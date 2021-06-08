@@ -333,11 +333,17 @@ void* smpi_shared_calloc_intercept(size_t num_elm, size_t elem_size, const char*
   }
 }
 
-void* smpi_shared_realloc_intercept(void* /*data*/, size_t /*size*/, const char* file, int line)
+void* smpi_shared_realloc_intercept(void* data, size_t size, const char* file, int line)
 {
   // FIXME
-  XBT_ERROR("%s:%d: using realloc() with SMPI malloc interception is currently not supported", file, line);
-  xbt_die("Please recompile with -DSMPI_NO_OVERRIDE_MALLOC");
+  static bool already_warned = false;
+  if (not already_warned) {
+    XBT_WARN("%s:%d: using realloc() with SMPI malloc interception is currently not well supported. "
+             "You may want to recompile with -DSMPI_NO_OVERRIDE_MALLOC",
+             file, line);
+    already_warned = true;
+  }
+  return realloc(data, size);
 }
 
 void* smpi_shared_malloc(size_t size, const char* file, int line)
