@@ -105,9 +105,8 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
         action.set_last_update();
       }
     }
-    XBT_DEBUG("Action (%p) : remains (%g) updated by %g.", &action, action.get_remains(),
-              action.get_variable()->get_value() * delta);
-    action.update_remains(action.get_variable()->get_value() * delta);
+    XBT_DEBUG("Action (%p) : remains (%g) updated by %g.", &action, action.get_remains(), action.get_rate() * delta);
+    action.update_remains(action.get_rate() * delta);
     action.update_max_duration(delta);
 
     XBT_DEBUG("Action (%p) : remains (%g).", &action, action.get_remains());

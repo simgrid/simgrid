@@ -24,6 +24,30 @@ LUA:
 Simix:
  - Legacy functions deprecated in this release: SIMIX_get_clock(), SIMIX_run().
 
+Models:
+ - Changed internal implementation of bandwidth factors in network models.
+   Models affected: CM02, LV08 (default), SMPI, IB.
+   Configuration affected: "network/bandwidth-factors" and "smpi/bw-factors".
+   Bandwidth factors are applied to communications to describe that users
+   cannot use 100% of the available bandwidth. For example, the default network model,
+   LV08, applies a factor of 0.97 to the bandwidth. In older versions, this
+   behavior was implemented by limiting the bandwidth available in the LMM
+   system for this flow. This may give the false impression that there is
+   bandwidth available for other flows due to its underutilization, especially
+   for the dynamic bandwidth factors used in SMPI models.
+   To avoid this, we have modified the implementation so that each flow uses the
+   maximum physical bandwidth according to the LMM system.
+   However, the actual throughput of the flow seen by the user is defined by
+   the physical bandwidth multiplied by the bandwidth factor.
+   This change impacts on the simulation results for all network models on
+   which we have bandwidth factors configured.
+   *****************************************
+   *DO NOT MIX 3.28 RESULTS WITH OLDER ONES*
+   *****************************************
+   This change may impact on the timing of your simulation results.
+   Take care when comparing simulations from different SimGrid's
+   versions. Sorry for the inconvenience.
+
 XBT:
  - xbt_assert is not disabled anymore, even when built with enable_debug=off.
 

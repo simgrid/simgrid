@@ -187,7 +187,7 @@ void NetworkCm02Model::update_actions_state_full(double /*now*/, double delta)
        */
       action.update_remains(action.get_remains());
     }
-    action.update_remains(action.get_variable()->get_value() * delta);
+    action.update_remains(action.get_rate() * delta);
 
     if (action.get_max_duration() != NO_MAX_DURATION)
       action.update_max_duration(delta);
@@ -338,6 +338,10 @@ void NetworkCm02Model::comm_action_set_bounds(const s4u::Host* src, const s4u::H
   } else {
     bw_factor = get_bandwidth_factor(size);
   }
+  xbt_assert(bw_factor != 0, "Invalid param for comm %s -> %s. Bandwidth factor cannot be 0", src->get_cname(),
+             dst->get_cname());
+  action->set_rate_factor(bw_factor);
+
   /* get mininum bandwidth among links in the route and multiply by correct factor
    * ignore wi-fi links, they're not considered for bw_factors */
   double bandwidth_bound = -1.0;
@@ -347,12 +351,13 @@ void NetworkCm02Model::comm_action_set_bounds(const s4u::Host* src, const s4u::H
     if (bandwidth_bound == -1.0 || l->get_bandwidth() < bandwidth_bound)
       bandwidth_bound = l->get_bandwidth();
   }
-  bandwidth_bound *= bw_factor;
 
+  /* increase rate given by user considering the factor, since the actual rate will be
+   * modified by it */
+  rate = rate / bw_factor;
   /* the bandwidth is determined by the minimum between flow and user's defined rate */
   if (rate >= 0 && rate < bandwidth_bound)
     bandwidth_bound = rate;
-
   action->set_user_bound(bandwidth_bound);
 
   action->lat_current_ = action->latency_;
@@ -439,7 +444,7 @@ NetworkCm02Link::NetworkCm02Link(const std::string& name, double bandwidth, kern
 {
   bandwidth_.scale = 1.0;
   bandwidth_.peak  = bandwidth;
-  this->set_constraint(system->constraint_new(this, sg_bandwidth_factor * bandwidth));
+  this->set_constraint(system->constraint_new(this, bandwidth));
 }
 
 void NetworkCm02Link::apply_event(kernel::profile::Event* triggered, double value)
@@ -471,8 +476,7 @@ void NetworkCm02Link::set_bandwidth(double value)
 {
   bandwidth_.peak = value;
 
-  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
-                                                            sg_bandwidth_factor * (bandwidth_.peak * bandwidth_.scale));
+  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), (bandwidth_.peak * bandwidth_.scale));
 
   LinkImpl::on_bandwidth_change();
 
@@ -555,7 +559,7 @@ void NetworkCm02Action::update_remains_lazy(double now)
   }
 
   set_last_update();
-  set_last_value(get_variable()->get_value());
+  set_last_value(get_rate());
 }
 
 } // namespace resource

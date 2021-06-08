@@ -72,6 +72,7 @@ class XBT_PUBLIC Action {
   activity::ActivityImpl* activity_ = nullptr;
 
   /* LMM */
+  double factor_           = 1.0; /**< Factor for effective rate = var->get_value() * factor_ */
   double last_update_      = 0;
   double last_value_       = 0;
   lmm::Variable* variable_ = nullptr;
@@ -244,6 +245,23 @@ public:
   double get_last_update() const { return last_update_; }
   void set_last_update();
 
+  /**
+   * @brief Set a factor for this action
+   *
+   * Defines a multiplicative factor for the consumption of the underlying resource.
+   *
+   * @param factor Multiplicative factor for this action (e.g. 0.97)
+   */
+  void set_rate_factor(double factor) { factor_ = factor; }
+  /**
+   * @brief Get the effective consumption rate of the resource
+   *
+   * The rate is based on the sharing given by the maxmin system underneath.
+   * However, it depends on the factor defined for this action.
+   *
+   * So, the effective rate is equal to var->get_value() * factor_
+   */
+  double get_rate() const;
   double get_last_value() const { return last_value_; }
   void set_last_value(double val) { last_value_ = val; }
   void set_suspend_state(Action::SuspendStates state) { suspended_ = state; }

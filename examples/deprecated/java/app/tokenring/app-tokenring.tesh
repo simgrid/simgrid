@@ -22,11 +22,11 @@ $ ${javacmd:=java} -classpath ${classpath:=.} app/tokenring/Main ${srcdir:=.}/..
 > [    0.000000] (0:maestro@) Using regular java threads.
 > [    0.000000] (0:maestro@) Number of hosts '2'
 > [    0.000000] (1:0@100030591) Host '0' send 'Token' to Host '1'
-> [    0.624423] (2:1@100036570) Host '1' received 'Token'
-> [    0.624423] (2:1@100036570) Host '1' send 'Token' to Host '0'
-> [    1.248846] (1:0@100030591) Host '0' received 'Token'
-> [    1.248846] (0:maestro@) Terminating the simulation...
-> [    1.248846] (0:maestro@) Simulation time 1.2488464578972847
+> [    0.625106] (2:1@100036570) Host '1' received 'Token'
+> [    0.625106] (2:1@100036570) Host '1' send 'Token' to Host '0'
+> [    1.250212] (1:0@100030591) Host '0' received 'Token'
+> [    1.250212] (0:maestro@) Terminating the simulation...
+> [    1.250212] (0:maestro@) Simulation time 1.250212042288475
 
 $ ${javacmd:=java} -classpath ${classpath:=.} app/tokenring/Main ${srcdir:=.}/../../platforms/meta_cluster.xml '--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n'
 > [  0.000000] (0:maestro@) Using regular java threads.

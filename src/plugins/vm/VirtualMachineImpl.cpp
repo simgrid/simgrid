@@ -159,7 +159,7 @@ double VMModel::next_occurring_event(double now)
     const kernel::resource::CpuImpl* cpu = ws_vm->pimpl_cpu;
 
     // solved_value below is X1 in comment above: what this VM got in the sharing on the PM
-    double solved_value = ws_vm->get_vm_impl()->get_action()->get_variable()->get_value();
+    double solved_value = ws_vm->get_vm_impl()->get_action()->get_rate();
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->get_cname(), ws_vm->get_pm()->get_cname());
 
     kernel::lmm::System* vcpu_system = cpu->get_model()->get_maxmin_system();

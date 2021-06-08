@@ -151,9 +151,14 @@ static double bandwidth_factor_cb(double size, const sg4::Host* src, const sg4::
 /*************************************************************************************************/
 class Sender {
   std::vector<sg4::Host*> hosts_;
+  double crosstraffic_ = 1.0;
 
 public:
-  explicit Sender(const std::vector<sg4::Host*>& hosts) : hosts_{hosts} {}
+  explicit Sender(const std::vector<sg4::Host*>& hosts, bool crosstraffic) : hosts_{hosts}
+  {
+    if (crosstraffic)
+      crosstraffic_ = 1.05; // add crosstraffic load if it is enabled
+  }
   void operator()() const
   {
     const std::vector<double> msg_sizes = {64e3, 64e6, 64e9}; // 64KB, 64MB, 64GB
@@ -165,7 +170,11 @@ public:
         if (host->get_name() == sg4::this_actor::get_host()->get_name()) {
           double lat_factor = get_factor_from_map(LOCAL_LAT_FACTOR, size);
           double bw_factor  = get_factor_from_map(LOCAL_BW_FACTOR, size);
-          double est_time   = sg4::Engine::get_clock() + size / (BW_LOCAL * bw_factor) + LATENCY * lat_factor;
+          /* Account for crosstraffic on local communications
+           * local communications use only a single link and crosstraffic impact on resource sharing
+           * on remote communications, we don't see this effect since we have split-duplex links */
+          double est_time =
+              sg4::Engine::get_clock() + size / (BW_LOCAL * bw_factor / crosstraffic_) + LATENCY * lat_factor;
 
           msg = "Local communication: size=" + std::to_string(size) + ". Use bw_factor=" + std::to_string(bw_factor) +
                 " lat_factor=" + std::to_string(lat_factor) + ". Estimated finished time=" + std::to_string(est_time);
@@ -211,9 +220,16 @@ public:
 /*************************************************************************************************/
 int main(int argc, char* argv[])
 {
+  bool crosstraffic = true;
   sg4::Engine e(&argc, argv);
   /* setting network model to default one */
   sg4::Engine::set_config("network/model:CM02");
+
+  /* test with crosstraffic disabled */
+  if (argc == 2 && std::string(argv[1]) == "disable_crosstraffic") {
+    sg4::Engine::set_config("network/crosstraffic:0");
+    crosstraffic = false;
+  }
 
   /* create platform */
   load_platform();
@@ -226,7 +242,8 @@ int main(int argc, char* argv[])
   sg4::Host* host_remote = e.host_by_name("dahu-10.grid5000.fr");
   sg4::Actor::create(std::string("receiver-local"), host, Receiver());
   sg4::Actor::create(std::string("receiver-remote"), host_remote, Receiver());
-  sg4::Actor::create(std::string("sender") + std::string(host->get_name()), host, Sender({host, host_remote}));
+  sg4::Actor::create(std::string("sender") + std::string(host->get_name()), host,
+                     Sender({host, host_remote}, crosstraffic));
 
   /* runs the simulation */
   e.run();
