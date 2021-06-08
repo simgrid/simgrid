@@ -18,9 +18,9 @@
 #include "mpi.h"
 #include <stdio.h>
 
-#define LOOP 100
+#define LOOP 10
 #define DATA_SIZE 100
-#define OPS_NUM 10000
+#define OPS_NUM 1000
 #define GACC_SZ 10
 
 typedef struct pair_struct {
