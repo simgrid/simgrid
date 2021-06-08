@@ -35,6 +35,7 @@
 #ifndef SMPI_NO_OVERRIDE_MALLOC
 #define malloc(x) smpi_shared_malloc_intercept((x), __FILE__, __LINE__)
 #define calloc(x, y) smpi_shared_calloc_intercept((x), (y), __FILE__, __LINE__)
+#define realloc(x, y) smpi_shared_realloc_intercept((x), (y), __FILE__, __LINE__)
 #define free(x) smpi_shared_free(x)
 #endif
 #endif
