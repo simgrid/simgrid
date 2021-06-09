@@ -319,17 +319,18 @@ void* smpi_shared_malloc_intercept(size_t size, const char* file, int line)
 
 void* smpi_shared_calloc_intercept(size_t num_elm, size_t elem_size, const char* file, int line)
 {
-  if( smpi_cfg_auto_shared_malloc_thresh() == 0 || elem_size*num_elm < smpi_cfg_auto_shared_malloc_thresh()){
-    void* ptr = ::operator new(elem_size*num_elm);
+  size_t size = elem_size * num_elm;
+  if (smpi_cfg_auto_shared_malloc_thresh() == 0 || size < smpi_cfg_auto_shared_malloc_thresh()) {
+    void* ptr = ::operator new(size);
     if(not smpi_cfg_trace_call_use_absolute_path())
-      simgrid::smpi::utils::account_malloc_size(elem_size*num_elm, simgrid::xbt::Path(file).get_base_name(), line, ptr);
+      simgrid::smpi::utils::account_malloc_size(size, simgrid::xbt::Path(file).get_base_name(), line, ptr);
     else
-      simgrid::smpi::utils::account_malloc_size(elem_size*num_elm, file, line, ptr);
-    memset(ptr, 0, elem_size*num_elm);
+      simgrid::smpi::utils::account_malloc_size(size, file, line, ptr);
+    memset(ptr, 0, size);
     return ptr;
   } else {
-    simgrid::smpi::utils::account_shared_size(elem_size*num_elm);
-    return smpi_shared_malloc(elem_size*num_elm, file, line);
+    simgrid::smpi::utils::account_shared_size(size);
+    return memset(smpi_shared_malloc(size, file, line), 0, size);
   }
 }
 
