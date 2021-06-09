@@ -305,7 +305,7 @@ void* smpi_shared_malloc_partial(size_t size, const size_t* shared_block_offsets
 void* smpi_shared_malloc_intercept(size_t size, const char* file, int line)
 {
   if( smpi_cfg_auto_shared_malloc_thresh() == 0 || size < smpi_cfg_auto_shared_malloc_thresh()){
-    void* ptr = ::operator new(size);
+    void* ptr = xbt_malloc(size);
     if(not smpi_cfg_trace_call_use_absolute_path())
       simgrid::smpi::utils::account_malloc_size(size, simgrid::xbt::Path(file).get_base_name(), line, ptr);
     else
@@ -321,12 +321,11 @@ void* smpi_shared_calloc_intercept(size_t num_elm, size_t elem_size, const char*
 {
   size_t size = elem_size * num_elm;
   if (smpi_cfg_auto_shared_malloc_thresh() == 0 || size < smpi_cfg_auto_shared_malloc_thresh()) {
-    void* ptr = ::operator new(size);
+    void* ptr = xbt_malloc0(size);
     if(not smpi_cfg_trace_call_use_absolute_path())
       simgrid::smpi::utils::account_malloc_size(size, simgrid::xbt::Path(file).get_base_name(), line, ptr);
     else
       simgrid::smpi::utils::account_malloc_size(size, file, line, ptr);
-    memset(ptr, 0, size);
     return ptr;
   } else {
     simgrid::smpi::utils::account_shared_size(size);
@@ -336,15 +335,26 @@ void* smpi_shared_calloc_intercept(size_t num_elm, size_t elem_size, const char*
 
 void* smpi_shared_realloc_intercept(void* data, size_t size, const char* file, int line)
 {
-  // FIXME
-  static bool already_warned = false;
-  if (not already_warned) {
-    XBT_WARN("%s:%d: using realloc() with SMPI malloc interception is currently not well supported. "
-             "You may want to recompile with -DSMPI_NO_OVERRIDE_MALLOC",
-             file, line);
-    already_warned = true;
+  if (size == 0) {
+    smpi_shared_free(data);
+    return nullptr;
   }
-  return realloc(data, size);
+  if (data == nullptr)
+    return smpi_shared_malloc_intercept(size, file, line);
+
+  auto meta = allocs_metadata.find(data);
+  if (meta == allocs_metadata.end()) {
+    XBT_DEBUG("Classical realloc(%p, %zu)", data, size);
+    return xbt_realloc(data, size);
+  }
+
+  XBT_DEBUG("Shared realloc(%p, %zu) (old size: %zu)", data, size, meta->second.size);
+  void* ptr = smpi_shared_malloc_intercept(size, file, line);
+  if (ptr != data) {
+    memcpy(ptr, data, std::min(size, meta->second.size));
+    smpi_shared_free(data);
+  }
+  return ptr;
 }
 
 void* smpi_shared_malloc(size_t size, const char* file, int line)
@@ -357,7 +367,7 @@ void* smpi_shared_malloc(size_t size, const char* file, int line)
     return smpi_shared_malloc_partial(size, shared_block_offsets.data(), nb_shared_blocks);
   }
   XBT_DEBUG("Classic allocation of %zu bytes", size);
-  return ::operator new(size);
+  return xbt_malloc(size);
 }
 
 int smpi_is_shared(const void* ptr, std::vector<std::pair<size_t, size_t>> &private_blocks, size_t *offset){
@@ -432,7 +442,7 @@ void smpi_shared_free(void *ptr)
   if (smpi_cfg_shared_malloc() == SharedMallocType::LOCAL) {
     auto meta = allocs_metadata.find(ptr);
     if (meta == allocs_metadata.end()) {
-      ::operator delete(ptr);
+      xbt_free(ptr);
       return;
     }
     shared_data_t* data = &meta->second.data->second;
@@ -460,13 +470,13 @@ void smpi_shared_free(void *ptr)
         allocs_metadata.erase(ptr);
       }
     }else{
-      ::operator delete(ptr);
+      xbt_free(ptr);
       return;
     }
 
   } else {
     XBT_DEBUG("Classic deallocation of %p", ptr);
-    ::operator delete(ptr);
+    xbt_free(ptr);
   }
 }
 #endif
