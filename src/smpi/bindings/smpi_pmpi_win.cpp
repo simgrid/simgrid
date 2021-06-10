@@ -325,10 +325,10 @@ int PMPI_Raccumulate(const void *origin_addr, int origin_count, MPI_Datatype ori
   return retval;
 }
 
-int PMPI_Get_accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
-int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
-MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
-
+int PMPI_Get_accumulate(const void* origin_addr, int origin_count, MPI_Datatype origin_datatype, void* result_addr,
+                        int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp,
+                        int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win)
+{
   if (op != MPI_NO_OP){
     CHECK_BUFFER(1, origin_addr, origin_count, origin_datatype)
     CHECK_COUNT(2, origin_count)
@@ -366,10 +366,10 @@ MPI_Datatype target_datatype, MPI_Op op, MPI_Win win){
   return retval;
 }
 
-
-int PMPI_Rget_accumulate(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, void *result_addr,
-int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp, int target_count,
-MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request){
+int PMPI_Rget_accumulate(const void* origin_addr, int origin_count, MPI_Datatype origin_datatype, void* result_addr,
+                         int result_count, MPI_Datatype result_datatype, int target_rank, MPI_Aint target_disp,
+                         int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win, MPI_Request* request)
+{
   if(target_rank==MPI_PROC_NULL)
     *request = MPI_REQUEST_NULL;
   if (op != MPI_NO_OP){

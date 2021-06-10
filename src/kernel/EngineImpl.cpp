@@ -34,7 +34,6 @@ config::Flag<double> cfg_breakpoint{"debug/breakpoint",
                                     "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
 EngineImpl::~EngineImpl()
 {
-
   while (not timer::kernel_timers().empty()) {
     delete timer::kernel_timers().top().second;
     timer::kernel_timers().pop();
