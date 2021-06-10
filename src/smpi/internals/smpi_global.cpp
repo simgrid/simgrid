@@ -230,57 +230,61 @@ static void smpi_init_papi()
   // the configuration as given by the user (counter data as a pair of (counter_name, counter_counter))
   // and the (computed) event_set.
 
-  if (not smpi_cfg_papi_events_file().empty()) {
-    if (PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT)
-      XBT_ERROR("Could not initialize PAPI library; is it correctly installed and linked?"
-                " Expected version is %u", PAPI_VER_CURRENT);
+  if (smpi_cfg_papi_events_file().empty())
+    return;
 
-    using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
-    boost::char_separator<char> separator_units(";");
-    std::string str = smpi_cfg_papi_events_file();
-    Tokenizer tokens(str, separator_units);
+  if (PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT) {
+    XBT_ERROR("Could not initialize PAPI library; is it correctly installed and linked? Expected version is %u",
+              PAPI_VER_CURRENT);
+    return;
+  }
 
-    // Iterate over all the computational units. This could be processes, hosts, threads, ranks... You name it.
-    // I'm not exactly sure what we will support eventually, so I'll leave it at the general term "units".
-    for (auto const& unit_it : tokens) {
-      boost::char_separator<char> separator_events(":");
-      Tokenizer event_tokens(unit_it, separator_events);
+  using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
+  boost::char_separator<char> separator_units(";");
+  std::string str = smpi_cfg_papi_events_file();
+  Tokenizer tokens(str, separator_units);
 
-      int event_set = PAPI_NULL;
-      if (PAPI_create_eventset(&event_set) != PAPI_OK) {
-        // TODO: Should this let the whole simulation die?
-        XBT_CRITICAL("Could not create PAPI event set during init.");
-      }
+  // Iterate over all the computational units. This could be processes, hosts, threads, ranks... You name it.
+  // I'm not exactly sure what we will support eventually, so I'll leave it at the general term "units".
+  for (auto const& unit_it : tokens) {
+    boost::char_separator<char> separator_events(":");
+    Tokenizer event_tokens(unit_it, separator_events);
 
-      // NOTE: We cannot use a map here, as we must obey the order of the counters
-      // This is important for PAPI: We need to map the values of counters back to the event_names (so, when PAPI_read()
-      // has finished)!
-      papi_counter_t counters2values;
-
-      // Iterate over all counters that were specified for this specific unit.
-      // Note that we need to remove the name of the unit (that could also be the "default" value), which always comes
-      // first. Hence, we start at ++(events.begin())!
-      for (Tokenizer::iterator events_it = ++(event_tokens.begin()); events_it != event_tokens.end(); ++events_it) {
-        int event_code   = PAPI_NULL;
-        auto* event_name = const_cast<char*>((*events_it).c_str());
-        if (PAPI_event_name_to_code(event_name, &event_code) != PAPI_OK) {
-          XBT_CRITICAL("Could not find PAPI event '%s'. Skipping.", event_name);
-          continue;
-        }
-        if (PAPI_add_event(event_set, event_code) != PAPI_OK) {
-          XBT_ERROR("Could not add PAPI event '%s'. Skipping.", event_name);
-          continue;
-        }
-        XBT_DEBUG("Successfully added PAPI event '%s' to the event set.", event_name);
-
-        counters2values.emplace_back(*events_it, 0LL);
-      }
-
-      std::string unit_name    = *(event_tokens.begin());
-      papi_process_data config = {.counter_data = std::move(counters2values), .event_set = event_set};
-
-      units2papi_setup.insert(std::make_pair(unit_name, std::move(config)));
+    int event_set = PAPI_NULL;
+    if (PAPI_create_eventset(&event_set) != PAPI_OK) {
+      // TODO: Should this let the whole simulation die?
+      XBT_CRITICAL("Could not create PAPI event set during init.");
+      break;
     }
+
+    // NOTE: We cannot use a map here, as we must obey the order of the counters
+    // This is important for PAPI: We need to map the values of counters back to the event_names (so, when PAPI_read()
+    // has finished)!
+    papi_counter_t counters2values;
+
+    // Iterate over all counters that were specified for this specific unit.
+    // Note that we need to remove the name of the unit (that could also be the "default" value), which always comes
+    // first. Hence, we start at ++(events.begin())!
+    for (Tokenizer::iterator events_it = ++(event_tokens.begin()); events_it != event_tokens.end(); ++events_it) {
+      int event_code   = PAPI_NULL;
+      auto* event_name = const_cast<char*>((*events_it).c_str());
+      if (PAPI_event_name_to_code(event_name, &event_code) != PAPI_OK) {
+        XBT_CRITICAL("Could not find PAPI event '%s'. Skipping.", event_name);
+        continue;
+      }
+      if (PAPI_add_event(event_set, event_code) != PAPI_OK) {
+        XBT_ERROR("Could not add PAPI event '%s'. Skipping.", event_name);
+        continue;
+      }
+      XBT_DEBUG("Successfully added PAPI event '%s' to the event set.", event_name);
+
+      counters2values.emplace_back(*events_it, 0LL);
+    }
+
+    std::string unit_name    = *(event_tokens.begin());
+    papi_process_data config = {.counter_data = std::move(counters2values), .event_set = event_set};
+
+    units2papi_setup.insert(std::make_pair(unit_name, std::move(config)));
   }
 #endif
 }
@@ -380,17 +384,17 @@ static void smpi_copy_file(const std::string& src, const std::string& target, of
   while (ssize_t got = read(fdin, buf.data(), buf.size())) {
     if (got == -1) {
       xbt_assert(errno == EINTR, "Cannot read from %s", src.c_str());
-    } else {
-      const unsigned char* p = buf.data();
-      ssize_t todo           = got;
-      while (ssize_t done = write(fdout, p, todo)) {
-        if (done == -1) {
-          xbt_assert(errno == EINTR, "Cannot write into %s", target.c_str());
-        } else {
-          p += done;
-          todo -= done;
-        }
+      continue;
+    }
+    const unsigned char* p = buf.data();
+    ssize_t todo           = got;
+    while (ssize_t done = write(fdout, p, todo)) {
+      if (done == -1) {
+        xbt_assert(errno == EINTR, "Cannot write into %s", target.c_str());
+        continue;
       }
+      p += done;
+      todo -= done;
     }
   }
   close(fdin);
