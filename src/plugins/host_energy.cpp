@@ -229,29 +229,29 @@ HostEnergy::~HostEnergy() = default;
 
 double HostEnergy::get_watt_idle_at(int pstate) const
 {
-  xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
-             host_->get_cname());
+  if (not has_pstate_power_values_)
+    return 0.0;
   return power_range_watts_list_[pstate].idle_;
 }
 
 double HostEnergy::get_watt_min_at(int pstate) const
 {
-  xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
-             host_->get_cname());
+  if (not has_pstate_power_values_)
+    return 0.0;
   return power_range_watts_list_[pstate].epsilon_;
 }
 
 double HostEnergy::get_watt_max_at(int pstate) const
 {
-  xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
-             host_->get_cname());
+  if (not has_pstate_power_values_)
+    return 0.0;
   return power_range_watts_list_[pstate].max_;
 }
 
 double HostEnergy::get_power_range_slope_at(int pstate) const
 {
-  xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
-             host_->get_cname());
+  if (not has_pstate_power_values_)
+    return 0.0;
   return power_range_watts_list_[pstate].slope_;
 }
 
@@ -293,8 +293,8 @@ double HostEnergy::get_current_watts_value()
  */
 double HostEnergy::get_current_watts_value(double cpu_load) const
 {
-  xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
-             host_->get_cname());
+  if (not has_pstate_power_values_)
+    return 0.0;
 
   /* Return watts_off if pstate == pstate_off (ie, if the host is off) */
   if (this->pstate_ == pstate_off_) {
@@ -341,12 +341,7 @@ void HostEnergy::init_watts_range_list()
 {
   const char* all_power_values_str = host_->get_property("wattage_per_state");
   if (all_power_values_str == nullptr) {
-    /* If no power values are given, we assume it's 0 everywhere */
     XBT_WARN("No energetic profiles (wattage_per_state) given for host %s, using 0 W by default. Direct request of power/energy consumption of this host will fail.", host_->get_cname());
-    for (int i = 0; i < host_->get_pstate_count(); ++i) {
-        PowerRange range(0,0,0);
-        power_range_watts_list_.push_back(range);
-    }
     return;
   }
 
