@@ -43,10 +43,6 @@ static simgrid::kernel::routing::ClusterZoneCreationArgs
 
 /** The current NetZone in the parsing */
 static simgrid::kernel::routing::NetZoneImpl* current_routing = nullptr;
-static simgrid::kernel::routing::NetZoneImpl* routing_get_current()
-{
-  return current_routing;
-}
 static simgrid::s4u::Host* current_host = nullptr;
 
 /** Module management function: creates all internal data structures */
@@ -67,8 +63,7 @@ void sg_platf_exit()
 /** @brief Add a host to the current NetZone */
 void sg_platf_new_host_begin(const simgrid::kernel::routing::HostCreationArgs* args)
 {
-  current_host = routing_get_current()
-                     ->create_host(args->id, args->speed_per_pstate)
+  current_host = current_routing->create_host(args->id, args->speed_per_pstate)
                      ->set_coordinates(args->coord)
                      ->set_core_count(args->core_amount)
                      ->set_state_profile(args->state_trace)
@@ -120,8 +115,7 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name,
 
 static void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* args, const std::string& link_name)
 {
-  routing_get_current()
-      ->create_link(link_name, args->bandwidths)
+  current_routing->create_link(link_name, args->bandwidths)
       ->set_properties(args->properties)
       ->get_impl() // this call to get_impl saves some simcalls but can be removed
       ->set_sharing_policy(args->policy)
@@ -144,8 +138,7 @@ void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* link)
 
 void sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk)
 {
-  const simgrid::s4u::Disk* new_disk = routing_get_current()
-                                           ->create_disk(disk->id, disk->read_bw, disk->write_bw)
+  const simgrid::s4u::Disk* new_disk = current_routing->create_disk(disk->id, disk->read_bw, disk->write_bw)
                                            ->set_host(current_host)
                                            ->set_properties(disk->properties)
                                            ->seal();
@@ -226,7 +219,7 @@ static void sg_platf_new_cluster_hierarchical(const simgrid::kernel::routing::Cl
     set_limiter = std::bind(sg_platf_cluster_create_limiter, cluster, _1, _2, _3);
   }
 
-  simgrid::s4u::NetZone const* parent = routing_get_current() ? routing_get_current()->get_iface() : nullptr;
+  simgrid::s4u::NetZone const* parent = current_routing ? current_routing->get_iface() : nullptr;
   simgrid::s4u::NetZone* zone;
   switch (cluster->topology) {
     case simgrid::kernel::routing::ClusterTopology::TORUS:
@@ -255,7 +248,7 @@ static void sg_platf_new_cluster_hierarchical(const simgrid::kernel::routing::Cl
 static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationArgs* cluster)
 {
   auto* zone                          = simgrid::s4u::create_star_zone(cluster->id);
-  simgrid::s4u::NetZone const* parent = routing_get_current() ? routing_get_current()->get_iface() : nullptr;
+  simgrid::s4u::NetZone const* parent = current_routing ? current_routing->get_iface() : nullptr;
   if (parent)
     zone->set_parent(parent);
 
@@ -448,14 +441,14 @@ void sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* a
 /*************************************************************************************************/
 void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route)
 {
-  routing_get_current()->add_route(route->src, route->dst, route->gw_src, route->gw_dst, route->link_list,
-                                   route->symmetrical);
+  current_routing->add_route(route->src, route->dst, route->gw_src, route->gw_dst, route->link_list,
+                             route->symmetrical);
 }
 
 void sg_platf_new_bypassRoute(simgrid::kernel::routing::RouteCreationArgs* bypassRoute)
 {
-  routing_get_current()->add_bypass_route(bypassRoute->src, bypassRoute->dst, bypassRoute->gw_src, bypassRoute->gw_dst,
-                                          bypassRoute->link_list, bypassRoute->symmetrical);
+  current_routing->add_bypass_route(bypassRoute->src, bypassRoute->dst, bypassRoute->gw_src, bypassRoute->gw_dst,
+                                    bypassRoute->link_list, bypassRoute->symmetrical);
 }
 
 void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
