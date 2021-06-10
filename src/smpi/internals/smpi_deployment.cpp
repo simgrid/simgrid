@@ -105,7 +105,7 @@ int smpi_get_universe_size()
 }
 
 /** @brief Auxiliary method to get list of hosts to deploy app */
-static std::vector<simgrid::s4u::Host*> smpi_get_hosts(simgrid::s4u::Engine* e, const std::string& hostfile)
+static std::vector<simgrid::s4u::Host*> smpi_get_hosts(const simgrid::s4u::Engine* e, const std::string& hostfile)
 {
   if (hostfile == "") {
     return e->get_all_hosts();
@@ -148,12 +148,12 @@ static std::vector<std::string> smpi_deployment_get_args(int rank_id, const std:
   // pass arguments to process only if not a replay execution
   if (replay.empty()) {
     for (int i = 0; i < argc; i++) {
-      args.push_back(argv[i]);
+      args.emplace_back(argv[i]);
     }
   }
   /* one trace per process */
   if (replay.size() > 1) {
-    args.push_back(replay[rank_id]);
+    args.emplace_back(replay[rank_id]);
   }
   return args;
 }
@@ -164,8 +164,8 @@ static std::vector<std::string> smpi_deployment_get_args(int rank_id, const std:
  * This used to be done at smpirun script, parsing either the hostfile or the platform XML.
  * If hostfile isn't provided, get the list of hosts from engine.
  */
-int smpi_deployment_smpirun(simgrid::s4u::Engine* e, const std::string& hostfile, int np, const std::string& replayfile,
-                            int map, int argc, char* argv[])
+int smpi_deployment_smpirun(const simgrid::s4u::Engine* e, const std::string& hostfile, int np,
+                            const std::string& replayfile, int map, int argc, char* argv[])
 {
   auto hosts     = smpi_get_hosts(e, hostfile);
   auto replay    = smpi_read_replay(replayfile);
