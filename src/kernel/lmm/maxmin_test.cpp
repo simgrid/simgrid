@@ -280,3 +280,147 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
 
   Sys.variable_free_all();
 }
+
+TEST_CASE("kernel::lmm dynamic constraint shared systems", "[kernel-lmm-shared-single-sys]")
+{
+  auto cb = [](double bound, int flows) -> double {
+    // decrease 10 % for each extra flow sharing this resource
+    return bound - (flows - 1) * .10 * bound;
+  };
+  lmm::System Sys(false);
+  lmm::Constraint* sys_cnst = Sys.constraint_new(nullptr, 10);
+  sys_cnst->set_sharing_policy(lmm::Constraint::SharingPolicy::NONLINEAR, cb);
+
+  SECTION("1 activity, 100% C")
+  {
+    /*
+     * A single variable gets all the share
+     *
+     * In details:
+     *   o System:  a1 * p1 * \rho1 < C
+     *   o consumption_weight: a1=1
+     *   o sharing_penalty:    p1=1
+     *
+     * Expectations
+     *   o rho1 = C (because all weights are 1)
+     */
+
+    lmm::Variable* rho_1      = Sys.variable_new(nullptr, 1);
+
+    Sys.expand(sys_cnst, rho_1, 1);
+    Sys.solve();
+
+    REQUIRE(double_equals(rho_1->get_value(), 10, sg_maxmin_precision));
+  }
+
+  SECTION("2 activities, but ignore crosstraffic 100% C")
+  {
+    /*
+     * Ignore small activities (e.g. crosstraffic)
+     *
+     * In details:
+     *   o System:  a1 * p1 * \rho1  +  a2 * p2 * \rho2 < C
+     *   o consumption_weight: a1=1 ; a2=0.05
+     *   o sharing_penalty:    p1=1 ; p2=1
+     *
+     * Expectations
+     *   o rho1 = C/1.05
+     *   o rho2 = C/1.05
+     *   o rho1 = rho2 (because rho1 and rho2 has the same penalty)
+     */
+
+    lmm::Variable* rho_1      = Sys.variable_new(nullptr, 1);
+    lmm::Variable* rho_2      = Sys.variable_new(nullptr, 1);
+
+    Sys.expand(sys_cnst, rho_1, 1);
+    Sys.expand(sys_cnst, rho_2, 0.05);
+    Sys.solve();
+
+    REQUIRE(double_equals(rho_1->get_value(), 10 / 1.05, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), rho_2->get_value(), sg_maxmin_precision));
+  }
+
+  SECTION("2 activities, 1 inactive 100% C")
+  {
+    /*
+     * 2 activities but 1 is inactive (sharing_penalty = 0)
+     *
+     * In details:
+     *   o System:  a1 * p1 * \rho1  +  a2 * p2 * \rho2 < C
+     *   o consumption_weight: a1=1 ; a2=1
+     *   o sharing_penalty:    p1=1 ; p2=0
+     *
+     * Expectations
+     *   o rho1 = C
+     *   o rho2 = 0
+     */
+
+    lmm::Variable* rho_1      = Sys.variable_new(nullptr, 1);
+    lmm::Variable* rho_2      = Sys.variable_new(nullptr, 0);
+
+    Sys.expand(sys_cnst, rho_1, 1);
+    Sys.expand(sys_cnst, rho_2, 1);
+    Sys.solve();
+
+    REQUIRE(double_equals(rho_1->get_value(), 10, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_2->get_value(), 0, sg_maxmin_precision));
+  }
+
+  SECTION("2 activity, 90% C")
+  {
+    /*
+     * 2 similar variables degrades performance, but get same share
+     *
+     * In details:
+     *   o System:  a1 * p1 * \rho1  +  a2 * p2 * \rho2 < .9C
+     *   o consumption_weight: a1=1 ; a2=1
+     *   o sharing_penalty:    p1=1 ; p2=1
+     *
+     * Expectations
+     *   o rho1 = rho2
+     *   o rho1 + rho2 = C (because all weights are 1)
+     */
+
+    lmm::Variable* rho_1      = Sys.variable_new(nullptr, 1);
+    lmm::Variable* rho_2      = Sys.variable_new(nullptr, 1);
+
+    Sys.expand(sys_cnst, rho_1, 1);
+    Sys.expand(sys_cnst, rho_2, 1);
+    Sys.solve();
+
+    REQUIRE(double_equals(rho_1->get_value(), 4.5, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 4.5, sg_maxmin_precision));
+  }
+
+  SECTION("3 activity, 80% C")
+  {
+    /*
+     * 3 similar variables degrades performance, sharing proportional to penalty
+     *
+     * In details:
+     *   o System:  a1 * p1 * \rho1  +  a2 * p2 * \rho2 + a3 * p3 * \rho3 < .8C
+     *   o consumption_weight: a1=1 ; a2=1 ; a3=1
+     *   o sharing_penalty:    p1=1 ; p2=3 ; p3=4
+     *
+     * Expectations
+     *   o rho1 = 2*rho2 = 2*rho3
+     *   0 rho1 = 4, rho2 = 2, rho3 = 2
+     *   o rho1 + rho2 + rho3 = .8C (because all weights are 1)
+     */
+
+    lmm::Variable* rho_1      = Sys.variable_new(nullptr, 1);
+    lmm::Variable* rho_2      = Sys.variable_new(nullptr, 2);
+    lmm::Variable* rho_3      = Sys.variable_new(nullptr, 2);
+
+    Sys.expand(sys_cnst, rho_1, 1);
+    Sys.expand(sys_cnst, rho_2, 1);
+    Sys.expand(sys_cnst, rho_3, 1);
+    Sys.solve();
+
+    REQUIRE(double_equals(rho_1->get_value(), 4, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_2->get_value(), 2, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_3->get_value(), 2, sg_maxmin_precision));
+  }
+
+  Sys.variable_free_all();
+}

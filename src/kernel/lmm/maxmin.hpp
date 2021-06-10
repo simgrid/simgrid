@@ -7,6 +7,7 @@
 #define SURF_MAXMIN_HPP
 
 #include "simgrid/kernel/resource/Action.hpp"
+#include "simgrid/kernel/resource/Model.hpp"
 #include "simgrid/s4u/Link.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "xbt/asserts.h"
@@ -187,7 +188,8 @@ public:
  */
 class XBT_PUBLIC Constraint {
 public:
-  enum class SharingPolicy { SHARED = 1, FATPIPE = 0 };
+  enum class SharingPolicy { NONLINEAR = 2, SHARED = 1, FATPIPE = 0 };
+
   Constraint() = delete;
   Constraint(resource::Resource* id_value, double bound_value);
 
@@ -195,7 +197,7 @@ public:
   void unshare() { sharing_policy_ = SharingPolicy::FATPIPE; }
 
   /** @brief Set how a constraint is shared  */
-  void set_sharing_policy(SharingPolicy policy) { sharing_policy_ = policy; }
+  void set_sharing_policy(SharingPolicy policy, const s4u::NonLinearResourceCb& cb);
   /** @brief Check how a constraint is shared  */
   SharingPolicy get_sharing_policy() const { return sharing_policy_; }
 
@@ -275,6 +277,7 @@ public:
   double remaining_ = 0.0;
   double usage_     = 0.0;
   double bound_;
+  double dynamic_bound_; //!< dynamic bound for this constraint, defined by user's callback
   // TODO MARTIN Check maximum value across resources at the end of simulation and give a warning is more than e.g. 500
   int concurrency_current_ = 0; /* The current concurrency */
   int concurrency_maximum_ = 0; /* The maximum number of (enabled and disabled) variables associated to the constraint
@@ -285,6 +288,7 @@ public:
   double lambda_               = 0.0;
   double new_lambda_           = 0.0;
   ConstraintLight* cnst_light_ = nullptr;
+  s4u::NonLinearResourceCb dyn_constraint_cb_;
 
 private:
   static int next_rank_;  // To give a separate rank_ to each constraint

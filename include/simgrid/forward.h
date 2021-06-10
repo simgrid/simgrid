@@ -91,6 +91,13 @@ XBT_PUBLIC void intrusive_ptr_release(const Semaphore* m);
 XBT_PUBLIC void intrusive_ptr_add_ref(const Semaphore* m);
 
 class Disk;
+/**
+ * @brief Callback to dynamically change the resource's capacity
+ *
+ * Allows user to change resource's capacity depending on the number of concurrent activities
+ * running on the resource at a given instant
+ */
+using NonLinearResourceCb = std::function<double(double capacity, int n_activities)>;
 } // namespace s4u
 
 namespace config {

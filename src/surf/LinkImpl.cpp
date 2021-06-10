@@ -48,7 +48,7 @@ void LinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy)
   lmm::Constraint::SharingPolicy ct_policy = lmm::Constraint::SharingPolicy::SHARED;
   if (policy == s4u::Link::SharingPolicy::FATPIPE)
     ct_policy = lmm::Constraint::SharingPolicy::FATPIPE;
-  get_constraint()->set_sharing_policy(ct_policy);
+  get_constraint()->set_sharing_policy(ct_policy, {});
   sharing_policy_ = policy;
 }
 s4u::Link::SharingPolicy LinkImpl::get_sharing_policy() const

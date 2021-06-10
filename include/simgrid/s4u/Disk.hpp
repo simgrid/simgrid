@@ -77,6 +77,26 @@ public:
   IoPtr write_async(sg_size_t size) const;
   sg_size_t write(sg_size_t size) const;
 
+  /** @brief Policy for sharing the disk among activities */
+  enum class SharingPolicy { NONLINEAR = 1, LINEAR = 0 };
+  enum class Operation { READ = 2, WRITE = 1, READWRITE = 0 };
+
+  /**
+   * @brief Describes how the disk is shared between activities for each operation
+   *
+   * Disks have different bandwidths for read and write operations. This method
+   * allows you to set different sharing policies for each operation:
+   * - Read: resource sharing for read operation
+   * - Write: resource sharing for write
+   * - ReadWrite: global sharing for read and write operations
+   *
+   * @param op Operation type
+   * @param policy Sharing policy
+   * @param cb Callback for NONLINEAR policies
+   */
+  Disk* set_sharing_policy(Operation op, SharingPolicy policy, const s4u::NonLinearResourceCb& cb = {});
+  SharingPolicy get_sharing_policy(Operation op) const;
+
   Disk* seal();
 
   /* The signals */

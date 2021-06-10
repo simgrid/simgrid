@@ -116,9 +116,47 @@ void DiskImpl::seal()
   this->set_read_constraint(maxmin_system->constraint_new(this, read_bw_.peak * read_bw_.scale))
       ->set_write_constraint(maxmin_system->constraint_new(this, write_bw_.peak * write_bw_.scale))
       ->set_constraint(maxmin_system->constraint_new(this, std::max(read_bw_.peak, write_bw_.peak)));
+  apply_sharing_policy_cfg();
   XBT_DEBUG("Create resource with read_bw '%f' write_bw '%f'", read_bw_.peak, write_bw_.peak);
   Resource::seal();
   turn_on();
+}
+
+constexpr kernel::lmm::Constraint::SharingPolicy to_maxmin_policy(s4u::Disk::SharingPolicy policy)
+{
+  switch (policy) {
+    case s4u::Disk::SharingPolicy::NONLINEAR:
+      return kernel::lmm::Constraint::SharingPolicy::NONLINEAR;
+    case s4u::Disk::SharingPolicy::LINEAR:
+    default:
+      return kernel::lmm::Constraint::SharingPolicy::SHARED;
+  }
+}
+
+void DiskImpl::set_sharing_policy(s4u::Disk::Operation op, s4u::Disk::SharingPolicy policy,
+                                  const s4u::NonLinearResourceCb& cb)
+{
+  sharing_policy_[op]    = policy;
+  sharing_policy_cb_[op] = cb;
+  apply_sharing_policy_cfg();
+}
+
+s4u::Disk::SharingPolicy DiskImpl::get_sharing_policy(s4u::Disk::Operation op) const
+{
+  return sharing_policy_.at(op);
+}
+
+void DiskImpl::apply_sharing_policy_cfg()
+{
+  if (get_constraint())
+    get_constraint()->set_sharing_policy(to_maxmin_policy(sharing_policy_[s4u::Disk::Operation::READWRITE]),
+                                         sharing_policy_cb_[s4u::Disk::Operation::READWRITE]);
+  if (constraint_read_)
+    constraint_read_->set_sharing_policy(to_maxmin_policy(sharing_policy_[s4u::Disk::Operation::READ]),
+                                         sharing_policy_cb_[s4u::Disk::Operation::READ]);
+  if (constraint_write_)
+    constraint_write_->set_sharing_policy(to_maxmin_policy(sharing_policy_[s4u::Disk::Operation::WRITE]),
+                                          sharing_policy_cb_[s4u::Disk::Operation::WRITE]);
 }
 
 /**********

@@ -51,6 +51,13 @@ class DiskImpl : public Resource_T<DiskImpl>, public xbt::PropertyHolder {
   s4u::Host* host_                   = nullptr;
   lmm::Constraint* constraint_write_ = nullptr; /* Constraint for maximum write bandwidth*/
   lmm::Constraint* constraint_read_  = nullptr; /* Constraint for maximum read bandwidth*/
+  std::unordered_map<s4u::Disk::Operation, s4u::Disk::SharingPolicy> sharing_policy_ = {
+      {s4u::Disk::Operation::READ, s4u::Disk::SharingPolicy::LINEAR},
+      {s4u::Disk::Operation::WRITE, s4u::Disk::SharingPolicy::LINEAR},
+      {s4u::Disk::Operation::READWRITE, s4u::Disk::SharingPolicy::LINEAR}};
+  std::unordered_map<s4u::Disk::Operation, s4u::NonLinearResourceCb> sharing_policy_cb_ = {};
+
+  void apply_sharing_policy_cfg();
 
 protected:
   ~DiskImpl() override = default; // Disallow direct deletion. Call destroy() instead.
@@ -83,6 +90,9 @@ public:
 
   DiskImpl* set_read_bandwidth_profile(profile::Profile* profile);
   DiskImpl* set_write_bandwidth_profile(profile::Profile* profile);
+
+  void set_sharing_policy(s4u::Disk::Operation op, s4u::Disk::SharingPolicy policy, const s4u::NonLinearResourceCb& cb);
+  s4u::Disk::SharingPolicy get_sharing_policy(s4u::Disk::Operation op) const;
 
   /** @brief Check if the Disk is used (if an action currently uses its resources) */
   bool is_used() const override;

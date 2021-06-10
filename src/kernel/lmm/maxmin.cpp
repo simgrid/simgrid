@@ -490,8 +490,12 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
   for (Constraint& cnst : cnst_list) {
     /* INIT: Collect constraints that actually need to be saturated (i.e remaining  and usage are strictly positive)
      * into cnst_light_tab. */
-    cnst.remaining_ = cnst.bound_;
-    if (not double_positive(cnst.remaining_, cnst.bound_ * sg_maxmin_precision))
+    cnst.dynamic_bound_ = cnst.bound_;
+    if (cnst.get_sharing_policy() == Constraint::SharingPolicy::NONLINEAR && cnst.dyn_constraint_cb_) {
+      cnst.dynamic_bound_ = cnst.dyn_constraint_cb_(cnst.bound_, cnst.concurrency_current_);
+    }
+    cnst.remaining_ = cnst.dynamic_bound_;
+    if (not double_positive(cnst.remaining_, cnst.dynamic_bound_ * sg_maxmin_precision))
       continue;
     cnst.usage_ = 0;
     for (Element& elem : cnst.enabled_element_set_) {
@@ -573,15 +577,16 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
         Constraint* cnst = elem.constraint;
         if (cnst->sharing_policy_ != Constraint::SharingPolicy::FATPIPE) {
           // Remember: shared constraints require that sum(elem.value * var.value) < cnst->bound
-          double_update(&(cnst->remaining_), elem.consumption_weight * var.value_, cnst->bound_ * sg_maxmin_precision);
+          double_update(&(cnst->remaining_), elem.consumption_weight * var.value_,
+                        cnst->dynamic_bound_ * sg_maxmin_precision);
           double_update(&(cnst->usage_), elem.consumption_weight / var.sharing_penalty_, sg_maxmin_precision);
           // If the constraint is saturated, remove it from the set of active constraints (light_tab)
           if (not double_positive(cnst->usage_, sg_maxmin_precision) ||
-              not double_positive(cnst->remaining_, cnst->bound_ * sg_maxmin_precision)) {
+              not double_positive(cnst->remaining_, cnst->dynamic_bound_ * sg_maxmin_precision)) {
             if (cnst->cnst_light_) {
               size_t index = (cnst->cnst_light_ - cnst_light_tab);
               XBT_DEBUG("index: %zu \t cnst_light_num: %d \t || usage: %f remaining: %f bound: %f  ", index,
-                        cnst_light_num, cnst->usage_, cnst->remaining_, cnst->bound_);
+                        cnst_light_num, cnst->usage_, cnst->remaining_, cnst->dynamic_bound_);
               cnst_light_tab[index]                  = cnst_light_tab[cnst_light_num - 1];
               cnst_light_tab[index].cnst->cnst_light_ = &cnst_light_tab[index];
               cnst_light_num--;
@@ -606,13 +611,13 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
           }
           // If the constraint is saturated, remove it from the set of active constraints (light_tab)
           if (not double_positive(cnst->usage_, sg_maxmin_precision) ||
-              not double_positive(cnst->remaining_, cnst->bound_ * sg_maxmin_precision)) {
+              not double_positive(cnst->remaining_, cnst->dynamic_bound_ * sg_maxmin_precision)) {
             if (cnst->cnst_light_) {
               size_t index = (cnst->cnst_light_ - cnst_light_tab);
               XBT_DEBUG("index: %zu \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p "
                         "\t cnst_light_tab: %p usage: %f remaining: %f bound: %f  ",
                         index, cnst_light_num, cnst, cnst->cnst_light_, cnst_light_tab, cnst->usage_, cnst->remaining_,
-                        cnst->bound_);
+                        cnst->dynamic_bound_);
               cnst_light_tab[index]                  = cnst_light_tab[cnst_light_num - 1];
               cnst_light_tab[index].cnst->cnst_light_ = &cnst_light_tab[index];
               cnst_light_num--;
@@ -930,6 +935,14 @@ int Constraint::get_variable_amount() const
 {
   return static_cast<int>(std::count_if(std::begin(enabled_element_set_), std::end(enabled_element_set_),
                                         [](const Element& elem) { return elem.consumption_weight > 0; }));
+}
+
+void Constraint::set_sharing_policy(SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
+{
+  xbt_assert(!cb || (cb && policy == SharingPolicy::NONLINEAR),
+             "Invalid sharing policy for constraint. Callback should be used with NONLINEAR sharing policy");
+  sharing_policy_    = policy;
+  dyn_constraint_cb_ = cb;
 }
 
 } // namespace lmm

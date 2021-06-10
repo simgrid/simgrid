@@ -74,7 +74,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  maestro-set
                  mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert
 		 		 network-wifi
-                 io-async io-file-system io-file-remote io-disk-raw io-dependent
+                 io-async io-degradation io-file-system io-file-remote io-disk-raw io-dependent
                  platform-failures platform-profile platform-properties
                  plugin-host-load plugin-link-load plugin-prodcons
                  replay-comm replay-io

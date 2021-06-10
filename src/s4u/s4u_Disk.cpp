@@ -131,6 +131,17 @@ sg_size_t Disk::write(sg_size_t size) const
   return IoPtr(io_init(size, Io::OpType::WRITE))->vetoable_start()->wait()->get_performed_ioops();
 }
 
+Disk* Disk::set_sharing_policy(Disk::Operation op, Disk::SharingPolicy policy, const NonLinearResourceCb& cb)
+{
+  kernel::actor::simcall([this, op, policy, &cb] { pimpl_->set_sharing_policy(op, policy, cb); });
+  return this;
+}
+
+Disk::SharingPolicy Disk::get_sharing_policy(Operation op) const
+{
+  return this->pimpl_->get_sharing_policy(op);
+}
+
 Disk* Disk::seal()
 {
   kernel::actor::simcall([this]{ pimpl_->seal(); });
