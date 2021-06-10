@@ -454,7 +454,7 @@ int console_AS_open(lua_State *L) {
  simgrid::kernel::routing::ZoneCreationArgs AS;
  AS.id = id;
  AS.routing                                    = mode;
- simgrid::kernel::routing::NetZoneImpl* new_as = sg_platf_new_Zone_begin(&AS);
+ simgrid::kernel::routing::NetZoneImpl* new_as = sg_platf_new_zone_begin(&AS);
 
  /* Build a Lua representation of the new AS on the stack */
  lua_newtable(L);
@@ -471,7 +471,7 @@ int console_AS_open(lua_State *L) {
 int console_AS_seal(lua_State*)
 {
   XBT_DEBUG("Sealing AS");
-  sg_platf_new_Zone_seal();
+  sg_platf_new_zone_seal();
   return 0;
 }
 

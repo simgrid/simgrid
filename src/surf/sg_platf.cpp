@@ -446,10 +446,10 @@ void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route)
                              route->symmetrical);
 }
 
-void sg_platf_new_bypassRoute(simgrid::kernel::routing::RouteCreationArgs* bypassRoute)
+void sg_platf_new_bypass_route(simgrid::kernel::routing::RouteCreationArgs* route)
 {
-  current_routing->add_bypass_route(bypassRoute->src, bypassRoute->dst, bypassRoute->gw_src, bypassRoute->gw_dst,
-                                    bypassRoute->link_list, bypassRoute->symmetrical);
+  current_routing->add_bypass_route(route->src, route->dst, route->gw_src, route->gw_dst, route->link_list,
+                                    route->symmetrical);
 }
 
 void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
@@ -565,13 +565,13 @@ sg_platf_create_zone(const simgrid::kernel::routing::ZoneCreationArgs* zone)
  * @brief Add a Zone to the platform
  *
  * Add a new autonomous system to the platform. Any elements (such as host, router or sub-Zone) added after this call
- * and before the corresponding call to sg_platf_new_Zone_seal() will be added to this Zone.
+ * and before the corresponding call to sg_platf_new_zone_seal() will be added to this Zone.
  *
  * Once this function was called, the configuration concerning the used models cannot be changed anymore.
  *
  * @param zone the parameters defining the Zone to build.
  */
-simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::kernel::routing::ZoneCreationArgs* zone)
+simgrid::kernel::routing::NetZoneImpl* sg_platf_new_zone_begin(const simgrid::kernel::routing::ZoneCreationArgs* zone)
 {
   zone_cluster.routing = zone->routing;
   current_routing      = sg_platf_create_zone(zone);
@@ -579,7 +579,7 @@ simgrid::kernel::routing::NetZoneImpl* sg_platf_new_Zone_begin(const simgrid::ke
   return current_routing;
 }
 
-void sg_platf_new_Zone_set_properties(const std::unordered_map<std::string, std::string>& props)
+void sg_platf_new_zone_set_properties(const std::unordered_map<std::string, std::string>& props)
 {
   xbt_assert(current_routing, "Cannot set properties of the current Zone: none under construction");
 
@@ -592,7 +592,7 @@ void sg_platf_new_Zone_set_properties(const std::unordered_map<std::string, std:
  * Once you've declared all the content of your Zone, you have to seal
  * it with this call. Your Zone is not usable until you call this function.
  */
-void sg_platf_new_Zone_seal()
+void sg_platf_new_zone_seal()
 {
   xbt_assert(current_routing, "Cannot seal the current Zone: none under construction");
   if (strcasecmp(zone_cluster.routing.c_str(), "Cluster") == 0) {

@@ -180,9 +180,9 @@ void routing_cluster_add_backbone(std::unique_ptr<simgrid::kernel::routing::Link
 /*** END of the parsing cruft ***/
 
 XBT_PUBLIC simgrid::kernel::routing::NetZoneImpl*
-sg_platf_new_Zone_begin(const simgrid::kernel::routing::ZoneCreationArgs* zone); // Begin description of new Zone
-XBT_PUBLIC void sg_platf_new_Zone_set_properties(const std::unordered_map<std::string, std::string>& props);
-XBT_PUBLIC void sg_platf_new_Zone_seal();                                          // That Zone is fully described
+sg_platf_new_zone_begin(const simgrid::kernel::routing::ZoneCreationArgs* zone); // Begin description of new Zone
+XBT_PUBLIC void sg_platf_new_zone_set_properties(const std::unordered_map<std::string, std::string>& props);
+XBT_PUBLIC void sg_platf_new_zone_seal(); // That Zone is fully described
 
 XBT_PUBLIC void
 sg_platf_new_host_begin(const simgrid::kernel::routing::HostCreationArgs* host); // Add a host to the current Zone
@@ -204,7 +204,7 @@ sg_platf_new_router(const std::string&, const std::string& coords);
 XBT_PUBLIC void
 sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* cabinet); // Add a cabinet to the current Zone
 XBT_PUBLIC void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route);             // Add a route
-XBT_PUBLIC void sg_platf_new_bypassRoute(simgrid::kernel::routing::RouteCreationArgs* bypassroute); // Add a bypassRoute
+XBT_PUBLIC void sg_platf_new_bypass_route(simgrid::kernel::routing::RouteCreationArgs* route); // Add a bypass route
 
 XBT_PUBLIC void sg_platf_new_trace(simgrid::kernel::routing::ProfileCreationArgs* trace);
 

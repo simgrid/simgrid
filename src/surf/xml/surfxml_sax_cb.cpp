@@ -615,7 +615,7 @@ void ETag_surfxml_bypassRoute(){
 
   route.link_list.swap(parsed_link_list);
 
-  sg_platf_new_bypassRoute(&route);
+  sg_platf_new_bypass_route(&route);
 }
 
 void ETag_surfxml_bypassASroute()
@@ -639,7 +639,7 @@ void ETag_surfxml_bypassZoneRoute()
   ASroute.gw_src = sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_gw___src);
   ASroute.gw_dst = sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_gw___dst);
 
-  sg_platf_new_bypassRoute(&ASroute);
+  sg_platf_new_bypass_route(&ASroute);
 }
 
 void ETag_surfxml_trace(){
@@ -701,14 +701,14 @@ void STag_surfxml_zone()
   simgrid::kernel::routing::ZoneCreationArgs zone;
   zone.id      = A_surfxml_zone_id;
   zone.routing = A_surfxml_zone_routing;
-  sg_platf_new_Zone_begin(&zone);
+  sg_platf_new_zone_begin(&zone);
 }
 
 void ETag_surfxml_zone()
 {
-  sg_platf_new_Zone_set_properties(property_sets.back());
+  sg_platf_new_zone_set_properties(property_sets.back());
   property_sets.pop_back();
-  sg_platf_new_Zone_seal();
+  sg_platf_new_zone_seal();
 }
 
 void STag_surfxml_config()
