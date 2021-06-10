@@ -5,13 +5,13 @@
 p Test instrumentation of SMPI
 
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/host-speed:1f -np 8 ${bindir:=.}/smpi_gemm 1000 native
-> You requested to use 8 ranks, but there is only 5 processes in your hostfile...
+> [0.000000] [smpi/INFO] You requested to use 8 ranks, but there is only 5 processes in your hostfile...
 > Matrix Size : 1000x1000
 > Native mode
 > Performance= 220.56 GFlop/s, Time= 9.068 sec, Size= 2000000000 Ops
 
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml --cfg=path:${srcdir:=.}/../msg --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/host-speed:1f -np 8 ${bindir:=.}/smpi_gemm 1000 sampling
-> You requested to use 8 ranks, but there is only 5 processes in your hostfile...
+> [0.000000] [smpi/INFO] You requested to use 8 ranks, but there is only 5 processes in your hostfile...
 > Matrix Size : 1000x1000
 > Sampling mode
 > Performance= 220.56 GFlop/s, Time= 9.068 sec, Size= 2000000000 Ops

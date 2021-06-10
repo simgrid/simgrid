@@ -3,18 +3,18 @@
 
 p Test classic - backbone
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${bindir}/../hostfile_cluster -platform ${platfdir:=.}/cluster_backbone.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error
-> [rank 0] -> node-0.simgrid.org
-> [rank 1] -> node-1.simgrid.org
-> [rank 2] -> node-2.simgrid.org
-> [rank 3] -> node-3.simgrid.org
-> [rank 4] -> node-4.simgrid.org
-> [rank 5] -> node-5.simgrid.org
-> [rank 6] -> node-6.simgrid.org
-> [rank 7] -> node-7.simgrid.org
-> [rank 8] -> node-8.simgrid.org
-> [rank 9] -> node-9.simgrid.org
-> [rank 10] -> node-10.simgrid.org
-> [rank 11] -> node-11.simgrid.org
+> [0.000000] [smpi/INFO] [rank 0] -> node-0.simgrid.org
+> [0.000000] [smpi/INFO] [rank 1] -> node-1.simgrid.org
+> [0.000000] [smpi/INFO] [rank 2] -> node-2.simgrid.org
+> [0.000000] [smpi/INFO] [rank 3] -> node-3.simgrid.org
+> [0.000000] [smpi/INFO] [rank 4] -> node-4.simgrid.org
+> [0.000000] [smpi/INFO] [rank 5] -> node-5.simgrid.org
+> [0.000000] [smpi/INFO] [rank 6] -> node-6.simgrid.org
+> [0.000000] [smpi/INFO] [rank 7] -> node-7.simgrid.org
+> [0.000000] [smpi/INFO] [rank 8] -> node-8.simgrid.org
+> [0.000000] [smpi/INFO] [rank 9] -> node-9.simgrid.org
+> [0.000000] [smpi/INFO] [rank 10] -> node-10.simgrid.org
+> [0.000000] [smpi/INFO] [rank 11] -> node-11.simgrid.org
 > [0] sndbuf=[0 1 2 3 4 5 6 7 8 9 10 11 ]
 > [1] sndbuf=[12 13 14 15 16 17 18 19 20 21 22 23 ]
 > [2] sndbuf=[24 25 26 27 28 29 30 31 32 33 34 35 ]
@@ -43,18 +43,18 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${bindir}/../host
 ! output sort
 p Test separate clusters
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -platform ${platfdir:=.}/cluster_multi.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error
-> [rank 0] -> node-0.1core.org
-> [rank 1] -> node-1.1core.org
-> [rank 2] -> node-2.1core.org
-> [rank 3] -> node-3.1core.org
-> [rank 4] -> node-4.1core.org
-> [rank 5] -> node-5.1core.org
-> [rank 6] -> node-6.1core.org
-> [rank 7] -> node-0.2cores.org
-> [rank 8] -> node-1.2cores.org
-> [rank 9] -> node-2.2cores.org
-> [rank 10] -> node-3.2cores.org
-> [rank 11] -> node-4.2cores.org
+> [0.000000] [smpi/INFO] [rank 0] -> node-0.1core.org
+> [0.000000] [smpi/INFO] [rank 1] -> node-1.1core.org
+> [0.000000] [smpi/INFO] [rank 2] -> node-2.1core.org
+> [0.000000] [smpi/INFO] [rank 3] -> node-3.1core.org
+> [0.000000] [smpi/INFO] [rank 4] -> node-4.1core.org
+> [0.000000] [smpi/INFO] [rank 5] -> node-5.1core.org
+> [0.000000] [smpi/INFO] [rank 6] -> node-6.1core.org
+> [0.000000] [smpi/INFO] [rank 7] -> node-0.2cores.org
+> [0.000000] [smpi/INFO] [rank 8] -> node-1.2cores.org
+> [0.000000] [smpi/INFO] [rank 9] -> node-2.2cores.org
+> [0.000000] [smpi/INFO] [rank 10] -> node-3.2cores.org
+> [0.000000] [smpi/INFO] [rank 11] -> node-4.2cores.org
 > [0] sndbuf=[0 1 2 3 4 5 6 7 8 9 10 11 ]
 > [1] sndbuf=[12 13 14 15 16 17 18 19 20 21 22 23 ]
 > [2] sndbuf=[24 25 26 27 28 29 30 31 32 33 34 35 ]
@@ -83,18 +83,18 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -platform ${platfdir:=.}/cl
 ! output sort
 p Test torus
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_cluster -platform ${platfdir:=.}/cluster_torus.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error
-> [rank 0] -> node-0.simgrid.org
-> [rank 1] -> node-1.simgrid.org
-> [rank 2] -> node-2.simgrid.org
-> [rank 3] -> node-3.simgrid.org
-> [rank 4] -> node-4.simgrid.org
-> [rank 5] -> node-5.simgrid.org
-> [rank 6] -> node-6.simgrid.org
-> [rank 7] -> node-7.simgrid.org
-> [rank 8] -> node-8.simgrid.org
-> [rank 9] -> node-9.simgrid.org
-> [rank 10] -> node-10.simgrid.org
-> [rank 11] -> node-11.simgrid.org
+> [0.000000] [smpi/INFO] [rank 0] -> node-0.simgrid.org
+> [0.000000] [smpi/INFO] [rank 1] -> node-1.simgrid.org
+> [0.000000] [smpi/INFO] [rank 2] -> node-2.simgrid.org
+> [0.000000] [smpi/INFO] [rank 3] -> node-3.simgrid.org
+> [0.000000] [smpi/INFO] [rank 4] -> node-4.simgrid.org
+> [0.000000] [smpi/INFO] [rank 5] -> node-5.simgrid.org
+> [0.000000] [smpi/INFO] [rank 6] -> node-6.simgrid.org
+> [0.000000] [smpi/INFO] [rank 7] -> node-7.simgrid.org
+> [0.000000] [smpi/INFO] [rank 8] -> node-8.simgrid.org
+> [0.000000] [smpi/INFO] [rank 9] -> node-9.simgrid.org
+> [0.000000] [smpi/INFO] [rank 10] -> node-10.simgrid.org
+> [0.000000] [smpi/INFO] [rank 11] -> node-11.simgrid.org
 > [0] sndbuf=[0 1 2 3 4 5 6 7 8 9 10 11 ]
 > [1] sndbuf=[12 13 14 15 16 17 18 19 20 21 22 23 ]
 > [2] sndbuf=[24 25 26 27 28 29 30 31 32 33 34 35 ]
@@ -123,18 +123,18 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_clust
 ! output sort
 p Test fat tree
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_cluster -platform ${platfdir:=.}/cluster_fat_tree.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error
-> [rank 0] -> node-0.simgrid.org
-> [rank 1] -> node-1.simgrid.org
-> [rank 2] -> node-2.simgrid.org
-> [rank 3] -> node-3.simgrid.org
-> [rank 4] -> node-4.simgrid.org
-> [rank 5] -> node-5.simgrid.org
-> [rank 6] -> node-6.simgrid.org
-> [rank 7] -> node-7.simgrid.org
-> [rank 8] -> node-8.simgrid.org
-> [rank 9] -> node-9.simgrid.org
-> [rank 10] -> node-10.simgrid.org
-> [rank 11] -> node-11.simgrid.org
+> [0.000000] [smpi/INFO] [rank 0] -> node-0.simgrid.org
+> [0.000000] [smpi/INFO] [rank 1] -> node-1.simgrid.org
+> [0.000000] [smpi/INFO] [rank 2] -> node-2.simgrid.org
+> [0.000000] [smpi/INFO] [rank 3] -> node-3.simgrid.org
+> [0.000000] [smpi/INFO] [rank 4] -> node-4.simgrid.org
+> [0.000000] [smpi/INFO] [rank 5] -> node-5.simgrid.org
+> [0.000000] [smpi/INFO] [rank 6] -> node-6.simgrid.org
+> [0.000000] [smpi/INFO] [rank 7] -> node-7.simgrid.org
+> [0.000000] [smpi/INFO] [rank 8] -> node-8.simgrid.org
+> [0.000000] [smpi/INFO] [rank 9] -> node-9.simgrid.org
+> [0.000000] [smpi/INFO] [rank 10] -> node-10.simgrid.org
+> [0.000000] [smpi/INFO] [rank 11] -> node-11.simgrid.org
 > [0] sndbuf=[0 1 2 3 4 5 6 7 8 9 10 11 ]
 > [1] sndbuf=[12 13 14 15 16 17 18 19 20 21 22 23 ]
 > [2] sndbuf=[24 25 26 27 28 29 30 31 32 33 34 35 ]
@@ -163,18 +163,18 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_clust
 ! output sort
 p Test fat tree IB
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_cluster -platform ${platfdir:=.}/cluster_fat_tree.xml -np 12 --cfg=network/model:IB --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error
-> [rank 0] -> node-0.simgrid.org
-> [rank 1] -> node-1.simgrid.org
-> [rank 2] -> node-2.simgrid.org
-> [rank 3] -> node-3.simgrid.org
-> [rank 4] -> node-4.simgrid.org
-> [rank 5] -> node-5.simgrid.org
-> [rank 6] -> node-6.simgrid.org
-> [rank 7] -> node-7.simgrid.org
-> [rank 8] -> node-8.simgrid.org
-> [rank 9] -> node-9.simgrid.org
-> [rank 10] -> node-10.simgrid.org
-> [rank 11] -> node-11.simgrid.org
+> [0.000000] [smpi/INFO] [rank 0] -> node-0.simgrid.org
+> [0.000000] [smpi/INFO] [rank 1] -> node-1.simgrid.org
+> [0.000000] [smpi/INFO] [rank 2] -> node-2.simgrid.org
+> [0.000000] [smpi/INFO] [rank 3] -> node-3.simgrid.org
+> [0.000000] [smpi/INFO] [rank 4] -> node-4.simgrid.org
+> [0.000000] [smpi/INFO] [rank 5] -> node-5.simgrid.org
+> [0.000000] [smpi/INFO] [rank 6] -> node-6.simgrid.org
+> [0.000000] [smpi/INFO] [rank 7] -> node-7.simgrid.org
+> [0.000000] [smpi/INFO] [rank 8] -> node-8.simgrid.org
+> [0.000000] [smpi/INFO] [rank 9] -> node-9.simgrid.org
+> [0.000000] [smpi/INFO] [rank 10] -> node-10.simgrid.org
+> [0.000000] [smpi/INFO] [rank 11] -> node-11.simgrid.org
 > [0] sndbuf=[0 1 2 3 4 5 6 7 8 9 10 11 ]
 > [1] sndbuf=[12 13 14 15 16 17 18 19 20 21 22 23 ]
 > [2] sndbuf=[24 25 26 27 28 29 30 31 32 33 34 35 ]
@@ -203,18 +203,18 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_clust
 ! output sort
 p Test Dragonfly
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_cluster -platform ${platfdir:=.}/cluster_dragonfly.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error
-> [rank 0] -> node-0.simgrid.org
-> [rank 1] -> node-1.simgrid.org
-> [rank 2] -> node-2.simgrid.org
-> [rank 3] -> node-3.simgrid.org
-> [rank 4] -> node-4.simgrid.org
-> [rank 5] -> node-5.simgrid.org
-> [rank 6] -> node-6.simgrid.org
-> [rank 7] -> node-7.simgrid.org
-> [rank 8] -> node-8.simgrid.org
-> [rank 9] -> node-9.simgrid.org
-> [rank 10] -> node-10.simgrid.org
-> [rank 11] -> node-11.simgrid.org
+> [0.000000] [smpi/INFO] [rank 0] -> node-0.simgrid.org
+> [0.000000] [smpi/INFO] [rank 1] -> node-1.simgrid.org
+> [0.000000] [smpi/INFO] [rank 2] -> node-2.simgrid.org
+> [0.000000] [smpi/INFO] [rank 3] -> node-3.simgrid.org
+> [0.000000] [smpi/INFO] [rank 4] -> node-4.simgrid.org
+> [0.000000] [smpi/INFO] [rank 5] -> node-5.simgrid.org
+> [0.000000] [smpi/INFO] [rank 6] -> node-6.simgrid.org
+> [0.000000] [smpi/INFO] [rank 7] -> node-7.simgrid.org
+> [0.000000] [smpi/INFO] [rank 8] -> node-8.simgrid.org
+> [0.000000] [smpi/INFO] [rank 9] -> node-9.simgrid.org
+> [0.000000] [smpi/INFO] [rank 10] -> node-10.simgrid.org
+> [0.000000] [smpi/INFO] [rank 11] -> node-11.simgrid.org
 > [0] sndbuf=[0 1 2 3 4 5 6 7 8 9 10 11 ]
 > [1] sndbuf=[12 13 14 15 16 17 18 19 20 21 22 23 ]
 > [2] sndbuf=[24 25 26 27 28 29 30 31 32 33 34 35 ]
@@ -243,98 +243,98 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_clust
 ! output sort
 p Test Griffon
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_griffon -platform ${platfdir:=.}/griffon.xml -np 92 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error
-> [rank 0] -> griffon-1.nancy.grid5000.fr
-> [rank 1] -> griffon-2.nancy.grid5000.fr
-> [rank 2] -> griffon-3.nancy.grid5000.fr
-> [rank 3] -> griffon-4.nancy.grid5000.fr
-> [rank 4] -> griffon-5.nancy.grid5000.fr
-> [rank 5] -> griffon-6.nancy.grid5000.fr
-> [rank 6] -> griffon-7.nancy.grid5000.fr
-> [rank 7] -> griffon-8.nancy.grid5000.fr
-> [rank 8] -> griffon-9.nancy.grid5000.fr
-> [rank 9] -> griffon-10.nancy.grid5000.fr
-> [rank 10] -> griffon-11.nancy.grid5000.fr
-> [rank 11] -> griffon-12.nancy.grid5000.fr
-> [rank 12] -> griffon-13.nancy.grid5000.fr
-> [rank 13] -> griffon-14.nancy.grid5000.fr
-> [rank 14] -> griffon-15.nancy.grid5000.fr
-> [rank 15] -> griffon-16.nancy.grid5000.fr
-> [rank 16] -> griffon-17.nancy.grid5000.fr
-> [rank 17] -> griffon-18.nancy.grid5000.fr
-> [rank 18] -> griffon-19.nancy.grid5000.fr
-> [rank 19] -> griffon-20.nancy.grid5000.fr
-> [rank 20] -> griffon-21.nancy.grid5000.fr
-> [rank 21] -> griffon-22.nancy.grid5000.fr
-> [rank 22] -> griffon-23.nancy.grid5000.fr
-> [rank 23] -> griffon-24.nancy.grid5000.fr
-> [rank 24] -> griffon-25.nancy.grid5000.fr
-> [rank 25] -> griffon-26.nancy.grid5000.fr
-> [rank 26] -> griffon-27.nancy.grid5000.fr
-> [rank 27] -> griffon-28.nancy.grid5000.fr
-> [rank 28] -> griffon-29.nancy.grid5000.fr
-> [rank 29] -> griffon-30.nancy.grid5000.fr
-> [rank 30] -> griffon-31.nancy.grid5000.fr
-> [rank 31] -> griffon-32.nancy.grid5000.fr
-> [rank 32] -> griffon-33.nancy.grid5000.fr
-> [rank 33] -> griffon-34.nancy.grid5000.fr
-> [rank 34] -> griffon-35.nancy.grid5000.fr
-> [rank 35] -> griffon-36.nancy.grid5000.fr
-> [rank 36] -> griffon-37.nancy.grid5000.fr
-> [rank 37] -> griffon-38.nancy.grid5000.fr
-> [rank 38] -> griffon-39.nancy.grid5000.fr
-> [rank 39] -> griffon-40.nancy.grid5000.fr
-> [rank 40] -> griffon-41.nancy.grid5000.fr
-> [rank 41] -> griffon-42.nancy.grid5000.fr
-> [rank 42] -> griffon-43.nancy.grid5000.fr
-> [rank 43] -> griffon-44.nancy.grid5000.fr
-> [rank 44] -> griffon-45.nancy.grid5000.fr
-> [rank 45] -> griffon-46.nancy.grid5000.fr
-> [rank 46] -> griffon-47.nancy.grid5000.fr
-> [rank 47] -> griffon-48.nancy.grid5000.fr
-> [rank 48] -> griffon-49.nancy.grid5000.fr
-> [rank 49] -> griffon-50.nancy.grid5000.fr
-> [rank 50] -> griffon-51.nancy.grid5000.fr
-> [rank 51] -> griffon-52.nancy.grid5000.fr
-> [rank 52] -> griffon-53.nancy.grid5000.fr
-> [rank 53] -> griffon-54.nancy.grid5000.fr
-> [rank 54] -> griffon-55.nancy.grid5000.fr
-> [rank 55] -> griffon-56.nancy.grid5000.fr
-> [rank 56] -> griffon-57.nancy.grid5000.fr
-> [rank 57] -> griffon-58.nancy.grid5000.fr
-> [rank 58] -> griffon-59.nancy.grid5000.fr
-> [rank 59] -> griffon-60.nancy.grid5000.fr
-> [rank 60] -> griffon-61.nancy.grid5000.fr
-> [rank 61] -> griffon-62.nancy.grid5000.fr
-> [rank 62] -> griffon-63.nancy.grid5000.fr
-> [rank 63] -> griffon-64.nancy.grid5000.fr
-> [rank 64] -> griffon-65.nancy.grid5000.fr
-> [rank 65] -> griffon-66.nancy.grid5000.fr
-> [rank 66] -> griffon-67.nancy.grid5000.fr
-> [rank 67] -> griffon-68.nancy.grid5000.fr
-> [rank 68] -> griffon-69.nancy.grid5000.fr
-> [rank 69] -> griffon-70.nancy.grid5000.fr
-> [rank 70] -> griffon-71.nancy.grid5000.fr
-> [rank 71] -> griffon-72.nancy.grid5000.fr
-> [rank 72] -> griffon-73.nancy.grid5000.fr
-> [rank 73] -> griffon-74.nancy.grid5000.fr
-> [rank 74] -> griffon-75.nancy.grid5000.fr
-> [rank 75] -> griffon-76.nancy.grid5000.fr
-> [rank 76] -> griffon-77.nancy.grid5000.fr
-> [rank 77] -> griffon-78.nancy.grid5000.fr
-> [rank 78] -> griffon-79.nancy.grid5000.fr
-> [rank 79] -> griffon-80.nancy.grid5000.fr
-> [rank 80] -> griffon-81.nancy.grid5000.fr
-> [rank 81] -> griffon-82.nancy.grid5000.fr
-> [rank 82] -> griffon-83.nancy.grid5000.fr
-> [rank 83] -> griffon-84.nancy.grid5000.fr
-> [rank 84] -> griffon-85.nancy.grid5000.fr
-> [rank 85] -> griffon-86.nancy.grid5000.fr
-> [rank 86] -> griffon-87.nancy.grid5000.fr
-> [rank 87] -> griffon-88.nancy.grid5000.fr
-> [rank 88] -> griffon-89.nancy.grid5000.fr
-> [rank 89] -> griffon-90.nancy.grid5000.fr
-> [rank 90] -> griffon-91.nancy.grid5000.fr
-> [rank 91] -> griffon-92.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 0] -> griffon-1.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 1] -> griffon-2.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 2] -> griffon-3.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 3] -> griffon-4.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 4] -> griffon-5.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 5] -> griffon-6.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 6] -> griffon-7.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 7] -> griffon-8.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 8] -> griffon-9.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 9] -> griffon-10.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 10] -> griffon-11.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 11] -> griffon-12.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 12] -> griffon-13.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 13] -> griffon-14.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 14] -> griffon-15.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 15] -> griffon-16.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 16] -> griffon-17.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 17] -> griffon-18.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 18] -> griffon-19.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 19] -> griffon-20.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 20] -> griffon-21.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 21] -> griffon-22.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 22] -> griffon-23.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 23] -> griffon-24.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 24] -> griffon-25.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 25] -> griffon-26.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 26] -> griffon-27.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 27] -> griffon-28.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 28] -> griffon-29.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 29] -> griffon-30.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 30] -> griffon-31.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 31] -> griffon-32.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 32] -> griffon-33.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 33] -> griffon-34.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 34] -> griffon-35.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 35] -> griffon-36.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 36] -> griffon-37.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 37] -> griffon-38.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 38] -> griffon-39.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 39] -> griffon-40.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 40] -> griffon-41.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 41] -> griffon-42.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 42] -> griffon-43.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 43] -> griffon-44.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 44] -> griffon-45.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 45] -> griffon-46.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 46] -> griffon-47.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 47] -> griffon-48.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 48] -> griffon-49.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 49] -> griffon-50.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 50] -> griffon-51.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 51] -> griffon-52.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 52] -> griffon-53.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 53] -> griffon-54.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 54] -> griffon-55.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 55] -> griffon-56.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 56] -> griffon-57.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 57] -> griffon-58.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 58] -> griffon-59.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 59] -> griffon-60.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 60] -> griffon-61.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 61] -> griffon-62.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 62] -> griffon-63.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 63] -> griffon-64.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 64] -> griffon-65.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 65] -> griffon-66.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 66] -> griffon-67.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 67] -> griffon-68.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 68] -> griffon-69.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 69] -> griffon-70.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 70] -> griffon-71.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 71] -> griffon-72.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 72] -> griffon-73.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 73] -> griffon-74.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 74] -> griffon-75.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 75] -> griffon-76.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 76] -> griffon-77.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 77] -> griffon-78.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 78] -> griffon-79.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 79] -> griffon-80.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 80] -> griffon-81.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 81] -> griffon-82.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 82] -> griffon-83.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 83] -> griffon-84.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 84] -> griffon-85.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 85] -> griffon-86.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 86] -> griffon-87.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 87] -> griffon-88.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 88] -> griffon-89.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 89] -> griffon-90.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 90] -> griffon-91.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 91] -> griffon-92.nancy.grid5000.fr
 > [0] sndbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 ]
 > [1] sndbuf=[92 93 94 95 96 97 98 99 100 101 102 103 104 105 106 107 108 109 110 111 112 113 114 115 116 117 118 119 120 121 122 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 145 146 147 148 149 150 151 152 153 154 155 156 157 158 159 160 161 162 163 164 165 166 167 168 169 170 171 172 173 174 175 176 177 178 179 180 181 182 183 ]
 > [2] sndbuf=[184 185 186 187 188 189 190 191 192 193 194 195 196 197 198 199 200 201 202 203 204 205 206 207 208 209 210 211 212 213 214 215 216 217 218 219 220 221 222 223 224 225 226 227 228 229 230 231 232 233 234 235 236 237 238 239 240 241 242 243 244 245 246 247 248 249 250 251 252 253 254 255 256 257 258 259 260 261 262 263 264 265 266 267 268 269 270 271 272 273 274 275 ]

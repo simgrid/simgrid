@@ -1,8 +1,8 @@
 p Simple pingpong test with execute calls to demonstrate SMPI
 ! output sort
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml -np 2 ${bindir:=.}/smpi_simple-execute --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/simulate-computation:no --log=smpi_mpi.:verbose --log=smpi_bench.thresh:debug --log=no_loc
-> [rank 0] -> Tremblay
-> [rank 1] -> Jupiter
+> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
+> [0.000000] [smpi/INFO] [rank 1] -> Jupiter
 > [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Init
 > [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Init
 > [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Init

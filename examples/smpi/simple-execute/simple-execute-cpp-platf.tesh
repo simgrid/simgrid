@@ -1,8 +1,8 @@
 p C++ interface (griffon.so) with hostfile: Simple pingpong test
 ! output sort
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile_griffon -platform ${libdir:=.}/libgriffon.so -np 2 ${bindir:=.}/smpi_simple-execute --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/simulate-computation:no --log=smpi_mpi.:verbose --log=smpi_bench.thresh:debug --log=no_loc
-> [rank 0] -> griffon-2.nancy.grid5000.fr
-> [rank 1] -> griffon-70.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 0] -> griffon-2.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 1] -> griffon-70.nancy.grid5000.fr
 > [griffon-2.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Init
 > [griffon-70.nancy.grid5000.fr:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Init
 > [griffon-2.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Init
@@ -42,8 +42,8 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/host
 p C++ interface (griffon.so) without hostfile: Simple pingpong test
 ! output sort
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -platform ${libdir:=.}/libgriffon.so -np 2 ${bindir:=.}/smpi_simple-execute --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/simulate-computation:no --log=smpi_mpi.:verbose --log=smpi_bench.thresh:debug --log=no_loc
-> [rank 0] -> griffon-1.nancy.grid5000.fr
-> [rank 1] -> griffon-10.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 0] -> griffon-1.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 1] -> griffon-10.nancy.grid5000.fr
 > [griffon-1.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Init
 > [griffon-10.nancy.grid5000.fr:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Init
 > [griffon-1.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Init

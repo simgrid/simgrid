@@ -10,7 +10,7 @@
 #include "smpi_comm.hpp"
 #include <map>
 
-XBT_LOG_EXTERNAL_CATEGORY(smpi);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi);
 
 namespace simgrid {
 namespace smpi {
@@ -92,7 +92,7 @@ MPI_Comm* smpi_deployment_comm_world(const std::string& instance_id)
 
 void smpi_deployment_cleanup_instances(){
   for (auto const& item : smpi_instances) {
-    XBT_CINFO(smpi, "Stalling SMPI instance: %s. Do all your MPI ranks call MPI_Finalize()?", item.first.c_str());
+    XBT_INFO("Stalling SMPI instance: %s. Do all your MPI ranks call MPI_Finalize()?", item.first.c_str());
     Instance instance = item.second;
     simgrid::smpi::Comm::destroy(instance.comm_world_);
   }
@@ -176,7 +176,7 @@ int smpi_deployment_smpirun(simgrid::s4u::Engine* e, const std::string& hostfile
   xbt_assert(np > 0, "Invalid number of process (np must be > 0). Check your np parameter, platform or hostfile");
 
   if (np > hosts_size) {
-    printf("You requested to use %d ranks, but there is only %d processes in your hostfile...\n", np, hosts_size);
+    XBT_INFO("You requested to use %d ranks, but there is only %d processes in your hostfile...", np, hosts_size);
   }
 
   for (int i = 0; i < np; i++) {
@@ -186,7 +186,7 @@ int smpi_deployment_smpirun(simgrid::s4u::Engine* e, const std::string& hostfile
     auto actor               = simgrid::s4u::Actor::create(rank_id, host, rank_id, args);
     /* keeping the same behavior as done in smpirun script, print mapping rank/process */
     if (map != 0) {
-      printf("[rank %d] -> %s\n", i, host->get_cname());
+      XBT_INFO("[rank %d] -> %s", i, host->get_cname());
     }
     actor->set_property("instance_id", "smpirun");
     actor->set_property("rank", rank_id);

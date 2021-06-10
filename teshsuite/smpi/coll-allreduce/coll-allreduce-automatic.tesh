@@ -3,22 +3,22 @@
 p Test allreduce
 ! output sort
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform ${platfdir:=.}/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce --log=smpi_config.thres:warning --log=smpi_coll.thres:error --cfg=smpi/allreduce:automatic --cfg=smpi/async-small-thresh:65536 --cfg=smpi/send-is-detached-thresh:128000 --cfg=smpi/simulate-computation:no "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error
-> [rank 0] -> Tremblay
-> [rank 1] -> Tremblay
-> [rank 2] -> Tremblay
-> [rank 3] -> Tremblay
-> [rank 4] -> Jupiter
-> [rank 5] -> Jupiter
-> [rank 6] -> Jupiter
-> [rank 7] -> Jupiter
-> [rank 8] -> Fafard
-> [rank 9] -> Fafard
-> [rank 10] -> Fafard
-> [rank 11] -> Fafard
-> [rank 12] -> Ginette
-> [rank 13] -> Ginette
-> [rank 14] -> Ginette
-> [rank 15] -> Ginette
+> [  0.000000] (0:maestro@) [rank 0] -> Tremblay
+> [  0.000000] (0:maestro@) [rank 1] -> Tremblay
+> [  0.000000] (0:maestro@) [rank 2] -> Tremblay
+> [  0.000000] (0:maestro@) [rank 3] -> Tremblay
+> [  0.000000] (0:maestro@) [rank 4] -> Jupiter
+> [  0.000000] (0:maestro@) [rank 5] -> Jupiter
+> [  0.000000] (0:maestro@) [rank 6] -> Jupiter
+> [  0.000000] (0:maestro@) [rank 7] -> Jupiter
+> [  0.000000] (0:maestro@) [rank 8] -> Fafard
+> [  0.000000] (0:maestro@) [rank 9] -> Fafard
+> [  0.000000] (0:maestro@) [rank 10] -> Fafard
+> [  0.000000] (0:maestro@) [rank 11] -> Fafard
+> [  0.000000] (0:maestro@) [rank 12] -> Ginette
+> [  0.000000] (0:maestro@) [rank 13] -> Ginette
+> [  0.000000] (0:maestro@) [rank 14] -> Ginette
+> [  0.000000] (0:maestro@) [rank 15] -> Ginette
 > [  0.516218] (8:7@Jupiter) The quickest allreduce was redbcast on rank 7 and took 0.008087
 > [  0.516218] (7:6@Jupiter) The quickest allreduce was redbcast on rank 6 and took 0.008056
 > [  0.516218] (6:5@Jupiter) The quickest allreduce was redbcast on rank 5 and took 0.008056

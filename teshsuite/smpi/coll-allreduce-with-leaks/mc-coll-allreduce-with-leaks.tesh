@@ -3,10 +3,10 @@
 p Test allreduce
 $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../../bin/simgrid-mc" -map -hostfile ../hostfile_coll -platform  ${platfdir:=.}/small_platform.xml -np 4 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce-with-leaks --log=smpi_config.thres:warning --cfg=smpi/display-allocs:yes --cfg=smpi/simulate-computation:no --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error --cfg=smpi/list-leaks:10 --log=no_loc
 > [0.000000] [mc_safety/INFO] Check a safety property. Reduction is: dpor.
-> [rank 0] -> Tremblay
-> [rank 1] -> Tremblay
-> [rank 2] -> Tremblay
-> [rank 3] -> Tremblay
+> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
+> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
+> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
+> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles :
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
 > [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm

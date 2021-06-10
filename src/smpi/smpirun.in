@@ -336,10 +336,6 @@ fi
 DEPLOYOPTS="${DEPLOYOPTS} --cfg=smpi/np:${NUMPROCS}"
 DEPLOYOPTS="${DEPLOYOPTS} --cfg=smpi/hostfile:${HOSTFILE}"
 
-#if [ "${NUMPROCS}" -gt "${hostfile_procs}" ] ; then
-#    echo "You requested to use ${NUMPROCS} ranks, but there is only ${hostfile_procs} processes in your hostfile..." >&2
-#fi
-
 ##-------------------------------- DEFAULT or SPECIFIED PLATFORM --------------------------------------
 if [ -z "${PLATFORM}" ]; then
     PLATFORMTMP="$(mktemp smpitmp-platfXXXXXX)"
