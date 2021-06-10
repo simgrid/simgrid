@@ -387,7 +387,7 @@ ExecPtr exec_init(double flops_amount)
 ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                   const std::vector<double>& bytes_amounts)
 {
-  xbt_assert(hosts.size() > 0, "Your parallel executions must span over at least one host.");
+  xbt_assert(not hosts.empty(), "Your parallel executions must span over at least one host.");
   xbt_assert(hosts.size() == flops_amounts.size() || flops_amounts.empty(),
              "Host count (%zu) does not match flops_amount count (%zu).", hosts.size(), flops_amounts.size());
   xbt_assert(hosts.size() * hosts.size() == bytes_amounts.size() || bytes_amounts.empty(),

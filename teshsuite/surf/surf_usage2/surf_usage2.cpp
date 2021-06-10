@@ -51,7 +51,7 @@ int main(int argc, char** argv)
     XBT_INFO("Next Event : %g", now);
 
     for (auto const& model : simgrid::kernel::EngineImpl::get_instance()->get_all_models()) {
-      if (model->get_started_action_set()->size() != 0) {
+      if (not model->get_started_action_set()->empty()) {
         XBT_DEBUG("\t Running that model");
         running = 1;
       }

@@ -115,10 +115,10 @@ static std::vector<simgrid::s4u::Host*> smpi_get_hosts(simgrid::s4u::Engine* e, 
   xbt_assert(in, "smpirun: Cannot open the host file: %s", hostfile.c_str());
   std::string str;
   while (std::getline(in, str)) {
-    if (str.size() > 0)
+    if (not str.empty())
       hosts.emplace_back(e->host_by_name(str));
   }
-  xbt_assert(hosts.size(), "smpirun: the hostfile '%s' is empty", hostfile.c_str());
+  xbt_assert(not hosts.empty(), "smpirun: the hostfile '%s' is empty", hostfile.c_str());
   return hosts;
 }
 
@@ -133,7 +133,7 @@ static std::vector<std::string> smpi_read_replay(const std::string& replayfile)
   xbt_assert(in, "smpirun: Cannot open the replay file: %s", replayfile.c_str());
   std::string str;
   while (std::getline(in, str)) {
-    if (str.size() > 0)
+    if (not str.empty())
       replay.emplace_back(str);
   }
 
@@ -146,7 +146,7 @@ static std::vector<std::string> smpi_deployment_get_args(int rank_id, const std:
 {
   std::vector<std::string> args{std::to_string(rank_id)};
   // pass arguments to process only if not a replay execution
-  if (replay.size() == 0) {
+  if (replay.empty()) {
     for (int i = 0; i < argc; i++) {
       args.push_back(argv[i]);
     }
@@ -190,7 +190,7 @@ int smpi_deployment_smpirun(simgrid::s4u::Engine* e, const std::string& hostfile
     }
     actor->set_property("instance_id", "smpirun");
     actor->set_property("rank", rank_id);
-    if (replay.size() > 0)
+    if (not replay.empty())
       actor->set_property("smpi_replay", "true");
     /* shared trace file, set it to rank 0 */
     if (i == 0 && replay.size() == 1)

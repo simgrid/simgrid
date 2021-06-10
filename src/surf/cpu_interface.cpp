@@ -82,7 +82,7 @@ CpuImpl* CpuImpl::set_pstate(int pstate_index)
 
 CpuImpl* CpuImpl::set_pstate_speed(const std::vector<double>& speed_per_state)
 {
-  xbt_assert(speed_per_state.size() > 0, "CPU %s: processor speed vector cannot be empty", get_cname());
+  xbt_assert(not speed_per_state.empty(), "CPU %s: processor speed vector cannot be empty", get_cname());
   xbt_assert(not is_sealed(), "CPU %s: processor speed cannot be changed once CPU has been sealed", get_cname());
   speed_per_pstate_ = speed_per_state;
   speed_.peak       = speed_per_pstate_.front();
