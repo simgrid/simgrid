@@ -10,6 +10,8 @@
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
+#include <numeric>
+
 #ifndef NETWORK_INTERFACE_CPP_
 #define NETWORK_INTERFACE_CPP_
 
@@ -187,6 +189,33 @@ std::list<LinkImpl*> NetworkAction::get_links() const
 
   return retlist;
 }
+
+static void add_latency(const std::vector<LinkImpl*>& links, double* latency)
+{
+  if (latency)
+    *latency = std::accumulate(begin(links), end(links), *latency,
+                               [](double lat, const auto* link) { return lat + link->get_latency(); });
+}
+
+void add_link_latency(std::vector<LinkImpl*>& result, LinkImpl* link, double* latency)
+{
+  result.push_back(link);
+  if (latency)
+    *latency += link->get_latency();
+}
+
+void add_link_latency(std::vector<LinkImpl*>& result, const std::vector<LinkImpl*>& links, double* latency)
+{
+  result.insert(result.end(), begin(links), end(links));
+  add_latency(links, latency);
+}
+
+void insert_link_latency(std::vector<LinkImpl*>& result, const std::vector<LinkImpl*>& links, double* latency)
+{
+  result.insert(result.begin(), rbegin(links), rend(links));
+  add_latency(links, latency);
+}
+
 } // namespace resource
 } // namespace kernel
 } // namespace simgrid

@@ -50,11 +50,7 @@ void FullZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* 
   if (e_route != nullptr) {
     res->gw_src_ = e_route->gw_src_;
     res->gw_dst_ = e_route->gw_dst_;
-    for (auto const& link : e_route->link_list_) {
-      res->link_list_.push_back(link);
-      if (lat)
-        *lat += link->get_latency();
-    }
+    add_link_latency(res->link_list_, e_route->link_list_, lat);
   }
 }
 

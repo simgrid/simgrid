@@ -23,9 +23,7 @@ void StarZone::add_links_to_route(const std::vector<resource::LinkImpl*>& links,
     /* do not add duplicated links in route->link_list_ */
     if (not added_links.insert(link).second)
       continue;
-    if (latency)
-      *latency += link->get_latency();
-    route->link_list_.push_back(link);
+    add_link_latency(route->link_list_, link, latency);
   }
 }
 

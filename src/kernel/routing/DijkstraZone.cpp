@@ -110,11 +110,7 @@ void DijkstraZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rou
 
     const Route* e_route = static_cast<Route*>(xbt_graph_edge_get_data(edge));
 
-    for (auto const& link : e_route->link_list_) {
-      route->link_list_.insert(route->link_list_.begin(), link);
-      if (lat)
-        *lat += link->get_latency();
-    }
+    insert_link_latency(route->link_list_, e_route->link_list_, lat);
   }
 
   auto elm                   = route_cache_.emplace(src_id, std::vector<int>());
@@ -193,19 +189,11 @@ void DijkstraZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rou
       const NetPoint* gw_dst_net_elm      = nullptr;
       const NetPoint* prev_gw_src_net_elm = nullptr;
       get_global_route(gw_dst_net_elm, prev_gw_src_net_elm, e_route_as_to_as, nullptr);
-      for (auto pos = e_route_as_to_as.rbegin(); pos != e_route_as_to_as.rend(); pos++) {
-        resource::LinkImpl* link = *pos;
-        route->link_list_.insert(route->link_list_.begin(), link);
-        if (lat)
-          *lat += link->get_latency();
-      }
+      std::reverse(begin(e_route_as_to_as), end(e_route_as_to_as));
+      insert_link_latency(route->link_list_, e_route_as_to_as, lat);
     }
 
-    for (auto const& link : e_route->link_list_) {
-      route->link_list_.insert(route->link_list_.begin(), link);
-      if (lat)
-        *lat += link->get_latency();
-    }
+    insert_link_latency(route->link_list_, e_route->link_list_, lat);
   }
 
   if (get_hierarchy() == RoutingMode::recursive) {

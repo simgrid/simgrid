@@ -91,9 +91,7 @@ void TorusZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
   if (src->id() == dst->id() && has_loopback()) {
     resource::LinkImpl* uplink = get_uplink_from(node_pos(src->id()));
 
-    route->link_list_.push_back(uplink);
-    if (lat)
-      *lat += uplink->get_latency();
+    add_link_latency(route->link_list_, uplink, lat);
     return;
   }
 
@@ -176,9 +174,7 @@ void TorusZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
     else
       lnk = get_downlink_to(linkOffset);
 
-    route->link_list_.push_back(lnk);
-    if (lat)
-      *lat += lnk->get_latency();
+    add_link_latency(route->link_list_, lnk, lat);
 
     current_node = next_node;
   }

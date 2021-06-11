@@ -197,6 +197,14 @@ public:
   s4u::Host& get_src() const { return src_; }
   s4u::Host& get_dst() const { return dst_; }
 };
+
+/* Insert link(s) at the end of vector `result' (at the beginning, and reversed, for insert_link_latency()), and add
+ * link->get_latency() to *latency when latency is not null
+ */
+void add_link_latency(std::vector<LinkImpl*>& result, LinkImpl* link, double* latency);
+void add_link_latency(std::vector<LinkImpl*>& result, const std::vector<LinkImpl*>& links, double* latency);
+void insert_link_latency(std::vector<LinkImpl*>& result, const std::vector<LinkImpl*>& links, double* latency);
+
 } // namespace resource
 } // namespace kernel
 } // namespace simgrid

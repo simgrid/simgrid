@@ -38,15 +38,11 @@ void WifiZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* 
 
     if (src != access_point_) {
       XBT_DEBUG("src %s is not our gateway", src->get_cname());
-      res->link_list_.push_back(wifi_link_);
-      if (lat)
-        *lat += wifi_link_->get_latency();
+      add_link_latency(res->link_list_, wifi_link_, lat);
     }
     if (dst != access_point_) {
       XBT_DEBUG("dst %s is not our gateway", dst->get_cname());
-      res->link_list_.push_back(wifi_link_);
-      if (lat)
-        *lat += wifi_link_->get_latency();
+      add_link_latency(res->link_list_, wifi_link_, lat);
     }
   }
 }

@@ -64,9 +64,7 @@ void FatTreeZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rout
 
   /* In case destination is the source, and there is a loopback, let's use it instead of going up to a switch */
   if (source->id == destination->id && has_loopback()) {
-    into->link_list_.push_back(source->loopback_);
-    if (latency)
-      *latency += source->loopback_->get_latency();
+    add_link_latency(into->link_list_, source->loopback_, latency);
     return;
   }
 
@@ -85,10 +83,7 @@ void FatTreeZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rout
     if (currentNode->limiter_link_)
       into->link_list_.push_back(currentNode->limiter_link_);
 
-    into->link_list_.push_back(currentNode->parents[d]->up_link_);
-
-    if (latency)
-      *latency += currentNode->parents[d]->up_link_->get_latency();
+    add_link_latency(into->link_list_, currentNode->parents[d]->up_link_, latency);
 
     currentNode = currentNode->parents[d]->up_node_;
   }
@@ -100,13 +95,11 @@ void FatTreeZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rout
   while (currentNode != destination) {
     for (unsigned int i = 0; i < currentNode->children.size(); i++) {
       if (i % this->num_children_per_node_[currentNode->level - 1] == destination->label[currentNode->level - 1]) {
-        into->link_list_.push_back(currentNode->children[i]->down_link_);
+        add_link_latency(into->link_list_, currentNode->children[i]->down_link_, latency);
 
         if (currentNode->limiter_link_)
           into->link_list_.push_back(currentNode->limiter_link_);
 
-        if (latency)
-          *latency += currentNode->children[i]->down_link_->get_latency();
         currentNode = currentNode->children[i]->down_node_;
         XBT_DEBUG("%d(%u,%u) is accessible through %d(%u,%u)", destination->id, destination->level,
                   destination->position, currentNode->id, currentNode->level, currentNode->position);

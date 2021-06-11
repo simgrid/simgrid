@@ -212,8 +212,7 @@ void NetZoneImpl::add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_sr
 
   /* Build a copy that will be stored in the dict */
   auto* newRoute = new BypassRoute(gw_src, gw_dst);
-  for (auto const& link : link_list_)
-    newRoute->links.push_back(link);
+  newRoute->links.insert(newRoute->links.end(), begin(link_list_), end(link_list_));
 
   /* Store it */
   bypass_routes_.insert({{src, dst}, newRoute});
@@ -341,11 +340,7 @@ bool NetZoneImpl::get_bypass_route(const NetPoint* src, const NetPoint* dst,
   if (dst->get_englobing_zone() == this && src->get_englobing_zone() == this) {
     if (bypass_routes_.find({src, dst}) != bypass_routes_.end()) {
       const BypassRoute* bypassedRoute = bypass_routes_.at({src, dst});
-      for (resource::LinkImpl* const& link : bypassedRoute->links) {
-        links.push_back(link);
-        if (latency)
-          *latency += link->get_latency();
-      }
+      add_link_latency(links, bypassedRoute->links, latency);
       XBT_DEBUG("Found a bypass route from '%s' to '%s' with %zu links", src->get_cname(), dst->get_cname(),
                 bypassedRoute->links.size());
       return true;
@@ -408,11 +403,7 @@ bool NetZoneImpl::get_bypass_route(const NetPoint* src, const NetPoint* dst,
               src->get_cname(), dst->get_cname(), bypassedRoute->links.size());
     if (src != key.first)
       get_global_route_with_netzones(src, bypassedRoute->gw_src, links, latency, netzones);
-    for (resource::LinkImpl* const& link : bypassedRoute->links) {
-      links.push_back(link);
-      if (latency)
-        *latency += link->get_latency();
-    }
+    add_link_latency(links, bypassedRoute->links, latency);
     if (dst != key.second)
       get_global_route_with_netzones(bypassedRoute->gw_dst, dst, links, latency, netzones);
     return true;
