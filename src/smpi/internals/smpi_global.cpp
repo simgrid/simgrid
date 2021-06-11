@@ -565,8 +565,9 @@ int smpi_main(const char* executable, int argc, char* argv[])
   
   SMPI_init();
 
-  int rank_counts = smpi_deployment_smpirun(engine, smpi_hostfile.get(), smpi_np.get(), smpi_replay.get(),
-                                            smpi_map.get(), argc - 2, argv + 2);
+  const std::vector<const char*> args(argv + 2, argv + argc);
+  int rank_counts =
+      smpi_deployment_smpirun(engine, smpi_hostfile.get(), smpi_np.get(), smpi_replay.get(), smpi_map.get(), args);
 
   SMPI_app_instance_register(smpi_default_instance_name.c_str(), nullptr, rank_counts);
   MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);

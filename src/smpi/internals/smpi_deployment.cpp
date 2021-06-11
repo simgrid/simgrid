@@ -141,20 +141,16 @@ static std::vector<std::string> smpi_read_replay(const std::string& replayfile)
 }
 
 /** @brief Build argument vector to pass to process */
-static std::vector<std::string> smpi_deployment_get_args(int rank_id, const std::vector<std::string>& replay, int argc,
-                                                         char* argv[])
+static std::vector<std::string> smpi_deployment_get_args(int rank_id, const std::vector<std::string>& replay,
+                                                         const std::vector<const char*>& run_args)
 {
   std::vector<std::string> args{std::to_string(rank_id)};
   // pass arguments to process only if not a replay execution
-  if (replay.empty()) {
-    for (int i = 0; i < argc; i++) {
-      args.emplace_back(argv[i]);
-    }
-  }
+  if (replay.empty())
+    args.insert(args.end(), begin(run_args), end(run_args));
   /* one trace per process */
-  if (replay.size() > 1) {
+  if (replay.size() > 1)
     args.emplace_back(replay[rank_id]);
-  }
   return args;
 }
 
@@ -165,7 +161,7 @@ static std::vector<std::string> smpi_deployment_get_args(int rank_id, const std:
  * If hostfile isn't provided, get the list of hosts from engine.
  */
 int smpi_deployment_smpirun(const simgrid::s4u::Engine* e, const std::string& hostfile, int np,
-                            const std::string& replayfile, int map, int argc, char* argv[])
+                            const std::string& replayfile, int map, const std::vector<const char*>& run_args)
 {
   auto hosts     = smpi_get_hosts(e, hostfile);
   auto replay    = smpi_read_replay(replayfile);
@@ -182,7 +178,7 @@ int smpi_deployment_smpirun(const simgrid::s4u::Engine* e, const std::string& ho
   for (int i = 0; i < np; i++) {
     simgrid::s4u::Host* host = hosts[i % hosts_size];
     std::string rank_id      = std::to_string(i);
-    auto args                = smpi_deployment_get_args(i, replay, argc, argv);
+    auto args                = smpi_deployment_get_args(i, replay, run_args);
     auto actor               = simgrid::s4u::Actor::create(rank_id, host, rank_id, args);
     /* keeping the same behavior as done in smpirun script, print mapping rank/process */
     if (map != 0) {
