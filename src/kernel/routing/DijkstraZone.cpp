@@ -193,12 +193,11 @@ void DijkstraZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rou
       const NetPoint* gw_dst_net_elm      = nullptr;
       const NetPoint* prev_gw_src_net_elm = nullptr;
       get_global_route(gw_dst_net_elm, prev_gw_src_net_elm, e_route_as_to_as, nullptr);
-      auto pos = route->link_list_.begin();
-      for (auto const& link : e_route_as_to_as) {
-        route->link_list_.insert(pos, link);
+      for (auto pos = e_route_as_to_as.rbegin(); pos != e_route_as_to_as.rend(); pos++) {
+        resource::LinkImpl* link = *pos;
+        route->link_list_.insert(route->link_list_.begin(), link);
         if (lat)
           *lat += link->get_latency();
-        pos++;
       }
     }
 
