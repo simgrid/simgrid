@@ -533,7 +533,7 @@ static simgrid::kernel::routing::NetZoneImpl*
 sg_platf_create_zone(const simgrid::kernel::routing::ZoneCreationArgs* zone)
 {
   /* search the routing model */
-  simgrid::s4u::NetZone* new_zone = nullptr;
+  const simgrid::s4u::NetZone* new_zone = nullptr;
 
   if (strcasecmp(zone->routing.c_str(), "Cluster") == 0) {
     new_zone = simgrid::s4u::create_star_zone(zone->id);

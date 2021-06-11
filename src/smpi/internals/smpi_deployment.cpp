@@ -20,7 +20,7 @@ static int universe_size = 0;
 
 class Instance {
 public:
-  Instance(int max_no_processes) : size_(max_no_processes)
+  explicit Instance(int max_no_processes) : size_(max_no_processes)
   {
     auto* group = new simgrid::smpi::Group(size_);
     comm_world_ = new simgrid::smpi::Comm(group, nullptr, false, -1);
