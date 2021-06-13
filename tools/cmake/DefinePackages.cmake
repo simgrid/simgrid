@@ -80,7 +80,6 @@ set(EXTRA_DIST
   tools/lualib.patch
   teshsuite/lua/lua_platforms.tesh
   examples/smpi/mc/only_send_deterministic.tesh
-  examples/smpi/mc/non_deterministic.tesh
   )
 
 set(SMPI_SRC

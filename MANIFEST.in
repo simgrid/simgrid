@@ -1962,7 +1962,6 @@ include examples/python/comm-waitall/comm-waitall_d.xml
 include examples/python/comm-waitany/comm-waitany_d.xml
 include examples/smpi/CMakeLists.txt
 include examples/smpi/NAS/CMakeLists.txt
-include examples/smpi/mc/non_deterministic.tesh
 include examples/smpi/mc/only_send_deterministic.tesh
 include examples/smpi/replay_multiple/CMakeLists.txt
 include examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt

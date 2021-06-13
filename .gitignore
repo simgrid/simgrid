@@ -251,6 +251,11 @@ examples/smpi/mc/smpi_bugged1
 examples/smpi/mc/smpi_bugged1_liveness
 examples/smpi/mc/smpi_bugged2
 examples/smpi/mc/smpi_mutual_exclusion
+examples/smpi/mc/smpi_non_termination1
+examples/smpi/mc/smpi_non_termination2
+examples/smpi/mc/smpi_non_termination3
+examples/smpi/mc/smpi_non_termination4
+examples/smpi/mc/smpi_only_send_deterministic
 examples/smpi/mc/smpi_sendsend
 examples/smpi/NAS/dt
 examples/smpi/NAS/ep
@@ -334,6 +339,7 @@ teshsuite/smpi/io-ordered/io-ordered
 teshsuite/smpi/io-shared/io-shared
 teshsuite/smpi/io-simple-at/io-simple-at
 teshsuite/smpi/io-simple/io-simple
+teshsuite/smpi/isp/umpire/**/*.tesh
 teshsuite/smpi/isp/umpire/abort
 teshsuite/smpi/isp/umpire/abort1
 teshsuite/smpi/isp/umpire/abort2
