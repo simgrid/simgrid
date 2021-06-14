@@ -99,7 +99,7 @@ int PMPI_Win_detach(MPI_Win win, const void* base)
 int PMPI_Win_free( MPI_Win* win){
   CHECK_NULL(1, MPI_ERR_WIN, win)
   CHECK_WIN(1, (*win))
-  if ((*win)->opened() == 1){
+  if (_smpi_cfg_pedantic && (*win)->opened() == 1){//only check in pedantic mode, as it's not clear this is illegal
     XBT_WARN("Attempt to destroy a MPI_Win too early -missing MPI_Win_fence ?");
     return MPI_ERR_WIN;
   }
