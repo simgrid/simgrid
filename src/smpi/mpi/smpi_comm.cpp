@@ -583,9 +583,12 @@ MPI_Errhandler Comm::errhandler()
       errhandler_->ref();
     return errhandler_;
   } else {
-    if(errhandlers_==nullptr)
-      return MPI_ERRORS_ARE_FATAL;
-    else {
+    if(errhandlers_==nullptr){
+      if (_smpi_cfg_default_errhandler_is_error)
+        return MPI_ERRORS_ARE_FATAL;
+      else
+        return MPI_ERRORS_RETURN;
+    } else {
       if(errhandlers_[this->rank()] != MPI_ERRHANDLER_NULL)
         errhandlers_[this->rank()]->ref();
       return errhandlers_[this->rank()];

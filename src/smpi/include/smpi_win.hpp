@@ -11,6 +11,7 @@
 #include "smpi_errhandler.hpp"
 #include "smpi_f2c.hpp"
 #include "smpi_keyvals.hpp"
+#include "smpi_config.hpp"
 
 #include <vector>
 #include <list>
@@ -41,7 +42,7 @@ class Win : public F2C, public Keyval {
   int mode_ = 0; // exclusive or shared lock
   bool allocated_;
   bool dynamic_;
-  MPI_Errhandler errhandler_ = MPI_ERRORS_ARE_FATAL;
+  MPI_Errhandler errhandler_ = _smpi_cfg_default_errhandler_is_error ? MPI_ERRORS_ARE_FATAL : MPI_ERRORS_RETURN;
 
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;

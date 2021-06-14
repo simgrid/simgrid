@@ -13,6 +13,7 @@
 #include "smpi_keyvals.hpp"
 #include "smpi_group.hpp"
 #include "smpi_topo.hpp"
+#include "smpi_config.hpp"
 
 namespace simgrid{
 namespace smpi{
@@ -36,7 +37,7 @@ class Comm : public F2C, public Keyval{
   std::string name_;
   MPI_Info info_ = MPI_INFO_NULL;
   int id_;
-  MPI_Errhandler errhandler_ = MPI_ERRORS_ARE_FATAL;
+  MPI_Errhandler errhandler_ =  _smpi_cfg_default_errhandler_is_error ? MPI_ERRORS_ARE_FATAL : MPI_ERRORS_RETURN;;
   MPI_Errhandler* errhandlers_ = nullptr; //for MPI_COMM_WORLD only
 
 public:

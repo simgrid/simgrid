@@ -21,7 +21,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_io, smpi, "Logging specific to SMPI (RMA operations)");
 
-MPI_Errhandler SMPI_default_File_Errhandler = MPI_ERRORS_RETURN;
+MPI_Errhandler SMPI_default_File_Errhandler =  _smpi_cfg_default_errhandler_is_error ? MPI_ERRORS_ARE_FATAL : MPI_ERRORS_RETURN;;
 
 namespace simgrid{
 namespace smpi{

@@ -150,6 +150,7 @@ Existing Configuration Items
 - **smpi/cpu-threshold:** :ref:`cfg=smpi/cpu-threshold`
 - **smpi/display-allocs:** :ref:`cfg=smpi/display-allocs`
 - **smpi/display-timing:** :ref:`cfg=smpi/display-timing`
+- **smpi/errors-are-fatal:** :ref:`cfg=smpi/errors-are-fatal`
 - **smpi/finalization-barrier:** :ref:`cfg=smpi/finalization-barrier`
 - **smpi/grow-injected-times:** :ref:`cfg=smpi/grow-injected-times`
 - **smpi/host-speed:** :ref:`cfg=smpi/host-speed`
@@ -1324,6 +1325,15 @@ If your code shows issues at finalization, such as segmentation fault, triggerin
 this option will add an explicit MPI_Barrier(MPI_COMM_WORLD) call inside the
 MPI_Finalize, so that all processes will terminate at almost the same point.
 It might affect the total timing by the cost of a barrier.
+
+.. _cfg=smpi/errors-are-fatal:
+
+**Option** ``smpi/errors-are-fatal`` **default:** on
+
+By default, SMPI processes will crash if a MPI error code is returned. MPI allows
+to explicitely set MPI_ERRORS_RETURN errhandler to avoid this behaviour. This flag
+will turn on this behaviour by default (for all concerned types and errhandlers).
+This can ease debugging by going after the first reported error.
 
 .. _cfg=smpi/iprobe:
 

@@ -15,9 +15,12 @@ SMPI:
  - The default SMPI compiler flags are no more taken from the environment.
    They can be explicitly set through cmake parameters SMPI_C_FLAGS,
    SMPI_CXX_FLAGS, or SMPI_Fortran_FLAGS.
- - New option: --cfg=smpi/finalization-barrier, which can be used to add
-   a barrier inside MPI_Finalize. This can help for some codes which cleanup
-   data attached to a process, but still used in other SMPI processes.
+ - New options:
+    --cfg=smpi/finalization-barrier: which can be used to add
+      a barrier inside MPI_Finalize. This can help for some codes which cleanup
+      data attached to a process, but still used in other SMPI processes.
+    --cfg=smpi/errors-are-fatal: True by default, behaves like if MPI_ERRORS_RETURN
+      is active when set to false, to keep going after a small error
 LUA:
  - Lua platform files are deprecated. Their support will be dropped after v3.31.
 
