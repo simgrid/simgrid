@@ -24,6 +24,7 @@ extern XBT_PRIVATE simgrid::config::Flag<bool> _smpi_cfg_trace_call_use_absolute
 extern XBT_PRIVATE simgrid::config::Flag<bool> _smpi_cfg_trace_call_location;
 extern XBT_PRIVATE simgrid::config::Flag<std::string> _smpi_cfg_comp_adjustment_file;
 extern XBT_PRIVATE simgrid::config::Flag<bool> _smpi_cfg_default_errhandler_is_error;
+extern XBT_PRIVATE simgrid::config::Flag<bool> _smpi_cfg_pedantic;
 #if HAVE_PAPI
 extern XBT_PRIVATE simgrid::config::Flag<std::string> _smpi_cfg_papi_events_file;
 #endif

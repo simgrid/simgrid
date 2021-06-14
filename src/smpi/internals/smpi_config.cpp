@@ -111,6 +111,8 @@ simgrid::config::Flag<std::string> _smpi_cfg_comp_adjustment_file{"smpi/comp-adj
 
 simgrid::config::Flag<bool> _smpi_cfg_default_errhandler_is_error{
   "smpi/errors-are-fatal", "Whether MPI errors are fatal or just return. Default is true", true };
+simgrid::config::Flag<bool> _smpi_cfg_pedantic{
+  "smpi/pedantic", "Activate extra checks that may crash slightly incorrect codes which would not crash on actual implementations", true };
 #if HAVE_PAPI
   simgrid::config::Flag<std::string> _smpi_cfg_papi_events_file{"smpi/papi-events",
                                                                 "This switch enables tracking the specified counters with PAPI", ""};

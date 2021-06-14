@@ -21,6 +21,8 @@ SMPI:
       data attached to a process, but still used in other SMPI processes.
     --cfg=smpi/errors-are-fatal: True by default, behaves like if MPI_ERRORS_RETURN
       is active when set to false, to keep going after a small error
+    --cfg=smpi/pedantic: True by default. Do not report some harmless MPI errors
+      which may or may not be problematic in the end.
 LUA:
  - Lua platform files are deprecated. Their support will be dropped after v3.31.
 

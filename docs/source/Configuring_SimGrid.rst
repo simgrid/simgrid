@@ -164,6 +164,7 @@ Existing Configuration Items
 - **smpi/or:** :ref:`cfg=smpi/or`
 - **smpi/os:** :ref:`cfg=smpi/os`
 - **smpi/papi-events:** :ref:`cfg=smpi/papi-events`
+- **smpi/pedantic:** :ref:`cfg=smpi/pedantic`
 - **smpi/privatization:** :ref:`cfg=smpi/privatization`
 - **smpi/privatize-libs:** :ref:`cfg=smpi/privatize-libs`
 - **smpi/send-is-detached-thresh:** :ref:`cfg=smpi/send-is-detached-thresh`
@@ -1334,6 +1335,17 @@ By default, SMPI processes will crash if a MPI error code is returned. MPI allow
 to explicitely set MPI_ERRORS_RETURN errhandler to avoid this behaviour. This flag
 will turn on this behaviour by default (for all concerned types and errhandlers).
 This can ease debugging by going after the first reported error.
+
+.. _cfg=smpi/pedantic:
+
+**Option** ``smpi/pedantic`` **default:** on
+
+By default, SMPI will report all errors it finds in MPI codes. Some of these errors
+may not be considered as errors by all developers. This flag can be turned off to
+avoid reporting some usually harmless mistakes.
+Concerned errors list (will be expanded in the future):
+  - Calling MPI_Win_fence only once in a program, hence just opening an epoch without
+  ever closing it.
 
 .. _cfg=smpi/iprobe:
 
