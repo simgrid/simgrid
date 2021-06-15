@@ -2311,7 +2311,7 @@
      transform="translate(-2.308124,-62.995623)"
      style="display:inline">
     <a
-       xlink:href="platform.html"
+       xlink:href="Platform.html"
        style="fill:#ffffff;fill-opacity:1"
        id="a2388"
        inkscape:label="PlatformLink">
@@ -2350,7 +2350,7 @@
            sodipodi:role="line">available resources</tspan></text>
     </a>
     <a
-       xlink:href="Experimental_Setup.html"
+       xlink:href="Experimental_setup.html"
        inkscape:label="XPSetupLink"
        id="a6081">
       <rect
@@ -2381,7 +2381,6 @@
            id="tspan820">Setup</tspan></text>
     </a>
     <a
-       xlink:href="platform.html#performance-profiles-and-churn"
        transform="translate(21.166664,43.282215)"
        inkscape:label="ProfileLink"
        style="fill:#ffffff;fill-opacity:1"
@@ -6210,7 +6209,7 @@
            id="tspan2827" /></text>
     </a>
     <a
-       xlink:href="Deploying_your_Application.html"
+       xlink:href="Deploying_your_application.html"
        inkscape:label="DeployLink"
        transform="translate(-2.8431311e-6,13.229176)"
        id="a6179">
@@ -6332,7 +6331,7 @@
          style="line-height:4.4979167px;text-align:start;text-anchor:start;fill:#0a3455;fill-opacity:1;stroke-width:0.26458332px"
          id="tspan4614">Manual</tspan></text>
     <a
-       xlink:href="platform.html#defining-a-routing"
+       xlink:href="Platform_routing.html"
        transform="translate(-32.808342,8.6462044)"
        style="display:inline;fill:#ffffff;fill-opacity:1"
        id="a6094"
@@ -6408,8 +6407,7 @@
        inkscape:label="OfflineTraceLink"
        style="display:inline;fill:#ffffff;fill-opacity:1"
        id="a6097-3-1"
-       transform="translate(-56.885422,31.905132)"
-       xlink:href="">
+       transform="translate(-56.885422,31.905132)">
       <rect
          inkscape:label="OfflineTraceBox"
          ry="0.87357658"
@@ -6493,7 +6491,7 @@
            sodipodi:role="line">+</tspan></text>
     </g>
     <a
-       xlink:href="Platform_Examples.html"
+       xlink:href="Platform_examples.html"
        inkscape:label="ExamplesLink"
        transform="translate(-20.902092,-41.010402)"
        style="display:inline;fill:#ffffff;fill-opacity:1"
@@ -6521,7 +6519,7 @@
            style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:4.93888903px;font-family:'Bitstream Vera Sans';-inkscape-font-specification:'Bitstream Vera Sans';stroke-width:0.26458332px">Examples</tspan></text>
     </a>
     <a
-       xlink:href="XML_Reference.html"
+       xlink:href="XML_reference.html"
        id="a6161-7-2"
        style="display:inline;fill:#ffffff;fill-opacity:1"
        transform="translate(6.879166,-41.010404)"
