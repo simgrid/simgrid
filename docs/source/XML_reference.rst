@@ -442,6 +442,30 @@ elements such as host or peer) |br|
    No other zone may have the same name over the whole platform.
 :``routing``: Routing algorithm to use.
 
+-------------------------------------------------------------------------------
+
+.. _pf_tag_zoneRoute:
+
+<zoneRoute>
+------
+
+The purpose of this entity is to define a route between two zones.
+Recall that all zones form a tree, so to connect two sibling zones,
+you must give such a zoneRoute specifying the source and destination zones,
+along with the gateway in each zone (i.e., the point to reach within that zone to reach the zone),
+and the list of links to go from one zone to another.
+
+**Parent tags:** :ref:`pf_tag_zone` |br|
+**Children tags:** :ref:`pf_tag_link_ctn` |br|
+**Attributes:**
+
+:``src``: Zone from which this route starts. Must be an existing zone.
+:``dst``: Zone to which this route leads. Must be an existing zone.
+:``gw_src``: Netpoint (within src zone) from which this route starts. Must be an existing host/router.
+:``gw_dst``: Netpoint (within dst zone) to which this route leads. Must be an existing host/router.
+:``symmetrical``: Whether this route is symmetrical, ie, whether we
+		  are defining the route ``dst -> src`` at the same
+		  time. Valid values: ``yes``, ``no``, ``YES``, ``NO``.
 
 .. |br| raw:: html
 

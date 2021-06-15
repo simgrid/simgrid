@@ -73,10 +73,11 @@ of every page. Bugs in the code should be reported
          The MSG interface <app_msg.rst>
          The XBT toolbox <The_XBT_toolbox.rst>
       Describing the simulated platform <Platform.rst>
+         Demystifying the routing <Platform_routing.rst>
          Examples <Platform_examples.rst>
          Modeling hints <Platform_howtos.rst>
-         Defining a routing <Platform_routing.rst>
          XML reference <XML_reference.rst>
+         C++ platforms <Platform_cpp.rst>
       Describing the experimental setup <Experimental_setup.rst>
          Configuring SimGrid <Configuring_SimGrid.rst>
          Deploying your application <Deploying_your_application.rst>
