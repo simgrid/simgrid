@@ -299,7 +299,7 @@ public:
 
 bool LocalData::need_more_benchs() const
 {
-  bool res = (count < iters) || (threshold > 0.0 && (count < 2 ||          // not enough data
+  bool res = (count < iters) && (threshold > 0.0 && (count < 2 ||          // not enough data
                                                      relstderr > threshold // stderr too high yet
                                                      ));
   XBT_DEBUG("%s (count:%d iter:%d stderr:%f thres:%f mean:%fs)",
