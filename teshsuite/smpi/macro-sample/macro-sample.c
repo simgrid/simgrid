@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
   }
 
   n = 0;
+  //Use 0 as max iter, but one will always be performed by design.
   SMPI_SAMPLE_LOCAL (int i = 0, i < 5, i++,0, 0.1){
       if (verbose || n < 2) {
         n++;

@@ -299,9 +299,8 @@ public:
 
 bool LocalData::need_more_benchs() const
 {
-  bool res = (count < iters) && (threshold > 0.0 && (count < 2 ||          // not enough data
-                                                     relstderr > threshold // stderr too high yet
-                                                     ));
+  bool res = (count < iters) && (threshold < 0.0 || count < 2 ||          // not enough data
+                                                  relstderr >= threshold); // stderr too high yet
   XBT_DEBUG("%s (count:%d iter:%d stderr:%f thres:%f mean:%fs)",
             (res ? "need more data" : "enough benchs"), count, iters, relstderr, threshold, mean);
   return res;
@@ -368,7 +367,7 @@ int smpi_sample_2(int global, const char *file, int line, int iter_count)
     // Enough data, no more bench (either we got enough data from previous visits to this benched nest, or we just
     //ran one bench and need to bail out now that our job is done). Just sleep instead
     if (not data.need_more_benchs()){
-      XBT_DEBUG("No benchmark (either no need, or just ran one): count >= iter (%d >= %d) or stderr<thres (%f<=%f). "
+      XBT_DEBUG("No benchmark (either no need, or just ran one): count (%d) >= iter (%d) (or <2) or stderr (%f) < thres (%f), or thresh is negative and ignored. "
               "Mean is %f, will be injected %d times",
               data.count, data.iters, data.relstderr, data.threshold, data.mean, iter_count);
               
