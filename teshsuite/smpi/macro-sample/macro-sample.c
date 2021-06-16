@@ -43,6 +43,21 @@ int main(int argc, char *argv[])
       d = compute(2.0);
   }
 
+  //tagged version, should differentiate between two different calls to the same kernel and run calibration even on the second one
+  for (int tag=0; tag < 4; tag++){
+    char ctag [8];
+    //run twice with the same tag, test should skip 1 and 3, as they were already benched.
+    sprintf(ctag, "%d", tag - tag%2);
+    SMPI_SAMPLE_GLOBAL_TAG(int i = 0, i < 500, i++, 2, 0.1, ctag){
+        if (verbose)
+          fprintf(stderr, "(%12.6f) [rank:%d]", MPI_Wtime(), rank);
+        else
+          fprintf(stderr, "(0)");
+        fprintf(stderr, " Run the computation %d with tag %d\n", tag, tag- tag%2);
+        d = compute(2.0);
+    }
+  }
+
   n = 0;
   //Use 0 as max iter, but one will always be performed by design.
   SMPI_SAMPLE_LOCAL (int i = 0, i < 5, i++,0, 0.1){

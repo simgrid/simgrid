@@ -56,7 +56,7 @@ void smpi_execute_flops(double flops)
 void smpi_execute(double duration)
 {
   if (duration >= smpi_cfg_cpu_thresh()) {
-    XBT_DEBUG("Sleep for %g to handle real computation time", duration);
+    XBT_DEBUG("Sleep for %gs (host time) to handle real computation time", duration);
     private_execute_flops(duration * smpi_cfg_host_speed());
   } else {
     XBT_DEBUG("Real computation took %g while option smpi/cpu-threshold is set to %g => ignore it", duration,
@@ -276,7 +276,7 @@ unsigned long long smpi_rastro_timestamp ()
 namespace {
 class SampleLocation : public std::string {
 public:
-  SampleLocation(bool global, const char* file, int line) : std::string(std::string(file) + ":" + std::to_string(line))
+  SampleLocation(bool global, const char* file, const char* tag) : std::string(std::string(file) + ":" + std::string(tag))
   {
     if (not global)
       this->append(":" + std::to_string(simgrid::s4u::this_actor::get_pid()));
@@ -309,9 +309,9 @@ bool LocalData::need_more_benchs() const
 std::unordered_map<SampleLocation, LocalData, std::hash<std::string>> samples;
 }
 
-void smpi_sample_1(int global, const char *file, int line, int iters, double threshold)
+void smpi_sample_1(int global, const char *file, const char *tag, int iters, double threshold)
 {
-  SampleLocation loc(global, file, line);
+  SampleLocation loc(global, file, tag);
   if (not smpi_process()->sampling()) { /* Only at first call when benchmarking, skip for next ones */
     smpi_bench_end();     /* Take time from previous, unrelated computation into account */
     smpi_process()->set_sampling(1);
@@ -348,9 +348,9 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
   }
 }
 
-int smpi_sample_2(int global, const char *file, int line, int iter_count)
+int smpi_sample_2(int global, const char *file,const char *tag, int iter_count)
 {
-  SampleLocation loc(global, file, line);
+  SampleLocation loc(global, file, tag);
 
   XBT_DEBUG("sample2 %s %d", loc.c_str(), iter_count);
   auto sample = samples.find(loc);
@@ -384,9 +384,9 @@ int smpi_sample_2(int global, const char *file, int line, int iter_count)
   return 1;
 }
 
-void smpi_sample_3(int global, const char *file, int line)
+void smpi_sample_3(int global, const char *file, const char* tag)
 {
-  SampleLocation loc(global, file, line);
+  SampleLocation loc(global, file, tag);
 
   XBT_DEBUG("sample3 %s", loc.c_str());
   auto sample = samples.find(loc);
@@ -416,9 +416,9 @@ void smpi_sample_3(int global, const char *file, int line)
   data.benching = false;
 }
 
-int smpi_sample_exit(int global, const char *file, int line, int iter_count){
+int smpi_sample_exit(int global, const char *file, const char* tag, int iter_count){
   if (smpi_process()->sampling()){
-    SampleLocation loc(global, file, line);
+    SampleLocation loc(global, file, tag);
 
     XBT_DEBUG("sample exit %s", loc.c_str());
     auto sample = samples.find(loc);
