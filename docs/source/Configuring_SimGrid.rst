@@ -365,17 +365,29 @@ one the timings of packet-level simulators, as described in `Accuracy
 Study and Improvement of Network Simulation in the SimGrid Framework
 <http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf>`_.
 
+- **network/latency-factor**: apply a multiplier to latency.
+  Models the TCP slow-start mechanism.
+- **network/bandwidth-factor**: actual bandwidth perceived by the
+  user.
+- **network/weight-S**: bottleneck sharing constant parameter. Used
+  to calculate RTT.
+
+These parameters are the same for all communications in your simulation,
+independently of message size or source/destination hosts. A more flexible
+mechanism based on callbacks was introduced in SimGrid. It provides the user
+a callback that will be called for each communication, allowing the user
+to set different latency and bandwidth factors, based on the message size, links used
+or zones traversed. To more details of how to use it, please look at the
+`examples/cpp/network-factors/s4u-network-factors.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/cpp/network-factors/s4u-network-factors.cpp>`_.
+
 
 If you are using the SMPI model, these correction coefficients are
 themselves corrected by constant values depending on the size of the
 exchange.  By default SMPI uses factors computed on the Stampede
 Supercomputer at TACC, with optimal deployment of processes on
 nodes. Again, only hardcore experts should bother about this fact.
+For more details, see SMPI sections about :ref:`cfg=smpi/bw-factor` and :ref:`cfg=smpi/lat-factor`.
 
-
-.. todo:: This section should be rewritten, and actually explain the
-	  options network/bandwidth-factor, network/latency-factor,
-	  network/weight-S.
 
 .. _cfg=smpi/IB-penalty-factors:
 
