@@ -187,16 +187,17 @@ public:
  */
 class XBT_PUBLIC Constraint {
 public:
+  enum class SharingPolicy { SHARED = 1, FATPIPE = 0 };
   Constraint() = delete;
   Constraint(resource::Resource* id_value, double bound_value);
 
   /** @brief Unshare a constraint. */
-  void unshare() { sharing_policy_ = s4u::Link::SharingPolicy::FATPIPE; }
+  void unshare() { sharing_policy_ = SharingPolicy::FATPIPE; }
 
   /** @brief Set how a constraint is shared  */
-  void set_sharing_policy(s4u::Link::SharingPolicy policy) { sharing_policy_ = policy; }
+  void set_sharing_policy(SharingPolicy policy) { sharing_policy_ = policy; }
   /** @brief Check how a constraint is shared  */
-  s4u::Link::SharingPolicy get_sharing_policy() const { return sharing_policy_; }
+  SharingPolicy get_sharing_policy() const { return sharing_policy_; }
 
   /** @brief Get the usage of the constraint after the last lmm solve */
   double get_usage() const;
@@ -279,7 +280,7 @@ public:
   int concurrency_maximum_ = 0; /* The maximum number of (enabled and disabled) variables associated to the constraint
                                  * at any given time (essentially for tracing)*/
 
-  s4u::Link::SharingPolicy sharing_policy_ = s4u::Link::SharingPolicy::SHARED;
+  SharingPolicy sharing_policy_ = SharingPolicy::SHARED;
   int rank_; // Only used in debug messages to identify the constraint
   double lambda_               = 0.0;
   double new_lambda_           = 0.0;

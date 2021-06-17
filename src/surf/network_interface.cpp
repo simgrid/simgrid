@@ -84,12 +84,16 @@ bool LinkImpl::is_used() const
 
 LinkImpl* LinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy)
 {
-  get_constraint()->set_sharing_policy(policy);
+  lmm::Constraint::SharingPolicy ct_policy = lmm::Constraint::SharingPolicy::SHARED;
+  if (policy == s4u::Link::SharingPolicy::FATPIPE)
+    ct_policy = lmm::Constraint::SharingPolicy::FATPIPE;
+  get_constraint()->set_sharing_policy(ct_policy);
+  sharing_policy_ = policy;
   return this;
 }
 s4u::Link::SharingPolicy LinkImpl::get_sharing_policy() const
 {
-  return get_constraint()->get_sharing_policy();
+  return sharing_policy_;
 }
 
 void LinkImpl::latency_check(double latency) const

@@ -102,6 +102,7 @@ public:
  */
 class LinkImpl : public Resource_T<LinkImpl>, public xbt::PropertyHolder {
   s4u::Link piface_;
+  s4u::Link::SharingPolicy sharing_policy_ = s4u::Link::SharingPolicy::SHARED;
 
 protected:
   explicit LinkImpl(const std::string& name);
