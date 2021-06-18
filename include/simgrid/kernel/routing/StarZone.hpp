@@ -69,7 +69,7 @@ public:
                  std::map<std::string, xbt_edge_t, std::less<>>* edges) override;
 
   void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                 const std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical) override;
+                 const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical) override;
   void do_seal() override;
 
 private:

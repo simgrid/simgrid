@@ -80,7 +80,7 @@ public:
   NetPoint* dst    = nullptr;
   NetPoint* gw_src = nullptr;
   NetPoint* gw_dst = nullptr;
-  std::vector<resource::LinkImpl*> link_list;
+  std::vector<simgrid::s4u::LinkInRoute> link_list;
 };
 
 enum class ClusterTopology { DRAGONFLY = 3, FAT_TREE = 2, FLAT = 1, TORUS = 0 };

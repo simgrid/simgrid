@@ -80,26 +80,42 @@ public:
    * @param dst Destination netzone' netpoint
    * @param gw_src Netpoint of the gateway in the source netzone
    * @param gw_dst Netpoint of the gateway in the destination netzone
-   * @param link_list List of links used in this communication
+   * @param link_list List of links and their direction used in this communication
    * @param symmetrical Bi-directional communication
    */
   void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
-                 kernel::routing::NetPoint* gw_dst, const std::vector<Link*>& link_list, bool symmetrical = true);
+                 kernel::routing::NetPoint* gw_dst, const std::vector<LinkInRoute>& link_list, bool symmetrical = true);
+
+  XBT_ATTRIB_DEPRECATED_v332("Please use add_route() method which uses s4u::LinkInRoute instead of "
+                             "LinkImpl") void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                                                        kernel::routing::NetPoint* gw_src,
+                                                        kernel::routing::NetPoint* gw_dst,
+                                                        const std::vector<kernel::resource::LinkImpl*>& link_list,
+                                                        bool symmetrical);
+
+  XBT_ATTRIB_DEPRECATED_v332("Please use add_bypass_route() method which uses s4u::LinkInRoute instead of "
+                             "LinkImpl") void add_bypass_route(kernel::routing::NetPoint* src,
+                                                               kernel::routing::NetPoint* dst,
+                                                               kernel::routing::NetPoint* gw_src,
+                                                               kernel::routing::NetPoint* gw_dst,
+                                                               std::vector<kernel::resource::LinkImpl*>& link_list,
+                                                               bool /*symmetrical*/);
 
 #ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v332("Please use add_route() method which uses s4u::Link instead of LinkImpl") void add_route(
-      kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
-      kernel::routing::NetPoint* gw_dst, const std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
 #endif
   void add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                        std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
+                        const std::vector<LinkInRoute>& link_list);
 
+#ifndef DOXYGEN
   /*** Called on each newly created regular route (not on bypass routes) */
   static xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                           kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                           std::vector<kernel::resource::LinkImpl*> const& link_list)>
-      on_route_creation;
+      on_route_creation; // XBT_ATTRIB_DEPRECATED_v332 : should not be used by users, used by ns3.. if necessary,
+                         // signal shouldn't use LinkImpl*
+#endif
+
   static xbt::signal<void(NetZone const&)> on_creation;
   static xbt::signal<void(NetZone const&)> on_seal;
 
@@ -133,6 +149,22 @@ public:
   s4u::Link* create_link(const std::string& name, const std::vector<std::string>& bandwidths);
   s4u::Link* create_link(const std::string& name, const std::string& bandwidth);
 
+  /**
+   * @brief Create a split-duplex link
+   *
+   * In SimGrid, split-duplex links are a composition of 2 regular (shared) links (up/down).
+   *
+   * This function eases its utilization by creating the 2 links for you. We append a suffix
+   * "_UP" and "_DOWN" to your link name to identify each of them.
+   *
+   * Both up/down links have exactly the same bandwidth
+   *
+   * @param name Name of the link
+   * @param bandwidth Speed
+   */
+  s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, const std::string& bandwidth);
+  s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, double bandwidth);
+
   kernel::resource::NetworkModelIntf* get_network_model() const;
 
   /**
@@ -146,8 +178,8 @@ public:
   NetZone* seal();
 
 private:
-  /** @brief Auxiliary function to get list of LinkImpl */
-  static std::vector<kernel::resource::LinkImpl*> get_link_list_impl(const std::vector<Link*>& link_list);
+  /** @brief Auxiliary function to convert types */
+  static std::vector<LinkInRoute> convert_to_linkInRoute(const std::vector<kernel::resource::LinkImpl*>& link_list);
 };
 
 // External constructors so that the types (and the types of their content) remain hidden

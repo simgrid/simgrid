@@ -35,13 +35,11 @@ create_cabinet(const sg4::NetZone* root, const std::string& name, const std::vec
     /* create host */
     const sg4::Host* host = cluster->create_host(hostname, "286.087kf");
     /* create UP/DOWN link */
-    sg4::Link* l_up   = cluster->create_link(hostname + "_up", "125MBps")->set_latency("24us")->seal();
-    sg4::Link* l_down = cluster->create_link(hostname + "_down", "125MBps")->set_latency("24us")->seal();
+    auto* link = cluster->create_split_duplex_link(hostname, "125MBps")->set_latency("24us")->seal();
 
-    /* add link UP and backbone for communications from the host */
-    cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, std::vector<sg4::Link*>{l_up, l_bb}, false);
-    /* add backbone and link DOWN for communications to the host */
-    cluster->add_route(nullptr, host->get_netpoint(), nullptr, nullptr, std::vector<sg4::Link*>{l_bb, l_down}, false);
+    /* add link and backbone for communications from the host */
+    cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr,
+                       std::vector<sg4::LinkInRoute>{{link, sg4::LinkInRoute::Direction::UP}, l_bb}, true);
   }
 
   /* create router */

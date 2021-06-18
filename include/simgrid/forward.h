@@ -66,6 +66,7 @@ XBT_PUBLIC void intrusive_ptr_release(Io* i);
 XBT_PUBLIC void intrusive_ptr_add_ref(Io* i);
 
 class Link;
+class SplitDuplexLink;
 
 class Mailbox;
 
@@ -163,6 +164,8 @@ class CpuModel;
 class NetworkModel;
 class NetworkModelIntf;
 class LinkImpl;
+class SplitDuplexLinkImpl;
+class LinkImplIntf;
 class NetworkAction;
 class DiskImpl;
 class DiskModel;

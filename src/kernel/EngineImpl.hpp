@@ -19,6 +19,7 @@
 #include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "src/surf/SplitDuplexLinkImpl.hpp"
 
 #include <boost/intrusive/list.hpp>
 #include <map>
@@ -34,6 +35,9 @@ namespace kernel {
 class EngineImpl {
   std::map<std::string, s4u::Host*, std::less<>> hosts_;
   std::map<std::string, resource::LinkImpl*, std::less<>> links_;
+  /* save split-duplex links separately, keep links_ with only LinkImpl* seen by the user
+   * members of a split-duplex are saved in the links_ */
+  std::map<std::string, std::unique_ptr<resource::SplitDuplexLinkImpl>> split_duplex_links_;
   std::unordered_map<std::string, routing::NetPoint*> netpoints_;
   std::unordered_map<std::string, activity::MailboxImpl*> mailboxes_;
 
@@ -117,6 +121,7 @@ public:
   actor::ActorImpl* get_actor_by_pid(aid_t pid);
   void add_actor(aid_t pid, actor::ActorImpl* actor) { actor_list_[pid] = actor; }
   void remove_actor(aid_t pid) { actor_list_.erase(pid); }
+  void add_split_duplex_link(const std::string& name, std::unique_ptr<resource::SplitDuplexLinkImpl> link);
 
 #if SIMGRID_HAVE_MC
   xbt_dynar_t get_actors_vector() const { return actors_vector_; }

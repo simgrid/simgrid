@@ -41,6 +41,9 @@ set(EXTRA_DIST
   src/surf/network_cm02.hpp
   src/surf/network_constant.hpp
   src/surf/network_interface.hpp
+  src/surf/LinkImpl.hpp
+  src/surf/LinkImplIntf.hpp
+  src/surf/SplitDuplexLinkImpl.hpp
   src/surf/network_ns3.hpp
   src/surf/network_smpi.hpp
   src/surf/network_ib.hpp
@@ -348,6 +351,8 @@ set(SURF_SRC
   src/surf/network_cm02.cpp
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
+  src/surf/LinkImpl.cpp
+  src/surf/SplitDuplexLinkImpl.cpp
   src/surf/network_wifi.cpp
   src/surf/sg_platf.cpp
   src/surf/surf_c_bindings.cpp

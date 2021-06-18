@@ -11,6 +11,7 @@
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/surf/HostImpl.hpp"
+#include "src/surf/SplitDuplexLinkImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp"
@@ -63,6 +64,11 @@ static void surf_config_models_setup()
   const auto* disk_model = find_model_description(surf_disk_model_description, disk_model_name);
   disk_model->model_init_preparse();
 }
+
+xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                 kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                 std::vector<kernel::resource::LinkImpl*> const& link_list)>
+    NetZoneImpl::on_route_creation;
 
 NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
 {
@@ -161,6 +167,17 @@ s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<d
   return network_model_->create_link(name, bandwidths)->get_iface();
 }
 
+s4u::SplitDuplexLink* NetZoneImpl::create_split_duplex_link(const std::string& name,
+                                                            const std::vector<double>& bandwidths)
+{
+  auto* link_up                  = network_model_->create_link(name + "_UP", bandwidths);
+  auto* link_down                = network_model_->create_link(name + "_DOWN", bandwidths);
+  auto link                      = std::make_unique<resource::SplitDuplexLinkImpl>(name, link_up, link_down);
+  auto* link_iface               = link->get_iface();
+  EngineImpl::get_instance()->add_split_duplex_link(name, std::move(link));
+  return link_iface;
+}
+
 s4u::Disk* NetZoneImpl::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
   xbt_assert(disk_model_,
@@ -184,27 +201,64 @@ int NetZoneImpl::add_component(NetPoint* elm)
   return vertices_.size() - 1; // The rank of the newly created object
 }
 
+std::vector<resource::LinkImpl*> NetZoneImpl::get_link_list_impl(const std::vector<s4u::LinkInRoute>& link_list,
+                                                                 bool backroute) const
+{
+  std::vector<resource::LinkImpl*> links;
+
+  for (const auto& link : link_list) {
+    resource::LinkImpl* link_impl;
+    if (link.get_link()->get_sharing_policy() == s4u::Link::SharingPolicy::SPLITDUPLEX) {
+      const auto* sd_link = dynamic_cast<const s4u::SplitDuplexLink*>(link.get_link());
+      xbt_assert(sd_link,
+                 "Add_route: cast to SpliDuplexLink impossible. This should not happen, please contact SimGrid team");
+      switch (link.get_direction()) {
+        case s4u::LinkInRoute::Direction::UP:
+          if (backroute)
+            link_impl = sd_link->get_link_down()->get_impl();
+          else
+            link_impl = sd_link->get_link_up()->get_impl();
+          break;
+        case s4u::LinkInRoute::Direction::DOWN:
+          if (backroute)
+            link_impl = sd_link->get_link_up()->get_impl();
+          else
+            link_impl = sd_link->get_link_down()->get_impl();
+          break;
+        case s4u::LinkInRoute::Direction::NONE:
+        default:
+          throw std::invalid_argument("Invalid add_route. Split-Duplex link without a direction: " +
+                                      link.get_link()->get_name());
+      }
+    } else {
+      link_impl = link.get_link()->get_impl();
+    }
+    links.push_back(link_impl);
+  }
+  return links;
+}
+
 void NetZoneImpl::add_route(NetPoint* /*src*/, NetPoint* /*dst*/, NetPoint* /*gw_src*/, NetPoint* /*gw_dst*/,
-                            const std::vector<resource::LinkImpl*>& /*link_list_*/, bool /*symmetrical*/)
+                            const std::vector<s4u::LinkInRoute>& /*link_list_*/, bool /*symmetrical*/)
 {
   xbt_die("NetZone '%s' does not accept new routes (wrong class).", get_cname());
 }
 
 void NetZoneImpl::add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                                   std::vector<resource::LinkImpl*>& link_list_, bool /* symmetrical */)
+                                   const std::vector<s4u::LinkInRoute>& link_list)
 {
   /* Argument validity checks */
   if (gw_dst) {
     XBT_DEBUG("Load bypassNetzoneRoute from %s@%s to %s@%s", src->get_cname(), gw_src->get_cname(), dst->get_cname(),
               gw_dst->get_cname());
-    xbt_assert(not link_list_.empty(), "Bypass route between %s@%s and %s@%s cannot be empty.", src->get_cname(),
+    xbt_assert(not link_list.empty(), "Bypass route between %s@%s and %s@%s cannot be empty.", src->get_cname(),
                gw_src->get_cname(), dst->get_cname(), gw_dst->get_cname());
     xbt_assert(bypass_routes_.find({src, dst}) == bypass_routes_.end(),
                "The bypass route between %s@%s and %s@%s already exists.", src->get_cname(), gw_src->get_cname(),
                dst->get_cname(), gw_dst->get_cname());
   } else {
     XBT_DEBUG("Load bypassRoute from %s to %s", src->get_cname(), dst->get_cname());
-    xbt_assert(not link_list_.empty(), "Bypass route between %s and %s cannot be empty.", src->get_cname(),
+    xbt_assert(not link_list.empty(), "Bypass route between %s and %s cannot be empty.", src->get_cname(),
                dst->get_cname());
     xbt_assert(bypass_routes_.find({src, dst}) == bypass_routes_.end(),
                "The bypass route between %s and %s already exists.", src->get_cname(), dst->get_cname());
@@ -212,7 +266,8 @@ void NetZoneImpl::add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_sr
 
   /* Build a copy that will be stored in the dict */
   auto* newRoute = new BypassRoute(gw_src, gw_dst);
-  newRoute->links.insert(newRoute->links.end(), begin(link_list_), end(link_list_));
+  auto converted_list = get_link_list_impl(link_list, false);
+  newRoute->links.insert(newRoute->links.end(), begin(converted_list), end(converted_list));
 
   /* Store it */
   bypass_routes_.insert({{src, dst}, newRoute});

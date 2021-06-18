@@ -69,13 +69,13 @@ void FloydZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
 }
 
 void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                          const std::vector<resource::LinkImpl*>& link_list_, bool symmetrical)
+                          const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical)
 {
   /* set the size of table routing */
   unsigned int table_size = get_table_size();
   init_tables(table_size);
 
-  add_route_check_params(src, dst, gw_src, gw_dst, link_list_, symmetrical);
+  add_route_check_params(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
   /* Check that the route does not already exist */
   if (gw_dst && gw_src) // netzone route (to adapt the error message, if any)
@@ -87,8 +87,8 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
                "The route between %s and %s already exists (Rq: routes are symmetrical by default).", src->get_cname(),
                dst->get_cname());
 
-  link_table_[src->id()][dst->id()] =
-      std::unique_ptr<Route>(new_extended_route(get_hierarchy(), gw_src, gw_dst, link_list_, true));
+  link_table_[src->id()][dst->id()] = std::unique_ptr<Route>(
+      new_extended_route(get_hierarchy(), gw_src, gw_dst, get_link_list_impl(link_list, false), true));
   predecessor_table_[src->id()][dst->id()] = src->id();
   cost_table_[src->id()][dst->id()]        = link_table_[src->id()][dst->id()]->link_list_.size();
 
@@ -115,8 +115,8 @@ void FloydZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoi
       XBT_DEBUG("Load NetzoneRoute from \"%s(%s)\" to \"%s(%s)\"", dst->get_cname(), gw_src->get_cname(),
                 src->get_cname(), gw_dst->get_cname());
 
-    link_table_[dst->id()][src->id()] =
-        std::unique_ptr<Route>(new_extended_route(get_hierarchy(), gw_src, gw_dst, link_list_, false));
+    link_table_[dst->id()][src->id()] = std::unique_ptr<Route>(
+        new_extended_route(get_hierarchy(), gw_src, gw_dst, get_link_list_impl(link_list, true), false));
     predecessor_table_[dst->id()][src->id()] = dst->id();
     cost_table_[dst->id()][src->id()] =
         link_table_[dst->id()][src->id()]->link_list_.size(); /* count of links, old model assume 1 */

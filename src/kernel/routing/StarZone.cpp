@@ -135,32 +135,31 @@ void StarZone::check_add_route_param(const NetPoint* src, const NetPoint* dst, c
 }
 
 void StarZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                         const std::vector<kernel::resource::LinkImpl*>& link_list_, bool symmetrical)
+                         const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical)
 {
   check_add_route_param(src, dst, gw_src, gw_dst, symmetrical);
 
-  s4u::NetZone::on_route_creation(symmetrical, src, dst, gw_src, gw_dst, link_list_);
-
   /* loopback */
   if (src == dst) {
-    routes_[src->id()].loopback = link_list_;
+    routes_[src->id()].loopback = get_link_list_impl(link_list, false);
   } else {
     /* src to everyone */
     if (src) {
       auto& route        = routes_[src->id()];
-      route.links_up     = link_list_;
+      route.links_up     = get_link_list_impl(link_list, false);
       route.gateway      = gw_src;
       route.links_up_set = true;
       if (symmetrical) {
+        auto links_down = get_link_list_impl(link_list, true);
         /* reverse it for down/symmetrical links */
-        route.links_down.assign(link_list_.rbegin(), link_list_.rend());
+        route.links_down.assign(links_down.rbegin(), links_down.rend());
         route.links_down_set = true;
       }
     }
     /* dst to everyone */
     if (dst) {
       auto& route          = routes_[dst->id()];
-      route.links_down     = link_list_;
+      route.links_down     = get_link_list_impl(link_list, false);
       route.gateway        = gw_dst;
       route.links_down_set = true;
     }

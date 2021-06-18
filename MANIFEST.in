@@ -2590,6 +2590,12 @@ include src/smpi/smpirun.in
 include src/smpi/smpitools.sh
 include src/surf/HostImpl.cpp
 include src/surf/HostImpl.hpp
+include src/surf/LinkImpl.cpp
+include src/surf/LinkImpl.hpp
+include src/surf/LinkImplIntf.hpp
+include src/surf/SplitDuplexLinkImpl.cpp
+include src/surf/SplitDuplexLinkImpl.hpp
+include src/surf/SplitDuplexLinkImpl_test.cpp
 include src/surf/cpu_cas01.cpp
 include src/surf/cpu_cas01.hpp
 include src/surf/cpu_interface.cpp

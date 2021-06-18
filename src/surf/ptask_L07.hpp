@@ -113,7 +113,7 @@ public:
   bool is_used() const override;
   void apply_event(kernel::profile::Event* event, double value) override;
   void set_bandwidth(double value) override;
-  LinkImpl* set_latency(double value) override;
+  void set_latency(double value) override;
 };
 
 /**********

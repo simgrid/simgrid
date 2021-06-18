@@ -51,7 +51,7 @@ public:
   s4u::Link::SharingPolicy get_sharing_policy() const override;
   void apply_event(kernel::profile::Event*, double) override { THROW_UNIMPLEMENTED; }
   void set_bandwidth(double) override { THROW_UNIMPLEMENTED; }
-  LinkImpl* set_latency(double) override;
+  void set_latency(double) override;
   void refresh_decay_bandwidths();
   bool toggle_decay_model();
   int get_host_count() const;

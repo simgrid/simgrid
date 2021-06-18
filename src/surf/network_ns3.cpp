@@ -330,19 +330,23 @@ NetworkNS3Model::NetworkNS3Model(const std::string& name) : NetworkModel(name)
     ns3::GlobalRouteManager::InitializeRoutes();
   });
   routing::on_cluster_creation.connect(&clusterCreation_cb);
-  s4u::NetZone::on_route_creation.connect(&routeCreation_cb);
+  routing::NetZoneImpl::on_route_creation.connect(&routeCreation_cb);
   s4u::NetZone::on_seal.connect(&zoneCreation_cb);
 }
 
 LinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   xbt_assert(bandwidths.size() == 1, "ns-3 links must use only 1 bandwidth.");
-  return (new LinkNS3(name, bandwidths[0]))->set_model(this);
+  auto* link = new LinkNS3(name, bandwidths[0]);
+  link->set_model(this);
+  return link;
 }
 
 LinkImpl* NetworkNS3Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
 {
-  return create_link(name, bandwidths)->set_sharing_policy(s4u::Link::SharingPolicy::WIFI);
+  auto* link = create_link(name, bandwidths);
+  link->set_sharing_policy(s4u::Link::SharingPolicy::WIFI);
+  return link;
 }
 
 Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
@@ -455,28 +459,24 @@ void LinkNS3::apply_event(profile::Event*, double)
   THROW_UNIMPLEMENTED;
 }
 
-LinkImpl* LinkNS3::set_bandwidth_profile(profile::Profile* profile)
+void LinkNS3::set_bandwidth_profile(profile::Profile* profile)
 {
   xbt_assert(profile == nullptr, "The ns-3 network model doesn't support bandwidth profiles");
-  return this;
 }
 
-LinkImpl* LinkNS3::set_latency_profile(profile::Profile* profile)
+void LinkNS3::set_latency_profile(profile::Profile* profile)
 {
   xbt_assert(profile == nullptr, "The ns-3 network model doesn't support latency profiles");
-  return this;
 }
 
-LinkImpl* LinkNS3::set_latency(double latency)
+void LinkNS3::set_latency(double latency)
 {
   latency_.peak = latency;
-  return this;
 }
 
-LinkImpl* LinkNS3::set_sharing_policy(s4u::Link::SharingPolicy policy)
+void LinkNS3::set_sharing_policy(s4u::Link::SharingPolicy policy)
 {
   sharing_policy_ = policy;
-  return this;
 }
 /**********
  * Action *

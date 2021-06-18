@@ -75,15 +75,15 @@ static void load_platform()
     /* create host */
     const sg4::Host* host = root->create_host(hostname, 1)->set_core_count(32)->seal();
     /* create UP/DOWN link */
-    sg4::Link* l_up   = root->create_link(hostname + "_up", BW_REMOTE)->set_latency(LATENCY)->seal();
-    sg4::Link* l_down = root->create_link(hostname + "_down", BW_REMOTE)->set_latency(LATENCY)->seal();
+    sg4::Link* l = root->create_split_duplex_link(hostname, BW_REMOTE)->set_latency(LATENCY)->seal();
 
     /* add link UP/DOWN for communications from the host */
-    root->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, std::vector<sg4::Link*>{l_up}, false);
-    root->add_route(nullptr, host->get_netpoint(), nullptr, nullptr, std::vector<sg4::Link*>{l_down}, false);
+    root->add_route(host->get_netpoint(), nullptr, nullptr, nullptr,
+                    std::vector<sg4::LinkInRoute>{{l, sg4::LinkInRoute::Direction::UP}}, true);
 
     sg4::Link* loopback = root->create_link(hostname + "_loopback", BW_LOCAL)->set_latency(LATENCY)->seal();
-    root->add_route(host->get_netpoint(), host->get_netpoint(), nullptr, nullptr, std::vector<sg4::Link*>{loopback});
+    root->add_route(host->get_netpoint(), host->get_netpoint(), nullptr, nullptr,
+                    std::vector<sg4::LinkInRoute>{loopback});
   }
 
   root->seal();

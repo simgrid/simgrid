@@ -10,7 +10,7 @@
 #include "simgrid/s4u/Link.hpp"
 #include "simgrid/sg_config.hpp"
 #include "simgrid/simix.hpp"
-#include "src/kernel/lmm/maxmin.hpp"
+#include "src/surf/SplitDuplexLinkImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/network_wifi.hpp"
 #include "xbt/log.h"
@@ -33,6 +33,14 @@ xbt::signal<void(kernel::resource::NetworkAction&, kernel::resource::Action::Sta
 Link* Link::by_name(const std::string& name)
 {
   return Engine::get_instance()->link_by_name(name);
+}
+
+kernel::resource::LinkImpl* Link::get_impl() const
+{
+  xbt_assert(
+      get_sharing_policy() != SharingPolicy::SPLITDUPLEX,
+      "Impossible to get a LinkImpl* from a Split-Duplex link. You should call this method to each UP/DOWN member");
+  return dynamic_cast<kernel::resource::LinkImpl*>(pimpl_);
 }
 
 Link* Link::by_name_or_null(const std::string& name)
@@ -96,7 +104,7 @@ Link* Link::set_sharing_policy(Link::SharingPolicy policy)
 {
   if (policy == SharingPolicy::SPLITDUPLEX)
     throw std::invalid_argument(std::string("Impossible to set split-duplex for the link: ") + get_name() +
-                                std::string(". You should create a link-up and link-down to emulate this behavior"));
+                                std::string(". Use NetZone::create_split_duplex_link."));
 
   kernel::actor::simcall([this, policy] { pimpl_->set_sharing_policy(policy); });
   return this;
@@ -183,6 +191,21 @@ Link* Link::set_properties(const std::unordered_map<std::string, std::string>& p
 {
   kernel::actor::simcall([this, &properties] { this->pimpl_->set_properties(properties); });
   return this;
+}
+
+Link* SplitDuplexLink::get_link_up() const
+{
+  return dynamic_cast<kernel::resource::SplitDuplexLinkImpl*>(pimpl_)->get_link_up();
+}
+
+Link* SplitDuplexLink::get_link_down() const
+{
+  return dynamic_cast<kernel::resource::SplitDuplexLinkImpl*>(pimpl_)->get_link_down();
+}
+
+SplitDuplexLink* SplitDuplexLink::by_name(const std::string& name)
+{
+  return Engine::get_instance()->split_duplex_link_by_name(name);
 }
 
 } // namespace s4u
