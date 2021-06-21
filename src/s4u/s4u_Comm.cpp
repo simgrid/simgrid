@@ -8,6 +8,7 @@
 
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Comm.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 
 #include <simgrid/comm.h>
@@ -52,9 +53,29 @@ int Comm::wait_any_for(const std::vector<CommPtr>* comms, double timeout)
 void Comm::wait_all(const std::vector<CommPtr>* comms)
 {
   // TODO: this should be a simcall or something
-  // TODO: we are missing a version with timeout
-  for (CommPtr comm : *comms)
+  for (auto& comm : *comms)
     comm->wait();
+}
+
+size_t Comm::wait_all_for(const std::vector<CommPtr>* comms, double timeout)
+{
+  if (timeout < 0.0) {
+    wait_all(comms);
+    return comms->size();
+  }
+
+  double deadline = Engine::get_clock() + timeout;
+  std::vector<CommPtr> waited_comm(1, nullptr);
+  for (size_t i = 0; i < comms->size(); i++) {
+    double wait_timeout = std::max(0.0, deadline - Engine::get_clock());
+    waited_comm[0]      = (*comms)[i];
+    // Using wait_any_for() here (and not wait_for) because we don't want comms to be invalidated on timeout
+    if (wait_any_for(&waited_comm, wait_timeout) == -1) {
+      XBT_DEBUG("Timeout (%g): i = %zu", wait_timeout, i);
+      return i;
+    }
+  }
+  return comms->size();
 }
 
 CommPtr Comm::set_rate(double rate)
@@ -320,11 +341,19 @@ sg_error_t sg_comm_wait_for(sg_comm_t comm, double timeout)
 
 void sg_comm_wait_all(sg_comm_t* comms, size_t count)
 {
+  sg_comm_wait_all_for(comms, count, -1);
+}
+
+size_t sg_comm_wait_all_for(sg_comm_t* comms, size_t count, double timeout)
+{
   std::vector<simgrid::s4u::CommPtr> s4u_comms;
-  for (unsigned int i = 0; i < count; i++)
+  for (size_t i = 0; i < count; i++)
     s4u_comms.emplace_back(comms[i], false);
 
-  simgrid::s4u::Comm::wait_all(&s4u_comms);
+  size_t pos = simgrid::s4u::Comm::wait_all_for(&s4u_comms, timeout);
+  for (size_t i = pos; i < count; i++)
+    s4u_comms[i]->add_ref();
+  return pos;
 }
 
 int sg_comm_wait_any(sg_comm_t* comms, size_t count)

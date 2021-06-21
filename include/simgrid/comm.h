@@ -17,6 +17,7 @@ XBT_PUBLIC int sg_comm_test(sg_comm_t comm);
 XBT_PUBLIC sg_error_t sg_comm_wait(sg_comm_t comm);
 XBT_PUBLIC sg_error_t sg_comm_wait_for(sg_comm_t comm, double timeout);
 XBT_PUBLIC void sg_comm_wait_all(sg_comm_t* comms, size_t count);
+XBT_PUBLIC size_t sg_comm_wait_all_for(sg_comm_t* comms, size_t count, double timeout);
 XBT_PUBLIC int sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout);
 XBT_PUBLIC int sg_comm_wait_any(sg_comm_t* comms, size_t count);
 XBT_PUBLIC void sg_comm_unref(sg_comm_t comm);

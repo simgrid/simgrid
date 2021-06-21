@@ -8,6 +8,7 @@ New features:
    associated example (examples/cpp/plugin-prodcons).
 
 S4U:
+ - New: simgrid::s4u::Comm::wait_all_for() (like Comm::Wait_all, but with a timeout).
  - Fixed a bug where Activity::wait_for() killed the activity on timeout.
    Explicitly cancel the activity to get back to previous behavior.
 
@@ -32,7 +33,7 @@ SMPI:
     It should now work with smpi/auto-shared-malloc-thresh.
   - Improve error handling and reporting in multiple places
   - Improve correctness checks on the MPI code.(MPI_Op and MPI_Datatype
-    validity checks, truncated messages are now an error, return errors 
+    validity checks, truncated messages are now an error, return errors
     when explicitely deleted handles are reused, ...)
   - RMA: multiple fixes and stability improvements.
   - analysis (-analyze flag in smpirun):

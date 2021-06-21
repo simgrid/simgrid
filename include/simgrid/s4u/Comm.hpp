@@ -75,6 +75,9 @@ public:
 
   /*! take a vector s4u::CommPtr and return when all of them is finished. */
   static void wait_all(const std::vector<CommPtr>* comms);
+  /*! Same as wait_all, but with a timeout. Return the number of terminated comm (less than comms.size() if the timeout
+   * occurs). */
+  static size_t wait_all_for(const std::vector<CommPtr>* comms, double timeout);
   /*! take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done). */
   static int test_any(const std::vector<CommPtr>* comms);
 
