@@ -67,23 +67,25 @@ class ActorState {
   };
 
   /** Exploration control information */
-  InterleavingType state = InterleavingType::disabled;
+  InterleavingType state_ = InterleavingType::disabled;
+
+  /** Number of times that the process was considered to be executed */
+  unsigned int times_considered_ = 0;
 
 public:
-  /** Number of times that the process was considered to be executed */
-  // TODO, make this private
-  unsigned int times_considered = 0;
+  unsigned int get_times_considered() const { return times_considered_; }
+  unsigned int get_times_considered_and_inc() { return times_considered_++; }
 
-  bool is_disabled() const { return this->state == InterleavingType::disabled; }
-  bool is_done() const { return this->state == InterleavingType::done; }
-  bool is_todo() const { return this->state == InterleavingType::todo; }
+  bool is_disabled() const { return this->state_ == InterleavingType::disabled; }
+  bool is_done() const { return this->state_ == InterleavingType::done; }
+  bool is_todo() const { return this->state_ == InterleavingType::todo; }
   /** Mark that we should try executing this process at some point in the future of the checker algorithm */
   void mark_todo()
   {
-    this->state            = InterleavingType::todo;
-    this->times_considered = 0;
+    this->state_            = InterleavingType::todo;
+    this->times_considered_ = 0;
   }
-  void set_done() { this->state = InterleavingType::done; }
+  void set_done() { this->state_ = InterleavingType::done; }
 };
 
 } // namespace mc
