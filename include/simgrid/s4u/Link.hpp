@@ -89,6 +89,16 @@ public:
   Link* set_properties(const std::unordered_map<std::string, std::string>& properties);
   Link* set_property(const std::string& key, const std::string& value);
 
+  /**
+   * @brief Set the number of communications that can shared this link at the same time
+   *
+   * Use this method to serialize communication flows going through this link.
+   * Use -1 to set no limit.
+   *
+   * @param limit  Number of concurrent flows
+   */
+  Link* set_concurrency_limit(int limit);
+
   /** @brief Set the level of communication speed of the given host on this wifi link.
    *
    * The bandwidth of a wifi link for a given host depends on its SNR (signal to noise ratio),
