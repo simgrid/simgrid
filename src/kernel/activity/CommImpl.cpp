@@ -412,7 +412,7 @@ void CommImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   if (state_ != State::WAITING && state_ != State::RUNNING) {
     finish();
   } else { /* we need a sleep action (even when there is no timeout) to be notified of host failures */
-    resource::Action* sleep = issuer->get_host()->pimpl_cpu->sleep(timeout);
+    resource::Action* sleep = issuer->get_host()->get_cpu()->sleep(timeout);
     sleep->set_activity(this);
 
     if (issuer == src_actor_)

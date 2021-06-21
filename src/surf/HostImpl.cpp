@@ -159,7 +159,7 @@ void HostImpl::seal()
     return;
   }
   // seals host's CPU
-  get_iface()->pimpl_cpu->seal();
+  get_iface()->get_cpu()->seal();
   sealed_ = true;
 
   /* seal its disks */

@@ -54,7 +54,7 @@ CpuImpl::CpuImpl(s4u::Host* host, const std::vector<double>& speed_per_pstate)
 {
   speed_.scale    = 1;
   speed_.peak     = speed_per_pstate_.front();
-  host->pimpl_cpu = this;
+  host->set_cpu(this);
 }
 
 void CpuImpl::reset_vcpu(CpuImpl* that)

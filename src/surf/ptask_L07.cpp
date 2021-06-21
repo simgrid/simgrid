@@ -193,10 +193,10 @@ L07Action::L07Action(kernel::resource::Model* model, const std::vector<s4u::Host
    * communication either */
   double bound = std::numeric_limits<double>::max();
   for (size_t i = 0; i < host_list.size(); i++) {
-    model->get_maxmin_system()->expand(host_list[i]->pimpl_cpu->get_constraint(), get_variable(),
+    model->get_maxmin_system()->expand(host_list[i]->get_cpu()->get_constraint(), get_variable(),
                                        (flops_amount == nullptr ? 0.0 : flops_amount[i]));
     if (flops_amount && flops_amount[i] > 0)
-      bound = std::min(bound, host_list[i]->pimpl_cpu->get_speed(1.0) * host_list[i]->pimpl_cpu->get_speed_ratio() /
+      bound = std::min(bound, host_list[i]->get_cpu()->get_speed(1.0) * host_list[i]->get_cpu()->get_speed_ratio() /
                                   flops_amount[i]);
   }
   if (bound < std::numeric_limits<double>::max())

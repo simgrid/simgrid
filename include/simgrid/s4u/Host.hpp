@@ -45,6 +45,9 @@ class XBT_PUBLIC Host : public xbt::Extendable<Host> {
   // The private implementation, that never changes
   surf::HostImpl* const pimpl_;
 
+  kernel::resource::CpuImpl* pimpl_cpu_      = nullptr;
+  kernel::routing::NetPoint* pimpl_netpoint_ = nullptr;
+
 public:
   explicit Host(surf::HostImpl* pimpl) : pimpl_(pimpl) {}
 
@@ -83,6 +86,8 @@ public:
   /** Retrieves the name of that host as a C string */
   const char* get_cname() const;
 
+  Host* set_cpu(kernel::resource::CpuImpl* cpu);
+  kernel::resource::CpuImpl* get_cpu() const { return pimpl_cpu_; }
   kernel::routing::NetPoint* get_netpoint() const { return pimpl_netpoint_; }
 
   size_t get_actor_count() const;
@@ -214,15 +219,6 @@ public:
   /** Block the calling actor on an execution located on the called host (with explicit priority) */
   void execute(double flops, double priority) const;
   surf::HostImpl* get_impl() const { return pimpl_; }
-
-private:
-  kernel::routing::NetPoint* pimpl_netpoint_ = nullptr;
-
-public:
-#ifndef DOXYGEN
-  /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
-  kernel::resource::CpuImpl* pimpl_cpu = nullptr;
-#endif
 };
 } // namespace s4u
 } // namespace simgrid

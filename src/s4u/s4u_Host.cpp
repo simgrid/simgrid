@@ -32,6 +32,12 @@ xbt::signal<void(Host const&)> Host::on_destruction;
 xbt::signal<void(Host const&)> Host::on_state_change;
 xbt::signal<void(Host const&)> Host::on_speed_change;
 
+Host* Host::set_cpu(kernel::resource::CpuImpl* cpu)
+{
+  pimpl_cpu_ = cpu;
+  return this;
+}
+
 Host* Host::set_netpoint(kernel::routing::NetPoint* netpoint)
 {
   pimpl_netpoint_ = netpoint;
@@ -42,7 +48,7 @@ Host::~Host()
 {
   if (pimpl_netpoint_ != nullptr) // not removed yet by a children class
     Engine::get_instance()->netpoint_unregister(pimpl_netpoint_);
-  delete pimpl_cpu;
+  delete pimpl_cpu_;
 }
 
 /** @brief Fire the required callbacks and destroy the object
@@ -87,7 +93,7 @@ void Host::turn_on()
 {
   if (not is_on()) {
     kernel::actor::simcall([this] {
-      this->pimpl_cpu->turn_on();
+      this->pimpl_cpu_->turn_on();
       this->pimpl_->turn_on();
       on_state_change(*this);
     });
@@ -105,7 +111,7 @@ void Host::turn_off()
           vm->shutdown();
           vm->turn_off();
         }
-      this->pimpl_cpu->turn_off();
+      this->pimpl_cpu_->turn_off();
       this->pimpl_->turn_off(self);
 
       on_state_change(*this);
@@ -115,12 +121,12 @@ void Host::turn_off()
 
 bool Host::is_on() const
 {
-  return this->pimpl_cpu->is_on();
+  return this->pimpl_cpu_->is_on();
 }
 
 int Host::get_pstate_count() const
 {
-  return this->pimpl_cpu->get_pstate_count();
+  return this->pimpl_cpu_->get_pstate_count();
 }
 
 /**
@@ -220,7 +226,7 @@ Host* Host::set_properties(const std::unordered_map<std::string, std::string>& p
  * The profile must contain boolean values. */
 Host* Host::set_state_profile(kernel::profile::Profile* p)
 {
-  kernel::actor::simcall([this, p] { pimpl_cpu->set_state_profile(p); });
+  kernel::actor::simcall([this, p] { pimpl_cpu_->set_state_profile(p); });
   return this;
 }
 /** Specify a profile modeling the external load according to an exhaustive list or a stochastic law.
@@ -231,43 +237,43 @@ Host* Host::set_state_profile(kernel::profile::Profile* p)
  */
 Host* Host::set_speed_profile(kernel::profile::Profile* p)
 {
-  kernel::actor::simcall([this, p] { pimpl_cpu->set_speed_profile(p); });
+  kernel::actor::simcall([this, p] { pimpl_cpu_->set_speed_profile(p); });
   return this;
 }
 
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
 double Host::get_pstate_speed(int pstate_index) const
 {
-  return this->pimpl_cpu->get_pstate_peak_speed(pstate_index);
+  return this->pimpl_cpu_->get_pstate_peak_speed(pstate_index);
 }
 
 double Host::get_speed() const
 {
-  return this->pimpl_cpu->get_speed(1.0);
+  return this->pimpl_cpu_->get_speed(1.0);
 }
 double Host::get_load() const
 {
-  return this->pimpl_cpu->get_load();
+  return this->pimpl_cpu_->get_load();
 }
 double Host::get_available_speed() const
 {
-  return this->pimpl_cpu->get_speed_ratio();
+  return this->pimpl_cpu_->get_speed_ratio();
 }
 
 int Host::get_core_count() const
 {
-  return this->pimpl_cpu->get_core_count();
+  return this->pimpl_cpu_->get_core_count();
 }
 
 Host* Host::set_core_count(int core_count)
 {
-  kernel::actor::simcall([this, core_count] { this->pimpl_cpu->set_core_count(core_count); });
+  kernel::actor::simcall([this, core_count] { this->pimpl_cpu_->set_core_count(core_count); });
   return this;
 }
 
 Host* Host::set_pstate_speed(const std::vector<double>& speed_per_state)
 {
-  kernel::actor::simcall([this, &speed_per_state] { pimpl_cpu->set_pstate_speed(speed_per_state); });
+  kernel::actor::simcall([this, &speed_per_state] { pimpl_cpu_->set_pstate_speed(speed_per_state); });
   return this;
 }
 
@@ -295,14 +301,14 @@ Host* Host::set_pstate_speed(const std::vector<std::string>& speed_per_state)
 /** @brief Set the pstate at which the host should run */
 Host* Host::set_pstate(int pstate_index)
 {
-  kernel::actor::simcall([this, pstate_index] { this->pimpl_cpu->set_pstate(pstate_index); });
+  kernel::actor::simcall([this, pstate_index] { this->pimpl_cpu_->set_pstate(pstate_index); });
   return this;
 }
 
 /** @brief Retrieve the pstate at which the host is currently running */
 int Host::get_pstate() const
 {
-  return this->pimpl_cpu->get_pstate();
+  return this->pimpl_cpu_->get_pstate();
 }
 
 Host* Host::set_coordinates(const std::string& coords)

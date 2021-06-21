@@ -48,7 +48,7 @@ ExecImpl& ExecImpl::set_hosts(const std::vector<s4u::Host*>& hosts)
 ExecImpl& ExecImpl::set_timeout(double timeout)
 {
   if (timeout >= 0 && not MC_is_active() && not MC_record_replay_is_active()) {
-    timeout_detector_.reset(hosts_.front()->pimpl_cpu->sleep(timeout));
+    timeout_detector_.reset(hosts_.front()->get_cpu()->sleep(timeout));
     timeout_detector_->set_activity(this);
   }
   return *this;
@@ -78,7 +78,7 @@ ExecImpl* ExecImpl::start()
   state_ = State::RUNNING;
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     if (hosts_.size() == 1) {
-      surf_action_ = hosts_.front()->pimpl_cpu->execution_start(flops_amounts_.front());
+      surf_action_ = hosts_.front()->get_cpu()->execution_start(flops_amounts_.front());
       surf_action_->set_sharing_penalty(sharing_penalty_);
       surf_action_->set_category(get_tracing_category());
 
@@ -221,7 +221,7 @@ ActivityImpl* ExecImpl::migrate(s4u::Host* to)
 {
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     resource::Action* old_action = this->surf_action_;
-    resource::Action* new_action = to->pimpl_cpu->execution_start(old_action->get_cost());
+    resource::Action* new_action = to->get_cpu()->execution_start(old_action->get_cost());
     new_action->set_remains(old_action->get_remains());
     new_action->set_activity(this);
     new_action->set_sharing_penalty(old_action->get_sharing_penalty());

@@ -30,7 +30,7 @@ IoImpl::IoImpl()
 IoImpl& IoImpl::set_timeout(double timeout)
 {
   const s4u::Host* host = get_disk()->get_host();
-  timeout_detector_ = host->pimpl_cpu->sleep(timeout);
+  timeout_detector_     = host->get_cpu()->sleep(timeout);
   timeout_detector_->set_activity(this);
   return *this;
 }
