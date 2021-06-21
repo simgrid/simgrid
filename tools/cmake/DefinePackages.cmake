@@ -906,7 +906,13 @@ set(DOC_SOURCES
   docs/source/img/graphical-toc.svg
   docs/source/img/smpi_simgrid_alltoall_pair_16.png
   docs/source/img/smpi_simgrid_alltoall_ring_16.png
+  docs/source/img/starzone.drawio
+  docs/source/img/starzone.svg
   docs/source/img/zone_hierarchy.png
+  docs/source/img/zone_tree.drawio
+  docs/source/img/zone_tree.svg
+  docs/source/img/zoom_comm.drawio
+  docs/source/img/zoom_comm.svg
 
   docs/ignored_symbols
   docs/source/application.rst
@@ -926,6 +932,7 @@ set(DOC_SOURCES
   docs/source/Models.rst
   docs/source/Outcomes.rst
   docs/source/Platform.rst
+  docs/source/Platform_cpp.rst
   docs/source/Platform_examples.rst
   docs/source/Platform_howtos.rst
   docs/source/Platform_routing.rst

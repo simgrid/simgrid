@@ -181,6 +181,8 @@ include examples/cpp/comm-pingpong/simix-breakpoint.tesh
 include examples/cpp/comm-ready/s4u-comm-ready.cpp
 include examples/cpp/comm-ready/s4u-comm-ready.tesh
 include examples/cpp/comm-ready/s4u-comm-ready_d.xml
+include examples/cpp/comm-serialize/s4u-comm-serialize.cpp
+include examples/cpp/comm-serialize/s4u-comm-serialize.tesh
 include examples/cpp/comm-suspend/s4u-comm-suspend.cpp
 include examples/cpp/comm-suspend/s4u-comm-suspend.tesh
 include examples/cpp/comm-suspend/s4u-comm-suspend_d.xml
@@ -1805,6 +1807,7 @@ include docs/source/Introduction.rst
 include docs/source/Models.rst
 include docs/source/Outcomes.rst
 include docs/source/Platform.rst
+include docs/source/Platform_cpp.rst
 include docs/source/Platform_examples.rst
 include docs/source/Platform_howtos.rst
 include docs/source/Platform_routing.rst
@@ -1846,7 +1849,13 @@ include docs/source/img/extlink.svg
 include docs/source/img/graphical-toc.svg
 include docs/source/img/smpi_simgrid_alltoall_pair_16.png
 include docs/source/img/smpi_simgrid_alltoall_ring_16.png
+include docs/source/img/starzone.drawio
+include docs/source/img/starzone.svg
 include docs/source/img/zone_hierarchy.png
+include docs/source/img/zone_tree.drawio
+include docs/source/img/zone_tree.svg
+include docs/source/img/zoom_comm.drawio
+include docs/source/img/zoom_comm.svg
 include docs/source/index.rst
 include docs/source/intl.rst
 include docs/source/tuto_s4u/deployment1.xml
