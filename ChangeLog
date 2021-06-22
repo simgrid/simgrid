@@ -23,6 +23,26 @@ SMPI:
       is active when set to false, to keep going after a small error
     --cfg=smpi/pedantic: True by default. Do not report some harmless MPI errors
       which may or may not be problematic in the end.
+  - Sampling:
+    - fix behaviour, as maximum iteration count could be ignored
+    - add SMPI_SAMPLE_LOCAL_TAG and SMPI_SAMPLE_GLOBAL_TAG macros, to allow user to
+      use sampling when the same kernel is called with a different set of parameters
+      which have an impact on the timing.
+  - realloc is now intercepted, to be coherent, as malloc/calloc/free were already.
+    It should now work with smpi/auto-shared-malloc-thresh.
+  - Improve error handling and reporting in multiple places
+  - Improve correctness checks on the MPI code.(MPI_Op and MPI_Datatype
+    validity checks, truncated messages are now an error, return errors 
+    when explicitely deleted handles are reused, ...)
+  - RMA: multiple fixes and stability improvements.
+  - analysis (-analyze flag in smpirun):
+     - SMPI can now report buffer leaks as well as MPI handles leaks,
+       if code was compiled without SMPI_NO_OVERRIDE_MALLOC.
+     - if -trace-call-location is used when compiling, SMPI can report
+       origin of leaked handles/buffers
+     - group leaks by type/origin in output message if possible
+  - New implemented MPI calls: MPI_Comm_test_inter
+
 LUA:
  - Lua platform files are deprecated. Their support will be dropped after v3.31.
 
