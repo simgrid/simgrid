@@ -687,7 +687,13 @@ their duration, and this duration will be used for the subsequent
 iterations. These samples are done per processor with
 SMPI_SAMPLE_LOCAL, and shared between all processors with
 SMPI_SAMPLE_GLOBAL. Of course, none of this will work if the execution
-time of your loop iteration are not stable.
+time of your loop iteration are not stable. If some parameters have an
+incidence on the timing of a kernel, and if they are reused often 
+(same kernel launched with a few different sizes during the run, for example), 
+SMPI_SAMPLE_LOCAL_TAG and SMPI_SAMPLE_GLOBAL_TAG can be used, with a tag 
+as last parameter, to differentiate between calls. The tag is a character 
+chain crafted by the user, with a maximum size of 128, and should include
+what is necessary to group calls of a given size together. 
 
 This feature is demoed by the example file
 `examples/smpi/NAS/ep.c <https://framagit.org/simgrid/simgrid/tree/master/examples/smpi/NAS/ep.c>`_
