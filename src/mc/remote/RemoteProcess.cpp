@@ -35,6 +35,7 @@ namespace mc {
 static const std::vector<std::string> filtered_libraries = {
 #ifdef __linux__
     "ld",
+    "ld-linux-x86",
 #elif defined __FreeBSD__
     "ld-elf",
     "ld-elf32",
