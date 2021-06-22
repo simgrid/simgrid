@@ -16,9 +16,9 @@ const char* buffer;                                                        /* Wh
 simgrid::s4u::SemaphorePtr sem_empty = simgrid::s4u::Semaphore::create(1); /* indicates whether the buffer is empty */
 simgrid::s4u::SemaphorePtr sem_full  = simgrid::s4u::Semaphore::create(0); /* indicates whether the buffer is full */
 
-static void producer(const std::vector<std::string>* args)
+static void producer(const std::vector<std::string>& args)
 {
-  for (auto const& str : *args) {
+  for (auto const& str : args) {
     sem_empty->acquire();
     XBT_INFO("Pushing '%s'", str.c_str());
     buffer = str.c_str();
@@ -45,7 +45,7 @@ int main(int argc, char **argv)
   std::vector<std::string> args({"one", "two", "three", ""});
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform("../../platforms/two_hosts.xml");
-  simgrid::s4u::Actor::create("producer", simgrid::s4u::Host::by_name("Tremblay"), producer, &args);
+  simgrid::s4u::Actor::create("producer", simgrid::s4u::Host::by_name("Tremblay"), producer, std::cref(args));
   simgrid::s4u::Actor::create("consumer", simgrid::s4u::Host::by_name("Jupiter"), consumer);
   e.run();
 
