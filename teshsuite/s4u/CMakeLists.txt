@@ -1,6 +1,6 @@
 foreach(x actor actor-autorestart actor-suspend
         activity-lifecycle
-        comm-get-sender comm-pt2pt wait-any-for
+        comm-get-sender comm-pt2pt wait-all-for wait-any-for
         cloud-interrupt-migration cloud-two-execs
         concurrent_rw 
         host-on-off host-on-off-actors host-on-off-recv
@@ -27,7 +27,7 @@ set_property(TARGET activity-lifecycle APPEND PROPERTY INCLUDE_DIRECTORIES "${IN
 ## Add the tests.
 ## Some need to be run with all factories, some don't need tesh to run
 foreach(x actor actor-autorestart actor-suspend
-        activity-lifecycle comm-get-sender wait-any-for
+        activity-lifecycle comm-get-sender wait-all-for wait-any-for
         cloud-interrupt-migration cloud-two-execs concurrent_rw
 	vm-live-migration vm-suicide)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)

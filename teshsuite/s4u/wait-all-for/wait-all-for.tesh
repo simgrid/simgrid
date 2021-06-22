@@ -1,0 +1,19 @@
+#!/usr/bin/env tesh
+
+p Testing the wait_all_for feature of S4U
+
+! output sort 19
+$ ${bindir:=.}/wait-all-for ${platfdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (1:worker@Tremblay) Sending and receiving 42 and 51 asynchronously
+> [  0.000000] (1:worker@Tremblay) All comms have started
+> [  0.500000] (1:worker@Tremblay) wait_all_for: Timeout reached
+> [  0.500000] (1:worker@Tremblay) wait_all_for: 0 comms finished (#comms=4)
+> [  1.000000] (1:worker@Tremblay) wait_all_for: Timeout reached
+> [  1.000000] (1:worker@Tremblay) wait_all_for: 0 comms finished (#comms=4)
+> [  1.500000] (1:worker@Tremblay) wait_all_for: Timeout reached
+> [  1.500000] (1:worker@Tremblay) wait_all_for: 1 comms finished (#comms=4)
+> [  2.000000] (1:worker@Tremblay) wait_all_for: Timeout reached
+> [  2.000000] (1:worker@Tremblay) wait_all_for: 0 comms finished (#comms=3)
+> [  2.070331] (1:worker@Tremblay) wait_all_for: 3 comms finished (#comms=3)
+> [  2.070331] (1:worker@Tremblay) All comms have finished
+> [  2.070331] (1:worker@Tremblay) Got 42 and 51
