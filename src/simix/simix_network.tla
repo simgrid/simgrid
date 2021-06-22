@@ -1,4 +1,9 @@
 ---- MODULE simix_network ----
+(* Copyright (c) 2012-2021. The SimGrid Team. All rights reserved.          *)
+
+(* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. *)
+
 (* This is a TLA module specifying the networking layer of SIMIX.
    It is used to verify the soundness of the DPOR reduction algorithm
    used in the model-checker.
