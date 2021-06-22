@@ -1177,8 +1177,8 @@ XBT_PUBLIC void smpi_trace_set_call_location__(const char* file, const int* line
 #define SMPI_CTAG_NAME(line) SMPI_CTAG_NAME1(line)
 
 #define SMPI_SAMPLE_LOOP(loop_init, loop_end, loop_iter, global, iters, thres, tag)                                    \
-  char SMPI_CTAG_NAME(__LINE__) [128];                                                                                 \
-  sprintf( SMPI_CTAG_NAME(__LINE__), "%s%d", tag, __LINE__);                                                           \
+  char SMPI_CTAG_NAME(__LINE__) [132];                                                                                 \
+  snprintf( SMPI_CTAG_NAME(__LINE__), 132, "%s%d", tag, __LINE__);                                                           \
   int SMPI_ITER_NAME(__LINE__) = 0;                                                                                    \
   {                                                                                                                    \
     loop_init;                                                                                                         \
