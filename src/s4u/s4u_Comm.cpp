@@ -39,43 +39,43 @@ Comm::~Comm()
   }
 }
 
-int Comm::wait_any_for(const std::vector<CommPtr>* comms, double timeout)
+int Comm::wait_any_for(const std::vector<CommPtr>& comms, double timeout)
 {
-  std::vector<kernel::activity::CommImpl*> rcomms(comms->size());
-  std::transform(begin(*comms), end(*comms), begin(rcomms),
+  std::vector<kernel::activity::CommImpl*> rcomms(comms.size());
+  std::transform(begin(comms), end(comms), begin(rcomms),
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
   int changed_pos = simcall_comm_waitany(rcomms.data(), rcomms.size(), timeout);
   if (changed_pos != -1)
-    comms->at(changed_pos)->complete(State::FINISHED);
+    comms.at(changed_pos)->complete(State::FINISHED);
   return changed_pos;
 }
 
-void Comm::wait_all(const std::vector<CommPtr>* comms)
+void Comm::wait_all(const std::vector<CommPtr>& comms)
 {
   // TODO: this should be a simcall or something
-  for (auto& comm : *comms)
+  for (auto& comm : comms)
     comm->wait();
 }
 
-size_t Comm::wait_all_for(const std::vector<CommPtr>* comms, double timeout)
+size_t Comm::wait_all_for(const std::vector<CommPtr>& comms, double timeout)
 {
   if (timeout < 0.0) {
     wait_all(comms);
-    return comms->size();
+    return comms.size();
   }
 
   double deadline = Engine::get_clock() + timeout;
   std::vector<CommPtr> waited_comm(1, nullptr);
-  for (size_t i = 0; i < comms->size(); i++) {
+  for (size_t i = 0; i < comms.size(); i++) {
     double wait_timeout = std::max(0.0, deadline - Engine::get_clock());
-    waited_comm[0]      = (*comms)[i];
+    waited_comm[0]      = comms[i];
     // Using wait_any_for() here (and not wait_for) because we don't want comms to be invalidated on timeout
-    if (wait_any_for(&waited_comm, wait_timeout) == -1) {
+    if (wait_any_for(waited_comm, wait_timeout) == -1) {
       XBT_DEBUG("Timeout (%g): i = %zu", wait_timeout, i);
       return i;
     }
   }
-  return comms->size();
+  return comms.size();
 }
 
 CommPtr Comm::set_rate(double rate)
@@ -245,14 +245,14 @@ Comm* Comm::wait_for(double timeout)
   return this;
 }
 
-int Comm::test_any(const std::vector<CommPtr>* comms)
+int Comm::test_any(const std::vector<CommPtr>& comms)
 {
-  std::vector<kernel::activity::CommImpl*> rcomms(comms->size());
-  std::transform(begin(*comms), end(*comms), begin(rcomms),
+  std::vector<kernel::activity::CommImpl*> rcomms(comms.size());
+  std::transform(begin(comms), end(comms), begin(rcomms),
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
   int changed_pos = simcall_comm_testany(rcomms.data(), rcomms.size());
   if (changed_pos != -1)
-    comms->at(changed_pos)->complete(State::FINISHED);
+    comms.at(changed_pos)->complete(State::FINISHED);
   return changed_pos;
 }
 
@@ -350,7 +350,7 @@ size_t sg_comm_wait_all_for(sg_comm_t* comms, size_t count, double timeout)
   for (size_t i = 0; i < count; i++)
     s4u_comms.emplace_back(comms[i], false);
 
-  size_t pos = simgrid::s4u::Comm::wait_all_for(&s4u_comms, timeout);
+  size_t pos = simgrid::s4u::Comm::wait_all_for(s4u_comms, timeout);
   for (size_t i = pos; i < count; i++)
     s4u_comms[i]->add_ref();
   return pos;
@@ -367,7 +367,7 @@ int sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout)
   for (unsigned int i = 0; i < count; i++)
     s4u_comms.emplace_back(comms[i], false);
 
-  int pos = simgrid::s4u::Comm::wait_any_for(&s4u_comms, timeout);
+  int pos = simgrid::s4u::Comm::wait_any_for(s4u_comms, timeout);
   for (unsigned i = 0; i < count; i++) {
     if (pos != -1 && static_cast<unsigned>(pos) != i)
       s4u_comms[i]->add_ref();

@@ -62,7 +62,7 @@ template <int Duration, typename Activity> bool tester_wait_any(const Activity& 
   try {
     std::vector<Activity> activities = {activity};
     XBT_DEBUG("calling wait_any_for(%f)", duration);
-    int index = Activity::element_type::wait_any_for(&activities, duration);
+    int index = Activity::element_type::wait_any_for(activities, duration);
     if (index == -1) {
       XBT_DEBUG("wait_any_for() timed out");
       INFO("wait_any_for() timeout should expire at expected date: " << timeout);

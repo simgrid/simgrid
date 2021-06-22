@@ -267,10 +267,14 @@ PYBIND11_MODULE(simgrid, m)
            "Test whether the communication is terminated.")
       .def("wait", &simgrid::s4u::Comm::wait, py::call_guard<GilScopedRelease>(),
            "Block until the completion of that communication.")
-      .def("wait_all", &simgrid::s4u::Comm::wait_all, py::call_guard<GilScopedRelease>(),
-           "Block until the completion of all communications in the list.")
-      .def("wait_any", &simgrid::s4u::Comm::wait_any, py::call_guard<GilScopedRelease>(),
-           "Block until the completion of any communication in the list and return the index of the terminated one.");
+      // use py::overload_cast for wait_all/wait_any, until the overload marked XBT_ATTRIB_DEPRECATED_v332 is removed
+      .def_static("wait_all",
+                  py::overload_cast<const std::vector<simgrid::s4u::CommPtr>&>(&simgrid::s4u::Comm::wait_all),
+                  py::call_guard<GilScopedRelease>(), "Block until the completion of all communications in the list.")
+      .def_static(
+          "wait_any", py::overload_cast<const std::vector<simgrid::s4u::CommPtr>&>(&simgrid::s4u::Comm::wait_any),
+          py::call_guard<GilScopedRelease>(),
+          "Block until the completion of any communication in the list and return the index of the terminated one.");
 
   /* Class Exec */
   py::class_<simgrid::s4u::Exec, simgrid::s4u::ExecPtr>(m, "Exec", "Execution")

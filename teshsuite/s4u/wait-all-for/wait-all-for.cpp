@@ -31,7 +31,7 @@ static void worker()
   std::vector<simgrid::s4u::CommPtr> comms = {put1, put2, get1, get2};
 
   while (not comms.empty()) {
-    size_t index = simgrid::s4u::Comm::wait_all_for(&comms, 0.5);
+    size_t index = simgrid::s4u::Comm::wait_all_for(comms, 0.5);
     if (index < comms.size())
       XBT_INFO("wait_all_for: Timeout reached");
     XBT_INFO("wait_all_for: %zu comms finished (#comms=%zu)", index, comms.size());

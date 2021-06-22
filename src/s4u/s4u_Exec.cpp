@@ -53,10 +53,10 @@ Exec* Exec::start()
   return this;
 }
 
-int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
+int Exec::wait_any_for(const std::vector<ExecPtr>& execs, double timeout)
 {
-  std::vector<kernel::activity::ExecImpl*> rexecs(execs->size());
-  std::transform(begin(*execs), end(*execs), begin(rexecs),
+  std::vector<kernel::activity::ExecImpl*> rexecs(execs.size());
+  std::transform(begin(execs), end(execs), begin(rexecs),
                  [](const ExecPtr& exec) { return static_cast<kernel::activity::ExecImpl*>(exec->pimpl_.get()); });
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
@@ -67,7 +67,7 @@ int Exec::wait_any_for(std::vector<ExecPtr>* execs, double timeout)
       },
       &observer);
   if (changed_pos != -1)
-    execs->at(changed_pos)->complete(State::FINISHED);
+    execs.at(changed_pos)->complete(State::FINISHED);
   return changed_pos;
 }
 
@@ -321,7 +321,7 @@ int sg_exec_wait_any_for(sg_exec_t* execs, size_t count, double timeout)
   for (unsigned int i = 0; i < count; i++)
     s4u_execs.emplace_back(execs[i], false);
 
-  int pos = simgrid::s4u::Exec::wait_any_for(&s4u_execs, timeout);
+  int pos = simgrid::s4u::Exec::wait_any_for(s4u_execs, timeout);
   for (unsigned i = 0; i < count; i++) {
     if (pos != -1 && static_cast<unsigned>(pos) != i)
       s4u_execs[i]->add_ref();

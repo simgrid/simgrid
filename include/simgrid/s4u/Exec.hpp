@@ -51,9 +51,14 @@ public:
 
   /*! take a vector of s4u::ExecPtr and return when one of them is finished.
    * The return value is the rank of the first finished ExecPtr. */
-  static int wait_any(std::vector<ExecPtr>* execs) { return wait_any_for(execs, -1); }
+  static int wait_any(const std::vector<ExecPtr>& execs) { return wait_any_for(execs, -1); }
   /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
-  static int wait_any_for(std::vector<ExecPtr>* execs, double timeout);
+  static int wait_any_for(const std::vector<ExecPtr>& execs, double timeout);
+
+  XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for parameter")
+  static int wait_any(std::vector<ExecPtr>* execs) { return wait_any_for(*execs, -1); }
+  XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for first parameter")
+  static int wait_any_for(std::vector<ExecPtr>* execs, double timeout) { return wait_any_for(*execs, timeout); }
 
   /** @brief On sequential executions, returns the amount of flops that remain to be done; This cannot be used on
    * parallel executions. */

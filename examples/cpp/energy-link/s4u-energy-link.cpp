@@ -35,7 +35,7 @@ static void sender(std::vector<std::string> args)
     std::vector<simgrid::s4u::CommPtr> comms;
     for (int i = 0; i < flow_amount; i++)
       comms.push_back(mailbox->put_async(bprintf("%d", i), comm_size));
-    simgrid::s4u::Comm::wait_all(&comms);
+    simgrid::s4u::Comm::wait_all(comms);
   }
   XBT_INFO("sender done.");
 }
@@ -59,7 +59,7 @@ static void receiver(std::vector<std::string> args)
     for (int i = 0; i < flow_amount; i++)
       comms.push_back(mailbox->get_async<char>(&data[i]));
 
-    simgrid::s4u::Comm::wait_all(&comms);
+    simgrid::s4u::Comm::wait_all(comms);
     for (int i = 0; i < flow_amount; i++)
       xbt_free(data[i]);
   }

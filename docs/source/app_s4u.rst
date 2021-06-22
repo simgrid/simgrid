@@ -1886,11 +1886,12 @@ also start direct communications as shown below.
       .. doxygenfunction:: simgrid::s4u::Comm::cancel
       .. doxygenfunction:: simgrid::s4u::Comm::start
       .. doxygenfunction:: simgrid::s4u::Comm::test
-      .. doxygenfunction:: simgrid::s4u::Comm::test_any(const std::vector< CommPtr > *comms)
+      .. doxygenfunction:: simgrid::s4u::Comm::test_any(const std::vector< CommPtr >& comms)
       .. doxygenfunction:: simgrid::s4u::Comm::wait
-      .. doxygenfunction:: simgrid::s4u::Comm::wait_all(const std::vector< CommPtr > *comms)
-      .. doxygenfunction:: simgrid::s4u::Comm::wait_any(const std::vector< CommPtr > *comms)
-      .. doxygenfunction:: simgrid::s4u::Comm::wait_any_for(const std::vector< CommPtr > *comms_in, double timeout)
+      .. doxygenfunction:: simgrid::s4u::Comm::wait_all(const std::vector< CommPtr >& comms)
+      .. doxygenfunction:: simgrid::s4u::Comm::wait_all_for(const std::vector< CommPtr >& comms, double timeout)
+      .. doxygenfunction:: simgrid::s4u::Comm::wait_any(const std::vector< CommPtr >& comms)
+      .. doxygenfunction:: simgrid::s4u::Comm::wait_any_for(const std::vector< CommPtr >& comms, double timeout)
       .. doxygenfunction:: simgrid::s4u::Comm::wait_for
 
    .. group-tab:: Python
@@ -1997,8 +1998,8 @@ Life cycle
       .. doxygenfunction:: simgrid::s4u::Exec::start
       .. doxygenfunction:: simgrid::s4u::Exec::test
       .. doxygenfunction:: simgrid::s4u::Exec::wait
-      .. doxygenfunction:: simgrid::s4u::Exec::wait_any(std::vector< ExecPtr > *execs)
-      .. doxygenfunction:: simgrid::s4u::Exec::wait_any_for(std::vector< ExecPtr > *execs, double timeout)
+      .. doxygenfunction:: simgrid::s4u::Exec::wait_any(std::vector< ExecPtr >& execs)
+      .. doxygenfunction:: simgrid::s4u::Exec::wait_any_for(std::vector< ExecPtr >& execs, double timeout)
       .. doxygenfunction:: simgrid::s4u::Exec::wait_for
 
    .. group-tab:: Python

@@ -69,17 +69,26 @@ public:
 
   /*! take a vector s4u::CommPtr and return when one of them is finished.
    * The return value is the rank of the first finished CommPtr. */
-  static int wait_any(const std::vector<CommPtr>* comms) { return wait_any_for(comms, -1); }
+  static int wait_any(const std::vector<CommPtr>& comms) { return wait_any_for(comms, -1); }
   /*! Same as wait_any, but with a timeout. Return -1 if the timeout occurs.*/
-  static int wait_any_for(const std::vector<CommPtr>* comms_in, double timeout);
+  static int wait_any_for(const std::vector<CommPtr>& comms, double timeout);
 
   /*! take a vector s4u::CommPtr and return when all of them is finished. */
-  static void wait_all(const std::vector<CommPtr>* comms);
+  static void wait_all(const std::vector<CommPtr>& comms);
   /*! Same as wait_all, but with a timeout. Return the number of terminated comm (less than comms.size() if the timeout
    * occurs). */
-  static size_t wait_all_for(const std::vector<CommPtr>* comms, double timeout);
+  static size_t wait_all_for(const std::vector<CommPtr>& comms, double timeout);
   /*! take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done). */
-  static int test_any(const std::vector<CommPtr>* comms);
+  static int test_any(const std::vector<CommPtr>& comms);
+
+  XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for parameter")
+  static int wait_any(const std::vector<CommPtr>* comms) { return wait_any_for(*comms, -1); }
+  XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for first parameter")
+  static int wait_any_for(const std::vector<CommPtr>* comms, double timeout) { return wait_any_for(*comms, timeout); }
+  XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for parameter")
+  static void wait_all(const std::vector<CommPtr>* comms) { wait_all(*comms); }
+  XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for parameter")
+  static int test_any(const std::vector<CommPtr>* comms) { return test_any(*comms); }
 
   Comm* start() override;
   Comm* wait_for(double timeout) override;

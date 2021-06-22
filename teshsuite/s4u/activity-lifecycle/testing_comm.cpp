@@ -272,7 +272,7 @@ TEST_CASE("Activity lifecycle: comm activities")
       int* data;
       simgrid::s4u::CommPtr comm                       = simgrid::s4u::Mailbox::by_name("mb")->get_async<int>(&data);
       std::vector<simgrid::s4u::CommPtr> pending_comms = {comm};
-      REQUIRE_NETWORK_FAILURE(simgrid::s4u::Comm::wait_any(&pending_comms));
+      REQUIRE_NETWORK_FAILURE(simgrid::s4u::Comm::wait_any(pending_comms));
     });
 
     simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[2], []() {

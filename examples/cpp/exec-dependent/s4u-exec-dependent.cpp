@@ -41,7 +41,7 @@ static void worker()
 
   // wait for the completion of all activities
   while (not pending_execs.empty()) {
-    int changed_pos = simgrid::s4u::Exec::wait_any_for(&pending_execs, -1);
+    int changed_pos = simgrid::s4u::Exec::wait_any_for(pending_execs, -1);
     XBT_INFO("Exec '%s' is complete", pending_execs[changed_pos]->get_cname());
     pending_execs.erase(pending_execs.begin() + changed_pos);
   }

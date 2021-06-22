@@ -35,9 +35,9 @@ static void worker(bool with_timeout)
   while (not pending_executions.empty()) {
     int pos;
     if (with_timeout)
-      pos = simgrid::s4u::Exec::wait_any_for(&pending_executions, 4);
+      pos = simgrid::s4u::Exec::wait_any_for(pending_executions, 4);
     else
-      pos = simgrid::s4u::Exec::wait_any(&pending_executions);
+      pos = simgrid::s4u::Exec::wait_any(pending_executions);
 
     if (pos < 0) {
       XBT_INFO("Do not wait any longer for an activity");

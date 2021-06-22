@@ -8,7 +8,10 @@ New features:
    associated example (examples/cpp/plugin-prodcons).
 
 S4U:
- - New: simgrid::s4u::Comm::wait_all_for() (like Comm::Wait_all, but with a timeout).
+ - New: s4u::Comm::wait_all_for() (like s4u::Comm::wait_all, but with a timeout),
+        s4u::Io::wait_any(), s4u::Io::wait_any_for().
+ - Methods test_all/test_any/wait_all/wait_any in s4u now take their vector
+   parameter by reference, instead of a pointer.
  - Fixed a bug where Activity::wait_for() killed the activity on timeout.
    Explicitly cancel the activity to get back to previous behavior.
 
