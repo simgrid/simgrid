@@ -37,9 +37,9 @@ public:
   Io* start() override;
   /*! take a vector of s4u::IoPtr and return when one of them is finished.
    * The return value is the rank of the first finished IoPtr. */
-  static int wait_any(const std::vector<IoPtr>& ios) { return wait_any_for(ios, -1); }
+  static ssize_t wait_any(const std::vector<IoPtr>& ios) { return wait_any_for(ios, -1); }
   /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
-  static int wait_any_for(const std::vector<IoPtr>& ios, double timeout);
+  static ssize_t wait_any_for(const std::vector<IoPtr>& ios, double timeout);
 
   double get_remaining() const override;
   sg_size_t get_performed_ioops() const;

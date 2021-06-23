@@ -7,6 +7,7 @@
 #define INCLUDE_SIMGRID_EXEC_H_
 
 #include <simgrid/forward.h>
+#include <sys/types.h> /* ssize_t */
 #include <xbt/dynar.h>
 
 /* C interface */
@@ -24,8 +25,8 @@ XBT_PUBLIC void sg_exec_cancel(sg_exec_t exec);
 XBT_PUBLIC int sg_exec_test(sg_exec_t exec);
 XBT_PUBLIC sg_error_t sg_exec_wait(sg_exec_t exec);
 XBT_PUBLIC sg_error_t sg_exec_wait_for(sg_exec_t exec, double timeout);
-XBT_PUBLIC int sg_exec_wait_any_for(sg_exec_t* execs, size_t count, double timeout);
-XBT_PUBLIC int sg_exec_wait_any(sg_exec_t* execs, size_t count);
+XBT_PUBLIC ssize_t sg_exec_wait_any_for(sg_exec_t* execs, size_t count, double timeout);
+XBT_PUBLIC ssize_t sg_exec_wait_any(sg_exec_t* execs, size_t count);
 
 SG_END_DECL
 

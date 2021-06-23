@@ -33,7 +33,7 @@ static void worker(bool with_timeout)
    * terminated.
    */
   while (not pending_executions.empty()) {
-    int pos;
+    ssize_t pos;
     if (with_timeout)
       pos = simgrid::s4u::Exec::wait_any_for(pending_executions, 4);
     else
@@ -43,7 +43,7 @@ static void worker(bool with_timeout)
       XBT_INFO("Do not wait any longer for an activity");
       pending_executions.clear();
     } else {
-      XBT_INFO("Activity '%s' (at position %d) is complete", pending_executions[pos]->get_cname(), pos);
+      XBT_INFO("Activity '%s' (at position %zd) is complete", pending_executions[pos]->get_cname(), pos);
       pending_executions.erase(pending_executions.begin() + pos);
     }
     XBT_INFO("%zu activities remain pending", pending_executions.size());
