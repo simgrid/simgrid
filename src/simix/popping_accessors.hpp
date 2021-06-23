@@ -597,17 +597,17 @@ static inline void simcall_comm_waitany__set__timeout(smx_simcall_t simcall, dou
 {
   simgrid::simix::marshal<double>(simcall->args_[2], arg);
 }
-static inline int simcall_comm_waitany__get__result(smx_simcall_t simcall)
+static inline ssize_t simcall_comm_waitany__get__result(smx_simcall_t simcall)
 {
-  return simgrid::simix::unmarshal<int>(simcall->result_);
+  return simgrid::simix::unmarshal<ssize_t>(simcall->result_);
 }
-static inline int simcall_comm_waitany__getraw__result(smx_simcall_t simcall)
+static inline ssize_t simcall_comm_waitany__getraw__result(smx_simcall_t simcall)
 {
-  return simgrid::simix::unmarshal_raw<int>(simcall->result_);
+  return simgrid::simix::unmarshal_raw<ssize_t>(simcall->result_);
 }
-static inline void simcall_comm_waitany__set__result(smx_simcall_t simcall, int result)
+static inline void simcall_comm_waitany__set__result(smx_simcall_t simcall, ssize_t result)
 {
-  simgrid::simix::marshal<int>(simcall->result_, result);
+  simgrid::simix::marshal<ssize_t>(simcall->result_, result);
 }
 
 static inline simgrid::kernel::activity::CommImpl* simcall_comm_wait__get__comm(smx_simcall_t simcall)

@@ -161,7 +161,7 @@ void MSG_comm_waitall(msg_comm_t* comm, int nb_elem, double timeout)
  */
 int MSG_comm_waitany(const_xbt_dynar_t comms)
 {
-  int finished_index = -1;
+  ssize_t finished_index = -1;
 
   /* Create the equivalent array with SIMIX objects: */
   std::vector<simgrid::kernel::activity::CommImpl*> s_comms;
@@ -197,7 +197,7 @@ int MSG_comm_waitany(const_xbt_dynar_t comms)
     (*comm->task_received)->set_not_used();
   }
 
-  return finished_index;
+  return static_cast<int>(finished_index);
 }
 
 /**

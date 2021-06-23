@@ -61,7 +61,7 @@ public:
       simgrid::s4u::CommPtr comm = me->get_async<FilePiece>(&received);
       pending_recvs.push_back(comm);
 
-      int idx = simgrid::s4u::Comm::wait_any(pending_recvs);
+      ssize_t idx = simgrid::s4u::Comm::wait_any(pending_recvs);
       if (idx != -1) {
         comm = pending_recvs.at(idx);
         XBT_DEBUG("Peer %s got a 'SEND_DATA' message", me->get_cname());

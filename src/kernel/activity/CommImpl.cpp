@@ -580,7 +580,7 @@ void CommImpl::finish()
       }
       if (not MC_is_active() && not MC_record_replay_is_active()) {
         CommImpl** element = std::find(comms, comms + count, this);
-        int rank           = (element != comms + count) ? element - comms : -1;
+        ssize_t rank       = (element != comms + count) ? element - comms : -1;
         simcall_comm_waitany__set__result(simcall, rank);
       }
     }
@@ -664,7 +664,7 @@ void CommImpl::finish()
         count = simcall_comm_testany__get__count(simcall);
       }
       CommImpl** element = std::find(comms, comms + count, this);
-      int rank           = (element != comms + count) ? element - comms : -1;
+      ssize_t rank       = (element != comms + count) ? element - comms : -1;
       // In order to modify the exception we have to rethrow it:
       try {
         std::rethrow_exception(simcall->issuer_->exception_);

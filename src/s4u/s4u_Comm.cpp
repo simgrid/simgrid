@@ -39,12 +39,12 @@ Comm::~Comm()
   }
 }
 
-int Comm::wait_any_for(const std::vector<CommPtr>& comms, double timeout)
+ssize_t Comm::wait_any_for(const std::vector<CommPtr>& comms, double timeout)
 {
   std::vector<kernel::activity::CommImpl*> rcomms(comms.size());
   std::transform(begin(comms), end(comms), begin(rcomms),
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
-  int changed_pos = simcall_comm_waitany(rcomms.data(), rcomms.size(), timeout);
+  ssize_t changed_pos = simcall_comm_waitany(rcomms.data(), rcomms.size(), timeout);
   if (changed_pos != -1)
     comms.at(changed_pos)->complete(State::FINISHED);
   return changed_pos;
@@ -356,20 +356,20 @@ size_t sg_comm_wait_all_for(sg_comm_t* comms, size_t count, double timeout)
   return pos;
 }
 
-int sg_comm_wait_any(sg_comm_t* comms, size_t count)
+ssize_t sg_comm_wait_any(sg_comm_t* comms, size_t count)
 {
   return sg_comm_wait_any_for(comms, count, -1);
 }
 
-int sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout)
+ssize_t sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout)
 {
   std::vector<simgrid::s4u::CommPtr> s4u_comms;
-  for (unsigned int i = 0; i < count; i++)
+  for (size_t i = 0; i < count; i++)
     s4u_comms.emplace_back(comms[i], false);
 
-  int pos = simgrid::s4u::Comm::wait_any_for(s4u_comms, timeout);
-  for (unsigned i = 0; i < count; i++) {
-    if (pos != -1 && static_cast<unsigned>(pos) != i)
+  ssize_t pos = simgrid::s4u::Comm::wait_any_for(s4u_comms, timeout);
+  for (size_t i = 0; i < count; i++) {
+    if (pos != -1 && static_cast<size_t>(pos) != i)
       s4u_comms[i]->add_ref();
   }
   return pos;

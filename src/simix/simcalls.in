@@ -41,7 +41,7 @@ void           comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_siz
 boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, unsigned char* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, bool detached);
 bool           comm_test(simgrid::kernel::activity::CommImpl* comm);
 ssize_t        comm_testany(simgrid::kernel::activity::CommImpl** comms, size_t count);
-int            comm_waitany(simgrid::kernel::activity::CommImpl** comms, size_t count, double timeout) [[block]];
+ssize_t        comm_waitany(simgrid::kernel::activity::CommImpl** comms, size_t count, double timeout) [[block]];
 void           comm_wait(simgrid::kernel::activity::CommImpl* comm, double timeout) [[block]];
 
 void       run_kernel(std::function<void()> const* code) [[nohandler]];

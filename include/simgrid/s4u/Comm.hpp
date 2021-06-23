@@ -69,9 +69,9 @@ public:
 
   /*! take a vector s4u::CommPtr and return when one of them is finished.
    * The return value is the rank of the first finished CommPtr. */
-  static int wait_any(const std::vector<CommPtr>& comms) { return wait_any_for(comms, -1); }
+  static ssize_t wait_any(const std::vector<CommPtr>& comms) { return wait_any_for(comms, -1); }
   /*! Same as wait_any, but with a timeout. Return -1 if the timeout occurs.*/
-  static int wait_any_for(const std::vector<CommPtr>& comms, double timeout);
+  static ssize_t wait_any_for(const std::vector<CommPtr>& comms, double timeout);
 
   /*! take a vector s4u::CommPtr and return when all of them is finished. */
   static void wait_all(const std::vector<CommPtr>& comms);
@@ -82,9 +82,9 @@ public:
   static ssize_t test_any(const std::vector<CommPtr>& comms);
 
   XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for parameter")
-  static int wait_any(const std::vector<CommPtr>* comms) { return wait_any_for(*comms, -1); }
+  static int wait_any(const std::vector<CommPtr>* comms) { return static_cast<int>(wait_any_for(*comms, -1)); }
   XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for first parameter")
-  static int wait_any_for(const std::vector<CommPtr>* comms, double timeout) { return wait_any_for(*comms, timeout); }
+  static int wait_any_for(const std::vector<CommPtr>* comms, double timeout) { return static_cast<int>(wait_any_for(*comms, timeout)); }
   XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for parameter")
   static void wait_all(const std::vector<CommPtr>* comms) { wait_all(*comms); }
   XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for parameter")

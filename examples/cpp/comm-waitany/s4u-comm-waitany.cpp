@@ -77,10 +77,10 @@ public:
      * Even in this simple example, the pending comms do not terminate in the exact same order of creation.
      */
     while (not pending_comms.empty()) {
-      int changed_pos = sg4::Comm::wait_any(pending_comms);
+      ssize_t changed_pos = sg4::Comm::wait_any(pending_comms);
       pending_comms.erase(pending_comms.begin() + changed_pos);
       if (changed_pos != 0)
-        XBT_INFO("Remove the %dth pending comm: it terminated earlier than another comm that was initiated first.",
+        XBT_INFO("Remove the %zdth pending comm: it terminated earlier than another comm that was initiated first.",
                  changed_pos);
     }
 

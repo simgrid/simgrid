@@ -64,13 +64,13 @@ static void sender(int argc, char* argv[])
    * Even in this simple example, the pending comms do not terminate in the exact same order of creation.
    */
   while (pending_comms_count != 0) {
-    int changed_pos = sg_comm_wait_any(pending_comms, pending_comms_count);
+    ssize_t changed_pos = sg_comm_wait_any(pending_comms, pending_comms_count);
     memmove(pending_comms + changed_pos, pending_comms + changed_pos + 1,
             sizeof(sg_comm_t) * (pending_comms_count - changed_pos - 1));
     pending_comms_count--;
 
     if (changed_pos != 0)
-      XBT_INFO("Remove the %dth pending comm: it terminated earlier than another comm that was initiated first.",
+      XBT_INFO("Remove the %zdth pending comm: it terminated earlier than another comm that was initiated first.",
                changed_pos);
   }
 

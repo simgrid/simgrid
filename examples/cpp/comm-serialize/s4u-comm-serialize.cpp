@@ -80,7 +80,7 @@ public:
       pending_comms.emplace_back(mbox->get_async<std::string>(pending_msgs[i].get()));
     }
     while (not pending_comms.empty()) {
-      int index        = sg4::Comm::wait_any(pending_comms);
+      ssize_t index    = sg4::Comm::wait_any(pending_comms);
       std::string* msg = *pending_msgs[index];
       XBT_INFO("I got '%s'.", msg->c_str());
       /* cleanup memory and remove from vectors */

@@ -191,10 +191,10 @@ unsigned int simcall_comm_waitany(simgrid::kernel::activity::ActivityImplPtr com
   std::transform(comms, comms + count, begin(rcomms), [](const simgrid::kernel::activity::ActivityImplPtr& comm) {
     return static_cast<simgrid::kernel::activity::CommImpl*>(comm.get());
   });
-  return simcall_BODY_comm_waitany(rcomms.data(), rcomms.size(), timeout);
+  return static_cast<unsigned int>(simcall_BODY_comm_waitany(rcomms.data(), rcomms.size(), timeout));
 }
 
-unsigned int simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_t count, double timeout)
+ssize_t simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_t count, double timeout)
 {
   return simcall_BODY_comm_waitany(comms, count, timeout);
 }
