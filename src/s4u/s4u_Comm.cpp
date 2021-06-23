@@ -245,12 +245,12 @@ Comm* Comm::wait_for(double timeout)
   return this;
 }
 
-int Comm::test_any(const std::vector<CommPtr>& comms)
+ssize_t Comm::test_any(const std::vector<CommPtr>& comms)
 {
   std::vector<kernel::activity::CommImpl*> rcomms(comms.size());
   std::transform(begin(comms), end(comms), begin(rcomms),
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
-  int changed_pos = simcall_comm_testany(rcomms.data(), rcomms.size());
+  ssize_t changed_pos = simcall_comm_testany(rcomms.data(), rcomms.size());
   if (changed_pos != -1)
     comms.at(changed_pos)->complete(State::FINISHED);
   return changed_pos;

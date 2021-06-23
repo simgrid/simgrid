@@ -79,7 +79,7 @@ public:
    * occurs). */
   static size_t wait_all_for(const std::vector<CommPtr>& comms, double timeout);
   /*! take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done). */
-  static int test_any(const std::vector<CommPtr>& comms);
+  static ssize_t test_any(const std::vector<CommPtr>& comms);
 
   XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for parameter")
   static int wait_any(const std::vector<CommPtr>* comms) { return wait_any_for(*comms, -1); }
@@ -88,7 +88,7 @@ public:
   XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for parameter")
   static void wait_all(const std::vector<CommPtr>* comms) { wait_all(*comms); }
   XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for parameter")
-  static int test_any(const std::vector<CommPtr>* comms) { return test_any(*comms); }
+  static int test_any(const std::vector<CommPtr>* comms) { return static_cast<int>(test_any(*comms)); }
 
   Comm* start() override;
   Comm* wait_for(double timeout) override;

@@ -176,7 +176,7 @@ XBT_PUBLIC void simcall_comm_wait(simgrid::kernel::activity::ActivityImpl* comm,
 XBT_PUBLIC bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm);
 XBT_ATTRIB_DEPRECATED_v330("Please use a CommImpl*[] for first parameter") XBT_PUBLIC
     int simcall_comm_testany(simgrid::kernel::activity::ActivityImplPtr comms[], size_t count);
-XBT_PUBLIC int simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count);
+XBT_PUBLIC ssize_t simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count);
 
 XBT_ATTRIB_DEPRECATED_v330("Please use an ActivityImpl* for first parameter") inline void simcall_comm_wait(
     const simgrid::kernel::activity::ActivityImplPtr& comm, double timeout)

@@ -190,7 +190,7 @@ bool simcall_HANDLER_comm_test(smx_simcall_t, simgrid::kernel::activity::CommImp
   return comm->test();
 }
 
-int simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count)
+ssize_t simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count)
 {
   std::vector<simgrid::kernel::activity::CommImpl*> comms_vec(comms, comms + count);
   return simgrid::kernel::activity::CommImpl::test_any(simcall->issuer_, comms_vec);
@@ -422,7 +422,7 @@ void CommImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   }
 }
 
-int CommImpl::test_any(const actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms)
+ssize_t CommImpl::test_any(const actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms)
 {
   if (MC_is_active() || MC_record_replay_is_active()) {
     int idx = issuer->simcall_.mc_value_;

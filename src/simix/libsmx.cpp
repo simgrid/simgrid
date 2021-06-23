@@ -210,10 +210,10 @@ int simcall_comm_testany(simgrid::kernel::activity::ActivityImplPtr comms[], siz
   std::transform(comms, comms + count, begin(rcomms), [](const simgrid::kernel::activity::ActivityImplPtr& comm) {
     return static_cast<simgrid::kernel::activity::CommImpl*>(comm.get());
   });
-  return simcall_BODY_comm_testany(rcomms.data(), rcomms.size());
+  return static_cast<int>(simcall_BODY_comm_testany(rcomms.data(), rcomms.size()));
 }
 
-int simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count)
+ssize_t simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count)
 {
   if (count == 0)
     return -1;

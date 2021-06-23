@@ -75,11 +75,11 @@ inline static bool simcall_BODY_comm_test(simgrid::kernel::activity::CommImpl* c
   return simcall<bool, simgrid::kernel::activity::CommImpl*>(Simcall::COMM_TEST, comm);
 }
 
-inline static int simcall_BODY_comm_testany(simgrid::kernel::activity::CommImpl** comms, size_t count)
+inline static ssize_t simcall_BODY_comm_testany(simgrid::kernel::activity::CommImpl** comms, size_t count)
 {
   if (false) /* Go to that function to follow the code flow through the simcall barrier */
     simcall_HANDLER_comm_testany(&SIMIX_process_self()->simcall_, comms, count);
-  return simcall<int, simgrid::kernel::activity::CommImpl**, size_t>(Simcall::COMM_TESTANY, comms, count);
+  return simcall<ssize_t, simgrid::kernel::activity::CommImpl**, size_t>(Simcall::COMM_TESTANY, comms, count);
 }
 
 inline static int simcall_BODY_comm_waitany(simgrid::kernel::activity::CommImpl** comms, size_t count, double timeout)
