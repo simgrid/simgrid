@@ -102,8 +102,8 @@ Intra zone
 
 TLDR: use :ref:`pf_tag_route`
 
-The communications inside a given zone is defined by ``routing=`` parameter
-in the :ref:`pf_tag_zone`. For example, in a *Full* zone, the user must declare
+The routing mechanism inside a given zone is defined by ``routing=`` parameter
+in the :ref:`pf_tag_zone` (see options in :ref:`intra-zone section <intra_zone>`). For example, in a *Full* zone, the user must declare
 a :ref:`pf_tag_route` for each pair of hosts inside the zone. Other zones, such as *Floyd*
 or *Dijkstra* will calculate the shortest path, while *DragonFly* and *Fat-Tree* uses
 specialized routing algorithms to improve performance.
@@ -123,16 +123,16 @@ of this page, you will need to connected not only hosts but zones too. The ratio
 behind a route between zone is exactly the same as for hosts. The only difference is
 the 2 new gateway parameters in the syntax of :ref:`pf_tag_zoneroute`.
 
-A zone is not a physical resource, just a collection of resources. Consequently, you
-need to describe the gateway, i.e. the physical resource inside the zone used for the route.
+A zone is not a physical resource, just a collection of resources (including other zones).
+Consequently, you need to describe the gateway, i.e. the physical resource inside the zone used for the route.
 It gives you 4 parameters to describe a zoneRoute:
   - src: The object of source zone
   - dst: The object of destination zone
   - gw_src: Gateway inside src zone. A Host (or router) belonging to src zone.
-  - gw_dst: Gateway inside dst zone. A Host (or router) belonging to src zone.
+  - gw_dst: Gateway inside dst zone. A Host (or router) belonging to dst zone.
   - links: Links that connect gw_src to gw_dst.
 
-.. note:: You must be careful to call zoneRoute with the correct parameters: zones for src and dst, and hosts/routers for gw_src and gw_dst
+.. note:: The gateways must be a component of the zone (either directly or member of some child sub-zone). SimGrid will verify these parameters when adding a route.
 
 .. warning:: SimGrid does not have the concept of default gateway/router. Each zoneRoute must describe the appropriate gateways which may be different for each route.
 
@@ -143,6 +143,8 @@ This section is not mandatory for a normal SimGrid user. However, if you want
 to know a little more of we calculate the route
 between nodes inside SimGrid, keep reading it.
 
+
+.. _intra_zone:
 
 Intra-zone communications
 =========================
@@ -163,11 +165,20 @@ through the ``routing=`` parameter.
   - **Dijkstra/Floyd**: calculates the shortest path between each pair
     of nodes using the routes described by the user (:ref:`pf_tag_route`).
     As long as you graph is connected, no problems.
+
+    - Dijkstra: shortest-path calculated considering the path's latency. As
+      the latency of links can change during simulation, it's recomputed each
+      time a route is necessary.
+
+    - Floyd: use the number of hops to build shortest path. It's calculated only
+      once at the beginning of the simulation (as the platform is fixed).
+
   - **Cluster/Fat-Tree/DragonFly/Torus**: routing is defined by the topology, automatically created.
+    These zones must be defined through the :ref:`pf_tag_cluster` tag in the XML.
   - **Star**: star-like topology. Users describe routes from/to every host in the zone.
   - **Vivaldi/Wi-Fi**: "fully-connected" zones with special characteristics.
 
-
+.. _inter_zone:
     
 Inter-zone communications
 =========================
@@ -176,7 +187,7 @@ Inter-zone communications
    :scale: 70%
 
 Inter-zone communications are a little more complicated since you need to pass
-through several zones. Let's give a look with more details in a communication
+through several zones. Let's have a look in more details in a communication
 within our initial topology.
 
 In this case, *Host1* within *AS2* wants to communicate with *Host2* from *AS5-4*.
@@ -194,7 +205,21 @@ them. The routing procedure is as follows:
    - **Dst ancestor**: *AS5*, it's the *AS5* that contains *AS5-4*.
 
 2. **Adding route from src to dst ancestor**: Ask *AS1* for the route between *AS2* and *AS5*.
-   Add *Link1* to our list of links
+
+   This route is defined by the following configuration
+
+   .. code-block:: xml
+
+        <zoneRoute> src="AS2" dst="AS5" gw_src="Host1" gw_dst"="gw1">
+            <link_ctn id="Link1">
+        </zoneRoute>
+
+   Add *Link1* to our list of links.
+
+   Also, we can see in this route that the gateway for *AS2* is *Host1* and for *AS5* is *gw1*.
+
+   Consequently, we need to go from *Host1* to *AS2*'s gateway (*Host1*) and from *Host2* to *AS5*'s
+   gateway (*gw1*).
 
 3. **Recursively search for route between hosts (Host1/Host2) and ancestors (AS2, AS5)**
 
@@ -202,6 +227,15 @@ them. The routing procedure is as follows:
 
    3.2. **Route from Host2 to AS5's gateway (gw1)**: start step 1 again, searching
    for a common root (*AS5* in this case) and the common ancestors (*AS5-4* and *AS5-3*).
+
+   This route is defined as follows.
+
+   .. code-block:: xml
+
+        <zoneRoute> src="AS5-4" dst="AS5-3" gw_src="gw2" gw_dst"="gw1">
+            <link_ctn id="Link3">
+        </zoneRoute>
+
    Add *Link3* to list of links.
 
 4. **Add local links in src and dst zones**
@@ -209,6 +243,14 @@ them. The routing procedure is as follows:
    4.1. **Route from Host1 to AS2's gateway**: same node, no link to add.
 
    4.2. **Route from Host2 to AS5-4's gateway**: follow intra-zone and add *Link2*.
+
+   The last route, as it is an internal route in *AS5-4*, is defined using the :ref:`pf_tag_route` tag.
+
+   .. code-block:: xml
+
+        <route> src="Host2" dst="gw2">
+            <link_ctn id="Link2">
+        </route>
 
 
 In the end, our communication from *Host1/AS2* to *Host2/AS5-4* will pass through
@@ -218,3 +260,43 @@ Note that a communication between *Host3/AS2* and *Host2/AS5-4* follow the same 
 for step 4.1 where we would add the link between *Host3* and *Host1* inside *AS2* zone.
 
 
+The Loopback
+************
+
+The link used of loopback communications has a special treatment in SimGrid. As it can be
+quite tedious to describe each a loopback link for each host in the platform, SimGrid provides
+a global **FATPIPE** link which is used by all hosts by default.
+
+By default, this link has the following characteristics:
+
+- **Bandwidth**: 10GBps. It can be changed through configuration, see :ref:`cfg=network/loopback`.
+
+- **Latency**: 0ms. See :ref:`cfg=network/loopback` for more details.
+
+.. warning::
+
+    These default values are arbitrary chosen and must be carefully configured to reflect
+    your environment if needed.
+
+In addition, you can add :ref:`pf_tag_route` from a node to itself to modify the loopback link
+for a specific node. In this case, SimGrid will get this link (instead of the global one) for
+the local communications.
+
+.. code-block:: xml
+
+    <link id="loopback" bandwidth="100MBps" latency="0"/>
+    <route src="Tremblay" dst="Tremblay">
+      <link_ctn id="loopback"/>
+    </route>
+
+Finally, some zones (e.g. :ref:`pf_tag_cluster`) allow you to describe the characteristics of
+the loopback nodes inside the zone. These links are equivalent to adding specific routes and
+have higher priority than the global loopback link.
+
+.. note::
+
+    **Loopback links are used only for local communications**.
+
+    You may have noticed that we didn't include them at step 3.1 in :ref:`inter_zone`.
+    Loopback links will be used only when src and dst are the same, not in the recursive search
+    described above.

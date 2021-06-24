@@ -120,6 +120,8 @@ loopback is given, the communication from a node to itself is handled
 as if it were two distinct nodes: it goes twice through the private
 link and through the backbone (if any).
 
+.. _platform_examples_fattree:
+
 Fat-Tree Cluster
 ----------------
 

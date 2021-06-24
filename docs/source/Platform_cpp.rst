@@ -16,16 +16,14 @@ C++ Platforms
 #############
 
 Using XML to describe the platforms is very convenient. It provides a
-human-readable, quick way to start your experiments. Although, as the
-platform grows in size, XML format brings some drawbacks which may
-make your life harder, specially for big and regular platforms such as
-homogeneous clusters.
+human-readable, quick way to start your experiments. Although, XML format brings
+several drawbacks as your platforms get larger and more complex (see :ref:`platform_cpp_beyond`).
 
 In this case, it may be more interesting to write your platform directly
 in C++ code. It allows you to programmatically describe your platform and
-remove the intermediate XML parsing during simulations. Take care to follows
+remove the intermediate XML parser during simulations. Take care to follow
 the recommendations in :ref:`Modeling Hints <howto>` to keep a clear separation
-of concerns between your platforms and your applications.
+of concerns between your platform and your application.
 
 Describing Resources
 ********************
@@ -44,8 +42,8 @@ idiom: create()->set()->set()->seal().
 The first NetZone created will be the root zone of your platform. You're allowed to modified
 an object as long as you did not seal it.
 
-For more details about how to describe the platforms, please give a look at the :ref:`examples<platform_cpp_example>`
-or directly the S4U API.
+For more details about how to describe the platforms, please give a look at :ref:`examples<platform_cpp_example>`
+or directly at the S4U API.
 
 Links
 =====
@@ -86,7 +84,7 @@ as you wish, separating (or unifying) your application from your platform code.
 However, we provide a small hack if you want to keep the same structure of the
 old code with XML platforms. You can pass a library (.so) file to ``Engine::load_platform``
 function, having a predefined function implemented. When loading the platform, the
-Engine will look for a function called "**void load_platform(const sg4::Engine& e)**" and
+Engine will look for a function with this signature: "**void load_platform(const sg4::Engine& e)**", and
 execute it. It could be an easy way to make the transition between XML and C++ if necessary.
 
 For more details, please refer to the cpp and CMakeLists.txt files in 
@@ -108,3 +106,74 @@ connected through a shared link.
 
 .. literalinclude:: ../../examples/platforms/griffon.cpp
    :language: cpp
+
+
+.. _platform_cpp_beyond:
+
+Beyond the XML: the power of C++ platforms
+**************
+
+This section describes one of the advantages of using C++ code to write your platforms.
+
+Let's see an example of the description of a Fat-Tree in XML (:ref:`platform_examples_fattree`)
+
+.. literalinclude:: ../../examples/platforms/cluster_fat_tree.xml
+   :language: xml
+   :lines: 1-3,10-
+
+Our cluster *bob* is composed of 16 hosts with the same 1Gf CPU power.
+
+Imagine now that you want to simulate the same **Fat-Tree topology with** more complex **hosts**,
+composed of **1 CPU, 1 GPU and some interconnecting bus**.
+
+Unfortunately, this is not possible with the XML description since its syntax obliges
+that the leaves in your Fat-Tree to be single Hosts. However, with the C++ API, your
+leaves can be composed of other zones, creating a **Fat-Tree of FullZones** for example.
+
+Consequently, you can describe the desired platform as follows:
+
+.. code-block:: c++
+
+    sg4::Engine e(&argc, argv);
+    sg4::create_fatTree_zone("bob", e.get_netzone_root(), {2, {4, 4}, {1, 2}, {1, 2}}, {create_hostzone, create_loopback, {}}, 125e6,
+                           50e-6, sg4::Link::SharingPolicy::SPLITDUPLEX)->seal();
+
+Note that the leaves and loopback links are defined through callbacks, as follows:
+
+.. code-block:: c++
+
+    /* create the loopback link for each leaf in the Fat-Tree */
+    static sg4::Link* create_loopback(sg4::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id)
+    {
+        // note that you could set different loopback links for each leaf
+        return zone->create_link("limiter-" + std::to_string(id), 1e6)->seal();
+    }
+
+    /* create each leaf in the Fat-Tree, return a pair composed of: <object (host, zone), gateway> */
+    static std::pair<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*>
+    create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id)
+    {
+      /* creating zone */
+      std::string hostname = "host" + std::to_string(id);
+      auto* host_zone = sg4::create_full_zone(hostname);
+      /* setting my parent zone */
+      host_zone->set_parent(zone);
+
+      /* creating CPU */
+      std::string cpu_name  = hostname + "-cpu" + std::to_string(i);
+      const sg4::Host* cpu = host_zone->create_host(cpu_name, 1e9)->seal();
+      /* creating GPU */
+      std::string gpu_name  = hostname + "-gpu" + std::to_string(i);
+      const sg4::Host* gpu = host_zone->create_host(gpu_name, 1e12)->seal();
+      /* connecting them */
+      sg4::Link* link   = host_zone->create_link("link-" + cpu_name, 10e9)->set_latency(10e-9)->seal();
+      host_zone->add_route(cpu->get_netpoint(), gpu->get_netpoint(), nullptr, nullptr, std::vector<sg4::Link*>{link});
+
+      host_zone->seal();
+      /* cpu is the gateway for this host */
+      return std::make_pair(host_zone->get_netpoint(), cpu->get_netpoint());
+    }
+
+The code is straightforward and can be easily adapted to more complex environments thanks to the flexibility
+provided by the C++ API.
+
