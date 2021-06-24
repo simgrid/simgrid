@@ -485,7 +485,7 @@ void NetworkCm02Link::set_bandwidth(double value)
 
     const kernel::lmm::Element* elem     = nullptr;
     const kernel::lmm::Element* nextelem = nullptr;
-    int numelem                          = 0;
+    size_t numelem                       = 0;
     while (const auto* var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem)) {
       auto* action = static_cast<NetworkCm02Action*>(var->get_id());
       action->sharing_penalty_ += delta;
@@ -502,7 +502,7 @@ LinkImpl* NetworkCm02Link::set_latency(double value)
   double delta                         = value - latency_.peak;
   const kernel::lmm::Element* elem     = nullptr;
   const kernel::lmm::Element* nextelem = nullptr;
-  int numelem                          = 0;
+  size_t numelem                       = 0;
 
   latency_.scale = 1.0;
   latency_.peak  = value;

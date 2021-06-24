@@ -75,7 +75,7 @@ void DiskS19::update_penalties(double delta) const
 {
   const kernel::lmm::Element* elem     = nullptr;
   const kernel::lmm::Element* nextelem = nullptr;
-  int numelem                          = 0;
+  size_t numelem                       = 0;
   while (const auto* var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem)) {
     auto* action = static_cast<DiskS19Action*>(var->get_id());
     action->sharing_penalty_ += delta;

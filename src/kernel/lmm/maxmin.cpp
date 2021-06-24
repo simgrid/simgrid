@@ -335,7 +335,7 @@ Variable* Constraint::get_variable(const Element** elem) const
 
 // if we modify the list between calls, normal version may loop forever
 // this safe version ensures that we browse the list elements only once
-Variable* Constraint::get_variable_safe(const Element** elem, const Element** nextelem, int* numelem) const
+Variable* Constraint::get_variable_safe(const Element** elem, const Element** nextelem, size_t* numelem) const
 {
   if (*elem == nullptr) {
     *numelem = enabled_element_set_.size() + disabled_element_set_.size() - 1;
@@ -579,8 +579,8 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
           if (not double_positive(cnst->usage_, sg_maxmin_precision) ||
               not double_positive(cnst->remaining_, cnst->bound_ * sg_maxmin_precision)) {
             if (cnst->cnst_light_) {
-              int index = (cnst->cnst_light_ - cnst_light_tab);
-              XBT_DEBUG("index: %d \t cnst_light_num: %d \t || usage: %f remaining: %f bound: %f  ", index,
+              size_t index = (cnst->cnst_light_ - cnst_light_tab);
+              XBT_DEBUG("index: %zu \t cnst_light_num: %d \t || usage: %f remaining: %f bound: %f  ", index,
                         cnst_light_num, cnst->usage_, cnst->remaining_, cnst->bound_);
               cnst_light_tab[index]                  = cnst_light_tab[cnst_light_num - 1];
               cnst_light_tab[index].cnst->cnst_light_ = &cnst_light_tab[index];
@@ -608,8 +608,8 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
           if (not double_positive(cnst->usage_, sg_maxmin_precision) ||
               not double_positive(cnst->remaining_, cnst->bound_ * sg_maxmin_precision)) {
             if (cnst->cnst_light_) {
-              int index = (cnst->cnst_light_ - cnst_light_tab);
-              XBT_DEBUG("index: %d \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p "
+              size_t index = (cnst->cnst_light_ - cnst_light_tab);
+              XBT_DEBUG("index: %zu \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p "
                         "\t cnst_light_tab: %p usage: %f remaining: %f bound: %f  ",
                         index, cnst_light_num, cnst, cnst->cnst_light_, cnst_light_tab, cnst->usage_, cnst->remaining_,
                         cnst->bound_);
@@ -677,7 +677,7 @@ void System::update_variable_bound(Variable* var, double bound)
 }
 
 void Variable::initialize(resource::Action* id_value, double sharing_penalty, double bound_value,
-                          int number_of_constraints, unsigned visited_value)
+                          size_t number_of_constraints, unsigned visited_value)
 {
   id_     = id_value;
   rank_   = next_rank_++;
@@ -773,8 +773,8 @@ void System::on_disabled_var(Constraint* cnstr)
   if (cnstr->get_concurrency_limit() < 0)
     return;
 
-  int numelem = cnstr->disabled_element_set_.size();
-  if (not numelem)
+  size_t numelem = cnstr->disabled_element_set_.size();
+  if (numelem == 0)
     return;
 
   Element* elem = &cnstr->disabled_element_set_.front();

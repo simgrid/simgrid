@@ -249,7 +249,7 @@ public:
    * @param numelem parameter representing the number of elements to go
    * @return A variable associated to a constraint
    */
-  Variable* get_variable_safe(const Element** elem, const Element** nextelem, int* numelem) const;
+  Variable* get_variable_safe(const Element** elem, const Element** nextelem, size_t* numelem) const;
 
   /**
    * @brief Get the data associated to a constraint
@@ -300,7 +300,7 @@ private:
  */
 class XBT_PUBLIC Variable {
 public:
-  void initialize(resource::Action* id_value, double sharing_penalty, double bound_value, int number_of_constraints,
+  void initialize(resource::Action* id_value, double sharing_penalty, double bound_value, size_t number_of_constraints,
                   unsigned visited_value);
 
   /** @brief Get the value of the variable after the last lmm solve */
