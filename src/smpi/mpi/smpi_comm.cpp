@@ -183,12 +183,12 @@ void Comm::get_name(char* name, int* len) const
 std::string Comm::name() const
 {
   int size;
-  char name[MPI_MAX_NAME_STRING+1];
-  this->get_name(name, &size);
+  std::array<char, MPI_MAX_NAME_STRING + 1> name;
+  this->get_name(name.data(), &size);
   if (name[0]=='\0')
     return std::string("MPI_Comm");
   else
-    return std::string(name);
+    return std::string(name.data());
 }
 
 
