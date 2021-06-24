@@ -173,9 +173,6 @@ struct mdesc {
   /** @brief Mutex locking the access to the heap */
   pthread_mutex_t mutex;
 
-  /** @brief Number of processes that attached the heap */
-  unsigned int refcount;
-
   /** @brief Chained lists of mdescs */
   struct mdesc *next_mdesc;
 
@@ -245,13 +242,6 @@ struct mdesc {
    */
   void *top;
 
-  /** @brief Open file descriptor for the file to which this malloc heap is mapped
-   *
-   * If this value is negative, MAP_ANONYMOUS memory is used.
-   *
-   * Also note that it may change each time the region is mapped and unmapped. */
-  int fd;
-
   /* @brief Instrumentation */
   struct mstats heapstats;
 };
@@ -259,16 +249,11 @@ struct mdesc {
 /* Bits to look at in the malloc descriptor flags word */
 
 #define MMALLOC_DEVZERO    (1 << 0)        /* Have mapped to /dev/zero */
-#define MMALLOC_ANONYMOUS (1 << 1)      /* Use anonymous mapping */
-#define MMALLOC_INITIALIZED  (1 << 2)        /* Initialized mmalloc */
+#define MMALLOC_INITIALIZED (1 << 1)      /* Initialized mmalloc */
 
 /* A default malloc descriptor for the single sbrk() managed region. */
 
 XBT_PUBLIC_DATA struct mdesc* __mmalloc_default_mdp;
-
-/* Remap a mmalloc region that was previously mapped. */
-
-XBT_PUBLIC void* __mmalloc_remap_core(const s_xbt_mheap_t* mdp);
 
 XBT_PUBLIC void* mmorecore(struct mdesc* mdp, ssize_t size);
 
