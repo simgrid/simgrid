@@ -162,7 +162,7 @@ LinkImpl* LinkImpl::set_latency_profile(profile::Profile* profile)
   return this;
 }
 
-void LinkImpl::set_concurrency_limit(int limit)
+void LinkImpl::set_concurrency_limit(int limit) const
 {
   if (limit != -1) {
     get_constraint()->reset_concurrency_maximum();
