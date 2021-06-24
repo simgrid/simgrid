@@ -152,6 +152,7 @@ sg_size_t File::read(sg_size_t size)
  * @ingroup plugin_filesystem
  *
  * @param size of the file to write
+ * @param write_inside
  * @return the number of bytes successfully write or -1 if an error occurred
  */
 sg_size_t File::write(sg_size_t size, bool write_inside)

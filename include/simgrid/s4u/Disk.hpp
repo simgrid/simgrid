@@ -30,9 +30,11 @@ namespace s4u {
  */
 
 class XBT_PUBLIC Disk : public xbt::Extendable<Disk> {
+#ifndef DOXYGEN
   friend Engine;
   friend Io;
   friend kernel::resource::DiskImpl;
+#endif
 
   explicit Disk(kernel::resource::DiskImpl* pimpl) : pimpl_(pimpl) {}
   virtual ~Disk() = default;

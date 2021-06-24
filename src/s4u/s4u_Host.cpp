@@ -38,6 +38,7 @@ Host* Host::set_cpu(kernel::resource::CpuImpl* cpu)
   return this;
 }
 
+#ifndef DOXYGEN
 Host* Host::set_netpoint(kernel::routing::NetPoint* netpoint)
 {
   pimpl_netpoint_ = netpoint;
@@ -50,6 +51,7 @@ Host::~Host()
     Engine::get_instance()->netpoint_unregister(pimpl_netpoint_);
   delete pimpl_cpu_;
 }
+#endif
 
 /** @brief Fire the required callbacks and destroy the object
  *
@@ -183,6 +185,7 @@ NetZone* Host::get_englobing_zone() const
   return pimpl_netpoint_->get_englobing_zone()->get_iface();
 }
 
+#ifndef DOXYGEN
 void Host::sendto(Host* dest, double byte_amount) // deprecated 331
 {
   Comm::sendto_async(this, dest, byte_amount)->wait();
@@ -197,6 +200,7 @@ void Host::send_to(Host* dest, double byte_amount) // deprecated 330
 {
   Comm::sendto(this, dest, byte_amount);
 }
+#endif
 
 /** Get the properties assigned to a host */
 const std::unordered_map<std::string, std::string>* Host::get_properties() const
@@ -486,7 +490,7 @@ double sg_host_speed(const_sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
   return sg_host_get_speed(host);
 }
 
-/** @brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_energy.
+/** @brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_host_energy.
  *
  * @param  host host to test
  * @param pstate_index pstate to test
@@ -515,7 +519,7 @@ double sg_host_get_available_speed(const_sg_host_t host)
 
 /** @brief Returns the number of power states for a host.
  *
- *  See also @ref plugin_energy.
+ *  See also @ref plugin_host_energy.
  */
 int sg_host_get_nb_pstates(const_sg_host_t host)
 {
@@ -524,7 +528,7 @@ int sg_host_get_nb_pstates(const_sg_host_t host)
 
 /** @brief Gets the pstate at which that host currently runs.
  *
- *  See also @ref plugin_energy.
+ *  See also @ref plugin_host_energy.
  */
 int sg_host_get_pstate(const_sg_host_t host)
 {
@@ -532,7 +536,7 @@ int sg_host_get_pstate(const_sg_host_t host)
 }
 /** @brief Sets the pstate at which that host should run.
  *
- *  See also @ref plugin_energy.
+ *  See also @ref plugin_host_energy.
  */
 void sg_host_set_pstate(sg_host_t host, int pstate)
 {
@@ -543,7 +547,7 @@ void sg_host_set_pstate(sg_host_t host, int pstate)
  *
  * @brief Start the host if it is off
  *
- * See also #sg_host_is_on() to test the current state of the host and @ref plugin_energy
+ * See also #sg_host_is_on() to test the current state of the host and @ref plugin_host_energy
  * for more info on DVFS.
  */
 void sg_host_turn_on(sg_host_t host)
@@ -555,7 +559,7 @@ void sg_host_turn_on(sg_host_t host)
  *
  * @brief Stop the host if it is on
  *
- * See also #MSG_host_is_on() to test the current state of the host and @ref plugin_energy
+ * See also #MSG_host_is_on() to test the current state of the host and @ref plugin_host_energy
  * for more info on DVFS.
  */
 void sg_host_turn_off(sg_host_t host)
@@ -566,8 +570,8 @@ void sg_host_turn_off(sg_host_t host)
 /** @ingroup m_host_management
  * @brief Determine if a host is up and running.
  *
- * See also #sg_host_turn_on() and #sg_host_turn_off() to switch the host ON and OFF and @ref plugin_energy for more
- * info on DVFS.
+ * See also #sg_host_turn_on() and #sg_host_turn_off() to switch the host ON and OFF and @ref plugin_host_energy for
+ * more info on DVFS.
  *
  * @param host host to test
  * @return Returns true if the host is up and running, and false if it's currently down

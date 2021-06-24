@@ -24,7 +24,9 @@ namespace s4u {
  * This is a singleton containing all the main functions of the simulation.
  */
 class XBT_PUBLIC Engine {
+#ifndef DOXYGEN
   friend simgrid::kernel::EngineImpl;
+#endif
 
 public:
   /** Constructor, taking only the name of your main function */
@@ -145,8 +147,8 @@ public:
   /**
    * @brief Add a model to engine list
    *
-   * @param model Pointer to model
-   * @param list  List of dependencies for this model (optional)
+   * @param model        Pointer to model
+   * @param dependencies List of dependencies for this model (optional)
    */
   void add_model(std::shared_ptr<simgrid::kernel::resource::Model> model,
                  const std::vector<kernel::resource::Model*>& dependencies = {});

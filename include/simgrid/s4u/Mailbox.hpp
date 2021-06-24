@@ -20,9 +20,11 @@ namespace s4u {
 
 /** @brief Mailboxes: Network rendez-vous points. */
 class XBT_PUBLIC Mailbox {
+#ifndef DOXYGEN
   friend Comm;
   friend smpi::Request;
   friend kernel::activity::MailboxImpl;
+#endif
 
   kernel::activity::MailboxImpl* const pimpl_;
 
@@ -111,18 +113,21 @@ public:
   /** Creates (but don't start) a data reception onto that mailbox */
   CommPtr get_init();
   /** Creates and start an async data reception to that mailbox */
-  XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get_async<>()") CommPtr get_async(void** data);
   template <typename T> CommPtr get_async(T** data);
 
   /** Blocking data reception */
   template <typename T> T* get();
-  XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get<>()") void* get();
   template <typename T> std::unique_ptr<T> get_unique() { return std::unique_ptr<T>(get<T>()); }
 
   /** Blocking data reception with timeout */
   template <typename T> T* get(double timeout);
-  XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get<>()") void* get(double timeout);
   template <typename T> std::unique_ptr<T> get_unique(double timeout) { return std::unique_ptr<T>(get<T>(timeout)); }
+
+#ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get_async<>()") CommPtr get_async(void** data);
+  XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get<>()") void* get();
+  XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get<>()") void* get(double timeout);
+#endif
 };
 
 template <typename T> CommPtr Mailbox::get_async(T** data)
@@ -146,6 +151,7 @@ template <typename T> T* Mailbox::get(double timeout)
   return res;
 }
 
+#ifndef DOXYGEN
 inline CommPtr Mailbox::get_async(void** data) // XBT_ATTRIB_DEPRECATED_v331
 {
   return get_async<void>(data);
@@ -158,7 +164,7 @@ inline void* Mailbox::get(double timeout) // XBT_ATTRIB_DEPRECATED_v331
 {
   return get<void>(timeout);
 }
-
+#endif
 } // namespace s4u
 } // namespace simgrid
 

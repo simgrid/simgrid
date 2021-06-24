@@ -27,11 +27,13 @@ namespace s4u {
  * s4u::Engine).
  */
 class XBT_PUBLIC NetZone {
+#ifndef DOXYGEN
+  friend kernel::routing::NetZoneImpl;
+#endif
+
   kernel::routing::NetZoneImpl* const pimpl_;
 
 protected:
-  friend kernel::routing::NetZoneImpl;
-
   explicit NetZone(kernel::routing::NetZoneImpl* impl) : pimpl_(impl) {}
 
 public:
@@ -76,17 +78,19 @@ public:
    *
    * @param src Source netzone's netpoint
    * @param dst Destination netzone' netpoint
-   * @param src_gw Netpoint of the gateway in the source netzone
-   * @param dst_gw Netpoint of the gateway in the destination netzone
+   * @param gw_src Netpoint of the gateway in the source netzone
+   * @param gw_dst Netpoint of the gateway in the destination netzone
    * @param link_list List of links used in this communication
    * @param symmetrical Bi-directional communication
    */
   void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
                  kernel::routing::NetPoint* gw_dst, const std::vector<Link*>& link_list, bool symmetrical = true);
 
+#ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v332("Please use add_route() method which uses s4u::Link instead of LinkImpl") void add_route(
       kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
       kernel::routing::NetPoint* gw_dst, const std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
+#endif
   void add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                         std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
@@ -103,7 +107,7 @@ public:
    * @brief Create a host
    *
    * @param name Host name
-   * @param speed_per_state Vector of CPU's speeds
+   * @param speed_per_pstate Vector of CPU's speeds
    */
   s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate);
   s4u::Host* create_host(const std::string& name, double speed);

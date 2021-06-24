@@ -30,7 +30,9 @@ namespace s4u {
  * @endrst
  */
 class XBT_PUBLIC Link : public xbt::Extendable<Link> {
+#ifndef DOXYGEN
   friend kernel::resource::LinkImpl;
+#endif
 
   // Links are created from the NetZone, and destroyed by their private implementation when the simulation ends
   explicit Link(kernel::resource::LinkImpl* pimpl) : pimpl_(pimpl) {}

@@ -28,7 +28,9 @@ namespace vm {
  * @details A VM represent a virtual machine
  */
 class XBT_PUBLIC VirtualMachineImpl : public surf::HostImpl, public simgrid::xbt::Extendable<VirtualMachineImpl> {
+#ifndef DOXYGEN
   friend simgrid::s4u::VirtualMachine;
+#endif
 
 public:
   /** @brief Callbacks fired after VM creation. Signature: `void(VirtualMachineImpl&)` */

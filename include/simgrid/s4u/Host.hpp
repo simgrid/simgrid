@@ -136,7 +136,7 @@ public:
    *  The amount of flops per second available for computing depends on several things:
    *    - The current pstate determines the maximal peak computing speed (use @ref get_pstate_speed() to retrieve the
    *      computing speed you would get at another pstate)
-   *    - If you declared an external load (with @ref simgrid::surf::Cpu::set_speed_profile()), you must multiply the
+   *    - If you declared an external load (with @ref set_speed_profile()), you must multiply the
    * result of get_speed() by get_available_speed() to retrieve what a new computation would get.
    *
    *  The remaining speed is then shared between the executions located on this host.
@@ -149,7 +149,7 @@ public:
   double get_speed() const;
   /** @brief Get the available speed ratio, between 0 and 1.
    *
-   * This accounts for external load (see @ref simgrid::surf::Cpu::set_speed_profile()).
+   * This accounts for external load (see @ref set_speed_profile()).
    */
   double get_available_speed() const;
 
@@ -199,9 +199,7 @@ public:
 
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v331("Please use Comm::sendto()") void sendto(Host* dest, double byte_amount);
-
   XBT_ATTRIB_DEPRECATED_v331("Please use Comm::sendto_async()") CommPtr sendto_async(Host* dest, double byte_amount);
-
   XBT_ATTRIB_DEPRECATED_v330("Please use Host::sendto()") void send_to(Host* dest, double byte_amount);
 #endif
 

@@ -447,7 +447,7 @@ elements such as host or peer) |br|
 .. _pf_tag_zoneRoute:
 
 <zoneRoute>
-------
+-----------
 
 The purpose of this entity is to define a route between two zones.
 Recall that all zones form a tree, so to connect two sibling zones,
