@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_REMOTE_EVENTLOOP_HPP
 #define SIMGRID_MC_REMOTE_EVENTLOOP_HPP
 
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/remote/Channel.hpp"
 
 #include <event2/event.h>
@@ -33,7 +34,7 @@ public:
   Channel const& get_channel() const { return channel_; }
   Channel& get_channel() { return channel_; }
 
-  void start(void (*handler)(int, short, void*));
+  void start(void (*handler)(int, short, void*), ModelChecker* mc);
   void dispatch();
   void break_loop();
 };
