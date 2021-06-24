@@ -117,8 +117,7 @@ void System::var_free(Variable* var)
       simgrid::xbt::intrusive_erase(elem.constraint->disabled_element_set_, elem);
     if (elem.active_element_set_hook.is_linked())
       simgrid::xbt::intrusive_erase(elem.constraint->active_element_set_, elem);
-    int nelements = elem.constraint->enabled_element_set_.size() + elem.constraint->disabled_element_set_.size();
-    if (nelements == 0)
+    if (elem.constraint->enabled_element_set_.empty() && elem.constraint->disabled_element_set_.empty())
       make_constraint_inactive(elem.constraint);
     else
       on_disabled_var(elem.constraint);
