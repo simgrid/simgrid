@@ -688,13 +688,12 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
   std::vector<simgrid::kernel::activity::CommImpl*> comms;
   comms.reserve(count);
 
-  int i;
   *flag = 0;
   int ret = MPI_SUCCESS;
   *index = MPI_UNDEFINED;
 
   std::vector<int> map; /** Maps all matching comms back to their location in requests **/
-  for(i = 0; i < count; i++) {
+  for (int i = 0; i < count; i++) {
     if ((requests[i] != MPI_REQUEST_NULL) && requests[i]->action_ && not(requests[i]->flags_ & MPI_REQ_PREPARED)) {
       comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(requests[i]->action_.get()));
       map.push_back(i);
@@ -705,6 +704,7 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
     static int nsleeps = 1;
     if(smpi_test_sleep > 0)
       simgrid::s4u::this_actor::sleep_for(nsleeps * smpi_test_sleep);
+    ssize_t i;
     try{
       i = simcall_comm_testany(comms.data(), comms.size()); // The i-th element in comms matches!
     } catch (const Exception&) {
@@ -1081,7 +1081,7 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
     }
     if (not comms.empty()) {
       XBT_DEBUG("Enter waitany for %zu comms", comms.size());
-      int i;
+      ssize_t i;
       try{
         i = simcall_comm_waitany(comms.data(), comms.size(), -1);
       } catch (const CancelException&) {
