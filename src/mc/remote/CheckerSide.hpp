@@ -11,20 +11,20 @@
 
 #include <event2/event.h>
 #include <functional>
+#include <memory>
 
 namespace simgrid {
 namespace mc {
 
 class CheckerSide {
-  struct event_base* base_    = nullptr;
-  struct event* socket_event_ = nullptr;
-  struct event* signal_event_ = nullptr;
+  std::unique_ptr<event_base, decltype(&event_base_free)> base_{nullptr, &event_base_free};
+  std::unique_ptr<event, decltype(&event_free)> socket_event_{nullptr, &event_free};
+  std::unique_ptr<event, decltype(&event_free)> signal_event_{nullptr, &event_free};
 
   Channel channel_;
 
 public:
   explicit CheckerSide(int sockfd) : channel_(sockfd) {}
-  ~CheckerSide();
 
   // No copy:
   CheckerSide(CheckerSide const&) = delete;

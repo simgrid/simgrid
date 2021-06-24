@@ -10,35 +10,28 @@
 namespace simgrid {
 namespace mc {
 
-CheckerSide::~CheckerSide()
-{
-  if (socket_event_ != nullptr)
-    event_free(socket_event_);
-  if (signal_event_ != nullptr)
-    event_free(signal_event_);
-  if (base_ != nullptr)
-    event_base_free(base_);
-}
-
 void CheckerSide::start(void (*handler)(int, short, void*), ModelChecker* mc)
 {
-  base_ = event_base_new();
+  auto* base = event_base_new();
+  base_.reset(base);
 
-  socket_event_ = event_new(base_, get_channel().get_socket(), EV_READ | EV_PERSIST, handler, mc);
-  event_add(socket_event_, nullptr);
+  auto* socket_event = event_new(base, get_channel().get_socket(), EV_READ | EV_PERSIST, handler, mc);
+  event_add(socket_event, nullptr);
+  socket_event_.reset(socket_event);
 
-  signal_event_ = event_new(base_, SIGCHLD, EV_SIGNAL | EV_PERSIST, handler, mc);
-  event_add(signal_event_, nullptr);
+  auto* signal_event = event_new(base, SIGCHLD, EV_SIGNAL | EV_PERSIST, handler, mc);
+  event_add(signal_event, nullptr);
+  signal_event_.reset(signal_event);
 }
 
 void CheckerSide::dispatch()
 {
-  event_base_dispatch(base_);
+  event_base_dispatch(base_.get());
 }
 
 void CheckerSide::break_loop()
 {
-  event_base_loopbreak(base_);
+  event_base_loopbreak(base_.get());
 }
 
 } // namespace mc
