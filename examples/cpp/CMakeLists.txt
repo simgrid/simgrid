@@ -70,7 +70,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  energy-exec energy-boot energy-link energy-vm energy-exec-ptask energy-wifi
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-remote exec-waitany exec-waitfor exec-dependent exec-unassigned
-                 exec-ptask exec-ptask-multicore
+                 exec-ptask-multicore
                  maestro-set
                  mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert
 		 		 network-wifi
@@ -206,7 +206,7 @@ endif()
 # Examples not accepting factories
 ##################################
 
-foreach (example trace-categories trace-masterworkers trace-platform trace-process-migration
+foreach (example exec-ptask trace-categories trace-masterworkers trace-platform trace-process-migration
                  trace-host-user-variables trace-link-user-variables trace-route-user-variables)
   add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
   target_link_libraries(s4u-${example} simgrid)
