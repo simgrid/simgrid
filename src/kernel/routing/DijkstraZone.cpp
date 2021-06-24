@@ -96,8 +96,8 @@ void DijkstraZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rou
   const s_xbt_node_t* src_elm = node_map_search(src_id);
   const s_xbt_node_t* dst_elm = node_map_search(dst_id);
 
-  unsigned int src_node_id = static_cast<GraphNodeData*>(xbt_graph_node_get_data(src_elm))->graph_id_;
-  unsigned int dst_node_id = static_cast<GraphNodeData*>(xbt_graph_node_get_data(dst_elm))->graph_id_;
+  unsigned long src_node_id = static_cast<GraphNodeData*>(xbt_graph_node_get_data(src_elm))->graph_id_;
+  unsigned long dst_node_id = static_cast<GraphNodeData*>(xbt_graph_node_get_data(dst_elm))->graph_id_;
 
   /* if the src and dst are the same */
   if (src_node_id == dst_node_id) {
@@ -120,7 +120,7 @@ void DijkstraZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rou
     unsigned long nr_nodes = xbt_dynar_length(nodes);
     std::vector<unsigned long> cost_arr(nr_nodes); /* link cost from src to other hosts */
     pred_arr.resize(nr_nodes);              /* predecessors in path from src */
-    using Qelt = std::pair<double, int>;
+    using Qelt = std::pair<double, unsigned long>;
     std::priority_queue<Qelt, std::vector<Qelt>, std::greater<>> pqueue;
 
     /* initialize */
@@ -139,7 +139,7 @@ void DijkstraZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rou
 
     /* apply dijkstra using the indexes from the graph's node array */
     while (not pqueue.empty()) {
-      int v_id = pqueue.top().second;
+      unsigned long v_id = pqueue.top().second;
       pqueue.pop();
       const s_xbt_node_t* v_node = xbt_dynar_get_as(nodes, v_id, xbt_node_t);
       xbt_edge_t edge            = nullptr;
@@ -148,7 +148,7 @@ void DijkstraZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rou
       xbt_dynar_foreach (xbt_graph_node_get_outedges(v_node), cursor, edge) {
         const s_xbt_node_t* u_node           = xbt_graph_edge_get_target(edge);
         const GraphNodeData* data            = static_cast<GraphNodeData*>(xbt_graph_node_get_data(u_node));
-        int u_id                             = data->graph_id_;
+        unsigned long u_id                   = data->graph_id_;
         const Route* tmp_e_route             = static_cast<Route*>(xbt_graph_edge_get_data(edge));
         unsigned long cost_v_u               = tmp_e_route->link_list_.size(); /* count of links, old model assume 1 */
 
