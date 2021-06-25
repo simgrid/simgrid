@@ -20,7 +20,7 @@ if [ "x$1" != 'xdoxy' ] && [ -e build/xml ] ; then
 else
   set -x
   rm -rf build/xml source/api/
-  (cd source; doxygen 2>&1; cd ..) | grep -v "is not documented." #   XXXXX Reduce the verbosity for now
+  (cd source; doxygen 2>&1; cd ..) | (grep -v "is not documented." || true) # XXXXX Reduce the verbosity for now
   set +x
 fi
 
