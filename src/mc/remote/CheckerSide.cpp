@@ -24,12 +24,12 @@ void CheckerSide::start(void (*handler)(int, short, void*), ModelChecker* mc)
   signal_event_.reset(signal_event);
 }
 
-void CheckerSide::dispatch()
+void CheckerSide::dispatch() const
 {
   event_base_dispatch(base_.get());
 }
 
-void CheckerSide::break_loop()
+void CheckerSide::break_loop() const
 {
   event_base_loopbreak(base_.get());
 }

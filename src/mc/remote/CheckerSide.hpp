@@ -35,8 +35,8 @@ public:
   Channel& get_channel() { return channel_; }
 
   void start(void (*handler)(int, short, void*), ModelChecker* mc);
-  void dispatch();
-  void break_loop();
+  void dispatch() const;
+  void break_loop() const;
 };
 
 } // namespace mc
