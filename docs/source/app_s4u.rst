@@ -460,6 +460,7 @@ Creating actors
 
       .. doxygenfunction:: simgrid::s4u::Actor::init(const std::string &name, s4u::Host *host)
       .. doxygenfunction:: simgrid::s4u::Actor::start(const std::function< void()> &code)
+      .. doxygenfunction:: simgrid::s4u::Actor::set_stacksize
 
    .. group-tab:: Python
 
@@ -470,6 +471,7 @@ Creating actors
       .. doxygenfunction:: sg_actor_create(const char *name, sg_host_t host, xbt_main_func_t code, int argc, char *const *argv)
       .. doxygenfunction:: sg_actor_init(const char *name, sg_host_t host)
       .. doxygenfunction:: sg_actor_start(sg_actor_t actor, xbt_main_func_t code, int argc, char *const *argv)
+      .. doxygenfunction:: sg_actor_set_stacksize
 
       .. doxygenfunction:: sg_actor_attach(const char *name, void *data, sg_host_t host, xbt_dict_t properties)
       .. doxygenfunction:: sg_actor_detach()
@@ -1005,7 +1007,7 @@ Sending data
       .. automethod:: simgrid.Mailbox.put
       .. automethod:: simgrid.Mailbox.put_async
 
-   .. group-tab: C
+   .. group-tab:: C
 
       .. doxygenfunction:: sg_mailbox_put(sg_mailbox_t mailbox, void *payload, long simulated_size_in_bytes)
       .. doxygenfunction:: sg_mailbox_put_init(sg_mailbox_t mailbox, void *payload, long simulated_size_in_bytes)
@@ -1896,10 +1898,17 @@ also start direct communications as shown below.
 
    .. group-tab:: Python
 
-       .. automethod:: simgrid.Comm.test
-       .. automethod:: simgrid.Comm.wait
-       .. automethod:: simgrid.Comm.wait_all
-       .. automethod:: simgrid.Comm.wait_any
+      .. automethod:: simgrid.Comm.test
+      .. automethod:: simgrid.Comm.wait
+      .. automethod:: simgrid.Comm.wait_all
+      .. automethod:: simgrid.Comm.wait_any
+
+   .. group-tab:: C
+
+      .. doxygenfunction:: sg_comm_test
+      .. doxygenfunction:: sg_comm_wait
+      .. doxygenfunction:: sg_comm_wait_all
+      .. doxygenfunction:: sg_comm_wait_any
 
 Signals
 -------
@@ -1960,11 +1969,7 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Exec::get_finish_time() const
       .. doxygenfunction:: simgrid::s4u::Exec::get_host() const
       .. doxygenfunction:: simgrid::s4u::Exec::get_host_number() const
-      .. cpp:function:: double Exec::get_remaining()
-
-         On sequential executions, returns the amount of flops that remain to be done;
-         This cannot be used on parallel executions.
-      
+      .. doxygenfunction:: simgrid::s4u::Exec::get_remaining
       .. doxygenfunction:: simgrid::s4u::Exec::get_remaining_ratio
       .. doxygenfunction:: simgrid::s4u::Exec::get_start_time() const
       .. doxygenfunction:: simgrid::s4u::Exec::set_bound(double bound)
@@ -1994,7 +1999,6 @@ Life cycle
    .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::Exec::cancel
-      .. doxygenfunction:: simgrid::s4u::Exec::set_timeout(double timeout)
       .. doxygenfunction:: simgrid::s4u::Exec::start
       .. doxygenfunction:: simgrid::s4u::Exec::test
       .. doxygenfunction:: simgrid::s4u::Exec::wait

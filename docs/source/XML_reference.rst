@@ -372,8 +372,7 @@ following functions:
 - Host: :cpp:func:`simgrid::s4u::Host::get_property` or :cpp:func:`MSG_host_get_property_value`
 - Link: :cpp:func:`simgrid::s4u::Link::get_property`
 - Disk: :cpp:func:`simgrid::s4u::Disk::get_property`
-- Storage :cpp:func:`MSG_storage_get_property_value` (deprecated)
-- Zone: :cpp:func:`simgrid::s4u::Zone::get_property` of :cpp:func:`MSG_zone_get_property_value`
+- Zone: :cpp:func:`simgrid::s4u::NetZone::get_property` of :cpp:func:`MSG_zone_get_property_value`
 
 **Parent tags:** :ref:`pf_tag_actor`, :ref:`pf_tag_config`, :ref:`pf_tag_cluster`, :ref:`pf_tag_host`,
 :ref:`pf_tag_link`, :ref:`pf_tag_disk`,:ref:`pf_tag_zone` |br|
@@ -429,7 +428,7 @@ break the routes that are longer than 1 hop.
 <zone>
 ------
 
-A networking zone is an area in which elements are located. See :cpp:class:`simgrid::s4u::Zone`.
+A networking zone is an area in which elements are located. See :cpp:class:`simgrid::s4u::NetZone`.
 
 **Parent tags:** :ref:`pf_tag_platform`, :ref:`pf_tag_zone` (only internal nodes, i.e., zones
 containing only inner zones or clusters but no basic

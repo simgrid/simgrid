@@ -608,7 +608,7 @@ You can still stop your workers with a specific task as previously,
 or you may kill them forcefully with
 :cpp:func:`simgrid::s4u::Actor::kill` (if you already have a reference
 to the actor you want to kill) or
-:cpp:func:`void simgrid::s4u::Actor::kill(aid_t)` (if you only have its ID).
+:cpp:func:`sg_actor_kill` (if you only have its ID).
 
 
 Anyway, the new deployment `deployment3.xml` file should thus look
