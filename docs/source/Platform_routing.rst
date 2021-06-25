@@ -27,6 +27,7 @@ platform.
 
 .. |tree_img| image:: img/zone_tree.svg
    :width: 45%
+
 Circles represent processing units and squares represent network
 routers. Bold lines represent communication links. The zone "AS2" models the core of a national network interconnecting a
 small flat cluster (AS4) and a larger hierarchical cluster (AS5), a
@@ -126,6 +127,7 @@ the 2 new gateway parameters in the syntax of :ref:`pf_tag_zoneroute`.
 A zone is not a physical resource, just a collection of resources (including other zones).
 Consequently, you need to describe the gateway, i.e. the physical resource inside the zone used for the route.
 It gives you 4 parameters to describe a zoneRoute:
+
   - src: The object of source zone
   - dst: The object of destination zone
   - gw_src: Gateway inside src zone. A Host (or router) belonging to src zone.
@@ -156,6 +158,7 @@ involved in the communication.
 
 As we stated earlier, each zone implements a different strategy, defined
 through the ``routing=`` parameter.
+
   - **Full**: all routes must be explicitly given using the
     :ref:`pf_tag_route` and :ref:`pf_tag_link_ctn` tags (this :ref:`routing
     model <pf_rm>` is both simple and inefficient :). It is OK to not

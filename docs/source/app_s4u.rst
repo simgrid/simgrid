@@ -1327,7 +1327,7 @@ using :cpp:func:`Comm::sendto() <simgrid::s4u::Comm::sendto()>`.
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::Host::get_englobing_zone()
+      .. doxygenfunction:: simgrid::s4u::Host::get_englobing_zone() const
       .. doxygenfunction:: simgrid::s4u::Host::get_netpoint() const
       .. doxygenfunction:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< Link * > &links, double *latency) const
       .. doxygenfunction:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< kernel::resource::LinkImpl * > &links, double *latency) const
@@ -1998,8 +1998,8 @@ Life cycle
       .. doxygenfunction:: simgrid::s4u::Exec::start
       .. doxygenfunction:: simgrid::s4u::Exec::test
       .. doxygenfunction:: simgrid::s4u::Exec::wait
-      .. doxygenfunction:: simgrid::s4u::Exec::wait_any(std::vector< ExecPtr >& execs)
-      .. doxygenfunction:: simgrid::s4u::Exec::wait_any_for(std::vector< ExecPtr >& execs, double timeout)
+      .. doxygenfunction:: simgrid::s4u::Exec::wait_any(const std::vector< ExecPtr >& execs)
+      .. doxygenfunction:: simgrid::s4u::Exec::wait_any_for(const std::vector< ExecPtr >& execs, double timeout)
       .. doxygenfunction:: simgrid::s4u::Exec::wait_for
 
    .. group-tab:: Python
@@ -2100,9 +2100,7 @@ Basic management
 
          .. doxygentypedef:: MutexPtr
 
-         .. doxygenfunction:: simgrid::s4u::Mutex::Mutex(kernel::activity::MutexImpl *mutex)
          .. doxygenfunction:: simgrid::s4u::Mutex::create()
-         .. doxygenfunction:: simgrid::s4u::Mutex::~Mutex()
 
       .. group-tab:: C
 
@@ -2256,8 +2254,6 @@ Basic management
             #include <simgrid/s4u/Semaphore.hpp>
 
          .. doxygentypedef:: SemaphorePtr
-         .. doxygenfunction:: simgrid::s4u::Semaphore::Semaphore(unsigned int initial_capacity)
-         .. doxygenfunction:: simgrid::s4u::Semaphore::~Semaphore()
          .. doxygenfunction:: simgrid::s4u::Semaphore::create(unsigned int initial_capacity)
 
       .. group-tab:: C
