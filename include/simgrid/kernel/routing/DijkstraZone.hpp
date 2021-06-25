@@ -28,7 +28,7 @@ class XBT_PRIVATE DijkstraZone : public RoutedZone {
       xbt_graph_new_graph(1, nullptr), &DijkstraZone::route_graph_delete};
   std::map<int, xbt_node_t> graph_node_map_;
   bool cached_;
-  std::map<int, std::vector<int>> route_cache_;
+  std::map<int, std::vector<unsigned long>> route_cache_;
 
   xbt_node_t route_graph_new_node(int id);
   xbt_node_t node_map_search(int id);

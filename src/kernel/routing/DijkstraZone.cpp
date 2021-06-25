@@ -113,8 +113,8 @@ void DijkstraZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rou
     insert_link_latency(route->link_list_, e_route->link_list_, lat);
   }
 
-  auto elm                   = route_cache_.emplace(src_id, std::vector<int>());
-  std::vector<int>& pred_arr = elm.first->second;
+  auto elm                             = route_cache_.emplace(src_id, std::vector<unsigned long>());
+  std::vector<unsigned long>& pred_arr = elm.first->second;
 
   if (elm.second) { /* new element was inserted (not cached mode, or cache miss) */
     unsigned long nr_nodes = xbt_dynar_length(nodes);
@@ -165,7 +165,7 @@ void DijkstraZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rou
   NetPoint* gw_src   = nullptr;
   NetPoint* first_gw = nullptr;
 
-  for (unsigned int v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
+  for (unsigned long v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
     const s_xbt_node_t* node_pred_v = xbt_dynar_get_as(nodes, pred_arr[v], xbt_node_t);
     const s_xbt_node_t* node_v      = xbt_dynar_get_as(nodes, v, xbt_node_t);
     const s_xbt_edge_t* edge        = xbt_graph_get_edge(route_graph_.get(), node_pred_v, node_v);
