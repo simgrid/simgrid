@@ -129,8 +129,8 @@ Some shortcuts are available:
 
 - ``-gdb`` is equivalent to ``-wrapper "gdb --args" -keep-temps``, to run within gdb debugger
 - ``-lldb`` is equivalent to ``-wrapper "lldb --" -keep-temps``, to run within lldb debugger
-- ``-vgdb`` is equivalent to ``-wrapper "valgrind --vgdb=yes --vgdb-error=0"
--keep-temps``, to run within valgrind and allow to attach a debugger
+- ``-vgdb`` is equivalent to ``-wrapper "valgrind --vgdb=yes --vgdb-error=0" -keep-temps``,
+  to run within valgrind and allow to attach a debugger
 
 To help locate bottlenecks and largest allocations in the simulated application,
 the -analyze flag can be passed to smpirun. It will activate

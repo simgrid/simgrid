@@ -111,7 +111,7 @@ connected through a shared link.
 .. _platform_cpp_beyond:
 
 Beyond the XML: the power of C++ platforms
-**************
+******************************************
 
 This section describes one of the advantages of using C++ code to write your platforms.
 

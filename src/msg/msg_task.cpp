@@ -778,7 +778,7 @@ void MSG_task_set_bound(msg_task_t task, double bound)
  * (or with #TRACE_category_with_color).
  *
  * @beginrst
- * See :ref:`outcomes_vizu` for details on how to trace the (categorized) resource utilization.
+ * See :ref:`outcome_vizu` for details on how to trace the (categorized) resource utilization.
  * @endrst
  *
  * @param task the task that is going to be categorized

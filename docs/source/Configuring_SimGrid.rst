@@ -942,7 +942,7 @@ which value is either:
 Configuring the Tracing
 -----------------------
 
-The :ref:`tracing subsystem <outcomes_vizu>` can be configured in
+The :ref:`tracing subsystem <outcome_vizu>` can be configured in
 several different ways depending on the used interface (S4U, SMPI, SimDag)
 and the kind of traces that needs to be obtained. See the
 :ref:`Tracing Configuration Options subsection
@@ -1323,10 +1323,10 @@ Each collective operation can be manually selected with a
 .. TODO:: All available collective algorithms will be made available
           via the ``smpirun --help-coll`` command.
 
+.. _cfg=smpi/finalization-barrier:
+
 Add a barrier in MPI_Finalize
 .............................
-
-.. _cfg=smpi/finalization-barrier:
 
 **Option** ``smpi/finalization-barrier`` **default:** off
 
@@ -1341,6 +1341,9 @@ It might affect the total timing by the cost of a barrier.
 
 .. _cfg=smpi/errors-are-fatal:
 
+Render MPI errors non-fatal
+...........................
+
 **Option** ``smpi/errors-are-fatal`` **default:** on
 
 By default, SMPI processes will crash if a MPI error code is returned. MPI allows
@@ -1350,14 +1353,18 @@ This can ease debugging by going after the first reported error.
 
 .. _cfg=smpi/pedantic:
 
+Disable pedantic MPI errors
+...........................
+
 **Option** ``smpi/pedantic`` **default:** on
 
 By default, SMPI will report all errors it finds in MPI codes. Some of these errors
 may not be considered as errors by all developers. This flag can be turned off to
 avoid reporting some usually harmless mistakes.
 Concerned errors list (will be expanded in the future):
-  - Calling MPI_Win_fence only once in a program, hence just opening an epoch without
-  ever closing it.
+
+ - Calling MPI_Win_fence only once in a program, hence just opening an epoch without
+   ever closing it.
 
 .. _cfg=smpi/iprobe:
 
