@@ -1,4 +1,4 @@
-breathe
+breathe>=4.26
 sphinx>=3.4.3,<4.0
 sphinx_rtd_theme
 # sphinx_tabs v1.2.1 is required for Sphinx 2
