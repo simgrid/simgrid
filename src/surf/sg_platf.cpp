@@ -114,27 +114,26 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name,
   return netpoint;
 }
 
-static void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* args, const std::string& link_name)
+static void sg_platf_set_link_properties(simgrid::s4u::Link* link,
+                                         const simgrid::kernel::routing::LinkCreationArgs* args)
 {
-  current_routing->create_link(link_name, args->bandwidths)
-      ->set_properties(args->properties)
-      ->get_impl() // this call to get_impl saves some simcalls but can be removed
-      ->set_sharing_policy(args->policy)
+  link->set_properties(args->properties)
       ->set_state_profile(args->state_trace)
       ->set_latency_profile(args->latency_trace)
       ->set_bandwidth_profile(args->bandwidth_trace)
-      ->set_latency(args->latency)
-      ->seal();
+      ->set_latency(args->latency);
 }
 
-void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* link)
+void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* args)
 {
-  if (link->policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    sg_platf_new_link(link, link->id + "_UP");
-    sg_platf_new_link(link, link->id + "_DOWN");
+  simgrid::s4u::Link* link;
+  if (args->policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
+    link = current_routing->create_split_duplex_link(args->id, args->bandwidths);
   } else {
-    sg_platf_new_link(link, link->id);
+    link = current_routing->create_link(args->id, args->bandwidths)->set_sharing_policy(args->policy);
   }
+  sg_platf_set_link_properties(link, args);
+  link->seal();
 }
 
 void sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk)
@@ -295,7 +294,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
                            ->seal();
 
       zone->add_route(host->get_netpoint(), host->get_netpoint(), nullptr, nullptr,
-                      std::vector<simgrid::s4u::Link*>{loopback});
+                      std::vector<simgrid::s4u::LinkInRoute>{loopback});
     }
 
     // add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -308,25 +307,22 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
     }
 
     // create link
-    simgrid::s4u::Link* link_up;
-    simgrid::s4u::Link* link_down;
+    simgrid::s4u::Link* link;
     if (cluster->sharing_policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
-      link_up = zone->create_link(link_id + "_UP", std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
-      link_down =
-          zone->create_link(link_id + "_DOWN", std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
+      link = zone->create_split_duplex_link(link_id, cluster->bw)->set_latency(cluster->lat)->seal();
     } else {
-      link_up   = zone->create_link(link_id, std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
-      link_down = link_up;
+      link = zone->create_link(link_id, std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
     }
 
     /* adding routes */
-    std::vector<simgrid::s4u::Link*> links_up{limiter, link_up, backbone};
-    std::vector<simgrid::s4u::Link*> links_down{backbone, link_down, limiter};
-    links_up.erase(std::remove(links_up.begin(), links_up.end(), nullptr), links_up.end());
-    links_down.erase(std::remove(links_down.begin(), links_down.end(), nullptr), links_down.end());
+    std::vector<simgrid::s4u::LinkInRoute> links;
+    if (limiter)
+      links.push_back(limiter);
+    links.push_back(simgrid::s4u::LinkInRoute(link, simgrid::s4u::LinkInRoute::Direction::UP));
+    if (backbone)
+      links.push_back(backbone);
 
-    zone->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, links_up, false);
-    zone->add_route(nullptr, host->get_netpoint(), nullptr, nullptr, links_down, false);
+    zone->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, links, true);
   }
 
   // Add a router.
@@ -359,22 +355,22 @@ void sg_platf_new_tag_cluster(simgrid::kernel::routing::ClusterCreationArgs* clu
 static void sg_platf_cluster_set_hostlink(simgrid::kernel::routing::StarZone* zone,
                                           simgrid::kernel::routing::NetPoint* netpoint,
                                           const simgrid::s4u::Link* link_up, const simgrid::s4u::Link* link_down,
-                                          simgrid::kernel::resource::LinkImpl* backbone)
+                                          simgrid::s4u::Link* backbone)
 {
   XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->get_cname(), netpoint->id());
   if (backbone) {
-    zone->add_route(netpoint, nullptr, nullptr, nullptr, {link_up->get_impl(), backbone}, false);
-    zone->add_route(nullptr, netpoint, nullptr, nullptr, {backbone, link_down->get_impl()}, false);
+    zone->add_route(netpoint, nullptr, nullptr, nullptr, {link_up, backbone}, false);
+    zone->add_route(nullptr, netpoint, nullptr, nullptr, {backbone, link_down}, false);
   } else {
-    zone->add_route(netpoint, nullptr, nullptr, nullptr, {link_up->get_impl()}, false);
-    zone->add_route(nullptr, netpoint, nullptr, nullptr, {link_down->get_impl()}, false);
+    zone->add_route(netpoint, nullptr, nullptr, nullptr, {link_up}, false);
+    zone->add_route(nullptr, netpoint, nullptr, nullptr, {link_down}, false);
   }
 }
 
 /** @brief Add a link connecting a host to the rest of its StarZone */
 static void sg_platf_build_hostlink(simgrid::kernel::routing::StarZone* zone,
                                     const simgrid::kernel::routing::HostLinkCreationArgs* hostlink,
-                                    simgrid::kernel::resource::LinkImpl* backbone)
+                                    simgrid::s4u::Link* backbone)
 {
   simgrid::kernel::routing::NetPoint* netpoint = simgrid::s4u::Host::by_name(hostlink->id)->get_netpoint();
   xbt_assert(netpoint, "Host '%s' not found!", hostlink->id.c_str());
@@ -390,7 +386,7 @@ static void sg_platf_build_hostlink(simgrid::kernel::routing::StarZone* zone,
 /** @brief Create a cabinet (set of hosts) inside a Cluster(StarZone) */
 static void sg_platf_build_cabinet(simgrid::kernel::routing::StarZone* zone,
                                    const simgrid::kernel::routing::CabinetCreationArgs* args,
-                                   simgrid::kernel::resource::LinkImpl* backbone)
+                                   simgrid::s4u::Link* backbone)
 {
   for (int const& radical : args->radicals) {
     std::string id   = args->prefix + std::to_string(radical) + args->suffix;
@@ -410,11 +406,11 @@ static void sg_platf_zone_cluster_populate(const simgrid::kernel::routing::Clust
   auto* zone = dynamic_cast<simgrid::kernel::routing::StarZone*>(current_routing);
   xbt_assert(zone, "Host_links are only valid for Cluster(Star)");
 
-  simgrid::kernel::resource::LinkImpl* backbone = nullptr;
+  simgrid::s4u::Link* backbone = nullptr;
   /* create backbone */
   if (cluster->backbone) {
     sg_platf_new_link(cluster->backbone.get());
-    backbone = simgrid::s4u::Link::by_name(cluster->backbone->id)->get_impl();
+    backbone = simgrid::s4u::Link::by_name(cluster->backbone->id);
   }
 
   /* create host_links for hosts */
@@ -448,8 +444,7 @@ void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route)
 
 void sg_platf_new_bypass_route(simgrid::kernel::routing::RouteCreationArgs* route)
 {
-  current_routing->add_bypass_route(route->src, route->dst, route->gw_src, route->gw_dst, route->link_list,
-                                    route->symmetrical);
+  current_routing->add_bypass_route(route->src, route->dst, route->gw_src, route->gw_dst, route->link_list);
 }
 
 void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)

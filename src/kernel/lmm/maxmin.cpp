@@ -276,7 +276,7 @@ void System::expand_add(Constraint* cnst, Variable* var, double value)
     if (var->sharing_penalty_ != 0.0)
       elem.decrease_concurrency();
 
-    if (cnst->sharing_policy_ != s4u::Link::SharingPolicy::FATPIPE)
+    if (cnst->sharing_policy_ != Constraint::SharingPolicy::FATPIPE)
       elem.consumption_weight += value;
     else
       elem.consumption_weight = std::max(elem.consumption_weight, value);
@@ -402,14 +402,14 @@ static inline void saturated_variable_set_update(const ConstraintLight* cnst_lig
 }
 
 template <class ElemList>
-static void format_element_list(const ElemList& elem_list, s4u::Link::SharingPolicy sharing_policy, double& sum,
+static void format_element_list(const ElemList& elem_list, Constraint::SharingPolicy sharing_policy, double& sum,
                                 std::string& buf)
 {
   for (Element const& elem : elem_list) {
     buf += std::to_string(elem.consumption_weight) + ".'" + std::to_string(elem.variable->rank_) + "'(" +
            std::to_string(elem.variable->value_) + ")" +
-           (sharing_policy != s4u::Link::SharingPolicy::FATPIPE ? " + " : " , ");
-    if (sharing_policy != s4u::Link::SharingPolicy::FATPIPE)
+           (sharing_policy != Constraint::SharingPolicy::FATPIPE ? " + " : " , ");
+    if (sharing_policy != Constraint::SharingPolicy::FATPIPE)
       sum += elem.consumption_weight * elem.variable->value_;
     else
       sum = std::max(sum, elem.consumption_weight * elem.variable->value_);
@@ -433,14 +433,14 @@ void System::print() const
     double sum            = 0.0;
     // Show  the enabled variables
     buf += "\t";
-    buf += cnst.sharing_policy_ != s4u::Link::SharingPolicy::FATPIPE ? "(" : "max(";
+    buf += cnst.sharing_policy_ != Constraint::SharingPolicy::FATPIPE ? "(" : "max(";
     format_element_list(cnst.enabled_element_set_, cnst.sharing_policy_, sum, buf);
     // TODO: Adding disabled elements only for test compatibility, but do we really want them to be printed?
     format_element_list(cnst.disabled_element_set_, cnst.sharing_policy_, sum, buf);
 
     buf += "0) <= " + std::to_string(cnst.bound_) + " ('" + std::to_string(cnst.rank_) + "')";
 
-    if (cnst.sharing_policy_ == s4u::Link::SharingPolicy::FATPIPE) {
+    if (cnst.sharing_policy_ == Constraint::SharingPolicy::FATPIPE) {
       buf += " [MAX-Constraint]";
     }
     XBT_DEBUG("%s", buf.c_str());
@@ -498,7 +498,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
       xbt_assert(elem.variable->sharing_penalty_ > 0.0);
       elem.variable->value_ = 0.0;
       if (elem.consumption_weight > 0) {
-        if (cnst.sharing_policy_ != s4u::Link::SharingPolicy::FATPIPE)
+        if (cnst.sharing_policy_ != Constraint::SharingPolicy::FATPIPE)
           cnst.usage_ += elem.consumption_weight / elem.variable->sharing_penalty_;
         else if (cnst.usage_ < elem.consumption_weight / elem.variable->sharing_penalty_)
           cnst.usage_ = elem.consumption_weight / elem.variable->sharing_penalty_;
@@ -571,7 +571,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
       /* Update the usage of constraints where this variable is involved */
       for (Element& elem : var.cnsts_) {
         Constraint* cnst = elem.constraint;
-        if (cnst->sharing_policy_ != s4u::Link::SharingPolicy::FATPIPE) {
+        if (cnst->sharing_policy_ != Constraint::SharingPolicy::FATPIPE) {
           // Remember: shared constraints require that sum(elem.value * var.value) < cnst->bound
           double_update(&(cnst->remaining_), elem.consumption_weight * var.value_, cnst->bound_ * sg_maxmin_precision);
           double_update(&(cnst->usage_), elem.consumption_weight / var.sharing_penalty_, sg_maxmin_precision);
@@ -914,7 +914,7 @@ void System::remove_all_modified_set()
 double Constraint::get_usage() const
 {
   double result              = 0.0;
-  if (sharing_policy_ != s4u::Link::SharingPolicy::FATPIPE) {
+  if (sharing_policy_ != SharingPolicy::FATPIPE) {
     for (Element const& elem : enabled_element_set_)
       if (elem.consumption_weight > 0)
         result += elem.consumption_weight * elem.variable->value_;

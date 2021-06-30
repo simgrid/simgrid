@@ -1490,3 +1490,28 @@ $ ${bindir:=.}/flatifier ../platforms/cluster_torus_noncontiguous_rad.xml "--log
 >   </route>
 > </AS>
 > </platform>
+$ ${bindir:=.}/flatifier ../platforms/two_hosts_one_link_splitduplex.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
+> <?xml version='1.0'?>
+> <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+> <platform version="4">
+> <AS id="AS0" routing="Full">
+>   <host id="alice" speed="500000000"/>
+>   <host id="bob" speed="1000000000"/>
+>   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
+>   <link id="link1_DOWN" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="link1_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <route src="alice" dst="alice">
+>   <link_ctn id="__loopback__"/>
+>   </route>
+>   <route src="alice" dst="bob">
+>   <link_ctn id="link1_UP"/>
+>   </route>
+>   <route src="bob" dst="alice">
+>   <link_ctn id="link1_DOWN"/>
+>   </route>
+>   <route src="bob" dst="bob">
+>   <link_ctn id="__loopback__"/>
+>   </route>
+> </AS>
+> </platform>
+

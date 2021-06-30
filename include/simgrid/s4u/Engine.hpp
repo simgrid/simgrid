@@ -121,6 +121,11 @@ public:
   std::vector<Link*> get_all_links() const;
   std::vector<Link*> get_filtered_links(const std::function<bool(Link*)>& filter) const;
   Link* link_by_name(const std::string& name) const;
+  /**
+   * @brief Find a split-duplex link from its name.
+   * @throw std::invalid_argument if the searched link does not exist.
+   */
+  SplitDuplexLink* split_duplex_link_by_name(const std::string& name) const;
   Link* link_by_name_or_null(const std::string& name) const;
 
   Mailbox* mailbox_by_name_or_create(const std::string& name) const;

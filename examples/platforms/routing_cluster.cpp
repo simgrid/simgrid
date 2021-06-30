@@ -39,9 +39,11 @@ static void create_cluster(const sg4::NetZone* root, const std::string& cluster_
     }
 
     /* add link UP and backbone for communications from the host */
-    cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, std::vector<sg4::Link*>{l_up, l_bb}, false);
+    cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, std::vector<sg4::LinkInRoute>{l_up, l_bb},
+                       false);
     /* add backbone and link DOWN for communications to the host */
-    cluster->add_route(nullptr, host->get_netpoint(), nullptr, nullptr, std::vector<sg4::Link*>{l_bb, l_down}, false);
+    cluster->add_route(nullptr, host->get_netpoint(), nullptr, nullptr, std::vector<sg4::LinkInRoute>{l_bb, l_down},
+                       false);
   }
 
   /* create router */

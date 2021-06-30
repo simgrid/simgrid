@@ -51,7 +51,7 @@ public:
    */
   void get_local_route(const NetPoint* src, const NetPoint* dst, Route* route, double* lat) override;
   void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                 const std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
+                 const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical) override;
 };
 } // namespace routing
 } // namespace kernel

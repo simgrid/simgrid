@@ -55,7 +55,7 @@ void FullZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* 
 }
 
 void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                         const std::vector<resource::LinkImpl*>& link_list, bool symmetrical)
+                         const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical)
 {
   add_route_check_params(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
@@ -72,8 +72,8 @@ void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
                dst->get_cname());
 
   /* Add the route to the base */
-  routing_table_[src->id()][dst->id()] =
-      std::unique_ptr<Route>(new_extended_route(get_hierarchy(), gw_src, gw_dst, link_list, true));
+  routing_table_[src->id()][dst->id()] = std::unique_ptr<Route>(
+      new_extended_route(get_hierarchy(), gw_src, gw_dst, get_link_list_impl(link_list, false), true));
 
   if (symmetrical && src != dst) {
     if (gw_dst && gw_src) {
@@ -91,8 +91,8 @@ void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
                  "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.",
                  dst->get_cname(), src->get_cname());
 
-    routing_table_[dst->id()][src->id()] =
-        std::unique_ptr<Route>(new_extended_route(get_hierarchy(), gw_src, gw_dst, link_list, false));
+    routing_table_[dst->id()][src->id()] = std::unique_ptr<Route>(
+        new_extended_route(get_hierarchy(), gw_src, gw_dst, get_link_list_impl(link_list, true), false));
   }
 }
 } // namespace routing

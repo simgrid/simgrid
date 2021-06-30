@@ -123,6 +123,11 @@ void EngineImpl::add_model(std::shared_ptr<resource::Model> model, const std::ve
   models_prio_[model_name] = std::move(model);
 }
 
+void EngineImpl::add_split_duplex_link(const std::string& name, std::unique_ptr<resource::SplitDuplexLinkImpl> link)
+{
+  split_duplex_links_[name] = std::move(link);
+}
+
 /** Wake up all actors waiting for a Surf action to finish */
 void EngineImpl::wake_all_waiting_actors() const
 {

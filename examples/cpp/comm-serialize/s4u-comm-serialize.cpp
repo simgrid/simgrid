@@ -104,14 +104,11 @@ int main(int argc, char* argv[])
   auto* receiver = zone->create_host("receiver", 1)->seal();
 
   /* create split-duplex link1 (UP/DOWN), limiting the number of concurrent flows in it for 2 */
-  auto* link_up   = zone->create_link("link1_up", 10e9)->set_latency(10e-6)->set_concurrency_limit(2)->seal();
-  auto* link_down = zone->create_link("link1_down", 10e9)->set_latency(10e-6)->set_concurrency_limit(2)->seal();
+  auto* link = zone->create_split_duplex_link("link1", 10e9)->set_latency(10e-6)->set_concurrency_limit(2)->seal();
 
   /* create routes between nodes */
-  zone->add_route(sender->get_netpoint(), receiver->get_netpoint(), nullptr, nullptr, std::vector<sg4::Link*>{link_up},
-                  false);
-  zone->add_route(receiver->get_netpoint(), sender->get_netpoint(), nullptr, nullptr,
-                  std::vector<sg4::Link*>{link_down}, false);
+  zone->add_route(sender->get_netpoint(), receiver->get_netpoint(), nullptr, nullptr,
+                  std::vector<sg4::LinkInRoute>{{link, sg4::LinkInRoute::Direction::UP}}, true);
   zone->seal();
 
   /* create actors Sender/Receiver */

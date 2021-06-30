@@ -66,7 +66,7 @@ protected:
   }
   void get_route_check_params(const NetPoint* src, const NetPoint* dst) const;
   void add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                              const std::vector<resource::LinkImpl*>& link_list, bool symmetrical) const;
+                              const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical) const;
 };
 } // namespace routing
 } // namespace kernel

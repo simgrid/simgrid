@@ -206,14 +206,16 @@ void DijkstraZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rou
 }
 
 void DijkstraZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                             const std::vector<resource::LinkImpl*>& link_list_, bool symmetrical)
+                             const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical)
 {
-  add_route_check_params(src, dst, gw_src, gw_dst, link_list_, symmetrical);
+  add_route_check_params(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
-  new_edge(src->id(), dst->id(), new_extended_route(get_hierarchy(), gw_src, gw_dst, link_list_, true));
+  new_edge(src->id(), dst->id(),
+           new_extended_route(get_hierarchy(), gw_src, gw_dst, get_link_list_impl(link_list, false), true));
 
   if (symmetrical)
-    new_edge(dst->id(), src->id(), new_extended_route(get_hierarchy(), gw_dst, gw_src, link_list_, false));
+    new_edge(dst->id(), src->id(),
+             new_extended_route(get_hierarchy(), gw_dst, gw_src, get_link_list_impl(link_list, true), false));
 }
 
 void DijkstraZone::new_edge(int src_id, int dst_id, Route* route)

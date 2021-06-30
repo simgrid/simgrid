@@ -110,6 +110,10 @@ protected:
   /** @brief Get the NetZone that is represented by the netpoint */
   const NetZoneImpl* get_netzone_recursive(const NetPoint* netpoint) const;
 
+  /** @brief Get the list of LinkImpl* to add in a route, considering split-duplex links and the direction */
+  std::vector<resource::LinkImpl*> get_link_list_impl(const std::vector<s4u::LinkInRoute>& link_list,
+                                                      bool backroute) const;
+
 public:
   enum class RoutingMode {
     base,     /**< Base case: use simple link lists for routing     */
@@ -156,11 +160,12 @@ public:
   s4u::Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
   /** @brief Make a link within that NetZone */
   virtual s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths);
+  s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, const std::vector<double>& bandwidths);
   /** @brief Make a router within that NetZone */
   NetPoint* create_router(const std::string& name);
   /** @brief Creates a new route in this NetZone */
   virtual void add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                                std::vector<resource::LinkImpl*>& link_list, bool symmetrical);
+                                const std::vector<s4u::LinkInRoute>& link_list);
 
   /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
   void seal();
@@ -169,7 +174,7 @@ public:
   virtual int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
   virtual void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                          kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                         const std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
+                         const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical);
   /** @brief Set parent of this Netzone */
   void set_parent(NetZoneImpl* parent);
   /** @brief Set network model for this Netzone */
@@ -196,6 +201,13 @@ public:
 
   virtual void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
                          std::map<std::string, xbt_edge_t, std::less<>>* edges) = 0;
+
+  /*** Called on each newly created regular route (not on bypass routes) */
+  static xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                          kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                          std::vector<kernel::resource::LinkImpl*> const& link_list)>
+      on_route_creation; // XBT_ATTRIB_DEPRECATED_v332 : should be an internal signal used by NS3.. if necessary,
+                         // callback shouldn't use LinkImpl*
 
 private:
   RoutingMode hierarchy_ = RoutingMode::base;

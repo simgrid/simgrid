@@ -65,15 +65,19 @@ under the hood, SimGrid creates 2 links in this case: the *1_UP*
 link and the *1_DOWN* link. As you can see, the selection of link to use
 in the <route> tag is done by the ``direction=`` parameter.
 
-Using the C++ interface, you should describe both links separately and use them
-in the route description.
+Using the C++ interface, you can use the specific function to create these 2 links. Note
+that you need to define the direction in the add_route function when adding a route containing
+a split-duplex link. Otherwise, SimGrid cannot know which link (UP/DOWN) to use.
 
 .. code-block:: cpp
 
-    Link* l_up   = zone->create_link("1_UP", "125MBps")->set_latency("24us")->seal();
-    Link* l_down = zone->create_link("1_DOWN", "125MBps")->set_latency("24us")->seal();
+    auto* link = zone->create_split_duplex_link("1", "125MBps")->set_latency("24us")->seal();
     
-    zone->add_route(S1, C1, nullptr, nullptr, {link_down});
+    zone->add_route(S1, C1, nullptr, nullptr, {{link, LinkInRoute::Direction::UP}});
+
+.. note::
+    Do not use set_sharing_policy(SharingPolicy::SPLITDUPLEX).
+    SimGrid will complain since set_sharing_policy should be used only with (SHARED and FATPIPE)
 
 
 Loading the platform

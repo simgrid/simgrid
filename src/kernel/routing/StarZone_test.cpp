@@ -19,6 +19,21 @@ TEST_CASE("kernel::routing::StarZone: Creating Zone", "[creation]")
   REQUIRE(simgrid::s4u::create_star_zone("test"));
 }
 
+TEST_CASE("kernel::routing::StarZone: Create links: exceptions", "")
+{
+  simgrid::s4u::Engine e("test");
+  auto* zone = simgrid::s4u::create_star_zone("test");
+  SECTION("create_link: invalid bandwidth")
+  {
+    REQUIRE_THROWS_AS(zone->create_link("link", "speed"), std::invalid_argument);
+  }
+
+  SECTION("split-duplex create_link: invalid bandwidth")
+  {
+    REQUIRE_THROWS_AS(zone->create_split_duplex_link("link", "speed"), std::invalid_argument);
+  }
+}
+
 TEST_CASE("kernel::routing::StarZone: Adding routes (hosts): exception", "")
 {
   simgrid::s4u::Engine e("test");
@@ -95,10 +110,10 @@ TEST_CASE("kernel::routing::StarZone: Get routes: assert", "[.][assert]")
 
   const auto* host1 = zone->create_host("netpoint1", {100});
   const auto* host2 = zone->create_host("netpoint2", {100});
-  std::vector<simgrid::kernel::resource::LinkImpl*> links;
-  links.push_back(zone->create_link("link1", {100})->get_impl());
-  std::vector<simgrid::kernel::resource::LinkImpl*> links2;
-  links2.push_back(zone->create_link("link2", {100})->get_impl());
+  std::vector<simgrid::s4u::LinkInRoute> links;
+  links.emplace_back(zone->create_link("link1", {100}));
+  std::vector<simgrid::s4u::LinkInRoute> links2;
+  links2.emplace_back(zone->create_link("link2", {100}));
 
   SECTION("Get route: no UP link")
   {
@@ -165,10 +180,10 @@ TEST_CASE("kernel::routing::StarZone: Get routes (hosts)", "")
 
   SECTION("Get route: no shared link")
   {
-    std::vector<simgrid::kernel::resource::LinkImpl*> links;
-    links.push_back(zone->create_link("link1", {100})->set_latency(10)->get_impl());
-    std::vector<simgrid::kernel::resource::LinkImpl*> links2;
-    links2.push_back(zone->create_link("link2", {200})->set_latency(20)->get_impl());
+    std::vector<simgrid::s4u::LinkInRoute> links;
+    links.emplace_back(zone->create_link("link1", {100})->set_latency(10));
+    std::vector<simgrid::s4u::LinkInRoute> links2;
+    links2.emplace_back(zone->create_link("link2", {200})->set_latency(20));
     zone->add_route(host1->get_netpoint(), nullptr, nullptr, nullptr, links, true);
     zone->add_route(host2->get_netpoint(), nullptr, nullptr, nullptr, links2, true);
     zone->seal();
@@ -186,13 +201,13 @@ TEST_CASE("kernel::routing::StarZone: Get routes (hosts)", "")
 
   SECTION("Get route: shared link(backbone)")
   {
-    auto* backbone = zone->create_link("backbone", {1000})->set_latency(100)->get_impl();
-    std::vector<simgrid::kernel::resource::LinkImpl*> links;
-    links.push_back(zone->create_link("link1", {100})->set_latency(10)->get_impl());
-    links.push_back(backbone);
-    std::vector<simgrid::kernel::resource::LinkImpl*> links2;
-    links2.push_back(zone->create_link("link2", {200})->set_latency(20)->get_impl());
-    links2.push_back(backbone);
+    auto* backbone = zone->create_link("backbone", {1000})->set_latency(100);
+    std::vector<simgrid::s4u::LinkInRoute> links;
+    links.emplace_back(zone->create_link("link1", {100})->set_latency(10));
+    links.emplace_back(backbone);
+    std::vector<simgrid::s4u::LinkInRoute> links2;
+    links2.emplace_back(zone->create_link("link2", {200})->set_latency(20));
+    links2.emplace_back(backbone);
 
     zone->add_route(host1->get_netpoint(), nullptr, nullptr, nullptr, links, true);
     zone->add_route(host2->get_netpoint(), nullptr, nullptr, nullptr, links2, true);
@@ -210,10 +225,10 @@ TEST_CASE("kernel::routing::StarZone: Get routes (hosts)", "")
 
   SECTION("Get route: loopback")
   {
-    auto* backbone = zone->create_link("backbone", {1000})->set_latency(100)->get_impl();
-    std::vector<simgrid::kernel::resource::LinkImpl*> links;
-    links.push_back(zone->create_link("link1", {100})->set_latency(10)->get_impl());
-    links.push_back(backbone);
+    auto* backbone = zone->create_link("backbone", {1000})->set_latency(100);
+    std::vector<simgrid::s4u::LinkInRoute> links;
+    links.emplace_back(zone->create_link("link1", {100})->set_latency(10));
+    links.emplace_back(backbone);
 
     zone->add_route(host1->get_netpoint(), host1->get_netpoint(), nullptr, nullptr, links, true);
     zone->seal();
@@ -243,10 +258,10 @@ TEST_CASE("kernel::routing::StarZone: Get routes (netzones)", "")
 
   SECTION("Get route: netzone")
   {
-    std::vector<simgrid::kernel::resource::LinkImpl*> links;
-    links.push_back(zone->create_link("link1", {100})->set_latency(10)->get_impl());
-    std::vector<simgrid::kernel::resource::LinkImpl*> links2;
-    links2.push_back(zone->create_link("link2", {200})->set_latency(20)->get_impl());
+    std::vector<simgrid::s4u::LinkInRoute> links;
+    links.emplace_back(zone->create_link("link1", {100})->set_latency(10));
+    std::vector<simgrid::s4u::LinkInRoute> links2;
+    links2.emplace_back(zone->create_link("link2", {200})->set_latency(20));
     zone->add_route(subzone1->get_netpoint(), nullptr, router1, nullptr, links, true);
     zone->add_route(subzone2->get_netpoint(), nullptr, router2, nullptr, links2, true);
     zone->seal();
@@ -272,7 +287,7 @@ TEST_CASE("kernel::routing::StarZone: mix new routes and hosts", "")
   for (int i = 0; i < 10; i++) {
     std::string cpu_name          = "CPU" + std::to_string(i);
     const simgrid::s4u::Host* cpu = zone->create_host(cpu_name, 1e9)->seal();
-    REQUIRE_NOTHROW(
-        zone->add_route(cpu->get_netpoint(), nullptr, nullptr, nullptr, std::vector<simgrid::s4u::Link*>{link}, true));
+    REQUIRE_NOTHROW(zone->add_route(cpu->get_netpoint(), nullptr, nullptr, nullptr,
+                                    std::vector<simgrid::s4u::LinkInRoute>{link}, true));
   }
 }

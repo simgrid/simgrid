@@ -7,11 +7,8 @@
 
     <link id="link1" bandwidth="125MBps" latency="50us" sharing_policy="SPLITDUPLEX"/>
 
-    <route src="alice" dst="bob" symmetrical="NO">
+    <route src="alice" dst="bob" symmetrical="YES">
       <link_ctn id="link1" direction="UP"/>
-    </route>
-    <route src="bob" dst="alice" symmetrical="NO">
-      <link_ctn id="link1" direction="DOWN"/>
     </route>
   </zone>
 </platform>

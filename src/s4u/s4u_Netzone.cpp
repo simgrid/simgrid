@@ -100,33 +100,41 @@ int NetZone::add_component(kernel::routing::NetPoint* elm)
   return pimpl_->add_component(elm);
 }
 
-std::vector<kernel::resource::LinkImpl*> NetZone::get_link_list_impl(const std::vector<Link*>& link_list)
+std::vector<LinkInRoute> NetZone::convert_to_linkInRoute(const std::vector<kernel::resource::LinkImpl*>& link_list)
 {
-  std::vector<kernel::resource::LinkImpl*> links;
-  for (const auto& link : link_list) {
-    links.push_back(link->get_impl());
+  std::vector<LinkInRoute> links;
+  for (const auto* link : link_list) {
+    links.emplace_back(LinkInRoute(link->get_iface()));
   }
   return links;
 }
 
 void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                        const std::vector<Link*>& link_list, bool symmetrical)
+                        const std::vector<LinkInRoute>& link_list, bool symmetrical)
 {
-  pimpl_->add_route(src, dst, gw_src, gw_dst, NetZone::get_link_list_impl(link_list), symmetrical);
+  pimpl_->add_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
 }
 
 void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                         const std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical)
 {
-  pimpl_->add_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
+  pimpl_->add_route(src, dst, gw_src, gw_dst, convert_to_linkInRoute(link_list), symmetrical);
 }
+
 void NetZone::add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                                kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                               std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical)
+                               std::vector<kernel::resource::LinkImpl*>& link_list, bool /*symmetrical*/)
 {
-  pimpl_->add_bypass_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
+  pimpl_->add_bypass_route(src, dst, gw_src, gw_dst, convert_to_linkInRoute(link_list));
+}
+
+void NetZone::add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
+                               kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+                               const std::vector<LinkInRoute>& link_list)
+{
+  pimpl_->add_bypass_route(src, dst, gw_src, gw_dst, link_list);
 }
 
 void NetZone::extract_xbt_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
@@ -178,6 +186,24 @@ s4u::Link* NetZone::create_link(const std::string& name, const std::vector<doubl
 s4u::Link* NetZone::create_link(const std::string& name, const std::string& bandwidth)
 {
   return create_link(name, std::vector<std::string>{bandwidth});
+}
+
+s4u::SplitDuplexLink* NetZone::create_split_duplex_link(const std::string& name, const std::string& bandwidth)
+{
+  double speed;
+  try {
+    speed = xbt_parse_get_bandwidth("", 0, bandwidth, "");
+  } catch (const simgrid::ParseError&) {
+    throw std::invalid_argument(std::string("Impossible to create split-duplex link: ") + name +
+                                std::string(". Invalid bandwidth: ") + bandwidth);
+  }
+  return create_split_duplex_link(name, speed);
+}
+
+s4u::SplitDuplexLink* NetZone::create_split_duplex_link(const std::string& name, double bandwidth)
+{
+  return kernel::actor::simcall(
+      [this, &name, &bandwidth] { return pimpl_->create_split_duplex_link(name, std::vector<double>{bandwidth}); });
 }
 
 s4u::Link* NetZone::create_link(const std::string& name, const std::vector<std::string>& bandwidths)

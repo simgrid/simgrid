@@ -87,9 +87,9 @@ NetworkCm02Model::NetworkCm02Model(const std::string& name) : NetworkModel(name)
   }
 
   set_maxmin_system(new lmm::System(select));
-  loopback_ = create_link("__loopback__", std::vector<double>{config::get_value<double>("network/loopback-bw")})
-                  ->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE)
-                  ->set_latency(config::get_value<double>("network/loopback-lat"));
+  loopback_ = create_link("__loopback__", std::vector<double>{config::get_value<double>("network/loopback-bw")});
+  loopback_->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE);
+  loopback_->set_latency(config::get_value<double>("network/loopback-lat"));
   loopback_->seal();
 }
 
@@ -130,12 +130,16 @@ void NetworkCm02Model::set_bw_factor_cb(const std::function<NetworkFactorCb>& cb
 LinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   xbt_assert(bandwidths.size() == 1, "Non-WIFI links must use only 1 bandwidth.");
-  return (new NetworkCm02Link(name, bandwidths[0], get_maxmin_system()))->set_model(this);
+  auto link = new NetworkCm02Link(name, bandwidths[0], get_maxmin_system());
+  link->set_model(this);
+  return link;
 }
 
 LinkImpl* NetworkCm02Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
 {
-  return (new NetworkWifiLink(name, bandwidths, get_maxmin_system()))->set_model(this);
+  auto link = new NetworkWifiLink(name, bandwidths, get_maxmin_system());
+  link->set_model(this);
+  return link;
 }
 
 void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
@@ -495,7 +499,7 @@ void NetworkCm02Link::set_bandwidth(double value)
   }
 }
 
-LinkImpl* NetworkCm02Link::set_latency(double value)
+void NetworkCm02Link::set_latency(double value)
 {
   latency_check(value);
 
@@ -528,7 +532,6 @@ LinkImpl* NetworkCm02Link::set_latency(double value)
     if (not action->is_suspended())
       get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), action->sharing_penalty_);
   }
-  return this;
 }
 
 /**********

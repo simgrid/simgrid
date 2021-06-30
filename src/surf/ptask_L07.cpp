@@ -62,9 +62,9 @@ NetworkL07Model::NetworkL07Model(const std::string& name, HostL07Model* hmodel, 
 {
   set_maxmin_system(sys);
   loopback_ =
-      create_link("__loopback__", std::vector<double>{simgrid::config::get_value<double>("network/loopback-bw")})
-          ->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE)
-          ->set_latency(simgrid::config::get_value<double>("network/loopback-lat"));
+      create_link("__loopback__", std::vector<double>{simgrid::config::get_value<double>("network/loopback-bw")});
+  loopback_->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE);
+  loopback_->set_latency(simgrid::config::get_value<double>("network/loopback-lat"));
   loopback_->seal();
 }
 
@@ -241,7 +241,9 @@ kernel::resource::CpuImpl* CpuL07Model::create_cpu(s4u::Host* host, const std::v
 kernel::resource::LinkImpl* NetworkL07Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   xbt_assert(bandwidths.size() == 1, "Non WIFI link must have only 1 bandwidth.");
-  return (new LinkL07(name, bandwidths[0], get_maxmin_system()))->set_model(this);
+  auto link = new LinkL07(name, bandwidths[0], get_maxmin_system());
+  link->set_model(this);
+  return link;
 }
 
 kernel::resource::LinkImpl* NetworkL07Model::create_wifi_link(const std::string& name,
@@ -362,7 +364,7 @@ void LinkL07::set_bandwidth(double value)
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), bandwidth_.peak * bandwidth_.scale);
 }
 
-kernel::resource::LinkImpl* LinkL07::set_latency(double value)
+void LinkL07::set_latency(double value)
 {
   latency_check(value);
   const kernel::lmm::Element* elem = nullptr;
@@ -372,7 +374,6 @@ kernel::resource::LinkImpl* LinkL07::set_latency(double value)
     auto* action = static_cast<L07Action*>(var->get_id());
     action->updateBound();
   }
-  return this;
 }
 LinkL07::~LinkL07() = default;
 
