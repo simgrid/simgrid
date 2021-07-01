@@ -37,7 +37,7 @@ class EngineImpl {
   std::map<std::string, resource::LinkImpl*, std::less<>> links_;
   /* save split-duplex links separately, keep links_ with only LinkImpl* seen by the user
    * members of a split-duplex are saved in the links_ */
-  std::map<std::string, std::unique_ptr<resource::SplitDuplexLinkImpl>> split_duplex_links_;
+  std::map<std::string, std::unique_ptr<resource::SplitDuplexLinkImpl>, std::less<>> split_duplex_links_;
   std::unordered_map<std::string, routing::NetPoint*> netpoints_;
   std::unordered_map<std::string, activity::MailboxImpl*> mailboxes_;
 

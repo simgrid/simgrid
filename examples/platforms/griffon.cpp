@@ -27,7 +27,7 @@ create_cabinet(const sg4::NetZone* root, const std::string& name, const std::vec
   cluster->set_parent(root);
 
   /* create the backbone link */
-  sg4::Link* l_bb = cluster->create_link("backbone-" + name, "1.25GBps")->seal();
+  const sg4::Link* l_bb = cluster->create_link("backbone-" + name, "1.25GBps")->seal();
 
   /* create all hosts and connect them to outside world */
   for (const auto& id : radicals) {
@@ -35,7 +35,7 @@ create_cabinet(const sg4::NetZone* root, const std::string& name, const std::vec
     /* create host */
     const sg4::Host* host = cluster->create_host(hostname, "286.087kf");
     /* create UP/DOWN link */
-    auto* link = cluster->create_split_duplex_link(hostname, "125MBps")->set_latency("24us")->seal();
+    const sg4::Link* link = cluster->create_split_duplex_link(hostname, "125MBps")->set_latency("24us")->seal();
 
     /* add link and backbone for communications from the host */
     cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr,
@@ -77,7 +77,7 @@ void load_platform(const sg4::Engine& /*e*/)
   simgrid::kernel::routing::NetPoint* router;
 
   /* create top link */
-  sg4::Link* link = root->create_link("backbone", "1.25GBps")->set_latency("24us")->seal();
+  const sg4::Link* link = root->create_link("backbone", "1.25GBps")->set_latency("24us")->seal();
 
   /* create cabinet1 */
   std::vector<int> rad(32);

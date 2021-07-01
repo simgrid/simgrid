@@ -195,14 +195,14 @@ Link* Link::set_properties(const std::unordered_map<std::string, std::string>& p
 
 Link* SplitDuplexLink::get_link_up() const
 {
-  kernel::resource::SplitDuplexLinkImpl* pimpl = dynamic_cast<kernel::resource::SplitDuplexLinkImpl*>(pimpl_);
+  const auto* pimpl = dynamic_cast<kernel::resource::SplitDuplexLinkImpl*>(pimpl_);
   xbt_assert(pimpl, "Requesting link_up from a non split-duplex link: %s", get_cname());
   return pimpl->get_link_up();
 }
 
 Link* SplitDuplexLink::get_link_down() const
 {
-  kernel::resource::SplitDuplexLinkImpl* pimpl = dynamic_cast<kernel::resource::SplitDuplexLinkImpl*>(pimpl_);
+  const auto* pimpl = dynamic_cast<kernel::resource::SplitDuplexLinkImpl*>(pimpl_);
   xbt_assert(pimpl, "Requesting link_down from a non split-duplex link: %s", get_cname());
   return pimpl->get_link_down();
 }

@@ -207,31 +207,31 @@ std::vector<resource::LinkImpl*> NetZoneImpl::get_link_list_impl(const std::vect
   std::vector<resource::LinkImpl*> links;
 
   for (const auto& link : link_list) {
+    if (link.get_link()->get_sharing_policy() != s4u::Link::SharingPolicy::SPLITDUPLEX) {
+      links.push_back(link.get_link()->get_impl());
+      continue;
+    }
+    // split-duplex links
+    const auto* sd_link = dynamic_cast<const s4u::SplitDuplexLink*>(link.get_link());
+    xbt_assert(sd_link,
+               "Add_route: cast to SpliDuplexLink impossible. This should not happen, please contact SimGrid team");
     resource::LinkImpl* link_impl;
-    if (link.get_link()->get_sharing_policy() == s4u::Link::SharingPolicy::SPLITDUPLEX) {
-      const auto* sd_link = dynamic_cast<const s4u::SplitDuplexLink*>(link.get_link());
-      xbt_assert(sd_link,
-                 "Add_route: cast to SpliDuplexLink impossible. This should not happen, please contact SimGrid team");
-      switch (link.get_direction()) {
-        case s4u::LinkInRoute::Direction::UP:
-          if (backroute)
-            link_impl = sd_link->get_link_down()->get_impl();
-          else
-            link_impl = sd_link->get_link_up()->get_impl();
-          break;
-        case s4u::LinkInRoute::Direction::DOWN:
-          if (backroute)
-            link_impl = sd_link->get_link_up()->get_impl();
-          else
-            link_impl = sd_link->get_link_down()->get_impl();
-          break;
-        case s4u::LinkInRoute::Direction::NONE:
-        default:
-          throw std::invalid_argument("Invalid add_route. Split-Duplex link without a direction: " +
-                                      link.get_link()->get_name());
-      }
-    } else {
-      link_impl = link.get_link()->get_impl();
+    switch (link.get_direction()) {
+      case s4u::LinkInRoute::Direction::UP:
+        if (backroute)
+          link_impl = sd_link->get_link_down()->get_impl();
+        else
+          link_impl = sd_link->get_link_up()->get_impl();
+        break;
+      case s4u::LinkInRoute::Direction::DOWN:
+        if (backroute)
+          link_impl = sd_link->get_link_up()->get_impl();
+        else
+          link_impl = sd_link->get_link_down()->get_impl();
+        break;
+      default:
+        throw std::invalid_argument("Invalid add_route. Split-Duplex link without a direction: " +
+                                    link.get_link()->get_name());
     }
     links.push_back(link_impl);
   }

@@ -257,7 +257,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
     zone->set_property(elm.first, elm.second);
 
   /* Make the backbone */
-  simgrid::s4u::Link* backbone = nullptr;
+  const simgrid::s4u::Link* backbone = nullptr;
   if ((cluster->bb_bw > 0) || (cluster->bb_lat > 0)) {
     std::string bb_name = std::string(cluster->id) + "_backbone";
     XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/> <!--backbone -->", bb_name.c_str(), cluster->bb_bw,
@@ -288,17 +288,17 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
       std::string loopback_name = link_id + "_loopback";
       XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", loopback_name.c_str(), cluster->loopback_bw);
 
-      auto* loopback = zone->create_link(loopback_name, std::vector<double>{cluster->loopback_bw})
-                           ->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::FATPIPE)
-                           ->set_latency(cluster->loopback_lat)
-                           ->seal();
+      const auto* loopback = zone->create_link(loopback_name, std::vector<double>{cluster->loopback_bw})
+                                 ->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::FATPIPE)
+                                 ->set_latency(cluster->loopback_lat)
+                                 ->seal();
 
       zone->add_route(host->get_netpoint(), host->get_netpoint(), nullptr, nullptr,
                       std::vector<simgrid::s4u::LinkInRoute>{loopback});
     }
 
     // add a limiter link (shared link to account for maximal bandwidth of the node)
-    simgrid::s4u::Link* limiter = nullptr;
+    const simgrid::s4u::Link* limiter = nullptr;
     if (cluster->limiter_link > 0) {
       std::string limiter_name = std::string(link_id) + "_limiter";
       XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", limiter_name.c_str(), cluster->limiter_link);
@@ -307,7 +307,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
     }
 
     // create link
-    simgrid::s4u::Link* link;
+    const simgrid::s4u::Link* link;
     if (cluster->sharing_policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
       link = zone->create_split_duplex_link(link_id, cluster->bw)->set_latency(cluster->lat)->seal();
     } else {
@@ -355,7 +355,7 @@ void sg_platf_new_tag_cluster(simgrid::kernel::routing::ClusterCreationArgs* clu
 static void sg_platf_cluster_set_hostlink(simgrid::kernel::routing::StarZone* zone,
                                           simgrid::kernel::routing::NetPoint* netpoint,
                                           const simgrid::s4u::Link* link_up, const simgrid::s4u::Link* link_down,
-                                          simgrid::s4u::Link* backbone)
+                                          const simgrid::s4u::Link* backbone)
 {
   XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->get_cname(), netpoint->id());
   if (backbone) {

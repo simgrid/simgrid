@@ -25,8 +25,8 @@ TEST_CASE("kernel::routing::DijkstraZone: mix new routes and hosts", "")
   simgrid::s4u::Engine e("test");
   auto* zone = simgrid::s4u::create_dijkstra_zone("test", false);
 
-  const simgrid::s4u::Host* nic = zone->create_host("nic", 1e9)->seal();
-  simgrid::s4u::Link* link      = zone->create_link("my_link", 1e6)->seal();
+  const simgrid::s4u::Host* nic  = zone->create_host("nic", 1e9)->seal();
+  const simgrid::s4u::Link* link = zone->create_link("my_link", 1e6)->seal();
   for (int i = 0; i < 10; i++) {
     std::string cpu_name          = "CPU" + std::to_string(i);
     const simgrid::s4u::Host* cpu = zone->create_host(cpu_name, 1e9)->seal();

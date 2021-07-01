@@ -17,7 +17,7 @@ namespace resource {
  * Resource *
  ************/
 
-NetworkWifiLink::NetworkWifiLink(const std::string& name, std::vector<double> bandwidths, lmm::System* system)
+NetworkWifiLink::NetworkWifiLink(const std::string& name, const std::vector<double>& bandwidths, lmm::System* system)
     : LinkImpl(name)
 {
   this->set_constraint(system->constraint_new(this, 1));

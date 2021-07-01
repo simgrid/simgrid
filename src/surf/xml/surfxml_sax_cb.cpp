@@ -481,7 +481,7 @@ void ETag_surfxml_link(){
 
 void STag_surfxml_link___ctn()
 {
-  simgrid::s4u::Link* link;
+  const simgrid::s4u::Link* link;
   simgrid::s4u::LinkInRoute::Direction direction = simgrid::s4u::LinkInRoute::Direction::NONE;
   switch (A_surfxml_link___ctn_direction) {
   case AU_surfxml_link___ctn_direction:

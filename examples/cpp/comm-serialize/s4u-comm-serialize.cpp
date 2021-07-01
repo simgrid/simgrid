@@ -104,7 +104,8 @@ int main(int argc, char* argv[])
   auto* receiver = zone->create_host("receiver", 1)->seal();
 
   /* create split-duplex link1 (UP/DOWN), limiting the number of concurrent flows in it for 2 */
-  auto* link = zone->create_split_duplex_link("link1", 10e9)->set_latency(10e-6)->set_concurrency_limit(2)->seal();
+  const auto* link =
+      zone->create_split_duplex_link("link1", 10e9)->set_latency(10e-6)->set_concurrency_limit(2)->seal();
 
   /* create routes between nodes */
   zone->add_route(sender->get_netpoint(), receiver->get_netpoint(), nullptr, nullptr,
