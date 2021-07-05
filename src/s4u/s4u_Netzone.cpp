@@ -116,6 +116,7 @@ void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoin
   pimpl_->add_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
 }
 
+// XBT_ATTRIB_DEPRECATED_v332
 void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                         const std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical)
@@ -123,6 +124,7 @@ void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoin
   pimpl_->add_route(src, dst, gw_src, gw_dst, convert_to_linkInRoute(link_list), symmetrical);
 }
 
+// XBT_ATTRIB_DEPRECATED_v332
 void NetZone::add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                                kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                                std::vector<kernel::resource::LinkImpl*>& link_list, bool /*symmetrical*/)
