@@ -70,6 +70,10 @@ public:
   /**
    * @brief Set latency (string version)
    *
+   * Accepts values with units, such as '1s' or '7ms'.
+   *
+   * Full list of accepted units: w (week), d (day), h, s, ms, us, ns, ps.
+   *
    * @throw std::invalid_argument if latency format is incorrect.
    */
   Link* set_latency(const std::string& value);
