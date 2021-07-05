@@ -48,8 +48,8 @@ public:
   double get_latency() const override { return latency_.peak * latency_.scale; }
 
   /** @brief The sharing policy */
-  virtual void set_sharing_policy(s4u::Link::SharingPolicy policy) override;
-  virtual s4u::Link::SharingPolicy get_sharing_policy() const override;
+  void set_sharing_policy(s4u::Link::SharingPolicy policy) override;
+  s4u::Link::SharingPolicy get_sharing_policy() const override;
 
   /** @brief Check if the Link is used */
   bool is_used() const override;
@@ -63,10 +63,10 @@ public:
 
   /* setup the profile file with bandwidth events (peak speed changes due to external load).
    * Profile must contain percentages (value between 0 and 1). */
-  virtual void set_bandwidth_profile(kernel::profile::Profile* profile) override;
+  void set_bandwidth_profile(kernel::profile::Profile* profile) override;
   /* setup the profile file with latency events (peak latency changes due to external load).
    * Profile must contain absolute values */
-  virtual void set_latency_profile(kernel::profile::Profile* profile) override;
+  void set_latency_profile(kernel::profile::Profile* profile) override;
 
   void set_concurrency_limit(int limit) const override;
 

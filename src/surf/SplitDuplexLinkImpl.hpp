@@ -48,8 +48,8 @@ public:
   void set_latency(double value) override;
 
   /** @brief The sharing policy */
-  virtual void set_sharing_policy(s4u::Link::SharingPolicy policy) override;
-  virtual s4u::Link::SharingPolicy get_sharing_policy() const override;
+  void set_sharing_policy(s4u::Link::SharingPolicy policy) override;
+  s4u::Link::SharingPolicy get_sharing_policy() const override;
 
   /** @brief Get link composing this split-duplex link */
   s4u::Link* get_link_up() const { return link_up_->get_iface(); }
