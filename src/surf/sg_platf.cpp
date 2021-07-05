@@ -370,7 +370,7 @@ static void sg_platf_cluster_set_hostlink(simgrid::kernel::routing::StarZone* zo
 /** @brief Add a link connecting a host to the rest of its StarZone */
 static void sg_platf_build_hostlink(simgrid::kernel::routing::StarZone* zone,
                                     const simgrid::kernel::routing::HostLinkCreationArgs* hostlink,
-                                    simgrid::s4u::Link* backbone)
+                                    const simgrid::s4u::Link* backbone)
 {
   simgrid::kernel::routing::NetPoint* netpoint = simgrid::s4u::Host::by_name(hostlink->id)->get_netpoint();
   xbt_assert(netpoint, "Host '%s' not found!", hostlink->id.c_str());
@@ -386,7 +386,7 @@ static void sg_platf_build_hostlink(simgrid::kernel::routing::StarZone* zone,
 /** @brief Create a cabinet (set of hosts) inside a Cluster(StarZone) */
 static void sg_platf_build_cabinet(simgrid::kernel::routing::StarZone* zone,
                                    const simgrid::kernel::routing::CabinetCreationArgs* args,
-                                   simgrid::s4u::Link* backbone)
+                                   const simgrid::s4u::Link* backbone)
 {
   for (int const& radical : args->radicals) {
     std::string id   = args->prefix + std::to_string(radical) + args->suffix;
@@ -406,7 +406,7 @@ static void sg_platf_zone_cluster_populate(const simgrid::kernel::routing::Clust
   auto* zone = dynamic_cast<simgrid::kernel::routing::StarZone*>(current_routing);
   xbt_assert(zone, "Host_links are only valid for Cluster(Star)");
 
-  simgrid::s4u::Link* backbone = nullptr;
+  const simgrid::s4u::Link* backbone = nullptr;
   /* create backbone */
   if (cluster->backbone) {
     sg_platf_new_link(cluster->backbone.get());
