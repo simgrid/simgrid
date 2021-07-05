@@ -40,7 +40,9 @@ kernel::resource::LinkImpl* Link::get_impl() const
   xbt_assert(
       get_sharing_policy() != SharingPolicy::SPLITDUPLEX,
       "Impossible to get a LinkImpl* from a Split-Duplex link. You should call this method to each UP/DOWN member");
-  return dynamic_cast<kernel::resource::LinkImpl*>(pimpl_);
+  auto* link_impl = dynamic_cast<kernel::resource::LinkImpl*>(pimpl_);
+  xbt_assert(link_impl != nullptr);
+  return link_impl;
 }
 
 Link* Link::by_name_or_null(const std::string& name)
