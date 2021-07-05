@@ -2,13 +2,6 @@ This file lists the symbols ignored in the documentation.
 It follows the RST syntax but is completely ignored by sphinx. 
 It is only used by find-missing, that will not report any definition linked here as missing.
 
-# These ones trigger a bug in autodoxy, that get confused with the const in the function parameter
-# So I document them manually in the rst for now. Shame, weak.
-.. autodoxyvar:: simgrid::s4u::Link::on_communicate
-.. autodoxyvar:: simgrid::s4u::Actor::on_host_change
-.. autodoxyvar:: simgrid::s4u::Exec::on_completion
-.. autodoxyvar:: simgrid::s4u::Exec::on_start
-
 # This is a bug in find-missing, as these symbols are actually documented
 .. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< Link * > &links, double *latency)
 .. autodoxymethod:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< kernel::resource::LinkImpl * > &links, double *latency)
@@ -18,7 +11,6 @@ It is only used by find-missing, that will not report any definition linked here
 .. autodoxymethod:: simgrid::s4u::Engine::register_default(int(*code)(int, char **))
 .. autodoxymethod:: simgrid::s4u::Engine::register_function(const std::string &name, const kernel::actor::ActorCodeFactory &factory)
 .. autodoxymethod:: simgrid::s4u::Engine::register_function(const std::string &name, int(*code)(int, char **))
-
 
 # These could be hidden as private things, eg in s4u_Exec.cpp
 .. autodoxymethod:: simgrid::s4u::ExecPar::get_remaining()
