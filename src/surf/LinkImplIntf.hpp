@@ -38,7 +38,7 @@ public:
   virtual void set_latency(double value) = 0;
 
   /** @brief The sharing policy */
-  virtual void set_sharing_policy(s4u::Link::SharingPolicy policy) = 0;
+  virtual void set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb) = 0;
   virtual s4u::Link::SharingPolicy get_sharing_policy() const      = 0;
 
   /* setup the profile file with bandwidth events (peak speed changes due to external load).

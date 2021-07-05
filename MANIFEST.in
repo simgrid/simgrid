@@ -280,6 +280,8 @@ include examples/cpp/mc-failing-assert/s4u-mc-failing-assert.cpp
 include examples/cpp/mc-failing-assert/s4u-mc-failing-assert.tesh
 include examples/cpp/network-factors/s4u-network-factors.cpp
 include examples/cpp/network-factors/s4u-network-factors.tesh
+include examples/cpp/network-nonlinear/s4u-network-nonlinear.cpp
+include examples/cpp/network-nonlinear/s4u-network-nonlinear.tesh
 include examples/cpp/network-ns3-wifi/s4u-network-ns3-wifi.cpp
 include examples/cpp/network-ns3-wifi/s4u-network-ns3-wifi.tesh
 include examples/cpp/network-ns3/3hosts_2links_d.xml

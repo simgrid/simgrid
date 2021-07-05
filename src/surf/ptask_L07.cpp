@@ -62,7 +62,7 @@ NetworkL07Model::NetworkL07Model(const std::string& name, HostL07Model* hmodel, 
 {
   set_maxmin_system(sys);
   loopback_ = create_link("__loopback__", {simgrid::config::get_value<double>("network/loopback-bw")});
-  loopback_->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE);
+  loopback_->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE, {});
   loopback_->set_latency(simgrid::config::get_value<double>("network/loopback-lat"));
   loopback_->seal();
 }

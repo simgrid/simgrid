@@ -345,7 +345,7 @@ LinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vecto
 LinkImpl* NetworkNS3Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   auto* link = create_link(name, bandwidths);
-  link->set_sharing_policy(s4u::Link::SharingPolicy::WIFI);
+  link->set_sharing_policy(s4u::Link::SharingPolicy::WIFI, {});
   return link;
 }
 
@@ -474,7 +474,7 @@ void LinkNS3::set_latency(double latency)
   latency_.peak = latency;
 }
 
-void LinkNS3::set_sharing_policy(s4u::Link::SharingPolicy policy)
+void LinkNS3::set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
 {
   sharing_policy_ = policy;
 }

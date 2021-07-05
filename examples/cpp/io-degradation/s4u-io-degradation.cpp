@@ -66,7 +66,7 @@ static void host()
  * @param capacity Resource current capacity in SimGrid
  * @param n Number of activities sharing this resource
  */
-static double ssd_dynamic_sharing(const sg4::Disk* disk, const std::string& op, double capacity, int n)
+static double ssd_dynamic_sharing(const sg4::Disk* /*disk*/, const std::string& op, double capacity, int n)
 {
   /* measurements for SSD disks */
   using DiskCapacity                                                   = std::unordered_map<int, double>;
@@ -107,7 +107,7 @@ static double ssd_dynamic_sharing(const sg4::Disk* disk, const std::string& op, 
  * @param capacity Resource current capacity in SimGrid
  * @param n Number of activities sharing this resource
  */
-static double sata_dynamic_sharing(const sg4::Disk* disk, double capacity, int n)
+static double sata_dynamic_sharing(const sg4::Disk* /*disk*/, double capacity, int n)
 {
   capacity = 68.3 - 1.7 * n;
   // XBT_INFO("Disk %s, read operation between %d flows, capacity %lf", disk->get_cname(), n, capacity);

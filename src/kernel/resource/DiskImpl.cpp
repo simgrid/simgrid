@@ -127,7 +127,6 @@ constexpr kernel::lmm::Constraint::SharingPolicy to_maxmin_policy(s4u::Disk::Sha
   switch (policy) {
     case s4u::Disk::SharingPolicy::NONLINEAR:
       return kernel::lmm::Constraint::SharingPolicy::NONLINEAR;
-    case s4u::Disk::SharingPolicy::LINEAR:
     default:
       return kernel::lmm::Constraint::SharingPolicy::SHARED;
   }

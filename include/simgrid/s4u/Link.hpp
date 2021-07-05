@@ -42,7 +42,7 @@ protected:
   kernel::resource::LinkImplIntf* const pimpl_;
 
 public:
-  enum class SharingPolicy { WIFI = 3, SPLITDUPLEX = 2, SHARED = 1, FATPIPE = 0 };
+  enum class SharingPolicy { NONLINEAR = 4, WIFI = 3, SPLITDUPLEX = 2, SHARED = 1, FATPIPE = 0 };
 
   kernel::resource::LinkImpl* get_impl() const;
 
@@ -79,7 +79,7 @@ public:
   Link* set_latency(const std::string& value);
 
   /** @brief Describes how the link is shared between flows */
-  Link* set_sharing_policy(SharingPolicy policy);
+  Link* set_sharing_policy(SharingPolicy policy, const NonLinearResourceCb& cb = {});
   SharingPolicy get_sharing_policy() const;
 
   /** Setup the profile with states events (ON or OFF). The profile must contain boolean values. */

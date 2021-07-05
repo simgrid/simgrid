@@ -47,7 +47,7 @@ public:
   void set_latency(double value) override;
 
   /** @brief The sharing policy */
-  void set_sharing_policy(s4u::Link::SharingPolicy policy) override;
+  void set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb) override;
   s4u::Link::SharingPolicy get_sharing_policy() const override { return s4u::Link::SharingPolicy::SPLITDUPLEX; }
 
   /** @brief Get link composing this split-duplex link */

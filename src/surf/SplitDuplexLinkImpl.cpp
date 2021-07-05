@@ -25,7 +25,7 @@ bool SplitDuplexLinkImpl::is_used() const
   xbt_die("Impossible to call is_used() in split-duplex links. Call it for each individual link.");
 }
 
-void SplitDuplexLinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy)
+void SplitDuplexLinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
 {
   xbt_die("Impossible to change sharing policy of split-duplex links");
 }

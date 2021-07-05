@@ -88,7 +88,7 @@ NetworkCm02Model::NetworkCm02Model(const std::string& name) : NetworkModel(name)
 
   set_maxmin_system(new lmm::System(select));
   loopback_ = create_link("__loopback__", {config::get_value<double>("network/loopback-bw")});
-  loopback_->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE);
+  loopback_->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE, {});
   loopback_->set_latency(config::get_value<double>("network/loopback-lat"));
   loopback_->seal();
 }

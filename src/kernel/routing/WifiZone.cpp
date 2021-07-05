@@ -53,7 +53,7 @@ s4u::Link* WifiZone::create_link(const std::string& name, const std::vector<doub
              "WIFI netzone %s contains more than one link. Please only declare one, the wifi link.", get_cname());
 
   wifi_link_ = get_network_model()->create_wifi_link(name, bandwidths);
-  wifi_link_->set_sharing_policy(s4u::Link::SharingPolicy::WIFI);
+  wifi_link_->set_sharing_policy(s4u::Link::SharingPolicy::WIFI, {});
   return wifi_link_->get_iface();
 }
 } // namespace routing

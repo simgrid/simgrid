@@ -32,6 +32,9 @@ protected:
   LinkImpl& operator=(const LinkImpl&) = delete;
   ~LinkImpl() override                 = default; // Use destroy() instead of this destructor.
 
+  Metric latency_   = {0.0, 1, nullptr};
+  Metric bandwidth_ = {1.0, 1, nullptr};
+
 public:
   void destroy(); // Must be called instead of the destructor
 
@@ -48,7 +51,7 @@ public:
   double get_latency() const override { return latency_.peak * latency_.scale; }
 
   /** @brief The sharing policy */
-  void set_sharing_policy(s4u::Link::SharingPolicy policy) override;
+  void set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb) override;
   s4u::Link::SharingPolicy get_sharing_policy() const override;
 
   /** @brief Check if the Link is used */
@@ -69,9 +72,6 @@ public:
   void set_latency_profile(kernel::profile::Profile* profile) override;
 
   void set_concurrency_limit(int limit) const override;
-
-  Metric latency_   = {0.0, 1, nullptr};
-  Metric bandwidth_ = {1.0, 1, nullptr};
 };
 
 } // namespace resource

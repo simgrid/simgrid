@@ -43,14 +43,24 @@ bool LinkImpl::is_used() const
   return get_model()->get_maxmin_system()->constraint_used(get_constraint());
 }
 
-void LinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy)
+constexpr kernel::lmm::Constraint::SharingPolicy to_maxmin_policy(s4u::Link::SharingPolicy policy)
 {
-  lmm::Constraint::SharingPolicy ct_policy = lmm::Constraint::SharingPolicy::SHARED;
-  if (policy == s4u::Link::SharingPolicy::FATPIPE)
-    ct_policy = lmm::Constraint::SharingPolicy::FATPIPE;
-  get_constraint()->set_sharing_policy(ct_policy, {});
+  switch (policy) {
+    case s4u::Link::SharingPolicy::NONLINEAR:
+      return kernel::lmm::Constraint::SharingPolicy::NONLINEAR;
+    case s4u::Link::SharingPolicy::FATPIPE:
+      return kernel::lmm::Constraint::SharingPolicy::FATPIPE;
+    default:
+      return kernel::lmm::Constraint::SharingPolicy::SHARED;
+  }
+}
+
+void LinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
+{
+  get_constraint()->set_sharing_policy(to_maxmin_policy(policy), cb);
   sharing_policy_ = policy;
 }
+
 s4u::Link::SharingPolicy LinkImpl::get_sharing_policy() const
 {
   return sharing_policy_;
