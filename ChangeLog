@@ -3,22 +3,22 @@
 SimGrid (3.27.1) NOT RELEASED YET (v3.28 expected June 21. 2021, 03:32 UTC)
 
 New features:
+ - C++ platform interface: Users can now describe their platform directly in C++.
+   This provides greatly flexibility and performance improvement for complex
+   platforms. Main features:
+     - Fat-Tree/DragonFly/Torus composing: allows you to create clusters of
+       "zones", instead of single hosts. This feature enables the description
+       of clusters with complex hosts, composed of several CPUs, GPUs, etc.
+     - StarZone: new zone with a Star-like topology. The routes are defined
+       as a set of links used to communicate from node to everybody (node<->ALL).
+     - Split-Duplex links: auxiliary method to create split-duplex links in
+       the platform, easing its utilisation. It automatically creates both UP
+       and DOWN links (similarly as done in XML).
+     - Please refer to the documentation and the examples included:
+       e.g. examples/cpp/clusters-multicpu/ and examples/platforms/*.cpp.
  - New plugin: Producer-Consumer with monitor. Just requires to include the
    include/simgrid/plugins/ProducerConsumer.hpp header to be used. See the
    associated example (examples/cpp/plugin-prodcons).
- - C++ platform interface: Users can now describe their platform directly in
-   C++ code. This provides greatly flexibility and performance improvement
-   for complex platforms. Main features:
-     - Fat-Tree/DragonFly/Torus composing: allows you to create clusters of
-	 "zones", instead of single hosts. This feature enables the description
-	 of clusters with complex hosts, composed of several CPUs, GPUs, etc.
-	 - StarZone: new zone with a Star-like topology. The routes are defined
-	 as a set of links used to communicate from node to everybody (node<->ALL).
-	 - Split-Duplex links: auxiliary method to create split-duplex links in
-	 the platform, easing its utilisation. It automatically creates both UP
-	 and DOWN links (similarly as done in XML).
-	 - Please refer to the documentation and the examples included:
-	 e.g. examples/cpp/clusters-multicpu/ and examples/platforms/*.cpp.
 
 S4U:
  - New: s4u::Comm::wait_all_for() (like s4u::Comm::wait_all, but with a timeout),
@@ -40,31 +40,25 @@ SMPI:
       is active when set to false, to keep going after a small error
     --cfg=smpi/pedantic: True by default. Do not report some harmless MPI errors
       which may or may not be problematic in the end.
-  - Sampling:
+ - Sampling:
     - fix behaviour, as maximum iteration count could be ignored
     - add SMPI_SAMPLE_LOCAL_TAG and SMPI_SAMPLE_GLOBAL_TAG macros, to allow user to
       use sampling when the same kernel is called with a different set of parameters
       which have an impact on the timing.
-  - realloc is now intercepted, to be coherent, as malloc/calloc/free were already.
-    It should now work with smpi/auto-shared-malloc-thresh.
-  - Improve error handling and reporting in multiple places
-  - Improve correctness checks on the MPI code.(MPI_Op and MPI_Datatype
-    validity checks, truncated messages are now an error, return errors
-    when explicitely deleted handles are reused, ...)
-  - RMA: multiple fixes and stability improvements.
-  - analysis (-analyze flag in smpirun):
-     - SMPI can now report buffer leaks as well as MPI handles leaks,
-       if code was compiled without SMPI_NO_OVERRIDE_MALLOC.
-     - if -trace-call-location is used when compiling, SMPI can report
-       origin of leaked handles/buffers
-     - group leaks by type/origin in output message if possible
-  - New implemented MPI calls: MPI_Comm_test_inter
-
-LUA:
- - Lua platform files are deprecated. Their support will be dropped after v3.31.
-
-Simix:
- - Legacy functions deprecated in this release: SIMIX_get_clock(), SIMIX_run().
+ - realloc is now intercepted, to be coherent, as malloc/calloc/free were already.
+   It should now work with smpi/auto-shared-malloc-thresh.
+ - Improve error handling and reporting in multiple places
+ - Improve correctness checks on the MPI code.(MPI_Op and MPI_Datatype
+   validity checks, truncated messages are now an error, return errors
+   when explicitely deleted handles are reused, ...)
+ - RMA: multiple fixes and stability improvements.
+ - analysis (-analyze flag in smpirun):
+    - SMPI can now report buffer leaks as well as MPI handles leaks,
+      if code was compiled without SMPI_NO_OVERRIDE_MALLOC.
+    - if -trace-call-location is used when compiling, SMPI can report
+      origin of leaked handles/buffers
+    - group leaks by type/origin in output message if possible
+ - New implemented MPI calls: MPI_Comm_test_inter
 
 Models:
  - Changed internal implementation of bandwidth factors in network models.
@@ -96,6 +90,12 @@ XBT:
 Documentation:
  - New tutorial: Model-checking and formal assessment
  - New sections: "Demystifying the routing" and "C++ platforms"
+
+LUA:
+ - Lua platform files are deprecated. Their support will be dropped after v3.31.
+
+Simix:
+ - Legacy functions deprecated in this release: SIMIX_get_clock(), SIMIX_run().
 
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GF: issues on GForge; GH: issues on GitHub)
