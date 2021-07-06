@@ -189,7 +189,7 @@ class XBT_PUBLIC LinkInRoute {
 public:
   enum class Direction { UP = 2, DOWN = 1, NONE = 0 };
 
-  LinkInRoute(const Link* link) : link_(link) {}
+  explicit LinkInRoute(const Link* link) : link_(link) {}
   LinkInRoute(const Link* link, Direction d) : link_(link), direction_(d) {}
 
   /** @brief Get direction of this link in the route: UP or DOWN */

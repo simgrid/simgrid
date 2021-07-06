@@ -294,7 +294,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
                                  ->seal();
 
       zone->add_route(host->get_netpoint(), host->get_netpoint(), nullptr, nullptr,
-                      std::vector<simgrid::s4u::LinkInRoute>{loopback});
+                      {simgrid::s4u::LinkInRoute(loopback)});
     }
 
     // add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -317,10 +317,10 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
     /* adding routes */
     std::vector<simgrid::s4u::LinkInRoute> links;
     if (limiter)
-      links.push_back(limiter);
-    links.push_back(simgrid::s4u::LinkInRoute(link, simgrid::s4u::LinkInRoute::Direction::UP));
+      links.emplace_back(limiter);
+    links.emplace_back(link, simgrid::s4u::LinkInRoute::Direction::UP);
     if (backbone)
-      links.push_back(backbone);
+      links.emplace_back(backbone);
 
     zone->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, links, true);
   }
@@ -358,12 +358,15 @@ static void sg_platf_cluster_set_hostlink(simgrid::kernel::routing::StarZone* zo
                                           const simgrid::s4u::Link* backbone)
 {
   XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->get_cname(), netpoint->id());
+  simgrid::s4u::LinkInRoute linkUp{link_up};
+  simgrid::s4u::LinkInRoute linkDown{link_down};
   if (backbone) {
-    zone->add_route(netpoint, nullptr, nullptr, nullptr, {link_up, backbone}, false);
-    zone->add_route(nullptr, netpoint, nullptr, nullptr, {backbone, link_down}, false);
+    simgrid::s4u::LinkInRoute linkBB{backbone};
+    zone->add_route(netpoint, nullptr, nullptr, nullptr, {linkUp, linkBB}, false);
+    zone->add_route(nullptr, netpoint, nullptr, nullptr, {linkBB, linkDown}, false);
   } else {
-    zone->add_route(netpoint, nullptr, nullptr, nullptr, {link_up}, false);
-    zone->add_route(nullptr, netpoint, nullptr, nullptr, {link_down}, false);
+    zone->add_route(netpoint, nullptr, nullptr, nullptr, {linkUp}, false);
+    zone->add_route(nullptr, netpoint, nullptr, nullptr, {linkDown}, false);
   }
 }
 

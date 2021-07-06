@@ -347,13 +347,12 @@ int console_add_route(lua_State *L) {
   boost::split(names, str, boost::is_any_of(", \t\r\n"));
   if (names.empty()) {
     /* unique name */
-    route.link_list.emplace_back(simgrid::s4u::LinkInRoute(simgrid::s4u::Link::by_name(lua_tostring(L, -1))));
+    route.link_list.emplace_back(simgrid::s4u::Link::by_name(lua_tostring(L, -1)));
   } else {
     // Several names separated by , \t\r\n
     for (auto const& name : names) {
       if (name.length() > 0) {
-        simgrid::s4u::LinkInRoute link(simgrid::s4u::Link::by_name(name));
-        route.link_list.emplace_back(link);
+        route.link_list.emplace_back(simgrid::s4u::Link::by_name(name));
       }
     }
   }
@@ -413,13 +412,12 @@ int console_add_ASroute(lua_State *L) {
   boost::split(names, str, boost::is_any_of(", \t\r\n"));
   if (names.empty()) {
     /* unique name with no comma */
-    ASroute.link_list.emplace_back(simgrid::s4u::LinkInRoute(simgrid::s4u::Link::by_name(lua_tostring(L, -1))));
+    ASroute.link_list.emplace_back(simgrid::s4u::Link::by_name(lua_tostring(L, -1)));
   } else {
     // Several names separated by , \t\r\n
     for (auto const& name : names) {
       if (name.length() > 0) {
-        simgrid::s4u::LinkInRoute link(simgrid::s4u::Link::by_name(name));
-        ASroute.link_list.emplace_back(link);
+        ASroute.link_list.emplace_back(simgrid::s4u::Link::by_name(name));
       }
     }
   }

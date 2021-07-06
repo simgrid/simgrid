@@ -30,6 +30,6 @@ TEST_CASE("kernel::routing::FloydZone: mix new routes and hosts", "")
     std::string cpu_name          = "CPU" + std::to_string(i);
     const simgrid::s4u::Host* cpu = zone->create_host(cpu_name, 1e9)->seal();
     REQUIRE_NOTHROW(zone->add_route(cpu->get_netpoint(), nic->get_netpoint(), nullptr, nullptr,
-                                    std::vector<simgrid::s4u::LinkInRoute>{link}, true));
+                                    {simgrid::s4u::LinkInRoute(link)}, true));
   }
 }

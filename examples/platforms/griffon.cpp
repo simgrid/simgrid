@@ -28,6 +28,7 @@ create_cabinet(const sg4::NetZone* root, const std::string& name, const std::vec
 
   /* create the backbone link */
   const sg4::Link* l_bb = cluster->create_link("backbone-" + name, "1.25GBps")->seal();
+  sg4::LinkInRoute backbone(l_bb);
 
   /* create all hosts and connect them to outside world */
   for (const auto& id : radicals) {
@@ -39,7 +40,7 @@ create_cabinet(const sg4::NetZone* root, const std::string& name, const std::vec
 
     /* add link and backbone for communications from the host */
     cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr,
-                       std::vector<sg4::LinkInRoute>{{link, sg4::LinkInRoute::Direction::UP}, l_bb}, true);
+                       {{link, sg4::LinkInRoute::Direction::UP}, backbone}, true);
   }
 
   /* create router */
@@ -77,7 +78,8 @@ void load_platform(const sg4::Engine& /*e*/)
   simgrid::kernel::routing::NetPoint* router;
 
   /* create top link */
-  const sg4::Link* link = root->create_link("backbone", "1.25GBps")->set_latency("24us")->seal();
+  const sg4::Link* l_bb = root->create_link("backbone", "1.25GBps")->set_latency("24us")->seal();
+  sg4::LinkInRoute backbone{l_bb};
 
   /* create cabinet1 */
   std::vector<int> rad(32);
@@ -86,19 +88,19 @@ void load_platform(const sg4::Engine& /*e*/)
   rad[rad.size() - 2]        = 59;
   rad[rad.size() - 3]        = 58;
   std::tie(cab_zone, router) = create_cabinet(root, "cabinet1", rad);
-  root->add_route(cab_zone->get_netpoint(), nullptr, router, nullptr, {link});
+  root->add_route(cab_zone->get_netpoint(), nullptr, router, nullptr, {backbone});
 
   /* create cabinet2 */
   rad.resize(28);
   std::iota(rad.begin(), rad.end(), 30); // 30-57
   std::tie(cab_zone, router) = create_cabinet(root, "cabinet2", rad);
-  root->add_route(cab_zone->get_netpoint(), nullptr, router, nullptr, {link});
+  root->add_route(cab_zone->get_netpoint(), nullptr, router, nullptr, {backbone});
 
   /* create cabinet3 */
   rad.resize(32);
   std::iota(rad.begin(), rad.end(), 61); // 61-92
   std::tie(cab_zone, router) = create_cabinet(root, "cabinet3", rad);
-  root->add_route(cab_zone->get_netpoint(), nullptr, router, nullptr, {link});
+  root->add_route(cab_zone->get_netpoint(), nullptr, router, nullptr, {backbone});
 
   root->seal();
 }

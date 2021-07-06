@@ -171,7 +171,7 @@ Note that the leaves and loopback links are defined through callbacks, as follow
       const sg4::Host* gpu = host_zone->create_host(gpu_name, 1e12)->seal();
       /* connecting them */
       sg4::Link* link   = host_zone->create_link("link-" + cpu_name, 10e9)->set_latency(10e-9)->seal();
-      host_zone->add_route(cpu->get_netpoint(), gpu->get_netpoint(), nullptr, nullptr, std::vector<sg4::Link*>{link});
+      host_zone->add_route(cpu->get_netpoint(), gpu->get_netpoint(), nullptr, nullptr, {sg4::LinkInRoute(link)});
 
       host_zone->seal();
       /* cpu is the gateway for this host */

@@ -70,7 +70,7 @@ static sg4::NetZone* create_zone(const sg4::NetZone* root, const std::string& id
     auto* host           = zone->create_host(hostname, 1e9);
     host->create_disk("disk-" + hostname, 1e9, 1e6);
     const auto* link = zone->create_link("link-" + hostname, 1e9);
-    zone->add_route(host->get_netpoint(), router, nullptr, nullptr, std::vector<sg4::LinkInRoute>{link});
+    zone->add_route(host->get_netpoint(), router, nullptr, nullptr, {sg4::LinkInRoute(link)});
   }
   return zone;
 }
@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
   auto* zoneB = create_zone(root, "B");
   const auto* link = root->create_link("root-link", 1e10);
   root->add_route(zoneA->get_netpoint(), zoneB->get_netpoint(), e.netpoint_by_name("routerA"),
-                  e.netpoint_by_name("routerB"), std::vector<sg4::LinkInRoute>{link});
+                  e.netpoint_by_name("routerB"), {sg4::LinkInRoute(link)});
 
   std::vector<sg4::Host*> host_list = e.get_all_hosts();
   /* create the sender actor running on first host */

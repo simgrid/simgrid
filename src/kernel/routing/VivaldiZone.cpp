@@ -66,8 +66,8 @@ void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out)
   std::string link_down      = "link_" + netpoint->get_name() + "_DOWN";
   const auto* linkUp         = create_link(link_up, std::vector<double>{bw_out})->seal();
   const auto* linkDown       = create_link(link_down, std::vector<double>{bw_in})->seal();
-  add_route(netpoint, nullptr, nullptr, nullptr, std::vector<s4u::LinkInRoute>{linkUp}, false);
-  add_route(nullptr, netpoint, nullptr, nullptr, std::vector<s4u::LinkInRoute>{linkDown}, false);
+  add_route(netpoint, nullptr, nullptr, nullptr, {s4u::LinkInRoute(linkUp)}, false);
+  add_route(nullptr, netpoint, nullptr, nullptr, {s4u::LinkInRoute(linkDown)}, false);
 }
 
 void VivaldiZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* route, double* lat)

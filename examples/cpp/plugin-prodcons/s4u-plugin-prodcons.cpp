@@ -65,8 +65,8 @@ int main(int argc, char* argv[])
     std::string linkname = std::string("cluster") + "_link_" + std::to_string(i);
     const auto* link     = cluster->create_split_duplex_link(linkname, "1Gbps");
 
-    cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr,
-                       std::vector<sg4::LinkInRoute>{{link, sg4::LinkInRoute::Direction::UP}}, true);
+    cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {{link, sg4::LinkInRoute::Direction::UP}},
+                       true);
   }
 
   auto* router = cluster->create_router("cluster_router");

@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
 
   /* create routes between nodes */
   zone->add_route(sender->get_netpoint(), receiver->get_netpoint(), nullptr, nullptr,
-                  std::vector<sg4::LinkInRoute>{{link, sg4::LinkInRoute::Direction::UP}}, true);
+                  {{link, sg4::LinkInRoute::Direction::UP}}, true);
   zone->seal();
 
   /* create actors Sender/Receiver */

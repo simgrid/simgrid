@@ -512,7 +512,7 @@ void STag_surfxml_link___ctn()
       dirname = "";
   }
   surf_parse_assert(link != nullptr, std::string("No such link: '") + A_surfxml_link___ctn_id + "'" + dirname);
-  parsed_link_list.emplace_back(simgrid::s4u::LinkInRoute(link, direction));
+  parsed_link_list.emplace_back(link, direction);
 }
 
 void ETag_surfxml_backbone()

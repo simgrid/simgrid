@@ -114,8 +114,8 @@ create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coo
     sg4::SplitDuplexLink* link = host_zone->create_split_duplex_link("link-" + cpu_name, link_bw);
     link->set_latency(link_lat)->seal();
     /* connecting CPU to outer world */
-    host_zone->add_route(host->get_netpoint(), nullptr, nullptr, nullptr,
-                         std::vector<sg4::LinkInRoute>{{link, sg4::LinkInRoute::Direction::UP}}, true);
+    host_zone->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {{link, sg4::LinkInRoute::Direction::UP}},
+                         true);
   }
   /* seal newly created netzone */
   host_zone->seal();

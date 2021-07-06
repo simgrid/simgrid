@@ -38,13 +38,14 @@ static void create_cluster(const sg4::NetZone* root, const std::string& cluster_
     if (hostname != single_link_host) {
       l_down = cluster->create_link(hostname + "_down", std::vector<double>{1.25e8})->set_latency(0.0001)->seal();
     }
+    sg4::LinkInRoute backbone{l_bb};
+    sg4::LinkInRoute link_up{l_up};
+    sg4::LinkInRoute link_down{l_down};
 
     /* add link UP and backbone for communications from the host */
-    cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, std::vector<sg4::LinkInRoute>{l_up, l_bb},
-                       false);
+    cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {link_up, backbone}, false);
     /* add backbone and link DOWN for communications to the host */
-    cluster->add_route(nullptr, host->get_netpoint(), nullptr, nullptr, std::vector<sg4::LinkInRoute>{l_bb, l_down},
-                       false);
+    cluster->add_route(nullptr, host->get_netpoint(), nullptr, nullptr, {backbone, link_down}, false);
   }
 
   /* create router */
@@ -82,7 +83,8 @@ void load_platform(const sg4::Engine& e)
   create_cluster(root, "2", {"host4", "host5", "host6"}, "host6");
 
   /* connect both cluster through their respective routers */
-  const sg4::Link* link = root->create_link("link1-2", std::vector<double>{2.25e9})->set_latency(5e-4)->seal();
+  const sg4::Link* l = root->create_link("link1-2", std::vector<double>{2.25e9})->set_latency(5e-4)->seal();
+  sg4::LinkInRoute link{l};
   root->add_route(e.netpoint_by_name_or_null("cluster1"), e.netpoint_by_name_or_null("cluster2"),
                   e.netpoint_by_name_or_null("router1"), e.netpoint_by_name_or_null("router2"), {link});
 
