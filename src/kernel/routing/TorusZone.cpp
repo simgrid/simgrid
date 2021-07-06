@@ -37,15 +37,11 @@ void TorusZone::create_torus_links(int id, int rank, unsigned int position)
     const s4u::Link* linkup;
     const s4u::Link* linkdown;
     if (get_link_sharing_policy() == s4u::Link::SharingPolicy::SPLITDUPLEX) {
-      linkup = create_link(link_id + "_UP", std::vector<double>{get_link_bandwidth()})
-                   ->set_latency(get_link_latency())
-                   ->seal();
-      linkdown = create_link(link_id + "_DOWN", std::vector<double>{get_link_bandwidth()})
-                     ->set_latency(get_link_latency())
-                     ->seal();
+      linkup   = create_link(link_id + "_UP", {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
+      linkdown = create_link(link_id + "_DOWN", {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
 
     } else {
-      linkup = create_link(link_id, std::vector<double>{get_link_bandwidth()})->set_latency(get_link_latency())->seal();
+      linkup   = create_link(link_id, {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
       linkdown = linkup;
     }
     /*

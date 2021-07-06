@@ -96,7 +96,7 @@ void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* args)
   auto* zone = dynamic_cast<simgrid::kernel::routing::VivaldiZone*>(current_routing);
   xbt_assert(zone, "<peer> tag can only be used in Vivaldi netzones.");
 
-  const auto* peer = zone->create_host(args->id, std::vector<double>{args->speed})
+  const auto* peer = zone->create_host(args->id, {args->speed})
                          ->set_state_profile(args->state_trace)
                          ->set_speed_profile(args->speed_trace)
                          ->set_coordinates(args->coord)
@@ -263,7 +263,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
     XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/> <!--backbone -->", bb_name.c_str(), cluster->bb_bw,
               cluster->bb_lat);
 
-    backbone = zone->create_link(bb_name, std::vector<double>{cluster->bb_bw})
+    backbone = zone->create_link(bb_name, cluster->bb_bw)
                    ->set_sharing_policy(cluster->bb_sharing_policy)
                    ->set_latency(cluster->bb_lat)
                    ->seal();
@@ -288,7 +288,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
       std::string loopback_name = link_id + "_loopback";
       XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", loopback_name.c_str(), cluster->loopback_bw);
 
-      const auto* loopback = zone->create_link(loopback_name, std::vector<double>{cluster->loopback_bw})
+      const auto* loopback = zone->create_link(loopback_name, cluster->loopback_bw)
                                  ->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::FATPIPE)
                                  ->set_latency(cluster->loopback_lat)
                                  ->seal();
@@ -303,7 +303,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
       std::string limiter_name = std::string(link_id) + "_limiter";
       XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", limiter_name.c_str(), cluster->limiter_link);
 
-      limiter = zone->create_link(limiter_name, std::vector<double>{cluster->limiter_link})->seal();
+      limiter = zone->create_link(limiter_name, cluster->limiter_link)->seal();
     }
 
     // create link
@@ -311,7 +311,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
     if (cluster->sharing_policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
       link = zone->create_split_duplex_link(link_id, cluster->bw)->set_latency(cluster->lat)->seal();
     } else {
-      link = zone->create_link(link_id, std::vector<double>{cluster->bw})->set_latency(cluster->lat)->seal();
+      link = zone->create_link(link_id, cluster->bw)->set_latency(cluster->lat)->seal();
     }
 
     /* adding routes */
@@ -393,12 +393,10 @@ static void sg_platf_build_cabinet(simgrid::kernel::routing::StarZone* zone,
 {
   for (int const& radical : args->radicals) {
     std::string id   = args->prefix + std::to_string(radical) + args->suffix;
-    auto const* host = zone->create_host(id, std::vector<double>{args->speed})->seal();
+    auto const* host = zone->create_host(id, {args->speed})->seal();
 
-    const auto* link_up =
-        zone->create_link("link_" + id + "_UP", std::vector<double>{args->bw})->set_latency(args->lat)->seal();
-    const auto* link_down =
-        zone->create_link("link_" + id + "_DOWN", std::vector<double>{args->bw})->set_latency(args->lat)->seal();
+    const auto* link_up   = zone->create_link("link_" + id + "_UP", {args->bw})->set_latency(args->lat)->seal();
+    const auto* link_down = zone->create_link("link_" + id + "_DOWN", {args->bw})->set_latency(args->lat)->seal();
 
     sg_platf_cluster_set_hostlink(zone, host->get_netpoint(), link_up, link_down, backbone);
   }

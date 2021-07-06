@@ -352,12 +352,10 @@ void FatTreeZone::add_link(FatTreeNode* parent, unsigned int parentPort, FatTree
       "link_from_" + std::to_string(child->id) + "_" + std::to_string(parent->id) + "_" + std::to_string(uniqueId);
 
   if (get_link_sharing_policy() == s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    linkup =
-        create_link(id + "_UP", std::vector<double>{get_link_bandwidth()})->set_latency(get_link_latency())->seal();
-    linkdown =
-        create_link(id + "_DOWN", std::vector<double>{get_link_bandwidth()})->set_latency(get_link_latency())->seal();
+    linkup   = create_link(id + "_UP", {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
+    linkdown = create_link(id + "_DOWN", {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
   } else {
-    linkup   = create_link(id, std::vector<double>{get_link_bandwidth()})->set_latency(get_link_latency())->seal();
+    linkup   = create_link(id, {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
     linkdown = linkup;
   }
   uniqueId++;
