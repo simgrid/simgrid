@@ -100,6 +100,7 @@ int NetZone::add_component(kernel::routing::NetPoint* elm)
   return pimpl_->add_component(elm);
 }
 
+// XBT_ATTRIB_DEPRECATED_v332
 std::vector<LinkInRoute> NetZone::convert_to_linkInRoute(const std::vector<kernel::resource::LinkImpl*>& link_list)
 {
   std::vector<LinkInRoute> links;

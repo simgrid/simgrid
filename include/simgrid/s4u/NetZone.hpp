@@ -86,6 +86,7 @@ public:
   void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
                  kernel::routing::NetPoint* gw_dst, const std::vector<LinkInRoute>& link_list, bool symmetrical = true);
 
+#ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v332("Please use add_route() method which uses s4u::LinkInRoute instead of "
                              "LinkImpl") void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                                                         kernel::routing::NetPoint* gw_src,
@@ -100,9 +101,8 @@ public:
                                                                kernel::routing::NetPoint* gw_dst,
                                                                std::vector<kernel::resource::LinkImpl*>& link_list,
                                                                bool /*symmetrical*/);
-
-#ifndef DOXYGEN
 #endif
+
   void add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                         const std::vector<LinkInRoute>& link_list);
@@ -178,8 +178,10 @@ public:
   NetZone* seal();
 
 private:
-  /** @brief Auxiliary function to convert types */
+#ifndef DOXYGEN
+  /** @brief XBT_ATTRIB_DEPRECATED_v332 Auxiliary function to convert types */
   static std::vector<LinkInRoute> convert_to_linkInRoute(const std::vector<kernel::resource::LinkImpl*>& link_list);
+#endif
 };
 
 // External constructors so that the types (and the types of their content) remain hidden
