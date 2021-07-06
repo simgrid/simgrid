@@ -178,11 +178,10 @@ actor::ActorImpl* EngineImpl::get_actor_by_pid(aid_t pid)
 /** Execute all the tasks that are queued, e.g. `.then()` callbacks of futures. */
 bool EngineImpl::execute_tasks()
 {
-  xbt_assert(tasksTemp.empty());
-
   if (tasks.empty())
     return false;
 
+  std::vector<xbt::Task<void()>> tasksTemp;
   do {
     // We don't want the callbacks to modify the vector we are iterating over:
     tasks.swap(tasksTemp);

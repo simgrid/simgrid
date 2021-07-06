@@ -68,7 +68,6 @@ class EngineImpl {
 #endif
 
   std::vector<xbt::Task<void()>> tasks;
-  std::vector<xbt::Task<void()>> tasksTemp;
 
   std::mutex mutex_;
   std::unique_ptr<void, std::function<int(void*)>> platf_handle_; //!< handle for platform library
