@@ -104,9 +104,9 @@ Link* Link::set_bandwidth(double value)
 
 Link* Link::set_sharing_policy(Link::SharingPolicy policy, const NonLinearResourceCb& cb)
 {
-  if (policy == SharingPolicy::SPLITDUPLEX)
-    throw std::invalid_argument(std::string("Impossible to set split-duplex for the link: ") + get_name() +
-                                std::string(". Use NetZone::create_split_duplex_link."));
+  if (policy == SharingPolicy::SPLITDUPLEX || policy == SharingPolicy::WIFI)
+    throw std::invalid_argument(std::string("Impossible to set wifi or split-duplex for the link: ") + get_name() +
+                                std::string(". Use appropriate create function in NetZone."));
 
   kernel::actor::simcall([this, policy, &cb] { pimpl_->set_sharing_policy(policy, cb); });
   return this;

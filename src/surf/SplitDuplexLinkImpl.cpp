@@ -27,7 +27,10 @@ bool SplitDuplexLinkImpl::is_used() const
 
 void SplitDuplexLinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
 {
-  xbt_die("Impossible to change sharing policy of split-duplex links");
+  xbt_assert(policy != s4u::Link::SharingPolicy::SPLITDUPLEX && policy != s4u::Link::SharingPolicy::WIFI,
+             "Invalid sharing policy for split-duplex links");
+  link_up_->set_sharing_policy(policy, cb);
+  link_down_->set_sharing_policy(policy, cb);
 }
 
 void SplitDuplexLinkImpl::set_bandwidth(double value)

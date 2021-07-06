@@ -35,8 +35,8 @@ TEST_CASE("SplitDuplexLink: create", "")
 TEST_CASE("SplitDuplexLink: sets", "")
 {
   simgrid::s4u::Engine e("test");
-  auto* zone      = simgrid::s4u::create_star_zone("test");
-  auto* link      = zone->create_split_duplex_link("link", 100e6);
+  auto* zone            = simgrid::s4u::create_star_zone("test");
+  auto* link            = zone->create_split_duplex_link("link", 100e6);
   auto const* link_up   = link->get_link_up();
   auto const* link_down = link->get_link_down();
 
@@ -71,5 +71,27 @@ TEST_CASE("SplitDuplexLink: sets", "")
     link->set_concurrency_limit(3);
     REQUIRE(link_up->get_impl()->get_constraint()->get_concurrency_limit() == 3);
     REQUIRE(link_down->get_impl()->get_constraint()->get_concurrency_limit() == 3);
+  }
+
+  SECTION("sharing_policy: invalid")
+  {
+    REQUIRE_THROWS_AS(link->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::WIFI), std::invalid_argument);
+    REQUIRE_THROWS_AS(link->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX), std::invalid_argument);
+  }
+
+  SECTION("sharing_policy: fatpipe/shared")
+  {
+    for (const auto& policy : {simgrid::s4u::Link::SharingPolicy::FATPIPE, simgrid::s4u::Link::SharingPolicy::SHARED}) {
+      link->set_sharing_policy(policy);
+      REQUIRE(link_up->get_sharing_policy() == policy);
+      REQUIRE(link_down->get_sharing_policy() == policy);
+    }
+  }
+
+  SECTION("sharing_policy: nonlinear")
+  {
+    link->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::NONLINEAR, [](double c, int n) -> double { return c; });
+    REQUIRE(link_up->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::NONLINEAR);
+    REQUIRE(link_down->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::NONLINEAR);
   }
 }

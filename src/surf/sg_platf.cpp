@@ -130,7 +130,8 @@ void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* args)
   if (args->policy == simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX) {
     link = current_routing->create_split_duplex_link(args->id, args->bandwidths);
   } else {
-    link = current_routing->create_link(args->id, args->bandwidths)->set_sharing_policy(args->policy);
+    link = current_routing->create_link(args->id, args->bandwidths);
+    link->get_impl()->set_sharing_policy(args->policy, {});
   }
   sg_platf_set_link_properties(link, args);
   link->seal();
