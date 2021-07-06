@@ -30,11 +30,6 @@ void SplitDuplexLinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy)
   xbt_die("Impossible to change sharing policy of split-duplex links");
 }
 
-s4u::Link::SharingPolicy SplitDuplexLinkImpl::get_sharing_policy() const
-{
-  return sharing_policy_;
-}
-
 void SplitDuplexLinkImpl::set_bandwidth(double value)
 {
   link_up_->set_bandwidth(value);

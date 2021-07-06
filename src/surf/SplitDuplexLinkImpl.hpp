@@ -25,7 +25,6 @@ namespace resource {
  */
 class SplitDuplexLinkImpl : public LinkImplIntf {
   s4u::SplitDuplexLink piface_;
-  s4u::Link::SharingPolicy sharing_policy_ = s4u::Link::SharingPolicy::SPLITDUPLEX;
   LinkImpl* link_up_;
   LinkImpl* link_down_;
 
@@ -49,7 +48,7 @@ public:
 
   /** @brief The sharing policy */
   void set_sharing_policy(s4u::Link::SharingPolicy policy) override;
-  s4u::Link::SharingPolicy get_sharing_policy() const override;
+  s4u::Link::SharingPolicy get_sharing_policy() const override { return s4u::Link::SharingPolicy::SPLITDUPLEX; }
 
   /** @brief Get link composing this split-duplex link */
   s4u::Link* get_link_up() const { return link_up_->get_iface(); }
