@@ -294,7 +294,8 @@ using smpi_c_entry_point_type       = int (*)(int argc, char** argv);
 using smpi_fortran_entry_point_type = void (*)();
 
 template <typename F>
-static int smpi_run_entry_point(const F& entry_point, const std::string& executable_path, std::vector<std::string> args)
+static int smpi_run_entry_point(const F& entry_point, const std::string& executable_path,
+                                const std::vector<std::string>& args)
 {
   // copy C strings, we need them writable
   auto* args4argv = new std::vector<char*>(args.size());
@@ -447,7 +448,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
   }
 
   simgrid::s4u::Engine::get_instance()->register_default([executable, fdin_size](std::vector<std::string> args) {
-    return std::function<void()>([executable, fdin_size, args] {
+    return simgrid::kernel::actor::ActorCode([executable, fdin_size, args = std::move(args)] {
       static std::size_t rank = 0;
       // Copy the dynamic library:
       simgrid::xbt::Path path(executable);
@@ -523,7 +524,7 @@ static void smpi_init_privatization_no_dlopen(const std::string& executable)
 
   // Execute the same entry point for each simulated process:
   simgrid::s4u::Engine::get_instance()->register_default([entry_point, executable](std::vector<std::string> args) {
-    return std::function<void()>([entry_point, executable, args] {
+    return simgrid::kernel::actor::ActorCode([entry_point, executable, args = std::move(args)] {
       if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
         simgrid::smpi::ActorExt* ext = smpi_process();
         /* Now using the segment index of this process  */
