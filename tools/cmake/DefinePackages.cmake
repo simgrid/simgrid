@@ -919,7 +919,6 @@ set(DOC_SOURCES
   docs/source/img/zoom_comm.drawio
   docs/source/img/zoom_comm.svg
 
-  docs/ignored_symbols
   docs/source/application.rst
   docs/source/app_msg.rst
   docs/source/app_s4u.rst

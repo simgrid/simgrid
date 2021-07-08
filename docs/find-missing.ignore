@@ -12,15 +12,6 @@ It is only used by find-missing, that will not report any definition linked here
 .. autodoxymethod:: simgrid::s4u::Engine::register_function(const std::string &name, const kernel::actor::ActorCodeFactory &factory)
 .. autodoxymethod:: simgrid::s4u::Engine::register_function(const std::string &name, int(*code)(int, char **))
 
-# These could be hidden as private things, eg in s4u_Exec.cpp
-.. autodoxymethod:: simgrid::s4u::ExecPar::get_remaining()
-.. autodoxymethod:: simgrid::s4u::ExecPar::get_remaining_ratio()
-.. autodoxymethod:: simgrid::s4u::ExecPar::start()
-.. autodoxymethod:: simgrid::s4u::ExecSeq::get_remaining()
-.. autodoxymethod:: simgrid::s4u::ExecSeq::get_remaining_ratio()
-.. autodoxymethod:: simgrid::s4u::ExecSeq::set_host(Host *host)
-.. autodoxymethod:: simgrid::s4u::ExecSeq::start()
-
 # I don't plan to document MSG in the new way.
 .. autodoxymethod:: ::MSG_barrier_destroy(const_sg_bar_t bar)
 .. autodoxymethod:: ::MSG_barrier_init(unsigned int count)
@@ -42,11 +33,9 @@ It is only used by find-missing, that will not report any definition linked here
 .. autodoxymethod:: ::MSG_get_host_number()
 .. autodoxymethod:: ::MSG_get_sent_msg()
 .. autodoxymethod:: ::MSG_host_by_name(const char *name)
-.. autodoxymethod:: ::MSG_host_get_attached_storage_lists(const_sg_host_t host)
 .. autodoxymethod:: ::MSG_host_get_core_number(const_sg_host_t host)
 .. autodoxymethod:: ::MSG_host_get_data(const_sg_host_t host)
 .. autodoxymethod:: ::MSG_host_get_load(const_sg_host_t host)
-.. autodoxymethod:: ::MSG_host_get_mounted_storage_list(sg_host_t host)
 .. autodoxymethod:: ::MSG_host_get_name(const_sg_host_t host)
 .. autodoxymethod:: ::MSG_host_get_nb_pstates(const_sg_host_t host)
 .. autodoxymethod:: ::MSG_host_get_power_peak_at(const_sg_host_t host, int pstate_index)
@@ -114,17 +103,6 @@ It is only used by find-missing, that will not report any definition linked here
 .. autodoxymethod:: ::MSG_sem_init(int initial_value)
 .. autodoxymethod:: ::MSG_sem_release(msg_sem_t sem)
 .. autodoxymethod:: ::MSG_sem_would_block(msg_sem_t sem)
-.. autodoxymethod:: ::MSG_storage_get_by_name(const char *name)
-.. autodoxymethod:: ::MSG_storage_get_data(const_sg_storage_t storage)
-.. autodoxymethod:: ::MSG_storage_get_host(const_sg_storage_t storage)
-.. autodoxymethod:: ::MSG_storage_get_name(const_sg_storage_t storage)
-.. autodoxymethod:: ::MSG_storage_get_properties(const_sg_storage_t storage)
-.. autodoxymethod:: ::MSG_storage_get_property_value(const_sg_storage_t storage, const char *name)
-.. autodoxymethod:: ::MSG_storage_read(msg_storage_t storage, sg_size_t size)
-.. autodoxymethod:: ::MSG_storage_set_data(msg_storage_t storage, void *data)
-.. autodoxymethod:: ::MSG_storage_set_property_value(msg_storage_t storage, const char *name, const char *value)
-.. autodoxymethod:: ::MSG_storage_write(msg_storage_t storage, sg_size_t size)
-.. autodoxymethod:: ::MSG_storages_as_dynar()
 .. autodoxymethod:: ::MSG_task_cancel(msg_task_t task)
 .. autodoxymethod:: ::MSG_task_create(const char *name, double flops_amount, double bytes_amount, void *data)
 .. autodoxymethod:: ::MSG_task_destroy(msg_task_t task)
@@ -191,21 +169,13 @@ member ::MSG_task_recv is of kind define
 member ::MSG_task_recv_bounded is of kind define
 member ::msg_error_t is of kind enum
 
-# Storage must die
-.. autodoxymethod:: sg_host_get_attached_storage_list(const_sg_host_t host)
-.. autodoxymethod:: sg_host_get_mounted_storage_list(sg_host_t host)
-.. autodoxymethod:: simgrid::s4u::Host::get_attached_storages()
-.. autodoxymethod:: simgrid::s4u::Host::get_mounted_storages()
-
 # These should not be public
 .. autodoxymethod:: simgrid::s4u::Link::get_impl()
 .. autodoxymethod:: simgrid::s4u::NetZone::get_impl()
-.. autodoxymethod:: simgrid::s4u::VirtualMachine::get_impl()
+.. autodoxymethod:: simgrid::s4u::VirtualMachine::get_vm_impl()
 .. autodoxymethod:: simgrid::s4u::Activity::get_impl()
 .. autodoxymethod:: simgrid::s4u::Comm::~Comm()
 .. autodoxymethod:: simgrid::s4u::Exec::~Exec()
-.. autodoxymethod:: simgrid::s4u::ExecPar::~ExecPar()
-.. autodoxymethod:: simgrid::s4u::ExecSeq::~ExecSeq()
 .. autodoxymethod:: simgrid::s4u::Io::~Io()
 
 # These ones are a bug of Doxygen, that parse them as variables instead of types.
@@ -215,7 +185,6 @@ member ::msg_error_t is of kind enum
 .. autodoxyvar:: ::const_sg_mutex_t
 .. autodoxyvar:: ::const_sg_sem_t
 .. autodoxyvar:: ::const_sg_host_t
-.. autodoxyvar:: ::const_sg_storage_t
 .. autodoxyvar:: ::const_msg_comm_t
 .. autodoxyvar:: ::const_msg_task_t
 .. autodoxyvar:: ::const_sg_cond_t

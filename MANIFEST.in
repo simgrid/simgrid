@@ -1791,7 +1791,6 @@ include docs/README.md
 include docs/bin/extract_logs_hierarchy.pl
 include docs/find-missing.ignore
 include docs/find-missing.py
-include docs/ignored_symbols
 include docs/manpages/smpicc.1
 include docs/manpages/smpicxx.1
 include docs/manpages/smpif90.1
