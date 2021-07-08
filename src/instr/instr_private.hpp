@@ -265,9 +265,9 @@ XBT_PUBLIC bool TRACE_smpi_view_internals();
 
 /* instr_paje.c */
 void instr_new_variable_type(const std::string& new_typename, const std::string& color);
-void instr_new_user_variable_type(const std::string& father_type, const std::string& new_typename,
+void instr_new_user_variable_type(const std::string& parent_type, const std::string& new_typename,
                                   const std::string& color);
-void instr_new_user_state_type(const std::string& father_type, const std::string& new_typename);
+void instr_new_user_state_type(const std::string& parent_type, const std::string& new_typename);
 void instr_new_value_for_user_state_type(const std::string& new_typename, const char* value, const std::string& color);
 
 XBT_PRIVATE void TRACE_help();

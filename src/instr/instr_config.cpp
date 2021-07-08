@@ -234,7 +234,7 @@ static void on_container_creation_paje(const Container& c)
             timestamp);
 
   stream << std::fixed << std::setprecision(trace_precision) << PajeEventType::CreateContainer << " ";
-  stream << timestamp << " " << c.get_id() << " " << c.type_->get_id() << " " << c.father_->get_id() << " \"";
+  stream << timestamp << " " << c.get_id() << " " << c.type_->get_id() << " " << c.parent_->get_id() << " \"";
   if (c.get_name().find("rank-") != 0)
     stream << c.get_name() << "\"";
   else
@@ -306,7 +306,7 @@ static void on_entity_value_creation(const EntityValue& value)
   std::stringstream stream;
   XBT_DEBUG("%s: event_type=%u", __func__, static_cast<unsigned>(PajeEventType::DefineEntityValue));
   stream << std::fixed << std::setprecision(trace_precision) << PajeEventType::DefineEntityValue;
-  stream << " " << value.get_id() << " " << value.get_father()->get_id() << " " << value.get_name();
+  stream << " " << value.get_id() << " " << value.get_parent()->get_id() << " " << value.get_name();
   if (not value.get_color().empty())
     stream << " \"" << value.get_color() << "\"";
   XBT_DEBUG("Dump %s", stream.str().c_str());
@@ -342,7 +342,7 @@ static void on_type_creation(const Type& type, PajeEventType event_type)
   std::stringstream stream;
   stream << std::fixed << std::setprecision(trace_precision);
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, static_cast<unsigned>(event_type), trace_precision, 0.);
-  stream << event_type << " " << type.get_id() << " " << type.get_father()->get_id() << " " << type.get_name();
+  stream << event_type << " " << type.get_id() << " " << type.get_parent()->get_id() << " " << type.get_name();
   if (type.is_colored())
     stream << " \"" << type.get_color() << "\"";
   XBT_DEBUG("Dump %s", stream.str().c_str());
@@ -354,7 +354,7 @@ static void on_link_type_creation(const Type& type, const Type& source, const Ty
   std::stringstream stream;
   XBT_DEBUG("%s: event_type=%u, timestamp=%.*f", __func__, static_cast<unsigned>(PajeEventType::DefineLinkType),
             trace_precision, 0.);
-  stream << PajeEventType::DefineLinkType << " " << type.get_id() << " " << type.get_father()->get_id();
+  stream << PajeEventType::DefineLinkType << " " << type.get_id() << " " << type.get_parent()->get_id();
   stream << " " << source.get_id() << " " << dest.get_id() << " " << type.get_name();
   XBT_DEBUG("Dump %s", stream.str().c_str());
   tracing_file << stream.str() << std::endl;

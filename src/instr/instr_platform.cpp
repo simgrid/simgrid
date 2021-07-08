@@ -33,17 +33,17 @@ static simgrid::instr::Container* lowestCommonAncestor(const simgrid::instr::Con
                                                        const simgrid::instr::Container* a2)
 {
   // this is only an optimization (since most of a1 and a2 share the same parent)
-  if (a1->father_ == a2->father_)
-    return a1->father_;
+  if (a1->parent_ == a2->parent_)
+    return a1->parent_;
 
   // create an array with all ancestors of a1
   std::vector<simgrid::instr::Container*> ancestors_a1;
-  for (auto* p = a1->father_; p != nullptr; p = p->father_)
+  for (auto* p = a1->parent_; p != nullptr; p = p->parent_)
     ancestors_a1.push_back(p);
 
   // create an array with all ancestors of a2
   std::vector<simgrid::instr::Container*> ancestors_a2;
-  for (auto* p = a2->father_; p != nullptr; p = p->father_)
+  for (auto* p = a2->parent_; p != nullptr; p = p->parent_)
     ancestors_a2.push_back(p);
 
   // find the lowest ancestor
@@ -73,9 +73,9 @@ static void linkContainers(simgrid::instr::Container* src, simgrid::instr::Conta
     return;
   }
 
-  // find common father
-  simgrid::instr::Container* father = lowestCommonAncestor(src, dst);
-  xbt_assert(father, "common father unknown, this is a tracing problem");
+  // find common parent
+  simgrid::instr::Container* parent = lowestCommonAncestor(src, dst);
+  xbt_assert(parent, "common parent unknown, this is a tracing problem");
 
   // check if we already register this pair (we only need one direction)
   std::string aux1 = src->get_name() + dst->get_name();
@@ -94,11 +94,11 @@ static void linkContainers(simgrid::instr::Container* src, simgrid::instr::Conta
   filter->insert(aux2);
 
   // declare type
-  std::string link_typename = father->type_->get_name() + "-" + src->type_->get_name() +
+  std::string link_typename = parent->type_->get_name() + "-" + src->type_->get_name() +
                               std::to_string(src->type_->get_id()) + "-" + dst->type_->get_name() +
                               std::to_string(dst->type_->get_id());
-  simgrid::instr::LinkType* link = father->type_->by_name_or_create(link_typename, src->type_, dst->type_);
-  link->set_calling_container(father);
+  simgrid::instr::LinkType* link = parent->type_->by_name_or_create(link_typename, src->type_, dst->type_);
+  link->set_calling_container(parent);
 
   // create the link
   static long long counter = 0;
@@ -162,35 +162,35 @@ void instr_new_variable_type(const std::string& new_typename, const std::string&
   recursiveNewVariableType(new_typename, color, simgrid::instr::Container::get_root()->type_);
 }
 
-static void recursiveNewUserVariableType(const std::string& father_type, const std::string& new_typename,
+static void recursiveNewUserVariableType(const std::string& parent_type, const std::string& new_typename,
                                          const std::string& color, simgrid::instr::Type* root)
 {
-  if (root->get_name() == father_type) {
+  if (root->get_name() == parent_type) {
     root->by_name_or_create(new_typename, color);
   }
   for (auto const& elm : root->get_children())
-    recursiveNewUserVariableType(father_type, new_typename, color, elm.second.get());
+    recursiveNewUserVariableType(parent_type, new_typename, color, elm.second.get());
 }
 
-void instr_new_user_variable_type(const std::string& father_type, const std::string& new_typename,
+void instr_new_user_variable_type(const std::string& parent_type, const std::string& new_typename,
                                   const std::string& color)
 {
-  recursiveNewUserVariableType(father_type, new_typename, color, simgrid::instr::Container::get_root()->type_);
+  recursiveNewUserVariableType(parent_type, new_typename, color, simgrid::instr::Container::get_root()->type_);
 }
 
-static void recursiveNewUserStateType(const std::string& father_type, const std::string& new_typename,
+static void recursiveNewUserStateType(const std::string& parent_type, const std::string& new_typename,
                                       simgrid::instr::Type* root)
 {
-  if (root->get_name() == father_type)
+  if (root->get_name() == parent_type)
     root->by_name_or_create<simgrid::instr::StateType>(new_typename);
 
   for (auto const& elm : root->get_children())
-    recursiveNewUserStateType(father_type, new_typename, elm.second.get());
+    recursiveNewUserStateType(parent_type, new_typename, elm.second.get());
 }
 
-void instr_new_user_state_type(const std::string& father_type, const std::string& new_typename)
+void instr_new_user_state_type(const std::string& parent_type, const std::string& new_typename)
 {
-  recursiveNewUserStateType(father_type, new_typename, simgrid::instr::Container::get_root()->type_);
+  recursiveNewUserStateType(parent_type, new_typename, simgrid::instr::Container::get_root()->type_);
 }
 
 static void recursiveNewValueForUserStateType(const std::string& type_name, const char* val, const std::string& color,

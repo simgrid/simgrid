@@ -30,13 +30,13 @@ public:
   static xbt::signal<void(Container const&)> on_creation;
   static xbt::signal<void(Container const&)> on_destruction;
 
-  explicit Container(const std::string& name, const std::string& type_name, Container* father);
+  explicit Container(const std::string& name, const std::string& type_name, Container* parent);
   Container(const Container&) = delete;
   Container& operator=(const Container&) = delete;
   virtual ~Container();
 
   Type* type_; /* Type of this container */
-  Container* father_;
+  Container* parent_;
   std::map<std::string, Container*, std::less<>> children_;
 
   static Container* by_name_or_null(const std::string& name);
@@ -55,17 +55,17 @@ public:
 
 class NetZoneContainer : public Container {
 public:
-  NetZoneContainer(const std::string& name, unsigned int level, NetZoneContainer* father);
+  NetZoneContainer(const std::string& name, unsigned int level, NetZoneContainer* parent);
 };
 
 class RouterContainer : public Container {
 public:
-  RouterContainer(const std::string& name, Container* father);
+  RouterContainer(const std::string& name, Container* parent);
 };
 
 class HostContainer : public Container {
 public:
-  HostContainer(s4u::Host const& host, NetZoneContainer* father);
+  HostContainer(s4u::Host const& host, NetZoneContainer* parent);
 };
 } // namespace instr
 } // namespace simgrid

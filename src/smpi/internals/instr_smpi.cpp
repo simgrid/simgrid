@@ -137,12 +137,12 @@ static std::string TRACE_smpi_get_key(aid_t src, aid_t dst, int tag, int send)
 
 void TRACE_smpi_setup_container(aid_t pid, const_sg_host_t host)
 {
-  auto* father = simgrid::instr::Container::get_root();
+  auto* parent = simgrid::instr::Container::get_root();
   if (TRACE_smpi_is_grouped()) {
-    father = simgrid::instr::Container::by_name_or_null(host->get_name());
-    xbt_assert(father != nullptr, "Could not find a parent for mpi rank 'rank-%ld' at function %s", pid, __func__);
+    parent = simgrid::instr::Container::by_name_or_null(host->get_name());
+    xbt_assert(parent != nullptr, "Could not find a parent for mpi rank 'rank-%ld' at function %s", pid, __func__);
   }
-  father->create_child(std::string("rank-") + std::to_string(pid), "MPI"); // This container is of type MPI
+  parent->create_child(std::string("rank-") + std::to_string(pid), "MPI"); // This container is of type MPI
 }
 
 void TRACE_smpi_init(aid_t pid, const std::string& calling_func)

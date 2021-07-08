@@ -19,15 +19,15 @@ long long int new_paje_id()
 }
 
 Type::Type(PajeEventType event_type, const std::string& name, const std::string& alias, const std::string& color,
-           Type* father)
-    : name_(name), color_(color), father_(father)
+           Type* parent)
+    : name_(name), color_(color), parent_(parent)
 {
   if (name_.empty() || alias.empty())
     throw TracingError(XBT_THROW_POINT, "can't create a new type with no name or alias");
 
-  if (father != nullptr){
-    father->children_[alias].reset(this);
-    XBT_DEBUG("new type %s, child of %s", get_cname(), father->get_cname());
+  if (parent != nullptr) {
+    parent->children_[alias].reset(this);
+    XBT_DEBUG("new type %s, child of %s", get_cname(), parent->get_cname());
     on_creation(*this, event_type);
   }
 }
@@ -119,7 +119,7 @@ Type* Type::by_name(const std::string& name)
     }
   }
   if (ret == nullptr)
-    throw TracingError(XBT_THROW_POINT, xbt::string_printf("type with name (%s) not found in father type (%s)",
+    throw TracingError(XBT_THROW_POINT, xbt::string_printf("type with name (%s) not found in parent type (%s)",
                                                            name.c_str(), get_cname()));
   return ret;
 }
@@ -145,7 +145,7 @@ EntityValue* ValueType::get_entity_value(const std::string& name)
 {
   auto ret = values_.find(name);
   if (ret == values_.end()) {
-    throw TracingError(XBT_THROW_POINT, xbt::string_printf("value with name (%s) not found in father type (%s)",
+    throw TracingError(XBT_THROW_POINT, xbt::string_printf("value with name (%s) not found in parent type (%s)",
                                                            name.c_str(), get_cname()));
   }
   return &ret->second;
