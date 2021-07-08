@@ -533,7 +533,7 @@ int SIMIX_process_count() // XBT_ATTRIB_DEPRECATED_v329
 
 void* SIMIX_process_self_get_data() // XBT_ATTRIB_DEPRECATED_v329
 {
-  simgrid::s4u::Actor* self = simgrid::s4u::Actor::self();
+  const simgrid::s4u::Actor* self = simgrid::s4u::Actor::self();
   return self ? self->get_data() : nullptr;
 }
 

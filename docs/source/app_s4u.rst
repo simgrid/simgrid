@@ -1617,7 +1617,7 @@ Routing data
       .. doxygenfunction:: simgrid::s4u::NetZone::add_component(kernel::routing::NetPoint *elm)
       .. doxygenfunction:: simgrid::s4u::NetZone::add_route
       .. doxygenfunction:: simgrid::s4u::NetZone::get_children() const
-      .. doxygenfunction:: simgrid::s4u::NetZone::get_parent()
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_parent() const
 
    .. group-tab:: C
 
