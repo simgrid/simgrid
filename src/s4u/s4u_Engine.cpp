@@ -111,14 +111,14 @@ void Engine::load_platform(const std::string& platf) const
   pimpl->load_platform(platf);
 }
 
-void Engine::register_function(const std::string& name, int (*code)(int, char**)) // XBT_ATTRIB_DEPRECATED_v329
+void Engine::register_function(const std::string& name, int (*code)(int, char**)) // XBT_ATTRIB_DEPRECATED_v330
 {
   kernel::actor::ActorCodeFactory code_factory = [code](std::vector<std::string> args) {
     return xbt::wrap_main(code, std::move(args));
   };
   register_function(name, code_factory);
 }
-void Engine::register_default(int (*code)(int, char**)) // XBT_ATTRIB_DEPRECATED_v329
+void Engine::register_default(int (*code)(int, char**)) // XBT_ATTRIB_DEPRECATED_v330
 {
   register_default([code](std::vector<std::string> args) { return xbt::wrap_main(code, std::move(args)); });
 }
