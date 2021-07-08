@@ -487,8 +487,8 @@ void NetZoneImpl::get_global_route_with_netzones(const NetPoint* src, const NetP
   NetZoneImpl* src_ancestor;
   NetZoneImpl* dst_ancestor;
   find_common_ancestors(src, dst, &common_ancestor, &src_ancestor, &dst_ancestor);
-  XBT_DEBUG("%s: common ancestor '%s' src ancestor '%s' dst ancestor '%s'", __func__, common_ancestor->get_cname(),
-            src_ancestor->get_cname(), dst_ancestor->get_cname());
+  XBT_DEBUG("find_common_ancestors: common ancestor '%s' src ancestor '%s' dst ancestor '%s'",
+            common_ancestor->get_cname(), src_ancestor->get_cname(), dst_ancestor->get_cname());
 
   netzones.insert(src->get_englobing_zone());
   netzones.insert(dst->get_englobing_zone());
