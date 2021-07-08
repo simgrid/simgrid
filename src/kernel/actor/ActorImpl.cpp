@@ -99,7 +99,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
 
   auto* actor = new ActorImpl(xbt::string(name), host);
   /* Actor data */
-  actor->set_user_data(data);
+  actor->piface_.set_data(data);
   actor->code_ = nullptr;
 
   XBT_VERB("Create context %s", actor->get_cname());
@@ -500,7 +500,7 @@ ActorImplPtr ActorImpl::create(const std::string& name, const ActorCode& code, v
     actor = self()->init(xbt::string(name), host);
 
   /* actor data */
-  actor->set_user_data(data);
+  actor->piface_.set_data(data);
 
   actor->start(code);
 
@@ -533,17 +533,13 @@ int SIMIX_process_count() // XBT_ATTRIB_DEPRECATED_v329
 
 void* SIMIX_process_self_get_data() // XBT_ATTRIB_DEPRECATED_v329
 {
-  smx_actor_t self = simgrid::kernel::actor::ActorImpl::self();
-
-  if (self == nullptr) {
-    return nullptr;
-  }
-  return self->get_user_data();
+  simgrid::s4u::Actor* self = simgrid::s4u::Actor::self();
+  return self ? self->get_data() : nullptr;
 }
 
 void SIMIX_process_self_set_data(void* data) // XBT_ATTRIB_DEPRECATED_v329
 {
-  simgrid::kernel::actor::ActorImpl::self()->set_user_data(data);
+  simgrid::s4u::Actor::self()->set_data(data);
 }
 
 /* needs to be public and without simcall because it is called
@@ -568,5 +564,5 @@ void SIMIX_process_on_exit(smx_actor_t actor,
 
 void simcall_process_set_data(smx_actor_t process, void* data) // XBT_ATTRIB_DEPRECATED_v329
 {
-  simgrid::kernel::actor::simcall([process, data] { process->set_user_data(data); });
+  simgrid::kernel::actor::simcall([process, data] { process->get_ciface()->set_data(data); });
 }
