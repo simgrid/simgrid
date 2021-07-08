@@ -84,7 +84,7 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
   bool sealed_ = false; // We cannot add more content when sealed
 
   std::map<std::pair<const NetPoint*, const NetPoint*>, BypassRoute*> bypass_routes_; // src x dst -> route
-  routing::NetPoint* netpoint_ = nullptr;                                 // Our representative in the father NetZone
+  routing::NetPoint* netpoint_ = nullptr; // Our representative in the parent NetZone
 
 protected:
   explicit NetZoneImpl(const std::string& name);

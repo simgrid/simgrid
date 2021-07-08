@@ -114,7 +114,7 @@ NetZoneImpl::~NetZoneImpl()
 void NetZoneImpl::add_child(NetZoneImpl* new_zone)
 {
   xbt_assert(not sealed_, "Cannot add a new child to the sealed zone %s", get_cname());
-  /* set the father behavior */
+  /* set the parent behavior */
   hierarchy_ = RoutingMode::recursive;
   children_.push_back(new_zone);
 }
@@ -358,27 +358,27 @@ static void find_common_ancestors(const NetPoint* src, const NetPoint* dst,
     current = current->get_parent();
   }
 
-  /* (3) find the common father.
+  /* (3) find the common parent.
    * Before that, index_src and index_dst may be different, they both point to nullptr in path_src/path_dst
    * So we move them down simultaneously as long as they point to the same content.
    *
    * This works because all SimGrid platform have a unique root element (that is the last element of both paths).
    */
-  NetZoneImpl* father = nullptr; // the netzone we dropped on the previous loop iteration
+  NetZoneImpl* parent = nullptr; // the netzone we dropped on the previous loop iteration
   while (path_src.size() > 1 && path_dst.size() > 1 && path_src.back() == path_dst.back()) {
-    father = path_src.back();
+    parent = path_src.back();
     path_src.pop_back();
     path_dst.pop_back();
   }
 
   /* (4) we found the difference at least. Finalize the returned values */
-  *src_ancestor = path_src.back();                  /* the first different father of src */
-  *dst_ancestor = path_dst.back();                  /* the first different father of dst */
+  *src_ancestor = path_src.back();                  /* the first different parent of src */
+  *dst_ancestor = path_dst.back();                  /* the first different parent of dst */
   if (*src_ancestor == *dst_ancestor) {             // src is the ancestor of dst, or the contrary
     *common_ancestor = *src_ancestor;
   } else {
-    xbt_assert(father != nullptr);
-    *common_ancestor = father;
+    xbt_assert(parent != nullptr);
+    *common_ancestor = parent;
   }
 }
 
@@ -420,7 +420,7 @@ bool NetZoneImpl::get_bypass_route(const NetPoint* src, const NetPoint* dst,
     current = current->parent_;
   }
 
-  /* (2) find the common father */
+  /* (2) find the common parent */
   while (path_src.size() > 1 && path_dst.size() > 1 && path_src.back() == path_dst.back()) {
     path_src.pop_back();
     path_dst.pop_back();
@@ -487,7 +487,7 @@ void NetZoneImpl::get_global_route_with_netzones(const NetPoint* src, const NetP
   NetZoneImpl* src_ancestor;
   NetZoneImpl* dst_ancestor;
   find_common_ancestors(src, dst, &common_ancestor, &src_ancestor, &dst_ancestor);
-  XBT_DEBUG("elements_father: common ancestor '%s' src ancestor '%s' dst ancestor '%s'", common_ancestor->get_cname(),
+  XBT_DEBUG("%s: common ancestor '%s' src ancestor '%s' dst ancestor '%s'", __func__, common_ancestor->get_cname(),
             src_ancestor->get_cname(), dst_ancestor->get_cname());
 
   netzones.insert(src->get_englobing_zone());

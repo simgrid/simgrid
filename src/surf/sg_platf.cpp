@@ -521,7 +521,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
 /**
  * @brief Auxiliary function to build the object NetZoneImpl
  *
- * Builds the objects, setting its father properties and root netzone if needed
+ * Builds the objects, setting its parent properties and root netzone if needed
  * @param zone the parameters defining the Zone to build.
  * @return Pointer to recently created netzone
  */
