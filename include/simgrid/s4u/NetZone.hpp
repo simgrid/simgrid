@@ -42,7 +42,7 @@ public:
   /** @brief Retrieves the name of that netzone as a C string */
   const char* get_cname() const;
 
-  XBT_ATTRIB_DEPRECATED_v331("Please use get_parent()") NetZone* get_father();
+  XBT_ATTRIB_DEPRECATED_v331("Please use get_parent()") NetZone* get_father() const;
   NetZone* get_parent() const;
   NetZone* set_parent(const NetZone* parent);
 

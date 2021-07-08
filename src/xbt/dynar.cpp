@@ -420,7 +420,7 @@ void xbt_dynar_sort(const_xbt_dynar_t dynar, int_f_cpvoid_cpvoid_t compar_fn)
  *
  *  Note: The dynar won't be usable afterwards.
  */
-void* xbt_dynar_to_array(xbt_dynar_t dynar)
+void* xbt_dynar_to_array(xbt_dynar_t dynar) // XBT_ATTRIB_DEPRECATED_v331
 {
   void* res;
   xbt_dynar_shrink(dynar, 1);

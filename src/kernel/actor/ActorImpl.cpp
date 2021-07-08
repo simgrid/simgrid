@@ -550,7 +550,7 @@ const char* SIMIX_process_self_get_name()
 }
 
 /** @brief Returns the process from PID. */
-smx_actor_t SIMIX_process_from_PID(aid_t pid)
+smx_actor_t SIMIX_process_from_PID(aid_t pid) // XBT_ATTRIB_DEPRECATD_v331
 {
   return simgrid::kernel::actor::ActorImpl::by_pid(pid);
 }

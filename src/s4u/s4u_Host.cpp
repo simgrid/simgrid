@@ -186,17 +186,17 @@ NetZone* Host::get_englobing_zone() const
 }
 
 #ifndef DOXYGEN
-void Host::sendto(Host* dest, double byte_amount) // deprecated 331
+void Host::sendto(Host* dest, double byte_amount) // XBT_ATTRIB_DEPRECATED_v331
 {
   Comm::sendto_async(this, dest, byte_amount)->wait();
 }
 
-CommPtr Host::sendto_async(Host* dest, double byte_amount) // deprecated 331
+CommPtr Host::sendto_async(Host* dest, double byte_amount) // XBT_ATTRIB_DEPRECATED_v331
 {
   return Comm::sendto_async(this, dest, byte_amount);
 }
 
-void Host::send_to(Host* dest, double byte_amount) // deprecated 330
+void Host::send_to(Host* dest, double byte_amount) // XBT_ATTRIB_DEPRECATED_v330
 {
   Comm::sendto(this, dest, byte_amount);
 }

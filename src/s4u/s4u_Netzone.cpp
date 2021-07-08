@@ -48,7 +48,7 @@ std::vector<NetZone*> NetZone::get_children() const
   return res;
 }
 
-NetZone* NetZone::add_child(NetZone* new_zone)
+NetZone* NetZone::add_child(NetZone* new_zone) // XBT_ATTRIB_DEPRECATED_v332
 {
   new_zone->set_parent(this);
   return this;
@@ -64,7 +64,7 @@ const char* NetZone::get_cname() const
   return pimpl_->get_cname();
 }
 
-NetZone* NetZone::get_father()
+NetZone* NetZone::get_father() const // XBT_ATTRIB_DEPRECATED_v331
 {
   return pimpl_->get_parent()->get_iface();
 }

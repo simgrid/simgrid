@@ -14,7 +14,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(exec_basic, "Messages specific for this example");
 
 static void executor(int argc, char* argv[])
 {
-  /* sg_actor_self_execute() tells SimGrid to pause the calling actor
+  /* sg_actor_execute() tells SimGrid to pause the calling actor
    * until its host has computed the amount of flops passed as a parameter */
   sg_actor_execute(98095);
   XBT_INFO("Done.");
@@ -24,7 +24,7 @@ static void executor(int argc, char* argv[])
 
 static void privileged(int argc, char* argv[])
 {
-  /* sg_actor_self_execute_with_priority() specifies that this execution gets a larger share of the resource.
+  /* sg_actor_execute_with_priority() specifies that this execution gets a larger share of the resource.
    *
    * Since the priority is 2, it computes twice as fast as a regular one.
    *
