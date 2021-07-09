@@ -176,12 +176,12 @@ public:
 
 /**
  * @beginrst
- * Another encapsulation for using links in the :cpp:function:: NetZone::add_route
+ * Another encapsulation for using links in the :cpp:func:`NetZone::add_route`
  *
  * When adding a route with split-duplex links, you need to specify the direction of the link
  * so SimGrid can know exactly which physical link to insert in the route.
  *
- * For shared/fat-pipe links, use the Direction::NONE since they don't have
+ * For shared/fat-pipe links, use the :cpp:enum:`Direction::NONE` since they don't have
  * the concept of UP/DOWN links.
  * @endrst
  */

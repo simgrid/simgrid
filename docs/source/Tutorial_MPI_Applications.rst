@@ -539,7 +539,7 @@ The computing part of this example is the matrix multiplication routine
 
 .. literalinclude:: /tuto_smpi/gemm_mpi.cpp
    :language: cpp
-   :lines: 4-19
+   :lines: 9-24
 
 .. code-block:: shell
 

@@ -1360,6 +1360,8 @@ Signals
 =============
 
 .. doxygenclass:: simgrid::s4u::Link
+.. doxygenclass:: simgrid::s4u::SplitDuplexLink
+.. doxygenclass:: simgrid::s4u::LinkInRoute
 
 Basic management
 ----------------
@@ -1613,9 +1615,9 @@ Routing data
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::NetZone::add_bypass_route
       .. doxygenfunction:: simgrid::s4u::NetZone::add_component(kernel::routing::NetPoint *elm)
       .. doxygenfunction:: simgrid::s4u::NetZone::add_route
+      .. doxygenfunction:: simgrid::s4u::NetZone::add_bypass_route
       .. doxygenfunction:: simgrid::s4u::NetZone::get_children() const
       .. doxygenfunction:: simgrid::s4u::NetZone::get_parent() const
 
@@ -1631,7 +1633,6 @@ Signals
   .. group-tab:: C++
 
      .. doxygenvariable:: simgrid::s4u::NetZone::on_creation
-     .. doxygenvariable:: simgrid::s4u::NetZone::on_route_creation
      .. doxygenvariable:: simgrid::s4u::NetZone::on_seal
 
 .. _API_s4u_VirtualMachine:

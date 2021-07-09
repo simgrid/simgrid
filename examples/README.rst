@@ -1089,11 +1089,3 @@ SimGrid is slower and may be less robust when MC is enabled.
 .. |br| raw:: html
 
    <br />
-
-.. |cpp| image:: /img/lang_cpp.png
-   :align: middle
-   :width: 12
-
-.. |py| image:: /img/lang_python.png
-   :align: middle
-   :width: 12
