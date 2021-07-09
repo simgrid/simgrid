@@ -152,8 +152,5 @@ File System
 
 .. doxygengroup:: plugin_filesystem
 
-.. doxygentypedef:: sg_file_t
-.. doxygentypedef:: const_sg_file_t
 
 ..  LocalWords:  SimGrid
-

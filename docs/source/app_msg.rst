@@ -255,6 +255,8 @@ Network Zone (:cpp:type:`msg_netzone_t`) and associated functions.
 .. doxygenfunction:: MSG_zone_get_sons
 .. doxygenfunction:: MSG_zone_set_property_value
 
+.. _Java_doc:
+
 Java bindings
 *************
 

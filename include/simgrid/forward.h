@@ -274,9 +274,9 @@ typedef s4u_Link* sg_link_t;
 typedef const s4u_Link* const_sg_link_t;
 typedef s4u_Disk* sg_disk_t;
 typedef const s4u_Disk* const_sg_disk_t;
-/** Pointer to a SimGrid file object */
+/** Pointer to a SimGrid file object @ingroup plugin_filesystem */
 typedef s4u_File* sg_file_t;
-/** Constant pointer to a SimGrid file object */
+/** Constant pointer to a SimGrid file object @ingroup plugin_filesystem */
 typedef const s4u_File* const_sg_file_t;
 typedef s4u_VM* sg_vm_t;
 typedef const s4u_VM* const_sg_vm_t;

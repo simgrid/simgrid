@@ -84,7 +84,7 @@ extern template class XBT_PUBLIC xbt::Extendable<s4u::File>;
 namespace s4u {
 
 /** @brief A simulated file
- *  @addtogroup Plugin_filesystem
+ *  @ingroup plugin_filesystem
  *
  * Used to simulate the time it takes to access to a file, but does not really store any information.
  *
