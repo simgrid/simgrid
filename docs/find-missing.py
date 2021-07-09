@@ -8,9 +8,9 @@
 
 """
 Search for symbols documented in both the XML files produced by Doxygen and the python modules,
-but not documented with autodoxy in the RST files.
+but not documented with breathe in the RST files.
 
-This script is tailored to SimGrid own needs and should be made more generic for autodoxy.
+This script is tailored to SimGrid own needs.
 
 If you are missing some dependencies, try:  pip3 install --requirement docs/requirements.txt
 """
@@ -219,7 +219,7 @@ with os.popen('grep doxygenfunction:: find-missing.ignore source/*rst|sed \'s/^.
             doxy_funs[klass][obj].remove(args)
             if len(doxy_funs[klass][obj]) == 0:
                 del doxy_funs[klass][obj]
-with os.popen('grep autodoxyvar:: find-missing.ignore source/*rst|sed \'s/^.*autodoxyvar:: //\'') as pse:
+with os.popen('grep doxygenvariable:: find-missing.ignore source/*rst|sed \'s/^.*doxygenvariable:: //\'') as pse:
     for line in (l.strip() for l in pse):
         (klass, var) = line.rsplit('::', 1)
 
@@ -242,4 +242,4 @@ for obj in sorted(doxy_funs):
 
 for obj in doxy_vars:
     for meth in sorted(doxy_vars[obj]):
-        print(".. autodoxyvar:: {}::{}".format(obj, meth))
+        print(".. doxygenvariable:: {}::{}".format(obj, meth))
