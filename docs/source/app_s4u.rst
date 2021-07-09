@@ -438,10 +438,7 @@ Basic management
          #include <simgrid/actor.h>
 
       .. doxygentypedef:: sg_actor_t
-      .. cpp:type:: const s4u_Actor* const_sg_actor_t
-
-         Pointer to a constant actor object.
-
+      .. doxygentypedef:: const_sg_actor_t
       .. doxygenfunction:: sg_actor_ref
       .. doxygenfunction:: sg_actor_unref
 

@@ -180,7 +180,6 @@ member ::msg_error_t is of kind enum
 
 # These ones are a bug of Doxygen, that parse them as variables instead of types.
 # So we don't use this bogus parse result, but go directly for cpp:type directives in app_s4u.rst
-.. autodoxyvar:: ::const_sg_actor_t
 .. autodoxyvar:: ::const_sg_bar_t
 .. autodoxyvar:: ::const_sg_mutex_t
 .. autodoxyvar:: ::const_sg_sem_t

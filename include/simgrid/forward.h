@@ -280,7 +280,9 @@ typedef s4u_File* sg_file_t;
 typedef const s4u_File* const_sg_file_t;
 typedef s4u_VM* sg_vm_t;
 typedef const s4u_VM* const_sg_vm_t;
+/** Pointer to an actor object */
 typedef s4u_Actor* sg_actor_t;
+/** Pointer to a constant actor object */
 typedef const s4u_Actor* const_sg_actor_t;
 
 typedef struct s_smx_simcall* smx_simcall_t;
