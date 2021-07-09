@@ -280,14 +280,14 @@ Using the Java bindings
 In most cases, you can use the SimGrid bindings as if it was a Java
 library:
 
-.. code-block:: shell
+.. code-block:: console
 
    $ javac -classpath .:path/to/simgrid.jar your/java/Code.java
    $ java -classpath .:path/to/simgrid.jar your.java.Code the/parameter/to/your/code
 
 For example:
 
-.. code-block:: shell
+.. code-block:: console
 
    $ cd examples/deprecated/java
    $ java -classpath ../../simgrid.jar:. .:../../simgrid.jar app.pingpong.Main ../platforms/platform.xml 

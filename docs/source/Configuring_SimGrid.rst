@@ -32,9 +32,9 @@ The most common way is to use the ``--cfg`` command line argument. For
 example, to set the item ``Item`` to the value ``Value``, simply
 type the following on the command-line:
 
-.. code-block:: shell
+.. code-block:: console
 
-   my_simulator --cfg=Item:Value (other arguments)
+   $ my_simulator --cfg=Item:Value (other arguments)
 
 Several ``--cfg`` command line arguments can naturally be used. If you
 need to include spaces in the argument, don't forget to quote the
@@ -345,10 +345,10 @@ the TCP congestion mechanism into account.  On Linux, this value can
 be retrieved using the following commands. Both give a set of values,
 and you should use the last one, which is the maximal size.
 
-.. code-block:: shell
+.. code-block:: console
 
-   cat /proc/sys/net/ipv4/tcp_rmem # gives the sender window
-   cat /proc/sys/net/ipv4/tcp_wmem # gives the receiver window
+   $ cat /proc/sys/net/ipv4/tcp_rmem # gives the sender window
+   $ cat /proc/sys/net/ipv4/tcp_wmem # gives the receiver window
 
 .. _cfg=network/bandwidth-factor:
 .. _cfg=network/latency-factor:
@@ -562,9 +562,9 @@ Configuring the Model-Checking
 To enable SimGrid's model-checking support, the program should
 be executed using the simgrid-mc wrapper:
 
-.. code-block:: shell
+.. code-block:: console
 
-   simgrid-mc ./my_program
+   $ simgrid-mc ./my_program
 
 Safety properties are expressed as assertions using the function
 :cpp:func:`void MC_assert(int prop)`.
@@ -607,9 +607,9 @@ the command line, specifying the name of the file containing the
 property, as formatted by the `ltl2ba <https://github.com/utwente-fmt/ltl2ba>`_ program.
 Note that ltl2ba is not part of SimGrid and must be installed separately.
 
-.. code-block:: shell
+.. code-block:: console
 
-   simgrid-mc ./my_program --cfg=model-check/property:<filename>
+   $ simgrid-mc ./my_program --cfg=model-check/property:<filename>
 
 .. _cfg=model-check/checkpoint:
 
@@ -769,7 +769,7 @@ When the model checker finds an interesting path in the application
 execution graph (where a safety or liveness property is violated), it
 generates an identifier for this path. Here is an example of the output:
 
-.. code-block:: shell
+.. code-block:: console
 
    [  0.000000] (0:@) Check a safety property
    [  0.000000] (0:@) **************************
@@ -955,7 +955,7 @@ you never used the tracing API.
 
 - Any SimGrid-based simulator (MSG, SimDag, SMPI, ...) and raw traces:
 
-  .. code-block:: shell
+  .. code-block:: none
 
      --cfg=tracing:yes --cfg=tracing/uncategorized:yes
 
@@ -966,7 +966,7 @@ you never used the tracing API.
 - MSG or SimDag-based simulator and categorized traces (you need to
   declare categories and classify your tasks according to them) 
 
-  .. code-block:: shell
+  .. code-block:: none
 
      --cfg=tracing:yes --cfg=tracing/categorized:yes
 
@@ -975,9 +975,9 @@ you never used the tracing API.
 
 - SMPI simulator and traces for a space/time view:
 
-  .. code-block:: shell
+  .. code-block:: console
 
-     smpirun -trace ...
+     $ smpirun -trace ...
 
   The `-trace` parameter for the smpirun script runs the simulation
   with ``--cfg=tracing:yes --cfg=tracing/smpi:yes``. Check the
@@ -989,13 +989,13 @@ reproduce an experiment. You have two ways to do that:
 
 - Add a string on top of the trace file as comment:
 
-  .. code-block:: shell
+  .. code-block:: none
 
      --cfg=tracing/comment:my_simulation_identifier
 
 - Add the contents of a textual file on top of the trace file as comment:
 
-  .. code-block:: shell
+  .. code-block:: none
 
      --cfg=tracing/comment-file:my_file_with_additional_information.txt
 
@@ -1102,7 +1102,7 @@ This option allows you to pass a file that contains two columns: The
 first column defines the section that will be subject to a speedup;
 the second column is the speedup. For instance:
 
-.. code-block:: shell
+.. code-block:: none
 
   "start:stop","ratio"
   "exchange_1.f:30:exchange_1.f:130",1.18244559422142
@@ -1227,7 +1227,7 @@ It is planned to make this feature available on a per-process (or per-thread?) b
 The first draft, however, just implements a "global" (i.e., for all processes) set
 of counters, the "default" set.
 
-.. code-block:: shell
+.. code-block:: none
 
    --cfg=smpi/papi-events:"default:PAPI_L3_LDM:PAPI_L2_LDM"
 
@@ -1278,9 +1278,9 @@ This configuration option can only use either full paths to libraries,
 or full names.  Check with ldd the name of the library you want to
 use.  For example:
 
-.. code-block:: shell
+.. code-block:: console
 
-   ldd allpairf90
+   $ ldd allpairf90
       ...
       libgfortran.so.3 => /usr/lib/x86_64-linux-gnu/libgfortran.so.3 (0x00007fbb4d91b000)
       ...
@@ -1553,11 +1553,11 @@ entry per MB of malloced data instead of one entry per 4 kB.
 To activate this, you must mount a hugetlbfs on your system and allocate
 at least one huge page:
 
-.. code-block:: shell
+.. code-block:: console
 
-    mkdir /home/huge
-    sudo mount none /home/huge -t hugetlbfs -o rw,mode=0777
-    sudo sh -c 'echo 1 > /proc/sys/vm/nr_hugepages' # echo more if you need more
+    $ mkdir /home/huge
+    $ sudo mount none /home/huge -t hugetlbfs -o rw,mode=0777
+    $ sudo sh -c 'echo 1 > /proc/sys/vm/nr_hugepages' # echo more if you need more
 
 Then, you can pass the option
 ``--cfg=smpi/shared-malloc-hugepage:/home/huge`` to smpirun to
@@ -1664,7 +1664,7 @@ It is also possible to set the breakpoint from inside the debugger, by
 writing in global variable simgrid::simix::breakpoint. For example,
 with gdb:
 
-.. code-block:: shell
+.. code-block:: none
 
    set variable simgrid::simix::breakpoint = 3.1416
 

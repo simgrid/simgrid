@@ -308,10 +308,10 @@ The easiest way to take the tutorial is to use the dedicated Docker
 image. Once you `installed Docker itself
 <https://docs.docker.com/install/>`_, simply do the following:
 
-.. code-block:: shell
+.. code-block:: console
 
-   docker pull simgrid/tuto-s4u
-   docker run -it --rm --name simgrid --volume ~/simgrid-tutorial:/source/tutorial simgrid/tuto-s4u bash
+   $ docker pull simgrid/tuto-s4u
+   $ docker run -it --rm --name simgrid --volume ~/simgrid-tutorial:/source/tutorial simgrid/tuto-s4u bash
 
 This will start a new container with all you need to take this
 tutorial, and create a ``simgrid-tutorial`` directory in your home on
@@ -334,12 +334,12 @@ The code template is available under ``/source/simgrid-template-s4u.git``
 in the image. You should copy it to your working directory and
 recompile it when you first log in:
 
-.. code-block:: shell
+.. code-block:: console
 
-   cp -r /source/simgrid-template-s4u.git/* /source/tutorial
-   cd /source/tutorial
-   cmake .
-   make
+   $ cp -r /source/simgrid-template-s4u.git/* /source/tutorial
+   $ cd /source/tutorial
+   $ cmake .
+   $ make
 
 Using your Computer Natively
 ............................
@@ -351,21 +351,21 @@ a recent version of SimGrid <install>`, a C++ compiler, and also
 The provided code template requires CMake to compile. On Debian and
 Ubuntu for example, you can get them as follows:
 
-.. code-block:: shell
+.. code-block:: console
 
-   sudo apt install simgrid pajeng cmake g++ vite
+   $ sudo apt install simgrid pajeng cmake g++ vite
 
 For R analysis of the produced traces, you may want to install R
 and the `pajengr <https://github.com/schnorr/pajengr#installation/>`_ package.
 
-.. code-block:: shell
+.. code-block:: console
 
    # install R and necessary packages
-   sudo apt install r-base r-cran-devtools r-cran-tidyverse
+   $ sudo apt install r-base r-cran-devtools r-cran-tidyverse
    # install pajengr dependencies
-   sudo apt install git cmake flex bison
+   $ sudo apt install git cmake flex bison
    # install the pajengr R package
-   Rscript -e "library(devtools); install_github('schnorr/pajengr');"
+   $ Rscript -e "library(devtools); install_github('schnorr/pajengr');"
 
 An initial version of the source code is provided on framagit. This
 template compiles with CMake. If SimGrid is correctly installed, you
@@ -373,15 +373,15 @@ should be able to clone the `repository
 <https://framagit.org/simgrid/simgrid-template-s4u>`_ and recompile
 everything as follows:
 
-.. code-block:: shell
+.. code-block:: console
 
    # (exporting SimGrid_PATH is only needed if SimGrid is installed in a non-standard path)
-   export SimGrid_PATH=/where/to/simgrid
+   $ export SimGrid_PATH=/where/to/simgrid
 
-   git clone https://framagit.org/simgrid/simgrid-template-s4u.git
-   cd simgrid-template-s4u/
-   cmake .
-   make
+   $ git clone https://framagit.org/simgrid/simgrid-template-s4u.git
+   $ cd simgrid-template-s4u/
+   $ cmake .
+   $ make
 
 If you struggle with the compilation, then you should double-check
 your :ref:`SimGrid installation <install>`.  On need, please refer to
@@ -393,16 +393,16 @@ Discovering the Provided Code
 
 Please compile and execute the provided simulator as follows:
 
-.. code-block:: shell
+.. code-block:: console
 
-   make master-workers
-   ./master-workers small_platform.xml master-workers_d.xml
+   $ make master-workers
+   $ ./master-workers small_platform.xml master-workers_d.xml
 
 For a more "fancy" output, you can use simgrid-colorizer.
 
-.. code-block:: shell
+.. code-block:: console
 
-   ./master-workers small_platform.xml master-workers_d.xml 2>&1 | simgrid-colorizer
+   $ ./master-workers small_platform.xml master-workers_d.xml 2>&1 | simgrid-colorizer
 
 If you installed SimGrid to a non-standard path, you may have to
 specify the full path to simgrid-colorizer on the above line, such as
@@ -414,10 +414,10 @@ For a classical Gantt-Chart visualization, you can use `Vite
 follows. But do not spend too much time installing Vite, because there
 is a better way to visualize SimGrid traces (see below).
 
-.. code-block:: shell
+.. code-block:: console
 
-   ./master-workers small_platform.xml master-workers_d.xml --cfg=tracing:yes --cfg=tracing/actor:yes
-   vite simgrid.trace
+   $ ./master-workers small_platform.xml master-workers_d.xml --cfg=tracing:yes --cfg=tracing/actor:yes
+   $ vite simgrid.trace
 
 .. image:: /tuto_s4u/img/vite-screenshot.png
    :align: center
@@ -432,10 +432,10 @@ to use R. As a start, you can download this `starter script
 <https://framagit.org/simgrid/simgrid/raw/master/docs/source/tuto_s4u/draw_gantt.R>`_
 and use it as follows:
 
-.. code-block:: shell
+.. code-block:: console
 
-   ./master-workers small_platform.xml master-workers_d.xml --cfg=tracing:yes --cfg=tracing/actor:yes
-   Rscript draw_gantt.R simgrid.trace
+   $ ./master-workers small_platform.xml master-workers_d.xml --cfg=tracing:yes --cfg=tracing/actor:yes
+   $ Rscript draw_gantt.R simgrid.trace
 
 It produces a ``Rplots.pdf`` with the following content:
 
@@ -623,9 +623,9 @@ every 100 tasks and ``XBT_DEBUG`` when sending all the other tasks. Or
 you could show only the total number of tasks processed by
 default. You can still see the debug messages as follows:
 
-.. code-block:: shell
+.. code-block:: console
 
-   ./master-workers-lab3 small_platform.xml deployment3.xml --log=s4u_app_masterworker.thres:debug
+   $ ./master-workers-lab3 small_platform.xml deployment3.xml --log=s4u_app_masterworker.thres:debug
 
 
 Lab 4: Competing Applications

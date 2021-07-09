@@ -265,10 +265,10 @@ The easiest way to take the tutorial is to use the dedicated Docker
 image. Once you `installed Docker itself
 <https://docs.docker.com/install/>`_, simply do the following:
 
-.. code-block:: shell
+.. code-block:: console
 
-   docker pull simgrid/tuto-smpi
-   docker run -it --rm --name simgrid --volume ~/smpi-tutorial:/source/tutorial simgrid/tuto-smpi bash
+   $ docker pull simgrid/tuto-smpi
+   $ docker run -it --rm --name simgrid --volume ~/smpi-tutorial:/source/tutorial simgrid/tuto-smpi bash
 
 This will start a new container with all you need to take this
 tutorial, and create a ``smpi-tutorial`` directory in your home on
@@ -293,10 +293,10 @@ Benchmarks. These files are available under
 ``/source/simgrid-template-smpi`` in the image. You should copy it to
 your working directory when you first log in:
 
-.. code-block:: shell
+.. code-block:: console
 
-   cp -r /source/simgrid-template-smpi/* /source/tutorial
-   cd /source/tutorial
+   $ cp -r /source/simgrid-template-smpi/* /source/tutorial
+   $ cd /source/tutorial
 
 Using your Computer Natively
 ............................
@@ -308,31 +308,31 @@ visualize the traces. You may want to install `Vite
 traces. The provided code template requires ``make`` to compile. On
 Debian and Ubuntu, you can get them as follows:
 
-.. code-block:: shell
+.. code-block:: console
 
-   sudo apt install simgrid pajeng make gcc g++ gfortran python3 vite
+   $ sudo apt install simgrid pajeng make gcc g++ gfortran python3 vite
 
 For R analysis of the produced traces, you may want to install R
 and the `pajengr <https://github.com/schnorr/pajengr#installation/>`_ package.
 
-.. code-block:: shell
+.. code-block:: console
 
    # install R and necessary packages
-   sudo apt install r-base r-cran-devtools r-cran-tidyverse
+   $ sudo apt install r-base r-cran-devtools r-cran-tidyverse
    # install pajengr dependencies
-   sudo apt install git cmake flex bison
+   $ sudo apt install git cmake flex bison
    # install the pajengr R package
-   Rscript -e "library(devtools); install_github('schnorr/pajengr');"
+   $ Rscript -e "library(devtools); install_github('schnorr/pajengr');"
 
 To take this tutorial, you will also need the platform files from the
 previous section as well as the source code of the NAS Parallel
 Benchmarks. Just  clone `this repository
 <https://framagit.org/simgrid/simgrid-template-smpi>`_  to get them all:
 
-.. code-block:: shell
+.. code-block:: console
 
-   git clone https://framagit.org/simgrid/simgrid-template-smpi.git
-   cd simgrid-template-smpi/
+   $ git clone https://framagit.org/simgrid/simgrid-template-smpi.git
+   $ cd simgrid-template-smpi/
 
 If you struggle with the compilation, then you should double-check
 your :ref:`SimGrid installation <install>`.  On need, please refer to
@@ -357,7 +357,7 @@ Compiling the program is straightforward (double-check your
 :ref:`SimGrid installation <install>` if you get an error message):
 
 
-.. code-block:: shell
+.. code-block:: console
 
   $ smpicc -O3 roundtrip.c -o roundtrip
 
@@ -365,7 +365,7 @@ Compiling the program is straightforward (double-check your
 Once compiled, you can simulate the execution of this program on 16
 nodes from the ``cluster_crossbar.xml`` platform as follows:
 
-.. code-block:: shell
+.. code-block:: console
 
    $ smpirun -np 16 -platform cluster_crossbar.xml -hostfile cluster_hostfile ./roundtrip
 
@@ -404,7 +404,7 @@ data size
 <https://www.nas.nasa.gov/publications/npb_problem_sizes.html>`_) with
 4 nodes.
 
-.. code-block:: shell
+.. code-block:: console
 
    $ make lu NPROCS=4 CLASS=S
    (compilation logs)
@@ -415,9 +415,9 @@ To get a better understanding of what is going on, activate the
 visualization tracing, and convert the produced trace for later
 use:
 
-.. code-block:: shell
+.. code-block:: console
 
-   smpirun -np 4 -platform ../cluster_backbone.xml -trace --cfg=tracing/filename:lu.S.4.trace bin/lu.S.4
+   $ smpirun -np 4 -platform ../cluster_backbone.xml -trace --cfg=tracing/filename:lu.S.4.trace bin/lu.S.4
 
 You can then produce a Gantt Chart with the following R chunk. You can
 either copy/paste it in an R session, or `turn it into a Rscript executable
@@ -481,7 +481,7 @@ Lab 2: Tracing and Replay of LU
 
 Now compile and execute the LU benchmark, class A, with 32 nodes.
 
-.. code-block:: shell
+.. code-block:: console
 
    $ make lu NPROCS=32 CLASS=A
 
@@ -496,7 +496,7 @@ skipped (the application must be network-dependent for this to work).
 
 You can even generate the trace during the live simulation as follows:
 
-.. code-block:: shell
+.. code-block:: console
 
    $ smpirun -trace-ti --cfg=tracing/filename:LU.A.32 -np 32 -platform ../cluster_backbone.xml bin/lu.A.32
 
@@ -504,7 +504,7 @@ The produced trace is composed of a file ``LU.A.32`` and a folder
 ``LU.A.32_files``. You can replay this trace with SMPI thanks to ``smpirun``.
 For example, the following command replays the trace on a different platform:
 
-.. code-block:: shell
+.. code-block:: console
 
    $ smpirun -np 32 -platform ../cluster_crossbar.xml -hostfile ../cluster_hostfile -replay LU.A.32
 
@@ -541,7 +541,7 @@ The computing part of this example is the matrix multiplication routine
    :language: cpp
    :lines: 9-24
 
-.. code-block:: shell
+.. code-block:: console
 
   $ smpicxx -O3 gemm_mpi.cpp -o gemm
   $ time smpirun -np 16 -platform cluster_crossbar.xml -hostfile cluster_hostfile --cfg=smpi/display-timing:yes --cfg=smpi/running-power:1000000000 ./gemm
@@ -560,7 +560,7 @@ running the simulation. Here we say that its speed is the same as one of the
 processors we are simulating (1Gf), so that 1 second of computation is injected 
 as 1 second in the simulation.
 
-.. code-block:: shell
+.. code-block:: console
 
   [5.568556] [smpi_kernel/INFO] Simulated time: 5.56856 seconds.
 
@@ -604,7 +604,7 @@ earlier if the expected stability is reached after fewer samples.
 Now run the code again with various sizes and parameters and check the time taken for the 
 simulation, as well as the resulting simulated time.
 
-.. code-block:: shell
+.. code-block:: console
 
   [5.575691] [smpi_kernel/INFO] Simulated time: 5.57569 seconds.
   The simulation took 1.23698 seconds (after parsing and platform setup)
@@ -638,7 +638,7 @@ Find it and replace the two other ones with ``SMPI_SHARED_MALLOC`` (there is onl
 
 Once done, you can now run
 
-.. code-block:: shell
+.. code-block:: console
 
    $ make dt NPROCS=85 CLASS=C
    (compilation logs)
@@ -664,14 +664,14 @@ It will display at the end of a (successful) run the largest allocations and the
 targets for sharing, or setting the threshold for automatic ones.
 For DT, the process would be to run a smaller class of problems, 
 
-.. code-block:: shell
+.. code-block:: console
 
    $ make dt NPROCS=21 CLASS=A
    $ smpirun --cfg=smpi/display-allocs:yes -np 21 -platform ../cluster_backbone.xml bin/dt.A.x BH
 
 Which should output:
 
-.. code-block:: shell
+.. code-block:: console
 
     [smpi_utils/INFO] Memory Usage: Simulated application allocated 198533192 bytes during its lifetime through malloc/calloc calls.
     Largest allocation at once from a single process was 3553184 bytes, at dt.c:388. It was called 3 times during the whole simulation.

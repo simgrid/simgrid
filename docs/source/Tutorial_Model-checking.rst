@@ -48,11 +48,11 @@ your machine: it works out of the box on Linux, Windows (with WSL2) and FreeBSD.
 -Denable_model-checking .``) and then compile SimGrid :ref:`as usual <install_src>`. Unfortunately, Mc SimGrid does not work natively
 on Mac OS X yet, so mac users should stick to the docker method for now.
 
-.. code-block:: shell
+.. code-block:: console
 
-   docker image pull simgrid/tuto-mc
-   mkdir ~/tuto-mcsimgrid # or chose another directory to share between your computer and the docker container 
-   docker run -it --rm --name mcsimgrid --volume ~/tuto-mcsimgrid:/source/tutorial simgrid/tuto-mc bash
+   $ docker image pull simgrid/tuto-mc
+   $ mkdir ~/tuto-mcsimgrid # or chose another directory to share between your computer and the docker container 
+   $ docker run -it --rm --name mcsimgrid --volume ~/tuto-mcsimgrid:/source/tutorial simgrid/tuto-mc bash
 
 In the container, you have access to the following directories of interest:
 
@@ -72,7 +72,7 @@ Motivational example
 Let's go with a first example of a bugged program. Once in the container, copy all files from the tutorial into the directory shared
 between your host computer and the container.
 
-.. code-block:: shell
+.. code-block:: console
 
   # From within the container
   $ cp -r /source/tuto-mc.git/* /source/tutorial/
@@ -95,7 +95,7 @@ The provided code is rather simple: Three ``client`` are launched with an intege
 send their parameter to a given mailbox. A ``server`` receives 3 messages and assumes that the last received message is the number ``3``.
 If you compile and run it, it simply works:
 
-.. code-block:: shell
+.. code-block:: console
 
    $ cmake . && make
    (output omitted)
@@ -116,7 +116,7 @@ the message ``3`` to arrive last. Depending on the link speed, any order should 
 source code and/or the platform file, but this is not a method. Time to start Mc SimGrid, the SimGrid model checker, to exhaustively test
 all message orders. For that, you simply launch your simulation as a parameter to the ``simgrid-mc`` binary as you would do with ``valgrind``:
 
-.. code-block:: shell
+.. code-block:: console
 
    $ simgrid-mc ./ndet-receive-s4u small_platform.xml
    (some output ignored)
@@ -135,7 +135,7 @@ now read it together. It can be split in several parts:
     all possible outcome of the code, the execution is sometimes rewind to explore another possible branch (here: another possible
     message ordering). Note also that all times are always 0 in the model checker, since the time is abstracted away in this mode.
 
-    .. code-block:: shell
+    .. code-block:: console
 
        [0.000000] [mc_safety/INFO] Check a safety property. Reduction is: dpor.
        [Jupiter:client:(2) 0.000000] [example/INFO] Sending 1
@@ -158,7 +158,7 @@ now read it together. It can be split in several parts:
   - Then you have the error message, along with a backtrace of the application at the point where the assertion fails. Not all the frames of
     the backtrace are useful, and some are omitted here.
 
-    .. code-block:: shell
+    .. code-block:: console
 
        [Tremblay:server:(1) 0.000000] /source/tutorial/ndet-receive-s4u.cpp:27: [root/CRITICAL] Assertion value_got == 3 failed
        Backtrace (displayed in actor server):
@@ -170,7 +170,7 @@ now read it together. It can be split in several parts:
   - First, the error message itself. The ``xbt_assert`` in the code result in an ``abort()`` in the application, that is interpreted as an
     application crash by the model-checker.
 
-    .. code-block:: shell
+    .. code-block:: console
 
        [0.000000] [mc_ModelChecker/INFO] **************************
        [0.000000] [mc_ModelChecker/INFO] ** CRASH IN THE PROGRAM **
@@ -182,7 +182,7 @@ now read it together. It can be split in several parts:
     calls we made (put/get) are split in atomic calls (iSend+Wait/iRecv+Wait), and all executions are interleaved. Also, Mc SimGrid
     reports the first faulty execution it finds: it may not be the shorter possible one.
 
-    .. code-block:: shell
+    .. code-block:: console
   
        [0.000000] [mc_ModelChecker/INFO] Counter-example execution trace:
        [0.000000] [mc_ModelChecker/INFO]   [(1)Tremblay (server)] iRecv(dst=(1)Tremblay (server), buff=(verbose only), size=(verbose only))
@@ -198,7 +198,7 @@ now read it together. It can be split in several parts:
 
   - Then, the execution path is given.
 
-    .. code-block:: shell
+    .. code-block:: console
 
        [0.000000] [mc_record/INFO] Path = 1;2;1;1;2;4;1;1;3;1
 
@@ -206,7 +206,7 @@ now read it together. It can be split in several parts:
     without ``simgrid-mc``. This is because ``simgrid-mc`` forbids to use a debugger such as gdb or valgrind on the code during the
     model-checking. For example, you can trigger the same execution in valgrind as follows:
 
-    .. code-block:: shell
+    .. code-block:: console
 
        $ valgrind ./ndet-receive-s4u small_platform.xml --cfg=model-check/replay:'1;2;1;1;2;4;1;1;3;1'
        ==402== Memcheck, a memory error detector
@@ -233,7 +233,7 @@ now read it together. It can be split in several parts:
     point of the exploration), the visited states (the amount of times we visited another state -- the same state may have been visited
     several times) and the amount of transitions.
 
-    .. code-block:: shell
+    .. code-block:: console
 
        [0.000000] [mc_safety/INFO] Expanded states = 22
        [0.000000] [mc_safety/INFO] Visited states = 56
@@ -257,7 +257,7 @@ translation of ``ndet-receive-s4u.cpp`` to MPI.
 |br|
 You can compile and run it on top of SimGrid as follows.
 
-.. code-block:: shell
+.. code-block:: console
 
    $ smpicc ndet-receive-mpi.c -o ndet-receive-mpi
    $ smpirun -np 4 -platform small_platform.xml ndet-receive-mpi
@@ -266,14 +266,14 @@ Interestingly enough, the bug is triggered on my machine even without Mc SimGrid
 leading to it. It may not be the case on your machine, as this depends on the iteration order of an unsorted collection. Instead, we
 should use Mc SimGrid to exhaustively explore the state space and trigger the bug in all cases.
 
-.. code-block:: shell
+.. code-block:: console
 
    $ smpirun -wrapper simgrid-mc -np 4 -platform small_platform.xml ndet-receive-mpi
 
 The produced output is then very similar to the one you get with S4U, even if the exact execution path leading to the bug may differs. You
 can also trigger a given execution path out of the model-checker, for example to explore it with valgrind.
 
-.. code-block:: shell
+.. code-block:: console
 
    $ smpirun -wrapper valgrind -np 4 -platform small_platform.xml --cfg=model-check/replay:'1;2;1;1;4;1;1;3;1' ndet-receive-mpi
 
