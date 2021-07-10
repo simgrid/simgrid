@@ -42,7 +42,6 @@ public:
   /** @brief Retrieves the name of that netzone as a C string */
   const char* get_cname() const;
 
-  XBT_ATTRIB_DEPRECATED_v331("Please use get_parent()") NetZone* get_father() const;
   NetZone* get_parent() const;
   NetZone* set_parent(const NetZone* parent);
 
@@ -59,9 +58,12 @@ public:
   /** @brief Get the netpoint associated to this netzone */
   kernel::routing::NetPoint* get_netpoint();
 
+#ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v331("Please use get_parent()") NetZone* get_father() const;
   std::vector<NetZone*> get_children() const;
   XBT_ATTRIB_DEPRECATED_v332("Please use set_parent() to manage NetZone's relationship") NetZone* add_child(
       NetZone* new_zone);
+#endif
 
   void extract_xbt_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
                          std::map<std::string, xbt_edge_t, std::less<>>* edges);

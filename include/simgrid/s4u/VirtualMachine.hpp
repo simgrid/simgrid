@@ -42,7 +42,9 @@ public:
     SUSPENDED, /**< Suspend/resume does not involve disk I/O, so we assume there is no transition states. */
     DESTROYED
   );
+#ifndef DOXYGEN
   using state XBT_ATTRIB_DEPRECATED_v332("Please use VirtualMachine::State") = State;
+#endif
 
   vm::VirtualMachineImpl* get_vm_impl() const { return pimpl_vm_; }
   void start();
