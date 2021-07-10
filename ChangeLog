@@ -83,6 +83,14 @@ Models:
    This change may impact on the timing of your simulation results.
    Take care when comparing simulations from different SimGrid's
    versions. Sorry for the inconvenience.
+ - Dynamic network factors: users can configure a callback to define
+   the network factors dynamically. This API is available at
+ simgrid::kernel::resource::NetworkModelIntf.
+   - Users have access to complete information about the current communication
+     to decide which factor to apply. This includes: message size, source and
+	 destination hosts, links and zones traversed.
+   - Dynamic factors for both latency and bandwidth.
+   - For more details, see the example in (examples/cpp/network-factors).
 
 XBT:
  - xbt_assert is not disabled anymore, even when built with enable_debug=off.
