@@ -162,33 +162,31 @@ void smpi_bench_end()
 }
 
 /* Private sleep function used by smpi_sleep(), smpi_usleep() and friends */
-static unsigned int private_sleep(double secs)
+static void private_sleep(double secs)
 {
   const SmpiBenchGuard suspend_bench;
 
   XBT_DEBUG("Sleep for: %lf secs", secs);
   aid_t pid = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_sleeping_in(pid, secs);
-
   simgrid::s4u::this_actor::sleep_for(secs);
-
   TRACE_smpi_sleeping_out(pid);
-
-  return 0;
 }
 
 unsigned int smpi_sleep(unsigned int secs)
 {
   if (not smpi_process())
     return sleep(secs);
-  return private_sleep(secs);
+  private_sleep(secs);
+  return 0;
 }
 
 int smpi_usleep(useconds_t usecs)
 {
   if (not smpi_process())
     return usleep(usecs);
-  return static_cast<int>(private_sleep(usecs / 1000000.0));
+  private_sleep(static_cast<double>(usecs) / 1e6);
+  return 0;
 }
 
 #if _POSIX_TIMERS > 0
@@ -196,7 +194,8 @@ int smpi_nanosleep(const struct timespec* tp, struct timespec* t)
 {
   if (not smpi_process())
     return nanosleep(tp,t);
-  return static_cast<int>(private_sleep(tp->tv_sec + tp->tv_nsec / 1000000000.0));
+  private_sleep(static_cast<double>(tp->tv_sec) + static_cast<double>(tp->tv_nsec) / 1e9);
+  return 0;
 }
 #endif
 
@@ -206,14 +205,12 @@ int smpi_gettimeofday(struct timeval* tv, struct timezone* tz)
     return gettimeofday(tv, tz);
 
   const SmpiBenchGuard suspend_bench;
-  double now = simgrid::s4u::Engine::get_clock();
   if (tv) {
-    tv->tv_sec = static_cast<time_t>(now);
-#ifdef WIN32
-    tv->tv_usec = static_cast<useconds_t>((now - tv->tv_sec) * 1e6);
-#else
-    tv->tv_usec = static_cast<suseconds_t>((now - tv->tv_sec) * 1e6);
-#endif
+    double now   = simgrid::s4u::Engine::get_clock();
+    double secs  = trunc(now);
+    double usecs = (now - secs) * 1e6;
+    tv->tv_sec   = static_cast<time_t>(secs);
+    tv->tv_usec  = static_cast<decltype(tv->tv_usec)>(usecs); // suseconds_t (or useconds_t on WIN32)
   }
   if (smpi_wtime_sleep > 0)
     simgrid::s4u::this_actor::sleep_for(smpi_wtime_sleep);
@@ -231,9 +228,11 @@ int smpi_clock_gettime(clockid_t clk_id, struct timespec* tp)
     return clock_gettime(clk_id, tp);
   //there is only one time in SMPI, so clk_id is ignored.
   const SmpiBenchGuard suspend_bench;
-  double now  = simgrid::s4u::Engine::get_clock();
-  tp->tv_sec  = static_cast<time_t>(now);
-  tp->tv_nsec = static_cast<long int>((now - tp->tv_sec) * 1e9);
+  double now   = simgrid::s4u::Engine::get_clock();
+  double secs  = trunc(now);
+  double nsecs = (now - secs) * 1e9;
+  tp->tv_sec   = static_cast<time_t>(secs);
+  tp->tv_nsec  = static_cast<long int>(nsecs);
   if (smpi_wtime_sleep > 0)
     simgrid::s4u::this_actor::sleep_for(smpi_wtime_sleep);
   return 0;

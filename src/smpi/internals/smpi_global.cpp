@@ -309,7 +309,7 @@ static int smpi_run_entry_point(const F& entry_point, const std::string& executa
   // take a copy of args4argv to keep reference of the allocated strings
   const std::vector<char*> args2str(*args4argv);
 #endif
-  int argc = args4argv->size();
+  int argc = static_cast<int>(args4argv->size());
   args4argv->push_back(nullptr);
   char** argv = args4argv->data();
 
@@ -473,7 +473,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
 
           // Copy the dynamic library, the new name must be the same length as the old one
           // just replace the name with 7 digits for the rank and the rest of the name.
-          auto pad                   = std::min<unsigned>(7, libname.length());
+          auto pad                   = std::min<size_t>(7, libname.length());
           std::string target_libname = std::string(pad - std::to_string(rank).length(), '0') + std::to_string(rank) + libname.substr(pad);
           std::string target_lib = simgrid::config::get_value<std::string>("smpi/tmpdir") + "/" + target_libname;
           target_libs.push_back(target_lib);
