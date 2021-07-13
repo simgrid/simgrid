@@ -260,7 +260,7 @@ with os.popen('grep doxygentypedef:: find-missing.ignore source/*rst|sed \'s/^.*
 for obj in sorted(doxy_funs):
     for meth in sorted(doxy_funs[obj]):
         for args in sorted(doxy_funs[obj][meth]):
-            if obj is '':
+            if obj == '':
                 print(".. doxygenfunction:: {}{}".format(meth, args))
             else:
                 print(".. doxygenfunction:: {}::{}{}".format(obj, meth, args))
@@ -271,8 +271,7 @@ for obj in doxy_vars:
 
 for obj in doxy_type:
     for meth in sorted(doxy_type[obj]):
-        if obj is '':
+        if obj == '':
             print(".. doxygentypedef:: {}".format(meth))
         else:
             print(".. doxygentypedef:: {}::{}".format(obj, meth))
-        
