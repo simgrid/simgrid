@@ -21,3 +21,18 @@ It is only used by find-missing, that will not report any definition linked here
 .. doxygenfunction:: simgrid::s4u::Exec::~Exec()
 .. doxygenfunction:: simgrid::s4u::Io::~Io()
 
+# These are used to make the C++ objects visible from the C world
+.. doxygentypedef:: s4u_Actor
+.. doxygentypedef:: s4u_Barrier
+.. doxygentypedef:: s4u_Comm
+.. doxygentypedef:: s4u_ConditionVariable
+.. doxygentypedef:: s4u_Disk
+.. doxygentypedef:: s4u_Exec
+.. doxygentypedef:: s4u_File
+.. doxygentypedef:: s4u_Host
+.. doxygentypedef:: s4u_Link
+.. doxygentypedef:: s4u_Mailbox
+.. doxygentypedef:: s4u_Mutex
+.. doxygentypedef:: s4u_NetZone
+.. doxygentypedef:: s4u_Semaphore
+.. doxygentypedef:: s4u_VM

@@ -197,7 +197,7 @@ for arg in xml_files:
                 print ("member {}::{} is of kind {}".format(compoundname, name, kind))
 
 # Forget about the declarations that are done in the RST
-with os.popen('grep doxygenfunction:: find-missing.ignore source/*rst|sed \'s/^.*doxygenfunction:: //\'') as pse:
+with os.popen('grep doxygenfunction:: find-missing.ignore source/*rst|sed \'s/^.*doxygenfunction:: //\'|sed \'s/ *const//\'') as pse:
     for line in (l.strip() for l in pse):
         (klass, obj, args) = (None, None, None)
         if "(" in line:
