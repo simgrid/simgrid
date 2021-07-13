@@ -9,7 +9,6 @@
 #define INCLUDE_SIMGRID_LINK_H_
 
 #include <simgrid/forward.h>
-#include <xbt/base.h>
 
 /* C interface */
 SG_BEGIN_DECL

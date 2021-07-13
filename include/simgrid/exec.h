@@ -8,7 +8,6 @@
 
 #include <simgrid/forward.h>
 #include <sys/types.h> /* ssize_t */
-#include <xbt/dynar.h>
 
 /* C interface */
 SG_BEGIN_DECL
