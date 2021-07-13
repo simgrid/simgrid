@@ -13,6 +13,7 @@
 #include "smpi_utils.hpp"
 #include "src/internal_config.h"
 #include "src/mc/mc_replay.hpp"
+#include "src/surf/surf_interface.hpp" // sg_surf_precision
 #include "xbt/config.hpp"
 #include "xbt/file.hpp"
 
@@ -253,22 +254,17 @@ double smpi_mpi_wtime()
   return time;
 }
 
-extern double sg_surf_precision;
+// Used by Akypuera (https://github.com/schnorr/akypuera)
 unsigned long long smpi_rastro_resolution ()
 {
   const SmpiBenchGuard suspend_bench;
-  double resolution = (1/sg_surf_precision);
-  return static_cast<unsigned long long>(resolution);
+  return static_cast<unsigned long long>(1.0 / sg_surf_precision);
 }
 
 unsigned long long smpi_rastro_timestamp ()
 {
   const SmpiBenchGuard suspend_bench;
-  double now = simgrid::s4u::Engine::get_clock();
-
-  auto sec               = static_cast<unsigned long long>(now);
-  unsigned long long pre = (now - sec) * smpi_rastro_resolution();
-  return sec * smpi_rastro_resolution() + pre;
+  return static_cast<unsigned long long>(simgrid::s4u::Engine::get_clock() / sg_surf_precision);
 }
 
 /* ****************************** Functions related to the SMPI_SAMPLE_ macros ************************************/
