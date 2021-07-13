@@ -1,0 +1,5 @@
+$ ${bindir:=.}/s4u-exec-cpu-nonlinear "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (1:runner@runner) Execute 10 tasks of 1e+06 flops, should take 10 second in a CPU without degradation. It will take the double here.
+> [  0.000000] (1:runner@runner) Waiting for all tasks to be done!
+> [  0.000000] (0:maestro@) Host runner, 10 concurrent tasks, new capacity 500000.000000
+> [ 20.000000] (1:runner@runner) Finished executing. Goodbye now!

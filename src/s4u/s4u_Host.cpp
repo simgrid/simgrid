@@ -264,6 +264,17 @@ double Host::get_available_speed() const
   return this->pimpl_cpu_->get_speed_ratio();
 }
 
+Host* Host::set_sharing_policy(SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
+{
+  kernel::actor::simcall([this, policy, &cb] { pimpl_cpu_->set_sharing_policy(policy, cb); });
+  return this;
+}
+
+Host::SharingPolicy Host::get_sharing_policy() const
+{
+  return this->pimpl_cpu_->get_sharing_policy();
+}
+
 int Host::get_core_count() const
 {
   return this->pimpl_cpu_->get_core_count();

@@ -113,6 +113,31 @@ CpuImpl* CpuImpl::set_core_count(int core_count)
   return this;
 }
 
+void CpuImpl::apply_sharing_policy_cfg() const
+{
+  if (!get_constraint())
+    return;
+
+  kernel::lmm::Constraint::SharingPolicy lmm_policy = kernel::lmm::Constraint::SharingPolicy::SHARED;
+  if (sharing_policy_ == s4u::Host::SharingPolicy::NONLINEAR)
+    lmm_policy = kernel::lmm::Constraint::SharingPolicy::NONLINEAR;
+
+  get_constraint()->set_sharing_policy(lmm_policy, sharing_policy_cb_);
+}
+
+void CpuImpl::set_sharing_policy(s4u::Host::SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
+{
+  xbt_assert(dynamic_cast<CpuTiModel*>(get_model()) == nullptr, "Cannot change sharing policy with CPU:TI model");
+  sharing_policy_    = policy;
+  sharing_policy_cb_ = cb;
+  apply_sharing_policy_cfg();
+}
+
+s4u::Host::SharingPolicy CpuImpl::get_sharing_policy() const
+{
+  return sharing_policy_;
+}
+
 int CpuImpl::get_core_count()
 {
   return core_count_;
@@ -135,6 +160,7 @@ void CpuImpl::seal()
   lmm::System* lmm = get_model()->get_maxmin_system();
   if (dynamic_cast<CpuTiModel*>(get_model()) == nullptr)
     this->set_constraint(lmm->constraint_new(this, core_count_ * speed_per_pstate_.front()));
+  apply_sharing_policy_cfg();
   Resource::seal();
 }
 

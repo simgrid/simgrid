@@ -56,6 +56,10 @@ class XBT_PUBLIC CpuImpl : public Resource_T<CpuImpl> {
   int pstate_ = 0;                       /*< Current pstate (index in the speed_per_pstate_)*/
   std::vector<double> speed_per_pstate_; /*< List of supported CPU capacities (pstate related). Not 'const' because VCPU
                                             get modified on migration */
+  s4u::Host::SharingPolicy sharing_policy_ = s4u::Host::SharingPolicy::LINEAR;
+  s4u::NonLinearResourceCb sharing_policy_cb_;
+
+  void apply_sharing_policy_cfg() const;
 
 public:
   /**
@@ -111,6 +115,9 @@ public:
    * @param speed_per_state list of powers for this processor (default power is at index 0)
    */
   CpuImpl* set_pstate_speed(const std::vector<double>& speed_per_state);
+
+  void set_sharing_policy(s4u::Host::SharingPolicy policy, const s4u::NonLinearResourceCb& cb);
+  s4u::Host::SharingPolicy get_sharing_policy() const;
 
   /**
    * @brief Execute some quantity of computation

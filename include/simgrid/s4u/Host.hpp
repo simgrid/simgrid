@@ -157,6 +157,16 @@ public:
   int get_core_count() const;
   Host* set_core_count(int core_count);
 
+  enum class SharingPolicy { NONLINEAR = 1, LINEAR = 0 };
+  /**
+   * @brief Describes how the CPU is shared between concurrent tasks
+   *
+   * @param policy Sharing policy
+   * @param cb Callback for NONLINEAR policies
+   */
+  Host* set_sharing_policy(SharingPolicy policy, const s4u::NonLinearResourceCb& cb = {});
+  SharingPolicy get_sharing_policy() const;
+
   /** Returns the current computation load (in flops per second)
    *
    * The external load (coming from an availability trace) is not taken in account.
