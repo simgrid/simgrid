@@ -124,7 +124,7 @@ Starting and Stopping Actors
 
           This file is not really interesting: the important matter is in the XML file.
 
-      .. example-tab:: examples/c/actor-lifetime/actor-lifetime.c
+       .. example-tab:: examples/c/actor-lifetime/actor-lifetime.c
 
           This file is not really interesting: the important matter is in the XML file.
 
