@@ -1341,8 +1341,8 @@ It might affect the total timing by the cost of a barrier.
 
 .. _cfg=smpi/errors-are-fatal:
 
-Render MPI errors non-fatal
-...........................
+Disable MPI fatal errors
+........................
 
 **Option** ``smpi/errors-are-fatal`` **default:** on
 

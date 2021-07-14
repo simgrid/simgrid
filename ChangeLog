@@ -27,6 +27,7 @@ S4U:
    parameter by reference, instead of a pointer.
  - Fixed a bug where Activity::wait_for() killed the activity on timeout.
    Explicitly cancel the activity to get back to previous behavior.
+ - New: Link::set_concurrency_limit() to limit the amount of concurrent flows.
 
 SMPI:
  - The default SMPI compiler flags are no more taken from the environment.
@@ -98,6 +99,9 @@ XBT:
 Documentation:
  - New tutorial: Model-checking and formal assessment
  - New sections: "Demystifying the routing" and "C++ platforms"
+ - Update and improve the part on visualization in MPI and Algo tutorials.
+ - Improve the section on routing: how to define it, how it's used internally
+ - Fix many issues, broken links and missing references in doxygen and Sphinx
 
 LUA:
  - Lua platform files are deprecated. Their support will be dropped after v3.31.
