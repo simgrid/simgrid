@@ -859,11 +859,9 @@ set(DOC_SOURCES
   doc/doxygen/module-sd.doc
   doc/doxygen/module-surf.doc
   doc/doxygen/module-trace.doc
-  doc/doxygen/module-xbt.doc
   doc/doxygen/module-index.doc
   doc/doxygen/outcomes_vizu.doc
   doc/doxygen/platform.doc
-  doc/doxygen/platform_lua.doc
   doc/doxygen/uhood.doc
   doc/doxygen/uhood_switch.doc
   doc/doxygen/uhood_arch.doc
