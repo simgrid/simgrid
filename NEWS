@@ -8,7 +8,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \( _ )
 The Victoriadagarna Release
   
   * Programmatic platform description (bye bye XML, hello C++)
-  * New plugin to simplify producer/consummer applications.
+  * New plugin to simplify producer/consumer applications.
   * MC: new tutorial and associated docker image.
   * SMPI: improve error handling for incorrect advanced usages.
   * Many internal cleanups and refactoring to prepare the future.

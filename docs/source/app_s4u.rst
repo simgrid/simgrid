@@ -1754,7 +1754,7 @@ class Activity
 **Known subclasses:**
 :ref:`Communications <API_s4u_Comm>` (started on Mailboxes and consuming links),
 :ref:`Executions <API_s4u_Exec>` (started on Host and consuming CPU resources)
-:ref:`I/O <API_s4u_Io>` (started on and consumming disks).
+:ref:`I/O <API_s4u_Io>` (started on and consuming disks).
 See also the :ref:`section on activities <s4u_Activities>` above.
 
 Basic management
