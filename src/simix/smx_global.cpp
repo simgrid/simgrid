@@ -249,33 +249,6 @@ void SIMIX_run() // XBT_ATTRIB_DEPRECATED_v332
   simgrid::kernel::EngineImpl::get_instance()->run();
 }
 
-double SIMIX_timer_next() // XBT_ATTRIB_DEPRECATED_v329
-{
-  return simgrid::kernel::timer::Timer::next();
-}
-
-smx_timer_t SIMIX_timer_set(double date, void (*callback)(void*), void* arg) // XBT_ATTRIB_DEPRECATED_v329
-{
-  return simgrid::kernel::timer::Timer::set(date, std::bind(callback, arg));
-}
-
-/** @brief cancels a timer that was added earlier */
-void SIMIX_timer_remove(smx_timer_t timer) // XBT_ATTRIB_DEPRECATED_v329
-{
-  timer->remove();
-}
-
-/** @brief Returns the date at which the timer will trigger (or 0 if nullptr timer) */
-double SIMIX_timer_get_date(smx_timer_t timer) // XBT_ATTRIB_DEPRECATED_v329
-{
-  return timer ? timer->get_date() : 0.0;
-}
-
-void SIMIX_display_process_status() // XBT_ATTRIB_DEPRECATED_v329
-{
-  simgrid::kernel::EngineImpl::get_instance()->display_all_actor_status();
-}
-
 int SIMIX_is_maestro()
 {
   if (simix_global == nullptr) // SimDag

@@ -526,22 +526,6 @@ void create_maestro(const std::function<void()>& code)
 } // namespace kernel
 } // namespace simgrid
 
-int SIMIX_process_count() // XBT_ATTRIB_DEPRECATED_v329
-{
-  return simgrid::kernel::EngineImpl::get_instance()->get_actor_list().size();
-}
-
-void* SIMIX_process_self_get_data() // XBT_ATTRIB_DEPRECATED_v329
-{
-  const simgrid::s4u::Actor* self = simgrid::s4u::Actor::self();
-  return self ? self->get_data() : nullptr;
-}
-
-void SIMIX_process_self_set_data(void* data) // XBT_ATTRIB_DEPRECATED_v329
-{
-  simgrid::s4u::Actor::self()->set_data(data);
-}
-
 /* needs to be public and without simcall because it is called
    by exceptions and logging events */
 const char* SIMIX_process_self_get_name()
@@ -553,16 +537,4 @@ const char* SIMIX_process_self_get_name()
 smx_actor_t SIMIX_process_from_PID(aid_t pid) // XBT_ATTRIB_DEPRECATD_v331
 {
   return simgrid::kernel::actor::ActorImpl::by_pid(pid);
-}
-
-void SIMIX_process_on_exit(smx_actor_t actor,
-                           const std::function<void(bool /*failed*/)>& fun) // XBT_ATTRIB_DEPRECATED_v329
-{
-  xbt_assert(actor, "current process not found: are you in maestro context ?");
-  actor->on_exit->emplace_back(fun);
-}
-
-void simcall_process_set_data(smx_actor_t process, void* data) // XBT_ATTRIB_DEPRECATED_v329
-{
-  simgrid::kernel::actor::simcall([process, data] { process->get_ciface()->set_data(data); });
 }

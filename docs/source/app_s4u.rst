@@ -740,7 +740,6 @@ the execution, or start an asynchronous activity.
       .. doxygenfunction:: simgrid::s4u::this_actor::execute(double flop)
       .. doxygenfunction:: simgrid::s4u::this_actor::execute(double flop, double priority)
       .. doxygenfunction:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
-      .. doxygenfunction:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts, double timeout)
 
    .. group-tab:: Python
 

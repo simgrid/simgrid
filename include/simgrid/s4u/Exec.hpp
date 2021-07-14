@@ -78,9 +78,6 @@ public:
 
   ExecPtr set_bound(double bound);
   ExecPtr set_priority(double priority);
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v329("Please use exec_init(...)->wait_for(timeout)") ExecPtr set_timeout(double timeout);
-#endif
 
   Host* get_host() const;
   unsigned int get_host_number() const;

@@ -100,15 +100,6 @@ ExecPtr Exec::set_priority(double priority)
   return this;
 }
 
-ExecPtr Exec::set_timeout(double timeout) // XBT_ATTRIB_DEPRECATED_v329
-{
-  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
-             "Cannot change the bound of an exec after its start");
-  kernel::actor::simcall(
-      [this, timeout] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_timeout(timeout); });
-  return this;
-}
-
 ExecPtr Exec::set_flops_amount(double flops_amount)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,

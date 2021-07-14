@@ -53,8 +53,6 @@
 #define XBT_ATTRIB_DEPRECATED(mesg) __attribute__((deprecated(mesg)))
 #endif
 
-#define XBT_ATTRIB_DEPRECATED_v329(mesg)                                                                               \
-  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v3.28)")
 #define XBT_ATTRIB_DEPRECATED_v330(mesg)                                                                               \
   XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v3.29)")
 #define XBT_ATTRIB_DEPRECATED_v331(mesg)                                                                               \

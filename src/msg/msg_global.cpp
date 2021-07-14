@@ -74,9 +74,3 @@ unsigned long int MSG_get_sent_msg()
 {
   return msg_global->sent_msg;
 }
-
-/** @brief register functions bypassing the parser */
-void MSG_set_function(const char* host_id, const char* function_name, xbt_dynar_t arguments)
-{
-  SIMIX_process_set_function(host_id, function_name, arguments, -1, -1);
-}

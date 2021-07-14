@@ -75,12 +75,6 @@ unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* 
       &observer);
 }
 
-simgrid::kernel::activity::State simcall_process_sleep(double duration) // XBT_ATTRIB_DEPRECATED_v329
-{
-  simgrid::kernel::actor::ActorImpl::self()->sleep(duration);
-  return simgrid::kernel::activity::State::DONE;
-}
-
 /**
  * @ingroup simix_comm_management
  */

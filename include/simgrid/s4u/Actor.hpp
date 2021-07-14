@@ -80,10 +80,6 @@ public:
   static xbt::signal<void(Actor const&)> on_wake_up;
   /** Signal to others that an actor is has been migrated to another host **/
   static xbt::signal<void(const Actor&, const Host& previous_location)> on_host_change;
-#ifndef DOXYGEN
-  static xbt::signal<void(Actor const&)> on_migration_start; // XBT_ATTRIB_DEPRECATED_v329
-  static xbt::signal<void(Actor const&)> on_migration_end;   // XBT_ATTRIB_DEPRECATED_v329
-#endif
 
   /** Signal indicating that an actor terminated its code.
    *  @beginrst
@@ -208,9 +204,6 @@ public:
    * to take care of this yourself (only you knows which ones should be migrated).
    */
   void set_host(Host* new_host);
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v329("Please use set_host() instead") void migrate(Host* new_host) { set_host(new_host); }
-#endif
 
   /** Ask the actor to die.
    *
@@ -344,10 +337,6 @@ XBT_PUBLIC void execute(double flop, double priority);
 XBT_PUBLIC void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                                  const std::vector<double>& bytes_amounts);
 
-XBT_ATTRIB_DEPRECATED_v329("Please use exec_init(...)->wait_for(timeout)") XBT_PUBLIC
-    void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
-                          const std::vector<double>& bytes_amounts, double timeout);
-
 /** Initialize a sequential execution that must then be started manually */
 XBT_PUBLIC ExecPtr exec_init(double flops_amounts);
 /** Initialize a parallel execution that must then be started manually */
@@ -397,9 +386,6 @@ XBT_PUBLIC void on_exit(const std::function<void(bool)>& fun);
 
 /** @brief Migrate the current actor to a new host. */
 XBT_PUBLIC void set_host(Host* new_host);
-#ifndef DOXYGEN
-XBT_ATTRIB_DEPRECATED_v329("Please use set_host() instead") XBT_PUBLIC void migrate(Host* new_host);
-#endif
 }
 
 

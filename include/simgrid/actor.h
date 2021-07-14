@@ -64,11 +64,6 @@ XBT_PUBLIC void sg_actor_set_auto_restart(sg_actor_t actor, int auto_restart);
 XBT_PUBLIC void sg_actor_daemonize(sg_actor_t actor);
 XBT_PUBLIC int sg_actor_is_daemon(const_sg_actor_t actor);
 
-#ifndef DOXYGEN
-XBT_ATTRIB_DEPRECATED_v329("Please use sg_actor_set_host() instead") XBT_PUBLIC
-    void sg_actor_migrate(sg_actor_t process, sg_host_t host);
-#endif
-
 XBT_PUBLIC void sg_actor_set_host(sg_actor_t actor, sg_host_t host);
 XBT_PUBLIC void sg_actor_join(const_sg_actor_t actor, double timeout);
 XBT_PUBLIC void sg_actor_kill(sg_actor_t actor);

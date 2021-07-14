@@ -32,10 +32,6 @@ xbt::signal<void(Actor const&)> s4u::Actor::on_suspend;
 xbt::signal<void(Actor const&)> s4u::Actor::on_resume;
 xbt::signal<void(Actor const&)> s4u::Actor::on_sleep;
 xbt::signal<void(Actor const&)> s4u::Actor::on_wake_up;
-#ifndef DOXYGEN
-xbt::signal<void(Actor const&)> s4u::Actor::on_migration_start; // XBT_ATTRIB_DEPRECATED_v329
-xbt::signal<void(Actor const&)> s4u::Actor::on_migration_end;   // XBT_ATTRIB_DEPRECATED_v329
-#endif
 xbt::signal<void(Actor const&, Host const& previous_location)> s4u::Actor::on_host_change;
 xbt::signal<void(Actor const&)> s4u::Actor::on_termination;
 xbt::signal<void(Actor const&)> s4u::Actor::on_destruction;
@@ -144,16 +140,6 @@ void Actor::on_exit(const std::function<void(bool /*failed*/)>& fun) const
 
 void Actor::set_host(Host* new_host)
 {
-  if (s4u::Actor::on_migration_start.get_slot_count() > 0) { // XBT_ATTRIB_DEPRECATED_v329
-    static bool already_warned = false;
-    if (not already_warned) {
-      XBT_INFO("Please use s4u::Actor::on_host_change instead of s4u::Actor::on_migration_start. This will be removed "
-               "in v3.29");
-      already_warned = true;
-    }
-    s4u::Actor::on_migration_start(*this);
-  }
-
   const s4u::Host* previous_location = get_host();
 
   kernel::actor::simcall([this, new_host]() {
@@ -164,16 +150,6 @@ void Actor::set_host(Host* new_host)
     }
     this->pimpl_->set_host(new_host);
   });
-
-  if (s4u::Actor::on_migration_end.get_slot_count() > 0) { // XBT_ATTRIB_DEPRECATED_v329
-    static bool already_warned = false;
-    if (not already_warned) {
-      XBT_INFO("Please use s4u::Actor::on_host_change instead of s4u::Actor::on_migration_end. This will be removed in "
-               "v3.29");
-      already_warned = true;
-    }
-    s4u::Actor::on_migration_end(*this);
-  }
 
   s4u::Actor::on_host_change(*this, *previous_location);
 }
@@ -373,12 +349,6 @@ void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<do
   exec_init(hosts, flops_amounts, bytes_amounts)->wait();
 }
 
-void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
-                      const std::vector<double>& bytes_amounts, double timeout) // XBT_ATTRIB_DEPRECATED_v329
-{
-  exec_init(hosts, flops_amounts, bytes_amounts)->wait_for(timeout);
-}
-
 ExecPtr exec_init(double flops_amount)
 {
   return Exec::init()->set_flops_amount(flops_amount)->set_host(get_host());
@@ -467,10 +437,6 @@ void on_exit(const std::function<void(bool)>& fun)
 void set_host(Host* new_host)
 {
   simgrid::kernel::actor::ActorImpl::self()->get_iface()->set_host(new_host);
-}
-void migrate(Host* new_host) // XBT_ATTRIB_DEPRECATED_v329
-{
-  set_host(new_host);
 }
 
 } // namespace this_actor
@@ -684,10 +650,6 @@ int sg_actor_is_daemon(const_sg_actor_t actor)
  * This function changes the value of the #sg_host_t on  which @a actor is running.
  */
 void sg_actor_set_host(sg_actor_t actor, sg_host_t host)
-{
-  actor->set_host(host);
-}
-void sg_actor_migrate(sg_actor_t actor, sg_host_t host) // XBT_ATTRIB_DEPRECATED_v329
 {
   actor->set_host(host);
 }
