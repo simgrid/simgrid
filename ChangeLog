@@ -1,6 +1,8 @@
 ----------------------------------------------------------------------------
 
-SimGrid (3.27.1) NOT RELEASED YET (v3.28 expected June 21. 2021, 03:32 UTC)
+SimGrid (3.28) July 14. 2021
+
+The Victoriadagarna Release.
 
 New features:
  - C++ platform interface: Users can now describe their platform directly in C++.
