@@ -44,6 +44,7 @@ public:
 
   NetZone* get_parent() const;
   NetZone* set_parent(const NetZone* parent);
+  std::vector<NetZone*> get_children() const;
 
   std::vector<Host*> get_all_hosts() const;
   int get_host_count() const;
@@ -60,7 +61,6 @@ public:
 
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v331("Please use get_parent()") NetZone* get_father() const;
-  std::vector<NetZone*> get_children() const;
   XBT_ATTRIB_DEPRECATED_v332("Please use set_parent() to manage NetZone's relationship") NetZone* add_child(
       NetZone* new_zone);
 #endif
