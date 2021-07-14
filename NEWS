@@ -5,9 +5,9 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \( _ )
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____\___/
                July 14. 2021
 
-The Victoriadagarna Release
+The Victoriadagarna Release (birthday of Crown Princess Victoria)
   
-  * Programmatic platform description (bye bye XML, hello C++)
+  * Programmatic platform description (only C++ for now).
   * New plugin to simplify producer/consumer applications.
   * MC: new tutorial and associated docker image.
   * SMPI: improve error handling for incorrect advanced usages.
