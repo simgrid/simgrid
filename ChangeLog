@@ -2,7 +2,26 @@
 
 SimGrid (3.28.1) NOT RELEASED YET (v3.29 expected September 22. 2021, 19:21 UTC)
 
+New features:
+ - Non-linear resource sharing: allows to dynamically change the resource
+   capacity. Users can change this capacity by setting a callback which will
+   be called when SimGrid is sharing the resource between the active
+   activities. An activity can be a task running, a read/write IO operation or a
+   communication flow.
+   - Callback signature: double (double capacity, int n_activities): given the
+     current resource's capacity and number of activities running on it,
+	 returns the new capacity.
+   - Note that this callback is in the critical path of the system solve and
+   should not take long to execute.
+   - Examples:
+     - Disk: examples/cpp/io-degradation
+	 - Link: examples/cpp/network-nonlinear
+	 - CPU: examples/cpp/exec-cpu-nonlinear
 
+S4u:
+ - New: s4u::Disk::set_sharing_policy() and s4u::Host::set_sharing_policy().
+   Allows the configuration of non-linear resource sharing for hosts and
+   disks.
 Documentation:
   * New section "Release Notes" documenting recent and current developments.
 
