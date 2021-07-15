@@ -56,7 +56,10 @@ jobs:
       with:
           name: jar-${{ matrix.config.os }}
           path: build/simgrid.jar
-
+    - name: Create the failure Message
+      if: ${{ failure() }}
+      run: |
+        echo "{\"text\":\"Failure when building JAR file on ${{ matrix.config.name }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}" > mattermost.json
   create_jar:
     needs: build
     runs-on: ubuntu-latest
@@ -95,7 +98,7 @@ jobs:
       - name: Create the failure Message
         if: ${{ failure() }}
         run: |
-          echo "{\"text\":\"Failure when building JAR file !\"}" > mattermost.json
+          echo "{\"text\":\"Failure when assembling JAR file ! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}" > mattermost.json
       - name: Create the success Message
         if: ${{ success() }}
         run: |
