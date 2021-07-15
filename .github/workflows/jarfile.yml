@@ -92,3 +92,16 @@ jobs:
             jar-ubuntu
             jar-windows
             jar-macos
+      - name: Create the failure Message
+        if: ${{ failure() }}
+        run: |
+          echo "{\"text\":\"Failure when building JAR file !\"}" > mattermost.json
+      - name: Create the success Message
+        if: ${{ success() }}
+        run: |
+          echo "{\"text\":\"JAR file built successfully ! You can get it on: https://github.com/simgrid/simgrid/actions/runs/{{ github.run_id }} \"}" > mattermost.json
+      - uses: mattermost/action-mattermost-notify@master
+        env:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
+  
