@@ -60,6 +60,11 @@ jobs:
       if: ${{ failure() }}
       run: |
         echo "{\"text\":\"Failure when building JAR file on ${{ matrix.config.name }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}" > mattermost.json
+    - uses: mattermost/action-mattermost-notify@master
+      if: ${{ failure() }}
+      env:
+        MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+        MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
   create_jar:
     needs: build
     runs-on: ubuntu-latest
@@ -107,5 +112,4 @@ jobs:
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
-          MATTERMOST_USERNAME: "GitHub"
   
