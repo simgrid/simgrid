@@ -548,8 +548,8 @@ file(READ ${CMAKE_HOME_DIRECTORY}/src/smpi/smpitools.sh SMPITOOLS_SH) # Definiti
 
 ### SMPI script used when simgrid is installed
 set(exec_prefix ${CMAKE_INSTALL_PREFIX})
-set(includedir "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}")
-set(libdir "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
+set(includedir "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
+set(libdir "${CMAKE_INSTALL_FULL_LIBDIR}")
 set(includeflag "-I${includedir} -I${includedir}/smpi")
 set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=\"${libdir}")
 if(NS3_LIBRARY_PATH)
