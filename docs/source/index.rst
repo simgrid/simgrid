@@ -67,6 +67,7 @@ of every page. Bugs in the code should be reported
          Installing SimGrid <Installing_SimGrid.rst>
          Start your own project <Start_your_own_project.rst>
          The SimGrid community <community.rst>
+         Release Notes <Release_Notes.rst>
       Describing your application <application.rst>
          The S4U interface <app_s4u.rst>
          The SMPI interface <app_smpi.rst>
