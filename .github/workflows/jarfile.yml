@@ -59,7 +59,7 @@ jobs:
     - name: Create the failure Message
       if: ${{ failure() }}
       run: |
-        echo "{\"text\":\"Failure when building JAR file on ${{ matrix.config.name }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}" > mattermost.json
+        echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"Failure when building JAR file on ${{ matrix.config.name }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
     - uses: mattermost/action-mattermost-notify@master
       if: ${{ failure() }}
       env:
@@ -103,13 +103,12 @@ jobs:
       - name: Create the failure Message
         if: ${{ failure() }}
         run: |
-          echo "{\"text\":\"Failure when assembling JAR file ! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}" > mattermost.json
+          echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"Failure when assembling JAR file ! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - name: Create the success Message
         if: ${{ success() }}
         run: |
-          echo "{\"text\":\"JAR file built successfully ! You can get it on: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}" > mattermost.json
+          echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"JAR file built successfully ! You can get it on: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@master
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
-  
