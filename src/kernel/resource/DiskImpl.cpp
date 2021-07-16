@@ -124,12 +124,10 @@ void DiskImpl::seal()
 
 constexpr kernel::lmm::Constraint::SharingPolicy to_maxmin_policy(s4u::Disk::SharingPolicy policy)
 {
-  switch (policy) {
-    case s4u::Disk::SharingPolicy::NONLINEAR:
-      return kernel::lmm::Constraint::SharingPolicy::NONLINEAR;
-    default:
-      return kernel::lmm::Constraint::SharingPolicy::SHARED;
-  }
+  kernel::lmm::Constraint::SharingPolicy lmm_policy = kernel::lmm::Constraint::SharingPolicy::SHARED;
+  if (policy == s4u::Disk::SharingPolicy::NONLINEAR)
+    lmm_policy = kernel::lmm::Constraint::SharingPolicy::NONLINEAR;
+  return lmm_policy;
 }
 
 void DiskImpl::set_sharing_policy(s4u::Disk::Operation op, s4u::Disk::SharingPolicy policy,

@@ -27,7 +27,7 @@ static void runner()
     tasks.emplace_back(sg4::this_actor::exec_async(computation_amount));
   }
   XBT_INFO("Waiting for all tasks to be done!");
-  for (auto& task : tasks)
+  for (const auto& task : tasks)
     task->wait();
 
   XBT_INFO("Finished executing. Goodbye now!");

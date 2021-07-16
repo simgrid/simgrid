@@ -21,7 +21,7 @@ namespace sg4 = simgrid::s4u;
 XBT_LOG_NEW_DEFAULT_CATEGORY(disk_test, "Messages specific for this simulation");
 
 /** @brief Calculates the bandwidth for disk doing async operations */
-static void estimate_bw(sg4::Disk* disk, int n_flows, bool read)
+static void estimate_bw(const sg4::Disk* disk, int n_flows, bool read)
 {
   unsigned long long size = 100000;
   double cur_time         = sg4::Engine::get_clock();
@@ -36,11 +36,11 @@ static void estimate_bw(sg4::Disk* disk, int n_flows, bool read)
     activities.push_back(act);
   }
 
-  for (auto& act : activities)
+  for (const auto& act : activities)
     act->wait();
 
   double elapsed_time = sg4::Engine::get_clock() - cur_time;
-  double estimated_bw = size * n_flows / elapsed_time;
+  double estimated_bw = static_cast<double>(size * n_flows) / elapsed_time;
   XBT_INFO("Disk: %s, concurrent %s: %d, estimated bandwidth: %lf", disk->get_cname(), read ? "read" : "write", n_flows,
            estimated_bw);
 }
@@ -93,8 +93,6 @@ static double ssd_dynamic_sharing(const sg4::Disk* /*disk*/, const std::string& 
   if (data.find(n) != data.end())
     capacity = data.at(n);
 
-  // XBT_INFO("Disk %s, %s operation between %d flows, capacity %lf", disk->get_cname(), op.c_str(), n, capacity);
-
   return capacity;
 }
 
@@ -109,10 +107,7 @@ static double ssd_dynamic_sharing(const sg4::Disk* /*disk*/, const std::string& 
  */
 static double sata_dynamic_sharing(const sg4::Disk* /*disk*/, double capacity, int n)
 {
-  capacity = 68.3 - 1.7 * n;
-  // XBT_INFO("Disk %s, read operation between %d flows, capacity %lf", disk->get_cname(), n, capacity);
-
-  return capacity;
+  return 68.3 - 1.7 * n;
 }
 
 /** @brief Creates an SSD disk, setting the appropriate callback for non-linear resource sharing */

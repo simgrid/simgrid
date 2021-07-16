@@ -90,7 +90,8 @@ TEST_CASE("SplitDuplexLink: sets", "")
 
   SECTION("sharing_policy: nonlinear")
   {
-    link->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::NONLINEAR, [](double c, int n) -> double { return c; });
+    link->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::NONLINEAR,
+                             [](double c, int /*n*/) -> double { return c; });
     REQUIRE(link_up->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::NONLINEAR);
     REQUIRE(link_down->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::NONLINEAR);
   }
