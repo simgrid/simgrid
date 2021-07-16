@@ -75,7 +75,7 @@ of every page. Bugs in the code should be reported
          The XBT toolbox <The_XBT_toolbox.rst>
       Describing the simulated platform <Platform.rst>
          Demystifying the routing <Platform_routing.rst>
-         Examples <Platform_examples.rst>
+         Network topology examples <Platform_examples.rst>
          Modeling hints <Platform_howtos.rst>
          XML reference <XML_reference.rst>
          C++ platforms <Platform_cpp.rst>

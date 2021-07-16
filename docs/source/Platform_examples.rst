@@ -12,8 +12,8 @@
 
 .. _platform_examples:
    
-Platform Examples
-=================
+Network Topology Examples
+=========================
 
 Simple Example with 3 hosts
 ---------------------------

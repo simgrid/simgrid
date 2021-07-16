@@ -966,6 +966,19 @@ set(DOC_SOURCES
   docs/source/tuto_smpi/gemm_mpi.cpp
   docs/source/tuto_smpi/roundtrip.c
 
+  docs/source/tuto_disk/analysis.org
+  docs/source/tuto_disk/analysis.rst
+  docs/source/tuto_disk/CMakeLists.txt
+  docs/source/tuto_disk/Dockerfile
+  docs/source/tuto_disk/fig/edel_read_dhist.png
+  docs/source/tuto_disk/fig/edel_write_dhist.png
+  docs/source/tuto_disk/fig/griffon_deg.png
+  docs/source/tuto_disk/fig/griffon_read_dhist.png
+  docs/source/tuto_disk/fig/griffon_write_dhist.png
+  docs/source/tuto_disk/fig/simgrid_results.png
+  docs/source/tuto_disk/init.el
+  docs/source/tuto_disk/tuto_disk.cpp
+
   docs/source/Tutorial_Model-checking.rst
 
   CITATION.bib
