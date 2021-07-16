@@ -18,13 +18,13 @@ New features:
 	 - Link: examples/cpp/network-nonlinear
 	 - CPU: examples/cpp/exec-cpu-nonlinear
 
-S4u:
+S4U:
  - New: s4u::Disk::set_sharing_policy() and s4u::Host::set_sharing_policy().
    Allows the configuration of non-linear resource sharing for hosts and
    disks.
+
 Documentation:
   * New section "Release Notes" documenting recent and current developments.
-
 
 ----------------------------------------------------------------------------
 
@@ -116,12 +116,15 @@ Models:
    versions. Sorry for the inconvenience.
  - Dynamic network factors: users can configure a callback to define
    the network factors dynamically. This API is available at
- simgrid::kernel::resource::NetworkModelIntf.
+   simgrid::kernel::resource::NetworkModelIntf.
    - Users have access to complete information about the current communication
      to decide which factor to apply. This includes: message size, source and
-	 destination hosts, links and zones traversed.
+     destination hosts, links and zones traversed.
    - Dynamic factors for both latency and bandwidth.
    - For more details, see the example in (examples/cpp/network-factors).
+ - Plugin host_energy: the "watt_off" and "watt_per_state" host properties,
+   deprecated since version 3.24, are no longer supported. Instead, use
+   "wattage_off" and "wattage_per_state".
 
 XBT:
  - xbt_assert is not disabled anymore, even when built with enable_debug=off.
