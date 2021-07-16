@@ -265,9 +265,10 @@ void FatTreeZone::generate_switches(const s4u::ClusterCallbacks& set_callbacks)
       k--;
       auto newNode = std::make_shared<FatTreeNode>(k, i + 1, j, get_limiter(i, j, k), nullptr);
       XBT_DEBUG("We create the switch %d(%u,%u)", newNode->id, newNode->level, newNode->position);
-      newNode->children.resize(this->num_children_per_node_[i] * this->num_port_lower_level_[i]);
+      newNode->children.resize(static_cast<size_t>(this->num_children_per_node_[i]) * this->num_port_lower_level_[i]);
       if (i != this->levels_ - 1) {
-        newNode->parents.resize(this->num_parents_per_node_[i + 1] * this->num_port_lower_level_[i + 1]);
+        newNode->parents.resize(static_cast<size_t>(this->num_parents_per_node_[i + 1]) *
+                                this->num_port_lower_level_[i + 1]);
       }
       newNode->label.resize(this->levels_);
       this->nodes_.emplace_back(newNode);
@@ -337,7 +338,7 @@ void FatTreeZone::add_processing_node(int id, resource::LinkImpl* limiter, resou
   static int position = 0;
   auto newNode = std::make_shared<FatTreeNode>(id, 0, position, limiter, loopback);
   position++;
-  newNode->parents.resize(this->num_parents_per_node_[0] * this->num_port_lower_level_[0]);
+  newNode->parents.resize(static_cast<size_t>(this->num_parents_per_node_[0]) * this->num_port_lower_level_[0]);
   newNode->label.resize(this->levels_);
   this->compute_nodes_.insert(make_pair(id, newNode));
   this->nodes_.emplace_back(newNode);

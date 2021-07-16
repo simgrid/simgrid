@@ -637,8 +637,8 @@ void AllToAllAction::kernel(simgrid::xbt::ReplayAction&)
                                                     Datatype::encode(args.datatype1),
                                                     Datatype::encode(args.datatype2)));
 
-  colls::alltoall(send_buffer(args.send_size * args.comm_size * args.datatype1->size()), args.send_size, args.datatype1,
-                  recv_buffer(args.recv_size * args.comm_size * args.datatype2->size()), args.recv_size, args.datatype2,
+  colls::alltoall(send_buffer(args.datatype1->size() * args.send_size * args.comm_size), args.send_size, args.datatype1,
+                  recv_buffer(args.datatype2->size() * args.recv_size * args.comm_size), args.recv_size, args.datatype2,
                   MPI_COMM_WORLD);
 
   TRACE_smpi_comm_out(get_pid());
@@ -655,7 +655,7 @@ void GatherAction::kernel(simgrid::xbt::ReplayAction&)
   if (get_name() == "gather") {
     int rank = MPI_COMM_WORLD->rank();
     colls::gather(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,
-                  (rank == args.root) ? recv_buffer(args.recv_size * args.comm_size * args.datatype2->size()) : nullptr,
+                  (rank == args.root) ? recv_buffer(args.datatype2->size() * args.recv_size * args.comm_size) : nullptr,
                   args.recv_size, args.datatype2, args.root, MPI_COMM_WORLD);
   } else
     colls::allgather(send_buffer(args.send_size * args.datatype1->size()), args.send_size, args.datatype1,

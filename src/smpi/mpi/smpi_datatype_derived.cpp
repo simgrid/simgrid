@@ -54,7 +54,7 @@ void Type_Contiguous::serialize(const void* noncontiguous_buf, void* contiguous_
 {
   auto* contiguous_buf_char          = static_cast<char*>(contiguous_buf);
   const auto* noncontiguous_buf_char = static_cast<const char*>(noncontiguous_buf) + lb();
-  memcpy(contiguous_buf_char, noncontiguous_buf_char, count * block_count_ * old_type_->size());
+  memcpy(contiguous_buf_char, noncontiguous_buf_char, old_type_->size() * count * block_count_);
 }
 
 void Type_Contiguous::unserialize(const void* contiguous_buf, void* noncontiguous_buf, int count, MPI_Op op)

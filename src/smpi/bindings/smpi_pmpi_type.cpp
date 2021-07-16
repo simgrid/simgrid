@@ -156,7 +156,7 @@ int PMPI_Type_create_indexed_block(int count, int blocklength, const int* indice
   CHECK_COUNT(1, count)
   CHECK_MPI_NULL(4, MPI_DATATYPE_NULL, MPI_ERR_TYPE, old_type)
   CHECK_NULL(5, MPI_ERR_ARG, new_type)
-  auto* blocklens = static_cast<int*>(xbt_malloc(blocklength * count * sizeof(int)));
+  auto* blocklens = static_cast<int*>(xbt_malloc(sizeof(int) * blocklength * count));
   for (int i    = 0; i < count; i++)
     blocklens[i]=blocklength;
   int retval    = simgrid::smpi::Datatype::create_indexed(count, blocklens, indices, old_type, new_type);
@@ -183,7 +183,7 @@ int PMPI_Type_create_hindexed_block(int count, int blocklength, const MPI_Aint* 
   CHECK_COUNT(1, count)
   CHECK_MPI_NULL(4, MPI_DATATYPE_NULL, MPI_ERR_TYPE, old_type)
   CHECK_NULL(5, MPI_ERR_ARG, new_type)
-  auto* blocklens = static_cast<int*>(xbt_malloc(blocklength * count * sizeof(int)));
+  auto* blocklens = static_cast<int*>(xbt_malloc(sizeof(int) * blocklength * count));
   for (int i     = 0; i < count; i++)
     blocklens[i] = blocklength;
   int retval     = simgrid::smpi::Datatype::create_hindexed(count, blocklens, indices, old_type, new_type);

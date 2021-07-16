@@ -166,7 +166,7 @@ void DragonflyZone::generate_routers(const s4u::ClusterCallbacks& set_callbacks)
     return limiter;
   };
 
-  routers_.reserve(num_groups_ * num_chassis_per_group_ * num_blades_per_chassis_);
+  routers_.reserve(static_cast<size_t>(num_groups_) * num_chassis_per_group_ * num_blades_per_chassis_);
   for (unsigned int i = 0; i < num_groups_; i++) {
     for (unsigned int j = 0; j < num_chassis_per_group_; j++) {
       for (unsigned int k = 0; k < num_blades_per_chassis_; k++) {
@@ -206,7 +206,7 @@ void DragonflyZone::generate_links()
   // Links from routers to their local nodes.
   for (unsigned int i = 0; i < numRouters; i++) {
     // allocate structures
-    routers_[i].my_nodes_.resize(num_links_per_link_ * num_nodes_per_blade_);
+    routers_[i].my_nodes_.resize(static_cast<size_t>(num_links_per_link_) * num_nodes_per_blade_);
     routers_[i].green_links_.resize(num_blades_per_chassis_);
     routers_[i].black_links_.resize(num_chassis_per_group_);
 
@@ -312,7 +312,8 @@ void DragonflyZone::get_local_route(const NetPoint* src, const NetPoint* dst, Ro
   }
 
   // node->router local link
-  add_link_latency(route->link_list_, myRouter->my_nodes_[myCoords.node * num_links_per_link_], latency);
+  add_link_latency(route->link_list_, myRouter->my_nodes_[static_cast<size_t>(myCoords.node) * num_links_per_link_],
+                   latency);
 
   if (targetRouter != myRouter) {
     // are we on a different group ?
