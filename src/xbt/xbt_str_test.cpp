@@ -5,6 +5,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "xbt/parse_units.hpp"
 #include "xbt/str.h"
 
 #include "simgrid/Exception.hpp"
@@ -51,5 +52,25 @@ TEST_CASE("xbt::str: String Handling", "xbt_str")
     test_parse_error(xbt_str_parse_double, "Parse nullptr as a double", nullptr);
     test_parse_error(xbt_str_parse_double, "Parse '' as a double", "");
     test_parse_error(xbt_str_parse_double, "Parse cruft as a double", "cruft");
+  }
+
+  SECTION("Test the parsing-with-units functions")
+  {
+    REQUIRE(xbt_parse_get_all_speeds(__FILE__, __LINE__, "1.0", "") == std::vector<double>{1e0});
+    REQUIRE(xbt_parse_get_all_speeds(__FILE__, __LINE__, "1.0,2.0", "") == std::vector<double>{1e0, 2e0});
+    REQUIRE(xbt_parse_get_all_speeds(__FILE__, __LINE__, "1.0,2.0,3.0", "") == std::vector<double>{1e0, 2e0, 3e0});
+
+    REQUIRE(xbt_parse_get_all_speeds(__FILE__, __LINE__, "1", "") == std::vector<double>{1e0});
+    REQUIRE(xbt_parse_get_all_speeds(__FILE__, __LINE__, "1,2", "") == std::vector<double>{1.0, 2.0});
+    REQUIRE(xbt_parse_get_all_speeds(__FILE__, __LINE__, "1,2,3", "") == std::vector<double>{1.0, 2.0, 3.0});
+
+    REQUIRE(xbt_parse_get_all_speeds(__FILE__, __LINE__, "1.0f", "") == std::vector<double>{1e0});
+    REQUIRE(xbt_parse_get_all_speeds(__FILE__, __LINE__, "1.0kf,2.0Mf", "") == std::vector<double>{1e3, 2e6});
+    REQUIRE(xbt_parse_get_all_speeds(__FILE__, __LINE__, "1.0Gf,2.0Tf,3.0Pf", "") ==
+            std::vector<double>{1e9, 2e12, 3e15});
+
+    REQUIRE(xbt_parse_get_all_speeds(__FILE__, __LINE__, "1f", "") == std::vector<double>{1e0});
+    REQUIRE(xbt_parse_get_all_speeds(__FILE__, __LINE__, "1kf,2Gf", "") == std::vector<double>{1e3, 2e9});
+    REQUIRE(xbt_parse_get_all_speeds(__FILE__, __LINE__, "1Ef,2Zf,3Yf", "") == std::vector<double>{1e18, 2e21, 3e24});
   }
 }

@@ -146,19 +146,15 @@ std::vector<double> xbt_parse_get_all_speeds(const std::string& filename, int li
                                              const std::string& entity_kind)
 {
   std::vector<double> speed_per_pstate;
+  std::vector<std::string> pstate_list;
 
-  if (speeds.find('.') == std::string::npos) {
-    double speed = xbt_parse_get_speed(filename, lineno, speeds, entity_kind);
+  boost::split(pstate_list, speeds, boost::is_any_of(","));
+  for (auto speed_str : pstate_list) {
+    boost::trim(speed_str);
+    double speed = xbt_parse_get_speed(filename, lineno, speed_str, entity_kind);
     speed_per_pstate.push_back(speed);
-  } else {
-    std::vector<std::string> pstate_list;
-    boost::split(pstate_list, speeds, boost::is_any_of(","));
-    for (auto speed_str : pstate_list) {
-      boost::trim(speed_str);
-      double speed = xbt_parse_get_speed(filename, lineno, speed_str, entity_kind);
-      speed_per_pstate.push_back(speed);
-      XBT_DEBUG("Speed value: %f", speed);
-    }
+    XBT_DEBUG("Speed value: %f", speed);
   }
+
   return speed_per_pstate;
 }

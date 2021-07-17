@@ -8,6 +8,7 @@
 #define SIMGRID_XBT_PARSE_UNITS_HPP
 
 #include <string>
+#include <vector>
 
 double xbt_parse_get_time(const std::string& filename, int lineno, const std::string& string,
                           const std::string& entity_kind);
