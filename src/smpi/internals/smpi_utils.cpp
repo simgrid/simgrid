@@ -67,7 +67,7 @@ std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string)
    * G --> H
    */
   for (Tokenizer::iterator token_iter = tokens.begin(); token_iter != tokens.end(); ++token_iter) {
-    XBT_DEBUG("token : %s", token_iter->c_str());
+    XBT_DEBUG("token: %s", token_iter->c_str());
     Tokenizer factor_values(*token_iter, factor_separator);
     s_smpi_factor_t fact;
     xbt_assert(factor_values.begin() != factor_values.end(), "Malformed radical for smpi factor: '%s'",
@@ -94,13 +94,13 @@ std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string)
     }
 
     smpi_factor.push_back(fact);
-    XBT_DEBUG("smpi_factor:\t%zu : %zu values, first: %f", fact.factor, smpi_factor.size(), fact.values[0]);
+    XBT_DEBUG("smpi_factor:\t%zu: %zu values, first: %f", fact.factor, smpi_factor.size(), fact.values[0]);
   }
   std::sort(smpi_factor.begin(), smpi_factor.end(), [](const s_smpi_factor_t &pa, const s_smpi_factor_t &pb) {
     return (pa.factor < pb.factor);
   });
   for (auto const& fact : smpi_factor) {
-    XBT_DEBUG("smpi_factor:\t%zu : %zu values, first: %f", fact.factor, smpi_factor.size() ,fact.values[0]);
+    XBT_DEBUG("smpi_factor:\t%zu: %zu values, first: %f", fact.factor, smpi_factor.size(), fact.values[0]);
   }
   smpi_factor.shrink_to_fit();
 
@@ -164,9 +164,9 @@ static void print_leaked_handles()
     return;
 
   auto max            = static_cast<unsigned long>(simgrid::config::get_value<int>("smpi/list-leaks"));
-  std::string message = "Probable memory leaks in your code: SMPI detected %zu unfreed MPI handles :";
+  std::string message = "Probable memory leaks in your code: SMPI detected %zu unfreed MPI handles:";
   if (max == 0)
-    message += "\nHINT : Display types and addresses (n max) with --cfg=smpi/list-leaks:n.\n"
+    message += "\nHINT: Display types and addresses (n max) with --cfg=smpi/list-leaks:n.\n"
                "Running smpirun with -wrapper \"valgrind --leak-check=full\" can provide more information";
   XBT_INFO(message.c_str(), handles.size());
   if (max == 0)
@@ -209,7 +209,7 @@ static void print_leaked_buffers()
     return;
 
   auto max            = static_cast<unsigned long>(simgrid::config::get_value<int>("smpi/list-leaks"));
-  std::string message = "Probable memory leaks in your code: SMPI detected %zu unfreed buffers :";
+  std::string message = "Probable memory leaks in your code: SMPI detected %zu unfreed buffers:";
   if (max == 0)
     message += "display types and addresses (n max) with --cfg=smpi/list-leaks:n.\nRunning smpirun with -wrapper "
                "\"valgrind --leak-check=full\" can provide more information";
@@ -229,7 +229,7 @@ static void print_leaked_buffers()
   for (const auto& elem : allocs) {
     std::string key = "leaked allocations";
     if (not xbt_log_no_loc)
-      key       = elem.second.file + ":" + std::to_string(elem.second.line) + " : " + key;
+      key = elem.second.file + ":" + std::to_string(elem.second.line) + ": " + key;
     auto result = leaks_aggreg.emplace(key, buff_leak{1, elem.second.size, elem.second.size, elem.second.size});
     if (result.second == false) {
       result.first->second.count++;
@@ -275,8 +275,9 @@ void print_memory_analysis()
              total_malloc_size, max_malloc.size, simgrid::xbt::Path(max_malloc.file).get_base_name().c_str(), max_malloc.line, max_malloc.numcall
       );
     else
-      XBT_INFO("Allocations analysis asked, but 0 bytes were allocated through malloc/calloc calls intercepted by SMPI.\n"
-               "Either code is using other ways of allocating memory, or it was built with SMPI_NO_OVERRIDE_MALLOC");
+      XBT_INFO(
+          "Allocations analysis asked, but 0 bytes were allocated through malloc/calloc calls intercepted by SMPI.\n"
+          "The code may not use malloc() to allocate memory, or it was built with SMPI_NO_OVERRIDE_MALLOC");
     if(total_shared_size != 0)
       XBT_INFO("%lu bytes were automatically shared between processes, in %u calls\n", total_shared_size, total_shared_calls);
   }
