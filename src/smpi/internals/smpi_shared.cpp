@@ -453,7 +453,7 @@ void smpi_shared_free(void *ptr)
     if (data->count <= 0) {
       close(data->fd);
       allocs.erase(allocs.find(meta->second.data->first));
-      allocs_metadata.erase(ptr);
+      allocs_metadata.erase(meta);
       XBT_DEBUG("Shared free - Local - with removal - of %p", ptr);
     } else {
       XBT_DEBUG("Shared free - Local - no removal - of %p, count = %d", ptr, data->count);
@@ -467,7 +467,7 @@ void smpi_shared_free(void *ptr)
       munmap(ptr, meta->second.size);
       if(meta->second.data->second.count==0){
         delete meta->second.data;
-        allocs_metadata.erase(ptr);
+        allocs_metadata.erase(meta);
       }
     }else{
       xbt_free(ptr);

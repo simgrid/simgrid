@@ -180,6 +180,9 @@ int Datatype::copy_attrs(Datatype* datatype){
     } else if (elem.copy_fn.type_copy_fn != MPI_NULL_COPY_FN) {
       ret = elem.copy_fn.type_copy_fn(datatype, it.first, elem.extra_state, it.second, &value_out, &flag);
     }
+    if (ret != MPI_SUCCESS)
+      return ret;
+
     if (elem.copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN) {
       value_out = xbt_new(int, 1);
       if (*(int*)*elem.copy_fn.type_copy_fn_fort == 1) { // MPI_TYPE_DUP_FN
@@ -188,11 +191,11 @@ int Datatype::copy_attrs(Datatype* datatype){
       } else { // not null, nor dup
         elem.copy_fn.type_copy_fn_fort(datatype, it.first, elem.extra_state, it.second, value_out, &flag, &ret);
       }
-      if (ret != MPI_SUCCESS)
+      if (ret != MPI_SUCCESS) {
         xbt_free(value_out);
+        return ret;
+      }
     }
-    if (ret != MPI_SUCCESS)
-      return ret;
     if (flag) {
       elem.refcount++;
       attributes().emplace(it.first, value_out);
