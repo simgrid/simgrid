@@ -13,9 +13,27 @@
 #pragma GCC diagnostic ignored "-Wunused-value"
 #endif
 
-#include <pybind11/functional.h>
+#ifndef NDEBUG
+/* Many tests are failing after pybind11 commit ad6bf5cd39ca64b4a9bf846b84b11c4c8df1c8e1 "Adding PyGILState_Check() in
+ *  object_api<>::operator(). (#2919)".
+ * See https://github.com/pybind/pybind11/commit/ad6bf5cd39ca64b4a9bf846b84b11c4c8df1c8e1
+ *
+ * The failing tests are mostly those with boost/raw/sysv contexts. As a workaround, define NDEBUG before pybind11
+ * includes.
+ */
+#define NDEBUG
+#define NDEBUG_LOCALLY_DEFINED
+#endif
+
 #include <pybind11/pybind11.h> // Must come before our own stuff
+
+#include <pybind11/functional.h>
 #include <pybind11/stl.h>
+
+#ifdef NDEBUG_LOCALLY_DEFINED
+#undef NDEBUG_LOCALLY_DEFINED
+#undef NDEBUG
+#endif
 
 #if defined(__GNUG__)
 #pragma GCC diagnostic pop
