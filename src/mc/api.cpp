@@ -115,7 +115,6 @@ static inline smx_simcall_t MC_state_choose_request_for_process(const RemoteProc
   } else
     switch (actor->simcall_.call_) {
       case Simcall::COMM_WAITANY:
-        state->transition_.times_considered_ = -1;
         while (procstate->get_times_considered() < simcall_comm_waitany__get__count(&actor->simcall_)) {
           if (simgrid::mc::request_is_enabled_by_idx(process, &actor->simcall_, procstate->get_times_considered())) {
             state->transition_.times_considered_ = procstate->get_times_considered_and_inc();
@@ -131,7 +130,6 @@ static inline smx_simcall_t MC_state_choose_request_for_process(const RemoteProc
         break;
 
       case Simcall::COMM_TESTANY:
-        state->transition_.times_considered_ = -1;
         while (procstate->get_times_considered() < simcall_comm_testany__get__count(&actor->simcall_)) {
           if (simgrid::mc::request_is_enabled_by_idx(process, &actor->simcall_, procstate->get_times_considered())) {
             state->transition_.times_considered_ = procstate->get_times_considered_and_inc();
@@ -157,8 +155,6 @@ static inline smx_simcall_t MC_state_choose_request_for_process(const RemoteProc
         else if (act->src_actor_.get() == nullptr && act->state_ == simgrid::kernel::activity::State::READY &&
                  act->detached())
           state->transition_.times_considered_ = 0; // OK
-        else
-          state->transition_.times_considered_ = -1; // timeout
         procstate->set_done();
         req = &actor->simcall_;
         break;
