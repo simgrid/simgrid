@@ -939,7 +939,7 @@ int Constraint::get_variable_amount() const
 
 void Constraint::set_sharing_policy(SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
 {
-  xbt_assert(!cb || (cb && policy == SharingPolicy::NONLINEAR),
+  xbt_assert(policy == SharingPolicy::NONLINEAR || not cb,
              "Invalid sharing policy for constraint. Callback should be used with NONLINEAR sharing policy");
   sharing_policy_    = policy;
   dyn_constraint_cb_ = cb;

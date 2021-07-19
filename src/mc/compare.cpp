@@ -880,7 +880,7 @@ static bool heap_area_differ(const RemoteProcess& process, StateComparator& stat
     }
 
     // Check if the blocks are already matched together:
-    if (state.equals_to_<1>(block1, frag1).valid_ && state.equals_to_<2>(block2, frag2).valid_ && offset1 == offset2 &&
+    if (state.equals_to_<1>(block1, frag1).valid_ && state.equals_to_<2>(block2, frag2).valid_ &&
         state.fragmentsEqual(block1, frag1, block2, frag2)) {
       if (match_pairs)
         state.match_equals(previous);

@@ -1070,7 +1070,7 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
           // This is a finished detached request, let's return this one
           comms.clear(); // don't do the waitany call afterwards
           index = i;
-          if (requests[index] != MPI_REQUEST_NULL && (requests[index])->flags_ & MPI_REQ_NBC)
+          if (requests[index]->flags_ & MPI_REQ_NBC)
             finish_nbc_requests(&requests[index], 0);
           finish_wait(&requests[i], status); // cleanup if refcount = 0
           if (requests[i] != MPI_REQUEST_NULL && (requests[i]->flags_ & MPI_REQ_NON_PERSISTENT))
