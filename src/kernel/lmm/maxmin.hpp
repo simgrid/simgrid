@@ -277,7 +277,7 @@ public:
   double remaining_ = 0.0;
   double usage_     = 0.0;
   double bound_;
-  double dynamic_bound_; //!< dynamic bound for this constraint, defined by user's callback
+  double dynamic_bound_ = 0.0; //!< dynamic bound for this constraint, defined by user's callback
   // TODO MARTIN Check maximum value across resources at the end of simulation and give a warning is more than e.g. 500
   int concurrency_current_ = 0; /* The current concurrency */
   int concurrency_maximum_ = 0; /* The maximum number of (enabled and disabled) variables associated to the constraint
