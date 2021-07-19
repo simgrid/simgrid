@@ -67,7 +67,7 @@ public:
   int partner;
   double size;
   int tag;
-  MPI_Datatype datatype1 = MPI_DEFAULT_TYPE;
+  MPI_Datatype datatype1;
 
   void parse(xbt::ReplayAction& action, const std::string& name) override;
 };
@@ -101,9 +101,9 @@ public:
   int send_size;
   int recv_size;
   unsigned comm_size; // size of communicator
-  int root               = 0;
-  MPI_Datatype datatype1 = MPI_DEFAULT_TYPE;
-  MPI_Datatype datatype2 = MPI_DEFAULT_TYPE;
+  int root;
+  MPI_Datatype datatype1;
+  MPI_Datatype datatype2;
 };
 
 class BcastArgParser : public CollCommParser {

@@ -70,10 +70,20 @@ void log_timed_action(const simgrid::xbt::ReplayAction& action, double clock)
   }
 }
 
-/* Helper function */
+/* Helper functions */
 static double parse_double(const std::string& string)
 {
   return xbt_str_parse_double(string.c_str(), "not a double");
+}
+
+static int parse_root(const simgrid::xbt::ReplayAction& action, unsigned i)
+{
+  return i < action.size() ? std::stoi(action[i]) : 0;
+}
+
+static MPI_Datatype parse_datatype(const simgrid::xbt::ReplayAction& action, unsigned i)
+{
+  return i < action.size() ? simgrid::smpi::Datatype::decode(action[i]) : simgrid::smpi::replay::MPI_DEFAULT_TYPE;
 }
 
 namespace simgrid {
@@ -148,8 +158,7 @@ void SendRecvParser::parse(simgrid::xbt::ReplayAction& action, const std::string
   partner = std::stoi(action[2]);
   tag     = std::stoi(action[3]);
   size    = parse_double(action[4]);
-  if (action.size() > 5)
-    datatype1 = simgrid::smpi::Datatype::decode(action[5]);
+  datatype1 = parse_datatype(action, 5);
 }
 
 void ComputeParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
@@ -175,9 +184,8 @@ void BcastArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string
 {
   CHECK_ACTION_PARAMS(action, 1, 2)
   size = parse_double(action[2]);
-  root = (action.size() > 3) ? std::stoi(action[3]) : 0;
-  if (action.size() > 4)
-    datatype1 = simgrid::smpi::Datatype::decode(action[4]);
+  root      = parse_root(action, 3);
+  datatype1 = parse_datatype(action, 4);
 }
 
 void ReduceArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
@@ -187,9 +195,8 @@ void ReduceArgParser::parse(simgrid::xbt::ReplayAction& action, const std::strin
   xbt_assert(0.0 <= arg2 && arg2 <= static_cast<double>(std::numeric_limits<unsigned>::max()));
   comm_size = static_cast<unsigned>(arg2);
   comp_size = parse_double(action[3]);
-  root      = (action.size() > 4) ? std::stoi(action[4]) : 0;
-  if (action.size() > 5)
-    datatype1 = simgrid::smpi::Datatype::decode(action[5]);
+  root      = parse_root(action, 4);
+  datatype1 = parse_datatype(action, 5);
 }
 
 void AllReduceArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
@@ -199,8 +206,7 @@ void AllReduceArgParser::parse(simgrid::xbt::ReplayAction& action, const std::st
   xbt_assert(0.0 <= arg2 && arg2 <= static_cast<double>(std::numeric_limits<unsigned>::max()));
   comm_size = static_cast<unsigned>(arg2);
   comp_size = parse_double(action[3]);
-  if (action.size() > 4)
-    datatype1 = simgrid::smpi::Datatype::decode(action[4]);
+  datatype1 = parse_datatype(action, 4);
 }
 
 void AllToAllArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
@@ -209,11 +215,8 @@ void AllToAllArgParser::parse(simgrid::xbt::ReplayAction& action, const std::str
   comm_size = MPI_COMM_WORLD->size();
   send_size = parse_double(action[2]);
   recv_size = parse_double(action[3]);
-
-  if (action.size() > 4)
-    datatype1 = simgrid::smpi::Datatype::decode(action[4]);
-  if (action.size() > 5)
-    datatype2 = simgrid::smpi::Datatype::decode(action[5]);
+  datatype1 = parse_datatype(action, 4);
+  datatype2 = parse_datatype(action, 5);
 }
 
 void GatherArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string& name)
@@ -233,16 +236,13 @@ void GatherArgParser::parse(simgrid::xbt::ReplayAction& action, const std::strin
   recv_size = parse_double(action[3]);
 
   if (name == "gather") {
-    root      = (action.size() > 4) ? std::stoi(action[4]) : 0;
-    if (action.size() > 5)
-      datatype1 = simgrid::smpi::Datatype::decode(action[5]);
-    if (action.size() > 6)
-      datatype2 = simgrid::smpi::Datatype::decode(action[6]);
+    root      = parse_root(action, 4);
+    datatype1 = parse_datatype(action, 5);
+    datatype2 = parse_datatype(action, 6);
   } else {
-    if (action.size() > 4)
-      datatype1 = simgrid::smpi::Datatype::decode(action[4]);
-    if (action.size() > 5)
-      datatype2 = simgrid::smpi::Datatype::decode(action[5]);
+    root      = 0;
+    datatype1 = parse_datatype(action, 4);
+    datatype2 = parse_datatype(action, 5);
   }
 }
 
@@ -264,32 +264,34 @@ void GatherVArgParser::parse(simgrid::xbt::ReplayAction& action, const std::stri
   recvcounts = std::make_shared<std::vector<int>>(comm_size);
 
   if (name == "gatherv") {
-    root = (action.size() > 3 + comm_size) ? std::stoi(action[3 + comm_size]) : 0;
-    if (action.size() > 4 + comm_size)
-      datatype1 = simgrid::smpi::Datatype::decode(action[4 + comm_size]);
-    if (action.size() > 5 + comm_size)
-      datatype2 = simgrid::smpi::Datatype::decode(action[5 + comm_size]);
+    root      = parse_root(action, 3 + comm_size);
+    datatype1 = parse_datatype(action, 4 + comm_size);
+    datatype2 = parse_datatype(action, 5 + comm_size);
   } else {
-    int disp_index     = 0;
+    root                = 0;
+    unsigned disp_index = 0;
     /* The 3 comes from "0 gather <sendcount>", which must always be present.
      * The + comm_size is the recvcounts array, which must also be present
      */
-    if (action.size() > 3 + comm_size + comm_size) { /* datatype + disp are specified */
-      int datatype_index = 3 + comm_size;
-      disp_index     = datatype_index + 1;
-      datatype1      = simgrid::smpi::Datatype::decode(action[datatype_index]);
-      datatype2      = simgrid::smpi::Datatype::decode(action[datatype_index]);
-    } else if (action.size() >
-               3 + comm_size + 2) { /* disps specified; datatype is not specified; use the default one */
+    if (action.size() > 3 + comm_size + comm_size) {
+      // datatype + disp are specified
+      datatype1  = parse_datatype(action, 3 + comm_size);
+      datatype2  = parse_datatype(action, 4 + comm_size);
+      disp_index = 5 + comm_size;
+    } else if (action.size() > 3 + comm_size + 2) {
+      // disps specified; datatype is not specified; use the default one
+      datatype1  = MPI_DEFAULT_TYPE;
+      datatype2  = MPI_DEFAULT_TYPE;
       disp_index = 3 + comm_size;
-    } else if (action.size() > 3 + comm_size) { /* only datatype, no disp specified */
-      int datatype_index = 3 + comm_size;
-      datatype1      = simgrid::smpi::Datatype::decode(action[datatype_index]);
-      datatype2      = simgrid::smpi::Datatype::decode(action[datatype_index]);
+    } else {
+      // no disp specified, maybe only datatype,
+      datatype1 = parse_datatype(action, 3 + comm_size);
+      datatype2 = parse_datatype(action, 4 + comm_size);
     }
 
     if (disp_index != 0) {
-      for (unsigned int i = 0; i < comm_size; i++)
+      xbt_assert(disp_index + comm_size <= action.size());
+      for (unsigned i = 0; i < comm_size; i++)
         disps[i]          = std::stoi(action[disp_index + i]);
     }
   }
@@ -315,11 +317,9 @@ void ScatterArgParser::parse(simgrid::xbt::ReplayAction& action, const std::stri
   comm_size = MPI_COMM_WORLD->size();
   send_size = parse_double(action[2]);
   recv_size = parse_double(action[3]);
-  root      = (action.size() > 4) ? std::stoi(action[4]) : 0;
-  if (action.size() > 5)
-    datatype1 = simgrid::smpi::Datatype::decode(action[5]);
-  if (action.size() > 6)
-    datatype2 = simgrid::smpi::Datatype::decode(action[6]);
+  root      = parse_root(action, 4);
+  datatype1 = parse_datatype(action, 5);
+  datatype2 = parse_datatype(action, 6);
 }
 
 void ScatterVArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
@@ -338,16 +338,14 @@ void ScatterVArgParser::parse(simgrid::xbt::ReplayAction& action, const std::str
   disps      = std::vector<int>(comm_size, 0);
   sendcounts = std::make_shared<std::vector<int>>(comm_size);
 
-  if (action.size() > 5 + comm_size)
-    datatype1 = simgrid::smpi::Datatype::decode(action[4 + comm_size]);
-  if (action.size() > 5 + comm_size)
-    datatype2 = simgrid::smpi::Datatype::decode(action[5]);
+  root      = parse_root(action, 3 + comm_size);
+  datatype1 = parse_datatype(action, 4 + comm_size);
+  datatype2 = parse_datatype(action, 5 + comm_size);
 
   for (unsigned int i = 0; i < comm_size; i++) {
     (*sendcounts)[i] = std::stoi(action[i + 2]);
   }
   send_size_sum = std::accumulate(sendcounts->begin(), sendcounts->end(), 0);
-  root          = (action.size() > 3 + comm_size) ? std::stoi(action[3 + comm_size]) : 0;
 }
 
 void ReduceScatterArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
@@ -363,8 +361,7 @@ void ReduceScatterArgParser::parse(simgrid::xbt::ReplayAction& action, const std
   CHECK_ACTION_PARAMS(action, comm_size + 1, 1)
   comp_size  = parse_double(action[2 + comm_size]);
   recvcounts = std::make_shared<std::vector<int>>(comm_size);
-  if (action.size() > 3 + comm_size)
-    datatype1 = simgrid::smpi::Datatype::decode(action[3 + comm_size]);
+  datatype1  = parse_datatype(action, 3 + comm_size);
 
   for (unsigned int i = 0; i < comm_size; i++) {
     recvcounts->push_back(std::stoi(action[i + 2]));
@@ -389,10 +386,8 @@ void AllToAllVArgParser::parse(simgrid::xbt::ReplayAction& action, const std::st
   senddisps  = std::vector<int>(comm_size, 0);
   recvdisps  = std::vector<int>(comm_size, 0);
 
-  if (action.size() > 5 + 2 * comm_size)
-    datatype1 = simgrid::smpi::Datatype::decode(action[4 + 2 * comm_size]);
-  if (action.size() > 5 + 2 * comm_size)
-    datatype2 = simgrid::smpi::Datatype::decode(action[5 + 2 * comm_size]);
+  datatype1 = parse_datatype(action, 4 + 2 * comm_size);
+  datatype2 = parse_datatype(action, 5 + 2 * comm_size);
 
   send_buf_size = parse_double(action[2]);
   recv_buf_size = parse_double(action[3 + comm_size]);
