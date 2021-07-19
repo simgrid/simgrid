@@ -64,11 +64,13 @@ public:
   }
   ChunkedData& operator=(ChunkedData&& that) noexcept
   {
-    this->clear();
-    store_      = that.store_;
-    that.store_ = nullptr;
-    pagenos_    = std::move(that.pagenos_);
-    that.pagenos_.clear();
+    if (this != &that) {
+      this->clear();
+      store_      = that.store_;
+      that.store_ = nullptr;
+      pagenos_    = std::move(that.pagenos_);
+      that.pagenos_.clear();
+    }
     return *this;
   }
 
