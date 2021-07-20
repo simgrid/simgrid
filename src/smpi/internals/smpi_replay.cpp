@@ -467,7 +467,7 @@ void RecvAction::kernel(simgrid::xbt::ReplayAction&)
   MPI_Status status;
   // unknown size from the receiver point of view
   size_t arg_size = args.size;
-  if (arg_size == 0.0) {
+  if (arg_size == 0) {
     Request::probe(args.partner, args.tag, MPI_COMM_WORLD, &status);
     arg_size = status.count;
   }
