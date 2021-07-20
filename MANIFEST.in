@@ -1817,6 +1817,7 @@ include docs/source/Platform_examples.rst
 include docs/source/Platform_howtos.rst
 include docs/source/Platform_routing.rst
 include docs/source/Plugins.rst
+include docs/source/Release_Notes.rst
 include docs/source/Start_your_own_project.rst
 include docs/source/The_XBT_toolbox.rst
 include docs/source/Tutorial_Algorithms.rst

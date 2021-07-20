@@ -938,6 +938,7 @@ set(DOC_SOURCES
   docs/source/Platform_howtos.rst
   docs/source/Platform_routing.rst
   docs/source/Plugins.rst
+  docs/source/Release_Notes.rst
   docs/source/XML_reference.rst
   docs/source/Design_goals.rst
 
