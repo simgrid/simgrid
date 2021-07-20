@@ -16,7 +16,6 @@
 + \.circleci/.*
 + \.clang-format
 + \.classpath
-+ \.codacy\.yml
 + \.editorconfig
 + \.gitlab-ci\.yml
 + \.lgtm\.yml
