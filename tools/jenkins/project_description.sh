@@ -173,41 +173,6 @@ do
 done
 
 
-#Travis - get ID of the last jobs with the API
-BUILD_NUM=$(curl -s 'https://api.travis-ci.org/repos/simgrid/simgrid/builds?limit=1' | grep -o '^\[{"id":[0-9]*,' | grep -o '[0-9]' | tr -d '\n')
-BUILDS=($(curl -s https://api.travis-ci.org/repos/simgrid/simgrid/builds/"${BUILD_NUM}" | grep -o '{"id":[0-9]*,' | grep -o '[0-9]*'| tail -n 3))
-OS=($(curl -s https://api.travis-ci.org/repos/simgrid/simgrid/builds/"${BUILD_NUM}" | grep -o '"os":"[a-z]*",' | sed  's/"os":"\([a-z]*\)",/\1/g'| tail -n 3))
-
-for id in "${!BUILDS[@]}"
-do
-    wget --quiet https://api.travis-ci.org/v3/job/"${BUILDS[$id]}"/log.txt -O ./consoleText >/dev/null 2>&1
-    sed -i -e "s/\r//g" ./consoleText
-
-    if [ "${OS[$id]}" == "linux" ]; then
-      node="travis-linux (<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">log</a>)"
-      os="Ubuntu  <a href=\"https://docs.travis-ci.com/user/reference/bionic/\">18.04 bionic</a>"
-    elif [ "${OS[$id]}" == "osx" ]; then
-      node="travis-mac (<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">log</a>)"
-      os="Mac OS X <a href=\"https://docs.travis-ci.com/user/reference/osx/\">Catalina (10.15)</a> "
-    elif [ "${OS[$id]}" == "windows" ]; then
-      node="travis-windows (<a href=\"https://travis-ci.org/simgrid/simgrid/jobs/${BUILDS[$id]}\">log</a>)"
-      os="Windows <a href=\"https://docs.travis-ci.com/user/reference/windows/\">Server 1809</a>"
-    fi
-    boost=$(get_boost)
-    compiler=$(get_compiler)
-    java=$(get_java)
-    cmake=$(get_cmake)
-    ns3=$(get_ns3)
-    py=$(get_python)
-    success=$(grep -m 1 "Your build exited with 0" ./consoleText)
-    ball="red.png"
-    if [ -n "$success" ]; then
-      ball="blue.png"
-    fi
-    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td><td class=\"matrix-cell\" style=\"text-align:center\"><img src=https://ci.inria.fr/simgrid/images/24x24/${ball}></td><td class=\"matrix-cell\" style=\"text-align:center\"><img src=https://ci.inria.fr/simgrid/images/24x24/grey.png></td></tr>"
-    rm consoleText
-done
-
 #Appveyor - get ID of the last job with the API
 BUILD_ID=$(curl -s "https://ci.appveyor.com/api/projects/mquinson/simgrid" | grep -o '\[{"jobId":"[a-zA-Z0-9]*",' | sed "s/\[{\"jobId\":\"//" | sed "s/\",//")
 wget --quiet https://ci.appveyor.com/api/buildjobs/"$BUILD_ID"/log -O ./consoleText >/dev/null 2>&1

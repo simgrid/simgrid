@@ -21,7 +21,6 @@
 + \.lgtm\.yml
 + \.project
 + \.readthedocs.yml
-+ \.travis\.yml
 + sonar-project\.properties
 
 + contrib/.*

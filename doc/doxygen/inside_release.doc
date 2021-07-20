@@ -22,7 +22,7 @@ Please apply the following checklist before releasing.
   - The release dub name matches the one given in ChangeLog file
 - Tests
   - The "make distcheck" target works (tested by jenkins)
-  - All tests pass on everything on ci + travis/macOS + AppVeyor
+  - All tests pass on everything on ci + AppVeyor
   - Tutorials and derivative projects build correctly
     https://framagit.org/simgrid/simgrid-template-s4u/pipelines
     https://framagit.org/simgrid/external-projects-ci/pipelines
