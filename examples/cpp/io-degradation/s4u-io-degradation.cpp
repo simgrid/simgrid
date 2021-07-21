@@ -49,7 +49,7 @@ static void host()
 {
   /* - Estimating bw for each disk and considering concurrent flows */
   for (int n = 1; n < 15; n += 2) {
-    for (auto* disk : sg4::Host::current()->get_disks()) {
+    for (const auto* disk : sg4::Host::current()->get_disks()) {
       estimate_bw(disk, n, true);
       estimate_bw(disk, n, false);
     }
@@ -105,7 +105,7 @@ static double ssd_dynamic_sharing(const sg4::Disk* /*disk*/, const std::string& 
  * @param capacity Resource current capacity in SimGrid
  * @param n Number of activities sharing this resource
  */
-static double sata_dynamic_sharing(const sg4::Disk* /*disk*/, double capacity, int n)
+static double sata_dynamic_sharing(const sg4::Disk* /*disk*/, double /*capacity*/, int n)
 {
   return 68.3 - 1.7 * n;
 }
