@@ -144,6 +144,7 @@ if (SIMGRID_HAVE_MC)
 else()
   set(EXTRA_DIST ${EXTRA_DIST} src/mc/sosp/Snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
 endif()  
+set(EXTRA_DIST ${EXTRA_DIST} src/kernel/routing/NetZone_test.hpp)
 
 add_executable       (unit-tests EXCLUDE_FROM_ALL ${UNIT_TESTS})
 add_dependencies     (tests unit-tests)

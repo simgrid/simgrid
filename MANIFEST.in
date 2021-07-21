@@ -2254,6 +2254,7 @@ include src/kernel/routing/FullZone.cpp
 include src/kernel/routing/FullZone_test.cpp
 include src/kernel/routing/NetPoint.cpp
 include src/kernel/routing/NetZoneImpl.cpp
+include src/kernel/routing/NetZone_test.hpp
 include src/kernel/routing/RoutedZone.cpp
 include src/kernel/routing/StarZone.cpp
 include src/kernel/routing/StarZone_test.cpp
