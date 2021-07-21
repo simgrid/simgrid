@@ -10,6 +10,7 @@
 #include "src/surf/surf_private.hpp"
 #include "xbt/function_types.h"
 
+#include <cfloat>
 #include <cmath>
 #include <functional>
 #include <set>
@@ -41,11 +42,13 @@ inline auto& watched_hosts() // avoid static initialization order fiasco
 
 static inline void double_update(double* variable, double value, double precision)
 {
-  // printf("Updating %g -= %g +- %g\n",*variable,value,precision);
-  // xbt_assert(value==0  || value>precision);
-  // Check that precision is higher than the machine-dependent size of the mantissa. If not, brutal rounding  may
-  // happen, and the precision mechanism is not active...
-  // xbt_assert(*variable< (2<<DBL_MANT_DIG)*precision && FLT_RADIX==2);
+  if (false) { // debug
+    fprintf(stderr, "Updating %g -= %g +- %g\n", *variable, value, precision);
+    xbt_assert(value == 0.0 || value > precision);
+    // Check that precision is higher than the machine-dependent size of the mantissa. If not, brutal rounding  may
+    // happen, and the precision mechanism is not active...
+    xbt_assert(FLT_RADIX == 2 && *variable < precision * exp2(DBL_MANT_DIG));
+  }
   *variable -= value;
   if (*variable < precision)
     *variable = 0.0;

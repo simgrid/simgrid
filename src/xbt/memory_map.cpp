@@ -155,11 +155,10 @@ std::vector<VmMap> get_memory_map(pid_t pid)
     if (dladdr(reinterpret_cast<void*>(address), &dlinfo))
       memreg.pathname = dlinfo.dli_fname;
 
-#if 0 /* debug */
-    std::fprintf(stderr, "Region: %016" PRIx64 "-%016" PRIx64 " | %c%c%c | %s\n", memreg.start_addr, memreg.end_addr,
-              (memreg.prot & PROT_READ) ? 'r' : '-', (memreg.prot & PROT_WRITE) ? 'w' : '-',
-              (memreg.prot & PROT_EXEC) ? 'x' : '-', memreg.pathname.c_str());
-#endif
+    if (false) // debug
+      std::fprintf(stderr, "Region: %016" PRIx64 "-%016" PRIx64 " | %c%c%c | %s\n", memreg.start_addr, memreg.end_addr,
+                   (memreg.prot & PROT_READ) ? 'r' : '-', (memreg.prot & PROT_WRITE) ? 'w' : '-',
+                   (memreg.prot & PROT_EXEC) ? 'x' : '-', memreg.pathname.c_str());
 
     ret.push_back(std::move(memreg));
     address += size;
@@ -290,7 +289,8 @@ std::vector<VmMap> get_memory_map(pid_t pid)
 
     /* Create space for a new map region in the region's array and copy the */
     /* parsed stuff from the temporal memreg variable */
-    // std::fprintf(stderr, "Found region for %s\n", not memreg.pathname.empty() ? memreg.pathname.c_str() : "(null)");
+    if (false) // debug
+      std::fprintf(stderr, "Found region for %s\n", not memreg.pathname.empty() ? memreg.pathname.c_str() : "(null)");
 
     ret.push_back(std::move(memreg));
   }
