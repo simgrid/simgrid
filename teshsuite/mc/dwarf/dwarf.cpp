@@ -20,9 +20,14 @@
 #include <cassert>
 #include <cstring>
 
-// Test broken with multi-dimensional arrays. See https://sourceware.org/bugzilla/show_bug.cgi?id=22546
-// int test_some_array[4][5][6];
+#include <elfutils/version.h>
+#if _ELFUTILS_VERSION < 171
+// Elder elfutils/libdw broken with multi-dimensional arrays. See https://sourceware.org/bugzilla/show_bug.cgi?id=22546
 int test_some_array[4 * 5 * 6];
+#else
+int test_some_array[4][5][6];
+#endif
+
 struct some_struct {
   int first;
   int second[4][5];
