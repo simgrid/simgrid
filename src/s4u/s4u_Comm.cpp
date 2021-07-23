@@ -299,11 +299,7 @@ Actor* Comm::get_sender() const
 
 CommPtr Comm::set_copy_data_callback(void (*callback)(kernel::activity::CommImpl*, void*, size_t))
 {
-  static void (*saved_callback)(kernel::activity::CommImpl*, void*, size_t);
-  saved_callback      = callback;
-  copy_data_function_ = [](simgrid::kernel::activity::CommImpl* comm, void* buff, size_t size) {
-    saved_callback(comm, buff, size);
-  };
+  copy_data_function_ = callback;
   return this;
 }
 
