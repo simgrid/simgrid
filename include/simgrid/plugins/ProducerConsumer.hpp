@@ -9,6 +9,7 @@
 #include <simgrid/s4u/ConditionVariable.hpp>
 #include <simgrid/s4u/Mailbox.hpp>
 #include <simgrid/s4u/Mutex.hpp>
+#include <simgrid/simix.h>
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 
@@ -145,7 +146,9 @@ public:
     while (size() >= max_queue_size_)
       can_put_->wait(lock);
     if (tmode_ == TransferMode::MAILBOX) {
-      comm = mbox_->put_async(data, simulated_size_in_bytes);
+      comm = mbox_->put_init(data, simulated_size_in_bytes)
+                 ->set_copy_data_callback(SIMIX_comm_copy_pointer_callback)
+                 ->start();
     } else
       queue_.push(data);
     can_get_->notify_all();
@@ -180,7 +183,10 @@ public:
     while (empty())
       can_get_->wait(lock);
     if (tmode_ == TransferMode::MAILBOX)
-      comm = mbox_->get_async<T>(data);
+      comm = mbox_->get_init()
+                 ->set_dst_data(reinterpret_cast<void**>(data), sizeof(void*))
+                 ->set_copy_data_callback(SIMIX_comm_copy_pointer_callback)
+                 ->start();
     else {
       *data = queue_.front();
       queue_.pop();
