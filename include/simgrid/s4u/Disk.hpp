@@ -57,6 +57,17 @@ public:
   Disk* set_write_bandwidth(double write_bw);
   double get_write_bandwidth() const;
 
+  /**
+   * @brief Set limit for read/write operations.
+   *
+   * This determines the limit for read and write operation in the same disk.
+   * Usually, it's configured to max(read_bw, write_bw).
+   * You can change this behavior using this method
+   *
+   * @param bw New bandwidth for the disk
+   */
+  Disk* set_readwrite_bandwidth(double bw);
+
   const std::unordered_map<std::string, std::string>* get_properties() const;
   const char* get_property(const std::string& key) const;
   Disk* set_property(const std::string&, const std::string& value);

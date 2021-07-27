@@ -47,6 +47,12 @@ double Disk::get_read_bandwidth() const
   return pimpl_->get_read_bandwidth();
 }
 
+Disk* Disk::set_readwrite_bandwidth(double bw)
+{
+  kernel::actor::simcall([this, bw] { pimpl_->set_readwrite_bandwidth(bw); });
+  return this;
+}
+
 double Disk::get_write_bandwidth() const
 {
   return pimpl_->get_write_bandwidth();

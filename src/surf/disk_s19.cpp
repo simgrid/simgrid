@@ -104,6 +104,13 @@ void DiskS19::set_write_bandwidth(double value)
   update_penalties(delta);
 }
 
+void DiskS19::set_readwrite_bandwidth(double value)
+{
+  readwrite_bw_ = value;
+  if (get_constraint())
+    get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), readwrite_bw_);
+}
+
 void DiskS19::apply_event(kernel::profile::Event* triggered, double value)
 {
   /* Find out which of my iterators was triggered, and react accordingly */

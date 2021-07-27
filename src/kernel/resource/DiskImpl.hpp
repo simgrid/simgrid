@@ -66,6 +66,7 @@ protected:
 public:
   Metric read_bw_  = {0.0, 0, nullptr};
   Metric write_bw_ = {0.0, 0, nullptr};
+  double readwrite_bw_ = -1; /* readwrite constraint bound, usually max(read, write) */
 
   explicit DiskImpl(const std::string& name, double read_bandwidth, double write_bandwidth);
   DiskImpl(const DiskImpl&) = delete;
@@ -82,6 +83,8 @@ public:
 
   virtual void set_write_bandwidth(double write_bw) = 0;
   double get_write_bandwidth() const { return write_bw_.peak * write_bw_.scale; }
+
+  virtual void set_readwrite_bandwidth(double bw) = 0;
 
   DiskImpl* set_read_constraint(lmm::Constraint* constraint_read);
   lmm::Constraint* get_read_constraint() const { return constraint_read_; }

@@ -113,9 +113,13 @@ void DiskImpl::seal()
 
   xbt_assert(this->get_model(), "Cannot seal Disk (%s) without setting the model first", get_cname());
   lmm::System* maxmin_system = get_model()->get_maxmin_system();
+  /* set readwrite constraint if not configured by user */
+  if (readwrite_bw_ == -1) {
+    readwrite_bw_ = std::max(read_bw_.peak, write_bw_.peak);
+  }
   this->set_read_constraint(maxmin_system->constraint_new(this, read_bw_.peak * read_bw_.scale))
       ->set_write_constraint(maxmin_system->constraint_new(this, write_bw_.peak * write_bw_.scale))
-      ->set_constraint(maxmin_system->constraint_new(this, std::max(read_bw_.peak, write_bw_.peak)));
+      ->set_constraint(maxmin_system->constraint_new(this, readwrite_bw_));
   apply_sharing_policy_cfg();
   XBT_DEBUG("Create resource with read_bw '%f' write_bw '%f'", read_bw_.peak, write_bw_.peak);
   Resource::seal();
