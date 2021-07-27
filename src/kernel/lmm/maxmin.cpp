@@ -817,7 +817,6 @@ void System::on_disabled_var(Constraint* cnstr)
 void System::update_variable_penalty(Variable* var, double penalty)
 {
   xbt_assert(penalty >= 0, "Variable penalty should not be negative!");
-
   if (penalty == var->sharing_penalty_)
     return;
 

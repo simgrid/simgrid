@@ -41,8 +41,6 @@ public:
  ************/
 
 class DiskS19 : public DiskImpl {
-  void update_penalties(double delta) const;
-
 public:
   using DiskImpl::DiskImpl;
   void set_read_bandwidth(double value) override;

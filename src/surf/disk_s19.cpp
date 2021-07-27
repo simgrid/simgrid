@@ -71,44 +71,30 @@ DiskAction* DiskS19Model::io_start(const DiskImpl* disk, sg_size_t size, s4u::Io
 /************
  * Resource *
  ************/
-void DiskS19::update_penalties(double delta) const
-{
-  const kernel::lmm::Element* elem     = nullptr;
-  const kernel::lmm::Element* nextelem = nullptr;
-  size_t numelem                       = 0;
-  while (const auto* var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem)) {
-    auto* action = static_cast<DiskS19Action*>(var->get_id());
-    action->sharing_penalty_ += delta;
-    if (not action->is_suspended())
-      get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), action->sharing_penalty_);
-  }
-}
-
 void DiskS19::set_read_bandwidth(double value)
 {
   read_bw_.peak = value;
 
-  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), read_bw_.peak * read_bw_.scale);
-
-  double delta = 1.0 / value - 1.0 / (read_bw_.peak * read_bw_.scale);
-  update_penalties(delta);
+  if (get_read_constraint()) {
+    get_model()->get_maxmin_system()->update_constraint_bound(get_read_constraint(), read_bw_.peak * read_bw_.scale);
+  }
 }
 
 void DiskS19::set_write_bandwidth(double value)
 {
   write_bw_.peak = value;
 
-  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), write_bw_.peak * write_bw_.scale);
-
-  double delta = 1.0 / value - 1.0 / (write_bw_.peak * write_bw_.scale);
-  update_penalties(delta);
+  if (get_write_constraint()) {
+    get_model()->get_maxmin_system()->update_constraint_bound(get_write_constraint(), write_bw_.peak * write_bw_.scale);
+  }
 }
 
 void DiskS19::set_readwrite_bandwidth(double value)
 {
   readwrite_bw_ = value;
-  if (get_constraint())
+  if (get_constraint()) {
     get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), readwrite_bw_);
+  }
 }
 
 void DiskS19::apply_event(kernel::profile::Event* triggered, double value)

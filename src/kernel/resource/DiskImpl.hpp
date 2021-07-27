@@ -120,8 +120,6 @@ public:
 
   using Action::Action;
   void set_state(simgrid::kernel::resource::Action::State state) override;
-
-  double sharing_penalty_ = {};
 };
 
 } // namespace resource
