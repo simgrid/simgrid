@@ -88,8 +88,6 @@ XBT_PRIVATE int smpi_deployment_smpirun(const simgrid::s4u::Engine* e, const std
                                         const std::string& replayfile, int map,
                                         const std::vector<const char*>& run_args);
 
-XBT_PRIVATE void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff,
-                                                size_t buff_size);
 
 XBT_PRIVATE void smpi_comm_null_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff,
                                                      size_t buff_size);
@@ -129,8 +127,6 @@ XBT_PRIVATE void smpi_prepare_global_memory_segment();
 XBT_PRIVATE void smpi_backup_global_memory_segment();
 XBT_PRIVATE void smpi_destroy_global_memory_segments();
 XBT_PRIVATE void smpi_bench_destroy();
-XBT_PRIVATE void smpi_bench_begin();
-XBT_PRIVATE void smpi_bench_end();
 XBT_PRIVATE void smpi_shared_destroy();
 XBT_PRIVATE double smpi_adjust_comp_speed();
 
