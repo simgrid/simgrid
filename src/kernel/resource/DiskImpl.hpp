@@ -56,6 +56,7 @@ class DiskImpl : public Resource_T<DiskImpl>, public xbt::PropertyHolder {
       {s4u::Disk::Operation::WRITE, s4u::Disk::SharingPolicy::LINEAR},
       {s4u::Disk::Operation::READWRITE, s4u::Disk::SharingPolicy::LINEAR}};
   std::unordered_map<s4u::Disk::Operation, s4u::NonLinearResourceCb> sharing_policy_cb_ = {};
+  std::function<s4u::Disk::IoFactorCb> factor_cb_                                       = {};
 
   void apply_sharing_policy_cfg();
 
@@ -93,6 +94,9 @@ public:
 
   void set_sharing_policy(s4u::Disk::Operation op, s4u::Disk::SharingPolicy policy, const s4u::NonLinearResourceCb& cb);
   s4u::Disk::SharingPolicy get_sharing_policy(s4u::Disk::Operation op) const;
+
+  void set_factor_cb(const std::function<s4u::Disk::IoFactorCb>& cb);
+  const std::function<s4u::Disk::IoFactorCb>& get_factor_cb() const { return factor_cb_; }
 
   /** @brief Check if the Disk is used (if an action currently uses its resources) */
   bool is_used() const override;

@@ -96,6 +96,18 @@ public:
    */
   Disk* set_sharing_policy(Operation op, SharingPolicy policy, const s4u::NonLinearResourceCb& cb = {});
   SharingPolicy get_sharing_policy(Operation op) const;
+  /**
+   * @brief Callback to set IO factors
+   *
+   * This callback offers a flexible way to create variability in I/O operations
+   *
+   * @param size I/O operation size in bytes
+   * @param op I/O operation type: read or write
+   * @return Multiply factor
+   */
+  using IoFactorCb = double(sg_size_t size, Io::OpType op);
+  /** @brief Configure the factor callback */
+  Disk* set_factor_cb(const std::function<IoFactorCb>& cb);
 
   Disk* seal();
 

@@ -142,6 +142,12 @@ Disk::SharingPolicy Disk::get_sharing_policy(Operation op) const
   return this->pimpl_->get_sharing_policy(op);
 }
 
+Disk* Disk::set_factor_cb(const std::function<IoFactorCb>& cb)
+{
+  kernel::actor::simcall([this, &cb] { pimpl_->set_factor_cb(cb); });
+  return this;
+}
+
 Disk* Disk::seal()
 {
   kernel::actor::simcall([this]{ pimpl_->seal(); });

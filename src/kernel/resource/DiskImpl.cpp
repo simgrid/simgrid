@@ -156,6 +156,12 @@ void DiskImpl::apply_sharing_policy_cfg()
                                           sharing_policy_cb_[s4u::Disk::Operation::WRITE]);
 }
 
+void DiskImpl::set_factor_cb(const std::function<s4u::Disk::IoFactorCb>& cb)
+{
+  xbt_assert(not is_sealed(), "Cannot set I/O factor callback in an already sealed disk(%s)", get_cname());
+  factor_cb_ = cb;
+}
+
 /**********
  * Action *
  **********/
