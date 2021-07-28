@@ -478,6 +478,7 @@ void NetworkCm02Link::apply_event(kernel::profile::Event* triggered, double valu
 
 void NetworkCm02Link::set_bandwidth(double value)
 {
+  double old_peak = bandwidth_.peak;
   bandwidth_.peak = value;
 
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), (bandwidth_.peak * bandwidth_.scale));
@@ -485,7 +486,8 @@ void NetworkCm02Link::set_bandwidth(double value)
   LinkImpl::on_bandwidth_change();
 
   if (sg_weight_S_parameter > 0) {
-    double delta = sg_weight_S_parameter / value - sg_weight_S_parameter / (bandwidth_.peak * bandwidth_.scale);
+    double delta = sg_weight_S_parameter / (bandwidth_.peak * bandwidth_.scale) -
+                   sg_weight_S_parameter / (old_peak * bandwidth_.scale);
 
     const kernel::lmm::Element* elem     = nullptr;
     const kernel::lmm::Element* nextelem = nullptr;
@@ -524,9 +526,9 @@ void NetworkCm02Link::set_latency(double value)
           std::min(action->get_user_bound(), NetworkModel::cfg_tcp_gamma / (2.0 * action->lat_current_)));
 
       if (action->get_user_bound() < NetworkModel::cfg_tcp_gamma / (2.0 * action->lat_current_)) {
-        XBT_INFO("Flow is limited BYBANDWIDTH");
+        XBT_DEBUG("Flow is limited BYBANDWIDTH");
       } else {
-        XBT_INFO("Flow is limited BYLATENCY, latency of flow is %f", action->lat_current_);
+        XBT_DEBUG("Flow is limited BYLATENCY, latency of flow is %f", action->lat_current_);
       }
     }
     if (not action->is_suspended())

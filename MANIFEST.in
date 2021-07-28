@@ -685,6 +685,8 @@ include teshsuite/mc/random-bug/random-bug.cpp
 include teshsuite/mc/random-bug/random-bug.tesh
 include teshsuite/models/cloud-sharing/cloud-sharing.cpp
 include teshsuite/models/cloud-sharing/cloud-sharing.tesh
+include teshsuite/models/cm02-set-lat-bw/cm02-set-lat-bw.cpp
+include teshsuite/models/cm02-set-lat-bw/cm02-set-lat-bw.tesh
 include teshsuite/models/ptask_L07_usage/ptask_L07_usage.cpp
 include teshsuite/models/ptask_L07_usage/ptask_L07_usage.tesh
 include teshsuite/models/wifi_usage/wifi_usage.cpp
