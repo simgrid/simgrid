@@ -34,7 +34,7 @@ Stable Java Package
 ^^^^^^^^^^^^^^^^^^^
 
 The jar file can be retrieved from the `Release page
-<https://framagit.org/simgrid/simgrid/releases>`_. This file is
+<https://framagit.org/simgrid/simgrid/-/releases>`_. This file is
 self-contained, including the native components for Linux, macOS and
 Windows. Copy it to your project's classpath and you're set.
 
@@ -130,7 +130,7 @@ Getting the Sources
 ^^^^^^^^^^^^^^^^^^^
 
 Grab the last **stable release** from `FramaGit
-<https://framagit.org/simgrid/simgrid/releases>`_, and compile it as follows:
+<https://framagit.org/simgrid/simgrid/-/releases>`_, and compile it as follows:
 
 .. code-block:: console
 
