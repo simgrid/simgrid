@@ -28,9 +28,8 @@ make install
 [local version](docs/source).
 
 You can also ask your questions, or simply discuss with other users on 
-to the [user mailing list](http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user)
+to the [SimGrid mattermost](https://framateam.org/simgrid/channels/town-square)
 or on the #simgrid IRC channel of the oftc network.
-
 
 Thanks for using our software. Please do great things with it and tell
 the world about it. Tell us, too, because we love to have positive
