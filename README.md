@@ -31,6 +31,8 @@ You can also ask your questions, or simply discuss with other users on
 to the [SimGrid mattermost](https://framateam.org/simgrid/channels/town-square)
 or on the #simgrid IRC channel of the oftc network.
 
+Last, note that although we maintain a [GitHub mirror](https://github.com/simgrid/simgrid/) and an [Inria GitLab mirror](https://gitlab.inria.fr/simgrid/simgrid), the main development of SimGrid is done on [Framagit](https://framagit.org/simgrid/simgrid/).
+
 Thanks for using our software. Please do great things with it and tell
 the world about it. Tell us, too, because we love to have positive
 feedback. Welcome to our community.
