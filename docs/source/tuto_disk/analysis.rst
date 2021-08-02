@@ -15,17 +15,27 @@ Capacities to the SimGridToolkit: Concepts, Models, and API".
 
 The paper presents a series of experiments to analyze the performance
 of IO operations (read/write) on different kinds of disks (SATA, SAS,
-SSD). In this tutorial, we show how to extract this data to simulate
-both performance degradation with concurrent operations (Fig. 8 in the
-paper) and variability in IO operations (Fig. 5 to 7).
+SSD). In this tutorial, we present a detailed example of how to
+extract experimental data to simulate: i) performance degradation
+with concurrent operations (Fig. 8 in the paper) and ii) variability
+in IO operations (Fig. 5 to 7).
 
 - Link for paper: `https://hal.inria.fr/hal-01197128 <https://hal.inria.fr/hal-01197128>`_
 
 - Link for data: `https://figshare.com/articles/dataset/Companion_of_the_SimGrid_storage_modeling_article/1175156 <https://figshare.com/articles/dataset/Companion_of_the_SimGrid_storage_modeling_article/1175156>`_
 
-**WARNING**: The purpose of this document is to illustrate how we can
-extract data from experiments and inject on SimGrid. However, the
-results may **not** reflect the reality.
+**Disclaimer**: 
+
+- The purpose of this document is to illustrate how we can
+  extract data from experiments and inject on SimGrid. However, the
+  data shown on this page may **not** reflect the reality.
+
+- You must run similar experiments on your hardware to get realistic
+  data for your context.
+
+- SimGrid has been in active development since the paper release in
+  2015, thus the MSG and XML description used in the paper may have
+  evolved and may not be available anymore.
 
 Running this tutorial
 ^^^^^^^^^^^^^^^^^^^^^

@@ -63,8 +63,8 @@ static void host()
 
   XBT_INFO("Setting readwrite limit to half (.5e6) in the middle of IO. Read and write should take 1.5s");
   cur_time        = sg4::Engine::get_clock();
-  act             = disk->write_async(1e6 / 2);
-  sg4::IoPtr act2 = disk->read_async(1e6 / 2);
+  act             = disk->write_async(.5e6);
+  sg4::IoPtr act2 = disk->read_async(.5e6);
   sg4::this_actor::sleep_for(.5);
   disk->set_readwrite_bandwidth(.5e6);
   act->wait();
