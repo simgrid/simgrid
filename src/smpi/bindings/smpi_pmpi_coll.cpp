@@ -808,7 +808,7 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
   int recv_size                      = 0;
   auto trace_sendcounts              = std::make_shared<std::vector<int>>();
   auto trace_recvcounts              = std::make_shared<std::vector<int>>();
-  int dt_size_recv                   = recvtype->size();
+  int dt_size_recv                   = recvtype->is_replayable() ? 1 : recvtype->size();
 
   const int* real_sendcounts = sendcounts;
   const int* real_senddispls  = senddispls;
@@ -838,7 +838,7 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
     return MPI_ERR_TRUNCATE;
   }
 
-  int dt_size_send = real_sendtype->size();
+  int dt_size_send = real_sendtype->is_replayable() ? 1 : real_sendtype->size();
 
   for (int i = 0; i < size; i++) { // copy data to avoid bad free
     send_size += real_sendcounts[i] * dt_size_send;
@@ -907,12 +907,14 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
   const int* real_sendcounts         = sendcounts;
   const int* real_senddispls          = senddispls;
   const MPI_Datatype* real_sendtypes = sendtypes;
+
   unsigned long maxsize      = 0;
   for (int i = 0; i < size; i++) { // copy data to avoid bad free
     if (recvtypes[i] == MPI_DATATYPE_NULL)
       return MPI_ERR_TYPE;
+    int dt_size_recv = recvtypes[i]->is_replayable() ? 1 : recvtypes[i]->size();
     recv_size += recvcounts[i] * recvtypes[i]->size();
-    trace_recvcounts->push_back(recvcounts[i] * recvtypes[i]->size());
+    trace_recvcounts->push_back(recvcounts[i] * dt_size_recv);
     if ((recvdispls[i] + (recvcounts[i] * recvtypes[i]->size())) > maxsize)
       maxsize = recvdispls[i] + (recvcounts[i] * recvtypes[i]->size());
   }
@@ -938,8 +940,9 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
   }
 
   for (int i = 0; i < size; i++) { // copy data to avoid bad free
+    int dt_size_send = real_sendtypes[i]->is_replayable() ? 1 : real_sendtypes[i]->size();
     send_size += real_sendcounts[i] * real_sendtypes[i]->size();
-    trace_sendcounts->push_back(real_sendcounts[i] * real_sendtypes[i]->size());
+    trace_sendcounts->push_back(real_sendcounts[i] * dt_size_send);
   }
 
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoallw" : "PMPI_Ialltoallw",
