@@ -170,9 +170,7 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
   MPI_Group group;
   win->get_group(&group);
   TRACE_smpi_comm_in(my_proc_id, __func__,
-                     new simgrid::instr::Pt2PtTIData("Get", target_rank, origin_datatype->is_replayable()
-                                                                             ? origin_count
-                                                                             : origin_count * origin_datatype->size(),
+                     new simgrid::instr::Pt2PtTIData("Get", target_rank, origin_count,
                                                      simgrid::smpi::Datatype::encode(origin_datatype)));
    retval = win->get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
                          target_datatype);
@@ -198,8 +196,7 @@ int PMPI_Rget( void *origin_addr, int origin_count, MPI_Datatype origin_datatype
   win->get_group(&group);
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData(
-                         "Rget", target_rank,
-                         origin_datatype->is_replayable() ? origin_count : origin_count * origin_datatype->size(),
+                         "Rget", target_rank, origin_count,
                          simgrid::smpi::Datatype::encode(origin_datatype)));
 
   retval = win->get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
@@ -224,9 +221,7 @@ int PMPI_Put(const void *origin_addr, int origin_count, MPI_Datatype origin_data
   win->get_group(&group);
   aid_t dst_traced = group->actor(target_rank);
   TRACE_smpi_comm_in(my_proc_id, __func__,
-                     new simgrid::instr::Pt2PtTIData("Put", target_rank, origin_datatype->is_replayable()
-                                                                             ? origin_count
-                                                                             : origin_count * origin_datatype->size(),
+                     new simgrid::instr::Pt2PtTIData("Put", target_rank, origin_count,
                                                      simgrid::smpi::Datatype::encode(origin_datatype)));
   TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, SMPI_RMA_TAG, origin_count * origin_datatype->size());
 
@@ -255,8 +250,7 @@ int PMPI_Rput(const void *origin_addr, int origin_count, MPI_Datatype origin_dat
   aid_t dst_traced = group->actor(target_rank);
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData(
-                         "Rput", target_rank,
-                         origin_datatype->is_replayable() ? origin_count : origin_count * origin_datatype->size(),
+                         "Rput", target_rank, origin_count,
                          simgrid::smpi::Datatype::encode(origin_datatype)));
   TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, SMPI_RMA_TAG, origin_count * origin_datatype->size());
 
@@ -283,8 +277,7 @@ int PMPI_Accumulate(const void *origin_addr, int origin_count, MPI_Datatype orig
   win->get_group(&group);
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData(
-                         "Accumulate", target_rank,
-                         origin_datatype->is_replayable() ? origin_count : origin_count * origin_datatype->size(),
+                         "Accumulate", target_rank, origin_count,
                          simgrid::smpi::Datatype::encode(origin_datatype)));
   retval = win->accumulate( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
                                 target_datatype, op);
@@ -313,8 +306,7 @@ int PMPI_Raccumulate(const void *origin_addr, int origin_count, MPI_Datatype ori
   win->get_group(&group);
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData(
-                         "Raccumulate", target_rank,
-                         origin_datatype->is_replayable() ? origin_count : origin_count * origin_datatype->size(),
+                         "Raccumulate", target_rank, origin_count,
                          simgrid::smpi::Datatype::encode(origin_datatype)));
 
   retval = win->accumulate( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
@@ -353,8 +345,7 @@ int PMPI_Get_accumulate(const void* origin_addr, int origin_count, MPI_Datatype 
   win->get_group(&group);
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData(
-                         "Get_accumulate", target_rank,
-                         target_datatype->is_replayable() ? target_count : target_count * target_datatype->size(),
+                         "Get_accumulate", target_rank, target_count,
                          simgrid::smpi::Datatype::encode(target_datatype)));
 
   retval = win->get_accumulate( origin_addr, origin_count, origin_datatype, result_addr,
@@ -396,8 +387,7 @@ int PMPI_Rget_accumulate(const void* origin_addr, int origin_count, MPI_Datatype
   win->get_group(&group);
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData(
-                         "Rget_accumulate", target_rank,
-                         target_datatype->is_replayable() ? target_count : target_count * target_datatype->size(),
+                         "Rget_accumulate", target_rank, target_count,
                          simgrid::smpi::Datatype::encode(target_datatype)));
 
   retval = win->get_accumulate( origin_addr, origin_count, origin_datatype, result_addr,
@@ -432,8 +422,7 @@ int PMPI_Compare_and_swap(const void* origin_addr, void* compare_addr, void* res
   MPI_Group group;
   win->get_group(&group);
   TRACE_smpi_comm_in(my_proc_id, __func__,
-                     new simgrid::instr::Pt2PtTIData("Compare_and_swap", target_rank,
-                                                     datatype->is_replayable() ? 1 : datatype->size(),
+                     new simgrid::instr::Pt2PtTIData("Compare_and_swap", target_rank, 1,
                                                      simgrid::smpi::Datatype::encode(datatype)));
 
   retval = win->compare_and_swap(origin_addr, compare_addr, result_addr, datatype, target_rank, target_disp);

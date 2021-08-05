@@ -249,13 +249,6 @@ bool Datatype::is_basic() const
   return (flags_ & DT_FLAG_BASIC);
 }
 
-bool Datatype::is_replayable() const
-{
-  return (simgrid::instr::trace_format == simgrid::instr::TraceFormat::Ti) &&
-         ((this == MPI_BYTE) || (this == MPI_DOUBLE) || (this == MPI_INT) || (this == MPI_CHAR) ||
-          (this == MPI_SHORT) || (this == MPI_LONG) || (this == MPI_FLOAT));
-}
-
 MPI_Datatype Datatype::decode(const std::string& datatype_id)
 {
   return id2type_lookup.find(datatype_id)->second;

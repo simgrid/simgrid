@@ -147,7 +147,6 @@ public:
   bool is_basic() const;
   static const char* encode(const Datatype* dt) { return dt->id.c_str(); }
   static MPI_Datatype decode(const std::string& datatype_id);
-  bool is_replayable() const;
   void addflag(int flag);
   int extent(MPI_Aint* lb, MPI_Aint* extent) const;
   MPI_Aint get_extent() const { return ub_ - lb_; };
