@@ -561,7 +561,7 @@ void WaitAllAction::kernel(simgrid::xbt::ReplayAction&)
   const size_t count_requests = req_storage.size();
 
   if (count_requests > 0) {
-    TRACE_smpi_comm_in(get_pid(), __func__, new simgrid::instr::Pt2PtTIData("waitall", -1, count_requests, ""));
+    TRACE_smpi_comm_in(get_pid(), __func__, new simgrid::instr::CpuTIData("waitall", count_requests));
     std::vector<std::pair</*sender*/ aid_t, /*recv*/ aid_t>> sender_receiver;
     std::vector<MPI_Request> reqs;
     req_storage.get_requests(reqs);
@@ -591,7 +591,7 @@ void BcastAction::kernel(simgrid::xbt::ReplayAction&)
 {
   const BcastArgParser& args = get_args();
   TRACE_smpi_comm_in(get_pid(), "action_bcast",
-                     new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->actor(args.root), -1.0, args.size,
+                     new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->rank(args.root), -1.0, args.size,
                                                     0, Datatype::encode(args.datatype1), ""));
 
   colls::bcast(send_buffer(args.size * args.datatype1->size()), args.size, args.datatype1, args.root, MPI_COMM_WORLD);
@@ -603,13 +603,14 @@ void ReduceAction::kernel(simgrid::xbt::ReplayAction&)
 {
   const ReduceArgParser& args = get_args();
   TRACE_smpi_comm_in(get_pid(), "action_reduce",
-                     new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->actor(args.root), args.comp_size,
+                     new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->rank(args.root), args.comp_size,
                                                     args.comm_size, 0, Datatype::encode(args.datatype1), ""));
 
   colls::reduce(send_buffer(args.comm_size * args.datatype1->size()),
                 recv_buffer(args.comm_size * args.datatype1->size()), args.comm_size, args.datatype1, MPI_OP_NULL,
                 args.root, MPI_COMM_WORLD);
-  private_execute_flops(args.comp_size);
+  if(args.comp_size != 0.0)
+    private_execute_flops(args.comp_size);
 
   TRACE_smpi_comm_out(get_pid());
 }
@@ -624,7 +625,8 @@ void AllReduceAction::kernel(simgrid::xbt::ReplayAction&)
   colls::allreduce(send_buffer(args.comm_size * args.datatype1->size()),
                    recv_buffer(args.comm_size * args.datatype1->size()), args.comm_size, args.datatype1, MPI_OP_NULL,
                    MPI_COMM_WORLD);
-  private_execute_flops(args.comp_size);
+  if(args.comp_size != 0.0)
+    private_execute_flops(args.comp_size);
 
   TRACE_smpi_comm_out(get_pid());
 }
