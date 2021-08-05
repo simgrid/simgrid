@@ -2014,6 +2014,7 @@ include include/simgrid/jedule/jedule.hpp
 include include/simgrid/jedule/jedule_events.hpp
 include include/simgrid/jedule/jedule_platform.hpp
 include include/simgrid/jedule/jedule_sd_binding.h
+include include/simgrid/kernel/ProfileBuilder.hpp
 include include/simgrid/kernel/Timer.hpp
 include include/simgrid/kernel/future.hpp
 include include/simgrid/kernel/resource/Action.hpp
@@ -2253,6 +2254,7 @@ include src/kernel/resource/profile/FutureEvtSet.cpp
 include src/kernel/resource/profile/FutureEvtSet.hpp
 include src/kernel/resource/profile/Profile.cpp
 include src/kernel/resource/profile/Profile.hpp
+include src/kernel/resource/profile/ProfileBuilder.cpp
 include src/kernel/resource/profile/Profile_test.cpp
 include src/kernel/resource/profile/StochasticDatedValue.cpp
 include src/kernel/resource/profile/StochasticDatedValue.hpp

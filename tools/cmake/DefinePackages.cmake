@@ -319,6 +319,7 @@ set(SURF_SRC
   src/kernel/resource/profile/Event.hpp
   src/kernel/resource/profile/FutureEvtSet.cpp
   src/kernel/resource/profile/FutureEvtSet.hpp
+  src/kernel/resource/profile/ProfileBuilder.cpp
   src/kernel/resource/profile/Profile.cpp
   src/kernel/resource/profile/Profile.hpp
   src/kernel/resource/profile/StochasticDatedValue.cpp
@@ -693,6 +694,7 @@ set(headers_to_install
   include/simgrid/forward.h
   include/simgrid/simix.h
   include/simgrid/simix.hpp
+  include/simgrid/kernel/ProfileBuilder.hpp
   include/simgrid/kernel/Timer.hpp
   include/simgrid/kernel/future.hpp
   include/simgrid/disk.h
