@@ -87,7 +87,7 @@ ExecImpl* ExecImpl::start()
         surf_action_->set_user_bound(bound_);
       }
     } else {
-      // FIXME[donassolo]: verify if all hosts belongs to the same netZone?
+      // get the model from first host since we have only 1 by now
       auto host_model = hosts_.front()->get_netpoint()->get_englobing_zone()->get_host_model();
       surf_action_    = host_model->execute_parallel(hosts_, flops_amounts_.data(), bytes_amounts_.data(), -1);
     }

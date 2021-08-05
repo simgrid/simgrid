@@ -57,9 +57,6 @@ kernel::resource::Action* HostCLM03Model::execute_parallel(const std::vector<s4u
                                                            double rate)
 {
   kernel::resource::Action* action = nullptr;
-  /* FIXME[donassolo]: getting the network_model from the origin host
-   * Soon we need to change this function to first get the routes and later
-   * create the respective surf actions */
   auto net_model = host_list[0]->get_netpoint()->get_englobing_zone()->get_network_model();
   if ((host_list.size() == 1) && (has_cost(bytes_amount, 0) <= 0) && (has_cost(flops_amount, 0) > 0)) {
     action = host_list[0]->get_cpu()->execution_start(flops_amount[0]);
