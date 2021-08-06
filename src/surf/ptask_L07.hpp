@@ -92,8 +92,8 @@ public:
 
   bool is_used() const override;
   void apply_event(kernel::profile::Event* event, double value) override;
-  kernel::resource::CpuAction* execution_start(double size) override;
-  kernel::resource::CpuAction* execution_start(double, int) override
+  kernel::resource::CpuAction* execution_start(double size, double user_bound) override;
+  kernel::resource::CpuAction* execution_start(double, int, double) override
   {
     THROW_UNIMPLEMENTED;
     return nullptr;
@@ -130,7 +130,7 @@ class L07Action : public kernel::resource::CpuAction {
   double latency_;
   double rate_;
 
-  friend CpuAction* CpuL07::execution_start(double size);
+  friend CpuAction* CpuL07::execution_start(double size, double user_bound);
   friend CpuAction* CpuL07::sleep(double duration);
   friend CpuAction* HostL07Model::execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                                                    const double* bytes_amount, double rate);

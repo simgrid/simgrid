@@ -123,18 +123,20 @@ public:
    * @brief Execute some quantity of computation
    *
    * @param size The value of the processing amount (in flop) needed to process
+   * @param user_bound User's bound for execution speed
    * @return The CpuAction corresponding to the processing
    */
-  virtual CpuAction* execution_start(double size) = 0;
+  virtual CpuAction* execution_start(double size, double user_bound) = 0;
 
   /**
    * @brief Execute some quantity of computation on more than one core
    *
    * @param size The value of the processing amount (in flop) needed to process
    * @param requested_cores The desired amount of cores. Must be >= 1
+   * @param user_bound User's bound for execution speed
    * @return The CpuAction corresponding to the processing
    */
-  virtual CpuAction* execution_start(double size, int requested_cores) = 0;
+  virtual CpuAction* execution_start(double size, int requested_cores, double user_bound) = 0;
 
   /**
    * @brief Make a process sleep for duration (in seconds)

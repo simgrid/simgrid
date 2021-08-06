@@ -78,14 +78,9 @@ ExecImpl* ExecImpl::start()
   state_ = State::RUNNING;
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     if (hosts_.size() == 1) {
-      surf_action_ = hosts_.front()->get_cpu()->execution_start(flops_amounts_.front());
+      surf_action_ = hosts_.front()->get_cpu()->execution_start(flops_amounts_.front(), bound_);
       surf_action_->set_sharing_penalty(sharing_penalty_);
       surf_action_->set_category(get_tracing_category());
-
-      if (bound_ > 0) {
-        surf_action_->set_bound(bound_);
-        surf_action_->set_user_bound(bound_);
-      }
     } else {
       // get the model from first host since we have only 1 by now
       auto host_model = hosts_.front()->get_netpoint()->get_englobing_zone()->get_host_model();
@@ -221,7 +216,7 @@ ActivityImpl* ExecImpl::migrate(s4u::Host* to)
 {
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     resource::Action* old_action = this->surf_action_;
-    resource::Action* new_action = to->get_cpu()->execution_start(old_action->get_cost());
+    resource::Action* new_action = to->get_cpu()->execution_start(old_action->get_cost(), old_action->get_user_bound());
     new_action->set_remains(old_action->get_remains());
     new_action->set_activity(this);
     new_action->set_sharing_penalty(old_action->get_sharing_penalty());

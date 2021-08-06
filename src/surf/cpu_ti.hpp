@@ -110,8 +110,8 @@ public:
   void update_remaining_amount(double now);
 
   bool is_used() const override;
-  CpuAction* execution_start(double size) override;
-  CpuAction* execution_start(double, int) override
+  CpuAction* execution_start(double size, double user_bound) override;
+  CpuAction* execution_start(double, int, double) override
   {
     THROW_UNIMPLEMENTED;
     return nullptr;

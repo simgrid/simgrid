@@ -34,8 +34,8 @@ int main(int argc, char** argv)
   simgrid::s4u::Host* hostB = sg_host_by_name("Cpu B");
 
   /* Let's do something on it */
-  hostA->get_cpu()->execution_start(1000.0);
-  hostB->get_cpu()->execution_start(1000.0);
+  hostA->get_cpu()->execution_start(1000.0, -1);
+  hostB->get_cpu()->execution_start(1000.0, -1);
   hostB->get_cpu()->sleep(7.32);
 
   const_sg_netzone_t as_zone = sg_zone_get_by_name("AS0");

@@ -255,9 +255,10 @@ kernel::resource::LinkImpl* NetworkL07Model::create_wifi_link(const std::string&
  * Resource *
  ************/
 
-kernel::resource::CpuAction* CpuL07::execution_start(double size)
+kernel::resource::CpuAction* CpuL07::execution_start(double size, double user_bound)
 {
   std::vector<s4u::Host*> host_list = {get_iface()};
+  xbt_assert(user_bound <= 0, "User bound not supported by ptask model");
 
   auto* flops_amount = new double[host_list.size()]();
   flops_amount[0]    = size;
@@ -270,7 +271,7 @@ kernel::resource::CpuAction* CpuL07::execution_start(double size)
 
 kernel::resource::CpuAction* CpuL07::sleep(double duration)
 {
-  auto* action = static_cast<L07Action*>(execution_start(1.0));
+  auto* action = static_cast<L07Action*>(execution_start(1.0, -1));
   action->set_max_duration(duration);
   action->set_suspend_state(kernel::resource::Action::SuspendStates::SLEEPING);
   get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), 0.0);

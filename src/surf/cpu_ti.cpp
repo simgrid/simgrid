@@ -495,9 +495,10 @@ void CpuTi::update_remaining_amount(double now)
   last_update_ = now;
 }
 
-CpuAction* CpuTi::execution_start(double size)
+CpuAction* CpuTi::execution_start(double size, double user_bound)
 {
   XBT_IN("(%s,%g)", get_cname(), size);
+  xbt_assert(user_bound <= 0, "Invalid user bound (%lf) in CPU TI model", user_bound);
   auto* action = new CpuTiAction(this, size);
 
   action_set_.push_back(*action); // Actually start the action

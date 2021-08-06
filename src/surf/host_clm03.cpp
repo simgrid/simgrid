@@ -59,7 +59,7 @@ kernel::resource::Action* HostCLM03Model::execute_parallel(const std::vector<s4u
   kernel::resource::Action* action = nullptr;
   auto net_model = host_list[0]->get_netpoint()->get_englobing_zone()->get_network_model();
   if ((host_list.size() == 1) && (has_cost(bytes_amount, 0) <= 0) && (has_cost(flops_amount, 0) > 0)) {
-    action = host_list[0]->get_cpu()->execution_start(flops_amount[0]);
+    action = host_list[0]->get_cpu()->execution_start(flops_amount[0], rate);
   } else if ((host_list.size() == 1) && (has_cost(flops_amount, 0) <= 0)) {
     action = net_model->communicate(host_list[0], host_list[0], bytes_amount[0], rate);
   } else if ((host_list.size() == 2) && (has_cost(flops_amount, 0) <= 0) && (has_cost(flops_amount, 1) <= 0)) {

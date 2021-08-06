@@ -52,8 +52,8 @@ int main(int argc, char** argv)
   simgrid::s4u::Host* hostB = sg_host_by_name("Cpu B");
 
   /* Let's do something on it */
-  const simgrid::kernel::resource::Action* actionA = hostA->get_cpu()->execution_start(1000.0);
-  const simgrid::kernel::resource::Action* actionB = hostB->get_cpu()->execution_start(1000.0);
+  const simgrid::kernel::resource::Action* actionA = hostA->get_cpu()->execution_start(1000.0, -1);
+  const simgrid::kernel::resource::Action* actionB = hostB->get_cpu()->execution_start(1000.0, -1);
   const simgrid::kernel::resource::Action* actionC = hostB->get_cpu()->sleep(7.32);
 
   simgrid::kernel::resource::Action::State stateActionA = actionA->get_state();

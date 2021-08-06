@@ -90,11 +90,15 @@ void CpuCas01::on_speed_change()
 
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
                                                             get_core_count() * speed_.scale * speed_.peak);
+
   while (const auto* var = get_constraint()->get_variable(&elem)) {
     const auto* action = static_cast<CpuCas01Action*>(var->get_id());
+    double bound       = action->requested_core() * speed_.scale * speed_.peak;
+    if (action->get_user_bound() > 0) {
+      bound = std::min(bound, action->get_user_bound());
+    }
 
-    get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(),
-                                                            action->requested_core() * speed_.scale * speed_.peak);
+    get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), bound);
   }
 
   CpuImpl::on_speed_change();
@@ -143,15 +147,21 @@ void CpuCas01::apply_event(profile::Event* event, double value)
 }
 
 /** @brief Start a new execution on this CPU lasting @param size flops and using one core */
-CpuAction* CpuCas01::execution_start(double size)
+CpuAction* CpuCas01::execution_start(double size, double user_bound)
 {
-  return new CpuCas01Action(get_model(), size, not is_on(), speed_.scale * speed_.peak, get_constraint());
+  return execution_start(size, 1, user_bound);
 }
 
-CpuAction* CpuCas01::execution_start(double size, int requested_cores)
+CpuAction* CpuCas01::execution_start(double size, int requested_cores, double user_bound)
 {
-  return new CpuCas01Action(get_model(), size, not is_on(), speed_.scale * speed_.peak, get_constraint(),
-                            requested_cores);
+  auto* action =
+      new CpuCas01Action(get_model(), size, not is_on(), speed_.scale * speed_.peak, get_constraint(), requested_cores);
+  action->set_user_bound(user_bound);
+  if (user_bound > 0 && user_bound < action->get_bound()) {
+    get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), user_bound);
+  }
+
+  return action;
 }
 
 CpuAction* CpuCas01::sleep(double duration)
@@ -160,7 +170,7 @@ CpuAction* CpuCas01::sleep(double duration)
     duration = std::max(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", get_cname(), duration);
-  auto* action = new CpuCas01Action(get_model(), 1.0, not is_on(), speed_.scale * speed_.peak, get_constraint());
+  auto* action = new CpuCas01Action(get_model(), 1.0, not is_on(), speed_.scale * speed_.peak, get_constraint(), 1);
 
   // FIXME: sleep variables should not consume 1.0 in System::expand()
   action->set_max_duration(duration);
