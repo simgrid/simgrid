@@ -107,17 +107,11 @@ void CpuCas01::on_speed_change()
 void CpuCas01::apply_event(profile::Event* event, double value)
 {
   if (event == speed_.event) {
-    /* TODO (Hypervisor): do the same thing for constraint_core[i] */
-    xbt_assert(get_core_count() == 1, "FIXME: add speed scaling code also for constraint_core[i]");
-
     speed_.scale = value;
     on_speed_change();
 
     tmgr_trace_event_unref(&speed_.event);
   } else if (event == state_event_) {
-    /* TODO (Hypervisor): do the same thing for constraint_core[i] */
-    xbt_assert(get_core_count() == 1, "FIXME: add state change code also for constraint_core[i]");
-
     if (value > 0) {
       if (not is_on()) {
         XBT_VERB("Restart actors on host %s", get_iface()->get_cname());

@@ -733,6 +733,8 @@ include teshsuite/s4u/concurrent_rw/concurrent_rw.cpp
 include teshsuite/s4u/concurrent_rw/concurrent_rw.tesh
 include teshsuite/s4u/evaluate-get-route-time/evaluate-get-route-time.cpp
 include teshsuite/s4u/evaluate-parse-time/evaluate-parse-time.cpp
+include teshsuite/s4u/host-multicore-speed-file/host-multicore-speed-file.cpp
+include teshsuite/s4u/host-multicore-speed-file/host-multicore-speed-file.tesh
 include teshsuite/s4u/host-on-off-actors/host-on-off-actors.cpp
 include teshsuite/s4u/host-on-off-actors/host-on-off-actors.tesh
 include teshsuite/s4u/host-on-off-recv/host-on-off-recv.cpp
