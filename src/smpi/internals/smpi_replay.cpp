@@ -418,20 +418,18 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
     return;
   }
 
-  aid_t rank = request->comm() != MPI_COMM_NULL ? request->comm()->rank() : -1;
-
   // Must be taken before Request::wait() since the request may be set to
   // MPI_REQUEST_NULL by Request::wait!
   bool is_wait_for_receive = (request->flags() & MPI_REQ_RECV);
-  // TODO: Here we take the rank while we normally take the process id (look for get_pid())
-  TRACE_smpi_comm_in(rank, __func__, new simgrid::instr::WaitTIData(args.src, args.dst, args.tag));
+
+  TRACE_smpi_comm_in(get_pid(), __func__, new simgrid::instr::WaitTIData(args.src, args.dst, args.tag));
 
   MPI_Status status;
   Request::wait(&request, &status);
 
-  TRACE_smpi_comm_out(rank);
+  TRACE_smpi_comm_out(get_pid());
   if (is_wait_for_receive)
-    TRACE_smpi_recv(args.src, args.dst, args.tag);
+    TRACE_smpi_recv(MPI_COMM_WORLD->group()->actor(args.src), MPI_COMM_WORLD->group()->actor(args.dst), args.tag);
 }
 
 void SendAction::kernel(simgrid::xbt::ReplayAction&)

@@ -601,7 +601,9 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
 
     aid_t my_proc_id = (*request)->comm() != MPI_COMM_NULL ? simgrid::s4u::this_actor::get_pid() : -1;
     TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::WaitTIData((*request)->src(), (*request)->dst(), (*request)->tag()));
+                       new simgrid::instr::WaitTIData(MPI_COMM_WORLD->group()->rank((*request)->src()),
+                                                      MPI_COMM_WORLD->group()->rank((*request)->dst()),
+                                                      (*request)->tag()));
 
     retval = simgrid::smpi::Request::wait(request, status);
 
