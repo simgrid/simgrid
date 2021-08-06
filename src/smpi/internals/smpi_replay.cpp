@@ -589,7 +589,7 @@ void BcastAction::kernel(simgrid::xbt::ReplayAction&)
 {
   const BcastArgParser& args = get_args();
   TRACE_smpi_comm_in(get_pid(), "action_bcast",
-                     new simgrid::instr::CollTIData("bcast", MPI_COMM_WORLD->group()->rank(args.root), -1.0, args.size,
+                     new simgrid::instr::CollTIData("bcast", args.root, -1.0, args.size,
                                                     0, Datatype::encode(args.datatype1), ""));
 
   colls::bcast(send_buffer(args.size * args.datatype1->size()), args.size, args.datatype1, args.root, MPI_COMM_WORLD);
@@ -601,7 +601,7 @@ void ReduceAction::kernel(simgrid::xbt::ReplayAction&)
 {
   const ReduceArgParser& args = get_args();
   TRACE_smpi_comm_in(get_pid(), "action_reduce",
-                     new simgrid::instr::CollTIData("reduce", MPI_COMM_WORLD->group()->rank(args.root), args.comp_size,
+                     new simgrid::instr::CollTIData("reduce", args.root, args.comp_size,
                                                     args.comm_size, 0, Datatype::encode(args.datatype1), ""));
 
   colls::reduce(send_buffer(args.comm_size * args.datatype1->size()),
