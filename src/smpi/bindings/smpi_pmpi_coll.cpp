@@ -99,7 +99,6 @@ int PMPI_Igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void
 {
   CHECK_COMM(8)
   SET_BUF1(sendbuf)
-  SET_BUF2(recvbuf)
   int rank = comm->rank();
   if(sendbuf != MPI_IN_PLACE){
     CHECK_COUNT(2, sendcount)
@@ -107,6 +106,7 @@ int PMPI_Igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void
     CHECK_BUFFER(1,sendbuf, sendcount, sendtype)
   }
   if(rank == root){
+    SET_BUF2(recvbuf)
     CHECK_NOT_IN_PLACE_ROOT(4, recvbuf)
     CHECK_TYPE(6, recvtype)
     CHECK_COUNT(5, recvcount)
@@ -159,7 +159,6 @@ int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
 {
   CHECK_COMM(9)
   SET_BUF1(sendbuf)
-  SET_BUF2(recvbuf)
   int rank = comm->rank();
   if(sendbuf != MPI_IN_PLACE){
     CHECK_TYPE(3, sendtype)
@@ -167,6 +166,7 @@ int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
   }
   CHECK_BUFFER(1, sendbuf, sendcount, sendtype)
   if(rank == root){
+    SET_BUF2(recvbuf)
     CHECK_NOT_IN_PLACE_ROOT(4, recvbuf)
     CHECK_TYPE(6, recvtype)
     CHECK_NULL(5, MPI_ERR_COUNT, recvcounts)
@@ -196,7 +196,8 @@ int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
   aid_t pid        = simgrid::s4u::this_actor::get_pid();
 
   auto trace_recvcounts = std::make_shared<std::vector<int>>();
-  trace_recvcounts->insert(trace_recvcounts->end(), &recvcounts[0], &recvcounts[comm->size()]);
+  if (rank == root)
+    trace_recvcounts->insert(trace_recvcounts->end(), &recvcounts[0], &recvcounts[comm->size()]);
 
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Gatherv" : "PMPI_Igatherv",
                      new simgrid::instr::VarCollTIData(
@@ -331,10 +332,10 @@ int PMPI_Iscatter(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
                   MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request)
 {
   CHECK_COMM(8)
-  SET_BUF1(sendbuf)
   SET_BUF2(recvbuf)
   int rank = comm->rank();
   if(rank == root){
+    SET_BUF1(sendbuf)
     CHECK_NOT_IN_PLACE_ROOT(1, sendbuf)
     CHECK_COUNT(2, sendcount)
     CHECK_TYPE(3, sendtype)
@@ -386,12 +387,10 @@ int PMPI_Scatterv(const void *sendbuf, const int *sendcounts, const int *displs,
 int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs, MPI_Datatype sendtype, void* recvbuf, int recvcount,
                    MPI_Datatype recvtype, int root, MPI_Comm comm, MPI_Request* request)
 {
-  SET_BUF1(sendbuf)
   SET_BUF2(recvbuf)
   CHECK_COMM(9)
   int rank = comm->rank();
   if(recvbuf != MPI_IN_PLACE){
-    CHECK_NOT_IN_PLACE_ROOT(1, sendbuf)
     CHECK_COUNT(5, recvcount)
     CHECK_TYPE(7, recvtype)
     CHECK_BUFFER(4, recvbuf, recvcount, recvtype)
@@ -399,6 +398,8 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
   CHECK_ROOT(9)
   CHECK_REQUEST(10)
   if (rank == root) {
+    SET_BUF1(sendbuf)
+    CHECK_NOT_IN_PLACE_ROOT(1, sendbuf)
     CHECK_NULL(2, MPI_ERR_COUNT, sendcounts)
     CHECK_NULL(3, MPI_ERR_ARG, displs)
     CHECK_TYPE(4, sendtype)
@@ -419,7 +420,8 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
   aid_t pid        = simgrid::s4u::this_actor::get_pid();
 
   auto trace_sendcounts = std::make_shared<std::vector<int>>();
-  trace_sendcounts->insert(trace_sendcounts->end(), &sendcounts[0], &sendcounts[comm->size()]);
+  if (rank == root)
+    trace_sendcounts->insert(trace_sendcounts->end(), &sendcounts[0], &sendcounts[comm->size()]);
 
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Scatterv" : "PMPI_Iscatterv",
                      new simgrid::instr::VarCollTIData(
@@ -446,12 +448,12 @@ int PMPI_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
 {
   CHECK_COMM(7)
   SET_BUF1(sendbuf)
-  SET_BUF2(recvbuf)
   int rank = comm->rank();
   CHECK_TYPE(4, datatype)
   CHECK_COUNT(3, count)
   CHECK_BUFFER(1, sendbuf, count, datatype)
   if(rank == root){
+    SET_BUF2(recvbuf)
     CHECK_NOT_IN_PLACE(2, recvbuf)
     CHECK_BUFFER(5, recvbuf, count, datatype)
   }
