@@ -161,6 +161,11 @@ public:
   void parse(xbt::ReplayAction& action, const std::string& name) override;
 };
 
+class ScanArgParser : public CollCommParser {
+public:
+  void parse(xbt::ReplayAction& action, const std::string& name) override;
+};
+
 class AllToAllVArgParser : public CollCommParser {
 public:
   int recv_size_sum;
@@ -337,6 +342,12 @@ public:
 class ReduceScatterAction : public ReplayAction<ReduceScatterArgParser> {
 public:
   explicit ReduceScatterAction() : ReplayAction("reducescatter") {}
+  void kernel(xbt::ReplayAction& action) override;
+};
+
+class ScanAction : public ReplayAction<ScanArgParser> {
+public:
+  using ReplayAction::ReplayAction;
   void kernel(xbt::ReplayAction& action) override;
 };
 

@@ -559,7 +559,7 @@ int PMPI_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, count, datatype);
 
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Scan" : "PMPI_Iscan",
-                     new simgrid::instr::CollTIData(request == MPI_REQUEST_IGNORED ? "scan" : "iscan", -1, -1.0,
+                     new simgrid::instr::CollTIData(request == MPI_REQUEST_IGNORED ? "scan" : "iscan", -1, 0.0,
                                                     count, 0, simgrid::smpi::Datatype::encode(datatype), ""));
 
   int retval;
@@ -594,8 +594,8 @@ int PMPI_Iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, count, datatype);
 
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Exscan" : "PMPI_Iexscan",
-                     new simgrid::instr::Pt2PtTIData(request == MPI_REQUEST_IGNORED ? "exscan" : "iexscan", -1,
-                                                     count, simgrid::smpi::Datatype::encode(datatype)));
+                     new simgrid::instr::CollTIData(request == MPI_REQUEST_IGNORED ? "exscan" : "iexscan", -1, 0.0,
+                                                    count, 0, simgrid::smpi::Datatype::encode(datatype), ""));
 
   int retval;
   if (request == MPI_REQUEST_IGNORED)

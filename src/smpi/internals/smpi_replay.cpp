@@ -8,6 +8,7 @@
 #include "smpi_datatype.hpp"
 #include "smpi_group.hpp"
 #include "smpi_request.hpp"
+#include "simgrid/s4u/Exec.hpp"
 #include "xbt/replay.hpp"
 #include <simgrid/smpi/smpi_replay.hpp>
 #include <src/smpi/include/private.hpp>
@@ -378,9 +379,10 @@ void ReduceScatterArgParser::parse(simgrid::xbt::ReplayAction& action, const std
 
 void ScanArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 {
-  CHECK_ACTION_PARAMS(action, 1, 1)
+  CHECK_ACTION_PARAMS(action, 2, 1)
   size      = parse_integer<size_t>(action[2]);
-  datatype1 = parse_datatype(action, 3);
+  comp_size = parse_double(action[3]);
+  datatype1 = parse_datatype(action, 4);
 }
 
 void AllToAllVArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
@@ -616,8 +618,11 @@ void ReduceAction::kernel(simgrid::xbt::ReplayAction&)
   colls::reduce(send_buffer(args.comm_size * args.datatype1->size()),
                 recv_buffer(args.comm_size * args.datatype1->size()), args.comm_size, args.datatype1, MPI_OP_NULL,
                 args.root, MPI_COMM_WORLD);
-  if(args.comp_size != 0.0)
-    private_execute_flops(args.comp_size);
+  if (args.comp_size != 0.0)
+    simgrid::s4u::this_actor::exec_init(args.comp_size)
+      ->set_name("computation")
+      ->start()
+      ->wait();
 
   TRACE_smpi_comm_out(get_pid());
 }
@@ -632,8 +637,11 @@ void AllReduceAction::kernel(simgrid::xbt::ReplayAction&)
   colls::allreduce(send_buffer(args.comm_size * args.datatype1->size()),
                    recv_buffer(args.comm_size * args.datatype1->size()), args.comm_size, args.datatype1, MPI_OP_NULL,
                    MPI_COMM_WORLD);
-  if(args.comp_size != 0.0)
-    private_execute_flops(args.comp_size);
+  if (args.comp_size != 0.0)
+    simgrid::s4u::this_actor::exec_init(args.comp_size)
+      ->set_name("computation")
+      ->start()
+      ->wait();
 
   TRACE_smpi_comm_out(get_pid());
 }
@@ -735,14 +743,40 @@ void ReduceScatterAction::kernel(simgrid::xbt::ReplayAction&)
   TRACE_smpi_comm_in(
       get_pid(), "action_reducescatter",
       new simgrid::instr::VarCollTIData(get_name(), -1, -1, nullptr, -1, args.recvcounts,
-                                        std::to_string(args.comp_size), /* ugly hack to print comp_size */
+                                        std::to_string(args.comp_size),
                                         Datatype::encode(args.datatype1)));
 
   colls::reduce_scatter(send_buffer(args.recv_size_sum * args.datatype1->size()),
                         recv_buffer(args.recv_size_sum * args.datatype1->size()), args.recvcounts->data(),
                         args.datatype1, MPI_OP_NULL, MPI_COMM_WORLD);
+  if (args.comp_size != 0.0)
+    simgrid::s4u::this_actor::exec_init(args.comp_size)
+      ->set_name("computation")
+      ->start()
+      ->wait();
+  TRACE_smpi_comm_out(get_pid());
+}
 
-  private_execute_flops(args.comp_size);
+void ScanAction::kernel(simgrid::xbt::ReplayAction&)
+{
+  const ScanArgParser& args = get_args();
+  TRACE_smpi_comm_in(get_pid(), "action_scan",
+                     new simgrid::instr::CollTIData(get_name(), -1, args.comp_size,
+                     args.size, 0, Datatype::encode(args.datatype1), ""));
+  if (get_name() == "scan")
+    colls::scan(send_buffer(args.size * args.datatype1->size()),
+              recv_buffer(args.size * args.datatype1->size()), args.size,
+              args.datatype1, MPI_OP_NULL, MPI_COMM_WORLD);
+  else
+    colls::exscan(send_buffer(args.size * args.datatype1->size()),
+              recv_buffer(args.size * args.datatype1->size()), args.size,
+              args.datatype1, MPI_OP_NULL, MPI_COMM_WORLD);
+
+  if (args.comp_size != 0.0)
+    simgrid::s4u::this_actor::exec_init(args.comp_size)
+      ->set_name("computation")
+      ->start()
+      ->wait();
   TRACE_smpi_comm_out(get_pid());
 }
 
@@ -802,6 +836,8 @@ void smpi_replay_init(const char* instance_id, int rank, double start_delay_flop
   xbt_replay_action_register("allgather", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::GatherAction("allgather").execute(action); });
   xbt_replay_action_register("allgatherv", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::GatherVAction("allgatherv").execute(action); });
   xbt_replay_action_register("reducescatter", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::ReduceScatterAction().execute(action); });
+  xbt_replay_action_register("scan", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::ScanAction("scan").execute(action); });
+  xbt_replay_action_register("exscan", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::ScanAction("exscan").execute(action); });
   xbt_replay_action_register("compute", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::ComputeAction().execute(action); });
   xbt_replay_action_register("sleep", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::SleepAction().execute(action); });
   xbt_replay_action_register("location", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::LocationAction().execute(action); });
