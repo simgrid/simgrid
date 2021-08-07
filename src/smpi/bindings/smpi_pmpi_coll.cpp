@@ -198,12 +198,14 @@ int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
   auto trace_recvcounts = std::make_shared<std::vector<int>>();
   if (rank == root)
     trace_recvcounts->insert(trace_recvcounts->end(), &recvcounts[0], &recvcounts[comm->size()]);
+  else //this is not significant outside of root, put 0 as we don't know if recvcounts is initialized
+    trace_recvcounts->insert(trace_recvcounts->end(), comm->size(), 0);
 
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Gatherv" : "PMPI_Igatherv",
                      new simgrid::instr::VarCollTIData(
                          request == MPI_REQUEST_IGNORED ? "gatherv" : "igatherv", root,
-                         real_sendcount,
-                         nullptr, recvtype->size(), trace_recvcounts, simgrid::smpi::Datatype::encode(real_sendtype),
+                         sendcount,
+                         nullptr, -1, trace_recvcounts, simgrid::smpi::Datatype::encode(real_sendtype),
                          simgrid::smpi::Datatype::encode(recvtype)));
   if (request == MPI_REQUEST_IGNORED)
     simgrid::smpi::colls::gatherv(real_sendbuf, real_sendcount, real_sendtype, recvbuf, recvcounts, displs, recvtype,
@@ -311,7 +313,7 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
       pid, request == MPI_REQUEST_IGNORED ? "PMPI_Allgatherv" : "PMPI_Iallgatherv",
       new simgrid::instr::VarCollTIData(request == MPI_REQUEST_IGNORED ? "allgatherv" : "iallgatherv", -1,
                                         sendcount, nullptr,
-                                        recvtype->size(), trace_recvcounts, simgrid::smpi::Datatype::encode(sendtype),
+                                        -1, trace_recvcounts, simgrid::smpi::Datatype::encode(sendtype),
                                         simgrid::smpi::Datatype::encode(recvtype)));
   if (request == MPI_REQUEST_IGNORED)
     simgrid::smpi::colls::allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm);
@@ -422,10 +424,13 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
   auto trace_sendcounts = std::make_shared<std::vector<int>>();
   if (rank == root)
     trace_sendcounts->insert(trace_sendcounts->end(), &sendcounts[0], &sendcounts[comm->size()]);
+  else //this is not significant outside of root, put 0 as we don't know if sendcounts is initialized
+    trace_sendcounts->insert(trace_sendcounts->end(), comm->size(), 0);
+
 
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Scatterv" : "PMPI_Iscatterv",
                      new simgrid::instr::VarCollTIData(
-                         request == MPI_REQUEST_IGNORED ? "scatterv" : "iscatterv", root, sendtype->size(),
+                         request == MPI_REQUEST_IGNORED ? "scatterv" : "iscatterv", root, -1,
                          trace_sendcounts, recvcount,
                          nullptr, simgrid::smpi::Datatype::encode(sendtype),
                          simgrid::smpi::Datatype::encode(recvtype)));
@@ -554,8 +559,8 @@ int PMPI_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, count, datatype);
 
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Scan" : "PMPI_Iscan",
-                     new simgrid::instr::Pt2PtTIData(request == MPI_REQUEST_IGNORED ? "scan" : "iscan", -1,
-                                                     count, simgrid::smpi::Datatype::encode(datatype)));
+                     new simgrid::instr::CollTIData(request == MPI_REQUEST_IGNORED ? "scan" : "iscan", -1, -1.0,
+                                                    count, 0, simgrid::smpi::Datatype::encode(datatype), ""));
 
   int retval;
   if (request == MPI_REQUEST_IGNORED)
@@ -639,7 +644,7 @@ int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcoun
 
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter" : "PMPI_Ireduce_scatter",
                      new simgrid::instr::VarCollTIData(
-                         request == MPI_REQUEST_IGNORED ? "reducescatter" : "ireducescatter", -1, datatype->size(), nullptr,
+                         request == MPI_REQUEST_IGNORED ? "reducescatter" : "ireducescatter", -1, -1, nullptr,
                          0, trace_recvcounts, simgrid::smpi::Datatype::encode(datatype), ""));
 
   if (request == MPI_REQUEST_IGNORED)
@@ -681,8 +686,8 @@ int PMPI_Ireduce_scatter_block(const void* sendbuf, void* recvbuf, int recvcount
 
   TRACE_smpi_comm_in(
       pid, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter_block" : "PMPI_Ireduce_scatter_block",
-      new simgrid::instr::VarCollTIData(request == MPI_REQUEST_IGNORED ? "reducescatter" : "ireducescatter", -1, 0,
-                                        nullptr, 0, trace_recvcounts, simgrid::smpi::Datatype::encode(datatype), ""));
+      new simgrid::instr::VarCollTIData(request == MPI_REQUEST_IGNORED ? "reducescatter" : "ireducescatter", -1, -1,
+                                        nullptr, -1, trace_recvcounts, simgrid::smpi::Datatype::encode(datatype), ""));
 
   std::vector<int> recvcounts(count);
   for (int i      = 0; i < count; i++)

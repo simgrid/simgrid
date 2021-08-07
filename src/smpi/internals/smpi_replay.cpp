@@ -371,9 +371,16 @@ void ReduceScatterArgParser::parse(simgrid::xbt::ReplayAction& action, const std
   datatype1  = parse_datatype(action, 3 + comm_size);
 
   for (unsigned int i = 0; i < comm_size; i++) {
-    recvcounts->push_back(std::stoi(action[i + 2]));
+    (*recvcounts)[i]= std::stoi(action[i + 2]);
   }
   recv_size_sum = std::accumulate(recvcounts->begin(), recvcounts->end(), 0);
+}
+
+void ScanArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
+{
+  CHECK_ACTION_PARAMS(action, 1, 1)
+  size      = parse_integer<size_t>(action[2]);
+  datatype1 = parse_datatype(action, 3);
 }
 
 void AllToAllVArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
@@ -673,7 +680,7 @@ void GatherVAction::kernel(simgrid::xbt::ReplayAction&)
   const GatherVArgParser& args = get_args();
   TRACE_smpi_comm_in(get_pid(), get_name().c_str(),
                      new simgrid::instr::VarCollTIData(
-                         get_name(), (get_name() == "gatherv") ? args.root : -1, args.send_size, nullptr, 0,
+                         get_name(), (get_name() == "gatherv") ? args.root : -1, args.send_size, nullptr, -1,
                          args.recvcounts, Datatype::encode(args.datatype1), Datatype::encode(args.datatype2)));
 
   if (get_name() == "gatherv") {
@@ -710,7 +717,7 @@ void ScatterVAction::kernel(simgrid::xbt::ReplayAction&)
   int rank = MPI_COMM_WORLD->rank();
   const ScatterVArgParser& args = get_args();
   TRACE_smpi_comm_in(get_pid(), "action_scatterv",
-                     new simgrid::instr::VarCollTIData(get_name(), args.root, 0, args.sendcounts, args.recv_size,
+                     new simgrid::instr::VarCollTIData(get_name(), args.root, -1, args.sendcounts, args.recv_size,
                                                        nullptr, Datatype::encode(args.datatype1),
                                                        Datatype::encode(args.datatype2)));
 
@@ -727,7 +734,7 @@ void ReduceScatterAction::kernel(simgrid::xbt::ReplayAction&)
   const ReduceScatterArgParser& args = get_args();
   TRACE_smpi_comm_in(
       get_pid(), "action_reducescatter",
-      new simgrid::instr::VarCollTIData("reducescatter", -1, 0, nullptr, 0, args.recvcounts,
+      new simgrid::instr::VarCollTIData(get_name(), -1, -1, nullptr, -1, args.recvcounts,
                                         std::to_string(args.comp_size), /* ugly hack to print comp_size */
                                         Datatype::encode(args.datatype1)));
 

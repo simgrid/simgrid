@@ -154,16 +154,16 @@ public:
 // VarCollTI: gatherv, scatterv, allgatherv, alltoallv (+ reducescatter out of laziness)
 class VarCollTIData : public TIData {
   int root_;
-  size_t send_size_;
+  long int send_size_;
   std::shared_ptr<std::vector<int>> sendcounts_;
-  size_t recv_size_;
+  long int recv_size_;
   std::shared_ptr<std::vector<int>> recvcounts_;
   std::string send_type_;
   std::string recv_type_;
 
 public:
-  VarCollTIData(const std::string& name, int root, size_t send_size, std::shared_ptr<std::vector<int>> sendcounts,
-                size_t recv_size, std::shared_ptr<std::vector<int>> recvcounts, const std::string& send_type,
+  VarCollTIData(const std::string& name, int root, long int send_size, std::shared_ptr<std::vector<int>> sendcounts,
+                long int recv_size, std::shared_ptr<std::vector<int>> recvcounts, const std::string& send_type,
                 const std::string& recv_type)
       : TIData(name)
       , root_(root)
@@ -178,12 +178,12 @@ public:
   {
     std::stringstream stream;
     stream << get_name() << " ";
-    if (send_size_ > 0)
+    if (send_size_ > -1)
       stream << send_size_ << " ";
     if (sendcounts_ != nullptr)
       for (auto count : *sendcounts_)
         stream << count << " ";
-    if (recv_size_ > 0)
+    if (recv_size_ > -1)
       stream << recv_size_ << " ";
     if (recvcounts_ != nullptr)
       for (auto count : *recvcounts_)
