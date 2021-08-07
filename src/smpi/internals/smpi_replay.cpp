@@ -318,6 +318,7 @@ void ScatterArgParser::parse(simgrid::xbt::ReplayAction& action, const std::stri
         4) 0 is the send datatype id, see simgrid::smpi::Datatype::decode()
         5) 0 is the recv datatype id, see simgrid::smpi::Datatype::decode()
   */
+  comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, 2, 3)
   comm_size = MPI_COMM_WORLD->size();
   send_size = parse_integer<int>(action[2]);
@@ -338,6 +339,7 @@ void ScatterVArgParser::parse(simgrid::xbt::ReplayAction& action, const std::str
       4) 0 is the send datatype id, see simgrid::smpi::Datatype::decode()
       5) 0 is the recv datatype id, see simgrid::smpi::Datatype::decode()
   */
+  comm_size = MPI_COMM_WORLD->size();
   CHECK_ACTION_PARAMS(action, comm_size + 1, 2)
   recv_size  = parse_integer<int>(action[2 + comm_size]);
   disps      = std::vector<int>(comm_size, 0);
