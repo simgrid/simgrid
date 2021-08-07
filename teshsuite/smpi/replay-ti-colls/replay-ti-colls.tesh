@@ -2,7 +2,7 @@
 ! output sort
 
 p First test
-$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${bindir:=.}/../hostfile_coll -platform ${platfdir}/small_platform.xml -np 4 --log=xbt_cfg.thres:critical --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error --cfg=smpi/simulate-computation:false -trace-ti --cfg=tracing/filename:trace1 ${bindir:=.}/replay
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${bindir:=.}/../hostfile_coll -platform ${platfdir}/small_platform.xml -np 4 --log=xbt_cfg.thres:critical --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error --cfg=smpi/simulate-computation:false -trace-ti --cfg=tracing/filename:trace1 ${bindir:=.}/replay-ti-colls
 
 p Replay
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ${bindir:=.}/../hostfile_coll -platform ${platfdir}/small_platform.xml -np 4 --log=xbt_cfg.thres:critical --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error --cfg=smpi/simulate-computation:false -trace-ti --cfg=tracing/filename:trace2 -replay ${bindir:=.}/trace1
