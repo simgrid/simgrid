@@ -9,7 +9,7 @@ if(enable_smpi)
   foreach(x coll-allgather coll-allgatherv coll-allreduce coll-allreduce-with-leaks coll-alltoall coll-alltoallv coll-barrier coll-bcast
             coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong
             type-hvector type-indexed type-struct type-vector bug-17132 gh-139 timers privatization 
-            io-simple io-simple-at io-all io-all-at io-shared io-ordered topo-cart-sub)
+            io-simple io-simple-at io-all io-all-at io-shared io-ordered topo-cart-sub replay)
     add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.c)
     target_link_libraries(${x}  simgrid)
     set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -39,7 +39,7 @@ foreach(x coll-allgather coll-allgatherv coll-allreduce coll-allreduce-with-leak
     coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong
     type-hvector type-indexed type-struct type-vector bug-17132 gh-139 timers privatization
     macro-shared auto-shared macro-partial-shared macro-partial-shared-communication
-    io-simple io-simple-at io-all io-all-at io-shared io-ordered topo-cart-sub)
+    io-simple io-simple-at io-all io-all-at io-shared io-ordered topo-cart-sub replay)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
 endforeach()
@@ -159,6 +159,8 @@ if(enable_smpi)
   # Extra pt2pt pingpong test: broken usage ti-tracing
   ADD_TESH_FACTORIES(tesh-smpi-broken  "thread"   --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pt2pt-pingpong --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/pt2pt-pingpong ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong/broken_hostfiles.tesh)
   ADD_TESH(tesh-smpi-replay-ti-tracing            --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/pt2pt-pingpong ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong/TI_output.tesh)
+  ADD_TESH(tesh-smpi-replay-ti-tracing-coll       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/replay --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/replay ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/replay/replay.tesh)
+
   ADD_TESH_FACTORIES(tesh-smpi-gh-139  "thread"   --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/gh-139 --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/gh-139 ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/gh-139/gh-139.tesh)
   
   # Simple privatization tests
