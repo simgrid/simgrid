@@ -808,7 +808,7 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
   std::vector<unsigned char> tmp_sendbuf;
   std::vector<int> tmp_sendcounts;
   std::vector<int> tmp_senddispls;
-  const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, maxsize, MPI_CHAR);
+  const void* real_sendbuf;
 
   if (sendbuf == MPI_IN_PLACE) {
     tmp_sendcounts.assign(recvcounts, recvcounts + size);
@@ -824,6 +824,7 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
     if (((recvdispls[i] + recvcounts[i]) * dt_size_recv) > maxsize)
       maxsize = (recvdispls[i] + recvcounts[i]) * dt_size_recv;
   }
+  real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, maxsize, MPI_CHAR);
 
   if(recvtype->size() * recvcounts[comm->rank()] !=  real_sendtype->size() * real_sendcounts[comm->rank()]){
     XBT_WARN("MPI_(I)Alltoallv : receive size from me differs from sent size to me : %zu vs %zu", recvtype->size() * recvcounts[comm->rank()], real_sendtype->size() * real_sendcounts[comm->rank()]);
