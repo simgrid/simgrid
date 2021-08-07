@@ -742,7 +742,7 @@ void AllToAllVAction::kernel(simgrid::xbt::ReplayAction&)
   const AllToAllVArgParser& args = get_args();
   TRACE_smpi_comm_in(get_pid(), __func__,
                      new simgrid::instr::VarCollTIData(
-                         "alltoallv", 0, args.send_size_sum, args.sendcounts, args.recv_size_sum, args.recvcounts,
+                         "alltoallv", -1, args.send_size_sum, args.sendcounts, args.recv_size_sum, args.recvcounts,
                          Datatype::encode(args.datatype1), Datatype::encode(args.datatype2)));
 
   colls::alltoallv(send_buffer(args.send_buf_size * args.datatype1->size()), args.sendcounts->data(),

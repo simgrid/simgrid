@@ -798,16 +798,11 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
   const int* real_senddispls  = senddispls;
   MPI_Datatype real_sendtype = sendtype;
   int maxsize              = 0;
-  for (int i = 0; i < size; i++) { // copy data to avoid bad free
-    recv_size += recvcounts[i] * dt_size_recv;
-    if (((recvdispls[i] + recvcounts[i]) * dt_size_recv) > maxsize)
-      maxsize = (recvdispls[i] + recvcounts[i]) * dt_size_recv;
-  }
-
   std::vector<unsigned char> tmp_sendbuf;
   std::vector<int> tmp_sendcounts;
   std::vector<int> tmp_senddispls;
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, maxsize, MPI_CHAR);
+
   if (sendbuf == MPI_IN_PLACE) {
     tmp_sendcounts.assign(recvcounts, recvcounts + size);
     real_sendcounts = tmp_sendcounts.data();
@@ -816,15 +811,19 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
     real_sendtype  = recvtype;
   }
 
+  for (int i = 0; i < size; i++) { // copy data to avoid bad free
+    send_size += real_sendcounts[i] ;
+    recv_size += recvcounts[i];
+    if (((recvdispls[i] + recvcounts[i]) * dt_size_recv) > maxsize)
+      maxsize = (recvdispls[i] + recvcounts[i]) * dt_size_recv;
+  }
+
   if(recvtype->size() * recvcounts[comm->rank()] !=  real_sendtype->size() * real_sendcounts[comm->rank()]){
     XBT_WARN("MPI_(I)Alltoallv : receive size from me differs from sent size to me : %zu vs %zu", recvtype->size() * recvcounts[comm->rank()], real_sendtype->size() * real_sendcounts[comm->rank()]);
     return MPI_ERR_TRUNCATE;
   }
 
   trace_sendcounts->insert(trace_sendcounts->end(), &real_sendcounts[0], &real_sendcounts[size]);
-  for (int i = 0; i < size; i++) {
-    send_size += real_sendcounts[i] * real_sendtype->size();
-  }
 
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoallv" : "PMPI_Ialltoallv",
                      new simgrid::instr::VarCollTIData(request == MPI_REQUEST_IGNORED ? "alltoallv" : "ialltoallv", -1,
