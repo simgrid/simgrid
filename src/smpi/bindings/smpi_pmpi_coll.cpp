@@ -645,7 +645,7 @@ int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcoun
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter" : "PMPI_Ireduce_scatter",
                      new simgrid::instr::VarCollTIData(
                          request == MPI_REQUEST_IGNORED ? "reducescatter" : "ireducescatter", -1, -1, nullptr,
-                         0, trace_recvcounts, simgrid::smpi::Datatype::encode(datatype), ""));
+                         -1 , trace_recvcounts, std::to_string(0), simgrid::smpi::Datatype::encode(datatype)));
 
   if (request == MPI_REQUEST_IGNORED)
     simgrid::smpi::colls::reduce_scatter(real_sendbuf, recvbuf, recvcounts, datatype, op, comm);

@@ -23,7 +23,6 @@
 #include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay, smpi, "Trace Replay with SMPI");
-
 // From https://stackoverflow.com/questions/7110301/generic-hash-for-tuples-in-unordered-map-unordered-set
 // This is all just to make std::unordered_map work with std::tuple. If we need this in other places,
 // this could go into a header file.
@@ -744,7 +743,9 @@ void ReduceScatterAction::kernel(simgrid::xbt::ReplayAction&)
   TRACE_smpi_comm_in(
       get_pid(), "action_reducescatter",
       new simgrid::instr::VarCollTIData(get_name(), -1, -1, nullptr, -1, args.recvcounts,
-                                        std::to_string(args.comp_size),
+                                        /* ugly as we use datatype field to pass computation as string */
+                                        /* and because of the trick to avoid getting 0.000000 when 0 is given */
+                                        args.comp_size == 0 ? "0" : std::to_string(args.comp_size),
                                         Datatype::encode(args.datatype1)));
 
   colls::reduce_scatter(send_buffer(args.recv_size_sum * args.datatype1->size()),
