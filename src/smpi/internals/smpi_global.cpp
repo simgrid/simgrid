@@ -77,8 +77,6 @@ static std::vector<std::string> privatize_libs_paths;
 // No instance gets manually created; check also the smpirun.in script as
 // this default name is used there as well (when the <actor> tag is generated).
 static const std::string smpi_default_instance_name("smpirun");
-static simgrid::config::Flag<double> smpi_init_sleep(
-  "smpi/init", "Time to inject inside a call to MPI_Init", 0.0);
 
 static simgrid::config::Flag<std::string>
     smpi_hostfile("smpi/hostfile",
@@ -633,8 +631,8 @@ void SMPI_finalize()
 
 void smpi_mpi_init() {
   smpi_init_fortran_types();
-  if(smpi_init_sleep > 0)
-    simgrid::s4u::this_actor::sleep_for(smpi_init_sleep);
+  if(_smpi_init_sleep > 0)
+    simgrid::s4u::this_actor::sleep_for(_smpi_init_sleep);
 }
 
 void SMPI_thread_create() {

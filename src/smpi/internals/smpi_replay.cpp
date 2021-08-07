@@ -8,6 +8,7 @@
 #include "smpi_datatype.hpp"
 #include "smpi_group.hpp"
 #include "smpi_request.hpp"
+#include "smpi_config.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "xbt/replay.hpp"
 #include <simgrid/smpi/smpi_replay.hpp>
@@ -850,6 +851,8 @@ void smpi_replay_init(const char* instance_id, int rank, double start_delay_flop
     // Wait for the other actors to initialize also
     simgrid::s4u::this_actor::yield();
   }
+  if(_smpi_init_sleep > 0)
+    simgrid::s4u::this_actor::sleep_for(_smpi_init_sleep);
 }
 
 /** @brief actually run the replay after initialization */
