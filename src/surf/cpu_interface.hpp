@@ -120,6 +120,12 @@ public:
   s4u::Host::SharingPolicy get_sharing_policy() const;
 
   /**
+   * @brief Sets factor callback
+   * Implemented only for cas01
+   */
+  virtual void set_factor_cb(const std::function<s4u::Host::CpuFactorCb>& cb) { THROW_UNIMPLEMENTED; }
+
+  /**
    * @brief Execute some quantity of computation
    *
    * @param size The value of the processing amount (in flop) needed to process

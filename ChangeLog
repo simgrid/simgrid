@@ -17,6 +17,10 @@ New features:
      - Disk: examples/cpp/io-degradation
 	 - Link: examples/cpp/network-nonlinear
 	 - CPU: examples/cpp/exec-cpu-nonlinear
+ - Dynamic factors for CPU and disk: similarly to dynamic network factors,
+ allows the user to set a callback which can affect the progress of activities
+ (multiplicative factor applied when updating the amount of work remaining).
+   - Example: examples/cpp/exec-cpu-factors
 
 S4U:
  - New: s4u::Disk::set_sharing_policy() and s4u::Host::set_sharing_policy().
@@ -25,6 +29,8 @@ S4U:
 
 Documentation:
   * New section "Release Notes" documenting recent and current developments.
+  * New section "Modeling I/O: the realistic way" presenting how to properly
+  model disks in SimGrid.
 
 ----------------------------------------------------------------------------
 

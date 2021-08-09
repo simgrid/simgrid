@@ -70,7 +70,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  energy-exec energy-boot energy-link energy-vm energy-exec-ptask energy-wifi
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-remote exec-waitany exec-waitfor exec-dependent exec-unassigned
-                 exec-ptask-multicore exec-cpu-nonlinear
+                 exec-ptask-multicore exec-cpu-nonlinear exec-cpu-factors
                  maestro-set
                  mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert
 		 		 network-wifi

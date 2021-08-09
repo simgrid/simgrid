@@ -47,11 +47,15 @@ public:
   CpuAction* execution_start(double size, double user_bound) override;
   CpuAction* execution_start(double size, int requested_cores, double user_bound) override;
   CpuAction* sleep(double duration) override;
+  void set_factor_cb(const std::function<s4u::Host::CpuFactorCb>& cb) override;
 
   bool is_used() const override;
 
 protected:
   void on_speed_change() override;
+
+private:
+  std::function<s4u::Host::CpuFactorCb> factor_cb_ = {};
 };
 
 /**********

@@ -234,6 +234,8 @@ include examples/cpp/exec-async/s4u-exec-async.cpp
 include examples/cpp/exec-async/s4u-exec-async.tesh
 include examples/cpp/exec-basic/s4u-exec-basic.cpp
 include examples/cpp/exec-basic/s4u-exec-basic.tesh
+include examples/cpp/exec-cpu-factors/s4u-exec-cpu-factors.cpp
+include examples/cpp/exec-cpu-factors/s4u-exec-cpu-factors.tesh
 include examples/cpp/exec-cpu-nonlinear/s4u-exec-cpu-nonlinear.cpp
 include examples/cpp/exec-cpu-nonlinear/s4u-exec-cpu-nonlinear.tesh
 include examples/cpp/exec-dependent/s4u-exec-dependent.cpp
@@ -1692,6 +1694,8 @@ include teshsuite/smpi/pt2pt-pingpong/TI_output.tesh
 include teshsuite/smpi/pt2pt-pingpong/broken_hostfiles.tesh
 include teshsuite/smpi/pt2pt-pingpong/pt2pt-pingpong.c
 include teshsuite/smpi/pt2pt-pingpong/pt2pt-pingpong.tesh
+include teshsuite/smpi/replay-ti-colls/replay-ti-colls.c
+include teshsuite/smpi/replay-ti-colls/replay-ti-colls.tesh
 include teshsuite/smpi/timers/timers.c
 include teshsuite/smpi/timers/timers.tesh
 include teshsuite/smpi/topo-cart-sub/topo-cart-sub.c

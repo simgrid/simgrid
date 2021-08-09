@@ -65,6 +65,10 @@ DiskAction* DiskS19Model::io_start(const DiskImpl* disk, sg_size_t size, s4u::Io
     default:
       THROW_UNIMPLEMENTED;
   }
+  const auto& factor_cb = disk->get_factor_cb();
+  if (factor_cb) { // handling disk variability
+    action->set_rate_factor(factor_cb(size, type));
+  }
   return action;
 }
 

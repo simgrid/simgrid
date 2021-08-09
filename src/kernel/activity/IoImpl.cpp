@@ -59,10 +59,6 @@ IoImpl* IoImpl::start()
   surf_action_ =
       disk_->get_host()->get_netpoint()->get_englobing_zone()->get_disk_model()->io_start(disk_, size_, type_);
   surf_action_->set_activity(this);
-  const auto& factor_cb = disk_->get_factor_cb();
-  if (factor_cb) { // handling disk variability
-    surf_action_->set_rate_factor(factor_cb(size_, type_));
-  }
 
   XBT_DEBUG("Create IO synchro %p %s", this, get_cname());
 

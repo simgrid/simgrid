@@ -326,6 +326,12 @@ int Host::get_pstate() const
   return this->pimpl_cpu_->get_pstate();
 }
 
+Host* Host::set_factor_cb(const std::function<CpuFactorCb>& cb)
+{
+  kernel::actor::simcall([this, &cb] { pimpl_cpu_->set_factor_cb(cb); });
+  return this;
+}
+
 Host* Host::set_coordinates(const std::string& coords)
 {
   if (not coords.empty())
