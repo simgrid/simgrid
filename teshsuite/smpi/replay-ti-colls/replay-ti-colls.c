@@ -1,3 +1,6 @@
+//exclude from clang static analysis, as there is an intentional uninitialized value passed to MPI calls.
+#ifndef __clang_analyzer__
+
 #include <stdio.h>
 #include <string.h>
 #include "mpi.h"
@@ -97,3 +100,5 @@ main (int argc, char **argv){
   MPI_Finalize ();
   return 0;
 }
+
+#endif
