@@ -161,7 +161,8 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
 void Request::init_buffer(int count){
 // FIXME Handle the case of a partial shared malloc.
   // This part handles the problem of non-contiguous memory (for the unserialization at the reception)
-  if ((((flags_ & MPI_REQ_RECV) != 0) && ((flags_ & MPI_REQ_ACCUMULATE) != 0)) || (type_->flags() & DT_FLAG_DERIVED)) {
+  if (not smpi_process()->replaying() &&
+     ((((flags_ & MPI_REQ_RECV) != 0) && ((flags_ & MPI_REQ_ACCUMULATE) != 0)) || (type_->flags() & DT_FLAG_DERIVED))) {
     // This part handles the problem of non-contiguous memory
     old_buf_ = buf_;
     if (count==0){
@@ -924,9 +925,9 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
       MPI_Datatype datatype = req->type_;
 
       // FIXME Handle the case of a partial shared malloc.
-      if (((req->flags_ & MPI_REQ_ACCUMULATE) != 0) ||
-          (datatype->flags() & DT_FLAG_DERIVED)) { // && (not smpi_is_shared(req->old_buf_))){
-        if (not smpi_process()->replaying() && smpi_switch_data_segment(simgrid::s4u::Actor::self(), req->old_buf_))
+      if (not smpi_process()->replaying() &&
+        (((req->flags_ & MPI_REQ_ACCUMULATE) != 0) || (datatype->flags() & DT_FLAG_DERIVED))) {
+        if (smpi_switch_data_segment(simgrid::s4u::Actor::self(), req->old_buf_))
           XBT_VERB("Privatization : We are unserializing to a zone in global memory  Switch data segment ");
 
         if(datatype->flags() & DT_FLAG_DERIVED){
