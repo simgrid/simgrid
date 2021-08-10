@@ -97,7 +97,7 @@ public:
    * @param flops Execution size in flops
    * @return Multiply factor
    */
-  using CpuFactorCb = double(sg_size_t flops);
+  using CpuFactorCb = double(double flops);
   /**
    * @brief Configure the factor callback to the CPU associated to this host
    */

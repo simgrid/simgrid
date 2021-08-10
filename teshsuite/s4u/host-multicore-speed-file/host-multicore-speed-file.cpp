@@ -70,7 +70,7 @@ static void failed_worker()
   try {
     XBT_INFO("Waiting big task to finish");
     fail->wait();
-  } catch (simgrid::ForcefulKillException&) {
+  } catch (const simgrid::ForcefulKillException&) {
     XBT_INFO("Unable to finish big task, host went down");
   }
 }
