@@ -1,6 +1,7 @@
 foreach(example actor-create actor-daemon actor-join actor-kill actor-migrate actor-suspend actor-yield actor-lifetime
                 comm-wait comm-waitall comm-waitany
-                exec-async exec-basic exec-dvfs exec-remote)
+                exec-async exec-basic exec-dvfs exec-remote
+                network-nonlinear)
   set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.py)
 

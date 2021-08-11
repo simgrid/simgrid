@@ -39,6 +39,7 @@
 #pragma GCC diagnostic pop
 #endif
 
+#include "simgrid/kernel/routing/NetPoint.hpp"
 #include "src/kernel/context/Context.hpp"
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Actor.hpp>
@@ -46,7 +47,9 @@
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Exec.hpp>
 #include <simgrid/s4u/Host.hpp>
+#include <simgrid/s4u/Link.hpp>
 #include <simgrid/s4u/Mailbox.hpp>
+#include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/version.h>
 
 #include <algorithm>
@@ -73,6 +76,14 @@ std::string get_simgrid_version()
   sg_version_get(&major, &minor, &patch);
   return simgrid::xbt::string_printf("%i.%i.%i", major, minor, patch);
 }
+
+/** @brief Wrap for mailbox::get_async */
+class PyGetAsync {
+  std::unique_ptr<PyObject*> data = std::make_unique<PyObject*>();
+
+public:
+  PyObject** get() const { return data.get(); }
+};
 
 /* Classes GilScopedAcquire and GilScopedRelease have the same purpose as pybind11::gil_scoped_acquire and
  * pybind11::gil_scoped_release.  Refer to the manual of pybind11 for details:
@@ -210,11 +221,29 @@ PYBIND11_MODULE(simgrid, m)
           },
           "Registers the main function of an actor");
 
+  /* Class Netzone */
+  py::class_<simgrid::s4u::NetZone, std::unique_ptr<simgrid::s4u::NetZone, py::nodelete>>(m, "NetZone",
+                                                                                          "Networking Zones")
+      .def_static("create_full_zone", &simgrid::s4u::create_full_zone, "Creates a netzone of type FullZone")
+      .def("add_route",
+           py::overload_cast<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*,
+                             simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*,
+                             const std::vector<simgrid::s4u::LinkInRoute>&, bool>(&simgrid::s4u::NetZone::add_route),
+           "Add a route between 2 netpoints")
+      .def("create_host", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_host),
+           "Creates a host")
+      .def("create_split_duplex_link",
+           py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_split_duplex_link),
+           "Creates a split-duplex link")
+      .def("seal", &simgrid::s4u::NetZone::seal, "Seal this NetZone");
+
   /* Class Host */
   py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>>(m, "Host", "Simulated host")
       .def("by_name", &Host::by_name, "Retrieves a host from its name, or die")
       .def("get_pstate_count", &Host::get_pstate_count, "Retrieve the count of defined pstate levels")
       .def("get_pstate_speed", &Host::get_pstate_speed, "Retrieve the maximal speed at the given pstate")
+      .def("get_netpoint", &Host::get_netpoint, "Retrieve the netpoint associated to this host")
+      .def("seal", &Host::seal, "Seal this host")
       .def_property(
           "pstate", &Host::get_pstate,
           [](Host* h, int i) {
@@ -237,6 +266,47 @@ PYBIND11_MODULE(simgrid, m)
           "speed", &Host::get_speed,
           "The peak computing speed in flops/s at the current pstate, taking the external load into account. "
           "This is the max potential speed.");
+
+  /* Class NetPoint */
+  py::class_<simgrid::kernel::routing::NetPoint, std::unique_ptr<simgrid::kernel::routing::NetPoint, py::nodelete>>(
+      m, "NetPoint", "NetPoint object");
+
+  /* Class Link */
+  py::class_<simgrid::s4u::Link, std::unique_ptr<simgrid::s4u::Link, py::nodelete>> link(m, "Link", "Network link");
+  link.def("set_latency", py::overload_cast<const std::string&>(&simgrid::s4u::Link::set_latency), "Set the latency");
+  link.def("set_latency", py::overload_cast<double>(&simgrid::s4u::Link::set_latency), "Set the latency");
+  link.def("set_sharing_policy", &simgrid::s4u::Link::set_sharing_policy, "Set sharing policy for this link");
+  link.def("seal", &simgrid::s4u::Link::seal, "Seal this link");
+  link.def_property_readonly(
+      "name",
+      [](const simgrid::s4u::Link* self) {
+        return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
+      },
+      "The name of this link");
+  py::enum_<simgrid::s4u::Link::SharingPolicy>(link, "SharingPolicy")
+      .value("NONLINEAR", simgrid::s4u::Link::SharingPolicy::NONLINEAR)
+      .value("WIFI", simgrid::s4u::Link::SharingPolicy::WIFI)
+      .value("SPLITDUPLEX", simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX)
+      .value("SHARED", simgrid::s4u::Link::SharingPolicy::SHARED)
+      .value("FATPIPE", simgrid::s4u::Link::SharingPolicy::FATPIPE)
+      .export_values();
+
+  /* Class LinkInRoute */
+  py::class_<simgrid::s4u::LinkInRoute> linkinroute(m, "LinkInRoute", "Abstraction to add link in routes");
+  linkinroute.def(py::init<const simgrid::s4u::Link*>());
+  linkinroute.def(py::init<const simgrid::s4u::Link*, simgrid::s4u::LinkInRoute::Direction>());
+  py::enum_<simgrid::s4u::LinkInRoute::Direction>(linkinroute, "Direction")
+      .value("UP", simgrid::s4u::LinkInRoute::Direction::UP)
+      .value("DOWN", simgrid::s4u::LinkInRoute::Direction::DOWN)
+      .value("NONE", simgrid::s4u::LinkInRoute::Direction::NONE)
+      .export_values();
+
+  /* Class Split-Duplex Link */
+  py::class_<simgrid::s4u::SplitDuplexLink, simgrid::s4u::Link,
+             std::unique_ptr<simgrid::s4u::SplitDuplexLink, py::nodelete>>(m, "SplitDuplexLink",
+                                                                           "Network split-duplex link")
+      .def("get_link_up", &simgrid::s4u::SplitDuplexLink::get_link_up, "Get link direction up")
+      .def("get_link_down", &simgrid::s4u::SplitDuplexLink::get_link_down, "Get link direction down");
 
   /* Class Mailbox */
   py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(m, "Mailbox", "Mailbox")
@@ -272,12 +342,25 @@ PYBIND11_MODULE(simgrid, m)
             return data;
           },
           py::call_guard<GilScopedRelease>(), "Blocking data reception")
-      .def("set_receiver",
-	 [](Mailbox* self, ActorPtr actor) {
-	   self->set_receiver(actor);
-	 },
-	 py::call_guard<GilScopedRelease>(),
-	 "Sets the actor as permanent receiver");
+      .def(
+          "get_async",
+          [](Mailbox* self) -> std::tuple<simgrid::s4u::CommPtr, PyGetAsync> {
+            PyGetAsync wrap;
+            auto comm = self->get_async(wrap.get());
+            return std::make_tuple(std::move(comm), std::move(wrap));
+          },
+          py::call_guard<GilScopedRelease>(),
+          "Non-blocking data reception. Use data.get() to get the python object after the communication has finished")
+      .def(
+          "set_receiver", [](Mailbox* self, ActorPtr actor) { self->set_receiver(actor); },
+          py::call_guard<GilScopedRelease>(), "Sets the actor as permanent receiver");
+
+  /* Class PyGetAsync */
+  py::class_<PyGetAsync>(m, "PyGetAsync", "Wrapper for async get communications")
+      .def(py::init<>())
+      .def(
+          "get", [](PyGetAsync* self) { return py::reinterpret_steal<py::object>(*(self->get())); },
+          "Get python object after async communication in receiver side");
 
   /* Class Comm */
   py::class_<simgrid::s4u::Comm, simgrid::s4u::CommPtr>(m, "Comm", "Communication")
