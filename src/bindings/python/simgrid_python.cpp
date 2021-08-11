@@ -224,7 +224,11 @@ PYBIND11_MODULE(simgrid, m)
   /* Class Netzone */
   py::class_<simgrid::s4u::NetZone, std::unique_ptr<simgrid::s4u::NetZone, py::nodelete>>(m, "NetZone",
                                                                                           "Networking Zones")
-      .def_static("create_full_zone", &simgrid::s4u::create_full_zone, "Creates a netzone of type FullZone")
+      .def_static("create_full_zone", &simgrid::s4u::create_full_zone, "Creates a zone of type FullZone")
+      .def_static("create_torus_zone", &simgrid::s4u::create_torus_zone, "Creates a cluster of type Torus")
+      .def_static("create_fatTree_zone", &simgrid::s4u::create_fatTree_zone, "Creates a cluster of type Fat-Tree")
+      .def_static("create_dragonfly_zone", &simgrid::s4u::create_dragonfly_zone, "Creates a cluster of type Dragonfly")
+      .def_static("create_star_zone", &simgrid::s4u::create_star_zone, "Creates a zone of type Star")
       .def("add_route",
            py::overload_cast<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*,
                              simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*,
@@ -232,10 +236,37 @@ PYBIND11_MODULE(simgrid, m)
            "Add a route between 2 netpoints")
       .def("create_host", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_host),
            "Creates a host")
+      .def("create_host",
+           py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::create_host),
+           "Creates a host")
+      .def("create_link",
+           py::overload_cast<const std::string&, const std::vector<double>&>(&simgrid::s4u::NetZone::create_link),
+           "Creates a network link")
       .def("create_split_duplex_link",
            py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_split_duplex_link),
            "Creates a split-duplex link")
+      .def("create_split_duplex_link",
+           py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::create_split_duplex_link),
+           "Creates a split-duplex link")
+      .def("set_parent", &simgrid::s4u::NetZone::set_parent, "Set the parent of this zone")
+      .def("get_netpoint", &simgrid::s4u::NetZone::get_netpoint, "Retrieve the netpoint associated to this zone")
       .def("seal", &simgrid::s4u::NetZone::seal, "Seal this NetZone");
+
+  /* Class ClusterCallbacks */
+  py::class_<simgrid::s4u::ClusterCallbacks>(m, "ClusterCallbacks", "Callbacks used to create cluster zones")
+      .def(py::init<const std::function<simgrid::s4u::ClusterCallbacks::ClusterNetPointCb>&,
+                    const std::function<simgrid::s4u::ClusterCallbacks::ClusterLinkCb>&,
+                    const std::function<simgrid::s4u::ClusterCallbacks::ClusterLinkCb>&>());
+
+  /* Class FatTreeParams */
+  py::class_<simgrid::s4u::FatTreeParams>(m, "FatTreeParams", "Parameters to create a Fat-Tree zone")
+      .def(py::init<unsigned int, const std::vector<unsigned int>&, const std::vector<unsigned int>&,
+                    const std::vector<unsigned int>&>());
+
+  /* Class DragonflyParams */
+  py::class_<simgrid::s4u::DragonflyParams>(m, "DragonflyParams", "Parameters to create a Dragonfly zone")
+      .def(py::init<const std::pair<unsigned int, unsigned int>&, const std::pair<unsigned int, unsigned int>&,
+                    const std::pair<unsigned int, unsigned int>&, unsigned int>());
 
   /* Class Host */
   py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>>(m, "Host", "Simulated host")

@@ -513,6 +513,8 @@ include examples/python/actor-suspend/actor-suspend.py
 include examples/python/actor-suspend/actor-suspend.tesh
 include examples/python/actor-yield/actor-yield.py
 include examples/python/actor-yield/actor-yield.tesh
+include examples/python/clusters-multicpu/clusters-multicpu.py
+include examples/python/clusters-multicpu/clusters-multicpu.tesh
 include examples/python/comm-wait/comm-wait.py
 include examples/python/comm-wait/comm-wait.tesh
 include examples/python/comm-waitall/comm-waitall.py

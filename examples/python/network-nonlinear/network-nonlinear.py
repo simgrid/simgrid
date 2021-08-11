@@ -14,7 +14,7 @@ class Sender:
   """
   Send a series of messages to mailbox "receiver"
   """
-  def __init__(self, msg_count, msg_size=int(1e6)):
+  def __init__(self, msg_count: int, msg_size=int(1e6)):
     self.msg_count = msg_count
     self.msg_size = msg_size
   
@@ -66,7 +66,7 @@ class Receiver:
       del pending_msgs[index]
 
 ####################################################################################################
-def link_nonlinear(link, capacity, n):
+def link_nonlinear(link: Link, capacity: float, n: int) -> float:
   """
   Non-linear resource sharing for links
 
