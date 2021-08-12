@@ -44,6 +44,7 @@ Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  - FG#78: Multiple fixes for SMPI replay:
     - TI tracing of allotallv/w was outputting wrong values
     - MPI_LOGICAL in fortran is actually 32 bits wide, and not 8.
+ - FG#77: Search feature of doc is broken (update sphinx theme version)
 ----------------------------------------------------------------------------
 
 SimGrid (3.28) July 14. 2021
