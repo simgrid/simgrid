@@ -1,6 +1,5 @@
-foreach(example borken-context corrupt-stack)
-  set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}_d.xml)
+foreach(example borken-context corrupt-stack platform-mix)
+  set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.py)
 
   if(enable_python)
@@ -15,5 +14,10 @@ foreach(example borken-context corrupt-stack)
   endif()
 endforeach()
 
+foreach(example borken-context corrupt-stack)
+  set(xml_files    ${xml_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}_d.xml)
+endforeach()
+
 set(tesh_files    ${tesh_files}    PARENT_SCOPE)
+set(xml_files    ${xml_files}    PARENT_SCOPE)
 set(examples_src  ${examples_src}  PARENT_SCOPE)

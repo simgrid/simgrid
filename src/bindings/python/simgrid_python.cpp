@@ -44,6 +44,7 @@
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Comm.hpp>
+#include <simgrid/s4u/Disk.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Exec.hpp>
 #include <simgrid/s4u/Host.hpp>
@@ -229,6 +230,11 @@ PYBIND11_MODULE(simgrid, m)
       .def_static("create_fatTree_zone", &simgrid::s4u::create_fatTree_zone, "Creates a cluster of type Fat-Tree")
       .def_static("create_dragonfly_zone", &simgrid::s4u::create_dragonfly_zone, "Creates a cluster of type Dragonfly")
       .def_static("create_star_zone", &simgrid::s4u::create_star_zone, "Creates a zone of type Star")
+      .def_static("create_floyd_zone", &simgrid::s4u::create_floyd_zone, "Creates a zone of type Floyd")
+      .def_static("create_dijkstra_zone", &simgrid::s4u::create_floyd_zone, "Creates a zone of type Dijkstra")
+      .def_static("create_vivaldi_zone", &simgrid::s4u::create_vivaldi_zone, "Creates a zone of type Vivaldi")
+      .def_static("create_empty_zone", &simgrid::s4u::create_empty_zone, "Creates a zone of type Empty")
+      .def_static("create_wifi_zone", &simgrid::s4u::create_wifi_zone, "Creates a zone of type Wi-Fi")
       .def("add_route",
            py::overload_cast<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*,
                              simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*,
@@ -239,8 +245,22 @@ PYBIND11_MODULE(simgrid, m)
       .def("create_host",
            py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::create_host),
            "Creates a host")
+      .def("create_host",
+           py::overload_cast<const std::string&, const std::vector<double>&>(&simgrid::s4u::NetZone::create_host),
+           "Creates a host")
+      .def("create_host",
+           py::overload_cast<const std::string&, const std::vector<std::string>&>(&simgrid::s4u::NetZone::create_host),
+           "Creates a host")
+      .def("create_link", py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_link),
+           "Creates a network link")
+      .def("create_link",
+           py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::create_link),
+           "Creates a network link")
       .def("create_link",
            py::overload_cast<const std::string&, const std::vector<double>&>(&simgrid::s4u::NetZone::create_link),
+           "Creates a network link")
+      .def("create_link",
+           py::overload_cast<const std::string&, const std::vector<std::string>&>(&simgrid::s4u::NetZone::create_link),
            "Creates a network link")
       .def("create_split_duplex_link",
            py::overload_cast<const std::string&, double>(&simgrid::s4u::NetZone::create_split_duplex_link),
@@ -248,9 +268,13 @@ PYBIND11_MODULE(simgrid, m)
       .def("create_split_duplex_link",
            py::overload_cast<const std::string&, const std::string&>(&simgrid::s4u::NetZone::create_split_duplex_link),
            "Creates a split-duplex link")
+      .def("create_router", &simgrid::s4u::NetZone::create_router, "Create a router")
       .def("set_parent", &simgrid::s4u::NetZone::set_parent, "Set the parent of this zone")
+      .def("set_property", &simgrid::s4u::NetZone::set_property, "Add a property to this zone")
       .def("get_netpoint", &simgrid::s4u::NetZone::get_netpoint, "Retrieve the netpoint associated to this zone")
-      .def("seal", &simgrid::s4u::NetZone::seal, "Seal this NetZone");
+      .def("seal", &simgrid::s4u::NetZone::seal, "Seal this NetZone")
+      .def_property_readonly(
+          "name", [](const simgrid::s4u::NetZone* self) { return self->get_name(); }, "The name of this network zone");
 
   /* Class ClusterCallbacks */
   py::class_<simgrid::s4u::ClusterCallbacks>(m, "ClusterCallbacks", "Callbacks used to create cluster zones")
@@ -274,6 +298,13 @@ PYBIND11_MODULE(simgrid, m)
       .def("get_pstate_count", &Host::get_pstate_count, "Retrieve the count of defined pstate levels")
       .def("get_pstate_speed", &Host::get_pstate_speed, "Retrieve the maximal speed at the given pstate")
       .def("get_netpoint", &Host::get_netpoint, "Retrieve the netpoint associated to this host")
+      .def("get_disks", &Host::get_disks, "Retrieve the list of disks in this host")
+      .def("set_core_count", &Host::set_core_count, "Set the number of cores in the CPU")
+      .def("set_coordinates", &Host::set_coordinates, "Set the coordinates of this host")
+      .def("create_disk", py::overload_cast<const std::string&, double, double>(&Host::create_disk), "Create a disk")
+      .def("create_disk",
+           py::overload_cast<const std::string&, const std::string&, const std::string&>(&Host::create_disk),
+           "Create a disk")
       .def("seal", &Host::seal, "Seal this host")
       .def_property(
           "pstate", &Host::get_pstate,
@@ -298,6 +329,14 @@ PYBIND11_MODULE(simgrid, m)
           "The peak computing speed in flops/s at the current pstate, taking the external load into account. "
           "This is the max potential speed.");
 
+  /* Class Disk */
+  py::class_<simgrid::s4u::Disk, std::unique_ptr<simgrid::s4u::Disk, py::nodelete>>(m, "Disk", "Simulated disk")
+      .def("read", &simgrid::s4u::Disk::read, py::call_guard<GilScopedRelease>(), "Read data from disk")
+      .def("write", &simgrid::s4u::Disk::write, py::call_guard<GilScopedRelease>(), "Write data in disk")
+      .def("seal", &simgrid::s4u::Disk::seal, "Seal this disk")
+      .def_property_readonly(
+          "name", [](const simgrid::s4u::Disk* self) { return self->get_name(); }, "The name of this disk");
+
   /* Class NetPoint */
   py::class_<simgrid::kernel::routing::NetPoint, std::unique_ptr<simgrid::kernel::routing::NetPoint, py::nodelete>>(
       m, "NetPoint", "NetPoint object");
@@ -307,6 +346,9 @@ PYBIND11_MODULE(simgrid, m)
   link.def("set_latency", py::overload_cast<const std::string&>(&simgrid::s4u::Link::set_latency), "Set the latency");
   link.def("set_latency", py::overload_cast<double>(&simgrid::s4u::Link::set_latency), "Set the latency");
   link.def("set_sharing_policy", &simgrid::s4u::Link::set_sharing_policy, "Set sharing policy for this link");
+  link.def("set_concurrency_limit", &simgrid::s4u::Link::set_concurrency_limit, "Set concurrency limit for this link");
+  link.def("set_host_wifi_rate", &simgrid::s4u::Link::set_host_wifi_rate,
+           "Set level of communication speed of given host on this Wi-Fi link");
   link.def("seal", &simgrid::s4u::Link::seal, "Seal this link");
   link.def_property_readonly(
       "name",

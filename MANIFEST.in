@@ -707,6 +707,8 @@ include teshsuite/python/borken-context/borken-context_d.xml
 include teshsuite/python/corrupt-stack/corrupt-stack.py
 include teshsuite/python/corrupt-stack/corrupt-stack.tesh
 include teshsuite/python/corrupt-stack/corrupt-stack_d.xml
+include teshsuite/python/platform-mix/platform-mix.py
+include teshsuite/python/platform-mix/platform-mix.tesh
 include teshsuite/s4u/activity-lifecycle/activity-lifecycle.cpp
 include teshsuite/s4u/activity-lifecycle/activity-lifecycle.hpp
 include teshsuite/s4u/activity-lifecycle/activity-lifecycle.tesh
