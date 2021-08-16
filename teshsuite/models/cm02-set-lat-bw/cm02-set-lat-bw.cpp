@@ -85,8 +85,10 @@ static void receiver()
   double* payload    = nullptr;
   while (true) {
     payload = mbox->get<double>();
-    if (*payload < 0)
+    if (*payload < 0) {
+      delete payload;
       break;
+    }
     XBT_INFO("Received data. Elapsed %lf", sg4::Engine::get_clock() - *payload);
     delete payload;
   }
