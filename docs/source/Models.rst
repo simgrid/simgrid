@@ -133,6 +133,16 @@ If you use a version of ns-3 that is not known to SimGrid yet, edit
 comments on top of this file. Conversely, if something goes wrong with an old
 version of either SimGrid or ns-3, try upgrading everything.
 
+Note that there is a known bug with version 3.31 of ns3, when it's build with
+MPI support, like it is with the package libns3-dev in Debian 11 « Bullseye ».
+A simple workaround is to edit the file
+``/usr/include/ns3.31/ns3/point-to-point-helper.h`` to remove the ``#ifdef NS3_MPI``
+include guard.  This can be achieved with the following command (as root):
+
+.. code-block:: console
+
+   # sed -i '/^#ifdef NS3_MPI/,+2s,^#,//&,' /usr/include/ns3.31/ns3/point-to-point-helper.h
+
 .. _ns3_use:
 
 Using ns-3 from SimGrid
