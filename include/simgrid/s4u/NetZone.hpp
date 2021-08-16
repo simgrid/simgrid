@@ -269,7 +269,7 @@ XBT_PUBLIC NetZone* create_torus_zone(const std::string& name, const NetZone* pa
                                       Link::SharingPolicy sharing_policy);
 
 /** @brief Aggregates the parameters necessary to build a Fat-tree zone */
-struct FatTreeParams {
+struct XBT_PUBLIC FatTreeParams {
   unsigned int levels;
   std::vector<unsigned int> down;
   std::vector<unsigned int> up;
@@ -309,7 +309,7 @@ XBT_PUBLIC NetZone* create_fatTree_zone(const std::string& name, const NetZone* 
                                         Link::SharingPolicy sharing_policy);
 
 /** @brief Aggregates the parameters necessary to build a Dragonfly zone */
-struct DragonflyParams {
+struct XBT_PUBLIC DragonflyParams {
   std::pair<unsigned int, unsigned int> groups;
   std::pair<unsigned int, unsigned int> chassis;
   std::pair<unsigned int, unsigned int> routers;
