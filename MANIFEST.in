@@ -525,6 +525,8 @@ include examples/python/exec-async/exec-async.py
 include examples/python/exec-async/exec-async.tesh
 include examples/python/exec-basic/exec-basic.py
 include examples/python/exec-basic/exec-basic.tesh
+include examples/python/exec-cpu-nonlinear/exec-cpu-nonlinear.py
+include examples/python/exec-cpu-nonlinear/exec-cpu-nonlinear.tesh
 include examples/python/exec-dvfs/exec-dvfs.py
 include examples/python/exec-dvfs/exec-dvfs.tesh
 include examples/python/exec-remote/exec-remote.py

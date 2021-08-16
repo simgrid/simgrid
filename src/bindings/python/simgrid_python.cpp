@@ -293,14 +293,16 @@ PYBIND11_MODULE(simgrid, m)
                     const std::pair<unsigned int, unsigned int>&, unsigned int>());
 
   /* Class Host */
-  py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>>(m, "Host", "Simulated host")
-      .def("by_name", &Host::by_name, "Retrieves a host from its name, or die")
+  py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>> host(m, "Host", "Simulated host");
+  host.def("by_name", &Host::by_name, "Retrieves a host from its name, or die")
       .def("get_pstate_count", &Host::get_pstate_count, "Retrieve the count of defined pstate levels")
       .def("get_pstate_speed", &Host::get_pstate_speed, "Retrieve the maximal speed at the given pstate")
       .def("get_netpoint", &Host::get_netpoint, "Retrieve the netpoint associated to this host")
       .def("get_disks", &Host::get_disks, "Retrieve the list of disks in this host")
       .def("set_core_count", &Host::set_core_count, "Set the number of cores in the CPU")
       .def("set_coordinates", &Host::set_coordinates, "Set the coordinates of this host")
+      .def("set_sharing_policy", &simgrid::s4u::Host::set_sharing_policy, "Describe how the CPU is shared",
+           py::arg("policy"), py::arg("cb") = simgrid::s4u::NonLinearResourceCb())
       .def("create_disk", py::overload_cast<const std::string&, double, double>(&Host::create_disk), "Create a disk")
       .def("create_disk",
            py::overload_cast<const std::string&, const std::string&, const std::string&>(&Host::create_disk),
@@ -328,6 +330,10 @@ PYBIND11_MODULE(simgrid, m)
           "speed", &Host::get_speed,
           "The peak computing speed in flops/s at the current pstate, taking the external load into account. "
           "This is the max potential speed.");
+  py::enum_<simgrid::s4u::Host::SharingPolicy>(host, "SharingPolicy")
+      .value("NONLINEAR", simgrid::s4u::Host::SharingPolicy::NONLINEAR)
+      .value("LINEAR", simgrid::s4u::Host::SharingPolicy::LINEAR)
+      .export_values();
 
   /* Class Disk */
   py::class_<simgrid::s4u::Disk, std::unique_ptr<simgrid::s4u::Disk, py::nodelete>> disk(m, "Disk", "Simulated disk");
