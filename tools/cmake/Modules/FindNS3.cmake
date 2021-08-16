@@ -34,6 +34,12 @@ find_library(NS3_LIBRARIES
        ns3.32-core ns3.32-core-optimized ns3.32-core-debug
        ns3.33-core ns3.33-core-optimized ns3.33-core-debug
        ns3.34-core ns3.34-core-optimized ns3.34-core-debug
+       ns3.35-core ns3.35-core-optimized ns3.35-core-debug
+       ns3.36-core ns3.36-core-optimized ns3.36-core-debug
+       ns3.37-core ns3.37-core-optimized ns3.37-core-debug
+       ns3.38-core ns3.38-core-optimized ns3.38-core-debug
+       ns3.39-core ns3.39-core-optimized ns3.39-core-debug
+       ns3.40-core ns3.40-core-optimized ns3.40-core-debug
   PATH_SUFFIXES lib64 lib ns3/lib
   PATHS
   ${NS3_HINT}
@@ -41,9 +47,9 @@ find_library(NS3_LIBRARIES
 
 find_path(NS3_INCLUDE_DIR
   NAME ns3/core-module.h
-  PATH_SUFFIXES include ns3/include 
+  PATH_SUFFIXES include ns3/include
                 include/ns3.22 include/ns3.23 include/ns3.24 include/ns3.25 include/ns3.26 include/ns3.27 include/ns3.28 include/ns3.29 include/ns3.30
-                include/ns3.31 include/ns3.32 include/ns3.33 include/ns3.34
+                include/ns3.31 include/ns3.32 include/ns3.33 include/ns3.34 include/ns3.35 include/ns3.36 include/ns3.37 include/ns3.38 include/ns3.39 include/ns3.40
   PATHS
   ${NS3_HINT}
   )
