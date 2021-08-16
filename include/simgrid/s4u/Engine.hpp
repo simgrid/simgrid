@@ -189,6 +189,7 @@ public:
   static void set_config(const std::string& name, double value);
   static void set_config(const std::string& name, const std::string& value);
 
+  Engine* set_default_comm_data_copy_callback(void (*callback)(kernel::activity::CommImpl*, void*, size_t));
   /** Callback fired when the platform is created (ie, the xml file parsed),
    * right before the actual simulation starts. */
   static xbt::signal<void()> on_platform_created;
