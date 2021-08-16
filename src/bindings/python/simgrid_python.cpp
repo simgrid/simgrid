@@ -330,12 +330,25 @@ PYBIND11_MODULE(simgrid, m)
           "This is the max potential speed.");
 
   /* Class Disk */
-  py::class_<simgrid::s4u::Disk, std::unique_ptr<simgrid::s4u::Disk, py::nodelete>>(m, "Disk", "Simulated disk")
-      .def("read", &simgrid::s4u::Disk::read, py::call_guard<GilScopedRelease>(), "Read data from disk")
+  py::class_<simgrid::s4u::Disk, std::unique_ptr<simgrid::s4u::Disk, py::nodelete>> disk(m, "Disk", "Simulated disk");
+  disk.def("read", &simgrid::s4u::Disk::read, py::call_guard<GilScopedRelease>(), "Read data from disk")
       .def("write", &simgrid::s4u::Disk::write, py::call_guard<GilScopedRelease>(), "Write data in disk")
+      .def("read_async", &simgrid::s4u::Disk::read_async, "Non-blocking read data from disk")
+      .def("write_async", &simgrid::s4u::Disk::write_async, "Non-blocking write data in disk")
+      .def("set_sharing_policy", &simgrid::s4u::Disk::set_sharing_policy, "Set sharing policy for this disk",
+           py::arg("op"), py::arg("policy"), py::arg("cb") = simgrid::s4u::NonLinearResourceCb())
       .def("seal", &simgrid::s4u::Disk::seal, "Seal this disk")
       .def_property_readonly(
           "name", [](const simgrid::s4u::Disk* self) { return self->get_name(); }, "The name of this disk");
+  py::enum_<simgrid::s4u::Disk::SharingPolicy>(disk, "SharingPolicy")
+      .value("NONLINEAR", simgrid::s4u::Disk::SharingPolicy::NONLINEAR)
+      .value("LINEAR", simgrid::s4u::Disk::SharingPolicy::LINEAR)
+      .export_values();
+  py::enum_<simgrid::s4u::Disk::Operation>(disk, "Operation")
+      .value("READ", simgrid::s4u::Disk::Operation::READ)
+      .value("WRITE", simgrid::s4u::Disk::Operation::WRITE)
+      .value("READWRITE", simgrid::s4u::Disk::Operation::READWRITE)
+      .export_values();
 
   /* Class NetPoint */
   py::class_<simgrid::kernel::routing::NetPoint, std::unique_ptr<simgrid::kernel::routing::NetPoint, py::nodelete>>(
@@ -343,19 +356,19 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Link */
   py::class_<simgrid::s4u::Link, std::unique_ptr<simgrid::s4u::Link, py::nodelete>> link(m, "Link", "Network link");
-  link.def("set_latency", py::overload_cast<const std::string&>(&simgrid::s4u::Link::set_latency), "Set the latency");
-  link.def("set_latency", py::overload_cast<double>(&simgrid::s4u::Link::set_latency), "Set the latency");
-  link.def("set_sharing_policy", &simgrid::s4u::Link::set_sharing_policy, "Set sharing policy for this link");
-  link.def("set_concurrency_limit", &simgrid::s4u::Link::set_concurrency_limit, "Set concurrency limit for this link");
-  link.def("set_host_wifi_rate", &simgrid::s4u::Link::set_host_wifi_rate,
-           "Set level of communication speed of given host on this Wi-Fi link");
-  link.def("seal", &simgrid::s4u::Link::seal, "Seal this link");
-  link.def_property_readonly(
-      "name",
-      [](const simgrid::s4u::Link* self) {
-        return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
-      },
-      "The name of this link");
+  link.def("set_latency", py::overload_cast<const std::string&>(&simgrid::s4u::Link::set_latency), "Set the latency")
+      .def("set_latency", py::overload_cast<double>(&simgrid::s4u::Link::set_latency), "Set the latency")
+      .def("set_sharing_policy", &simgrid::s4u::Link::set_sharing_policy, "Set sharing policy for this link")
+      .def("set_concurrency_limit", &simgrid::s4u::Link::set_concurrency_limit, "Set concurrency limit for this link")
+      .def("set_host_wifi_rate", &simgrid::s4u::Link::set_host_wifi_rate,
+           "Set level of communication speed of given host on this Wi-Fi link")
+      .def("seal", &simgrid::s4u::Link::seal, "Seal this link")
+      .def_property_readonly(
+          "name",
+          [](const simgrid::s4u::Link* self) {
+            return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
+          },
+          "The name of this link");
   py::enum_<simgrid::s4u::Link::SharingPolicy>(link, "SharingPolicy")
       .value("NONLINEAR", simgrid::s4u::Link::SharingPolicy::NONLINEAR)
       .value("WIFI", simgrid::s4u::Link::SharingPolicy::WIFI)
@@ -449,6 +462,17 @@ PYBIND11_MODULE(simgrid, m)
           "wait_any", py::overload_cast<const std::vector<simgrid::s4u::CommPtr>&>(&simgrid::s4u::Comm::wait_any),
           py::call_guard<GilScopedRelease>(),
           "Block until the completion of any communication in the list and return the index of the terminated one.");
+
+  /* Class Io */
+  py::class_<simgrid::s4u::Io, simgrid::s4u::IoPtr>(m, "Io", "I/O activities")
+      .def("test", &simgrid::s4u::Io::test, py::call_guard<GilScopedRelease>(), "Test whether the I/O is terminated.")
+      .def("wait", &simgrid::s4u::Io::wait, py::call_guard<GilScopedRelease>(),
+           "Block until the completion of that I/O operation")
+      .def_static(
+          "wait_any_for", &simgrid::s4u::Io::wait_any_for, py::call_guard<GilScopedRelease>(),
+          "Block until the completion of any I/O in the list (or timeout) and return the index of the terminated one.")
+      .def_static("wait_any", &simgrid::s4u::Io::wait_any, py::call_guard<GilScopedRelease>(),
+                  "Block until the completion of any I/O in the list and return the index of the terminated one.");
 
   /* Class Exec */
   py::class_<simgrid::s4u::Exec, simgrid::s4u::ExecPtr>(m, "Exec", "Execution")

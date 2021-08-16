@@ -529,6 +529,8 @@ include examples/python/exec-dvfs/exec-dvfs.py
 include examples/python/exec-dvfs/exec-dvfs.tesh
 include examples/python/exec-remote/exec-remote.py
 include examples/python/exec-remote/exec-remote.tesh
+include examples/python/io-degradation/io-degradation.py
+include examples/python/io-degradation/io-degradation.tesh
 include examples/python/network-nonlinear/network-nonlinear.py
 include examples/python/network-nonlinear/network-nonlinear.tesh
 include examples/smpi/NAS/DGraph.c
