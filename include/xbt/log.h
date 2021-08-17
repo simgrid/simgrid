@@ -91,9 +91,7 @@ typedef enum {
   void _XBT_LOGV_CTOR(catName)(void)                                                                                   \
   {                                                                                                                    \
     XBT_LOG_EXTERNAL_CATEGORY(catName);                                                                                \
-    if (!_XBT_LOGV(catName).initialized) {                                                                             \
-      _xbt_log_cat_init(&_XBT_LOGV(catName), xbt_log_priority_uninitialized);                                          \
-    }                                                                                                                  \
+    (void)_xbt_log_cat_init(&_XBT_LOGV(catName), xbt_log_priority_uninitialized);                                      \
   }                                                                                                                    \
   XBT_EXPORT_NO_IMPORT s_xbt_log_category_t _XBT_LOGV(catName) = {                                                     \
       &_XBT_LOGV(parent),                                                                                              \

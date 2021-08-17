@@ -107,7 +107,7 @@ void AppSide::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg) cons
 {
   bool res = mc::actor_is_enabled(kernel::actor::ActorImpl::by_pid(msg->aid));
   s_mc_message_int_t answer{MessageType::ACTOR_ENABLED_REPLY, res};
-  channel_.send(answer);
+  xbt_assert(channel_.send(answer) == 0, "Could not send ACTOR_ENABLED_REPLY");
 }
 
 #define assert_msg_size(_name_, _type_)                                                                                \
