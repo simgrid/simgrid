@@ -1,6 +1,3 @@
-//exclude from clang static analysis, as there is an intentional uninitialized value passed to MPI calls.
-#ifndef __clang_analyzer__
-
 #include "mpi.h"
 #include <stdio.h>
 #include <string.h>
@@ -42,10 +39,12 @@ int main(int argc, char** argv)
   for (int i = 0; i < nprocs; i++)
     alltoallvcounts[i] = BOUNDED(i + rank);
 
-  int* recvbuf;
-  int* displs;
-  int* counts;
-  int* rcounts;
+  int* dummy_buffer = malloc(sizeof(int));
+  // initialize buffers with an invalid value (we want to trigger a valgrind error if they are used)
+  int* recvbuf      = dummy_buffer + 1;
+  int* displs       = dummy_buffer + 1;
+  int* counts       = dummy_buffer + 1;
+  int* rcounts      = dummy_buffer + 1;
   if (rank == 0)
     setup_recvbuf(nprocs, &recvbuf, &displs, &counts, &rcounts);
 
@@ -58,6 +57,7 @@ int main(int argc, char** argv)
   MPI_Scatterv(recvbuf, counts, displs, MPI_INT, sendbuf, BOUNDED(rank), MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Reduce(sendbuf, recvbuf, BUFSIZE, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
 
+  free(dummy_buffer);
   if (rank != 0)
     setup_recvbuf(nprocs, &recvbuf, &displs, &counts, &rcounts);
 
@@ -88,5 +88,3 @@ int main(int argc, char** argv)
   MPI_Finalize();
   return 0;
 }
-
-#endif
