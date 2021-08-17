@@ -53,7 +53,7 @@ class Receiver:
     pending_comms = []
 
     this_actor.info("Wait for %d messages asynchronously" % self.msg_count)
-    for i in range(self.msg_count):
+    for _ in range(self.msg_count):
       comm, data = mbox.get_async()
       pending_comms.append(comm)
       pending_msgs.append(data)

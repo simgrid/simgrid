@@ -175,7 +175,7 @@ def create_torus_cluster():
 #####################################################################################################
 
 
-def create_fatTree_cluster():
+def create_fat_tree_cluster():
     """
     Creates a Fat-Tree cluster
 
@@ -283,7 +283,7 @@ if __name__ == '__main__':
     if platform == "torus":
         create_torus_cluster()
     elif platform == "fatTree":
-        create_fatTree_cluster()
+        create_fat_tree_cluster()
     elif platform == "dragonfly":
         create_dragonfly_cluster()
     else:

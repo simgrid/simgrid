@@ -223,9 +223,9 @@ PYBIND11_MODULE(simgrid, m)
           "Registers the main function of an actor");
 
   /* Class Netzone */
-  py::class_<simgrid::s4u::NetZone, std::unique_ptr<simgrid::s4u::NetZone, py::nodelete>>(m, "NetZone",
-                                                                                          "Networking Zones")
-      .def_static("create_full_zone", &simgrid::s4u::create_full_zone, "Creates a zone of type FullZone")
+  py::class_<simgrid::s4u::NetZone, std::unique_ptr<simgrid::s4u::NetZone, py::nodelete>> netzone(m, "NetZone",
+                                                                                                  "Networking Zones");
+  netzone.def_static("create_full_zone", &simgrid::s4u::create_full_zone, "Creates a zone of type FullZone")
       .def_static("create_torus_zone", &simgrid::s4u::create_torus_zone, "Creates a cluster of type Torus")
       .def_static("create_fatTree_zone", &simgrid::s4u::create_fatTree_zone, "Creates a cluster of type Fat-Tree")
       .def_static("create_dragonfly_zone", &simgrid::s4u::create_dragonfly_zone, "Creates a cluster of type Dragonfly")
@@ -357,8 +357,8 @@ PYBIND11_MODULE(simgrid, m)
       .export_values();
 
   /* Class NetPoint */
-  py::class_<simgrid::kernel::routing::NetPoint, std::unique_ptr<simgrid::kernel::routing::NetPoint, py::nodelete>>(
-      m, "NetPoint", "NetPoint object");
+  py::class_<simgrid::kernel::routing::NetPoint, std::unique_ptr<simgrid::kernel::routing::NetPoint, py::nodelete>>
+      netpoint(m, "NetPoint", "NetPoint object");
 
   /* Class Link */
   py::class_<simgrid::s4u::Link, std::unique_ptr<simgrid::s4u::Link, py::nodelete>> link(m, "Link", "Network link");
@@ -451,7 +451,7 @@ PYBIND11_MODULE(simgrid, m)
   py::class_<PyGetAsync>(m, "PyGetAsync", "Wrapper for async get communications")
       .def(py::init<>())
       .def(
-          "get", [](PyGetAsync* self) { return py::reinterpret_steal<py::object>(*(self->get())); },
+          "get", [](const PyGetAsync* self) { return py::reinterpret_steal<py::object>(*(self->get())); },
           "Get python object after async communication in receiver side");
 
   /* Class Comm */
