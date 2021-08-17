@@ -1,32 +1,32 @@
 #!/usr/bin/env tesh
 
 $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/io-degradation.py "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [657.894737] (1:@bob) Disk: Edel (SSD), concurrent read: 1, estimated bandwidth: 152.000000
-> [1421.253515] (1:@bob) Disk: Edel (SSD), concurrent write: 1, estimated bandwidth: 131.000000
-> [2922.755017] (1:@bob) Disk: Griffon (SATA II), concurrent read: 1, estimated bandwidth: 66.600000
-> [2922.757017] (1:@bob) Disk: Griffon (SATA II), concurrent write: 1, estimated bandwidth: 50000000.001182
-> [4553.191800] (1:@bob) Disk: Edel (SSD), concurrent read: 3, estimated bandwidth: 184.000000
-> [4553.193564] (1:@bob) Disk: Edel (SSD), concurrent write: 3, estimated bandwidth: 170000000.022058
-> [9300.029007] (1:@bob) Disk: Griffon (SATA II), concurrent read: 3, estimated bandwidth: 63.200000
-> [9300.035007] (1:@bob) Disk: Griffon (SATA II), concurrent write: 3, estimated bandwidth: 50000000.004972
-> [11715.493945] (1:@bob) Disk: Edel (SSD), concurrent read: 5, estimated bandwidth: 207.000000
-> [11715.496886] (1:@bob) Disk: Edel (SSD), concurrent write: 5, estimated bandwidth: 170000000.039581
-> [20076.700899] (1:@bob) Disk: Griffon (SATA II), concurrent read: 5, estimated bandwidth: 59.800000
-> [20076.710899] (1:@bob) Disk: Griffon (SATA II), concurrent write: 5, estimated bandwidth: 50000000.008004
-> [23258.529081] (1:@bob) Disk: Edel (SSD), concurrent read: 7, estimated bandwidth: 220.000000
-> [23258.533199] (1:@bob) Disk: Edel (SSD), concurrent write: 7, estimated bandwidth: 170000000.009542
-> [35669.880716] (1:@bob) Disk: Griffon (SATA II), concurrent read: 7, estimated bandwidth: 56.400000
-> [35669.894716] (1:@bob) Disk: Griffon (SATA II), concurrent write: 7, estimated bandwidth: 49999999.989814
-> [39634.652426] (1:@bob) Disk: Edel (SSD), concurrent read: 9, estimated bandwidth: 227.000000
-> [39634.657720] (1:@bob) Disk: Edel (SSD), concurrent write: 9, estimated bandwidth: 169999999.992853
-> [56615.789795] (1:@bob) Disk: Griffon (SATA II), concurrent read: 9, estimated bandwidth: 53.000000
-> [56615.807795] (1:@bob) Disk: Griffon (SATA II), concurrent write: 9, estimated bandwidth: 50000000.010025
-> [61336.837838] (1:@bob) Disk: Edel (SSD), concurrent read: 11, estimated bandwidth: 233.000000
-> [61336.844309] (1:@bob) Disk: Edel (SSD), concurrent write: 11, estimated bandwidth: 170000000.077813
-> [83514.263663] (1:@bob) Disk: Griffon (SATA II), concurrent read: 11, estimated bandwidth: 49.600000
-> [83514.285663] (1:@bob) Disk: Griffon (SATA II), concurrent write: 11, estimated bandwidth: 50000000.006350
-> [88999.517731] (1:@bob) Disk: Edel (SSD), concurrent read: 13, estimated bandwidth: 237.000000
-> [88999.525378] (1:@bob) Disk: Edel (SSD), concurrent write: 13, estimated bandwidth: 169999999.974881
-> [117138.053517] (1:@bob) Disk: Griffon (SATA II), concurrent read: 13, estimated bandwidth: 46.200000
-> [117138.079517] (1:@bob) Disk: Griffon (SATA II), concurrent write: 13, estimated bandwidth: 50000000.003806
+> [657.894737] (1:runner@bob) Disk: Edel (SSD), concurrent read: 1, estimated bandwidth: 152.000000
+> [1421.253515] (1:runner@bob) Disk: Edel (SSD), concurrent write: 1, estimated bandwidth: 131.000000
+> [2922.755017] (1:runner@bob) Disk: Griffon (SATA II), concurrent read: 1, estimated bandwidth: 66.600000
+> [2922.757017] (1:runner@bob) Disk: Griffon (SATA II), concurrent write: 1, estimated bandwidth: 50000000.001182
+> [4553.191800] (1:runner@bob) Disk: Edel (SSD), concurrent read: 3, estimated bandwidth: 184.000000
+> [4553.193564] (1:runner@bob) Disk: Edel (SSD), concurrent write: 3, estimated bandwidth: 170000000.022058
+> [9300.029007] (1:runner@bob) Disk: Griffon (SATA II), concurrent read: 3, estimated bandwidth: 63.200000
+> [9300.035007] (1:runner@bob) Disk: Griffon (SATA II), concurrent write: 3, estimated bandwidth: 50000000.004972
+> [11715.493945] (1:runner@bob) Disk: Edel (SSD), concurrent read: 5, estimated bandwidth: 207.000000
+> [11715.496886] (1:runner@bob) Disk: Edel (SSD), concurrent write: 5, estimated bandwidth: 170000000.039581
+> [20076.700899] (1:runner@bob) Disk: Griffon (SATA II), concurrent read: 5, estimated bandwidth: 59.800000
+> [20076.710899] (1:runner@bob) Disk: Griffon (SATA II), concurrent write: 5, estimated bandwidth: 50000000.008004
+> [23258.529081] (1:runner@bob) Disk: Edel (SSD), concurrent read: 7, estimated bandwidth: 220.000000
+> [23258.533199] (1:runner@bob) Disk: Edel (SSD), concurrent write: 7, estimated bandwidth: 170000000.009542
+> [35669.880716] (1:runner@bob) Disk: Griffon (SATA II), concurrent read: 7, estimated bandwidth: 56.400000
+> [35669.894716] (1:runner@bob) Disk: Griffon (SATA II), concurrent write: 7, estimated bandwidth: 49999999.989814
+> [39634.652426] (1:runner@bob) Disk: Edel (SSD), concurrent read: 9, estimated bandwidth: 227.000000
+> [39634.657720] (1:runner@bob) Disk: Edel (SSD), concurrent write: 9, estimated bandwidth: 169999999.992853
+> [56615.789795] (1:runner@bob) Disk: Griffon (SATA II), concurrent read: 9, estimated bandwidth: 53.000000
+> [56615.807795] (1:runner@bob) Disk: Griffon (SATA II), concurrent write: 9, estimated bandwidth: 50000000.010025
+> [61336.837838] (1:runner@bob) Disk: Edel (SSD), concurrent read: 11, estimated bandwidth: 233.000000
+> [61336.844309] (1:runner@bob) Disk: Edel (SSD), concurrent write: 11, estimated bandwidth: 170000000.077813
+> [83514.263663] (1:runner@bob) Disk: Griffon (SATA II), concurrent read: 11, estimated bandwidth: 49.600000
+> [83514.285663] (1:runner@bob) Disk: Griffon (SATA II), concurrent write: 11, estimated bandwidth: 50000000.006350
+> [88999.517731] (1:runner@bob) Disk: Edel (SSD), concurrent read: 13, estimated bandwidth: 237.000000
+> [88999.525378] (1:runner@bob) Disk: Edel (SSD), concurrent write: 13, estimated bandwidth: 169999999.974881
+> [117138.053517] (1:runner@bob) Disk: Griffon (SATA II), concurrent read: 13, estimated bandwidth: 46.200000
+> [117138.079517] (1:runner@bob) Disk: Griffon (SATA II), concurrent write: 13, estimated bandwidth: 50000000.003806
 > [117138.079517] (0:maestro@) Simulated time: 117138
