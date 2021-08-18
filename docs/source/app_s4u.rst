@@ -1030,6 +1030,7 @@ Receiving data
    .. group-tab:: Python
 
        .. automethod:: simgrid.Mailbox.get
+       .. automethod:: simgrid.Mailbox.get_async
 
    .. group-tab:: C
 
@@ -1083,6 +1084,16 @@ Basic management
       idiom on disks because SimGrid does not allow (yet) to create nor
       destroy resources once the simulation is started. 
          
+      .. doxygenfunction:: simgrid::s4u::Disk::seal()
+
+   .. group-tab:: Python
+
+      .. code:: Python
+
+         from simgrid import Disk
+
+      .. automethod:: simgrid.Disk.seal
+
 
 Querying info
 -------------
@@ -1099,6 +1110,12 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Disk::get_read_bandwidth() const
       .. doxygenfunction:: simgrid::s4u::Disk::get_write_bandwidth() const
       .. doxygenfunction:: simgrid::s4u::Disk::set_property(const std::string &, const std::string &value)
+      .. doxygenfunction:: simgrid::s4u::Disk::set_sharing_policy(Operation op, SharingPolicy policy, const s4u::NonLinearResourceCb& cb = {})
+
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.Disk.name
+      .. automethod:: simgrid.Disk.set_sharing_policy
 
 I/O operations
 --------------
@@ -1112,6 +1129,13 @@ I/O operations
       .. doxygenfunction:: simgrid::s4u::Disk::read_async(sg_size_t size) const
       .. doxygenfunction:: simgrid::s4u::Disk::write(sg_size_t size) const
       .. doxygenfunction:: simgrid::s4u::Disk::write_async(sg_size_t size) const
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Disk.read
+      .. automethod:: simgrid.Disk.read_async
+      .. automethod:: simgrid.Disk.write
+      .. automethod:: simgrid.Disk.write_async
 
 Signals
 -------
@@ -1149,12 +1173,15 @@ Basic management
       destroy resources once the simulation is started. 
 
       .. doxygenfunction:: simgrid::s4u::Host::destroy()
+      .. doxygenfunction:: simgrid::s4u::Host::seal()
 
    .. group-tab:: Python
 
       .. code:: Python
 
          from simgrid import Host
+
+      .. automethod:: simgrid.Host.seal
 
    .. group-tab:: C
 
@@ -1193,6 +1220,23 @@ Retrieving hosts
       .. doxygenfunction:: sg_host_count()
       .. doxygenfunction:: sg_host_list()
       .. doxygenfunction:: sg_hosts_as_dynar()
+
+Modifying characteristics
+-------------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Host::set_core_count(int core_count)
+      .. doxygenfunction:: simgrid::s4u::Host::set_coordinates(const std::string& coords)
+      .. doxygenfunction:: simgrid::s4u::Host::set_sharing_policy(SharingPolicy policy, const s4u::NonLinearResourceCb& cb = {})
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Host.set_core_count
+      .. automethod:: simgrid.Host.set_coordinates
+      .. automethod:: simgrid.Host.set_sharing_policy
 
 Querying info
 -------------
@@ -1255,6 +1299,10 @@ Retrieving components
       .. doxygenfunction:: simgrid::s4u::Host::get_all_actors() const
       .. doxygenfunction:: simgrid::s4u::Host::get_disks() const
       .. doxygenfunction:: simgrid::s4u::Host::remove_disk(const std::string &disk_name)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Host.get_disks
 
    .. group-tab:: C
 
@@ -1329,6 +1377,13 @@ using :cpp:func:`Comm::sendto() <simgrid::s4u::Comm::sendto()>`.
       .. doxygenfunction:: simgrid::s4u::Host::get_netpoint() const
       .. doxygenfunction:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< Link * > &links, double *latency) const
       .. doxygenfunction:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< kernel::resource::LinkImpl * > &links, double *latency) const
+      .. doxygenfunction:: simgrid::s4u::Host::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
+      .. doxygenfunction:: simgrid::s4u::Host::create_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Host.get_netpoint
+      .. automethod:: simgrid.Host.create_disk
 
    .. group-tab:: C
 
@@ -1374,11 +1429,15 @@ Basic management
       idiom on hosts because SimGrid does not allow (yet) to create nor
       destroy resources once the simulation is started. 
 
+      .. doxygenfunction:: simgrid::s4u::Link::seal()
+
    .. group-tab:: Python
 
       .. code:: Python
 
          from simgrid import Link
+
+      .. automethod:: simgrid.Link.seal
 
    .. group-tab:: C
 
@@ -1402,6 +1461,10 @@ Retrieving links
 
       .. doxygenfunction:: simgrid::s4u::Link::by_name(const std::string &name)
       .. doxygenfunction:: simgrid::s4u::Link::by_name_or_null(const std::string &name)
+
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.Link.name
 
    .. group-tab:: C
 
@@ -1440,6 +1503,15 @@ Modifying characteristics
 
       .. doxygenfunction:: simgrid::s4u::Link::set_bandwidth(double value)
       .. doxygenfunction:: simgrid::s4u::Link::set_latency(double value)
+      .. doxygenfunction:: simgrid::s4u::Link::set_latency(const std::string& value)
+      .. doxygenfunction:: simgrid::s4u::Link::set_concurrency_limit(int limit)
+      .. doxygenfunction:: simgrid::s4u::Link::set_sharing_policy(SharingPolicy policy, const NonLinearResourceCb& cb = {})
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Link.set_latency
+      .. automethod:: simgrid.Link.set_concurrency_limit
+      .. automethod:: simgrid.Link.set_sharing_policy
 
    .. group-tab:: C
 
@@ -1496,6 +1568,10 @@ WIFI links
 
       .. doxygenfunction:: simgrid::s4u::Link::set_host_wifi_rate
 
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Link.set_host_wifi_rate
+
 Signals
 -------
 
@@ -1533,6 +1609,17 @@ Basic management
       idiom on network zones because SimGrid does not allow (yet) to create nor
       destroy resources once the simulation is started. 
 
+      .. automethod:: simgrid.NetZone.seal
+
+   .. group-tab:: Python
+
+      .. code:: Python
+
+         from simgrid import NetZone
+
+      .. autoclass:: simgrid.NetZone
+      .. automethod:: simgrid.NetZone.seal
+
    .. group-tab:: C
 
       .. code:: C
@@ -1569,6 +1656,12 @@ Querying info
 
       .. doxygenfunction:: simgrid::s4u::NetZone::get_cname() const
       .. doxygenfunction:: simgrid::s4u::NetZone::get_name() const
+      .. doxygenfunction:: simgrid::s4u::NetZone::get_netpoint()
+
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.NetZone.name
+      .. automethod:: simgrid.NetZone.get_netpoint
 
    .. group-tab:: C
 
@@ -1584,6 +1677,10 @@ User data and properties
       .. doxygenfunction:: simgrid::s4u::NetZone::get_properties() const
       .. doxygenfunction:: simgrid::s4u::NetZone::get_property(const std::string &key) const
       .. doxygenfunction:: simgrid::s4u::NetZone::set_property(const std::string &key, const std::string &value)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.NetZone.set_property
 
    .. group-tab:: C
 
@@ -1616,6 +1713,12 @@ Routing data
       .. doxygenfunction:: simgrid::s4u::NetZone::add_bypass_route
       .. doxygenfunction:: simgrid::s4u::NetZone::get_children() const
       .. doxygenfunction:: simgrid::s4u::NetZone::get_parent() const
+      .. doxygenfunction:: simgrid::s4u::NetZone::set_parent(const NetZone* parent)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.NetZone.add_route
+      .. automethod:: simgrid.NetZone.set_parent
 
    .. group-tab:: C
 
@@ -1630,6 +1733,87 @@ Signals
 
      .. doxygenvariable:: simgrid::s4u::NetZone::on_creation
      .. doxygenvariable:: simgrid::s4u::NetZone::on_seal
+
+Creating resources
+------------------
+
+Zones
+^^^^^
+.. tabs::
+
+  .. group-tab:: C++
+
+     .. doxygenfunction:: simgrid::s4u::create_full_zone(const std::string& name)
+     .. doxygenfunction:: simgrid::s4u::create_empty_zone(const std::string& name)
+     .. doxygenfunction:: simgrid::s4u::create_star_zone(const std::string& name)
+     .. doxygenfunction:: simgrid::s4u::create_dijkstra_zone(const std::string& name, bool cache)
+     .. doxygenfunction:: simgrid::s4u::create_floyd_zone(const std::string& name)
+     .. doxygenfunction:: simgrid::s4u::create_vivaldi_zone(const std::string& name)
+     .. doxygenfunction:: simgrid::s4u::create_wifi_zone(const std::string& name)
+     .. doxygenfunction:: simgrid::s4u::create_torus_zone(const std::string& name, const NetZone* parent, const std::vector<unsigned int>& dimensions, const ClusterCallbacks& set_callbacks, double bandwidth, double latency, Link::SharingPolicy sharing_policy)
+     .. doxygenfunction:: simgrid::s4u::create_fatTree_zone(const std::string& name, const NetZone* parent, const FatTreeParams& parameters, const ClusterCallbacks& set_callbacks, double bandwidth, double latency, Link::SharingPolicy sharing_policy)
+     .. doxygenfunction:: simgrid::s4u::create_dragonfly_zone(const std::string& name, const NetZone* parent, const DragonflyParams& parameters, const ClusterCallbacks& set_callbacks, double bandwidth, double latency, Link::SharingPolicy sharing_policy)
+
+  .. group-tab:: Python
+
+     .. automethod:: simgrid.NetZone.create_full_zone
+     .. automethod:: simgrid.NetZone.create_empty_zone
+     .. automethod:: simgrid.NetZone.create_star_zone
+     .. automethod:: simgrid.NetZone.create_dijkstra_zone
+     .. automethod:: simgrid.NetZone.create_floyd_zone
+     .. automethod:: simgrid.NetZone.create_vivaldi_zone
+     .. automethod:: simgrid.NetZone.create_wifi_zone
+     .. automethod:: simgrid.NetZone.create_torus_zone
+     .. automethod:: simgrid.NetZone.create_fatTree_zone
+     .. automethod:: simgrid.NetZone.create_dragonfly_zone
+
+Hosts
+^^^^^
+
+.. tabs::
+
+  .. group-tab:: C++
+
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, double speed)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, const std::vector<std::string>& speed_per_pstate)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_host(const std::string& name, const std::string& speed)
+
+  .. group-tab:: Python
+
+     .. automethod:: simgrid.NetZone.create_host
+
+Links
+^^^^^
+
+.. tabs::
+
+  .. group-tab:: C++
+
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string& name, const std::vector<double>& bandwidths)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string& name, double bandwidth)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string& name, const std::vector<std::string>& bandwidthds)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_link(const std::string& name, const std::string& bandwidth)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_split_duplex_link(const std::string& name, const std::string& bandwidth)
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_split_duplex_link(const std::string& name, double bandwidth)
+
+  .. group-tab:: Python
+
+     .. automethod:: simgrid.NetZone.create_link
+     .. automethod:: simgrid.NetZone.create_split_duplex_link
+
+Router
+^^^^^^
+
+.. tabs::
+
+  .. group-tab:: C++
+
+     .. doxygenfunction:: simgrid::s4u::NetZone::create_router(const std::string& name)
+
+  .. group-tab:: Python
+
+     .. automethod:: simgrid.NetZone.create_router
 
 .. _API_s4u_VirtualMachine:
 
@@ -1743,6 +1927,10 @@ Signals
       .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_suspend
 
 .. _API_s4u_Activity:
+
+==========
+Activities
+==========
 
 ==============
 class Activity
@@ -2073,6 +2261,15 @@ Life cycle
       .. doxygenfunction:: simgrid::s4u::Io::test
       .. doxygenfunction:: simgrid::s4u::Io::wait
       .. doxygenfunction:: simgrid::s4u::Io::wait_for
+      .. doxygenfunction:: simgrid::s4u::Io::wait_any
+      .. doxygenfunction:: simgrid::s4u::Io::wait_any_for
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Io.test
+      .. automethod:: simgrid.Io.wait
+      .. automethod:: simgrid.Io.wait_any_for
+      .. automethod:: simgrid.Io.wait_any
 
 .. _API_s4u_Synchronizations:
 

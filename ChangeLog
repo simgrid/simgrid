@@ -22,6 +22,16 @@ New features:
  (multiplicative factor applied when updating the amount of work remaining).
    - Example: examples/cpp/exec-cpu-factors
 
+Python:
+ - Added support to programmatic platform creation in Python.
+ - Several new methods were added to Python interface. For more details, see
+ the corresponding documentation.
+ - New python examples:
+   - Clusters: examples/python/clusters-multicpu
+   - Disk: examples/python/io-degradation
+   - CPU: examples/python/exec-cpu-nonlienar
+   - Link: examples/python/network-nonlinear
+
 S4U:
  - New: s4u::Disk::set_sharing_policy() and s4u::Host::set_sharing_policy().
    Allows the configuration of non-linear resource sharing for hosts and
@@ -38,6 +48,7 @@ Documentation:
   * New section "Release Notes" documenting recent and current developments.
   * New section "Modeling I/O: the realistic way" presenting how to properly
   model disks in SimGrid.
+  * Improvements in API Reference for C++ and Python interfaces.
 
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GF: issues on GForge; GH: issues on GitHub)
