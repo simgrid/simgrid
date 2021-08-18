@@ -321,7 +321,7 @@ void xbt_log_parent_set(xbt_log_category_t cat, xbt_log_category_t parent)
   parent->firstChild = cat;
 
   if (not parent->initialized)
-    _xbt_log_cat_init(parent, xbt_log_priority_uninitialized /* ignored */ );
+    (void)_xbt_log_cat_init(parent, xbt_log_priority_uninitialized /* ignored */);
 
   cat->threshold = parent->threshold;
 

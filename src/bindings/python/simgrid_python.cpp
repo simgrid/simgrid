@@ -512,10 +512,10 @@ PYBIND11_MODULE(simgrid, m)
                                             "application")
       .def(
           "create",
-          [](py::str name, Host* host, py::object fun, py::args args) {
+          [](py::str name, Host* h, py::object fun, py::args args) {
             fun.inc_ref();  // FIXME: why is this needed for tests like exec-async, exec-dvfs and exec-remote?
             args.inc_ref(); // FIXME: why is this needed for tests like actor-migrate?
-            return simgrid::s4u::Actor::create(name, host, [fun, args]() {
+            return simgrid::s4u::Actor::create(name, h, [fun, args]() {
               GilScopedAcquire py_context;
               try {
                 fun(*args);
