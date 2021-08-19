@@ -44,10 +44,6 @@ foreach(x coll-allgather coll-allgatherv coll-allreduce coll-allreduce-with-leak
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
 endforeach()
 
-if (CMAKE_C_COMPILER_ID MATCHES "Clang|LLVM")
-    set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/replay-ti-colls/replay-ti-colls.c PROPERTIES COMPILE_FLAGS "-Wno-sometimes-uninitialized")
-endif()
-
 set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/fort_args/fort_args.f90 PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-large.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-automatic.tesh
