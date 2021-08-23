@@ -42,6 +42,19 @@ static void wizard()
 
   exec->wait();
   XBT_INFO("Done!");
+
+  XBT_INFO("And now, even harder. Start a remote activity on Ginette and turn off the host after 0.5 sec");
+  exec = simgrid::s4u::this_actor::exec_init(48.492e6)->set_host(ginette);
+  exec->start();
+
+  simgrid::s4u::this_actor::sleep_for(0.5);
+  ginette->turn_off();
+  try {
+    exec->wait();
+  } catch (const simgrid::HostFailureException& e) {
+    XBT_INFO("Execution failed on %s", ginette->get_cname());
+  }
+  XBT_INFO("Done!");
 }
 
 int main(int argc, char* argv[])

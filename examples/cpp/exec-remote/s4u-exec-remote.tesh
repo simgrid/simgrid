@@ -10,3 +10,6 @@ $ ${bindir:=.}/s4u-exec-remote ${platfdir}/small_platform.xml "--log=root.fmt:[%
 > [  1.500000] (1:test@Fafard) Loads before the move: Boivin=0; Fafard=0; Ginette=48492000
 > [  1.600000] (1:test@Fafard) Loads after the move: Boivin=98095000; Fafard=0; Ginette=0
 > [  2.000000] (1:test@Fafard) Done!
+> [  2.000000] (1:test@Fafard) And now, even harder. Start a remote activity on Ginette and turn off the host after 0.5 sec
+> [  2.500000] (1:test@Fafard) Execution failed on Ginette
+> [  2.500000] (1:test@Fafard) Done!
