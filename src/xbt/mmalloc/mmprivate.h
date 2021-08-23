@@ -62,7 +62,7 @@
    sign of the result is machine dependent for negative values, so force
    it to be treated as an unsigned int. */
 
-#define ADDR2UINT(addr)  ((uintptr_t) ((char*) (addr) - (char*) NULL))
+#define ADDR2UINT(addr)  ((uintptr_t) (addr))
 #define RESIDUAL(addr,bsize) ((uintptr_t) (ADDR2UINT (addr) % (bsize)))
 
 /* Determine the amount of memory spanned by the initial heap table
