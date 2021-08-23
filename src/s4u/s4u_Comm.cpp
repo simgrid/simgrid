@@ -44,7 +44,17 @@ ssize_t Comm::wait_any_for(const std::vector<CommPtr>& comms, double timeout)
   std::vector<kernel::activity::CommImpl*> rcomms(comms.size());
   std::transform(begin(comms), end(comms), begin(rcomms),
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
-  ssize_t changed_pos = simcall_comm_waitany(rcomms.data(), rcomms.size(), timeout);
+  ssize_t changed_pos = -1;
+  try {
+    changed_pos = simcall_comm_waitany(rcomms.data(), rcomms.size(), timeout);
+  } catch (const NetworkFailureException& e) {
+    for (auto c : comms) {
+      if (c->pimpl_->state_ == kernel::activity::State::FAILED) {
+        c->complete(State::FAILED);
+      }
+    }
+    e.rethrow_nested(XBT_THROW_POINT, boost::core::demangle(typeid(e).name()) + " raised in kernel mode.");
+  }
   if (changed_pos != -1)
     comms.at(changed_pos)->complete(State::FINISHED);
   return changed_pos;
@@ -214,6 +224,8 @@ Comm* Comm::wait_for(double timeout)
   switch (state_) {
     case State::FINISHED:
       break;
+    case State::FAILED:
+      throw NetworkFailureException(XBT_THROW_POINT, "Cannot wait for a failed communication");
 
     case State::INITED:
     case State::STARTING: // It's not started yet. Do it in one simcall if it's a regular communication
@@ -232,7 +244,12 @@ Comm* Comm::wait_for(double timeout)
       break;
 
     case State::STARTED:
-      simcall_comm_wait(get_impl(), timeout);
+      try {
+        simcall_comm_wait(get_impl(), timeout);
+      } catch (const NetworkFailureException& e) {
+        complete(State::FAILED);
+        e.rethrow_nested(XBT_THROW_POINT, boost::core::demangle(typeid(e).name()) + " raised in kernel mode.");
+      }
       break;
 
     case State::CANCELED:

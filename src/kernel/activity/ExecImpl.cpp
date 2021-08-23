@@ -184,6 +184,7 @@ void ExecImpl::finish()
     }
     switch (state_) {
       case State::FAILED:
+        piface_->complete(s4u::Activity::State::FAILED);
         if (simcall->issuer_->get_host()->is_on())
           simcall->issuer_->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
         else /* else, the actor will be killed with no possibility to survive */
@@ -249,7 +250,6 @@ void ExecImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<ExecImpl
   for (auto* exec : execs) {
     /* associate this simcall to the the synchro */
     exec->simcalls_.push_back(&issuer->simcall_);
-
     /* see if the synchro is already finished */
     if (exec->state_ != State::WAITING && exec->state_ != State::RUNNING) {
       exec->finish();
