@@ -256,7 +256,7 @@ void AppSide::ignore_heap(void* address, std::size_t size) const
     message.fragment = -1;
     heap->heapinfo[message.block].busy_block.ignore++;
   } else {
-    message.fragment = address ? (ADDR2UINT(address) % BLOCKSIZE) >> heap->heapinfo[message.block].type : 0;
+    message.fragment = (ADDR2UINT(address) % BLOCKSIZE) >> heap->heapinfo[message.block].type;
     heap->heapinfo[message.block].busy_frag.ignore[message.fragment]++;
   }
 
