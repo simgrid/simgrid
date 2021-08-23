@@ -31,14 +31,13 @@
 int main(int argc, char *argv[])
 {
     MPI_Datatype column[LOOPS], xpose[LOOPS];
-    double t[NUM_SIZES], ttmp, tmean;
+    double t[NUM_SIZES], ttmp;
     double tMeanLower, tMeanHigher;
     int size;
     int i, j, errs = 0, nrows, ncols;
 
     MPI_Init(&argc, &argv);
 
-    tmean = 0;
     size = 1;
     for (i = -SKIP; i < NUM_SIZES; i++) {
         nrows = ncols = size;
@@ -59,7 +58,6 @@ int main(int argc, char *argv[])
                  * time large enough */
                 t[i] = 0;
             }
-            tmean += t[i];
         }
 
         for (j = 0; j < LOOPS; j++) {
@@ -70,7 +68,6 @@ int main(int argc, char *argv[])
         if (i >= 0)
             size *= 2;
     }
-    tmean /= NUM_SIZES;
 
     /* Now, analyze the times to see that they do not grow too fast
      * as a function of size.  As that is a vague criteria, we do the
