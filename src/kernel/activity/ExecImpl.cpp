@@ -184,10 +184,10 @@ void ExecImpl::finish()
     }
     switch (state_) {
       case State::FAILED:
-        simcall->issuer_->context_->set_wannadie();
         if (simcall->issuer_->get_host()->is_on())
           simcall->issuer_->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
-        /* else, the actor will be killed with no possibility to survive */
+        else /* else, the actor will be killed with no possibility to survive */
+          simcall->issuer_->context_->set_wannadie();
         break;
 
       case State::CANCELED:
