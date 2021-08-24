@@ -82,15 +82,11 @@ static void sender(const std::string& recv_name, sg4::Link* l4)
 static void receiver()
 {
   sg4::Mailbox* mbox = sg4::Mailbox::by_name(sg4::this_actor::get_host()->get_name());
-  double* payload    = nullptr;
   while (true) {
-    payload = mbox->get<double>();
-    if (*payload < 0) {
-      delete payload;
+    auto payload = mbox->get_unique<double>();
+    if (*payload < 0)
       break;
-    }
     XBT_INFO("Received data. Elapsed %lf", sg4::Engine::get_clock() - *payload);
-    delete payload;
   }
   XBT_INFO("Bye");
 }

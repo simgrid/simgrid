@@ -119,7 +119,6 @@ static double disk_variability(const std::unordered_map<sg4::Io::OpType, DiskNoi
 static void create_disk(sg4::Host* host, std::mt19937& gen, const std::string& disk_name,
                         const boost::property_tree::ptree& pt)
 {
-
   double read_bw                = pt.get_child("read_bw").begin()->second.get_value<double>() * 1e6;
   double write_bw               = pt.get_child("write_bw").begin()->second.get_value<double>() * 1e6;
   auto* disk                    = host->create_disk(disk_name, read_bw, write_bw);

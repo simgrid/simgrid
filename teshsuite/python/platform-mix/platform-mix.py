@@ -3,9 +3,8 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-from simgrid import Actor, Engine, Comm, Host, Mailbox, NetZone, Link, LinkInRoute, this_actor
+from simgrid import Actor, Engine, Host, Mailbox, NetZone, LinkInRoute, this_actor
 import sys
-import functools
 
 class Sender:
   """
@@ -51,7 +50,8 @@ def load_platform():
   hosts = []
   # dijkstra
   dijkstra = NetZone.create_dijkstra_zone("dijkstra")
-  this_actor.info("Creating zone: " + dijkstra.name)
+  msg_base = "Creating zone: "
+  this_actor.info(msg_base + dijkstra.name)
   dijkstra.set_parent(root)
   host1 = dijkstra.create_host("host1", [1e9, 1e8]).set_core_count(2)
   hosts.append(host1)
@@ -68,7 +68,7 @@ def load_platform():
 
   # vivaldi
   vivaldi = NetZone.create_vivaldi_zone("vivaldi")
-  this_actor.info("Creating zone: " + vivaldi.name)
+  this_actor.info(msg_base + vivaldi.name)
   vivaldi.set_parent(root)
   host3 = vivaldi.create_host("host3", 1e9).set_coordinates("1 1 1").seal()
   host4 = vivaldi.create_host("host4", "1Gf").set_coordinates("2 2 2").seal()
@@ -77,7 +77,7 @@ def load_platform():
 
   # empty
   empty = NetZone.create_empty_zone("empty")
-  this_actor.info("Creating zone: " + empty.name)
+  this_actor.info(msg_base + empty.name)
   empty.set_parent(root)
   host5 = empty.create_host("host5", 1e9)
   hosts.append(host5)
@@ -85,7 +85,7 @@ def load_platform():
 
   # wifi
   wifi = NetZone.create_wifi_zone("wifi")
-  this_actor.info("Creating zone: " + wifi.name)
+  this_actor.info(msg_base + wifi.name)
   wifi.set_parent(root)
   router = wifi.create_router("wifi_router")
   wifi.set_property("access_point", "wifi_router")
@@ -97,15 +97,15 @@ def load_platform():
   wifi.seal()
 
   # create routes between netzones
-  linkA = vivaldi.create_link("linkA", 1e9).seal()
-  linkB = vivaldi.create_link("linkB", "1GBps").seal()
-  linkC = vivaldi.create_link("linkC", "1GBps").seal()
+  link_a = vivaldi.create_link("linkA", 1e9).seal()
+  link_b = vivaldi.create_link("linkB", "1GBps").seal()
+  link_c = vivaldi.create_link("linkC", "1GBps").seal()
   root.add_route(dijkstra.get_netpoint(), vivaldi.get_netpoint(
-  ), host1.get_netpoint(), host3.get_netpoint(), [LinkInRoute(linkA)], True)
+  ), host1.get_netpoint(), host3.get_netpoint(), [LinkInRoute(link_a)], True)
   root.add_route(vivaldi.get_netpoint(), empty.get_netpoint(
-  ), host3.get_netpoint(), host5.get_netpoint(), [LinkInRoute(linkB)], True)
+  ), host3.get_netpoint(), host5.get_netpoint(), [LinkInRoute(link_b)], True)
   root.add_route(empty.get_netpoint(), wifi.get_netpoint(
-  ), host5.get_netpoint(), router, [LinkInRoute(linkC)], True)
+  ), host5.get_netpoint(), router, [LinkInRoute(link_c)], True)
 
   # create actors Sender/Receiver
   Actor.create("sender", hosts[0], Sender(hosts))

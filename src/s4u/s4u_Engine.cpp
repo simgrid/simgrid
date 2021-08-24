@@ -16,6 +16,7 @@
 #include "simgrid/simix.h"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
@@ -443,6 +444,11 @@ void Engine::set_config(const std::string& name, const std::string& value)
   config::set_value(name.c_str(), value);
 }
 
+Engine* Engine::set_default_comm_data_copy_callback(void (*callback)(kernel::activity::CommImpl*, void*, size_t))
+{
+  kernel::activity::CommImpl::set_copy_data_callback(callback);
+  return this;
+}
 } // namespace s4u
 } // namespace simgrid
 

@@ -173,6 +173,8 @@ include examples/cpp/clusters-multicpu/s4u-clusters-multicpu.cpp
 include examples/cpp/clusters-multicpu/s4u-clusters-multicpu.tesh
 include examples/cpp/comm-dependent/s4u-comm-dependent.cpp
 include examples/cpp/comm-dependent/s4u-comm-dependent.tesh
+include examples/cpp/comm-failure/s4u-comm-failure.cpp
+include examples/cpp/comm-failure/s4u-comm-failure.tesh
 include examples/cpp/comm-host2host/s4u-comm-host2host.cpp
 include examples/cpp/comm-host2host/s4u-comm-host2host.tesh
 include examples/cpp/comm-pingpong/s4u-comm-pingpong.cpp
@@ -242,6 +244,8 @@ include examples/cpp/exec-dependent/s4u-exec-dependent.cpp
 include examples/cpp/exec-dependent/s4u-exec-dependent.tesh
 include examples/cpp/exec-dvfs/s4u-exec-dvfs.cpp
 include examples/cpp/exec-dvfs/s4u-exec-dvfs.tesh
+include examples/cpp/exec-failure/s4u-exec-failure.cpp
+include examples/cpp/exec-failure/s4u-exec-failure.tesh
 include examples/cpp/exec-ptask-multicore/s4u-exec-ptask-multicore.cpp
 include examples/cpp/exec-ptask-multicore/s4u-exec-ptask-multicore.tesh
 include examples/cpp/exec-ptask/s4u-exec-ptask.cpp
@@ -525,10 +529,14 @@ include examples/python/exec-async/exec-async.py
 include examples/python/exec-async/exec-async.tesh
 include examples/python/exec-basic/exec-basic.py
 include examples/python/exec-basic/exec-basic.tesh
+include examples/python/exec-cpu-nonlinear/exec-cpu-nonlinear.py
+include examples/python/exec-cpu-nonlinear/exec-cpu-nonlinear.tesh
 include examples/python/exec-dvfs/exec-dvfs.py
 include examples/python/exec-dvfs/exec-dvfs.tesh
 include examples/python/exec-remote/exec-remote.py
 include examples/python/exec-remote/exec-remote.tesh
+include examples/python/io-degradation/io-degradation.py
+include examples/python/io-degradation/io-degradation.tesh
 include examples/python/network-nonlinear/network-nonlinear.py
 include examples/python/network-nonlinear/network-nonlinear.tesh
 include examples/smpi/NAS/DGraph.c

@@ -56,7 +56,7 @@ class Receiver:
 #####################################################################################################
 
 
-def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], id: int) -> typing.Tuple[simgrid.NetPoint, simgrid.NetPoint]:
+def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], ident: int) -> typing.Tuple[simgrid.NetPoint, simgrid.NetPoint]:
     """
     Callback to set a cluster leaf/element
 
@@ -77,7 +77,7 @@ def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], id: int) -> 
 
     :param zone: Cluster netzone being created (usefull to create the hosts/links inside it)
     :param coord: Coordinates in the cluster
-    :param id: Internal identifier in the torus (for information)
+    :param ident: Internal identifier in the torus (for information)
     :return netpoint, gateway: the netpoint to the StarZone and CPU0 as gateway
     """
     num_cpus = 8     # Number of CPUs in the zone
@@ -85,7 +85,7 @@ def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], id: int) -> 
     link_bw = "100GBps"  # Link bw connecting the CPU
     link_lat = "1ns"  # Link latency
 
-    hostname = "host" + str(id)
+    hostname = "host" + str(ident)
     # create the StarZone
     host_zone = simgrid.NetZone.create_star_zone(hostname)
     # setting my Torus parent zone
@@ -113,13 +113,13 @@ def create_hostzone(zone: simgrid.NetZone, coord: typing.List[int], id: int) -> 
 #####################################################################################################
 
 
-def create_limiter(zone: simgrid.NetZone, coord: typing.List[int], id: int) -> simgrid.Link:
+def create_limiter(zone: simgrid.NetZone, coord: typing.List[int], ident: int) -> simgrid.Link:
     """
     Callback to create limiter link (1Gbs) for each netpoint
 
     The coord parameter depends on the cluster being created:
     - Torus: Direct translation of the Torus' dimensions, e.g. (0, 0, 0) for a 3-D Torus
-    - Fat-Tree: A pair (level in the tree, id), e.g. (0, 0) for first leaf in the tree and (1,0) for the first switch at
+    - Fat-Tree: A pair (level in the tree, ident), e.g. (0, 0) for first leaf in the tree and (1,0) for the first switch at
     level 1.
     - Dragonfly: a tuple (group, chassis, blades/routers, nodes), e.g. (0, 0, 0, 0) for first node in the cluster. To
     identify the router inside a (group, chassis, blade), we use MAX_UINT in the last parameter (e.g. 0, 0, 0,
@@ -127,10 +127,10 @@ def create_limiter(zone: simgrid.NetZone, coord: typing.List[int], id: int) -> s
 
     :param zone: Torus netzone being created (usefull to create the hosts/links inside it)
     :param coord: Coordinates in the cluster
-    :param id: Internal identifier in the torus (for information)
+    :param ident: Internal identifier in the torus (for information)
     :return: Limiter link
     """
-    return zone.create_link("limiter-" + str(id), [1e9]).seal()
+    return zone.create_link("limiter-" + str(ident), [1e9]).seal()
 
 
 def create_torus_cluster():
@@ -175,7 +175,7 @@ def create_torus_cluster():
 #####################################################################################################
 
 
-def create_fatTree_cluster():
+def create_fat_tree_cluster():
     """
     Creates a Fat-Tree cluster
 
@@ -283,7 +283,7 @@ if __name__ == '__main__':
     if platform == "torus":
         create_torus_cluster()
     elif platform == "fatTree":
-        create_fatTree_cluster()
+        create_fat_tree_cluster()
     elif platform == "dragonfly":
         create_dragonfly_cluster()
     else:

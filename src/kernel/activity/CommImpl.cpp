@@ -591,6 +591,10 @@ void CommImpl::finish()
       simcall->issuer_->context_->set_wannadie();
     } else {
       switch (state_) {
+        case State::FAILED:
+          simcall->issuer_->exception_ =
+              std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
+          break;
         case State::SRC_TIMEOUT:
           simcall->issuer_->exception_ = std::make_exception_ptr(
               TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the sender"));
@@ -604,17 +608,21 @@ void CommImpl::finish()
         case State::SRC_HOST_FAILURE:
           if (simcall->issuer_ == src_actor_)
             simcall->issuer_->context_->set_wannadie();
-          else
+          else {
+            state_ = kernel::activity::State::FAILED;
             simcall->issuer_->exception_ =
                 std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
+          }
           break;
 
         case State::DST_HOST_FAILURE:
           if (simcall->issuer_ == dst_actor_)
             simcall->issuer_->context_->set_wannadie();
-          else
+          else {
+            state_ = kernel::activity::State::FAILED;
             simcall->issuer_->exception_ =
                 std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
+          }
           break;
 
         case State::LINK_FAILURE:
@@ -630,6 +638,7 @@ void CommImpl::finish()
           } else {
             XBT_DEBUG("I'm neither source nor dest");
           }
+          state_ = kernel::activity::State::FAILED;
           simcall->issuer_->throw_exception(
               std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Link failure")));
           break;

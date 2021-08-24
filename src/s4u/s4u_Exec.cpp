@@ -7,6 +7,7 @@
 #include "simgrid/exec.h"
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Exec.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
@@ -33,6 +34,13 @@ void Exec::complete(Activity::State state)
 ExecPtr Exec::init()
 {
   auto pimpl = kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl());
+  Host::on_state_change.connect([pimpl](s4u::Host const& h) {
+    if (not h.is_on() && pimpl->state_ == kernel::activity::State::RUNNING &&
+        std::find(pimpl->get_hosts().begin(), pimpl->get_hosts().end(), &h) != pimpl->get_hosts().end()) {
+      pimpl->state_ = kernel::activity::State::FAILED;
+      pimpl->post();
+    }
+  });
   return ExecPtr(pimpl->get_iface());
 }
 

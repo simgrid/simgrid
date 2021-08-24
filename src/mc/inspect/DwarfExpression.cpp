@@ -78,7 +78,7 @@ void execute(const Dwarf_Op* ops, std::size_t n, const ExpressionContext& contex
 
         // Pop/drop the top of the stack:
       case DW_OP_drop:
-        stack.pop();
+        (void)stack.pop();
         break;
 
       case DW_OP_swap:

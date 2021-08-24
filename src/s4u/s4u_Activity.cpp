@@ -8,6 +8,8 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Activity.hpp"
 #include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Exec.hpp"
+#include "simgrid/s4u/Io.hpp"
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
@@ -29,6 +31,13 @@ Activity* Activity::wait_for(double timeout)
 {
   if (state_ == State::INITED)
     vetoable_start();
+
+  if (state_ == State::FAILED) {
+    if (dynamic_cast<Exec*>(this))
+      throw HostFailureException(XBT_THROW_POINT, "Cannot wait for a failed exec");
+    if (dynamic_cast<Io*>(this))
+      throw StorageFailureException(XBT_THROW_POINT, "Cannot wait for a failed I/O");
+  }
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::ActivityWaitSimcall observer{issuer, pimpl_.get(), timeout};

@@ -64,13 +64,13 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-bittorrent app-chainsend app-token-ring
                  comm-pingpong comm-ready comm-serialize comm-suspend comm-wait comm-waitany comm-waitall comm-waituntil
-                 comm-dependent comm-host2host
+                 comm-dependent comm-host2host comm-failure
                  cloud-capping cloud-migration cloud-simple
                  dht-chord dht-kademlia
                  energy-exec energy-boot energy-link energy-vm energy-exec-ptask energy-wifi
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-remote exec-waitany exec-waitfor exec-dependent exec-unassigned
-                 exec-ptask-multicore exec-cpu-nonlinear exec-cpu-factors
+                 exec-ptask-multicore exec-cpu-nonlinear exec-cpu-factors exec-failure
                  maestro-set
                  mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert
 		 		 network-wifi
