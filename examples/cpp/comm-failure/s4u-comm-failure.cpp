@@ -44,9 +44,8 @@ public:
     std::vector<sg4::CommPtr> pending_comms;
     pending_comms.push_back(comm1);
     pending_comms.push_back(comm2);
-    long index;
     try {
-      index = sg4::Comm::wait_any(pending_comms);
+      long index = sg4::Comm::wait_any(pending_comms);
       XBT_INFO("Wait any returned index %ld (comm to %s)", index, pending_comms.at(index)->get_mailbox()->get_cname());
     } catch (simgrid::NetworkFailureException& e) {
       XBT_INFO("Sender has experienced a network failure exception, so it knows that something went wrong");
@@ -63,7 +62,7 @@ public:
     }
     XBT_INFO("Wait for remaining comm, just to be nice");
     pending_comms.erase(pending_comms.begin());
-    index = simgrid::s4u::Comm::wait_any(pending_comms);
+    simgrid::s4u::Comm::wait_any(pending_comms);
   }
 };
 

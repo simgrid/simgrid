@@ -33,9 +33,8 @@ static void dispatcher(sg4::Host* host1, sg4::Host* host2)
   exec2->start();
 
   XBT_INFO("Calling wait_any..");
-  long index;
   try {
-    index = sg4::Exec::wait_any(pending_execs);
+    long index = sg4::Exec::wait_any(pending_execs);
     XBT_INFO("Wait any returned index %ld (exec on %s)", index, pending_execs.at(index)->get_host()->get_cname());
   } catch (simgrid::HostFailureException& e) {
     XBT_INFO("Dispatcher has experienced a host failure exception, so it knows that something went wrong");
@@ -52,7 +51,7 @@ static void dispatcher(sg4::Host* host1, sg4::Host* host2)
   }
   pending_execs.pop_back();
   XBT_INFO("Wait for remaining exec, just to be nice");
-  index = simgrid::s4u::Exec::wait_any(pending_execs);
+  simgrid::s4u::Exec::wait_any(pending_execs);
   XBT_INFO("Dispatcher ends");
 }
 
