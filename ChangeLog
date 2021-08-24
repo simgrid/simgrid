@@ -18,8 +18,8 @@ New features:
      - Link: examples/cpp/network-nonlinear
      - CPU: examples/cpp/exec-cpu-nonlinear
  - Dynamic factors for CPU and disk: similarly to dynamic network factors,
- allows the user to set a callback which can affect the progress of activities
- (multiplicative factor applied when updating the amount of work remaining).
+   allows the user to set a callback which can affect the progress of activities
+   (multiplicative factor applied when updating the amount of work remaining).
    - Example: examples/cpp/exec-cpu-factors
 
 Python:
@@ -49,6 +49,9 @@ Documentation:
   * New section "Modeling I/O: the realistic way" presenting how to properly
   model disks in SimGrid.
   * Improvements in API Reference for C++ and Python interfaces.
+
+ns-3 model:
+ - Make wifi creation compatible with ns-3 version 3.34 too.
 
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GF: issues on GForge; GH: issues on GitHub)
