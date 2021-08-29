@@ -8,7 +8,7 @@ name: Docker
 on:
   workflow_dispatch:
   schedule:
-    - cron: '41 20 * * 0'
+    - cron: '42 18 * * 0'
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -28,16 +28,18 @@ jobs:
 
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
-   #   - name: Log into registry ${{ env.REGISTRY }}
-   #     uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
-   #     with:
-   #       registry: ${{ env.REGISTRY }}
-   #       username: ${{ github.actor }}
-   #       password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@28218f9b04b4f3f62068d7b6ce6ca5b26e35336c
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: build
         run: |
           cd tools/docker
           make stable
           make all
+          make tuto-mc
+          make push
       
