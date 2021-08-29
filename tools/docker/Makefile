@@ -18,9 +18,9 @@ stable:
 	export last_tag=$$(wget https://framagit.org/simgrid/simgrid/tags 2>/dev/null -O - | grep /simgrid/simgrid/-/tags/v | head -n1  | sed 's/[^>]*>//' | sed 's/<.*//'); \
  	echo "DLURL=/simgrid/simgrid/-/archive/$${last_tag}/simgrid-$${last_tag}.tar.gz";\
 	docker build -f Dockerfile.stable \
-	         --build-arg DLURL=$${DLURL} \
+	         --build-arg DLURL=/simgrid/simgrid/-/archive/$${last_tag}/simgrid-$${last_tag}.tar.gz \
 		 -t simgrid/stable:latest \
-                 -t simgrid/stable:"/simgrid/simgrid/-/archive/$${last_tag}/simgrid-$${last_tag}.tar.gz" \
+                 -t simgrid/stable:$${last_tag} \
 		 $(DOCKER_EXTRA) \
                  . | tee stable.log
 
