@@ -36,4 +36,3 @@ jobs:
           make stable
           make all
           make push
-      
