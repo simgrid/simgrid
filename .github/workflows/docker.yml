@@ -38,6 +38,6 @@ jobs:
       - name: build
         run: |
           cd tools/docker
+          make stable
           make all
-          #make push
       
