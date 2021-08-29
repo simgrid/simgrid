@@ -35,6 +35,5 @@ jobs:
           cd tools/docker
           make stable
           make all
-          make tuto-mc
           make push
       
