@@ -11,7 +11,7 @@ default:
 	@echo "All our images are based on debian:testing"
 	@echo "Also possible: DOCKER_EXTRA=--no-cache make unstable"
 
-all: build-deps unstable tuto-s4u tuto-smpi
+all: build-deps unstable tuto-s4u tuto-smpi tuto-mc
 
 stable:
 	# docker build -f Dockerfile.stable --build-arg DLURL=/simgrid/simgrid/-/archive/v3.28/simgrid-v3.28.tar.gz -t simgrid/stable:latest -t simgrid/stable:v3.25 . |tee stable.log
