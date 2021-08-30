@@ -73,7 +73,7 @@ static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
             "Access violation or Bus error detected.\n"
             "This probably comes from a programming error in your code, or from a stack\n"
             "overflow. If you are certain of your code, try increasing the stack size\n"
-            "   --cfg=contexts/stack-size=XXX (current size is %u KiB).\n"
+            "   --cfg=contexts/stack-size:XXX (current size is %u KiB).\n"
             "\n"
             "If it does not help, this may have one of the following causes:\n"
             "a bug in SimGrid, a bug in the OS or a bug in a third-party libraries.\n"
