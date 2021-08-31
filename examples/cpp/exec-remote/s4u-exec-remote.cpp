@@ -51,7 +51,7 @@ static void wizard()
   ginette->turn_off();
   try {
     exec->wait();
-  } catch (const simgrid::HostFailureException& e) {
+  } catch (const simgrid::HostFailureException&) {
     XBT_INFO("Execution failed on %s", ginette->get_cname());
   }
   XBT_INFO("Done!");

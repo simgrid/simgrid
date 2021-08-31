@@ -25,12 +25,12 @@ class Sender {
   std::string mailbox2_name;
 
 public:
-  Sender(std::string mailbox1_name, std::string mailbox2_name)
+  Sender(const std::string& mailbox1_name, const std::string& mailbox2_name)
       : mailbox1_name(mailbox1_name), mailbox2_name(mailbox2_name)
   {
   }
 
-  void operator()()
+  void operator()() const
   {
     auto mailbox1 = sg4::Mailbox::by_name(mailbox1_name);
     auto mailbox2 = sg4::Mailbox::by_name(mailbox2_name);
@@ -47,7 +47,7 @@ public:
     try {
       long index = sg4::Comm::wait_any(pending_comms);
       XBT_INFO("Wait any returned index %ld (comm to %s)", index, pending_comms.at(index)->get_mailbox()->get_cname());
-    } catch (simgrid::NetworkFailureException& e) {
+    } catch (const simgrid::NetworkFailureException&) {
       XBT_INFO("Sender has experienced a network failure exception, so it knows that something went wrong");
       XBT_INFO("Now it needs to figure out which of the two comms failed by looking at their state");
     }
@@ -57,7 +57,7 @@ public:
 
     try {
       comm1->wait();
-    } catch (simgrid::NetworkFailureException& e) {
+    } catch (const simgrid::NetworkFailureException& e) {
       XBT_INFO("Waiting on a FAILED comm raises an exception: '%s'", e.what());
     }
     XBT_INFO("Wait for remaining comm, just to be nice");
@@ -70,9 +70,9 @@ class Receiver {
   std::string mailbox_name;
 
 public:
-  explicit Receiver(std::string mailbox_name) : mailbox_name(mailbox_name) {}
+  explicit Receiver(const std::string& mailbox_name) : mailbox_name(mailbox_name) {}
 
-  void operator()()
+  void operator()() const
   {
     auto mailbox = sg4::Mailbox::by_name(mailbox_name);
     XBT_INFO("Receiver posting a receive...");
@@ -89,9 +89,9 @@ class LinkKiller {
   std::string link_name;
 
 public:
-  explicit LinkKiller(std::string link_name) : link_name(link_name) {}
+  explicit LinkKiller(const std::string& link_name) : link_name(link_name) {}
 
-  void operator()()
+  void operator()() const
   {
     auto link_to_kill = sg4::Link::by_name(link_name);
     XBT_INFO("LinkKiller  sleeping 10 seconds...");
