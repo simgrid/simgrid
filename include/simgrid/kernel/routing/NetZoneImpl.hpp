@@ -171,9 +171,8 @@ public:
   void seal();
   /** @brief Check if netpoint is a member of this NetZone or some of the childrens */
   bool is_component_recursive(const NetPoint* netpoint) const;
-  virtual int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
-  virtual void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
+  virtual unsigned long add_component(NetPoint* elm); /* A host, a router or a netzone, whatever */
+  virtual void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                          const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical);
   /** @brief Set parent of this Netzone */
   void set_parent(NetZoneImpl* parent);
@@ -191,11 +190,11 @@ public:
    * @param links Accumulator in which all traversed links should be pushed (caller must empty it)
    * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
-  static void get_global_route(const routing::NetPoint* src, const routing::NetPoint* dst,
+  static void get_global_route(const NetPoint* src, const NetPoint* dst,
                                /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency);
 
   /** @brief Similar to get_global_route but get the NetZones traversed by route */
-  static void get_global_route_with_netzones(const routing::NetPoint* src, const routing::NetPoint* dst,
+  static void get_global_route_with_netzones(const NetPoint* src, const NetPoint* dst,
                                              /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency,
                                              std::unordered_set<NetZoneImpl*>& netzones);
 
@@ -203,9 +202,8 @@ public:
                          std::map<std::string, xbt_edge_t, std::less<>>* edges) = 0;
 
   /*** Called on each newly created regular route (not on bypass routes) */
-  static xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                          kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                          std::vector<kernel::resource::LinkImpl*> const& link_list)>
+  static xbt::signal<void(bool symmetrical, NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                          std::vector<resource::LinkImpl*> const& link_list)>
       on_route_creation; // XBT_ATTRIB_DEPRECATED_v332 : should be an internal signal used by NS3.. if necessary,
                          // callback shouldn't use LinkImpl*
 
@@ -215,7 +213,7 @@ private:
   std::shared_ptr<resource::CpuModel> cpu_model_vm_;
   std::shared_ptr<resource::CpuModel> cpu_model_pm_;
   std::shared_ptr<resource::DiskModel> disk_model_;
-  std::shared_ptr<simgrid::surf::HostModel> host_model_;
+  std::shared_ptr<surf::HostModel> host_model_;
   /** @brief Perform sealing procedure for derived classes, if necessary */
   virtual void do_seal()
   { /* obviously nothing to do by default */

@@ -187,7 +187,7 @@ public:
    */
   double get_load() const;
 
-  int get_pstate_count() const;
+  unsigned long get_pstate_count() const;
   int get_pstate() const;
   double get_pstate_speed(int pstate_index) const;
   Host* set_pstate(int pstate_index);

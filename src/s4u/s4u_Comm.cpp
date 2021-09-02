@@ -151,7 +151,7 @@ CommPtr Comm::set_dst_data(void** buff, size_t size)
   dst_buff_size_ = size;
   return this;
 }
-CommPtr Comm::set_payload_size(double bytes)
+CommPtr Comm::set_payload_size(uint64_t bytes)
 {
   Activity::set_remaining(bytes);
   return this;
@@ -166,14 +166,14 @@ CommPtr Comm::sendto_init(Host* from, Host* to)
   return res;
 }
 
-CommPtr Comm::sendto_async(Host* from, Host* to, double simulated_size_in_bytes)
+CommPtr Comm::sendto_async(Host* from, Host* to, uint64_t simulated_size_in_bytes)
 {
   auto res = Comm::sendto_init(from, to)->set_payload_size(simulated_size_in_bytes);
   res->vetoable_start();
   return res;
 }
 
-void Comm::sendto(Host* from, Host* to, double simulated_size_in_bytes)
+void Comm::sendto(Host* from, Host* to, uint64_t simulated_size_in_bytes)
 {
   sendto_async(from, to, simulated_size_in_bytes)->wait();
 }

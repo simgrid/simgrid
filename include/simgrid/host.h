@@ -89,7 +89,7 @@ XBT_PUBLIC const char* sg_host_self_get_name();
  *
  * @param  host host to test
  */
-XBT_PUBLIC int sg_host_get_nb_pstates(const_sg_host_t host);
+XBT_PUBLIC unsigned long sg_host_get_nb_pstates(const_sg_host_t host);
 
 XBT_PUBLIC int sg_host_get_pstate(const_sg_host_t host);
 XBT_PUBLIC void sg_host_set_pstate(sg_host_t host, int pstate);

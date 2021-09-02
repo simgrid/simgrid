@@ -89,8 +89,8 @@ namespace dvfs {
 class Governor {
   simgrid::s4u::Host* const host_;
   double sampling_rate_;
-  int min_pstate = cfg_min_pstate; //< Never use a pstate less than this one
-  int max_pstate = cfg_max_pstate; //< Never use a pstate larger than this one
+  unsigned long min_pstate = cfg_min_pstate; //< Never use a pstate less than this one
+  unsigned long max_pstate = cfg_max_pstate; //< Never use a pstate larger than this one
 
 public:
   explicit Governor(simgrid::s4u::Host* ptr)
@@ -116,16 +116,15 @@ public:
     }
     const char* local_min_pstate_config = host_->get_property(cfg_min_pstate.get_name());
     if (local_min_pstate_config != nullptr) {
-      min_pstate = std::stoi(local_min_pstate_config);
+      min_pstate = std::stoul(local_min_pstate_config);
     }
 
     const char* local_max_pstate_config = host_->get_property(cfg_max_pstate.get_name());
     if (local_max_pstate_config != nullptr) {
-      max_pstate = std::stoi(local_max_pstate_config);
+      max_pstate = std::stoul(local_max_pstate_config);
     }
     xbt_assert(max_pstate <= host_->get_pstate_count() - 1, "Value for max_pstate too large!");
     xbt_assert(min_pstate <= max_pstate, "min_pstate is larger than max_pstate!");
-    xbt_assert(0 <= min_pstate, "min_pstate is negative!");
   }
 
   virtual void update()         = 0;
@@ -341,7 +340,7 @@ public:
     bool is_initialized         = rates[task_id][best_pstate] != 0;
     rates[task_id][best_pstate] = computed_flops / comp_timer;
     if (not is_initialized) {
-      for (int i = 1; i < get_host()->get_pstate_count(); i++) {
+      for (unsigned long i = 1; i < get_host()->get_pstate_count(); i++) {
         rates[task_id][i] = rates[task_id][0] * (get_host()->get_pstate_speed(i) / get_host()->get_speed());
       }
     }

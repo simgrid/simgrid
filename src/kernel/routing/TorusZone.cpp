@@ -115,7 +115,7 @@ void TorusZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
    * linkOffset describes the offset where the link we want to use is stored(+1 is added because each node has a link
    * from itself to itself, which can only be the case if src->m_id == dst->m_id -- see above for this special case)
    */
-  unsigned int linkOffset = (dsize + 1) * src->id();
+  unsigned long linkOffset = (dsize + 1) * src->id();
 
   bool use_lnk_up = false; // Is this link of the form "cur -> next" or "next -> cur"? false means: next -> cur
   unsigned int current_node = src->id();
@@ -149,7 +149,7 @@ void TorusZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
           linkOffset = node_pos_with_loopback_limiter(next_node) + j;
           use_lnk_up = false;
         }
-        XBT_DEBUG("torus_get_route_and_latency - current_node: %u, next_node: %u, linkOffset is %u", current_node,
+        XBT_DEBUG("torus_get_route_and_latency - current_node: %u, next_node: %u, linkOffset is %lu", current_node,
                   next_node, linkOffset);
         break;
       }

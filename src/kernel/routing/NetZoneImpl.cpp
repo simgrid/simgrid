@@ -195,7 +195,8 @@ NetPoint* NetZoneImpl::create_router(const std::string& name)
 
   return (new NetPoint(name, NetPoint::Type::Router))->set_englobing_zone(this);
 }
-int NetZoneImpl::add_component(NetPoint* elm)
+
+unsigned long NetZoneImpl::add_component(NetPoint* elm)
 {
   vertices_.push_back(elm);
   return vertices_.size() - 1; // The rank of the newly created object

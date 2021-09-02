@@ -126,7 +126,7 @@ bool Host::is_on() const
   return this->pimpl_cpu_->is_on();
 }
 
-int Host::get_pstate_count() const
+unsigned long Host::get_pstate_count() const
 {
   return this->pimpl_cpu_->get_pstate_count();
 }
@@ -538,7 +538,7 @@ double sg_host_get_available_speed(const_sg_host_t host)
  *
  *  See also @ref plugin_host_energy.
  */
-int sg_host_get_nb_pstates(const_sg_host_t host)
+unsigned long sg_host_get_nb_pstates(const_sg_host_t host)
 {
   return host->get_pstate_count();
 }

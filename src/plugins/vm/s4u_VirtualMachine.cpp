@@ -40,7 +40,7 @@ VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host
 
   // Create a VCPU for this VM
   std::vector<double> speeds;
-  for (int i = 0; i < physical_host->get_pstate_count(); i++)
+  for (unsigned long i = 0; i < physical_host->get_pstate_count(); i++)
     speeds.push_back(physical_host->get_pstate_speed(i));
 
   physical_host->get_netpoint()

@@ -55,14 +55,14 @@ public:
    * There is really no limit on the hosts involved. In particular, the actor does not have to be on one of the involved
    * hosts.
    */
-  static CommPtr sendto_async(Host* from, Host* to, double simulated_size_in_bytes);
+  static CommPtr sendto_async(Host* from, Host* to, uint64_t simulated_size_in_bytes);
   /** Do a blocking communication between two arbitrary hosts.
    *
    * This starts a blocking communication right away, bypassing the mailbox and actors mechanism.
    * The calling actor is blocked until the end of the communication; there is really no limit on the hosts involved.
    * In particular, the actor does not have to be on one of the involved hosts. Enjoy the comfort of the simulator :)
    */
-  static void sendto(Host* from, Host* to, double simulated_size_in_bytes);
+  static void sendto(Host* from, Host* to, uint64_t simulated_size_in_bytes);
 
   static xbt::signal<void(Comm const&, bool is_sender)> on_start;
   static xbt::signal<void(Comm const&)> on_completion;
@@ -136,7 +136,7 @@ public:
    * :cpp:func:`simgrid::s4u::Comm::set_src_data_size`).
    * @endrst
    */
-  CommPtr set_payload_size(double bytes);
+  CommPtr set_payload_size(uint64_t bytes);
 
   /** Specify the data to send and its size (not to be mixed with set_payload_size())
    *

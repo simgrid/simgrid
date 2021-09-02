@@ -12,8 +12,8 @@ static int dvfs()
   double workload = 100E6;
   simgrid::s4u::Host* host = simgrid::s4u::this_actor::get_host();
 
-  int nb = host->get_pstate_count();
-  XBT_INFO("Count of Processor states=%d", nb);
+  unsigned long nb = host->get_pstate_count();
+  XBT_INFO("Count of Processor states=%lu", nb);
 
   XBT_INFO("Current power peak=%f", host->get_speed());
 
@@ -40,7 +40,7 @@ static int dvfs()
 
   // Verify that the default pstate is set to 0
   host = simgrid::s4u::Host::by_name_or_null("MyHost2");
-  XBT_INFO("Count of Processor states=%d", host->get_pstate_count());
+  XBT_INFO("Count of Processor states=%lu", host->get_pstate_count());
 
   XBT_INFO("Current power peak=%f", host->get_speed());
   return 0;

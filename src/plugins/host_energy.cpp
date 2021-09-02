@@ -349,8 +349,8 @@ void HostEnergy::init_watts_range_list()
   boost::split(all_power_values, all_power_values_str, boost::is_any_of(","));
   XBT_DEBUG("%s: power properties: %s", host_->get_cname(), all_power_values_str);
 
-  xbt_assert(all_power_values.size() == (unsigned)host_->get_pstate_count(),
-             "Invalid XML file. Found %zu energetic profiles for %d pstates", all_power_values.size(),
+  xbt_assert(all_power_values.size() == host_->get_pstate_count(),
+             "Invalid XML file. Found %zu energetic profiles for %lu pstates", all_power_values.size(),
              host_->get_pstate_count());
 
   int i = 0;

@@ -99,7 +99,7 @@ public:
   /** @brief Get the peak processor speed (in flops/s), at the specified pstate */
   virtual double get_pstate_peak_speed(int pstate_index) const;
 
-  virtual int get_pstate_count() const { return speed_per_pstate_.size(); }
+  virtual unsigned long get_pstate_count() const { return speed_per_pstate_.size(); }
 
   virtual int get_pstate() const { return pstate_; }
   virtual CpuImpl* set_pstate(int pstate_index);

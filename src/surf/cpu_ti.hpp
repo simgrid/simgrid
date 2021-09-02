@@ -34,7 +34,7 @@ public:
 
   std::vector<double> time_points_;
   std::vector<double> integral_;
-  static int binary_search(const std::vector<double>& array, double a);
+  static long binary_search(const std::vector<double>& array, double a);
 };
 
 class CpuTiTmgr {
