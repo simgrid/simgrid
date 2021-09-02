@@ -79,7 +79,7 @@ public:
     try {
       mailbox->get<void*>();
       XBT_INFO("Receiver has received successfully!");
-    } catch (simgrid::NetworkFailureException& e) {
+    } catch (const simgrid::NetworkFailureException&) {
       XBT_INFO("Receiver has experience a network failure exception");
     }
   }
