@@ -147,7 +147,7 @@ void TRACE_declare_mark(const char *mark_type)
   }
 
   XBT_DEBUG("MARK,declare %s", mark_type);
-  simgrid::instr::Container::get_root()->type_->by_name_or_create<simgrid::instr::EventType>(mark_type);
+  simgrid::instr::Container::get_root()->get_type()->by_name_or_create<simgrid::instr::EventType>(mark_type);
   declared_marks.emplace(mark_type);
 }
 
@@ -176,7 +176,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
   xbt_assert(mark_value, "mark_value is nullptr");
 
   auto* type =
-      static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::get_root()->type_->by_name(mark_type));
+      static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::get_root()->get_type()->by_name(mark_type));
   if (not type) {
     throw simgrid::TracingError(XBT_THROW_POINT,
                                 simgrid::xbt::string_printf("mark_type with name (%s) is not declared", mark_type));
@@ -231,7 +231,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
 
   //check if mark_type is already declared
   auto* type =
-      static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::get_root()->type_->by_name(mark_type));
+      static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::get_root()->get_type()->by_name(mark_type));
   if (not type) {
     throw simgrid::TracingError(XBT_THROW_POINT,
                                 simgrid::xbt::string_printf("mark_type with name (%s) is not declared", mark_type));

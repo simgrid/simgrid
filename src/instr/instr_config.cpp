@@ -234,7 +234,7 @@ static void on_container_creation_paje(const Container& c)
             timestamp);
 
   stream << std::fixed << std::setprecision(trace_precision) << PajeEventType::CreateContainer << " ";
-  stream << timestamp << " " << c.get_id() << " " << c.type_->get_id() << " " << c.parent_->get_id() << " \"";
+  stream << timestamp << " " << c.get_id() << " " << c.get_type()->get_id() << " " << c.get_parent()->get_id() << " \"";
   if (c.get_name().find("rank-") != 0)
     stream << c.get_name() << "\"";
   else
@@ -256,7 +256,7 @@ static void on_container_destruction_paje(const Container& c)
               timestamp);
 
     stream << std::fixed << std::setprecision(trace_precision) << PajeEventType::DestroyContainer << " ";
-    stream << timestamp << " " << c.type_->get_id() << " " << c.get_id();
+    stream << timestamp << " " << c.get_type()->get_id() << " " << c.get_id();
     XBT_DEBUG("Dump %s", stream.str().c_str());
     tracing_file << stream.str() << std::endl;
   }
@@ -423,7 +423,7 @@ static void on_simulation_end()
   last_timestamp_to_dump = surf_get_clock();
   dump_buffer(true);
 
-  const Type* root_type = Container::get_root()->type_;
+  const Type* root_type = Container::get_root()->get_type();
   /* destroy all data structures of tracing (and free) */
   delete Container::get_root();
   delete root_type;

@@ -33,17 +33,17 @@ Mailbox* Mailbox::by_name(const std::string& name)
 
 bool Mailbox::empty() const
 {
-  return pimpl_->comm_queue_.empty();
+  return pimpl_->empty();
 }
 
-unsigned int Mailbox::size() const
+size_t Mailbox::size() const
 {
-  return pimpl_->comm_queue_.size();
+  return pimpl_->size();
 }
 
 bool Mailbox::listen() const
 {
-  return not this->empty() || (pimpl_->permanent_receiver_ && not pimpl_->done_comm_queue_.empty());
+  return not pimpl_->empty() || (pimpl_->is_permanent() && pimpl_->has_some_done_comm());
 }
 
 aid_t Mailbox::listen_from() const
@@ -58,18 +58,18 @@ aid_t Mailbox::listen_from() const
 bool Mailbox::ready() const
 {
   bool comm_ready = false;
-  if (not pimpl_->comm_queue_.empty()) {
-    comm_ready = pimpl_->comm_queue_.front()->state_ == kernel::activity::State::DONE;
+  if (not pimpl_->empty()) {
+    comm_ready = pimpl_->front()->state_ == kernel::activity::State::DONE;
 
-  } else if (pimpl_->permanent_receiver_ && not pimpl_->done_comm_queue_.empty()) {
-    comm_ready = pimpl_->done_comm_queue_.front()->state_ == kernel::activity::State::DONE;
+  } else if (pimpl_->is_permanent() && pimpl_->has_some_done_comm()) {
+    comm_ready = pimpl_->done_front()->state_ == kernel::activity::State::DONE;
   }
   return comm_ready;
 }
 
 kernel::activity::CommImplPtr Mailbox::front() const
 {
-  return pimpl_->comm_queue_.empty() ? nullptr : pimpl_->comm_queue_.front();
+  return pimpl_->empty() ? nullptr : pimpl_->front();
 }
 
 void Mailbox::set_receiver(ActorPtr actor)
@@ -80,9 +80,9 @@ void Mailbox::set_receiver(ActorPtr actor)
 /** @brief get the receiver (process associated to the mailbox) */
 ActorPtr Mailbox::get_receiver() const
 {
-  if (pimpl_->permanent_receiver_ == nullptr)
+  if (pimpl_->is_permanent())
     return ActorPtr();
-  return pimpl_->permanent_receiver_->get_iface();
+  return pimpl_->get_permanent_receiver()->get_iface();
 }
 
 CommPtr Mailbox::put_init()

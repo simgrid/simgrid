@@ -17,11 +17,15 @@ class StateType;
 class VariableType;
 
 class Container {
+  friend class NetZoneContainer;
   static Container* root_container_;
   static std::map<std::string, Container*, std::less<>> all_containers_;
 
   long long int id_;
   std::string name_; /* Unique name of this container */
+  Type* type_;       /* Type of this container */
+  Container* parent_;
+  std::map<std::string, Container*, std::less<>> children_;
 
 protected:
   static void set_root(Container* root) { root_container_ = root; }
@@ -35,9 +39,6 @@ public:
   Container& operator=(const Container&) = delete;
   virtual ~Container();
 
-  Type* type_; /* Type of this container */
-  Container* parent_;
-  std::map<std::string, Container*, std::less<>> children_;
 
   static Container* by_name_or_null(const std::string& name);
   static Container* by_name(const std::string& name);
@@ -46,10 +47,13 @@ public:
   long long int get_id() const { return id_; }
   void remove_from_parent();
 
+  Container* get_parent() const { return parent_; }
+  Type* get_type() const { return type_; }
   StateType* get_state(const std::string& name);
   LinkType* get_link(const std::string& name);
   VariableType* get_variable(const std::string& name);
   void create_child(const std::string& name, const std::string& type_name);
+  Container* get_child_by_name(const std::string& name) const { return children_.at(name); }
   static Container* get_root() { return root_container_; }
 };
 

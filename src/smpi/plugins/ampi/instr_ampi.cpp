@@ -37,7 +37,7 @@ void TRACE_migration_call(aid_t pid, simgrid::instr::TIData* extra)
   if(smpi_process()->replaying()) {//When replaying, we register an event.
     smpi_container(pid)->get_state("MIGRATE_STATE")->add_entity_value(operation);
 
-    auto* type = static_cast<simgrid::instr::EventType*>(smpi_container(pid)->type_->by_name(operation));
+    auto* type = static_cast<simgrid::instr::EventType*>(smpi_container(pid)->get_type()->by_name(operation));
     new simgrid::instr::NewEvent(smpi_process()->simulated_elapsed(), smpi_container(pid), type,
                                  type->get_entity_value(operation));
   } else {

@@ -47,7 +47,7 @@ public:
   bool empty() const;
 
   /* Returns the number of queued communications */
-  unsigned int size() const;
+  size_t size() const;
 
   /** Check if there is a communication going on in a mailbox. */
   bool listen() const;

@@ -55,11 +55,11 @@ XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr simcall_HANDLER_comm_isen
   if (not other_comm) {
     other_comm = std::move(this_comm);
 
-    if (mbox->permanent_receiver_ != nullptr) {
+    if (mbox->is_permanent()) {
       // this mailbox is for small messages, which have to be sent right now
       other_comm->state_     = simgrid::kernel::activity::State::READY;
-      other_comm->dst_actor_ = mbox->permanent_receiver_.get();
-      mbox->done_comm_queue_.push_back(other_comm);
+      other_comm->dst_actor_ = mbox->get_permanent_receiver().get();
+      mbox->push_done(other_comm);
       XBT_DEBUG("pushing a message into the permanent receive list %p, comm %p", mbox, other_comm.get());
 
     } else {
@@ -119,7 +119,7 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
 
   simgrid::kernel::activity::CommImplPtr other_comm;
   // communication already done, get it inside the list of completed comms
-  if (mbox->permanent_receiver_ != nullptr && not mbox->done_comm_queue_.empty()) {
+  if (mbox->is_permanent() && mbox->has_some_done_comm()) {
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
     // find a match in the list of already received comms
     other_comm = mbox->find_matching_comm(simgrid::kernel::activity::CommImpl::Type::SEND, match_fun, data,
@@ -150,7 +150,7 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
                                           /*remove_matching*/ true);
 
     if (other_comm == nullptr) {
-      XBT_DEBUG("Receive pushed first (%zu comm enqueued so far)", mbox->comm_queue_.size());
+      XBT_DEBUG("Receive pushed first (%zu comm enqueued so far)", mbox->size());
       other_comm = std::move(this_synchro);
       mbox->push(other_comm);
     } else {
