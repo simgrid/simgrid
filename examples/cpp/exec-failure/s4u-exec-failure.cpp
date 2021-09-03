@@ -66,7 +66,6 @@ static void host_killer(sg4::Host* to_kill)
 
 int main(int argc, char** argv)
 {
-
   sg4::Engine engine(&argc, argv);
 
   auto* zone  = sg4::create_full_zone("AS0");

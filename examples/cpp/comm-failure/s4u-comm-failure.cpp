@@ -104,7 +104,6 @@ public:
 
 int main(int argc, char** argv)
 {
-
   sg4::Engine engine(&argc, argv);
   auto* zone  = sg4::create_full_zone("AS0");
   auto* host1 = zone->create_host("Host1", "1f");
