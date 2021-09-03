@@ -79,7 +79,7 @@ void TorusZone::set_topology(const std::vector<unsigned int>& dimensions)
 
 void TorusZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* route, double* lat)
 {
-  XBT_VERB("torus getLocalRoute from '%s'[%u] to '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
+  XBT_VERB("torus getLocalRoute from '%s'[%lu] to '%s'[%lu]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 
   if (dst->is_router() || src->is_router())
     return;

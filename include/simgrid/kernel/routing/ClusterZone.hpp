@@ -104,8 +104,8 @@ class XBT_PRIVATE ClusterBase : public ClusterZone {
 protected:
   using ClusterZone::ClusterZone;
   void set_num_links_per_node(unsigned long num) { num_links_per_node_ = num; }
-  resource::LinkImpl* get_uplink_from(unsigned int position) const { return private_links_.at(position).first; }
-  resource::LinkImpl* get_downlink_to(unsigned int position) const { return private_links_.at(position).second; }
+  resource::LinkImpl* get_uplink_from(unsigned long position) const { return private_links_.at(position).first; }
+  resource::LinkImpl* get_downlink_to(unsigned long position) const { return private_links_.at(position).second; }
 
   double get_link_latency() const { return link_lat_; }
   double get_link_bandwidth() const { return link_bw_; }

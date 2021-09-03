@@ -95,7 +95,7 @@ int NetZone::get_host_count() const
   return pimpl_->get_host_count();
 }
 
-int NetZone::add_component(kernel::routing::NetPoint* elm)
+unsigned long NetZone::add_component(kernel::routing::NetPoint* elm)
 {
   return pimpl_->add_component(elm);
 }

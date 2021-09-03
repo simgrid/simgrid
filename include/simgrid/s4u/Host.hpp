@@ -189,8 +189,8 @@ public:
 
   unsigned long get_pstate_count() const;
   int get_pstate() const;
-  double get_pstate_speed(int pstate_index) const;
-  Host* set_pstate(int pstate_index);
+  double get_pstate_speed(unsigned long pstate_index) const;
+  Host* set_pstate(unsigned long pstate_index);
   Host* set_coordinates(const std::string& coords);
 
   std::vector<Disk*> get_disks() const;

@@ -87,8 +87,8 @@ xbt_node_t DijkstraZone::node_map_search(int id)
 void DijkstraZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* route, double* lat)
 {
   get_route_check_params(src, dst);
-  int src_id = src->id();
-  int dst_id = dst->id();
+  unsigned long src_id = src->id();
+  unsigned long dst_id = dst->id();
 
   const_xbt_dynar_t nodes = xbt_graph_get_nodes(route_graph_.get());
 

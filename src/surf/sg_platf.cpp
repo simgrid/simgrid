@@ -109,7 +109,7 @@ void sg_platf_new_peer(const simgrid::kernel::routing::PeerCreationArgs* args)
 simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name, const std::string& coords)
 {
   auto* netpoint = current_routing->create_router(name)->set_coordinates(coords);
-  XBT_DEBUG("Router '%s' has the id %u", netpoint->get_cname(), netpoint->id());
+  XBT_DEBUG("Router '%s' has the id %lu", netpoint->get_cname(), netpoint->id());
 
   return netpoint;
 }
@@ -358,7 +358,7 @@ static void sg_platf_cluster_set_hostlink(simgrid::kernel::routing::StarZone* zo
                                           const simgrid::s4u::Link* link_up, const simgrid::s4u::Link* link_down,
                                           const simgrid::s4u::Link* backbone)
 {
-  XBT_DEBUG("Push Host_link for host '%s' to position %u", netpoint->get_cname(), netpoint->id());
+  XBT_DEBUG("Push Host_link for host '%s' to position %lu", netpoint->get_cname(), netpoint->id());
   simgrid::s4u::LinkInRoute linkUp{link_up};
   simgrid::s4u::LinkInRoute linkDown{link_down};
   if (backbone) {

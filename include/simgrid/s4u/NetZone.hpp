@@ -69,7 +69,7 @@ public:
                          std::map<std::string, xbt_edge_t, std::less<>>* edges);
 
   /* Add content to the netzone, at parsing time. It should be sealed afterward. */
-  int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
+  unsigned long add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
 
   /**
    * @brief Add a route between 2 netpoints

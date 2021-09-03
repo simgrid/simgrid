@@ -43,7 +43,7 @@ void FullZone::do_seal()
 
 void FullZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* res, double* lat)
 {
-  XBT_DEBUG("full getLocalRoute from %s[%u] to %s[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
+  XBT_DEBUG("full getLocalRoute from %s[%lu] to %s[%lu]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 
   const auto& e_route = routing_table_[src->id()][dst->id()];
 

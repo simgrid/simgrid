@@ -31,7 +31,7 @@ public:
   NetPoint(const std::string& name, NetPoint::Type component_type);
 
   // Our rank in the vertices_ array of the netzone that contains us.
-  unsigned int id() const { return id_; }
+  unsigned long id() const { return id_; }
   const std::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
   /** @brief the NetZone in which this NetPoint is included */
@@ -49,7 +49,7 @@ public:
   bool operator<(const NetPoint& rhs) const { return name_ < rhs.name_; }
 
 private:
-  unsigned int id_ = -1;
+  unsigned long id_ = -1;
   std::string name_;
   NetPoint::Type component_type_;
   NetZoneImpl* englobing_zone_ = nullptr;

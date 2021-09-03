@@ -29,7 +29,7 @@ void StarZone::add_links_to_route(const std::vector<resource::LinkImpl*>& links,
 
 void StarZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* route, double* latency)
 {
-  XBT_VERB("StarZone getLocalRoute from '%s'[%u] to '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(),
+  XBT_VERB("StarZone getLocalRoute from '%s'[%lu] to '%s'[%lu]", src->get_cname(), src->id(), dst->get_cname(),
            dst->id());
 
   const auto& src_route = routes_.at(src->id());

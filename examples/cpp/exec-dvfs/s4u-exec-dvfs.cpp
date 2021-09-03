@@ -24,9 +24,9 @@ static int dvfs()
   XBT_INFO("Computation1 duration: %.2f", exec_time);
 
   // Change power peak
-  int new_pstate = 2;
+  unsigned long new_pstate = 2;
 
-  XBT_INFO("Changing power peak value to %f (at index %d)", host->get_pstate_speed(new_pstate), new_pstate);
+  XBT_INFO("Changing power peak value to %f (at index %lu)", host->get_pstate_speed(new_pstate), new_pstate);
 
   host->set_pstate(new_pstate);
 

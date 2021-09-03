@@ -30,7 +30,7 @@ void WifiZone::do_seal()
 
 void WifiZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* res, double* lat)
 {
-  XBT_DEBUG("full getLocalRoute from %s[%u] to %s[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
+  XBT_DEBUG("full getLocalRoute from %s[%lu] to %s[%lu]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 
   if (wifi_link_ != nullptr) {
     // If src and dst are nodes, not access_point, we need to traverse the link twice

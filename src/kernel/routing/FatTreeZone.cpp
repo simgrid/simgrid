@@ -50,16 +50,16 @@ void FatTreeZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rout
 
   /* Let's find the source and the destination in our internal structure */
   auto searchedNode = this->compute_nodes_.find(src->id());
-  xbt_assert(searchedNode != this->compute_nodes_.end(), "Could not find the source %s [%u] in the fat tree",
+  xbt_assert(searchedNode != this->compute_nodes_.end(), "Could not find the source %s [%lu] in the fat tree",
              src->get_cname(), src->id());
   const FatTreeNode* source = searchedNode->second.get();
 
   searchedNode = this->compute_nodes_.find(dst->id());
-  xbt_assert(searchedNode != this->compute_nodes_.end(), "Could not find the destination %s [%u] in the fat tree",
+  xbt_assert(searchedNode != this->compute_nodes_.end(), "Could not find the destination %s [%lu] in the fat tree",
              dst->get_cname(), dst->id());
   const FatTreeNode* destination = searchedNode->second.get();
 
-  XBT_VERB("Get route and latency from '%s' [%u] to '%s' [%u] in a fat tree", src->get_cname(), src->id(),
+  XBT_VERB("Get route and latency from '%s' [%lu] to '%s' [%lu] in a fat tree", src->get_cname(), src->id(),
            dst->get_cname(), dst->id());
 
   /* In case destination is the source, and there is a loopback, let's use it instead of going up to a switch */

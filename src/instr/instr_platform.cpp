@@ -113,7 +113,7 @@ static void linkContainers(simgrid::instr::Container* src, simgrid::instr::Conta
   XBT_DEBUG("  linkContainers %s <-> %s", src->get_cname(), dst->get_cname());
 }
 
-static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, simgrid::instr::Container* container,
+static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, const simgrid::instr::Container* container,
                                      std::set<std::string, std::less<>>* filter)
 {
   if (not TRACE_platform_topology()) {

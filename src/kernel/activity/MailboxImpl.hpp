@@ -53,7 +53,7 @@ public:
   CommImplPtr find_matching_comm(CommImpl::Type type, bool (*match_fun)(void*, void*, CommImpl*), void* this_user_data,
                                  const CommImplPtr& my_synchro, bool done, bool remove_matching);
   bool is_permanent() const { return permanent_receiver_ != nullptr; }
-  actor::ActorImplPtr get_permanent_receiver() { return permanent_receiver_; }
+  actor::ActorImplPtr get_permanent_receiver() const { return permanent_receiver_; }
   bool empty() const { return comm_queue_.empty(); }
   size_t size() const { return comm_queue_.size(); }
   CommImplPtr front() const { return comm_queue_.front(); }

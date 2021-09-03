@@ -284,7 +284,7 @@ void DragonflyZone::get_local_route(const NetPoint* src, const NetPoint* dst, Ro
   if (dst->is_router() || src->is_router())
     return;
 
-  XBT_VERB("dragonfly getLocalRoute from '%s'[%u] to '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(),
+  XBT_VERB("dragonfly getLocalRoute from '%s'[%lu] to '%s'[%lu]", src->get_cname(), src->id(), dst->get_cname(),
            dst->id());
 
   if ((src->id() == dst->id()) && has_loopback()) {

@@ -39,7 +39,7 @@ void FloydZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
 
   /* create a result route */
   std::vector<Route*> route_stack;
-  unsigned int cur = dst->id();
+  unsigned long cur = dst->id();
   do {
     int pred = predecessor_table_[src->id()][cur];
     if (pred == -1)

@@ -246,7 +246,7 @@ Host* Host::set_speed_profile(kernel::profile::Profile* p)
 }
 
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
-double Host::get_pstate_speed(int pstate_index) const
+double Host::get_pstate_speed(unsigned long pstate_index) const
 {
   return this->pimpl_cpu_->get_pstate_peak_speed(pstate_index);
 }
@@ -314,7 +314,7 @@ Host* Host::set_pstate_speed(const std::vector<std::string>& speed_per_state)
 }
 
 /** @brief Set the pstate at which the host should run */
-Host* Host::set_pstate(int pstate_index)
+Host* Host::set_pstate(unsigned long pstate_index)
 {
   kernel::actor::simcall([this, pstate_index] { this->pimpl_cpu_->set_pstate(pstate_index); });
   return this;
@@ -547,7 +547,7 @@ unsigned long sg_host_get_nb_pstates(const_sg_host_t host)
  *
  *  See also @ref plugin_host_energy.
  */
-int sg_host_get_pstate(const_sg_host_t host)
+unsigned long sg_host_get_pstate(const_sg_host_t host)
 {
   return host->get_pstate();
 }
@@ -555,7 +555,7 @@ int sg_host_get_pstate(const_sg_host_t host)
  *
  *  See also @ref plugin_host_energy.
  */
-void sg_host_set_pstate(sg_host_t host, int pstate)
+void sg_host_set_pstate(sg_host_t host, unsigned long pstate)
 {
   host->set_pstate(pstate);
 }
