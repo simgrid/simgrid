@@ -174,7 +174,7 @@ void TRACE_smpi_init(aid_t pid, const std::string& calling_func)
      * Check whether this variable already exists or not. Otherwise, it will be created
      * multiple times but only the last one would be used...
      */
-    container->type_->by_name_or_create(it.first, "");
+    container->get_type()->by_name_or_create(it.first, "");
   }
 #endif
 }
