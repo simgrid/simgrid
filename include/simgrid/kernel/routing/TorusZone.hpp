@@ -20,16 +20,16 @@ namespace routing {
  */
 
 class XBT_PRIVATE TorusZone : public ClusterBase {
-  std::vector<unsigned int> dimensions_;
+  std::vector<unsigned long> dimensions_;
 
 public:
   explicit TorusZone(const std::string& name) : ClusterBase(name){};
-  void create_torus_links(int id, int rank, unsigned int position);
+  void create_torus_links(int id, int rank, unsigned long position);
   void get_local_route(const NetPoint* src, const NetPoint* dst, Route* into, double* latency) override;
-  void set_topology(const std::vector<unsigned int>& dimensions);
+  void set_topology(const std::vector<unsigned long>& dimensions);
 
   /** @brief Convert topology parameters from string to vector of uint */
-  static std::vector<unsigned int> parse_topo_parameters(const std::string& topo_parameters);
+  static std::vector<unsigned long> parse_topo_parameters(const std::string& topo_parameters);
 };
 
 } // namespace routing

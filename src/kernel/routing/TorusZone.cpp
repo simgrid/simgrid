@@ -20,12 +20,12 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-void TorusZone::create_torus_links(int id, int rank, unsigned int position)
+void TorusZone::create_torus_links(int id, int rank, unsigned long position)
 {
   /* Create all links that exist in the torus. Each rank creates @a dimensions-1 links */
   int dim_product = 1; // Needed to calculate the next neighbor_id
 
-  for (unsigned int j = 0; j < dimensions_.size(); j++) {
+  for (unsigned long j = 0; j < dimensions_.size(); j++) {
     int current_dimension = dimensions_[j]; // which dimension are we currently in?
                                             // we need to iterate over all dimensions and create all links there
     // The other node the link connects
@@ -54,11 +54,11 @@ void TorusZone::create_torus_links(int id, int rank, unsigned int position)
   }
 }
 
-std::vector<unsigned int> TorusZone::parse_topo_parameters(const std::string& topo_parameters)
+std::vector<unsigned long> TorusZone::parse_topo_parameters(const std::string& topo_parameters)
 {
   std::vector<std::string> dimensions_str;
   boost::split(dimensions_str, topo_parameters, boost::is_any_of(","));
-  std::vector<unsigned int> dimensions;
+  std::vector<unsigned long> dimensions;
 
   /* We are in a torus cluster
    * Parse attribute dimensions="dim1,dim2,dim3,...,dimN" and save them into a vector.
@@ -70,7 +70,7 @@ std::vector<unsigned int> TorusZone::parse_topo_parameters(const std::string& to
   return dimensions;
 }
 
-void TorusZone::set_topology(const std::vector<unsigned int>& dimensions)
+void TorusZone::set_topology(const std::vector<unsigned long>& dimensions)
 {
   xbt_assert(not dimensions.empty(), "Torus dimensions cannot be empty");
   dimensions_ = dimensions;
@@ -184,7 +184,7 @@ void TorusZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
 
 namespace s4u {
 
-NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const std::vector<unsigned int>& dimensions,
+NetZone* create_torus_zone(const std::string& name, const NetZone* parent, const std::vector<unsigned long>& dimensions,
                            const ClusterCallbacks& set_callbacks, double bandwidth, double latency,
                            Link::SharingPolicy sharing_policy)
 {

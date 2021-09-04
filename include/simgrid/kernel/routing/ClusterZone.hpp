@@ -135,17 +135,17 @@ protected:
     THROW_UNIMPLEMENTED;
   };
 
-  unsigned int node_pos(int id) const { return id * num_links_per_node_; }
-  unsigned int node_pos_with_loopback(int id) const { return node_pos(id) + (has_loopback_ ? 1 : 0); }
+  unsigned long node_pos(unsigned long id) const { return id * num_links_per_node_; }
+  unsigned long node_pos_with_loopback(unsigned long id) const { return node_pos(id) + (has_loopback_ ? 1 : 0); }
 
 public:
   /** Fill the leaf retriving netpoint from a user's callback */
-  void fill_leaf_from_cb(unsigned int position, const std::vector<unsigned int>& dimensions,
+  void fill_leaf_from_cb(unsigned long position, const std::vector<unsigned long>& dimensions,
                          const s4u::ClusterCallbacks& set_callbacks, NetPoint** node_netpoint, s4u::Link** lb_link,
                          s4u::Link** limiter_link);
   /** @brief Set the characteristics of links inside a Cluster zone */
   virtual void set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy);
-  unsigned int node_pos_with_loopback_limiter(int id) const
+  unsigned long node_pos_with_loopback_limiter(unsigned long id) const
   {
     return node_pos_with_loopback(id) + (has_limiter_ ? 1 : 0);
   }

@@ -15,7 +15,6 @@
 int main(int argc, char *argv[])
 {
   int rank;
-  unsigned long i;
   char buf[1024];
 
   int err = MPI_Init(&argc, &argv);
@@ -42,7 +41,7 @@ int main(int argc, char *argv[])
     sz -= x;
   } else
     sz = 0;
-  for (i = 1; i < pstates; i++) {
+  for (unsigned long i = 1; i < pstates; i++) {
     x = snprintf(s, sz, ", %.0f", sg_host_get_pstate_speed(sg_host_self(), i));
     if (x < sz) {
       s += x;
@@ -52,7 +51,7 @@ int main(int argc, char *argv[])
   }
   fprintf(stderr, "%s%s\n", buf, (sz ? "" : " [...]"));
 
-  for (i = 0; i < pstates; i++) {
+  for (unsigned long i = 0; i < pstates; i++) {
     sg_host_set_pstate(sg_host_self(), i);
     fprintf(stderr, "[%.6f] [rank %d] Current pstate: %lu; Current power: %.0f\n", MPI_Wtime(), rank, i,
             sg_host_get_speed(sg_host_self()));

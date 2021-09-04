@@ -62,7 +62,7 @@ NetPoint* ClusterBase::get_gateway(unsigned int position)
   return res;
 }
 
-void ClusterBase::fill_leaf_from_cb(unsigned int position, const std::vector<unsigned int>& dimensions,
+void ClusterBase::fill_leaf_from_cb(unsigned long position, const std::vector<unsigned long>& dimensions,
                                     const s4u::ClusterCallbacks& set_callbacks, NetPoint** node_netpoint,
                                     s4u::Link** lb_link, s4u::Link** limiter_link)
 {
@@ -90,10 +90,10 @@ void ClusterBase::fill_leaf_from_cb(unsigned int position, const std::vector<uns
   kernel::routing::NetPoint* gw       = nullptr;
   auto dims                           = index_to_dims(position);
   std::tie(netpoint, gw)              = set_callbacks.netpoint(get_iface(), dims, position);
-  xbt_assert(netpoint, "set_netpoint(elem=%u): Invalid netpoint (nullptr)", position);
+  xbt_assert(netpoint, "set_netpoint(elem=%lu): Invalid netpoint (nullptr)", position);
   if (netpoint->is_netzone()) {
     xbt_assert(gw && not gw->is_netzone(),
-               "set_netpoint(elem=%u): Netpoint (%s) is a netzone, but gateway (%s) is invalid", position,
+               "set_netpoint(elem=%lu): Netpoint (%s) is a netzone, but gateway (%s) is invalid", position,
                netpoint->get_cname(), gw ? gw->get_cname() : "nullptr");
   } else {
     xbt_assert(not gw, "set_netpoint: Netpoint (%s) isn't netzone, gateway must be nullptr", netpoint->get_cname());
@@ -103,7 +103,7 @@ void ClusterBase::fill_leaf_from_cb(unsigned int position, const std::vector<uns
 
   if (set_callbacks.loopback) {
     s4u::Link* loopback = set_callbacks.loopback(get_iface(), dims, position);
-    xbt_assert(loopback, "set_loopback: Invalid loopback link (nullptr) for element %u", position);
+    xbt_assert(loopback, "set_loopback: Invalid loopback link (nullptr) for element %lu", position);
     set_loopback();
     add_private_link_at(node_pos(netpoint->id()), {loopback->get_impl(), loopback->get_impl()});
     *lb_link = loopback;
@@ -111,7 +111,7 @@ void ClusterBase::fill_leaf_from_cb(unsigned int position, const std::vector<uns
 
   if (set_callbacks.limiter) {
     s4u::Link* limiter = set_callbacks.limiter(get_iface(), dims, position);
-    xbt_assert(limiter, "set_limiter: Invalid limiter link (nullptr) for element %u", position);
+    xbt_assert(limiter, "set_limiter: Invalid limiter link (nullptr) for element %lu", position);
     set_limiter();
     add_private_link_at(node_pos_with_loopback(netpoint->id()), {limiter->get_impl(), limiter->get_impl()});
     *limiter_link = limiter;

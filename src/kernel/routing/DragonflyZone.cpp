@@ -422,8 +422,8 @@ NetZone* create_dragonfly_zone(const std::string& name, const NetZone* parent, c
   zone->set_link_characteristics(bandwidth, latency, sharing_policy);
 
   /* populating it */
-  std::vector<unsigned int> dimensions = {params.groups.first, params.chassis.first, params.routers.first,
-                                          params.nodes};
+  std::vector<unsigned long> dimensions = {params.groups.first, params.chassis.first, params.routers.first,
+                                           params.nodes};
   int tot_elements                     = std::accumulate(dimensions.begin(), dimensions.end(), 1, std::multiplies<>());
   for (int i = 0; i < tot_elements; i++) {
     kernel::routing::NetPoint* netpoint;

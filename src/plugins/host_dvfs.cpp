@@ -205,7 +205,7 @@ public:
        */
       // Load is now < freq_up_threshold; exclude pstate 0 (the fastest)
       // because pstate 0 can only be selected if load > freq_up_threshold_
-      unsigned long new_pstate = static_cast<int>(get_max_pstate() - load * (get_max_pstate() + 1));
+      unsigned long new_pstate = static_cast<unsigned long>(get_max_pstate() - load * (get_max_pstate() + 1));
       if (new_pstate < get_min_pstate())
         new_pstate = get_min_pstate();
       get_host()->set_pstate(new_pstate);
@@ -264,11 +264,10 @@ public:
 
 #if HAVE_SMPI
 class Adagio : public Governor {
-private:
-  int best_pstate     = 0;
-  double start_time   = 0;
-  double comp_counter = 0;
-  double comp_timer   = 0;
+  unsigned long best_pstate = 0;
+  double start_time         = 0;
+  double comp_counter       = 0;
+  double comp_timer         = 0;
 
   std::vector<std::vector<double>> rates; // Each host + all frequencies of that host
 
@@ -327,7 +326,7 @@ public:
     if (rates[task_id][best_pstate] == 0)
       best_pstate = 0;
     get_host()->set_pstate(best_pstate); // Load our schedule
-    XBT_DEBUG("Set pstate to %i", best_pstate);
+    XBT_DEBUG("Set pstate to %lu", best_pstate);
   }
 
   void post_task()

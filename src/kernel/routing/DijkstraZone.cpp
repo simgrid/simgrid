@@ -21,8 +21,8 @@ namespace routing {
 
 class GraphNodeData {
 public:
-  explicit GraphNodeData(int id) : id_(id) {}
-  int id_;
+  explicit GraphNodeData(unsigned long id) : id_(id) {}
+  unsigned long id_;
   unsigned long graph_id_ = UINT_MAX; /* used for caching internal graph id's */
 };
 
@@ -68,7 +68,7 @@ void DijkstraZone::do_seal()
   }
 }
 
-xbt_node_t DijkstraZone::route_graph_new_node(int id)
+xbt_node_t DijkstraZone::route_graph_new_node(unsigned long id)
 {
   xbt_node_t node = xbt_graph_new_node(route_graph_.get(), new GraphNodeData(id));
   graph_node_map_.emplace(id, node);
@@ -76,7 +76,7 @@ xbt_node_t DijkstraZone::route_graph_new_node(int id)
   return node;
 }
 
-xbt_node_t DijkstraZone::node_map_search(int id)
+xbt_node_t DijkstraZone::node_map_search(unsigned long id)
 {
   auto ret = graph_node_map_.find(id);
   return ret == graph_node_map_.end() ? nullptr : ret->second;
@@ -218,9 +218,9 @@ void DijkstraZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, Net
              new_extended_route(get_hierarchy(), gw_dst, gw_src, get_link_list_impl(link_list, true), false));
 }
 
-void DijkstraZone::new_edge(int src_id, int dst_id, Route* route)
+void DijkstraZone::new_edge(unsigned long src_id, unsigned long dst_id, Route* route)
 {
-  XBT_DEBUG("Create Route from '%d' to '%d'", src_id, dst_id);
+  XBT_DEBUG("Create Route from '%lu' to '%lu'", src_id, dst_id);
 
   // Get the extremities, or create them if they don't exist yet
   xbt_node_t src = node_map_search(src_id);

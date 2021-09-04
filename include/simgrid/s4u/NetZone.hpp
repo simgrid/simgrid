@@ -264,7 +264,7 @@ struct ClusterCallbacks {
  * @return Pointer to new netzone
  */
 XBT_PUBLIC NetZone* create_torus_zone(const std::string& name, const NetZone* parent,
-                                      const std::vector<unsigned int>& dimensions,
+                                      const std::vector<unsigned long>& dimensions,
                                       const ClusterCallbacks& set_callbacks, double bandwidth, double latency,
                                       Link::SharingPolicy sharing_policy);
 

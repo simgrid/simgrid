@@ -124,7 +124,7 @@ static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, const
 
   // bottom-up recursion
   for (auto const& nz_son : netzone->get_children()) {
-    simgrid::instr::Container* child_container = container->get_child_by_name(nz_son->get_name());
+    const simgrid::instr::Container* child_container = container->get_child_by_name(nz_son->get_name());
     recursiveGraphExtraction(nz_son, child_container, filter);
   }
 

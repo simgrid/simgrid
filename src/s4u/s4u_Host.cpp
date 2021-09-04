@@ -513,7 +513,7 @@ double sg_host_speed(const_sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
  * @param pstate_index pstate to test
  * @return Returns the processor speed associated with pstate_index
  */
-double sg_host_get_pstate_speed(const_sg_host_t host, int pstate_index)
+double sg_host_get_pstate_speed(const_sg_host_t host, unsigned long pstate_index)
 {
   return host->get_pstate_speed(pstate_index);
 }

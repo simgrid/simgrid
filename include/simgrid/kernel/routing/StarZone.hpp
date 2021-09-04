@@ -91,7 +91,7 @@ private:
   /** @brief Auxiliary methods to check params received in add_route method */
   void check_add_route_param(const NetPoint* src, const NetPoint* dst, const NetPoint* gw_src, const NetPoint* gw_dst,
                              bool symmetrical) const;
-  std::unordered_map<unsigned int, StarRoute> routes_;
+  std::unordered_map<unsigned long, StarRoute> routes_;
 };
 } // namespace routing
 } // namespace kernel
