@@ -69,9 +69,9 @@ CpuImpl* CpuImpl::set_pstate(unsigned long pstate_index)
 {
   xbt_assert(
       pstate_index <= speed_per_pstate_.size(),
-      "Invalid parameters for CPU %s (pstate %lu > length of pstates %lu). Please fix your platform file, or your "
+      "Invalid parameters for CPU %s (pstate %lu > length of pstates %d). Please fix your platform file, or your "
       "call to change the pstate.",
-      get_cname(), pstate_index, speed_per_pstate_.size());
+      get_cname(), pstate_index, static_cast<int>(speed_per_pstate_.size()));
 
   double new_peak_speed = speed_per_pstate_[pstate_index];
   pstate_               = pstate_index;
