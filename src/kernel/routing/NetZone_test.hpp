@@ -13,7 +13,7 @@
 // Callback function common to several routing unit tests
 struct CreateHost {
   std::pair<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*>
-  operator()(simgrid::s4u::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id) const
+  operator()(simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& /*coord*/, unsigned long id) const
   {
     const simgrid::s4u::Host* host = zone->create_host(std::to_string(id), 1e9)->seal();
     return std::make_pair(host->get_netpoint(), nullptr);

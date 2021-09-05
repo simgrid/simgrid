@@ -151,10 +151,10 @@ void sg_platf_new_disk(const simgrid::kernel::routing::DiskCreationArgs* disk)
 /** @brief Auxiliary function to create hosts */
 static std::pair<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*>
 sg_platf_cluster_create_host(const simgrid::kernel::routing::ClusterCreationArgs* cluster, simgrid::s4u::NetZone* zone,
-                             const std::vector<unsigned int>& /*coord*/, int id)
+                             const std::vector<unsigned long>& /*coord*/, unsigned long id)
 {
   xbt_assert(static_cast<unsigned long>(id) < cluster->radicals.size(),
-             "Zone(%s): error when creating host number %d in the zone. Insufficient number of radicals available "
+             "Zone(%s): error when creating host number %lu in the zone. Insufficient number of radicals available "
              "(total = %zu). Check the 'radical' parameter in XML",
              cluster->id.c_str(), id, cluster->radicals.size());
 
@@ -170,11 +170,12 @@ sg_platf_cluster_create_host(const simgrid::kernel::routing::ClusterCreationArgs
 /** @brief Auxiliary function to create loopback links */
 static simgrid::s4u::Link*
 sg_platf_cluster_create_loopback(const simgrid::kernel::routing::ClusterCreationArgs* cluster,
-                                 simgrid::s4u::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id)
+                                 simgrid::s4u::NetZone* zone, const std::vector<unsigned long>& /*coord*/,
+                                 unsigned long id)
 {
   xbt_assert(static_cast<unsigned long>(id) < cluster->radicals.size(),
-             "Zone(%s): error when creating loopback for host number %d in the zone. Insufficient number of radicals "
-             "available "
+             "Zone(%s): error when creating loopback for host number %lu in the zone. Insufficient number of "
+             "radicals available "
              "(total = %zu). Check the 'radical' parameter in XML",
              cluster->id.c_str(), id, cluster->radicals.size());
 
@@ -191,7 +192,8 @@ sg_platf_cluster_create_loopback(const simgrid::kernel::routing::ClusterCreation
 /** @brief Auxiliary function to create limiter links */
 static simgrid::s4u::Link* sg_platf_cluster_create_limiter(const simgrid::kernel::routing::ClusterCreationArgs* cluster,
                                                            simgrid::s4u::NetZone* zone,
-                                                           const std::vector<unsigned int>& /*coord*/, int id)
+                                                           const std::vector<unsigned long>& /*coord*/,
+                                                           unsigned long id)
 {
   std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(id) + "_limiter";
   XBT_DEBUG("Cluster: creating limiter link=%s bw=%f", link_id.c_str(), cluster->limiter_link);

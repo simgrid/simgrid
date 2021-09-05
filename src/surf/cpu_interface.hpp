@@ -53,7 +53,7 @@ class XBT_PUBLIC CpuImpl : public Resource_T<CpuImpl> {
 
   s4u::Host* piface_;
   int core_count_ = 1;
-  int pstate_ = 0;                       /*< Current pstate (index in the speed_per_pstate_)*/
+  unsigned long pstate_ = 0;             /*< Current pstate (index in the speed_per_pstate_)*/
   std::vector<double> speed_per_pstate_; /*< List of supported CPU capacities (pstate related). Not 'const' because VCPU
                                             get modified on migration */
   s4u::Host::SharingPolicy sharing_policy_ = s4u::Host::SharingPolicy::LINEAR;
@@ -97,12 +97,12 @@ public:
   virtual double get_speed_ratio() { return speed_.scale; }
 
   /** @brief Get the peak processor speed (in flops/s), at the specified pstate */
-  virtual double get_pstate_peak_speed(int pstate_index) const;
+  virtual double get_pstate_peak_speed(unsigned long pstate_index) const;
 
   virtual unsigned long get_pstate_count() const { return speed_per_pstate_.size(); }
 
-  virtual int get_pstate() const { return pstate_; }
-  virtual CpuImpl* set_pstate(int pstate_index);
+  virtual unsigned long get_pstate() const { return pstate_; }
+  virtual CpuImpl* set_pstate(unsigned long pstate_index);
 
   /*< @brief Setup the profile file with availability events (peak speed changes due to external load).
    * Profile must contain relative values (ratio between 0 and 1)

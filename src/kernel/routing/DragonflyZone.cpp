@@ -20,7 +20,7 @@ namespace routing {
 
 DragonflyZone::DragonflyZone(const std::string& name) : ClusterBase(name) {}
 
-DragonflyZone::Coords DragonflyZone::rankId_to_coords(int rankId) const
+DragonflyZone::Coords DragonflyZone::rankId_to_coords(unsigned long rankId) const
 {
   // coords : group, chassis, blade, node
   Coords coords;
@@ -150,7 +150,7 @@ void DragonflyZone::build_upper_levels(const s4u::ClusterCallbacks& set_callback
 
 void DragonflyZone::generate_routers(const s4u::ClusterCallbacks& set_callbacks)
 {
-  int id = 0;
+  unsigned long id = 2 * num_groups_ * num_chassis_per_group_ * num_blades_per_chassis_ * num_nodes_per_blade_;
   /* get limiter for this router */
   auto get_limiter = [this, &id, &set_callbacks](unsigned int i, unsigned int j,
                                                  unsigned int k) -> resource::LinkImpl* {
@@ -432,7 +432,6 @@ NetZone* create_dragonfly_zone(const std::string& name, const NetZone* parent, c
     zone->fill_leaf_from_cb(i, dimensions, set_callbacks, &netpoint, &loopback, &limiter);
   }
   zone->build_upper_levels(set_callbacks);
-
   return zone->get_iface();
 }
 } // namespace s4u

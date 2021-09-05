@@ -259,7 +259,7 @@ void FatTreeZone::generate_switches(const s4u::ClusterCallbacks& set_callbacks)
     return limiter;
   };
   // Create the switches
-  int k = 0;
+  unsigned long k = 2 * nodes_.size();
   for (unsigned int i = 0; i < this->levels_; i++) {
     for (unsigned int j = 0; j < this->nodes_by_level_[i + 1]; j++) {
       k--;

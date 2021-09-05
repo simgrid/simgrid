@@ -89,7 +89,7 @@ public:
  * @return netpoint, gateway: the netpoint to the StarZone and CPU0 as gateway
  */
 static std::pair<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*>
-create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id)
+create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned long>& /*coord*/, unsigned long id)
 {
   constexpr int num_cpus    = 8;     //!< Number of CPUs in the zone
   constexpr double speed    = 1e9;   //!< Speed of each CPU
@@ -139,7 +139,7 @@ create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coo
  * @param id Internal identifier in the torus (for information)
  * @return Limiter link
  */
-static sg4::Link* create_limiter(sg4::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id)
+static sg4::Link* create_limiter(sg4::NetZone* zone, const std::vector<unsigned long>& /*coord*/, unsigned long id)
 {
   return zone->create_link("limiter-" + std::to_string(id), 1e9)->seal();
 }

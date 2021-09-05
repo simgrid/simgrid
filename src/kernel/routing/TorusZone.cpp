@@ -20,14 +20,15 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-void TorusZone::create_torus_links(int id, int rank, unsigned long position)
+void TorusZone::create_torus_links(unsigned long id, int rank, unsigned long position)
 {
   /* Create all links that exist in the torus. Each rank creates @a dimensions-1 links */
   int dim_product = 1; // Needed to calculate the next neighbor_id
 
   for (unsigned long j = 0; j < dimensions_.size(); j++) {
-    int current_dimension = dimensions_[j]; // which dimension are we currently in?
-                                            // we need to iterate over all dimensions and create all links there
+    unsigned long current_dimension =
+        dimensions_[j]; // which dimension are we currently in?
+                        // we need to iterate over all dimensions and create all links there
     // The other node the link connects
     int neighbor_rank_id = ((rank / dim_product) % current_dimension == current_dimension - 1)
                                ? rank - (current_dimension - 1) * dim_product

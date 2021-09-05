@@ -115,7 +115,7 @@ class XBT_PRIVATE FatTreeZone : public ClusterBase {
   std::vector<unsigned int> num_parents_per_node_;  // number of parents by node
   std::vector<unsigned int> num_port_lower_level_;  // ports between each level l and l-1
 
-  std::map<int, std::shared_ptr<FatTreeNode>> compute_nodes_;
+  std::map<unsigned long, std::shared_ptr<FatTreeNode>> compute_nodes_;
   std::vector<std::shared_ptr<FatTreeNode>> nodes_;
   std::vector<std::shared_ptr<FatTreeLink>> links_;
   std::vector<unsigned int> nodes_by_level_;

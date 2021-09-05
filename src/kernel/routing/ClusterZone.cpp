@@ -40,19 +40,19 @@ void ClusterBase::set_link_characteristics(double bw, double lat, s4u::Link::Sha
   link_lat_            = lat;
 }
 
-void ClusterBase::add_private_link_at(unsigned int position, std::pair<resource::LinkImpl*, resource::LinkImpl*> link)
+void ClusterBase::add_private_link_at(unsigned long position, std::pair<resource::LinkImpl*, resource::LinkImpl*> link)
 {
   private_links_.insert({position, link});
 }
 
-void ClusterBase::set_gateway(unsigned int position, NetPoint* gateway)
+void ClusterBase::set_gateway(unsigned long position, NetPoint* gateway)
 {
   xbt_assert(not gateway || not gateway->is_netzone(), "ClusterBase: gateway cannot be another netzone %s",
              gateway->get_cname());
   gateways_[position] = gateway;
 }
 
-NetPoint* ClusterBase::get_gateway(unsigned int position)
+NetPoint* ClusterBase::get_gateway(unsigned long position)
 {
   NetPoint* res = nullptr;
   auto it       = gateways_.find(position);
@@ -73,13 +73,13 @@ void ClusterBase::fill_leaf_from_cb(unsigned long position, const std::vector<un
   *limiter_link = nullptr;
 
   // auxiliary function to get dims from index
-  auto index_to_dims = [&dimensions](int index) {
-    std::vector<unsigned int> dims_array(dimensions.size());
+  auto index_to_dims = [&dimensions](unsigned long index) {
+    std::vector<unsigned long> dims_array(dimensions.size());
     for (auto i = static_cast<int>(dimensions.size() - 1); i >= 0; --i) {
       if (index <= 0) {
         break;
       }
-      unsigned int value = index % dimensions[i];
+      unsigned long value = index % dimensions[i];
       dims_array[i]      = value;
       index              = (index / dimensions[i]);
     }

@@ -211,7 +211,7 @@ struct ClusterCallbacks {
    * @return pair<NetPoint*, NetPoint*>: returns a pair of netpoint and gateway.
    */
   using ClusterNetPointCb = std::pair<kernel::routing::NetPoint*, kernel::routing::NetPoint*>(
-      NetZone* zone, const std::vector<unsigned int>& coord, int id);
+      NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id);
   /**
    * @brief Callback used to set the links for some leaf of the cluster (Torus, FatTree, etc)
    *
@@ -227,7 +227,7 @@ struct ClusterCallbacks {
    * @param id: Internal identifier of the element
    * @return Pointer to the Link
    */
-  using ClusterLinkCb = Link*(NetZone* zone, const std::vector<unsigned int>& coord, int id);
+  using ClusterLinkCb = Link*(NetZone* zone, const std::vector<unsigned long>& coord, unsigned long id);
 
   std::function<ClusterNetPointCb> netpoint;
   std::function<ClusterLinkCb> loopback = {};

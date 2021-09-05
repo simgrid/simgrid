@@ -205,7 +205,7 @@ public:
        */
       // Load is now < freq_up_threshold; exclude pstate 0 (the fastest)
       // because pstate 0 can only be selected if load > freq_up_threshold_
-      unsigned long new_pstate = static_cast<unsigned long>(get_max_pstate() - load * (get_max_pstate() + 1));
+      auto new_pstate = get_max_pstate() - static_cast<unsigned long>(load) * (get_max_pstate() + 1);
       if (new_pstate < get_min_pstate())
         new_pstate = get_min_pstate();
       get_host()->set_pstate(new_pstate);

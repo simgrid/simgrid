@@ -119,11 +119,11 @@ protected:
   bool has_backbone() const { return backbone_ != nullptr; }
   void set_router(NetPoint* router) { router_ = router; }
   /** @brief Sets gateway for the leaf */
-  void set_gateway(unsigned int position, NetPoint* gateway);
+  void set_gateway(unsigned long position, NetPoint* gateway);
   /** @brief Gets gateway for the leaf or nullptr */
-  NetPoint* get_gateway(unsigned int position);
-  void add_private_link_at(unsigned int position, std::pair<resource::LinkImpl*, resource::LinkImpl*> link);
-  bool private_link_exists_at(unsigned int position) const
+  NetPoint* get_gateway(unsigned long position);
+  void add_private_link_at(unsigned long position, std::pair<resource::LinkImpl*, resource::LinkImpl*> link);
+  bool private_link_exists_at(unsigned long position) const
   {
     return private_links_.find(position) != private_links_.end();
   }
