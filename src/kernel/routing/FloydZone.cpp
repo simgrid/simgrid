@@ -41,7 +41,7 @@ void FloydZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
   std::vector<Route*> route_stack;
   unsigned long cur = dst->id();
   do {
-    int pred = predecessor_table_[src->id()][cur];
+    long pred = predecessor_table_[src->id()][cur];
     if (pred == -1)
       throw std::invalid_argument(xbt::string_printf("No route from '%s' to '%s'", src->get_cname(), dst->get_cname()));
     route_stack.push_back(link_table_[pred][cur].get());
