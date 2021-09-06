@@ -248,7 +248,7 @@ void FatTreeZone::generate_switches(const s4u::ClusterCallbacks& set_callbacks)
   }
 
   /* get limiter for this router */
-  auto get_limiter = [this, &set_callbacks](unsigned int i, unsigned int j, int id) -> resource::LinkImpl* {
+  auto get_limiter = [this, &set_callbacks](unsigned long i, unsigned long j, long id) -> resource::LinkImpl* {
     kernel::resource::LinkImpl* limiter = nullptr;
     if (set_callbacks.limiter) {
       const auto* s4u_link = set_callbacks.limiter(get_iface(), {i + 1, j}, id);
@@ -260,8 +260,8 @@ void FatTreeZone::generate_switches(const s4u::ClusterCallbacks& set_callbacks)
   };
   // Create the switches
   unsigned long k = 2 * nodes_.size();
-  for (unsigned int i = 0; i < this->levels_; i++) {
-    for (unsigned int j = 0; j < this->nodes_by_level_[i + 1]; j++) {
+  for (unsigned long i = 0; i < this->levels_; i++) {
+    for (unsigned long j = 0; j < this->nodes_by_level_[i + 1]; j++) {
       k--;
       auto newNode = std::make_shared<FatTreeNode>(k, i + 1, j, get_limiter(i, j, k), nullptr);
       XBT_DEBUG("We create the switch %d(%u,%u)", newNode->id, newNode->level, newNode->position);

@@ -30,9 +30,9 @@ void TorusZone::create_torus_links(unsigned long id, int rank, unsigned long pos
         dimensions_[j]; // which dimension are we currently in?
                         // we need to iterate over all dimensions and create all links there
     // The other node the link connects
-    int neighbor_rank_id = ((rank / dim_product) % current_dimension == current_dimension - 1)
-                               ? rank - (current_dimension - 1) * dim_product
-                               : rank + dim_product;
+    unsigned long neighbor_rank_id = ((rank / dim_product) % current_dimension == current_dimension - 1)
+                                         ? rank - (current_dimension - 1) * dim_product
+                                         : rank + dim_product;
     // name of neighbor is not right for non contiguous cluster radicals (as id != rank in this case)
     std::string link_id = get_name() + "_link_from_" + std::to_string(id) + "_to_" + std::to_string(neighbor_rank_id);
     const s4u::Link* linkup;
@@ -106,7 +106,7 @@ void TorusZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
   std::vector<unsigned int> targetCoords(dsize);
   unsigned int dim_size_product = 1;
   for (unsigned long i = 0; i < dsize; i++) {
-    unsigned cur_dim_size = dimensions_[i];
+    unsigned long cur_dim_size = dimensions_[i];
     myCoords[i]           = (src->id() / dim_size_product) % cur_dim_size;
     targetCoords[i]       = (dst->id() / dim_size_product) % cur_dim_size;
     dim_size_product *= cur_dim_size;
@@ -119,12 +119,12 @@ void TorusZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
   unsigned long linkOffset = (dsize + 1) * src->id();
 
   bool use_lnk_up = false; // Is this link of the form "cur -> next" or "next -> cur"? false means: next -> cur
-  unsigned int current_node = src->id();
+  unsigned long current_node = src->id();
   while (current_node != dst->id()) {
     unsigned int next_node   = 0;
     unsigned int dim_product = 1; // First, we will route in x-dimension
     for (unsigned j = 0; j < dsize; j++) {
-      const unsigned cur_dim = dimensions_[j];
+      const unsigned long cur_dim = dimensions_[j];
       // current_node/dim_product = position in current dimension
       if ((current_node / dim_product) % cur_dim != (dst->id() / dim_product) % cur_dim) {
         if ((targetCoords[j] > myCoords[j] &&
@@ -150,7 +150,7 @@ void TorusZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
           linkOffset = node_pos_with_loopback_limiter(next_node) + j;
           use_lnk_up = false;
         }
-        XBT_DEBUG("torus_get_route_and_latency - current_node: %u, next_node: %u, linkOffset is %lu", current_node,
+        XBT_DEBUG("torus_get_route_and_latency - current_node: %lu, next_node: %u, linkOffset is %lu", current_node,
                   next_node, linkOffset);
         break;
       }

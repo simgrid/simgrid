@@ -188,7 +188,7 @@ public:
   double get_load() const;
 
   unsigned long get_pstate_count() const;
-  int get_pstate() const;
+  unsigned long get_pstate() const;
   double get_pstate_speed(unsigned long pstate_index) const;
   Host* set_pstate(unsigned long pstate_index);
   Host* set_coordinates(const std::string& coords);

@@ -65,10 +65,10 @@ public:
 class XBT_PUBLIC DragonflyZone : public ClusterBase {
 public:
   struct Coords {
-    unsigned group;
-    unsigned chassis;
-    unsigned blade;
-    unsigned node;
+    unsigned long group;
+    unsigned long chassis;
+    unsigned long blade;
+    unsigned long node;
   };
 
   explicit DragonflyZone(const std::string& name);

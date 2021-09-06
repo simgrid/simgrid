@@ -88,8 +88,8 @@ protected:
 class XBT_PRIVATE ClusterBase : public ClusterZone {
   /* We use a map instead of a std::vector here because that's a sparse vector. Some values may not exist */
   /* The pair is {link_up, link_down} */
-  std::unordered_map<unsigned int, std::pair<resource::LinkImpl*, resource::LinkImpl*>> private_links_;
-  std::unordered_map<unsigned int, NetPoint*> gateways_; //!< list of gateways for leafs (if they're netzones)
+  std::unordered_map<unsigned long, std::pair<resource::LinkImpl*, resource::LinkImpl*>> private_links_;
+  std::unordered_map<unsigned long, NetPoint*> gateways_; //!< list of gateways for leafs (if they're netzones)
   resource::LinkImpl* backbone_     = nullptr;
   NetPoint* router_                 = nullptr;
   bool has_limiter_                 = false;

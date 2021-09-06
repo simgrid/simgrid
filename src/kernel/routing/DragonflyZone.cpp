@@ -296,9 +296,9 @@ void DragonflyZone::get_local_route(const NetPoint* src, const NetPoint* dst, Ro
 
   const auto myCoords     = rankId_to_coords(src->id());
   const auto targetCoords = rankId_to_coords(dst->id());
-  XBT_DEBUG("src : %u group, %u chassis, %u blade, %u node", myCoords.group, myCoords.chassis, myCoords.blade,
+  XBT_DEBUG("src : %lu group, %lu chassis, %lu blade, %lu node", myCoords.group, myCoords.chassis, myCoords.blade,
             myCoords.node);
-  XBT_DEBUG("dst : %u group, %u chassis, %u blade, %u node", targetCoords.group, targetCoords.chassis,
+  XBT_DEBUG("dst : %lu group, %lu chassis, %lu blade, %lu node", targetCoords.group, targetCoords.chassis,
             targetCoords.blade, targetCoords.node);
 
   DragonflyRouter* myRouter      = &routers_[myCoords.group * (num_chassis_per_group_ * num_blades_per_chassis_) +

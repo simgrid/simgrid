@@ -321,7 +321,7 @@ Host* Host::set_pstate(unsigned long pstate_index)
 }
 
 /** @brief Retrieve the pstate at which the host is currently running */
-int Host::get_pstate() const
+unsigned long Host::get_pstate() const
 {
   return this->pimpl_cpu_->get_pstate();
 }

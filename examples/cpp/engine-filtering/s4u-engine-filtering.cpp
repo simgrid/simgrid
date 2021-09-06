@@ -36,7 +36,7 @@ public:
  * Then, it allows one to easily retrieve the hosts which frequency changed since the functor creation.
  */
 class FrequencyChanged {
-  std::map<simgrid::s4u::Host*, int> host_list;
+  std::map<simgrid::s4u::Host*, unsigned long> host_list;
 
 public:
   explicit FrequencyChanged(const simgrid::s4u::Engine& e)
