@@ -8,7 +8,8 @@ on:
 jobs:
   build:
 
-    runs-on: simgrid/unstable
+    runs-on: ubuntu-latest
+    container: simgrid/unstable
 
     steps:
       - uses: actions/checkout@v2
