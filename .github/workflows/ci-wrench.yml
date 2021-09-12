@@ -26,7 +26,11 @@ jobs:
           apt -y install libboost-all-dev
           apt -y install libpugixml-dev
           apt -y install nlohmann-json3-dev
-          apt -y install googletest
+      - name: Install googletest
+        run: |
+          wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
+          tar xf release-1.8.0.tar.gz
+          cd googletest-release-1.8.0/googletest && cmake . && make install
       - name: Build and test WRENCH
         run: |
           set -e
