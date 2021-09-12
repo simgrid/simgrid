@@ -24,9 +24,9 @@ jobs:
           apt -y install wget
           apt -y install git
           apt -y install libboost-all-dev
-	  apt -y install libpugixml-dev
-	  apt -y install nlohmann-json3-dev
-	  apt -y install googletest
+          apt -y install libpugixml-dev
+          apt -y install nlohmann-json3-dev
+          apt -y install googletest
       - name: Build and test WRENCH
         run: |
           set -e
