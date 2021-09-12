@@ -24,22 +24,10 @@ jobs:
           apt -y install wget
           apt -y install git
           apt -y install libboost-all-dev
-      - name: Install pugixml
-        run: |
-          wget https://github.com/zeux/pugixml/releases/download/v1.8.1/pugixml-1.8.1.tar.gz
-          tar -xf pugixml-1.8.1.tar.gz 
-          cd pugixml-1.8 && cmake . && make install 
-      - name: Install json for modern c++
-        run: |
-          wget https://github.com/nlohmann/json/archive/v3.9.1.tar.gz 
-          tar -xf v3.9.1.tar.gz 
-          cd json-3.9.1 && cmake . && make install
-      - name: Install googletest
-        run: |
-          wget https://github.com/google/googletest/archive/release-1.8.0.tar.gz
-          tar xf release-1.8.0.tar.gz 
-          cd googletest-release-1.8.0/googletest && cmake . && make install
-      - name: Install WRENCH
+	  apt -y install libpugixml-dev
+	  apt -y install nlohmann-json3-dev
+	  apt -y install googletest
+      - name: Build and test WRENCH
         run: |
           set -e
           rm -rf wrench.git && git clone --depth 1 --branch simgrid-external-project-ci https://github.com/wrench-project/wrench.git wrench.git
