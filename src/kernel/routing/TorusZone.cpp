@@ -102,8 +102,8 @@ void TorusZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
    * both arrays, we can easily assess whether we need to route into this dimension or not.
    */
   const unsigned long dsize = dimensions_.size();
-  std::vector<unsigned int> myCoords(dsize);
-  std::vector<unsigned int> targetCoords(dsize);
+  std::vector<unsigned long> myCoords(dsize);
+  std::vector<unsigned long> targetCoords(dsize);
   unsigned int dim_size_product = 1;
   for (unsigned long i = 0; i < dsize; i++) {
     unsigned long cur_dim_size = dimensions_[i];
@@ -121,9 +121,9 @@ void TorusZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
   bool use_lnk_up = false; // Is this link of the form "cur -> next" or "next -> cur"? false means: next -> cur
   unsigned long current_node = src->id();
   while (current_node != dst->id()) {
-    unsigned int next_node   = 0;
-    unsigned int dim_product = 1; // First, we will route in x-dimension
-    for (unsigned j = 0; j < dsize; j++) {
+    unsigned long next_node   = 0;
+    unsigned long dim_product = 1; // First, we will route in x-dimension
+    for (unsigned long j = 0; j < dsize; j++) {
       const unsigned long cur_dim = dimensions_[j];
       // current_node/dim_product = position in current dimension
       if ((current_node / dim_product) % cur_dim != (dst->id() / dim_product) % cur_dim) {
@@ -150,7 +150,7 @@ void TorusZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
           linkOffset = node_pos_with_loopback_limiter(next_node) + j;
           use_lnk_up = false;
         }
-        XBT_DEBUG("torus_get_route_and_latency - current_node: %lu, next_node: %u, linkOffset is %lu", current_node,
+        XBT_DEBUG("torus_get_route_and_latency - current_node: %lu, next_node: %lu, linkOffset is %lu", current_node,
                   next_node, linkOffset);
         break;
       }

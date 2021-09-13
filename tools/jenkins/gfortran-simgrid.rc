@@ -3,15 +3,16 @@
 def getcwd():
   import os
   return os.getcwd()
+prefix=getcwd()+"/install"
 #Add the condition testing to run tests and includes PyYaml
 conditions.add("testing")
 conditions.add("simulation") #to include simgrid compilation
-#conditions.add("python")
 #List the module the this rcfile will build
 modules = ['spred',]
 #example of the potentialities of the python syntax in this file
 def env_configuration():
-    return  """ "FCFLAGS=-O2 -fPIC -fopenmp" "CFLAGS=-fPIC -O2 -fopenmp" "FC=mpif90" "F77=mpif77" "FCLIBS= " "LIBS=-ldl -lstdc++ -lgfortran"  """
+    return """--host=x86_64-linux-gnu 'FCFLAGS=-O2 -std=legacy -fopenmp -g -fbounds-check -fbacktrace -ffpe-trap=invalid,zero,overflow,denormal -Wall -fPIC' 'CFLAGS=-O2 -fopenmp -fPIC' 'LDFLAGS=-fopenmp -fPIC' --with-mpi3=false"""
+
 #the following command sets the environment variable to give these settings
 #to all the modules
 import os
@@ -24,8 +25,4 @@ module_autogenargs.update({
     " --enable-simgrid-shared --with-mpi-libs='-lsimgrid' --with-mpi-include=-I"+getcwd()+"/install/include/smpi FC="+getcwd()+"/install/bin/smpif90 CC=gcc SIMGRID_FC="+getcwd()+"/install/bin/smpif90",
 'bigdft': env_configuration()+
     " --enable-simgrid-shared --with-mpi-libs='-lsimgrid' --with-mpi-include=-I"+getcwd()+"/install/include/smpi FC="+getcwd()+"/install/bin/smpif90 CC=gcc SIMGRID_FC="+getcwd()+"/install/bin/smpif90",
-'spred': env_configuration()+" --with-gobject=yes ",
-'PyYAML': "build_ext -I%(prefix)s/include -L%(prefix)s/lib --rpath=%(prefix)s/lib " % {"prefix": prefix},
-'pygobject': 'PYTHON=/usr/bin/python',
-'v_sim-dev': '--with-abinit --with-archives --with-openbabel --with-cube --without-strict-cflags'
 })

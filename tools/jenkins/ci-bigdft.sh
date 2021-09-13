@@ -10,11 +10,7 @@ export OMP_NUM_THREADS=1
 echo "XXXXXXXXXXXXXXXX Install APT dependencies"
 SUDO="" # to ease the local testing
 $SUDO apt-get -y update
-$SUDO apt-get -y install git
-$SUDO apt-get -y install build-essential
-$SUDO apt-get -y install python-is-python3
-$SUDO apt-get -y install python3-six
-$SUDO apt-get -y install jhbuild
+$SUDO apt-get -y install git build-essential gfortran python-is-python3 python3-six python3-distutils automake cmake libboost-dev libblas-dev liblapack-dev wget
 
 echo "XXXXXXXXXXXXXXXX build and test BigDFT (git version)"
 git clone --depth=1 https://gitlab.com/l_sim/bigdft-suite.git
@@ -22,10 +18,13 @@ cd bigdft-suite
 
 WORKSPACE=`pwd`
 mkdir build && cd build
+export PATH=$PWD/simgrid-dev/smpi_script/bin/:$PATH
+export LD_LIBRARY_PATH=$PWD/simgrid-dev/lib/:$LD_LIBRARY_PATH
+export JHBUILD_RUN_AS_ROOT=1
 
-JHBUILD_RUN_AS_ROOT=1 ../Installer.py autogen -y
+../Installer.py autogen -y
 
-JHBUILD_RUN_AS_ROOT=1 ../Installer.py -f ../../tools/jenkins/gfortran-simgrid.rc -y build
+../Installer.py -f ../../tools/jenkins/gfortran-simgrid.rc -y build
 
 #cubic version
 cd ../bigdft/tests/DFT/cubic/C
