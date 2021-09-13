@@ -37,7 +37,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this example");
 
 static void simulate_bootup(simgrid::s4u::Host* host)
 {
-  int previous_pstate = host->get_pstate();
+  unsigned long previous_pstate = host->get_pstate();
 
   XBT_INFO("Switch to virtual pstate 3, that encodes the 'booting up' state in that platform");
   host->set_pstate(3);
@@ -48,13 +48,13 @@ static void simulate_bootup(simgrid::s4u::Host* host)
   XBT_INFO("Wait 150s to simulate the boot time.");
   simgrid::s4u::this_actor::sleep_for(150);
 
-  XBT_INFO("The host is now up and running. Switch back to previous pstate %d", previous_pstate);
+  XBT_INFO("The host is now up and running. Switch back to previous pstate %lu", previous_pstate);
   host->set_pstate(previous_pstate);
 }
 
 static void simulate_shutdown(simgrid::s4u::Host* host)
 {
-  int previous_pstate = host->get_pstate();
+  unsigned long previous_pstate = host->get_pstate();
 
   XBT_INFO("Switch to virtual pstate 4, that encodes the 'shutting down' state in that platform");
   host->set_pstate(4);
@@ -62,7 +62,7 @@ static void simulate_shutdown(simgrid::s4u::Host* host)
   XBT_INFO("Wait 7 seconds to simulate the shutdown time.");
   simgrid::s4u::this_actor::sleep_for(7);
 
-  XBT_INFO("Switch back to previous pstate %d, that will be used on reboot.", previous_pstate);
+  XBT_INFO("Switch back to previous pstate %lu, that will be used on reboot.", previous_pstate);
   host->set_pstate(previous_pstate);
 
   XBT_INFO("Actually shutdown the host");

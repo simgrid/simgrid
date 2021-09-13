@@ -33,7 +33,7 @@ DragonflyZone::Coords DragonflyZone::rankId_to_coords(unsigned long rankId) cons
   return coords;
 }
 
-void DragonflyZone::rankId_to_coords(int rankId, unsigned int coords[4]) const // XBT_ATTRIB_DEPRECATED_v330
+void DragonflyZone::rankId_to_coords(int rankId, unsigned long coords[4]) const // XBT_ATTRIB_DEPRECATED_v330
 {
   const auto s_coords = rankId_to_coords(rankId);
   coords[0]           = s_coords.group;
@@ -312,8 +312,7 @@ void DragonflyZone::get_local_route(const NetPoint* src, const NetPoint* dst, Ro
   }
 
   // node->router local link
-  add_link_latency(route->link_list_, myRouter->my_nodes_[static_cast<size_t>(myCoords.node) * num_links_per_link_],
-                   latency);
+  add_link_latency(route->link_list_, myRouter->my_nodes_[myCoords.node * num_links_per_link_], latency);
 
   if (targetRouter != myRouter) {
     // are we on a different group ?
