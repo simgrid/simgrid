@@ -18,7 +18,7 @@ mkdir build && cd build
 
 ../Installer.py autogen -y
 
-../Installer.py -f /builds/gfortran-simgrid.rc -y build
+../Installer.py -f ../../tools/jenkins/gfortran-simgrid.rc -y build
 
 #cubic version
 cd ../bigdft/tests/DFT/cubic/C
@@ -34,4 +34,4 @@ cd $WORKSPACE/bigdft/tests/DFT/linear/surface
 smpirun -hostfile $WORKSPACE/simgrid-dev/examples/smpi/hostfile -platform $WORKSPACE/simgrid-dev/examples/platforms/small_platform.xml -np 4 $WORKSPACE/build/install/bin/bigdft -n graphene -l no
 
 cd $WORKSPACE/build
-../Installer.py -f /builds/gfortran-simgrid.rc -y clean
+../Installer.py -f ../../tools/jenkins/gfortran-simgrid.rc -y clean
