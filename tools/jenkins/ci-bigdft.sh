@@ -16,9 +16,9 @@ cd bigdft-suite
 WORKSPACE=`pwd`
 mkdir build && cd build
 
-../Installer.py autogen -y
+JHBUILD_RUN_AS_ROOT=1 ../Installer.py autogen -y
 
-../Installer.py -f ../../tools/jenkins/gfortran-simgrid.rc -y build
+JHBUILD_RUN_AS_ROOT=1 ../Installer.py -f ../../tools/jenkins/gfortran-simgrid.rc -y build
 
 #cubic version
 cd ../bigdft/tests/DFT/cubic/C
