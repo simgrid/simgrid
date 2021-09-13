@@ -3,7 +3,7 @@ name: CI BigDFT
 on:
   workflow_dispatch:
   schedule:
-    - cron: '43 18 * * 0'
+    - cron: '0 20 * * 0'
 
 jobs:
   build:
@@ -21,13 +21,13 @@ jobs:
       - name: Create the failure Message
         if: ${{ failure() }}
         run: |
-          echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"BigDFT failed to build on simgrid/unstable docker image! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+          echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"@adegomme: BigDFT failed to build on simgrid/unstable docker image! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - name: Create the success Message
         if: ${{ success() }}
         run: |
           echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"BigDFT successfully built on simgrid/unstable docker image. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@master
-        if: ${{ failure() }}
+        if: ${{ always() }}
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}

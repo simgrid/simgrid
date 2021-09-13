@@ -3,7 +3,7 @@ name: CI BatSim
 on:
   workflow_dispatch:
   schedule:
-    - cron: '43 18 * * 0'
+    - cron: '0 20 * * 0'
 
 jobs:
   build:
