@@ -21,13 +21,13 @@ jobs:
       - name: Create the failure Message
         if: ${{ failure() }}
         run: |
-          echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"StarPU failed to build on simgrid/unstable docker image! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+          echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"@sthibaul: StarPu failed to build on simgrid/unstable docker image! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - name: Create the success Message
         if: ${{ success() }}
         run: |
-          echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"StarPU successfully built on simgrid/unstable docker image. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+          echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"@sthibaul: StarPu successfully built on simgrid/unstable docker image. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@master
-        if: ${{ failure() }}
+        if: ${{ always() }}
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
