@@ -1,7 +1,7 @@
 #! /bin/sh
 
 # Test this script locally as follows (rerun `docker pull simgrid/unstable` to get a fresh version).
-# cd <simgrid/tools/jenkins
+# cd (simgrid)/tools/jenkins
 # docker run -it --rm --volume `pwd`:/source simgrid/unstable /source/ci-batsim.sh
 
 set -ex
@@ -35,7 +35,7 @@ echo "XXXXXXXXXXXXXXXX Install redox"
 $SUDO apt-get -y install libhiredis-dev libev-dev cmake #for redox
 git clone --depth=1 --branch=install-pkg-config-file https://github.com/mpoquet/redox.git
 cd redox 
-cmake -DCMAKE_INSTALL_PREFIX=/usr -Dstatic_lib=OFF . && make install
+cmake -DCMAKE_INSTALL_PREFIX=/usr -Dstatic_lib=OFF . && make -j$(nproc) install
 cp redox.pc /usr/lib/pkgconfig/
 cd ..
 

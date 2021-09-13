@@ -1,18 +1,19 @@
 #!/usr/bin/env sh
-set -e
+
+# Test this script locally as follows (rerun `docker pull simgrid/unstable` to get a fresh version).
+# cd (simgrid)/tools/jenkins
+# docker run -it --rm --volume `pwd`:/source simgrid/unstable /source/ci-starpu.sh
+
+set -ex
 
 export SUDO=""
 
-# Update refs, just in case
+echo "XXXXXXXXXXXXXXXX Install APT dependencies"
 $SUDO apt-get update
-
-# Install basic tools
-$SUDO apt-get -y install build-essential
-$SUDO apt-get -y install libboost-all-dev
-$SUDO apt-get -y install wget
-$SUDO apt-get -y install git
+$SUDO apt-get -y install build-essential libboost-all-dev wget git
 
 for i in master 1.3 ; do
+  echo "XXXXXXXXXXXXXXXX Build and test StarPU $i"
   rm -rf starpu*
   wget https://files.inria.fr/starpu/simgrid/starpu-simgrid-$i.tar.gz
   md5sum starpu-simgrid-$i.tar.gz
@@ -38,7 +39,7 @@ for i in master 1.3 ; do
     cat ./config.log
     false
   fi
-  make -j 2 V=1
+  make -j$(nproc) V=1
 
   for STARPU_SCHED in eager dmdas ; do
     export STARPU_SCHED

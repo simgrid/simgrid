@@ -1,7 +1,13 @@
-#!/usr/bin/env sh
+#!/bin/sh
+
+# Test this script locally as follows (rerun `docker pull simgrid/unstable` to get a fresh version).
+# cd (simgrid)/tools/jenkins
+# docker run -it --rm --volume `pwd`:/source simgrid/unstable /source/ci-bigdft.sh
+
 set -ex
 export OMP_NUM_THREADS=1
 
+echo "XXXXXXXXXXXXXXXX Install APT dependencies"
 SUDO="" # to ease the local testing
 $SUDO apt-get -y update
 $SUDO apt-get -y install git
@@ -10,6 +16,7 @@ $SUDO apt-get -y install python-is-python3
 $SUDO apt-get -y install python3-six
 $SUDO apt-get -y install jhbuild
 
+echo "XXXXXXXXXXXXXXXX build and test BigDFT (git version)"
 git clone --depth=1 https://gitlab.com/l_sim/bigdft-suite.git
 cd bigdft-suite
 
