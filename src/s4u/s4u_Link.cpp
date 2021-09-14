@@ -10,7 +10,7 @@
 #include "simgrid/s4u/Link.hpp"
 #include "simgrid/sg_config.hpp"
 #include "simgrid/simix.hpp"
-#include "src/kernel/lmm/maxmin.hpp"
+#include "src/surf/SplitDuplexLinkImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/network_wifi.hpp"
 #include "xbt/log.h"
@@ -33,6 +33,16 @@ xbt::signal<void(kernel::resource::NetworkAction&, kernel::resource::Action::Sta
 Link* Link::by_name(const std::string& name)
 {
   return Engine::get_instance()->link_by_name(name);
+}
+
+kernel::resource::LinkImpl* Link::get_impl() const
+{
+  auto* link_impl = dynamic_cast<kernel::resource::LinkImpl*>(pimpl_);
+  xbt_assert(link_impl != nullptr, "Impossible to get a LinkImpl* from link. %s.",
+             (get_sharing_policy() == SharingPolicy::SPLITDUPLEX
+                  ? "For a Split-Duplex link, you should call this method to each UP/DOWN member"
+                  : "Please report this bug"));
+  return link_impl;
 }
 
 Link* Link::by_name_or_null(const std::string& name)
@@ -92,9 +102,13 @@ Link* Link::set_bandwidth(double value)
   return this;
 }
 
-Link* Link::set_sharing_policy(Link::SharingPolicy policy)
+Link* Link::set_sharing_policy(Link::SharingPolicy policy, const NonLinearResourceCb& cb)
 {
-  kernel::actor::simcall([this, policy] { pimpl_->set_sharing_policy(policy); });
+  if (policy == SharingPolicy::SPLITDUPLEX || policy == SharingPolicy::WIFI)
+    throw std::invalid_argument(std::string("Impossible to set wifi or split-duplex for the link: ") + get_name() +
+                                std::string(". Use appropriate create function in NetZone."));
+
+  kernel::actor::simcall([this, policy, &cb] { pimpl_->set_sharing_policy(policy, cb); });
   return this;
 }
 Link::SharingPolicy Link::get_sharing_policy() const
@@ -107,6 +121,12 @@ void Link::set_host_wifi_rate(const s4u::Host* host, int level) const
   auto* wlink = dynamic_cast<kernel::resource::NetworkWifiLink*>(pimpl_);
   xbt_assert(wlink != nullptr, "Link %s does not seem to be a wifi link.", get_cname());
   wlink->set_host_rate(host, level);
+}
+
+Link* Link::set_concurrency_limit(int limit)
+{
+  kernel::actor::simcall([this, limit] { pimpl_->set_concurrency_limit(limit); });
+  return this;
 }
 
 double Link::get_usage() const
@@ -173,6 +193,25 @@ Link* Link::set_properties(const std::unordered_map<std::string, std::string>& p
 {
   kernel::actor::simcall([this, &properties] { this->pimpl_->set_properties(properties); });
   return this;
+}
+
+Link* SplitDuplexLink::get_link_up() const
+{
+  const auto* pimpl = dynamic_cast<kernel::resource::SplitDuplexLinkImpl*>(pimpl_);
+  xbt_assert(pimpl, "Requesting link_up from a non split-duplex link: %s", get_cname());
+  return pimpl->get_link_up();
+}
+
+Link* SplitDuplexLink::get_link_down() const
+{
+  const auto* pimpl = dynamic_cast<kernel::resource::SplitDuplexLinkImpl*>(pimpl_);
+  xbt_assert(pimpl, "Requesting link_down from a non split-duplex link: %s", get_cname());
+  return pimpl->get_link_down();
+}
+
+SplitDuplexLink* SplitDuplexLink::by_name(const std::string& name)
+{
+  return Engine::get_instance()->split_duplex_link_by_name(name);
 }
 
 } // namespace s4u
@@ -269,8 +308,8 @@ sg_link_t* sg_link_list()
 {
   std::vector<simgrid::s4u::Link*> links = simgrid::s4u::Engine::get_instance()->get_all_links();
 
-  sg_link_t* res = xbt_new(sg_link_t, links.size());
-  memcpy(res, links.data(), sizeof(sg_link_t) * links.size());
+  auto* res = xbt_new(sg_link_t, links.size());
+  std::copy(begin(links), end(links), res);
 
   return res;
 }

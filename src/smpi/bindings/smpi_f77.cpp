@@ -23,11 +23,10 @@ void smpi_init_fortran_types()
     MPI_COMM_WORLD->add_f();
     MPI_BYTE->add_f(); // MPI_BYTE
     MPI_CHAR->add_f(); // MPI_CHARACTER
+    MPI_C_BOOL->add_f(); // MPI_LOGICAL
     if (sizeof(void*) == 8) {
-      MPI_C_BOOL->add_f(); // MPI_LOGICAL
       MPI_INT->add_f();    // MPI_INTEGER
     } else {
-      MPI_C_BOOL->add_f(); // MPI_LOGICAL
       MPI_LONG->add_f();   // MPI_INTEGER
     }
     MPI_INT8_T->add_f();    // MPI_INTEGER1

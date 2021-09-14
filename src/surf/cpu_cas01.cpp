@@ -90,11 +90,15 @@ void CpuCas01::on_speed_change()
 
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
                                                             get_core_count() * speed_.scale * speed_.peak);
+
   while (const auto* var = get_constraint()->get_variable(&elem)) {
     const auto* action = static_cast<CpuCas01Action*>(var->get_id());
+    double bound       = action->requested_core() * speed_.scale * speed_.peak;
+    if (action->get_user_bound() > 0) {
+      bound = std::min(bound, action->get_user_bound());
+    }
 
-    get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(),
-                                                            action->requested_core() * speed_.scale * speed_.peak);
+    get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), bound);
   }
 
   CpuImpl::on_speed_change();
@@ -103,17 +107,11 @@ void CpuCas01::on_speed_change()
 void CpuCas01::apply_event(profile::Event* event, double value)
 {
   if (event == speed_.event) {
-    /* TODO (Hypervisor): do the same thing for constraint_core[i] */
-    xbt_assert(get_core_count() == 1, "FIXME: add speed scaling code also for constraint_core[i]");
-
     speed_.scale = value;
     on_speed_change();
 
     tmgr_trace_event_unref(&speed_.event);
   } else if (event == state_event_) {
-    /* TODO (Hypervisor): do the same thing for constraint_core[i] */
-    xbt_assert(get_core_count() == 1, "FIXME: add state change code also for constraint_core[i]");
-
     if (value > 0) {
       if (not is_on()) {
         XBT_VERB("Restart actors on host %s", get_iface()->get_cname());
@@ -143,15 +141,24 @@ void CpuCas01::apply_event(profile::Event* event, double value)
 }
 
 /** @brief Start a new execution on this CPU lasting @param size flops and using one core */
-CpuAction* CpuCas01::execution_start(double size)
+CpuAction* CpuCas01::execution_start(double size, double user_bound)
 {
-  return new CpuCas01Action(get_model(), size, not is_on(), speed_.scale * speed_.peak, get_constraint());
+  return execution_start(size, 1, user_bound);
 }
 
-CpuAction* CpuCas01::execution_start(double size, int requested_cores)
+CpuAction* CpuCas01::execution_start(double size, int requested_cores, double user_bound)
 {
-  return new CpuCas01Action(get_model(), size, not is_on(), speed_.scale * speed_.peak, get_constraint(),
-                            requested_cores);
+  auto* action =
+      new CpuCas01Action(get_model(), size, not is_on(), speed_.scale * speed_.peak, get_constraint(), requested_cores);
+  action->set_user_bound(user_bound);
+  if (user_bound > 0 && user_bound < action->get_bound()) {
+    get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), user_bound);
+  }
+  if (factor_cb_) {
+    action->set_rate_factor(factor_cb_(size));
+  }
+
+  return action;
 }
 
 CpuAction* CpuCas01::sleep(double duration)
@@ -160,7 +167,7 @@ CpuAction* CpuCas01::sleep(double duration)
     duration = std::max(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", get_cname(), duration);
-  auto* action = new CpuCas01Action(get_model(), 1.0, not is_on(), speed_.scale * speed_.peak, get_constraint());
+  auto* action = new CpuCas01Action(get_model(), 1.0, not is_on(), speed_.scale * speed_.peak, get_constraint(), 1);
 
   // FIXME: sleep variables should not consume 1.0 in System::expand()
   action->set_max_duration(duration);
@@ -178,6 +185,12 @@ CpuAction* CpuCas01::sleep(double duration)
 
   XBT_OUT();
   return action;
+}
+
+void CpuCas01::set_factor_cb(const std::function<s4u::Host::CpuFactorCb>& cb)
+{
+  xbt_assert(not is_sealed(), "Cannot set CPU factor callback in an already sealed CPU(%s)", get_cname());
+  factor_cb_ = cb;
 }
 
 /**********

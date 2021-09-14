@@ -48,9 +48,8 @@ int PMPI_Send_init(const void *buf, int count, MPI_Datatype datatype, int dst, i
 {
   CHECK_ISEND_INPUTS
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   *request = simgrid::smpi::Request::send_init(buf, count, datatype, dst, tag, comm);
-  smpi_bench_begin();
 
   return MPI_SUCCESS;
 }
@@ -59,9 +58,8 @@ int PMPI_Recv_init(void *buf, int count, MPI_Datatype datatype, int src, int tag
 {
   CHECK_IRECV_INPUTS
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   *request = simgrid::smpi::Request::recv_init(buf, count, datatype, src, tag, comm);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -76,11 +74,10 @@ int PMPI_Ssend_init(const void* buf, int count, MPI_Datatype datatype, int dst, 
   CHECK_ISEND_INPUTS
 
   int retval = 0;
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   *request = simgrid::smpi::Request::ssend_init(buf, count, datatype, dst, tag, comm);
   retval = MPI_SUCCESS;
 
-  smpi_bench_begin();
   return retval;
 }
 
@@ -93,7 +90,7 @@ int PMPI_Start(MPI_Request * request)
 {
   int retval = 0;
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   CHECK_REQUEST_VALID(1)
   if ( *request == MPI_REQUEST_NULL) {
     retval = MPI_ERR_REQUEST;
@@ -115,14 +112,13 @@ int PMPI_Start(MPI_Request * request)
     retval = MPI_SUCCESS;
     TRACE_smpi_comm_out(my_proc_id);
   }
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Startall(int count, MPI_Request * requests)
 {
   int retval;
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   if (requests == nullptr) {
     retval = MPI_ERR_ARG;
   } else {
@@ -153,7 +149,6 @@ int PMPI_Startall(int count, MPI_Request * requests)
       TRACE_smpi_comm_out(my_proc_id);
     }
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -161,14 +156,13 @@ int PMPI_Request_free(MPI_Request * request)
 {
   int retval = 0;
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   if (*request != MPI_REQUEST_NULL) {
     (*request)->mark_as_deleted();
     simgrid::smpi::Request::unref(request);
     *request = MPI_REQUEST_NULL;
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -176,15 +170,14 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
 {
   CHECK_IRECV_INPUTS
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData("irecv", src,
-                                                     datatype->is_replayable() ? count : count * datatype->size(),
+                                                     count,
                                                      tag, simgrid::smpi::Datatype::encode(datatype)));
   *request = simgrid::smpi::Request::irecv(buf, count, datatype, src, tag, comm);
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -193,19 +186,18 @@ int PMPI_Isend(const void *buf, int count, MPI_Datatype datatype, int dst, int t
 {
   CHECK_ISEND_INPUTS
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   int retval = 0;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   aid_t trace_dst  = getPid(comm, dst);
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData("isend", dst,
-                                                     datatype->is_replayable() ? count : count * datatype->size(),
+                                                     count,
                                                      tag, simgrid::smpi::Datatype::encode(datatype)));
   TRACE_smpi_send(my_proc_id, my_proc_id, trace_dst, tag, count * datatype->size());
   *request = simgrid::smpi::Request::isend(buf, count, datatype, dst, tag, comm);
   retval = MPI_SUCCESS;
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
 
   return retval;
 }
@@ -220,17 +212,16 @@ int PMPI_Issend(const void* buf, int count, MPI_Datatype datatype, int dst, int 
 {
   CHECK_ISEND_INPUTS
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   aid_t trace_dst  = getPid(comm, dst);
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData("ISsend", dst,
-                                                     datatype->is_replayable() ? count : count * datatype->size(),
+                                                     count,
                                                      tag, simgrid::smpi::Datatype::encode(datatype)));
   TRACE_smpi_send(my_proc_id, my_proc_id, trace_dst, tag, count * datatype->size());
   *request = simgrid::smpi::Request::issend(buf, count, datatype, dst, tag, comm);
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -244,7 +235,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
   CHECK_TAG(5, tag)
   CHECK_COMM(6)
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   if (src == MPI_PROC_NULL) {
     if(status != MPI_STATUS_IGNORE){
       simgrid::smpi::Status::empty(status);
@@ -257,7 +248,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
     TRACE_smpi_comm_in(my_proc_id, __func__,
                        new simgrid::instr::Pt2PtTIData("recv", src,
-                                                       datatype->is_replayable() ? count : count * datatype->size(),
+                                                       count,
                                                        tag, simgrid::smpi::Datatype::encode(datatype)));
 
     retval = simgrid::smpi::Request::recv(buf, count, datatype, src, tag, comm, status);
@@ -271,7 +262,6 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
     TRACE_smpi_comm_out(my_proc_id);
   }
 
-  smpi_bench_begin();
   return retval;
 }
 
@@ -279,19 +269,18 @@ int PMPI_Send(const void *buf, int count, MPI_Datatype datatype, int dst, int ta
 {
   CHECK_SEND_INPUTS
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   aid_t dst_traced = getPid(comm, dst);
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData("send", dst,
-                                                     datatype->is_replayable() ? count : count * datatype->size(),
+                                                     count,
                                                      tag, simgrid::smpi::Datatype::encode(datatype)));
   if (not TRACE_smpi_view_internals()) {
     TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, tag, count * datatype->size());
   }
   simgrid::smpi::Request::send(buf, count, datatype, dst, tag, comm);
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -304,25 +293,24 @@ int PMPI_Bsend(const void* buf, int count, MPI_Datatype datatype, int dst, int t
 {
   CHECK_SEND_INPUTS
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id   = simgrid::s4u::this_actor::get_pid();
   aid_t dst_traced   = getPid(comm, dst);
   int bsend_buf_size = 0;
   void* bsend_buf = nullptr;
   smpi_process()->bsend_buffer(&bsend_buf, &bsend_buf_size);
   int size = datatype->get_extent() * count;
-  if(bsend_buf==nullptr || bsend_buf_size < size + MPI_BSEND_OVERHEAD )
+  if (bsend_buf == nullptr || bsend_buf_size < size + MPI_BSEND_OVERHEAD)
     return MPI_ERR_BUFFER;
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData("bsend", dst,
-                                                     datatype->is_replayable() ? count : count * datatype->size(),
+                                                     count,
                                                      tag, simgrid::smpi::Datatype::encode(datatype)));
   if (not TRACE_smpi_view_internals()) {
     TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, tag, count * datatype->size());
   }
   simgrid::smpi::Request::bsend(buf, count, datatype, dst, tag, comm);
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -330,23 +318,22 @@ int PMPI_Ibsend(const void* buf, int count, MPI_Datatype datatype, int dst, int 
 {
   CHECK_ISEND_INPUTS
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id   = simgrid::s4u::this_actor::get_pid();
   aid_t trace_dst    = getPid(comm, dst);
   int bsend_buf_size = 0;
   void* bsend_buf = nullptr;
   smpi_process()->bsend_buffer(&bsend_buf, &bsend_buf_size);
   int size = datatype->get_extent() * count;
-  if(bsend_buf==nullptr || bsend_buf_size < size + MPI_BSEND_OVERHEAD )
+  if (bsend_buf == nullptr || bsend_buf_size < size + MPI_BSEND_OVERHEAD)
     return MPI_ERR_BUFFER;
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData("ibsend", dst,
-                                                     datatype->is_replayable() ? count : count * datatype->size(),
+                                                     count,
                                                      tag, simgrid::smpi::Datatype::encode(datatype)));
   TRACE_smpi_send(my_proc_id, my_proc_id, trace_dst, tag, count * datatype->size());
   *request = simgrid::smpi::Request::ibsend(buf, count, datatype, dst, tag, comm);
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -354,7 +341,7 @@ int PMPI_Bsend_init(const void* buf, int count, MPI_Datatype datatype, int dst, 
 {
   CHECK_ISEND_INPUTS
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   int retval = 0;
   int bsend_buf_size = 0;
   void* bsend_buf = nullptr;
@@ -365,7 +352,6 @@ int PMPI_Bsend_init(const void* buf, int count, MPI_Datatype datatype, int dst, 
     *request = simgrid::smpi::Request::bsend_init(buf, count, datatype, dst, tag, comm);
     retval   = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -373,17 +359,16 @@ int PMPI_Ssend(const void* buf, int count, MPI_Datatype datatype, int dst, int t
 {
   CHECK_SEND_INPUTS
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   aid_t dst_traced = getPid(comm, dst);
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData("Ssend", dst,
-                                                     datatype->is_replayable() ? count : count * datatype->size(),
+                                                     count,
                                                      tag, simgrid::smpi::Datatype::encode(datatype)));
   TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, tag, count * datatype->size());
   simgrid::smpi::Request::ssend(buf, count, datatype, dst, tag, comm);
   TRACE_smpi_comm_out(my_proc_id);
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
@@ -402,7 +387,7 @@ int PMPI_Sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int
   CHECK_BUFFER(6, recvbuf, recvcount, recvtype)
   CHECK_TAG(10, recvtag)
   CHECK_COMM(11)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   if (src == MPI_PROC_NULL) {
     if(status!=MPI_STATUS_IGNORE){
@@ -429,8 +414,8 @@ int PMPI_Sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int
     src_hack->push_back(src_traced);
     TRACE_smpi_comm_in(my_proc_id, __func__,
                        new simgrid::instr::VarCollTIData(
-                           "sendRecv", -1, sendtype->is_replayable() ? sendcount : sendcount * sendtype->size(),
-                           dst_hack, recvtype->is_replayable() ? recvcount : recvcount * recvtype->size(), src_hack,
+                           "sendRecv", -1, sendcount,
+                           dst_hack, recvcount, src_hack,
                            simgrid::smpi::Datatype::encode(sendtype), simgrid::smpi::Datatype::encode(recvtype)));
 
     TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, sendtag, sendcount * sendtype->size());
@@ -443,7 +428,6 @@ int PMPI_Sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int
     TRACE_smpi_comm_out(my_proc_id);
   }
 
-  smpi_bench_begin();
   return retval;
 }
 
@@ -470,7 +454,7 @@ int PMPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, 
 int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
 {
   int retval = 0;
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   if (request == nullptr || flag == nullptr) {
     retval = MPI_ERR_ARG;
   } else if (*request == MPI_REQUEST_NULL) {
@@ -487,7 +471,6 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
 
     TRACE_smpi_comm_out(my_proc_id);
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -495,7 +478,7 @@ int PMPI_Testany(int count, MPI_Request requests[], int *index, int *flag, MPI_S
 {
   int retval = 0;
   CHECK_COUNT(1, count)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   if (index == nullptr || flag == nullptr) {
     retval = MPI_ERR_ARG;
   } else {
@@ -504,7 +487,6 @@ int PMPI_Testany(int count, MPI_Request requests[], int *index, int *flag, MPI_S
     retval = simgrid::smpi::Request::testany(count, requests, index, flag, status);
     TRACE_smpi_comm_out(my_proc_id);
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -512,7 +494,7 @@ int PMPI_Testall(int count, MPI_Request* requests, int* flag, MPI_Status* status
 {
   int retval = 0;
   CHECK_COUNT(1, count)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   if (flag == nullptr) {
     retval = MPI_ERR_ARG;
   } else {
@@ -521,7 +503,6 @@ int PMPI_Testall(int count, MPI_Request* requests, int* flag, MPI_Status* status
     retval = simgrid::smpi::Request::testall(count, requests, flag, statuses);
     TRACE_smpi_comm_out(my_proc_id);
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -529,7 +510,7 @@ int PMPI_Testsome(int incount, MPI_Request requests[], int* outcount, int* indic
 {
   int retval = 0;
   CHECK_COUNT(1, incount)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   if (outcount == nullptr) {
     retval = MPI_ERR_ARG;
   } else {
@@ -538,13 +519,12 @@ int PMPI_Testsome(int incount, MPI_Request requests[], int* outcount, int* indic
     retval = simgrid::smpi::Request::testsome(incount, requests, outcount, indices, status);
     TRACE_smpi_comm_out(my_proc_id);
   }
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Probe(int source, int tag, MPI_Comm comm, MPI_Status* status) {
   int retval = 0;
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   CHECK_COMM(6)
   if(source!=MPI_ANY_SOURCE && source!=MPI_PROC_NULL)\
@@ -560,13 +540,12 @@ int PMPI_Probe(int source, int tag, MPI_Comm comm, MPI_Status* status) {
     simgrid::smpi::Request::probe(source, tag, comm, status);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
 int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status) {
   int retval = 0;
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   CHECK_COMM(6)
   if(source!=MPI_ANY_SOURCE && source!=MPI_PROC_NULL)\
     CHECK_RANK(1, source, comm)
@@ -584,12 +563,10 @@ int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* statu
     simgrid::smpi::Request::iprobe(source, tag, comm, flag, status);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
-// TODO: cheinrich: Move declaration to other file? Rename this function - it's used for PMPI_Wait*?
-static void trace_smpi_recv_helper(MPI_Request* request, MPI_Status* status)
+static void trace_smpi_wait_recv_helper(MPI_Request* request, MPI_Status* status)
 {
   const simgrid::smpi::Request* req = *request;
   // Requests already received are null. Is this request a wait for RECV?
@@ -607,7 +584,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
 {
   int retval = 0;
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   simgrid::smpi::Status::empty(status);
 
@@ -617,25 +594,26 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
   } else {
     // for tracing, save the handle which might get overridden before we can use the helper on it
     MPI_Request savedreq = *request;
-    if (savedreq != MPI_REQUEST_NULL && not(savedreq->flags() & (MPI_REQ_FINISHED | MPI_REQ_GENERALIZED | MPI_REQ_NBC)))
+    if (not(savedreq->flags() & (MPI_REQ_FINISHED | MPI_REQ_GENERALIZED | MPI_REQ_NBC)))
       savedreq->ref();//don't erase the handle in Request::wait, we'll need it later
     else
       savedreq = MPI_REQUEST_NULL;
 
     aid_t my_proc_id = (*request)->comm() != MPI_COMM_NULL ? simgrid::s4u::this_actor::get_pid() : -1;
     TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::WaitTIData((*request)->src(), (*request)->dst(), (*request)->tag()));
+                       new simgrid::instr::WaitTIData(MPI_COMM_WORLD->group()->rank((*request)->src()),
+                                                      MPI_COMM_WORLD->group()->rank((*request)->dst()),
+                                                      (*request)->tag()));
 
     retval = simgrid::smpi::Request::wait(request, status);
 
     //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
     TRACE_smpi_comm_out(my_proc_id);
-    trace_smpi_recv_helper(&savedreq, status);
+    trace_smpi_wait_recv_helper(&savedreq, status);
     if (savedreq != MPI_REQUEST_NULL)
       simgrid::smpi::Request::unref(&savedreq);
   }
 
-  smpi_bench_begin();
   return retval;
 }
 
@@ -647,7 +625,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   if (count <= 0)
     return MPI_SUCCESS;
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   // for tracing, save the handles which might get overridden before we can use the helper on it
   std::vector<MPI_Request> savedreqs(requests, requests + count);
   for (MPI_Request& req : savedreqs) {
@@ -663,7 +641,7 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   *index = simgrid::smpi::Request::waitany(count, requests, status);
 
   if(*index!=MPI_UNDEFINED){
-    trace_smpi_recv_helper(&savedreqs[*index], status);
+    trace_smpi_wait_recv_helper(&savedreqs[*index], status);
     TRACE_smpi_comm_out(rank_traced);
   }
 
@@ -671,13 +649,12 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
     if (req != MPI_REQUEST_NULL)
       simgrid::smpi::Request::unref(&req);
 
-  smpi_bench_begin();
   return MPI_SUCCESS;
 }
 
 int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
 {
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   CHECK_COUNT(1, count)
   // for tracing, save the handles which might get overridden before we can use the helper on it
   std::vector<MPI_Request> savedreqs(requests, requests + count);
@@ -694,7 +671,7 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
   int retval = simgrid::smpi::Request::waitall(count, requests, status);
 
   for (int i = 0; i < count; i++) {
-    trace_smpi_recv_helper(&savedreqs[i], status!=MPI_STATUSES_IGNORE ? &status[i]: MPI_STATUS_IGNORE);
+    trace_smpi_wait_recv_helper(&savedreqs[i], status != MPI_STATUSES_IGNORE ? &status[i] : MPI_STATUS_IGNORE);
   }
   TRACE_smpi_comm_out(rank_traced);
 
@@ -702,7 +679,6 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
     if (req != MPI_REQUEST_NULL)
       simgrid::smpi::Request::unref(&req);
 
-  smpi_bench_begin();
   return retval;
 }
 
@@ -710,14 +686,13 @@ int PMPI_Waitsome(int incount, MPI_Request requests[], int *outcount, int *indic
 {
   int retval = 0;
   CHECK_COUNT(1, incount)
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   if (outcount == nullptr) {
     retval = MPI_ERR_ARG;
   } else {
     *outcount = simgrid::smpi::Request::waitsome(incount, requests, indices, status);
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 
@@ -725,7 +700,7 @@ int PMPI_Cancel(MPI_Request* request)
 {
   int retval = 0;
 
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   CHECK_REQUEST_VALID(1)
   if (*request == MPI_REQUEST_NULL) {
     retval = MPI_ERR_REQUEST;
@@ -733,7 +708,6 @@ int PMPI_Cancel(MPI_Request* request)
     (*request)->cancel();
     retval = MPI_SUCCESS;
   }
-  smpi_bench_begin();
   return retval;
 }
 

@@ -87,9 +87,9 @@ NetworkCm02Model::NetworkCm02Model(const std::string& name) : NetworkModel(name)
   }
 
   set_maxmin_system(new lmm::System(select));
-  loopback_ = create_link("__loopback__", std::vector<double>{config::get_value<double>("network/loopback-bw")})
-                  ->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE)
-                  ->set_latency(config::get_value<double>("network/loopback-lat"));
+  loopback_ = create_link("__loopback__", {config::get_value<double>("network/loopback-bw")});
+  loopback_->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE, {});
+  loopback_->set_latency(config::get_value<double>("network/loopback-lat"));
   loopback_->seal();
 }
 
@@ -130,12 +130,16 @@ void NetworkCm02Model::set_bw_factor_cb(const std::function<NetworkFactorCb>& cb
 LinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   xbt_assert(bandwidths.size() == 1, "Non-WIFI links must use only 1 bandwidth.");
-  return (new NetworkCm02Link(name, bandwidths[0], get_maxmin_system()))->set_model(this);
+  auto link = new NetworkCm02Link(name, bandwidths[0], get_maxmin_system());
+  link->set_model(this);
+  return link;
 }
 
 LinkImpl* NetworkCm02Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
 {
-  return (new NetworkWifiLink(name, bandwidths, get_maxmin_system()))->set_model(this);
+  auto link = new NetworkWifiLink(name, bandwidths, get_maxmin_system());
+  link->set_model(this);
+  return link;
 }
 
 void NetworkCm02Model::update_actions_state_lazy(double now, double /*delta*/)
@@ -187,7 +191,7 @@ void NetworkCm02Model::update_actions_state_full(double /*now*/, double delta)
        */
       action.update_remains(action.get_remains());
     }
-    action.update_remains(action.get_variable()->get_value() * delta);
+    action.update_remains(action.get_rate() * delta);
 
     if (action.get_max_duration() != NO_MAX_DURATION)
       action.update_max_duration(delta);
@@ -338,6 +342,10 @@ void NetworkCm02Model::comm_action_set_bounds(const s4u::Host* src, const s4u::H
   } else {
     bw_factor = get_bandwidth_factor(size);
   }
+  xbt_assert(bw_factor != 0, "Invalid param for comm %s -> %s. Bandwidth factor cannot be 0", src->get_cname(),
+             dst->get_cname());
+  action->set_rate_factor(bw_factor);
+
   /* get mininum bandwidth among links in the route and multiply by correct factor
    * ignore wi-fi links, they're not considered for bw_factors */
   double bandwidth_bound = -1.0;
@@ -347,12 +355,13 @@ void NetworkCm02Model::comm_action_set_bounds(const s4u::Host* src, const s4u::H
     if (bandwidth_bound == -1.0 || l->get_bandwidth() < bandwidth_bound)
       bandwidth_bound = l->get_bandwidth();
   }
-  bandwidth_bound *= bw_factor;
 
+  /* increase rate given by user considering the factor, since the actual rate will be
+   * modified by it */
+  rate = rate / bw_factor;
   /* the bandwidth is determined by the minimum between flow and user's defined rate */
   if (rate >= 0 && rate < bandwidth_bound)
     bandwidth_bound = rate;
-
   action->set_user_bound(bandwidth_bound);
 
   action->lat_current_ = action->latency_;
@@ -439,7 +448,7 @@ NetworkCm02Link::NetworkCm02Link(const std::string& name, double bandwidth, kern
 {
   bandwidth_.scale = 1.0;
   bandwidth_.peak  = bandwidth;
-  this->set_constraint(system->constraint_new(this, sg_bandwidth_factor * bandwidth));
+  this->set_constraint(system->constraint_new(this, bandwidth));
 }
 
 void NetworkCm02Link::apply_event(kernel::profile::Event* triggered, double value)
@@ -469,19 +478,20 @@ void NetworkCm02Link::apply_event(kernel::profile::Event* triggered, double valu
 
 void NetworkCm02Link::set_bandwidth(double value)
 {
+  double old_peak = bandwidth_.peak;
   bandwidth_.peak = value;
 
-  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
-                                                            sg_bandwidth_factor * (bandwidth_.peak * bandwidth_.scale));
+  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), (bandwidth_.peak * bandwidth_.scale));
 
   LinkImpl::on_bandwidth_change();
 
   if (sg_weight_S_parameter > 0) {
-    double delta = sg_weight_S_parameter / value - sg_weight_S_parameter / (bandwidth_.peak * bandwidth_.scale);
+    double delta = sg_weight_S_parameter / (bandwidth_.peak * bandwidth_.scale) -
+                   sg_weight_S_parameter / (old_peak * bandwidth_.scale);
 
     const kernel::lmm::Element* elem     = nullptr;
     const kernel::lmm::Element* nextelem = nullptr;
-    int numelem                          = 0;
+    size_t numelem                       = 0;
     while (const auto* var = get_constraint()->get_variable_safe(&elem, &nextelem, &numelem)) {
       auto* action = static_cast<NetworkCm02Action*>(var->get_id());
       action->sharing_penalty_ += delta;
@@ -491,14 +501,14 @@ void NetworkCm02Link::set_bandwidth(double value)
   }
 }
 
-LinkImpl* NetworkCm02Link::set_latency(double value)
+void NetworkCm02Link::set_latency(double value)
 {
   latency_check(value);
 
   double delta                         = value - latency_.peak;
   const kernel::lmm::Element* elem     = nullptr;
   const kernel::lmm::Element* nextelem = nullptr;
-  int numelem                          = 0;
+  size_t numelem                       = 0;
 
   latency_.scale = 1.0;
   latency_.peak  = value;
@@ -516,15 +526,14 @@ LinkImpl* NetworkCm02Link::set_latency(double value)
           std::min(action->get_user_bound(), NetworkModel::cfg_tcp_gamma / (2.0 * action->lat_current_)));
 
       if (action->get_user_bound() < NetworkModel::cfg_tcp_gamma / (2.0 * action->lat_current_)) {
-        XBT_INFO("Flow is limited BYBANDWIDTH");
+        XBT_DEBUG("Flow is limited BYBANDWIDTH");
       } else {
-        XBT_INFO("Flow is limited BYLATENCY, latency of flow is %f", action->lat_current_);
+        XBT_DEBUG("Flow is limited BYLATENCY, latency of flow is %f", action->lat_current_);
       }
     }
     if (not action->is_suspended())
       get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), action->sharing_penalty_);
   }
-  return this;
 }
 
 /**********
@@ -555,7 +564,7 @@ void NetworkCm02Action::update_remains_lazy(double now)
   }
 
   set_last_update();
-  set_last_value(get_variable()->get_value());
+  set_last_value(get_rate());
 }
 
 } // namespace resource

@@ -31,7 +31,7 @@ CpuTiProfile::CpuTiProfile(const profile::Profile* profile)
 {
   double integral    = 0;
   double time        = 0;
-  unsigned nb_points = profile->get_event_list().size() + 1;
+  unsigned long nb_points = profile->get_event_list().size() + 1;
   time_points_.reserve(nb_points);
   integral_.reserve(nb_points);
   for (auto const& val : profile->get_event_list()) {
@@ -106,10 +106,10 @@ double CpuTiProfile::integrate_simple_point(double a) const
 {
   double integral = 0;
   double a_aux    = a;
-  int ind         = binary_search(time_points_, a);
+  long ind        = binary_search(time_points_, a);
   integral += integral_[ind];
 
-  XBT_DEBUG("a %f ind %d integral %f ind + 1 %f ind %f time +1 %f time %f", a, ind, integral, integral_[ind + 1],
+  XBT_DEBUG("a %f ind %ld integral %f ind + 1 %f ind %f time +1 %f time %f", a, ind, integral, integral_[ind + 1],
             integral_[ind], time_points_[ind + 1], time_points_[ind]);
   double_update(&a_aux, time_points_[ind], sg_maxmin_precision * sg_surf_precision);
   if (a_aux > 0)
@@ -187,7 +187,7 @@ double CpuTiTmgr::solve(double a, double amount) const
 double CpuTiProfile::solve_simple(double a, double amount) const
 {
   double integral_a = integrate_simple_point(a);
-  int ind           = binary_search(integral_, integral_a + amount);
+  long ind          = binary_search(integral_, integral_a + amount);
   double time       = time_points_[ind];
   time += (integral_a + amount - integral_[ind]) /
           ((integral_[ind + 1] - integral_[ind]) / (time_points_[ind + 1] - time_points_[ind]));
@@ -205,7 +205,7 @@ double CpuTiProfile::solve_simple(double a, double amount) const
 double CpuTiTmgr::get_power_scale(double a) const
 {
   double reduced_a                = a - floor(a / last_time_) * last_time_;
-  int point                       = CpuTiProfile::binary_search(profile_->time_points_, reduced_a);
+  long point                      = CpuTiProfile::binary_search(profile_->time_points_, reduced_a);
   kernel::profile::DatedValue val = speed_profile_->get_event_list().at(point);
   return val.value_;
 }
@@ -255,7 +255,7 @@ CpuTiTmgr::CpuTiTmgr(kernel::profile::Profile* speed_profile, double value) : sp
  * @param a        Value to search
  * @return Index of point
  */
-int CpuTiProfile::binary_search(const std::vector<double>& array, double a)
+long CpuTiProfile::binary_search(const std::vector<double>& array, double a)
 {
   if (array[0] > a)
     return 0;
@@ -495,9 +495,10 @@ void CpuTi::update_remaining_amount(double now)
   last_update_ = now;
 }
 
-CpuAction* CpuTi::execution_start(double size)
+CpuAction* CpuTi::execution_start(double size, double user_bound)
 {
   XBT_IN("(%s,%g)", get_cname(), size);
+  xbt_assert(user_bound <= 0, "Invalid user bound (%lf) in CPU TI model", user_bound);
   auto* action = new CpuTiAction(this, size);
 
   action_set_.push_back(*action); // Actually start the action

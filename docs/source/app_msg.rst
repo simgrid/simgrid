@@ -180,7 +180,7 @@ Communications
 ==============
 
 .. doxygentypedef:: msg_comm_t
-
+.. doxygentypedef:: const_msg_comm_t
 .. doxygenfunction:: MSG_comm_destroy
 .. doxygenfunction:: MSG_comm_get_status
 .. doxygenfunction:: MSG_comm_get_task
@@ -244,7 +244,7 @@ processes.
 
 NetZone Management
 ==================
-Network Zone (:cpp:class:`msg_file_t`) and associated functions.
+Network Zone (:cpp:type:`msg_netzone_t`) and associated functions.
 
 .. doxygentypedef:: msg_netzone_t
 .. doxygenfunction:: MSG_zone_get_by_name
@@ -254,6 +254,8 @@ Network Zone (:cpp:class:`msg_file_t`) and associated functions.
 .. doxygenfunction:: MSG_zone_get_root
 .. doxygenfunction:: MSG_zone_get_sons
 .. doxygenfunction:: MSG_zone_set_property_value
+
+.. _Java_doc:
 
 Java bindings
 *************
@@ -280,14 +282,14 @@ Using the Java bindings
 In most cases, you can use the SimGrid bindings as if it was a Java
 library:
 
-.. code-block:: shell
+.. code-block:: console
 
    $ javac -classpath .:path/to/simgrid.jar your/java/Code.java
    $ java -classpath .:path/to/simgrid.jar your.java.Code the/parameter/to/your/code
 
 For example:
 
-.. code-block:: shell
+.. code-block:: console
 
    $ cd examples/deprecated/java
    $ java -classpath ../../simgrid.jar:. .:../../simgrid.jar app.pingpong.Main ../platforms/platform.xml 
@@ -360,7 +362,6 @@ Package org.simgrid.msg
 
    Class org.simgrid.msg.As <java/org/simgrid/msg/As>
    Class org.simgrid.msg.Comm <java/org/simgrid/msg/Comm>
-   Class org.simgrid.msg.File <java/org/simgrid/msg/File>
    Class org.simgrid.msg.Host <java/org/simgrid/msg/Host>
    Class org.simgrid.msg.HostFailureException <java/org/simgrid/msg/HostFailureException>
    Class org.simgrid.msg.HostNotFoundException <java/org/simgrid/msg/HostNotFoundException>
@@ -372,8 +373,6 @@ Package org.simgrid.msg
    Class org.simgrid.msg.ProcessKilledError <java/org/simgrid/msg/ProcessKilledError>
    Class org.simgrid.msg.ProcessNotFoundException <java/org/simgrid/msg/ProcessNotFoundException>
    Class org.simgrid.msg.Semaphore <java/org/simgrid/msg/Semaphore>
-   Class org.simgrid.msg.Storage <java/org/simgrid/msg/Storage>
-   Class org.simgrid.msg.StorageNotFoundException <java/org/simgrid/msg/StorageNotFoundException>
    Class org.simgrid.msg.Task <java/org/simgrid/msg/Task>
    Class org.simgrid.msg.TaskCancelledException <java/org/simgrid/msg/TaskCancelledException>
    Class org.simgrid.msg.TimeoutException <java/org/simgrid/msg/TimeoutException>

@@ -129,7 +129,7 @@ Profile* Profile::from_string(const std::string& name, const std::string& input,
       std::vector<std::string> splittedval((std::istream_iterator<std::string>(iss)),
                                            std::istream_iterator<std::string>());
 
-      xbt_assert(splittedval.size() > 0, "Invalid profile line");
+      xbt_assert(not splittedval.empty(), "Invalid profile line");
 
       if (splittedval[0] == "DET") {
         stochevent.date_law = Distribution::DET;

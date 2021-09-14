@@ -114,7 +114,6 @@ int PMPI_Type_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new_typ
 }
 
 int PMPI_Type_commit(MPI_Datatype* datatype) {
-  CHECK_NULL(1, MPI_ERR_ARG, datatype)
   CHECK_MPI_NULL(1, MPI_DATATYPE_NULL, MPI_ERR_TYPE, (*datatype))
   (*datatype)->commit();
   return MPI_SUCCESS;
@@ -124,6 +123,7 @@ int PMPI_Type_vector(int count, int blocklen, int stride, MPI_Datatype old_type,
   CHECK_COUNT(1, count)
   CHECK_NEGATIVE(2, MPI_ERR_ARG, blocklen)
   CHECK_MPI_NULL(4, MPI_DATATYPE_NULL, MPI_ERR_TYPE, old_type)
+  CHECK_NULL(5, MPI_ERR_ARG, new_type)
   return simgrid::smpi::Datatype::create_vector(count, blocklen, stride, old_type, new_type);
 }
 
@@ -131,6 +131,7 @@ int PMPI_Type_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old
   CHECK_COUNT(1, count)
   CHECK_NEGATIVE(2, MPI_ERR_ARG, blocklen)
   CHECK_MPI_NULL(4, MPI_DATATYPE_NULL, MPI_ERR_TYPE, old_type)
+  CHECK_NULL(5, MPI_ERR_ARG, new_type)
   return simgrid::smpi::Datatype::create_hvector(count, blocklen, stride, old_type, new_type);
 }
 
@@ -139,14 +140,13 @@ int PMPI_Type_create_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datat
 }
 
 int PMPI_Type_indexed(int count, const int* blocklens, const int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
-  CHECK_COUNT(1, count)
-  CHECK_MPI_NULL(4, MPI_DATATYPE_NULL, MPI_ERR_TYPE, old_type)
-  return simgrid::smpi::Datatype::create_indexed(count, blocklens, indices, old_type, new_type);
+  return PMPI_Type_create_indexed(count, blocklens, indices, old_type, new_type);
 }
 
 int PMPI_Type_create_indexed(int count, const int* blocklens, const int* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
   CHECK_COUNT(1, count)
   CHECK_MPI_NULL(4, MPI_DATATYPE_NULL, MPI_ERR_TYPE, old_type)
+  CHECK_NULL(5, MPI_ERR_ARG, new_type)
   return simgrid::smpi::Datatype::create_indexed(count, blocklens, indices, old_type, new_type);
 }
 
@@ -155,7 +155,8 @@ int PMPI_Type_create_indexed_block(int count, int blocklength, const int* indice
 {
   CHECK_COUNT(1, count)
   CHECK_MPI_NULL(4, MPI_DATATYPE_NULL, MPI_ERR_TYPE, old_type)
-  auto* blocklens = static_cast<int*>(xbt_malloc(blocklength * count * sizeof(int)));
+  CHECK_NULL(5, MPI_ERR_ARG, new_type)
+  auto* blocklens = static_cast<int*>(xbt_malloc(sizeof(int) * blocklength * count));
   for (int i    = 0; i < count; i++)
     blocklens[i]=blocklength;
   int retval    = simgrid::smpi::Datatype::create_indexed(count, blocklens, indices, old_type, new_type);
@@ -168,6 +169,7 @@ int PMPI_Type_hindexed(int count, const int* blocklens, const MPI_Aint* indices,
 {
   CHECK_COUNT(1, count)
   CHECK_MPI_NULL(4, MPI_DATATYPE_NULL, MPI_ERR_TYPE, old_type)
+  CHECK_NULL(5, MPI_ERR_ARG, new_type)
   return simgrid::smpi::Datatype::create_hindexed(count, blocklens, indices, old_type, new_type);
 }
 
@@ -180,7 +182,8 @@ int PMPI_Type_create_hindexed_block(int count, int blocklength, const MPI_Aint* 
                                     MPI_Datatype* new_type) {
   CHECK_COUNT(1, count)
   CHECK_MPI_NULL(4, MPI_DATATYPE_NULL, MPI_ERR_TYPE, old_type)
-  auto* blocklens = static_cast<int*>(xbt_malloc(blocklength * count * sizeof(int)));
+  CHECK_NULL(5, MPI_ERR_ARG, new_type)
+  auto* blocklens = static_cast<int*>(xbt_malloc(sizeof(int) * blocklength * count));
   for (int i     = 0; i < count; i++)
     blocklens[i] = blocklength;
   int retval     = simgrid::smpi::Datatype::create_hindexed(count, blocklens, indices, old_type, new_type);
@@ -194,6 +197,7 @@ int PMPI_Type_struct(int count, const int* blocklens, const MPI_Aint* indices, c
   CHECK_COUNT(1, count)
   for(int i=0; i<count; i++)
     CHECK_MPI_NULL(4, MPI_DATATYPE_NULL, MPI_ERR_TYPE, old_types[i])
+  CHECK_NULL(5, MPI_ERR_ARG, new_type)
   return simgrid::smpi::Datatype::create_struct(count, blocklens, indices, old_types, new_type);
 }
 
@@ -219,6 +223,7 @@ int PMPI_Type_create_subarray(int ndims, const int* array_of_sizes,
     CHECK_NEGATIVE(3, MPI_ERR_COUNT, array_of_subsizes[i])
     CHECK_NEGATIVE(4, MPI_ERR_COUNT, array_of_starts[i])
   }
+  CHECK_NULL(7, MPI_ERR_ARG, newtype)
   if (ndims==1){
     simgrid::smpi::Datatype::create_contiguous( array_of_subsizes[0], oldtype, array_of_starts[0]*oldtype->get_extent(), newtype);
     return MPI_SUCCESS;
@@ -233,6 +238,7 @@ int PMPI_Type_create_subarray(int ndims, const int* array_of_sizes,
 
 int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, MPI_Datatype *newtype){
   CHECK_MPI_NULL(1, MPI_DATATYPE_NULL, MPI_ERR_TYPE, oldtype)
+  CHECK_NULL(4, MPI_ERR_ARG, newtype)
   return simgrid::smpi::Datatype::create_resized(oldtype, lb, extent, newtype);
 }
 

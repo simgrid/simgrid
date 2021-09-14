@@ -36,6 +36,7 @@ int smpi_getopt(int argc, char* const* argv, const char* options);
 
 void* smpi_shared_malloc_intercept(size_t size, const char* file, int line);
 void* smpi_shared_calloc_intercept(size_t num_elm, size_t elem_size, const char* file, int line);
+void* smpi_shared_realloc_intercept(void* data, size_t size, const char* file, int line);
 void smpi_shared_free(void* data);
 #ifdef __cplusplus
 } // extern "C"

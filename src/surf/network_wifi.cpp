@@ -17,7 +17,7 @@ namespace resource {
  * Resource *
  ************/
 
-NetworkWifiLink::NetworkWifiLink(const std::string& name, std::vector<double> bandwidths, lmm::System* system)
+NetworkWifiLink::NetworkWifiLink(const std::string& name, const std::vector<double>& bandwidths, lmm::System* system)
     : LinkImpl(name)
 {
   this->set_constraint(system->constraint_new(this, 1));
@@ -91,10 +91,9 @@ bool NetworkWifiLink::toggle_decay_model(){
   return use_decay_model_;
 }
 
-LinkImpl* NetworkWifiLink::set_latency(double value)
+void NetworkWifiLink::set_latency(double value)
 {
   xbt_assert(value == 0, "Latency cannot be set for WiFi Links.");
-  return this;
 }
 } // namespace resource
 } // namespace kernel

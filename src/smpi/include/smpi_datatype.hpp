@@ -94,6 +94,9 @@ class Datatype_contents {
                     int number_of_integers, const int* integers, 
                     int number_of_addresses, const MPI_Aint* addresses, 
                     int number_of_datatypes, const MPI_Datatype* datatypes);
+  Datatype_contents(const Datatype_contents&) = delete;
+  Datatype_contents& operator=(const Datatype_contents&) = delete;
+  ~Datatype_contents();
 };
 
 class Datatype : public F2C, public Keyval{
@@ -144,7 +147,6 @@ public:
   bool is_basic() const;
   static const char* encode(const Datatype* dt) { return dt->id.c_str(); }
   static MPI_Datatype decode(const std::string& datatype_id);
-  bool is_replayable() const;
   void addflag(int flag);
   int extent(MPI_Aint* lb, MPI_Aint* extent) const;
   MPI_Aint get_extent() const { return ub_ - lb_; };

@@ -32,6 +32,13 @@ xbt::signal<void(Host const&)> Host::on_destruction;
 xbt::signal<void(Host const&)> Host::on_state_change;
 xbt::signal<void(Host const&)> Host::on_speed_change;
 
+Host* Host::set_cpu(kernel::resource::CpuImpl* cpu)
+{
+  pimpl_cpu_ = cpu;
+  return this;
+}
+
+#ifndef DOXYGEN
 Host* Host::set_netpoint(kernel::routing::NetPoint* netpoint)
 {
   pimpl_netpoint_ = netpoint;
@@ -42,8 +49,9 @@ Host::~Host()
 {
   if (pimpl_netpoint_ != nullptr) // not removed yet by a children class
     Engine::get_instance()->netpoint_unregister(pimpl_netpoint_);
-  delete pimpl_cpu;
+  delete pimpl_cpu_;
 }
+#endif
 
 /** @brief Fire the required callbacks and destroy the object
  *
@@ -87,7 +95,7 @@ void Host::turn_on()
 {
   if (not is_on()) {
     kernel::actor::simcall([this] {
-      this->pimpl_cpu->turn_on();
+      this->pimpl_cpu_->turn_on();
       this->pimpl_->turn_on();
       on_state_change(*this);
     });
@@ -105,7 +113,7 @@ void Host::turn_off()
           vm->shutdown();
           vm->turn_off();
         }
-      this->pimpl_cpu->turn_off();
+      this->pimpl_cpu_->turn_off();
       this->pimpl_->turn_off(self);
 
       on_state_change(*this);
@@ -115,12 +123,12 @@ void Host::turn_off()
 
 bool Host::is_on() const
 {
-  return this->pimpl_cpu->is_on();
+  return this->pimpl_cpu_->is_on();
 }
 
-int Host::get_pstate_count() const
+unsigned long Host::get_pstate_count() const
 {
-  return this->pimpl_cpu->get_pstate_count();
+  return this->pimpl_cpu_->get_pstate_count();
 }
 
 /**
@@ -172,25 +180,27 @@ void Host::route_to(const Host* dest, std::vector<kernel::resource::LinkImpl*>& 
 }
 
 /** @brief Returns the networking zone englobing that host */
-NetZone* Host::get_englobing_zone()
+NetZone* Host::get_englobing_zone() const
 {
   return pimpl_netpoint_->get_englobing_zone()->get_iface();
 }
 
-void Host::sendto(Host* dest, double byte_amount) // deprecated 331
+#ifndef DOXYGEN
+void Host::sendto(Host* dest, double byte_amount) // XBT_ATTRIB_DEPRECATED_v331
 {
   Comm::sendto_async(this, dest, byte_amount)->wait();
 }
 
-CommPtr Host::sendto_async(Host* dest, double byte_amount) // deprecated 331
+CommPtr Host::sendto_async(Host* dest, double byte_amount) // XBT_ATTRIB_DEPRECATED_v331
 {
   return Comm::sendto_async(this, dest, byte_amount);
 }
 
-void Host::send_to(Host* dest, double byte_amount) // deprecated 330
+void Host::send_to(Host* dest, double byte_amount) // XBT_ATTRIB_DEPRECATED_v330
 {
   Comm::sendto(this, dest, byte_amount);
 }
+#endif
 
 /** Get the properties assigned to a host */
 const std::unordered_map<std::string, std::string>* Host::get_properties() const
@@ -220,7 +230,7 @@ Host* Host::set_properties(const std::unordered_map<std::string, std::string>& p
  * The profile must contain boolean values. */
 Host* Host::set_state_profile(kernel::profile::Profile* p)
 {
-  kernel::actor::simcall([this, p] { pimpl_cpu->set_state_profile(p); });
+  kernel::actor::simcall([this, p] { pimpl_cpu_->set_state_profile(p); });
   return this;
 }
 /** Specify a profile modeling the external load according to an exhaustive list or a stochastic law.
@@ -231,43 +241,54 @@ Host* Host::set_state_profile(kernel::profile::Profile* p)
  */
 Host* Host::set_speed_profile(kernel::profile::Profile* p)
 {
-  kernel::actor::simcall([this, p] { pimpl_cpu->set_speed_profile(p); });
+  kernel::actor::simcall([this, p] { pimpl_cpu_->set_speed_profile(p); });
   return this;
 }
 
 /** @brief Get the peak processor speed (in flops/s), at the specified pstate  */
-double Host::get_pstate_speed(int pstate_index) const
+double Host::get_pstate_speed(unsigned long pstate_index) const
 {
-  return this->pimpl_cpu->get_pstate_peak_speed(pstate_index);
+  return this->pimpl_cpu_->get_pstate_peak_speed(pstate_index);
 }
 
 double Host::get_speed() const
 {
-  return this->pimpl_cpu->get_speed(1.0);
+  return this->pimpl_cpu_->get_speed(1.0);
 }
 double Host::get_load() const
 {
-  return this->pimpl_cpu->get_load();
+  return this->pimpl_cpu_->get_load();
 }
 double Host::get_available_speed() const
 {
-  return this->pimpl_cpu->get_speed_ratio();
+  return this->pimpl_cpu_->get_speed_ratio();
+}
+
+Host* Host::set_sharing_policy(SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
+{
+  kernel::actor::simcall([this, policy, &cb] { pimpl_cpu_->set_sharing_policy(policy, cb); });
+  return this;
+}
+
+Host::SharingPolicy Host::get_sharing_policy() const
+{
+  return this->pimpl_cpu_->get_sharing_policy();
 }
 
 int Host::get_core_count() const
 {
-  return this->pimpl_cpu->get_core_count();
+  return this->pimpl_cpu_->get_core_count();
 }
 
 Host* Host::set_core_count(int core_count)
 {
-  kernel::actor::simcall([this, core_count] { this->pimpl_cpu->set_core_count(core_count); });
+  kernel::actor::simcall([this, core_count] { this->pimpl_cpu_->set_core_count(core_count); });
   return this;
 }
 
 Host* Host::set_pstate_speed(const std::vector<double>& speed_per_state)
 {
-  kernel::actor::simcall([this, &speed_per_state] { pimpl_cpu->set_pstate_speed(speed_per_state); });
+  kernel::actor::simcall([this, &speed_per_state] { pimpl_cpu_->set_pstate_speed(speed_per_state); });
   return this;
 }
 
@@ -293,16 +314,22 @@ Host* Host::set_pstate_speed(const std::vector<std::string>& speed_per_state)
 }
 
 /** @brief Set the pstate at which the host should run */
-Host* Host::set_pstate(int pstate_index)
+Host* Host::set_pstate(unsigned long pstate_index)
 {
-  kernel::actor::simcall([this, pstate_index] { this->pimpl_cpu->set_pstate(pstate_index); });
+  kernel::actor::simcall([this, pstate_index] { this->pimpl_cpu_->set_pstate(pstate_index); });
   return this;
 }
 
 /** @brief Retrieve the pstate at which the host is currently running */
-int Host::get_pstate() const
+unsigned long Host::get_pstate() const
 {
-  return this->pimpl_cpu->get_pstate();
+  return this->pimpl_cpu_->get_pstate();
+}
+
+Host* Host::set_factor_cb(const std::function<CpuFactorCb>& cb)
+{
+  kernel::actor::simcall([this, &cb] { pimpl_cpu_->set_factor_cb(cb); });
+  return this;
 }
 
 Host* Host::set_coordinates(const std::string& coords)
@@ -397,7 +424,7 @@ sg_host_t* sg_host_list()
   xbt_assert(host_count > 0, "There is no host!");
   std::vector<simgrid::s4u::Host*> hosts = e->get_all_hosts();
 
-  sg_host_t* res = xbt_new(sg_host_t, hosts.size());
+  auto* res = xbt_new(sg_host_t, hosts.size());
   std::copy(begin(hosts), end(hosts), res);
 
   return res;
@@ -480,13 +507,13 @@ double sg_host_speed(const_sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
   return sg_host_get_speed(host);
 }
 
-/** @brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_energy.
+/** @brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_host_energy.
  *
  * @param  host host to test
  * @param pstate_index pstate to test
  * @return Returns the processor speed associated with pstate_index
  */
-double sg_host_get_pstate_speed(const_sg_host_t host, int pstate_index)
+double sg_host_get_pstate_speed(const_sg_host_t host, unsigned long pstate_index)
 {
   return host->get_pstate_speed(pstate_index);
 }
@@ -509,26 +536,26 @@ double sg_host_get_available_speed(const_sg_host_t host)
 
 /** @brief Returns the number of power states for a host.
  *
- *  See also @ref plugin_energy.
+ *  See also @ref plugin_host_energy.
  */
-int sg_host_get_nb_pstates(const_sg_host_t host)
+unsigned long sg_host_get_nb_pstates(const_sg_host_t host)
 {
   return host->get_pstate_count();
 }
 
 /** @brief Gets the pstate at which that host currently runs.
  *
- *  See also @ref plugin_energy.
+ *  See also @ref plugin_host_energy.
  */
-int sg_host_get_pstate(const_sg_host_t host)
+unsigned long sg_host_get_pstate(const_sg_host_t host)
 {
   return host->get_pstate();
 }
 /** @brief Sets the pstate at which that host should run.
  *
- *  See also @ref plugin_energy.
+ *  See also @ref plugin_host_energy.
  */
-void sg_host_set_pstate(sg_host_t host, int pstate)
+void sg_host_set_pstate(sg_host_t host, unsigned long pstate)
 {
   host->set_pstate(pstate);
 }
@@ -537,7 +564,7 @@ void sg_host_set_pstate(sg_host_t host, int pstate)
  *
  * @brief Start the host if it is off
  *
- * See also #sg_host_is_on() to test the current state of the host and @ref plugin_energy
+ * See also #sg_host_is_on() to test the current state of the host and @ref plugin_host_energy
  * for more info on DVFS.
  */
 void sg_host_turn_on(sg_host_t host)
@@ -549,7 +576,7 @@ void sg_host_turn_on(sg_host_t host)
  *
  * @brief Stop the host if it is on
  *
- * See also #MSG_host_is_on() to test the current state of the host and @ref plugin_energy
+ * See also #MSG_host_is_on() to test the current state of the host and @ref plugin_host_energy
  * for more info on DVFS.
  */
 void sg_host_turn_off(sg_host_t host)
@@ -560,8 +587,8 @@ void sg_host_turn_off(sg_host_t host)
 /** @ingroup m_host_management
  * @brief Determine if a host is up and running.
  *
- * See also #sg_host_turn_on() and #sg_host_turn_off() to switch the host ON and OFF and @ref plugin_energy for more
- * info on DVFS.
+ * See also #sg_host_turn_on() and #sg_host_turn_off() to switch the host ON and OFF and @ref plugin_host_energy for
+ * more info on DVFS.
  *
  * @param host host to test
  * @return Returns true if the host is up and running, and false if it's currently down

@@ -33,17 +33,17 @@ static simgrid::instr::Container* lowestCommonAncestor(const simgrid::instr::Con
                                                        const simgrid::instr::Container* a2)
 {
   // this is only an optimization (since most of a1 and a2 share the same parent)
-  if (a1->father_ == a2->father_)
-    return a1->father_;
+  if (a1->get_parent() == a2->get_parent())
+    return a1->get_parent();
 
   // create an array with all ancestors of a1
   std::vector<simgrid::instr::Container*> ancestors_a1;
-  for (auto* p = a1->father_; p != nullptr; p = p->father_)
+  for (auto* p = a1->get_parent(); p != nullptr; p = p->get_parent())
     ancestors_a1.push_back(p);
 
   // create an array with all ancestors of a2
   std::vector<simgrid::instr::Container*> ancestors_a2;
-  for (auto* p = a2->father_; p != nullptr; p = p->father_)
+  for (auto* p = a2->get_parent(); p != nullptr; p = p->get_parent())
     ancestors_a2.push_back(p);
 
   // find the lowest ancestor
@@ -73,9 +73,9 @@ static void linkContainers(simgrid::instr::Container* src, simgrid::instr::Conta
     return;
   }
 
-  // find common father
-  simgrid::instr::Container* father = lowestCommonAncestor(src, dst);
-  xbt_assert(father, "common father unknown, this is a tracing problem");
+  // find common parent
+  simgrid::instr::Container* parent = lowestCommonAncestor(src, dst);
+  xbt_assert(parent, "common parent unknown, this is a tracing problem");
 
   // check if we already register this pair (we only need one direction)
   std::string aux1 = src->get_name() + dst->get_name();
@@ -94,11 +94,12 @@ static void linkContainers(simgrid::instr::Container* src, simgrid::instr::Conta
   filter->insert(aux2);
 
   // declare type
-  std::string link_typename = father->type_->get_name() + "-" + src->type_->get_name() +
-                              std::to_string(src->type_->get_id()) + "-" + dst->type_->get_name() +
-                              std::to_string(dst->type_->get_id());
-  simgrid::instr::LinkType* link = father->type_->by_name_or_create(link_typename, src->type_, dst->type_);
-  link->set_calling_container(father);
+  std::string link_typename = parent->get_type()->get_name() + "-" + src->get_type()->get_name() +
+                              std::to_string(src->get_type()->get_id()) + "-" + dst->get_type()->get_name() +
+                              std::to_string(dst->get_type()->get_id());
+  simgrid::instr::LinkType* link =
+      parent->get_type()->by_name_or_create(link_typename, src->get_type(), dst->get_type());
+  link->set_calling_container(parent);
 
   // create the link
   static long long counter = 0;
@@ -112,7 +113,7 @@ static void linkContainers(simgrid::instr::Container* src, simgrid::instr::Conta
   XBT_DEBUG("  linkContainers %s <-> %s", src->get_cname(), dst->get_cname());
 }
 
-static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, simgrid::instr::Container* container,
+static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, const simgrid::instr::Container* container,
                                      std::set<std::string, std::less<>>* filter)
 {
   if (not TRACE_platform_topology()) {
@@ -120,12 +121,11 @@ static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, simgr
     return;
   }
   XBT_DEBUG("Graph extraction for NetZone = %s", netzone->get_cname());
-  if (not netzone->get_children().empty()) {
-    // bottom-up recursion
-    for (auto const& nz_son : netzone->get_children()) {
-      simgrid::instr::Container* child_container = container->children_.at(nz_son->get_name());
-      recursiveGraphExtraction(nz_son, child_container, filter);
-    }
+
+  // bottom-up recursion
+  for (auto const& nz_son : netzone->get_children()) {
+    const simgrid::instr::Container* child_container = container->get_child_by_name(nz_son->get_name());
+    recursiveGraphExtraction(nz_son, child_container, filter);
   }
 
   auto* graph = xbt_graph_new_graph(0, nullptr);
@@ -160,38 +160,38 @@ static void recursiveNewVariableType(const std::string& new_typename, const std:
 
 void instr_new_variable_type(const std::string& new_typename, const std::string& color)
 {
-  recursiveNewVariableType(new_typename, color, simgrid::instr::Container::get_root()->type_);
+  recursiveNewVariableType(new_typename, color, simgrid::instr::Container::get_root()->get_type());
 }
 
-static void recursiveNewUserVariableType(const std::string& father_type, const std::string& new_typename,
+static void recursiveNewUserVariableType(const std::string& parent_type, const std::string& new_typename,
                                          const std::string& color, simgrid::instr::Type* root)
 {
-  if (root->get_name() == father_type) {
+  if (root->get_name() == parent_type) {
     root->by_name_or_create(new_typename, color);
   }
   for (auto const& elm : root->get_children())
-    recursiveNewUserVariableType(father_type, new_typename, color, elm.second.get());
+    recursiveNewUserVariableType(parent_type, new_typename, color, elm.second.get());
 }
 
-void instr_new_user_variable_type(const std::string& father_type, const std::string& new_typename,
+void instr_new_user_variable_type(const std::string& parent_type, const std::string& new_typename,
                                   const std::string& color)
 {
-  recursiveNewUserVariableType(father_type, new_typename, color, simgrid::instr::Container::get_root()->type_);
+  recursiveNewUserVariableType(parent_type, new_typename, color, simgrid::instr::Container::get_root()->get_type());
 }
 
-static void recursiveNewUserStateType(const std::string& father_type, const std::string& new_typename,
+static void recursiveNewUserStateType(const std::string& parent_type, const std::string& new_typename,
                                       simgrid::instr::Type* root)
 {
-  if (root->get_name() == father_type)
+  if (root->get_name() == parent_type)
     root->by_name_or_create<simgrid::instr::StateType>(new_typename);
 
   for (auto const& elm : root->get_children())
-    recursiveNewUserStateType(father_type, new_typename, elm.second.get());
+    recursiveNewUserStateType(parent_type, new_typename, elm.second.get());
 }
 
-void instr_new_user_state_type(const std::string& father_type, const std::string& new_typename)
+void instr_new_user_state_type(const std::string& parent_type, const std::string& new_typename)
 {
-  recursiveNewUserStateType(father_type, new_typename, simgrid::instr::Container::get_root()->type_);
+  recursiveNewUserStateType(parent_type, new_typename, simgrid::instr::Container::get_root()->get_type());
 }
 
 static void recursiveNewValueForUserStateType(const std::string& type_name, const char* val, const std::string& color,
@@ -206,7 +206,7 @@ static void recursiveNewValueForUserStateType(const std::string& type_name, cons
 
 void instr_new_value_for_user_state_type(const std::string& type_name, const char* value, const std::string& color)
 {
-  recursiveNewValueForUserStateType(type_name, value, color, simgrid::instr::Container::get_root()->type_);
+  recursiveNewValueForUserStateType(type_name, value, color, simgrid::instr::Container::get_root()->get_type());
 }
 
 namespace simgrid {
@@ -260,11 +260,11 @@ static void on_netzone_creation(s4u::NetZone const& netzone)
     xbt_assert(Container::get_root() == root);
 
     if (TRACE_smpi_is_enabled()) {
-      auto* mpi = root->type_->by_name_or_create<ContainerType>("MPI");
+      auto* mpi = root->get_type()->by_name_or_create<ContainerType>("MPI");
       if (not TRACE_smpi_is_grouped())
         mpi->by_name_or_create<StateType>("MPI_STATE");
-      root->type_->by_name_or_create("MPI_LINK", mpi, mpi);
-      root->type_->by_name_or_create("MIGRATE_LINK", mpi, mpi);
+      root->get_type()->by_name_or_create("MPI_LINK", mpi, mpi);
+      root->get_type()->by_name_or_create("MIGRATE_LINK", mpi, mpi);
       mpi->by_name_or_create<StateType>("MIGRATE_STATE");
     }
 
@@ -289,16 +289,16 @@ static void on_link_creation(s4u::Link const& link)
   auto* container = new Container(link.get_name(), "LINK", currentContainer.back());
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_link())) {
-    VariableType* bandwidth = container->type_->by_name_or_create("bandwidth", "");
+    VariableType* bandwidth = container->get_type()->by_name_or_create("bandwidth", "");
     bandwidth->set_calling_container(container);
     bandwidth->set_event(0, link.get_bandwidth());
-    VariableType* latency = container->type_->by_name_or_create("latency", "");
+    VariableType* latency = container->get_type()->by_name_or_create("latency", "");
     latency->set_calling_container(container);
     latency->set_event(0, link.get_latency());
   }
 
   if (TRACE_uncategorized()) {
-    container->type_->by_name_or_create("bandwidth_used", "0.5 0.5 0.5");
+    container->get_type()->by_name_or_create("bandwidth_used", "0.5 0.5 0.5");
   }
 }
 
@@ -311,22 +311,22 @@ static void on_host_creation(s4u::Host const& host)
   const Container* root = Container::get_root();
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (not TRACE_disable_speed())) {
-    VariableType* speed = container->type_->by_name_or_create("speed", "");
+    VariableType* speed = container->get_type()->by_name_or_create("speed", "");
     speed->set_calling_container(container);
     speed->set_event(0, host.get_speed());
 
-    VariableType* cores = container->type_->by_name_or_create("core_count", "");
+    VariableType* cores = container->get_type()->by_name_or_create("core_count", "");
     cores->set_calling_container(container);
     cores->set_event(0, host.get_core_count());
   }
 
   if (TRACE_uncategorized())
-    container->type_->by_name_or_create("speed_used", "0.5 0.5 0.5");
+    container->get_type()->by_name_or_create("speed_used", "0.5 0.5 0.5");
 
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()) {
-    auto* mpi = container->type_->by_name_or_create<ContainerType>("MPI");
+    auto* mpi = container->get_type()->by_name_or_create<ContainerType>("MPI");
     mpi->by_name_or_create<StateType>("MPI_STATE");
-    root->type_->by_name_or_create("MIGRATE_LINK", mpi, mpi);
+    root->get_type()->by_name_or_create("MIGRATE_LINK", mpi, mpi);
     mpi->by_name_or_create<StateType>("MIGRATE_STATE");
   }
 }
@@ -337,7 +337,7 @@ static void on_action_state_change(kernel::resource::Action const& action,
   auto n = static_cast<unsigned>(action.get_variable()->get_number_of_constraint());
 
   for (unsigned i = 0; i < n; i++) {
-    double value = action.get_variable()->get_value() * action.get_variable()->get_constraint_weight(i);
+    double value = action.get_rate() * action.get_variable()->get_constraint_weight(i);
     /* Beware of composite actions: ptasks put links and cpus together. Extra pb: we cannot dynamic_cast from void* */
     kernel::resource::Resource* resource = action.get_variable()->get_constraint(i)->get_id();
     const kernel::resource::CpuImpl* cpu = dynamic_cast<kernel::resource::CpuImpl*>(resource);
@@ -371,14 +371,14 @@ static void on_actor_creation(s4u::Actor const& actor)
   std::string container_name = instr_pid(actor);
 
   container->create_child(container_name, "ACTOR");
-  auto* actor_type = container->type_->by_name_or_create<ContainerType>("ACTOR");
+  auto* actor_type = container->get_type()->by_name_or_create<ContainerType>("ACTOR");
   auto* state      = actor_type->by_name_or_create<StateType>("ACTOR_STATE");
   state->add_entity_value("suspend", "1 0 1");
   state->add_entity_value("sleep", "1 1 0");
   state->add_entity_value("receive", "1 0 0");
   state->add_entity_value("send", "0 0 1");
   state->add_entity_value("execute", "0 1 1");
-  root->type_->by_name_or_create("ACTOR_LINK", actor_type, actor_type);
+  root->get_type()->by_name_or_create("ACTOR_LINK", actor_type, actor_type);
 
   actor.on_exit([container_name](bool failed) {
     if (failed)
@@ -408,15 +408,15 @@ static void on_vm_creation(s4u::Host const& host)
 {
   const Container* container = new HostContainer(host, currentContainer.back());
   const Container* root      = Container::get_root();
-  auto* vm                   = container->type_->by_name_or_create<ContainerType>("VM");
+  auto* vm                   = container->get_type()->by_name_or_create<ContainerType>("VM");
   auto* state                = vm->by_name_or_create<StateType>("VM_STATE");
   state->add_entity_value("suspend", "1 0 1");
   state->add_entity_value("sleep", "1 1 0");
   state->add_entity_value("receive", "1 0 0");
   state->add_entity_value("send", "0 0 1");
   state->add_entity_value("execute", "0 1 1");
-  root->type_->by_name_or_create("VM_LINK", vm, vm);
-  root->type_->by_name_or_create("VM_ACTOR_LINK", vm, vm);
+  root->get_type()->by_name_or_create("VM_LINK", vm, vm);
+  root->get_type()->by_name_or_create("VM_ACTOR_LINK", vm, vm);
 }
 
 void define_callbacks()

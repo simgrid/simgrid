@@ -83,8 +83,8 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
   std::string name_;
   bool sealed_ = false; // We cannot add more content when sealed
 
-  std::map<std::pair<NetPoint*, NetPoint*>, BypassRoute*> bypass_routes_; // src x dst -> route
-  routing::NetPoint* netpoint_ = nullptr;                                 // Our representative in the father NetZone
+  std::map<std::pair<const NetPoint*, const NetPoint*>, BypassRoute*> bypass_routes_; // src x dst -> route
+  routing::NetPoint* netpoint_ = nullptr; // Our representative in the parent NetZone
 
 protected:
   explicit NetZoneImpl(const std::string& name);
@@ -100,12 +100,19 @@ protected:
    * @param into Container into which the traversed links and gateway information should be pushed
    * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
-  virtual void get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency) = 0;
+  virtual void get_local_route(const NetPoint* src, const NetPoint* dst, Route* into, double* latency) = 0;
   /** @brief retrieves the list of all routes of size 1 (of type src x dst x Link) */
   /* returns whether we found a bypass path */
-  bool get_bypass_route(routing::NetPoint* src, routing::NetPoint* dst,
+  bool get_bypass_route(const routing::NetPoint* src, const routing::NetPoint* dst,
                         /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency,
                         std::unordered_set<NetZoneImpl*>& netzones);
+
+  /** @brief Get the NetZone that is represented by the netpoint */
+  const NetZoneImpl* get_netzone_recursive(const NetPoint* netpoint) const;
+
+  /** @brief Get the list of LinkImpl* to add in a route, considering split-duplex links and the direction */
+  std::vector<resource::LinkImpl*> get_link_list_impl(const std::vector<s4u::LinkInRoute>& link_list,
+                                                      bool backroute) const;
 
 public:
   enum class RoutingMode {
@@ -153,18 +160,20 @@ public:
   s4u::Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
   /** @brief Make a link within that NetZone */
   virtual s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths);
+  s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, const std::vector<double>& bandwidths);
   /** @brief Make a router within that NetZone */
   NetPoint* create_router(const std::string& name);
   /** @brief Creates a new route in this NetZone */
   virtual void add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                                std::vector<resource::LinkImpl*>& link_list, bool symmetrical);
+                                const std::vector<s4u::LinkInRoute>& link_list);
 
   /** @brief Seal your netzone once you're done adding content, and before routing stuff through it */
   void seal();
-  virtual int add_component(kernel::routing::NetPoint* elm); /* A host, a router or a netzone, whatever */
-  virtual void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                         const std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical);
+  /** @brief Check if netpoint is a member of this NetZone or some of the childrens */
+  bool is_component_recursive(const NetPoint* netpoint) const;
+  virtual unsigned long add_component(NetPoint* elm); /* A host, a router or a netzone, whatever */
+  virtual void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                         const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical);
   /** @brief Set parent of this Netzone */
   void set_parent(NetZoneImpl* parent);
   /** @brief Set network model for this Netzone */
@@ -181,16 +190,22 @@ public:
    * @param links Accumulator in which all traversed links should be pushed (caller must empty it)
    * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
-  static void get_global_route(routing::NetPoint* src, routing::NetPoint* dst,
+  static void get_global_route(const NetPoint* src, const NetPoint* dst,
                                /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency);
 
   /** @brief Similar to get_global_route but get the NetZones traversed by route */
-  static void get_global_route_with_netzones(routing::NetPoint* src, routing::NetPoint* dst,
+  static void get_global_route_with_netzones(const NetPoint* src, const NetPoint* dst,
                                              /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency,
                                              std::unordered_set<NetZoneImpl*>& netzones);
 
   virtual void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
                          std::map<std::string, xbt_edge_t, std::less<>>* edges) = 0;
+
+  /*** Called on each newly created regular route (not on bypass routes) */
+  static xbt::signal<void(bool symmetrical, NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
+                          std::vector<resource::LinkImpl*> const& link_list)>
+      on_route_creation; // XBT_ATTRIB_DEPRECATED_v332 : should be an internal signal used by NS3.. if necessary,
+                         // callback shouldn't use LinkImpl*
 
 private:
   RoutingMode hierarchy_ = RoutingMode::base;
@@ -198,7 +213,7 @@ private:
   std::shared_ptr<resource::CpuModel> cpu_model_vm_;
   std::shared_ptr<resource::CpuModel> cpu_model_pm_;
   std::shared_ptr<resource::DiskModel> disk_model_;
-  std::shared_ptr<simgrid::surf::HostModel> host_model_;
+  std::shared_ptr<surf::HostModel> host_model_;
   /** @brief Perform sealing procedure for derived classes, if necessary */
   virtual void do_seal()
   { /* obviously nothing to do by default */

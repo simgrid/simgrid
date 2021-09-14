@@ -1,0 +1,16 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-exec-failure "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (1:Dispatcher@Host1) Initiating asynchronous exec on Host1
+> [  0.000000] (2:HostKiller@Host1) HostKiller  sleeping 10 seconds...
+> [  0.000000] (1:Dispatcher@Host1) Initiating asynchronous exec on Host2
+> [  0.000000] (1:Dispatcher@Host1) Calling wait_any..
+> [ 10.000000] (2:HostKiller@Host1) HostKiller turning off host Host2
+> [ 10.000000] (1:Dispatcher@Host1) Dispatcher has experienced a host failure exception, so it knows that something went wrong
+> [ 10.000000] (1:Dispatcher@Host1) Now it needs to figure out which of the two execs failed by looking at their state
+> [ 10.000000] (1:Dispatcher@Host1) Exec on Host1 has state: STARTED
+> [ 10.000000] (1:Dispatcher@Host1) Exec on Host2 has state: FAILED
+> [ 10.000000] (1:Dispatcher@Host1) Waiting on a FAILED exec raises an exception: 'Cannot wait for a failed exec'
+> [ 10.000000] (1:Dispatcher@Host1) Wait for remaining exec, just to be nice
+> [ 10.000000] (2:HostKiller@Host1) HostKiller ends
+> [ 20.000000] (1:Dispatcher@Host1) Dispatcher ends

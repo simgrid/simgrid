@@ -1,5 +1,10 @@
 #! /bin/bash
 #
+# Copyright (c) 2018-2021. The SimGrid Team. All rights reserved.
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
+
 # Simplistic script to rebuild our documentation with sphinx-build
 
 # If you are missing some dependencies, try: pip3 install --requirement docs/requirements.txt
@@ -15,7 +20,7 @@ if [ "x$1" != 'xdoxy' ] && [ -e build/xml ] ; then
 else
   set -x
   rm -rf build/xml source/api/
-  (cd source; doxygen 2>&1; cd ..) | grep -v "is not documented." #   XXXXX Reduce the verbosity for now
+  (cd source; doxygen 2>&1; cd ..) | (grep -v "is not documented." || true) # XXXXX Reduce the verbosity for now
   set +x
 fi
 

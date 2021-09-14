@@ -124,7 +124,7 @@ Starting and Stopping Actors
 
           This file is not really interesting: the important matter is in the XML file.
 
-      .. example-tab:: examples/c/actor-lifetime/actor-lifetime.c
+       .. example-tab:: examples/c/actor-lifetime/actor-lifetime.c
 
           This file is not really interesting: the important matter is in the XML file.
 
@@ -313,7 +313,7 @@ Communications on the Network
 
       .. example-tab:: examples/c/comm-wait/comm-wait.c
 
-         See also :cpp:func:`sg_mailbox_put_async()` and :cpp:func:`sg_comm__wait()`.
+         See also :cpp:func:`sg_mailbox_put_async()` and :cpp:func:`sg_comm_wait()`.
 
  - **Waiting for communications with timeouts:**
    This example is very similar to the previous one, simply adding how to declare timeouts when waiting on asynchronous communication.
@@ -322,7 +322,7 @@ Communications on the Network
 
       .. example-tab:: examples/cpp/comm-waituntil/s4u-comm-waituntil.cpp
 
-         See also :cpp:func:`simgrid::s4u::Mailbox::wait_until()` and :cpp:func:`simgrid::s4u::Comm::wait_for()`.
+         See also :cpp:func:`simgrid::s4u::Activity::wait_until()` and :cpp:func:`simgrid::s4u::Comm::wait_for()`.
 
  - **Suspending communications:**
    The ``suspend()`` and ``resume()`` functions allow to block the
@@ -607,10 +607,9 @@ Interacting with the Platform
 
       .. example-tab:: examples/c/platform-properties/platform-properties.c
 
-         - :cpp:func:`sg_actor_get_property()` and :cpp:func:`sg_actor_set_property()`
-         - :cpp:func:`sg_host_get_property()` and :cpp:func:sg_host_set_property()`
-         - :cpp:func:`sg_link_get_property()` and :cpp:func:`sg_link_set_property()`
-         - :cpp:func:`sg_link_get_property()` and :cpp:func:`sg_link_set_property()`
+         - :cpp:func:`sg_actor_get_property_value()`
+         - :cpp:func:`sg_host_get_property_value()` and :cpp:func:sg_host_set_property_value()`
+         - :cpp:func:`sg_zone_get_property_value()` and :cpp:func:`sg_zone_set_property_value()`
 
       .. group-tab:: XML
 
@@ -1090,11 +1089,3 @@ SimGrid is slower and may be less robust when MC is enabled.
 .. |br| raw:: html
 
    <br />
-
-.. |cpp| image:: /img/lang_cpp.png
-   :align: middle
-   :width: 12
-
-.. |py| image:: /img/lang_python.png
-   :align: middle
-   :width: 12

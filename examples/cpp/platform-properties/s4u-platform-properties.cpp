@@ -51,7 +51,7 @@ static void test_host(const std::string& hostname)
   /* Restore the value for the next test */
   thehost->set_property(exist, "180");
 
-  auto thezone = thehost->get_englobing_zone();
+  const auto* thezone = thehost->get_englobing_zone();
   XBT_INFO("== Print the properties of the zone '%s' that contains '%s'", thezone->get_cname(), hostname.c_str());
   const std::unordered_map<std::string, std::string>* zoneprops = thezone->get_properties();
   keys.clear();

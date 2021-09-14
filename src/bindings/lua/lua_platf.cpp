@@ -347,13 +347,12 @@ int console_add_route(lua_State *L) {
   boost::split(names, str, boost::is_any_of(", \t\r\n"));
   if (names.empty()) {
     /* unique name */
-    route.link_list.push_back(simgrid::s4u::Link::by_name(lua_tostring(L, -1))->get_impl());
+    route.link_list.emplace_back(simgrid::s4u::Link::by_name(lua_tostring(L, -1)));
   } else {
     // Several names separated by , \t\r\n
     for (auto const& name : names) {
       if (name.length() > 0) {
-        simgrid::kernel::resource::LinkImpl* link = simgrid::s4u::Link::by_name(name)->get_impl();
-        route.link_list.push_back(link);
+        route.link_list.emplace_back(simgrid::s4u::Link::by_name(name));
       }
     }
   }
@@ -413,13 +412,12 @@ int console_add_ASroute(lua_State *L) {
   boost::split(names, str, boost::is_any_of(", \t\r\n"));
   if (names.empty()) {
     /* unique name with no comma */
-    ASroute.link_list.push_back(simgrid::s4u::Link::by_name(lua_tostring(L, -1))->get_impl());
+    ASroute.link_list.emplace_back(simgrid::s4u::Link::by_name(lua_tostring(L, -1)));
   } else {
     // Several names separated by , \t\r\n
     for (auto const& name : names) {
       if (name.length() > 0) {
-        simgrid::kernel::resource::LinkImpl* link = simgrid::s4u::Link::by_name(name)->get_impl();
-        ASroute.link_list.push_back(link);
+        ASroute.link_list.emplace_back(simgrid::s4u::Link::by_name(name));
       }
     }
   }
@@ -454,7 +452,7 @@ int console_AS_open(lua_State *L) {
  simgrid::kernel::routing::ZoneCreationArgs AS;
  AS.id = id;
  AS.routing                                    = mode;
- simgrid::kernel::routing::NetZoneImpl* new_as = sg_platf_new_Zone_begin(&AS);
+ simgrid::kernel::routing::NetZoneImpl* new_as = sg_platf_new_zone_begin(&AS);
 
  /* Build a Lua representation of the new AS on the stack */
  lua_newtable(L);
@@ -471,7 +469,7 @@ int console_AS_open(lua_State *L) {
 int console_AS_seal(lua_State*)
 {
   XBT_DEBUG("Sealing AS");
-  sg_platf_new_Zone_seal();
+  sg_platf_new_zone_seal();
   return 0;
 }
 

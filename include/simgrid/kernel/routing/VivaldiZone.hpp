@@ -48,7 +48,7 @@ class XBT_PRIVATE VivaldiZone : public StarZone {
 public:
   using StarZone::StarZone;
   void set_peer_link(NetPoint* netpoint, double bw_in, double bw_out);
-  void get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency) override;
+  void get_local_route(const NetPoint* src, const NetPoint* dst, Route* into, double* latency) override;
 };
 
 namespace vivaldi {

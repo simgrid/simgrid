@@ -1,0 +1,26 @@
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/platform-mix.py "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Creating zone: dijkstra
+> [  0.000000] (0:maestro@) Creating zone: vivaldi
+> [  0.000000] (0:maestro@) Creating zone: empty
+> [  0.000000] (0:maestro@) Creating zone: wifi
+> [  0.000000] (1:sender@host1) Sending msg to host1
+> [  1.000000] (2:receiver@host1) Using disk disk1
+> [  2.100000] (2:receiver@host1) Using disk disk2
+> [  2.190103] (2:receiver@host1) I got 'Hello. I'm host1'.
+> [  2.190103] (2:receiver@host1) Finished executing. Goodbye!
+> [  2.190103] (1:sender@host1) Sending msg to host2
+> [  2.204144] (3:receiver@host2) I got 'Hello. I'm host1'.
+> [  2.204144] (3:receiver@host2) Finished executing. Goodbye!
+> [  2.204144] (1:sender@host1) Sending msg to host3
+> [  2.205226] (4:receiver@host3) I got 'Hello. I'm host1'.
+> [  2.205226] (4:receiver@host3) Finished executing. Goodbye!
+> [  2.205226] (1:sender@host1) Sending msg to host4
+> [  2.264825] (5:receiver@host4) I got 'Hello. I'm host1'.
+> [  2.264825] (5:receiver@host4) Finished executing. Goodbye!
+> [  2.264825] (1:sender@host1) Sending msg to host5
+> [  2.265908] (6:receiver@host5) I got 'Hello. I'm host1'.
+> [  2.265908] (6:receiver@host5) Finished executing. Goodbye!
+> [  2.265908] (1:sender@host1) Sending msg to host6
+> [ 10.240550] (1:sender@host1) Done dispatching all messages. Goodbye!
+> [ 10.240550] (7:receiver@host6) I got 'Hello. I'm host1'.
+> [ 10.240550] (7:receiver@host6) Finished executing. Goodbye!

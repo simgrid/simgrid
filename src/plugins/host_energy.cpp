@@ -131,6 +131,7 @@ class HostEnergy {
   simgrid::s4u::Host* host_ = nullptr;
   /*< List of (idle_power, epsilon_power, max_power) tuple corresponding to each cpu pstate */
   std::vector<PowerRange> power_range_watts_list_;
+  bool has_pstate_power_values_ = false; /*< Whether power consumption values were provided for all pstates */
 
   /* We need to keep track of what pstate has been used, as we will sometimes be notified only *after* a pstate has been
    * used (but we need to update the energy consumption with the old pstate!)
@@ -155,6 +156,8 @@ public:
   explicit HostEnergy(simgrid::s4u::Host* ptr);
   ~HostEnergy();
 
+  bool has_pstate_power_values() const;
+
   double get_current_watts_value();
   double get_current_watts_value(double cpu_load) const;
   double get_consumed_energy();
@@ -167,6 +170,11 @@ public:
 };
 
 simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> HostEnergy::EXTENSION_ID;
+
+/* Returns whether power consumption values were provided for all pstates. */
+bool HostEnergy::has_pstate_power_values() const {
+  return has_pstate_power_values_;
+}
 
 /* Computes the consumption so far. Called lazily on need. */
 void HostEnergy::update()
@@ -221,29 +229,29 @@ HostEnergy::~HostEnergy() = default;
 
 double HostEnergy::get_watt_idle_at(int pstate) const
 {
-  xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
-             host_->get_cname());
+  if (not has_pstate_power_values_)
+    return 0.0;
   return power_range_watts_list_[pstate].idle_;
 }
 
 double HostEnergy::get_watt_min_at(int pstate) const
 {
-  xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
-             host_->get_cname());
+  if (not has_pstate_power_values_)
+    return 0.0;
   return power_range_watts_list_[pstate].epsilon_;
 }
 
 double HostEnergy::get_watt_max_at(int pstate) const
 {
-  xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
-             host_->get_cname());
+  if (not has_pstate_power_values_)
+    return 0.0;
   return power_range_watts_list_[pstate].max_;
 }
 
 double HostEnergy::get_power_range_slope_at(int pstate) const
 {
-  xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
-             host_->get_cname());
+  if (not has_pstate_power_values_)
+    return 0.0;
   return power_range_watts_list_[pstate].slope_;
 }
 
@@ -285,8 +293,8 @@ double HostEnergy::get_current_watts_value()
  */
 double HostEnergy::get_current_watts_value(double cpu_load) const
 {
-  xbt_assert(not power_range_watts_list_.empty(), "No power range properties specified for host %s",
-             host_->get_cname());
+  if (not has_pstate_power_values_)
+    return 0.0;
 
   /* Return watts_off if pstate == pstate_off (ie, if the host is off) */
   if (this->pstate_ == pstate_off_) {
@@ -333,12 +341,7 @@ void HostEnergy::init_watts_range_list()
 {
   const char* all_power_values_str = host_->get_property("wattage_per_state");
   if (all_power_values_str == nullptr) {
-    /* If no power values are given, we assume it's 0 everywhere */
-    XBT_DEBUG("No energetic profiles given for host %s, using 0 W by default.", host_->get_cname());
-    for (int i = 0; i < host_->get_pstate_count(); ++i) {
-        PowerRange range(0,0,0);
-        power_range_watts_list_.push_back(range);
-    }
+    XBT_WARN("No energetic profiles (wattage_per_state) given for host %s, using 0 W by default. Direct request of power/energy consumption of this host will fail.", host_->get_cname());
     return;
   }
 
@@ -346,8 +349,8 @@ void HostEnergy::init_watts_range_list()
   boost::split(all_power_values, all_power_values_str, boost::is_any_of(","));
   XBT_DEBUG("%s: power properties: %s", host_->get_cname(), all_power_values_str);
 
-  xbt_assert(all_power_values.size() == (unsigned)host_->get_pstate_count(),
-             "Invalid XML file. Found %zu energetic profiles for %d pstates", all_power_values.size(),
+  xbt_assert(all_power_values.size() == host_->get_pstate_count(),
+             "Invalid XML file. Found %zu energetic profiles for %lu pstates", all_power_values.size(),
              host_->get_pstate_count());
 
   int i = 0;
@@ -365,28 +368,27 @@ void HostEnergy::init_watts_range_list()
     double epsilon_power;
     double max_power;
 
-    char* msg_idle    = bprintf("Invalid Idle value for pstate %d on host %s: %%s", i, host_->get_cname());
-    char* msg_epsilon = bprintf("Invalid Epsilon value for pstate %d on host %s: %%s", i, host_->get_cname());
-    char* msg_max     = bprintf("Invalid AllCores value for pstate %d on host %s: %%s", i, host_->get_cname());
+    auto msg_idle    = xbt::string_printf("Invalid Idle value for pstate %d on host %s", i, host_->get_cname());
+    auto msg_epsilon = xbt::string_printf("Invalid Epsilon value for pstate %d on host %s", i, host_->get_cname());
+    auto msg_max     = xbt::string_printf("Invalid AllCores value for pstate %d on host %s", i, host_->get_cname());
 
-    idle_power = xbt_str_parse_double((current_power_values.at(0)).c_str(), msg_idle);
+    idle_power = xbt_str_parse_double((current_power_values.at(0)).c_str(), msg_idle.c_str());
     if (current_power_values.size() == 2) { // Case: Idle:AllCores
-      epsilon_power = xbt_str_parse_double((current_power_values.at(0)).c_str(), msg_idle);
-      max_power     = xbt_str_parse_double((current_power_values.at(1)).c_str(), msg_max);
+      epsilon_power = xbt_str_parse_double((current_power_values.at(0)).c_str(), msg_idle.c_str());
+      max_power     = xbt_str_parse_double((current_power_values.at(1)).c_str(), msg_max.c_str());
     } else { // Case: Idle:Epsilon:AllCores
-      epsilon_power = xbt_str_parse_double((current_power_values.at(1)).c_str(), msg_epsilon);
-      max_power     = xbt_str_parse_double((current_power_values.at(2)).c_str(), msg_max);
+      epsilon_power = xbt_str_parse_double((current_power_values.at(1)).c_str(), msg_epsilon.c_str());
+      max_power     = xbt_str_parse_double((current_power_values.at(2)).c_str(), msg_max.c_str());
     }
 
     XBT_DEBUG("Creating PowerRange for host %s. Idle:%f, Epsilon:%f, AllCores:%f.", host_->get_cname(), idle_power, epsilon_power, max_power);
 
     PowerRange range(idle_power, epsilon_power, max_power);
     power_range_watts_list_.push_back(range);
-    xbt_free(msg_idle);
-    xbt_free(msg_epsilon);
-    xbt_free(msg_max);
     ++i;
   }
+
+  has_pstate_power_values_ = true;
 }
 } // namespace plugin
 } // namespace simgrid
@@ -533,7 +535,10 @@ static void ensure_plugin_inited()
 double sg_host_get_consumed_energy(const_sg_host_t host)
 {
   ensure_plugin_inited();
-  return host->extension<HostEnergy>()->get_consumed_energy();
+  auto host_energy = host->extension<HostEnergy>();
+  xbt_assert(host_energy->has_pstate_power_values(), "No power range properties specified for host %s",
+             host->get_cname());
+  return host_energy->get_consumed_energy();
 }
 
 /** @ingroup plugin_host_energy
@@ -584,5 +589,8 @@ double sg_host_get_power_range_slope_at(const_sg_host_t host, int pstate)
 double sg_host_get_current_consumption(const_sg_host_t host)
 {
   ensure_plugin_inited();
-  return host->extension<HostEnergy>()->get_current_watts_value();
+  auto host_energy = host->extension<HostEnergy>();
+  xbt_assert(host_energy->has_pstate_power_values(), "No power range properties specified for host %s",
+             host->get_cname());
+  return host_energy->get_current_watts_value();
 }

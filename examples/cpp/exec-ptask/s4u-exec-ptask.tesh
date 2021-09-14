@@ -50,3 +50,5 @@ $ ${bindir:=.}/s4u-exec-ptask ${platfdir}/energy_platform.xml --cfg=host/model:p
 > [375.500000] (0:maestro@) UNCAT LINK [360.500000 - 375.500000] bus bandwidth_used 100000.000000
 > [375.500000] (1:test@MyHost1) Goodbye now!
 > [375.500000] (0:maestro@) Simulation done.
+
+$ rm -f ./simgrid.trace

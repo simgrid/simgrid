@@ -1,7 +1,7 @@
 # Build the version number
 
 set(SIMGRID_VERSION_MAJOR "3")
-set(SIMGRID_VERSION_MINOR "27")
+set(SIMGRID_VERSION_MINOR "28")
 set(SIMGRID_VERSION_PATCH "1") # odd => git branch; even => stable release or released snapshot
 
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")
@@ -548,8 +548,8 @@ file(READ ${CMAKE_HOME_DIRECTORY}/src/smpi/smpitools.sh SMPITOOLS_SH) # Definiti
 
 ### SMPI script used when simgrid is installed
 set(exec_prefix ${CMAKE_INSTALL_PREFIX})
-set(includedir "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_INCLUDEDIR}")
-set(libdir "${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_LIBDIR}")
+set(includedir "${CMAKE_INSTALL_FULL_INCLUDEDIR}")
+set(libdir "${CMAKE_INSTALL_FULL_LIBDIR}")
 set(includeflag "-I${includedir} -I${includedir}/smpi")
 set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=\"${libdir}")
 if(NS3_LIBRARY_PATH)
@@ -635,6 +635,7 @@ if(NOT "${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_allgatherv.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_allgatherv.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hostfile ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hostfile_cluster ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile_cluster COPYONLY)
+  configure_file(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hostfile_griffon ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile_griffon COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hostfile_coll ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile_coll COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hostfile_io ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile_io COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hostfile_empty ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile_empty COPYONLY)

@@ -84,7 +84,7 @@ extern template class XBT_PUBLIC xbt::Extendable<s4u::File>;
 namespace s4u {
 
 /** @brief A simulated file
- *  @addtogroup Plugin_filesystem
+ *  @ingroup plugin_filesystem
  *
  * Used to simulate the time it takes to access to a file, but does not really store any information.
  *
@@ -116,11 +116,6 @@ public:
 
   /** Simulates a write action. Returns the size of data actually written. */
   sg_size_t write(sg_size_t size, bool write_inside = false);
-
-  /** Allows to store user data on that host */
-  XBT_ATTRIB_DEPRECATED_v329("Please use set_data()") void set_userdata(void* data) { set_data(data); }
-  /** Retrieves the previously stored data */
-  XBT_ATTRIB_DEPRECATED_v329("Please use get_data()") void* get_userdata() { return get_data(); }
 
   sg_size_t size() const;
   void seek(sg_offset_t pos);             /** Sets the file head to the given position. */

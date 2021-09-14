@@ -55,28 +55,42 @@ public:
    * There is really no limit on the hosts involved. In particular, the actor does not have to be on one of the involved
    * hosts.
    */
-  static CommPtr sendto_async(Host* from, Host* to, double simulated_size_in_bytes);
+  static CommPtr sendto_async(Host* from, Host* to, uint64_t simulated_size_in_bytes);
   /** Do a blocking communication between two arbitrary hosts.
    *
    * This starts a blocking communication right away, bypassing the mailbox and actors mechanism.
    * The calling actor is blocked until the end of the communication; there is really no limit on the hosts involved.
    * In particular, the actor does not have to be on one of the involved hosts. Enjoy the comfort of the simulator :)
    */
-  static void sendto(Host* from, Host* to, double simulated_size_in_bytes);
+  static void sendto(Host* from, Host* to, uint64_t simulated_size_in_bytes);
 
   static xbt::signal<void(Comm const&, bool is_sender)> on_start;
   static xbt::signal<void(Comm const&)> on_completion;
 
   /*! take a vector s4u::CommPtr and return when one of them is finished.
    * The return value is the rank of the first finished CommPtr. */
-  static int wait_any(const std::vector<CommPtr>* comms) { return wait_any_for(comms, -1); }
+  static ssize_t wait_any(const std::vector<CommPtr>& comms) { return wait_any_for(comms, -1); }
   /*! Same as wait_any, but with a timeout. Return -1 if the timeout occurs.*/
-  static int wait_any_for(const std::vector<CommPtr>* comms_in, double timeout);
+  static ssize_t wait_any_for(const std::vector<CommPtr>& comms, double timeout);
 
   /*! take a vector s4u::CommPtr and return when all of them is finished. */
-  static void wait_all(const std::vector<CommPtr>* comms);
+  static void wait_all(const std::vector<CommPtr>& comms);
+  /*! Same as wait_all, but with a timeout. Return the number of terminated comm (less than comms.size() if the timeout
+   * occurs). */
+  static size_t wait_all_for(const std::vector<CommPtr>& comms, double timeout);
   /*! take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done). */
-  static int test_any(const std::vector<CommPtr>* comms);
+  static ssize_t test_any(const std::vector<CommPtr>& comms);
+
+#ifndef DOXYGEN
+  XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for parameter")
+  static int wait_any(const std::vector<CommPtr>* comms) { return static_cast<int>(wait_any_for(*comms, -1)); }
+  XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for first parameter")
+  static int wait_any_for(const std::vector<CommPtr>* comms, double timeout) { return static_cast<int>(wait_any_for(*comms, timeout)); }
+  XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for parameter")
+  static void wait_all(const std::vector<CommPtr>* comms) { wait_all(*comms); }
+  XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for parameter")
+  static int test_any(const std::vector<CommPtr>* comms) { return static_cast<int>(test_any(*comms)); }
+#endif
 
   Comm* start() override;
   Comm* wait_for(double timeout) override;
@@ -122,7 +136,7 @@ public:
    * :cpp:func:`simgrid::s4u::Comm::set_src_data_size`).
    * @endrst
    */
-  CommPtr set_payload_size(double bytes);
+  CommPtr set_payload_size(uint64_t bytes);
 
   /** Specify the data to send and its size (not to be mixed with set_payload_size())
    *
@@ -154,6 +168,8 @@ public:
   Actor* get_sender() const;
 
   bool is_assigned() const override { return (to_ != nullptr && from_ != nullptr) || (mailbox_ != nullptr); }
+
+  CommPtr set_copy_data_callback(void (*callback)(kernel::activity::CommImpl*, void*, size_t));
 };
 } // namespace s4u
 } // namespace simgrid

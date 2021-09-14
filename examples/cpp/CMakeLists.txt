@@ -63,24 +63,24 @@ endif()
 foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-bittorrent app-chainsend app-token-ring
-                 comm-pingpong comm-ready comm-suspend comm-wait comm-waitany comm-waitall comm-waituntil
-                 comm-dependent comm-host2host
+                 comm-pingpong comm-ready comm-serialize comm-suspend comm-wait comm-waitany comm-waitall comm-waituntil
+                 comm-dependent comm-host2host comm-failure
                  cloud-capping cloud-migration cloud-simple
                  dht-chord dht-kademlia
                  energy-exec energy-boot energy-link energy-vm energy-exec-ptask energy-wifi
                  engine-filtering
                  exec-async exec-basic exec-dvfs exec-remote exec-waitany exec-waitfor exec-dependent exec-unassigned
-                 exec-ptask exec-ptask-multicore
+                 exec-ptask-multicore exec-cpu-nonlinear exec-cpu-factors exec-failure
                  maestro-set
                  mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert
 		 		 network-wifi
-                 io-async io-file-system io-file-remote io-disk-raw io-dependent
+                 io-async io-degradation io-file-system io-file-remote io-disk-raw io-dependent
                  platform-failures platform-profile platform-properties
                  plugin-host-load plugin-link-load plugin-prodcons
                  replay-comm replay-io
                  routing-get-clusters
                  synchro-barrier synchro-condition-variable synchro-condition-variable-waituntil synchro-mutex synchro-semaphore
-                 clusters-multicpu network-factors)
+                 clusters-multicpu network-factors network-nonlinear)
 
   # Use default source file unless specified otherwise
   if(NOT DEFINED _${example}_sources)
@@ -90,6 +90,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
   if(NOT DEFINED _${example}_disable)
     add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${_${example}_sources})
     add_dependencies     (tests s4u-${example})
+    add_dependencies     (s4u-${example} platf_cpp)
     target_link_libraries(s4u-${example} simgrid)
     set_target_properties(s4u-${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
 
@@ -101,6 +102,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
 
     ADD_TESH_FACTORIES(s4u-${example} "${_${example}_factories}"
                                       --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+                                      --setenv libdir=${CMAKE_BINARY_DIR}/lib
                                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                       --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
                                       ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}.tesh)
@@ -204,7 +206,7 @@ endif()
 # Examples not accepting factories
 ##################################
 
-foreach (example trace-categories trace-masterworkers trace-platform trace-process-migration
+foreach (example exec-ptask trace-categories trace-masterworkers trace-platform trace-process-migration
                  trace-host-user-variables trace-link-user-variables trace-route-user-variables)
   add_executable       (s4u-${example} EXCLUDE_FROM_ALL ${example}/s4u-${example}.cpp)
   target_link_libraries(s4u-${example} simgrid)

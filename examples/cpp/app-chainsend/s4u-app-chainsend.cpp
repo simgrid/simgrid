@@ -61,7 +61,7 @@ public:
       simgrid::s4u::CommPtr comm = me->get_async<FilePiece>(&received);
       pending_recvs.push_back(comm);
 
-      int idx = simgrid::s4u::Comm::wait_any(&pending_recvs);
+      ssize_t idx = simgrid::s4u::Comm::wait_any(pending_recvs);
       if (idx != -1) {
         comm = pending_recvs.at(idx);
         XBT_DEBUG("Peer %s got a 'SEND_DATA' message", me->get_cname());
@@ -116,7 +116,7 @@ public:
       simgrid::s4u::CommPtr comm = first->put_async(new FilePiece(), MESSAGE_SEND_DATA_HEADER_SIZE + PIECE_SIZE);
       pending_sends.push_back(comm);
     }
-    simgrid::s4u::Comm::wait_all(&pending_sends);
+    simgrid::s4u::Comm::wait_all(pending_sends);
   }
 
   Broadcaster(int hostcount, unsigned int piece_count) : piece_count(piece_count)
@@ -139,7 +139,7 @@ static void peer()
   p.joinChain();
   p.forwardFile();
 
-  simgrid::s4u::Comm::wait_all(&p.pending_sends);
+  simgrid::s4u::Comm::wait_all(p.pending_sends);
   double end_time = simgrid::s4u::Engine::get_clock();
 
   XBT_INFO("### %f %llu bytes (Avg %f MB/s); copy finished (simulated).", end_time - start_time, p.received_bytes,

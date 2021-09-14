@@ -26,13 +26,13 @@ class XBT_PRIVATE DijkstraZone : public RoutedZone {
 
   std::unique_ptr<s_xbt_graph_t, decltype(&DijkstraZone::route_graph_delete)> route_graph_{
       xbt_graph_new_graph(1, nullptr), &DijkstraZone::route_graph_delete};
-  std::map<int, xbt_node_t> graph_node_map_;
+  std::map<unsigned long, xbt_node_t> graph_node_map_;
   bool cached_;
-  std::map<int, std::vector<int>> route_cache_;
+  std::map<unsigned long, std::vector<unsigned long>> route_cache_;
 
-  xbt_node_t route_graph_new_node(int id);
-  xbt_node_t node_map_search(int id);
-  void new_edge(int src_id, int dst_id, Route* e_route);
+  xbt_node_t route_graph_new_node(unsigned long id);
+  xbt_node_t node_map_search(unsigned long id);
+  void new_edge(unsigned long src_id, unsigned long dst_id, Route* e_route);
   void do_seal() override;
 
 public:
@@ -49,9 +49,9 @@ public:
    * After this function returns, any node in the graph
    * will have a loopback attached to it.
    */
-  void get_local_route(NetPoint* src, NetPoint* dst, Route* route, double* lat) override;
+  void get_local_route(const NetPoint* src, const NetPoint* dst, Route* route, double* lat) override;
   void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                 const std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
+                 const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical) override;
 };
 } // namespace routing
 } // namespace kernel

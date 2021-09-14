@@ -16,17 +16,17 @@ class EntityValue {
   long long int id_ = new_paje_id();
   std::string name_;
   std::string color_;
-  Type* father_;
+  Type* parent_;
 
 public:
   static xbt::signal<void(const EntityValue&)> on_creation;
-  explicit EntityValue(const std::string& name, const std::string& color, Type* father);
+  explicit EntityValue(const std::string& name, const std::string& color, Type* parent);
 
   long long int get_id() const { return id_; }
   std::string get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
   std::string get_color() const { return color_; }
-  Type* get_father() const { return father_; }
+  Type* get_parent() const { return parent_; }
 };
 } // namespace instr
 } // namespace simgrid

@@ -117,7 +117,8 @@ int PMPI_Group_incl(MPI_Group group, int n, const int *ranks, MPI_Group * newgro
 {
   CHECK_GROUP(1, group)
   CHECK_NEGATIVE(2, MPI_ERR_ARG, n)
-  CHECK_NULL(3, MPI_ERR_ARG, ranks)
+  if (n != 0)
+    CHECK_NULL(3, MPI_ERR_ARG, ranks)
   CHECK_NULL(4, MPI_ERR_ARG, newgroup)
   CHECK_GROUP_RANKS(group, n, ranks)
   return group->incl(n, ranks, newgroup);

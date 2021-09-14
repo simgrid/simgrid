@@ -32,35 +32,14 @@
 #include <fcntl.h>              /* After sys/types.h, at least for dpx/2.  */
 #include <sys/stat.h>
 #include <string.h>
-#if HAVE_UNISTD_H
-#include <unistd.h>             /* Prototypes for lseek */
-#endif
 #include "mmprivate.h"
 #include "xbt/ex.h"
 #include "xbt/xbt_modinter.h" /* declarations of mmalloc_preinit and friends that live here */
 
-#ifndef SEEK_SET
-#define SEEK_SET 0
-#endif
-
 /* Initialize access to a mmalloc managed region.
 
-   If FD is a valid file descriptor for an open file then data for the
-   mmalloc managed region is mapped to that file, otherwise an anonymous
-   map is used if supported by the underlying OS. In case of running in
-   an OS without support of anonymous mappings then "/dev/zero" is used
-   and in both cases the data will not exist in any filesystem object.
-
-   If the open file corresponding to FD is from a previous use of
-   mmalloc and passes some basic sanity checks to ensure that it is
-   compatible with the current mmalloc package, then its data is
-   mapped in and is immediately accessible at the same addresses in
-   the current process as the process that created the file (ignoring
-   the BASEADDR parameter).
-
-   For non valid FDs or empty files ones the mapping is established
-   starting at the specified address BASEADDR in the process address
-   space.
+   The mapping is established starting at the specified address BASEADDR
+   in the process address space.
 
    The provided BASEADDR should be chosen carefully in order to avoid
    bumping into existing mapped regions or future mapped regions.
@@ -72,116 +51,26 @@
 
    On failure returns NULL. */
 
-xbt_mheap_t xbt_mheap_new(int fd, void *baseaddr)
+xbt_mheap_t xbt_mheap_new(void* baseaddr, int options)
 {
-  return xbt_mheap_new_options(fd, baseaddr, 0);
-}
-
-xbt_mheap_t xbt_mheap_new_options(int fd, void *baseaddr, int options)
-{
-  struct mdesc mtemp;
-  xbt_mheap_t mdp;
-  void *mbase;
-  struct stat sbuf;
-
-  /* First check to see if FD is a valid file descriptor, and if so, see
-     if the file has any current contents (size > 0).  If it does, then
-     attempt to reuse the file.  If we can't reuse the file, either
-     because it isn't a valid mmalloc produced file, was produced by an
-     obsolete version, or any other reason, then we fail to attach to
-     this file. */
-
-  if (fd >= 0) {
-    if (fstat(fd, &sbuf) < 0)
-      return (NULL);
-
-    else if (sbuf.st_size > 0) {
-      /* We were given a valid file descriptor on an open file, so try to remap
-         it into the current process at the same address to which it was previously
-         mapped. It naturally have to pass some sanity checks for that.
-
-         Note that we have to update the file descriptor number in the malloc-
-         descriptor read from the file to match the current valid one, before
-         trying to map the file in, and again after a successful mapping and
-         after we've switched over to using the mapped in malloc descriptor
-         rather than the temporary one on the stack.
-
-         Once we've switched over to using the mapped in malloc descriptor, we
-         have to update the pointer to the morecore function, since it almost
-         certainly will be at a different address if the process reusing the
-         mapped region is from a different executable.
-
-         Also note that if the heap being remapped previously used the mmcheckf()
-         routines, we need to update the hooks since their target functions
-         will have certainly moved if the executable has changed in any way.
-         We do this by calling mmcheckf() internally.
-
-         Returns a pointer to the malloc descriptor if successful, or NULL if
-         unsuccessful for some reason. */
-
-      struct mdesc newmd;
-      struct mdesc* mdptr   = NULL;
-      struct mdesc* mdptemp = NULL;
-
-      if (lseek(fd, 0L, SEEK_SET) != 0)
-        return NULL;
-      if (read(fd, (char *) &newmd, sizeof(newmd)) != sizeof(newmd))
-        return NULL;
-      if (newmd.headersize != sizeof(newmd))
-        return NULL;
-      if (strcmp(newmd.magic, MMALLOC_MAGIC) != 0)
-        return NULL;
-      if (newmd.version > MMALLOC_VERSION)
-        return NULL;
-
-      newmd.fd = fd;
-      if (__mmalloc_remap_core(&newmd) == newmd.base) {
-        mdptr = (struct mdesc *) newmd.base;
-        mdptr->fd = fd;
-        if(!mdptr->refcount){
-          pthread_mutex_init(&mdptr->mutex, NULL);
-          mdptr->refcount++;
-        }
-      }
-
-      /* Add the new heap to the linked list of heaps attached by mmalloc */
-      mdptemp = __mmalloc_default_mdp;
-      while(mdptemp->next_mdesc)
-        mdptemp = mdptemp->next_mdesc;
-
-      LOCK(mdptemp);
-      mdptemp->next_mdesc = mdptr;
-      UNLOCK(mdptemp);
-
-      return mdptr;
-    }
-  }
-
   /* NULL is not a valid baseaddr as we cannot map anything there. C'mon, user. Think! */
   if (baseaddr == NULL)
-    return (NULL);
+    return NULL;
 
   /* We start off with the malloc descriptor allocated on the stack, until we build it up enough to
    * call _mmalloc_mmap_morecore() to allocate the first page of the region and copy it there.  Ensure that it is
    * zero'd and then initialize the fields that we know values for. */
 
-  mdp = &mtemp;
+  struct mdesc mtemp;
+  xbt_mheap_t mdp = &mtemp;
   memset((char *) mdp, 0, sizeof(mtemp));
   strncpy(mdp->magic, MMALLOC_MAGIC, MMALLOC_MAGIC_SIZE);
   mdp->headersize = sizeof(mtemp);
   mdp->version = MMALLOC_VERSION;
-  mdp->fd = fd;
   mdp->base = mdp->breakval = mdp->top = baseaddr;
   mdp->next_mdesc = NULL;
-  mdp->refcount = 1;
   mdp->options = options;
 
-  /* If we have not been passed a valid open file descriptor for the file
-     to map to, then we go for an anonymous map */
-
-  if (mdp->fd < 0){
-    mdp->flags |= MMALLOC_ANONYMOUS;
-  }
   pthread_mutex_init(&mdp->mutex, NULL);
   /* If we have not been passed a valid open file descriptor for the file
      to map to, then open /dev/zero and use that to map to. */
@@ -190,12 +79,12 @@ xbt_mheap_t xbt_mheap_new_options(int fd, void *baseaddr, int options)
    * this new copy.  If the mapping fails, then close the file descriptor if it was opened by us, and arrange to return
    * a NULL. */
 
-  if ((mbase = mmorecore(mdp, sizeof(mtemp))) != NULL) {
-    memcpy(mbase, mdp, sizeof(mtemp));
-  } else {
+  void* mbase = mmorecore(mdp, sizeof(mtemp));
+  if (mbase == NULL) {
     fprintf(stderr, "morecore failed to get some more memory!\n");
     abort();
   }
+  memcpy(mbase, mdp, sizeof(mtemp));
 
   /* Add the new heap to the linked list of heaps attached by mmalloc */
   if(__mmalloc_default_mdp){
@@ -222,9 +111,7 @@ void xbt_mheap_destroy_no_free(xbt_mheap_t md)
 {
   struct mdesc *mdp = md;
 
-  if(--mdp->refcount == 0){
-    pthread_mutex_destroy(&mdp->mutex);
-  }
+  pthread_mutex_destroy(&mdp->mutex);
 }
 
 /** Terminate access to a mmalloc managed region by unmapping all memory pages associated with the region, and closing
@@ -258,9 +145,6 @@ void *xbt_mheap_destroy(xbt_mheap_t mdp)
       /* Deallocating failed.  Update the original malloc descriptor with any changes */
       *mdp = mtemp;
     } else {
-      if (mtemp.flags & MMALLOC_DEVZERO) {
-        close(mtemp.fd);
-      }
       mdp = NULL;
     }
   }
@@ -278,9 +162,6 @@ static void mmalloc_fork_prepare(void)
   if ((mdp =__mmalloc_default_mdp)){
     while(mdp){
       LOCK(mdp);
-      if(mdp->fd >= 0){
-        mdp->refcount++;
-      }
       mdp = mdp->next_mdesc;
     }
   }
@@ -291,8 +172,7 @@ static void mmalloc_fork_parent(void)
   xbt_mheap_t mdp = NULL;
   if ((mdp =__mmalloc_default_mdp)){
     while(mdp){
-      if(mdp->fd < 0)
-        UNLOCK(mdp);
+      UNLOCK(mdp);
       mdp = mdp->next_mdesc;
     }
   }
@@ -317,7 +197,7 @@ xbt_mheap_t mmalloc_preinit(void)
       xbt_pagesize = getpagesize();
     unsigned long mask = ~((unsigned long)xbt_pagesize - 1);
     void *addr = (void*)(((unsigned long)sbrk(0) + HEAP_OFFSET) & mask);
-    __mmalloc_default_mdp = xbt_mheap_new_options(-1, addr, XBT_MHEAP_OPTION_MEMSET);
+    __mmalloc_default_mdp = xbt_mheap_new(addr, XBT_MHEAP_OPTION_MEMSET);
 
     // atfork mandated at least on FreeBSD, or simgrid-mc will fail to fork the verified app
     int res = pthread_atfork(mmalloc_fork_prepare, mmalloc_fork_parent, mmalloc_fork_child);

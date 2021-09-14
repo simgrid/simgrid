@@ -36,7 +36,7 @@ void CpuModel::update_actions_state_full(double /*now*/, double delta)
     auto& action = static_cast<CpuAction&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
 
-    action.update_remains(action.get_variable()->get_value() * delta);
+    action.update_remains(action.get_rate() * delta);
     action.update_max_duration(delta);
 
     if (((action.get_remains_no_update() <= 0) && (action.get_variable()->get_penalty() > 0)) ||
@@ -54,7 +54,7 @@ CpuImpl::CpuImpl(s4u::Host* host, const std::vector<double>& speed_per_pstate)
 {
   speed_.scale    = 1;
   speed_.peak     = speed_per_pstate_.front();
-  host->pimpl_cpu = this;
+  host->set_cpu(this);
 }
 
 void CpuImpl::reset_vcpu(CpuImpl* that)
@@ -65,12 +65,13 @@ void CpuImpl::reset_vcpu(CpuImpl* that)
   this->speed_per_pstate_.assign(that->speed_per_pstate_.begin(), that->speed_per_pstate_.end());
 }
 
-CpuImpl* CpuImpl::set_pstate(int pstate_index)
+CpuImpl* CpuImpl::set_pstate(unsigned long pstate_index)
 {
-  xbt_assert(pstate_index <= static_cast<int>(speed_per_pstate_.size()),
-             "Invalid parameters for CPU %s (pstate %d > length of pstates %d). Please fix your platform file, or your "
-             "call to change the pstate.",
-             get_cname(), pstate_index, static_cast<int>(speed_per_pstate_.size()));
+  xbt_assert(
+      pstate_index <= speed_per_pstate_.size(),
+      "Invalid parameters for CPU %s (pstate %lu > length of pstates %d). Please fix your platform file, or your "
+      "call to change the pstate.",
+      get_cname(), pstate_index, static_cast<int>(speed_per_pstate_.size()));
 
   double new_peak_speed = speed_per_pstate_[pstate_index];
   pstate_               = pstate_index;
@@ -82,17 +83,16 @@ CpuImpl* CpuImpl::set_pstate(int pstate_index)
 
 CpuImpl* CpuImpl::set_pstate_speed(const std::vector<double>& speed_per_state)
 {
-  xbt_assert(speed_per_state.size() > 0, "CPU %s: processor speed vector cannot be empty", get_cname());
+  xbt_assert(not speed_per_state.empty(), "CPU %s: processor speed vector cannot be empty", get_cname());
   xbt_assert(not is_sealed(), "CPU %s: processor speed cannot be changed once CPU has been sealed", get_cname());
   speed_per_pstate_ = speed_per_state;
   speed_.peak       = speed_per_pstate_.front();
   return this;
 }
 
-double CpuImpl::get_pstate_peak_speed(int pstate_index) const
+double CpuImpl::get_pstate_peak_speed(unsigned long pstate_index) const
 {
-  xbt_assert((pstate_index <= static_cast<int>(speed_per_pstate_.size())),
-             "Invalid parameters (pstate index out of bounds)");
+  xbt_assert((pstate_index <= speed_per_pstate_.size()), "Invalid parameters (pstate index out of bounds)");
 
   return speed_per_pstate_[pstate_index];
 }
@@ -111,6 +111,31 @@ CpuImpl* CpuImpl::set_core_count(int core_count)
 
   core_count_ = core_count;
   return this;
+}
+
+void CpuImpl::apply_sharing_policy_cfg() const
+{
+  if (!get_constraint())
+    return;
+
+  kernel::lmm::Constraint::SharingPolicy lmm_policy = kernel::lmm::Constraint::SharingPolicy::SHARED;
+  if (sharing_policy_ == s4u::Host::SharingPolicy::NONLINEAR)
+    lmm_policy = kernel::lmm::Constraint::SharingPolicy::NONLINEAR;
+
+  get_constraint()->set_sharing_policy(lmm_policy, sharing_policy_cb_);
+}
+
+void CpuImpl::set_sharing_policy(s4u::Host::SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
+{
+  xbt_assert(dynamic_cast<CpuTiModel*>(get_model()) == nullptr, "Cannot change sharing policy with CPU:TI model");
+  sharing_policy_    = policy;
+  sharing_policy_cb_ = cb;
+  apply_sharing_policy_cfg();
+}
+
+s4u::Host::SharingPolicy CpuImpl::get_sharing_policy() const
+{
+  return sharing_policy_;
 }
 
 int CpuImpl::get_core_count()
@@ -135,6 +160,7 @@ void CpuImpl::seal()
   lmm::System* lmm = get_model()->get_maxmin_system();
   if (dynamic_cast<CpuTiModel*>(get_model()) == nullptr)
     this->set_constraint(lmm->constraint_new(this, core_count_ * speed_per_pstate_.front()));
+  apply_sharing_policy_cfg();
   Resource::seal();
 }
 
@@ -159,7 +185,7 @@ void CpuAction::update_remains_lazy(double now)
   }
 
   set_last_update();
-  set_last_value(get_variable()->get_value());
+  set_last_value(get_rate());
 }
 
 xbt::signal<void(CpuAction const&, Action::State)> CpuAction::on_state_change;

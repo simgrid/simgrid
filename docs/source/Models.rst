@@ -107,9 +107,9 @@ SimGrid must be recompiled with the ``enable_ns3`` option activated in cmake.
 Optionally, use ``NS3_HINT`` to tell cmake where ns3 is installed on
 your disk.
 
-.. code-block:: shell
+.. code-block:: console
 
-   cmake . -Denable_ns3=ON -DNS3_HINT=/opt/ns3 # or change the path if needed
+   $ cmake . -Denable_ns3=ON -DNS3_HINT=/opt/ns3 # or change the path if needed
 
 By the end of the configuration, cmake reports whether ns-3 was found,
 and this information is also available in ``include/simgrid/config.h``
@@ -121,9 +121,9 @@ Test that ns-3 was successfully integrated with the following (from your SimGrid
 build directory). It will run all SimGrid tests that are related to the ns-3
 integration. If no test is run at all, you probably forgot to enable ns-3 in cmake.
 
-.. code-block:: shell
+.. code-block:: console
 
-   ctest -R ns3
+   $ ctest -R ns3
 
 Troubleshooting
 ---------------
@@ -132,6 +132,16 @@ If you use a version of ns-3 that is not known to SimGrid yet, edit
 ``tools/cmake/Modules/FindNS3.cmake`` in your SimGrid tree, according to the
 comments on top of this file. Conversely, if something goes wrong with an old
 version of either SimGrid or ns-3, try upgrading everything.
+
+Note that there is a known bug with version 3.31 of ns3, when it's build with
+MPI support, like it is with the package libns3-dev in Debian 11 « Bullseye ».
+A simple workaround is to edit the file
+``/usr/include/ns3.31/ns3/point-to-point-helper.h`` to remove the ``#ifdef NS3_MPI``
+include guard.  This can be achieved with the following command (as root):
+
+.. code-block:: console
+
+   # sed -i '/^#ifdef NS3_MPI/,+2s,^#,//&,' /usr/include/ns3.31/ns3/point-to-point-helper.h
 
 .. _ns3_use:
 
@@ -198,9 +208,9 @@ Once your platform is OK, just change the :ref:`network/model
 <options_model_select>` configuration option to `ns-3` as follows. The other
 options can be used as usual.
 
-.. code-block:: shell
+.. code-block:: console
 
-   ./network-ns3 --cfg=network/model:ns-3 (other parameters)
+   $ ./network-ns3 --cfg=network/model:ns-3 (other parameters)
 
 Many other files from the ``examples/platform`` directory are usable with the
 ns-3 model, such as `examples/platforms/dogbone.xml <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms/dogbone.xml>`_.

@@ -81,7 +81,7 @@ static inline void _xbt_dynar_get_elm(void* dst, const_xbt_dynar_t dynar, unsign
  */
 xbt_dynar_t xbt_dynar_new(const unsigned long elmsize, void_f_pvoid_t free_f)
 {
-  xbt_dynar_t dynar = xbt_new0(s_xbt_dynar_t, 1);
+  auto* dynar = xbt_new0(s_xbt_dynar_t, 1);
 
   dynar->size = 0;
   dynar->used = 0;
@@ -420,7 +420,7 @@ void xbt_dynar_sort(const_xbt_dynar_t dynar, int_f_cpvoid_cpvoid_t compar_fn)
  *
  *  Note: The dynar won't be usable afterwards.
  */
-void* xbt_dynar_to_array(xbt_dynar_t dynar)
+void* xbt_dynar_to_array(xbt_dynar_t dynar) // XBT_ATTRIB_DEPRECATED_v331
 {
   void* res;
   xbt_dynar_shrink(dynar, 1);

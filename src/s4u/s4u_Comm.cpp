@@ -8,6 +8,7 @@
 
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Comm.hpp"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 
 #include <simgrid/comm.h>
@@ -38,23 +39,53 @@ Comm::~Comm()
   }
 }
 
-int Comm::wait_any_for(const std::vector<CommPtr>* comms, double timeout)
+ssize_t Comm::wait_any_for(const std::vector<CommPtr>& comms, double timeout)
 {
-  std::vector<kernel::activity::CommImpl*> rcomms(comms->size());
-  std::transform(begin(*comms), end(*comms), begin(rcomms),
+  std::vector<kernel::activity::CommImpl*> rcomms(comms.size());
+  std::transform(begin(comms), end(comms), begin(rcomms),
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
-  int changed_pos = simcall_comm_waitany(rcomms.data(), rcomms.size(), timeout);
+  ssize_t changed_pos = -1;
+  try {
+    changed_pos = simcall_comm_waitany(rcomms.data(), rcomms.size(), timeout);
+  } catch (const NetworkFailureException& e) {
+    for (auto c : comms) {
+      if (c->pimpl_->state_ == kernel::activity::State::FAILED) {
+        c->complete(State::FAILED);
+      }
+    }
+    e.rethrow_nested(XBT_THROW_POINT, boost::core::demangle(typeid(e).name()) + " raised in kernel mode.");
+  }
   if (changed_pos != -1)
-    comms->at(changed_pos)->complete(State::FINISHED);
+    comms.at(changed_pos)->complete(State::FINISHED);
   return changed_pos;
 }
 
-void Comm::wait_all(const std::vector<CommPtr>* comms)
+void Comm::wait_all(const std::vector<CommPtr>& comms)
 {
   // TODO: this should be a simcall or something
-  // TODO: we are missing a version with timeout
-  for (CommPtr comm : *comms)
+  for (auto& comm : comms)
     comm->wait();
+}
+
+size_t Comm::wait_all_for(const std::vector<CommPtr>& comms, double timeout)
+{
+  if (timeout < 0.0) {
+    wait_all(comms);
+    return comms.size();
+  }
+
+  double deadline = Engine::get_clock() + timeout;
+  std::vector<CommPtr> waited_comm(1, nullptr);
+  for (size_t i = 0; i < comms.size(); i++) {
+    double wait_timeout = std::max(0.0, deadline - Engine::get_clock());
+    waited_comm[0]      = comms[i];
+    // Using wait_any_for() here (and not wait_for) because we don't want comms to be invalidated on timeout
+    if (wait_any_for(waited_comm, wait_timeout) == -1) {
+      XBT_DEBUG("Timeout (%g): i = %zu", wait_timeout, i);
+      return i;
+    }
+  }
+  return comms.size();
 }
 
 CommPtr Comm::set_rate(double rate)
@@ -120,7 +151,7 @@ CommPtr Comm::set_dst_data(void** buff, size_t size)
   dst_buff_size_ = size;
   return this;
 }
-CommPtr Comm::set_payload_size(double bytes)
+CommPtr Comm::set_payload_size(uint64_t bytes)
 {
   Activity::set_remaining(bytes);
   return this;
@@ -135,14 +166,14 @@ CommPtr Comm::sendto_init(Host* from, Host* to)
   return res;
 }
 
-CommPtr Comm::sendto_async(Host* from, Host* to, double simulated_size_in_bytes)
+CommPtr Comm::sendto_async(Host* from, Host* to, uint64_t simulated_size_in_bytes)
 {
   auto res = Comm::sendto_init(from, to)->set_payload_size(simulated_size_in_bytes);
   res->vetoable_start();
   return res;
 }
 
-void Comm::sendto(Host* from, Host* to, double simulated_size_in_bytes)
+void Comm::sendto(Host* from, Host* to, uint64_t simulated_size_in_bytes)
 {
   sendto_async(from, to, simulated_size_in_bytes)->wait();
 }
@@ -193,6 +224,8 @@ Comm* Comm::wait_for(double timeout)
   switch (state_) {
     case State::FINISHED:
       break;
+    case State::FAILED:
+      throw NetworkFailureException(XBT_THROW_POINT, "Cannot wait for a failed communication");
 
     case State::INITED:
     case State::STARTING: // It's not started yet. Do it in one simcall if it's a regular communication
@@ -211,7 +244,12 @@ Comm* Comm::wait_for(double timeout)
       break;
 
     case State::STARTED:
-      simcall_comm_wait(get_impl(), timeout);
+      try {
+        simcall_comm_wait(get_impl(), timeout);
+      } catch (const NetworkFailureException& e) {
+        complete(State::FAILED);
+        e.rethrow_nested(XBT_THROW_POINT, boost::core::demangle(typeid(e).name()) + " raised in kernel mode.");
+      }
       break;
 
     case State::CANCELED:
@@ -224,14 +262,14 @@ Comm* Comm::wait_for(double timeout)
   return this;
 }
 
-int Comm::test_any(const std::vector<CommPtr>* comms)
+ssize_t Comm::test_any(const std::vector<CommPtr>& comms)
 {
-  std::vector<kernel::activity::CommImpl*> rcomms(comms->size());
-  std::transform(begin(*comms), end(*comms), begin(rcomms),
+  std::vector<kernel::activity::CommImpl*> rcomms(comms.size());
+  std::transform(begin(comms), end(comms), begin(rcomms),
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
-  int changed_pos = simcall_comm_testany(rcomms.data(), rcomms.size());
+  ssize_t changed_pos = simcall_comm_testany(rcomms.data(), rcomms.size());
   if (changed_pos != -1)
-    comms->at(changed_pos)->complete(State::FINISHED);
+    comms.at(changed_pos)->complete(State::FINISHED);
   return changed_pos;
 }
 
@@ -276,6 +314,12 @@ Actor* Comm::get_sender() const
   return sender ? sender->get_ciface() : nullptr;
 }
 
+CommPtr Comm::set_copy_data_callback(void (*callback)(kernel::activity::CommImpl*, void*, size_t))
+{
+  copy_data_function_ = callback;
+  return this;
+}
+
 } // namespace s4u
 } // namespace simgrid
 /* **************************** Public C interface *************************** */
@@ -298,19 +342,7 @@ int sg_comm_test(sg_comm_t comm)
 
 sg_error_t sg_comm_wait(sg_comm_t comm)
 {
-  sg_error_t status = SG_OK;
-
-  simgrid::s4u::CommPtr s4u_comm(comm, false);
-  try {
-    s4u_comm->wait_for(-1);
-  } catch (const simgrid::TimeoutException&) {
-    status = SG_ERROR_TIMEOUT;
-  } catch (const simgrid::CancelException&) {
-    status = SG_ERROR_CANCELED;
-  } catch (const simgrid::NetworkFailureException&) {
-    status = SG_ERROR_NETWORK;
-  }
-  return status;
+  return sg_comm_wait_for(comm, -1);
 }
 
 sg_error_t sg_comm_wait_for(sg_comm_t comm, double timeout)
@@ -332,27 +364,35 @@ sg_error_t sg_comm_wait_for(sg_comm_t comm, double timeout)
 
 void sg_comm_wait_all(sg_comm_t* comms, size_t count)
 {
-  std::vector<simgrid::s4u::CommPtr> s4u_comms;
-  for (unsigned int i = 0; i < count; i++)
-    s4u_comms.emplace_back(comms[i], false);
-
-  simgrid::s4u::Comm::wait_all(&s4u_comms);
+  sg_comm_wait_all_for(comms, count, -1);
 }
 
-int sg_comm_wait_any(sg_comm_t* comms, size_t count)
+size_t sg_comm_wait_all_for(sg_comm_t* comms, size_t count, double timeout)
+{
+  std::vector<simgrid::s4u::CommPtr> s4u_comms;
+  for (size_t i = 0; i < count; i++)
+    s4u_comms.emplace_back(comms[i], false);
+
+  size_t pos = simgrid::s4u::Comm::wait_all_for(s4u_comms, timeout);
+  for (size_t i = pos; i < count; i++)
+    s4u_comms[i]->add_ref();
+  return pos;
+}
+
+ssize_t sg_comm_wait_any(sg_comm_t* comms, size_t count)
 {
   return sg_comm_wait_any_for(comms, count, -1);
 }
 
-int sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout)
+ssize_t sg_comm_wait_any_for(sg_comm_t* comms, size_t count, double timeout)
 {
   std::vector<simgrid::s4u::CommPtr> s4u_comms;
-  for (unsigned int i = 0; i < count; i++)
+  for (size_t i = 0; i < count; i++)
     s4u_comms.emplace_back(comms[i], false);
 
-  int pos = simgrid::s4u::Comm::wait_any_for(&s4u_comms, timeout);
-  for (unsigned i = 0; i < count; i++) {
-    if (pos != -1 && static_cast<unsigned>(pos) != i)
+  ssize_t pos = simgrid::s4u::Comm::wait_any_for(s4u_comms, timeout);
+  for (size_t i = 0; i < count; i++) {
+    if (pos != -1 && static_cast<size_t>(pos) != i)
       s4u_comms[i]->add_ref();
   }
   return pos;

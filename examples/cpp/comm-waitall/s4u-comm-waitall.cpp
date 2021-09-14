@@ -68,7 +68,7 @@ public:
     XBT_INFO("Done dispatching all messages");
 
     /* Now that all message exchanges were initiated, wait for their completion in one single call */
-    sg4::Comm::wait_all(&pending_comms);
+    sg4::Comm::wait_all(pending_comms);
     // sphinx-doc: put-end
 
     XBT_INFO("Goodbye now!");

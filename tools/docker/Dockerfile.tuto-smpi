@@ -1,7 +1,9 @@
 # Base image 
 FROM simgrid/stable
 
-RUN apt update && apt -y upgrade 
+# https://stackoverflow.com/questions/35134713/disable-cache-for-specific-run-commands
+ADD "http://deb.debian.org/debian/dists/testing/Release" skipcache
+RUN apt update && apt -y upgrade
 
 RUN apt install -y sudo && \
     groupadd -g 999 user && \
@@ -12,7 +14,7 @@ RUN apt install -y sudo && \
     chown -R user:user /home/user
 
 # - Clone simgrid-template-smpi, as it is needed by the tutorial
-RUN apt install -y python3 pajeng libssl-dev r-base r-cran-ggplot2 r-cran-dplyr r-cran-devtools build-essential g++ gfortran git libboost-dev cmake flex bison libfmt-dev && \
+RUN apt install -y python3 pajeng libssl-dev r-base r-cran-devtools r-cran-tidyverse build-essential g++ gfortran git libboost-dev cmake flex bison libfmt-dev && \
     cd /source && \
     git clone --depth=1 https://framagit.org/simgrid/simgrid-template-smpi.git simgrid-template-smpi.git && \
     chown -R user:user /source && \

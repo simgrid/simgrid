@@ -3,22 +3,22 @@
 
 p Test allgather
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_coll -platform ${platfdir:=.}/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allgather --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_pmpi.thres:error --log=smpi_mpi.thres:error
-> [rank 0] -> Tremblay
-> [rank 1] -> Tremblay
-> [rank 2] -> Tremblay
-> [rank 3] -> Tremblay
-> [rank 4] -> Jupiter
-> [rank 5] -> Jupiter
-> [rank 6] -> Jupiter
-> [rank 7] -> Jupiter
-> [rank 8] -> Fafard
-> [rank 9] -> Fafard
-> [rank 10] -> Fafard
-> [rank 11] -> Fafard
-> [rank 12] -> Ginette
-> [rank 13] -> Ginette
-> [rank 14] -> Ginette
-> [rank 15] -> Ginette
+> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
+> [0.000000] [smpi/INFO] [rank 1] -> Tremblay
+> [0.000000] [smpi/INFO] [rank 2] -> Tremblay
+> [0.000000] [smpi/INFO] [rank 3] -> Tremblay
+> [0.000000] [smpi/INFO] [rank 4] -> Jupiter
+> [0.000000] [smpi/INFO] [rank 5] -> Jupiter
+> [0.000000] [smpi/INFO] [rank 6] -> Jupiter
+> [0.000000] [smpi/INFO] [rank 7] -> Jupiter
+> [0.000000] [smpi/INFO] [rank 8] -> Fafard
+> [0.000000] [smpi/INFO] [rank 9] -> Fafard
+> [0.000000] [smpi/INFO] [rank 10] -> Fafard
+> [0.000000] [smpi/INFO] [rank 11] -> Fafard
+> [0.000000] [smpi/INFO] [rank 12] -> Ginette
+> [0.000000] [smpi/INFO] [rank 13] -> Ginette
+> [0.000000] [smpi/INFO] [rank 14] -> Ginette
+> [0.000000] [smpi/INFO] [rank 15] -> Ginette
 > [0] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
 > [1] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
 > [2] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]

@@ -14,45 +14,69 @@
 #include "ampi.hpp"
 #include <smpi/sampi.h>
 
-static std::vector<size_t> memory_size(500, 0); // FIXME cheinrich This needs to be dynamic
-static std::map</*address*/ void*, size_t> alloc_table; // Keep track of all allocations
+class AllocTracker {
+  std::vector<size_t> memory_size_;
+  std::map</*address*/ void*, size_t> alloc_table_; // Keep track of all allocations
+
+public:
+  void record(void* ptr, size_t size)
+  {
+    alloc_table_.emplace(ptr, size);
+    if (not simgrid::s4u::this_actor::is_maestro()) {
+      auto actor = static_cast<size_t>(simgrid::s4u::this_actor::get_pid());
+      if (actor >= memory_size_.size())
+        memory_size_.resize(actor + 1, 0);
+      memory_size_[actor] += size;
+    }
+  }
+
+  void forget(void* ptr)
+  {
+    auto elm = alloc_table_.find(ptr);
+    xbt_assert(elm != alloc_table_.end());
+    if (not simgrid::s4u::this_actor::is_maestro()) {
+      auto actor = static_cast<size_t>(simgrid::s4u::this_actor::get_pid());
+      memory_size_.at(actor) -= elm->second; // size
+    }
+    alloc_table_.erase(elm);
+  }
+
+  size_t summary() const
+  {
+    if (simgrid::s4u::this_actor::is_maestro())
+      return 0;
+    auto actor = static_cast<size_t>(simgrid::s4u::this_actor::get_pid());
+    return actor < memory_size_.size() ? memory_size_[actor] : 0;
+  }
+};
+
+static AllocTracker alloc_tracker;
 
 extern "C" void* _sampi_malloc(size_t size)
 {
   void* result = xbt_malloc(size);
-  alloc_table.insert({result, size});
-  if (not simgrid::s4u::this_actor::is_maestro()) {
-    memory_size[simgrid::s4u::this_actor::get_pid()] += size;
-  }
+  alloc_tracker.record(result, size);
   return result;
 }
 
 extern "C" void _sampi_free(void* ptr)
 {
-  size_t alloc_size = alloc_table.at(ptr);
-  aid_t my_proc_id  = simgrid::s4u::this_actor::get_pid();
-  memory_size[my_proc_id] -= alloc_size;
+  alloc_tracker.forget(ptr);
   xbt_free(ptr);
 }
 
 extern "C" void* _sampi_calloc(size_t num_elm, size_t elem_size)
 {
-  void* result = xbt_malloc0(num_elm * elem_size);
-  alloc_table.insert({result, num_elm * elem_size});
-  if (not simgrid::s4u::this_actor::is_maestro()) {
-    memory_size[simgrid::s4u::this_actor::get_pid()] += num_elm * elem_size;
-  }
+  size_t size  = num_elm * elem_size;
+  void* result = xbt_malloc0(size);
+  alloc_tracker.record(result, size);
   return result;
 }
 extern "C" void* _sampi_realloc(void* ptr, size_t size)
 {
+  alloc_tracker.forget(ptr);
   void* result = xbt_realloc(ptr, size);
-  size_t old_size = alloc_table.at(ptr);
-  alloc_table.erase(ptr);
-  alloc_table.insert({result, size});
-  if (not simgrid::s4u::this_actor::is_maestro()) {
-    memory_size[simgrid::s4u::this_actor::get_pid()] += size - old_size;
-  }
+  alloc_tracker.record(result, size);
   return result;
 }
 
@@ -74,26 +98,22 @@ xbt::signal<void(s4u::Actor const&)> on_iteration_out;
  */
 int APMPI_Iteration_in(MPI_Comm comm)
 {
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   TRACE_Iteration_in(comm->rank() + 1, new simgrid::instr::NoOpTIData("iteration_in")); // implemented on instr_smpi.c
-  smpi_bench_begin();
   return 1;
 }
 
 int APMPI_Iteration_out(MPI_Comm comm)
 {
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   TRACE_Iteration_out(comm->rank() + 1, new simgrid::instr::NoOpTIData("iteration_out"));
-  smpi_bench_begin();
   return 1;
 }
 
 void APMPI_Migrate(MPI_Comm comm)
 {
-  smpi_bench_end();
-  aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
-  TRACE_migration_call(comm->rank() + 1, new simgrid::instr::AmpiMigrateTIData(memory_size[my_proc_id]));
-  smpi_bench_begin();
+  const SmpiBenchGuard suspend_bench;
+  TRACE_migration_call(comm->rank() + 1, new simgrid::instr::AmpiMigrateTIData(alloc_tracker.summary()));
 }
 
 int AMPI_Iteration_in(MPI_Comm comm)

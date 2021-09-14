@@ -31,7 +31,7 @@ XBT_PUBLIC void sg_version_check(int lib_version_major, int lib_version_minor, i
  *
  * Similar to vasprintf(), but returns a pointer to the newly created string (or aborts on error).
  */
-XBT_PUBLIC char* bvprintf(const char* fmt, va_list ap);
+XBT_PUBLIC char* bvprintf(const char* fmt, va_list ap) XBT_ATTRIB_PRINTF(1, 0);
 /** @brief print to allocated string
  *
  * Similar to asprintf(), but returns a pointer to the newly created string (or aborts on error).

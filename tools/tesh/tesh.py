@@ -674,5 +674,4 @@ if __name__ == '__main__':
             print("Test suite from stdin OK")
         else:
             print("Test suite `" + f.filename + "' OK")
-    else:
-        tesh_exit(return_code)
+    tesh_exit(return_code)

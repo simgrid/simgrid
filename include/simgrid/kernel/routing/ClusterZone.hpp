@@ -88,8 +88,8 @@ protected:
 class XBT_PRIVATE ClusterBase : public ClusterZone {
   /* We use a map instead of a std::vector here because that's a sparse vector. Some values may not exist */
   /* The pair is {link_up, link_down} */
-  std::unordered_map<unsigned int, std::pair<resource::LinkImpl*, resource::LinkImpl*>> private_links_;
-  std::unordered_map<unsigned int, NetPoint*> gateways_; //!< list of gateways for leafs (if they're netzones)
+  std::unordered_map<unsigned long, std::pair<resource::LinkImpl*, resource::LinkImpl*>> private_links_;
+  std::unordered_map<unsigned long, NetPoint*> gateways_; //!< list of gateways for leafs (if they're netzones)
   resource::LinkImpl* backbone_     = nullptr;
   NetPoint* router_                 = nullptr;
   bool has_limiter_                 = false;
@@ -104,8 +104,8 @@ class XBT_PRIVATE ClusterBase : public ClusterZone {
 protected:
   using ClusterZone::ClusterZone;
   void set_num_links_per_node(unsigned long num) { num_links_per_node_ = num; }
-  resource::LinkImpl* get_uplink_from(unsigned int position) const { return private_links_.at(position).first; }
-  resource::LinkImpl* get_downlink_to(unsigned int position) const { return private_links_.at(position).second; }
+  resource::LinkImpl* get_uplink_from(unsigned long position) const { return private_links_.at(position).first; }
+  resource::LinkImpl* get_downlink_to(unsigned long position) const { return private_links_.at(position).second; }
 
   double get_link_latency() const { return link_lat_; }
   double get_link_bandwidth() const { return link_bw_; }
@@ -119,11 +119,11 @@ protected:
   bool has_backbone() const { return backbone_ != nullptr; }
   void set_router(NetPoint* router) { router_ = router; }
   /** @brief Sets gateway for the leaf */
-  void set_gateway(unsigned int position, NetPoint* gateway);
+  void set_gateway(unsigned long position, NetPoint* gateway);
   /** @brief Gets gateway for the leaf or nullptr */
-  NetPoint* get_gateway(unsigned int position);
-  void add_private_link_at(unsigned int position, std::pair<resource::LinkImpl*, resource::LinkImpl*> link);
-  bool private_link_exists_at(unsigned int position) const
+  NetPoint* get_gateway(unsigned long position);
+  void add_private_link_at(unsigned long position, std::pair<resource::LinkImpl*, resource::LinkImpl*> link);
+  bool private_link_exists_at(unsigned long position) const
   {
     return private_links_.find(position) != private_links_.end();
   }
@@ -135,17 +135,17 @@ protected:
     THROW_UNIMPLEMENTED;
   };
 
-  unsigned int node_pos(int id) const { return id * num_links_per_node_; }
-  unsigned int node_pos_with_loopback(int id) const { return node_pos(id) + (has_loopback_ ? 1 : 0); }
+  unsigned long node_pos(unsigned long id) const { return id * num_links_per_node_; }
+  unsigned long node_pos_with_loopback(unsigned long id) const { return node_pos(id) + (has_loopback_ ? 1 : 0); }
 
 public:
   /** Fill the leaf retriving netpoint from a user's callback */
-  void fill_leaf_from_cb(unsigned int position, const std::vector<unsigned int>& dimensions,
+  void fill_leaf_from_cb(unsigned long position, const std::vector<unsigned long>& dimensions,
                          const s4u::ClusterCallbacks& set_callbacks, NetPoint** node_netpoint, s4u::Link** lb_link,
                          s4u::Link** limiter_link);
   /** @brief Set the characteristics of links inside a Cluster zone */
   virtual void set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy);
-  unsigned int node_pos_with_loopback_limiter(int id) const
+  unsigned long node_pos_with_loopback_limiter(unsigned long id) const
   {
     return node_pos_with_loopback(id) + (has_limiter_ ? 1 : 0);
   }

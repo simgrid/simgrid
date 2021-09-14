@@ -114,6 +114,9 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone)
   wifiPhy.Set("Antennas", ns3::UintegerValue(nss_value));
   wifiPhy.Set("MaxSupportedTxSpatialStreams", ns3::UintegerValue(nss_value));
   wifiPhy.Set("MaxSupportedRxSpatialStreams", ns3::UintegerValue(nss_value));
+#if NS3_MINOR_VERSION > 33
+  wifiPhy.Set("ChannelWidth", ns3::UintegerValue(40));
+#endif
   wifiMac.SetType("ns3::ApWifiMac", "Ssid", ns3::SsidValue(ssid));
 
   mobility.SetMobilityModel("ns3::ConstantPositionMobilityModel");
@@ -158,7 +161,11 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone)
     ns3::Simulator::Schedule(ns3::Seconds(start_time_value), &resumeWifiDevice, device);
   }
 
+#if NS3_MINOR_VERSION < 33
+  // This fails with "The channel width does not uniquely identify an operating channel" on v3.34,
+  // so we specified the ChannelWidth of wifiPhy to 40, above, when creating wifiPhy with v3.34 and higher
   ns3::Config::Set("/NodeList/*/DeviceList/*/$ns3::WifiNetDevice/Phy/ChannelWidth", ns3::UintegerValue(40));
+#endif
 
   mobility.SetPositionAllocator(positionAllocS);
   mobility.Install(nodes);
@@ -330,19 +337,23 @@ NetworkNS3Model::NetworkNS3Model(const std::string& name) : NetworkModel(name)
     ns3::GlobalRouteManager::InitializeRoutes();
   });
   routing::on_cluster_creation.connect(&clusterCreation_cb);
-  s4u::NetZone::on_route_creation.connect(&routeCreation_cb);
+  routing::NetZoneImpl::on_route_creation.connect(&routeCreation_cb);
   s4u::NetZone::on_seal.connect(&zoneCreation_cb);
 }
 
 LinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   xbt_assert(bandwidths.size() == 1, "ns-3 links must use only 1 bandwidth.");
-  return (new LinkNS3(name, bandwidths[0]))->set_model(this);
+  auto* link = new LinkNS3(name, bandwidths[0]);
+  link->set_model(this);
+  return link;
 }
 
 LinkImpl* NetworkNS3Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
 {
-  return create_link(name, bandwidths)->set_sharing_policy(s4u::Link::SharingPolicy::WIFI);
+  auto* link = create_link(name, bandwidths);
+  link->set_sharing_policy(s4u::Link::SharingPolicy::WIFI, {});
+  return link;
 }
 
 Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
@@ -455,28 +466,24 @@ void LinkNS3::apply_event(profile::Event*, double)
   THROW_UNIMPLEMENTED;
 }
 
-LinkImpl* LinkNS3::set_bandwidth_profile(profile::Profile* profile)
+void LinkNS3::set_bandwidth_profile(profile::Profile* profile)
 {
   xbt_assert(profile == nullptr, "The ns-3 network model doesn't support bandwidth profiles");
-  return this;
 }
 
-LinkImpl* LinkNS3::set_latency_profile(profile::Profile* profile)
+void LinkNS3::set_latency_profile(profile::Profile* profile)
 {
   xbt_assert(profile == nullptr, "The ns-3 network model doesn't support latency profiles");
-  return this;
 }
 
-LinkImpl* LinkNS3::set_latency(double latency)
+void LinkNS3::set_latency(double latency)
 {
   latency_.peak = latency;
-  return this;
 }
 
-LinkImpl* LinkNS3::set_sharing_policy(s4u::Link::SharingPolicy policy)
+void LinkNS3::set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
 {
   sharing_policy_ = policy;
-  return this;
 }
 /**********
  * Action *

@@ -31,13 +31,13 @@ namespace xbt {
  *
  * @ingroup XBT_str
  */
-XBT_PUBLIC std::string string_printf(const char* fmt, ...);
+XBT_PUBLIC std::string string_printf(const char* fmt, ...) XBT_ATTRIB_PRINTF(1, 2);
 
 /** Create a C++ string from a C-style format
  *
  * @ingroup XBT_str
  */
-XBT_PUBLIC std::string string_vprintf(const char* fmt, va_list ap);
+XBT_PUBLIC std::string string_vprintf(const char* fmt, va_list ap) XBT_ATTRIB_PRINTF(1, 0);
 
 #if SIMGRID_HAVE_MC
 

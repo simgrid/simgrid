@@ -11,6 +11,7 @@
 #include "simgrid/kernel/resource/Resource.hpp"
 #include "simgrid/s4u/Link.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
+#include "src/surf/LinkImpl.hpp"
 #include <xbt/PropertyHolder.hpp>
 
 #include <list>
@@ -93,66 +94,6 @@ public:
   LinkImpl* loopback_ = nullptr;
 };
 
-/************
- * Resource *
- ************/
-/** @ingroup SURF_network_interface
- * @brief SURF network link interface class
- * @details A Link represents the link between two [hosts](@ref simgrid::surf::HostImpl)
- */
-class LinkImpl : public Resource_T<LinkImpl>, public xbt::PropertyHolder {
-  s4u::Link piface_;
-
-protected:
-  explicit LinkImpl(const std::string& name);
-  LinkImpl(const LinkImpl&) = delete;
-  LinkImpl& operator=(const LinkImpl&) = delete;
-  ~LinkImpl() override                 = default; // Use destroy() instead of this destructor.
-
-public:
-  void destroy(); // Must be called instead of the destructor
-
-  void latency_check(double latency) const;
-
-  /** @brief Public interface */
-  const s4u::Link* get_iface() const { return &piface_; }
-  s4u::Link* get_iface() { return &piface_; }
-
-  /** @brief Get the bandwidth in bytes per second of current Link */
-  double get_bandwidth() const { return bandwidth_.peak * bandwidth_.scale; }
-  /** @brief Update the bandwidth in bytes per second of current Link */
-  virtual void set_bandwidth(double value) = 0;
-
-  /** @brief Get the latency in seconds of current Link */
-  double get_latency() const { return latency_.peak * latency_.scale; }
-  /** @brief Update the latency in seconds of current Link */
-  virtual LinkImpl* set_latency(double value) = 0;
-
-  /** @brief The sharing policy */
-  virtual LinkImpl* set_sharing_policy(s4u::Link::SharingPolicy policy);
-  virtual s4u::Link::SharingPolicy get_sharing_policy() const;
-
-  /** @brief Check if the Link is used */
-  bool is_used() const override;
-
-  void turn_on() override;
-  void turn_off() override;
-
-  void seal() override;
-
-  void on_bandwidth_change() const;
-
-  /* setup the profile file with bandwidth events (peak speed changes due to external load).
-   * Profile must contain percentages (value between 0 and 1). */
-  virtual LinkImpl* set_bandwidth_profile(kernel::profile::Profile* profile);
-  /* setup the profile file with latency events (peak latency changes due to external load).
-   * Profile must contain absolute values */
-  virtual LinkImpl* set_latency_profile(kernel::profile::Profile* profile);
-
-  Metric latency_   = {0.0, 1, nullptr};
-  Metric bandwidth_ = {1.0, 1, nullptr};
-};
-
 /**********
  * Action *
  **********/
@@ -197,6 +138,14 @@ public:
   s4u::Host& get_src() const { return src_; }
   s4u::Host& get_dst() const { return dst_; }
 };
+
+/* Insert link(s) at the end of vector `result' (at the beginning, and reversed, for insert_link_latency()), and add
+ * link->get_latency() to *latency when latency is not null
+ */
+void add_link_latency(std::vector<LinkImpl*>& result, LinkImpl* link, double* latency);
+void add_link_latency(std::vector<LinkImpl*>& result, const std::vector<LinkImpl*>& links, double* latency);
+void insert_link_latency(std::vector<LinkImpl*>& result, const std::vector<LinkImpl*>& links, double* latency);
+
 } // namespace resource
 } // namespace kernel
 } // namespace simgrid

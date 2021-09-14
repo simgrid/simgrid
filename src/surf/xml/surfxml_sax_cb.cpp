@@ -28,8 +28,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF parsing module");
 
 std::string surf_parsed_filename; // Currently parsed file (for the error messages)
-std::vector<simgrid::kernel::resource::LinkImpl*>
-    parsed_link_list; /* temporary store of current link list of a route */
+std::vector<simgrid::s4u::LinkInRoute> parsed_link_list; /* temporary store of current link list of a route */
 
 /* Helping functions */
 void surf_parse_assert(bool cond, const std::string& msg)
@@ -482,17 +481,20 @@ void ETag_surfxml_link(){
 
 void STag_surfxml_link___ctn()
 {
-  simgrid::kernel::resource::LinkImpl* link = nullptr;
+  const simgrid::s4u::Link* link;
+  simgrid::s4u::LinkInRoute::Direction direction = simgrid::s4u::LinkInRoute::Direction::NONE;
   switch (A_surfxml_link___ctn_direction) {
   case AU_surfxml_link___ctn_direction:
   case A_surfxml_link___ctn_direction_NONE:
-    link = simgrid::s4u::Link::by_name(std::string(A_surfxml_link___ctn_id))->get_impl();
+    link = simgrid::s4u::Link::by_name(std::string(A_surfxml_link___ctn_id));
     break;
   case A_surfxml_link___ctn_direction_UP:
-    link = simgrid::s4u::Link::by_name(std::string(A_surfxml_link___ctn_id) + "_UP")->get_impl();
+    link      = simgrid::s4u::SplitDuplexLink::by_name(std::string(A_surfxml_link___ctn_id));
+    direction = simgrid::s4u::LinkInRoute::Direction::UP;
     break;
   case A_surfxml_link___ctn_direction_DOWN:
-    link = simgrid::s4u::Link::by_name(std::string(A_surfxml_link___ctn_id) + "_DOWN")->get_impl();
+    link      = simgrid::s4u::SplitDuplexLink::by_name(std::string(A_surfxml_link___ctn_id));
+    direction = simgrid::s4u::LinkInRoute::Direction::DOWN;
     break;
   default:
     surf_parse_error(std::string("Invalid direction for link ") + A_surfxml_link___ctn_id);
@@ -510,7 +512,7 @@ void STag_surfxml_link___ctn()
       dirname = "";
   }
   surf_parse_assert(link != nullptr, std::string("No such link: '") + A_surfxml_link___ctn_id + "'" + dirname);
-  parsed_link_list.push_back(link);
+  parsed_link_list.emplace_back(link, direction);
 }
 
 void ETag_surfxml_backbone()
@@ -615,7 +617,7 @@ void ETag_surfxml_bypassRoute(){
 
   route.link_list.swap(parsed_link_list);
 
-  sg_platf_new_bypassRoute(&route);
+  sg_platf_new_bypass_route(&route);
 }
 
 void ETag_surfxml_bypassASroute()
@@ -639,7 +641,7 @@ void ETag_surfxml_bypassZoneRoute()
   ASroute.gw_src = sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_gw___src);
   ASroute.gw_dst = sg_netpoint_by_name_or_null(A_surfxml_bypassZoneRoute_gw___dst);
 
-  sg_platf_new_bypassRoute(&ASroute);
+  sg_platf_new_bypass_route(&ASroute);
 }
 
 void ETag_surfxml_trace(){
@@ -701,14 +703,14 @@ void STag_surfxml_zone()
   simgrid::kernel::routing::ZoneCreationArgs zone;
   zone.id      = A_surfxml_zone_id;
   zone.routing = A_surfxml_zone_routing;
-  sg_platf_new_Zone_begin(&zone);
+  sg_platf_new_zone_begin(&zone);
 }
 
 void ETag_surfxml_zone()
 {
-  sg_platf_new_Zone_set_properties(property_sets.back());
+  sg_platf_new_zone_set_properties(property_sets.back());
   property_sets.pop_back();
-  sg_platf_new_Zone_seal();
+  sg_platf_new_zone_seal();
 }
 
 void STag_surfxml_config()

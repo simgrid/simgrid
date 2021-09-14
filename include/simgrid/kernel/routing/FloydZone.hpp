@@ -23,7 +23,7 @@ namespace routing {
  */
 class XBT_PRIVATE FloydZone : public RoutedZone {
   /* vars to compute the Floyd algorithm. */
-  std::vector<std::vector<int>> predecessor_table_;
+  std::vector<std::vector<long>> predecessor_table_;
   std::vector<std::vector<unsigned long>> cost_table_;
   std::vector<std::vector<std::unique_ptr<Route>>> link_table_;
 
@@ -35,9 +35,9 @@ public:
   FloydZone(const FloydZone&) = delete;
   FloydZone& operator=(const FloydZone&) = delete;
 
-  void get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency) override;
+  void get_local_route(const NetPoint* src, const NetPoint* dst, Route* into, double* latency) override;
   void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                 const std::vector<resource::LinkImpl*>& link_list, bool symmetrical) override;
+                 const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical) override;
 };
 } // namespace routing
 } // namespace kernel

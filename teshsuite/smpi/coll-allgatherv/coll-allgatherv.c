@@ -86,5 +86,5 @@ int main(int argc, char *argv[])
   xbt_free(recv_counts);
   xbt_free(recv_disps);
   MPI_Finalize();
-  return (EXIT_SUCCESS);
+  return EXIT_SUCCESS;
 }

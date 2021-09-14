@@ -24,7 +24,9 @@ namespace s4u {
  * This is a singleton containing all the main functions of the simulation.
  */
 class XBT_PUBLIC Engine {
+#ifndef DOXYGEN
   friend simgrid::kernel::EngineImpl;
+#endif
 
 public:
   /** Constructor, taking only the name of your main function */
@@ -119,6 +121,11 @@ public:
   std::vector<Link*> get_all_links() const;
   std::vector<Link*> get_filtered_links(const std::function<bool(Link*)>& filter) const;
   Link* link_by_name(const std::string& name) const;
+  /**
+   * @brief Find a split-duplex link from its name.
+   * @throw std::invalid_argument if the searched link does not exist.
+   */
+  SplitDuplexLink* split_duplex_link_by_name(const std::string& name) const;
   Link* link_by_name_or_null(const std::string& name) const;
 
   Mailbox* mailbox_by_name_or_create(const std::string& name) const;
@@ -145,8 +152,8 @@ public:
   /**
    * @brief Add a model to engine list
    *
-   * @param model Pointer to model
-   * @param list  List of dependencies for this model (optional)
+   * @param model        Pointer to model
+   * @param dependencies List of dependencies for this model (optional)
    */
   void add_model(std::shared_ptr<simgrid::kernel::resource::Model> model,
                  const std::vector<kernel::resource::Model*>& dependencies = {});
@@ -182,6 +189,7 @@ public:
   static void set_config(const std::string& name, double value);
   static void set_config(const std::string& name, const std::string& value);
 
+  Engine* set_default_comm_data_copy_callback(void (*callback)(kernel::activity::CommImpl*, void*, size_t));
   /** Callback fired when the platform is created (ie, the xml file parsed),
    * right before the actual simulation starts. */
   static xbt::signal<void()> on_platform_created;

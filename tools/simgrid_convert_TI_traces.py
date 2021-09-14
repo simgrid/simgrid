@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
 
+# Copyright (c) 2018-2021. The SimGrid Team. All rights reserved.
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
+
 '''
 This script is intended to convert SMPI time independent traces (TIT) from the
 old format (simgrid version <= 3.19) to the new format.

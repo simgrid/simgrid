@@ -34,7 +34,7 @@ public:
 
   std::vector<double> time_points_;
   std::vector<double> integral_;
-  static int binary_search(const std::vector<double>& array, double a);
+  static long binary_search(const std::vector<double>& array, double a);
 };
 
 class CpuTiTmgr {
@@ -110,8 +110,8 @@ public:
   void update_remaining_amount(double now);
 
   bool is_used() const override;
-  CpuAction* execution_start(double size) override;
-  CpuAction* execution_start(double, int) override
+  CpuAction* execution_start(double size, double user_bound) override;
+  CpuAction* execution_start(double, int, double) override
   {
     THROW_UNIMPLEMENTED;
     return nullptr;

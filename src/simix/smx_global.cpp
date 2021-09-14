@@ -29,8 +29,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix, "Logging specific to SIMIX 
 
 std::unique_ptr<simgrid::simix::Global> simix_global;
 
-void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr) = nullptr;
-
 namespace simgrid {
 namespace simix {
 config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit", "Display the actor status at exit", true};
@@ -75,7 +73,7 @@ static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
             "Access violation or Bus error detected.\n"
             "This probably comes from a programming error in your code, or from a stack\n"
             "overflow. If you are certain of your code, try increasing the stack size\n"
-            "   --cfg=contexts/stack-size=XXX (current size is %u KiB).\n"
+            "   --cfg=contexts/stack-size:XXX (current size is %u KiB).\n"
             "\n"
             "If it does not help, this may have one of the following causes:\n"
             "a bug in SimGrid, a bug in the OS or a bug in a third-party libraries.\n"
@@ -202,37 +200,10 @@ void SIMIX_run() // XBT_ATTRIB_DEPRECATED_v332
   simgrid::kernel::EngineImpl::get_instance()->run();
 }
 
-double SIMIX_timer_next() // XBT_ATTRIB_DEPRECATED_v329
-{
-  return simgrid::kernel::timer::Timer::next();
-}
-
-smx_timer_t SIMIX_timer_set(double date, void (*callback)(void*), void* arg) // XBT_ATTRIB_DEPRECATED_v329
-{
-  return simgrid::kernel::timer::Timer::set(date, std::bind(callback, arg));
-}
-
-/** @brief cancels a timer that was added earlier */
-void SIMIX_timer_remove(smx_timer_t timer) // XBT_ATTRIB_DEPRECATED_v329
-{
-  timer->remove();
-}
-
-/** @brief Returns the date at which the timer will trigger (or 0 if nullptr timer) */
-double SIMIX_timer_get_date(smx_timer_t timer) // XBT_ATTRIB_DEPRECATED_v329
-{
-  return timer ? timer->get_date() : 0.0;
-}
-
-void SIMIX_display_process_status() // XBT_ATTRIB_DEPRECATED_v329
-{
-  simgrid::kernel::EngineImpl::get_instance()->display_all_actor_status();
-}
-
 int SIMIX_is_maestro()
 {
   if (simix_global == nullptr) // SimDag
     return true;
-  simgrid::kernel::actor::ActorImpl* self = SIMIX_process_self();
+  const simgrid::kernel::actor::ActorImpl* self = SIMIX_process_self();
   return self == nullptr || simix_global->is_maestro(self);
 }

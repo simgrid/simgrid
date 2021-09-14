@@ -45,7 +45,7 @@ static void test()
   // wait for the completion of all activities
   bob_compute->wait();
   while (not pending_ios.empty()) {
-    int changed_pos = simgrid::s4u::Io::wait_any(&pending_ios);
+    ssize_t changed_pos = simgrid::s4u::Io::wait_any(pending_ios);
     XBT_INFO("Io '%s' is complete", pending_ios[changed_pos]->get_cname());
     pending_ios.erase(pending_ios.begin() + changed_pos);
   }

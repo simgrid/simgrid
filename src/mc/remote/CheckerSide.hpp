@@ -6,24 +6,25 @@
 #ifndef SIMGRID_MC_REMOTE_EVENTLOOP_HPP
 #define SIMGRID_MC_REMOTE_EVENTLOOP_HPP
 
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/remote/Channel.hpp"
 
 #include <event2/event.h>
 #include <functional>
+#include <memory>
 
 namespace simgrid {
 namespace mc {
 
 class CheckerSide {
-  struct event_base* base_    = nullptr;
-  struct event* socket_event_ = nullptr;
-  struct event* signal_event_ = nullptr;
+  std::unique_ptr<event_base, decltype(&event_base_free)> base_{nullptr, &event_base_free};
+  std::unique_ptr<event, decltype(&event_free)> socket_event_{nullptr, &event_free};
+  std::unique_ptr<event, decltype(&event_free)> signal_event_{nullptr, &event_free};
 
   Channel channel_;
 
 public:
   explicit CheckerSide(int sockfd) : channel_(sockfd) {}
-  ~CheckerSide();
 
   // No copy:
   CheckerSide(CheckerSide const&) = delete;
@@ -33,9 +34,9 @@ public:
   Channel const& get_channel() const { return channel_; }
   Channel& get_channel() { return channel_; }
 
-  void start(void (*handler)(int, short, void*));
-  void dispatch();
-  void break_loop();
+  void start(void (*handler)(int, short, void*), ModelChecker* mc);
+  void dispatch() const;
+  void break_loop() const;
 };
 
 } // namespace mc

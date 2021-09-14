@@ -28,9 +28,9 @@ void WifiZone::do_seal()
   }
 }
 
-void WifiZone::get_local_route(NetPoint* src, NetPoint* dst, Route* res, double* lat)
+void WifiZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* res, double* lat)
 {
-  XBT_DEBUG("full getLocalRoute from %s[%u] to %s[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
+  XBT_DEBUG("full getLocalRoute from %s[%lu] to %s[%lu]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 
   if (wifi_link_ != nullptr) {
     // If src and dst are nodes, not access_point, we need to traverse the link twice
@@ -38,15 +38,11 @@ void WifiZone::get_local_route(NetPoint* src, NetPoint* dst, Route* res, double*
 
     if (src != access_point_) {
       XBT_DEBUG("src %s is not our gateway", src->get_cname());
-      res->link_list_.push_back(wifi_link_);
-      if (lat)
-        *lat += wifi_link_->get_latency();
+      add_link_latency(res->link_list_, wifi_link_, lat);
     }
     if (dst != access_point_) {
       XBT_DEBUG("dst %s is not our gateway", dst->get_cname());
-      res->link_list_.push_back(wifi_link_);
-      if (lat)
-        *lat += wifi_link_->get_latency();
+      add_link_latency(res->link_list_, wifi_link_, lat);
     }
   }
 }
@@ -57,7 +53,7 @@ s4u::Link* WifiZone::create_link(const std::string& name, const std::vector<doub
              "WIFI netzone %s contains more than one link. Please only declare one, the wifi link.", get_cname());
 
   wifi_link_ = get_network_model()->create_wifi_link(name, bandwidths);
-  wifi_link_->set_sharing_policy(s4u::Link::SharingPolicy::WIFI);
+  wifi_link_->set_sharing_policy(s4u::Link::SharingPolicy::WIFI, {});
   return wifi_link_->get_iface();
 }
 } // namespace routing

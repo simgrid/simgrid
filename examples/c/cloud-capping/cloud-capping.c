@@ -19,9 +19,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(cloud_capping, "Messages specific for this example"
 static void worker_main(int argc, char* argv[])
 {
   xbt_assert(argc == 4);
-  double computation_amount = xbt_str_parse_double(argv[1], "Invalid computation amount: %s");
-  int use_bound             = !!xbt_str_parse_int(argv[2], "Second parameter (use_bound) should be 0 or 1 but is: %s");
-  double bound              = xbt_str_parse_double(argv[3], "Invalid bound: %s");
+  double computation_amount = xbt_str_parse_double(argv[1], "Invalid computation amount");
+  int use_bound             = !!xbt_str_parse_int(argv[2], "Second parameter (use_bound) should be 0 or 1 but is");
+  double bound              = xbt_str_parse_double(argv[3], "Invalid bound");
 
   double clock_sta = simgrid_get_clock();
 

@@ -65,9 +65,9 @@ class SendRecvParser : public ActionArgParser {
 public:
   /* communication partner; if we send, this is the receiver and vice versa */
   int partner;
-  double size;
+  size_t size;
   int tag;
-  MPI_Datatype datatype1 = MPI_DEFAULT_TYPE;
+  MPI_Datatype datatype1;
 
   void parse(xbt::ReplayAction& action, const std::string& name) override;
 };
@@ -96,14 +96,14 @@ public:
 
 class CollCommParser : public ActionArgParser {
 public:
-  double size;
+  size_t size;
   double comp_size;
   int send_size;
   int recv_size;
   unsigned comm_size; // size of communicator
-  int root               = 0;
-  MPI_Datatype datatype1 = MPI_DEFAULT_TYPE;
-  MPI_Datatype datatype2 = MPI_DEFAULT_TYPE;
+  int root;
+  MPI_Datatype datatype1;
+  MPI_Datatype datatype2;
 };
 
 class BcastArgParser : public CollCommParser {
@@ -158,6 +158,11 @@ public:
   int recv_size_sum;
   std::shared_ptr<std::vector<int>> recvcounts;
   std::vector<int> disps;
+  void parse(xbt::ReplayAction& action, const std::string& name) override;
+};
+
+class ScanArgParser : public CollCommParser {
+public:
   void parse(xbt::ReplayAction& action, const std::string& name) override;
 };
 
@@ -337,6 +342,12 @@ public:
 class ReduceScatterAction : public ReplayAction<ReduceScatterArgParser> {
 public:
   explicit ReduceScatterAction() : ReplayAction("reducescatter") {}
+  void kernel(xbt::ReplayAction& action) override;
+};
+
+class ScanAction : public ReplayAction<ScanArgParser> {
+public:
+  using ReplayAction::ReplayAction;
   void kernel(xbt::ReplayAction& action) override;
 };
 

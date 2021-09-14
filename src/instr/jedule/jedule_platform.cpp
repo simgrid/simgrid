@@ -36,7 +36,7 @@ void Container::add_child(jed_container_t child)
   child->set_parent(this);
 }
 
-void Container::add_resources(std::vector<sg_host_t> hosts)
+void Container::add_resources(const std::vector<sg_host_t>& hosts)
 {
   children_.clear();
   last_id_ = 0;
@@ -144,7 +144,7 @@ void Container::print(FILE* jed_file)
 } // namespace jedule
 } // namespace simgrid
 
-static void add_subsets_to(std::vector<simgrid::jedule::Subset>& subset_list, std::vector<const char*> hostgroup,
+static void add_subsets_to(std::vector<simgrid::jedule::Subset>& subset_list, const std::vector<const char*>& hostgroup,
                            jed_container_t parent)
 {
   // get ids for each host

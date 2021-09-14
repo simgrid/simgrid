@@ -8,9 +8,9 @@
 
 """
 Search for symbols documented in both the XML files produced by Doxygen and the python modules,
-but not documented with autodoxy in the RST files.
+but not documented with breathe in the RST files.
 
-This script is tailored to SimGrid own needs and should be made more generic for autodoxy.
+This script is tailored to SimGrid own needs.
 
 If you are missing some dependencies, try:  pip3 install --requirement docs/requirements.txt
 """
@@ -144,6 +144,7 @@ for kind in python_decl:
 
 doxy_funs = {} # {classname: {func_name: [args]} }
 doxy_vars = {} # {classname: [names]}
+doxy_type = {} # {classname: [names]}
 
 # find the declarations in the XML files
 for arg in xml_files:
@@ -186,13 +187,17 @@ for arg in xml_files:
                 if name not in doxy_funs[compoundname]:
                     doxy_funs[compoundname][name] = []
                 doxy_funs[compoundname][name].append(args)
+            elif kind == "typedef":
+                if compoundname not in doxy_type:
+                    doxy_type[compoundname] = []
+                doxy_type[compoundname].append(name)                
             elif kind == "friend":
                 pass # Ignore friendship
             else:
                 print ("member {}::{} is of kind {}".format(compoundname, name, kind))
 
 # Forget about the declarations that are done in the RST
-with os.popen('grep doxygenfunction:: find-missing.ignore source/*rst|sed \'s/^.*doxygenfunction:: //\'') as pse:
+with os.popen('grep doxygenfunction:: find-missing.ignore source/*rst|sed \'s/^.*doxygenfunction:: //\'|sed \'s/ *const//\'') as pse:
     for line in (l.strip() for l in pse):
         (klass, obj, args) = (None, None, None)
         if "(" in line:
@@ -219,7 +224,7 @@ with os.popen('grep doxygenfunction:: find-missing.ignore source/*rst|sed \'s/^.
             doxy_funs[klass][obj].remove(args)
             if len(doxy_funs[klass][obj]) == 0:
                 del doxy_funs[klass][obj]
-with os.popen('grep autodoxyvar:: find-missing.ignore source/*rst|sed \'s/^.*autodoxyvar:: //\'') as pse:
+with os.popen('grep doxygenvariable:: find-missing.ignore source/*rst|sed \'s/^.*doxygenvariable:: //\'') as pse:
     for line in (l.strip() for l in pse):
         (klass, var) = line.rsplit('::', 1)
 
@@ -227,19 +232,46 @@ with os.popen('grep autodoxyvar:: find-missing.ignore source/*rst|sed \'s/^.*aut
             print("Warning: {} documented, but class {} not found in doxygen.".format(line, klass))
             continue
         if var not in doxy_vars[klass]:
-            print("Warning: Object {} documented but not found in {}".format(line, klass))
+            print("Warning: Object {} documented but not found in '{}'".format(line, klass))
         else:
 #            print("Found {} in {}".format(line, klass))
             doxy_vars[klass].remove(var)
             if len(doxy_vars[klass]) == 0:
                 del doxy_vars[klass]
+with os.popen('grep doxygentypedef:: find-missing.ignore source/*rst|sed \'s/^.*doxygentypedef:: //\'') as pse:
+    for line in (l.strip() for l in pse):
+        if '::' in line:
+            (klass, typ) = line.rsplit('::', 1)
+        else:
+            (klass, typ) = ('', line)
+
+        if klass not in doxy_type:
+            print("Warning: {} documented, but class {} not found in doxygen.".format(line, klass))
+            continue
+        if typ not in doxy_type[klass]:
+            print("Warning: Type {} documented but not found in '{}'".format(line, klass))
+        else:
+#            print("Found {} in {}".format(line, klass))
+            doxy_type[klass].remove(typ)
+            if len(doxy_type[klass]) == 0:
+                del doxy_type[klass]
 
 # Dump the undocumented Doxygen declarations 
 for obj in sorted(doxy_funs):
     for meth in sorted(doxy_funs[obj]):
         for args in sorted(doxy_funs[obj][meth]):
-            print(".. doxygenfunction:: {}::{}{}".format(obj, meth, args))
+            if obj == '':
+                print(".. doxygenfunction:: {}{}".format(meth, args))
+            else:
+                print(".. doxygenfunction:: {}::{}{}".format(obj, meth, args))
 
 for obj in doxy_vars:
     for meth in sorted(doxy_vars[obj]):
-        print(".. autodoxyvar:: {}::{}".format(obj, meth))
+        print(".. doxygenvariable:: {}::{}".format(obj, meth))
+
+for obj in doxy_type:
+    for meth in sorted(doxy_type[obj]):
+        if obj == '':
+            print(".. doxygentypedef:: {}".format(meth))
+        else:
+            print(".. doxygentypedef:: {}::{}".format(obj, meth))

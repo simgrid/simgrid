@@ -30,7 +30,7 @@ IoImpl::IoImpl()
 IoImpl& IoImpl::set_timeout(double timeout)
 {
   const s4u::Host* host = get_disk()->get_host();
-  timeout_detector_ = host->pimpl_cpu->sleep(timeout);
+  timeout_detector_     = host->get_cpu()->sleep(timeout);
   timeout_detector_->set_activity(this);
   return *this;
 }
@@ -129,6 +129,7 @@ void IoImpl::finish()
     switch (state_) {
       case State::FAILED:
         simcall->issuer_->context_->set_wannadie();
+        piface_->complete(s4u::Activity::State::FAILED);
         simcall->issuer_->exception_ =
             std::make_exception_ptr(StorageFailureException(XBT_THROW_POINT, "Storage failed"));
         break;

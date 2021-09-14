@@ -41,6 +41,9 @@ set(EXTRA_DIST
   src/surf/network_cm02.hpp
   src/surf/network_constant.hpp
   src/surf/network_interface.hpp
+  src/surf/LinkImpl.hpp
+  src/surf/LinkImplIntf.hpp
+  src/surf/SplitDuplexLinkImpl.hpp
   src/surf/network_ns3.hpp
   src/surf/network_smpi.hpp
   src/surf/network_ib.hpp
@@ -80,7 +83,6 @@ set(EXTRA_DIST
   tools/lualib.patch
   teshsuite/lua/lua_platforms.tesh
   examples/smpi/mc/only_send_deterministic.tesh
-  examples/smpi/mc/non_deterministic.tesh
   )
 
 set(SMPI_SRC
@@ -317,6 +319,7 @@ set(SURF_SRC
   src/kernel/resource/profile/Event.hpp
   src/kernel/resource/profile/FutureEvtSet.cpp
   src/kernel/resource/profile/FutureEvtSet.hpp
+  src/kernel/resource/profile/ProfileBuilder.cpp
   src/kernel/resource/profile/Profile.cpp
   src/kernel/resource/profile/Profile.hpp
   src/kernel/resource/profile/StochasticDatedValue.cpp
@@ -349,6 +352,8 @@ set(SURF_SRC
   src/surf/network_cm02.cpp
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
+  src/surf/LinkImpl.cpp
+  src/surf/SplitDuplexLinkImpl.cpp
   src/surf/network_wifi.cpp
   src/surf/sg_platf.cpp
   src/surf/surf_c_bindings.cpp
@@ -395,7 +400,6 @@ set(SIMIX_SRC
   src/kernel/context/ContextSwapped.hpp
   src/kernel/context/ContextThread.cpp
   src/kernel/context/ContextThread.hpp
-  src/simix/smx_deployment.cpp
   src/simix/smx_global.cpp
   src/simix/popping.cpp
   src/kernel/activity/ActivityImpl.cpp
@@ -690,6 +694,7 @@ set(headers_to_install
   include/simgrid/forward.h
   include/simgrid/simix.h
   include/simgrid/simix.hpp
+  include/simgrid/kernel/ProfileBuilder.hpp
   include/simgrid/kernel/Timer.hpp
   include/simgrid/kernel/future.hpp
   include/simgrid/disk.h
@@ -855,11 +860,9 @@ set(DOC_SOURCES
   doc/doxygen/module-sd.doc
   doc/doxygen/module-surf.doc
   doc/doxygen/module-trace.doc
-  doc/doxygen/module-xbt.doc
   doc/doxygen/module-index.doc
   doc/doxygen/outcomes_vizu.doc
   doc/doxygen/platform.doc
-  doc/doxygen/platform_lua.doc
   doc/doxygen/uhood.doc
   doc/doxygen/uhood_switch.doc
   doc/doxygen/uhood_arch.doc
@@ -907,9 +910,14 @@ set(DOC_SOURCES
   docs/source/img/graphical-toc.svg
   docs/source/img/smpi_simgrid_alltoall_pair_16.png
   docs/source/img/smpi_simgrid_alltoall_ring_16.png
+  docs/source/img/starzone.drawio
+  docs/source/img/starzone.svg
   docs/source/img/zone_hierarchy.png
+  docs/source/img/zone_tree.drawio
+  docs/source/img/zone_tree.svg
+  docs/source/img/zoom_comm.drawio
+  docs/source/img/zoom_comm.svg
 
-  docs/ignored_symbols
   docs/source/application.rst
   docs/source/app_msg.rst
   docs/source/app_s4u.rst
@@ -927,10 +935,12 @@ set(DOC_SOURCES
   docs/source/Models.rst
   docs/source/Outcomes.rst
   docs/source/Platform.rst
+  docs/source/Platform_cpp.rst
   docs/source/Platform_examples.rst
   docs/source/Platform_howtos.rst
   docs/source/Platform_routing.rst
   docs/source/Plugins.rst
+  docs/source/Release_Notes.rst
   docs/source/XML_reference.rst
   docs/source/Design_goals.rst
 
@@ -957,6 +967,19 @@ set(DOC_SOURCES
   docs/source/tuto_smpi/img/lu.S.4.png
   docs/source/tuto_smpi/gemm_mpi.cpp
   docs/source/tuto_smpi/roundtrip.c
+
+  docs/source/tuto_disk/analysis.org
+  docs/source/tuto_disk/analysis.rst
+  docs/source/tuto_disk/CMakeLists.txt
+  docs/source/tuto_disk/Dockerfile
+  docs/source/tuto_disk/fig/edel_read_dhist.png
+  docs/source/tuto_disk/fig/edel_write_dhist.png
+  docs/source/tuto_disk/fig/griffon_deg.png
+  docs/source/tuto_disk/fig/griffon_read_dhist.png
+  docs/source/tuto_disk/fig/griffon_write_dhist.png
+  docs/source/tuto_disk/fig/simgrid_results.png
+  docs/source/tuto_disk/init.el
+  docs/source/tuto_disk/tuto_disk.cpp
 
   docs/source/Tutorial_Model-checking.rst
 
@@ -998,6 +1021,7 @@ set(txt_files
 # The list of cmake build directories is constructed from the following list.
 # Add your CMakeLists file here to see your subdir built.
 set(CMAKEFILES_TXT
+  examples/platforms/CMakeLists.txt
   examples/c/CMakeLists.txt
   examples/cpp/CMakeLists.txt
   examples/smpi/CMakeLists.txt
@@ -1151,6 +1175,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/energy_cluster.xml
   examples/platforms/faulty_host.xml
   examples/platforms/g5k.xml
+  examples/platforms/griffon.cpp
   examples/platforms/griffon.xml
   examples/platforms/hosts_with_disks.xml
   examples/platforms/meta_cluster.xml
@@ -1161,6 +1186,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/prop.xml
   examples/platforms/routing_cluster.xml
   examples/platforms/routing_cluster.lua
+  examples/platforms/routing_cluster.cpp
   examples/platforms/routing_none.xml
   examples/platforms/simulacrum_7_hosts.xml
   examples/platforms/storage/content/small_content.txt

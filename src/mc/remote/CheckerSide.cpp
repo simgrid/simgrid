@@ -10,35 +10,28 @@
 namespace simgrid {
 namespace mc {
 
-CheckerSide::~CheckerSide()
+void CheckerSide::start(void (*handler)(int, short, void*), ModelChecker* mc)
 {
-  if (socket_event_ != nullptr)
-    event_free(socket_event_);
-  if (signal_event_ != nullptr)
-    event_free(signal_event_);
-  if (base_ != nullptr)
-    event_base_free(base_);
+  auto* base = event_base_new();
+  base_.reset(base);
+
+  auto* socket_event = event_new(base, get_channel().get_socket(), EV_READ | EV_PERSIST, handler, mc);
+  event_add(socket_event, nullptr);
+  socket_event_.reset(socket_event);
+
+  auto* signal_event = event_new(base, SIGCHLD, EV_SIGNAL | EV_PERSIST, handler, mc);
+  event_add(signal_event, nullptr);
+  signal_event_.reset(signal_event);
 }
 
-void CheckerSide::start(void (*handler)(int, short, void*))
+void CheckerSide::dispatch() const
 {
-  base_ = event_base_new();
-
-  socket_event_ = event_new(base_, get_channel().get_socket(), EV_READ | EV_PERSIST, handler, this);
-  event_add(socket_event_, nullptr);
-
-  signal_event_ = event_new(base_, SIGCHLD, EV_SIGNAL | EV_PERSIST, handler, this);
-  event_add(signal_event_, nullptr);
+  event_base_dispatch(base_.get());
 }
 
-void CheckerSide::dispatch()
+void CheckerSide::break_loop() const
 {
-  event_base_dispatch(base_);
-}
-
-void CheckerSide::break_loop()
-{
-  event_base_loopbreak(base_);
+  event_base_loopbreak(base_.get());
 }
 
 } // namespace mc

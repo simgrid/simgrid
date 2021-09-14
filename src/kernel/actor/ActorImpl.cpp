@@ -3,9 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/Actor.hpp"
 #include "mc/mc.h"
 #include "simgrid/Exception.hpp"
-#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
@@ -16,6 +16,9 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/AppSide.hpp"
 #include "src/simix/smx_private.hpp"
+#if HAVE_SMPI
+#include "src/smpi/include/private.hpp"
+#endif
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 
@@ -96,7 +99,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
 
   auto* actor = new ActorImpl(xbt::string(name), host);
   /* Actor data */
-  actor->set_user_data(data);
+  actor->piface_.set_data(data);
   actor->code_ = nullptr;
 
   XBT_VERB("Create context %s", actor->get_cname());
@@ -307,9 +310,10 @@ void ActorImpl::yield()
     }
   }
 
-  if (SMPI_switch_data_segment && not finished_) {
-    SMPI_switch_data_segment(get_iface());
-  }
+#if HAVE_SMPI
+  if (not finished_)
+    smpi_switch_data_segment(get_iface());
+#endif
 }
 
 /** This actor will be terminated automatically when the last non-daemon actor finishes */
@@ -496,7 +500,7 @@ ActorImplPtr ActorImpl::create(const std::string& name, const ActorCode& code, v
     actor = self()->init(xbt::string(name), host);
 
   /* actor data */
-  actor->set_user_data(data);
+  actor->piface_.set_data(data);
 
   actor->start(code);
 
@@ -522,26 +526,6 @@ void create_maestro(const std::function<void()>& code)
 } // namespace kernel
 } // namespace simgrid
 
-int SIMIX_process_count() // XBT_ATTRIB_DEPRECATED_v329
-{
-  return simgrid::kernel::EngineImpl::get_instance()->get_actor_list().size();
-}
-
-void* SIMIX_process_self_get_data() // XBT_ATTRIB_DEPRECATED_v329
-{
-  smx_actor_t self = simgrid::kernel::actor::ActorImpl::self();
-
-  if (self == nullptr) {
-    return nullptr;
-  }
-  return self->get_user_data();
-}
-
-void SIMIX_process_self_set_data(void* data) // XBT_ATTRIB_DEPRECATED_v329
-{
-  simgrid::kernel::actor::ActorImpl::self()->set_user_data(data);
-}
-
 /* needs to be public and without simcall because it is called
    by exceptions and logging events */
 const char* SIMIX_process_self_get_name()
@@ -550,19 +534,7 @@ const char* SIMIX_process_self_get_name()
 }
 
 /** @brief Returns the process from PID. */
-smx_actor_t SIMIX_process_from_PID(aid_t pid)
+smx_actor_t SIMIX_process_from_PID(aid_t pid) // XBT_ATTRIB_DEPRECATD_v331
 {
   return simgrid::kernel::actor::ActorImpl::by_pid(pid);
-}
-
-void SIMIX_process_on_exit(smx_actor_t actor,
-                           const std::function<void(bool /*failed*/)>& fun) // XBT_ATTRIB_DEPRECATED_v329
-{
-  xbt_assert(actor, "current process not found: are you in maestro context ?");
-  actor->on_exit->emplace_back(fun);
-}
-
-void simcall_process_set_data(smx_actor_t process, void* data) // XBT_ATTRIB_DEPRECATED_v329
-{
-  simgrid::kernel::actor::simcall([process, data] { process->set_user_data(data); });
 }

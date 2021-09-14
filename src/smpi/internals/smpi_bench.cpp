@@ -13,6 +13,7 @@
 #include "smpi_utils.hpp"
 #include "src/internal_config.h"
 #include "src/mc/mc_replay.hpp"
+#include "src/surf/surf_interface.hpp" // sg_surf_precision
 #include "xbt/config.hpp"
 #include "xbt/file.hpp"
 
@@ -56,7 +57,7 @@ void smpi_execute_flops(double flops)
 void smpi_execute(double duration)
 {
   if (duration >= smpi_cfg_cpu_thresh()) {
-    XBT_DEBUG("Sleep for %g to handle real computation time", duration);
+    XBT_DEBUG("Sleep for %gs (host time) to handle real computation time", duration);
     private_execute_flops(duration * smpi_cfg_host_speed());
   } else {
     XBT_DEBUG("Real computation took %g while option smpi/cpu-threshold is set to %g => ignore it", duration,
@@ -66,23 +67,19 @@ void smpi_execute(double duration)
 
 void smpi_execute_benched(double duration)
 {
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   double speed = sg_host_get_speed(sg_host_self());
   smpi_execute_flops(duration*speed);
-  smpi_bench_begin();
 }
 
 void smpi_execute_flops_benched(double flops) {
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
   smpi_execute_flops(flops);
-  smpi_bench_begin();
 }
 
 void smpi_bench_begin()
 {
-  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
-    smpi_switch_data_segment(simgrid::s4u::Actor::self());
-  }
+  smpi_switch_data_segment(simgrid::s4u::Actor::self());
 
   if (MC_is_active() || MC_record_replay_is_active())
     return;
@@ -166,34 +163,31 @@ void smpi_bench_end()
 }
 
 /* Private sleep function used by smpi_sleep(), smpi_usleep() and friends */
-static unsigned int private_sleep(double secs)
+static void private_sleep(double secs)
 {
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
 
   XBT_DEBUG("Sleep for: %lf secs", secs);
   aid_t pid = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_sleeping_in(pid, secs);
-
   simgrid::s4u::this_actor::sleep_for(secs);
-
   TRACE_smpi_sleeping_out(pid);
-
-  smpi_bench_begin();
-  return 0;
 }
 
 unsigned int smpi_sleep(unsigned int secs)
 {
   if (not smpi_process())
     return sleep(secs);
-  return private_sleep(secs);
+  private_sleep(secs);
+  return 0;
 }
 
 int smpi_usleep(useconds_t usecs)
 {
   if (not smpi_process())
     return usleep(usecs);
-  return static_cast<int>(private_sleep(usecs / 1000000.0));
+  private_sleep(static_cast<double>(usecs) / 1e6);
+  return 0;
 }
 
 #if _POSIX_TIMERS > 0
@@ -201,7 +195,8 @@ int smpi_nanosleep(const struct timespec* tp, struct timespec* t)
 {
   if (not smpi_process())
     return nanosleep(tp,t);
-  return static_cast<int>(private_sleep(tp->tv_sec + tp->tv_nsec / 1000000000.0));
+  private_sleep(static_cast<double>(tp->tv_sec) + static_cast<double>(tp->tv_nsec) / 1e9);
+  return 0;
 }
 #endif
 
@@ -210,19 +205,16 @@ int smpi_gettimeofday(struct timeval* tv, struct timezone* tz)
   if (not smpi_process()->initialized() || smpi_process()->finalized() || smpi_process()->sampling())
     return gettimeofday(tv, tz);
 
-  smpi_bench_end();
-  double now = simgrid::s4u::Engine::get_clock();
+  const SmpiBenchGuard suspend_bench;
   if (tv) {
-    tv->tv_sec = static_cast<time_t>(now);
-#ifdef WIN32
-    tv->tv_usec = static_cast<useconds_t>((now - tv->tv_sec) * 1e6);
-#else
-    tv->tv_usec = static_cast<suseconds_t>((now - tv->tv_sec) * 1e6);
-#endif
+    double now   = simgrid::s4u::Engine::get_clock();
+    double secs  = trunc(now);
+    double usecs = (now - secs) * 1e6;
+    tv->tv_sec   = static_cast<time_t>(secs);
+    tv->tv_usec  = static_cast<decltype(tv->tv_usec)>(usecs); // suseconds_t (or useconds_t on WIN32)
   }
   if (smpi_wtime_sleep > 0)
     simgrid::s4u::this_actor::sleep_for(smpi_wtime_sleep);
-  smpi_bench_begin();
   return 0;
 }
 
@@ -236,13 +228,14 @@ int smpi_clock_gettime(clockid_t clk_id, struct timespec* tp)
   if (not smpi_process()->initialized() || smpi_process()->finalized() || smpi_process()->sampling())
     return clock_gettime(clk_id, tp);
   //there is only one time in SMPI, so clk_id is ignored.
-  smpi_bench_end();
-  double now  = simgrid::s4u::Engine::get_clock();
-  tp->tv_sec  = static_cast<time_t>(now);
-  tp->tv_nsec = static_cast<long int>((now - tp->tv_sec) * 1e9);
+  const SmpiBenchGuard suspend_bench;
+  double now   = simgrid::s4u::Engine::get_clock();
+  double secs  = trunc(now);
+  double nsecs = (now - secs) * 1e9;
+  tp->tv_sec   = static_cast<time_t>(secs);
+  tp->tv_nsec  = static_cast<long int>(nsecs);
   if (smpi_wtime_sleep > 0)
     simgrid::s4u::this_actor::sleep_for(smpi_wtime_sleep);
-  smpi_bench_begin();
   return 0;
 }
 #endif
@@ -251,42 +244,34 @@ double smpi_mpi_wtime()
 {
   double time;
   if (smpi_process()->initialized() && not smpi_process()->finalized() && not smpi_process()->sampling()) {
-    smpi_bench_end();
+    const SmpiBenchGuard suspend_bench;
     time = simgrid::s4u::Engine::get_clock();
     if (smpi_wtime_sleep > 0)
       simgrid::s4u::this_actor::sleep_for(smpi_wtime_sleep);
-    smpi_bench_begin();
   } else {
     time = simgrid::s4u::Engine::get_clock();
   }
   return time;
 }
 
-extern double sg_surf_precision;
+// Used by Akypuera (https://github.com/schnorr/akypuera)
 unsigned long long smpi_rastro_resolution ()
 {
-  smpi_bench_end();
-  double resolution = (1/sg_surf_precision);
-  smpi_bench_begin();
-  return static_cast<unsigned long long>(resolution);
+  const SmpiBenchGuard suspend_bench;
+  return static_cast<unsigned long long>(1.0 / sg_surf_precision);
 }
 
 unsigned long long smpi_rastro_timestamp ()
 {
-  smpi_bench_end();
-  double now = simgrid::s4u::Engine::get_clock();
-
-  auto sec               = static_cast<unsigned long long>(now);
-  unsigned long long pre = (now - sec) * smpi_rastro_resolution();
-  smpi_bench_begin();
-  return sec * smpi_rastro_resolution() + pre;
+  const SmpiBenchGuard suspend_bench;
+  return static_cast<unsigned long long>(simgrid::s4u::Engine::get_clock() / sg_surf_precision);
 }
 
 /* ****************************** Functions related to the SMPI_SAMPLE_ macros ************************************/
 namespace {
 class SampleLocation : public std::string {
 public:
-  SampleLocation(bool global, const char* file, int line) : std::string(std::string(file) + ":" + std::to_string(line))
+  SampleLocation(bool global, const char* file, const char* tag) : std::string(std::string(file) + ":" + std::string(tag))
   {
     if (not global)
       this->append(":" + std::to_string(simgrid::s4u::this_actor::get_pid()));
@@ -309,9 +294,8 @@ public:
 
 bool LocalData::need_more_benchs() const
 {
-  bool res = (count < iters) || (threshold > 0.0 && (count < 2 ||          // not enough data
-                                                     relstderr > threshold // stderr too high yet
-                                                     ));
+  bool res = (count < iters) && (threshold < 0.0 || count < 2 ||          // not enough data
+                                                  relstderr >= threshold); // stderr too high yet
   XBT_DEBUG("%s (count:%d iter:%d stderr:%f thres:%f mean:%fs)",
             (res ? "need more data" : "enough benchs"), count, iters, relstderr, threshold, mean);
   return res;
@@ -320,9 +304,9 @@ bool LocalData::need_more_benchs() const
 std::unordered_map<SampleLocation, LocalData, std::hash<std::string>> samples;
 }
 
-void smpi_sample_1(int global, const char *file, int line, int iters, double threshold)
+void smpi_sample_1(int global, const char *file, const char *tag, int iters, double threshold)
 {
-  SampleLocation loc(global, file, line);
+  SampleLocation loc(global, file, tag);
   if (not smpi_process()->sampling()) { /* Only at first call when benchmarking, skip for next ones */
     smpi_bench_end();     /* Take time from previous, unrelated computation into account */
     smpi_process()->set_sampling(1);
@@ -359,9 +343,9 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
   }
 }
 
-int smpi_sample_2(int global, const char *file, int line, int iter_count)
+int smpi_sample_2(int global, const char *file,const char *tag, int iter_count)
 {
-  SampleLocation loc(global, file, line);
+  SampleLocation loc(global, file, tag);
 
   XBT_DEBUG("sample2 %s %d", loc.c_str(), iter_count);
   auto sample = samples.find(loc);
@@ -378,7 +362,7 @@ int smpi_sample_2(int global, const char *file, int line, int iter_count)
     // Enough data, no more bench (either we got enough data from previous visits to this benched nest, or we just
     //ran one bench and need to bail out now that our job is done). Just sleep instead
     if (not data.need_more_benchs()){
-      XBT_DEBUG("No benchmark (either no need, or just ran one): count >= iter (%d >= %d) or stderr<thres (%f<=%f). "
+      XBT_DEBUG("No benchmark (either no need, or just ran one): count (%d) >= iter (%d) (or <2) or stderr (%f) < thres (%f), or thresh is negative and ignored. "
               "Mean is %f, will be injected %d times",
               data.count, data.iters, data.relstderr, data.threshold, data.mean, iter_count);
               
@@ -395,9 +379,9 @@ int smpi_sample_2(int global, const char *file, int line, int iter_count)
   return 1;
 }
 
-void smpi_sample_3(int global, const char *file, int line)
+void smpi_sample_3(int global, const char *file, const char* tag)
 {
-  SampleLocation loc(global, file, line);
+  SampleLocation loc(global, file, tag);
 
   XBT_DEBUG("sample3 %s", loc.c_str());
   auto sample = samples.find(loc);
@@ -427,9 +411,9 @@ void smpi_sample_3(int global, const char *file, int line)
   data.benching = false;
 }
 
-int smpi_sample_exit(int global, const char *file, int line, int iter_count){
+int smpi_sample_exit(int global, const char *file, const char* tag, int iter_count){
   if (smpi_process()->sampling()){
-    SampleLocation loc(global, file, line);
+    SampleLocation loc(global, file, tag);
 
     XBT_DEBUG("sample exit %s", loc.c_str());
     auto sample = samples.find(loc);

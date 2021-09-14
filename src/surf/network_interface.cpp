@@ -10,6 +10,8 @@
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"
 
+#include <numeric>
+
 #ifndef NETWORK_INTERFACE_CPP_
 #define NETWORK_INTERFACE_CPP_
 
@@ -52,114 +54,6 @@ double NetworkModel::next_occurring_event_full(double now)
   return minRes;
 }
 
-/************
- * Resource *
- ************/
-
-LinkImpl::LinkImpl(const std::string& name) : Resource_T(name), piface_(this)
-{
-  if (name != "__loopback__")
-    xbt_assert(not s4u::Link::by_name_or_null(name), "Link '%s' declared several times in the platform.", name.c_str());
-
-  s4u::Engine::get_instance()->link_register(name, &piface_);
-  XBT_DEBUG("Create link '%s'", name.c_str());
-}
-
-/** @brief Fire the required callbacks and destroy the object
- *
- * Don't delete directly a Link, call l->destroy() instead.
- */
-void LinkImpl::destroy()
-{
-  s4u::Link::on_destruction(this->piface_);
-  delete this;
-}
-
-bool LinkImpl::is_used() const
-{
-  return get_model()->get_maxmin_system()->constraint_used(get_constraint());
-}
-
-LinkImpl* LinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy)
-{
-  get_constraint()->set_sharing_policy(policy);
-  return this;
-}
-s4u::Link::SharingPolicy LinkImpl::get_sharing_policy() const
-{
-  return get_constraint()->get_sharing_policy();
-}
-
-void LinkImpl::latency_check(double latency) const
-{
-  static double last_warned_latency = sg_surf_precision;
-  if (latency != 0.0 && latency < last_warned_latency) {
-    XBT_WARN("Latency for link %s is smaller than surf/precision (%g < %g)."
-        " For more accuracy, consider setting \"--cfg=surf/precision:%g\".",
-        get_cname(), latency, sg_surf_precision, latency);
-    last_warned_latency = latency;
-  }
-}
-
-void LinkImpl::turn_on()
-{
-  if (not is_on()) {
-    Resource::turn_on();
-    s4u::Link::on_state_change(piface_);
-  }
-}
-
-void LinkImpl::turn_off()
-{
-  if (is_on()) {
-    Resource::turn_off();
-    s4u::Link::on_state_change(piface_);
-
-    const kernel::lmm::Element* elem = nullptr;
-    double now                       = surf_get_clock();
-    while (const auto* var = get_constraint()->get_variable(&elem)) {
-      Action* action = var->get_id();
-      if (action->get_state() == Action::State::INITED || action->get_state() == Action::State::STARTED) {
-        action->set_finish_time(now);
-        action->set_state(Action::State::FAILED);
-      }
-    }
-  }
-}
-
-void LinkImpl::seal()
-{
-  if (is_sealed())
-    return;
-
-  xbt_assert(this->get_model(), "Cannot seal Link(%s) without setting the Network model first", this->get_cname());
-  Resource::seal();
-  s4u::Link::on_creation(piface_);
-}
-
-void LinkImpl::on_bandwidth_change() const
-{
-  s4u::Link::on_bandwidth_change(piface_);
-}
-
-LinkImpl* LinkImpl::set_bandwidth_profile(profile::Profile* profile)
-{
-  if (profile) {
-    xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth profile to Link %s", get_cname());
-    bandwidth_.event = profile->schedule(&profile::future_evt_set, this);
-  }
-  return this;
-}
-
-LinkImpl* LinkImpl::set_latency_profile(profile::Profile* profile)
-{
-  if (profile) {
-    xbt_assert(latency_.event == nullptr, "Cannot set a second latency profile to Link %s", get_cname());
-    latency_.event = profile->schedule(&profile::future_evt_set, this);
-  }
-  return this;
-}
-
 /**********
  * Action *
  **********/
@@ -187,6 +81,33 @@ std::list<LinkImpl*> NetworkAction::get_links() const
 
   return retlist;
 }
+
+static void add_latency(const std::vector<LinkImpl*>& links, double* latency)
+{
+  if (latency)
+    *latency = std::accumulate(begin(links), end(links), *latency,
+                               [](double lat, const auto* link) { return lat + link->get_latency(); });
+}
+
+void add_link_latency(std::vector<LinkImpl*>& result, LinkImpl* link, double* latency)
+{
+  result.push_back(link);
+  if (latency)
+    *latency += link->get_latency();
+}
+
+void add_link_latency(std::vector<LinkImpl*>& result, const std::vector<LinkImpl*>& links, double* latency)
+{
+  result.insert(result.end(), begin(links), end(links));
+  add_latency(links, latency);
+}
+
+void insert_link_latency(std::vector<LinkImpl*>& result, const std::vector<LinkImpl*>& links, double* latency)
+{
+  result.insert(result.begin(), rbegin(links), rend(links));
+  add_latency(links, latency);
+}
+
 } // namespace resource
 } // namespace kernel
 } // namespace simgrid

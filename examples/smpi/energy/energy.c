@@ -15,7 +15,6 @@
 int main(int argc, char *argv[])
 {
   int rank;
-  int i;
   char buf[1024];
 
   int err = MPI_Init(&argc, &argv);
@@ -31,19 +30,18 @@ int main(int argc, char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  int pstates = sg_host_get_nb_pstates(sg_host_self());
+  unsigned long pstates = sg_host_get_nb_pstates(sg_host_self());
 
   char *s = buf;
   size_t sz = sizeof buf;
-  size_t x = snprintf(s, sz,
-               "[%.6f] [rank %d] Pstates: %d; Powers: %.0f",
-               MPI_Wtime(), rank, pstates, sg_host_get_pstate_speed(sg_host_self(), 0));
+  size_t x  = snprintf(s, sz, "[%.6f] [rank %d] Pstates: %lu; Powers: %.0f", MPI_Wtime(), rank, pstates,
+                      sg_host_get_pstate_speed(sg_host_self(), 0));
   if (x < sz) {
     s += x;
     sz -= x;
   } else
     sz = 0;
-  for (i = 1; i < pstates; i++) {
+  for (unsigned long i = 1; i < pstates; i++) {
     x = snprintf(s, sz, ", %.0f", sg_host_get_pstate_speed(sg_host_self(), i));
     if (x < sz) {
       s += x;
@@ -53,9 +51,9 @@ int main(int argc, char *argv[])
   }
   fprintf(stderr, "%s%s\n", buf, (sz ? "" : " [...]"));
 
-  for (i = 0; i < pstates; i++) {
+  for (unsigned long i = 0; i < pstates; i++) {
     sg_host_set_pstate(sg_host_self(), i);
-    fprintf(stderr, "[%.6f] [rank %d] Current pstate: %d; Current power: %.0f\n", MPI_Wtime(), rank, i,
+    fprintf(stderr, "[%.6f] [rank %d] Current pstate: %lu; Current power: %.0f\n", MPI_Wtime(), rank, i,
             sg_host_get_speed(sg_host_self()));
 
     SMPI_SAMPLE_FLOPS(1e9) {

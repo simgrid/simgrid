@@ -1,0 +1,19 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-comm-failure "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (4:LinkKiller@Host1) LinkKiller  sleeping 10 seconds...
+> [  0.000000] (2:Receiver@Host2) Receiver posting a receive...
+> [  0.000000] (3:Receiver@Host3) Receiver posting a receive...
+> [  0.000000] (1:Sender@Host1) Initiating asynchronous send to mailbox2
+> [  0.000000] (1:Sender@Host1) Initiating asynchronous send to mailbox3
+> [  0.000000] (1:Sender@Host1) Calling wait_any..
+> [ 10.000000] (4:LinkKiller@Host1) LinkKiller turning off link linkto2
+> [ 10.000000] (4:LinkKiller@Host1) LinkKiller killed. exiting
+> [ 10.000000] (2:Receiver@Host2) Receiver has experience a network failure exception
+> [ 10.000000] (1:Sender@Host1) Sender has experienced a network failure exception, so it knows that something went wrong
+> [ 10.000000] (1:Sender@Host1) Now it needs to figure out which of the two comms failed by looking at their state
+> [ 10.000000] (1:Sender@Host1) Comm to mailbox2 has state: FAILED
+> [ 10.000000] (1:Sender@Host1) Comm to mailbox3 has state: STARTED
+> [ 10.000000] (1:Sender@Host1) Waiting on a FAILED comm raises an exception: 'Cannot wait for a failed communication'
+> [ 10.000000] (1:Sender@Host1) Wait for remaining comm, just to be nice
+> [ 16.494845] (3:Receiver@Host3) Receiver has received successfully!

@@ -143,11 +143,10 @@ void LinkEnergyWifi::update(const kernel::resource::NetworkAction&)
   double durUsage = 0;
   while (const auto* var = wifi_link->get_constraint()->get_variable(&elem)) {
     auto* action = static_cast<kernel::resource::NetworkWifiAction*>(var->get_id());
-    XBT_DEBUG("cost: %f action value: %f link rate 1: %f link rate 2: %f", action->get_cost(),
-              action->get_variable()->get_value(), wifi_link->get_host_rate(&action->get_src()),
-              wifi_link->get_host_rate(&action->get_dst()));
+    XBT_DEBUG("cost: %f action value: %f link rate 1: %f link rate 2: %f", action->get_cost(), action->get_rate(),
+              wifi_link->get_host_rate(&action->get_src()), wifi_link->get_host_rate(&action->get_dst()));
 
-    if (action->get_variable()->get_value() != 0.0) {
+    if (action->get_rate() != 0.0) {
       auto it = flowTmp.find(action);
 
       // if the flow has not been registered, initialize it: 0 bytes sent, and not updated since its creation timestamp
@@ -161,7 +160,7 @@ void LinkEnergyWifi::update(const kernel::resource::NetworkAction&)
        * If this is longer than the duration since the previous update, active duration = now - previous_update
        */
       double du = // durUsage on the current flow
-          (action->get_cost() - it->second.first) / action->get_variable()->get_value();
+          (action->get_cost() - it->second.first) / action->get_rate();
 
       if(du > surf_get_clock()-it->second.second)
         du = surf_get_clock()-it->second.second;
@@ -171,7 +170,7 @@ void LinkEnergyWifi::update(const kernel::resource::NetworkAction&)
         durUsage = du;
 
       // update the amount of data already sent by the flow
-      it->second.first += du*action->get_variable()->get_value();
+      it->second.first += du * action->get_rate();
       it->second.second =  surf_get_clock();
 
       // important: if the transmission finished, remove it (needed for performance and multi-message flows)

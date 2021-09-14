@@ -61,9 +61,9 @@ MPI projects should include ``find_package (MPI)`` in CMakeLists.txt. Then, the
 variables ``MPI_C_COMPILER``, ``MPI_CXX_COMPILER``, and ``MPI_Fortran_COMPILER`` should
 point to the full path of smpicc, smpicxx, and smpiff respectively. Example:
 
-.. code-block:: shell
+.. code-block:: console
 
-   cmake -DMPI_C_COMPILER=/opt/simgrid/bin/smpicc -DMPI_CXX_COMPILER=/opt/simgrid/bin/smpicxx -DMPI_Fortran_COMPILER=/opt/simgrid/bin/smpiff .
+   $ cmake -DMPI_C_COMPILER=/opt/simgrid/bin/smpicc -DMPI_CXX_COMPILER=/opt/simgrid/bin/smpicxx -DMPI_Fortran_COMPILER=/opt/simgrid/bin/smpiff .
 
 
 Building your project with Makefile
@@ -158,9 +158,9 @@ Library not found
 
 When the library cannot be found, you will get such an error message similar to:
 
-.. code-block:: shell
+.. code-block:: console
 
-  ./masterworker1: error while loading shared libraries: libsimgrid.so: cannot open shared object file: No such file or directory
+  $ ./masterworker1: error while loading shared libraries: libsimgrid.so: cannot open shared object file: No such file or directory
 
 To fix this, add the path to where you installed the library to the
 ``LD_LIBRARY_PATH`` variable. You can add the following line to your
@@ -175,7 +175,7 @@ computer.
 Many undefined references
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. code-block:: shell
+.. code-block:: console
 
   masterworker.c:209: undefined reference to `sg_version_check'
   masterworker.c:209: undefined reference to `MSG_init_nocheck'

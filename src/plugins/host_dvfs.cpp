@@ -89,8 +89,8 @@ namespace dvfs {
 class Governor {
   simgrid::s4u::Host* const host_;
   double sampling_rate_;
-  int min_pstate = cfg_min_pstate; //< Never use a pstate less than this one
-  int max_pstate = cfg_max_pstate; //< Never use a pstate larger than this one
+  unsigned long min_pstate = cfg_min_pstate; //< Never use a pstate less than this one
+  unsigned long max_pstate = cfg_max_pstate; //< Never use a pstate larger than this one
 
 public:
   explicit Governor(simgrid::s4u::Host* ptr)
@@ -103,8 +103,8 @@ public:
   virtual ~Governor() = default;
   virtual std::string get_name() const = 0;
   simgrid::s4u::Host* get_host() const { return host_; }
-  int get_min_pstate() const { return min_pstate; }
-  int get_max_pstate() const { return max_pstate; }
+  unsigned long get_min_pstate() const { return min_pstate; }
+  unsigned long get_max_pstate() const { return max_pstate; }
 
   void init()
   {
@@ -116,16 +116,15 @@ public:
     }
     const char* local_min_pstate_config = host_->get_property(cfg_min_pstate.get_name());
     if (local_min_pstate_config != nullptr) {
-      min_pstate = std::stoi(local_min_pstate_config);
+      min_pstate = std::stoul(local_min_pstate_config);
     }
 
     const char* local_max_pstate_config = host_->get_property(cfg_max_pstate.get_name());
     if (local_max_pstate_config != nullptr) {
-      max_pstate = std::stoi(local_max_pstate_config);
+      max_pstate = std::stoul(local_max_pstate_config);
     }
     xbt_assert(max_pstate <= host_->get_pstate_count() - 1, "Value for max_pstate too large!");
     xbt_assert(min_pstate <= max_pstate, "min_pstate is larger than max_pstate!");
-    xbt_assert(0 <= min_pstate, "min_pstate is negative!");
   }
 
   virtual void update()         = 0;
@@ -195,7 +194,7 @@ public:
 
     if (load > freq_up_threshold_) {
       get_host()->set_pstate(get_min_pstate()); /* Run at max. performance! */
-      XBT_INFO("Load: %f > threshold: %f --> changed to pstate %i", load, freq_up_threshold_, get_min_pstate());
+      XBT_INFO("Load: %f > threshold: %f --> changed to pstate %lu", load, freq_up_threshold_, get_min_pstate());
     } else {
       /* The actual implementation uses a formula here: (See Kernel file cpufreq_ondemand.c:158)
        *
@@ -206,12 +205,12 @@ public:
        */
       // Load is now < freq_up_threshold; exclude pstate 0 (the fastest)
       // because pstate 0 can only be selected if load > freq_up_threshold_
-      int new_pstate = static_cast<int>(get_max_pstate() - load * (get_max_pstate() + 1));
+      auto new_pstate = get_max_pstate() - static_cast<unsigned long>(load) * (get_max_pstate() + 1);
       if (new_pstate < get_min_pstate())
         new_pstate = get_min_pstate();
       get_host()->set_pstate(new_pstate);
 
-      XBT_DEBUG("Load: %f < threshold: %f --> changed to pstate %i", load, freq_up_threshold_, new_pstate);
+      XBT_DEBUG("Load: %f < threshold: %f --> changed to pstate %lu", load, freq_up_threshold_, new_pstate);
     }
   }
 };
@@ -239,24 +238,24 @@ public:
   void update() override
   {
     double load = get_host()->get_core_count() * sg_host_get_avg_load(get_host());
-    int pstate  = get_host()->get_pstate();
+    unsigned long pstate = get_host()->get_pstate();
     sg_host_load_reset(get_host()); // Only consider the period between two calls to this method!
 
     if (load > freq_up_threshold_) {
       if (pstate != get_min_pstate()) {
         get_host()->set_pstate(pstate - 1);
-        XBT_INFO("Load: %f > threshold: %f -> increasing performance to pstate %d", load, freq_up_threshold_,
+        XBT_INFO("Load: %f > threshold: %f -> increasing performance to pstate %lu", load, freq_up_threshold_,
                  pstate - 1);
       } else {
-        XBT_DEBUG("Load: %f > threshold: %f -> but cannot speed up even more, already in highest pstate %d", load,
+        XBT_DEBUG("Load: %f > threshold: %f -> but cannot speed up even more, already in highest pstate %lu", load,
                   freq_up_threshold_, pstate);
       }
     } else if (load < freq_down_threshold_) {
       if (pstate != get_max_pstate()) { // Are we in the slowest pstate already?
         get_host()->set_pstate(pstate + 1);
-        XBT_INFO("Load: %f < threshold: %f -> slowing down to pstate %d", load, freq_down_threshold_, pstate + 1);
+        XBT_INFO("Load: %f < threshold: %f -> slowing down to pstate %lu", load, freq_down_threshold_, pstate + 1);
       } else {
-        XBT_DEBUG("Load: %f < threshold: %f -> cannot slow down even more, already in slowest pstate %d", load,
+        XBT_DEBUG("Load: %f < threshold: %f -> cannot slow down even more, already in slowest pstate %lu", load,
                   freq_down_threshold_, pstate);
       }
     }
@@ -265,11 +264,10 @@ public:
 
 #if HAVE_SMPI
 class Adagio : public Governor {
-private:
-  int best_pstate     = 0;
-  double start_time   = 0;
-  double comp_counter = 0;
-  double comp_timer   = 0;
+  unsigned long best_pstate = 0;
+  double start_time         = 0;
+  double comp_counter       = 0;
+  double comp_timer         = 0;
 
   std::vector<std::vector<double>> rates; // Each host + all frequencies of that host
 
@@ -328,7 +326,7 @@ public:
     if (rates[task_id][best_pstate] == 0)
       best_pstate = 0;
     get_host()->set_pstate(best_pstate); // Load our schedule
-    XBT_DEBUG("Set pstate to %i", best_pstate);
+    XBT_DEBUG("Set pstate to %lu", best_pstate);
   }
 
   void post_task()
@@ -341,12 +339,12 @@ public:
     bool is_initialized         = rates[task_id][best_pstate] != 0;
     rates[task_id][best_pstate] = computed_flops / comp_timer;
     if (not is_initialized) {
-      for (int i = 1; i < get_host()->get_pstate_count(); i++) {
+      for (unsigned long i = 1; i < get_host()->get_pstate_count(); i++) {
         rates[task_id][i] = rates[task_id][0] * (get_host()->get_pstate_speed(i) / get_host()->get_speed());
       }
     }
 
-    for (int pstate = get_host()->get_pstate_count() - 1; pstate >= 0; pstate--) {
+    for (unsigned long pstate = get_host()->get_pstate_count() - 1; pstate != 0; pstate--) {
       if (computed_flops / rates[task_id][pstate] <= target_time) {
         // We just found the pstate we want to use!
         best_pstate = pstate;

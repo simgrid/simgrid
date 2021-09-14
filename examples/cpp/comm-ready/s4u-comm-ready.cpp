@@ -93,7 +93,7 @@ static void peer(int argc, char** argv)
   }
 
   XBT_INFO("I'm done, just waiting for my peers to receive the messages before exiting");
-  sg4::Comm::wait_all(&pending_comms);
+  sg4::Comm::wait_all(pending_comms);
 
   XBT_INFO("Goodbye now!");
 }

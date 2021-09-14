@@ -74,9 +74,9 @@ If you use cmake, set the variables ``MPI_C_COMPILER``, ``MPI_CXX_COMPILER`` and
 ``MPI_Fortran_COMPILER`` to the full path of smpicc, smpicxx and smpiff (or
 smpif90), respectively. Example:
 
-.. code-block:: shell
+.. code-block:: console
 
-   cmake -DMPI_C_COMPILER=/opt/simgrid/bin/smpicc -DMPI_CXX_COMPILER=/opt/simgrid/bin/smpicxx -DMPI_Fortran_COMPILER=/opt/simgrid/bin/smpiff .
+   $ cmake -DMPI_C_COMPILER=/opt/simgrid/bin/smpicc -DMPI_CXX_COMPILER=/opt/simgrid/bin/smpicxx -DMPI_Fortran_COMPILER=/opt/simgrid/bin/smpiff .
 
 ....................
 Simulating your Code
@@ -84,9 +84,9 @@ Simulating your Code
 
 Use the ``smpirun`` script as follows:
 
-.. code-block:: shell
+.. code-block:: console
 
-   smpirun -hostfile my_hostfile.txt -platform my_platform.xml ./program -blah
+   $ smpirun -hostfile my_hostfile.txt -platform my_platform.xml ./program -blah
 
 - ``my_hostfile.txt`` is a classical MPI hostfile (that is, this file
   lists the machines on which the processes must be dispatched, one
@@ -120,17 +120,17 @@ following commands. Once in GDB, each MPI ranks will be represented as
 a regular thread, and you can explore the state of each of them as
 usual.
 
-.. code-block:: shell
+.. code-block:: console
 
-   smpirun -wrapper valgrind ...other args...
-   smpirun -wrapper "gdb --args" --cfg=contexts/factory:thread ...other args...
+   $ smpirun -wrapper valgrind ...other args...
+   $ smpirun -wrapper "gdb --args" --cfg=contexts/factory:thread ...other args...
 
 Some shortcuts are available:
 
 - ``-gdb`` is equivalent to ``-wrapper "gdb --args" -keep-temps``, to run within gdb debugger
 - ``-lldb`` is equivalent to ``-wrapper "lldb --" -keep-temps``, to run within lldb debugger
-- ``-vgdb`` is equivalent to ``-wrapper "valgrind --vgdb=yes --vgdb-error=0"
--keep-temps``, to run within valgrind and allow to attach a debugger
+- ``-vgdb`` is equivalent to ``-wrapper "valgrind --vgdb=yes --vgdb-error=0" -keep-temps``,
+  to run within valgrind and allow to attach a debugger
 
 To help locate bottlenecks and largest allocations in the simulated application,
 the -analyze flag can be passed to smpirun. It will activate
@@ -687,7 +687,13 @@ their duration, and this duration will be used for the subsequent
 iterations. These samples are done per processor with
 SMPI_SAMPLE_LOCAL, and shared between all processors with
 SMPI_SAMPLE_GLOBAL. Of course, none of this will work if the execution
-time of your loop iteration are not stable.
+time of your loop iteration are not stable. If some parameters have an
+incidence on the timing of a kernel, and if they are reused often 
+(same kernel launched with a few different sizes during the run, for example), 
+SMPI_SAMPLE_LOCAL_TAG and SMPI_SAMPLE_GLOBAL_TAG can be used, with a tag 
+as last parameter, to differentiate between calls. The tag is a character 
+chain crafted by the user, with a maximum size of 128, and should include
+what is necessary to group calls of a given size together. 
 
 This feature is demoed by the example file
 `examples/smpi/NAS/ep.c <https://framagit.org/simgrid/simgrid/tree/master/examples/smpi/NAS/ep.c>`_
@@ -777,10 +783,10 @@ functional or that you are cross-compiling, try to define the
 ``SMPI_PRETEND_CC`` environment variable before running the
 configuration.
 
-.. code-block:: shell
+.. code-block:: console
 
-   SMPI_PRETEND_CC=1 ./configure # here come the configure parameters
-   make
+   $ SMPI_PRETEND_CC=1 ./configure # here come the configure parameters
+   $ make
 
 Indeed, the programs compiled with ``smpicc`` cannot be executed
 without ``smpirun`` (they are shared libraries and do weird things on
@@ -802,10 +808,10 @@ fail without ``smpirun``.
 In addition to the previous answers, some projects also need to be
 explicitly told what compiler to use, as follows:
 
-.. code-block:: shell
+.. code-block:: console
 
-   SMPI_PRETEND_CC=1 ./configure CC=smpicc # here come the other configure parameters
-   make
+   $ SMPI_PRETEND_CC=1 ./configure CC=smpicc # here come the other configure parameters
+   $ make
 
 Maybe your configure is using another variable, such as ``cc`` (in
 lower case) or similar. Just check the logs.
@@ -841,7 +847,7 @@ SimGrid uses time-independent traces, in which each actor is given a
 script of the actions to do sequentially. These trace files can
 actually be captured with the online version of SMPI, as follows:
 
-.. code-block:: shell
+.. code-block:: console
 
    $ smpirun -trace-ti --cfg=tracing/filename:LU.A.32 -np 32 -platform ../cluster_backbone.xml bin/lu.A.32
 
@@ -854,11 +860,13 @@ To replay this with SMPI, you need to first compile the provided
 `simgrid/examples/smpi/replay
 <https://framagit.org/simgrid/simgrid/tree/master/examples/smpi/replay>`_.
 
-.. code-block:: shell
+.. code-block:: console
 
    $ smpicxx ../replay.cpp -O3 -o ../smpi_replay
 
 Afterward, you can replay your trace in SMPI as follows:
+
+.. code-block:: console
 
    $ smpirun -np 32 -platform ../cluster_torus.xml -ext smpi_replay ../smpi_replay LU.A.32
 

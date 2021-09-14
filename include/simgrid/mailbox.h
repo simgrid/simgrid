@@ -7,7 +7,6 @@
 #define INCLUDE_SIMGRID_MAILBOX_H_
 
 #include <simgrid/forward.h>
-#include <xbt/base.h>
 
 /* C interface */
 SG_BEGIN_DECL

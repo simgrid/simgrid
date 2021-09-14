@@ -67,7 +67,7 @@ if(SIMGRID_HAVE_LUA)
   ADD_CUSTOM_TARGET(link_simgrid_lua ALL
     DEPENDS 	simgrid
     )
-  SET(SIMGRID_DEP "${SIMGRID_DEP} ${LUA_LIBRARY} ${DL_LIBRARY}")
+  SET(SIMGRID_DEP "${SIMGRID_DEP} ${LUA_LIBRARY}")
 endif()
 
 if(HAVE_PAPI)
@@ -84,7 +84,7 @@ if(HAVE_GRAPHVIZ)
   endif()
 endif()
 
-if(SIMGRID_HAVE_MC AND NOT ${DL_LIBRARY} STREQUAL "")
+if(NOT ${DL_LIBRARY} STREQUAL "")
   SET(SIMGRID_DEP "${SIMGRID_DEP} ${DL_LIBRARY}")
 endif()
 
@@ -100,10 +100,6 @@ endif()
 ##################################
 
 if(enable_smpi)
-  if(NOT ${DL_LIBRARY} STREQUAL "")
-    set(SIMGRID_DEP "${SIMGRID_DEP} ${DL_LIBRARY}") # for privatization
-  endif()
-
   add_executable(smpimain src/smpi/smpi_main.c)
   target_link_libraries(smpimain simgrid)
   set_target_properties(smpimain

@@ -12,8 +12,8 @@
 
 .. _platform_examples:
    
-Platform Examples
-=================
+Network Topology Examples
+=========================
 
 Simple Example with 3 hosts
 ---------------------------
@@ -120,6 +120,8 @@ loopback is given, the communication from a node to itself is handled
 as if it were two distinct nodes: it goes twice through the private
 link and through the backbone (if any).
 
+.. _platform_examples_fattree:
+
 Fat-Tree Cluster
 ----------------
 
@@ -185,6 +187,54 @@ For example, ``3,4 ; 3,2 ; 3,1 ; 2``:
 .. literalinclude:: ../../examples/platforms/cluster_dragonfly.xml
    :language: xml
 
+
+Star Zone
+---------
+
+In a Star topology, as the name says, nodes are organized following a star.
+It's similar to a cluster topology but you have the flexibility to set
+different route for every component in the star.
+Unfortunately, it's only available in the C++ interface.
+
+.. image:: img/starzone.svg
+    :scale: 80%
+    :align: center
+
+The particularity of this zone is how routes are declared. Instead of declaring the
+source and destination, routes are described from a node to everybody else or from
+everybody else to the node. In the example, the node *A* uses the *Link1* and *Backbone*
+to communicate with other nodes (note that this is valid for both nodes inside or outside
+the zone). More precisely, a communication from node *A* to *B* would use links: *Link1, Backbone,
+Link3_down*. Note that duplicated links are removed from the route, i.e. in this example we'll use *Backbone*
+only once.
+
+Also, note that the nodes (A, B and C) can be either hosts or other zones. In case of using zones,
+set the gateway parameter properly when adding the route.
+
+The following code illustrates how to create this Star Zone and add the appropriates routes.
+
+.. code-block:: cpp
+
+    auto* zone = sg4::create_star_zone("star");
+    /* create hosts */
+    const sg4::Host* hostA = zone->create_host("A", 1e9)->seal();
+    const sg4::Host* hostB = zone->create_host("B", 1e9)->seal();
+
+    /* create links */
+    sg4::Link* link1      = zone->create_link("link1", 1e6)->seal();
+    sg4::Link* link3_up   = zone->create_link("link3_up", 1e6)->seal();
+    sg4::Link* link3_down = zone->create_link("link3_down", 1e6)->seal();
+    sg4::Link* backbone   = zone->create_link("backbone", 1e9)->seal();
+
+    /* symmetric route route: A->ALL and ALL->A, shared link1 */
+    zone->add_route(hostA->get_netpoint(), nullptr, nullptr, nullptr,
+                    std::vector<sg4::Link*>{link1, backbone}, true);
+    /* route host B -> ALL, split-duplex link3, direction UP */
+    zone->add_route(hostB->get_netpoint(), nullptr, nullptr, nullptr,
+                    std::vector<sg4::Link*>{link3_up, backbone}, false);
+    /* route host ALL -> B, split-duplex link3, direction DOWN */
+    zone->add_route(nullptr, hostB->get_netpoint(), nullptr, nullptr,
+                    std::vector<sg4::Link*>{backbone, link3_down}, false);
 
 .. todo:: Complete this page of the manual.
 

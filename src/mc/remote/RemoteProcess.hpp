@@ -270,7 +270,7 @@ public:
    *  (with simgrid::mc::Process* / simgrid::mc::AddressSpace*
    *  and unw_context_t).
    */
-  unw_addr_space_t unw_addr_space;
+  unw_addr_space_t unw_addr_space = nullptr;
 
   /** Underlying libunwind address-space
    *
@@ -278,11 +278,11 @@ public:
    *  operations of the native MC address space is currently delegated
    *  to this address space (either the local or a ptrace unwinder).
    */
-  unw_addr_space_t unw_underlying_addr_space;
+  unw_addr_space_t unw_underlying_addr_space = nullptr;
 
   /** The corresponding context
    */
-  void* unw_underlying_context;
+  void* unw_underlying_context = nullptr;
 };
 
 /** Open a FD to a remote process memory (`/dev/$pid/mem`) */

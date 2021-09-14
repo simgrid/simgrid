@@ -36,7 +36,7 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task)
  */
 SD_task_t SD_task_create(const char* name, void* data, double amount)
 {
-  SD_task_t task = xbt_new0(s_SD_task_t, 1);
+  auto* task     = xbt_new0(s_SD_task_t, 1);
   task->kind     = SD_TASK_NOT_TYPED;
   task->state    = SD_NOT_SCHEDULED;
   sd_global->initial_tasks.insert(task);
@@ -802,7 +802,6 @@ void SD_task_run(SD_task_t task)
   XBT_VERB("Executing task '%s'", task->name);
 
   /* Beware! The scheduling data are now used by the surf action directly! no copy was done */
-  // FIXME[donassolo]: verify if all hosts belongs to the same netZone?
   auto host_model = (*task->allocation).front()->get_netpoint()->get_englobing_zone()->get_host_model();
   task->surf_action =
       host_model->execute_parallel(*task->allocation, task->flops_amount, task->bytes_amount, task->rate);

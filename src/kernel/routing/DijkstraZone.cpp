@@ -21,8 +21,8 @@ namespace routing {
 
 class GraphNodeData {
 public:
-  explicit GraphNodeData(int id) : id_(id) {}
-  int id_;
+  explicit GraphNodeData(unsigned long id) : id_(id) {}
+  unsigned long id_;
   unsigned long graph_id_ = UINT_MAX; /* used for caching internal graph id's */
 };
 
@@ -68,7 +68,7 @@ void DijkstraZone::do_seal()
   }
 }
 
-xbt_node_t DijkstraZone::route_graph_new_node(int id)
+xbt_node_t DijkstraZone::route_graph_new_node(unsigned long id)
 {
   xbt_node_t node = xbt_graph_new_node(route_graph_.get(), new GraphNodeData(id));
   graph_node_map_.emplace(id, node);
@@ -76,7 +76,7 @@ xbt_node_t DijkstraZone::route_graph_new_node(int id)
   return node;
 }
 
-xbt_node_t DijkstraZone::node_map_search(int id)
+xbt_node_t DijkstraZone::node_map_search(unsigned long id)
 {
   auto ret = graph_node_map_.find(id);
   return ret == graph_node_map_.end() ? nullptr : ret->second;
@@ -84,11 +84,11 @@ xbt_node_t DijkstraZone::node_map_search(int id)
 
 /* Parsing */
 
-void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, double* lat)
+void DijkstraZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* route, double* lat)
 {
   get_route_check_params(src, dst);
-  int src_id = src->id();
-  int dst_id = dst->id();
+  unsigned long src_id = src->id();
+  unsigned long dst_id = dst->id();
 
   const_xbt_dynar_t nodes = xbt_graph_get_nodes(route_graph_.get());
 
@@ -96,8 +96,8 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, d
   const s_xbt_node_t* src_elm = node_map_search(src_id);
   const s_xbt_node_t* dst_elm = node_map_search(dst_id);
 
-  unsigned int src_node_id = static_cast<GraphNodeData*>(xbt_graph_node_get_data(src_elm))->graph_id_;
-  unsigned int dst_node_id = static_cast<GraphNodeData*>(xbt_graph_node_get_data(dst_elm))->graph_id_;
+  unsigned long src_node_id = static_cast<GraphNodeData*>(xbt_graph_node_get_data(src_elm))->graph_id_;
+  unsigned long dst_node_id = static_cast<GraphNodeData*>(xbt_graph_node_get_data(dst_elm))->graph_id_;
 
   /* if the src and dst are the same */
   if (src_node_id == dst_node_id) {
@@ -110,21 +110,17 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, d
 
     const Route* e_route = static_cast<Route*>(xbt_graph_edge_get_data(edge));
 
-    for (auto const& link : e_route->link_list_) {
-      route->link_list_.insert(route->link_list_.begin(), link);
-      if (lat)
-        *lat += link->get_latency();
-    }
+    insert_link_latency(route->link_list_, e_route->link_list_, lat);
   }
 
-  auto elm                   = route_cache_.emplace(src_id, std::vector<int>());
-  std::vector<int>& pred_arr = elm.first->second;
+  auto elm                             = route_cache_.emplace(src_id, std::vector<unsigned long>());
+  std::vector<unsigned long>& pred_arr = elm.first->second;
 
   if (elm.second) { /* new element was inserted (not cached mode, or cache miss) */
     unsigned long nr_nodes = xbt_dynar_length(nodes);
     std::vector<unsigned long> cost_arr(nr_nodes); /* link cost from src to other hosts */
     pred_arr.resize(nr_nodes);              /* predecessors in path from src */
-    using Qelt = std::pair<double, int>;
+    using Qelt = std::pair<double, unsigned long>;
     std::priority_queue<Qelt, std::vector<Qelt>, std::greater<>> pqueue;
 
     /* initialize */
@@ -143,7 +139,7 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, d
 
     /* apply dijkstra using the indexes from the graph's node array */
     while (not pqueue.empty()) {
-      int v_id = pqueue.top().second;
+      unsigned long v_id = pqueue.top().second;
       pqueue.pop();
       const s_xbt_node_t* v_node = xbt_dynar_get_as(nodes, v_id, xbt_node_t);
       xbt_edge_t edge            = nullptr;
@@ -152,7 +148,7 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, d
       xbt_dynar_foreach (xbt_graph_node_get_outedges(v_node), cursor, edge) {
         const s_xbt_node_t* u_node           = xbt_graph_edge_get_target(edge);
         const GraphNodeData* data            = static_cast<GraphNodeData*>(xbt_graph_node_get_data(u_node));
-        int u_id                             = data->graph_id_;
+        unsigned long u_id                   = data->graph_id_;
         const Route* tmp_e_route             = static_cast<Route*>(xbt_graph_edge_get_data(edge));
         unsigned long cost_v_u               = tmp_e_route->link_list_.size(); /* count of links, old model assume 1 */
 
@@ -169,7 +165,7 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, d
   NetPoint* gw_src   = nullptr;
   NetPoint* first_gw = nullptr;
 
-  for (unsigned int v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
+  for (unsigned long v = dst_node_id; v != src_node_id; v = pred_arr[v]) {
     const s_xbt_node_t* node_pred_v = xbt_dynar_get_as(nodes, pred_arr[v], xbt_node_t);
     const s_xbt_node_t* node_v      = xbt_dynar_get_as(nodes, v, xbt_node_t);
     const s_xbt_edge_t* edge        = xbt_graph_get_edge(route_graph_.get(), node_pred_v, node_v);
@@ -190,23 +186,14 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, d
         gw_dst->get_name() != prev_gw_src->get_name()) {
       std::vector<resource::LinkImpl*> e_route_as_to_as;
 
-      NetPoint* gw_dst_net_elm      = nullptr;
-      NetPoint* prev_gw_src_net_elm = nullptr;
+      const NetPoint* gw_dst_net_elm      = nullptr;
+      const NetPoint* prev_gw_src_net_elm = nullptr;
       get_global_route(gw_dst_net_elm, prev_gw_src_net_elm, e_route_as_to_as, nullptr);
-      auto pos = route->link_list_.begin();
-      for (auto const& link : e_route_as_to_as) {
-        route->link_list_.insert(pos, link);
-        if (lat)
-          *lat += link->get_latency();
-        pos++;
-      }
+      std::reverse(begin(e_route_as_to_as), end(e_route_as_to_as));
+      insert_link_latency(route->link_list_, e_route_as_to_as, lat);
     }
 
-    for (auto const& link : e_route->link_list_) {
-      route->link_list_.insert(route->link_list_.begin(), link);
-      if (lat)
-        *lat += link->get_latency();
-    }
+    insert_link_latency(route->link_list_, e_route->link_list_, lat);
   }
 
   if (get_hierarchy() == RoutingMode::recursive) {
@@ -219,19 +206,21 @@ void DijkstraZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, d
 }
 
 void DijkstraZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                             const std::vector<resource::LinkImpl*>& link_list_, bool symmetrical)
+                             const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical)
 {
-  add_route_check_params(src, dst, gw_src, gw_dst, link_list_, symmetrical);
+  add_route_check_params(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
-  new_edge(src->id(), dst->id(), new_extended_route(get_hierarchy(), gw_src, gw_dst, link_list_, true));
+  new_edge(src->id(), dst->id(),
+           new_extended_route(get_hierarchy(), gw_src, gw_dst, get_link_list_impl(link_list, false), true));
 
   if (symmetrical)
-    new_edge(dst->id(), src->id(), new_extended_route(get_hierarchy(), gw_dst, gw_src, link_list_, false));
+    new_edge(dst->id(), src->id(),
+             new_extended_route(get_hierarchy(), gw_dst, gw_src, get_link_list_impl(link_list, true), false));
 }
 
-void DijkstraZone::new_edge(int src_id, int dst_id, Route* route)
+void DijkstraZone::new_edge(unsigned long src_id, unsigned long dst_id, Route* route)
 {
-  XBT_DEBUG("Create Route from '%d' to '%d'", src_id, dst_id);
+  XBT_DEBUG("Create Route from '%lu' to '%lu'", src_id, dst_id);
 
   // Get the extremities, or create them if they don't exist yet
   xbt_node_t src = node_map_search(src_id);

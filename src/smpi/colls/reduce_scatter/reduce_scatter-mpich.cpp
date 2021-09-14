@@ -74,16 +74,16 @@ int reduce_scatter__mpich_pair(const void *sendbuf, void *recvbuf, const int rec
             if (sendbuf != MPI_IN_PLACE)
                 Request::sendrecv(((char *)sendbuf+disps[dst]*extent),
                                              recvcounts[dst], datatype, dst,
-                                             COLL_TAG_SCATTER, tmp_recvbuf,
+                                             COLL_TAG_REDUCE_SCATTER, tmp_recvbuf,
                                              recvcounts[rank], datatype, src,
-                                             COLL_TAG_SCATTER, comm,
+                                             COLL_TAG_REDUCE_SCATTER, comm,
                                              MPI_STATUS_IGNORE);
             else
                 Request::sendrecv(((char *)recvbuf+disps[dst]*extent),
                                              recvcounts[dst], datatype, dst,
-                                             COLL_TAG_SCATTER, tmp_recvbuf,
+                                             COLL_TAG_REDUCE_SCATTER, tmp_recvbuf,
                                              recvcounts[rank], datatype, src,
-                                             COLL_TAG_SCATTER, comm,
+                                             COLL_TAG_REDUCE_SCATTER, comm,
                                              MPI_STATUS_IGNORE);
 
             if (is_commutative || (src < rank)) {
@@ -230,9 +230,9 @@ int reduce_scatter__mpich_noncomm(const void *sendbuf, void *recvbuf, const int 
         }
 
         Request::sendrecv(outgoing_data + send_offset*true_extent,
-                                     size, datatype, peer, COLL_TAG_SCATTER,
+                                     size, datatype, peer, COLL_TAG_REDUCE_SCATTER,
                                      incoming_data + recv_offset*true_extent,
-                                     size, datatype, peer, COLL_TAG_SCATTER,
+                                     size, datatype, peer, COLL_TAG_REDUCE_SCATTER,
                                      comm, MPI_STATUS_IGNORE);
         /* always perform the reduction at recv_offset, the data at send_offset
            is now our peer's responsibility */
@@ -384,8 +384,8 @@ int reduce_scatter__mpich_rdb(const void *sendbuf, void *recvbuf, const int recv
            received in tmp_recvbuf and then accumulated into
            tmp_results. accumulation is done later below.   */
 
-        Request::sendrecv(tmp_results, 1, sendtype, dst, COLL_TAG_SCATTER, tmp_recvbuf, 1, recvtype, dst,
-                          COLL_TAG_SCATTER, comm, MPI_STATUS_IGNORE);
+        Request::sendrecv(tmp_results, 1, sendtype, dst, COLL_TAG_REDUCE_SCATTER, tmp_recvbuf, 1, recvtype, dst,
+                          COLL_TAG_REDUCE_SCATTER, comm, MPI_STATUS_IGNORE);
         received = 1;
       }
 
@@ -423,12 +423,12 @@ int reduce_scatter__mpich_rdb(const void *sendbuf, void *recvbuf, const int recv
              can send if they have the data */
           if ((dst > rank) && (rank < tree_root + nprocs_completed) && (dst >= tree_root + nprocs_completed)) {
             /* send the current result */
-            Request::send(tmp_recvbuf, 1, recvtype, dst, COLL_TAG_SCATTER, comm);
+            Request::send(tmp_recvbuf, 1, recvtype, dst, COLL_TAG_REDUCE_SCATTER, comm);
           }
           /* recv only if this proc. doesn't have data and sender
              has data */
           else if ((dst < rank) && (dst < tree_root + nprocs_completed) && (rank >= tree_root + nprocs_completed)) {
-            Request::recv(tmp_recvbuf, 1, recvtype, dst, COLL_TAG_SCATTER, comm, MPI_STATUS_IGNORE);
+            Request::recv(tmp_recvbuf, 1, recvtype, dst, COLL_TAG_REDUCE_SCATTER, comm, MPI_STATUS_IGNORE);
             received = 1;
           }
           tmp_mask >>= 1;

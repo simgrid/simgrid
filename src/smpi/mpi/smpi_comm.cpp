@@ -65,16 +65,17 @@ void Comm::destroy(Comm* comm)
     Comm::destroy(smpi_process()->comm_world());
     return;
   }
-  if(comm != MPI_COMM_WORLD)
+  if (comm != MPI_COMM_WORLD && not comm->deleted()) {
+    comm->cleanup_attr<Comm>();
     comm->mark_as_deleted();
+  }
   Comm::unref(comm);
 }
 
 int Comm::dup(MPI_Comm* newcomm){
-  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
-    // we need to switch as the called function may silently touch global variables
-    smpi_switch_data_segment(s4u::Actor::self());
-  }
+  // we need to switch as the called function may silently touch global variables
+  smpi_switch_data_segment(s4u::Actor::self());
+
   auto* cp     = new Group(this->group());
   (*newcomm)   = new  Comm(cp, this->topo());
 
@@ -182,12 +183,12 @@ void Comm::get_name(char* name, int* len) const
 std::string Comm::name() const
 {
   int size;
-  char name[MPI_MAX_NAME_STRING+1];
-  this->get_name(name, &size);
+  std::array<char, MPI_MAX_NAME_STRING + 1> name;
+  this->get_name(name.data(), &size);
   if (name[0]=='\0')
     return std::string("MPI_Comm");
   else
-    return std::string(name);
+    return std::string(name.data());
 }
 
 
@@ -411,10 +412,9 @@ void Comm::init_smp(){
     smpi_process()->set_replaying(false);
   }
 
-  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
-    // we need to switch as the called function may silently touch global variables
-    smpi_switch_data_segment(s4u::Actor::self());
-  }
+  // we need to switch as the called function may silently touch global variables
+  smpi_switch_data_segment(s4u::Actor::self());
+
   // identify neighbors in comm
   MPI_Comm comm_intra = find_intra_comm(&leader);
 
@@ -424,11 +424,6 @@ void Comm::init_smp(){
   std::fill_n(leader_list, comm_size, -1);
 
   allgather__ring(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, this);
-
-  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
-    // we need to switch as the called function may silently touch global variables
-    smpi_switch_data_segment(s4u::Actor::self());
-  }
 
   if(leaders_map_==nullptr){
     leaders_map_= leaders_map;
@@ -481,7 +476,7 @@ void Comm::init_smp(){
   int my_local_size=comm_intra->size();
   if(comm_intra->rank()==0) {
     int is_uniform       = 1;
-    int* non_uniform_map = xbt_new0(int,leader_group_size);
+    auto* non_uniform_map = xbt_new0(int, leader_group_size);
     allgather__ring(&my_local_size, 1, MPI_INT,
         non_uniform_map, 1, MPI_INT, leader_comm);
     for(i=0; i < leader_group_size; i++) {
@@ -499,10 +494,9 @@ void Comm::init_smp(){
   }
   bcast__scatter_LR_allgather(&is_uniform_, 1, MPI_INT, 0, comm_intra);
 
-  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
-    // we need to switch as the called function may silently touch global variables
-    smpi_switch_data_segment(s4u::Actor::self());
-  }
+  // we need to switch as the called function may silently touch global variables
+  smpi_switch_data_segment(s4u::Actor::self());
+
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes
   int is_blocked=1;
   int prev      = this->group()->rank(comm_intra->group()->actor(0));
@@ -559,19 +553,17 @@ void Comm::remove_rma_win(MPI_Win win){
 
 void Comm::finish_rma_calls() const
 {
+  const int myrank = rank();
   for (auto const& it : rma_wins_) {
-    if(it->rank()==this->rank()){//is it ours (for MPI_COMM_WORLD)?
+    if (it->rank() == myrank) { // is it ours (for MPI_COMM_WORLD)?
       int finished = it->finish_comms();
-      XBT_DEBUG("Barrier for rank %d - Finished %d RMA calls",this->rank(), finished);
+      XBT_DEBUG("Barrier for rank %d - Finished %d RMA calls", myrank, finished);
     }
   }
 }
 
 MPI_Info Comm::info()
 {
-  if (info_ == MPI_INFO_NULL)
-    info_ = new Info();
-  info_->ref();
   return info_;
 }
 
@@ -591,9 +583,12 @@ MPI_Errhandler Comm::errhandler()
       errhandler_->ref();
     return errhandler_;
   } else {
-    if(errhandlers_==nullptr)
-      return MPI_ERRORS_ARE_FATAL;
-    else {
+    if(errhandlers_==nullptr){
+      if (_smpi_cfg_default_errhandler_is_error)
+        return MPI_ERRORS_ARE_FATAL;
+      else
+        return MPI_ERRORS_RETURN;
+    } else {
       if(errhandlers_[this->rank()] != MPI_ERRHANDLER_NULL)
         errhandlers_[this->rank()]->ref();
       return errhandlers_[this->rank()];

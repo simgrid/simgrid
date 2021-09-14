@@ -43,30 +43,28 @@ bool FatTreeZone::is_in_sub_tree(const FatTreeNode* root, const FatTreeNode* nod
   return true;
 }
 
-void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency)
+void FatTreeZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* into, double* latency)
 {
   if (dst->is_router() || src->is_router())
     return;
 
   /* Let's find the source and the destination in our internal structure */
   auto searchedNode = this->compute_nodes_.find(src->id());
-  xbt_assert(searchedNode != this->compute_nodes_.end(), "Could not find the source %s [%u] in the fat tree",
+  xbt_assert(searchedNode != this->compute_nodes_.end(), "Could not find the source %s [%lu] in the fat tree",
              src->get_cname(), src->id());
   const FatTreeNode* source = searchedNode->second.get();
 
   searchedNode = this->compute_nodes_.find(dst->id());
-  xbt_assert(searchedNode != this->compute_nodes_.end(), "Could not find the destination %s [%u] in the fat tree",
+  xbt_assert(searchedNode != this->compute_nodes_.end(), "Could not find the destination %s [%lu] in the fat tree",
              dst->get_cname(), dst->id());
   const FatTreeNode* destination = searchedNode->second.get();
 
-  XBT_VERB("Get route and latency from '%s' [%u] to '%s' [%u] in a fat tree", src->get_cname(), src->id(),
+  XBT_VERB("Get route and latency from '%s' [%lu] to '%s' [%lu] in a fat tree", src->get_cname(), src->id(),
            dst->get_cname(), dst->id());
 
   /* In case destination is the source, and there is a loopback, let's use it instead of going up to a switch */
   if (source->id == destination->id && has_loopback()) {
-    into->link_list_.push_back(source->loopback_);
-    if (latency)
-      *latency += source->loopback_->get_latency();
+    add_link_latency(into->link_list_, source->loopback_, latency);
     return;
   }
 
@@ -85,10 +83,7 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, Route* into, dou
     if (currentNode->limiter_link_)
       into->link_list_.push_back(currentNode->limiter_link_);
 
-    into->link_list_.push_back(currentNode->parents[d]->up_link_);
-
-    if (latency)
-      *latency += currentNode->parents[d]->up_link_->get_latency();
+    add_link_latency(into->link_list_, currentNode->parents[d]->up_link_, latency);
 
     currentNode = currentNode->parents[d]->up_node_;
   }
@@ -100,13 +95,11 @@ void FatTreeZone::get_local_route(NetPoint* src, NetPoint* dst, Route* into, dou
   while (currentNode != destination) {
     for (unsigned int i = 0; i < currentNode->children.size(); i++) {
       if (i % this->num_children_per_node_[currentNode->level - 1] == destination->label[currentNode->level - 1]) {
-        into->link_list_.push_back(currentNode->children[i]->down_link_);
+        add_link_latency(into->link_list_, currentNode->children[i]->down_link_, latency);
 
         if (currentNode->limiter_link_)
           into->link_list_.push_back(currentNode->limiter_link_);
 
-        if (latency)
-          *latency += currentNode->children[i]->down_link_->get_latency();
         currentNode = currentNode->children[i]->down_node_;
         XBT_DEBUG("%d(%u,%u) is accessible through %d(%u,%u)", destination->id, destination->level,
                   destination->position, currentNode->id, currentNode->level, currentNode->position);
@@ -255,7 +248,7 @@ void FatTreeZone::generate_switches(const s4u::ClusterCallbacks& set_callbacks)
   }
 
   /* get limiter for this router */
-  auto get_limiter = [this, &set_callbacks](unsigned int i, unsigned int j, int id) -> resource::LinkImpl* {
+  auto get_limiter = [this, &set_callbacks](unsigned long i, unsigned long j, long id) -> resource::LinkImpl* {
     kernel::resource::LinkImpl* limiter = nullptr;
     if (set_callbacks.limiter) {
       const auto* s4u_link = set_callbacks.limiter(get_iface(), {i + 1, j}, id);
@@ -266,15 +259,16 @@ void FatTreeZone::generate_switches(const s4u::ClusterCallbacks& set_callbacks)
     return limiter;
   };
   // Create the switches
-  int k = 0;
-  for (unsigned int i = 0; i < this->levels_; i++) {
-    for (unsigned int j = 0; j < this->nodes_by_level_[i + 1]; j++) {
+  unsigned long k = 2 * nodes_.size();
+  for (unsigned long i = 0; i < this->levels_; i++) {
+    for (unsigned long j = 0; j < this->nodes_by_level_[i + 1]; j++) {
       k--;
       auto newNode = std::make_shared<FatTreeNode>(k, i + 1, j, get_limiter(i, j, k), nullptr);
       XBT_DEBUG("We create the switch %d(%u,%u)", newNode->id, newNode->level, newNode->position);
-      newNode->children.resize(this->num_children_per_node_[i] * this->num_port_lower_level_[i]);
+      newNode->children.resize(static_cast<size_t>(this->num_children_per_node_[i]) * this->num_port_lower_level_[i]);
       if (i != this->levels_ - 1) {
-        newNode->parents.resize(this->num_parents_per_node_[i + 1] * this->num_port_lower_level_[i + 1]);
+        newNode->parents.resize(static_cast<size_t>(this->num_parents_per_node_[i + 1]) *
+                                this->num_port_lower_level_[i + 1]);
       }
       newNode->label.resize(this->levels_);
       this->nodes_.emplace_back(newNode);
@@ -344,7 +338,7 @@ void FatTreeZone::add_processing_node(int id, resource::LinkImpl* limiter, resou
   static int position = 0;
   auto newNode = std::make_shared<FatTreeNode>(id, 0, position, limiter, loopback);
   position++;
-  newNode->parents.resize(this->num_parents_per_node_[0] * this->num_port_lower_level_[0]);
+  newNode->parents.resize(static_cast<size_t>(this->num_parents_per_node_[0]) * this->num_port_lower_level_[0]);
   newNode->label.resize(this->levels_);
   this->compute_nodes_.insert(make_pair(id, newNode));
   this->nodes_.emplace_back(newNode);
@@ -359,12 +353,10 @@ void FatTreeZone::add_link(FatTreeNode* parent, unsigned int parentPort, FatTree
       "link_from_" + std::to_string(child->id) + "_" + std::to_string(parent->id) + "_" + std::to_string(uniqueId);
 
   if (get_link_sharing_policy() == s4u::Link::SharingPolicy::SPLITDUPLEX) {
-    linkup =
-        create_link(id + "_UP", std::vector<double>{get_link_bandwidth()})->set_latency(get_link_latency())->seal();
-    linkdown =
-        create_link(id + "_DOWN", std::vector<double>{get_link_bandwidth()})->set_latency(get_link_latency())->seal();
+    linkup   = create_link(id + "_UP", {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
+    linkdown = create_link(id + "_DOWN", {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
   } else {
-    linkup   = create_link(id, std::vector<double>{get_link_bandwidth()})->set_latency(get_link_latency())->seal();
+    linkup   = create_link(id, {get_link_bandwidth()})->set_latency(get_link_latency())->seal();
     linkdown = linkup;
   }
   uniqueId++;

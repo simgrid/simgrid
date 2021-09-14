@@ -21,6 +21,11 @@
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
 
+#include <boost/algorithm/string/predicate.hpp>
+#ifndef _WIN32
+#include <dlfcn.h>
+#endif /* _WIN32 */
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(ker_engine, "Logging specific to Engine (kernel)");
 
 namespace simgrid {
@@ -109,6 +114,32 @@ EngineImpl::~EngineImpl()
   xbt_dynar_free(&actors_vector_);
   xbt_dynar_free(&dead_actors_vector_);
 #endif
+  /* clear models before freeing handle, network models can use external callback defined in the handle */
+  models_prio_.clear();
+}
+
+void EngineImpl::load_platform(const std::string& platf)
+{
+  double start = xbt_os_time();
+  if (boost::algorithm::ends_with(platf, ".so") or boost::algorithm::ends_with(platf, ".dylib")) {
+#ifdef _WIN32
+    xbt_die("loading platform through shared library isn't supported on windows");
+#else
+    void* handle = dlopen(platf.c_str(), RTLD_LAZY);
+    xbt_assert(handle, "Impossible to open platform file: %s", platf.c_str());
+    platf_handle_           = std::unique_ptr<void, std::function<int(void*)>>(handle, dlclose);
+    using load_fct_t = void (*)(const simgrid::s4u::Engine&);
+    auto callable           = (load_fct_t)dlsym(platf_handle_.get(), "load_platform");
+    const char* dlsym_error = dlerror();
+    xbt_assert(not dlsym_error, "Error: %s", dlsym_error);
+    callable(*simgrid::s4u::Engine::get_instance());
+#endif /* _WIN32 */
+  } else {
+    parse_platform_file(platf);
+  }
+
+  double end = xbt_os_time();
+  XBT_DEBUG("PARSE TIME: %g", (end - start));
 }
 
 void EngineImpl::load_deployment(const std::string& file) const
@@ -142,6 +173,11 @@ void EngineImpl::add_model(std::shared_ptr<resource::Model> model, const std::ve
   }
   models_.push_back(model.get());
   models_prio_[model_name] = std::move(model);
+}
+
+void EngineImpl::add_split_duplex_link(const std::string& name, std::unique_ptr<resource::SplitDuplexLinkImpl> link)
+{
+  split_duplex_links_[name] = std::move(link);
 }
 
 /** Wake up all actors waiting for a Surf action to finish */
@@ -194,11 +230,10 @@ actor::ActorImpl* EngineImpl::get_actor_by_pid(aid_t pid)
 /** Execute all the tasks that are queued, e.g. `.then()` callbacks of futures. */
 bool EngineImpl::execute_tasks()
 {
-  xbt_assert(tasksTemp.empty());
-
   if (tasks.empty())
     return false;
 
+  std::vector<xbt::Task<void()>> tasksTemp;
   do {
     // We don't want the callbacks to modify the vector we are iterating over:
     tasks.swap(tasksTemp);
@@ -289,6 +324,7 @@ void EngineImpl::run()
 {
   if (MC_record_replay_is_active()) {
     mc::replay(MC_record_path());
+    empty_trash();
     return;
   }
 

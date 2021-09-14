@@ -138,9 +138,7 @@ We use <a href="https://ci.inria.fr/simgrid/">Jenkins on Inria
 servers</a> as a workhorse: it runs all of our tests for many
 configurations. It takes a long time to answer, and it often reports
 issues but when it's green, then you know that SimGrid is very fit!
-We use <a href="https://travis-ci.org/simgrid/simgrid">Travis</a> to
-quickly run some tests on Linux and Mac. It answers quickly but may
-miss issues. And we use <a href="https://ci.appveyor.com/project/mquinson/simgrid">AppVeyor</a>
+We use <a href="https://ci.appveyor.com/project/mquinson/simgrid">AppVeyor</a>
 to build and somehow test SimGrid on windows. 
 
 @subsection inside_tests_jenkins Jenkins on the Inria CI servers
@@ -205,23 +203,9 @@ pkg install boost-libs cmake openjdk8 automake libxslt libxml2 libunwind git hto
 brew install cmake boost libunwind-headers libxslt git python3 
 @endverbatim
 
-@subsection inside_tests_travis Travis
-
-Travis is a free (as in free beer) Continuous Integration system that
-open-sourced project can use freely. It is very well integrated in the
-GitHub ecosystem. There is a plenty of documentation out there. Our
-configuration is in the file .travis.yml as it should be, and the
-result is here: https://travis-ci.org/simgrid/simgrid
-
-The .travis.yml configuration file can be useful if you fail to get
-SimGrid to compile on modern mac systems. We use the @c brew package
-manager there, and it works like a charm.
-
 @subsection inside_tests_appveyor AppVeyor
 
-AppVeyor aims at becoming the Travis of Windows. It is maybe less
-mature than Travis, or maybe it is just that I'm less trained in
-Windows. Our configuration is in the file appveyor.yml as it should
+Our configuration is in the file appveyor.yml as it should
 be, and the result is here: https://ci.appveyor.com/project/mquinson/simgrid
 
 We use @c Choco as a package manager on AppVeyor, and it is sufficient
@@ -251,8 +235,5 @@ open-source project can use it at no cost. That is what we are doing.
 
 Don't miss the great looking dashboard here: 
 https://sonarcloud.io/dashboard?id=simgrid_simgrid
-
-This tool is enriched by the script @c tools/internal/travis-sonarqube.sh 
-that is run from @c .travis.yml
 
 */

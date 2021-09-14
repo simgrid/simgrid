@@ -4,7 +4,7 @@ $ ${bindir:=.}/stack-overflow --cfg=contexts/stack-size:96 ${srcdir:=.}/examples
 > Access violation or Bus error detected.
 > This probably comes from a programming error in your code, or from a stack
 > overflow. If you are certain of your code, try increasing the stack size
->    --cfg=contexts/stack-size=XXX (current size is 96 KiB).
+>    --cfg=contexts/stack-size:XXX (current size is 96 KiB).
 >
 > If it does not help, this may have one of the following causes:
 > a bug in SimGrid, a bug in the OS or a bug in a third-party libraries.

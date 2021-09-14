@@ -147,7 +147,7 @@ void TRACE_declare_mark(const char *mark_type)
   }
 
   XBT_DEBUG("MARK,declare %s", mark_type);
-  simgrid::instr::Container::get_root()->type_->by_name_or_create<simgrid::instr::EventType>(mark_type);
+  simgrid::instr::Container::get_root()->get_type()->by_name_or_create<simgrid::instr::EventType>(mark_type);
   declared_marks.emplace(mark_type);
 }
 
@@ -175,8 +175,8 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
   xbt_assert(mark_type, "mark_type is nullptr");
   xbt_assert(mark_value, "mark_value is nullptr");
 
-  simgrid::instr::EventType* type =
-      static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::get_root()->type_->by_name(mark_type));
+  auto* type =
+      static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::get_root()->get_type()->by_name(mark_type));
   if (not type) {
     throw simgrid::TracingError(XBT_THROW_POINT,
                                 simgrid::xbt::string_printf("mark_type with name (%s) is not declared", mark_type));
@@ -230,8 +230,8 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   xbt_assert(mark_value, "mark_value is nullptr");
 
   //check if mark_type is already declared
-  simgrid::instr::EventType* type =
-      static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::get_root()->type_->by_name(mark_type));
+  auto* type =
+      static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::get_root()->get_type()->by_name(mark_type));
   if (not type) {
     throw simgrid::TracingError(XBT_THROW_POINT,
                                 simgrid::xbt::string_printf("mark_type with name (%s) is not declared", mark_type));
@@ -257,7 +257,7 @@ xbt_dynar_t TRACE_get_marks ()
   return instr_set_to_dynar(declared_marks);
 }
 
-static void instr_user_variable(double time, const char* resource, const char* variable_name, const char* father_type,
+static void instr_user_variable(double time, const char* resource, const char* variable_name, const char* parent_type,
                                 double value, InstrUserVariable what, const char* color,
                                 std::set<std::string, std::less<>>* filter)
 {
@@ -270,7 +270,7 @@ static void instr_user_variable(double time, const char* resource, const char* v
   if (what == InstrUserVariable::DECLARE) {
     if (created == filter->end()) { // not declared yet
       filter->insert(variable_name);
-      instr_new_user_variable_type(father_type, variable_name, color == nullptr ? "" : color);
+      instr_new_user_variable_type(parent_type, variable_name, color == nullptr ? "" : color);
     }
   }else{
     if (created != filter->end()) { // declared, let's work
@@ -293,19 +293,19 @@ static void instr_user_variable(double time, const char* resource, const char* v
   }
 }
 
-static void instr_user_srcdst_variable(double time, const char *src, const char *dst, const char *variable,
-                              const char *father_type, double value, InstrUserVariable what)
+static void instr_user_srcdst_variable(double time, const char* src, const char* dst, const char* variable,
+                                       const char* parent_type, double value, InstrUserVariable what)
 {
-  simgrid::kernel::routing::NetPoint* src_elm = sg_netpoint_by_name_or_null(src);
+  const simgrid::kernel::routing::NetPoint* src_elm = sg_netpoint_by_name_or_null(src);
   xbt_assert(src_elm, "Element '%s' not found!", src);
 
-  simgrid::kernel::routing::NetPoint* dst_elm = sg_netpoint_by_name_or_null(dst);
+  const simgrid::kernel::routing::NetPoint* dst_elm = sg_netpoint_by_name_or_null(dst);
   xbt_assert(dst_elm, "Element '%s' not found!", dst);
 
   std::vector<simgrid::kernel::resource::LinkImpl*> route;
   simgrid::kernel::routing::NetZoneImpl::get_global_route(src_elm, dst_elm, route, nullptr);
   for (auto const& link : route)
-    instr_user_variable(time, link->get_cname(), variable, father_type, value, what, nullptr, &user_link_variables);
+    instr_user_variable(time, link->get_cname(), variable, parent_type, value, what, nullptr, &user_link_variables);
 }
 
 /** @ingroup TRACE_API

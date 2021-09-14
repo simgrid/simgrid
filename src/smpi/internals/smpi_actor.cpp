@@ -216,21 +216,12 @@ void ActorExt::init()
   xbt_assert(smpi_get_universe_size() != 0, "SimGrid was not initialized properly before entering MPI_Init. "
                                             "Aborting, please check compilation process and use smpirun.");
 
-  simgrid::s4u::Actor* self = simgrid::s4u::Actor::self();
-  // cheinrich: I'm not sure what the impact of the SMPI_switch_data_segment on this call is. I moved
-  // this up here so that I can set the privatized region before the switch.
   ActorExt* ext = smpi_process();
   // if we are in MPI_Init and argc handling has already been done.
   if (ext->initialized())
     return;
 
-  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
-    /* Now using the segment index of this process  */
-    ext->set_privatized_region(smpi_init_global_memory_segment_process());
-    /* Done at the process's creation */
-    SMPI_switch_data_segment(self);
-  }
-
+  const simgrid::s4u::Actor* self = simgrid::s4u::Actor::self();
   ext->instance_id_ = self->get_property("instance_id");
   const int rank    = xbt_str_parse_int(self->get_property("rank"), "Cannot parse rank");
 

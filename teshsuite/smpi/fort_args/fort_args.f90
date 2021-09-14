@@ -1,3 +1,8 @@
+! Copyright (c) 2018-2021. The SimGrid Team. All rights reserved.
+
+! This program is free software; you can redistribute it and/or modify it
+! under the terms of the license (GNU LGPL) which comes with this package.
+
 ! Check that getarg does something sensible.
 program getarg_1
   use mpi

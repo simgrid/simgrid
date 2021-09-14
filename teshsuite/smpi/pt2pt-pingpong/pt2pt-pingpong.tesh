@@ -25,7 +25,7 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -plat
 > [3] About to send back message '102' to process [2]
 > [3] Received 1st message '101' from process [2]
 > [3] increment message's value to  '102'
-> [rank 0] -> Tremblay
-> [rank 1] -> Jupiter
-> [rank 2] -> Fafard
-> [rank 3] -> Ginette
+> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
+> [0.000000] [smpi/INFO] [rank 1] -> Jupiter
+> [0.000000] [smpi/INFO] [rank 2] -> Fafard
+> [0.000000] [smpi/INFO] [rank 3] -> Ginette

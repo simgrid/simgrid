@@ -49,7 +49,7 @@ AppSide* AppSide::initialize()
 
   // Fetch socket from MC_ENV_SOCKET_FD:
   const char* fd_env = std::getenv(MC_ENV_SOCKET_FD);
-  int fd = xbt_str_parse_int(fd_env, "Variable '" MC_ENV_SOCKET_FD "' should contain a number but contains '%s'");
+  int fd             = xbt_str_parse_int(fd_env, "Not a number in variable '" MC_ENV_SOCKET_FD "'");
   XBT_DEBUG("Model-checked application found socket FD %i", fd);
 
   // Check the socket type/validity:
@@ -85,15 +85,9 @@ AppSide* AppSide::initialize()
 void AppSide::handle_deadlock_check(const s_mc_message_t*) const
 {
   const auto& actor_list = kernel::EngineImpl::get_instance()->get_actor_list();
-  bool deadlock = false;
-  if (not actor_list.empty()) {
-    deadlock = true;
-    for (auto const& kv : actor_list)
-      if (mc::actor_is_enabled(kv.second)) {
-        deadlock = false;
-        break;
-      }
-  }
+  bool deadlock = not actor_list.empty() && std::none_of(begin(actor_list), end(actor_list), [](const auto& kv) {
+    return mc::actor_is_enabled(kv.second);
+  });
 
   // Send result:
   s_mc_message_int_t answer{MessageType::DEADLOCK_CHECK_REPLY, deadlock};
@@ -113,7 +107,7 @@ void AppSide::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg) cons
 {
   bool res = mc::actor_is_enabled(kernel::actor::ActorImpl::by_pid(msg->aid));
   s_mc_message_int_t answer{MessageType::ACTOR_ENABLED_REPLY, res};
-  channel_.send(answer);
+  xbt_assert(channel_.send(answer) == 0, "Could not send ACTOR_ENABLED_REPLY");
 }
 
 #define assert_msg_size(_name_, _type_)                                                                                \

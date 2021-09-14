@@ -7,6 +7,7 @@
 #define SURF_MAXMIN_HPP
 
 #include "simgrid/kernel/resource/Action.hpp"
+#include "simgrid/kernel/resource/Model.hpp"
 #include "simgrid/s4u/Link.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "xbt/asserts.h"
@@ -187,16 +188,18 @@ public:
  */
 class XBT_PUBLIC Constraint {
 public:
+  enum class SharingPolicy { NONLINEAR = 2, SHARED = 1, FATPIPE = 0 };
+
   Constraint() = delete;
   Constraint(resource::Resource* id_value, double bound_value);
 
   /** @brief Unshare a constraint. */
-  void unshare() { sharing_policy_ = s4u::Link::SharingPolicy::FATPIPE; }
+  void unshare() { sharing_policy_ = SharingPolicy::FATPIPE; }
 
   /** @brief Set how a constraint is shared  */
-  void set_sharing_policy(s4u::Link::SharingPolicy policy) { sharing_policy_ = policy; }
+  void set_sharing_policy(SharingPolicy policy, const s4u::NonLinearResourceCb& cb);
   /** @brief Check how a constraint is shared  */
-  s4u::Link::SharingPolicy get_sharing_policy() const { return sharing_policy_; }
+  SharingPolicy get_sharing_policy() const { return sharing_policy_; }
 
   /** @brief Get the usage of the constraint after the last lmm solve */
   double get_usage() const;
@@ -249,7 +252,7 @@ public:
    * @param numelem parameter representing the number of elements to go
    * @return A variable associated to a constraint
    */
-  Variable* get_variable_safe(const Element** elem, const Element** nextelem, int* numelem) const;
+  Variable* get_variable_safe(const Element** elem, const Element** nextelem, size_t* numelem) const;
 
   /**
    * @brief Get the data associated to a constraint
@@ -274,16 +277,18 @@ public:
   double remaining_ = 0.0;
   double usage_     = 0.0;
   double bound_;
+  double dynamic_bound_ = 0.0; //!< dynamic bound for this constraint, defined by user's callback
   // TODO MARTIN Check maximum value across resources at the end of simulation and give a warning is more than e.g. 500
   int concurrency_current_ = 0; /* The current concurrency */
   int concurrency_maximum_ = 0; /* The maximum number of (enabled and disabled) variables associated to the constraint
                                  * at any given time (essentially for tracing)*/
 
-  s4u::Link::SharingPolicy sharing_policy_ = s4u::Link::SharingPolicy::SHARED;
+  SharingPolicy sharing_policy_ = SharingPolicy::SHARED;
   int rank_; // Only used in debug messages to identify the constraint
   double lambda_               = 0.0;
   double new_lambda_           = 0.0;
   ConstraintLight* cnst_light_ = nullptr;
+  s4u::NonLinearResourceCb dyn_constraint_cb_;
 
 private:
   static int next_rank_;  // To give a separate rank_ to each constraint
@@ -300,7 +305,7 @@ private:
  */
 class XBT_PUBLIC Variable {
 public:
-  void initialize(resource::Action* id_value, double sharing_penalty, double bound_value, int number_of_constraints,
+  void initialize(resource::Action* id_value, double sharing_penalty, double bound_value, size_t number_of_constraints,
                   unsigned visited_value);
 
   /** @brief Get the value of the variable after the last lmm solve */

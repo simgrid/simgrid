@@ -20,7 +20,7 @@ class Global {
   kernel::actor::ActorImpl* maestro_                = nullptr;
 
 public:
-  bool is_maestro(kernel::actor::ActorImpl* actor) const { return actor == maestro_; }
+  bool is_maestro(const kernel::actor::ActorImpl* actor) const { return actor == maestro_; }
   void set_maestro(kernel::actor::ActorImpl* actor) { maestro_ = actor; }
   kernel::actor::ActorImpl* get_maestro() const { return maestro_; }
   void destroy_maestro()

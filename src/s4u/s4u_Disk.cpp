@@ -47,6 +47,12 @@ double Disk::get_read_bandwidth() const
   return pimpl_->get_read_bandwidth();
 }
 
+Disk* Disk::set_readwrite_bandwidth(double bw)
+{
+  kernel::actor::simcall([this, bw] { pimpl_->set_readwrite_bandwidth(bw); });
+  return this;
+}
+
 double Disk::get_write_bandwidth() const
 {
   return pimpl_->get_write_bandwidth();
@@ -129,6 +135,23 @@ IoPtr Disk::write_async(sg_size_t size) const
 sg_size_t Disk::write(sg_size_t size) const
 {
   return IoPtr(io_init(size, Io::OpType::WRITE))->vetoable_start()->wait()->get_performed_ioops();
+}
+
+Disk* Disk::set_sharing_policy(Disk::Operation op, Disk::SharingPolicy policy, const NonLinearResourceCb& cb)
+{
+  kernel::actor::simcall([this, op, policy, &cb] { pimpl_->set_sharing_policy(op, policy, cb); });
+  return this;
+}
+
+Disk::SharingPolicy Disk::get_sharing_policy(Operation op) const
+{
+  return this->pimpl_->get_sharing_policy(op);
+}
+
+Disk* Disk::set_factor_cb(const std::function<IoFactorCb>& cb)
+{
+  kernel::actor::simcall([this, &cb] { pimpl_->set_factor_cb(cb); });
+  return this;
 }
 
 Disk* Disk::seal()

@@ -1,14 +1,14 @@
 foreach(x actor actor-autorestart actor-suspend
         activity-lifecycle
-        comm-get-sender comm-pt2pt wait-any-for
+        comm-get-sender comm-pt2pt wait-all-for wait-any-for
         cloud-interrupt-migration cloud-two-execs
         concurrent_rw 
-        host-on-off host-on-off-actors host-on-off-recv
+        host-on-off host-on-off-actors host-on-off-recv host-multicore-speed-file io-set-bw
         basic-link-test basic-parsing-test evaluate-get-route-time evaluate-parse-time is-router
         storage_client_server listen_async pid
         trace-integration
         seal-platform
-	vm-live-migration vm-suicide)
+	vm-live-migration vm-suicide issue71)
   add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -27,15 +27,15 @@ set_property(TARGET activity-lifecycle APPEND PROPERTY INCLUDE_DIRECTORIES "${IN
 ## Add the tests.
 ## Some need to be run with all factories, some don't need tesh to run
 foreach(x actor actor-autorestart actor-suspend
-        activity-lifecycle comm-get-sender wait-any-for
-        cloud-interrupt-migration cloud-two-execs concurrent_rw
+        activity-lifecycle comm-get-sender wait-all-for wait-any-for
+        cloud-interrupt-migration cloud-two-execs concurrent_rw io-set-bw
 	vm-live-migration vm-suicide)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   ADD_TESH_FACTORIES(tesh-s4u-${x} "*" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}.tesh)
 endforeach()
 
-foreach(x basic-link-test basic-parsing-test host-on-off host-on-off-actors host-on-off-recv is-router listen_async 
-		pid storage_client_server trace-integration seal-platform)
+foreach(x basic-link-test basic-parsing-test host-on-off host-on-off-actors host-on-off-recv host-multicore-speed-file is-router listen_async 
+		pid storage_client_server trace-integration seal-platform issue71)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   ADD_TESH(tesh-s4u-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}.tesh)
 endforeach()
@@ -95,4 +95,5 @@ set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/activity-lifecyc
                                     ${CMAKE_CURRENT_SOURCE_DIR}/trace-integration/test-hbp1-c1s1-c3s2.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/trace-integration/test-hbp2.5-hbp1.5.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/vm-live-migration/platform.xml
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/issue71/platform_bad.xml
 				    PARENT_SCOPE)

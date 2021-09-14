@@ -55,11 +55,11 @@ XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr simcall_HANDLER_comm_isen
   if (not other_comm) {
     other_comm = std::move(this_comm);
 
-    if (mbox->permanent_receiver_ != nullptr) {
+    if (mbox->is_permanent()) {
       // this mailbox is for small messages, which have to be sent right now
       other_comm->state_     = simgrid::kernel::activity::State::READY;
-      other_comm->dst_actor_ = mbox->permanent_receiver_.get();
-      mbox->done_comm_queue_.push_back(other_comm);
+      other_comm->dst_actor_ = mbox->get_permanent_receiver().get();
+      mbox->push_done(other_comm);
       XBT_DEBUG("pushing a message into the permanent receive list %p, comm %p", mbox, other_comm.get());
 
     } else {
@@ -119,7 +119,7 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
 
   simgrid::kernel::activity::CommImplPtr other_comm;
   // communication already done, get it inside the list of completed comms
-  if (mbox->permanent_receiver_ != nullptr && not mbox->done_comm_queue_.empty()) {
+  if (mbox->is_permanent() && mbox->has_some_done_comm()) {
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
     // find a match in the list of already received comms
     other_comm = mbox->find_matching_comm(simgrid::kernel::activity::CommImpl::Type::SEND, match_fun, data,
@@ -150,7 +150,7 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
                                           /*remove_matching*/ true);
 
     if (other_comm == nullptr) {
-      XBT_DEBUG("Receive pushed first (%zu comm enqueued so far)", mbox->comm_queue_.size());
+      XBT_DEBUG("Receive pushed first (%zu comm enqueued so far)", mbox->size());
       other_comm = std::move(this_synchro);
       mbox->push(other_comm);
     } else {
@@ -190,7 +190,7 @@ bool simcall_HANDLER_comm_test(smx_simcall_t, simgrid::kernel::activity::CommImp
   return comm->test();
 }
 
-int simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count)
+ssize_t simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count)
 {
   std::vector<simgrid::kernel::activity::CommImpl*> comms_vec(comms, comms + count);
   return simgrid::kernel::activity::CommImpl::test_any(simcall->issuer_, comms_vec);
@@ -306,9 +306,9 @@ CommImpl* CommImpl::start()
     from_ = from_ != nullptr ? from_ : src_actor_->get_host();
     to_   = to_ != nullptr ? to_ : dst_actor_->get_host();
 
-    /* FIXME[donassolo]: getting the network_model from the origin host
-     * Soon we need to change this function to first get the routes and later
-     * create the respective surf actions */
+    /* Getting the network_model from the origin host
+     * Valid while we have a single network model, otherwise we would need to change this function to first get the
+     * routes and later create the respective surf actions */
     auto net_model = from_->get_netpoint()->get_englobing_zone()->get_network_model();
 
     surf_action_ = net_model->communicate(from_, to_, size_, rate_);
@@ -412,7 +412,7 @@ void CommImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   if (state_ != State::WAITING && state_ != State::RUNNING) {
     finish();
   } else { /* we need a sleep action (even when there is no timeout) to be notified of host failures */
-    resource::Action* sleep = issuer->get_host()->pimpl_cpu->sleep(timeout);
+    resource::Action* sleep = issuer->get_host()->get_cpu()->sleep(timeout);
     sleep->set_activity(this);
 
     if (issuer == src_actor_)
@@ -422,7 +422,7 @@ void CommImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   }
 }
 
-int CommImpl::test_any(const actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms)
+ssize_t CommImpl::test_any(const actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms)
 {
   if (MC_is_active() || MC_record_replay_is_active()) {
     int idx = issuer->simcall_.mc_value_;
@@ -580,7 +580,7 @@ void CommImpl::finish()
       }
       if (not MC_is_active() && not MC_record_replay_is_active()) {
         CommImpl** element = std::find(comms, comms + count, this);
-        int rank           = (element != comms + count) ? element - comms : -1;
+        ssize_t rank       = (element != comms + count) ? element - comms : -1;
         simcall_comm_waitany__set__result(simcall, rank);
       }
     }
@@ -591,6 +591,10 @@ void CommImpl::finish()
       simcall->issuer_->context_->set_wannadie();
     } else {
       switch (state_) {
+        case State::FAILED:
+          simcall->issuer_->exception_ =
+              std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
+          break;
         case State::SRC_TIMEOUT:
           simcall->issuer_->exception_ = std::make_exception_ptr(
               TimeoutException(XBT_THROW_POINT, "Communication timeouted because of the sender"));
@@ -604,17 +608,21 @@ void CommImpl::finish()
         case State::SRC_HOST_FAILURE:
           if (simcall->issuer_ == src_actor_)
             simcall->issuer_->context_->set_wannadie();
-          else
+          else {
+            state_ = kernel::activity::State::FAILED;
             simcall->issuer_->exception_ =
                 std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
+          }
           break;
 
         case State::DST_HOST_FAILURE:
           if (simcall->issuer_ == dst_actor_)
             simcall->issuer_->context_->set_wannadie();
-          else
+          else {
+            state_ = kernel::activity::State::FAILED;
             simcall->issuer_->exception_ =
                 std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
+          }
           break;
 
         case State::LINK_FAILURE:
@@ -630,6 +638,7 @@ void CommImpl::finish()
           } else {
             XBT_DEBUG("I'm neither source nor dest");
           }
+          state_ = kernel::activity::State::FAILED;
           simcall->issuer_->throw_exception(
               std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Link failure")));
           break;
@@ -664,7 +673,7 @@ void CommImpl::finish()
         count = simcall_comm_testany__get__count(simcall);
       }
       CommImpl** element = std::find(comms, comms + count, this);
-      int rank           = (element != comms + count) ? element - comms : -1;
+      ssize_t rank       = (element != comms + count) ? element - comms : -1;
       // In order to modify the exception we have to rethrow it:
       try {
         std::rethrow_exception(simcall->issuer_->exception_);

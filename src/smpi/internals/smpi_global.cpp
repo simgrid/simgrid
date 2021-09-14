@@ -77,8 +77,19 @@ static std::vector<std::string> privatize_libs_paths;
 // No instance gets manually created; check also the smpirun.in script as
 // this default name is used there as well (when the <actor> tag is generated).
 static const std::string smpi_default_instance_name("smpirun");
-static simgrid::config::Flag<double> smpi_init_sleep(
-  "smpi/init", "Time to inject inside a call to MPI_Init", 0.0);
+
+static simgrid::config::Flag<std::string>
+    smpi_hostfile("smpi/hostfile",
+                  "Classical MPI hostfile containing list of machines to dispatch "
+                  "the processes, one per line",
+                  "");
+
+static simgrid::config::Flag<std::string> smpi_replay("smpi/replay",
+                                                      "Replay a trace instead of executing the application", "");
+
+static simgrid::config::Flag<int> smpi_np("smpi/np", "Number of processes to be created", 0);
+
+static simgrid::config::Flag<int> smpi_map("smpi/map", "Display the mapping between nodes and processes", 0);
 
 void (*smpi_comm_copy_data_callback)(simgrid::kernel::activity::CommImpl*, void*,
                                      size_t) = &smpi_comm_copy_buffer_callback;
@@ -184,21 +195,15 @@ void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, v
   auto private_blocks = merge_private_blocks(src_private_blocks, dst_private_blocks);
   check_blocks(private_blocks, buff_size);
   void* tmpbuff=buff;
-  if ((smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) &&
-      (static_cast<char*>(buff) >= smpi_data_exe_start) &&
-      (static_cast<char*>(buff) < smpi_data_exe_start + smpi_data_exe_size)) {
+  if (smpi_switch_data_segment(comm->src_actor_->get_iface(), buff)) {
     XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
-    smpi_switch_data_segment(comm->src_actor_->get_iface());
     tmpbuff = xbt_malloc(buff_size);
     memcpy_private(tmpbuff, buff, private_blocks);
   }
 
-  if ((smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) &&
-      ((char*)comm->dst_buff_ >= smpi_data_exe_start) &&
-      ((char*)comm->dst_buff_ < smpi_data_exe_start + smpi_data_exe_size)) {
+  if (smpi_switch_data_segment(comm->dst_actor_->get_iface(), comm->dst_buff_))
     XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
-    smpi_switch_data_segment(comm->dst_actor_->get_iface());
-  }
+
   XBT_DEBUG("Copying %zu bytes from %p to %p", buff_size, tmpbuff, comm->dst_buff_);
   memcpy_private(comm->dst_buff_, tmpbuff, private_blocks);
 
@@ -223,57 +228,61 @@ static void smpi_init_papi()
   // the configuration as given by the user (counter data as a pair of (counter_name, counter_counter))
   // and the (computed) event_set.
 
-  if (not smpi_cfg_papi_events_file().empty()) {
-    if (PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT)
-      XBT_ERROR("Could not initialize PAPI library; is it correctly installed and linked?"
-                " Expected version is %u", PAPI_VER_CURRENT);
+  if (smpi_cfg_papi_events_file().empty())
+    return;
 
-    using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
-    boost::char_separator<char> separator_units(";");
-    std::string str = smpi_cfg_papi_events_file();
-    Tokenizer tokens(str, separator_units);
+  if (PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT) {
+    XBT_ERROR("Could not initialize PAPI library; is it correctly installed and linked? Expected version is %u",
+              PAPI_VER_CURRENT);
+    return;
+  }
 
-    // Iterate over all the computational units. This could be processes, hosts, threads, ranks... You name it.
-    // I'm not exactly sure what we will support eventually, so I'll leave it at the general term "units".
-    for (auto const& unit_it : tokens) {
-      boost::char_separator<char> separator_events(":");
-      Tokenizer event_tokens(unit_it, separator_events);
+  using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
+  boost::char_separator<char> separator_units(";");
+  std::string str = smpi_cfg_papi_events_file();
+  Tokenizer tokens(str, separator_units);
 
-      int event_set = PAPI_NULL;
-      if (PAPI_create_eventset(&event_set) != PAPI_OK) {
-        // TODO: Should this let the whole simulation die?
-        XBT_CRITICAL("Could not create PAPI event set during init.");
-      }
+  // Iterate over all the computational units. This could be processes, hosts, threads, ranks... You name it.
+  // I'm not exactly sure what we will support eventually, so I'll leave it at the general term "units".
+  for (auto const& unit_it : tokens) {
+    boost::char_separator<char> separator_events(":");
+    Tokenizer event_tokens(unit_it, separator_events);
 
-      // NOTE: We cannot use a map here, as we must obey the order of the counters
-      // This is important for PAPI: We need to map the values of counters back to the event_names (so, when PAPI_read()
-      // has finished)!
-      papi_counter_t counters2values;
-
-      // Iterate over all counters that were specified for this specific unit.
-      // Note that we need to remove the name of the unit (that could also be the "default" value), which always comes
-      // first. Hence, we start at ++(events.begin())!
-      for (Tokenizer::iterator events_it = ++(event_tokens.begin()); events_it != event_tokens.end(); ++events_it) {
-        int event_code   = PAPI_NULL;
-        auto* event_name = const_cast<char*>((*events_it).c_str());
-        if (PAPI_event_name_to_code(event_name, &event_code) != PAPI_OK) {
-          XBT_CRITICAL("Could not find PAPI event '%s'. Skipping.", event_name);
-          continue;
-        }
-        if (PAPI_add_event(event_set, event_code) != PAPI_OK) {
-          XBT_ERROR("Could not add PAPI event '%s'. Skipping.", event_name);
-          continue;
-        }
-        XBT_DEBUG("Successfully added PAPI event '%s' to the event set.", event_name);
-
-        counters2values.emplace_back(*events_it, 0LL);
-      }
-
-      std::string unit_name    = *(event_tokens.begin());
-      papi_process_data config = {.counter_data = std::move(counters2values), .event_set = event_set};
-
-      units2papi_setup.insert(std::make_pair(unit_name, std::move(config)));
+    int event_set = PAPI_NULL;
+    if (PAPI_create_eventset(&event_set) != PAPI_OK) {
+      // TODO: Should this let the whole simulation die?
+      XBT_CRITICAL("Could not create PAPI event set during init.");
+      break;
     }
+
+    // NOTE: We cannot use a map here, as we must obey the order of the counters
+    // This is important for PAPI: We need to map the values of counters back to the event_names (so, when PAPI_read()
+    // has finished)!
+    papi_counter_t counters2values;
+
+    // Iterate over all counters that were specified for this specific unit.
+    // Note that we need to remove the name of the unit (that could also be the "default" value), which always comes
+    // first. Hence, we start at ++(events.begin())!
+    for (Tokenizer::iterator events_it = ++(event_tokens.begin()); events_it != event_tokens.end(); ++events_it) {
+      int event_code   = PAPI_NULL;
+      auto* event_name = const_cast<char*>((*events_it).c_str());
+      if (PAPI_event_name_to_code(event_name, &event_code) != PAPI_OK) {
+        XBT_CRITICAL("Could not find PAPI event '%s'. Skipping.", event_name);
+        continue;
+      }
+      if (PAPI_add_event(event_set, event_code) != PAPI_OK) {
+        XBT_ERROR("Could not add PAPI event '%s'. Skipping.", event_name);
+        continue;
+      }
+      XBT_DEBUG("Successfully added PAPI event '%s' to the event set.", event_name);
+
+      counters2values.emplace_back(*events_it, 0LL);
+    }
+
+    std::string unit_name    = *(event_tokens.begin());
+    papi_process_data config = {.counter_data = std::move(counters2values), .event_set = event_set};
+
+    units2papi_setup.insert(std::make_pair(unit_name, std::move(config)));
   }
 #endif
 }
@@ -283,7 +292,8 @@ using smpi_c_entry_point_type       = int (*)(int argc, char** argv);
 using smpi_fortran_entry_point_type = void (*)();
 
 template <typename F>
-static int smpi_run_entry_point(const F& entry_point, const std::string& executable_path, std::vector<std::string> args)
+static int smpi_run_entry_point(const F& entry_point, const std::string& executable_path,
+                                const std::vector<std::string>& args)
 {
   // copy C strings, we need them writable
   auto* args4argv = new std::vector<char*>(args.size());
@@ -297,7 +307,7 @@ static int smpi_run_entry_point(const F& entry_point, const std::string& executa
   // take a copy of args4argv to keep reference of the allocated strings
   const std::vector<char*> args2str(*args4argv);
 #endif
-  int argc = args4argv->size();
+  int argc = static_cast<int>(args4argv->size());
   args4argv->push_back(nullptr);
   char** argv = args4argv->data();
 
@@ -373,17 +383,17 @@ static void smpi_copy_file(const std::string& src, const std::string& target, of
   while (ssize_t got = read(fdin, buf.data(), buf.size())) {
     if (got == -1) {
       xbt_assert(errno == EINTR, "Cannot read from %s", src.c_str());
-    } else {
-      const unsigned char* p = buf.data();
-      ssize_t todo           = got;
-      while (ssize_t done = write(fdout, p, todo)) {
-        if (done == -1) {
-          xbt_assert(errno == EINTR, "Cannot write into %s", target.c_str());
-        } else {
-          p += done;
-          todo -= done;
-        }
+      continue;
+    }
+    const unsigned char* p = buf.data();
+    ssize_t todo           = got;
+    while (ssize_t done = write(fdout, p, todo)) {
+      if (done == -1) {
+        xbt_assert(errno == EINTR, "Cannot write into %s", target.c_str());
+        continue;
       }
+      p += done;
+      todo -= done;
     }
   }
   close(fdin);
@@ -436,7 +446,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
   }
 
   simgrid::s4u::Engine::get_instance()->register_default([executable, fdin_size](std::vector<std::string> args) {
-    return std::function<void()>([executable, fdin_size, args] {
+    return simgrid::kernel::actor::ActorCode([executable, fdin_size, args = std::move(args)] {
       static std::size_t rank = 0;
       // Copy the dynamic library:
       simgrid::xbt::Path path(executable);
@@ -461,7 +471,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
 
           // Copy the dynamic library, the new name must be the same length as the old one
           // just replace the name with 7 digits for the rank and the rest of the name.
-          auto pad                   = std::min<unsigned>(7, libname.length());
+          auto pad                   = std::min<size_t>(7, libname.length());
           std::string target_libname = std::string(pad - std::to_string(rank).length(), '0') + std::to_string(rank) + libname.substr(pad);
           std::string target_lib = simgrid::config::get_value<std::string>("smpi/tmpdir") + "/" + target_libname;
           target_libs.push_back(target_lib);
@@ -512,8 +522,16 @@ static void smpi_init_privatization_no_dlopen(const std::string& executable)
 
   // Execute the same entry point for each simulated process:
   simgrid::s4u::Engine::get_instance()->register_default([entry_point, executable](std::vector<std::string> args) {
-    return std::function<void()>(
-        [entry_point, executable, args] { smpi_run_entry_point(entry_point, executable, args); });
+    return simgrid::kernel::actor::ActorCode([entry_point, executable, args = std::move(args)] {
+      if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
+        simgrid::smpi::ActorExt* ext = smpi_process();
+        /* Now using the segment index of this process  */
+        ext->set_privatized_region(smpi_init_global_memory_segment_process());
+        /* Done at the process's creation */
+        smpi_switch_data_segment(simgrid::s4u::Actor::self());
+      }
+      smpi_run_entry_point(entry_point, executable, args);
+    });
   });
 }
 
@@ -524,9 +542,8 @@ int smpi_main(const char* executable, int argc, char* argv[])
      * configuration tools */
     return 0;
   }
-  
-  SMPI_switch_data_segment = &smpi_switch_data_segment;
-  smpi_init_options();
+
+  smpi_init_options_internal(true);
   simgrid::instr::init();
   SIMIX_global_init(&argc, argv);
 
@@ -535,7 +552,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
   sg_storage_file_system_init();
   // parse the platform file: get the host list
   engine->load_platform(argv[1]);
-  simgrid::kernel::activity::CommImpl::set_copy_data_callback(smpi_comm_copy_buffer_callback);
+  engine->set_default_comm_data_copy_callback(smpi_comm_copy_buffer_callback);
 
   if (smpi_cfg_privatization() == SmpiPrivStrategies::DLOPEN)
     smpi_init_privatization_dlopen(executable);
@@ -547,13 +564,9 @@ int smpi_main(const char* executable, int argc, char* argv[])
   
   SMPI_init();
 
-  /* This is a ... heavy way to count the MPI ranks */
-  int rank_counts = 0;
-  simgrid::s4u::Actor::on_creation.connect([&rank_counts](const simgrid::s4u::Actor& actor) {
-    if (not actor.is_daemon())
-      rank_counts++;
-  });
-  engine->load_deployment(argv[2]);
+  const std::vector<const char*> args(argv + 2, argv + argc);
+  int rank_counts =
+      smpi_deployment_smpirun(engine, smpi_hostfile.get(), smpi_np.get(), smpi_replay.get(), smpi_map.get(), args);
 
   SMPI_app_instance_register(smpi_default_instance_name.c_str(), nullptr, rank_counts);
   MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);
@@ -577,7 +590,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
 
 // Called either directly from the user code, or from the code called by smpirun
 void SMPI_init(){
-  smpi_init_options();
+  smpi_init_options_internal(false);
   simgrid::s4u::Actor::on_creation.connect([](simgrid::s4u::Actor& actor) {
     if (not actor.is_daemon())
       actor.extension_set<simgrid::smpi::ActorExt>(new simgrid::smpi::ActorExt(&actor));
@@ -618,8 +631,8 @@ void SMPI_finalize()
 
 void smpi_mpi_init() {
   smpi_init_fortran_types();
-  if(smpi_init_sleep > 0)
-    simgrid::s4u::this_actor::sleep_for(smpi_init_sleep);
+  if(_smpi_init_sleep > 0)
+    simgrid::s4u::this_actor::sleep_for(_smpi_init_sleep);
 }
 
 void SMPI_thread_create() {

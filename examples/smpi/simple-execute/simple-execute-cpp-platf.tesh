@@ -1,0 +1,80 @@
+p C++ interface (griffon.so) with hostfile: Simple pingpong test
+! output sort
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile_griffon -platform ${libdir:=.}/libgriffon.so -np 2 ${bindir:=.}/smpi_simple-execute --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/simulate-computation:no --log=smpi_mpi.:verbose --log=smpi_bench.thresh:debug --log=no_loc
+> [0.000000] [smpi/INFO] [rank 0] -> griffon-2.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 1] -> griffon-70.nancy.grid5000.fr
+> [griffon-2.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Init
+> [griffon-70.nancy.grid5000.fr:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Init
+> [griffon-2.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Init
+> [griffon-2.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_size
+> [griffon-2.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_size
+> [griffon-2.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_rank
+> [griffon-2.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_rank
+> [griffon-2.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Send
+> [griffon-70.nancy.grid5000.fr:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Init
+> [griffon-70.nancy.grid5000.fr:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_size
+> [griffon-70.nancy.grid5000.fr:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_size
+> [griffon-70.nancy.grid5000.fr:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_rank
+> [griffon-70.nancy.grid5000.fr:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_rank
+> [griffon-70.nancy.grid5000.fr:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Recv
+> [griffon-2.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Send
+> [griffon-2.nancy.grid5000.fr:0:(1) 0.000000] [smpi_bench/DEBUG] Handle real computation time: 1430435.000000 flops
+> [griffon-70.nancy.grid5000.fr:1:(2) 0.000145] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Recv
+> [griffon-70.nancy.grid5000.fr:1:(2) 0.000145] [smpi_bench/DEBUG] Handle real computation time: 762960000.000000 flops
+> [griffon-2.nancy.grid5000.fr:0:(1) 5.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Recv
+> [griffon-70.nancy.grid5000.fr:1:(2) 2666.881199] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Send
+> [griffon-70.nancy.grid5000.fr:1:(2) 2666.881199] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Send
+> [griffon-70.nancy.grid5000.fr:1:(2) 2666.881199] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Finalize
+> [griffon-70.nancy.grid5000.fr:1:(2) 2666.881199] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Finalize
+> [griffon-2.nancy.grid5000.fr:0:(1) 2666.881344] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Recv
+> [griffon-2.nancy.grid5000.fr:0:(1) 2666.881344] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Finalize
+> [griffon-2.nancy.grid5000.fr:0:(1) 2666.881344] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Finalize
+> 
+>     *** Ping-pong test (MPI_Send/MPI_Recv) ***
+> 
+> [0] About to send 1st message '99' to process [1]
+> [1] Received 1st message '99' from process [0]
+> [1] After a nap, increment message's value to  '100'
+> [1] About to send back message '100' to process [0]
+> [0] Received reply message '100' from process [1]
+
+
+p C++ interface (griffon.so) without hostfile: Simple pingpong test
+! output sort
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -platform ${libdir:=.}/libgriffon.so -np 2 ${bindir:=.}/smpi_simple-execute --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/simulate-computation:no --log=smpi_mpi.:verbose --log=smpi_bench.thresh:debug --log=no_loc
+> [0.000000] [smpi/INFO] [rank 0] -> griffon-1.nancy.grid5000.fr
+> [0.000000] [smpi/INFO] [rank 1] -> griffon-10.nancy.grid5000.fr
+> [griffon-1.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Init
+> [griffon-10.nancy.grid5000.fr:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Init
+> [griffon-1.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Init
+> [griffon-1.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_size
+> [griffon-1.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_size
+> [griffon-1.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_rank
+> [griffon-1.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_rank
+> [griffon-1.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Send
+> [griffon-10.nancy.grid5000.fr:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Init
+> [griffon-10.nancy.grid5000.fr:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_size
+> [griffon-10.nancy.grid5000.fr:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_size
+> [griffon-10.nancy.grid5000.fr:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_rank
+> [griffon-10.nancy.grid5000.fr:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_rank
+> [griffon-10.nancy.grid5000.fr:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Recv
+> [griffon-1.nancy.grid5000.fr:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Send
+> [griffon-1.nancy.grid5000.fr:0:(1) 0.000000] [smpi_bench/DEBUG] Handle real computation time: 1430435.000000 flops
+> [griffon-10.nancy.grid5000.fr:1:(2) 0.000097] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Recv
+> [griffon-10.nancy.grid5000.fr:1:(2) 0.000097] [smpi_bench/DEBUG] Handle real computation time: 762960000.000000 flops
+> [griffon-1.nancy.grid5000.fr:0:(1) 5.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Recv
+> [griffon-10.nancy.grid5000.fr:1:(2) 2666.881151] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Send
+> [griffon-10.nancy.grid5000.fr:1:(2) 2666.881151] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Send
+> [griffon-10.nancy.grid5000.fr:1:(2) 2666.881151] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Finalize
+> [griffon-10.nancy.grid5000.fr:1:(2) 2666.881151] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Finalize
+> [griffon-1.nancy.grid5000.fr:0:(1) 2666.881247] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Recv
+> [griffon-1.nancy.grid5000.fr:0:(1) 2666.881247] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Finalize
+> [griffon-1.nancy.grid5000.fr:0:(1) 2666.881247] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Finalize
+> 
+>     *** Ping-pong test (MPI_Send/MPI_Recv) ***
+> 
+> [0] About to send 1st message '99' to process [1]
+> [1] Received 1st message '99' from process [0]
+> [1] After a nap, increment message's value to  '100'
+> [1] About to send back message '100' to process [0]
+> [0] Received reply message '100' from process [1]

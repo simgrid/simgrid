@@ -288,3 +288,8 @@ So the final platform for our example becomes :
         <link_ctn id="link2"/>
     </route>
 
+
+:ref:`Modeling I/O: the realistic way<howto_disk>`
+*****************
+
+Tutorial available at: :ref:`howto_disk`.

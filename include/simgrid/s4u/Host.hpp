@@ -45,6 +45,9 @@ class XBT_PUBLIC Host : public xbt::Extendable<Host> {
   // The private implementation, that never changes
   surf::HostImpl* const pimpl_;
 
+  kernel::resource::CpuImpl* pimpl_cpu_      = nullptr;
+  kernel::routing::NetPoint* pimpl_netpoint_ = nullptr;
+
 public:
   explicit Host(surf::HostImpl* pimpl) : pimpl_(pimpl) {}
 
@@ -83,7 +86,22 @@ public:
   /** Retrieves the name of that host as a C string */
   const char* get_cname() const;
 
+  Host* set_cpu(kernel::resource::CpuImpl* cpu);
+  kernel::resource::CpuImpl* get_cpu() const { return pimpl_cpu_; }
   kernel::routing::NetPoint* get_netpoint() const { return pimpl_netpoint_; }
+  /**
+   * @brief Callback to set CPU factor
+   *
+   * This callback offers a flexible way to create variability in CPU executions
+   *
+   * @param flops Execution size in flops
+   * @return Multiply factor
+   */
+  using CpuFactorCb = double(double flops);
+  /**
+   * @brief Configure the factor callback to the CPU associated to this host
+   */
+  Host* set_factor_cb(const std::function<CpuFactorCb>& cb);
 
   size_t get_actor_count() const;
   std::vector<ActorPtr> get_all_actors() const;
@@ -131,7 +149,7 @@ public:
    *  The amount of flops per second available for computing depends on several things:
    *    - The current pstate determines the maximal peak computing speed (use @ref get_pstate_speed() to retrieve the
    *      computing speed you would get at another pstate)
-   *    - If you declared an external load (with @ref simgrid::surf::Cpu::set_speed_profile()), you must multiply the
+   *    - If you declared an external load (with @ref set_speed_profile()), you must multiply the
    * result of get_speed() by get_available_speed() to retrieve what a new computation would get.
    *
    *  The remaining speed is then shared between the executions located on this host.
@@ -144,13 +162,23 @@ public:
   double get_speed() const;
   /** @brief Get the available speed ratio, between 0 and 1.
    *
-   * This accounts for external load (see @ref simgrid::surf::Cpu::set_speed_profile()).
+   * This accounts for external load (see @ref set_speed_profile()).
    */
   double get_available_speed() const;
 
   /** Returns the number of core of the processor. */
   int get_core_count() const;
   Host* set_core_count(int core_count);
+
+  enum class SharingPolicy { NONLINEAR = 1, LINEAR = 0 };
+  /**
+   * @brief Describes how the CPU is shared between concurrent tasks
+   *
+   * @param policy Sharing policy
+   * @param cb Callback for NONLINEAR policies
+   */
+  Host* set_sharing_policy(SharingPolicy policy, const s4u::NonLinearResourceCb& cb = {});
+  SharingPolicy get_sharing_policy() const;
 
   /** Returns the current computation load (in flops per second)
    *
@@ -159,10 +187,10 @@ public:
    */
   double get_load() const;
 
-  int get_pstate_count() const;
-  int get_pstate() const;
-  double get_pstate_speed(int pstate_index) const;
-  Host* set_pstate(int pstate_index);
+  unsigned long get_pstate_count() const;
+  unsigned long get_pstate() const;
+  double get_pstate_speed(unsigned long pstate_index) const;
+  Host* set_pstate(unsigned long pstate_index);
   Host* set_coordinates(const std::string& coords);
 
   std::vector<Disk*> get_disks() const;
@@ -194,13 +222,11 @@ public:
 
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v331("Please use Comm::sendto()") void sendto(Host* dest, double byte_amount);
-
   XBT_ATTRIB_DEPRECATED_v331("Please use Comm::sendto_async()") CommPtr sendto_async(Host* dest, double byte_amount);
-
   XBT_ATTRIB_DEPRECATED_v330("Please use Host::sendto()") void send_to(Host* dest, double byte_amount);
 #endif
 
-  NetZone* get_englobing_zone();
+  NetZone* get_englobing_zone() const;
   /** Block the calling actor on an execution located on the called host
    *
    * It is not a problem if the actor is not located on the called host.
@@ -214,15 +240,6 @@ public:
   /** Block the calling actor on an execution located on the called host (with explicit priority) */
   void execute(double flops, double priority) const;
   surf::HostImpl* get_impl() const { return pimpl_; }
-
-private:
-  kernel::routing::NetPoint* pimpl_netpoint_ = nullptr;
-
-public:
-#ifndef DOXYGEN
-  /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
-  kernel::resource::CpuImpl* pimpl_cpu = nullptr;
-#endif
 };
 } // namespace s4u
 } // namespace simgrid

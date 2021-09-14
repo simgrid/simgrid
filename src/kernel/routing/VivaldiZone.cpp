@@ -49,7 +49,7 @@ static inline double euclidean_dist_comp(double src_coord, double dst_coord)
   return (src_coord - dst_coord) * (src_coord - dst_coord);
 }
 
-static const std::vector<double>& netpoint_get_coords(NetPoint* np)
+static const std::vector<double>& netpoint_get_coords(const NetPoint* np)
 {
   const auto* coords = np->extension<vivaldi::Coords>();
   xbt_assert(coords, "Please specify the Vivaldi coordinates of %s %s (%p)",
@@ -64,15 +64,15 @@ void VivaldiZone::set_peer_link(NetPoint* netpoint, double bw_in, double bw_out)
 
   std::string link_up        = "link_" + netpoint->get_name() + "_UP";
   std::string link_down      = "link_" + netpoint->get_name() + "_DOWN";
-  const auto* linkUp         = create_link(link_up, std::vector<double>{bw_out})->seal();
-  const auto* linkDown       = create_link(link_down, std::vector<double>{bw_in})->seal();
-  add_route(netpoint, nullptr, nullptr, nullptr, {linkUp->get_impl()}, false);
-  add_route(nullptr, netpoint, nullptr, nullptr, {linkDown->get_impl()}, false);
+  const auto* linkUp         = create_link(link_up, {bw_out})->seal();
+  const auto* linkDown       = create_link(link_down, {bw_in})->seal();
+  add_route(netpoint, nullptr, nullptr, nullptr, {s4u::LinkInRoute(linkUp)}, false);
+  add_route(nullptr, netpoint, nullptr, nullptr, {s4u::LinkInRoute(linkDown)}, false);
 }
 
-void VivaldiZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, double* lat)
+void VivaldiZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* route, double* lat)
 {
-  XBT_DEBUG("vivaldi getLocalRoute from '%s'[%u] '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
+  XBT_DEBUG("vivaldi getLocalRoute from '%s'[%lu] '%s'[%lu]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 
   if (src->is_netzone()) {
     std::string srcName = "router_" + src->get_name();

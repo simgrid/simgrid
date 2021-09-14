@@ -1,3 +1,8 @@
+/* Copyright (c) 2020-2021. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include "api.hpp"
 
 #include "src/kernel/activity/MailboxImpl.hpp"
@@ -103,42 +108,37 @@ static inline smx_simcall_t MC_state_choose_request_for_process(const RemoteProc
 
   smx_simcall_t req = nullptr;
   if (actor->simcall_.observer_ != nullptr) {
-    state->transition_.times_considered_ = procstate->times_considered;
-    procstate->times_considered++;
-    if (actor->simcall_.mc_max_consider_ <= procstate->times_considered)
+    state->transition_.times_considered_ = procstate->get_times_considered_and_inc();
+    if (actor->simcall_.mc_max_consider_ <= procstate->get_times_considered())
       procstate->set_done();
     req = &actor->simcall_;
   } else
     switch (actor->simcall_.call_) {
       case Simcall::COMM_WAITANY:
-        state->transition_.times_considered_ = -1;
-        while (procstate->times_considered < simcall_comm_waitany__get__count(&actor->simcall_)) {
-          if (simgrid::mc::request_is_enabled_by_idx(process, &actor->simcall_, procstate->times_considered)) {
-            state->transition_.times_considered_ = procstate->times_considered;
-            ++procstate->times_considered;
+        while (procstate->get_times_considered() < simcall_comm_waitany__get__count(&actor->simcall_)) {
+          if (simgrid::mc::request_is_enabled_by_idx(process, &actor->simcall_, procstate->get_times_considered())) {
+            state->transition_.times_considered_ = procstate->get_times_considered_and_inc();
             break;
           }
-          ++procstate->times_considered;
+          procstate->get_times_considered_and_inc();
         }
 
-        if (procstate->times_considered >= simcall_comm_waitany__get__count(&actor->simcall_))
+        if (procstate->get_times_considered() >= simcall_comm_waitany__get__count(&actor->simcall_))
           procstate->set_done();
         if (state->transition_.times_considered_ != -1)
           req = &actor->simcall_;
         break;
 
       case Simcall::COMM_TESTANY:
-        state->transition_.times_considered_ = -1;
-        while (procstate->times_considered < simcall_comm_testany__get__count(&actor->simcall_)) {
-          if (simgrid::mc::request_is_enabled_by_idx(process, &actor->simcall_, procstate->times_considered)) {
-            state->transition_.times_considered_ = procstate->times_considered;
-            ++procstate->times_considered;
+        while (procstate->get_times_considered() < simcall_comm_testany__get__count(&actor->simcall_)) {
+          if (simgrid::mc::request_is_enabled_by_idx(process, &actor->simcall_, procstate->get_times_considered())) {
+            state->transition_.times_considered_ = procstate->get_times_considered_and_inc();
             break;
           }
-          ++procstate->times_considered;
+          procstate->get_times_considered_and_inc();
         }
 
-        if (procstate->times_considered >= simcall_comm_testany__get__count(&actor->simcall_))
+        if (procstate->get_times_considered() >= simcall_comm_testany__get__count(&actor->simcall_))
           procstate->set_done();
         if (state->transition_.times_considered_ != -1)
           req = &actor->simcall_;
@@ -155,8 +155,6 @@ static inline smx_simcall_t MC_state_choose_request_for_process(const RemoteProc
         else if (act->src_actor_.get() == nullptr && act->state_ == simgrid::kernel::activity::State::READY &&
                  act->detached())
           state->transition_.times_considered_ = 0; // OK
-        else
-          state->transition_.times_considered_ = -1; // timeout
         procstate->set_done();
         req = &actor->simcall_;
         break;

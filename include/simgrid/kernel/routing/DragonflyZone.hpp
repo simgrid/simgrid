@@ -65,14 +65,14 @@ public:
 class XBT_PUBLIC DragonflyZone : public ClusterBase {
 public:
   struct Coords {
-    unsigned group;
-    unsigned chassis;
-    unsigned blade;
-    unsigned node;
+    unsigned long group;
+    unsigned long chassis;
+    unsigned long blade;
+    unsigned long node;
   };
 
   explicit DragonflyZone(const std::string& name);
-  void get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency) override;
+  void get_local_route(const NetPoint* src, const NetPoint* dst, Route* into, double* latency) override;
   /**
    * @brief Parse topology parameters from string format
    *
@@ -91,9 +91,9 @@ public:
   void build_upper_levels(const s4u::ClusterCallbacks& set_callbacks);
   /** @brief Set the characteristics of links inside the Dragonfly zone */
   void set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy) override;
-  Coords rankId_to_coords(int rank_id) const;
+  Coords rankId_to_coords(unsigned long rank_id) const;
   XBT_ATTRIB_DEPRECATED_v330("Please use rankId_to_coords(int)") void rankId_to_coords(int rank_id,
-                                                                                       unsigned int coords[4]) const;
+                                                                                       unsigned long coords[4]) const;
 
 private:
   void generate_routers(const s4u::ClusterCallbacks& set_callbacks);

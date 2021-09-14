@@ -17,8 +17,8 @@ static void dvfs(int argc, char* argv[])
 {
   sg_host_t host = sg_host_self();
 
-  int nb = sg_host_get_nb_pstates(host);
-  XBT_INFO("Count of Processor states=%d", nb);
+  unsigned long nb = sg_host_get_nb_pstates(host);
+  XBT_INFO("Count of Processor states=%lu", nb);
 
   double current_peak = sg_host_get_speed(host);
   XBT_INFO("Current power peak=%f", current_peak);
@@ -29,12 +29,12 @@ static void dvfs(int argc, char* argv[])
   XBT_INFO("Task1 simulation time: %e", task_time);
 
   // Change power peak
-  int new_pstate = 2;
-  xbt_assert(new_pstate < nb, "Cannot set the host %s at pstate %d because it only provides %d pstates.",
+  unsigned long new_pstate = 2;
+  xbt_assert(new_pstate < nb, "Cannot set the host %s at pstate %lu because it only provides %lu pstates.",
              sg_host_get_name(host), new_pstate, nb);
 
   double peak_at = sg_host_get_pstate_speed(host, new_pstate);
-  XBT_INFO("Changing power peak value to %f (at index %d)", peak_at, new_pstate);
+  XBT_INFO("Changing power peak value to %f (at index %lu)", peak_at, new_pstate);
 
   sg_host_set_pstate(host, new_pstate);
 
@@ -48,8 +48,8 @@ static void dvfs(int argc, char* argv[])
 
   // Verify the default pstate is set to 0
   host    = sg_host_by_name("MyHost2");
-  int nb2 = sg_host_get_nb_pstates(host);
-  XBT_INFO("Count of Processor states=%d", nb2);
+  unsigned long nb2 = sg_host_get_nb_pstates(host);
+  XBT_INFO("Count of Processor states=%lu", nb2);
 
   double current_peak2 = sg_host_get_speed(host);
   XBT_INFO("Current power peak=%f", current_peak2);

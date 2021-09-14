@@ -41,7 +41,7 @@ static void worker(int argc, char* argv[])
    * terminated.
    */
   while (pending_execs_count > 0) {
-    int pos;
+    ssize_t pos;
     if (with_timeout)
       pos = sg_exec_wait_any_for(pending_execs, pending_execs_count, 4);
     else
@@ -51,7 +51,7 @@ static void worker(int argc, char* argv[])
       XBT_INFO("Do not wait any longer for an activity");
       pending_execs_count = 0;
     } else {
-      XBT_INFO("Activity at position %d is complete", pos);
+      XBT_INFO("Activity at position %zd is complete", pos);
       memmove(pending_execs + pos, pending_execs + pos + 1, sizeof(sg_exec_t) * (pending_execs_count - pos - 1));
       pending_execs_count--;
     }

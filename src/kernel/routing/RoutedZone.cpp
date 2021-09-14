@@ -131,7 +131,7 @@ Route* RoutedZone::new_extended_route(RoutingMode hierarchy, NetPoint* gw_src, N
   return result;
 }
 
-void RoutedZone::get_route_check_params(NetPoint* src, NetPoint* dst) const
+void RoutedZone::get_route_check_params(const NetPoint* src, const NetPoint* dst) const
 {
   xbt_assert(src, "Cannot find a route from nullptr to %s", dst->get_cname());
   xbt_assert(dst, "Cannot find a route from %s to nullptr", src->get_cname());
@@ -149,7 +149,7 @@ void RoutedZone::get_route_check_params(NetPoint* src, NetPoint* dst) const
              src->get_cname(), dst->get_cname(), src_as->get_cname(), dst_as->get_cname(), get_cname());
 }
 void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                                        const std::vector<resource::LinkImpl*>& link_list, bool symmetrical) const
+                                        const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical) const
 {
   const char* srcName = src->get_cname();
   const char* dstName = dst->get_cname();
@@ -165,7 +165,8 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
     xbt_assert(not dst->is_netzone(),
                "When defining a route, dst cannot be a netzone such as '%s'. Did you meant to have a NetzoneRoute?",
                dstName);
-    s4u::NetZone::on_route_creation(symmetrical, src, dst, gw_src, gw_dst, link_list);
+    s4u::NetZone::on_route_creation(symmetrical, src, dst, gw_src, gw_dst, get_link_list_impl(link_list, false));
+    NetZoneImpl::on_route_creation(symmetrical, src, dst, gw_src, gw_dst, get_link_list_impl(link_list, false));
   } else {
     XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", srcName, gw_src->get_cname(), dstName, gw_dst->get_cname());
     xbt_assert(src->is_netzone(), "When defining a NetzoneRoute, src must be a netzone but '%s' is not", srcName);
@@ -184,7 +185,19 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
                gw_dst->get_cname(), dstName);
     xbt_assert(not link_list.empty(), "Empty route (between %s@%s and %s@%s) forbidden.", srcName, gw_src->get_cname(),
                dstName, gw_dst->get_cname());
-    s4u::NetZone::on_route_creation(symmetrical, gw_src, gw_dst, gw_src, gw_dst, link_list);
+    const auto* netzone_src = get_netzone_recursive(src);
+    xbt_assert(netzone_src->is_component_recursive(gw_src),
+               "Invalid NetzoneRoute from %s@%s to %s@%s: gw_src %s belongs to %s, not to %s.", srcName,
+               gw_src->get_cname(), dstName, gw_dst->get_cname(), gw_src->get_cname(),
+               gw_src->get_englobing_zone()->get_cname(), srcName);
+
+    const auto* netzone_dst = get_netzone_recursive(dst);
+    xbt_assert(netzone_dst->is_component_recursive(gw_dst),
+               "Invalid NetzoneRoute from %s@%s to %s@%s: gw_dst %s belongs to %s, not to %s.", srcName,
+               gw_src->get_cname(), dstName, gw_dst->get_cname(), gw_dst->get_cname(),
+               gw_dst->get_englobing_zone()->get_cname(), dst->get_cname());
+    s4u::NetZone::on_route_creation(symmetrical, gw_src, gw_dst, gw_src, gw_dst, get_link_list_impl(link_list, false));
+    NetZoneImpl::on_route_creation(symmetrical, gw_src, gw_dst, gw_src, gw_dst, get_link_list_impl(link_list, false));
   }
 }
 } // namespace routing

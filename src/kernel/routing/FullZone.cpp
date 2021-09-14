@@ -41,25 +41,21 @@ void FullZone::do_seal()
   }
 }
 
-void FullZone::get_local_route(NetPoint* src, NetPoint* dst, Route* res, double* lat)
+void FullZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* res, double* lat)
 {
-  XBT_DEBUG("full getLocalRoute from %s[%u] to %s[%u]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
+  XBT_DEBUG("full getLocalRoute from %s[%lu] to %s[%lu]", src->get_cname(), src->id(), dst->get_cname(), dst->id());
 
   const auto& e_route = routing_table_[src->id()][dst->id()];
 
   if (e_route != nullptr) {
     res->gw_src_ = e_route->gw_src_;
     res->gw_dst_ = e_route->gw_dst_;
-    for (auto const& link : e_route->link_list_) {
-      res->link_list_.push_back(link);
-      if (lat)
-        *lat += link->get_latency();
-    }
+    add_link_latency(res->link_list_, e_route->link_list_, lat);
   }
 }
 
 void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                         const std::vector<resource::LinkImpl*>& link_list, bool symmetrical)
+                         const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical)
 {
   add_route_check_params(src, dst, gw_src, gw_dst, link_list, symmetrical);
 
@@ -76,8 +72,8 @@ void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
                dst->get_cname());
 
   /* Add the route to the base */
-  routing_table_[src->id()][dst->id()] =
-      std::unique_ptr<Route>(new_extended_route(get_hierarchy(), gw_src, gw_dst, link_list, true));
+  routing_table_[src->id()][dst->id()] = std::unique_ptr<Route>(
+      new_extended_route(get_hierarchy(), gw_src, gw_dst, get_link_list_impl(link_list, false), true));
 
   if (symmetrical && src != dst) {
     if (gw_dst && gw_src) {
@@ -95,8 +91,8 @@ void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
                  "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.",
                  dst->get_cname(), src->get_cname());
 
-    routing_table_[dst->id()][src->id()] =
-        std::unique_ptr<Route>(new_extended_route(get_hierarchy(), gw_src, gw_dst, link_list, false));
+    routing_table_[dst->id()][src->id()] = std::unique_ptr<Route>(
+        new_extended_route(get_hierarchy(), gw_src, gw_dst, get_link_list_impl(link_list, true), false));
   }
 }
 } // namespace routing

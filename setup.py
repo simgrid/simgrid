@@ -1,4 +1,7 @@
+# Copyright (c) 2019-2021. The SimGrid Team. All rights reserved.
 
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
 
 # python3 setup.py sdist # Build a source distrib (building binary distribs is complex on linux)
 
@@ -85,7 +88,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='simgrid',
-    version='3.27.1',
+    version='3.28.1',
     author='Da SimGrid Team',
     author_email='simgrid-devel@lists.gforge.inria.fr',
     description='Toolkit for scalable simulation of distributed applications',

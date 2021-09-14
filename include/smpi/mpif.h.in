@@ -192,7 +192,7 @@
 
       parameter(MPI_BYTE=1)
       parameter(MPI_CHARACTER=2)
-      parameter(MPI_LOGICAL=3)
+      parameter(MPI_LOGICAL=18)
       parameter(MPI_INT=4)
       parameter(MPI_INTEGER=4)
       parameter(MPI_INTEGER1=5)

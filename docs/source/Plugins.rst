@@ -96,9 +96,8 @@ Partial list of existing signals in s4u:
   :cpp:member:`Link::on_speed_change <simgrid::s4u::Link::on_bandwidth_change>`
   :cpp:member:`Link::on_communicate <simgrid::s4u::Link::on_communicate>`
   :cpp:member:`Link::on_communication_state_change <simgrid::s4u::Link::on_communication_state_change>`
-- :cpp:member:`Netzone::on_creation <simgrid::s4u::Netzone::on_creation>`
-  :cpp:member:`Netzone::on_seal <simgrid::s4u::Netzone::on_seal>`
-  :cpp:member:`Netzone::on_route_creation <simgrid::s4u::Netzone::on_route_creation>`
+- :cpp:member:`NetZone::on_creation <simgrid::s4u::NetZone::on_creation>`
+  :cpp:member:`NetZone::on_seal <simgrid::s4u::NetZone::on_seal>`
 - :cpp:member:`VirtualMachine::on_start <simgrid::s4u::VirtualMachine::on_start>`
   :cpp:member:`VirtualMachine::on_started <simgrid::s4u::VirtualMachine::on_started>`
   :cpp:member:`VirtualMachine::on_suspend <simgrid::s4u::VirtualMachine::on_suspend>`
@@ -153,8 +152,5 @@ File System
 
 .. doxygengroup:: plugin_filesystem
 
-.. doxygentypedef:: sg_file_t
-.. doxygentypedef:: const_sg_file_t
 
 ..  LocalWords:  SimGrid
-

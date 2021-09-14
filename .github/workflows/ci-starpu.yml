@@ -1,0 +1,34 @@
+name: CI StarPU
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 20 * * 0'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    container: simgrid/unstable
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build and test StarPU
+        run: |
+          set -e
+          ./tools/jenkins/ci-starpu.sh
+
+      - name: Create the failure Message
+        if: ${{ failure() }}
+        run: |
+          echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"@sthibaul: StarPU failed to build on simgrid/unstable docker image! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+      - name: Create the success Message
+        if: ${{ success() }}
+        run: |
+          echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"StarPU successfully built on simgrid/unstable docker image. ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+      - uses: mattermost/action-mattermost-notify@master
+        if: ${{ always() }}
+        env:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
+

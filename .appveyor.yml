@@ -24,7 +24,7 @@ branches:
 
 environment:
   global:
-    BOOST_ROOT: C:\Libraries\boost_1_71_0
+    BOOST_ROOT: C:\Libraries\boost_1_77_0
 
 install:
 # Strawberry perl is the one to work with gcc; AppVeyor provides ActiveState perl, which is the one to work with visual.

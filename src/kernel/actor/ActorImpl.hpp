@@ -22,7 +22,6 @@ namespace actor {
 
 class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder {
   s4u::Host* host_   = nullptr; /* the host on which the actor is running */
-  void* userdata_    = nullptr; /* XBT_ATTRIB_DEPRECATED_v329 kept for compatibility, should be replaced with moddata */
   aid_t pid_         = 0;
   aid_t ppid_        = -1;
   bool daemon_       = false; /* Daemon actors are automatically killed when the last non-daemon leaves */
@@ -52,8 +51,6 @@ public:
   // Accessors to private fields
   s4u::Host* get_host() { return host_; }
   void set_host(s4u::Host* dest);
-  void* get_user_data() { return userdata_; }          // XBT_ATTRIB_DEPRECATED_v329
-  void set_user_data(void* data) { userdata_ = data; } // XBT_ATTRIB_DEPRECATED_v329
   aid_t get_pid() const { return pid_; }
   aid_t get_ppid() const { return ppid_; }
   void set_ppid(aid_t ppid) { ppid_ = ppid; }
@@ -182,7 +179,7 @@ public:
   explicit ProcessArg(s4u::Host* host, ActorImpl* actor)
       : name(actor->get_name())
       , code(actor->code_)
-      , data(actor->get_user_data())
+      , data(actor->get_ciface()->get_data())
       , host(host)
       , kill_time(actor->get_kill_time())
       , auto_restart(actor->has_to_auto_restart())
@@ -204,7 +201,5 @@ XBT_PUBLIC unsigned long* get_maxpid_addr(); // In MC mode, the application send
 } // namespace actor
 } // namespace kernel
 } // namespace simgrid
-
-extern void (*SMPI_switch_data_segment)(simgrid::s4u::ActorPtr actor);
 
 #endif

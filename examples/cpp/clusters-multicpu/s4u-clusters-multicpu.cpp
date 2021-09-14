@@ -47,7 +47,7 @@ public:
     XBT_INFO("Done dispatching all messages");
 
     /* Now that all message exchanges were initiated, wait for their completion in one single call */
-    sg4::Comm::wait_all(&pending_comms);
+    sg4::Comm::wait_all(pending_comms);
 
     XBT_INFO("Goodbye now!");
   }
@@ -89,7 +89,7 @@ public:
  * @return netpoint, gateway: the netpoint to the StarZone and CPU0 as gateway
  */
 static std::pair<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*>
-create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id)
+create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned long>& /*coord*/, unsigned long id)
 {
   constexpr int num_cpus    = 8;     //!< Number of CPUs in the zone
   constexpr double speed    = 1e9;   //!< Speed of each CPU
@@ -110,13 +110,12 @@ create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coo
     /* the first CPU is the gateway */
     if (i == 0)
       gateway = host;
-    /* create 2 links for a full-duplex communication */
-    sg4::Link* link_up   = host_zone->create_link("link-up-" + cpu_name, link_bw)->set_latency(link_lat)->seal();
-    sg4::Link* link_down = host_zone->create_link("link-down-" + cpu_name, link_bw)->set_latency(link_lat)->seal();
-    /* link UP, connection from CPU to outer world */
-    host_zone->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, std::vector<sg4::Link*>{link_up}, false);
-    /* link DOWN, connection from outer to CPU */
-    host_zone->add_route(nullptr, host->get_netpoint(), nullptr, nullptr, std::vector<sg4::Link*>{link_down}, false);
+    /* create split-duplex link */
+    sg4::SplitDuplexLink* link = host_zone->create_split_duplex_link("link-" + cpu_name, link_bw);
+    link->set_latency(link_lat)->seal();
+    /* connecting CPU to outer world */
+    host_zone->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {{link, sg4::LinkInRoute::Direction::UP}},
+                         true);
   }
   /* seal newly created netzone */
   host_zone->seal();
@@ -140,7 +139,7 @@ create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coo
  * @param id Internal identifier in the torus (for information)
  * @return Limiter link
  */
-static sg4::Link* create_limiter(sg4::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id)
+static sg4::Link* create_limiter(sg4::NetZone* zone, const std::vector<unsigned long>& /*coord*/, unsigned long id)
 {
   return zone->create_link("limiter-" + std::to_string(id), 1e9)->seal();
 }

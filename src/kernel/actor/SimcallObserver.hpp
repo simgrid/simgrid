@@ -180,7 +180,7 @@ public:
   double get_timeout() const { return timeout_; }
 };
 
-class ExecutionWaitanySimcall : public ResultingSimcall<int> {
+class ExecutionWaitanySimcall : public ResultingSimcall<ssize_t> {
   const std::vector<activity::ExecImpl*>& execs_;
   const double timeout_;
 
@@ -197,7 +197,7 @@ public:
   double get_timeout() const { return timeout_; }
 };
 
-class IoWaitanySimcall : public ResultingSimcall<int> {
+class IoWaitanySimcall : public ResultingSimcall<ssize_t> {
   const std::vector<activity::IoImpl*>& ios_;
   const double timeout_;
 

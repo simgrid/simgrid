@@ -19,11 +19,11 @@ Binaries for Linux
 To get all of SimGrid on Debian or Ubuntu, simply type one of the
 following lines, or several lines if you need several languages.
 
-.. code-block:: shell
+.. code-block:: console
 
-   apt install libsimgrid-dev  # if you want to develop in C or C++
-   apt install simgrid-java    # if you want to develop in Java
-   apt install python3-simgrid # if you want to develop in Python
+   $ apt install libsimgrid-dev  # if you want to develop in C or C++
+   $ apt install simgrid-java    # if you want to develop in Java
+   $ apt install python3-simgrid # if you want to develop in Python
 
 If you build pre-compiled packages for other distributions, drop us an
 email.
@@ -34,7 +34,7 @@ Stable Java Package
 ^^^^^^^^^^^^^^^^^^^
 
 The jar file can be retrieved from the `Release page
-<https://framagit.org/simgrid/simgrid/releases>`_. This file is
+<https://framagit.org/simgrid/simgrid/-/releases>`_. This file is
 self-contained, including the native components for Linux, macOS and
 Windows. Copy it to your project's classpath and you're set.
 
@@ -130,27 +130,27 @@ Getting the Sources
 ^^^^^^^^^^^^^^^^^^^
 
 Grab the last **stable release** from `FramaGit
-<https://framagit.org/simgrid/simgrid/releases>`_, and compile it as follows:
+<https://framagit.org/simgrid/simgrid/-/releases>`_, and compile it as follows:
 
-.. code-block:: shell
+.. code-block:: console
 
-   tar xf simgrid-3-XX.tar.gz
-   cd simgrid-*
-   cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid .
-   make
-   make install
+   $ tar xf simgrid-3-XX.tar.gz
+   $ cd simgrid-*
+   $ cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid .
+   $ make
+   $ make install
 
 If you want to stay on the **bleeding edge**, get the current git version,
 and recompile it as with stable archives. You may need some extra
 dependencies.
 
-.. code-block:: shell
+.. code-block:: console
 
-   git clone https://framagit.org/simgrid/simgrid.git
-   cd simgrid
-   cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid .
-   make
-   make install
+   $ git clone https://framagit.org/simgrid/simgrid.git
+   $ cd simgrid
+   $ cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid .
+   $ make
+   $ make install
 
 .. _install_src_config:
    
@@ -199,17 +199,17 @@ prefer the ``-D`` flag of ``cmake``.
 For example, you can change the compilers by issuing these commands to set some
 environment variables before launching cmake:
 
-.. code-block:: shell
+.. code-block:: console
 
-   export CC=gcc-5.1
-   export CXX=g++-5.1
+   $ export CC=gcc-5.1
+   $ export CXX=g++-5.1
 
 The same can be done by passing ``-D`` parameters to cmake, as follows.
 Note that the dot at the end is mandatory (see :ref:`install_cmake_outsrc`).
 
-.. code-block:: shell
+.. code-block:: console
 
-   cmake -DCC=clang -DCXX=clang++ .
+   $ cmake -DCC=clang -DCXX=clang++ .
 
 SimGrid compilation options
 """""""""""""""""""""""""""
@@ -319,22 +319,22 @@ For that, go to the directory where the files should be produced, and
 invoke cmake (or ccmake) with the full path to the SimGrid source as
 last argument.
 
-.. code-block:: shell
+.. code-block:: console
 
-  mkdir build
-  cd build
-  cmake [options] ..
-  make
+  $ mkdir build
+  $ cd build
+  $ cmake [options] ..
+  $ make
 
 Existing Compilation Targets
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In most cases, compiling and installing SimGrid is enough:
 
-.. code-block:: shell
+.. code-block:: console
 
-  make
-  make install # try "sudo make install" if you don't have the permission to write
+  $ make
+  $ make install # try "sudo make install" if you don't have the permission to write
 
 In addition, several compilation targets are provided in SimGrid. If
 your system is well configured, the full list of targets is available
@@ -357,9 +357,9 @@ if some do not work for you.
 If you want to see what is really happening, try adding ``VERBOSE=1`` to
 your compilation requests:
 
-.. code-block:: shell
+.. code-block:: console
 
-  make VERBOSE=1
+  $ make VERBOSE=1
 
 .. _install_src_test:
 
@@ -373,17 +373,18 @@ default, so you first have to build them with ``make tests``. You can
 then run them with ``ctest``, that comes with CMake.  We run them
 every commit and the results are on `our Jenkins <https://ci.inria.fr/simgrid/>`_.
 
-.. code-block:: shell
+.. code-block:: console
 
-  make tests                # Build the tests
-  ctest	                    # Launch all tests
-  ctest -R s4u              # Launch only the tests whose names match the string "s4u"
-  ctest -j4                 # Launch all tests in parallel, at most 4 concurrent jobs
-  ctest --verbose           # Display all details on what's going on
-  ctest --output-on-failure # Only get verbose for the tests that fail
+  $ make tests                # Build the tests
+  $ ctest                     # Launch all tests
+  $ ctest -R s4u              # Launch only the tests whose names match the string "s4u"
+  $ ctest -j4                 # Launch all tests in parallel, at most 4 concurrent jobs
+  $ ctest --verbose           # Display all details on what's going on
+  $ ctest --output-on-failure # Only get verbose for the tests that fail
 
-  ctest -R s4u -j4 --output-on-failure # You changed S4U and want to check that you didn't break anything, huh?
-                                       # That's fine, I do so all the time myself.
+  $ ctest -R s4u -j4 --output-on-failure # You changed S4U and want to check that you  \
+                                         # didn't break anything, huh?                 \
+                                         # That's fine, I do so all the time myself.
 
 .. _install_cmake_mac:
 
@@ -392,10 +393,10 @@ macOS-specific instructions
 
 SimGrid compiles like a charm with clang (version 3.0 or higher) on macOS:
 
-.. code-block:: shell
+.. code-block:: console
 
-  cmake -DCMAKE_C_COMPILER=/path/to/clang -DCMAKE_CXX_COMPILER=/path/to/clang++ .
-  make
+  $ cmake -DCMAKE_C_COMPILER=/path/to/clang -DCMAKE_CXX_COMPILER=/path/to/clang++ .
+  $ make
 
 
 Troubleshooting your macOS build.
@@ -441,17 +442,17 @@ recent version of the `pybind11 <https://pybind11.readthedocs.io/en/stable/>`
 module (version at least 2.4), recompiling the Python bindings from
 the source should be as easy as: 
 
-.. code-block:: shell
+.. code-block:: console
 
   # cd simgrid-source-tree
-  python setup.py build install
+  $ python setup.py build install
   
 Starting with SimGrid 3.13, it should even be possible to install
 simgrid without downloading the source with pip:
 
-.. code-block:: shell
+.. code-block:: console
 
-  pip install simgrid
+  $ pip install simgrid
 
 Java-specific instructions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -459,10 +460,10 @@ Java-specific instructions
 Once you have the `full JDK <http://www.oracle.com/technetwork/java/javase/downloads>`_ installed,
 things should be as simple as:
 
-.. code-block:: shell
+.. code-block:: console
 
-   cmake -Denable_java=ON -Dminimal-bindings=ON .
-   make  simgrid-java_jar # Only build the jarfile
+   $ cmake -Denable_java=ON -Dminimal-bindings=ON .
+   $ make  simgrid-java_jar # Only build the jarfile
 
 After the compilation, the file ```simgrid.jar``` is produced in the
 root directory.
@@ -471,7 +472,7 @@ root directory.
 
 Sometimes, the build system fails to find the JNI headers. First locate them as follows:
 
-.. code-block:: shell
+.. code-block:: console
 
   $ locate jni.h
   /usr/lib/jvm/java-8-openjdk-amd64/include/jni.h
@@ -484,11 +485,11 @@ path, and relaunch cmake. If you have several versions of JNI installed
 (as above), pick the one corresponding to the report of
 ``javac -version``
 
-.. code-block:: shell
+.. code-block:: console
 
-  export JAVA_INCLUDE_PATH=/usr/lib/jvm/java-8-openjdk-amd64/include/
-  cmake -Denable_java=ON .
-  make
+  $ export JAVA_INCLUDE_PATH=/usr/lib/jvm/java-8-openjdk-amd64/include/
+  $ cmake -Denable_java=ON .
+  $ make
 
 Note that the filename ```jni.h``` was removed from the path.
 
@@ -498,19 +499,19 @@ Linux Multi-Arch specific instructions
 On a multiarch x86_64 Linux, it should be possible to compile a 32-bit
 version of SimGrid with something like:
 
-.. code-block:: shell
+.. code-block:: console
 
-  CFLAGS=-m32 \
-  CXXFLAGS=-m32 \
-  FFLAGS=-m32 \
-  PKG_CONFIG_LIBDIR=/usr/lib/i386-linux-gnu/pkgconfig/ \
-  cmake . \
-  -DCMAKE_SYSTEM_PROCESSOR=i386 \
-  -DCMAKE_Fortran_COMPILER=/some/path/to/i686-linux-gnu-gfortran \
-  -DGFORTRAN_EXE=/some/path/to/i686-linux-gnu-gfortran \
-  -DSMPI_C_FLAGS=-m32 \
-  -DSMPI_CXX_FLAGS=-m32 \
-  -DSMPI_Fortran_FLAGS=-m32
+  $ CFLAGS=-m32                                                      \
+    CXXFLAGS=-m32                                                    \
+    FFLAGS=-m32                                                      \
+    PKG_CONFIG_LIBDIR=/usr/lib/i386-linux-gnu/pkgconfig/             \
+    cmake .                                                          \
+      -DCMAKE_SYSTEM_PROCESSOR=i386                                  \
+      -DCMAKE_Fortran_COMPILER=/some/path/to/i686-linux-gnu-gfortran \
+      -DGFORTRAN_EXE=/some/path/to/i686-linux-gnu-gfortran           \
+      -DSMPI_C_FLAGS=-m32                                            \
+      -DSMPI_CXX_FLAGS=-m32                                          \
+      -DSMPI_Fortran_FLAGS=-m32
 
 If needed, implement ``i686-linux-gnu-gfortran`` as a script:
 

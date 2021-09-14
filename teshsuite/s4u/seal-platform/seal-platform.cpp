@@ -35,7 +35,7 @@ public:
     XBT_INFO("Done dispatching all messages");
 
     /* Now that all message exchanges were initiated, wait for their completion in one single call */
-    sg4::Comm::wait_all(&pending_comms);
+    sg4::Comm::wait_all(pending_comms);
 
     XBT_INFO("Goodbye now!");
   }
@@ -69,8 +69,8 @@ static sg4::NetZone* create_zone(const sg4::NetZone* root, const std::string& id
     std::string hostname = id + "-cpu-" + std::to_string(i);
     auto* host           = zone->create_host(hostname, 1e9);
     host->create_disk("disk-" + hostname, 1e9, 1e6);
-    auto* link = zone->create_link("link-" + hostname, 1e9);
-    zone->add_route(host->get_netpoint(), router, nullptr, nullptr, std::vector<sg4::Link*>{link});
+    const auto* link = zone->create_link("link-" + hostname, 1e9);
+    zone->add_route(host->get_netpoint(), router, nullptr, nullptr, {sg4::LinkInRoute(link)});
   }
   return zone;
 }
@@ -85,9 +85,9 @@ int main(int argc, char* argv[])
   auto* root  = sg4::create_full_zone("root");
   auto* zoneA = create_zone(root, "A");
   auto* zoneB = create_zone(root, "B");
-  auto* link  = root->create_link("root-link", 1e10);
+  const auto* link = root->create_link("root-link", 1e10);
   root->add_route(zoneA->get_netpoint(), zoneB->get_netpoint(), e.netpoint_by_name("routerA"),
-                  e.netpoint_by_name("routerB"), std::vector<sg4::Link*>{link});
+                  e.netpoint_by_name("routerB"), {sg4::LinkInRoute(link)});
 
   std::vector<sg4::Host*> host_list = e.get_all_hosts();
   /* create the sender actor running on first host */

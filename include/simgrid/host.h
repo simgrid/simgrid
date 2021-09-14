@@ -38,19 +38,21 @@ XBT_PUBLIC sg_host_t sg_host_by_name(const char* name);
 /** @brief Return the name of the sg_host_t. */
 XBT_PUBLIC const char* sg_host_get_name(const_sg_host_t host);
 
-#ifndef DOXYGEN
 // ========== User Data ==============
 /** @brief Return the user data of a #sg_host_t.
  *
  * This functions returns the user data associated to @a host if any.
  */
 XBT_PUBLIC void* sg_host_get_data(const_sg_host_t host);
-XBT_ATTRIB_DEPRECATED_v330("Please use sg_host_get_data()") XBT_PUBLIC void* sg_host_data(const_sg_host_t host);
+
 /** @brief Set the user data of a #sg_host_t.
  *
  * This functions attach @a data to @a host.
  */
 XBT_PUBLIC void sg_host_set_data(sg_host_t host, void* userdata);
+
+#ifndef DOXYGEN
+XBT_ATTRIB_DEPRECATED_v330("Please use sg_host_get_data()") XBT_PUBLIC void* sg_host_data(const_sg_host_t host);
 XBT_ATTRIB_DEPRECATED_v330("Please use sg_host_set_data()") XBT_PUBLIC
     void sg_host_data_set(sg_host_t host, void* userdata);
 #endif
@@ -62,7 +64,7 @@ XBT_PUBLIC void sg_host_get_disks(const_sg_host_t host, unsigned int* disk_count
 /** @brief Return the speed of the processor (in flop/s), regardless of the current load on the machine. */
 XBT_PUBLIC double sg_host_get_speed(const_sg_host_t host);
 XBT_ATTRIB_DEPRECATED_v330("Please use sg_host_get_speed()") XBT_PUBLIC double sg_host_speed(const_sg_host_t host);
-XBT_PUBLIC double sg_host_get_pstate_speed(const_sg_host_t host, int pstate_index);
+XBT_PUBLIC double sg_host_get_pstate_speed(const_sg_host_t host, unsigned long pstate_index);
 
 XBT_PUBLIC double sg_host_get_available_speed(const_sg_host_t host);
 
@@ -87,10 +89,10 @@ XBT_PUBLIC const char* sg_host_self_get_name();
  *
  * @param  host host to test
  */
-XBT_PUBLIC int sg_host_get_nb_pstates(const_sg_host_t host);
+XBT_PUBLIC unsigned long sg_host_get_nb_pstates(const_sg_host_t host);
 
-XBT_PUBLIC int sg_host_get_pstate(const_sg_host_t host);
-XBT_PUBLIC void sg_host_set_pstate(sg_host_t host, int pstate);
+XBT_PUBLIC unsigned long sg_host_get_pstate(const_sg_host_t host);
+XBT_PUBLIC void sg_host_set_pstate(sg_host_t host, unsigned long pstate);
 
 XBT_PUBLIC void sg_host_turn_on(sg_host_t host);
 XBT_PUBLIC void sg_host_turn_off(sg_host_t host);

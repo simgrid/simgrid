@@ -56,40 +56,35 @@ Giving back to SimGrid
 We are sometimes asked by users how to give back to the project. Here
 are some ideas, but if you have new ones, feel free to share them with us.
 
+Provide fresh-eyes feedback
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+We are working on the project since years. We take for granted things that are hard to infer at first, and traps we don't even see anymore. 
+Likewise, it's hard for us to maintain the documentation uptodate with the current situation, because we don't rely on the doc when navigating the project.
+This is why your first impression as a newcomer to the project is utterly precious for us. 
+Please make sure to write a `discovery report <https://diff.wikimedia.org/2014/03/25/seeing-through-the-eyes-of-new-technical-contributors/>`_ to enlight us.
+You can send it either as a bug report, as a mail on the list or simply post it as is to the Mattermost channel.
+
 Spread the word
 ^^^^^^^^^^^^^^^
 
-There are many ways to help the SimGrid project. The first and most
-natural one is to **use SimGrid for your research, and say so**. Cite
-the SimGrid framework in your papers and discuss of its advantages with
-your colleagues to spread the word. When we ask for new funding to
-sustain the project, the number of publications enabled by SimGrid is
-always the first question we get. The more you use the framework,
-the better for us. 
+A simple way to help the SimGrid project is to **use SimGrid for your research, and say so**. 
+`Cite the SimGrid framework<https://simgrid.org/publications.html>`_ in your papers and speak of it with your colleagues to spread the word. 
+The number of publications enabled by SimGrid is really important when asking for further fundings to sustain the project:
+The more you use the framework, the better for us. 
 
-Make sure that your scientific publications using SimGrid actually
-cite the `right paper <https://simgrid.org/publications.html>`_.
-Also make sure that these citations are correctly listed on 
-`our list <https://simgrid.org/usages.html>`_.
+Add a link to the `SimGrid homepage <https://simgrid.org>`_ on your site to improve our ranking in search engines.
 
-You can also **help us constituting an active and welcoming user
-community**. Subscribe to the mailing lists, and answer the
-questions that newscomers have if you can. Point them (gently ;) to
-the relevant part of the documentation on need, and help them becoming
-part of our community too. 
+You can also **help us constituting an active and welcoming user community**. Answer to the question sent to the mailing lists if you can, gently pointing to
+the relevant part of the documentation on need, and help newscomers becoming part of our community too. 
 
-Another easy way to help the project is to add a link to the `SimGrid
-homepage <https://simgrid.org>`_ on your site to improve SimGrid's ranking in
-search engines.
-
-Finally, if you organize a scientific event where you expect many
-potential users, you can invite us to give a tutorial on SimGrid. We
-found that 45 minutes to one hour is very sharp, but
-`doable <http://people.irisa.fr/Martin.Quinson/blog/2012/1120/Simgrid_at_Louvain/>`_.
-It is enough to explain the main motivations and outcomes of the
-project in order to motivate the attendees get more information on
-SimGrid, and eventually improve their scientific habits by using a
-sound simulation framework. 
+Finally, you can invite us for a talk on SimGrid to events you organize.
+We have various format, ranging from a focused `20 minute talks <http://people.irisa.fr/Martin.Quinson/blog/2020/1124/SimGrid_presentations>`_ 
+to a `45mn dense tutorial <http://people.irisa.fr/Martin.Quinson/blog/2012/1120/Simgrid_at_Louvain/>`_, 
+to a `2 hours seminar <http://people.irisa.fr/Martin.Quinson/blog/2016/0524/Experimental_methodology_for_distributed_systems>`_, or
+even to `multi-days events <https://simgrid.org/tutorials.html>`_.
+Note that even if most of these examples are from the same individual, several people in the team can present the project.
+It's just that I wrote this paragraph so took the examples I knew, from my own experience :)
 
 Report (and fix) issues
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -102,7 +97,7 @@ large code and documentation base. So please, **report any issue you
 find**, be it a typo in the documentation, a paragraph that needs to
 be reworded, a bug in the code, or any other problem. The best way to
 do so is to open an issue on our
-`Bug Tracker <https://github.com/simgrid/simgrid/issues>`_ so
+`Bug Tracker <https://framagit.org/simgrid/simgrid/issues>`_ so
 that we don't forget about it. 
 
 The worst way to report such issues is to go through private emails.

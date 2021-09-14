@@ -23,10 +23,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(platform_failures, "Messages specific for this exam
 static void master(int argc, char* argv[])
 {
   xbt_assert(argc == 5);
-  long number_of_tasks  = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
-  double task_comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s");
-  long task_comm_size   = xbt_str_parse_int(argv[3], "Invalid communication size: %s");
-  long workers_count    = xbt_str_parse_int(argv[4], "Invalid amount of workers: %s");
+  long number_of_tasks  = xbt_str_parse_int(argv[1], "Invalid amount of tasks");
+  double task_comp_size = xbt_str_parse_double(argv[2], "Invalid computational size");
+  long task_comm_size   = xbt_str_parse_int(argv[3], "Invalid communication size");
+  long workers_count    = xbt_str_parse_int(argv[4], "Invalid amount of workers");
 
   XBT_INFO("Got %ld workers and %ld tasks to process", workers_count, number_of_tasks);
 
@@ -90,7 +90,7 @@ static void worker(int argc, char* argv[])
 {
   xbt_assert(argc == 2);
   char mailbox_name[80];
-  long id = xbt_str_parse_int(argv[1], "Invalid argument %s");
+  long id = xbt_str_parse_int(argv[1], "Invalid argument");
 
   snprintf(mailbox_name, 79, "worker-%ld", id);
   sg_mailbox_t mailbox = sg_mailbox_by_name(mailbox_name);

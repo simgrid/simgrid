@@ -30,18 +30,21 @@ namespace s4u {
  * @endrst
  */
 class XBT_PUBLIC Link : public xbt::Extendable<Link> {
+#ifndef DOXYGEN
   friend kernel::resource::LinkImpl;
+#endif
 
+protected:
   // Links are created from the NetZone, and destroyed by their private implementation when the simulation ends
-  explicit Link(kernel::resource::LinkImpl* pimpl) : pimpl_(pimpl) {}
+  explicit Link(kernel::resource::LinkImplIntf* pimpl) : pimpl_(pimpl) {}
   virtual ~Link() = default;
-  // The private implementation, that never changes
-  kernel::resource::LinkImpl* const pimpl_;
+  // The implementation that never changes
+  kernel::resource::LinkImplIntf* const pimpl_;
 
 public:
-  enum class SharingPolicy { WIFI = 3, SPLITDUPLEX = 2, SHARED = 1, FATPIPE = 0 };
+  enum class SharingPolicy { NONLINEAR = 4, WIFI = 3, SPLITDUPLEX = 2, SHARED = 1, FATPIPE = 0 };
 
-  kernel::resource::LinkImpl* get_impl() const { return pimpl_; }
+  kernel::resource::LinkImpl* get_impl() const;
 
   /** @brief Retrieve a link from its name */
   static Link* by_name(const std::string& name);
@@ -67,12 +70,16 @@ public:
   /**
    * @brief Set latency (string version)
    *
+   * Accepts values with units, such as '1s' or '7ms'.
+   *
+   * Full list of accepted units: w (week), d (day), h, s, ms, us, ns, ps.
+   *
    * @throw std::invalid_argument if latency format is incorrect.
    */
   Link* set_latency(const std::string& value);
 
   /** @brief Describes how the link is shared between flows */
-  Link* set_sharing_policy(SharingPolicy policy);
+  Link* set_sharing_policy(SharingPolicy policy, const NonLinearResourceCb& cb = {});
   SharingPolicy get_sharing_policy() const;
 
   /** Setup the profile with states events (ON or OFF). The profile must contain boolean values. */
@@ -88,6 +95,16 @@ public:
   const char* get_property(const std::string& key) const;
   Link* set_properties(const std::unordered_map<std::string, std::string>& properties);
   Link* set_property(const std::string& key, const std::string& value);
+
+  /**
+   * @brief Set the number of communications that can shared this link at the same time
+   *
+   * Use this method to serialize communication flows going through this link.
+   * Use -1 to set no limit.
+   *
+   * @param limit  Number of concurrent flows
+   */
+  Link* set_concurrency_limit(int limit);
 
   /** @brief Set the level of communication speed of the given host on this wifi link.
    *
@@ -137,6 +154,54 @@ public:
   static xbt::signal<void(kernel::resource::NetworkAction&, kernel::resource::Action::State)>
       on_communication_state_change;
 };
+
+/**
+ * @beginrst
+ * A SplitDuplexLink encapsulates the :cpp:class:`links <simgrid::s4u::Link>` which
+ * compose a Split-Duplex link. Remember that a Split-Duplex link is nothing more than
+ * a pair of up/down links.
+ * @endrst
+ */
+class XBT_PUBLIC SplitDuplexLink : public Link {
+public:
+  explicit SplitDuplexLink(kernel::resource::LinkImplIntf* pimpl) : Link(pimpl) {}
+  /** @brief Get the link direction up*/
+  Link* get_link_up() const;
+  /** @brief Get the link direction down */
+  Link* get_link_down() const;
+
+  /** @brief Retrieve a link from its name */
+  static SplitDuplexLink* by_name(const std::string& name);
+};
+
+/**
+ * @beginrst
+ * Another encapsulation for using links in the :cpp:func:`NetZone::add_route`
+ *
+ * When adding a route with split-duplex links, you need to specify the direction of the link
+ * so SimGrid can know exactly which physical link to insert in the route.
+ *
+ * For shared/fat-pipe links, use the :cpp:enumerator:`Direction::NONE` since they don't have
+ * the concept of UP/DOWN links.
+ * @endrst
+ */
+class XBT_PUBLIC LinkInRoute {
+public:
+  enum class Direction { UP = 2, DOWN = 1, NONE = 0 };
+
+  explicit LinkInRoute(const Link* link) : link_(link) {}
+  LinkInRoute(const Link* link, Direction d) : link_(link), direction_(d) {}
+
+  /** @brief Get direction of this link in the route: UP or DOWN */
+  Direction get_direction() const { return direction_; }
+  /** @brief Get pointer to the link */
+  const Link* get_link() const { return link_; }
+
+private:
+  const Link* link_;
+  Direction direction_ = Direction::NONE;
+};
+
 } // namespace s4u
 } // namespace simgrid
 

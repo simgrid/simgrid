@@ -29,8 +29,10 @@ namespace s4u {
  *
  */
 class XBT_PUBLIC Semaphore {
+#ifndef DOXYGEN
   friend kernel::activity::SemaphoreImpl;
   friend void kernel::activity::intrusive_ptr_release(kernel::activity::SemaphoreImpl* sem);
+#endif
 
   kernel::activity::SemaphoreImpl* const pimpl_;
 

@@ -64,12 +64,12 @@ class StarZone : public ClusterZone { // implements the old ClusterZone
 public:
   explicit StarZone(const std::string& name);
 
-  void get_local_route(NetPoint* src, NetPoint* dst, Route* route, double* latency) override;
+  void get_local_route(const NetPoint* src, const NetPoint* dst, Route* route, double* latency) override;
   void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
                  std::map<std::string, xbt_edge_t, std::less<>>* edges) override;
 
   void add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                 const std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical) override;
+                 const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical) override;
   void do_seal() override;
 
 private:
@@ -91,7 +91,7 @@ private:
   /** @brief Auxiliary methods to check params received in add_route method */
   void check_add_route_param(const NetPoint* src, const NetPoint* dst, const NetPoint* gw_src, const NetPoint* gw_dst,
                              bool symmetrical) const;
-  std::unordered_map<unsigned int, StarRoute> routes_;
+  std::unordered_map<unsigned long, StarRoute> routes_;
 };
 } // namespace routing
 } // namespace kernel

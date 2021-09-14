@@ -29,16 +29,16 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename
 > [3] About to send back message '102' to process [2]
 > [3] Received 1st message '101' from process [2]
 > [3] increment message's value to  '102'
-> [rank 0] -> Tremblay
-> [rank 1] -> Jupiter
-> [rank 2] -> Fafard
-> [rank 3] -> Ginette
+> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
+> [0.000000] [smpi/INFO] [rank 1] -> Jupiter
+> [0.000000] [smpi/INFO] [rank 2] -> Fafard
+> [0.000000] [smpi/INFO] [rank 3] -> Ginette
 
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -no-privatize -replay ./out_in_ti.txt --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=smpi/simulate-computation:no -map -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/replay/smpi_replay --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
-> [rank 0] -> Tremblay
-> [rank 1] -> Jupiter
-> [rank 2] -> Fafard
-> [rank 3] -> Ginette
+> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
+> [0.000000] [smpi/INFO] [rank 1] -> Jupiter
+> [0.000000] [smpi/INFO] [rank 2] -> Fafard
+> [0.000000] [smpi/INFO] [rank 3] -> Ginette
 > [Jupiter:1:(2) 0.016806] [smpi_replay/INFO] Simulation time 0.016806
 
 ! output sort
@@ -120,16 +120,16 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace-ti --cfg=tracing/filename
 > [3] About to send back message '102' to process [2]
 > [3] Received 1st message '101' from process [2]
 > [3] increment message's value to  '102'
-> [rank 0] -> Tremblay
-> [rank 1] -> Jupiter
-> [rank 2] -> Fafard
-> [rank 3] -> Ginette
+> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
+> [0.000000] [smpi/INFO] [rank 1] -> Jupiter
+> [0.000000] [smpi/INFO] [rank 2] -> Fafard
+> [0.000000] [smpi/INFO] [rank 3] -> Ginette
 
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -no-privatize -replay ./out_in_ti.txt --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=tracing/smpi/format/ti-one-file:yes --cfg=smpi/simulate-computation:no -map -hostfile ${srcdir:=.}/../hostfile -platform ${platfdir:=.}/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/replay/smpi_replay --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
-> [rank 0] -> Tremblay
-> [rank 1] -> Jupiter
-> [rank 2] -> Fafard
-> [rank 3] -> Ginette
+> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
+> [0.000000] [smpi/INFO] [rank 1] -> Jupiter
+> [0.000000] [smpi/INFO] [rank 2] -> Fafard
+> [0.000000] [smpi/INFO] [rank 3] -> Ginette
 > [Jupiter:1:(2) 0.016806] [smpi_replay/INFO] Simulation time 0.016806
 
 $ rm -rf ./out_ti.txt_files

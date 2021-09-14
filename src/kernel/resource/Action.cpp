@@ -96,6 +96,11 @@ double Action::get_bound() const
   return variable_ ? variable_->get_bound() : 0;
 }
 
+double Action::get_rate() const
+{
+  return variable_ ? variable_->get_value() * factor_ : 0;
+}
+
 void Action::set_bound(double bound)
 {
   XBT_IN("(%p,%g)", this, bound);

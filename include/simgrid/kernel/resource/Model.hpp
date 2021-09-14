@@ -61,12 +61,6 @@ public:
   /** @brief Set the maxmin system of the current Model */
   void set_maxmin_system(lmm::System* system);
 
-  /** @brief Get the update algorithm of the current Model */
-  XBT_ATTRIB_DEPRECATED_v329("Please use is_update_lazy()") UpdateAlgo get_update_algorithm() const
-  {
-    return update_algorithm_;
-  }
-
   /** @brief Get Action heap */
   ActionHeap& get_action_heap() { return action_heap_; }
 
@@ -79,21 +73,6 @@ public:
   virtual double next_occurring_event(double now);
   virtual double next_occurring_event_lazy(double now);
   virtual double next_occurring_event_full(double now);
-
-  XBT_ATTRIB_DEPRECATED_v329("Please use next_occurring_event()") virtual double next_occuring_event(double now) final
-  {
-    return next_occurring_event(now);
-  }
-  XBT_ATTRIB_DEPRECATED_v329("Please use next_occurring_event_lazy()") virtual double next_occuring_event_lazy(
-      double now) final
-  {
-    return next_occurring_event_lazy(now);
-  }
-  XBT_ATTRIB_DEPRECATED_v329("Please use next_occurring_event_full()") virtual double next_occuring_event_full(
-      double now) final
-  {
-    return next_occurring_event_full(now);
-  }
 
 private:
   Action* extract_action(Action::StateSet* list);
@@ -118,12 +97,6 @@ public:
    * so we need to call it only when the next timestamp of other sources is computed.
    */
   virtual bool next_occurring_event_is_idempotent() { return true; }
-
-  XBT_ATTRIB_DEPRECATED_v329(
-      "Please use next_occurring_event_is_idempotent()") virtual bool next_occuring_event_is_idempotent() final
-  {
-    return next_occurring_event_is_idempotent();
-  }
 
   /** @brief Gets the model name */
   std::string get_name() const { return name_; }

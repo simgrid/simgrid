@@ -1,9 +1,24 @@
+                    _               _____  ____   ___
+__   _____ _ __ ___(_) ___  _ __   |___ / |___ \ / _ \
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | (_) |
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | / __/ \__, |
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|  /_/
+               (unreleased)
+
                     _               _____  ____  ___
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \( _ )
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) / _ \
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | / __/ (_) |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____\___/
-               (unreleased)
+               July 14. 2021
+
+The Victoriadagarna Release (birthday of Crown Princess Victoria)
+  
+  * Programmatic platform description (only C++ for now).
+  * New plugin to simplify producer/consumer applications.
+  * MC: new tutorial and associated docker image.
+  * SMPI: improve error handling for incorrect advanced usages.
+  * Many internal cleanups and refactoring to prepare the future.
 
                     _               _____  ____ _____
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \___  |
@@ -12,12 +27,12 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \___  |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____/_/
                March 29. 2021
 
-  The Ragnar Release (anniversary of the siege of Paris by Vikings in 845)
+The Ragnar Release (anniversary of the siege of Paris by Vikings in 845)
 
-    * SMPI: can now report leaks and hint about the mallocs and kernels hindering simulation scalability
-    * Doc: Several new sections in the user manual, and start documenting the internals.
-    * S4U: Direct comms from host to host, without mailboxes.
-    * Many internal cleanups and refactoring to prepare the future.
+  * SMPI: can now report leaks and hint about the mallocs and kernels hindering simulation scalability
+  * Doc: Several new sections in the user manual, and start documenting the internals.
+  * S4U: Direct comms from host to host, without mailboxes.
+  * Many internal cleanups and refactoring to prepare the future.
 
                     _               _____  ____   __
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \ / /_

@@ -156,10 +156,10 @@ double VMModel::next_occurring_event(double now)
     if (ws_vm->get_state() == s4u::VirtualMachine::State::SUSPENDED) // Ignore suspended VMs
       continue;
 
-    const kernel::resource::CpuImpl* cpu = ws_vm->pimpl_cpu;
+    const kernel::resource::CpuImpl* cpu = ws_vm->get_cpu();
 
     // solved_value below is X1 in comment above: what this VM got in the sharing on the PM
-    double solved_value = ws_vm->get_vm_impl()->get_action()->get_variable()->get_value();
+    double solved_value = ws_vm->get_vm_impl()->get_action()->get_rate();
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->get_cname(), ws_vm->get_pm()->get_cname());
 
     kernel::lmm::System* vcpu_system = cpu->get_model()->get_maxmin_system();
@@ -184,7 +184,7 @@ VirtualMachineImpl::VirtualMachineImpl(const std::string& name, s4u::VirtualMach
    * The value for GUESTOS_NOISE corresponds to the cost of the global action associated to the VM.  It corresponds to
    * the cost of a VM running no tasks.
    */
-  action_ = physical_host_->pimpl_cpu->execution_start(0, core_amount_);
+  action_ = physical_host_->get_cpu()->execution_start(0, core_amount_);
 
   // It's empty for now, so it should not request resources in the PM
   update_action_weight();
@@ -288,13 +288,13 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
   piface_->set_netpoint(destination->get_netpoint());
 
   /* Adapt the speed, pstate and other physical characteristics to the one of our new physical CPU */
-  piface_->pimpl_cpu->reset_vcpu(destination->pimpl_cpu);
+  piface_->get_cpu()->reset_vcpu(destination->get_cpu());
 
   physical_host_ = destination;
 
   /* Update vcpu's action for the new pm */
   /* create a cpu action bound to the pm model at the destination. */
-  kernel::resource::CpuAction* new_cpu_action = destination->pimpl_cpu->execution_start(0, this->core_amount_);
+  kernel::resource::CpuAction* new_cpu_action = destination->get_cpu()->execution_start(0, this->core_amount_);
 
   if (action_->get_remains_no_update() > 0)
     XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->get_remains_no_update());

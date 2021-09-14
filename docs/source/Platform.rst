@@ -20,8 +20,7 @@ some drawbacks, but using a specific format ensures that the platform
 is not mixed with the tested application. This separation of concern
 :ref:`is a must <howto_science>` for your Modeling and Simulation (M&S)
 work. When XML is too limiting, you may describe your platforms using
-the :ref:`lua bindings <platform_lua>` (it is not yet possible to do so in
-python or directly in C++).
+directly :ref:`C++ code <platform_cpp>` 
 
 Any simulated platform must contain **basic elements**, such as
 :ref:`pf_tag_host`, :ref:`pf_tag_link`, :ref:`pf_tag_disk`, and similar.

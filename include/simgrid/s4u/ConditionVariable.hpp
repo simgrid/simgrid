@@ -26,8 +26,10 @@ namespace s4u {
  */
 class XBT_PUBLIC ConditionVariable {
 private:
+#ifndef DOXYGEN
   friend kernel::activity::ConditionVariableImpl;
   friend void kernel::activity::intrusive_ptr_release(kernel::activity::ConditionVariableImpl* cond);
+#endif
 
   kernel::activity::ConditionVariableImpl* const pimpl_;
 

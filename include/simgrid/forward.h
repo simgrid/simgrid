@@ -66,6 +66,7 @@ XBT_PUBLIC void intrusive_ptr_release(Io* i);
 XBT_PUBLIC void intrusive_ptr_add_ref(Io* i);
 
 class Link;
+class SplitDuplexLink;
 
 class Mailbox;
 
@@ -90,6 +91,13 @@ XBT_PUBLIC void intrusive_ptr_release(const Semaphore* m);
 XBT_PUBLIC void intrusive_ptr_add_ref(const Semaphore* m);
 
 class Disk;
+/**
+ * @brief Callback to dynamically change the resource's capacity
+ *
+ * Allows user to change resource's capacity depending on the number of concurrent activities
+ * running on the resource at a given instant
+ */
+using NonLinearResourceCb = std::function<double(double capacity, int n_activities)>;
 } // namespace s4u
 
 namespace config {
@@ -163,6 +171,8 @@ class CpuModel;
 class NetworkModel;
 class NetworkModelIntf;
 class LinkImpl;
+class SplitDuplexLinkImpl;
+class LinkImplIntf;
 class NetworkAction;
 class DiskImpl;
 class DiskModel;
@@ -271,13 +281,15 @@ typedef s4u_Link* sg_link_t;
 typedef const s4u_Link* const_sg_link_t;
 typedef s4u_Disk* sg_disk_t;
 typedef const s4u_Disk* const_sg_disk_t;
-/** Pointer to a SimGrid file object */
+/** Pointer to a SimGrid file object @ingroup plugin_filesystem */
 typedef s4u_File* sg_file_t;
-/** Constant pointer to a SimGrid file object */
+/** Constant pointer to a SimGrid file object @ingroup plugin_filesystem */
 typedef const s4u_File* const_sg_file_t;
 typedef s4u_VM* sg_vm_t;
 typedef const s4u_VM* const_sg_vm_t;
+/** Pointer to an actor object */
 typedef s4u_Actor* sg_actor_t;
+/** Pointer to a constant actor object */
 typedef const s4u_Actor* const_sg_actor_t;
 
 typedef struct s_smx_simcall* smx_simcall_t;

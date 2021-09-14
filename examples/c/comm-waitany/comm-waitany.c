@@ -19,9 +19,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(comm_waitany, "Messages specific for this example")
 static void sender(int argc, char* argv[])
 {
   xbt_assert(argc == 4, "Expecting 3 parameters from the XML deployment file but got %d", argc);
-  long messages_count  = xbt_str_parse_int(argv[1], "Invalid message count: %s");
-  long msg_size        = xbt_str_parse_int(argv[2], "Invalid message size: %s");
-  long receivers_count = xbt_str_parse_int(argv[3], "Invalid amount of receivers: %s");
+  long messages_count  = xbt_str_parse_int(argv[1], "Invalid message count");
+  long msg_size        = xbt_str_parse_int(argv[2], "Invalid message size");
+  long receivers_count = xbt_str_parse_int(argv[3], "Invalid amount of receivers");
   xbt_assert(receivers_count > 0);
 
   /* Array in which we store all ongoing communications */
@@ -64,13 +64,13 @@ static void sender(int argc, char* argv[])
    * Even in this simple example, the pending comms do not terminate in the exact same order of creation.
    */
   while (pending_comms_count != 0) {
-    int changed_pos = sg_comm_wait_any(pending_comms, pending_comms_count);
+    ssize_t changed_pos = sg_comm_wait_any(pending_comms, pending_comms_count);
     memmove(pending_comms + changed_pos, pending_comms + changed_pos + 1,
             sizeof(sg_comm_t) * (pending_comms_count - changed_pos - 1));
     pending_comms_count--;
 
     if (changed_pos != 0)
-      XBT_INFO("Remove the %dth pending comm: it terminated earlier than another comm that was initiated first.",
+      XBT_INFO("Remove the %zdth pending comm: it terminated earlier than another comm that was initiated first.",
                changed_pos);
   }
 
@@ -83,7 +83,7 @@ static void sender(int argc, char* argv[])
 static void receiver(int argc, char* argv[])
 {
   xbt_assert(argc == 2, "Expecting one parameter from the XML deployment file but got %d", argc);
-  int id = (int)xbt_str_parse_int(argv[1], "ID should be numerical, not %s");
+  int id = (int)xbt_str_parse_int(argv[1], "ID should be numerical");
   char mailbox_name[80];
   snprintf(mailbox_name, 79, "receiver-%d", id);
   sg_mailbox_t mbox = sg_mailbox_by_name(mailbox_name);

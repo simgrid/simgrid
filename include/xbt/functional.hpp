@@ -126,7 +126,7 @@ class Task<R(Args...)> {
     move_function move;
   };
 
-  TaskUnion buffer_;
+  TaskUnion buffer_         = {};
   const TaskVtable* vtable_ = nullptr;
 
   void clear()

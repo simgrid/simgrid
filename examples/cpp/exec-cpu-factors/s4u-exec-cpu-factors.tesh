@@ -1,0 +1,6 @@
+$ ${bindir:=.}/s4u-exec-cpu-factors "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (1:runner@runner) Executing 1 tasks of 1e+06 flops, should take 1 second.
+> [  0.000000] (0:maestro@) Host runner, task with 1000000.000000 flops, new factor 1.000000
+> [  1.000000] (1:runner@runner) Executing 1 tasks of 100000 flops, it would take .001s without factor. It'll take .002s
+> [  1.000000] (0:maestro@) Host runner, task with 1000.000000 flops, new factor 0.500000
+> [  1.002000] (1:runner@runner) Finished executing. Goodbye now!

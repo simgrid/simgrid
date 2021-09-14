@@ -1,0 +1,22 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/cm02-set-lat-bw  "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
+> [  0.000000] [0:maestro@] Configuration change: Set 'network/model' to 'CM02'
+> [  0.000000] [0:maestro@] Configuration change: Set 'network/weight-S' to '20537'
+> [  0.000000] [0:maestro@] Configuration change: Set 'network/crosstraffic' to '0'
+> [  0.000000] [1:@S1] Comm to C1, same weight/penalty (w_a == w_b, ~20) for everybody, each comm should take 1s and finish at the same time
+> [  0.000000] [3:@S2] Comm to C2, same weight/penalty (w_a == w_b, ~20) for everybody, each comm should take 1s and finish at the same time
+> [  2.000000] [2:@C1] Received data. Elapsed 2.000000
+> [  2.000000] [4:@C2] Received data. Elapsed 2.000000
+> [ 10.000000] [3:@S2] Comm Flow B to C2: after 1s, change latency of L4 to increase penalty for flow B (w_b = 2* w_a)
+> [ 10.000000] [3:@S2] rho_a = 2*rho_b, flow A receives twice the bandwidth than flow B
+> [ 10.000000] [1:@S1] Comm Flow A to C1
+> [ 11.753312] [2:@C1] Received data. Elapsed 1.753312
+> [ 12.000000] [4:@C2] Received data. Elapsed 2.000000
+> [ 20.000000] [1:@S1] Comm Flow A to C1
+> [ 20.000000] [3:@S2] Comm Flow B to C2: after 1s, change bandwidth of L4 to increase penalty for flow B (w_b = 2* w_a)
+> [ 20.000000] [3:@S2] rho_a = 2*rho_b, flow A receives twice the bandwidth than flow B
+> [ 21.750000] [2:@C1] Received data. Elapsed 1.750000
+> [ 22.000000] [4:@C2] Received data. Elapsed 2.000000
+> [ 30.000000] [2:@C1] Bye
+> [ 30.000000] [4:@C2] Bye

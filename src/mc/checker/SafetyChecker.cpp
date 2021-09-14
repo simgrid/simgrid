@@ -89,7 +89,11 @@ void SafetyChecker::run()
 
     // Backtrack if we reached the maximum depth
     if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
-      XBT_WARN("/!\\ Max depth reached ! /!\\ ");
+      if (reductionMode_ == ReductionMode::dpor) {
+        XBT_ERROR("/!\\ Max depth reached! THIS WILL PROBABLY BREAK the dpor reduction /!\\");
+        XBT_ERROR("/!\\ If bad things happen, disable dpor with --cfg=model-check/reduction:none /!\\");
+      } else
+        XBT_WARN("/!\\ Max depth reached ! /!\\ ");
       this->backtrack();
       continue;
     }

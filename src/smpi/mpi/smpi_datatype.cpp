@@ -180,6 +180,9 @@ int Datatype::copy_attrs(Datatype* datatype){
     } else if (elem.copy_fn.type_copy_fn != MPI_NULL_COPY_FN) {
       ret = elem.copy_fn.type_copy_fn(datatype, it.first, elem.extra_state, it.second, &value_out, &flag);
     }
+    if (ret != MPI_SUCCESS)
+      return ret;
+
     if (elem.copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN) {
       value_out = xbt_new(int, 1);
       if (*(int*)*elem.copy_fn.type_copy_fn_fort == 1) { // MPI_TYPE_DUP_FN
@@ -188,11 +191,11 @@ int Datatype::copy_attrs(Datatype* datatype){
       } else { // not null, nor dup
         elem.copy_fn.type_copy_fn_fort(datatype, it.first, elem.extra_state, it.second, value_out, &flag, &ret);
       }
-      if (ret != MPI_SUCCESS)
+      if (ret != MPI_SUCCESS) {
         xbt_free(value_out);
+        return ret;
+      }
     }
-    if (ret != MPI_SUCCESS)
-      return ret;
     if (flag) {
       elem.refcount++;
       attributes().emplace(it.first, value_out);
@@ -244,13 +247,6 @@ bool Datatype::is_valid() const
 bool Datatype::is_basic() const
 {
   return (flags_ & DT_FLAG_BASIC);
-}
-
-bool Datatype::is_replayable() const
-{
-  return (simgrid::instr::trace_format == simgrid::instr::TraceFormat::Ti) &&
-         ((this == MPI_BYTE) || (this == MPI_DOUBLE) || (this == MPI_INT) || (this == MPI_CHAR) ||
-          (this == MPI_SHORT) || (this == MPI_LONG) || (this == MPI_FLOAT));
 }
 
 MPI_Datatype Datatype::decode(const std::string& datatype_id)
@@ -315,7 +311,8 @@ int Datatype::get_contents(int max_integers, int max_addresses, int max_datatype
   if (static_cast<unsigned>(max_datatypes) < contents_->datatypes_.size())
     return MPI_ERR_COUNT;
   std::copy(begin(contents_->datatypes_), end(contents_->datatypes_), array_of_datatypes);
-  std::for_each(begin(contents_->datatypes_), end(contents_->datatypes_), std::mem_fn(&Datatype::ref));
+  for (auto& datatype : contents_->datatypes_)
+    datatype->ref();
   return MPI_SUCCESS;
 }
 
@@ -340,9 +337,8 @@ int Datatype::copy(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
 {
   // FIXME Handle the case of a partial shared malloc.
 
-  if (smpi_cfg_privatization() == SmpiPrivStrategies::MMAP) {
-    smpi_switch_data_segment(simgrid::s4u::Actor::self());
-  }
+  smpi_switch_data_segment(simgrid::s4u::Actor::self());
+
   /* First check if we really have something to do */
   size_t offset = 0;
   std::vector<std::pair<size_t, size_t>> private_blocks;
@@ -423,13 +419,14 @@ int Datatype::create_vector(int count, int block_length, int stride, MPI_Datatyp
     ub=((count-1)*stride+block_length-1)*old_type->get_extent()+old_type->ub();
   }
   if(old_type->flags() & DT_FLAG_DERIVED || stride != block_length){
-    *new_type = new Type_Vector(count * block_length * old_type->size(), lb, ub, DT_FLAG_DERIVED, count, block_length,
+    *new_type = new Type_Vector(old_type->size() * block_length * count, lb, ub, DT_FLAG_DERIVED, count, block_length,
                                 stride, old_type);
     retval=MPI_SUCCESS;
   }else{
     /* in this situation the data are contiguous thus it's not required to serialize and unserialize it*/
-    *new_type = new Datatype(count * block_length * old_type->size(), 0, ((count -1) * stride + block_length)*
-                         old_type->size(), DT_FLAG_CONTIGUOUS|DT_FLAG_DERIVED);
+    *new_type =
+        new Datatype(old_type->size() * block_length * count, 0,
+                     old_type->size() * ((count - 1) * stride + block_length), DT_FLAG_CONTIGUOUS | DT_FLAG_DERIVED);
     const std::array<int, 3> ints = {{count, block_length, stride}};
     (*new_type)->set_contents(MPI_COMBINER_VECTOR, 3, ints.data(), 0, nullptr, 1, &old_type);
     retval=MPI_SUCCESS;
@@ -450,12 +447,13 @@ int Datatype::create_hvector(int count, int block_length, MPI_Aint stride, MPI_D
     ub=((count-1)*stride)+(block_length-1)*old_type->get_extent()+old_type->ub();
   }
   if(old_type->flags() & DT_FLAG_DERIVED || stride != block_length*old_type->get_extent()){
-    *new_type = new Type_Hvector(count * block_length * old_type->size(), lb, ub, DT_FLAG_DERIVED, count, block_length,
+    *new_type = new Type_Hvector(old_type->size() * block_length * count, lb, ub, DT_FLAG_DERIVED, count, block_length,
                                  stride, old_type);
     retval=MPI_SUCCESS;
   }else{
     /* in this situation the data are contiguous thus it's not required to serialize and unserialize it*/
-    *new_type = new Datatype(count * block_length * old_type->size(), 0, count * block_length * old_type->size(), DT_FLAG_CONTIGUOUS|DT_FLAG_DERIVED);
+    *new_type = new Datatype(old_type->size() * block_length * count, 0, old_type->size() * block_length * count,
+                             DT_FLAG_CONTIGUOUS | DT_FLAG_DERIVED);
     const std::array<int, 2> ints = {{count, block_length}};
     (*new_type)->set_contents(MPI_COMBINER_HVECTOR, 2, ints.data(), 1, &stride, 1, &old_type);
     retval=MPI_SUCCESS;
@@ -517,7 +515,7 @@ int Datatype::create_hindexed(int count, const int* block_lengths, const MPI_Ain
     if(indices[i]+block_lengths[i]*old_type->ub()>ub)
       ub = indices[i]+block_lengths[i]*old_type->ub();
 
-    if ( (i< count -1) && (indices[i]+block_lengths[i]*(static_cast<int>(old_type->size())) != indices[i+1]) )
+    if ((i < count - 1) && (indices[i] + static_cast<MPI_Aint>(old_type->size()) * block_lengths[i] != indices[i + 1]))
       contiguous=false;
   }
   if (old_type->flags_ & DT_FLAG_DERIVED || lb!=0)
@@ -565,7 +563,8 @@ int Datatype::create_struct(int count, const int* block_lengths, const MPI_Aint*
     if (not forced_ub && indices[i] + block_lengths[i] * old_types[i]->ub() > ub)
       ub = indices[i]+block_lengths[i]*old_types[i]->ub();
 
-    if ( (i< count -1) && (indices[i]+block_lengths[i]*static_cast<int>(old_types[i]->size()) != indices[i+1]) )
+    if ((i < count - 1) &&
+        (indices[i] + static_cast<MPI_Aint>(old_types[i]->size() * block_lengths[i]) != indices[i + 1]))
       contiguous=false;
   }
   if (not contiguous) {

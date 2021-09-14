@@ -132,6 +132,7 @@ set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
                 src/kernel/routing/FullZone_test.cpp
                 src/kernel/routing/StarZone_test.cpp
                 src/kernel/routing/TorusZone_test.cpp
+                src/surf/SplitDuplexLinkImpl_test.cpp
                 src/xbt/config_test.cpp
                 src/xbt/dict_test.cpp
                 src/xbt/dynar_test.cpp
@@ -143,6 +144,7 @@ if (SIMGRID_HAVE_MC)
 else()
   set(EXTRA_DIST ${EXTRA_DIST} src/mc/sosp/Snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
 endif()  
+set(EXTRA_DIST ${EXTRA_DIST} src/kernel/routing/NetZone_test.hpp)
 
 add_executable       (unit-tests EXCLUDE_FROM_ALL ${UNIT_TESTS})
 add_dependencies     (tests unit-tests)

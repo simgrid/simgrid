@@ -19,21 +19,16 @@
 set(SIMGRID_HAVE_NS3 0)
 set(NS3_HINT ${ns3_path} CACHE PATH "Path to search for NS3 lib and include")
 
+set(NS3_KNOWN_VERSIONS "3.22" "3.23" "3.24" "3.25" "3.26" "3.27" "3.28" "3.29" "3.30" "3.31" "3.32" "3.33" "3.34" "3.35" "3.36" "3.37" "3.38" "3.39" "3.40")
+
+foreach (_ns3_ver ${NS3_KNOWN_VERSIONS})
+  list(APPEND _ns3_LIB_SEARCH_DIRS "ns${_ns3_ver}-core" "ns${_ns3_ver}-core-optimized" "ns${_ns3_ver}-core-debug")
+  list(APPEND _ns3_INCLUDE_SEARCH_DIRS "include/ns${_ns3_ver}")
+endforeach()
+
 find_library(NS3_LIBRARIES
   NAME ns3-core
-       ns3.22-core ns3.22-core-optimized ns3.22-core-debug
-       ns3.23-core ns3.23-core-optimized ns3.23-core-debug
-       ns3.24-core ns3.24-core-optimized ns3.24-core-debug
-       ns3.25-core ns3.25-core-optimized ns3.25-core-debug
-       ns3.26-core ns3.26-core-optimized ns3.26-core-debug
-       ns3.27-core ns3.27-core-optimized ns3.27-core-debug
-       ns3.28-core ns3.28-core-optimized ns3.28-core-debug
-       ns3.29-core ns3.29-core-optimized ns3.29-core-debug
-       ns3.30-core ns3.30-core-optimized ns3.30-core-debug
-       ns3.31-core ns3.31-core-optimized ns3.31-core-debug
-       ns3.32-core ns3.32-core-optimized ns3.32-core-debug
-       ns3.33-core ns3.33-core-optimized ns3.33-core-debug
-       ns3.34-core ns3.34-core-optimized ns3.34-core-debug
+      ${_ns3_LIB_SEARCH_DIRS}
   PATH_SUFFIXES lib64 lib ns3/lib
   PATHS
   ${NS3_HINT}
@@ -41,9 +36,8 @@ find_library(NS3_LIBRARIES
 
 find_path(NS3_INCLUDE_DIR
   NAME ns3/core-module.h
-  PATH_SUFFIXES include ns3/include 
-                include/ns3.22 include/ns3.23 include/ns3.24 include/ns3.25 include/ns3.26 include/ns3.27 include/ns3.28 include/ns3.29 include/ns3.30
-                include/ns3.31 include/ns3.32 include/ns3.33 include/ns3.34
+  PATH_SUFFIXES include ns3/include
+                ${_ns3_INCLUDE_SEARCH_DIRS}
   PATHS
   ${NS3_HINT}
   )

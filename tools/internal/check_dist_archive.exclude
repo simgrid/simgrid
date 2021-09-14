@@ -16,12 +16,11 @@
 + \.circleci/.*
 + \.clang-format
 + \.classpath
-+ \.codacy\.yml
 + \.editorconfig
 + \.gitlab-ci\.yml
++ \.lgtm\.yml
 + \.project
 + \.readthedocs.yml
-+ \.travis\.yml
 + sonar-project\.properties
 
 + contrib/.*

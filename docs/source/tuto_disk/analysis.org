@@ -1,0 +1,625 @@
+#+TITLE: Modeling I/O: the realistic way
+#+AUTHOR: The SimGrid Team
+#+OPTIONS: toc:nil title:nil author:nil num:nil
+
+* Modeling I/O: the realistic way
+:PROPERTIES:
+:CUSTOM_ID: howto_disk
+:END:
+
+** Introduction
+
+ This tutorial presents how to perform faithful IO experiments in
+ SimGrid. It is based on the paper "Adding Storage Simulation
+ Capacities to the SimGridToolkit: Concepts, Models, and API".
+
+ The paper presents a series of experiments to analyze the performance
+ of IO operations (read/write) on different kinds of disks (SATA, SAS,
+ SSD). In this tutorial, we present a detailed example of how to
+ extract experimental data to simulate: i) performance degradation
+ with concurrent operations (Fig. 8 in the paper) and ii) variability
+ in IO operations (Fig. 5 to 7).
+
+ - Link for paper: https://hal.inria.fr/hal-01197128
+ - Link for data: https://figshare.com/articles/dataset/Companion_of_the_SimGrid_storage_modeling_article/1175156
+
+ *Disclaimer*: 
+- The purpose of this document is to illustrate how we can
+ extract data from experiments and inject on SimGrid. However, the
+ data shown on this page may *not* reflect the reality.
+- You must run similar experiments on your hardware to get realistic
+  data for your context.
+- SimGrid has been in active development since the paper release in
+  2015, thus the MSG and XML description used in the paper may have
+  evolved and may not be available anymore.
+
+*** Running this tutorial
+
+ A Dockerfile is available in =docs/source/tuto_disk=. It allows you to
+ re-run this tutorial. For that, build the image and run the container:
+ - =docker build -t tuto_disk .=
+ - =docker run -it tuto_disk=
+
+** Analyzing the experimental data
+ We start by analyzing and extracting the real data available.
+*** Scripts
+
+ We use a special method to create non-uniform histograms to represent
+ the noise in IO operations. 
+
+ Unable to install the library properly, I copied the important methods
+ here.
+
+ Copied from: https://rdrr.io/github/dlebauer/pecan-priors/src/R/plots.R
+
+ #+begin_src R :results output :session *R* :exports none
+#' Variable-width (dagonally cut) histogram
+#'
+#' 
+#' When constructing a histogram, it is common to make all bars the same width.
+#' One could also choose to make them all have the same area.
+#' These two options have complementary strengths and weaknesses; the equal-width histogram oversmooths in regions of high density, and is poor at identifying sharp peaks; the equal-area histogram oversmooths in regions of low density, and so does not identify outliers.
+#' We describe a compromise approach which avoids both of these defects. We regard the histogram as an exploratory device, rather than as an estimate of a density. 
+#' @title Diagonally Cut Histogram 
+#' @param x is a numeric vector (the data)
+#' @param a is the scaling factor, default is 5 * IQR
+#' @param nbins is the number of bins, default is assigned by the Stuges method
+#' @param rx  is the range used for the left of the left-most bin to the right of the right-most bin  
+#' @param eps used to set artificial bound on min width / max height of bins as described in Denby and Mallows (2009) on page 24.
+#' @param xlab is label for the x axis 
+#' @param plot = TRUE produces the plot, FALSE returns the heights, breaks and counts
+#' @param lab.spikes = TRUE labels the \% of data in the spikes
+#' @return list with two elements, heights of length n and breaks of length n+1 indicating the heights and break points of the histogram bars. 
+#' @author Lorraine Denby, Colin Mallows
+#' @references Lorraine Denby, Colin Mallows. Journal of Computational and Graphical Statistics. March 1, 2009, 18(1): 21-31. doi:10.1198/jcgs.2009.0002.
+ dhist<-function(x, a=5*iqr(x),
+                 nbins=nclass.Sturges(x), rx = range(x,na.rm = TRUE),
+                 eps=.15, xlab = "x", plot = TRUE,lab.spikes = TRUE)
+ {
+
+   if(is.character(nbins))
+     nbins <- switch(casefold(nbins),
+                     sturges = nclass.Sturges(x),
+                     fd = nclass.FD(x),
+                     scott = nclass.scott(x),
+                     stop("Nclass method not recognized"))
+   else if(is.function(nbins))
+     nbins <- nbins(x)
+
+   x <- sort(x[!is.na(x)])
+   if(a == 0)
+     a <- diff(range(x))/100000000
+   if(a != 0 & a != Inf) {
+     n <- length(x)
+     h <- (rx[2] + a - rx[1])/nbins
+     ybr <- rx[1] + h * (0:nbins)
+     yupper <- x + (a * (1:n))/n
+                                         # upper and lower corners in the ecdf
+     ylower <- yupper - a/n
+                                         #
+     cmtx <- cbind(cut(yupper, breaks = ybr), cut(yupper, breaks = 
+                                 ybr, left.include = TRUE), cut(ylower, breaks = ybr),
+                   cut(ylower, breaks = ybr, left.include = TRUE))
+     cmtx[1, 3] <- cmtx[1, 4] <- 1
+                                         # to replace NAs when default r is used
+     cmtx[n, 1] <- cmtx[n, 2] <- nbins
+                                         #
+                                         #checksum <- apply(cmtx, 1, sum) %% 4
+     checksum <- (cmtx[, 1] + cmtx[, 2] + cmtx[, 3] + cmtx[, 4]) %%
+     4
+                                         # will be 2 for obs. that straddle two bins
+     straddlers <- (1:n)[checksum == 2]
+                                         # to allow for zero counts
+     if(length(straddlers) > 0) {
+       counts <- table(c(1:nbins, cmtx[ - straddlers, 1]))
+     } else {
+       counts <- table(c(1:nbins, cmtx[, 1]))
+     }
+     counts <- counts - 1
+                                         #
+     if(length(straddlers) > 0) {
+       for(i in straddlers) {
+         binno <- cmtx[i, 1]
+         theta <- ((yupper[i] - ybr[binno]) * n)/a
+         counts[binno - 1] <- counts[binno - 1] + (
+                                                   1 - theta)
+         counts[binno] <- counts[binno] + theta
+       }
+     }
+     xbr <- ybr
+     xbr[-1] <- ybr[-1] - (a * cumsum(counts))/n
+     spike<-eps*diff(rx)/nbins
+     flag.vec<-c(diff(xbr)<spike,F)
+     if ( sum(abs(diff(xbr))<=spike) >1) {
+       xbr.new<-xbr
+       counts.new<-counts
+       diff.xbr<-abs(diff(xbr))
+       amt.spike<-diff.xbr[length(diff.xbr)]
+       for (i in rev(2:length(diff.xbr))) {
+         if (diff.xbr[i-1]<=spike&diff.xbr[i]<=spike&
+             !is.na(diff.xbr[i])) {
+           amt.spike<-amt.spike+diff.xbr[i-1]
+           counts.new[i-1]<-counts.new[i-1]+counts.new[i]
+           xbr.new[i]<-NA
+           counts.new[i]<-NA
+           flag.vec[i-1]<-T
+         }
+         else amt.spike<-diff.xbr[i-1]
+       }
+       flag.vec<-flag.vec[!is.na(xbr.new)]
+       flag.vec<-flag.vec[-length(flag.vec)]
+       counts<-counts.new[!is.na(counts.new)]
+       xbr<-xbr.new[!is.na(xbr.new)]
+
+     }
+     else flag.vec<-flag.vec[-length(flag.vec)]
+     widths <- abs(diff(xbr))
+     ## N.B. argument "widths" in barplot must be xbr
+     heights <- counts/widths
+   }
+   bin.size <- length(x)/nbins
+   cut.pt <- unique(c(min(x) - abs(min(x))/1000,
+                      approx(seq(length(x)), x, (1:(nbins - 1)) * bin.size, rule = 2)$y, max(x)))
+   aa <- hist(x, breaks = cut.pt, plot = FALSE, probability = TRUE)
+   if(a == Inf) {
+     heights <- aa$counts
+     xbr <- aa$breaks
+   }
+   amt.height<-3
+   q75<-quantile(heights,.75)
+   if (sum(flag.vec)!=0) {
+     amt<-max(heights[!flag.vec])
+     ylim.height<-amt*amt.height
+     ind.h<-flag.vec&heights> ylim.height
+     flag.vec[heights<ylim.height*(amt.height-1)/amt.height]<-F
+     heights[ind.h] <- ylim.height
+   }
+   amt.txt<-0
+   end.y<-(-10000)
+   if(plot) {
+     barplot(heights, abs(diff(xbr)), space = 0, density = -1, xlab = 
+             xlab, plot = TRUE, xaxt = "n",yaxt='n')
+     at <- pretty(xbr)
+     axis(1, at = at - xbr[1], labels = as.character(at))
+     if (lab.spikes) {
+       if (sum(flag.vec)>=1) {
+         usr<-par('usr')
+         for ( i in seq(length(xbr)-1)) {
+           if (!flag.vec[i]) {
+             amt.txt<-0
+             if (xbr[i]-xbr[1]<end.y) amt.txt<-1
+           }
+           else {
+             amt.txt<-amt.txt+1
+             end.y<-xbr[i]-xbr[1]+3*par('cxy')[1]
+           }
+           if (flag.vec[i]) {
+             txt<-paste(' ',format(round(counts[i]/
+                                         sum(counts)*100)),'%',sep='')
+             par(xpd = TRUE)
+             text(xbr[i+1]-xbr[1],ylim.height-par('cxy')[2]*(amt.txt-1),txt, adj=0)
+           }}
+       }
+       else print('no spikes or more than one spike')
+     }
+     invisible(list(heights = heights, xbr = xbr))
+   }
+   else {
+     return(list(heights = heights, xbr = xbr,counts=counts))
+   }
+ }
+
+#' Calculate interquartile range
+#'
+#' Calculates the 25th and 75th quantiles given a vector x; used in function \link{dhist}.
+#' @title Interquartile range
+#' @param x vector
+#' @return numeric vector of length 2, with the 25th and 75th quantiles of input vector x. 
+ iqr<-function(x){
+   return(diff(quantile(x, c(0.25, 0.75), na.rm = TRUE)))
+ }
+
+ #+end_src
+
+*** Data preparation
+
+ Some initial configurations/list of packages.
+
+ #+begin_src R :results output :session *R* :exports both
+ library(jsonlite)
+ library(ggplot2)
+ library(plyr)
+ library(dplyr)
+ library(gridExtra)
+
+ IO_INFO = list()
+ #+end_src
+
+ This was copied from the =sg_storage_ccgrid15.org= available at the
+ figshare of the paper. Before executing this code, please download and
+ decompress the appropriate file.
+
+ #+begin_src sh :results output :exports both
+ curl -O -J -L "https://ndownloader.figshare.com/files/1928095"
+ tar xfz bench.tgz
+ #+end_src
+
+ Preparing data for varialiby analysis.
+
+ #+BEGIN_SRC R :session :results output :export none
+
+ clean_up <- function (df, infra){
+ names(df) <- c("Hostname","Date","DirectIO","IOengine","IOscheduler","Error","Operation","Jobs","BufferSize","FileSize","Runtime","Bandwidth","BandwidthMin","BandwidthMax","Latency", "LatencyMin", "LatencyMax","IOPS")
+ df=subset(df,Error=="0")
+ df=subset(df,DirectIO=="1")
+ df <- merge(df,infra,by="Hostname")
+ df$Hostname = sapply(strsplit(df$Hostname, "[.]"), "[", 1)
+ df$HostModel = paste(df$Hostname, df$Model, sep=" - ")
+ df$Duration = df$Runtime/1000 # fio outputs runtime in msec, we want to display seconds
+ df$Size = df$FileSize/1024/1024
+ df=subset(df,Duration!=0.000)
+ df$Bwi=df$Duration/df$Size
+ df[df$Operation=="read",]$Operation<- "Read"
+ df[df$Operation=="write",]$Operation<- "Write"
+ return(df)
+ }
+
+ grenoble <- read.csv('./bench/grenoble.csv', header=FALSE,sep = ";",
+ stringsAsFactors=FALSE)
+ luxembourg <- read.csv('./bench/luxembourg.csv', header=FALSE,sep = ";",  stringsAsFactors=FALSE)
+ nancy <- read.csv('./bench/nancy.csv', header=FALSE,sep = ";",  stringsAsFactors=FALSE)
+ all <- rbind(grenoble,nancy, luxembourg)
+ infra <- read.csv('./bench/infra.csv', header=FALSE,sep = ";",  stringsAsFactors=FALSE)
+ names(infra) <- c("Hostname","Model","DiskSize")
+
+ all = clean_up(all, infra)
+ griffon = subset(all,grepl("^griffon", Hostname))
+ griffon$Cluster <-"Griffon (SATA II)"
+ edel = subset(all,grepl("^edel", Hostname))
+ edel$Cluster<-"Edel (SSD)"
+
+ df = rbind(griffon[griffon$Jobs=="1" & griffon$IOscheduler=="cfq",],
+            edel[edel$Jobs=="1" & edel$IOscheduler=="cfq",])
+ #Get rid off of 64 Gb disks of Edel as they behave differently (used to be "edel-51")
+ df = df[!(grepl("^Edel",df$Cluster) & df$DiskSize=="64 GB"),]
+ #+END_SRC
+
+ Preparing data for concurrent analysis.
+ #+begin_src R :results output :session *R* :exports both
+   dfc = rbind(griffon[griffon$Jobs>1 & griffon$IOscheduler=="cfq",],
+              edel[edel$Jobs>1 & edel$IOscheduler=="cfq",])
+   dfc2 = rbind(griffon[griffon$Jobs==1 & griffon$IOscheduler=="cfq",],
+              edel[edel$Jobs==1 & edel$IOscheduler=="cfq",])
+   dfc = rbind(dfc,dfc2[sample(nrow(dfc2),size=200),])
+
+   dd <- data.frame(
+         Hostname="??",
+         Date = NA, #tmpl$Date,
+         DirectIO = NA,
+         IOengine = NA,
+         IOscheduler = NA,
+         Error = 0,
+         Operation = NA, #tmpl$Operation,
+         Jobs = NA, # #d$nb.of.concurrent.access,
+         BufferSize = NA, #d$bs,
+         FileSize = NA, #d$size,
+         Runtime = NA,
+         Bandwidth = NA,
+         BandwidthMin = NA,
+         BandwidthMax = NA,
+         Latency = NA,
+         LatencyMin = NA,
+         LatencyMax = NA,
+         IOPS = NA,
+         Model = NA, #tmpl$Model,
+         DiskSize = NA, #tmpl$DiskSize,
+         HostModel = NA,
+         Duration = NA, #d$time,
+         Size = NA,
+         Bwi = NA,
+         Cluster = NA) #tmpl$Cluster)
+
+   dd$Size = dd$FileSize/1024/1024
+   dd$Bwi = dd$Duration/dd$Size
+
+   dfc = rbind(dfc, dd)
+   # Let's get rid of small files!
+   dfc = subset(dfc,Size >= 10)
+   # Let's get rid of 64Gb edel disks
+   dfc = dfc[!(grepl("^Edel",dfc$Cluster) & dfc$DiskSize=="64 GB"),]
+
+   dfc$TotalSize=dfc$Size * dfc$Jobs
+   dfc$BW = (dfc$TotalSize) / dfc$Duration
+   dfc = dfc[dfc$BW>=20,] # get rid of one point that is typically an outlier and does not make sense
+
+   dfc$method="lm"
+   dfc[dfc$Cluster=="Edel (SSD)"  & dfc$Operation=="Read",]$method="loess"
+
+   dfc[dfc$Cluster=="Edel (SSD)"  & dfc$Operation=="Write" & dfc$Jobs ==1,]$method="lm"
+   dfc[dfc$Cluster=="Edel (SSD)"  & dfc$Operation=="Write" & dfc$Jobs ==1,]$method=""
+
+   dfc[dfc$Cluster=="Griffon (SATA II)" & dfc$Operation=="Write",]$method="lm"
+   dfc[dfc$Cluster=="Griffon (SATA II)"  & dfc$Operation=="Write" & dfc$Jobs ==1,]$method=""
+
+   dfd = dfc[dfc$Operation=="Write" & dfc$Jobs ==1 &
+             (dfc$Cluster %in% c("Griffon (SATA II)", "Edel (SSD)")),]
+   dfd = ddply(dfd,c("Cluster","Operation","Jobs","DiskSize"), summarize,
+               mean = mean(BW), num = length(BW), sd = sd(BW))
+   dfd$BW=dfd$mean
+   dfd$ci = 2*dfd$sd/sqrt(dfd$num)
+
+   dfrange=ddply(dfc,c("Cluster","Operation","DiskSize"), summarize,
+               max = max(BW))
+   dfrange=ddply(dfrange,c("Cluster","DiskSize"), mutate,
+               BW = max(max))
+   dfrange$Jobs=16
+
+ #+end_src
+
+*** Griffon (SATA)
+**** Modeling resource sharing w/ concurrent access
+
+ This figure presents the overall performance of IO operation with
+ concurrent access to the disk. Note that the image is different
+ from the one in the paper. Probably, we need to further clean the
+ available data to obtain exaclty the same results.
+
+ #+begin_src R :results output graphics :file fig/griffon_deg.png :exports both :width 600 :height 400 :session *R* 
+   ggplot(data=dfc,aes(x=Jobs,y=BW, color=Operation)) + theme_bw() +
+     geom_point(alpha=.3) +
+     geom_point(data=dfrange, size=0) +
+     facet_wrap(Cluster~Operation,ncol=2,scale="free_y")+ # ) + #
+     geom_smooth(data=dfc[dfc$method=="loess",], color="black", method=loess,se=TRUE,fullrange=T) +
+     geom_smooth(data=dfc[dfc$method=="lm",], color="black", method=lm,se=TRUE) +
+     geom_point(data=dfd, aes(x=Jobs,y=BW),color="black",shape=21,fill="white") +
+     geom_errorbar(data=dfd, aes(x=Jobs, ymin=BW-ci, ymax=BW+ci),color="black",width=.6) +
+     xlab("Number of concurrent operations") + ylab("Aggregated Bandwidth (MiB/s)")  + guides(color=FALSE)  + xlim(0,NA) + ylim(0,NA)
+
+ #+end_src
+
+***** Read
+ Getting read data for Griffon from 1 to 15 concurrent reads.
+
+ #+begin_src R :results output :session *R* :exports both
+ deg_griffon = dfc %>% filter(grepl("^Griffon", Cluster)) %>% filter(Operation == "Read")
+ model = lm(BW~Jobs, data = deg_griffon)
+ IO_INFO[["griffon"]][["degradation"]][["read"]] = predict(model,data.frame(Jobs=seq(1,15)))
+
+ toJSON(IO_INFO, pretty = TRUE)
+ #+end_src
+
+ 
+***** Write
+
+ Same for write operations.
+
+ #+begin_src R :results output :session *R* :exports both
+ deg_griffon = dfc %>% filter(grepl("^Griffon", Cluster)) %>% filter(Operation == "Write") %>% filter(Jobs > 2)
+ mean_job_1 = dfc %>% filter(grepl("^Griffon", Cluster)) %>% filter(Operation == "Write") %>% filter(Jobs == 1) %>% summarize(mean = mean(BW))
+ model = lm(BW~Jobs, data = deg_griffon)
+ IO_INFO[["griffon"]][["degradation"]][["write"]] = c(mean_job_1$mean, predict(model,data.frame(Jobs=seq(2,15))))
+ toJSON(IO_INFO, pretty = TRUE)
+ #+end_src
+ 
+
+**** Modeling read/write bandwidth variability
+
+ Fig.5 in the paper presents the noise in the read/write operations in
+ the Griffon SATA disk.
+
+ The paper uses regular histogram to illustrate the distribution of the
+ effective bandwidth. However, in this tutorial, we use dhist
+ (https://rdrr.io/github/dlebauer/pecan-priors/man/dhist.html) to have a
+ more precise information over the highly dense areas around the mean.
+
+***** Read
+ First, we present the histogram for read operations.
+ #+begin_src R :results output graphics :file fig/griffon_read_dhist.png :exports both :width 600 :height 400 :session *R* 
+ griffon_read = df %>% filter(grepl("^Griffon", Cluster)) %>% filter(Operation == "Read") %>% select(Bwi)
+ dhist(1/griffon_read$Bwi)
+ #+end_src
+
+ Saving it to be exported in json format.
+
+ #+begin_src R :results output :session *R* :exports both
+ griffon_read_dhist = dhist(1/griffon_read$Bwi, plot=FALSE)
+ IO_INFO[["griffon"]][["noise"]][["read"]] = c(breaks=list(griffon_read_dhist$xbr), heights=list(unclass(griffon_read_dhist$heights)))
+ IO_INFO[["griffon"]][["read_bw"]] = mean(1/griffon_read$Bwi)
+ toJSON(IO_INFO, pretty = TRUE)
+ #+end_src
+
+***** Write
+
+ Same analysis for write operations.
+ #+begin_src R :results output graphics :file fig/griffon_write_dhist.png :exports both :width 600 :height 400 :session *R* 
+ griffon_write = df %>% filter(grepl("^Griffon", Cluster)) %>% filter(Operation == "Write") %>% select(Bwi)
+ dhist(1/griffon_write$Bwi)
+ #+end_src
+
+ #+begin_src R :results output :session *R* :exports both
+ griffon_write_dhist = dhist(1/griffon_write$Bwi, plot=FALSE)
+ IO_INFO[["griffon"]][["noise"]][["write"]] = c(breaks=list(griffon_write_dhist$xbr), heights=list(unclass(griffon_write_dhist$heights)))
+ IO_INFO[["griffon"]][["write_bw"]] = mean(1/griffon_write$Bwi)
+ toJSON(IO_INFO, pretty = TRUE)
+ #+end_src
+
+*** Edel (SSD)
+ This section presents the exactly same analysis for the Edel SSDs.
+
+**** Modeling resource sharing w/ concurrent access
+
+***** Read
+ Getting read data for Edel from 1 to 15 concurrent operations.
+
+ #+begin_src R :results output :session *R* :exports both
+ deg_edel = dfc %>% filter(grepl("^Edel", Cluster)) %>% filter(Operation == "Read")
+ model = loess(BW~Jobs, data = deg_edel)
+ IO_INFO[["edel"]][["degradation"]][["read"]] = predict(model,data.frame(Jobs=seq(1,15)))
+ toJSON(IO_INFO, pretty = TRUE)
+ #+end_src
+
+***** Write
+
+ Same for write operations.
+
+ #+begin_src R :results output :session *R* :exports both
+ deg_edel = dfc %>% filter(grepl("^Edel", Cluster)) %>% filter(Operation == "Write") %>% filter(Jobs > 2)
+ mean_job_1 = dfc %>% filter(grepl("^Edel", Cluster)) %>% filter(Operation == "Write") %>% filter(Jobs == 1) %>% summarize(mean = mean(BW))
+ model = lm(BW~Jobs, data = deg_edel)
+ IO_INFO[["edel"]][["degradation"]][["write"]] = c(mean_job_1$mean, predict(model,data.frame(Jobs=seq(2,15))))
+ toJSON(IO_INFO, pretty = TRUE)
+ #+end_src
+
+
+**** Modeling read/write bandwidth variability
+
+***** Read
+
+ #+begin_src R :results output graphics :file fig/edel_read_dhist.png :exports both :width 600 :height 400 :session *R* 
+ edel_read = df %>% filter(grepl("^Edel", Cluster)) %>% filter(Operation == "Read") %>% select(Bwi)
+ dhist(1/edel_read$Bwi)
+ #+end_src
+
+ Saving it to be exported in json format.
+
+ #+begin_src R :results output :session *R* :exports both
+ edel_read_dhist = dhist(1/edel_read$Bwi, plot=FALSE)
+ IO_INFO[["edel"]][["noise"]][["read"]] = c(breaks=list(edel_read_dhist$xbr), heights=list(unclass(edel_read_dhist$heights)))
+ IO_INFO[["edel"]][["read_bw"]] = mean(1/edel_read$Bwi)
+ toJSON(IO_INFO, pretty = TRUE)
+ #+end_src
+
+***** Write
+ #+begin_src R :results output graphics :file fig/edel_write_dhist.png :exports both :width 600 :height 400 :session *R* 
+
+ edel_write = df %>% filter(grepl("^Edel", Cluster)) %>% filter(Operation == "Write") %>% select(Bwi)
+ dhist(1/edel_write$Bwi)
+ #+end_src
+
+ Saving it to be exported later.
+ #+begin_src R :results output :session *R* :exports both
+ edel_write_dhist = dhist(1/edel_write$Bwi, plot=FALSE)
+ IO_INFO[["edel"]][["noise"]][["write"]] = c(breaks=list(edel_write_dhist$xbr), heights=list(unclass(edel_write_dhist$heights)))
+ IO_INFO[["edel"]][["write_bw"]] = mean(1/edel_write$Bwi)
+ toJSON(IO_INFO, pretty = TRUE)
+ #+end_src
+
+** Exporting to JSON
+ Finally, let's save it to a file to be opened by our simulator.
+
+ #+begin_src R :results output :session *R* :exports both
+ json = toJSON(IO_INFO, pretty = TRUE)
+ cat(json, file="IO_noise.json")
+ #+end_src
+
+
+** Injecting this data in SimGrid
+
+ To mimic this behavior in SimGrid, we use two features in the platform
+ description: non-linear sharing policy and bandwidth factors. For more
+ details, please see the source code in =tuto_disk.cpp=.
+
+*** Modeling resource sharing w/ concurrent access
+
+ The =set_sharing_policy= method allows the user to set a callback to
+ dynamically change the disk capacity. The callback is called each time
+ SimGrid will share the disk between a set of I/O operations.
+
+ The callback has access to the number of activities sharing the
+ resource and its current capacity. It must return the new resource's
+ capacity.
+
+ #+begin_src C++ :results output :eval no :exports code
+ static double disk_dynamic_sharing(double capacity, int n)
+ {
+    return capacity; //useless callback
+ }
+
+ auto* disk = host->create_disk("dump", 1e6, 1e6);
+ disk->set_sharing_policy(sg4::Disk::Operation::READ, sg4::Disk::SharingPolicy::NONLINEAR, &disk_dynamic_sharing);
+ #+end_src
+
+
+*** Modeling read/write bandwidth variability
+
+ The noise in I/O operations can be obtained by applying a factor to
+ the I/O bandwidth of the disk. This factor is applied when we update
+ the remaining amount of bytes to be transferred, increasing or
+ decreasing the effective disk bandwidth.
+
+ The =set_factor= method allows the user to set a callback to
+ dynamically change the factor to be applied for each I/O operation.
+ The callback has access to size of the operation and its type (read or
+ write). It must return a multiply factor (e.g. 1.0 for doing nothing).
+
+ #+begin_src C++ :results output :eval no :exports code
+ static double disk_variability(sg_size_t size, sg4::Io::OpType op)
+ {
+    return 1.0; //useless callback
+ }
+
+ auto* disk = host->create_disk("dump", 1e6, 1e6);
+ disk->set_factor_cb(&disk_variability);
+ #+end_src
+
+
+*** Running our simulation
+ The binary was compiled in the provided docker container.
+
+ #+begin_src sh :results output :exports both
+ ./tuto_disk > ./simgrid_disk.csv
+ #+end_src
+
+
+** Analyzing the SimGrid results
+
+The figure below presents the results obtained by SimGrid.
+
+The experiment performs I/O operations, varying the number of
+concurrent operations from 1 to 15. We run only 20 simulations for
+each case.
+
+We can see that the graphics are quite similar to the ones obtained in
+the real platform.
+
+ #+begin_src R :results output graphics :file fig/simgrid_results.png :exports both :width 600 :height 400 :session *R* 
+ sg_df = read.csv("./simgrid_disk.csv")
+ sg_df = sg_df %>% group_by(disk, op, flows) %>% mutate(bw=((size*flows)/elapsed)/10^6, method=if_else(disk=="edel" & op=="read", "loess", "lm"))
+ sg_dfd = sg_df %>% filter(flows==1 & op=="write") %>% group_by(disk, op, flows) %>% summarize(mean = mean(bw), sd = sd(bw), se=sd/sqrt(n()))
+
+ sg_df[sg_df$op=="write" & sg_df$flows ==1,]$method=""
+ 
+ ggplot(data=sg_df, aes(x=flows, y=bw, color=op)) + theme_bw() +
+     geom_point(alpha=.3) + 
+     geom_smooth(data=sg_df[sg_df$method=="loess",], color="black", method=loess,se=TRUE,fullrange=T) +
+     geom_smooth(data=sg_df[sg_df$method=="lm",], color="black", method=lm,se=TRUE) +
+     geom_errorbar(data=sg_dfd, aes(x=flows, y=mean, ymin=mean-2*se, ymax=mean+2*se),color="black",width=.6) +
+     facet_wrap(disk~op,ncol=2,scale="free_y")+ # ) + #
+     xlab("Number of concurrent operations") + ylab("Aggregated Bandwidth (MiB/s)")  + guides(color=FALSE)  + xlim(0,NA) + ylim(0,NA)
+
+ #+end_src
+
+Note: The variability in griffon read operation seems to decrease when
+we have more concurrent operations. This is a particularity of the
+griffon read speed profile and the elapsed time calculation.
+
+Given that:
+- Each point represents the time to perform the N I/O operations.
+- Griffon read speed decreases with the number of concurrent
+  operations.
+
+With 15 read operations:
+- At the beginning, every read gets the same bandwidth, about
+  42MiB/s.
+- We sample the noise in I/O operations, some will be faster than
+  others (e.g. factor > 1).
+
+When the first read operation finish:
+- We will recalculate the bandwidth sharing, now considering that we
+  have 14 active read operations. This will increase the bandwidth for
+  each operation (about 44MiB/s).
+- The remaining "slower" activities will be speed up.
+
+This behavior keeps happening until the end of the 15 operations,
+at each step, we speed up a little the slowest operations and
+consequently, decreasing the variability we see.

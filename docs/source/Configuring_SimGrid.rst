@@ -32,9 +32,9 @@ The most common way is to use the ``--cfg`` command line argument. For
 example, to set the item ``Item`` to the value ``Value``, simply
 type the following on the command-line:
 
-.. code-block:: shell
+.. code-block:: console
 
-   my_simulator --cfg=Item:Value (other arguments)
+   $ my_simulator --cfg=Item:Value (other arguments)
 
 Several ``--cfg`` command line arguments can naturally be used. If you
 need to include spaces in the argument, don't forget to quote the
@@ -150,6 +150,8 @@ Existing Configuration Items
 - **smpi/cpu-threshold:** :ref:`cfg=smpi/cpu-threshold`
 - **smpi/display-allocs:** :ref:`cfg=smpi/display-allocs`
 - **smpi/display-timing:** :ref:`cfg=smpi/display-timing`
+- **smpi/errors-are-fatal:** :ref:`cfg=smpi/errors-are-fatal`
+- **smpi/finalization-barrier:** :ref:`cfg=smpi/finalization-barrier`
 - **smpi/grow-injected-times:** :ref:`cfg=smpi/grow-injected-times`
 - **smpi/host-speed:** :ref:`cfg=smpi/host-speed`
 - **smpi/IB-penalty-factors:** :ref:`cfg=smpi/IB-penalty-factors`
@@ -162,6 +164,7 @@ Existing Configuration Items
 - **smpi/or:** :ref:`cfg=smpi/or`
 - **smpi/os:** :ref:`cfg=smpi/os`
 - **smpi/papi-events:** :ref:`cfg=smpi/papi-events`
+- **smpi/pedantic:** :ref:`cfg=smpi/pedantic`
 - **smpi/privatization:** :ref:`cfg=smpi/privatization`
 - **smpi/privatize-libs:** :ref:`cfg=smpi/privatize-libs`
 - **smpi/send-is-detached-thresh:** :ref:`cfg=smpi/send-is-detached-thresh`
@@ -342,10 +345,10 @@ the TCP congestion mechanism into account.  On Linux, this value can
 be retrieved using the following commands. Both give a set of values,
 and you should use the last one, which is the maximal size.
 
-.. code-block:: shell
+.. code-block:: console
 
-   cat /proc/sys/net/ipv4/tcp_rmem # gives the sender window
-   cat /proc/sys/net/ipv4/tcp_wmem # gives the receiver window
+   $ cat /proc/sys/net/ipv4/tcp_rmem # gives the sender window
+   $ cat /proc/sys/net/ipv4/tcp_wmem # gives the receiver window
 
 .. _cfg=network/bandwidth-factor:
 .. _cfg=network/latency-factor:
@@ -362,17 +365,29 @@ one the timings of packet-level simulators, as described in `Accuracy
 Study and Improvement of Network Simulation in the SimGrid Framework
 <http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf>`_.
 
+- **network/latency-factor**: apply a multiplier to latency.
+  Models the TCP slow-start mechanism.
+- **network/bandwidth-factor**: actual bandwidth perceived by the
+  user.
+- **network/weight-S**: bottleneck sharing constant parameter. Used
+  to calculate RTT.
+
+These parameters are the same for all communications in your simulation,
+independently of message size or source/destination hosts. A more flexible
+mechanism based on callbacks was introduced in SimGrid. It provides the user
+a callback that will be called for each communication, allowing the user
+to set different latency and bandwidth factors, based on the message size, links used
+or zones traversed. To more details of how to use it, please look at the
+`examples/cpp/network-factors/s4u-network-factors.cpp <https://framagit.org/simgrid/simgrid/tree/master/examples/cpp/network-factors/s4u-network-factors.cpp>`_.
+
 
 If you are using the SMPI model, these correction coefficients are
 themselves corrected by constant values depending on the size of the
 exchange.  By default SMPI uses factors computed on the Stampede
 Supercomputer at TACC, with optimal deployment of processes on
 nodes. Again, only hardcore experts should bother about this fact.
+For more details, see SMPI sections about :ref:`cfg=smpi/bw-factor` and :ref:`cfg=smpi/lat-factor`.
 
-
-.. todo:: This section should be rewritten, and actually explain the
-	  options network/bandwidth-factor, network/latency-factor,
-	  network/weight-S.
 
 .. _cfg=smpi/IB-penalty-factors:
 
@@ -547,9 +562,9 @@ Configuring the Model-Checking
 To enable SimGrid's model-checking support, the program should
 be executed using the simgrid-mc wrapper:
 
-.. code-block:: shell
+.. code-block:: console
 
-   simgrid-mc ./my_program
+   $ simgrid-mc ./my_program
 
 Safety properties are expressed as assertions using the function
 :cpp:func:`void MC_assert(int prop)`.
@@ -592,9 +607,9 @@ the command line, specifying the name of the file containing the
 property, as formatted by the `ltl2ba <https://github.com/utwente-fmt/ltl2ba>`_ program.
 Note that ltl2ba is not part of SimGrid and must be installed separately.
 
-.. code-block:: shell
+.. code-block:: console
 
-   simgrid-mc ./my_program --cfg=model-check/property:<filename>
+   $ simgrid-mc ./my_program --cfg=model-check/property:<filename>
 
 .. _cfg=model-check/checkpoint:
 
@@ -754,7 +769,7 @@ When the model checker finds an interesting path in the application
 execution graph (where a safety or liveness property is violated), it
 generates an identifier for this path. Here is an example of the output:
 
-.. code-block:: shell
+.. code-block:: console
 
    [  0.000000] (0:@) Check a safety property
    [  0.000000] (0:@) **************************
@@ -927,7 +942,7 @@ which value is either:
 Configuring the Tracing
 -----------------------
 
-The :ref:`tracing subsystem <outcomes_vizu>` can be configured in
+The :ref:`tracing subsystem <outcome_vizu>` can be configured in
 several different ways depending on the used interface (S4U, SMPI, SimDag)
 and the kind of traces that needs to be obtained. See the
 :ref:`Tracing Configuration Options subsection
@@ -940,7 +955,7 @@ you never used the tracing API.
 
 - Any SimGrid-based simulator (MSG, SimDag, SMPI, ...) and raw traces:
 
-  .. code-block:: shell
+  .. code-block:: none
 
      --cfg=tracing:yes --cfg=tracing/uncategorized:yes
 
@@ -951,7 +966,7 @@ you never used the tracing API.
 - MSG or SimDag-based simulator and categorized traces (you need to
   declare categories and classify your tasks according to them) 
 
-  .. code-block:: shell
+  .. code-block:: none
 
      --cfg=tracing:yes --cfg=tracing/categorized:yes
 
@@ -960,9 +975,9 @@ you never used the tracing API.
 
 - SMPI simulator and traces for a space/time view:
 
-  .. code-block:: shell
+  .. code-block:: console
 
-     smpirun -trace ...
+     $ smpirun -trace ...
 
   The `-trace` parameter for the smpirun script runs the simulation
   with ``--cfg=tracing:yes --cfg=tracing/smpi:yes``. Check the
@@ -974,13 +989,13 @@ reproduce an experiment. You have two ways to do that:
 
 - Add a string on top of the trace file as comment:
 
-  .. code-block:: shell
+  .. code-block:: none
 
      --cfg=tracing/comment:my_simulation_identifier
 
 - Add the contents of a textual file on top of the trace file as comment:
 
-  .. code-block:: shell
+  .. code-block:: none
 
      --cfg=tracing/comment-file:my_file_with_additional_information.txt
 
@@ -1087,7 +1102,7 @@ This option allows you to pass a file that contains two columns: The
 first column defines the section that will be subject to a speedup;
 the second column is the speedup. For instance:
 
-.. code-block:: shell
+.. code-block:: none
 
   "start:stop","ratio"
   "exchange_1.f:30:exchange_1.f:130",1.18244559422142
@@ -1212,7 +1227,7 @@ It is planned to make this feature available on a per-process (or per-thread?) b
 The first draft, however, just implements a "global" (i.e., for all processes) set
 of counters, the "default" set.
 
-.. code-block:: shell
+.. code-block:: none
 
    --cfg=smpi/papi-events:"default:PAPI_L3_LDM:PAPI_L2_LDM"
 
@@ -1263,9 +1278,9 @@ This configuration option can only use either full paths to libraries,
 or full names.  Check with ldd the name of the library you want to
 use.  For example:
 
-.. code-block:: shell
+.. code-block:: console
 
-   ldd allpairf90
+   $ ldd allpairf90
       ...
       libgfortran.so.3 => /usr/lib/x86_64-linux-gnu/libgfortran.so.3 (0x00007fbb4d91b000)
       ...
@@ -1307,6 +1322,49 @@ Each collective operation can be manually selected with a
 
 .. TODO:: All available collective algorithms will be made available
           via the ``smpirun --help-coll`` command.
+
+.. _cfg=smpi/finalization-barrier:
+
+Add a barrier in MPI_Finalize
+.............................
+
+**Option** ``smpi/finalization-barrier`` **default:** off
+
+By default, SMPI processes are destroyed as soon as soon as their code ends,
+so after a successful MPI_Finalize call returns. In some rare cases, some data
+might have been attached to MPI objects still active in the remaining processes,
+and can be destroyed eagerly by the finished process.
+If your code shows issues at finalization, such as segmentation fault, triggering
+this option will add an explicit MPI_Barrier(MPI_COMM_WORLD) call inside the
+MPI_Finalize, so that all processes will terminate at almost the same point.
+It might affect the total timing by the cost of a barrier.
+
+.. _cfg=smpi/errors-are-fatal:
+
+Disable MPI fatal errors
+........................
+
+**Option** ``smpi/errors-are-fatal`` **default:** on
+
+By default, SMPI processes will crash if a MPI error code is returned. MPI allows
+to explicitely set MPI_ERRORS_RETURN errhandler to avoid this behaviour. This flag
+will turn on this behaviour by default (for all concerned types and errhandlers).
+This can ease debugging by going after the first reported error.
+
+.. _cfg=smpi/pedantic:
+
+Disable pedantic MPI errors
+...........................
+
+**Option** ``smpi/pedantic`` **default:** on
+
+By default, SMPI will report all errors it finds in MPI codes. Some of these errors
+may not be considered as errors by all developers. This flag can be turned off to
+avoid reporting some usually harmless mistakes.
+Concerned errors list (will be expanded in the future):
+
+ - Calling MPI_Win_fence only once in a program, hence just opening an epoch without
+   ever closing it.
 
 .. _cfg=smpi/iprobe:
 
@@ -1495,11 +1553,11 @@ entry per MB of malloced data instead of one entry per 4 kB.
 To activate this, you must mount a hugetlbfs on your system and allocate
 at least one huge page:
 
-.. code-block:: shell
+.. code-block:: console
 
-    mkdir /home/huge
-    sudo mount none /home/huge -t hugetlbfs -o rw,mode=0777
-    sudo sh -c 'echo 1 > /proc/sys/vm/nr_hugepages' # echo more if you need more
+    $ mkdir /home/huge
+    $ sudo mount none /home/huge -t hugetlbfs -o rw,mode=0777
+    $ sudo sh -c 'echo 1 > /proc/sys/vm/nr_hugepages' # echo more if you need more
 
 Then, you can pass the option
 ``--cfg=smpi/shared-malloc-hugepage:/home/huge`` to smpirun to
@@ -1606,7 +1664,7 @@ It is also possible to set the breakpoint from inside the debugger, by
 writing in global variable simgrid::simix::breakpoint. For example,
 with gdb:
 
-.. code-block:: shell
+.. code-block:: none
 
    set variable simgrid::simix::breakpoint = 3.1416
 

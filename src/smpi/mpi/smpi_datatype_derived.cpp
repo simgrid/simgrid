@@ -21,6 +21,14 @@ Datatype_contents::Datatype_contents(int combiner, int number_of_integers, const
     , addresses_(addresses, addresses + number_of_addresses)
     , datatypes_(datatypes, datatypes + number_of_datatypes)
 {
+  for (auto& datatype : datatypes_)
+    datatype->ref();
+}
+
+Datatype_contents::~Datatype_contents()
+{
+  for (auto& datatype : datatypes_)
+    Datatype::unref(datatype);
 }
 
 Type_Contiguous::Type_Contiguous(int size, MPI_Aint lb, MPI_Aint ub, int flags, int block_count, MPI_Datatype old_type)
@@ -46,7 +54,7 @@ void Type_Contiguous::serialize(const void* noncontiguous_buf, void* contiguous_
 {
   auto* contiguous_buf_char          = static_cast<char*>(contiguous_buf);
   const auto* noncontiguous_buf_char = static_cast<const char*>(noncontiguous_buf) + lb();
-  memcpy(contiguous_buf_char, noncontiguous_buf_char, count * block_count_ * old_type_->size());
+  memcpy(contiguous_buf_char, noncontiguous_buf_char, old_type_->size() * count * block_count_);
 }
 
 void Type_Contiguous::unserialize(const void* contiguous_buf, void* noncontiguous_buf, int count, MPI_Op op)

@@ -75,12 +75,6 @@ unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* 
       &observer);
 }
 
-simgrid::kernel::activity::State simcall_process_sleep(double duration) // XBT_ATTRIB_DEPRECATED_v329
-{
-  simgrid::kernel::actor::ActorImpl::self()->sleep(duration);
-  return simgrid::kernel::activity::State::DONE;
-}
-
 /**
  * @ingroup simix_comm_management
  */
@@ -191,10 +185,10 @@ unsigned int simcall_comm_waitany(simgrid::kernel::activity::ActivityImplPtr com
   std::transform(comms, comms + count, begin(rcomms), [](const simgrid::kernel::activity::ActivityImplPtr& comm) {
     return static_cast<simgrid::kernel::activity::CommImpl*>(comm.get());
   });
-  return simcall_BODY_comm_waitany(rcomms.data(), rcomms.size(), timeout);
+  return static_cast<unsigned int>(simcall_BODY_comm_waitany(rcomms.data(), rcomms.size(), timeout));
 }
 
-unsigned int simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_t count, double timeout)
+ssize_t simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_t count, double timeout)
 {
   return simcall_BODY_comm_waitany(comms, count, timeout);
 }
@@ -210,10 +204,10 @@ int simcall_comm_testany(simgrid::kernel::activity::ActivityImplPtr comms[], siz
   std::transform(comms, comms + count, begin(rcomms), [](const simgrid::kernel::activity::ActivityImplPtr& comm) {
     return static_cast<simgrid::kernel::activity::CommImpl*>(comm.get());
   });
-  return simcall_BODY_comm_testany(rcomms.data(), rcomms.size());
+  return static_cast<int>(simcall_BODY_comm_testany(rcomms.data(), rcomms.size()));
 }
 
-int simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count)
+ssize_t simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count)
 {
   if (count == 0)
     return -1;

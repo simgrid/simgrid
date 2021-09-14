@@ -1,5 +1,8 @@
-breathe
-sphinx>=3.2.1
-sphinx_rtd_theme
+breathe>=4.26
+sphinx>=3.4.3,<4.0
+sphinx_rtd_theme>=0.5.2
 # sphinx_tabs v1.2.1 is required for Sphinx 2
 sphinx_tabs>=1.2.1
+javalang
+beautifulsoup4
+lxml

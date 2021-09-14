@@ -239,7 +239,7 @@ static bool mmalloc_heap_differ(const RemoteProcess& process, StateComparator& s
 
     xbt_assert(heapinfo1->type >= 0, "Unknown mmalloc block type: %d", heapinfo1->type);
 
-    void* addr_block1 = ((void*)(((ADDR2UINT(i1)) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase));
+    void* addr_block1 = (ADDR2UINT(i1) - 1) * BLOCKSIZE + (char*)state.std_heap_copy.heapbase;
 
     if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED) { /* Large block */
       if (is_stack(process, addr_block1)) {
@@ -880,7 +880,7 @@ static bool heap_area_differ(const RemoteProcess& process, StateComparator& stat
     }
 
     // Check if the blocks are already matched together:
-    if (state.equals_to_<1>(block1, frag1).valid_ && state.equals_to_<2>(block2, frag2).valid_ && offset1 == offset2 &&
+    if (state.equals_to_<1>(block1, frag1).valid_ && state.equals_to_<2>(block2, frag2).valid_ &&
         state.fragmentsEqual(block1, frag1, block2, frag2)) {
       if (match_pairs)
         state.match_equals(previous);

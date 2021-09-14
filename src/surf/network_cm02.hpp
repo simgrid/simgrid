@@ -77,7 +77,7 @@ public:
   NetworkCm02Link(const std::string& name, double bandwidth, lmm::System* system);
   void apply_event(kernel::profile::Event* event, double value) override;
   void set_bandwidth(double value) override;
-  LinkImpl* set_latency(double value) override;
+  void set_latency(double value) override;
 };
 
 /**********

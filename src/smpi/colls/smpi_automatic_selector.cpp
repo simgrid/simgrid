@@ -25,7 +25,7 @@
       barrier__default(comm);                                                                                          \
       if (TRACE_is_enabled()) {                                                                                        \
         simgrid::instr::EventType* type =                                                                              \
-            simgrid::instr::Container::get_root()->type_->by_name_or_create<simgrid::instr::EventType>(                \
+            simgrid::instr::Container::get_root()->get_type()->by_name_or_create<simgrid::instr::EventType>(           \
                 _XBT_STRINGIFY(cat));                                                                                  \
                                                                                                                        \
         std::string cont_name = std::string("rank-" + std::to_string(simgrid::s4u::this_actor::get_pid()));            \

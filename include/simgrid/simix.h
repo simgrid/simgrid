@@ -48,55 +48,19 @@ XBT_PUBLIC void SIMIX_set_maestro(void (*code)(void*), void* data);
 XBT_ATTRIB_DEPRECATED_v332("Please use EngineImpl:run()") XBT_PUBLIC void SIMIX_run();
 XBT_ATTRIB_DEPRECATED_v332("Please use simgrid_get_clock() or Engine::get_clock()") XBT_PUBLIC double SIMIX_get_clock();
 
-XBT_ATTRIB_DEPRECATED_v329("Please use simgrid::kernel::timer::Timer::set()") XBT_PUBLIC smx_timer_t
-    SIMIX_timer_set(double date, void (*function)(void*), void* arg);
-XBT_ATTRIB_DEPRECATED_v329("Please use simgrid::kernel::timer::Timer::remove()") XBT_PUBLIC
-    void SIMIX_timer_remove(smx_timer_t timer);
-XBT_ATTRIB_DEPRECATED_v329("Please use simgrid::kernel::timer::Timer::next()") XBT_PUBLIC double SIMIX_timer_next();
-XBT_ATTRIB_DEPRECATED_v329("Please use simgrid::kernel::timer::Timer::get_date()") XBT_PUBLIC
-    double SIMIX_timer_get_date(smx_timer_t timer);
-
-XBT_ATTRIB_DEPRECATED_v329("Please use simix_global->display_all_actor_status()") XBT_PUBLIC
-    void SIMIX_display_process_status();
 SG_END_DECL
-
-/******************************** Deployment **********************************/
-SG_BEGIN_DECL
-XBT_ATTRIB_DEPRECATED_v329("Please use simgrid_register_default() or Engine::register_default()") XBT_PUBLIC
-    void SIMIX_function_register_default(xbt_main_func_t code);
-XBT_ATTRIB_DEPRECATED_v329("This function will be removed") XBT_PUBLIC void SIMIX_init_application();
-
-XBT_PUBLIC void SIMIX_process_set_function(const char* process_host, const char* process_function,
-                                           xbt_dynar_t arguments, double process_start_time, double process_kill_time);
-SG_END_DECL
-
-#ifdef __cplusplus
-XBT_ATTRIB_DEPRECATED_v329("Please use simgrid_register_function() or Engine::register_function()") XBT_PUBLIC
-    void SIMIX_function_register(const std::string& name, void (*code)(std::vector<std::string>));
-XBT_ATTRIB_DEPRECATED_v329("Please use simgrid_register_function() or Engine::register_function()") XBT_PUBLIC
-    void SIMIX_function_register(const std::string& name, xbt_main_func_t code);
-XBT_ATTRIB_DEPRECATED_v329("Please use simgrid_load_deployment() or Engine::load_deployment()") XBT_PUBLIC
-    void SIMIX_launch_application(const std::string& file);
-#endif
 
 /********************************* Process ************************************/
 SG_BEGIN_DECL
-XBT_ATTRIB_DEPRECATED_v329("Please use sg_actor_count()") XBT_PUBLIC int SIMIX_process_count();
 XBT_PUBLIC smx_actor_t SIMIX_process_self();
 XBT_PUBLIC const char* SIMIX_process_self_get_name();
-XBT_ATTRIB_DEPRECATED_v329("This function will be removed") XBT_PUBLIC void SIMIX_process_self_set_data(void* data);
-XBT_ATTRIB_DEPRECATED_v329("This function will be removed") XBT_PUBLIC void* SIMIX_process_self_get_data();
 SG_END_DECL
-
-#ifdef __cplusplus
-XBT_ATTRIB_DEPRECATED_v329("This function will be removed") XBT_PUBLIC
-    void SIMIX_process_on_exit(smx_actor_t process, const std::function<void(bool /*failed*/)>& fun);
-#endif
 
 /****************************** Communication *********************************/
 #ifdef __cplusplus
-XBT_PUBLIC void SIMIX_comm_set_copy_data_callback(void (*callback)(simgrid::kernel::activity::CommImpl*, void*,
-                                                                   size_t));
+XBT_ATTRIB_DEPRECATED_v333("Please use Engine::set_default_comm_data_copy_callback()") XBT_PUBLIC
+    void SIMIX_comm_set_copy_data_callback(void (*callback)(simgrid::kernel::activity::CommImpl*, void*, size_t));
+
 XBT_PUBLIC void SIMIX_comm_copy_pointer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff,
                                                  size_t buff_size);
 XBT_PUBLIC void SIMIX_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff,
@@ -125,19 +89,6 @@ XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Exec::test()") XBT_PUBLIC
     bool simcall_execution_test(const simgrid::kernel::activity::ActivityImplPtr& execution);
 
 #endif
-
-/**************************** Process simcalls ********************************/
-SG_BEGIN_DECL
-XBT_ATTRIB_DEPRECATED_v329("This function will be removed") void simcall_process_set_data(smx_actor_t process,
-                                                                                          void* data);
-XBT_ATTRIB_DEPRECATED_v329("Please use sg_actor_sleep_for()") XBT_PUBLIC
-#ifdef __cplusplus
-    simgrid::kernel::activity::State
-#else
-    enum kernel_activity_state
-#endif
-    simcall_process_sleep(double duration);
-SG_END_DECL
 
 /************************** Communication simcalls ****************************/
 
@@ -170,13 +121,12 @@ XBT_ATTRIB_DEPRECATED_v330("Please use Mailbox::iprobe()") XBT_PUBLIC simgrid::k
 
 XBT_ATTRIB_DEPRECATED_v330("Please use a CommImpl*[] for first parameter") XBT_PUBLIC
     unsigned int simcall_comm_waitany(simgrid::kernel::activity::ActivityImplPtr comms[], size_t count, double timeout);
-XBT_PUBLIC unsigned int simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_t count,
-                                             double timeout);
+XBT_PUBLIC ssize_t simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_t count, double timeout);
 XBT_PUBLIC void simcall_comm_wait(simgrid::kernel::activity::ActivityImpl* comm, double timeout);
 XBT_PUBLIC bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm);
 XBT_ATTRIB_DEPRECATED_v330("Please use a CommImpl*[] for first parameter") XBT_PUBLIC
     int simcall_comm_testany(simgrid::kernel::activity::ActivityImplPtr comms[], size_t count);
-XBT_PUBLIC int simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count);
+XBT_PUBLIC ssize_t simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count);
 
 XBT_ATTRIB_DEPRECATED_v330("Please use an ActivityImpl* for first parameter") inline void simcall_comm_wait(
     const simgrid::kernel::activity::ActivityImplPtr& comm, double timeout)

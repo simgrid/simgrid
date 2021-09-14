@@ -42,7 +42,7 @@ class NetworkWifiLink : public LinkImpl {
   std::vector<Metric> decay_bandwidths_;
 
 public:
-  NetworkWifiLink(const std::string& name, std::vector<double> bandwidths, lmm::System* system);
+  NetworkWifiLink(const std::string& name, const std::vector<double>& bandwidths, lmm::System* system);
 
   void set_host_rate(const s4u::Host* host, int rate_level);
   /** @brief Get the AP rate associated to the host (or -1 if not associated to the AP) */
@@ -51,7 +51,7 @@ public:
   s4u::Link::SharingPolicy get_sharing_policy() const override;
   void apply_event(kernel::profile::Event*, double) override { THROW_UNIMPLEMENTED; }
   void set_bandwidth(double) override { THROW_UNIMPLEMENTED; }
-  LinkImpl* set_latency(double) override;
+  void set_latency(double) override;
   void refresh_decay_bandwidths();
   bool toggle_decay_model();
   int get_host_count() const;

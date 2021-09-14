@@ -11,6 +11,7 @@
 #include "smpi_comm.hpp"
 #include "smpi_datatype_derived.hpp"
 #include "smpi_status.hpp"
+#include "smpi_coll.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
@@ -20,14 +21,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_pmpi, smpi, "Logging specific to SMPI (pmpi
 void TRACE_smpi_set_category(const char *category)
 {
   //need to end bench otherwise categories for execution tasks are wrong
-  smpi_bench_end();
+  const SmpiBenchGuard suspend_bench;
+
   if (category != nullptr) {
     // declare category
     TRACE_category(category);
     smpi_process()->set_tracing_category(category);
   }
-  //begin bench after changing process's category
-  smpi_bench_begin();
 }
 
 /* PMPI User level calls */
@@ -66,6 +66,9 @@ int PMPI_Finalize()
   aid_t rank_traced = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::NoOpTIData("finalize"));
 
+  if(simgrid::config::get_value<bool>("smpi/finalization-barrier"))
+    simgrid::smpi::colls::barrier(MPI_COMM_WORLD);
+
   smpi_process()->finalize();
 
   TRACE_smpi_comm_out(rank_traced);
@@ -87,7 +90,7 @@ int PMPI_Get_version (int *version,int *subversion){
 int PMPI_Get_library_version (char *version,int *len){
   snprintf(version, MPI_MAX_LIBRARY_VERSION_STRING, "SMPI Version %d.%d. Copyright The SimGrid Team 2007-2021",
            SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR);
-  *len = strlen(version) > MPI_MAX_LIBRARY_VERSION_STRING ? MPI_MAX_LIBRARY_VERSION_STRING : strlen(version);
+  *len = std::min(static_cast<int>(strlen(version)), MPI_MAX_LIBRARY_VERSION_STRING);
   return MPI_SUCCESS;
 }
 
@@ -179,7 +182,7 @@ MPI_Aint PMPI_Aint_diff(MPI_Aint address, MPI_Aint disp)
 
 int PMPI_Get_processor_name(char *name, int *resultlen)
 {
-  int len = std::min<int>(sg_host_self()->get_name().size(), MPI_MAX_PROCESSOR_NAME - 1);
+  int len = std::min(static_cast<int>(sg_host_self()->get_name().size()), MPI_MAX_PROCESSOR_NAME - 1);
   std::string(sg_host_self()->get_name()).copy(name, len);
   name[len]  = '\0';
   *resultlen = len;

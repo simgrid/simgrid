@@ -53,9 +53,13 @@ class XBT_PUBLIC CpuImpl : public Resource_T<CpuImpl> {
 
   s4u::Host* piface_;
   int core_count_ = 1;
-  int pstate_ = 0;                       /*< Current pstate (index in the speed_per_pstate_)*/
+  unsigned long pstate_ = 0;             /*< Current pstate (index in the speed_per_pstate_)*/
   std::vector<double> speed_per_pstate_; /*< List of supported CPU capacities (pstate related). Not 'const' because VCPU
                                             get modified on migration */
+  s4u::Host::SharingPolicy sharing_policy_ = s4u::Host::SharingPolicy::LINEAR;
+  s4u::NonLinearResourceCb sharing_policy_cb_;
+
+  void apply_sharing_policy_cfg() const;
 
 public:
   /**
@@ -93,12 +97,12 @@ public:
   virtual double get_speed_ratio() { return speed_.scale; }
 
   /** @brief Get the peak processor speed (in flops/s), at the specified pstate */
-  virtual double get_pstate_peak_speed(int pstate_index) const;
+  virtual double get_pstate_peak_speed(unsigned long pstate_index) const;
 
-  virtual int get_pstate_count() const { return speed_per_pstate_.size(); }
+  virtual unsigned long get_pstate_count() const { return speed_per_pstate_.size(); }
 
-  virtual int get_pstate() const { return pstate_; }
-  virtual CpuImpl* set_pstate(int pstate_index);
+  virtual unsigned long get_pstate() const { return pstate_; }
+  virtual CpuImpl* set_pstate(unsigned long pstate_index);
 
   /*< @brief Setup the profile file with availability events (peak speed changes due to external load).
    * Profile must contain relative values (ratio between 0 and 1)
@@ -112,22 +116,33 @@ public:
    */
   CpuImpl* set_pstate_speed(const std::vector<double>& speed_per_state);
 
+  void set_sharing_policy(s4u::Host::SharingPolicy policy, const s4u::NonLinearResourceCb& cb);
+  s4u::Host::SharingPolicy get_sharing_policy() const;
+
+  /**
+   * @brief Sets factor callback
+   * Implemented only for cas01
+   */
+  virtual void set_factor_cb(const std::function<s4u::Host::CpuFactorCb>& cb) { THROW_UNIMPLEMENTED; }
+
   /**
    * @brief Execute some quantity of computation
    *
    * @param size The value of the processing amount (in flop) needed to process
+   * @param user_bound User's bound for execution speed
    * @return The CpuAction corresponding to the processing
    */
-  virtual CpuAction* execution_start(double size) = 0;
+  virtual CpuAction* execution_start(double size, double user_bound) = 0;
 
   /**
    * @brief Execute some quantity of computation on more than one core
    *
    * @param size The value of the processing amount (in flop) needed to process
    * @param requested_cores The desired amount of cores. Must be >= 1
+   * @param user_bound User's bound for execution speed
    * @return The CpuAction corresponding to the processing
    */
-  virtual CpuAction* execution_start(double size, int requested_cores) = 0;
+  virtual CpuAction* execution_start(double size, int requested_cores, double user_bound) = 0;
 
   /**
    * @brief Make a process sleep for duration (in seconds)

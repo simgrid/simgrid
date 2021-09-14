@@ -395,7 +395,7 @@ public class Peer extends Process {
   // Update the list of current choked and unchoked peers, using the choke algorithm
   private void updateChokedPeers() {
     round = (round + 1) % 3;
-    if (peers.size() == 0) {
+    if (peers.isEmpty()) {
       return;
     }
     //remove a peer from the list

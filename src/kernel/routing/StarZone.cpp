@@ -23,15 +23,13 @@ void StarZone::add_links_to_route(const std::vector<resource::LinkImpl*>& links,
     /* do not add duplicated links in route->link_list_ */
     if (not added_links.insert(link).second)
       continue;
-    if (latency)
-      *latency += link->get_latency();
-    route->link_list_.push_back(link);
+    add_link_latency(route->link_list_, link, latency);
   }
 }
 
-void StarZone::get_local_route(NetPoint* src, NetPoint* dst, Route* route, double* latency)
+void StarZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* route, double* latency)
 {
-  XBT_VERB("StarZone getLocalRoute from '%s'[%u] to '%s'[%u]", src->get_cname(), src->id(), dst->get_cname(),
+  XBT_VERB("StarZone getLocalRoute from '%s'[%lu] to '%s'[%lu]", src->get_cname(), src->id(), dst->get_cname(),
            dst->id());
 
   const auto& src_route = routes_.at(src->id());
@@ -111,6 +109,12 @@ void StarZone::check_add_route_param(const NetPoint* src, const NetPoint* dst, c
       throw std::invalid_argument(
           xbt::string_printf("StarZone::add_route(): src(%s) is a netzone, gw_src(%s) cannot be a netzone",
                              src->get_cname(), gw_src->get_cname()));
+
+    const auto* netzone_src = get_netzone_recursive(src);
+    if (not netzone_src->is_component_recursive(gw_src))
+      throw std::invalid_argument(xbt::string_printf(
+          "Invalid NetzoneRoute from %s@%s to %s: gw_src %s belongs to %s, not to %s.", src_name, gw_src->get_cname(),
+          dst_name, gw_src->get_cname(), gw_src->get_englobing_zone()->get_cname(), src_name));
   }
 
   if (dst && dst->is_netzone()) {
@@ -121,36 +125,41 @@ void StarZone::check_add_route_param(const NetPoint* src, const NetPoint* dst, c
       throw std::invalid_argument(
           xbt::string_printf("StarZone::add_route(): dst(%s) is a netzone, gw_dst(%s) cannot be a netzone",
                              dst->get_cname(), gw_dst->get_cname()));
+
+    const auto* netzone_dst = get_netzone_recursive(dst);
+    if (not netzone_dst->is_component_recursive(gw_dst))
+      throw std::invalid_argument(xbt::string_printf(
+          "Invalid NetzoneRoute from %s@%s to %s: gw_dst %s belongs to %s, not to %s.", dst_name, gw_dst->get_cname(),
+          src_name, gw_dst->get_cname(), gw_dst->get_englobing_zone()->get_cname(), dst_name));
   }
 }
 
 void StarZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                         const std::vector<kernel::resource::LinkImpl*>& link_list_, bool symmetrical)
+                         const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical)
 {
   check_add_route_param(src, dst, gw_src, gw_dst, symmetrical);
 
-  s4u::NetZone::on_route_creation(symmetrical, src, dst, gw_src, gw_dst, link_list_);
-
   /* loopback */
   if (src == dst) {
-    routes_[src->id()].loopback = link_list_;
+    routes_[src->id()].loopback = get_link_list_impl(link_list, false);
   } else {
     /* src to everyone */
     if (src) {
       auto& route        = routes_[src->id()];
-      route.links_up     = link_list_;
+      route.links_up     = get_link_list_impl(link_list, false);
       route.gateway      = gw_src;
       route.links_up_set = true;
       if (symmetrical) {
+        auto links_down = get_link_list_impl(link_list, true);
         /* reverse it for down/symmetrical links */
-        route.links_down.assign(link_list_.rbegin(), link_list_.rend());
+        route.links_down.assign(links_down.rbegin(), links_down.rend());
         route.links_down_set = true;
       }
     }
     /* dst to everyone */
     if (dst) {
       auto& route          = routes_[dst->id()];
-      route.links_down     = link_list_;
+      route.links_down     = get_link_list_impl(link_list, false);
       route.gateway        = gw_dst;
       route.links_down_set = true;
     }

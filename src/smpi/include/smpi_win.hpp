@@ -11,6 +11,7 @@
 #include "smpi_errhandler.hpp"
 #include "smpi_f2c.hpp"
 #include "smpi_keyvals.hpp"
+#include "smpi_config.hpp"
 
 #include <vector>
 #include <list>
@@ -31,23 +32,25 @@ class Win : public F2C, public Keyval {
   std::vector<MPI_Win> connected_wins_;
   std::string name_;
   int opened_               = 0;
-  MPI_Group group_          = MPI_GROUP_NULL;
+  MPI_Group src_group_      = MPI_GROUP_NULL; // for post/wait
+  MPI_Group dst_group_      = MPI_GROUP_NULL; // for start/complete
   int count_                = 0; // for ordering the accs
   s4u::MutexPtr lock_mut_   = s4u::Mutex::create();
   s4u::MutexPtr atomic_mut_ = s4u::Mutex::create();
   std::list<int> lockers_;
   int rank_; // to identify owner for barriers in MPI_COMM_WORLD
   int mode_ = 0; // exclusive or shared lock
-  int allocated_;
-  int dynamic_;
-  MPI_Errhandler errhandler_ = MPI_ERRORS_ARE_FATAL;
+  bool allocated_;
+  bool dynamic_;
+  MPI_Errhandler errhandler_ = _smpi_cfg_default_errhandler_is_error ? MPI_ERRORS_ARE_FATAL : MPI_ERRORS_RETURN;
 
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;
   static int keyval_id_;
 
-  Win(void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, int allocated = 0, int dynamic = 0);
-  Win(MPI_Info info, MPI_Comm comm) : Win(MPI_BOTTOM, 0, 1, info, comm, 0, 1) {};
+  Win(void* base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, bool allocated = false,
+      bool dynamic = false);
+  Win(MPI_Info info, MPI_Comm comm) : Win(MPI_BOTTOM, 0, 1, info, comm, false, true){};
   Win(const Win&) = delete;
   Win& operator=(const Win&) = delete;
   ~Win() override;
@@ -59,7 +62,7 @@ public:
   void set_name(const char* name);
   int rank() const;
   MPI_Comm comm() const;
-  int dynamic() const;
+  bool dynamic() const;
   int start(MPI_Group group, int assert);
   int post(MPI_Group group, int assert);
   int complete();
@@ -70,6 +73,7 @@ public:
   void* base() const;
   int disp_unit() const;
   int fence(int assert);
+  int opened() const {return opened_;}
   int put(const void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Request* request=nullptr);
   int get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,

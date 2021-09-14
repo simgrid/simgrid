@@ -34,7 +34,7 @@ class XBT_PUBLIC Activity {
 
 public:
   // enum class State { ... }
-  XBT_DECLARE_ENUM_CLASS(State, INITED, STARTING, STARTED, CANCELED, FINISHED);
+  XBT_DECLARE_ENUM_CLASS(State, INITED, STARTING, STARTED, FAILED, CANCELED, FINISHED);
 
 protected:
   Activity()  = default;

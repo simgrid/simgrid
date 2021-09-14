@@ -17,14 +17,14 @@ static void ingester(int id, simgrid::plugin::ProducerConsumerPtr<int> pc)
 {
   sg4::this_actor::sleep_for(simgrid::xbt::random::uniform_real(0, 1));
   for (int i = 0; i < 3; i++) {
-    int* data = new int(10 * id + i);
+    auto* data = new int(10 * id + i);
     pc->put(data, 1.2125e6); // last for 0.01s
     XBT_INFO("data sucessfully put: %d", *data);
     sg4::this_actor::sleep_for((3 - i) * simgrid::xbt::random::uniform_real(0, 1));
   }
 
   for (int i = 0; i < 3; i++) {
-    int* data = new int(10 * id + i);
+    auto* data = new int(10 * id + i);
     pc->put_async(data, 1.2125e6); // last for 0.01s
     XBT_INFO("data sucessfully put: %d", *data);
     sg4::this_actor::sleep_for((i + 3) * simgrid::xbt::random::uniform_real(0, 1));
@@ -63,11 +63,10 @@ int main(int argc, char* argv[])
     const auto* host = cluster->create_host(hostname, "1Gf");
 
     std::string linkname = std::string("cluster") + "_link_" + std::to_string(i);
-    auto* link_up        = cluster->create_link(linkname + "_UP", "1Gbps");
-    auto* link_down      = cluster->create_link(linkname + "_DOWN", "1Gbps");
+    const auto* link     = cluster->create_split_duplex_link(linkname, "1Gbps");
 
-    cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, std::vector<sg4::Link*>{link_up}, false);
-    cluster->add_route(nullptr, host->get_netpoint(), nullptr, nullptr, std::vector<sg4::Link*>{link_down}, false);
+    cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {{link, sg4::LinkInRoute::Direction::UP}},
+                       true);
   }
 
   auto* router = cluster->create_router("cluster_router");

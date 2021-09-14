@@ -1,3 +1,8 @@
+/* Copyright (c) 2019-2021. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #include <cstdlib>
 #include <iostream>
 #include <string>
@@ -26,11 +31,11 @@ static void worker()
   std::vector<simgrid::s4u::CommPtr> comms = {put1, put2, get1, get2};
 
   while (not comms.empty()) {
-    int index = simgrid::s4u::Comm::wait_any_for(&comms, 0.5);
+    ssize_t index = simgrid::s4u::Comm::wait_any_for(comms, 0.5);
     if (index < 0)
       XBT_INFO("wait_any_for: Timeout reached");
     else {
-      XBT_INFO("wait_any_for: A comm finished (index=%d, #comms=%zu)", index, comms.size());
+      XBT_INFO("wait_any_for: A comm finished (index=%zd, #comms=%zu)", index, comms.size());
       comms.erase(comms.begin() + index);
     }
   }

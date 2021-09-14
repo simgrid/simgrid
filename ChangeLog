@@ -1,20 +1,173 @@
 ----------------------------------------------------------------------------
 
-SimGrid (3.27.1) NOT RELEASED YET (v3.28 expected June 21. 2021, 03:32 UTC)
+SimGrid (3.28.1) NOT RELEASED YET (v3.29 expected September 22. 2021, 19:21 UTC)
 
 New features:
+ - Non-linear resource sharing: allows to dynamically change the resource
+   capacity. Users can change this capacity by setting a callback which will
+   be called when SimGrid is sharing the resource between the active
+   activities. An activity can be a task running, a read/write IO operation or a
+   communication flow.
+   - Callback signature: double (double capacity, int n_activities): given the
+     current resource's capacity and number of activities running on it,
+     returns the new capacity.
+   - Note that this callback is in the critical path of the system solve and
+   should not take long to execute.
+   - Examples:
+     - Disk: examples/cpp/io-degradation
+     - Link: examples/cpp/network-nonlinear
+     - CPU: examples/cpp/exec-cpu-nonlinear
+ - Dynamic factors for CPU and disk: similarly to dynamic network factors,
+   allows the user to set a callback which can affect the progress of activities
+   (multiplicative factor applied when updating the amount of work remaining).
+   - Example: examples/cpp/exec-cpu-factors
+
+Python:
+ - Added support to programmatic platform creation in Python.
+ - Several new methods were added to Python interface. For more details, see
+ the corresponding documentation.
+ - New python examples:
+   - Clusters: examples/python/clusters-multicpu
+   - Disk: examples/python/io-degradation
+   - CPU: examples/python/exec-cpu-nonlienar
+   - Link: examples/python/network-nonlinear
+
+S4U:
+ - New: s4u::Disk::set_sharing_policy() and s4u::Host::set_sharing_policy().
+   Allows the configuration of non-linear resource sharing for hosts and
+   disks.
+
+SMPI:
+ - TI Tracing/Replay:
+     - Multiple fixes to ensure reproducibility of tracing
+     - scan/excan can now be replayed
+     - wait action now uses ranks and not pid, as the other ones.
+     - smpi/init and smpi/finalization-barrier are now valid for replays.
+
+Documentation:
+  * New section "Release Notes" documenting recent and current developments.
+  * New section "Modeling I/O: the realistic way" presenting how to properly
+  model disks in SimGrid.
+  * Improvements in API Reference for C++ and Python interfaces.
+
+ns-3 model:
+ - Make wifi creation compatible with ns-3 version 3.34 too.
+
+Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
+ (FG: issues on Framagit; GF: issues on GForge; GH: issues on GitHub)
+ - FG#78: Multiple fixes for SMPI replay:
+    - TI tracing of allotallv/w was outputting wrong values
+    - MPI_LOGICAL in fortran is actually 32 bits wide, and not 8.
+ - FG#77: Search feature of doc is broken (update sphinx theme version)
+----------------------------------------------------------------------------
+
+SimGrid (3.28) July 14. 2021
+
+The Victoriadagarna Release.
+
+New features:
+ - C++ platform interface: Users can now describe their platform directly in C++.
+   This provides greatly flexibility and performance improvement for complex
+   platforms. Main features:
+     - Fat-Tree/DragonFly/Torus composing: allows you to create clusters of
+       "zones", instead of single hosts. This feature enables the description
+       of clusters with complex hosts, composed of several CPUs, GPUs, etc.
+     - StarZone: new zone with a Star-like topology. The routes are defined
+       as a set of links used to communicate from node to everybody (node<->ALL).
+     - Split-Duplex links: auxiliary method to create split-duplex links in
+       the platform, easing its utilisation. It automatically creates both UP
+       and DOWN links (similarly as done in XML).
+     - Please refer to the documentation and the examples included:
+       e.g. examples/cpp/clusters-multicpu/ and examples/platforms/*.cpp.
  - New plugin: Producer-Consumer with monitor. Just requires to include the
    include/simgrid/plugins/ProducerConsumer.hpp header to be used. See the
    associated example (examples/cpp/plugin-prodcons).
 
 S4U:
+ - New: s4u::Comm::wait_all_for() (like s4u::Comm::wait_all, but with a timeout),
+        s4u::Io::wait_any(), s4u::Io::wait_any_for().
+ - Methods test_all/test_any/wait_all/wait_any in s4u now take their vector
+   parameter by reference, instead of a pointer.
  - Fixed a bug where Activity::wait_for() killed the activity on timeout.
    Explicitly cancel the activity to get back to previous behavior.
+ - New: Link::set_concurrency_limit() to limit the amount of concurrent flows.
 
 SMPI:
  - The default SMPI compiler flags are no more taken from the environment.
    They can be explicitly set through cmake parameters SMPI_C_FLAGS,
    SMPI_CXX_FLAGS, or SMPI_Fortran_FLAGS.
+ - New options:
+    --cfg=smpi/finalization-barrier: which can be used to add
+      a barrier inside MPI_Finalize. This can help for some codes which cleanup
+      data attached to a process, but still used in other SMPI processes.
+    --cfg=smpi/errors-are-fatal: True by default, behaves like if MPI_ERRORS_RETURN
+      is active when set to false, to keep going after a small error
+    --cfg=smpi/pedantic: True by default. Do not report some harmless MPI errors
+      which may or may not be problematic in the end.
+ - Sampling:
+    - fix behaviour, as maximum iteration count could be ignored
+    - add SMPI_SAMPLE_LOCAL_TAG and SMPI_SAMPLE_GLOBAL_TAG macros, to allow user to
+      use sampling when the same kernel is called with a different set of parameters
+      which have an impact on the timing.
+ - realloc is now intercepted, to be coherent, as malloc/calloc/free were already.
+   It should now work with smpi/auto-shared-malloc-thresh.
+ - Improve error handling and reporting in multiple places
+ - Improve correctness checks on the MPI code.(MPI_Op and MPI_Datatype
+   validity checks, truncated messages are now an error, return errors
+   when explicitely deleted handles are reused, ...)
+ - RMA: multiple fixes and stability improvements.
+ - analysis (-analyze flag in smpirun):
+    - SMPI can now report buffer leaks as well as MPI handles leaks,
+      if code was compiled without SMPI_NO_OVERRIDE_MALLOC.
+    - if -trace-call-location is used when compiling, SMPI can report
+      origin of leaked handles/buffers
+    - group leaks by type/origin in output message if possible
+ - New implemented MPI calls: MPI_Comm_test_inter
+
+Models:
+ - Changed internal implementation of bandwidth factors in network models.
+   Models affected: CM02, LV08 (default), SMPI, IB.
+   Configuration affected: "network/bandwidth-factors" and "smpi/bw-factors".
+   Bandwidth factors are applied to communications to describe that users
+   cannot use 100% of the available bandwidth. For example, the default network model,
+   LV08, applies a factor of 0.97 to the bandwidth. In older versions, this
+   behavior was implemented by limiting the bandwidth available in the LMM
+   system for this flow. This may give the false impression that there is
+   bandwidth available for other flows due to its underutilization, especially
+   for the dynamic bandwidth factors used in SMPI models.
+   To avoid this, we have modified the implementation so that each flow uses the
+   maximum physical bandwidth according to the LMM system.
+   However, the actual throughput of the flow seen by the user is defined by
+   the physical bandwidth multiplied by the bandwidth factor.
+   This change impacts on the simulation results for all network models on
+   which we have bandwidth factors configured.
+   *****************************************
+   *DO NOT MIX 3.28 RESULTS WITH OLDER ONES*
+   *****************************************
+   This change may impact on the timing of your simulation results.
+   Take care when comparing simulations from different SimGrid's
+   versions. Sorry for the inconvenience.
+ - Dynamic network factors: users can configure a callback to define
+   the network factors dynamically. This API is available at
+   simgrid::kernel::resource::NetworkModelIntf.
+   - Users have access to complete information about the current communication
+     to decide which factor to apply. This includes: message size, source and
+     destination hosts, links and zones traversed.
+   - Dynamic factors for both latency and bandwidth.
+   - For more details, see the example in (examples/cpp/network-factors).
+ - Plugin host_energy: the "watt_off" and "watt_per_state" host properties,
+   deprecated since version 3.24, are no longer supported. Instead, use
+   "wattage_off" and "wattage_per_state".
+
+XBT:
+ - xbt_assert is not disabled anymore, even when built with enable_debug=off.
+
+Documentation:
+ - New tutorial: Model-checking and formal assessment
+ - New sections: "Demystifying the routing" and "C++ platforms"
+ - Update and improve the part on visualization in MPI and Algo tutorials.
+ - Improve the section on routing: how to define it, how it's used internally
+ - Fix many issues, broken links and missing references in doxygen and Sphinx
 
 LUA:
  - Lua platform files are deprecated. Their support will be dropped after v3.31.
@@ -22,18 +175,13 @@ LUA:
 Simix:
  - Legacy functions deprecated in this release: SIMIX_get_clock(), SIMIX_run().
 
-XBT:
- - xbt_assert is not disabled anymore, even when built with enable_debug=off.
-
-Documentation:
- - New tutorial: Model-checking and formal assessment
-
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GF: issues on GForge; GH: issues on GitHub)
  - FG#47: Complete and fix tests from teshuite/s4u/activity-lifecycle
  - FG#64: Configuring smpi/IB-penalty-factors
  - FG#67: Running computation concurrently with MPI_Iallreduce
  - FG#69: Tutorial misleading users of pre-v3.26 versions of SimGrid
+ - FG#71: Segmentation fault on invalid gw_src/gw_dst
  - GH#322: Issue when an actor kills his host vm
 
 ----------------------------------------------------------------------------

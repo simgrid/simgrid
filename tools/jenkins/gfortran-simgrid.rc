@@ -1,0 +1,28 @@
+#This is the configuration file for the BigDFT installer
+#This is a python script which is executed by the build suite
+def getcwd():
+  import os
+  return os.getcwd()
+prefix=getcwd()+"/install"
+#Add the condition testing to run tests and includes PyYaml
+conditions.add("testing")
+conditions.add("simulation") #to include simgrid compilation
+#List the module the this rcfile will build
+modules = ['spred',]
+#example of the potentialities of the python syntax in this file
+def env_configuration():
+    return """--host=x86_64-linux-gnu 'FCFLAGS=-O2 -std=legacy -fopenmp -g -fbounds-check -fbacktrace -ffpe-trap=invalid,zero,overflow,denormal -Wall -fPIC' 'CFLAGS=-O2 -fopenmp -fPIC' 'LDFLAGS=-fopenmp -fPIC' --with-mpi3=false"""
+
+#the following command sets the environment variable to give these settings
+#to all the modules
+import os
+os.environ['BIGDFT_CONFIGURE_FLAGS']=env_configuration()
+#here follow the configuration instructions for the modules built
+#we specify the configurations for the modules to customize the options if needed
+autogenargs=env_configuration()
+module_autogenargs.update({
+'futile': env_configuration()+
+    " --enable-simgrid-shared --with-mpi-libs='-lsimgrid' --with-mpi-include=-I"+getcwd()+"/install/include/smpi FC="+getcwd()+"/install/bin/smpif90 CC=gcc SIMGRID_FC="+getcwd()+"/install/bin/smpif90",
+'bigdft': env_configuration()+
+    " --enable-simgrid-shared --with-mpi-libs='-lsimgrid' --with-mpi-include=-I"+getcwd()+"/install/include/smpi FC="+getcwd()+"/install/bin/smpif90 CC=gcc SIMGRID_FC="+getcwd()+"/install/bin/smpif90",
+})

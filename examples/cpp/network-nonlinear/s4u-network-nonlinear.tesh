@@ -1,0 +1,42 @@
+$ ${bindir:=.}/s4u-network-nonlinear "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+>[  0.000000] (1:receiver@receiver) Wait for 9 messages asynchronously
+>[  0.000000] (2:sender@sender) Send 'Message 0' to 'receiver, msg size: 1000000'
+>[  0.000000] (2:sender@sender) Send 'Message 1' to 'receiver, msg size: 2000000'
+>[  0.000000] (2:sender@sender) Send 'Message 2' to 'receiver, msg size: 3000000'
+>[  0.000000] (2:sender@sender) Send 'Message 3' to 'receiver, msg size: 4000000'
+>[  0.000000] (2:sender@sender) Send 'Message 4' to 'receiver, msg size: 5000000'
+>[  0.000000] (2:sender@sender) Send 'Message 5' to 'receiver, msg size: 6000000'
+>[  0.000000] (2:sender@sender) Send 'Message 6' to 'receiver, msg size: 7000000'
+>[  0.000000] (2:sender@sender) Send 'Message 7' to 'receiver, msg size: 8000000'
+>[  0.000000] (2:sender@sender) Send 'Message 8' to 'receiver, msg size: 9000000'
+>[  0.000000] (2:sender@sender) Done dispatching all messages
+>[  0.000000] (0:maestro@) Link link1_UP, 0 active communications, new capacity 1000000.000000
+>[  0.000000] (0:maestro@) Link link1_DOWN, 0 active communications, new capacity 1000000.000000
+>[  0.000130] (0:maestro@) Link link1_UP, 9 active communications, new capacity 200000.000000
+>[  0.000130] (0:maestro@) Link link1_DOWN, 0 active communications, new capacity 1000000.000000
+>[ 46.391883] (1:receiver@receiver) I got 'Message 0'.
+>[ 46.391883] (0:maestro@) Link link1_UP, 8 active communications, new capacity 300000.000000
+>[ 46.391883] (0:maestro@) Link link1_DOWN, 0 active communications, new capacity 1000000.000000
+>[ 73.883292] (1:receiver@receiver) I got 'Message 1'.
+>[ 73.883292] (0:maestro@) Link link1_UP, 7 active communications, new capacity 400000.000000
+>[ 73.883292] (0:maestro@) Link link1_DOWN, 0 active communications, new capacity 1000000.000000
+>[ 91.924529] (1:receiver@receiver) I got 'Message 2'.
+>[ 91.924529] (0:maestro@) Link link1_UP, 6 active communications, new capacity 500000.000000
+>[ 91.924529] (0:maestro@) Link link1_DOWN, 0 active communications, new capacity 1000000.000000
+>[104.295663] (1:receiver@receiver) I got 'Message 3'.
+>[104.295663] (0:maestro@) Link link1_UP, 5 active communications, new capacity 600000.000000
+>[104.295663] (0:maestro@) Link link1_DOWN, 0 active communications, new capacity 1000000.000000
+>[112.886728] (1:receiver@receiver) I got 'Message 4'.
+>[112.886728] (0:maestro@) Link link1_UP, 4 active communications, new capacity 700000.000000
+>[112.886728] (0:maestro@) Link link1_DOWN, 0 active communications, new capacity 1000000.000000
+>[118.777744] (1:receiver@receiver) I got 'Message 5'.
+>[118.777744] (0:maestro@) Link link1_UP, 3 active communications, new capacity 800000.000000
+>[118.777744] (0:maestro@) Link link1_DOWN, 0 active communications, new capacity 1000000.000000
+>[122.643724] (1:receiver@receiver) I got 'Message 6'.
+>[122.643724] (0:maestro@) Link link1_UP, 2 active communications, new capacity 900000.000000
+>[122.643724] (0:maestro@) Link link1_DOWN, 0 active communications, new capacity 1000000.000000
+>[124.934674] (1:receiver@receiver) I got 'Message 7'.
+>[124.934674] (0:maestro@) Link link1_UP, 1 active communications, new capacity 1000000.000000
+>[124.934674] (0:maestro@) Link link1_DOWN, 0 active communications, new capacity 1000000.000000
+>[125.965602] (1:receiver@receiver) I got 'Message 8'.
+>[125.965602] (2:sender@sender) Goodbye now!

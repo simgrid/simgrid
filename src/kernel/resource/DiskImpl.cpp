@@ -113,12 +113,57 @@ void DiskImpl::seal()
 
   xbt_assert(this->get_model(), "Cannot seal Disk (%s) without setting the model first", get_cname());
   lmm::System* maxmin_system = get_model()->get_maxmin_system();
+  /* set readwrite constraint if not configured by user */
+  if (readwrite_bw_ == -1) {
+    readwrite_bw_ = std::max(read_bw_.peak, write_bw_.peak);
+  }
   this->set_read_constraint(maxmin_system->constraint_new(this, read_bw_.peak * read_bw_.scale))
       ->set_write_constraint(maxmin_system->constraint_new(this, write_bw_.peak * write_bw_.scale))
-      ->set_constraint(maxmin_system->constraint_new(this, std::max(read_bw_.peak, write_bw_.peak)));
+      ->set_constraint(maxmin_system->constraint_new(this, readwrite_bw_));
+  apply_sharing_policy_cfg();
   XBT_DEBUG("Create resource with read_bw '%f' write_bw '%f'", read_bw_.peak, write_bw_.peak);
   Resource::seal();
   turn_on();
+}
+
+constexpr kernel::lmm::Constraint::SharingPolicy to_maxmin_policy(s4u::Disk::SharingPolicy policy)
+{
+  kernel::lmm::Constraint::SharingPolicy lmm_policy = kernel::lmm::Constraint::SharingPolicy::SHARED;
+  if (policy == s4u::Disk::SharingPolicy::NONLINEAR)
+    lmm_policy = kernel::lmm::Constraint::SharingPolicy::NONLINEAR;
+  return lmm_policy;
+}
+
+void DiskImpl::set_sharing_policy(s4u::Disk::Operation op, s4u::Disk::SharingPolicy policy,
+                                  const s4u::NonLinearResourceCb& cb)
+{
+  sharing_policy_[op]    = policy;
+  sharing_policy_cb_[op] = cb;
+  apply_sharing_policy_cfg();
+}
+
+s4u::Disk::SharingPolicy DiskImpl::get_sharing_policy(s4u::Disk::Operation op) const
+{
+  return sharing_policy_.at(op);
+}
+
+void DiskImpl::apply_sharing_policy_cfg()
+{
+  if (get_constraint())
+    get_constraint()->set_sharing_policy(to_maxmin_policy(sharing_policy_[s4u::Disk::Operation::READWRITE]),
+                                         sharing_policy_cb_[s4u::Disk::Operation::READWRITE]);
+  if (constraint_read_)
+    constraint_read_->set_sharing_policy(to_maxmin_policy(sharing_policy_[s4u::Disk::Operation::READ]),
+                                         sharing_policy_cb_[s4u::Disk::Operation::READ]);
+  if (constraint_write_)
+    constraint_write_->set_sharing_policy(to_maxmin_policy(sharing_policy_[s4u::Disk::Operation::WRITE]),
+                                          sharing_policy_cb_[s4u::Disk::Operation::WRITE]);
+}
+
+void DiskImpl::set_factor_cb(const std::function<s4u::Disk::IoFactorCb>& cb)
+{
+  xbt_assert(not is_sealed(), "Cannot set I/O factor callback in an already sealed disk(%s)", get_cname());
+  factor_cb_ = cb;
 }
 
 /**********

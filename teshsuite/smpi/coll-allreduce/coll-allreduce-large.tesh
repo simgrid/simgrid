@@ -4,10 +4,10 @@
 ! timeout 20
 p Test allreduce
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -platform ${platfdir:=.}/small_platform.xml -np 4 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce 300000 --log=smpi_config.thres:warning --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error
-> [rank 0] -> Tremblay
-> [rank 1] -> Jupiter
-> [rank 2] -> Fafard
-> [rank 3] -> Ginette
+> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
+> [0.000000] [smpi/INFO] [rank 1] -> Jupiter
+> [0.000000] [smpi/INFO] [rank 2] -> Fafard
+> [0.000000] [smpi/INFO] [rank 3] -> Ginette
 > [0] sndbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 ]
 > [1] sndbuf=[4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 ]
 > [2] sndbuf=[8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 ]

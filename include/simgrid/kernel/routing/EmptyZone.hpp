@@ -7,6 +7,7 @@
 #define SURF_ROUTING_NONE_HPP_
 
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
+#include <xbt/asserts.h>
 
 namespace simgrid {
 namespace kernel {
@@ -23,9 +24,9 @@ class XBT_PRIVATE EmptyZone : public NetZoneImpl {
 public:
   explicit EmptyZone(const std::string& name) : NetZoneImpl(name) {}
 
-  void get_local_route(NetPoint* src, NetPoint* dst, Route* into, double* latency) override
+  void get_local_route(const NetPoint* src, const NetPoint* dst, Route* into, double* latency) override
   {
-    /* There can't be route in an Empty zone */
+    xbt_die("There can't be route in an Empty zone");
   }
 
   void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* /*nodes*/,

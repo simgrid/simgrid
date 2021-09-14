@@ -1,0 +1,22 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/io-set-bw  "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
+> [  0.000000] [1:@bob] I/O operations: size 1e6. Should take 1s each
+> [  1.000000] [1:@bob] Read finished. Took: 1.000000
+> [  2.000000] [1:@bob] Write finished. Took: 1.000000
+> [  2.000000] [1:@bob] Setting read limit to half (.5e6). Read should take 2s, write still 1s
+> [  4.000000] [1:@bob] Read finished. Took: 2.000000
+> [  5.000000] [1:@bob] Write finished. Took: 1.000000
+> [  5.000000] [1:@bob] Setting write limit to half (.5e6). Write should take 2s, read still 1s
+> [  6.000000] [1:@bob] Read finished. Took: 1.000000
+> [  8.000000] [1:@bob] Write finished. Took: 2.000000
+> [  8.000000] [1:@bob] Setting readwrite limit to half (.5e6). Write and read should take 2s now
+> [ 10.000000] [1:@bob] Read finished. Took: 2.000000
+> [ 12.000000] [1:@bob] Write finished. Took: 2.000000
+> [ 12.000000] [1:@bob] Change bandwidth in the middle of I/O operation
+> [ 12.000000] [1:@bob] Setting read limit to half (.5e6) in the middle of IO. Read should take 1.5s
+> [ 13.500000] [1:@bob] Read finished. Took: 1.500000
+> [ 13.500000] [1:@bob] Setting write limit to half (.5e6) in the middle of IO. Write should take 1.5s
+> [ 15.000000] [1:@bob] Write finished. Took: 1.500000
+> [ 15.000000] [1:@bob] Setting readwrite limit to half (.5e6) in the middle of IO. Read and write should take 1.5s
+> [ 16.500000] [1:@bob] Read and write finished. Took: 1.500000

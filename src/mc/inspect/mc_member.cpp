@@ -22,8 +22,6 @@ void* resolve_member(const void* base, const simgrid::mc::Type* /*type*/, const 
                      const simgrid::mc::AddressSpace* address_space)
 {
   ExpressionContext state;
-  state.frame_base    = nullptr;
-  state.cursor        = nullptr;
   state.address_space = address_space;
 
   ExpressionStack stack;

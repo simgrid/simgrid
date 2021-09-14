@@ -35,7 +35,7 @@ public:
   unsigned int get_id_by_name(const char* name) const { return name2id.at(name); }
 
   void add_child(Container* child);
-  void add_resources(std::vector<sg_host_t> hosts);
+  void add_resources(const std::vector<sg_host_t>& hosts);
   void create_hierarchy(const_sg_netzone_t from_as);
   std::vector<int> get_hierarchy();
   std::string get_hierarchy_as_string();

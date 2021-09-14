@@ -36,10 +36,10 @@ public:
 
   void apply_event(profile::Event* event, double value) override;
   void set_bandwidth(double) override { THROW_UNIMPLEMENTED; }
-  LinkImpl* set_latency(double) override;
-  LinkImpl* set_bandwidth_profile(profile::Profile* profile) override;
-  LinkImpl* set_latency_profile(profile::Profile* profile) override;
-  LinkImpl* set_sharing_policy(s4u::Link::SharingPolicy policy) override;
+  void set_latency(double) override;
+  void set_bandwidth_profile(profile::Profile* profile) override;
+  void set_latency_profile(profile::Profile* profile) override;
+  void set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb) override;
   s4u::Link::SharingPolicy get_sharing_policy() const override { return sharing_policy_; }
 };
 

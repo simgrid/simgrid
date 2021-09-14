@@ -96,9 +96,9 @@ static int job_executor_process(Job* job)
 }
 
 // Executes a workload of SMPI processes
-static int workload_executor_process(const std::vector<std::unique_ptr<Job>>* workload)
+static int workload_executor_process(const std::vector<std::unique_ptr<Job>>& workload)
 {
-  for (auto const& job : *workload) {
+  for (auto const& job : workload) {
     // Let's wait until the job's waiting time if needed
     double curr_time = simgrid::s4u::Engine::get_clock();
     if (job->starting_time > curr_time) {
@@ -236,7 +236,7 @@ int main(int argc, char* argv[])
   }
 
   // Let's execute the workload
-  simgrid::s4u::Actor::create("workload", hosts[0], workload_executor_process, &jobs);
+  simgrid::s4u::Actor::create("workload", hosts[0], workload_executor_process, std::cref(jobs));
 
   e.run();
   XBT_INFO("Simulation finished! Final time: %g", simgrid::s4u::Engine::get_clock());

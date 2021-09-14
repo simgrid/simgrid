@@ -84,6 +84,9 @@ XBT_PRIVATE void smpi_deployment_unregister_process(const std::string& instance_
 
 XBT_PRIVATE MPI_Comm* smpi_deployment_comm_world(const std::string& instance_id);
 XBT_PRIVATE void smpi_deployment_cleanup_instances();
+XBT_PRIVATE int smpi_deployment_smpirun(const simgrid::s4u::Engine* e, const std::string& hostfile, int np,
+                                        const std::string& replayfile, int map,
+                                        const std::vector<const char*>& run_args);
 
 XBT_PRIVATE void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff,
                                                 size_t buff_size);
@@ -115,10 +118,12 @@ XBT_PRIVATE double smpi_cfg_auto_shared_malloc_thresh();
 XBT_PRIVATE bool smpi_cfg_display_alloc();
 
 // utilities
+XBT_PRIVATE void smpi_init_options_internal(bool called_by_smpi_main);
+
 extern XBT_PRIVATE char* smpi_data_exe_start; // start of the data+bss segment of the executable
 extern XBT_PRIVATE size_t smpi_data_exe_size; // size of the data+bss segment of the executable
 
-XBT_PRIVATE void smpi_switch_data_segment(simgrid::s4u::ActorPtr actor);
+XBT_PRIVATE bool smpi_switch_data_segment(simgrid::s4u::ActorPtr actor, const void* addr = nullptr);
 
 XBT_PRIVATE void smpi_prepare_global_memory_segment();
 XBT_PRIVATE void smpi_backup_global_memory_segment();
@@ -128,6 +133,16 @@ XBT_PRIVATE void smpi_bench_begin();
 XBT_PRIVATE void smpi_bench_end();
 XBT_PRIVATE void smpi_shared_destroy();
 XBT_PRIVATE double smpi_adjust_comp_speed();
+
+// This helper class uses RAII to call smpi_bench_end() when an object is built, and have smpi_bench_begin() be called
+// automatically when going out of scope.
+class XBT_PRIVATE SmpiBenchGuard {
+public:
+  SmpiBenchGuard() { smpi_bench_end(); }
+  SmpiBenchGuard(const SmpiBenchGuard&) = delete;
+  SmpiBenchGuard& operator=(const SmpiBenchGuard&) = delete;
+  ~SmpiBenchGuard() { smpi_bench_begin(); }
+};
 
 XBT_PRIVATE unsigned char* smpi_get_tmp_sendbuffer(size_t size);
 XBT_PRIVATE unsigned char* smpi_get_tmp_recvbuffer(size_t size);
@@ -540,10 +555,6 @@ XBT_PRIVATE void private_execute_flops(double flops);
     CHECK_ARGS(init_flag, MPI_ERR_OTHER, "%s: MPI_Finalize was already called !", __func__)                            \
   }
 
-#define CHECK_MPI_NULL(num, val, err, ptr)\
-  CHECK_ARGS((ptr) == (val), (err),\
-             "%s: param %d %s cannot be %s", __func__, (num), _XBT_STRINGIFY(ptr), _XBT_STRINGIFY(val))
-
 #define CHECK_VAL(num, val, err, value)\
   CHECK_ARGS((value) == (val), (err),\
              "%s: param %d %s cannot be %s", __func__, (num), _XBT_STRINGIFY(value), _XBT_STRINGIFY(val))
@@ -551,6 +562,13 @@ XBT_PRIVATE void private_execute_flops(double flops);
 #define CHECK_NULL(num,err,buf)\
   CHECK_ARGS((buf) == nullptr, (err),\
              "%s: param %d %s cannot be NULL", __func__, (num), _XBT_STRINGIFY(buf))
+
+#define CHECK_MPI_NULL(num, val, err, ptr)\
+  {\
+    CHECK_ARGS((ptr) == (val), (err),\
+               "%s: param %d %s cannot be %s", __func__, (num), _XBT_STRINGIFY(ptr), _XBT_STRINGIFY(val))\
+    CHECK_NULL(num, err, ptr)\
+  }
 
 #define CHECK_NEGATIVE(num, err, val)\
   CHECK_ARGS((val) < 0, (err),\
@@ -608,8 +626,9 @@ XBT_PRIVATE void private_execute_flops(double flops);
 
 #define CHECK_TYPE(num, datatype)\
   {\
-    CHECK_ARGS(((datatype) == MPI_DATATYPE_NULL|| not (datatype)->is_valid()), MPI_ERR_TYPE,\
-             "%s: param %d %s cannot be MPI_DATATYPE_NULL or invalid", __func__, (num), _XBT_STRINGIFY(datatype));\
+    CHECK_MPI_NULL((num), MPI_DATATYPE_NULL, MPI_ERR_TYPE, (datatype))\
+    CHECK_ARGS((not (datatype)->is_valid()), MPI_ERR_TYPE,\
+             "%s: param %d %s is invalid", __func__, (num), _XBT_STRINGIFY(datatype));\
     CHECK_DELETED((num), MPI_ERR_TYPE, datatype)\
     if (not datatype->is_basic())\
       simgrid::smpi::utils::set_current_handle(datatype);\
@@ -618,6 +637,8 @@ XBT_PRIVATE void private_execute_flops(double flops);
 #define CHECK_OP(num, op, type)\
   {\
   CHECK_MPI_NULL((num), MPI_OP_NULL, MPI_ERR_OP, (op))\
+  CHECK_ARGS((op == MPI_REPLACE || op == MPI_NO_OP), MPI_ERR_OP,\
+             "%s: param %d op %s cannot be used in non RMA calls", __func__, (num), _XBT_STRINGIFY(op));\
   CHECK_DELETED((num), MPI_ERR_OP, op)\
   if (not op->is_predefined())\
     simgrid::smpi::utils::set_current_handle(op);\

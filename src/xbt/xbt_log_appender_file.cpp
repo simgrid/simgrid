@@ -26,10 +26,10 @@ static void free_(const s_xbt_log_appender_t* this_)
 
 xbt_log_appender_t xbt_log_appender_stream(FILE* f)
 {
-  xbt_log_appender_t res = xbt_new0(s_xbt_log_appender_t, 1);
-  res->do_append         = &append_file;
-  res->free_             = nullptr;
-  res->data              = static_cast<void*>(f);
+  auto* res      = xbt_new0(s_xbt_log_appender_t, 1);
+  res->do_append = &append_file;
+  res->free_     = nullptr;
+  res->data      = static_cast<void*>(f);
   return res;
 }
 
@@ -37,10 +37,10 @@ xbt_log_appender_t xbt_log_appender_file_new(const char* arg)
 {
   if (arg == nullptr)
     return xbt_log_appender_stream(stderr);
-  xbt_log_appender_t res = xbt_new0(s_xbt_log_appender_t, 1);
-  res->do_append         = &append_file;
-  res->free_             = &free_;
-  res->data              = static_cast<void*>(fopen(arg, "w"));
+  auto* res      = xbt_new0(s_xbt_log_appender_t, 1);
+  res->do_append = &append_file;
+  res->free_     = &free_;
+  res->data      = static_cast<void*>(fopen(arg, "w"));
   xbt_assert(res->data != nullptr, "Cannot open file: %s: %s", arg, strerror(errno));
   return res;
 }
@@ -113,10 +113,10 @@ static void free_append2_(const s_xbt_log_appender_t* this_)
 //For split, replace %  in the file by the current count
 xbt_log_appender_t xbt_log_appender2_file_new(const char* arg, int roll)
 {
-  xbt_log_appender_t res      = xbt_new0(s_xbt_log_appender_t, 1);
-  res->do_append              = &append2_file;
-  res->free_                  = &free_append2_;
-  xbt_log_append2_file_t data = xbt_new0(struct xbt_log_append2_file_s, 1);
+  auto* res      = xbt_new0(s_xbt_log_appender_t, 1);
+  res->do_append = &append2_file;
+  res->free_     = &free_append2_;
+  auto* data     = xbt_new0(struct xbt_log_append2_file_s, 1);
   xbt_assert(arg);
   char* buf=xbt_strdup(arg);
   char* sep=strchr(buf,':');

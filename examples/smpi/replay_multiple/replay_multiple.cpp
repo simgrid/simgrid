@@ -19,7 +19,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 static void smpi_replay(int argc, char* argv[])
 {
   const char* instance_id = argv[1];
-  int rank                = static_cast<int>(xbt_str_parse_int(argv[2], "Cannot parse rank '%s'"));
+  int rank                = static_cast<int>(xbt_str_parse_int(argv[2], "Cannot parse rank"));
   const char* shared_trace =
       simgrid::s4u::Actor::self()->get_property("tracefile"); // Cannot use properties because this can be nullptr
   const char* private_trace = argv[3];

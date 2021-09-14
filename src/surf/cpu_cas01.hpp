@@ -44,26 +44,26 @@ public:
   CpuCas01(const CpuCas01&) = delete;
   CpuCas01& operator=(const CpuCas01&) = delete;
   void apply_event(profile::Event* event, double value) override;
-  CpuAction* execution_start(double size) override;
-  CpuAction* execution_start(double size, int requested_cores) override;
+  CpuAction* execution_start(double size, double user_bound) override;
+  CpuAction* execution_start(double size, int requested_cores, double user_bound) override;
   CpuAction* sleep(double duration) override;
+  void set_factor_cb(const std::function<s4u::Host::CpuFactorCb>& cb) override;
 
   bool is_used() const override;
 
 protected:
   void on_speed_change() override;
+
+private:
+  std::function<s4u::Host::CpuFactorCb> factor_cb_ = {};
 };
 
 /**********
  * Action *
  **********/
 class CpuCas01Action : public CpuAction {
-  friend CpuAction* CpuCas01::execution_start(double size);
-  friend CpuAction* CpuCas01::sleep(double duration);
-
 public:
-  CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm::Constraint* constraint,
-                 int requested_core = 1);
+  CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm::Constraint* constraint, int requested_core);
   CpuCas01Action(const CpuCas01Action&) = delete;
   CpuCas01Action& operator=(const CpuCas01Action&) = delete;
   int requested_core() const;

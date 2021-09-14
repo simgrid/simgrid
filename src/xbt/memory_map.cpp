@@ -59,6 +59,12 @@
   } else                                                                                                               \
     ((void)0)
 
+#define DEBUG_PRINT(...)                                                                                               \
+  if (false) {                                                                                                         \
+    fprintf(stderr, __VA_ARGS__);                                                                                      \
+  } else                                                                                                               \
+    ((void)0)
+
 namespace simgrid {
 namespace xbt {
 
@@ -155,11 +161,9 @@ std::vector<VmMap> get_memory_map(pid_t pid)
     if (dladdr(reinterpret_cast<void*>(address), &dlinfo))
       memreg.pathname = dlinfo.dli_fname;
 
-#if 0 /* debug */
-    std::fprintf(stderr, "Region: %016" PRIx64 "-%016" PRIx64 " | %c%c%c | %s\n", memreg.start_addr, memreg.end_addr,
-              (memreg.prot & PROT_READ) ? 'r' : '-', (memreg.prot & PROT_WRITE) ? 'w' : '-',
-              (memreg.prot & PROT_EXEC) ? 'x' : '-', memreg.pathname.c_str());
-#endif
+    DEBUG_PRINT("Region: %016" PRIx64 "-%016" PRIx64 " | %c%c%c | %s\n", memreg.start_addr, memreg.end_addr,
+                (memreg.prot & PROT_READ) ? 'r' : '-', (memreg.prot & PROT_WRITE) ? 'w' : '-',
+                (memreg.prot & PROT_EXEC) ? 'x' : '-', memreg.pathname.c_str());
 
     ret.push_back(std::move(memreg));
     address += size;
@@ -290,7 +294,7 @@ std::vector<VmMap> get_memory_map(pid_t pid)
 
     /* Create space for a new map region in the region's array and copy the */
     /* parsed stuff from the temporal memreg variable */
-    // std::fprintf(stderr, "Found region for %s\n", not memreg.pathname.empty() ? memreg.pathname.c_str() : "(null)");
+    DEBUG_PRINT("Found region for \"%s\"\n", memreg.pathname.c_str());
 
     ret.push_back(std::move(memreg));
   }

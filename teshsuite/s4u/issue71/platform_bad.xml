@@ -1,0 +1,20 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+<platform version="4.1">
+  <zone id="world" routing="Full">
+    <cluster id="cluster1" router_id="router_c1"
+       prefix="c1_" radical="0-0" suffix=""
+       speed="1Gf" bw="125MBps" lat="50us"  bb_bw="2.25GBps" bb_lat="500us">
+    </cluster>
+
+    <cluster id="cluster2" router_id="router_c2"
+      prefix="c2_" radical="0-0" suffix=""
+      speed="1Gf" bw="125MBps" lat="50us"  bb_bw="2.25GBps" bb_lat="500us">
+    </cluster>
+
+    <link id="backbone" bandwidth="1.25Gbps" latency="50us"/>
+    <zoneRoute src="cluster1" dst="cluster2" gw_src="router_c2" gw_dst="router_c1"> <!-- !!! -->
+      <link_ctn id="backbone"/>
+    </zoneRoute>
+  </zone>
+</platform>

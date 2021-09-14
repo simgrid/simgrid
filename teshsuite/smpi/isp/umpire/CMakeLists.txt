@@ -197,13 +197,16 @@ set(txt_files ${txt_files} ${sources} PARENT_SCOPE)
 # Build the tests
 #################
 
-if(enable_smpi AND enable_model-checking AND enable_smpi_ISP_testsuite)
+if(enable_smpi AND enable_smpi_ISP_testsuite)
   set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff")
-
+  set(umpire_tests_to_run ${umpire_tests_passing})
+  if (enable_model-checking)
+    set(umpire_tests_to_run ${umpire_tests_to_run}  ${umpire_tests_deadlock} ${umpire_tests_problematic})
+  endif()
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
-  foreach (test ${umpire_tests_passing} ${umpire_tests_deadlock} ${umpire_tests_problematic} )
+  foreach (test ${umpire_tests_to_run})
     add_executable(${test} EXCLUDE_FROM_ALL ${test}.c)
     add_dependencies(tests-mc ${test})
     target_link_libraries(${test} simgrid)
@@ -217,21 +220,26 @@ if(enable_smpi AND enable_model-checking AND enable_smpi_ISP_testsuite)
   foreach (test ${umpire_tests_passing})
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! timeout 30")
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! output display" APPEND)
-    write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "\$ \${bindir:=.}/../../../../smpi_script/bin/smpirun -wrapper \"\${bindir:=.}/../../../../bin/simgrid-mc\" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=smpi/host-speed:1Gf --cfg=smpi/coll-selector:ompi \${bindir:=.}/${test} --log=smpi_coll.thresh:error" APPEND)
+    if(enable_model-checking)
+      set(wrapper "-wrapper \"\${bindir:=.}/../../../../bin/simgrid-mc\"")
+    endif()
+    write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "\$ \${bindir:=.}/../../../../smpi_script/bin/smpirun ${wrapper} -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=smpi/host-speed:1Gf --cfg=smpi/coll-selector:ompi \${bindir:=.}/${test} --log=smpi_coll.thresh:error" APPEND)
   endforeach()
 
-  foreach (test ${umpire_tests_deadlock} ${umpire_tests_problematic} )
-    write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! timeout 30"     )
-    write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! expect return 3" APPEND)
-    write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! output display"  APPEND)
-    write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "\$ \${bindir:=.}/../../../../smpi_script/bin/smpirun -wrapper \"\${bindir:=.}/../../../../bin/simgrid-mc\" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=smpi/buffering:zero --cfg=smpi/coll-selector:ompi \${bindir:=.}/${test} --log=smpi_coll.thresh:error" APPEND)
-  endforeach()
+  if (enable_model-checking)
+    foreach (test ${umpire_tests_deadlock} ${umpire_tests_problematic} )
+      write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! timeout 30"     )
+      write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! expect return 3" APPEND)
+      write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! output display"  APPEND)
+      write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "\$ \${bindir:=.}/../../../../smpi_script/bin/smpirun -wrapper \"\${bindir:=.}/../../../../bin/simgrid-mc\" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=smpi/buffering:zero --cfg=smpi/coll-selector:ompi \${bindir:=.}/${test} --log=smpi_coll.thresh:error" APPEND)
+    endforeach()
+  endif()
 endif()
 
 # Erase all tesh files on cleanup: they are generated anyway
 set_directory_properties ( PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${files_to_clean}" )
 
-if(enable_smpi AND enable_model-checking AND enable_smpi_ISP_testsuite)
+if(enable_smpi AND enable_smpi_ISP_testsuite)
   foreach (tesh ${umpire_tesh})
     ADD_TESH(mc-umpire-${tesh}
       --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}

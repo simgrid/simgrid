@@ -30,7 +30,7 @@ static void peer_forward_file(peer_t p)
     p->pending_recvs[nb_pending_recvs] = sg_mailbox_get_async(p->me, &received);
     nb_pending_recvs++;
 
-    int idx = sg_comm_wait_any(p->pending_recvs, nb_pending_recvs);
+    ssize_t idx = sg_comm_wait_any(p->pending_recvs, nb_pending_recvs);
     if (idx != -1) {
       XBT_DEBUG("Peer %s got a 'SEND_DATA' message", sg_mailbox_get_name(p->me));
       /* move the last pending comm where the finished one was, and decrement */

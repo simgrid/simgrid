@@ -21,7 +21,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_io, smpi, "Logging specific to SMPI (RMA operations)");
 
-MPI_Errhandler SMPI_default_File_Errhandler = MPI_ERRORS_RETURN;
+MPI_Errhandler SMPI_default_File_Errhandler =  _smpi_cfg_default_errhandler_is_error ? MPI_ERRORS_ARE_FATAL : MPI_ERRORS_RETURN;;
 
 namespace simgrid{
 namespace smpi{
@@ -121,15 +121,15 @@ namespace smpi{
 
   int File::seek(MPI_Offset offset, int whence){
     switch(whence){
-      case(MPI_SEEK_SET):
+      case MPI_SEEK_SET:
         XBT_VERB("Seeking in MPI_File %s, setting offset %lld", file_->get_path(), offset);
         file_->seek(offset,SEEK_SET);
         break;
-      case(MPI_SEEK_CUR):
+      case MPI_SEEK_CUR:
         XBT_VERB("Seeking in MPI_File %s, current offset + %lld", file_->get_path(), offset);
         file_->seek(offset,SEEK_CUR);
         break;
-      case(MPI_SEEK_END):
+      case MPI_SEEK_END:
         XBT_VERB("Seeking in MPI_File %s, end offset + %lld", file_->get_path(), offset);
         file_->seek(offset,SEEK_END);
         break;
@@ -301,9 +301,6 @@ namespace smpi{
 
   MPI_Info File::info()
   {
-    if (info_ == MPI_INFO_NULL)
-      info_ = new Info();
-    info_->ref();
     return info_;
   }
 
