@@ -42,34 +42,37 @@ void Engine::initialize(int* argc, char** argv)
 {
   xbt_assert(Engine::instance_ == nullptr, "It is currently forbidden to create more than one instance of s4u::Engine");
   Engine::instance_ = this;
-  kernel::EngineImpl::instance_ = pimpl;
   instr::init();
   SIMIX_global_init(argc, argv);
 }
 
-Engine::Engine(std::string name) : pimpl(new kernel::EngineImpl())
+Engine::Engine(std::string name) : pimpl(new kernel::EngineImpl(nullptr, nullptr))
 {
   int argc   = 1;
   char* argv = &name[0];
   initialize(&argc, &argv);
 }
 
-Engine::Engine(int* argc, char** argv) : pimpl(new kernel::EngineImpl())
+Engine::Engine(int* argc, char** argv) : pimpl(new kernel::EngineImpl(argc, argv))
 {
   initialize(argc, argv);
 }
 
 Engine::~Engine()
 {
-  delete pimpl;
+  pimpl->shutdown();
   Engine::instance_ = nullptr;
 }
 
 /** @brief Retrieve the engine singleton */
 Engine* Engine::get_instance()
 {
+  return get_instance(nullptr, nullptr);
+}
+Engine* Engine::get_instance(int* argc, char** argv)
+{
   if (Engine::instance_ == nullptr) {
-    auto e = new Engine(nullptr, nullptr);
+    auto e = new Engine(argc, argv);
     xbt_assert(Engine::instance_ == e);
   }
   return Engine::instance_;
@@ -78,7 +81,6 @@ Engine* Engine::get_instance()
 void Engine::shutdown()
 {
   delete Engine::instance_;
-  Engine::instance_ = nullptr;
 }
 
 double Engine::get_clock()
@@ -456,7 +458,7 @@ Engine* Engine::set_default_comm_data_copy_callback(void (*callback)(kernel::act
 /* **************************** Public C interface *************************** */
 void simgrid_init(int* argc, char** argv)
 {
-  simgrid::s4u::Engine e(argc, argv);
+  static simgrid::s4u::Engine e(argc, argv);
 }
 void simgrid_load_platform(const char* file)
 {
