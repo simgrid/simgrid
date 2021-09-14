@@ -47,9 +47,15 @@ void EngineImpl::shutdown()
   }
   XBT_DEBUG("EngineImpl::shutdown() called. Simulation's over.");
 
+  /* Kill all actors (but maestro) */
+  simix_global->get_maestro()->kill_all();
+  instance_->run_all_actors();
+  instance_->empty_trash();
+
   if (instance_->has_actors_to_run() && simgrid_get_clock() <= 0.0) {
     XBT_CRITICAL("   ");
-    XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
+    XBT_CRITICAL("The time is still 0, and you still have %lu processes ready to run.",
+                 instance_->get_actor_to_run_count());
     XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
     xbt_die("Bailing out to avoid that stop-before-start madness. Please fix your code.");
   }
@@ -65,11 +71,6 @@ void EngineImpl::shutdown()
   }
 #endif
 
-  /* Kill all actors (but maestro) */
-  simix_global->get_maestro()->kill_all();
-  instance_->run_all_actors();
-  instance_->empty_trash();
-
   /* Let's free maestro now */
   simix_global->destroy_maestro();
 
@@ -83,7 +84,6 @@ void EngineImpl::shutdown()
 
   tmgr_finalize();
   sg_platf_exit();
-
   simgrid::s4u::Engine::shutdown();
 
   simix_global = nullptr;
@@ -227,6 +227,7 @@ actor::ActorImpl* EngineImpl::get_actor_by_pid(aid_t pid)
       return &a;
   return nullptr; // Not found, even in the trash
 }
+
 /** Execute all the tasks that are queued, e.g. `.then()` callbacks of futures. */
 bool EngineImpl::execute_tasks()
 {
