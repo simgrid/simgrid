@@ -5,12 +5,11 @@
 # docker run -it --rm --volume `pwd`:/source simgrid/unstable /source/ci-bigdft.sh
 
 set -ex
-export OMP_NUM_THREADS=1
 
 echo "XXXXXXXXXXXXXXXX Install APT dependencies"
 SUDO="" # to ease the local testing
 $SUDO apt-get -y update
-$SUDO apt-get -y install git build-essential gfortran python-is-python3 python3-six python3-distutils automake cmake libboost-dev libblas-dev liblapack-dev wget
+$SUDO apt-get -y install git build-essential gfortran python-is-python3 python3-six python3-distutils python3-setuptools pkg-config automake cmake libboost-dev libblas-dev liblapack-dev wget
 
 echo "XXXXXXXXXXXXXXXX build and test BigDFT (git version)"
 git clone --depth=1 https://gitlab.com/l_sim/bigdft-suite.git
@@ -25,6 +24,8 @@ export JHBUILD_RUN_AS_ROOT=1
 ../Installer.py autogen -y
 
 ../Installer.py -f ../../tools/jenkins/gfortran-simgrid.rc -y build
+
+export OMP_NUM_THREADS=1
 
 #cubic version
 cd ../bigdft/tests/DFT/cubic/C
