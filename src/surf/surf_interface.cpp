@@ -198,13 +198,3 @@ void surf_init(int* argc, char** argv)
 
   sg_config_init(argc, argv);
 }
-
-void surf_exit()
-{
-  simgrid::s4u::Engine::shutdown();
-
-  tmgr_finalize();
-  sg_platf_exit();
-
-  NOW = 0; /* Just in case the user plans to restart the simulation afterward */
-}

@@ -18,7 +18,7 @@
  *  This function has to be called to initialize the common structures. Then you will have to create the environment by
  *  calling  e.g. surf_host_model_init_CM02()
  *
- *  @see surf_host_model_init_CM02(), surf_host_model_init_compound(), surf_exit()
+ *  @see surf_host_model_init_CM02(), surf_host_model_init_compound()
  */
 XBT_PUBLIC void surf_init(int* argc, char** argv); /* initialize common structures */
 
@@ -47,15 +47,6 @@ XBT_PUBLIC double surf_solve(double max_date);
  *  Return the current time in millisecond.
  */
 XBT_PUBLIC double surf_get_clock();
-
-/** @ingroup SURF_simulation
- *  @brief Exit SURF
- *
- *  Clean everything.
- *
- *  @see surf_init()
- */
-XBT_PUBLIC void surf_exit();
 
 /* surf parse file related (public because called from a test suite) */
 XBT_PUBLIC void parse_platform_file(const std::string& file);
