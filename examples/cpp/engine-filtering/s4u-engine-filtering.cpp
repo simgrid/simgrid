@@ -49,7 +49,7 @@ public:
 
   bool operator()(simgrid::s4u::Host* host) { return host->get_pstate() != host_list.at(host); }
 
-  double get_old_speed(simgrid::s4u::Host* host) { return host_list.at(host); }
+  unsigned long get_old_speed_state(simgrid::s4u::Host* host) { return host_list.at(host); }
 };
 }
 int main(int argc, char* argv[])
@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 
   for (auto& host : list)
     XBT_INFO("The following hosts changed their frequency: %s (from %.1ff to %.1ff)", host->get_cname(),
-             host->get_pstate_speed(filter.get_old_speed(host)), host->get_speed());
+             host->get_pstate_speed(filter.get_old_speed_state(host)), host->get_speed());
 
   /* You can also just use any regular function (namespaced on need) to filter  */
   list = e.get_filtered_hosts(filter::filter_speed_more_than_50Mf);
