@@ -67,8 +67,8 @@ void CpuImpl::reset_vcpu(CpuImpl* that)
 CpuImpl* CpuImpl::set_pstate(unsigned long pstate_index)
 {
   xbt_assert(
-      pstate_index <= speed_per_pstate_.size(),
-      "Invalid parameters for CPU %s (pstate %lu > length of pstates %d). Please fix your platform file, or your "
+      pstate_index < speed_per_pstate_.size(),
+      "Invalid parameters for CPU %s (pstate %lu >= length of pstates %d). Please fix your platform file, or your "
       "call to change the pstate.",
       get_cname(), pstate_index, static_cast<int>(speed_per_pstate_.size()));
 
