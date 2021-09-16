@@ -284,7 +284,7 @@ void CpuL07::on_speed_change()
 {
   const lmm::Element* elem = nullptr;
 
-  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), speed_.peak * speed_.scale);
+  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), get_core_count() * speed_.peak * speed_.scale);
   while (const auto* var = get_constraint()->get_variable(&elem)) {
     const Action* action = var->get_id();
 
