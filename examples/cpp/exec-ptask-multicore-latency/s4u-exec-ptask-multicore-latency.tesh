@@ -1,0 +1,14 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-exec-ptask-multicore-latency ${platfdir}/energy_cluster.xml --cfg=host/model:ptask_L07 --log=no_loc "--log=root.fmt:[%10.6r]%e%m%n"
+> [  0.000000] Configuration change: Set 'host/model' to 'ptask_L07'
+> [  0.000000] Switching to the L07 model to handle parallel tasks.
+> [ 10.000000] Computed 2-core activity on two different hosts. Took 10 s
+> [ 20.000000] Computed 2-core activity on one 4-core host. Took 10 s
+> [ 35.000000] Computed 6-core activity on a 4-core host. Took 15 s
+> [ 40.000600] Computed 2-core activity on a 4-core host with some communication. Took 10.0006 s
+> [ 40.000600] Switching machine multicore to pstate 1.
+> [ 40.000600] Switching back to pstate 0.
+> [ 50.000600] Computed 2-core activity on one 4-core host. Took 10 s
+> [ 60.000600] Computed 2-core activity on two different hosts. Took 10 s
+> [ 60.000600] Simulation done.

@@ -7,4 +7,10 @@ $ ${bindir:=.}/s4u-exec-ptask-multicore ${platfdir}/energy_platform.xml --cfg=ho
 > [ 30.000000] Computed 2-core activity one 1-core host. Took 20 s
 > [ 40.000000] Computed 2-core activity on one 2-core host. Took 10 s
 > [ 55.000000] Computed 6-core activity of a 4-core host. Took 15 s
+> [ 65.000000] Computed 2-core activity on a 4-core host with some communication. Took 10 s
+> [ 65.000000] Switching machine multicore to pstate 1.
+> [ 65.000000] Switching back to pstate 0.
+> [ 75.000000] Computed 2-core activity on one 4-core host. Took 10 s
+> [ 85.000000] Computed 2-core activity on two different hosts. Took 10 s
+> [ 85.000000] Simulation done.
 > [ 55.000000] Simulation done.
