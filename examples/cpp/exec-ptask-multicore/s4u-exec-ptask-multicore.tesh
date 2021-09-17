@@ -12,5 +12,10 @@ $ ${bindir:=.}/s4u-exec-ptask-multicore ${platfdir}/energy_platform.xml --cfg=ho
 > [ 65.000000] Switching back to pstate 0.
 > [ 75.000000] Computed 2-core activity on one 4-core host. Took 10 s
 > [ 85.000000] Computed 2-core activity on two different hosts. Took 10 s
-> [ 85.000000] Simulation done.
-> [ 55.000000] Simulation done.
+> [ 85.000000] Start a 1-core background task on the 4-core host.
+> [ 95.000000] Computed 2-core activity on the 4-core host. Took 10 s
+> [ 95.000000] Remaining amount of work for the background task: 80%
+> [ 95.000000] Switching to pstate 1 while background task is still running.
+> [115.000000] Computed again the same 2-core activity on it. Took 20 s
+> [175.000000] The background task has ended.
+> [175.000000] Simulation done.

@@ -6,9 +6,9 @@ $ ${bindir:=.}/s4u-exec-ptask-multicore-latency ${platfdir}/energy_cluster.xml -
 > [ 10.000000] Computed 2-core activity on two different hosts. Took 10 s
 > [ 20.000000] Computed 2-core activity on one 4-core host. Took 10 s
 > [ 35.000000] Computed 6-core activity on a 4-core host. Took 15 s
-> [ 40.000600] Computed 2-core activity on a 4-core host with some communication. Took 10.0006 s
-> [ 40.000600] Switching machine multicore to pstate 1.
-> [ 40.000600] Switching back to pstate 0.
-> [ 50.000600] Computed 2-core activity on one 4-core host. Took 10 s
-> [ 60.000600] Computed 2-core activity on two different hosts. Took 10 s
-> [ 60.000600] Simulation done.
+> [ 45.000600] Computed 2-core activity on a 4-core host with some communication. Took 10.0006 s
+> [ 45.000600] Switching machine multicore to pstate 1.
+> [ 45.000600] Switching back to pstate 0.
+> [ 55.000600] Computed 2-core activity on one 4-core host. Took 10 s
+> [ 65.000600] Computed 2-core activity on two different hosts. Took 10 s
+> [ 65.000600] Simulation done.
