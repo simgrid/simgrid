@@ -12,6 +12,8 @@
 #include "jmsg_host.h"
 #include "jxbt_utilities.hpp"
 #include "simgrid/Exception.hpp"
+#include "simgrid/s4u/Actor.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 

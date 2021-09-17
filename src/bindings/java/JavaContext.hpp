@@ -13,7 +13,6 @@
 
 #include "simgrid/simix.h"
 #include "src/kernel/context/ContextThread.hpp"
-#include "src/simix/smx_private.hpp"
 
 #include "jmsg.hpp"
 

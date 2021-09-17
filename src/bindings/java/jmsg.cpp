@@ -16,9 +16,8 @@
 #include "simgrid/plugins/load.h"
 #include "simgrid/simix.h"
 
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/Host.hpp"
-
-#include "src/simix/smx_private.hpp"
 
 #include "jmsg.hpp"
 #include "jmsg_as.hpp"
