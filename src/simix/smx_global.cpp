@@ -45,25 +45,6 @@ xbt_dynar_t simix_global_get_dead_actors_addr()
 } // namespace simix
 } // namespace simgrid
 
-
-static simgrid::kernel::actor::ActorCode maestro_code;
-void SIMIX_set_maestro(void (*code)(void*), void* data)
-{
-#ifdef _WIN32
-  XBT_INFO("WARNING, SIMIX_set_maestro is believed to not work on windows. Please help us investigating this issue if "
-           "you need that feature");
-#endif
-  maestro_code = std::bind(code, data);
-}
-
-void SIMIX_global_init(int* argc, char** argv)
-{
-
-  // Either create a new context with maestro or create
-  // a context object with the current context maestro):
-  simgrid::kernel::actor::create_maestro(maestro_code);
-}
-
 /**
  * @ingroup SIMIX_API
  * @brief A clock (in second).
