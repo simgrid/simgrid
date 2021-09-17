@@ -8,7 +8,6 @@
 #include "src/internal_config.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "src/simix/smx_private.hpp"
 #include "xbt/parmap.hpp"
 
 #include "src/kernel/context/ContextSwapped.hpp"

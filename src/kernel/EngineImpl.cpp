@@ -16,7 +16,6 @@
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/simix/smx_private.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
@@ -194,10 +193,6 @@ void EngineImpl::shutdown()
   if (already_cleaned_up)
     return; // to avoid double cleaning by java and C
   already_cleaned_up = true;
-  if (not instance_) {
-    simix_global->destroy_context_factory();
-    return; // Nothing more to shutdown
-  }
   XBT_DEBUG("EngineImpl::shutdown() called. Simulation's over.");
   if (instance_->has_actors_to_run() && simgrid_get_clock() <= 0.0) {
     XBT_CRITICAL("   ");
@@ -226,7 +221,7 @@ void EngineImpl::shutdown()
   instance_->destroy_maestro();
 
   /* Finish context module and SURF */
-  simix_global->destroy_context_factory();
+  instance_->destroy_context_factory();
 
   while (not timer::kernel_timers().empty()) {
     delete timer::kernel_timers().top().second;
@@ -236,7 +231,6 @@ void EngineImpl::shutdown()
   tmgr_finalize();
   sg_platf_exit();
 
-  simix_global = nullptr;
   delete instance_;
   instance_ = nullptr;
 }
@@ -332,7 +326,7 @@ void EngineImpl::wake_all_waiting_actors() const
  */
 void EngineImpl::run_all_actors()
 {
-  simix_global->get_context_factory()->run_all();
+  instance_->get_context_factory()->run_all();
 
   actors_to_run_.swap(actors_that_ran_);
   actors_to_run_.clear();

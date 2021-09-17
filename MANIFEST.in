@@ -2444,7 +2444,6 @@ include src/simix/simcalls.in
 include src/simix/simcalls.py
 include src/simix/smx_context.cpp
 include src/simix/smx_global.cpp
-include src/simix/smx_private.hpp
 include src/smpi/bindings/smpi_f77.cpp
 include src/smpi/bindings/smpi_f77_coll.cpp
 include src/smpi/bindings/smpi_f77_comm.cpp

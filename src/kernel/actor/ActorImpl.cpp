@@ -15,7 +15,6 @@
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/AppSide.hpp"
-#include "src/simix/smx_private.hpp"
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
 #endif
@@ -74,7 +73,7 @@ ActorImpl::ActorImpl(xbt::string name, s4u::Host* host) : host_(host), name_(std
 
 ActorImpl::~ActorImpl()
 {
-  if (simix_global != nullptr && not EngineImpl::get_instance()->is_maestro(this))
+  if (not EngineImpl::get_instance()->is_maestro(this))
     s4u::Actor::on_destruction(*get_ciface());
 }
 
@@ -103,8 +102,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
   actor->code_ = nullptr;
 
   XBT_VERB("Create context %s", actor->get_cname());
-  xbt_assert(simix_global != nullptr, "simix is not initialized, please call MSG_init first");
-  actor->context_.reset(simix_global->get_context_factory()->attach(actor));
+  actor->context_.reset(engine->get_context_factory()->attach(actor));
 
   /* Add the actor to it's host actor list */
   host->get_impl()->add_actor(actor);
@@ -474,7 +472,7 @@ ActorImpl* ActorImpl::start(const ActorCode& code)
 
   this->code_ = code;
   XBT_VERB("Create context %s", get_cname());
-  context_.reset(simix_global->get_context_factory()->create_context(ActorCode(code), this));
+  context_.reset(engine->get_context_factory()->create_context(ActorCode(code), this));
 
   XBT_DEBUG("Start context '%s'", get_cname());
 
@@ -509,13 +507,14 @@ ActorImplPtr ActorImpl::create(const std::string& name, const ActorCode& code, v
 
 void create_maestro(const std::function<void()>& code)
 {
+  auto* engine = EngineImpl::get_instance();
   /* Create maestro actor and initialize it */
   auto* maestro = new ActorImpl(xbt::string(""), /*host*/ nullptr);
 
   if (not code) {
-    maestro->context_.reset(simix_global->get_context_factory()->create_context(ActorCode(), maestro));
+    maestro->context_.reset(engine->get_context_factory()->create_context(ActorCode(), maestro));
   } else {
-    maestro->context_.reset(simix_global->get_context_factory()->create_maestro(ActorCode(code), maestro));
+    maestro->context_.reset(engine->get_context_factory()->create_maestro(ActorCode(code), maestro));
   }
 
   maestro->simcall_.issuer_ = maestro;

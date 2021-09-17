@@ -16,6 +16,7 @@
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
 
+#include "signal.h"
 #include <array>
 #include <memory>
 #include <string>

@@ -6,7 +6,7 @@
 #ifndef SIMGRID_MC_REMOTE_PTR_HPP
 #define SIMGRID_MC_REMOTE_PTR_HPP
 
-#include "src/simix/smx_private.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 
 namespace simgrid {
 namespace mc {

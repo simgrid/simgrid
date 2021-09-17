@@ -7,7 +7,6 @@
 #include "mc/mc.h"
 #include "private.hpp"
 #include "smpi_coll.hpp"
-#include "src/simix/smx_private.hpp"
 #include "xbt/parse_units.hpp"
 
 #include <cfloat> /* DBL_MAX */

@@ -238,11 +238,6 @@ bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm)
  */
 smx_mutex_t simcall_mutex_init() // XBT_ATTRIB_DEPRECATED_v330
 {
-  if (simix_global == nullptr) {
-    fprintf(stderr, "You must initialize the SimGrid engine before using it\n"); // We can't use xbt_die since we may
-                                                                                 // get there before the initialization
-    xbt_abort();
-  }
   return simgrid::kernel::actor::simcall([] { return new simgrid::kernel::activity::MutexImpl(); });
 }
 

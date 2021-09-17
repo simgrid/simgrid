@@ -72,6 +72,7 @@ class EngineImpl {
   std::mutex mutex_;
   static EngineImpl* instance_;
   actor::ActorImpl* maestro_ = nullptr;
+  context::ContextFactory* context_factory_ = nullptr;
 
   std::unique_ptr<void, std::function<int(void*)>> platf_handle_; //!< handle for platform library
   friend s4u::Engine;
@@ -101,6 +102,16 @@ public:
     delete maestro_;
     maestro_ = nullptr;
   }
+
+  context::ContextFactory* get_context_factory() const { return context_factory_; }
+  void set_context_factory(context::ContextFactory* factory) { context_factory_ = factory; }
+  bool has_context_factory() const { return context_factory_ != nullptr; }
+  void destroy_context_factory()
+  {
+    delete context_factory_;
+    context_factory_ = nullptr;
+  }
+
   /**
    * @brief Add a model to engine list
    *

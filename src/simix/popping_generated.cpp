@@ -14,7 +14,6 @@
  * That's not about http://en.wikipedia.org/wiki/Poop, despite the odor :)
  */
 
-#include "smx_private.hpp"
 #include <simgrid/host.h>
 #include <xbt/base.h>
 #if SIMGRID_HAVE_MC
@@ -22,6 +21,7 @@
 #endif
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
+#include "src/kernel/context/Context.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
 

@@ -13,7 +13,6 @@
 #include "src/kernel/EngineImpl.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/simix/smx_private.hpp"
 #include "src/surf/xml/platf.hpp"
 
 #include "simgrid/kernel/resource/Model.hpp"
@@ -22,8 +21,6 @@
 
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix, "Logging specific to SIMIX (kernel)");
-
-std::unique_ptr<simgrid::simix::Global> simix_global;
 
 namespace simgrid {
 namespace simix {
@@ -61,10 +58,6 @@ void SIMIX_set_maestro(void (*code)(void*), void* data)
 
 void SIMIX_global_init(int* argc, char** argv)
 {
-  if (simix_global != nullptr)
-    return;
-
-  simix_global = std::make_unique<simgrid::simix::Global>();
 
   SIMIX_context_mod_init();
 
@@ -91,8 +84,6 @@ void SIMIX_run() // XBT_ATTRIB_DEPRECATED_v332
 
 int SIMIX_is_maestro()
 {
-  if (simix_global == nullptr) // SimDag
-    return true;
   const simgrid::kernel::actor::ActorImpl* self = SIMIX_process_self();
   return self == nullptr || simgrid::kernel::EngineImpl::get_instance()->is_maestro(self);
 }

@@ -6,7 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/internal_config.h"
-#include "src/simix/smx_private.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/smpi/include/private.hpp"
 #include "xbt/config.hpp"
 
@@ -58,7 +58,8 @@ static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_DEFAUL
  */
 void SIMIX_context_mod_init()
 {
-  xbt_assert(not simix_global->has_context_factory());
+  auto* engine = simgrid::kernel::EngineImpl::get_instance();
+  xbt_assert(not engine->has_context_factory());
 
 #if HAVE_SMPI && (defined(__APPLE__) || defined(__NetBSD__))
   smpi_init_options_internal(false);
@@ -79,17 +80,17 @@ void SIMIX_context_mod_init()
 
   /* select the context factory to use to create the contexts */
   if (simgrid::kernel::context::factory_initializer != nullptr) { // Give Java a chance to hijack the factory mechanism
-    simix_global->set_context_factory(simgrid::kernel::context::factory_initializer());
+    engine->set_context_factory(simgrid::kernel::context::factory_initializer());
     return;
   }
   /* use the factory specified by --cfg=contexts/factory:value */
   for (auto const& factory : context_factories)
     if (context_factory_name == factory.first) {
-      simix_global->set_context_factory(factory.second());
+      engine->set_context_factory(factory.second());
       break;
     }
 
-  if (not simix_global->has_context_factory()) {
+  if (not engine->has_context_factory()) {
     XBT_ERROR("Invalid context factory specified. Valid factories on this machine:");
 #if HAVE_RAW_CONTEXTS
     XBT_ERROR("  raw: high performance context factory implemented specifically for SimGrid");

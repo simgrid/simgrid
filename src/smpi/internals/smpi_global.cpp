@@ -12,7 +12,6 @@
 #include "smpi_host.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
-#include "src/simix/smx_private.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "xbt/config.hpp"
 #include "xbt/file.hpp"

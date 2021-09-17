@@ -13,7 +13,6 @@
 #include "xbt/file.hpp"
 #include <boost/tokenizer.hpp>
 #include "smpi_config.hpp"
-#include "src/simix/smx_private.hpp"
 #include <algorithm>
 #include "private.hpp"
 
