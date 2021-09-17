@@ -41,6 +41,12 @@ XBT_PUBLIC void simgrid_register_function(const char* name, void (*code)(int, ch
 XBT_PUBLIC void simgrid_register_default(void (*code)(int, char**));
 /** Retrieve the simulation time (in seconds) */
 XBT_PUBLIC double simgrid_get_clock();
+/* Set some code to execute in the maestro (must be used before the engine creation)
+ *
+ * If no maestro code is registered (the default), the main thread
+ * is assumed to be the maestro. */
+XBT_PUBLIC void simgrid_set_maestro(void (*code)(void*), void* data);
+
 /** Retrieve the number of actors in the simulation */
 XBT_ATTRIB_DEPRECATED_v330("Please use sg_actor_count()") XBT_PUBLIC int simgrid_get_actor_count();
 

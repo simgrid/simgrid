@@ -35,14 +35,12 @@ XBT_PUBLIC void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode);
 XBT_PUBLIC int SIMIX_is_maestro();
 
 /********************************** Global ************************************/
-/* Initialization and exit */
-XBT_PUBLIC void SIMIX_global_init(int* argc, char** argv);
-
 /* Set some code to execute in the maestro (must be used before the engine creation)
  *
  * If no maestro code is registered (the default), the main thread
  * is assumed to be the maestro. */
-XBT_PUBLIC void SIMIX_set_maestro(void (*code)(void*), void* data);
+XBT_ATTRIB_DEPRECATED_v333("Please use simgrid_set_maestro()") XBT_PUBLIC
+    void SIMIX_set_maestro(void (*code)(void*), void* data);
 
 /* Simulation execution */
 XBT_ATTRIB_DEPRECATED_v332("Please use EngineImpl:run()") XBT_PUBLIC void SIMIX_run();

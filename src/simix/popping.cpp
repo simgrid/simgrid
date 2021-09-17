@@ -3,7 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smx_private.hpp"
+#include "src/simix/popping_private.hpp"
+#include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_popping, simix,
                                 "Popping part of SIMIX (transmuting from user request into kernel handlers)");

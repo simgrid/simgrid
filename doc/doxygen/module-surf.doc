@@ -1,4 +1,4 @@
-/** @addtogroup SURF_API
+﻿/** @addtogroup SURF_API
   
   @section SURF_doc Surf documentation
    Surf is composed several components:
@@ -71,8 +71,6 @@
     to the states sets. For example, if your want to know what actions are finished,
     extract them from @a surf_host_model->common_public->states.done_action_set.
     Depending on these results, you can schedule other tasks and call surf_solve() again.
-
-    When the simulation is over, just call surf_exit() to clean the memory.
 
     Have a look at the implementation of @ref MSG_API "MSG" and @ref SD_API "Simdag" to see how these module
     interact with SURF. But if you want to create a new API on top of SURF,

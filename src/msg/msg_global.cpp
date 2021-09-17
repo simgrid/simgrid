@@ -7,8 +7,8 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/instr/instr_private.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/msg/msg_private.hpp"
-#include "src/simix/smx_private.hpp"
 #include <xbt/config.hpp>
 
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
@@ -34,7 +34,7 @@ void MSG_init_nocheck(int* argc, char** argv)
     simgrid::config::bind_flag(MSG_Global_t::debug_multiple_use, "msg/debug-multiple-use",
                                "Print backtraces of both processes when there is a conflict of multiple use of a task");
 
-    SIMIX_global_init(argc, argv);
+    simgrid::kernel::EngineImpl::get_instance(argc, argv);
 
     msg_global = new MSG_Global_t();
 

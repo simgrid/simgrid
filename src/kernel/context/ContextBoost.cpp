@@ -6,7 +6,6 @@
 #include "ContextBoost.hpp"
 #include "simgrid/Exception.hpp"
 #include "src/internal_config.h"
-#include "src/simix/smx_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 

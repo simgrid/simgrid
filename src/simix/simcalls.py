@@ -307,7 +307,6 @@ if __name__ == '__main__':
 
     fd = header("popping_generated.cpp")
 
-    fd.write('#include "smx_private.hpp"\n')
     fd.write('#include <simgrid/host.h>\n')
     fd.write('#include <xbt/base.h>\n')
     fd.write('#if SIMGRID_HAVE_MC\n')
@@ -315,6 +314,7 @@ if __name__ == '__main__':
     fd.write('#endif\n')
     fd.write('#include "src/kernel/activity/ConditionVariableImpl.hpp"\n')
     fd.write('#include "src/kernel/actor/SimcallObserver.hpp"\n')
+    fd.write('#include "src/kernel/context/Context.hpp"\n')
 
     fd.write('\n')
     fd.write('XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);\n\n')
@@ -362,8 +362,8 @@ if __name__ == '__main__':
     # popping_bodies.cpp
     #
     fd = header('popping_bodies.cpp')
-    fd.write('#include "smx_private.hpp"\n')
     fd.write('#include "src/mc/mc_forward.hpp"\n')
+    fd.write('#include "src/kernel/EngineImpl.hpp"\n')
     fd.write('#include "xbt/ex.h"\n')
     fd.write('#include <functional>\n')
     fd.write('#include <simgrid/simix.hpp>\n')
@@ -380,7 +380,7 @@ inline static R simcall(Simcall call, T const&... t)
 {
   smx_actor_t self = SIMIX_process_self();
   simgrid::simix::marshal(&self->simcall_, call, t...);
-  if (not simix_global->is_maestro(self)) {
+  if (not simgrid::kernel::EngineImpl::get_instance()->is_maestro(self)) {
     XBT_DEBUG("Yield process '%s' on simcall %s", self->get_cname(), SIMIX_simcall_name(self->simcall_));
     self->yield();
   } else {

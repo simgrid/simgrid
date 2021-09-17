@@ -13,9 +13,9 @@
 #include "simgrid/sg_config.hpp"
 #include "src/include/surf/surf.hpp" //get_clock() and surf_solve()
 #include "src/kernel/resource/DiskImpl.hpp"
+#include "src/kernel/resource/profile/Profile.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/simix/smx_private.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
@@ -25,20 +25,116 @@
 #include <dlfcn.h>
 #endif /* _WIN32 */
 
+#if SIMGRID_HAVE_MC
+#include "src/mc/remote/AppSide.hpp"
+#endif
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(ker_engine, "Logging specific to Engine (kernel)");
+namespace simgrid {
+namespace kernel {
+EngineImpl* EngineImpl::instance_ = nullptr; /* That singleton is awful too. */
+
+config::Flag<double> cfg_breakpoint{"debug/breakpoint",
+                                    "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
+config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit", "Display the actor status at exit", true};
+} // namespace kernel
+} // namespace simgrid
+
+XBT_ATTRIB_NORETURN static void inthandler(int)
+{
+  if (simgrid::kernel::cfg_verbose_exit) {
+    XBT_INFO("CTRL-C pressed. The current status will be displayed before exit (disable that behavior with option "
+             "'debug/verbose-exit').");
+    simgrid::kernel::EngineImpl::get_instance()->display_all_actor_status();
+  } else {
+    XBT_INFO("CTRL-C pressed, exiting. Hiding the current process status since 'debug/verbose-exit' is set to false.");
+  }
+  exit(1);
+}
+
+#ifndef _WIN32
+static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
+{
+  if ((siginfo->si_signo == SIGSEGV && siginfo->si_code == SEGV_ACCERR) || siginfo->si_signo == SIGBUS) {
+    fprintf(stderr,
+            "Access violation or Bus error detected.\n"
+            "This probably comes from a programming error in your code, or from a stack\n"
+            "overflow. If you are certain of your code, try increasing the stack size\n"
+            "   --cfg=contexts/stack-size:XXX (current size is %u KiB).\n"
+            "\n"
+            "If it does not help, this may have one of the following causes:\n"
+            "a bug in SimGrid, a bug in the OS or a bug in a third-party libraries.\n"
+            "Failing hardware can sometimes generate such errors too.\n"
+            "\n"
+            "If you think you've found a bug in SimGrid, please report it along with a\n"
+            "Minimal Working Example (MWE) reproducing your problem and a full backtrace\n"
+            "of the fault captured with gdb or valgrind.\n",
+            smx_context_stack_size / 1024);
+  } else if (siginfo->si_signo == SIGSEGV) {
+    fprintf(stderr, "Segmentation fault.\n");
+#if HAVE_SMPI
+    if (smpi_enabled() && smpi_cfg_privatization() == SmpiPrivStrategies::NONE) {
+#if HAVE_PRIVATIZATION
+      fprintf(stderr, "Try to enable SMPI variable privatization with --cfg=smpi/privatization:yes.\n");
+#else
+      fprintf(stderr, "Sadly, your system does not support --cfg=smpi/privatization:yes (yet).\n");
+#endif /* HAVE_PRIVATIZATION */
+    }
+#endif /* HAVE_SMPI */
+  }
+  std::raise(signum);
+}
+
+/**
+ * Install signal handler for SIGSEGV.  Check that nobody has already installed
+ * its own handler.  For example, the Java VM does this.
+ */
+static void install_segvhandler()
+{
+  stack_t old_stack;
+
+  if (simgrid::kernel::context::Context::install_sigsegv_stack(&old_stack, true) == -1) {
+    XBT_WARN("Failed to register alternate signal stack: %s", strerror(errno));
+    return;
+  }
+  if (not(old_stack.ss_flags & SS_DISABLE)) {
+    XBT_DEBUG("An alternate stack was already installed (sp=%p, size=%zu, flags=%x). Restore it.", old_stack.ss_sp,
+              old_stack.ss_size, (unsigned)old_stack.ss_flags);
+    sigaltstack(&old_stack, nullptr);
+  }
+
+  struct sigaction action;
+  struct sigaction old_action;
+  action.sa_sigaction = &segvhandler;
+  action.sa_flags     = SA_ONSTACK | SA_RESETHAND | SA_SIGINFO;
+  sigemptyset(&action.sa_mask);
+
+  /* Linux tend to raise only SIGSEGV where other systems also raise SIGBUS on severe error */
+  for (int sig : {SIGSEGV, SIGBUS}) {
+    if (sigaction(sig, &action, &old_action) == -1) {
+      XBT_WARN("Failed to register signal handler for signal %d: %s", sig, strerror(errno));
+      continue;
+    }
+    if ((old_action.sa_flags & SA_SIGINFO) || old_action.sa_handler != SIG_DFL) {
+      XBT_DEBUG("A signal handler was already installed for signal %d (%p). Restore it.", sig,
+                (old_action.sa_flags & SA_SIGINFO) ? (void*)old_action.sa_sigaction : (void*)old_action.sa_handler);
+      sigaction(sig, &old_action, nullptr);
+    }
+  }
+}
+
+#endif /* _WIN32 */
 
 namespace simgrid {
 namespace kernel {
 
-config::Flag<double> cfg_breakpoint{"debug/breakpoint",
-                                    "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
+EngineImpl::EngineImpl(int* argc, char** argv)
+{
+  EngineImpl::instance_ = this;
+}
+
 EngineImpl::~EngineImpl()
 {
-  while (not timer::kernel_timers().empty()) {
-    delete timer::kernel_timers().top().second;
-    timer::kernel_timers().pop();
-  }
-
   /* Since hosts_ is a std::map, the hosts are destroyed in the lexicographic order, which ensures that the output is
    * reproducible.
    */
@@ -64,6 +160,81 @@ EngineImpl::~EngineImpl()
 #endif
   /* clear models before freeing handle, network models can use external callback defined in the handle */
   models_prio_.clear();
+}
+
+void EngineImpl::initialize(int* argc, char** argv)
+{
+#if SIMGRID_HAVE_MC
+  // The communication initialization is done ASAP, as we need to get some init parameters from the MC for different
+  // layers. But simix_global needs to be created, as we send the address of some of its fields to the MC that wants to
+  // read them directly.
+  simgrid::mc::AppSide::initialize();
+#endif
+
+  surf_init(argc, argv); /* Initialize SURF structures */
+
+  instance_->context_mod_init();
+
+  /* Prepare to display some more info when dying on Ctrl-C pressing */
+  std::signal(SIGINT, inthandler);
+
+#ifndef _WIN32
+  install_segvhandler();
+#endif
+
+  /* register a function to be called by SURF after the environment creation */
+  sg_platf_init();
+  s4u::Engine::on_platform_created.connect(surf_presolve);
+
+  if (config::get_value<bool>("debug/clean-atexit"))
+    atexit(shutdown);
+}
+void EngineImpl::shutdown()
+{
+  static bool already_cleaned_up = false;
+  if (already_cleaned_up)
+    return; // to avoid double cleaning by java and C
+  already_cleaned_up = true;
+  XBT_DEBUG("EngineImpl::shutdown() called. Simulation's over.");
+  if (instance_->has_actors_to_run() && simgrid_get_clock() <= 0.0) {
+    XBT_CRITICAL("   ");
+    XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
+    XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
+    xbt_die("Bailing out to avoid that stop-before-start madness. Please fix your code.");
+  }
+
+  /* Kill all actors (but maestro) */
+  instance_->maestro_->kill_all();
+  instance_->run_all_actors();
+  instance_->empty_trash();
+
+#if HAVE_SMPI
+  if (not instance_->actor_list_.empty()) {
+    if (smpi_process()->initialized()) {
+      xbt_die("Process exited without calling MPI_Finalize - Killing simulation");
+    } else {
+      XBT_WARN("Process called exit when leaving - Skipping cleanups");
+      return;
+    }
+  }
+#endif
+
+  /* Let's free maestro now */
+  instance_->destroy_maestro();
+
+  /* Finish context module and SURF */
+  instance_->destroy_context_factory();
+
+  while (not timer::kernel_timers().empty()) {
+    delete timer::kernel_timers().top().second;
+    timer::kernel_timers().pop();
+  }
+
+  tmgr_finalize();
+  sg_platf_exit();
+
+  delete instance_;
+  instance_ = nullptr;
 }
 
 void EngineImpl::load_platform(const std::string& platf)
@@ -157,7 +328,7 @@ void EngineImpl::wake_all_waiting_actors() const
  */
 void EngineImpl::run_all_actors()
 {
-  simix_global->get_context_factory()->run_all();
+  instance_->get_context_factory()->run_all();
 
   actors_to_run_.swap(actors_that_ran_);
   actors_to_run_.clear();
@@ -175,6 +346,7 @@ actor::ActorImpl* EngineImpl::get_actor_by_pid(aid_t pid)
       return &a;
   return nullptr; // Not found, even in the trash
 }
+
 /** Execute all the tasks that are queued, e.g. `.then()` callbacks of futures. */
 bool EngineImpl::execute_tasks()
 {
@@ -376,7 +548,7 @@ void EngineImpl::run()
       if (actor_list_.size() == daemons_.size())
         for (auto const& dmon : daemons_) {
           XBT_DEBUG("Kill %s", dmon->get_cname());
-          simix_global->get_maestro()->kill(dmon);
+          maestro_->kill(dmon);
         }
     }
 
@@ -416,7 +588,7 @@ void EngineImpl::run()
       simgrid::s4u::Engine::on_deadlock();
       for (auto const& kv : actor_list_) {
         XBT_DEBUG("Kill %s", kv.second->get_cname());
-        simix_global->get_maestro()->kill(kv.second);
+        maestro_->kill(kv.second);
       }
     }
   } while (time > -1.0 || has_actors_to_run());

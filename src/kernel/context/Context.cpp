@@ -8,7 +8,6 @@
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/context/Context.hpp"
-#include "src/simix/smx_private.hpp"
 #include "src/surf/surf_interface.hpp"
 
 #include <vector>

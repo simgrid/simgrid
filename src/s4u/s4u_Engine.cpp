@@ -17,6 +17,7 @@
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp" // routing_platf. FIXME:KILLME. SOON
@@ -28,6 +29,8 @@
 XBT_LOG_NEW_CATEGORY(s4u, "Log channels of the S4U (Simgrid for you) interface");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_engine, s4u, "Logging specific to S4U (engine)");
 
+static simgrid::kernel::actor::ActorCode maestro_code;
+
 namespace simgrid {
 namespace s4u {
 xbt::signal<void()> Engine::on_platform_creation;
@@ -36,39 +39,46 @@ xbt::signal<void()> Engine::on_simulation_end;
 xbt::signal<void(double)> Engine::on_time_advance;
 xbt::signal<void(void)> Engine::on_deadlock;
 
-Engine* Engine::instance_ = nullptr; /* That singleton is awful, but I don't see no other solution right now. */
+Engine* Engine::instance_ = nullptr; /* This singleton is awful, but I don't see no other solution right now. */
 
 void Engine::initialize(int* argc, char** argv)
 {
   xbt_assert(Engine::instance_ == nullptr, "It is currently forbidden to create more than one instance of s4u::Engine");
   Engine::instance_ = this;
   instr::init();
-  SIMIX_global_init(argc, argv);
+  pimpl->initialize(argc, argv);
+  // Either create a new context with maestro or create
+  // a context object with the current context maestro):
+  kernel::actor::create_maestro(maestro_code);
 }
 
-Engine::Engine(std::string name) : pimpl(new kernel::EngineImpl())
+Engine::Engine(std::string name) : pimpl(new kernel::EngineImpl(nullptr, nullptr))
 {
   int argc   = 1;
   char* argv = &name[0];
   initialize(&argc, &argv);
 }
 
-Engine::Engine(int* argc, char** argv) : pimpl(new kernel::EngineImpl())
+Engine::Engine(int* argc, char** argv) : pimpl(new kernel::EngineImpl(argc, argv))
 {
   initialize(argc, argv);
 }
 
 Engine::~Engine()
 {
-  delete pimpl;
+  pimpl->shutdown();
   Engine::instance_ = nullptr;
 }
 
 /** @brief Retrieve the engine singleton */
 Engine* Engine::get_instance()
 {
+  return get_instance(nullptr, nullptr);
+}
+Engine* Engine::get_instance(int* argc, char** argv)
+{
   if (Engine::instance_ == nullptr) {
-    auto e = new Engine(nullptr, nullptr);
+    auto e = new Engine(argc, argv);
     xbt_assert(Engine::instance_ == e);
   }
   return Engine::instance_;
@@ -77,7 +87,6 @@ Engine* Engine::get_instance()
 void Engine::shutdown()
 {
   delete Engine::instance_;
-  Engine::instance_ = nullptr;
 }
 
 double Engine::get_clock()
@@ -455,7 +464,7 @@ Engine* Engine::set_default_comm_data_copy_callback(void (*callback)(kernel::act
 /* **************************** Public C interface *************************** */
 void simgrid_init(int* argc, char** argv)
 {
-  simgrid::s4u::Engine e(argc, argv);
+  static simgrid::s4u::Engine e(argc, argv);
 }
 void simgrid_load_platform(const char* file)
 {
@@ -486,4 +495,17 @@ double simgrid_get_clock()
 int simgrid_get_actor_count() // XBT_ATTRIB_DEPRECATED_v330
 {
   return simgrid::s4u::Engine::get_instance()->get_actor_count();
+}
+
+void simgrid_set_maestro(void (*code)(void*), void* data)
+{
+#ifdef _WIN32
+  XBT_INFO("WARNING, SIMIX_set_maestro is believed to not work on windows. Please help us investigating this issue if "
+           "you need that feature");
+#endif
+  maestro_code = std::bind(code, data);
+}
+void SIMIX_set_maestro(void (*code)(void*), void* data) // XBT_ATTRIB_DEPRECATED_v333
+{
+  simgrid_set_maestro(code, data);
 }

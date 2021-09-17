@@ -50,6 +50,7 @@ public:
   static double get_clock();
   /** @brief Retrieve the engine singleton */
   static s4u::Engine* get_instance();
+  static s4u::Engine* get_instance(int* argc, char** argv);
 
   void load_platform(const std::string& platf) const;
 

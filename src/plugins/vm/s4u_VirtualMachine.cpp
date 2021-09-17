@@ -132,7 +132,7 @@ void VirtualMachine::destroy()
     });
   };
 
-  if (this_actor::get_host() == this) {
+  if (not this_actor::is_maestro() && this_actor::get_host() == this) {
     XBT_VERB("Launch another actor on physical host %s to destroy my own VM: %s", get_pm()->get_cname(), get_cname());
     simgrid::s4u::Actor::create(get_cname() + std::string("-destroy"), get_pm(), destroy_code);
     simgrid::s4u::this_actor::yield();

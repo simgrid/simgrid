@@ -70,21 +70,49 @@ class EngineImpl {
   std::vector<xbt::Task<void()>> tasks;
 
   std::mutex mutex_;
+  static EngineImpl* instance_;
+  actor::ActorImpl* maestro_ = nullptr;
+  context::ContextFactory* context_factory_ = nullptr;
+
   std::unique_ptr<void, std::function<int(void*)>> platf_handle_; //!< handle for platform library
   friend s4u::Engine;
 
 public:
-  EngineImpl() = default;
+  explicit EngineImpl(int* argc, char** argv);
 
+  /* Currently, only one instance is allowed to exist. This is why you can't copy or move it */
+#ifndef DOXYGEN
   EngineImpl(const EngineImpl&) = delete;
   EngineImpl& operator=(const EngineImpl&) = delete;
   virtual ~EngineImpl();
+  static void shutdown();
+#endif
 
+  void initialize(int* argc, char** argv);
   void load_platform(const std::string& platf);
   void load_deployment(const std::string& file) const;
   void register_function(const std::string& name, const actor::ActorCodeFactory& code);
   void register_default(const actor::ActorCodeFactory& code);
 
+  bool is_maestro(const actor::ActorImpl* actor) const { return actor == maestro_; }
+  void set_maestro(actor::ActorImpl* actor) { maestro_ = actor; }
+  actor::ActorImpl* get_maestro() const { return maestro_; }
+  void destroy_maestro()
+  {
+    delete maestro_;
+    maestro_ = nullptr;
+  }
+
+  context::ContextFactory* get_context_factory() const { return context_factory_; }
+  void set_context_factory(context::ContextFactory* factory) { context_factory_ = factory; }
+  bool has_context_factory() const { return context_factory_ != nullptr; }
+  void destroy_context_factory()
+  {
+    delete context_factory_;
+    context_factory_ = nullptr;
+  }
+
+  void context_mod_init();
   /**
    * @brief Add a model to engine list
    *
@@ -97,7 +125,9 @@ public:
   /** @brief Get list of all models managed by this engine */
   const std::vector<resource::Model*>& get_all_models() const { return models_; }
 
-  static EngineImpl* get_instance() { return simgrid::s4u::Engine::get_instance()->pimpl; }
+  static EngineImpl* get_instance() { return s4u::Engine::get_instance()->pimpl; }
+  static EngineImpl* get_instance(int* argc, char** argv) { return s4u::Engine::get_instance(argc, argv)->pimpl; }
+
   actor::ActorCodeFactory get_function(const std::string& name)
   {
     auto res = registered_functions.find(name);

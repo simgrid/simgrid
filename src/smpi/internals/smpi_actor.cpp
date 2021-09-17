@@ -10,7 +10,6 @@
 #include "smpi_comm.hpp"
 #include "smpi_info.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/simix/smx_private.hpp"
 
 #if HAVE_PAPI
 #include "papi.h"

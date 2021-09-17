@@ -9,8 +9,8 @@
 #define XBT_PARMAP_HPP
 
 #include "src/internal_config.h" // HAVE_FUTEX_H
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/context/Context.hpp"
-#include "src/simix/smx_private.hpp" /* simix_global */
 
 #include <boost/optional.hpp>
 #include <condition_variable>
@@ -286,10 +286,10 @@ template <typename T> typename Parmap<T>::Synchro* Parmap<T>::new_synchro(e_xbt_
 /** @brief Main function of a worker thread */
 template <typename T> void Parmap<T>::worker_main(ThreadData* data)
 {
+  auto engine                       = simgrid::kernel::EngineImpl::get_instance();
   Parmap<T>& parmap     = data->parmap;
   unsigned round        = 0;
-  kernel::context::Context* context =
-      simix_global->get_context_factory()->create_context(std::function<void()>(), nullptr);
+  kernel::context::Context* context = engine->get_context_factory()->create_context(std::function<void()>(), nullptr);
   kernel::context::Context::set_current(context);
 
   XBT_CDEBUG(xbt_parmap, "New worker thread created");

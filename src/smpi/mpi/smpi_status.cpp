@@ -6,7 +6,6 @@
 #include "smpi_status.hpp"
 #include "private.hpp"
 #include "smpi_datatype.hpp"
-#include "src/simix/smx_private.hpp"
 
 namespace simgrid{
 namespace smpi{

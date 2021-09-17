@@ -14,7 +14,7 @@
  * That's not about http://en.wikipedia.org/wiki/Poop, despite the odor :)
  */
 
-#include "smx_private.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "xbt/ex.h"
 #include <functional>
@@ -31,7 +31,7 @@ inline static R simcall(Simcall call, T const&... t)
 {
   smx_actor_t self = SIMIX_process_self();
   simgrid::simix::marshal(&self->simcall_, call, t...);
-  if (not simix_global->is_maestro(self)) {
+  if (not simgrid::kernel::EngineImpl::get_instance()->is_maestro(self)) {
     XBT_DEBUG("Yield process '%s' on simcall %s", self->get_cname(), SIMIX_simcall_name(self->simcall_));
     self->yield();
   } else {

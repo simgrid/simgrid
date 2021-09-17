@@ -15,7 +15,6 @@
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/remote/AppSide.hpp"
-#include "src/simix/smx_private.hpp"
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
 #endif
@@ -74,7 +73,7 @@ ActorImpl::ActorImpl(xbt::string name, s4u::Host* host) : host_(host), name_(std
 
 ActorImpl::~ActorImpl()
 {
-  if (simix_global != nullptr && not simix_global->is_maestro(this))
+  if (not EngineImpl::get_instance()->is_maestro(this))
     s4u::Actor::on_destruction(*get_ciface());
 }
 
@@ -103,8 +102,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
   actor->code_ = nullptr;
 
   XBT_VERB("Create context %s", actor->get_cname());
-  xbt_assert(simix_global != nullptr, "simix is not initialized, please call MSG_init first");
-  actor->context_.reset(simix_global->get_context_factory()->attach(actor));
+  actor->context_.reset(engine->get_context_factory()->attach(actor));
 
   /* Add the actor to it's host actor list */
   host->get_impl()->add_actor(actor);
@@ -179,7 +177,7 @@ void ActorImpl::cleanup()
 
   XBT_DEBUG("%s@%s(%ld) should not run anymore", get_cname(), get_host()->get_cname(), get_pid());
 
-  if (simix_global->is_maestro(this)) /* Do not cleanup maestro */
+  if (EngineImpl::get_instance()->is_maestro(this)) /* Do not cleanup maestro */
     return;
 
   XBT_DEBUG("Cleanup actor %s (%p), waiting synchro %p", get_cname(), this, waiting_synchro_.get());
@@ -236,7 +234,7 @@ void ActorImpl::exit()
 
 void ActorImpl::kill(ActorImpl* actor) const
 {
-  xbt_assert(not simix_global->is_maestro(actor), "Killing maestro is a rather bad idea");
+  xbt_assert(not EngineImpl::get_instance()->is_maestro(actor), "Killing maestro is a rather bad idea");
   if (actor->finished_) {
     XBT_DEBUG("Ignoring request to kill actor %s@%s that is already dead", actor->get_cname(),
               actor->host_->get_cname());
@@ -335,7 +333,7 @@ void ActorImpl::undaemonize()
 
 s4u::Actor* ActorImpl::restart()
 {
-  xbt_assert(not simix_global->is_maestro(this), "Restarting maestro is not supported");
+  xbt_assert(not EngineImpl::get_instance()->is_maestro(this), "Restarting maestro is not supported");
 
   XBT_DEBUG("Restarting actor %s on %s", get_cname(), host_->get_cname());
 
@@ -429,11 +427,11 @@ void ActorImpl::throw_exception(std::exception_ptr e)
 
 void ActorImpl::simcall_answer()
 {
-  if (not simix_global->is_maestro(this)) {
+  auto* engine = EngineImpl::get_instance();
+  if (not engine->is_maestro(this)) {
     XBT_DEBUG("Answer simcall %s issued by %s (%p)", SIMIX_simcall_name(simcall_), get_cname(), this);
     xbt_assert(simcall_.call_ != simix::Simcall::NONE);
     simcall_.call_ = simix::Simcall::NONE;
-    auto* engine              = EngineImpl::get_instance();
     const auto& actors_to_run = engine->get_actors_to_run();
     xbt_assert(not XBT_LOG_ISENABLED(simix_process, xbt_log_priority_debug) ||
                    std::find(begin(actors_to_run), end(actors_to_run), this) == end(actors_to_run),
@@ -474,7 +472,7 @@ ActorImpl* ActorImpl::start(const ActorCode& code)
 
   this->code_ = code;
   XBT_VERB("Create context %s", get_cname());
-  context_.reset(simix_global->get_context_factory()->create_context(ActorCode(code), this));
+  context_.reset(engine->get_context_factory()->create_context(ActorCode(code), this));
 
   XBT_DEBUG("Start context '%s'", get_cname());
 
@@ -509,17 +507,18 @@ ActorImplPtr ActorImpl::create(const std::string& name, const ActorCode& code, v
 
 void create_maestro(const std::function<void()>& code)
 {
+  auto* engine = EngineImpl::get_instance();
   /* Create maestro actor and initialize it */
   auto* maestro = new ActorImpl(xbt::string(""), /*host*/ nullptr);
 
   if (not code) {
-    maestro->context_.reset(simix_global->get_context_factory()->create_context(ActorCode(), maestro));
+    maestro->context_.reset(engine->get_context_factory()->create_context(ActorCode(), maestro));
   } else {
-    maestro->context_.reset(simix_global->get_context_factory()->create_maestro(ActorCode(code), maestro));
+    maestro->context_.reset(engine->get_context_factory()->create_maestro(ActorCode(code), maestro));
   }
 
-  maestro->simcall_.issuer_     = maestro;
-  simix_global->set_maestro(maestro);
+  maestro->simcall_.issuer_ = maestro;
+  EngineImpl::get_instance()->set_maestro(maestro);
 }
 
 } // namespace actor

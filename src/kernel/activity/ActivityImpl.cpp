@@ -6,9 +6,9 @@
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "simgrid/modelchecker.h"
 #include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/simix/smx_private.hpp"
 #include <boost/range/algorithm.hpp>
 #include <cmath> // isfinite()
 

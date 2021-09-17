@@ -7,9 +7,9 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/simix/popping_private.hpp"
-#include "src/simix/smx_private.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 
