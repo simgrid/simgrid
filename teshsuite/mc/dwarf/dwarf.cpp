@@ -8,6 +8,7 @@
 #endif
 
 #include <mc/mc.h>
+#include <simgrid/s4u/Engine.hpp>
 
 #include "mc/datatypes.h"
 #include "src/mc/mc_private.hpp"
@@ -116,7 +117,7 @@ static void test_type_by_name(const simgrid::mc::RemoteProcess& process, s_foo /
 
 int main(int argc, char** argv)
 {
-  SIMIX_global_init(&argc, argv);
+  simgrid::s4u::Engine::get_instance(&argc, argv);
 
   const simgrid::mc::Variable* var;
   simgrid::mc::Type* type;

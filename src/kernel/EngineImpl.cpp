@@ -26,14 +26,108 @@
 #include <dlfcn.h>
 #endif /* _WIN32 */
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(ker_engine, "Logging specific to Engine (kernel)");
+#if SIMGRID_HAVE_MC
+#include "src/mc/remote/AppSide.hpp"
+#endif
 
+XBT_LOG_NEW_DEFAULT_CATEGORY(ker_engine, "Logging specific to Engine (kernel)");
 namespace simgrid {
 namespace kernel {
 EngineImpl* EngineImpl::instance_ = nullptr; /* That singleton is awful too. */
 
 config::Flag<double> cfg_breakpoint{"debug/breakpoint",
                                     "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
+config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit", "Display the actor status at exit", true};
+} // namespace kernel
+} // namespace simgrid
+
+XBT_ATTRIB_NORETURN static void inthandler(int)
+{
+  if (simgrid::kernel::cfg_verbose_exit) {
+    XBT_INFO("CTRL-C pressed. The current status will be displayed before exit (disable that behavior with option "
+             "'debug/verbose-exit').");
+    simgrid::kernel::EngineImpl::get_instance()->display_all_actor_status();
+  } else {
+    XBT_INFO("CTRL-C pressed, exiting. Hiding the current process status since 'debug/verbose-exit' is set to false.");
+  }
+  exit(1);
+}
+
+#ifndef _WIN32
+static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
+{
+  if ((siginfo->si_signo == SIGSEGV && siginfo->si_code == SEGV_ACCERR) || siginfo->si_signo == SIGBUS) {
+    fprintf(stderr,
+            "Access violation or Bus error detected.\n"
+            "This probably comes from a programming error in your code, or from a stack\n"
+            "overflow. If you are certain of your code, try increasing the stack size\n"
+            "   --cfg=contexts/stack-size:XXX (current size is %u KiB).\n"
+            "\n"
+            "If it does not help, this may have one of the following causes:\n"
+            "a bug in SimGrid, a bug in the OS or a bug in a third-party libraries.\n"
+            "Failing hardware can sometimes generate such errors too.\n"
+            "\n"
+            "If you think you've found a bug in SimGrid, please report it along with a\n"
+            "Minimal Working Example (MWE) reproducing your problem and a full backtrace\n"
+            "of the fault captured with gdb or valgrind.\n",
+            smx_context_stack_size / 1024);
+  } else if (siginfo->si_signo == SIGSEGV) {
+    fprintf(stderr, "Segmentation fault.\n");
+#if HAVE_SMPI
+    if (smpi_enabled() && smpi_cfg_privatization() == SmpiPrivStrategies::NONE) {
+#if HAVE_PRIVATIZATION
+      fprintf(stderr, "Try to enable SMPI variable privatization with --cfg=smpi/privatization:yes.\n");
+#else
+      fprintf(stderr, "Sadly, your system does not support --cfg=smpi/privatization:yes (yet).\n");
+#endif /* HAVE_PRIVATIZATION */
+    }
+#endif /* HAVE_SMPI */
+  }
+  std::raise(signum);
+}
+
+/**
+ * Install signal handler for SIGSEGV.  Check that nobody has already installed
+ * its own handler.  For example, the Java VM does this.
+ */
+static void install_segvhandler()
+{
+  stack_t old_stack;
+
+  if (simgrid::kernel::context::Context::install_sigsegv_stack(&old_stack, true) == -1) {
+    XBT_WARN("Failed to register alternate signal stack: %s", strerror(errno));
+    return;
+  }
+  if (not(old_stack.ss_flags & SS_DISABLE)) {
+    XBT_DEBUG("An alternate stack was already installed (sp=%p, size=%zu, flags=%x). Restore it.", old_stack.ss_sp,
+              old_stack.ss_size, (unsigned)old_stack.ss_flags);
+    sigaltstack(&old_stack, nullptr);
+  }
+
+  struct sigaction action;
+  struct sigaction old_action;
+  action.sa_sigaction = &segvhandler;
+  action.sa_flags     = SA_ONSTACK | SA_RESETHAND | SA_SIGINFO;
+  sigemptyset(&action.sa_mask);
+
+  /* Linux tend to raise only SIGSEGV where other systems also raise SIGBUS on severe error */
+  for (int sig : {SIGSEGV, SIGBUS}) {
+    if (sigaction(sig, &action, &old_action) == -1) {
+      XBT_WARN("Failed to register signal handler for signal %d: %s", sig, strerror(errno));
+      continue;
+    }
+    if ((old_action.sa_flags & SA_SIGINFO) || old_action.sa_handler != SIG_DFL) {
+      XBT_DEBUG("A signal handler was already installed for signal %d (%p). Restore it.", sig,
+                (old_action.sa_flags & SA_SIGINFO) ? (void*)old_action.sa_sigaction : (void*)old_action.sa_handler);
+      sigaction(sig, &old_action, nullptr);
+    }
+  }
+}
+
+#endif /* _WIN32 */
+
+namespace simgrid {
+namespace kernel {
 
 EngineImpl::EngineImpl(int* argc, char** argv)
 {
@@ -69,6 +163,31 @@ EngineImpl::~EngineImpl()
   models_prio_.clear();
 }
 
+void EngineImpl::initialize(int* argc, char** argv)
+{
+#if SIMGRID_HAVE_MC
+  // The communication initialization is done ASAP, as we need to get some init parameters from the MC for different
+  // layers. But simix_global needs to be created, as we send the address of some of its fields to the MC that wants to
+  // read them directly.
+  simgrid::mc::AppSide::initialize();
+#endif
+
+  surf_init(argc, argv); /* Initialize SURF structures */
+
+  /* Prepare to display some more info when dying on Ctrl-C pressing */
+  std::signal(SIGINT, inthandler);
+
+#ifndef _WIN32
+  install_segvhandler();
+#endif
+
+  /* register a function to be called by SURF after the environment creation */
+  sg_platf_init();
+  s4u::Engine::on_platform_created.connect(surf_presolve);
+
+  if (config::get_value<bool>("debug/clean-atexit"))
+    atexit(shutdown);
+}
 void EngineImpl::shutdown()
 {
   static bool already_cleaned_up = false;

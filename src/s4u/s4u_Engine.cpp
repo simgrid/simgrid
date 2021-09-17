@@ -43,6 +43,7 @@ void Engine::initialize(int* argc, char** argv)
   xbt_assert(Engine::instance_ == nullptr, "It is currently forbidden to create more than one instance of s4u::Engine");
   Engine::instance_ = this;
   instr::init();
+  pimpl->initialize(argc, argv);
   SIMIX_global_init(argc, argv);
 }
 
