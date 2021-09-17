@@ -9,7 +9,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    container: simgrid/unstable
+    container: 
+      image: bigdft/sdk
+      options: --user 0
 
     steps:
       - uses: actions/checkout@v2
