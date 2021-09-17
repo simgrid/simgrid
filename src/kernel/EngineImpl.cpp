@@ -173,6 +173,8 @@ void EngineImpl::initialize(int* argc, char** argv)
 
   surf_init(argc, argv); /* Initialize SURF structures */
 
+  instance_->context_mod_init();
+
   /* Prepare to display some more info when dying on Ctrl-C pressing */
   std::signal(SIGINT, inthandler);
 

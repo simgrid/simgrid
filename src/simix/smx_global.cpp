@@ -59,8 +59,6 @@ void SIMIX_set_maestro(void (*code)(void*), void* data)
 void SIMIX_global_init(int* argc, char** argv)
 {
 
-  SIMIX_context_mod_init();
-
   // Either create a new context with maestro or create
   // a context object with the current context maestro):
   simgrid::kernel::actor::create_maestro(maestro_code);
