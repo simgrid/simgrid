@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
 {
   /* Specify which code should be executed by maestro on another thread, once this current thread is affected to an
    * actor by the subsequent sg_actor_attach(). This must be done before the creation of the engine. */
-  SIMIX_set_maestro(maestro, nullptr);
+  simgrid_set_maestro(maestro, nullptr);
 
   simgrid::s4u::Engine e(&argc, argv);
 

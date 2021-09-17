@@ -497,11 +497,15 @@ int simgrid_get_actor_count() // XBT_ATTRIB_DEPRECATED_v330
   return simgrid::s4u::Engine::get_instance()->get_actor_count();
 }
 
-void SIMIX_set_maestro(void (*code)(void*), void* data)
+void simgrid_set_maestro(void (*code)(void*), void* data)
 {
 #ifdef _WIN32
   XBT_INFO("WARNING, SIMIX_set_maestro is believed to not work on windows. Please help us investigating this issue if "
            "you need that feature");
 #endif
   maestro_code = std::bind(code, data);
+}
+void SIMIX_set_maestro(void (*code)(void*), void* data) // XBT_ATTRIB_DEPRECATED_v333
+{
+  simgrid_set_maestro(code, data);
 }

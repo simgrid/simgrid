@@ -39,7 +39,8 @@ XBT_PUBLIC int SIMIX_is_maestro();
  *
  * If no maestro code is registered (the default), the main thread
  * is assumed to be the maestro. */
-XBT_PUBLIC void SIMIX_set_maestro(void (*code)(void*), void* data);
+XBT_ATTRIB_DEPRECATED_v333("Please use simgrid_set_maestro()") XBT_PUBLIC
+    void SIMIX_set_maestro(void (*code)(void*), void* data);
 
 /* Simulation execution */
 XBT_ATTRIB_DEPRECATED_v332("Please use EngineImpl:run()") XBT_PUBLIC void SIMIX_run();
