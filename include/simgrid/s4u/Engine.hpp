@@ -51,6 +51,7 @@ public:
   /** @brief Retrieve the engine singleton */
   static s4u::Engine* get_instance();
   static s4u::Engine* get_instance(int* argc, char** argv);
+  static bool has_instance() { return instance_ != nullptr; }
 
   void load_platform(const std::string& platf) const;
 

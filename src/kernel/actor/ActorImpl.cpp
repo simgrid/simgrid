@@ -73,7 +73,7 @@ ActorImpl::ActorImpl(xbt::string name, s4u::Host* host) : host_(host), name_(std
 
 ActorImpl::~ActorImpl()
 {
-  if (not EngineImpl::get_instance()->is_maestro(this))
+  if (EngineImpl::has_instance() && not EngineImpl::get_instance()->is_maestro(this))
     s4u::Actor::on_destruction(*get_ciface());
 }
 
