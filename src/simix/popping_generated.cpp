@@ -14,6 +14,7 @@
  * That's not about http://en.wikipedia.org/wiki/Poop, despite the odor :)
  */
 
+#include <simgrid/config.h>
 #include <simgrid/host.h>
 #include <xbt/base.h>
 #if SIMGRID_HAVE_MC

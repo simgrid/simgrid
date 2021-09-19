@@ -15,6 +15,7 @@
 #include "xbt/system_error.hpp"
 
 #include <array>
+#include <csignal>
 #include <sys/ptrace.h>
 #include <sys/wait.h>
 

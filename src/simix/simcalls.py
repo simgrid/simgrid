@@ -307,6 +307,7 @@ if __name__ == '__main__':
 
     fd = header("popping_generated.cpp")
 
+    fd.write('#include <simgrid/config.h>\n')
     fd.write('#include <simgrid/host.h>\n')
     fd.write('#include <xbt/base.h>\n')
     fd.write('#if SIMGRID_HAVE_MC\n')
@@ -362,8 +363,8 @@ if __name__ == '__main__':
     # popping_bodies.cpp
     #
     fd = header('popping_bodies.cpp')
-    fd.write('#include "src/mc/mc_forward.hpp"\n')
     fd.write('#include "src/kernel/EngineImpl.hpp"\n')
+    fd.write('#include "src/mc/mc_forward.hpp"\n')
     fd.write('#include "xbt/ex.h"\n')
     fd.write('#include <functional>\n')
     fd.write('#include <simgrid/simix.hpp>\n')
