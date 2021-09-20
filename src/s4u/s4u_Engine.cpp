@@ -52,14 +52,14 @@ void Engine::initialize(int* argc, char** argv)
   kernel::actor::create_maestro(maestro_code);
 }
 
-Engine::Engine(std::string name) : pimpl(new kernel::EngineImpl(nullptr, nullptr))
+Engine::Engine(std::string name) : pimpl(new kernel::EngineImpl())
 {
   int argc   = 1;
   char* argv = &name[0];
   initialize(&argc, &argv);
 }
 
-Engine::Engine(int* argc, char** argv) : pimpl(new kernel::EngineImpl(argc, argv))
+Engine::Engine(int* argc, char** argv) : pimpl(new kernel::EngineImpl())
 {
   initialize(argc, argv);
 }

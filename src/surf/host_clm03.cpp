@@ -15,10 +15,11 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_host);
 
 void surf_host_model_init_current_default()
 {
-  auto host_model = std::make_shared<simgrid::surf::HostCLM03Model>("Host_CLM03");
   simgrid::config::set_default<bool>("network/crosstraffic", true);
-  simgrid::kernel::EngineImpl::get_instance()->add_model(host_model);
-  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_host_model(host_model);
+  auto host_model = std::make_shared<simgrid::surf::HostCLM03Model>("Host_CLM03");
+  auto* engine    = simgrid::kernel::EngineImpl::get_instance();
+  engine->add_model(host_model);
+  engine->get_netzone_root()->set_host_model(host_model);
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
 }
@@ -26,8 +27,9 @@ void surf_host_model_init_current_default()
 void surf_host_model_init_compound()
 {
   auto host_model = std::make_shared<simgrid::surf::HostCLM03Model>("Host_CLM03");
-  simgrid::kernel::EngineImpl::get_instance()->add_model(host_model);
-  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_host_model(host_model);
+  auto* engine    = simgrid::kernel::EngineImpl::get_instance();
+  engine->add_model(host_model);
+  engine->get_netzone_root()->set_host_model(host_model);
 }
 
 namespace simgrid {

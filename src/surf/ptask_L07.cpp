@@ -24,8 +24,9 @@ void surf_host_model_init_ptask_L07()
   XBT_CINFO(xbt_cfg, "Switching to the L07 model to handle parallel tasks.");
 
   auto host_model = std::make_shared<simgrid::surf::HostL07Model>("Host_Ptask");
-  simgrid::kernel::EngineImpl::get_instance()->add_model(host_model);
-  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_host_model(host_model);
+  auto* engine    = simgrid::kernel::EngineImpl::get_instance();
+  engine->add_model(host_model);
+  engine->get_netzone_root()->set_host_model(host_model);
 }
 
 namespace simgrid {
@@ -39,11 +40,11 @@ HostL07Model::HostL07Model(const std::string& name) : HostModel(name)
   auto net_model = std::make_shared<NetworkL07Model>("Network_Ptask", this, maxmin_system);
   auto engine    = simgrid::kernel::EngineImpl::get_instance();
   engine->add_model(net_model);
-  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_network_model(net_model);
+  engine->get_netzone_root()->set_network_model(net_model);
 
   auto cpu_model = std::make_shared<CpuL07Model>("Cpu_Ptask", this, maxmin_system);
   engine->add_model(cpu_model);
-  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_pm_model(cpu_model);
+  engine->get_netzone_root()->set_cpu_pm_model(cpu_model);
 }
 
 CpuL07Model::CpuL07Model(const std::string& name, HostL07Model* hmodel, kernel::lmm::System* sys)

@@ -78,7 +78,7 @@ class EngineImpl {
   friend s4u::Engine;
 
 public:
-  explicit EngineImpl(int* argc, char** argv);
+  EngineImpl() = default;
 
   /* Currently, only one instance is allowed to exist. This is why you can't copy or move it */
 #ifndef DOXYGEN
@@ -137,6 +137,9 @@ public:
     else
       return res->second;
   }
+
+  routing::NetZoneImpl* get_netzone_root() const { return netzone_root_; }
+
   void add_daemon(actor::ActorImpl* d) { daemons_.insert(d); }
   void remove_daemon(actor::ActorImpl* d);
   void add_actor_to_run_list(actor::ActorImpl* actor);

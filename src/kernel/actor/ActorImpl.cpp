@@ -234,7 +234,8 @@ void ActorImpl::exit()
 
 void ActorImpl::kill(ActorImpl* actor) const
 {
-  xbt_assert(not EngineImpl::get_instance()->is_maestro(actor), "Killing maestro is a rather bad idea");
+  auto* engine = EngineImpl::get_instance();
+  xbt_assert(not engine->is_maestro(actor), "Killing maestro is a rather bad idea");
   if (actor->finished_) {
     XBT_DEBUG("Ignoring request to kill actor %s@%s that is already dead", actor->get_cname(),
               actor->host_->get_cname());
@@ -249,7 +250,7 @@ void ActorImpl::kill(ActorImpl* actor) const
   if (actor == this) {
     XBT_DEBUG("Go on, this is a suicide,");
   } else
-    EngineImpl::get_instance()->add_actor_to_run_list(actor);
+    engine->add_actor_to_run_list(actor);
 }
 
 void ActorImpl::kill_all() const
@@ -518,7 +519,7 @@ void create_maestro(const std::function<void()>& code)
   }
 
   maestro->simcall_.issuer_ = maestro;
-  EngineImpl::get_instance()->set_maestro(maestro);
+  engine->set_maestro(maestro);
 }
 
 } // namespace actor

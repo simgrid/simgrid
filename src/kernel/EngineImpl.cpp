@@ -128,11 +128,6 @@ static void install_segvhandler()
 namespace simgrid {
 namespace kernel {
 
-EngineImpl::EngineImpl(int* argc, char** argv)
-{
-  EngineImpl::instance_ = this;
-}
-
 EngineImpl::~EngineImpl()
 {
   /* Since hosts_ is a std::map, the hosts are destroyed in the lexicographic order, which ensures that the output is
@@ -164,6 +159,9 @@ EngineImpl::~EngineImpl()
 
 void EngineImpl::initialize(int* argc, char** argv)
 {
+  xbt_assert(EngineImpl::instance_ == nullptr,
+             "It is currently forbidden to create more than one instance of kernel::EngineImpl");
+  EngineImpl::instance_ = this;
 #if SIMGRID_HAVE_MC
   // The communication initialization is done ASAP, as we need to get some init parameters from the MC for different
   // layers. But simix_global needs to be created, as we send the address of some of its fields to the MC that wants to
@@ -189,12 +187,11 @@ void EngineImpl::initialize(int* argc, char** argv)
   if (config::get_value<bool>("debug/clean-atexit"))
     atexit(shutdown);
 }
+
 void EngineImpl::shutdown()
 {
-  static bool already_cleaned_up = false;
-  if (already_cleaned_up)
-    return; // to avoid double cleaning by java and C
-  already_cleaned_up = true;
+  if (EngineImpl::instance_ == nullptr)
+    return;
   XBT_DEBUG("EngineImpl::shutdown() called. Simulation's over.");
   if (instance_->has_actors_to_run() && simgrid_get_clock() <= 0.0) {
     XBT_CRITICAL("   ");
