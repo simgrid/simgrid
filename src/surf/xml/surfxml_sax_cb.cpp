@@ -481,19 +481,20 @@ void ETag_surfxml_link(){
 
 void STag_surfxml_link___ctn()
 {
+  const auto engine = simgrid::s4u::Engine::get_instance();
   const simgrid::s4u::Link* link;
   simgrid::s4u::LinkInRoute::Direction direction = simgrid::s4u::LinkInRoute::Direction::NONE;
   switch (A_surfxml_link___ctn_direction) {
   case AU_surfxml_link___ctn_direction:
   case A_surfxml_link___ctn_direction_NONE:
-    link = simgrid::s4u::Link::by_name(std::string(A_surfxml_link___ctn_id));
+    link = engine->link_by_name(std::string(A_surfxml_link___ctn_id));
     break;
   case A_surfxml_link___ctn_direction_UP:
-    link      = simgrid::s4u::SplitDuplexLink::by_name(std::string(A_surfxml_link___ctn_id));
+    link      = engine->split_duplex_link_by_name(std::string(A_surfxml_link___ctn_id));
     direction = simgrid::s4u::LinkInRoute::Direction::UP;
     break;
   case A_surfxml_link___ctn_direction_DOWN:
-    link      = simgrid::s4u::SplitDuplexLink::by_name(std::string(A_surfxml_link___ctn_id));
+    link      = engine->split_duplex_link_by_name(std::string(A_surfxml_link___ctn_id));
     direction = simgrid::s4u::LinkInRoute::Direction::DOWN;
     break;
   default:

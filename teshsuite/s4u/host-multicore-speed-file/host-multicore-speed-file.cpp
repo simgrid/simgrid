@@ -102,12 +102,12 @@ int main(int argc, char* argv[])
       ->seal();
   zone->seal();
 
-  sg4::Actor::create("carol", simgrid::s4u::Host::by_name("carol"), worker);
-  sg4::Actor::create("erin", simgrid::s4u::Host::by_name("erin"), failed_worker)->set_auto_restart(true);
+  sg4::Actor::create("carol", e.host_by_name("carol"), worker);
+  sg4::Actor::create("erin", e.host_by_name("erin"), failed_worker)->set_auto_restart(true);
 
   e.run();
 
-  XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

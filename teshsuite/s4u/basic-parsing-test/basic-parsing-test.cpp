@@ -72,7 +72,7 @@ int main(int argc, char** argv)
     if (strcmp(argv[2], "FULL_LINK") == 0)
       test_full_link(hosts);
     if (strcmp(argv[2], "PROP") == 0)
-      XBT_INFO("SG_TEST_mem: %s", sg4::Host::by_name("host1")->get_property("SG_TEST_mem"));
+      XBT_INFO("SG_TEST_mem: %s", e.host_by_name("host1")->get_property("SG_TEST_mem"));
   }
 
   return 0;

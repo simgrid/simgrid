@@ -19,7 +19,7 @@ int main(int argc, char** argv)
   /* creation of the environment */
   e.load_platform(argv[1]);
 
-  std::vector<simgrid::s4u::Link*> links = simgrid::s4u::Engine::get_instance()->get_all_links();
+  std::vector<simgrid::s4u::Link*> links = e.get_all_links();
   XBT_INFO("Link count: %zu", links.size());
 
   std::sort(links.begin(), links.end(), [](const simgrid::s4u::Link* a, const simgrid::s4u::Link* b) {

@@ -69,12 +69,12 @@ int main(int argc, char* argv[])
 #endif
 
   e.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("Jupiter"), receiver, "box");
-  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("Boivin"), sender, "box", mutex, 1);
-  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("Fafard"), sender, "box", mutex, 2);
+  simgrid::s4u::Actor::create("receiver", e.host_by_name("Jupiter"), receiver, "box");
+  simgrid::s4u::Actor::create("sender", e.host_by_name("Boivin"), sender, "box", mutex, 1);
+  simgrid::s4u::Actor::create("sender", e.host_by_name("Fafard"), sender, "box", mutex, 2);
 
   e.run();
-  XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

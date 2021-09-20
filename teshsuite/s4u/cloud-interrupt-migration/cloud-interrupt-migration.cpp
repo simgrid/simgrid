@@ -61,11 +61,11 @@ int main(int argc, char* argv[])
   /* load the platform file */
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("master_", simgrid::s4u::Host::by_name("Fafard"), master_main);
+  simgrid::s4u::Actor::create("master_", e.host_by_name("Fafard"), master_main);
 
   e.run();
 
-  XBT_INFO("Bye (simulation time %g)", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Bye (simulation time %g)", e.get_clock());
 
   return 0;
 }

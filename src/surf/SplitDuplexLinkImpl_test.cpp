@@ -20,9 +20,9 @@ TEST_CASE("SplitDuplexLink: create", "")
     simgrid::s4u::Link* link_down;
     simgrid::s4u::SplitDuplexLink* link;
     REQUIRE_NOTHROW(link = zone->create_split_duplex_link("link", "100GBps"));
-    REQUIRE(simgrid::s4u::SplitDuplexLink::by_name("link") == link);
-    REQUIRE_NOTHROW(link_up = simgrid::s4u::Link::by_name("link_UP"));
-    REQUIRE_NOTHROW(link_down = simgrid::s4u::Link::by_name("link_DOWN"));
+    REQUIRE(e.split_duplex_link_by_name("link") == link);
+    REQUIRE_NOTHROW(link_up = e.link_by_name("link_UP"));
+    REQUIRE_NOTHROW(link_down = e.link_by_name("link_DOWN"));
     REQUIRE(link_up->get_bandwidth() == 100e9);
     REQUIRE(link_down->get_bandwidth() == 100e9);
     REQUIRE(link_up == link->get_link_up());

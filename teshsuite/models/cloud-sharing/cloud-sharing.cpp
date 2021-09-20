@@ -588,7 +588,7 @@ int main(int argc, char* argv[])
     platform = argv[1];
   e.load_platform(platform);
 
-  simgrid::s4u::Host* pm0 = simgrid::s4u::Host::by_name("node-0.1core.org");
+  simgrid::s4u::Host* pm0 = e.host_by_name("node-0.1core.org");
   xbt_assert(pm0, "Host 'node-0.1core.org' not found");
   simgrid::s4u::Actor::create("master", pm0, master_main);
 

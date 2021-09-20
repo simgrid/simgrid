@@ -36,8 +36,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("send", simgrid::s4u::Host::by_name("Tremblay"), sender_fun);
-  simgrid::s4u::Actor::create("receive", simgrid::s4u::Host::by_name("Tremblay"), receiver_fun);
+  simgrid::s4u::Actor::create("send", e.host_by_name("Tremblay"), sender_fun);
+  simgrid::s4u::Actor::create("receive", e.host_by_name("Tremblay"), receiver_fun);
 
   e.run();
   return 0;

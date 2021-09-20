@@ -3,11 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "surf/surf.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
+#include "surf/surf.hpp"
+#include <simgrid/s4u/Engine.hpp>
 
 #include <vector>
 
@@ -100,12 +101,15 @@ void parse_platform_file(const std::string& file)
   /* Do the actual parsing */
   surf_parse();
 
+  /* Get the Engine singleton once and for all*/
+  const auto engine = simgrid::s4u::Engine::get_instance();
+
   /* connect all profiles relative to hosts */
   for (auto const& elm : trace_connect_list_host_avail) {
     surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(), std::string("<trace_connect kind=\"HOST_AVAIL\">: Trace ")+elm.first+" undefined.");
     auto profile = traces_set_list.at(elm.first);
 
-    auto host = simgrid::s4u::Host::by_name_or_null(elm.second);
+    auto host = engine->host_by_name_or_null(elm.second);
     surf_parse_assert(host, std::string("<trace_connect kind=\"HOST_AVAIL\">: Host ") + elm.second + " undefined.");
     host->set_state_profile(profile);
   }
@@ -114,7 +118,7 @@ void parse_platform_file(const std::string& file)
     surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(), std::string("<trace_connect kind=\"SPEED\">: Trace ")+elm.first+" undefined.");
     auto profile = traces_set_list.at(elm.first);
 
-    auto host = simgrid::s4u::Host::by_name_or_null(elm.second);
+    auto host = engine->host_by_name_or_null(elm.second);
     surf_parse_assert(host, std::string("<trace_connect kind=\"SPEED\">: Host ") + elm.second + " undefined.");
     host->set_speed_profile(profile);
   }
@@ -123,7 +127,7 @@ void parse_platform_file(const std::string& file)
     surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(), std::string("<trace_connect kind=\"LINK_AVAIL\">: Trace ")+elm.first+" undefined.");
     auto profile = traces_set_list.at(elm.first);
 
-    auto link = simgrid::s4u::Link::by_name_or_null(elm.second);
+    auto link = engine->link_by_name_or_null(elm.second);
     surf_parse_assert(link, std::string("<trace_connect kind=\"LINK_AVAIL\">: Link ") + elm.second + " undefined.");
     link->set_state_profile(profile);
   }
@@ -132,7 +136,7 @@ void parse_platform_file(const std::string& file)
     surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(), std::string("<trace_connect kind=\"BANDWIDTH\">: Trace ")+elm.first+" undefined.");
     auto profile = traces_set_list.at(elm.first);
 
-    auto link = simgrid::s4u::Link::by_name_or_null(elm.second);
+    auto link = engine->link_by_name_or_null(elm.second);
     surf_parse_assert(link, std::string("<trace_connect kind=\"BANDWIDTH\">: Link ") + elm.second + " undefined.");
     link->set_bandwidth_profile(profile);
   }
@@ -141,7 +145,7 @@ void parse_platform_file(const std::string& file)
     surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(), std::string("<trace_connect kind=\"LATENCY\">: Trace ")+elm.first+" undefined.");
     auto profile = traces_set_list.at(elm.first);
 
-    auto link = simgrid::s4u::Link::by_name_or_null(elm.second);
+    auto link = engine->link_by_name_or_null(elm.second);
     surf_parse_assert(link, std::string("<trace_connect kind=\"LATENCY\">: Link ") + elm.second + " undefined.");
     link->set_latency_profile(profile);
   }

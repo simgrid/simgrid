@@ -149,11 +149,11 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n", argv[0]);
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("server", simgrid::s4u::Host::by_name("alice"), server);
-  simgrid::s4u::Actor::create("client", simgrid::s4u::Host::by_name("bob"), client);
+  simgrid::s4u::Actor::create("server", e.host_by_name("alice"), server);
+  simgrid::s4u::Actor::create("client", e.host_by_name("bob"), client);
 
   e.run();
 
-  XBT_INFO("Simulated time: %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulated time: %g", e.get_clock());
   return 0;
 }

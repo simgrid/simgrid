@@ -94,12 +94,12 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("master", simgrid::s4u::Host::by_name("Tremblay"), master);
-  simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Jupiter"), worker);
+  simgrid::s4u::Actor::create("master", e.host_by_name("Tremblay"), master);
+  simgrid::s4u::Actor::create("worker", e.host_by_name("Jupiter"), worker);
 
   e.run();
 
-  XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

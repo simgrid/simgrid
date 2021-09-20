@@ -159,12 +159,11 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("test_launcher", simgrid::s4u::Host::by_name("Tremblay"), test_launcher,
-                              std::stoi(argv[2]));
+  simgrid::s4u::Actor::create("test_launcher", e.host_by_name("Tremblay"), test_launcher, std::stoi(argv[2]));
 
   e.run();
 
-  XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

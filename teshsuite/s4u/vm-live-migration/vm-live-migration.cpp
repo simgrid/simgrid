@@ -28,7 +28,7 @@ static void task_executor()
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  simgrid::s4u::Engine::set_config("network/model:CM02"); // Much less realistic, but easier to compute manually
+  e.set_config("network/model:CM02"); // Much less realistic, but easier to compute manually
 
   sg_vm_live_migration_plugin_init();
   sg_host_energy_plugin_init();
@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform.xml\n", argv[0]);
 
   e.load_platform(argv[1]);
-  auto* pm = simgrid::s4u::Host::by_name("host1");
+  auto* pm = e.host_by_name("host1");
   auto* vm = new simgrid::s4u::VirtualMachine("VM0", pm, 1 /*nCores*/);
   vm->set_ramsize(1250000000)->start();
   simgrid::s4u::Actor::create("executor", vm, task_executor);

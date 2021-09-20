@@ -49,11 +49,12 @@ static void main_dispatcher()
   }
   run_ping_test("Station 1", "Station 2", 1000);
 }
+
 int main(int argc, char** argv)
 {
   simgrid::s4u::Engine engine(&argc, argv);
   engine.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("dispatcher", simgrid::s4u::Host::by_name("node1"), main_dispatcher);
+  simgrid::s4u::Actor::create("dispatcher", engine.host_by_name("node1"), main_dispatcher);
   engine.run();
 
   return 0;

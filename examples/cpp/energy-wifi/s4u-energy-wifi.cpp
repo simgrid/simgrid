@@ -52,13 +52,13 @@ int main(int argc, char** argv)
   engine.load_platform(argv[1]);
 
   // setup WiFi bandwidths
-  const auto* l = simgrid::s4u::Link::by_name("AP1");
-  l->set_host_wifi_rate(simgrid::s4u::Host::by_name("Station 1"), 0);
-  l->set_host_wifi_rate(simgrid::s4u::Host::by_name("Station 2"), 0);
+  const auto* l = engine.link_by_name("AP1");
+  l->set_host_wifi_rate(engine.host_by_name("Station 1"), 0);
+  l->set_host_wifi_rate(engine.host_by_name("Station 2"), 0);
 
   // create the two actors for the test
-  simgrid::s4u::Actor::create("act0", simgrid::s4u::Host::by_name("Station 1"), sender);
-  simgrid::s4u::Actor::create("act1", simgrid::s4u::Host::by_name("Station 2"), receiver);
+  simgrid::s4u::Actor::create("act0", engine.host_by_name("Station 1"), sender);
+  simgrid::s4u::Actor::create("act1", engine.host_by_name("Station 2"), receiver);
 
   engine.run();
 

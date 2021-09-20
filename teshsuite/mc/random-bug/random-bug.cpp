@@ -64,6 +64,6 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[2]);
 
-  simgrid::s4u::Actor::create("app", simgrid::s4u::Host::by_name("Fafard"), &app);
+  simgrid::s4u::Actor::create("app", e.host_by_name("Fafard"), &app);
   e.run();
 }
