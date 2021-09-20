@@ -452,13 +452,14 @@ void sg_platf_new_bypass_route(simgrid::kernel::routing::RouteCreationArgs* rout
 
 void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
 {
+  auto* engine   = simgrid::s4u::Engine::get_instance();
   sg_host_t host = sg_host_by_name(actor->host);
   if (not host) {
     // The requested host does not exist. Do a nice message to the user
     std::string msg = std::string("Cannot create actor '") + actor->function + "': host '" + actor->host +
                       "' does not exist\nExisting hosts: '";
 
-    std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
+    std::vector<simgrid::s4u::Host*> list = engine->get_all_hosts();
 
     for (auto const& some_host : list) {
       msg += some_host->get_name();
@@ -471,8 +472,7 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
     }
     xbt_die("%s", msg.c_str());
   }
-  const simgrid::kernel::actor::ActorCodeFactory& factory =
-      simgrid::kernel::EngineImpl::get_instance()->get_function(actor->function);
+  const simgrid::kernel::actor::ActorCodeFactory& factory = engine->get_impl()->get_function(actor->function);
   xbt_assert(factory, "Error while creating an actor from the XML file: Function '%s' not registered", actor->function);
 
   double start_time = actor->start_time;

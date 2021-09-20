@@ -173,6 +173,8 @@ public:
     return res;
   }
 
+  kernel::EngineImpl* get_impl() const { return pimpl; }
+
   /** Returns whether SimGrid was initialized yet -- mostly for internal use */
   static bool is_initialized();
   /** @brief set a configuration variable

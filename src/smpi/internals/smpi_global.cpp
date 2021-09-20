@@ -543,12 +543,12 @@ int smpi_main(const char* executable, int argc, char* argv[])
   }
 
   smpi_init_options_internal(true);
-  auto engine = simgrid::s4u::Engine::get_instance(&argc, argv);
+  simgrid::s4u::Engine engine(&argc, argv);
 
   sg_storage_file_system_init();
   // parse the platform file: get the host list
-  engine->load_platform(argv[1]);
-  engine->set_default_comm_data_copy_callback(smpi_comm_copy_buffer_callback);
+  engine.load_platform(argv[1]);
+  engine.set_default_comm_data_copy_callback(smpi_comm_copy_buffer_callback);
 
   if (smpi_cfg_privatization() == SmpiPrivStrategies::DLOPEN)
     smpi_init_privatization_dlopen(executable);
@@ -562,7 +562,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
 
   const std::vector<const char*> args(argv + 2, argv + argc);
   int rank_counts =
-      smpi_deployment_smpirun(engine, smpi_hostfile.get(), smpi_np.get(), smpi_replay.get(), smpi_map.get(), args);
+      smpi_deployment_smpirun(&engine, smpi_hostfile.get(), smpi_np.get(), smpi_replay.get(), smpi_map.get(), args);
 
   SMPI_app_instance_register(smpi_default_instance_name.c_str(), nullptr, rank_counts);
   MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);
@@ -574,7 +574,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
   if (MC_is_active()) {
     MC_run();
   } else {
-    simgrid::kernel::EngineImpl::get_instance()->run();
+    engine.get_impl()->run();
 
     xbt_os_walltimer_stop(global_timer);
     simgrid::smpi::utils::print_time_analysis(xbt_os_timer_elapsed(global_timer));
