@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/simdag.h"
 #include "surf/surf.hpp"
 #include <set>
@@ -19,11 +20,13 @@ namespace simgrid{
 namespace sd{
 class Global {
 public:
+  explicit Global(int* argc, char** argv) : engine_(new simgrid::s4u::Engine(argc, argv)) {}
   bool watch_point_reached = false; /* has a task just reached a watch point? */
   std::set<SD_task_t> initial_tasks;
   std::set<SD_task_t> runnable_tasks;
   std::set<SD_task_t> completed_tasks;
   std::set<SD_task_t> return_set;
+  s4u::Engine* engine_;
 };
 
 std::set<SD_task_t>* simulate (double how_long);

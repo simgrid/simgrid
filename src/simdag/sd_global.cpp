@@ -146,9 +146,7 @@ void SD_init_nocheck(int* argc, char** argv)
 {
   xbt_assert(sd_global == nullptr, "SD_init() already called");
 
-  surf_init(argc, argv);
-
-  sd_global = new simgrid::sd::Global();
+  sd_global = new simgrid::sd::Global(argc, argv);
 
   simgrid::config::set_default<std::string>("host/model", "ptask_L07");
   if (simgrid::config::get_value<bool>("debug/clean-atexit"))
@@ -187,7 +185,7 @@ void SD_config(const char* key, const char* value)
  */
 void SD_create_environment(const char* platform_file)
 {
-  simgrid::s4u::Engine::get_instance()->load_platform(platform_file);
+  sd_global->engine_->load_platform(platform_file);
 
   XBT_DEBUG("Host number: %zu, link number: %zu", sg_host_count(), sg_link_count());
 #if SIMGRID_HAVE_JEDULE
@@ -239,5 +237,6 @@ void SD_exit()
 #if SIMGRID_HAVE_JEDULE
   jedule_sd_exit();
 #endif
+  sd_global->engine_->shutdown();
   delete sd_global;
 }
