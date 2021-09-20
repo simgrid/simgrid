@@ -84,9 +84,9 @@ int main(int argc, char* argv[])
       [](sg4::Actor const& actor) { XBT_INFO("Actor %s gets destroyed now", actor.get_cname()); });
 
   /* Create some actors */
-  sg4::Actor::create("A", sg4::Host::by_name("Tremblay"), actor_a);
-  sg4::Actor::create("B", sg4::Host::by_name("Fafard"), actor_b);
-  sg4::Actor::create("C", sg4::Host::by_name("Ginette"), actor_c);
+  sg4::Actor::create("A", e.host_by_name("Tremblay"), actor_a);
+  sg4::Actor::create("B", e.host_by_name("Fafard"), actor_b);
+  sg4::Actor::create("C", e.host_by_name("Ginette"), actor_c);
 
   e.run(); /* - Run the simulation */
 

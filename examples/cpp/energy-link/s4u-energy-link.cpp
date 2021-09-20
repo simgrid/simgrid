@@ -99,8 +99,8 @@ int main(int argc, char* argv[])
   } else { // No parameter at all? Then use the default value
     argSender.emplace_back("25000");
   }
-  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("MyHost1"), sender, argSender);
-  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("MyHost2"), receiver, argReceiver);
+  simgrid::s4u::Actor::create("sender", e.host_by_name("MyHost1"), sender, argSender);
+  simgrid::s4u::Actor::create("receiver", e.host_by_name("MyHost2"), receiver, argReceiver);
 
   /* And now, launch the simulation */
   e.run();

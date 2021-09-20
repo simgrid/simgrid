@@ -21,25 +21,25 @@ int main(int argc, char* argv[])
   e.load_platform(argv[1]);
 
   // If you don't specify anything, you get the default size (8Mb) or the one passed on the command line
-  sg4::Actor::create("actor", sg4::Host::by_name("Tremblay"), actor);
+  sg4::Actor::create("actor", e.host_by_name("Tremblay"), actor);
 
   // You can use set_config(string) to pass a size that will be parsed. That value will be used for any subsequent
   // actors
   sg4::Engine::set_config("contexts/stack-size:16384");
-  sg4::Actor::create("actor", sg4::Host::by_name("Tremblay"), actor);
-  sg4::Actor::create("actor", sg4::Host::by_name("Tremblay"), actor);
+  sg4::Actor::create("actor", e.host_by_name("Tremblay"), actor);
+  sg4::Actor::create("actor", e.host_by_name("Tremblay"), actor);
 
   // You can use set_config(key, value) for the same effect.
   sg4::Engine::set_config("contexts/stack-size", 32 * 1024);
-  sg4::Actor::create("actor", sg4::Host::by_name("Tremblay"), actor);
-  sg4::Actor::create("actor", sg4::Host::by_name("Tremblay"), actor);
+  sg4::Actor::create("actor", e.host_by_name("Tremblay"), actor);
+  sg4::Actor::create("actor", e.host_by_name("Tremblay"), actor);
 
   // Or you can use set_stacksize() before starting the actor to modify only this one
-  sg4::Actor::init("actor", sg4::Host::by_name("Tremblay"))->set_stacksize(64 * 1024)->start(actor);
-  sg4::Actor::create("actor", sg4::Host::by_name("Tremblay"), actor);
+  sg4::Actor::init("actor", e.host_by_name("Tremblay"))->set_stacksize(64 * 1024)->start(actor);
+  sg4::Actor::create("actor", e.host_by_name("Tremblay"), actor);
 
   e.run();
-  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

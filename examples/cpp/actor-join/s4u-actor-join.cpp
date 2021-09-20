@@ -55,11 +55,11 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("master", sg4::Host::by_name("Tremblay"), master);
+  sg4::Actor::create("master", e.host_by_name("Tremblay"), master);
 
   e.run();
 
-  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
+  XBT_INFO("Simulation time %g", e.get_clock());
 
   return 0;
 }

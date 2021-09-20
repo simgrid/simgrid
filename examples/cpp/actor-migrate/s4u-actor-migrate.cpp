@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/small_platform.xml\n", argv[0], argv[0]);
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("monitor", sg4::Host::by_name("Boivin"), monitor);
+  sg4::Actor::create("monitor", e.host_by_name("Boivin"), monitor);
   e.run();
 
   return 0;

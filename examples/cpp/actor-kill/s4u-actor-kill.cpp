@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]); /* - Load the platform description */
   /* - Create and deploy killer actor, that will create the victim actors  */
-  sg4::Actor::create("killer", sg4::Host::by_name("Tremblay"), killer);
+  sg4::Actor::create("killer", e.host_by_name("Tremblay"), killer);
 
   e.run(); /* - Run the simulation */
 

@@ -62,12 +62,12 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
-  sg4::Actor::create("sender", sg4::Host::by_name("Boivin"), sender, sg4::Host::by_name("Tremblay"),
-                     sg4::Host::by_name("Jupiter"), sg4::Host::by_name("Fafard"), sg4::Host::by_name("Ginette"));
+  sg4::Actor::create("sender", e.host_by_name("Boivin"), sender, e.host_by_name("Tremblay"), e.host_by_name("Jupiter"),
+                     e.host_by_name("Fafard"), e.host_by_name("Ginette"));
 
   e.run();
 
-  XBT_INFO("Total simulation time: %.3f", sg4::Engine::get_clock());
+  XBT_INFO("Total simulation time: %.3f", e.get_clock());
 
   return 0;
 }

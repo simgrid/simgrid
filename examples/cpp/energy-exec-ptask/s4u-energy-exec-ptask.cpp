@@ -157,12 +157,12 @@ int main(int argc, char* argv[])
 {
   sg_host_energy_plugin_init();
   simgrid::s4u::Engine e(&argc, argv);
-  simgrid::s4u::Engine::set_config("host/model:ptask_L07");
+  e.set_config("host/model:ptask_L07");
 
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/energy_platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("energy_ptask_test", simgrid::s4u::Host::by_name("MyHost1"), runner);
+  simgrid::s4u::Actor::create("energy_ptask_test", e.host_by_name("MyHost1"), runner);
 
   e.run();
   XBT_INFO("End of simulation.");

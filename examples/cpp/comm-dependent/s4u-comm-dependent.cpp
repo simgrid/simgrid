@@ -41,14 +41,14 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
-  sg4::Mailbox* mbox = sg4::Mailbox::by_name("Mailbox");
+  sg4::Mailbox* mbox = e.mailbox_by_name_or_create("Mailbox");
 
-  sg4::Actor::create("sender", sg4::Host::by_name("Tremblay"), sender, mbox);
-  sg4::Actor::create("receiver", sg4::Host::by_name("Jupiter"), receiver, mbox);
+  sg4::Actor::create("sender", e.host_by_name("Tremblay"), sender, mbox);
+  sg4::Actor::create("receiver", e.host_by_name("Jupiter"), receiver, mbox);
 
   e.run();
 
-  XBT_INFO("Simulation time: %.3f", sg4::Engine::get_clock());
+  XBT_INFO("Simulation time: %.3f", e.get_clock());
 
   return 0;
 }

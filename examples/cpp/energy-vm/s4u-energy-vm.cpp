@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("dvfs", simgrid::s4u::Host::by_name("MyHost1"), dvfs);
+  simgrid::s4u::Actor::create("dvfs", e.host_by_name("MyHost1"), dvfs);
 
   e.run();
 
