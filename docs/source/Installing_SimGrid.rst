@@ -41,14 +41,9 @@ Windows. Copy it to your project's classpath and you're set.
 Nightly built Java Package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For non-Windows systems (Linux, macOS, or FreeBSD), head to `Jenkins <https://ci.inria.fr/simgrid/job/SimGrid>`_.
-In the build history, pick the last green (or at least yellow) build that is not blinking (i.e., not currently under
-build). In the list, pick a system that is close to yours, and click on the ball in the Debug row. The build artifact
-will appear at the top of the resulting page.
-
-For Windows, head to `AppVeyor <https://ci.appveyor.com/project/simgrid/simgrid>`_.
-Click on the artifact link on the right, and grab your file. If the latest build failed, there will be no artifact. Then
-you will need to first click on "History" at the top and look for the last successful build.
+Head to the corresponding `GitHub Action <https://github.com/simgrid/simgrid/actions/workflows/jarfile.yml>`_
+and pick the last green build. At the bottom of the build page, click on the ``jar-final`` artefact. 
+Open this zip file to find the jar you need. This jar can be used under Linux, Mac OSX or Windows, as you wish.
 
 Binary Java Troubleshooting
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
