@@ -92,7 +92,7 @@ void Engine::shutdown()
 double Engine::get_clock()
 {
   if (MC_is_active() || MC_record_replay_is_active()) {
-    return MC_process_clock_get(SIMIX_process_self());
+    return MC_process_clock_get(kernel::actor::ActorImpl::self());
   } else {
     return surf_get_clock();
   }
@@ -101,7 +101,7 @@ double Engine::get_clock()
 void Engine::add_model(std::shared_ptr<kernel::resource::Model> model,
                        const std::vector<kernel::resource::Model*>& dependencies)
 {
-  simgrid::kernel::actor::simcall([this, &model, &dependencies] { pimpl->add_model(std::move(model), dependencies); });
+  kernel::actor::simcall([this, &model, &dependencies] { pimpl->add_model(std::move(model), dependencies); });
 }
 
 const std::vector<simgrid::kernel::resource::Model*>& Engine::get_all_models() const

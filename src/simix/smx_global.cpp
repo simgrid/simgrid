@@ -4,20 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc.h"
-#include "simgrid/kernel/Timer.hpp"
 #include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/Host.hpp"
-#include "src/smpi/include/smpi_actor.hpp"
-
-#include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
-#include "src/mc/mc_record.hpp"
-#include "src/mc/mc_replay.hpp"
-#include "src/surf/xml/platf.hpp"
-
-#include "simgrid/kernel/resource/Model.hpp"
-
-#include <memory>
 
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix, "Logging specific to SIMIX (kernel)");
