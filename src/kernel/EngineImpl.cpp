@@ -205,11 +205,6 @@ void EngineImpl::shutdown()
     xbt_die("Bailing out to avoid that stop-before-start madness. Please fix your code.");
   }
 
-  /* Kill all actors (but maestro) */
-  instance_->maestro_->kill_all();
-  instance_->run_all_actors();
-  instance_->empty_trash();
-
 #if HAVE_SMPI
   if (not instance_->actor_list_.empty()) {
     if (smpi_process()->initialized()) {
@@ -220,6 +215,11 @@ void EngineImpl::shutdown()
     }
   }
 #endif
+
+  /* Kill all actors (but maestro) */
+  instance_->maestro_->kill_all();
+  instance_->run_all_actors();
+  instance_->empty_trash();
 
   /* Let's free maestro now */
   instance_->destroy_maestro();
