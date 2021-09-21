@@ -93,15 +93,10 @@ auto simcall_blocking(F&& code, Observer* observer) -> decltype(observer->get_re
 }
 } // namespace actor
 } // namespace kernel
-} // namespace simgrid
-namespace simgrid {
+
 namespace simix {
 
 XBT_PUBLIC void unblock(smx_actor_t process);
-
-// In MC mode, the application sends these pointers to the MC
-xbt_dynar_t simix_global_get_actors_addr();
-xbt_dynar_t simix_global_get_dead_actors_addr();
 
 } // namespace simix
 } // namespace simgrid

@@ -31,6 +31,9 @@
 
 namespace simgrid {
 namespace kernel {
+// In MC mode, the application sends these pointers to the MC
+xbt_dynar_t get_actors_addr();
+xbt_dynar_t get_dead_actors_addr();
 
 class EngineImpl {
   std::map<std::string, s4u::Host*, std::less<>> hosts_;

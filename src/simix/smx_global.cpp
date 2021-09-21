@@ -3,35 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "mc/mc.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/EngineImpl.hpp"
 
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix, "Logging specific to SIMIX (kernel)");
-
-namespace simgrid {
-namespace simix {
-
-xbt_dynar_t simix_global_get_actors_addr()
-{
-#if SIMGRID_HAVE_MC
-  return kernel::EngineImpl::get_instance()->get_actors_vector();
-#else
-  xbt_die("This function is intended to be used when compiling with MC");
-#endif
-}
-xbt_dynar_t simix_global_get_dead_actors_addr()
-{
-#if SIMGRID_HAVE_MC
-  return kernel::EngineImpl::get_instance()->get_dead_actors_vector();
-#else
-  xbt_die("This function is intended to be used when compiling with MC");
-#endif
-}
-
-} // namespace simix
-} // namespace simgrid
 
 /**
  * @ingroup SIMIX_API

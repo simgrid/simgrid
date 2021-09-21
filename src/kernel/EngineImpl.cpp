@@ -38,6 +38,25 @@ EngineImpl* EngineImpl::instance_ = nullptr; /* That singleton is awful too. */
 config::Flag<double> cfg_breakpoint{"debug/breakpoint",
                                     "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
 config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit", "Display the actor status at exit", true};
+
+xbt_dynar_t get_actors_addr()
+{
+#if SIMGRID_HAVE_MC
+  return EngineImpl::get_instance()->get_actors_vector();
+#else
+  xbt_die("This function is intended to be used when compiling with MC");
+#endif
+}
+
+xbt_dynar_t get_dead_actors_addr()
+{
+#if SIMGRID_HAVE_MC
+  return EngineImpl::get_instance()->get_dead_actors_vector();
+#else
+  xbt_die("This function is intended to be used when compiling with MC");
+#endif
+}
+
 } // namespace kernel
 } // namespace simgrid
 
