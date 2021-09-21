@@ -96,9 +96,9 @@ int main(int argc, char** argv)
 {
   sg4::Engine e(&argc, argv);
   /* keep it simple, no network factors nor crosstrafic */
-  e.set_config("network/model:CM02");
-  e.set_config("network/weight-S:20537");
-  e.set_config("network/crosstraffic:0");
+  sg4::Engine::set_config("network/model:CM02");
+  sg4::Engine::set_config("network/weight-S:20537");
+  sg4::Engine::set_config("network/crosstraffic:0");
 
   /* dog-bone platform */
   std::unordered_map<std::string, sg4::Host*> hosts;

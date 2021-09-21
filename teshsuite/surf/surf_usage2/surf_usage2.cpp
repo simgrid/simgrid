@@ -24,8 +24,8 @@ int main(int argc, char** argv)
 
   simgrid::s4u::Engine e(&argc, argv);
 
-  e.set_config("network/model:CM02");
-  e.set_config("cpu/model:Cas01");
+  simgrid::s4u::Engine::set_config("network/model:CM02");
+  simgrid::s4u::Engine::set_config("cpu/model:Cas01");
 
   xbt_assert(argc > 1, "Usage: %s platform.xml\n", argv[0]);
   e.load_platform(argv[1]);

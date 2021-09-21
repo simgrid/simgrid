@@ -28,7 +28,7 @@ static void task_executor()
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  e.set_config("network/model:CM02"); // Much less realistic, but easier to compute manually
+  simgrid::s4u::Engine::set_config("network/model:CM02"); // Much less realistic, but easier to compute manually
 
   sg_vm_live_migration_plugin_init();
   sg_host_energy_plugin_init();
