@@ -621,3 +621,8 @@ void EngineImpl::run()
 }
 } // namespace kernel
 } // namespace simgrid
+
+void SIMIX_run() // XBT_ATTRIB_DEPRECATED_v332
+{
+  simgrid::kernel::EngineImpl::get_instance()->run();
+}

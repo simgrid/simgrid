@@ -28,6 +28,7 @@
 #include <boost/core/demangle.hpp>
 #include <string>
 #include <typeinfo>
+XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 
 /**
  * @ingroup simix_host_management

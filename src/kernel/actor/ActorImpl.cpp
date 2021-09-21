@@ -526,8 +526,7 @@ void create_maestro(const std::function<void()>& code)
 } // namespace kernel
 } // namespace simgrid
 
-/* needs to be public and without simcall because it is called
-   by exceptions and logging events */
+/* needs to be public and without simcall because it is called by exceptions and logging events */
 const char* SIMIX_process_self_get_name()
 {
   return SIMIX_is_maestro() ? "maestro" : simgrid::kernel::actor::ActorImpl::self()->get_cname();
@@ -537,4 +536,10 @@ const char* SIMIX_process_self_get_name()
 smx_actor_t SIMIX_process_from_PID(aid_t pid) // XBT_ATTRIB_DEPRECATD_v331
 {
   return simgrid::kernel::actor::ActorImpl::by_pid(pid);
+}
+
+int SIMIX_is_maestro()
+{
+  const auto* self = simgrid::kernel::actor::ActorImpl::self();
+  return self == nullptr || simgrid::kernel::EngineImpl::get_instance()->is_maestro(self);
 }
