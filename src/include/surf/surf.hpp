@@ -11,18 +11,6 @@
 /*** SURF Globals **************************/
 
 /** @ingroup SURF_simulation
- *  @brief Initialize SURF
- *  @param argc argument number
- *  @param argv arguments
- *
- *  This function has to be called to initialize the common structures. Then you will have to create the environment by
- *  calling  e.g. surf_host_model_init_CM02()
- *
- *  @see surf_host_model_init_CM02(), surf_host_model_init_compound()
- */
-XBT_PUBLIC void surf_init(int* argc, char** argv); /* initialize common structures */
-
-/** @ingroup SURF_simulation
  *  @brief Finish simulation initialization
  *
  *  This function must be called before the first call to surf_solve()

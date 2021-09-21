@@ -19,6 +19,7 @@
 #include "src/smpi/include/smpi_actor.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
+#include "xbt/xbt_modinter.h"     /* whether initialization was already done */
 
 #include <boost/algorithm/string/predicate.hpp>
 #ifndef _WIN32
@@ -169,7 +170,11 @@ void EngineImpl::initialize(int* argc, char** argv)
   simgrid::mc::AppSide::initialize();
 #endif
 
-  surf_init(argc, argv); /* Initialize SURF structures */
+  if (xbt_initialized == 0) {
+    xbt_init(argc, argv);
+
+    sg_config_init(argc, argv);
+  }
 
   instance_->context_mod_init();
 

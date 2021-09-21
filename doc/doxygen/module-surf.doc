@@ -48,7 +48,7 @@
     #surf_host_model_init_current_default() (which will give you a
     CLM03 model), or similar (see @ref SURF_models).
 
-    To initialize SURF, call #surf_init(). Then
+    To initialize SURF, call 
     #surf_host_model_init_current_default() or #surf_host_model_init_ptask_L07() 
     to create the platform.
 

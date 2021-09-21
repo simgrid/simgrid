@@ -188,13 +188,3 @@ const surf_model_description_t* find_model_description(const std::vector<surf_mo
   }
   xbt_die("Model '%s' is invalid! Valid models are: %s.", name.c_str(), name_list.c_str());
 }
-
-void surf_init(int* argc, char** argv)
-{
-  if (xbt_initialized > 0)
-    return;
-
-  xbt_init(argc, argv);
-
-  sg_config_init(argc, argv);
-}
