@@ -190,7 +190,7 @@ void EngineImpl::initialize(int* argc, char** argv)
   s4u::Engine::on_platform_created.connect(surf_presolve);
 
   if (config::get_value<bool>("debug/clean-atexit"))
-    atexit(shutdown);
+    atexit(s4u::Engine::shutdown);
 }
 
 void EngineImpl::shutdown()
