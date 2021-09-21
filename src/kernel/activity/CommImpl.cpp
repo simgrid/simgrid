@@ -206,6 +206,7 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, simgrid::kernel::activi
 /******************************************************************************/
 /*                    SIMIX_comm_copy_data callbacks                       */
 /******************************************************************************/
+// XBT_ATTRIB_DEPRECATED_v333
 void SIMIX_comm_set_copy_data_callback(void (*callback)(simgrid::kernel::activity::CommImpl*, void*, size_t))
 {
   simgrid::kernel::activity::CommImpl::set_copy_data_callback(callback);
