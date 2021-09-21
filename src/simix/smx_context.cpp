@@ -105,7 +105,7 @@ void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode) {
 namespace simgrid {
 namespace kernel {
 
-void EngineImpl::context_mod_init()
+void EngineImpl::context_mod_init() const
 {
   xbt_assert(not instance_->has_context_factory());
 

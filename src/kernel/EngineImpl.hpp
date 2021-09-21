@@ -115,7 +115,7 @@ public:
     context_factory_ = nullptr;
   }
 
-  void context_mod_init();
+  void context_mod_init() const;
   /**
    * @brief Add a model to engine list
    *

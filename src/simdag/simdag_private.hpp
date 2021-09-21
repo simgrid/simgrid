@@ -33,7 +33,7 @@ std::set<SD_task_t>* simulate (double how_long);
 }
 }
 
-extern XBT_PRIVATE simgrid::sd::Global *sd_global;
+extern XBT_PRIVATE std::unique_ptr<simgrid::sd::Global> sd_global;
 
 /* Task */
 struct s_SD_task_t {

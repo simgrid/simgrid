@@ -23,9 +23,9 @@ static void main_dispatcher()
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to compute 1 flop on a 1 flop/s host.");
   XBT_INFO("Should be done in exactly one second.");
-  start_time = e->get_clock();
+  start_time = sg4::Engine::get_clock();
   sg4::Exec::init()->set_flops_amount(1)->set_host(hosts[0])->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: computing 1 flop at 1 flop/s takes %.2f seconds.", end_time - start_time);
   XBT_INFO("\n");
 
@@ -35,12 +35,12 @@ static void main_dispatcher()
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to compute 2 x 1 flop on a 1 flop/s host.");
   XBT_INFO("Should be done in exactly 2 seconds because of sharing.");
-  start_time      = e->get_clock();
+  start_time      = sg4::Engine::get_clock();
   sg4::ExecPtr e1 = sg4::Exec::init()->set_flops_amount(1)->set_host(hosts[0])->start();
   sg4::ExecPtr e2 = sg4::Exec::init()->set_flops_amount(1)->set_host(hosts[0])->start();
   e1->wait();
   e2->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: computing 2x1 flop at 1 flop/s takes %.2f seconds.", end_time - start_time);
   XBT_INFO("\n");
 
@@ -50,12 +50,12 @@ static void main_dispatcher()
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to compute 2 flops across two hosts running at 1 flop/s.");
   XBT_INFO("Should be done in exactly one second.");
-  start_time = e->get_clock();
+  start_time = sg4::Engine::get_clock();
   sg4::Exec::init()
       ->set_flops_amounts(std::vector<double>({1.0, 1.0}))
       ->set_hosts(std::vector<sg4::Host*>({hosts[0], hosts[1]}))
       ->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: computing 2 flops on 2 hosts at 1 flop/s takes %.2f seconds.", end_time - start_time);
   XBT_INFO("\n");
 
@@ -65,12 +65,12 @@ static void main_dispatcher()
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to compute 2 flops across two hosts, one running at 1 flop/s and one at 2 flop/s.");
   XBT_INFO("Should be done in exactly one second.");
-  start_time = e->get_clock();
+  start_time = sg4::Engine::get_clock();
   sg4::Exec::init()
       ->set_flops_amounts(std::vector<double>({1.0, 1.0}))
       ->set_hosts(std::vector<sg4::Host*>({hosts[0], hosts[5]}))
       ->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: computing 2 flops on 2 heterogeneous hosts takes %.2f seconds.", end_time - start_time);
   XBT_INFO("\n");
 
@@ -80,9 +80,9 @@ static void main_dispatcher()
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 1B from one host to another at 1Bps with a latency of 500ms.");
   XBT_INFO("Should be done in 1.5 seconds (500ms latency + 1s transfert).");
-  start_time = e->get_clock();
+  start_time = sg4::Engine::get_clock();
   sg4::Comm::sendto_async(hosts[0], hosts[4], 1.0)->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: sending 1 byte on a shared link at 1Bps + 500ms takes %.2f seconds.", end_time - start_time);
   XBT_INFO("\n");
 
@@ -92,9 +92,9 @@ static void main_dispatcher()
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 1B from one host to another at 1Bps with a latency of 500ms.");
   XBT_INFO("Should be done in 1.5 seconds (500ms latency + 1s transfert).");
-  start_time = e->get_clock();
+  start_time = sg4::Engine::get_clock();
   sg4::Comm::sendto_async(hosts[0], hosts[5], 1.0)->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: sending 1 byte on a fatpipe link at 1Bps + 500ms takes %.2f seconds.",
            end_time - start_time);
   XBT_INFO("\n");
@@ -105,9 +105,9 @@ static void main_dispatcher()
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 1B from one host to another at 1Bps with a latency of 2 x 500ms + 1s.");
   XBT_INFO("Should be done in 3 seconds (2 x 500ms + 1s latency + 1s transfert).");
-  start_time = e->get_clock();
+  start_time = sg4::Engine::get_clock();
   sg4::Comm::sendto_async(hosts[0], hosts[1], 1.0)->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: sending 1 byte on a 3-link route at 1Bps + 2,500ms takes %.2f seconds.",
            end_time - start_time);
   XBT_INFO("\n");
@@ -119,9 +119,9 @@ static void main_dispatcher()
   XBT_INFO("Have to send 1B from one host to another on a link at 2Bps with a latency of 2 x 1024^2s.");
   XBT_INFO("This latency is half the default TCP window size (4MiB). This limits the bandwidth to 1B");
   XBT_INFO("Should be done in 2 x 1024^2s + 1 seconds (large latency + 1s transfert).");
-  start_time = e->get_clock();
+  start_time = sg4::Engine::get_clock();
   sg4::Comm::sendto_async(hosts[0], hosts[6], 1.0)->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: sending 1 byte on a large latency link takes %.2f seconds.", end_time - start_time);
   XBT_INFO("\n");
 
@@ -131,12 +131,12 @@ static void main_dispatcher()
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 2 x 1B from one host to another at 1Bps with a latency of 500ms.");
   XBT_INFO("Should be done in 2.5 seconds (500ms latency + 2s transfert).");
-  start_time      = e->get_clock();
+  start_time      = sg4::Engine::get_clock();
   sg4::CommPtr c1 = sg4::Comm::sendto_async(hosts[0], hosts[4], 1.0);
   sg4::CommPtr c2 = sg4::Comm::sendto_async(hosts[0], hosts[4], 1.0);
   c1->wait();
   c2->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: sending 2x1 bytes on a shared link at 1Bps + 500ms takes %.2f seconds.",
            end_time - start_time);
   XBT_INFO("\n");
@@ -147,12 +147,12 @@ static void main_dispatcher()
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 2 x 1B from one host to another at 1Bps with a latency of 500ms.");
   XBT_INFO("Should be done in 1.5 seconds (500ms latency + 1s transfert).");
-  start_time = e->get_clock();
+  start_time = sg4::Engine::get_clock();
   c1         = sg4::Comm::sendto_async(hosts[0], hosts[5], 1.0);
   c2         = sg4::Comm::sendto_async(hosts[0], hosts[5], 1.0);
   c1->wait();
   c2->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: sending 2x1 bytes on a fatpipe link at 1Bps + 500ms takes %.2f seconds.",
            end_time - start_time);
   XBT_INFO("\n");
@@ -163,12 +163,12 @@ static void main_dispatcher()
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 2 x 1B from one host to another at 1Bps with a latency of 2 x 500ms + 1s.");
   XBT_INFO("Should be done in 4 seconds (2 x 500ms + 1s latency + 2s transfert).");
-  start_time = e->get_clock();
+  start_time = sg4::Engine::get_clock();
   c1         = sg4::Comm::sendto_async(hosts[0], hosts[1], 1.0);
   c2         = sg4::Comm::sendto_async(hosts[0], hosts[1], 1.0);
   c1->wait();
   c2->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: sending 2x1 bytes on a 3-link route at 1Bps + 2,500ms takes %.2f seconds.",
            end_time - start_time);
   XBT_INFO("\n");
@@ -179,12 +179,12 @@ static void main_dispatcher()
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 1B between two hosts in each direction at 1Bps with a latency of 500ms.");
   XBT_INFO("Should be done in 2.5 seconds (500ms latency + 2s transfert).");
-  start_time = e->get_clock();
+  start_time = sg4::Engine::get_clock();
   c1         = sg4::Comm::sendto_async(hosts[0], hosts[4], 1.0);
   c2         = sg4::Comm::sendto_async(hosts[4], hosts[0], 1.0);
   c1->wait();
   c2->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: sending 1 byte in both directions on a shared link at 1Bps + 500ms takes %.2f seconds.",
            end_time - start_time);
   XBT_INFO("\n");
@@ -195,12 +195,12 @@ static void main_dispatcher()
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 1B between two hosts in each direction at 1Bps with a latency of 500ms.");
   XBT_INFO("Should be done in 1.5 seconds (500ms latency + 1s transfert).");
-  start_time = e->get_clock();
+  start_time = sg4::Engine::get_clock();
   c1         = sg4::Comm::sendto_async(hosts[0], hosts[5], 1.0);
   c2         = sg4::Comm::sendto_async(hosts[5], hosts[0], 1.0);
   c1->wait();
   c2->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: sending 1 byte in both directions on a fatpipe link at 1Bps + 500ms takes %.2f seconds.",
            end_time - start_time);
   XBT_INFO("\n");
@@ -211,12 +211,12 @@ static void main_dispatcher()
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 1B between two hosts in each direction at 1Bps with a latency of 2 x 500ms + 1s.");
   XBT_INFO("Should be done in 4 seconds (2 x 500ms + 1s latency + 2s transfert).");
-  start_time = e->get_clock();
+  start_time = sg4::Engine::get_clock();
   c1         = sg4::Comm::sendto_async(hosts[0], hosts[1], 1.0);
   c2         = sg4::Comm::sendto_async(hosts[1], hosts[0], 1.0);
   c1->wait();
   c2->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: sending 1 byte in both directions on a 3-link route at 1Bps + 2,500ms takes %.2f seconds.",
            end_time - start_time);
   XBT_INFO("\n");
@@ -227,7 +227,7 @@ static void main_dispatcher()
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("'cpu0' sends 1B to 'cpu1' and 'cpu2' sends 1B to 'cpu3'. The only shared link is the fatpipe switch.");
   XBT_INFO("Should be done in 3 seconds (2 x 500ms + 1s latency + 1s transfert).");
-  start_time = e->get_clock();
+  start_time = sg4::Engine::get_clock();
   sg4::Exec::init()
       ->set_bytes_amounts(std::vector<double>({0.0, 1.0, 0.0, 0.0,
                                                0.0, 0.0, 0.0, 0.0,
@@ -235,7 +235,7 @@ static void main_dispatcher()
                                                0.0, 0.0, 0.0, 0.0 }))
       ->set_hosts(std::vector<sg4::Host*>({hosts[0], hosts[1], hosts[2], hosts[3]}))
       ->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: sending 2 x 1 byte in a parallel communication without interference takes %.2f seconds.",
            end_time - start_time);
   XBT_INFO("\n");
@@ -250,7 +250,7 @@ static void main_dispatcher()
   XBT_INFO(" - For 2 seconds, two lows share a link to transfer 1 x 1B. 'cpu2' received is payload");
   XBT_INFO(" - For 1 second, one flow has the full bandwidth to transfer 1B. 'cpu3' received is payload");
 
-  start_time = e->get_clock();
+  start_time = sg4::Engine::get_clock();
   sg4::Exec::init()
       ->set_bytes_amounts(std::vector<double>({0.0, 1.0, 2.0, 3.0,
                                                0.0, 0.0, 0.0, 0.0,
@@ -258,7 +258,7 @@ static void main_dispatcher()
                                                0.0, 0.0, 0.0, 0.0 }))
       ->set_hosts(std::vector<sg4::Host*>({hosts[0], hosts[1], hosts[2], hosts[3]}))
       ->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: scattering an increasing number of bytes to 3 hosts takes %.2f seconds.",
            end_time - start_time);
   XBT_INFO("\n");
@@ -272,7 +272,7 @@ static void main_dispatcher()
   XBT_INFO("Each SHARED link is traversed by 6 flows (3 in and 3 out). ");
   XBT_INFO("Each 1B transfer thus takes 6 seconds on a 1Bps link");
 
-  start_time = e->get_clock();
+  start_time = sg4::Engine::get_clock();
   sg4::Exec::init()
       ->set_bytes_amounts(std::vector<double>({0.0, 1.0, 1.0, 1.0,
                                                1.0, 0.0, 1.0, 1.0,
@@ -280,7 +280,7 @@ static void main_dispatcher()
                                                1.0, 1.0, 1.0, 0.0 }))
       ->set_hosts(std::vector<sg4::Host*>({hosts[0], hosts[1], hosts[2], hosts[3]}))
       ->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: 1-byte all-too-all in a parallel communication takes %.2f seconds.", end_time - start_time);
   XBT_INFO("\n");
 
@@ -293,12 +293,12 @@ static void main_dispatcher()
   XBT_INFO("The small communication has a negligible impact on the large one.");
   XBT_INFO("This corresponds to paying latency once and having the full bandwidth for the large communication.");
 
-  start_time = e->get_clock();
+  start_time = sg4::Engine::get_clock();
   c1         = sg4::Comm::sendto_async(hosts[0], hosts[7], 1e8);
   c2         = sg4::Comm::sendto_async(hosts[0], hosts[7], 1.0);
   c1->wait();
   c2->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: 1 small and 1 large concurrent communications take %.4f seconds.", end_time - start_time);
   XBT_INFO("\n");
 
@@ -311,12 +311,12 @@ static void main_dispatcher()
   XBT_INFO("The two activities should overlap smoothly as they use different resources.");
   XBT_INFO("The completion time is thus the maximum of the time to complete the two activities.");
 
-  start_time = e->get_clock();
+  start_time = sg4::Engine::get_clock();
   c1         = sg4::Comm::sendto_async(hosts[0], hosts[4], 1.0);
   e1         = sg4::Exec::init()->set_flops_amount(2.0)->set_host(hosts[4])->start();
   e1->wait();
   c1->wait();
-  end_time = e->get_clock();
+  end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: Sending 1B while computing 2 flops takes %.4f seconds.", end_time - start_time);
   XBT_INFO("\n");
 }

@@ -16,7 +16,7 @@
 XBT_LOG_NEW_CATEGORY(sd, "Logging specific to SimDag");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_kernel, sd, "Logging specific to SimDag (kernel)");
 
-simgrid::sd::Global* sd_global = nullptr;
+std::unique_ptr<simgrid::sd::Global> sd_global = nullptr;
 
 namespace simgrid {
 namespace sd {
@@ -146,7 +146,7 @@ void SD_init_nocheck(int* argc, char** argv)
 {
   xbt_assert(sd_global == nullptr, "SD_init() already called");
 
-  sd_global = new simgrid::sd::Global(argc, argv);
+  sd_global = std::make_unique<simgrid::sd::Global>(argc, argv);
 
   simgrid::config::set_default<std::string>("host/model", "ptask_L07");
   if (simgrid::config::get_value<bool>("debug/clean-atexit"))
@@ -237,6 +237,5 @@ void SD_exit()
 #if SIMGRID_HAVE_JEDULE
   jedule_sd_exit();
 #endif
-  sd_global->engine_->shutdown();
-  delete sd_global;
+  simgrid::s4u::Engine::shutdown();
 }

@@ -453,7 +453,7 @@ void sg_platf_new_bypass_route(simgrid::kernel::routing::RouteCreationArgs* rout
 
 void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
 {
-  auto* engine   = simgrid::s4u::Engine::get_instance();
+  const auto* engine = simgrid::s4u::Engine::get_instance();
   sg_host_t host = sg_host_by_name(actor->host);
   if (not host) {
     // The requested host does not exist. Do a nice message to the user
