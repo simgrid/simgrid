@@ -7,6 +7,7 @@
 
 #include "simgrid/host.h"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp" // full type for NetZoneImpl object
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/zone.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
@@ -21,24 +22,24 @@ int main(int argc, char** argv)
 {
   int running;
 
-  surf_init(&argc, argv); /* Initialize some common structures */
+  simgrid::s4u::Engine e(&argc, argv);
 
-  simgrid::config::set_parse("network/model:CM02");
-  simgrid::config::set_parse("cpu/model:Cas01");
+  e.set_config("network/model:CM02");
+  e.set_config("cpu/model:Cas01");
 
   xbt_assert(argc > 1, "Usage: %s platform.xml\n", argv[0]);
-  parse_platform_file(argv[1]);
+  e.load_platform(argv[1]);
 
   /*********************** HOST ***********************************/
-  simgrid::s4u::Host* hostA = sg_host_by_name("Cpu A");
-  simgrid::s4u::Host* hostB = sg_host_by_name("Cpu B");
+  simgrid::s4u::Host* hostA = e.host_by_name("Cpu A");
+  simgrid::s4u::Host* hostB = e.host_by_name("Cpu B");
 
   /* Let's do something on it */
   hostA->get_cpu()->execution_start(1000.0, -1);
   hostB->get_cpu()->execution_start(1000.0, -1);
   hostB->get_cpu()->sleep(7.32);
 
-  const_sg_netzone_t as_zone = sg_zone_get_by_name("AS0");
+  const_sg_netzone_t as_zone = e.netzone_by_name_or_null("AS0");
   auto net_model             = as_zone->get_impl()->get_network_model();
   net_model->communicate(hostA, hostB, 150.0, -1.0);
 
@@ -47,10 +48,10 @@ int main(int argc, char** argv)
     simgrid::kernel::resource::Action* action = nullptr;
     running                                   = 0;
 
-    double now = surf_get_clock();
+    double now = e.get_clock();
     XBT_INFO("Next Event : %g", now);
 
-    for (auto const& model : simgrid::kernel::EngineImpl::get_instance()->get_all_models()) {
+    for (auto const& model : e.get_all_models()) {
       if (not model->get_started_action_set()->empty()) {
         XBT_DEBUG("\t Running that model");
         running = 1;
