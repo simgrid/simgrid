@@ -98,7 +98,7 @@ static int worker(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED char* argv[])
 int main(int argc, char* argv[])
 {
   MSG_init(&argc, argv);
-  xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
+  xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s platform.xml\n", argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
 

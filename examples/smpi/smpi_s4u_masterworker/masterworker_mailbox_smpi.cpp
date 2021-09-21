@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
 
   xbt_assert(argc > 2,
              "Usage: %s platform_file deployment_file\n"
-             "\nexample: %s msg_platform.xml msg_deployment.xml\n",
+             "\nexample: %s platform.xml deployment.xml\n",
              argv[0], argv[0]);
 
   e.load_platform(argv[1]);

@@ -59,8 +59,9 @@ static int sender(const char* box_name, simgrid::s4u::MutexPtr mutex, int value)
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  xbt_assert(argc > 1, "Usage: %s platform_file\n"
-                       "\tExample: %s msg_platform.xml\n",
+  xbt_assert(argc > 1,
+             "Usage: %s platform_file\n"
+             "\tExample: %s platform.xml\n",
              argv[0], argv[0]);
 
   simgrid::s4u::MutexPtr mutex;

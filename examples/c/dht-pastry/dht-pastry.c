@@ -515,7 +515,7 @@ int main(int argc, char* argv[])
   simgrid_init(&argc, argv);
   xbt_assert(argc > 2,
              "Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n"
-             "\tExample: %s ../msg_platform.xml pastry10.xml\n",
+             "\tExample: %s ../platform.xml pastry10.xml\n",
              argv[0], argv[0]);
 
   char** options = &argv[1];

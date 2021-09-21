@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
   simgrid_init(&argc, argv);
   xbt_assert(argc > 2,
              "Usage: %s platform_file deployment_file\n"
-             "\tExample: %s msg_platform.xml msg_deployment.xml\n",
+             "\tExample: %s platform.xml deployment.xml\n",
              argv[0], argv[0]);
 
   simgrid_register_function("alice", alice);

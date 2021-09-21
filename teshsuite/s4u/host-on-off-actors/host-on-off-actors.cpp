@@ -155,7 +155,7 @@ static void test_launcher(int test_number)
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  xbt_assert(argc == 3, "Usage: %s platform_file test_number\n\tExample: %s msg_platform.xml 1\n", argv[0], argv[0]);
+  xbt_assert(argc == 3, "Usage: %s platform_file test_number\n\tExample: %s platform.xml 1\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
 

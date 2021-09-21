@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 
   xbt_assert(argc > 3,
              "Usage: %s description_file platform_file deployment_file\n"
-             "\tExample: %s smpi_multiple_apps msg_platform.xml msg_deployment.xml\n",
+             "\tExample: %s smpi_multiple_apps platform.xml deployment.xml\n",
              argv[0], argv[0]);
 
   /*  Simulation setting */

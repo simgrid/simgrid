@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
   simgrid_init(&argc, argv);
   sg_cfg_set_string("plugin", "host_energy");
 
-  xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
+  xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s platform.xml\n", argv[0], argv[0]);
 
   simgrid_load_platform(argv[1]);
   sg_actor_create("dvfs_test", sg_host_by_name("MyHost1"), dvfs, 0, NULL);

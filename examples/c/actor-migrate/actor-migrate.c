@@ -58,7 +58,7 @@ static void monitor(int argc, char* argv[])
 int main(int argc, char* argv[])
 {
   simgrid_init(&argc, argv);
-  xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
+  xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s platform.xml\n", argv[0], argv[0]);
 
   simgrid_load_platform(argv[1]); /* - Load the platform description */
   sg_actor_create("monitor", sg_host_by_name("Boivin"), monitor, 0, NULL);

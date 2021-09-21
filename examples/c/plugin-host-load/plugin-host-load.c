@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
   sg_host_load_plugin_init();
   simgrid_init(&argc, argv);
 
-  xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
+  xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s platform.xml\n", argv[0], argv[0]);
 
   simgrid_load_platform(argv[1]);
   sg_actor_create("load_test", sg_host_by_name("MyHost1"), execute_load_test, 0, NULL);
