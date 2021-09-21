@@ -43,7 +43,7 @@ int main(int argc, char** argv)
 {
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform("../../platforms/two_hosts.xml");
-  simgrid::s4u::Actor::create("main", simgrid::s4u::Host::by_name("Tremblay"), master_fun);
+  simgrid::s4u::Actor::create("main", e.host_by_name("Tremblay"), master_fun);
   e.run();
 
   return 0;

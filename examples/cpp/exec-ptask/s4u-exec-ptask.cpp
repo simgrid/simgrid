@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
   xbt_assert(argc == 2, "Usage: %s <platform file>", argv[0]);
 
   e.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("test", simgrid::s4u::Host::by_name("MyHost1"), runner);
+  simgrid::s4u::Actor::create("test", e.host_by_name("MyHost1"), runner);
 
   e.run();
   XBT_INFO("Simulation done.");

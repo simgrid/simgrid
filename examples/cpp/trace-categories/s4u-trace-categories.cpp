@@ -64,8 +64,8 @@ int main(int argc, char* argv[])
   TRACE_category_with_color("data", "0 0 1");     // blue
   TRACE_category_with_color("finalize", "0 0 0"); // black
 
-  simgrid::s4u::Actor::create("master", simgrid::s4u::Host::by_name("Tremblay"), master);
-  simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Fafard"), worker);
+  simgrid::s4u::Actor::create("master", e.host_by_name("Tremblay"), master);
+  simgrid::s4u::Actor::create("worker", e.host_by_name("Fafard"), worker);
 
   e.run();
   return 0;

@@ -54,8 +54,8 @@ int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Tremblay"), worker, false);
-  simgrid::s4u::Actor::create("worker_timeout", simgrid::s4u::Host::by_name("Tremblay"), worker, true);
+  simgrid::s4u::Actor::create("worker", e.host_by_name("Tremblay"), worker, false);
+  simgrid::s4u::Actor::create("worker_timeout", e.host_by_name("Tremblay"), worker, true);
   e.run();
 
   return 0;

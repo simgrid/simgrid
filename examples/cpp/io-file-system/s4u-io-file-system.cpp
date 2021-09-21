@@ -81,7 +81,7 @@ int main(int argc, char** argv)
   simgrid::s4u::Engine e(&argc, argv);
   sg_storage_file_system_init();
   e.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("host", simgrid::s4u::Host::by_name("bob"), MyHost());
+  simgrid::s4u::Actor::create("host", e.host_by_name("bob"), MyHost());
   e.run();
 
   return 0;

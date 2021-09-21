@@ -59,9 +59,9 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("server", simgrid::s4u::Host::by_name("HostA"), server);
-  simgrid::s4u::Actor::create("client", simgrid::s4u::Host::by_name("HostB"), client, 1);
-  simgrid::s4u::Actor::create("client", simgrid::s4u::Host::by_name("HostC"), client, 2);
+  simgrid::s4u::Actor::create("server", e.host_by_name("HostA"), server);
+  simgrid::s4u::Actor::create("client", e.host_by_name("HostB"), client, 1);
+  simgrid::s4u::Actor::create("client", e.host_by_name("HostC"), client, 2);
 
   e.run();
   return 0;

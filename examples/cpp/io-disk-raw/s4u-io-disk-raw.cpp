@@ -64,8 +64,7 @@ int main(int argc, char** argv)
       XBT_INFO("  %s -> %s", kv.first.c_str(), kv.second.c_str());
   }
 
-
-  simgrid::s4u::Actor::create("", simgrid::s4u::Host::by_name("bob"), host);
+  simgrid::s4u::Actor::create("", e.host_by_name("bob"), host);
 
   e.run();
   XBT_INFO("Simulated time: %g", simgrid::s4u::Engine::get_clock());

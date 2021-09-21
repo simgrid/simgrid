@@ -44,25 +44,25 @@ int main(int argc, char* argv[])
   e.load_platform(argv[1]);
   double msg_size = 1E5;
 
-  /* Communication between STA in the same wifi zone */    
-  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("STA0-0"), sender, "1", msg_size, 10);
-  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("STA0-1"), receiver, "1");
-  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("STA0-1"), sender, "2", msg_size, 20);
-  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("STA0-0"), receiver, "2");
-  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("STA1-1"), sender, "3", msg_size, 30);
-  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("STA1-2"), receiver, "3");
-  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("STA1-2"), sender, "4", msg_size, 40);
-  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("STA1-1"), receiver, "4");
+  /* Communication between STA in the same wifi zone */
+  simgrid::s4u::Actor::create("sender", e.host_by_name("STA0-0"), sender, "1", msg_size, 10);
+  simgrid::s4u::Actor::create("receiver", e.host_by_name("STA0-1"), receiver, "1");
+  simgrid::s4u::Actor::create("sender", e.host_by_name("STA0-1"), sender, "2", msg_size, 20);
+  simgrid::s4u::Actor::create("receiver", e.host_by_name("STA0-0"), receiver, "2");
+  simgrid::s4u::Actor::create("sender", e.host_by_name("STA1-1"), sender, "3", msg_size, 30);
+  simgrid::s4u::Actor::create("receiver", e.host_by_name("STA1-2"), receiver, "3");
+  simgrid::s4u::Actor::create("sender", e.host_by_name("STA1-2"), sender, "4", msg_size, 40);
+  simgrid::s4u::Actor::create("receiver", e.host_by_name("STA1-1"), receiver, "4");
 
   /* Communication between STA of different wifi zones */
-  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("STA0-0"), sender, "5", msg_size, 50);
-  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("STA1-0"), receiver, "5");
-  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("STA1-0"), sender, "6", msg_size, 60);
-  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("STA0-0"), receiver, "6");
-  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("STA0-1"), sender, "7", msg_size, 70);
-  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("STA1-2"), receiver, "7");
-  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("STA1-2"), sender, "8", msg_size, 80);
-  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("STA0-1"), receiver, "8");
+  simgrid::s4u::Actor::create("sender", e.host_by_name("STA0-0"), sender, "5", msg_size, 50);
+  simgrid::s4u::Actor::create("receiver", e.host_by_name("STA1-0"), receiver, "5");
+  simgrid::s4u::Actor::create("sender", e.host_by_name("STA1-0"), sender, "6", msg_size, 60);
+  simgrid::s4u::Actor::create("receiver", e.host_by_name("STA0-0"), receiver, "6");
+  simgrid::s4u::Actor::create("sender", e.host_by_name("STA0-1"), sender, "7", msg_size, 70);
+  simgrid::s4u::Actor::create("receiver", e.host_by_name("STA1-2"), receiver, "7");
+  simgrid::s4u::Actor::create("sender", e.host_by_name("STA1-2"), sender, "8", msg_size, 80);
+  simgrid::s4u::Actor::create("receiver", e.host_by_name("STA0-1"), receiver, "8");
 
   e.run();
   return 0;

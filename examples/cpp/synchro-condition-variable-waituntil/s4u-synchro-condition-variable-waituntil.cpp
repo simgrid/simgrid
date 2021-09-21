@@ -54,8 +54,7 @@ int main(int argc, char* argv[])
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform("../../platforms/small_platform.xml");
 
-  auto host = simgrid::s4u::Host::by_name("Tremblay");
-  simgrid::s4u::Actor::create("main", host, main_actor);
+  simgrid::s4u::Actor::create("main", e.host_by_name("Tremblay"), main_actor);
 
   e.run();
   return 0;

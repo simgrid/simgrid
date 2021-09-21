@@ -56,12 +56,12 @@ int main(int argc, char* argv[])
   TRACE_link_variable_declare("Link_Capacity");
   TRACE_link_variable_declare_with_color("Link_Utilization", "0.9 0.1 0.1");
 
-  simgrid::s4u::Actor::create("master", simgrid::s4u::Host::by_name("Tremblay"), trace_fun);
-  simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Tremblay"), trace_fun);
-  simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Jupiter"), trace_fun);
-  simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Fafard"), trace_fun);
-  simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Ginette"), trace_fun);
-  simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Bourassa"), trace_fun);
+  simgrid::s4u::Actor::create("master", e.host_by_name("Tremblay"), trace_fun);
+  simgrid::s4u::Actor::create("worker", e.host_by_name("Tremblay"), trace_fun);
+  simgrid::s4u::Actor::create("worker", e.host_by_name("Jupiter"), trace_fun);
+  simgrid::s4u::Actor::create("worker", e.host_by_name("Fafard"), trace_fun);
+  simgrid::s4u::Actor::create("worker", e.host_by_name("Ginette"), trace_fun);
+  simgrid::s4u::Actor::create("worker", e.host_by_name("Bourassa"), trace_fun);
 
   e.run();
   return 0;

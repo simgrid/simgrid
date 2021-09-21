@@ -51,8 +51,8 @@ int main(int argc, char* argv[])
 
   TRACE_category("migration_order");
 
-  sg4::Actor::create("emigrant", sg4::Host::by_name("Fafard"), emigrant);
-  sg4::Actor::create("policeman", sg4::Host::by_name("Tremblay"), policeman);
+  sg4::Actor::create("emigrant", e.host_by_name("Fafard"), emigrant);
+  sg4::Actor::create("policeman", e.host_by_name("Tremblay"), policeman);
 
   e.run();
   return 0;

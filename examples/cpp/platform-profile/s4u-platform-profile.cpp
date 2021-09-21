@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("watcher", simgrid::s4u::Host::by_name("Tremblay"), watcher);
+  simgrid::s4u::Actor::create("watcher", e.host_by_name("Tremblay"), watcher);
 
   e.run(); /* - Run the simulation */
 

@@ -42,8 +42,8 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("executor", simgrid::s4u::Host::by_name("Tremblay"), executor);
-  simgrid::s4u::Actor::create("privileged", simgrid::s4u::Host::by_name("Tremblay"), privileged);
+  simgrid::s4u::Actor::create("executor", e.host_by_name("Tremblay"), executor);
+  simgrid::s4u::Actor::create("privileged", e.host_by_name("Tremblay"), privileged);
 
   e.run();
 

@@ -67,10 +67,10 @@ int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("test", simgrid::s4u::Host::by_name("bob"), test, 2e7);
-  simgrid::s4u::Actor::create("test_waitfor", simgrid::s4u::Host::by_name("alice"), test_waitfor, 5e7);
-  simgrid::s4u::Actor::create("test_cancel", simgrid::s4u::Host::by_name("alice"), test_cancel, 5e7);
-  simgrid::s4u::Actor::create("test_monitor", simgrid::s4u::Host::by_name("alice"), test_monitor, 5e7);
+  simgrid::s4u::Actor::create("test", e.host_by_name("bob"), test, 2e7);
+  simgrid::s4u::Actor::create("test_waitfor", e.host_by_name("alice"), test_waitfor, 5e7);
+  simgrid::s4u::Actor::create("test_cancel", e.host_by_name("alice"), test_cancel, 5e7);
+  simgrid::s4u::Actor::create("test_monitor", e.host_by_name("alice"), test_monitor, 5e7);
 
   e.run();
 

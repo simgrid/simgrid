@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("test", simgrid::s4u::Host::by_name("Fafard"), wizard);
+  simgrid::s4u::Actor::create("test", e.host_by_name("Fafard"), wizard);
 
   e.run();
 

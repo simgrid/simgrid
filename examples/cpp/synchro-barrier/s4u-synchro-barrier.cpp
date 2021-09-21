@@ -42,7 +42,7 @@ int main(int argc, char **argv)
   xbt_assert(actor_count > 0, "<actor-count> must be greater than 0");
 
   e.load_platform("../../platforms/two_hosts.xml");
-  simgrid::s4u::Actor::create("master", simgrid::s4u::Host::by_name("Tremblay"), master, actor_count);
+  simgrid::s4u::Actor::create("master", e.host_by_name("Tremblay"), master, actor_count);
   e.run();
 
   return 0;

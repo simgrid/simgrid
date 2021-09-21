@@ -35,8 +35,8 @@ int main(int argc, char* argv[])
 
   /* Exchange a message between the 2 stations */
   auto mailbox  = simgrid::s4u::Mailbox::by_name("mailbox");
-  auto station1 = simgrid::s4u::Host::by_name("Station 1");
-  auto station2 = simgrid::s4u::Host::by_name("Station 2");
+  auto station1 = e.host_by_name("Station 1");
+  auto station2 = e.host_by_name("Station 2");
   simgrid::s4u::Actor::create("sender", station1, sender, mailbox, 1e7);
   simgrid::s4u::Actor::create("receiver", station2, receiver, mailbox);
 

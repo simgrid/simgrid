@@ -56,9 +56,9 @@ int main(int argc, char* argv[])
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Host* fafard  = simgrid::s4u::Host::by_name("Fafard");
-  simgrid::s4u::Host* ginette = simgrid::s4u::Host::by_name("Ginette");
-  simgrid::s4u::Host* boivin  = simgrid::s4u::Host::by_name("Boivin");
+  simgrid::s4u::Host* fafard  = e.host_by_name("Fafard");
+  simgrid::s4u::Host* ginette = e.host_by_name("Ginette");
+  simgrid::s4u::Host* boivin  = e.host_by_name("Boivin");
 
   simgrid::s4u::Actor::create("wait", fafard, waiter);
   simgrid::s4u::Actor::create("monitor", ginette, monitor);

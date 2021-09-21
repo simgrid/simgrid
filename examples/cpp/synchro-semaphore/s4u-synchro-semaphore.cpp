@@ -45,8 +45,8 @@ int main(int argc, char **argv)
   std::vector<std::string> args({"one", "two", "three", ""});
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform("../../platforms/two_hosts.xml");
-  simgrid::s4u::Actor::create("producer", simgrid::s4u::Host::by_name("Tremblay"), producer, std::cref(args));
-  simgrid::s4u::Actor::create("consumer", simgrid::s4u::Host::by_name("Jupiter"), consumer);
+  simgrid::s4u::Actor::create("producer", e.host_by_name("Tremblay"), producer, std::cref(args));
+  simgrid::s4u::Actor::create("consumer", e.host_by_name("Jupiter"), consumer);
   e.run();
 
   return 0;

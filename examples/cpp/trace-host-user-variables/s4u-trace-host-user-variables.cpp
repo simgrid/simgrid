@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
   TRACE_host_variable_declare("HDD_capacity");
   TRACE_host_variable_declare("HDD_utilization");
 
-  simgrid::s4u::Actor::create("master", simgrid::s4u::Host::by_name("Tremblay"), trace_fun);
+  simgrid::s4u::Actor::create("master", e.host_by_name("Tremblay"), trace_fun);
 
   e.run();
 
