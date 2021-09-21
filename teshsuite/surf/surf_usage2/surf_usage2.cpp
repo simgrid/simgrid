@@ -48,7 +48,7 @@ int main(int argc, char** argv)
     simgrid::kernel::resource::Action* action = nullptr;
     running                                   = 0;
 
-    double now = e.get_clock();
+    double now = simgrid::s4u::Engine::get_clock();
     XBT_INFO("Next Event : %g", now);
 
     for (auto const& model : e.get_all_models()) {

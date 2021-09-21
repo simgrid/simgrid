@@ -67,7 +67,7 @@ int main(int argc, char* argv[])
 
   e.run();
 
-  XBT_INFO("Total simulation time: %.3f", e.get_clock());
+  XBT_INFO("Total simulation time: %.3f", sg4::Engine::get_clock());
 
   return 0;
 }

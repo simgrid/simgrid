@@ -173,7 +173,7 @@ int main(int argc, char* argv[])
   simgrid::s4u::Actor::create("peer", e.host_by_name("node-8.simgrid.org"), peer);
 
   e.run();
-  XBT_INFO("Total simulation time: %e", e.get_clock());
+  XBT_INFO("Total simulation time: %e", simgrid::s4u::Engine::get_clock());
 
   return 0;
 }

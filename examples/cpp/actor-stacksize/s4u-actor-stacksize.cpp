@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
   sg4::Actor::create("actor", e.host_by_name("Tremblay"), actor);
 
   e.run();
-  XBT_INFO("Simulation time %g", e.get_clock());
+  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
 
   return 0;
 }

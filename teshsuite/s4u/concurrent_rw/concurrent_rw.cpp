@@ -38,7 +38,7 @@ int main(int argc, char** argv)
     sg4::Actor::create("host", e.host_by_name("bob"), host);
 
   e.run();
-  XBT_INFO("Simulation time %g", e.get_clock());
+  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
 
   return 0;
 }

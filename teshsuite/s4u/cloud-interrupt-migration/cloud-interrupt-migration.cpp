@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
 
   e.run();
 
-  XBT_INFO("Bye (simulation time %g)", e.get_clock());
+  XBT_INFO("Bye (simulation time %g)", simgrid::s4u::Engine::get_clock());
 
   return 0;
 }

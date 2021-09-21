@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
   surf_solve(-1.0);
   do {
-    XBT_INFO("Next Event : %g", e.get_clock());
+    XBT_INFO("Next Event : %g", simgrid::s4u::Engine::get_clock());
     XBT_DEBUG("\t CPU actions");
 
     simgrid::kernel::resource::Action::StateSet* action_list = cpu_model_pm->get_failed_action_set();
