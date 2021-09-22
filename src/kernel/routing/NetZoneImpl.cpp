@@ -72,12 +72,13 @@ xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routi
 
 NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
 {
+  auto* engine = s4u::Engine::get_instance();
   /* workaroud: first netzoneImpl will be the root netzone.
    * Without globals and with current surf_*_model_description init functions, we need
    * the root netzone to exist when creating the models.
    * This was usually done at sg_platf.cpp, during XML parsing */
-  if (not s4u::Engine::get_instance()->get_netzone_root()) {
-    s4u::Engine::get_instance()->set_netzone_root(&piface_);
+  if (not engine->get_netzone_root()) {
+    engine->set_netzone_root(&piface_);
     /* root netzone set, initialize models */
     simgrid::s4u::Engine::on_platform_creation();
 
@@ -91,7 +92,7 @@ NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
     surf_config_models_setup();
   }
 
-  xbt_assert(nullptr == s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name()),
+  xbt_assert(nullptr == engine->netpoint_by_name_or_null(get_name()),
              "Refusing to create a second NetZone called '%s'.", get_cname());
   netpoint_ = new NetPoint(name_, NetPoint::Type::NetZone);
   XBT_DEBUG("NetZone '%s' created with the id '%lu'", get_cname(), netpoint_->id());

@@ -20,8 +20,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_vm, ker_resource, "Virtual Machines, contain
 void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model)
 {
   auto vm_model = std::make_shared<simgrid::vm::VMModel>("VM_HL13");
+  auto* engine  = simgrid::kernel::EngineImpl::get_instance();
 
-  simgrid::kernel::EngineImpl::get_instance()->add_model(vm_model, {cpu_pm_model});
+  engine->add_model(vm_model, {cpu_pm_model});
   std::shared_ptr<simgrid::kernel::resource::CpuModel> cpu_model_vm;
 
   auto cpu_optim = simgrid::config::get_value<std::string>("cpu/optim");
@@ -30,8 +31,8 @@ void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model)
   } else {
     cpu_model_vm = std::make_shared<simgrid::kernel::resource::CpuCas01Model>("VmCpu_Cas01");
   }
-  simgrid::kernel::EngineImpl::get_instance()->add_model(cpu_model_vm, {cpu_pm_model, vm_model.get()});
-  simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->set_cpu_vm_model(cpu_model_vm);
+  engine->add_model(cpu_model_vm, {cpu_pm_model, vm_model.get()});
+  engine->get_netzone_root()->set_cpu_vm_model(cpu_model_vm);
 }
 
 namespace simgrid {
