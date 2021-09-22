@@ -1334,8 +1334,8 @@ DVFS
 
       .. doxygenfunction:: simgrid::s4u::Host::get_pstate() const
       .. doxygenfunction:: simgrid::s4u::Host::get_pstate_count() const
-      .. doxygenfunction:: simgrid::s4u::Host::get_pstate_speed(int pstate_index) const
-      .. doxygenfunction:: simgrid::s4u::Host::set_pstate(int pstate_index)
+      .. doxygenfunction:: simgrid::s4u::Host::get_pstate_speed(unsigned long pstate_index) const
+      .. doxygenfunction:: simgrid::s4u::Host::set_pstate(unsigned long pstate_index)
       .. doxygenfunction:: simgrid::s4u::Host::set_speed_profile(kernel::profile::Profile *p)
       .. doxygenfunction:: simgrid::s4u::Host::set_state_profile(kernel::profile::Profile *p)
 
@@ -1349,8 +1349,8 @@ DVFS
       .. doxygenfunction:: sg_host_get_available_speed(const_sg_host_t host)
       .. doxygenfunction:: sg_host_get_nb_pstates(const_sg_host_t host)
       .. doxygenfunction:: sg_host_get_pstate(const_sg_host_t host)
-      .. doxygenfunction:: sg_host_get_pstate_speed(const_sg_host_t host, int pstate_index)
-      .. doxygenfunction:: sg_host_set_pstate(sg_host_t host, int pstate)
+      .. doxygenfunction:: sg_host_get_pstate_speed(const_sg_host_t host, unsigned long pstate_index)
+      .. doxygenfunction:: sg_host_set_pstate(sg_host_t host, unsigned long pstate)
 
 Execution
 ---------
@@ -1609,7 +1609,7 @@ Basic management
       idiom on network zones because SimGrid does not allow (yet) to create nor
       destroy resources once the simulation is started. 
 
-      .. automethod:: simgrid.NetZone.seal
+      .. doxygenfunction:: simgrid::s4u::NetZone::seal
 
    .. group-tab:: Python
 
@@ -1750,7 +1750,7 @@ Zones
      .. doxygenfunction:: simgrid::s4u::create_floyd_zone(const std::string& name)
      .. doxygenfunction:: simgrid::s4u::create_vivaldi_zone(const std::string& name)
      .. doxygenfunction:: simgrid::s4u::create_wifi_zone(const std::string& name)
-     .. doxygenfunction:: simgrid::s4u::create_torus_zone(const std::string& name, const NetZone* parent, const std::vector<unsigned int>& dimensions, const ClusterCallbacks& set_callbacks, double bandwidth, double latency, Link::SharingPolicy sharing_policy)
+     .. doxygenfunction:: simgrid::s4u::create_torus_zone
      .. doxygenfunction:: simgrid::s4u::create_fatTree_zone(const std::string& name, const NetZone* parent, const FatTreeParams& parameters, const ClusterCallbacks& set_callbacks, double bandwidth, double latency, Link::SharingPolicy sharing_policy)
      .. doxygenfunction:: simgrid::s4u::create_dragonfly_zone(const std::string& name, const NetZone* parent, const DragonflyParams& parameters, const ClusterCallbacks& set_callbacks, double bandwidth, double latency, Link::SharingPolicy sharing_policy)
 
@@ -2050,7 +2050,7 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Comm::set_dst_data(void **buff, size_t size)
       .. doxygenfunction:: simgrid::s4u::Comm::detach()
       .. doxygenfunction:: simgrid::s4u::Comm::detach(void(*clean_function)(void *))
-      .. doxygenfunction:: simgrid::s4u::Comm::set_payload_size(double bytes)
+      .. doxygenfunction:: simgrid::s4u::Comm::set_payload_size(uint64_t bytes)
       .. doxygenfunction:: simgrid::s4u::Comm::set_rate(double rate)
       .. doxygenfunction:: simgrid::s4u::Comm::set_src_data(void *buff)
       .. doxygenfunction:: simgrid::s4u::Comm::set_src_data(void *buff, size_t size)
