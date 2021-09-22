@@ -101,7 +101,7 @@ https://hal.inria.fr/hal-01523608
 
 .. _howto_churn:
 
-Modeling Churn (e.g., in P2P)
+Modeling churn (e.g., in P2P)
 *****************************
 
 One of the biggest challenges in P2P settings is to cope with the
@@ -137,10 +137,10 @@ listing the events, or something else if you wish.
 
 .. _howto_multicore:
 
-Modeling Multicore Machines
+Modeling multicore machines
 ***************************
 
-Default Model
+Default model
 =============
 
 Multicore machines are very complex, and there are many ways to model
@@ -186,7 +186,7 @@ and unconvincing, but some users achieved very realistic simulations
 of multicore and GPU machines this way.
 
 Modeling machine boot and shutdown periods
-********************************************
+******************************************
 
 When a physical host boots up, a lot of things happen. It takes time
 during which the machine is not usable but dissipates energy, and
@@ -288,8 +288,4 @@ So the final platform for our example becomes :
         <link_ctn id="link2"/>
     </route>
 
-
-:ref:`Modeling I/O: the realistic way<howto_disk>`
-*****************
-
-Tutorial available at: :ref:`howto_disk`.
+.. include:: tuto_disk/analysis.irst
