@@ -25,8 +25,25 @@ following lines, or several lines if you need several languages.
    $ apt install simgrid-java    # if you want to develop in Java
    $ apt install python3-simgrid # if you want to develop in Python
 
+If you use the Nix_ package manager, the latest SimGrid release is packaged as ``simgrid`` in Nixpkgs_.
+Previous SimGrid versions are maintained in `NUR-Kapack`_ and are available
+pre-compiled in release and debug modes on the `capack cachix binary cache`_
+— refer to `NUR-Kapack's documentation`_ for usage instructions.
+
+If you use a pacman-based system (*e.g.*, Arch Linux and derived distributions),
+the latest SimGrid is available in the `simgrid AUR package`_
+— refer to `AUR official documentation`_ for installation instructions.
+
 If you build pre-compiled packages for other distributions, drop us an
 email.
+
+.. _Nix: https://nixos.org/
+.. _Nixpkgs: https://github.com/NixOS/nixpkgs
+.. _NUR-Kapack: https://github.com/oar-team/nur-kapack
+.. _capack cachix binary cache: https://app.cachix.org/cache/capack
+.. _NUR-Kapack's documentation: https://github.com/oar-team/nur-kapack
+.. _simgrid AUR package: https://aur.archlinux.org/packages/simgrid/
+.. _AUR official documentation: https://wiki.archlinux.org/title/Arch_User_Repository
 
 .. _install_java_precompiled:
 
