@@ -967,7 +967,7 @@ set(DOC_SOURCES
   docs/source/tuto_smpi/roundtrip.c
 
   docs/source/tuto_disk/analysis.org
-  docs/source/tuto_disk/analysis.rst
+  docs/source/tuto_disk/analysis.irst
   docs/source/tuto_disk/CMakeLists.txt
   docs/source/tuto_disk/Dockerfile
   docs/source/tuto_disk/fig/edel_read_dhist.png

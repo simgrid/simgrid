@@ -27,6 +27,8 @@
 
 + \.github/.*
 
++ docs/default.nix
+
 + tools/appveyor-irc-notify\.py
 + tools/docker/.*
 + tools/git-hooks/.*

@@ -1890,8 +1890,8 @@ include docs/source/index.rst
 include docs/source/intl.rst
 include docs/source/tuto_disk/CMakeLists.txt
 include docs/source/tuto_disk/Dockerfile
+include docs/source/tuto_disk/analysis.irst
 include docs/source/tuto_disk/analysis.org
-include docs/source/tuto_disk/analysis.rst
 include docs/source/tuto_disk/fig/edel_read_dhist.png
 include docs/source/tuto_disk/fig/edel_write_dhist.png
 include docs/source/tuto_disk/fig/griffon_deg.png
