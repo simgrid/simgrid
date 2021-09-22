@@ -58,6 +58,8 @@ Library not found: boost-context
    You should obviously install the ``boost-context`` library on your
    machine, for example with ``apt``.
 
+.. _deprecation_policy:
+
 Version numbering and deprecation
 ---------------------------------
 

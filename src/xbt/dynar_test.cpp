@@ -18,7 +18,6 @@ TEST_CASE("xbt::dynar: generic C vector", "dynar")
 {
   SECTION("Dynars of integers")
   {
-    /* Vars_decl [doxygen cruft] */
     int cpt;
     unsigned int cursor;
 
@@ -32,7 +31,6 @@ TEST_CASE("xbt::dynar: generic C vector", "dynar")
     /* in your code is naturally the way to go outside a regression test */
 
     INFO("==== Push " << NB_ELEM << " int, set them again 3 times, traverse them, shift them");
-    /* Populate_ints [doxygen cruft] */
     /* 1. Populate the dynar */
     d = xbt_dynar_new(sizeof(int), nullptr);
     for (int i = 0; i < NB_ELEM; i++) {

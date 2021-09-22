@@ -71,13 +71,12 @@ static inline void _xbt_dynar_get_elm(void* dst, const_xbt_dynar_t dynar, unsign
   memcpy(dst, elm, dynar->elmsize);
 }
 
-/** @brief Constructor
+/**
+ * Creates a new dynar. If a @c free_f is provided, the elements have to be pointer of pointer. That is to say that
+ * dynars can contain either base types (int, char, double, etc) or pointer of pointers (struct **).
  *
  * @param elmsize size of each element in the dynar
  * @param free_f function to call each time we want to get rid of an element (or nullptr if nothing to do).
- *
- * Creates a new dynar. If a free_func is provided, the elements have to be pointer of pointer. That is to say that
- * dynars can contain either base types (int, char, double, etc) or pointer of pointers (struct **).
  */
 xbt_dynar_t xbt_dynar_new(const unsigned long elmsize, void_f_pvoid_t free_f)
 {
@@ -92,12 +91,10 @@ xbt_dynar_t xbt_dynar_new(const unsigned long elmsize, void_f_pvoid_t free_f)
   return dynar;
 }
 
-/** @brief Destructor of the structure not touching to the content
+/** Destructor of the structure leaving the content unmodified. Ie, the array is freed, but the content is not touched
+ * (the @a free_f function is not used).
  *
  * @param dynar poor victim
- *
- * kilkil a dynar BUT NOT its content. Ie, the array is freed, but the content is not touched (the @a free_f function
- * is not used)
  */
 void xbt_dynar_free_container(xbt_dynar_t* dynar)
 {
@@ -109,10 +106,7 @@ void xbt_dynar_free_container(xbt_dynar_t* dynar)
   }
 }
 
-/** @brief Frees the content and set the size to 0
- *
- * @param dynar who to squeeze
- */
+/** @brief Frees the content and set the size to 0 */
 void xbt_dynar_reset(xbt_dynar_t dynar)
 {
   _sanity_check_dynar(dynar);
@@ -125,27 +119,19 @@ void xbt_dynar_reset(xbt_dynar_t dynar)
 }
 
 /**
- * @brief Shrink the dynar by removing empty slots at the end of the internal array
- * @param dynar a dynar
- * @param empty_slots_wanted number of empty slots you want to keep at the end of the internal array for further
- * insertions
+ * Shrinks (reduces) the dynar by removing empty slots in the internal storage to save memory.
+ * If @c empty_slots_wanted is not zero, this operation preserves that amount of empty slot, for fast future additions.
+ * Note that if @c empty_slots_wanted is large enough, the internal array is expanded instead of shrunk.
  *
- * Reduces the internal array size of the dynar to the number of elements plus @a empty_slots_wanted.
- * After removing elements from the dynar, you can call this function to make the dynar use less memory.
- * Set @a empty_slots_wanted to zero to reduce the dynar internal array as much as possible.
- * Note that if @a empty_slots_wanted is greater than the array size, the internal array is expanded instead of shrunk.
+ * @param dynar a dynar
+ * @param empty_slots_wanted number of empty slots elements that can be inserted the internal storage without resizing it
  */
 void xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots_wanted)
 {
   _xbt_dynar_resize(dynar, dynar->used + empty_slots_wanted);
 }
 
-/** @brief Destructor
- *
- * @param dynar poor victim
- *
- * kilkil a dynar and its content
- */
+/** @brief Destructor: kilkil a dynar and its content. */
 void xbt_dynar_free(xbt_dynar_t* dynar)
 {
   if (dynar && *dynar) {
@@ -154,19 +140,13 @@ void xbt_dynar_free(xbt_dynar_t* dynar)
   }
 }
 
-/** @brief Count of dynar's elements
- *
- * @param dynar the dynar we want to measure
- */
+/** @brief Count of dynar's elements */
 unsigned long xbt_dynar_length(const_xbt_dynar_t dynar)
 {
   return (dynar ? dynar->used : 0UL);
 }
 
-/**@brief check if a dynar is empty
- *
- *@param dynar the dynat we want to check
- */
+/**@brief check if a dynar is empty */
 int xbt_dynar_is_empty(const_xbt_dynar_t dynar)
 {
   return (xbt_dynar_length(dynar) == 0);
@@ -188,11 +168,7 @@ void xbt_dynar_get_cpy(const_xbt_dynar_t dynar, unsigned long idx, void* dst)
 
 /** @brief Retrieve a pointer to the Nth element of a dynar.
  *
- * @param dynar information dealer
- * @param idx index of the slot we want to retrieve
- * @return the @a idx-th element of @a dynar.
- *
- * @warning The returned value is the actual content of the dynar.
+ * Note that the returned value is the actual content of the dynar.
  * Make a copy before fooling with it.
  */
 void* xbt_dynar_get_ptr(const_xbt_dynar_t dynar, unsigned long idx)
@@ -261,7 +237,7 @@ void xbt_dynar_insert_at(xbt_dynar_t dynar, int idx, const void* src)
   memcpy(xbt_dynar_insert_at_ptr(dynar, idx), src, dynar->elmsize);
 }
 
-/** @brief Remove the Nth dynar's element, sliding the previous values to the left
+/** @brief Remove the Nth element, sliding other values to the left
  *
  * Get the Nth element of a dynar, removing it from the dynar and moving all subsequent values to one position left in
  * the dynar.
@@ -293,7 +269,7 @@ void xbt_dynar_remove_at(xbt_dynar_t dynar, int idx, void* object)
 /** @brief Returns a boolean indicating whether the element is part of the dynar
  *
  * Beware that if your dynar contains pointed values (such as strings) instead of scalar, this function is probably not
- * what you want.
+ * what you want. It would compare the pointer values, not the pointed elements.
  */
 int xbt_dynar_member(const_xbt_dynar_t dynar, const void* elem)
 {
@@ -388,21 +364,21 @@ void xbt_dynar_map(const_xbt_dynar_t dynar, void_f_pvoid_t op)
  * a comparison function. Here is a quick example if you have integers in your dynar:
  *
  * @verbatim
- * int cmpfunc (const void * a, const void * b) {
- *   int intA = *(int*)a;
- *   int intB = *(int*)b;
- *   return intA - intB;
- * }
- * @endverbatim
+   int cmpfunc (const void * a, const void * b) {
+     int intA = *(int*)a;
+     int intB = *(int*)b;
+     return intA - intB;
+   }
+   @endverbatim
  *
- * and now to sort a dynar of MSG hosts depending on their speed:
+ * And now, a function to sort a dynar of MSG hosts depending on their speed:
  * @verbatim
- * int cmpfunc(const MSG_host_t a, const MSG_host_t b) {
- *   MSG_host_t hostA = *(MSG_host_t*)a;
- *   MSG_host_t hostB = *(MSG_host_t*)b;
- *   return MSG_host_get_speed(hostA) - MSG_host_get_speed(hostB);
- * }
- * @endverbatim
+   int cmpfunc(const MSG_host_t a, const MSG_host_t b) {
+     MSG_host_t hostA = *(MSG_host_t*)a;
+     MSG_host_t hostB = *(MSG_host_t*)b;
+     return MSG_host_get_speed(hostA) - MSG_host_get_speed(hostB);
+   }
+   @endverbatim
  *
  * @param dynar the dynar to sort
  * @param compar_fn comparison function of type (int (compar_fn*) (const void*) (const void*)).

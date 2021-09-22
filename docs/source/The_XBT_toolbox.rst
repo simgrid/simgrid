@@ -185,3 +185,166 @@ single integer comparison at runtime, and the parameters are not even evaluated.
 You can even specify a compile-time threshold that will completely remove every logging below the specified priority. Passing ``-DNDEBUG`` to cmake disables every logging of
 priority below INFO while ``-DNLOG`` removes any logging at compile time. Note that using this feature may hinder the stability of SimGrid, as we consider the logs to be fast
 enough to not thoughtfully test the case where they are removed at compile time.
+
+Dynamic arrays
+**************
+
+As SimGrid used to be written in pure C, it used to rely on custom data containers such as dynamic arrays and dictionnaries. Nowadays, the standard library of
+C++ is used internally, but some part of the interface still rely on the old containers, that are thus still available. 
+
+.. warning:: 
+
+   You should probably not start a new project using these data structures,  as we will :ref:`deprecate them from SimGrid <deprecation_policy>` 
+   as soon as possible. Better implementations exist out there anyway, in particular if you're not writting pure C code.
+
+.. doxygentypedef:: xbt_dynar_t
+.. doxygentypedef:: const_xbt_dynar_t
+
+Creation and destruction
+========================
+
+.. doxygenfunction:: xbt_dynar_new
+.. doxygenfunction:: xbt_dynar_free
+.. doxygenfunction:: xbt_dynar_free_container
+.. doxygenfunction:: xbt_dynar_shrink
+
+Dynars as regular arrays
+========================
+   
+.. doxygenfunction:: xbt_dynar_get_cpy
+.. doxygenfunction:: xbt_dynar_insert_at
+.. doxygenfunction:: xbt_dynar_remove_at
+.. doxygenfunction:: xbt_dynar_member
+.. doxygenfunction:: xbt_dynar_sort
+
+Dynar size
+==========
+
+.. doxygenfunction:: xbt_dynar_is_empty
+.. doxygenfunction:: xbt_dynar_length
+.. doxygenfunction:: xbt_dynar_reset
+   
+Perl-like interface
+===================
+
+.. doxygenfunction:: xbt_dynar_push
+.. doxygenfunction:: xbt_dynar_pop
+.. doxygenfunction:: xbt_dynar_unshift
+.. doxygenfunction:: xbt_dynar_shift
+.. doxygenfunction:: xbt_dynar_map
+
+Direct content manipulation
+===========================
+
+Those functions do not retrieve the content, but only their address.
+
+.. doxygenfunction:: xbt_dynar_set_at_ptr
+.. doxygenfunction:: xbt_dynar_get_ptr
+.. doxygenfunction:: xbt_dynar_insert_at_ptr
+.. doxygenfunction:: xbt_dynar_push_ptr
+.. doxygenfunction:: xbt_dynar_pop_ptr
+
+Dynars of scalars
+=================
+
+While the other functions use a memcpy to retrieve the content into the user provided area, those ones use a
+regular affectation. It only works for scalar values, but should be a little faster.
+
+.. doxygendefine:: xbt_dynar_get_as
+.. doxygendefine:: xbt_dynar_set_as
+
+.. doxygendefine:: xbt_dynar_getlast_as
+.. doxygendefine:: xbt_dynar_getfirst_as
+.. doxygendefine:: xbt_dynar_push_as
+.. doxygendefine:: xbt_dynar_pop_as
+
+Iterating over Dynars
+=====================
+
+.. doxygendefine:: xbt_dynar_foreach
+
+Example with scalar values
+==========================
+
+.. code-block:: c
+
+   xbt_dynar_t d = xbt_dynar_new(sizeof(int), nullptr);
+
+   /* 1. Populate the dynar */
+   xbt_dynar_t d = xbt_dynar_new(sizeof(int), nullptr);
+   for (int cpt = 0; cpt < NB_ELEM; cpt++) {
+     xbt_dynar_push_as(d, int, cpt);     /* This is faster (and possible only with scalars) */
+     /* xbt_dynar_push(d,&cpt);       This would also work */
+     xbt_test_log("Push %d, length=%lu", cpt, xbt_dynar_length(d));
+   }
+
+   /* 2. Traverse manually the dynar */
+   for (cursor = 0; cursor < NB_ELEM; cursor++) {
+     int* iptr = (int*)xbt_dynar_get_ptr(d, cursor);
+   /* 1. Populate further the dynar */
+   for (int cpt = 0; cpt < NB_ELEM; cpt++) {
+     xbt_dynar_insert_at(d, cpt, &cpt);
+     xbt_test_log("Push %d, length=%lu", cpt, xbt_dynar_length(d));
+   }
+
+   /* 3. Traverse the dynar */
+   int cpt;
+   xbt_dynar_foreach(d, cursor, cpt) {
+     xbt_test_assert(cursor == (unsigned int) cpt, "The retrieved value is not the same than the injected one (%u!=%d)", cursor, cpt);
+   }
+
+   /* 4. Reset the values */
+   for (int i = 0; i < NB_ELEM; i++)
+     *(int*)xbt_dynar_get_ptr(d, i) = i;
+
+   /* 5. Shift all the values */
+   for (int i = 0; i < NB_ELEM; i++) {
+      int val;
+      xbt_dynar_shift(d, &val);
+   }
+   // the dynar is empty after shifting all values
+
+   /* 5. Free the resources */
+   xbt_dynar_free(&d);
+
+Example with pointed values
+===========================
+
+.. code-block:: c
+
+   xbt_dynar_t d = xbt_dynar_new(sizeof(char*), &xbt_free_ref);
+
+   /// Push/shift example 
+   for (int i = 0; i < NB_ELEM; i++) {
+     char * val = xbt_strdup("hello");
+     xbt_dynar_push(d, &val);
+   }
+   for (int i = 0; i < NB_ELEM; i++) {
+     char *val;
+     xbt_dynar_shift(d, &val);
+     REQUIRE("hello" == val);
+     xbt_free(val);
+   }
+   xbt_dynar_free(&d);
+
+   /// Unshift, traverse and pop example
+   d = xbt_dynar_new(sizeof(char**), &xbt_free_ref);
+   for (int i = 0; i < NB_ELEM; i++) {
+     std::string val = std::to_string(i);
+     s1              = xbt_strdup(val.c_str());
+     xbt_dynar_unshift(d, &s1);
+   }
+   /* 2. Traverse the dynar with the macro */
+   xbt_dynar_foreach (d, iter, s1) {
+     std::string val = std::to_string(NB_ELEM - iter - 1);
+     REQUIRE(s1 == val); // The retrieved value is not the same than the injected one
+   }
+   /* 3. Traverse the dynar with the macro */
+   for (int i = 0; i < NB_ELEM; i++) {
+     std::string val = std::to_string(i);
+     xbt_dynar_pop(d, &s2);
+     REQUIRE(s2 == val); // The retrieved value is not the same than the injected one
+     xbt_free(s2);
+   }
+   /* 4. Free the resources */
+   xbt_dynar_free(&d);

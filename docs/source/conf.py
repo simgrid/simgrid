@@ -124,6 +124,7 @@ nitpick_ignore = [
   ('cpp:identifier', 'this_actor'),
   ('cpp:identifier', 'uint64_t'),
   ('cpp:identifier', 'xbt'),
+  ('cpp:identifier', 'xbt_dynar_s'),
   ('cpp:identifier', 'xbt::Extendable<Actor>'),
   ('cpp:identifier', 'xbt::Extendable<Disk>'),
   ('cpp:identifier', 'xbt::Extendable<File>'),
