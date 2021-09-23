@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2011 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -25,7 +25,7 @@ C
 C
 C Test of reduce scatter.
 C
-C Each processor contributes its rank + the index to the reduction, 
+C Each processor contributes its rank + the index to the reduction,
 C then receives the ith sum
 C
 C Can be called with any number of processors.
@@ -58,11 +58,11 @@ C
          recvcounts(i) = 1
       enddo
 
-      call mpi_reduce_scatter( sendbuf, recvbuf, recvcounts, 
+      call mpi_reduce_scatter( sendbuf, recvbuf, recvcounts,
      &     MPI_INTEGER, MPI_SUM, comm, ierr )
 
       sumval = size * rank + ((size - 1) * size)/2
-C recvbuf should be size * (rank + i) 
+C recvbuf should be size * (rank + i)
       if (recvbuf .ne. sumval) then
          errs = errs + 1
          print *, "Did not get expected value for reduce scatter"
@@ -70,11 +70,11 @@ C recvbuf should be size * (rank + i)
       endif
 
       call mpi_op_create( uop, .true., sumop, ierr )
-      call mpi_reduce_scatter( sendbuf, recvbuf, recvcounts, 
+      call mpi_reduce_scatter( sendbuf, recvbuf, recvcounts,
      &     MPI_INTEGER, sumop, comm, ierr )
 
       sumval = size * rank + ((size - 1) * size)/2
-C recvbuf should be size * (rank + i) 
+C recvbuf should be size * (rank + i)
       if (recvbuf .ne. sumval) then
          errs = errs + 1
          print *, "sumop: Did not get expected value for reduce scatter"

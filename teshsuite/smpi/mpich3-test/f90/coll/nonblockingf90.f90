@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/coll/nonblockingf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2012 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -25,7 +25,7 @@
       comm = MPI_COMM_WORLD
       call MPI_Comm_size(comm, size, ierr)
       call MPI_Comm_rank(comm, rank, ierr)
-!      
+!
       do ii = 1, size
          sbuf(2*ii-1) = ii
          sbuf(2*ii)   = ii

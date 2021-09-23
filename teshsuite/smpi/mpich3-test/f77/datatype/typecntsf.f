@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -10,7 +10,7 @@ C
        integer ntype1, ntype2
 C
 C This is a very simple test that just tests that the contents/envelope
-C routines can be called.  This should be upgraded to test the new 
+C routines can be called.  This should be upgraded to test the new
 C MPI-2 datatype routines (which use address-sized integers)
 C
 
@@ -19,14 +19,14 @@ C
 
        call explore( MPI_INTEGER, MPI_COMBINER_NAMED, errs )
        call explore( MPI_BYTE, MPI_COMBINER_NAMED, errs )
-       call mpi_type_vector( 10, 1, 30, MPI_DOUBLE_PRECISION, ntype1, 
+       call mpi_type_vector( 10, 1, 30, MPI_DOUBLE_PRECISION, ntype1,
      &                       ierr )
        call explore( ntype1, MPI_COMBINER_VECTOR, errs )
        call mpi_type_dup( ntype1, ntype2, ierr )
        call explore( ntype2, MPI_COMBINER_DUP, errs )
        call mpi_type_free( ntype2, ierr )
        call mpi_type_free( ntype1, ierr )
-       
+
 C
        call mtest_finalize( errs )
        call mpi_finalize( ierr )
@@ -47,7 +47,7 @@ C
      &                             combiner, ierr )
 C
        if (combiner .ne. MPI_COMBINER_NAMED) then
-          call mpi_type_get_contents( dtype, 
+          call mpi_type_get_contents( dtype,
      &         max_nints, max_asizev, max_dtypes,
      &         intv, aintv, dtypesv, ierr )
 C
@@ -86,6 +86,6 @@ C List all combiner types to check that they are defined in mpif.h
           errs = errs + 1
           print *, ' Unknown combiner ', combiner
        endif
-       
+
        return
        end

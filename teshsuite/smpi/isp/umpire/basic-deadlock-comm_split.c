@@ -45,7 +45,7 @@ main (int argc, char **argv)
 	  memset (buf0, 0, buf_size*sizeof(int));
 
 	  MPI_Recv (buf1, buf_size, MPI_INT, 1, 0, comm, &status);
-	
+
 	  MPI_Send (buf0, buf_size, MPI_INT, 1, 0, comm);
 	}
 	else if (drank == 1) {

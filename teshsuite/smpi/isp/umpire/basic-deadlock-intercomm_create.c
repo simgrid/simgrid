@@ -62,9 +62,9 @@ main (int argc, char **argv)
 	  }
 	  else {
 	    memset (buf0, 0, buf_size*sizeof(int));
-	
+
 	    MPI_Recv (buf1, buf_size, MPI_INT, drank, 0, intercomm, &status);
-	
+
 	    MPI_Send (buf0, buf_size, MPI_INT, drank, 0, intercomm);
 	  }
 	}

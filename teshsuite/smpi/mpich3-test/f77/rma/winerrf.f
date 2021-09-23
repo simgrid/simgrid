@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -12,7 +12,7 @@ C
        integer buf(10)
        integer win
        external myerrhanfunc
-CF90   INTERFACE 
+CF90   INTERFACE
 CF90   SUBROUTINE myerrhanfunc(vv0,vv1)
 CF90   INTEGER vv0,vv1
 CF90   END SUBROUTINE
@@ -60,25 +60,25 @@ C We can free our error handler now
        call mpi_win_call_errhandler( win, newerrclass, ierr )
        call mpi_win_call_errhandler( win, code(1), ierr )
        call mpi_win_call_errhandler( win, code(2), ierr )
-       
+
        if (callcount .ne. 3) then
           errs = errs + 1
-          print *, ' Expected 3 calls to error handler, found ', 
+          print *, ' Expected 3 calls to error handler, found ',
      &             callcount
        else
           if (codesSeen(1) .ne. newerrclass) then
              errs = errs + 1
-             print *, 'Expected class ', newerrclass, ' got ', 
+             print *, 'Expected class ', newerrclass, ' got ',
      &                codesSeen(1)
           endif
           if (codesSeen(2) .ne. code(1)) then
              errs = errs + 1
-             print *, 'Expected code ', code(1), ' got ', 
+             print *, 'Expected code ', code(1), ' got ',
      &                codesSeen(2)
           endif
           if (codesSeen(3) .ne. code(2)) then
              errs = errs + 1
-             print *, 'Expected code ', code(2), ' got ', 
+             print *, 'Expected code ', code(2), ' got ',
      &                codesSeen(3)
           endif
        endif

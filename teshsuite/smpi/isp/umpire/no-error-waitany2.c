@@ -70,7 +70,7 @@ printf ("Done = %d\n", done);
 
       for (i = 3; i >= 0; i--) {
 	MPI_Recv (&flipbit, 1, MPI_INT, 0, i, MPI_COMM_WORLD, &status);
-	
+
 	if (i > 0) {
 	  MPI_Send (buf0, buf_size, MPI_INT, 0, i, MPI_COMM_WORLD);
 	}

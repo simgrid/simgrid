@@ -55,9 +55,9 @@ main (int argc, char **argv)
 			    INTERCOMM_CREATE_TAG, &intercomm);
 
       if (tnprocs > 1) {
-	if (trank == 0) {	
+	if (trank == 0) {
 	  memset (buf0, 0, buf_size*sizeof(int));
-	
+
 	  MPI_Send (buf0, buf_size, MPI_INT, 1, 0, temp);
 	}
       }
@@ -82,9 +82,9 @@ main (int argc, char **argv)
 	  }
 	  else {
 	    memset (buf0, 0, buf_size*sizeof(int));
-	
+
 	    MPI_Send (buf0, buf_size, MPI_INT, drank, 0, intercomm);
-	
+
 	    MPI_Recv (buf1, buf_size, MPI_INT, drank, 0, intercomm, &status);
 	  }
 	}

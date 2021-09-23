@@ -165,7 +165,7 @@ main (int argc, char **argv)
 	  MPI_Wait (&aReq[j], &aStatus[j]);
 	}
 	break;
-	
+
       case 1:
 	/* use MPI_Waitall */
 	MPI_Waitall (NUM_SEND_TYPES * 2, aReq, aStatus);
@@ -178,7 +178,7 @@ main (int argc, char **argv)
 	}
 
 	break;
-	
+
       case 3:
 	/* use MPI_Waitsome */
 	total = 0;
@@ -201,7 +201,7 @@ main (int argc, char **argv)
 	}
 
 	break;
-	
+
       case 5:
 	/* use MPI_Testall */
 	flag = 0;
@@ -221,7 +221,7 @@ main (int argc, char **argv)
 	}
 
 	break;
-	
+
       case 7:
 	/* use MPI_Testsome */
 	total = 0;

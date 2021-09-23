@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2004 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -7,7 +7,7 @@ C
         implicit none
         include 'mpif.h'
 C
-C This program makes use of a common (but not universal; g77 doesn't 
+C This program makes use of a common (but not universal; g77 doesn't
 C have it) extension: the "Cray" pointer.  This allows MPI_Alloc_mem
 C to allocate memory and return it to Fortran, where it can be used.
 C As this is not standard Fortran, this test is not run by default.

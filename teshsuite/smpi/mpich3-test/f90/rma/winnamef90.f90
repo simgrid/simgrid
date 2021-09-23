@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/rma/winnamef.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -20,7 +20,7 @@
       call mtest_init( ierr )
 !
 ! Create a window and get, set the names on it
-!      
+!
       call mpi_type_size( MPI_INTEGER, intsize, ierr )
       asize = 10
       call mpi_win_create( buf, asize, intsize,  &
@@ -72,7 +72,7 @@
             print *, ' window name is not blank padded'
          endif
       endif
-!      
+!
       call mpi_win_free( win, ierr )
       call mtest_finalize( errs )
       call mpi_finalize( ierr )

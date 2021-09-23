@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2004 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -19,15 +19,15 @@ C
 C The only difference between the MPI-2 and MPI-1 attribute caching
 C routines in Fortran is that the take an address-sized integer
 C instead of a simple integer.  These still are not pointers,
-C so the values are still just integers. 
+C so the values are still just integers.
 C
       errs      = 0
       call mtest_init( ierr )
       call mpi_comm_dup( MPI_COMM_WORLD, comm1, ierr )
-C 
+C
       extrastate = 1001
-      call mpi_comm_create_keyval( MPI_COMM_NULL_COPY_FN, 
-     &                             MPI_COMM_NULL_DELETE_FN, keyval, 
+      call mpi_comm_create_keyval( MPI_COMM_NULL_COPY_FN,
+     &                             MPI_COMM_NULL_DELETE_FN, keyval,
      &                             extrastate, ierr )
       flag = .true.
       call mpi_comm_get_attr( comm1, keyval, valout, flag, ierr )
@@ -40,7 +40,7 @@ C Test the null copy function
       valin = 5001
       call mpi_comm_set_attr( comm1, keyval, valin, ierr )
       call mpi_comm_dup( comm1, comm2, ierr )
-C Because we set NULL_COPY_FN, the attribute should not 
+C Because we set NULL_COPY_FN, the attribute should not
 C appear on the dup'ed communicator
       flag = .false.
       call mpi_comm_get_attr( comm1, keyval, valout, flag, ierr )
@@ -54,7 +54,7 @@ C appear on the dup'ed communicator
          errs = errs + 1
          print *, ' Attribute incorrectly present on dup communicator'
       endif
-C Test the delete function      
+C Test the delete function
       call mpi_comm_free( comm2, ierr )
 C
 C Test the attr delete function

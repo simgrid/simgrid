@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/pt2pt/greqf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -33,7 +33,7 @@
 !
       extrastate = extrastate - 1
 !   The value returned by the free function is the error code
-!   returned by the wait/test function 
+!   returned by the wait/test function
       ierr = MPI_SUCCESS
       end
 !
@@ -54,10 +54,10 @@
 ! MPI_Grequest_complete function would be called from another routine,
 ! often running in a separate thread.  This simple code allows us to
 ! check that requests can be created, tested, and waited on in the
-! case where the request is complete before the wait is called.  
+! case where the request is complete before the wait is called.
 !
 ! Note that MPI did *not* define a routine that can be called within
-! test or wait to advance the state of a generalized request.  
+! test or wait to advance the state of a generalized request.
 ! Most uses of generalized requests will need to use a separate thread.
 !
        program main
@@ -74,7 +74,7 @@
 
        errs = 0
        freefncall = 0
-       
+
        call MTest_Init( ierr )
 
        extrastate = 0
@@ -85,7 +85,7 @@
           errs = errs + 1
           print *, 'Generalized request marked as complete'
        endif
-       
+
        call mpi_grequest_complete( request, ierr )
 
        call MPI_Wait( request, status, ierr )
@@ -95,15 +95,15 @@
       &                          extrastate, request, ierr )
        call mpi_grequest_complete( request, ierr )
        call mpi_wait( request, MPI_STATUS_IGNORE, ierr )
-!       
-!      The following routine may prevent an optimizing compiler from 
+!
+!      The following routine may prevent an optimizing compiler from
 !      just remembering that extrastate was set in grequest_start
        call dummyupdate(extrastate)
        if (extrastate .ne. 0) then
           errs = errs + 1
           if (freefncall .eq. 0) then
               print *, 'Free routine not called'
-          else 
+          else
               print *, 'Free routine did not update extra_data'
               print *, 'extrastate = ', extrastate
           endif

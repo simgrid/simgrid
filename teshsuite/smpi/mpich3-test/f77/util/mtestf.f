@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -30,14 +30,14 @@ C
         include 'mpif.h'
         integer errs
         integer rank, toterrs, ierr
-        
+
         call MPI_Comm_rank( MPI_COMM_WORLD, rank, ierr )
 
-        call MPI_Allreduce( errs, toterrs, 1, MPI_INTEGER, MPI_SUM, 
-     *        MPI_COMM_WORLD, ierr ) 
-        
+        call MPI_Allreduce( errs, toterrs, 1, MPI_INTEGER, MPI_SUM,
+     *        MPI_COMM_WORLD, ierr )
+
         if (rank .eq. 0) then
-           if (toterrs .gt. 0) then 
+           if (toterrs .gt. 0) then
                 print *, " Found ", toterrs, " errors"
            else
                 print *, " No Errors"
@@ -67,7 +67,7 @@ C A simple get intracomm for now
         else if (myindex .eq. 2) then
            call mpi_comm_size( MPI_COMM_WORLD, size, ierr )
            call mpi_comm_rank( MPI_COMM_WORLD, rank, ierr )
-           call mpi_comm_split( MPI_COMM_WORLD, 0, size - rank, comm, 
+           call mpi_comm_split( MPI_COMM_WORLD, 0, size - rank, comm,
      &                                 ierr )
         else
            if (min_size .eq. 1 .and. myindex .eq. 3) then
@@ -112,5 +112,5 @@ C
         call MPI_Error_class( errcode, errclass, ierr )
         call MPI_Error_string( errcode, string, slen, ierr )
         print *, msg, ": Error class ", errclass, "
-     $       (", string(1:slen), ")" 
+     $       (", string(1:slen), ")"
         end

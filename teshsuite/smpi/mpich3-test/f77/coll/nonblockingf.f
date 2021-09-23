@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2012 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -25,7 +25,7 @@ C
       comm = MPI_COMM_WORLD
       call MPI_Comm_size(comm, size, ierr)
       call MPI_Comm_rank(comm, rank, ierr)
-C      
+C
       do ii = 1, size
          sbuf(2*ii-1) = ii
          sbuf(2*ii)   = ii
@@ -93,7 +93,7 @@ C
      .                  MPI_SUM, comm, req, ierr)
       call MPI_Wait(req, MPI_STATUS_IGNORE, ierr)
 
-      call MPI_Iscatter(sbuf, NUM_INTS, MPI_INTEGER, rbuf, 
+      call MPI_Iscatter(sbuf, NUM_INTS, MPI_INTEGER, rbuf,
      .                  NUM_INTS, MPI_INTEGER, 0, comm, req, ierr)
       call MPI_Wait(req, MPI_STATUS_IGNORE, ierr)
 
@@ -106,8 +106,8 @@ C
      .                  rbuf, NUM_INTS, MPI_INTEGER, comm, req, ierr)
       call MPI_Wait(req, MPI_STATUS_IGNORE, ierr)
 
-      call MPI_Iallgatherv(sbuf, NUM_INTS, MPI_INTEGER, 
-     .                  rbuf, rcounts, rdispls, MPI_INTEGER, 
+      call MPI_Iallgatherv(sbuf, NUM_INTS, MPI_INTEGER,
+     .                  rbuf, rcounts, rdispls, MPI_INTEGER,
      .                  comm, req, ierr)
       call MPI_Wait(req, MPI_STATUS_IGNORE, ierr)
 

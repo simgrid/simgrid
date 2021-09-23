@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -18,16 +18,16 @@ C
       logical flag
 C Include addsize defines asize as an address-sized integer
       include 'addsize.h'
-      
+
       errs = 0
       call mtest_init( ierr )
 
       call mpi_type_size( MPI_INTEGER, intsize, ierr )
-      do while( mtestGetIntraComm( comm, 2, .false. ) ) 
+      do while( mtestGetIntraComm( comm, 2, .false. ) )
          asize = nrows * (ncols + 2) * intsize
-         call mpi_win_create( buf, asize, intsize * nrows, 
+         call mpi_win_create( buf, asize, intsize * nrows,
      &                        MPI_INFO_NULL, comm, win, ierr )
-         
+
 C Create the group for the neighbors
          call mpi_comm_size( comm, size, ierr )
          call mpi_comm_rank( comm, rank, ierr )
@@ -50,7 +50,7 @@ C Create the group for the neighbors
          call mpi_group_incl( group, nneighbors, nbrs, group2, ierr )
          call mpi_group_free( group, ierr )
 C
-C Initialize the buffer 
+C Initialize the buffer
          do i=1,nrows
             buf(i,0)       = -1
             buf(i,ncols+1) = -1
@@ -62,14 +62,14 @@ C Initialize the buffer
          enddo
          call mpi_win_post( group2, 0, win, ierr )
          call mpi_win_start( group2, 0, win, ierr )
-C         
+C
          asize = ncols+1
          call mpi_put( buf(1,1), nrows, MPI_INTEGER, left, asize,
      &                 nrows, MPI_INTEGER, win, ierr )
          asize = 0
-         call mpi_put( buf(1,ncols), nrows, MPI_INTEGER, right, asize, 
+         call mpi_put( buf(1,ncols), nrows, MPI_INTEGER, right, asize,
      &                 nrows, MPI_INTEGER, win, ierr )
-C         
+C
          call mpi_win_complete( win, ierr )
          flag = .false.
          do while (.not. flag)
@@ -83,7 +83,7 @@ C Check the results
                if (buf(i,0) .ne. ans) then
                   errs = errs + 1
                   if (errs .le. 10) then
-                     print *, ' buf(',i,',0) = ', buf(i,0), 
+                     print *, ' buf(',i,',0) = ', buf(i,0),
      &    'expected ', ans
                   endif
                endif
@@ -95,7 +95,7 @@ C Check the results
                if (buf(i,ncols+1) .ne. ans) then
                   errs = errs + 1
                   if (errs .le. 10) then
-                     print *, ' buf(',i,',',ncols+1,') = ', 
+                     print *, ' buf(',i,',',ncols+1,') = ',
      &                          buf(i,ncols+1), ' expected ', ans
                   endif
                endif

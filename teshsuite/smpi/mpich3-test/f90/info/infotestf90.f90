@@ -1,10 +1,10 @@
 ! This file created from test/mpi/f77/info/infotestf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
 !
-! Simple info test 
+! Simple info test
        program main
        use mpi
        integer i1, i2
@@ -34,12 +34,12 @@
        if (.not. flag ) then
           print *, "Did not find key1 in info1"
           errs = errs + 1
-       else 
+       else
           if (value .ne. "value1") then
              print *, "Found wrong value (", value, "), expected value1"
              errs = errs + 1
           else
-!     check for trailing blanks             
+!     check for trailing blanks
              do i=7,valuelen
                 if (value(i:i) .ne. " ") then
                    print *, "Found non blank in info value"

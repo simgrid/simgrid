@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -17,7 +17,7 @@ C
 C The only difference between the MPI-2 and MPI-1 attribute caching
 C routines in Fortran is that the take an address-sized integer
 C instead of a simple integer.  These still are not pointers,
-C so the values are still just integers. 
+C so the values are still just integers.
 C
       errs      = 0
       call mtest_init( ierr )
@@ -26,10 +26,10 @@ C Create a new window; use val for an address-sized int
       val = 10
       call mpi_win_create( buf, val, 1,
      &                        MPI_INFO_NULL, comm, win, ierr )
-C 
+C
       extrastate = 1001
-      call mpi_win_create_keyval( MPI_WIN_DUP_FN, 
-     &                            MPI_WIN_NULL_DELETE_FN, keyval, 
+      call mpi_win_create_keyval( MPI_WIN_DUP_FN,
+     &                            MPI_WIN_NULL_DELETE_FN, keyval,
      &                             extrastate, ierr )
       flag = .true.
       call mpi_win_get_attr( win, keyval, valout, flag, ierr )
@@ -45,10 +45,10 @@ C
       call mpi_win_get_attr( win, keyval, valout, flag, ierr )
       if (valout .ne. 2003) then
          errs = errs + 1
-         print *, 'Unexpected value (should be 2003)', valout, 
+         print *, 'Unexpected value (should be 2003)', valout,
      &            ' from attr'
       endif
-      
+
       valin = 2001
       call mpi_win_set_attr( win, keyval, valin, ierr )
       flag = .false.
@@ -56,7 +56,7 @@ C
       call mpi_win_get_attr( win, keyval, valout, flag, ierr )
       if (valout .ne. 2001) then
          errs = errs + 1
-         print *, 'Unexpected value (should be 2001)', valout, 
+         print *, 'Unexpected value (should be 2001)', valout,
      &            ' from attr'
       endif
 C
@@ -68,7 +68,7 @@ C Test the attr delete function
          errs = errs + 1
          print *, ' Delete_attr did not delete attribute'
       endif
-      
+
 C Test the delete function on window free
       valin = 2001
       call mpi_win_set_attr( win, keyval, valin, ierr )

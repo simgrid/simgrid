@@ -83,7 +83,7 @@ main (int argc, char **argv)
 	/* use MPI_Test */
 	for (j = 0; j < 2; j++) {
 	  flag = 0;
-	
+
 	  while (!flag) {
 	    MPI_Test (&aReq[j], &flag, &aStatus[j]);
 	  }

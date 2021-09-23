@@ -124,7 +124,7 @@ main (int argc, char **argv)
 		     comm, &aReq[send_t_number * 2 + 1]);
 
 	  send_t_number++;
-	
+
 	  MPI_Ibsend (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		      1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
 	  MPI_Ibsend (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
@@ -135,7 +135,7 @@ main (int argc, char **argv)
 
 	  /* Barrier to ensure receives are posted for rsends... */
 	  MPI_Barrier(MPI_COMM_WORLD);
-	
+
 	  MPI_Irsend (&buf[send_t_number * 2 * BUF_SIZE], BUF_SIZE, MPI_INT,
 		    1, send_t_number * 2, comm, &aReq[send_t_number * 2]);
 	  MPI_Irsend (&buf[(send_t_number * 2 + 1) * BUF_SIZE],
@@ -165,7 +165,7 @@ main (int argc, char **argv)
 	      MPI_Start (&aReq[2 * send_t_number + j]);
 	    }
 	  }
-	
+
 	  /* complete the sends */
 	  switch (k/2) {
 	  case 0:
@@ -174,7 +174,7 @@ main (int argc, char **argv)
 	      MPI_Wait (&aReq[j], &aStatus[j]);
 	    }
 	    break;
-	
+
 	  case 1:
 	    /* use MPI_Waitall */
 	    MPI_Waitall (NUM_SEND_TYPES * 2, aReq, aStatus);
@@ -185,9 +185,9 @@ main (int argc, char **argv)
 	    for (j = 0; j < NUM_SEND_TYPES * 2; j++) {
 	      MPI_Waitany (NUM_SEND_TYPES * 2, aReq, &index, aStatus);
 	    }
-	
+
 	    break;
-	
+
 	  case 3:
 	    /* use MPI_Waitsome */
 	    total = 0;
@@ -204,23 +204,23 @@ main (int argc, char **argv)
 	    /* use MPI_Test */
 	    for (j = 0; j < NUM_SEND_TYPES * 2; j++) {
 	      flag = 0;
-	
+
 	      while (!flag) {
 		MPI_Test (&aReq[j], &flag, &aStatus[j]);
 	      }
 	    }
-	
+
 	    break;
-	
+
 	  case 5:
 	    /* use MPI_Testall */
 	    flag = 0;
 	    while (!flag) {
 	      MPI_Testall (NUM_SEND_TYPES * 2, aReq, &flag, aStatus);
 	    }
-	
+
 	    break;
-	
+
 	  case 6:
 	    /* use MPI_Testany */
 	    for (j = 0; j < NUM_SEND_TYPES * 2; j++) {
@@ -232,7 +232,7 @@ main (int argc, char **argv)
 	    }
 
 	    break;
-	
+
 	  case 7:
 	    /* use MPI_Testsome */
 	    total = 0;
@@ -279,7 +279,7 @@ main (int argc, char **argv)
 
 	  /* Barrier to ensure receives are posted for rsends... */
 	  MPI_Barrier(MPI_COMM_WORLD);
-	
+
 	  /* complete all of the receives... */
 	  switch (l/2) {
 	  case 0:
@@ -288,7 +288,7 @@ main (int argc, char **argv)
 	      MPI_Wait (&aReq[j], &aStatus[j]);
 	    }
 	    break;
-	
+
 	  case 1:
 	    /* use MPI_Waitall */
 	    MPI_Waitall (NUM_SEND_TYPES * 2, aReq, aStatus);
@@ -299,9 +299,9 @@ main (int argc, char **argv)
 	    for (j = 0; j < NUM_SEND_TYPES * 2; j++) {
 	      MPI_Waitany (NUM_SEND_TYPES * 2, aReq, &index, aStatus);
 	    }
-	
+
 	    break;
-	
+
 	  case 3:
 	    /* use MPI_Waitsome */
 	    total = 0;
@@ -313,28 +313,28 @@ main (int argc, char **argv)
 	    }
 
 	    break;
-	
+
 	  case 4:
 	    /* use MPI_Test */
 	    for (j = 0; j < NUM_SEND_TYPES * 2; j++) {
 	      flag = 0;
-	
+
 	      while (!flag) {
 		MPI_Test (&aReq[j], &flag, &aStatus[j]);
 	      }
 	    }
-	
+
 	    break;
-	
+
 	  case 5:
 	    /* use MPI_Testall */
 	    flag = 0;
 	    while (!flag) {
 	      MPI_Testall (NUM_SEND_TYPES * 2, aReq, &flag, aStatus);
 	    }
-	
+
 	    break;
-	
+
 	  case 6:
 	    /* use MPI_Testany */
 	    for (j = 0; j < NUM_SEND_TYPES * 2; j++) {
@@ -344,9 +344,9 @@ main (int argc, char **argv)
 			     &index, &flag, aStatus);
 	      }
 	    }
-	
+
 	    break;
-	
+
 	  case 7:
 	    /* use MPI_Testsome */
 	    total = 0;
@@ -357,12 +357,12 @@ main (int argc, char **argv)
 		MPI_Testsome (NUM_SEND_TYPES * 2, aReq,
 			      &outcount, indices, aStatus);
 	      }
-	
+
 	      total += outcount;
 	    }
-	
+
 	    break;
-	
+
 	  default:
 	    assert (0);
 	    break;

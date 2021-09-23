@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -57,7 +57,7 @@ C Test using a C routine to provide the Fortran handle
          errs = errs + 1
          print *, "Comm(fortran) has wrong size or rank"
       endif
-      
+
       call f2cgroup( group )
       call mpi_group_size( group, fsize, ierr )
       call mpi_group_rank( group, frank, ierr )
@@ -72,7 +72,7 @@ C Test using a C routine to provide the Fortran handle
          errs = errs + 1
          print *, "Datatype(fortran) is not MPI_INT"
       endif
-      
+
       call f2cinfo( info )
       call mpi_info_get( info, "host", 100, value, flag, ierr )
       if (.not. flag) then
@@ -118,4 +118,4 @@ C
 
       call mpi_finalize( ierr )
       end
-      
+

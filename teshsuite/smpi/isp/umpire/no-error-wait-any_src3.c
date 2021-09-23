@@ -50,7 +50,7 @@ main (int argc, char **argv)
 
       for (i = 0; i < NUMREPS; i++) {
 	MPI_Send (buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD);
-	
+
 	MPI_Recv (buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
       }
 

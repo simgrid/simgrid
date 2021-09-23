@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/info/infotest2f.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -23,7 +23,7 @@
       errs = 0
 
       call mtest_init( ierr )
-      
+
 ! Note that the MPI standard requires that leading an trailing blanks
 ! are stripped from keys and values (Section 4.10, The Info Object)
 !
@@ -107,13 +107,13 @@
          if (flag) then
             errs = errs + 1
             print *, ' Found unexpected key in MPI_Info_get ', keys(i)
-         else 
+         else
             if (myvalue .ne. 'A test') then
                errs = errs + 1
                print *, ' Returned value overwritten, is now ', myvalue
             endif
          endif
-         
+
       enddo
       do i=3,6
          myvalue = ' '
@@ -122,7 +122,7 @@
          if (.not. flag) then
              errs = errs + 1
              print *, ' Did not find key ', keys(i)
-         else 
+         else
             if (myvalue .ne. values(i)) then
                errs = errs + 1
                print *, ' Found wrong value (', myvalue, ') for key ',  &

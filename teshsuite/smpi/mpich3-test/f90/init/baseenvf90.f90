@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/init/baseenvf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -63,7 +63,7 @@
           errs = errs + 1
           print *, 'is_thread_main returned false for main thread'
        endif
-          
+
        call mpi_query_thread( qprovided, ierr )
        if (qprovided .ne. provided) then
           errs = errs + 1
@@ -80,7 +80,7 @@
        endif
 
        if (rank .eq. 0) then
-          if (errs .eq. 0) then 
+          if (errs .eq. 0) then
              print *, ' No Errors'
           else
              print *, ' Found ', errs, ' errors'

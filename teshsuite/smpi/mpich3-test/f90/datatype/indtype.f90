@@ -1,4 +1,4 @@
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -17,7 +17,7 @@
       double precision,dimension(:,:),allocatable :: sndbuf, rcvbuf
       logical verbose
 
-      verbose = .false. 
+      verbose = .false.
       call mtest_init ( ierr )
       call mpi_comm_size( MPI_COMM_WORLD, size, ierr )
       call mpi_comm_rank( MPI_COMM_WORLD, rank, ierr )
@@ -42,10 +42,10 @@
       enddo
 
 ! bug occurs when first two displacements are 0
-      displs(1) = 0 
-      displs(2) = 0 
+      displs(1) = 0
+      displs(2) = 0
       displs(3) = 10
-      displs(4) = 10 
+      displs(4) = 10
 
       call mpi_type_indexed( count, blocklens, displs*blocklens(1),  &
       &                         MPI_DOUBLE_PRECISION, type, ierr )
@@ -59,7 +59,7 @@
           call mpi_send( sndbuf(1,1), 1, type, 1, 0, MPI_COMM_WORLD,ierr )
 
       else if (rank .eq. 1) then
-       
+
           xfersize=count * blocklens(1)
           call mpi_recv( rcvbuf(1,1), xfersize, MPI_DOUBLE_PRECISION, 0, 0, &
            &   MPI_COMM_WORLD,status, ierr )

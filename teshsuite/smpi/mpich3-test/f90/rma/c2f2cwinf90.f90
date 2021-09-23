@@ -1,9 +1,9 @@
 ! This file created from test/mpi/f77/rma/c2f2cwinf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
-!   
+!
 ! Test just MPI-RMA
 !
       program main
@@ -35,7 +35,7 @@
 !     no info, in comm world, created with no memory (base address 0,
 !     displacement unit 1
       call mpi_win_free( win, ierr )
-      
+
 !
 ! Summarize the errors
 !
@@ -51,4 +51,4 @@
 
       call mpi_finalize( ierr )
       end
-      
+

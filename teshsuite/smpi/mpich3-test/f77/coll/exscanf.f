@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -9,7 +9,7 @@ C
       integer cin(*), cout(*)
       integer count, datatype
       integer i
-      
+
       if (.false.) then
          if (datatype .ne. MPI_INTEGER) then
             write(6,*) 'Invalid datatype passed to user_op()'
@@ -32,7 +32,7 @@ C
       external uop
 
       errs = 0
-      
+
       call mtest_init( ierr )
 C
 C A simple test of exscan
@@ -43,7 +43,7 @@ C A simple test of exscan
 
       inbuf(1) = rank
       inbuf(2) = -rank
-      call mpi_exscan( inbuf, outbuf, 2, MPI_INTEGER, MPI_SUM, comm, 
+      call mpi_exscan( inbuf, outbuf, 2, MPI_INTEGER, MPI_SUM, comm,
      &                 ierr )
 C this process has the sum of i from 0 to rank-1, which is
 C (rank)(rank-1)/2 and -i
@@ -59,12 +59,12 @@ C (rank)(rank-1)/2 and -i
          endif
       endif
 C
-C Try a user-defined operation 
+C Try a user-defined operation
 C
       call mpi_op_create( uop, .true., sumop, ierr )
       inbuf(1) = rank
       inbuf(2) = -rank
-      call mpi_exscan( inbuf, outbuf, 2, MPI_INTEGER, sumop, comm, 
+      call mpi_exscan( inbuf, outbuf, 2, MPI_INTEGER, sumop, comm,
      &                 ierr )
 C this process has the sum of i from 0 to rank-1, which is
 C (rank)(rank-1)/2 and -i
@@ -80,14 +80,14 @@ C (rank)(rank-1)/2 and -i
          endif
       endif
       call mpi_op_free( sumop, ierr )
-      
+
 C
 C Try a user-defined operation (and don't claim it is commutative)
 C
       call mpi_op_create( uop, .false., sumop, ierr )
       inbuf(1) = rank
       inbuf(2) = -rank
-      call mpi_exscan( inbuf, outbuf, 2, MPI_INTEGER, sumop, comm, 
+      call mpi_exscan( inbuf, outbuf, 2, MPI_INTEGER, sumop, comm,
      &                 ierr )
 C this process has the sum of i from 0 to rank-1, which is
 C (rank)(rank-1)/2 and -i
@@ -103,7 +103,7 @@ C (rank)(rank-1)/2 and -i
          endif
       endif
       call mpi_op_free( sumop, ierr )
-      
+
       call mtest_finalize( errs )
       call mpi_finalize( ierr )
       end

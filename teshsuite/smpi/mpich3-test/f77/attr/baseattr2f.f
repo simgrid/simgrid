@@ -18,14 +18,14 @@ C
         call mpi_comm_rank( MPI_COMM_WORLD, commrank, ierr )
 
         call mpi_attr_get( MPI_COMM_WORLD, MPI_TAG_UB, value, flag, ierr
-     $       ) 
+     $       )
         if (.not. flag) then
            errs = errs + 1
            print *, "Could not get TAG_UB"
         else
            if (value .lt. 32767) then
               errs = errs + 1
-              print *, "Got too-small value (", value, ") for TAG_UB" 
+              print *, "Got too-small value (", value, ") for TAG_UB"
            endif
         endif
 
@@ -33,13 +33,13 @@ C
         if (.not. flag) then
            errs = errs + 1
            print *, "Could not get HOST"
-        else 
+        else
            if ((value .lt. 0 .or. value .ge. commsize) .and. value .ne.
-     $          MPI_PROC_NULL) then 
+     $          MPI_PROC_NULL) then
               errs = errs + 1
               print *, "Got invalid value ", value, " for HOST"
            endif
-        endif   
+        endif
 
         call mpi_attr_get( MPI_COMM_WORLD, MPI_IO, value, flag, ierr )
         if (.not. flag) then
@@ -57,10 +57,10 @@ C
      $       flag, ierr )
         if (flag) then
 C          Wtime need not be set
-           if (value .lt.  0 .or. value .gt. 1) then 
+           if (value .lt.  0 .or. value .gt. 1) then
               errs = errs + 1
               print *, "Invalid value for WTIME_IS_GLOBAL (got ", value,
-     $             ")" 
+     $             ")"
            endif
         endif
 
@@ -71,7 +71,7 @@ C     appnum need not be set
            if (value .lt. 0) then
               errs = errs + 1
               print *, "MPI_APPNUM is defined as ", value,
-     $             " but must be nonnegative" 
+     $             " but must be nonnegative"
            endif
         endif
 
@@ -85,7 +85,7 @@ C     MPI_UNIVERSE_SIZE need not be set
      $             ", less than comm world (", commsize, ")"
            endif
         endif
-    
+
         call mpi_attr_get( MPI_COMM_WORLD, MPI_LASTUSEDCODE, value, flag
      $       , ierr )
 C Last used code must be defined and >= MPI_ERR_LASTCODE
@@ -96,7 +96,7 @@ C Last used code must be defined and >= MPI_ERR_LASTCODE
      $           MPI_ERR_LASTCODE, ") smaller than MPI_ERR_LASTCODE (",
      $           value, ")"
             endif
-         else 
+         else
             errs = errs + 1
             print *, "MPI_LASTUSECODE is not defined"
          endif

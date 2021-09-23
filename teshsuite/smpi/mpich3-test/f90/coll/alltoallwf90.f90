@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/coll/alltoallwf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -14,7 +14,7 @@
       integer rcounts(maxSize), rdispls(maxSize), rtypes(maxSize)
       integer sbuf(maxSize), rbuf(maxSize)
       errs = 0
-      
+
       call mtest_init( ierr )
 
       call mpi_type_size( MPI_INTEGER, intsize, ierr )
@@ -32,7 +32,7 @@
          call mpi_comm_size( comm, size, ierr )
       endif
       call mpi_comm_rank( comm, rank, ierr )
-      
+
       if (size .le. maxSize) then
 ! Initialize the data.  Just use this as an all to all
          do i=1, size
@@ -46,10 +46,10 @@
             rbuf(i) = -1
          enddo
          call mpi_alltoallw( sbuf, scounts, sdispls, stypes, &
-      &        rbuf, rcounts, rdispls, rtypes, comm, ierr )     
+      &        rbuf, rcounts, rdispls, rtypes, comm, ierr )
 !
 ! check rbuf(i) = data from the ith location of the ith send buf, or
-!       rbuf(i) = (i-1) * size + i   
+!       rbuf(i) = (i-1) * size + i
          do i=1, size
             ans = (i-1) * size + rank + 1
             if (rbuf(i) .ne. ans) then
@@ -64,4 +64,4 @@
       call mtest_finalize( errs )
       call mpi_finalize( ierr )
       end
-      
+

@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/datatype/packef.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -24,27 +24,27 @@
        pbufsize = 1000 * intsize
 
        call mpi_pack_external_size( 'external32', 10, MPI_INTEGER,  &
-      &                              aint, ierr ) 
+      &                              aint, ierr )
        if (aint .ne. 10 * 4) then
           errs = errs + 1
           print *, 'Expected 40 for size of 10 external32 integers', &
       &       ', got ', aint
        endif
        call mpi_pack_external_size( 'external32', 10, MPI_LOGICAL,  &
-      &                              aint, ierr ) 
+      &                              aint, ierr )
        if (aint .ne. 10 * 4) then
           errs = errs + 1
           print *, 'Expected 40 for size of 10 external32 logicals', &
       &       ', got ', aint
        endif
        call mpi_pack_external_size( 'external32', 10, MPI_CHARACTER,  &
-      &                              aint, ierr ) 
+      &                              aint, ierr )
        if (aint .ne. 10 * 1) then
           errs = errs + 1
           print *, 'Expected 10 for size of 10 external32 characters', &
       &       ', got ', aint
        endif
-       
+
        call mpi_pack_external_size( 'external32', 3, MPI_INTEGER2, &
       &                              aint, ierr )
        if (aint .ne. 3 * 2) then
@@ -113,7 +113,7 @@
        aintv(1) = pbufsize
        aintv(2) = 0
        aintv(3) = 0
-! One MPI implementation failed to increment the position; instead, 
+! One MPI implementation failed to increment the position; instead,
 ! it set the value with the amount of data packed in this call
 ! We use aintv(3) to detect and report this specific error
        call mpi_pack_external( 'external32', inbuf, insize, MPI_INTEGER, &
@@ -166,7 +166,7 @@
        do i=1, rsize
           if (routbuf(i) .ne. 1000.0 * i) then
              errs = errs + 1
-             print *, 'routbuf(',i,') = ', routbuf(i), ' expected ',       & 
+             print *, 'routbuf(',i,') = ', routbuf(i), ' expected ',       &
       &                1000.0 * i
           endif
        enddo

@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -14,7 +14,7 @@ C
 
       errs = 0
       call mtest_init( ierr )
-      
+
 C Test the predefined communicators
       do ln=1,MPI_MAX_OBJECT_NAME
          cname(ln:ln) = 'X'
@@ -76,7 +76,7 @@ C     Now test them all
          endif
          call MTestFreeComm( comm(i) )
       enddo
-C      
+C
       call mtest_finalize( errs )
       call mpi_finalize( ierr )
       end

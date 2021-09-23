@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -22,28 +22,28 @@ C
        call mpi_type_size( MPI_INTEGER, intsize, ierr )
        pbufsize = 1000 * intsize
 
-       call mpi_pack_external_size( 'external32', 10, MPI_INTEGER, 
-     &                              aint, ierr ) 
+       call mpi_pack_external_size( 'external32', 10, MPI_INTEGER,
+     &                              aint, ierr )
        if (aint .ne. 10 * 4) then
           errs = errs + 1
           print *, 'Expected 40 for size of 10 external32 integers',
      &       ', got ', aint
        endif
-       call mpi_pack_external_size( 'external32', 10, MPI_LOGICAL, 
-     &                              aint, ierr ) 
+       call mpi_pack_external_size( 'external32', 10, MPI_LOGICAL,
+     &                              aint, ierr )
        if (aint .ne. 10 * 4) then
           errs = errs + 1
           print *, 'Expected 40 for size of 10 external32 logicals',
      &       ', got ', aint
        endif
-       call mpi_pack_external_size( 'external32', 10, MPI_CHARACTER, 
-     &                              aint, ierr ) 
+       call mpi_pack_external_size( 'external32', 10, MPI_CHARACTER,
+     &                              aint, ierr )
        if (aint .ne. 10 * 1) then
           errs = errs + 1
           print *, 'Expected 10 for size of 10 external32 characters',
      &       ', got ', aint
        endif
-       
+
        call mpi_pack_external_size( 'external32', 3, MPI_INTEGER2,
      &                              aint, ierr )
        if (aint .ne. 3 * 2) then
@@ -112,7 +112,7 @@ C
        aintv(1) = pbufsize
        aintv(2) = 0
        aintv(3) = 0
-C One MPI implementation failed to increment the position; instead, 
+C One MPI implementation failed to increment the position; instead,
 C it set the value with the amount of data packed in this call
 C We use aintv(3) to detect and report this specific error
        call mpi_pack_external( 'external32', inbuf, insize, MPI_INTEGER,
@@ -121,21 +121,21 @@ C We use aintv(3) to detect and report this specific error
             print *, ' Position decreased after pack of integer!'
        endif
        aintv(3) = aintv(2)
-       call mpi_pack_external( 'external32', rbuf, rsize, 
-     &               MPI_DOUBLE_PRECISION, packbuf, aintv(1), 
+       call mpi_pack_external( 'external32', rbuf, rsize,
+     &               MPI_DOUBLE_PRECISION, packbuf, aintv(1),
      &               aintv(2), ierr )
        if (aintv(2) .le. aintv(3)) then
             print *, ' Position decreased after pack of real!'
        endif
        aintv(3) = aintv(2)
-       call mpi_pack_external( 'external32', cbuf, csize, 
-     &               MPI_CHARACTER, packbuf, aintv(1), 
+       call mpi_pack_external( 'external32', cbuf, csize,
+     &               MPI_CHARACTER, packbuf, aintv(1),
      &               aintv(2), ierr )
        if (aintv(2) .le. aintv(3)) then
             print *, ' Position decreased after pack of character!'
        endif
        aintv(3) = aintv(2)
-       call mpi_pack_external( 'external32', inbuf2, insize2, 
+       call mpi_pack_external( 'external32', inbuf2, insize2,
      &               MPI_INTEGER,
      &               packbuf, aintv(1), aintv(2), ierr )
        if (aintv(2) .le. aintv(3)) then
@@ -165,7 +165,7 @@ C
        do i=1, rsize
           if (routbuf(i) .ne. 1000.0 * i) then
              errs = errs + 1
-             print *, 'routbuf(',i,') = ', routbuf(i), ' expected ',       & 
+             print *, 'routbuf(',i,') = ', routbuf(i), ' expected ',       &
      &                1000.0 * i
           endif
        enddo

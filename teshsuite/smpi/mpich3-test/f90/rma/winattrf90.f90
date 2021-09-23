@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/rma/winattrf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -19,7 +19,7 @@
 ! The only difference between the MPI-2 and MPI-1 attribute caching
 ! routines in Fortran is that the take an address-sized integer
 ! instead of a simple integer.  These still are not pointers,
-! so the values are still just integers. 
+! so the values are still just integers.
 !
       errs      = 0
       callcount = 0
@@ -30,7 +30,7 @@
       val = 10
       call mpi_win_create( buf, val, 1, &
       &                        MPI_INFO_NULL, comm, win, ierr )
-! 
+!
       extrastate = 1001
       call mpi_win_create_keyval( mycopyfn, mydelfn, keyval,  &
       &                             extrastate, ierr )
@@ -51,7 +51,7 @@
          print *, 'Unexpected value (should be 2003)', valout,  &
       &            ' from attr'
       endif
-      
+
       valin = 2001
       call mpi_win_set_attr( win, keyval, valin, ierr )
       flag = .false.
@@ -76,7 +76,7 @@
          errs = errs + 1
          print *, ' Delete_attr did not delete attribute'
       endif
-      
+
 ! Test the delete function on window free
       valin = 2001
       call mpi_win_set_attr( win, keyval, valin, ierr )
@@ -105,14 +105,14 @@
       valout = -1
       ierr   = -1
       call MPI_WIN_DUP_FN( win, keyval, extrastate, valin, valout, &
-      &     flag, ierr ) 
+      &     flag, ierr )
       if (.not. flag) then
          errs = errs + 1
          print *, " Flag was false after MPI_WIN_DUP_FN"
       else if (valout .ne. 7001) then
          errs = errs + 1
          if (valout .eq. -1 ) then
-          print *, " output attr value was not copied in MPI_WIN_DUP_FN" 
+          print *, " output attr value was not copied in MPI_WIN_DUP_FN"
          endif
          print *, " value was ", valout, " but expected 7001"
       else if (ierr .ne. MPI_SUCCESS) then
@@ -125,14 +125,14 @@
       valout = -1
       ierr   = -1
       call MPI_WIN_NULL_COPY_FN( win, keyval, extrastate, valin, valout &
-      &     ,flag, ierr ) 
+      &     ,flag, ierr )
       if (flag) then
          errs = errs + 1
          print *, " Flag was true after MPI_WIN_NULL_COPY_FN"
       else if (valout .ne. -1) then
          errs = errs + 1
          print *, &
-      &        " output attr value was copied in MPI_WIN_NULL_COPY_FN" 
+      &        " output attr value was copied in MPI_WIN_NULL_COPY_FN"
       else if (ierr .ne. MPI_SUCCESS) then
          errs = errs + 1
          print *, " MPI_WIN_NULL_COPY_FN did not return MPI_SUCCESS"

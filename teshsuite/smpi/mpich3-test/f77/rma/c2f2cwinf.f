@@ -1,8 +1,8 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
-C   
+C
 C Test just MPI-RMA
 C
       program main
@@ -23,7 +23,7 @@ C
 C Test passing a Fortran MPI object to C
       call mpi_comm_rank( MPI_COMM_WORLD, wrank, ierr )
       asize = 0
-      call mpi_win_create( 0, asize, 1, MPI_INFO_NULL, 
+      call mpi_win_create( 0, asize, 1, MPI_INFO_NULL,
      $     MPI_COMM_WORLD, win, ierr )
       errs = errs + c2fwin( win )
       call mpi_win_free( win, ierr )
@@ -34,7 +34,7 @@ C Test using a C routine to provide the Fortran handle
 C     no info, in comm world, created with no memory (base address 0,
 C     displacement unit 1
       call mpi_win_free( win, ierr )
-      
+
 C
 C Summarize the errors
 C
@@ -50,4 +50,4 @@ C
 
       call mpi_finalize( ierr )
       end
-      
+

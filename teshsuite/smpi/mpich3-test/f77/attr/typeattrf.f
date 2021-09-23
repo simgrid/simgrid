@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -19,17 +19,17 @@ C
 C The only difference between the MPI-2 and MPI-1 attribute caching
 C routines in Fortran is that the take an address-sized integer
 C instead of a simple integer.  These still are not pointers,
-C so the values are still just integers. 
+C so the values are still just integers.
 C
       errs      = 0
       callcount = 0
       delcount  = 0
       call mtest_init( ierr )
-C 
+C
 C Attach an attribute to a predefined object
       type1 = MPI_INTEGER
       extrastate = 1001
-      call mpi_type_create_keyval( mycopyfn, mydelfn, keyval, 
+      call mpi_type_create_keyval( mycopyfn, mydelfn, keyval,
      &                             extrastate, ierr )
       flag = .true.
       call mpi_type_get_attr( type1, keyval, valout, flag, ierr )
@@ -45,10 +45,10 @@ C Attach an attribute to a predefined object
       call mpi_type_get_attr( type1, keyval, valout, flag, ierr )
       if (valout .ne. 2003) then
          errs = errs + 1
-         print *, 'Unexpected value (should be 2003)', valout, 
+         print *, 'Unexpected value (should be 2003)', valout,
      &            ' from attr'
       endif
-      
+
       valin = 2001
       call mpi_type_set_attr( type1, keyval, valin, ierr )
       flag = .false.
@@ -56,10 +56,10 @@ C Attach an attribute to a predefined object
       call mpi_type_get_attr( type1, keyval, valout, flag, ierr )
       if (valout .ne. 2001) then
          errs = errs + 1
-         print *, 'Unexpected value (should be 2001)', valout, 
+         print *, 'Unexpected value (should be 2001)', valout,
      &            ' from attr'
       endif
-      
+
 C
 C Test the copy function
       valin = 5001
@@ -77,12 +77,12 @@ C Test the copy function
          errs = errs + 1
          print *, 'Unexpected output value in type2 ', valout
       endif
-C Test the delete function      
+C Test the delete function
       curcount = delcount
       call mpi_type_free( type2, ierr )
       if (delcount .ne. curcount + 1) then
          errs = errs + 1
-         print *, ' did not get expected value of delcount ', 
+         print *, ' did not get expected value of delcount ',
      &          delcount, curcount + 1
       endif
 C

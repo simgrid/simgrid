@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C (C) 2012 by Argonne National Laboratory.
 C     See COPYRIGHT in top-level directory.

@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -17,15 +17,15 @@ C
 C The only difference between the MPI-2 and MPI-1 attribute caching
 C routines in Fortran is that the take an address-sized integer
 C instead of a simple integer.  These still are not pointers,
-C so the values are still just integers. 
+C so the values are still just integers.
 C
       errs      = 0
       call mtest_init( ierr )
       call mpi_comm_dup( MPI_COMM_WORLD, comm1, ierr )
-C 
+C
       extrastate = 1001
-      call mpi_comm_create_keyval( MPI_COMM_DUP_FN, 
-     &                             MPI_COMM_NULL_DELETE_FN, keyval, 
+      call mpi_comm_create_keyval( MPI_COMM_DUP_FN,
+     &                             MPI_COMM_NULL_DELETE_FN, keyval,
      &                             extrastate, ierr )
       flag = .true.
       call mpi_comm_get_attr( comm1, keyval, valout, flag, ierr )
@@ -41,10 +41,10 @@ C
       call mpi_comm_get_attr( comm1, keyval, valout, flag, ierr )
       if (valout .ne. 2003) then
          errs = errs + 1
-         print *, 'Unexpected value (should be 2003)', valout, 
+         print *, 'Unexpected value (should be 2003)', valout,
      &            ' from attr'
       endif
-      
+
       valin = 2001
       call mpi_comm_set_attr( comm1, keyval, valin, ierr )
       flag = .false.
@@ -52,10 +52,10 @@ C
       call mpi_comm_get_attr( comm1, keyval, valout, flag, ierr )
       if (valout .ne. 2001) then
          errs = errs + 1
-         print *, 'Unexpected value (should be 2001)', valout, 
+         print *, 'Unexpected value (should be 2001)', valout,
      &            ' from attr'
       endif
-      
+
 C
 C Test the copy function
       valin = 5001
@@ -73,7 +73,7 @@ C Test the copy function
          errs = errs + 1
          print *, 'Unexpected output value in comm2 ', valout
       endif
-C Test the delete function      
+C Test the delete function
       call mpi_comm_free( comm2, ierr )
 C
 C Test the attr delete function

@@ -1,8 +1,8 @@
-!  
+!
 !  (C) 2004 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
 !
-! Thanks to 
+! Thanks to
 ! William R. Magro
 ! for this test
 !
@@ -17,7 +17,7 @@
       use mpi
       implicit none
 
-      
+
       integer comm
       integer newtype
       integer me
@@ -72,7 +72,7 @@
           call mpi_send(MPI_BOTTOM,1,newtype,dest,1,comm,ierr)
           call mpi_type_free(newtype,ierr)
 !         write(*,*) "Sent ",name(1:5),x
-      else 
+      else
 !         Everyone calls barrier in case size > 2
           call mpi_barrier( MPI_COMM_WORLD, ierr )
           if (me.eq.dest) then
@@ -82,7 +82,7 @@
              x    = 0.0d0
              call mpi_recv(buf,bufsize,MPI_PACKED, src,                    &
      &            1, comm, status, ierr)
-             
+
              call mpi_unpack(buf,bufsize,position,                         &
      &            name,5,MPI_CHARACTER, comm,ierr)
              call mpi_unpack(buf,bufsize,position,                         &

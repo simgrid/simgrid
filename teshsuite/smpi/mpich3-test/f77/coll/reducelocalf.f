@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2009 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -17,7 +17,7 @@ C
          write(6,*) 'Invalid datatype passed to user_op()'
          return
       endif
-      
+
       do ii=1, count
          outvec(ii) = invec(ii) * 2 + outvec(ii)
       enddo
@@ -34,7 +34,7 @@ C
       integer ierr, errs
       integer count, myop
       integer ii
-      
+
       errs = 0
 
       call mtest_init(ierr)
@@ -44,7 +44,7 @@ C
          do ii = 1,count
             vin(ii) = ii
             vout(ii) = ii
-         enddo 
+         enddo
          call mpi_reduce_local( vin, vout, count,
      &                          MPI_INTEGER, MPI_SUM, ierr )
 C        Check if the result is correct
@@ -55,7 +55,7 @@ C        Check if the result is correct
             if ( vout(ii) .ne. 2*ii ) then
                errs = errs + 1
             endif
-         enddo 
+         enddo
          if ( count .gt. 0 ) then
             count = count + count
          else
@@ -66,7 +66,7 @@ C        Check if the result is correct
       call mpi_op_create( user_op, .false., myop, ierr )
 
       count = 0
-      do while (count .le. max_buf_size) 
+      do while (count .le. max_buf_size)
          do ii = 1, count
             vin(ii) = ii
             vout(ii) = ii

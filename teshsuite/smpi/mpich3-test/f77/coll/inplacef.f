@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C (C) 2005 by Argonne National Laboratory.
 C     See COPYRIGHT in top-level directory.
@@ -15,7 +15,7 @@ C
        integer MAX_SIZE
        parameter (MAX_SIZE=1024)
        integer rbuf(MAX_SIZE), rdispls(MAX_SIZE), rcount(MAX_SIZE),
-     $      sbuf(MAX_SIZE) 
+     $      sbuf(MAX_SIZE)
 
        errs = 0
        call mtest_init( ierr )
@@ -36,14 +36,14 @@ C Gather with inplace
           do i=1,size
              if (rbuf(i) .ne. i-1) then
                 errs = errs + 1
-                print *, '[',rank,'] rbuf(', i, ') = ', rbuf(i), 
-     $                   ' in gather'  
+                print *, '[',rank,'] rbuf(', i, ') = ', rbuf(i),
+     $                   ' in gather'
              endif
           enddo
        else
           call mpi_gather( rank, 1, MPI_INTEGER, rbuf, 1, MPI_INTEGER,
      $         root, comm, ierr )
-       endif   
+       endif
 
 C Gatherv with inplace
        do i=1,size
@@ -58,14 +58,14 @@ C Gatherv with inplace
           do i=1,size
              if (rbuf(i) .ne. i-1) then
                 errs = errs + 1
-                print *, '[', rank, '] rbuf(', i, ') = ', rbuf(i), 
+                print *, '[', rank, '] rbuf(', i, ') = ', rbuf(i),
      $                ' in gatherv'
              endif
           enddo
        else
           call mpi_gatherv( rank, 1, MPI_INTEGER, rbuf, rcount, rdispls,
      $         MPI_INTEGER, root, comm, ierr )
-       endif   
+       endif
 
 C Scatter with inplace
        do i=1,size
@@ -81,9 +81,9 @@ C Scatter with inplace
           if (rbuf(1) .ne. rank+1) then
              errs = errs + 1
              print *, '[', rank, '] rbuf  = ', rbuf(1),
-     $            ' in scatter' 
+     $            ' in scatter'
           endif
-       endif   
+       endif
 
        call mtest_finalize( errs )
        call mpi_finalize( ierr )

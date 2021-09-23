@@ -1,4 +1,4 @@
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2013 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.

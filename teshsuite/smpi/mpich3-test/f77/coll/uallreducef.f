@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -12,7 +12,7 @@ C
       integer cin(*), cout(*)
       integer count, datatype
       integer i
-      
+
 C      if (datatype .ne. MPI_INTEGER) then
 C         print *, 'Invalid datatype (',datatype,') passed to user_op()'
 C         return
@@ -30,7 +30,7 @@ C      endif
       integer ierr, errs
       integer count, sumop, vin(65000), vout(65000), i, size
       integer comm
-      
+
       errs = 0
 
       call mtest_init(ierr)
@@ -39,12 +39,12 @@ C      endif
       comm = MPI_COMM_WORLD
       call mpi_comm_size( comm, size, ierr )
       count = 1
-      do while (count .lt. 65000) 
+      do while (count .lt. 65000)
          do i=1, count
             vin(i) = i
             vout(i) = -1
          enddo
-         call mpi_allreduce( vin, vout, count, MPI_INTEGER, sumop, 
+         call mpi_allreduce( vin, vout, count, MPI_INTEGER, sumop,
      *                       comm, ierr )
 C         Check that all results are correct
          do i=1, count

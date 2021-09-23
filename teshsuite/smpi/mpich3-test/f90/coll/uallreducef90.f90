@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/coll/uallreducef.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -12,7 +12,7 @@
       integer cin(*), cout(*)
       integer count, datatype
       integer i
-      
+
       if (datatype .ne. MPI_INTEGER) then
          print *, 'Invalid datatype (',datatype,') passed to user_op()'
          return
@@ -31,7 +31,7 @@
       integer, DIMENSION(:), ALLOCATABLE :: vin, vout
       integer comm
       integer status
-      
+
       errs = 0
       ALLOCATE(vin(65000), STAT=status)
       ALLOCATE(vout(65000), STAT=status)
@@ -42,7 +42,7 @@
       comm = MPI_COMM_WORLD
       call mpi_comm_size( comm, size, ierr )
       count = 1
-      do while (count .lt. 65000) 
+      do while (count .lt. 65000)
          do i=1, count
             vin(i) = i
             vout(i) = -1

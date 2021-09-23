@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/datatype/typecntsf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -10,7 +10,7 @@
        integer ntype1, ntype2
 !
 ! This is a very simple test that just tests that the contents/envelope
-! routines can be called.  This should be upgraded to test the new 
+! routines can be called.  This should be upgraded to test the new
 ! MPI-2 datatype routines (which use address-sized integers)
 !
 
@@ -26,7 +26,7 @@
        call explore( ntype2, MPI_COMBINER_DUP, errs )
        call mpi_type_free( ntype2, ierr )
        call mpi_type_free( ntype1, ierr )
-       
+
 !
        call mtest_finalize( errs )
        call mpi_finalize( ierr )
@@ -86,6 +86,6 @@
           errs = errs + 1
           print *, ' Unknown combiner ', combiner
        endif
-       
+
        return
        end

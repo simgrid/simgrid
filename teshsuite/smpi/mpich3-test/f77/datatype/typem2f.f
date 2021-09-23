@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -28,7 +28,7 @@ C
 C
       aintv(1) = 0
       aintv(2) = 3 * intsize
-      call mpi_type_create_resized( MPI_INTEGER, aintv(1), aintv(2), 
+      call mpi_type_create_resized( MPI_INTEGER, aintv(1), aintv(2),
      &                              type1, ierr )
       call mpi_type_commit( type1, ierr )
       aintv(1) = -1
@@ -59,12 +59,12 @@ C
          blocklens(i) = 1
          aintv(i)    = (i-1) * 3 * intsize
       enddo
-      call mpi_type_create_hindexed( 10, blocklens, aintv, 
+      call mpi_type_create_hindexed( 10, blocklens, aintv,
      &                               MPI_INTEGER, type2, ierr )
       call mpi_type_commit( type2, ierr )
 C
       aint = 3 * intsize
-      call mpi_type_create_hvector( 10, 1, aint, MPI_INTEGER, type3, 
+      call mpi_type_create_hvector( 10, 1, aint, MPI_INTEGER, type3,
      &                              ierr )
       call mpi_type_commit( type3, ierr )
 C
@@ -80,7 +80,7 @@ C
       do i=1,10
          displs(i)    = (i-1) * 3
       enddo
-      call mpi_type_create_indexed_block( 10, 1, displs, 
+      call mpi_type_create_indexed_block( 10, 1, displs,
      &                               MPI_INTEGER, type5, ierr )
       call mpi_type_commit( type5, ierr )
 C
@@ -91,8 +91,8 @@ C Using each time, send and receive using these types
       do i=1, max_asizev
          sendbuf(i) = i
       enddo
-      call mpi_sendrecv( sendbuf, max_asizev, MPI_INTEGER, rank, 0, 
-     &                   recvbuf, max_asizev, type1, rank, 0, 
+      call mpi_sendrecv( sendbuf, max_asizev, MPI_INTEGER, rank, 0,
+     &                   recvbuf, max_asizev, type1, rank, 0,
      &                   MPI_COMM_WORLD, status, ierr )
       do i=1, max_asizev
          if (recvbuf(1+(i-1)*3) .ne. i ) then
@@ -107,8 +107,8 @@ C
       do i=1, max_asizev
          sendbuf(i) = i
       enddo
-      call mpi_sendrecv( sendbuf, max_asizev, MPI_INTEGER, rank, 0, 
-     &                   recvbuf, 1, type2, rank, 0, 
+      call mpi_sendrecv( sendbuf, max_asizev, MPI_INTEGER, rank, 0,
+     &                   recvbuf, 1, type2, rank, 0,
      &                   MPI_COMM_WORLD, status, ierr )
       do i=1, max_asizev
          if (recvbuf(1+(i-1)*3) .ne. i ) then
@@ -123,8 +123,8 @@ C
       do i=1, max_asizev
          sendbuf(i) = i
       enddo
-      call mpi_sendrecv( sendbuf, max_asizev, MPI_INTEGER, rank, 0, 
-     &                   recvbuf, 1, type3, rank, 0, 
+      call mpi_sendrecv( sendbuf, max_asizev, MPI_INTEGER, rank, 0,
+     &                   recvbuf, 1, type3, rank, 0,
      &                   MPI_COMM_WORLD, status, ierr )
       do i=1, max_asizev
          if (recvbuf(1+(i-1)*3) .ne. i ) then
@@ -139,8 +139,8 @@ C
       do i=1, max_asizev
          sendbuf(i) = i
       enddo
-      call mpi_sendrecv( sendbuf, max_asizev, MPI_INTEGER, rank, 0, 
-     &                   recvbuf, 1, type4, rank, 0, 
+      call mpi_sendrecv( sendbuf, max_asizev, MPI_INTEGER, rank, 0,
+     &                   recvbuf, 1, type4, rank, 0,
      &                   MPI_COMM_WORLD, status, ierr )
       do i=1, max_asizev
          if (recvbuf(1+(i-1)*3) .ne. i ) then
@@ -155,8 +155,8 @@ C
       do i=1, max_asizev
          sendbuf(i) = i
       enddo
-      call mpi_sendrecv( sendbuf, max_asizev, MPI_INTEGER, rank, 0, 
-     &                   recvbuf, 1, type5, rank, 0, 
+      call mpi_sendrecv( sendbuf, max_asizev, MPI_INTEGER, rank, 0,
+     &                   recvbuf, 1, type5, rank, 0,
      &                   MPI_COMM_WORLD, status, ierr )
       do i=1, max_asizev
          if (recvbuf(1+(i-1)*3) .ne. i ) then

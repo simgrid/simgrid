@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -27,7 +27,7 @@ C
 
       call mpi_attr_get( MPI_COMM_WORLD, MPI_LASTUSEDCODE, value, flag,
      $     ierr )
-      ! Last used code must be defined and >= MPI_ERR_LASTCODE 
+      ! Last used code must be defined and >= MPI_ERR_LASTCODE
       if (flag) then
          if (value .lt. MPI_ERR_LASTCODE) then
             errs = errs + 1
@@ -35,7 +35,7 @@ C
      $           (", value, ") smaller than MPI_ERR_LASTCODE (",
      $           MPI_ERR_LASTCODE, ")"
          endif
-      else 
+      else
          errs = errs + 1
          print *, "MPI_LASTUSECODE is not defined"
       endif

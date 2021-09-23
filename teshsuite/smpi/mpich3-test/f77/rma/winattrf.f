@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -18,7 +18,7 @@ C
 C The only difference between the MPI-2 and MPI-1 attribute caching
 C routines in Fortran is that the take an address-sized integer
 C instead of a simple integer.  These still are not pointers,
-C so the values are still just integers. 
+C so the values are still just integers.
 C
       errs      = 0
       callcount = 0
@@ -29,9 +29,9 @@ C Create a new window; use val for an address-sized int
       val = 10
       call mpi_win_create( buf, val, 1,
      &                        MPI_INFO_NULL, comm, win, ierr )
-C 
+C
       extrastate = 1001
-      call mpi_win_create_keyval( mycopyfn, mydelfn, keyval, 
+      call mpi_win_create_keyval( mycopyfn, mydelfn, keyval,
      &                             extrastate, ierr )
       flag = .true.
       call mpi_win_get_attr( win, keyval, valout, flag, ierr )
@@ -47,10 +47,10 @@ C
       call mpi_win_get_attr( win, keyval, valout, flag, ierr )
       if (valout .ne. 2003) then
          errs = errs + 1
-         print *, 'Unexpected value (should be 2003)', valout, 
+         print *, 'Unexpected value (should be 2003)', valout,
      &            ' from attr'
       endif
-      
+
       valin = 2001
       call mpi_win_set_attr( win, keyval, valin, ierr )
       flag = .false.
@@ -58,7 +58,7 @@ C
       call mpi_win_get_attr( win, keyval, valout, flag, ierr )
       if (valout .ne. 2001) then
          errs = errs + 1
-         print *, 'Unexpected value (should be 2001)', valout, 
+         print *, 'Unexpected value (should be 2001)', valout,
      &            ' from attr'
       endif
 C
@@ -75,7 +75,7 @@ C Test the attr delete function
          errs = errs + 1
          print *, ' Delete_attr did not delete attribute'
       endif
-      
+
 C Test the delete function on window free
       valin = 2001
       call mpi_win_set_attr( win, keyval, valin, ierr )
@@ -83,7 +83,7 @@ C Test the delete function on window free
       call mpi_win_free( win, ierr )
       if (delcount .ne. curcount + 1) then
          errs = errs + 1
-         print *, ' did not get expected value of delcount ', 
+         print *, ' did not get expected value of delcount ',
      &          delcount, curcount + 1
       endif
 
@@ -104,14 +104,14 @@ C as defined.  To test them, we simply call them here
       valout = -1
       ierr   = -1
       call MPI_WIN_DUP_FN( win, keyval, extrastate, valin, valout,
-     $     flag, ierr ) 
+     $     flag, ierr )
       if (.not. flag) then
          errs = errs + 1
          print *, " Flag was false after MPI_WIN_DUP_FN"
       else if (valout .ne. 7001) then
          errs = errs + 1
          if (valout .eq. -1 ) then
-          print *, " output attr value was not copied in MPI_WIN_DUP_FN" 
+          print *, " output attr value was not copied in MPI_WIN_DUP_FN"
          endif
          print *, " value was ", valout, " but expected 7001"
       else if (ierr .ne. MPI_SUCCESS) then
@@ -124,14 +124,14 @@ C as defined.  To test them, we simply call them here
       valout = -1
       ierr   = -1
       call MPI_WIN_NULL_COPY_FN( win, keyval, extrastate, valin, valout
-     $     ,flag, ierr ) 
+     $     ,flag, ierr )
       if (flag) then
          errs = errs + 1
          print *, " Flag was true after MPI_WIN_NULL_COPY_FN"
       else if (valout .ne. -1) then
          errs = errs + 1
          print *,
-     $        " output attr value was copied in MPI_WIN_NULL_COPY_FN" 
+     $        " output attr value was copied in MPI_WIN_NULL_COPY_FN"
       else if (ierr .ne. MPI_SUCCESS) then
          errs = errs + 1
          print *, " MPI_WIN_NULL_COPY_FN did not return MPI_SUCCESS"

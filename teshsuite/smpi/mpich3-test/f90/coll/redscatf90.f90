@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/coll/redscatf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2011 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -9,7 +9,7 @@
       integer cin(*), cout(*)
       integer count, datatype
       integer i
-      
+
       if (.false.) then
          if (datatype .ne. MPI_INTEGER) then
             write(6,*) 'Invalid datatype ',datatype,' passed to user_op()'
@@ -24,7 +24,7 @@
 !
 ! Test of reduce scatter.
 !
-! Each processor contributes its rank + the index to the reduction, 
+! Each processor contributes its rank + the index to the reduction,
 ! then receives the ith sum
 !
 ! Can be called with any number of processors.
@@ -63,7 +63,7 @@
       &     MPI_INTEGER, MPI_SUM, comm, ierr )
 
       sumval = size * rank + ((size - 1) * size)/2
-! recvbuf should be size * (rank + i) 
+! recvbuf should be size * (rank + i)
       if (recvbuf .ne. sumval) then
          errs = errs + 1
          print *, "Did not get expected value for reduce scatter"
@@ -75,7 +75,7 @@
       &     MPI_INTEGER, sumop, comm, ierr )
 
       sumval = size * rank + ((size - 1) * size)/2
-! recvbuf should be size * (rank + i) 
+! recvbuf should be size * (rank + i)
       if (recvbuf .ne. sumval) then
          errs = errs + 1
          print *, "sumop: Did not get expected value for reduce scatter"

@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/util/mtestf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -29,14 +29,14 @@
         use mpi
         integer errs
         integer rank, toterrs, ierr
-        
+
         call MPI_Comm_rank( MPI_COMM_WORLD, rank, ierr )
 
         call MPI_Allreduce( errs, toterrs, 1, MPI_INTEGER, MPI_SUM,  &
-      &        MPI_COMM_WORLD, ierr ) 
-        
+      &        MPI_COMM_WORLD, ierr )
+
         if (rank .eq. 0) then
-           if (toterrs .gt. 0) then 
+           if (toterrs .gt. 0) then
                 print *, " Found ", toterrs, " errors"
            else
                 print *, " No Errors"
@@ -107,5 +107,5 @@
         call MPI_Error_class( errcode, errclass, ierr )
         call MPI_Error_string( errcode, string, slen, ierr )
         print *, msg, ": Error class ", errclass, " &
-      &       (", string(1:slen), ")" 
+      &       (", string(1:slen), ")"
         end

@@ -87,9 +87,9 @@ main (int argc, char **argv)
 		}
 		else if (drank == 0) {
 		  memset (buf0, 0, buf_size*sizeof(int));
-	
+
 		  MPI_Send (buf0, buf_size, MPI_INT, 1, 0, comm);
-	
+
 		  MPI_Recv (buf1, buf_size, MPI_INT, 1, 0, comm, &status);
 		}
 	      }
@@ -110,9 +110,9 @@ main (int argc, char **argv)
 		}
 		else if (drank == 0) {
 		  memset (buf0, 0, buf_size*sizeof(int));
-	
+
 		  MPI_Send (buf0, buf_size, MPI_INT, 1, 0, comm2);
-	
+
 		  MPI_Recv (buf1, buf_size, MPI_INT, 1, 0, comm2, &status);
 		}
 	      }

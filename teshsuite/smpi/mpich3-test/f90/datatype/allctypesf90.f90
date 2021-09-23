@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/datatype/allctypesf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2004 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -81,7 +81,7 @@
             call checkdtype( MPI_C_LONG_DOUBLE_COMPLEX,  &
       &                       "MPI_C_LONG_DOUBLE_COMPLEX", ierr )
           endif
-! address/offset types 
+! address/offset types
           call checkdtype( MPI_AINT, "MPI_AINT", ierr )
           call checkdtype( MPI_OFFSET, "MPI_OFFSET", ierr )
        endif
@@ -97,7 +97,7 @@
       character *(*) name
       integer ir, rlen
       character *(MPI_MAX_OBJECT_NAME) outname
-!     
+!
       outname = ""
       call MPI_TYPE_GET_NAME( intype, outname, rlen, ir )
       if (ir .ne. MPI_SUCCESS) then
@@ -110,7 +110,7 @@
             ierr = ierr + 1
          endif
       endif
-      
+
       return
       end
 !
@@ -121,7 +121,7 @@
       character *(*) name, name2
       integer ir, rlen
       character *(MPI_MAX_OBJECT_NAME) outname
-!     
+!
       outname = ""
       call MPI_TYPE_GET_NAME( intype, outname, rlen, ir )
       if (ir .ne. MPI_SUCCESS) then
@@ -134,6 +134,6 @@
             ierr = ierr + 1
          endif
       endif
-      
+
       return
       end

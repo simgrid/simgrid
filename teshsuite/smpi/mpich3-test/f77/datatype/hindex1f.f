@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C
 C  (C) 2011 by Argonne National Laboratory.
@@ -14,19 +14,19 @@ C
       integer inbuf(bufsize), outbuf(bufsize), packbuf(bufsize)
       integer position, len, psize
 C
-C     Test for hindexed; 
-C     
+C     Test for hindexed;
+C
       errs = 0
       call mtest_init( ierr )
 
       call mpi_type_size( MPI_INTEGER, intsize, ierr )
-      
+
       do i=1, 10
          displs(i) = (10-i)*intsize
          counts(i) = 1
       enddo
       call mpi_type_hindexed( 10, counts, displs, MPI_INTEGER, dtype,
-     &     ierr ) 
+     &     ierr )
       call mpi_type_commit( dtype, ierr )
 C
       call mpi_pack_size( 1, dtype, MPI_COMM_WORLD, psize, ierr )
@@ -45,7 +45,7 @@ C
          position = 0
          call mpi_unpack( packbuf, len, position, outbuf, 10,
      $        MPI_INTEGER, MPI_COMM_WORLD, ierr )
-C     
+C
          do i=1, 10
             if (outbuf(i) .ne. 11-i) then
                errs = errs + 1

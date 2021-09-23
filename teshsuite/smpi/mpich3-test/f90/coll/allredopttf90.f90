@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/coll/allredopttf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2007 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -12,7 +12,7 @@
       integer errs, ierr
 
       errs = 0
-      
+
       call mtest_init( ierr )
       call mpi_comm_size( MPI_COMM_WORLD, wsize, ierr )
 !

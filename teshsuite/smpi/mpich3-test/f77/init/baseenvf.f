@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -27,7 +27,7 @@ C
        provided = -1
        call mpi_init_thread( MPI_THREAD_MULTIPLE, provided, ierr )
 
-       if (provided .ne. MPI_THREAD_MULTIPLE .and. 
+       if (provided .ne. MPI_THREAD_MULTIPLE .and.
      &     provided .ne. MPI_THREAD_SERIALIZED .and.
      &     provided .ne. MPI_THREAD_FUNNELED .and.
      &     provided .ne. MPI_THREAD_SINGLE) then
@@ -41,7 +41,7 @@ C
        if (iv .ne. MPI_VERSION .or. isubv .ne. MPI_SUBVERSION) then
           errs = errs + 1
           print *, 'Version in mpif.h and get_version do not agree'
-          print *, 'Version in mpif.h is ', MPI_VERSION, '.', 
+          print *, 'Version in mpif.h is ', MPI_VERSION, '.',
      &              MPI_SUBVERSION
           print *, 'Version in get_version is ', iv, '.', isubv
        endif
@@ -63,7 +63,7 @@ C
           errs = errs + 1
           print *, 'is_thread_main returned false for main thread'
        endif
-          
+
        call mpi_query_thread( qprovided, ierr )
        if (qprovided .ne. provided) then
           errs = errs + 1
@@ -80,7 +80,7 @@ C
        endif
 
        if (rank .eq. 0) then
-          if (errs .eq. 0) then 
+          if (errs .eq. 0) then
              print *, ' No Errors'
           else
              print *, ' Found ', errs, ' errors'

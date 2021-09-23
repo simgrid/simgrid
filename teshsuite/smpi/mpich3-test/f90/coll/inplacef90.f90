@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/coll/inplacef.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 ! (C) 2005 by Argonne National Laboratory.
 !     See COPYRIGHT in top-level directory.
@@ -15,7 +15,7 @@
        integer MAX_SIZE
        parameter (MAX_SIZE=1024)
        integer rbuf(MAX_SIZE), rdispls(MAX_SIZE), rcount(MAX_SIZE), &
-      &      sbuf(MAX_SIZE) 
+      &      sbuf(MAX_SIZE)
 
        errs = 0
        call mtest_init( ierr )
@@ -37,13 +37,13 @@
              if (rbuf(i) .ne. i-1) then
                 errs = errs + 1
                 print *, '[',rank,'] rbuf(', i, ') = ', rbuf(i),  &
-      &                   ' in gather'  
+      &                   ' in gather'
              endif
           enddo
        else
           call mpi_gather( rank, 1, MPI_INTEGER, rbuf, 1, MPI_INTEGER, &
       &         root, comm, ierr )
-       endif   
+       endif
 
 ! Gatherv with inplace
        do i=1,size
@@ -65,7 +65,7 @@
        else
           call mpi_gatherv( rank, 1, MPI_INTEGER, rbuf, rcount, rdispls, &
       &         MPI_INTEGER, root, comm, ierr )
-       endif   
+       endif
 
 ! Scatter with inplace
        do i=1,size
@@ -81,9 +81,9 @@
           if (rbuf(1) .ne. rank+1) then
              errs = errs + 1
              print *, '[', rank, '] rbuf  = ', rbuf(1), &
-      &            ' in scatter' 
+      &            ' in scatter'
           endif
-       endif   
+       endif
 
        call mtest_finalize( errs )
        call mpi_finalize( ierr )

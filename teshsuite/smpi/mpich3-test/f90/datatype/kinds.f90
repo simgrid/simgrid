@@ -1,4 +1,4 @@
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2011 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -59,7 +59,7 @@
      call MPI_SEND( aint, 1, MPI_AINT, 1, 0, MPI_COMM_WORLD, ierr )
      call MPI_SEND( oint, 1, MPI_OFFSET, 1, 1, MPI_COMM_WORLD, ierr )
      call MPI_SEND( iint, 1, MPI_INTEGER, 1, 2, MPI_COMM_WORLD, ierr )
-!     
+!
   else if (wrank .eq. 1) then
      if (range(taint) .ge. 10) then
         taint = 1

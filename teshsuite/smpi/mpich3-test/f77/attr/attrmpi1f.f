@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -19,7 +19,7 @@ C
 C     Simple attribute put and get
 C
       call mpi_keyval_create( MPI_NULL_COPY_FN, MPI_NULL_DELETE_FN,
-     $     mykey, extra,ierr ) 
+     $     mykey, extra,ierr )
       call mpi_attr_get( MPI_COMM_WORLD, mykey, value, flag, ierr )
       if (flag) then
          errs = errs + 1
@@ -55,7 +55,7 @@ C
             print *, "Neg Attribute value ", rvalue," should be ",svalue
          endif
       endif
-C      
+C
       call mpi_keyval_free( mykey, ierr )
       call mtest_finalize( errs )
       call mpi_finalize( ierr )

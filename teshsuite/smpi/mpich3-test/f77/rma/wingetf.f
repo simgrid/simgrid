@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -17,16 +17,16 @@ C
       logical mtestGetIntraComm
 C Include addsize defines asize as an address-sized integer
       include 'addsize.h'
-      
+
       errs = 0
       call mtest_init( ierr )
 
       call mpi_type_size( MPI_INTEGER, intsize, ierr )
-      do while( mtestGetIntraComm( comm, 2, .false. ) ) 
+      do while( mtestGetIntraComm( comm, 2, .false. ) )
          asize = nrows * (ncols + 2) * intsize
-         call mpi_win_create( buf, asize, intsize * nrows, 
+         call mpi_win_create( buf, asize, intsize * nrows,
      &                        MPI_INFO_NULL, comm, win, ierr )
-         
+
          call mpi_comm_size( comm, size, ierr )
          call mpi_comm_rank( comm, rank, ierr )
          left = rank - 1
@@ -38,7 +38,7 @@ C Include addsize defines asize as an address-sized integer
             right = MPI_PROC_NULL
          endif
 C
-C Initialize the buffer 
+C Initialize the buffer
          do i=1,nrows
             buf(i,0)       = -1
             buf(i,ncols+1) = -1
@@ -49,15 +49,15 @@ C Initialize the buffer
             enddo
          enddo
          call mpi_win_fence( MPI_MODE_NOPRECEDE, win, ierr )
-C      
+C
          asize = 1
          call mpi_get( buf(1,ncols+1), nrows, MPI_INTEGER, right,
      &                 asize, nrows, MPI_INTEGER, win, ierr )
          asize = ncols
-         call mpi_get( buf(1,0), nrows, MPI_INTEGER, left, 
+         call mpi_get( buf(1,0), nrows, MPI_INTEGER, left,
      &                 asize, nrows, MPI_INTEGER, win, ierr )
-C         
-         call mpi_win_fence( MPI_MODE_NOSTORE + MPI_MODE_NOPUT + 
+C
+         call mpi_win_fence( MPI_MODE_NOSTORE + MPI_MODE_NOPUT +
      &                       MPI_MODE_NOSUCCEED, win, ierr )
 C
 C Check the results
@@ -79,7 +79,7 @@ C Check the results
                if (buf(i,ncols+1) .ne. ans) then
                   errs = errs + 1
                   if (errs .le. 10) then
-                     print *, rank, ' buf(',i,',',ncols+1,') = ', 
+                     print *, rank, ' buf(',i,',',ncols+1,') = ',
      &                         buf(i,ncols+1), ' expected ', ans
                   endif
                endif

@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2011 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -15,7 +15,7 @@ C
       integer sbuf(maxSize), rbuf(maxSize)
 
       errs = 0
-      
+
       call mtest_init( ierr )
 
 C Get a comm
@@ -31,7 +31,7 @@ C Get a comm
          call mpi_comm_size( comm, size, ierr )
       endif
       call mpi_comm_rank( comm, rank, ierr )
-C      
+C
       if (size .le. maxSize) then
 C Initialize the data.  Just use this as an all to all
 C Use the same test as alltoallwf.c , except displacements are in units of
@@ -47,15 +47,15 @@ C integers instead of bytes
             rbuf(i) = -1
          enddo
          call mpi_alltoallv( sbuf, scounts, sdispls, stypes,
-     &        rbuf, rcounts, rdispls, rtypes, comm, ierr )     
+     &        rbuf, rcounts, rdispls, rtypes, comm, ierr )
 C
 C check rbuf(i) = data from the ith location of the ith send buf, or
-C       rbuf(i) = (i-1) * size + i   
+C       rbuf(i) = (i-1) * size + i
          do i=1, size
             ans = (i-1) * size + rank + 1
             if (rbuf(i) .ne. ans) then
                errs = errs + 1
-               print *, rank, ' rbuf(', i, ') = ', rbuf(i), 
+               print *, rank, ' rbuf(', i, ') = ', rbuf(i),
      &               ' expected ', ans
             endif
          enddo
@@ -91,7 +91,7 @@ C     Note that the arrays are 1-origin
          sbuf(1+displ)     = rank
          displ           = displ + 1
          if (rank .lt. size-1) then
-            scounts(1+rank+1) = 1 
+            scounts(1+rank+1) = 1
             rcounts(1+rank+1) = 1
             sdispls(1+rank+1) = displ
             rdispls(1+rank+1) = rank+1
@@ -126,14 +126,14 @@ C
          do i=0,rank-2
             if (rbuf(1+i) .ne. -1) then
                errs = errs + 1
-               print *, rank, ' rbuf(', 1+i, ') = ', rbuf(1+i), 
+               print *, rank, ' rbuf(', 1+i, ') = ', rbuf(1+i),
      &              'expected -1'
             endif
          enddo
          do i=rank+2,size-1
             if (rbuf(1+i) .ne. -1) then
                errs = errs + 1
-               print *, rank, ' rbuf(', i, ') = ', rbuf(1+i), 
+               print *, rank, ' rbuf(', i, ') = ', rbuf(1+i),
      &              'expected -1'
             endif
          enddo
@@ -143,4 +143,4 @@ C
       call mtest_finalize( errs )
       call mpi_finalize( ierr )
       end
-      
+

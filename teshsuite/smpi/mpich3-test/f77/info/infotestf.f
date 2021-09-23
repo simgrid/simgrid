@@ -1,9 +1,9 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
 C
-C Simple info test 
+C Simple info test
        program main
        implicit none
        include 'mpif.h'
@@ -34,12 +34,12 @@ C
        if (.not. flag ) then
           print *, "Did not find key1 in info1"
           errs = errs + 1
-       else 
+       else
           if (value .ne. "value1") then
              print *, "Found wrong value (", value, "), expected value1"
              errs = errs + 1
           else
-C     check for trailing blanks             
+C     check for trailing blanks
              do i=7,valuelen
                 if (value(i:i) .ne. " ") then
                    print *, "Found non blank in info value"

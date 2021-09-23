@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -19,10 +19,10 @@ C
       call mtest_init( ierr )
 C
 C Create a window and get, set the names on it
-C      
+C
       call mpi_type_size( MPI_INTEGER, intsize, ierr )
       asize = 10
-      call mpi_win_create( buf, asize, intsize, 
+      call mpi_win_create( buf, asize, intsize,
      &     MPI_INFO_NULL, MPI_COMM_WORLD, win, ierr )
 C
 C     Check that there is no name yet
@@ -71,7 +71,7 @@ C Now, set a name and check it
             print *, ' window name is not blank padded'
          endif
       endif
-C      
+C
       call mpi_win_free( win, ierr )
       call mtest_finalize( errs )
       call mpi_finalize( ierr )

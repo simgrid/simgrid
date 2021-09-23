@@ -1,4 +1,4 @@
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2013 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -9,9 +9,9 @@
 
 PROGRAM get_elem_u
 
-  USE mpi 
-  IMPLICIT NONE 
-  INTEGER    RANK, SIZE, IERR, COMM, errs 
+  USE mpi
+  IMPLICIT NONE
+  INTEGER    RANK, SIZE, IERR, COMM, errs
   INTEGER    MAX, I, K, dest
   INTEGER   STATUS(MPI_STATUS_SIZE)
 
@@ -24,31 +24,31 @@ PROGRAM get_elem_u
   INTEGER :: type1, type2, extent
   REAL    :: a(amax)
 
-  errs = 0 
-  CALL MPI_Init( ierr ) 
-  COMM = MPI_COMM_WORLD 
-  CALL MPI_Comm_rank(COMM,RANK,IERR) 
-  CALL MPI_Comm_size(COMM,SIZE,IERR) 
+  errs = 0
+  CALL MPI_Init( ierr )
+  COMM = MPI_COMM_WORLD
+  CALL MPI_Comm_rank(COMM,RANK,IERR)
+  CALL MPI_Comm_size(COMM,SIZE,IERR)
   dest=size-1
 
   CALL MPI_Type_create_struct(nb, blklen, disp, types, type1, ierr)
   CALL MPI_Type_commit(type1, ierr)
   CALL MPI_Type_extent(type1, extent, ierr)
 
-  CALL MPI_Type_contiguous(4, Type1, Type2, ierr) 
-  CALL MPI_Type_commit(Type2, ierr) 
+  CALL MPI_Type_contiguous(4, Type1, Type2, ierr)
+  CALL MPI_Type_commit(Type2, ierr)
   CALL MPI_Type_extent(Type2, extent, ierr)
 
   DO k=1,17
 
-     IF(rank .EQ. 0) THEN 
+     IF(rank .EQ. 0) THEN
 
         !       send k copies of datatype Type1
-        CALL MPI_Send(a, k, Type1, dest, 0, comm, ierr) 
+        CALL MPI_Send(a, k, Type1, dest, 0, comm, ierr)
 
      ELSE IF (rank == dest) THEN
 
-        CALL MPI_Recv(a, 200, Type2, 0, 0, comm, status, ierr) 
+        CALL MPI_Recv(a, 200, Type2, 0, 0, comm, status, ierr)
         CALL MPI_Get_elements(status, Type2, i, ierr)
         IF (i .NE. 2*k) THEN
            errs = errs+1

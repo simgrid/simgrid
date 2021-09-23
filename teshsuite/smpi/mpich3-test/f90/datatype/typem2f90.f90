@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/datatype/typem2f.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.

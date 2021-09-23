@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/coll/exscanf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -9,7 +9,7 @@
       integer cin(*), cout(*)
       integer count, datatype
       integer i
-      
+
       if (.false.) then
          if (datatype .ne. MPI_INTEGER) then
             write(6,*) 'Invalid datatype passed to user_op()'
@@ -32,7 +32,7 @@
       allocate(inbuf(2), STAT=status)
       allocate(outbuf(2), STAT=status)
       errs = 0
-      
+
       call mtest_init( ierr )
 !
 ! A simple test of exscan
@@ -59,7 +59,7 @@
          endif
       endif
 !
-! Try a user-defined operation 
+! Try a user-defined operation
 !
       call mpi_op_create( uop, .true., sumop, ierr )
       inbuf(1) = rank
@@ -80,7 +80,7 @@
          endif
       endif
       call mpi_op_free( sumop, ierr )
-      
+
 !
 ! Try a user-defined operation (and don't claim it is commutative)
 !

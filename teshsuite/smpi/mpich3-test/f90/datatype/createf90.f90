@@ -1,4 +1,4 @@
-!  
+!
 !  (C) 2004 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
 !
@@ -47,7 +47,7 @@
               print *, "parameter was ", nparms(1), " should be 9"
            endif
         endif
-           
+
         call mpi_type_create_f90_integer( 8, ntype2, ierr )
         if (ntype1 .eq. ntype2) then
            errs = errs + 1
@@ -64,5 +64,5 @@
 
         call mtest_finalize( errs )
         call mpi_finalize( ierr )
-        
+
         end

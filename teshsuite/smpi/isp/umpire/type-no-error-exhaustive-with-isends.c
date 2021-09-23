@@ -215,7 +215,7 @@ main (int argc, char **argv)
       struct_lb_ub_send_buf[i].dontsend_double2 = 1.0;
 #endif
     }
-	
+
     /* set up the sends */
 #ifdef RUN_TYPE_STRUCT
     MPI_Isend (struct_buf, MSG_COUNT, newtype[0], 1, 0, comm, &aReq[0]);
@@ -692,7 +692,7 @@ main (int argc, char **argv)
 #endif
     }
   }
-	
+
   if ((rank == 0) || (rank == 1)) {
     /* wait on everything... */
     MPI_Waitall (TYPE_CONSTRUCTOR_COUNT, aReq, aStatus);
@@ -1032,7 +1032,7 @@ main (int argc, char **argv)
 #endif
     }
   }
-	
+
   for (i = 0; i < TYPE_CONSTRUCTOR_COUNT; i++) {
     MPI_Type_free (&newtype[i]);
   }

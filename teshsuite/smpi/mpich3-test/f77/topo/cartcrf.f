@@ -1,9 +1,9 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2004 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
 C
-C Test various combinations of periodic and non-periodic Cartesian 
+C Test various combinations of periodic and non-periodic Cartesian
 C communicators
 C
       program main
@@ -74,7 +74,7 @@ C                  print *, i, '(', outcoords(i), ')'
                         endif
                      endif
                   endif
-                  
+
                   call mpi_cart_shift( newcomm, i-1, -1, source, dest,
      $                 ierr )
                   if (outcoords(i) .eq. 0) then
@@ -93,10 +93,10 @@ C                  print *, i, '(', outcoords(i), ')'
                enddo
                call mpi_comm_free( newcomm, ierr )
             endif
-            
+
          enddo
       enddo
-      
+
       call mtest_finalize( errs )
       call mpi_finalize( ierr )
       end

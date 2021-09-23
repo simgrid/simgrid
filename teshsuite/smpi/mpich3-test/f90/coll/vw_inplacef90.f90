@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/coll/vw_inplacef.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 ! (C) 2012 by Argonne National Laboratory.
 !     See COPYRIGHT in top-level directory.

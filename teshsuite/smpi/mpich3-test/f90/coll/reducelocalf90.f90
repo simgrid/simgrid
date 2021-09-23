@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/coll/reducelocalf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2009 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -17,7 +17,7 @@
          write(6,*) 'Invalid datatype passed to user_op()'
          return
       endif
-      
+
       do ii=1, count
          outvec(ii) = invec(ii) * 2 + outvec(ii)
       enddo
@@ -33,7 +33,7 @@
       integer ierr, errs
       integer count, myop
       integer ii
-      
+
       errs = 0
 
       call mtest_init(ierr)
@@ -43,7 +43,7 @@
          do ii = 1,count
             vin(ii) = ii
             vout(ii) = ii
-         enddo 
+         enddo
          call mpi_reduce_local( vin, vout, count, &
       &                          MPI_INTEGER, MPI_SUM, ierr )
 !        Check if the result is correct
@@ -54,7 +54,7 @@
             if ( vout(ii) .ne. 2*ii ) then
                errs = errs + 1
             endif
-         enddo 
+         enddo
          if ( count .gt. 0 ) then
             count = count + count
          else
@@ -65,7 +65,7 @@
       call mpi_op_create( user_op, .false., myop, ierr )
 
       count = 0
-      do while (count .le. max_buf_size) 
+      do while (count .le. max_buf_size)
          do ii = 1, count
             vin(ii) = ii
             vout(ii) = ii

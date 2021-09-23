@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/rma/winerrf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -12,7 +12,7 @@
        integer buf(10)
        integer win
 !      external myerrhanfunc
-       INTERFACE 
+       INTERFACE
        SUBROUTINE myerrhanfunc(vv0,vv1)
        INTEGER vv0,vv1
        END SUBROUTINE
@@ -61,7 +61,7 @@
        call mpi_win_call_errhandler( win, newerrclass, ierr )
        call mpi_win_call_errhandler( win, code(1), ierr )
        call mpi_win_call_errhandler( win, code(2), ierr )
-       
+
        if (callcount .ne. 3) then
           errs = errs + 1
           print *, ' Expected 3 calls to error handler, found ',  &

@@ -100,13 +100,13 @@ main (int argc, char **argv)
       small_struct_buf[i].the_double = 1.0;
       small_struct_buf[i].the_char = 'a';
     }
-	
+
     for (i = 0; i < BIG_SIZE; i++) {
       big_struct_buf[i].the_double = 1.0;
       big_struct_buf[i].the_char = 'a';
       big_struct_buf[i].the_other_double = 1.0;
     }
-	
+
     /* set up the sends */
     MPI_Isend (small_struct_buf, 1, newtype[0], 1, 0, comm, &aReq[0]);
     MPI_Isend (big_struct_buf, 1, newtype[1], 1, 1, comm, &aReq[1]);

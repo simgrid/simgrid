@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/pt2pt/mprobef.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2012 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -18,20 +18,20 @@
       call mpi_init( ierr )
       if (ierr .ne. MPI_SUCCESS) then
           errs = errs + 1
-          print *, ' Unexpected return from MPI_INIT', ierr 
+          print *, ' Unexpected return from MPI_INIT', ierr
       endif
 
       call mpi_comm_rank( MPI_COMM_WORLD, rank, ierr )
       call mpi_comm_size( MPI_COMM_WORLD, size, ierr )
       if (size .lt. 2) then
           errs = errs + 1
-          print *, ' This test requires at least 2 processes' 
-!         Abort now - do not continue in this case.          
+          print *, ' This test requires at least 2 processes'
+!         Abort now - do not continue in this case.
           call mpi_abort( MPI_COMM_WORLD, 1, ierr )
       endif
       if (size .gt. 2) then
           print *, ' This test is running with ', size, ' processes,'
-          print *, ' only 2 processes are used.' 
+          print *, ' only 2 processes are used.'
       endif
 
 ! Test 0: simple Send and Mprobe+Mrecv.
@@ -152,7 +152,7 @@
           if (rreq .eq. MPI_REQUEST_NULL) then
               errs = errs + 1
               print *, 'rreq is unmodified at T1 Imrecv().'
-          endif 
+          endif
           call MPI_Wait(rreq, s2, ierr)
           if (recvbuf(1) .ne. 1735928559) then
               errs = errs + 1
@@ -306,7 +306,7 @@
           if (rreq .eq. MPI_REQUEST_NULL) then
               errs = errs + 1
               print *, 'rreq is unmodified at T3 Imrecv().'
-          endif 
+          endif
           call MPI_Wait(rreq, s2, ierr)
           if (recvbuf(1) .ne. 1735928559) then
               errs = errs + 1

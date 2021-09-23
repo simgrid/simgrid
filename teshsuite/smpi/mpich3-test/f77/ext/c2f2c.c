@@ -206,7 +206,7 @@ MPI_Fint c2ferrhandler_ ( MPI_Fint *errh )
 	fprintf( stderr, "Errhandler: did not get errors return\n" );
 	return 1;
     }
-	
+
     return 0;
 }
 

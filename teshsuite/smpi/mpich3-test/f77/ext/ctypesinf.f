@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2010 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -46,4 +46,4 @@ C
       call mtest_finalize( errs )
       call mpi_finalize( ierr )
 
-      end 
+      end

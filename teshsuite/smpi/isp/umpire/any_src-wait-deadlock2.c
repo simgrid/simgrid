@@ -42,7 +42,7 @@ main (int argc, char **argv)
       printf("Proc 0:  Request number - %p\n",req);
 
       MPI_Send (buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD);
-	
+
       MPI_Recv (buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD, &status);
 
       MPI_Send (buf0, buf_size, MPI_INT, 1, 0, MPI_COMM_WORLD);

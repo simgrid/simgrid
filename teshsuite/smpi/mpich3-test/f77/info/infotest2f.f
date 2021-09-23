@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -23,7 +23,7 @@ C
       errs = 0
 
       call mtest_init( ierr )
-      
+
 C Note that the MPI standard requires that leading an trailing blanks
 C are stripped from keys and values (Section 4.10, The Info Object)
 C
@@ -64,8 +64,8 @@ C        keys are number from 0 to n-1, even in Fortran (Section 4.10)
                         if (myvalue(ln:ln) .ne. ' ') then
                            if (vlen .ne. ln) then
                               errs = errs + 1
-                              print *, ' length is ', ln, 
-     &                          ' but valuelen gave ',  vlen, 
+                              print *, ' length is ', ln,
+     &                          ' but valuelen gave ',  vlen,
      &                          ' for key ', mykey
                            endif
                            goto 100
@@ -102,30 +102,30 @@ C flag to false
             print *, ' Found unexpected key ', keys(i)
          endif
          myvalue = 'A test'
-         call mpi_info_get( i2, keys(i), MPI_MAX_INFO_VAL, 
+         call mpi_info_get( i2, keys(i), MPI_MAX_INFO_VAL,
      &                      myvalue, flag, ierr )
          if (flag) then
             errs = errs + 1
             print *, ' Found unexpected key in MPI_Info_get ', keys(i)
-         else 
+         else
             if (myvalue .ne. 'A test') then
                errs = errs + 1
                print *, ' Returned value overwritten, is now ', myvalue
             endif
          endif
-         
+
       enddo
       do i=3,6
          myvalue = ' '
-         call mpi_info_get( i2, keys(i), MPI_MAX_INFO_VAL, 
+         call mpi_info_get( i2, keys(i), MPI_MAX_INFO_VAL,
      &                      myvalue, flag, ierr )
          if (.not. flag) then
              errs = errs + 1
              print *, ' Did not find key ', keys(i)
-         else 
+         else
             if (myvalue .ne. values(i)) then
                errs = errs + 1
-               print *, ' Found wrong value (', myvalue, ') for key ', 
+               print *, ' Found wrong value (', myvalue, ') for key ',
      &                  keys(i)
             endif
          endif

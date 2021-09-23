@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2003 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -32,7 +32,7 @@ C    integer a(maxn,maxm)
 C and the subarray is
 C    a(1+1:(maxn-3) +(1+1)-1,2+1:(maxm-4)+(2+1)-1)
 C i.e., a (start:(len + start - 1),...)
-      call mpi_type_create_subarray( 2, fullsizes, subsizes, starts, 
+      call mpi_type_create_subarray( 2, fullsizes, subsizes, starts,
      &         MPI_ORDER_FORTRAN, MPI_INTEGER, newtype, ierr )
       call mpi_type_commit( newtype, ierr )
 C
@@ -48,8 +48,8 @@ C Prefill the array
          enddo
       enddo
       ssize = subsizes(1)*subsizes(2)
-      call mpi_sendrecv( fullarr, 1, newtype, rank, 0, 
-     &                   subarr, ssize, MPI_INTEGER, rank, 0, 
+      call mpi_sendrecv( fullarr, 1, newtype, rank, 0,
+     &                   subarr, ssize, MPI_INTEGER, rank, 0,
      &                   MPI_COMM_WORLD, MPI_STATUS_IGNORE, ierr )
 C
 C Check the data

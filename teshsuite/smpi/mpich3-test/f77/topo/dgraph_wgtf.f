@@ -1,4 +1,4 @@
-C -*- Mode: Fortran; -*- 
+C -*- Mode: Fortran; -*-
 C
 C  (C) 2011 by Argonne National Laboratory.
 C      See COPYRIGHT in top-level directory.
@@ -46,7 +46,7 @@ C     i.e. everyone only talks to left and right neighbors.
 
       if (src_sz .ne. 2 .or. dest_sz .ne. 2) then
           validate_dgraph = .false.
-          write(6,*) "source or destination edge array is not size 2." 
+          write(6,*) "source or destination edge array is not size 2."
           write(6,"('src_sz = ',I3,', dest_sz = ',I3)") src_sz, dest_sz
           return
       endif
@@ -65,7 +65,7 @@ C     Check if the neighbors returned from MPI are really
 C     the nearest neighbors that within a ring.
       call MPI_Comm_rank(MPI_COMM_WORLD, world_rank, ierr)
       call MPI_Comm_size(MPI_COMM_WORLD, world_size, ierr)
- 
+
       do idx = 1, src_sz
           nbr_sep = iabs(srcs(idx) - world_rank)
           if (nbr_sep .ne. 1 .and. nbr_sep .ne. (world_size-1)) then
@@ -142,7 +142,7 @@ C     the nearest neighbors that within a ring.
       integer    src_wgts(2), dest_wgts(2)
 
       errs = 0
-      call MTEST_Init(ierr) 
+      call MTEST_Init(ierr)
       call MPI_Comm_rank(MPI_COMM_WORLD, world_rank, ierr)
       call MPI_Comm_size(MPI_COMM_WORLD, world_size, ierr)
 

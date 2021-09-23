@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/rma/baseattrwinf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -19,11 +19,11 @@
 
 
       errs = 0
-      
+
       call mtest_init( ierr )
       call mpi_comm_size( MPI_COMM_WORLD, commsize, ierr )
 
-! Create a window; then extract the values 
+! Create a window; then extract the values
       asize    = 1024
       disp = 4
       call MPI_Win_create( base, asize, disp, MPI_INFO_NULL,  &
@@ -36,8 +36,8 @@
          errs = errs + 1
          print *, "Could not get WIN_BASE"
 !
-! There is no easy way to get the actual value of base to compare 
-! against.  MPI_Address gives a value relative to MPI_BOTTOM, which 
+! There is no easy way to get the actual value of base to compare
+! against.  MPI_Address gives a value relative to MPI_BOTTOM, which
 ! is different from 0 in Fortran (unless you can define MPI_BOTTOM
 ! as something like %pointer(0)).
 !      else
@@ -46,7 +46,7 @@
 !         call MPI_Address( base, baseadd, ierr )
 !         if (valout .ne. baseadd) then
 !           errs = errs + 1
-!           print *, "Got incorrect value for WIN_BASE (", valout, 
+!           print *, "Got incorrect value for WIN_BASE (", valout,
 !     &             ", should be ", baseadd, ")"
 !         endif
       endif

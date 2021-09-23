@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/rma/winaccf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -18,16 +18,16 @@
 ! Include addsize defines asize as an address-sized integer
       integer (kind=MPI_ADDRESS_KIND) asize
 
-      
+
       errs = 0
       call mtest_init( ierr )
 
       call mpi_type_size( MPI_INTEGER, intsize, ierr )
-      do while( mtestGetIntraComm( comm, 2, .false. ) ) 
+      do while( mtestGetIntraComm( comm, 2, .false. ) )
          asize  = nrows * (ncols + 2) * intsize
          call mpi_win_create( buf, asize, intsize * nrows,  &
       &                        MPI_INFO_NULL, comm, win, ierr )
-         
+
          call mpi_comm_size( comm, size, ierr )
          call mpi_comm_rank( comm, rank, ierr )
          left = rank - 1
@@ -39,7 +39,7 @@
             right = MPI_PROC_NULL
          endif
 !
-! Initialize the buffer 
+! Initialize the buffer
          do i=1,nrows
             buf(i,0)       = -1
             buf(i,ncols+1) = -1
@@ -50,7 +50,7 @@
             enddo
          enddo
          call mpi_win_fence( MPI_MODE_NOPRECEDE, win, ierr )
-!         
+!
          asize = ncols + 1
          call mpi_accumulate( buf(1,1), nrows, MPI_INTEGER,  &
       &                 left, asize,  &
@@ -58,7 +58,7 @@
          asize = 0
          call mpi_accumulate( buf(1,ncols), nrows, MPI_INTEGER, right, &
       &                 asize, nrows, MPI_INTEGER, MPI_SUM, win, ierr )
-!         
+!
          call mpi_win_fence( MPI_MODE_NOSTORE + MPI_MODE_NOPUT +  &
       &                       MPI_MODE_NOSUCCEED, win, ierr )
 !

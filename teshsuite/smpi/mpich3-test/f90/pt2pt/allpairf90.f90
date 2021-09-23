@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/pt2pt/allpairf.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2012 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -14,7 +14,7 @@
       logical mtestGetIntraComm
       logical verbose
       common /flags/ verbose
-      
+
       errs = 0
       verbose = .false.
 !      verbose = .true.
@@ -35,7 +35,7 @@
          call test_pair_sendrecvrepl( comm, errs )
          call mtestFreeComm( comm )
       enddo
-!         
+!
       call MTest_Finalize( errs )
       call MPI_Finalize(ierr)
 !
@@ -74,7 +74,7 @@
          call init_test_data(send_buf,TEST_SIZE)
 !
          call MPI_Send(send_buf, count, MPI_REAL, next, tag, &
-      &        comm, ierr) 
+      &        comm, ierr)
 !
          call MPI_Recv(recv_buf, TEST_SIZE, MPI_REAL, &
       &                 MPI_ANY_SOURCE, MPI_ANY_TAG, comm, status, ierr)
@@ -88,7 +88,7 @@
          call msg_check( recv_buf, prev, tag, count, status, TEST_SIZE, &
       &                   'send and recv', errs )
 !
-         call MPI_Send(recv_buf, count, MPI_REAL, prev, tag, comm, ierr) 
+         call MPI_Send(recv_buf, count, MPI_REAL, prev, tag, comm, ierr)
       end if
 !
       end
@@ -123,16 +123,16 @@
       call clear_test_data(recv_buf,TEST_SIZE)
 !
       if (rank .eq. 0) then
-!        
+!
          call init_test_data(send_buf,TEST_SIZE)
 !
          call MPI_Recv( MPI_BOTTOM, 0, MPI_INTEGER, next, tag,  &
       &                  comm, status, ierr )
 !
          call MPI_Rsend(send_buf, count, MPI_REAL, next, tag, &
-      &                  comm, ierr) 
+      &                  comm, ierr)
 !
-         call MPI_Probe(MPI_ANY_SOURCE, tag, comm, status, ierr) 
+         call MPI_Probe(MPI_ANY_SOURCE, tag, comm, status, ierr)
 !
          if (status(MPI_SOURCE) .ne. next) then
             print *, 'Rsend: Incorrect source, expected', next, &
@@ -173,7 +173,7 @@
       &                   'rsend and recv', errs )
 !
          call MPI_Send(recv_buf, count, MPI_REAL, prev, tag, &
-      &                  comm, ierr) 
+      &                  comm, ierr)
       end if
 !
       end
@@ -213,7 +213,7 @@
          call init_test_data(send_buf,TEST_SIZE)
 !
          call MPI_Iprobe(MPI_ANY_SOURCE, tag, &
-      &                   comm, flag, status, ierr) 
+      &                   comm, flag, status, ierr)
 !
          if (flag) then
             print *, 'Ssend: Iprobe succeeded! source',  &
@@ -223,13 +223,13 @@
          end if
 !
          call MPI_Ssend(send_buf, count, MPI_REAL, next, tag, &
-      &                  comm, ierr) 
+      &                  comm, ierr)
 !
          do while (.not. flag)
             call MPI_Iprobe(MPI_ANY_SOURCE, tag, &
-      &                      comm, flag, status, ierr) 
+      &                      comm, flag, status, ierr)
          end do
-!           
+!
          if (status(MPI_SOURCE) .ne. next) then
             print *, 'Ssend: Incorrect source, expected', next, &
       &               ', got', status(MPI_SOURCE)
@@ -255,7 +255,7 @@
       &                 status, ierr)
 !
          call msg_check( recv_buf, next, tag, count, status, &
-      &        TEST_SIZE, 'ssend and recv', errs ) 
+      &        TEST_SIZE, 'ssend and recv', errs )
 !
       else if (prev .eq. 0) then
 !
@@ -267,7 +267,7 @@
       &                   'ssend and recv', errs )
 !
          call MPI_Ssend(recv_buf, count, MPI_REAL, prev, tag, &
-      &                  comm, ierr) 
+      &                  comm, ierr)
       end if
 !
       end
@@ -311,7 +311,7 @@
          call init_test_data(send_buf,TEST_SIZE)
 !
          call MPI_Isend(send_buf, count, MPI_REAL, next, tag, &
-      &                  comm, requests(2), ierr) 
+      &                  comm, requests(2), ierr)
 !
          call MPI_Waitall(2, requests, statuses, ierr)
 !
@@ -330,7 +330,7 @@
       &                   'isend and irecv', errs )
 !
          call MPI_Isend(recv_buf, count, MPI_REAL, prev, tag, &
-      &                  comm, requests(1), ierr) 
+      &                  comm, requests(1), ierr)
 !
          call MPI_Wait(requests(1), status, ierr)
 !
@@ -386,7 +386,7 @@
       &                      dupcom, status, ierr )
 !
          call MPI_Irsend(send_buf, count, MPI_REAL, next, tag, &
-      &                   comm, requests(2), ierr) 
+      &                   comm, requests(2), ierr)
 !
          index = -1
          do while (index .ne. 1)
@@ -419,7 +419,7 @@
       &                   'irsend and irecv', errs )
 !
          call MPI_Irsend(recv_buf, count, MPI_REAL, prev, tag, &
-      &                   comm, requests(1), ierr) 
+      &                   comm, requests(1), ierr)
 !
          call MPI_Waitall(1, requests, statuses, ierr)
 !
@@ -471,7 +471,7 @@
          call init_test_data(send_buf,TEST_SIZE)
 !
          call MPI_Issend(send_buf, count, MPI_REAL, next, tag, &
-      &                   comm, requests(2), ierr) 
+      &                   comm, requests(2), ierr)
 !
          flag = .FALSE.
          do while (.not. flag)
@@ -493,7 +493,7 @@
       &                   'issend and recv', errs )
 
          call MPI_Issend(recv_buf, count, MPI_REAL, prev, tag, &
-      &                   comm, requests(1), ierr) 
+      &                   comm, requests(1), ierr)
 !
          flag = .FALSE.
          do while (.not. flag)
@@ -544,9 +544,9 @@
          call init_test_data(send_buf,TEST_SIZE)
 !
          call MPI_Send_init(send_buf, count, MPI_REAL, next, tag, &
-      &                      comm, requests(1), ierr) 
+      &                      comm, requests(1), ierr)
 !
-         call MPI_Startall(2, requests, ierr) 
+         call MPI_Startall(2, requests, ierr)
          call MPI_Waitall(2, requests, statuses, ierr)
 !
          call msg_check( recv_buf, next, tag, count, statuses(1,2), &
@@ -557,8 +557,8 @@
       else if (prev .eq. 0) then
 !
          call MPI_Send_init(send_buf, count, MPI_REAL, prev, tag, &
-      &                      comm, requests(1), ierr) 
-         call MPI_Start(requests(2), ierr) 
+      &                      comm, requests(1), ierr)
+         call MPI_Start(requests(2), ierr)
          call MPI_Wait(requests(2), status, ierr)
 !
          call msg_check( recv_buf, prev, tag, count, status, TEST_SIZE, &
@@ -568,7 +568,7 @@
             send_buf(i) = recv_buf(i)
          end do
 !
-         call MPI_Start(requests(1), ierr) 
+         call MPI_Start(requests(1), ierr)
          call MPI_Wait(requests(1), status, ierr)
 !
          call MPI_Request_free(requests(1), ierr)
@@ -617,7 +617,7 @@
       if (rank .eq. 0) then
 !
          call MPI_Rsend_init(send_buf, count, MPI_REAL, next, tag, &
-      &                       comm, requests(1), ierr) 
+      &                       comm, requests(1), ierr)
 !
          call init_test_data(send_buf,TEST_SIZE)
 !
@@ -644,7 +644,7 @@
       else if (prev .eq. 0) then
 !
          call MPI_Rsend_init(send_buf, count, MPI_REAL, prev, tag, &
-      &                       comm, requests(1), ierr) 
+      &                       comm, requests(1), ierr)
 !
          call MPI_Start(requests(2), ierr)
 !
@@ -711,7 +711,7 @@
       if (rank .eq. 0) then
 !
          call MPI_Ssend_init(send_buf, count, MPI_REAL, next, tag, &
-      &                       comm, requests(2), ierr) 
+      &                       comm, requests(2), ierr)
 !
          call init_test_data(send_buf,TEST_SIZE)
 !
@@ -735,7 +735,7 @@
       else if (prev .eq. 0) then
 !
          call MPI_Ssend_init(send_buf, count, MPI_REAL, prev, tag, &
-      &                       comm, requests(2), ierr) 
+      &                       comm, requests(2), ierr)
 !
          call MPI_Start(requests(1), ierr)
 !
@@ -798,7 +798,7 @@
 
          call MPI_Sendrecv(send_buf, count, MPI_REAL, next, tag, &
       &                     recv_buf, count, MPI_REAL, next, tag, &
-      &                     comm, status, ierr) 
+      &                     comm, status, ierr)
 
          call msg_check( recv_buf, next, tag, count, status, TEST_SIZE, &
       &                   'sendrecv', errs )
@@ -813,7 +813,7 @@
       &                   'recv/send', errs )
 
          call MPI_Send(recv_buf, count, MPI_REAL, prev, tag, &
-      &                 comm, ierr) 
+      &                 comm, ierr)
       end if
 !
       end
@@ -854,7 +854,7 @@
 !
          call MPI_Sendrecv_replace(recv_buf, count, MPI_REAL, &
       &                             next, tag, next, tag, &
-      &                             comm, status, ierr)  
+      &                             comm, status, ierr)
 
          call msg_check( recv_buf, next, tag, count, status, TEST_SIZE, &
       &                   'sendrecvreplace', errs )
@@ -871,7 +871,7 @@
       &                   'recv/send for replace', errs )
 
          call MPI_Send(recv_buf, count, MPI_REAL, prev, tag, &
-      &                 comm, ierr) 
+      &                 comm, ierr)
       end if
 !
       end
@@ -917,7 +917,7 @@
          errs       = errs + 1
          foundError = .true.
       end if
-         
+
       call verify_test_data(recv_buf, count, n, name, errs )
 
       end
@@ -937,7 +937,7 @@
             print *, 'Nonnull request in ', msg
          endif
  10   continue
-!      
+!
       end
 !------------------------------------------------------------------------------
 !
@@ -995,14 +995,14 @@
             errs = errs + 1
          endif
  20   continue
-!      
+!
 100   format('Invalid data', f6.1, ' at ', i4, ' of ', i4, ' in ', a)
 !
       end
 !
-!    This routine is used to prevent the compiler from deallocating the 
-!    array "a", which may happen in some of the tests (see the text in 
-!    the MPI standard about why this may be a problem in valid Fortran 
+!    This routine is used to prevent the compiler from deallocating the
+!    array "a", which may happen in some of the tests (see the text in
+!    the MPI standard about why this may be a problem in valid Fortran
 !    codes).  Without this, for example, tests fail with the Cray ftn
 !    compiler.
 !

@@ -1,5 +1,5 @@
 ! This file created from test/mpi/f77/rma/winattr2f.f with f77tof90
-! -*- Mode: Fortran; -*- 
+! -*- Mode: Fortran; -*-
 !
 !  (C) 2003 by Argonne National Laboratory.
 !      See COPYRIGHT in top-level directory.
@@ -18,7 +18,7 @@
 ! The only difference between the MPI-2 and MPI-1 attribute caching
 ! routines in Fortran is that the take an address-sized integer
 ! instead of a simple integer.  These still are not pointers,
-! so the values are still just integers. 
+! so the values are still just integers.
 !
       errs      = 0
       call mtest_init( ierr )
@@ -27,7 +27,7 @@
       val = 10
       call mpi_win_create( buf, val, 1, &
       &                        MPI_INFO_NULL, comm, win, ierr )
-! 
+!
       extrastate = 1001
       call mpi_win_create_keyval( MPI_WIN_DUP_FN,  &
       &                            MPI_WIN_NULL_DELETE_FN, keyval,  &
@@ -49,7 +49,7 @@
          print *, 'Unexpected value (should be 2003)', valout,  &
       &            ' from attr'
       endif
-      
+
       valin = 2001
       call mpi_win_set_attr( win, keyval, valin, ierr )
       flag = .false.
@@ -69,7 +69,7 @@
          errs = errs + 1
          print *, ' Delete_attr did not delete attribute'
       endif
-      
+
 ! Test the delete function on window free
       valin = 2001
       call mpi_win_set_attr( win, keyval, valin, ierr )
