@@ -1148,6 +1148,9 @@ XBT_PUBLIC void smpi_execute_flops_benched(double flops);
 XBT_PUBLIC void smpi_execute(double duration);
 XBT_PUBLIC void smpi_execute_benched(double duration);
 
+XBT_PUBLIC void smpi_bench_begin();
+XBT_PUBLIC void smpi_bench_end();
+
 XBT_PUBLIC unsigned long long smpi_rastro_resolution();
 XBT_PUBLIC unsigned long long smpi_rastro_timestamp();
 XBT_PUBLIC void smpi_sample_1(int global, const char* file, const char* tag, int iters, double threshold);
@@ -1237,7 +1240,7 @@ XBT_PUBLIC void SMPI_thread_create();
 
 SG_END_DECL
 
-/* C++ declarations for shared_malloc */
+/* C++ declarations for shared_malloc and default copy buffer callback */
 #ifdef __cplusplus
 XBT_PUBLIC int smpi_is_shared(const void* ptr, std::vector<std::pair<size_t, size_t>>& private_blocks, size_t* offset);
 
@@ -1245,6 +1248,10 @@ std::vector<std::pair<size_t, size_t>> shift_and_frame_private_blocks(const std:
                                                                       size_t offset, size_t buff_size);
 std::vector<std::pair<size_t, size_t>> merge_private_blocks(const std::vector<std::pair<size_t, size_t>>& src,
                                                             const std::vector<std::pair<size_t, size_t>>& dst);
+
+/* May be used by S4U simulations to manually initialize SMPI */
+XBT_PUBLIC void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff,
+                                                size_t buff_size);
 #endif
 
 #endif 
