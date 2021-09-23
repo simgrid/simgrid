@@ -154,7 +154,6 @@ size_t Host::get_actor_count() const
  * @param links [OUT] where to store the list of links (must exist, cannot be nullptr).
  * @param latency [OUT] where to store the latency experienced on the path (or nullptr if not interested)
  *                It is the caller responsibility to initialize latency to 0 (we add to provided route)
- * @pre links!=nullptr
  *
  * walk through the routing components tree and find a route between hosts
  * by calling each "get_route" function in each routing component.
