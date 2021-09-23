@@ -4,6 +4,12 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \ / _ \
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | / __/ \__, |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|  /_/
                (unreleased)
+	       
+The "Give peace a chance" release (International Day of Peace)
+
+  * Python bindings for the platform creation API
+  * Introduce non-linear ressource sharing, allowing decay models
+  * New documentation section on realistic I/O modeling
 
                     _               _____  ____  ___
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \( _ )

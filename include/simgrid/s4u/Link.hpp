@@ -78,7 +78,10 @@ public:
    */
   Link* set_latency(const std::string& value);
 
-  /** @brief Describes how the link is shared between flows */
+  /** @brief Describes how the link is shared between flows
+   *
+   *  Note that the NONLINEAR callback is in the critical path of the solver, so it should be fast.
+   */
   Link* set_sharing_policy(SharingPolicy policy, const NonLinearResourceCb& cb = {});
   SharingPolicy get_sharing_policy() const;
 

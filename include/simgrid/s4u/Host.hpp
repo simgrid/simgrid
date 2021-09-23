@@ -174,6 +174,8 @@ public:
   /**
    * @brief Describes how the CPU is shared between concurrent tasks
    *
+   * Note that the NONLINEAR callback is in the critical path of the solver, so it should be fast.
+   *
    * @param policy Sharing policy
    * @param cb Callback for NONLINEAR policies
    */

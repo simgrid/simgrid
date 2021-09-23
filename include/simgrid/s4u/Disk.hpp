@@ -95,11 +95,12 @@ public:
   /**
    * @brief Describes how the disk is shared between activities for each operation
    *
-   * Disks have different bandwidths for read and write operations. This method
-   * allows you to set different sharing policies for each operation:
+   * Disks have different bandwidths for read and write operations, that can have different policies:
    * - Read: resource sharing for read operation
    * - Write: resource sharing for write
    * - ReadWrite: global sharing for read and write operations
+   *
+   * Note that the NONLINEAR callback is in the critical path of the solver, so it should be fast.
    *
    * @param op Operation type
    * @param policy Sharing policy
