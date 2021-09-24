@@ -75,5 +75,5 @@ int main(int argc, char *argv[])
 
   XBT_INFO("rank %d: data exchanged", rank);
   MPI_Finalize();
-  return 0;
+  exit(0);
 }
