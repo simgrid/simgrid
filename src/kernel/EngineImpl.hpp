@@ -88,7 +88,7 @@ public:
   EngineImpl(const EngineImpl&) = delete;
   EngineImpl& operator=(const EngineImpl&) = delete;
   virtual ~EngineImpl();
-  void shutdown();
+  static void shutdown();
 #endif
 
   void initialize(int* argc, char** argv);

@@ -41,7 +41,7 @@ public:
 #endif
 
   /** Finalize the default engine and all its dependencies */
-  static void shutdown();
+  void shutdown();
 
   /** Run the simulation after initialization */
   void run() const;

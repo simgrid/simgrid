@@ -209,7 +209,7 @@ void EngineImpl::initialize(int* argc, char** argv)
   s4u::Engine::on_platform_created.connect(surf_presolve);
 
   if (config::get_value<bool>("debug/clean-atexit"))
-    atexit(s4u::Engine::shutdown);
+    atexit(shutdown);
 }
 
 void EngineImpl::shutdown()
@@ -217,13 +217,6 @@ void EngineImpl::shutdown()
   if (EngineImpl::instance_ == nullptr)
     return;
   XBT_DEBUG("EngineImpl::shutdown() called. Simulation's over.");
-  if (instance_->has_actors_to_run() && simgrid_get_clock() <= 0.0) {
-    XBT_CRITICAL("   ");
-    XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
-    XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
-    xbt_die("Bailing out to avoid that stop-before-start madness. Please fix your code.");
-  }
-
 #if HAVE_SMPI
   if (not instance_->actor_list_.empty()) {
     if (smpi_process()->initialized()) {
@@ -234,6 +227,13 @@ void EngineImpl::shutdown()
     }
   }
 #endif
+
+  if (instance_->has_actors_to_run() && simgrid_get_clock() <= 0.0) {
+    XBT_CRITICAL("   ");
+    XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
+    XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
+    xbt_die("Bailing out to avoid that stop-before-start madness. Please fix your code.");
+  }
 
   /* Kill all actors (but maestro) */
   instance_->maestro_->kill_all();

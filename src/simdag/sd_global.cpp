@@ -237,5 +237,5 @@ void SD_exit()
 #if SIMGRID_HAVE_JEDULE
   jedule_sd_exit();
 #endif
-  simgrid::s4u::Engine::shutdown();
+  sd_global->engine_->shutdown();
 }
