@@ -46,7 +46,7 @@ ssize_t Comm::wait_any_for(const std::vector<CommPtr>& comms, double timeout)
   std::vector<kernel::activity::CommImpl*> rcomms(comms.size());
   std::transform(begin(comms), end(comms), begin(rcomms),
                  [](const CommPtr& comm) { return static_cast<kernel::activity::CommImpl*>(comm->pimpl_.get()); });
-  ssize_t changed_pos = -1;
+  ssize_t changed_pos;
   try {
     changed_pos = simcall_comm_waitany(rcomms.data(), rcomms.size(), timeout);
   } catch (const NetworkFailureException& e) {
