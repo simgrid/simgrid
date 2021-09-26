@@ -38,4 +38,6 @@
 #define realloc(x, y) smpi_shared_realloc_intercept((x), (y), __FILE__, __LINE__)
 #define free(x) smpi_shared_free(x)
 #endif
+
+#define exit(x) smpi_exit(x)
 #endif

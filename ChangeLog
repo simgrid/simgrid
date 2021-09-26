@@ -28,6 +28,9 @@ SMPI:
    - scan/excan can now be replayed
    - wait action now uses ranks and not pid, as the other ones.
    - smpi/init and smpi/finalization-barrier are now valid for replays.
+ - exit() is now intercepted by SMPI to avoid premature shutdown of
+   simulation. First non 0 return codes is returned as simulation return
+   code.
 
 Documentation:
   * New section "Release Notes" documenting recent and current developments.

@@ -635,3 +635,9 @@ void SMPI_thread_create() {
   TRACE_smpi_init(simgrid::s4u::this_actor::get_pid(), __func__);
   smpi_process()->mark_as_initialized();
 }
+
+void smpi_exit(int x){
+  if(x!=0)
+    smpi_exit_status = x;
+  return;
+}
