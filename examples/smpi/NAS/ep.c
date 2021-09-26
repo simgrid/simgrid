@@ -20,7 +20,7 @@ int main(int argc, char **argv) {
   double t1, t2, t3, t4;
   double sx_verify_value, sy_verify_value, sx_err, sy_err;
 
-  int    m = 24;
+  int    m;
   int    mk=16;
   int    nk = (int)(pow(2,mk)),
          nq=10,
