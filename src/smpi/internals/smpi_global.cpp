@@ -636,8 +636,11 @@ void SMPI_thread_create() {
   smpi_process()->mark_as_initialized();
 }
 
-void smpi_exit(int x){
-  if(x!=0)
-    smpi_exit_status = x;
-  return;
+void smpi_exit(int res){
+  if(res != 0){
+    XBT_WARN("SMPI process did not return 0. Return value : %d", res);
+    smpi_exit_status = res;
+  }
+  simgrid::s4u::this_actor::exit();
+  while(1);//necessary for the noreturn attribute
 }
