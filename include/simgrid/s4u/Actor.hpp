@@ -366,7 +366,7 @@ XBT_PUBLIC void suspend();
 XBT_PUBLIC void yield();
 
 /** @brief kill the current actor. */
-XBT_PUBLIC void exit();
+XBT_ATTRIB_NORETURN XBT_PUBLIC void exit();
 
 /** @brief Add a function to the list of "on_exit" functions of the current actor.
  *

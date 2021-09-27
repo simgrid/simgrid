@@ -423,6 +423,7 @@ void exit()
 {
   kernel::actor::ActorImpl* self = simgrid::kernel::actor::ActorImpl::self();
   simgrid::kernel::actor::simcall([self] { self->exit(); });
+  THROW_IMPOSSIBLE;
 }
 
 void on_exit(const std::function<void(bool)>& fun)
