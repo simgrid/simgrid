@@ -642,5 +642,5 @@ void smpi_exit(int res){
     smpi_exit_status = res;
   }
   simgrid::s4u::this_actor::exit();
-  while(1);//necessary for the noreturn attribute
+  THROW_IMPOSSIBLE;
 }
