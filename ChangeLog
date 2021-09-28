@@ -3,15 +3,21 @@
 SimGrid (3.28.1) NOT RELEASED YET (v3.29 expected September 22. 2021, 19:21 UTC)
 
 New modeling features:
- - Non-linear resource sharing for decay models:
-   - The total capacity may depend on the number of concurrent usages
-   - For that, resources can take a callback that computes the capacity 
-     depending on the idle capacity and the number of concurrent usages
+ - Non-linear resource sharing modeling resources whose performance drops with contention.
+   - The total capacity may be updated dynamically through a callback
+     and depends on the idle capacity and the number of concurrent flows.
    - Examples (both cpp and python): io-degradation, network-nonlinear, exec-cpu-nonlinear
 
- - Dynamic factors for CPU and disk: similarly to dynamic network factors,
-   allows the user to set a callback which can affect the progress of activities
-   (multiplicative factor applied when updating the amount of work remaining).
+ - Dynamic factors: model variability in the speed of activities
+   - The factor of activities can be updated dynamically through a callback
+     and depends on (TODO: unsure)
+   - (activities with factor=0.5 need twice the instantaneous speed for the same progression)
+   - This can model variation in the progression speed over time, 
+     or the tasks' CPU affinity, related the "Unrelated Machines" problem in scheduling,
+     or TODO: speak of debiasing?
+   - This existed for network, and now for CPU and disk too.
+   - For that, resources can take a callback that computes the activity factor
+     (multiplicative factor applied when updating the amount of work remaining).
    - Example: examples/cpp/exec-cpu-factors
 
 Python:
