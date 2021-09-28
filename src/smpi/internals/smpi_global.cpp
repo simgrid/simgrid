@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc.h"
+#include "simgrid/Exception.hpp"
 #include "simgrid/plugins/file_system.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "smpi_coll.hpp"
@@ -317,8 +318,18 @@ static int smpi_run_entry_point(const F& entry_point, const std::string& executa
   __io_set_argv(argv);
 #elif SMPI_GFORTRAN
   _gfortran_set_args(argc, argv);
-#endif 
-  int res = entry_point(argc, argv);
+#endif
+
+  try {
+    int res = entry_point(argc, argv);
+    if (res != 0) {
+      XBT_WARN("SMPI process did not return 0. Return value : %d", res);
+      if (smpi_exit_status == 0)
+        smpi_exit_status = res;
+    }
+  } catch (simgrid::ForcefulKillException const& e) {
+    XBT_DEBUG("Caught a ForcefulKillException: %s", e.what());
+  }
 
 #if SMPI_IFORT
   for_rtl_finish_ ();
@@ -328,11 +339,6 @@ static int smpi_run_entry_point(const F& entry_point, const std::string& executa
   delete args4argv;
 #endif
 
-  if (res != 0){
-    XBT_WARN("SMPI process did not return 0. Return value : %d", res);
-    if (smpi_exit_status == 0)
-      smpi_exit_status = res;
-  }
   return 0;
 }
 
@@ -557,7 +563,7 @@ int smpi_main(const char* executable, int argc, char* argv[])
 
   simgrid::smpi::colls::set_collectives();
   simgrid::smpi::colls::smpi_coll_cleanup_callback = nullptr;
-  
+
   SMPI_init();
 
   const std::vector<const char*> args(argv + 2, argv + argc);
