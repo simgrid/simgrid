@@ -141,9 +141,6 @@ public:
   /** @brief Callback signal fired when a new Link is created */
   static xbt::signal<void(Link&)> on_creation;
 
-  /** @brief Callback signal fired when a Link is destroyed */
-  static xbt::signal<void(Link const&)> on_destruction;
-
   /** @brief Callback signal fired when the state of a Link changes (when it is turned on or off) */
   static xbt::signal<void(Link const&)> on_state_change;
 
@@ -156,6 +153,9 @@ public:
   /** @brief Callback signal fired when a communication changes it state (ready/done/cancel) */
   static xbt::signal<void(kernel::resource::NetworkAction&, kernel::resource::Action::State)>
       on_communication_state_change;
+
+  /** @brief Callback signal fired when a Link is destroyed */
+  static xbt::signal<void(Link const&)> on_destruction;
 };
 
 /**

@@ -67,14 +67,14 @@ double DirtyPageTrackingExt::computed_flops_lookup()
 } // namespace vm
 } // namespace simgrid
 
-static void on_virtual_machine_creation(simgrid::vm::VirtualMachineImpl& vm)
+static void on_virtual_machine_creation(simgrid::s4u::VirtualMachine& vm)
 {
-  vm.extension_set<simgrid::vm::DirtyPageTrackingExt>(new simgrid::vm::DirtyPageTrackingExt());
+  vm.get_vm_impl()->extension_set<simgrid::vm::DirtyPageTrackingExt>(new simgrid::vm::DirtyPageTrackingExt());
 }
 
 static void on_exec_creation(simgrid::s4u::Exec const& e)
 {
-  auto exec                        = static_cast<simgrid::kernel::activity::ExecImpl*>(e.get_impl());
+  auto exec                              = static_cast<simgrid::kernel::activity::ExecImpl*>(e.get_impl());
   const simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(exec->get_host());
   if (vm == nullptr)
     return;
@@ -107,7 +107,7 @@ void sg_vm_dirty_page_tracking_init()
   if (not simgrid::vm::DirtyPageTrackingExt::EXTENSION_ID.valid()) {
     simgrid::vm::DirtyPageTrackingExt::EXTENSION_ID =
         simgrid::vm::VirtualMachineImpl::extension_create<simgrid::vm::DirtyPageTrackingExt>();
-    simgrid::vm::VirtualMachineImpl::on_creation.connect(&on_virtual_machine_creation);
+    simgrid::s4u::VirtualMachine::on_creation.connect(&on_virtual_machine_creation);
     simgrid::s4u::Exec::on_start.connect(&on_exec_creation);
     simgrid::s4u::Exec::on_completion.connect(&on_exec_completion);
   }

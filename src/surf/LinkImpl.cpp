@@ -34,7 +34,8 @@ LinkImpl::LinkImpl(const std::string& name) : LinkImplIntf(name), piface_(this)
  */
 void LinkImpl::destroy()
 {
-  s4u::Link::on_destruction(this->piface_);
+  s4u::Link::on_destruction(piface_);
+  s4u::Engine::get_instance()->link_unregister(get_name());
   delete this;
 }
 
@@ -110,7 +111,6 @@ void LinkImpl::seal()
 
   xbt_assert(this->get_model(), "Cannot seal Link(%s) without setting the Network model first", this->get_cname());
   Resource::seal();
-  s4u::Link::on_creation(piface_);
 }
 
 void LinkImpl::on_bandwidth_change() const

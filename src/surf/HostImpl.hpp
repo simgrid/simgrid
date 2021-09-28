@@ -49,7 +49,7 @@ class XBT_PRIVATE HostImpl : public xbt::PropertyHolder {
   ActorList actor_list_;
   std::vector<kernel::actor::ProcessArg*> actors_at_boot_;
   s4u::Host piface_;
-  std::vector<kernel::resource::DiskImpl*> disks_;
+  std::map<std::string, kernel::resource::DiskImpl*, std::less<>> disks_;
   xbt::string name_{"noname"};
   bool sealed_ = false;
 
@@ -66,7 +66,7 @@ public:
   std::vector<s4u::Disk*> get_disks() const;
   s4u::Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
   void add_disk(const s4u::Disk* disk);
-  void remove_disk(const std::string& disk_name);
+  void remove_disk(const std::string& name);
 
   virtual const s4u::Host* get_iface() const { return &piface_; }
   virtual s4u::Host* get_iface() { return &piface_; }

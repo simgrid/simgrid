@@ -145,6 +145,7 @@ void Link::turn_off()
 Link* Link::seal()
 {
   kernel::actor::simcall([this]() { this->pimpl_->seal(); });
+  s4u::Link::on_creation(*this); // notify the signal
   return this;
 }
 

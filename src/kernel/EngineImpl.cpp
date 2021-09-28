@@ -161,9 +161,8 @@ EngineImpl::~EngineImpl()
   for (auto const& kv : netpoints_)
     delete kv.second;
 
-  for (auto const& kv : links_)
-    if (kv.second)
-      kv.second->destroy();
+  while (not links_.empty())
+    links_.begin()->second->destroy();
 
   for (auto const& kv : mailboxes_)
     delete kv.second;

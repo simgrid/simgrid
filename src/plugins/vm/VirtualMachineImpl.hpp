@@ -33,20 +33,15 @@ class XBT_PUBLIC VirtualMachineImpl : public surf::HostImpl, public simgrid::xbt
 #endif
 
 public:
-  /** @brief Callbacks fired after VM creation. Signature: `void(VirtualMachineImpl&)` */
-  static xbt::signal<void(simgrid::vm::VirtualMachineImpl&)> on_creation;
-  /** @brief Callbacks fired after VM destruction. Signature: `void(VirtualMachineImpl const&)` */
-  static xbt::signal<void(simgrid::vm::VirtualMachineImpl const&)> on_destruction;
-
   static std::deque<s4u::VirtualMachine*> allVms_;
 
   explicit VirtualMachineImpl(const std::string& name, s4u::VirtualMachine* piface, s4u::Host* host, int core_amount,
                               size_t ramsize);
-  ~VirtualMachineImpl() override;
 
   void suspend(kernel::actor::ActorImpl* issuer);
   void resume();
   void shutdown(kernel::actor::ActorImpl* issuer);
+  void destroy();
 
   /** @brief Change the physical host on which the given VM is running */
   void set_physical_host(s4u::Host* dest);

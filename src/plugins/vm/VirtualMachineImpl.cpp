@@ -40,11 +40,6 @@ namespace simgrid {
 template class xbt::Extendable<vm::VirtualMachineImpl>;
 
 namespace vm {
-/*************
- * Callbacks *
- *************/
-xbt::signal<void(VirtualMachineImpl&)> VirtualMachineImpl::on_creation;
-xbt::signal<void(VirtualMachineImpl const&)> VirtualMachineImpl::on_destruction;
 
 /*********
  * Model *
@@ -191,13 +186,12 @@ VirtualMachineImpl::VirtualMachineImpl(const std::string& name, s4u::VirtualMach
   update_action_weight();
 
   XBT_VERB("Create VM(%s)@PM(%s)", name.c_str(), physical_host_->get_cname());
-  on_creation(*this);
 }
 
 /** @brief A physical host does not disappear in the current SimGrid code, but a VM may disappear during a simulation */
-VirtualMachineImpl::~VirtualMachineImpl()
+void VirtualMachineImpl::destroy()
 {
-  on_destruction(*this);
+  s4u::VirtualMachine::on_destruction(*piface_);
   /* I was already removed from the allVms set if the VM was destroyed cleanly */
   auto iter = find(allVms_.begin(), allVms_.end(), piface_);
   if (iter != allVms_.end())
@@ -210,7 +204,7 @@ VirtualMachineImpl::~VirtualMachineImpl()
 
 void VirtualMachineImpl::suspend(smx_actor_t issuer)
 {
-  if (get_state() != s4u::VirtualMachine::State::RUNNING)
+  if (vm_state_ != s4u::VirtualMachine::State::RUNNING)
     throw VmFailureException(XBT_THROW_POINT,
                              xbt::string_printf("Cannot suspend VM %s: it is not running.", piface_->get_cname()));
   if (issuer->get_host() == piface_)
@@ -233,7 +227,7 @@ void VirtualMachineImpl::suspend(smx_actor_t issuer)
 
 void VirtualMachineImpl::resume()
 {
-  if (get_state() != s4u::VirtualMachine::State::SUSPENDED)
+  if (vm_state_ != s4u::VirtualMachine::State::SUSPENDED)
     throw VmFailureException(XBT_THROW_POINT,
                              xbt::string_printf("Cannot resume VM %s: it was not suspended", piface_->get_cname()));
 
@@ -258,7 +252,7 @@ void VirtualMachineImpl::resume()
  */
 void VirtualMachineImpl::shutdown(smx_actor_t issuer)
 {
-  if (get_state() != s4u::VirtualMachine::State::RUNNING)
+  if (vm_state_ != s4u::VirtualMachine::State::RUNNING)
     XBT_VERB("Shutting down the VM %s even if it's not running but in state %s", piface_->get_cname(),
              s4u::VirtualMachine::to_c_str(get_state()));
 

@@ -23,7 +23,6 @@ namespace s4u {
  */
 class XBT_PUBLIC VirtualMachine : public s4u::Host {
   vm::VirtualMachineImpl* const pimpl_vm_;
-  ~VirtualMachine() override;
 
 public:
   explicit VirtualMachine(const std::string& name, Host* physical_host, int core_amount);
@@ -60,6 +59,7 @@ public:
   VirtualMachine* set_bound(double bound);
 
   State get_state() const;
+  static xbt::signal<void(VirtualMachine&)> on_creation;
   static xbt::signal<void(VirtualMachine const&)> on_start;
   static xbt::signal<void(VirtualMachine const&)> on_started;
   static xbt::signal<void(VirtualMachine const&)> on_shutdown;
@@ -67,6 +67,7 @@ public:
   static xbt::signal<void(VirtualMachine const&)> on_resume;
   static xbt::signal<void(VirtualMachine const&)> on_migration_start;
   static xbt::signal<void(VirtualMachine const&)> on_migration_end;
+  static xbt::signal<void(VirtualMachine const&)> on_destruction;
 };
 } // namespace s4u
 } // namespace simgrid

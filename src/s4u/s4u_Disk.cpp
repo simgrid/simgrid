@@ -157,7 +157,7 @@ Disk* Disk::set_factor_cb(const std::function<IoFactorCb>& cb)
 Disk* Disk::seal()
 {
   kernel::actor::simcall([this]{ pimpl_->seal(); });
-  Disk::on_creation(*this);
+  Disk::on_creation(*this); // notify the signal
   return this;
 }
 } // namespace s4u

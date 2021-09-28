@@ -54,7 +54,7 @@ HostImpl::~HostImpl()
   actors_at_boot_.clear();
 
   for (auto const& d : disks_)
-    d->destroy();
+    d.second->destroy();
 }
 
 /** @brief Fire the required callbacks and destroy the object
@@ -125,7 +125,7 @@ std::vector<s4u::Disk*> HostImpl::get_disks() const
 {
   std::vector<s4u::Disk*> disks;
   for (auto const& d : disks_)
-    disks.push_back(d->get_iface());
+    disks.push_back(d.second->get_iface());
   return disks;
 }
 
@@ -138,19 +138,12 @@ s4u::Disk* HostImpl::create_disk(const std::string& name, double read_bandwidth,
 
 void HostImpl::add_disk(const s4u::Disk* disk)
 {
-  disks_.push_back(disk->get_impl());
+  disks_[disk->get_name()] = disk->get_impl();
 }
 
-void HostImpl::remove_disk(const std::string& disk_name)
+void HostImpl::remove_disk(const std::string& name)
 {
-  auto position = disks_.begin();
-  for (auto const& d : disks_) {
-    if (d->get_name() == disk_name) {
-      disks_.erase(position);
-      break;
-    }
-    position++;
-  }
+  disks_.erase(name);
 }
 
 void HostImpl::seal()
@@ -163,8 +156,8 @@ void HostImpl::seal()
   sealed_ = true;
 
   /* seal its disks */
-  for (auto* disk : disks_)
-    disk->seal();
+  for (auto const& disk : disks_)
+    disk.second->seal();
 }
 } // namespace surf
 } // namespace simgrid

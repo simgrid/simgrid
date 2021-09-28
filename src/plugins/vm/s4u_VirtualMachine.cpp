@@ -16,6 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_vm, s4u, "S4U virtual machines");
 
 namespace simgrid {
 namespace s4u {
+simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_creation;
 simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_start;
 simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_started;
 simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_shutdown;
@@ -23,6 +24,7 @@ simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_suspend;
 simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_resume;
 simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_migration_start;
 simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_migration_end;
+simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_destruction;
 
 VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host, int core_amount)
     : VirtualMachine(name, physical_host, core_amount, 1024)
@@ -54,14 +56,7 @@ VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host
     set_pstate(physical_host->get_pstate());
 
   seal(); // seal this host
-}
-
-VirtualMachine::~VirtualMachine()
-{
-  on_destruction(*this);
-
-  /* Don't free these things twice: they are the ones of my physical host */
-  set_netpoint(nullptr);
+  s4u::VirtualMachine::on_creation(*this);
 }
 
 void VirtualMachine::start()
@@ -127,7 +122,11 @@ void VirtualMachine::destroy()
 
     /* Then, destroy the VM object */
     kernel::actor::simcall([this]() {
+      get_vm_impl()->destroy();
       get_impl()->destroy();
+
+      /* Don't free these things twice: they are the ones of my physical host */
+      set_netpoint(nullptr);
       delete this;
     });
   };
