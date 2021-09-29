@@ -27,7 +27,7 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
   std::vector<double> flops_amounts_;
   std::vector<double> bytes_amounts_;
   s4u::Exec* piface_;
-
+  int cb_id_ = -1; // callback id from Host::on_state_change.connect()
 public:
   ExecImpl();
   s4u::Exec* get_iface() { return piface_; }
@@ -35,6 +35,7 @@ public:
   ExecImpl& set_timeout(double timeout) override;
   ExecImpl& set_bound(double bound);
   ExecImpl& set_sharing_penalty(double sharing_penalty);
+  void set_cb_id(unsigned int cb_id) { cb_id_ = cb_id; }
 
   double get_start_time() const { return start_time_; }
   double get_finish_time() const { return finish_time_; }

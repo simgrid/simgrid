@@ -146,6 +146,8 @@ void ExecImpl::post()
     actor_->activities_.remove(this);
     actor_ = nullptr;
   }
+  if (state_ != State::FAILED && cb_id_ >= 0)
+    s4u::Host::on_state_change.disconnect(cb_id_);
   /* Answer all simcalls associated with the synchro */
   finish();
 }
