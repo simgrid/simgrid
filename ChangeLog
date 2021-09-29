@@ -3,22 +3,34 @@
 SimGrid (3.28.1) NOT RELEASED YET (v3.29 expected September 22. 2021, 19:21 UTC)
 
 New modeling features:
- - Non-linear resource sharing modeling resources whose performance drops with contention.
+ - Non-linear resource sharing, modeling resources whose performance heavily degrades with contention:
    - The total capacity may be updated dynamically through a callback
-     and depends on the idle capacity and the number of concurrent flows.
+     and depends mainly on the number of concurrent flows.
    - Examples (both cpp and python): io-degradation, network-nonlinear, exec-cpu-nonlinear
 
  - Dynamic factors: model variability in the speed of activities
-   - The factor of activities can be updated dynamically through a callback
-     and depends on (TODO: unsure)
-   - (activities with factor=0.5 need twice the instantaneous speed for the same progression)
-   - This can model variation in the progression speed over time, 
-     or the tasks' CPU affinity, related the "Unrelated Machines" problem in scheduling,
-     or TODO: speak of debiasing?
-   - This existed for network, and now for CPU and disk too.
-   - For that, resources can take a callback that computes the activity factor
-     (multiplicative factor applied when updating the amount of work remaining).
-   - Example: examples/cpp/exec-cpu-factors
+    - Each action can now have a factor that affects its progression.
+      This multiplicative factor is applied when updating the amount of work
+      remaining, thereby an activity with factor=0.5 only uses half of the
+      instantaneous power/bandwidth it is allocated and will appear twice
+      slower than what it actually consumes.
+    - This can be used to model a overhead (e.g., there is a 20 bytes
+      header in a 480 bytes TCP packet so the factor 0.9583) but the novelty
+      is this factor can now easily be adjusted depending on activity's and
+      resources characteristics.
+    - This existed for network (e.g., the effective bandwidth depends
+      on the message in SMPI piecewise-linear network model) but it is now
+      more general (the factor may depend on the source and destination and
+      thus account to different behaviors for intra-node communications and
+      extra-node communications) and is available for CPUs (e.g., if you
+      want to model an affinity as in the "Unrelated Machines" problem in
+      scheduling) and disks (e.g., if you want to model a stochastic
+      capacity) too.
+    - For that, resources can be provided with a callback that computes
+      the activity factor when creating the action.
+    - Example: examples/cpp/exec-cpu-factors
+    - The same mechanism is also available for the latency, which
+      allows to easily introduce complex variability patterns.
 
 Python:
  - Added support to programmatic platform creation in Python.
