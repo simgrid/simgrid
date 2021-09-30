@@ -3,21 +3,22 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/Exception.hpp"
-#include "simgrid/actor.h"
-#include "simgrid/modelchecker.h"
-#include "simgrid/s4u/Actor.hpp"
-#include "simgrid/s4u/Exec.hpp"
-#include "simgrid/s4u/Host.hpp"
-#include "simgrid/s4u/VirtualMachine.hpp"
+#include <simgrid/Exception.hpp>
+#include <simgrid/actor.h>
+#include <simgrid/modelchecker.h>
+#include <simgrid/s4u/Actor.hpp>
+#include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/Exec.hpp>
+#include <simgrid/s4u/VirtualMachine.hpp>
+
 #include "src/include/mc/mc.h"
 #include "src/kernel/EngineImpl.hpp"
-#include "src/kernel/activity/ExecImpl.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
+#include "src/kernel/context/Context.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/HostImpl.hpp"
 
 #include <algorithm>
-#include <sstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_actor, s4u, "S4U actors");
 

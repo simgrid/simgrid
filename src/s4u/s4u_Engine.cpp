@@ -5,23 +5,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <simgrid/Exception.hpp>
 #include <simgrid/kernel/routing/NetPoint.hpp>
-#include <simgrid/kernel/routing/NetZoneImpl.hpp>
-#include <simgrid/s4u/Disk.hpp>
+#include <simgrid/modelchecker.h>
 #include <simgrid/s4u/Engine.hpp>
-#include <simgrid/s4u/Host.hpp>
-#include <simgrid/s4u/Mailbox.hpp>
-#include <simgrid/s4u/NetZone.hpp>
-#include <simgrid/simix.h>
-
+//
 #include "mc/mc.h"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
-#include "src/kernel/activity/CommImpl.hpp"
-#include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp"
 
 #include <algorithm>

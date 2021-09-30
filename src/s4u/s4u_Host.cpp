@@ -3,19 +3,19 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/Exception.hpp"
-#include "simgrid/host.h"
-#include "simgrid/kernel/routing/NetPoint.hpp"
-#include "simgrid/s4u/Actor.hpp"
-#include "simgrid/s4u/Comm.hpp"
-#include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/Exec.hpp"
-#include "simgrid/s4u/VirtualMachine.hpp"
+#include <simgrid/Exception.hpp>
+#include <simgrid/host.h>
+#include <simgrid/kernel/routing/NetPoint.hpp>
+#include <simgrid/s4u/Comm.hpp>
+#include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/Exec.hpp>
+#include <simgrid/s4u/Host.hpp>
+#include <simgrid/s4u/VirtualMachine.hpp>
+#include <xbt/parse_units.hpp>
+
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/HostImpl.hpp"
-#include "xbt/parse_units.hpp"
 
-#include <algorithm>
 #include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_host, s4u, "Logging specific to the S4U hosts");

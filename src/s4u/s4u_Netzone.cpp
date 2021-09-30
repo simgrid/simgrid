@@ -4,14 +4,15 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/Exception.hpp"
-#include "simgrid/kernel/routing/NetPoint.hpp"
-#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "simgrid/s4u/NetZone.hpp"
-#include "simgrid/simix.hpp"
-#include "simgrid/zone.h"
+#include <simgrid/kernel/routing/NetZoneImpl.hpp>
+#include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/NetZone.hpp>
+#include <simgrid/simix.hpp>
+#include <simgrid/zone.h>
+#include <xbt/parse_units.hpp>
+
 #include "src/surf/network_interface.hpp"
-#include "xbt/parse_units.hpp"
 
 namespace simgrid {
 namespace s4u {

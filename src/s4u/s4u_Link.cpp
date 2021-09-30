@@ -3,18 +3,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <algorithm>
+#include <simgrid/Exception.hpp>
+#include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/Link.hpp>
+#include <simgrid/sg_config.hpp>
+#include <simgrid/simix.hpp>
+#include <xbt/parse_units.hpp>
 
-#include "simgrid/Exception.hpp"
-#include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/Link.hpp"
-#include "simgrid/sg_config.hpp"
-#include "simgrid/simix.hpp"
 #include "src/surf/SplitDuplexLinkImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/network_wifi.hpp"
-#include "xbt/log.h"
-#include "xbt/parse_units.hpp"
 
 namespace simgrid {
 

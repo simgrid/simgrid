@@ -3,16 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/cond.h"
-#include "simgrid/forward.h"
-#include "simgrid/s4u/ConditionVariable.hpp"
-#include "simgrid/simix.h"
-#include "src/kernel/activity/ConditionVariableImpl.hpp"
-#include "src/kernel/activity/MutexImpl.hpp"
-#include "src/kernel/actor/SimcallObserver.hpp"
-#include "xbt/log.hpp"
+#include <simgrid/cond.h>
+#include <simgrid/s4u/ConditionVariable.hpp>
+#include <xbt/log.h>
 
-#include <exception>
+#include "src/kernel/activity/ConditionVariableImpl.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
+
 #include <mutex>
 
 namespace simgrid {

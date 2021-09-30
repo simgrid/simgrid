@@ -3,14 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/log.h"
+#include <simgrid/Exception.hpp>
+#include <simgrid/s4u/Activity.hpp>
+#include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/Exec.hpp>
+#include <simgrid/s4u/Io.hpp>
+#include <xbt/log.h>
 
-#include "simgrid/Exception.hpp"
-#include "simgrid/s4u/Activity.hpp"
-#include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/Exec.hpp"
-#include "simgrid/s4u/Io.hpp"
-#include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 

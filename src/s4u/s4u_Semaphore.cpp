@@ -3,11 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/msg/msg_private.hpp"
-#include "xbt/log.h"
+#include <simgrid/s4u/Semaphore.hpp>
+#include <simgrid/semaphore.h>
 
-#include "simgrid/forward.h"
-#include "simgrid/s4u/Semaphore.hpp"
 #include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 

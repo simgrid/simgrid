@@ -3,14 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <exception>
-#include <mutex>
-
-#include "simgrid/Exception.hpp"
-#include "simgrid/barrier.h"
-#include "simgrid/s4u/Barrier.hpp"
-#include "simgrid/simix.h"
-#include "xbt/log.hpp"
+#include <simgrid/barrier.h>
+#include <simgrid/s4u/Barrier.hpp>
+#include <xbt/log.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_barrier, s4u, "S4U barrier");
 

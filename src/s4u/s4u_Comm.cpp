@@ -3,15 +3,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/msg/msg_private.hpp"
-#include "xbt/log.h"
+//#include "src/msg/msg_private.hpp"
+//#include "xbt/log.h"
 
-#include "simgrid/Exception.hpp"
-#include "simgrid/s4u/Comm.hpp"
-#include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/Mailbox.hpp"
-
+#include <simgrid/Exception.hpp>
 #include <simgrid/comm.h>
+#include <simgrid/s4u/Comm.hpp>
+#include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/Mailbox.hpp>
+
+#include "src/kernel/activity/CommImpl.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm, s4u_activity, "S4U asynchronous communications");
 

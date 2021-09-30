@@ -3,12 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u/Comm.hpp"
-#include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/Mailbox.hpp"
-#include "src/kernel/activity/MailboxImpl.hpp"
-
 #include <simgrid/mailbox.h>
+#include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/Mailbox.hpp>
+
+#include "src/kernel/activity/MailboxImpl.hpp"
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_channel, s4u, "S4U Communication Mailboxes");
