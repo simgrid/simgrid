@@ -3,11 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/plugins/load.h"
-#include "src/include/surf/surf.hpp"
+#include <simgrid/plugins/load.h>
+#include <simgrid/s4u.hpp>
+
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
-#include <simgrid/s4u.hpp>
 
 // Makes sure that this plugin can be activated from the command line with ``--cfg=plugin:host_load``
 SIMGRID_REGISTER_PLUGIN(host_load, "Cpu load", &sg_host_load_plugin_init)
@@ -57,8 +57,8 @@ public:
 
   explicit HostLoad(simgrid::s4u::Host* ptr)
       : host_(ptr)
-      , last_updated_(surf_get_clock())
-      , last_reset_(surf_get_clock())
+      , last_updated_(simgrid_get_clock())
+      , last_reset_(simgrid_get_clock())
       , current_speed_(host_->get_speed())
       , current_flops_(host_->get_load())
   {
@@ -115,7 +115,7 @@ void HostLoad::add_activity(simgrid::kernel::activity::ExecImpl* activity)
 
 void HostLoad::update()
 {
-  double now = surf_get_clock();
+  double now = simgrid_get_clock();
 
   // This loop updates the flops that the host executed for the ongoing computations
   auto iter = begin(current_activities);
@@ -178,8 +178,8 @@ double HostLoad::get_current_load() const
  */
 void HostLoad::reset()
 {
-  last_updated_    = surf_get_clock();
-  last_reset_      = surf_get_clock();
+  last_updated_    = simgrid_get_clock();
+  last_reset_      = simgrid_get_clock();
   idle_time_       = 0;
   computed_flops_  = 0;
   theor_max_flops_ = 0;

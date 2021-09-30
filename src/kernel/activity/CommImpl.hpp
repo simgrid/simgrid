@@ -8,8 +8,6 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "surf/surf.hpp"
-
 
 namespace simgrid {
 namespace kernel {

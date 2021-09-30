@@ -3,16 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "disk_s19.hpp"
-#include "simgrid/kernel/routing/NetPoint.hpp"
-#include "simgrid/kernel/routing/NetZoneImpl.hpp"
-#include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/Host.hpp"
+#include <simgrid/kernel/routing/NetPoint.hpp>
+#include <simgrid/kernel/routing/NetZoneImpl.hpp>
+#include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/Host.hpp>
+
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
-#include "src/surf/xml/platf.hpp"
-#include "surf/surf.hpp"
+#include "src/surf/disk_s19.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_disk);
 

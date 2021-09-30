@@ -3,11 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/Exception.hpp"
-#include "simgrid/plugins/energy.h"
-#include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/Exec.hpp"
-#include "src/include/surf/surf.hpp"
+#include <simgrid/Exception.hpp>
+#include <simgrid/plugins/energy.h>
+#include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/Exec.hpp>
+
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
@@ -140,7 +140,7 @@ class HostEnergy {
   const int pstate_off_ = -1;
   double watts_off_     = 0.0;              /*< Consumption when the machine is turned off (shutdown) */
   double total_energy_  = 0.0;              /*< Total energy consumed by the host */
-  double last_updated_  = surf_get_clock(); /*< Timestamp of the last energy update event*/
+  double last_updated_  = simgrid::s4u::Engine::get_clock(); /*< Timestamp of the last energy update event*/
 
   /* Only used to split total energy into unused/used hosts.
    * If you want to get this info for something else, rather use the host_load plugin
@@ -180,7 +180,7 @@ bool HostEnergy::has_pstate_power_values() const {
 void HostEnergy::update()
 {
   double start_time  = last_updated_;
-  double finish_time = surf_get_clock();
+  double finish_time = simgrid::s4u::Engine::get_clock();
   //
   // We may have start == finish if the past consumption was updated since the simcall was started
   // for example if 2 actors requested to update the same host's consumption in a given scheduling round.
@@ -331,7 +331,7 @@ double HostEnergy::get_current_watts_value(double cpu_load) const
 
 double HostEnergy::get_consumed_energy()
 {
-  if (last_updated_ < surf_get_clock()) // We need to simcall this as it modifies the environment
+  if (last_updated_ < simgrid::s4u::Engine::get_clock()) // We need to simcall this as it modifies the environment
     simgrid::kernel::actor::simcall(std::bind(&HostEnergy::update, this));
 
   return total_energy_;
@@ -420,7 +420,7 @@ static void on_action_state_change(simgrid::kernel::resource::CpuAction const& a
       // Get the host_energy extension for the relevant host
       auto* host_energy = host->extension<HostEnergy>();
 
-      if (host_energy->get_last_update_time() < surf_get_clock())
+      if (host_energy->get_last_update_time() < simgrid::s4u::Engine::get_clock())
         host_energy->update();
     }
   }

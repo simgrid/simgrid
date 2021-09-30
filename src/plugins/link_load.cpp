@@ -3,12 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/host.h"
 #include "simgrid/plugins/load.h"
+#include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Link.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "surf/surf.hpp"
 
 #include <limits>
 
@@ -100,7 +99,7 @@ void LinkLoad::reset()
   max_bytes_per_second_ = std::numeric_limits<double>::lowest();
   XBT_DEBUG("min_bytes_per_second_ = %g", min_bytes_per_second_);
   XBT_DEBUG("max_bytes_per_second_ = %g", max_bytes_per_second_);
-  last_reset_   = surf_get_clock();
+  last_reset_   = simgrid::s4u::Engine::get_clock();
   last_updated_ = last_reset_;
 }
 
@@ -113,7 +112,7 @@ void LinkLoad::update()
              link_->get_cname());
 
   double current_instantaneous_bytes_per_second = link_->get_usage();
-  double now                                    = surf_get_clock();
+  double now                                    = simgrid::s4u::Engine::get_clock();
 
   // Update minimum/maximum observed values if needed
   min_bytes_per_second_ = std::min(min_bytes_per_second_, current_instantaneous_bytes_per_second);
@@ -150,7 +149,7 @@ double LinkLoad::get_average_bytes()
 {
   update();
 
-  double now = surf_get_clock();
+  double now = simgrid::s4u::Engine::get_clock();
   if (now > last_reset_)
     return cumulated_bytes_ / (now - last_reset_);
   else
@@ -186,7 +185,8 @@ static void on_communicate(const simgrid::kernel::resource::NetworkAction& actio
  */
 void sg_link_load_plugin_init()
 {
-  xbt_assert(sg_host_count() == 0, "Please call sg_link_load_plugin_init() BEFORE initializing the platform.");
+  xbt_assert(simgrid::s4u::Engine::get_instance()->get_host_count() == 0,
+             "Please call sg_link_load_plugin_init() BEFORE initializing the platform.");
   xbt_assert(not LinkLoad::EXTENSION_ID.valid(), "Double call to sg_link_load_plugin_init. Aborting.");
   LinkLoad::EXTENSION_ID = simgrid::s4u::Link::extension_create<LinkLoad>();
 

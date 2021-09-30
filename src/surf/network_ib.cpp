@@ -3,13 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/surf/network_ib.hpp"
-#include "simgrid/kernel/routing/NetPoint.hpp"
+#include <simgrid/kernel/routing/NetPoint.hpp>
+
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/surf/HostImpl.hpp"
+#include "src/surf/network_ib.hpp"
 #include "src/surf/xml/platf.hpp"
-#include "surf/surf.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>

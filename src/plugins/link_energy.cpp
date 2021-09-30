@@ -10,7 +10,6 @@
 #include "simgrid/simix.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "surf/surf.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -60,7 +59,7 @@ class LinkEnergy {
 public:
   static xbt::Extension<simgrid::s4u::Link, LinkEnergy> EXTENSION_ID;
 
-  explicit LinkEnergy(s4u::Link* ptr) : link_(ptr), last_updated_(surf_get_clock()) {}
+  explicit LinkEnergy(s4u::Link* ptr) : link_(ptr), last_updated_(simgrid::s4u::Engine::get_clock()) {}
 
   void init_watts_range_list();
   double get_consumed_energy();
@@ -75,7 +74,7 @@ void LinkEnergy::update()
     init_watts_range_list();
 
   double power = get_power();
-  double now   = surf_get_clock();
+  double now   = simgrid::s4u::Engine::get_clock();
   total_energy_ += power * (now - last_updated_);
   last_updated_ = now;
 }
@@ -138,7 +137,7 @@ double LinkEnergy::get_power() const
 
 double LinkEnergy::get_consumed_energy()
 {
-  if (last_updated_ < surf_get_clock()) // We need to simcall this as it modifies the environment
+  if (last_updated_ < simgrid::s4u::Engine::get_clock()) // We need to simcall this as it modifies the environment
     kernel::actor::simcall(std::bind(&LinkEnergy::update, this));
   return this->total_energy_;
 }

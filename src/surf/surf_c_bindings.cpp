@@ -3,13 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u/Engine.hpp"
-#include "src/include/surf/surf.hpp"
+#include <simgrid/s4u/Engine.hpp>
+
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "surf/surf.hpp"
 
 #include <algorithm>
 

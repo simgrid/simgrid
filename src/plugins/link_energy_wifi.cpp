@@ -3,17 +3,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/Exception.hpp"
-#include "simgrid/plugins/energy.h"
-#include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/Host.hpp"
-#include "simgrid/s4u/Link.hpp"
+#include <simgrid/Exception.hpp>
+#include <simgrid/plugins/energy.h>
+#include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/Host.hpp>
+#include <simgrid/s4u/Link.hpp>
+#include <xbt/config.hpp>
+
 #include "src/surf/network_interface.hpp"
 #include "src/surf/network_wifi.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "surf/surf.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
-#include "xbt/config.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -104,8 +104,8 @@ xbt::Extension<s4u::Link, LinkEnergyWifi> LinkEnergyWifi::EXTENSION_ID;
 void LinkEnergyWifi::update_destroy()
 {
   auto const* wifi_link = static_cast<kernel::resource::NetworkWifiLink*>(link_->get_impl());
-  double duration       = surf_get_clock() - prev_update_;
-  prev_update_          = surf_get_clock();
+  double duration       = simgrid::s4u::Engine::get_clock() - prev_update_;
+  prev_update_          = simgrid::s4u::Engine::get_clock();
 
   dur_idle_ += duration;
 
@@ -120,8 +120,8 @@ void LinkEnergyWifi::update(const kernel::resource::NetworkAction&)
 {
   init_watts_range_list();
 
-  double duration = surf_get_clock() - prev_update_;
-  prev_update_    = surf_get_clock();
+  double duration = simgrid::s4u::Engine::get_clock() - prev_update_;
+  prev_update_    = simgrid::s4u::Engine::get_clock();
 
   // we don't update for null durations
   if(duration < 1e-6)
@@ -162,8 +162,8 @@ void LinkEnergyWifi::update(const kernel::resource::NetworkAction&)
       double du = // durUsage on the current flow
           (action->get_cost() - it->second.first) / action->get_rate();
 
-      if(du > surf_get_clock()-it->second.second)
-        du = surf_get_clock()-it->second.second;
+      if (du > simgrid::s4u::Engine::get_clock() - it->second.second)
+        du = simgrid::s4u::Engine::get_clock() - it->second.second;
 
       // if the flow has been more active than the others
       if(du > durUsage)
@@ -171,7 +171,7 @@ void LinkEnergyWifi::update(const kernel::resource::NetworkAction&)
 
       // update the amount of data already sent by the flow
       it->second.first += du * action->get_rate();
-      it->second.second =  surf_get_clock();
+      it->second.second = simgrid::s4u::Engine::get_clock();
 
       // important: if the transmission finished, remove it (needed for performance and multi-message flows)
       if(it->second.first >= action->get_cost())

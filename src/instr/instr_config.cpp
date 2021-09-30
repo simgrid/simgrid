@@ -3,12 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "include/xbt/config.hpp"
-#include "simgrid/Exception.hpp"
-#include "simgrid/s4u/Engine.hpp"
-#include "simgrid/version.h"
+#include <simgrid/Exception.hpp>
+#include <simgrid/s4u/Engine.hpp>
+#include <simgrid/version.h>
+
 #include "src/instr/instr_private.hpp"
-#include "surf/surf.hpp"
+#include "xbt/config.hpp"
 
 #include <sys/stat.h>
 #ifdef WIN32
@@ -420,7 +420,7 @@ static void on_simulation_end()
     return;
 
   /* dump trace buffer */
-  last_timestamp_to_dump = surf_get_clock();
+  last_timestamp_to_dump = simgrid_get_clock();
   dump_buffer(true);
 
   const Type* root_type = Container::get_root()->get_type();

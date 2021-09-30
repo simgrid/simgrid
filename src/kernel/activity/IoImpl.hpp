@@ -7,7 +7,6 @@
 #define SIMGRID_KERNEL_ACTIVITY_IO_HPP
 
 #include "src/kernel/activity/ActivityImpl.hpp"
-#include "surf/surf.hpp"
 #include <simgrid/s4u/Io.hpp>
 
 namespace simgrid {

@@ -9,7 +9,6 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "simgrid/sg_config.hpp"
-#include "src/include/surf/surf.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/surf/cpu_cas01.hpp"

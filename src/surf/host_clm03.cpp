@@ -3,13 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/surf/host_clm03.hpp"
-#include "simgrid/kernel/routing/NetPoint.hpp"
-#include "simgrid/kernel/routing/NetZoneImpl.hpp"
-#include "simgrid/s4u/Engine.hpp"
+#include <simgrid/kernel/routing/NetPoint.hpp>
+#include <simgrid/kernel/routing/NetZoneImpl.hpp>
+#include <simgrid/s4u/Engine.hpp>
+
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
-#include "surf/surf.hpp"
+#include "src/surf/host_clm03.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_host);
 

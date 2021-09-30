@@ -3,27 +3,28 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/Exception.hpp"
-#include "simgrid/kernel/routing/DijkstraZone.hpp"
-#include "simgrid/kernel/routing/DragonflyZone.hpp"
-#include "simgrid/kernel/routing/EmptyZone.hpp"
-#include "simgrid/kernel/routing/FatTreeZone.hpp"
-#include "simgrid/kernel/routing/FloydZone.hpp"
-#include "simgrid/kernel/routing/FullZone.hpp"
-#include "simgrid/kernel/routing/NetPoint.hpp"
-#include "simgrid/kernel/routing/NetZoneImpl.hpp"
-#include "simgrid/kernel/routing/TorusZone.hpp"
-#include "simgrid/kernel/routing/VivaldiZone.hpp"
-#include "simgrid/kernel/routing/WifiZone.hpp"
-#include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/NetZone.hpp"
-#include "src/include/simgrid/sg_config.hpp"
-#include "src/include/surf/surf.hpp"
+#include <simgrid/Exception.hpp>
+#include <simgrid/kernel/routing/DijkstraZone.hpp>
+#include <simgrid/kernel/routing/DragonflyZone.hpp>
+#include <simgrid/kernel/routing/EmptyZone.hpp>
+#include <simgrid/kernel/routing/FatTreeZone.hpp>
+#include <simgrid/kernel/routing/FloydZone.hpp>
+#include <simgrid/kernel/routing/FullZone.hpp>
+#include <simgrid/kernel/routing/NetPoint.hpp>
+#include <simgrid/kernel/routing/NetZoneImpl.hpp>
+#include <simgrid/kernel/routing/TorusZone.hpp>
+#include <simgrid/kernel/routing/VivaldiZone.hpp>
+#include <simgrid/kernel/routing/WifiZone.hpp>
+#include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/NetZone.hpp>
+
+#include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf_private.hpp"
+#include "surf/surf.hpp"
 
 #include <algorithm>
 #include <string>

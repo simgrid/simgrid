@@ -3,22 +3,22 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/kernel/EngineImpl.hpp"
+#include <simgrid/Exception.hpp>
+#include <simgrid/kernel/Timer.hpp>
+#include <simgrid/kernel/routing/NetPoint.hpp>
+#include <simgrid/kernel/routing/NetZoneImpl.hpp>
+#include <simgrid/s4u/Host.hpp>
+#include <simgrid/sg_config.hpp>
+
 #include "mc/mc.h"
-#include "simgrid/Exception.hpp"
-#include "simgrid/kernel/Timer.hpp"
-#include "simgrid/kernel/routing/NetPoint.hpp"
-#include "simgrid/kernel/routing/NetZoneImpl.hpp"
-#include "simgrid/s4u/Host.hpp"
-#include "simgrid/sg_config.hpp"
-#include "src/include/surf/surf.hpp" //get_clock() and surf_solve()
-#include "src/kernel/resource/DiskImpl.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
+#include "surf/surf.hpp"          //surf_presolve() and surf_solve()
 #include "xbt/xbt_modinter.h"     /* whether initialization was already done */
 
 #include <boost/algorithm/string/predicate.hpp>
@@ -473,7 +473,7 @@ void EngineImpl::run()
   do {
     XBT_DEBUG("New Schedule Round; size(queue)=%zu", actors_to_run_.size());
 
-    if (cfg_breakpoint >= 0.0 && surf_get_clock() >= cfg_breakpoint) {
+    if (cfg_breakpoint >= 0.0 && simgrid_get_clock() >= cfg_breakpoint) {
       XBT_DEBUG("Breakpoint reached (%g)", cfg_breakpoint.get());
       cfg_breakpoint = -1.0;
 #ifdef SIGTRAP

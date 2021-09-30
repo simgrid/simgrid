@@ -6,10 +6,10 @@
 #ifndef SIMGRID_KERNEL_ACTIVITY_EXEC_HPP
 #define SIMGRID_KERNEL_ACTIVITY_EXEC_HPP
 
-#include "simgrid/s4u/Exec.hpp"
+#include <simgrid/s4u/Exec.hpp>
+
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/context/Context.hpp"
-#include "surf/surf.hpp"
 
 namespace simgrid {
 namespace kernel {

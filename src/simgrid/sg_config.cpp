@@ -5,9 +5,11 @@
 
 /* sg_config: configuration infrastructure for the simulation world         */
 
+#include <simgrid/instr.h>
+#include <simgrid/version.h>
+#include <xbt/config.hpp>
+
 #include "simgrid/sg_config.hpp"
-#include "simgrid/instr.h"
-#include "simgrid/version.h"
 #include "src/instr/instr_private.hpp"
 #include "src/internal_config.h"
 #include "src/kernel/lmm/maxmin.hpp"
@@ -15,8 +17,6 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_config.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "surf/surf.hpp"
-#include "xbt/config.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf, "About the configuration of SimGrid");
 

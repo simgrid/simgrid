@@ -3,13 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "ptask_L07.hpp"
-#include "simgrid/kernel/routing/NetZoneImpl.hpp"
-#include "simgrid/s4u/Engine.hpp"
+#include <simgrid/kernel/routing/NetZoneImpl.hpp>
+#include <simgrid/s4u/Engine.hpp>
+#include <xbt/config.hpp>
+
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
-#include "surf/surf.hpp"
-#include "xbt/config.hpp"
+#include "src/surf/ptask_L07.hpp"
 
 #include <unordered_set>
 

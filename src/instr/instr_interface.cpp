@@ -3,13 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/Exception.hpp"
-#include "simgrid/kernel/routing/NetPoint.hpp"
+#include <simgrid/Exception.hpp>
+#include <simgrid/kernel/routing/NetPoint.hpp>
+#include <xbt/random.hpp>
+
 #include "src/instr/instr_private.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_private.hpp"
-#include "surf/surf.hpp"
-#include "xbt/random.hpp"
 #include <algorithm>
 #include <cmath>
 

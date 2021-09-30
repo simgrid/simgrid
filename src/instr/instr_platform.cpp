@@ -3,22 +3,21 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/instr/instr_private.hpp"
+#include <simgrid/kernel/routing/NetPoint.hpp>
+#include <simgrid/kernel/routing/NetZoneImpl.hpp>
+#include <simgrid/s4u/Actor.hpp>
+#include <simgrid/s4u/Comm.hpp>
+#include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/Exec.hpp>
+#include <simgrid/s4u/Host.hpp>
+#include <simgrid/s4u/VirtualMachine.hpp>
+#include <xbt/graph.h>
 
-#include "simgrid/kernel/routing/NetPoint.hpp"
-#include "simgrid/kernel/routing/NetZoneImpl.hpp"
-#include "simgrid/s4u/Actor.hpp"
-#include "simgrid/s4u/Comm.hpp"
-#include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/Exec.hpp"
-#include "simgrid/s4u/Host.hpp"
-#include "simgrid/s4u/VirtualMachine.hpp"
+#include "src/instr/instr_private.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/xml/platf_private.hpp"
-#include "surf/surf.hpp"
-#include "xbt/graph.h"
 
 #include <fstream>
 
@@ -429,13 +428,13 @@ void define_callbacks()
     s4u::Host::on_speed_change.connect([](s4u::Host const& host) {
       Container::by_name(host.get_name())
           ->get_variable("speed")
-          ->set_event(surf_get_clock(), host.get_core_count() * host.get_available_speed());
+          ->set_event(simgrid_get_clock(), host.get_core_count() * host.get_available_speed());
     });
     s4u::Link::on_creation.connect(on_link_creation);
     s4u::Link::on_bandwidth_change.connect([](s4u::Link const& link) {
       Container::by_name(link.get_name())
           ->get_variable("bandwidth")
-          ->set_event(surf_get_clock(), sg_bandwidth_factor * link.get_bandwidth());
+          ->set_event(simgrid_get_clock(), sg_bandwidth_factor * link.get_bandwidth());
     });
     s4u::NetZone::on_seal.connect([](s4u::NetZone const& /*netzone*/) { currentContainer.pop_back(); });
     kernel::routing::NetPoint::on_creation.connect([](kernel::routing::NetPoint const& netpoint) {

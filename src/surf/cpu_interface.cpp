@@ -3,11 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "cpu_interface.hpp"
-#include "cpu_ti.hpp"
+#include "src/surf/cpu_interface.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
+#include "src/surf/cpu_ti.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "surf/surf.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_cpu, ker_resource, "CPU resource, fueling execution activites");
 

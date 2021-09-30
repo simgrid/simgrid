@@ -3,12 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "network_interface.hpp"
-#include "simgrid/s4u/Engine.hpp"
+#include <simgrid/s4u/Engine.hpp>
+
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
+#include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "surf/surf.hpp"
 
 #include <numeric>
 

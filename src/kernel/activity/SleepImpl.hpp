@@ -7,7 +7,6 @@
 #define SIMGRID_KERNEL_ACTIVITY_SLEEP_HPP
 
 #include "src/kernel/activity/ActivityImpl.hpp"
-#include "surf/surf.hpp"
 
 namespace simgrid {
 namespace kernel {

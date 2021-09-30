@@ -7,7 +7,7 @@
 #define SIMGRID_KERNEL_ACTIVITY_SYNCHRO_RAW_HPP
 
 #include "src/kernel/activity/ActivityImpl.hpp"
-#include "surf/surf.hpp"
+
 #include <functional>
 
 namespace simgrid {
