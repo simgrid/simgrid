@@ -59,6 +59,7 @@ public:
   void mark_as_initialized();
   void set_replaying(bool value);
   bool replaying() const;
+  std::string get_instance_id() const { return instance_id_;}
   void set_tracing_category(const std::string& category) { tracing_category_ = category; }
   const std::string& get_tracing_category() const { return tracing_category_; }
   smpi_trace_call_location_t* call_location();

@@ -635,6 +635,7 @@ void smpi_mpi_init() {
   smpi_init_fortran_types();
   if(_smpi_init_sleep > 0)
     simgrid::s4u::this_actor::sleep_for(_smpi_init_sleep);
+  smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
 }
 
 void SMPI_thread_create() {

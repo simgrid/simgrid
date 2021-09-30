@@ -7,6 +7,7 @@
 #include "smpi_host.hpp"
 #include "private.hpp"
 #include "simgrid/s4u/Engine.hpp"
+#include "simgrid/s4u/Barrier.hpp"
 #include "smpi_comm.hpp"
 #include <map>
 
@@ -25,8 +26,9 @@ public:
     auto* group = new simgrid::smpi::Group(size_);
     comm_world_ = new simgrid::smpi::Comm(group, nullptr, false, -1);
     universe_size += max_no_processes;
+    bar_ = new s4u::Barrier(size_);
   }
-
+  s4u::Barrier* bar_;
   unsigned int size_;
   unsigned int finalized_ranks_ = 0;
   MPI_Comm comm_world_;
@@ -63,6 +65,13 @@ void smpi_deployment_register_process(const std::string& instance_id, int rank, 
 {
   const Instance& instance = smpi_instances.at(instance_id);
   instance.comm_world_->group()->set_mapping(actor->get_pid(), rank);
+
+}
+
+void smpi_deployment_startup_barrier(const std::string& instance_id)
+{
+  const Instance& instance = smpi_instances.at(instance_id);
+  instance.bar_->wait();
 }
 
 void smpi_deployment_unregister_process(const std::string& instance_id)
@@ -72,6 +81,7 @@ void smpi_deployment_unregister_process(const std::string& instance_id)
 
   if (instance.finalized_ranks_ == instance.size_) {
     simgrid::smpi::Comm::destroy(instance.comm_world_);
+    delete instance.bar_;
     smpi_instances.erase(instance_id);
   }
 }
