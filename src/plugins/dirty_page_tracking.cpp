@@ -67,7 +67,7 @@ double DirtyPageTrackingExt::computed_flops_lookup()
 } // namespace vm
 } // namespace simgrid
 
-static void on_virtual_machine_creation(simgrid::s4u::VirtualMachine& vm)
+static void on_virtual_machine_creation(const simgrid::s4u::VirtualMachine& vm)
 {
   vm.get_vm_impl()->extension_set<simgrid::vm::DirtyPageTrackingExt>(new simgrid::vm::DirtyPageTrackingExt());
 }

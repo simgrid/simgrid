@@ -66,7 +66,7 @@ Engine::Engine(int* argc, char** argv) : pimpl(new kernel::EngineImpl())
 
 Engine::~Engine()
 {
-  pimpl->shutdown();
+  kernel::EngineImpl::shutdown();
   Engine::instance_ = nullptr;
 }
 

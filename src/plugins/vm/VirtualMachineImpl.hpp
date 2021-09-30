@@ -41,7 +41,7 @@ public:
   void suspend(kernel::actor::ActorImpl* issuer);
   void resume();
   void shutdown(kernel::actor::ActorImpl* issuer);
-  void destroy();
+  void vm_destroy();
 
   /** @brief Change the physical host on which the given VM is running */
   void set_physical_host(s4u::Host* dest);

@@ -122,7 +122,7 @@ void VirtualMachine::destroy()
 
     /* Then, destroy the VM object */
     kernel::actor::simcall([this]() {
-      get_vm_impl()->destroy();
+      get_vm_impl()->vm_destroy();
       get_impl()->destroy();
 
       /* Don't free these things twice: they are the ones of my physical host */
@@ -133,7 +133,7 @@ void VirtualMachine::destroy()
 
   if (not this_actor::is_maestro() && this_actor::get_host() == this) {
     XBT_VERB("Launch another actor on physical host %s to destroy my own VM: %s", get_pm()->get_cname(), get_cname());
-    simgrid::s4u::Actor::create(get_cname() + std::string("-destroy"), get_pm(), destroy_code);
+    simgrid::s4u::Actor::create(get_cname() + std::string("-vm_destroy"), get_pm(), destroy_code);
     simgrid::s4u::this_actor::yield();
     XBT_CRITICAL("I should be dead now!");
     DIE_IMPOSSIBLE;
