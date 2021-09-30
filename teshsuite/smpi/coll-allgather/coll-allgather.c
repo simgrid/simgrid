@@ -8,12 +8,18 @@
 #include <string.h>
 #include <errno.h>
 #include "mpi.h"
+#include <time.h>
+#include "simgrid/actor.h"
 
 int main(int argc, char *argv[])
 {
   int rank;
   int size;
   int status;
+
+  srand(sg_actor_self_get_pid());
+  int randomTime = rand() %5;
+  sleep(randomTime);
 
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
