@@ -17,7 +17,7 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
+#include "src/surf/xml/platf.hpp"
 #include "surf/surf.hpp"          //surf_presolve() and surf_solve()
 #include "xbt/xbt_modinter.h"     /* whether initialization was already done */
 

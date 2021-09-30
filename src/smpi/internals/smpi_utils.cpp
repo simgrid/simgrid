@@ -6,15 +6,15 @@
 
 #include "smpi_utils.hpp"
 
-#include "src/surf/xml/platf_private.hpp"
+#include "private.hpp"
+#include "smpi_config.hpp"
+#include "src/surf/xml/platf.hpp"
+#include "xbt/file.hpp"
 #include "xbt/log.h"
 #include "xbt/parse_units.hpp"
 #include "xbt/sysdep.h"
-#include "xbt/file.hpp"
-#include <boost/tokenizer.hpp>
-#include "smpi_config.hpp"
 #include <algorithm>
-#include "private.hpp"
+#include <boost/tokenizer.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_utils, smpi, "Logging specific to SMPI (utils)");
 

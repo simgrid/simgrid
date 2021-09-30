@@ -36,7 +36,7 @@
 #include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/kernel/EngineImpl.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "src/surf/xml/platf_private.hpp"
+#include "src/surf/xml/platf_private.hpp" // ClusterCreationArgs
 #include "surf/surf.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_ns3, res_network, "Network model based on ns-3");

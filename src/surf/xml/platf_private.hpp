@@ -11,7 +11,6 @@
 
 #include "simgrid/host.h"
 #include "simgrid/s4u/Link.hpp"
-#include "src/surf/xml/platf.hpp"
 #include "src/surf/xml/simgrid_dtd.h"
 
 #include <map>

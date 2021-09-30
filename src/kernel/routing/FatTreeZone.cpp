@@ -3,15 +3,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/kernel/routing/FatTreeZone.hpp>
+#include <simgrid/kernel/routing/NetPoint.hpp>
+
+#include "src/surf/network_interface.hpp"
+#include "src/surf/xml/platf.hpp" // surf_parse_error() and surf_parse_assert()
+
 #include <fstream>
 #include <numeric>
 #include <sstream>
 #include <string>
-
-#include "simgrid/kernel/routing/FatTreeZone.hpp"
-#include "simgrid/kernel/routing/NetPoint.hpp"
-#include "src/surf/network_interface.hpp"
-#include "src/surf/xml/platf_private.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>

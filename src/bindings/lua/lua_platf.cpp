@@ -9,7 +9,7 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/surf_private.hpp"
+#include "src/surf/xml/platf.hpp"
 #include "src/surf/xml/platf_private.hpp"
 #include "xbt/parse_units.hpp"
 

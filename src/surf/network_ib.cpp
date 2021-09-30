@@ -9,7 +9,6 @@
 #include "src/kernel/EngineImpl.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/network_ib.hpp"
-#include "src/surf/xml/platf.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -85,8 +84,8 @@ NetworkIBModel::NetworkIBModel(const std::string& name) : NetworkSmpiModel(name)
   std::vector<std::string> radical_elements;
   boost::split(radical_elements, IB_factors_string, boost::is_any_of(";"));
 
-  surf_parse_assert(radical_elements.size() == 3, "smpi/IB-penalty-factors should be provided and contain 3 "
-                                                  "elements, semi-colon separated. Example: 0.965;0.925;1.35");
+  xbt_assert(radical_elements.size() == 3, "smpi/IB-penalty-factors should be provided and contain 3 "
+                                           "elements, semi-colon separated. Example: 0.965;0.925;1.35");
 
   try {
     Be_ = std::stod(radical_elements.front());

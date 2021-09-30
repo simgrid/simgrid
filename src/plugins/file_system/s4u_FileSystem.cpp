@@ -3,14 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/plugins/file_system.h"
-#include "simgrid/s4u/Actor.hpp"
-#include "simgrid/s4u/Comm.hpp"
-#include "simgrid/s4u/Engine.hpp"
+#include <simgrid/plugins/file_system.h>
+#include <simgrid/s4u/Actor.hpp>
+#include <simgrid/s4u/Comm.hpp>
+#include <simgrid/s4u/Engine.hpp>
+#include <xbt/config.hpp>
+#include <xbt/parse_units.hpp>
+
 #include "src/surf/HostImpl.hpp"
-#include "src/surf/xml/platf_private.hpp"
-#include "xbt/config.hpp"
-#include "xbt/parse_units.hpp"
 
 #include <algorithm>
 #include <boost/algorithm/string.hpp>

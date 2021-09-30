@@ -23,6 +23,7 @@
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/HostImpl.hpp"
+#include "src/surf/xml/platf.hpp"
 #include "src/surf/xml/platf_private.hpp"
 #include "surf/surf.hpp"
 

@@ -9,7 +9,6 @@
 
 #include "src/instr/instr_private.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/surf_private.hpp"
 #include <algorithm>
 #include <cmath>
 
