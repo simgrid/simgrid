@@ -4,10 +4,13 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <simgrid/plugins/load.h>
-#include <simgrid/s4u.hpp>
+#include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/Exec.hpp>
+#include <simgrid/s4u/Host.hpp>
+#include <simgrid/s4u/VirtualMachine.hpp>
 
 #include "src/kernel/activity/ExecImpl.hpp"
-#include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/surf/surf_interface.hpp"
 
 // Makes sure that this plugin can be activated from the command line with ``--cfg=plugin:host_load``
 SIMGRID_REGISTER_PLUGIN(host_load, "Cpu load", &sg_host_load_plugin_init)

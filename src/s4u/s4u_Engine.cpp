@@ -8,7 +8,7 @@
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <simgrid/modelchecker.h>
 #include <simgrid/s4u/Engine.hpp>
-//
+
 #include "mc/mc.h"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"

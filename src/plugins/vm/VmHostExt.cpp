@@ -16,5 +16,5 @@ void VmHostExt::ensureVmExtInstalled()
   if (not EXTENSION_ID.valid())
     EXTENSION_ID = simgrid::s4u::Host::extension_create<VmHostExt>();
 }
-}
-}
+} // namespace vm
+} // namespace simgrid

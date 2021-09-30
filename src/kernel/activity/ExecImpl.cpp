@@ -3,19 +3,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/Exception.hpp>
+#include <simgrid/kernel/routing/NetPoint.hpp>
+#include <simgrid/modelchecker.h>
+#include <simgrid/s4u/Engine.hpp>
+
 #include "src/kernel/activity/ExecImpl.hpp"
-#include "simgrid/Exception.hpp"
-#include "simgrid/kernel/routing/NetPoint.hpp"
-#include "simgrid/modelchecker.h"
-#include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/Exec.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
-#include "src/surf/surf_interface.hpp"
-
-#include "simgrid/s4u/Host.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 

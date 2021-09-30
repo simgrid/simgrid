@@ -4,20 +4,21 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <simgrid/plugins/file_system.h>
-#include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Comm.hpp>
+#include <simgrid/s4u/Disk.hpp>
 #include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/Host.hpp>
+#include <simgrid/simix.hpp>
+#include <xbt/asserts.h>
 #include <xbt/config.hpp>
+#include <xbt/log.h>
 #include <xbt/parse_units.hpp>
 
-#include "src/surf/HostImpl.hpp"
+#include "src/surf/surf_interface.hpp"
 
-#include <algorithm>
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/join.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <fstream>
-#include <memory>
 #include <numeric>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_file, s4u, "S4U files");

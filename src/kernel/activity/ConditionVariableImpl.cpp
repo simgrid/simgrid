@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
-#include "simgrid/Exception.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"

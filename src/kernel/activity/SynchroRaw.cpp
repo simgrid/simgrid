@@ -3,16 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/kernel/activity/SynchroRaw.hpp"
-#include "simgrid/Exception.hpp"
-#include "simgrid/kernel/resource/Action.hpp"
-#include "src/kernel/activity/ConditionVariableImpl.hpp"
-#include "src/kernel/activity/MutexImpl.hpp"
-#include "src/kernel/activity/SemaphoreImpl.hpp"
-#include "src/kernel/context/Context.hpp"
-#include "src/surf/cpu_interface.hpp"
-#include "src/surf/surf_interface.hpp"
+#include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Host.hpp>
+
+#include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
+#include "src/kernel/context/Context.hpp"
+#include "src/simix/popping_private.hpp"
+#include "src/surf/cpu_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix, "SIMIX Synchronization (mutex, semaphores and conditions)");
 

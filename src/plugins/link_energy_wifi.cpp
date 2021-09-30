@@ -3,21 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <simgrid/Exception.hpp>
 #include <simgrid/plugins/energy.h>
 #include <simgrid/s4u/Engine.hpp>
-#include <simgrid/s4u/Host.hpp>
 #include <simgrid/s4u/Link.hpp>
-#include <xbt/config.hpp>
 
 #include "src/surf/network_interface.hpp"
 #include "src/surf/network_wifi.hpp"
-#include "src/surf/surf_interface.hpp"
-#include "src/kernel/lmm/maxmin.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <map>
 
 SIMGRID_REGISTER_PLUGIN(link_energy_wifi, "Energy wifi test", &sg_wifi_energy_plugin_init);
 /** @defgroup plugin_link_energy_wifi Plugin WiFi energy

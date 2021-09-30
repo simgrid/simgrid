@@ -6,8 +6,8 @@
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Link.hpp>
-#include <simgrid/sg_config.hpp>
 #include <simgrid/simix.hpp>
+#include <xbt/config.hpp>
 #include <xbt/parse_units.hpp>
 
 #include "src/surf/SplitDuplexLinkImpl.hpp"

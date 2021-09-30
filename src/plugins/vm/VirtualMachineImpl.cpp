@@ -3,14 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/plugins/vm/VirtualMachineImpl.hpp"
-#include "simgrid/Exception.hpp"
-#include "simgrid/kernel/routing/NetZoneImpl.hpp"
-#include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/Exec.hpp"
+#include <simgrid/Exception.hpp>
+#include <simgrid/kernel/routing/NetZoneImpl.hpp>
+#include <simgrid/s4u/Exec.hpp>
+
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
+#include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/cpu_cas01.hpp"
 #include "src/surf/cpu_ti.hpp"
 

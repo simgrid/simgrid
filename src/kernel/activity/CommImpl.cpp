@@ -3,18 +3,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/Exception.hpp>
+#include <simgrid/kernel/routing/NetPoint.hpp>
+#include <simgrid/modelchecker.h>
+#include <simgrid/s4u/Host.hpp>
+
 #include "src/kernel/activity/CommImpl.hpp"
-#include "simgrid/Exception.hpp"
-#include "simgrid/kernel/resource/Action.hpp"
-#include "simgrid/kernel/routing/NetPoint.hpp"
-#include "simgrid/modelchecker.h"
-#include "simgrid/s4u/Host.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
-#include "src/surf/surf_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix, "SIMIX network-related synchronization");
 

@@ -3,15 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/s4u/Host.hpp>
+
 #include "src/kernel/activity/SleepImpl.hpp"
-#include "simgrid/Exception.hpp"
-#include "simgrid/kernel/resource/Action.hpp"
-#include "simgrid/s4u/Host.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "src/kernel/context/Context.hpp"
 #include "src/simix/popping_private.hpp"
 #include "src/surf/cpu_interface.hpp"
-#include "src/surf/surf_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 namespace simgrid {

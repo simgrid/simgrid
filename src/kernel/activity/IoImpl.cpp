@@ -2,14 +2,14 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-#include "src/kernel/activity/IoImpl.hpp"
+
+#include <simgrid/Exception.hpp>
+#include <simgrid/kernel/routing/NetPoint.hpp>
+#include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/Host.hpp>
+
 #include "mc/mc.h"
-#include "simgrid/Exception.hpp"
-#include "simgrid/kernel/resource/Action.hpp"
-#include "simgrid/kernel/routing/NetPoint.hpp"
-#include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/Host.hpp"
-#include "simgrid/s4u/Io.hpp"
+#include "src/kernel/activity/IoImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/kernel/context/Context.hpp"

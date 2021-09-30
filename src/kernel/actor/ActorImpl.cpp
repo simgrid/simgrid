@@ -3,23 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/s4u/Actor.hpp"
-#include "mc/mc.h"
-#include "simgrid/Exception.hpp"
-#include "simgrid/s4u/Exec.hpp"
+#include <simgrid/Exception.hpp>
+#include <simgrid/s4u/Actor.hpp>
+#include <simgrid/s4u/Host.hpp>
+
 #include "src/kernel/EngineImpl.hpp"
-#include "src/kernel/activity/CommImpl.hpp"
-#include "src/kernel/activity/ExecImpl.hpp"
-#include "src/kernel/activity/IoImpl.hpp"
-#include "src/kernel/activity/SleepImpl.hpp"
-#include "src/kernel/activity/SynchroRaw.hpp"
-#include "src/mc/mc_replay.hpp"
-#include "src/mc/remote/AppSide.hpp"
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
 #endif
 #include "src/surf/HostImpl.hpp"
-#include "src/surf/cpu_interface.hpp"
 
 #include <boost/core/demangle.hpp>
 #include <typeinfo>

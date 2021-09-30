@@ -3,8 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/plugins/live_migration.h"
-#include "simgrid/s4u/Exec.hpp"
+#include <simgrid/plugins/live_migration.h>
+#include <simgrid/s4u/Exec.hpp>
+#include <simgrid/s4u/VirtualMachine.hpp>
+
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 

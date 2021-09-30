@@ -3,21 +3,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/plugins/dvfs.h"
-#include "simgrid/plugins/load.h"
-#include "simgrid/s4u/Engine.hpp"
-#include "src/internal_config.h" // HAVE_SMPI
-#include "src/kernel/activity/ExecImpl.hpp"
-#include "src/plugins/vm/VirtualMachineImpl.hpp"
-#if HAVE_SMPI
-#include "src/smpi/plugins/ampi/ampi.hpp"
-#endif
+#include <simgrid/plugins/dvfs.h>
+#include <simgrid/plugins/load.h>
 #include <xbt/config.hpp>
 
-#include <boost/algorithm/string.hpp>
+#include "src/internal_config.h" // HAVE_SMPI
+#include "src/surf/network_interface.hpp"
 #if HAVE_SMPI
 #include "src/smpi/include/smpi_request.hpp"
+#include "src/smpi/plugins/ampi/ampi.hpp"
 #endif
+
+#include <boost/algorithm/string.hpp>
 
 SIMGRID_REGISTER_PLUGIN(host_dvfs, "Dvfs support", &sg_host_dvfs_plugin_init)
 

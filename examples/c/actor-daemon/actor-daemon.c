@@ -6,8 +6,8 @@
 #include "simgrid/actor.h"
 #include "simgrid/engine.h"
 #include "simgrid/host.h"
+#include "xbt/asserts.h"
 #include "xbt/log.h"
-#include "xbt/sysdep.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actor_daemon, "Messages specific for this example");
 

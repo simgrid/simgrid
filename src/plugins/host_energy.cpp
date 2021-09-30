@@ -7,9 +7,10 @@
 #include <simgrid/plugins/energy.h>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Exec.hpp>
+#include <simgrid/s4u/Host.hpp>
+#include <simgrid/s4u/VirtualMachine.hpp>
+#include <simgrid/simix.hpp>
 
-#include "src/kernel/activity/ExecImpl.hpp"
-#include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 
 #include <boost/algorithm/string/classification.hpp>

@@ -20,7 +20,7 @@ public:
 
   static void ensureVmExtInstalled();
 };
-}
-}
+} // namespace vm
+} // namespace simgrid
 
 #endif /* VM_HOST_INFO_HPP_ */

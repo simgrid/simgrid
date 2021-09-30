@@ -5,7 +5,6 @@
 
 #include <simgrid/Exception.hpp>
 #include <simgrid/kernel/routing/NetPoint.hpp>
-#include <simgrid/s4u/Actor.hpp>
 #include <simgrid/vm.h>
 
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
