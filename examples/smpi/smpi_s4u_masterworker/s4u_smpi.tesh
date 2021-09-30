@@ -1,4 +1,5 @@
 p Test the use of SMPI+MSG in the same file, as well as several different SMPI instances at the same time
+! output sort
 $ ./masterworker_mailbox_smpi ${srcdir:=.}/../../platforms/small_platform_with_routers.xml ${srcdir:=.}/deployment_masterworker_mailbox_smpi.xml --log=smpi.:info --cfg=smpi/simulate-computation:no
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/simulate-computation' to 'no'
 > [0.000000] [smpi_config/INFO] You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/host-speed:<flops>" to set its value.  Check https://simgrid.org/doc/latest/Configuring_SimGrid.html#automatic-benchmarking-of-smpi-code for more information.

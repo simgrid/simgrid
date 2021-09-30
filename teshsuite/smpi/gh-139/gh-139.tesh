@@ -1,15 +1,16 @@
+! output sort
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -np 2 -platform ${platfdir:=.}/small_platform.xml -hostfile ../hostfile ${bindir:=.}/gh-139 --cfg=smpi/simulate-computation:no --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 > [Tremblay:0:(1) 0.000000] [smpi_test/INFO] I'm 0/2
 > [Jupiter:1:(2) 0.000000] [smpi_test/INFO] I'm 1/2
-> [Tremblay:wait send:(3) 0.000000] [smpi_test/INFO] new thread has parameter rank 0 and global variable rank 0
-> [Tremblay:wait send:(3) 0.000000] [smpi_test/INFO] 0 has MPI rank 0 and global variable rank 0
-> [Tremblay:wait send:(3) 0.000000] [smpi_test/INFO] 0 waiting request
-> [Tremblay:wait send:(3) 0.000000] [smpi_test/INFO] 0 request done, return MPI_SUCCESS
-> [Tremblay:wait send:(3) 0.000000] [smpi_test/INFO] 0 still has MPI rank 0 and global variable 0
-> [Jupiter:wait recv:(4) 0.000000] [smpi_test/INFO] new thread has parameter rank 1 and global variable rank 1
-> [Jupiter:wait recv:(4) 0.000000] [smpi_test/INFO] 1 has MPI rank 1 and global variable rank 1
-> [Jupiter:wait recv:(4) 0.000000] [smpi_test/INFO] 1 waiting request
-> [Jupiter:wait recv:(4) 0.002948] [smpi_test/INFO] 1 request done, return MPI_SUCCESS
-> [Jupiter:wait recv:(4) 0.002948] [smpi_test/INFO] 1 still has MPI rank 1 and global variable 1
+> [Tremblay:wait send:(4) 0.000000] [smpi_test/INFO] new thread has parameter rank 0 and global variable rank 0
+> [Tremblay:wait send:(4) 0.000000] [smpi_test/INFO] 0 has MPI rank 0 and global variable rank 0
+> [Tremblay:wait send:(4) 0.000000] [smpi_test/INFO] 0 waiting request
+> [Tremblay:wait send:(4) 0.000000] [smpi_test/INFO] 0 request done, return MPI_SUCCESS
+> [Tremblay:wait send:(4) 0.000000] [smpi_test/INFO] 0 still has MPI rank 0 and global variable 0
+> [Jupiter:wait recv:(3) 0.000000] [smpi_test/INFO] new thread has parameter rank 1 and global variable rank 1
+> [Jupiter:wait recv:(3) 0.000000] [smpi_test/INFO] 1 has MPI rank 1 and global variable rank 1
+> [Jupiter:wait recv:(3) 0.000000] [smpi_test/INFO] 1 waiting request
+> [Jupiter:wait recv:(3) 0.002948] [smpi_test/INFO] 1 request done, return MPI_SUCCESS
+> [Jupiter:wait recv:(3) 0.002948] [smpi_test/INFO] 1 still has MPI rank 1 and global variable 1
 > [Tremblay:0:(1) 1.000000] [smpi_test/INFO] finally 42
 > [Jupiter:1:(2) 2.000000] [smpi_test/INFO] finally 42

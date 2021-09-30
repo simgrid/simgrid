@@ -1,4 +1,5 @@
 p Test cart_sub
+! output sort
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -platform ${platfdir:=.}/small_platform.xml -np 4 ${bindir:=.}/topo-cart-sub -q --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 > [0.000000] [smpi/INFO] [rank 0] -> Tremblay
 > [0.000000] [smpi/INFO] [rank 1] -> Jupiter
