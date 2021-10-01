@@ -11,7 +11,6 @@
 #include <functional>
 #include <jni.h>
 
-#include "simgrid/simix.h"
 #include "src/kernel/context/ContextThread.hpp"
 
 #include "jmsg.hpp"
@@ -23,7 +22,7 @@ namespace context {
 class JavaContext;
 class JavacontextFactory;
 
-class JavaContext : public simgrid::kernel::context::SerialThreadContext {
+class JavaContext : public SerialThreadContext {
 public:
   // The java process instance bound with the msg process structure:
   jobject jprocess_ = nullptr;
@@ -31,13 +30,13 @@ public:
   JNIEnv* jenv_           = nullptr;
 
   friend class JavaContextFactory;
-  JavaContext(std::function<void()>&& code, smx_actor_t actor);
+  JavaContext(std::function<void()>&& code, actor::ActorImpl* actor);
 
   void start_hook() override;
   void stop_hook() override;
 };
 
-class JavaContextFactory : public simgrid::kernel::context::ContextFactory {
+class JavaContextFactory : public ContextFactory {
 public:
   JavaContextFactory();
   ~JavaContextFactory() override;
@@ -45,9 +44,11 @@ public:
   void run_all() override;
 };
 
-XBT_PRIVATE simgrid::kernel::context::ContextFactory* java_factory();
+XBT_PRIVATE ContextFactory* java_factory();
 XBT_PRIVATE void java_main_jprocess(jobject process);
 
-}}} // namespace simgrid::kernel::context
+} // namespace context
+} // namespace kernel
+} // namespace simgrid
 
 #endif /* SIMGRID_JAVA_JAVA_CONTEXT_HPP */

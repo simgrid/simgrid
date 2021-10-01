@@ -6,7 +6,6 @@
 
 #include <simgrid/kernel/Timer.hpp>
 #include <simgrid/s4u/Engine.hpp>
-#include <simgrid/simix.h>
 
 namespace simgrid {
 namespace kernel {

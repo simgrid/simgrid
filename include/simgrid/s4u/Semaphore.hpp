@@ -7,7 +7,6 @@
 #define SIMGRID_S4U_SEMAPHORE_HPP
 
 #include <simgrid/forward.h>
-#include <simgrid/simix.h>
 
 namespace simgrid {
 namespace s4u {
