@@ -7,6 +7,7 @@
 #include <simgrid/plugins/load.h>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Host.hpp>
+#include <simgrid/s4u/VirtualMachine.hpp>
 #include <xbt/asserts.h>
 #include <xbt/config.hpp>
 
