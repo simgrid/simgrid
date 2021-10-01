@@ -5,6 +5,9 @@
 
 #include <simgrid/plugins/dvfs.h>
 #include <simgrid/plugins/load.h>
+#include <simgrid/s4u/Actor.hpp>
+#include <simgrid/s4u/Host.hpp>
+#include <xbt/asserts.h>
 #include <xbt/config.hpp>
 
 #include "src/internal_config.h" // HAVE_SMPI
