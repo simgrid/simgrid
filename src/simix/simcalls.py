@@ -159,7 +159,7 @@ class Simcall(object):
         res.append('  if (false) /* Go to that function to follow the code flow through the simcall barrier */')
         if self.need_handler:
             res.append('    simcall_HANDLER_%s(%s);' % (self.name,
-                                                        ', '.join(["&SIMIX_process_self()->simcall_"] + [arg.name for arg in self.args])))
+                                                        ', '.join(["&simgrid::kernel::actor::ActorImpl::self()->simcall_"] + [arg.name for arg in self.args])))
         else:
             res.append('    SIMIX_%s(%s);' % (self.name,
                                               ', '.join(arg.name for arg in self.args)))
@@ -363,6 +363,7 @@ if __name__ == '__main__':
     # popping_bodies.cpp
     #
     fd = header('popping_bodies.cpp')
+    fd.write('#include "src/kernel/actor/ActorImpl.hpp"\n')
     fd.write('#include "src/kernel/EngineImpl.hpp"\n')
     fd.write('#include "src/mc/mc_forward.hpp"\n')
     fd.write('#include "xbt/ex.h"\n')
@@ -379,7 +380,7 @@ using simgrid::simix::Simcall;
 template<class R, class... T>
 inline static R simcall(Simcall call, T const&... t)
 {
-  smx_actor_t self = SIMIX_process_self();
+  auto self = simgrid::kernel::actor::ActorImpl::self();
   simgrid::simix::marshal(&self->simcall_, call, t...);
   if (not simgrid::kernel::EngineImpl::get_instance()->is_maestro(self)) {
     XBT_DEBUG("Yield process '%s' on simcall %s", self->get_cname(), SIMIX_simcall_name(self->simcall_));

@@ -33,7 +33,7 @@ int MC_random(int min, int max)
     static simgrid::xbt::random::XbtRandom prng;
     return prng.uniform_int(min, max);
   }
-  simgrid::kernel::actor::RandomSimcall observer{SIMIX_process_self(), min, max};
+  simgrid::kernel::actor::RandomSimcall observer{simgrid::kernel::actor::ActorImpl::self(), min, max};
   return simgrid::kernel::actor::simcall([&observer] { return observer.get_value(); }, &observer);
 }
 

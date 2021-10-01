@@ -479,7 +479,7 @@ auto kernel_sync(F code) -> decltype(code().get())
   typedef decltype(code().get()) T;
   xbt_assert(not SIMIX_is_maestro(), "Can't execute blocking call in kernel mode");
 
-  smx_actor_t self = SIMIX_process_self();
+  auto self = simgrid::kernel::actor::ActorImpl::self();
   simgrid::xbt::Result<T> result;
 
   simcall_run_blocking([&result, self, &code]{
@@ -549,7 +549,7 @@ T simgrid::simix::Future<T>::get()
 {
   if (!valid())
     throw std::future_error(std::future_errc::no_state);
-  smx_actor_t self = SIMIX_process_self();
+  auto self = simgrid::kernel::actor::ActorImpl::self();
   simgrid::xbt::Result<T> result;
   simcall_run_blocking([this, &result, self]{
     try {

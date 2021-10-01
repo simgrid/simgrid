@@ -50,8 +50,8 @@ SG_END_DECL
 
 /********************************* Process ************************************/
 SG_BEGIN_DECL
-XBT_PUBLIC smx_actor_t SIMIX_process_self();
-XBT_PUBLIC const char* SIMIX_process_self_get_name();
+XBT_ATTRIB_DEPRECATED_v333("Please use kernel::actor::ActorImpl::self()") XBT_PUBLIC smx_actor_t SIMIX_process_self();
+XBT_ATTRIB_DEPRECATED_v333("Please use xbt_procname()") XBT_PUBLIC const char* SIMIX_process_self_get_name();
 SG_END_DECL
 
 /****************************** Communication *********************************/

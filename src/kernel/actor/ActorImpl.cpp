@@ -26,7 +26,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix, "Logging specific to SIMIX
  *
  * @return The SIMIX process
  */
-smx_actor_t SIMIX_process_self()
+smx_actor_t SIMIX_process_self() // XBT_ATTRIB_DEPRECATED_v333
 {
   return simgrid::kernel::actor::ActorImpl::self();
 }
@@ -519,7 +519,7 @@ void create_maestro(const std::function<void()>& code)
 } // namespace simgrid
 
 /* needs to be public and without simcall because it is called by exceptions and logging events */
-const char* SIMIX_process_self_get_name()
+const char* SIMIX_process_self_get_name() // XBT_ATTRIB_DEPRECATD_v333
 {
   return SIMIX_is_maestro() ? "maestro" : simgrid::kernel::actor::ActorImpl::self()->get_cname();
 }

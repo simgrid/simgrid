@@ -14,9 +14,9 @@
 #include <xbt/sysdep.h>
 
 #include <simgrid/kernel/future.hpp>
-#include <simgrid/simix.h>
-#include <simgrid/simix.hpp>
 #include <xbt/promise.hpp>
+
+#include "src/kernel/actor/ActorImpl.hpp"
 
 namespace simgrid {
 namespace simix {
@@ -46,19 +46,19 @@ template <class F> auto kernel_sync(F code) -> decltype(code().get())
   using T = decltype(code().get());
   xbt_assert(not SIMIX_is_maestro(), "Cannot execute blocking call in kernel mode");
 
-  smx_actor_t self = SIMIX_process_self();
-  simgrid::xbt::Result<T> result;
+  auto self = kernel::actor::ActorImpl::self();
+  xbt::Result<T> result;
   simcall_run_blocking(
       [&result, self, &code] {
         try {
           auto future = code();
-          future.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>> value) {
-            simgrid::xbt::set_promise(result, simgrid::kernel::Future<T>(std::move(value)));
-            simgrid::simix::unblock(self);
+          future.then_([&result, self](std::shared_ptr<kernel::FutureState<T>> value) {
+            xbt::set_promise(result, kernel::Future<T>(std::move(value)));
+            unblock(self);
           });
         } catch (...) {
           result.set_exception(std::current_exception());
-          simgrid::simix::unblock(self);
+          unblock(self);
         }
       },
       nullptr);
@@ -84,20 +84,20 @@ public:
   {
     if (not valid())
       throw std::future_error(std::future_errc::no_state);
-    smx_actor_t self = SIMIX_process_self();
-    simgrid::xbt::Result<T> result;
+    auto self = kernel::actor::ActorImpl::self();
+    xbt::Result<T> result;
     simcall_run_blocking(
         [this, &result, self] {
           try {
             // When the kernel future is ready...
-            this->future_.then_([&result, self](std::shared_ptr<simgrid::kernel::FutureState<T>> value) {
+            this->future_.then_([&result, self](std::shared_ptr<kernel::FutureState<T>> value) {
               // ... wake up the process with the result of the kernel future.
-              simgrid::xbt::set_promise(result, simgrid::kernel::Future<T>(std::move(value)));
-              simgrid::simix::unblock(self);
+              xbt::set_promise(result, kernel::Future<T>(std::move(value)));
+              unblock(self);
             });
           } catch (...) {
             result.set_exception(std::current_exception());
-            simgrid::simix::unblock(self);
+            unblock(self);
           }
         },
         nullptr);
@@ -116,19 +116,19 @@ public:
       return;
     // The future is not ready. We have to delegate to the SimGrid kernel:
     std::exception_ptr exception;
-    smx_actor_t self = SIMIX_process_self();
+    auto self = kernel::actor::ActorImpl::self();
     simcall_run_blocking(
         [this, &exception, self] {
           try {
             // When the kernel future is ready...
-            this->future_.then_([this, self](std::shared_ptr<simgrid::kernel::FutureState<T>> value) {
+            this->future_.then_([this, self](std::shared_ptr<kernel::FutureState<T>> value) {
               // ...store it the simix kernel and wake up.
-              this->future_ = simgrid::kernel::Future<T>(std::move(value));
-              simgrid::simix::unblock(self);
+              this->future_ = kernel::Future<T>(std::move(value));
+              unblock(self);
             });
           } catch (...) {
             exception = std::current_exception();
-            simgrid::simix::unblock(self);
+            unblock(self);
           }
         },
         nullptr);
@@ -136,7 +136,7 @@ public:
 
 private:
   // We wrap an event-based kernel future:
-  simgrid::kernel::Future<T> future_;
+  kernel::Future<T> future_;
 };
 
 /** Start some asynchronous work
@@ -149,12 +149,12 @@ template <class F> auto kernel_async(F code) -> Future<decltype(code().get())>
   using T = decltype(code().get());
 
   // Execute the code in the kernel and get the kernel future:
-  simgrid::kernel::Future<T> future = simgrid::kernel::actor::simcall(std::move(code));
+  kernel::Future<T> future = kernel::actor::simcall(std::move(code));
 
   // Wrap the kernel future in an actor future:
-  return simgrid::simix::Future<T>(std::move(future));
+  return Future<T>(std::move(future));
 }
-}
-}
+} // namespace simix
+} // namespace simgrid
 
 #endif

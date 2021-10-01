@@ -5,17 +5,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/simix.h"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "xbt/virtu.h"
 
 int xbt_getpid()
 {
-  const simgrid::kernel::actor::ActorImpl* self = SIMIX_process_self();
+  const auto* self = simgrid::kernel::actor::ActorImpl::self();
   return self == nullptr ? 0 : static_cast<int>(self->get_pid());
 }
 
 const char* xbt_procname(void)
 {
-  return SIMIX_process_self_get_name();
+  return SIMIX_is_maestro() ? "maestro" : simgrid::kernel::actor::ActorImpl::self()->get_cname();
 }
