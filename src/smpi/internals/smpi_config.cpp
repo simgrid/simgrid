@@ -99,8 +99,8 @@ simgrid::config::Flag<std::string> _smpi_cfg_comp_adjustment_file{"smpi/comp-adj
         std::getline(fstream, line); // Skip the header line
         while (std::getline(fstream, line)) {
           Tokenizer tok(line);
-          Tokenizer::iterator it  = tok.begin();
-          Tokenizer::iterator end = std::next(tok.begin());
+          auto it              = tok.begin();
+          auto end             = std::next(tok.begin());
           std::string location = *it;
           boost::trim(location);
           location2speedup.insert(std::pair<std::string, double>(location, std::stod(*end)));

@@ -65,14 +65,14 @@ std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string)
    * E --> F
    * G --> H
    */
-  for (Tokenizer::iterator token_iter = tokens.begin(); token_iter != tokens.end(); ++token_iter) {
+  for (auto token_iter = tokens.begin(); token_iter != tokens.end(); ++token_iter) {
     XBT_DEBUG("token: %s", token_iter->c_str());
     Tokenizer factor_values(*token_iter, factor_separator);
     s_smpi_factor_t fact;
     xbt_assert(factor_values.begin() != factor_values.end(), "Malformed radical for smpi factor: '%s'",
                smpi_coef_string.c_str());
     unsigned int iteration = 0;
-    for (Tokenizer::iterator factor_iter = factor_values.begin(); factor_iter != factor_values.end(); ++factor_iter) {
+    for (auto factor_iter = factor_values.begin(); factor_iter != factor_values.end(); ++factor_iter) {
       iteration++;
 
       if (factor_iter == factor_values.begin()) { /* first element */
