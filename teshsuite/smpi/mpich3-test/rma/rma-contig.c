@@ -133,6 +133,7 @@ int main(int argc, char **argv)
     run_test(MPI_LOCK_SHARED, MPI_MODE_NOCHECK);
 
     MTest_Finalize(0);
+    MPI_Finalize();
 
     return 0;
 }
