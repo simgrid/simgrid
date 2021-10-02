@@ -363,8 +363,8 @@ if __name__ == '__main__':
     # popping_bodies.cpp
     #
     fd = header('popping_bodies.cpp')
-    fd.write('#include "src/kernel/actor/ActorImpl.hpp"\n')
     fd.write('#include "src/kernel/EngineImpl.hpp"\n')
+    fd.write('#include "src/kernel/actor/ActorImpl.hpp"\n')
     fd.write('#include "src/mc/mc_forward.hpp"\n')
     fd.write('#include "xbt/ex.h"\n')
     fd.write('#include <functional>\n')
