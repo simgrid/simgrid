@@ -17,8 +17,7 @@ int main(int argc, char *argv[])
   int size;
   int status;
 
-  srand(sg_actor_self_get_pid());
-  int randomTime = rand() %5;
+  int randomTime = sg_actor_self_get_pid() % 5;
   sleep(randomTime);
 
   MPI_Init(&argc, &argv);
