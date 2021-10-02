@@ -98,7 +98,8 @@ public:
 
   std::string resolve_backtrace() const { return throwpoint_.backtrace_.resolve(); }
 
-  virtual void rethrow_nested(simgrid::xbt::ThrowPoint&& throwpoint, const std::string& message) const
+  XBT_ATTRIB_NORETURN virtual void rethrow_nested(simgrid::xbt::ThrowPoint&& throwpoint,
+                                                  const std::string& message) const
   {
     std::throw_with_nested(Exception(std::move(throwpoint), message));
   }
@@ -114,7 +115,8 @@ private:
     using Exception::Exception;                                                                                        \
     __VA_ARGS__                                                                                                        \
     ~AnyException() override;                                                                                          \
-    void rethrow_nested(simgrid::xbt::ThrowPoint&& throwpoint, const std::string& message) const override              \
+    XBT_ATTRIB_NORETURN void rethrow_nested(simgrid::xbt::ThrowPoint&& throwpoint,                                     \
+                                            const std::string& message) const override                                 \
     {                                                                                                                  \
       std::throw_with_nested(AnyException(std::move(throwpoint), message));                                            \
     }                                                                                                                  \
