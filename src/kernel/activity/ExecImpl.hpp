@@ -28,6 +28,7 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
   std::vector<double> bytes_amounts_;
   s4u::Exec* piface_;
   int cb_id_ = -1; // callback id from Host::on_state_change.connect()
+
 public:
   ExecImpl();
   s4u::Exec* get_iface() { return piface_; }

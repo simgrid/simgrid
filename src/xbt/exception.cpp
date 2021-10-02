@@ -88,8 +88,7 @@ XBT_ATTRIB_NORETURN static void handler()
     std::abort();
   }
 
-  // Get the current backtrace and exception
-  simgrid::xbt::Backtrace bt = simgrid::xbt::Backtrace();
+  // Get the current exception and show backtrace
   try {
     std::rethrow_exception(std::current_exception());
   }
@@ -120,7 +119,7 @@ XBT_ATTRIB_NORETURN static void handler()
     }
     XBT_ERROR("Unknown uncaught exception");
   }
-  show_backtrace(bt);
+  show_backtrace(simgrid::xbt::Backtrace());
   std::abort();
 }
 

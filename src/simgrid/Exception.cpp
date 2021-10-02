@@ -35,8 +35,8 @@ bool ForcefulKillException::try_n_catch(const std::function<void()>& try_block)
   try {
     try_block();
     res = true;
-  } catch (ForcefulKillException const&) {
-    XBT_DEBUG("Caught a ForcefulKillException");
+  } catch (ForcefulKillException const& e) {
+    XBT_DEBUG("Caught a ForcefulKillException: %s", e.what());
     res = false;
   }
   return res;

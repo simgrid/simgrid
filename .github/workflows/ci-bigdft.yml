@@ -9,7 +9,7 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    container: 
+    container:
       image: bigdft/sdk
       options: --user 0
 
