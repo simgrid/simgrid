@@ -150,7 +150,7 @@ void DragonflyZone::build_upper_levels(const s4u::ClusterCallbacks& set_callback
 
 void DragonflyZone::generate_routers(const s4u::ClusterCallbacks& set_callbacks)
 {
-  unsigned long id = 2 * num_groups_ * num_chassis_per_group_ * num_blades_per_chassis_ * num_nodes_per_blade_;
+  unsigned long id = 2UL * num_groups_ * num_chassis_per_group_ * num_blades_per_chassis_ * num_nodes_per_blade_;
   /* get limiter for this router */
   auto get_limiter = [this, &id, &set_callbacks](unsigned int i, unsigned int j,
                                                  unsigned int k) -> resource::LinkImpl* {

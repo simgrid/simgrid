@@ -23,7 +23,7 @@ namespace routing {
 void TorusZone::create_torus_links(unsigned long id, int rank, unsigned long position)
 {
   /* Create all links that exist in the torus. Each rank creates @a dimensions-1 links */
-  int dim_product = 1; // Needed to calculate the next neighbor_id
+  unsigned long dim_product = 1; // Needed to calculate the next neighbor_id
 
   for (unsigned long j = 0; j < dimensions_.size(); j++) {
     unsigned long current_dimension =
