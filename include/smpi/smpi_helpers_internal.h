@@ -38,8 +38,24 @@ void* smpi_shared_malloc_intercept(size_t size, const char* file, int line);
 void* smpi_shared_calloc_intercept(size_t num_elm, size_t elem_size, const char* file, int line);
 void* smpi_shared_realloc_intercept(void* data, size_t size, const char* file, int line);
 void smpi_shared_free(void* data);
-void __attribute__((noreturn)) smpi_exit(int status);
+#ifdef __cplusplus
+[[noreturn]] // c++11
+#else
+_Noreturn // c11
+#endif
+void smpi_exit(int status);
 #ifdef __cplusplus
 } // extern "C"
+#endif
+
+#ifdef __cplusplus
+namespace std {
+extern "C" void* smpi_shared_malloc_intercept(size_t size, const char* file, int line);
+extern "C" void* smpi_shared_calloc_intercept(size_t num_elm, size_t elem_size, const char* file, int line);
+extern "C" void* smpi_shared_realloc_intercept(void* data, size_t size, const char* file, int line);
+extern "C" void smpi_shared_free(void* ptr);
+
+extern "C" [[noreturn]] void smpi_exit(int status);
+} // namespace std
 #endif
 #endif
