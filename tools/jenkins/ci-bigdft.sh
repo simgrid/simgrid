@@ -10,6 +10,7 @@ echo "XXXXXXXXXXXXXXXX Install APT dependencies"
 SUDO="" # to ease the local testing
 $SUDO apt-get -y update
 $SUDO apt-get -y install python-is-python3 python3-setuptools libboost-dev
+$SUDO apt-get -y install --only-upgrade ca-certificates
 
 echo "XXXXXXXXXXXXXXXX build and test BigDFT (git version)"
 git clone --depth=1 https://gitlab.com/l_sim/bigdft-suite.git
