@@ -296,31 +296,21 @@ static int smpi_run_entry_point(const F& entry_point, const std::string& executa
                                 const std::vector<std::string>& args)
 {
   // copy C strings, we need them writable
-  auto* args4argv = new std::vector<char*>(args.size());
-  std::transform(begin(args), end(args), begin(*args4argv), [](const std::string& s) { return xbt_strdup(s.c_str()); });
+  std::vector<char*> args4argv(args.size());
+  std::transform(begin(args) + 1, end(args), begin(args4argv) + 1,
+                 [](const std::string& s) { return xbt_strdup(s.c_str()); });
 
   // set argv[0] to executable_path
-  xbt_free((*args4argv)[0]);
-  (*args4argv)[0] = xbt_strdup(executable_path.c_str());
+  args4argv[0] = xbt_strdup(executable_path.c_str());
+  // add the final NULL
+  args4argv.push_back(nullptr);
 
-#if !SMPI_IFORT
   // take a copy of args4argv to keep reference of the allocated strings
-  const std::vector<char*> args2str(*args4argv);
-#endif
-  int argc = static_cast<int>(args4argv->size());
-  args4argv->push_back(nullptr);
-  char** argv = args4argv->data();
-
-#if SMPI_IFORT
-  for_rtl_init_ (&argc, argv);
-#elif SMPI_FLANG
-  __io_set_argc(argc);
-  __io_set_argv(argv);
-#elif SMPI_GFORTRAN
-  _gfortran_set_args(argc, argv);
-#endif
+  const std::vector<char*> args2str(args4argv);
 
   try {
+    int argc    = static_cast<int>(args4argv.size() - 1);
+    char** argv = args4argv.data();
     int res = entry_point(argc, argv);
     if (res != 0) {
       XBT_WARN("SMPI process did not return 0. Return value : %d", res);
@@ -331,19 +321,12 @@ static int smpi_run_entry_point(const F& entry_point, const std::string& executa
     XBT_DEBUG("Caught a ForcefulKillException: %s", e.what());
   }
 
-#if SMPI_IFORT
-  for_rtl_finish_ ();
-#else
   for (char* s : args2str)
     xbt_free(s);
-  delete args4argv;
-#endif
 
   return 0;
 }
 
-
-// TODO, remove the number of functions involved here
 static smpi_entry_point_type smpi_resolve_function(void* handle)
 {
   auto* entry_point_fortran = reinterpret_cast<smpi_fortran_entry_point_type>(dlsym(handle, "user_main_"));
@@ -564,9 +547,24 @@ int smpi_main(const char* executable, int argc, char* argv[])
   simgrid::smpi::colls::set_collectives();
   simgrid::smpi::colls::smpi_coll_cleanup_callback = nullptr;
 
+  std::vector<char*> args4argv(argv + 1, argv + argc + 1); // last element is NULL
+  args4argv[0]     = xbt_strdup(executable);
+  int real_argc    = argc - 1;
+  char** real_argv = args4argv.data();
+
+  // Setup argc/argv for the Fortran run-time environment
+#if SMPI_IFORT
+  for_rtl_init_(&real_argc, real_argv);
+#elif SMPI_FLANG
+  __io_set_argc(real_argc);
+  __io_set_argv(real_argv);
+#elif SMPI_GFORTRAN
+  _gfortran_set_args(real_argc, real_argv);
+#endif
+
   SMPI_init();
 
-  const std::vector<const char*> args(argv + 2, argv + argc);
+  const std::vector<const char*> args(real_argv + 1, real_argv + real_argc);
   int rank_counts =
       smpi_deployment_smpirun(&engine, smpi_hostfile.get(), smpi_np.get(), smpi_replay.get(), smpi_map.get(), args);
 
@@ -586,6 +584,11 @@ int smpi_main(const char* executable, int argc, char* argv[])
     simgrid::smpi::utils::print_time_analysis(xbt_os_timer_elapsed(global_timer));
   }
   SMPI_finalize();
+
+#if SMPI_IFORT
+  for_rtl_finish_();
+#endif
+  xbt_free(args4argv[0]);
 
   return smpi_exit_status;
 }
