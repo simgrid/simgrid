@@ -1,4 +1,6 @@
+! setenv FOR_DISABLE_STACK_TRACE=1
 ! ignore .*Aborted.*
+! ignore ^forrtl: error \(76\):
 ! expect return 134
 $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -hostfile ../hostfile_empty -quiet -platform ${platfdir:=.}/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -s --log=smpi_config.thres:warning --log=xbt_cfg.thres=warning --log=no_loc
 > [0.000000] [root/CRITICAL] smpirun: the hostfile '../hostfile_empty' is empty
