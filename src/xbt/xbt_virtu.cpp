@@ -5,8 +5,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/s4u/Actor.hpp>
+#include <xbt/virtu.h>
+
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "xbt/virtu.h"
 
 int xbt_getpid()
 {
@@ -16,5 +18,5 @@ int xbt_getpid()
 
 const char* xbt_procname(void)
 {
-  return SIMIX_is_maestro() ? "maestro" : simgrid::kernel::actor::ActorImpl::self()->get_cname();
+  return simgrid::s4u::Actor::is_maestro() ? "maestro" : simgrid::kernel::actor::ActorImpl::self()->get_cname();
 }

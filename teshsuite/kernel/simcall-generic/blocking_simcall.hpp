@@ -44,7 +44,7 @@ namespace simix {
 template <class F> auto kernel_sync(F code) -> decltype(code().get())
 {
   using T = decltype(code().get());
-  xbt_assert(not SIMIX_is_maestro(), "Cannot execute blocking call in kernel mode");
+  xbt_assert(not s4u::Actor::is_maestro(), "Cannot execute blocking call in kernel mode");
 
   auto self = kernel::actor::ActorImpl::self();
   xbt::Result<T> result;

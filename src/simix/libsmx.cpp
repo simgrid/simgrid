@@ -382,7 +382,7 @@ namespace simix {
 
 void unblock(smx_actor_t actor)
 {
-  xbt_assert(SIMIX_is_maestro());
+  xbt_assert(s4u::Actor::is_maestro());
   actor->simcall_answer();
 }
 } // namespace simix

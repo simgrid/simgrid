@@ -7,6 +7,7 @@
 #ifndef SIMGRID_SIMIX_HPP
 #define SIMGRID_SIMIX_HPP
 
+#include <simgrid/s4u/Actor.hpp>
 #include <simgrid/simix.h>
 #include <xbt/promise.hpp>
 #include <xbt/signal.hpp>
@@ -46,7 +47,7 @@ template <class F> typename std::result_of_t<F()> simcall(F&& code, SimcallObser
 {
   // If we are in the maestro, we take the fast path and execute the
   // code directly without simcall marshalling/unmarshalling/dispatch:
-  if (SIMIX_is_maestro())
+  if (s4u::Actor::is_maestro())
     return std::forward<F>(code)();
 
   // If we are in the application, pass the code to the maestro which
@@ -76,7 +77,7 @@ template <class F> typename std::result_of_t<F()> simcall(F&& code, SimcallObser
  */
 template <class F> void simcall_blocking(F&& code, SimcallObserver* observer = nullptr)
 {
-  xbt_assert(not SIMIX_is_maestro(), "Cannot execute blocking call in kernel mode");
+  xbt_assert(not s4u::Actor::is_maestro(), "Cannot execute blocking call in kernel mode");
 
   // Pass the code to the maestro which executes it for us and reports the result. We use a std::future which
   // conveniently handles the success/failure value for us.

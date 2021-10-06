@@ -725,14 +725,14 @@ void sg_host_get_actor_list(const_sg_host_t host, xbt_dynar_t whereto)
 
 sg_host_t sg_host_self()
 {
-  return SIMIX_is_maestro() ? nullptr : simgrid::kernel::actor::ActorImpl::self()->get_host();
+  return simgrid::s4u::Actor::is_maestro() ? nullptr : simgrid::kernel::actor::ActorImpl::self()->get_host();
 }
 
 /* needs to be public and without simcall for exceptions and logging events */
 const char* sg_host_self_get_name()
 {
   const char* res = "";
-  if (not SIMIX_is_maestro()) {
+  if (not simgrid::s4u::Actor::is_maestro()) {
     const simgrid::s4u::Host* host = simgrid::kernel::actor::ActorImpl::self()->get_host();
     if (host != nullptr)
       res = host->get_cname();

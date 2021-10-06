@@ -170,6 +170,12 @@ bool Actor::is_daemon() const
   return this->pimpl_->is_daemon();
 }
 
+bool Actor::is_maestro()
+{
+  const auto* self = kernel::actor::ActorImpl::self();
+  return self == nullptr || kernel::EngineImpl::get_instance()->is_maestro(self);
+}
+
 const simgrid::xbt::string& Actor::get_name() const
 {
   return this->pimpl_->get_name();
@@ -285,7 +291,7 @@ namespace this_actor {
  */
 bool is_maestro()
 {
-  return SIMIX_is_maestro();
+  return Actor::is_maestro();
 }
 
 void sleep_for(double duration)

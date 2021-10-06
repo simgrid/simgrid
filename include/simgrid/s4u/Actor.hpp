@@ -152,6 +152,7 @@ public:
 
   /** Returns whether or not this actor has been daemonized or not **/
   bool is_daemon() const;
+  static bool is_maestro();
 
   /** Retrieves the name of that actor as a C++ string */
   const simgrid::xbt::string& get_name() const;

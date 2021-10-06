@@ -521,17 +521,16 @@ void create_maestro(const std::function<void()>& code)
 /* needs to be public and without simcall because it is called by exceptions and logging events */
 const char* SIMIX_process_self_get_name() // XBT_ATTRIB_DEPRECATED_v333
 {
-  return SIMIX_is_maestro() ? "maestro" : simgrid::kernel::actor::ActorImpl::self()->get_cname();
+  return simgrid::s4u::Actor::is_maestro() ? "maestro" : simgrid::kernel::actor::ActorImpl::self()->get_cname();
 }
 
 /** @brief Returns the process from PID. */
-smx_actor_t SIMIX_process_from_PID(aid_t pid) // XBT_ATTRIB_DEPRECATD_v331
+smx_actor_t SIMIX_process_from_PID(aid_t pid) // XBT_ATTRIB_DEPRECATED_v331
 {
   return simgrid::kernel::actor::ActorImpl::by_pid(pid);
 }
 
-int SIMIX_is_maestro()
+int SIMIX_is_maestro() // XBT_ATTRIB_DEPRECATED_v333
 {
-  const auto* self = simgrid::kernel::actor::ActorImpl::self();
-  return self == nullptr || simgrid::kernel::EngineImpl::get_instance()->is_maestro(self);
+  return simgrid::s4u::Actor::is_maestro();
 }

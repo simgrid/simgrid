@@ -32,7 +32,7 @@ XBT_ATTRIB_DEPRECATED_v333("Please use kernel::context::get_parallel_mode()") XB
     SIMIX_context_get_parallel_mode();
 XBT_ATTRIB_DEPRECATED_v333("Please use kernel::context::set_parallel_mode()") XBT_PUBLIC
     void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode);
-XBT_PUBLIC int SIMIX_is_maestro();
+XBT_ATTRIB_DEPRECATED_v333("Please use Actor::is_maestro()") XBT_PUBLIC int SIMIX_is_maestro();
 
 /********************************** Global ************************************/
 /* Set some code to execute in the maestro (must be used before the engine creation)
