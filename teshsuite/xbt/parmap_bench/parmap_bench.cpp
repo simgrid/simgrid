@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
   XBT_INFO("Parmap benchmark with %d workers (modes = %#x)...", nthreads, modes);
   XBT_INFO("%s", "");
 
-  SIMIX_context_set_nthreads(nthreads);
+  simgrid::kernel::context::set_nthreads(nthreads);
 
   XBT_INFO("Benchmark for parmap create+apply+destroy (small comp):");
   bench_all_modes(nthreads, timeout, modes, true, &fun_small_comp);

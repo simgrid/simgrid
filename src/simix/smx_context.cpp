@@ -48,58 +48,29 @@ static simgrid::config::Flag<std::string>
     context_factory_name("contexts/factory", (std::string("Possible values: ") + contexts_list()).c_str(),
                          context_factories.begin()->first);
 
-unsigned smx_context_stack_size;
-unsigned smx_context_guard_size;
-static int smx_parallel_contexts = 1;
-static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_DEFAULT;
-
-/** @brief Returns whether some parallel threads are used for the user contexts. */
-int SIMIX_context_is_parallel() {
-  return smx_parallel_contexts > 1;
+int SIMIX_context_is_parallel() // XBT_ATTRIB_DEPRECATED_v333
+{
+  return simgrid::kernel::context::is_parallel();
 }
 
-/**
- * @brief Returns the number of parallel threads used for the user contexts.
- * @return the number of threads (1 means no parallelism)
- */
-int SIMIX_context_get_nthreads() {
-  return smx_parallel_contexts;
+int SIMIX_context_get_nthreads() // XBT_ATTRIB_DEPRECATED_v333
+{
+  return simgrid::kernel::context::get_nthreads();
 }
 
-/**
- * @brief Sets the number of parallel threads to use
- * for the user contexts.
- *
- * This function should be called before initializing SIMIX.
- * A value of 1 means no parallelism (1 thread only).
- * If the value is greater than 1, the thread support must be enabled.
- *
- * @param nb_threads the number of threads to use
- */
-void SIMIX_context_set_nthreads(int nb_threads) {
-  if (nb_threads<=0) {
-    nb_threads = std::thread::hardware_concurrency();
-    XBT_INFO("Auto-setting contexts/nthreads to %d", nb_threads);
-  }
-  smx_parallel_contexts = nb_threads;
+void SIMIX_context_set_nthreads(int nb_threads) // XBT_ATTRIB_DEPRECATED_v333
+{
+  simgrid::kernel::context::set_nthreads(nb_threads);
 }
 
-/**
- * @brief Returns the synchronization mode used when processes are run in
- * parallel.
- * @return how threads are synchronized if processes are run in parallel
- */
-e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode() {
-  return smx_parallel_synchronization_mode;
+e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode() // XBT_ATTRIB_DEPRECATED_v333
+{
+  return simgrid::kernel::context::get_parallel_mode();
 }
 
-/**
- * @brief Sets the synchronization mode to use when processes are run in
- * parallel.
- * @param mode how to synchronize threads if processes are run in parallel
- */
-void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode) {
-  smx_parallel_synchronization_mode = mode;
+void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode) // XBT_ATTRIB_DEPRECATED_v333
+{
+  simgrid::kernel::context::set_parallel_mode(mode);
 }
 
 namespace simgrid {

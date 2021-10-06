@@ -6,7 +6,9 @@
 #ifndef SIMGRID_KERNEL_CONTEXT_CONTEXT_HPP
 #define SIMGRID_KERNEL_CONTEXT_CONTEXT_HPP
 
-#include "simgrid/forward.h"
+#include <simgrid/forward.h>
+#include <xbt/parmap.h>
+
 #include "src/kernel/activity/ActivityImpl.hpp"
 
 #include <csignal>
@@ -15,6 +17,8 @@
 namespace simgrid {
 namespace kernel {
 namespace context {
+extern unsigned stack_size;
+extern unsigned guard_size;
 
 class XBT_PUBLIC ContextFactory {
 public:
@@ -103,6 +107,11 @@ XBT_PRIVATE ContextFactory* sysv_factory();
 XBT_PRIVATE ContextFactory* raw_factory();
 XBT_PRIVATE ContextFactory* boost_factory();
 
+XBT_PUBLIC int is_parallel();
+XBT_PUBLIC int get_nthreads();
+XBT_PUBLIC void set_nthreads(int nb_threads);
+XBT_PUBLIC void set_parallel_mode(e_xbt_parmap_mode_t mode);
+XBT_PUBLIC e_xbt_parmap_mode_t get_parallel_mode();
 } // namespace context
 } // namespace kernel
 } // namespace simgrid

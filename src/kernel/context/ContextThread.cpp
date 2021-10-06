@@ -26,21 +26,21 @@ namespace context {
 
 ThreadContextFactory::ThreadContextFactory() : ContextFactory()
 {
-  if (smx_context_stack_size != 8 * 1024 * 1024)
+  if (stack_size != 8 * 1024 * 1024)
     XBT_INFO("Stack size modifications are ignored by thread factory.");
-  if (SIMIX_context_is_parallel())
+  if (is_parallel())
     ParallelThreadContext::initialize();
 }
 
 ThreadContextFactory::~ThreadContextFactory()
 {
-  if (SIMIX_context_is_parallel())
+  if (is_parallel())
     ParallelThreadContext::finalize();
 }
 
 ThreadContext* ThreadContextFactory::create_context(std::function<void()>&& code, actor::ActorImpl* actor, bool maestro)
 {
-  if (SIMIX_context_is_parallel())
+  if (is_parallel())
     return this->new_context<ParallelThreadContext>(std::move(code), actor, maestro);
   else
     return this->new_context<SerialThreadContext>(std::move(code), actor, maestro);
@@ -48,7 +48,7 @@ ThreadContext* ThreadContextFactory::create_context(std::function<void()>&& code
 
 void ThreadContextFactory::run_all()
 {
-  if (SIMIX_context_is_parallel()) {
+  if (is_parallel()) {
     // Parallel execution
     ParallelThreadContext::run_all();
   } else {
@@ -192,7 +192,7 @@ xbt::OsSemaphore* ParallelThreadContext::thread_sem_ = nullptr;
 
 void ParallelThreadContext::initialize()
 {
-  thread_sem_ = new xbt::OsSemaphore(SIMIX_context_get_nthreads());
+  thread_sem_ = new xbt::OsSemaphore(get_nthreads());
 }
 
 void ParallelThreadContext::finalize()

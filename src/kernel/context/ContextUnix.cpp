@@ -65,7 +65,7 @@ UContext::UContext(std::function<void()>&& code, actor::ActorImpl* actor, Swappe
 
 #if SIMGRID_HAVE_MC
     if (MC_is_active()) {
-      MC_register_stack_area(get_stack(), &(this->uc_), smx_context_stack_size);
+      MC_register_stack_area(get_stack(), &(this->uc_), stack_size);
     }
 #endif
   }

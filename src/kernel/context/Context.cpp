@@ -19,6 +19,61 @@ namespace kernel {
 namespace context {
 
 ContextFactoryInitializer factory_initializer = nullptr;
+static e_xbt_parmap_mode_t parallel_synchronization_mode = XBT_PARMAP_DEFAULT;
+static int parallel_contexts                             = 1;
+unsigned stack_size;
+unsigned guard_size;
+
+/** @brief Returns whether some parallel threads are used for the user contexts. */
+int is_parallel()
+{
+  return parallel_contexts > 1;
+}
+
+/**
+ * @brief Returns the number of parallel threads used for the user contexts.
+ * @return the number of threads (1 means no parallelism)
+ */
+int get_nthreads()
+{
+  return parallel_contexts;
+}
+
+/**
+ * @brief Sets the number of parallel threads to use  for the user contexts.
+ *
+ * This function should be called before initializing SIMIX.
+ * A value of 1 means no parallelism (1 thread only).
+ * If the value is greater than 1, the thread support must be enabled.
+ *
+ * @param nb_threads the number of threads to use
+ */
+void set_nthreads(int nb_threads)
+{
+  if (nb_threads <= 0) {
+    nb_threads = std::thread::hardware_concurrency();
+    XBT_INFO("Auto-setting contexts/nthreads to %d", nb_threads);
+  }
+  parallel_contexts = nb_threads;
+}
+
+/**
+ * @brief Sets the synchronization mode to use when actors are run in parallel.
+ * @param mode how to synchronize threads if actors are run in parallel
+ */
+void set_parallel_mode(e_xbt_parmap_mode_t mode)
+{
+  parallel_synchronization_mode = mode;
+}
+
+/**
+ * @brief Returns the synchronization mode used when actors are run in parallel.
+ * @return how threads are synchronized if actors are run in parallel
+ */
+e_xbt_parmap_mode_t get_parallel_mode()
+{
+  return parallel_synchronization_mode;
+}
 
 ContextFactory::~ContextFactory() = default;
 

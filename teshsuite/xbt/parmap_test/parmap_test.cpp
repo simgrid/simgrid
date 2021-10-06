@@ -88,7 +88,7 @@ int main(int argc, char** argv)
   int status = 0;
   xbt_log_control_set("parmap_test.fmt:[%c/%p]%e%m%n");
   simgrid::s4u::Engine e(&argc, argv);
-  SIMIX_context_set_nthreads(16); // dummy value > 1
+  simgrid::kernel::context::set_nthreads(16); // dummy value > 1
 
   XBT_INFO("Basic testing posix");
   status += test_parmap_basic(XBT_PARMAP_POSIX);

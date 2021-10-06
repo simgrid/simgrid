@@ -89,7 +89,7 @@ static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
             "If you think you've found a bug in SimGrid, please report it along with a\n"
             "Minimal Working Example (MWE) reproducing your problem and a full backtrace\n"
             "of the fault captured with gdb or valgrind.\n",
-            smx_context_stack_size / 1024);
+            simgrid::kernel::context::stack_size / 1024);
   } else if (siginfo->si_signo == SIGSEGV) {
     fprintf(stderr, "Segmentation fault.\n");
 #if HAVE_SMPI

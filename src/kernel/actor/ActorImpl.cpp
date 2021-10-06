@@ -60,7 +60,7 @@ ActorImpl::ActorImpl(xbt::string name, s4u::Host* host) : host_(host), name_(std
 {
   pid_            = maxpid++;
   simcall_.issuer_ = this;
-  stacksize_      = smx_context_stack_size;
+  stacksize_       = context::stack_size;
 }
 
 ActorImpl::~ActorImpl()

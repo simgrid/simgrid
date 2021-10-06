@@ -74,12 +74,12 @@ SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, 
     : Context(std::move(code), actor), factory_(*factory)
 {
   // Save maestro (=first created context) in preparation for run_all
-  if (not SIMIX_context_is_parallel() && factory_.maestro_context_ == nullptr)
+  if (not is_parallel() && factory_.maestro_context_ == nullptr)
     factory_.maestro_context_ = this;
 
   if (has_code()) {
     xbt_assert((actor->get_stacksize() & 0xf) == 0, "Actor stack size should be multiple of 16");
-    if (smx_context_guard_size > 0 && not MC_is_active()) {
+    if (guard_size > 0 && not MC_is_active()) {
 #if PTH_STACKGROWTH != -1
       xbt_die(
           "Stack overflow protection is known to be broken on your system: you stacks grow upwards (or detection is "
@@ -89,7 +89,7 @@ SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, 
        * Protected pages need to be put after the stack when PTH_STACKGROWTH == 1. */
 #endif
 
-      size_t size = actor->get_stacksize() + smx_context_guard_size;
+      size_t size = actor->get_stacksize() + guard_size;
 #if SIMGRID_HAVE_MC
       /* Cannot use posix_memalign when SIMGRID_HAVE_MC. Align stack by hand, and save the
        * pointer returned by xbt_malloc0. */
@@ -107,7 +107,7 @@ SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, 
 #ifndef _WIN32
       /* This is fatal. We are going to fail at some point when we try reusing this. */
       xbt_assert(
-          mprotect(this->stack_, smx_context_guard_size, PROT_NONE) != -1,
+          mprotect(this->stack_, guard_size, PROT_NONE) != -1,
           "Failed to protect stack: %s.\n"
           "If you are running a lot of actors, you may be exceeding the amount of mappings allowed per process.\n"
           "On Linux systems, change this value with sudo sysctl -w vm.max_map_count=newvalue (default value: 65536)\n"
@@ -115,7 +115,7 @@ SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, 
           "for more information.",
           strerror(errno));
 #endif
-      this->stack_ = this->stack_ + smx_context_guard_size;
+      this->stack_ = this->stack_ + guard_size;
     } else {
       this->stack_ = static_cast<unsigned char*>(xbt_malloc0(actor->get_stacksize()));
     }
@@ -152,9 +152,9 @@ SwappedContext::~SwappedContext()
 #endif
 
 #ifndef _WIN32
-  if (smx_context_guard_size > 0 && not MC_is_active()) {
-    stack_ = stack_ - smx_context_guard_size;
-    if (mprotect(stack_, smx_context_guard_size, PROT_READ | PROT_WRITE) == -1) {
+  if (guard_size > 0 && not MC_is_active()) {
+    stack_ = stack_ - guard_size;
+    if (mprotect(stack_, guard_size, PROT_READ | PROT_WRITE) == -1) {
       XBT_WARN("Failed to remove page protection: %s", strerror(errno));
       /* try to pursue anyway */
     }
@@ -211,11 +211,10 @@ void SwappedContextFactory::run_all()
    * stuff It is much easier to understand what happens if you see the working threads as bodies that swap their soul
    * for the ones of the simulated processes that must run.
    */
-  if (SIMIX_context_is_parallel()) {
+  if (is_parallel()) {
     // We lazily create the parmap so that all options are actually processed when doing so.
     if (parmap_ == nullptr)
-      parmap_ = std::make_unique<simgrid::xbt::Parmap<smx_actor_t>>(SIMIX_context_get_nthreads(),
-                                                                    SIMIX_context_get_parallel_mode());
+      parmap_ = std::make_unique<simgrid::xbt::Parmap<smx_actor_t>>(get_nthreads(), get_parallel_mode());
 
     // Usually, Parmap::apply() executes the provided function on all elements of the array.
     // Here, the executed function does not return the control to the parmap before all the array is processed:
@@ -250,7 +249,7 @@ void SwappedContextFactory::run_all()
 void SwappedContext::resume()
 {
   auto* old = static_cast<SwappedContext*>(self());
-  if (SIMIX_context_is_parallel()) {
+  if (is_parallel()) {
     // Save my current soul (either maestro, or one of the minions) in a thread-specific area
     worker_context_ = old;
   }
@@ -272,7 +271,7 @@ void SwappedContext::resume()
 void SwappedContext::suspend()
 {
   SwappedContext* next_context;
-  if (SIMIX_context_is_parallel()) {
+  if (is_parallel()) {
     // Get some more work to directly swap into the next executable actor instead of yielding back to the parmap
     boost::optional<smx_actor_t> next_work = factory_.parmap_->next();
     if (next_work) {

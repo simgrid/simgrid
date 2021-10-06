@@ -18,20 +18,20 @@
 #endif
 
 /******************************* Networking ***********************************/
-extern unsigned smx_context_stack_size;
-extern unsigned smx_context_guard_size;
-
 SG_BEGIN_DECL
 
 XBT_ATTRIB_DEPRECATED_v331("Please use sg_actor_by_pid() instead.") XBT_PUBLIC smx_actor_t
     SIMIX_process_from_PID(aid_t pid);
 
 /* parallelism */
-XBT_PUBLIC int SIMIX_context_is_parallel();
-XBT_PUBLIC int SIMIX_context_get_nthreads();
-XBT_PUBLIC void SIMIX_context_set_nthreads(int nb_threads);
-XBT_PUBLIC e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode();
-XBT_PUBLIC void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode);
+XBT_ATTRIB_DEPRECATED_v333("Please use kernel::context::is_parallel()") XBT_PUBLIC int SIMIX_context_is_parallel();
+XBT_ATTRIB_DEPRECATED_v333("Please use kernel::context::get_nthreads()") XBT_PUBLIC int SIMIX_context_get_nthreads();
+XBT_ATTRIB_DEPRECATED_v333("Please use kernel::context::set_nthreads()") XBT_PUBLIC
+    void SIMIX_context_set_nthreads(int nb_threads);
+XBT_ATTRIB_DEPRECATED_v333("Please use kernel::context::get_parallel_mode()") XBT_PUBLIC e_xbt_parmap_mode_t
+    SIMIX_context_get_parallel_mode();
+XBT_ATTRIB_DEPRECATED_v333("Please use kernel::context::set_parallel_mode()") XBT_PUBLIC
+    void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode);
 XBT_PUBLIC int SIMIX_is_maestro();
 
 /********************************** Global ************************************/

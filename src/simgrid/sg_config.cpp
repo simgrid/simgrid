@@ -12,6 +12,7 @@
 #include "simgrid/sg_config.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/internal_config.h"
+#include "src/kernel/context/Context.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
@@ -201,11 +202,11 @@ static void _sg_cfg_cb__network_model(const std::string& value)
 static void _sg_cfg_cb_contexts_parallel_mode(const std::string& mode_name)
 {
   if (mode_name == "posix") {
-    SIMIX_context_set_parallel_mode(XBT_PARMAP_POSIX);
+    simgrid::kernel::context::set_parallel_mode(XBT_PARMAP_POSIX);
   } else if (mode_name == "futex") {
-    SIMIX_context_set_parallel_mode(XBT_PARMAP_FUTEX);
+    simgrid::kernel::context::set_parallel_mode(XBT_PARMAP_FUTEX);
   } else if (mode_name == "busy_wait") {
-    SIMIX_context_set_parallel_mode(XBT_PARMAP_BUSY_WAIT);
+    simgrid::kernel::context::set_parallel_mode(XBT_PARMAP_BUSY_WAIT);
   } else {
     xbt_die("Command line setting of the parallel synchronization mode should "
             "be one of \"posix\", \"futex\" or \"busy_wait\"");
@@ -308,7 +309,7 @@ void sg_config_init(int *argc, char **argv)
                                       "no");
 
   simgrid::config::declare_flag<int>("contexts/stack-size", "Stack size of contexts in KiB (not with threads)",
-                                     8 * 1024, [](int value) { smx_context_stack_size = value * 1024; });
+                                     8 * 1024, [](int value) { simgrid::kernel::context::stack_size = value * 1024; });
 
   /* guard size for contexts stacks in memory pages */
 #if defined(_WIN32) || (PTH_STACKGROWTH != -1)
@@ -318,9 +319,9 @@ void sg_config_init(int *argc, char **argv)
 #endif
   simgrid::config::declare_flag<int>("contexts/guard-size", "Guard size for contexts stacks in memory pages",
                                      default_guard_size,
-                                     [](int value) { smx_context_guard_size = value * xbt_pagesize; });
+                                     [](int value) { simgrid::kernel::context::guard_size = value * xbt_pagesize; });
   simgrid::config::declare_flag<int>("contexts/nthreads", "Number of parallel threads used to execute user contexts", 1,
-                                     &SIMIX_context_set_nthreads);
+                                     &simgrid::kernel::context::set_nthreads);
 
   /* synchronization mode for parallel user contexts */
 #if HAVE_FUTEX_H
@@ -360,7 +361,7 @@ void sg_config_init(int *argc, char **argv)
 
   sg_config_cmd_line(argc, argv);
 
-  xbt_mallocator_initialization_is_done(SIMIX_context_is_parallel());
+  xbt_mallocator_initialization_is_done(simgrid::kernel::context::is_parallel());
 }
 
 void sg_config_finalize()
