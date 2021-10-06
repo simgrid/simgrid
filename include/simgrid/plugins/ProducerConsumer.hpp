@@ -6,10 +6,10 @@
 #ifndef SIMGRID_PLUGIN_PRODUCERCONSUMER_HPP
 #define SIMGRID_PLUGIN_PRODUCERCONSUMER_HPP
 
+#include <simgrid/s4u/Comm.hpp>
 #include <simgrid/s4u/ConditionVariable.hpp>
 #include <simgrid/s4u/Mailbox.hpp>
 #include <simgrid/s4u/Mutex.hpp>
-#include <simgrid/simix.h>
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 
@@ -147,7 +147,7 @@ public:
       can_put_->wait(lock);
     if (tmode_ == TransferMode::MAILBOX) {
       comm = mbox_->put_init(data, simulated_size_in_bytes)
-                 ->set_copy_data_callback(SIMIX_comm_copy_pointer_callback)
+                 ->set_copy_data_callback(s4u::Comm::copy_pointer_callback)
                  ->start();
     } else
       queue_.push(data);
@@ -185,7 +185,7 @@ public:
     if (tmode_ == TransferMode::MAILBOX)
       comm = mbox_->get_init()
                  ->set_dst_data(reinterpret_cast<void**>(data), sizeof(void*))
-                 ->set_copy_data_callback(SIMIX_comm_copy_pointer_callback)
+                 ->set_copy_data_callback(s4u::Comm::copy_pointer_callback)
                  ->start();
     else {
       *data = queue_.front();

@@ -211,28 +211,23 @@ void SIMIX_comm_set_copy_data_callback(void (*callback)(simgrid::kernel::activit
   simgrid::kernel::activity::CommImpl::set_copy_data_callback(callback);
 }
 
+// XBT_ATTRIB_DEPRECATED_v333
 void SIMIX_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
 {
-  XBT_DEBUG("Copy the data over");
-  memcpy(comm->dst_buff_, buff, buff_size);
-  if (comm->detached()) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the
-                          // original buffer available to the application ASAP
-    xbt_free(buff);
-    comm->src_buff_ = nullptr;
-  }
+  simgrid::s4u::Comm::copy_buffer_callback(comm, buff, buff_size);
 }
 
+// XBT_ATTRIB_DEPRECATED_v333
 void SIMIX_comm_copy_pointer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
 {
-  xbt_assert((buff_size == sizeof(void*)), "Cannot copy %zu bytes: must be sizeof(void*)", buff_size);
-  *(void**)(comm->dst_buff_) = buff;
+  simgrid::s4u::Comm::copy_pointer_callback(comm, buff, buff_size);
 }
 
 namespace simgrid {
 namespace kernel {
 namespace activity {
 
-void (*CommImpl::copy_data_callback_)(CommImpl*, void*, size_t) = &SIMIX_comm_copy_pointer_callback;
+void (*CommImpl::copy_data_callback_)(CommImpl*, void*, size_t) = &s4u::Comm::copy_pointer_callback;
 
 void CommImpl::set_copy_data_callback(void (*callback)(CommImpl*, void*, size_t))
 {

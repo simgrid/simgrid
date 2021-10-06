@@ -170,6 +170,8 @@ public:
   bool is_assigned() const override { return (to_ != nullptr && from_ != nullptr) || (mailbox_ != nullptr); }
 
   CommPtr set_copy_data_callback(void (*callback)(kernel::activity::CommImpl*, void*, size_t));
+  static void copy_buffer_callback(kernel::activity::CommImpl*, void*, size_t);
+  static void copy_pointer_callback(kernel::activity::CommImpl*, void*, size_t);
 };
 } // namespace s4u
 } // namespace simgrid

@@ -450,6 +450,7 @@ Engine* Engine::set_default_comm_data_copy_callback(void (*callback)(kernel::act
   kernel::activity::CommImpl::set_copy_data_callback(callback);
   return this;
 }
+
 } // namespace s4u
 } // namespace simgrid
 
