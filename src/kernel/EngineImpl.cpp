@@ -57,6 +57,37 @@ xbt_dynar_t get_dead_actors_addr()
 #endif
 }
 
+constexpr std::initializer_list<std::pair<const char*, context::ContextFactoryInitializer>> context_factories = {
+#if HAVE_RAW_CONTEXTS
+    {"raw", &context::raw_factory},
+#endif
+#if HAVE_UCONTEXT_CONTEXTS
+    {"ucontext", &context::sysv_factory},
+#endif
+#if HAVE_BOOST_CONTEXTS
+    {"boost", &context::boost_factory},
+#endif
+    {"thread", &context::thread_factory},
+};
+
+static_assert(context_factories.size() > 0, "No context factories are enabled for this build");
+
+// Create the list of possible contexts:
+static inline std::string contexts_list()
+{
+  std::string res;
+  std::string sep = "";
+  for (auto const& factory : context_factories) {
+    res += sep + factory.first;
+    sep = ", ";
+  }
+  return res;
+}
+
+static config::Flag<std::string> context_factory_name("contexts/factory",
+                                                      (std::string("Possible values: ") + contexts_list()).c_str(),
+                                                      context_factories.begin()->first);
+
 } // namespace kernel
 } // namespace simgrid
 
@@ -209,6 +240,62 @@ void EngineImpl::initialize(int* argc, char** argv)
 
   if (config::get_value<bool>("debug/clean-atexit"))
     atexit(shutdown);
+}
+
+void EngineImpl::context_mod_init() const
+{
+  xbt_assert(not instance_->has_context_factory());
+
+#if HAVE_SMPI && (defined(__APPLE__) || defined(__NetBSD__))
+  smpi_init_options_internal(false);
+  std::string priv = config::get_value<std::string>("smpi/privatization");
+  if (context_factory_name == "thread" && (priv == "dlopen" || priv == "yes" || priv == "default" || priv == "1")) {
+    XBT_WARN("dlopen+thread broken on Apple and BSD. Switching to raw contexts.");
+    context_factory_name = "raw";
+  }
+#endif
+
+#if HAVE_SMPI && defined(__FreeBSD__)
+  smpi_init_options_internal(false);
+  if (context_factory_name == "thread" && config::get_value<std::string>("smpi/privatization") != "no") {
+    XBT_WARN("mmap broken on FreeBSD, but dlopen+thread broken too. Switching to dlopen+raw contexts.");
+    context_factory_name = "raw";
+  }
+#endif
+
+  /* select the context factory to use to create the contexts */
+  if (context::factory_initializer != nullptr) { // Give Java a chance to hijack the factory mechanism
+    instance_->set_context_factory(context::factory_initializer());
+    return;
+  }
+  /* use the factory specified by --cfg=contexts/factory:value */
+  for (auto const& factory : context_factories)
+    if (context_factory_name == factory.first) {
+      instance_->set_context_factory(factory.second());
+      break;
+    }
+
+  if (not instance_->has_context_factory()) {
+    XBT_ERROR("Invalid context factory specified. Valid factories on this machine:");
+#if HAVE_RAW_CONTEXTS
+    XBT_ERROR("  raw: high performance context factory implemented specifically for SimGrid");
+#else
+    XBT_ERROR("  (raw contexts were disabled at compilation time on this machine -- check configure logs for details)");
+#endif
+#if HAVE_UCONTEXT_CONTEXTS
+    XBT_ERROR("  ucontext: classical system V contexts (implemented with makecontext, swapcontext and friends)");
+#else
+    XBT_ERROR("  (ucontext was disabled at compilation time on this machine -- check configure logs for details)");
+#endif
+#if HAVE_BOOST_CONTEXTS
+    XBT_ERROR("  boost: this uses the boost libraries context implementation");
+#else
+    XBT_ERROR("  (boost was disabled at compilation time on this machine -- check configure logs for details. Did you "
+              "install the libboost-context-dev package?)");
+#endif
+    XBT_ERROR("  thread: slow portability layer using pthreads as provided by gcc");
+    xbt_die("Please use a valid factory.");
+  }
 }
 
 void EngineImpl::shutdown()

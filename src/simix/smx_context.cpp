@@ -5,48 +5,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/internal_config.h"
-#include "src/kernel/EngineImpl.hpp"
-#include "src/smpi/include/private.hpp"
-#include "xbt/config.hpp"
-
-#include <initializer_list>
-#include <thread>
+#include "src/kernel/context/Context.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix, "Context switching mechanism");
-
-constexpr std::initializer_list<std::pair<const char*, simgrid::kernel::context::ContextFactoryInitializer>>
-    context_factories = {
-#if HAVE_RAW_CONTEXTS
-        {"raw", &simgrid::kernel::context::raw_factory},
-#endif
-#if HAVE_UCONTEXT_CONTEXTS
-        {"ucontext", &simgrid::kernel::context::sysv_factory},
-#endif
-#if HAVE_BOOST_CONTEXTS
-        {"boost", &simgrid::kernel::context::boost_factory},
-#endif
-        {"thread", &simgrid::kernel::context::thread_factory},
-};
-
-static_assert(context_factories.size() > 0, "No context factories are enabled for this build");
-
-// Create the list of possible contexts:
-static inline
-std::string contexts_list()
-{
-  std::string res;
-  std::string sep = "";
-  for (auto const& factory : context_factories) {
-    res += sep + factory.first;
-    sep = ", ";
-  }
-  return res;
-}
-
-static simgrid::config::Flag<std::string>
-    context_factory_name("contexts/factory", (std::string("Possible values: ") + contexts_list()).c_str(),
-                         context_factories.begin()->first);
 
 int SIMIX_context_is_parallel() // XBT_ATTRIB_DEPRECATED_v333
 {
@@ -72,64 +33,3 @@ void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode) // XBT_ATTRIB_DEP
 {
   simgrid::kernel::context::set_parallel_mode(mode);
 }
-
-namespace simgrid {
-namespace kernel {
-
-void EngineImpl::context_mod_init() const
-{
-  xbt_assert(not instance_->has_context_factory());
-
-#if HAVE_SMPI && (defined(__APPLE__) || defined(__NetBSD__))
-  smpi_init_options_internal(false);
-  std::string priv = config::get_value<std::string>("smpi/privatization");
-  if (context_factory_name == "thread" && (priv == "dlopen" || priv == "yes" || priv == "default" || priv == "1")) {
-    XBT_WARN("dlopen+thread broken on Apple and BSD. Switching to raw contexts.");
-    context_factory_name = "raw";
-  }
-#endif
-
-#if HAVE_SMPI && defined(__FreeBSD__)
-  smpi_init_options_internal(false);
-  if (context_factory_name == "thread" && config::get_value<std::string>("smpi/privatization") != "no") {
-    XBT_WARN("mmap broken on FreeBSD, but dlopen+thread broken too. Switching to dlopen+raw contexts.");
-    context_factory_name = "raw";
-  }
-#endif
-
-  /* select the context factory to use to create the contexts */
-  if (context::factory_initializer != nullptr) { // Give Java a chance to hijack the factory mechanism
-    instance_->set_context_factory(context::factory_initializer());
-    return;
-  }
-  /* use the factory specified by --cfg=contexts/factory:value */
-  for (auto const& factory : context_factories)
-    if (context_factory_name == factory.first) {
-      instance_->set_context_factory(factory.second());
-      break;
-    }
-
-  if (not instance_->has_context_factory()) {
-    XBT_ERROR("Invalid context factory specified. Valid factories on this machine:");
-#if HAVE_RAW_CONTEXTS
-    XBT_ERROR("  raw: high performance context factory implemented specifically for SimGrid");
-#else
-    XBT_ERROR("  (raw contexts were disabled at compilation time on this machine -- check configure logs for details)");
-#endif
-#if HAVE_UCONTEXT_CONTEXTS
-    XBT_ERROR("  ucontext: classical system V contexts (implemented with makecontext, swapcontext and friends)");
-#else
-    XBT_ERROR("  (ucontext was disabled at compilation time on this machine -- check configure logs for details)");
-#endif
-#if HAVE_BOOST_CONTEXTS
-    XBT_ERROR("  boost: this uses the boost libraries context implementation");
-#else
-    XBT_ERROR("  (boost was disabled at compilation time on this machine -- check configure logs for details. Did you "
-              "install the libboost-context-dev package?)");
-#endif
-    XBT_ERROR("  thread: slow portability layer using pthreads as provided by gcc");
-    xbt_die("Please use a valid factory.");
-  }
-}
-} // namespace kernel
-} // namespace simgrid
