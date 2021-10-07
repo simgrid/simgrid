@@ -190,9 +190,6 @@ class FutureEvtSet;
 class Profile;
 } // namespace profile
 } // namespace kernel
-namespace simix {
-  class Host;
-}
 namespace surf {
   class HostImpl;
   class HostModel;
