@@ -50,6 +50,7 @@ Please apply the following checklist before releasing.
 - Document the tag on framagit and ghub
   - Upload the files simgrid-3.XX.tar.gz, simgrid-3_XX.jar and simgrid-doc-3_XX.zip
   - Add a link to the version of the ChangeLog that comes with this tag.
+    https://framagit.org/simgrid/simgrid/-/blob/v3.29/ChangeLog
 - Update the website
   - emacs org/org-templates/level-0.org to change the release version, the tgz link and the jar link.
   - jed .gitlab-ci.yml
@@ -84,12 +85,9 @@ Please apply the following checklist before releasing.
   - edit debian/control: s/simgrid3.XX/simgrid3.XY/ 
 - Update the simgrid/package.py for spack: https://gitlab.inria.fr/solverstack/spack-repo
 - Update the Docker images (after pushing to the git)
-  - cd tools/docker && make stable.
-    The argument passing is somehow failing, so you'll need to copy/paste + execute manually this line:
-      docker build -f Dockerfile.stable --build-arg DLURL=?????  -t simgrid/stable:latest ...........
-  - Upload the stable docker image once built
-  - Once the new image is uploaded, trigger a rebuild of the images tuto-{s4u,smpi} on https://hub.docker.com
-    They use the dockerfiles in simgrid:tools/docker, and are built upon the simgrid/stable image
+  - cd tools/docker && make stable && make tuto-s4u tuto-smpi tuto-mc
+    The tuto images are built upon the simgrid/stable image
+  - Upload these docker images once built
   - Once the new images are built, trigger a rebuild of the simgrid-template-{s4u,smpi} repositories on framagit
 
 @subsection inside_release_c_postrelease Post-release cleanups
