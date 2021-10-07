@@ -20,6 +20,9 @@ Please apply the following checklist before releasing.
   - The most notable changes of the version are documented
   - The release date is indicated right below the version name
   - The release dub name matches the one given in ChangeLog file
+- Release notes in the documentation
+  - The content of the future mail is part of the documentation, since
+    we won't send mails once gforge is definitly turned off.
 - Tests
   - The "make distcheck" target works (tested by jenkins)
   - All tests pass on everything on ci + AppVeyor
