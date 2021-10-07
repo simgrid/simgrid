@@ -1,5 +1,6 @@
 # Base image: use a named release to avoid names clashes when calling apt upgrade on the resulting image
-FROM debian:11 #  Bullseye, release 2021-08-14
+# debian:11 is Bullseye, release 2021-08-14
+FROM debian:11
 
 ARG DLURL
 
