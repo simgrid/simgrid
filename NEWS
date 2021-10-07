@@ -8,7 +8,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \ / _ \
 The "Ask a stupid question" release
 
   * Python bindings for the platform creation API
-  * Introduce non-linear ressource sharing, allowing decay models
+  * Introduce non-linear resource sharing, allowing decay models
   * New documentation section on realistic I/O modeling
   * (+ many bug fixes and internal refactoring)
 
