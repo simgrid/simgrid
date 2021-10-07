@@ -204,9 +204,9 @@ double CpuTiProfile::solve_simple(double a, double amount) const
  */
 double CpuTiTmgr::get_power_scale(double a) const
 {
-  double reduced_a                = a - floor(a / last_time_) * last_time_;
-  long point                      = CpuTiProfile::binary_search(profile_->time_points_, reduced_a);
-  kernel::profile::DatedValue val = speed_profile_->get_event_list().at(point);
+  double reduced_a        = a - floor(a / last_time_) * last_time_;
+  long point              = CpuTiProfile::binary_search(profile_->get_time_points(), reduced_a);
+  profile::DatedValue val = speed_profile_->get_event_list().at(point);
   return val.value_;
 }
 

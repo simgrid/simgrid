@@ -167,7 +167,7 @@ CpuAction* CpuCas01::sleep(double duration)
   if (duration > 0)
     duration = std::max(duration, sg_surf_precision);
 
-  XBT_IN("(%s,%g)", get_cname(), duration);
+  XBT_IN("(%s, %g)", get_cname(), duration);
   auto* action = new CpuCas01Action(get_model(), 1.0, not is_on(), speed_.scale * speed_.peak, get_constraint(), 1);
 
   // FIXME: sleep variables should not consume 1.0 in System::expand()
@@ -206,11 +206,6 @@ CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double sp
   if (model->is_update_lazy())
     set_last_update();
   model->get_maxmin_system()->expand(constraint, get_variable(), 1.0);
-}
-
-int CpuCas01Action::requested_core() const
-{
-  return requested_core_;
 }
 
 } // namespace resource

@@ -25,15 +25,18 @@ class XBT_PRIVATE CpuTi;
  * Trace *
  *********/
 class CpuTiProfile {
+  std::vector<double> time_points_;
+  std::vector<double> integral_;
+
 public:
   explicit CpuTiProfile(const profile::Profile* profile);
+
+  const std::vector<double>& get_time_points() const { return time_points_; }
 
   double integrate_simple(double a, double b) const;
   double integrate_simple_point(double a) const;
   double solve_simple(double a, double amount) const;
 
-  std::vector<double> time_points_;
-  std::vector<double> integral_;
   static long binary_search(const std::vector<double>& array, double a);
 };
 
@@ -42,6 +45,15 @@ class CpuTiTmgr {
     FIXED,  /*< Trace fixed, no availability file */
     DYNAMIC /*< Dynamic, have an availability file */
   };
+  Type type_ = Type::FIXED;
+  double value_; /*< Percentage of cpu speed available. Value fixed between 0 and 1 */
+
+  /* Dynamic */
+  double last_time_ = 0.0; /*< Integral interval last point (discrete time) */
+  double total_     = 0.0; /*< Integral total between 0 and last point */
+
+  std::unique_ptr<CpuTiProfile> profile_ = nullptr;
+  profile::Profile* speed_profile_       = nullptr;
 
 public:
   explicit CpuTiTmgr(double value) : value_(value){};
@@ -52,17 +64,6 @@ public:
   double integrate(double a, double b) const;
   double solve(double a, double amount) const;
   double get_power_scale(double a) const;
-
-private:
-  Type type_ = Type::FIXED;
-  double value_;                 /*< Percentage of cpu speed available. Value fixed between 0 and 1 */
-
-  /* Dynamic */
-  double last_time_ = 0.0;             /*< Integral interval last point (discrete time) */
-  double total_     = 0.0;             /*< Integral total between 0 and last point */
-
-  std::unique_ptr<CpuTiProfile> profile_ = nullptr;
-  profile::Profile* speed_profile_       = nullptr;
 };
 
 /**********

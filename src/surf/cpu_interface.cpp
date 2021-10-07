@@ -132,16 +132,6 @@ void CpuImpl::set_sharing_policy(s4u::Host::SharingPolicy policy, const s4u::Non
   apply_sharing_policy_cfg();
 }
 
-s4u::Host::SharingPolicy CpuImpl::get_sharing_policy() const
-{
-  return sharing_policy_;
-}
-
-int CpuImpl::get_core_count()
-{
-  return core_count_;
-}
-
 CpuImpl* CpuImpl::set_speed_profile(kernel::profile::Profile* profile)
 {
   if (profile) {

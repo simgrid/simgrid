@@ -74,10 +74,10 @@ public:
   CpuImpl& operator=(const CpuImpl&) = delete;
 
   /** @brief Public interface */
-  s4u::Host* get_iface() { return piface_; }
+  s4u::Host* get_iface() const { return piface_; }
 
   CpuImpl* set_core_count(int core_count);
-  virtual int get_core_count();
+  virtual int get_core_count() const { return core_count_; }
 
   void seal() override;
 
@@ -117,7 +117,7 @@ public:
   CpuImpl* set_pstate_speed(const std::vector<double>& speed_per_state);
 
   void set_sharing_policy(s4u::Host::SharingPolicy policy, const s4u::NonLinearResourceCb& cb);
-  s4u::Host::SharingPolicy get_sharing_policy() const;
+  s4u::Host::SharingPolicy get_sharing_policy() const { return sharing_policy_; }
 
   /**
    * @brief Sets factor callback

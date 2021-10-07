@@ -39,6 +39,8 @@ public:
  ************/
 
 class CpuCas01 : public CpuImpl {
+  std::function<s4u::Host::CpuFactorCb> factor_cb_ = {};
+
 public:
   using CpuImpl::CpuImpl;
   CpuCas01(const CpuCas01&) = delete;
@@ -53,23 +55,19 @@ public:
 
 protected:
   void on_speed_change() override;
-
-private:
-  std::function<s4u::Host::CpuFactorCb> factor_cb_ = {};
 };
 
 /**********
  * Action *
  **********/
 class CpuCas01Action : public CpuAction {
+  int requested_core_ = 1;
+
 public:
   CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm::Constraint* constraint, int requested_core);
   CpuCas01Action(const CpuCas01Action&) = delete;
   CpuCas01Action& operator=(const CpuCas01Action&) = delete;
-  int requested_core() const;
-
-private:
-  int requested_core_ = 1;
+  int requested_core() const { return requested_core_; }
 };
 
 } // namespace resource
