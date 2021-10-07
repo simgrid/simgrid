@@ -3,13 +3,14 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \ / _ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | (_) |
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | / __/ \__, |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|  /_/
-               (unreleased)
+               October 7. 2021
 	       
-The "Give peace a chance" release (International Day of Peace)
+The "Ask a stupid questione" release
 
   * Python bindings for the platform creation API
   * Introduce non-linear ressource sharing, allowing decay models
   * New documentation section on realistic I/O modeling
+  * (+ many bug fixes and internal refactoring)
 
                     _               _____  ____  ___
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \( _ )

@@ -1,6 +1,12 @@
 ----------------------------------------------------------------------------
 
-SimGrid (3.28.1) NOT RELEASED YET (v3.29 expected September 22. 2021, 19:21 UTC)
+SimGrid (3.29) October 7. 2021
+
+The "Ask a stupid question" release.
+
+We wish that every user ask one question about SimGrid to celebrate.
+On Mattermost, Stack Overflow or using the issues tracker.
+
 
 New modeling features:
  - Non-linear resource sharing, modeling resources whose performance heavily degrades with contention:
