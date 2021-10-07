@@ -33,8 +33,7 @@ jobs:
       - name: build
         run: |
           cd tools/docker
-          make stable
-          make all
+          make unstable
           make push
       - name: Create the failure Message
         if: ${{ failure() }}
