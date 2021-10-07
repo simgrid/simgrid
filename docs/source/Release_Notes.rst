@@ -390,7 +390,40 @@ Finally, we pursued our quest for a better codebase by following the hints of So
 to fight the technical debt and ensure that you'll still enjoy SimGrid in a decade. Along the same line, we removed the symbols that were
 deprecated since 3 releases, as usual.
 
-Version 3.29 (not released yet)
--------------------------------
+Version 3.29 (October 7. 2021)
+------------------------------
 
-Release target: September 22. 2021
+To celebrate the "Ask a stupid question" release, we wish that every user ask one question about SimGrid.
+On `Mattermost <https://framateam.org/simgrid/channels/town-square>`_, 
+`Stack Overflow <https://stackoverflow.com/questions/tagged/simgrid>`_,
+or using the `issues tracker <https://framagit.org/simgrid/simgrid/-/issues>`_.
+
+  * Python bindings for the platform creation API
+  * Introduce non-linear resource sharing, allowing decay models
+  * New documentation section on realistic I/O modeling
+  * (+ many bug fixes and internal refactoring)
+
+This release finishes the work on programmatic platforms, that was ongoing since 3.27. It is now possible to define a complete platform in either C++
+or python, and the XML approach is now deprecated. It will probably remain around for a long time, but no evolution is planned. New features will not
+be ported to the XML parser (unless you provide a patch, of course).
+
+This release also paves the way for new models, with the introduction of two new features to the model solver:
+ * Non-linear resource sharing was introduced, allowing to model resource whose performance heavily degrades with contention. This may be used in the
+   future for Wi-Fi links, where the total amount of data exchanged in a cell drops when the amount of stations reaches a threshold.
+ * Dynamic factors model variability in the speed of activities. This can be used to model an overhead (e.g., there is a 20 bytes header in a 480
+   bytes TCP packet so the factor 0.9583) but the novelty is this factor can now easily be adjusted depending on activity's and resources
+   characteristics.
+
+   This existed for network (e.g., the effective bandwidth depends on the message in SMPI piecewise-linear network model) but it is now more general
+   (the factor may depend on the source and destination and thus account to different behaviors for intra-node communications and extra-node
+   communications) and is available for CPUs (e.g., if you want to model an affinity as in the "Unrelated Machines" problem in scheduling) and disks
+   (e.g., if you want to model a stochastic capacity) too.
+
+   The same mechanism is also available for the latency, which allows to easily introduce complex variability patterns.
+
+These new features are not used yet in the provided models, but this will probably change in future releases.
+
+Version 3.30 (Not released)
+---------------------------
+
+Release target: winter 2021
