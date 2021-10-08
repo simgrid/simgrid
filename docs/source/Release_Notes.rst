@@ -408,6 +408,7 @@ or python, and the XML approach is now deprecated. It will probably remain aroun
 be ported to the XML parser (unless you provide a patch, of course).
 
 This release also paves the way for new models, with the introduction of two new features to the model solver:
+
  * Non-linear resource sharing was introduced, allowing to model resource whose performance heavily degrades with contention. This may be used in the
    future for Wi-Fi links, where the total amount of data exchanged in a cell drops when the amount of stations reaches a threshold.
  * Dynamic factors model variability in the speed of activities. This can be used to model an overhead (e.g., there is a 20 bytes header in a 480
