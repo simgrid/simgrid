@@ -33,8 +33,9 @@ jobs:
       - name: build
         run: |
           cd tools/docker
-          make unstable
-          make push
+          make unstable tuto-mc
+          docker push simgrid/unstable
+          docker push simgrid/tuto-mc
       - name: Create the failure Message
         if: ${{ failure() }}
         run: |
