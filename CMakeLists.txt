@@ -2,7 +2,7 @@
 
 set(SIMGRID_VERSION_MAJOR "3")
 set(SIMGRID_VERSION_MINOR "29")
-set(SIMGRID_VERSION_PATCH "0") # odd => git branch; even => stable release or released snapshot
+set(SIMGRID_VERSION_PATCH "1") # odd => git branch; even => stable release or released snapshot
 
 if(${SIMGRID_VERSION_PATCH} EQUAL "0")
   set(release_version "${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}")

@@ -1,10 +1,17 @@
+                    _               _____  _____  ___
+__   _____ _ __ ___(_) ___  _ __   |___ / |___ / / _ \
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \| | | |
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) | |_| |
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____/ \___/
+               (unreleased)
+
                     _               _____  ____   ___
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \ / _ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | (_) |
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | / __/ \__, |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_____|  /_/
                October 7. 2021
-	       
+
 The "Ask a stupid question" release
 
   * Python bindings for the platform creation API
@@ -20,7 +27,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ \( _ )
                July 14. 2021
 
 The Victoriadagarna Release (birthday of Crown Princess Victoria)
-  
+
   * Programmatic platform description (only C++ for now).
   * New plugin to simplify producer/consumer applications.
   * MC: new tutorial and associated docker image.
@@ -249,7 +256,7 @@ The Christmas Pi Release.
    - Routing code rewritten for readability
    - Virtual Machines almost turned into a plugin
    - MSG, SimDag, MPI interfaces mostly unchanged
-   
+
  * The model-checker now works on FreeBSD too.
 
                     _               _____  _ _____
