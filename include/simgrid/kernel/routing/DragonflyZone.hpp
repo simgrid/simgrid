@@ -92,8 +92,6 @@ public:
   /** @brief Set the characteristics of links inside the Dragonfly zone */
   void set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy) override;
   Coords rankId_to_coords(unsigned long rank_id) const;
-  XBT_ATTRIB_DEPRECATED_v330("Please use rankId_to_coords(int)") void rankId_to_coords(int rank_id,
-                                                                                       unsigned long coords[4]) const;
 
 private:
   void generate_routers(const s4u::ClusterCallbacks& set_callbacks);

@@ -603,7 +603,7 @@ void EngineImpl::run()
        *          - You are added from ActorImpl::simcall_answer() only. When this function is called depends on the
        *            resource kind (network, cpu, disk, whatever), but the same arguments hold. Let's take communications
        *            as an example.
-       *          - For communications, this function is called from SIMIX_comm_finish().
+       *          - For communications, this function is called from CommImpl::finish().
        *            This function itself don't mess with the order since simcalls are handled in FIFO order.
        *            The function is called:
        *            - before the comm starts (invalid parameters, or resource already dead or whatever).

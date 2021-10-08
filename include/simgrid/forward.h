@@ -225,7 +225,6 @@ using smx_cond_t     = simgrid::kernel::activity::ConditionVariableImpl*;
 using smx_mailbox_t  = simgrid::kernel::activity::MailboxImpl*;
 using smx_mutex_t    = simgrid::kernel::activity::MutexImpl*;
 using smx_sem_t      = simgrid::kernel::activity::SemaphoreImpl*;
-using e_smx_state_t XBT_ATTRIB_DEPRECATED_v330("Please use kernel::activity::State") = simgrid::kernel::activity::State;
 #else
 
 typedef struct s4u_Actor s4u_Actor;
@@ -242,7 +241,6 @@ typedef struct s4u_Semaphore s4u_Semaphore;
 typedef struct s4u_Disk s4u_Disk;
 typedef struct s4u_NetZone s4u_NetZone;
 typedef struct s4u_VM s4u_VM;
-XBT_ATTRIB_DEPRECATED_v330("Please stop using this type alias") typedef enum kernel_activity_state e_smx_state_t;
 
 typedef struct s_smx_timer* smx_timer_t;
 typedef struct s_smx_actor* smx_actor_t;

@@ -194,11 +194,6 @@ CommPtr Host::sendto_async(Host* dest, double byte_amount) // XBT_ATTRIB_DEPRECA
 {
   return Comm::sendto_async(this, dest, byte_amount);
 }
-
-void Host::send_to(Host* dest, double byte_amount) // XBT_ATTRIB_DEPRECATED_v330
-{
-  Comm::sendto(this, dest, byte_amount);
-}
 #endif
 
 /** Get the properties assigned to a host */
@@ -449,21 +444,6 @@ sg_host_t sg_host_by_name(const char* name)
   return simgrid::s4u::Host::by_name_or_null(name);
 }
 
-xbt_dynar_t sg_hosts_as_dynar() // XBT_ATTRIB_DEPRECATED_v330
-{
-  std::vector<simgrid::s4u::Host*> list = simgrid::s4u::Engine::get_instance()->get_all_hosts();
-
-  auto last = std::remove_if(begin(list), end(list), [](const simgrid::s4u::Host* host) {
-    return not host || not host->get_netpoint() || not host->get_netpoint()->is_host();
-  });
-  std::sort(begin(list), last,
-            [](const simgrid::s4u::Host* a, const simgrid::s4u::Host* b) { return a->get_name() < b->get_name(); });
-
-  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), nullptr);
-  std::for_each(begin(list), last, [res](sg_host_t host) { xbt_dynar_push_as(res, sg_host_t, host); });
-  return res;
-}
-
 // ========= Layering madness ==============*
 
 // ========== User data Layer ==========
@@ -474,14 +454,6 @@ void* sg_host_get_data(const_sg_host_t host)
 void sg_host_set_data(sg_host_t host, void* userdata)
 {
   host->set_data(userdata);
-}
-void* sg_host_data(const_sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
-{
-  return sg_host_get_data(host);
-}
-void sg_host_data_set(sg_host_t host, void* userdata) // XBT_ATTRIB_DEPRECATED_v330
-{
-  sg_host_set_data(host, userdata);
 }
 
 // ========= Disk related functions ============
@@ -499,11 +471,6 @@ void sg_host_get_disks(const_sg_host_t host, unsigned int* disk_count, sg_disk_t
 double sg_host_get_speed(const_sg_host_t host)
 {
   return host->get_speed();
-}
-
-double sg_host_speed(const_sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
-{
-  return sg_host_get_speed(host);
 }
 
 /** @brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref plugin_host_energy.
@@ -675,21 +642,6 @@ double sg_host_get_route_bandwidth(const_sg_host_t from, const_sg_host_t to)
   return min_bandwidth;
 }
 
-void sg_host_route(const_sg_host_t from, const_sg_host_t to, xbt_dynar_t links) // XBT_ATTRIB_DEPRECATED_v330
-{
-  sg_host_get_route(from, to, links);
-}
-
-double sg_host_route_latency(const_sg_host_t from, const_sg_host_t to) // XBT_ATTRIB_DEPRECATED_v330
-{
-  return sg_host_get_route_latency(from, to);
-}
-
-double sg_host_route_bandwidth(const_sg_host_t from, const_sg_host_t to) // XBT_ATTRIB_DEPRECATED_v330
-{
-  return sg_host_get_route_bandwidth(from, to);
-}
-
 void sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount)
 {
   simgrid::s4u::Comm::sendto(from, to, byte_amount);
@@ -743,9 +695,4 @@ const char* sg_host_self_get_name()
 double sg_host_get_load(const_sg_host_t host)
 {
   return host->get_load();
-}
-
-double sg_host_load(const_sg_host_t host) // XBT_ATTRIB_DEPRECATED_v330
-{
-  return sg_host_get_load(host);
 }

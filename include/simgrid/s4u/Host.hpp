@@ -225,7 +225,6 @@ public:
 #ifndef DOXYGEN
   XBT_ATTRIB_DEPRECATED_v331("Please use Comm::sendto()") void sendto(Host* dest, double byte_amount);
   XBT_ATTRIB_DEPRECATED_v331("Please use Comm::sendto_async()") CommPtr sendto_async(Host* dest, double byte_amount);
-  XBT_ATTRIB_DEPRECATED_v330("Please use Host::sendto()") void send_to(Host* dest, double byte_amount);
 #endif
 
   NetZone* get_englobing_zone() const;

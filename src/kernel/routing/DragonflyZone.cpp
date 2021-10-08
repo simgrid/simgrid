@@ -33,15 +33,6 @@ DragonflyZone::Coords DragonflyZone::rankId_to_coords(unsigned long rankId) cons
   return coords;
 }
 
-void DragonflyZone::rankId_to_coords(int rankId, unsigned long coords[4]) const // XBT_ATTRIB_DEPRECATED_v330
-{
-  const auto s_coords = rankId_to_coords(rankId);
-  coords[0]           = s_coords.group;
-  coords[1]           = s_coords.chassis;
-  coords[2]           = s_coords.blade;
-  coords[3]           = s_coords.node;
-}
-
 void DragonflyZone::set_link_characteristics(double bw, double lat, s4u::Link::SharingPolicy sharing_policy)
 {
   ClusterBase::set_link_characteristics(bw, lat, sharing_policy);

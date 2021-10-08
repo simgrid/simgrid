@@ -74,18 +74,9 @@ XBT_ATTRIB_DEPRECATED_v333("Please use Comm::copy_pointer_callback()") XBT_PUBLI
 
 /******************************* Host simcalls ********************************/
 #ifdef __cplusplus
-XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Exec::wait_for()") XBT_PUBLIC simgrid::kernel::activity::State
-    simcall_execution_wait(simgrid::kernel::activity::ActivityImpl* execution, double timeout);
-XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Exec::wait_for()") XBT_PUBLIC simgrid::kernel::activity::State
-    simcall_execution_wait(const simgrid::kernel::activity::ActivityImplPtr& execution, double timeout);
 XBT_ATTRIB_DEPRECATED_v331("Please use s4u::Exec::wait_any_for()") XBT_PUBLIC
     unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count,
                                                double timeout);
-XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Exec::test()") XBT_PUBLIC
-    bool simcall_execution_test(simgrid::kernel::activity::ActivityImpl* execution);
-XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Exec::test()") XBT_PUBLIC
-    bool simcall_execution_test(const simgrid::kernel::activity::ActivityImplPtr& execution);
-
 #endif
 
 /************************** Communication simcalls ****************************/
@@ -113,39 +104,19 @@ simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, siz
                    bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                    void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data, double rate);
 
-XBT_ATTRIB_DEPRECATED_v330("Please use Mailbox::iprobe()") XBT_PUBLIC simgrid::kernel::activity::ActivityImplPtr
-    simcall_comm_iprobe(smx_mailbox_t mbox, int type,
-                        bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*), void* data);
-
-XBT_ATTRIB_DEPRECATED_v330("Please use a CommImpl*[] for first parameter") XBT_PUBLIC
-    unsigned int simcall_comm_waitany(simgrid::kernel::activity::ActivityImplPtr comms[], size_t count, double timeout);
 XBT_PUBLIC ssize_t simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_t count, double timeout);
 XBT_PUBLIC void simcall_comm_wait(simgrid::kernel::activity::ActivityImpl* comm, double timeout);
 XBT_PUBLIC bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm);
-XBT_ATTRIB_DEPRECATED_v330("Please use a CommImpl*[] for first parameter") XBT_PUBLIC
-    int simcall_comm_testany(simgrid::kernel::activity::ActivityImplPtr comms[], size_t count);
 XBT_PUBLIC ssize_t simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count);
 
-XBT_ATTRIB_DEPRECATED_v330("Please use an ActivityImpl* for first parameter") inline void simcall_comm_wait(
-    const simgrid::kernel::activity::ActivityImplPtr& comm, double timeout)
-{
-  simcall_comm_wait(comm.get(), timeout);
-}
-XBT_ATTRIB_DEPRECATED_v330("Please use an ActivityImpl* for first parameter") inline bool simcall_comm_test(
-    const simgrid::kernel::activity::ActivityImplPtr& comm)
-{
-  return simcall_comm_test(comm.get());
-}
 #endif
 
 /************************** Synchro simcalls **********************************/
 SG_BEGIN_DECL
-XBT_ATTRIB_DEPRECATED_v330("Please use sg_mutex_init()") XBT_PUBLIC smx_mutex_t simcall_mutex_init();
 XBT_ATTRIB_DEPRECATED_v331("Please use sg_mutex_lock()") XBT_PUBLIC void simcall_mutex_lock(smx_mutex_t mutex);
 XBT_ATTRIB_DEPRECATED_v331("Please use sg_mutex_try_lock()") XBT_PUBLIC int simcall_mutex_trylock(smx_mutex_t mutex);
 XBT_ATTRIB_DEPRECATED_v331("Please use sg_mutex_unlock()") XBT_PUBLIC void simcall_mutex_unlock(smx_mutex_t mutex);
 
-XBT_ATTRIB_DEPRECATED_v330("Please use sg_cond_init()") XBT_PUBLIC smx_cond_t simcall_cond_init();
 XBT_ATTRIB_DEPRECATED_v331("Please use sg_cond_wait()") XBT_PUBLIC
     void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex);
 XBT_ATTRIB_DEPRECATED_v331("Please use sg_cond_wait_for()") XBT_PUBLIC
@@ -156,17 +127,6 @@ XBT_ATTRIB_DEPRECATED_v331("Please use sg_sem_acquire_timeout()") XBT_PUBLIC
     int simcall_sem_acquire_timeout(smx_sem_t sem, double max_duration);
 SG_END_DECL
 
-/*****************************   Io   **************************************/
-#ifdef __cplusplus
-XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Io::wait_for()") XBT_PUBLIC simgrid::kernel::activity::State
-    simcall_io_wait(simgrid::kernel::activity::ActivityImpl* io, double timeout);
-XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Io::wait_for()") XBT_PUBLIC simgrid::kernel::activity::State
-    simcall_io_wait(const simgrid::kernel::activity::ActivityImplPtr& io, double timeout);
-XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Io::test()") XBT_PUBLIC
-    bool simcall_io_test(simgrid::kernel::activity::ActivityImpl* io);
-XBT_ATTRIB_DEPRECATED_v330("Please use s4u::Io::test()") XBT_PUBLIC
-    bool simcall_io_test(const simgrid::kernel::activity::ActivityImplPtr& io);
-#endif
 /************************** MC simcalls   **********************************/
 SG_BEGIN_DECL
 XBT_ATTRIB_DEPRECATED_v331("Please use MC_random()") XBT_PUBLIC int simcall_mc_random(int min, int max);

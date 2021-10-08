@@ -113,18 +113,6 @@ void Engine::load_platform(const std::string& platf) const
   pimpl->load_platform(platf);
 }
 
-void Engine::register_function(const std::string& name, int (*code)(int, char**)) // XBT_ATTRIB_DEPRECATED_v330
-{
-  kernel::actor::ActorCodeFactory code_factory = [code](std::vector<std::string> args) {
-    return xbt::wrap_main(code, std::move(args));
-  };
-  register_function(name, code_factory);
-}
-void Engine::register_default(int (*code)(int, char**)) // XBT_ATTRIB_DEPRECATED_v330
-{
-  register_default([code](std::vector<std::string> args) { return xbt::wrap_main(code, std::move(args)); });
-}
-
 /** Registers the main function of an actor that will be launched from the deployment file */
 void Engine::register_function(const std::string& name, const std::function<void(int, char**)>& code)
 {
@@ -488,11 +476,6 @@ void simgrid_register_default(void (*code)(int, char**))
 double simgrid_get_clock()
 {
   return simgrid::s4u::Engine::get_clock();
-}
-
-int simgrid_get_actor_count() // XBT_ATTRIB_DEPRECATED_v330
-{
-  return simgrid::s4u::Engine::get_instance()->get_actor_count();
 }
 
 void simgrid_set_maestro(void (*code)(void*), void* data)

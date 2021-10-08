@@ -858,7 +858,7 @@ Retrieving actors
 
    .. group-tab:: C
 
-      .. doxygenfunction:: simgrid_get_actor_count()
+      .. doxygenfunction:: sg_actor_count()
 
 Retrieving hosts
 ----------------
@@ -1219,7 +1219,6 @@ Retrieving hosts
       .. doxygenfunction:: sg_host_by_name(const char *name)
       .. doxygenfunction:: sg_host_count()
       .. doxygenfunction:: sg_host_list()
-      .. doxygenfunction:: sg_hosts_as_dynar()
 
 Modifying characteristics
 -------------------------

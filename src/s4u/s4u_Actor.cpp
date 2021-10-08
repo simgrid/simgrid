@@ -764,24 +764,9 @@ void sg_actor_self_set_data(void* userdata)
   simgrid::s4u::Actor::self()->set_data(userdata);
 }
 
-void* sg_actor_self_data() // XBT_ATTRIB_DEPRECATED_v330
-{
-  return sg_actor_self_get_data();
-}
-
-void sg_actor_self_data_set(void* userdata) // XBT_ATTRIB_DEPRECATED_v330
-{
-  sg_actor_self_set_data(userdata);
-}
-
 sg_actor_t sg_actor_self()
 {
   return simgrid::s4u::Actor::self();
-}
-
-void sg_actor_self_execute(double flops) // XBT_ATTRIB_DEPRECATED_v330
-{
-  simgrid::s4u::this_actor::execute(flops);
 }
 
 void sg_actor_execute(double flops)
@@ -827,16 +812,6 @@ void* sg_actor_get_data(const_sg_actor_t actor)
 void sg_actor_set_data(sg_actor_t actor, void* userdata)
 {
   actor->set_data(userdata);
-}
-
-void* sg_actor_data(const_sg_actor_t actor) // XBT_ATTRIB_DEPRECATED_v330
-{
-  return sg_actor_get_data(actor);
-}
-
-void sg_actor_data_set(sg_actor_t actor, void* userdata) // XBT_ATTRIB_DEPRECATED_v330
-{
-  sg_actor_set_data(actor, userdata);
 }
 
 /** @brief Add a function to the list of "on_exit" functions for the current actor.

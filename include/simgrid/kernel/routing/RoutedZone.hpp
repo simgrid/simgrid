@@ -58,12 +58,6 @@ public:
 protected:
   Route* new_extended_route(RoutingMode hierarchy, NetPoint* gw_src, NetPoint* gw_dst,
                             const std::vector<resource::LinkImpl*>& link_list, bool preserve_order);
-  XBT_ATTRIB_DEPRECATED_v330("Please drop 2nd, 3rd and 7th parameters") virtual Route* new_extended_route(
-      RoutingMode hierarchy, NetPoint* /* src */, NetPoint* /* dst */, NetPoint* gw_src, NetPoint* gw_dst,
-      std::vector<resource::LinkImpl*>& link_list, bool /* symmetrical */, bool preserve_order)
-  {
-    return new_extended_route(hierarchy, gw_src, gw_dst, link_list, preserve_order);
-  }
   void get_route_check_params(const NetPoint* src, const NetPoint* dst) const;
   void add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                               const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical) const;

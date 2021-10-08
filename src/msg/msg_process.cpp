@@ -91,14 +91,3 @@ XBT_PUBLIC void MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup)
 {
   msg_global->process_data_cleanup = data_cleanup;
 }
-
-/** @brief returns a list of all currently existing processes */
-xbt_dynar_t MSG_processes_as_dynar() // XBT_ATTRIB_DEPRECATED_v330
-{
-  xbt_dynar_t res = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
-  for (auto const& kv : simgrid::kernel::EngineImpl::get_instance()->get_actor_list()) {
-    smx_actor_t actor = kv.second;
-    xbt_dynar_push(res, &actor);
-  }
-  return res;
-}

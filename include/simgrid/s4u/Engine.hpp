@@ -55,13 +55,6 @@ public:
 
   void load_platform(const std::string& platf) const;
 
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v330("Please change the return code of your actors to void") void register_function(
-      const std::string& name, int (*code)(int, char**));
-  XBT_ATTRIB_DEPRECATED_v330("Please change the return code of your actors to void") void register_default(
-      int (*code)(int, char**));
-#endif
-
   void register_function(const std::string& name, const std::function<void(int, char**)>& code);
   void register_function(const std::string& name, const std::function<void(std::vector<std::string>)>& code);
   void register_function(const std::string& name, const kernel::actor::ActorCodeFactory& factory);

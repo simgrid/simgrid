@@ -61,12 +61,10 @@ This describes the process structure :cpp:type:`msg_process_t` and the functions
 .. doxygenfunction:: MSG_process_create_with_environment
 .. doxygenfunction:: MSG_process_daemonize
 .. doxygenfunction:: MSG_process_detach
-.. doxygenfunction:: MSG_processes_as_dynar
 .. doxygenfunction:: MSG_process_from_PID
 .. doxygenfunction:: MSG_process_get_data
 .. doxygenfunction:: MSG_process_get_host
 .. doxygenfunction:: MSG_process_get_name
-.. doxygenfunction:: MSG_process_get_number
 .. doxygenfunction:: MSG_process_get_PID
 .. doxygenfunction:: MSG_process_get_PPID
 .. doxygenfunction:: MSG_process_get_properties
@@ -113,7 +111,6 @@ Host Management
 .. doxygenfunction:: MSG_host_is_on
 .. doxygenfunction:: MSG_host_off
 .. doxygenfunction:: MSG_host_on
-.. doxygenfunction:: MSG_hosts_as_dynar
 .. doxygenfunction:: MSG_host_self
 .. doxygenfunction:: MSG_host_set_data
 .. doxygenfunction:: MSG_host_set_property_value

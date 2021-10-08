@@ -159,7 +159,7 @@ SwappedContext::~SwappedContext()
       /* try to pursue anyway */
     }
 #if SIMGRID_HAVE_MC
-    /* Retrieve the saved pointer.  See SIMIX_context_stack_new above. */
+    /* Retrieve the saved pointer.  See the initialization above. */
     stack_ = reinterpret_cast<unsigned char**>(stack_)[-1];
 #endif
   }

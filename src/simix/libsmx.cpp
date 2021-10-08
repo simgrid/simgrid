@@ -30,38 +30,6 @@
 #include <typeinfo>
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 
-/**
- * @ingroup simix_host_management
- * @brief Waits for the completion of an execution synchro and destroy it.
- *
- * @param execution The execution synchro
- */
-simgrid::kernel::activity::State simcall_execution_wait(simgrid::kernel::activity::ActivityImpl* execution,
-                                                        double timeout) // XBT_ATTRIB_DEPRECATED_v330
-{
-  simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
-  simgrid::kernel::actor::simcall_blocking([execution, issuer, timeout] { execution->wait_for(issuer, timeout); });
-  return simgrid::kernel::activity::State::DONE;
-}
-
-simgrid::kernel::activity::State simcall_execution_wait(const simgrid::kernel::activity::ActivityImplPtr& execution,
-                                                        double timeout) // XBT_ATTRIB_DEPRECATED_v330
-{
-  simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
-  simgrid::kernel::actor::simcall_blocking([execution, issuer, timeout] { execution->wait_for(issuer, timeout); });
-  return simgrid::kernel::activity::State::DONE;
-}
-
-bool simcall_execution_test(simgrid::kernel::activity::ActivityImpl* execution) // XBT_ATTRIB_DEPRECATED_v330
-{
-  return simgrid::kernel::actor::simcall([execution] { return execution->test(); });
-}
-
-bool simcall_execution_test(const simgrid::kernel::activity::ActivityImplPtr& execution) // XBT_ATTRIB_DEPRECATED_v330
-{
-  return simgrid::kernel::actor::simcall([execution] { return execution->test(); });
-}
-
 unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count,
                                            double timeout) // XBT_ATTRIB_DEPRECATED_v331
 {
@@ -167,28 +135,6 @@ simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, siz
 /**
  * @ingroup simix_comm_management
  */
-simgrid::kernel::activity::ActivityImplPtr
-simcall_comm_iprobe(smx_mailbox_t mbox, int type, bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                    void* data) // XBT_ATTRIB_DEPRECATED_v330
-{
-  xbt_assert(mbox, "No rendez-vous point defined for iprobe");
-
-  return simgrid::kernel::actor::simcall([mbox, type, match_fun, data] { return mbox->iprobe(type, match_fun, data); });
-}
-
-/**
- * @ingroup simix_comm_management
- */
-unsigned int simcall_comm_waitany(simgrid::kernel::activity::ActivityImplPtr comms[], size_t count,
-                                  double timeout) // XBT_ATTRIB_DEPRECATED_v330
-{
-  std::vector<simgrid::kernel::activity::CommImpl*> rcomms(count);
-  std::transform(comms, comms + count, begin(rcomms), [](const simgrid::kernel::activity::ActivityImplPtr& comm) {
-    return static_cast<simgrid::kernel::activity::CommImpl*>(comm.get());
-  });
-  return static_cast<unsigned int>(simcall_BODY_comm_waitany(rcomms.data(), rcomms.size(), timeout));
-}
-
 ssize_t simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_t count, double timeout)
 {
   return simcall_BODY_comm_waitany(comms, count, timeout);
@@ -197,17 +143,6 @@ ssize_t simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_
 /**
  * @ingroup simix_comm_management
  */
-int simcall_comm_testany(simgrid::kernel::activity::ActivityImplPtr comms[], size_t count) // XBT_ATTRIB_DEPRECATED_v330
-{
-  if (count == 0)
-    return -1;
-  std::vector<simgrid::kernel::activity::CommImpl*> rcomms(count);
-  std::transform(comms, comms + count, begin(rcomms), [](const simgrid::kernel::activity::ActivityImplPtr& comm) {
-    return static_cast<simgrid::kernel::activity::CommImpl*>(comm.get());
-  });
-  return static_cast<int>(simcall_BODY_comm_testany(rcomms.data(), rcomms.size()));
-}
-
 ssize_t simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count)
 {
   if (count == 0)
@@ -237,15 +172,6 @@ bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm)
  * @ingroup simix_synchro_management
  *
  */
-smx_mutex_t simcall_mutex_init() // XBT_ATTRIB_DEPRECATED_v330
-{
-  return simgrid::kernel::actor::simcall([] { return new simgrid::kernel::activity::MutexImpl(); });
-}
-
-/**
- * @ingroup simix_synchro_management
- *
- */
 void simcall_mutex_lock(smx_mutex_t mutex) // XBT_ATTRIB_DEPRECATD_v331
 {
   mutex->mutex().lock();
@@ -267,15 +193,6 @@ int simcall_mutex_trylock(smx_mutex_t mutex) // XBT_ATTRIB_DEPRECATD_v331
 void simcall_mutex_unlock(smx_mutex_t mutex) // XBT_ATTRIB_DEPRECATD_v331
 {
   mutex->mutex().unlock();
-}
-
-/**
- * @ingroup simix_synchro_management
- *
- */
-smx_cond_t simcall_cond_init() // XBT_ATTRIB_DEPRECATED_v330
-{
-  return simgrid::kernel::actor::simcall([] { return new simgrid::kernel::activity::ConditionVariableImpl(); });
 }
 
 /**
@@ -313,32 +230,6 @@ void simcall_sem_acquire(smx_sem_t sem) // XBT_ATTRIB_DEPRECATD_v331
 int simcall_sem_acquire_timeout(smx_sem_t sem, double timeout) // XBT_ATTRIB_DEPRECATD_v331
 {
   return sem->sem().acquire_timeout(timeout);
-}
-
-simgrid::kernel::activity::State simcall_io_wait(simgrid::kernel::activity::ActivityImpl* io,
-                                                 double timeout) // XBT_ATTRIB_DEPRECATED_v330
-{
-  simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
-  simgrid::kernel::actor::simcall_blocking([io, issuer, timeout] { io->wait_for(issuer, timeout); });
-  return simgrid::kernel::activity::State::DONE;
-}
-
-simgrid::kernel::activity::State simcall_io_wait(const simgrid::kernel::activity::ActivityImplPtr& io,
-                                                 double timeout) // XBT_ATTRIB_DEPRECATED_v330
-{
-  simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
-  simgrid::kernel::actor::simcall_blocking([io, issuer, timeout] { io->wait_for(issuer, timeout); });
-  return simgrid::kernel::activity::State::DONE;
-}
-
-bool simcall_io_test(simgrid::kernel::activity::ActivityImpl* io) // XBT_ATTRIB_DEPRECATED_v330
-{
-  return simgrid::kernel::actor::simcall([io] { return io->test(); });
-}
-
-bool simcall_io_test(const simgrid::kernel::activity::ActivityImplPtr& io) // XBT_ATTRIB_DEPRECATD_v330
-{
-  return simgrid::kernel::actor::simcall([io] { return io->test(); });
 }
 
 void simcall_run_kernel(std::function<void()> const& code, simgrid::kernel::actor::SimcallObserver* observer)

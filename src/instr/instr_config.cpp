@@ -37,7 +37,6 @@ static simgrid::config::Flag<bool> trace_enabled{
 
 static simgrid::config::Flag<bool> trace_actor_enabled{
     "tracing/actor",
-    {"tracing/msg/process"}, // XBT_ATTRIB_DEPRECATED_v330(option alias)
     "Trace the behavior of all categorized actors, grouping them by host. "
     "Can be used to track actor location if the simulator does actor migration.",
     false};

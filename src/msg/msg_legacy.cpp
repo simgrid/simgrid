@@ -219,11 +219,7 @@ void MSG_process_unref(const_sg_actor_t process)
 {
   sg_actor_unref(process);
 }
-/** @brief Return the current number MSG processes. */
-int MSG_process_get_number() // XBT_ATTRIB_DEPRECATED_v330
-{
-  return sg_actor_count();
-}
+
 /* ************************** NetZones *************************** */
 sg_netzone_t MSG_zone_get_root()
 {
@@ -255,18 +251,6 @@ void MSG_zone_get_hosts(const_sg_netzone_t zone, xbt_dynar_t whereto)
 }
 
 /* ************************** hosts *************************** */
-xbt_dynar_t MSG_hosts_as_dynar() // XBT_ATTRIB_DEPRECATED_v330
-{
-  size_t host_count = sg_host_count();
-  sg_host_t* list   = sg_host_list();
-
-  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t), nullptr);
-  for (size_t i = 0; i < host_count; i++)
-    xbt_dynar_push_as(res, sg_host_t, list[i]);
-  xbt_free(list);
-
-  return res;
-}
 size_t MSG_get_host_number()
 {
   return sg_host_count();
