@@ -16,7 +16,7 @@ echo "XXXXXXXXXXXXXXXX build and test BigDFT (git version)"
 git clone --depth=1 https://gitlab.com/l_sim/bigdft-suite.git
 cd bigdft-suite
 
-WORKSPACE=`pwd`
+WORKSPACE=$PWD
 mkdir build && cd build
 export PATH=$PWD/simgrid-dev/smpi_script/bin/:$PATH
 export LD_LIBRARY_PATH=$PWD/simgrid-dev/lib/:$LD_LIBRARY_PATH
