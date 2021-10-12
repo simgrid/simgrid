@@ -68,7 +68,7 @@
       <zoneRoute src="AS1_cb2" dst="gw_AS1_dc1" gw_src="cb2-AS1_cb2_router.dc1.acloud.com"
                gw_dst="gw_dc1_horizdist">
         <link_ctn id="link_dc1_cb2"/>
-      </zoneRoute> 
+      </zoneRoute>
     </zone>
 
     <zone id="AS2_dc2" routing="Full">
@@ -138,7 +138,7 @@
       </zoneRoute>
       <zoneRoute src="AS2_cb2" dst="AS2_cb6" gw_src="cb2-AS2_cb2_router.dc2.acloud.com"
                gw_dst="cb6-AS2_cb6_router.dc2.acloud.com">
-        <link_ctn id="link_dc2_cb2"/> 
+        <link_ctn id="link_dc2_cb2"/>
         <link_ctn id="link_dc2_cb6"/>
       </zoneRoute>
       <zoneRoute src="AS2_cb2" dst="AS2_cb4" gw_src="cb2-AS2_cb2_router.dc2.acloud.com"
@@ -156,7 +156,7 @@
         <link_ctn id="link_dc2_cb3"/>
         <link_ctn id="link_dc2_cb6"/>
       </zoneRoute>
-      <zoneRoute src="AS2_cb3" dst="AS2_cb4" gw_src="cb3-AS2_cb3_router.dc2.acloud.com" 
+      <zoneRoute src="AS2_cb3" dst="AS2_cb4" gw_src="cb3-AS2_cb3_router.dc2.acloud.com"
                gw_dst="cb4-AS2_cb4_router.dc2.acloud.com">
         <link_ctn id="link_dc2_cb3"/>
         <link_ctn id="link_dc2_cb4"/>
@@ -221,11 +221,11 @@
       <zoneRoute src="AS2_cb1" dst="gw_AS2_dc2" gw_src="cb1-AS2_cb1_router.dc2.acloud.com"
                gw_dst="gw_dc2_horizdist">
         <link_ctn id="link_dc2_cb1"/>
-      </zoneRoute> 
+      </zoneRoute>
     </zone>
 
-    <zone id="AS3_dc3" routing="Full">  
-      <!--small tier-1 datacenter, according to TIA-942 annex G tiers notation, routing : FULL -->    
+    <zone id="AS3_dc3" routing="Full">
+      <!--small tier-1 datacenter, according to TIA-942 annex G tiers notation, routing : FULL -->
       <!-- 4 clusters, no zone dist area, 1 horiz dist area, no multi-homing, telecom and operation rooms omitted -->
       <!-- clusters -->
       <cluster id="AS3_cb1" prefix="cb1-" suffix=".dc3.acloud.com" radical="1-40" speed="5.2297Gf"
@@ -250,9 +250,9 @@
         <!-- ISP end point, entering the cloud, so it has coordinates -->
         <router id="router_AS3_dc3" coordinates="6.0 5.7 6.6"/>
         <!-- links -->
-        <link id="dc3_horizdist_maindist" bandwidth="1.25GBps" latency="100us"/>        
-        <link id="dc3_maindist_entranceroom" bandwidth="1.25GBps" latency="100us"/>  
-        <link id="dc3_entranceroom_ISP" bandwidth="1.25GBps" latency="100us"/>  
+        <link id="dc3_horizdist_maindist" bandwidth="1.25GBps" latency="100us"/>
+        <link id="dc3_maindist_entranceroom" bandwidth="1.25GBps" latency="100us"/>
+        <link id="dc3_entranceroom_ISP" bandwidth="1.25GBps" latency="100us"/>
         <!-- links to router relationships -->
         <route src="gw_dc3_horizdist" dst="gw_dc3_maindist">
           <link_ctn id="dc3_horizdist_maindist"/>

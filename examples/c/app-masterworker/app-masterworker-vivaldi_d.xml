@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
-  <!-- The master actor (with some arguments) --> 
+  <!-- The master actor (with some arguments) -->
   <actor host="100030591" function="master">
     <argument value="10"/>       <!-- Number of tasks -->
     <argument value="50000000"/>  <!-- Computation size of tasks -->
@@ -10,48 +10,48 @@
   </actor>
   <!-- The worker actors (with mailbox to listen on as argument) -->
   <actor host="100036570" function="worker">
-    <argument value="0"/> 
+    <argument value="0"/>
   </actor>
   <actor host="100041334" function="worker">
-    <argument value="1"/> 
+    <argument value="1"/>
   </actor>
   <actor host="100055671" function="worker">
-    <argument value="2"/> 
+    <argument value="2"/>
   </actor>
   <actor host="100066658" function="worker">
-    <argument value="3"/> 
+    <argument value="3"/>
   </actor>
   <actor host="100090691" function="worker">
-    <argument value="4"/> 
+    <argument value="4"/>
   </actor>
   <actor host="100094952" function="worker">
-    <argument value="5"/> 
+    <argument value="5"/>
   </actor>
   <actor host="100117943" function="worker">
-    <argument value="6"/> 
+    <argument value="6"/>
   </actor>
   <actor host="100126290" function="worker">
-    <argument value="7"/> 
+    <argument value="7"/>
   </actor>
   <actor host="100144483" function="worker">
-    <argument value="8"/> 
+    <argument value="8"/>
   </actor>
   <actor host="100152889" function="worker">
-    <argument value="9"/> 
+    <argument value="9"/>
   </actor>
   <actor host="100178474" function="worker">
-    <argument value="10"/> 
+    <argument value="10"/>
   </actor>
   <actor host="100180261" function="worker">
-    <argument value="11"/> 
+    <argument value="11"/>
   </actor>
   <actor host="100185883" function="worker">
-    <argument value="12"/> 
+    <argument value="12"/>
   </actor>
   <actor host="100186365" function="worker">
-    <argument value="13"/> 
+    <argument value="13"/>
   </actor>
   <actor host="100200866" function="worker">
-    <argument value="14"/> 
+    <argument value="14"/>
   </actor>
 </platform>

@@ -8,32 +8,32 @@
 
   <actor host="node-1.simgrid.org" function="peer">
     <argument value="00000002"/>    <!-- my id -->
-    <argument value="5000" />    <!-- end time --> 
-    <argument value="1" />       <!-- indicates if the peer is a seed at the beginning of the simulation --> 
+    <argument value="5000" />    <!-- end time -->
+    <argument value="1" />       <!-- indicates if the peer is a seed at the beginning of the simulation -->
   </actor>
   <actor host="node-2.simgrid.org" function="peer">
     <argument value="00000003"/>    <!-- my id -->
-    <argument value="5000" />    <!-- end time --> 
+    <argument value="5000" />    <!-- end time -->
   </actor>
   <actor host="node-3.simgrid.org" function="peer">
     <argument value="00000004"/>    <!-- my id -->
-    <argument value="5000" />    <!-- end time --> 
+    <argument value="5000" />    <!-- end time -->
   </actor>
   <actor host="node-4.simgrid.org" function="peer">
     <argument value="00000005"/>    <!-- my id -->
-    <argument value="5000" />    <!-- end time --> 
-    <argument value="1" />       <!-- indicates if the peer is a seed at the beginning of the simulation --> 
+    <argument value="5000" />    <!-- end time -->
+    <argument value="1" />       <!-- indicates if the peer is a seed at the beginning of the simulation -->
   </actor>
   <actor host="node-5.simgrid.org" function="peer">
     <argument value="00000006"/>    <!-- my id -->
-    <argument value="5000" />    <!-- end time --> 
+    <argument value="5000" />    <!-- end time -->
   </actor>
   <actor host="node-6.simgrid.org" function="peer">
     <argument value="00000007"/>    <!-- my id -->
-    <argument value="5000" />    <!-- end time --> 
+    <argument value="5000" />    <!-- end time -->
   </actor>
   <actor host="node-7.simgrid.org" function="peer">
     <argument value="00000008"/>    <!-- my id -->
-    <argument value="5000" />    <!-- end time --> 
+    <argument value="5000" />    <!-- end time -->
   </actor>
 </platform>

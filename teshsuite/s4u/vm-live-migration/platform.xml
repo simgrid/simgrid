@@ -6,14 +6,14 @@
     <prop id="wattage_per_state" value="0.0:0.0:4.0" />
     <prop id="wattage_off" value="0.0" />
   </host>
-  
+
   <host id="host2" speed="2Gf" core="1">
     <prop id="wattage_per_state" value="0.0:0.0:4.0" />
     <prop id="wattage_off" value="0.0" />
   </host>
-  
+
   <link bandwidth="1.25GBps" id="link" latency="0" sharing_policy="FATPIPE" />
-  
+
   <route src="host1" dst="host2">
       <link_ctn id="link" />
   </route>

@@ -3,7 +3,7 @@
 <platform version = "4.1">
   <zone id="WIFI zone" routing = "Wifi">
     <prop id = "access_point" value = "router" />
-    
+
     <host id = "Station 1" speed = "100.0Mf,50.0Mf,20.0Mf" />
     <host id = "Station 2" speed = "100.0Mf,50.0Mf,20.0Mf" />
 
@@ -14,4 +14,4 @@
       <prop id = "control_duration" value = "0"/>
     </link>
   </zone>
-</platform>	
+</platform>

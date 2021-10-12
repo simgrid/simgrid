@@ -27,9 +27,9 @@
         <router id="router_dataCenter1" coordinates="25.5 9.4 1.4"/>
 
         <!-- links -->
-        <link id="dc1_horizdist_maindist" bandwidth="1.25GBps" latency="100us"/>        
-        <link id="dc1_maindist_entranceroom" bandwidth="1.25GBps" latency="100us"/>  
-        <link id="dc1_entranceroom_ISP" bandwidth="1.25GBps" latency="100us"/> 
+        <link id="dc1_horizdist_maindist" bandwidth="1.25GBps" latency="100us"/>
+        <link id="dc1_maindist_entranceroom" bandwidth="1.25GBps" latency="100us"/>
+        <link id="dc1_entranceroom_ISP" bandwidth="1.25GBps" latency="100us"/>
 
         <!-- links to router relationships -->
         <route src="gw_dc1_horizdist" dst="gw_dc1_maindist">

@@ -19,7 +19,7 @@
     <link id="link4" bandwidth="1Bps" latency="500ms" sharing_policy="FATPIPE" />
 
    <!-- large latency link (2*1024^2s) to limit bandwidth by TCP_gamma (4MiB)
-         max bw = TCP_gamma / ( 2 * latency ) which is then 1Bps (half the nominal bandwidth) -->    
+         max bw = TCP_gamma / ( 2 * latency ) which is then 1Bps (half the nominal bandwidth) -->
     <link id="link5" bandwidth="1Bps" latency="2097152s" sharing_policy="FATPIPE" />
 
     <link id="link6" bandwidth="125MBps" latency="100us" sharing_policy="SHARED"/>

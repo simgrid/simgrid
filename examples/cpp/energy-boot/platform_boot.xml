@@ -12,8 +12,8 @@
       * 0-2: real pstates
          0: p1 100 MFlops/s, [idle: 95W -> full burning: 200W]
          1: p2  50 MFlops/s, [idle: 93W -> full burning: 170W]
-         2: p3  20 MFlops/s, [idel: 90W -> full burning: 150W] 
-	 
+         2: p3  20 MFlops/s, [idel: 90W -> full burning: 150W]
+
       * 3: booting up was measured to take 150s and 18000J.
            So we create a pstate 3 consuming 18000J/150s=120W, and a boot remains at this pstate for 150s.
            Speed is set at 0 flop/s so that nothing progresses during the boot.
@@ -21,7 +21,7 @@
            So we create a pstate 4 consuming 770J/7s=110W, and a shutdown remains at this pstate for 7s.
 
       Please note that even if these values are educated guesses, you should still challenge them.
-      If you want a realistic simulation, you must use values coming from a real benchmark of your platform. 
+      If you want a realistic simulation, you must use values coming from a real benchmark of your platform.
       -->
 
     <host id="MyHost1"             speed="100.0Mf,50.0Mf,20.0Mf,                    0f,0f" pstate="0" >

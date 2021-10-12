@@ -6,25 +6,25 @@
              radical="1-29,58,59,60" speed="286.087kf" bw="125MBps" lat="24us"
              bb_bw="1.25GBps" bb_lat="0" sharing_policy="SPLITDUPLEX" bb_sharing_policy="SHARED"/>
     <cluster id="griffon_cluster_cabinet2" prefix="griffon-" suffix=".nancy.grid5000.fr"
-             radical="30-57" speed="286.087kf" bw="125MBps" lat="24us" 
+             radical="30-57" speed="286.087kf" bw="125MBps" lat="24us"
              bb_bw="1.25GBps" bb_lat="0" sharing_policy="SPLITDUPLEX" bb_sharing_policy="SHARED"/>
     <cluster id="griffon_cluster_cabinet3" prefix="griffon-" suffix=".nancy.grid5000.fr"
-             radical="61-92" speed="286.087kf" bw="125MBps" lat="24us" 
+             radical="61-92" speed="286.087kf" bw="125MBps" lat="24us"
              bb_bw="1.25GBps" bb_lat="0" sharing_policy="SPLITDUPLEX" bb_sharing_policy="SHARED"/>
 
     <link id="backbone" bandwidth="1.25GBps" latency="24us" sharing_policy="SHARED"/>
 
-    <zoneRoute src="griffon_cluster_cabinet1" dst="griffon_cluster_cabinet2" 
+    <zoneRoute src="griffon_cluster_cabinet1" dst="griffon_cluster_cabinet2"
              gw_src="griffon-griffon_cluster_cabinet1_router.nancy.grid5000.fr"
              gw_dst="griffon-griffon_cluster_cabinet2_router.nancy.grid5000.fr">
       <link_ctn id="backbone"/>
     </zoneRoute>
-    <zoneRoute src="griffon_cluster_cabinet2" dst="griffon_cluster_cabinet3" 
+    <zoneRoute src="griffon_cluster_cabinet2" dst="griffon_cluster_cabinet3"
              gw_src="griffon-griffon_cluster_cabinet2_router.nancy.grid5000.fr"
            gw_dst="griffon-griffon_cluster_cabinet3_router.nancy.grid5000.fr">
       <link_ctn id="backbone"/>
     </zoneRoute>
-    <zoneRoute src="griffon_cluster_cabinet1" dst="griffon_cluster_cabinet3" 
+    <zoneRoute src="griffon_cluster_cabinet1" dst="griffon_cluster_cabinet3"
              gw_src="griffon-griffon_cluster_cabinet1_router.nancy.grid5000.fr"
              gw_dst="griffon-griffon_cluster_cabinet3_router.nancy.grid5000.fr">
       <link_ctn id="backbone"/>

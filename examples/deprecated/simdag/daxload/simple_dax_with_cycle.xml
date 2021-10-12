@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <adag xmlns="http://pegasus.isi.edu/schema/DAX" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://pegasus.isi.edu/schema/DAX http://pegasus.isi.edu/schema/dax-2.1.xsd" 
+      xsi:schemaLocation="http://pegasus.isi.edu/schema/DAX http://pegasus.isi.edu/schema/dax-2.1.xsd"
       version="2.1" count="1" index="0" name="smalldax" jobCount="4" fileCount="0" childCount="2">
   <job id="1" namespace="SG" name="task1" version="1.0" runtime="10">
     <uses file="i1" link="input" register="true" transfer="true" optional="false" type="data" size="1000000"/>
@@ -20,4 +20,4 @@
   <child ref="1">
     <parent ref="3"/>
   </child>
-</adag>    
+</adag>

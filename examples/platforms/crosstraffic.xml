@@ -4,7 +4,7 @@
   <!-- S1 _________ C1
            link 1
          10kB, 10ms    -->
-       
+
   <zone id="1" routing="Full">
     <host id="S1" speed="1Gf"/>
     <host id="C1" speed="1Gf"/>

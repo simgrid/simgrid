@@ -5,22 +5,22 @@
   <!-- this platform models 3 clusters, interconnected over the Internet
     -
     -  This example intends to be somewhat exhaustive, your platform should probably be simpler.
-    - 
+    -
     -  In particular, the clusters are modeled in very different ways,
     -  but you should pick the way you prefer, and stick to it.
     -->
 
   <!-- Here comes the first cluster, the simplest one.
-     
+
        Every nodes are connected through a private link to a router
        (ie a machine that cannot host computations).
-  
+
        node-0.1core.org __[l0]__
                                 \
        node-1.1core.org __[l1]__router___(outer world)
                 ...             /
        node-7.1core.org __[l9]_/
- 
+
        So the route from node-0 to node-1 is {l0.UP, l1.DOWN}
     -->
   <cluster bw="125MBps" id="simple" lat="50us" prefix="node-" radical="0-7" speed="1Gf" suffix=".1core.org">
@@ -36,20 +36,20 @@
                 ...                  |
        node-7.2cores.org __[l7]______+
     The route from node-0 to node-1 is: l0.UP ; backbone ; l1.DOWN
-    
+
     The route from node-0 to the outer world begins with: l0.UP ; backbone
-  -->    
+  -->
   <cluster bb_bw="2.25GBps" bb_lat="500us" bw="125MBps" core="2" id="backboned" lat="50us" prefix="node-" radical="0-7" speed="1Gf" suffix=".2cores.org">
     <prop id="wattage_per_state" value="0.0:0.0:2.0" />
     <prop id="wattage_off" value="0.0" />
   </cluster>
-	   
+
 
   <!-- This cluster has a backbone link, but no links are splitduplex.
     -  It means that up and down communications compete as if they
     -  were using exactly the same resource. If you send and receive
     -  at the same time, then each get half of the bandwidth.
-    - 
+    -
     -  Also, the hosts have 4 cores.
     -->
   <cluster bb_bw="2.25GBps" bb_lat="500us" bb_sharing_policy="SHARED" bw="125MBps" core="4" id="halfduplex" lat="50us" prefix="node-" radical="0-7" sharing_policy="SHARED" speed="1Gf" suffix=".4cores.org">
@@ -58,13 +58,13 @@
   </cluster>
 
   <!-- And now, we create the routes between the clusters, ie inter-zone routes -->
-  
-  <!-- We have only one outer link, representing the internet 
+
+  <!-- We have only one outer link, representing the internet
     -  Its sharing is FATPIPE, meaning that communications have no impact on each others.
-    -  Any given comm can use the full provided bandwidth. 
-    - 
-    -  This models the big links constituting the backbone of the internet, 
-    -  that users cannot saturate. 
+    -  Any given comm can use the full provided bandwidth.
+    -
+    -  This models the big links constituting the backbone of the internet,
+    -  that users cannot saturate.
     -  Users' bandwidth is mostly limited by their outgoing connection,
     -  not by the network backbone.
     -->
@@ -78,7 +78,7 @@
     <zoneRoute dst="halfduplex" gw_dst="node-halfduplex_router.4cores.org" gw_src="node-simple_router.1core.org" src="simple">
       <link_ctn id="backbone" />
     </zoneRoute>
-    
+
     <zoneRoute dst="halfduplex" gw_dst="node-halfduplex_router.4cores.org" gw_src="node-backboned_router.2cores.org" src="backboned">
       <link_ctn id="backbone" />
     </zoneRoute>

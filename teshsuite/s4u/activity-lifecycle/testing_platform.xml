@@ -2,20 +2,19 @@
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
   <config>
-    <prop id="network/crosstraffic" value="0"/> 
+    <prop id="network/crosstraffic" value="0"/>
     <prop id="network/model" value="CM02"/>
   </config>
-  
+
   <zone id="zone0" routing="Full">
     <host id="host0" speed="100Mf"/>
     <host id="host1" speed="100Mf"/>
     <host id="host2" speed="100Mf"/>
-    
+
     <link id="link1" bandwidth="1000Bps" latency="0"/>
- 
+
     <route src="host1" dst="host2">
       <link_ctn id="link1"/>
     </route>
   </zone>
 </platform>
-		  

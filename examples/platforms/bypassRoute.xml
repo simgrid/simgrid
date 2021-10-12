@@ -29,7 +29,7 @@
       <router id="bypass_router2"/>
       <router id="AS_2_gateway"/>
 
-      <!-- routes providing topological information -->  
+      <!-- routes providing topological information -->
       <route src="central_router" dst="AS_2_host1">
         <link_ctn id="AS_2_link1"/>
       </route>

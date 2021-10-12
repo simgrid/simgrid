@@ -7,7 +7,7 @@
     <argument value="50000000"/>  <!-- Computation size of tasks -->
     <argument value="1"/>         <!-- Number of receivers -->
   </actor>
-  <!-- The receiver actors --> 
+  <!-- The receiver actors -->
   <actor host="Ruby" function="receiver">
     <argument value="0"/> <!-- id -->
   </actor>

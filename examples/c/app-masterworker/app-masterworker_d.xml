@@ -10,18 +10,18 @@
   </actor>
   <!-- The worker actors (with mailbox to listen on as argument) -->
   <actor host="Tremblay" function="worker" on_failure="RESTART">
-    <argument value="0"/> 
+    <argument value="0"/>
   </actor>
   <actor host="Jupiter" function="worker" on_failure="RESTART">
-    <argument value="1"/> 
+    <argument value="1"/>
   </actor>
   <actor host="Fafard" function="worker" on_failure="RESTART">
-    <argument value="2"/> 
+    <argument value="2"/>
   </actor>
   <actor host="Ginette" function="worker" on_failure="RESTART">
-    <argument value="3"/> 
+    <argument value="3"/>
   </actor>
   <actor host="Bourassa" function="worker" on_failure="RESTART">
-    <argument value="4"/> 
+    <argument value="4"/>
   </actor>
 </platform>

@@ -6,14 +6,14 @@
 
     <zone id="WIFI zone" routing="Wifi">
         <prop id="access_point" value="WIFI router" />
-	
+
         <!-- Declare the stations of this wifi zone -->
         <host id="Station 1" speed="100.0Mf,50.0Mf,20.0Mf" />
         <host id="Station 2" speed="100.0Mf,50.0Mf,20.0Mf" />
 
         <!-- Declare the wifi media (after hosts because our parser is sometimes annoying) -->
         <link id="AP1" sharing_policy="WIFI" bandwidth="54Mbps,36Mbps,24Mbps" latency="0ms" />
-	
+
         <router id="WIFI router"/>
     </zone>
 
@@ -21,13 +21,13 @@
     <zone id="Wired zone" routing="Full">
       <host id="node1" speed="100.0Mf,50.0Mf,20.0Mf" />
     </zone>
-    
+
 
     <!-- AS Routing -->
     <link id="Collector" sharing_policy="SHARED" bandwidth="100Mbps" latency="0ms" />
     <zoneRoute src="WIFI zone" dst="Wired zone" gw_src="WIFI router" gw_dst="node1">
       <link_ctn id="Collector" />
     </zoneRoute>
-    
+
   </zone>
 </platform>

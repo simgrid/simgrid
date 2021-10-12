@@ -7,7 +7,7 @@
     -  This is only for the example, but don't do that at home.
     -  Instead, you want to start all your actors from the deployment file.
     -->
-   
+
   <actor host="Fafard" function="sender">
     <argument value="PopPop!"/> <!-- msg as argv[1] -->
     <argument value="other mb"/> <!-- mbox as argv[2] -->

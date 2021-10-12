@@ -50,7 +50,7 @@
 				<property name="ProcessorClockFrequency" value="{$ProcessorClockFrequency}" />
 			</properties>
 			<xsl:apply-templates select="Testing/Test"/>
-			
+
 			<system-out>
 				BuildName: <xsl:value-of select="$BuildName" />
 				BuildStamp: <xsl:value-of select="$BuildStamp" />
@@ -87,7 +87,7 @@
 				</xsl:if>
 			</xsl:for-each>
 		</xsl:variable>
-		
+
 			<testcase name="{$testcasename}" classname="TestSuite" time="{$exectime}">
             <xsl:if test="@Status = 'passed'">
             </xsl:if>

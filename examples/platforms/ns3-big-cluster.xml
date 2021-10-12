@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4.1">
-  <zone id="AS0" routing="Floyd"> 
+  <zone id="AS0" routing="Floyd">
 
     <host id="c-01.rennes" core="6" speed="21.496E9f"/>
     <host id="c-02.rennes" core="6" speed="21.496E9f"/>
@@ -60,7 +60,7 @@
     <host id="c-55.rennes" core="6" speed="21.496E9f"/>
     <host id="c-56.rennes" core="6" speed="21.496E9f"/>
     <host id="c-57.rennes" core="6" speed="21.496E9f"/>
-  
+
     <router id="router1"/>
 
     <link id="link01" bandwidth="1.25GBps" latency="2.5ms"/>

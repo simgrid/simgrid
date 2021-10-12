@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <adag xmlns="http://pegasus.isi.edu/schema/DAX" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://pegasus.isi.edu/schema/DAX http://pegasus.isi.edu/schema/dax-2.1.xsd" 
+      xsi:schemaLocation="http://pegasus.isi.edu/schema/DAX http://pegasus.isi.edu/schema/dax-2.1.xsd"
       version="2.1" count="1" index="0" name="test" jobCount="3" fileCount="5" childCount="1">
 
   <job id="1" namespace="SG" name="task1" version="1.0" runtime="10">

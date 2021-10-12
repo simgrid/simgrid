@@ -10,21 +10,21 @@
   </actor>
   <!-- The worker actors (with mailbox to listen on as argument) -->
   <actor host="Tremblay" function="worker">
-    <argument value="0"/> 
+    <argument value="0"/>
   </actor>
   <actor host="Tremblay" function="worker">
-    <argument value="1"/> 
+    <argument value="1"/>
   </actor>
   <actor host="Tremblay" function="worker">
-    <argument value="2"/> 
+    <argument value="2"/>
   </actor>
   <actor host="Tremblay" function="worker">
-    <argument value="3"/> 
+    <argument value="3"/>
   </actor>
   <actor host="Tremblay" function="worker">
-    <argument value="4"/> 
+    <argument value="4"/>
   </actor>
   <actor host="Tremblay" function="worker">
-    <argument value="5"/> 
+    <argument value="5"/>
   </actor>
 </platform>
