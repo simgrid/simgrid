@@ -187,7 +187,7 @@ if cmake --version | grep -q 3\.11 ; then
   # -DCMAKE_DISABLE_SOURCE_CHANGES=ON is broken with java on CMake 3.11
   # https://gitlab.kitware.com/cmake/cmake/issues/17933
   MAY_DISABLE_SOURCE_CHANGE=""
-else 
+else
   MAY_DISABLE_SOURCE_CHANGE="-DCMAKE_DISABLE_SOURCE_CHANGES=ON"
 fi
 

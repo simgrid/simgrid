@@ -41,7 +41,7 @@ while (<RESULTS>) {
 	$testStatus = $_;
     }
     close (SFD);
-    
+
     if (-s $resultsFile) {
 	open (RFD, "<$resultsFile");
 	$runLine = <RFD>;

@@ -8,14 +8,14 @@ if(enable_smpi)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   foreach(x coll-allgather coll-allgatherv coll-allreduce coll-allreduce-with-leaks coll-alltoall coll-alltoallv coll-barrier coll-bcast
             coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong
-            type-hvector type-indexed type-struct type-vector bug-17132 gh-139 timers privatization 
+            type-hvector type-indexed type-struct type-vector bug-17132 gh-139 timers privatization
             io-simple io-simple-at io-all io-all-at io-shared io-ordered topo-cart-sub replay-ti-colls)
     add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.c)
     target_link_libraries(${x}  simgrid)
     set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
     add_dependencies(tests ${x})
   endforeach()
-  
+
   if(NOT WIN32)
     foreach(x macro-shared auto-shared macro-partial-shared macro-partial-shared-communication )
       add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.c)
@@ -162,7 +162,7 @@ if(enable_smpi)
   ADD_TESH(tesh-smpi-replay-ti-tracing-coll       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/replay-ti-colls --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/replay-ti-colls ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/replay-ti-colls/replay-ti-colls.tesh)
 
   ADD_TESH_FACTORIES(tesh-smpi-gh-139  "thread"   --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/gh-139 --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/gh-139 ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/gh-139/gh-139.tesh)
-  
+
   # Simple privatization tests
   if(HAVE_PRIVATIZATION)
     foreach(PRIVATIZATION dlopen mmap)

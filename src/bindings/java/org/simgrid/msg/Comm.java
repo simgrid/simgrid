@@ -76,5 +76,5 @@ public class Comm {
 	static {
 		org.simgrid.NativeLib.nativeInit();
 		nativeInit();
-	}	
+	}
 }

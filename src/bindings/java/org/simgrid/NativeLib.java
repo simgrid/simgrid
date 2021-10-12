@@ -36,7 +36,7 @@ public final class NativeLib {
 	public static void main(String[] args) {
 		System.out.println("This jarfile searches the native code under: " +getPath());
 	}
-	
+
 	/** Main function loading all the native classes that we need */
 	public static void nativeInit() {
 		if (isNativeInited)
@@ -60,13 +60,13 @@ public final class NativeLib {
 		} catch (UnsatisfiedLinkError|SecurityException|IOException e) {
 			cause = e;
 		}
-		
+
 		/* If not found, try to see if we can find a version on disk */
 		try {
 			System.loadLibrary(name);
 			return;
 		} catch (UnsatisfiedLinkError systemException) { /* don't care */ }
-		
+
 		System.err.println("\nCannot load the bindings to the "+name+" library in path "+getPath()+" and no usable SimGrid installation found on disk.");
 		if (cause != null) {
 			if (cause.getMessage().contains("libcgraph.so"))
@@ -87,7 +87,7 @@ public final class NativeLib {
 	/** Try to extract the library from the jarfile before loading it */
 	private static boolean loadLibAsStream (String name) throws IOException, UnsatisfiedLinkError {
 		String path = NativeLib.getPath();
-		
+
 		// We must write the lib onto the disk before loading it -- stupid operating systems
 		if (tempDir == null) {
 			final String tempPrefix = "simgrid-java-";
@@ -111,14 +111,14 @@ public final class NativeLib {
 			// don't leak the files on disk, but remove it on JVM shutdown
 			Runtime.getRuntime().addShutdownHook(new Thread(new FileCleaner(tempDir.toFile())));
 		}
-		
+
 		/* For each possible filename of the given library on all possible OSes, try it */
 		for (String filename : new String[]
 		   { name,
 		     "lib"+name+".so",               /* linux */
 		     name+".dll", "lib"+name+".dll", /* windows (pure and mingw) */
 		     "lib"+name+".dylib"             /* macOS */}) {
-						
+
 			File fileOut = new File(tempDir.toFile(), filename);
 			try ( // Try-with-resources. These stream will be autoclosed when needed.
 				InputStream in = NativeLib.class.getClassLoader().getResourceAsStream(path+filename);
@@ -135,7 +135,7 @@ public final class NativeLib {
 				}
 			}
 		}
-		
+
 		/* No suitable name found */
 		return false;
 	}
@@ -162,7 +162,7 @@ public final class NativeLib {
 
 		return prefix + "/" + os + "/" + arch + "/";
 	}
-	
+
 	/** A hackish mechanism used to remove the file containing our library when the JVM shuts down */
 	private static class FileCleaner implements Runnable {
 		private File dir;

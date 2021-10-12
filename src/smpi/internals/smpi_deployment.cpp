@@ -65,7 +65,6 @@ void smpi_deployment_register_process(const std::string& instance_id, int rank, 
 {
   const Instance& instance = smpi_instances.at(instance_id);
   instance.comm_world_->group()->set_mapping(actor->get_pid(), rank);
-
 }
 
 void smpi_deployment_startup_barrier(const std::string& instance_id)

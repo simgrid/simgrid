@@ -18,7 +18,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
     add_dependencies(tests ${test})
     target_link_libraries(${test} simgrid mtest_f77)
   endforeach()
-  
+
   add_executable(c2f2cwinf EXCLUDE_FROM_ALL c2f2cwinf.f c2f2cwin.c)
   set_property(TARGET c2f2cwinf PROPERTY INTERPROCEDURAL_OPTIMIZATION FALSE)
   add_dependencies(tests c2f2cwinf)

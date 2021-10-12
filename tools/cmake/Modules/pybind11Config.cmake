@@ -1,7 +1,7 @@
 # pybind11Config.cmake
 # --------------------
 #
-# Edited for simgrid so that we survive when pybind11Tools is not found, 
+# Edited for simgrid so that we survive when pybind11Tools is not found,
 # concluding that pybind11 is not installed. Original version was 2.2.4-2.
 #
 # PYBIND11 cmake module.

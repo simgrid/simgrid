@@ -16,12 +16,12 @@ class Main {
 
 	public static void main(String[] args) {
 		Msg.init(args);
-		
+
 		String platform = "../platforms/small_platform.xml";
-		if(args.length >= 1) 
+		if(args.length >= 1)
 			platform = args[0];
 		Msg.createEnvironment(platform);
-		
+
 		Host[] hosts = Host.all();
 		for (int rank = 0; rank < hosts.length; rank++) {
 			Process proc = new RelayRunner(hosts[rank], Integer.toString(rank),  null);

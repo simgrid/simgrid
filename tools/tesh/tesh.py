@@ -125,7 +125,7 @@ def kill_process_group(pid):
     except:
         # os.getpgid failed. Ok, don't cleanup.
         return
-    
+
     try:
         os.killpg(pgid, signal.SIGTERM)
         if process_is_dead(pid):

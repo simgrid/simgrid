@@ -77,7 +77,7 @@ function sortTable(n, type) {
   table = document.getElementById('configuration-matrix');
   switching = true;
   //Set the sorting direction to ascending:
-  dir = 'asc'; 
+  dir = 'asc';
   /*Make a loop that will continue until
   no switching has been done:*/
   while (switching) {
@@ -117,7 +117,7 @@ function sortTable(n, type) {
       rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
       switching = true;
       //Each time a switch is done, increase this count by 1:
-      switchcount ++;      
+      switchcount ++;
     } else {
       /*If no switching has been done AND the direction is 'asc',
       set the direction to 'desc' and run the while loop again.*/
@@ -128,7 +128,7 @@ function sortTable(n, type) {
     }
   }
 }</script>
-<table id=configuration-matrix> 
+<table id=configuration-matrix>
 <tr class=matrix-row>  <td class=matrix-header style=min-width:75px onclick='sortTable(0);'>Name of the Builder</td><td class=matrix-header style=min-width:75px onclick='sortTable(1);'>OS</td><td class=matrix-header style=min-width:75px onclick='sortTable(2);'>Compiler</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(3, 'version');\">Boost</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(4,'version');\">Java</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(5,'version');\">Cmake</td><td class=matrix-header style=min-width:50px onclick='sortTable(6);'>ns-3</td><td class=matrix-header style=min-width:50px onclick='sortTable(7);'>Python</td><td class=matrix-header style=min-width:50px onclick='sortTable(1);'>Debug</td><td class=matrix-header style=min-width:50px onclick='sortTable(1);'>MC</td></tr>"
 
 for node in "${nodes[@]}"
@@ -148,7 +148,7 @@ do
     ns3=$(get_ns3)
     py=$(get_python)
     os=$(grep -m 1 "OS Version" ./consoleText| sed "s/OS Version : \(.*\)/\1/g")
-    
+
     color1=""
     color2=""
     #in case of success, replace blue by green in status balls

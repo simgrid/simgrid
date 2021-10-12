@@ -6,8 +6,8 @@
 package async.dsend;
 
 /** This example demonstrates the use of the Task.dsend() method.
- * 
- *  This way, the sender can be detached from the communication: it is not blocked as with Task.send() 
+ *
+ *  This way, the sender can be detached from the communication: it is not blocked as with Task.send()
  *  and has nothing to do at the end as with Task.isend() where it must do a Comm.wait().
  */
 

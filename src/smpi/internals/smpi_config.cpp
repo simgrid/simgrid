@@ -47,19 +47,19 @@ simgrid::config::Flag<bool> _smpi_cfg_simulate_computation{
   "smpi/simulate-computation", "Whether the computational part of the simulated application should be simulated.",
    true};
 simgrid::config::Flag<std::string> _smpi_cfg_shared_malloc_string{
-  "smpi/shared-malloc", "Whether SMPI_SHARED_MALLOC is enabled. Disable it for debugging purposes.", "global", 
-  [](const std::string& val) {   
-    if ((val == "yes") || (val == "1") || (val == "on") || (val == "global")) {
-      _smpi_cfg_shared_malloc = SharedMallocType::GLOBAL;
-    } else if (val == "local") {
-      _smpi_cfg_shared_malloc = SharedMallocType::LOCAL;
-    } else if ((val == "no") || (val == "0") || (val == "off")) {
-      _smpi_cfg_shared_malloc = SharedMallocType::NONE;
-    } else {
-      xbt_die("Invalid value '%s' for option smpi/shared-malloc. Possible values: 'on' or 'global', 'local', 'off'",
-      val.c_str());
-    } 
-  } };
+    "smpi/shared-malloc", "Whether SMPI_SHARED_MALLOC is enabled. Disable it for debugging purposes.", "global",
+    [](const std::string& val) {
+      if ((val == "yes") || (val == "1") || (val == "on") || (val == "global")) {
+        _smpi_cfg_shared_malloc = SharedMallocType::GLOBAL;
+      } else if (val == "local") {
+        _smpi_cfg_shared_malloc = SharedMallocType::LOCAL;
+      } else if ((val == "no") || (val == "0") || (val == "off")) {
+        _smpi_cfg_shared_malloc = SharedMallocType::NONE;
+      } else {
+        xbt_die("Invalid value '%s' for option smpi/shared-malloc. Possible values: 'on' or 'global', 'local', 'off'",
+                val.c_str());
+      }
+    }};
 
 simgrid::config::Flag<double> _smpi_cfg_cpu_threshold{
   "smpi/cpu-threshold", "Minimal computation time (in seconds) not discarded, or -1 for infinity.", 1e-6,
@@ -71,9 +71,9 @@ simgrid::config::Flag<double> _smpi_cfg_cpu_threshold{
 simgrid::config::Flag<int> _smpi_cfg_async_small_thresh{"smpi/async-small-thresh",
                                                         "Maximal size of messages that are to be sent asynchronously, without waiting for the receiver",
                                                         0};
-simgrid::config::Flag<int> _smpi_cfg_detached_send_thresh{"smpi/send-is-detached-thresh",
-                                                          "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend", 
-                                                          65536};
+simgrid::config::Flag<int> _smpi_cfg_detached_send_thresh{
+    "smpi/send-is-detached-thresh",
+    "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend", 65536};
 simgrid::config::Flag<bool> _smpi_cfg_grow_injected_times{"smpi/grow-injected-times",
                                                           "Whether we want to make the injected time in MPI_Iprobe and MPI_Test grow, to "
                                                           "allow faster simulation. This can make simulation less precise, though.",
@@ -88,9 +88,9 @@ simgrid::config::Flag<bool>  _smpi_cfg_trace_call_location{"smpi/trace-call-loca
                                                            "Should filename and linenumber of MPI calls be traced?", false};
 simgrid::config::Flag<bool> _smpi_cfg_trace_call_use_absolute_path{"smpi/trace-call-use-absolute-path",
                                                                    "Should filenames for trace-call tracing be absolute or not?", false};
-simgrid::config::Flag<std::string> _smpi_cfg_comp_adjustment_file{"smpi/comp-adjustment-file",
-    "A file containing speedups or slowdowns for some parts of the code.", 
-    "", [](const std::string& filename){
+simgrid::config::Flag<std::string> _smpi_cfg_comp_adjustment_file{
+    "smpi/comp-adjustment-file", "A file containing speedups or slowdowns for some parts of the code.", "",
+    [](const std::string& filename) {
       if (not filename.empty()) {
         std::ifstream fstream(filename);
         xbt_assert(fstream.is_open(), "Could not open file %s. Does it exist?", filename.c_str());
@@ -253,16 +253,16 @@ void smpi_init_options_internal(bool called_by_smpi_main)
         }
       });
 
-  simgrid::config::declare_flag<std::string>("smpi/privatize-libs", 
-                                            "Add libraries (; separated) to privatize (libgfortran for example)."
-                                            "You need to provide the full names of the files (libgfortran.so.4), or its full path", 
-                                            "");
+  simgrid::config::declare_flag<std::string>(
+      "smpi/privatize-libs",
+      "Add libraries (; separated) to privatize (libgfortran for example)."
+      "You need to provide the full names of the files (libgfortran.so.4), or its full path",
+      "");
   simgrid::config::declare_flag<double>("smpi/shared-malloc-blocksize",
-                                        "Size of the bogus file which will be created for global shared allocations", 
+                                        "Size of the bogus file which will be created for global shared allocations",
                                         1UL << 20);
   simgrid::config::declare_flag<std::string>("smpi/shared-malloc-hugepage",
-                                             "Path to a mounted hugetlbfs, to use huge pages with shared malloc.", 
-                                             "");
+                                             "Path to a mounted hugetlbfs, to use huge pages with shared malloc.", "");
 
   simgrid::config::declare_flag<std::string>(
       "smpi/os", "Small messages timings (MPI_Send minimum time for small messages)", "0:0:0:0:0");

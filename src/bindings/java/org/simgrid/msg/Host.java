@@ -138,7 +138,7 @@ public class Host {
 	public native double getConsumedEnergy();
 
 	/** Returns the current load of the host, as a ratio = achieved_flops / (core_current_speed * core_amount)
-	 *	
+	 *
 	 * See simgrid::plugin::HostLoad::get_current_load() for the full documentation.
 	 */
 	public native double getCurrentLoad();
@@ -146,7 +146,7 @@ public class Host {
 	public native double getComputedFlops();
 	/** Returns the average load of the host as a ratio since the beginning of the simulation*/
 	public native double getAvgLoad();
-   
+
 	/** Returns the current pstate */
 	public native int getPstate();
 	/** Changes the current pstate */
@@ -164,5 +164,5 @@ public class Host {
 	private static native void nativeInit();
 	static {
 		nativeInit();
-	}	
+	}
 }

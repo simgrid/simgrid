@@ -23,7 +23,7 @@ int barrier__mpich_smp(MPI_Comm comm)
     int mpi_errno_ret = MPI_SUCCESS;
     MPI_Comm shmem_comm = MPI_COMM_NULL, leader_comm = MPI_COMM_NULL;
     int local_rank = -1;
-    
+
     if(comm->get_leaders_comm()==MPI_COMM_NULL){
       comm->init_smp();
     }

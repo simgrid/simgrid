@@ -73,9 +73,8 @@ simgrid::config::Flag<bool> _sg_mc_send_determinism{
     }};
 
 simgrid::config::Flag<bool> _sg_mc_unfolding_checker{
-    "model-check/unfolding-checker", "Whether to enable the unfolding-based dynamic partial order reduction to MPI programs",     
-    false,
-    [](bool) {
+    "model-check/unfolding-checker",
+    "Whether to enable the unfolding-based dynamic partial order reduction to MPI programs", false, [](bool) {
       _mc_cfg_cb_check("value to to enable/disable the unfolding-based dynamic partial order reduction to MPI programs");
     }};
 

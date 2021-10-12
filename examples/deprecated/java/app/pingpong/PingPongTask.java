@@ -15,8 +15,8 @@ public class PingPongTask extends Task {
 
   public PingPongTask(String name, double computeDuration, double messageSize, double timeVal) {
     super(name,computeDuration,messageSize);
-    
-    this.timeVal = timeVal;    
+
+    this.timeVal = timeVal;
   }
 
   public double getTime() {

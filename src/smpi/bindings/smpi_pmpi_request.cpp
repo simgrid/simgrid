@@ -30,7 +30,7 @@ static aid_t getPid(MPI_Comm comm, int id)
   CHECK_REQUEST(7)\
   *request = MPI_REQUEST_NULL;\
   CHECK_SEND_INPUTS
-  
+
 #define CHECK_IRECV_INPUTS\
   SET_BUF1(buf)\
   CHECK_REQUEST(7)\
@@ -98,9 +98,7 @@ int PMPI_Start(MPI_Request * request)
     MPI_Request req = *request;
     aid_t my_proc_id = (req->comm() != MPI_COMM_NULL) ? simgrid::s4u::this_actor::get_pid() : -1;
     TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::Pt2PtTIData("Start", req->dst(),
-                                                       req->size(),
-                                                       req->tag(), 
+                       new simgrid::instr::Pt2PtTIData("Start", req->dst(), req->size(), req->tag(),
                                                        simgrid::smpi::Datatype::encode(req->type())));
     if (not TRACE_smpi_view_internals() && req->flags() & MPI_REQ_SEND)
       TRACE_smpi_send(my_proc_id, my_proc_id, getPid(req->comm(), req->dst()), req->tag(), req->size());
@@ -258,7 +256,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
       aid_t src_traced = (status != MPI_STATUS_IGNORE) ? getPid(comm, status->MPI_SOURCE) : getPid(comm, src);
       TRACE_smpi_recv(src_traced, my_proc_id, tag);
     }
-    
+
     TRACE_smpi_comm_out(my_proc_id);
   }
 
@@ -588,7 +586,7 @@ int PMPI_Wait(MPI_Request * request, MPI_Status * status)
 
   simgrid::smpi::Status::empty(status);
 
-  CHECK_NULL(1, MPI_ERR_ARG, request) 
+  CHECK_NULL(1, MPI_ERR_ARG, request)
   if (*request == MPI_REQUEST_NULL) {
     retval = MPI_SUCCESS;
   } else {
@@ -717,7 +715,7 @@ int PMPI_Test_cancelled(const MPI_Status* status, int* flag){
     return MPI_ERR_ARG;
   }
   *flag=simgrid::smpi::Status::cancelled(status);
-  return MPI_SUCCESS;  
+  return MPI_SUCCESS;
 }
 
 int PMPI_Status_set_cancelled(MPI_Status* status, int flag){
@@ -725,7 +723,7 @@ int PMPI_Status_set_cancelled(MPI_Status* status, int flag){
     return MPI_ERR_ARG;
   }
   simgrid::smpi::Status::set_cancelled(status,flag);
-  return MPI_SUCCESS;  
+  return MPI_SUCCESS;
 }
 
 int PMPI_Status_set_elements(MPI_Status* status, MPI_Datatype datatype, int count){

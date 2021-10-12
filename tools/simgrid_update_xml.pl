@@ -247,11 +247,11 @@ while (defined($line = <INPUT>)) {
 	    $output_string .=  " <AS  id=\"AS0\"  routing=\"Full\">\n";
 	    $AS_opened=1;
 	}
-	
+
 	if($line=~/<route /){$line =~ s/\<route/\<route symmetrical=\"NO\"/g;}
     }
     if ($fromversion < 4) {
-	$line =~ s/\bpower\b/speed/g;	
+	$line =~ s/\bpower\b/speed/g;
 	$line =~ s/\bkind="POWER"/kind="SPEED"/g;
     }
     if ($fromversion < 4.1) {
@@ -262,7 +262,7 @@ while (defined($line = <INPUT>)) {
     }
     $line =~ s/\bFULLDUPLEX\b/SPLITDUPLEX/g;
     $line =~ s/\bavailability_file\b/speed_file/g;
-	
+
     $output_string .= "$line\n";
 }
 

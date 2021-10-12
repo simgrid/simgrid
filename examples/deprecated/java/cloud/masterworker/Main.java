@@ -21,18 +21,18 @@ class Main {
   }
 
   public static void main(String[] args) {
-    Msg.init(args); 
+    Msg.init(args);
 
     String platfFile = "../../examples/platforms/small_platform.xml";
     if (args.length >= 1)
     	platfFile = args[0];
-    
-    File f = new File(platfFile); 
+
+    File f = new File(platfFile);
     if (!f.exists()) {
       Msg.error("File " + platfFile + " does not exist in " + System.getProperty("user.dir"));
       Msg.error("Usage  : Main ../platforms/platform.xml");
     }
-    
+
     Msg.createEnvironment(platfFile);
     Host[] hosts = Host.all();
     if (hosts.length < NHOSTS+1) {
@@ -41,7 +41,7 @@ class Main {
       System.exit(42);
     }
     new Master(hosts[0],"Master",hosts).start();
-    
+
     /* Execute the simulation */
     Msg.run();
   }

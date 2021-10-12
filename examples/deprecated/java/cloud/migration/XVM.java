@@ -24,7 +24,7 @@ public class XVM extends VM {
     this.daemon = new Daemon(this);
   }
 
-  public void setLoad(int load){  
+  public void setLoad(int load){
     if (load >0) {
       this.setBound(this.getSpeed()*load/100);
       daemon.resume();
@@ -48,13 +48,13 @@ public class XVM extends VM {
   @Override
   public void migrate(Host host) throws HostFailureException {
     Msg.info("Start migration of VM " + this.getName() + " to " + host.getName());
-    Msg.info("    currentLoad:" + this.currentLoad + "/ramSize:" + this.ramsize + "/dpIntensity:" + this.dpIntensity 
+    Msg.info("    currentLoad:" + this.currentLoad + "/ramSize:" + this.ramsize + "/dpIntensity:" + this.dpIntensity
         + "/remaining:" + String.format(java.util.Locale.US, "%.2E",this.daemon.getRemaining()));
     try{
       super.migrate(host);
     } catch (Exception e){
       Msg.info("Something wrong during the live migration of VM "+this.getName());
-      throw new HostFailureException(); 
+      throw new HostFailureException();
     }
     this.setLoad(this.currentLoad); //Fixed the fact that setBound is not propagated to the new node.
     Msg.info("End of migration of VM " + this.getName() + " to node " + host.getName());

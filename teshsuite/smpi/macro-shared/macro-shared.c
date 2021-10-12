@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
     MPI_Send(buf, 1, MPI_AINT, 1, 100, MPI_COMM_WORLD);
   else if (rank ==1)
     MPI_Recv(buf, 1, MPI_AINT, 0, 100, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-    
+
   //same thing with an MPI_IN_PLACE collective (no)
   if (rank == 0)
     MPI_Scatter(buf, 1, MPI_AINT, MPI_IN_PLACE, -1, MPI_DATATYPE_NULL, 0, MPI_COMM_WORLD);

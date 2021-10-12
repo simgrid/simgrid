@@ -33,7 +33,7 @@ public class Mutex {
 	static {
 		org.simgrid.NativeLib.nativeInit();
 		nativeInit();
-	}	
+	}
 }
 
 

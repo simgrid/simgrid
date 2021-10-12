@@ -1,4 +1,4 @@
-# Base image 
+# Base image
 FROM simgrid/stable
 
 RUN apt update && apt -y upgrade

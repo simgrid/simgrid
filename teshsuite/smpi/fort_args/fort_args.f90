@@ -13,7 +13,7 @@ program getarg_1
   I = 0
   call MPI_Init(ierr)
   CALL GETARG(I,ARGS)
-  ! This should return the invoking command.  The actual value depends 
+  ! This should return the invoking command.  The actual value depends
   ! on the OS, but a blank string is wrong no matter what.
   ! ??? What about deep embedded systems?
   if (args.eq.'') STOP 2

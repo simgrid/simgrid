@@ -30,14 +30,14 @@ else
   set -x
   perl ./bin/extract_logs_hierarchy.pl ../ > build/log_categories.rst
   set +x
-fi 
+fi
 
 if [ "x$1" != 'xjava' ] && [ -e source/java ] ; then
   echo "javasphinx not rerun: 'java' was not provided as an argument"
 else
   set -x
   rm -rf source/java
-  
+
   # Use that script without installing javasphinx: javasphinx-apidoc --force -o source/java/ ../src/bindings/java/org/simgrid/msg
   PYTHONPATH=${PYTHONPATH}:source/_ext/javasphinx python3 - --force -o source/java/ ../src/bindings/java/org/simgrid/msg <<EOF
 import re

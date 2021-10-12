@@ -12,7 +12,7 @@ class Sender:
   """
   def __init__(self, hosts):
     self.hosts = hosts
-  
+
   # Actors that are created as object will execute their __call__ method.
   # So, the following constitutes the main function of the Sender actor.
   def __call__(self):

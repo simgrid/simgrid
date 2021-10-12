@@ -28,7 +28,7 @@ public class Worker extends Process {
     int num = Integer.parseInt(args[0]);
     Msg.debug("Receiving on 'worker_"+num+"'");
 
-    while(true) {  
+    while(true) {
       Task task = Task.receive("worker_"+num);
 
       if ("finalize".equals(task.getName())) {

@@ -25,7 +25,7 @@ public class Receiver extends Process {
     Msg.info("hello!");
     Trace.hostPushState (getHost().getName(), PM_STATE, "waitingPing");
 
-    /* Wait for the ping */ 
+    /* Wait for the ping */
     Msg.info("try to get a task");
 
     PingPongTask ping = (PingPongTask)Task.receive(getHost().getName());

@@ -4,6 +4,6 @@ grouptest2 4
 #needs MPI_Intercomm_create
 #groupnullincl 4
 gtranks 8
-# this may be too many processes for some systems, but the test needs a 
+# this may be too many processes for some systems, but the test needs a
 # large-ish number of processes to yield an effective performance check
 gtranksperf 20

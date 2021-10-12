@@ -18,8 +18,8 @@ endif()
 
 set(examples_src
   ${examples_src}
- ${CMAKE_CURRENT_SOURCE_DIR}/infotest2f.f 
- ${CMAKE_CURRENT_SOURCE_DIR}/infotestf.f 
+ ${CMAKE_CURRENT_SOURCE_DIR}/infotest2f.f
+ ${CMAKE_CURRENT_SOURCE_DIR}/infotestf.f
   PARENT_SCOPE)
 set(txt_files
   ${txt_files}

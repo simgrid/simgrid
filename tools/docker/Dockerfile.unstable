@@ -1,7 +1,7 @@
-# Base image 
+# Base image
 FROM debian:testing
 
-# - Install SimGrid's dependencies 
+# - Install SimGrid's dependencies
 # - Compile and install SimGrid itself. Clean the tree.
 # - Remove everything that was installed, and re-install what's needed by the SimGrid libraries before the Gran Final Cleanup
 RUN apt-get --allow-releaseinfo-change update && apt -y upgrade && \

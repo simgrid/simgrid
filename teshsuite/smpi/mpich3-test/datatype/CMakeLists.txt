@@ -40,14 +40,14 @@ if (enable_smpi_MPICH3_testsuite AND HAVE_RAW_CONTEXTS)
   SET_TESTS_PROPERTIES(test-smpi-mpich3-datatype-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
 endif()
 
-foreach(file blockindexed-misc blockindexed-zero-count contents contigstruct contig-zero-count cxx-types darray-cyclic 
+foreach(file blockindexed-misc blockindexed-zero-count contents contigstruct contig-zero-count cxx-types darray-cyclic
         darray-pack dataalign gaddress get-elements get-elements-pairtype getpartelm hindexed_block
         hindexed_block_contents hindexed-zeros hvecblklen indexed-misc large-count large_type large_type_sendrec lbub
-        localpack longdouble lots-of-types pairtype-pack pairtype-size-extent segtest sendrecvt2 sendrecvt4 
-        simple-commit simple-pack simple-pack-external simple-pack-external2 simple-resized simple-size-extent sizedtypes slice-pack 
-        slice-pack-external large_vec struct-derived-zeros struct-empty-el struct-ezhov struct-no-real-types struct-pack 
+        localpack longdouble lots-of-types pairtype-pack pairtype-size-extent segtest sendrecvt2 sendrecvt4
+        simple-commit simple-pack simple-pack-external simple-pack-external2 simple-resized simple-size-extent sizedtypes slice-pack
+        slice-pack-external large_vec struct-derived-zeros struct-empty-el struct-ezhov struct-no-real-types struct-pack
         structpack2 struct-verydeep struct-zero-count subarray subarray-pack tfree tmatchsize transpose-pack tresized2
-        tresized triangular-pack typecommit typefree typelb typename unpack unusual-noncontigs vecblklen 
+        tresized triangular-pack typecommit typefree typelb typename unpack unusual-noncontigs vecblklen
         zero-blklen-vector zeroblks zeroparms)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
 endforeach()

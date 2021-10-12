@@ -63,7 +63,7 @@ Topo_Cart::Topo_Cart(MPI_Comm comm_old, int ndims, const int dims[], const int p
       position_[i] = rank / nranks;
       rank = rank % nranks;
     }
-    
+
     if(comm_cart != nullptr){
       const Group* oldGroup = comm_old->group();
       auto* newGroup        = new Group(newSize);

@@ -40,14 +40,14 @@ i<-1
 
 # Reading histograms one by one, line by line
 while (length(oneLine <- readLines(fp, n = 1, warn = FALSE)) > 0){
-  myVector <- (strsplit(oneLine, "\t")) 
-  
+  myVector <- (strsplit(oneLine, "\t"))
+
   dfl <- ldply (myVector, data.frame)
 
   name<-as.character(dfl[1,])
   nbins<-as.numeric(as.character(dfl[4,]))
   allbreaks<-as.numeric(as.character(dfl[5:(5+nbins-1),]))
-  
+
   dh<-data.frame(Name=as.character(dfl[1,]), Total=as.numeric(as.character(dfl[2,])),
                  Mean=as.numeric(as.character(dfl[3,])), Nbins=as.numeric(as.character(dfl[4,])))
   dh<-cbind(dh,Bstart=allbreaks[-length(allbreaks)])

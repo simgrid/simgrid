@@ -8,7 +8,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
-  foreach(test attrmpi1f 
+  foreach(test attrmpi1f
                baseattrf baseattr2f
                commattrf commattr2f commattr3f
 	       typeattrf typeattr2f typeattr3f)

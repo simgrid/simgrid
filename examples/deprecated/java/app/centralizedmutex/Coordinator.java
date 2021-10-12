@@ -20,7 +20,7 @@ public class Coordinator extends Process {
   public void main(String[] args) throws MsgException {
     int csToServe = Integer.parseInt(args[0]);
     LinkedList<RequestTask> waitingQueue=new LinkedList<>();
-     
+
     while (csToServe >0) {
       Task task = Task.receive("coordinator");
       if (task instanceof RequestTask) {

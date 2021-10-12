@@ -19,7 +19,7 @@ public class EnergyVMRunner extends Process {
 
   public class DummyProcess extends Process {
     public  DummyProcess (Host host, String name) {
-      super(host, name); 
+      super(host, name);
     }
 
     @Override
@@ -30,8 +30,8 @@ public class EnergyVMRunner extends Process {
       } catch (HostFailureException | TaskCancelledException e) {
         Msg.error(e.getMessage());
         e.printStackTrace();
-      } 
-      Msg.info("This worker is done."); 
+      }
+      Msg.info("This worker is done.");
     }
   }
 
@@ -54,8 +54,8 @@ public class EnergyVMRunner extends Process {
     vmHost2.start();
 
     Msg.info("Create two tasks on Host1: one inside a VM, the other directly on the host");
-    new DummyProcess (vmHost1, "p11").start(); 
-    new DummyProcess (vmHost1, "p12").start(); 
+    new DummyProcess (vmHost1, "p11").start();
+    new DummyProcess (vmHost1, "p12").start();
 
     Msg.info("Create two tasks on Host2: both directly on the host");
     new DummyProcess (vmHost2, "p21").start();
@@ -66,9 +66,9 @@ public class EnergyVMRunner extends Process {
     new DummyProcess (host3, "p312").start();
 
     Msg.info("Wait 5 seconds. The tasks are still running (they run for 3 seconds, but 2 tasks are co-located, "
-             + "so they run for 6 seconds)"); 
+             + "so they run for 6 seconds)");
     waitFor(5);
-    Msg.info("Wait another 5 seconds. The tasks stop at some point in between"); 
+    Msg.info("Wait another 5 seconds. The tasks stop at some point in between");
     waitFor(5);
 
     vmHost1.destroy();

@@ -37,7 +37,7 @@ public final class Msg {
 	 * @param args            The arguments of the command line of the simulation.
 	 */
 	public static final native void init(String[]args);
-	
+
 	/** Tell the kernel that you want to use the energy plugin */
 	public static final native void energyInit();
 
@@ -83,7 +83,7 @@ public final class Msg {
 		/* Execute the simulation */
 		Msg.run();
 	}
-	
+
 	/* Class initializer, to initialize various JNI stuff */
 	static {
 		org.simgrid.NativeLib.nativeInit();

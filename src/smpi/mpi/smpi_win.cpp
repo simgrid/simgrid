@@ -84,7 +84,7 @@ Win::~Win(){
 
   colls::barrier(comm_);
   Comm::unref(comm_);
-  
+
   if (rank_ == 0)
     delete bar_;
 

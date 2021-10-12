@@ -175,7 +175,7 @@ int PMPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
    retval = win->get( origin_addr, origin_count, origin_datatype, target_rank, target_disp, target_count,
                          target_datatype);
   TRACE_smpi_comm_out(my_proc_id);
- 
+
   return retval;
 }
 

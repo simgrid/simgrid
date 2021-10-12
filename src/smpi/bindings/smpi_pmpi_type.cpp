@@ -283,9 +283,8 @@ int PMPI_Type_set_attr (MPI_Datatype type, int type_keyval, void *attribute_val)
   return type->attr_put<simgrid::smpi::Datatype>(type_keyval, attribute_val);
 }
 
-int PMPI_Type_get_contents (MPI_Datatype type, int max_integers, int max_addresses, 
-                            int max_datatypes, int* array_of_integers, MPI_Aint* array_of_addresses, 
-                            MPI_Datatype *array_of_datatypes)
+int PMPI_Type_get_contents(MPI_Datatype type, int max_integers, int max_addresses, int max_datatypes,
+                           int* array_of_integers, MPI_Aint* array_of_addresses, MPI_Datatype* array_of_datatypes)
 {
   CHECK_MPI_NULL(1, MPI_DATATYPE_NULL, MPI_ERR_TYPE, type)
   CHECK_NEGATIVE(2, MPI_ERR_COUNT, max_integers)
@@ -301,8 +300,7 @@ int PMPI_Type_get_contents (MPI_Datatype type, int max_integers, int max_address
                             array_of_integers, array_of_addresses, array_of_datatypes);
 }
 
-int PMPI_Type_get_envelope (MPI_Datatype type, int *num_integers, int *num_addresses, 
-                            int *num_datatypes, int *combiner)
+int PMPI_Type_get_envelope(MPI_Datatype type, int* num_integers, int* num_addresses, int* num_datatypes, int* combiner)
 {
   CHECK_MPI_NULL(1, MPI_DATATYPE_NULL, MPI_ERR_TYPE, type)
   CHECK_NULL(2, MPI_ERR_ARG, num_integers)

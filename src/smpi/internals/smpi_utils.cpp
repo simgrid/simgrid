@@ -320,11 +320,14 @@ void set_current_buffer(int i, const char* name, const void* buf){
   }
 }
 
-void print_buffer_info(){
-    if(not current_buffer1.name.empty())
-      XBT_INFO("Buffer %s was allocated from %s line %d, with size %zu", current_buffer1.name.c_str(), current_buffer1.alloc.file.c_str(), current_buffer1.alloc.line, current_buffer1.alloc.size);
-    if(not current_buffer2.name.empty())
-      XBT_INFO("Buffer %s was allocated from %s line %d, with size %zu", current_buffer2.name.c_str(), current_buffer2.alloc.file.c_str(), current_buffer2.alloc.line, current_buffer2.alloc.size);    
+void print_buffer_info()
+{
+  if (not current_buffer1.name.empty())
+    XBT_INFO("Buffer %s was allocated from %s line %d, with size %zu", current_buffer1.name.c_str(),
+             current_buffer1.alloc.file.c_str(), current_buffer1.alloc.line, current_buffer1.alloc.size);
+  if (not current_buffer2.name.empty())
+    XBT_INFO("Buffer %s was allocated from %s line %d, with size %zu", current_buffer2.name.c_str(),
+             current_buffer2.alloc.file.c_str(), current_buffer2.alloc.line, current_buffer2.alloc.size);
 }
 
 size_t get_buffer_size(const void* buf){

@@ -169,7 +169,7 @@ foreach $_ (@ARGV) {
     elsif (/--?batchdir=(.*)/) { $batrundir = $1; }
     elsif (/--?timeoutarg=(.*)/) { $timeoutArgPattern = $1; }
     elsif (/--?execarg=(.*)/) { $execarg = "$execarg $1"; }
-    elsif (/--?privatization=(.*)/) { 
+    elsif (/--?privatization=(.*)/) {
 print STDERR "privatization called\n";
 $enabled_privatization = $1; }
     elsif (/--?wrapper=(.*)/) {
@@ -430,7 +430,7 @@ sub RunList {
 	if ($needs_privatization == 1 &&
 		$enabled_privatization != 1) {
                 SkippedTest($programname, $np, $workdir, "requires SMPI privatization");
-	        next; 
+	        next;
 	}
 
 	if ($np eq "") { $np = $np_default; }

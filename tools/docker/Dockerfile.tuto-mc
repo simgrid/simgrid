@@ -3,12 +3,12 @@
 # Launch it as follows:
 #    docker run -it simgrid/tuto-mc bash
 
-# Base image 
+# Base image
 FROM debian:testing
 
-RUN apt update && apt -y upgrade 
+RUN apt update && apt -y upgrade
 
-# - Install SimGrid's dependencies 
+# - Install SimGrid's dependencies
 # - Compile and install SimGrid itself.
 # - Get the tutorial files (with an empty makefile advising to run cmake before make, just in case)
 # - Remove everything that was installed, and re-install what's needed by the SimGrid libraries before the Gran Final Cleanup
@@ -25,7 +25,7 @@ RUN apt install -y g++ gcc git valgrind gfortran libboost-dev libboost-stacktrac
     apt install -y `sed -e 's/shlibs:Depends=//' -e 's/([^)]*)//g' -e 's/,//g' /tmp/deps` && rm /tmp/deps && \
     apt autoremove -y && apt autoclean && apt clean
 
-# The build and dependencies are not cleaned in this image since it's it's experimental so far    
+# The build and dependencies are not cleaned in this image since it's it's experimental so far
 #    git reset --hard master && git clean -dfx && \
 
 

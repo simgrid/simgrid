@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &nproc);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-    
+
     if(argc<2){
       if (rank == 0)
         printf("Usage : gemm size \"native/sampling\"\n");
@@ -73,7 +73,6 @@ int main(int argc, char* argv[])
     float *b = (float*)malloc(sizeof(float)*size*size);
     float *c = (float*)malloc(sizeof(float)*size*size);
 
-  
     MPI_Barrier(MPI_COMM_WORLD);
     start = MPI_Wtime();
 
@@ -130,7 +129,7 @@ int main(int argc, char* argv[])
                 multiply_sampled(a, b, c, (size/nproc)*nproc, size-1, size);
         }
     }
-    
+
     MPI_Barrier(MPI_COMM_WORLD);
     end = MPI_Wtime();
 
@@ -151,7 +150,6 @@ int main(int argc, char* argv[])
             sec_per_matrix_mul,
             flops_per_matrix_mul);
     }
-   
 
     return 0;
 }

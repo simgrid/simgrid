@@ -7,7 +7,7 @@
 package task.priority;
 import org.simgrid.msg.Msg;
 
-/* Demonstrates the use of Task.setPriority to change the computation priority of a task */ 
+/* Demonstrates the use of Task.setPriority to change the computation priority of a task */
 public class Main {
   private Main() {
     throw new IllegalAccessError("Utility class");

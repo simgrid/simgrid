@@ -83,7 +83,7 @@ my $path = $ARGV[0] // "..";
 open FILES, "find $path/src/ $path/tools/ $path/include/ -name '*.c' -o -name '*.cpp' |" || die "Cannot search for the source file names: $!\n";
 while (my $file=<FILES>) {
     chomp $file;
-    parse_file($file); 	
+    parse_file($file);
 }
 parse_file("$path/include/xbt/sysdep.h");
 close FILES;
@@ -94,7 +94,7 @@ my %used;
 sub display_subtree {
     my $name=shift;
     my $indent=shift;
-    
+
     $used{$name} = 1;
     unless ($name eq "XBT_LOG_ROOT_CAT") { # do not display the root
 	print "$indent - $name: ".($desc{$name}|| "(undocumented)")."\n";

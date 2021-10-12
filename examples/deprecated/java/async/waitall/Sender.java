@@ -29,7 +29,7 @@ public class Sender extends Process {
 
     Comm[] communicators = new Comm[receiverCount];
     for (int i = 1; i <= receiverCount; i++) {
-      Task task = new Task("Task_" + i, taskComputeSize, taskCommunicateSize); 
+      Task task = new Task("Task_" + i, taskComputeSize, taskCommunicateSize);
       Msg.info("Start the Sending '" + task.getName()+ "' to '" + hosts[i].getName() + "'");
       communicators[i-1] = task.isend(hosts[i].getName());
     }

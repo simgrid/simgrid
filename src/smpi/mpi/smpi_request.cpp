@@ -712,7 +712,7 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
       XBT_DEBUG("Exception in testany");
       return 0;
     }
-    
+
     if (i != -1) { // -1 is not MPI_UNDEFINED but a SIMIX return code. (nothing matches)
       *index = map[i];
       if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags_ & MPI_REQ_GENERALIZED) &&
@@ -771,7 +771,7 @@ int Request::testall(int count, MPI_Request requests[], int* outflag, MPI_Status
       }else{
         *outflag=0;
       }
-      if (ret != MPI_SUCCESS) 
+      if (ret != MPI_SUCCESS)
         error = 1;
     }else{
       Status::empty(pstat);
@@ -780,9 +780,9 @@ int Request::testall(int count, MPI_Request requests[], int* outflag, MPI_Status
       status[i] = *pstat;
     }
   }
-  if(error==1) 
+  if (error == 1)
     return MPI_ERR_IN_STATUS;
-  else 
+  else
     return MPI_SUCCESS;
 }
 
@@ -813,11 +813,11 @@ void Request::iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
                                /*(seconds * flop/s -> total flops)*/ smpi_iprobe_sleep * speed * maxrate)
         ->set_name("iprobe")
         /* Not the entire CPU can be used when iprobing: This is important for
-         * the energy consumption caused by polling with iprobes. 
+         * the energy consumption caused by polling with iprobes.
          * Note also that the number of flops that was
          * computed above contains a maxrate factor and is hence reduced (maxrate < 1)
          */
-        ->set_bound(maxrate*speed)
+        ->set_bound(maxrate * speed)
         ->start()
         ->wait();
   }
@@ -1180,8 +1180,7 @@ int Request::waitsome(int incount, MPI_Request requests[], int *indices, MPI_Sta
   indices[count] = index;
   count++;
   for (int i = 0; i < incount; i++) {
-    if (i!=index && requests[i] != MPI_REQUEST_NULL 
-        && not(requests[i]->flags_ & MPI_REQ_FINISHED)) {
+    if (i != index && requests[i] != MPI_REQUEST_NULL && not(requests[i]->flags_ & MPI_REQ_FINISHED)) {
       test(&requests[i], pstat,&flag);
       if (flag==1){
         indices[count] = i;

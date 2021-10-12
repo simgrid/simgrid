@@ -17,7 +17,7 @@ set(bin_files    ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/promela_bugged2_li
 #if(SIMGRID_HAVE_MC)
 #  IF(HAVE_UCONTEXT_CONTEXTS AND SIMGRID_PROCESSOR_x86_64) # liveness model-checking works only on 64bits (for now ...)
 #    ADD_TESH(mc-bugged2-liveness-ucontext     --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}
-#                                              --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+#                                              --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
 #                                              --cd ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/mc
 #                                              bugged2-liveness.tesh)
 #  ENDIF()

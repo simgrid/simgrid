@@ -27,7 +27,7 @@ public class Sender extends Process {
     Msg.info("Hello! Got "+ receiverCount + " receivers to contact");
 
     for (int i = 1; i <= receiverCount; i++) {
-      Task task = new Task("Task_" + i, taskComputeSize, taskCommunicateSize); 
+      Task task = new Task("Task_" + i, taskComputeSize, taskCommunicateSize);
       Msg.info("Sending \"" + task.getName()+ "\" to \"" + hosts[i].getName() + "\"");
       task.dsend(hosts[i].getName());
     }

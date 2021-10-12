@@ -80,23 +80,23 @@ while(defined($line=<FILE>)){
 		push @hosts, "           radical=\"1-$nb_host\" power=\"1000000000\" bw=\"125000000\" lat=\"5E-5\"\n";
 		push @hosts, "           router_id=\"cluster$src-router\"/>\n";
 	    }
-	}		
+	}
 	my $table = $4;
 	@tokens = split(/ /,$table);
 	foreach $token (@tokens) {
 	    if($src >= $dst){
 		if($token != "0") #if there is a link between src and dst
-		{	
-		    #Create a link				
-		    if($1 == "0"){ 
+		{
+		    #Create a link
+		    if($1 == "0"){
 			push @links_router, "    <link id=\"link$num_link\" bandwidth=\"$token\"/>\n";
 		    }
 		    else{
 			push @links, "  <link id=\"link$num_link\" bandwidth=\"$token\"/>\n";
 		    }
-		    
+
 		    #Create the route between router and router
-		    if($is_router[$src] && $is_router[$dst]) 
+		    if($is_router[$src] && $is_router[$dst])
 		    {
 			if(@list_of_name){
 			    push @routes_router, "    <route src=\"$list_of_name[$src]\" dst=\"$list_of_name[$dst]\">";
@@ -107,9 +107,9 @@ while(defined($line=<FILE>)){
 			push @routes_router, " <link_ctn id=\"link$num_link\"/>";
 			push @routes_router, " </route>\n";
 		    }
-		    
+
 		    #Create the route between cluster and cluster
-		    elsif(!$is_router[$src] && !$is_router[$dst]) 
+		    elsif(!$is_router[$src] && !$is_router[$dst])
 		    {
 			if(@list_of_name){
 			    push @routes_cluster, "    <ASroute src=\"$list_of_name[$src]\" dst=\"$list_of_name[$dst]\"";
@@ -121,7 +121,7 @@ while(defined($line=<FILE>)){
 			}
 			push @routes_cluster, "      <link_ctn id=\"link$num_link\"/>\n";
 			push @routes_cluster, "    </ASroute>\n";
-		    }				
+		    }
 		    else
 		    {
 			push @routes, "  <ASroute ";
@@ -130,8 +130,8 @@ while(defined($line=<FILE>)){
 			    {push @routes, "src=\"AS_intern\" gw_src=\"$list_of_name[$src]\" ";}
 			    else			#cluster
 			    {push @routes, "src=\"$list_of_name[$src]\" gw_src=\"$list_of_name[$src]-router\" ";}
-			    
-			    
+
+
 			    if($is_router[$dst]) 	#router
 			    {push @routes, "dst=\"AS_intern\" gw_dst=\"$list_of_name[$dst]\">\n";}
 			    else			#cluster
@@ -142,8 +142,8 @@ while(defined($line=<FILE>)){
 			    {push @routes, "src=\"AS_intern\" gw_src=\"router$src\" ";}
 			    else			#cluster
 			    {push @routes, "src=\"cluster$src\" gw_src=\"cluster$src-router\" ";}
-			    
-			    
+
+
 			    if($is_router[$dst]) 	#router
 			    {push @routes, "dst=\"AS_intern\" gw_dst=\"router$dst\">\n";}
 			    else			#cluster
@@ -151,10 +151,10 @@ while(defined($line=<FILE>)){
 			}
 			push @routes, "    <link_ctn id=\"link$num_link\"/>\n";
 			push @routes, "  </ASroute>\n";
-			
+
 		    }
-		    
-		    $num_link++;	
+
+		    $num_link++;
 		}
 	    }
 	    $dst++;
@@ -174,7 +174,7 @@ print @routers;
 print @links_router;
 print @routes_router;
 print "  </AS>\n";
-print "\n";	
+print "\n";
 print @hosts;
 print @routes_cluster;
 print "\n";

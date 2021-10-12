@@ -1,4 +1,4 @@
-# CMake find module to search for the SimGrid library. 
+# CMake find module to search for the SimGrid library.
 
 # Copyright (c) 2016-2021. The SimGrid Team.
 #
@@ -48,7 +48,7 @@
 #  Since SimGrid header files require C++14, so we set CMAKE_CXX_STANDARD to 14.
 #    Change this variable in your own file if you need a later standard.
 
-# 
+#
 # IMPROVING THIS FILE
 # -------------------
 #  - Use automatic SimGridConfig.cmake creation via export/install(EXPORT in main CMakeLists.txt:
@@ -72,7 +72,7 @@ if (NOT SimGrid_INCLUDE_DIR)
     NAMES simgrid_config.h
     PATHS ${SimGrid_PATH}/include /opt/simgrid/include
   )
-endif()    
+endif()
 find_library(SimGrid_LIBRARY
   NAMES simgrid
   PATHS ${SimGrid_PATH}/lib /opt/simgrid/lib
@@ -100,7 +100,7 @@ if (SimGrid_INCLUDE_DIR)
     set(SimGrid_VERSION_${CMAKE_MATCH_1} ${CMAKE_MATCH_2})
   endforeach()
   unset(SimGrid_VERSION_STRING)
-  unset(SimGrid_VERSION_REGEX)  
+  unset(SimGrid_VERSION_REGEX)
 endif ()
 
 include(FindPackageHandleStandardArgs)

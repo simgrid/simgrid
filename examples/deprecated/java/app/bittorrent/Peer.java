@@ -49,7 +49,7 @@ public class Peer extends Process {
       Msg.info("Wrong number of arguments");
     }
     init(Integer.parseInt(args[0]), (args.length == 3));
-     
+
     //Retrieve the deadline
     deadline = Double.parseDouble(args[1]);
     if (deadline < 0) {
@@ -61,7 +61,7 @@ public class Peer extends Process {
     if (getPeersData()) {
       Msg.debug("Got " + peers.size() + " peers from the tracker");
       Msg.debug("Here is my current status: " + getStatus());
-      beginReceiveTime = Msg.getClock();      
+      beginReceiveTime = Msg.getClock();
       if (hasFinished()) {
         pieces = Common.FILE_PIECES;
         sendHandshakeAll();
@@ -265,39 +265,39 @@ public class Peer extends Process {
         assert message.index >= 0 && message.index < Common.FILE_PIECES;
         assert remotePeer.bitfield != null;
         remotePeer.bitfield[message.index] = '1';
-        piecesCount[message.index]++; 
+        piecesCount[message.index]++;
         //Send interested message to the peer if he has what we want
         if (!remotePeer.amInterested && currentPieces.contains(message.index) ) {
           remotePeer.amInterested = true;
           sendInterested(remotePeer.mailbox);
         }
-        
+
         if (currentPieces.contains(message.index)) {
-          int blockIndex = getFirstBlock(message.index);      
+          int blockIndex = getFirstBlock(message.index);
           int blockLength = Common.PIECES_BLOCKS - blockIndex ;
-          blockLength = blockLength > Common.BLOCKS_REQUESTED ? Common.BLOCKS_REQUESTED : blockLength;    
+          blockLength = blockLength > Common.BLOCKS_REQUESTED ? Common.BLOCKS_REQUESTED : blockLength;
           sendRequest(message.mailbox,message.index,blockIndex,blockLength);
         }
       break;
       case REQUEST:
         assert message.index >= 0 && message.index < Common.FILE_PIECES;
         if (!remotePeer.chokedUpload) {
-          Msg.debug("Received a REQUEST from " + message.peerId + "(" + message.issuerHostname + ") for " 
+          Msg.debug("Received a REQUEST from " + message.peerId + "(" + message.issuerHostname + ") for "
                     + message.peerId);
           if (bitfield[message.index] == '1') {
-            sendPiece(message.mailbox,message.index,false,message.blockIndex,message.blockLength);  
+            sendPiece(message.mailbox,message.index,false,message.blockIndex,message.blockLength);
           } else {
-            Msg.debug("Received a REQUEST from " + message.peerId + " (" + message.issuerHostname 
+            Msg.debug("Received a REQUEST from " + message.peerId + " (" + message.issuerHostname
                       + ") but he is choked" );
           }
         }
       break;
       case PIECE:
         if (message.stalled) {
-          Msg.debug("The received piece " + message.index + " from " + message.peerId + " (" + message.issuerHostname 
+          Msg.debug("The received piece " + message.index + " from " + message.peerId + " (" + message.issuerHostname
                     + ") is stalled");
         } else {
-          Msg.debug("Received piece " + message.index + " from " + message.peerId + " (" 
+          Msg.debug("Received piece " + message.index + " from " + message.peerId + " ("
                     + message.issuerHostname + ")");
           if (bitfield[message.index] == '0') {
             updateBitfieldBlocks(message.index,message.blockIndex,message.blockLength);
@@ -493,7 +493,7 @@ public class Peer extends Process {
     return true;
   }
 
-  // Returns the first block of a piece that we don't have. 
+  // Returns the first block of a piece that we don't have.
   private int getFirstBlock(int piece) {
     int blockIndex = -1;
     for (int i = 0; i < Common.PIECES_BLOCKS; i++) {
@@ -517,7 +517,7 @@ public class Peer extends Process {
       //Getting the block to send.
       int blockIndex = getFirstBlock(piece);
       int blockLength = Common.PIECES_BLOCKS - blockIndex ;
-      blockLength = blockLength > Common.BLOCKS_REQUESTED ? Common.BLOCKS_REQUESTED : blockLength;    
+      blockLength = blockLength > Common.BLOCKS_REQUESTED ? Common.BLOCKS_REQUESTED : blockLength;
       if (remotePeer.bitfield[piece] == '1') {
         sendRequest(remotePeer.mailbox, piece, blockIndex, blockLength);
       }
@@ -531,9 +531,9 @@ public class Peer extends Process {
     }
     for (Connection connection : peers.values()) {
       if (connection.bitfield != null && connection.bitfield[currentPiece] == '1' && !connection.amInterested) {
-        connection.amInterested = true;        
+        connection.amInterested = true;
         MessageTask task = new MessageTask(MessageTask.Type.INTERESTED, hostname, this.mailbox, this.id);
-        task.dsend(connection.mailbox);        
+        task.dsend(connection.mailbox);
       }
     }
     currentPiece = -1;
@@ -605,7 +605,7 @@ public class Peer extends Process {
   private void sendRequest(String mailbox, int piece, int blockIndex, int blockLength) {
     Msg.debug("Sending a REQUEST to " + mailbox + " for piece " + piece + " and blocks " + blockIndex + ","
               + (blockIndex + blockLength));
-    MessageTask task = new MessageTask(MessageTask.Type.REQUEST, hostname, this.mailbox, this.id, piece, blockIndex, 
+    MessageTask task = new MessageTask(MessageTask.Type.REQUEST, hostname, this.mailbox, this.id, piece, blockIndex,
                                        blockLength);
     task.dsend(mailbox);
   }

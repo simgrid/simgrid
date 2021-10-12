@@ -134,8 +134,8 @@ public class Node extends Process {
     } while (!answerGot && trials < Common.MAX_JOIN_TRIALS);
     /* Second step: Send a FIND_NODE in a node in each bucket */
     int bucketId = table.findBucket(idKnown).getId();
-    for (int i = 0; ((bucketId - i) > 0 || 
-       (bucketId + i) <= Common.IDENTIFIER_SIZE) && 
+    for (int i = 0; ((bucketId - i) > 0 ||
+       (bucketId + i) <= Common.IDENTIFIER_SIZE) &&
        i < Common.JOIN_BUCKETS_QUERIES; i++) {
       if (bucketId - i > 0) {
         int idInBucket = table.getIdInPrefix(this.id,bucketId - i);
@@ -178,7 +178,7 @@ public class Node extends Process {
           if (!comm.test()) {
             waitFor(1);
           } else {
-            Task task = comm.getTask();  
+            Task task = comm.getTask();
             if (task instanceof FindNodeAnswerTask) {
               FindNodeAnswerTask answerTask = (FindNodeAnswerTask)task;
               //Check if we received what we are looking for.
@@ -189,7 +189,7 @@ public class Node extends Process {
                   table.update(c.getId());
                 }
                 answers++;
-                
+
                 nodesAdded = nodeList.merge(answerTask.getAnswer());
               } else {
               /* If it's not our answer, we answer to the node that has queried us anyway */
@@ -211,7 +211,7 @@ public class Node extends Process {
         }
       } while (answers < queries && Msg.getClock() < timeout);
       destinationFound = nodeList.destinationFound();
-    } while (!destinationFound && (nodesAdded > 0 || answers == 0) && Msg.getClock() < globalTimeout 
+    } while (!destinationFound && (nodesAdded > 0 || answers == 0) && Msg.getClock() < globalTimeout
              && steps < Common.MAX_STEPS);
 
     if (destinationFound) {

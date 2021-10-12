@@ -2,9 +2,9 @@ attrt 2
 #needs MPI_Intercomm_create
 #attric 4
 attrerr 1
-#      The MPI-2 specification makes it clear that delect attributes are 
+#      The MPI-2 specification makes it clear that delect attributes are
 #      called on MPI_COMM_WORLD and MPI_COMM_SELF at the very beginning of
-#      MPI_Finalize.  This is useful for tools that want to perform the MPI 
+#      MPI_Finalize.  This is useful for tools that want to perform the MPI
 #      equivalent of an "at_exit" action.
 # SMPI does not keep a copy of comm_self at all times for memory reasons...
 #attrend 1

@@ -9,8 +9,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
   foreach(test alltoallvf90
-           allredint8f90 allredopttf90 alltoallwf90 
-           exscanf90 inplacef90 
+           allredint8f90 allredopttf90 alltoallwf90
+           exscanf90 inplacef90
            nonblockingf90 nonblocking_inpf90
            redscatf90 red_scat_blockf90 reducelocalf90
            split_typef90 uallreducef90 vw_inplacef90)

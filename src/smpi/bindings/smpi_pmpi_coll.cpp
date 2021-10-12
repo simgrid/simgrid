@@ -58,8 +58,7 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
   return PMPI_Ibcast(buf, count, datatype, root, comm, MPI_REQUEST_IGNORED);
 }
 
-int PMPI_Ibcast(void *buf, int count, MPI_Datatype datatype, 
-                   int root, MPI_Comm comm, MPI_Request* request)
+int PMPI_Ibcast(void* buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm, MPI_Request* request)
 {
   SET_BUF1(buf)
   CHECK_COMM(5)

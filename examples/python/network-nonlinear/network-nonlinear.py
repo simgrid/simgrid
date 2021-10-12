@@ -17,7 +17,7 @@ class Sender:
   def __init__(self, msg_count: int, msg_size=int(1e6)):
     self.msg_count = msg_count
     self.msg_size = msg_size
-  
+
   # Actors that are created as object will execute their __call__ method.
   # So, the following constitutes the main function of the Sender actor.
   def __call__(self):
@@ -57,7 +57,7 @@ class Receiver:
       comm, data = mbox.get_async()
       pending_comms.append(comm)
       pending_msgs.append(data)
-    
+
     while len(pending_comms) > 0:
       index = Comm.wait_any(pending_comms)
       msg = pending_msgs[index].get()
@@ -88,7 +88,7 @@ def load_platform():
    ________                 __________
   | Sender |===============| Receiver |
   |________|    Link1      |__________|
-  
+
   """
   zone = NetZone.create_full_zone("Zone1")
   sender = zone.create_host("sender", 1).seal()

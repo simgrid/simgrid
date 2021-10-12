@@ -36,9 +36,9 @@ class ActorExt {
 #endif
   std::string tracing_category_                  = "";
   MPI_Info info_env_;
-  void* bsend_buffer_ = nullptr; 
-  int bsend_buffer_size_ = 0; 
-  
+  void* bsend_buffer_    = nullptr;
+  int bsend_buffer_size_ = 0;
+
 #if HAVE_PAPI
   /** Contains hardware data as read by PAPI **/
   int papi_event_set_;

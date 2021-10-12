@@ -39,7 +39,7 @@ src/surf/xml/simgrid_dtd.l
 ### Jedule
 examples/deprecated/simdag/scheduling/sd_scheduling.jed
 teshsuite/simdag/platforms/simgrid.jed
-### Libraries links 
+### Libraries links
 [Ss]im[Gg]rid-*.tar.gz
 simgrid.jar
 ### Generated files
@@ -99,7 +99,7 @@ doc/simgrid.tag
 doc/doxygen/logcategories.doc
 doc/javadoc
 doc/example_lists/
-### Specific of project 
+### Specific of project
 .settings/
 .csettings/
 examples/deprecated/java/.classpath

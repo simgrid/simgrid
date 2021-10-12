@@ -8,7 +8,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
-  foreach(test gaddressf90 typesnamef90 structf 
+  foreach(test gaddressf90 typesnamef90 structf
              # allctypesf90 createf90 get_elem_d get_elem_u
 	       hindex1f90
 	       indtype kinds

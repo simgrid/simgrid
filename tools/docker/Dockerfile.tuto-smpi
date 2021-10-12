@@ -1,4 +1,4 @@
-# Base image 
+# Base image
 FROM simgrid/stable
 
 # https://stackoverflow.com/questions/35134713/disable-cache-for-specific-run-commands
@@ -19,7 +19,7 @@ RUN apt install -y python3 pajeng libssl-dev r-base r-cran-devtools r-cran-tidyv
     git clone --depth=1 https://framagit.org/simgrid/simgrid-template-smpi.git simgrid-template-smpi.git && \
     chown -R user:user /source && \
     apt autoremove -y && apt clean && apt autoclean
-    
+
 RUN Rscript -e "library(devtools); install_github('schnorr/pajengr');"
 
 CMD ["su", "-", "user", "-c", "/bin/bash"]

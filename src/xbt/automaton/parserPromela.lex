@@ -73,7 +73,7 @@ commentaire  "/*"([^\*\/]*{nouv_ligne}*[^\*\/]*)*"*/"
 [a-zA-Z]{caractere}*      { yylval.string=(char *)malloc(strlen(yytext)+1);
                             sscanf(yytext,"%s",yylval.string);
 			                      return (ID); }
-		
+
 {numl}                    { }
 
 .                         { }

@@ -56,7 +56,7 @@ while(defined($line=<SH_LIGNE>))
 		{
 		print "$line";
 		}
-	}	
+	}
 }
 
 close(SH_LIGNE);

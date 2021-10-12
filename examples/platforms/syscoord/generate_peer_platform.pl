@@ -23,12 +23,12 @@ open INPUT, $ARGV[0] or die "Unable to open $ARGV[1]: $!\n";
 while(defined($line=<INPUT>))
 {
     next if ($line =~ /^#/);
-    # 278 7.2 -9.4 h 2.3 
+    # 278 7.2 -9.4 h 2.3
     if($line =~ /^([^ ]*) ([^ ]*) ([^ ]*) h ([^ ]*) *$/) {
 	print "\t\t<peer id=\"peer-$1\" coordinates=\"$2 $3 $4\" speed=\"730Mf\" bw_in=\"13.38MBps\" bw_out=\"1.024MBps\"/>\n";
 	next;
     }
     die "Parse error: $line\n";
-}			
+}
 print "\t</AS>\n";
 print "</platform>\n";

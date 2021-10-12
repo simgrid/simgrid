@@ -15,7 +15,7 @@ public class FindNodeTask extends KademliaTask {
   private int destination;
 
   public FindNodeTask(int senderId, int destination) {
-    super(senderId);  
+    super(senderId);
     this.destination = destination;
   }
 

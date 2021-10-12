@@ -17,7 +17,7 @@ public class VM extends Host {
 	 * Create a `basic` VM : 1 core and 1GB of RAM.
 	 * @param host Host node
 	 * @param name name of the machine
-	 */	
+	 */
 	public VM(Host host, String name) {
 		this(host,name, /*coreAmount*/1, 1024, 0, 0);
 	}
@@ -27,7 +27,7 @@ public class VM extends Host {
 	 * @param host Host node
 	 * @param name name of the machine
 	 * @param coreAmount the amount of cores of the VM
-	 */	
+	 */
 	public VM(Host host, String name, int coreAmount) {
 		this(host,name, coreAmount, 1024, 0, 0);
 	}
@@ -39,7 +39,7 @@ public class VM extends Host {
 	 * @param ramSize size of the RAM that should be allocated (in MBytes)
 	 * @param migNetSpeed (network bandwidth allocated for migrations in MB/s, if you don't know put zero ;))
 	 * @param dpIntensity (dirty page percentage according to migNetSpeed, [0-100], if you don't know put zero ;))
-	 */	
+	 */
 	public VM(Host host, String name, int ramSize, int migNetSpeed, int dpIntensity){
 		this(host, name, /*coreAmount*/1, ramSize, migNetSpeed, dpIntensity);
 	}
@@ -77,7 +77,7 @@ public class VM extends Host {
 	}
 	private native void nativeFinalize();
 
-	/** Returns whether the given VM is currently suspended */	
+	/** Returns whether the given VM is currently suspended */
 	public native boolean isCreated();
 
 	/** Returns whether the given VM is currently running */
@@ -86,14 +86,14 @@ public class VM extends Host {
 	/** Returns whether the given VM is currently running */
 	public native boolean isMigrating();
 
-	/** Returns whether the given VM is currently suspended */	
+	/** Returns whether the given VM is currently suspended */
 	public native boolean isSuspended();
 
 	/** Returns the amount of virtual CPUs provided */
 	public int getCoreAmount() {
 		return coreAmount;
 	}
-	
+
 	/**
 	 * Natively implemented method create the VM.
 	 * @param ramSize size of the RAM that should be allocated (in MB)
@@ -123,7 +123,7 @@ public class VM extends Host {
 
 	/** Change the host on which all processes are running
 	 * (pre-copy is implemented)
-	 */	
+	 */
 	public void migrate(Host destination) throws HostFailureException{
 		try {
 			this.nativeMigration(destination);
@@ -140,7 +140,7 @@ public class VM extends Host {
 	 *
 	 * No suspension cost occurs. If you want to simulate this too, you want to use a @ref File.write() before or
 	 * after, depending on the exact semantic of VM suspend to you.
-	 */	
+	 */
 	public native void suspend();
 
 	/** Immediately resumes the execution of all processes within the given VM

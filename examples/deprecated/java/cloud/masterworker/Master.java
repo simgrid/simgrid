@@ -24,9 +24,9 @@ public class Master extends Process {
 		int workersCount = Main.NHOSTS;
 
 		for (int step = 1; step <= Main.NSTEPS ; step++) {
-			// Create one VM per host and bind a process inside each one. 
+			// Create one VM per host and bind a process inside each one.
 			for (int i = 0; i < workersCount; i++) {
-				Msg.verb("create VM0-s"+step+"-"+i);  
+				Msg.verb("create VM0-s"+step+"-"+i);
 				VM vm = new VM(hosts[i+1],"VM0-s"+step+"-"+i);
 				vm.start();
 				Worker worker= new Worker(vm,"WK:"+step+":"+ i);
@@ -48,9 +48,9 @@ public class Master extends Process {
 
 			Msg.verb("Wait a while, and resume all VMs.");
 			waitFor(2);
-			for (VM vm : vms) 
+			for (VM vm : vms)
 				vm.resume();
-			
+
 
 			Msg.verb("Sleep long enough for everyone to be done with previous batch of work");
 			waitFor(1000*step - Msg.getClock());
@@ -63,7 +63,7 @@ public class Master extends Process {
 
 			Msg.verb("Let's kill everyone.");
 
-			for (VM vm : vms) 
+			for (VM vm : vms)
 				vm.destroy();
 			Msg.info("XXXXXXXXXXXXXXX Step "+step+" done.");
 		}

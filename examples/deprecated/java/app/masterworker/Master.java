@@ -16,7 +16,7 @@ import org.simgrid.msg.Process;
 public class Master extends Process {
   public Master(Host host, String name, String[]args) {
     super(host,name,args);
-  } 
+  }
   public void main(String[] args) throws MsgException {
     if (args.length < 4) {
       Msg.info("Master needs 4 arguments");
@@ -32,7 +32,7 @@ public class Master extends Process {
     Msg.info("Hello! My PID is "+getPID()+". Got "+  workersCount + " workers and "+tasksCount+" tasks to process");
 
     for (int i = 0; i < tasksCount; i++) {
-      Task task = new Task("Task_" + i, taskComputeSize, taskCommunicateSize); 
+      Task task = new Task("Task_" + i, taskComputeSize, taskCommunicateSize);
       Msg.debug("Sending \"" + task.getName()+ "\" to \"worker_" + i % workersCount + "\"");
       task.send("worker_"+(i%workersCount));
     }

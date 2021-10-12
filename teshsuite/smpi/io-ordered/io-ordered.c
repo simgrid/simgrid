@@ -21,16 +21,16 @@ int main( int argc, char *argv[] )
     MPI_File fh;
     MPI_Comm comm;
     MPI_Status status;
- 
+
     MPI_Init( &argc, &argv );
- 
+
     comm = MPI_COMM_WORLD;
     MPI_File_open( comm, (char*)"/scratch/testfile", MPI_MODE_RDWR | MPI_MODE_CREATE | MPI_MODE_DELETE_ON_CLOSE, MPI_INFO_NULL, &fh );
     MPI_Comm_size( comm, &size );
     MPI_Comm_rank( comm, &rank );
     buf = (int *)malloc( 10* sizeof(int) );
     buf[0] = rank;
- 
+
     /* Write to file */
     MPI_File_write_ordered( fh, buf, 10, MPI_INT, &status );
     MPI_Get_count( &status, MPI_INT, &count );
@@ -49,7 +49,7 @@ int main( int argc, char *argv[] )
 
     free( buf );
     MPI_File_close( &fh );
- 
+
     MPI_Finalize();
     return errs;
 }

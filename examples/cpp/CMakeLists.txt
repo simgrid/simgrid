@@ -33,7 +33,7 @@ if(SIMGRID_HAVE_MC)
    target_link_libraries(s4u-mc-bugged1-liveness  simgrid)
    set_target_properties(s4u-mc-bugged1-liveness PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness)
    add_dependencies(tests-mc s4u-mc-bugged1-liveness)
- 
+
   if(HAVE_C_STACK_CLEANER)
     add_executable       (s4u-mc-bugged1-liveness-cleaner-on  EXCLUDE_FROM_ALL s4u-mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
     target_link_libraries(s4u-mc-bugged1-liveness-cleaner-on  simgrid)
@@ -125,7 +125,7 @@ endforeach()
 ###################
 
 # MASTERWORKERS EXAMPLE
-foreach(variant fun class) 
+foreach(variant fun class)
   add_executable       (s4u-app-masterworkers-${variant} EXCLUDE_FROM_ALL app-masterworkers/s4u-app-masterworkers-${variant}.cpp)
   target_link_libraries(s4u-app-masterworkers-${variant} simgrid)
   set_target_properties(s4u-app-masterworkers-${variant} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-masterworkers)
@@ -142,25 +142,25 @@ if(SIMGRID_HAVE_MC)
       add_dependencies(tests-mc s4u-${example})
     endif()
   endforeach()
-  
+
   # Model-checking liveness
   IF(HAVE_UCONTEXT_CONTEXTS AND SIMGRID_PROCESSOR_x86_64) # liveness model-checking works only on 64bits (for now ...)
     add_dependencies(tests-mc s4u-mc-bugged1-liveness)
-    ADD_TESH(s4u-mc-bugged1-liveness-ucontext     --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness 
-                                                  --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+    ADD_TESH(s4u-mc-bugged1-liveness-ucontext     --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness
+                                                  --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                                   --cd ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness
                                                   ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/s4u-mc-bugged1-liveness.tesh)
 
 # This example hit the 5' timeout on CI, disable it for now
-#    ADD_TESH(s4u-mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness 
-#                                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+#    ADD_TESH(s4u-mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness
+#                                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
 #                                                      --cd ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness
 #                                                       ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh)
     IF(HAVE_C_STACK_CLEANER)
       add_dependencies(tests-mc s4u-mc-bugged1-liveness-stack-cleaner)
       # This test checks if the stack cleaner is making a difference:
       ADD_TEST(s4u-mc-bugged1-liveness-stack-cleaner ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/s4u-mc-bugged1-liveness-stack-cleaner
-                                                     ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/ 
+                                                     ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/
                                                      ${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness/)
     ENDIF()
   ENDIF()
@@ -180,13 +180,13 @@ else()
   set(parallel-factories "*")
 endif()
 
-foreach(example app-bittorrent app-masterworkers 
+foreach(example app-bittorrent app-masterworkers
                 dht-chord dht-kademlia
                 )
   ADD_TESH_FACTORIES(s4u-${example}-parallel "${parallel-factories}" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
-                                             --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example} 
-                                             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
-                                             --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example} 
+                                             --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+                                             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                             --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
                                              ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}.tesh)
 endforeach()
 
@@ -215,10 +215,10 @@ foreach (example exec-ptask trace-categories trace-masterworkers trace-platform 
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.tesh)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-${example}.cpp)
-  
+
   ADD_TESH(s4u-${example} --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
                           --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
-                          --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+                          --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                           --cd ${CMAKE_CURRENT_BINARY_DIR}/${example}
                           ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}.tesh)
 endforeach()
@@ -239,7 +239,7 @@ endif()
 # Add all extra files to the archive
 ####################################
 set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.cpp              
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.cpp
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3-wifi/s4u-network-ns3-wifi.cpp              PARENT_SCOPE)
 set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/comm-pingpong/simix-breakpoint.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.tesh

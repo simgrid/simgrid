@@ -113,7 +113,7 @@ public class Node extends Process {
   private void handleTask(Task task) {
     if (task instanceof FindSuccessorTask) {
       FindSuccessorTask fTask = (FindSuccessorTask)task;
-      Msg.debug("Receiving a 'Find Successor' request from " + fTask.getIssuerHostName() + " for id " + 
+      Msg.debug("Receiving a 'Find Successor' request from " + fTask.getIssuerHostName() + " for id " +
                 fTask.getRequestId());
       // is my successor the successor?
       if (isInInterval(fTask.getRequestId(), this.id + 1, fingers[0])) {
@@ -150,7 +150,7 @@ public class Node extends Process {
     setPredecessor(-1);
   }
 
-  // Makes the current node join the ring, knowing the id of a node already in the ring 
+  // Makes the current node join the ring, knowing the id of a node already in the ring
   private boolean join(int knownId) {
     Msg.info("Joining the ring with id " + this.id + " knowing node " + knownId);
     setPredecessor(-1);

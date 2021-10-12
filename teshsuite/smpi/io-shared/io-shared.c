@@ -21,9 +21,9 @@ int main( int argc, char *argv[] )
     MPI_File fh;
     MPI_Comm comm;
     MPI_Status status;
- 
+
     MPI_Init( &argc, &argv );
- 
+
     comm = MPI_COMM_WORLD;
     MPI_File_open( comm, (char*)"/scratch/testfile", MPI_MODE_RDWR | MPI_MODE_CREATE | MPI_MODE_DELETE_ON_CLOSE, MPI_INFO_NULL, &fh );
     MPI_Comm_size( comm, &size );
@@ -33,7 +33,7 @@ int main( int argc, char *argv[] )
 
     MPI_File_seek_shared( fh, 0, MPI_SEEK_SET );
     MPI_Barrier(comm);
-    
+
     memset( &status, 0xff, sizeof(MPI_Status) );
     MPI_File_write_shared( fh, buf, 1, MPI_INT, &status );
     MPI_Get_count( &status, MPI_INT, &count );
@@ -65,7 +65,7 @@ int main( int argc, char *argv[] )
 
     free( buf );
     MPI_File_close( &fh );
- 
+
     MPI_Finalize();
     return errs;
 }

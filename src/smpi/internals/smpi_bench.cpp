@@ -365,7 +365,7 @@ int smpi_sample_2(int global, const char *file,const char *tag, int iter_count)
       XBT_DEBUG("No benchmark (either no need, or just ran one): count (%d) >= iter (%d) (or <2) or stderr (%f) < thres (%f), or thresh is negative and ignored. "
               "Mean is %f, will be injected %d times",
               data.count, data.iters, data.relstderr, data.threshold, data.mean, iter_count);
-              
+
       //we ended benchmarking, let's inject all the time, now, and fast forward out of the loop.
       smpi_process()->set_sampling(0);
       smpi_execute(data.mean*iter_count);

@@ -4,9 +4,9 @@ explore_files() {
 
   for cmake in $(find -name CMakeLists.txt) ; do
     d=$(dirname $cmake)
-  
+
     echo;echo "Directory $d"
-  
+
     grep add_executable $cmake |\
       sed -e 's/ #/#/' -e 's/ *add_executable(//' -e 's/ .*//'|\
       sed -e 's/^\([^#].*\)/\1 PASS/' -e 's/^#\(.*\)/\1 todo/' |\

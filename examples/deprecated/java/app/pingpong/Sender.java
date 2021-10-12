@@ -25,7 +25,7 @@ public class Sender extends Process {
 			for(int pos = 0; pos < args.length ; pos++) {
 				String hostname = Host.getByName(args[pos]).getName(); // Make sure that this host exists
 
-				double time = Msg.getClock(); 
+				double time = Msg.getClock();
 				Msg.info("sender time: " + time);
 
 				PingPongTask task = new PingPongTask("no name", /* Duration: 0 flops */ 0, COMM_SIZE_LAT, time);

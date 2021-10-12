@@ -60,7 +60,7 @@ Pair::Pair(unsigned long expanded_pairs) : num(expanded_pairs)
 
 std::shared_ptr<const std::vector<int>> LivenessChecker::get_proposition_values() const
 {
-  auto values = api::get().automaton_propositional_symbol_evaluate();  
+  auto values = api::get().automaton_propositional_symbol_evaluate();
   return std::make_shared<const std::vector<int>>(std::move(values));
 }
 
@@ -392,7 +392,7 @@ void LivenessChecker::run()
     // (application_state, automaton_state) pair to the exploration stack:
     for (int i = api::get().get_dynar_length(current_pair->automaton_state->out) - 1; i >= 0; i--) {
       auto transition_succ_label = api::get().get_automaton_transition_label(current_pair->automaton_state->out, i);
-      auto transition_succ_dst = api::get().get_automaton_transition_dst(current_pair->automaton_state->out, i);      
+      auto transition_succ_dst   = api::get().get_automaton_transition_dst(current_pair->automaton_state->out, i);
       if (evaluate_label(transition_succ_label, *prop_values))
         exploration_stack_.push_back(this->create_pair(current_pair.get(), transition_succ_dst, prop_values));
     }

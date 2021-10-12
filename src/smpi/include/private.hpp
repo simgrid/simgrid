@@ -57,7 +57,7 @@ constexpr int SMPI_RMA_TAG            = -6666;
 extern XBT_PUBLIC int mpi_in_place_;
 extern XBT_PUBLIC int mpi_bottom_;
 extern XBT_PUBLIC int mpi_status_ignore_;
-extern XBT_PUBLIC int mpi_statuses_ignore_; 
+extern XBT_PUBLIC int mpi_statuses_ignore_;
 /* Convert between Fortran and C */
 #define FORT_ADDR(addr, val, val2)                                         \
   (((void *)(addr) == (void*) &(val2))                  \

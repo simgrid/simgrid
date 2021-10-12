@@ -6,8 +6,8 @@
 package async.yield;
 
 /** This example demonstrates the use of the Task.dsend() method.
- * 
- *  This way, the sender can be detached from the communication: it is not blocked as with Task.send() 
+ *
+ *  This way, the sender can be detached from the communication: it is not blocked as with Task.send()
  *  and has nothing to do at the end as with Task.isend() where it must do a Comm.wait().
  */
 
@@ -33,7 +33,7 @@ class Main {
     Host[] hosts = Host.all();
     new Yielder(hosts[0],"Yielder", new String[] {"10"}).start();
     new Yielder(hosts[1],"Yielder", new String[] {"15"}).start();
-    
+
     /*  execute the simulation. */
     Msg.run();
   }

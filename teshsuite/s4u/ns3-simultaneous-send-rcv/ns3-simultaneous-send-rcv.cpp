@@ -43,7 +43,7 @@ static void test_receive(){
 int main(int argc, char *argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
- 
+
   e.load_platform(argv[1]);
 
   auto hosts = e.get_all_hosts();

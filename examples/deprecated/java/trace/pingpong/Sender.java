@@ -23,12 +23,12 @@ public class Sender extends Process {
   }
 
   public void main(String[] args) throws MsgException {
-    Msg.info("hello !"); 
+    Msg.info("hello !");
     Trace.hostPushState (getHost().getName(), PM_STATE, "sendingPing");
 
     int hostCount = args.length;
     Msg.info("host count: " + hostCount);
-    String[] mailboxes = new String[hostCount]; 
+    String[] mailboxes = new String[hostCount];
     double time;
     double computeDuration = 0;
     PingPongTask ping;
@@ -37,8 +37,8 @@ public class Sender extends Process {
       mailboxes[pos] = Host.getByName(args[pos]).getName();
     }
 
-    for (int pos = 0; pos < hostCount; pos++) { 
-      time = Msg.getClock(); 
+    for (int pos = 0; pos < hostCount; pos++) {
+      time = Msg.getClock();
       Msg.info("sender time: " + time);
       ping = new PingPongTask("no name",computeDuration,COMM_SIZE_LAT);
       ping.setTime(time);
@@ -59,11 +59,11 @@ public class Sender extends Process {
 
       Msg.info(" --- bw "+ COMM_SIZE_BW/communicationTime + " ----");
 
-      /* Pop the last state (going back to sending ping) */  
+      /* Pop the last state (going back to sending ping) */
       Trace.hostPopState (getHost().getName(), PM_STATE);
     }
 
-    /* Pop the sendingPong state */  
+    /* Pop the sendingPong state */
     Trace.hostPopState (getHost().getName(), PM_STATE);
     Msg.info("goodbye!");
   }

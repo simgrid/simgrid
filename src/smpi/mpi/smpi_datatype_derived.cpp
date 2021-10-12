@@ -245,7 +245,7 @@ Type_Indexed::Type_Indexed(int size, MPI_Aint lb, MPI_Aint ub, int flags, int co
 }
 
 int Type_Indexed::clone(MPI_Datatype* type)
-{ 
+{
   *type = new Type_Indexed(this->size(), this->lb(), this->ub(), this->flags(), this->block_count_, this->block_lengths_, (int*)(this->block_indices_), this->old_type_);
   (*type)->copy_attrs(this);
   return MPI_SUCCESS;

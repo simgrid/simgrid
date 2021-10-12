@@ -24,7 +24,7 @@ merge_empty_bins <- function (h){
         j<-j+1
       }
     }
-  
+
   counts2[j]<-h$counts[length(h$counts)]
   breaks2[j+1]<-h$breaks[length(h$breaks)]
 
@@ -74,7 +74,7 @@ for(i in unique(NAME)){
          h<-merge_empty_bins(h)
        }
   }
-    
+
   cat(i, file = outputfile, sep = "\t", append = TRUE)
   cat("\t", file = outputfile,  append = TRUE)
   cat(sum(h$counts), file =outputfile, sep = "\t", append = TRUE)

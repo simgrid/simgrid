@@ -26,7 +26,7 @@ $SUDO apt-get -y install meson pkg-config libpugixml-dev libgtest-dev rapidjson-
 
 echo "XXXXXXXXXXXXXXXX Install intervalset"
 git clone https://framagit.org/batsim/intervalset.git
-cd intervalset 
+cd intervalset
 meson build --prefix=/usr
 cd build && ninja install
 cd ../..
@@ -34,7 +34,7 @@ cd ../..
 echo "XXXXXXXXXXXXXXXX Install redox"
 $SUDO apt-get -y install libhiredis-dev libev-dev cmake #for redox
 git clone --depth=1 --branch=install-pkg-config-file https://github.com/mpoquet/redox.git
-cd redox 
+cd redox
 cmake -DCMAKE_INSTALL_PREFIX=/usr -Dstatic_lib=OFF . && make -j$(nproc) install
 cp redox.pc /usr/lib/pkgconfig/
 cd ..

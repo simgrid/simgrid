@@ -9,7 +9,7 @@ package dht.chord;
 public class Common {
   public static final int COMM_SIZE = 10;
   public static final int COMP_SIZE = 0;
-  
+
   public static final int NB_BITS = 24;
   public static final int NB_KEYS = 16777216;
   public static final int TIMEOUT = 50;

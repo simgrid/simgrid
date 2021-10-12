@@ -54,7 +54,7 @@ public abstract class Process implements Runnable {
 	private double killTime = -1; // Used from the C world
 
 	private String name = null;
-	
+
 	private int pid = -1;
 	private int ppid = -1;
 	private Host host = null;
@@ -108,14 +108,14 @@ public abstract class Process implements Runnable {
 	 * @param host			Where to create the process.
 	 * @param name			The name of the process.
 	 * @param argsParam		The arguments of main method of the process.
-	 */	
+	 */
 	protected Process(Host host, String name, String[]argsParam)
 	{
 		if (host == null)
 			throw new IllegalArgumentException("Cannot create a process on the null host");
 		if (name == null)
 			throw new IllegalArgumentException("Process name cannot be null");
-		
+
 		this.host = host;
 		this.name = name;
 
@@ -144,7 +144,7 @@ public abstract class Process implements Runnable {
 	 * @param host    where to create the process.
 	 */
 	protected native void create(Host host);
-	
+
 	/**
 	 * This method kills all running process of the simulation.
 	 */
@@ -158,21 +158,21 @@ public abstract class Process implements Runnable {
 	public static void kill(Process p) {
 		p.kill();
 	}
-	
+
 	/** Suspends the process. See {@link #resume()} to resume it afterward */
 	public native void suspend();
 	/** Resume a process that was suspended by {@link #suspend()}. */
-	public native void resume();	
+	public native void resume();
 	/** Tests if a process is suspended.
 	 *
 	 * @see suspend()
 	 * @see resume()
 	 */
 	public native boolean isSuspended();
-	
+
 	/** Yield the current process. All other processes that are ready at the same timestamp will be executed first */
 	public static native void yield();
-	
+
 	/**
 	 * Specify whether the process should restart when its host restarts after a failure
 	 *
@@ -250,11 +250,11 @@ public abstract class Process implements Runnable {
 	 * @param host			The host where to migrate the process.
 	 *
 	 */
-	public native void migrate(Host host);	
+	public native void migrate(Host host);
 	/**
 	 * Makes the current process sleep until millis milliseconds have elapsed.
 	 * You should note that unlike "waitFor" which takes seconds (as usual in SimGrid), this method takes milliseconds (as usual for sleep() in Java).
-	 * 
+	 *
 	 * @param millis the length of time to sleep in milliseconds.
 	 */
 	public static void sleep(long millis) throws HostFailureException  {

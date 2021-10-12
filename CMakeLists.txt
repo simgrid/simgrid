@@ -34,7 +34,7 @@ include(GNUInstallDirs)
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
 #     Check for the compiler        #
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
-## 
+##
 ## Check the C/C++ standard that we need
 ##   See also tools/cmake/Flags.cmake that sets our paranoid warning flags
 INCLUDE(CheckCCompilerFlag)
@@ -44,7 +44,7 @@ CHECK_C_COMPILER_FLAG(-fstack-cleaner HAVE_C_STACK_CLEANER)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
 
-if (CMAKE_COMPILER_IS_GNUCC)    
+if (CMAKE_COMPILER_IS_GNUCC)
   if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.0")
     message(FATAL_ERROR
             "SimGrid needs at least g++ version 5.0 to compile but you have ${CMAKE_CXX_COMPILER_VERSION}."
@@ -71,16 +71,16 @@ find_package(Threads)
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Option.cmake)
 
 ### SMPI vs. Fortran
-if ((NOT DEFINED enable_smpi) OR enable_smpi) 
+if ((NOT DEFINED enable_smpi) OR enable_smpi)
   # First unset the compiler in case we're re-running cmake over a previous
   # configuration where it was saved as smpiff
   unset(CMAKE_Fortran_COMPILER)
-  
+
   SET(SMPI_FORTRAN 0)
   if(enable_fortran)
     enable_language(Fortran OPTIONAL)
   endif()
-  
+
   if(CMAKE_Fortran_COMPILER)
 
     # Fortran compiler detected: save it, then replace by smpiff
@@ -110,7 +110,7 @@ if ((NOT DEFINED enable_smpi) OR enable_smpi)
 
 endif()
 
-### SET THE LIBRARY EXTENSION 
+### SET THE LIBRARY EXTENSION
 if(APPLE)
   set(LIB_EXE "dylib")
 elseif(WIN32)
@@ -182,7 +182,7 @@ if(WIN32)
 endif()
 
 # library dependency cannot start with a space (CMP0004), so initialize it with something that is never deactivated.
-set(SIMGRID_DEP "-lm") 
+set(SIMGRID_DEP "-lm")
 
 ### Determine the assembly flavor that we need today
 set(HAVE_RAW_CONTEXTS 0)
@@ -314,7 +314,7 @@ set(_Boost_STACKTRACE_ADDR2LINE_HEADERS "boost/stacktrace.hpp")
         message(STATUS "Mandatory components found. SimGrid is compilable.")
       endif()
     endif()
-  endif() 
+  endif()
 
 # Checks for header libraries functions.
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
@@ -408,7 +408,7 @@ if(enable_model-checking)
     set(enable_java FALSE)
   endif()
 else()
-  SET(SIMGRID_HAVE_MC 0)  
+  SET(SIMGRID_HAVE_MC 0)
   set(HAVE_MMALLOC 0)
 endif()
 mark_as_advanced(PATH_LIBDW_H)
@@ -574,7 +574,7 @@ foreach(script cc cxx ff f90 run)
   configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpi${script}.in ${CMAKE_BINARY_DIR}/bin/smpi${script} @ONLY)
 endforeach()
 
-### SMPI scripts used when compiling simgrid 
+### SMPI scripts used when compiling simgrid
 set(exec_prefix "${CMAKE_BINARY_DIR}/smpi_script/")
 set(includedir "${CMAKE_HOME_DIRECTORY}/include")
 set(libdir "${CMAKE_BINARY_DIR}/lib")

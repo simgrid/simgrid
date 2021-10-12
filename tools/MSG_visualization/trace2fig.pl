@@ -89,7 +89,7 @@ sub read_link {
 	    my($numkey)=hex "$key";
 	    while (defined($link{$numkey}{dst})) {$numkey++;}
 	    $link{$numkey}{dst}=$dst;
-	    $link{$numkey}{dst_date}=$date;	
+	    $link{$numkey}{dst_date}=$date;
 	}
     }
     close INPUT;
@@ -236,7 +236,7 @@ sub draw_cat {
 
 # LM: I added the next line because of "undefined values"...
 # normally, I think that this should not happen, but this part of code is a bit too cryptic to me
-		next unless (defined($state));		
+		next unless (defined($state));
 
 		my($line) = new XFig ('polyline');
 
@@ -292,7 +292,7 @@ sub draw_cat {
     foreach $cat (keys %$Cat) {
 	next unless (defined($$Cat{$cat}{Y_min_host}) && defined($$Cat{$cat}{Y_max_host}));
 	my($line) = new XFig ('polyline');
-	
+
 	$line->{'depth'} = 150;
 	$line->{'subtype'} = 1;  # line
 	$line->{'points'} = [ [$min_x_for_host, $$Cat{$cat}{Y_min_host}*$grid_Y_size],
@@ -304,7 +304,7 @@ sub draw_cat {
 	$line->{'thickness'} = 0;
 	$index_fill++;
 	$fig->add ($line);
-	
+
 	my($text) = new XFig ('text');
 	$text->{'text'} = "$$Cat{$cat}{name}";
 	$text->{'angle'} = 3.14159265/2;

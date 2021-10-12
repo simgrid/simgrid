@@ -15,7 +15,7 @@ public class Main {
 
   public static void main(String[] args) {
     Msg.loadInit();
-    Msg.init(args); 
+    Msg.init(args);
 
     if (args.length < 1) {
       Msg.info("Usage   : Load platform_file");

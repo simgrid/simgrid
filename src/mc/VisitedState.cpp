@@ -21,7 +21,7 @@ namespace mc {
 
 /** @brief Save the current state */
 VisitedState::VisitedState(unsigned long state_number) : num(state_number)
-{  
+{
   this->heap_bytes_used = api::get().get_remote_heap_bytes();
   this->actors_count = api::get().get_actors_size();
   this->system_state = std::make_shared<simgrid::mc::Snapshot>(state_number);

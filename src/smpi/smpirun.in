@@ -47,7 +47,7 @@ Options:
   -np <numprocs>             # use that amount of processes from the hostfile.
                              # By default, all processes of the hostfile are used.
   -no-privatize              # Disable the globals privatization, that is activated by default
-  -tmpdir                    # Directory used to store temporary files. Defaults to system's. 
+  -tmpdir                    # Directory used to store temporary files. Defaults to system's.
   -trace-ti                  # activate time independent tracing (for replay, default in smpi_simgrid.txt)
   -trace                     # activate tracing (Paje, default in smpi_simgrid.trace)
   -trace-comment <comment>   # put a comment on the top of the trace file

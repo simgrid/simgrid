@@ -79,8 +79,8 @@ int colls::iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype,
   for (int other = 0; other < size; other++) {
     if(other != rank) {
       requests.push_back(Request::isend_init(sendbuf, sendcount, sendtype, other, system_tag, comm));
-      requests.push_back(Request::irecv_init(static_cast<char *>(recvbuf) + other * recvcount * recvext, 
-                         recvcount, recvtype, other, system_tag, comm));
+      requests.push_back(Request::irecv_init(static_cast<char*>(recvbuf) + other * recvcount * recvext, recvcount,
+                                             recvtype, other, system_tag, comm));
     }
   }
   (*request)->start_nbc_requests(requests);

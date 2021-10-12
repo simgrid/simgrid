@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
             multiply((size/nproc)*nproc, size-1);
         }
     }
-    
+
     // MPI_Barrier(MPI_COMM_WORLD);
     // end = MPI_Wtime();
 
@@ -97,7 +97,6 @@ int main(int argc, char* argv[])
     //         msec_per_matrix_mul,
     //         flops_per_matrix_mul);
     // }
-   
 
     return 0;
 }

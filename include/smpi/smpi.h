@@ -1048,8 +1048,9 @@ MPI_CALL(XBT_PUBLIC int, MPI_Dist_graph_create, (MPI_Comm comm_old, int n, const
                           const int* weights, MPI_Info info, int reorder, MPI_Comm* comm_dist_graph));
 MPI_CALL(XBT_PUBLIC int, MPI_Dist_graph_create_adjacent, (MPI_Comm comm_old, int indegree, const int* sources, const int* sourceweights,
                           int outdegree, const int* destinations, const int* destweights, MPI_Info info, int reorder, MPI_Comm* comm_dist_graph));
-MPI_CALL(XBT_PUBLIC int, MPI_Dist_graph_neighbors, (MPI_Comm comm, int maxindegree, int* sources, int* sourceweights, 
-                          int maxoutdegree, int* destinations, int* destweights));
+MPI_CALL(XBT_PUBLIC int, MPI_Dist_graph_neighbors,
+         (MPI_Comm comm, int maxindegree, int* sources, int* sourceweights, int maxoutdegree, int* destinations,
+          int* destweights));
 MPI_CALL(XBT_PUBLIC int, MPI_Dist_graph_neighbors_count, (MPI_Comm comm, int *indegree, int *outdegree, int *weighted));
 
 MPI_CALL(XBT_PUBLIC int, MPI_Win_test, (MPI_Win win, int* flag));
@@ -1254,4 +1255,4 @@ XBT_PUBLIC void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommIm
                                                 size_t buff_size);
 #endif
 
-#endif 
+#endif

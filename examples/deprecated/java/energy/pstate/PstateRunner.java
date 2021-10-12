@@ -18,7 +18,7 @@ public class PstateRunner extends Process {
 
 	public class DVFS extends Process {
 		public  DVFS (Host host, String name) {
-			super(host, name); 
+			super(host, name);
 		}
 
 		@Override
@@ -77,8 +77,8 @@ public class PstateRunner extends Process {
 	@Override
 	public void main(String[] strings) throws HostNotFoundException, HostFailureException {
 
-	    new DVFS (Host.getByName("MyHost1"), "dvfs_test").start(); 
-	    new DVFS (Host.getByName("MyHost2"), "dvfs_test").start(); 
+	    new DVFS (Host.getByName("MyHost1"), "dvfs_test").start();
+	    new DVFS (Host.getByName("MyHost2"), "dvfs_test").start();
 
 	}
 }

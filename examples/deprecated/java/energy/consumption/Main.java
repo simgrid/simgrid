@@ -14,9 +14,9 @@ public class Main {
     throw new IllegalAccessError("Utility class");
   }
 
-  public static void main(String[] args) throws MsgException {  
-    Msg.energyInit(); 
-    Msg.init(args); 
+  public static void main(String[] args) throws MsgException {
+    Msg.energyInit();
+    Msg.init(args);
 
     if (args.length < 1) {
       Msg.info("Usage   : Energy platform_file");

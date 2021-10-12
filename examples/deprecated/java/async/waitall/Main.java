@@ -6,13 +6,13 @@
 package async.waitall;
 
 /** This example demonstrates the use of the asynchronous communications
- * 
+ *
  *  Task.isend() and Task.irecv() are used to start the communications in non-blocking mode.
- *  
- *  The sends are then blocked onto with Comm.waitCompletion(), that locks until the given 
+ *
+ *  The sends are then blocked onto with Comm.waitCompletion(), that locks until the given
  *  communication terminates.
- *  
- *  The receives are packed into an array, and the sender blocks until all of them terminate 
+ *
+ *  The receives are packed into an array, and the sender blocks until all of them terminate
  *  with Comm.waitAll().
  */
 

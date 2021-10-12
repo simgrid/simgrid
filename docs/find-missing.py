@@ -190,7 +190,7 @@ for arg in xml_files:
             elif kind == "typedef":
                 if compoundname not in doxy_type:
                     doxy_type[compoundname] = []
-                doxy_type[compoundname].append(name)                
+                doxy_type[compoundname].append(name)
             elif kind == "friend":
                 pass # Ignore friendship
             else:
@@ -256,7 +256,7 @@ with os.popen('grep doxygentypedef:: find-missing.ignore source/*rst|sed \'s/^.*
             if len(doxy_type[klass]) == 0:
                 del doxy_type[klass]
 
-# Dump the undocumented Doxygen declarations 
+# Dump the undocumented Doxygen declarations
 for obj in sorted(doxy_funs):
     for meth in sorted(doxy_funs[obj]):
         for args in sorted(doxy_funs[obj][meth]):

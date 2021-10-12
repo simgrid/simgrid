@@ -6,7 +6,7 @@ if(enable_msg)
 
   ADD_TESH_FACTORIES(tesh-msg-task_destroy_cancel "raw"  --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                                          --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/msg/task_destroy_cancel
-                                                         --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/task_destroy_cancel 
+                                                         --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/task_destroy_cancel
                                                          ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/task_destroy_cancel/task_destroy_cancel.tesh)
 endif()
 

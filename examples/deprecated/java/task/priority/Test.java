@@ -16,7 +16,7 @@ public class Test extends Process {
     super(host,name,args);
   }
 
-  public void main(String[] args) throws MsgException {  
+  public void main(String[] args) throws MsgException {
     double computationAmount = Double.parseDouble(args[0]);
     double priority = Double.parseDouble(args[1]);
 

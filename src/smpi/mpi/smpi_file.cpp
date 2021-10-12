@@ -167,7 +167,7 @@ namespace smpi{
 
   /*Ordered and Shared Versions, with RMA-based locks : Based on the model described in :*/
   /* @InProceedings{10.1007/11557265_15,*/
-  /* author="Latham, Robert and Ross, Robert and Thakur, Rajeev and Toonen, Brian",*/ 
+  /* author="Latham, Robert and Ross, Robert and Thakur, Rajeev and Toonen, Brian",*/
   /* title="Implementing MPI-IO Shared File Pointers Without File System Support",*/
   /* booktitle="Recent Advances in Parallel Virtual Machine and Message Passing Interface",*/
   /* year="2005",*/

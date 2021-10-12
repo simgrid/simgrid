@@ -4,7 +4,7 @@
 foreach(x
         actor-create actor-daemon actor-exiting actor-join actor-kill actor-lifetime actor-migrate actor-stacksize
         actor-suspend actor-yield
-        app-masterworker app-token-ring 
+        app-masterworker app-token-ring
         comm-pingpong comm-wait comm-waitall comm-waitany
         cloud-capping cloud-masterworker cloud-migration cloud-simple
         dht-pastry
@@ -37,7 +37,7 @@ endforeach()
 
 # Chainsend example
 
-add_executable       (c-app-chainsend EXCLUDE_FROM_ALL app-chainsend/chainsend.c app-chainsend/broadcaster.c 
+add_executable       (c-app-chainsend EXCLUDE_FROM_ALL app-chainsend/chainsend.c app-chainsend/broadcaster.c
                       app-chainsend/peer.c)
 target_link_libraries(c-app-chainsend simgrid)
 set_target_properties(c-app-chainsend PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-chainsend)
@@ -131,10 +131,10 @@ else()
     set(parallel-factories "*")
 endif()
 
-ADD_TESH_FACTORIES(c-app-bittorrent-parallel "raw" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} 
-                                             --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/app-bittorrent 
-                                             --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
-                                             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms 
+ADD_TESH_FACTORIES(c-app-bittorrent-parallel "raw" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}
+                                             --setenv bindir=${CMAKE_BINARY_DIR}/examples/c/app-bittorrent
+                                             --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                                              --cd ${CMAKE_HOME_DIRECTORY}/examples/c/app-bittorrent app-bittorrent.tesh)
 
 ADD_TESH_FACTORIES(c-dht-kademlia-parallel "${parallel-factories}" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO}

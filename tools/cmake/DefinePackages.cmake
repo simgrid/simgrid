@@ -638,7 +638,7 @@ set(MC_SRC
   src/mc/sosp/Region.hpp
   src/mc/sosp/Snapshot.hpp
   src/mc/sosp/Snapshot.cpp
-  
+
   src/mc/AddressSpace.hpp
   src/mc/ModelChecker.hpp
   src/mc/ModelChecker.cpp
@@ -1126,8 +1126,8 @@ set(CMAKE_SOURCE_FILES
   tools/stack-cleaner/clean-stack-filter
   tools/stack-cleaner/compiler-wrapper
   tools/stack-cleaner/README
-  
-  setup.py 
+
+  setup.py
   MANIFEST.in
   MANIFEST.in.in
   )

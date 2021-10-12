@@ -93,7 +93,7 @@
    match-leak-kinds: all
    fun:MPI_Comm_dup
    obj:coll-allreduce-with-leaks*
-} 
+}
 
 #Memory leaks appearing to be in libcgraph.  They can be seen with the
 # following simple program:

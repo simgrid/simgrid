@@ -65,7 +65,7 @@ while [ $# -gt 0 ]; do
             ;;
         *)
             PROC_ARGS="${PROC_ARGS:+$PROC_ARGS }$1"
-            shift      
+            shift
             ;;
     esac
 done
@@ -135,13 +135,13 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
         instance=$(echo "$line"|cut -d' ' -f1)
         hosttrace=$(tr '\n\r' '  ' < $(echo "$line"|cut -d' ' -f2))
         NUMPROCSMINE=$(wc -l < $(echo "$line"|cut -d' ' -f2))
-        
+
         if [ $NUMPROCSMINE != $(echo "$line"|cut -d' ' -f3) ];
         then
           echo "declared num of processes for instance $instance : $(echo "$line"|cut -d' ' -f3) is not the same as the one in the replay files : $NUMPROCSMINE. Please check consistency of these information"
           exit 1
         fi
-        
+
         sleeptime=$(echo "$line"|cut -d' ' -f4)
         HAVE_SEQ=$(which seq 2>/dev/null)
 
@@ -179,7 +179,7 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
             echo "    <argument value=\"${instance}\"/> <!-- instance -->"
             echo "    <argument value=\"${i}\"/> <!-- rank -->"
             echo "    <argument value=\"$(echo "$hosttrace"|cut -d' ' -f$((i+1)))\"/>"
-	    
+
             echo "    <argument value=\"${sleeptime}\"/> <!-- delay -->"
             echo "  </actor>"
             } >> "${APPLICATIONTMP}"
