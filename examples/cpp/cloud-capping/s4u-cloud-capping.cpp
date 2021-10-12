@@ -157,24 +157,24 @@ static void master_main()
 {
   simgrid::s4u::Host* pm0 = simgrid::s4u::Host::by_name("Fafard");
 
-  XBT_INFO("# 1. Put a single activity on a PM. ");
+  XBT_INFO("# 1. Put a single activity on a PM.");
   test_one_activity(pm0);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   XBT_INFO("# 2. Put two activities on a PM.");
   test_two_activities(pm0, pm0);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   auto* vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
   vm0->start();
 
-  XBT_INFO("# 3. Put a single activity on a VM. ");
+  XBT_INFO("# 3. Put a single activity on a VM.");
   test_one_activity(vm0);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   XBT_INFO("# 4. Put two activities on a VM.");
   test_two_activities(vm0, vm0);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   vm0->destroy();
 
@@ -183,7 +183,7 @@ static void master_main()
 
   XBT_INFO("# 6. Put an activity on a PM and an activity on a VM.");
   test_two_activities(pm0, vm0);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   vm0->destroy();
 
@@ -193,15 +193,15 @@ static void master_main()
 
   XBT_INFO("# 7. Put a single activity on the VM capped by 10%%.");
   test_one_activity(vm0);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   XBT_INFO("# 8. Put two activities on the VM capped by 10%%.");
   test_two_activities(vm0, vm0);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   XBT_INFO("# 9. Put an activity on a PM and an activity on the VM capped by 10%%.");
   test_two_activities(pm0, vm0);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   vm0->destroy();
 
@@ -217,23 +217,23 @@ static void master_main()
   XBT_INFO("# 10. (a) Put an activity on a VM without any bound.");
   simgrid::s4u::Actor::create("worker0", vm0, worker, computation_amount, false, 0);
   simgrid::s4u::this_actor::sleep_for(1000);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   XBT_INFO("# 10. (b) set 10%% bound to the VM, and then put an activity on the VM.");
   vm0->set_bound(cpu_speed / 10);
   simgrid::s4u::Actor::create("worker0", vm0, worker, computation_amount, false, 0);
   simgrid::s4u::this_actor::sleep_for(1000);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   XBT_INFO("# 10. (c) migrate");
   simgrid::s4u::Host* pm1 = simgrid::s4u::Host::by_name("Fafard");
   sg_vm_migrate(vm0, pm1);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   XBT_INFO("# 10. (d) Put an activity again on the VM.");
   simgrid::s4u::Actor::create("worker0", vm0, worker, computation_amount, false, 0);
   simgrid::s4u::this_actor::sleep_for(1000);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   vm0->destroy();
 

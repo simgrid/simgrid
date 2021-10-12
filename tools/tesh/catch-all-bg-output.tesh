@@ -6,10 +6,10 @@
 ! expect return 2
 < ! timeout 3
 < & sh -c 'echo "I crash in background" && sleep 2'
-< 
+<
 < ! timeout 2
 < & sh -c 'echo "I also crash in background" && sleep 1'
-< 
+<
 < ! timeout 1
 < $ sh -c 'echo "I crash in foreground"'
 $ ${bindir:=.}/tesh

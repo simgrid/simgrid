@@ -36,4 +36,4 @@ $ ${bindir:=.}/scheduling/sd_scheduling --log=sd_daxparse.thresh:critical ${srcd
 
 
 ! output ignore
-$ cmake -E remove -f ${srcdir:=.}/scheduling/sd_scheduling.jed 
+$ cmake -E remove -f ${srcdir:=.}/scheduling/sd_scheduling.jed

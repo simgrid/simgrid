@@ -5,32 +5,32 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -plat
 > [0.000000] [smpi/INFO] [rank 1] -> Jupiter
 > [0.000000] [smpi/INFO] [rank 2] -> Fafard
 > [0.000000] [smpi/INFO] [rank 3] -> Ginette
-> rank 0: Alive 
-> rank 1: Alive 
-> rank 2: Alive 
-> rank 3: Alive 
-> process:(0,0) 
+> rank 0: Alive
+> rank 1: Alive
+> rank 2: Alive
+> rank 3: Alive
+> process:(0,0)
 > -------------------
-> 0 0 0 
-> 0 0 0 
-> 0 0 0 
+>  0 0 0
+>  0 0 0
+>  0 0 0
 > -------------------
-> process:(1,0) 
+> process:(1,0)
 > -------------------
-> 2 0 0 
-> 0 2 0 
-> 0 0 2 
+>  2 0 0
+>  0 2 0
+>  0 0 2
 > -------------------
-> process:(0,1) 
+> process:(0,1)
 > -------------------
-> 0 0 0 
-> 0 0 0 
-> 0 0 0 
+>  0 0 0
+>  0 0 0
+>  0 0 0
 > -------------------
-> process:(1,1) 
+> process:(1,1)
 > -------------------
-> 2 0 0 
-> 0 2 0 
-> 0 0 2 
+>  2 0 0
+>  0 2 0
+>  0 0 2
 > -------------------
 

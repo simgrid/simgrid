@@ -5,7 +5,7 @@ p Testing the Pastry implementation
 $ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir:=.}/dht-pastry_d.xml --log=pastry.thres:verbose "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [ 20.007806] (1:node@node-0.simgrid.org) Task update from 366680 !!!
 > [ 20.007806] (1:node@node-0.simgrid.org) Node:
-> [ 20.007806] (1:node@node-0.simgrid.org)  Id: 42 '0000002a' 
+> [ 20.007806] (1:node@node-0.simgrid.org)  Id: 42 '0000002a'
 > [ 20.007806] (1:node@node-0.simgrid.org)  Namespace:
 > [ 20.007806] (1:node@node-0.simgrid.org)   ffffffff
 > [ 20.007806] (1:node@node-0.simgrid.org)   ffffffff
@@ -15,7 +15,7 @@ $ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir
 > [ 20.007806] (1:node@node-0.simgrid.org)   ffffffff
 > [ 25.023418] (2:node@node-1.simgrid.org) Task update from 533744 !!!
 > [ 25.023418] (2:node@node-1.simgrid.org) Node:
-> [ 25.023418] (2:node@node-1.simgrid.org)  Id: 366680 '00059858' 
+> [ 25.023418] (2:node@node-1.simgrid.org)  Id: 366680 '00059858'
 > [ 25.023418] (2:node@node-1.simgrid.org)  Namespace:
 > [ 25.023418] (2:node@node-1.simgrid.org)   ffffffff
 > [ 25.023418] (2:node@node-1.simgrid.org)   ffffffff
@@ -25,7 +25,7 @@ $ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir
 > [ 25.023418] (2:node@node-1.simgrid.org)   ffffffff
 > [ 30.007806] (1:node@node-0.simgrid.org) Task update from 533744 !!!
 > [ 30.007806] (1:node@node-0.simgrid.org) Node:
-> [ 30.007806] (1:node@node-0.simgrid.org)  Id: 42 '0000002a' 
+> [ 30.007806] (1:node@node-0.simgrid.org)  Id: 42 '0000002a'
 > [ 30.007806] (1:node@node-0.simgrid.org)  Namespace:
 > [ 30.007806] (1:node@node-0.simgrid.org)   ffffffff
 > [ 30.007806] (1:node@node-0.simgrid.org)   ffffffff
@@ -35,7 +35,7 @@ $ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir
 > [ 30.007806] (1:node@node-0.simgrid.org)   ffffffff
 > [ 40.015612] (1:node@node-0.simgrid.org) Task update from 1319738 !!!
 > [ 40.015612] (1:node@node-0.simgrid.org) Node:
-> [ 40.015612] (1:node@node-0.simgrid.org)  Id: 42 '0000002a' 
+> [ 40.015612] (1:node@node-0.simgrid.org)  Id: 42 '0000002a'
 > [ 40.015612] (1:node@node-0.simgrid.org)  Namespace:
 > [ 40.015612] (1:node@node-0.simgrid.org)   ffffffff
 > [ 40.015612] (1:node@node-0.simgrid.org)   ffffffff
@@ -45,7 +45,7 @@ $ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir
 > [ 40.015612] (1:node@node-0.simgrid.org)   ffffffff
 > [ 45.015612] (1:node@node-0.simgrid.org) Task update from 16509405 !!!
 > [ 45.015612] (1:node@node-0.simgrid.org) Node:
-> [ 45.015612] (1:node@node-0.simgrid.org)  Id: 42 '0000002a' 
+> [ 45.015612] (1:node@node-0.simgrid.org)  Id: 42 '0000002a'
 > [ 45.015612] (1:node@node-0.simgrid.org)  Namespace:
 > [ 45.015612] (1:node@node-0.simgrid.org)   ffffffff
 > [ 45.015612] (1:node@node-0.simgrid.org)   ffffffff
@@ -55,7 +55,7 @@ $ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir
 > [ 45.015612] (1:node@node-0.simgrid.org)   ffffffff
 > [ 45.031224] (2:node@node-1.simgrid.org) Task update from 16509405 !!!
 > [ 45.031224] (2:node@node-1.simgrid.org) Node:
-> [ 45.031224] (2:node@node-1.simgrid.org)  Id: 366680 '00059858' 
+> [ 45.031224] (2:node@node-1.simgrid.org)  Id: 366680 '00059858'
 > [ 45.031224] (2:node@node-1.simgrid.org)  Namespace:
 > [ 45.031224] (2:node@node-1.simgrid.org)   ffffffff
 > [ 45.031224] (2:node@node-1.simgrid.org)   ffffffff
@@ -65,7 +65,7 @@ $ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir
 > [ 45.031224] (2:node@node-1.simgrid.org)   ffffffff
 > [ 55.015612] (1:node@node-0.simgrid.org) Task update from 10874876 !!!
 > [ 55.015612] (1:node@node-0.simgrid.org) Node:
-> [ 55.015612] (1:node@node-0.simgrid.org)  Id: 42 '0000002a' 
+> [ 55.015612] (1:node@node-0.simgrid.org)  Id: 42 '0000002a'
 > [ 55.015612] (1:node@node-0.simgrid.org)  Namespace:
 > [ 55.015612] (1:node@node-0.simgrid.org)   ffffffff
 > [ 55.015612] (1:node@node-0.simgrid.org)   ffffffff
@@ -75,7 +75,7 @@ $ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir
 > [ 55.015612] (1:node@node-0.simgrid.org)   ffffffff
 > [ 55.031224] (3:node@node-2.simgrid.org) Task update from 10874876 !!!
 > [ 55.031224] (3:node@node-2.simgrid.org) Node:
-> [ 55.031224] (3:node@node-2.simgrid.org)  Id: 533744 '000824f0' 
+> [ 55.031224] (3:node@node-2.simgrid.org)  Id: 533744 '000824f0'
 > [ 55.031224] (3:node@node-2.simgrid.org)  Namespace:
 > [ 55.031224] (3:node@node-2.simgrid.org)   ffffffff
 > [ 55.031224] (3:node@node-2.simgrid.org)   0000002a
@@ -85,7 +85,7 @@ $ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir
 > [ 55.031224] (3:node@node-2.simgrid.org)   ffffffff
 > [ 55.031224] (2:node@node-1.simgrid.org) Task update from 10874876 !!!
 > [ 55.031224] (2:node@node-1.simgrid.org) Node:
-> [ 55.031224] (2:node@node-1.simgrid.org)  Id: 366680 '00059858' 
+> [ 55.031224] (2:node@node-1.simgrid.org)  Id: 366680 '00059858'
 > [ 55.031224] (2:node@node-1.simgrid.org)  Namespace:
 > [ 55.031224] (2:node@node-1.simgrid.org)   ffffffff
 > [ 55.031224] (2:node@node-1.simgrid.org)   ffffffff
@@ -95,7 +95,7 @@ $ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir
 > [ 55.031224] (2:node@node-1.simgrid.org)   ffffffff
 > [ 65.015612] (1:node@node-0.simgrid.org) Task update from 16728096 !!!
 > [ 65.015612] (1:node@node-0.simgrid.org) Node:
-> [ 65.015612] (1:node@node-0.simgrid.org)  Id: 42 '0000002a' 
+> [ 65.015612] (1:node@node-0.simgrid.org)  Id: 42 '0000002a'
 > [ 65.015612] (1:node@node-0.simgrid.org)  Namespace:
 > [ 65.015612] (1:node@node-0.simgrid.org)   ffffffff
 > [ 65.015612] (1:node@node-0.simgrid.org)   ffffffff
@@ -105,7 +105,7 @@ $ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir
 > [ 65.015612] (1:node@node-0.simgrid.org)   ffffffff
 > [ 65.031224] (4:node@node-3.simgrid.org) Task update from 16728096 !!!
 > [ 65.031224] (4:node@node-3.simgrid.org) Node:
-> [ 65.031224] (4:node@node-3.simgrid.org)  Id: 1319738 '0014233a' 
+> [ 65.031224] (4:node@node-3.simgrid.org)  Id: 1319738 '0014233a'
 > [ 65.031224] (4:node@node-3.simgrid.org)  Namespace:
 > [ 65.031224] (4:node@node-3.simgrid.org)   ffffffff
 > [ 65.031224] (4:node@node-3.simgrid.org)   ffffffff
@@ -115,7 +115,7 @@ $ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir
 > [ 65.031224] (4:node@node-3.simgrid.org)   ffffffff
 > [ 75.015612] (1:node@node-0.simgrid.org) Task update from 10004760 !!!
 > [ 75.015612] (1:node@node-0.simgrid.org) Node:
-> [ 75.015612] (1:node@node-0.simgrid.org)  Id: 42 '0000002a' 
+> [ 75.015612] (1:node@node-0.simgrid.org)  Id: 42 '0000002a'
 > [ 75.015612] (1:node@node-0.simgrid.org)  Namespace:
 > [ 75.015612] (1:node@node-0.simgrid.org)   ffffffff
 > [ 75.015612] (1:node@node-0.simgrid.org)   ffffffff
@@ -125,7 +125,7 @@ $ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir
 > [ 75.015612] (1:node@node-0.simgrid.org)   ffffffff
 > [ 75.031224] (5:node@node-4.simgrid.org) Task update from 10004760 !!!
 > [ 75.031224] (5:node@node-4.simgrid.org) Node:
-> [ 75.031224] (5:node@node-4.simgrid.org)  Id: 16509405 '00fbe9dd' 
+> [ 75.031224] (5:node@node-4.simgrid.org)  Id: 16509405 '00fbe9dd'
 > [ 75.031224] (5:node@node-4.simgrid.org)  Namespace:
 > [ 75.031224] (5:node@node-4.simgrid.org)   ffffffff
 > [ 75.031224] (5:node@node-4.simgrid.org)   0000002a
@@ -135,7 +135,7 @@ $ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir
 > [ 75.031224] (5:node@node-4.simgrid.org)   ffffffff
 > [ 75.031224] (2:node@node-1.simgrid.org) Task update from 10004760 !!!
 > [ 75.031224] (2:node@node-1.simgrid.org) Node:
-> [ 75.031224] (2:node@node-1.simgrid.org)  Id: 366680 '00059858' 
+> [ 75.031224] (2:node@node-1.simgrid.org)  Id: 366680 '00059858'
 > [ 75.031224] (2:node@node-1.simgrid.org)  Namespace:
 > [ 75.031224] (2:node@node-1.simgrid.org)   ffffffff
 > [ 75.031224] (2:node@node-1.simgrid.org)   ffffffff
@@ -145,7 +145,7 @@ $ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir
 > [ 75.031224] (2:node@node-1.simgrid.org)   ffffffff
 > [ 85.023418] (1:node@node-0.simgrid.org) Task update from 6518808 !!!
 > [ 85.023418] (1:node@node-0.simgrid.org) Node:
-> [ 85.023418] (1:node@node-0.simgrid.org)  Id: 42 '0000002a' 
+> [ 85.023418] (1:node@node-0.simgrid.org)  Id: 42 '0000002a'
 > [ 85.023418] (1:node@node-0.simgrid.org)  Namespace:
 > [ 85.023418] (1:node@node-0.simgrid.org)   ffffffff
 > [ 85.023418] (1:node@node-0.simgrid.org)   ffffffff
@@ -155,7 +155,7 @@ $ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir
 > [ 85.023418] (1:node@node-0.simgrid.org)   ffffffff
 > [ 95.023418] (1:node@node-0.simgrid.org) Task update from 2015253 !!!
 > [ 95.023418] (1:node@node-0.simgrid.org) Node:
-> [ 95.023418] (1:node@node-0.simgrid.org)  Id: 42 '0000002a' 
+> [ 95.023418] (1:node@node-0.simgrid.org)  Id: 42 '0000002a'
 > [ 95.023418] (1:node@node-0.simgrid.org)  Namespace:
 > [ 95.023418] (1:node@node-0.simgrid.org)   ffffffff
 > [ 95.023418] (1:node@node-0.simgrid.org)   ffffffff
@@ -165,7 +165,7 @@ $ ${bindir:=.}/c-dht-pastry -nb_bits=6 ${platfdir}/cluster_backbone.xml ${srcdir
 > [ 95.023418] (1:node@node-0.simgrid.org)   ffffffff
 > [ 95.039030] (4:node@node-3.simgrid.org) Task update from 2015253 !!!
 > [ 95.039030] (4:node@node-3.simgrid.org) Node:
-> [ 95.039030] (4:node@node-3.simgrid.org)  Id: 1319738 '0014233a' 
+> [ 95.039030] (4:node@node-3.simgrid.org)  Id: 1319738 '0014233a'
 > [ 95.039030] (4:node@node-3.simgrid.org)  Namespace:
 > [ 95.039030] (4:node@node-3.simgrid.org)   ffffffff
 > [ 95.039030] (4:node@node-3.simgrid.org)   ffffffff

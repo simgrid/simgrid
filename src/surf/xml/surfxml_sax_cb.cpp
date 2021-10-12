@@ -48,7 +48,7 @@ void surf_parse_assert_netpoint(const std::string& hostname, const std::string& 
   if (simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(hostname) != nullptr) // found
     return;
 
-  std::string msg = pre + hostname + post + " Existing netpoints: \n";
+  std::string msg = pre + hostname + post + " Existing netpoints:\n";
 
   std::vector<simgrid::kernel::routing::NetPoint*> netpoints =
       simgrid::s4u::Engine::get_instance()->get_all_netpoints();

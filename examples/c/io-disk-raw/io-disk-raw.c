@@ -30,7 +30,7 @@ static void host(int argc, char* argv[])
   sg_host_get_disks(sg_host_self(), &disk_count, &disk_list);
 
   for (unsigned int i = 0; i < disk_count; i++)
-    XBT_INFO("Disk name: %s (read: %.0f B/s -- write: %.0f B/s ", sg_disk_get_name(disk_list[i]),
+    XBT_INFO("Disk name: %s (read: %.0f B/s -- write: %.0f B/s", sg_disk_get_name(disk_list[i]),
              sg_disk_read_bandwidth(disk_list[i]), sg_disk_write_bandwidth(disk_list[i]));
 
   /* - Write 400,000 bytes on Disk1 */

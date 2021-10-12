@@ -3,5 +3,5 @@ p Test struct
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile -platform ${platfdir:=.}/small_platform.xml -np 2 ${bindir:=.}/type-struct -q --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 > [0.000000] [smpi/INFO] [rank 0] -> Tremblay
 > [0.000000] [smpi/INFO] [rank 1] -> Jupiter
-> Process 0 got -2 (-2?) and 8.000000 (8.0?), tab (should be all 0): 0 0 0 0 0 0 
-> Process 1 got -2 (-2?) and 8.000000 (8.0?), tab (should be all 0): 0 0 0 0 0 0 
+> Process 0 got -2 (-2?) and 8.000000 (8.0?), tab (should be all 0): 0 0 0 0 0 0
+> Process 1 got -2 (-2?) and 8.000000 (8.0?), tab (should be all 0): 0 0 0 0 0 0

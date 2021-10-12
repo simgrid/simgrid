@@ -195,24 +195,24 @@ static void master_main(int argc, char* argv[])
   sg_host_t pm0 = sg_host_by_name("Fafard");
   sg_host_t pm1 = sg_host_by_name("Fafard");
 
-  XBT_INFO("# 1. Put a single task on a PM. ");
+  XBT_INFO("# 1. Put a single task on a PM.");
   test_one_task(pm0);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   XBT_INFO("# 2. Put two tasks on a PM.");
   test_two_tasks(pm0, pm0);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   sg_vm_t vm0 = sg_vm_create_core(pm0, "VM0");
   sg_vm_start(vm0);
 
-  XBT_INFO("# 3. Put a single task on a VM. ");
+  XBT_INFO("# 3. Put a single task on a VM.");
   test_one_task((sg_host_t)vm0);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   XBT_INFO("# 4. Put two tasks on a VM.");
   test_two_tasks((sg_host_t)vm0, (sg_host_t)vm0);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   sg_vm_destroy(vm0);
 
@@ -221,7 +221,7 @@ static void master_main(int argc, char* argv[])
 
   XBT_INFO("# 6. Put a task on a PM and a task on a VM.");
   test_two_tasks(pm0, (sg_host_t)vm0);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   sg_vm_destroy(vm0);
 
@@ -232,15 +232,15 @@ static void master_main(int argc, char* argv[])
 
   XBT_INFO("# 7. Put a single task on the VM capped by 10%%.");
   test_one_task((sg_host_t)vm0);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   XBT_INFO("# 8. Put two tasks on the VM capped by 10%%.");
   test_two_tasks((sg_host_t)vm0, (sg_host_t)vm0);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   XBT_INFO("# 9. Put a task on a PM and a task on the VM capped by 10%%.");
   test_two_tasks(pm0, (sg_host_t)vm0);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   sg_vm_destroy(vm0);
 
@@ -258,22 +258,22 @@ static void master_main(int argc, char* argv[])
   XBT_INFO("# 10. (a) Put a task on a VM without any bound.");
   launch_worker((sg_host_t)vm0, "worker0", computation_amount, 0, 0);
   sg_actor_sleep_for(1000);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   XBT_INFO("# 10. (b) set 10%% bound to the VM, and then put a task on the VM.");
   sg_vm_set_bound(vm0, cpu_speed / 10);
   launch_worker((sg_host_t)vm0, "worker0", computation_amount, 0, 0);
   sg_actor_sleep_for(1000);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   XBT_INFO("# 10. (c) migrate");
   sg_vm_migrate(vm0, pm1);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   XBT_INFO("# 10. (d) Put a task again on the VM.");
   launch_worker((sg_host_t)vm0, "worker0", computation_amount, 0, 0);
   sg_actor_sleep_for(1000);
-  XBT_INFO(" ");
+  XBT_INFO(".");
 
   sg_vm_destroy(vm0);
 

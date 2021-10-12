@@ -1,5 +1,5 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/c-exec-basic ${platfdir}/small_platform.xml 
+$ ${bindir:=.}/c-exec-basic ${platfdir}/small_platform.xml
 > [Tremblay:privileged:(2) 0.001500] [exec_basic/INFO] Done.
 > [Tremblay:executor:(1) 0.002000] [exec_basic/INFO] Done.

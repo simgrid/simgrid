@@ -3,7 +3,7 @@
 $ ${javacmd:=java} -classpath ${classpath:=.} cloud/migration/Main ${srcdir:=.}/../../platforms/three_multicore_hosts.xml
 > [0.000000] [java/INFO] Using regular java threads.
 > [PM0:Test:(1) 0.000000] [java/INFO] This example evaluates the migration time of a VM in presence of collocated VMs on the source and the dest nodes
-> [PM0:Test:(1) 0.000000] [java/INFO] The migrated VM has a memory intensity rate of 70% of the network BW and a cpu load of 90% " (see cloudcom 2013 paper "Adding a Live Migration Model Into SimGrid" for further information) 
+> [PM0:Test:(1) 0.000000] [java/INFO] The migrated VM has a memory intensity rate of 70% of the network BW and a cpu load of 90% " (see cloudcom 2013 paper "Adding a Live Migration Model Into SimGrid" for further information)
 > [PM0:Test:(1) 0.000000] [java/INFO] Load of collocated VMs fluctuate between 0 and 90% in order to create a starvation issue and see whether it impacts or not the migration time
 > [PM0:Test:(1) 0.000000] [java/INFO] Round trip of VM1 (load 90%)
 > [PM0:Test:(1) 0.000000] [java/INFO]      - Launch migration from PM0 to PM1
@@ -16,8 +16,7 @@ $ ${javacmd:=java} -classpath ${classpath:=.} cloud/migration/Main ${srcdir:=.}/
 > [PM0:Test:(1) 45.731913] [java/INFO]     currentLoad:90/ramSize:2048/dpIntensity:70/remaining:5.01E+11
 > [PM0:Test:(1) 97.502375] [java/INFO] End of migration of VM vm0 to node PM0
 > [PM0:Test:(1) 97.502375] [java/INFO]      - End of Migration from PM1 to PM0 (duration:51.77046280907213)
-> [PM0:Test:(1) 97.502375] [java/INFO] 
-> [PM0:Test:(1) 97.502375] [java/INFO] 
+> [PM0:Test:(1) 97.502375] [java/INFO] .
 > [PM0:Test:(1) 97.502375] [java/INFO] Round trip of VM1 (load 80%)
 > [PM0:Test:(1) 97.502375] [java/INFO]      - Launch migration from PM0 to PM1
 > [PM0:Test:(1) 97.502375] [java/INFO] Start migration of VM vm0 to PM1

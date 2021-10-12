@@ -564,12 +564,12 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
           XBT_DEBUG("Setting %p (%d) value to %f\n", &var, var.rank_, var.value_);
         } else {
           // Variables which bound is different are not considered for this cycle, but they will be afterwards.
-          XBT_DEBUG("Do not consider %p (%d) \n", &var, var.rank_);
+          XBT_DEBUG("Do not consider %p (%d)\n", &var, var.rank_);
           var_list.pop_front();
           continue;
         }
       }
-      XBT_DEBUG("Min usage: %f, Var(%d).penalty: %f, Var(%d).value: %f ", min_usage, var.rank_, var.sharing_penalty_,
+      XBT_DEBUG("Min usage: %f, Var(%d).penalty: %f, Var(%d).value: %f", min_usage, var.rank_, var.sharing_penalty_,
                 var.rank_, var.value_);
 
       /* Update the usage of constraints where this variable is involved */
@@ -585,7 +585,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
               not double_positive(cnst->remaining_, cnst->dynamic_bound_ * sg_maxmin_precision)) {
             if (cnst->cnst_light_) {
               size_t index = (cnst->cnst_light_ - cnst_light_tab);
-              XBT_DEBUG("index: %zu \t cnst_light_num: %d \t || usage: %f remaining: %f bound: %f  ", index,
+              XBT_DEBUG("index: %zu \t cnst_light_num: %d \t || usage: %f remaining: %f bound: %f", index,
                         cnst_light_num, cnst->usage_, cnst->remaining_, cnst->dynamic_bound_);
               cnst_light_tab[index]                  = cnst_light_tab[cnst_light_num - 1];
               cnst_light_tab[index].cnst->cnst_light_ = &cnst_light_tab[index];
@@ -615,7 +615,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
             if (cnst->cnst_light_) {
               size_t index = (cnst->cnst_light_ - cnst_light_tab);
               XBT_DEBUG("index: %zu \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p "
-                        "\t cnst_light_tab: %p usage: %f remaining: %f bound: %f  ",
+                        "\t cnst_light_tab: %p usage: %f remaining: %f bound: %f",
                         index, cnst_light_num, cnst, cnst->cnst_light_, cnst_light_tab, cnst->usage_, cnst->remaining_,
                         cnst->dynamic_bound_);
               cnst_light_tab[index]                  = cnst_light_tab[cnst_light_num - 1];

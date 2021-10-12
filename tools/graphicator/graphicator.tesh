@@ -7,7 +7,7 @@ $ cat test.dot
 >   graph [overlap=scale]
 >   node [shape=box, style=filled]
 >   node [width=.3, height=.3, style=filled, color=skyblue]
-> 
+>
 >   "bob0.hamburger.edu";
 >   "bob2.hamburger.edu";
 >   "bob3.hamburger.edu";

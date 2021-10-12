@@ -29,9 +29,9 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/host
 > [griffon-2.nancy.grid5000.fr:0:(1) 2666.881344] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Recv
 > [griffon-2.nancy.grid5000.fr:0:(1) 2666.881344] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Finalize
 > [griffon-2.nancy.grid5000.fr:0:(1) 2666.881344] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Finalize
-> 
+>
 >     *** Ping-pong test (MPI_Send/MPI_Recv) ***
-> 
+>
 > [0] About to send 1st message '99' to process [1]
 > [1] Received 1st message '99' from process [0]
 > [1] After a nap, increment message's value to  '100'
@@ -70,9 +70,9 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -platform ${libdir:=.}/libg
 > [griffon-1.nancy.grid5000.fr:0:(1) 2666.881247] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Recv
 > [griffon-1.nancy.grid5000.fr:0:(1) 2666.881247] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Finalize
 > [griffon-1.nancy.grid5000.fr:0:(1) 2666.881247] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Finalize
-> 
+>
 >     *** Ping-pong test (MPI_Send/MPI_Recv) ***
-> 
+>
 > [0] About to send 1st message '99' to process [1]
 > [1] Received 1st message '99' from process [0]
 > [1] After a nap, increment message's value to  '100'

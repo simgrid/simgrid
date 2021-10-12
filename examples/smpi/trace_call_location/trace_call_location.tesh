@@ -6,9 +6,9 @@ p Test SMPI with call-location tracing. This means that the binary must have
 p already been compiled with the -trace-call-location switch.
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace -trace-file ${bindir:=.}/smpi_trace.trace -hostfile ${srcdir:=.}/hostfile -platform ${platfdir}/small_platform.xml --cfg=smpi/trace-call-location:1 -np 3 ${bindir:=.}/smpi_trace_call_location --cfg=smpi/trace-call-use-absolute-path:1 --cfg=smpi/host-speed:1f --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning
 
-$ grep -q "12 0.* 2 1 7 .*trace_call_location\.c\" 14$" ${bindir:=.}/smpi_trace.trace 
+$ grep -q "12 0.* 2 1 7 .*trace_call_location\.c\" 14$" ${bindir:=.}/smpi_trace.trace
 
-$ rm -f ${bindir:=.}/smpi_trace.trace 
+$ rm -f ${bindir:=.}/smpi_trace.trace
 
 #the same, but with trace-ti
 $ ${bindir:=.}/../../../smpi_script/bin/smpirun -trace-ti -trace-file ${bindir:=.}/smpi_trace.txt --cfg=tracing/smpi/sleeping:1 -hostfile ${srcdir:=.}/hostfile -platform ${platfdir}/small_platform.xml --cfg=smpi/trace-call-location:1 -np 3 ${bindir:=.}/smpi_trace_call_location --cfg=smpi/host-speed:1f --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/cpu-threshold:0

@@ -113,7 +113,6 @@ $ ${bindir:=.}/flatifier ../platforms/one_cluster.xml "--log=root.fmt:[%10.6r]%e
 >   <link_ctn id="bob_cluster_link_6_UP"/><link_ctn id="bob_cluster_backbone"/>
 >   </route>
 >   <route src="bobbob_cluster_router.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   
 >   </route>
 >   <route src="bobbob_cluster_router.hamburger.edu" dst="bob0.hamburger.edu">
 >   <link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_0_DOWN"/>
@@ -246,7 +245,6 @@ $ ${bindir:=.}/flatifier ../platforms/one_cluster_multicore.xml "--log=root.fmt:
 >   <link_ctn id="bob_cluster_link_6_UP"/>
 >   </route>
 >   <route src="bobbob_cluster_router.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   
 >   </route>
 >   <route src="bobbob_cluster_router.hamburger.edu" dst="bob0.hamburger.edu">
 >   <link_ctn id="bob_cluster_link_0_DOWN"/>
@@ -454,7 +452,6 @@ $ ${bindir:=.}/flatifier ../platforms/two_clusters.xml "--log=root.fmt:[%10.6r]%
 >   <link_ctn id="bob_cluster_link_1_UP"/><link_ctn id="bob_cluster_backbone"/>
 >   </route>
 >   <route src="alicealice_cluster_router.crepe.fr" dst="alicealice_cluster_router.crepe.fr">
->   
 >   </route>
 >   <route src="alicealice_cluster_router.crepe.fr" dst="bobbob_cluster_router.hamburger.edu">
 >   <link_ctn id="backbone"/>
@@ -475,7 +472,6 @@ $ ${bindir:=.}/flatifier ../platforms/two_clusters.xml "--log=root.fmt:[%10.6r]%
 >   <link_ctn id="backbone"/>
 >   </route>
 >   <route src="bobbob_cluster_router.hamburger.edu" dst="bobbob_cluster_router.hamburger.edu">
->   
 >   </route>
 >   <route src="bobbob_cluster_router.hamburger.edu" dst="alice0.crepe.fr">
 >   <link_ctn id="backbone"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
@@ -619,7 +615,6 @@ $ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/bypassZoneRoute.xml "--
 >   <link_ctn id="my_cluster_3_link_3_UP"/>
 >   </route>
 >   <route src="my_cluster_1_router" dst="my_cluster_1_router">
->   
 >   </route>
 >   <route src="my_cluster_1_router" dst="my_cluster_2_router">
 >   <link_ctn id="link_tmp"/>
@@ -640,7 +635,6 @@ $ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/bypassZoneRoute.xml "--
 >   <link_ctn id="link2"/><link_ctn id="link1"/>
 >   </route>
 >   <route src="my_cluster_2_router" dst="my_cluster_2_router">
->   
 >   </route>
 >   <route src="my_cluster_2_router" dst="my_cluster_3_router">
 >   <link_ctn id="link2"/><link_ctn id="link3"/>
@@ -661,7 +655,6 @@ $ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/bypassZoneRoute.xml "--
 >   <link_ctn id="link3"/><link_ctn id="link2"/>
 >   </route>
 >   <route src="my_cluster_3_router" dst="my_cluster_3_router">
->   
 >   </route>
 >   <route src="my_cluster_3_router" dst="1">
 >   <link_ctn id="link3"/><link_ctn id="link1"/><link_ctn id="my_cluster_1_link_1_DOWN"/>

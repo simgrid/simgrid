@@ -60,11 +60,11 @@ int main(int argc, char **argv)
 
     MPI_Bcast( &value, 1, mystruct, 0, MPI_COMM_WORLD );
 
-    printf( "Process %d got %d (-2?) and %f (8.0?), tab (should be all 0): ", rank, value.a, value.b );
+    printf("Process %d got %d (-2?) and %f (8.0?), tab (should be all 0):", rank, value.a, value.b);
 
     for (int j = 0; j < 2; j++)
       for (int i = 0; i < 3; i++)
-        printf("%d ", tab[j][i]);
+        printf(" %d", tab[j][i]);
     printf("\n");
 
     /* Clean up the type */

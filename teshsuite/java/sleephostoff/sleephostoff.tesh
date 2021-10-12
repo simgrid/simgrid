@@ -7,6 +7,6 @@ $ ${javacmd:=java} -classpath ${classpath:=.} sleephostoff.SleepHostOff ${srcdir
 > [  0.020000] (1:TestRunner@Fafard) Stop Tremblay
 > [  0.020000] (2:Sleeper@Tremblay) I'm not dead
 > [  0.020000] (1:TestRunner@Fafard) Tremblay has been stopped
-> [  0.020000] (2:Sleeper@Tremblay) catch HostFailureException: Host Failure 
+> [  0.020000] (2:Sleeper@Tremblay) catch HostFailureException: Host Failure
 > [  0.320000] (1:TestRunner@Fafard) Test sleep seems ok, cool! (number of Process : 1, it should be 1 (i.e. the Test one))
 > [  0.320000] (0:maestro@) Terminating the simulation...

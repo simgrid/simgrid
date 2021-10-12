@@ -1,4 +1,4 @@
-p Test the replay with multiple instances 
+p Test the replay with multiple instances
 
 p first generate the deployment file
 $ ${srcdir:=.}/generate_multiple_deployment.sh -platform ${srcdir:=.}/../../platforms/small_platform_with_routers.xml -hostfile ${srcdir:=.}/../hostfile  ${srcdir:=.}/description_file ${bindir:=.}/deployment.xml

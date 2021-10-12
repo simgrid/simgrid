@@ -29,9 +29,9 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/../h
 > [Tremblay:0:(1) 10.005896] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Recv
 > [Tremblay:0:(1) 10.005896] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Finalize
 > [Tremblay:0:(1) 10.005896] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Finalize
-> 
+>
 >     *** Ping-pong test (MPI_Send/MPI_Recv) ***
-> 
+>
 > [0] About to send 1st message '99' to process [1]
 > [1] Received 1st message '99' from process [0]
 > [1] After a nap, increment message's value to  '100'

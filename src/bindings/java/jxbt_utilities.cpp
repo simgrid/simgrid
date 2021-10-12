@@ -190,7 +190,7 @@ void jxbt_throw_transfer_failure(JNIEnv* env, const std::string& details)
 
 void jxbt_throw_host_failure(JNIEnv* env, const std::string& details)
 {
-  jxbt_throw_by_name(env, "org/simgrid/msg/HostFailureException", "Host Failure " + details);
+  jxbt_throw_by_name(env, "org/simgrid/msg/HostFailureException", "Host Failure" + details);
 }
 
 void jxbt_throw_time_out_failure(JNIEnv* env, const std::string& details)

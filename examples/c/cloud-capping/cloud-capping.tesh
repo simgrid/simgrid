@@ -1,6 +1,6 @@
 ! output sort
 $ ${bindir:=.}/c-cloud-capping ${platfdir}/small_platform.xml --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (1:master_@Fafard) # 1. Put a single task on a PM. 
+> [  0.000000] (1:master_@Fafard) # 1. Put a single task on a PM.
 > [  0.000000] (1:master_@Fafard) ### Test: with/without sg_exec_set_bound
 > [  0.000000] (1:master_@Fafard) ### Test: no bound for Task1@Fafard
 > [ 10.000000] (2:worker0@Fafard) not bound => duration 10.000000 (76296000.000000 flops/s)
@@ -13,7 +13,7 @@ $ ${bindir:=.}/c-cloud-capping ${platfdir}/small_platform.xml --log=no_loc "--lo
 > [3010.000000] (5:worker0@Fafard) bound to 0.000000 => duration 10.000000 (76296000.000000 flops/s)
 > [4000.000000] (1:master_@Fafard) ### Test: 200% for Task1@Fafard (i.e., meaningless)
 > [4010.000000] (6:worker0@Fafard) bound to 152592000.000000 => duration 10.000000 (76296000.000000 flops/s)
-> [5000.000000] (1:master_@Fafard)  
+> [5000.000000] (1:master_@Fafard) .
 > [5000.000000] (1:master_@Fafard) # 2. Put two tasks on a PM.
 > [5000.000000] (1:master_@Fafard) ### Test: no bound for Task1@Fafard, no bound for Task2@Fafard
 > [5020.000000] (8:worker1@Fafard) not bound => duration 20.000000 (38148000.000000 flops/s)
@@ -38,8 +38,8 @@ $ ${bindir:=.}/c-cloud-capping ${platfdir}/small_platform.xml --log=no_loc "--lo
 > [11000.000000] (1:master_@Fafard) ### Test: 75% for Task1@Fafard, 25% for Task2@Fafard
 > [11013.333333] (19:worker0@Fafard) bound to 57222000.000000 => duration 13.333333 (57221999.999997 flops/s)
 > [11040.000000] (20:worker1@Fafard) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
-> [12000.000000] (1:master_@Fafard)  
-> [12000.000000] (1:master_@Fafard) # 3. Put a single task on a VM. 
+> [12000.000000] (1:master_@Fafard) .
+> [12000.000000] (1:master_@Fafard) # 3. Put a single task on a VM.
 > [12000.000000] (1:master_@Fafard) ### Test: with/without sg_exec_set_bound
 > [12000.000000] (1:master_@Fafard) ### Test: no bound for Task1@VM0
 > [12010.000000] (21:worker0@VM0) not bound => duration 10.000000 (76296000.000000 flops/s)
@@ -52,7 +52,7 @@ $ ${bindir:=.}/c-cloud-capping ${platfdir}/small_platform.xml --log=no_loc "--lo
 > [15010.000000] (24:worker0@VM0) bound to 0.000000 => duration 10.000000 (76296000.000000 flops/s)
 > [16000.000000] (1:master_@Fafard) ### Test: 200% for Task1@VM0 (i.e., meaningless)
 > [16010.000000] (25:worker0@VM0) bound to 152592000.000000 => duration 10.000000 (76296000.000000 flops/s)
-> [17000.000000] (1:master_@Fafard)  
+> [17000.000000] (1:master_@Fafard) .
 > [17000.000000] (1:master_@Fafard) # 4. Put two tasks on a VM.
 > [17000.000000] (1:master_@Fafard) ### Test: no bound for Task1@VM0, no bound for Task2@VM0
 > [17020.000000] (27:worker1@VM0) not bound => duration 20.000000 (38148000.000000 flops/s)
@@ -77,7 +77,7 @@ $ ${bindir:=.}/c-cloud-capping ${platfdir}/small_platform.xml --log=no_loc "--lo
 > [23000.000000] (1:master_@Fafard) ### Test: 75% for Task1@VM0, 25% for Task2@VM0
 > [23013.333333] (38:worker0@VM0) bound to 57222000.000000 => duration 13.333333 (57222000.000005 flops/s)
 > [23040.000000] (39:worker1@VM0) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
-> [24000.000000] (1:master_@Fafard)  
+> [24000.000000] (1:master_@Fafard) .
 > [24000.000000] (1:master_@Fafard) # 6. Put a task on a PM and a task on a VM.
 > [24000.000000] (1:master_@Fafard) ### Test: no bound for Task1@Fafard, no bound for Task2@VM0
 > [24020.000000] (40:worker0@Fafard) not bound => duration 20.000000 (38148000.000000 flops/s)
@@ -102,7 +102,7 @@ $ ${bindir:=.}/c-cloud-capping ${platfdir}/small_platform.xml --log=no_loc "--lo
 > [30000.000000] (1:master_@Fafard) ### Test: 75% for Task1@Fafard, 25% for Task2@VM0
 > [30020.000000] (52:worker0@Fafard) bound to 57222000.000000 => duration 20.000000 (38148000.000000 flops/s)
 > [30040.000000] (53:worker1@VM0) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
-> [31000.000000] (1:master_@Fafard)  
+> [31000.000000] (1:master_@Fafard) .
 > [31000.000000] (1:master_@Fafard) # 7. Put a single task on the VM capped by 10%.
 > [31000.000000] (1:master_@Fafard) ### Test: with/without sg_exec_set_bound
 > [31000.000000] (1:master_@Fafard) ### Test: no bound for Task1@VM0
@@ -116,7 +116,7 @@ $ ${bindir:=.}/c-cloud-capping ${platfdir}/small_platform.xml --log=no_loc "--lo
 > [34100.000000] (57:worker0@VM0) bound to 0.000000 => duration 100.000000 (7629600.000000 flops/s)
 > [35000.000000] (1:master_@Fafard) ### Test: 200% for Task1@VM0 (i.e., meaningless)
 > [35100.000000] (58:worker0@VM0) bound to 152592000.000000 => duration 100.000000 (7629600.000000 flops/s)
-> [36000.000000] (1:master_@Fafard)  
+> [36000.000000] (1:master_@Fafard) .
 > [36000.000000] (1:master_@Fafard) # 8. Put two tasks on the VM capped by 10%.
 > [36000.000000] (1:master_@Fafard) ### Test: no bound for Task1@VM0, no bound for Task2@VM0
 > [36200.000000] (60:worker1@VM0) not bound => duration 200.000000 (3814800.000000 flops/s)
@@ -141,7 +141,7 @@ $ ${bindir:=.}/c-cloud-capping ${platfdir}/small_platform.xml --log=no_loc "--lo
 > [42000.000000] (1:master_@Fafard) ### Test: 75% for Task1@VM0, 25% for Task2@VM0
 > [42200.000000] (72:worker1@VM0) bound to 19074000.000000 => duration 200.000000 (3814800.000000 flops/s)
 > [42200.000000] (71:worker0@VM0) bound to 57222000.000000 => duration 200.000000 (3814800.000000 flops/s)
-> [43000.000000] (1:master_@Fafard)  
+> [43000.000000] (1:master_@Fafard) .
 > [43000.000000] (1:master_@Fafard) # 9. Put a task on a PM and a task on the VM capped by 10%.
 > [43000.000000] (1:master_@Fafard) ### Test: no bound for Task1@Fafard, no bound for Task2@VM0
 > [43011.111111] (73:worker0@Fafard) not bound => duration 11.111111 (68666400.000010 flops/s)
@@ -166,19 +166,19 @@ $ ${bindir:=.}/c-cloud-capping ${platfdir}/small_platform.xml --log=no_loc "--lo
 > [49000.000000] (1:master_@Fafard) ### Test: 75% for Task1@Fafard, 25% for Task2@VM0
 > [49013.333333] (85:worker0@Fafard) bound to 57222000.000000 => duration 13.333333 (57221999.999990 flops/s)
 > [49100.000000] (86:worker1@VM0) bound to 19074000.000000 => duration 100.000000 (7629600.000000 flops/s)
-> [50000.000000] (1:master_@Fafard)  
+> [50000.000000] (1:master_@Fafard) .
 > [50000.000000] (1:master_@Fafard) # 10. Test migration
 > [50000.000000] (1:master_@Fafard) # 10. (a) Put a task on a VM without any bound.
 > [50010.000000] (87:worker0@VM0) not bound => duration 10.000000 (76296000.000000 flops/s)
-> [51000.000000] (1:master_@Fafard)  
+> [51000.000000] (1:master_@Fafard) .
 > [51000.000000] (1:master_@Fafard) # 10. (b) set 10% bound to the VM, and then put a task on the VM.
 > [51100.000000] (88:worker0@VM0) not bound => duration 100.000000 (7629600.000000 flops/s)
-> [52000.000000] (1:master_@Fafard)  
+> [52000.000000] (1:master_@Fafard) .
 > [52000.000000] (1:master_@Fafard) # 10. (c) migrate
-> [52002.070722] (1:master_@Fafard)  
+> [52002.070722] (1:master_@Fafard) .
 > [52002.070722] (1:master_@Fafard) # 10. (d) Put a task again on the VM.
 > [52102.070722] (91:worker0@VM0) not bound => duration 100.000000 (7629600.000000 flops/s)
-> [53002.070722] (1:master_@Fafard)  
+> [53002.070722] (1:master_@Fafard) .
 > [53002.070722] (1:master_@Fafard) # 11. Change a bound dynamically.
 > [53002.070722] (93:worker1@VM1) set bound of VM1 to 0.000000
 > [53102.070722] (93:worker1@VM1) Task1@VM1: 38148000 flops/s

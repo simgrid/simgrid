@@ -22,29 +22,29 @@ $ ${bindir:=.}/ptask_L07_usage --cfg=host/model:ptask_L07 ${platfdir}/ptask_L07.
 > Have to compute 2 flops across two hosts running at 1 flop/s.
 > Should be done in exactly one second.
 > Actual result: computing 2 flops on 2 hosts at 1 flop/s takes 1.00 seconds.
-> 
-> 
+>
+>
 > TEST: Create and run a parallel execution on 2 heterogeneous hosts.
 > ------------------------------------------------------------
 > Have to compute 2 flops across two hosts, one running at 1 flop/s and one at 2 flop/s.
 > Should be done in exactly one second.
 > Actual result: computing 2 flops on 2 heterogeneous hosts takes 1.00 seconds.
-> 
-> 
+>
+>
 > TEST: Latency test between hosts connected by a shared link.
 > ------------------------------------------------------------
 > Have to send 1B from one host to another at 1Bps with a latency of 500ms.
 > Should be done in 1.5 seconds (500ms latency + 1s transfert).
 > Actual result: sending 1 byte on a shared link at 1Bps + 500ms takes 1.50 seconds.
-> 
-> 
+>
+>
 > TEST: Latency test between hosts connected by a fatpipe link.
 > ------------------------------------------------------------
 > Have to send 1B from one host to another at 1Bps with a latency of 500ms.
 > Should be done in 1.5 seconds (500ms latency + 1s transfert).
 > Actual result: sending 1 byte on a fatpipe link at 1Bps + 500ms takes 1.50 seconds.
-> 
-> 
+>
+>
 > TEST: Latency test between hosts connected by a 3-link route.
 > ------------------------------------------------------------
 > Have to send 1B from one host to another at 1Bps with a latency of 2 x 500ms + 1s.
@@ -58,57 +58,57 @@ $ ${bindir:=.}/ptask_L07_usage --cfg=host/model:ptask_L07 ${platfdir}/ptask_L07.
 > This latency is half the default TCP window size (4MiB). This limits the bandwidth to 1B
 > Should be done in 2 x 1024^2s + 1 seconds (large latency + 1s transfert).
 > Actual result: sending 1 byte on a large latency link takes 2097153.00 seconds.
-> 
-> 
+>
+>
 > TEST: Latency test between hosts connected by a shared link with 2 comms in same direction.
 > ------------------------------------------------------------
 > Have to send 2 x 1B from one host to another at 1Bps with a latency of 500ms.
 > Should be done in 2.5 seconds (500ms latency + 2s transfert).
 > Actual result: sending 2x1 bytes on a shared link at 1Bps + 500ms takes 2.50 seconds.
-> 
-> 
+>
+>
 > TEST: Latency test between hosts connected by a fatpipe link with 2 comms in same direction.
 > ------------------------------------------------------------
 > Have to send 2 x 1B from one host to another at 1Bps with a latency of 500ms.
 > Should be done in 1.5 seconds (500ms latency + 1s transfert).
 > Actual result: sending 2x1 bytes on a fatpipe link at 1Bps + 500ms takes 1.50 seconds.
 >
-> 
+>
 > TEST: Latency test between hosts connected by a 3-link route with 2 comms in same direction.
 > ------------------------------------------------------------
 > Have to send 2 x 1B from one host to another at 1Bps with a latency of 2 x 500ms + 1s.
 > Should be done in 4 seconds (2 x 500ms + 1s latency + 2s transfert).
 > Actual result: sending 2x1 bytes on a 3-link route at 1Bps + 2,500ms takes 4.00 seconds.
-> 
-> 
+>
+>
 > TEST: Latency test between hosts connected by a shared link with 2 comms in opposite direction.
 > ------------------------------------------------------------
 > Have to send 1B between two hosts in each direction at 1Bps with a latency of 500ms.
 > Should be done in 2.5 seconds (500ms latency + 2s transfert).
 > Actual result: sending 1 byte in both directions on a shared link at 1Bps + 500ms takes 2.50 seconds.
-> 
-> 
+>
+>
 > TEST: Latency test between hosts connected by a fatpipe link with 2 comms in opposite direction.
 > ------------------------------------------------------------
 > Have to send 1B between two hosts in each direction at 1Bps with a latency of 500ms.
 > Should be done in 1.5 seconds (500ms latency + 1s transfert).
 > Actual result: sending 1 byte in both directions on a fatpipe link at 1Bps + 500ms takes 1.50 seconds.
 >
-> 
+>
 > TEST: Latency test between hosts connected by a 3-link route with 2 comms in opposite direction.
 > ------------------------------------------------------------
 > Have to send 1B between two hosts in each direction at 1Bps with a latency of 2 x 500ms + 1s.
 > Should be done in 4 seconds (2 x 500ms + 1s latency + 2s transfert).
 > Actual result: sending 1 byte in both directions on a 3-link route at 1Bps + 2,500ms takes 4.00 seconds.
-> 
-> 
+>
+>
 > TEST: 4-host parallel communication with independent transfers.
 > ------------------------------------------------------------
 > 'cpu0' sends 1B to 'cpu1' and 'cpu2' sends 1B to 'cpu3'. The only shared link is the fatpipe switch.
 > Should be done in 3 seconds (2 x 500ms + 1s latency + 1s transfert).
 > Actual result: sending 2 x 1 byte in a parallel communication without interference takes 3.00 seconds.
 >
-> 
+>
 > TEST: 4-host parallel communication with scatter pattern.
 > ------------------------------------------------------------
 > 'cpu0' sends 1B to 'cpu1', 2B to 'cpu2' and 3B to 'cpu3'.
@@ -123,11 +123,11 @@ $ ${bindir:=.}/ptask_L07_usage --cfg=host/model:ptask_L07 ${platfdir}/ptask_L07.
 > ------------------------------------------------------------
 > Each host sends 1B to every other hosts.
 > Should be done in 8 seconds: 2 x 500ms + 1s of initial latency and 6 seconds for transfer
-> Each SHARED link is traversed by 6 flows (3 in and 3 out). 
+> Each SHARED link is traversed by 6 flows (3 in and 3 out).
 > Each 1B transfer thus takes 6 seconds on a 1Bps link
 > Actual result: 1-byte all-too-all in a parallel communication takes 8.00 seconds.
-> 
-> 
+>
+>
 > TEST: Two concurrent communications, 1 large and 1 small.
 > ------------------------------------------------------------
 > A host sends two messages of 100MB and 1B to the other host.
@@ -135,8 +135,8 @@ $ ${bindir:=.}/ptask_L07_usage --cfg=host/model:ptask_L07 ${platfdir}/ptask_L07.
 > The small communication has a negligible impact on the large one.
 > This corresponds to paying latency once and having the full bandwidth for the large communication.
 > Actual result: 1 small and 1 large concurrent communications take 0.8001 seconds.
-> 
-> 
+>
+>
 > TEST: Concurrent communication and computation.
 > ------------------------------------------------------------
 > A host sends 1B to another while the latter compute 2 flop.

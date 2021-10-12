@@ -269,7 +269,7 @@ static void main_dispatcher()
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Each host sends 1B to every other hosts.");
   XBT_INFO("Should be done in 8 seconds: 2 x 500ms + 1s of initial latency and 6 seconds for transfer");
-  XBT_INFO("Each SHARED link is traversed by 6 flows (3 in and 3 out). ");
+  XBT_INFO("Each SHARED link is traversed by 6 flows (3 in and 3 out).");
   XBT_INFO("Each 1B transfer thus takes 6 seconds on a 1Bps link");
 
   start_time = sg4::Engine::get_clock();

@@ -63,7 +63,7 @@ static void test_energy_consumption(const std::string& name, int nb_cores)
              actual_consumption, expected_consumption, nb_cores);
     failed_test++;
   } else {
-    XBT_INFO("Passed: %s consumed %f J (i.e. %i cores used) ", name.c_str(), actual_consumption, nb_cores);
+    XBT_INFO("Passed: %s consumed %f J (i.e. %i cores used)", name.c_str(), actual_consumption, nb_cores);
   }
 }
 
@@ -570,10 +570,9 @@ static int master_main()
   run_test("( [oo]2 ooo )4");
   run_test("( [ooo]2 ooo )4");
 
-  XBT_INFO("   ");
-  XBT_INFO("   ");
+  XBT_INFO(".");
   XBT_INFO("## %d test failed", failed_test);
-  XBT_INFO("   ");
+  XBT_INFO(".");
   return 0;
 }
 int main(int argc, char* argv[])

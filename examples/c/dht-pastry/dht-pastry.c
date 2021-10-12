@@ -183,7 +183,7 @@ static state_t node_get_state(const_node_t node)
 
 static void print_node_id(const_node_t node)
 {
-  XBT_INFO(" Id: %i '%08x' ", node->id, (unsigned)node->id);
+  XBT_INFO(" Id: %i '%08x'", node->id, (unsigned)node->id);
 }
 
 /* Print the node namespace set */

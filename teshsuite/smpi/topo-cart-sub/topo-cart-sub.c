@@ -64,7 +64,7 @@ int main(int argc, char** argv)
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &nbNodes);
 
-  printf("rank %d: Alive \n", rank);
+  printf("rank %d: Alive\n", rank);
 
   MPI_Barrier(MPI_COMM_WORLD);
 
@@ -72,7 +72,7 @@ int main(int argc, char** argv)
   MPI_Cart_create(MPI_COMM_WORLD, DIM, dims, periods, reorder, &gridComm);
 
   if (gridComm == MPI_COMM_NULL)
-    printf("error grid NULLCOMM \n");
+    printf("error grid NULLCOMM\n");
 
   MPI_Comm_rank(gridComm, &myGridRank);
   MPI_Comm_size(gridComm, &gridSize);
@@ -105,12 +105,12 @@ int main(int argc, char** argv)
   MPI_Bcast(A, N * N, MPI_INT, root, lineComm);
 
   /* Print A */
-  printf("process:(%d,%d) \n", myLineRank, myColRank);
+  printf("process:(%d,%d)\n", myLineRank, myColRank);
 
   printf("-------------------\n");
   for (int i = 0; i < N; i++) {
     for (int j = 0; j < N; j++) {
-      printf("%d ", *(A + (i * N) + j));
+      printf(" %d", *(A + (i * N) + j));
     }
     printf("\n");
   }

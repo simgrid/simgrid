@@ -13,7 +13,7 @@ $ cat tmp_fich
 ! output ignore
 < $ cat tmp_fich
 < > TUTU TOTO
-$ ${bindir:=.}/tesh 
+$ ${bindir:=.}/tesh
 
 $ rm tmp_fich
 
@@ -122,7 +122,7 @@ $ cat
 < $ cat
 < > a
 < > c
-$ ${bindir:=.}/tesh 
+$ ${bindir:=.}/tesh
 
 ! expect return 2
 ! output ignore
@@ -132,7 +132,7 @@ $ ${bindir:=.}/tesh
 < > a
 < >
 < > c
-$ ${bindir:=.}/tesh 
+$ ${bindir:=.}/tesh
 
 <
 < b
@@ -150,7 +150,7 @@ $ cat
 < $ cat
 < > b
 < > c
-$ ${bindir:=.}/tesh 
+$ ${bindir:=.}/tesh
 
 ! expect return 2
 ! output ignore
@@ -160,4 +160,4 @@ $ ${bindir:=.}/tesh
 < >
 < > b
 < > c
-$ ${bindir:=.}/tesh 
+$ ${bindir:=.}/tesh

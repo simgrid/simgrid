@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-p In the ns-3 tests, the timings are not shown because the exact values may vary with your ns-3 version. 
+p In the ns-3 tests, the timings are not shown because the exact values may vary with your ns-3 version.
 p We just want to check that the ns-3 bindings of SimGrid are working correctly, we don't want to thoroughly test ns-3.
 
 p 3hosts 2links
@@ -48,8 +48,8 @@ $ ${bindir:=.}/network-ns3/s4u-network-ns3 ${platfdir}/onelink.xml ${srcdir}/net
 > [C1:worker(2)] [s4u_test/INFO] FLOW[1] : Receive 10000 bytes from S1 to C1
 
 p Crosstraffic TCP option DISABLED
-! output ignore 
-$ ${bindir:=.}/network-ns3/s4u-network-ns3 ${platfdir}/crosstraffic.xml ${srcdir}/network-ns3/crosstraffic_d.xml --cfg=network/model:ns-3 --cfg=network/crosstraffic:0 
+! output ignore
+$ ${bindir:=.}/network-ns3/s4u-network-ns3 ${platfdir}/crosstraffic.xml ${srcdir}/network-ns3/crosstraffic_d.xml --cfg=network/model:ns-3 --cfg=network/crosstraffic:0
 
 p Crosstraffic TCP option ENABLED
 ! output ignore
