@@ -29,7 +29,7 @@ to us and say hello! We love earing about how people use SimGrid.
    framework, and you never know who have the time and knowledge to
    answer your question, so please keep messages on the public mailing
    list.
-   
+
  - If you want to chat with the community, join us on `Mattermost
    <https://framateam.org/simgrid/channels/town-square>`_. Be warned
    that even if many people are connected to the channel, they may not
@@ -42,13 +42,13 @@ to us and say hello! We love earing about how people use SimGrid.
    non-french speaker are connected, we usually chat in french on
    these channel, but we do switch back to english when we have a
    guest.
-   
+
  - Asking your question on
    `StackOverflow <http://stackoverflow.com/questions/tagged/simgrid>`_
    is also a good idea, as this
    site is very well indexed. We answer questions there too (don't
    forget to use the SimGrid tag in your question so that we can see
-   it), and they remain usable for the next users. 
+   it), and they remain usable for the next users.
 
 Giving back to SimGrid
 ----------------------
@@ -59,28 +59,28 @@ are some ideas, but if you have new ones, feel free to share them with us.
 Provide fresh-eyes feedback
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-We are working on the project since years. We take for granted things that are hard to infer at first, and traps we don't even see anymore. 
+We are working on the project since years. We take for granted things that are hard to infer at first, and traps we don't even see anymore.
 Likewise, it's hard for us to maintain the documentation uptodate with the current situation, because we don't rely on the doc when navigating the project.
-This is why your first impression as a newcomer to the project is utterly precious for us. 
+This is why your first impression as a newcomer to the project is utterly precious for us.
 Please make sure to write a `discovery report <https://diff.wikimedia.org/2014/03/25/seeing-through-the-eyes-of-new-technical-contributors/>`_ to enlight us.
 You can send it either as a bug report, as a mail on the list or simply post it as is to the Mattermost channel.
 
 Spread the word
 ^^^^^^^^^^^^^^^
 
-A simple way to help the SimGrid project is to **use SimGrid for your research, and say so**. 
-`Cite the SimGrid framework<https://simgrid.org/publications.html>`_ in your papers and speak of it with your colleagues to spread the word. 
+A simple way to help the SimGrid project is to **use SimGrid for your research, and say so**.
+`Cite the SimGrid framework<https://simgrid.org/publications.html>`_ in your papers and speak of it with your colleagues to spread the word.
 The number of publications enabled by SimGrid is really important when asking for further fundings to sustain the project:
-The more you use the framework, the better for us. 
+The more you use the framework, the better for us.
 
 Add a link to the `SimGrid homepage <https://simgrid.org>`_ on your site to improve our ranking in search engines.
 
 You can also **help us constituting an active and welcoming user community**. Answer to the question sent to the mailing lists if you can, gently pointing to
-the relevant part of the documentation on need, and help newscomers becoming part of our community too. 
+the relevant part of the documentation on need, and help newscomers becoming part of our community too.
 
 Finally, you can invite us for a talk on SimGrid to events you organize.
-We have various format, ranging from a focused `20 minute talks <http://people.irisa.fr/Martin.Quinson/blog/2020/1124/SimGrid_presentations>`_ 
-to a `45mn dense tutorial <http://people.irisa.fr/Martin.Quinson/blog/2012/1120/Simgrid_at_Louvain/>`_, 
+We have various format, ranging from a focused `20 minute talks <http://people.irisa.fr/Martin.Quinson/blog/2020/1124/SimGrid_presentations>`_
+to a `45mn dense tutorial <http://people.irisa.fr/Martin.Quinson/blog/2012/1120/Simgrid_at_Louvain/>`_,
 to a `2 hours seminar <http://people.irisa.fr/Martin.Quinson/blog/2016/0524/Experimental_methodology_for_distributed_systems>`_, or
 even to `multi-days events <https://simgrid.org/tutorials.html>`_.
 Note that even if most of these examples are from the same individual, several people in the team can present the project.
@@ -98,11 +98,11 @@ find**, be it a typo in the documentation, a paragraph that needs to
 be reworded, a bug in the code, or any other problem. The best way to
 do so is to open an issue on our
 `Bug Tracker <https://framagit.org/simgrid/simgrid/issues>`_ so
-that we don't forget about it. 
+that we don't forget about it.
 
 The worst way to report such issues is to go through private emails.
 These are unreliable, and we are trying to develop SimGrid openly, so
-private discussions are to be avoided if possible. 
+private discussions are to be avoided if possible.
 
 If you can provide a patch fixing the issue you report, that's even
 better. If you cannot, then you need to give us a minimal working
@@ -135,8 +135,8 @@ could be included to SimGrid. Modeling accurately a given platform is
 a difficult work, which outcome is very precious to us.
 
 Or maybe you developed an independent tool on top of SimGrid. We'd
-love helping you gaining visibility by listing it in our 
-`Contrib <https://simgrid.org/contrib.html>`_. 
+love helping you gaining visibility by listing it in our
+`Contrib <https://simgrid.org/contrib.html>`_.
 
 Possible Enhancements
 ^^^^^^^^^^^^^^^^^^^^^

@@ -25,7 +25,7 @@ parameter in the command line (see @ref outcomes_vizu for details).
 /** @defgroup ROUTING_API  Routing: Determining the communication paths
     @brief Organize the platform to determine the links used by each communication
 
-@section routing_basics Basic Concepts 
+@section routing_basics Basic Concepts
 
 The purpose of the simgrid::kernel::routing module is to retrieve the
 routing path between two points in a time- and space-efficient manner.
@@ -34,7 +34,7 @@ the created communication, and the summed latency that these links
 represent. This operation is clearly on the critical path of most
 SimGrid simulations.
 
-When defining how the information is routed in the simulated network, 
+When defining how the information is routed in the simulated network,
 it is certainly very tempting to use a formalism somehow similar to
 how it is defined on real network. One would have to define the
 routing tables of each routers interconnections sub-networks, just
@@ -49,7 +49,7 @@ large systems, and allows highly optimized datastructures and
 algorithms in the simulator. The proposed description mechanism is
 thus much more convenient and efficient. In addition, it is more
 expressive than the classical solution based on forwarding tables on
-each host and router. 
+each host and router.
 
 The price to pay is that this representation of networks is very
 specific to SimGrid, so you will have to read further to understand
@@ -58,7 +58,7 @@ it, even if you already know how real networks work.
 The central notion here are @b Networking @b Zones. NetZones represent
 network areas in which the routing is done in an homogeneous way.
 Conceptually, netzones generalize from the ideas of local networks
-(such as Ethernet switched networks) and Autonomous System. The 
+(such as Ethernet switched networks) and Autonomous System. The
 network as a whole is represented as a single hierarchy of netzones,
 meaning that every netzone is part of another netzone (but the @c
 NetRoot, which is the top-level netzone).
@@ -116,6 +116,3 @@ the feasibility of your idea.
 Please note that as it is not really intended for public use, this
 module is only partially documented.
 */
-
-
-

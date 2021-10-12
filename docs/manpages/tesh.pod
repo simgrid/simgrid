@@ -141,7 +141,7 @@ Tesh also supports perl default value for undefined variables:
 
     $ ${bindir:=/usr/bin}/myprogram
 
-=head2 Not enforcing the expected output 
+=head2 Not enforcing the expected output
 
 By default, the commands output is matched against the one expected,
 and an error is raised on discrepancy. Metacommands to change this:
@@ -193,7 +193,7 @@ This approach may seem surprising at the first glance but it does its job:
 
 =over 4
 
-=item Every timestamps remain separated, as it should; 
+=item Every timestamps remain separated, as it should;
 
 =item In each timestamp, the output order of processes become
    reproducible: that's the lexicographical order of their name;

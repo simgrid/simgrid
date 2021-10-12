@@ -298,7 +298,7 @@ MPI_Scatter
  - automatic (experimental): use an automatic self-benchmarking algorithm
  - ompi_basic_linear: basic linear scatter
  - ompi_binomial: binomial tree scatter
- - mvapich2_two_level_direct: SMP aware algorithm, with an intra-node stage (default set to mpich selector), and then a basic linear inter node stage. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster. 
+ - mvapich2_two_level_direct: SMP aware algorithm, with an intra-node stage (default set to mpich selector), and then a basic linear inter node stage. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster.
  - mvapich2_two_level_binomial: SMP aware algorithm, with an intra-node stage (default set to mpich selector), and then a binomial phase. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster.
 
 MPI_Reduce
@@ -688,12 +688,12 @@ iterations. These samples are done per processor with
 SMPI_SAMPLE_LOCAL, and shared between all processors with
 SMPI_SAMPLE_GLOBAL. Of course, none of this will work if the execution
 time of your loop iteration are not stable. If some parameters have an
-incidence on the timing of a kernel, and if they are reused often 
-(same kernel launched with a few different sizes during the run, for example), 
-SMPI_SAMPLE_LOCAL_TAG and SMPI_SAMPLE_GLOBAL_TAG can be used, with a tag 
-as last parameter, to differentiate between calls. The tag is a character 
+incidence on the timing of a kernel, and if they are reused often
+(same kernel launched with a few different sizes during the run, for example),
+SMPI_SAMPLE_LOCAL_TAG and SMPI_SAMPLE_GLOBAL_TAG can be used, with a tag
+as last parameter, to differentiate between calls. The tag is a character
 chain crafted by the user, with a maximum size of 128, and should include
-what is necessary to group calls of a given size together. 
+what is necessary to group calls of a given size together.
 
 This feature is demoed by the example file
 `examples/smpi/NAS/ep.c <https://framagit.org/simgrid/simgrid/tree/master/examples/smpi/NAS/ep.c>`_
@@ -750,13 +750,13 @@ Some show how to simply run MPI code in SimGrid, how to use the
 tracing/replay mechanism or how to use plugins written in S4U to
 extend the simulator abilities.
 
-Another source of examples lay in the SimGrid archive, under 
+Another source of examples lay in the SimGrid archive, under
 `teshsuite/smpi <https://framagit.org/simgrid/simgrid/-/tree/master/examples/smpi>`_.
 They are not in the ``examples`` directory because they probably don't
 constitute pedagogical examples. Instead, they are intended to stress
 our implementation during the tests. Some of you may be interested
 anyway.
- 
+
 But the best source of SMPI examples is certainly the `proxy app
 <https://framagit.org/simgrid/SMPI-proxy-apps>`_ external project.
 Proxy apps are scale models of real, massive HPC applications: each of

@@ -37,7 +37,7 @@ The design of SimGrid is shaped by several design goals:
    and resource models. But the simulation should be parsimonious too,
    to not hinder the tool's usability. SimGrid tries to provide sane
    default settings along with the possibility to augment and modify
-   the provided models and their default settings.   
+   the provided models and their default settings.
  - **scalability**: ability to deal with very large simulations. In the
    number of actors, in the size of the platform, in the number of
    events, or all together.
@@ -120,7 +120,7 @@ the stepwise variation of computational speed depending on the DVFS,
 and was reused to model the bootup and shutdown phases of a CPU: the
 computational speed is 0 at these specific pstates. This pstate notion
 was extended to represent the fact that the bandwidth provided by a
-wifi link to a given station depends on its signal-noise ratio (SNR). 
+wifi link to a given station depends on its signal-noise ratio (SNR).
 
 Further on this line, all provided resource models are very comparable
 internally. They rely on linear inequation systems, stating for

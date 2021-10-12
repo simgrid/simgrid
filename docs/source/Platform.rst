@@ -20,12 +20,12 @@ some drawbacks, but using a specific format ensures that the platform
 is not mixed with the tested application. This separation of concern
 :ref:`is a must <howto_science>` for your Modeling and Simulation (M&S)
 work. When XML is too limiting, you may describe your platforms using
-directly :ref:`C++ code <platform_cpp>` 
+directly :ref:`C++ code <platform_cpp>`
 
 Any simulated platform must contain **basic elements**, such as
 :ref:`pf_tag_host`, :ref:`pf_tag_link`, :ref:`pf_tag_disk`, and similar.
 SimGrid makes no assumption about the **routing of your platform**, so you must declare
-explicitly the network path taken between each pair of hosts. 
+explicitly the network path taken between each pair of hosts.
 This can be done through a flat list of :ref:`pf_tag_route` for each pair of hosts (routes
 are symmetrical by default), or you may use the advanced concept of :ref:`networking zone <platform_routing>`
 to efficiently express the routing of your platform.

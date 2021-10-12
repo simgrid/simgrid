@@ -59,7 +59,7 @@ Nightly built Java Package
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Head to the corresponding `GitHub Action <https://github.com/simgrid/simgrid/actions/workflows/jarfile.yml>`_
-and pick the last green build. At the bottom of the build page, click on the ``jar-final`` artefact. 
+and pick the last green build. At the bottom of the build page, click on the ``jar-final`` artefact.
 Open this zip file to find the jar you need. This jar can be used under Linux, Mac OSX or Windows, as you wish.
 
 Binary Java Troubleshooting
@@ -167,7 +167,7 @@ dependencies.
    $ make install
 
 .. _install_src_config:
-   
+
 Build Configuration
 ^^^^^^^^^^^^^^^^^^^
 
@@ -186,7 +186,7 @@ cmake itself.
    files, such as ``CMakeCache.txt``. Since Cmake also generates some
    files in the tree, you may need to wipe out your complete tree and
    start with a fresh one when you install new dependencies.
-   
+
    Another (better) solution is to :ref:`build out of the source tree
    <install_cmake_outsrc>`.
 
@@ -452,15 +452,15 @@ Python-specific instructions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Once you have the Python development headers installed as well as a
-recent version of the `pybind11 <https://pybind11.readthedocs.io/en/stable/>` 
+recent version of the `pybind11 <https://pybind11.readthedocs.io/en/stable/>`
 module (version at least 2.4), recompiling the Python bindings from
-the source should be as easy as: 
+the source should be as easy as:
 
 .. code-block:: console
 
   # cd simgrid-source-tree
   $ python setup.py build install
-  
+
 Starting with SimGrid 3.13, it should even be possible to install
 simgrid without downloading the source with pip:
 
@@ -533,4 +533,3 @@ If needed, implement ``i686-linux-gnu-gfortran`` as a script:
 
   #!/usr/bin/env sh
   exec gfortran -m32 "$@"
-

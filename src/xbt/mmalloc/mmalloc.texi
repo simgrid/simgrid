@@ -240,7 +240,7 @@ Given an @code{mmalloc} descriptor @var{md} and a pointer to memory
 previously allocated by @code{mmalloc} in @var{ptr}, reallocate the
 memory to be @var{size} bytes long, possibly moving the existing
 contents of memory if necessary.
-	
+
 @item void *mvalloc (void *@var{md}, size_t @var{size});
 Like @code{mmalloc} but the resulting memory is aligned on a page boundary.
 

@@ -164,7 +164,7 @@ example of an invalid platform:
      <zone id="zone0" routing="Floyd">
        <host id="alice" speed="1Gf" />
        <host id="bob"   speed="1Gf" />
-  
+
        <link id="l1" bandwidth="1Mbps" latency="5ms" />
        <link id="l2" bandwidth="1Mbps" latency="5ms" />
 
@@ -174,7 +174,7 @@ example of an invalid platform:
        </route>
      </zone>
    </platform>
-  
+
 This can be reformulated as follows to make it usable with the ns-3 binding.
 There is no direct connection from alice to bob, but that's OK because ns-3
 automatically routes from point to point (using
@@ -195,11 +195,11 @@ automatically routes from point to point (using
        <link id="l2" bandwidth="1Mbps" latency="5ms"/>
 
        <route src="alice" dst="r1">
-         <link_ctn id="l1"/> 
+         <link_ctn id="l1"/>
        </route>
-  
+
        <route src="r1" dst="bob">
-         <link_ctn id="l2"/> 
+         <link_ctn id="l2"/>
        </route>
      </zone>
    </platform>
@@ -220,13 +220,13 @@ to see which ones are used in our regression tests.
 WiFi platforms
 ^^^^^^^^^^^^^^
 
-In SimGrid, WiFi networks are modeled with WiFi zones, where a zone contains 
-the access point of the WiFi network and the hosts connected to it (called 
-station in the WiFi world). Links inside WiFi zones are modeled as regular 
-links with a specific attribute, and these links are then added to routes 
-between hosts. The main difference When using ns-3 WiFi networks is that 
-the network performance is not given by the link bandwidth and latency but 
-by the access point WiFi characteristics, and the distance between the access 
+In SimGrid, WiFi networks are modeled with WiFi zones, where a zone contains
+the access point of the WiFi network and the hosts connected to it (called
+station in the WiFi world). Links inside WiFi zones are modeled as regular
+links with a specific attribute, and these links are then added to routes
+between hosts. The main difference When using ns-3 WiFi networks is that
+the network performance is not given by the link bandwidth and latency but
+by the access point WiFi characteristics, and the distance between the access
 point and the hosts.
 
 So, to declare a new WiFi network, simply declare a zone with the ``WIFI``
@@ -243,14 +243,14 @@ of the WiFi network.
 
 	<prop id="access_point" value="alice"/>
 
-Afterward simply declare the hosts and routers inside the WiFi network. Remember 
+Afterward simply declare the hosts and routers inside the WiFi network. Remember
 that one must have the same name as declared in the property "access point".
 
 .. code-block:: xml
 
 	<router id="alice" speed="1Gf"/>
 	<host id="STA0-0" speed="1Gf"/>
-	<host id="STA0-1" speed="1Gf"/> 
+	<host id="STA0-1" speed="1Gf"/>
 
 Finally, close the WiFi zone.
 
@@ -258,7 +258,7 @@ Finally, close the WiFi zone.
 
 	</zone>
 
-The WiFi zone may be connected to another zone using a traditional link and 
+The WiFi zone may be connected to another zone using a traditional link and
 a zoneRoute. Note that the connection between two zones is always wired.
 
 .. code-block:: xml
@@ -279,7 +279,7 @@ to hosts connected to the wifi zone:
    Roughly speaking, it defines the speed at which the access point is
    exchanging data with all stations. It depends on its model and configuration,
    and the possible values are listed for example on Wikipedia.
-   |br| By default, ``mcs=3``. 
+   |br| By default, ``mcs=3``.
    It is a property of the WiFi zone.
  * ``nss`` (Number of Spatial Streams, or `number of antennas <https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Number_of_antennas>`_)
    defines the amount of simultaneous data streams that the AP can sustain.
@@ -313,7 +313,7 @@ Here is an example of a host changing ``wifi_distance`` value.
 Random Number Generator
 -----------------------
 
-It is possible to define a fixed or random seed to the ns3 random number 
+It is possible to define a fixed or random seed to the ns3 random number
 generator using the config tag.
 
 .. code-block:: xml
@@ -322,14 +322,14 @@ generator using the config tag.
 	<platform version="4.1">
 	    <config>
 		    <prop id = "network/model" value = "ns-3" />
-		    <prop id = "ns3/seed" value = "time" /> 
+		    <prop id = "ns3/seed" value = "time" />
 	    </config>
-	... 
+	...
 	</platform>
 
 The first property defines that this platform will be used with the ns3 model.
-The second property defines the seed that will be used. Defined to ``time`` 
-it will use a random seed, defined to a number it will use this number as 
+The second property defines the seed that will be used. Defined to ``time``
+it will use a random seed, defined to a number it will use this number as
 the seed.
 
 Limitations
@@ -343,7 +343,7 @@ platform. However, there are some known caveats:
   * End hosts cannot have more than one interface card. So, your SimGrid hosts
     should be connected to the platform through only one link. Otherwise, your
     SimGrid host will be considered as a router (FIXME: is it still true?).
-	     
+
 Our goal is to keep the ns-3 plugin of SimGrid as easy (and hopefully readable)
 as possible. If the current state does not fit your needs, you should modify
 this plugin, and/or create your own plugin from the existing one. If you come up

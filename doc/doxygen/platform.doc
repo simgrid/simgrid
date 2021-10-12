@@ -203,7 +203,7 @@ id              | yes       | string | Name of the link that is supposed to act 
   is just some doc valuable only at the time of writing.
   This section describes the storage management under SimGrid ; nowadays
   it's only usable with MSG. It relies basically on linux-like concepts.
-  You also may want to have a look to its corresponding section in 
+  You also may want to have a look to its corresponding section in
   @ref msg_file ; access functions are organized as a POSIX-like
   interface.
 
@@ -241,7 +241,7 @@ be used. There are 3 different categories for routing models:
    tedious very quickly, as it is very verbose.
    Consistent with some manually managed real life routing.
 3. @ref pf_routing_model_simple "Simple/fast models": those models offer fast, low memory routing
-   algorithms. You should consider to use this type of model if 
+   algorithms. You should consider to use this type of model if
    you can make some assumptions about your network zone.
    Routing in this case is more or less ignored.
 
@@ -259,7 +259,7 @@ destination for each edge.
 Routers are naturally an important concept ns-3 since the
 way routers run the packet routing algorithms is actually simulated.
 SimGrid's analytical models however simply aggregate the routing time
-with the transfer time. 
+with the transfer time.
 
 So why did we incorporate routers in SimGrid? Rebuilding a graph representation
 only from the route information turns out to be a very difficult task, because
@@ -269,7 +269,7 @@ It is important to understand that routers are only used to provide topological
 information.
 
 To express this topological information, a <b>route</b> has to be
-defined in order to declare which link is connected to a router. 
+defined in order to declare which link is connected to a router.
 
 
 @subsubsection pf_routing_model_shortest_path Shortest-path based models
@@ -464,7 +464,7 @@ routing model (the path is given relative to SimGrid's source directory):
 
 @subsection ps_dec Defining routes
 
-There are currently four different ways to define routes: 
+There are currently four different ways to define routes:
 
 | Name                                              | Description                                                                         |
 | ------------------------------------------------- | ----------------------------------------------------------------------------------- |
@@ -495,7 +495,7 @@ this is not the case for bypass*Route, as it is more probable that you
 want to bypass only one default route.
 
 For an @ref pf_tag_zoneroute "zoneroute", things are just slightly more complicated, as you have
-to give the id of the gateway which is inside the zone you want to access ... 
+to give the id of the gateway which is inside the zone you want to access ...
 So it looks like this:
 
 @verbatim
@@ -534,7 +534,7 @@ host @c dst_host that is within @c dst, you need to:
 | dst             | yes       | String | See the @c src attribute                                                                                                                   |
 | gw_src          | yes       | String | The gateway that will be used within the src zone; this can be any @ref pf_tag_host "Host" or @ref pf_router "Router" defined within the src zone. |
 | gw_dst          | yes       | String | Same as @c gw_src, but with the dst zone instead.                                                                                            |
-| symmetrical     | no        | YES@|NO (Default: YES) | If this route is symmetric, the opposite route (from dst to src) will also be declared implicitly.               | 
+| symmetrical     | no        | YES@|NO (Default: YES) | If this route is symmetric, the opposite route (from dst to src) will also be declared implicitly.               |
 
 #### Example ####
 
@@ -563,14 +563,14 @@ host @c dst_host that is within @c dst, you need to:
 </zone>
 @endverbatim
 
-@subsubsection pf_tag_route &lt;route&gt; 
+@subsubsection pf_tag_route &lt;route&gt;
 
-The principle is the same as for 
+The principle is the same as for
 @ref pf_tag_zoneroute "ZoneRoute": The route contains a list of links that
-provide a path from @c src to @c dst. Here, @c src and @c dst can both be either a 
-@ref pf_tag_host "host" or @ref pf_router "router".  This is mostly useful for the 
-@ref pf_routing_model_full "Full routing model" as well as for the 
-@ref pf_routing_model_shortest_path "shortest-paths" based models (as they require 
+provide a path from @c src to @c dst. Here, @c src and @c dst can both be either a
+@ref pf_tag_host "host" or @ref pf_router "router".  This is mostly useful for the
+@ref pf_routing_model_full "Full routing model" as well as for the
+@ref pf_routing_model_shortest_path "shortest-paths" based models (as they require
 topological information).
 
 
@@ -596,7 +596,7 @@ A route in the @ref pf_routing_model_shortest_path "Shortest-Path routing model"
   <link_ctn id="3"/>
 </route>
 @endverbatim
-@note 
+@note
     You must only have one link in your routes when you're using them to provide
     topological information, as the routes here are simply the edges of the
     (network-)graph and the employed algorithms need to know which edge connects
@@ -757,7 +757,7 @@ to a file, later a host/link/cluster, and finally using trace_connect
 you say that the file trace must be used by the entity.
 
 
-#### Example #### 
+#### Example ####
 
 @verbatim
 <zone  id="zone0"  routing="Full">
@@ -767,8 +767,8 @@ you say that the file trace must be used by the entity.
 <trace_connect trace="myTrace" element="bob" kind="POWER"/>
 @endverbatim
 
-@note 
-    The order here is important.  @c trace_connect must come 
+@note
+    The order here is important.  @c trace_connect must come
     after the elements @c trace and @c host, as both the host
     and the trace definition must be known when @c trace_connect
     is parsed; the order of @c trace and @c host is arbitrary.
@@ -838,7 +838,7 @@ that model the platform on which you run your code. For that, you
 could use <a href="https://gitlab.inria.fr/simgrid/platform-calibration">our
 calibration scripts</a>. This leads to very good fits between the
 platform, the model and the needs.  The g5k.xml example resulted of
-such an effort, which also lead to <a href="https://github.com/lpouillo/topo5k/">an 
+such an effort, which also lead to <a href="https://github.com/lpouillo/topo5k/">an
 ongoing attempt</a> to automatically extract the SimGrid platform from
 the <a href="http://grid5000.fr/">Grid'5000</a> experimental platform.
 But it's hard to come up with generic models. Don't take these files
@@ -1001,19 +1001,19 @@ characteristics (lookup: time to resolve a route):
 
 Each routing model automatically adds a loopback link for each declared host, i.e.,
 a network route from the host to itself, if no such route is declared in the XML
-file. This default link has a bandwidth of 498 Mb/s, a latency of 15 microseconds, 
-and is <b>not</b> shared among network flows. 
+file. This default link has a bandwidth of 498 Mb/s, a latency of 15 microseconds,
+and is <b>not</b> shared among network flows.
 
 If you want to specify the characteristics of the loopback link for a given host, you
-just have to specify a route from this host to itself with the desired characteristics 
-in the XML file. This will prevent the routing model to add and use the default 
+just have to specify a route from this host to itself with the desired characteristics
+in the XML file. This will prevent the routing model to add and use the default
 loopback link.
 
 @subsection pf_switch I want to describe a switch but there is no switch tag!
 
 Actually we did not include switch tag. But when you're trying to
-simulate a switch, assuming 
-fluid bandwidth models are used (which SimGrid uses by default unless 
+simulate a switch, assuming
+fluid bandwidth models are used (which SimGrid uses by default unless
 ns-3 or constant network models are activated), the limiting factor is
 switch backplane bandwidth. So, essentially, at least from
 the simulation perspective, a switch is similar to a
@@ -1029,13 +1029,13 @@ as a normal link.
 You have several possibilities, as usual when modeling things. If your
 cabinets are homogeneous and the intercabinet network negligible for
 your study, you should just create a larger cluster with all hosts at
-the same layer. 
+the same layer.
 
 In the rare case where your hosts are not homogeneous between the
 cabinets, you can create your cluster completely manually. For that,
 create an As using the Cluster routing, and then use one
 &lt;cabinet&gt; for each cabinet. This cabinet tag can only be used an
-As using the Cluster routing schema, and creating 
+As using the Cluster routing schema, and creating
 
 Be warned that creating a cluster manually from the XML with
 &lt;cabinet&gt;, &lt;backbone&gt; and friends is rather tedious. The

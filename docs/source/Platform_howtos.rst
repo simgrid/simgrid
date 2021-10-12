@@ -124,13 +124,13 @@ timed events with the form "date value". Example:
 
   - At time t = 1, the host is turned off (a zero value means OFF)
   - At time t = 2, the host is turned back on (any other value than zero means ON)
-  - At time t = 10, the profile is reset (as we are 8 seconds after the last event). Then the host will be turned off 
+  - At time t = 10, the profile is reset (as we are 8 seconds after the last event). Then the host will be turned off
     again at time t = 11.
 
    If your profile does not contain any LOOPAFTER line, then it will be executed only once and not in a repetitive way.
 
 Another possibility is to use the
-:cpp:func:`simgrid::s4u::Host::set_state_profile()` or 
+:cpp:func:`simgrid::s4u::Host::set_state_profile()` or
 :cpp:func:`simgrid::s4u::Link::set_state_profile()` functions. These
 functions take a profile, that can be a fixed profile exhaustively
 listing the events, or something else if you wish.
@@ -168,7 +168,7 @@ The default model does not account for task pinning, where you
 manually select on which core each of the existing activity should
 execute. The best solution to model this is probably to model your
 4-core processor as 4 distinct hosts, and assigning the activities to
-cores by migrating them to the declared hosts. In some sense, this 
+cores by migrating them to the declared hosts. In some sense, this
 takes the whole Network-On-Chip idea really seriously.
 
 Some extra complications may arise here. If you have more activities than
@@ -231,7 +231,7 @@ Of course, this is only one possible way to model these things. YMMV ;)
 Modeling parallel links
 ***********************
 
-Most HPC topologies, such as fat-trees, allow parallel links (a 
+Most HPC topologies, such as fat-trees, allow parallel links (a
 router A and a router B can be connected by more than one link).
 You might be tempted to model this configuration as follows :
 
@@ -250,23 +250,23 @@ You might be tempted to model this configuration as follows :
         <link_ctn id="link2"/>
     </route>
 
-But that will not work, since SimGrid doesn't allow several routes for 
+But that will not work, since SimGrid doesn't allow several routes for
 a single `{src ; dst}` pair. Instead, what you should do is :
 
   - Use a single route with both links (so both will be traversed
     each time a message is exchanged between router A and B)
 
   - Double the bandwidth of one link, to model the total bandwidth of
-    both links used in parallel. This will make sure no combined 
-    communications between router A and B use more than the bandwidth 
+    both links used in parallel. This will make sure no combined
+    communications between router A and B use more than the bandwidth
     of two links
 
-  - Assign the other link a `FATPIPE` sharing policy, which will allow 
+  - Assign the other link a `FATPIPE` sharing policy, which will allow
     several communications to use the full bandwidth of this link without
     having to share it. This will model the fact that individual
     communications can use at most this link's bandwidth
 
-  - Set the latency of one of the links to 0, so that latency is only 
+  - Set the latency of one of the links to 0, so that latency is only
     accounted for once (since both link are traversed by each message)
 
 So the final platform for our example becomes :

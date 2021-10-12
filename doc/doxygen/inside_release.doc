@@ -1,4 +1,4 @@
-/*! 
+/*!
 @page inside_release Releasing SimGrid
 
 @section inside_release_c Releasing the main library
@@ -65,7 +65,7 @@ Please apply the following checklist before releasing.
 - Rebuild and upload the python package
   - rm -rf dist/ ; python3 setup.py sdist # Build a source distrib
   - test that the built distrib recompiles:
-    rm -rf /tmp/pysimgrid && mkdir /tmp/pysimgrid && cp dist/simgrid-*.tar.gz /tmp/pysimgrid 
+    rm -rf /tmp/pysimgrid && mkdir /tmp/pysimgrid && cp dist/simgrid-*.tar.gz /tmp/pysimgrid
     (cd /tmp/pysimgrid && tar xfz simgrid*.tar.gz && cd simgrid-*/ && python3 setup.py build)
   - Upload it to pypi (WARNING: you cannot modify uploaded files, ever)
     twine upload dist/simgrid-*.tar.gz
@@ -85,7 +85,7 @@ Please apply the following checklist before releasing.
   - gbp import-orig ../simgrid_3.*+dfsg.orig.tar.xz
   - dch -i "New upstream release" # + copy the NEWS into debian/changelog
   - git mv debian/libsimgrid3.XX.install debian/libsimgrid3.XY.install
-  - edit debian/control: s/simgrid3.XX/simgrid3.XY/ 
+  - edit debian/control: s/simgrid3.XX/simgrid3.XY/
 - Update the simgrid/package.py for spack: https://gitlab.inria.fr/solverstack/spack-repo
 - Update the Docker images (after pushing to the git)
   - cd tools/docker && make stable && make tuto-s4u tuto-smpi tuto-mc
@@ -99,13 +99,13 @@ Please apply the following checklist before releasing.
   Release Target date: https://en.wikipedia.org/wiki/Equinox
 - Bump release number to 3.X.1 in CMakeLists.txt sonar-project.properties docs/source/conf.py setup.py
 - Deal with deprecations:
-  - jed include/xbt/base.h: Introduce the next XBT_ATTRIB_DEPRECATED_v??? macro 
+  - jed include/xbt/base.h: Introduce the next XBT_ATTRIB_DEPRECATED_v??? macro
   - Kill the one for the current release and remove all code that were
     mandated by the deprecated functions (both in source and headers).
   - Do the possible cleanups now that these features are gone.
 
-Release numbering semantic: 
-  - 3.X is a named release. 
+Release numbering semantic:
+  - 3.X is a named release.
     - We have 4 named releases per year (for each equinox and solstice)
     - The ChangeLog and NEWS are complete and informative
     - All tests pass on all ci systems (or the workarounds are documented)
@@ -114,16 +114,16 @@ Release numbering semantic:
     - These releases are announced to the users
   - 3.X.Y where Y is even: dot release of 3.X, prerelease of 3.(X+1)
     - We provide and store a source .tar.gz and a full jarfile on framagit
-    - These releases are NOT announced publicly, nor really documented. 
+    - These releases are NOT announced publicly, nor really documented.
       The idea is to have something close to a rolling release.
     - External projects can depend on dot releases to loosen their
-      release process from ours, when 4 release a year is not enough 
+      release process from ours, when 4 release a year is not enough
   - 3.X.Y where Y is odd: git current status between two releases
     - No expectations on such versions
   - Example
     - 3.22.4: unannounced/loosely documented stable release
     - 3.22.5: git status somewhere between the release of 3.22.4 and the next one
     - 3.23: Documented and announced stable release
-    
+
 
 */

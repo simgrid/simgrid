@@ -23,7 +23,3 @@ Describing the Experimental Setup
    - Availability and state profiles
    - Reproducible random number generation
    - Command line options, in particular on the model switching
-
-
-
-	     

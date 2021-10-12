@@ -1,5 +1,5 @@
 ﻿/** @addtogroup SURF_API
-  
+
   @section SURF_doc Surf documentation
    Surf is composed several components:
    - @ref SURF_simulation
@@ -15,7 +15,7 @@
    - @ref SURF_lmm
    - @ref SURF_callbacks
    - @ref plugin_energy
-   
+
 
 */
 
@@ -48,8 +48,8 @@
     #surf_host_model_init_current_default() (which will give you a
     CLM03 model), or similar (see @ref SURF_models).
 
-    To initialize SURF, call 
-    #surf_host_model_init_current_default() or #surf_host_model_init_ptask_L07() 
+    To initialize SURF, call
+    #surf_host_model_init_current_default() or #surf_host_model_init_ptask_L07()
     to create the platform.
 
     Then you can access the hosts with the @ref simgrid::s4u::Engine::get_all_hosts.

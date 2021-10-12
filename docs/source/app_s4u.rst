@@ -21,14 +21,14 @@ abstract algorithms in the domains of Cloud, P2P, HPC, IoT, and similar
 settings.
 
 Since v3.20 (June 2018), S4U is the way to go for long-term
-projects. It is feature complete, but may still evolve slightly in 
+projects. It is feature complete, but may still evolve slightly in
 future releases. It can already be used to do everything that can be
 done in SimGrid, but you may have to adapt your code in future
 releases. When this happens, compiling your code will produce
 deprecation warnings for 4 releases (one year) before the removal of
-the old symbols. 
+the old symbols.
 If you want an API that will never ever evolve in the future, you
-should use the :ref:`deprecated MSG API <MSG_doc>` instead. 
+should use the :ref:`deprecated MSG API <MSG_doc>` instead.
 
 Main Concepts
 *************
@@ -144,7 +144,7 @@ Activities
 **********
 
 Activities represent the actions that consume a resource, such as a
-:ref:`Comm <API_s4u_Comm>` that consumes the *transmitting power* of 
+:ref:`Comm <API_s4u_Comm>` that consumes the *transmitting power* of
 :ref:`Link <API_s4u_Link>` resources, or an :ref:`Exec <API_s4u_Exec>`
 that consumes the *computing power* of :ref:`Host <API_s4u_Host>` resources.
 See also the :ref:`full API <API_s4u_Activity>` below.
@@ -171,10 +171,10 @@ Finally, to wait at most until a specified time limit, use
 
 Every kind of activity can be asynchronous:
 
-  - :ref:`s4u::CommPtr <API_s4u_Comm>` are created with 
+  - :ref:`s4u::CommPtr <API_s4u_Comm>` are created with
     :cpp:func:`s4u::Mailbox::put_async() <simgrid::s4u::Mailbox::put_async>` and
     :cpp:func:`s4u::Mailbox::get_async() <simgrid::s4u::Mailbox::get_async>`.
-  - :ref:`s4u::IoPtr <API_s4u_Io>` are created with 
+  - :ref:`s4u::IoPtr <API_s4u_Io>` are created with
     :cpp:func:`s4u::Disk::read_async() <simgrid::s4u::Disk::read_async>` and
     :cpp:func:`s4u::Disk::write_async() <simgrid::s4u::Disk::write_async>`.
   - :ref:`s4u::ExecPtr <API_s4u_Exec>` are created with
@@ -194,11 +194,11 @@ vector of mailboxes.
    :dedent: 4
 
 Then, you start all the communications that should occur concurrently with
-:cpp:func:`s4u::Mailbox::put_async() <simgrid::s4u::Mailbox::put_async>`.  
+:cpp:func:`s4u::Mailbox::put_async() <simgrid::s4u::Mailbox::put_async>`.
 Finally, the actor waits for the completion of all of them at once
-with 
-:cpp:func:`s4u::Comm::wait_all() <simgrid::s4u::Comm::wait_all>`.  
-     
+with
+:cpp:func:`s4u::Comm::wait_all() <simgrid::s4u::Comm::wait_all>`.
+
 .. literalinclude:: ../../examples/cpp/comm-waitall/s4u-comm-waitall.cpp
    :language: c++
    :start-after: put-begin
@@ -210,12 +210,12 @@ with
 Activities Life cycle
 =====================
 
-Sometimes, you want to change the setting of an activity before it even starts. 
+Sometimes, you want to change the setting of an activity before it even starts.
 
 .. todo:: write this section
 
 .. _s4u_mailbox:
-	  
+
 Mailboxes
 *********
 
@@ -233,9 +233,9 @@ but only to find the contact with which you want to communicate.
 
 They are similar to many common things: The phone number, which allows
 the caller to find the receiver. The Twitter hashtag, which helps
-senders and receivers to find each other. In TCP, the pair 
+senders and receivers to find each other. In TCP, the pair
 ``{host name, host port}`` to which you can connect to find your peer.
-In HTTP, URLs through which the clients can connect to the servers. 
+In HTTP, URLs through which the clients can connect to the servers.
 In ZeroMQ, the queues are used to match senders and receivers.
 
 One big difference with most of these systems is that no actor is the
@@ -259,9 +259,9 @@ is consumed by the first receiver.
 A big difference with the ZeroMQ queues is that you cannot filter
 on the data you want to get from the mailbox. To model such settings
 in SimGrid, you'd have one mailbox per potential topic, and subscribe
-to each topic individually with a 
+to each topic individually with a
 :cpp:func:`get_async() <simgrid::s4u::Mailbox::get_async>` on each mailbox.
-Then, use :cpp:func:`Comm::wait_any() <simgrid::s4u::Comm::wait_any>` 
+Then, use :cpp:func:`Comm::wait_any() <simgrid::s4u::Comm::wait_any>`
 to get the first message on any of the mailboxes you are subscribed to.
 
 The mailboxes are not located on the network, and you can access
@@ -314,14 +314,14 @@ Declaring a Receiving Actor
 The last twist is that by default in the simulator, the data starts
 to be exchanged only when both the sender and the receiver are
 announced (it waits until both :cpp:func:`put() <simgrid::s4u::Mailbox::put()>`
-and :cpp:func:`get() <simgrid::s4u::Mailbox::get()>` are posted). 
+and :cpp:func:`get() <simgrid::s4u::Mailbox::get()>` are posted).
 In TCP, since you establish connections beforehand, the data starts to
 flow as soon as the sender posts it, even if the receiver did not post
-its :cpp:func:`put() <simgrid::s4u::Mailbox::put()>` yet. 
+its :cpp:func:`put() <simgrid::s4u::Mailbox::put()>` yet.
 
 To model this in SimGrid, you can declare a specific receiver to a
-given mailbox (with the function 
-:cpp:func:`set_receiver() <simgrid::s4u::Mailbox::set_receiver()>`). 
+given mailbox (with the function
+:cpp:func:`set_receiver() <simgrid::s4u::Mailbox::set_receiver()>`).
 That way, any :cpp:func:`put() <simgrid::s4u::Mailbox::put()>`
 posted to that mailbox will start as soon as possible, and the data
 will already be there on the receiver host when the receiver actor
@@ -372,14 +372,14 @@ Here is a little example:
 
 .. code-block:: cpp
 
-   void myFunc() 
+   void myFunc()
    {
      simgrid::s4u::MutexPtr mutex = simgrid::s4u::Mutex::create(); // Too bad we cannot use `new`
 
      mutex->lock();   // use the mutex as a simple reference
      //  bla bla
-     mutex->unlock(); 
-  
+     mutex->unlock();
+
    } // The mutex gets automatically freed because the only existing reference gets out of scope
 
 Note that Mailboxes, Hosts, and Links are not handled through smart
@@ -506,7 +506,7 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Actor::get_ppid
       .. doxygenfunction:: simgrid::s4u::Actor::get_properties() const
       .. doxygenfunction:: simgrid::s4u::Actor::get_property(const std::string &key) const
-      .. doxygenfunction:: simgrid::s4u::Actor::set_property(const std::string &key, const std::string &value) 
+      .. doxygenfunction:: simgrid::s4u::Actor::set_property(const std::string &key, const std::string &value)
 
       .. doxygenfunction:: simgrid::s4u::Actor::get_host
       .. doxygenfunction:: simgrid::s4u::Actor::set_host
@@ -515,7 +515,7 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Actor::get_impl
 
    .. group-tab:: Python
-                  
+
       .. autoattribute:: simgrid.Actor.name
       .. autoattribute:: simgrid.Actor.host
       .. autoattribute:: simgrid.Actor.pid
@@ -811,7 +811,7 @@ Initialization
       .. doxygenfunction:: simgrid::s4u::Engine::register_function(const std::string &name, const kernel::actor::ActorCodeFactory &factory)
 
    .. group-tab:: Python
-   
+
        .. automethod:: simgrid.Engine.load_deployment
        .. automethod:: simgrid.Engine.load_platform
        .. automethod:: simgrid.Engine.register_actor
@@ -836,7 +836,7 @@ Run the simulation
       .. doxygenfunction:: simgrid::s4u::Engine::run
 
    .. group-tab:: Python
-   
+
       .. automethod:: simgrid.Engine.get_clock
       .. automethod:: simgrid.Engine.run
 
@@ -947,7 +947,7 @@ Basic management
       idiom on mailboxes because they are internal objects to the simulation
       engine. Once created, there is no way to destroy a mailbox before the end
       of the simulation.
-         
+
       .. doxygenfunction:: simgrid::s4u::Mailbox::by_name(const std::string &name)
 
    .. group-tab:: Python
@@ -965,7 +965,7 @@ Basic management
       .. code-block:: C
 
          #include <simgrid/s4u/mailbox.h>
-      
+
       .. doxygentypedef:: sg_mailbox_t
       .. doxygentypedef:: const_sg_mailbox_t
 
@@ -1054,7 +1054,7 @@ See :ref:`s4u_receiving_actor`.
    .. group-tab:: C
 
       .. doxygenfunction:: sg_mailbox_set_receiver(const char *alias)
-                  
+
 .. _API_s4u_Resource:
 
 =========
@@ -1082,8 +1082,8 @@ Basic management
 
       Note that there is no DiskPtr type and that you cannot use the RAII
       idiom on disks because SimGrid does not allow (yet) to create nor
-      destroy resources once the simulation is started. 
-         
+      destroy resources once the simulation is started.
+
       .. doxygenfunction:: simgrid::s4u::Disk::seal()
 
    .. group-tab:: Python
@@ -1170,7 +1170,7 @@ Basic management
 
       Note that there is no HostPtr type, and that you cannot use the RAII
       idiom on hosts because SimGrid does not allow (yet) to create nor
-      destroy resources once the simulation is started. 
+      destroy resources once the simulation is started.
 
       .. doxygenfunction:: simgrid::s4u::Host::destroy()
       .. doxygenfunction:: simgrid::s4u::Host::seal()
@@ -1426,7 +1426,7 @@ Basic management
 
       Note that there is no LinkPtr type and that you cannot use the RAII
       idiom on hosts because SimGrid does not allow (yet) to create nor
-      destroy resources once the simulation is started. 
+      destroy resources once the simulation is started.
 
       .. doxygenfunction:: simgrid::s4u::Link::seal()
 
@@ -1606,7 +1606,7 @@ Basic management
 
       Note that there is no NetZonePtr type and that you cannot use the RAII
       idiom on network zones because SimGrid does not allow (yet) to create nor
-      destroy resources once the simulation is started. 
+      destroy resources once the simulation is started.
 
       .. doxygenfunction:: simgrid::s4u::NetZone::seal
 
@@ -2068,7 +2068,7 @@ also start direct communications as shown below.
       .. doxygenfunction:: simgrid::s4u::Comm::sendto
       .. doxygenfunction:: simgrid::s4u::Comm::sendto_init
       .. doxygenfunction:: simgrid::s4u::Comm::sendto_async
-      
+
       .. doxygenfunction:: simgrid::s4u::Comm::cancel
       .. doxygenfunction:: simgrid::s4u::Comm::start
       .. doxygenfunction:: simgrid::s4u::Comm::test
@@ -2167,7 +2167,7 @@ Querying info
       .. autoattribute:: simgrid.Exec.remaining_ratio
 
    .. group-tab:: C
-   
+
       .. doxygenfunction:: sg_exec_set_bound(sg_exec_t exec, double bound)
       .. doxygenfunction:: sg_exec_get_name(const_sg_exec_t exec)
       .. doxygenfunction:: sg_exec_set_name(sg_exec_t exec, const char* name)
@@ -2198,7 +2198,7 @@ Life cycle
        .. automethod:: simgrid.Exec.wait
 
    .. group-tab:: C
-   
+
        .. doxygenfunction:: sg_exec_start(sg_exec_t exec)
        .. doxygenfunction:: sg_exec_cancel(sg_exec_t exec);
        .. doxygenfunction:: sg_exec_test(sg_exec_t exec);

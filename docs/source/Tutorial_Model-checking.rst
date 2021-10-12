@@ -51,7 +51,7 @@ on Mac OS X yet, so mac users should stick to the docker method for now.
 .. code-block:: console
 
    $ docker image pull simgrid/tuto-mc
-   $ mkdir ~/tuto-mcsimgrid # or chose another directory to share between your computer and the docker container 
+   $ mkdir ~/tuto-mcsimgrid # or chose another directory to share between your computer and the docker container
    $ docker run -it --rm --name mcsimgrid --volume ~/tuto-mcsimgrid:/source/tutorial simgrid/tuto-mc bash
 
 In the container, you have access to the following directories of interest:
@@ -183,7 +183,7 @@ now read it together. It can be split in several parts:
     reports the first faulty execution it finds: it may not be the shorter possible one.
 
     .. code-block:: console
-  
+
        [0.000000] [mc_ModelChecker/INFO] Counter-example execution trace:
        [0.000000] [mc_ModelChecker/INFO]   [(1)Tremblay (server)] iRecv(dst=(1)Tremblay (server), buff=(verbose only), size=(verbose only))
        [0.000000] [mc_ModelChecker/INFO]   [(2)Jupiter (client)] iSend(src=(2)Jupiter (client), buff=(verbose only), size=(verbose only))
@@ -213,7 +213,7 @@ now read it together. It can be split in several parts:
        ==402== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
        ==402== Using Valgrind-3.16.1 and LibVEX; rerun with -h for copyright info
        ==402== Command: ./ndet-receive-s4u small_platform.xml --cfg=model-check/replay:1;2;1;1;2;4;1;1;3;1
-       ==402== 
+       ==402==
        [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/replay' to '1;2;1;1;2;4;1;1;3;1'
        [0.000000] [mc_record/INFO] path=1;2;1;1;2;4;1;1;3;1
        [Jupiter:client:(2) 0.000000] [example/INFO] Sending 1
@@ -222,7 +222,7 @@ now read it together. It can be split in several parts:
        [Jupiter:client:(2) 0.000000] [example/INFO] Sent!
        [Tremblay:server:(1) 0.000000] /source/tutorial/ndet-receive-s4u.cpp:27: [root/CRITICAL] Assertion value_got == 3 failed
        (some output ignored)
-       ==402== 
+       ==402==
        ==402== Process terminating with default action of signal 6 (SIGABRT): dumping core
        ==402==    at 0x550FCE1: raise (raise.c:51)
        ==402==    by 0x54F9536: abort (abort.c:79)

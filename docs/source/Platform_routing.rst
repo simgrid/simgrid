@@ -44,7 +44,7 @@ allows you to have more than one routing model in your platform. For
 example, you can have a coordinate-based routing for the WAN parts
 of your platforms, a full routing within each datacenter, and a highly
 optimized routing within each cluster of the datacenter.  In this
-case, determining the route between two given hosts gets 
+case, determining the route between two given hosts gets
 "somewhat more complex" but SimGrid still computes
 these routes for you in a time- and space-efficient manner.
 
@@ -182,7 +182,7 @@ through the ``routing=`` parameter.
   - **Vivaldi/Wi-Fi**: "fully-connected" zones with special characteristics.
 
 .. _inter_zone:
-    
+
 Inter-zone communications
 =========================
 

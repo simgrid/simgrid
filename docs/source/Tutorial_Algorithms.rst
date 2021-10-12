@@ -93,7 +93,7 @@ host on which a worker is waiting for something to compute.
 
 Then, the tasks are sent one after the other, each on a mailbox named
 after the worker's hosts. On the other side, a given worker (which
-code is given below) waits for incoming tasks on its 
+code is given below) waits for incoming tasks on its
 mailbox.
 
 
@@ -344,7 +344,7 @@ recompile it when you first log in:
 Using your Computer Natively
 ............................
 
-To take the tutorial on your machine, you first need to :ref:`install 
+To take the tutorial on your machine, you first need to :ref:`install
 a recent version of SimGrid <install>`, a C++ compiler, and also
 ``pajeng`` to visualize the traces. You may want to install `Vite
 <http://vite.gforge.inria.fr/>`_ to get a first glance at the traces.
@@ -459,7 +459,7 @@ using the worker location (which should be filled in two locations),
 we could use their ID (which should be filled in one location
 only).
 
-This could be done with the following deployment file. It's 
+This could be done with the following deployment file. It's
 not shorter than the previous one, but it's still simpler because the
 information is only written once. It thus follows the `DRY
 <https://en.wikipedia.org/wiki/Don't_repeat_yourself>`_ `SPOT
@@ -494,7 +494,7 @@ Wrap up
 The mailboxes are a very powerful mechanism in SimGrid, allowing many
 interesting application settings. They may feel unusual if you are
 used to BSD sockets or other classical systems, but you will soon
-appreciate their power. They are only used to match 
+appreciate their power. They are only used to match
 communications but have no impact on the communication
 timing. ``put()`` and ``get()`` are matched regardless of their
 initiators' location and then the real communication occurs between

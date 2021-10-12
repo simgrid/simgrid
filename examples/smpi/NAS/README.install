@@ -2,13 +2,13 @@ Some explanations on the MPI implementation of a subset of NPB 3.3 (NPB3.3-MPI)
 ----------------------------------------------------------------------
 
 NPB-MPI is a sample MPI implementation based on NPB2.4 and NPB3.0-SER.
-This subset contains three of the original benchmarks: one in Fortran: EP; 
+This subset contains three of the original benchmarks: one in Fortran: EP;
 one in C: IS, as well as the DT benchmark, written in C, introduced in NPB3.2-MPI.
 
 1. Compilation
 
    Before compilation, one needs to check the configuration file
-   'make.def' in the config directory and modify the file if necessary.  
+   'make.def' in the config directory and modify the file if necessary.
 
        make <benchmark-name> NPROCS=<number> CLASS=<class> \
          [SUBTYPE=<type>] [VERSION=VEC]
@@ -19,12 +19,12 @@ one in C: IS, as well as the DT benchmark, written in C, introduced in NPB3.2-MP
 
    Class E is not available for IS and DT.
 
-   Class D for IS (Integer Sort) requires a compiler/system that 
-   supports the "long" type in C to be 64-bit.  
- 
+   Class D for IS (Integer Sort) requires a compiler/system that
+   supports the "long" type in C to be 64-bit.
+
 2. Execution
 
    The executable is named <benchmark-name>.<class>.<nprocs>
-   The executable is placed in the bin subdirectory (or in the directory 
-   BINDIR specified in make.def, if you've defined it). The method for 
+   The executable is placed in the bin subdirectory (or in the directory
+   BINDIR specified in make.def, if you've defined it). The method for
    running the MPI program depends on your local system.

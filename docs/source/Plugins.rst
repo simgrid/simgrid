@@ -33,9 +33,9 @@ Defining a Plugin
 
 A plugin can get some additional code executed within the SimGrid
 kernel, and attach the data needed by that code to the SimGrid
-objects. 
+objects.
 
-The host load plugin in 
+The host load plugin in
 `src/plugins/host_load.cpp <https://framagit.org/simgrid/simgrid/tree/master/src/plugins/host_load.cpp>`_
 constitutes a good introductory example. It defines a class
 ``HostLoad`` that is meant to be attached to each host. This class
@@ -55,7 +55,7 @@ kind of objects, please let us now.
 
 .. cpp:class:: template<class R, class... P> simgrid::xbt::signal<R(P...)>
 
-  A signal/slot mechanism, where you can attach callbacks to a given signal, and then fire the signal. 
+  A signal/slot mechanism, where you can attach callbacks to a given signal, and then fire the signal.
 
   The template parameter is the function signature of the signal (the return value currently ignored).
 

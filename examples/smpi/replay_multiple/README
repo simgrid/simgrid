@@ -12,17 +12,17 @@ example :
 
 2 smpi_replay.txt 32 125000000000
 
-This launches an instance "2" that will replay file smpi_replay.txt with 32 processes, and each one of these processes 
+This launches an instance "2" that will replay file smpi_replay.txt with 32 processes, and each one of these processes
 will sleep for 125000000000 flops before the run.
 
-In order to be replayed, a deployment file must be generatedfrom this description file, and from the intended platform 
-file and hostfiles. The script generate_multiple_deployment.sh can be used as such : 
+In order to be replayed, a deployment file must be generatedfrom this description file, and from the intended platform
+file and hostfiles. The script generate_multiple_deployment.sh can be used as such :
 
 ./generate_multiple_deployment.sh -platform platform_file.xml -hostfile hostfile  description_file deployment.xml
 
 The output deployment file will be written in deployment.xml
 
-Please not that the deployment will use the hostfile in order, placing processes of the first instance using the first 
+Please not that the deployment will use the hostfile in order, placing processes of the first instance using the first
 node, and the ones of the following instances on the following nodes.
 
 The actual replay can now be launched, using classic options for SMPI

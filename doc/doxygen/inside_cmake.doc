@@ -1,26 +1,26 @@
-/*! 
+/*!
 @page inside_cmake Adding source files or examples
 
 @tableofcontents
 
-SimGrid uses CMake which is a family of tools designed to build, test, and package software. 
+SimGrid uses CMake which is a family of tools designed to build, test, and package software.
 
 @section inside_cmake_addsrc How to add source files?
 
-If you want to rename, add, or delete source file(s) in the SimGrid distribution, you have to edit the 
-tools/cmake/DefinePackages.cmake configuration file. Files are organized in sections, then find 
-the section you are interested in and modify it. 
+If you want to rename, add, or delete source file(s) in the SimGrid distribution, you have to edit the
+tools/cmake/DefinePackages.cmake configuration file. Files are organized in sections, then find
+the section you are interested in and modify it.
 
 Once you're done, test your changes with ``make distcheck``.
 
 @section inside_cmake_examples How to add an example?
 
-The first rule is that the content of examples/ must be interesting to the users. It is expected that the users will 
-take one of these examples and start editing it to make it fit their needs. So, it should be self-contained, 
+The first rule is that the content of examples/ must be interesting to the users. It is expected that the users will
+take one of these examples and start editing it to make it fit their needs. So, it should be self-contained,
 informative, and should use only the public APIs.
 
-To ensure that all examples actually work as expected, every example is also used as an integration test (see 
-@ref inside_tests), but you should still strive to keep the code under examples/ as informative as possible for the 
+To ensure that all examples actually work as expected, every example is also used as an integration test (see
+@ref inside_tests), but you should still strive to keep the code under examples/ as informative as possible for the
 users. In particular, torture test cases should be placed in teshsuite/, not examples/, so that the users don't stumble
 upon them by error.
 
@@ -30,12 +30,12 @@ The examples/ directory is organized as  follows:
  - examples/platforms/ only contains platforms descriptions in the XML format (see @ref platform for details)
  - examples/deprecated/msg/ for examples using the MSG API. Here the naming convention is package-example (e.g., app-masterworker).
  - examples/deprecated/simdag/ for examples using the SimDag API
- - examples/deprecated/java/ for examples using the Java bindings to the MSG API. This directory contains packages (app, async, 
+ - examples/deprecated/java/ for examples using the Java bindings to the MSG API. This directory contains packages (app, async,
    cloud, ...) which in turn contain individual examples. If your new example fits in an existing package, add it here,
-   or create a new package otherwise. 
+   or create a new package otherwise.
 
 In each of these directories, there is a CMakeLists.txt file that has
-to be edited to include the new examples. 
+to be edited to include the new examples.
 
 Once you're done, test your changes with ``make distcheck``.
 

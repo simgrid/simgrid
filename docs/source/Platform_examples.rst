@@ -11,7 +11,7 @@
    <br/>
 
 .. _platform_examples:
-   
+
 Network Topology Examples
 =========================
 
@@ -32,12 +32,12 @@ simulated platform as a graph of hosts and network links.
 
 The elements basic elements (with :ref:`pf_tag_host` and
 :ref:`pf_tag_link`) are described first, and then the routes between
-any pair of hosts are explicitly given with :ref:`pf_tag_route`. 
+any pair of hosts are explicitly given with :ref:`pf_tag_route`.
 
 Any host must be given a computational speed in flops while links must
 be given a latency and a bandwidth. You can write 1Gf for
-1,000,000,000 flops (full list of units in the reference guide of 
-:ref:`pf_tag_host` and :ref:`pf_tag_link`). 
+1,000,000,000 flops (full list of units in the reference guide of
+:ref:`pf_tag_host` and :ref:`pf_tag_link`).
 
 Routes defined with :ref:`pf_tag_route` are symmetrical by default,
 meaning that the list of traversed links from A to B is the same as
@@ -241,4 +241,3 @@ The following code illustrates how to create this Star Zone and add the appropri
    SimGrid comes with an extensive set of platforms in the
    `examples/platforms <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms>`_
    directory that should be described here.
-   

@@ -402,7 +402,7 @@ or more concisely in `this paper <https://hal.inria.fr/hal-00953618/document>`_,
 even if that paper does only describe models for myrinet and ethernet.
 You can see in Fig 2 some results for Infiniband, for example. This model
 may be outdated by now for modern infiniband, anyway, so a new
-validation would be good. 
+validation would be good.
 
 The three paramaters are defined as follows:
 
@@ -428,15 +428,15 @@ a simple translation of this text. First, some notations:
 To determine the penalty for a communication, two values need to be calculated. First, the penalty caused by the conflict in transmission, noted ps.
 
 
-- if ∆s (i) = 1 then ps = 1. 
+- if ∆s (i) = 1 then ps = 1.
 - if ∆s (i) ≥ 2 and ∆e (i) ≥ 3 then ps = ∆s (i) × βs × γr
-- else, ps = ∆s (i) × βs 
+- else, ps = ∆s (i) × βs
 
 
 Then,  the penalty caused by the conflict in reception (noted pe) should be computed as follows:
 
 - if ∆e (i) = 1 then pe = 1
-- else, pe = Φ (e) × βe × Ω (s, e) 
+- else, pe = Φ (e) × βe × Ω (s, e)
 
 Finally, the penalty associated with the communication is:
 p = max (ps ∈ s, pe)
@@ -467,9 +467,9 @@ Note that with the default host model this option is activated by default.
 Configuring loopback link
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Several network model provide an implicit loopback link to account for local 
+Several network model provide an implicit loopback link to account for local
 communication on a host. By default it has a 10GBps bandwidth and a null latency.
-This can be changed with ``network/loopback-lat`` and ``network/loopback-bw`` 
+This can be changed with ``network/loopback-lat`` and ``network/loopback-bw``
 items.
 
 .. _cfg=smpi/async-small-thresh:
@@ -871,7 +871,7 @@ want to reduce the ``contexts/stack-size`` item. Its default value is
 8192 (in KiB), while our Chord simulation works with stacks as small
 as 16 KiB, for example. You can ensure that some actors have a specific
 size by simply changing the value of this configuration item before
-creating these actors. The :cpp:func:`simgrid::s4u::Engine::set_config` 
+creating these actors. The :cpp:func:`simgrid::s4u::Engine::set_config`
 functions are handy for that.
 
 This *setting is ignored* when using the thread factory (because there
@@ -964,7 +964,7 @@ you never used the tracing API.
   categorization).
 
 - MSG or SimDag-based simulator and categorized traces (you need to
-  declare categories and classify your tasks according to them) 
+  declare categories and classify your tasks according to them)
 
   .. code-block:: none
 
@@ -1516,7 +1516,7 @@ of the SMPI CourseWare (see Activity #2.2 of the pointed
 assignment). In practice, change the calls for malloc() and free() into
 SMPI_SHARED_MALLOC() and SMPI_SHARED_FREE().
 
-SMPI provides two algorithms for this feature. The first one, called 
+SMPI provides two algorithms for this feature. The first one, called
 ``local``, allocates one block per call to SMPI_SHARED_MALLOC()
 (each call site gets its own block) ,and this block is shared
 among all MPI ranks.  This is implemented with the shm_* functions
@@ -1773,8 +1773,8 @@ As with printf, you can specify the precision and width of the fields. For examp
 
 
 If you want to have spaces in your log format, you should protect it. Otherwise, SimGrid will consider that this is a space-separated list of several parameters. But you should
-also protect it from the shell that also splits command line arguments on spaces. At the end, you should use something such as ``--log="'root.fmt:%l: [%p/%c]: %m%n'"``. 
-Another option is to use the ``%e`` directive for spaces, as in ``--log=root.fmt:%l:%e[%p/%c]:%e%m%n``. 
+also protect it from the shell that also splits command line arguments on spaces. At the end, you should use something such as ``--log="'root.fmt:%l: [%p/%c]: %m%n'"``.
+Another option is to use the ``%e`` directive for spaces, as in ``--log=root.fmt:%l:%e[%p/%c]:%e%m%n``.
 
 Category appender
 .................

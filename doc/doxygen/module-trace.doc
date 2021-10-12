@@ -7,7 +7,7 @@
 - @ref TRACE_user_variables
 
 @{
- 
+
   @defgroup TRACE_category Tracing categories
   @brief Functions to declare tracing categories.
 
@@ -16,6 +16,6 @@
 
   @defgroup TRACE_user_variables Tracing user variables
   @brief Functions to declare and define user variables associated to resources.
-  
+
 @}
 */

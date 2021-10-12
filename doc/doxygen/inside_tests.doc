@@ -1,4 +1,4 @@
-/*! 
+/*!
 @page inside_tests Testing SimGrid
 
 This page will teach you how to run the tests, selecting the ones you
@@ -29,7 +29,7 @@ cmake. These tests are run for every commit and the result is publicly
 <a href="https://ci.inria.fr/simgrid/">available</a>.
 
 @verbatim
-ctest		 	  # Launch all tests
+ctest                     # Launch all tests
 ctest -R msg              # Launch only the tests which name match the string "msg"
 ctest -j4                 # Launch all tests in parallel, at most 4 at the same time
 ctest --verbose           # Display all details on what's going on
@@ -70,7 +70,7 @@ integration tests. It is distributed with the SimGrid source file, and
 even comes with a man page. TESH ensures that the output produced by a
 command perfectly matches the expected output. This is very precious
 to ensure that no change modifies the timings computed by the models
-without notice. 
+without notice.
 
 To add a new integration test, you thus have 3 things to do:
 
@@ -80,9 +80,9 @@ To add a new integration test, you thus have 3 things to do:
    examples/ and modify the cmake files as explained on this page:
    @ref inside_cmake_examples. If you feel like you should write a
    torture test that is not interesting to the users (because nobody
-   would sanely write something similar in user code), then put it under 
+   would sanely write something similar in user code), then put it under
    teshsuite/ somewhere.
-   
+
  - <b>Write the tesh file</b>, containing the command to run, the
    provided input (if any, but almost no SimGrid test provide such an
    input) and the expected output. Check the tesh man page for more
@@ -96,14 +96,14 @@ To add a new integration test, you thus have 3 things to do:
    #XBT_LOG_ISENABLED() macro), or the modification of the log formats
    to hide the timings when they depend on the host machine.@n
    The script located in <project/directory>/tools/tesh/generate_tesh can
-   help you a lot in particular if the output is large (though a smaller output is preferable). 
+   help you a lot in particular if the output is large (though a smaller output is preferable).
    There are also example tesh files in the <project/directory>/tools/tesh/ directory, that can be useful to understand the tesh syntax.
-   
+
  - <b>Add your test in the cmake infrastructure</b>. For that, modify
    the following file:
    @verbatim
    <project/directory>/teshsuite/<interface eg msg>/CMakeLists.txt
-   @endverbatim   
+   @endverbatim
    Make sure to pick a wise name for your test. It is often useful to
    check a category of tests together. The only way to do so in ctest
    is to use the -R argument that specifies a regular expression that
@@ -119,13 +119,13 @@ the following (assuming that you use tesh as expected).
 #  option --setenv bindir set the directory containing the binary
 #         --setenv srcdir set the directory containing the source file
 #         --cd set the working directory
-ADD_TEST(my-test-name ${CMAKE_BINARY_DIR}/bin/tesh 
+ADD_TEST(my-test-name ${CMAKE_BINARY_DIR}/bin/tesh
          --setenv bindir=${CMAKE_BINARY_DIR}/examples/my-test/
          --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/my-test/
          --cd ${CMAKE_HOME_DIRECTORY}/examples/my-test/
          ${CMAKE_HOME_DIRECTORY}/examples/deprecated/msg/io/io.tesh
 )
-@endverbatim             
+@endverbatim
 
 As usual, you must run "make distcheck" after modifying the cmake files,
 to ensure that you did not forget any files in the distributed archive.
@@ -133,13 +133,13 @@ to ensure that you did not forget any files in the distributed archive.
 @section inside_tests_ci Continuous Integration
 
 We use several systems to automatically test SimGrid with a large set
-of parameters, across as many platforms as possible. 
+of parameters, across as many platforms as possible.
 We use <a href="https://ci.inria.fr/simgrid/">Jenkins on Inria
 servers</a> as a workhorse: it runs all of our tests for many
 configurations. It takes a long time to answer, and it often reports
 issues but when it's green, then you know that SimGrid is very fit!
 We use <a href="https://ci.appveyor.com/project/mquinson/simgrid">AppVeyor</a>
-to build and somehow test SimGrid on windows. 
+to build and somehow test SimGrid on windows.
 
 @subsection inside_tests_jenkins Jenkins on the Inria CI servers
 
@@ -162,7 +162,7 @@ We have 2 interesting projects on Jenkins:
     (on Jenkins) to run the script <tt>tools/jenkins/DynamicAnalysis.sh</tt>
 
 In each case, SimGrid gets built in
-/builds/workspace/$PROJECT/build_mode/$CONFIG/label/$SERVER/build 
+/builds/workspace/$PROJECT/build_mode/$CONFIG/label/$SERVER/build
 with $PROJECT being for instance "SimGrid", $CONFIG "DEBUG" or
 "ModelChecker" and $SERVER for instance "simgrid-fedora20-64-clang".
 
@@ -183,7 +183,7 @@ template with the following commands:
 @verbatim
 #debian/ubuntu
 apt-get install gcc g++ gfortran automake cmake libboost-dev openjdk-8-jdk openjdk-8-jre libxslt-dev libxml2-dev libevent-dev libunwind-dev libdw-dev htop git python3 xsltproc libboost-context-dev
-#for dynamicanalysis: 
+#for dynamicanalysis:
 apt-get install jacoco libjacoco-java libns3-dev pcregrep gcovr ant lua5.3-dev sloccount
 
 #fedora
@@ -200,7 +200,7 @@ pkg install boost-libs cmake openjdk8 automake libxslt libxml2 libunwind git hto
 #+ clang-devel from ports
 
 #osx
-brew install cmake boost libunwind-headers libxslt git python3 
+brew install cmake boost libunwind-headers libxslt git python3
 @endverbatim
 
 @subsection inside_tests_appveyor AppVeyor
@@ -233,7 +233,7 @@ SonarQube is an open-source code quality analysis solution. Their nice
 code scanners are provided as plugin. The one for C++ is not free, but
 open-source project can use it at no cost. That is what we are doing.
 
-Don't miss the great looking dashboard here: 
+Don't miss the great looking dashboard here:
 https://sonarcloud.io/dashboard?id=simgrid_simgrid
 
 */

@@ -1,11 +1,10 @@
-
 (package-initialize)
 (add-to-list 'package-archives
-		 '("gnu" . "https://elpa.gnu.org/packages/"))
+             '("gnu" . "https://elpa.gnu.org/packages/"))
 (add-to-list 'package-archives
-		 '("melpa-stable" . "https://stable.melpa.org/packages/"))
+             '("melpa-stable" . "https://stable.melpa.org/packages/"))
 (add-to-list 'package-archives
-		 '("melpa" . "https://melpa.org/packages/"))
+             '("melpa" . "https://melpa.org/packages/"))
 (add-to-list 'load-path "/source/ox-rst.git/")
 (setq package-archive-priorities '(("melpa-stable" . 100)
                                    ("melpa" . 50)
@@ -27,8 +26,8 @@
 
 (global-set-key (kbd "C-c l") 'org-store-link)
 
-;; In org-mode 9 you need to have #+PROPERTY: header-args :eval never-export 
-;; in the beginning or your document to tell org-mode not to evaluate every 
+;; In org-mode 9 you need to have #+PROPERTY: header-args :eval never-export
+;; in the beginning or your document to tell org-mode not to evaluate every
 ;; code block every time you export.
 (setq org-confirm-babel-evaluate nil) ;; Do not ask for confirmation all the time!!
 
@@ -55,7 +54,7 @@
    ))
 (setq org-src-preserve-indentation t)
 
-(add-hook 'org-babel-after-execute-hook 'org-display-inline-images) 
+(add-hook 'org-babel-after-execute-hook 'org-display-inline-images)
 (add-hook 'org-mode-hook 'org-display-inline-images)
 (add-hook 'org-mode-hook 'org-babel-result-hide-all)
 

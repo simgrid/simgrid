@@ -49,13 +49,13 @@ things, and get them directly in master.
 
 Your commit message should follow the git habits, explained in this
 <a href="http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html">blog
-post</a>, or in the 
+post</a>, or in the
 <a href="https://github.com/atom/atom/blob/master/CONTRIBUTING.md#git-commit-messages">
 git styleguide of Atom</a>.
 
-  
+
 @subsection uhood_tech_inside_codstand Automatically Enforcing our Coding Standards
- 
+
 If you plan to commit code to the SimGrid project, you definitely need
 to install the relevant tool to ensure that your changes follow our
 coding standards:
@@ -135,9 +135,9 @@ Note that the links sometimes broken by git or others. Relaunching
     which valgrind does not really love).
     All this is configured with:
 
-    cmake -Denable_model-checking=OFF 
-          -Denable_mallocators=OFF 
-	  -Denable_compile_optimizations=OFF .
+    cmake -Denable_model-checking=OFF
+          -Denable_mallocators=OFF
+          -Denable_compile_optimizations=OFF .
 
 * If you break the logs, you want to define XBT_LOG_MAYDAY at the
   beginning of log.h. It deactivates the whole logging mechanism,

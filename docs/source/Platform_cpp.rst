@@ -11,7 +11,7 @@
    <br/>
 
 .. _platform_cpp:
-   
+
 C++ Platforms
 #############
 
@@ -72,7 +72,7 @@ a split-duplex link. Otherwise, SimGrid cannot know which link (UP/DOWN) to use.
 .. code-block:: cpp
 
     auto* link = zone->create_split_duplex_link("1", "125MBps")->set_latency("24us")->seal();
-    
+
     zone->add_route(S1, C1, nullptr, nullptr, {{link, LinkInRoute::Direction::UP}});
 
 .. note::
@@ -91,7 +91,7 @@ function, having a predefined function implemented. When loading the platform, t
 Engine will look for a function with this signature: "**void load_platform(const sg4::Engine& e)**", and
 execute it. It could be an easy way to make the transition between XML and C++ if necessary.
 
-For more details, please refer to the cpp and CMakeLists.txt files in 
+For more details, please refer to the cpp and CMakeLists.txt files in
 `examples/platform <https://framagit.org/simgrid/simgrid/tree/master/examples/platforms>`_.
 
 
@@ -180,4 +180,3 @@ Note that the leaves and loopback links are defined through callbacks, as follow
 
 The code is straightforward and can be easily adapted to more complex environments thanks to the flexibility
 provided by the C++ API.
-

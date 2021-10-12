@@ -95,12 +95,12 @@ simulated platform as a graph of hosts and network links.
 
 The elements basic elements (with :ref:`pf_tag_host` and
 :ref:`pf_tag_link`) are described first, and then the routes between
-any pair of hosts are explicitly given with :ref:`pf_tag_route`. 
+any pair of hosts are explicitly given with :ref:`pf_tag_route`.
 
 Any host must be given a computational speed in flops while links must
 be given a latency and a bandwidth. You can write 1Gf for
-1,000,000,000 flops (full list of units in the reference guide of 
-:ref:`pf_tag_host` and :ref:`pf_tag_link`). 
+1,000,000,000 flops (full list of units in the reference guide of
+:ref:`pf_tag_host` and :ref:`pf_tag_link`).
 
 Routes defined with :ref:`pf_tag_route` are symmetrical by default,
 meaning that the list of traversed links from A to B is the same as
@@ -200,7 +200,7 @@ Here is the meaning of this example: ``2 ; 4,4 ; 1,2 ; 1,2``
 - Hosts are connected to only 1 router above them, while these routers
   are connected to 2 routers above them (thus the ``1,2`` used as
   ``#uplink``).
-- Hosts have only one link to their router while every path between 
+- Hosts have only one link to their router while every path between
   level-1 routers and level-2 routers uses 2 parallel links. Thus the
   ``1,2`` used as ``link count``.
 
@@ -546,18 +546,18 @@ The computing part of this example is the matrix multiplication routine
   $ smpicxx -O3 gemm_mpi.cpp -o gemm
   $ time smpirun -np 16 -platform cluster_crossbar.xml -hostfile cluster_hostfile --cfg=smpi/display-timing:yes --cfg=smpi/running-power:1000000000 ./gemm
 
-This should end quite quickly, as the size of each matrix is only 1000x1000. 
+This should end quite quickly, as the size of each matrix is only 1000x1000.
 But what happens if we want to simulate larger runs?
 Replace the size by 2000, 3000, and try again.
 
 The simulation time increases a lot, while there are no more MPI calls performed, only computation.
 
-The ``--cfg=smpi/display-timing`` option gives more details about execution 
+The ``--cfg=smpi/display-timing`` option gives more details about execution
 and advises using sampling if the time spent in computing loops seems too high.
 
-The ``--cfg=smpi/host-speed:1000000000`` option sets the speed of the processor used for 
-running the simulation. Here we say that its speed is the same as one of the 
-processors we are simulating (1Gf), so that 1 second of computation is injected 
+The ``--cfg=smpi/host-speed:1000000000`` option sets the speed of the processor used for
+running the simulation. Here we say that its speed is the same as one of the
+processors we are simulating (1Gf), so that 1 second of computation is injected
 as 1 second in the simulation.
 
 .. code-block:: console
@@ -570,11 +570,11 @@ as 1 second in the simulation.
   You may want to use sampling functions or trace replay to reduce this.
 
 So in our case (size 3000), the simulation ran for 25 seconds, and the simulated time was 5.57s at the end.
-Computation by itself took 24 seconds, and can quickly grow with larger sizes 
+Computation by itself took 24 seconds, and can quickly grow with larger sizes
 (as computation is really performed, there will be variability between similar runs).
 
-SMPI provides sampling macros to accelerate simulation by sampling iterations 
-of large computation loops, and skip computation after a certain amount of iterations, 
+SMPI provides sampling macros to accelerate simulation by sampling iterations
+of large computation loops, and skip computation after a certain amount of iterations,
 or when the sampling is stable enough.
 
 The two macros only slightly differ :
@@ -582,7 +582,7 @@ The two macros only slightly differ :
 - ``SMPI_SAMPLE_GLOBAL`` : the specified number of samples is produced by all processors
 - ``SMPI_SAMPLE_LOCAL`` : each process executes a specified number of iterations
 
-So if the size of the computed part varies between processes (imbalance), 
+So if the size of the computed part varies between processes (imbalance),
 it's safer to use the LOCAL one.
 
 To use one of them, replacing the external for loop of the multiply routine:
@@ -598,10 +598,10 @@ by:
   SMPI_SAMPLE_GLOBAL(int i = istart, i <= iend, ++i, 10, 0.005)
 
 The first three parameters are the ones from the loop, while the two last ones are for sampling.
-They mean that at most 10 iterations will be performed and that the sampling phase can be exited 
+They mean that at most 10 iterations will be performed and that the sampling phase can be exited
 earlier if the expected stability is reached after fewer samples.
 
-Now run the code again with various sizes and parameters and check the time taken for the 
+Now run the code again with various sizes and parameters and check the time taken for the
 simulation, as well as the resulting simulated time.
 
 .. code-block:: console
@@ -610,7 +610,7 @@ simulation, as well as the resulting simulated time.
   The simulation took 1.23698 seconds (after parsing and platform setup)
   0.0319454 seconds were actual computation of the application
 
-In this case, the simulation only took 1.2 seconds, while the simulated time 
+In this case, the simulation only took 1.2 seconds, while the simulated time
 remained almost identical.
 
 The computation results will obviously be altered since most computations are skipped.
@@ -628,7 +628,7 @@ We will use the DT benchmark of the NAS suite to illustrate how to avoid such is
 With 85 processes and class C, the DT simulated benchmark will try to allocate 35GB of memory,
 which may not be available on the node you are using.
 
-To avoid this we can simply replace the largest calls to malloc and free by calls 
+To avoid this we can simply replace the largest calls to malloc and free by calls
 to ``SMPI_SHARED_MALLOC`` and ``SMPI_SHARED_FREE``.
 This means that all processes will share one single instance of this buffer.
 As for sampling, results will be altered, and this should not be used for control structures.
@@ -647,14 +647,14 @@ Once done, you can now run
 
 And simulation should finish without swapping/crashing (Ignore the warning about the return value).
 
-If control structures are also problematic, you can use ``SMPI_PARTIAL_SHARED_MALLOC(size, offsets, offsetscount)`` 
-macro, which shares only specific parts of the structure between processes, 
+If control structures are also problematic, you can use ``SMPI_PARTIAL_SHARED_MALLOC(size, offsets, offsetscount)``
+macro, which shares only specific parts of the structure between processes,
 and use specific memory for the important parts.
 It can be freed afterward with SMPI_SHARED_FREE.
 
 If allocations are performed with malloc or calloc, SMPI (from version 3.25) provides the option
 ``--cfg=smpi/auto-shared-malloc-shared:n`` which will replace all allocations above size n bytes by
-shared allocations. The value has to be carefully selected to avoid smaller control arrays, 
+shared allocations. The value has to be carefully selected to avoid smaller control arrays,
 containing data necessary for the completion of the run.
 Try to run the (non modified) DT example again, with values going from 10 to 100,000 to show that
 too small values can cause crashes.
@@ -662,7 +662,7 @@ too small values can cause crashes.
 A useful option to identify the largest allocations in the code is ``--cfg=smpi/display-allocs:yes`` (from 3.27).
 It will display at the end of a (successful) run the largest allocations and their locations, helping pinpoint the
 targets for sharing, or setting the threshold for automatic ones.
-For DT, the process would be to run a smaller class of problems, 
+For DT, the process would be to run a smaller class of problems,
 
 .. code-block:: console
 

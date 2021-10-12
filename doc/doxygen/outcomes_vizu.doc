@@ -2,7 +2,7 @@
 
 SimGrid comes with an extensive support to trace and register what
 happens during the simulation, so that it can be either visualized or
-statistically analysed after the simulation. 
+statistically analysed after the simulation.
 
 This tracing is widely used to observe and understand the behavior of
 parallel applications and distributed algorithms. Usually, this is

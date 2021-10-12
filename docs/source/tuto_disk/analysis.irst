@@ -22,7 +22,7 @@ in IO operations (Fig. 5 to 7).
 
 - Link for data: `https://figshare.com/articles/dataset/Companion_of_the_SimGrid_storage_modeling_article/1175156 <https://figshare.com/articles/dataset/Companion_of_the_SimGrid_storage_modeling_article/1175156>`_
 
-**Disclaimer**: 
+**Disclaimer**:
 
 - The purpose of this document is to illustrate how we can
   extract data from experiments and inject on SimGrid. However, the
@@ -54,7 +54,7 @@ Scripts
 -------
 
 We use a special method to create non-uniform histograms to represent
-the noise in IO operations. 
+the noise in IO operations.
 
 Unable to install the library properly, I copied the important methods
 here.
@@ -708,7 +708,7 @@ the real platform.
     sg_df[sg_df$op=="write" & sg_df$flows ==1,]$method=""
 
     ggplot(data=sg_df, aes(x=flows, y=bw, color=op)) + theme_bw() +
-        geom_point(alpha=.3) + 
+        geom_point(alpha=.3) +
         geom_smooth(data=sg_df[sg_df$method=="loess",], color="black", method=loess,se=TRUE,fullrange=T) +
         geom_smooth(data=sg_df[sg_df$method=="lm",], color="black", method=lm,se=TRUE) +
         geom_errorbar(data=sg_dfd, aes(x=flows, y=mean, ymin=mean-2*se, ymax=mean+2*se),color="black",width=.6) +

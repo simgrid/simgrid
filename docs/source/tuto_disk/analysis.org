@@ -23,7 +23,7 @@
  - Link for paper: https://hal.inria.fr/hal-01197128
  - Link for data: https://figshare.com/articles/dataset/Companion_of_the_SimGrid_storage_modeling_article/1175156
 
- *Disclaimer*: 
+ *Disclaimer*:
 - The purpose of this document is to illustrate how we can
  extract data from experiments and inject on SimGrid. However, the
  data shown on this page may *not* reflect the reality.
@@ -45,7 +45,7 @@
 *** Scripts
 
  We use a special method to create non-uniform histograms to represent
- the noise in IO operations. 
+ the noise in IO operations.
 
  Unable to install the library properly, I copied the important methods
  here.
@@ -55,21 +55,21 @@
  #+begin_src R :results output :session *R* :exports none
 #' Variable-width (dagonally cut) histogram
 #'
-#' 
+#'
 #' When constructing a histogram, it is common to make all bars the same width.
 #' One could also choose to make them all have the same area.
 #' These two options have complementary strengths and weaknesses; the equal-width histogram oversmooths in regions of high density, and is poor at identifying sharp peaks; the equal-area histogram oversmooths in regions of low density, and so does not identify outliers.
-#' We describe a compromise approach which avoids both of these defects. We regard the histogram as an exploratory device, rather than as an estimate of a density. 
-#' @title Diagonally Cut Histogram 
+#' We describe a compromise approach which avoids both of these defects. We regard the histogram as an exploratory device, rather than as an estimate of a density.
+#' @title Diagonally Cut Histogram
 #' @param x is a numeric vector (the data)
 #' @param a is the scaling factor, default is 5 * IQR
 #' @param nbins is the number of bins, default is assigned by the Stuges method
-#' @param rx  is the range used for the left of the left-most bin to the right of the right-most bin  
+#' @param rx  is the range used for the left of the left-most bin to the right of the right-most bin
 #' @param eps used to set artificial bound on min width / max height of bins as described in Denby and Mallows (2009) on page 24.
-#' @param xlab is label for the x axis 
+#' @param xlab is label for the x axis
 #' @param plot = TRUE produces the plot, FALSE returns the heights, breaks and counts
 #' @param lab.spikes = TRUE labels the \% of data in the spikes
-#' @return list with two elements, heights of length n and breaks of length n+1 indicating the heights and break points of the histogram bars. 
+#' @return list with two elements, heights of length n and breaks of length n+1 indicating the heights and break points of the histogram bars.
 #' @author Lorraine Denby, Colin Mallows
 #' @references Lorraine Denby, Colin Mallows. Journal of Computational and Graphical Statistics. March 1, 2009, 18(1): 21-31. doi:10.1198/jcgs.2009.0002.
  dhist<-function(x, a=5*iqr(x),
@@ -97,7 +97,7 @@
                                          # upper and lower corners in the ecdf
      ylower <- yupper - a/n
                                          #
-     cmtx <- cbind(cut(yupper, breaks = ybr), cut(yupper, breaks = 
+     cmtx <- cbind(cut(yupper, breaks = ybr), cut(yupper, breaks =
                                  ybr, left.include = TRUE), cut(ylower, breaks = ybr),
                    cut(ylower, breaks = ybr, left.include = TRUE))
      cmtx[1, 3] <- cmtx[1, 4] <- 1
@@ -177,7 +177,7 @@
    amt.txt<-0
    end.y<-(-10000)
    if(plot) {
-     barplot(heights, abs(diff(xbr)), space = 0, density = -1, xlab = 
+     barplot(heights, abs(diff(xbr)), space = 0, density = -1, xlab =
              xlab, plot = TRUE, xaxt = "n",yaxt='n')
      at <- pretty(xbr)
      axis(1, at = at - xbr[1], labels = as.character(at))
@@ -214,7 +214,7 @@
 #' Calculates the 25th and 75th quantiles given a vector x; used in function \link{dhist}.
 #' @title Interquartile range
 #' @param x vector
-#' @return numeric vector of length 2, with the 25th and 75th quantiles of input vector x. 
+#' @return numeric vector of length 2, with the 25th and 75th quantiles of input vector x.
  iqr<-function(x){
    return(diff(quantile(x, c(0.25, 0.75), na.rm = TRUE)))
  }
@@ -364,7 +364,7 @@
  from the one in the paper. Probably, we need to further clean the
  available data to obtain exaclty the same results.
 
- #+begin_src R :results output graphics :file fig/griffon_deg.png :exports both :width 600 :height 400 :session *R* 
+ #+begin_src R :results output graphics :file fig/griffon_deg.png :exports both :width 600 :height 400 :session *R*
    ggplot(data=dfc,aes(x=Jobs,y=BW, color=Operation)) + theme_bw() +
      geom_point(alpha=.3) +
      geom_point(data=dfrange, size=0) +
@@ -388,7 +388,7 @@
  toJSON(IO_INFO, pretty = TRUE)
  #+end_src
 
- 
+
 ***** Write
 
  Same for write operations.
@@ -400,7 +400,7 @@
  IO_INFO[["griffon"]][["degradation"]][["write"]] = c(mean_job_1$mean, predict(model,data.frame(Jobs=seq(2,15))))
  toJSON(IO_INFO, pretty = TRUE)
  #+end_src
- 
+
 
 **** Modeling read/write bandwidth variability
 
@@ -414,7 +414,7 @@
 
 ***** Read
  First, we present the histogram for read operations.
- #+begin_src R :results output graphics :file fig/griffon_read_dhist.png :exports both :width 600 :height 400 :session *R* 
+ #+begin_src R :results output graphics :file fig/griffon_read_dhist.png :exports both :width 600 :height 400 :session *R*
  griffon_read = df %>% filter(grepl("^Griffon", Cluster)) %>% filter(Operation == "Read") %>% select(Bwi)
  dhist(1/griffon_read$Bwi)
  #+end_src
@@ -431,7 +431,7 @@
 ***** Write
 
  Same analysis for write operations.
- #+begin_src R :results output graphics :file fig/griffon_write_dhist.png :exports both :width 600 :height 400 :session *R* 
+ #+begin_src R :results output graphics :file fig/griffon_write_dhist.png :exports both :width 600 :height 400 :session *R*
  griffon_write = df %>% filter(grepl("^Griffon", Cluster)) %>% filter(Operation == "Write") %>% select(Bwi)
  dhist(1/griffon_write$Bwi)
  #+end_src
@@ -475,7 +475,7 @@
 
 ***** Read
 
- #+begin_src R :results output graphics :file fig/edel_read_dhist.png :exports both :width 600 :height 400 :session *R* 
+ #+begin_src R :results output graphics :file fig/edel_read_dhist.png :exports both :width 600 :height 400 :session *R*
  edel_read = df %>% filter(grepl("^Edel", Cluster)) %>% filter(Operation == "Read") %>% select(Bwi)
  dhist(1/edel_read$Bwi)
  #+end_src
@@ -490,7 +490,7 @@
  #+end_src
 
 ***** Write
- #+begin_src R :results output graphics :file fig/edel_write_dhist.png :exports both :width 600 :height 400 :session *R* 
+ #+begin_src R :results output graphics :file fig/edel_write_dhist.png :exports both :width 600 :height 400 :session *R*
 
  edel_write = df %>% filter(grepl("^Edel", Cluster)) %>% filter(Operation == "Write") %>% select(Bwi)
  dhist(1/edel_write$Bwi)
@@ -582,15 +582,15 @@ each case.
 We can see that the graphics are quite similar to the ones obtained in
 the real platform.
 
- #+begin_src R :results output graphics :file fig/simgrid_results.png :exports both :width 600 :height 400 :session *R* 
+ #+begin_src R :results output graphics :file fig/simgrid_results.png :exports both :width 600 :height 400 :session *R*
  sg_df = read.csv("./simgrid_disk.csv")
  sg_df = sg_df %>% group_by(disk, op, flows) %>% mutate(bw=((size*flows)/elapsed)/10^6, method=if_else(disk=="edel" & op=="read", "loess", "lm"))
  sg_dfd = sg_df %>% filter(flows==1 & op=="write") %>% group_by(disk, op, flows) %>% summarize(mean = mean(bw), sd = sd(bw), se=sd/sqrt(n()))
 
  sg_df[sg_df$op=="write" & sg_df$flows ==1,]$method=""
- 
+
  ggplot(data=sg_df, aes(x=flows, y=bw, color=op)) + theme_bw() +
-     geom_point(alpha=.3) + 
+     geom_point(alpha=.3) +
      geom_smooth(data=sg_df[sg_df$method=="loess",], color="black", method=loess,se=TRUE,fullrange=T) +
      geom_smooth(data=sg_df[sg_df$method=="lm",], color="black", method=lm,se=TRUE) +
      geom_errorbar(data=sg_dfd, aes(x=flows, y=mean, ymin=mean-2*se, ymax=mean+2*se),color="black",width=.6) +

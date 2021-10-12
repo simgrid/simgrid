@@ -178,11 +178,11 @@ Copyright:
  Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
  Copyright (C) 2003-2021. The SimGrid team.
 License: GPL-3+ and LGPL-2.1
-Comment: Generated with the Bison processor generator (which is GPL-3+) using SimGrid configuration files (that are LGPL-2.1) 
+Comment: Generated with the Bison processor generator (which is GPL-3+) using SimGrid configuration files (that are LGPL-2.1)
 
 Files: src/include/catch.hpp
 Copyright:
-  Copyright (c) 2018 Two Blue Cubes Ltd. 
+  Copyright (c) 2018 Two Blue Cubes Ltd.
 License: BSL-1.0
 
 Files: src/include/xxhash.hpp

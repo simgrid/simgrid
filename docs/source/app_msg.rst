@@ -32,7 +32,7 @@ The basic workflow is the following:
  - Initialize the library with :c:macro:`MSG_init`
  - Create a platform (usually by parsing a file with :cpp:func:`MSG_create_environment`)
  - Register the functions that your processes are supposed to run with
-   :cpp:func:`MSG_function_register` (and maybe :cpp:func:`MSG_function_register_default`) 
+   :cpp:func:`MSG_function_register` (and maybe :cpp:func:`MSG_function_register_default`)
  - Launch your processes from a deployment file with :cpp:func:`MSG_launch_application`
  - Run the simulation with :cpp:func:`MSG_main`
 
@@ -167,7 +167,7 @@ Task structure of MSG :cpp:type:`msg_task_t` and associated functions.
 .. doxygenfunction:: MSG_task_set_name
 .. doxygenfunction:: MSG_task_set_priority
 
-		   
+
 Mailbox Management
 ==================
 
@@ -204,7 +204,7 @@ Barriers
 
 Semaphores
 ----------
-		     
+
 .. doxygentypedef:: msg_sem_t
 .. doxygenfunction:: MSG_sem_acquire
 .. doxygenfunction:: MSG_sem_acquire_timeout
@@ -257,7 +257,7 @@ Network Zone (:cpp:type:`msg_netzone_t`) and associated functions.
 Java bindings
 *************
 
-This section describes jMSG, the Java API to Simgrid. This API mimics 
+This section describes jMSG, the Java API to Simgrid. This API mimics
 :ref:`MSG <MSG_doc>`, which is a simple yet somehow realistic interface.
 The full reference documentation is provided at the end of this page.
 
@@ -289,7 +289,7 @@ For example:
 .. code-block:: console
 
    $ cd examples/deprecated/java
-   $ java -classpath ../../simgrid.jar:. .:../../simgrid.jar app.pingpong.Main ../platforms/platform.xml 
+   $ java -classpath ../../simgrid.jar:. .:../../simgrid.jar app.pingpong.Main ../platforms/platform.xml
 
 Any SimGrid simulation (java or not) is usually constituted of several
 kind of actors or processes (classes extending @c Msg.Process) that
@@ -336,7 +336,7 @@ When using jMSG, your program can crash for 3 main reasons:
   you should read carefully MSG samples and/or documentation.
 - Something has crashed in the C part. Okay, here comes the tricky
   thing. It happens mainly for 2 reasons:
-  
+
   - When something goes wrong in your simulation, sometimes the C part stops
     because you used SimGrid incorrectly, and JNI bindings are not fond of that.
     It means that you'll have something that looks ugly, but you should be able

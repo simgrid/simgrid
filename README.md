@@ -8,9 +8,9 @@
 
 # Welcome to the SimGrid project!
 
-SimGrid is a scientific instrument to study the behavior of 
+SimGrid is a scientific instrument to study the behavior of
 large-scale distributed systems such as Grids, Clouds, HPC or P2P
-systems. It can be used to evaluate heuristics, prototype applications 
+systems. It can be used to evaluate heuristics, prototype applications
 or even assess legacy MPI applications.
 
 ## Installation
@@ -24,15 +24,15 @@ make install
 ```
 
 ## More information
-[Online documentation](https://simgrid.org/doc/latest/) or 
+[Online documentation](https://simgrid.org/doc/latest/) or
 [local version](docs/source).
 
-You can also ask your questions, or simply discuss with other users on 
+You can also ask your questions, or simply discuss with other users on
 to the [SimGrid mattermost](https://framateam.org/simgrid/channels/town-square)
 or on the #simgrid IRC channel of the oftc network.
 
 Last, the main development of SimGrid is done on [Framagit](https://framagit.org/simgrid/simgrid/),
-but we also maintain a [GitHub mirror](https://github.com/simgrid/simgrid/) and an [Inria GitLab mirror](https://gitlab.inria.fr/simgrid/simgrid), 
+but we also maintain a [GitHub mirror](https://github.com/simgrid/simgrid/) and an [Inria GitLab mirror](https://gitlab.inria.fr/simgrid/simgrid),
 
 Thanks for using our software. Please do great things with it and tell
 the world about it. Tell us, too, because we love to have positive

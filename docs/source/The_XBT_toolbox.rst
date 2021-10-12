@@ -44,7 +44,7 @@ Refer to the :ref:`logging_categories` section for a list of all existing catego
 
 .. c:macro:: XBT_LOG_EXTERNAL_CATEGORY(category)
 
-   Make an external category (i.e., a category declared in another source file) visible from this source file. 
+   Make an external category (i.e., a category declared in another source file) visible from this source file.
    In each source file, at most one one category can be the default one.
 
 .. c:macro:: XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(category)
@@ -190,11 +190,11 @@ Dynamic arrays
 **************
 
 As SimGrid used to be written in pure C, it used to rely on custom data containers such as dynamic arrays and dictionnaries. Nowadays, the standard library of
-C++ is used internally, but some part of the interface still rely on the old containers, that are thus still available. 
+C++ is used internally, but some part of the interface still rely on the old containers, that are thus still available.
 
-.. warning:: 
+.. warning::
 
-   You should probably not start a new project using these data structures,  as we will :ref:`deprecate them from SimGrid <deprecation_policy>` 
+   You should probably not start a new project using these data structures,  as we will :ref:`deprecate them from SimGrid <deprecation_policy>`
    as soon as possible. Better implementations exist out there anyway, in particular if you're not writting pure C code.
 
 .. doxygentypedef:: xbt_dynar_t
@@ -210,7 +210,7 @@ Creation and destruction
 
 Dynars as regular arrays
 ========================
-   
+
 .. doxygenfunction:: xbt_dynar_get_cpy
 .. doxygenfunction:: xbt_dynar_insert_at
 .. doxygenfunction:: xbt_dynar_remove_at
@@ -223,7 +223,7 @@ Dynar size
 .. doxygenfunction:: xbt_dynar_is_empty
 .. doxygenfunction:: xbt_dynar_length
 .. doxygenfunction:: xbt_dynar_reset
-   
+
 Perl-like interface
 ===================
 
@@ -314,7 +314,7 @@ Example with pointed values
 
    xbt_dynar_t d = xbt_dynar_new(sizeof(char*), &xbt_free_ref);
 
-   /// Push/shift example 
+   /// Push/shift example
    for (int i = 0; i < NB_ELEM; i++) {
      char * val = xbt_strdup("hello");
      xbt_dynar_push(d, &val);

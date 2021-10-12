@@ -1,8 +1,8 @@
 There are two tests:
-- The first one aims at validating the migration in presence of consolidated VMs 	
+- The first one aims at validating the migration in presence of consolidated VMs
 - The second one aims at validating the robustness of the migration process (the SRC node or the DST node are turned off during the migration process)
 
-To switch between the first and the second tests, you should instrument Main.java (sorry for that :( ) 
+To switch between the first and the second tests, you should instrument Main.java (sorry for that :( )
 Adsein - Thu Oct  9 18:25:39 CEST 2014
 
 UPDATE: the second test was never used (dit it ever work?), and was removed 4 years later

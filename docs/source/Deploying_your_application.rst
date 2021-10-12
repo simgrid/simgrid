@@ -46,7 +46,7 @@ archive for files named ``???_d.xml`` for more):
        <argument value="3000"/>
      </actor>
 
-     <!-- Carole runs on 'host3', has 1 parameter "42" in its argv and one property. 
+     <!-- Carole runs on 'host3', has 1 parameter "42" in its argv and one property.
        -- Use simgrid::s4u::Actor::get_property() to retrieve it.-->
      <actor host="host3" function="carol">
        <argument value="42"/>
@@ -62,7 +62,7 @@ archive for files named ``???_d.xml`` for more):
 <actor>
 --------
 
-This tag starts a new actor executing the given function on a given host. 
+This tag starts a new actor executing the given function on a given host.
 
 
 **Parent tags:** :ref:`pf_tag_platform` (only in deployment files) |br|

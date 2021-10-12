@@ -46,7 +46,7 @@ RUN cd /source && git clone --depth=1 https://framagit.org/simgrid/simgrid.git s
     cmake -DCMAKE_INSTALL_PREFIX=/usr/ -Denable_documentation=OFF -Denable_smpi=ON -Denable_compile_optimizations=ON . && \
     make -j4 install
 
-## compile 
+## compile
 RUN cd /source/simgrid.git/docs/source/tuto_disk && \
     cmake . &&\
     make

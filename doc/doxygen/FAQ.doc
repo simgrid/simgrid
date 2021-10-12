@@ -12,7 +12,7 @@ cannot do with SimGrid, you should read the
 slides</a> from the SimGrid's website. You may find more up-to-date
 material on the
 <a href="http://people.irisa.fr/Martin.Quinson/blog/SimGrid/">blog of
-Martin Quinson</a>. 
+Martin Quinson</a>.
 
 Another great source of inspiration can be found in the @ref s4u_examples.
 
@@ -81,7 +81,7 @@ several simcalls), you obviously cannot use regular synchronization
 mechanisms (pthread_mutexes in C or the synchronized keyword in Java).
 This is because the SimGrid kernel locks all processes and unlock them
 one after the other when they are supposed to run, until they give the
-control back in their simcall. If one of them gets locked by the OS 
+control back in their simcall. If one of them gets locked by the OS
 before returning the control to the kernel, that's definitively a
 deadlock.
 

@@ -60,7 +60,7 @@ Here are some questions on which SimGrid is particularly relevant:
 
  - **Design the best [Simulated] Platform for a given Application.**
    Tweaking the platform file is much easier than building a new real
-   platform for testing purposes. SimGrid also allows for the co-design 
+   platform for testing purposes. SimGrid also allows for the co-design
    of the platform and the application by modifying both of them.
 
  - **Debug Real Applications**. With real systems, is sometimes
@@ -107,7 +107,7 @@ explored. In some sense, this mode tests your application for all
 possible platforms that you could imagine (and more).
 
 You just provide the application and its deployment (number of
-processes and parameters), and the model checker will 
+processes and parameters), and the model checker will
 explore all possible outcomes by testing all possible message
 interleavings: if at some point a given process can either receive the
 message A first or the message B depending on the platform
@@ -240,4 +240,3 @@ key-value pair storage library developed at the University of Zurich).
 Some of these applications enjoy large user communities themselves.
 
 ..  LocalWords:  SimGrid
-

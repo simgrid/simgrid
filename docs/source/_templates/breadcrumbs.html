@@ -5,11 +5,11 @@
 {% block breadcrumbs_aside %}
   <li class="wy-breadcrumbs-aside">
     {% if hasdoc(pagename) and pagename != "search" and pagename != "genindex" %}
-    {# TODO: How to rule out all java pages? 
+    {# TODO: How to rule out all java pages?
      #    (not re.match(pagename, "java/org/simgrid"))
      # fails because re is not imported #}
-     
+
       <a href="{{ meta['framagit_url'] }}" class="fa fa-bitbucket"> {{ _('Edit on FramaGit') }}</a>
     {% endif %}
-  </li>		  
+  </li>
 {% endblock %}

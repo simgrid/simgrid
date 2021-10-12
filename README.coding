@@ -20,7 +20,7 @@
 
 SimGrid4 will follow the these rules:
 
-  - filenames are unique in the whole project 
+  - filenames are unique in the whole project
     (because of a bug in Sonar coverage computation)
   C++
   - fields, methods and variables are in snake_case()
@@ -40,7 +40,7 @@ SimGrid4 will follow the these rules:
   - variables and functions are in snake_case()
   - typedefs do not hide the pointers, i.e. * must be explicit
     char* sg_host_get_name(sg_host_t* host);
-  
+
 
 This is different from the old convention (described below), that
 should not be used in S4U and its bindings, nor in the kernel.

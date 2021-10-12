@@ -28,8 +28,8 @@ The Half Release, a.k.a. the Zealous Easter Trim:
 Version 3.14 (Dec 25. 2016)
 ---------------------------
 
-This version (aka, the Christmas Pi) mainly introduces internal reorganization on the way to the future SimGrid 4 version. 
-These changes should be transparent to the users of the MSG, SMPI and SimDag interfaces, even if some buggy features were reworked 
+This version (aka, the Christmas Pi) mainly introduces internal reorganization on the way to the future SimGrid 4 version.
+These changes should be transparent to the users of the MSG, SMPI and SimDag interfaces, even if some buggy features were reworked
 while some new features were added.
 
 Users are expected to switch to this new version at their own pace, as we do not have the manpower to do any bugfixing on the old releases.
@@ -81,7 +81,7 @@ SMPI performance was further improved, using various OS-level magic to speed up 
 Tom to run a simulation of HPL involving 10^6 processes... Wow. The dlopen privatization schema should even allows to run your ranks
 in parallel (even if it's not well tested yet).
 
-On the Cloud side, we implemented multi-core VMs, which naturally acts as containers of processes; 
+On the Cloud side, we implemented multi-core VMs, which naturally acts as containers of processes;
 S4U, the future interface of SimGrid 4.0 also progressed quite a bit.
 
 The Storage is currently cleaned up by Fred, and some API changes are to be expected. We are sorry but the exisiting API is so crappy that
@@ -125,7 +125,7 @@ This version is dubbed the "The Drained Leaks release", because almost no known 
 Version 3.18 (Dec. 24 2017)
 ---------------------------
 
-This is an important version for SimGrid: MSG is now deprecated, and new projects should use S4U instead. 
+This is an important version for SimGrid: MSG is now deprecated, and new projects should use S4U instead.
 There is still some work to do before SimGrid 4: S4U is not ready for SimDag users yet unfortunately. This will come for sure.
 
 Main changes in the "Ho Ho Ho! SimGrid 4 beta is coming to town" release:
@@ -133,7 +133,7 @@ Main changes in the "Ho Ho Ho! SimGrid 4 beta is coming to town" release:
  * Convert almost all interesting MSG examples to S4U.
  * New model: energy consumption due to the network.
  * Major cleanups in the disk and storage subsystems.
- * (+ further deprecate XBT, bug fixes and doc improvement) 
+ * (+ further deprecate XBT, bug fixes and doc improvement)
 
 SimGrid 4 *may* be there by the next solstice.
 
@@ -150,7 +150,7 @@ In total, this "Moscovitly-cold Spring" release brings more than 500 commits mad
 Version 3.19.1 (March 22. 2018)
 -------------------------------
 
-As you may know, we are currently refactoring SimGrid in deep. 
+As you may know, we are currently refactoring SimGrid in deep.
 Upcoming SimGrid4 will be really different from SimGrid3: modular, standard and extensible vs. layered, homegrown and rigid. C++ vs. C.
 
 Our goal is to smooth this transition, with backward compatibility and automatic update paths, while still progressing toward SimGrid4.
@@ -243,7 +243,7 @@ quite a bit of them, but many dark snakes remain in that lake. Fred and Martin c
 is not finished, but it's not worse than the old one either) while Augustin completed the tutorial for MPI applications. Augustin also
 added several non-blocking collectives to SMPI, even if Martin finally decided to release right before he could complete the last ones
 (sorry). We continued cutting on XBT, replacing many functions and modules by their standard counterparts in C++11 or in Boost. We are
-now using Catch2 for our unit testing. These cleanups may speedup your simulations by something like 10%. 
+now using Catch2 for our unit testing. These cleanups may speedup your simulations by something like 10%.
 
 Version 3.23 (June 25. 2019)
 ----------------------------
@@ -327,7 +327,7 @@ This is the "Release" release. Indeed a small contribution to the event, but thi
 Version 3.27 (March 29. 2021)
 -----------------------------
 
-To celebrate the 1176th anniversary of the siege of Paris by Vikings in 845, we just released another version of SimGrid, the Ragnar Release. 
+To celebrate the 1176th anniversary of the siege of Paris by Vikings in 845, we just released another version of SimGrid, the Ragnar Release.
 Yeah, that's a stupid release name, but we already had 4 "spring release" in the past, so we needed another name.
 
  * SMPI: can now report leaks and hint about the mallocs and kernels hindering simulation scalability
@@ -349,7 +349,7 @@ XML. There is a real possibility that this one will be part of the 3.28 release,
 
 And the third front is about modernizing the model checker implementation. The current state is very difficult to work with, and we hope that once it's
 simplified, we will be able to implement more efficient state space reduction techniques, and also allow more synchronization mechanism to be used in the
-model checker (for now, our dpor algorithm cannot cope with mutexes). 
+model checker (for now, our dpor algorithm cannot cope with mutexes).
 
 In parallel to these refactoring, the work on SMPI stability and robustness peacefully continued. The list of MPI applications that can now work with
 absolutely no change on top of SMPI really gets impressive... Check it yourself: https://framagit.org/simgrid/SMPI-proxy-apps
@@ -368,7 +368,7 @@ To celebrate the birthday of Crown Princess Victoria, we just released another v
  * SMPI: improve error handling for incorrect advanced usages.
  * Many internal cleanups and refactoring to prepare the future.
 
-As usual, even the full changelog is only the tip of the iceberg, given the amount of changes in the backstage. 
+As usual, even the full changelog is only the tip of the iceberg, given the amount of changes in the backstage.
 
 This release is the big one for the programmatic platform descriptions, that are now fully usable from C++. XML will not
 disappear anytime soon, but it is unlikely that we continue developing it in the future. When starting a new project, you should
@@ -394,7 +394,7 @@ Version 3.29 (October 7. 2021)
 ------------------------------
 
 To celebrate the "Ask a stupid question" release, we wish that every user ask one question about SimGrid.
-On `Mattermost <https://framateam.org/simgrid/channels/town-square>`_, 
+On `Mattermost <https://framateam.org/simgrid/channels/town-square>`_,
 `Stack Overflow <https://stackoverflow.com/questions/tagged/simgrid>`_,
 or using the `issues tracker <https://framagit.org/simgrid/simgrid/-/issues>`_.
 

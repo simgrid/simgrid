@@ -27,7 +27,7 @@ Your platform description should follow the specification presented in the
 
 SimGrid can simulate the time it takes to read or write data on disk, even if the stored data is not made persistent in
 any way by SimGrid. This means that your application will correctly be slowed down when doing simulated I/O, but there
-is no way to get the data stored this way. 
+is no way to get the data stored this way.
 
 We decided to not model anything beyond raw access in SimGrid because we believe that there is not single way of doing so.
 We provide an example model of file system as a plugin, (sparsely) documented in :ref:`plugin_filesystem`.
@@ -150,7 +150,7 @@ A host is the computing resource on which an actor can run. See :cpp:class:`simg
 
    - At time t = 1, the host is turned off (a zero value means OFF)
    - At time t = 2, the host is turned back on (any other value than zero means ON)
-   - At time t = 10, the profile is reset (as we are 8 seconds after the last event). Then the host will be turned off 
+   - At time t = 10, the profile is reset (as we are 8 seconds after the last event). Then the host will be turned off
      again at time t = 11.
 
    If your profile does not contain any LOOPAFTER line, then it will
@@ -168,8 +168,8 @@ A host is the computing resource on which an actor can run. See :cpp:class:`simg
 <link>
 ------
 
-SimGrid links usually represent one-hop network connections (see :cpp:class:`simgrid::s4u::Link`), i.e., a single wire. 
-They can also be used to abstract a larger network interconnect, e.g., the entire transcontinental network, into a 
+SimGrid links usually represent one-hop network connections (see :cpp:class:`simgrid::s4u::Link`), i.e., a single wire.
+They can also be used to abstract a larger network interconnect, e.g., the entire transcontinental network, into a
 single element.
 
 **Parent tags:** :ref:`pf_tag_zone` (both leaf zones and inner zones) |br|
@@ -310,7 +310,7 @@ and a download link.
 :``id``: Name of the host. Must be unique on the whole platform.
 :``speed``: Computational power (in flop/s).
 
-   If you use DVFS, provide a comma-separated list of values for each pstate (see :ref:`howto_dvfs`). 
+   If you use DVFS, provide a comma-separated list of values for each pstate (see :ref:`howto_dvfs`).
 :``bw_in``: Bandwidth of the private downstream link, along with its
 	    unit. See :ref:`pf_tag_link`.
 :``bw_out``: Bandwidth of the private upstream link, along with its
@@ -525,8 +525,8 @@ can be obtained easily: just do not set the bb_* attributes.
 :``suffix``: Each node of the cluster will be suffixed with this suffix
 :``radical``: Regexp used to generate cluster nodes name.
 
-    Syntax: "10-20" will give you 11 machines numbered from 10 to 20, "10-20;2" will give you 12 machines, one with the number 2, others numbered as before. 
-    
+    Syntax: "10-20" will give you 11 machines numbered from 10 to 20, "10-20;2" will give you 12 machines, one with the number 2, others numbered as before.
+
     The produced number is concatenated between prefix and suffix to form machine names.
 :``speed``: Same as the ``speed`` attribute of the :ref:`pf_tag_host` tag.
 :``core``: Same as the ``core`` attribute of the :ref:`pf_tag_host` tag.
@@ -543,14 +543,14 @@ can be obtained easily: just do not set the bb_* attributes.
 :``limiter_link``: Bandwidth for limiter link (if any).
 
     This adds a specific link for each node, to set the maximum bandwidth reached when communicating in both directions at the same time.
-    
+
     In theory this value should be 2*bw for splitduplex links, but in reality this might be less. This value will depend heavily on the communication model, and on the cluster's hardware, so no default value can be set, this has to be measured.
-    
+
     More details can be obtained in `Toward Better Simulation of MPI Applications on Ethernet/TCP Networks <https://hal.inria.fr/hal-00919507/>`_
 :``loopback_bw``: Bandwidth for loopback (if any). See :ref:`pf_tag_link` section for syntax/details.
 
     If loopback_bw and loopback_lat attributes are omitted, no loopback link is created and all intra-node communication will use the main network link of the node.
-    
+
     The sharing policy of a loopback link is **FATPIPE** :ref:`pf_tag_link`.
 :``loopback_lat``: Latency for loopback (if any). See loopback_bw for more info.
 :``topology``: Network topology to use.
@@ -562,7 +562,7 @@ can be obtained easily: just do not set the bb_* attributes.
 :``topo_parameters``: Specific parameters to pass for the topology defined in the topology tag.
 
     For torus networks, comma-separated list of the number of nodes in each dimension of the torus.
-    
+
     Please refer to :ref:`platform_examples`.
 
 
@@ -593,7 +593,7 @@ The second example creates one router and 100 machines with the following names:
     c-99.me
 
 .. note::
-    
+
     The router name is defined as the resulting string: prefix + clusterId + "_router" + suffix.
     In this case: *my_cluster_1_router* and *my_cluster_2_router.me*.
 
@@ -622,8 +622,8 @@ and routers yourself; see our examples below.
 :``prefix``: Each node of the cabinet has to have a name. This name will be prefixed with this prefix.
 :``suffix``: Each node of the cabinet will be suffixed with this suffix.
 :``radical``: Regexp used to generate cabinet nodes name.
-    Syntax: "10-20" will give you 11 machines numbered from 10 to 20, "10-20;2" will give you 12 machines, one with the number 2, others numbered as before. 
-    
+    Syntax: "10-20" will give you 11 machines numbered from 10 to 20, "10-20;2" will give you 12 machines, one with the number 2, others numbered as before.
+
     The produced number is concatenated between prefix and suffix to form machine names.
 :``speed``: Same as the ``speed`` attribute of the :ref:`pf_tag_host` tag.
 :``bw``: Bandwidth for the links between nodes and backbone (if any). See the :ref:`pf_tag_link` for syntax/details.

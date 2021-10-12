@@ -109,7 +109,7 @@ simulation kernel.
 Our futures are based on the C++ Concurrency Technical Specification
 API, with a few differences:
 
- - The simulation kernel is single-threaded so we do not need 
+ - The simulation kernel is single-threaded so we do not need
    inter-thread synchronization for our futures.
 
  - As the simulation kernel cannot block, `f.wait()` is not meaningful
@@ -279,7 +279,7 @@ So a simcall is a way for the actor to push a request to the
 simulation kernel and yield the control until the request is
 fulfilled. The performance requirements are very high because
 the actors usually do an inordinate amount of simcalls during the
-simulation. 
+simulation.
 
 As for real syscalls, the basic idea is to write the wanted call and
 its arguments in a memory area that is specific to the actor, and
@@ -676,7 +676,7 @@ public:
 
   void notify_one();
   void notify_all();
-  
+
 };
 @endcode
 
@@ -768,7 +768,7 @@ expose asynchronous operations in the simulation kernel to the actors.
 In addition, we wrote variations of some other C++ standard library
 classes (`SimulationClock`, `Mutex`, `ConditionVariable`) which work in
 the simulation:
-  
+
   * using simulated time;
 
   * using simcalls for synchronisation.
@@ -931,7 +931,7 @@ auto makeTask(F code, Args... args)
 @endcode
 
 
-## Notes    
+## Notes
 
 [^getcompared]:
 

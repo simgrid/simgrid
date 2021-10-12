@@ -4,7 +4,7 @@ This page presents the current code organization, as you will see it
 if you dig into the src/ directory. <b>But things will change during
 the current Gran Refactoring leading to SimGrid 4</b>. So take the
 information on this page with a grain of salt, and don't be afraid if
-things are not exactly as documented here. 
+things are not exactly as documented here.
 
 At some point, we at least extend this page to present the overall
 design that we are currently pursuing for SimGrid 4.
