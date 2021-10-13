@@ -10,7 +10,7 @@
 /doc/simgrid/examples/cxx/basic/Main.cxx  148
 /doc/simgrid/examples/cxx/basic/Slave.cxx  693
 /doc/simgrid/examples/cxx/basic/BasicTask.cxx  65
-/doc/simgrid/examples/cxx/basic/basic_platform.xml  2133932  
+/doc/simgrid/examples/cxx/basic/basic_platform.xml  2133932
 /doc/simgrid/examples/cxx/basic/Master.cxx  2148
 /doc/simgrid/examples/cxx/basic/basic_deployment.xml 1188
 /doc/simgrid/examples/cxx/basic/Forwarder.cxx  1244
@@ -162,7 +162,7 @@
 /doc/simgrid/examples/msg/gtnets/splitduplex-p.xml 575
 /doc/simgrid/examples/msg/gtnets/dogbone-d.xml 576
 /doc/simgrid/examples/msg/gtnets/waxman-d.xml  46642
-/doc/simgrid/examples/msg/gtnets/waxman-p.xml 4964600  
+/doc/simgrid/examples/msg/gtnets/waxman-p.xml 4964600
 /doc/simgrid/examples/msg/gtnets/splitduplex-d.xml 1029
 /doc/simgrid/examples/msg/gtnets/onelink-d.xml 356
 /doc/simgrid/examples/msg/gtnets/gtnets.c  6172
@@ -183,7 +183,7 @@
 /doc/simgrid/examples/msg/token_ring/two_clusters.xml 1007
 /doc/simgrid/examples/msg/token_ring/ring_call.c 4205
 /doc/simgrid/examples/msg/token_ring/two_peers.xml 556
-/doc/simgrid/examples/msg/msg_platform.xml 2261806  
+/doc/simgrid/examples/msg/msg_platform.xml 2261806
 /doc/simgrid/examples/msg/priority/deployment_priority.xml  406
 /doc/simgrid/examples/msg/priority/priority.c  2394
 /doc/simgrid/examples/msg/actions/actions.c  19339
@@ -217,7 +217,7 @@
 /doc/simgrid/examples/msg/small_platform_with_routers.xml  5295
 /doc/simgrid/examples/msg/chord/chord90.xml  13992
 /doc/simgrid/examples/msg/chord/chord.xml  2236
-/doc/simgrid/examples/msg/chord/chord10k.xml 1624671  
+/doc/simgrid/examples/msg/chord/chord10k.xml 1624671
 /doc/simgrid/examples/msg/chord/chord.c  28995
 /doc/simgrid/examples/lua/multi_matrix/quicksort_platform.xml  4628
 /doc/simgrid/examples/lua/multi_matrix/mult_matrix.lua  227
@@ -251,7 +251,7 @@
 /doc/simgrid/examples/simdag/properties/sd_prop.c 3012
 /doc/simgrid/examples/simdag/dax/Strassen.xml  9663
 /doc/simgrid/examples/simdag/dax/Montage_25.xml 23087
-/doc/simgrid/examples/simdag/dax/Sipht_30.xml 267014   
+/doc/simgrid/examples/simdag/dax/Sipht_30.xml 267014
 /doc/simgrid/examples/simdag/dax/dax_test.c  4346
 /doc/simgrid/examples/simdag/dax/Montage_50.xml 48868
 /doc/simgrid/examples/simdag/dax/Inspiral_30.xml 28774
@@ -367,7 +367,7 @@
 /doc/simgrid/html/MSG_ex_master_slave.html  51294
 /doc/simgrid/html/doxygen.png 3942
 /doc/simgrid/html/group__XBT__mallocator__cons.html 10757
-/doc/simgrid/html/group__API__index.html 125324   
+/doc/simgrid/html/group__API__index.html 125324
 /doc/simgrid/html/group__XBT__dict__cons.html  9746
 /doc/simgrid/html/group__XBT__swag__func.html  19885
 /doc/simgrid/html/group__SimGrid__API.html  4674
@@ -384,7 +384,7 @@
 /doc/simgrid/html/publis.html 435
 /doc/simgrid/html/group__XBT__misc.html  4663
 /doc/simgrid/html/simdag.html 226
-/doc/simgrid/html/Paje_MSG_screenshot.jpg 340759   
+/doc/simgrid/html/Paje_MSG_screenshot.jpg 340759
 /doc/simgrid/html/group__msg__gos__functions.html 65293
 /doc/simgrid/html/classsimgrid_1_1msg_1_1Host.html 1519
 /doc/simgrid/html/publis_extern.html  435
@@ -433,7 +433,7 @@
 /doc/simgrid/html/structsurf__action__state.html 7301
 /doc/simgrid/html/tab_s.png 189
 /doc/simgrid/html/tab_h.png 192
-/doc/simgrid/html/nav_h.png  97  
+/doc/simgrid/html/nav_h.png  97
 /include/smpi/mpif.h  4826
 /include/smpi/smpif.h  1139
 /include/smpi/mpi.h  510
