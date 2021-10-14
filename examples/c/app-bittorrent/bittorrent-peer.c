@@ -454,7 +454,7 @@ void handle_message(peer_t peer, message_t message)
       xbt_assert(!remote_peer->choked_download);
       xbt_assert(remote_peer->choked_download != 1, "Can't received a piece if I'm choked !");
       xbt_assert((message->piece >= 0 && message->piece < FILE_PIECES), "Wrong piece received");
-      // TODO: Execute à computation.
+      // TODO: Execute a computation.
       if (peer_has_not_piece(peer, message->piece)) {
         update_bitfield_blocks(peer, message->piece, message->block_index, message->block_length);
         if (piece_complete(peer, message->piece)) {
