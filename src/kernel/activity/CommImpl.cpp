@@ -226,6 +226,8 @@ void SIMIX_comm_copy_pointer_callback(simgrid::kernel::activity::CommImpl* comm,
 namespace simgrid {
 namespace kernel {
 namespace activity {
+xbt::signal<void(CommImpl const&)> CommImpl::on_start;
+xbt::signal<void(CommImpl const&)> CommImpl::on_completion;
 
 void (*CommImpl::copy_data_callback_)(CommImpl*, void*, size_t) = &s4u::Comm::copy_pointer_callback;
 
@@ -300,7 +302,7 @@ CommImpl* CommImpl::start()
   if (state_ == State::READY) {
     from_ = from_ != nullptr ? from_ : src_actor_->get_host();
     to_   = to_ != nullptr ? to_ : dst_actor_->get_host();
-
+    on_start(*this);
     /* Getting the network_model from the origin host
      * Valid while we have a single network model, otherwise we would need to change this function to first get the
      * routes and later create the respective surf actions */
@@ -339,6 +341,16 @@ CommImpl* CommImpl::start()
   }
 
   return this;
+}
+
+std::vector<s4u::Link*> CommImpl::get_traversed_links() const
+{
+  xbt_assert(state_ != State::WAITING, "You cannot use %s() if your communication is not ready (%s)", __FUNCTION__,
+             get_state_str());
+  std::vector<s4u::Link*> vlinks;
+  XBT_ATTRIB_UNUSED double res = 0;
+  from_->route_to(to_, vlinks, &res);
+  return vlinks;
 }
 
 /** @brief Copy the communication data from the sender's buffer to the receiver's one  */
@@ -519,6 +531,8 @@ void CommImpl::cleanup_surf()
 
 void CommImpl::post()
 {
+  on_completion(*this);
+
   /* Update synchro state */
   if (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FINISHED)
     state_ = State::SRC_TIMEOUT;
@@ -546,7 +560,6 @@ void CommImpl::post()
 void CommImpl::finish()
 {
   XBT_DEBUG("CommImpl::finish() in state %s", to_c_str(state_));
-
   /* If the synchro is still in a rendez-vous point then remove from it */
   if (mbox_)
     mbox_->remove(this);

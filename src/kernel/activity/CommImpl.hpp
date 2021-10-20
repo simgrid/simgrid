@@ -46,6 +46,7 @@ public:
   MailboxImpl* get_mailbox() const { return mbox_; }
   bool detached() const { return detached_; }
 
+  std::vector<s4u::Link*> get_traversed_links() const;
   void copy_data();
 
   bool test() override;
@@ -88,6 +89,9 @@ expectations of the other side, too. See  */
 
   void* src_data_ = nullptr; /* User data associated to the communication */
   void* dst_data_ = nullptr;
+
+  static xbt::signal<void(CommImpl const&)> on_start;
+  static xbt::signal<void(CommImpl const&)> on_completion;
 };
 } // namespace activity
 } // namespace kernel

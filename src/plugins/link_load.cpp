@@ -6,6 +6,7 @@
 #include <simgrid/plugins/load.h>
 #include <simgrid/s4u/Engine.hpp>
 
+#include "src/kernel/activity/CommImpl.hpp"
 #include "src/surf/network_interface.hpp"
 
 #include <limits>
@@ -161,16 +162,14 @@ double LinkLoad::get_average_bytes()
 using simgrid::plugin::LinkLoad;
 
 /* **************************** events  callback *************************** */
-static void on_communicate(const simgrid::kernel::resource::NetworkAction& action)
+static void on_communication(const simgrid::kernel::activity::CommImpl& comm)
 {
-  XBT_DEBUG("on_communicate is called");
-  for (auto* link : action.get_links()) {
-    if (link == nullptr || link->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI)
-      continue;
-
-    auto link_load = link->get_iface()->extension<LinkLoad>();
-    if (link_load->is_tracked()) {
-      link_load->update();
+  for (auto* link : comm.get_traversed_links()) {
+    if (link != nullptr && link->get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI) {
+      auto* link_load = link->extension<LinkLoad>();
+      XBT_DEBUG("Update %s on Comm Start/End", link->get_cname());
+      if (link_load->is_tracked())
+        link_load->update();
     }
   }
 }
@@ -200,7 +199,9 @@ void sg_link_load_plugin_init()
   });
 
   // Call this plugin on some of the links' events.
-  simgrid::s4u::Link::on_communicate.connect(&on_communicate);
+  simgrid::kernel::activity::CommImpl::on_start.connect(&on_communication);
+  simgrid::kernel::activity::CommImpl::on_completion.connect(&on_communication);
+
   simgrid::s4u::Link::on_state_change.connect([](simgrid::s4u::Link const& link) {
     if (link.get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI) {
       auto link_load = link.extension<LinkLoad>();

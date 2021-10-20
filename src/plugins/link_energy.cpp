@@ -7,8 +7,8 @@
 #include "simgrid/host.h"
 #include "simgrid/plugins/energy.h"
 #include "simgrid/s4u/Engine.hpp"
-#include "simgrid/simix.hpp"
-#include "src/surf/network_interface.hpp"
+#include "simgrid/s4u/Link.hpp"
+#include "src/kernel/activity/CommImpl.hpp"
 #include "src/surf/surf_interface.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
@@ -147,20 +147,6 @@ double LinkEnergy::get_consumed_energy()
 using simgrid::plugin::LinkEnergy;
 
 /* **************************** events  callback *************************** */
-static void on_communicate(const simgrid::kernel::resource::NetworkAction& action)
-{
-  XBT_DEBUG("onCommunicate is called");
-  for (auto const* link : action.get_links()) {
-    if (link == nullptr || link->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI)
-      continue;
-
-    XBT_DEBUG("Update link %s", link->get_cname());
-    auto* link_energy = link->get_iface()->extension<LinkEnergy>();
-    link_energy->init_watts_range_list();
-    link_energy->update();
-  }
-}
-
 static void on_simulation_end()
 {
   std::vector<simgrid::s4u::Link*> links = simgrid::s4u::Engine::get_instance()->get_all_links();
@@ -175,6 +161,16 @@ static void on_simulation_end()
   }
 
   XBT_INFO("Total energy over all links: %f", total_energy);
+}
+
+static void on_communication(const simgrid::kernel::activity::CommImpl& comm)
+{
+  for (auto const* link : comm.get_traversed_links()) {
+    if (link != nullptr && link->get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI) {
+      XBT_DEBUG("Update %s on Comm Start/End", link->get_cname());
+      link->extension<LinkEnergy>()->update();
+    }
+  }
 }
 /* **************************** Public interface *************************** */
 
@@ -215,16 +211,9 @@ void sg_link_energy_plugin_init()
                link.extension<LinkEnergy>()->get_consumed_energy());
   });
 
-  simgrid::s4u::Link::on_communication_state_change.connect(
-      [](simgrid::kernel::resource::NetworkAction const& action,
-         simgrid::kernel::resource::Action::State /* previous */) {
-        for (auto const* link : action.get_links()) {
-          if (link != nullptr && link->get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI)
-            link->get_iface()->extension<LinkEnergy>()->update();
-        }
-      });
+  simgrid::kernel::activity::CommImpl::on_start.connect(&on_communication);
+  simgrid::kernel::activity::CommImpl::on_completion.connect(&on_communication);
 
-  simgrid::s4u::Link::on_communicate.connect(&on_communicate);
   simgrid::s4u::Engine::on_simulation_end.connect(&on_simulation_end);
 }
 

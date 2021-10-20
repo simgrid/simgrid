@@ -84,6 +84,10 @@ Partial list of existing signals in s4u:
   :cpp:member:`Engine::on_time_advance <simgrid::s4u::Engine::on_time_advance>`
   :cpp:member:`Engine::on_simulation_end <simgrid::s4u::Engine::on_simulation_end>`
   :cpp:member:`Engine::on_deadlock <simgrid::s4u::Engine::on_deadlock>`
+- :cpp:member:`Comm::on_start <simgrid::s4u::Comm::on_start>`
+  :cpp:member:`Comm::on_completion <simgrid::s4u::Comm::on_completion>`
+- :cpp:member:`Exec::on_start <simgrid::s4u::Exec::on_start>`
+  :cpp:member:`Exec::on_completion <simgrid::s4u::Exec::on_completion>`
 - :cpp:member:`Exec::on_start <simgrid::s4u::Exec::on_start>`
   :cpp:member:`Exec::on_completion <simgrid::s4u::Exec::on_completion>`
 - :cpp:member:`Host::on_creation <simgrid::s4u::Host::on_creation>`

@@ -7,6 +7,7 @@
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Link.hpp>
 
+#include "src/kernel/activity/CommImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/network_wifi.hpp"
 
@@ -61,7 +62,7 @@ public:
   LinkEnergyWifi()  = delete;
 
   /** Update the energy consumed by link_ when transmissions start or end */
-  void update(const simgrid::kernel::resource::NetworkAction &);
+  void update();
 
   /** Update the energy consumed when link_ is destroyed */
   void update_destroy();
@@ -110,7 +111,7 @@ void LinkEnergyWifi::update_destroy()
   XBT_DEBUG("finish eStat_ += %f * %f * (%d+1) | eStat = %f", duration, pIdle_, wifi_link->get_host_count(), eStat_);
 }
 
-void LinkEnergyWifi::update(const kernel::resource::NetworkAction&)
+void LinkEnergyWifi::update()
 {
   init_watts_range_list();
 
@@ -263,6 +264,17 @@ void LinkEnergyWifi::init_watts_range_list()
 } // namespace simgrid
 
 using simgrid::plugin::LinkEnergyWifi;
+/* **************************** events  callback *************************** */
+static void on_communication(const simgrid::kernel::activity::CommImpl& comm)
+{
+  for (auto* link : comm.get_traversed_links()) {
+    if (link != nullptr && link->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI) {
+      auto* link_energy = link->extension<LinkEnergyWifi>();
+      XBT_DEBUG("Update %s on Comm Start/End", link->get_cname());
+      link_energy->update();
+    }
+  }
+}
 
 void sg_wifi_energy_plugin_init()
 {
@@ -274,10 +286,10 @@ void sg_wifi_energy_plugin_init()
 
   /**
    * Attaching to events:
-   * - on_creation to initialize the plugin
-   * - on_destruction to produce final energy results
-   * - on_communication_state_change: to account the energy when communications are updated
-   * - on_communicate: ''
+   * - Link::on_creation to initialize the plugin
+   * - Link::on_destruction to produce final energy results
+   * - Link::on_communication_state_change: to account for the energy when communications are updated
+   * - Comm::on_start and Comm::on_completion: to account for the energy during communications
    */
   simgrid::s4u::Link::on_creation.connect([](simgrid::s4u::Link& link) {
     // verify the link is appropriate to WiFi energy computations
@@ -308,23 +320,11 @@ void sg_wifi_energy_plugin_init()
         // update WiFi links encountered during the communication
         for (auto const* link : action.get_links()) {
           if (link != nullptr && link->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI) {
-            link->get_iface()->extension<LinkEnergyWifi>()->update(action);
+            link->get_iface()->extension<LinkEnergyWifi>()->update();
           }
         }
       });
 
-  simgrid::s4u::Link::on_communicate.connect([](const simgrid::kernel::resource::NetworkAction& action) {
-    auto const* actionWifi = dynamic_cast<const simgrid::kernel::resource::NetworkWifiAction*>(&action);
-
-    if (actionWifi == nullptr)
-      return;
-
-    auto const* link_src = actionWifi->get_src_link();
-    auto const* link_dst = actionWifi->get_dst_link();
-
-    if(link_src != nullptr)
-      link_src->get_iface()->extension<LinkEnergyWifi>()->update(action);
-    if(link_dst != nullptr)
-      link_dst->get_iface()->extension<LinkEnergyWifi>()->update(action);
-  });
+  simgrid::kernel::activity::CommImpl::on_start.connect(&on_communication);
+  simgrid::kernel::activity::CommImpl::on_completion.connect(&on_communication);
 }
