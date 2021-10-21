@@ -77,15 +77,16 @@ Partial list of existing signals in s4u:
   :cpp:member:`Actor::on_host_change <simgrid::s4u::Actor::on_host_change>`
   :cpp:member:`Actor::on_termination <simgrid::s4u::Actor::on_termination>`
   :cpp:member:`Actor::on_destruction <simgrid::s4u::Actor::on_destruction>`
-- :cpp:member:`Comm::on_start <simgrid::s4u::Comm::on_start>`
+- :cpp:member:`Comm::on_send <simgrid::s4u::Comm::on_send>`
+  :cpp:member:`Comm::on_recv <simgrid::s4u::Comm::on_recv>`
   :cpp:member:`Comm::on_completion <simgrid::s4u::Comm::on_completion>`
+- :cpp:member:`CommImpl::on_start <simgrid::kernel::actiivty::CommImpl::on_start>`
+  :cpp:member:`CommImpl::on_completion <simgrid::kernel::activity::CommImpl::on_completion>`
 - :cpp:member:`Engine::on_platform_creation <simgrid::s4u::Engine::on_platform_creation>`
   :cpp:member:`Engine::on_platform_created <simgrid::s4u::Engine::on_platform_created>`
   :cpp:member:`Engine::on_time_advance <simgrid::s4u::Engine::on_time_advance>`
   :cpp:member:`Engine::on_simulation_end <simgrid::s4u::Engine::on_simulation_end>`
   :cpp:member:`Engine::on_deadlock <simgrid::s4u::Engine::on_deadlock>`
-- :cpp:member:`Comm::on_start <simgrid::s4u::Comm::on_start>`
-  :cpp:member:`Comm::on_completion <simgrid::s4u::Comm::on_completion>`
 - :cpp:member:`Exec::on_start <simgrid::s4u::Exec::on_start>`
   :cpp:member:`Exec::on_completion <simgrid::s4u::Exec::on_completion>`
 - :cpp:member:`Exec::on_start <simgrid::s4u::Exec::on_start>`

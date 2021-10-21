@@ -2101,7 +2101,8 @@ Signals
    .. group-tab:: C++
 
       .. doxygenvariable:: simgrid::s4u::Comm::on_completion
-      .. doxygenvariable:: simgrid::s4u::Comm::on_start
+      .. doxygenvariable:: simgrid::s4u::Comm::on_recv
+      .. doxygenvariable:: simgrid::s4u::Comm::on_send
 
 .. _API_s4u_Exec:
 

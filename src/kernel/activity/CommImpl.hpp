@@ -89,7 +89,6 @@ expectations of the other side, too. See  */
 
   void* src_data_ = nullptr; /* User data associated to the communication */
   void* dst_data_ = nullptr;
-
   static xbt::signal<void(CommImpl const&)> on_start;
   static xbt::signal<void(CommImpl const&)> on_completion;
 };

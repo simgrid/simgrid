@@ -64,7 +64,9 @@ public:
    */
   static void sendto(Host* from, Host* to, uint64_t simulated_size_in_bytes);
 
-  static xbt::signal<void(Comm const&, bool is_sender)> on_start;
+  static xbt::signal<void(Comm const&)> on_send;
+  static xbt::signal<void(Comm const&)> on_recv;
+  static xbt::signal<void(Comm const&)> on_start;
   static xbt::signal<void(Comm const&)> on_completion;
 
   /*! take a vector s4u::CommPtr and return when one of them is finished.

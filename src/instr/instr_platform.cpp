@@ -470,10 +470,11 @@ void define_callbacks()
     s4u::Exec::on_completion.connect([](s4u::Exec const&) {
       Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->pop_event();
     });
-    s4u::Comm::on_start.connect([](s4u::Comm const&, bool is_sender) {
-      Container::by_name(instr_pid(*s4u::Actor::self()))
-          ->get_state("ACTOR_STATE")
-          ->push_event(is_sender ? "send" : "receive");
+    s4u::Comm::on_send.connect([](s4u::Comm const&) {
+      Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->push_event("send");
+    });
+    s4u::Comm::on_recv.connect([](s4u::Comm const&) {
+      Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->push_event("receive");
     });
     s4u::Comm::on_completion.connect([](s4u::Comm const&) {
       Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->pop_event();

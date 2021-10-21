@@ -19,7 +19,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm, s4u_activity, "S4U asynchronous commun
 
 namespace simgrid {
 namespace s4u {
-xbt::signal<void(Comm const&, bool is_sender)> Comm::on_start;
+xbt::signal<void(Comm const&)> Comm::on_send;
+xbt::signal<void(Comm const&)> Comm::on_recv;
 xbt::signal<void(Comm const&)> Comm::on_completion;
 
 void Comm::complete(Activity::State state)
@@ -195,12 +196,12 @@ Comm* Comm::start()
     });
 
   } else if (src_buff_ != nullptr) { // Sender side
-    on_start(*this, true /* is_sender*/);
+    on_send(*this);
     pimpl_ = simcall_comm_isend(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
                                 clean_fun_, copy_data_function_, get_user_data(), detached_);
   } else if (dst_buff_ != nullptr) { // Receiver side
     xbt_assert(not detached_, "Receive cannot be detached");
-    on_start(*this, false /*is_sender*/);
+    on_recv(*this);
     pimpl_ = simcall_comm_irecv(receiver_, mailbox_->get_impl(), dst_buff_, &dst_buff_size_, match_fun_,
                                 copy_data_function_, get_user_data(), rate_);
 
@@ -234,12 +235,12 @@ Comm* Comm::wait_for(double timeout)
       if (from_ != nullptr || to_ != nullptr) {
         return vetoable_start()->wait_for(timeout); // In the case of host2host comm, do it in two simcalls
       } else if (src_buff_ != nullptr) {
-        on_start(*this, true /*is_sender*/);
+        on_send(*this);
         simcall_comm_send(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
                           copy_data_function_, get_user_data(), timeout);
 
       } else { // Receiver
-        on_start(*this, false /*is_sender*/);
+        on_recv(*this);
         simcall_comm_recv(receiver_, mailbox_->get_impl(), dst_buff_, &dst_buff_size_, match_fun_, copy_data_function_,
                           get_user_data(), timeout, rate_);
       }
