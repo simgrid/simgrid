@@ -12,6 +12,7 @@
 #include <xbt/config.hpp>
 
 #include "src/internal_config.h" // HAVE_SMPI
+#include "src/kernel/activity/CommImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #if HAVE_SMPI
 #include "src/smpi/include/smpi_request.hpp"
@@ -307,8 +308,9 @@ public:
     });
     // FIXME I think that this fires at the same time for all hosts, so when the src sends something,
     // the dst will be notified even though it didn't even arrive at the recv yet
-    simgrid::s4u::Link::on_communicate.connect([this](const kernel::resource::NetworkAction& act) {
-      if ((get_host() == &act.get_src() || get_host() == &act.get_dst()) && iteration_running) {
+    kernel::activity::CommImpl::on_start.connect([this](const kernel::activity::CommImpl& comm) {
+      auto* act = static_cast<kernel::resource::NetworkAction*>(comm.surf_action_);
+      if ((get_host() == &act->get_src() || get_host() == &act->get_dst()) && iteration_running) {
         post_task();
       }
     });
