@@ -289,7 +289,7 @@ void sg_wifi_energy_plugin_init()
    * - Link::on_creation to initialize the plugin
    * - Link::on_destruction to produce final energy results
    * - Link::on_communication_state_change: to account for the energy when communications are updated
-   * - Comm::on_start and Comm::on_completion: to account for the energy during communications
+   * - CommImpl::on_start and CommImpl::on_completion: to account for the energy during communications
    */
   simgrid::s4u::Link::on_creation.connect([](simgrid::s4u::Link& link) {
     // verify the link is appropriate to WiFi energy computations
