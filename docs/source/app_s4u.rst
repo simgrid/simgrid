@@ -1579,7 +1579,6 @@ Signals
    .. group-tab:: C++
 
       .. doxygenvariable:: simgrid::s4u::Link::on_bandwidth_change
-      .. doxygenvariable:: simgrid::s4u::Link::on_communicate
       .. doxygenvariable:: simgrid::s4u::Link::on_communication_state_change
       .. doxygenvariable:: simgrid::s4u::Link::on_creation
       .. doxygenvariable:: simgrid::s4u::Link::on_destruction

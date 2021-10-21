@@ -147,9 +147,6 @@ public:
   /** @brief Callback signal fired when the bandwidth of a Link changes */
   static xbt::signal<void(Link const&)> on_bandwidth_change;
 
-  /** @brief Callback signal fired when a communication starts */
-  static xbt::signal<void(kernel::resource::NetworkAction&)> on_communicate;
-
   /** @brief Callback signal fired when a communication changes it state (ready/done/cancel) */
   static xbt::signal<void(kernel::resource::NetworkAction&, kernel::resource::Action::State)>
       on_communication_state_change;

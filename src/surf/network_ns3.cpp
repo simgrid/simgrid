@@ -542,8 +542,6 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
   port_number = 1 + (port_number % UINT16_MAX);
   if (port_number == 1)
     XBT_WARN("Too many connections! Port number is saturated. Trying to use the oldest ports.");
-
-  s4u::Link::on_communicate(*this);
 }
 
 void NetworkNS3Action::suspend()

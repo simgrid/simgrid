@@ -98,7 +98,6 @@ Partial list of existing signals in s4u:
   :cpp:member:`Link::on_destruction <simgrid::s4u::Link::on_destruction>`
   :cpp:member:`Link::on_state_change <simgrid::s4u::Link::on_state_change>`
   :cpp:member:`Link::on_speed_change <simgrid::s4u::Link::on_bandwidth_change>`
-  :cpp:member:`Link::on_communicate <simgrid::s4u::Link::on_communicate>`
   :cpp:member:`Link::on_communication_state_change <simgrid::s4u::Link::on_communication_state_change>`
 - :cpp:member:`NetZone::on_creation <simgrid::s4u::NetZone::on_creation>`
   :cpp:member:`NetZone::on_seal <simgrid::s4u::NetZone::on_seal>`
