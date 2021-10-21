@@ -55,7 +55,7 @@ public:
 
   static void IB_create_host_callback(s4u::Host const& host);
   static void IB_action_state_changed_callback(NetworkAction& action, Action::State /*previous*/);
-  static void IB_action_init_callback(NetworkAction& action);
+  static void IB_comm_start_callback(const activity::CommImpl& comm);
 };
 } // namespace resource
 } // namespace kernel

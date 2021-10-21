@@ -302,7 +302,6 @@ CommImpl* CommImpl::start()
   if (state_ == State::READY) {
     from_ = from_ != nullptr ? from_ : src_actor_->get_host();
     to_   = to_ != nullptr ? to_ : dst_actor_->get_host();
-    on_start(*this);
     /* Getting the network_model from the origin host
      * Valid while we have a single network model, otherwise we would need to change this function to first get the
      * routes and later create the respective surf actions */
@@ -312,6 +311,7 @@ CommImpl* CommImpl::start()
     surf_action_->set_activity(this);
     surf_action_->set_category(get_tracing_category());
     state_ = State::RUNNING;
+    on_start(*this);
 
     XBT_DEBUG("Starting communication %p from '%s' to '%s' (surf_action: %p; state: %s)", this, from_->get_cname(),
               to_->get_cname(), surf_action_, get_state_str());

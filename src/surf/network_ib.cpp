@@ -7,6 +7,7 @@
 
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/activity/CommImpl.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/network_ib.hpp"
 
@@ -39,7 +40,7 @@ void surf_network_model_init_IB()
   engine->get_netzone_root()->set_network_model(net_model);
 
   simgrid::s4u::Link::on_communication_state_change.connect(NetworkIBModel::IB_action_state_changed_callback);
-  simgrid::s4u::Link::on_communicate.connect(NetworkIBModel::IB_action_init_callback);
+  simgrid::kernel::activity::CommImpl::on_start.connect(NetworkIBModel::IB_comm_start_callback);
   simgrid::s4u::Host::on_creation.connect(NetworkIBModel::IB_create_host_callback);
   simgrid::config::set_default<double>("network/weight-S", 8775);
 }
@@ -68,14 +69,15 @@ void NetworkIBModel::IB_action_state_changed_callback(NetworkAction& action, Act
   ibModel->active_comms.erase(&action);
 }
 
-void NetworkIBModel::IB_action_init_callback(NetworkAction& action)
+void NetworkIBModel::IB_comm_start_callback(const activity::CommImpl& comm)
 {
-  auto* ibModel = static_cast<NetworkIBModel*>(action.get_model());
-  auto* act_src = &ibModel->active_nodes.at(action.get_src().get_name());
-  auto* act_dst = &ibModel->active_nodes.at(action.get_dst().get_name());
+  auto* action  = static_cast<NetworkAction*>(comm.surf_action_);
+  auto* ibModel = static_cast<NetworkIBModel*>(action->get_model());
+  auto* act_src = &ibModel->active_nodes.at(action->get_src().get_name());
+  auto* act_dst = &ibModel->active_nodes.at(action->get_dst().get_name());
 
-  ibModel->active_comms[&action] = std::make_pair(act_src, act_dst);
-  ibModel->update_IB_factors(&action, act_src, act_dst, 0);
+  ibModel->active_comms[action] = std::make_pair(act_src, act_dst);
+  ibModel->update_IB_factors(action, act_src, act_dst, 0);
 }
 
 NetworkIBModel::NetworkIBModel(const std::string& name) : NetworkSmpiModel(name)
