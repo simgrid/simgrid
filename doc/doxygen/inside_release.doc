@@ -76,7 +76,7 @@ Please apply the following checklist before releasing.
  - Mail the simgrid-user mailing list
     - the NEWS chunk in the mail;
     - Hall of Fame in the mail
-      git shortlog -se v3.24..
+      git shortlog -se v3.29..
     - Link to the ChangeLog on framagit (the version of that tag)
  - Also mail some other lists (G5K users)
 - Release the debian package
@@ -87,11 +87,14 @@ Please apply the following checklist before releasing.
   - git mv debian/libsimgrid3.XX.install debian/libsimgrid3.XY.install
   - edit debian/control: s/simgrid3.XX/simgrid3.XY/
 - Update the simgrid/package.py for spack: https://gitlab.inria.fr/solverstack/spack-repo
-- Update the Docker images (after pushing to the git)
-  - cd tools/docker && make stable && make tuto-s4u tuto-smpi tuto-mc
-    The tuto images are built upon the simgrid/stable image
-  - Upload these docker images once built
+- Push the stable branch to github to rebuild and push the stable Docker images
+  - It downloads the latest tag on framagit
+  - Doing the same manually: cd tools/docker && make stable && make tuto-s4u tuto-smpi
+    (tuto-mc is not based on simgrid/stable but rebuilds from the git)
   - Once the new images are built, trigger a rebuild of the simgrid-template-{s4u,smpi} repositories on framagit
+- Add the new simgrid/stable image to the .gitlab-ci.yml of:
+  - https://framagit.org/simgrid/simgrid-template-s4u/
+  - https://framagit.org/simgrid/simgrid-template-smpi/
 
 @subsection inside_release_c_postrelease Post-release cleanups
 
