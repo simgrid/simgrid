@@ -20,6 +20,8 @@ extern "C" void raw_swapcontext(raw_stack_t* old, raw_stack_t new_context);
 
 // TODO, we should handle FP, MMX and the x87 control-word (for x86 and x86_64)
 
+#if HAVE_RAW_CONTEXTS
+
 #if SIMGRID_PROCESSOR_x86_64
 __asm__ (
 #if defined(__APPLE__)
@@ -160,7 +162,10 @@ __asm__ (
    "   retl\n"
 );
 #else
+#error HAVE_RAW_CONTEXTS defined, but neither SIMGRID_PROCESSOR_x86_64 nor SIMGRID_PROCESSOR_i686. Please update the code.
+#endif
 
+#else /* not HAVE_RAW_CONTEXTS */
 
 /* If you implement raw contexts for other processors, don't forget to
    update the definition of HAVE_RAW_CONTEXTS in tools/cmake/CompleteInFiles.cmake */
