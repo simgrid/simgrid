@@ -38,9 +38,9 @@ cleanup () {
 trap 'cleanup' EXIT
 
 filter_and_compile() {
-    list_add TMPFILES "${TMPFILE}"
     #replace "program main_name by subroutine user_main (and the end clause as well)"
-    if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
+    if [ "x${SMPI_PRETEND_CC}" = "x" ] && [ "x${TMPFILE}" != "x" ]; then
+      list_add TMPFILES "${TMPFILE}"
       sed 's/^\([[:space:]]*\)\([eE][nN][dD] \)\{0,1\}[pP][rR][oO][gG][rR][aA][mM][^a-zA-Z0-9]*\([a-zA-Z0-9_]*\)/\1\2subroutine user_main /g' "${ARG}" >> "${TMPFILE}"
       SRCFILE="${TMPFILE}"
     else
@@ -64,13 +64,17 @@ while [ $# -gt 0 ]; do
             ;;
         *.f90)
             FILENAME=$(basename "${ARG}")
-            TMPFILE=$(mymktemp "${ARG}" ".f90")
+            if main=$(grep -q -i "program" "${ARG}"); then
+              TMPFILE=$(mymktemp "${ARG}" ".f90")
+            fi
             ORIGFILE="${FILENAME%.f90}"
             filter_and_compile
             ;;
         *.F90)
             FILENAME=$(basename "${ARG}")
-            TMPFILE=$(mymktemp "${ARG}" ".F90")
+            if main=$(grep -q -i "program" "${ARG}"); then
+              TMPFILE=$(mymktemp "${ARG}" ".F90")
+            fi
             ORIGFILE="${FILENAME%.F90}"
             filter_and_compile
             ;;
