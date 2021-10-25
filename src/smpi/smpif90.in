@@ -41,6 +41,10 @@ filter_and_compile() {
     #replace "program main_name by subroutine user_main (and the end clause as well)"
     if [ "x${SMPI_PRETEND_CC}" = "x" ] && [ "x${TMPFILE}" != "x" ]; then
       list_add TMPFILES "${TMPFILE}"
+      if [ "$TRACE_CALL_LOCATION" -gt 0 ]; then
+        echo "#include \"@includedir@/smpi/smpi_extended_traces_fortran.h\"" > "${TMPFILE}"
+        echo "#line 1 \"${ARG}\"" >> "${TMPFILE}"
+      fi
       sed 's/^\([[:space:]]*\)\([eE][nN][dD] \)\{0,1\}[pP][rR][oO][gG][rR][aA][mM][^a-zA-Z0-9]*\([a-zA-Z0-9_]*\)/\1\2subroutine user_main /g' "${ARG}" >> "${TMPFILE}"
       SRCFILE="${TMPFILE}"
     else
@@ -64,7 +68,7 @@ while [ $# -gt 0 ]; do
             ;;
         *.f90)
             FILENAME=$(basename "${ARG}")
-            if main=$(grep -q -i "program" "${ARG}"); then
+            if [ "$TRACE_CALL_LOCATION" -gt 0 ] || main=$(grep -q -i "program" "${ARG}"); then
               TMPFILE=$(mymktemp "${ARG}" ".f90")
             fi
             ORIGFILE="${FILENAME%.f90}"
@@ -72,7 +76,7 @@ while [ $# -gt 0 ]; do
             ;;
         *.F90)
             FILENAME=$(basename "${ARG}")
-            if main=$(grep -q -i "program" "${ARG}"); then
+            if [ "$TRACE_CALL_LOCATION" -gt 0 ] || main=$(grep -q -i "program" "${ARG}"); then
               TMPFILE=$(mymktemp "${ARG}" ".F90")
             fi
             ORIGFILE="${FILENAME%.F90}"
