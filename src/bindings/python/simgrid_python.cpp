@@ -114,9 +114,6 @@ class XBT_PRIVATE GilScopedAcquire {
   }
 
   std::unique_ptr<PyThreadState, decltype(&release)> thread_state{acquire(), &release};
-
-public:
-  void reset() { thread_state.reset(); }
 };
 
 class XBT_PRIVATE GilScopedRelease {
@@ -167,13 +164,11 @@ PYBIND11_MODULE(simgrid, m)
           [](py::object fun) {
             fun.inc_ref(); // FIXME: why is this needed for tests like actor-kill and actor-lifetime?
             simgrid::s4u::this_actor::on_exit([fun](bool /*failed*/) {
-              GilScopedAcquire py_context; // need a new context for callback
               try {
+                GilScopedAcquire py_context; // need a new context for callback
                 fun();
               } catch (const py::error_already_set& e) {
-                std::string what = e.what();
-                py_context.reset();
-                xbt_die("Error while executing the on_exit lambda: %s", what.c_str());
+                xbt_die("Error while executing the on_exit lambda: %s", e.what());
               }
             });
           },
@@ -198,8 +193,8 @@ PYBIND11_MODULE(simgrid, m)
           "register_actor",
           [](Engine* e, const std::string& name, py::object fun_or_class) {
             e->register_actor(name, [fun_or_class](std::vector<std::string> args) {
-              GilScopedAcquire py_context;
               try {
+                GilScopedAcquire py_context;
                 /* Convert the std::vector into a py::tuple */
                 py::tuple params(args.size() - 1);
                 for (size_t i = 1; i < args.size(); i++)
@@ -210,9 +205,7 @@ PYBIND11_MODULE(simgrid, m)
                 if (py::isinstance<py::function>(res))
                   res();
               } catch (const py::error_already_set& ex) {
-                bool ffk = ex.matches(pyForcefulKillEx);
-                py_context.reset();
-                if (ffk) {
+                if (ex.matches(pyForcefulKillEx)) {
                   XBT_VERB("Actor killed");
                   simgrid::ForcefulKillException::do_throw(); // Forward that ForcefulKill exception
                 }
@@ -516,13 +509,11 @@ PYBIND11_MODULE(simgrid, m)
             fun.inc_ref();  // FIXME: why is this needed for tests like exec-async, exec-dvfs and exec-remote?
             args.inc_ref(); // FIXME: why is this needed for tests like actor-migrate?
             return simgrid::s4u::Actor::create(name, h, [fun, args]() {
-              GilScopedAcquire py_context;
               try {
+                GilScopedAcquire py_context;
                 fun(*args);
               } catch (const py::error_already_set& ex) {
-                bool ffk = ex.matches(pyForcefulKillEx);
-                py_context.reset();
-                if (ffk) {
+                if (ex.matches(pyForcefulKillEx)) {
                   XBT_VERB("Actor killed");
                   simgrid::ForcefulKillException::do_throw(); // Forward that ForcefulKill exception
                 }
