@@ -82,6 +82,9 @@ Partial list of existing signals in s4u:
   :cpp:member:`Comm::on_completion <simgrid::s4u::Comm::on_completion>`
 - :cpp:member:`CommImpl::on_start <simgrid::kernel::actiivty::CommImpl::on_start>`
   :cpp:member:`CommImpl::on_completion <simgrid::kernel::activity::CommImpl::on_completion>`
+- :cpp:member:`Disk::on_creation <simgrid::s4u::Disk::on_creation>`
+  :cpp:member:`Disk::on_destruction <simgrid::s4u::Disk::on_destruction>`
+  :cpp:member:`Disk::on_state_change <simgrid::s4u::Disk::on_state_change>`
 - :cpp:member:`Engine::on_platform_creation <simgrid::s4u::Engine::on_platform_creation>`
   :cpp:member:`Engine::on_platform_created <simgrid::s4u::Engine::on_platform_created>`
   :cpp:member:`Engine::on_time_advance <simgrid::s4u::Engine::on_time_advance>`
@@ -89,12 +92,12 @@ Partial list of existing signals in s4u:
   :cpp:member:`Engine::on_deadlock <simgrid::s4u::Engine::on_deadlock>`
 - :cpp:member:`Exec::on_start <simgrid::s4u::Exec::on_start>`
   :cpp:member:`Exec::on_completion <simgrid::s4u::Exec::on_completion>`
-- :cpp:member:`Exec::on_start <simgrid::s4u::Exec::on_start>`
-  :cpp:member:`Exec::on_completion <simgrid::s4u::Exec::on_completion>`
 - :cpp:member:`Host::on_creation <simgrid::s4u::Host::on_creation>`
   :cpp:member:`Host::on_destruction <simgrid::s4u::Host::on_destruction>`
   :cpp:member:`Host::on_state_change <simgrid::s4u::Host::on_state_change>`
   :cpp:member:`Host::on_speed_change <simgrid::s4u::Host::on_speed_change>`
+- :cpp:member:`Io::on_start <simgrid::s4u::Io::on_start>`
+  :cpp:member:`Io::on_completion <simgrid::s4u::Io::on_completion>`
 - :cpp:member:`Link::on_creation <simgrid::s4u::Link::on_creation>`
   :cpp:member:`Link::on_destruction <simgrid::s4u::Link::on_destruction>`
   :cpp:member:`Link::on_state_change <simgrid::s4u::Link::on_state_change>`
