@@ -52,7 +52,7 @@ filter_and_compile() {
     fi
     list_add CMDLINE "${SRCFILE}"
 }
-
+TRACE_CALL_LOCATION=0
 NEEDS_OUTPUT=1
 
 list_set CMDLINE "${REAL_FORTRAN_COMPILER}"
