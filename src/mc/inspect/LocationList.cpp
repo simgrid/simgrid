@@ -75,7 +75,7 @@ LocationList location_list(const simgrid::mc::ObjectInformation& info, Dwarf_Att
 
     if (offset == 0)
       break;
-    xbt_assert(offset != -1, "Error while loading location list");
+    xbt_assert(offset != -1, "Error while loading location list: %s", dwarf_errmsg(-1));
 
     auto base_address = reinterpret_cast<std::uint64_t>(info.base_address());
 
