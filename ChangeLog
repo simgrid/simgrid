@@ -2,6 +2,10 @@
 
 SimGrid (3.29.1) NOT RELEASED YET (v3.30 expected December 21. 2021, 15:59 UTC)
 
+Python:
+ - Thread contexts are used by default with Python bindings.  Other kinds of
+   contexts revealed unstable, specially starting with pybind11 v2.8.0.
+
 ----------------------------------------------------------------------------
 
 SimGrid (3.29) October 7. 2021

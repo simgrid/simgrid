@@ -13,27 +13,10 @@
 #pragma GCC diagnostic ignored "-Wunused-value"
 #endif
 
-#ifndef NDEBUG
-/* Many tests are failing after pybind11 commit ad6bf5cd39ca64b4a9bf846b84b11c4c8df1c8e1 "Adding PyGILState_Check() in
- *  object_api<>::operator(). (#2919)".
- * See https://github.com/pybind/pybind11/commit/ad6bf5cd39ca64b4a9bf846b84b11c4c8df1c8e1
- *
- * The failing tests are mostly those with boost/raw/sysv contexts. As a workaround, define NDEBUG before pybind11
- * includes.
- */
-#define NDEBUG
-#define NDEBUG_LOCALLY_DEFINED
-#endif
-
 #include <pybind11/pybind11.h> // Must come before our own stuff
 
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
-
-#ifdef NDEBUG_LOCALLY_DEFINED
-#undef NDEBUG_LOCALLY_DEFINED
-#undef NDEBUG
-#endif
 
 #if defined(__GNUG__)
 #pragma GCC diagnostic pop
@@ -86,41 +69,6 @@ public:
   PyObject** get() const { return data.get(); }
 };
 
-/* Classes GilScopedAcquire and GilScopedRelease have the same purpose as pybind11::gil_scoped_acquire and
- * pybind11::gil_scoped_release.  Refer to the manual of pybind11 for details:
- * https://pybind11.readthedocs.io/en/stable/advanced/misc.html#global-interpreter-lock-gil
- *
- * The pybind11 versions are however too sophisticated (using TLS for example) and don't work well with all kinds of
- * contexts.
- * See also https://github.com/pybind/pybind11/issues/1276, which may be related.
- *
- * Briefly, GilScopedAcquire can be used on actor creation to acquire a new PyThreadState.  The PyThreadState has to be
- * released for context switches (i.e. before simcalls). That's the purpose of GilScopedRelease.
- *
- * Like their pybind11 counterparts, both classes use a RAII pattern.
- */
-class XBT_PRIVATE GilScopedAcquire {
-  static PyThreadState* acquire()
-  {
-    PyThreadState* state = PyThreadState_New(PyInterpreterState_Head());
-    PyEval_AcquireThread(state);
-    return state;
-  }
-  static void release(PyThreadState* state)
-  {
-    PyEval_ReleaseThread(state);
-    PyThreadState_Clear(state);
-    PyThreadState_Delete(state);
-  }
-
-  std::unique_ptr<PyThreadState, decltype(&release)> thread_state{acquire(), &release};
-};
-
-class XBT_PRIVATE GilScopedRelease {
-  std::unique_ptr<PyThreadState, decltype(&PyEval_RestoreThread)> thread_state{PyEval_SaveThread(),
-                                                                               &PyEval_RestoreThread};
-};
-
 } // namespace
 
 PYBIND11_DECLARE_HOLDER_TYPE(T, boost::intrusive_ptr<T>)
@@ -144,38 +92,38 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "error", [](const char* s) { XBT_ERROR("%s", s); }, "Display a logging message of 'error' priority.")
       .def("execute", py::overload_cast<double, double>(&simgrid::s4u::this_actor::execute),
-           py::call_guard<GilScopedRelease>(),
+           py::call_guard<py::gil_scoped_release>(),
            "Block the current actor, computing the given amount of flops at the given priority.", py::arg("flops"),
            py::arg("priority") = 1)
       .def("exec_init", py::overload_cast<double>(&simgrid::s4u::this_actor::exec_init),
-           py::call_guard<GilScopedRelease>())
+           py::call_guard<py::gil_scoped_release>())
       .def("get_host", &simgrid::s4u::this_actor::get_host, "Retrieves host on which the current actor is located")
-      .def("set_host", &simgrid::s4u::this_actor::set_host, py::call_guard<GilScopedRelease>(),
+      .def("set_host", &simgrid::s4u::this_actor::set_host, py::call_guard<py::gil_scoped_release>(),
            "Moves the current actor to another host.", py::arg("dest"))
       .def("sleep_for", static_cast<void (*)(double)>(&simgrid::s4u::this_actor::sleep_for),
-           py::call_guard<GilScopedRelease>(), "Block the actor sleeping for that amount of seconds.",
+           py::call_guard<py::gil_scoped_release>(), "Block the actor sleeping for that amount of seconds.",
            py::arg("duration"))
       .def("sleep_until", static_cast<void (*)(double)>(&simgrid::s4u::this_actor::sleep_until),
-           py::call_guard<GilScopedRelease>(), "Block the actor sleeping until the specified timestamp.",
+           py::call_guard<py::gil_scoped_release>(), "Block the actor sleeping until the specified timestamp.",
            py::arg("duration"))
-      .def("suspend", &simgrid::s4u::this_actor::suspend, py::call_guard<GilScopedRelease>(),
+      .def("suspend", &simgrid::s4u::this_actor::suspend, py::call_guard<py::gil_scoped_release>(),
            "Suspend the current actor, that is blocked until resume()ed by another actor.")
-      .def("yield_", &simgrid::s4u::this_actor::yield, py::call_guard<GilScopedRelease>(), "Yield the actor")
-      .def("exit", &simgrid::s4u::this_actor::exit, py::call_guard<GilScopedRelease>(), "kill the current actor")
+      .def("yield_", &simgrid::s4u::this_actor::yield, py::call_guard<py::gil_scoped_release>(), "Yield the actor")
+      .def("exit", &simgrid::s4u::this_actor::exit, py::call_guard<py::gil_scoped_release>(), "kill the current actor")
       .def(
           "on_exit",
           [](py::object fun) {
             fun.inc_ref(); // FIXME: why is this needed for tests like actor-kill and actor-lifetime?
             simgrid::s4u::this_actor::on_exit([fun](bool /*failed*/) {
               try {
-                GilScopedAcquire py_context; // need a new context for callback
+                py::gil_scoped_acquire py_context; // need a new context for callback
                 fun();
               } catch (const py::error_already_set& e) {
                 xbt_die("Error while executing the on_exit lambda: %s", e.what());
               }
             });
           },
-          py::call_guard<GilScopedRelease>(), "");
+          py::call_guard<py::gil_scoped_release>(), "");
 
   /* Class Engine */
   py::class_<Engine>(m, "Engine", "Simulation Engine")
@@ -191,13 +139,13 @@ PYBIND11_MODULE(simgrid, m)
       .def("get_all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
       .def("load_platform", &Engine::load_platform, "Load a platform file describing the environment")
       .def("load_deployment", &Engine::load_deployment, "Load a deployment file and launch the actors that it contains")
-      .def("run", &Engine::run, py::call_guard<GilScopedRelease>(), "Run the simulation")
+      .def("run", &Engine::run, py::call_guard<py::gil_scoped_release>(), "Run the simulation")
       .def(
           "register_actor",
           [](Engine* e, const std::string& name, py::object fun_or_class) {
             e->register_actor(name, [fun_or_class](std::vector<std::string> args) {
               try {
-                GilScopedAcquire py_context;
+                py::gil_scoped_acquire py_context;
                 /* Convert the std::vector into a py::tuple */
                 py::tuple params(args.size() - 1);
                 for (size_t i = 1; i < args.size(); i++)
@@ -307,11 +255,11 @@ PYBIND11_MODULE(simgrid, m)
       .def_property(
           "pstate", &Host::get_pstate,
           [](Host* h, int i) {
-            GilScopedRelease gil_guard;
+            py::gil_scoped_release gil_guard;
             h->set_pstate(i);
           },
           "The current pstate")
-      .def("current", &Host::current, py::call_guard<GilScopedRelease>(),
+      .def("current", &Host::current, py::call_guard<py::gil_scoped_release>(),
            "Retrieves the host on which the running actor is located.")
       .def_property_readonly(
           "name",
@@ -333,8 +281,8 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Disk */
   py::class_<simgrid::s4u::Disk, std::unique_ptr<simgrid::s4u::Disk, py::nodelete>> disk(m, "Disk", "Simulated disk");
-  disk.def("read", &simgrid::s4u::Disk::read, py::call_guard<GilScopedRelease>(), "Read data from disk")
-      .def("write", &simgrid::s4u::Disk::write, py::call_guard<GilScopedRelease>(), "Write data in disk")
+  disk.def("read", &simgrid::s4u::Disk::read, py::call_guard<py::gil_scoped_release>(), "Read data from disk")
+      .def("write", &simgrid::s4u::Disk::write, py::call_guard<py::gil_scoped_release>(), "Write data in disk")
       .def("read_async", &simgrid::s4u::Disk::read_async, "Non-blocking read data from disk")
       .def("write_async", &simgrid::s4u::Disk::write_async, "Non-blocking write data in disk")
       .def("set_sharing_policy", &simgrid::s4u::Disk::set_sharing_policy, "Set sharing policy for this disk",
@@ -401,7 +349,7 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "__str__", [](const Mailbox* self) { return std::string("Mailbox(") + self->get_cname() + ")"; },
           "Textual representation of the Mailbox`")
-      .def("by_name", &Mailbox::by_name, py::call_guard<GilScopedRelease>(), "Retrieve a Mailbox from its name")
+      .def("by_name", &Mailbox::by_name, py::call_guard<py::gil_scoped_release>(), "Retrieve a Mailbox from its name")
       .def_property_readonly(
           "name",
           [](const Mailbox* self) {
@@ -414,14 +362,14 @@ PYBIND11_MODULE(simgrid, m)
             data.inc_ref();
             self->put(data.ptr(), size);
           },
-          py::call_guard<GilScopedRelease>(), "Blocking data transmission")
+          py::call_guard<py::gil_scoped_release>(), "Blocking data transmission")
       .def(
           "put_async",
           [](Mailbox* self, py::object data, int size) {
             data.inc_ref();
             return self->put_async(data.ptr(), size);
           },
-          py::call_guard<GilScopedRelease>(), "Non-blocking data transmission")
+          py::call_guard<py::gil_scoped_release>(), "Non-blocking data transmission")
       .def(
           "get",
           [](Mailbox* self) {
@@ -429,7 +377,7 @@ PYBIND11_MODULE(simgrid, m)
             // data.dec_ref(); // FIXME: why does it break python-actor-create?
             return data;
           },
-          py::call_guard<GilScopedRelease>(), "Blocking data reception")
+          py::call_guard<py::gil_scoped_release>(), "Blocking data reception")
       .def(
           "get_async",
           [](Mailbox* self) -> std::tuple<simgrid::s4u::CommPtr, PyGetAsync> {
@@ -437,11 +385,11 @@ PYBIND11_MODULE(simgrid, m)
             auto comm = self->get_async(wrap.get());
             return std::make_tuple(std::move(comm), std::move(wrap));
           },
-          py::call_guard<GilScopedRelease>(),
+          py::call_guard<py::gil_scoped_release>(),
           "Non-blocking data reception. Use data.get() to get the python object after the communication has finished")
       .def(
           "set_receiver", [](Mailbox* self, ActorPtr actor) { self->set_receiver(actor); },
-          py::call_guard<GilScopedRelease>(), "Sets the actor as permanent receiver");
+          py::call_guard<py::gil_scoped_release>(), "Sets the actor as permanent receiver");
 
   /* Class PyGetAsync */
   py::class_<PyGetAsync>(m, "PyGetAsync", "Wrapper for async get communications")
@@ -452,28 +400,29 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Comm */
   py::class_<simgrid::s4u::Comm, simgrid::s4u::CommPtr>(m, "Comm", "Communication")
-      .def("test", &simgrid::s4u::Comm::test, py::call_guard<GilScopedRelease>(),
+      .def("test", &simgrid::s4u::Comm::test, py::call_guard<py::gil_scoped_release>(),
            "Test whether the communication is terminated.")
-      .def("wait", &simgrid::s4u::Comm::wait, py::call_guard<GilScopedRelease>(),
+      .def("wait", &simgrid::s4u::Comm::wait, py::call_guard<py::gil_scoped_release>(),
            "Block until the completion of that communication.")
       // use py::overload_cast for wait_all/wait_any, until the overload marked XBT_ATTRIB_DEPRECATED_v332 is removed
-      .def_static("wait_all",
-                  py::overload_cast<const std::vector<simgrid::s4u::CommPtr>&>(&simgrid::s4u::Comm::wait_all),
-                  py::call_guard<GilScopedRelease>(), "Block until the completion of all communications in the list.")
+      .def_static(
+          "wait_all", py::overload_cast<const std::vector<simgrid::s4u::CommPtr>&>(&simgrid::s4u::Comm::wait_all),
+          py::call_guard<py::gil_scoped_release>(), "Block until the completion of all communications in the list.")
       .def_static(
           "wait_any", py::overload_cast<const std::vector<simgrid::s4u::CommPtr>&>(&simgrid::s4u::Comm::wait_any),
-          py::call_guard<GilScopedRelease>(),
+          py::call_guard<py::gil_scoped_release>(),
           "Block until the completion of any communication in the list and return the index of the terminated one.");
 
   /* Class Io */
   py::class_<simgrid::s4u::Io, simgrid::s4u::IoPtr>(m, "Io", "I/O activities")
-      .def("test", &simgrid::s4u::Io::test, py::call_guard<GilScopedRelease>(), "Test whether the I/O is terminated.")
-      .def("wait", &simgrid::s4u::Io::wait, py::call_guard<GilScopedRelease>(),
+      .def("test", &simgrid::s4u::Io::test, py::call_guard<py::gil_scoped_release>(),
+           "Test whether the I/O is terminated.")
+      .def("wait", &simgrid::s4u::Io::wait, py::call_guard<py::gil_scoped_release>(),
            "Block until the completion of that I/O operation")
       .def_static(
-          "wait_any_for", &simgrid::s4u::Io::wait_any_for, py::call_guard<GilScopedRelease>(),
+          "wait_any_for", &simgrid::s4u::Io::wait_any_for, py::call_guard<py::gil_scoped_release>(),
           "Block until the completion of any I/O in the list (or timeout) and return the index of the terminated one.")
-      .def_static("wait_any", &simgrid::s4u::Io::wait_any, py::call_guard<GilScopedRelease>(),
+      .def_static("wait_any", &simgrid::s4u::Io::wait_any, py::call_guard<py::gil_scoped_release>(),
                   "Block until the completion of any I/O in the list and return the index of the terminated one.");
 
   /* Class Exec */
@@ -481,25 +430,25 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly(
           "remaining",
           [](simgrid::s4u::ExecPtr self) {
-            GilScopedRelease gil_guard;
+            py::gil_scoped_release gil_guard;
             return self->get_remaining();
           },
           "Amount of flops that remain to be computed until completion.")
       .def_property_readonly(
           "remaining_ratio",
           [](simgrid::s4u::ExecPtr self) {
-            GilScopedRelease gil_guard;
+            py::gil_scoped_release gil_guard;
             return self->get_remaining_ratio();
           },
           "Amount of work remaining until completion from 0 (completely done) to 1 (nothing done "
           "yet).")
       .def_property("host", &simgrid::s4u::Exec::get_host, &simgrid::s4u::Exec::set_host,
                     "Host on which this execution runs. Only the first host is returned for parallel executions.")
-      .def("test", &simgrid::s4u::Exec::test, py::call_guard<GilScopedRelease>(),
+      .def("test", &simgrid::s4u::Exec::test, py::call_guard<py::gil_scoped_release>(),
            "Test whether the execution is terminated.")
-      .def("cancel", &simgrid::s4u::Exec::cancel, py::call_guard<GilScopedRelease>(), "Cancel that execution.")
-      .def("start", &simgrid::s4u::Exec::start, py::call_guard<GilScopedRelease>(), "Start that execution.")
-      .def("wait", &simgrid::s4u::Exec::wait, py::call_guard<GilScopedRelease>(),
+      .def("cancel", &simgrid::s4u::Exec::cancel, py::call_guard<py::gil_scoped_release>(), "Cancel that execution.")
+      .def("start", &simgrid::s4u::Exec::start, py::call_guard<py::gil_scoped_release>(), "Start that execution.")
+      .def("wait", &simgrid::s4u::Exec::wait, py::call_guard<py::gil_scoped_release>(),
            "Block until the completion of that execution.");
 
   /* Class Actor */
@@ -513,7 +462,7 @@ PYBIND11_MODULE(simgrid, m)
             args.inc_ref(); // FIXME: why is this needed for tests like actor-migrate?
             return simgrid::s4u::Actor::create(name, h, [fun, args]() {
               try {
-                GilScopedAcquire py_context;
+                py::gil_scoped_acquire py_context;
                 fun(*args);
               } catch (const py::error_already_set& ex) {
                 if (ex.matches(pyForcefulKillEx)) {
@@ -524,11 +473,11 @@ PYBIND11_MODULE(simgrid, m)
               }
             });
           },
-          py::call_guard<GilScopedRelease>(), "Create an actor from a function or an object.")
+          py::call_guard<py::gil_scoped_release>(), "Create an actor from a function or an object.")
       .def_property(
           "host", &Actor::get_host,
           [](Actor* a, Host* h) {
-            GilScopedRelease gil_guard;
+            py::gil_scoped_release gil_guard;
             a->set_host(h);
           },
           "The host on which this actor is located")
@@ -537,20 +486,20 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("ppid", &Actor::get_ppid,
                              "The PID (unique identifier) of the actor that created this one.")
       .def("by_pid", &Actor::by_pid, "Retrieve an actor by its PID")
-      .def("daemonize", &Actor::daemonize, py::call_guard<GilScopedRelease>(),
+      .def("daemonize", &Actor::daemonize, py::call_guard<py::gil_scoped_release>(),
            "This actor will be automatically terminated when the last non-daemon actor finishes (more info in the C++ "
            "documentation).")
       .def("is_daemon", &Actor::is_daemon,
            "Returns True if that actor is a daemon and will be terminated automatically when the last non-daemon actor "
            "terminates.")
-      .def("join", py::overload_cast<double>(&Actor::join, py::const_), py::call_guard<GilScopedRelease>(),
+      .def("join", py::overload_cast<double>(&Actor::join, py::const_), py::call_guard<py::gil_scoped_release>(),
            "Wait for the actor to finish (more info in the C++ documentation).", py::arg("timeout"))
-      .def("kill", &Actor::kill, py::call_guard<GilScopedRelease>(), "Kill that actor")
-      .def("kill_all", &Actor::kill_all, py::call_guard<GilScopedRelease>(), "Kill all actors but the caller.")
+      .def("kill", &Actor::kill, py::call_guard<py::gil_scoped_release>(), "Kill that actor")
+      .def("kill_all", &Actor::kill_all, py::call_guard<py::gil_scoped_release>(), "Kill all actors but the caller.")
       .def("self", &Actor::self, "Retrieves the current actor.")
       .def("is_suspended", &Actor::is_suspended, "Returns True if that actor is currently suspended.")
-      .def("suspend", &Actor::suspend, py::call_guard<GilScopedRelease>(),
+      .def("suspend", &Actor::suspend, py::call_guard<py::gil_scoped_release>(),
            "Suspend that actor, that is blocked until resume()ed by another actor.")
-      .def("resume", &Actor::resume, py::call_guard<GilScopedRelease>(),
+      .def("resume", &Actor::resume, py::call_guard<py::gil_scoped_release>(),
            "Resume that actor, that was previously suspend()ed.");
 }
