@@ -6,9 +6,9 @@
 #ifndef SIMGRID_KERNEL_RESOURCE_LINKIMPLINTF_HPP
 #define SIMGRID_KERNEL_RESOURCE_LINKIMPLINTF_HPP
 
-#include "simgrid/kernel/resource/Resource.hpp"
 #include "simgrid/s4u/Link.hpp"
-#include <xbt/PropertyHolder.hpp>
+#include "src/kernel/resource/Resource.hpp"
+#include "xbt/PropertyHolder.hpp"
 
 /***********
  * Classes *

@@ -5,11 +5,11 @@
 
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/kernel/resource/Model.hpp"
-#include "simgrid/kernel/resource/Resource.hpp"
 #include "simgrid/s4u/Disk.hpp"
 #include "simgrid/s4u/Io.hpp"
+#include "src/kernel/resource/Resource.hpp"
 #include "src/surf/surf_interface.hpp"
-#include <xbt/PropertyHolder.hpp>
+#include "xbt/PropertyHolder.hpp"
 
 #include <map>
 

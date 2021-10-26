@@ -6,14 +6,14 @@
 #ifndef SIMGRID_KERNEL_RESOURCE_RESOURCE_HPP
 #define SIMGRID_KERNEL_RESOURCE_RESOURCE_HPP
 
+#include "simgrid/forward.h"
 #include "src/kernel/lmm/maxmin.hpp" // Constraint
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
-#include <simgrid/forward.h>
-#include <xbt/signal.hpp>
-#include <xbt/str.h>
-#include <xbt/utility.hpp>
+#include "xbt/signal.hpp"
+#include "xbt/str.h"
+#include "xbt/utility.hpp"
 
 #include <string>
 
@@ -26,9 +26,9 @@ namespace resource {
  * @details This is the ancestor class of every resources in SimGrid, such as links, CPU or disk
  */
 class XBT_PUBLIC Resource {
-  std::string name_ = "unnamed";
-  bool is_on_       = true;
-  bool sealed_      = false;
+  std::string name_            = "unnamed";
+  bool is_on_                  = true;
+  bool sealed_                 = false;
   profile::Event* state_event_ = nullptr;
 
 protected:

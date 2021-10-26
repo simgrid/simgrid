@@ -7,9 +7,9 @@
 #define SURF_CPU_INTERFACE_HPP_
 
 #include "simgrid/kernel/resource/Model.hpp"
-#include "simgrid/kernel/resource/Resource.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
+#include "src/kernel/resource/Resource.hpp"
 
 #include <list>
 

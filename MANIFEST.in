@@ -2040,7 +2040,6 @@ include include/simgrid/kernel/future.hpp
 include include/simgrid/kernel/resource/Action.hpp
 include include/simgrid/kernel/resource/Model.hpp
 include include/simgrid/kernel/resource/NetworkModelIntf.hpp
-include include/simgrid/kernel/resource/Resource.hpp
 include include/simgrid/kernel/routing/ClusterZone.hpp
 include include/simgrid/kernel/routing/DijkstraZone.hpp
 include include/simgrid/kernel/routing/DragonflyZone.hpp
@@ -2266,6 +2265,7 @@ include src/kernel/resource/DiskImpl.cpp
 include src/kernel/resource/DiskImpl.hpp
 include src/kernel/resource/Model.cpp
 include src/kernel/resource/NetworkModelIntf_test.cpp
+include src/kernel/resource/Resource.hpp
 include src/kernel/resource/profile/DatedValue.cpp
 include src/kernel/resource/profile/DatedValue.hpp
 include src/kernel/resource/profile/Event.hpp

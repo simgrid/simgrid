@@ -313,6 +313,7 @@ set(SURF_SRC
   src/kernel/resource/Model.cpp
   src/kernel/resource/DiskImpl.cpp
   src/kernel/resource/DiskImpl.hpp
+  src/kernel/resource/Resource.hpp
 
   src/kernel/resource/profile/DatedValue.cpp
   src/kernel/resource/profile/DatedValue.hpp
@@ -724,7 +725,6 @@ set(headers_to_install
   include/simgrid/kernel/resource/Action.hpp
   include/simgrid/kernel/resource/NetworkModelIntf.hpp
   include/simgrid/kernel/resource/Model.hpp
-  include/simgrid/kernel/resource/Resource.hpp
 
   include/simgrid/kernel/routing/ClusterZone.hpp
   include/simgrid/kernel/routing/DijkstraZone.hpp

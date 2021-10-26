@@ -5,7 +5,7 @@
 
 #include "catch.hpp"
 
-#include "simgrid/kernel/resource/Resource.hpp"
+#include "src/kernel/resource/Resource.hpp"
 #include "src/kernel/resource/profile/DatedValue.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"

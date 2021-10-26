@@ -8,11 +8,11 @@
 
 #include "simgrid/kernel/resource/Model.hpp"
 #include "simgrid/kernel/resource/NetworkModelIntf.hpp"
-#include "simgrid/kernel/resource/Resource.hpp"
 #include "simgrid/s4u/Link.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
+#include "src/kernel/resource/Resource.hpp"
 #include "src/surf/LinkImpl.hpp"
-#include <xbt/PropertyHolder.hpp>
+#include "xbt/PropertyHolder.hpp"
 
 #include <list>
 #include <unordered_map>
