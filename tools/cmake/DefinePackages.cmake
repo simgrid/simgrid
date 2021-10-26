@@ -124,6 +124,7 @@ set(SMPI_SRC
   src/smpi/include/smpi_info.hpp
   src/smpi/include/smpi_keyvals.hpp
   src/smpi/include/smpi_op.hpp
+  src/smpi/include/smpi_replay.hpp
   src/smpi/include/smpi_request.hpp
   src/smpi/include/smpi_status.hpp
   src/smpi/include/smpi_topo.hpp
@@ -684,7 +685,6 @@ set(headers_to_install
   include/simgrid/plugins/live_migration.h
   include/simgrid/plugins/load.h
   include/simgrid/plugins/ProducerConsumer.hpp
-  include/simgrid/smpi/smpi_replay.hpp
   include/simgrid/instr.h
   include/simgrid/mailbox.h
   include/simgrid/simdag.h

@@ -3,16 +3,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "smpi_replay.hpp"
+#include "simgrid/s4u/Exec.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_comm.hpp"
+#include "smpi_config.hpp"
 #include "smpi_datatype.hpp"
 #include "smpi_group.hpp"
 #include "smpi_request.hpp"
-#include "smpi_config.hpp"
-#include "simgrid/s4u/Exec.hpp"
+#include "src/smpi/include/private.hpp"
 #include "xbt/replay.hpp"
-#include <simgrid/smpi/smpi_replay.hpp>
-#include <src/smpi/include/private.hpp>
 
 #include <cmath>
 #include <limits>

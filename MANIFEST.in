@@ -2087,7 +2087,6 @@ include include/simgrid/semaphore.h
 include include/simgrid/simdag.h
 include include/simgrid/simix.h
 include include/simgrid/simix.hpp
-include include/simgrid/smpi/smpi_replay.hpp
 include include/simgrid/version.h.in
 include include/simgrid/vm.h
 include include/simgrid/zone.h
@@ -2586,6 +2585,7 @@ include src/smpi/include/smpi_host.hpp
 include src/smpi/include/smpi_info.hpp
 include src/smpi/include/smpi_keyvals.hpp
 include src/smpi/include/smpi_op.hpp
+include src/smpi/include/smpi_replay.hpp
 include src/smpi/include/smpi_request.hpp
 include src/smpi/include/smpi_status.hpp
 include src/smpi/include/smpi_topo.hpp

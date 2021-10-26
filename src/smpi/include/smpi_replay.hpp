@@ -5,12 +5,11 @@
 #ifndef SMPI_REPLAY_HPP_
 #define SMPI_REPLAY_HPP_
 
-#include "src/smpi/include/smpi_actor.hpp"
+#include "smpi_actor.hpp"
+#include "xbt/ex.h"
+#include "xbt/replay.hpp"
 
 #include <boost/algorithm/string/join.hpp>
-#include <xbt/ex.h>
-#include <xbt/replay.hpp>
-
 #include <memory>
 #include <sstream>
 
