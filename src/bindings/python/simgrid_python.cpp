@@ -131,6 +131,9 @@ PYBIND11_MODULE(simgrid, m)
 
   m.attr("simgrid_version") = get_simgrid_version();
 
+  // Swapped contexts are broken, starting from pybind11 v2.8.0.  Use thread contexts by default.
+  simgrid::s4u::Engine::set_config("contexts/factory:thread");
+
   // Internal exception used to kill actors and sweep the RAII chimney (free objects living on the stack)
   static py::object pyForcefulKillEx(py::register_exception<simgrid::ForcefulKillException>(m, "ActorKilled"));
 
