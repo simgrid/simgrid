@@ -243,15 +243,18 @@ PYBIND11_MODULE(simgrid, m)
       .def("get_pstate_speed", &Host::get_pstate_speed, "Retrieve the maximal speed at the given pstate")
       .def("get_netpoint", &Host::get_netpoint, "Retrieve the netpoint associated to this host")
       .def("get_disks", &Host::get_disks, "Retrieve the list of disks in this host")
-      .def("set_core_count", &Host::set_core_count, "Set the number of cores in the CPU")
-      .def("set_coordinates", &Host::set_coordinates, "Set the coordinates of this host")
-      .def("set_sharing_policy", &simgrid::s4u::Host::set_sharing_policy, "Describe how the CPU is shared",
-           py::arg("policy"), py::arg("cb") = simgrid::s4u::NonLinearResourceCb())
-      .def("create_disk", py::overload_cast<const std::string&, double, double>(&Host::create_disk), "Create a disk")
+      .def("set_core_count", &Host::set_core_count, py::call_guard<py::gil_scoped_release>(),
+           "Set the number of cores in the CPU")
+      .def("set_coordinates", &Host::set_coordinates, py::call_guard<py::gil_scoped_release>(),
+           "Set the coordinates of this host")
+      .def("set_sharing_policy", &simgrid::s4u::Host::set_sharing_policy, py::call_guard<py::gil_scoped_release>(),
+           "Describe how the CPU is shared", py::arg("policy"), py::arg("cb") = simgrid::s4u::NonLinearResourceCb())
+      .def("create_disk", py::overload_cast<const std::string&, double, double>(&Host::create_disk),
+           py::call_guard<py::gil_scoped_release>(), "Create a disk")
       .def("create_disk",
            py::overload_cast<const std::string&, const std::string&, const std::string&>(&Host::create_disk),
-           "Create a disk")
-      .def("seal", &Host::seal, "Seal this host")
+           py::call_guard<py::gil_scoped_release>(), "Create a disk")
+      .def("seal", &Host::seal, py::call_guard<py::gil_scoped_release>(), "Seal this host")
       .def_property(
           "pstate", &Host::get_pstate,
           [](Host* h, int i) {
@@ -283,11 +286,14 @@ PYBIND11_MODULE(simgrid, m)
   py::class_<simgrid::s4u::Disk, std::unique_ptr<simgrid::s4u::Disk, py::nodelete>> disk(m, "Disk", "Simulated disk");
   disk.def("read", &simgrid::s4u::Disk::read, py::call_guard<py::gil_scoped_release>(), "Read data from disk")
       .def("write", &simgrid::s4u::Disk::write, py::call_guard<py::gil_scoped_release>(), "Write data in disk")
-      .def("read_async", &simgrid::s4u::Disk::read_async, "Non-blocking read data from disk")
-      .def("write_async", &simgrid::s4u::Disk::write_async, "Non-blocking write data in disk")
-      .def("set_sharing_policy", &simgrid::s4u::Disk::set_sharing_policy, "Set sharing policy for this disk",
-           py::arg("op"), py::arg("policy"), py::arg("cb") = simgrid::s4u::NonLinearResourceCb())
-      .def("seal", &simgrid::s4u::Disk::seal, "Seal this disk")
+      .def("read_async", &simgrid::s4u::Disk::read_async, py::call_guard<py::gil_scoped_release>(),
+           "Non-blocking read data from disk")
+      .def("write_async", &simgrid::s4u::Disk::write_async, py::call_guard<py::gil_scoped_release>(),
+           "Non-blocking write data in disk")
+      .def("set_sharing_policy", &simgrid::s4u::Disk::set_sharing_policy, py::call_guard<py::gil_scoped_release>(),
+           "Set sharing policy for this disk", py::arg("op"), py::arg("policy"),
+           py::arg("cb") = simgrid::s4u::NonLinearResourceCb())
+      .def("seal", &simgrid::s4u::Disk::seal, py::call_guard<py::gil_scoped_release>(), "Seal this disk")
       .def_property_readonly(
           "name", [](const simgrid::s4u::Disk* self) { return self->get_name(); }, "The name of this disk");
   py::enum_<simgrid::s4u::Disk::SharingPolicy>(disk, "SharingPolicy")
@@ -306,13 +312,17 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Link */
   py::class_<simgrid::s4u::Link, std::unique_ptr<simgrid::s4u::Link, py::nodelete>> link(m, "Link", "Network link");
-  link.def("set_latency", py::overload_cast<const std::string&>(&simgrid::s4u::Link::set_latency), "Set the latency")
-      .def("set_latency", py::overload_cast<double>(&simgrid::s4u::Link::set_latency), "Set the latency")
-      .def("set_sharing_policy", &simgrid::s4u::Link::set_sharing_policy, "Set sharing policy for this link")
-      .def("set_concurrency_limit", &simgrid::s4u::Link::set_concurrency_limit, "Set concurrency limit for this link")
-      .def("set_host_wifi_rate", &simgrid::s4u::Link::set_host_wifi_rate,
+  link.def("set_latency", py::overload_cast<const std::string&>(&simgrid::s4u::Link::set_latency),
+           py::call_guard<py::gil_scoped_release>(), "Set the latency")
+      .def("set_latency", py::overload_cast<double>(&simgrid::s4u::Link::set_latency),
+           py::call_guard<py::gil_scoped_release>(), "Set the latency")
+      .def("set_sharing_policy", &simgrid::s4u::Link::set_sharing_policy, py::call_guard<py::gil_scoped_release>(),
+           "Set sharing policy for this link")
+      .def("set_concurrency_limit", &simgrid::s4u::Link::set_concurrency_limit,
+           py::call_guard<py::gil_scoped_release>(), "Set concurrency limit for this link")
+      .def("set_host_wifi_rate", &simgrid::s4u::Link::set_host_wifi_rate, py::call_guard<py::gil_scoped_release>(),
            "Set level of communication speed of given host on this Wi-Fi link")
-      .def("seal", &simgrid::s4u::Link::seal, "Seal this link")
+      .def("seal", &simgrid::s4u::Link::seal, py::call_guard<py::gil_scoped_release>(), "Seal this link")
       .def_property_readonly(
           "name",
           [](const simgrid::s4u::Link* self) {
