@@ -68,11 +68,6 @@ void DiskImpl::destroy()
   delete this;
 }
 
-bool DiskImpl::is_used() const
-{
-  return get_model()->get_maxmin_system()->constraint_used(get_constraint());
-}
-
 void DiskImpl::turn_on()
 {
   if (not is_on()) {

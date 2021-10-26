@@ -52,13 +52,12 @@ public:
   /** @brief Apply an event of external load event to that resource */
   virtual void apply_event(profile::Event* event, double value) = 0;
 
-  /** @brief Check if the current Resource is used (if it currently serves an action) */
-  virtual bool is_used() const = 0;
-
   /** @brief Check if the current Resource is active */
   virtual bool is_on() const { return is_on_; }
   virtual bool is_sealed() const { return sealed_; }
 
+  /** @brief Check if the current Resource is used (if it currently serves an action) */
+  virtual bool is_used() const = 0;
   /** @brief Turn on the current Resource */
   virtual void turn_on() { is_on_ = true; }
   /** @brief Turn off the current Resource */
@@ -102,6 +101,8 @@ public:
    *
    * The load due to external usages modeled by profile files is ignored.*/
   virtual double get_load() const { return constraint_->get_usage(); }
+
+  bool is_used() const override { return model_->get_maxmin_system()->constraint_used(constraint_); }
 };
 
 } // namespace resource

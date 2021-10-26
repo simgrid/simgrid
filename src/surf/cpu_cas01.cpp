@@ -79,11 +79,6 @@ CpuImpl* CpuCas01Model::create_cpu(s4u::Host* host, const std::vector<double>& s
 /************
  * Resource *
  ************/
-bool CpuCas01::is_used() const
-{
-  return get_model()->get_maxmin_system()->constraint_used(get_constraint());
-}
-
 /** @brief take into account changes of speed (either load or max) */
 void CpuCas01::on_speed_change()
 {

@@ -39,11 +39,6 @@ void LinkImpl::destroy()
   delete this;
 }
 
-bool LinkImpl::is_used() const
-{
-  return get_model()->get_maxmin_system()->constraint_used(get_constraint());
-}
-
 constexpr kernel::lmm::Constraint::SharingPolicy to_maxmin_policy(s4u::Link::SharingPolicy policy)
 {
   switch (policy) {

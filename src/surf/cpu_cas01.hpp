@@ -51,8 +51,6 @@ public:
   CpuAction* sleep(double duration) override;
   void set_factor_cb(const std::function<s4u::Host::CpuFactorCb>& cb) override;
 
-  bool is_used() const override;
-
 protected:
   void on_speed_change() override;
 };

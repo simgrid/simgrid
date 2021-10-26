@@ -101,8 +101,6 @@ public:
   void set_factor_cb(const std::function<s4u::Disk::IoFactorCb>& cb);
   const std::function<s4u::Disk::IoFactorCb>& get_factor_cb() const { return factor_cb_; }
 
-  /** @brief Check if the Disk is used (if an action currently uses its resources) */
-  bool is_used() const override;
   void turn_on() override;
   void turn_off() override;
 

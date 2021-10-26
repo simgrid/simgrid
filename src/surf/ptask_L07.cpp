@@ -280,11 +280,6 @@ kernel::resource::CpuAction* CpuL07::sleep(double duration)
   return action;
 }
 
-bool CpuL07::is_used() const
-{
-  return get_model()->get_maxmin_system()->constraint_used(get_constraint());
-}
-
 /** @brief take into account changes of speed (either load or max) */
 void CpuL07::on_speed_change()
 {
@@ -304,11 +299,6 @@ LinkL07::LinkL07(const std::string& name, double bandwidth, kernel::lmm::System*
 {
   this->set_constraint(system->constraint_new(this, bandwidth));
   bandwidth_.peak = bandwidth;
-}
-
-bool LinkL07::is_used() const
-{
-  return get_model()->get_maxmin_system()->constraint_used(get_constraint());
 }
 
 void CpuL07::apply_event(kernel::profile::Event* triggered, double value)
