@@ -7,6 +7,7 @@
 #define SIMGRID_KERNEL_RESOURCE_RESOURCE_HPP
 
 #include "src/kernel/lmm/maxmin.hpp" // Constraint
+#include "src/kernel/resource/profile/Event.hpp"
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include <simgrid/forward.h>
@@ -28,6 +29,7 @@ class XBT_PUBLIC Resource {
   std::string name_ = "unnamed";
   bool is_on_       = true;
   bool sealed_      = false;
+  profile::Event* state_event_ = nullptr;
 
 protected:
   struct Metric {
@@ -35,7 +37,10 @@ protected:
     double scale;          /**< Current availability of the metric according to the profiles, in [0,1] */
     profile::Event* event; /**< The associated profile event associated to the metric */
   };
-  profile::Event* state_event_ = nullptr;
+
+  virtual profile::Event* get_state_event() const { return state_event_; }
+  virtual void set_state_event(profile::Event* evt) { state_event_ = evt; }
+  virtual void unref_state_event() { tmgr_trace_event_unref(&state_event_); }
 
 public:
   explicit Resource(const std::string& name) : name_(name){};
@@ -74,8 +79,8 @@ public:
   AnyResource* set_state_profile(profile::Profile* profile)
   {
     if (profile) {
-      xbt_assert(state_event_ == nullptr, "Cannot set a second state profile to %s", get_cname());
-      state_event_ = profile->schedule(&profile::future_evt_set, this);
+      xbt_assert(get_state_event() == nullptr, "Cannot set a second state profile to %s", get_cname());
+      set_state_event(profile->schedule(&profile::future_evt_set, this));
     }
 
     return static_cast<AnyResource*>(this);

@@ -309,7 +309,7 @@ void CpuL07::apply_event(kernel::profile::Event* triggered, double value)
     on_speed_change();
     tmgr_trace_event_unref(&speed_.event);
 
-  } else if (triggered == state_event_) {
+  } else if (triggered == get_state_event()) {
     if (value > 0) {
       if (not is_on()) {
         XBT_VERB("Restart actors on host %s", get_iface()->get_cname());
@@ -317,8 +317,8 @@ void CpuL07::apply_event(kernel::profile::Event* triggered, double value)
       }
     } else
       get_iface()->turn_off();
-    tmgr_trace_event_unref(&state_event_);
 
+    unref_state_event();
   } else {
     xbt_die("Unknown event!\n");
   }
@@ -335,13 +335,12 @@ void LinkL07::apply_event(kernel::profile::Event* triggered, double value)
     set_latency(value);
     tmgr_trace_event_unref(&latency_.event);
 
-  } else if (triggered == state_event_) {
+  } else if (triggered == get_state_event()) {
     if (value > 0)
       turn_on();
     else
       turn_off();
-    tmgr_trace_event_unref(&state_event_);
-
+    unref_state_event();
   } else {
     xbt_die("Unknown event ! \n");
   }

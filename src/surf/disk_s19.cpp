@@ -112,12 +112,12 @@ void DiskS19::apply_event(kernel::profile::Event* triggered, double value)
     set_write_bandwidth(value);
     tmgr_trace_event_unref(&write_bw_.event);
 
-  } else if (triggered == state_event_) {
+  } else if (triggered == get_state_event()) {
     if (value > 0)
       turn_on();
     else
       turn_off();
-    tmgr_trace_event_unref(&state_event_);
+    unref_state_event();
   } else {
     xbt_die("Unknown event!\n");
   }

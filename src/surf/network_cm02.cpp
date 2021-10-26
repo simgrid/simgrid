@@ -463,12 +463,12 @@ void NetworkCm02Link::apply_event(kernel::profile::Event* triggered, double valu
     set_latency(value);
     tmgr_trace_event_unref(&latency_.event);
 
-  } else if (triggered == state_event_) {
+  } else if (triggered == get_state_event()) {
     if (value > 0)
       turn_on();
     else
       turn_off();
-    tmgr_trace_event_unref(&state_event_);
+    unref_state_event();
   } else {
     xbt_die("Unknown event!\n");
   }

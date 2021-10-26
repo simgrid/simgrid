@@ -360,7 +360,7 @@ void CpuTi::apply_event(kernel::profile::Event* event, double value)
     speed_.scale = value;
     tmgr_trace_event_unref(&speed_.event);
 
-  } else if (event == state_event_) {
+  } else if (event == get_state_event()) {
     if (value > 0) {
       if (not is_on()) {
         XBT_VERB("Restart actors on host %s", get_iface()->get_cname());
@@ -380,7 +380,7 @@ void CpuTi::apply_event(kernel::profile::Event* event, double value)
         }
       }
     }
-    tmgr_trace_event_unref(&state_event_);
+    unref_state_event();
 
   } else {
     xbt_die("Unknown event!\n");
