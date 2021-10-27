@@ -1853,8 +1853,8 @@ Creating VMs
 
    .. group-tab:: C++
 
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::VirtualMachine(const std::string &name, Host *physical_host, int core_amount)
-      .. doxygenfunction:: simgrid::s4u::VirtualMachine::VirtualMachine(const std::string &name, Host *physical_host, int core_amount, size_t ramsize)
+      .. doxygenfunction:: simgrid::s4u::Host::create_vm(const std::string &name, int core_amount)
+      .. doxygenfunction:: simgrid::s4u::Host::create_vm(const std::string &name, int core_amount, size_t ramsize)
       .. doxygenfunction:: simgrid::s4u::VirtualMachine::destroy
 
    .. group-tab:: C
@@ -1916,6 +1916,8 @@ Signals
 
    .. group-tab:: C++
 
+      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_creation
+      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_destruction
       .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_migration_end
       .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_migration_start
       .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_resume
