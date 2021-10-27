@@ -2,7 +2,7 @@
 
 ! expect return 2
 ! timeout 30
-! output ignore
+! output display
 $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-bugged1-liveness ${platfdir:=.}/small_platform.xml 1 --log=xbt_cfg.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --cfg=contexts/factory:ucontext --cfg=model-check/visited:100 --cfg=contexts/stack-size:256  --cfg=model-check/property:promela_bugged1_liveness
 > [  0.000000] (0:maestro@) Check the liveness property promela_bugged1_liveness
 > [  0.000000] (2:client@Boivin) Ask the request
