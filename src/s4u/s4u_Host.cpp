@@ -375,6 +375,16 @@ void Host::remove_disk(const std::string& disk_name)
   kernel::actor::simcall([this, disk_name] { this->pimpl_->remove_disk(disk_name); });
 }
 
+VirtualMachine* Host::create_vm(const std::string& name, int core_amount)
+{
+  return new VirtualMachine(name, this, core_amount);
+}
+
+VirtualMachine* Host::create_vm(const std::string& name, int core_amount, size_t ramsize)
+{
+  return new VirtualMachine(name, this, core_amount, ramsize);
+}
+
 ExecPtr Host::exec_init(double flops) const
 {
   return this_actor::exec_init(flops);

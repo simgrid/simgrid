@@ -213,6 +213,9 @@ public:
   void add_disk(const Disk* disk);
   void remove_disk(const std::string& disk_name);
 
+  VirtualMachine* create_vm(const std::string& name, int core_amount);
+  VirtualMachine* create_vm(const std::string& name, int core_amount, size_t ramsize);
+
   void route_to(const Host* dest, std::vector<Link*>& links, double* latency) const;
   void route_to(const Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency) const;
 

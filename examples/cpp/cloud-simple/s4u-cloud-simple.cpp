@@ -93,7 +93,7 @@ static void master_main()
       "## Test 2 (started): check impact of running an activity inside a VM (there is no degradation for the moment)");
 
   XBT_INFO("### Put a VM on a PM, and put an activity to the VM");
-  auto* vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
+  auto* vm0 = pm0->create_vm("VM0", 1);
   vm0->start();
   launch_computation_worker(vm0);
   simgrid::s4u::this_actor::sleep_for(2);
@@ -105,7 +105,7 @@ static void master_main()
            "the moment)");
 
   XBT_INFO("### Put a VM on a PM, and put an activity to the PM");
-  vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
+  vm0 = pm0->create_vm("VM0", 1);
   vm0->start();
   launch_computation_worker(pm0);
   simgrid::s4u::this_actor::sleep_for(2);
@@ -117,9 +117,9 @@ static void master_main()
       " the moment, there is no degradation for the VMs. Hence, the time should be equals to the time of test 1");
 
   XBT_INFO("### Put two VMs on a PM, and put an activity to each VM");
-  vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
+  vm0 = pm0->create_vm("VM0", 1);
   vm0->start();
-  auto* vm1 = new simgrid::s4u::VirtualMachine("VM1", pm0, 1);
+  auto* vm1 = pm0->create_vm("VM1", 1);
   launch_computation_worker(vm0);
   launch_computation_worker(vm1);
   simgrid::s4u::this_actor::sleep_for(2);
@@ -127,8 +127,8 @@ static void master_main()
   vm1->destroy();
 
   XBT_INFO("### Put a VM on each PM, and put an activity to each VM");
-  vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
-  vm1 = new simgrid::s4u::VirtualMachine("VM1", pm1, 1);
+  vm0 = pm0->create_vm("VM0", 1);
+  vm1 = pm1->create_vm("VM1", 1);
   vm0->start();
   vm1->start();
   launch_computation_worker(vm0);
@@ -149,20 +149,20 @@ static void master_main()
   simgrid::s4u::this_actor::sleep_for(5);
 
   XBT_INFO("### Make a connection between PM0 and VM0@PM0");
-  vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
+  vm0 = pm0->create_vm("VM0", 1);
   vm0->start();
   launch_communication_worker(pm0, vm0);
   simgrid::s4u::this_actor::sleep_for(5);
   vm0->destroy();
 
   XBT_INFO("### Make a connection between PM0 and VM0@PM1");
-  vm0 = new simgrid::s4u::VirtualMachine("VM0", pm1, 1);
+  vm0 = pm1->create_vm("VM0", 1);
   launch_communication_worker(pm0, vm0);
   simgrid::s4u::this_actor::sleep_for(5);
   vm0->destroy();
 
   XBT_INFO("### Make two connections between PM0 and VM0@PM1");
-  vm0 = new simgrid::s4u::VirtualMachine("VM0", pm1, 1);
+  vm0 = pm1->create_vm("VM0", 1);
   vm0->start();
   launch_communication_worker(pm0, vm0);
   launch_communication_worker(pm0, vm0);
@@ -170,7 +170,7 @@ static void master_main()
   vm0->destroy();
 
   XBT_INFO("### Make a connection between PM0 and VM0@PM1, and also make a connection between PM0 and PM1");
-  vm0 = new simgrid::s4u::VirtualMachine("VM0", pm1, 1);
+  vm0 = pm1->create_vm("VM0", 1);
   vm0->start();
   launch_communication_worker(pm0, vm0);
   launch_communication_worker(pm0, pm1);
@@ -178,8 +178,8 @@ static void master_main()
   vm0->destroy();
 
   XBT_INFO("### Make a connection between VM0@PM0 and PM1@PM1, and also make a connection between VM0@PM0 and VM1@PM1");
-  vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
-  vm1 = new simgrid::s4u::VirtualMachine("VM1", pm1, 1);
+  vm0 = pm0->create_vm("VM0", 1);
+  vm1 = pm1->create_vm("VM1", 1);
   vm0->start();
   vm1->start();
   launch_communication_worker(vm0, vm1);
@@ -192,7 +192,7 @@ static void master_main()
   XBT_INFO("## Test 6 (started): Check migration impact (not yet implemented neither on the CPU resource nor on the"
            " network one");
   XBT_INFO("### Relocate VM0 between PM0 and PM1");
-  vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
+  vm0 = pm0->create_vm("VM0", 1);
   vm0->set_ramsize(1L * 1024 * 1024 * 1024); // 1GiB
 
   vm0->start();

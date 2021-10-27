@@ -34,7 +34,7 @@ static void computation_fun()
 static void master_main()
 {
   auto* pm0 = simgrid::s4u::Host::by_name("Fafard");
-  auto* vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
+  auto* vm0 = pm0->create_vm("VM0", 1);
   vm0->start();
 
   simgrid::s4u::Actor::create("compute", vm0, computation_fun);

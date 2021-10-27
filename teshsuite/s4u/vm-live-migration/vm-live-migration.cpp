@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
   auto* pm = e.host_by_name("host1");
-  auto* vm = new simgrid::s4u::VirtualMachine("VM0", pm, 1 /*nCores*/);
+  auto* vm = pm->create_vm("VM0", 1 /*nCores*/);
   vm->set_ramsize(1250000000)->start();
   simgrid::s4u::Actor::create("executor", vm, task_executor);
 

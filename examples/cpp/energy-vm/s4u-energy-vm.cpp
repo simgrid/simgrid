@@ -23,9 +23,9 @@ static void dvfs()
 
   /* Host 1 */
   XBT_INFO("Creating and starting two VMs");
-  auto* vm_host1 = new simgrid::s4u::VirtualMachine("vm_host1", host1, 1);
+  auto* vm_host1 = host1->create_vm("vm_host1", 1);
   vm_host1->start();
-  auto* vm_host2 = new simgrid::s4u::VirtualMachine("vm_host2", host2, 1);
+  auto* vm_host2 = host2->create_vm("vm_host2", 1);
   vm_host2->start();
 
   XBT_INFO("Create two activities on Host1: both inside a VM");

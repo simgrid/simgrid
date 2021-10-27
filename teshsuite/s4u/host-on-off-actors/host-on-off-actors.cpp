@@ -124,7 +124,7 @@ static void test_launcher(int test_number)
       XBT_INFO("Test 6: Turn on Jupiter, assign a VM on Jupiter, launch an actor inside the VM, and turn off the node");
 
       // Create VM0
-      vm0 = new simgrid::s4u::VirtualMachine("vm0", jupiter, 1);
+      vm0 = jupiter->create_vm("vm0", 1);
       vm0->start();
 
       daemon = simgrid::s4u::Actor::create("actor_daemon", vm0, actor_daemon);

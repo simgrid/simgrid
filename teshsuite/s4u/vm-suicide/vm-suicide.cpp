@@ -66,7 +66,7 @@ static void life_cycle_manager()
 static void master(const std::vector<simgrid::s4u::Host*>& hosts)
 {
   for (int i = 1; i <= 2; i++) {
-    auto* vm = new simgrid::s4u::VirtualMachine("test_vm", hosts.at(i), 4);
+    auto* vm = hosts.at(i)->create_vm("test_vm", 4);
     vm->start();
     simgrid::s4u::Actor::create("life_cycle_manager-" + std::to_string(i), vm, life_cycle_manager);
 

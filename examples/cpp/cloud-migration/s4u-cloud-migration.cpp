@@ -30,7 +30,7 @@ static void master_main()
   simgrid::s4u::Host* pm1 = simgrid::s4u::Host::by_name("Tremblay");
   simgrid::s4u::Host* pm2 = simgrid::s4u::Host::by_name("Bourassa");
 
-  auto* vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
+  auto* vm0 = pm0->create_vm("VM0", 1);
   vm0->set_ramsize(1e9); // 1Gbytes
   vm0->start();
 
@@ -39,7 +39,7 @@ static void master_main()
 
   vm0->destroy();
 
-  vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
+  vm0 = pm0->create_vm("VM0", 1);
   vm0->set_ramsize(1e8); // 100Mbytes
   vm0->start();
 
@@ -48,8 +48,8 @@ static void master_main()
 
   vm0->destroy();
 
-  vm0       = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
-  auto* vm1 = new simgrid::s4u::VirtualMachine("VM1", pm0, 1);
+  vm0       = pm0->create_vm("VM0", 1);
+  auto* vm1 = pm0->create_vm("VM1", 1);
 
   vm0->set_ramsize(1e9); // 1Gbytes
   vm1->set_ramsize(1e9); // 1Gbytes
@@ -64,8 +64,8 @@ static void master_main()
   vm0->destroy();
   vm1->destroy();
 
-  vm0 = new simgrid::s4u::VirtualMachine("VM0", pm0, 1);
-  vm1 = new simgrid::s4u::VirtualMachine("VM1", pm0, 1);
+  vm0 = pm0->create_vm("VM0", 1);
+  vm1 = pm0->create_vm("VM1", 1);
 
   vm0->set_ramsize(1e9); // 1Gbytes
   vm1->set_ramsize(1e9); // 1Gbytes
