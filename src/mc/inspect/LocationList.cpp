@@ -8,12 +8,15 @@
 #include "src/mc/inspect/mc_dwarf.hpp"
 
 #include "xbt/asserts.h"
+#include "xbt/log.h"
 #include "xbt/sysdep.h"
 
 #include <cstddef>
 #include <cstdint>
 #include <libunwind.h>
 #include <utility>
+
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(mc_dwarf);
 
 namespace simgrid {
 namespace dwarf {
@@ -73,9 +76,10 @@ LocationList location_list(const simgrid::mc::ObjectInformation& info, Dwarf_Att
 
     offset = dwarf_getlocations(&attr, offset, &base, &start, &end, &ops, &len);
 
-    if (offset == 0)
+    if (offset == -1)
+      XBT_WARN("Error while loading location list: %s", dwarf_errmsg(-1));
+    if (offset <= 0)
       break;
-    xbt_assert(offset != -1, "Error while loading location list: %s", dwarf_errmsg(-1));
 
     auto base_address = reinterpret_cast<std::uint64_t>(info.base_address());
 
