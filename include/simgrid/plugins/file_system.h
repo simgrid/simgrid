@@ -27,7 +27,7 @@ XBT_PUBLIC void sg_storage_file_system_init();
 XBT_PUBLIC sg_file_t sg_file_open(const char* fullpath, void* data);
 XBT_PUBLIC sg_size_t sg_file_read(sg_file_t fd, sg_size_t size);
 XBT_PUBLIC sg_size_t sg_file_write(sg_file_t fd, sg_size_t size);
-XBT_PUBLIC void sg_file_close(const_sg_file_t fd);
+XBT_PUBLIC void sg_file_close(sg_file_t fd);
 
 XBT_PUBLIC const char* sg_file_get_name(const_sg_file_t fd);
 XBT_PUBLIC sg_size_t sg_file_get_size(const_sg_file_t fd);
@@ -107,6 +107,9 @@ public:
   File(const File&) = delete;
   File& operator=(const File&) = delete;
   ~File();
+
+  static File* open(const std::string& fullpath, void* userdata);
+  void close() { delete this; };
 
   /** Retrieves the path to the file */
   const char* get_path() const { return fullpath_.c_str(); }

@@ -32,7 +32,7 @@ public:
 
     // Open a non-existing file to create it
     std::string filename     = "/scratch/tmp/data.txt";
-    auto* file               = new simgrid::s4u::File(filename, nullptr);
+    auto* file               = simgrid::s4u::File::open(filename, nullptr);
 
     sg_size_t write = file->write(200000); // Write 200,000 bytes
     XBT_INFO("Create a %llu bytes file named '%s' on /scratch", write, filename.c_str());
@@ -62,15 +62,15 @@ public:
     delete file_data;
 
     // Close the file
-    delete file;
+    file->close();
 
     show_info(disks);
 
     // Reopen the file and then unlink it
-    file = new simgrid::s4u::File("/scratch/tmp/simgrid.readme", nullptr);
+    file = simgrid::s4u::File::open("/scratch/tmp/simgrid.readme", nullptr);
     XBT_INFO("Unlink file: '%s'", file->get_path());
     file->unlink();
-    delete file; // Unlinking the file on "disk" does not free the object
+    file->close(); // Unlinking the file on "disk" does not close the file and free the object
 
     show_info(disks);
   }

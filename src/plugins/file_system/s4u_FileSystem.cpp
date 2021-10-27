@@ -111,6 +111,11 @@ File::~File()
   kernel::actor::simcall([this, desc_table] { desc_table->push_back(this->desc_id); });
 }
 
+File* File::open(const std::string& fullpath, void* userdata)
+{
+  return new File(fullpath, userdata);
+}
+
 void File::dump() const
 {
   XBT_INFO("File Descriptor information:\n"
@@ -471,7 +476,7 @@ void sg_storage_file_system_init()
 
 sg_file_t sg_file_open(const char* fullpath, void* data)
 {
-  return new simgrid::s4u::File(fullpath, data);
+  return simgrid::s4u::File::open(fullpath, data);
 }
 
 sg_size_t sg_file_read(sg_file_t fd, sg_size_t size)
@@ -484,9 +489,9 @@ sg_size_t sg_file_write(sg_file_t fd, sg_size_t size)
   return fd->write(size);
 }
 
-void sg_file_close(const_sg_file_t fd)
+void sg_file_close(sg_file_t fd)
 {
-  delete fd;
+  fd->close();
 }
 
 /** Retrieves the path to the file

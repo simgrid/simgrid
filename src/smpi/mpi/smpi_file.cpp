@@ -51,7 +51,7 @@ namespace smpi{
       }
     }
 
-    file_= new simgrid::s4u::File(fullname, nullptr);
+    file_ = simgrid::s4u::File::open(fullname, nullptr);
     list_=nullptr;
     if (comm_->rank() == 0) {
       int size= comm_->size() + FP_SIZE;
@@ -80,7 +80,7 @@ namespace smpi{
       delete[] list_;
     }
     delete win_;
-    delete file_;
+    file_->close();
     F2C::free_f(this->f2c_id());
     if (info_ != MPI_INFO_NULL)
       simgrid::smpi::Info::unref(info_);
