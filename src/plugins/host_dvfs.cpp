@@ -309,7 +309,7 @@ public:
     // FIXME I think that this fires at the same time for all hosts, so when the src sends something,
     // the dst will be notified even though it didn't even arrive at the recv yet
     kernel::activity::CommImpl::on_start.connect([this](const kernel::activity::CommImpl& comm) {
-      auto* act = static_cast<kernel::resource::NetworkAction*>(comm.surf_action_);
+      const auto* act = static_cast<kernel::resource::NetworkAction*>(comm.surf_action_);
       if ((get_host() == &act->get_src() || get_host() == &act->get_dst()) && iteration_running) {
         post_task();
       }

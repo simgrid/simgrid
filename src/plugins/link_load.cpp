@@ -164,7 +164,7 @@ using simgrid::plugin::LinkLoad;
 /* **************************** events  callback *************************** */
 static void on_communication(const simgrid::kernel::activity::CommImpl& comm)
 {
-  for (auto* link : comm.get_traversed_links()) {
+  for (const auto* link : comm.get_traversed_links()) {
     if (link != nullptr && link->get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI) {
       auto* link_load = link->extension<LinkLoad>();
       XBT_DEBUG("Update %s on Comm Start/End", link->get_cname());
