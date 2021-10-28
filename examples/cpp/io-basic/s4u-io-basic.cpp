@@ -30,7 +30,7 @@ static void privileged_writer()
   XBT_INFO("Done.");
 
   /* Note that the timings printed when running this example are a bit misleading, because the uneven sharing only last
-   * until the privileged actor ends. After this point, the unprivileged one gets 100% of the CPU and finishes quite
+   * until the privileged actor ends. After this point, the unprivileged one gets 100% of the disk and finishes quite
    * quickly. */
 }
 
