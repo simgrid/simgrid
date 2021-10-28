@@ -1,0 +1,5 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-io-basic ${platfdir}/hosts_with_disks.xml
+> [bob:privileged_writer:(2) 0.150000] [s4u_test/INFO] Done.
+> [bob:writer:(1) 0.200000] [s4u_test/INFO] Done.

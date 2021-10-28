@@ -78,6 +78,16 @@ IoPtr Io::set_disk(const_sg_disk_t disk)
  return this;
 }
 
+IoPtr Io::set_priority(double priority)
+{
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+             "Cannot change the priority of an io after its start");
+  kernel::actor::simcall([this, priority] {
+    boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_sharing_penalty(1. / priority);
+  });
+  return this;
+}
+
 IoPtr Io::set_size(sg_size_t size)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING, "Cannot set size once the Io is started");

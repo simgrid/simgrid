@@ -260,6 +260,8 @@ include examples/cpp/exec-waitfor/s4u-exec-waitfor.cpp
 include examples/cpp/exec-waitfor/s4u-exec-waitfor.tesh
 include examples/cpp/io-async/s4u-io-async.cpp
 include examples/cpp/io-async/s4u-io-async.tesh
+include examples/cpp/io-basic/s4u-io-basic.cpp
+include examples/cpp/io-basic/s4u-io-basic.tesh
 include examples/cpp/io-degradation/s4u-io-degradation.cpp
 include examples/cpp/io-degradation/s4u-io-degradation.tesh
 include examples/cpp/io-dependent/s4u-io-dependent.cpp

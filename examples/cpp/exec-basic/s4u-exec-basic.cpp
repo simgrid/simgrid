@@ -19,26 +19,23 @@ static void executor()
 
 static void privileged()
 {
-  /* This version of this_actor::execute() specifies that this execution
-   * gets a larger share of the resource.
+  /* This version of this_actor::execute() specifies that this execution gets a larger share of the resource.
    *
    * Since the priority is 2, it computes twice as fast as a regular one.
    *
-   * So instead of a half/half sharing between the two executions,
-   * we get a 1/3 vs 2/3 sharing. */
+   * So instead of a half/half sharing between the two executions, we get a 1/3 vs 2/3 sharing. */
   simgrid::s4u::this_actor::execute(98095, 2);
   XBT_INFO("Done.");
 
-  /* Note that the timings printed when executing this example are a bit misleading,
-   * because the uneven sharing only last until the privileged actor ends.
-   * After this point, the unprivileged one gets 100% of the CPU and finishes
-   * quite quickly. */
+  /* Note that the timings printed when running this example are a bit misleading, because the uneven sharing only  last
+   * until the privileged actor ends. After this point, the unprivileged one gets 100% of the CPU and finishes quite
+   * quickly. */
 }
 
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
-  xbt_assert(argc > 1, "Usage: %s platform_file\n\tExample: %s ../platforms/small_platform.xml\n", argv[0], argv[0]);
+  xbt_assert(argc > 1, "Usage: %s platform_file\n\tExample: %s platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
 

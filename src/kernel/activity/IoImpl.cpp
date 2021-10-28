@@ -28,6 +28,12 @@ IoImpl::IoImpl()
   piface_ = new s4u::Io(this);
 }
 
+IoImpl& IoImpl::set_sharing_penalty(double sharing_penalty)
+{
+  sharing_penalty_ = sharing_penalty;
+  return *this;
+}
+
 IoImpl& IoImpl::set_timeout(double timeout)
 {
   const s4u::Host* host = get_disk()->get_host();
@@ -59,6 +65,7 @@ IoImpl* IoImpl::start()
   state_ = State::RUNNING;
   surf_action_ =
       disk_->get_host()->get_netpoint()->get_englobing_zone()->get_disk_model()->io_start(disk_, size_, type_);
+  surf_action_->set_sharing_penalty(sharing_penalty_);
   surf_action_->set_activity(this);
 
   XBT_DEBUG("Create IO synchro %p %s", this, get_cname());
