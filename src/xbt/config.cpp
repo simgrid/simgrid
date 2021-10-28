@@ -289,7 +289,12 @@ inline ConfigurationElement* Config::get_dict_element(const std::string& name)
         XBT_INFO("Option %s has been renamed to %s. Consider switching.", name.c_str(), res->get_key().c_str());
       return res;
     } else {
-      std::string msg = "Bad config key: " + name + "\nExisting config keys:\n";
+      std::string msg   = "Bad config key: " + name + "\n";
+      std::string kebab = name;
+      std::replace(begin(kebab), end(kebab), '_', '-'); // convert from snake_case to kebab-case
+      if (options.count(kebab) > 0)
+        msg += "Did you mean '" + kebab + "'?\n";
+      msg += "Existing config keys:\n";
       for (auto const& elm : options)
         msg += "  " + elm.first + ": (" + elm.second->get_type_name() + ")" + elm.second->get_string_value() + "\n";
       throw std::out_of_range(msg);
