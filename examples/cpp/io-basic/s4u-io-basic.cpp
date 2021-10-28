@@ -11,7 +11,7 @@ static void writer()
 {
   /* - Retrieve all disks from current host */
   std::vector<simgrid::s4u::Disk*> const& disk_list = simgrid::s4u::Host::current()->get_disks();
-  /* - Write 400,000 bytes on Disk1 */
+  /* - Write 4,000,000 bytes on Disk1 */
   disk_list.front()->write(4000000);
   XBT_INFO("Done.");
 }
@@ -21,7 +21,7 @@ static void privileged_writer()
   /* - Retrieve all disks from current host */
   std::vector<simgrid::s4u::Disk*> const& disk_list = simgrid::s4u::Host::current()->get_disks();
 
-  /* - Write 400,000 bytes on Disk1 but specifies that this I/O operation gets a larger share of the resource.
+  /* - Write 4,000,000 bytes on Disk1 but specifies that this I/O operation gets a larger share of the resource.
    *
    * Since the priority is 2, it writes twice as fast as a regular one.
    *
