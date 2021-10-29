@@ -21,26 +21,32 @@ TEST_CASE("xbt::config: Configuration support", "config")
   auto temp      = simgrid_config;
   simgrid_config = nullptr;
   simgrid::config::declare_flag<int>("speed", "description", 0);
-  simgrid::config::declare_flag<std::string>("peername", "description", "");
+  simgrid::config::alias("speed", {"velocity"});
+  simgrid::config::declare_flag<std::string>("peer-name", "description", "");
   simgrid::config::declare_flag<std::string>("user", "description", "");
 
   SECTION("Alloc and free a config set")
   {
     INFO("Alloc and free a config set");
-    simgrid::config::set_parse("peername:veloce user:bidule");
+    simgrid::config::set_parse("peer-name:veloce user:bidule");
   }
 
   SECTION("Data retrieving tests")
   {
     INFO("Get a single value");
     /* get_single_value */
-    simgrid::config::set_parse("peername:toto:42 speed:42");
+    simgrid::config::set_parse("peer-name:toto:42 speed:42");
     int ival = simgrid::config::get_value<int>("speed");
     REQUIRE(ival == 42); // Unexpected value for speed
 
     INFO("Access to a non-existent entry");
-
     REQUIRE_THROWS_AS(simgrid::config::set_parse("color:blue"), std::out_of_range);
+    REQUIRE_THROWS_AS(simgrid::config::set_parse("peer_name:fellow"), std::out_of_range);
+
+    INFO("Set value by alias");
+    simgrid::config::set_parse("velocity:33");
+    ival = simgrid::config::get_value<int>("speed");
+    REQUIRE(ival == 33); // Unexpected value for speed
   }
 
   SECTION("C++ flags")

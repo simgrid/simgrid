@@ -262,8 +262,6 @@ public:
     return variable;
   }
 
-  // Debug:
-  void dump(const char* name, const char* indent) const;
   void show_aliases() const;
   void help() const;
 
@@ -313,24 +311,6 @@ void Config::alias(const std::string& realname, const std::string& aliasname)
   ConfigurationElement* element = this->get_dict_element(realname);
   xbt_assert(element, "Cannot define an alias to the non-existing option '%s'.", realname.c_str());
   this->aliases.insert({aliasname, element});
-}
-
-/** @brief Dump a config set for debugging purpose
- *
- * @param name The name to give to this config set
- * @param indent what to write at the beginning of each line (right number of spaces)
- */
-void Config::dump(const char* name, const char* indent) const
-{
-  if (name)
-    XBT_CVERB(xbt_help, "%s>> Dumping of the config set '%s':", indent, name);
-
-  for (auto const& elm : options)
-    XBT_CVERB(xbt_help, "%s  %s: ()%s) %s", indent, elm.first.c_str(), elm.second->get_type_name(),
-              elm.second->get_string_value().c_str());
-
-  if (name)
-    XBT_CVERB(xbt_help, "%s<< End of the config set '%s'", indent, name);
 }
 
 /** @brief Displays the declared aliases and their replacement */
