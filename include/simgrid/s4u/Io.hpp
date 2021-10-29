@@ -50,6 +50,8 @@ public:
   IoPtr set_size(sg_size_t size);
   IoPtr set_op_type(OpType type);
 
+  IoPtr update_priority(double priority);
+
   bool is_assigned() const override;
 };
 

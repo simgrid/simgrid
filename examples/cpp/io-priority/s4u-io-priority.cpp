@@ -13,7 +13,10 @@ static void writer()
   std::vector<simgrid::s4u::Disk*> const& disk_list = simgrid::s4u::Host::current()->get_disks();
   /* - Write 4,000,000 bytes on Disk1 */
   disk_list.front()->write(4000000);
-  XBT_INFO("Done.");
+  XBT_INFO("First write done.");
+  /* - Write 4,000,000 bytes on Disk1 again */
+  disk_list.front()->write(4000000);
+  XBT_INFO("Second write done.");
 }
 
 static void privileged_writer()
@@ -27,11 +30,33 @@ static void privileged_writer()
    *
    * So instead of a half/half sharing between the two, we get a 1/3 vs. 2/3 sharing. */
   disk_list.front()->io_init(4000000, simgrid::s4u::Io::OpType::WRITE)->set_priority(2)->wait();
-  XBT_INFO("Done.");
+  XBT_INFO("First write done.");
 
   /* Note that the timings printed when running this example are a bit misleading, because the uneven sharing only last
    * until the privileged actor ends. After this point, the unprivileged one gets 100% of the disk and finishes quite
    * quickly. */
+
+  /* Resynchronize actors before second write */
+  simgrid::s4u::this_actor::sleep_for(0.05);
+
+  /* - Write 4,000,000 bytes on Disk1 again and this time :
+   *    - Start the I/O operation asynchronously to get an IoPtr
+   *    - Let the actor sleep while half of the data is written
+   *    - Double its priority
+   *    - Wait for the end of the I/O operation
+   *
+   *   Writing the second half of the data with a higher priority, and thus 2/3 of the bandwidth takes 0.075s.
+   *   In the meantime, the regular writer has only 1/3 of the bandwidth and thus only writes 1MB. After the completion
+   *   of the I/O initiated by the privileged writer, the regular writer has the full bandwidth available and only needs
+   *   0.025s to write the last MB.
+   */
+
+  simgrid::s4u::IoPtr io = disk_list.front()->write_async(4000000);
+  simgrid::s4u::this_actor::sleep_for(0.1);
+  XBT_INFO("Increase priority for the priviledged writer (%.0f bytes remaining to write)", io->get_remaining());
+  io->update_priority(2);
+  io->wait();
+  XBT_INFO("Second write done.");
 }
 
 int main(int argc, char* argv[])

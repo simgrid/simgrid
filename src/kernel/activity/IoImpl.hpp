@@ -32,6 +32,8 @@ public:
   IoImpl& set_type(s4u::Io::OpType type);
   IoImpl& set_disk(resource::DiskImpl* disk);
 
+  IoImpl& update_sharing_penalty(double sharing_penalty);
+
   sg_size_t get_performed_ioops() const { return performed_ioops_; }
   resource::DiskImpl* get_disk() const { return disk_; }
 

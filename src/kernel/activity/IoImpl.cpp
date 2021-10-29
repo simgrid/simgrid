@@ -34,6 +34,13 @@ IoImpl& IoImpl::set_sharing_penalty(double sharing_penalty)
   return *this;
 }
 
+IoImpl& IoImpl::update_sharing_penalty(double sharing_penalty)
+{
+  sharing_penalty_ = sharing_penalty;
+  surf_action_->set_sharing_penalty(sharing_penalty);
+  return *this;
+}
+
 IoImpl& IoImpl::set_timeout(double timeout)
 {
   const s4u::Host* host = get_disk()->get_host();

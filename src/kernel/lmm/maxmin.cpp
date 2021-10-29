@@ -823,7 +823,7 @@ void System::update_variable_penalty(Variable* var, double penalty)
   bool enabling_var  = (penalty > 0 && var->sharing_penalty_ <= 0);
   bool disabling_var = (penalty <= 0 && var->sharing_penalty_ > 0);
 
-  XBT_IN("(sys=%p, var=%p, penalty=%f)", this, var, penalty);
+  XBT_IN("(sys=%p, var=%p, var->sharing_penalty = %f, penalty=%f)", this, var, var->sharing_penalty_, penalty);
 
   modified_ = true;
 
@@ -843,6 +843,8 @@ void System::update_variable_penalty(Variable* var, double penalty)
     disable_var(var);
   } else {
     var->sharing_penalty_ = penalty;
+    if (not var->cnsts_.empty())
+      update_modified_set(var->cnsts_[0].constraint);
   }
 
   check_concurrency();

@@ -1,0 +1,8 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-io-priority ${platfdir}/hosts_with_disks.xml
+> [bob:privileged_writer:(2) 0.150000] [s4u_test/INFO] First write done.
+> [bob:writer:(1) 0.200000] [s4u_test/INFO] First write done.
+> [bob:privileged_writer:(2) 0.300000] [s4u_test/INFO] Increase priority for the priviledged writer (2000000 bytes remaining to write)
+> [bob:privileged_writer:(2) 0.375000] [s4u_test/INFO] Second write done.
+> [bob:writer:(1) 0.400000] [s4u_test/INFO] Second write done.

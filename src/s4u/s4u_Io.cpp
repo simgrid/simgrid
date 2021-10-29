@@ -105,6 +105,14 @@ IoPtr Io::set_op_type(OpType type)
   return this;
 }
 
+IoPtr Io::update_priority(double priority)
+{
+  kernel::actor::simcall([this, priority] {
+    boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->update_sharing_penalty(1. / priority);
+  });
+  return this;
+}
+
 /** @brief Returns the amount of flops that remain to be done */
 double Io::get_remaining() const
 {

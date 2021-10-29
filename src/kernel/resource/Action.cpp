@@ -129,7 +129,6 @@ void Action::set_sharing_penalty(double sharing_penalty)
   XBT_IN("(%p,%g)", this, sharing_penalty);
   sharing_penalty_ = sharing_penalty;
   model_->get_maxmin_system()->update_variable_penalty(get_variable(), sharing_penalty);
-
   if (model_->is_update_lazy())
     model_->get_action_heap().remove(this);
   XBT_OUT();

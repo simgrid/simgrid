@@ -260,8 +260,6 @@ include examples/cpp/exec-waitfor/s4u-exec-waitfor.cpp
 include examples/cpp/exec-waitfor/s4u-exec-waitfor.tesh
 include examples/cpp/io-async/s4u-io-async.cpp
 include examples/cpp/io-async/s4u-io-async.tesh
-include examples/cpp/io-basic/s4u-io-basic.cpp
-include examples/cpp/io-basic/s4u-io-basic.tesh
 include examples/cpp/io-degradation/s4u-io-degradation.cpp
 include examples/cpp/io-degradation/s4u-io-degradation.tesh
 include examples/cpp/io-dependent/s4u-io-dependent.cpp
@@ -273,6 +271,8 @@ include examples/cpp/io-file-remote/s4u-io-file-remote.tesh
 include examples/cpp/io-file-remote/s4u-io-file-remote_d.xml
 include examples/cpp/io-file-system/s4u-io-file-system.cpp
 include examples/cpp/io-file-system/s4u-io-file-system.tesh
+include examples/cpp/io-priority/s4u-io-priority.cpp
+include examples/cpp/io-priority/s4u-io-priority.tesh
 include examples/cpp/maestro-set/s4u-maestro-set.cpp
 include examples/cpp/maestro-set/s4u-maestro-set.tesh
 include examples/cpp/mc-bugged1-liveness/promela_bugged1_liveness
