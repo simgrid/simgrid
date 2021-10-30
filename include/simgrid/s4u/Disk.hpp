@@ -84,9 +84,11 @@ public:
 
   IoPtr read_async(sg_size_t size) const;
   sg_size_t read(sg_size_t size) const;
+  sg_size_t read(sg_size_t size, double priority) const;
 
   IoPtr write_async(sg_size_t size) const;
   sg_size_t write(sg_size_t size) const;
+  sg_size_t write(sg_size_t size, double priority) const;
 
   /** @brief Policy for sharing the disk among activities */
   enum class SharingPolicy { NONLINEAR = 1, LINEAR = 0 };

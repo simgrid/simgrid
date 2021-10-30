@@ -29,7 +29,7 @@ static void privileged_writer()
    * Since the priority is 2, it writes twice as fast as a regular one.
    *
    * So instead of a half/half sharing between the two, we get a 1/3 vs. 2/3 sharing. */
-  disk_list.front()->io_init(4000000, simgrid::s4u::Io::OpType::WRITE)->set_priority(2)->wait();
+  disk_list.front()->write(4000000, 2);
   XBT_INFO("First write done.");
 
   /* Note that the timings printed when running this example are a bit misleading, because the uneven sharing only last

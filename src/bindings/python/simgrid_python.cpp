@@ -284,8 +284,10 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Disk */
   py::class_<simgrid::s4u::Disk, std::unique_ptr<simgrid::s4u::Disk, py::nodelete>> disk(m, "Disk", "Simulated disk");
-  disk.def("read", &simgrid::s4u::Disk::read, py::call_guard<py::gil_scoped_release>(), "Read data from disk")
-      .def("write", &simgrid::s4u::Disk::write, py::call_guard<py::gil_scoped_release>(), "Write data in disk")
+  disk.def("read", py::overload_cast<sg_size_t, double>(&simgrid::s4u::Disk::read, py::const_),
+           py::call_guard<py::gil_scoped_release>(), "Read data from disk", py::arg("size"), py::arg("priority") = 1)
+      .def("write", py::overload_cast<sg_size_t, double>(&simgrid::s4u::Disk::write, py::const_),
+           py::call_guard<py::gil_scoped_release>(), "Write data in disk", py::arg("size"), py::arg("priority") = 1)
       .def("read_async", &simgrid::s4u::Disk::read_async, py::call_guard<py::gil_scoped_release>(),
            "Non-blocking read data from disk")
       .def("write_async", &simgrid::s4u::Disk::write_async, py::call_guard<py::gil_scoped_release>(),

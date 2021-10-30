@@ -126,6 +126,15 @@ sg_size_t Disk::read(sg_size_t size) const
   return IoPtr(io_init(size, Io::OpType::READ))->vetoable_start()->wait()->get_performed_ioops();
 }
 
+sg_size_t Disk::read(sg_size_t size, double priority) const
+{
+  return IoPtr(io_init(size, Io::OpType::READ))
+      ->set_priority(priority)
+      ->vetoable_start()
+      ->wait()
+      ->get_performed_ioops();
+}
+
 IoPtr Disk::write_async(sg_size_t size) const
 {
   return IoPtr(io_init(size, Io::OpType::WRITE)->vetoable_start());
@@ -134,6 +143,15 @@ IoPtr Disk::write_async(sg_size_t size) const
 sg_size_t Disk::write(sg_size_t size) const
 {
   return IoPtr(io_init(size, Io::OpType::WRITE))->vetoable_start()->wait()->get_performed_ioops();
+}
+
+sg_size_t Disk::write(sg_size_t size, double priority) const
+{
+  return IoPtr(io_init(size, Io::OpType::WRITE))
+      ->set_priority(priority)
+      ->vetoable_start()
+      ->wait()
+      ->get_performed_ioops();
 }
 
 Disk* Disk::set_sharing_policy(Disk::Operation op, Disk::SharingPolicy policy, const NonLinearResourceCb& cb)
