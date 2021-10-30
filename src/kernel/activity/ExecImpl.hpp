@@ -36,6 +36,8 @@ public:
   ExecImpl& set_timeout(double timeout) override;
   ExecImpl& set_bound(double bound);
   ExecImpl& set_sharing_penalty(double sharing_penalty);
+  ExecImpl& update_sharing_penalty(double sharing_penalty);
+
   void set_cb_id(unsigned int cb_id) { cb_id_ = cb_id; }
 
   double get_start_time() const { return start_time_; }

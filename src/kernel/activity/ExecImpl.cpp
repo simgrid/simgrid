@@ -115,6 +115,13 @@ ExecImpl& ExecImpl::set_sharing_penalty(double sharing_penalty)
   return *this;
 }
 
+ExecImpl& ExecImpl::update_sharing_penalty(double sharing_penalty)
+{
+  sharing_penalty_ = sharing_penalty;
+  surf_action_->set_sharing_penalty(sharing_penalty);
+  return *this;
+}
+
 void ExecImpl::post()
 {
   xbt_assert(surf_action_ != nullptr);

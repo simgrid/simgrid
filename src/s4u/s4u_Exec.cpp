@@ -108,6 +108,14 @@ ExecPtr Exec::set_priority(double priority)
   return this;
 }
 
+ExecPtr Exec::update_priority(double priority)
+{
+  kernel::actor::simcall([this, priority] {
+    boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->update_sharing_penalty(1. / priority);
+  });
+  return this;
+}
+
 ExecPtr Exec::set_flops_amount(double flops_amount)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,

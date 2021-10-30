@@ -78,6 +78,7 @@ public:
 
   ExecPtr set_bound(double bound);
   ExecPtr set_priority(double priority);
+  ExecPtr update_priority(double priority);
 
   Host* get_host() const;
   unsigned int get_host_number() const;
