@@ -10,7 +10,7 @@
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
-#include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/surf/cpu_cas01.hpp"
 #include "src/surf/cpu_ti.hpp"
 
@@ -18,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_vm, ker_resource, "Virtual Machines, contain
 
 void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model)
 {
-  auto vm_model = std::make_shared<simgrid::vm::VMModel>("VM_HL13");
+  auto vm_model = std::make_shared<simgrid::kernel::resource::VMModel>("VM_HL13");
   auto* engine  = simgrid::kernel::EngineImpl::get_instance();
 
   engine->add_model(vm_model, {cpu_pm_model});
@@ -35,10 +35,10 @@ void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model)
 }
 
 namespace simgrid {
+template class xbt::Extendable<kernel::resource::VirtualMachineImpl>;
 
-template class xbt::Extendable<vm::VirtualMachineImpl>;
-
-namespace vm {
+namespace kernel {
+namespace resource {
 
 /*********
  * Model *
@@ -116,8 +116,8 @@ VMModel::VMModel(const std::string& name) : HostModel(name)
   s4u::Host::on_state_change.connect(host_state_change);
   s4u::Exec::on_start.connect(add_active_exec);
   s4u::Exec::on_completion.connect(remove_active_exec);
-  kernel::activity::ActivityImpl::on_resumed.connect(add_active_activity);
-  kernel::activity::ActivityImpl::on_suspended.connect(remove_active_activity);
+  activity::ActivityImpl::on_resumed.connect(add_active_activity);
+  activity::ActivityImpl::on_suspended.connect(remove_active_activity);
 }
 
 double VMModel::next_occurring_event(double now)
@@ -157,7 +157,7 @@ double VMModel::next_occurring_event(double now)
     double solved_value = ws_vm->get_vm_impl()->get_action()->get_rate();
     XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->get_cname(), ws_vm->get_pm()->get_cname());
 
-    kernel::lmm::System* vcpu_system = cpu->get_model()->get_maxmin_system();
+    lmm::System* vcpu_system = cpu->get_model()->get_maxmin_system();
     vcpu_system->update_constraint_bound(cpu->get_constraint(), virt_overhead * solved_value);
   }
   /* actual next occurring event is determined by VM CPU model at surf_solve */
@@ -288,7 +288,7 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
 
   /* Update vcpu's action for the new pm */
   /* create a cpu action bound to the pm model at the destination. */
-  kernel::resource::CpuAction* new_cpu_action = destination->get_cpu()->execution_start(0, this->core_amount_);
+  CpuAction* new_cpu_action = destination->get_cpu()->execution_start(0, this->core_amount_);
 
   if (action_->get_remains_no_update() > 0)
     XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->get_remains_no_update());
@@ -330,5 +330,6 @@ void VirtualMachineImpl::update_action_weight()
   action_->set_bound(std::min(impact * physical_host_->get_speed(), user_bound_));
 }
 
-} // namespace vm
+} // namespace resource
+} // namespace kernel
 } // namespace simgrid

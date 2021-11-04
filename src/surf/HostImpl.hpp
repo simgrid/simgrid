@@ -58,7 +58,7 @@ protected:
   HostImpl(const std::string& name, s4u::Host* piface);
 
 public:
-  friend simgrid::vm::VirtualMachineImpl;
+  friend kernel::resource::VirtualMachineImpl;
   explicit HostImpl(const std::string& name);
 
   void destroy(); // Must be called instead of the destructor

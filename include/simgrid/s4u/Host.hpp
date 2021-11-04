@@ -37,8 +37,8 @@ namespace s4u {
  */
 class XBT_PUBLIC Host : public xbt::Extendable<Host> {
 #ifndef DOXYGEN
-  friend vm::VMModel;            // Use the pimpl_cpu to compute the VM sharing
-  friend vm::VirtualMachineImpl; // creates the the pimpl_cpu
+  friend kernel::resource::VMModel;            // Use the pimpl_cpu to compute the VM sharing
+  friend kernel::resource::VirtualMachineImpl; // creates the the pimpl_cpu
   friend kernel::routing::NetZoneImpl;
   friend surf::HostImpl; // call destructor from private implementation
 

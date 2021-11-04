@@ -5,14 +5,14 @@
 
 #include <simgrid/Exception.hpp>
 
-#include "src/plugins/vm/VmLiveMigration.hpp"
 #include "src/instr/instr_private.hpp"
-#include "src/plugins/vm/VirtualMachineImpl.hpp"
-#include "src/plugins/vm/VmHostExt.hpp"
+#include "src/kernel/resource/VirtualMachineImpl.hpp"
+#include "src/plugins/vm/VmLiveMigration.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(vm_live_migration, s4u, "S4U virtual machines live migration");
 
 namespace simgrid {
+namespace plugin {
 namespace vm {
 xbt::Extension<s4u::Host, VmMigrationExt> VmMigrationExt::EXTENSION_ID;
 
@@ -271,14 +271,17 @@ void MigrationTx::operator()()
   XBT_DEBUG("mig: tx_done");
 }
 } // namespace vm
+} // namespace plugin
 } // namespace simgrid
+
+using simgrid::plugin::vm::VmMigrationExt;
 
 static void onVirtualMachineShutdown(simgrid::s4u::VirtualMachine const& vm)
 {
   if (vm.get_vm_impl()->is_migrating()) {
-    vm.extension<simgrid::vm::VmMigrationExt>()->rx_->kill();
-    vm.extension<simgrid::vm::VmMigrationExt>()->tx_->kill();
-    vm.extension<simgrid::vm::VmMigrationExt>()->issuer_->kill();
+    vm.extension<VmMigrationExt>()->rx_->kill();
+    vm.extension<VmMigrationExt>()->tx_->kill();
+    vm.extension<VmMigrationExt>()->issuer_->kill();
     vm.get_vm_impl()->end_migration();
   }
 }
@@ -286,14 +289,14 @@ static void onVirtualMachineShutdown(simgrid::s4u::VirtualMachine const& vm)
 void sg_vm_live_migration_plugin_init()
 {
   sg_vm_dirty_page_tracking_init();
-  simgrid::vm::VmMigrationExt::ensureVmMigrationExtInstalled();
+  VmMigrationExt::ensureVmMigrationExtInstalled();
   simgrid::s4u::VirtualMachine::on_shutdown.connect(&onVirtualMachineShutdown);
 }
 
 simgrid::s4u::VirtualMachine* sg_vm_create_migratable(simgrid::s4u::Host* pm, const char* name, int coreAmount,
                                                       int ramsize, int mig_netspeed, int dp_intensity)
 {
-  simgrid::vm::VmHostExt::ensureVmExtInstalled();
+  simgrid::s4u::VmHostExt::ensureVmExtInstalled();
 
   /* For the moment, intensity_rate is the percentage against the migration bandwidth */
 
@@ -342,11 +345,11 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
       std::string("__pr_mig_tx:") + vm->get_cname() + "(" + src_pm->get_cname() + "-" + dst_pm->get_cname() + ")";
 
   simgrid::s4u::ActorPtr rx =
-      simgrid::s4u::Actor::create(rx_name.c_str(), dst_pm, simgrid::vm::MigrationRx(vm, dst_pm));
+      simgrid::s4u::Actor::create(rx_name.c_str(), dst_pm, simgrid::plugin::vm::MigrationRx(vm, dst_pm));
   simgrid::s4u::ActorPtr tx =
-      simgrid::s4u::Actor::create(tx_name.c_str(), src_pm, simgrid::vm::MigrationTx(vm, dst_pm));
+      simgrid::s4u::Actor::create(tx_name.c_str(), src_pm, simgrid::plugin::vm::MigrationTx(vm, dst_pm));
 
-  vm->extension_set<simgrid::vm::VmMigrationExt>(new simgrid::vm::VmMigrationExt(simgrid::s4u::Actor::self(), rx, tx));
+  vm->extension_set<VmMigrationExt>(new VmMigrationExt(simgrid::s4u::Actor::self(), rx, tx));
 
   /* wait until the migration have finished or on error has occurred */
   XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");

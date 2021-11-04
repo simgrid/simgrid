@@ -13,6 +13,16 @@
 namespace simgrid {
 namespace s4u {
 
+/** @brief Host extension for the VMs */
+class VmHostExt {
+public:
+  static xbt::Extension<s4u::Host, VmHostExt> EXTENSION_ID;
+
+  sg_size_t ramsize = 0;    /* available ramsize (0= not taken into account) */
+  bool overcommit   = true; /* Whether the host allows overcommiting more VM than the avail ramsize allows */
+  static void ensureVmExtInstalled();
+};
+
 /** @ingroup s4u_api
  *
  * @tableofcontents
@@ -22,7 +32,7 @@ namespace s4u {
  *
  */
 class XBT_PUBLIC VirtualMachine : public s4u::Host {
-  vm::VirtualMachineImpl* const pimpl_vm_;
+  kernel::resource::VirtualMachineImpl* const pimpl_vm_;
 
 public:
   explicit VirtualMachine(const std::string& name, Host* physical_host, int core_amount);
@@ -45,7 +55,7 @@ public:
   using state XBT_ATTRIB_DEPRECATED_v332("Please use VirtualMachine::State") = State;
 #endif
 
-  vm::VirtualMachineImpl* get_vm_impl() const { return pimpl_vm_; }
+  kernel::resource::VirtualMachineImpl* get_vm_impl() const { return pimpl_vm_; }
   void start();
   void suspend();
   void resume();

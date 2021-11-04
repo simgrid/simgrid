@@ -13,7 +13,7 @@
 #include <simgrid/s4u/VirtualMachine.hpp>
 #include <xbt/parse_units.hpp>
 
-#include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/surf/HostImpl.hpp"
 
 #include <string>
@@ -108,7 +108,7 @@ void Host::turn_off()
   if (is_on()) {
     const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
     kernel::actor::simcall([this, self] {
-      for (VirtualMachine* const& vm : vm::VirtualMachineImpl::allVms_)
+      for (VirtualMachine* const& vm : kernel::resource::VirtualMachineImpl::allVms_)
         if (vm->get_pm() == this) {
           vm->shutdown();
           vm->turn_off();

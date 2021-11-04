@@ -176,6 +176,8 @@ class LinkImplIntf;
 class NetworkAction;
 class DiskImpl;
 class DiskModel;
+class VirtualMachineImpl;
+class VMModel;
 }
 namespace timer {
 class Timer;
@@ -197,10 +199,6 @@ namespace surf {
 namespace mc {
 class CommunicationDeterminismChecker;
 }
-namespace vm {
-class VMModel;
-class VirtualMachineImpl;
-} // namespace vm
 } // namespace simgrid
 
 using s4u_Actor             = simgrid::s4u::Actor;

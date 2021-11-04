@@ -19,8 +19,8 @@
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
+#include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "xbt/random.hpp"
 
 #include "popping_bodies.cpp"

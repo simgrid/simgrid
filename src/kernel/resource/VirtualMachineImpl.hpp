@@ -12,21 +12,18 @@
 
 namespace simgrid {
 
-extern template class XBT_PUBLIC xbt::Extendable<vm::VirtualMachineImpl>;
+extern template class XBT_PUBLIC xbt::Extendable<kernel::resource::VirtualMachineImpl>;
 
-namespace vm {
+namespace kernel {
+namespace resource {
 
 /************
  * Resource *
  ************/
 
-/** @ingroup SURF_vm_interface
- * @brief SURF VM interface class
- * @details A VM represent a virtual machine
- */
-class XBT_PUBLIC VirtualMachineImpl : public surf::HostImpl, public simgrid::xbt::Extendable<VirtualMachineImpl> {
+class XBT_PUBLIC VirtualMachineImpl : public surf::HostImpl, public xbt::Extendable<VirtualMachineImpl> {
 #ifndef DOXYGEN
-  friend simgrid::s4u::VirtualMachine;
+  friend s4u::VirtualMachine;
 #endif
 
 public:
@@ -35,7 +32,7 @@ public:
   explicit VirtualMachineImpl(const std::string& name, s4u::VirtualMachine* piface, s4u::Host* host, int core_amount,
                               size_t ramsize);
 
-  void suspend(kernel::actor::ActorImpl* issuer);
+  void suspend(actor::ActorImpl* issuer);
   void resume();
   void shutdown(kernel::actor::ActorImpl* issuer);
   void vm_destroy();
@@ -52,7 +49,7 @@ public:
   void set_state(s4u::VirtualMachine::State state) { vm_state_ = state; }
 
   unsigned int get_core_amount() const { return core_amount_; }
-  kernel::resource::Action* get_action() const { return action_; }
+  Action* get_action() const { return action_; }
 
   const s4u::VirtualMachine* get_iface() const override { return piface_; }
   s4u::VirtualMachine* get_iface() override { return piface_; }
@@ -70,8 +67,8 @@ public:
 
 private:
   s4u::VirtualMachine* piface_;
-  kernel::resource::Action* action_ = nullptr;
-  unsigned int active_execs_        = 0;
+  Action* action_            = nullptr;
+  unsigned int active_execs_ = 0;
   s4u::Host* physical_host_;
   unsigned int core_amount_;
   double user_bound_                   = std::numeric_limits<double>::max();
@@ -93,13 +90,14 @@ public:
 
   double next_occurring_event(double now) override;
   void update_actions_state(double /*now*/, double /*delta*/) override{};
-  kernel::resource::Action* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
-                                             const double* bytes_amount, double rate) override
+  Action* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
+                           const double* bytes_amount, double rate) override
   {
     return nullptr;
   };
 };
-} // namespace vm
+} // namespace resource
+} // namespace kernel
 } // namespace simgrid
 
 #endif /* VM_INTERFACE_HPP_ */

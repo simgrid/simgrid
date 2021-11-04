@@ -7,23 +7,30 @@
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <simgrid/vm.h>
 
-#include "src/plugins/vm/VirtualMachineImpl.hpp"
-#include "src/plugins/vm/VmHostExt.hpp"
+#include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/surf/cpu_cas01.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_vm, s4u, "S4U virtual machines");
 
 namespace simgrid {
 namespace s4u {
-simgrid::xbt::signal<void(VirtualMachine&)> VirtualMachine::on_creation;
-simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_start;
-simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_started;
-simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_shutdown;
-simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_suspend;
-simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_resume;
-simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_migration_start;
-simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_migration_end;
-simgrid::xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_destruction;
+xbt::signal<void(VirtualMachine&)> VirtualMachine::on_creation;
+xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_start;
+xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_started;
+xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_shutdown;
+xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_suspend;
+xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_resume;
+xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_migration_start;
+xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_migration_end;
+xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_destruction;
+
+xbt::Extension<Host, VmHostExt> VmHostExt::EXTENSION_ID;
+
+void VmHostExt::ensureVmExtInstalled()
+{
+  if (not EXTENSION_ID.valid())
+    EXTENSION_ID = Host::extension_create<VmHostExt>();
+}
 
 VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host, int core_amount)
     : VirtualMachine(name, physical_host, core_amount, 1024)
@@ -31,8 +38,8 @@ VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host
 }
 
 VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host, int core_amount, size_t ramsize)
-    : Host(new vm::VirtualMachineImpl(name, this, physical_host, core_amount, ramsize))
-    , pimpl_vm_(dynamic_cast<vm::VirtualMachineImpl*>(Host::get_impl()))
+    : Host(new kernel::resource::VirtualMachineImpl(name, this, physical_host, core_amount, ramsize))
+    , pimpl_vm_(dynamic_cast<kernel::resource::VirtualMachineImpl*>(Host::get_impl()))
 {
   XBT_DEBUG("Create VM %s", get_cname());
 
@@ -62,18 +69,18 @@ void VirtualMachine::start()
 {
   on_start(*this);
 
-  vm::VmHostExt::ensureVmExtInstalled();
+  VmHostExt::ensureVmExtInstalled();
 
   kernel::actor::simcall([this]() {
     Host* pm = this->pimpl_vm_->get_physical_host();
-    if (pm->extension<vm::VmHostExt>() == nullptr)
-      pm->extension_set(new vm::VmHostExt());
+    if (pm->extension<VmHostExt>() == nullptr)
+      pm->extension_set(new VmHostExt());
 
-    size_t pm_ramsize = pm->extension<vm::VmHostExt>()->ramsize;
-    if (pm_ramsize && not pm->extension<vm::VmHostExt>()->overcommit) { /* Need to verify that we don't overcommit */
+    size_t pm_ramsize = pm->extension<VmHostExt>()->ramsize;
+    if (pm_ramsize && not pm->extension<VmHostExt>()->overcommit) { /* Need to verify that we don't overcommit */
       /* Retrieve the memory occupied by the VMs on that host. Yep, we have to traverse all VMs of all hosts for that */
       size_t total_ramsize_of_vms = 0;
-      for (VirtualMachine* const& ws_vm : vm::VirtualMachineImpl::allVms_)
+      for (VirtualMachine* const& ws_vm : kernel::resource::VirtualMachineImpl::allVms_)
         if (pm == ws_vm->get_pm())
           total_ramsize_of_vms += ws_vm->get_ramsize();
 

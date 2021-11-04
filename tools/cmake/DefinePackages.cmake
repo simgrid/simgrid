@@ -314,6 +314,8 @@ set(SURF_SRC
   src/kernel/resource/DiskImpl.cpp
   src/kernel/resource/DiskImpl.hpp
   src/kernel/resource/Resource.hpp
+  src/kernel/resource/VirtualMachineImpl.hpp
+  src/kernel/resource/VirtualMachineImpl.cpp
 
   src/kernel/resource/profile/DatedValue.cpp
   src/kernel/resource/profile/DatedValue.hpp
@@ -370,7 +372,6 @@ set(SURF_SRC
 
 set(PLUGINS_SRC
   src/plugins/ProducerConsumer.cpp
-  src/plugins/dirty_page_tracking.cpp
   src/plugins/host_dvfs.cpp
   src/plugins/host_energy.cpp
   src/plugins/link_energy.cpp
@@ -378,12 +379,7 @@ set(PLUGINS_SRC
   src/plugins/host_load.cpp
   src/plugins/link_load.cpp
   src/plugins/file_system/s4u_FileSystem.cpp
-  src/plugins/vm/VirtualMachineImpl.hpp
-  src/plugins/vm/s4u_VirtualMachine.cpp
-  src/plugins/vm/VirtualMachineImpl.hpp
-  src/plugins/vm/VirtualMachineImpl.cpp
-  src/plugins/vm/VmHostExt.hpp
-  src/plugins/vm/VmHostExt.cpp
+  src/plugins/vm/dirty_page_tracking.cpp
   src/plugins/vm/VmLiveMigration.cpp
   src/plugins/vm/VmLiveMigration.hpp
   )
@@ -459,6 +455,7 @@ set(S4U_SRC
   src/s4u/s4u_Mutex.cpp
   src/s4u/s4u_Netzone.cpp
   src/s4u/s4u_Semaphore.cpp
+  src/s4u/s4u_VirtualMachine.cpp
 )
 
 set(SIMGRID_SRC

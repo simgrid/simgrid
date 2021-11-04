@@ -8,8 +8,8 @@
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
+#include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
-#include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "surf/surf.hpp"
 
 #include <algorithm>

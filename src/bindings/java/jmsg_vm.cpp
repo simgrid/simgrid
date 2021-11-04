@@ -11,7 +11,7 @@
 #include "simgrid/Exception.hpp"
 #include "simgrid/plugins/live_migration.h"
 #include "src/kernel/context/Context.hpp"
-#include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/kernel/resource/VirtualMachineImpl.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);
 
@@ -141,7 +141,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_destroy(JNIEnv* env, jobject jvm)
   sg_vm_t vm = jvm_get_native(env, jvm);
   if (vm) {
     sg_vm_destroy(vm);
-    auto* vmList = &simgrid::vm::VirtualMachineImpl::allVms_;
+    auto* vmList = &simgrid::kernel::resource::VirtualMachineImpl::allVms_;
     vmList->erase(std::remove(vmList->begin(), vmList->end(), vm), vmList->end());
   }
 }

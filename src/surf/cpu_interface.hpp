@@ -49,7 +49,7 @@ public:
  ************/
 
 class XBT_PUBLIC CpuImpl : public Resource_T<CpuImpl> {
-  friend vm::VirtualMachineImpl; // Resets the VCPU
+  friend VirtualMachineImpl; // Resets the VCPU
 
   s4u::Host* piface_;
   int core_count_ = 1;

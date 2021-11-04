@@ -11,13 +11,14 @@
 #define VM_LIVE_MIGRATION_HPP_
 
 namespace simgrid {
+namespace plugin {
 namespace vm {
 class VmMigrationExt {
 public:
   s4u::ActorPtr issuer_ = nullptr;
   s4u::ActorPtr tx_     = nullptr;
   s4u::ActorPtr rx_     = nullptr;
-  static simgrid::xbt::Extension<simgrid::s4u::Host, VmMigrationExt> EXTENSION_ID;
+  static xbt::Extension<s4u::Host, VmMigrationExt> EXTENSION_ID;
   explicit VmMigrationExt(s4u::ActorPtr issuer, s4u::ActorPtr rx, s4u::ActorPtr tx) : issuer_(issuer), tx_(tx), rx_(rx)
   {
   }
@@ -64,6 +65,7 @@ public:
   void operator()();
   sg_size_t sendMigrationData(sg_size_t size, int stage, int stage2_round, double mig_speed, double timeout);
 };
-}
-}
+} // namespace vm
+} // namespace plugin
+} // namespace simgrid
 #endif

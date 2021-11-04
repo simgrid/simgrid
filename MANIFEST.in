@@ -2268,6 +2268,8 @@ include src/kernel/resource/DiskImpl.hpp
 include src/kernel/resource/Model.cpp
 include src/kernel/resource/NetworkModelIntf_test.cpp
 include src/kernel/resource/Resource.hpp
+include src/kernel/resource/VirtualMachineImpl.cpp
+include src/kernel/resource/VirtualMachineImpl.hpp
 include src/kernel/resource/profile/DatedValue.cpp
 include src/kernel/resource/profile/DatedValue.hpp
 include src/kernel/resource/profile/Event.hpp
@@ -2392,7 +2394,6 @@ include src/msg/msg_private.hpp
 include src/msg/msg_process.cpp
 include src/msg/msg_task.cpp
 include src/plugins/ProducerConsumer.cpp
-include src/plugins/dirty_page_tracking.cpp
 include src/plugins/file_system/s4u_FileSystem.cpp
 include src/plugins/host_dvfs.cpp
 include src/plugins/host_energy.cpp
@@ -2400,13 +2401,9 @@ include src/plugins/host_load.cpp
 include src/plugins/link_energy.cpp
 include src/plugins/link_energy_wifi.cpp
 include src/plugins/link_load.cpp
-include src/plugins/vm/VirtualMachineImpl.cpp
-include src/plugins/vm/VirtualMachineImpl.hpp
-include src/plugins/vm/VmHostExt.cpp
-include src/plugins/vm/VmHostExt.hpp
 include src/plugins/vm/VmLiveMigration.cpp
 include src/plugins/vm/VmLiveMigration.hpp
-include src/plugins/vm/s4u_VirtualMachine.cpp
+include src/plugins/vm/dirty_page_tracking.cpp
 include src/s4u/s4u_Activity.cpp
 include src/s4u/s4u_Actor.cpp
 include src/s4u/s4u_Barrier.cpp
@@ -2422,6 +2419,7 @@ include src/s4u/s4u_Mailbox.cpp
 include src/s4u/s4u_Mutex.cpp
 include src/s4u/s4u_Netzone.cpp
 include src/s4u/s4u_Semaphore.cpp
+include src/s4u/s4u_VirtualMachine.cpp
 include src/simdag/dax.dtd
 include src/simdag/dax_dtd.c
 include src/simdag/dax_dtd.h
