@@ -13,13 +13,9 @@
 #include "mc/mc.h"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
-#include "src/kernel/activity/ExecImpl.hpp"
-#include "src/kernel/activity/IoImpl.hpp"
-#include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
-#include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "xbt/random.hpp"
 
