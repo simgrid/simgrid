@@ -16,7 +16,7 @@ A model in SimGrid is composed of three classes: Model, Resource and Action
 
 Actually there are five kind of models: CpuModel, NetworkModel, WorkstationModel,
 WorkstationVMModel and StorageModel. For each kind of model, there is an
-interface (e.g.: @ref SURF_cpu_interface "cpu_interface.hpp") and some implementations (e.g.: cpu_cas01.hpp,
+interface (e.g.: @ref SURF_cpu_interface "CpuImpl.hpp") and some implementations (e.g.: cpu_cas01.hpp,
 cpu_ti.hpp).
 
 The CPU model Cas01, for instance, is initialized by the function

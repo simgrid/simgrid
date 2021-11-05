@@ -10,7 +10,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/zone.h"
 #include "src/kernel/EngineImpl.hpp"
-#include "src/surf/cpu_interface.hpp"
+#include "src/kernel/resource/CpuImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "surf/surf.hpp"

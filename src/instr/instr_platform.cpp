@@ -14,7 +14,7 @@
 #include <xbt/graph.h>
 
 #include "src/instr/instr_private.hpp"
-#include "src/surf/cpu_interface.hpp"
+#include "src/kernel/resource/CpuImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 

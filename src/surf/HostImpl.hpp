@@ -7,8 +7,8 @@
 #define SURF_HOST_INTERFACE_HPP
 
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
-#include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include <xbt/PropertyHolder.hpp>
 

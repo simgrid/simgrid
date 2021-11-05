@@ -7,8 +7,8 @@
 
 #include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "src/kernel/resource/CpuImpl.hpp"
 #include "src/simix/popping_private.hpp"
-#include "src/surf/cpu_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 namespace simgrid {

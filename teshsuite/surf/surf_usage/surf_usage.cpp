@@ -9,7 +9,7 @@
 #include "simgrid/kernel/routing/NetZoneImpl.hpp" // full type for NetZoneImpl object
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/zone.h"
-#include "src/surf/cpu_interface.hpp"
+#include "src/kernel/resource/CpuImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "surf/surf.hpp"
 #include "xbt/config.hpp"

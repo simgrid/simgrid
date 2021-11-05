@@ -11,7 +11,7 @@
 #include <simgrid/s4u/VirtualMachine.hpp>
 #include <simgrid/simix.hpp>
 
-#include "src/surf/cpu_interface.hpp"
+#include "src/kernel/resource/CpuImpl.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>

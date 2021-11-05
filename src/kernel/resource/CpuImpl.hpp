@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_CPU_INTERFACE_HPP_
-#define SURF_CPU_INTERFACE_HPP_
+#ifndef CPU_IMPL_HPP_
+#define CPU_IMPL_HPP_
 
 #include "simgrid/kernel/resource/Model.hpp"
 #include "simgrid/s4u/Host.hpp"
@@ -13,13 +13,13 @@
 
 #include <list>
 
-/***********
- * Classes *
- ***********/
-
 namespace simgrid {
 namespace kernel {
 namespace resource {
+
+/***********
+ * Classes *
+ ***********/
 
 class CpuAction;
 
@@ -52,7 +52,7 @@ class XBT_PUBLIC CpuImpl : public Resource_T<CpuImpl> {
   friend VirtualMachineImpl; // Resets the VCPU
 
   s4u::Host* piface_;
-  int core_count_ = 1;
+  int core_count_       = 1;
   unsigned long pstate_ = 0;             /*< Current pstate (index in the speed_per_pstate_)*/
   std::vector<double> speed_per_pstate_; /*< List of supported CPU capacities (pstate related). Not 'const' because VCPU
                                             get modified on migration */
@@ -163,24 +163,24 @@ protected:
    **/
   virtual void reset_vcpu(CpuImpl* that);
 
-  Metric speed_                  = {1.0, 0, nullptr};
+  Metric speed_ = {1.0, 0, nullptr};
 };
 
 /**********
  * Action *
  **********/
 
- /** @ingroup SURF_cpu_interface
+/** @ingroup SURF_cpu_interface
  * @brief A CpuAction represents the execution of code on one or several Cpus
  */
 class XBT_PUBLIC CpuAction : public Action {
 public:
+  using Action::Action;
+
   /** @brief Signal emitted when the action state changes (ready/running/done, etc)
    *  Signature: `void(CpuAction const& action, simgrid::kernel::resource::Action::State previous)`
    */
   static xbt::signal<void(CpuAction const&, Action::State)> on_state_change;
-
-  using Action::Action;
 
   void set_state(Action::State state) override;
 
@@ -194,4 +194,4 @@ public:
 } // namespace kernel
 } // namespace simgrid
 
-#endif /* SURF_CPU_INTERFACE_HPP_ */
+#endif /* CPU_IMPL_HPP_ */

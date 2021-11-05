@@ -10,10 +10,10 @@
 
 #include "src/include/simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/SplitDuplexLinkImpl.hpp"
-#include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_route);

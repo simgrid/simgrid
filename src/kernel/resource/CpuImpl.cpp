@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/surf/cpu_interface.hpp"
+#include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/cpu_ti.hpp"
 #include "src/surf/surf_interface.hpp"
@@ -51,8 +51,8 @@ void CpuModel::update_actions_state_full(double /*now*/, double delta)
 CpuImpl::CpuImpl(s4u::Host* host, const std::vector<double>& speed_per_pstate)
     : Resource_T(host->get_cname()), piface_(host), speed_per_pstate_(speed_per_pstate)
 {
-  speed_.scale    = 1;
-  speed_.peak     = speed_per_pstate_.front();
+  speed_.scale = 1;
+  speed_.peak  = speed_per_pstate_.front();
   host->set_cpu(this);
 }
 

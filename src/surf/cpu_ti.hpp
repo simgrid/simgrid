@@ -6,7 +6,7 @@
 #ifndef SURF_MODEL_CPUTI_H_
 #define SURF_MODEL_CPUTI_H_
 
-#include "cpu_interface.hpp"
+#include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include <boost/intrusive/list.hpp>
 #include <memory>

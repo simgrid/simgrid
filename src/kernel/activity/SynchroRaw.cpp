@@ -9,8 +9,8 @@
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/context/Context.hpp"
+#include "src/kernel/resource/CpuImpl.hpp"
 #include "src/simix/popping_private.hpp"
-#include "src/surf/cpu_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix, "SIMIX Synchronization (mutex, semaphores and conditions)");
 

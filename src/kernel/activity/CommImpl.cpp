@@ -11,8 +11,8 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/context/Context.hpp"
+#include "src/kernel/resource/CpuImpl.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix, "SIMIX network-related synchronization");

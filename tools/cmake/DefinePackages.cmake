@@ -35,7 +35,6 @@ set(EXTRA_DIST
   src/smpi/smpi_main.c
   src/smpi/smpi_replay_main.cpp
   src/surf/cpu_cas01.hpp
-  src/surf/cpu_interface.hpp
   src/surf/cpu_ti.hpp
   src/surf/network_cm02.hpp
   src/surf/network_constant.hpp
@@ -310,9 +309,11 @@ set(SURF_SRC
   src/kernel/lmm/maxmin.cpp
 
   src/kernel/resource/Action.cpp
-  src/kernel/resource/Model.cpp
+  src/kernel/resource/CpuImpl.cpp
+  src/kernel/resource/CpuImpl.hpp
   src/kernel/resource/DiskImpl.cpp
   src/kernel/resource/DiskImpl.hpp
+  src/kernel/resource/Model.cpp
   src/kernel/resource/Resource.hpp
   src/kernel/resource/VirtualMachineImpl.hpp
   src/kernel/resource/VirtualMachineImpl.cpp
@@ -349,7 +350,6 @@ set(SURF_SRC
   src/kernel/EngineImpl.hpp
 
   src/surf/cpu_cas01.cpp
-  src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
   src/surf/disk_s19.cpp
   src/surf/network_cm02.cpp

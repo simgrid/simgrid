@@ -2263,6 +2263,8 @@ include src/kernel/lmm/maxmin.cpp
 include src/kernel/lmm/maxmin.hpp
 include src/kernel/lmm/maxmin_test.cpp
 include src/kernel/resource/Action.cpp
+include src/kernel/resource/CpuImpl.cpp
+include src/kernel/resource/CpuImpl.hpp
 include src/kernel/resource/DiskImpl.cpp
 include src/kernel/resource/DiskImpl.hpp
 include src/kernel/resource/Model.cpp
@@ -2638,8 +2640,6 @@ include src/surf/SplitDuplexLinkImpl.hpp
 include src/surf/SplitDuplexLinkImpl_test.cpp
 include src/surf/cpu_cas01.cpp
 include src/surf/cpu_cas01.hpp
-include src/surf/cpu_interface.cpp
-include src/surf/cpu_interface.hpp
 include src/surf/cpu_ti.cpp
 include src/surf/cpu_ti.hpp
 include src/surf/disk_s19.cpp

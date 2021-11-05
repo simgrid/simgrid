@@ -6,7 +6,7 @@
 #ifndef SIMGRID_SURF_CPUCAS01_HPP
 #define SIMGRID_SURF_CPUCAS01_HPP
 
-#include "cpu_interface.hpp"
+#include "src/kernel/resource/CpuImpl.hpp"
 #include "xbt/base.h"
 
 /***********
