@@ -22,7 +22,7 @@ SplitDuplexLinkImpl::SplitDuplexLinkImpl(const std::string& name, LinkImpl* link
 
 bool SplitDuplexLinkImpl::is_used() const
 {
-  xbt_die("Impossible to call is_used() in split-duplex links. Call it for each individual link.");
+  return link_up_->is_used() || link_down_->is_used();
 }
 
 void SplitDuplexLinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
