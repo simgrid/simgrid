@@ -9,13 +9,13 @@
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "xbt/base.h"
 
-/***********
- * Classes *
- ***********/
-
 namespace simgrid {
 namespace kernel {
 namespace resource {
+
+/***********
+ * Classes *
+ ***********/
 
 class XBT_PRIVATE CpuCas01Model;
 class XBT_PRIVATE CpuCas01;

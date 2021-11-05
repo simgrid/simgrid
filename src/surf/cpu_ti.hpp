@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_MODEL_CPUTI_H_
-#define SURF_MODEL_CPUTI_H_
+#ifndef SURF_MODEL_CPUTI_HPP_
+#define SURF_MODEL_CPUTI_HPP_
 
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
@@ -20,10 +20,11 @@ namespace resource {
  ***********/
 class XBT_PRIVATE CpuTiModel;
 class XBT_PRIVATE CpuTi;
+class XBT_PRIVATE CpuTiAction;
 
-/*********
- * Trace *
- *********/
+/***********
+ * Profile *
+ ***********/
 class CpuTiProfile {
   std::vector<double> time_points_;
   std::vector<double> integral_;
@@ -155,4 +156,4 @@ public:
 } // namespace kernel
 } // namespace simgrid
 
-#endif /* SURF_MODEL_CPUTI_H_ */
+#endif /* SURF_MODEL_CPUTI_HPP_ */
