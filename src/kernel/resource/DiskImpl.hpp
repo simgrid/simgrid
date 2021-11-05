@@ -13,8 +13,8 @@
 
 #include <map>
 
-#ifndef DISK_INTERFACE_HPP_
-#define DISK_INTERFACE_HPP_
+#ifndef DISK_IMPL_HPP_
+#define DISK_IMPL_HPP_
 
 /*********
  * Model *
@@ -123,4 +123,4 @@ public:
 } // namespace resource
 } // namespace kernel
 } // namespace simgrid
-#endif /* DISK_INTERFACE_HPP_ */
+#endif /* DISK_IMPL_HPP_ */
