@@ -52,7 +52,7 @@ public:
 
   /** @brief The sharing policy */
   void set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb) override;
-  s4u::Link::SharingPolicy get_sharing_policy() const override;
+  s4u::Link::SharingPolicy get_sharing_policy() const override { return sharing_policy_; }
 
   void turn_on() override;
   void turn_off() override;

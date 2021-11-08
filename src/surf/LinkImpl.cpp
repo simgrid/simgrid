@@ -57,11 +57,6 @@ void LinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::No
   sharing_policy_ = policy;
 }
 
-s4u::Link::SharingPolicy LinkImpl::get_sharing_policy() const
-{
-  return sharing_policy_;
-}
-
 void LinkImpl::latency_check(double latency) const
 {
   static double last_warned_latency = sg_surf_precision;
