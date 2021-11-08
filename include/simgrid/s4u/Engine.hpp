@@ -84,12 +84,12 @@ public:
 
 protected:
 #ifndef DOXYGEN
-  friend surf::HostImpl;
   friend Host;
   friend Link;
   friend Disk;
   friend kernel::routing::NetPoint;
   friend kernel::routing::NetZoneImpl;
+  friend kernel::resource::HostImpl;
   friend kernel::resource::LinkImpl;
   void host_register(const std::string& name, Host* host);
   void host_unregister(const std::string& name);

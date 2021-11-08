@@ -21,7 +21,7 @@ namespace resource {
  ************/
 /** @ingroup SURF_network_interface
  * @brief SURF network link interface class
- * @details A Link represents the link between two [hosts](@ref simgrid::surf::HostImpl)
+ * @details A Link represents the link between two [hosts](@ref HostImpl)
  */
 class SplitDuplexLinkImpl : public LinkImplIntf {
   s4u::SplitDuplexLink piface_;

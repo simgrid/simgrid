@@ -16,7 +16,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_host);
 void surf_host_model_init_current_default()
 {
   simgrid::config::set_default<bool>("network/crosstraffic", true);
-  auto host_model = std::make_shared<simgrid::surf::HostCLM03Model>("Host_CLM03");
+  auto host_model = std::make_shared<simgrid::kernel::resource::HostCLM03Model>("Host_CLM03");
   auto* engine    = simgrid::kernel::EngineImpl::get_instance();
   engine->add_model(host_model);
   engine->get_netzone_root()->set_host_model(host_model);
@@ -26,15 +26,17 @@ void surf_host_model_init_current_default()
 
 void surf_host_model_init_compound()
 {
-  auto host_model = std::make_shared<simgrid::surf::HostCLM03Model>("Host_CLM03");
+  auto host_model = std::make_shared<simgrid::kernel::resource::HostCLM03Model>("Host_CLM03");
   auto* engine    = simgrid::kernel::EngineImpl::get_instance();
   engine->add_model(host_model);
   engine->get_netzone_root()->set_host_model(host_model);
 }
 
 namespace simgrid {
-namespace surf {
-double HostCLM03Model::next_occurring_event(double now)
+namespace kernel {
+namespace resource {
+
+double HostCLM03Model::next_occurring_event(double /*now*/)
 {
   /* nothing specific to be done here
    * surf_solve already calls all the models next_occurring_event properly */
@@ -54,11 +56,10 @@ static inline double has_cost(const double* array, size_t pos)
   return -1.0;
 }
 
-kernel::resource::Action* HostCLM03Model::execute_parallel(const std::vector<s4u::Host*>& host_list,
-                                                           const double* flops_amount, const double* bytes_amount,
-                                                           double rate)
+Action* HostCLM03Model::execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
+                                         const double* bytes_amount, double rate)
 {
-  kernel::resource::Action* action = nullptr;
+  Action* action = nullptr;
   auto net_model = host_list[0]->get_netpoint()->get_englobing_zone()->get_network_model();
   if ((host_list.size() == 1) && (has_cost(bytes_amount, 0) <= 0) && (has_cost(flops_amount, 0) > 0)) {
     action = host_list[0]->get_cpu()->execution_start(flops_amount[0], rate);
@@ -93,5 +94,6 @@ kernel::resource::Action* HostCLM03Model::execute_parallel(const std::vector<s4u
   return action;
 }
 
-} // namespace surf
+} // namespace resource
+} // namespace kernel
 } // namespace simgrid

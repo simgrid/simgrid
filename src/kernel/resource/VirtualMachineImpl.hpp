@@ -21,7 +21,7 @@ namespace resource {
  * Resource *
  ************/
 
-class XBT_PUBLIC VirtualMachineImpl : public surf::HostImpl, public xbt::Extendable<VirtualMachineImpl> {
+class XBT_PUBLIC VirtualMachineImpl : public HostImpl, public xbt::Extendable<VirtualMachineImpl> {
 #ifndef DOXYGEN
   friend s4u::VirtualMachine;
 #endif
@@ -84,7 +84,7 @@ private:
  * @brief SURF VM model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
-class XBT_PRIVATE VMModel : public surf::HostModel {
+class XBT_PRIVATE VMModel : public HostModel {
 public:
   explicit VMModel(const std::string& name);
 

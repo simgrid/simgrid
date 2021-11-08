@@ -151,7 +151,7 @@ s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<d
   xbt_assert(cpu_model_pm_,
              "Impossible to create host: %s. Invalid CPU model: nullptr. Have you set the parent of this NetZone: %s?",
              name.c_str(), get_cname());
-  auto* res = (new surf::HostImpl(name))->get_iface();
+  auto* res = (new resource::HostImpl(name))->get_iface();
   res->set_netpoint((new NetPoint(name, NetPoint::Type::Host))->set_englobing_zone(this));
 
   cpu_model_pm_->create_cpu(res, speed_per_pstate);
@@ -581,7 +581,7 @@ void NetZoneImpl::set_disk_model(std::shared_ptr<resource::DiskModel> disk_model
   disk_model_ = std::move(disk_model);
 }
 
-void NetZoneImpl::set_host_model(std::shared_ptr<surf::HostModel> host_model)
+void NetZoneImpl::set_host_model(std::shared_ptr<resource::HostModel> host_model)
 {
   xbt_assert(not sealed_, "Impossible to set host model to an already sealed NetZone(%s)", this->get_cname());
   host_model_ = std::move(host_model);

@@ -20,7 +20,7 @@ namespace resource {
  ************/
 /** @ingroup SURF_network_interface
  * @brief SURF network link interface class
- * @details A Link represents the link between two [hosts](@ref simgrid::surf::HostImpl)
+ * @details A Link represents the link between two [hosts](@ref simgrid::kernel::resource::HostImpl)
  */
 class LinkImpl : public LinkImplIntf {
   s4u::Link piface_;

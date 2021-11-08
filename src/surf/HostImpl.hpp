@@ -15,8 +15,8 @@
 #include <vector>
 
 namespace simgrid {
-namespace surf {
-
+namespace kernel {
+namespace resource {
 /*********
  * Model *
  *********/
@@ -25,12 +25,11 @@ namespace surf {
  * @brief SURF Host model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
-class XBT_PRIVATE HostModel : public kernel::resource::Model {
+class XBT_PRIVATE HostModel : public Model {
 public:
   using Model::Model;
-  virtual kernel::resource::Action* execute_parallel(const std::vector<s4u::Host*>& host_list,
-                                                     const double* flops_amount, const double* bytes_amount,
-                                                     double rate) = 0;
+  virtual Action* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
+                                   const double* bytes_amount, double rate) = 0;
 };
 
 /************
@@ -41,15 +40,15 @@ public:
  * @details A host represents a machine with an aggregation of a Cpu, a RoutingEdge and Disk(s)
  */
 class XBT_PRIVATE HostImpl : public xbt::PropertyHolder {
-  using ActorList = boost::intrusive::list<
-      kernel::actor::ActorImpl,
-      boost::intrusive::member_hook<kernel::actor::ActorImpl, boost::intrusive::list_member_hook<>,
-                                    &kernel::actor::ActorImpl::host_actor_list_hook>>;
+  using ActorList =
+      boost::intrusive::list<actor::ActorImpl,
+                             boost::intrusive::member_hook<actor::ActorImpl, boost::intrusive::list_member_hook<>,
+                                                           &actor::ActorImpl::host_actor_list_hook>>;
 
   ActorList actor_list_;
-  std::vector<kernel::actor::ProcessArg*> actors_at_boot_;
+  std::vector<actor::ProcessArg*> actors_at_boot_;
   s4u::Host piface_;
-  std::map<std::string, kernel::resource::DiskImpl*, std::less<>> disks_;
+  std::map<std::string, DiskImpl*, std::less<>> disks_;
   xbt::string name_{"noname"};
   bool sealed_ = false;
 
@@ -58,7 +57,7 @@ protected:
   HostImpl(const std::string& name, s4u::Host* piface);
 
 public:
-  friend kernel::resource::VirtualMachineImpl;
+  friend VirtualMachineImpl;
   explicit HostImpl(const std::string& name);
 
   void destroy(); // Must be called instead of the destructor
@@ -77,12 +76,12 @@ public:
   const char* get_cname() const { return name_.c_str(); }
 
   void turn_on() const;
-  void turn_off(const kernel::actor::ActorImpl* issuer);
+  void turn_off(const actor::ActorImpl* issuer);
   std::vector<s4u::ActorPtr> get_all_actors();
   size_t get_actor_count() const;
-  void add_actor(kernel::actor::ActorImpl* actor) { actor_list_.push_back(*actor); }
-  void remove_actor(kernel::actor::ActorImpl* actor) { xbt::intrusive_erase(actor_list_, *actor); }
-  void add_actor_at_boot(kernel::actor::ProcessArg* arg) { actors_at_boot_.emplace_back(arg); }
+  void add_actor(actor::ActorImpl* actor) { actor_list_.push_back(*actor); }
+  void remove_actor(actor::ActorImpl* actor) { xbt::intrusive_erase(actor_list_, *actor); }
+  void add_actor_at_boot(actor::ProcessArg* arg) { actors_at_boot_.emplace_back(arg); }
 
   void seal();
 
@@ -92,7 +91,8 @@ public:
       function(actor);
   }
 };
-} // namespace surf
+} // namespace resource
+} // namespace kernel
 } // namespace simgrid
 
-#endif /* SURF_HOST_INTERFACE_HPP */
+#endif /* HOST_INTERFACE_HPP */

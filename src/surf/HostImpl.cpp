@@ -19,7 +19,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_host, ker_resource, "Host resources agregate
  *************/
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 /*********
  * Model *
@@ -47,7 +48,7 @@ HostImpl::~HostImpl()
     for (auto const& actor : actor_list_)
       msg += "\n\t" + std::string(actor.get_name());
 
-    kernel::EngineImpl::get_instance()->display_all_actor_status();
+    EngineImpl::get_instance()->display_all_actor_status();
     xbt_die("%s", msg.c_str());
   }
   for (auto const& arg : actors_at_boot_)
@@ -77,8 +78,7 @@ void HostImpl::turn_on() const
 {
   for (auto const& arg : actors_at_boot_) {
     XBT_DEBUG("Booting Actor %s(%s) right now", arg->name.c_str(), arg->host->get_cname());
-    simgrid::kernel::actor::ActorImplPtr actor =
-        simgrid::kernel::actor::ActorImpl::create(arg->name, arg->code, nullptr, arg->host, nullptr);
+    actor::ActorImplPtr actor = actor::ActorImpl::create(arg->name, arg->code, nullptr, arg->host, nullptr);
     actor->set_properties(arg->properties);
     if (arg->on_exit)
       *actor->on_exit = *arg->on_exit;
@@ -92,7 +92,7 @@ void HostImpl::turn_on() const
 }
 
 /** Kill all actors hosted here */
-void HostImpl::turn_off(const kernel::actor::ActorImpl* issuer)
+void HostImpl::turn_off(const actor::ActorImpl* issuer)
 {
   for (auto& actor : actor_list_) {
     XBT_DEBUG("Killing Actor %s@%s on behalf of %s which turned off that host.", actor.get_cname(),
@@ -101,7 +101,7 @@ void HostImpl::turn_off(const kernel::actor::ActorImpl* issuer)
   }
   // When a host is turned off, we want to keep only the actors that should restart for when it will boot again.
   // Then get rid of the others.
-  auto elm = remove_if(begin(actors_at_boot_), end(actors_at_boot_), [](const kernel::actor::ProcessArg* arg) {
+  auto elm = remove_if(begin(actors_at_boot_), end(actors_at_boot_), [](const actor::ProcessArg* arg) {
     if (arg->auto_restart)
       return false;
     delete arg;
@@ -160,5 +160,6 @@ void HostImpl::seal()
   for (auto const& disk : disks_)
     disk.second->seal();
 }
-} // namespace surf
+} // namespace resource
+} // namespace kernel
 } // namespace simgrid

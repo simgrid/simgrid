@@ -44,7 +44,7 @@ void surf_cpu_model_init_plop()
 
   surf_cpu_model_pm = new CpuPlopModel();
 
-  simgrid::surf::on_postparse.connect(cpu_add_traces);
+  simgrid::kernel::resource::on_postparse.connect(cpu_add_traces);
 
   xbt_dynar_push(model_list, &surf_cpu_model_pm);
 }
@@ -191,8 +191,9 @@ simulation.  This call is particularly useful for implementing mutable calls:
 ~~~
 void Host::setProperty(const char*key, const char *value){
   simgrid::simix::kernelImmediate([&] {
-    simgrid::surf::HostImpl* surf_host = this->extension<simgrid::surf::HostImpl>();
-    surf_host->setProperty(key,value);
+    simgrid::kernel::resource::HostImpl* host =
+       this->extension<simgrid::kernel::resource::HostImpl>();
+    host->setProperty(key,value);
   });
 }
 ~~~

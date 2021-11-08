@@ -41,7 +41,7 @@ public:
   static ActorImpl* self();
   double get_kill_time() const;
   void set_kill_time(double kill_time);
-  boost::intrusive::list_member_hook<> host_actor_list_hook;   /* simgrid::surf::HostImpl::actor_list_ */
+  boost::intrusive::list_member_hook<> host_actor_list_hook;     /* resource::HostImpl::actor_list_ */
   boost::intrusive::list_member_hook<> kernel_destroy_list_hook; /* EngineImpl actors_to_destroy */
   boost::intrusive::list_member_hook<> smx_synchro_hook;       /* {mutex,cond,sem}->sleeping */
 

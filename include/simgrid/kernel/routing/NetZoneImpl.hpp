@@ -129,7 +129,7 @@ public:
   /** @brief Retrieves the disk model associated to this NetZone */
   const std::shared_ptr<resource::DiskModel>& get_disk_model() const { return disk_model_; }
   /** @brief Retrieves the host model associated to this NetZone */
-  const std::shared_ptr<surf::HostModel>& get_host_model() const { return host_model_; }
+  const std::shared_ptr<resource::HostModel>& get_host_model() const { return host_model_; }
 
   const s4u::NetZone* get_iface() const { return &piface_; }
   s4u::NetZone* get_iface() { return &piface_; }
@@ -181,7 +181,7 @@ public:
   void set_cpu_vm_model(std::shared_ptr<resource::CpuModel> cpu_model);
   void set_cpu_pm_model(std::shared_ptr<resource::CpuModel> cpu_model);
   void set_disk_model(std::shared_ptr<resource::DiskModel> disk_model);
-  void set_host_model(std::shared_ptr<surf::HostModel> host_model);
+  void set_host_model(std::shared_ptr<resource::HostModel> host_model);
 
   /** @brief get the route between two nodes in the full platform
    *
@@ -213,7 +213,7 @@ private:
   std::shared_ptr<resource::CpuModel> cpu_model_vm_;
   std::shared_ptr<resource::CpuModel> cpu_model_pm_;
   std::shared_ptr<resource::DiskModel> disk_model_;
-  std::shared_ptr<surf::HostModel> host_model_;
+  std::shared_ptr<resource::HostModel> host_model_;
   /** @brief Perform sealing procedure for derived classes, if necessary */
   virtual void do_seal()
   { /* obviously nothing to do by default */

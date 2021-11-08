@@ -40,16 +40,16 @@ class XBT_PUBLIC Host : public xbt::Extendable<Host> {
   friend kernel::resource::VMModel;            // Use the pimpl_cpu to compute the VM sharing
   friend kernel::resource::VirtualMachineImpl; // creates the the pimpl_cpu
   friend kernel::routing::NetZoneImpl;
-  friend surf::HostImpl; // call destructor from private implementation
+  friend kernel::resource::HostImpl; // call destructor from private implementation
 
   // The private implementation, that never changes
-  surf::HostImpl* const pimpl_;
+  kernel::resource::HostImpl* const pimpl_;
 
   kernel::resource::CpuImpl* pimpl_cpu_      = nullptr;
   kernel::routing::NetPoint* pimpl_netpoint_ = nullptr;
 
 public:
-  explicit Host(surf::HostImpl* pimpl) : pimpl_(pimpl) {}
+  explicit Host(kernel::resource::HostImpl* pimpl) : pimpl_(pimpl) {}
 
 protected:
   virtual ~Host(); // Call destroy() instead of manually deleting it.
@@ -243,7 +243,7 @@ public:
 
   /** Block the calling actor on an execution located on the called host (with explicit priority) */
   void execute(double flops, double priority) const;
-  surf::HostImpl* get_impl() const { return pimpl_; }
+  kernel::resource::HostImpl* get_impl() const { return pimpl_; }
 };
 } // namespace s4u
 } // namespace simgrid

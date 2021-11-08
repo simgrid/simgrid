@@ -99,7 +99,7 @@ public:
  **********/
 /** @ingroup SURF_network_interface
  * @brief SURF network action interface class
- * @details A NetworkAction represents a communication between two [hosts](@ref simgrid::surf::HostImpl)
+ * @details A NetworkAction represents a communication between two [hosts](@ref HostImpl)
  */
 class NetworkAction : public Action {
   s4u::Host& src_;

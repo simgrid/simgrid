@@ -22,7 +22,7 @@ namespace resource {
  ************/
 /** @ingroup SURF_interface
  * @brief SURF network link interface class
- * @details A Link represents the link between two [hosts](@ref simgrid::surf::HostImpl)
+ * @details A Link represents the link between two [hosts](@ref HostImpl)
  */
 class LinkImplIntf : public Resource_T<LinkImplIntf>, public xbt::PropertyHolder {
 public:

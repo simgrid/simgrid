@@ -439,9 +439,9 @@ Example of usage:
 @code{cpp}
 xbt_dict_t Host::properties() {
   return simgrid::simix::kernelImmediate([&] {
-    simgrid::surf::HostImpl* surf_host =
-      this->extension<simgrid::surf::HostImpl>();
-    return surf_host->getProperties();
+    simgrid::kernel::resource::HostImpl* host =
+      this->extension<simgrid::kernel::resource::HostImpl>();
+    return host->getProperties();
   });
 }
 @endcode

@@ -5,25 +5,27 @@
 
 #include "src/surf/HostImpl.hpp"
 
-#ifndef SURF_HOST_CLM03_HPP_
-#define SURF_HOST_CLM03_HPP_
+#ifndef HOST_CLM03_HPP_
+#define HOST_CLM03_HPP_
 
 /***********
  * Classes *
  ***********/
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 class XBT_PRIVATE HostCLM03Model : public HostModel {
 public:
   using HostModel::HostModel;
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
-  kernel::resource::Action* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
-                                             const double* bytes_amount, double rate) override;
+  Action* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
+                           const double* bytes_amount, double rate) override;
 };
-}
-}
+} // namespace resource
+} // namespace kernel
+} // namespace simgrid
 
-#endif /* SURF_HOST_CLM03_HPP_ */
+#endif /* HOST_CLM03_HPP_ */

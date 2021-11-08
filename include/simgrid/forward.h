@@ -168,6 +168,8 @@ class CpuImpl;
 class Model;
 class Resource;
 class CpuModel;
+class HostImpl;
+class HostModel;
 class NetworkModel;
 class NetworkModelIntf;
 class LinkImpl;
@@ -192,10 +194,6 @@ class FutureEvtSet;
 class Profile;
 } // namespace profile
 } // namespace kernel
-namespace surf {
-  class HostImpl;
-  class HostModel;
-}
 namespace mc {
 class CommunicationDeterminismChecker;
 }

@@ -12,7 +12,8 @@
 #define HOST_L07_HPP_
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace resource {
 
 /***********
  * Classes *
@@ -26,9 +27,6 @@ class XBT_PRIVATE CpuL07;
 class XBT_PRIVATE LinkL07;
 
 class XBT_PRIVATE L07Action;
-/*********
- * Tools *
- *********/
 
 /*********
  * Model *
@@ -41,13 +39,13 @@ public:
 
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
-  kernel::resource::CpuAction* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
-                                                const double* bytes_amount, double rate) override;
+  CpuAction* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
+                              const double* bytes_amount, double rate) override;
 };
 
-class CpuL07Model : public kernel::resource::CpuModel {
+class CpuL07Model : public CpuModel {
 public:
-  CpuL07Model(const std::string& name, HostL07Model* hmodel, kernel::lmm::System* sys);
+  CpuL07Model(const std::string& name, HostL07Model* hmodel, lmm::System* sys);
   CpuL07Model(const CpuL07Model&) = delete;
   CpuL07Model& operator=(const CpuL07Model&) = delete;
   ~CpuL07Model() override;
@@ -57,20 +55,20 @@ public:
        * method in surf_presolve */
   };
 
-  kernel::resource::CpuImpl* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) override;
+  CpuImpl* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) override;
   HostL07Model* hostModel_;
 };
 
-class NetworkL07Model : public kernel::resource::NetworkModel {
+class NetworkL07Model : public NetworkModel {
 public:
-  NetworkL07Model(const std::string& name, HostL07Model* hmodel, kernel::lmm::System* sys);
+  NetworkL07Model(const std::string& name, HostL07Model* hmodel, lmm::System* sys);
   NetworkL07Model(const NetworkL07Model&) = delete;
   NetworkL07Model& operator=(const NetworkL07Model&) = delete;
   ~NetworkL07Model() override;
-  kernel::resource::LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) final;
-  kernel::resource::LinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidths) override;
+  LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) final;
+  LinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidths) override;
 
-  kernel::resource::Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
+  Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
   void update_actions_state(double /*now*/, double /*delta*/) override{
       /* this action is done by HostL07Model which shares the LMM system with the CPU model
        * Overriding to an empty function here allows us to handle the Cpu07Model as a regular
@@ -84,32 +82,32 @@ public:
  * Resource *
  ************/
 
-class CpuL07 : public kernel::resource::CpuImpl {
+class CpuL07 : public CpuImpl {
 public:
-  using kernel::resource::CpuImpl::CpuImpl;
+  using CpuImpl::CpuImpl;
   CpuL07(const CpuL07&) = delete;
   CpuL07& operator=(const CpuL07&) = delete;
 
-  void apply_event(kernel::profile::Event* event, double value) override;
-  kernel::resource::CpuAction* execution_start(double size, double user_bound) override;
-  kernel::resource::CpuAction* execution_start(double, int, double) override
+  void apply_event(profile::Event* event, double value) override;
+  CpuAction* execution_start(double size, double user_bound) override;
+  CpuAction* execution_start(double, int, double) override
   {
     THROW_UNIMPLEMENTED;
     return nullptr;
   }
-  kernel::resource::CpuAction* sleep(double duration) override;
+  CpuAction* sleep(double duration) override;
 
 protected:
   void on_speed_change() override;
 };
 
-class LinkL07 : public kernel::resource::LinkImpl {
+class LinkL07 : public LinkImpl {
 public:
-  LinkL07(const std::string& name, double bandwidth, kernel::lmm::System* system);
+  LinkL07(const std::string& name, double bandwidth, lmm::System* system);
   LinkL07(const LinkL07&) = delete;
   LinkL07& operator=(const LinkL07&) = delete;
   ~LinkL07() override;
-  void apply_event(kernel::profile::Event* event, double value) override;
+  void apply_event(profile::Event* event, double value) override;
   void set_bandwidth(double value) override;
   void set_latency(double value) override;
 };
@@ -117,7 +115,7 @@ public:
 /**********
  * Action *
  **********/
-class L07Action : public kernel::resource::CpuAction {
+class L07Action : public CpuAction {
   std::vector<s4u::Host*> hostList_;
   bool free_arrays_ = false; // By default, computationAmount_ and friends are freed by caller. But not for sequential
                              // exec and regular comms
@@ -136,7 +134,7 @@ class L07Action : public kernel::resource::CpuAction {
 
 public:
   L07Action() = delete;
-  L07Action(kernel::resource::Model* model, const std::vector<s4u::Host*>& host_list, const double* flops_amount,
+  L07Action(Model* model, const std::vector<s4u::Host*>& host_list, const double* flops_amount,
             const double* bytes_amount, double rate);
   L07Action(const L07Action&) = delete;
   L07Action& operator=(const L07Action&) = delete;
@@ -148,7 +146,8 @@ public:
   void update_latency(double delta, double precision) { double_update(&latency_, delta, precision); }
 };
 
-} // namespace surf
+} // namespace resource
+} // namespace kernel
 } // namespace simgrid
 
 #endif /* HOST_L07_HPP_ */
