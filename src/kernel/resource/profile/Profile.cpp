@@ -91,6 +91,26 @@ DatedValue Profile::next(Event* event)
   }
 }
 
+static bool is_comment_or_empty_line(const std::string& val)
+{
+  return (val[0] == '#' || val[0] == '\0' || val[0] == '%');
+}
+
+static bool is_normal_distribution(const std::string& val)
+{
+  return (val == "NORM" || val == "NORMAL" || val == "GAUSS" || val == "GAUSSIAN");
+}
+
+static bool is_exponential_distribution(const std::string& val)
+{
+  return (val == "EXP" || val == "EXPONENTIAL");
+}
+
+static bool is_uniform_distribution(const std::string& val)
+{
+  return (val == "UNIF" || val == "UNIFORM");
+}
+
 Profile* Profile::from_string(const std::string& name, const std::string& input, double periodicity)
 {
   int linecount                                    = 0;
@@ -106,7 +126,7 @@ Profile* Profile::from_string(const std::string& name, const std::string& input,
     simgrid::kernel::profile::StochasticDatedValue stochevent;
     linecount++;
     boost::trim(val);
-    if (val[0] == '#' || val[0] == '\0' || val[0] == '%') // pass comments
+    if (is_comment_or_empty_line(val))
       continue;
     if (sscanf(val.c_str(), "PERIODICITY %lg\n", &periodicity) == 1)
       continue;
@@ -134,14 +154,13 @@ Profile* Profile::from_string(const std::string& name, const std::string& input,
       if (splittedval[0] == "DET") {
         stochevent.date_law = Distribution::DET;
         i                   = 2;
-      } else if (splittedval[0] == "NORM" || splittedval[0] == "NORMAL" || splittedval[0] == "GAUSS" ||
-                 splittedval[0] == "GAUSSIAN") {
+      } else if (is_normal_distribution(splittedval[0])) {
         stochevent.date_law = Distribution::NORM;
         i                   = 3;
-      } else if (splittedval[0] == "EXP" || splittedval[0] == "EXPONENTIAL") {
+      } else if (is_exponential_distribution(splittedval[0])) {
         stochevent.date_law = Distribution::EXP;
         i                   = 2;
-      } else if (splittedval[0] == "UNIF" || splittedval[0] == "UNIFORM") {
+      } else if (is_uniform_distribution(splittedval[0])) {
         stochevent.date_law = Distribution::UNIF;
         i                   = 3;
       } else {
@@ -158,14 +177,13 @@ Profile* Profile::from_string(const std::string& name, const std::string& input,
       if (splittedval[i] == "DET") {
         stochevent.value_law = Distribution::DET;
         j                    = 1;
-      } else if (splittedval[i] == "NORM" || splittedval[i] == "NORMAL" || splittedval[i] == "GAUSS" ||
-                 splittedval[i] == "GAUSSIAN") {
+      } else if (is_normal_distribution(splittedval[i])) {
         stochevent.value_law = Distribution::NORM;
         j                    = 2;
-      } else if (splittedval[i] == "EXP" || splittedval[i] == "EXPONENTIAL") {
+      } else if (is_exponential_distribution(splittedval[i])) {
         stochevent.value_law = Distribution::EXP;
         j                    = 1;
-      } else if (splittedval[i] == "UNIF" || splittedval[i] == "UNIFORM") {
+      } else if (is_uniform_distribution(splittedval[i])) {
         stochevent.value_law = Distribution::UNIF;
         j                    = 2;
       } else {
