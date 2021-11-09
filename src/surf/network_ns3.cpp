@@ -572,7 +572,7 @@ void ns3_simulator(double maxSeconds)
   if (maxSeconds > 0.0) // If there is a maximum amount of time to run
     id = ns3::Simulator::Schedule(ns3::Seconds(maxSeconds), &ns3::Simulator::Stop);
 
-  XBT_DEBUG("Start simulator for at most %fs (current time: %f)", maxSeconds, EngineImpl::get_clock());
+  XBT_DEBUG("Start simulator for at most %fs (current time: %f)", maxSeconds, simgrid::kernel::EngineImpl::get_clock());
   ns3::Simulator::Run();
   XBT_DEBUG("Simulator stopped at %fs", ns3::Simulator::Now().GetSeconds());
 
