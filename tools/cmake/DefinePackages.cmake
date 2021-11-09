@@ -6,7 +6,6 @@ set(EXTRA_DIST
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/include/simgrid/sg_config.hpp
-  src/include/surf/surf.hpp
   src/include/xbt/coverage.h
   src/include/xbt/parmap.hpp
   src/include/xbt/mmalloc.h
@@ -359,7 +358,6 @@ set(SURF_SRC
   src/surf/SplitDuplexLinkImpl.cpp
   src/surf/network_wifi.cpp
   src/surf/sg_platf.cpp
-  src/surf/surf_c_bindings.cpp
   src/surf/surf_interface.cpp
   src/surf/xml/platf.hpp
   src/surf/xml/platf_private.hpp

@@ -39,7 +39,7 @@ namespace resource {
 double HostCLM03Model::next_occurring_event(double /*now*/)
 {
   /* nothing specific to be done here
-   * surf_solve already calls all the models next_occurring_event properly */
+   * EngineImpl::solve already calls all the models next_occurring_event properly */
   return -1.0;
 }
 

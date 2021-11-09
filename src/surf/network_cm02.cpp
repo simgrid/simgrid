@@ -12,7 +12,6 @@
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/surf/network_wifi.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "surf/surf.hpp"
 
 #include <algorithm>
 #include <numeric>

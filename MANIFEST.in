@@ -2193,7 +2193,6 @@ include src/include/catch.hpp
 include src/include/mc/datatypes.h
 include src/include/mc/mc.h
 include src/include/simgrid/sg_config.hpp
-include src/include/surf/surf.hpp
 include src/include/xbt/coverage.h
 include src/include/xbt/mmalloc.h
 include src/include/xbt/parmap.hpp
@@ -2665,7 +2664,6 @@ include src/surf/ns3/ns3_simulator.hpp
 include src/surf/ptask_L07.cpp
 include src/surf/ptask_L07.hpp
 include src/surf/sg_platf.cpp
-include src/surf/surf_c_bindings.cpp
 include src/surf/surf_interface.cpp
 include src/surf/surf_interface.hpp
 include src/surf/surf_private.hpp

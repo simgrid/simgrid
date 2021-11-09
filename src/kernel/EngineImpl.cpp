@@ -18,7 +18,6 @@
 #include "src/smpi/include/smpi_actor.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf.hpp"
-#include "surf/surf.hpp"          //surf_presolve() and surf_solve()
 #include "xbt/xbt_modinter.h"     /* whether initialization was already done */
 
 #include <boost/algorithm/string/predicate.hpp>
@@ -30,7 +29,10 @@
 #include "src/mc/remote/AppSide.hpp"
 #endif
 
+double NOW = 0;
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(ker_engine, "Logging specific to Engine (kernel)");
+
 namespace simgrid {
 namespace kernel {
 EngineImpl* EngineImpl::instance_ = nullptr; /* That singleton is awful too. */
@@ -236,7 +238,7 @@ void EngineImpl::initialize(int* argc, char** argv)
 
   /* register a function to be called by SURF after the environment creation */
   sg_platf_init();
-  s4u::Engine::on_platform_created.connect(surf_presolve);
+  s4u::Engine::on_platform_created.connect([this]() { this->presolve(); });
 
   if (config::get_value<bool>("debug/clean-atexit"))
     atexit(shutdown);
@@ -547,6 +549,129 @@ void EngineImpl::display_all_actor_status() const
   }
 }
 
+void EngineImpl::presolve()
+{
+  XBT_DEBUG("Consume all trace events occurring before the starting time.");
+  double next_event_date;
+  while ((next_event_date = profile::future_evt_set.next_date()) != -1.0) {
+    if (next_event_date > NOW)
+      break;
+
+    double value                 = -1.0;
+    resource::Resource* resource = nullptr;
+    while (auto* event = profile::future_evt_set.pop_leq(next_event_date, &value, &resource)) {
+      if (value >= 0)
+        resource->apply_event(event, value);
+    }
+  }
+
+  XBT_DEBUG("Set every models in the right state by updating them to 0.");
+  for (auto const& model : models_)
+    model->update_actions_state(NOW, 0.0);
+}
+
+double EngineImpl::solve(double max_date)
+{
+  double time_delta            = -1.0; /* duration */
+  double value                 = -1.0;
+  resource::Resource* resource = nullptr;
+
+  if (max_date != -1.0) {
+    xbt_assert(max_date >= NOW, "You asked to simulate up to %f, but that's in the past already", max_date);
+
+    time_delta = max_date - NOW;
+  }
+
+  XBT_DEBUG("Looking for next event in all models");
+  for (auto model : models_) {
+    if (not model->next_occurring_event_is_idempotent()) {
+      continue;
+    }
+    double next_event = model->next_occurring_event(NOW);
+    if ((time_delta < 0.0 || next_event < time_delta) && next_event >= 0.0) {
+      time_delta = next_event;
+    }
+  }
+
+  XBT_DEBUG("Min for resources (remember that NS3 don't update that value): %f", time_delta);
+
+  XBT_DEBUG("Looking for next trace event");
+
+  while (true) { // Handle next occurring events until none remains
+    double next_event_date = profile::future_evt_set.next_date();
+    XBT_DEBUG("Next TRACE event: %f", next_event_date);
+
+    for (auto model : models_) {
+      /* Skip all idempotent models, they were already treated above
+       * NS3 is the one to handled here */
+      if (model->next_occurring_event_is_idempotent())
+        continue;
+
+      if (next_event_date != -1.0) {
+        time_delta = std::min(next_event_date - NOW, time_delta);
+      } else {
+        time_delta = std::max(next_event_date - NOW, time_delta); // Get the positive component
+      }
+
+      XBT_DEBUG("Run the NS3 network at most %fs", time_delta);
+      // run until min or next flow
+      double model_next_action_end = model->next_occurring_event(time_delta);
+
+      XBT_DEBUG("Min for network : %f", model_next_action_end);
+      if (model_next_action_end >= 0.0)
+        time_delta = model_next_action_end;
+    }
+
+    if (next_event_date < 0.0 || (next_event_date > NOW + time_delta)) {
+      // next event may have already occurred or will after the next resource change, then bail out
+      XBT_DEBUG("no next usable TRACE event. Stop searching for it");
+      break;
+    }
+
+    XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", time_delta, NOW, next_event_date);
+
+    while (auto* event = profile::future_evt_set.pop_leq(next_event_date, &value, &resource)) {
+      if (resource->is_used() || (watched_hosts().find(resource->get_cname()) != watched_hosts().end())) {
+        time_delta = next_event_date - NOW;
+        XBT_DEBUG("This event invalidates the next_occurring_event() computation of models. Next event set to %f",
+                  time_delta);
+      }
+      // FIXME: I'm too lame to update NOW live, so I change it and restore it so that the real update with surf_min
+      // will work
+      double round_start = NOW;
+      NOW                = next_event_date;
+      /* update state of the corresponding resource to the new value. Does not touch lmm.
+         It will be modified if needed when updating actions */
+      XBT_DEBUG("Calling update_resource_state for resource %s", resource->get_cname());
+      resource->apply_event(event, value);
+      NOW = round_start;
+    }
+  }
+
+  /* FIXME: Moved this test to here to avoid stopping simulation if there are actions running on cpus and all cpus are
+   * with availability = 0. This may cause an infinite loop if one cpu has a trace with periodicity = 0 and the other a
+   * trace with periodicity > 0.
+   * The options are: all traces with same periodicity(0 or >0) or we need to change the way how the events are managed
+   */
+  if (time_delta < 0) {
+    XBT_DEBUG("No next event at all. Bail out now.");
+    return -1.0;
+  }
+
+  XBT_DEBUG("Duration set to %f", time_delta);
+
+  // Bump the time: jump into the future
+  NOW = NOW + time_delta;
+
+  // Inform the models of the date change
+  for (auto const& model : models_)
+    model->update_actions_state(NOW, time_delta);
+
+  s4u::Engine::on_time_advance(time_delta);
+
+  return time_delta;
+}
+
 void EngineImpl::run()
 {
   if (MC_record_replay_is_active()) {
@@ -661,8 +786,8 @@ void EngineImpl::run()
 
     time = timer::Timer::next();
     if (time > -1.0 || not actor_list_.empty()) {
-      XBT_DEBUG("Calling surf_solve");
-      time = surf_solve(time);
+      XBT_DEBUG("Calling solve");
+      time = solve(time);
       XBT_DEBUG("Moving time ahead : %g", time);
     }
 
@@ -704,6 +829,11 @@ void EngineImpl::run()
     THROW_IMPOSSIBLE;
 
   simgrid::s4u::Engine::on_simulation_end();
+}
+
+double EngineImpl::get_clock()
+{
+  return NOW;
 }
 } // namespace kernel
 } // namespace simgrid

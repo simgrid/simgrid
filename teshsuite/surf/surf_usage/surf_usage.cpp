@@ -9,9 +9,9 @@
 #include "simgrid/kernel/routing/NetZoneImpl.hpp" // full type for NetZoneImpl object
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/zone.h"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/surf/network_interface.hpp"
-#include "surf/surf.hpp"
 #include "xbt/config.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
@@ -69,7 +69,7 @@ int main(int argc, char** argv)
   /* Let's do something on it */
   net_model->communicate(hostA, hostB, 150.0, -1.0);
 
-  surf_solve(-1.0);
+  e.get_impl()->solve(-1.0);
   do {
     XBT_INFO("Next Event : %g", simgrid::s4u::Engine::get_clock());
     XBT_DEBUG("\t CPU actions");
@@ -106,7 +106,7 @@ int main(int argc, char** argv)
       action.unref();
     }
   } while ((net_model->get_started_action_set()->size() || cpu_model_pm->get_started_action_set()->size()) &&
-           surf_solve(-1.0) >= 0.0);
+           e.get_impl()->solve(-1.0) >= 0.0);
 
   XBT_DEBUG("Simulation Terminated");
 

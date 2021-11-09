@@ -5,9 +5,9 @@
 
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/kernel/resource/Model.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "surf/surf.hpp"
 
 XBT_LOG_NEW_CATEGORY(kernel, "SimGrid internals");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_resource, kernel, "Resources, modeling the platform performance");
@@ -19,7 +19,7 @@ namespace resource {
 Action::Action(Model* model, double cost, bool failed) : Action(model, cost, failed, nullptr) {}
 
 Action::Action(Model* model, double cost, bool failed, lmm::Variable* var)
-    : remains_(cost), start_time_(surf_get_clock()), cost_(cost), model_(model), variable_(var)
+    : remains_(cost), start_time_(EngineImpl::get_clock()), cost_(cost), model_(model), variable_(var)
 {
   if (failed)
     state_set_ = model_->get_failed_action_set();
@@ -44,7 +44,7 @@ Action::~Action()
 
 void Action::finish(Action::State state)
 {
-  finish_time_ = surf_get_clock();
+  finish_time_ = EngineImpl::get_clock();
   set_remains(0);
   set_state(state);
 }
@@ -107,7 +107,7 @@ void Action::set_bound(double bound)
   if (variable_)
     model_->get_maxmin_system()->update_variable_bound(variable_, bound);
 
-  if (model_->is_update_lazy() && get_last_update() != surf_get_clock())
+  if (model_->is_update_lazy() && get_last_update() != EngineImpl::get_clock())
     model_->get_action_heap().remove(this);
   XBT_OUT();
 }
@@ -163,7 +163,7 @@ void Action::suspend()
       model_->get_action_heap().remove(this);
       if (state_set_ == model_->get_started_action_set() && sharing_penalty_ > 0) {
         // If we have a lazy model, we need to update the remaining value accordingly
-        update_remains_lazy(surf_get_clock());
+        update_remains_lazy(EngineImpl::get_clock());
       }
     }
     suspended_ = SuspendStates::SUSPENDED;
@@ -188,7 +188,7 @@ double Action::get_remains()
   XBT_IN("(%p)", this);
   /* update remains before returning it */
   if (model_->is_update_lazy()) /* update remains before return it */
-    update_remains_lazy(surf_get_clock());
+    update_remains_lazy(EngineImpl::get_clock());
   XBT_OUT();
   return remains_;
 }
@@ -206,7 +206,7 @@ void Action::update_remains(double delta)
 
 void Action::set_last_update()
 {
-  last_update_ = surf_get_clock();
+  last_update_ = EngineImpl::get_clock();
 }
 
 double ActionHeap::top_date() const

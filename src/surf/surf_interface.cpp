@@ -12,7 +12,6 @@
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "surf/surf.hpp"
 
 #include <fstream>
 #include <string>
@@ -97,13 +96,6 @@ const std::vector<surf_model_description_t> surf_optimization_mode_description =
 const std::vector<surf_model_description_t> surf_disk_model_description = {
     {"default", "Simplistic disk model.", &surf_disk_model_init_default},
 };
-
-double NOW = 0;
-
-double surf_get_clock()
-{
-  return NOW;
-}
 
 /* returns whether #file_path is an absolute file path. Surprising, isn't it ? */
 static bool is_absolute_file_path(const std::string& file_path)

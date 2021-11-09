@@ -187,8 +187,26 @@ public:
   void display_all_actor_status() const;
   void run_all_actors();
 
+  /*  @brief Finish simulation initialization
+   *  This function must be called before the first call to solve()
+   */
+  void presolve();
+  /** @brief Performs a part of the simulation
+   *  @param max_date Maximum date to update the simulation to, or -1
+   *  @return the elapsed time, or -1.0 if no event could be executed
+   *
+   *  This function execute all possible events, update the action states  and returns the time elapsed.
+   *  When you call execute or communicate on a model, the corresponding actions are not executed immediately but only
+   *  when you call solve().
+   *  Note that the returned elapsed time can be zero.
+   */
+  double solve(double max_date);
+
   /** @brief Run the main simulation loop. */
   void run();
+
+  /** @brief Return the current time in milliseconds. */
+  static double get_clock();
 };
 
 } // namespace kernel

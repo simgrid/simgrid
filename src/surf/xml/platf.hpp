@@ -25,5 +25,6 @@ XBT_PUBLIC double surf_parse_get_double(const std::string& s);
 XBT_PUBLIC int surf_parse_get_int(const std::string& s);
 
 XBT_PUBLIC void surf_parse(); /* Entry-point to the parser */
+XBT_PUBLIC void parse_platform_file(const std::string& file);
 
 #endif

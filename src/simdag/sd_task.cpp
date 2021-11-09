@@ -296,7 +296,7 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
       jedule_log_sd_event(task);
 #endif
     } else
-      task->finish_time = surf_get_clock();
+      task->finish_time = simgrid_get_clock();
     task->surf_action->unref();
     task->surf_action = nullptr;
     task->allocation->clear();

@@ -25,7 +25,6 @@
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf.hpp"
 #include "src/surf/xml/platf_private.hpp"
-#include "surf/surf.hpp"
 
 #include <algorithm>
 #include <string>

@@ -211,7 +211,7 @@ $ ${bindir:=.}/c-platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${p
 > [ 43.774742] (0:maestro@) Simulation time 43.7747
 
 p NOT testing the mixture of failures and CpuTI:
-p This test leads to a deadlock because of a bug somewhere in surf_solve.
+p This test leads to a deadlock because of a bug somewhere in EngineImpl::solve.
 p We should debug this instead of ignoring the issue, but it's utterly
 p   complex with such an integration test. One day, we will setup a set of
 p   unit tests for the surf solver, and such issues will be addressable again.

@@ -52,7 +52,7 @@ public:
   void update_actions_state(double /*now*/, double /*delta*/) override{
       /* this action is done by HostL07Model which shares the LMM system with the CPU model
        * Overriding to an empty function here allows us to handle the Cpu07Model as a regular
-       * method in surf_presolve */
+       * method in EngineImpl::presolve */
   };
 
   CpuImpl* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) override;
@@ -72,7 +72,7 @@ public:
   void update_actions_state(double /*now*/, double /*delta*/) override{
       /* this action is done by HostL07Model which shares the LMM system with the CPU model
        * Overriding to an empty function here allows us to handle the Cpu07Model as a regular
-       * method in surf_presolve */
+       * method in EngineImpl::presolve */
   };
 
   HostL07Model* hostModel_;

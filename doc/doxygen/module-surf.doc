@@ -66,11 +66,11 @@
     a new action that represents the task you have just created.
 
     To execute the actions created with @a execute(), @a communicate() or @a execute_parallel_task(), call
-    surf_solve(). The function surf_solve() is where the simulation takes place. It returns the
+    EngineImpl::solve(). This function is where the simulation takes place. It returns the
     time elapsed to execute the actions. You can know what actions have changed their state thanks
     to the states sets. For example, if your want to know what actions are finished,
     extract them from @a surf_host_model->common_public->states.done_action_set.
-    Depending on these results, you can schedule other tasks and call surf_solve() again.
+    Depending on these results, you can schedule other tasks and call solve() again.
 
     Have a look at the implementation of @ref MSG_API "MSG" and @ref SD_API "Simdag" to see how these module
     interact with SURF. But if you want to create a new API on top of SURF,

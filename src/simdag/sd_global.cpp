@@ -24,7 +24,8 @@ namespace sd {
 std::set<SD_task_t>* simulate(double how_long)
 {
   XBT_VERB("Run simulation for %f seconds", how_long);
-
+  auto engine = sd_global->engine_->get_impl();
+  simgrid::kernel::EngineImpl::get_instance();
   sd_global->watch_point_reached = false;
   sd_global->return_set.clear();
 
@@ -39,13 +40,13 @@ std::set<SD_task_t>* simulate(double how_long)
          not sd_global->watch_point_reached) {
     XBT_DEBUG("Total time: %f", total_time);
 
-    elapsed_time = surf_solve(how_long > 0 ? surf_get_clock() + how_long - total_time : -1.0);
-    XBT_DEBUG("surf_solve() returns %f", elapsed_time);
+    elapsed_time = engine->solve(how_long > 0 ? simgrid_get_clock() + how_long - total_time : -1.0);
+    XBT_DEBUG("solve() returns %f", elapsed_time);
     if (elapsed_time > 0.0)
       total_time += elapsed_time;
 
     /* let's see which tasks are done */
-    for (auto const& model : simgrid::kernel::EngineImpl::get_instance()->get_all_models()) {
+    for (auto const& model : engine->get_all_models()) {
       const simgrid::kernel::resource::Action* action = model->extract_done_action();
       while (action != nullptr && action->get_data() != nullptr) {
         auto* task = static_cast<SD_task_t>(action->get_data());
@@ -114,7 +115,7 @@ std::set<SD_task_t>* simulate(double how_long)
 
   XBT_DEBUG("elapsed_time = %f, total_time = %f, watch_point_reached = %d", elapsed_time, total_time,
             sd_global->watch_point_reached);
-  XBT_DEBUG("current time = %f", surf_get_clock());
+  XBT_DEBUG("current time = %f", simgrid_get_clock());
 
   return &sd_global->return_set;
 }
@@ -192,7 +193,7 @@ void SD_create_environment(const char* platform_file)
   jedule_sd_init();
 #endif
   XBT_VERB("Starting simulation...");
-  surf_presolve(); /* Takes traces into account */
+  sd_global->engine_->get_impl()->presolve(); /* Takes traces into account */
 }
 
 /**
@@ -224,7 +225,7 @@ void SD_simulate_with_update(double how_long, xbt_dynar_t changed_tasks_dynar)
 /** @brief Returns the current clock, in seconds */
 double SD_get_clock()
 {
-  return surf_get_clock();
+  return simgrid_get_clock();
 }
 
 /**

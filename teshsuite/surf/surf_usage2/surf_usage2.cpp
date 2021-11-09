@@ -13,7 +13,6 @@
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "surf/surf.hpp"
 #include "xbt/config.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
@@ -43,7 +42,7 @@ int main(int argc, char** argv)
   auto net_model             = as_zone->get_impl()->get_network_model();
   net_model->communicate(hostA, hostB, 150.0, -1.0);
 
-  surf_solve(-1.0); /* Takes traces into account. Returns 0.0 */
+  e.get_impl()->solve(-1.0); /* Takes traces into account. Returns 0.0 */
   do {
     simgrid::kernel::resource::Action* action = nullptr;
     running                                   = 0;
@@ -73,7 +72,7 @@ int main(int argc, char** argv)
         action = model->extract_done_action();
       }
     }
-  } while (running && surf_solve(-1.0) >= 0.0);
+  } while (running && e.get_impl()->solve(-1.0) >= 0.0);
 
   XBT_INFO("Simulation Terminated");
   return 0;

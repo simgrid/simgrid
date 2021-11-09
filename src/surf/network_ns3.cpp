@@ -37,7 +37,6 @@
 #include "src/kernel/EngineImpl.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/xml/platf_private.hpp" // ClusterCreationArgs
-#include "surf/surf.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_ns3, res_network, "Network model based on ns-3");
 
@@ -380,7 +379,7 @@ double NetworkNS3Model::next_occurring_event(double now)
 
   XBT_DEBUG("doing a ns3 simulation for a duration of %f", now);
   ns3_simulator(now);
-  time_to_next_flow_completion = ns3::Simulator::Now().GetSeconds() - surf_get_clock();
+  time_to_next_flow_completion = ns3::Simulator::Now().GetSeconds() - EngineImpl::get_clock();
   // NS-3 stops as soon as a flow ends,
   // but it does not process the other flows that may finish at the same (simulated) time.
   // If another flow ends at the same time, time_to_next_flow_completion = 0
@@ -389,7 +388,7 @@ double NetworkNS3Model::next_occurring_event(double now)
 
   XBT_DEBUG("min       : %f", now);
   XBT_DEBUG("ns3  time : %f", ns3::Simulator::Now().GetSeconds());
-  XBT_DEBUG("surf time : %f", surf_get_clock());
+  XBT_DEBUG("surf time : %f", EngineImpl::get_clock());
   XBT_DEBUG("Next completion %f :", time_to_next_flow_completion);
 
   return time_to_next_flow_completion;
@@ -509,10 +508,10 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
 
   // If there is no other started actions, we need to move NS-3 forward to be sync with SimGrid
   if (model->get_started_action_set()->size() == 1) {
-    while (double_positive(surf_get_clock() - ns3::Simulator::Now().GetSeconds(), sg_surf_precision)) {
+    while (double_positive(EngineImpl::get_clock() - ns3::Simulator::Now().GetSeconds(), sg_surf_precision)) {
       XBT_DEBUG("Synchronizing NS-3 (time %f) with SimGrid (time %f)", ns3::Simulator::Now().GetSeconds(),
-                surf_get_clock());
-      ns3_simulator(surf_get_clock() - ns3::Simulator::Now().GetSeconds());
+                EngineImpl::get_clock());
+      ns3_simulator(EngineImpl::get_clock() - ns3::Simulator::Now().GetSeconds());
     }
   }
 
@@ -573,7 +572,7 @@ void ns3_simulator(double maxSeconds)
   if (maxSeconds > 0.0) // If there is a maximum amount of time to run
     id = ns3::Simulator::Schedule(ns3::Seconds(maxSeconds), &ns3::Simulator::Stop);
 
-  XBT_DEBUG("Start simulator for at most %fs (current time: %f)", maxSeconds, surf_get_clock());
+  XBT_DEBUG("Start simulator for at most %fs (current time: %f)", maxSeconds, EngineImpl::get_clock());
   ns3::Simulator::Run();
   XBT_DEBUG("Simulator stopped at %fs", ns3::Simulator::Now().GetSeconds());
 

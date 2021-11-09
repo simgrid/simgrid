@@ -12,7 +12,6 @@
 #include "src/surf/cpu_cas01.hpp"
 #include "src/surf/cpu_ti.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "surf/surf.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cpu_cas, res_cpu, "CPU resource, CAS01 model (used by default)");
 
@@ -115,7 +114,7 @@ void CpuCas01::apply_event(profile::Event* event, double value)
       }
     } else {
       const lmm::Element* elem = nullptr;
-      double date              = surf_get_clock();
+      double date              = EngineImpl::get_clock();
 
       get_iface()->turn_off();
 

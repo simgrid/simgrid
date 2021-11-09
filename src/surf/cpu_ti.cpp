@@ -10,7 +10,6 @@
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "surf/surf.hpp"
 
 #include <algorithm>
 #include <memory>
@@ -307,7 +306,7 @@ void CpuTiModel::update_actions_state(double now, double /*delta*/)
     XBT_DEBUG("Action %p: finish", action);
     action->finish(Action::State::FINISHED);
     /* update remaining amount of all actions */
-    action->cpu_->update_remaining_amount(surf_get_clock());
+    action->cpu_->update_remaining_amount(EngineImpl::get_clock());
   }
 }
 
@@ -350,7 +349,7 @@ void CpuTi::apply_event(kernel::profile::Event* event, double value)
     XBT_DEBUG("Speed changed in trace! New fixed value: %f", value);
 
     /* update remaining of actions and put in modified cpu list */
-    update_remaining_amount(surf_get_clock());
+    update_remaining_amount(EngineImpl::get_clock());
 
     set_modified(true);
 
@@ -368,7 +367,7 @@ void CpuTi::apply_event(kernel::profile::Event* event, double value)
       }
     } else {
       get_iface()->turn_off();
-      double date = surf_get_clock();
+      double date = EngineImpl::get_clock();
 
       /* put all action running on cpu to failed */
       for (CpuTiAction& action : action_set_) {
@@ -454,7 +453,7 @@ bool CpuTi::is_used() const
 
 double CpuTi::get_speed_ratio()
 {
-  speed_.scale = speed_integrated_trace_->get_power_scale(surf_get_clock());
+  speed_.scale = speed_integrated_trace_->get_power_scale(EngineImpl::get_clock());
   return CpuImpl::get_speed_ratio();
 }
 
@@ -603,7 +602,7 @@ void CpuTiAction::set_sharing_penalty(double sharing_penalty)
 double CpuTiAction::get_remains()
 {
   XBT_IN("(%p)", this);
-  cpu_->update_remaining_amount(surf_get_clock());
+  cpu_->update_remaining_amount(EngineImpl::get_clock());
   XBT_OUT();
   return get_remains_no_update();
 }

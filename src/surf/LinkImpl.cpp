@@ -3,9 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/s4u/Engine.hpp>
+
+#include "src/kernel/EngineImpl.hpp"
 #include "src/surf/LinkImpl.hpp"
-#include "simgrid/s4u/Engine.hpp"
-#include "surf/surf.hpp"
 
 #include <numeric>
 
@@ -83,7 +84,7 @@ void LinkImpl::turn_off()
     s4u::Link::on_state_change(piface_);
 
     const kernel::lmm::Element* elem = nullptr;
-    double now                       = surf_get_clock();
+    double now                       = EngineImpl::get_clock();
     while (const auto* var = get_constraint()->get_variable(&elem)) {
       Action* action = var->get_id();
       if (action->get_state() == Action::State::INITED || action->get_state() == Action::State::STARTED) {

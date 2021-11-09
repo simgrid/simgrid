@@ -160,7 +160,7 @@ double VMModel::next_occurring_event(double now)
     lmm::System* vcpu_system = cpu->get_model()->get_maxmin_system();
     vcpu_system->update_constraint_bound(cpu->get_constraint(), virt_overhead * solved_value);
   }
-  /* actual next occurring event is determined by VM CPU model at surf_solve */
+  /* actual next occurring event is determined by VM CPU model at EngineImpl::solve */
   return -1.0;
 }
 

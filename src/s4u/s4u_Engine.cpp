@@ -13,7 +13,6 @@
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "surf/surf.hpp"
 
 #include <algorithm>
 #include <string>
@@ -86,7 +85,7 @@ double Engine::get_clock()
   if (MC_is_active() || MC_record_replay_is_active()) {
     return MC_process_clock_get(kernel::actor::ActorImpl::self());
   } else {
-    return surf_get_clock();
+    return kernel::EngineImpl::get_clock();
   }
 }
 

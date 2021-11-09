@@ -5,7 +5,6 @@
 
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/simdag.h"
-#include "surf/surf.hpp"
 #include <set>
 #include <string>
 #include <vector>

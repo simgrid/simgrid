@@ -10,7 +10,6 @@
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/xml/platf.hpp"
 #include "src/surf/xml/platf_private.hpp"
-#include "surf/surf.hpp"
 
 #include <vector>
 
