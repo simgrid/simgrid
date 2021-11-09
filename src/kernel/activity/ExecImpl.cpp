@@ -164,23 +164,22 @@ void ExecImpl::finish()
     smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
 
+    if (simcall->call_ == simix::Simcall::NONE) // FIXME: maybe a better way to handle this case
+      continue;                                 // if process handling comm is killed
+
     /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
      * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
      * simcall */
+    if (auto* observer = dynamic_cast<actor::ExecutionWaitanySimcall*>(simcall->observer_)) {
 
-    if (simcall->call_ == simix::Simcall::NONE) // FIXME: maybe a better way to handle this case
-      continue;                                 // if process handling comm is killed
-    if (auto* observer =
-            dynamic_cast<kernel::actor::ExecutionWaitanySimcall*>(simcall->observer_)) { // simcall is a wait_any?
       const auto& execs = observer->get_execs();
 
-      for (auto* exec : execs) {
+      for (auto* exec : execs)
         exec->unregister_simcall(simcall);
 
-        if (simcall->timeout_cb_) {
-          simcall->timeout_cb_->remove();
-          simcall->timeout_cb_ = nullptr;
-        }
+      if (simcall->timeout_cb_) {
+        simcall->timeout_cb_->remove();
+        simcall->timeout_cb_ = nullptr;
       }
 
       if (not MC_is_active() && not MC_record_replay_is_active()) {
@@ -189,6 +188,7 @@ void ExecImpl::finish()
         observer->set_result(rank);
       }
     }
+
     switch (state_) {
       case State::FAILED:
         piface_->complete(s4u::Activity::State::FAILED);
