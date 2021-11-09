@@ -1,3 +1,3 @@
 $ ${bindir:=.}/context-defaults
-> [simix_context/VERBOSE] Using Boost contexts. Welcome to the 21th century.
-> [simix_context/VERBOSE] Creating a context of stack 8Mb
+> [ker_context/VERBOSE] Using Boost contexts. Welcome to the 21th century.
+> [ker_context/VERBOSE] Creating a context of stack 8Mb

@@ -1,4 +1,3 @@
 $ ${bindir:=.}/context-defaults
-> [simix_context/VERBOSE] Activating SYSV context factory
-> [simix_context/VERBOSE] Creating a context of stack 8Mb
-
+> [ker_context/VERBOSE] Activating SYSV context factory
+> [ker_context/VERBOSE] Creating a context of stack 8Mb

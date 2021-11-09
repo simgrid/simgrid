@@ -1,2 +1,2 @@
 $ ${bindir:=.}/context-defaults
-> [simix_context/VERBOSE] Activating thread context factory
+> [ker_context/VERBOSE] Activating thread context factory

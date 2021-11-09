@@ -38,7 +38,7 @@
 #include <sanitizer/tsan_interface.h>
 #endif
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_context);
 
 // The name of this function is currently hardcoded in MC (as string).
 // Do not change it without fixing those references as well.

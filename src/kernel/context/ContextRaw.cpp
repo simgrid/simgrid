@@ -7,7 +7,7 @@
 #include "mc/mc.h"
 #include "simgrid/Exception.hpp"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_context);
 
 // Raw context routines
 

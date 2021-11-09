@@ -12,7 +12,7 @@
 
 #include <vector>
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_context, kernel, "Context switching mechanism");
 
 namespace simgrid {
 namespace kernel {

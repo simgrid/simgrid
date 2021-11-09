@@ -16,7 +16,7 @@
 #include <typeinfo>
 #include <utility>
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_context);
 
 namespace simgrid {
 namespace kernel {

@@ -12,7 +12,7 @@
 
 #include "ContextUnix.hpp"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_context);
 
 /** Up to two integers may be needed to store a pointer on the system we target */
 constexpr int CTX_ADDR_LEN = 2;

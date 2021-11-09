@@ -5,7 +5,7 @@
 
 #include <simgrid/Exception.hpp>
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_actor);
 
 namespace simgrid {
 

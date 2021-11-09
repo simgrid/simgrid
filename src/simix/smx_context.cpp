@@ -7,8 +7,6 @@
 
 #include "src/kernel/context/Context.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix, "Context switching mechanism");
-
 int SIMIX_context_is_parallel() // XBT_ATTRIB_DEPRECATED_v333
 {
   return simgrid::kernel::context::is_parallel();

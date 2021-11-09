@@ -12,7 +12,7 @@
 int main(int argc, char* argv[])
 {
   xbt_log_control_set("root.fmt:[%c/%p]%e%m%n");
-  xbt_log_control_set("simix_context.threshold:verbose");
+  xbt_log_control_set("ker_context.threshold:verbose");
   XBT_ATTRIB_UNUSED simgrid::s4u::Engine e(&argc, argv);
   return 0;
 }
