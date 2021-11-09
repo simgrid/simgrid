@@ -53,7 +53,6 @@ set(EXTRA_DIST
 
   src/surf/disk_s19.hpp
   src/surf/surf_interface.hpp
-  src/surf/surf_private.hpp
   src/surf/host_clm03.hpp
   src/surf/HostImpl.hpp
   src/surf/ptask_L07.hpp

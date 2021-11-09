@@ -2666,7 +2666,6 @@ include src/surf/ptask_L07.hpp
 include src/surf/sg_platf.cpp
 include src/surf/surf_interface.cpp
 include src/surf/surf_interface.hpp
-include src/surf/surf_private.hpp
 include src/surf/xml/platf.hpp
 include src/surf/xml/platf_private.hpp
 include src/surf/xml/simgrid.dtd

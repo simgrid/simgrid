@@ -6,9 +6,10 @@
 #ifndef SURF_MODEL_H_
 #define SURF_MODEL_H_
 
+#include <xbt/asserts.h>
+#include <xbt/function_types.h>
+
 #include "src/internal_config.h"
-#include "src/surf/surf_private.hpp"
-#include "xbt/function_types.h"
 
 #include <cfloat>
 #include <cmath>
@@ -21,6 +22,8 @@
 /*********
  * Utils *
  *********/
+XBT_PRIVATE FILE* surf_fopen(const std::string& name, const char* mode);
+XBT_PRIVATE std::ifstream* surf_ifsopen(const std::string& name);
 
 /* user-visible parameters */
 XBT_PUBLIC_DATA double sg_maxmin_precision;
