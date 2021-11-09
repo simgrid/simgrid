@@ -10,7 +10,8 @@
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/simix/popping_private.hpp"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_actor);
+
 namespace simgrid {
 namespace kernel {
 namespace activity {

@@ -17,7 +17,7 @@
 #include <typeinfo>
 #include <utility>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix, "Logging specific to SIMIX (process)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_actor, kernel, "Logging specific to Actor's kernel side");
 
 /**
  * @brief Returns the current agent.
@@ -426,7 +426,7 @@ void ActorImpl::simcall_answer()
     xbt_assert(simcall_.call_ != simix::Simcall::NONE);
     simcall_.call_ = simix::Simcall::NONE;
     const auto& actors_to_run = engine->get_actors_to_run();
-    xbt_assert(not XBT_LOG_ISENABLED(simix_process, xbt_log_priority_debug) ||
+    xbt_assert(not XBT_LOG_ISENABLED(ker_actor, xbt_log_priority_debug) ||
                    std::find(begin(actors_to_run), end(actors_to_run), this) == end(actors_to_run),
                "Actor %p should not exist in actors_to_run!", this);
     engine->add_actor_to_run_list_no_check(this);

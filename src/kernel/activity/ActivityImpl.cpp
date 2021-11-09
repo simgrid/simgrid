@@ -14,7 +14,7 @@
 #include <boost/range/algorithm.hpp>
 #include <cmath> // isfinite()
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_actor);
 
 namespace simgrid {
 namespace kernel {

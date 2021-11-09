@@ -16,7 +16,7 @@ $ ./host-on-off-actors ${platfdir}/small_platform.xml 1 --log=no_loc
 $ $VALGRIND_NO_LEAK_CHECK ./host-on-off-actors ${platfdir}/small_platform.xml 2 --log=no_loc
 > [Tremblay:test_launcher:(1) 0.000000] [s4u_test/INFO] Test 2:
 > [Tremblay:test_launcher:(1) 0.000000] [s4u_test/INFO]   Turn off Jupiter
-> [0.000000] [simix_process/WARNING] Cannot launch actor 'actor_daemon' on failed host 'Jupiter'
+> [0.000000] [ker_actor/WARNING] Cannot launch actor 'actor_daemon' on failed host 'Jupiter'
 > [Tremblay:test_launcher:(1) 0.000000] [root/CRITICAL] Could not launch a new actor on failed host Jupiter.
 
 $ ./host-on-off-actors ${platfdir}/small_platform.xml 4 --log=no_loc
