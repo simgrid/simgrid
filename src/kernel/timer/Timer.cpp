@@ -11,9 +11,9 @@ namespace simgrid {
 namespace kernel {
 namespace timer {
 
-Timer* Timer::set(double date, xbt::Task<void()>&& callback)
+std::shared_ptr<Timer> Timer::set(double date, xbt::Task<void()>&& callback)
 {
-  auto* timer    = new Timer(date, std::move(callback));
+  auto timer     = std::make_shared<Timer>(date, std::move(callback));
   timer->handle_ = kernel_timers().emplace(std::make_pair(date, timer));
   return timer;
 }
@@ -22,7 +22,6 @@ Timer* Timer::set(double date, xbt::Task<void()>&& callback)
 void Timer::remove()
 {
   kernel_timers().erase(handle_);
-  delete this;
 }
 
 /** Handle any pending timer. Returns if something was actually run. */
@@ -32,10 +31,9 @@ bool Timer::execute_all()
   while (not kernel_timers().empty() && s4u::Engine::get_clock() >= kernel_timers().top().first) {
     result = true;
     // FIXME: make the timers being real callbacks (i.e. provide dispatchers that read and expand the args)
-    Timer* timer = kernel_timers().top().second;
+    std::shared_ptr<Timer> timer = kernel_timers().top().second;
     kernel_timers().pop();
     timer->callback();
-    delete timer;
   }
   return result;
 }

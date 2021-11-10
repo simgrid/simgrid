@@ -75,7 +75,7 @@ public:
       std::make_shared<std::vector<std::function<void(bool)>>>();
 
   std::function<void()> code_;
-  timer::Timer* kill_timer_ = nullptr;
+  std::shared_ptr<timer::Timer> kill_timer_ = nullptr;
 
 private:
   /* Refcounting */
