@@ -51,6 +51,7 @@ class Request : public F2C {
   MPI_Op op_;
   std::unique_ptr<smpi_mpi_generalized_request_funcs_t> generalized_funcs;
   std::vector<MPI_Request> nbc_requests_;
+  s4u::Host* src_host_ = nullptr; //!< save simgrid's source host since it can finished before the recv
   static bool match_common(MPI_Request req, MPI_Request sender, MPI_Request receiver);
   static bool match_types(MPI_Datatype stype, MPI_Datatype rtype);
 

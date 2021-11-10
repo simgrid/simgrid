@@ -618,6 +618,7 @@ void SMPI_finalize()
   smpi_bench_destroy();
   smpi_shared_destroy();
   smpi_deployment_cleanup_instances();
+  smpi_cleanup_op_cost_callback();
 
   if (simgrid::smpi::colls::smpi_coll_cleanup_callback != nullptr)
     simgrid::smpi::colls::smpi_coll_cleanup_callback();

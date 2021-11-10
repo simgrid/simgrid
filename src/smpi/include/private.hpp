@@ -89,6 +89,8 @@ XBT_PRIVATE int smpi_deployment_smpirun(const simgrid::s4u::Engine* e, const std
                                         const std::string& replayfile, int map,
                                         const std::vector<const char*>& run_args);
 
+/** @brief Cleanup user's callback structure. Avoid segfault while destroying process */
+XBT_PRIVATE void smpi_cleanup_op_cost_callback();
 
 XBT_PRIVATE void smpi_comm_null_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff,
                                                      size_t buff_size);

@@ -57,6 +57,10 @@ Request::Request(const void* buf, int count, MPI_Datatype datatype, aid_t src, a
   detached_        = false;
   detached_sender_ = nullptr;
   real_src_        = 0;
+  // get src_host if it's available (src is valid)
+  auto src_process = simgrid::s4u::Actor::by_pid(src);
+  if (src_process)
+    src_host_ = src_process->get_host();
   truncated_       = false;
   unmatched_types_ = false;
   real_size_       = 0;
@@ -132,8 +136,10 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
        receiver->src_ == sender->src_) &&
       ((receiver->tag_ == MPI_ANY_TAG && sender->tag_ >= 0) || receiver->tag_ == sender->tag_)) {
     // we match, we can transfer some values
-    if (receiver->src_ == MPI_ANY_SOURCE)
+    if (receiver->src_ == MPI_ANY_SOURCE) {
       receiver->real_src_ = sender->src_;
+      receiver->src_host_ = sender->src_host_;
+    }
     if (receiver->tag_ == MPI_ANY_TAG)
       receiver->real_tag_ = sender->tag_;
     if ((receiver->flags_ & MPI_REQ_PROBE) == 0 ){
@@ -513,9 +519,13 @@ void Request::start()
     double sleeptime = 0.0;
     if (detached_ || ((flags_ & (MPI_REQ_ISEND | MPI_REQ_SSEND)) != 0)) { // issend should be treated as isend
       // isend and send timings may be different
-      sleeptime = ((flags_ & MPI_REQ_ISEND) != 0)
-                      ? simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::Host>()->oisend(size_)
-                      : simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::Host>()->osend(size_);
+      sleeptime =
+          ((flags_ & MPI_REQ_ISEND) != 0)
+              ? simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::Host>()->oisend(
+                    size_, simgrid::s4u::Actor::by_pid(src_)->get_host(), simgrid::s4u::Actor::by_pid(dst_)->get_host())
+              : simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::Host>()->osend(
+                    size_, simgrid::s4u::Actor::by_pid(src_)->get_host(),
+                    simgrid::s4u::Actor::by_pid(dst_)->get_host());
     }
 
     if(sleeptime > 0.0){
@@ -955,8 +965,9 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
   }
   if(req->detached_sender_ != nullptr){
     //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
-    double sleeptime =
-        simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::Host>()->orecv(req->real_size());
+    simgrid::s4u::Host* dst_host = simgrid::s4u::Actor::by_pid(req->dst_)->get_host();
+    double sleeptime             = simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::Host>()->orecv(
+        req->real_size(), req->src_host_, dst_host);
     if (sleeptime > 0.0) {
       simgrid::s4u::this_actor::sleep_for(sleeptime);
       XBT_DEBUG("receiving size of %zu : sleep %f ", req->real_size_, sleeptime);

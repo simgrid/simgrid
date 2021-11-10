@@ -290,3 +290,5 @@ So the final platform for our example becomes :
     </route>
 
 .. include:: tuto_disk/analysis.irst
+
+.. include:: tuto_network_calibration/network_calibration_tutorial.rst

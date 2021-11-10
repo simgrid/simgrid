@@ -17,6 +17,7 @@
 #include <xbt/misc.h>
 
 #ifdef __cplusplus
+#include <functional>
 #include <vector>
 #endif
 
@@ -1253,6 +1254,27 @@ std::vector<std::pair<size_t, size_t>> merge_private_blocks(const std::vector<st
 /* May be used by S4U simulations to manually initialize SMPI */
 XBT_PUBLIC void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff,
                                                 size_t buff_size);
+
+/**
+ * @brief Callback to set cost for SMPI operations (send, recv, isend)
+ *
+ * This callback replaces the configuration parameters smpi/or, smpi/os, smpi/ois.
+ * It offers more flexibility for cost functions.
+ *
+ * @param size Size of message being received/sent
+ * @param source Source host
+ * @param dst Destination host
+ */
+using SmpiOpCostCb = std::function<double(double size, simgrid::s4u::Host* source, simgrid::s4u::Host* dst)>;
+/** @brief SMPI functions that accept cost functions */
+enum class SmpiOperation { RECV = 2, SEND = 1, ISEND = 0 };
+/**
+ * @brief Register a cost callback for some SMPI function (MPI_Send, MPI_ISend or MPI_Recv)
+ *
+ * @param op SMPI function
+ * @param cb User's callback
+ */
+XBT_PUBLIC void smpi_register_op_cost_callback(SmpiOperation op, const SmpiOpCostCb& cb);
 #endif
 
 #endif

@@ -1,0 +1,83 @@
+p Dynamic costs for MPI_Recv/MPI_Send operations. Use Simple pingpong test
+! output sort
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${libdir:=.}/libsmpi_comm-dynamic-cost.so -np 2 ${bindir:=.}/smpi_simple-execute --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/simulate-computation:no --log=smpi_mpi.:verbose --log=smpi_bench.thresh:debug --log=no_loc
+> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
+> [0.000000] [smpi/INFO] [rank 1] -> Jupiter
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Init
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Init
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Init
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_size
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_size
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_rank
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_rank
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Recv
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Init
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_size
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_size
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_rank
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_rank
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Send
+> [Tremblay:0:(1) 10.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Send
+> [Tremblay:0:(1) 10.000000] [smpi_bench/DEBUG] Handle real computation time: 490475000.000000 flops
+> [Jupiter:1:(2) 11.002948] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Recv
+> [Jupiter:1:(2) 11.002948] [smpi_bench/DEBUG] Handle real computation time: 762960000.000000 flops
+> [Tremblay:0:(1) 15.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Recv
+> [Jupiter:1:(2) 21.002948] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Send
+> [Jupiter:1:(2) 26.002948] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Send
+> [Jupiter:1:(2) 26.002948] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Finalize
+> [Jupiter:1:(2) 26.002948] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Finalize
+> [Tremblay:0:(1) 28.005896] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Recv
+> [Tremblay:0:(1) 28.005896] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Finalize
+> [Tremblay:0:(1) 28.005896] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Finalize
+>
+>     *** Ping-pong test (MPI_Send/MPI_Recv) ***
+>
+> [0] About to send 1st message '99' to process [1]
+> [1] Received 1st message '99' from process [0]
+> [1] After a nap, increment message's value to  '100'
+> [1] About to send back message '100' to process [0]
+> [0] Received reply message '100' from process [1]
+
+p Dynamic costs for MPI_Recv/MPI_Send operations. Check config warning.
+! output sort
+$ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ${srcdir:=.}/hostfile -platform ${libdir:=.}/libsmpi_comm-dynamic-cost.so -np 2 ${bindir:=.}/smpi_simple-execute --log=smpi_config.thres:warning --log=xbt_cfg.thres:warning --cfg=smpi/simulate-computation:no --log=smpi_mpi.:verbose --log=smpi_bench.thresh:debug --log=no_loc --cfg=smpi/or:1:3:2;10:5:1 --cfg=smpi/os:1:3:2;10:5:1
+> [0.000000] [smpi/INFO] [rank 0] -> Tremblay
+> [0.000000] [smpi/INFO] [rank 1] -> Jupiter
+> [0.000000] [smpi_host/WARNING] SMPI (host: Jupiter): mismatch cost functions for smpi/or. Only user's callback will be used.
+> [0.000000] [smpi_host/WARNING] SMPI (host: Jupiter): mismatch cost functions for smpi/os. Only user's callback will be used.
+> [0.000000] [smpi_host/WARNING] SMPI (host: Tremblay): mismatch cost functions for smpi/or. Only user's callback will be used.
+> [0.000000] [smpi_host/WARNING] SMPI (host: Tremblay): mismatch cost functions for smpi/os. Only user's callback will be used.
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Init
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Init
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Init
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_size
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_size
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_rank
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_rank
+> [Jupiter:1:(2) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Recv
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Init
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_size
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_size
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Comm_rank
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Comm_rank
+> [Tremblay:0:(1) 0.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Send
+> [Tremblay:0:(1) 10.000000] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Send
+> [Tremblay:0:(1) 10.000000] [smpi_bench/DEBUG] Handle real computation time: 490475000.000000 flops
+> [Jupiter:1:(2) 11.002948] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Recv
+> [Jupiter:1:(2) 11.002948] [smpi_bench/DEBUG] Handle real computation time: 762960000.000000 flops
+> [Tremblay:0:(1) 15.000000] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Recv
+> [Jupiter:1:(2) 21.002948] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Send
+> [Jupiter:1:(2) 26.002948] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Send
+> [Jupiter:1:(2) 26.002948] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Finalize
+> [Jupiter:1:(2) 26.002948] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Finalize
+> [Tremblay:0:(1) 28.005896] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Recv
+> [Tremblay:0:(1) 28.005896] [smpi_mpi/VERBOSE] SMPI - Entering MPI_Finalize
+> [Tremblay:0:(1) 28.005896] [smpi_mpi/VERBOSE] SMPI - Leaving MPI_Finalize
+>
+>     *** Ping-pong test (MPI_Send/MPI_Recv) ***
+>
+> [0] About to send 1st message '99' to process [1]
+> [1] Received 1st message '99' from process [0]
+> [1] After a nap, increment message's value to  '100'
+> [1] About to send back message '100' to process [0]
+> [0] Received reply message '100' from process [1]

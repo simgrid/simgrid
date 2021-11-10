@@ -2,6 +2,15 @@
 
 SimGrid (3.29.1) NOT RELEASED YET (v3.30 expected December 21. 2021, 15:59 UTC)
 
+SMPI:
+ - Dynamic costs for MPI operations: New API to allow users to dynamically
+ change injected costs for MPI_Recv, MPI_Send and MPI_Isend operations.
+ Alternative for smpi/or, smpi/os and smpi/ois configuration options.
+
+Documentation:
+  * SimGrid MPI calibration of a Grid5000 cluster" presenting how to properly
+  calibrate MPI communications in SimGrid.
+
 Python:
  - Thread contexts are used by default with Python bindings.  Other kinds of
    contexts revealed unstable, specially starting with pybind11 v2.8.0.

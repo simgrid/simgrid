@@ -972,6 +972,35 @@ set(DOC_SOURCES
   docs/source/tuto_disk/fig/simgrid_results.png
   docs/source/tuto_disk/init.el
   docs/source/tuto_disk/tuto_disk.cpp
+  docs/source/tuto_network_calibration/clustering_ckmeans.ipynb
+  docs/source/tuto_network_calibration/clustering_dhist.ipynb
+  docs/source/tuto_network_calibration/CMakeLists.txt
+  docs/source/tuto_network_calibration/dahu_platform_ckmeans.cpp
+  docs/source/tuto_network_calibration/dahu_platform_dhist.cpp
+  docs/source/tuto_network_calibration/Dockerfile
+  docs/source/tuto_network_calibration/fig/pingpong_real.drawio
+  docs/source/tuto_network_calibration/fig/pingpong_real.png
+  docs/source/tuto_network_calibration/fig/pingpong_simgrid.drawio
+  docs/source/tuto_network_calibration/fig/pingpong_simgrid.png
+  docs/source/tuto_network_calibration/isend_ckmeans.json
+  docs/source/tuto_network_calibration/isend_dhist.json
+  docs/source/tuto_network_calibration/network_calibration_tutorial.ipynb
+  docs/source/tuto_network_calibration/network_calibration_tutorial.rst
+  docs/source/tuto_network_calibration/pingpong_ckmeans.json
+  docs/source/tuto_network_calibration/pingpong_dhist.json
+  docs/source/tuto_network_calibration/plot_ckmeans_PingPong.png
+  docs/source/tuto_network_calibration/plot_dhist_PingPong.png
+  docs/source/tuto_network_calibration/plot_op_average.png
+  docs/source/tuto_network_calibration/plot_op_raw.png
+  docs/source/tuto_network_calibration/plot_op_segmented.png
+  docs/source/tuto_network_calibration/plot_op_simgrid_ckmeans.png
+  docs/source/tuto_network_calibration/plot_op_simgrid_dhist.png
+  docs/source/tuto_network_calibration/recv_ckmeans.json
+  docs/source/tuto_network_calibration/recv_dhist.json
+  docs/source/tuto_network_calibration/send_ckmeans.json
+  docs/source/tuto_network_calibration/send_dhist.json
+  docs/source/tuto_network_calibration/Utils.cpp
+  docs/source/tuto_network_calibration/Utils.hpp
 
   docs/source/Tutorial_Model-checking.rst
 
@@ -1017,6 +1046,7 @@ set(CMAKEFILES_TXT
   examples/c/CMakeLists.txt
   examples/cpp/CMakeLists.txt
   examples/smpi/CMakeLists.txt
+  examples/smpi/comm_dynamic_costs/CMakeLists.txt
   examples/smpi/NAS/CMakeLists.txt
   examples/smpi/smpi_s4u_masterworker/CMakeLists.txt
   examples/smpi/replay_multiple/CMakeLists.txt
