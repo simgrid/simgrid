@@ -190,7 +190,7 @@ public:
   /*  @brief Finish simulation initialization
    *  This function must be called before the first call to solve()
    */
-  void presolve();
+  void presolve() const;
   /** @brief Performs a part of the simulation
    *  @param max_date Maximum date to update the simulation to, or -1
    *  @return the elapsed time, or -1.0 if no event could be executed
@@ -200,7 +200,7 @@ public:
    *  when you call solve().
    *  Note that the returned elapsed time can be zero.
    */
-  double solve(double max_date);
+  double solve(double max_date) const;
 
   /** @brief Run the main simulation loop. */
   void run();

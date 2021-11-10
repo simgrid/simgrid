@@ -549,7 +549,7 @@ void EngineImpl::display_all_actor_status() const
   }
 }
 
-void EngineImpl::presolve()
+void EngineImpl::presolve() const
 {
   XBT_DEBUG("Consume all trace events occurring before the starting time.");
   double next_event_date;
@@ -570,7 +570,7 @@ void EngineImpl::presolve()
     model->update_actions_state(NOW, 0.0);
 }
 
-double EngineImpl::solve(double max_date)
+double EngineImpl::solve(double max_date) const
 {
   double time_delta            = -1.0; /* duration */
   double value                 = -1.0;
