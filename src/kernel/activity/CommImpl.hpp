@@ -59,6 +59,7 @@ public:
   void resume() override;
   void cancel() override;
   void post() override;
+  void set_exception(actor::ActorImpl* issuer) override;
   void finish() override;
 
   const Type type_ = Type::SEND; /* Type of the communication (SEND or RECEIVE) */

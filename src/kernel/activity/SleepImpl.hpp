@@ -20,6 +20,7 @@ public:
   SleepImpl& set_host(s4u::Host* host);
   SleepImpl& set_duration(double duration);
   void post() override;
+  void set_exception(actor::ActorImpl* issuer) override;
   void finish() override;
   SleepImpl* start();
 };

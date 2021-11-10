@@ -157,6 +157,30 @@ void ExecImpl::post()
   finish();
 }
 
+void ExecImpl::set_exception(actor::ActorImpl* issuer)
+{
+  switch (state_) {
+    case State::FAILED:
+      piface_->complete(s4u::Activity::State::FAILED);
+      if (issuer->get_host()->is_on())
+        issuer->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
+      else /* else, the actor will be killed with no possibility to survive */
+        issuer->context_->set_wannadie();
+      break;
+
+    case State::CANCELED:
+      issuer->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Execution Canceled"));
+      break;
+
+    case State::TIMEOUT:
+      issuer->exception_ = std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Timeouted"));
+      break;
+
+    default:
+      xbt_assert(state_ == State::DONE, "Internal error in ExecImpl::finish(): unexpected synchro state %s",
+                 to_c_str(state_));
+  }
+}
 void ExecImpl::finish()
 {
   XBT_DEBUG("ExecImpl::finish() in state %s", to_c_str(state_));
@@ -189,27 +213,7 @@ void ExecImpl::finish()
       }
     }
 
-    switch (state_) {
-      case State::FAILED:
-        piface_->complete(s4u::Activity::State::FAILED);
-        if (simcall->issuer_->get_host()->is_on())
-          simcall->issuer_->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
-        else /* else, the actor will be killed with no possibility to survive */
-          simcall->issuer_->context_->set_wannadie();
-        break;
-
-      case State::CANCELED:
-        simcall->issuer_->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "Execution Canceled"));
-        break;
-
-      case State::TIMEOUT:
-        simcall->issuer_->exception_ = std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Timeouted"));
-        break;
-
-      default:
-        xbt_assert(state_ == State::DONE, "Internal error in ExecImpl::finish(): unexpected synchro state %s",
-                   to_c_str(state_));
-    }
+    set_exception(simcall->issuer_);
 
     simcall->issuer_->waiting_synchro_ = nullptr;
     /* Fail the process if the host is down */

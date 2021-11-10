@@ -108,6 +108,25 @@ void IoImpl::post()
   /* Answer all simcalls associated with the synchro */
   finish();
 }
+void IoImpl::set_exception(actor::ActorImpl* issuer)
+{
+  switch (state_) {
+    case State::FAILED:
+      issuer->context_->set_wannadie();
+      piface_->complete(s4u::Activity::State::FAILED);
+      issuer->exception_ = std::make_exception_ptr(StorageFailureException(XBT_THROW_POINT, "Storage failed"));
+      break;
+    case State::CANCELED:
+      issuer->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "I/O Canceled"));
+      break;
+    case State::TIMEOUT:
+      issuer->exception_ = std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Timeouted"));
+      break;
+    default:
+      xbt_assert(state_ == State::DONE, "Internal error in IoImpl::finish(): unexpected synchro state %s",
+                 to_c_str(state_));
+  }
+}
 
 void IoImpl::finish()
 {
@@ -141,23 +160,7 @@ void IoImpl::finish()
       }
     }
 
-    switch (state_) {
-      case State::FAILED:
-        simcall->issuer_->context_->set_wannadie();
-        piface_->complete(s4u::Activity::State::FAILED);
-        simcall->issuer_->exception_ =
-            std::make_exception_ptr(StorageFailureException(XBT_THROW_POINT, "Storage failed"));
-        break;
-      case State::CANCELED:
-        simcall->issuer_->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "I/O Canceled"));
-        break;
-      case State::TIMEOUT:
-        simcall->issuer_->exception_ = std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Timeouted"));
-        break;
-      default:
-        xbt_assert(state_ == State::DONE, "Internal error in IoImpl::finish(): unexpected synchro state %s",
-                   to_c_str(state_));
-    }
+    set_exception(simcall->issuer_);
 
     simcall->issuer_->waiting_synchro_ = nullptr;
     simcall->issuer_->simcall_answer();

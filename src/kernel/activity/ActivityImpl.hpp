@@ -56,6 +56,7 @@ public:
 
   virtual void post() = 0; // Called by the main loop when the activity is marked as terminated or failed by its model.
                            // Setups the status, clean things up, and call finish()
+  virtual void set_exception(actor::ActorImpl* issuer) = 0; // Raising exceptions and stuff
   virtual void finish() = 0; // Unlock all simcalls blocked on that activity, either because it was marked as done by
                              // the model or because it terminated without waiting for the model
 

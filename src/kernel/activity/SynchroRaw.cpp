@@ -64,6 +64,16 @@ void RawImpl::post()
   /* Answer all simcalls associated with the synchro */
   finish();
 }
+void RawImpl::set_exception(actor::ActorImpl* issuer)
+{
+  if (state_ == State::FAILED) {
+    issuer->context_->set_wannadie();
+    issuer->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
+  } else {
+    xbt_assert(state_ == State::SRC_TIMEOUT, "Internal error in RawImpl::finish() unexpected synchro state %s",
+               to_c_str(state_));
+  }
+}
 
 void RawImpl::finish()
 {
@@ -72,13 +82,7 @@ void RawImpl::finish()
   smx_simcall_t simcall = simcalls_.front();
   simcalls_.pop_front();
 
-  if (state_ == State::FAILED) {
-    simcall->issuer_->context_->set_wannadie();
-    simcall->issuer_->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
-  } else {
-    xbt_assert(state_ == State::SRC_TIMEOUT, "Internal error in RawImpl::finish() unexpected synchro state %s",
-               to_c_str(state_));
-  }
+  set_exception(simcall->issuer_);
 
   finish_callback_();
   simcall->issuer_->waiting_synchro_ = nullptr;

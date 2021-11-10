@@ -51,7 +51,10 @@ void SleepImpl::post()
   /* Answer all simcalls associated with the synchro */
   finish();
 }
-
+void SleepImpl::set_exception(actor::ActorImpl* issuer)
+{
+  /* FIXME: Really, nothing bad can happen while we sleep? */
+}
 void SleepImpl::finish()
 {
   XBT_DEBUG("SleepImpl::finish() in state %s", to_c_str(state_));
