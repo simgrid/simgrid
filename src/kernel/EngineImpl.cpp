@@ -334,7 +334,10 @@ void EngineImpl::shutdown()
   /* Finish context module and SURF */
   instance_->destroy_context_factory();
 
-  timer::kernel_timers().clear();
+  while (not timer::kernel_timers().empty()) {
+    delete timer::kernel_timers().top().second;
+    timer::kernel_timers().pop();
+  }
 
   tmgr_finalize();
   sg_platf_exit();

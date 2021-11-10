@@ -45,8 +45,8 @@ union u_smx_scalar {
  */
 struct s_smx_simcall {
   simgrid::simix::Simcall call_                      = simgrid::simix::Simcall::NONE;
-  simgrid::kernel::actor::ActorImpl* issuer_                 = nullptr;
-  std::shared_ptr<simgrid::kernel::timer::Timer> timeout_cb_ = nullptr; // Callback to timeouts
+  smx_actor_t issuer_                                = nullptr;
+  simgrid::kernel::timer::Timer* timeout_cb_         = nullptr; // Callback to timeouts
   simgrid::kernel::actor::SimcallObserver* observer_ = nullptr; // makes that simcall observable by the MC
   unsigned int mc_max_consider_ =
       0; // How many times this simcall should be used. If >1, this will be a fork in the state space.

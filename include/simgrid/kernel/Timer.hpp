@@ -19,7 +19,7 @@ namespace timer {
 
 inline auto& kernel_timers() // avoid static initialization order fiasco
 {
-  using TimerQelt = std::pair<double, std::shared_ptr<Timer>>;
+  using TimerQelt = std::pair<double, Timer*>;
   static boost::heap::fibonacci_heap<TimerQelt, boost::heap::compare<xbt::HeapComparator<TimerQelt>>> value;
   return value;
 }
@@ -38,12 +38,12 @@ public:
 
   void remove();
 
-  template <class F> static inline std::shared_ptr<Timer> set(double date, F callback)
+  template <class F> static inline Timer* set(double date, F callback)
   {
     return set(date, xbt::Task<void()>(std::move(callback)));
   }
 
-  static std::shared_ptr<Timer> set(double date, xbt::Task<void()>&& callback);
+  static Timer* set(double date, xbt::Task<void()>&& callback);
   static double next() { return kernel_timers().empty() ? -1.0 : kernel_timers().top().first; }
 
   /** Handle any pending timer. Returns if something was actually run. */

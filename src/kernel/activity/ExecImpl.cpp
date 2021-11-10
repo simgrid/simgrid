@@ -181,7 +181,6 @@ void ExecImpl::set_exception(actor::ActorImpl* issuer)
                  to_c_str(state_));
   }
 }
-
 void ExecImpl::finish()
 {
   XBT_DEBUG("ExecImpl::finish() in state %s", to_c_str(state_));
