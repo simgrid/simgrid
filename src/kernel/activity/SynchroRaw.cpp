@@ -12,7 +12,8 @@
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/simix/popping_private.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix, "SIMIX Synchronization (mutex, semaphores and conditions)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_synchro, kernel,
+                                "Kernel synchronization mechanisms (mutex, semaphores and conditions)");
 
 namespace simgrid {
 namespace kernel {

@@ -16,7 +16,7 @@
 #define MC_CHECK_NO_DPOR() (void)0
 #endif
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_mutex, simix_synchro, "Mutex kernel-space implementation");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_mutex, ker_synchro, "Mutex kernel-space implementation");
 
 namespace simgrid {
 namespace kernel {

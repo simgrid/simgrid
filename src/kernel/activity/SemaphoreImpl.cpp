@@ -8,7 +8,7 @@
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include <cmath> // std::isfinite
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_semaphore, simix_synchro, "Semaphore kernel-space implementation");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_semaphore, ker_synchro, "Semaphore kernel-space implementation");
 
 namespace simgrid {
 namespace kernel {

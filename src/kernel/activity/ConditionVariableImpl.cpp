@@ -9,7 +9,7 @@
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include <cmath> // std::isfinite
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_condition, simix_synchro, "Condition variables");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_condition, ker_synchro, "Condition variables kernel-space implementation");
 
 /********************************* Condition **********************************/
 
