@@ -405,7 +405,7 @@ void Task::schedulev(const std::vector<s4u::Host*>& hosts)
         input->build_MxN_1D_block_matrix(src_nb, dst_nb);
 
       input->do_schedule();
-      XBT_VERB("Auto-Schedule Communication task '%s'. Send %.f bytes from %zu hosts to %zu hosts.", input->get_cname(),
+      XBT_VERB("Auto-Schedule Communication task '%s'. Send %.f bytes from %lu hosts to %lu hosts.", input->get_cname(),
                input->get_amount(), src_nb, dst_nb);
     }
   }
