@@ -14,9 +14,22 @@
 
 #ifdef __cplusplus
 #include <set>
+
+namespace simgrid {
+namespace sd {
+class Task;
+XBT_PUBLIC std::set<Task*>* simulate(double how_long);
+} // namespace sd
+} // namespace simgrid
+
+using sg_sd_Task = simgrid::sd::Task;
+#else
+typedef struct sd_Task sg_sd_Task;
 #endif
 
-SG_BEGIN_DECL
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /** @brief Link opaque datatype
     @ingroup SD_link_api
@@ -34,8 +47,8 @@ typedef sg_link_t SD_link_t;
     Each task has a <em>@ref e_SD_task_state_t "state"</em> indicating whether the task is scheduled, running, done, ...
 
     */
-typedef struct s_SD_task_t* SD_task_t;
-typedef const struct s_SD_task_t* const_SD_task_t;
+typedef sg_sd_Task* SD_task_t;
+typedef const sg_sd_Task* const_SD_task_t;
 
 /** @brief Task states
     @ingroup SD_task_api */
@@ -196,13 +209,7 @@ XBT_PUBLIC xbt_dynar_t SD_PTG_dotload(const char* filename);
 //SD_route_get_size
 //SD_route_get_list
 //TRACE_sd_set_task_category
-SG_END_DECL
-
 #ifdef __cplusplus
-namespace simgrid {
-namespace sd {
-XBT_PUBLIC std::set<SD_task_t>* simulate(double how_long);
-}
 }
 #endif
 

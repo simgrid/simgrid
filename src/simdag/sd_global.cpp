@@ -21,17 +21,17 @@ std::unique_ptr<simgrid::sd::Global> sd_global = nullptr;
 namespace simgrid {
 namespace sd {
 
-std::set<SD_task_t>* simulate(double how_long)
+std::set<Task*>* simulate(double how_long)
 {
   XBT_VERB("Run simulation for %f seconds", how_long);
+
   auto engine = sd_global->engine_->get_impl();
-  simgrid::kernel::EngineImpl::get_instance();
   sd_global->watch_point_reached = false;
   sd_global->return_set.clear();
 
   /* explore the runnable tasks */
   while (not sd_global->runnable_tasks.empty())
-    SD_task_run(*(sd_global->runnable_tasks.begin()));
+    (*(sd_global->runnable_tasks.begin()))->run();
 
   double elapsed_time = 0.0;
   double total_time   = 0.0;
@@ -47,60 +47,32 @@ std::set<SD_task_t>* simulate(double how_long)
 
     /* let's see which tasks are done */
     for (auto const& model : engine->get_all_models()) {
-      const simgrid::kernel::resource::Action* action = model->extract_done_action();
+      const kernel::resource::Action* action = model->extract_done_action();
       while (action != nullptr && action->get_data() != nullptr) {
-        auto* task = static_cast<SD_task_t>(action->get_data());
-        XBT_VERB("Task '%s' done", SD_task_get_name(task));
-        SD_task_set_state(task, SD_DONE);
+        auto* task = static_cast<Task*>(action->get_data());
+        XBT_VERB("Task '%s' done", task->get_cname());
+        task->set_state(SD_DONE);
 
         /* the state has changed. Add it only if it's the first change */
         sd_global->return_set.emplace(task);
 
         /* remove the dependencies after this task */
-        for (auto const& succ : *task->successors) {
-          succ->predecessors->erase(task);
-          succ->inputs->erase(task);
-          XBT_DEBUG("Release dependency on %s: %zu remain(s). Becomes schedulable if %zu=0", SD_task_get_name(succ),
-                    succ->predecessors->size() + succ->inputs->size(), succ->predecessors->size());
+        for (auto const& succ : task->get_successors())
+          succ->released_by(task);
+        task->clear_successors();
 
-          if (SD_task_get_state(succ) == SD_NOT_SCHEDULED && succ->predecessors->empty())
-            SD_task_set_state(succ, SD_SCHEDULABLE);
-
-          if (SD_task_get_state(succ) == SD_SCHEDULED && succ->predecessors->empty() && succ->inputs->empty())
-            SD_task_set_state(succ, SD_RUNNABLE);
-
-          if (SD_task_get_state(succ) == SD_RUNNABLE && not sd_global->watch_point_reached)
-            SD_task_run(succ);
-        }
-        task->successors->clear();
-
-        for (auto const& output : *task->outputs) {
-          output->start_time = task->finish_time;
-          output->predecessors->erase(task);
-          if (SD_task_get_state(output) == SD_SCHEDULED)
-            SD_task_set_state(output, SD_RUNNABLE);
-          else
-            SD_task_set_state(output, SD_SCHEDULABLE);
-
-          SD_task_t comm_dst = *(output->successors->begin());
-          if (SD_task_get_state(comm_dst) == SD_NOT_SCHEDULED && comm_dst->predecessors->empty()) {
-            XBT_DEBUG("%s is a transfer, %s may be ready now if %zu=0", SD_task_get_name(output),
-                      SD_task_get_name(comm_dst), comm_dst->predecessors->size());
-            SD_task_set_state(comm_dst, SD_SCHEDULABLE);
-          }
-          if (SD_task_get_state(output) == SD_RUNNABLE && not sd_global->watch_point_reached)
-            SD_task_run(output);
-        }
-        task->outputs->clear();
+        for (auto const& output : task->get_outputs())
+          output->produced_by(task);
+        task->clear_outputs();
         action = model->extract_done_action();
       }
 
       /* let's see which tasks have just failed */
       action = model->extract_failed_action();
       while (action != nullptr) {
-        auto* task = static_cast<SD_task_t>(action->get_data());
-        XBT_VERB("Task '%s' failed", SD_task_get_name(task));
-        SD_task_set_state(task, SD_FAILED);
+        auto* task = static_cast<Task*>(action->get_data());
+        XBT_VERB("Task '%s' failed", task->get_cname());
+        task->set_state(SD_FAILED);
         sd_global->return_set.insert(task);
         action = model->extract_failed_action();
       }
@@ -110,7 +82,7 @@ std::set<SD_task_t>* simulate(double how_long)
   if (not sd_global->watch_point_reached && how_long < 0 && not sd_global->initial_tasks.empty()) {
     XBT_WARN("Simulation is finished but %zu tasks are still not done", sd_global->initial_tasks.size());
     for (auto const& t : sd_global->initial_tasks)
-      XBT_WARN("%s is in %s state", SD_task_get_name(t), __get_state_name(SD_task_get_state(t)));
+      XBT_WARN("%s is in %s state", t->get_cname(), __get_state_name(t->get_state()));
   }
 
   XBT_DEBUG("elapsed_time = %f, total_time = %f, watch_point_reached = %d", elapsed_time, total_time,

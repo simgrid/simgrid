@@ -93,7 +93,7 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
 
         if ((performer != -1 && order != -1) && performer < static_cast<int>(sg_host_count())) {
           /* required parameters are given and less performers than hosts are required */
-          XBT_DEBUG ("Task '%s' is scheduled on workstation '%d' in position '%d'", task->name, performer, order);
+          XBT_DEBUG("Task '%s' is scheduled on workstation '%d' in position '%d'", task->get_cname(), performer, order);
           auto comp = computers.find(char_performer);
           if (comp != computers.end()) {
             computer = comp->second;
@@ -102,12 +102,12 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
             computers.insert({char_performer, computer});
           }
           if (static_cast<unsigned int>(order) < computer->size()) {
-            const s_SD_task_t* task_test = computer->at(order);
+            const_SD_task_t task_test = computer->at(order);
             if (task_test && task_test != task) {
               /* the user gave the same order to several tasks */
               schedule_success = false;
               XBT_VERB("Task '%s' wants to start on performer '%s' at the same position '%s' as task '%s'",
-                       task_test->name, char_performer, char_order, task->name);
+                       task_test->get_cname(), char_performer, char_order, task->get_cname());
               continue;
             }
           } else
@@ -117,7 +117,7 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
         } else {
           /* one of required parameters is not given */
           schedule_success = false;
-          XBT_VERB("The schedule is ignored, task '%s' can not be scheduled on %d hosts", task->name, performer);
+          XBT_VERB("The schedule is ignored, task '%s' can not be scheduled on %d hosts", task->get_cname(), performer);
         }
       }
     } else {
@@ -132,7 +132,7 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
   else
     root = jobs.at("root");
 
-  SD_task_set_state(root, SD_SCHEDULABLE);   /* by design the root task is always SCHEDULABLE */
+  root->set_state(SD_SCHEDULABLE);           /* by design the root task is always SCHEDULABLE */
   xbt_dynar_insert_at(result, 0, &root);     /* Put it at the beginning of the dynar */
 
   if (jobs.find("end") == jobs.end())
@@ -180,19 +180,19 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
     }
   }
 
-  XBT_DEBUG("All tasks have been created, put %s at the end of the dynar", end->name);
+  XBT_DEBUG("All tasks have been created, put %s at the end of the dynar", end->get_cname());
   xbt_dynar_push(result, &end);
 
   /* Connect entry tasks to 'root', and exit tasks to 'end'*/
   unsigned i;
   xbt_dynar_foreach (result, i, task){
-    if (task->predecessors->empty() && task->inputs->empty() && task != root) {
-      XBT_DEBUG("Task '%s' has no source. Add dependency from 'root'", task->name);
+    if (task->has_unsolved_dependencies() == 0 && task != root) {
+      XBT_DEBUG("Task '%s' has no source. Add dependency from 'root'", task->get_cname());
       SD_task_dependency_add(root, task);
     }
 
-    if (task->successors->empty() && task->outputs->empty() && task != end) {
-      XBT_DEBUG("Task '%s' has no destination. Add dependency to 'end'", task->name);
+    if (task->is_waited_by() == 0 && task != end) {
+      XBT_DEBUG("Task '%s' has no destination. Add dependency to 'end'", task->get_cname());
       SD_task_dependency_add(task, end);
     }
   }
