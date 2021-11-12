@@ -271,7 +271,7 @@ void Task::dump() const
   XBT_INFO("  - amount: %.0f", amount_);
   if (kind_ == SD_TASK_COMP_PAR_AMDAHL)
     XBT_INFO("  - alpha: %.2f", alpha_);
-  XBT_INFO("  - Dependencies to satisfy: %zu", has_unsolved_dependencies());
+  XBT_INFO("  - Dependencies to satisfy: %lu", has_unsolved_dependencies());
   if (has_unsolved_dependencies() > 0) {
     XBT_INFO("  - pre-dependencies:");
     for (auto const& it : predecessors_)
@@ -280,7 +280,7 @@ void Task::dump() const
     for (auto const& it : inputs_)
       XBT_INFO("    %s", it->get_cname());
   }
-  if ((outputs_.size() + successors_.size()) > 0) {
+  if (is_waited_by() > 0) {
     XBT_INFO("  - post-dependencies:");
 
     for (auto const& it : successors_)
@@ -294,7 +294,7 @@ void Task::released_by(Task* pred)
 {
   predecessors_.erase(pred);
   inputs_.erase(pred);
-  XBT_DEBUG("Release dependency on %s: %zu remain(s). Becomes schedulable if %zu=0", get_cname(),
+  XBT_DEBUG("Release dependency on %s: %lu remain(s). Becomes schedulable if %zu=0", get_cname(),
             has_unsolved_dependencies(), predecessors_.size());
 
   if (state_ == SD_NOT_SCHEDULED && predecessors_.empty())
@@ -423,7 +423,7 @@ void Task::schedulev(const std::vector<s4u::Host*>& hosts)
         output->build_MxN_1D_block_matrix(src_nb, dst_nb);
 
       output->do_schedule();
-      XBT_VERB("Auto-Schedule Communication task %s. Send %.f bytes from %zu hosts to %zu hosts.", output->get_cname(),
+      XBT_VERB("Auto-Schedule Communication task %s. Send %.f bytes from %lu hosts to %lu hosts.", output->get_cname(),
                output->get_amount(), src_nb, dst_nb);
     }
   }
