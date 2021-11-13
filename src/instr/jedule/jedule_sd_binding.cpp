@@ -19,9 +19,8 @@ void jedule_log_sd_event(const_SD_task_t task)
 {
   xbt_assert(task != nullptr);
 
-  simgrid::jedule::Event event(std::string(SD_task_get_name(task)), SD_task_get_start_time(task),
-                               SD_task_get_finish_time(task), "SD");
-  event.add_resources(*task->allocation);
+  simgrid::jedule::Event event(task->get_name(), task->get_start_time(), task->get_finish_time(), "SD");
+  event.add_resources(*task->get_allocation());
   my_jedule->add_event(event);
 }
 
