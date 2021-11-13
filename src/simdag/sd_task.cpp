@@ -507,6 +507,7 @@ void Task::destroy()
     surf_action_->unref();
 
   XBT_DEBUG("Task destroyed.");
+  delete this;
 }
 } // namespace sd
 } // namespace simgrid
