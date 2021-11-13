@@ -57,8 +57,7 @@ int main(int argc, char **argv)
   SD_task_destroy(taskD);
   SD_task_destroy(taskInit);
 
-  XBT_INFO("Simulation time: %f", SD_get_clock());
-
+  XBT_INFO("Simulation time: %f", simgrid_get_clock());
 
   return 0;
 }

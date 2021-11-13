@@ -59,11 +59,10 @@ std::set<Task*>* simulate(double how_long)
         /* remove the dependencies after this task */
         for (auto const& succ : task->get_successors())
           succ->released_by(task);
-        task->clear_successors();
 
         for (auto const& output : task->get_outputs())
           output->produced_by(task);
-        task->clear_outputs();
+        task->clear_successors();
         action = model->extract_done_action();
       }
 
@@ -123,7 +122,12 @@ void SD_init_nocheck(int* argc, char** argv)
 
   simgrid::config::set_default<std::string>("host/model", "ptask_L07");
   if (simgrid::config::get_value<bool>("debug/clean-atexit"))
-    atexit(SD_exit);
+    atexit([]() {
+#if SIMGRID_HAVE_JEDULE
+      jedule_sd_exit();
+#endif
+      sd_global->engine_->shutdown();
+    });
 }
 
 /** @brief set a configuration variable
@@ -192,23 +196,4 @@ void SD_simulate_with_update(double how_long, xbt_dynar_t changed_tasks_dynar)
   const std::set<SD_task_t>* changed_tasks = simgrid::sd::simulate(how_long);
   for (auto const& task : *changed_tasks)
     xbt_dynar_push(changed_tasks_dynar, &task);
-}
-
-/** @brief Returns the current clock, in seconds */
-double SD_get_clock()
-{
-  return simgrid_get_clock();
-}
-
-/**
- * @brief Destroys all SD internal data
- * This function should be called when the simulation is over. Don't forget to destroy too.
- * @see SD_init(), SD_task_destroy()
- */
-void SD_exit()
-{
-#if SIMGRID_HAVE_JEDULE
-  jedule_sd_exit();
-#endif
-  sd_global->engine_->shutdown();
 }

@@ -47,7 +47,7 @@ int main(int argc, char **argv)
 
   SD_simulate_with_update(-1.0, changed_tasks);
   while (!xbt_dynar_is_empty(changed_tasks)) {
-    XBT_INFO("Simulation stopped after %.4f seconds", SD_get_clock());
+    XBT_INFO("Simulation stopped after %.4f seconds", simgrid_get_clock());
     xbt_dynar_foreach(changed_tasks, ctr, task) {
       XBT_INFO("Task '%s' start time: %f, finish time: %f", SD_task_get_name(task), SD_task_get_start_time(task),
                SD_task_get_finish_time(task));

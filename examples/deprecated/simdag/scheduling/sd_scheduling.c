@@ -231,7 +231,7 @@ int main(int argc, char **argv)
     SD_simulate_with_update(-1.0, changed_tasks);
   }
 
-  XBT_INFO("Simulation Time: %f", SD_get_clock());
+  XBT_INFO("Simulation Time: %f", simgrid_get_clock());
   XBT_INFO("------------------- Produce the trace file---------------------------");
   XBT_INFO("Producing a jedule output (if active) of the run into %s", tracefilename?tracefilename:"minmin_test.jed");
 #if SIMGRID_HAVE_JEDULE

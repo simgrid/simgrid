@@ -6,6 +6,7 @@
 #ifndef SIMGRID_SIMDAG_H
 #define SIMGRID_SIMDAG_H
 
+#include <simgrid/engine.h>
 #include <simgrid/host.h>
 #include <simgrid/link.h>
 #include <simgrid/version.h>
@@ -167,8 +168,6 @@ XBT_PUBLIC void SD_config(const char* key, const char* value);
 XBT_PUBLIC void SD_create_environment(const char* platform_file);
 XBT_PUBLIC void SD_simulate(double how_long);
 XBT_PUBLIC void SD_simulate_with_update(double how_long, xbt_dynar_t changed_tasks_dynar);
-XBT_PUBLIC double SD_get_clock();
-XBT_PUBLIC void SD_exit();
 XBT_PUBLIC xbt_dynar_t SD_daxload(const char* filename);
 XBT_PUBLIC xbt_dynar_t SD_dotload(const char* filename);
 XBT_PUBLIC xbt_dynar_t SD_dotload_with_sched(const char* filename);
@@ -176,6 +175,7 @@ XBT_PUBLIC xbt_dynar_t SD_PTG_dotload(const char* filename);
 /** @} */
 
 /* Support some backward compatibility */
+#define SD_get_clock simgrid_get_clock
 #define SD_workstation_t sg_host_t
 
 #define SD_link_get_name sg_link_get_name

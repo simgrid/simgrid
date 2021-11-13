@@ -22,7 +22,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
 xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool schedule);
 
 static void dot_task_p_free(void *task) {
-  SD_task_destroy(*(SD_task_t *)task);
+  (*(SD_task_t*)task)->destroy();
 }
 
 /** @brief loads a DOT file describing a DAG
@@ -71,11 +71,11 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
     if (jobs.find(name) == jobs.end()) {
       if (sequential) {
         XBT_DEBUG("See <job id=%s amount =%.0f>", name, amount);
-        task = SD_task_create_comp_seq(name, nullptr , amount);
+        task = simgrid::sd::Task::create_comp_seq(name, amount, nullptr);
       } else {
         double alpha = atof(agget(node, (char *) "alpha"));
         XBT_DEBUG("See <job id=%s amount =%.0f alpha = %.3f>", name, amount, alpha);
-        task = SD_task_create_comp_par_amdahl(name, nullptr , amount, alpha);
+        task = simgrid::sd::Task::create_comp_par_amdahl(name, amount, nullptr, alpha);
       }
 
       jobs.insert({std::string(name), task});
@@ -127,8 +127,8 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
 
   /*Check if 'root' and 'end' nodes have been explicitly declared.  If not, create them. */
   if (jobs.find("root") == jobs.end())
-    root = (sequential ? SD_task_create_comp_seq("root", nullptr, 0)
-                       : SD_task_create_comp_par_amdahl("root", nullptr, 0, 0));
+    root = (sequential ? simgrid::sd::Task::create_comp_seq("root", 0, nullptr)
+                       : simgrid::sd::Task::create_comp_par_amdahl("root", 0, nullptr, 0));
   else
     root = jobs.at("root");
 
@@ -136,8 +136,8 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
   xbt_dynar_insert_at(result, 0, &root);     /* Put it at the beginning of the dynar */
 
   if (jobs.find("end") == jobs.end())
-    end = (sequential ? SD_task_create_comp_seq("end", nullptr, 0)
-                      : SD_task_create_comp_par_amdahl("end", nullptr, 0, 0));
+    end = (sequential ? simgrid::sd::Task::create_comp_seq("end", 0, nullptr)
+                      : simgrid::sd::Task::create_comp_par_amdahl("end", 0, nullptr, 0));
   else
     end = jobs.at("end");
 
@@ -164,9 +164,9 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
         XBT_DEBUG("See <transfer id=%s amount = %.0f>", name.c_str(), size);
         if (jobs.find(name) == jobs.end()) {
           if (sequential)
-            task = SD_task_create_comm_e2e(name.c_str(), nullptr, size);
+            task = simgrid::sd::Task::create_comm_e2e(name.c_str(), size, nullptr);
           else
-            task = SD_task_create_comm_par_mxn_1d_block(name.c_str(), nullptr, size);
+            task = simgrid::sd::Task::create_comm_par_mxn_1d_block(name.c_str(), size, nullptr);
           SD_task_dependency_add(src, task);
           SD_task_dependency_add(task, dst);
           jobs.insert({name, task});
@@ -212,7 +212,7 @@ xbt_dynar_t SD_dotload_generic(const char* filename, bool sequential, bool sched
             if (previous_task && not SD_task_dependency_exists(previous_task, cur_task))
               SD_task_dependency_add(previous_task, cur_task);
 
-            SD_task_schedulel(cur_task, 1, hosts[std::stoi(elm.first)]);
+            cur_task->schedulev({hosts[std::stoi(elm.first)]});
             previous_task = cur_task;
           }
         }

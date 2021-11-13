@@ -47,7 +47,7 @@ int main(int argc, char **argv){
 
   XBT_INFO("------------------- Run the schedule ---------------------------");
   SD_simulate(-1);
-  XBT_INFO("Makespan: %f", SD_get_clock());
+  XBT_INFO("Makespan: %f", simgrid_get_clock());
   xbt_dynar_foreach(dot, cursor, task) {
     SD_task_destroy(task);
   }

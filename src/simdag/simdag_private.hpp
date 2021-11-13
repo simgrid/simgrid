@@ -42,10 +42,8 @@ class Task : public xbt::Extendable<Task> {
   double alpha_ = 0; /* used by typed parallel tasks */
 
   /* dependencies */
-  std::set<Task*> inputs_;
-  std::set<Task*> outputs_;
-  std::set<Task*> predecessors_;
-  std::set<Task*> successors_;
+  std::set<Task*> dependencies_;
+  std::vector<Task*> successors_;
 
   /* scheduling parameters (only exist in state SD_SCHEDULED) */
   std::vector<s4u::Host*>* allocation_;
@@ -65,29 +63,37 @@ public:
   static Task* create_comp_par_amdahl(const std::string& name, double amount, void* userdata, double alpha);
   static Task* create_comm_par_mxn_1d_block(const std::string& name, double amount, void* userdata);
 
-  void distribute_comp_amdahl(int count);
-  void build_MxN_1D_block_matrix(int src_nb, int dst_nb);
+  void distribute_comp_amdahl(unsigned long count);
+  void build_MxN_1D_block_matrix(unsigned long src_nb, unsigned long dst_nb);
 
-  void add_input(Task* task) { inputs_.insert(task); }
-  void rm_input(Task* task) { inputs_.erase(task); }
-  void add_predecessor(Task* task) { predecessors_.insert(task); }
-  void rm_predecessor(Task* task) { predecessors_.erase(task); }
-  void add_successor(Task* task) { successors_.insert(task); }
-  void rm_successor(Task* task) { successors_.erase(task); }
+  /** @brief Adds a dependency between with 'task'
+   *  @a task will depend on this Task, i.e., it cannot start before this task is finished.
+   */
+  void dependency_add(Task* task);
+  bool dependency_exist(Task* task) const;
+  /** @brief Remove a dependency with 'task' */
+  void dependency_remove(Task* task);
   void clear_successors() { successors_.clear(); }
-  void add_output(Task* task) { outputs_.insert(task); }
-  void rm_output(Task* task) { outputs_.erase(task); }
-  void clear_outputs() { outputs_.clear(); }
 
   void set_name(const std::string& name) { name_ = name; }
   const std::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
 
+  /** @brief Sets the total amount of work of a task
+   * For sequential typed tasks (COMP_SEQ and COMM_E2E), it also sets the appropriate values in the flops_amount and
+   * bytes_amount arrays respectively. Nothing more than modifying task->amount is done for parallel typed tasks
+   * (COMP_PAR_AMDAHL and COMM_PAR_MXN_1D_BLOCK) as the distribution of the amount of work is done at scheduling time.
+   */
   void set_amount(double amount);
   double get_amount() const { return amount_; }
+  /** @brief Returns the remaining amount of work (computation or data transfer) to do before completion */
   double get_remaining_amount() const;
-
+  /** @brief Returns the start time of a task */
   double get_start_time() const;
+  /** @brief Returns the finish time of a task
+   * If the state is not completed yet, the returned value is an estimation of the task finish time. This value can
+   * vary until the task is completed.
+   */
   double get_finish_time() const;
 
   void set_state(e_SD_task_state_t new_state);
@@ -97,16 +103,14 @@ public:
   void unmark() { marked_ = false; }
   bool is_marked() const { return marked_; }
 
-  const std::set<Task*>& get_inputs() const { return inputs_; }
-  const std::set<Task*>& get_predecessors() const { return predecessors_; }
-  const std::set<Task*>& get_successors() const { return successors_; }
-  const std::set<Task*>& get_outputs() const { return outputs_; }
+  const std::set<Task*>& get_dependencies() const { return dependencies_; }
+  std::set<Task*> get_predecessors() const;
+  std::set<Task*> get_inputs() const;
+  const std::vector<Task*>& get_successors() const { return successors_; }
+  std::vector<Task*> get_outputs() const;
 
-  bool is_parent_of(Task* task) const;
-  bool is_child_of(Task* task) const;
-
-  unsigned long has_unsolved_dependencies() const { return (predecessors_.size() + inputs_.size()); }
-  unsigned long is_waited_by() const { return (successors_.size() + outputs_.size()); }
+  unsigned long has_unsolved_dependencies() const { return dependencies_.size(); }
+  unsigned long is_waited_by() const { return successors_.size(); }
   void released_by(Task* pred);
   void produced_by(Task* pred);
 
@@ -114,21 +118,37 @@ public:
   e_SD_task_kind_t get_kind() const { return kind_; }
 
   void set_alpha(double alpha) { alpha_ = alpha; }
-  double get_alpha() const;
+  /** @brief Sets the rate of a task
+   *
+   * This will change the network bandwidth a task can use. This rate  cannot be dynamically changed. Once the task has
+   * started, this call is ineffective. This rate depends on both the nominal bandwidth on the route onto which the task
+   * is scheduled (@see SD_task_get_current_bandwidth) and the amount of data to transfer.
+   *
+   * To divide the nominal bandwidth by 2, the rate then has to be :
+   *    rate = bandwidth/(2*amount)
+   */
   void set_rate(double rate);
 
-  unsigned int get_allocation_size() const { return allocation_->size(); }
+  unsigned long get_allocation_size() const { return allocation_->size(); }
   std::vector<s4u::Host*>* get_allocation() const { return allocation_; }
 
+  /** @brief Adds a watch point to a task
+   * sd::simulate() stops as soon as the @ref e_SD_task_state_t "state" of this task becomes the one given as argument.
+   * The watched state cannot be #SD_NOT_SCHEDULED
+   */
   void watch(e_SD_task_state_t state);
+  /** @brief Removes a watch point on 'state' from a task */
   void unwatch(e_SD_task_state_t state);
 
+  /** @brief Displays debugging information about a task */
   void dump() const;
 
   void do_schedule();
   void schedule(const std::vector<s4u::Host*>& hosts, const double* flops_amount, const double* bytes_amount,
                 double rate);
   void schedulev(const std::vector<s4u::Host*>& hosts);
+  /**
+   * @brief Unschedules a task. Its state becomes #SD_NOT_SCHEDULED. You can schedule it again afterwards */
   void unschedule();
 
   void run();

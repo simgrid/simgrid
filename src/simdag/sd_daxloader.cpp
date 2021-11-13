@@ -22,27 +22,22 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");
 void uniq_transfer_task_name(SD_task_t task)
 {
   const_SD_task_t child  = *(task->get_successors().begin());
-  const_SD_task_t parent = *(task->get_predecessors().begin());
+  const_SD_task_t parent = *(task->get_dependencies().begin());
 
-  std::string new_name =
-      std::string(SD_task_get_name(parent)) + "_" + SD_task_get_name(task) + "_" + SD_task_get_name(child);
+  std::string new_name = parent->get_name() + "_" + task->get_name() + "_" + child->get_name();
 
-  SD_task_set_name(task, new_name.c_str());
+  task->set_name(new_name);
 }
 
 static bool children_are_marked(const_SD_task_t task)
 {
   return std::none_of(task->get_successors().begin(), task->get_successors().end(),
-                      [](const SD_task_t& elm) { return not elm->is_marked(); }) &&
-         std::none_of(task->get_outputs().begin(), task->get_outputs().end(),
                       [](const SD_task_t& elm) { return not elm->is_marked(); });
 }
 
 static bool parents_are_marked(const_SD_task_t task)
 {
-  return std::none_of(task->get_predecessors().begin(), task->get_predecessors().end(),
-                      [](const SD_task_t& elm) { return not elm->is_marked(); }) &&
-         std::none_of(task->get_inputs().begin(), task->get_inputs().end(),
+  return std::none_of(task->get_dependencies().begin(), task->get_dependencies().end(),
                       [](const SD_task_t& elm) { return not elm->is_marked(); });
 }
 
@@ -52,7 +47,7 @@ bool acyclic_graph_detail(const_xbt_dynar_t dag)
   SD_task_t task = nullptr;
   std::vector<SD_task_t> current;
   xbt_dynar_foreach (dag, count, task)
-    if (task->get_kind() != SD_TASK_COMM_E2E && task->get_successors().empty() && task->get_outputs().empty())
+    if (task->get_kind() != SD_TASK_COMM_E2E && task->is_waited_by() == 0)
       current.push_back(task);
 
   while (not current.empty()) {
@@ -60,14 +55,14 @@ bool acyclic_graph_detail(const_xbt_dynar_t dag)
     for (auto const& t : current) {
       //Mark task
       t->mark();
-      for (SD_task_t const& input : t->get_inputs()) {
+      for (auto const& input : t->get_inputs()) {
         input->mark();
         // Inputs are communication, hence they can have only one predecessor
-        SD_task_t input_pred = *(input->get_predecessors().begin());
+        auto input_pred = *(input->get_dependencies().begin());
         if (children_are_marked(input_pred))
           next.push_back(input_pred);
       }
-      for (SD_task_t const& pred : t->get_predecessors()) {
+      for (auto const& pred : t->get_dependencies()) {
         if (children_are_marked(pred))
           next.push_back(pred);
       }
@@ -89,7 +84,7 @@ bool acyclic_graph_detail(const_xbt_dynar_t dag)
   if (not all_marked) {
     XBT_VERB("there is at least one cycle in your task graph");
     xbt_dynar_foreach(dag,count,task){
-      if (task->get_kind() != SD_TASK_COMM_E2E && task->get_predecessors().empty() && task->get_inputs().empty()) {
+      if (task->get_kind() != SD_TASK_COMM_E2E && task->has_unsolved_dependencies() == 0) {
         task->mark();
         current.push_back(task);
       }
@@ -169,23 +164,23 @@ xbt_dynar_t SD_daxload(const char *filename)
   for (auto const& elm : files) {
     file = elm.second;
     SD_task_t newfile;
-    if (file->get_predecessors().empty()) {
+    if (file->has_unsolved_dependencies() == 0) {
       for (SD_task_t const& it : file->get_successors()) {
         newfile = SD_task_create_comm_e2e(file->get_cname(), nullptr, file->get_amount());
-        SD_task_dependency_add(root_task, newfile);
-        SD_task_dependency_add(newfile, it);
+        root_task->dependency_add(newfile);
+        newfile->dependency_add(it);
         xbt_dynar_push(result, &newfile);
       }
     }
-    if (file->get_successors().empty()) {
-      for (SD_task_t const& it : file->get_predecessors()) {
+    if (file->is_waited_by() == 0) {
+      for (SD_task_t const& it : file->get_dependencies()) {
         newfile = SD_task_create_comm_e2e(file->get_cname(), nullptr, file->get_amount());
-        SD_task_dependency_add(it, newfile);
-        SD_task_dependency_add(newfile, end_task);
+        it->dependency_add(newfile);
+        newfile->dependency_add(end_task);
         xbt_dynar_push(result, &newfile);
       }
     }
-    for (SD_task_t const& it : file->get_predecessors()) {
+    for (SD_task_t const& it : file->get_dependencies()) {
       for (SD_task_t const& it2 : file->get_successors()) {
         if (it == it2) {
           XBT_WARN("File %s is produced and consumed by task %s."
@@ -193,13 +188,13 @@ xbt_dynar_t SD_daxload(const char *filename)
                    file->get_cname(), it->get_cname());
         }
         newfile = SD_task_create_comm_e2e(file->get_cname(), nullptr, file->get_amount());
-        SD_task_dependency_add(it, newfile);
-        SD_task_dependency_add(newfile, it2);
+        it->dependency_add(newfile);
+        newfile->dependency_add(it2);
         xbt_dynar_push(result, &newfile);
       }
     }
     /* Free previous copy of the files */
-    SD_task_destroy(file);
+    file->destroy();
   }
 
   /* Push end task last */
@@ -207,17 +202,17 @@ xbt_dynar_t SD_daxload(const char *filename)
 
   unsigned int cpt;
   xbt_dynar_foreach(result, cpt, file) {
-    if (SD_task_get_kind(file) == SD_TASK_COMM_E2E) {
+    if (file->get_kind() == SD_TASK_COMM_E2E) {
       uniq_transfer_task_name(file);
     } else {
       /* If some tasks do not take files as input, connect them to the root
        * if they don't produce files, connect them to the end node.
        */
       if ((file != root_task) && (file != end_task)) {
-        if (file->get_inputs().empty())
-          SD_task_dependency_add(root_task, file);
-        if (file->get_outputs().empty())
-          SD_task_dependency_add(file, end_task);
+        if (file->has_unsolved_dependencies() == 0)
+          root_task->dependency_add(file);
+        if (file->is_waited_by() == 0)
+          file->dependency_add(end_task);
       }
     }
   }
@@ -226,7 +221,7 @@ xbt_dynar_t SD_daxload(const char *filename)
     XBT_ERROR("The DAX described in %s is not a DAG. It contains a cycle.",
               simgrid::xbt::Path(filename).get_base_name().c_str());
     xbt_dynar_foreach(result, cpt, file)
-      SD_task_destroy(file);
+      file->destroy();
     xbt_dynar_free_container(&result);
     result = nullptr;
   }
@@ -284,9 +279,9 @@ void STag_dax__uses()
     }
   }
   if (is_input) {
-    SD_task_dependency_add(file, current_job);
+    file->dependency_add(current_job);
   } else {
-    SD_task_dependency_add(current_job, file);
+    current_job->dependency_add(file);
     if (file->has_unsolved_dependencies() > 1) {
       XBT_WARN("File %s created at more than one location...", file->get_cname());
     }
@@ -314,8 +309,8 @@ void STag_dax__parent()
 {
   auto job = jobs.find(A_dax__parent_ref);
   if (job != jobs.end()) {
-    SD_task_t parent = job->second;
-    SD_task_dependency_add(parent, current_child);
+    auto parent = job->second;
+    parent->dependency_add(current_child);
     XBT_DEBUG("Control-flow dependency from %s to %s", current_child->get_cname(), parent->get_cname());
   } else {
     throw std::out_of_range(std::string("Parse error on line ") + std::to_string(dax_lineno) +

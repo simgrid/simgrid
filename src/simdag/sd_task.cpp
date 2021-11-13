@@ -69,18 +69,18 @@ Task* Task::create_comm_par_mxn_1d_block(const std::string& name, double amount,
   return task;
 }
 
-void Task::distribute_comp_amdahl(int count)
+void Task::distribute_comp_amdahl(unsigned long count)
 {
   xbt_assert(kind_ == SD_TASK_COMP_PAR_AMDAHL,
              "Task %s is not a SD_TASK_COMP_PAR_AMDAHL typed task."
              "Cannot use this function.",
              get_cname());
   flops_amount_ = xbt_new0(double, count);
-  for (int i = 0; i < count; i++)
+  for (unsigned long i = 0; i < count; i++)
     flops_amount_[i] = (alpha_ + (1 - alpha_) / count) * amount_;
 }
 
-void Task::build_MxN_1D_block_matrix(int src_nb, int dst_nb)
+void Task::build_MxN_1D_block_matrix(unsigned long src_nb, unsigned long dst_nb)
 {
   xbt_assert(kind_ == SD_TASK_COMM_PAR_MXN_1D_BLOCK,
              "Task %s is not a SD_TASK_COMM_PAR_MXN_1D_BLOCK typed task."
@@ -89,13 +89,13 @@ void Task::build_MxN_1D_block_matrix(int src_nb, int dst_nb)
   xbt_free(bytes_amount_);
   bytes_amount_ = xbt_new0(double, allocation_->size() * allocation_->size());
 
-  for (int i = 0; i < src_nb; i++) {
+  for (unsigned long i = 0; i < src_nb; i++) {
     double src_start = i * amount_ / src_nb;
     double src_end   = src_start + amount_ / src_nb;
-    for (int j = 0; j < dst_nb; j++) {
+    for (unsigned long j = 0; j < dst_nb; j++) {
       double dst_start = j * amount_ / dst_nb;
       double dst_end   = dst_start + amount_ / dst_nb;
-      XBT_VERB("(%d->%d): (%.2f, %.2f)-> (%.2f, %.2f)", i, j, src_start, src_end, dst_start, dst_end);
+      XBT_VERB("(%lu->%lu): (%.2f, %.2f)-> (%.2f, %.2f)", i, j, src_start, src_end, dst_start, dst_end);
       bytes_amount_[i * (src_nb + dst_nb) + src_nb + j] = 0.0;
       if ((src_end > dst_start) && (dst_end > src_start)) { /* There is something to send */
         bytes_amount_[i * (src_nb + dst_nb) + src_nb + j] = std::min(src_end, dst_end) - std::max(src_start, dst_start);
@@ -105,14 +105,84 @@ void Task::build_MxN_1D_block_matrix(int src_nb, int dst_nb)
   }
 }
 
-bool Task::is_parent_of(Task* task) const
+void Task::dependency_add(Task* task)
 {
-  return (successors_.find(task) != successors_.end() || outputs_.find(task) != outputs_.end());
+  if (this == task)
+    throw std::invalid_argument(
+        simgrid::xbt::string_printf("Cannot add a dependency between task '%s' and itself", get_cname()));
+
+  if (state_ == SD_DONE || state_ == SD_FAILED)
+    throw std::invalid_argument(simgrid::xbt::string_printf(
+        "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED, SD_RUNNABLE, or SD_RUNNING", get_cname()));
+
+  if (task->get_state() == SD_DONE || task->get_state() == SD_FAILED || task->get_state() == SD_RUNNING)
+    throw std::invalid_argument(simgrid::xbt::string_printf(
+        "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED, or SD_RUNNABLE", task->get_cname()));
+
+  if (dependency_exist(task))
+    throw std::invalid_argument(simgrid::xbt::string_printf(
+        "A dependency already exists between task '%s' and task '%s'", get_cname(), task->get_cname()));
+
+  successors_.push_back(task);
+  task->dependencies_.insert({this});
+
+  /* if 'task' was runnable, it goes back to the SD_SCHEDULED state because of the new dependency*/
+  if (task->get_state() == SD_RUNNABLE) {
+    XBT_DEBUG("SD_task_dependency_add: %s was runnable and becomes scheduled!", task->get_cname());
+    task->set_state(SD_SCHEDULED);
+  }
 }
 
-bool Task::is_child_of(Task* task) const
+bool Task::dependency_exist(Task* task) const
 {
-  return (inputs_.find(task) != inputs_.end() || predecessors_.find(task) != predecessors_.end());
+  return (std::find(successors_.begin(), successors_.end(), task) != successors_.end() ||
+          dependencies_.find(task) != dependencies_.end());
+}
+
+void Task::dependency_remove(Task* task)
+{
+  if (this == task)
+    throw std::invalid_argument("Cannot ask to remove itself from successors");
+
+  auto p = std::find(successors_.begin(), successors_.end(), task);
+  if (p != successors_.end()) {
+    successors_.erase(p);
+    task->dependencies_.erase({this});
+  } else
+    throw std::invalid_argument(simgrid::xbt::string_printf(
+        "No dependency found between task '%s' and '%s': task '%s' is not a successor of task '%s'", get_cname(),
+        task->get_cname(), task->get_cname(), get_cname()));
+
+  /* if 'task' was scheduled and dependencies are satisfied, we can make it runnable */
+  if (task->has_unsolved_dependencies() == 0 && task->get_state() == SD_SCHEDULED)
+    task->set_state(SD_RUNNABLE);
+}
+
+std::set<Task*> Task::get_predecessors() const
+{
+  std::set<Task*> res;
+  for (const auto& d : dependencies_)
+    if (d->get_kind() == SD_TASK_COMP_SEQ || d->get_kind() == SD_TASK_COMP_PAR_AMDAHL)
+      res.insert(d);
+  return res;
+}
+
+std::set<Task*> Task::get_inputs() const
+{
+  std::set<Task*> res;
+  for (const auto& d : dependencies_)
+    if (d->get_kind() == SD_TASK_COMM_E2E || d->get_kind() == SD_TASK_COMM_PAR_MXN_1D_BLOCK)
+      res.insert(d);
+  return res;
+}
+
+std::vector<Task*> Task::get_outputs() const
+{
+  std::vector<Task*> res;
+  for (const auto& d : successors_)
+    if (d->get_kind() == SD_TASK_COMM_E2E || d->get_kind() == SD_TASK_COMM_PAR_MXN_1D_BLOCK)
+      res.push_back(d);
+  return res;
 }
 
 void Task::set_amount(double amount)
@@ -134,6 +204,7 @@ void Task::set_rate(double rate)
     XBT_WARN("Task %p has started. Changing rate is ineffective.", this);
   }
 }
+
 void Task::set_state(e_SD_task_state_t new_state)
 {
   std::set<Task*>::iterator idx;
@@ -183,12 +254,6 @@ void Task::set_state(e_SD_task_state_t new_state)
   }
 }
 
-double Task::get_alpha() const
-{
-  xbt_assert(kind_ == SD_TASK_COMP_PAR_AMDAHL, "Alpha parameter is not defined for this kind of task");
-  return alpha_;
-}
-
 double Task::get_remaining_amount() const
 {
   if (surf_action_)
@@ -199,10 +264,7 @@ double Task::get_remaining_amount() const
 
 double Task::get_start_time() const
 {
-  if (surf_action_)
-    return surf_action_->get_start_time();
-  else
-    return start_time_;
+  return surf_action_ ? surf_action_->get_start_time() : start_time_;
 }
 
 double Task::get_finish_time() const
@@ -274,10 +336,7 @@ void Task::dump() const
   XBT_INFO("  - Dependencies to satisfy: %lu", has_unsolved_dependencies());
   if (has_unsolved_dependencies() > 0) {
     XBT_INFO("  - pre-dependencies:");
-    for (auto const& it : predecessors_)
-      XBT_INFO("    %s", it->get_cname());
-
-    for (auto const& it : inputs_)
+    for (auto const& it : dependencies_)
       XBT_INFO("    %s", it->get_cname());
   }
   if (is_waited_by() > 0) {
@@ -285,19 +344,16 @@ void Task::dump() const
 
     for (auto const& it : successors_)
       XBT_INFO("    %s", it->get_cname());
-    for (auto const& it : outputs_)
-      XBT_INFO("    %s", it->get_cname());
   }
 }
 
 void Task::released_by(Task* pred)
 {
-  predecessors_.erase(pred);
-  inputs_.erase(pred);
+  dependencies_.erase(pred);
   XBT_DEBUG("Release dependency on %s: %lu remain(s). Becomes schedulable if %zu=0", get_cname(),
-            has_unsolved_dependencies(), predecessors_.size());
+            has_unsolved_dependencies(), get_predecessors().size());
 
-  if (state_ == SD_NOT_SCHEDULED && predecessors_.empty())
+  if (state_ == SD_NOT_SCHEDULED && get_predecessors().empty())
     set_state(SD_SCHEDULABLE);
 
   if (state_ == SD_SCHEDULED && has_unsolved_dependencies() == 0)
@@ -309,8 +365,11 @@ void Task::released_by(Task* pred)
 
 void Task::produced_by(Task* pred)
 {
+  if (state_ == SD_RUNNABLE)
+    return;
+
   start_time_ = pred->get_finish_time();
-  predecessors_.erase(pred);
+  dependencies_.erase(pred);
   if (state_ == SD_SCHEDULED)
     set_state(SD_RUNNABLE);
   else
@@ -360,8 +419,8 @@ void Task::schedule(const std::vector<s4u::Host*>& hosts, const double* flops_am
     bytes_amount_ = nullptr;
   }
 
-  for (unsigned long i = 0; i < host_count; i++)
-    allocation_->push_back(hosts[i]);
+  for (const auto& h : hosts)
+    allocation_->push_back(h);
 
   do_schedule();
 }
@@ -392,7 +451,7 @@ void Task::schedulev(const std::vector<s4u::Host*>& hosts)
   do_schedule();
 
   /* Iterate over all inputs and outputs to say where I am located (and start them if runnable) */
-  for (auto const& input : inputs_) {
+  for (auto const& input : get_inputs()) {
     unsigned long src_nb = input->get_allocation_size();
     unsigned long dst_nb = hosts.size();
     if (src_nb == 0)
@@ -410,7 +469,7 @@ void Task::schedulev(const std::vector<s4u::Host*>& hosts)
     }
   }
 
-  for (auto const& output : outputs_) {
+  for (auto const& output : get_outputs()) {
     unsigned long src_nb = hosts.size();
     unsigned long dst_nb = output->get_allocation_size();
     if (dst_nb == 0)
@@ -482,14 +541,10 @@ void Task::destroy()
   XBT_DEBUG("Destroying task %s...", get_cname());
 
   /* First Remove all dependencies associated with the task. */
-  while (not predecessors_.empty())
-    SD_task_dependency_remove(*(predecessors_.begin()), this);
-  while (not inputs_.empty())
-    SD_task_dependency_remove(*(inputs_.begin()), this);
+  while (not dependencies_.empty())
+    (*(dependencies_.begin()))->dependency_remove(this);
   while (not successors_.empty())
-    SD_task_dependency_remove(this, *(successors_.begin()));
-  while (not outputs_.empty())
-    SD_task_dependency_remove(this, *(outputs_.begin()));
+    this->dependency_remove(successors_.front());
 
   if (state_ == SD_SCHEDULED || state_ == SD_RUNNABLE) {
     xbt_free(flops_amount_);
@@ -612,45 +667,20 @@ void SD_task_destroy(SD_task_t task)
   task->destroy();
 }
 
-/**
- * @brief Returns the user data of a task
- *
- * @param task a task
- * @return the user data associated with this task (can be @c nullptr)
- * @see SD_task_set_data()
- */
+/** @brief Returns the user data of a task */
 void* SD_task_get_data(const_SD_task_t task)
 {
   return task->get_data();
 }
 
-/**
- * @brief Sets the user data of a task
- *
+/** @brief Sets the user data of a task
  * The new data can be @c nullptr. The old data should have been freed first, if it was not @c nullptr.
- *
- * @param task a task
- * @param data the new data you want to associate with this task
- * @see SD_task_get_data()
  */
 void SD_task_set_data(SD_task_t task, void* data)
 {
   task->set_data(data);
 }
 
-/**
- * @brief Sets the rate of a task
- *
- * This will change the network bandwidth a task can use. This rate  cannot be dynamically changed. Once the task has
- * started, this call is ineffective. This rate depends on both the nominal bandwidth on the route onto which the task
- * is scheduled (@see SD_task_get_current_bandwidth) and the amount of data to transfer.
- *
- * To divide the nominal bandwidth by 2, the rate then has to be :
- *    rate = bandwidth/(2*amount)
- *
- * @param task a @see SD_TASK_COMM_E2E task (end-to-end communication)
- * @param rate the new rate you want to associate with this task.
- */
 void SD_task_set_rate(SD_task_t task, double rate)
 {
   task->set_rate(rate);
@@ -668,56 +698,57 @@ e_SD_task_state_t SD_task_get_state(const_SD_task_t task)
 {
   return task->get_state();
 }
-/**
- * @brief Returns the name of a task
- *
- * @param task a task
- * @return the name of this task (can be @c nullptr)
- */
+
 const char* SD_task_get_name(const_SD_task_t task)
 {
   return task->get_cname();
 }
 
-/** @brief Allows to change the name of a task */
 void SD_task_set_name(SD_task_t task, const char* name)
 {
   task->set_name(name);
 }
 
-/** @brief Returns the dynar of the parents of a task
- *
- * @param task a task
- * @return a newly allocated dynar comprising the parents of this task
- */
-
+/** @brief Returns the parents of a task ina dynar */
 xbt_dynar_t SD_task_get_parents(const_SD_task_t task)
 {
   xbt_dynar_t parents = xbt_dynar_new(sizeof(SD_task_t), nullptr);
 
-  for (auto const& it : task->get_predecessors())
-    xbt_dynar_push(parents, &it);
-  for (auto const& it : task->get_inputs())
+  for (auto const& it : task->get_dependencies())
     xbt_dynar_push(parents, &it);
 
   return parents;
 }
 
-/** @brief Returns the dynar of the parents of a task
- *
- * @param task a task
- * @return a newly allocated dynar comprising the parents of this task
- */
+/** @brief Returns the children of a task in a dynar */
 xbt_dynar_t SD_task_get_children(const_SD_task_t task)
 {
   xbt_dynar_t children = xbt_dynar_new(sizeof(SD_task_t), nullptr);
 
   for (auto const& it : task->get_successors())
     xbt_dynar_push(children, &it);
-  for (auto const& it : task->get_outputs())
-    xbt_dynar_push(children, &it);
 
   return children;
+}
+
+double SD_task_get_start_time(const_SD_task_t task)
+{
+  return task->get_start_time();
+}
+
+double SD_task_get_finish_time(const_SD_task_t task)
+{
+  return task->get_finish_time();
+}
+
+void SD_task_distribute_comp_amdahl(SD_task_t task, int count)
+{
+  task->distribute_comp_amdahl(count);
+}
+
+void SD_task_build_MxN_1D_block_matrix(SD_task_t task, int src_nb, int dst_nb)
+{
+  task->build_MxN_1D_block_matrix(src_nb, dst_nb);
 }
 
 /**
@@ -754,37 +785,11 @@ double SD_task_get_amount(const_SD_task_t task)
   return task->get_amount();
 }
 
-/** @brief Sets the total amount of work of a task
- * For sequential typed tasks (COMP_SEQ and COMM_E2E), it also sets the appropriate values in the flops_amount and
- * bytes_amount arrays respectively. Nothing more than modifying task->amount is done for parallel  typed tasks
- * (COMP_PAR_AMDAHL and COMM_PAR_MXN_1D_BLOCK) as the distribution of the amount of work is done at scheduling time.
- *
- * @param task a task
- * @param amount the new amount of work to execute
- */
 void SD_task_set_amount(SD_task_t task, double amount)
 {
   task->set_amount(amount);
 }
 
-/**
- * @brief Returns the alpha parameter of a SD_TASK_COMP_PAR_AMDAHL task
- *
- * @param task a parallel task assuming Amdahl's law as speedup model
- * @return the alpha parameter (serial part of a task in percent) for this task
- */
-double SD_task_get_alpha(const_SD_task_t task)
-{
-  return task->get_alpha();
-}
-
-/**
- * @brief Returns the remaining amount work to do till the completion of a task
- *
- * @param task a task
- * @return the remaining amount of work (computation or data transfer) of this task
- * @see SD_task_get_amount()
- */
 double SD_task_get_remaining_amount(const_SD_task_t task)
 {
   return task->get_remaining_amount();
@@ -795,10 +800,48 @@ e_SD_task_kind_t SD_task_get_kind(const_SD_task_t task)
   return task->get_kind();
 }
 
-/** @brief Displays debugging information about a task */
 void SD_task_dump(const_SD_task_t task)
 {
   task->dump();
+}
+
+void SD_task_dependency_add(SD_task_t src, SD_task_t dst)
+{
+  XBT_DEBUG("SD_task_dependency_add: src = %s, dst = %s", src->get_cname(), dst->get_cname());
+  src->dependency_add(dst);
+}
+void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
+{
+  XBT_DEBUG("SD_task_dependency_remove: src = %s, dst = %s", src->get_cname(), dst->get_cname());
+  src->dependency_remove(dst);
+}
+
+/**
+ * @brief Indicates whether there is a dependency between two tasks.
+ * If src is nullptr, checks whether dst has any pre-dependency.
+ * If dst is nullptr, checks whether src has any post-dependency.
+ */
+int SD_task_dependency_exists(const_SD_task_t src, SD_task_t dst)
+{
+  xbt_assert(src != nullptr || dst != nullptr, "Invalid parameter: both src and dst are nullptr");
+
+  if (src)
+    if (dst)
+      return src->dependency_exist(dst);
+    else
+      return static_cast<int>(src->is_waited_by());
+  else
+    return static_cast<int>(dst->has_unsolved_dependencies());
+}
+
+void SD_task_watch(SD_task_t task, e_SD_task_state_t state)
+{
+  task->watch(state);
+}
+
+void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
+{
+  task->unwatch(state);
 }
 
 /** @brief Dumps the task in dotty formalism into the FILE* passed as second argument */
@@ -819,146 +862,8 @@ void SD_task_dotty(const_SD_task_t task, void* out)
       xbt_die("Unknown task type!");
   }
   fprintf(fout, "];\n");
-  for (auto const& it : task->get_predecessors())
+  for (auto const& it : task->get_dependencies())
     fprintf(fout, " T%p -> T%p;\n", it, task);
-  for (auto const& it : task->get_inputs())
-    fprintf(fout, " T%p -> T%p;\n", it, task);
-}
-
-/**
- * @brief Adds a dependency between two tasks
- *
- * @a dst will depend on @a src, ie @a dst will not start before @a src is finished.
- * Their @ref e_SD_task_state_t "state" must be #SD_NOT_SCHEDULED, #SD_SCHEDULED or #SD_RUNNABLE.
- *
- * @param src the task which must be executed first
- * @param dst the task you want to make depend on @a src
- * @see SD_task_dependency_remove()
- */
-void SD_task_dependency_add(SD_task_t src, SD_task_t dst)
-{
-  if (src == dst)
-    throw std::invalid_argument(
-        simgrid::xbt::string_printf("Cannot add a dependency between task '%s' and itself", SD_task_get_name(src)));
-
-  if (src->get_state() == SD_DONE || src->get_state() == SD_FAILED)
-    throw std::invalid_argument(simgrid::xbt::string_printf(
-        "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED, SD_RUNNABLE, or SD_RUNNING",
-        src->get_cname()));
-
-  if (dst->get_state() == SD_DONE || dst->get_state() == SD_FAILED || dst->get_state() == SD_RUNNING)
-    throw std::invalid_argument(simgrid::xbt::string_printf(
-        "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED, or SD_RUNNABLE", dst->get_cname()));
-
-  if (dst->is_child_of(src) || src->is_parent_of(dst))
-    throw std::invalid_argument(simgrid::xbt::string_printf(
-        "A dependency already exists between task '%s' and task '%s'", src->get_cname(), dst->get_cname()));
-
-  XBT_DEBUG("SD_task_dependency_add: src = %s, dst = %s", src->get_cname(), dst->get_cname());
-
-  if (src->get_kind() == SD_TASK_COMM_E2E || src->get_kind() == SD_TASK_COMM_PAR_MXN_1D_BLOCK) {
-    if (dst->get_kind() == SD_TASK_COMP_SEQ || dst->get_kind() == SD_TASK_COMP_PAR_AMDAHL)
-      dst->add_input(src);
-    else
-      dst->add_predecessor(src);
-    src->add_successor(dst);
-  } else {
-    if (dst->get_kind() == SD_TASK_COMM_E2E || dst->get_kind() == SD_TASK_COMM_PAR_MXN_1D_BLOCK)
-      src->add_output(dst);
-    else
-      src->add_successor(dst);
-    dst->add_predecessor(src);
-  }
-
-  /* if the task was runnable, the task goes back to SD_SCHEDULED because of the new dependency*/
-  if (dst->get_state() == SD_RUNNABLE) {
-    XBT_DEBUG("SD_task_dependency_add: %s was runnable and becomes scheduled!", dst->get_cname());
-    dst->set_state(SD_SCHEDULED);
-  }
-}
-
-/**
- * @brief Indicates whether there is a dependency between two tasks.
- *
- * @param src a task
- * @param dst a task depending on @a src
- *
- * If src is nullptr, checks whether dst has any pre-dependency.
- * If dst is nullptr, checks whether src has any post-dependency.
- */
-int SD_task_dependency_exists(const_SD_task_t src, SD_task_t dst)
-{
-  xbt_assert(src != nullptr || dst != nullptr, "Invalid parameter: both src and dst are nullptr");
-
-  if (src)
-    if (dst)
-      return src->is_parent_of(dst);
-    else
-      return static_cast<int>(src->is_waited_by());
-  else
-    return static_cast<int>(dst->has_unsolved_dependencies());
-}
-
-/**
- * @brief Remove a dependency between two tasks
- *
- * @param src a task
- * @param dst a task depending on @a src
- * @see SD_task_dependency_add()
- */
-void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
-{
-  XBT_DEBUG("SD_task_dependency_remove: src = %s, dst = %s", src->get_cname(), dst->get_cname());
-
-  if (not src->is_parent_of(dst))
-    throw std::invalid_argument(simgrid::xbt::string_printf(
-        "No dependency found between task '%s' and '%s': task '%s' is not a successor of task '%s'", src->get_cname(),
-        dst->get_cname(), dst->get_cname(), src->get_cname()));
-
-  if (src->get_kind() == SD_TASK_COMM_E2E || src->get_kind() == SD_TASK_COMM_PAR_MXN_1D_BLOCK) {
-    if (dst->get_kind() == SD_TASK_COMP_SEQ || dst->get_kind() == SD_TASK_COMP_PAR_AMDAHL)
-      dst->rm_input(src);
-    else
-      dst->rm_predecessor(src);
-    src->rm_successor(dst);
-  } else {
-    if (dst->get_kind() == SD_TASK_COMM_E2E || dst->get_kind() == SD_TASK_COMM_PAR_MXN_1D_BLOCK)
-      src->rm_output(dst);
-    else
-      src->rm_successor(dst);
-    dst->rm_predecessor(src);
-  }
-
-  /* if the task was scheduled and dependencies are satisfied, we can make it runnable */
-  if (dst->has_unsolved_dependencies() == 0 && dst->get_state() == SD_SCHEDULED)
-    dst->set_state(SD_RUNNABLE);
-}
-
-/**
- * @brief Adds a watch point to a task
- *
- * SD_simulate() will stop as soon as the @ref e_SD_task_state_t "state" of this task becomes the one given in argument.
- * The watch point is then automatically removed.
- *
- * @param task a task
- * @param state the @ref e_SD_task_state_t "state" you want to watch (cannot be #SD_NOT_SCHEDULED)
- * @see SD_task_unwatch()
- */
-void SD_task_watch(SD_task_t task, e_SD_task_state_t state)
-{
-  task->watch(state);
-}
-
-/**
- * @brief Removes a watch point from a task
- *
- * @param task a task
- * @param state the @ref e_SD_task_state_t "state" you no longer want to watch
- * @see SD_task_watch()
- */
-void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
-{
-  task->unwatch(state);
 }
 
 /**
@@ -1023,57 +928,9 @@ void SD_task_schedule(SD_task_t task, int host_count, const sg_host_t* host_list
   task->schedule(hosts, flops_amount, bytes_amount, rate);
 }
 
-/**
- * @brief Unschedules a task
- *
- * The task state must be #SD_SCHEDULED, #SD_RUNNABLE, #SD_RUNNING or #SD_FAILED.
- * If you call this function, the task state becomes #SD_NOT_SCHEDULED.
- * Call SD_task_schedule() to schedule it again.
- *
- * @param task the task you want to unschedule
- * @see SD_task_schedule()
- */
 void SD_task_unschedule(SD_task_t task)
 {
   task->unschedule();
-}
-
-/**
- * @brief Returns the start time of a task
- *
- * The task state must be SD_RUNNING, SD_DONE or SD_FAILED.
- *
- * @param task: a task
- * @return the start time of this task
- */
-double SD_task_get_start_time(const_SD_task_t task)
-{
-  return task->get_start_time();
-}
-
-/**
- * @brief Returns the finish time of a task
- *
- * The task state must be SD_RUNNING, SD_DONE or SD_FAILED.
- * If the state is not completed yet, the returned value is an estimation of the task finish time. This value can
- * vary until the task is completed.
- *
- * @param task: a task
- * @return the start time of this task
- */
-double SD_task_get_finish_time(const_SD_task_t task)
-{
-  return task->get_finish_time();
-}
-
-void SD_task_distribute_comp_amdahl(SD_task_t task, int count)
-{
-  task->distribute_comp_amdahl(count);
-}
-
-void SD_task_build_MxN_1D_block_matrix(SD_task_t task, int src_nb, int dst_nb)
-{
-  task->build_MxN_1D_block_matrix(src_nb, dst_nb);
 }
 
 /** @brief Auto-schedules a task.
