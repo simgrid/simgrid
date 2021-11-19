@@ -248,7 +248,7 @@ void EngineImpl::context_mod_init() const
 {
   xbt_assert(not instance_->has_context_factory());
 
-#if HAVE_SMPI && (defined(__APPLE__) || defined(__NetBSD__))
+#if HAVE_SMPI && defined(__NetBSD__)
   smpi_init_options_internal(false);
   std::string priv = config::get_value<std::string>("smpi/privatization");
   if (context_factory_name == "thread" && (priv == "dlopen" || priv == "yes" || priv == "default" || priv == "1")) {
