@@ -31,7 +31,6 @@ jobs:
       if: matrix.config.os == 'windows'
       run: |
         Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
-        (Get-Content ~\scoop\buckets\main\bucket\gcc.json).replace('http://repo.msys2.org/', 'http://mirrors.huaweicloud.com/msys2/') | Set-Content  ~\scoop\buckets\main\bucket\gcc.json
         scoop install gcc --global
         If ((Test-Path "C:\hostedtoolcache\windows\Boost") -eq $False){
           # Use the boost-1.72.0-win32-msvc14.1-x86_64.tar.gz for Windows 2016
