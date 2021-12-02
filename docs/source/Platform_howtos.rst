@@ -122,12 +122,13 @@ timed events with the form "date value". Example:
    2 1
    LOOPAFTER 8
 
-  - At time t = 1, the host is turned off (a zero value means OFF)
-  - At time t = 2, the host is turned back on (any other value than zero means ON)
-  - At time t = 10, the profile is reset (as we are 8 seconds after the last event). Then the host will be turned off
-    again at time t = 11.
+This file uses a cryptic yet simple formalism:
 
-   If your profile does not contain any LOOPAFTER line, then it will be executed only once and not in a repetitive way.
+  * At time t = 1, the host is turned off (a zero value means OFF).
+  * At time t = 2, the host is turned back on (any other value than zero means ON).
+  * At time t = 10, the profile is reset (as we are 8 seconds after the last event). Then the host will be turned off again at time t = 11.
+
+If your profile does not contain any LOOPAFTER line, then it will be executed only once and not in a repetitive way.
 
 Another possibility is to use the
 :cpp:func:`simgrid::s4u::Host::set_state_profile()` or
@@ -251,7 +252,7 @@ You might be tempted to model this configuration as follows :
     </route>
 
 But that will not work, since SimGrid doesn't allow several routes for
-a single `{src ; dst}` pair. Instead, what you should do is :
+a single `{src ; dst}` pair. Instead, what you should do is:
 
   - Use a single route with both links (so both will be traversed
     each time a message is exchanged between router A and B)
