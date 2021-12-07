@@ -1265,7 +1265,7 @@ XBT_PUBLIC void smpi_comm_copy_buffer_callback(simgrid::kernel::activity::CommIm
  * @param source Source host
  * @param dst Destination host
  */
-using SmpiOpCostCb = std::function<double(double size, simgrid::s4u::Host* source, simgrid::s4u::Host* dst)>;
+using SmpiOpCostCb = std::function<double(size_t size, simgrid::s4u::Host* source, simgrid::s4u::Host* dst)>;
 /** @brief SMPI functions that accept cost functions */
 enum class SmpiOperation { RECV = 2, SEND = 1, ISEND = 0 };
 /**

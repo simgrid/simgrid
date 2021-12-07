@@ -120,7 +120,7 @@ double Host::oisend(size_t size, s4u::Host* src, s4u::Host* dst)
   return current;
 }
 
-void Host::check_factor_configs(const std::string op) const
+void Host::check_factor_configs(const std::string& op) const
 {
   static const std::unordered_map<std::string, SmpiOperation> name_to_op_enum{
       {"smpi/or", SmpiOperation::RECV}, {"smpi/os", SmpiOperation::SEND}, {"smpi/ois", SmpiOperation::ISEND}};

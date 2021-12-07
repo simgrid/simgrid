@@ -25,7 +25,7 @@ class Host {
    * @brief Generates warning message if user's config is conflicting (callback vs command line/xml)
    * @param op String with config name (smpi/os, smpi/or, smpi/ois)
    */
-  void check_factor_configs(const std::string op) const;
+  void check_factor_configs(const std::string& op) const;
 
 public:
   static xbt::Extension<s4u::Host, smpi::Host> EXTENSION_ID;

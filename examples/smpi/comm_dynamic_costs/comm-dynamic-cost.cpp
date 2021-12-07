@@ -19,7 +19,7 @@ namespace sg4 = simgrid::s4u;
  * @param src Source host (set by simgrid)
  * @param dst Source host (set by simgrid)
  */
-static double smpi_cost_cb(SmpiOperation op, double size, sg4::Host* src, sg4::Host* dst)
+static double smpi_cost_cb(SmpiOperation op, size_t /*size*/, const sg4::Host* src, const sg4::Host* dst)
 {
   /* some dummy cost that depends on the operation and host */
   static std::unordered_map<std::string, double> read_cost  = {{"Tremblay", 1}, {"Jupiter", 2}};
