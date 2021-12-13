@@ -3,6 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/plugins/ns3.hpp"
+
 #include <string>
 #include <unordered_set>
 
@@ -517,8 +519,8 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
 
   static uint16_t port_number = 1;
 
-  ns3::Ptr<ns3::Node> src_node = src->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
-  ns3::Ptr<ns3::Node> dst_node = dst->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
+  ns3::Ptr<ns3::Node> src_node = get_ns3node_from_sghost(src);
+  ns3::Ptr<ns3::Node> dst_node = get_ns3node_from_sghost(dst);
 
   std::string& addr = dst->get_netpoint()->extension<NetPointNs3>()->ipv4_address_;
   xbt_assert(not addr.empty(), "Element %s is unknown to ns-3. Is it connected to any one-hop link?",
@@ -564,6 +566,12 @@ void NetworkNS3Action::update_remains_lazy(double /*now*/)
 
 } // namespace resource
 } // namespace kernel
+
+ns3::Ptr<ns3::Node> get_ns3node_from_sghost(simgrid::s4u::Host* host)
+{
+  xbt_assert(host->get_netpoint()->extension<NetPointNs3>() != nullptr, "Please only use this function on ns-3 nodes");
+  return host->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
+}
 } // namespace simgrid
 
 void ns3_simulator(double maxSeconds)
