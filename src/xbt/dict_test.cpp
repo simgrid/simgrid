@@ -295,9 +295,9 @@ TEST_CASE("xbt::dict: dict data container", "dict")
     xbt_dict_t head = xbt_dict_new_homogeneous(&free);
     INFO("Fill " << NB_ELM << " elements, with keys being the number of element");
     for (int j = 0; j < NB_ELM; j++) {
-      auto* key = static_cast<char*>(xbt_malloc(10));
+      auto* key = static_cast<char*>(xbt_malloc(12));
 
-      snprintf(key, 10, "%d", j);
+      snprintf(key, 12, "%d", j);
       xbt_dict_set(head, key, key);
     }
 
@@ -305,10 +305,10 @@ TEST_CASE("xbt::dict: dict data container", "dict")
     INFO("There is " << countelems(head) << " elements");
 
     INFO("Search my " << NB_ELM << " elements 20 times");
-    auto* key = static_cast<char*>(xbt_malloc(10));
+    auto* key = static_cast<char*>(xbt_malloc(12));
     for (int i = 0; i < 20; i++) {
       for (int j = 0; j < NB_ELM; j++) {
-        snprintf(key, 10, "%d", j);
+        snprintf(key, 12, "%d", j);
         void* data = xbt_dict_get_or_null(head, key);
         REQUIRE((data && not strcmp(key, (char*)data))); // with get, key != data
         data = xbt_dict_get_or_null_ext(head, key, strlen(key));
@@ -318,9 +318,9 @@ TEST_CASE("xbt::dict: dict data container", "dict")
     xbt_free(key);
 
     INFO("Remove my " << NB_ELM << " elements");
-    key = (char*)xbt_malloc(10);
+    key = (char*)xbt_malloc(12);
     for (int j = 0; j < NB_ELM; j++) {
-      snprintf(key, 10, "%d", j);
+      snprintf(key, 12, "%d", j);
       xbt_dict_remove_ext(head, key, strlen(key));
     }
     xbt_free(key);
