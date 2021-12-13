@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 
   //tagged version, should differentiate between two different calls to the same kernel and run calibration even on the second one
   for (int tag=0; tag < 4; tag++){
-    char ctag [8];
+    char ctag [12];
     //run twice with the same tag, test should skip 1 and 3, as they were already benched.
     sprintf(ctag, "%d", tag - tag%2);
     SMPI_SAMPLE_GLOBAL_TAG(int i = 0, i < 500, i++, 2, 0.1, ctag){
