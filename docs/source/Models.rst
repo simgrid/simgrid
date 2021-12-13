@@ -217,6 +217,14 @@ ns-3 model, such as `examples/platforms/dogbone.xml <https://framagit.org/simgri
 Check the file  `examples/cpp/network-ns3/network-ns3.tesh <https://framagit.org/simgrid/simgrid/tree/master/examples/cpp/network-ns3/network-ns3.tesh>`_
 to see which ones are used in our regression tests.
 
+Alternatively, you can manually modify the ns-3 settings by retrieving
+the ns-3 node from any given host with the
+:cpp:func:`simgrid::get_ns3node_from_sghost` function (defined in
+``simgrid/plugins/ns3.hpp``).
+
+.. doxygenfunction:: simgrid::get_ns3node_from_sghost
+
+
 WiFi platforms
 ^^^^^^^^^^^^^^
 
