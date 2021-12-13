@@ -31,3 +31,8 @@ https://ipsj.ixsq.nii.ac.jp/ej/?action=pages_view_main&active_action=repository_
 In S. Hirasawa, H. Yamaki, M.o Koibuchi. A Study of Routing-table Cache on HPC Switches.
 Information Processing Society of Japan Journal of Computing Systems, 2020 (in Japanese).
 https://ipsj.ixsq.nii.ac.jp/ej/index.php?active_action=repository_view_main_item_detail&page_id=13&block_id=8&item_id=206944&item_no=1
+
+さらに, 提案アルゴリズムが生成するグラフの性能を評価するため, 並列シミュレーション フレームワーク SimGrid と並列ベンチマーク集 NAS Parallel Benchmarks による評価を
+In M. Nakao, M. Tsukamoto, Y. Hanada, K. Yamamoto. Proposal of optimization algorithm using symmetry and host bias in Order / Radix Problem.
+Information Processing Society of Japan Journal of Computing Systems, 2021 (in Japanese).
+https://ipsj.ixsq.nii.ac.jp/ej/index.php?active_action=repository_view_main_item_detail&page_id=13&block_id=8&item_id=214218&item_no=1
