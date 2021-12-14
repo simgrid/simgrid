@@ -55,6 +55,7 @@ public:
   unsigned int get_host_number() const { return hosts_.size(); }
   double get_seq_remaining_ratio();
   double get_par_remaining_ratio();
+  double get_remaining() const override;
   virtual ActivityImpl* migrate(s4u::Host* to);
 
   ExecImpl* start();

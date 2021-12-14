@@ -92,14 +92,25 @@ ExecImpl* ExecImpl::start()
   return this;
 }
 
+double ExecImpl::get_remaining() const
+{
+  if (state_ == State::WAITING)
+    return flops_amounts_.front();
+  return ActivityImpl::get_remaining();
+}
+
 double ExecImpl::get_seq_remaining_ratio()
 {
+  if (state_ == State::WAITING)
+    return 1;
   return (surf_action_ == nullptr) ? 0 : surf_action_->get_remains() / surf_action_->get_cost();
 }
 
 double ExecImpl::get_par_remaining_ratio()
 {
   // parallel task: their remain is already between 0 and 1
+  if (state_ == State::WAITING)
+    return 1;
   return (surf_action_ == nullptr) ? 0 : surf_action_->get_remains();
 }
 
