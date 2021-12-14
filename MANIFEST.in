@@ -232,6 +232,8 @@ include examples/cpp/energy-wifi/s4u-energy-wifi.cpp
 include examples/cpp/energy-wifi/s4u-energy-wifi.tesh
 include examples/cpp/engine-filtering/s4u-engine-filtering.cpp
 include examples/cpp/engine-filtering/s4u-engine-filtering.tesh
+include examples/cpp/engine-run-partial/s4u-engine-run-partial.cpp
+include examples/cpp/engine-run-partial/s4u-engine-run-partial.tesh
 include examples/cpp/exec-async/s4u-exec-async.cpp
 include examples/cpp/exec-async/s4u-exec-async.tesh
 include examples/cpp/exec-basic/s4u-exec-basic.cpp
@@ -2100,6 +2102,7 @@ include include/simgrid/plugins/energy.h
 include include/simgrid/plugins/file_system.h
 include include/simgrid/plugins/live_migration.h
 include include/simgrid/plugins/load.h
+include include/simgrid/plugins/ns3.hpp
 include include/simgrid/s4u.hpp
 include include/simgrid/s4u/Activity.hpp
 include include/simgrid/s4u/Actor.hpp
