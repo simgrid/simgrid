@@ -1,0 +1,15 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-engine-run-partial ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Remaining amount of flops: 7.6296e+08 (100%)
+> [  1.000000] (0:maestro@) Remaining amount of flops: 6.86664e+08 (90%)
+> [  2.000000] (0:maestro@) Remaining amount of flops: 6.10368e+08 (80%)
+> [  3.000000] (0:maestro@) Remaining amount of flops: 5.34072e+08 (70%)
+> [  4.000000] (0:maestro@) Remaining amount of flops: 4.57776e+08 (60%)
+> [  5.000000] (0:maestro@) Remaining amount of flops: 3.8148e+08 (50%)
+> [  6.000000] (0:maestro@) Remaining amount of flops: 3.05184e+08 (40%)
+> [  7.000000] (0:maestro@) Remaining amount of flops: 2.28888e+08 (30%)
+> [  8.000000] (0:maestro@) Remaining amount of flops: 1.52592e+08 (20%)
+> [  9.000000] (0:maestro@) Remaining amount of flops: 7.6296e+07 (10%)
+> [ 10.000000] (1:runner@Fafard) Goodbye now!
+> [ 10.000000] (0:maestro@) Simulation time 10

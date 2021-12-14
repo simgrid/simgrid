@@ -68,12 +68,12 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  cloud-capping cloud-migration cloud-simple
                  dht-chord dht-kademlia
                  energy-exec energy-boot energy-link energy-vm energy-exec-ptask energy-wifi
-                 engine-filtering
+                 engine-filtering engine-run-partial
                  exec-async exec-basic exec-dvfs exec-remote exec-waitany exec-waitfor exec-dependent exec-unassigned
                  exec-ptask-multicore exec-cpu-nonlinear exec-cpu-factors exec-failure
                  maestro-set
                  mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert
-		 		 network-wifi
+                 network-wifi
                  io-async io-priority io-degradation io-file-system io-file-remote io-disk-raw io-dependent
                  platform-failures platform-profile platform-properties
                  plugin-host-load plugin-link-load plugin-prodcons
