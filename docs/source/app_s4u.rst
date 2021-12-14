@@ -846,6 +846,7 @@ Run the simulation
 
       .. doxygenfunction:: simgrid_get_clock
       .. doxygenfunction:: simgrid_run
+      .. doxygenfunction:: simgrid_run_until
 
 Retrieving actors
 -----------------
