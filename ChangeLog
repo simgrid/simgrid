@@ -2,8 +2,9 @@
 
 SimGrid (3.29.1) NOT RELEASED YET (v3.30 expected December 21. 2021, 15:59 UTC)
 
-Engine:
- - New function: run_until(date) allowing to split the simulation.
+S4U:
+ - New function: Engine::run_until(date), to split the simulation.
+ - New signal: Activity::on_veto, to detect when an activity fails to start.
 
 SMPI:
  - Dynamic costs for MPI operations: New API to allow users to dynamically

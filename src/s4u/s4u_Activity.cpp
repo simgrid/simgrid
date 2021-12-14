@@ -19,6 +19,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_activity, s4u, "S4U activities");
 namespace simgrid {
 namespace s4u {
 
+xbt::signal<void(Activity&)> Activity::on_veto;
+
 void Activity::wait_until(double time_limit)
 {
   double now = Engine::get_clock();

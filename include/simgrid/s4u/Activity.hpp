@@ -36,12 +36,13 @@ public:
   // enum class State { ... }
   XBT_DECLARE_ENUM_CLASS(State, INITED, STARTING, STARTED, FAILED, CANCELED, FINISHED);
 
+  virtual bool is_assigned() const = 0;
+  virtual bool dependencies_solved() const { return dependencies_.empty(); }
+
 protected:
   Activity()  = default;
   virtual ~Activity() = default;
 
-  virtual bool is_assigned() const = 0;
-  virtual bool dependencies_solved() { return dependencies_.empty(); }
   virtual void complete(Activity::State state)
   {
     state_ = state;
@@ -88,12 +89,18 @@ protected:
   }
 
 public:
+  /*! Signal fired each time that the activity fails to start because of a veto (e.g., unsolved dependency or no
+   * resource assigned) */
+  static xbt::signal<void(Activity&)> on_veto;
+
   void vetoable_start()
   {
     state_ = State::STARTING;
     if (dependencies_solved() && is_assigned()) {
       XBT_CVERB(s4u_activity, "'%s' is assigned to a resource and all dependencies are solved. Let's start", get_cname());
       start();
+    } else {
+      on_veto(*this);
     }
   }
 

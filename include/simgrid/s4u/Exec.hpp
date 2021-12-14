@@ -46,7 +46,9 @@ public:
   Exec(Exec const&) = delete;
   Exec& operator=(Exec const&) = delete;
 #endif
+  /*! Signal fired each time that an execution actually starts (no veto) */
   static xbt::signal<void(Exec const&)> on_start;
+  /*! Signal fired each time that an execution terminates (either normally, cancelled or failed) */
   static xbt::signal<void(Exec const&)> on_completion;
 
   static ExecPtr init();

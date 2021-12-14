@@ -21,7 +21,7 @@ static void worker()
   pending_execs.push_back(first_parent);
   simgrid::s4u::ExecPtr second_parent = simgrid::s4u::this_actor::exec_init(2 * computation_amount);
   pending_execs.push_back(second_parent);
-  simgrid::s4u::ExecPtr child = simgrid::s4u::this_actor::exec_init(computation_amount);
+  simgrid::s4u::ExecPtr child = simgrid::s4u::Exec::init()->set_flops_amount(computation_amount);
   pending_execs.push_back(child);
 
   // Name the activities (for logging purposes only)
@@ -53,6 +53,21 @@ int main(int argc, char* argv[])
   e.load_platform(argv[1]);
 
   simgrid::s4u::Actor::create("worker", e.host_by_name("Fafard"), worker);
+
+  simgrid::s4u::Activity::on_veto.connect([&e](simgrid::s4u::Activity& a) {
+    auto& exec = static_cast<simgrid::s4u::Exec&>(a);
+
+    // First display the situation
+    XBT_INFO("Activity '%s' vetoed. Dependencies: %s; Ressources: %s", exec.get_cname(),
+             (exec.dependencies_solved() ? "solved" : "NOT solved"),
+             (exec.is_assigned() ? "assigned" : "NOT assigned"));
+
+    // In this simple case, we just assign the child task to a resource when its dependencies are solved
+    if (exec.dependencies_solved() && not exec.is_assigned()) {
+      XBT_INFO("Activity %s's dependencies are resolved. Let's assign it to Fafard.", exec.get_cname());
+      exec.set_host(e.host_by_name("Fafard"));
+    }
+  });
 
   e.run();
 
