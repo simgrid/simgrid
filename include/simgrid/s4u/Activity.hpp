@@ -41,7 +41,7 @@ protected:
   virtual ~Activity() = default;
 
   virtual bool is_assigned() const = 0;
-
+  virtual bool dependencies_solved() { return dependencies_.empty(); }
   virtual void complete(Activity::State state)
   {
     state_ = state;
@@ -55,7 +55,7 @@ protected:
       ActivityPtr b = successors_.back();
       XBT_CVERB(s4u_activity, "Remove a dependency from '%s' on '%s'", get_cname(), b->get_cname());
       b->dependencies_.erase(this);
-      if (b->dependencies_.empty()) {
+      if (b->dependencies_solved()) {
         b->vetoable_start();
       }
       successors_.pop_back();
@@ -91,7 +91,7 @@ public:
   void vetoable_start()
   {
     state_ = State::STARTING;
-    if (dependencies_.empty() && is_assigned()) {
+    if (dependencies_solved() && is_assigned()) {
       XBT_CVERB(s4u_activity, "'%s' is assigned to a resource and all dependencies are solved. Let's start", get_cname());
       start();
     }
