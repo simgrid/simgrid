@@ -43,8 +43,11 @@ public:
   /** Finalize the default engine and all its dependencies */
   void shutdown();
 
-  /** Run the simulation after initialization */
+  /** Run the simulation until its end */
   void run() const;
+
+  /** Run the simulation until the specified date */
+  void run_until(double max_date) const;
 
   /** @brief Retrieve the simulation time (in seconds) */
   static double get_clock();

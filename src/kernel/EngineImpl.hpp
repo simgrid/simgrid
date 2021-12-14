@@ -202,8 +202,8 @@ public:
    */
   double solve(double max_date) const;
 
-  /** @brief Run the main simulation loop. */
-  void run();
+  /** @brief Run the main simulation loop until the specified date (or infinitly if max_date is negative). */
+  void run(double max_date);
 
   /** @brief Return the current time in milliseconds. */
   static double get_clock();

@@ -317,6 +317,10 @@ std::vector<ActorPtr> Engine::get_filtered_actors(const std::function<bool(Actor
 
 void Engine::run() const
 {
+  run_until(-1);
+}
+void Engine::run_until(double max_date) const
+{
   /* sealing resources before run: links */
   for (auto* link : get_all_links())
     link->seal();
@@ -330,7 +334,7 @@ void Engine::run() const
   if (MC_is_active()) {
     MC_run();
   } else {
-    pimpl->run();
+    pimpl->run(max_date);
   }
 }
 

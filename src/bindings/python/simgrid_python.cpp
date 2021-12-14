@@ -139,7 +139,10 @@ PYBIND11_MODULE(simgrid, m)
       .def("get_all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
       .def("load_platform", &Engine::load_platform, "Load a platform file describing the environment")
       .def("load_deployment", &Engine::load_deployment, "Load a deployment file and launch the actors that it contains")
-      .def("run", &Engine::run, py::call_guard<py::gil_scoped_release>(), "Run the simulation")
+      .def("run", &Engine::run, py::call_guard<py::gil_scoped_release>(), "Run the simulation until its end")
+      .def("run_until", py::overload_cast<double>(&Engine::run_until, py::const_),
+           py::call_guard<py::gil_scoped_release>(), "Run the simulation until the given date",
+           py::arg("max_date") = -1)
       .def(
           "register_actor",
           [](Engine* e, const std::string& name, py::object fun_or_class) {

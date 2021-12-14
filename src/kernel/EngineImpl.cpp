@@ -672,7 +672,7 @@ double EngineImpl::solve(double max_date) const
   return time_delta;
 }
 
-void EngineImpl::run()
+void EngineImpl::run(double max_date)
 {
   if (MC_record_replay_is_active()) {
     mc::replay(MC_record_path());
@@ -680,7 +680,7 @@ void EngineImpl::run()
     return;
   }
 
-  double time = 0;
+  double elapsed_time = -1;
 
   do {
     XBT_DEBUG("New Schedule Round; size(queue)=%zu", actors_to_run_.size());
@@ -784,11 +784,21 @@ void EngineImpl::run()
         }
     }
 
-    time = timer::Timer::next();
-    if (time > -1.0 || not actor_list_.empty()) {
-      XBT_DEBUG("Calling solve");
-      time = solve(time);
-      XBT_DEBUG("Moving time ahead : %g", time);
+    // Compute the max_date of the next solve.
+    // It's either when a timer occurs, or when user-specified deadline is reached, or -1 if none is given
+    double next_time = timer::Timer::next();
+    if (next_time < 0 && max_date > -1) {
+      next_time = max_date;
+    } else if (next_time > -1 && max_date > -1) { // either both <0, or both >0
+      next_time = std::min(next_time, max_date);
+    }
+
+    if (next_time > -1.0 || not actor_list_.empty()) {
+      XBT_DEBUG("Calling solve(%g) %g", next_time, NOW);
+      elapsed_time = solve(next_time);
+      XBT_DEBUG("Moving time ahead. NOW=%g; elapsed: %g", NOW, elapsed_time);
+    } else {
+      elapsed_time = -1;
     }
 
     /* Notify all the hosts that have failed */
@@ -807,9 +817,9 @@ void EngineImpl::run()
     /* Clean actors to destroy */
     empty_trash();
 
-    XBT_DEBUG("### time %f, #actors %zu, #to_run %zu", time, actor_list_.size(), actors_to_run_.size());
+    XBT_DEBUG("### elapsed time %f, #actors %zu, #to_run %zu", elapsed_time, actor_list_.size(), actors_to_run_.size());
 
-    if (time < 0. && actors_to_run_.empty() && not actor_list_.empty()) {
+    if (elapsed_time < 0. && actors_to_run_.empty() && not actor_list_.empty()) {
       if (actor_list_.size() <= daemons_.size()) {
         XBT_CRITICAL("Oops! Daemon actors cannot do any blocking activity (communications, synchronization, etc) "
                      "once the simulation is over. Please fix your on_exit() functions.");
@@ -823,9 +833,9 @@ void EngineImpl::run()
         maestro_->kill(kv.second);
       }
     }
-  } while (time > -1.0 || has_actors_to_run());
+  } while ((elapsed_time > -1.0 && not double_equals(max_date, NOW, 0.00001)) || has_actors_to_run());
 
-  if (not actor_list_.empty())
+  if (not actor_list_.empty() && max_date < 0)
     THROW_IMPOSSIBLE;
 
   simgrid::s4u::Engine::on_simulation_end();
@@ -840,5 +850,5 @@ double EngineImpl::get_clock()
 
 void SIMIX_run() // XBT_ATTRIB_DEPRECATED_v332
 {
-  simgrid::kernel::EngineImpl::get_instance()->run();
+  simgrid::kernel::EngineImpl::get_instance()->run(-1);
 }
