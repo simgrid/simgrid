@@ -468,6 +468,10 @@ void simgrid_run()
 {
   simgrid::s4u::Engine::get_instance()->run();
 }
+void simgrid_run_until(double max_date)
+{
+  simgrid::s4u::Engine::get_instance()->run_until(max_date);
+}
 void simgrid_register_function(const char* name, void (*code)(int, char**))
 {
   simgrid::s4u::Engine::get_instance()->register_function(name, code);

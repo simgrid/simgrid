@@ -29,8 +29,10 @@ XBT_PUBLIC void simgrid_load_platform(const char* filename);
  * \endrst
  */
 XBT_PUBLIC void simgrid_load_deployment(const char* filename);
-/** Run the simulation after initialization */
+/** Run the simulation until its end */
 XBT_PUBLIC void simgrid_run();
+/** Run the simulation until the specified date */
+XBT_PUBLIC void simgrid_run_until(double max_date);
 /** Registers the main function of an actor that will be launched from the deployment file */
 XBT_PUBLIC void simgrid_register_function(const char* name, void (*code)(int, char**));
 /** Registers a function as the default main function of actors

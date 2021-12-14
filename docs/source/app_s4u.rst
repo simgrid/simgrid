@@ -834,11 +834,13 @@ Run the simulation
 
       .. doxygenfunction:: simgrid::s4u::Engine::get_clock()
       .. doxygenfunction:: simgrid::s4u::Engine::run
+      .. doxygenfunction:: simgrid::s4u::Engine::run_until
 
    .. group-tab:: Python
 
       .. automethod:: simgrid.Engine.get_clock
       .. automethod:: simgrid.Engine.run
+      .. automethod:: simgrid.Engine.run_until
 
    .. group-tab:: C
 
