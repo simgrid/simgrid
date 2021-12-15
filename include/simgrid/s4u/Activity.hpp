@@ -88,6 +88,8 @@ protected:
       throw std::invalid_argument("Dependency does not exist. Can not be removed.");
   }
 
+  static std::set<Activity*>* vetoed_activities_;
+
 public:
   /*! Signal fired each time that the activity fails to start because of a veto (e.g., unsolved dependency or no
    * resource assigned) */
@@ -100,9 +102,14 @@ public:
       XBT_CVERB(s4u_activity, "'%s' is assigned to a resource and all dependencies are solved. Let's start", get_cname());
       start();
     } else {
+      if (vetoed_activities_ != nullptr)
+        vetoed_activities_->insert(this);
       on_veto(*this);
     }
   }
+
+  static std::set<Activity*>* get_vetoed_activities() { return vetoed_activities_; }
+  static void set_vetoed_activities(std::set<Activity*>* whereto) { vetoed_activities_ = whereto; }
 
 #ifndef DOXYGEN
   Activity(Activity const&) = delete;

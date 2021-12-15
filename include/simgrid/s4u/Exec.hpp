@@ -32,6 +32,7 @@ namespace s4u {
 class XBT_PUBLIC Exec : public Activity_T<Exec> {
 #ifndef DOXYGEN
   friend kernel::activity::ExecImpl;
+  friend kernel::EngineImpl; // Auto-completes the execs of maestro (in simDAG)
 #endif
 
   bool parallel_ = false;

@@ -32,6 +32,7 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
 public:
   ExecImpl();
   s4u::Exec* get_iface() { return piface_; }
+  actor::ActorImpl* get_actor() { return actor_; }
 
   ExecImpl& set_timeout(double timeout) override;
   ExecImpl& set_bound(double bound);

@@ -21,6 +21,8 @@ namespace s4u {
 
 xbt::signal<void(Activity&)> Activity::on_veto;
 
+std::set<Activity*>* Activity::vetoed_activities_ = nullptr;
+
 void Activity::wait_until(double time_limit)
 {
   double now = Engine::get_clock();

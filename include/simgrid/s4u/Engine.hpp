@@ -13,6 +13,7 @@
 #include <simgrid/kernel/resource/Model.hpp>
 #include <simgrid/s4u/NetZone.hpp>
 
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -82,6 +83,9 @@ public:
     };
     register_function(name, code_factory);
   }
+
+  /** If non-null, the provided set will be filled with all activities that fail to start because of a veto */
+  void track_vetoed_activities(std::set<Activity*>* vetoed_activities);
 
   void load_deployment(const std::string& deploy) const;
 

@@ -415,16 +415,31 @@ void EngineImpl::wake_all_waiting_actors() const
     XBT_DEBUG("Handling the failed actions (if any)");
     while (auto* action = model->extract_failed_action()) {
       XBT_DEBUG("   Handling Action %p", action);
-      if (action->get_activity() != nullptr)
+      if (action->get_activity() != nullptr) {
+        // If nobody told the interface that the activity has failed, that's because no actor waits on it (maestro
+        // started it). SimDAG I see you!
+        auto* exec = dynamic_cast<activity::ExecImpl*>(action->get_activity());
+        if (exec != nullptr && exec->get_actor() == maestro_)
+          exec->get_iface()->complete(s4u::Activity::State::FAILED);
+
         activity::ActivityImplPtr(action->get_activity())->post();
+      }
     }
     XBT_DEBUG("Handling the terminated actions (if any)");
     while (auto* action = model->extract_done_action()) {
       XBT_DEBUG("   Handling Action %p", action);
       if (action->get_activity() == nullptr)
         XBT_DEBUG("probably vcpu's action %p, skip", action);
-      else
+      else {
+        // If nobody told the interface that the activity is finished, that's because no actor waits on it (maestro
+        // started it). SimDAG I see you!
+        // TODO: do the same for other activity kinds once comms are cleaned up
+        auto* exec = dynamic_cast<activity::ExecImpl*>(action->get_activity());
+        if (exec != nullptr && exec->get_actor() == maestro_)
+          exec->get_iface()->complete(s4u::Activity::State::FINISHED);
+
         activity::ActivityImplPtr(action->get_activity())->post();
+      }
     }
   }
 }
@@ -681,6 +696,7 @@ void EngineImpl::run(double max_date)
   }
 
   double elapsed_time = -1;
+  std::set<s4u::Activity*>* vetoed_activities = s4u::Activity::get_vetoed_activities();
 
   do {
     XBT_DEBUG("New Schedule Round; size(queue)=%zu", actors_to_run_.size());
@@ -793,13 +809,9 @@ void EngineImpl::run(double max_date)
       next_time = std::min(next_time, max_date);
     }
 
-    if (next_time > -1.0 || not actor_list_.empty()) {
-      XBT_DEBUG("Calling solve(%g) %g", next_time, NOW);
-      elapsed_time = solve(next_time);
-      XBT_DEBUG("Moving time ahead. NOW=%g; elapsed: %g", NOW, elapsed_time);
-    } else {
-      elapsed_time = -1;
-    }
+    XBT_DEBUG("Calling solve(%g) %g", next_time, NOW);
+    elapsed_time = solve(next_time);
+    XBT_DEBUG("Moving time ahead. NOW=%g; elapsed: %g", NOW, elapsed_time);
 
     /* Notify all the hosts that have failed */
     /* FIXME: iterate through the list of failed host and mark each of them */
@@ -817,7 +829,8 @@ void EngineImpl::run(double max_date)
     /* Clean actors to destroy */
     empty_trash();
 
-    XBT_DEBUG("### elapsed time %f, #actors %zu, #to_run %zu", elapsed_time, actor_list_.size(), actors_to_run_.size());
+    XBT_DEBUG("### elapsed time %f, #actors %zu, #to_run %zu, #vetoed %d", elapsed_time, actor_list_.size(),
+              actors_to_run_.size(), (vetoed_activities == nullptr ? -1 : static_cast<int>(vetoed_activities->size())));
 
     if (elapsed_time < 0. && actors_to_run_.empty() && not actor_list_.empty()) {
       if (actor_list_.size() <= daemons_.size()) {
@@ -833,9 +846,11 @@ void EngineImpl::run(double max_date)
         maestro_->kill(kv.second);
       }
     }
-  } while ((elapsed_time > -1.0 && not double_equals(max_date, NOW, 0.00001)) || has_actors_to_run());
 
-  if (not actor_list_.empty() && max_date < 0)
+  } while ((vetoed_activities == nullptr || vetoed_activities->empty()) &&
+           ((elapsed_time > -1.0 && not double_equals(max_date, NOW, 0.00001)) || has_actors_to_run()));
+
+  if (not actor_list_.empty() && max_date < 0 && not(vetoed_activities == nullptr || vetoed_activities->empty()))
     THROW_IMPOSSIBLE;
 
   simgrid::s4u::Engine::on_simulation_end();

@@ -338,6 +338,11 @@ void Engine::run_until(double max_date) const
   }
 }
 
+void Engine::track_vetoed_activities(std::set<Activity*>* vetoed_activities)
+{
+  Activity::set_vetoed_activities(vetoed_activities);
+}
+
 /** @brief Retrieve the root netzone, containing all others */
 s4u::NetZone* Engine::get_netzone_root() const
 {
