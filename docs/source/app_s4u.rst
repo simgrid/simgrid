@@ -406,9 +406,18 @@ Simulation objects
 ⁣  class Actor
 ==============
 
-.. doxygenclass:: simgrid::s4u::Actor
+.. tabs::
 
-.. doxygentypedef:: aid_t
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::Actor
+
+      .. doxygentypedef:: aid_t
+
+
+   .. group-tab:: Python
+   
+      .. autoclass:: simgrid.Actor
 
 Basic management
 ----------------
@@ -428,8 +437,6 @@ Basic management
       .. code:: Python
 
          from simgrid import Actor
-
-      .. autoclass:: simgrid.Actor
 
    .. group-tab:: C
 
@@ -781,7 +788,15 @@ Exiting
 ⁣  Simulation Engine
 ====================
 
-.. doxygenclass:: simgrid::s4u::Engine
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::Engine
+
+   .. group-tab:: Python
+   
+      .. autoclass:: simgrid.Engine
 
 Initialization
 --------------
@@ -931,7 +946,15 @@ Signals
 ⁣  class Mailbox
 ================
 
-.. doxygenclass:: simgrid::s4u::Mailbox
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::Mailbox
+
+   .. group-tab:: Python
+   
+      .. autoclass:: simgrid.Mailbox
 
 Please also refer to the :ref:`full doc on s4u::Mailbox <s4u_mailbox>`.
 
@@ -958,8 +981,6 @@ Basic management
       .. code-block:: C++
 
          #include <simgrid/mailbox.h>
-
-      .. autoclass:: simgrid.Mailbox
 
       .. automethod:: simgrid.Mailbox.by_name
 
@@ -1070,7 +1091,15 @@ Resources
 ⁣  class Disk
 =============
 
-.. doxygenclass:: simgrid::s4u::Disk
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::Disk
+
+   .. group-tab:: Python
+   
+      .. autoclass:: simgrid.Disk
 
 Basic management
 ----------------
@@ -1158,7 +1187,15 @@ Signals
 ⁣  class Host
 =============
 
-.. doxygenclass:: simgrid::s4u::Host
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::Host
+
+   .. group-tab:: Python
+   
+      .. autoclass:: simgrid.Host
 
 Basic management
 ----------------
@@ -1412,9 +1449,18 @@ Signals
 ⁣  class Link
 =============
 
-.. doxygenclass:: simgrid::s4u::Link
-.. doxygenclass:: simgrid::s4u::SplitDuplexLink
-.. doxygenclass:: simgrid::s4u::LinkInRoute
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::Link
+      .. doxygenclass:: simgrid::s4u::SplitDuplexLink
+      .. doxygenclass:: simgrid::s4u::LinkInRoute
+
+
+   .. group-tab:: Python
+   
+      .. autoclass:: simgrid.Link
 
 Basic management
 ----------------
@@ -1593,7 +1639,15 @@ Signals
 ⁣  class NetZone
 ================
 
-.. doxygenclass:: simgrid::s4u::NetZone
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::NetZone
+
+   .. group-tab:: Python
+   
+      .. autoclass:: simgrid.NetZone
 
 Basic management
 ----------------
@@ -1618,7 +1672,6 @@ Basic management
 
          from simgrid import NetZone
 
-      .. autoclass:: simgrid.NetZone
       .. automethod:: simgrid.NetZone.seal
 
    .. group-tab:: C
@@ -2007,7 +2060,15 @@ Suspending and resuming an activity
 ⁣  class Comm
 =============
 
-.. doxygenclass:: simgrid::s4u::Comm
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::Comm
+
+   .. group-tab:: Python
+   
+      .. autoclass:: simgrid.Comm
 
 Basic management
 ----------------
@@ -2027,8 +2088,6 @@ Basic management
       .. code:: Python
 
          from simgrid import Comm
-
-      .. autoclass:: simgrid.Comm
 
    .. group-tab:: c
 
@@ -2115,7 +2174,15 @@ Signals
 ⁣  class Exec
 =============
 
-.. doxygenclass:: simgrid::s4u::Exec
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::Exec
+
+   .. group-tab:: Python
+   
+      .. autoclass:: simgrid.Exec
 
 Basic management
 ----------------
@@ -2135,8 +2202,6 @@ Basic management
       .. code:: Python
 
          from simgrid import Exec
-
-      .. autoclass:: simgrid.Exec
 
    .. group-tab:: C
 
@@ -2228,7 +2293,15 @@ Signals
 ⁣  class Io
 ===========
 
-.. doxygenclass:: simgrid::s4u::Io
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::Io
+
+   .. group-tab:: Python
+   
+      .. autoclass:: simgrid.Io
 
 Basic management
 ----------------

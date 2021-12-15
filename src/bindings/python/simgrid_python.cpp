@@ -86,7 +86,7 @@ PYBIND11_MODULE(simgrid, m)
   static py::object pyForcefulKillEx(py::register_exception<simgrid::ForcefulKillException>(m, "ActorKilled"));
 
   /* this_actor namespace */
-  m.def_submodule("this_actor", "Bindings of the s4u::this_actor namespace.")
+  m.def_submodule("this_actor", "Bindings of the s4u::this_actor namespace. See the C++ documentation for details.")
       .def(
           "info", [](const char* s) { XBT_INFO("%s", s); }, "Display a logging message of 'info' priority.")
       .def(
@@ -170,8 +170,8 @@ PYBIND11_MODULE(simgrid, m)
           "Registers the main function of an actor");
 
   /* Class Netzone */
-  py::class_<simgrid::s4u::NetZone, std::unique_ptr<simgrid::s4u::NetZone, py::nodelete>> netzone(m, "NetZone",
-                                                                                                  "Networking Zones");
+  py::class_<simgrid::s4u::NetZone, std::unique_ptr<simgrid::s4u::NetZone, py::nodelete>> netzone(
+      m, "NetZone", "Networking Zones. See the C++ documentation for details.");
   netzone.def_static("create_full_zone", &simgrid::s4u::create_full_zone, "Creates a zone of type FullZone")
       .def_static("create_torus_zone", &simgrid::s4u::create_torus_zone, "Creates a cluster of type Torus")
       .def_static("create_fatTree_zone", &simgrid::s4u::create_fatTree_zone, "Creates a cluster of type Fat-Tree")
@@ -240,7 +240,8 @@ PYBIND11_MODULE(simgrid, m)
                     const std::pair<unsigned int, unsigned int>&, unsigned int>());
 
   /* Class Host */
-  py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>> host(m, "Host", "Simulated host");
+  py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>> host(
+      m, "Host", "Simulated host. See the C++ documentation for details.");
   host.def("by_name", &Host::by_name, "Retrieves a host from its name, or die")
       .def("get_pstate_count", &Host::get_pstate_count, "Retrieve the count of defined pstate levels")
       .def("get_pstate_speed", &Host::get_pstate_speed, "Retrieve the maximal speed at the given pstate")
@@ -286,7 +287,8 @@ PYBIND11_MODULE(simgrid, m)
       .export_values();
 
   /* Class Disk */
-  py::class_<simgrid::s4u::Disk, std::unique_ptr<simgrid::s4u::Disk, py::nodelete>> disk(m, "Disk", "Simulated disk");
+  py::class_<simgrid::s4u::Disk, std::unique_ptr<simgrid::s4u::Disk, py::nodelete>> disk(
+      m, "Disk", "Simulated disk. See the C++ documentation for details.");
   disk.def("read", py::overload_cast<sg_size_t, double>(&simgrid::s4u::Disk::read, py::const_),
            py::call_guard<py::gil_scoped_release>(), "Read data from disk", py::arg("size"), py::arg("priority") = 1)
       .def("write", py::overload_cast<sg_size_t, double>(&simgrid::s4u::Disk::write, py::const_),
@@ -316,7 +318,8 @@ PYBIND11_MODULE(simgrid, m)
       netpoint(m, "NetPoint", "NetPoint object");
 
   /* Class Link */
-  py::class_<simgrid::s4u::Link, std::unique_ptr<simgrid::s4u::Link, py::nodelete>> link(m, "Link", "Network link");
+  py::class_<simgrid::s4u::Link, std::unique_ptr<simgrid::s4u::Link, py::nodelete>> link(
+      m, "Link", "Network link. See the C++ documentation for details.");
   link.def("set_latency", py::overload_cast<const std::string&>(&simgrid::s4u::Link::set_latency),
            py::call_guard<py::gil_scoped_release>(), "Set the latency")
       .def("set_latency", py::overload_cast<double>(&simgrid::s4u::Link::set_latency),
@@ -360,7 +363,8 @@ PYBIND11_MODULE(simgrid, m)
       .def("get_link_down", &simgrid::s4u::SplitDuplexLink::get_link_down, "Get link direction down");
 
   /* Class Mailbox */
-  py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(m, "Mailbox", "Mailbox")
+  py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(
+      m, "Mailbox", "Mailbox. See the C++ documentation for details.")
       .def(
           "__str__", [](const Mailbox* self) { return std::string("Mailbox(") + self->get_cname() + ")"; },
           "Textual representation of the Mailbox`")
@@ -414,7 +418,8 @@ PYBIND11_MODULE(simgrid, m)
           "Get python object after async communication in receiver side");
 
   /* Class Comm */
-  py::class_<simgrid::s4u::Comm, simgrid::s4u::CommPtr>(m, "Comm", "Communication")
+  py::class_<simgrid::s4u::Comm, simgrid::s4u::CommPtr>(m, "Comm",
+                                                        "Communication. See the C++ documentation for details.")
       .def("test", &simgrid::s4u::Comm::test, py::call_guard<py::gil_scoped_release>(),
            "Test whether the communication is terminated.")
       .def("wait", &simgrid::s4u::Comm::wait, py::call_guard<py::gil_scoped_release>(),
@@ -429,7 +434,7 @@ PYBIND11_MODULE(simgrid, m)
           "Block until the completion of any communication in the list and return the index of the terminated one.");
 
   /* Class Io */
-  py::class_<simgrid::s4u::Io, simgrid::s4u::IoPtr>(m, "Io", "I/O activities")
+  py::class_<simgrid::s4u::Io, simgrid::s4u::IoPtr>(m, "Io", "I/O activities. See the C++ documentation for details.")
       .def("test", &simgrid::s4u::Io::test, py::call_guard<py::gil_scoped_release>(),
            "Test whether the I/O is terminated.")
       .def("wait", &simgrid::s4u::Io::wait, py::call_guard<py::gil_scoped_release>(),
@@ -441,7 +446,7 @@ PYBIND11_MODULE(simgrid, m)
                   "Block until the completion of any I/O in the list and return the index of the terminated one.");
 
   /* Class Exec */
-  py::class_<simgrid::s4u::Exec, simgrid::s4u::ExecPtr>(m, "Exec", "Execution")
+  py::class_<simgrid::s4u::Exec, simgrid::s4u::ExecPtr>(m, "Exec", "Execution. See the C++ documentation for details.")
       .def_property_readonly(
           "remaining",
           [](simgrid::s4u::ExecPtr self) {
@@ -469,7 +474,7 @@ PYBIND11_MODULE(simgrid, m)
   /* Class Actor */
   py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor",
                                             "An actor is an independent stream of execution in your distributed "
-                                            "application")
+                                            "application. See the C++ documentation for details.")
       .def(
           "create",
           [](py::str name, Host* h, py::object fun, py::args args) {
