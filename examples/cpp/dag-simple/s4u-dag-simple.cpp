@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
   auto fafard = e.host_by_name("Fafard");
 
   // Display the details on vetoed activities
-  simgrid::s4u::Activity::on_veto.connect([&e](simgrid::s4u::Activity& a) {
+  simgrid::s4u::Activity::on_veto.connect([](simgrid::s4u::Activity& a) {
     auto& exec = static_cast<simgrid::s4u::Exec&>(a); // all activities are execs in this example
 
     XBT_INFO("Activity '%s' vetoed. Dependencies: %s; Ressources: %s", exec.get_cname(),
