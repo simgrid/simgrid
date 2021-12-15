@@ -200,6 +200,8 @@ include examples/cpp/comm-waitany/s4u-comm-waitany_d.xml
 include examples/cpp/comm-waituntil/s4u-comm-waituntil.cpp
 include examples/cpp/comm-waituntil/s4u-comm-waituntil.tesh
 include examples/cpp/comm-waituntil/s4u-comm-waituntil_d.xml
+include examples/cpp/dag-simple/s4u-dag-simple.cpp
+include examples/cpp/dag-simple/s4u-dag-simple.tesh
 include examples/cpp/dht-chord/s4u-dht-chord-node.cpp
 include examples/cpp/dht-chord/s4u-dht-chord.cpp
 include examples/cpp/dht-chord/s4u-dht-chord.hpp
