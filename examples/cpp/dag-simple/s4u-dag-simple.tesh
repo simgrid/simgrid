@@ -5,9 +5,12 @@ $ ${bindir:=.}/s4u-dag-simple ${platfdir}/small_platform.xml --log=s4u_activity.
 > [  0.000000] (0:maestro@) 'parent 2' is assigned to a resource and all dependencies are solved. Let's start
 > [  0.000000] (0:maestro@) Activity 'child' vetoed. Dependencies: NOT solved; Ressources: NOT assigned
 > [  2.000000] (0:maestro@) Remove a dependency from 'parent 1' on 'child'
+> [  2.000000] (0:maestro@) Activity 'parent 1' is complete (start time: 0.000000, finish time: 2.000000)
 > [  2.000000] (0:maestro@) Activity child not ready.
 > [  3.000000] (0:maestro@) Remove a dependency from 'parent 2' on 'child'
 > [  3.000000] (0:maestro@) Activity 'child' vetoed. Dependencies: solved; Ressources: NOT assigned
+> [  3.000000] (0:maestro@) Activity 'parent 2' is complete (start time: 0.000000, finish time: 3.000000)
 > [  3.000000] (0:maestro@) Activity child's dependencies are resolved. Let's assign it to Fafard.
 > [  3.000000] (0:maestro@) 'child' is assigned to a resource and all dependencies are solved. Let's start
+> [  4.000000] (0:maestro@) Activity 'child' is complete (start time: 3.000000, finish time: 4.000000)
 > [  4.000000] (0:maestro@) Simulation time 4
