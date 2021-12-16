@@ -42,6 +42,7 @@ public:
   void set_cb_id(unsigned int cb_id) { cb_id_ = cb_id; }
 
   double get_start_time() const { return start_time_; }
+  void set_finish_time(double finish_time) { finish_time_ = finish_time; }
   double get_finish_time() const { return finish_time_; }
 
   ExecImpl& set_flops_amount(double flop_amount);

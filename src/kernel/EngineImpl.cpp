@@ -435,9 +435,10 @@ void EngineImpl::wake_all_waiting_actors() const
         // started it). SimDAG I see you!
         // TODO: do the same for other activity kinds once comms are cleaned up
         auto* exec = dynamic_cast<activity::ExecImpl*>(action->get_activity());
-        if (exec != nullptr && exec->get_actor() == maestro_)
+        if (exec != nullptr && exec->get_actor() == maestro_) {
+          exec->set_finish_time(action->get_finish_time());
           exec->get_iface()->complete(s4u::Activity::State::FINISHED);
-
+        }
         activity::ActivityImplPtr(action->get_activity())->post();
       }
     }
