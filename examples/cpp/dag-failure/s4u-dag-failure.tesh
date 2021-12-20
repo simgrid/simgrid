@@ -1,0 +1,32 @@
+#!/usr/bin/env tesh
+
+p Test of the management of failed tasks simdag
+
+$ ${bindir:=.}/s4u-dag-failure ${platfdir}/faulty_host.xml --log=s4u_activity.t:verbose "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'ptask_L07'
+> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
+> [  0.000000] (0:maestro@) First test: sequential Exec activity
+> [  0.000000] (0:maestro@) Schedule Activity 'Poor task' on 'Faulty Host'
+> [  0.000000] (0:maestro@) 'Poor task' is assigned to a resource and all dependencies are solved. Let's start
+> [  0.000000] (0:maestro@) Run the simulation
+> [ 10.000000] (0:maestro@) Activity 'Poor task' has failed. 20000000000 flops remain to be done
+> [ 10.000000] (0:maestro@) let's unschedule Activity 'Poor task' and reschedule it on the 'Safe Host'
+> [ 10.000000] (0:maestro@) 'Poor task' is assigned to a resource and all dependencies are solved. Let's start
+> [ 10.000000] (0:maestro@) Run the simulation again
+> [ 50.000000] (0:maestro@) Remove a dependency from 'Poor task' on 'Child'
+> [ 50.000000] (0:maestro@) 'Child' is assigned to a resource and all dependencies are solved. Let's start
+> [ 50.000000] (0:maestro@) Activity 'Poor task' is complete (start time: 10.000000, finish time: 50.000000)
+> [ 90.000000] (0:maestro@) Activity 'Child' is complete (start time: 50.000000, finish time: 90.000000)
+> [ 90.000000] (0:maestro@) Second test: parallel Exec activity
+> [ 90.000000] (0:maestro@) Schedule Activity 'Poor parallel task' on 'Safe Host' and 'Faulty Host'
+> [ 90.000000] (0:maestro@) 'Poor parallel task' is assigned to a resource and all dependencies are solved. Let's start
+> [ 90.000000] (0:maestro@) Run the simulation
+> [100.000000] (0:maestro@) Activity 'Poor parallel task' has failed. 100 % remain to be done
+> [100.000000] (0:maestro@) let's unschedule Activity 'Poor parallel task' and reschedule it only on the 'Safe Host'
+> [100.000000] (0:maestro@) 'Poor parallel task' is assigned to a resource and all dependencies are solved. Let's start
+> [100.000000] (0:maestro@) Run the simulation again
+> [180.000000] (0:maestro@) Remove a dependency from 'Poor parallel task' on 'Child'
+> [180.000000] (0:maestro@) 'Child' is assigned to a resource and all dependencies are solved. Let's start
+> [180.000000] (0:maestro@) Activity 'Poor parallel task' is complete (start time: 100.000000, finish time: 180.000000)
+> [220.000000] (0:maestro@) Activity 'Child' is complete (start time: 180.000000, finish time: 220.000000)
+

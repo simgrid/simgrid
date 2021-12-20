@@ -200,6 +200,8 @@ include examples/cpp/comm-waitany/s4u-comm-waitany_d.xml
 include examples/cpp/comm-waituntil/s4u-comm-waituntil.cpp
 include examples/cpp/comm-waituntil/s4u-comm-waituntil.tesh
 include examples/cpp/comm-waituntil/s4u-comm-waituntil_d.xml
+include examples/cpp/dag-failure/s4u-dag-failure.cpp
+include examples/cpp/dag-failure/s4u-dag-failure.tesh
 include examples/cpp/dag-simple/s4u-dag-simple.cpp
 include examples/cpp/dag-simple/s4u-dag-simple.tesh
 include examples/cpp/dht-chord/s4u-dht-chord-node.cpp
@@ -488,8 +490,6 @@ include examples/deprecated/simdag/daxload/sd_daxload.c
 include examples/deprecated/simdag/daxload/sd_daxload.tesh
 include examples/deprecated/simdag/daxload/simple_dax_with_cycle.xml
 include examples/deprecated/simdag/daxload/smalldax.xml
-include examples/deprecated/simdag/fail/sd_fail.c
-include examples/deprecated/simdag/fail/sd_fail.tesh
 include examples/deprecated/simdag/ptg-dotload/ptg.dot
 include examples/deprecated/simdag/ptg-dotload/sd_ptg-dotload.c
 include examples/deprecated/simdag/ptg-dotload/sd_ptg-dotload.tesh
