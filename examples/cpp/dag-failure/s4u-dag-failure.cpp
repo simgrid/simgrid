@@ -20,12 +20,13 @@ int main(int argc, char** argv)
     if (exec.get_state() == simgrid::s4u::Activity::State::FINISHED)
       XBT_INFO("Activity '%s' is complete (start time: %f, finish time: %f)", exec.get_cname(), exec.get_start_time(),
                exec.get_finish_time());
-    if (exec.get_state() == simgrid::s4u::Activity::State::FAILED)
+    if (exec.get_state() == simgrid::s4u::Activity::State::FAILED) {
       if (exec.is_parallel())
         XBT_INFO("Activity '%s' has failed. %.f %% remain to be done", exec.get_cname(),
                  100 * exec.get_remaining_ratio());
       else
         XBT_INFO("Activity '%s' has failed. %.f flops remain to be done", exec.get_cname(), exec.get_remaining());
+    }
   });
 
   /* creation of a single Exec that will poorly fail when the workstation will stop */
