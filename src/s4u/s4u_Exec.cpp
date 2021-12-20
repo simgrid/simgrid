@@ -29,6 +29,10 @@ void Exec::complete(Activity::State state)
   Activity::complete(state);
   on_completion(*this);
 }
+void Exec::reset()
+{
+  boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->reset();
+}
 
 ExecPtr Exec::init()
 {
@@ -206,6 +210,22 @@ ExecPtr Exec::set_hosts(const std::vector<Host*>& hosts)
      vetoable_start();
 
   return this;
+}
+
+ExecPtr Exec::unset_host()
+{
+  if (not is_assigned())
+    throw std::invalid_argument(
+        xbt::string_printf("Exec %s: the activity is not assigned to any host(s)", get_cname()));
+  else {
+    reset();
+
+    if (state_ == State::STARTED)
+      cancel();
+    vetoable_start();
+
+    return this;
+  }
 }
 
 double Exec::get_cost() const

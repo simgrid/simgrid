@@ -41,6 +41,7 @@ protected:
   explicit Exec(kernel::activity::ExecImplPtr pimpl);
 
   void complete(Activity::State state) override;
+  void reset();
 
 public:
 #ifndef DOXYGEN
@@ -74,6 +75,7 @@ public:
   double get_remaining_ratio() const;
   ExecPtr set_host(Host* host);
   ExecPtr set_hosts(const std::vector<Host*>& hosts);
+  ExecPtr unset_host();
 
   ExecPtr set_flops_amount(double flops_amount);
   ExecPtr set_flops_amounts(const std::vector<double>& flops_amounts);

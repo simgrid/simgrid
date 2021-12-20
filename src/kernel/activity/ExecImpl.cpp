@@ -94,7 +94,7 @@ ExecImpl* ExecImpl::start()
 
 double ExecImpl::get_remaining() const
 {
-  if (state_ == State::WAITING)
+  if (state_ == State::WAITING || state_ == State::FAILED)
     return flops_amounts_.front();
   return ActivityImpl::get_remaining();
 }
@@ -160,7 +160,6 @@ void ExecImpl::post()
   timeout_detector_.reset();
   if (actor_) {
     actor_->activities_.remove(this);
-    actor_ = nullptr;
   }
   if (state_ != State::FAILED && cb_id_ >= 0)
     s4u::Host::on_state_change.disconnect(cb_id_);
@@ -233,6 +232,14 @@ void ExecImpl::finish()
     else
       simcall->issuer_->context_->set_wannadie();
   }
+}
+
+void ExecImpl::reset()
+{
+  hosts_.clear();
+  bytes_amounts_.clear();
+  flops_amounts_.clear();
+  start_time_ = -1.0;
 }
 
 ActivityImpl* ExecImpl::migrate(s4u::Host* to)
