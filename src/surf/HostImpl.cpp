@@ -101,9 +101,12 @@ void HostImpl::turn_off(const actor::ActorImpl* issuer)
   }
   for (auto& activity : EngineImpl::get_instance()->get_maestro()->activities_) {
     auto* exec = dynamic_cast<activity::ExecImpl*>(activity.get());
-    if (exec != nullptr && exec->get_host() == &piface_) {
-      exec->cancel();
-      exec->state_ = activity::State::FAILED;
+    if (exec != nullptr) {
+      auto hosts = exec->get_hosts();
+      if (std::find(hosts.begin(), hosts.end(), &piface_) != hosts.end()) {
+        exec->cancel();
+        exec->state_ = activity::State::FAILED;
+      }
     }
   }
   // When a host is turned off, we want to keep only the actors that should restart for when it will boot again.
