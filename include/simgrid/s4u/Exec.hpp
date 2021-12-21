@@ -76,6 +76,7 @@ public:
   ExecPtr set_host(Host* host);
   ExecPtr set_hosts(const std::vector<Host*>& hosts);
   ExecPtr unset_host();
+  ExecPtr unset_hosts() { return unset_host(); }
 
   ExecPtr set_flops_amount(double flops_amount);
   ExecPtr set_flops_amounts(const std::vector<double>& flops_amounts);
