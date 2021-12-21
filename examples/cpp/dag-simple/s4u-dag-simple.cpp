@@ -41,13 +41,6 @@ int main(int argc, char* argv[])
   first_parent->add_successor(child);
   second_parent->add_successor(child);
 
-  /*
-    std::vector<simgrid::s4u::ExecPtr> pending_execs;
-    pending_execs.push_back(first_parent);
-    pending_execs.push_back(second_parent);
-    pending_execs.push_back(child);
-  */
-
   // Set the parameters (the name is for logging purposes only)
   // + First parent ends after 1 second and the Second parent after 2 seconds.
   first_parent->set_name("parent 1")->set_flops_amount(computation_amount);
