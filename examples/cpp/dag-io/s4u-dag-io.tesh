@@ -1,0 +1,16 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-dag-io ${platfdir}/hosts_with_disks.xml --log=s4u_activity.t:verbose "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (0:maestro@) 'parent' is assigned to a resource and all dependencies are solved. Let's start
+> [  0.000000] (0:maestro@) Activity 'write' vetoed. Dependencies: NOT solved; Ressources: assigned
+> [  0.000000] (0:maestro@) Activity 'read' vetoed. Dependencies: NOT solved; Ressources: assigned
+> [  0.000000] (0:maestro@) Activity 'child' vetoed. Dependencies: NOT solved; Ressources: assigned
+> [  1.000000] (0:maestro@) Remove a dependency from 'parent' on 'write'
+> [  1.000000] (0:maestro@) 'write' is assigned to a resource and all dependencies are solved. Let's start
+> [  1.000000] (0:maestro@) Activity 'parent' is complete (start time: 0.000000, finish time: 1.000000)
+> [ 26.000000] (0:maestro@) Remove a dependency from 'write' on 'read'
+> [ 26.000000] (0:maestro@) 'read' is assigned to a resource and all dependencies are solved. Let's start
+> [ 36.000000] (0:maestro@) Remove a dependency from 'read' on 'child'
+> [ 36.000000] (0:maestro@) 'child' is assigned to a resource and all dependencies are solved. Let's start
+> [ 37.000000] (0:maestro@) Activity 'child' is complete (start time: 36.000000, finish time: 37.000000)
+> [ 37.000000] (0:maestro@) Simulation time 37
