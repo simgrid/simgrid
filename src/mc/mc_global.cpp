@@ -79,18 +79,6 @@ void MC_run()
   simgrid::mc::AppSide::get()->main_loop();
 }
 
-void MC_show_deadlock()
-{
-  XBT_INFO("**************************");
-  XBT_INFO("*** DEADLOCK DETECTED ***");
-  XBT_INFO("**************************");
-  XBT_INFO("Counter-example execution trace:");
-  for (auto const& s : mc_model_checker->getChecker()->get_textual_trace())
-    XBT_INFO("  %s", s.c_str());
-  simgrid::mc::dumpRecordPath();
-  simgrid::mc::session_singleton->log_state();
-}
-
 void MC_automaton_load(const char *file)
 {
   if (simgrid::mc::property_automaton == nullptr)

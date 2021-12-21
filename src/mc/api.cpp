@@ -27,6 +27,7 @@
 #endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(Api, mc, "Logging specific to MC Facade APIs ");
+XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
 using Simcall = simgrid::simix::Simcall;
 
@@ -588,7 +589,14 @@ unsigned long Api::mc_get_executed_trans() const
 void Api::mc_check_deadlock() const
 {
   if (mc_model_checker->checkDeadlock()) {
-    MC_show_deadlock();
+    XBT_CINFO(mc_global, "**************************");
+    XBT_CINFO(mc_global, "*** DEADLOCK DETECTED ***");
+    XBT_CINFO(mc_global, "**************************");
+    XBT_CINFO(mc_global, "Counter-example execution trace:");
+    for (auto const& s : mc_model_checker->getChecker()->get_textual_trace())
+      XBT_CINFO(mc_global, "  %s", s.c_str());
+    simgrid::mc::dumpRecordPath();
+    simgrid::mc::session_singleton->log_state();
     throw DeadlockError();
   }
 }
