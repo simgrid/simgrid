@@ -756,6 +756,8 @@ include teshsuite/s4u/comm-get-sender/comm-get-sender.tesh
 include teshsuite/s4u/comm-pt2pt/comm-pt2pt.cpp
 include teshsuite/s4u/concurrent_rw/concurrent_rw.cpp
 include teshsuite/s4u/concurrent_rw/concurrent_rw.tesh
+include teshsuite/s4u/dependencies/dependencies.cpp
+include teshsuite/s4u/dependencies/dependencies.tesh
 include teshsuite/s4u/evaluate-get-route-time/evaluate-get-route-time.cpp
 include teshsuite/s4u/evaluate-parse-time/evaluate-parse-time.cpp
 include teshsuite/s4u/host-multicore-speed-file/host-multicore-speed-file.cpp

@@ -1,0 +1,13 @@
+#!/usr/bin/env tesh
+
+$ ./dependencies ${platfdir}/small_platform.xml --cfg=host/model:ptask_L07
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'host/model' to 'ptask_L07'
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
+> [0.000000] [dependencies/INFO] Caught attempt to self-dependency creation: Cannot be its own successor
+> [0.000000] [dependencies/INFO] Caught attempt to add an already existing dependency: Dependency already exists
+> [0.000000] [dependencies/INFO] Caught attempt to remove an unknown dependency: Dependency does not exist. Can not be removed.
+> [0.000000] [dependencies/INFO] Caught attempt to remove a self-dependency: Cannot ask to remove itself from successors list
+> [2.004027] [dependencies/INFO] Exec 'D' start time: 0.000000, finish time: 2.004027
+> [4.008055] [dependencies/INFO] Exec 'B' start time: 2.004027, finish time: 4.008055
+> [6.012082] [dependencies/INFO] Exec 'C' start time: 4.008055, finish time: 6.012082
+> [8.016109] [dependencies/INFO] Exec 'A' start time: 6.012082, finish time: 8.016109

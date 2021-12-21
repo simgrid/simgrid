@@ -78,7 +78,7 @@ protected:
   void remove_successor(ActivityPtr a)
   {
     if(this == a)
-      throw std::invalid_argument("Cannot ask to remove its from successors");
+      throw std::invalid_argument("Cannot ask to remove itself from successors list");
 
     auto p = std::find_if(successors_.begin(), successors_.end(), [a](ActivityPtr const& i){ return i.get() == a.get(); });
     if (p != successors_.end()){

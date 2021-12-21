@@ -66,36 +66,6 @@ int main(int argc, char **argv)
   SD_task_dependency_add(taskD, taskC);
   SD_task_dependency_add(taskB, taskC);
 
-  try {
-    SD_task_dependency_add(taskA, taskA); /* shouldn't work and must raise an exception */
-    xbt_die("Hey, I can add a dependency between Task A and Task A!");
-  } catch (const std::invalid_argument& e) {
-    XBT_DEBUG("Caught invalid_argument: %s", e.what());
-  }
-
-  try {
-    SD_task_dependency_add(taskB, taskA); /* shouldn't work and must raise an exception */
-    xbt_die("Oh oh, I can add an already existing dependency!");
-  } catch (const std::invalid_argument& e) {
-    XBT_DEBUG("Caught invalid_argument: %s", e.what());
-  }
-
-  try {
-    SD_task_dependency_remove(taskA, taskC);    /* shouldn't work and must raise an exception */
-    xbt_die("Dude, I can remove an unknown dependency!");
-  } catch (const std::invalid_argument& e) {
-    XBT_DEBUG("Caught invalid_argument: %s", e.what());
-  }
-
-  try {
-    SD_task_dependency_remove(taskC, taskC);    /* shouldn't work and must raise an exception */
-    xbt_die("Wow, I can remove a dependency between Task C and itself!");
-  } catch (const std::invalid_argument& e) {
-    XBT_DEBUG("Caught invalid_argument: %s", e.what());
-  }
-
-  /* if everything is ok, no exception is forwarded or rethrown by main() */
-
   /* watch points */
   SD_task_watch(taskD, SD_DONE);
   SD_task_watch(taskB, SD_DONE);
