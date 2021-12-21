@@ -100,7 +100,6 @@ public:
   unsigned long mc_get_visited_states() const;
   unsigned long mc_get_executed_trans() const;
   void mc_check_deadlock() const;
-  bool mc_is_null() const;
   Checker* mc_get_checker() const;
   void handle_simcall(Transition const& transition) const;
   void mc_wait_for_requests() const;

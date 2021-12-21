@@ -643,12 +643,6 @@ RemotePtr<kernel::activity::ActivityImpl> Api::get_comm_remote_addr(smx_simcall_
   THROW_IMPOSSIBLE;
 }
 
-bool Api::mc_is_null() const
-{
-  auto is_null = (mc_model_checker == nullptr) ? true : false;
-  return is_null;
-}
-
 Checker* Api::mc_get_checker() const
 {
   return mc_model_checker->getChecker();
