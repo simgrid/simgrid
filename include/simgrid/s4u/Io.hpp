@@ -22,6 +22,7 @@ namespace s4u {
 class XBT_PUBLIC Io : public Activity_T<Io> {
 #ifndef DOXYGEN
   friend kernel::activity::IoImpl;
+  friend kernel::EngineImpl;
 #endif
 
 protected:

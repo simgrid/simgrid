@@ -422,6 +422,10 @@ void EngineImpl::wake_all_waiting_actors() const
         if (exec != nullptr && exec->get_actor() == maestro_)
           exec->get_iface()->complete(s4u::Activity::State::FAILED);
 
+        auto* io = dynamic_cast<activity::IoImpl*>(action->get_activity());
+        if (io != nullptr && io->get_actor() == maestro_)
+          io->get_iface()->complete(s4u::Activity::State::FAILED);
+
         activity::ActivityImplPtr(action->get_activity())->post();
       }
     }
@@ -439,6 +443,10 @@ void EngineImpl::wake_all_waiting_actors() const
           exec->set_finish_time(action->get_finish_time());
           exec->get_iface()->complete(s4u::Activity::State::FINISHED);
         }
+        auto* io = dynamic_cast<activity::IoImpl*>(action->get_activity());
+        if (io != nullptr && io->get_actor() == maestro_)
+          io->get_iface()->complete(s4u::Activity::State::FINISHED);
+
         activity::ActivityImplPtr(action->get_activity())->post();
       }
     }

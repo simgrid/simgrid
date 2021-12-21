@@ -26,6 +26,11 @@ namespace activity {
 IoImpl::IoImpl()
 {
   piface_ = new s4u::Io(this);
+  actor::ActorImpl* self = actor::ActorImpl::self();
+  if (self) {
+    actor_ = self;
+    self->activities_.emplace_back(this);
+  }
 }
 
 IoImpl& IoImpl::set_sharing_penalty(double sharing_penalty)
