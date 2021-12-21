@@ -1,4 +1,4 @@
-foreach(x daxload typed_tasks throttling scheduling)
+foreach(x daxload typed_tasks scheduling)
   add_executable       (sd_${x}  EXCLUDE_FROM_ALL  ${x}/sd_${x}.c)
   target_link_libraries(sd_${x}     simgrid)
   set_target_properties(sd_${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -39,7 +39,7 @@ set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/dag-dotload/dag_wi
                                   ${CMAKE_CURRENT_SOURCE_DIR}/schedule-dotload/dag_with_good_schedule.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/scheduling/expected_output.jed               PARENT_SCOPE)
 
-foreach(x daxload typed_tasks throttling scheduling test)
+foreach(x daxload typed_tasks scheduling test)
   ADD_TESH(simdag-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/simdag --cd ${CMAKE_BINARY_DIR}/examples/deprecated/simdag ${CMAKE_HOME_DIRECTORY}/examples/deprecated/simdag/${x}/sd_${x}.tesh)
 endforeach()
 

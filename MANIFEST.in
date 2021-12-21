@@ -188,6 +188,8 @@ include examples/cpp/comm-serialize/s4u-comm-serialize.tesh
 include examples/cpp/comm-suspend/s4u-comm-suspend.cpp
 include examples/cpp/comm-suspend/s4u-comm-suspend.tesh
 include examples/cpp/comm-suspend/s4u-comm-suspend_d.xml
+include examples/cpp/comm-throttling/s4u-comm-throttling.cpp
+include examples/cpp/comm-throttling/s4u-comm-throttling.tesh
 include examples/cpp/comm-wait/s4u-comm-wait.cpp
 include examples/cpp/comm-wait/s4u-comm-wait.tesh
 include examples/cpp/comm-wait/s4u-comm-wait_d.xml
@@ -503,8 +505,6 @@ include examples/deprecated/simdag/scheduling/sd_scheduling.c
 include examples/deprecated/simdag/scheduling/sd_scheduling.tesh
 include examples/deprecated/simdag/test/sd_test.cpp
 include examples/deprecated/simdag/test/sd_test.tesh
-include examples/deprecated/simdag/throttling/sd_throttling.c
-include examples/deprecated/simdag/throttling/sd_throttling.tesh
 include examples/deprecated/simdag/typed_tasks/sd_typed_tasks.c
 include examples/deprecated/simdag/typed_tasks/sd_typed_tasks.tesh
 include examples/python/actor-create/actor-create.py
