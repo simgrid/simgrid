@@ -100,7 +100,6 @@ public:
   unsigned long mc_get_visited_states() const;
   unsigned long mc_get_executed_trans() const;
   void mc_check_deadlock() const;
-  Checker* mc_get_checker() const;
   void handle_simcall(Transition const& transition) const;
   void mc_wait_for_requests() const;
   XBT_ATTRIB_NORETURN void mc_exit(int status) const;
@@ -114,7 +113,6 @@ public:
   std::string request_to_string(smx_simcall_t req, int value) const;
   std::string request_get_dot_output(smx_simcall_t req, int value) const;
   smx_actor_t simcall_get_issuer(s_smx_simcall const* req) const;
-  long simcall_get_actor_id(s_smx_simcall const* req) const;
   RemotePtr<kernel::activity::MailboxImpl> get_mbox_remote_addr(smx_simcall_t const req) const;
   RemotePtr<kernel::activity::ActivityImpl> get_comm_remote_addr(smx_simcall_t const req) const;
   bool simcall_check_dependency(smx_simcall_t const req1, smx_simcall_t const req2) const;

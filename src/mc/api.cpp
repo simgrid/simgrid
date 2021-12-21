@@ -628,11 +628,6 @@ smx_actor_t Api::simcall_get_issuer(s_smx_simcall const* req) const
   xbt_die("Issuer not found");
 }
 
-long Api::simcall_get_actor_id(s_smx_simcall const* req) const
-{
-  return simcall_get_issuer(req)->get_pid();
-}
-
 RemotePtr<kernel::activity::MailboxImpl> Api::get_mbox_remote_addr(smx_simcall_t const req) const
 {
   if (req->call_ == Simcall::COMM_ISEND)
@@ -649,11 +644,6 @@ RemotePtr<kernel::activity::ActivityImpl> Api::get_comm_remote_addr(smx_simcall_
   if (req->call_ == Simcall::COMM_IRECV)
     return remote(simcall_comm_irecv__getraw__result(req));
   THROW_IMPOSSIBLE;
-}
-
-Checker* Api::mc_get_checker() const
-{
-  return mc_model_checker->getChecker();
 }
 
 void Api::handle_simcall(Transition const& transition) const
