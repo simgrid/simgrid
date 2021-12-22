@@ -760,6 +760,8 @@ include teshsuite/s4u/comm-get-sender/comm-get-sender.tesh
 include teshsuite/s4u/comm-pt2pt/comm-pt2pt.cpp
 include teshsuite/s4u/concurrent_rw/concurrent_rw.cpp
 include teshsuite/s4u/concurrent_rw/concurrent_rw.tesh
+include teshsuite/s4u/dag-incomplete-simulation/dag-incomplete-simulation.cpp
+include teshsuite/s4u/dag-incomplete-simulation/dag-incomplete-simulation.tesh
 include teshsuite/s4u/dependencies/dependencies.cpp
 include teshsuite/s4u/dependencies/dependencies.tesh
 include teshsuite/s4u/evaluate-get-route-time/evaluate-get-route-time.cpp
@@ -820,8 +822,6 @@ include teshsuite/simdag/flatifier/bogus_missing_gateway.tesh
 include teshsuite/simdag/flatifier/bogus_two_hosts_asymetric.tesh
 include teshsuite/simdag/flatifier/flatifier.cpp
 include teshsuite/simdag/flatifier/flatifier.tesh
-include teshsuite/simdag/incomplete/incomplete.c
-include teshsuite/simdag/incomplete/incomplete.tesh
 include teshsuite/simdag/platforms/Dijkstra.xml
 include teshsuite/simdag/platforms/bob.trace
 include teshsuite/simdag/platforms/bogus_missing_dst_gateway.xml

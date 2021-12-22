@@ -1,0 +1,10 @@
+! output sort
+$ ./dag-incomplete-simulation ${platfdir}/two_hosts_platform_shared.xml "--log=root.fmt:[%10.6r]%e%m%n" --log=s4u_activity.t:debug
+> [  0.000000] 'A' is assigned to a resource and all dependencies are solved. Let's start
+> [  0.000000] 'Init' is assigned to a resource and all dependencies are solved. Let's start
+> [  0.000000] Remove a dependency from 'Init' on 'A'
+> [  0.000000] Remove a dependency from 'Init' on 'B'
+> [  8.661095] Activity 'B' blocked: Dependencies: solved; Ressources: NOT assigned
+> [  8.661095] Activity 'C' blocked: Dependencies: solved; Ressources: NOT assigned
+> [  8.661095] Activity 'D' blocked: Dependencies: NOT solved; Ressources: assigned
+> [  8.661095] Simulation is finished but 3 tasks are still not done
