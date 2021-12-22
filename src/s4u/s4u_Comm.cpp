@@ -212,6 +212,8 @@ Comm* Comm::start()
   if (suspended_)
     pimpl_->suspend();
 
+  if (not detached_)
+    static_cast<kernel::activity::CommImpl*>(pimpl_.get())->set_iface(this);
   state_ = State::STARTED;
   return this;
 }
