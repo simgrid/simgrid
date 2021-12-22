@@ -36,21 +36,22 @@ int main(int argc, char* argv[])
 
   // Create a small DAG: parent->transfert->child
   simgrid::s4u::ExecPtr parent    = simgrid::s4u::Exec::init();
-  simgrid::s4u::CommPtr transfert = simgrid::s4u::Comm::sendto_init(tremblay, jupiter);
+  simgrid::s4u::CommPtr transfert = simgrid::s4u::Comm::sendto_init();
   simgrid::s4u::ExecPtr child     = simgrid::s4u::Exec::init();
   parent->add_successor(transfert);
   transfert->add_successor(child);
 
   // Set the parameters (the name is for logging purposes only)
   // + parent and child end after 1 second
-  parent->set_name("parent")->set_flops_amount(tremblay->get_speed());
-  transfert->set_name("transfert")->set_payload_size(125e6);
-  child->set_name("child")->set_flops_amount(jupiter->get_speed());
+  parent->set_name("parent")->set_flops_amount(tremblay->get_speed())->vetoable_start();
+  transfert->set_name("transfert")->set_payload_size(125e6)->vetoable_start();
+  child->set_name("child")->set_flops_amount(jupiter->get_speed())->vetoable_start();
 
-  // Schedule and try to start the different activities
-  parent->set_host(tremblay)->vetoable_start();
-  transfert->vetoable_start();
-  child->set_host(jupiter)->vetoable_start();
+  // Schedule the different activities
+  parent->set_host(tremblay);
+  transfert->set_from(tremblay);
+  child->set_host(jupiter);
+  transfert->set_to(jupiter);
 
   e.run();
 
