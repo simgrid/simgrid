@@ -2005,7 +2005,6 @@ include examples/platforms/onelink.xml
 include examples/platforms/optorsim/gridpp_grid_2004.conf
 include examples/platforms/optorsim/lcg_sept2004_grid.conf
 include examples/platforms/optorsim/transform_optorsim_platform.pl
-include examples/platforms/profiles/bourassa_state.profile
 include examples/platforms/profiles/fafard_state.profile
 include examples/platforms/profiles/faulty_host.profile
 include examples/platforms/profiles/ginette_state.profile

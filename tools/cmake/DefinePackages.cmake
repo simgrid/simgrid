@@ -1182,7 +1182,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/config.xml
   examples/platforms/config_tracing.xml
   examples/platforms/model_checker_platform.xml
-  examples/platforms/profiles/bourassa_state.profile
   examples/platforms/profiles/fafard_state.profile
   examples/platforms/profiles/faulty_host.profile
   examples/platforms/profiles/ginette_state.profile
