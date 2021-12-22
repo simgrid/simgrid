@@ -29,7 +29,6 @@ public:
   void attach_start() override;
   void attach_stop() override;
 
-  bool is_maestro() const { return is_maestro_; }
   void release(); // unblock context's start()
   void wait();    // wait for context's yield()
 
@@ -40,7 +39,6 @@ private:
   xbt::OsSemaphore begin_{0};
   /** Semaphore used to schedule/unschedule (not needed when the maestro is in main, but harmless then) */
   xbt::OsSemaphore end_{0};
-  bool is_maestro_;
 
   void start();                // match a call to release()
   void yield();                // match a call to yield()

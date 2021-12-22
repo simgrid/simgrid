@@ -52,6 +52,7 @@ class XBT_PUBLIC Context {
   std::function<void()> code_;
   actor::ActorImpl* actor_ = nullptr;
   bool iwannadie_          = false;
+  bool is_maestro_;
   void declare_context(std::size_t size);
 
 public:
@@ -59,13 +60,14 @@ public:
   static int install_sigsegv_stack(stack_t* old_stack, bool enable);
 #endif
 
-  Context(std::function<void()>&& code, actor::ActorImpl* actor);
+  Context(std::function<void()>&& code, actor::ActorImpl* actor, bool maestro);
   Context(const Context&) = delete;
   Context& operator=(const Context&) = delete;
   virtual ~Context();
 
   bool wannadie() const { return iwannadie_; }
   void set_wannadie(bool value = true) { iwannadie_ = value; }
+  bool is_maestro() const { return is_maestro_; }
   void operator()() const { code_(); }
   bool has_code() const { return static_cast<bool>(code_); }
   actor::ActorImpl* get_actor() const { return this->actor_; }
@@ -83,14 +85,15 @@ public:
 
 class XBT_PUBLIC AttachContext : public Context {
 public:
-  AttachContext(std::function<void()>&& code, actor::ActorImpl* actor) : Context(std::move(code), actor) {}
+  AttachContext(std::function<void()>&& code, actor::ActorImpl* actor, bool maestro)
+      : Context(std::move(code), actor, maestro)
+  {
+  }
   AttachContext(const AttachContext&) = delete;
   AttachContext& operator=(const AttachContext&) = delete;
   ~AttachContext() override;
 
-  /** Called by the context when it is ready to give control
-   *  to the maestro.
-   */
+  /** Called by the context when it is ready to give control to the maestro */
   virtual void attach_start() = 0;
 
   /** Called by the context when it has finished its job */

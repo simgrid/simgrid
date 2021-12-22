@@ -122,11 +122,11 @@ Context* ContextFactory::create_maestro(std::function<void()>&&, actor::ActorImp
     "Try using --cfg=contexts/factory:thread instead.\n");
 }
 
-Context::Context(std::function<void()>&& code, actor::ActorImpl* actor) : code_(std::move(code)), actor_(actor)
+Context::Context(std::function<void()>&& code, actor::ActorImpl* actor, bool maestro)
+    : code_(std::move(code)), actor_(actor), is_maestro_(maestro)
 {
-  /* If no function was provided, this is the context for maestro
-   * and we should set it as the current context */
-  if (not has_code())
+  /* If we are creating maestro, we should set it as the current context */
+  if (maestro)
     set_current(this);
 }
 

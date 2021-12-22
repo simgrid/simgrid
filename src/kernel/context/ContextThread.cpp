@@ -60,7 +60,7 @@ void ThreadContextFactory::run_all()
 // ThreadContext
 
 ThreadContext::ThreadContext(std::function<void()>&& code, actor::ActorImpl* actor, bool maestro)
-    : AttachContext(std::move(code), actor), is_maestro_(maestro)
+    : AttachContext(std::move(code), actor, maestro)
 {
   /* If the user provided a function for the actor then use it */
   if (has_code()) {

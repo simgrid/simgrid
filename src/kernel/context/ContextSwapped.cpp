@@ -71,7 +71,7 @@ namespace context {
 thread_local SwappedContext* SwappedContext::worker_context_ = nullptr;
 
 SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, SwappedContextFactory* factory)
-    : Context(std::move(code), actor), factory_(*factory)
+    : Context(std::move(code), actor, not code /* maestro if no code */), factory_(*factory)
 {
   // Save maestro (=first created context) in preparation for run_all
   if (not is_parallel() && factory_.maestro_context_ == nullptr)

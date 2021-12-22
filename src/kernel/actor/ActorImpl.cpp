@@ -128,6 +128,12 @@ void ActorImpl::detach()
   context->attach_stop();
 }
 
+/** Whether this actor is actually maestro */
+bool ActorImpl::is_maestro() const
+{
+  return context_->is_maestro();
+}
+
 void ActorImpl::cleanup_from_simix()
 {
   auto* engine = EngineImpl::get_instance();
