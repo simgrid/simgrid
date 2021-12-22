@@ -55,12 +55,14 @@ bool acyclic_graph_detail(const_xbt_dynar_t dag)
     for (auto const& t : current) {
       //Mark task
       t->mark();
-      for (auto const& input : t->get_inputs()) {
-        input->mark();
-        // Inputs are communication, hence they can have only one predecessor
-        auto input_pred = *(input->get_dependencies().begin());
-        if (children_are_marked(input_pred))
-          next.push_back(input_pred);
+      for (auto const& input : t->get_predecessors()) {
+        if (input->get_kind() == SD_TASK_COMM_E2E || input->get_kind() == SD_TASK_COMM_PAR_MXN_1D_BLOCK) {
+          input->mark();
+          // Inputs are communication, hence they can have only one predecessor
+          auto input_pred = *(input->get_dependencies().begin());
+          if (children_are_marked(input_pred))
+            next.push_back(input_pred);
+        }
       }
       for (auto const& pred : t->get_dependencies()) {
         if (children_are_marked(pred))
@@ -95,12 +97,14 @@ bool acyclic_graph_detail(const_xbt_dynar_t dag)
       //test if the current iteration is done
       for (auto const& t : current) {
         t->mark();
-        for (SD_task_t const& output : t->get_outputs()) {
-          output->mark();
-          // outputs are communication, hence they can have only one successor
-          SD_task_t output_succ = *(output->get_successors().begin());
-          if (parents_are_marked(output_succ))
-            next.push_back(output_succ);
+        for (auto const& output : t->get_successors()) {
+          if (output->get_kind() == SD_TASK_COMM_E2E || output->get_kind() == SD_TASK_COMM_PAR_MXN_1D_BLOCK) {
+            output->mark();
+            // outputs are communication, hence they can have only one successor
+            SD_task_t output_succ = output->get_successors().front();
+            if (parents_are_marked(output_succ))
+              next.push_back(output_succ);
+          }
         }
         for (SD_task_t const& succ : t->get_successors()) {
           if (parents_are_marked(succ))
