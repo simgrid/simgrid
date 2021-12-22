@@ -20,6 +20,7 @@ namespace simgrid {
 namespace s4u {
 
 xbt::signal<void(Activity&)> Activity::on_veto;
+xbt::signal<void(Activity&)> Activity::on_completion;
 
 std::set<Activity*>* Activity::vetoed_activities_ = nullptr;
 

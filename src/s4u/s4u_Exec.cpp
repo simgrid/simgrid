@@ -17,18 +17,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_exec, s4u_activity, "S4U asynchronous execut
 namespace simgrid {
 namespace s4u {
 xbt::signal<void(Exec const&)> Exec::on_start;
-xbt::signal<void(Exec const&)> Exec::on_completion;
 
 Exec::Exec(kernel::activity::ExecImplPtr pimpl)
 {
   pimpl_ = pimpl;
 }
 
-void Exec::complete(Activity::State state)
-{
-  Activity::complete(state);
-  on_completion(*this);
-}
 void Exec::reset()
 {
   boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->reset();
@@ -45,7 +39,7 @@ ExecPtr Exec::init()
     }
   });
   pimpl->set_cb_id(cb_id);
-  return ExecPtr(pimpl->get_iface());
+  return ExecPtr(static_cast<Exec*>(pimpl->get_iface()));
 }
 
 Exec* Exec::start()

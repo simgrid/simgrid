@@ -467,7 +467,7 @@ void define_callbacks()
     s4u::Exec::on_start.connect([](s4u::Exec const&) {
       Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->push_event("execute");
     });
-    s4u::Exec::on_completion.connect([](s4u::Exec const&) {
+    s4u::Activity::on_completion.connect([](s4u::Activity&) {
       Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->pop_event();
     });
     s4u::Comm::on_send.connect([](s4u::Comm const&) {
@@ -475,9 +475,6 @@ void define_callbacks()
     });
     s4u::Comm::on_recv.connect([](s4u::Comm const&) {
       Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->push_event("receive");
-    });
-    s4u::Comm::on_completion.connect([](s4u::Comm const&) {
-      Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->pop_event();
     });
     s4u::Actor::on_host_change.connect(on_actor_host_change);
   }
@@ -488,7 +485,7 @@ void define_callbacks()
           ->get_state("MPI_STATE")
           ->push_event("computing", new CpuTIData("compute", exec.get_cost()));
     });
-    s4u::Exec::on_completion.connect([](s4u::Exec const&) {
+    s4u::Activity::on_completion.connect([](s4u::Activity&) {
       Container::by_name(std::string("rank-") + std::to_string(s4u::Actor::self()->get_pid()))
           ->get_state("MPI_STATE")
           ->pop_event();

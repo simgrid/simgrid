@@ -28,13 +28,10 @@ class XBT_PUBLIC Io : public Activity_T<Io> {
 protected:
   explicit Io(kernel::activity::IoImplPtr pimpl);
 
-  void complete(Activity::State state) override;
-
 public:
   enum class OpType { READ, WRITE };
 
   static xbt::signal<void(Io const&)> on_start;
-  static xbt::signal<void(Io const&)> on_completion;
 
   static IoPtr init();
   Io* start() override;

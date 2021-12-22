@@ -14,23 +14,16 @@
 namespace simgrid {
 namespace s4u {
 xbt::signal<void(Io const&)> Io::on_start;
-xbt::signal<void(Io const&)> Io::on_completion;
 
 Io::Io(kernel::activity::IoImplPtr pimpl)
 {
   pimpl_ = pimpl;
 }
 
-void Io::complete(Activity::State state)
-{
-  Activity::complete(state);
-  on_completion(*this);
-}
-
 IoPtr Io::init()
 {
   auto pimpl = kernel::activity::IoImplPtr(new kernel::activity::IoImpl());
-  return IoPtr(pimpl->get_iface());
+  return IoPtr(static_cast<Io*>(pimpl->get_iface()));
 }
 
 Io* Io::start()

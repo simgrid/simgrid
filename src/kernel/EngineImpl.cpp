@@ -419,13 +419,8 @@ void EngineImpl::wake_all_waiting_actors() const
       if (action->get_activity() != nullptr) {
         // If nobody told the interface that the activity has failed, that's because no actor waits on it (maestro
         // started it). SimDAG I see you!
-        auto* exec = dynamic_cast<activity::ExecImpl*>(action->get_activity());
-        if (exec != nullptr && exec->get_actor() == maestro_)
-          exec->get_iface()->complete(s4u::Activity::State::FAILED);
-
-        auto* io = dynamic_cast<activity::IoImpl*>(action->get_activity());
-        if (io != nullptr && io->get_actor() == maestro_)
-          io->get_iface()->complete(s4u::Activity::State::FAILED);
+        if (action->get_activity()->get_actor() == maestro_)
+          action->get_activity()->get_iface()->complete(s4u::Activity::State::FAILED);
 
         activity::ActivityImplPtr(action->get_activity())->post();
       }

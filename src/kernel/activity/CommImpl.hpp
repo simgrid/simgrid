@@ -26,7 +26,6 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   MailboxImpl* mbox_ = nullptr; /* Rendez-vous where the comm is queued */
   s4u::Host* from_   = nullptr; /* Pre-determined only for direct host-to-host communications */
   s4u::Host* to_     = nullptr; /* Otherwise, computed at start() time from the actors */
-  s4u::Comm* piface_ = nullptr;
 
 public:
   enum class Type { SEND, RECEIVE };
@@ -36,8 +35,6 @@ public:
   explicit CommImpl(Type type) : type_(type) {}
   CommImpl(s4u::Host* from, s4u::Host* to, double bytes);
 
-  void set_iface(s4u::Comm* piface) { piface_ = piface; }
-  s4u::Comm* get_iface() const { return piface_; }
   CommImpl& set_size(double size);
   CommImpl& set_src_buff(unsigned char* buff, size_t size);
   CommImpl& set_dst_buff(unsigned char* buff, size_t* size);

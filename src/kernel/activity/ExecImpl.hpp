@@ -18,7 +18,6 @@ namespace activity {
 class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
   std::unique_ptr<resource::Action, std::function<void(resource::Action*)>> timeout_detector_{
       nullptr, [](resource::Action* a) { a->unref(); }};
-  actor::ActorImpl* actor_            = nullptr;
   double sharing_penalty_             = 1.0;
   double bound_                       = 0.0;
   double start_time_                  = -1.0;
@@ -26,13 +25,10 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
   std::vector<s4u::Host*> hosts_;
   std::vector<double> flops_amounts_;
   std::vector<double> bytes_amounts_;
-  s4u::Exec* piface_;
   int cb_id_ = -1; // callback id from Host::on_state_change.connect()
 
 public:
   ExecImpl();
-  s4u::Exec* get_iface() { return piface_; }
-  actor::ActorImpl* get_actor() { return actor_; }
 
   ExecImpl& set_timeout(double timeout) override;
   ExecImpl& set_bound(double bound);

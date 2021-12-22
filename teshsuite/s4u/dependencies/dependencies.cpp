@@ -13,9 +13,12 @@ int main(int argc, char** argv)
   xbt_assert(argc > 1, "Usage: %s platform_file\n\nExample: %s two_clusters.xml", argv[0], argv[0]);
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Exec::on_completion.connect([](simgrid::s4u::Exec const& exec) {
-    XBT_INFO("Exec '%s' start time: %f, finish time: %f", exec.get_cname(), exec.get_start_time(),
-             exec.get_finish_time());
+  simgrid::s4u::Activity::on_completion.connect([](simgrid::s4u::Activity& activity) {
+    auto* exec = dynamic_cast<simgrid::s4u::Exec*>(&activity);
+    if (exec == nullptr) // Only Execs are concerned here
+      return;
+    XBT_INFO("Exec '%s' start time: %f, finish time: %f", exec->get_cname(), exec->get_start_time(),
+             exec->get_finish_time());
   });
 
   /* creation of the activities and their dependencies */

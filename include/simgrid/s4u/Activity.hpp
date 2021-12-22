@@ -43,13 +43,6 @@ protected:
   Activity()  = default;
   virtual ~Activity() = default;
 
-  virtual void complete(Activity::State state)
-  {
-    state_ = state;
-    if (state == State::FINISHED)
-      release_dependencies();
-  }
-
   void release_dependencies()
   {
     while (not successors_.empty()) {
@@ -94,6 +87,8 @@ public:
   /*! Signal fired each time that the activity fails to start because of a veto (e.g., unsolved dependency or no
    * resource assigned) */
   static xbt::signal<void(Activity&)> on_veto;
+  /*! Signal fired when theactivity completes  (either normally, cancelled or failed) */
+  static xbt::signal<void(Activity&)> on_completion;
 
   void vetoable_start()
   {
@@ -106,6 +101,14 @@ public:
         vetoed_activities_->insert(this);
       on_veto(*this);
     }
+  }
+
+  void complete(Activity::State state)
+  {
+    state_ = state;
+    if (state == State::FINISHED)
+      release_dependencies();
+    on_completion(*this);
   }
 
   static std::set<Activity*>* get_vetoed_activities() { return vetoed_activities_; }

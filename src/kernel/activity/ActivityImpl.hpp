@@ -33,6 +33,8 @@ public:
   State state_   = State::WAITING;      /* State of the activity */
   std::list<smx_simcall_t> simcalls_;   /* List of simcalls waiting for this activity */
   resource::Action* surf_action_ = nullptr;
+  actor::ActorImpl* actor_       = nullptr;
+  s4u::Activity* piface_         = nullptr;
 
 protected:
   void inline set_name(const std::string& name)
@@ -45,6 +47,12 @@ protected:
 public:
   const std::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
+
+  void set_actor(actor::ActorImpl* actor) { actor_ = actor; }
+  actor::ActorImpl* get_actor() const { return actor_; }
+
+  void set_iface(s4u::Activity* iface) { piface_ = iface; }
+  s4u::Activity* get_iface() { return piface_; }
 
   virtual bool test();
   virtual void wait_for(actor::ActorImpl* issuer, double timeout);

@@ -23,12 +23,6 @@ xbt::signal<void(Comm const&)> Comm::on_send;
 xbt::signal<void(Comm const&)> Comm::on_recv;
 xbt::signal<void(Comm const&)> Comm::on_completion;
 
-void Comm::complete(Activity::State state)
-{
-  Activity::complete(state);
-  on_completion(*this);
-}
-
 Comm::~Comm()
 {
   if (state_ == State::STARTED && not detached_ &&
@@ -163,6 +157,7 @@ CommPtr Comm::set_payload_size(uint64_t bytes)
 CommPtr Comm::sendto_init(Host* from, Host* to)
 {
   CommPtr res(new Comm());
+  res->sender_ = kernel::actor::ActorImpl::self();
   res->from_ = from;
   res->to_   = to;
 
@@ -212,8 +207,11 @@ Comm* Comm::start()
   if (suspended_)
     pimpl_->suspend();
 
-  if (not detached_)
-    static_cast<kernel::activity::CommImpl*>(pimpl_.get())->set_iface(this);
+  if (not detached_) {
+    pimpl_->set_iface(this);
+    pimpl_->set_actor(sender_);
+  }
+
   state_ = State::STARTED;
   return this;
 }

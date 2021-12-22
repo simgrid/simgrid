@@ -28,7 +28,7 @@ IoImpl::IoImpl()
   piface_ = new s4u::Io(this);
   actor::ActorImpl* self = actor::ActorImpl::self();
   if (self) {
-    actor_ = self;
+    set_actor(self);
     self->activities_.emplace_back(this);
   }
 }
@@ -118,7 +118,7 @@ void IoImpl::set_exception(actor::ActorImpl* issuer)
   switch (state_) {
     case State::FAILED:
       issuer->context_->set_wannadie();
-      piface_->complete(s4u::Activity::State::FAILED);
+      static_cast<s4u::Io*>(get_iface())->complete(s4u::Activity::State::FAILED);
       issuer->exception_ = std::make_exception_ptr(StorageFailureException(XBT_THROW_POINT, "Storage failed"));
       break;
     case State::CANCELED:

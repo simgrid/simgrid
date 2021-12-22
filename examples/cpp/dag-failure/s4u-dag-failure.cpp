@@ -18,16 +18,19 @@ int main(int argc, char** argv)
 
   auto* faulty = e.host_by_name("Faulty Host");
   auto* safe   = e.host_by_name("Safe Host");
-  sg4::Exec::on_completion.connect([](sg4::Exec const& exec) {
-    if (exec.get_state() == sg4::Activity::State::FINISHED)
-      XBT_INFO("Activity '%s' is complete (start time: %f, finish time: %f)", exec.get_cname(), exec.get_start_time(),
-               exec.get_finish_time());
-    if (exec.get_state() == sg4::Activity::State::FAILED) {
-      if (exec.is_parallel())
-        XBT_INFO("Activity '%s' has failed. %.f %% remain to be done", exec.get_cname(),
-                 100 * exec.get_remaining_ratio());
+  sg4::Activity::on_completion.connect([](sg4::Activity& activity) {
+    auto* exec = dynamic_cast<simgrid::s4u::Exec*>(&activity);
+    if (exec == nullptr) // Only Execs are concerned here
+      return;
+    if (exec->get_state() == sg4::Activity::State::FINISHED)
+      XBT_INFO("Activity '%s' is complete (start time: %f, finish time: %f)", exec->get_cname(), exec->get_start_time(),
+               exec->get_finish_time());
+    if (exec->get_state() == sg4::Activity::State::FAILED) {
+      if (exec->is_parallel())
+        XBT_INFO("Activity '%s' has failed. %.f %% remain to be done", exec->get_cname(),
+                 100 * exec->get_remaining_ratio());
       else
-        XBT_INFO("Activity '%s' has failed. %.f flops remain to be done", exec.get_cname(), exec.get_remaining());
+        XBT_INFO("Activity '%s' has failed. %.f flops remain to be done", exec->get_cname(), exec->get_remaining());
     }
   });
 

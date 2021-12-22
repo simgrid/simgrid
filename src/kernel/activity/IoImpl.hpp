@@ -14,18 +14,14 @@ namespace kernel {
 namespace activity {
 
 class XBT_PUBLIC IoImpl : public ActivityImpl_T<IoImpl> {
-  actor::ActorImpl* actor_            = nullptr;
   resource::DiskImpl* disk_           = nullptr;
   double sharing_penalty_             = 1.0;
   sg_size_t size_                     = 0;
   s4u::Io::OpType type_               = s4u::Io::OpType::READ;
   sg_size_t performed_ioops_          = 0;
   resource::Action* timeout_detector_ = nullptr;
-  s4u::Io* piface_;
 public:
   IoImpl();
-  s4u::Io* get_iface() { return piface_; }
-  actor::ActorImpl* get_actor() { return actor_; }
 
   IoImpl& set_sharing_penalty(double sharing_penalty);
   IoImpl& set_timeout(double timeout) override;

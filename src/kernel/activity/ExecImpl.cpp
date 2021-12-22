@@ -26,7 +26,7 @@ ExecImpl::ExecImpl()
   piface_                = new s4u::Exec(this);
   actor::ActorImpl* self = actor::ActorImpl::self();
   if (self) {
-    actor_ = self;
+    set_actor(self);
     self->activities_.emplace_back(this);
   }
 }
@@ -158,8 +158,8 @@ void ExecImpl::post()
 
   clean_action();
   timeout_detector_.reset();
-  if (actor_) {
-    actor_->activities_.remove(this);
+  if (get_actor() != nullptr) {
+    get_actor()->activities_.remove(this);
   }
   if (state_ != State::FAILED && cb_id_ >= 0)
     s4u::Host::on_state_change.disconnect(cb_id_);
@@ -171,7 +171,7 @@ void ExecImpl::set_exception(actor::ActorImpl* issuer)
 {
   switch (state_) {
     case State::FAILED:
-      piface_->complete(s4u::Activity::State::FAILED);
+      static_cast<s4u::Exec*>(get_iface())->complete(s4u::Activity::State::FAILED);
       if (issuer->get_host()->is_on())
         issuer->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
       else /* else, the actor will be killed with no possibility to survive */
