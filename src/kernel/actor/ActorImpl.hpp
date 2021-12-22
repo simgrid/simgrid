@@ -55,7 +55,8 @@ public:
   aid_t get_ppid() const { return ppid_; }
   void set_ppid(aid_t ppid) { ppid_ = ppid; }
   bool is_daemon() const { return daemon_; } /** Whether this actor has been daemonized */
-  bool is_maestro() const;                   /** Whether this actor is actually maestro (rather cheap call) */
+  bool is_maestro() const; /** Whether this actor is actually maestro (cheap call but may segfault before actor creation
+                              / after terminaison) */
   bool has_to_auto_restart() const { return auto_restart_; }
   void set_auto_restart(bool autorestart) { auto_restart_ = autorestart; }
   void set_stacksize(unsigned stacksize) { stacksize_ = stacksize; }

@@ -232,8 +232,7 @@ void ActorImpl::exit()
 
 void ActorImpl::kill(ActorImpl* actor) const
 {
-  auto* engine = EngineImpl::get_instance();
-  xbt_assert(not engine->is_maestro(actor), "Killing maestro is a rather bad idea");
+  xbt_assert(not actor->is_maestro(), "Killing maestro is a rather bad idea.");
   if (actor->finished_) {
     XBT_DEBUG("Ignoring request to kill actor %s@%s that is already dead", actor->get_cname(),
               actor->host_->get_cname());
@@ -248,7 +247,7 @@ void ActorImpl::kill(ActorImpl* actor) const
   if (actor == this) {
     XBT_DEBUG("Go on, this is a suicide,");
   } else
-    engine->add_actor_to_run_list(actor);
+    EngineImpl::get_instance()->add_actor_to_run_list(actor);
 }
 
 void ActorImpl::kill_all() const
@@ -332,7 +331,7 @@ void ActorImpl::undaemonize()
 
 s4u::Actor* ActorImpl::restart()
 {
-  xbt_assert(not EngineImpl::get_instance()->is_maestro(this), "Restarting maestro is not supported");
+  xbt_assert(not this->is_maestro(), "Restarting maestro is not supported");
 
   XBT_DEBUG("Restarting actor %s on %s", get_cname(), host_->get_cname());
 
@@ -427,7 +426,7 @@ void ActorImpl::throw_exception(std::exception_ptr e)
 void ActorImpl::simcall_answer()
 {
   auto* engine = EngineImpl::get_instance();
-  if (not engine->is_maestro(this)) {
+  if (not this->is_maestro()) {
     XBT_DEBUG("Answer simcall %s issued by %s (%p)", SIMIX_simcall_name(simcall_), get_cname(), this);
     xbt_assert(simcall_.call_ != simix::Simcall::NONE);
     simcall_.call_ = simix::Simcall::NONE;
@@ -496,8 +495,7 @@ ActorImplPtr ActorImpl::create(const std::string& name, const ActorCode& code, v
   else
     actor = self()->init(xbt::string(name), host);
 
-  /* actor data */
-  actor->piface_.set_data(data);
+  actor->piface_.set_data(data); /* actor data */
 
   actor->start(code);
 
@@ -538,5 +536,6 @@ smx_actor_t SIMIX_process_from_PID(aid_t pid) // XBT_ATTRIB_DEPRECATED_v331
 
 int SIMIX_is_maestro() // XBT_ATTRIB_DEPRECATED_v333
 {
-  return simgrid::s4u::Actor::is_maestro();
+  auto* self = simgrid::kernel::actor::ActorImpl::self();
+  return self != nullptr && self->is_maestro();
 }
