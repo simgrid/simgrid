@@ -433,15 +433,13 @@ void EngineImpl::wake_all_waiting_actors() const
       else {
         // If nobody told the interface that the activity is finished, that's because no actor waits on it (maestro
         // started it). SimDAG I see you!
-        // TODO: do the same for other activity kinds once comms are cleaned up
+        // The finish time of an Exec has to be set before the emission of the on_completion signal by complete
         auto* exec = dynamic_cast<activity::ExecImpl*>(action->get_activity());
-        if (exec != nullptr && exec->get_actor() == maestro_) {
+        if (exec != nullptr)
           exec->set_finish_time(action->get_finish_time());
-          exec->get_iface()->complete(s4u::Activity::State::FINISHED);
-        }
-        auto* io = dynamic_cast<activity::IoImpl*>(action->get_activity());
-        if (io != nullptr && io->get_actor() == maestro_)
-          io->get_iface()->complete(s4u::Activity::State::FINISHED);
+
+        if (action->get_activity()->get_actor() == maestro_)
+          action->get_activity()->get_iface()->complete(s4u::Activity::State::FINISHED);
 
         activity::ActivityImplPtr(action->get_activity())->post();
       }
