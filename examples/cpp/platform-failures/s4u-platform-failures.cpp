@@ -7,7 +7,8 @@
  * specifying when the resource must be turned on or off.
  *
  * To set such a profile, the first way is to use a file in the XML, while the second is to use the programmatic
- * interface. Once this profile is in place, the resource will automatically be turned on and off.
+ * interface, as exemplified in the main() below. Once this profile is in place, the resource will automatically
+ * be turned on and off.
  *
  * The actors running on a host that is turned off are forcefully killed
  * once their on_exit callbacks are executed. They cannot avoid this fate.
@@ -17,6 +18,7 @@
  * Communications using failed links will .. fail.
  */
 
+#include "simgrid/kernel/ProfileBuilder.hpp"
 #include "simgrid/s4u.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
@@ -96,7 +98,17 @@ static void worker(std::vector<std::string> args)
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
+
+  // This is how to attach a profile to an host that is created from the XML file.
+  // This should be done before calling load_platform(), as the on_creation() event is fired when loading the platform.
+  // You can never set a new profile to a resource that already have one.
+  simgrid::s4u::Host::on_creation.connect([](simgrid::s4u::Host& h) {
+    if (h.get_name() == "Bourrassa") {
+      h.set_state_profile(simgrid::kernel::profile::ProfileBuilder::from_string("bourassa_profile", "67 0\n70 1\n", 0));
+    }
+  });
   e.load_platform(argv[1]);
+
   e.register_function("master", master);
   e.register_function("worker", worker);
   e.load_deployment(argv[2]);

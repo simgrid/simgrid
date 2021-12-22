@@ -6,7 +6,7 @@
     <host id="Jupiter"  speed="25Mf" state_file="profiles/jupiter_state.profile"/>
     <host id="Fafard"   speed="25Mf" state_file="profiles/fafard_state.profile" />
     <host id="Ginette"  speed="25Mf" state_file="profiles/ginette_state.profile"/>
-    <host id="Bourassa" speed="25Mf" state_file="profiles/bourassa_state.profile"/>
+    <host id="Bourassa" speed="25Mf"/>
 
     <link id="1" bandwidth="1MBps" latency="0"/>
     <link id="2" bandwidth="1MBps" latency="0"/>
