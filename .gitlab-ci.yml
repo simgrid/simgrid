@@ -54,7 +54,9 @@ release:
     - simgrid-*.tar.gz
 
 pip:
-  image: debian:testing
+  image:
+    name: debian:testing
+    entrypoint: ['/bin/bash', '-c', 'ln -snf /bin/bash /bin/sh && /bin/bash -c $0' ]
   stage: build
   except:
   - stable
