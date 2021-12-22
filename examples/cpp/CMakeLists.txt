@@ -66,7 +66,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  comm-pingpong comm-ready comm-serialize comm-suspend comm-wait comm-waitany comm-waitall comm-waituntil
                  comm-dependent comm-host2host comm-failure comm-throttling
                  cloud-capping cloud-migration cloud-simple
-                 dag-failure dag-io dag-simple
+                 dag-comm dag-failure dag-io dag-simple
                  dht-chord dht-kademlia
                  energy-exec energy-boot energy-link energy-vm energy-exec-ptask energy-wifi
                  engine-filtering engine-run-partial

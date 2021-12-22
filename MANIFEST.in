@@ -202,6 +202,8 @@ include examples/cpp/comm-waitany/s4u-comm-waitany_d.xml
 include examples/cpp/comm-waituntil/s4u-comm-waituntil.cpp
 include examples/cpp/comm-waituntil/s4u-comm-waituntil.tesh
 include examples/cpp/comm-waituntil/s4u-comm-waituntil_d.xml
+include examples/cpp/dag-comm/s4u-dag-comm.cpp
+include examples/cpp/dag-comm/s4u-dag-comm.tesh
 include examples/cpp/dag-failure/s4u-dag-failure.cpp
 include examples/cpp/dag-failure/s4u-dag-failure.tesh
 include examples/cpp/dag-io/s4u-dag-io.cpp
