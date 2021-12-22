@@ -100,11 +100,6 @@ public:
   bool is_maestro(const actor::ActorImpl* actor) const { return actor == maestro_; }
   void set_maestro(actor::ActorImpl* actor) { maestro_ = actor; }
   actor::ActorImpl* get_maestro() const { return maestro_; }
-  void destroy_maestro()
-  {
-    delete maestro_;
-    maestro_ = nullptr;
-  }
 
   context::ContextFactory* get_context_factory() const { return context_factory_; }
   void set_context_factory(context::ContextFactory* factory) { context_factory_ = factory; }

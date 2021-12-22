@@ -329,7 +329,8 @@ void EngineImpl::shutdown()
   instance_->empty_trash();
 
   /* Let's free maestro now */
-  instance_->destroy_maestro();
+  delete instance_->maestro_;
+  instance_->maestro_ = nullptr;
 
   /* Finish context module and SURF */
   instance_->destroy_context_factory();
