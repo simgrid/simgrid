@@ -44,6 +44,8 @@ public:
 
   ~Comm() override;
 
+  /*! Creates a communication that bypasses the mailbox mechanism. */
+  static CommPtr sendto_init();
   /*! Creates a communication beween the two given hosts, bypassing the mailbox mechanism. */
   static CommPtr sendto_init(Host* from, Host* to);
   /** Do an asynchronous communication between two arbitrary hosts.
@@ -103,6 +105,10 @@ public:
     clean_fun_ = clean_function;
     return detach();
   }
+
+  /** Set the source and destination of communications that bypass the mailbox mechanism */
+  CommPtr set_from(Host* from);
+  CommPtr set_to(Host* to);
 
   /** Sets the maximal communication rate (in byte/sec). Must be done before start */
   CommPtr set_rate(double rate);

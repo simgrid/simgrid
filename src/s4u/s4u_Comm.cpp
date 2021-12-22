@@ -85,6 +85,28 @@ size_t Comm::wait_all_for(const std::vector<CommPtr>& comms, double timeout)
   return comms.size();
 }
 
+CommPtr Comm::set_from(Host* from)
+{
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+             "Cannot change the source of a Comm once it's started (state: %s)", to_c_str(state_));
+  from_ = from;
+  // Setting 'from_' may allow to start the activity, let's try
+  vetoable_start();
+
+  return this;
+}
+
+CommPtr Comm::set_to(Host* to)
+{
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+             "Cannot change the destination of a Comm once it's started (state: %s)", to_c_str(state_));
+  to_ = to;
+  // Setting 'to_' may allow to start the activity, let's try
+  vetoable_start();
+
+  return this;
+}
+
 CommPtr Comm::set_rate(double rate)
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
@@ -154,10 +176,16 @@ CommPtr Comm::set_payload_size(uint64_t bytes)
   return this;
 }
 
-CommPtr Comm::sendto_init(Host* from, Host* to)
+CommPtr Comm::sendto_init()
 {
   CommPtr res(new Comm());
   res->sender_ = kernel::actor::ActorImpl::self();
+  return res;
+}
+
+CommPtr Comm::sendto_init(Host* from, Host* to)
+{
+  auto res   = Comm::sendto_init();
   res->from_ = from;
   res->to_   = to;
 
