@@ -31,6 +31,9 @@ class XBT_PUBLIC Activity {
   friend Comm;
   friend Exec;
   friend Io;
+#ifndef DOXYGEN
+  friend std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename);
+#endif
 
 public:
   // enum class State { ... }
@@ -38,6 +41,7 @@ public:
 
   virtual bool is_assigned() const = 0;
   virtual bool dependencies_solved() const { return dependencies_.empty(); }
+  virtual unsigned long is_waited_by() const { return successors_.size(); }
 
 protected:
   Activity()  = default;
