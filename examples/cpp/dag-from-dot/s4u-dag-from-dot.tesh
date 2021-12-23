@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u_dag-from-dot --log=no_loc ${platfdir}/cluster_backbone.xml ${srcdir:=.}/dag.dot
+$ ${bindir:=.}/s4u-dag-from-dot --log=no_loc ${platfdir}/cluster_backbone.xml ${srcdir:=.}/dag.dot
 > [0.000000] [dag_from_dot/INFO] --------- Display all activities of the loaded DAG -----------
 > [0.000000] [dag_from_dot/INFO] 'root' is an Exec: 0 flops to execute. Dependencies: solved; Ressources: NOT assigned
 > [0.000000] [dag_from_dot/INFO] '0' is an Exec: 10000000129 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned

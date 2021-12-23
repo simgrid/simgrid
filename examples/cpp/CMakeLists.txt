@@ -29,18 +29,18 @@ foreach (example ${MC_regular_tests})
 endforeach()
 
 if(HAVE_GRAPHVIZ)
-  add_executable       (s4u_dag-from-dot  EXCLUDE_FROM_ALL dag-from-dot/s4u_dag-from-dot.cpp)
-  target_link_libraries(s4u_dag-from-dot  simgrid)
-  set_target_properties(s4u_dag-from-dot  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dag-from-dot)
-  add_dependencies(tests s4u_dag-from-dot)
+  add_executable       (s4u-dag-from-dot  EXCLUDE_FROM_ALL dag-from-dot/s4u-dag-from-dot.cpp)
+  target_link_libraries(s4u-dag-from-dot  simgrid)
+  set_target_properties(s4u-dag-from-dot  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dag-from-dot)
+  add_dependencies(tests s4u-dag-from-dot)
 
   ADD_TESH(s4u-dag-from-dot --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/cpp/dag-from-dot
                              --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                              --cd ${CMAKE_BINARY_DIR}/examples/cpp/dag-from-dot
-                             ${CMAKE_HOME_DIRECTORY}/examples/cpp/dag-from-dot/s4u_dag-from-dot.tesh)
+                             ${CMAKE_HOME_DIRECTORY}/examples/cpp/dag-from-dot/s4u-dag-from-dot.tesh)
  endif()
- set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/s4u_dag-from-dot.cpp)
- set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/s4u_dag-from-dot.tesh)
+ set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/s4u-dag-from-dot.cpp)
+ set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/s4u-dag-from-dot.tesh)
 
 
 if(SIMGRID_HAVE_MC)
