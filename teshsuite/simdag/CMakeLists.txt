@@ -1,13 +1,3 @@
-foreach(x availability )
-  add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.c)
-  target_link_libraries(${x}  simgrid)
-  set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
-  add_dependencies(tests ${x})
-
-  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
-  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
-endforeach()
-
 foreach(x flatifier)
   add_executable       (${x} EXCLUDE_FROM_ALL ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
@@ -53,7 +43,7 @@ set(txt_files     ${txt_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/carol.
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/link.fail
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/link.lat                         PARENT_SCOPE)
 
-foreach(x availability flatifier)
+foreach(x flatifier)
   ADD_TESH(tesh-simdag-${x} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/${x} ${x}.tesh)
 endforeach()
 
