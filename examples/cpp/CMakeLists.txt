@@ -39,8 +39,8 @@ if(HAVE_GRAPHVIZ)
                              --cd ${CMAKE_BINARY_DIR}/examples/cpp/dag-from-dot
                              ${CMAKE_HOME_DIRECTORY}/examples/cpp/dag-from-dot/s4u_dag-from-dot.tesh)
  endif()
- set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/s4u_dag-frm-dot.cpp)
- set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/s4u_dag-frm-dot.tesh)
+ set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/s4u_dag-from-dot.cpp)
+ set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/s4u_dag-from-dot.tesh)
 
 
 if(SIMGRID_HAVE_MC)
