@@ -15,8 +15,8 @@ SMPI:
  Alternative for smpi/or, smpi/os and smpi/ois configuration options.
 
 Documentation:
-  * SimGrid MPI calibration of a Grid5000 cluster" presenting how to properly
-  calibrate MPI communications in SimGrid.
+ - New section: "SimGrid MPI calibration of a Grid5000 cluster"
+   presenting how to properly calibrate MPI communications in SimGrid.
 
 Python:
  - Thread contexts are used by default with Python bindings.  Other kinds of

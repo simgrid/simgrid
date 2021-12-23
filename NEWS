@@ -5,6 +5,10 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ / / _ \
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____/ \___/
                (unreleased)
 
+  * SimDAG is finally removed, fully superseeded by S4U.
+  * New documentation on calibrating MPI.
+  *
+  * (+ many bug fixes and internal refactoring)
                     _               _____  ____   ___
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \ / _ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | (_) |
