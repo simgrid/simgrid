@@ -218,6 +218,8 @@ private:
   void initialize(int* argc, char** argv);
 };
 
+std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename);
+
 #ifndef DOXYGEN /* Internal use only, no need to expose it */
 template <class T>
 XBT_PRIVATE void get_filtered_netzones_recursive(const s4u::NetZone* current, std::vector<T*>* whereto)

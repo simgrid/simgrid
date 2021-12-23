@@ -1,0 +1,47 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u_dag-from-dot --log=no_loc ${platfdir}/cluster_backbone.xml ${srcdir:=.}/dag.dot
+> [0.000000] [dag_from_dot/INFO] --------- Display all activities of the loaded DAG -----------
+> [0.000000] [dag_from_dot/INFO] 'root' is an Exec: 0 flops to execute. Dependencies: solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] '0' is an Exec: 10000000129 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] '1' is an Exec: 10000000131 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] '2' is an Exec: 10000000121 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] '3' is an Exec: 10000000230 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] '4' is an Exec: 10000000004 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] '5' is an Exec: 10000000046 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] '6' is an Exec: 10000000091 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] '7' is an Exec: 10000000040 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] '8' is an Exec: 10000000250 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] '9' is an Exec: 10000000079 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] '0->1' is a Comm: 10001 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] '1->2' is a Comm: 10004 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] '2->3' is a Comm: 10001 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] '4->5' is a Comm: 10029 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] '6->7' is a Comm: 10004 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] '7->8' is a Comm: 10000 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] '7->end' is a Comm: 10014000 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] 'root->5' is a Comm: 10014000 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] 'end' is an Exec: 10000000129 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dot/INFO] ------------------- Schedule tasks ---------------------------
+> [0.000000] [dag_from_dot/INFO] ------------------- Run the schedule -------------------------
+> [110.047415] [dag_from_dot/INFO] -------------- Summary of executed schedule ------------------
+> [110.047415] [dag_from_dot/INFO] [0.000000->0.000000] 'root' executed on node-0.simgrid.org
+> [110.047415] [dag_from_dot/INFO] [0.000000->10.000000] '0' executed on node-1.simgrid.org
+> [110.047415] [dag_from_dot/INFO] [10.007889->20.007889] '1' executed on node-10.simgrid.org
+> [110.047415] [dag_from_dot/INFO] [20.015777->30.015777] '2' executed on node-11.simgrid.org
+> [110.047415] [dag_from_dot/INFO] [30.023666->40.023666] '3' executed on node-12.simgrid.org
+> [110.047415] [dag_from_dot/INFO] [40.023666->50.023666] '4' executed on node-13.simgrid.org
+> [110.047415] [dag_from_dot/INFO] [50.031555->60.031555] '5' executed on node-14.simgrid.org
+> [110.047415] [dag_from_dot/INFO] [60.031555->70.031555] '6' executed on node-15.simgrid.org
+> [110.047415] [dag_from_dot/INFO] [70.039443->80.039443] '7' executed on node-16.simgrid.org
+> [110.047415] [dag_from_dot/INFO] [80.047414->90.047415] '8' executed on node-17.simgrid.org
+> [110.047415] [dag_from_dot/INFO] [90.047415->100.047415] '9' executed on node-18.simgrid.org
+> [110.047415] [dag_from_dot/INFO] 0->1
+> [110.047415] [dag_from_dot/INFO] 1->2
+> [110.047415] [dag_from_dot/INFO] 2->3
+> [110.047415] [dag_from_dot/INFO] 4->5
+> [110.047415] [dag_from_dot/INFO] 6->7
+> [110.047415] [dag_from_dot/INFO] 7->8
+> [110.047415] [dag_from_dot/INFO] 7->end
+> [110.047415] [dag_from_dot/INFO] root->5
+> [110.047415] [dag_from_dot/INFO] [100.047415->110.047415] 'end' executed on node-0.simgrid.org

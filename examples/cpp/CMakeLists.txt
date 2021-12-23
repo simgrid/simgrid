@@ -28,6 +28,21 @@ foreach (example ${MC_regular_tests})
   set(_${example}_factories "^thread")
 endforeach()
 
+if(HAVE_GRAPHVIZ)
+  add_executable       (s4u_dag-from-dot  EXCLUDE_FROM_ALL dag-from-dot/s4u_dag-from-dot.cpp)
+  target_link_libraries(s4u_dag-from-dot  simgrid)
+  set_target_properties(s4u_dag-from-dot  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dag-from-dot)
+  add_dependencies(tests s4u_dag-from-dot)
+
+  ADD_TESH(s4u-dag-from-dot --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/cpp/dag-from-dot
+                             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                             --cd ${CMAKE_BINARY_DIR}/examples/cpp/dag-from-dot
+                             ${CMAKE_HOME_DIRECTORY}/examples/cpp/dag-from-dot/s4u_dag-from-dot.tesh)
+ endif()
+ set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/s4u_dag-frm-dot.cpp)
+ set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/s4u_dag-frm-dot.tesh)
+
+
 if(SIMGRID_HAVE_MC)
    add_executable       (s4u-mc-bugged1-liveness  EXCLUDE_FROM_ALL mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
    target_link_libraries(s4u-mc-bugged1-liveness  simgrid)
@@ -277,7 +292,8 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
 set(bin_files     ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness-stack-cleaner
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/promela_bugged1_liveness PARENT_SCOPE)
-set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p0.txt
+set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/dag.dot
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p0.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p1.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-io/s4u-replay-io.txt                  PARENT_SCOPE)
