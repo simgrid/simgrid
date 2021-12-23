@@ -28,21 +28,6 @@ foreach (example ${MC_regular_tests})
   set(_${example}_factories "^thread")
 endforeach()
 
-if(HAVE_GRAPHVIZ)
-  add_executable       (s4u-dag-from-dot  EXCLUDE_FROM_ALL dag-from-dot/s4u-dag-from-dot.cpp)
-  target_link_libraries(s4u-dag-from-dot  simgrid)
-  set_target_properties(s4u-dag-from-dot  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/dag-from-dot)
-  add_dependencies(tests s4u-dag-from-dot)
-
-  ADD_TESH(s4u-dag-from-dot --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/cpp/dag-from-dot
-                             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                             --cd ${CMAKE_BINARY_DIR}/examples/cpp/dag-from-dot
-                             ${CMAKE_HOME_DIRECTORY}/examples/cpp/dag-from-dot/s4u-dag-from-dot.tesh)
- endif()
- set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/s4u-dag-from-dot.cpp)
- set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/s4u-dag-from-dot.tesh)
-
-
 if(SIMGRID_HAVE_MC)
    add_executable       (s4u-mc-bugged1-liveness  EXCLUDE_FROM_ALL mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
    target_link_libraries(s4u-mc-bugged1-liveness  simgrid)
@@ -62,15 +47,14 @@ if(SIMGRID_HAVE_MC)
   endif()
 endif()
 
-if(SIMGRID_HAVE_NS3)
-  add_executable       (s4u-network-ns3 EXCLUDE_FROM_ALL network-ns3/s4u-network-ns3.cpp)
-  target_link_libraries(s4u-network-ns3 simgrid)
-  set_target_properties(s4u-network-ns3  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/network-ns3)
-  add_dependencies(tests s4u-network-ns3)
-  add_executable       (s4u-network-ns3-wifi EXCLUDE_FROM_ALL network-ns3-wifi/s4u-network-ns3-wifi.cpp)
-  target_link_libraries(s4u-network-ns3-wifi simgrid)
-  set_target_properties(s4u-network-ns3-wifi  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/network-ns3-wifi)
-  add_dependencies(tests s4u-network-ns3-wifi)
+if(NOT HAVE_GRAPHVIZ)
+  set(_s4u-dag-from-dot_disable 1)
+endif()
+
+if(NOT SIMGRID_HAVE_NS3)
+  foreach (example network-ns3 network-ns3-wifi)
+    set(_${example}_disable 1)
+  endforeach()
 endif()
 
 # Deal with each example
@@ -81,7 +65,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  comm-pingpong comm-ready comm-serialize comm-suspend comm-wait comm-waitany comm-waitall comm-waituntil
                  comm-dependent comm-host2host comm-failure comm-throttling
                  cloud-capping cloud-migration cloud-simple
-                 dag-comm dag-failure dag-io dag-simple
+                 dag-comm dag-from-dot dag-failure dag-io dag-simple
                  dht-chord dht-kademlia
                  energy-exec energy-boot energy-link energy-vm energy-exec-ptask energy-wifi
                  engine-filtering engine-run-partial
@@ -89,7 +73,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  exec-ptask-multicore exec-cpu-nonlinear exec-cpu-factors exec-failure
                  maestro-set
                  mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert
-                 network-wifi
+                 network-ns3 network-ns3-wifi network-wifi
                  io-async io-priority io-degradation io-file-system io-file-remote io-disk-raw io-dependent
                  platform-failures platform-profile platform-properties
                  plugin-host-load plugin-link-load plugin-prodcons
@@ -120,6 +104,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                                       --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
                                       --setenv libdir=${CMAKE_BINARY_DIR}/lib
                                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                      --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
                                       --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
                                       ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}.tesh)
   else()
@@ -206,19 +191,6 @@ foreach(example app-bittorrent app-masterworkers
                                              ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}.tesh)
 endforeach()
 
-# ns3-tests
-if(SIMGRID_HAVE_NS3)
-  ADD_TESH_FACTORIES(s4u-network-ns3 "*"
-                                     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/cpp
-                                     --setenv bindir=${CMAKE_BINARY_DIR}/examples/cpp
-                                     --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                     ${CMAKE_HOME_DIRECTORY}/examples/cpp/network-ns3/s4u-network-ns3.tesh)
-  ADD_TESH_FACTORIES(s4u-network-ns3-wifi "*"
-                                     --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/cpp
-                                     --setenv bindir=${CMAKE_BINARY_DIR}/examples/cpp
-                                     --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                     ${CMAKE_HOME_DIRECTORY}/examples/cpp/network-ns3-wifi/s4u-network-ns3-wifi.tesh)
-endif()
 # Examples not accepting factories
 ##################################
 
@@ -254,14 +226,10 @@ endif()
 
 # Add all extra files to the archive
 ####################################
-set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.cpp
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3-wifi/s4u-network-ns3-wifi.cpp              PARENT_SCOPE)
+set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp        PARENT_SCOPE)
 set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/comm-pingpong/simix-breakpoint.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/s4u-network-ns3.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3-wifi/s4u-network-ns3-wifi.tesh             PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh  PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-actor-create_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/s4u-actor-yield_d.xml
