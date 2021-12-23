@@ -170,7 +170,9 @@ A host is the computing resource on which an actor can run. See :cpp:class:`simg
 
 SimGrid links usually represent one-hop network connections (see :cpp:class:`simgrid::s4u::Link`), i.e., a single wire.
 They can also be used to abstract a larger network interconnect, e.g., the entire transcontinental network, into a
-single element.
+single element. Links are characterized by their bandwidth and latency, and their sharing is realistic wrt TCP connexions.
+Another unusual point is that SimGrid links can be used to connect more than two elements, just like
+hyperlinks in an `hypergraph <https://en.wikipedia.org/wiki/Hypergraph>`_.
 
 **Parent tags:** :ref:`pf_tag_zone` (both leaf zones and inner zones) |br|
 **Children tags:** :ref:`pf_tag_prop` |br|
@@ -394,20 +396,22 @@ of :ref:`pf_tag_link` .
 
 **Parent tags:** :ref:`pf_tag_zone` |br|
 **Children tags:** :ref:`pf_tag_link_ctn` |br|
+**See also:** :ref:`pf_tag_zoneRoute` |br|
 **Attributes:**
 
-:``src``: Host from which this route starts. Must be an existing host.
-:``dst``: Host to which this route leads. Must be an existing host.
+:``src``: Host from which this route starts. Must be the name of an existing host.
+:``dst``: Host to which this route leads. Must be the name of an existing host.
 :``symmetrical``: Whether this route is symmetrical, ie, whether we
 		  are defining the route ``dst -> src`` at the same
-		  time. Valid values: ``yes``, ``no``, ``YES``, ``NO``.
+		  time. Valid values: ``yes``, ``no``, ``YES``, ``NO``
+		  (default: YES).
 
 -------------------------------------------------------------------------------
 
 .. _pf_tag_router:
 
 <router>
-------------------------------------------------------------------
+--------
 
 A router is similar to a :ref:`pf_tag_host`, but it cannot contain
 any actor. It is only useful to some routing algorithms. In
@@ -456,6 +460,7 @@ and the list of links to go from one zone to another.
 
 **Parent tags:** :ref:`pf_tag_zone` |br|
 **Children tags:** :ref:`pf_tag_link_ctn` |br|
+**See also:** :ref:`pf_tag_route` |br|
 **Attributes:**
 
 :``src``: Zone from which this route starts. Must be an existing zone.
@@ -465,6 +470,14 @@ and the list of links to go from one zone to another.
 :``symmetrical``: Whether this route is symmetrical, ie, whether we
 		  are defining the route ``dst -> src`` at the same
 		  time. Valid values: ``yes``, ``no``, ``YES``, ``NO``.
+
+Afterward, the path from `src_host` in zone `src`, to `dst_host` in
+zone `dst`, is composed of 3 segments. First, move within zone `src`
+from `src_host` to the specified gateway `gw_src`. Then, traverse all
+links specified by the zoneRoute (purportedly within the common
+ancestor) and finally, move within zone `dst` from `gw_dst` to
+`dst_host`.
+ 
 
 -------------------------------------------------------------------------------
 

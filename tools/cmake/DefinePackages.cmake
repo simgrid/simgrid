@@ -853,9 +853,7 @@ set(DOC_SOURCES
   doc/doxygen/inside_cmake.doc
   doc/doxygen/inside_extending.doc
   doc/doxygen/inside_release.doc
-  doc/doxygen/module-sd.doc
   doc/doxygen/module-surf.doc
-  doc/doxygen/module-trace.doc
   doc/doxygen/module-index.doc
   doc/doxygen/outcomes_vizu.doc
   doc/doxygen/platform.doc

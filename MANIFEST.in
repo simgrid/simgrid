@@ -1808,9 +1808,7 @@ include doc/doxygen/inside_extending.doc
 include doc/doxygen/inside_release.doc
 include doc/doxygen/inside_tests.doc
 include doc/doxygen/module-index.doc
-include doc/doxygen/module-sd.doc
 include doc/doxygen/module-surf.doc
-include doc/doxygen/module-trace.doc
 include doc/doxygen/outcomes_vizu.doc
 include doc/doxygen/platform.doc
 include doc/doxygen/uhood.doc

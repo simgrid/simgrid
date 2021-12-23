@@ -163,14 +163,7 @@ etc.
 
 There are two tags at all times available to represent network entities and
 several other tags that are available only in certain contexts.
-1. ``<link>``: Represents an entity that has a limited bandwidth, a
-    latency, and that can be shared according to TCP way to share this
-    bandwidth.
-@remark
-  The concept of links in SimGrid may not be intuitive, as links are not
-  limited to connecting (exactly) two entities; in fact, you can have more than
-  two equipments connected to it. (In graph theoretical terms: A link in
-  SimGrid is not an edge, but a hyperedge)
+1. ``<link>``:
 
 2. ``<router/>``: Represents an entity that a message can be routed
     to, but that is unable to execute any code. In SimGrid, routers have also
@@ -477,130 +470,6 @@ Basically all those tags will contain an (ordered) list of references
 to link that compose the route you want to define.
 
 Consider the example below:
-
-@verbatim
-<route src="Alice" dst="Bob">
-	<link_ctn id="link1"/>
-	<link_ctn id="link2"/>
-	<link_ctn id="link3"/>
-</route>
-@endverbatim
-
-The route here from host Alice to Bob will be first link1, then link2,
-and finally link3. What about the reverse route? @ref pf_tag_route "Route" and
-@ref pf_tag_zoneroute "zoneroute" have an optional attribute @c symmetrical, that can
-be either @c YES or @c NO. @c YES means that the reverse route is the same
-route in the inverse order, and is set to @c YES by default. Note that
-this is not the case for bypass*Route, as it is more probable that you
-want to bypass only one default route.
-
-For an @ref pf_tag_zoneroute "zoneroute", things are just slightly more complicated, as you have
-to give the id of the gateway which is inside the zone you want to access ...
-So it looks like this:
-
-@verbatim
-<zoneroute src="zone1" dst="zone2"
-  gw_src="router1" gw_dst="router2">
-  <link_ctn id="link1"/>
-</zoneroute>
-@endverbatim
-
-gw == gateway, so when any message are trying to go from zone1 to zone2,
-it means that it must pass through router1 to get out of the zone, then
-pass through link1, and get into zone2 by being received by router2.
-router1 must belong to zone1 and router2 must belong to zone2.
-
-@subsubsection pf_tag_zoneroute &lt;zoneRoute&gt;
-
-The purpose of this entity is to define a route between two
-NetZones. Recall that all zones form a tree, so to connect two
-sibling zones, you must give such a zoneRoute specifying the source
-and destination zones, along with the gateway in each zone (ie, the
-point to reach within that zone to reach the netzone), and the list of
-links in the ancestor zone to go from one zone to another.
-
-So, to go from a host @c src_host that is within zone @c src, to a
-host @c dst_host that is within @c dst, you need to:
-
- - move within zone @c src, from @c src_host to the specified @c gw_src;
- - traverse all links specified by the zoneRoute (they are supposed to be within the common ancestor);
- - move within zone @c dst, from @c gw_dst to @c dst_host.
-
-#### Attributes ####
-
-| Attribute name  | Mandatory | Values | Description                                                                                                                                |
-| --------------- | --------- | ------ | -----------                                                                                                                                |
-| src             | yes       | String | The identifier of the source zone                                                                                                            |
-| dst             | yes       | String | See the @c src attribute                                                                                                                   |
-| gw_src          | yes       | String | The gateway that will be used within the src zone; this can be any @ref pf_tag_host "Host" or @ref pf_router "Router" defined within the src zone. |
-| gw_dst          | yes       | String | Same as @c gw_src, but with the dst zone instead.                                                                                            |
-| symmetrical     | no        | YES@|NO (Default: YES) | If this route is symmetric, the opposite route (from dst to src) will also be declared implicitly.               |
-
-#### Example ####
-
-@verbatim
-<zone  id="zone0"  routing="Full">
-  <cluster id="my_cluster_1" prefix="c-" suffix=".me"
-  		radical="0-149" speed="1000000000" bw="125000000" lat="5E-5"
-        bb_bw="2250000000" bb_lat="5E-4"/>
-
-  <cluster id="my_cluster_2" prefix="c-" suffix=".me"
-    radical="150-299" speed="1000000000" bw="125000000" lat="5E-5"
-    bb_bw="2250000000" bb_lat="5E-4"/>
-
-     <link id="backbone" bandwidth="1250000000" latency="5E-4"/>
-
-     <zoneroute src="my_cluster_1" dst="my_cluster_2"
-	 gw_src="c-my_cluster_1_router.me"
-	 gw_dst="c-my_cluster_2_router.me">
- 		<link_ctn id="backbone"/>
-     </zoneroute>
-     <zoneroute src="my_cluster_2" dst="my_cluster_1"
-	 gw_src="c-my_cluster_2_router.me"
-	 gw_dst="c-my_cluster_1_router.me">
- 		<link_ctn id="backbone"/>
-     </zoneroute>
-</zone>
-@endverbatim
-
-@subsubsection pf_tag_route &lt;route&gt;
-
-The principle is the same as for
-@ref pf_tag_zoneroute "ZoneRoute": The route contains a list of links that
-provide a path from @c src to @c dst. Here, @c src and @c dst can both be either a
-@ref pf_tag_host "host" or @ref pf_router "router".  This is mostly useful for the
-@ref pf_routing_model_full "Full routing model" as well as for the
-@ref pf_routing_model_shortest_path "shortest-paths" based models (as they require
-topological information).
-
-
-| Attribute name  | Mandatory | Values                 | Description                                                                                        |
-| --------------- | --------- | ---------------------- | -----------                                                                                        |
-| src             | yes       | String                 | The value given to the source's "id" attribute                                                     |
-| dst             | yes       | String                 | The value given to the destination's "id" attribute.                                               |
-| symmetrical     | no        | YES@| NO (Default: YES) | If this route is symmetric, the opposite route (from dst to src) will also be declared implicitly. |
-
-
-#### Examples ####
-
-A route in the @ref pf_routing_model_full "Full routing model" could look like this:
-@verbatim
- <route src="Tremblay" dst="Bourassa">
-     <link_ctn id="4"/><link_ctn id="3"/><link_ctn id="2"/><link_ctn id="0"/><link_ctn id="1"/><link_ctn id="6"/><link_ctn id="7"/>
- </route>
-@endverbatim
-
-A route in the @ref pf_routing_model_shortest_path "Shortest-Path routing model" could look like this:
-@verbatim
-<route src="Tremblay" dst="Bourassa">
-  <link_ctn id="3"/>
-</route>
-@endverbatim
-@note
-    You must only have one link in your routes when you're using them to provide
-    topological information, as the routes here are simply the edges of the
-    (network-)graph and the employed algorithms need to know which edge connects
-    which pair of entities.
 
 @subsubsection pf_tag_bypassasroute bypasszoneroute
 
