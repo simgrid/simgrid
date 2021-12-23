@@ -48,7 +48,7 @@ if(SIMGRID_HAVE_MC)
 endif()
 
 if(NOT HAVE_GRAPHVIZ)
-  set(_s4u-dag-from-dot_disable 1)
+  set(_dag-from-dot_disable 1)
 endif()
 
 if(NOT SIMGRID_HAVE_NS3)
