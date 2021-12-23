@@ -37,8 +37,8 @@ int main(int argc, char** argv)
   C->add_successor(D);
 
   Init->set_host(host);
-  A->set_from(host)->set_to(host);
-  D->set_from(host)->set_to(host);
+  A->set_source(host)->set_destination(host);
+  D->set_source(host)->set_destination(host);
 
   /* let's launch the simulation! */
   e.run();

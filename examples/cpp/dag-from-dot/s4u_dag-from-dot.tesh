@@ -36,12 +36,12 @@ $ ${bindir:=.}/s4u_dag-from-dot --log=no_loc ${platfdir}/cluster_backbone.xml ${
 > [110.047415] [dag_from_dot/INFO] [70.039443->80.039443] '7' executed on node-16.simgrid.org
 > [110.047415] [dag_from_dot/INFO] [80.047414->90.047415] '8' executed on node-17.simgrid.org
 > [110.047415] [dag_from_dot/INFO] [90.047415->100.047415] '9' executed on node-18.simgrid.org
-> [110.047415] [dag_from_dot/INFO] 0->1
-> [110.047415] [dag_from_dot/INFO] 1->2
-> [110.047415] [dag_from_dot/INFO] 2->3
-> [110.047415] [dag_from_dot/INFO] 4->5
-> [110.047415] [dag_from_dot/INFO] 6->7
-> [110.047415] [dag_from_dot/INFO] 7->8
-> [110.047415] [dag_from_dot/INFO] 7->end
-> [110.047415] [dag_from_dot/INFO] root->5
+> [110.047415] [dag_from_dot/INFO] [10.000000->10.007889] '0->1' transferred from node-1.simgrid.org to node-10.simgrid.org
+> [110.047415] [dag_from_dot/INFO] [20.007889->20.015777] '1->2' transferred from node-10.simgrid.org to node-11.simgrid.org
+> [110.047415] [dag_from_dot/INFO] [30.015777->30.023666] '2->3' transferred from node-11.simgrid.org to node-12.simgrid.org
+> [110.047415] [dag_from_dot/INFO] [50.023666->50.031555] '4->5' transferred from node-13.simgrid.org to node-14.simgrid.org
+> [110.047415] [dag_from_dot/INFO] [70.031555->70.039443] '6->7' transferred from node-15.simgrid.org to node-16.simgrid.org
+> [110.047415] [dag_from_dot/INFO] [80.039443->80.047414] '7->8' transferred from node-16.simgrid.org to node-17.simgrid.org
+> [110.047415] [dag_from_dot/INFO] [80.039443->80.129922] '7->end' transferred from node-16.simgrid.org to node-0.simgrid.org
+> [110.047415] [dag_from_dot/INFO] [0.000000->0.090396] 'root->5' transferred from node-0.simgrid.org to node-14.simgrid.org
 > [110.047415] [dag_from_dot/INFO] [100.047415->110.047415] 'end' executed on node-0.simgrid.org

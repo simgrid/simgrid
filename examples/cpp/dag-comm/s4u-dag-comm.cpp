@@ -49,9 +49,9 @@ int main(int argc, char* argv[])
 
   // Schedule the different activities
   parent->set_host(tremblay);
-  transfert->set_from(tremblay);
+  transfert->set_source(tremblay);
   child->set_host(jupiter);
-  transfert->set_to(jupiter);
+  transfert->set_destination(jupiter);
 
   e.run();
 

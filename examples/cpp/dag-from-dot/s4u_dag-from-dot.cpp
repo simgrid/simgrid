@@ -48,7 +48,7 @@ int main(int argc, char** argv)
     if (comm != nullptr) {
       auto pred = dynamic_cast<simgrid::s4u::Exec*>(comm->get_parent().get());
       auto succ = dynamic_cast<simgrid::s4u::Exec*>(comm->get_child().get());
-      comm->set_from(pred->get_host())->set_to(succ->get_host());
+      comm->set_source(pred->get_host())->set_destination(succ->get_host());
     }
   }
 
@@ -64,7 +64,8 @@ int main(int argc, char** argv)
     }
     auto* comm = dynamic_cast<simgrid::s4u::Comm*>(a.get());
     if (comm != nullptr) {
-      XBT_INFO("%s", comm->get_cname());
+      XBT_INFO("[%f->%f] '%s' transferred from %s to %s", comm->get_start_time(), comm->get_finish_time(),
+               comm->get_cname(), comm->get_source()->get_cname(), comm->get_destination()->get_cname());
     }
   }
   return 0;
