@@ -166,6 +166,9 @@ public:
    * It is forbidden to change the amount of work once the Activity is started */
   Activity* set_remaining(double remains);
 
+  double get_start_time() const;
+  double get_finish_time() const;
+
   /** Returns the internal implementation of this Activity */
   kernel::activity::ActivityImpl* get_impl() const { return pimpl_.get(); }
 

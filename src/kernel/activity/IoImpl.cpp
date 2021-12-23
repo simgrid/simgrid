@@ -79,6 +79,7 @@ IoImpl* IoImpl::start()
       disk_->get_host()->get_netpoint()->get_englobing_zone()->get_disk_model()->io_start(disk_, size_, type_);
   surf_action_->set_sharing_penalty(sharing_penalty_);
   surf_action_->set_activity(this);
+  start_time_ = surf_action_->get_start_time();
 
   XBT_DEBUG("Create IO synchro %p %s", this, get_cname());
 

@@ -85,8 +85,6 @@ public:
 
   Host* get_host() const;
   unsigned int get_host_number() const;
-  double get_start_time() const;
-  double get_finish_time() const;
   double get_cost() const;
   bool is_parallel() const { return parallel_; }
   bool is_assigned() const override;

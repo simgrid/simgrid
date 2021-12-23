@@ -10,6 +10,7 @@
 #include <simgrid/s4u/Io.hpp>
 #include <xbt/log.h>
 
+#include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 
@@ -115,6 +116,14 @@ double Activity::get_remaining() const
     return remains_;
   else
     return pimpl_->get_remaining();
+}
+double Activity::get_start_time() const
+{
+  return pimpl_->get_start_time();
+}
+double Activity::get_finish_time() const
+{
+  return pimpl_->get_finish_time();
 }
 
 Activity* Activity::set_remaining(double remains)

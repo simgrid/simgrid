@@ -35,6 +35,8 @@ public:
   resource::Action* surf_action_ = nullptr;
   actor::ActorImpl* actor_       = nullptr;
   s4u::Activity* piface_         = nullptr;
+  double start_time_             = -1.0;
+  double finish_time_            = -1.0;
 
 protected:
   void inline set_name(const std::string& name)
@@ -53,6 +55,10 @@ public:
 
   void set_iface(s4u::Activity* iface) { piface_ = iface; }
   s4u::Activity* get_iface() { return piface_; }
+
+  double get_start_time() const { return start_time_; }
+  void set_finish_time(double finish_time) { finish_time_ = finish_time; }
+  double get_finish_time() const { return finish_time_; }
 
   virtual bool test();
   virtual void wait_for(actor::ActorImpl* issuer, double timeout);

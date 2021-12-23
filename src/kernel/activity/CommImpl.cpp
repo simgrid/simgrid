@@ -310,6 +310,7 @@ CommImpl* CommImpl::start()
     surf_action_ = net_model->communicate(from_, to_, size_, rate_);
     surf_action_->set_activity(this);
     surf_action_->set_category(get_tracing_category());
+    start_time_ = surf_action_->get_start_time();
     state_ = State::RUNNING;
     on_start(*this);
 

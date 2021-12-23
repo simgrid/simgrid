@@ -154,8 +154,6 @@ void ExecImpl::post()
     state_ = State::DONE;
   }
 
-  finish_time_ = surf_action_->get_finish_time();
-
   clean_action();
   timeout_detector_.reset();
   if (get_actor() != nullptr) {

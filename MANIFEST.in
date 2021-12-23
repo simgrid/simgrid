@@ -207,8 +207,8 @@ include examples/cpp/dag-comm/s4u-dag-comm.tesh
 include examples/cpp/dag-failure/s4u-dag-failure.cpp
 include examples/cpp/dag-failure/s4u-dag-failure.tesh
 include examples/cpp/dag-from-dot/dag.dot
-include examples/cpp/dag-from-dot/s4u_dag-frm-dot.cpp
-include examples/cpp/dag-from-dot/s4u_dag-frm-dot.tesh
+include examples/cpp/dag-from-dot/s4u_dag-from-dot.cpp
+include examples/cpp/dag-from-dot/s4u_dag-from-dot.tesh
 include examples/cpp/dag-io/s4u-dag-io.cpp
 include examples/cpp/dag-io/s4u-dag-io.tesh
 include examples/cpp/dag-simple/s4u-dag-simple.cpp
