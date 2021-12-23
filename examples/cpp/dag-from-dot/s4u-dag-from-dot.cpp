@@ -46,8 +46,8 @@ int main(int argc, char** argv)
     }
     auto* comm = dynamic_cast<simgrid::s4u::Comm*>(a.get());
     if (comm != nullptr) {
-      auto pred = dynamic_cast<simgrid::s4u::Exec*>(comm->get_parent().get());
-      auto succ = dynamic_cast<simgrid::s4u::Exec*>(comm->get_child().get());
+      auto pred = dynamic_cast<simgrid::s4u::Exec*>((*comm->get_dependencies().begin()).get());
+      auto succ = dynamic_cast<simgrid::s4u::Exec*>(comm->get_successors().front().get());
       comm->set_source(pred->get_host())->set_destination(succ->get_host());
     }
   }
