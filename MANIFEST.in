@@ -499,10 +499,6 @@ include examples/deprecated/simdag/daxload/sd_daxload.c
 include examples/deprecated/simdag/daxload/sd_daxload.tesh
 include examples/deprecated/simdag/daxload/simple_dax_with_cycle.xml
 include examples/deprecated/simdag/daxload/smalldax.xml
-include examples/deprecated/simdag/schedule-dotload/dag_with_bad_schedule.dot
-include examples/deprecated/simdag/schedule-dotload/dag_with_good_schedule.dot
-include examples/deprecated/simdag/schedule-dotload/sd_schedule-dotload.c
-include examples/deprecated/simdag/schedule-dotload/sd_schedule-dotload.tesh
 include examples/deprecated/simdag/scheduling/Montage_25.xml
 include examples/deprecated/simdag/scheduling/expected_output.jed
 include examples/deprecated/simdag/scheduling/sd_scheduling.c
