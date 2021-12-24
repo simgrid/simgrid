@@ -24,13 +24,13 @@ static void runner()
   std::vector<sg4::Host*> monocore_hosts = {e->host_by_name("MyHost2"), e->host_by_name("MyHost2")};
   start_time                             = sg4::Engine::get_clock();
   sg4::this_actor::parallel_execute(monocore_hosts, comp, comm);
-  XBT_INFO("Computed 2-core activity one 1-core host. Took %g s", e->get_clock() - start_time);
+  XBT_INFO("Computed 2-core activity a 1-core host. Took %g s", e->get_clock() - start_time);
 
   // Same host, multicore.
   std::vector<sg4::Host*> multicore_host = {e->host_by_name("MyHost1"), e->host_by_name("MyHost1")};
   start_time                             = sg4::Engine::get_clock();
   sg4::this_actor::parallel_execute(multicore_host, comp, comm);
-  XBT_INFO("Computed 2-core activity on one 4-core host. Took %g s", e->get_clock() - start_time);
+  XBT_INFO("Computed 2-core activity on a 4-core host. Took %g s", e->get_clock() - start_time);
 
   // Same host, using too many cores
   std::vector<double> comp6(6, 1e9);
@@ -54,7 +54,7 @@ static void runner()
 
   start_time = sg4::Engine::get_clock();
   sg4::this_actor::parallel_execute(multicore_host, comp, comm);
-  XBT_INFO("Computed 2-core activity on one 4-core host. Took %g s", e->get_clock() - start_time);
+  XBT_INFO("Computed 2-core activity on a 4-core host. Took %g s", e->get_clock() - start_time);
 
   start_time = sg4::Engine::get_clock();
   sg4::this_actor::parallel_execute(hosts_diff, comp, comm);
@@ -63,7 +63,6 @@ static void runner()
   // Add a background task and change ptask on the fly
   auto MyHost1                          = e->host_by_name("MyHost1");
   simgrid::s4u::ExecPtr background_task = MyHost1->exec_async(5e9);
-  background_task->start();
   XBT_INFO("Start a 1-core background task on the 4-core host.");
 
   start_time = sg4::Engine::get_clock();

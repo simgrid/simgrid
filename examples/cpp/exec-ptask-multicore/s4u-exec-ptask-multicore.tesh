@@ -4,13 +4,13 @@ $ ${bindir:=.}/s4u-exec-ptask-multicore ${platfdir}/energy_platform.xml --cfg=ho
 > [  0.000000] Configuration change: Set 'host/model' to 'ptask_L07'
 > [  0.000000] Switching to the L07 model to handle parallel tasks.
 > [ 10.000000] Computed 2-core activity on two different hosts. Took 10 s
-> [ 30.000000] Computed 2-core activity one 1-core host. Took 20 s
-> [ 40.000000] Computed 2-core activity on one 2-core host. Took 10 s
-> [ 55.000000] Computed 6-core activity of a 4-core host. Took 15 s
+> [ 30.000000] Computed 2-core activity a 1-core host. Took 20 s
+> [ 40.000000] Computed 2-core activity on a 4-core host. Took 10 s
+> [ 55.000000] Computed 6-core activity on a 4-core host. Took 15 s
 > [ 65.000000] Computed 2-core activity on a 4-core host with some communication. Took 10 s
 > [ 65.000000] Switching machine multicore to pstate 1.
 > [ 65.000000] Switching back to pstate 0.
-> [ 75.000000] Computed 2-core activity on one 4-core host. Took 10 s
+> [ 75.000000] Computed 2-core activity on a 4-core host. Took 10 s
 > [ 85.000000] Computed 2-core activity on two different hosts. Took 10 s
 > [ 85.000000] Start a 1-core background task on the 4-core host.
 > [ 95.000000] Computed 2-core activity on the 4-core host. Took 10 s
