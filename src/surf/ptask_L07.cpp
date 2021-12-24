@@ -191,16 +191,10 @@ L07Action::L07Action(Model* model, const std::vector<s4u::Host*>& host_list, con
 
   /* Expand it for the CPUs even if there is nothing to compute, to make sure that it gets expended even if there is no
    * communication either */
-  double bound = std::numeric_limits<double>::max();
   for (size_t i = 0; i < host_list.size(); i++) {
     model->get_maxmin_system()->expand(host_list[i]->get_cpu()->get_constraint(), get_variable(),
                                        (flops_amount == nullptr ? 0.0 : flops_amount[i]));
-    if (flops_amount && flops_amount[i] > 0)
-      bound = std::min(bound, host_list[i]->get_cpu()->get_speed(1.0) * host_list[i]->get_cpu()->get_speed_ratio() /
-                                  flops_amount[i]);
   }
-  if (bound < std::numeric_limits<double>::max())
-    model->get_maxmin_system()->update_variable_bound(get_variable(), bound);
 
   if (bytes_amount != nullptr) {
     for (size_t k = 0; k < host_list.size() * host_list.size(); k++) {
@@ -218,6 +212,8 @@ L07Action::L07Action(Model* model, const std::vector<s4u::Host*>& host_list, con
     this->set_cost(1.0);
     this->set_remains(0.0);
   }
+  /* finally calculate the initial bound value */
+  updateBound();
 }
 
 Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
@@ -285,10 +281,10 @@ void CpuL07::on_speed_change()
   const lmm::Element* elem = nullptr;
 
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), get_core_count() * speed_.peak * speed_.scale);
-  while (const auto* var = get_constraint()->get_variable(&elem)) {
-    const Action* action = var->get_id();
 
-    get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), speed_.scale * speed_.peak);
+  while (const auto* var = get_constraint()->get_variable(&elem)) {
+    auto* action = static_cast<L07Action*>(var->get_id());
+    action->updateBound();
   }
 
   CpuImpl::on_speed_change();
@@ -378,9 +374,10 @@ L07Action::~L07Action()
   }
 }
 
-void L07Action::updateBound()
+double L07Action::calculateNetworkBound()
 {
   double lat_current = 0.0;
+  double lat_bound   = std::numeric_limits<double>::max();
 
   size_t host_count = hostList_.size();
 
@@ -397,13 +394,36 @@ void L07Action::updateBound()
       }
     }
   }
-  double lat_bound = NetworkModel::cfg_tcp_gamma / (2.0 * lat_current);
-  XBT_DEBUG("action (%p) : lat_bound = %g", this, lat_bound);
-  if ((latency_ <= 0.0) && is_running()) {
+  if (lat_current > 0) {
+    lat_bound = NetworkModel::cfg_tcp_gamma / (2.0 * lat_current);
+  }
+  return lat_bound;
+}
+
+double L07Action::calculateCpuBound()
+{
+  double cpu_bound = std::numeric_limits<double>::max();
+  for (size_t i = 0; i < hostList_.size(); i++) {
+    if (computationAmount_ && computationAmount_[i] > 0) {
+      cpu_bound = std::min(cpu_bound, hostList_[i]->get_cpu()->get_speed(1.0) *
+                                          hostList_[i]->get_cpu()->get_speed_ratio() / computationAmount_[i]);
+    }
+  }
+  return cpu_bound;
+}
+
+void L07Action::updateBound()
+{
+  double bound = std::min(calculateNetworkBound(), calculateCpuBound());
+
+  XBT_DEBUG("action (%p) : bound = %g", this, bound);
+
+  /* latency has been paid (or no latency), we can set the appropriate bound for multicore or network limit */
+  if ((bound < std::numeric_limits<double>::max()) && (latency_ <= 0.0)) {
     if (rate_ < 0)
-      get_model()->get_maxmin_system()->update_variable_bound(get_variable(), lat_bound);
+      get_model()->get_maxmin_system()->update_variable_bound(get_variable(), bound);
     else
-      get_model()->get_maxmin_system()->update_variable_bound(get_variable(), std::min(rate_, lat_bound));
+      get_model()->get_maxmin_system()->update_variable_bound(get_variable(), std::min(rate_, bound));
   }
 }
 

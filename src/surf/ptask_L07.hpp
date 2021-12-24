@@ -131,6 +131,21 @@ class L07Action : public CpuAction {
   friend CpuAction* HostL07Model::execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                                                    const double* bytes_amount, double rate);
   friend Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate);
+  /**
+   * @brief Calculate the CPU bound for the parallel task
+   *
+   * The task is bounded by the slowest CPU running the ptask, considering the current pstate of each CPU.
+   * Return MAX_DOUBLE if ptask has no computation.
+   */
+  double calculateCpuBound();
+
+  /**
+   * @brief Calculate the network bound for the parallel task
+   *
+   * The network bound depends on the largest latency between the communication in the ptask.
+   * Return MAX_DOUBLE if latency is 0 (or ptask doesn't have any communication)
+   */
+  double calculateNetworkBound();
 
 public:
   L07Action() = delete;
