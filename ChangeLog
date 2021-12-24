@@ -22,6 +22,10 @@ Python:
  - Thread contexts are used by default with Python bindings.  Other kinds of
    contexts revealed unstable, specially starting with pybind11 v2.8.0.
 
+Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
+ (FG: issues on Framagit; GF: issues on GForge; GH: issues on GitHub)
+ - FG#95: Wrong computation time for multicore execution after pstate change
+ - FG#97: Wrong computation time for ptask+multicore+pstates
 ----------------------------------------------------------------------------
 
 SimGrid (3.29) October 7. 2021
