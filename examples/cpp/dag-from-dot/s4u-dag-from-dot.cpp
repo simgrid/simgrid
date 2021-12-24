@@ -18,6 +18,11 @@ int main(int argc, char** argv)
 
   std::vector<simgrid::s4u::ActivityPtr> dag = simgrid::s4u::create_DAG_from_dot(argv[2]);
 
+  if (dag.empty()) {
+    XBT_CRITICAL("No dot loaded. Do you have a cycle in your graph?");
+    exit(2);
+  }
+
   XBT_INFO("--------- Display all activities of the loaded DAG -----------");
   for (const auto& a : dag) {
     std::string type = "an Exec";

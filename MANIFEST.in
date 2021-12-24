@@ -207,6 +207,7 @@ include examples/cpp/dag-comm/s4u-dag-comm.tesh
 include examples/cpp/dag-failure/s4u-dag-failure.cpp
 include examples/cpp/dag-failure/s4u-dag-failure.tesh
 include examples/cpp/dag-from-dot/dag.dot
+include examples/cpp/dag-from-dot/dag_with_cycle.dot
 include examples/cpp/dag-from-dot/s4u-dag-from-dot.cpp
 include examples/cpp/dag-from-dot/s4u-dag-from-dot.tesh
 include examples/cpp/dag-io/s4u-dag-io.cpp
@@ -491,9 +492,6 @@ include examples/deprecated/msg/mc/centralized_mutex.tesh
 include examples/deprecated/msg/mc/deploy_bugged2_liveness.xml
 include examples/deprecated/msg/mc/deploy_centralized_mutex.xml
 include examples/deprecated/msg/mc/promela_bugged2_liveness
-include examples/deprecated/simdag/dag-dotload/dag_with_cycle.dot
-include examples/deprecated/simdag/dag-dotload/sd_dag-dotload.c
-include examples/deprecated/simdag/dag-dotload/sd_dag-dotload.tesh
 include examples/deprecated/simdag/daxload/sd_daxload.c
 include examples/deprecated/simdag/daxload/sd_daxload.tesh
 include examples/deprecated/simdag/daxload/simple_dax_with_cycle.xml

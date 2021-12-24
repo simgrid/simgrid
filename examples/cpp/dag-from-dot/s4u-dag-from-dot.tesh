@@ -45,3 +45,8 @@ $ ${bindir:=.}/s4u-dag-from-dot --log=no_loc ${platfdir}/cluster_backbone.xml ${
 > [110.047415] [dag_from_dot/INFO] [80.039443->80.129922] '7->end' transferred from node-16.simgrid.org to node-0.simgrid.org
 > [110.047415] [dag_from_dot/INFO] [0.000000->0.090396] 'root->5' transferred from node-0.simgrid.org to node-14.simgrid.org
 > [110.047415] [dag_from_dot/INFO] [100.047415->110.047415] 'end' executed on node-0.simgrid.org
+
+! expect return 2
+$ ${bindir:=.}/s4u-dag-from-dot --log=no_loc ${platfdir}/cluster_backbone.xml ${srcdir:=.}/dag_with_cycle.dot
+> [0.000000] [sd_dotparse/ERROR] The DOT described in dag_with_cycle.dot is not a DAG. It contains a cycle.
+> [0.000000] [dag_from_dot/CRITICAL] No dot loaded. Do you have a cycle in your graph?
