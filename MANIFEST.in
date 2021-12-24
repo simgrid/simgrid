@@ -503,10 +503,6 @@ include examples/deprecated/simdag/scheduling/Montage_25.xml
 include examples/deprecated/simdag/scheduling/expected_output.jed
 include examples/deprecated/simdag/scheduling/sd_scheduling.c
 include examples/deprecated/simdag/scheduling/sd_scheduling.tesh
-include examples/deprecated/simdag/test/sd_test.cpp
-include examples/deprecated/simdag/test/sd_test.tesh
-include examples/deprecated/simdag/typed_tasks/sd_typed_tasks.c
-include examples/deprecated/simdag/typed_tasks/sd_typed_tasks.tesh
 include examples/python/actor-create/actor-create.py
 include examples/python/actor-create/actor-create.tesh
 include examples/python/actor-daemon/actor-daemon.py
