@@ -20,7 +20,7 @@ some drawbacks, but using a specific format ensures that the platform
 is not mixed with the tested application. This separation of concern
 :ref:`is a must <howto_science>` for your Modeling and Simulation (M&S)
 work. When XML is too limiting, you may describe your platforms using
-directly :ref:`C++ code <platform_cpp>`
+directly :ref:`C++ code <platform_cpp>`.
 
 Any simulated platform must contain **basic elements**, such as
 :ref:`pf_tag_host`, :ref:`pf_tag_link`, :ref:`pf_tag_disk`, and similar.
@@ -32,7 +32,26 @@ to efficiently express the routing of your platform.
 Finally, you may also describe an **experimental scenario**, with qualitative (e.g., bandwidth variations representing
 an external load) and qualitative (e.g., representing how some elements fail and restart over time) changes.
 
-The most efficient way to learn about platform description is to look at the
+Here is a minimalistic platform example, describing a zone which routing is fully described, containing two hosts and a
+link. You need to explicitly add a :ref:`pf_tag_route` between ``host0`` and ``host1`` for this link to get used during
+communications.
+
+.. code-block:: xml
+
+  <zone id="AS5-4" routing="Full">
+    <host id="host0" speed="1Gf"/>
+    <host id="host1" speed="2Gf"/>
+    <link id="link0" bandwidth="125MBps" latency="100us"/>
+    <route src="host0" dst="host1"><link_ctn id="link0"/></route>
+  </zone>
+
+SimGrid only perform minimalistic verifications about the described platforms, to make things flexible and interesting.
+It enables weird topologies, such as a single link used for all communications in a large platform, or a single used by
+hosts from different zones, or even worse. It is also OK to not describe some routing paths. SimGrid won't complain
+unless your application tries to actually use inexistant paths. In short, it is your responsibility to write proper
+platform files, and SimGrid will not try to be smarter than you!
+
+To learn further about platform descriptions, the easiest is to look at the
 :ref:`many examples <platform_examples>` included in the archive and described
 in the next section. This documentation also contains some :ref:`hints and
 howtos <howto>`, as well as the full :ref:`XML reference guide

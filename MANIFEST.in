@@ -1881,6 +1881,7 @@ include docs/source/img/smpi_simgrid_alltoall_pair_16.png
 include docs/source/img/smpi_simgrid_alltoall_ring_16.png
 include docs/source/img/starzone.drawio
 include docs/source/img/starzone.svg
+include docs/source/img/vivaldi.svg
 include docs/source/img/zone_hierarchy.png
 include docs/source/img/zone_tree.drawio
 include docs/source/img/zone_tree.svg

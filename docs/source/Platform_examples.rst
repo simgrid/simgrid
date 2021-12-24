@@ -15,6 +15,8 @@
 Network Topology Examples
 =========================
 
+.. _platform_example_3hosts:
+
 Simple Example with 3 hosts
 ---------------------------
 
@@ -47,6 +49,10 @@ The last thing you must know on SimGrid platform files is that the
 root tag must be :ref:`pf_tag_platform`. If the ``version`` attribute
 does not match what SimGrid expects, you will be hinted to use to the
 ``simgrid_update_xml`` utility to update your file.
+
+There is often more than one way to model a given platform. For example, the above platform could also be
+:ref:`expressed using a shortest path algorithm <platform_rm_shortest>` instead of explicitely listing all routes as in
+the example above.
 
 Cluster with a Crossbar
 -----------------------

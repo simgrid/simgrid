@@ -906,6 +906,7 @@ set(DOC_SOURCES
   docs/source/img/smpi_simgrid_alltoall_ring_16.png
   docs/source/img/starzone.drawio
   docs/source/img/starzone.svg
+  docs/source/img/vivaldi.svg
   docs/source/img/zone_hierarchy.png
   docs/source/img/zone_tree.drawio
   docs/source/img/zone_tree.svg

@@ -54,7 +54,7 @@ of every page. Bugs in the code should be reported
    :maxdepth: 1
    :caption: Tutorials:
 
-	Simulating Algorithms <Tutorial_Algorithms.rst>
+	Simulating Distributed Algorithms <Tutorial_Algorithms.rst>
 	Simulating MPI Applications <Tutorial_MPI_Applications.rst>
 	Model-checking algorithms and applications <Tutorial_Model-checking.rst>
 
@@ -74,8 +74,8 @@ of every page. Bugs in the code should be reported
          The MSG interface <app_msg.rst>
          The XBT toolbox <The_XBT_toolbox.rst>
       Describing the simulated platform <Platform.rst>
-         Demystifying the routing <Platform_routing.rst>
          Network topology examples <Platform_examples.rst>
+         Advanced routing <Platform_routing.rst>
          Modeling hints <Platform_howtos.rst>
          XML reference <XML_reference.rst>
          C++ platforms <Platform_cpp.rst>

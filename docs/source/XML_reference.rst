@@ -396,7 +396,7 @@ of :ref:`pf_tag_link` .
 
 **Parent tags:** :ref:`pf_tag_zone` |br|
 **Children tags:** :ref:`pf_tag_link_ctn` |br|
-**See also:** :ref:`pf_tag_zoneRoute` |br|
+**See also:** :ref:`pf_tag_zoneRoute`, :ref:`pf_routes` |br|
 **Attributes:**
 
 :``src``: Host from which this route starts. Must be the name of an existing host.
@@ -452,15 +452,15 @@ elements such as host or peer) |br|
 <zoneRoute>
 -----------
 
-The purpose of this entity is to define a route between two zones.
-Recall that all zones form a tree, so to connect two sibling zones,
-you must give such a zoneRoute specifying the source and destination zones,
-along with the gateway in each zone (i.e., the point to reach within that zone to reach the zone),
-and the list of links to go from one zone to another.
+The purpose of this entity is to define a route between two zones. Recall that
+all zones form a tree, so to connect two sibling zones, you must give such a
+zoneRoute specifying the source and destination zones, along with the gateway in
+each zone (i.e., the point to reach within that zone to reach the zone), and the
+list of links to go from one zone to another.
 
 **Parent tags:** :ref:`pf_tag_zone` |br|
 **Children tags:** :ref:`pf_tag_link_ctn` |br|
-**See also:** :ref:`pf_tag_route` |br|
+**See also:** :ref:`pf_tag_route`, :ref:`pf_routes` |br|
 **Attributes:**
 
 :``src``: Zone from which this route starts. Must be an existing zone.
@@ -471,12 +471,6 @@ and the list of links to go from one zone to another.
 		  are defining the route ``dst -> src`` at the same
 		  time. Valid values: ``yes``, ``no``, ``YES``, ``NO``.
 
-Afterward, the path from `src_host` in zone `src`, to `dst_host` in
-zone `dst`, is composed of 3 segments. First, move within zone `src`
-from `src_host` to the specified gateway `gw_src`. Then, traverse all
-links specified by the zoneRoute (purportedly within the common
-ancestor) and finally, move within zone `dst` from `gw_dst` to
-`dst_host`.
  
 
 -------------------------------------------------------------------------------
