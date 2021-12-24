@@ -32,7 +32,6 @@ If host `A` sends `100kB` (a hundred kilobytes) to host `B`, one could expect
 that this communication would take `0.81` seconds to complete according to a
 simple latency-plus-size-divided-by-bandwidth model (0.01 + 8e5/1e6 = 0.81).
 However, the default TCP model of SimGrid is a bit more complex than that. It
-
 accounts for three phenomena that directly impact the simulation time even
 on such a simple example:
 

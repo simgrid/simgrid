@@ -92,14 +92,17 @@ computed automatically at startup. Another way to describe the same platform can
 .. image:: /tuto_smpi/3hosts.png
    :align: center
 
+.. _pf_rm_cluster:
+
 Clusters
 ========
 
-TODO
+Clusters constitute a fundamental building bricks of any cyberinfrastructure. SimGrid provides several kinds of clusters:
+crossbar clusters (contention-free internal network), backbone clusters (constrained internal network), fat-trees,
+DragonFly, Torus and generic Star clusters. Each of them are created through the :ref:`pf_tag_cluster` tag, and have a
+highly optimized implementation in SimGrid source code.
 
-  - **Cluster/Fat-Tree/DragonFly/Torus**: routing is defined by the topology, automatically created.
-    These zones must be defined through the :ref:`pf_tag_cluster` tag in the XML.
-  - **Star**: star-like topology. Users describe routes from/to every host in the zone.
+The documentation of each cluster kinds is given as :ref:`platform_examples`.
 
 Vivaldi
 =======
@@ -150,6 +153,13 @@ Wi-Fi
 
 TODO
 
+ns-3
+====
+
+When using :ref:`model_ns3`, SimGrid does not uses its own platform or routing models. Your platform must be limited to one
+zone only, and any routing model will be ignored. Since ns-3 uses a shortest path algorithm on its side, all routes must be
+of length 1.
+
 .. _pf_routes:
 
 Describing routes
@@ -168,6 +178,8 @@ SimGrid enforces that each gateway is within its zone, either directly or in a s
 described in the next section actually works.
 
 TODO: bypassRoute
+
+.. _pf_route_usage:
 
 Calculating network paths
 *************************

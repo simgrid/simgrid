@@ -20,6 +20,105 @@ Your platform description should follow the specification presented in the
 
 -------------------------------------------------------------------------------
 
+.. _pf_tag_cluster:
+
+<cluster>
+---------
+
+This complex tag builds a full zone, with some hosts, links, a router, and the relevant routing algorithm. There is several
+kind of specifically tailored cluster types: crossbar clusters (contention-free internal network), backbone clusters
+(constrained internal network), fat-trees, DragonFly and Torus (star clusters are similar, but can only be created from the
+C++ code). The ``topology`` attribute is used to choose the type of cluster while the ``topo_parameters`` attribute is used
+to configure the topology. Please refer to the  :ref:`examples in the documentation <platform_examples>` for all details.
+
+Regardless of its topology, each cluster comes with a router that can be used for inter-zone routing. Its name is defined
+as ``${prefix}${clusterId}_router${suffix}``.
+
+**Parent tags:** :ref:`pf_tag_platform`, :ref:`pf_tag_zone` |br|
+**Children tags:** none |br|
+**Attributes:**
+
+:``id``: The identifier of the cluster. Facilitates referring to this cluster.
+:``prefix``: Each node of the cluster has to have a name. This name will be prefixed with this prefix.
+:``suffix``: Each node of the cluster will be suffixed with this suffix
+:``radical``: Regexp used to generate cluster nodes name.
+
+    Syntax: "10-20" will give you 11 machines numbered from 10 to 20, "10-20;2" will give you 12 machines, one with the number 2, others numbered as before.
+
+    The produced number is concatenated between prefix and suffix to form machine names.
+:``speed``: Same as the ``speed`` attribute of the :ref:`pf_tag_host` tag.
+:``core``: Same as the ``core`` attribute of the :ref:`pf_tag_host` tag.
+:``bw``: Bandwidth for the links between nodes and backbone (if any). See :ref:`pf_tag_link` for syntax/details.
+:``lat``: Latency for the links between nodes and backbone (if any). See :ref:`pf_tag_link` for syntax/details.
+:``sharing_policy``: Sharing policy for the links between nodes and backbone (if any). See :ref:`pf_tag_link` for syntax/details.
+:``bb_bw``: Bandwidth for backbone (if any). See :ref:`pf_tag_link` for syntax/details.
+
+    If bb_bw and bb_lat attributes are omitted, no backbone is created (alternative cluster architecture described earlier).
+:``bb_lat``: Latency for backbone (if any). See :ref:`pf_tag_link` section for syntax/details.
+
+    If bb_lat and bb_bw attributes are omitted, no backbone is created (alternative cluster architecture described earlier).
+:``bb_sharing_policy``: Sharing policy for the backbone (if any). See :ref:`pf_tag_link` section for syntax/details.
+:``limiter_link``: Bandwidth for limiter link (if any).
+
+    This adds a specific link for each node, to set the maximum bandwidth reached when communicating in both directions at the same time.
+
+    In theory this value should be 2*bw for splitduplex links, but in reality this might be less. This value will depend heavily on the communication model, and on the cluster's hardware, so no default value can be set, this has to be measured.
+
+    More details can be obtained in `Toward Better Simulation of MPI Applications on Ethernet/TCP Networks <https://hal.inria.fr/hal-00919507/>`_
+:``loopback_bw``: Bandwidth for loopback (if any). See :ref:`pf_tag_link` section for syntax/details.
+
+    If loopback_bw and loopback_lat attributes are omitted, no loopback link is created and all intra-node communication will use the main network link of the node.
+
+    The sharing policy of a loopback link is **FATPIPE** :ref:`pf_tag_link`.
+:``loopback_lat``: Latency for loopback (if any). See loopback_bw for more info.
+:``topology``: Network topology to use.
+
+    SimGrid currently supports FLAT (with or without backbone, as described before), TORUS, FAT_TREE and DRAGONFLY attributes for this tag.
+
+    See :ref:`platform_examples` for more details.
+
+:``topo_parameters``: Specific parameters to pass for the topology defined in the topology tag.
+
+    For torus networks, comma-separated list of the number of nodes in each dimension of the torus.
+
+    Please refer to :ref:`platform_examples`.
+
+-------------------------------------------------------------------------------
+.. _pf_tag_config:
+
+<config>
+--------
+
+Adding configuration flags directly into the platform file becomes particularly
+useful when the realism of the described platform depends on some specific
+flags. For example, this could help you to finely tune SMPI. Almost all
+:ref:`command-line configuration items <options_list>` can be configured this
+way.
+
+Each configuration flag is described as a :ref:`pf_tag_prop` whose ``id`` is the
+name of the flag and ``value`` is what it has to be set to.
+
+**Parent tags:** :ref:`pf_tag_platform` (must appear before any other tags) |br|
+**Children tags:** :ref:`pf_tag_prop` |br|
+**Attributes:** none
+
+.. code-block:: xml
+
+   <?xml version = '1.0'?>
+   <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
+   <platform version = "4.1">
+     <config>
+       <prop id = "maxmin/precision" value = "0.000010" />
+       <prop id = "cpu/optim" value = "TI" />
+       <prop id = "network/model" value = "SMPI" />
+       <prop id = "smpi/bw-factor" value = "65472:0.940694;15424:0.697866;9376:0.58729" />
+     </config>
+
+     <!-- The rest of your platform -->
+   </platform>
+
+-------------------------------------------------------------------------------
+
 .. _pf_tag_disk:
 
 <disk>
@@ -59,41 +158,6 @@ We provide an example model of file system as a plugin, (sparsely) documented in
       </disk>
       <prop id="ram" value="100B" />
     </host>
-
--------------------------------------------------------------------------------
-
-.. _pf_tag_config:
-
-<config>
---------
-
-Adding configuration flags directly into the platform file becomes particularly
-useful when the realism of the described platform depends on some specific
-flags. For example, this could help you to finely tune SMPI. Almost all
-:ref:`command-line configuration items <options_list>` can be configured this
-way.
-
-Each configuration flag is described as a :ref:`pf_tag_prop` whose ``id`` is the
-name of the flag and ``value`` is what it has to be set to.
-
-**Parent tags:** :ref:`pf_tag_platform` (must appear before any other tags) |br|
-**Children tags:** :ref:`pf_tag_prop` |br|
-**Attributes:** none
-
-.. code-block:: xml
-
-   <?xml version = '1.0'?>
-   <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-   <platform version = "4.1">
-     <config>
-       <prop id = "maxmin/precision" value = "0.000010" />
-       <prop id = "cpu/optim" value = "TI" />
-       <prop id = "network/model" value = "SMPI" />
-       <prop id = "smpi/bw-factor" value = "65472:0.940694;15424:0.697866;9376:0.58729" />
-     </config>
-
-     <!-- The rest of your platform -->
-   </platform>
 
 -------------------------------------------------------------------------------
 
@@ -391,12 +455,12 @@ following functions:
 <route>
 -------
 
-A path between two network locations, composed of several occurrences
-of :ref:`pf_tag_link` .
+A path between two network locations, composed of several occurrences of :ref:`pf_tag_link`. It is only relevant for
+intra-:ref:`pf_tag_zone` routes. Inter-zone routes must be declared with :ref:`pf_tag_zoneRoute`. More detail can be
+found in the following sections :ref:`pf_routes` and :ref:`pf_route_usage`.
 
 **Parent tags:** :ref:`pf_tag_zone` |br|
 **Children tags:** :ref:`pf_tag_link_ctn` |br|
-**See also:** :ref:`pf_tag_zoneRoute`, :ref:`pf_routes` |br|
 **Attributes:**
 
 :``src``: Host from which this route starts. Must be the name of an existing host.
@@ -413,10 +477,9 @@ of :ref:`pf_tag_link` .
 <router>
 --------
 
-A router is similar to a :ref:`pf_tag_host`, but it cannot contain
-any actor. It is only useful to some routing algorithms. In
-particular, they are useful when you want to use the NS3 bindings to
-break the routes that are longer than 1 hop.
+A router is similar to a :ref:`pf_tag_host`, but it cannot contain any actor. It is only useful to some routing
+algorithms. In particular, they are useful when you want to use the NS3 bindings to break the routes that are longer
+than 1 hop.
 
 **Parent tags:** :ref:`pf_tag_zone` (only leaf zones, i.e., zones containing neither inner zones nor clusters) |br|
 **Attributes:**
@@ -452,159 +515,26 @@ elements such as host or peer) |br|
 <zoneRoute>
 -----------
 
-The purpose of this entity is to define a route between two zones. Recall that
-all zones form a tree, so to connect two sibling zones, you must give such a
-zoneRoute specifying the source and destination zones, along with the gateway in
-each zone (i.e., the point to reach within that zone to reach the zone), and the
-list of links to go from one zone to another.
+All information to factorize the routes between two zones; intra-zone paths must be declared with :ref:`pf_tag_route`.
+Since zones form a tree, :ref:`pf_tag_zoneRoute` is probably best used to connect sibling zones.
+
+When declaring a zoneRoute, you must give the source and destination zones, along with the gateway in each zone (i.e.,
+the point to reach within that zone to reach the declared route), and the list of links to go from one zone to another.
+More detail can be found in the following sections :ref:`pf_routes` and :ref:`pf_route_usage`.
 
 **Parent tags:** :ref:`pf_tag_zone` |br|
 **Children tags:** :ref:`pf_tag_link_ctn` |br|
-**See also:** :ref:`pf_tag_route`, :ref:`pf_routes` |br|
 **Attributes:**
 
 :``src``: Zone from which this route starts. Must be an existing zone.
 :``dst``: Zone to which this route leads. Must be an existing zone.
 :``gw_src``: Netpoint (within src zone) from which this route starts. Must be an existing host/router.
 :``gw_dst``: Netpoint (within dst zone) to which this route leads. Must be an existing host/router.
-:``symmetrical``: Whether this route is symmetrical, ie, whether we
-		  are defining the route ``dst -> src`` at the same
-		  time. Valid values: ``yes``, ``no``, ``YES``, ``NO``.
-
- 
+:``symmetrical``: Whether this route is symmetrical, ie, whether we are defining the route ``dst -> src`` at the same
+		  time. Valid values: ``yes``, ``no``, ``YES``, ``NO``. 
 
 -------------------------------------------------------------------------------
 
-.. _pf_tag_cluster:
-
-<cluster>
----------
-
-This tag is commonly used when one wants to define many hosts and a network quickly.
-Technically, cluster is a meta-tag: **from the inner SimGrid point of
-view, a cluster is a network zone where some optimized routing is defined**.
-The default inner organization of the cluster is as follow:
-
-.. code-block:: text
-
-                 __________
-                |          |
-                |  router  |
-    ____________|__________|_____________ backbone
-      |   |   |              |     |   |
-    l0|	l1| l2|           l97| l96 |   | l99
-      |   |   |   ........   |     |   |
-      |                                |
-    c-0.me                             c-99.me
-
-
-Here, a set of **hosts** is defined. Each of them has a **link**
-to a central backbone (backbone is a link itself, as a link can
-be used to represent a switch).
-A **router** allows to connect a **cluster** to the outside world. Internally,
-SimGrid treats a cluster as a network zone containing all hosts: the router is the
-gateway for the cluster.
-
-There is an alternative organization, which is as follows:
-
-.. code-block:: text
-
-         __________
-        |          |
-        |  router  |
-        |__________|
-            / | \
-           /  |  \
-       l0 / l1|   \l2
-         /    |    \
-        /     |     \
-    host0   host1   host2
-
-The principle is the same, except that there is no backbone. This representation
-can be obtained easily: just do not set the bb_* attributes.
-
-**Parent tags:** :ref:`pf_tag_platform`, :ref:`pf_tag_zone` |br|
-**Children tags:** none |br|
-**Attributes:**
-
-:``id``: The identifier of the cluster. Facilitates referring to this cluster.
-:``prefix``: Each node of the cluster has to have a name. This name will be prefixed with this prefix.
-:``suffix``: Each node of the cluster will be suffixed with this suffix
-:``radical``: Regexp used to generate cluster nodes name.
-
-    Syntax: "10-20" will give you 11 machines numbered from 10 to 20, "10-20;2" will give you 12 machines, one with the number 2, others numbered as before.
-
-    The produced number is concatenated between prefix and suffix to form machine names.
-:``speed``: Same as the ``speed`` attribute of the :ref:`pf_tag_host` tag.
-:``core``: Same as the ``core`` attribute of the :ref:`pf_tag_host` tag.
-:``bw``: Bandwidth for the links between nodes and backbone (if any). See :ref:`pf_tag_link` for syntax/details.
-:``lat``: Latency for the links between nodes and backbone (if any). See :ref:`pf_tag_link` for syntax/details.
-:``sharing_policy``: Sharing policy for the links between nodes and backbone (if any). See :ref:`pf_tag_link` for syntax/details.
-:``bb_bw``: Bandwidth for backbone (if any). See :ref:`pf_tag_link` for syntax/details.
-
-    If bb_bw and bb_lat attributes are omitted, no backbone is created (alternative cluster architecture described earlier).
-:``bb_lat``: Latency for backbone (if any). See :ref:`pf_tag_link` section for syntax/details.
-
-    If bb_lat and bb_bw attributes are omitted, no backbone is created (alternative cluster architecture described earlier).
-:``bb_sharing_policy``: Sharing policy for the backbone (if any). See :ref:`pf_tag_link` section for syntax/details.
-:``limiter_link``: Bandwidth for limiter link (if any).
-
-    This adds a specific link for each node, to set the maximum bandwidth reached when communicating in both directions at the same time.
-
-    In theory this value should be 2*bw for splitduplex links, but in reality this might be less. This value will depend heavily on the communication model, and on the cluster's hardware, so no default value can be set, this has to be measured.
-
-    More details can be obtained in `Toward Better Simulation of MPI Applications on Ethernet/TCP Networks <https://hal.inria.fr/hal-00919507/>`_
-:``loopback_bw``: Bandwidth for loopback (if any). See :ref:`pf_tag_link` section for syntax/details.
-
-    If loopback_bw and loopback_lat attributes are omitted, no loopback link is created and all intra-node communication will use the main network link of the node.
-
-    The sharing policy of a loopback link is **FATPIPE** :ref:`pf_tag_link`.
-:``loopback_lat``: Latency for loopback (if any). See loopback_bw for more info.
-:``topology``: Network topology to use.
-
-    SimGrid currently supports FLAT (with or without backbone, as described before), TORUS, FAT_TREE and DRAGONFLY attributes for this tag.
-
-    See :ref:`platform_examples` for more details.
-
-:``topo_parameters``: Specific parameters to pass for the topology defined in the topology tag.
-
-    For torus networks, comma-separated list of the number of nodes in each dimension of the torus.
-
-    Please refer to :ref:`platform_examples`.
-
-
-Cluster example
-^^^^^^^^^^^^^^^
-
-Consider the following two (and independent) uses of the ``cluster`` tag:
-
-.. code-block:: xml
-
-    <cluster id="my_cluster_1" prefix="" suffix="" radical="0-262144"
-         speed="1e9" bw="125e6" lat="5E-5"/>
-
-    <cluster id="my_cluster_2" prefix="c-" suffix=".me" radical="0-99"
-         speed="1e9" bw="125e6" lat="5E-5"
-         bb_bw="2.25e9" bb_lat="5E-4"/>
-
-
-The second example creates one router and 100 machines with the following names:
-
-.. code-block:: text
-
-    c-my_cluster_2_router.me
-    c-0.me
-    c-1.me
-    c-2.me
-    ...
-    c-99.me
-
-.. note::
-
-    The router name is defined as the resulting string: prefix + clusterId + "_router" + suffix.
-    In this case: *my_cluster_1_router* and *my_cluster_2_router.me*.
-
--------------------------------------------------------------------------------
 
 .. _pf_tag_cabinet:
 
@@ -656,6 +586,10 @@ The following example shows how to use the cabinet tag.
 The hosts generated in the above example are named host-1.cluster, host-2.cluster1
 etc.
 
-.. |br| raw:: html
+.. TODO::
 
+   Missing tags: <host_link> <backbone> <bypassRoute> <bypassZoneRoute> <actor><argument>
+
+.. |br| raw:: html
+     
    <br />
