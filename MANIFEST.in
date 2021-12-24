@@ -262,6 +262,8 @@ include examples/cpp/exec-dvfs/s4u-exec-dvfs.cpp
 include examples/cpp/exec-dvfs/s4u-exec-dvfs.tesh
 include examples/cpp/exec-failure/s4u-exec-failure.cpp
 include examples/cpp/exec-failure/s4u-exec-failure.tesh
+include examples/cpp/exec-ptask-multicore-latency/s4u-exec-ptask-multicore-latency.cpp
+include examples/cpp/exec-ptask-multicore-latency/s4u-exec-ptask-multicore-latency.tesh
 include examples/cpp/exec-ptask-multicore/s4u-exec-ptask-multicore.cpp
 include examples/cpp/exec-ptask-multicore/s4u-exec-ptask-multicore.tesh
 include examples/cpp/exec-ptask/s4u-exec-ptask.cpp
