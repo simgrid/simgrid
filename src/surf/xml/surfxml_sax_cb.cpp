@@ -129,9 +129,6 @@ static void explodesRadical(const std::string& radicals, std::vector<int>* explo
 
 std::vector<std::unordered_map<std::string, std::string>> property_sets;
 
-/* The default current property receiver. Setup in the corresponding opening callbacks. */
-std::unordered_map<std::string, std::string> current_model_property_set;
-
 FILE *surf_file_to_parse = nullptr;
 
 /* Stuff relative to storage */
@@ -805,7 +802,7 @@ void STag_surfxml_argument(){
 }
 
 void STag_surfxml_model___prop(){
-  current_model_property_set.insert({A_surfxml_model___prop_id, A_surfxml_model___prop_value});
+  XBT_INFO("Deprecated tag <model_prop> ignored");
 }
 
 void ETag_surfxml_prop(){/* Nothing to do */}
