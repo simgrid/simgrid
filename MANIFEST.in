@@ -491,7 +491,6 @@ include examples/deprecated/msg/mc/centralized_mutex.tesh
 include examples/deprecated/msg/mc/deploy_bugged2_liveness.xml
 include examples/deprecated/msg/mc/deploy_centralized_mutex.xml
 include examples/deprecated/msg/mc/promela_bugged2_liveness
-include examples/deprecated/simdag/dag-dotload/dag.dot
 include examples/deprecated/simdag/dag-dotload/dag_with_cycle.dot
 include examples/deprecated/simdag/dag-dotload/sd_dag-dotload.c
 include examples/deprecated/simdag/dag-dotload/sd_dag-dotload.tesh

@@ -24,7 +24,6 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/scheduling/Montage
                                   ${CMAKE_CURRENT_SOURCE_DIR}/daxload/simple_dax_with_cycle.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/daxload/smalldax.xml                         PARENT_SCOPE)
 set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/dag-dotload/dag_with_cycle.dot
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag-dotload/dag.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/scheduling/expected_output.jed               PARENT_SCOPE)
 
 foreach(x daxload scheduling)
