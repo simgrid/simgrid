@@ -169,9 +169,6 @@ XBT_PUBLIC void SD_create_environment(const char* platform_file);
 XBT_PUBLIC void SD_simulate(double how_long);
 XBT_PUBLIC void SD_simulate_with_update(double how_long, xbt_dynar_t changed_tasks_dynar);
 XBT_PUBLIC xbt_dynar_t SD_daxload(const char* filename);
-XBT_PUBLIC xbt_dynar_t SD_dotload(const char* filename);
-XBT_PUBLIC xbt_dynar_t SD_dotload_with_sched(const char* filename);
-XBT_PUBLIC xbt_dynar_t SD_PTG_dotload(const char* filename);
 /** @} */
 
 /* Support some backward compatibility */
