@@ -99,7 +99,7 @@ void HostImpl::turn_off(const actor::ActorImpl* issuer)
               actor.get_host()->get_cname(), issuer->get_cname());
     issuer->kill(&actor);
   }
-  for (auto& activity : EngineImpl::get_instance()->get_maestro()->activities_) {
+  for (const auto& activity : EngineImpl::get_instance()->get_maestro()->activities_) {
     auto* exec = dynamic_cast<activity::ExecImpl*>(activity.get());
     if (exec != nullptr) {
       auto hosts = exec->get_hosts();

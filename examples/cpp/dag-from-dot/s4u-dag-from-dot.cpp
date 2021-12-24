@@ -62,12 +62,12 @@ int main(int argc, char** argv)
 
   XBT_INFO("-------------- Summary of executed schedule ------------------");
   for (const auto& a : dag) {
-    auto* exec = dynamic_cast<simgrid::s4u::Exec*>(a.get());
+    const auto* exec = dynamic_cast<simgrid::s4u::Exec*>(a.get());
     if (exec != nullptr) {
       XBT_INFO("[%f->%f] '%s' executed on %s", exec->get_start_time(), exec->get_finish_time(), exec->get_cname(),
                exec->get_host()->get_cname());
     }
-    auto* comm = dynamic_cast<simgrid::s4u::Comm*>(a.get());
+    const auto* comm = dynamic_cast<simgrid::s4u::Comm*>(a.get());
     if (comm != nullptr) {
       XBT_INFO("[%f->%f] '%s' transferred from %s to %s", comm->get_start_time(), comm->get_finish_time(),
                comm->get_cname(), comm->get_source()->get_cname(), comm->get_destination()->get_cname());

@@ -300,7 +300,7 @@ public:
         pre_task();
     });
     simgrid::s4u::Activity::on_completion.connect([this](simgrid::s4u::Activity& activity) {
-      auto* exec = dynamic_cast<simgrid::s4u::Exec*>(&activity);
+      const auto* exec = dynamic_cast<simgrid::s4u::Exec*>(&activity);
       if (exec == nullptr) // Only Execs are concerned here
         return;
       // For more than one host (not yet supported), we can access the host via

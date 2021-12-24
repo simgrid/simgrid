@@ -23,7 +23,7 @@ Exec::Exec(kernel::activity::ExecImplPtr pimpl)
   pimpl_ = pimpl;
 }
 
-void Exec::reset()
+void Exec::reset() const
 {
   boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->reset();
 }

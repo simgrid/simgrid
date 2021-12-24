@@ -108,9 +108,9 @@ public:
 
   /** Set the source and destination of communications that bypass the mailbox mechanism */
   CommPtr set_source(Host* from);
-  Host* get_source() { return from_; }
+  Host* get_source() const { return from_; }
   CommPtr set_destination(Host* to);
-  Host* get_destination() { return to_; }
+  Host* get_destination() const { return to_; }
 
   /** Sets the maximal communication rate (in byte/sec). Must be done before start */
   CommPtr set_rate(double rate);

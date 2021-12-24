@@ -85,7 +85,7 @@ public:
   }
 
   /** If non-null, the provided set will be filled with all activities that fail to start because of a veto */
-  void track_vetoed_activities(std::set<Activity*>* vetoed_activities);
+  void track_vetoed_activities(std::set<Activity*>* vetoed_activities) const;
 
   void load_deployment(const std::string& deploy) const;
 

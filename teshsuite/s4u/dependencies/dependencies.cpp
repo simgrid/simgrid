@@ -14,7 +14,7 @@ int main(int argc, char** argv)
   e.load_platform(argv[1]);
 
   simgrid::s4u::Activity::on_completion.connect([](simgrid::s4u::Activity& activity) {
-    auto* exec = dynamic_cast<simgrid::s4u::Exec*>(&activity);
+    const auto* exec = dynamic_cast<simgrid::s4u::Exec*>(&activity);
     if (exec == nullptr) // Only Execs are concerned here
       return;
     XBT_INFO("Exec '%s' start time: %f, finish time: %f", exec->get_cname(), exec->get_start_time(),
@@ -35,7 +35,7 @@ int main(int argc, char** argv)
 
   try {
     A->add_successor(A);
-    ; /* shouldn't work and must raise an exception */
+    /* shouldn't work and must raise an exception */
     xbt_die("Hey, I can add a dependency between A and A!");
   } catch (const std::invalid_argument& e) {
     XBT_INFO("Caught attempt to self-dependency creation: %s", e.what());

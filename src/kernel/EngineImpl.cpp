@@ -696,7 +696,7 @@ void EngineImpl::run(double max_date)
   }
 
   double elapsed_time = -1;
-  std::set<s4u::Activity*>* vetoed_activities = s4u::Activity::get_vetoed_activities();
+  const std::set<s4u::Activity*>* vetoed_activities = s4u::Activity::get_vetoed_activities();
 
   do {
     XBT_DEBUG("New Schedule Round; size(queue)=%zu", actors_to_run_.size());

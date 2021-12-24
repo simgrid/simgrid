@@ -250,7 +250,7 @@ void sg_host_load_plugin_init()
     }
   });
   simgrid::s4u::Activity::on_completion.connect([](simgrid::s4u::Activity& activity) {
-    auto* exec = dynamic_cast<simgrid::s4u::Exec*>(&activity);
+    const auto* exec = dynamic_cast<simgrid::s4u::Exec*>(&activity);
     if (exec == nullptr) // Only Execs are concerned here
       return;
     if (exec->get_host_number() == 1) { // We only run on one host

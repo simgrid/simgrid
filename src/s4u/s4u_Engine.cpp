@@ -338,7 +338,7 @@ void Engine::run_until(double max_date) const
   }
 }
 
-void Engine::track_vetoed_activities(std::set<Activity*>* vetoed_activities)
+void Engine::track_vetoed_activities(std::set<Activity*>* vetoed_activities) const
 {
   Activity::set_vetoed_activities(vetoed_activities);
 }

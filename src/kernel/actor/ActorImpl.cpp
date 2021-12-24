@@ -536,6 +536,6 @@ smx_actor_t SIMIX_process_from_PID(aid_t pid) // XBT_ATTRIB_DEPRECATED_v331
 
 int SIMIX_is_maestro() // XBT_ATTRIB_DEPRECATED_v333
 {
-  auto* self = simgrid::kernel::actor::ActorImpl::self();
+  const auto* self = simgrid::kernel::actor::ActorImpl::self();
   return self != nullptr && self->is_maestro();
 }
