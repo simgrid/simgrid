@@ -28,9 +28,8 @@ if(SIMGRID_HAVE_MC)
   endforeach()
 
   # Make all MC tests buildable together
-  foreach(example mc-bugged1-liveness)
-    add_dependencies(tests-mc s4u-${example})
-  endforeach()
+  #foreach(example ) # no test to be build in any case
+  #endforeach()
   
 
   if(HAVE_C_STACK_CLEANER)
@@ -49,6 +48,7 @@ if(SIMGRID_HAVE_MC)
   if(HAVE_UCONTEXT_CONTEXTS AND SIMGRID_PROCESSOR_x86_64) 
     # liveness model-checking works only on 64bits (for now ...)
     set(_mc-bugged1-liveness_factories "ucontext") # Timeout
+    add_dependencies(tests-mc s4u-mc-bugged1-liveness)
   else()
     set(_mc-bugged1-liveness_disable 1)
   endif()
