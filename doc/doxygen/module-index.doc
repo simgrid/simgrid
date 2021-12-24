@@ -99,20 +99,3 @@ working to make it possible from the C++ code (or even from bindings
 in other languages). Until then, please head to @ref platform.
 
 */
-
-/**
-@defgroup SURF_API SURF
-@brief Internal kernel of all the simulators used in SimGrid, and associated models.
-
-SURF provides the core functionalities to simulate a virtual
-platform. It is very low-level and is not intended to be used by end
-users, but rather to serve as a basis for higher-level simulators. Its
-interfaces are not frozen (and probably never will be), and the
-structure emphasis on performance over ease of use. This module
-contains the platform models. If you need a model that is not encoded
-yet, please come to the devel mailing list so that we can discuss on
-the feasibility of your idea.
-
-Please note that as it is not really intended for public use, this
-module is only partially documented.
-*/

@@ -202,17 +202,6 @@ keep working on it. You may find inspiring ideas in it.
 
 @subsection faq_platform Platform building and Dynamic resources
 
-@subsubsection faq_platform_example Where can I find SimGrid platform files?
-
-There are several little examples in the archive, in the examples/platforms
-directory. From time to time, we are asked for other files, but we
-don't have much at hand right now.
-
-You should refer to the Platform Description Archive
-(http://pda.gforge.inria.fr) project to see the other platform file we
-have available, as well as the Simulacrum simulator, meant to generate
-SimGrid platforms using all classical generation algorithms.
-
 @subsubsection faq_platform_synthetic Generating synthetic but realistic platforms
 
 Another possibility to get a platform file is to generate synthetic
@@ -236,61 +225,6 @@ note that although sound, this model were never scientifically
 assessed. Please keep this fact in mind when using it.
 
 @section faq_troubleshooting Troubleshooting
-
-@subsection faq_trouble_compil User code compilation problems
-
-@subsubsection faq_trouble_err_logcat "gcc: _simgrid_this_log_category_does_not_exist__??? undeclared (first use in this function)"
-
-This is because you are using the log mechanism, but you didn't created
-any default category in this file. You should refer to @ref XBT_log
-for all the details, but you simply forgot to call one of
-XBT_LOG_NEW_DEFAULT_CATEGORY() or XBT_LOG_NEW_DEFAULT_SUBCATEGORY().
-
-@subsection faq_trouble_errors Runtime error messages
-
-@subsubsection faq_trouble_errors_big_fat_warning I'm told that my XML files are too old.
-
-The format of the XML platform description files is sometimes
-improved. For example, we decided to change the units used in SimGrid
-from MBytes, MFlops and seconds to Bytes, Flops and seconds to ease
-people exchanging small messages. We also reworked the route
-descriptions to allow more compact descriptions.
-
-That is why the XML files are versioned using the 'version' attribute
-of the root tag. Currently, it should read:
-@verbatim
-  <platform version="4">
-@endverbatim
-
-If your files are too old, you can use the simgrid_update_xml.pl
-script which can be found in the tools directory of the archive.
-
-@subsection faq_trouble_debug Debugging SMPI applications
-
-In order to debug SMPI programs, you can use the following options:
-
-- <b>-wrapper 'gdb --args'</b>: this option is used to use a wrapper
-  in order to call the SMPI process. Good candidates for this options
-  are "gdb --args", "valgrind", "rr record", "strace", etc;
-
-- <b>-foreground</b>: this options gives the debugger access to the terminal
-  which is needed in order to use an interactive debugger.
-
-Both options are needed in order to run the SMPI process under GDB.
-
-@subsection faq_deadlock There is a deadlock in my code!!!
-
-Unfortunately, we cannot debug every code written in SimGrid.  We
-furthermore believe that the framework provides ways enough
-information to debug such information yourself. If the textual output
-is not enough, Make sure to check the @ref faq_visualization FAQ entry to see
-how to get a graphical one.
-
-Now, if you come up with a really simple example that deadlocks and
-you're absolutely convinced that it should not, you can ask on the
-list. Just be aware that you'll be severely punished if the mistake is
-on your side... We have plenty of FAQ entries to redact and new
-features to implement for the impenitents! ;)
 
 @subsection faq_surf_network_latency I get weird timings when I play with the latencies.
 
@@ -332,24 +266,5 @@ This bound on the effective bandwidth of a flow is not the only thing
 that may make your result be unexpected. For example, two flows
 competing on a saturated link receive an amount of bandwidth inversely
 proportional to their round trip time.
-
-@subsection faq_bugrepport So I've found a bug in SimGrid. How to report it?
-
-We do our best to make sure to hammer away any bugs of SimGrid, but this is
-still an academic project so please be patient if/when you find bugs in it.
-If you do, the best solution is to drop an email either on the simgrid-user
-or the simgrid-devel mailing list and explain us about the issue.  You can
-also decide to open a formal bug report using the
-<a href="https://framagit.org/simgrid/simgrid/issues">relevant
-interface</a>. You need to login on the server to get the ability to submit
-bugs.
-
-We will do our best to solve any problem reported, but you need to help us
-finding the issue. Just telling "it segfault" isn't enough. Telling "It
-segfaults when running the attached simulator" doesn't really help either.
-You may find the following article interesting to see how to report
-informative bug repports:
-http://www.chiark.greenend.org.uk/~sgtatham/bugs.html (it is not SimGrid
-specific at all, but it's full of good advices).
 
 */

@@ -588,7 +588,7 @@ etc.
 
 .. TODO::
 
-   Missing tags: <host_link> <backbone> <bypassRoute> <bypassZoneRoute> <actor><argument>
+   Missing tags: <host_link> <backbone> <bypassRoute> <bypassZoneRoute>
 
 .. |br| raw:: html
      

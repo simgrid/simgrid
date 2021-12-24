@@ -859,7 +859,6 @@ set(DOC_SOURCES
   doc/doxygen/platform.doc
   doc/doxygen/uhood.doc
   doc/doxygen/uhood_switch.doc
-  doc/doxygen/uhood_arch.doc
 
   examples/README.rst
 

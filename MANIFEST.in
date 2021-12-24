@@ -1812,7 +1812,6 @@ include doc/doxygen/module-surf.doc
 include doc/doxygen/outcomes_vizu.doc
 include doc/doxygen/platform.doc
 include doc/doxygen/uhood.doc
-include doc/doxygen/uhood_arch.doc
 include doc/doxygen/uhood_switch.doc
 include docs/Build.sh
 include docs/README.md
