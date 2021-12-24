@@ -168,6 +168,8 @@ public:
 
   double get_start_time() const;
   double get_finish_time() const;
+  void mark() { marked_ = true; }
+  bool is_marked() const { return marked_; }
 
   /** Returns the internal implementation of this Activity */
   kernel::activity::ActivityImpl* get_impl() const { return pimpl_.get(); }
@@ -194,6 +196,7 @@ private:
   Activity::State state_                   = Activity::State::INITED;
   double remains_                          = 0;
   bool suspended_                          = false;
+  bool marked_                             = false;
   std::vector<ActivityPtr> successors_;
   std::set<ActivityPtr> dependencies_;
   std::atomic_int_fast32_t refcount_{0};

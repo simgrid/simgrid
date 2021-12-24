@@ -120,6 +120,12 @@ std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename)
   agclose(dag_dot);
   fclose(in_file);
 
+  if (not check_for_cycle(dag)) {
+    std::string base = simgrid::xbt::Path(filename).get_base_name();
+    XBT_ERROR("The DOT described in %s is not a DAG. It contains a cycle.", base.c_str());
+    dag.clear();
+  }
+
   return dag;
 }
 

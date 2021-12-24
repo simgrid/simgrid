@@ -5,6 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simdag_private.hpp"
+#include "simgrid/s4u/Comm.hpp"
+#include "simgrid/s4u/Exec.hpp"
 #include "simgrid/simdag.h"
 #include "xbt/file.hpp"
 #include "xbt/log.h"
@@ -124,6 +126,40 @@ bool acyclic_graph_detail(const_xbt_dynar_t dag)
     }
   }
   return all_marked;
+}
+
+bool check_for_cycle(const std::vector<simgrid::s4u::ActivityPtr>& dag)
+{
+  std::vector<simgrid::s4u::ActivityPtr> current;
+
+  for (const auto& a : dag)
+    if (dynamic_cast<simgrid::s4u::Exec*>(a.get()) != nullptr && a->is_waited_by() == 0)
+      current.push_back(a);
+
+  while (not current.empty()) {
+    std::vector<simgrid::s4u::ActivityPtr> next;
+    for (auto const& a : current) {
+      a->mark();
+      for (auto const& pred : a->get_dependencies()) {
+        if (dynamic_cast<simgrid::s4u::Comm*>(pred.get()) != nullptr) {
+          pred->mark();
+          // Comms have only one predecessor
+          auto pred_pred = *(pred->get_dependencies().begin());
+          if (std::none_of(pred_pred->get_successors().begin(), pred_pred->get_successors().end(),
+                           [](const simgrid::s4u::ActivityPtr& a) { return not a->is_marked(); }))
+            next.push_back(pred_pred);
+        } else {
+          if (std::none_of(pred->get_successors().begin(), pred->get_successors().end(),
+                           [](const simgrid::s4u::ActivityPtr& a) { return not a->is_marked(); }))
+            next.push_back(pred);
+        }
+      }
+    }
+    current.clear();
+    current = next;
+  }
+
+  return not std::any_of(dag.begin(), dag.end(), [](const simgrid::s4u::ActivityPtr& a) { return not a->is_marked(); });
 }
 
 static YY_BUFFER_STATE input_buffer;

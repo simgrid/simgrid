@@ -172,6 +172,7 @@ public:
 extern XBT_PRIVATE std::unique_ptr<simgrid::sd::Global> sd_global;
 
 /* SimDag private functions */
+XBT_PRIVATE bool check_for_cycle(const std::vector<simgrid::s4u::ActivityPtr>& dag);
 XBT_PRIVATE bool acyclic_graph_detail(const_xbt_dynar_t dag);
 XBT_PRIVATE void uniq_transfer_task_name(SD_task_t task);
 XBT_PRIVATE const char *__get_state_name(e_SD_task_state_t state);
