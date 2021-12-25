@@ -29,6 +29,7 @@ Here is the complete list of all existing tags in the DTD:
 :ref:`pf_tag_config`: pass simulation parameters from the XML file. |br|
 :ref:`pf_tag_disk`: storage resource. |br|
 :ref:`pf_tag_host`: computing resource. |br|
+:ref:`pf_tag_host_link`: building clusters manually from the XML (deprecated, please use the C++ API). |br|
 :ref:`pf_tag_link`: communication resource. |br|
 :ref:`pf_tag_link_ctn`: name of a link to be included in a route. |br|
 :ref:`pf_tag_peer`: host located in a :ref:`pf_rm_vivaldi` zone. |br|
@@ -38,10 +39,6 @@ Here is the complete list of all existing tags in the DTD:
 :ref:`pf_tag_router`: like an :ref:`pf_tag_host` that cannot host actors (for network routing algorithms). |br|
 :ref:`pf_tag_zone`: area of the network containing elements (:ref:`pf_tag_disk`, :ref:`pf_tag_host`, :ref:`pf_tag_link` and sub-:ref:`pf_tag_zone`). |br|
 :ref:`pf_tag_zoneRoute`: inter-zone network path.
-
-.. TODO::
-
-   Missing tags: <host_link>
 
 -------------------------------------------------------------------------------
 
@@ -610,10 +607,12 @@ to experts.
 :``symmetrical``: Whether this route is symmetrical, ie, whether we are defining the route ``dst -> src`` at the same
 		  time. Valid values: ``yes``, ``no``, ``YES``, ``NO``. 
 
+-------------------------------------------------------------------------------
+
 .. _pf_tag_backbone:
 
 <backbone>
-^^^^^^^^^
+^^^^^^^^^^
 
 Within a manually-built cluster, specify the backbone to use. See the documentation of :ref:`pf_tag_cabinet` for all
 details, even if you should probably stop using this tag and switch to the C++ interface.
@@ -661,6 +660,23 @@ the core amount or link characteristics cannot be changed with this tag.
 
 The hosts generated in the above example are named host-1.cluster, host-2.cluster1
 etc.
+
+-------------------------------------------------------------------------------
+
+.. _pf_tag_host_link:
+
+<host_link>
+^^^^^^^^^^^
+
+Specify the up and down private links of a given host, which must be in a Cluster zone.
+
+**Parent tags:** :ref:`pf_tag_zone` with ``routing="Cluster"`` attribute |br|
+**Children tags:** none |br|
+**Attributes:**
+
+:``id``: Identifier of the host to be connected.
+:``up``: Link id to be used for the outgoing communications.
+:``down``: Link id to be used for the incoming communications.
 
 
 .. |br| raw:: html
