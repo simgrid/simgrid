@@ -2129,7 +2129,8 @@ also start direct communications as shown below.
    .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::Comm::sendto
-      .. doxygenfunction:: simgrid::s4u::Comm::sendto_init
+      .. doxygenfunction:: simgrid::s4u::Comm::sendto_init()
+      .. doxygenfunction:: simgrid::s4u::Comm::sendto_init(Host *from, Host *to)
       .. doxygenfunction:: simgrid::s4u::Comm::sendto_async
 
       .. doxygenfunction:: simgrid::s4u::Comm::cancel

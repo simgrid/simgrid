@@ -199,7 +199,7 @@ SimGrid Success Stories
 
 SimGrid was cited in over 3,000 scientific papers (according to Google
 Scholar). Among them,
-`over 500 publications <https://simgrid.org/Usages.html>`_
+`over 500 publications <https://simgrid.org/usages.html>`_
 (written by hundreds of individuals) use SimGrid as a scientific
 instrument to conduct their experimental evaluation. These
 numbers do not include the articles contributing to SimGrid.
@@ -215,7 +215,7 @@ This instrument was used in many research communities, such as
 `Network Architecture <http://dx.doi.org/10.1109/TPDS.2016.2613043>`_,
 `Fog Computing <http://ieeexplore.ieee.org/document/7946412/>`_, or
 `Batch Scheduling <https://hal.archives-ouvertes.fr/hal-01333471>`_
-`(more info) <https://simgrid.org/Usages.html>`_.
+`(more info) <https://simgrid.org/usages.html>`_.
 
 If your platform description is accurate enough (see
 `here <http://hal.inria.fr/hal-00907887>`_ or

@@ -927,11 +927,11 @@ set(DOC_SOURCES
   docs/source/Installing_SimGrid.rst
   docs/source/Start_your_own_project.rst
   docs/source/Models.rst
+  docs/source/Modeling_howtos.rst
   docs/source/Outcomes.rst
   docs/source/Platform.rst
   docs/source/Platform_cpp.rst
   docs/source/Platform_examples.rst
-  docs/source/Platform_howtos.rst
   docs/source/Platform_routing.rst
   docs/source/Plugins.rst
   docs/source/Release_Notes.rst
@@ -1163,10 +1163,12 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/bypassRoute.xml
   examples/platforms/cloud.xml
   examples/platforms/cluster_backbone.xml
+  examples/platforms/cluster_backbone.svg
   examples/platforms/cluster_multi.xml
   examples/platforms/cluster_and_one_host.xml
   examples/platforms/cluster_prototype.lua
   examples/platforms/cluster_crossbar.xml
+  examples/platforms/cluster_crossbar.svg
   examples/platforms/cluster_fat_tree.xml
   examples/platforms/cluster_fat_tree.svg
   examples/platforms/cluster_torus.xml

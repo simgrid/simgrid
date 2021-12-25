@@ -57,7 +57,7 @@ Shortest path
 =============
 
 SimGrid can compute automatically the paths between all pair of hosts in a zone. You just need to provide the one-hop routes to connect all hosts.
-Two algorithms are provided: 
+Several algorithms are provided: 
 
   - ``routing=Floyd``: use the number of hops to build shortest path. It is calculated only once at the beginning of the
     simulation.
@@ -208,9 +208,9 @@ only gives an overview of the algorithm used. You should refer to the source cod
 
    .. code-block:: XML
 
-        <zoneRoute src="AS2" dst="AS5" gw_src="Host1" gw_dst"="gw1">
-            <link_ctn id="Link1">
-        </zoneRoute>
+      <zoneRoute src="AS2" dst="AS5" gw_src="Host1" gw_dst"="gw1">
+         <link_ctn id="Link1"/>
+      </zoneRoute>
 
 2. **Add the route up to the ancestor**, i.e. from ``src`` to the ``gw_src`` in the route between ancestor zones. This is a recursive call to the current algorithm.
 
@@ -225,10 +225,10 @@ only gives an overview of the algorithm used. You should refer to the source cod
    Here, we need the route from *gw1* and *host2*. The common ancestor is *AS5*, and the relative ancestors are *AS5-4* and *AS5-3*. This route is defined as follows (routes are symmetrical by default).
 
    .. code-block:: XML
-
-        <zoneRoute src="AS5-4" dst="AS5-3" gw_src="gw2" gw_dst"="gw1">
-            <link_ctn id="Link3">
-        </zoneRoute>
+      
+      <zoneRoute src="AS5-4" dst="AS5-3" gw_src="gw2" gw_dst"="gw1">
+         <link_ctn id="Link3"/>
+      </zoneRoute>
 
    So to compute the route from *gw1* to *Host2*, we need to add:
 

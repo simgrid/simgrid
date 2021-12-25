@@ -17,6 +17,7 @@ SMPI:
 Documentation:
  - New section: "SimGrid MPI calibration of a Grid5000 cluster"
    presenting how to properly calibrate MPI communications in SimGrid.
+ - Complete and reword the platform section, which is now completed.
 
 Python:
  - Thread contexts are used by default with Python bindings.  Other kinds of
