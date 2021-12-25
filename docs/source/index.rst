@@ -81,11 +81,11 @@ of every page. Bugs in the code should be reported
       The SimGrid models <Models.rst>      
          SimGrid plugins <Plugins.rst>
          Modeling hints <Modeling_howtos.rst>
+         Calibrating the models <Calibrating_the_models.rst>   
       Running an experiment <Experimental_setup.rst>
          Configuring SimGrid <Configuring_SimGrid.rst>
          Deploying your application <Deploying_your_application.rst>
          Simulation outcomes <Outcomes.rst>
-      Frequently asked questions <faq.rst>
 
 .. toctree::
    :hidden:

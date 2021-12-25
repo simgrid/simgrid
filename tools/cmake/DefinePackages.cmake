@@ -917,6 +917,7 @@ set(DOC_SOURCES
   docs/source/app_s4u.rst
   docs/source/app_smpi.rst
   docs/source/The_XBT_toolbox.rst
+  docs/source/Calibrating_the_models.rst
   docs/source/community.rst
   docs/source/Configuring_SimGrid.rst
   docs/source/Deploying_your_application.rst

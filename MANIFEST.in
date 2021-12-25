@@ -1825,6 +1825,7 @@ include docs/manpages/smpiff.1
 include docs/manpages/smpirun.1
 include docs/manpages/tesh.pod
 include docs/requirements.txt
+include docs/source/Calibrating_the_models.rst
 include docs/source/Configuring_SimGrid.rst
 include docs/source/Deploying_your_application.rst
 include docs/source/Design_goals.rst

@@ -1,5 +1,5 @@
-SimGrid MPI calibration of a Grid5000 cluster
-*********************************************
+MPI Network calibration
+***********************
 
 This tutorial demonstrates how to properly calibrate SimGrid to reflect
 the performance of MPI operations in a Grid’5000 cluster. However, the same
