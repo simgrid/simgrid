@@ -104,6 +104,8 @@ highly optimized implementation in SimGrid source code.
 
 The documentation of each cluster kinds is given as :ref:`platform_examples`.
 
+.. _pf_rm_vivaldi:
+
 Vivaldi
 =======
 

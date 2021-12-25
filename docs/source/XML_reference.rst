@@ -18,47 +18,30 @@ Complete XML Reference
 Your platform description should follow the specification presented in the
 `simgrid.dtd <https://simgrid.org/simgrid.dtd>`_ DTD file. The same DTD is used for both platform and deployment files.
 
--------------------------------------------------------------------------------
+Here is the complete list of all existing tags in the DTD:
 
-.. _pf_tag_bypassRoute:
+:ref:`pf_tag_actor`: request the creation of an actor (deployment file, not in the platform). |br|
+:ref:`pf_tag_argument`: pass parameters to the created actors (deployment file, not in the platform). |br|
+:ref:`pf_tag_backbone`: building clusters manually from the XML (deprecated, please use the C++ API). |br|
+:ref:`pf_tag_bypassRoute`: tweeking the routing (advanced tag). |br|
+:ref:`pf_tag_bypassZoneRoute`: tweeking the routing (expert-only tag). |br|
+:ref:`pf_tag_cabinet`: building clusters manually from the XML (deprecated, please use the C++ API). |br|
+:ref:`pf_tag_config`: pass simulation parameters from the XML file. |br|
+:ref:`pf_tag_disk`: storage resource. |br|
+:ref:`pf_tag_host`: computing resource. |br|
+:ref:`pf_tag_link`: communication resource. |br|
+:ref:`pf_tag_link_ctn`: name of a link to be included in a route. |br|
+:ref:`pf_tag_peer`: host located in a :ref:`pf_rm_vivaldi` zone. |br|
+:ref:`pf_tag_platform`: root tag of any platform description. |br|
+:ref:`pf_tag_prop`: attach used-defined properties to your :ref:`pf_tag_actor`, :ref:`pf_tag_disk`, :ref:`pf_tag_host`, :ref:`pf_tag_link` or :ref:`pf_tag_zone`. |br|
+:ref:`pf_tag_route`: intra-zone network path. |br|
+:ref:`pf_tag_router`: like an :ref:`pf_tag_host` that cannot host actors (for network routing algorithms). |br|
+:ref:`pf_tag_zone`: area of the network containing elements (:ref:`pf_tag_disk`, :ref:`pf_tag_host`, :ref:`pf_tag_link` and sub-:ref:`pf_tag_zone`). |br|
+:ref:`pf_tag_zoneRoute`: inter-zone network path.
 
-<bypassRoute>
--------------
+.. TODO::
 
-This tag can be used to completely bypass the classical :ref:`routing algorithm <pf_route_usage>` for a pair of hosts. The
-provided list of links will be used directly, with no further routing computation. This is an advanced tag that is rarely
-used in practice.
-
-**Parent tags:** :ref:`pf_tag_zone` |br|
-**Children tags:** :ref:`pf_tag_link_ctn` |br|
-**Attributes:**
-
-:``src``: Host from which this route starts. Must be the name of an existing host.
-:``dst``: Host to which this route leads. Must be the name of an existing host.
-:``symmetrical``: Whether this route is symmetrical, ie, whether we are defining the route ``dst -> src`` at the same time.
-		  Valid values: ``yes``, ``no``, ``YES``, ``NO`` (default: YES).
-
--------------------------------------------------------------------------------
-
-.. _pf_tag_bypassZoneRoute:
-
-<bypassZoneRoute>
------------------
-
-This tag can be used to completely bypass the classical :ref:`routing algorithm <pf_route_usage>` between two zones. When
-provided, it breaks the recursive search and the provided links will be used instead. This tag should probably be reserved
-to experts.
-
-**Parent tags:** :ref:`pf_tag_zone` |br|
-**Children tags:** :ref:`pf_tag_link_ctn` |br|
-**Attributes:**
-
-:``src``: Zone from which this route starts. Must be an existing zone.
-:``dst``: Zone to which this route leads. Must be an existing zone.
-:``gw_src``: Netpoint (within src zone) from which this route starts. Must be an existing host/router.
-:``gw_dst``: Netpoint (within dst zone) to which this route leads. Must be an existing host/router.
-:``symmetrical``: Whether this route is symmetrical, ie, whether we are defining the route ``dst -> src`` at the same
-		  time. Valid values: ``yes``, ``no``, ``YES``, ``NO``. 
+   Missing tags: <host_link>
 
 -------------------------------------------------------------------------------
 
@@ -126,6 +109,7 @@ as ``${prefix}${clusterId}_router${suffix}``.
     Please refer to :ref:`platform_examples`.
 
 -------------------------------------------------------------------------------
+
 .. _pf_tag_config:
 
 <config>
@@ -477,9 +461,9 @@ following functions:
 
 - Actor: :cpp:func:`simgrid::s4u::Actor::get_property` or :cpp:func:`MSG_process_get_property_value`
 - Cluster: this is a zone, see below.
+- Disk: :cpp:func:`simgrid::s4u::Disk::get_property`
 - Host: :cpp:func:`simgrid::s4u::Host::get_property` or :cpp:func:`MSG_host_get_property_value`
 - Link: :cpp:func:`simgrid::s4u::Link::get_property`
-- Disk: :cpp:func:`simgrid::s4u::Disk::get_property`
 - Zone: :cpp:func:`simgrid::s4u::NetZone::get_property` of :cpp:func:`MSG_zone_get_property_value`
 
 **Parent tags:** :ref:`pf_tag_actor`, :ref:`pf_tag_config`, :ref:`pf_tag_cluster`, :ref:`pf_tag_host`,
@@ -577,23 +561,86 @@ More detail can be found in the following sections :ref:`pf_routes` and :ref:`pf
 
 -------------------------------------------------------------------------------
 
+Advanced tags
+-------------
+
+The following list contains some tags that are less often used. They are still valid, but unless you know what you are
+doing, there is a good chance that you don't really want to use them.
+
+
+-------------------------------------------------------------------------------
+
+.. _pf_tag_bypassRoute:
+
+<bypassRoute>
+^^^^^^^^^^^^^
+
+This tag can be used to completely bypass the classical :ref:`routing algorithm <pf_route_usage>` for a pair of hosts. The
+provided list of links will be used directly, with no further routing computation. This is an advanced tag that is rarely
+used in practice.
+
+**Parent tags:** :ref:`pf_tag_zone` |br|
+**Children tags:** :ref:`pf_tag_link_ctn` |br|
+**Attributes:**
+
+:``src``: Host from which this route starts. Must be the name of an existing host.
+:``dst``: Host to which this route leads. Must be the name of an existing host.
+:``symmetrical``: Whether this route is symmetrical, ie, whether we are defining the route ``dst -> src`` at the same time.
+		  Valid values: ``yes``, ``no``, ``YES``, ``NO`` (default: YES).
+
+-------------------------------------------------------------------------------
+
+.. _pf_tag_bypassZoneRoute:
+
+<bypassZoneRoute>
+^^^^^^^^^^^^^^^^^
+
+This tag can be used to completely bypass the classical :ref:`routing algorithm <pf_route_usage>` between two zones. When
+provided, it breaks the recursive search and the provided links will be used instead. This tag should probably be reserved
+to experts.
+
+**Parent tags:** :ref:`pf_tag_zone` |br|
+**Children tags:** :ref:`pf_tag_link_ctn` |br|
+**Attributes:**
+
+:``src``: Zone from which this route starts. Must be an existing zone.
+:``dst``: Zone to which this route leads. Must be an existing zone.
+:``gw_src``: Netpoint (within src zone) from which this route starts. Must be an existing host/router.
+:``gw_dst``: Netpoint (within dst zone) to which this route leads. Must be an existing host/router.
+:``symmetrical``: Whether this route is symmetrical, ie, whether we are defining the route ``dst -> src`` at the same
+		  time. Valid values: ``yes``, ``no``, ``YES``, ``NO``. 
+
+.. _pf_tag_backbone:
+
+<backbone>
+^^^^^^^^^
+
+Within a manually-built cluster, specify the backbone to use. See the documentation of :ref:`pf_tag_cabinet` for all
+details, even if you should probably stop using this tag and switch to the C++ interface.
+
+**Parent tags:** :ref:`pf_tag_zone` with ``routing="Cluster"`` attribute |br|
+**Children tags:** none |br|
+**Attributes:**
+
+:``id``: No other link in the platform shall have the same identifier.
+:``bw``: Bandwidth, see the :ref:`pf_tag_link` for syntax/details.
+:``lat``: Latency, see the :ref:`pf_tag_link` for syntax/details.
+
+-------------------------------------------------------------------------------
 
 .. _pf_tag_cabinet:
 
 <cabinet>
----------
+^^^^^^^^^
 
-.. note::
-    This tag is only available when the routing mode of the network zone
-    is set to ``Cluster``.
+The cabinet tag is a shortcut for creating a set of (homogenous) hosts and links quickly, as in cabinets of data centers.
+This is mostly useful when manually describing a cluster, i.e. a ``<zone routing="Cluster">`` where you manually specify
+the content with :ref:`pf_tag_cabinet`, :ref:`pf_tag_backbone` and maybe :ref:`pf_tag_host_link`.
 
-The cabinet tag is, like the :ref:`pf_tag_cluster` tag,
-a meta-tag. This means that it is simply a shortcut for creating a set of (homogenous) hosts and links quickly;
-unsurprisingly, this tag was introduced to setup cabinets in data centers. Unlike
-:ref:`pf_tag_cluster`, however, the :ref:`pf_tag_cabinet` assumes that you create the backbone
-and routers yourself; see our examples below.
+But this approach is somewhat deprecated now, as the C++ interface is both more convinient and more powerful. For example,
+the core amount or link characteristics cannot be changed with this tag.
 
-**Parent tags:** :ref:`pf_tag_zone` |br|
+**Parent tags:** :ref:`pf_tag_zone` with ``routing="Cluster"`` attribute |br|
 **Children tags:** none |br|
 **Attributes:**
 
@@ -608,29 +655,13 @@ and routers yourself; see our examples below.
 :``bw``: Bandwidth for the links between nodes and backbone (if any). See the :ref:`pf_tag_link` for syntax/details.
 :``lat``: Latency for the links between nodes and backbone (if any). See the :ref:`pf_tag_link` for syntax/details.
 
-.. note::
-    Please note that as of now, it is impossible to change attributes such as,
-    amount of cores (always set to 1), the initial state of hosts/links
-    (always set to ON), the sharing policy of the links (always set to **SPLITDUPLEX** :ref:`pf_tag_link` ).
-
-
-Cabinet example
-^^^^^^^^^^^^^^^
-The following example shows how to use the cabinet tag.
+**Example**
 
 .. literalinclude:: ../../examples/platforms/meta_cluster.xml
-
-\note
-   Please note that you must specify the :ref:`pf_backbone` tag by yourself;
-   this is not done automatically and there are no checks
-   that ensure this backbone was defined.
 
 The hosts generated in the above example are named host-1.cluster, host-2.cluster1
 etc.
 
-.. TODO::
-
-   Missing tags: <host_link> <backbone>
 
 .. |br| raw:: html
      

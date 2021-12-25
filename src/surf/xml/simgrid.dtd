@@ -8,7 +8,7 @@ To upgrade your files, use the tool simgrid_update_xml
   - The following tags will be removed:
     - <include> spits an error since v3.18
     - <random> and <model_prop> do nothing since a very long time
-    - <as>, <asroute>, <bypassZoneRoute> and <process>, deprecated in DTD4.1
+    - <as>, <asroute>, <bypassASRoute> and <process>, deprecated in DTD4.1
   - FULLDUPLEX sharing will be removed, deprecated in DTD4.2 (v3.19)
 
 * New in DTD version 4.1 (in SimGrid 3.16): backward compatible change (v4 files are valid v4.1 files)
