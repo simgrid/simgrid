@@ -20,6 +20,48 @@ Your platform description should follow the specification presented in the
 
 -------------------------------------------------------------------------------
 
+.. _pf_tag_bypassRoute:
+
+<bypassRoute>
+-------------
+
+This tag can be used to completely bypass the classical :ref:`routing algorithm <pf_route_usage>` for a pair of hosts. The
+provided list of links will be used directly, with no further routing computation. This is an advanced tag that is rarely
+used in practice.
+
+**Parent tags:** :ref:`pf_tag_zone` |br|
+**Children tags:** :ref:`pf_tag_link_ctn` |br|
+**Attributes:**
+
+:``src``: Host from which this route starts. Must be the name of an existing host.
+:``dst``: Host to which this route leads. Must be the name of an existing host.
+:``symmetrical``: Whether this route is symmetrical, ie, whether we are defining the route ``dst -> src`` at the same time.
+		  Valid values: ``yes``, ``no``, ``YES``, ``NO`` (default: YES).
+
+-------------------------------------------------------------------------------
+
+.. _pf_tag_bypassZoneRoute:
+
+<bypassZoneRoute>
+-----------------
+
+This tag can be used to completely bypass the classical :ref:`routing algorithm <pf_route_usage>` between two zones. When
+provided, it breaks the recursive search and the provided links will be used instead. This tag should probably be reserved
+to experts.
+
+**Parent tags:** :ref:`pf_tag_zone` |br|
+**Children tags:** :ref:`pf_tag_link_ctn` |br|
+**Attributes:**
+
+:``src``: Zone from which this route starts. Must be an existing zone.
+:``dst``: Zone to which this route leads. Must be an existing zone.
+:``gw_src``: Netpoint (within src zone) from which this route starts. Must be an existing host/router.
+:``gw_dst``: Netpoint (within dst zone) to which this route leads. Must be an existing host/router.
+:``symmetrical``: Whether this route is symmetrical, ie, whether we are defining the route ``dst -> src`` at the same
+		  time. Valid values: ``yes``, ``no``, ``YES``, ``NO``. 
+
+-------------------------------------------------------------------------------
+
 .. _pf_tag_cluster:
 
 <cluster>
@@ -588,7 +630,7 @@ etc.
 
 .. TODO::
 
-   Missing tags: <host_link> <backbone> <bypassRoute> <bypassZoneRoute>
+   Missing tags: <host_link> <backbone>
 
 .. |br| raw:: html
      

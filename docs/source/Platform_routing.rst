@@ -177,7 +177,8 @@ the common ancestor) and finally, move within zone ``dst`` from ``gw_dst`` to ``
 SimGrid enforces that each gateway is within its zone, either directly or in a sub-zone to ensure that the algorithm
 described in the next section actually works.
 
-TODO: bypassRoute
+One can also use :ref:`pf_tag_bypassRoute` and :ref:`pf_tag_bypassZoneRoute` to define exceptions to the classical routing
+algorithm. This advanced feature is also detailed in the next section.
 
 .. _pf_route_usage:
 
@@ -186,6 +187,9 @@ Calculating network paths
 
 Computing the path between two hosts is easy when they are located in the same zone. It is done directly by the routing
 algorithm of that zone. Full routing looks in its table, Vivaldi computes the distance between peers, etc.
+
+Another simple case is when a :ref:`pf_tag_bypassRoute` was provided. Such routes are used in priority, with no further
+routing computation. You can define a bypass between any hosts, even if they are not in the same zone.
 
 When communicating through several zones, a recursive algorithm is used. As an illustration, we will apply this
 algorithm to a communication between `host1` in `AS1` and `host2` in `AS5-4`, in our previous topology. This section
@@ -238,6 +242,9 @@ only gives an overview of the algorithm used. You should refer to the source cod
 
 In the end, our communication from *Host1@AS2* to *Host2@AS5-4* follows this path: ``{Link1, Link3, Link2}`` 
 
+It is possbile to use :ref:`pf_tag_bypassZoneRoute` to provide a path between two zones that are not necessarily sibilings.
+If such routes exist, SimGrid will try to match each of the ancestor zones of the source with each of the ancestor zone of
+the destination, looking for such a bypass to use intead of the common ancestor.
 
 Loopback links
 **************

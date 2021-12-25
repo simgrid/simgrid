@@ -54,9 +54,9 @@ of every page. Bugs in the code should be reported
    :maxdepth: 1
    :caption: Tutorials:
 
-	Simulating Distributed Algorithms <Tutorial_Algorithms.rst>
-	Simulating MPI Applications <Tutorial_MPI_Applications.rst>
-	Model-checking algorithms and applications <Tutorial_Model-checking.rst>
+	Simulating distributed algorithms <Tutorial_Algorithms.rst>
+	Simulating MPI applications <Tutorial_MPI_Applications.rst>
+	Model-checking algorithms <Tutorial_Model-checking.rst>
 
 .. toctree::
    :hidden:
