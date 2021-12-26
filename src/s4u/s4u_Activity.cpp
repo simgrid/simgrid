@@ -76,8 +76,10 @@ Activity* Activity::cancel()
 {
   kernel::actor::simcall([this] {
     XBT_HERE();
-    pimpl_->cancel();
+    if (pimpl_)
+      pimpl_->cancel();
   });
+  release_dependencies();
   complete(State::CANCELED);
   return this;
 }
