@@ -80,6 +80,8 @@ static void remove_active_exec(s4u::Activity& task)
   const auto* exec = dynamic_cast<s4u::Exec*>(&task);
   if (exec == nullptr)
     return;
+  if (not exec->is_assigned())
+    return;
   const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(exec->get_host());
   if (vm != nullptr) {
     VirtualMachineImpl* vm_impl = vm->get_vm_impl();
