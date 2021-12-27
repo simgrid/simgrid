@@ -381,16 +381,18 @@ double L07Action::calculateNetworkBound()
 
   size_t host_count = hostList_.size();
 
-  if (communicationAmount_ != nullptr) {
-    for (size_t i = 0; i < host_count; i++) {
-      for (size_t j = 0; j < host_count; j++) {
-        if (communicationAmount_[i * host_count + j] > 0) {
-          double lat = 0.0;
-          std::vector<LinkImpl*> route;
-          hostList_.at(i)->route_to(hostList_.at(j), route, &lat);
+  if (communicationAmount_ == nullptr) {
+    return lat_bound;
+  }
 
-          lat_current = std::max(lat_current, lat * communicationAmount_[i * host_count + j]);
-        }
+  for (size_t i = 0; i < host_count; i++) {
+    for (size_t j = 0; j < host_count; j++) {
+      if (communicationAmount_[i * host_count + j] > 0) {
+        double lat = 0.0;
+        std::vector<LinkImpl*> route;
+        hostList_.at(i)->route_to(hostList_.at(j), route, &lat);
+
+        lat_current = std::max(lat_current, lat * communicationAmount_[i * host_count + j]);
       }
     }
   }
@@ -403,8 +405,13 @@ double L07Action::calculateNetworkBound()
 double L07Action::calculateCpuBound()
 {
   double cpu_bound = std::numeric_limits<double>::max();
+
+  if (computationAmount_ == nullptr) {
+    return cpu_bound;
+  }
+
   for (size_t i = 0; i < hostList_.size(); i++) {
-    if (computationAmount_ && computationAmount_[i] > 0) {
+    if (computationAmount_[i] > 0) {
       cpu_bound = std::min(cpu_bound, hostList_[i]->get_cpu()->get_speed(1.0) *
                                           hostList_[i]->get_cpu()->get_speed_ratio() / computationAmount_[i]);
     }
