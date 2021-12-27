@@ -58,6 +58,12 @@ set(LIBSIMGRID_JAVA_SO  ${CMAKE_SHARED_LIBRARY_PREFIX}simgrid-java${CMAKE_SHARED
 
 ## Here is how to build simgrid.jar
 ##
+add_jar(simgrid-java_jar ${JMSG_JAVA_SRC} OUTPUT_NAME simgrid)
+
+if(enable_lib_in_jar)
+  add_dependencies(simgrid-java_jar simgrid-java)
+  add_dependencies(simgrid-java_jar simgrid)
+endif()
 
 if (enable_documentation)
   add_custom_command(
@@ -81,7 +87,7 @@ if (enable_documentation)
 endif()
 
 ###
-### Prepare to pack the java libraries into the jarfile if asked to do so
+### Pack the java libraries into the jarfile if asked to do so
 ###
 
 if(enable_lib_in_jar)
@@ -105,72 +111,64 @@ if(enable_lib_in_jar)
     set(JAVA_NATIVE_PATH NATIVE/${SG_SYSTEM_NAME}/arm) # Default arm (soft-float ABI)
   endif()
 
-  if(WIN32)
-    add_custom_target(simgrid-java-natives
-      COMMENT "Copy the windows-specific native libs for inclusion into simgrid.jar..."
-      DEPENDS simgrid simgrid-java
+  add_custom_command(
+    TARGET simgrid-java_jar POST_BUILD
+    COMMENT "Add the native libs into simgrid.jar..."
+    DEPENDS simgrid simgrid-java ${JAVALIBS}
 
-      # There is no way to disable the dependency of mingw-64 on that lib, unfortunately nor to script cmake -E properly
-      # So let's be brutal and copy it in any case (even on non-windows builds) from the location where appveyor provides it.
-      # The copy is only expected to work on the appveyor builder, but that's all we need right now
-      # since our users are directed to download that file as nightly build.
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different C:/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/libwinpthread-1.dll ${JAVA_NATIVE_PATH}/libwinpthread-1.dll || true
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different C:/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin/libwinpthread-1.dll  ${JAVA_NATIVE_PATH}/libwinpthread-1.dll || true
-    
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}/${LIBSIMGRID_SO}
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO}
-    )
-    set(JMSG_JAVA_RES ${JMSG_JAVA_RES}
-                      NAMESPACE "${JAVA_NATIVE_PATH}" ${CMAKE_CURRENT_BINARY_DIR}/${JAVA_NATIVE_PATH}/libwinpthread-1.dll)
-  elsif(APPLE)
-    add_custom_target(simgrid-java-natives
-      COMMENT "Copy the apple-specific native libs for inclusion into simgrid.jar..."
-      DEPENDS simgrid simgrid-java
+    COMMAND ${CMAKE_COMMAND} -E make_directory   ${JAVA_NATIVE_PATH}
 
-      # We need to fix the rpath of the simgrid-java library so that it searches the simgrid library in the right location
-      #
-      # Since we don't officially install the lib before copying it in the jarfile, the lib is searched for where it was built. 
-      # Given how we unpack it, we need to instruct simgrid-java to forget about the build path, and search in its current directory
-      # instead.
-      #
-      # This has to be done with the classical Apple tools, as follows:
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}/${LIBSIMGRID_SO}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO}
+  )
 
-      COMMAND install_name_tool -change ${CMAKE_BINARY_DIR}/lib/libsimgrid.${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}${CMAKE_SHARED_LIBRARY_SUFFIX} @loader_path/libsimgrid.dylib ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO}
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}/${LIBSIMGRID_SO}
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO}
-    )
-  else()
-    add_custom_target(simgrid-java-natives
-      COMMENT "Copy the native libs for inclusion into simgrid.jar..."
-      DEPENDS simgrid simgrid-java
+if(WIN32)
+  add_custom_command(
+    TARGET simgrid-java_jar POST_BUILD
+    COMMENT "Add the windows-specific native libs into simgrid.jar..."
+    DEPENDS simgrid simgrid-java ${JAVALIBS}
 
-      COMMAND ${CMAKE_COMMAND} -E make_directory   ${JAVA_NATIVE_PATH}
+    # There is no way to disable the dependency of mingw-64 on that lib, unfortunately nor to script cmake -E properly
+    # So let's be brutal and copy it in any case (even on non-windows builds) from the location where appveyor provides it.
+    # The copy is only expected to work on the appveyor builder, but that's all we need right now
+    # since our users are directed to download that file as nightly build.
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different C:/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/libwinpthread-1.dll ${JAVA_NATIVE_PATH}/libwinpthread-1.dll || true
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different C:/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin/libwinpthread-1.dll  ${JAVA_NATIVE_PATH}/libwinpthread-1.dll || true
+  )
+endif()
 
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}/${LIBSIMGRID_SO}
-      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO}
-    )
-  endif()
+if(APPLE)
+  add_custom_command(
+    TARGET simgrid-java_jar POST_BUILD
+    COMMENT "Add the apple-specific native libs into simgrid.jar..."
+    DEPENDS simgrid simgrid-java ${JAVALIBS}
 
-  set(JMSG_JAVA_RES ${JMSG_JAVA_RES}
-                    NAMESPACE "${JAVA_NATIVE_PATH}" ${CMAKE_CURRENT_BINARY_DIR}/${JAVA_NATIVE_PATH}/${LIBSIMGRID_SO}
-                    NAMESPACE "${JAVA_NATIVE_PATH}" ${CMAKE_CURRENT_BINARY_DIR}/${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO})
-else(enable_lib_in_jar)
-  add_custom_target(simgrid-java-natives) # Nothing to do in this case
-  set(JMSG_JAVA_RES "")
+    # We need to fix the rpath of the simgrid-java library so that it
+    #    searches the simgrid library in the right location
+    #
+    # Since we don't officially install the lib before copying it in
+    # the jarfile, the lib is searched for where it was built. Given
+    # how we unpack it, we need to instruct simgrid-java to forget
+    # about the build path, and search in its current directory
+    # instead.
+    #
+    # This has to be done with the classical Apple tools, as follows:
+
+    COMMAND install_name_tool -change ${CMAKE_BINARY_DIR}/lib/libsimgrid.${SIMGRID_VERSION_MAJOR}.${SIMGRID_VERSION_MINOR}${CMAKE_SHARED_LIBRARY_SUFFIX} @loader_path/libsimgrid.dylib ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO}
+  )
+endif(APPLE)
+
+  add_custom_command(
+    TARGET simgrid-java_jar POST_BUILD
+    COMMENT "Packing back the simgrid.jar with the native libs..."
+    DEPENDS simgrid simgrid-java ${JAVALIBS}
+
+    COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR}  ${JAVA_NATIVE_PATH}
+
+    COMMAND ${CMAKE_COMMAND} -E echo "-- Cmake put the native code in ${JAVA_NATIVE_PATH}"
+    COMMAND "${Java_JAVA_EXECUTABLE}" -classpath "${SIMGRID_JAR}" org.simgrid.NativeLib
+  )
+
 endif(enable_lib_in_jar)
-
-# Actually building the JAR, with the right dependency, and check that it works
-#####
-add_jar(simgrid-java_jar 
-        SOURCES ${JMSG_JAVA_SRC}
-	RESOURCES ${JMSG_JAVA_RES}
-	OUTPUT_NAME simgrid)
-add_dependencies(simgrid-java_jar simgrid-java-natives)
-
-add_custom_command(
-   TARGET simgrid-java_jar POST_BUILD
-   COMMAND ${CMAKE_COMMAND} -E echo "-- Cmake puts the native code in ${JAVA_NATIVE_PATH}"
-   COMMAND "${Java_JAVA_EXECUTABLE}" -classpath "${SIMGRID_JAR}" org.simgrid.NativeLib
-)
 
 include_directories(${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
