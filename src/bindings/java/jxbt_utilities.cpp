@@ -31,12 +31,11 @@ jmethodID jxbt_get_jmethod(JNIEnv * env, jclass cls, const char *name, const cha
 
   if (not id) {
     jmethodID tostr_id = env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
-    auto jclassname       = (jstring)env->CallObjectMethod(cls, tostr_id, nullptr);
-    const char* classname = env->GetStringUTFChars(jclassname, nullptr);
+    auto jclassname    = (jstring)env->CallObjectMethod(cls, tostr_id, nullptr);
+    jstring_wrapper classname(env, jclassname);
+    auto msg = std::string("Cannot find method") + name + "(" + signature + ") in " + classname.value;
 
-    env->ReleaseStringUTFChars(jclassname, classname);
-
-    jxbt_throw_jni(env, std::string("Cannot find method") + name + "(" + signature + ") in " + classname);
+    jxbt_throw_jni(env, msg);
     return nullptr;
   }
 
@@ -54,11 +53,10 @@ jmethodID jxbt_get_static_jmethod(JNIEnv * env, jclass cls, const char *name, co
   if (not id) {
     jmethodID tostr_id = env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
     auto jclassname       = (jstring)env->CallObjectMethod(cls, tostr_id, nullptr);
-    const char* classname = env->GetStringUTFChars(jclassname, nullptr);
+    jstring_wrapper classname(env, jclassname);
+    auto msg = std::string("Cannot find static method") + name + "(" + signature + ") in " + classname.value;
 
-    env->ReleaseStringUTFChars(jclassname, classname);
-
-    jxbt_throw_jni(env, std::string("Cannot find static method") + name + "(" + signature + ") in " + classname);
+    jxbt_throw_jni(env, msg);
     return nullptr;
   }
 

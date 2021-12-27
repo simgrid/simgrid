@@ -102,7 +102,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobje
     jxbt_throw_notbound(env, "as", jas);
     return nullptr;
   }
-  const char* name = env->GetStringUTFChars(static_cast<jstring>(jname), nullptr);
+  jstring_wrapper name(env, static_cast<jstring>(jname));
 
   const char* property = sg_zone_get_property_value(as, name);
   if (not property) {
@@ -110,8 +110,6 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobje
   }
 
   jobject jproperty = env->NewStringUTF(property);
-
-  env->ReleaseStringUTFChars(static_cast<jstring>(jname), name);
 
   return jproperty;
 }
