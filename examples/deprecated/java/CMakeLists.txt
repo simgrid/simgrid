@@ -26,6 +26,7 @@ set(hostload_files              Main  LoadRunner)
 if(enable_java)
   add_custom_target(java-all COMMENT "Building all Java examples...")
   add_dependencies(tests java-all)
+  add_dependencies(java-all simgrid-java) # useful when the libs are not included in the jar
 endif()
 
 foreach (example app-bittorrent app-centralizedmutex app-masterworker app-pingpong app-tokenring async-yield async-waitall async-dsend

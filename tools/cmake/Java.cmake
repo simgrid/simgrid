@@ -160,7 +160,7 @@ endif(APPLE)
 
   add_custom_command(
     TARGET simgrid-java_jar POST_BUILD
-    COMMENT "Packing back the simgrid.jar with the native libs..."
+    COMMENT "Packing back the simgrid.jar with the native libs (turn lib_in_jar off when coding in java)..."
     DEPENDS simgrid simgrid-java ${JAVALIBS}
 
     COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR}  ${JAVA_NATIVE_PATH}
@@ -168,7 +168,6 @@ endif(APPLE)
     COMMAND ${CMAKE_COMMAND} -E echo "-- Cmake put the native code in ${JAVA_NATIVE_PATH}"
     COMMAND "${Java_JAVA_EXECUTABLE}" -classpath "${SIMGRID_JAR}" org.simgrid.NativeLib
   )
-
 endif(enable_lib_in_jar)
 
 include_directories(${JNI_INCLUDE_DIRS} ${JAVA_INCLUDE_PATH} ${JAVA_INCLUDE_PATH2})
