@@ -11,7 +11,7 @@ foreach(example semaphoregc sleephostoff)
   if(enable_java)
     string (REPLACE "-" "/" example_dir ${example})
     add_jar(java-${example} SOURCES ${sources}
-            INCLUDE_JARS ${SIMGRID_JAR}
+            INCLUDE_JARS simgrid-java_jar
 	    OUTPUT_NAME ${example}
 	    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${example_dir})
     add_dependencies(java-all java-${example})
