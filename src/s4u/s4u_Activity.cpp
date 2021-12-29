@@ -25,6 +25,17 @@ xbt::signal<void(Activity&)> Activity::on_completion;
 
 std::set<Activity*>* Activity::vetoed_activities_ = nullptr;
 
+void Activity::destroy()
+{
+  /* First Remove all dependencies */
+  while (not dependencies_.empty())
+    (*(dependencies_.begin()))->remove_successor(this);
+  while (not successors_.empty())
+    this->remove_successor(successors_.front());
+
+  cancel();
+}
+
 void Activity::wait_until(double time_limit)
 {
   double now = Engine::get_clock();
@@ -79,7 +90,6 @@ Activity* Activity::cancel()
     if (pimpl_)
       pimpl_->cancel();
   });
-  release_dependencies();
   complete(State::CANCELED);
   return this;
 }

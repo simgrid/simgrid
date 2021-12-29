@@ -48,6 +48,7 @@ public:
 protected:
   Activity()  = default;
   virtual ~Activity() = default;
+  void destroy();
 
   void release_dependencies()
   {
