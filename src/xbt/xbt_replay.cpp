@@ -99,7 +99,12 @@ static ReplayAction* get_action(const char* name)
 static void handle_action(ReplayAction& action)
 {
   XBT_DEBUG("%s replays a %s action", action.at(0).c_str(), action.at(1).c_str());
-  action_fun function = action_funs.at(action.at(1));
+  action_fun function;
+  try {
+    function = action_funs.at(action.at(1));
+  } catch (const std::out_of_range&) {
+    xbt_die("Replay Error: action %s is unknown, please register it properly in the replay engine",  action.at(1).c_str());
+  }
   try {
     function(action);
   } catch (const Exception&) {
