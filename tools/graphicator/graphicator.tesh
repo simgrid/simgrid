@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/graphicator ${srcdir:=.}/teshsuite/simdag/platforms/one_cluster.xml test.dot
+$ ${bindir:=.}/graphicator ${srcdir:=.}/teshsuite/platforms/one_cluster.xml test.dot
 
 $ cat test.dot
 > graph test {

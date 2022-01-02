@@ -1,5 +1,5 @@
 #!/usr/bin/env tesh
-$ ${bindir:=.}/flatifier ../platforms/one_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ./one_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -130,7 +130,7 @@ $ ${bindir:=.}/flatifier ../platforms/one_cluster.xml "--log=root.fmt:[%10.6r]%e
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ../platforms/one_cluster_multicore.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ./one_cluster_multicore.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -260,7 +260,7 @@ $ ${bindir:=.}/flatifier ../platforms/one_cluster_multicore.xml "--log=root.fmt:
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ../platforms/host_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ./host_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -293,7 +293,7 @@ $ ${bindir:=.}/flatifier ../platforms/host_attributes.xml "--log=root.fmt:[%10.6
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ../platforms/link_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ./link_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -310,7 +310,7 @@ $ ${bindir:=.}/flatifier ../platforms/link_attributes.xml "--log=root.fmt:[%10.6
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ../platforms/three_hosts_non_symmetric_route.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ./three_hosts_non_symmetric_route.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -352,7 +352,7 @@ $ ${bindir:=.}/flatifier ../platforms/three_hosts_non_symmetric_route.xml "--log
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ../platforms/two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ./two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -480,7 +480,7 @@ $ ${bindir:=.}/flatifier ../platforms/two_clusters.xml "--log=root.fmt:[%10.6r]%
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ../platforms/two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ./two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -506,7 +506,7 @@ $ ${bindir:=.}/flatifier ../platforms/two_hosts_multi_hop.xml "--log=root.fmt:[%
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ../platforms/two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ./two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -1191,7 +1191,7 @@ $ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/cluster_torus.xml "--lo
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ../platforms/cluster_dragonfly_noncontiguous_rad.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ./cluster_dragonfly_noncontiguous_rad.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -1280,7 +1280,7 @@ $ ${bindir:=.}/flatifier ../platforms/cluster_dragonfly_noncontiguous_rad.xml "-
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ../platforms/cluster_fat_tree_noncontiguous_rad.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ./cluster_fat_tree_noncontiguous_rad.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -1377,7 +1377,7 @@ $ ${bindir:=.}/flatifier ../platforms/cluster_fat_tree_noncontiguous_rad.xml "--
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier ../platforms/cluster_torus_noncontiguous_rad.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
+$ ${bindir:=.}/flatifier ./cluster_torus_noncontiguous_rad.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -1469,7 +1469,8 @@ $ ${bindir:=.}/flatifier ../platforms/cluster_torus_noncontiguous_rad.xml "--log
 >   </route>
 > </AS>
 > </platform>
-$ ${bindir:=.}/flatifier ../platforms/two_hosts_one_link_splitduplex.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
+
+$ ${bindir:=.}/flatifier ./two_hosts_one_link_splitduplex.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
@@ -1493,4 +1494,3 @@ $ ${bindir:=.}/flatifier ../platforms/two_hosts_one_link_splitduplex.xml "--log=
 >   </route>
 > </AS>
 > </platform>
-

@@ -45,7 +45,7 @@ static void create_environment(xbt_os_timer_t parse_time, const std::string& pla
 
 static void dump_hosts()
 {
-  std::vector<sg4::Host*> hosts  = sg4::Engine::get_instance()->get_all_hosts();
+  std::vector<sg4::Host*> hosts = sg4::Engine::get_instance()->get_all_hosts();
   std::sort(hosts.begin(), hosts.end(),
             [](const sg4::Host* a, const sg4::Host* b) { return a->get_name() < b->get_name(); });
 
@@ -75,14 +75,14 @@ static void dump_links()
 {
   std::vector<sg4::Link*> links = sg4::Engine::get_instance()->get_all_links();
 
-  std::sort(links.begin(), links.end(), [](const sg4::Link* a, const sg4::Link* b) {
-    return a->get_name() < b->get_name();
-  });
+  std::sort(links.begin(), links.end(),
+            [](const sg4::Link* a, const sg4::Link* b) { return a->get_name() < b->get_name(); });
 
   for (auto link : links) {
     std::printf("  <link id=\"");
 
-    std::printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"", link->get_cname(), link->get_bandwidth(), link->get_latency());
+    std::printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"", link->get_cname(), link->get_bandwidth(),
+                link->get_latency());
     if (link->is_shared()) {
       std::printf("/>\n");
     } else {
@@ -93,8 +93,7 @@ static void dump_links()
 
 static void dump_routers()
 {
-  std::vector<simgrid::kernel::routing::NetPoint*> netpoints =
-      sg4::Engine::get_instance()->get_all_netpoints();
+  std::vector<simgrid::kernel::routing::NetPoint*> netpoints = sg4::Engine::get_instance()->get_all_netpoints();
   std::sort(netpoints.begin(), netpoints.end(),
             [](const simgrid::kernel::routing::NetPoint* a, const simgrid::kernel::routing::NetPoint* b) {
               return a->get_name() < b->get_name();
@@ -107,11 +106,10 @@ static void dump_routers()
 
 static void dump_routes()
 {
-  std::vector<sg4::Host*> hosts  = sg4::Engine::get_instance()->get_all_hosts();
+  std::vector<sg4::Host*> hosts = sg4::Engine::get_instance()->get_all_hosts();
   std::sort(hosts.begin(), hosts.end(),
             [](const sg4::Host* a, const sg4::Host* b) { return a->get_name() < b->get_name(); });
-  std::vector<simgrid::kernel::routing::NetPoint*> netpoints =
-      sg4::Engine::get_instance()->get_all_netpoints();
+  std::vector<simgrid::kernel::routing::NetPoint*> netpoints = sg4::Engine::get_instance()->get_all_netpoints();
   std::sort(netpoints.begin(), netpoints.end(),
             [](const simgrid::kernel::routing::NetPoint* a, const simgrid::kernel::routing::NetPoint* b) {
               return a->get_name() < b->get_name();

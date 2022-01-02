@@ -1048,9 +1048,9 @@ set(CMAKEFILES_TXT
   teshsuite/mc/CMakeLists.txt
   teshsuite/models/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt
+  teshsuite/platforms/CMakeLists.txt
   teshsuite/python/CMakeLists.txt
   teshsuite/s4u/CMakeLists.txt
-  teshsuite/simdag/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
   teshsuite/surf/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt

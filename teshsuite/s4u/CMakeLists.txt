@@ -74,8 +74,8 @@ ADD_TEST(test-help-logs    ${TESH_WRAPPER_UNBOXED} ${CMAKE_BINARY_DIR}/teshsuite
 ADD_TESH(tesh-parser-bypass   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/s4u/basic-parsing-test --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/basic-parsing-test --setenv srcdir=${CMAKE_HOME_DIRECTORY} basic-parsing-test-bypass.tesh)
 ADD_TESH(tesh-parser-sym-full --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/s4u/basic-parsing-test --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/basic-parsing-test basic-parsing-test-sym-full.tesh)
 
-ADD_TEST(tesh-parser-full-links01    ${CMAKE_BINARY_DIR}/teshsuite/s4u/basic-parsing-test/basic-parsing-test ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/two_clusters.xml FULL_LINK)
-ADD_TEST(tesh-parser-full-links02    ${CMAKE_BINARY_DIR}/teshsuite/s4u/basic-parsing-test/basic-parsing-test ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms/two_clusters_one_name.xml FULL_LINK)
+ADD_TEST(tesh-parser-full-links01    ${CMAKE_BINARY_DIR}/teshsuite/s4u/basic-parsing-test/basic-parsing-test ${CMAKE_HOME_DIRECTORY}/teshsuite/platforms/two_clusters.xml FULL_LINK)
+ADD_TEST(tesh-parser-full-links02    ${CMAKE_BINARY_DIR}/teshsuite/s4u/basic-parsing-test/basic-parsing-test ${CMAKE_HOME_DIRECTORY}/teshsuite/platforms/two_clusters_one_name.xml FULL_LINK)
 ADD_TEST(tesh-parser-one-link-g5k    ${CMAKE_BINARY_DIR}/teshsuite/s4u/basic-parsing-test/basic-parsing-test ${CMAKE_HOME_DIRECTORY}/examples/platforms/g5k.xml ONE_LINK)
 
 set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/activity-lifecycle/activity-lifecycle.hpp PARENT_SCOPE)

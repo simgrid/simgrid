@@ -1,0 +1,3 @@
+! expect signal SIGABRT
+$ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/flatifier ./bogus_two_hosts_asymetric.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n" --log=no_loc
+> [  0.000000] [0:maestro@] The route between alice and bob already exists (Rq: routes are symmetrical by default).
