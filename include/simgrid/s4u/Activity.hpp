@@ -6,7 +6,6 @@
 #ifndef SIMGRID_S4U_ACTIVITY_HPP
 #define SIMGRID_S4U_ACTIVITY_HPP
 
-#include <xbt/asserts.h>
 #include <algorithm>
 #include <atomic>
 #include <set>
@@ -14,6 +13,8 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <xbt/Extendable.hpp>
+#include <xbt/asserts.h>
 #include <xbt/signal.hpp>
 #include <xbt/utility.hpp>
 
@@ -27,12 +28,13 @@ namespace s4u {
  * This class is the ancestor of every activities that an actor can undertake.
  * That is, activities are all the things that do take time to the actor in the simulated world.
  */
-class XBT_PUBLIC Activity {
+class XBT_PUBLIC Activity : public xbt::Extendable<Activity> {
   friend Comm;
   friend Exec;
   friend Io;
 #ifndef DOXYGEN
   friend std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename);
+  friend std::vector<ActivityPtr> create_DAG_from_DAX(const std::string& filename);
 #endif
 
 public:
@@ -113,9 +115,9 @@ public:
   void complete(Activity::State state)
   {
     state_ = state;
+    on_completion(*this);
     if (state == State::FINISHED)
       release_dependencies();
-    on_completion(*this);
   }
 
   static std::set<Activity*>* get_vetoed_activities() { return vetoed_activities_; }

@@ -8,11 +8,11 @@ $ ${bindir:=.}/s4u-dag-comm ${platfdir}/two_hosts.xml --log=s4u_activity.t:verbo
 > [  0.000000] (0:maestro@) Activity 'transfert' vetoed. Dependencies: NOT solved; Ressources: NOT assigned
 > [  0.000000] (0:maestro@) Activity 'child' vetoed. Dependencies: NOT solved; Ressources: assigned
 > [  0.000000] (0:maestro@) Activity 'transfert' vetoed. Dependencies: NOT solved; Ressources: assigned
+> [  1.000000] (0:maestro@) Activity 'parent' is complete (start time: 0.000000, finish time: 1.000000)
 > [  1.000000] (0:maestro@) Remove a dependency from 'parent' on 'transfert'
 > [  1.000000] (0:maestro@) 'transfert' is assigned to a resource and all dependencies are solved. Let's start
-> [  1.000000] (0:maestro@) Activity 'parent' is complete (start time: 0.000000, finish time: 1.000000)
+> [  2.083775] (0:maestro@) Activity 'transfert' is complete
 > [  2.083775] (0:maestro@) Remove a dependency from 'transfert' on 'child'
 > [  2.083775] (0:maestro@) 'child' is assigned to a resource and all dependencies are solved. Let's start
-> [  2.083775] (0:maestro@) Activity 'transfert' is complete
 > [  3.083775] (0:maestro@) Activity 'child' is complete (start time: 2.083775, finish time: 3.083775)
 > [  3.083775] (0:maestro@) Simulation time 3.08378

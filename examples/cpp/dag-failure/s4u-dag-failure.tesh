@@ -13,9 +13,9 @@ $ ${bindir:=.}/s4u-dag-failure ${platfdir}/faulty_host.xml --log=s4u_activity.t:
 > [ 10.000000] (0:maestro@) let's unschedule Activity 'Poor task' and reschedule it on the 'Safe Host'
 > [ 10.000000] (0:maestro@) 'Poor task' is assigned to a resource and all dependencies are solved. Let's start
 > [ 10.000000] (0:maestro@) Run the simulation again
+> [ 50.000000] (0:maestro@) Activity 'Poor task' is complete (start time: 10.000000, finish time: 50.000000)
 > [ 50.000000] (0:maestro@) Remove a dependency from 'Poor task' on 'Child'
 > [ 50.000000] (0:maestro@) 'Child' is assigned to a resource and all dependencies are solved. Let's start
-> [ 50.000000] (0:maestro@) Activity 'Poor task' is complete (start time: 10.000000, finish time: 50.000000)
 > [ 90.000000] (0:maestro@) Activity 'Child' is complete (start time: 50.000000, finish time: 90.000000)
 > [ 90.000000] (0:maestro@) Second test: parallel Exec activity
 > [ 90.000000] (0:maestro@) Schedule Activity 'Poor parallel task' on 'Safe Host' and 'Faulty Host'
@@ -25,8 +25,8 @@ $ ${bindir:=.}/s4u-dag-failure ${platfdir}/faulty_host.xml --log=s4u_activity.t:
 > [100.000000] (0:maestro@) let's unschedule Activity 'Poor parallel task' and reschedule it only on the 'Safe Host'
 > [100.000000] (0:maestro@) 'Poor parallel task' is assigned to a resource and all dependencies are solved. Let's start
 > [100.000000] (0:maestro@) Run the simulation again
+> [180.000000] (0:maestro@) Activity 'Poor parallel task' is complete (start time: 100.000000, finish time: 180.000000)
 > [180.000000] (0:maestro@) Remove a dependency from 'Poor parallel task' on 'Child'
 > [180.000000] (0:maestro@) 'Child' is assigned to a resource and all dependencies are solved. Let's start
-> [180.000000] (0:maestro@) Activity 'Poor parallel task' is complete (start time: 100.000000, finish time: 180.000000)
 > [220.000000] (0:maestro@) Activity 'Child' is complete (start time: 180.000000, finish time: 220.000000)
 

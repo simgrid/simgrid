@@ -98,7 +98,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  comm-pingpong comm-ready comm-serialize comm-suspend comm-wait comm-waitany comm-waitall comm-waituntil
                  comm-dependent comm-host2host comm-failure comm-throttling
                  cloud-capping cloud-migration cloud-simple
-                 dag-comm dag-from-dot dag-failure dag-io dag-simple
+                 dag-comm dag-from-dax dag-from-dot dag-failure dag-io dag-scheduling dag-simple
                  dht-chord dht-kademlia
                  energy-exec energy-boot energy-link energy-vm energy-exec-ptask energy-wifi
                  engine-filtering engine-run-partial
@@ -232,6 +232,7 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/comm-waitall/s4u-comm-waitall_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/comm-ready/s4u-comm-ready_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/comm-waituntil/s4u-comm-waituntil_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag-scheduling/Montage_25.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/s4u-dht-kademlia_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/energy-boot/platform_boot.xml
@@ -251,10 +252,12 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
 set(bin_files     ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness-stack-cleaner
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/promela_bugged1_liveness PARENT_SCOPE)
-set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/dag.dot
+set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax/simple_dax_with_cycle.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax/smalldax.xml     
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/dag.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/dag_with_cycle.dot
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag-scheduling/expected_output.jed
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p0.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p1.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-io/s4u-replay-io.txt                  PARENT_SCOPE)
-

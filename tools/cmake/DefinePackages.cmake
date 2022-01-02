@@ -1057,7 +1057,6 @@ set(CMAKEFILES_TXT
   examples/python/CMakeLists.txt
   examples/deprecated/java/CMakeLists.txt
   examples/deprecated/msg/mc/CMakeLists.txt
-  examples/deprecated/simdag/CMakeLists.txt
 
   teshsuite/java/CMakeLists.txt
   teshsuite/kernel/CMakeLists.txt

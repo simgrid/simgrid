@@ -1,0 +1,35 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-dag-scheduling --log=sd_daxparse.thresh:critical --log=no_loc ${platfdir}/simulacrum_7_hosts.xml ${srcdir:=.}/Montage_25.xml
+> [0.000000] [dag_scheduling/INFO] Schedule ID00002@mProjectPP on Host 27
+> [0.001301] [dag_scheduling/INFO] Schedule ID00000@mProjectPP on Host 26
+> [0.001301] [dag_scheduling/INFO] Schedule ID00003@mProjectPP on Host 30
+> [0.001306] [dag_scheduling/INFO] Schedule ID00004@mProjectPP on Host 27
+> [0.001736] [dag_scheduling/INFO] Schedule ID00001@mProjectPP on Host 32
+> [14.582104] [dag_scheduling/INFO] Schedule ID00010@mDiffFit on Host 26
+> [17.042829] [dag_scheduling/INFO] Schedule ID00008@mDiffFit on Host 27
+> [29.547201] [dag_scheduling/INFO] Schedule ID00013@mDiffFit on Host 26
+> [32.629864] [dag_scheduling/INFO] Schedule ID00009@mDiffFit on Host 30
+> [32.631165] [dag_scheduling/INFO] Schedule ID00011@mDiffFit on Host 27
+> [32.632466] [dag_scheduling/INFO] Schedule ID00005@mDiffFit on Host 26
+> [32.632466] [dag_scheduling/INFO] Schedule ID00006@mDiffFit on Host 32
+> [32.632469] [dag_scheduling/INFO] Schedule ID00012@mDiffFit on Host 31
+> [32.632896] [dag_scheduling/INFO] Schedule ID00007@mDiffFit on Host 28
+> [60.434831] [dag_scheduling/INFO] Schedule ID00014@mConcatFit on Host 27
+> [61.228672] [dag_scheduling/INFO] Schedule ID00015@mBgModel on Host 27
+> [62.772102] [dag_scheduling/INFO] Schedule ID00016@mBackground on Host 27
+> [62.772102] [dag_scheduling/INFO] Schedule ID00017@mBackground on Host 26
+> [62.773403] [dag_scheduling/INFO] Schedule ID00020@mBackground on Host 30
+> [62.773403] [dag_scheduling/INFO] Schedule ID00018@mBackground on Host 27
+> [62.773403] [dag_scheduling/INFO] Schedule ID00019@mBackground on Host 32
+> [88.573854] [dag_scheduling/INFO] Schedule ID00021@mImgTbl on Host 27
+> [90.158236] [dag_scheduling/INFO] Schedule ID00022@mAdd on Host 27
+> [93.450123] [dag_scheduling/INFO] Schedule ID00023@mShrink on Host 27
+> [97.646883] [dag_scheduling/INFO] Schedule ID00024@mJPEG on Host 27
+> [98.135775] [dag_scheduling/INFO] Schedule end on Host 27
+> [98.135796] [dag_scheduling/INFO] Simulation Time: 98.135796
+> [98.135796] [dag_scheduling/INFO] ------------------- Produce the trace file---------------------------
+> [98.135796] [dag_scheduling/INFO] Producing a jedule output (if active) of the run into minmin_test.jed
+
+! output ignore
+$ cmake -E remove -f ${srcdir:=.}/sd_scheduling.jed
