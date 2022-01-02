@@ -5,8 +5,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* simple test to schedule a DAX file with the Min-Min algorithm.           */
-#include "simgrid/s4u.hpp"
 #include <math.h>
+#include <simgrid/host.h>
+#include <simgrid/s4u.hpp>
 #include <string.h>
 
 #if SIMGRID_HAVE_JEDULE
