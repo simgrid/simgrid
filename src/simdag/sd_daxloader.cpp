@@ -286,9 +286,10 @@ std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename)
   return dag;
 }
 #else
-std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename) xbt_die(
-    "create_DAG_from_dot() is not usable because graphviz was not found.\n"
-    "Please install graphviz, graphviz-dev, and libgraphviz-dev (and erase CMakeCache.txt) before recompiling.");
+std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename)
+{
+  xbt_die("create_DAG_from_dot() is not usable because graphviz was not found.\n"
+          "Please install graphviz, graphviz-dev, and libgraphviz-dev (and erase CMakeCache.txt) before recompiling.");
 }
 #endif
 } // namespace s4u
