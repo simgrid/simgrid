@@ -49,11 +49,11 @@ bool check_for_cycle(const std::vector<simgrid::s4u::ActivityPtr>& dag)
           // Comms have only one predecessor
           auto pred_pred = *(pred->get_dependencies().begin());
           if (std::none_of(pred_pred->get_successors().begin(), pred_pred->get_successors().end(),
-                           [](const simgrid::s4u::ActivityPtr& a) { return not a->is_marked(); }))
+                           [](const simgrid::s4u::ActivityPtr& act) { return not act->is_marked(); }))
             next.push_back(pred_pred);
         } else {
           if (std::none_of(pred->get_successors().begin(), pred->get_successors().end(),
-                           [](const simgrid::s4u::ActivityPtr& a) { return not a->is_marked(); }))
+                           [](const simgrid::s4u::ActivityPtr& act) { return not act->is_marked(); }))
             next.push_back(pred);
         }
       }

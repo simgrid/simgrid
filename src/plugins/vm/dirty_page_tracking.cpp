@@ -92,7 +92,7 @@ static void on_exec_creation(simgrid::s4u::Exec const& e)
   }
 }
 
-static void on_exec_completion(simgrid::s4u::Activity& e)
+static void on_exec_completion(const simgrid::s4u::Activity& e)
 {
   const auto exec = dynamic_cast<simgrid::kernel::activity::ExecImpl*>(e.get_impl());
   if (exec == nullptr)
