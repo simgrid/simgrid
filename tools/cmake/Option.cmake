@@ -41,8 +41,6 @@ if(enable-model-checking)
   SET(enable_model-checking ON CACHE BOOL "Whether to compile the model-checker" FORCE)
 endif()
 
-option(enable_jedule         "Jedule output of SimDAG." off)
-
 if(WIN32)
   option(enable_smpi "Whether SMPI is included in the library." off)
 else()

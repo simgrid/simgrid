@@ -10,10 +10,6 @@
 #include <simgrid/s4u.hpp>
 #include <string.h>
 
-#if SIMGRID_HAVE_JEDULE
-#include "simgrid/jedule/jedule_sd_binding.h"
-#endif
-
 XBT_LOG_NEW_DEFAULT_CATEGORY(dag_scheduling, "Logging specific to this example");
 
 typedef struct _HostAttribute* HostAttribute;
@@ -152,7 +148,6 @@ int main(int argc, char** argv)
   double min_finish_time            = -1.0;
   simgrid::s4u::Exec* selected_task = nullptr;
   simgrid::s4u::Host* selected_host = nullptr;
-  char* tracefilename               = nullptr;
 
   simgrid::s4u::Engine e(&argc, argv);
   std::set<simgrid::s4u::Activity*> vetoed;
@@ -173,14 +168,6 @@ int main(int argc, char** argv)
       }
     }
   });
-  /* Check our arguments */
-  xbt_assert(argc > 2,
-             "Usage: %s platform_file dax_file [jedule_file]\n"
-             "\tExample: %s simulacrum_7_hosts.xml Montage_25.xml Montage_25.jed",
-             argv[0], argv[0]);
-
-  if (argc == 4)
-    tracefilename = xbt_strdup(argv[3]);
 
   e.load_platform(argv[1]);
 
@@ -276,13 +263,6 @@ int main(int argc, char** argv)
   }
 
   XBT_INFO("Simulation Time: %f", simgrid_get_clock());
-  XBT_INFO("------------------- Produce the trace file---------------------------");
-  XBT_INFO("Producing a jedule output (if active) of the run into %s",
-           tracefilename ? tracefilename : "minmin_test.jed");
-#if SIMGRID_HAVE_JEDULE
-  jedule_sd_dump(tracefilename);
-#endif
-  free(tracefilename);
 
   for (auto h : hosts) {
     xbt_free(h->get_data());

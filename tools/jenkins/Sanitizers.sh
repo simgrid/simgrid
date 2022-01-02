@@ -76,7 +76,7 @@ ctest -D ExperimentalStart || true
 
 cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=OFF \
       -Denable_compile_optimizations=ON -Denable_compile_warnings=ON \
-      -Denable_jedule=ON -Denable_mallocators=OFF \
+      -Denable_mallocators=OFF \
       -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_model-checking=OFF \
       -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=ON -Denable_coverage=OFF\
       -Denable_fortran=OFF -Denable_python=OFF -DLTO_EXTRA_FLAG="auto" ${SANITIZER_OPTIONS} "$WORKSPACE"

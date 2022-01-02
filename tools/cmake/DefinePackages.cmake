@@ -473,8 +473,6 @@ set(MSG_SRC
 set(SIMDAG_SRC
   src/simdag/sd_daxloader.cpp
   src/simdag/sd_dotloader.cpp
-  src/simdag/sd_global.cpp
-  src/simdag/sd_task.cpp
   )
 
 set(BINDINGS_SRC
@@ -561,17 +559,6 @@ set(TRACING_SRC
   src/instr/instr_private.hpp
   src/instr/instr_smpi.hpp
   src/instr/instr_resource_utilization.cpp
-  )
-
-set(JEDULE_SRC
-  include/simgrid/jedule/jedule_events.hpp
-  include/simgrid/jedule/jedule.hpp
-  include/simgrid/jedule/jedule_platform.hpp
-  include/simgrid/jedule/jedule_sd_binding.h
-  src/instr/jedule/jedule_events.cpp
-  src/instr/jedule/jedule.cpp
-  src/instr/jedule/jedule_platform.cpp
-  src/instr/jedule/jedule_sd_binding.cpp
   )
 
 set(MC_SRC_BASE
@@ -682,7 +669,6 @@ set(headers_to_install
   include/simgrid/plugins/ProducerConsumer.hpp
   include/simgrid/instr.h
   include/simgrid/mailbox.h
-  include/simgrid/simdag.h
   include/simgrid/modelchecker.h
   include/simgrid/forward.h
   include/simgrid/simix.h

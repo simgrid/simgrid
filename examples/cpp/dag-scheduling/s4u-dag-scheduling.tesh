@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-dag-scheduling --log=sd_daxparse.thresh:critical --log=no_loc ${platfdir}/simulacrum_7_hosts.xml ${srcdir:=.}/Montage_25.xml
+$ ${bindir:=.}/s4u-dag-scheduling --log=daxparse.thresh:critical --log=no_loc ${platfdir}/simulacrum_7_hosts.xml ${srcdir:=.}/Montage_25.xml
 > [0.000000] [dag_scheduling/INFO] Schedule ID00002@mProjectPP on Host 27
 > [0.001301] [dag_scheduling/INFO] Schedule ID00000@mProjectPP on Host 26
 > [0.001301] [dag_scheduling/INFO] Schedule ID00003@mProjectPP on Host 30
@@ -28,8 +28,3 @@ $ ${bindir:=.}/s4u-dag-scheduling --log=sd_daxparse.thresh:critical --log=no_loc
 > [97.646883] [dag_scheduling/INFO] Schedule ID00024@mJPEG on Host 27
 > [98.135775] [dag_scheduling/INFO] Schedule end on Host 27
 > [98.135796] [dag_scheduling/INFO] Simulation Time: 98.135796
-> [98.135796] [dag_scheduling/INFO] ------------------- Produce the trace file---------------------------
-> [98.135796] [dag_scheduling/INFO] Producing a jedule output (if active) of the run into minmin_test.jed
-
-! output ignore
-$ cmake -E remove -f ${srcdir:=.}/sd_scheduling.jed

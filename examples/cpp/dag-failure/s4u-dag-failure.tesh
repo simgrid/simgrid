@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-p Test of the management of failed tasks simdag
+p Test of the management of failed dag activities 
 
 $ ${bindir:=.}/s4u-dag-failure ${platfdir}/faulty_host.xml --log=s4u_activity.t:verbose "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'ptask_L07'

@@ -256,7 +256,6 @@ set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax/simpl
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax/smalldax.xml     
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/dag.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/dag_with_cycle.dot
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag-scheduling/expected_output.jed
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p0.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p1.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm.txt

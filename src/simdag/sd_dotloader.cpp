@@ -19,7 +19,7 @@
 #if HAVE_GRAPHVIZ
 #include <graphviz/cgraph.h>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
+XBT_LOG_NEW_DEFAULT_CATEGORY(dotparse, "Parsing DOT files");
 
 namespace simgrid {
 namespace s4u {

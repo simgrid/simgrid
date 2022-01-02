@@ -18,7 +18,7 @@
 #include "dax_dtd.h"
 #include "dax_dtd.c"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");
+XBT_LOG_NEW_DEFAULT_CATEGORY(daxparse, "Parsing DAX files");
 
 /* Ensure that transfer tasks have unique names even though a file is used several times */
 static void uniq_transfer_task_name(simgrid::s4u::Comm* comm)

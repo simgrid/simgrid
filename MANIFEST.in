@@ -217,7 +217,6 @@ include examples/cpp/dag-from-dot/s4u-dag-from-dot.tesh
 include examples/cpp/dag-io/s4u-dag-io.cpp
 include examples/cpp/dag-io/s4u-dag-io.tesh
 include examples/cpp/dag-scheduling/Montage_25.xml
-include examples/cpp/dag-scheduling/expected_output.jed
 include examples/cpp/dag-scheduling/s4u-dag-scheduling.cpp
 include examples/cpp/dag-scheduling/s4u-dag-scheduling.tesh
 include examples/cpp/dag-simple/s4u-dag-simple.cpp
@@ -2061,10 +2060,6 @@ include include/simgrid/exec.h
 include include/simgrid/forward.h
 include include/simgrid/host.h
 include include/simgrid/instr.h
-include include/simgrid/jedule/jedule.hpp
-include include/simgrid/jedule/jedule_events.hpp
-include include/simgrid/jedule/jedule_platform.hpp
-include include/simgrid/jedule/jedule_sd_binding.h
 include include/simgrid/kernel/ProfileBuilder.hpp
 include include/simgrid/kernel/Timer.hpp
 include include/simgrid/kernel/future.hpp
@@ -2115,7 +2110,6 @@ include include/simgrid/s4u/NetZone.hpp
 include include/simgrid/s4u/Semaphore.hpp
 include include/simgrid/s4u/VirtualMachine.hpp
 include include/simgrid/semaphore.h
-include include/simgrid/simdag.h
 include include/simgrid/simix.h
 include include/simgrid/simix.hpp
 include include/simgrid/version.h.in
@@ -2243,10 +2237,6 @@ include src/instr/instr_platform.cpp
 include src/instr/instr_private.hpp
 include src/instr/instr_resource_utilization.cpp
 include src/instr/instr_smpi.hpp
-include src/instr/jedule/jedule.cpp
-include src/instr/jedule/jedule_events.cpp
-include src/instr/jedule/jedule_platform.cpp
-include src/instr/jedule/jedule_sd_binding.cpp
 include src/internal_config.h.in
 include src/kernel/EngineImpl.cpp
 include src/kernel/EngineImpl.hpp
@@ -2456,8 +2446,6 @@ include src/simdag/dax_dtd.c
 include src/simdag/dax_dtd.h
 include src/simdag/sd_daxloader.cpp
 include src/simdag/sd_dotloader.cpp
-include src/simdag/sd_global.cpp
-include src/simdag/sd_task.cpp
 include src/simdag/simdag_private.hpp
 include src/simgrid/Exception.cpp
 include src/simgrid/sg_config.cpp
