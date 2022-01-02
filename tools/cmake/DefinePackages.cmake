@@ -18,7 +18,6 @@ set(EXTRA_DIST
   src/simdag/dax.dtd
   src/simdag/dax_dtd.c
   src/simdag/dax_dtd.h
-  src/simdag/simdag_private.hpp
   src/simix/simcalls.in
   src/simix/simcalls.py
   src/simix/popping_private.hpp
@@ -472,7 +471,6 @@ set(MSG_SRC
 
 set(SIMDAG_SRC
   src/simdag/sd_daxloader.cpp
-  src/simdag/sd_dotloader.cpp
   )
 
 set(BINDINGS_SRC

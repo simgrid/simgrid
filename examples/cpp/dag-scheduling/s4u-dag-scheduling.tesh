@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-dag-scheduling --log=daxparse.thresh:critical --log=no_loc ${platfdir}/simulacrum_7_hosts.xml ${srcdir:=.}/Montage_25.xml
+$ ${bindir:=.}/s4u-dag-scheduling --log=dag_parsing.thresh:critical --log=no_loc ${platfdir}/simulacrum_7_hosts.xml ${srcdir:=.}/Montage_25.xml
 > [0.000000] [dag_scheduling/INFO] Schedule ID00002@mProjectPP on Host 27
 > [0.001301] [dag_scheduling/INFO] Schedule ID00000@mProjectPP on Host 26
 > [0.001301] [dag_scheduling/INFO] Schedule ID00003@mProjectPP on Host 30

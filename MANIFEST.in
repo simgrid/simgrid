@@ -2445,8 +2445,6 @@ include src/simdag/dax.dtd
 include src/simdag/dax_dtd.c
 include src/simdag/dax_dtd.h
 include src/simdag/sd_daxloader.cpp
-include src/simdag/sd_dotloader.cpp
-include src/simdag/simdag_private.hpp
 include src/simgrid/Exception.cpp
 include src/simgrid/sg_config.cpp
 include src/simgrid/sg_version.cpp

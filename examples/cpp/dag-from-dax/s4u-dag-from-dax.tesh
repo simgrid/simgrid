@@ -2,8 +2,8 @@
 p Test the DAX loader on a small DAX instance
 
 $ ${bindir:=.}/s4u-dag-from-dax --log=no_loc ${platfdir}/cluster_backbone.xml ${srcdir:=.}/smalldax.xml
-> [0.000000] [daxparse/WARNING] Ignore file o1 size redefinition from 1000000 to 304
-> [0.000000] [daxparse/WARNING] Ignore file o2 size redefinition from 1000000 to 304
+> [0.000000] [dag_parsing/WARNING] Ignore file o1 size redefinition from 1000000 to 304
+> [0.000000] [dag_parsing/WARNING] Ignore file o2 size redefinition from 1000000 to 304
 > [0.000000] [dag_from_dax/INFO] --------- Display all activities of the loaded DAG -----------
 > [0.000000] [dag_from_dax/INFO] 'root' is an Exec: 0 flops to execute. Dependencies: solved; Ressources: NOT assigned
 > [0.000000] [dag_from_dax/INFO] '1@task1' is an Exec: 42000000000 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
@@ -33,5 +33,5 @@ p Test the DAX loader with a DAX comprising a cycle.
 
 ! expect return 2
 $ ${bindir:=.}/s4u-dag-from-dax --log=no_loc ${platfdir}/cluster_backbone.xml ${srcdir:=.}/simple_dax_with_cycle.xml
-> [0.000000] [daxparse/ERROR] The DAX described in simple_dax_with_cycle.xml is not a DAG. It contains a cycle.
+> [0.000000] [dag_parsing/ERROR] The DAX described in simple_dax_with_cycle.xml is not a DAG. It contains a cycle.
 > [0.000000] [dag_from_dax/ERROR] A problem occurred during DAX parsing (cycle or syntax). Do not continue this test
