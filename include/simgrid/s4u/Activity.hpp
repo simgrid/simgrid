@@ -45,8 +45,8 @@ public:
   XBT_DECLARE_ENUM_CLASS(State, INITED, STARTING, STARTED, FAILED, CANCELED, FINISHED);
 
   virtual bool is_assigned() const = 0;
-  virtual bool dependencies_solved() const { return dependencies_.empty(); }
-  virtual unsigned long is_waited_by() const { return successors_.size(); }
+  bool dependencies_solved() const { return dependencies_.empty(); }
+  unsigned long is_waited_by() const { return successors_.size(); }
   const std::set<ActivityPtr>& get_dependencies() const { return dependencies_; }
   const std::vector<ActivityPtr>& get_successors() const { return successors_; }
 
