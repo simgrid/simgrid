@@ -15,9 +15,9 @@ set(EXTRA_DIST
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
   src/msg/msg_private.hpp
-  src/simdag/dax.dtd
-  src/simdag/dax_dtd.c
-  src/simdag/dax_dtd.h
+  src/dag/dax.dtd
+  src/dag/dax_dtd.c
+  src/dag/dax_dtd.h
   src/simix/simcalls.in
   src/simix/simcalls.py
   src/simix/popping_private.hpp
@@ -469,8 +469,8 @@ set(MSG_SRC
   src/msg/msg_task.cpp
   )
 
-set(SIMDAG_SRC
-  src/simdag/sd_daxloader.cpp
+set(DAG_SRC
+  src/dag/loaders.cpp
   )
 
 set(BINDINGS_SRC
@@ -791,7 +791,7 @@ set(simgrid_sources
   ${XBT_SRC}
   ${PLUGINS_SRC}
   ${BINDINGS_SRC}
-  ${SIMDAG_SRC}
+  ${DAG_SRC}
   )
 
 if(${enable_msg})

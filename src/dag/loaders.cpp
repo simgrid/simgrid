@@ -331,7 +331,7 @@ void STag_dax__uses()
   }
   bool is_input = (A_dax__uses_link == A_dax__uses_link_input);
 
-  XBT_DEBUG("See <uses file=%s %s>",A_dax__uses_file,(is_input?"in":"out"));
+  XBT_DEBUG("See <uses file=%s %s>", A_dax__uses_file, (is_input ? "in" : "out"));
   auto it = simgrid::s4u::files.find(A_dax__uses_file);
   simgrid::s4u::CommPtr file;
   if (it == simgrid::s4u::files.end()) {

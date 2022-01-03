@@ -34,7 +34,7 @@ CTestCustom.cmake
 CTestResults.xml
 
 ### Maintainer mode
-src/simdag/dax_dtd.l
+src/dag/dax_dtd.l
 src/surf/xml/simgrid_dtd.l
 ### Libraries links
 [Ss]im[Gg]rid-*.tar.gz

@@ -65,8 +65,8 @@ License: other
  privately owned rights.
 
 Files:
- src/simdag/dax_dtd.c
- src/simdag/dax_dtd.h
+ src/dag/dax_dtd.c
+ src/dag/dax_dtd.h
  src/surf/xml/simgrid_dtd.c
  src/surf/xml/simgrid_dtd.h
 Copyright:

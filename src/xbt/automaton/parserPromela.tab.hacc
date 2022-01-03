@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.4.2.  */
+/* A Bison parser, made by GNU Bison 3.7.6.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2019 Free Software Foundation,
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
    Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,7 @@
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -31,8 +31,9 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-/* Undocumented macros, especially those whose name start with YY_,
-   are private implementation details.  Do not rely on them.  */
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
 
 #ifndef YY_XBT_AUTOMATON_PARSER_PARSERPROMELA_TAB_HACC_INCLUDED
 # define YY_XBT_AUTOMATON_PARSER_PARSERPROMELA_TAB_HACC_INCLUDED
@@ -44,32 +45,37 @@
 extern int xbt_automaton_parser_debug;
 #endif
 
-/* Token type.  */
+/* Token kinds.  */
 #ifndef YYTOKENTYPE
 # define YYTOKENTYPE
   enum yytokentype
   {
-    NEVER = 258,
-    IF = 259,
-    FI = 260,
-    IMPLIES = 261,
-    GOTO = 262,
-    AND = 263,
-    OR = 264,
-    NOT = 265,
-    LEFT_PAR = 266,
-    RIGHT_PAR = 267,
-    CASE = 268,
-    COLON = 269,
-    SEMI_COLON = 270,
-    CASE_TRUE = 271,
-    LEFT_BRACE = 272,
-    RIGHT_BRACE = 273,
-    LITT_ENT = 274,
-    LITT_CHAINE = 275,
-    LITT_REEL = 276,
-    ID = 277
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    NEVER = 258,                   /* NEVER  */
+    IF = 259,                      /* IF  */
+    FI = 260,                      /* FI  */
+    IMPLIES = 261,                 /* IMPLIES  */
+    GOTO = 262,                    /* GOTO  */
+    AND = 263,                     /* AND  */
+    OR = 264,                      /* OR  */
+    NOT = 265,                     /* NOT  */
+    LEFT_PAR = 266,                /* LEFT_PAR  */
+    RIGHT_PAR = 267,               /* RIGHT_PAR  */
+    CASE = 268,                    /* CASE  */
+    COLON = 269,                   /* COLON  */
+    SEMI_COLON = 270,              /* SEMI_COLON  */
+    CASE_TRUE = 271,               /* CASE_TRUE  */
+    LEFT_BRACE = 272,              /* LEFT_BRACE  */
+    RIGHT_BRACE = 273,             /* RIGHT_BRACE  */
+    LITT_ENT = 274,                /* LITT_ENT  */
+    LITT_CHAINE = 275,             /* LITT_CHAINE  */
+    LITT_REEL = 276,               /* LITT_REEL  */
+    ID = 277                       /* ID  */
   };
+  typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
@@ -83,7 +89,7 @@ union YYSTYPE
   char* string;
   xbt_automaton_exp_label_t label;
 
-#line 87 "parserPromela.tab.hacc"
+#line 93 "parserPromela.tab.hacc"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -2213,6 +2213,9 @@ include src/bindings/lua/lua_utils.hpp
 include src/bindings/lua/simgrid_lua.cpp
 include src/bindings/lua/simgrid_lua.hpp
 include src/bindings/python/simgrid_python.cpp
+include src/dag/dax.dtd
+include src/dag/dax_dtd.c
+include src/dag/dax_dtd.h
 include src/include/catch.hpp
 include src/include/mc/datatypes.h
 include src/include/mc/mc.h
@@ -2441,10 +2444,6 @@ include src/s4u/s4u_Mutex.cpp
 include src/s4u/s4u_Netzone.cpp
 include src/s4u/s4u_Semaphore.cpp
 include src/s4u/s4u_VirtualMachine.cpp
-include src/simdag/dax.dtd
-include src/simdag/dax_dtd.c
-include src/simdag/dax_dtd.h
-include src/simdag/sd_daxloader.cpp
 include src/simgrid/Exception.cpp
 include src/simgrid/sg_config.cpp
 include src/simgrid/sg_version.cpp
