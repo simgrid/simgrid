@@ -147,7 +147,6 @@ set(source_to_pack
   ${headers_to_install}
   ${source_of_generated_headers}
   ${BINDINGS_SRC}
-  ${JEDULE_SRC}
   ${JMSG_C_SRC}
   ${JMSG_JAVA_SRC}
   ${LUA_SRC}
@@ -158,7 +157,7 @@ set(source_to_pack
   ${S4U_SRC}
   ${NS3_SRC}
   ${PLUGINS_SRC}
-  ${SIMDAG_SRC}
+  ${DAG_SRC}
   ${SIMGRID_SRC}
   ${SIMIX_SRC}
   ${SMPI_SRC}

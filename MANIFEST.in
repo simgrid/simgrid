@@ -2216,6 +2216,7 @@ include src/bindings/python/simgrid_python.cpp
 include src/dag/dax.dtd
 include src/dag/dax_dtd.c
 include src/dag/dax_dtd.h
+include src/dag/loaders.cpp
 include src/include/catch.hpp
 include src/include/mc/datatypes.h
 include src/include/mc/mc.h

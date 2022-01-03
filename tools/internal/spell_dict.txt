@@ -40,7 +40,6 @@ ingroup
 int
 java
 Java
-JEDULE
 JNI
 kcachegrind
 KILLME

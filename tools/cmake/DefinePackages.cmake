@@ -802,12 +802,6 @@ else()
                                                 ${MSG_SRC})
 endif()
 
-if(${SIMGRID_HAVE_JEDULE})
-  set(simgrid_sources  ${simgrid_sources}  ${JEDULE_SRC})
-else()
-  set(EXTRA_DIST       ${EXTRA_DIST}       ${JEDULE_SRC})
-endif()
-
 if(enable_smpi)
   set(simgrid_sources  ${simgrid_sources}  ${SMPI_SRC})
 endif()
