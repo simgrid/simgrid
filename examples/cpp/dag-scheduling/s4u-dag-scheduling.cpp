@@ -43,7 +43,7 @@ static void sg_host_set_last_scheduled_task(simgrid::s4u::Host* host, simgrid::s
   host->set_data(attr);
 }
 
-static bool dependency_exists(simgrid::s4u::Exec* src, simgrid::s4u::Exec* dst)
+static bool dependency_exists(const simgrid::s4u::Exec* src, simgrid::s4u::Exec* dst)
 {
   const auto& dependencies = src->get_dependencies();
   const auto& successors   = src->get_successors();
@@ -51,7 +51,7 @@ static bool dependency_exists(simgrid::s4u::Exec* src, simgrid::s4u::Exec* dst)
           dependencies.find(dst) != dependencies.end());
 }
 
-static std::vector<simgrid::s4u::Exec*> get_ready_tasks(const std::vector<simgrid::s4u::ActivityPtr> dax)
+static std::vector<simgrid::s4u::Exec*> get_ready_tasks(const std::vector<simgrid::s4u::ActivityPtr>& dax)
 {
   std::vector<simgrid::s4u::Exec*> ready_tasks;
   std::map<simgrid::s4u::Exec*, unsigned int> candidate_execs;
@@ -65,7 +65,7 @@ static std::vector<simgrid::s4u::Exec*> get_ready_tasks(const std::vector<simgri
         ready_tasks.push_back(exec);
       // if it a comm, we consider its successor as a candidate. If a candidate solves all its dependencies,
       // i.e., get all its input data, it's ready
-      auto* comm = dynamic_cast<simgrid::s4u::Comm*>(a.get());
+      const auto* comm = dynamic_cast<simgrid::s4u::Comm*>(a.get());
       if (comm != nullptr) {
         auto* next_exec = static_cast<simgrid::s4u::Exec*>(comm->get_successors().front().get());
         candidate_execs[next_exec]++;
@@ -91,7 +91,7 @@ static double finish_on_at(const simgrid::s4u::ExecPtr task, const simgrid::s4u:
     last_data_available = -1.0;
     for (const auto& parent : parents) {
       /* normal case */
-      auto* comm = dynamic_cast<simgrid::s4u::Comm*>(parent.get());
+      const auto* comm = dynamic_cast<simgrid::s4u::Comm*>(parent.get());
       if (comm != nullptr) {
         auto source = comm->get_source();
         XBT_DEBUG("transfer from %s to %s", source->get_cname(), host->get_cname());
@@ -108,7 +108,7 @@ static double finish_on_at(const simgrid::s4u::ExecPtr task, const simgrid::s4u:
         data_available = *(static_cast<double*>(comm->get_data())) + redist_time;
       }
 
-      auto* exec = dynamic_cast<simgrid::s4u::Exec*>(parent.get());
+      const auto* exec = dynamic_cast<simgrid::s4u::Exec*>(parent.get());
       /* no transfer, control dependency */
       if (exec != nullptr) {
         data_available = exec->get_finish_time();
@@ -161,7 +161,7 @@ int main(int argc, char** argv)
     for (const auto& succ : exec->get_successors()) {
       auto* comm = dynamic_cast<simgrid::s4u::Comm*>(succ.get());
       if (comm != nullptr) {
-        double* finish_time = new double(exec->get_finish_time());
+        auto* finish_time = new double(exec->get_finish_time());
         // We use the user data field to store the finish time of the predecessor of the comm, i.e., its potential start
         // time
         comm->set_data(finish_time);
@@ -172,10 +172,10 @@ int main(int argc, char** argv)
   e.load_platform(argv[1]);
 
   /*  Allocating the host attribute */
-  unsigned int total_nhosts = e.get_host_count();
+  unsigned long total_nhosts = e.get_host_count();
   const auto hosts          = e.get_all_hosts();
 
-  for (unsigned int i = 0; i < total_nhosts; i++)
+  for (unsigned long i = 0; i < total_nhosts; i++)
     hosts[i]->set_data(xbt_new0(struct _HostAttribute, 1));
 
   /* load the DAX file */

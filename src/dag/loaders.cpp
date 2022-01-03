@@ -19,11 +19,11 @@
 #include "dax_dtd.h"
 #include "dax_dtd.c"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(dag_parsing, "Generation DAGs from files");
-
 #if HAVE_GRAPHVIZ
 #include <graphviz/cgraph.h>
 #endif
+
+XBT_LOG_NEW_DEFAULT_CATEGORY(dag_parsing, "Generation DAGs from files");
 
 /* Ensure that transfer tasks have unique names even though a file is used several times */
 static void uniq_transfer_task_name(simgrid::s4u::Comm* comm)
