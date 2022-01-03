@@ -63,6 +63,7 @@ int main(int argc, char** argv)
 
   /* creation of the environment */
   e.load_platform(argv[1]);
+  e.seal_platform();
   XBT_INFO("Workstation number: %zu, link number: %zu", e.get_host_count(), e.get_link_count());
 
   std::vector<sg4::Host*> hosts = e.get_all_hosts();

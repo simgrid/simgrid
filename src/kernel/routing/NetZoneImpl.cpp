@@ -151,6 +151,7 @@ s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<d
   xbt_assert(cpu_model_pm_,
              "Impossible to create host: %s. Invalid CPU model: nullptr. Have you set the parent of this NetZone: %s?",
              name.c_str(), get_cname());
+  xbt_assert(not sealed_, "Impossible to create host: %s. NetZone %s already sealed", name.c_str(), get_cname());
   auto* res = (new resource::HostImpl(name))->get_iface();
   res->set_netpoint((new NetPoint(name, NetPoint::Type::Host))->set_englobing_zone(this));
 
@@ -165,12 +166,19 @@ s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<d
       network_model_,
       "Impossible to create link: %s. Invalid network model: nullptr. Have you set the parent of this NetZone: %s?",
       name.c_str(), get_cname());
+  xbt_assert(not sealed_, "Impossible to create link: %s. NetZone %s already sealed", name.c_str(), get_cname());
   return network_model_->create_link(name, bandwidths)->get_iface();
 }
 
 s4u::SplitDuplexLink* NetZoneImpl::create_split_duplex_link(const std::string& name,
                                                             const std::vector<double>& bandwidths)
 {
+  xbt_assert(
+      network_model_,
+      "Impossible to create link: %s. Invalid network model: nullptr. Have you set the parent of this NetZone: %s?",
+      name.c_str(), get_cname());
+  xbt_assert(not sealed_, "Impossible to create link: %s. NetZone %s already sealed", name.c_str(), get_cname());
+
   auto* link_up                  = network_model_->create_link(name + "_UP", bandwidths);
   auto* link_down                = network_model_->create_link(name + "_DOWN", bandwidths);
   auto link                      = std::make_unique<resource::SplitDuplexLinkImpl>(name, link_up, link_down);
@@ -184,6 +192,7 @@ s4u::Disk* NetZoneImpl::create_disk(const std::string& name, double read_bandwid
   xbt_assert(disk_model_,
              "Impossible to create disk: %s. Invalid disk model: nullptr. Have you set the parent of this NetZone: %s?",
              name.c_str(), get_cname());
+  xbt_assert(not sealed_, "Impossible to create disk: %s. NetZone %s already sealed", name.c_str(), get_cname());
   auto* l = disk_model_->create_disk(name, read_bandwidth, write_bandwidth);
 
   return l->get_iface();
@@ -193,6 +202,7 @@ NetPoint* NetZoneImpl::create_router(const std::string& name)
 {
   xbt_assert(nullptr == s4u::Engine::get_instance()->netpoint_by_name_or_null(name),
              "Refusing to create a router named '%s': this name already describes a node.", name.c_str());
+  xbt_assert(not sealed_, "Impossible to create router: %s. NetZone %s already sealed", name.c_str(), get_cname());
 
   return (new NetPoint(name, NetPoint::Type::Router))->set_englobing_zone(this);
 }

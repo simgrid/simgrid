@@ -94,6 +94,7 @@ public:
   void initialize(int* argc, char** argv);
   void load_platform(const std::string& platf);
   void load_deployment(const std::string& file) const;
+  void seal_platform() const;
   void register_function(const std::string& name, const actor::ActorCodeFactory& code);
   void register_default(const actor::ActorCodeFactory& code);
 
