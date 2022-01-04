@@ -2,6 +2,18 @@
 
 SimGrid (3.29.1) NOT RELEASED YET (v3.30 expected December 21. 2021, 15:59 UTC)
 
+Main user-visible changes:
+ - The SimDag API for the simulation of the scheduling of Directed Acyclic 
+    Graphs has been dropped. It was marked as deprecated for a couple of years. 
+    We finally complete the implementation of what has been called SimDag++ 
+    internally, i.e., porting the different features of SimDag on top of S4U. 
+    The new way to simulate the execution of dependent activities directly by 
+    maestro (without any other actor) is details in the examples/cpp/dag-* series
+    of examples. 
+ - The removal of SimDag led us to also remove the export to Jedule files that 
+   was tightly coupled to SimDag. The instrumentation of DAG simulation is still 
+   possible through the regular instrumentation API based on the Paje format. 
+   
 S4U:
  - New function: Engine::run_until(date), to split the simulation.
  - New signal: Activity::on_veto, to detect when an activity fails to start.
