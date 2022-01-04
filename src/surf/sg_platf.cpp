@@ -223,27 +223,25 @@ static void sg_platf_new_cluster_hierarchical(const simgrid::kernel::routing::Cl
   }
 
   simgrid::s4u::NetZone const* parent = current_routing ? current_routing->get_iface() : nullptr;
-  simgrid::s4u::NetZone* zone;
   switch (cluster->topology) {
     case simgrid::kernel::routing::ClusterTopology::TORUS:
-      zone = simgrid::s4u::create_torus_zone(
-          cluster->id, parent, TorusZone::parse_topo_parameters(cluster->topo_parameters),
-          {set_host, set_loopback, set_limiter}, cluster->bw, cluster->lat, cluster->sharing_policy);
+      simgrid::s4u::create_torus_zone(cluster->id, parent, TorusZone::parse_topo_parameters(cluster->topo_parameters),
+                                      {set_host, set_loopback, set_limiter}, cluster->bw, cluster->lat,
+                                      cluster->sharing_policy);
       break;
     case simgrid::kernel::routing::ClusterTopology::DRAGONFLY:
-      zone = simgrid::s4u::create_dragonfly_zone(
+      simgrid::s4u::create_dragonfly_zone(
           cluster->id, parent, DragonflyZone::parse_topo_parameters(cluster->topo_parameters),
           {set_host, set_loopback, set_limiter}, cluster->bw, cluster->lat, cluster->sharing_policy);
       break;
     case simgrid::kernel::routing::ClusterTopology::FAT_TREE:
-      zone = simgrid::s4u::create_fatTree_zone(
+      simgrid::s4u::create_fatTree_zone(
           cluster->id, parent, FatTreeZone::parse_topo_parameters(cluster->topo_parameters),
           {set_host, set_loopback, set_limiter}, cluster->bw, cluster->lat, cluster->sharing_policy);
       break;
     default:
       THROW_IMPOSSIBLE;
   }
-  zone->seal();
 }
 
 /*************************************************************************************************/
@@ -336,7 +334,6 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
   auto* router = zone->create_router(cluster->router_id);
   zone->add_route(router, nullptr, nullptr, nullptr, {});
 
-  zone->seal();
   simgrid::kernel::routing::on_cluster_creation(*cluster);
 }
 
@@ -602,7 +599,6 @@ void sg_platf_new_zone_seal()
     zone_cluster.cabinets.clear();
     zone_cluster.backbone.reset();
   }
-  current_routing->seal();
   current_routing = current_routing->get_parent();
 }
 

@@ -347,6 +347,15 @@ void EngineImpl::shutdown()
   instance_ = nullptr;
 }
 
+void EngineImpl::seal_platform() const
+{
+  /* sealing resources before run: links */
+  for (auto const& kv : links_)
+    kv.second->get_iface()->seal();
+  /* seal netzone root, recursively seal children netzones, hosts and disks */
+  netzone_root_->seal();
+}
+
 void EngineImpl::load_platform(const std::string& platf)
 {
   double start = xbt_os_time();
@@ -689,6 +698,8 @@ double EngineImpl::solve(double max_date) const
 
 void EngineImpl::run(double max_date)
 {
+  seal_platform();
+
   if (MC_record_replay_is_active()) {
     mc::replay(MC_record_path());
     empty_trash();

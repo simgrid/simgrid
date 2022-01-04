@@ -58,6 +58,7 @@ public:
   static bool has_instance() { return instance_ != nullptr; }
 
   void load_platform(const std::string& platf) const;
+  void seal_platform() const;
 
   void register_function(const std::string& name, const std::function<void(int, char**)>& code);
   void register_function(const std::string& name, const std::function<void(std::vector<std::string>)>& code);

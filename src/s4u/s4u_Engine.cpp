@@ -112,6 +112,16 @@ void Engine::load_platform(const std::string& platf) const
   pimpl->load_platform(platf);
 }
 
+/**
+ * @brief Seals the platform, finishing the creation of its resources.
+ *
+ * This method is optional. The seal() is done automatically when you call Engine::run.
+ */
+void Engine::seal_platform() const
+{
+  pimpl->seal_platform();
+}
+
 /** Registers the main function of an actor that will be launched from the deployment file */
 void Engine::register_function(const std::string& name, const std::function<void(int, char**)>& code)
 {
@@ -321,12 +331,6 @@ void Engine::run() const
 }
 void Engine::run_until(double max_date) const
 {
-  /* sealing resources before run: links */
-  for (auto* link : get_all_links())
-    link->seal();
-  /* seal netzone root, recursively seal children netzones, hosts and disks */
-  get_netzone_root()->seal();
-
   /* Clean IO before the run */
   fflush(stdout);
   fflush(stderr);

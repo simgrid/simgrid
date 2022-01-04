@@ -40,6 +40,7 @@ static void create_environment(xbt_os_timer_t parse_time, const std::string& pla
 {
   xbt_os_cputimer_start(parse_time);
   sg4::Engine::get_instance()->load_platform(platformFile);
+  sg4::Engine::get_instance()->seal_platform();
   xbt_os_cputimer_stop(parse_time);
 }
 
