@@ -2,7 +2,7 @@
 
 p Test1 Peer sending and receiving
 
-$ ${bindir:=.}/s4u-comm-ready ${platfdir}/small_platform_fatpipe.xml s4u-comm-ready_d.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+$ ${bindir:=.}/s4u-comm-ready ${platfdir}/small_platform_fatpipe.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (1:peer@Tremblay) Send 'Message 0 from peer 0' to 'peer-1'
 > [  0.000000] (2:peer@Ruby) Send 'Message 0 from peer 1' to 'peer-0'
 > [  0.000000] (3:peer@Perl) Send 'finalize' to 'peer-0'

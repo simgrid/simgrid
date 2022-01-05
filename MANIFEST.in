@@ -146,7 +146,6 @@ include examples/cpp/actor-suspend/s4u-actor-suspend.cpp
 include examples/cpp/actor-suspend/s4u-actor-suspend.tesh
 include examples/cpp/actor-yield/s4u-actor-yield.cpp
 include examples/cpp/actor-yield/s4u-actor-yield.tesh
-include examples/cpp/actor-yield/s4u-actor-yield_d.xml
 include examples/cpp/app-bittorrent/s4u-app-bittorrent.tesh
 include examples/cpp/app-bittorrent/s4u-app-bittorrent_d.xml
 include examples/cpp/app-bittorrent/s4u-bittorrent.cpp
@@ -182,17 +181,14 @@ include examples/cpp/comm-pingpong/s4u-comm-pingpong.tesh
 include examples/cpp/comm-pingpong/simix-breakpoint.tesh
 include examples/cpp/comm-ready/s4u-comm-ready.cpp
 include examples/cpp/comm-ready/s4u-comm-ready.tesh
-include examples/cpp/comm-ready/s4u-comm-ready_d.xml
 include examples/cpp/comm-serialize/s4u-comm-serialize.cpp
 include examples/cpp/comm-serialize/s4u-comm-serialize.tesh
 include examples/cpp/comm-suspend/s4u-comm-suspend.cpp
 include examples/cpp/comm-suspend/s4u-comm-suspend.tesh
-include examples/cpp/comm-suspend/s4u-comm-suspend_d.xml
 include examples/cpp/comm-throttling/s4u-comm-throttling.cpp
 include examples/cpp/comm-throttling/s4u-comm-throttling.tesh
 include examples/cpp/comm-wait/s4u-comm-wait.cpp
 include examples/cpp/comm-wait/s4u-comm-wait.tesh
-include examples/cpp/comm-wait/s4u-comm-wait_d.xml
 include examples/cpp/comm-waitall/s4u-comm-waitall.cpp
 include examples/cpp/comm-waitall/s4u-comm-waitall.tesh
 include examples/cpp/comm-waitall/s4u-comm-waitall_d.xml
@@ -201,7 +197,6 @@ include examples/cpp/comm-waitany/s4u-comm-waitany.tesh
 include examples/cpp/comm-waitany/s4u-comm-waitany_d.xml
 include examples/cpp/comm-waituntil/s4u-comm-waituntil.cpp
 include examples/cpp/comm-waituntil/s4u-comm-waituntil.tesh
-include examples/cpp/comm-waituntil/s4u-comm-waituntil_d.xml
 include examples/cpp/dag-comm/s4u-dag-comm.cpp
 include examples/cpp/dag-comm/s4u-dag-comm.tesh
 include examples/cpp/dag-failure/s4u-dag-failure.cpp

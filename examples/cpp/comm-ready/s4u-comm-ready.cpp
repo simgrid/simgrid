@@ -26,14 +26,8 @@ namespace sg4 = simgrid::s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_async_ready, "Messages specific for this s4u example");
 
-static void peer(int argc, char** argv)
+static void peer(int my_id, int messages_count, size_t payload_size, int peers_count)
 {
-  xbt_assert(argc == 5, "Expecting 4 parameters from the XML deployment file but got %d", argc);
-  int my_id           = std::stoi(argv[1]); /* - my id */
-  long messages_count = std::stol(argv[2]); /* - number of message */
-  long msg_size       = std::stol(argv[3]); /* - message size in bytes */
-  long peers_count    = std::stol(argv[4]); /* - number of peers */
-
   /* Set myself as the persistent receiver of my mailbox so that messages start flowing to me as soon as they are put
    * into it */
   sg4::Mailbox* my_mbox = sg4::Mailbox::by_name(std::string("peer-") + std::to_string(my_id));
@@ -45,15 +39,13 @@ static void peer(int argc, char** argv)
   for (int i = 0; i < messages_count; i++) {
     for (int peer_id = 0; peer_id < peers_count; peer_id++) {
       if (peer_id != my_id) {
-        std::string mboxName        = std::string("peer-") + std::to_string(peer_id);
-        sg4::Mailbox* mbox          = sg4::Mailbox::by_name(mboxName);
-        std::string msgName =
-            std::string("Message ") + std::to_string(i) + std::string(" from peer ") + std::to_string(my_id);
-        auto* payload = new std::string(msgName); // copy the data we send:
+        sg4::Mailbox* mbox  = sg4::Mailbox::by_name(std::string("peer-") + std::to_string(peer_id));
+        std::string message = std::string("Message ") + std::to_string(i) + " from peer " + std::to_string(my_id);
+        auto* payload       = new std::string(message); // copy the data we send:
         // 'msgName' is not a stable storage location
-        XBT_INFO("Send '%s' to '%s'", msgName.c_str(), mboxName.c_str());
+        XBT_INFO("Send '%s' to '%s'", message.c_str(), mbox->get_cname());
         /* Create a communication representing the ongoing communication */
-        pending_comms.push_back(mbox->put_async(payload, msg_size));
+        pending_comms.push_back(mbox->put_async(payload, payload_size));
       }
     }
   }
@@ -61,10 +53,9 @@ static void peer(int argc, char** argv)
   /* Start sending messages to let peers know that they should stop */
   for (int peer_id = 0; peer_id < peers_count; peer_id++) {
     if (peer_id != my_id) {
-      std::string mboxName        = std::string("peer-") + std::to_string(peer_id);
-      sg4::Mailbox* mbox          = sg4::Mailbox::by_name(mboxName);
-      auto* payload               = new std::string("finalize"); // Make a copy of the data we will send
-      pending_comms.push_back(mbox->put_async(payload, msg_size));
+      sg4::Mailbox* mbox = sg4::Mailbox::by_name(std::string("peer-") + std::to_string(peer_id));
+      auto* payload      = new std::string("finalize"); // Make a copy of the data we will send
+      pending_comms.push_back(mbox->put_async(payload, payload_size));
       XBT_INFO("Send 'finalize' to 'peer-%d'", peer_id);
     }
   }
@@ -100,13 +91,12 @@ static void peer(int argc, char** argv)
 
 int main(int argc, char* argv[])
 {
-  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
-
   sg4::Engine e(&argc, argv);
-  e.register_function("peer", &peer);
-
   e.load_platform(argv[1]);
-  e.load_deployment(argv[2]);
+
+  sg4::Actor::create("peer", e.host_by_name("Tremblay"), peer, 0, 2, 5e7, 3);
+  sg4::Actor::create("peer", e.host_by_name("Ruby"), peer, 1, 6, 2.5e5, 3);
+  sg4::Actor::create("peer", e.host_by_name("Perl"), peer, 2, 0, 5e7, 3);
 
   e.run();
 

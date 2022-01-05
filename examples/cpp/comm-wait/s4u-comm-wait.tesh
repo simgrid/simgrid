@@ -2,7 +2,7 @@
 
 p Test1 Sleep_sender > Sleep_receiver
 
-$ ${bindir:=.}/s4u-comm-wait ${platfdir}/small_platform_fatpipe.xml s4u-comm-wait_d.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+$ ${bindir:=.}/s4u-comm-wait ${platfdir}/small_platform_fatpipe.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) sleep_start_time : 5.000000 , sleep_test_time : 0.000000
 > [  0.000000] (2:receiver@Ruby) sleep_start_time : 1.000000 , sleep_test_time : 0.100000
 > [  1.000000] (2:receiver@Ruby) Wait for my first message

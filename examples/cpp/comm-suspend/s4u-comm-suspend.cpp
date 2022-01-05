@@ -13,10 +13,8 @@ namespace sg4 = simgrid::s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_comm_wait, "Messages specific for this s4u example");
 
-static void sender(int argc, char**)
+static void sender()
 {
-  xbt_assert(argc == 1, "Expecting no parameter from the XML deployment file but got %d", argc - 1);
-
   sg4::Mailbox* mbox = sg4::Mailbox::by_name("receiver");
 
   // Copy the data we send: the 'msg_content' variable is not a stable storage location.
@@ -43,7 +41,7 @@ static void sender(int argc, char**)
   comm->suspend();
 }
 
-static void receiver(int, char**)
+static void receiver()
 {
   sg4::Mailbox* mbox = sg4::Mailbox::by_name("receiver");
   XBT_INFO("Wait for the message.");
@@ -54,14 +52,13 @@ static void receiver(int, char**)
 
 int main(int argc, char* argv[])
 {
-  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
-
   sg4::Engine e(&argc, argv);
-  e.register_function("sender", &sender);
-  e.register_function("receiver", &receiver);
 
   e.load_platform(argv[1]);
-  e.load_deployment(argv[2]);
+
+  sg4::Actor::create("sender", e.host_by_name("Tremblay"), sender);
+  sg4::Actor::create("receiver", e.host_by_name("Jupiter"), receiver);
+
   e.run();
 
   return 0;

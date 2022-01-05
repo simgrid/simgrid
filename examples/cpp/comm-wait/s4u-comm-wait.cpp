@@ -19,11 +19,8 @@ namespace sg4 = simgrid::s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_comm_wait, "Messages specific for this s4u example");
 
-static void sender(int argc, char** argv)
+static void sender(int messages_count, size_t payload_size)
 {
-  xbt_assert(argc == 3, "Expecting 2 parameters from the XML deployment file but got %d", argc);
-  long messages_count     = std::stol(argv[1]); /* - number of messages */
-  long msg_size           = std::stol(argv[2]); /* - message size in bytes */
   double sleep_start_time = 5.0;
   double sleep_test_time  = 0;
 
@@ -39,7 +36,7 @@ static void sender(int argc, char** argv)
     auto* payload = new std::string(msg_content);
 
     /* Create a communication representing the ongoing communication and then */
-    sg4::CommPtr comm = mbox->put_async(payload, msg_size);
+    sg4::CommPtr comm = mbox->put_async(payload, payload_size);
     XBT_INFO("Send '%s' to '%s'", msg_content.c_str(), mbox->get_cname());
 
     if (sleep_test_time > 0) {   /* - "test_time" is set to 0, wait */
@@ -57,7 +54,7 @@ static void sender(int argc, char** argv)
 }
 
 /* Receiver actor expects 1 argument: its ID */
-static void receiver(int, char**)
+static void receiver()
 {
   double sleep_start_time = 1.0;
   double sleep_test_time  = 0.1;
@@ -89,14 +86,13 @@ static void receiver(int, char**)
 
 int main(int argc, char* argv[])
 {
-  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
-
   sg4::Engine e(&argc, argv);
-  e.register_function("sender", &sender);
-  e.register_function("receiver", &receiver);
 
   e.load_platform(argv[1]);
-  e.load_deployment(argv[2]);
+
+  sg4::Actor::create("sender", e.host_by_name("Tremblay"), sender, 3, 482117300);
+  sg4::Actor::create("receiver", e.host_by_name("Ruby"), receiver);
+
   e.run();
 
   return 0;

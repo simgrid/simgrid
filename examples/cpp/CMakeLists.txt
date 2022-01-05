@@ -226,15 +226,10 @@ set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/comm-pingpong/simi
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh  PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-actor-create_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actor-lifetime/s4u-actor-lifetime_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/actor-yield/s4u-actor-yield_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/s4u-app-bittorrent_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworkers/s4u-app-masterworkers_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/comm-suspend/s4u-comm-suspend_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/comm-wait/s4u-comm-wait_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/comm-waitany/s4u-comm-waitany_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/comm-waitall/s4u-comm-waitall_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/comm-ready/s4u-comm-ready_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/comm-waituntil/s4u-comm-waituntil_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-scheduling/Montage_25.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/s4u-dht-chord_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/s4u-dht-kademlia_d.xml

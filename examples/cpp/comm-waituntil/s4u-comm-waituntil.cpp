@@ -18,40 +18,30 @@ namespace sg4 = simgrid::s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_comm_waituntil, "Messages specific for this s4u example");
 
-static void sender(int argc, char** argv)
+static void sender(int messages_count, size_t payload_size)
 {
-  xbt_assert(argc == 4, "Expecting 3 parameters from the XML deployment file but got %d", argc);
-  long messages_count  = std::stol(argv[1]); /* - number of messages */
-  long msg_size        = std::stol(argv[2]); /* - message size in bytes */
-  long receivers_count = std::stol(argv[3]); /* - number of receivers */
-
   std::vector<sg4::CommPtr> pending_comms;
+  sg4::Mailbox* mbox = sg4::Mailbox::by_name("receiver-0");
 
-  /* Start dispatching all messages to receivers, in a round robin fashion */
+  /* Start dispatching all messages to the receiver */
   for (int i = 0; i < messages_count; i++) {
-    std::string mboxName        = std::string("receiver-") + std::to_string(i % receivers_count);
-    sg4::Mailbox* mbox          = sg4::Mailbox::by_name(mboxName);
-    std::string msgName         = std::string("Message ") + std::to_string(i);
-    auto* payload               = new std::string(msgName); // copy the data we send:
+    std::string message = std::string("Message ") + std::to_string(i);
+    auto* payload       = new std::string(message); // copy the data we send:
 
     // 'msgName' is not a stable storage location
-    XBT_INFO("Send '%s' to '%s'", msgName.c_str(), mboxName.c_str());
+    XBT_INFO("Send '%s' to '%s'", message.c_str(), mbox->get_cname());
     /* Create a communication representing the ongoing communication */
-    sg4::CommPtr comm = mbox->put_async(payload, msg_size);
+    sg4::CommPtr comm = mbox->put_async(payload, payload_size);
     /* Add this comm to the vector of all known comms */
     pending_comms.push_back(comm);
   }
 
-  /* Start sending messages to let the workers know that they should stop */
-  for (int i = 0; i < receivers_count; i++) {
-    std::string mboxName        = std::string("receiver-") + std::to_string(i % receivers_count);
-    sg4::Mailbox* mbox          = sg4::Mailbox::by_name(mboxName);
-    auto* payload               = new std::string("finalize"); // Make a copy of the data we will send
+  /* Start the finalize signal to the receiver*/
+  auto* payload     = new std::string("finalize"); // Make a copy of the data we will send
+  sg4::CommPtr comm = mbox->put_async(payload, 0);
+  pending_comms.push_back(comm);
+  XBT_INFO("Send 'finalize' to 'receiver-0'");
 
-    sg4::CommPtr comm = mbox->put_async(payload, 0);
-    pending_comms.push_back(comm);
-    XBT_INFO("Send 'finalize' to 'receiver-%ld'", i % receivers_count);
-  }
   XBT_INFO("Done dispatching all messages");
 
   /* Now that all message exchanges were initiated, wait for their completion, in order of creation. */
@@ -64,11 +54,9 @@ static void sender(int argc, char** argv)
   XBT_INFO("Goodbye now!");
 }
 
-/* Receiver actor expects 1 argument: its ID */
-static void receiver(int argc, char** argv)
+static void receiver()
 {
-  xbt_assert(argc == 2, "Expecting one parameter from the XML deployment file but got %d", argc);
-  sg4::Mailbox* mbox = sg4::Mailbox::by_name(std::string("receiver-") + argv[1]);
+  sg4::Mailbox* mbox = sg4::Mailbox::by_name("receiver-0");
 
   XBT_INFO("Wait for my first message");
   for (bool cont = true; cont;) {
@@ -81,14 +69,13 @@ static void receiver(int argc, char** argv)
 
 int main(int argc, char* argv[])
 {
-  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
-
   sg4::Engine e(&argc, argv);
-  e.register_function("sender", &sender);
-  e.register_function("receiver", &receiver);
 
   e.load_platform(argv[1]);
-  e.load_deployment(argv[2]);
+
+  sg4::Actor::create("sender", e.host_by_name("Tremblay"), sender, 3, 5e7);
+  sg4::Actor::create("receiver", e.host_by_name("Ruby"), receiver);
+
   e.run();
 
   return 0;
