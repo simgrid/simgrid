@@ -31,7 +31,6 @@ if(SIMGRID_HAVE_MC)
   #foreach(example ) # no test to be build in any case
   #endforeach()
   
-
   if(HAVE_C_STACK_CLEANER)
     add_executable       (s4u-mc-bugged1-liveness-cleaner-on  EXCLUDE_FROM_ALL s4u-mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
     target_link_libraries(s4u-mc-bugged1-liveness-cleaner-on  simgrid)
@@ -49,9 +48,13 @@ if(SIMGRID_HAVE_MC)
     # liveness model-checking works only on 64bits (for now ...)
     set(_mc-bugged1-liveness_factories "ucontext") # Timeout
     add_dependencies(tests-mc s4u-mc-bugged1-liveness)
+    set(_mc-bugged2-liveness_factories "ucontext") # Timeout
   else()
     set(_mc-bugged1-liveness_disable 1)
   endif()
+
+  # This example never ends, disable it for now
+  set(_mc-bugged2-liveness_disable 1)
   
   # This example hit the 5' timeout on CI, disable it for now
   #    ADD_TESH(s4u-mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness
@@ -75,7 +78,7 @@ if(SIMGRID_HAVE_MC)
 
 else()
   foreach (example mc-bugged1 mc-bugged2 mc-failing-assert mc-electric-fence 
-                   mc-bugged1-liveness)
+                   mc-bugged1-liveness mc-bugged2-liveness)
     set(_${example}_disable 1)
   endforeach()
 endif()
@@ -105,7 +108,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  exec-async exec-basic exec-dvfs exec-remote exec-waitany exec-waitfor exec-dependent exec-unassigned
                  exec-ptask-multicore exec-cpu-nonlinear exec-cpu-factors exec-failure
                  maestro-set
-                 mc-bugged1 mc-bugged1-liveness mc-bugged2 mc-electric-fence mc-failing-assert
+                 mc-bugged1 mc-bugged1-liveness mc-bugged2 mc-bugged2-liveness mc-electric-fence mc-failing-assert
                  network-ns3 network-ns3-wifi network-wifi
                  io-async io-priority io-degradation io-file-system io-file-remote io-disk-raw io-dependent
                  platform-failures platform-profile platform-properties
@@ -251,7 +254,8 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-a
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/one_cluster_d.xml                PARENT_SCOPE)
 set(bin_files     ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness-stack-cleaner
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/promela_bugged1_liveness PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/promela_bugged1_liveness
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged2-liveness/promela_bugged2_liveness PARENT_SCOPE)
 set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax/simple_dax_with_cycle.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax/smalldax.xml     
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/dag.dot
