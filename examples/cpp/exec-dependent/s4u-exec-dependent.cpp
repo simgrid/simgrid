@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
 
   simgrid::s4u::Actor::create("worker", e.host_by_name("Fafard"), worker);
 
-  simgrid::s4u::Activity::on_veto.connect([&e](simgrid::s4u::Activity& a) {
+  simgrid::s4u::Activity::on_veto_cb([&e](simgrid::s4u::Activity& a) {
     auto& exec = static_cast<simgrid::s4u::Exec&>(a);
 
     // First display the situation

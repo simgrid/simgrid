@@ -463,15 +463,15 @@ void sg_storage_file_system_init()
 
   if (not FileSystemDiskExt::EXTENSION_ID.valid()) {
     FileSystemDiskExt::EXTENSION_ID = simgrid::s4u::Disk::extension_create<FileSystemDiskExt>();
-    simgrid::s4u::Disk::on_creation.connect(&on_disk_creation);
+    simgrid::s4u::Disk::on_creation_cb(&on_disk_creation);
   }
 
   if (not FileDescriptorHostExt::EXTENSION_ID.valid()) {
     FileDescriptorHostExt::EXTENSION_ID = simgrid::s4u::Host::extension_create<FileDescriptorHostExt>();
-    simgrid::s4u::Host::on_creation.connect(&on_host_creation);
+    simgrid::s4u::Host::on_creation_cb(&on_host_creation);
   }
-  simgrid::s4u::Engine::on_platform_created.connect(&on_platform_created);
-  simgrid::s4u::Engine::on_simulation_end.connect(&on_simulation_end);
+  simgrid::s4u::Engine::on_platform_created_cb(&on_platform_created);
+  simgrid::s4u::Engine::on_simulation_end_cb(&on_simulation_end);
 }
 
 sg_file_t sg_file_open(const char* fullpath, void* data)

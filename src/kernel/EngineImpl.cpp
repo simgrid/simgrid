@@ -238,7 +238,7 @@ void EngineImpl::initialize(int* argc, char** argv)
 
   /* register a function to be called by SURF after the environment creation */
   sg_platf_init();
-  s4u::Engine::on_platform_created.connect([this]() { this->presolve(); });
+  s4u::Engine::on_platform_created_cb([this]() { this->presolve(); });
 
   if (config::get_value<bool>("debug/clean-atexit"))
     atexit(shutdown);

@@ -193,17 +193,19 @@ void STag_surfxml_platform() {
       "Use simgrid_update_xml to update your file automatically. "
       "This program is installed automatically with SimGrid, or "
       "available in the tools/ directory of the source archive.");
-  surf_parse_assert((version >= 4.0),
-             std::string("******* THIS FILE IS TOO OLD (v:")+std::to_string(version)+") *********\n "
-             "Changes introduced in SimGrid 3.13:\n"
-             "  - 'power' attribute of hosts (and others) got renamed to 'speed'.\n"
-             "  - In <trace_connect>, attribute kind=\"POWER\" is now kind=\"SPEED\".\n"
-             "  - DOCTYPE now point to the rignt URL.\n"
-             "  - speed, bandwidth and latency attributes now MUST have an explicit unit (f, Bps, s by default)"
-             "\n\n"
-             "Use simgrid_update_xml to update your file automatically. "
-             "This program is installed automatically with SimGrid, or "
-             "available in the tools/ directory of the source archive.");
+  surf_parse_assert(
+      (version >= 4.0),
+      std::string("******* THIS FILE IS TOO OLD (v:") + std::to_string(version) +
+          ") *********\n "
+          "Changes introduced in SimGrid 3.13:\n"
+          "  - 'power' attribute of hosts (and others) got renamed to 'speed'.\n"
+          "  - In <trace_connect>, attribute kind=\"POWER\" is now kind=\"SPEED\".\n"
+          "  - DOCTYPE now point to the rignt URL.\n"
+          "  - speed, bandwidth and latency attributes now MUST have an explicit unit (f, Bps, s by default)"
+          "\n\n"
+          "Use simgrid_update_xml to update your file automatically. "
+          "This program is installed automatically with SimGrid, or "
+          "available in the tools/ directory of the source archive.");
   if (version < 4.1) {
     XBT_INFO("You're using a v%.1f XML file (%s) while the current standard is v4.1 "
              "That's fine, the new version is backward compatible. \n\n"
@@ -659,27 +661,27 @@ void STag_surfxml_trace___connect()
   simgrid::kernel::routing::TraceConnectCreationArgs trace_connect;
 
   trace_connect.element = A_surfxml_trace___connect_element;
-  trace_connect.trace = A_surfxml_trace___connect_trace;
+  trace_connect.trace   = A_surfxml_trace___connect_trace;
 
   switch (A_surfxml_trace___connect_kind) {
-  case AU_surfxml_trace___connect_kind:
-  case A_surfxml_trace___connect_kind_SPEED:
-    trace_connect.kind = simgrid::kernel::routing::TraceConnectKind::SPEED;
-    break;
-  case A_surfxml_trace___connect_kind_BANDWIDTH:
-    trace_connect.kind = simgrid::kernel::routing::TraceConnectKind::BANDWIDTH;
-    break;
-  case A_surfxml_trace___connect_kind_HOST___AVAIL:
-    trace_connect.kind = simgrid::kernel::routing::TraceConnectKind::HOST_AVAIL;
-    break;
-  case A_surfxml_trace___connect_kind_LATENCY:
-    trace_connect.kind = simgrid::kernel::routing::TraceConnectKind::LATENCY;
-    break;
-  case A_surfxml_trace___connect_kind_LINK___AVAIL:
-    trace_connect.kind = simgrid::kernel::routing::TraceConnectKind::LINK_AVAIL;
-    break;
-  default:
-    surf_parse_error("Invalid trace kind");
+    case AU_surfxml_trace___connect_kind:
+    case A_surfxml_trace___connect_kind_SPEED:
+      trace_connect.kind = simgrid::kernel::routing::TraceConnectKind::SPEED;
+      break;
+    case A_surfxml_trace___connect_kind_BANDWIDTH:
+      trace_connect.kind = simgrid::kernel::routing::TraceConnectKind::BANDWIDTH;
+      break;
+    case A_surfxml_trace___connect_kind_HOST___AVAIL:
+      trace_connect.kind = simgrid::kernel::routing::TraceConnectKind::HOST_AVAIL;
+      break;
+    case A_surfxml_trace___connect_kind_LATENCY:
+      trace_connect.kind = simgrid::kernel::routing::TraceConnectKind::LATENCY;
+      break;
+    case A_surfxml_trace___connect_kind_LINK___AVAIL:
+      trace_connect.kind = simgrid::kernel::routing::TraceConnectKind::LINK_AVAIL;
+      break;
+    default:
+      surf_parse_error("Invalid trace kind");
   }
   sg_platf_trace_connect(&trace_connect);
 }
@@ -808,7 +810,9 @@ void STag_surfxml_model___prop(){
 void ETag_surfxml_prop(){/* Nothing to do */}
 void STag_surfxml_random(){/* Nothing to do */}
 void ETag_surfxml_random(){/* Nothing to do */}
-void ETag_surfxml_trace___connect(){/* Nothing to do */}
+void ETag_surfxml_trace___connect()
+{ /* Nothing to do */
+}
 void STag_surfxml_trace()
 { /* Nothing to do */
 }

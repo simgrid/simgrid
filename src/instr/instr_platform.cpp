@@ -422,70 +422,70 @@ void define_callbacks()
   // always need the callbacks to zones (we need only the root zone), to create the rootContainer and the rootType
   // properly
   if (TRACE_needs_platform()) {
-    s4u::Engine::on_platform_created.connect(on_platform_created);
-    s4u::Host::on_creation.connect(on_host_creation);
-    s4u::Host::on_speed_change.connect([](s4u::Host const& host) {
+    s4u::Engine::on_platform_created_cb(on_platform_created);
+    s4u::Host::on_creation_cb(on_host_creation);
+    s4u::Host::on_speed_change_cb([](s4u::Host const& host) {
       Container::by_name(host.get_name())
           ->get_variable("speed")
           ->set_event(simgrid_get_clock(), host.get_core_count() * host.get_available_speed());
     });
-    s4u::Link::on_creation.connect(on_link_creation);
-    s4u::Link::on_bandwidth_change.connect([](s4u::Link const& link) {
+    s4u::Link::on_creation_cb(on_link_creation);
+    s4u::Link::on_bandwidth_change_cb([](s4u::Link const& link) {
       Container::by_name(link.get_name())
           ->get_variable("bandwidth")
           ->set_event(simgrid_get_clock(), sg_bandwidth_factor * link.get_bandwidth());
     });
-    s4u::NetZone::on_seal.connect([](s4u::NetZone const& /*netzone*/) { currentContainer.pop_back(); });
+    s4u::NetZone::on_seal_cb([](s4u::NetZone const& /*netzone*/) { currentContainer.pop_back(); });
     kernel::routing::NetPoint::on_creation.connect([](kernel::routing::NetPoint const& netpoint) {
       if (netpoint.is_router())
         new RouterContainer(netpoint.get_name(), currentContainer.back());
     });
   }
 
-  s4u::NetZone::on_creation.connect(on_netzone_creation);
+  s4u::NetZone::on_creation_cb(on_netzone_creation);
 
   kernel::resource::CpuAction::on_state_change.connect(on_action_state_change);
-  s4u::Link::on_communication_state_change.connect(on_action_state_change);
+  s4u::Link::on_communication_state_change_cb(on_action_state_change);
 
   if (TRACE_actor_is_enabled()) {
-    s4u::Actor::on_creation.connect(on_actor_creation);
-    s4u::Actor::on_destruction.connect([](s4u::Actor const& actor) {
+    s4u::Actor::on_creation_cb(on_actor_creation);
+    s4u::Actor::on_destruction_cb([](s4u::Actor const& actor) {
       auto container = Container::by_name_or_null(instr_pid(actor));
       if (container != nullptr)
         container->remove_from_parent();
     });
-    s4u::Actor::on_suspend.connect([](s4u::Actor const& actor) {
+    s4u::Actor::on_suspend_cb([](s4u::Actor const& actor) {
       Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->push_event("suspend");
     });
-    s4u::Actor::on_resume.connect(
+    s4u::Actor::on_resume_cb(
         [](s4u::Actor const& actor) { Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->pop_event(); });
-    s4u::Actor::on_sleep.connect([](s4u::Actor const& actor) {
+    s4u::Actor::on_sleep_cb([](s4u::Actor const& actor) {
       Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->push_event("sleep");
     });
-    s4u::Actor::on_wake_up.connect(
+    s4u::Actor::on_wake_up_cb(
         [](s4u::Actor const& actor) { Container::by_name(instr_pid(actor))->get_state("ACTOR_STATE")->pop_event(); });
-    s4u::Exec::on_start.connect([](s4u::Exec const&) {
+    s4u::Exec::on_start_cb([](s4u::Exec const&) {
       Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->push_event("execute");
     });
-    s4u::Activity::on_completion.connect([](const s4u::Activity&) {
+    s4u::Activity::on_completion_cb([](const s4u::Activity&) {
       Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->pop_event();
     });
-    s4u::Comm::on_send.connect([](s4u::Comm const&) {
+    s4u::Comm::on_send_cb([](s4u::Comm const&) {
       Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->push_event("send");
     });
-    s4u::Comm::on_recv.connect([](s4u::Comm const&) {
+    s4u::Comm::on_recv_cb([](s4u::Comm const&) {
       Container::by_name(instr_pid(*s4u::Actor::self()))->get_state("ACTOR_STATE")->push_event("receive");
     });
-    s4u::Actor::on_host_change.connect(on_actor_host_change);
+    s4u::Actor::on_host_change_cb(on_actor_host_change);
   }
 
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_computing()) {
-    s4u::Exec::on_start.connect([](s4u::Exec const& exec) {
+    s4u::Exec::on_start_cb([](s4u::Exec const& exec) {
       Container::by_name(std::string("rank-") + std::to_string(s4u::Actor::self()->get_pid()))
           ->get_state("MPI_STATE")
           ->push_event("computing", new CpuTIData("compute", exec.get_cost()));
     });
-    s4u::Activity::on_completion.connect([](const s4u::Activity&) {
+    s4u::Activity::on_completion_cb([](const s4u::Activity&) {
       Container::by_name(std::string("rank-") + std::to_string(s4u::Actor::self()->get_pid()))
           ->get_state("MPI_STATE")
           ->pop_event();
@@ -493,18 +493,18 @@ void define_callbacks()
   }
 
   if (TRACE_vm_is_enabled()) {
-    s4u::Host::on_creation.connect(on_vm_creation);
-    s4u::VirtualMachine::on_start.connect([](s4u::VirtualMachine const& vm) {
+    s4u::Host::on_creation_cb(on_vm_creation);
+    s4u::VirtualMachine::on_start_cb([](s4u::VirtualMachine const& vm) {
       Container::by_name(vm.get_name())->get_state("VM_STATE")->push_event("start");
     });
-    s4u::VirtualMachine::on_started.connect(
+    s4u::VirtualMachine::on_started_cb(
         [](s4u::VirtualMachine const& vm) { Container::by_name(vm.get_name())->get_state("VM_STATE")->pop_event(); });
-    s4u::VirtualMachine::on_suspend.connect([](s4u::VirtualMachine const& vm) {
+    s4u::VirtualMachine::on_suspend_cb([](s4u::VirtualMachine const& vm) {
       Container::by_name(vm.get_name())->get_state("VM_STATE")->push_event("suspend");
     });
-    s4u::VirtualMachine::on_resume.connect(
+    s4u::VirtualMachine::on_resume_cb(
         [](s4u::VirtualMachine const& vm) { Container::by_name(vm.get_name())->get_state("VM_STATE")->pop_event(); });
-    s4u::Host::on_destruction.connect(
+    s4u::Host::on_destruction_cb(
         [](s4u::Host const& host) { Container::by_name(host.get_name())->remove_from_parent(); });
   }
 }

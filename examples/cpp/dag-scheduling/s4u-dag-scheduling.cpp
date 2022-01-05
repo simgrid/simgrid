@@ -153,7 +153,7 @@ int main(int argc, char** argv)
   std::set<simgrid::s4u::Activity*> vetoed;
   e.track_vetoed_activities(&vetoed);
 
-  simgrid::s4u::Activity::on_completion.connect([](simgrid::s4u::Activity& activity) {
+  simgrid::s4u::Activity::on_completion_cb([](simgrid::s4u::Activity& activity) {
     // when an Exec completes, we need to set the potential start time of all its ouput comms
     const auto* exec = dynamic_cast<simgrid::s4u::Exec*>(&activity);
     if (exec == nullptr) // Only Execs are concerned here

@@ -30,9 +30,13 @@ class Container {
 protected:
   static void set_root(Container* root) { root_container_ = root; }
 
-public:
+private:
   static xbt::signal<void(Container const&)> on_creation;
   static xbt::signal<void(Container const&)> on_destruction;
+
+public:
+  static void on_creation_cb(const std::function<void(Container const&)>& cb) { on_creation.connect(cb); }
+  static void on_destruction_cb(const std::function<void(Container const&)>& cb) { on_destruction.connect(cb); }
 
   explicit Container(const std::string& name, const std::string& type_name, Container* parent);
   Container(const Container&) = delete;

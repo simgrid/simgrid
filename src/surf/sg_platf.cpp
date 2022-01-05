@@ -56,7 +56,7 @@ void sg_platf_init()
 void sg_platf_exit()
 {
   simgrid::kernel::routing::on_cluster_creation.disconnect_slots();
-  simgrid::s4u::Engine::on_platform_created.disconnect_slots();
+  // simgrid::s4u::Engine::on_platform_created.disconnect_slots();
 
   surf_parse_lex_destroy();
 }

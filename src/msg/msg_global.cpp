@@ -41,7 +41,7 @@ void MSG_init_nocheck(int* argc, char** argv)
     msg_global->sent_msg = 0;
     msg_global->task_copy_callback = nullptr;
     msg_global->process_data_cleanup = nullptr;
-    simgrid::s4u::Actor::on_termination.connect([](simgrid::s4u::Actor const& actor) {
+    simgrid::s4u::Actor::on_termination_cb([](simgrid::s4u::Actor const& actor) {
       // free the data if a function was provided
       void* userdata = sg_actor_get_data(&actor);
       if (userdata && msg_global->process_data_cleanup)

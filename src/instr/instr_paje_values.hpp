@@ -18,8 +18,10 @@ class EntityValue {
   std::string color_;
   Type* parent_;
 
-public:
   static xbt::signal<void(const EntityValue&)> on_creation;
+
+public:
+  static void on_creation_cb(const std::function<void(const EntityValue&)>& cb) { on_creation.connect(cb); }
   explicit EntityValue(const std::string& name, const std::string& color, Type* parent);
 
   long long int get_id() const { return id_; }

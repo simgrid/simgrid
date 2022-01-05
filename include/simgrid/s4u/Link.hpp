@@ -40,6 +40,9 @@ protected:
   virtual ~Link() = default;
   // The implementation that never changes
   kernel::resource::LinkImplIntf* const pimpl_;
+#ifndef DOXYGEN
+  friend kernel::resource::NetworkAction; // signal comm_state_changed
+#endif
 
 public:
   enum class SharingPolicy { NONLINEAR = 4, WIFI = 3, SPLITDUPLEX = 2, SHARED = 1, FATPIPE = 0 };
@@ -137,22 +140,32 @@ public:
 
   Link* seal();
 
-  /* The signals */
-  /** @brief Callback signal fired when a new Link is created */
+private:
+#ifndef DOXYGEN
   static xbt::signal<void(Link&)> on_creation;
-
-  /** @brief Callback signal fired when the state of a Link changes (when it is turned on or off) */
   static xbt::signal<void(Link const&)> on_state_change;
-
-  /** @brief Callback signal fired when the bandwidth of a Link changes */
   static xbt::signal<void(Link const&)> on_bandwidth_change;
-
-  /** @brief Callback signal fired when a communication changes it state (ready/done/cancel) */
   static xbt::signal<void(kernel::resource::NetworkAction&, kernel::resource::Action::State)>
       on_communication_state_change;
-
-  /** @brief Callback signal fired when a Link is destroyed */
   static xbt::signal<void(Link const&)> on_destruction;
+#endif
+
+public:
+  /* The signals */
+  /** @brief Add a callback fired when a new Link is created */
+  static void on_creation_cb(const std::function<void(Link&)>& cb) { on_creation.connect(cb); }
+  /** @brief Add a callback fired when the state of a Link changes (when it is turned on or off) */
+  static void on_state_change_cb(const std::function<void(Link const&)>& cb) { on_state_change.connect(cb); }
+  /** @brief Add a callback fired when the bandwidth of a Link changes */
+  static void on_bandwidth_change_cb(const std::function<void(Link const&)>& cb) { on_bandwidth_change.connect(cb); }
+  /** @brief Add a callback fired when a communication changes it state (ready/done/cancel) */
+  static void on_communication_state_change_cb(
+      const std::function<void(kernel::resource::NetworkAction&, kernel::resource::Action::State)>& cb)
+  {
+    on_communication_state_change.connect(cb);
+  }
+  /** @brief Add a callback fired when a Link is destroyed */
+  static void on_destruction_cb(std::function<void(Link const&)> cb) { on_destruction.connect(cb); }
 };
 
 /**

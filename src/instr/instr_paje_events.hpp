@@ -46,9 +46,12 @@ inline std::ostream& operator<<(std::ostream& os, PajeEventType event)
 class PajeEvent {
   Container* container_;
   Type* type_;
-public:
   static xbt::signal<void(PajeEvent&)> on_creation;
   static xbt::signal<void(PajeEvent const&)> on_destruction;
+
+public:
+  static void on_creation_cb(const std::function<void(PajeEvent&)>& cb) { on_creation.connect(cb); }
+  static void on_destruction_cb(const std::function<void(PajeEvent const&)>& cb) { on_destruction.connect(cb); }
 
   double timestamp_;
   PajeEventType eventType_;
@@ -83,8 +86,10 @@ class StateEvent : public PajeEvent {
 #endif
   std::unique_ptr<TIData> extra_;
 
-public:
   static xbt::signal<void(StateEvent const&)> on_destruction;
+
+public:
+  static void on_destruction_cb(const std::function<void(StateEvent const&)>& cb) { on_destruction.connect(cb); }
   StateEvent(Container* container, Type* type, PajeEventType event_type, EntityValue* value, TIData* extra);
   ~StateEvent() override { on_destruction(*this); }
   bool has_extra() const { return extra_ != nullptr; }

@@ -115,9 +115,9 @@ void sg_vm_dirty_page_tracking_init()
   if (not DirtyPageTrackingExt::EXTENSION_ID.valid()) {
     DirtyPageTrackingExt::EXTENSION_ID =
         simgrid::kernel::resource::VirtualMachineImpl::extension_create<DirtyPageTrackingExt>();
-    simgrid::s4u::VirtualMachine::on_creation.connect(&on_virtual_machine_creation);
-    simgrid::s4u::Exec::on_start.connect(&on_exec_creation);
-    simgrid::s4u::Activity::on_completion.connect(&on_exec_completion);
+    simgrid::s4u::VirtualMachine::on_creation_cb(&on_virtual_machine_creation);
+    simgrid::s4u::Exec::on_start_cb(&on_exec_creation);
+    simgrid::s4u::Activity::on_completion_cb(&on_exec_completion);
   }
 }
 

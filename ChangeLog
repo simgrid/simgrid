@@ -20,6 +20,13 @@ S4U:
  - New function: Engine::track_vetoed_activities() to interrupt run()
    when an activity fails to start, and to keep track of such activities.
    Please see the corresponding example for more info.
+ - Introduce on_X_cb() functions for all signals, to attach a new
+   callback to the signal X. The signal variables are now hidden and
+   only these functions should be used.
+   Rational: this enables the usual deprecation schema where functions
+   remain for 4 releases when we need to modify the signals, while the
+   current code with the signal variables directly visible prevent any
+   smooth transition.
 
 SMPI:
  - Dynamic costs for MPI operations: New API to allow users to dynamically

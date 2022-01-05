@@ -477,11 +477,11 @@ void sg_host_energy_plugin_init()
 
   HostEnergy::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostEnergy>();
 
-  simgrid::s4u::Host::on_creation.connect(&on_creation);
-  simgrid::s4u::Host::on_state_change.connect(&on_host_change);
-  simgrid::s4u::Host::on_speed_change.connect(&on_host_change);
-  simgrid::s4u::Host::on_destruction.connect(&on_host_destruction);
-  simgrid::s4u::Engine::on_simulation_end.connect(&on_simulation_end);
+  simgrid::s4u::Host::on_creation_cb(&on_creation);
+  simgrid::s4u::Host::on_state_change_cb(&on_host_change);
+  simgrid::s4u::Host::on_speed_change_cb(&on_host_change);
+  simgrid::s4u::Host::on_destruction_cb(&on_host_destruction);
+  simgrid::s4u::Engine::on_simulation_end_cb(&on_simulation_end);
   simgrid::kernel::resource::CpuAction::on_state_change.connect(&on_action_state_change);
   // We may only have one actor on a node. If that actor executes something like
   //   compute -> recv -> compute
@@ -489,7 +489,7 @@ void sg_host_energy_plugin_init()
   // that the next trigger would be the 2nd compute, hence ignoring the idle time
   // during the recv call. By updating at the beginning of a compute, we can
   // fix that. (If the cpu is not idle, this is not required.)
-  simgrid::s4u::Exec::on_start.connect([](simgrid::s4u::Exec const& activity) {
+  simgrid::s4u::Exec::on_start_cb([](simgrid::s4u::Exec const& activity) {
     if (activity.get_host_number() == 1) { // We only run on one host
       simgrid::s4u::Host* host         = activity.get_host();
       const simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);

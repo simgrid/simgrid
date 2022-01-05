@@ -189,7 +189,7 @@ void sg_link_load_plugin_init()
   LinkLoad::EXTENSION_ID = simgrid::s4u::Link::extension_create<LinkLoad>();
 
   // Attach new LinkLoad links created in the future.
-  simgrid::s4u::Link::on_creation.connect([](simgrid::s4u::Link& link) {
+  simgrid::s4u::Link::on_creation_cb([](simgrid::s4u::Link& link) {
     if (link.get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI) {
       XBT_DEBUG("Wired link '%s' created. Attaching a LinkLoad to it.", link.get_cname());
       link.extension_set(new LinkLoad(&link));
@@ -202,24 +202,23 @@ void sg_link_load_plugin_init()
   simgrid::kernel::activity::CommImpl::on_start.connect(&on_communication);
   simgrid::kernel::activity::CommImpl::on_completion.connect(&on_communication);
 
-  simgrid::s4u::Link::on_state_change.connect([](simgrid::s4u::Link const& link) {
+  simgrid::s4u::Link::on_state_change_cb([](simgrid::s4u::Link const& link) {
     if (link.get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI) {
       auto link_load = link.extension<LinkLoad>();
       if (link_load->is_tracked())
         link_load->update();
     }
   });
-  simgrid::s4u::Link::on_communication_state_change.connect(
-      [](simgrid::kernel::resource::NetworkAction const& action,
-         simgrid::kernel::resource::Action::State /* previous */) {
-        for (auto const* link : action.get_links()) {
-          if (link != nullptr && link->get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI) {
-            auto link_load = link->get_iface()->extension<LinkLoad>();
-            if (link_load->is_tracked())
-              link_load->update();
-          }
-        }
-      });
+  simgrid::s4u::Link::on_communication_state_change_cb([](simgrid::kernel::resource::NetworkAction const& action,
+                                                          simgrid::kernel::resource::Action::State /* previous */) {
+    for (auto const* link : action.get_links()) {
+      if (link != nullptr && link->get_sharing_policy() != simgrid::s4u::Link::SharingPolicy::WIFI) {
+        auto link_load = link->get_iface()->extension<LinkLoad>();
+        if (link_load->is_tracked())
+          link_load->update();
+      }
+    }
+  });
 }
 
 /**

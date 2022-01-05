@@ -83,9 +83,9 @@ NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
     simgrid::s4u::Engine::on_platform_creation();
 
     /* Initialize the surf models. That must be done after we got all config, and before we need the models.
-     * That is, after the last <config> tag, if any, and before the first of cluster|peer|zone|trace|trace_connect
+     * That is, after the last <config> tag, if any, and before the first of cluster|peer|zone|trace|trace_cb
      *
-     * I'm not sure for <trace> and <trace_connect>, there may be a bug here
+     * I'm not sure for <trace> and <trace_cb>, there may be a bug here
      * (FIXME: check it out by creating a file beginning with one of these tags)
      * but cluster and peer come down to zone creations, so putting this verification here is correct.
      */

@@ -118,9 +118,9 @@ static void remove_active_activity(kernel::activity::ActivityImpl const& act)
 
 VMModel::VMModel(const std::string& name) : HostModel(name)
 {
-  s4u::Host::on_state_change.connect(host_state_change);
-  s4u::Exec::on_start.connect(add_active_exec);
-  s4u::Activity::on_completion.connect(remove_active_exec);
+  s4u::Host::on_state_change_cb(host_state_change);
+  s4u::Exec::on_start_cb(add_active_exec);
+  s4u::Activity::on_completion_cb(remove_active_exec);
   activity::ActivityImpl::on_resumed.connect(add_active_activity);
   activity::ActivityImpl::on_suspended.connect(remove_active_activity);
 }

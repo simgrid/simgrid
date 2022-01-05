@@ -39,9 +39,9 @@ void surf_network_model_init_IB()
   engine->add_model(net_model);
   engine->get_netzone_root()->set_network_model(net_model);
 
-  simgrid::s4u::Link::on_communication_state_change.connect(NetworkIBModel::IB_action_state_changed_callback);
+  simgrid::s4u::Link::on_communication_state_change_cb(NetworkIBModel::IB_action_state_changed_callback);
   simgrid::kernel::activity::CommImpl::on_start.connect(NetworkIBModel::IB_comm_start_callback);
-  simgrid::s4u::Host::on_creation.connect(NetworkIBModel::IB_create_host_callback);
+  simgrid::s4u::Host::on_creation_cb(NetworkIBModel::IB_create_host_callback);
   simgrid::config::set_default<double>("network/weight-S", 8775);
 }
 

@@ -227,13 +227,13 @@ void sg_host_load_plugin_init()
   }
 
   // Make sure that every future host also gets an extension (in case the platform is not loaded yet)
-  simgrid::s4u::Host::on_creation.connect([](simgrid::s4u::Host& host) {
+  simgrid::s4u::Host::on_creation_cb([](simgrid::s4u::Host& host) {
     if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
       return;
     host.extension_set(new HostLoad(&host));
   });
 
-  simgrid::s4u::Exec::on_start.connect([](simgrid::s4u::Exec const& activity) {
+  simgrid::s4u::Exec::on_start_cb([](simgrid::s4u::Exec const& activity) {
     if (activity.get_host_number() == 1) { // We only run on one host
       simgrid::s4u::Host* host         = activity.get_host();
       const simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
@@ -249,7 +249,7 @@ void sg_host_load_plugin_init()
       XBT_WARN("HostLoad plugin currently does not support executions on several hosts");
     }
   });
-  simgrid::s4u::Activity::on_completion.connect([](simgrid::s4u::Activity& activity) {
+  simgrid::s4u::Activity::on_completion_cb([](simgrid::s4u::Activity& activity) {
     const auto* exec = dynamic_cast<simgrid::s4u::Exec*>(&activity);
     if (exec == nullptr) // Only Execs are concerned here
       return;
@@ -264,8 +264,8 @@ void sg_host_load_plugin_init()
       XBT_WARN("HostLoad plugin currently does not support executions on several hosts");
     }
   });
-  simgrid::s4u::Host::on_state_change.connect(&on_host_change);
-  simgrid::s4u::Host::on_speed_change.connect(&on_host_change);
+  simgrid::s4u::Host::on_state_change_cb(&on_host_change);
+  simgrid::s4u::Host::on_speed_change_cb(&on_host_change);
 }
 
 /** @brief Returns the current load of that host, as a ratio = achieved_flops / (core_current_speed * core_amount)
