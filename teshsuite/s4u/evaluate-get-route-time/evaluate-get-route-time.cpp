@@ -22,6 +22,7 @@ int main(int argc, char** argv)
 
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform(argv[1]);
+  e.seal_platform();
 
   std::vector<simgrid::s4u::Host*> hosts = e.get_all_hosts();
   int host_count                         = static_cast<int>(e.get_host_count());
