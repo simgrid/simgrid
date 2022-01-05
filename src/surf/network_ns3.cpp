@@ -20,6 +20,7 @@
 #include <ns3/global-route-manager.h>
 #include <ns3/internet-stack-helper.h>
 #include <ns3/ipv4-address-helper.h>
+#include <ns3/ipv4-global-routing-helper.h>
 #include <ns3/packet-sink-helper.h>
 #include <ns3/point-to-point-helper.h>
 
@@ -170,7 +171,6 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone)
 
   mobility.SetPositionAllocator(positionAllocS);
   mobility.Install(nodes);
-
   ns3::Ipv4AddressHelper address;
   std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
   address.SetBase(addr.c_str(), "255.255.0.0");
@@ -187,6 +187,9 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone)
   } else {
     number_of_links++;
   }
+  /* in theory we can compute the routing table only only once at the platform seal
+   *  however put it here since or platform_created signal is called before the seal right now */
+  ns3::Ipv4GlobalRoutingHelper::RecomputeRoutingTables();
 }
 
 static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs const& cluster)
