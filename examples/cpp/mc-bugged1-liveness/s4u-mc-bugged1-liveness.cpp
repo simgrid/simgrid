@@ -46,7 +46,7 @@ static void garbage_stack(void)
 
 static void coordinator()
 {
-  int CS_used = 0;
+  bool CS_used = false;
   std::queue<simgrid::s4u::Mailbox*> requests;
 
   simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name("coordinator");
@@ -61,7 +61,7 @@ static void coordinator()
         if (m->return_mailbox->get_name() != "1") {
           XBT_INFO("CS idle. Grant immediately");
           m->return_mailbox->put(new Message(Message::Kind::GRANT, mbox), 1000);
-          CS_used = 1;
+          CS_used = true;
         }
       }
     } else {
@@ -73,11 +73,11 @@ static void coordinator()
           req->put(new Message(Message::Kind::GRANT, mbox), 1000);
         } else {
           requests.push(req);
-          CS_used = 0;
+          CS_used = false;
         }
       } else {
         XBT_INFO("CS release. resource now idle");
-        CS_used = 0;
+        CS_used = false;
       }
     }
   }

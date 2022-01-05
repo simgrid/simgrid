@@ -1,0 +1,40 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-mc-centralized-mutex ${platfdir:=.}/small_platform.xml "--log=root.fmt:[%5.2r]%e[%11P][%9h]%e%m%n"
+> [ 0.00] [     client][   Fafard] Ask the request
+> [ 0.00] [     client][   Boivin] Ask the request
+> [ 0.00] [     client][Jacquelin] Ask the request
+> [ 0.00] [     client][  Ginette] Ask the request
+> [ 0.03] [coordinator][ Tremblay] CS idle. Grant immediately
+> [ 0.05] [     client][   Fafard] got the answer. Sleep a bit and release it
+> [ 0.25] [coordinator][ Tremblay] CS already used. Queue the request
+> [ 1.12] [coordinator][ Tremblay] CS already used. Queue the request
+> [ 1.13] [coordinator][ Tremblay] CS already used. Queue the request
+> [ 1.16] [coordinator][ Tremblay] CS release. Grant to queued requests (queue size: 3)
+> [ 1.36] [     client][   Boivin] got the answer. Sleep a bit and release it
+> [ 2.56] [coordinator][ Tremblay] CS release. Grant to queued requests (queue size: 2)
+> [ 3.16] [     client][   Fafard] Ask the request
+> [ 3.42] [     client][Jacquelin] got the answer. Sleep a bit and release it
+> [ 3.45] [coordinator][ Tremblay] CS already used. Queue the request
+> [ 5.28] [coordinator][ Tremblay] CS release. Grant to queued requests (queue size: 2)
+> [ 5.30] [     client][  Ginette] got the answer. Sleep a bit and release it
+> [ 5.56] [     client][   Boivin] Ask the request
+> [ 5.77] [coordinator][ Tremblay] CS already used. Queue the request
+> [ 6.32] [coordinator][ Tremblay] CS release. Grant to queued requests (queue size: 2)
+> [ 6.34] [     client][   Fafard] got the answer. Sleep a bit and release it
+> [ 7.37] [coordinator][ Tremblay] CS release. Grant to queued requests (queue size: 1)
+> [ 7.57] [     client][   Boivin] got the answer. Sleep a bit and release it
+> [ 8.78] [coordinator][ Tremblay] CS release. resource now idle
+> [ 9.28] [     client][Jacquelin] Ask the request
+> [ 9.37] [     client][   Fafard] Got all the CS I wanted, quit now
+> [10.15] [coordinator][ Tremblay] CS idle. Grant immediately
+> [11.01] [     client][Jacquelin] got the answer. Sleep a bit and release it
+> [11.32] [     client][  Ginette] Ask the request
+> [11.33] [coordinator][ Tremblay] CS already used. Queue the request
+> [11.78] [     client][   Boivin] Got all the CS I wanted, quit now
+> [12.87] [coordinator][ Tremblay] CS release. Grant to queued requests (queue size: 1)
+> [12.88] [     client][  Ginette] got the answer. Sleep a bit and release it
+> [13.90] [coordinator][ Tremblay] CS release. resource now idle
+> [13.90] [coordinator][ Tremblay] Received all releases, quit now
+> [16.87] [     client][Jacquelin] Got all the CS I wanted, quit now
+> [18.90] [     client][  Ginette] Got all the CS I wanted, quit now

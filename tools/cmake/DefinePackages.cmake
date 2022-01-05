@@ -1034,7 +1034,6 @@ set(CMAKEFILES_TXT
   examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
   examples/python/CMakeLists.txt
   examples/deprecated/java/CMakeLists.txt
-  examples/deprecated/msg/mc/CMakeLists.txt
 
   teshsuite/java/CMakeLists.txt
   teshsuite/kernel/CMakeLists.txt

@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(bugged2_liveness, "my log messages");
 
 class Message {
 public:
-  enum class Kind { GRANT, NOT_GRANT, REQUEST, RELEASE };
+  enum class Kind { GRANT, NOT_GRANT, REQUEST };
   Kind kind                             = Kind::GRANT;
   simgrid::s4u::Mailbox* return_mailbox = nullptr;
   explicit Message(Message::Kind kind, simgrid::s4u::Mailbox* mbox) : kind(kind), return_mailbox(mbox) {}
@@ -26,7 +26,7 @@ int cs = 0;
 
 static void coordinator()
 {
-  int CS_used = 0; // initially the CS is idle
+  bool CS_used = false; // initially the CS is idle
   std::queue<simgrid::s4u::Mailbox*> requests;
 
   simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name("coordinator");
@@ -40,11 +40,11 @@ static void coordinator()
       } else { // can serve it immediately
         XBT_INFO("CS idle. Grant immediately");
         m->return_mailbox->put(new Message(Message::Kind::GRANT, mbox), 1000);
-        CS_used = 1;
+        CS_used = true;
       }
     } else { // that's a release. Check if someone was waiting for the lock
       XBT_INFO("CS release. resource now idle");
-      CS_used = 0;
+      CS_used = false;
     }
   }
 }

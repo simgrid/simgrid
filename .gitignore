@@ -149,8 +149,6 @@ examples/c/platform-failures/c-platform-failures
 examples/c/platform-properties/c-platform-properties
 examples/c/plugin-host-load/c-plugin-host-load
 examples/c/synchro-semaphore/c-synchro-semaphore
-examples/deprecated/msg/mc/bugged2_liveness
-examples/deprecated/msg/mc/centralized_mutex
 examples/cpp/actor-create/s4u-actor-create
 examples/cpp/actor-daemon/s4u-actor-daemon
 examples/cpp/actor-exiting/s4u-actor-exiting
@@ -223,6 +221,8 @@ examples/cpp/maestro-set/s4u-maestro-set
 examples/cpp/mc-bugged1/s4u-mc-bugged1
 examples/cpp/mc-bugged1-liveness/s4u-mc-bugged1-liveness
 examples/cpp/mc-bugged2/s4u-mc-bugged2
+examples/cpp/mc-bugged2-liveness/s4u-mc-bugged2-liveness
+examples/cpp/mc-centralized-mutex/s4u-mc-centralized-mutex
 examples/cpp/mc-electric-fence/s4u-mc-electric-fence
 examples/cpp/mc-failing-assert/s4u-mc-failing-assert
 examples/cpp/network-factors/s4u-network-factors

@@ -1,3 +1,0 @@
-#!/usr/bin/env tesh
-
-$ ${bindir:=.}/centralized_mutex ${platfdir:=.}/small_platform.xml

@@ -77,7 +77,7 @@ if(SIMGRID_HAVE_MC)
   endif()
 
 else()
-  foreach (example mc-bugged1 mc-bugged2 mc-failing-assert mc-electric-fence 
+  foreach (example mc-bugged1 mc-bugged2  mc-centralized-mutex mc-failing-assert mc-electric-fence 
                    mc-bugged1-liveness mc-bugged2-liveness)
     set(_${example}_disable 1)
   endforeach()
@@ -108,7 +108,7 @@ foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
                  exec-async exec-basic exec-dvfs exec-remote exec-waitany exec-waitfor exec-dependent exec-unassigned
                  exec-ptask-multicore exec-cpu-nonlinear exec-cpu-factors exec-failure
                  maestro-set
-                 mc-bugged1 mc-bugged1-liveness mc-bugged2 mc-bugged2-liveness mc-electric-fence mc-failing-assert
+                 mc-bugged1 mc-bugged1-liveness mc-bugged2 mc-bugged2-liveness mc-centralized-mutex mc-electric-fence mc-failing-assert
                  network-ns3 network-ns3-wifi network-wifi
                  io-async io-priority io-degradation io-file-system io-file-remote io-disk-raw io-dependent
                  platform-failures platform-profile platform-properties

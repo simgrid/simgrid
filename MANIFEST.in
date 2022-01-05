@@ -310,6 +310,8 @@ include examples/cpp/mc-bugged2-liveness/s4u-mc-bugged2-liveness.cpp
 include examples/cpp/mc-bugged2-liveness/s4u-mc-bugged2-liveness.tesh
 include examples/cpp/mc-bugged2/s4u-mc-bugged2.cpp
 include examples/cpp/mc-bugged2/s4u-mc-bugged2.tesh
+include examples/cpp/mc-centralized-mutex/s4u-mc-centralized-mutex.cpp
+include examples/cpp/mc-centralized-mutex/s4u-mc-centralized-mutex.tesh
 include examples/cpp/mc-electric-fence/s4u-mc-electric-fence.cpp
 include examples/cpp/mc-electric-fence/s4u-mc-electric-fence.tesh
 include examples/cpp/mc-failing-assert/s4u-mc-failing-assert.cpp
@@ -495,9 +497,6 @@ include examples/deprecated/java/trace/pingpong/PingPongTask.java
 include examples/deprecated/java/trace/pingpong/Receiver.java
 include examples/deprecated/java/trace/pingpong/Sender.java
 include examples/deprecated/java/trace/pingpong/trace-pingpong.tesh
-include examples/deprecated/msg/mc/centralized_mutex.c
-include examples/deprecated/msg/mc/centralized_mutex.tesh
-include examples/deprecated/msg/mc/deploy_centralized_mutex.xml
 include examples/python/actor-create/actor-create.py
 include examples/python/actor-create/actor-create.tesh
 include examples/python/actor-daemon/actor-daemon.py
@@ -1952,7 +1951,6 @@ include examples/README.rst
 include examples/c/CMakeLists.txt
 include examples/cpp/CMakeLists.txt
 include examples/deprecated/java/CMakeLists.txt
-include examples/deprecated/msg/mc/CMakeLists.txt
 include examples/platforms/CMakeLists.txt
 include examples/platforms/bypassRoute.xml
 include examples/platforms/bypassZoneRoute.xml
