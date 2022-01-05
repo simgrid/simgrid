@@ -13,7 +13,7 @@ int main(int argc, char** argv)
   xbt_assert(argc > 1, "Usage: %s platform_file\n\nExample: %s two_clusters.xml", argv[0], argv[0]);
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Activity::on_completion.connect([](simgrid::s4u::Activity& activity) {
+  simgrid::s4u::Activity::on_completion_cb([](simgrid::s4u::Activity& activity) {
     const auto* exec = dynamic_cast<simgrid::s4u::Exec*>(&activity);
     if (exec == nullptr) // Only Execs are concerned here
       return;

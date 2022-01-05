@@ -238,7 +238,7 @@ void EngineImpl::initialize(int* argc, char** argv)
 
   /* register a function to be called by SURF after the environment creation */
   sg_platf_init();
-  s4u::Engine::on_platform_created.connect([this]() { this->presolve(); });
+  s4u::Engine::on_platform_created_cb([this]() { this->presolve(); });
 
   if (config::get_value<bool>("debug/clean-atexit"))
     atexit(shutdown);
@@ -345,6 +345,15 @@ void EngineImpl::shutdown()
 
   delete instance_;
   instance_ = nullptr;
+}
+
+void EngineImpl::seal_platform() const
+{
+  /* sealing resources before run: links */
+  for (auto const& kv : links_)
+    kv.second->get_iface()->seal();
+  /* seal netzone root, recursively seal children netzones, hosts and disks */
+  netzone_root_->seal();
 }
 
 void EngineImpl::load_platform(const std::string& platf)
@@ -689,6 +698,8 @@ double EngineImpl::solve(double max_date) const
 
 void EngineImpl::run(double max_date)
 {
+  seal_platform();
+
   if (MC_record_replay_is_active()) {
     mc::replay(MC_record_path());
     empty_trash();

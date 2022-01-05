@@ -3,7 +3,7 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-from simgrid import Engine, this_actor
+from simgrid import Actor, Engine, Host, this_actor
 import sys
 
 # This example does not much: It just spans over-polite actor that yield a large amount
@@ -15,27 +15,17 @@ import sys
 # It can also be used to benchmark our context-switching mechanism.
 
 
-class Yielder:
-    """Main function of the Yielder actor"""
-    number_of_yields = 0
-
-    def __init__(self, *args):
-        self.number_of_yields = int(args[0])
-
-    def __call__(self):
-        for _ in range(self.number_of_yields):
-            this_actor.yield_()
-        this_actor.info("I yielded {:d} times. Goodbye now!".format(
-            self.number_of_yields))
-
+def yielder (number_of_yields):
+    for _ in range(number_of_yields):
+        this_actor.yield_()
+    this_actor.info("I yielded {:d} times. Goodbye now!".format(number_of_yields))
 
 if __name__ == '__main__':
     e = Engine(sys.argv)
 
     e.load_platform(sys.argv[1])             # Load the platform description
-    # Register the class representing the actors
-    e.register_actor("yielder", Yielder)
-
-    e.load_deployment(sys.argv[2])
+  
+    Actor.create("yielder", Host.by_name("Tremblay"), yielder, 10)
+    Actor.create("yielder", Host.by_name("Ruby"), yielder, 15)
 
     e.run()  # - Run the simulation

@@ -192,9 +192,10 @@ void mpi_comm_call_errhandler_ (int* comm,int* errorcode, int* ierr){
  *ierr = MPI_Comm_call_errhandler(simgrid::smpi::Comm::f2c(*comm), *errorcode);
 }
 
-void mpi_comm_connect_ ( char *port_name, int* info, int* root, int* comm, int*newcomm, int* ierr){
+void mpi_comm_connect_(char* port_name, int* info, int* root, int* comm, int* newcomm, int* ierr)
+{
   MPI_Comm tmp;
-  *ierr = MPI_Comm_connect( port_name, simgrid::smpi::Info::f2c(*info), *root, simgrid::smpi::Comm::f2c(*comm), &tmp);
+  *ierr = MPI_Comm_connect(port_name, simgrid::smpi::Info::f2c(*info), *root, simgrid::smpi::Comm::f2c(*comm), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newcomm = tmp->c2f();
   }

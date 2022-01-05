@@ -408,7 +408,9 @@ UNIMPLEMENTED_WRAPPED_PMPI_CALL_NOFAIL(int,MPI_Add_error_string,( int errorcode,
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Cart_map,(MPI_Comm comm_old, int ndims, const int* dims, const int* periods, int* newrank) ,(comm_old, ndims, dims, periods, newrank))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Close_port,(const char *port_name),( port_name))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_accept,(const char *port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *newcomm),( port_name, info, root, comm, newcomm))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_connect,(const char *port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm *newcomm),( port_name, info, root, comm, newcomm))
+UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_Comm_connect,
+                                (const char* port_name, MPI_Info info, int root, MPI_Comm comm, MPI_Comm* newcomm),
+                                (port_name, info, root, comm, newcomm))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_get_parent,( MPI_Comm *parent),( parent))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_idup,( MPI_Comm comm, MPI_Comm *newcomm, MPI_Request* request),( comm,  newcomm, request))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Comm_join,( int fd, MPI_Comm *intercomm),( fd, intercomm))

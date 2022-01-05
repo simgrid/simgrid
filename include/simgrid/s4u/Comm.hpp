@@ -63,10 +63,17 @@ public:
    */
   static void sendto(Host* from, Host* to, uint64_t simulated_size_in_bytes);
 
+  static void on_send_cb(const std::function<void(Comm const&)>& cb) { on_send.connect(cb); }
+  static void on_recv_cb(const std::function<void(Comm const&)>& cb) { on_recv.connect(cb); }
+  static void on_start_cb(const std::function<void(Comm const&)>& cb) { on_start.connect(cb); }
+  static void on_completion_cb(const std::function<void(Comm const&)>& cb) { on_completion.connect(cb); }
+#ifndef DOXYGEN
+  /* FIXME signals should be private */
   static xbt::signal<void(Comm const&)> on_send;
   static xbt::signal<void(Comm const&)> on_recv;
   static xbt::signal<void(Comm const&)> on_start;
   static xbt::signal<void(Comm const&)> on_completion;
+#endif
 
   /*! take a vector s4u::CommPtr and return when one of them is finished.
    * The return value is the rank of the first finished CommPtr. */

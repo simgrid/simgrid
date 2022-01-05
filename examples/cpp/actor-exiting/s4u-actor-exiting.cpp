@@ -77,10 +77,10 @@ int main(int argc, char* argv[])
   e.load_platform(argv[1]); /* - Load the platform description */
 
   /* Register a callback in the Actor::on_termination signal. It will be called for every terminated actors */
-  sg4::Actor::on_termination.connect(
+  sg4::Actor::on_termination_cb(
       [](sg4::Actor const& actor) { XBT_INFO("Actor %s terminates now", actor.get_cname()); });
   /* Register a callback in the Actor::on_destruction signal. It will be called for every destructed actors */
-  sg4::Actor::on_destruction.connect(
+  sg4::Actor::on_destruction_cb(
       [](sg4::Actor const& actor) { XBT_INFO("Actor %s gets destroyed now", actor.get_cname()); });
 
   /* Create some actors */

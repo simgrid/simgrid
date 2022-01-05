@@ -42,13 +42,15 @@ protected:
 
   void reset() const;
 
+  static xbt::signal<void(Exec const&)> on_start;
+
 public:
 #ifndef DOXYGEN
   Exec(Exec const&) = delete;
   Exec& operator=(Exec const&) = delete;
 #endif
   /*! Signal fired each time that an execution actually starts (no veto) */
-  static xbt::signal<void(Exec const&)> on_start;
+  static void on_start_cb(const std::function<void(Exec const&)>& cb) { on_start.connect(cb); }
 
   static ExecPtr init();
   Exec* start() override;

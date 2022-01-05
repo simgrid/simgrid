@@ -1,0 +1,37 @@
+#!/usr/bin/env tesh
+p Test the DAX loader on a small DAX instance
+
+$ ${bindir:=.}/s4u-dag-from-dax --log=no_loc ${platfdir}/cluster_backbone.xml ${srcdir:=.}/smalldax.xml
+> [0.000000] [dag_parsing/WARNING] Ignore file o1 size redefinition from 1000000 to 304
+> [0.000000] [dag_parsing/WARNING] Ignore file o2 size redefinition from 1000000 to 304
+> [0.000000] [dag_from_dax/INFO] --------- Display all activities of the loaded DAG -----------
+> [0.000000] [dag_from_dax/INFO] 'root' is an Exec: 0 flops to execute. Dependencies: solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dax/INFO] '1@task1' is an Exec: 42000000000 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dax/INFO] '2@task2' is an Exec: 42000000000 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dax/INFO] '3@task1' is an Exec: 42000000000 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dax/INFO] 'root_i1_1@task1' is a Comm: 1000000 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dax/INFO] 'root_i2_2@task2' is a Comm: 1000000 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dax/INFO] '1@task1_o1_3@task1' is a Comm: 1000000 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dax/INFO] '2@task2_o2_3@task1' is a Comm: 1000000 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dax/INFO] '3@task1_o3_end' is a Comm: 4167312 bytes to transfer. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dax/INFO] 'end' is an Exec: 0 flops to execute. Dependencies: NOT solved; Ressources: NOT assigned
+> [0.000000] [dag_from_dax/INFO] ------------------- Schedule tasks ---------------------------
+> [0.000000] [dag_from_dax/INFO] ------------------- Run the schedule -------------------------
+> [84.090777] [dag_from_dax/INFO] -------------- Summary of executed schedule ------------------
+> [84.090777] [dag_from_dax/INFO] [0.000000->0.000000] 'root' executed on node-0.simgrid.org
+> [84.090777] [dag_from_dax/INFO] [0.024301->42.024301] '1@task1' executed on node-1.simgrid.org
+> [84.090777] [dag_from_dax/INFO] [0.024301->42.024301] '2@task2' executed on node-10.simgrid.org
+> [84.090777] [dag_from_dax/INFO] [42.048602->84.048602] '3@task1' executed on node-11.simgrid.org
+> [84.090777] [dag_from_dax/INFO] [0.000000->0.024301] 'root_i1_1@task1' transferred from node-0.simgrid.org to node-1.simgrid.org
+> [84.090777] [dag_from_dax/INFO] [0.000000->0.024301] 'root_i2_2@task2' transferred from node-0.simgrid.org to node-10.simgrid.org
+> [84.090777] [dag_from_dax/INFO] [42.024301->42.048602] '1@task1_o1_3@task1' transferred from node-1.simgrid.org to node-11.simgrid.org
+> [84.090777] [dag_from_dax/INFO] [42.024301->42.048602] '2@task2_o2_3@task1' transferred from node-10.simgrid.org to node-11.simgrid.org
+> [84.090777] [dag_from_dax/INFO] [84.048602->84.090777] '3@task1_o3_end' transferred from node-11.simgrid.org to node-0.simgrid.org
+> [84.090777] [dag_from_dax/INFO] [84.090777->84.090777] 'end' executed on node-0.simgrid.org
+
+p Test the DAX loader with a DAX comprising a cycle.
+
+! expect return 2
+$ ${bindir:=.}/s4u-dag-from-dax --log=no_loc ${platfdir}/cluster_backbone.xml ${srcdir:=.}/simple_dax_with_cycle.xml
+> [0.000000] [dag_parsing/ERROR] The DAX described in simple_dax_with_cycle.xml is not a DAG. It contains a cycle.
+> [0.000000] [dag_from_dax/ERROR] A problem occurred during DAX parsing (cycle or syntax). Do not continue this test

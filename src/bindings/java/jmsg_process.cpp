@@ -141,15 +141,13 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_getProperty(JNIEnv *env, 
     jxbt_throw_notbound(env, "process", jprocess);
     return nullptr;
   }
-  const char* name = env->GetStringUTFChars((jstring)jname, nullptr);
+  jstring_wrapper name(env, (jstring)jname);
 
   const char* property = actor->get_property(name);
   if (not property)
     return nullptr;
 
   jobject jproperty = env->NewStringUTF(property);
-
-  env->ReleaseStringUTFChars((jstring)jname, name);
 
   return jproperty;
 }

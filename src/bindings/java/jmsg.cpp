@@ -104,9 +104,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv* env, jclass, jobjec
   args.emplace_back("java");
   for (int index = 1; index < argc; index++) {
     auto jval       = (jstring)env->GetObjectArrayElement(jargs, index - 1);
-    const char* tmp = env->GetStringUTFChars(jval, nullptr);
-    args.emplace_back(tmp);
-    env->ReleaseStringUTFChars(jval, tmp);
+    jstring_wrapper tmp(env, jval);
+    args.emplace_back(tmp.value);
   }
 
   std::unique_ptr<char* []> argv(new char*[argc + 1]);
@@ -150,11 +149,8 @@ JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv* env, jclass)
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv* env, jclass, jstring jplatformFile)
 {
-  const char* platformFile = env->GetStringUTFChars(jplatformFile, nullptr);
-
+  jstring_wrapper platformFile(env, jplatformFile);
   simgrid_load_platform(platformFile);
-
-  env->ReleaseStringUTFChars(jplatformFile, platformFile);
 }
 
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNIEnv* env, jclass)
@@ -177,51 +173,45 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNI
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_debug(JNIEnv* env, jclass, jstring js)
 {
-  const char* s = env->GetStringUTFChars(js, nullptr);
-  XBT_DEBUG("%s", s);
-  env->ReleaseStringUTFChars(js, s);
+  jstring_wrapper s(env, js);
+  XBT_DEBUG("%s", s.value);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_verb(JNIEnv* env, jclass, jstring js)
 {
-  const char* s = env->GetStringUTFChars(js, nullptr);
-  XBT_VERB("%s", s);
-  env->ReleaseStringUTFChars(js, s);
+  jstring_wrapper s(env, js);
+  XBT_VERB("%s", s.value);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_info(JNIEnv* env, jclass, jstring js)
 {
-  const char* s = env->GetStringUTFChars(js, nullptr);
-  XBT_INFO("%s", s);
-  env->ReleaseStringUTFChars(js, s);
+  jstring_wrapper s(env, js);
+  XBT_INFO("%s", s.value);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_warn(JNIEnv* env, jclass, jstring js)
 {
-  const char* s = env->GetStringUTFChars(js, nullptr);
-  XBT_WARN("%s", s);
-  env->ReleaseStringUTFChars(js, s);
+  jstring_wrapper s(env, js);
+  XBT_WARN("%s", s.value);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_error(JNIEnv* env, jclass, jstring js)
 {
-  const char* s = env->GetStringUTFChars(js, nullptr);
-  XBT_ERROR("%s", s);
-  env->ReleaseStringUTFChars(js, s);
+  jstring_wrapper s(env, js);
+  XBT_ERROR("%s", s.value);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_critical(JNIEnv* env, jclass, jstring js)
 {
-  const char* s = env->GetStringUTFChars(js, nullptr);
-  XBT_CRITICAL("%s", s);
-  env->ReleaseStringUTFChars(js, s);
+  jstring_wrapper s(env, js);
+  XBT_CRITICAL("%s", s.value);
 }
 
 static void java_main(int argc, char* argv[]);
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_deployApplication(JNIEnv* env, jclass, jstring jdeploymentFile)
 {
-  const char* deploymentFile = env->GetStringUTFChars(jdeploymentFile, nullptr);
+  jstring_wrapper deploymentFile(env, jdeploymentFile);
 
   simgrid_register_default(java_main);
   simgrid_load_deployment(deploymentFile);

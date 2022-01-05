@@ -54,18 +54,23 @@ public:
 protected:
   virtual ~Host(); // Call destroy() instead of manually deleting it.
   Host* set_netpoint(kernel::routing::NetPoint* netpoint);
-#endif
+
+  static xbt::signal<void(Host&)> on_creation;
+  static xbt::signal<void(Host const&)> on_destruction;
 
 public:
-  /** Called on each newly created host */
-  static xbt::signal<void(Host&)> on_creation;
-  /** Called when the machine is turned on or off (called AFTER the change) */
-  static xbt::signal<void(Host const&)> on_state_change;
-  /** Called when the speed of the machine is changed (called AFTER the change)
-   * (either because of a pstate switch or because of an external load event coming from the profile) */
   static xbt::signal<void(Host const&)> on_speed_change;
-  /** Called just before destructing a host */
-  static xbt::signal<void(Host const&)> on_destruction;
+  static xbt::signal<void(Host const&)> on_state_change;
+#endif
+  /** Add a callback fired on each newly created host */
+  static void on_creation_cb(const std::function<void(Host&)>& cb) { on_creation.connect(cb); }
+  /** Add a callback fired when the machine is turned on or off (called AFTER the change) */
+  static void on_state_change_cb(const std::function<void(Host const&)>& cb) { on_state_change.connect(cb); }
+  /** Add a callback fired when the speed of the machine is changed (called AFTER the change)
+   * (either because of a pstate switch or because of an external load event coming from the profile) */
+  static void on_speed_change_cb(const std::function<void(Host const&)>& cb) { on_speed_change.connect(cb); }
+  /** Add a callback fired just before destructing a host */
+  static void on_destruction_cb(const std::function<void(Host const&)>& cb) { on_destruction.connect(cb); }
 
   virtual void destroy();
 #ifndef DOXYGEN

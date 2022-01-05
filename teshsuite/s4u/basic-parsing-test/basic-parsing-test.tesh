@@ -1,47 +1,47 @@
 ! output sort
 
-$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/one_cluster.xml --log=root.fmt=%m%n
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../platforms/one_cluster.xml --log=root.fmt=%m%n
 > Workstation number: 5, link number: 12
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/host_attributes.xml --log=root.fmt=%m%n
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../platforms/host_attributes.xml --log=root.fmt=%m%n
 > Workstation number: 5, link number: 1
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/link_attributes.xml --log=root.fmt=%m%n
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../platforms/link_attributes.xml --log=root.fmt=%m%n
 > Workstation number: 1, link number: 5
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/three_hosts_non_symmetric_route.xml --log=root.fmt=%m%n
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../platforms/three_hosts_non_symmetric_route.xml --log=root.fmt=%m%n
 > Workstation number: 3, link number: 4
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/two_clusters.xml --log=root.fmt=%m%n
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../platforms/two_clusters.xml --log=root.fmt=%m%n
 > Workstation number: 4, link number: 12
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/two_hosts_multi_hop.xml --log=root.fmt=%m%n
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../platforms/two_hosts_multi_hop.xml --log=root.fmt=%m%n
 > Workstation number: 2, link number: 4
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/two_hosts_one_link.xml --log=root.fmt=%m%n
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../platforms/two_hosts_one_link.xml --log=root.fmt=%m%n
 > Workstation number: 2, link number: 2
 
 ! output sort
-$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/four_hosts_floyd.xml --log=root.fmt=%m%n
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../platforms/four_hosts_floyd.xml --log=root.fmt=%m%n
 > Workstation number: 4, link number: 5
 
 ! output sort
 $ ${bindir:=.}/basic-parsing-test ${platfdir:=.}/cloud.xml --log=root.fmt=%m%n
 > Workstation number: 510, link number: 1056
 
-$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/properties.xml --log=root.fmt=%m%n
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../platforms/properties.xml --log=root.fmt=%m%n
 > Configuration change: Set 'cpu/optim' to 'TI'
 > Configuration change: Set 'host/model' to 'compound'
 > Configuration change: Set 'maxmin/precision' to '0.000010'
 > Workstation number: 1, link number: 1
 
-$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../simdag/platforms/properties.xml --cfg=cpu/optim:TI --log=root.fmt=%m%n
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../platforms/properties.xml --cfg=cpu/optim:TI --log=root.fmt=%m%n
 > Configuration change: Set 'cpu/optim' to 'TI'
 > The custom configuration 'cpu/optim' is already defined by user!
 > Configuration change: Set 'host/model' to 'compound'

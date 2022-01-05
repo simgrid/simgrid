@@ -14,7 +14,7 @@ Peer-to-Peer systems,
 Volunteer Computing (`🖹 <http://www.sciencedirect.com/science/article/pii/S1569190X17301028>`__)
 Fog Computing (`🖹 <http://ieeexplore.ieee.org/document/7946412/>`__),
 MapReduce (`🖹 <http://www.sciencedirect.com/science/article/pii/S0167819113000215>`__) and
-`much more <https://simgrid.org/Usages.html>`_.
+`much more <https://simgrid.org/usages.html>`_.
 
 The simulation models are **fast** (`🖹 <http://hal.inria.fr/hal-00650233>`__) and
 **highly scalable** (`🖹 <http://hal.inria.fr/inria-00602216/>`__) while
@@ -54,9 +54,9 @@ of every page. Bugs in the code should be reported
    :maxdepth: 1
    :caption: Tutorials:
 
-	Simulating Distributed Algorithms <Tutorial_Algorithms.rst>
-	Simulating MPI Applications <Tutorial_MPI_Applications.rst>
-	Model-checking algorithms and applications <Tutorial_Model-checking.rst>
+	Simulating distributed algorithms <Tutorial_Algorithms.rst>
+	Simulating MPI applications <Tutorial_MPI_Applications.rst>
+	Model-checking algorithms <Tutorial_Model-checking.rst>
 
 .. toctree::
    :hidden:
@@ -76,16 +76,16 @@ of every page. Bugs in the code should be reported
       Describing the simulated platform <Platform.rst>
          Network topology examples <Platform_examples.rst>
          Advanced routing <Platform_routing.rst>
-         Modeling hints <Platform_howtos.rst>
          XML reference <XML_reference.rst>
          C++ platforms <Platform_cpp.rst>
-      Describing the experimental setup <Experimental_setup.rst>
+      The SimGrid models <Models.rst>      
+         SimGrid plugins <Plugins.rst>
+         Modeling hints <Modeling_howtos.rst>
+         Calibrating the models <Calibrating_the_models.rst>   
+      Running an experiment <Experimental_setup.rst>
          Configuring SimGrid <Configuring_SimGrid.rst>
          Deploying your application <Deploying_your_application.rst>
-         The SimGrid models <Models.rst>
-      SimGrid plugins <Plugins.rst>
-      Simulation outcomes <Outcomes.rst>
-      Frequently asked questions <faq.rst>
+         Simulation outcomes <Outcomes.rst>
 
 .. toctree::
    :hidden:

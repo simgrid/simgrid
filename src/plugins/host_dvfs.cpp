@@ -295,11 +295,11 @@ public:
         task_id           = 0;
       }
     });
-    simgrid::s4u::Exec::on_start.connect([this](simgrid::s4u::Exec const& activity) {
+    simgrid::s4u::Exec::on_start_cb([this](simgrid::s4u::Exec const& activity) {
       if (activity.get_host() == get_host())
         pre_task();
     });
-    simgrid::s4u::Activity::on_completion.connect([this](simgrid::s4u::Activity& activity) {
+    simgrid::s4u::Activity::on_completion_cb([this](simgrid::s4u::Activity& activity) {
       const auto* exec = dynamic_cast<simgrid::s4u::Exec*>(&activity);
       if (exec == nullptr) // Only Execs are concerned here
         return;
@@ -444,5 +444,5 @@ void sg_host_dvfs_plugin_init()
 
   sg_host_load_plugin_init();
 
-  simgrid::s4u::Host::on_creation.connect(&on_host_added);
+  simgrid::s4u::Host::on_creation_cb(&on_host_added);
 }

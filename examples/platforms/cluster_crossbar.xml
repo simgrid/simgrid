@@ -17,7 +17,7 @@
   -->
   <zone id="world" routing="Full">
     <cluster id="cluster-crossbar"
-             prefix="node-" radical="0-65536" suffix=".simgrid.org"
+             prefix="node-" radical="0-65535" suffix=".simgrid.org"
 	     speed="1Gf" bw="125MBps" lat="50us"/>
   </zone>
 </platform>

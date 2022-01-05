@@ -18,37 +18,6 @@ static void runner(simgrid::s4u::ExecPtr activity)
   XBT_INFO("Goodbye now!");
 }
 
-/* This actor tests the ongoing execution until its completion, and don't wait before it's terminated. */
-static void monitor()
-{
-  double computation_amount = simgrid::s4u::this_actor::get_host()->get_speed();
-  XBT_INFO("Execute %g flops, should take 1 second.", computation_amount);
-  simgrid::s4u::ExecPtr activity = simgrid::s4u::this_actor::exec_init(computation_amount);
-  activity->start();
-
-  while (not activity->test()) {
-    XBT_INFO("Remaining amount of flops: %g (%.0f%%)", activity->get_remaining(),
-             100 * activity->get_remaining_ratio());
-    simgrid::s4u::this_actor::sleep_for(0.3);
-  }
-
-  XBT_INFO("Goodbye now!");
-}
-
-/* This actor cancels the ongoing execution after a while. */
-static void canceller()
-{
-  double computation_amount = simgrid::s4u::this_actor::get_host()->get_speed();
-
-  XBT_INFO("Execute %g flops, should take 1 second.", computation_amount);
-  simgrid::s4u::ExecPtr activity = simgrid::s4u::this_actor::exec_async(computation_amount);
-  simgrid::s4u::this_actor::sleep_for(0.5);
-  XBT_INFO("I changed my mind, cancel!");
-  activity->cancel();
-
-  XBT_INFO("Goodbye now!");
-}
-
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
@@ -62,7 +31,7 @@ int main(int argc, char* argv[])
   while (activity->get_remaining() > 0) {
     XBT_INFO("Remaining amount of flops: %g (%.0f%%)", activity->get_remaining(),
              100 * activity->get_remaining_ratio());
-    e.run_until(e.get_clock() + 1);
+    e.run_until(simgrid::s4u::Engine::get_clock() + 1);
   }
 
   XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());

@@ -384,13 +384,13 @@ static void on_simulation_start()
   XBT_DEBUG("Filename %s is open for writing", filename.c_str());
 
   if (format == "Paje") {
-    Container::on_creation.connect(on_container_creation_paje);
-    Container::on_destruction.connect(on_container_destruction_paje);
-    EntityValue::on_creation.connect(on_entity_value_creation);
-    Type::on_creation.connect(on_type_creation);
-    LinkType::on_creation.connect(on_link_type_creation);
-    PajeEvent::on_creation.connect(on_event_creation);
-    PajeEvent::on_destruction.connect(on_event_destruction);
+    Container::on_creation_cb(on_container_creation_paje);
+    Container::on_destruction_cb(on_container_destruction_paje);
+    EntityValue::on_creation_cb(on_entity_value_creation);
+    Type::on_creation_cb(on_type_creation);
+    LinkType::on_creation_cb(on_link_type_creation);
+    PajeEvent::on_creation_cb(on_event_creation);
+    PajeEvent::on_destruction_cb(on_event_destruction);
 
     paje::dump_generator_version();
 
@@ -404,9 +404,9 @@ static void on_simulation_start()
     paje::dump_header(trace_basic, TRACE_display_sizes());
   } else {
     trace_format = TraceFormat::Ti;
-    Container::on_creation.connect(on_container_creation_ti);
-    Container::on_destruction.connect(on_container_destruction_ti);
-    StateEvent::on_destruction.connect(on_state_event_destruction);
+    Container::on_creation_cb(on_container_creation_ti);
+    Container::on_destruction_cb(on_container_destruction_ti);
+    StateEvent::on_destruction_cb(on_state_event_destruction);
   }
 
   trace_active = true;
@@ -464,10 +464,10 @@ void init()
                             6);
 
   /* Connect Engine callbacks */
-  s4u::Engine::on_platform_creation.connect(on_simulation_start);
-  s4u::Engine::on_time_advance.connect([](double /*time_delta*/) { dump_buffer(false); });
-  s4u::Engine::on_deadlock.connect(on_simulation_end);
-  s4u::Engine::on_simulation_end.connect(on_simulation_end);
+  s4u::Engine::on_platform_creation_cb(on_simulation_start);
+  s4u::Engine::on_time_advance_cb([](double /*time_delta*/) { dump_buffer(false); });
+  s4u::Engine::on_deadlock_cb(on_simulation_end);
+  s4u::Engine::on_simulation_end_cb(on_simulation_end);
 }
 } // namespace instr
 } // namespace simgrid

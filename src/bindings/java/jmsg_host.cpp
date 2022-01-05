@@ -58,16 +58,14 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv* env, jclas
     jxbt_throw_null(env, "No host can have a null name");
     return nullptr;
   }
-  const char* name = env->GetStringUTFChars(jname, nullptr);
+  jstring_wrapper name(env, jname);
   /* get the host by name       (the hosts are created during the grid resolution) */
   sg_host_t host = sg_host_by_name(name);
 
   if (not host) { /* invalid name */
     jxbt_throw_host_not_found(env, name);
-    env->ReleaseStringUTFChars(jname, name);
     return nullptr;
   }
-  env->ReleaseStringUTFChars(jname, name);
 
   if (not host->extension(JAVA_HOST_LEVEL)) { /* native host not associated yet with java host */
     /* Instantiate a new java host */
@@ -178,7 +176,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getProperty(JNIEnv *env, job
     jxbt_throw_notbound(env, "host", jhost);
     return nullptr;
   }
-  const char* name = env->GetStringUTFChars((jstring)jname, nullptr);
+  jstring_wrapper name(env, (jstring)jname);
 
   const char* property = sg_host_get_property_value(host, name);
   if (not property) {
@@ -186,8 +184,6 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getProperty(JNIEnv *env, job
   }
 
   jobject jproperty = env->NewStringUTF(property);
-
-  env->ReleaseStringUTFChars((jstring) jname, name);
 
   return jproperty;
 }
@@ -200,14 +196,11 @@ Java_org_simgrid_msg_Host_setProperty(JNIEnv *env, jobject jhost, jobject jname,
     jxbt_throw_notbound(env, "host", jhost);
     return;
   }
-  const char* name       = env->GetStringUTFChars((jstring)jname, nullptr);
-  const char* value_java = env->GetStringUTFChars((jstring)jvalue, nullptr);
+  jstring_wrapper name(env, (jstring)jname);
+  jstring_wrapper value_java(env, (jstring)jvalue);
   const char* value      = xbt_strdup(value_java);
 
   sg_host_set_property_value(host, name, value);
-
-  env->ReleaseStringUTFChars((jstring) jvalue, value_java);
-  env->ReleaseStringUTFChars((jstring) jname, name);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Host_isOn(JNIEnv * env, jobject jhost)
@@ -254,9 +247,8 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_all(JNIEnv * env, jclas
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, jclass cls_arg, jobject jname)
 {
-  const char* name = env->GetStringUTFChars((jstring)jname, nullptr);
+  jstring_wrapper name(env, (jstring)jname);
   sg_mailbox_set_receiver(name);
-  env->ReleaseStringUTFChars((jstring) jname, name);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_updateAllEnergyConsumptions(JNIEnv* env, jclass cls)

@@ -596,11 +596,11 @@ int smpi_main(const char* executable, int argc, char* argv[])
 // Called either directly from the user code, or from the code called by smpirun
 void SMPI_init(){
   smpi_init_options_internal(false);
-  simgrid::s4u::Actor::on_creation.connect([](simgrid::s4u::Actor& actor) {
+  simgrid::s4u::Actor::on_creation_cb([](simgrid::s4u::Actor& actor) {
     if (not actor.is_daemon())
       actor.extension_set<simgrid::smpi::ActorExt>(new simgrid::smpi::ActorExt(&actor));
   });
-  simgrid::s4u::Host::on_creation.connect(
+  simgrid::s4u::Host::on_creation_cb(
       [](simgrid::s4u::Host& host) { host.extension_set(new simgrid::smpi::Host(&host)); });
   for (auto const& host : simgrid::s4u::Engine::get_instance()->get_all_hosts())
     host->extension_set(new simgrid::smpi::Host(host));

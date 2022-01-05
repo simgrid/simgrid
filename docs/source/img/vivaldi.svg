@@ -887,11 +887,11 @@
        id="text418"
        x="322.50092"
        y="-2255.2273"><tspan
-         x="322.50092 349.36172"
+         x="322.50092"
          y="-2255.2273"
          sodipodi:role="line"
          id="tspan416"
-         style="stroke-width:2.02122">+h</tspan></text><text
+         style="stroke-width:2.02122">+ z</tspan></text><text
        transform="scale(1,-1)"
        style="font-variant:normal;font-weight:normal;font-size:16.1093px;font-family:CMSSBX10;-inkscape-font-specification:CMSSBX10;writing-mode:lr-tb;fill:#231f20;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.02122"
        id="text422"
@@ -906,11 +906,11 @@
        id="text426"
        x="381.89651"
        y="-2255.2273"><tspan
-         x="381.89651 408.73312"
+         x="381.89651"
          y="-2255.2273"
          sodipodi:role="line"
          id="tspan424"
-         style="stroke-width:2.02122">+h</tspan></text><text
+         style="stroke-width:2.02122">+ z</tspan></text><text
        transform="scale(1,-1)"
        style="font-variant:normal;font-weight:normal;font-size:16.1093px;font-family:CMSSBX10;-inkscape-font-specification:CMSSBX10;writing-mode:lr-tb;fill:#231f20;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:2.02122"
        id="text430"
@@ -961,7 +961,7 @@
          id="tspan535311"
          style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:18px;font-family:serif;-inkscape-font-specification:serif;stroke:none;stroke-width:0.749999px"
          x="76.447578"
-         y="-2383.0488">h</tspan></text><text
+         y="-2383.0488">z</tspan></text><text
        xml:space="preserve"
        style="font-weight:bold;font-size:18px;line-height:21.6px;font-family:serif;-inkscape-font-specification:'serif Bold';text-decoration:none;text-decoration-line:none;text-decoration-color:#000000;letter-spacing:0px;word-spacing:0px;fill:#000000;stroke:#000000;stroke-width:0.749999px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stop-color:#000000"
        x="81.32592"

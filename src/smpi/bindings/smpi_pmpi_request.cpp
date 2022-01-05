@@ -98,7 +98,7 @@ int PMPI_Start(MPI_Request * request)
     MPI_Request req = *request;
     aid_t my_proc_id = (req->comm() != MPI_COMM_NULL) ? simgrid::s4u::this_actor::get_pid() : -1;
     TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::Pt2PtTIData("Start", req->dst(), req->size(), req->tag(),
+                       new simgrid::instr::Pt2PtTIData("Start", MPI_COMM_WORLD->group()->rank(req->dst()), req->size(), req->tag(),
                                                        simgrid::smpi::Datatype::encode(req->type())));
     if (not TRACE_smpi_view_internals() && req->flags() & MPI_REQ_SEND)
       TRACE_smpi_send(my_proc_id, my_proc_id, getPid(req->comm(), req->dst()), req->tag(), req->size());
@@ -171,7 +171,7 @@ int PMPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MP
   const SmpiBenchGuard suspend_bench;
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(my_proc_id, __func__,
-                     new simgrid::instr::Pt2PtTIData("irecv", src,
+                     new simgrid::instr::Pt2PtTIData("irecv", MPI_COMM_WORLD->group()->rank(getPid(comm, src)),
                                                      count,
                                                      tag, simgrid::smpi::Datatype::encode(datatype)));
   *request = simgrid::smpi::Request::irecv(buf, count, datatype, src, tag, comm);
@@ -189,7 +189,7 @@ int PMPI_Isend(const void *buf, int count, MPI_Datatype datatype, int dst, int t
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   aid_t trace_dst  = getPid(comm, dst);
   TRACE_smpi_comm_in(my_proc_id, __func__,
-                     new simgrid::instr::Pt2PtTIData("isend", dst,
+                     new simgrid::instr::Pt2PtTIData("isend", MPI_COMM_WORLD->group()->rank(trace_dst),
                                                      count,
                                                      tag, simgrid::smpi::Datatype::encode(datatype)));
   TRACE_smpi_send(my_proc_id, my_proc_id, trace_dst, tag, count * datatype->size());
@@ -214,7 +214,7 @@ int PMPI_Issend(const void* buf, int count, MPI_Datatype datatype, int dst, int 
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   aid_t trace_dst  = getPid(comm, dst);
   TRACE_smpi_comm_in(my_proc_id, __func__,
-                     new simgrid::instr::Pt2PtTIData("ISsend", dst,
+                     new simgrid::instr::Pt2PtTIData("ISsend", MPI_COMM_WORLD->group()->rank(trace_dst),
                                                      count,
                                                      tag, simgrid::smpi::Datatype::encode(datatype)));
   TRACE_smpi_send(my_proc_id, my_proc_id, trace_dst, tag, count * datatype->size());
@@ -245,7 +245,7 @@ int PMPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI
   } else {
     aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
     TRACE_smpi_comm_in(my_proc_id, __func__,
-                       new simgrid::instr::Pt2PtTIData("recv", src,
+                       new simgrid::instr::Pt2PtTIData("recv", MPI_COMM_WORLD->group()->rank(getPid(comm, src)),
                                                        count,
                                                        tag, simgrid::smpi::Datatype::encode(datatype)));
 
@@ -271,7 +271,7 @@ int PMPI_Send(const void *buf, int count, MPI_Datatype datatype, int dst, int ta
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   aid_t dst_traced = getPid(comm, dst);
   TRACE_smpi_comm_in(my_proc_id, __func__,
-                     new simgrid::instr::Pt2PtTIData("send", dst,
+                     new simgrid::instr::Pt2PtTIData("send", MPI_COMM_WORLD->group()->rank(dst_traced),
                                                      count,
                                                      tag, simgrid::smpi::Datatype::encode(datatype)));
   if (not TRACE_smpi_view_internals()) {
@@ -301,7 +301,7 @@ int PMPI_Bsend(const void* buf, int count, MPI_Datatype datatype, int dst, int t
   if (bsend_buf == nullptr || bsend_buf_size < size + MPI_BSEND_OVERHEAD)
     return MPI_ERR_BUFFER;
   TRACE_smpi_comm_in(my_proc_id, __func__,
-                     new simgrid::instr::Pt2PtTIData("bsend", dst,
+                     new simgrid::instr::Pt2PtTIData("bsend", MPI_COMM_WORLD->group()->rank(dst_traced),
                                                      count,
                                                      tag, simgrid::smpi::Datatype::encode(datatype)));
   if (not TRACE_smpi_view_internals()) {
@@ -326,7 +326,7 @@ int PMPI_Ibsend(const void* buf, int count, MPI_Datatype datatype, int dst, int 
   if (bsend_buf == nullptr || bsend_buf_size < size + MPI_BSEND_OVERHEAD)
     return MPI_ERR_BUFFER;
   TRACE_smpi_comm_in(my_proc_id, __func__,
-                     new simgrid::instr::Pt2PtTIData("ibsend", dst,
+                     new simgrid::instr::Pt2PtTIData("ibsend", MPI_COMM_WORLD->group()->rank(trace_dst),
                                                      count,
                                                      tag, simgrid::smpi::Datatype::encode(datatype)));
   TRACE_smpi_send(my_proc_id, my_proc_id, trace_dst, tag, count * datatype->size());
@@ -361,7 +361,7 @@ int PMPI_Ssend(const void* buf, int count, MPI_Datatype datatype, int dst, int t
   aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
   aid_t dst_traced = getPid(comm, dst);
   TRACE_smpi_comm_in(my_proc_id, __func__,
-                     new simgrid::instr::Pt2PtTIData("Ssend", dst,
+                     new simgrid::instr::Pt2PtTIData("Ssend", MPI_COMM_WORLD->group()->rank(dst_traced),
                                                      count,
                                                      tag, simgrid::smpi::Datatype::encode(datatype)));
   TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, tag, count * datatype->size());
@@ -402,8 +402,8 @@ int PMPI_Sendrecv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, int
     retval = MPI_ERR_RANK;
   } else {
     aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
-    aid_t dst_traced = getPid(comm, dst);
-    aid_t src_traced = getPid(comm, src);
+    aid_t dst_traced = MPI_COMM_WORLD->group()->rank(getPid(comm, dst));
+    aid_t src_traced = MPI_COMM_WORLD->group()->rank(getPid(comm, src));
 
     // FIXME: Hack the way to trace this one
     auto dst_hack = std::make_shared<std::vector<int>>();

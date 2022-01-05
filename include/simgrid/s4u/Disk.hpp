@@ -126,11 +126,16 @@ public:
   Disk* seal();
 
   /* The signals */
-  /** @brief Callback signal fired when a new Disk is created */
+  /** @brief Add a callback fired when a new Disk is created */
+  static void on_creation_cb(const std::function<void(Disk&)>& cb) { on_creation.connect(cb); }
+  /** @brief Add a callback fired when a Disk is destroyed */
+  static void on_destruction_cb(const std::function<void(Disk const&)>& cb) { on_destruction.connect(cb); }
+  /** @brief Add a callback fired when a Disk's state changes */
+  static void on_state_change_cb(const std::function<void(Disk const&)>& cb) { on_state_change.connect(cb); }
+
+private:
   static xbt::signal<void(Disk&)> on_creation;
-  /** @brief Callback signal fired when a Disk is destroyed */
   static xbt::signal<void(Disk const&)> on_destruction;
-  /** @brief Callback signal fired when a Disk's state changes */
   static xbt::signal<void(Disk const&)> on_state_change;
 };
 

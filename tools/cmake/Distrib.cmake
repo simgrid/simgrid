@@ -107,7 +107,6 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall bin ok"
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/instr
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/msg
-  COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/simdag
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/smpi
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/simix
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/include/surf
@@ -148,7 +147,6 @@ set(source_to_pack
   ${headers_to_install}
   ${source_of_generated_headers}
   ${BINDINGS_SRC}
-  ${JEDULE_SRC}
   ${JMSG_C_SRC}
   ${JMSG_JAVA_SRC}
   ${LUA_SRC}
@@ -159,7 +157,7 @@ set(source_to_pack
   ${S4U_SRC}
   ${NS3_SRC}
   ${PLUGINS_SRC}
-  ${SIMDAG_SRC}
+  ${DAG_SRC}
   ${SIMGRID_SRC}
   ${SIMIX_SRC}
   ${SMPI_SRC}

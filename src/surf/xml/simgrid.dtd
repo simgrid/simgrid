@@ -7,8 +7,8 @@ To upgrade your files, use the tool simgrid_update_xml
 * Things that will change in upcoming version 5 (TODO):
   - The following tags will be removed:
     - <include> spits an error since v3.18
-    - <random> does nothing since a very long time
-    - <as>, <asroute>, <bypassZoneRoute> and <process>, deprecated in DTD4.1
+    - <random> and <model_prop> do nothing since a very long time
+    - <as>, <asroute>, <bypassASRoute> and <process>, deprecated in DTD4.1
   - FULLDUPLEX sharing will be removed, deprecated in DTD4.2 (v3.19)
 
 * New in DTD version 4.1 (in SimGrid 3.16): backward compatible change (v4 files are valid v4.1 files)
@@ -88,6 +88,7 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST trace file CDATA "">
 <!ATTLIST trace periodicity CDATA #REQUIRED>
 
+<!-- random is deprecated -->
 <!ELEMENT random EMPTY>
 <!ATTLIST random id CDATA #REQUIRED>
 <!ATTLIST random min CDATA #REQUIRED>
@@ -103,8 +104,7 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST trace_connect trace CDATA #REQUIRED>
 <!ATTLIST trace_connect element CDATA #REQUIRED>
 
-<!-- A zone is either an internal node that contains other zones, 
-     or a  leaf containing hosts and other leaf-like elements -->
+<!-- AS is a deprecated equivalent of zone -->
 <!ELEMENT AS ((prop*),
           (((AS|zone|include|link|backbone|cabinet|cluster|peer|trace|trace_connect)*,
 	    (zoneRoute|ASroute|trace|trace_connect|bypassASroute|bypassZoneRoute)*,
@@ -125,12 +125,17 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST zone id CDATA #REQUIRED>
 <!ATTLIST zone routing CDATA #REQUIRED>
 
+<!-- storage, storage_type and mount are deprecated -->
 <!ELEMENT storage_type ((model_prop|prop)*)>
 <!ATTLIST storage_type id       CDATA #REQUIRED>
 <!ATTLIST storage_type model    CDATA "N11">
 <!ATTLIST storage_type size     CDATA #REQUIRED>
 <!ATTLIST storage_type content  CDATA "">
-
+<!ELEMENT storage (prop*)>
+<!ATTLIST storage id CDATA #REQUIRED>
+<!ATTLIST storage typeId CDATA #REQUIRED>
+<!ATTLIST storage content  CDATA "">
+<!ATTLIST storage attach CDATA #REQUIRED>
 <!ELEMENT mount EMPTY>
 <!ATTLIST mount storageId CDATA #REQUIRED>
 <!ATTLIST mount name CDATA #REQUIRED>
@@ -149,12 +154,6 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST disk id CDATA "/">
 <!ATTLIST disk read_bw CDATA #REQUIRED>
 <!ATTLIST disk write_bw CDATA #REQUIRED>
-
-<!ELEMENT storage (prop*)>
-<!ATTLIST storage id CDATA #REQUIRED>
-<!ATTLIST storage typeId CDATA #REQUIRED>
-<!ATTLIST storage content  CDATA "">
-<!ATTLIST storage attach CDATA #REQUIRED>
 
 <!ELEMENT host_link EMPTY>
 <!ATTLIST host_link id CDATA #REQUIRED>
@@ -224,12 +223,18 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST route dst CDATA #REQUIRED>
 <!ATTLIST route symmetrical (YES|NO|yes|no) "YES">
 
+<!-- ASroute bypassASRoute are deprecated (prefer zoneRoute and friends) -->
 <!ELEMENT ASroute (link_ctn*)>
 <!ATTLIST ASroute src CDATA #REQUIRED>
 <!ATTLIST ASroute dst CDATA #REQUIRED>
 <!ATTLIST ASroute gw_src CDATA #REQUIRED>
 <!ATTLIST ASroute gw_dst CDATA #REQUIRED>
 <!ATTLIST ASroute symmetrical (YES|NO|yes|no) "YES">
+<!ELEMENT bypassASroute (link_ctn*)>
+<!ATTLIST bypassASroute src CDATA #REQUIRED>
+<!ATTLIST bypassASroute dst CDATA #REQUIRED>
+<!ATTLIST bypassASroute gw_src CDATA #REQUIRED>
+<!ATTLIST bypassASroute gw_dst CDATA #REQUIRED>
 
 <!ELEMENT zoneRoute (link_ctn*)>
 <!ATTLIST zoneRoute src CDATA #REQUIRED>
@@ -246,18 +251,13 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST bypassRoute src CDATA #REQUIRED>
 <!ATTLIST bypassRoute dst CDATA #REQUIRED>
 
-<!ELEMENT bypassASroute (link_ctn*)>
-<!ATTLIST bypassASroute src CDATA #REQUIRED>
-<!ATTLIST bypassASroute dst CDATA #REQUIRED>
-<!ATTLIST bypassASroute gw_src CDATA #REQUIRED>
-<!ATTLIST bypassASroute gw_dst CDATA #REQUIRED>
-
 <!ELEMENT bypassZoneRoute (link_ctn*)>
 <!ATTLIST bypassZoneRoute src CDATA #REQUIRED>
 <!ATTLIST bypassZoneRoute dst CDATA #REQUIRED>
 <!ATTLIST bypassZoneRoute gw_src CDATA #REQUIRED>
 <!ATTLIST bypassZoneRoute gw_dst CDATA #REQUIRED>
 
+<!-- process is deprecated -->
 <!ELEMENT process ((argument|prop)*)>
 <!ATTLIST process host CDATA #REQUIRED>
 <!ATTLIST process function CDATA #REQUIRED>

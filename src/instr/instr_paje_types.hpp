@@ -26,11 +26,16 @@ class Type {
   std::map<std::string, std::unique_ptr<Type>, std::less<>> children_;
   Container* issuer_ = nullptr;
 
+  static xbt::signal<void(Type const&, PajeEventType event_type)> on_creation;
+
 protected:
   Container* get_issuer() const { return issuer_; }
 
 public:
-  static xbt::signal<void(Type const&, PajeEventType event_type)> on_creation;
+  static void on_creation_cb(const std::function<void(Type const&, PajeEventType event_type)>& cb)
+  {
+    on_creation.connect(cb);
+  }
 
   Type(PajeEventType event_type, const std::string& name, const std::string& alias, const std::string& color,
        Type* parent);
@@ -94,8 +99,13 @@ public:
 };
 
 class LinkType : public ValueType {
-public:
   static xbt::signal<void(LinkType const&, Type const&, Type const&)> on_creation;
+
+public:
+  static void on_creation_cb(const std::function<void(LinkType const&, Type const&, Type const&)>& cb)
+  {
+    on_creation.connect(cb);
+  }
   LinkType(const std::string& name, const Type* source, const Type* dest, const std::string& alias, Type* parent)
       : ValueType(PajeEventType::DefineLinkType, name, alias, parent)
   {

@@ -116,10 +116,14 @@ public:
                           std::vector<kernel::resource::LinkImpl*> const& link_list)>
       on_route_creation; // XBT_ATTRIB_DEPRECATED_v332 : should not be used by users, used by ns3.. if necessary,
                          // signal shouldn't use LinkImpl*
-#endif
 
+private:
   static xbt::signal<void(NetZone const&)> on_creation;
   static xbt::signal<void(NetZone const&)> on_seal;
+#endif
+public:
+  static void on_creation_cb(const std::function<void(NetZone const&)>& cb) { on_creation.connect(cb); }
+  static void on_seal_cb(const std::function<void(NetZone const&)>& cb) { on_seal.connect(cb); }
 
   /**
    * @brief Create a host

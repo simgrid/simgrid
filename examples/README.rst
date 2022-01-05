@@ -655,8 +655,6 @@ Interacting with the Platform
 
          .. showfile:: examples/platforms/profiles/jupiter_state.profile
 
-         .. showfile:: examples/platforms/profiles/bourassa_state.profile
-
          .. showfile:: examples/platforms/profiles/fafard_state.profile
 
  - **Specifying speed profiles:** shows how to specify an external

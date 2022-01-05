@@ -26,8 +26,15 @@ set(hostload_files              Main  LoadRunner)
 if(enable_java)
   add_custom_target(java-all COMMENT "Building all Java examples...")
   add_dependencies(tests java-all)
+  add_dependencies(java-all simgrid-java) # useful when the libs are not included in the jar
 endif()
 
+if (WIN32)
+  set (path_separator ";")
+else()
+  set (path_separator ":")
+endif()
+    
 foreach (example app-bittorrent app-centralizedmutex app-masterworker app-pingpong app-tokenring async-yield async-waitall async-dsend
          cloud-migration cloud-masterworker dht-chord dht-kademlia energy-consumption energy-pstate energy-vm hostload
          process-kill process-migration process-startkilltime process-suspend task-priority trace-pingpong)
@@ -38,17 +45,14 @@ foreach (example app-bittorrent app-centralizedmutex app-masterworker app-pingpo
   endforeach()
 
   if(enable_java)
-    add_custom_command(
-      COMMENT "Building java-${example}..."
-      OUTPUT ${example_dir}/java-${example}_compiled
-      DEPENDS ${example_sources} simgrid-java_jar ${SIMGRID_JAR}
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${example_dir}
-      COMMAND ${JAVA_COMPILE} -classpath ${SIMGRID_JAR} -d ${CMAKE_CURRENT_BINARY_DIR} ${${example}_sources}
-      COMMAND ${CMAKE_COMMAND} -E remove ${example_dir}/java-${example}_compiled
-      COMMAND ${CMAKE_COMMAND} -E touch ${example_dir}/java-${example}_compiled
-    )
-    add_custom_target(java-${example} ALL DEPENDS ${example_dir}/java-${example}_compiled)
+    add_jar(java-${example} SOURCES ${${example}_sources}
+            INCLUDE_JARS simgrid-java_jar
+	    OUTPUT_NAME ${example}
+	    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/${example_dir})
     add_dependencies(java-all java-${example})
+    
+    string (REPLACE "-" "/" example_dir ${example})
+    ADD_TESH(java-${example}  --setenv javacmd=${Java_JAVA_EXECUTABLE} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/java --setenv LD_LIBRARY_PATH=${TESH_LIBRARY_PATH} --setenv classpath=""${TESH_CLASSPATH}${path_separator}${example}.jar"" --cd ${CMAKE_BINARY_DIR}/examples/deprecated/java/${example_dir} ${CMAKE_HOME_DIRECTORY}/examples/deprecated/java/${example_dir}/${example}.tesh)
   endif()
   set(examples_src  ${examples_src}  ${${example}_sources})
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example_dir}/${example}.tesh)
@@ -66,12 +70,3 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent/bi
                                    ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/kademlia.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process/startkilltime/startkilltime.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/task/priority/priority.xml                  PARENT_SCOPE)
-
-if(enable_java)
-  foreach (example app-bittorrent app-centralizedmutex app-masterworker app-pingpong app-tokenring async-yield async-waitall async-dsend
-           cloud-migration cloud-masterworker dht-chord dht-kademlia energy-consumption energy-pstate energy-vm hostload
-           process-kill process-migration process-startkilltime process-suspend task-priority trace-pingpong)
-    string (REPLACE "-" "/" example_dir ${example})
-    ADD_TESH(java-${example}  --setenv javacmd=${Java_JAVA_EXECUTABLE} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/java --setenv LD_LIBRARY_PATH=${TESH_LIBRARY_PATH} --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/deprecated/java/${example_dir} ${CMAKE_HOME_DIRECTORY}/examples/deprecated/java/${example_dir}/${example}.tesh)
-  endforeach()
-endif()

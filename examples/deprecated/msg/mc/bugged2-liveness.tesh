@@ -1,6 +1,0 @@
-#!/usr/bin/env tesh
-
-! expect return 2
-! timeout 20
-! output ignore
-$ ${bindir:=.}/../../../../bin/simgrid-mc ${bindir:=.}/bugged2_liveness ${platfdir:=.}/small_platform.xml ${srcdir:=.}/deploy_bugged2_liveness.xml --log=xbt_cfg.thresh:warning "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --cfg=contexts/factory:ucontext --cfg=contexts/stack-size:256 --cfg=model-check/property:promela_bugged2_liveness

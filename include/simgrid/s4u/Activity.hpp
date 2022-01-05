@@ -6,7 +6,6 @@
 #ifndef SIMGRID_S4U_ACTIVITY_HPP
 #define SIMGRID_S4U_ACTIVITY_HPP
 
-#include <xbt/asserts.h>
 #include <algorithm>
 #include <atomic>
 #include <set>
@@ -14,12 +13,17 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include <xbt/Extendable.hpp>
+#include <xbt/asserts.h>
 #include <xbt/signal.hpp>
 #include <xbt/utility.hpp>
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u_activity);
 
 namespace simgrid {
+
+extern template class XBT_PUBLIC xbt::Extendable<s4u::Activity>;
+
 namespace s4u {
 
 /** @brief Activities
@@ -27,12 +31,13 @@ namespace s4u {
  * This class is the ancestor of every activities that an actor can undertake.
  * That is, activities are all the things that do take time to the actor in the simulated world.
  */
-class XBT_PUBLIC Activity {
+class XBT_PUBLIC Activity : public xbt::Extendable<Activity> {
   friend Comm;
   friend Exec;
   friend Io;
 #ifndef DOXYGEN
   friend std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename);
+  friend std::vector<ActivityPtr> create_DAG_from_DAX(const std::string& filename);
 #endif
 
 public:
@@ -48,6 +53,7 @@ public:
 protected:
   Activity()  = default;
   virtual ~Activity() = default;
+  void destroy();
 
   void release_dependencies()
   {
@@ -89,12 +95,16 @@ protected:
 
   static std::set<Activity*>* vetoed_activities_;
 
-public:
-  /*! Signal fired each time that the activity fails to start because of a veto (e.g., unsolved dependency or no
-   * resource assigned) */
+private:
   static xbt::signal<void(Activity&)> on_veto;
-  /*! Signal fired when theactivity completes  (either normally, cancelled or failed) */
   static xbt::signal<void(Activity&)> on_completion;
+
+public:
+  /*! Add a callback fired each time that the activity fails to start because of a veto (e.g., unsolved dependency or no
+   * resource assigned) */
+  static void on_veto_cb(const std::function<void(Activity&)>& cb) { on_veto.connect(cb); }
+  /*! Add a callback fired when theactivity completes (either normally, cancelled or failed) */
+  static void on_completion_cb(const std::function<void(Activity&)> cb) { on_completion.connect(cb); }
 
   void vetoable_start()
   {
@@ -112,9 +122,9 @@ public:
   void complete(Activity::State state)
   {
     state_ = state;
+    on_completion(*this);
     if (state == State::FINISHED)
       release_dependencies();
-    on_completion(*this);
   }
 
   static std::set<Activity*>* get_vetoed_activities() { return vetoed_activities_; }

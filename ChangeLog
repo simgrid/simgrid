@@ -2,12 +2,31 @@
 
 SimGrid (3.29.1) NOT RELEASED YET (v3.30 expected December 21. 2021, 15:59 UTC)
 
+Main user-visible changes:
+ - The SimDag API for the simulation of the scheduling of Directed Acyclic 
+    Graphs has been dropped. It was marked as deprecated for a couple of years. 
+    We finally complete the implementation of what has been called SimDag++ 
+    internally, i.e., porting the different features of SimDag on top of S4U. 
+    The new way to simulate the execution of dependent activities directly by 
+    maestro (without any other actor) is details in the examples/cpp/dag-* series
+    of examples. 
+ - The removal of SimDag led us to also remove the export to Jedule files that 
+   was tightly coupled to SimDag. The instrumentation of DAG simulation is still 
+   possible through the regular instrumentation API based on the Paje format. 
+   
 S4U:
  - New function: Engine::run_until(date), to split the simulation.
  - New signal: Activity::on_veto, to detect when an activity fails to start.
  - New function: Engine::track_vetoed_activities() to interrupt run()
    when an activity fails to start, and to keep track of such activities.
    Please see the corresponding example for more info.
+ - Introduce on_X_cb() functions for all signals, to attach a new
+   callback to the signal X. The signal variables are now hidden and
+   only these functions should be used.
+   Rational: this enables the usual deprecation schema where functions
+   remain for 4 releases when we need to modify the signals, while the
+   current code with the signal variables directly visible prevent any
+   smooth transition.
 
 SMPI:
  - Dynamic costs for MPI operations: New API to allow users to dynamically
@@ -17,6 +36,7 @@ SMPI:
 Documentation:
  - New section: "SimGrid MPI calibration of a Grid5000 cluster"
    presenting how to properly calibrate MPI communications in SimGrid.
+ - Complete and reword the platform section, which is now completed.
 
 Python:
  - Thread contexts are used by default with Python bindings.  Other kinds of
@@ -26,6 +46,7 @@ Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GF: issues on GForge; GH: issues on GitHub)
  - FG#95: Wrong computation time for multicore execution after pstate change
  - FG#97: Wrong computation time for ptask+multicore+pstates
+ - FG#99: Weird segfault when not sealing an host
 ----------------------------------------------------------------------------
 
 SimGrid (3.29) October 7. 2021

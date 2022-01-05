@@ -57,50 +57,46 @@ the example above.
 Cluster with a Crossbar
 -----------------------
 
-A very common parallel computing platform is a homogeneous cluster in
-which hosts are interconnected via a crossbar switch with as many
-ports as hosts, so that any disjoint pairs of hosts can communicate
-concurrently at full speed. For instance:
+A very common parallel computing platform is a homogeneous cluster in which hosts are interconnected via a crossbar switch
+with as many ports as hosts, so that any disjoint pairs of hosts can communicate concurrently at full speed. Because there
+is no contention on the switch, it is modeled as if there were a direct link from each host to the outgoing router. For
+instance:
+
 
 .. literalinclude:: ../../examples/platforms/cluster_crossbar.xml
    :language: xml
    :lines: 1-3,18-
 
-One specifies a name prefix and suffix for each host, and then give an
-integer range. In the example the cluster contains 65535 hosts (!),
-named ``node-0.simgrid.org`` to ``node-65534.simgrid.org``. All hosts
-have the same power (1 Gflop/sec) and are connected to the switch via
-links with same bandwidth (125 MBytes/sec) and latency (50
+One specifies a name prefix and suffix for each host, and then give an integer range. In the example the cluster contains
+65536 hosts (!), named ``node-0.simgrid.org`` to ``node-65535.simgrid.org``. All hosts have the same power (1 Gflop/sec)
+and are connected directly to the switch via private links with same bandwidth (125 MBytes/sec) and latency (50
 microseconds).
 
-.. todo::
+The outgoing router is named ``${prefix}${cluster_id}_router${suffix}`` so in this case, this is
+``node-cluster-crossbar_router.simgrid.org``.
 
-   Add the picture.
+.. image:: ../../examples/platforms/cluster_crossbar.svg
+   :align: center
 
 Cluster with a Shared Backbone
 ------------------------------
 
-Another popular model for a parallel platform is that of a set of
-homogeneous hosts connected to a shared communication medium, a
-backbone, with some finite bandwidth capacity and on which
-communicating host pairs can experience contention. For instance:
-
+Another popular model for a parallel platform is that of a set of homogeneous hosts connected to a shared communication
+medium, a backbone, with some limited bandwidth capacity and on which communicating host pairs can experience contention.
+For instance:
 
 .. literalinclude:: ../../examples/platforms/cluster_backbone.xml
    :language: xml
    :lines: 1-3,18-
 
-The only differences with the crossbar cluster above are the ``bb_bw``
-and ``bb_lat`` attributes that specify the backbone characteristics
-(here, a 500 microseconds latency and a 2.25 GByte/sec
-bandwidth). This link is used for every communication within the
-cluster. The route from ``node-0.simgrid.org`` to ``node-1.simgrid.org``
-counts 3 links: the private link of ``node-0.simgrid.org``, the backbone
-and the private link of ``node-1.simgrid.org``.
+The main differences with the crossbar cluster above are the ``bb_bw`` and ``bb_lat`` attributes that specify the backbone
+characteristics (here, a 500 microseconds latency and a 2.25 GBytes/sec bandwidth). This link is used for every
+communication within the cluster. The route from ``node-0.simgrid.org`` to ``node-1.simgrid.org`` counts 3 links: the
+private link of ``node-0.simgrid.org``, the backbone and the private link of ``node-1.simgrid.org``. The route from
+``node-0.simgrid.org`` to the outer internet counts 2 links: the private link of ``node-0.simgrid.org`` and the backbone.
 
-.. todo::
-
-   Add the picture.
+.. image:: ../../examples/platforms/cluster_backbone.svg
+   :align: center
 
 Torus Cluster
 -------------
@@ -197,10 +193,10 @@ For example, ``3,4 ; 3,2 ; 3,1 ; 2``:
 Star Zone
 ---------
 
-In a Star topology, as the name says, nodes are organized following a star.
-It's similar to a cluster topology but you have the flexibility to set
-different route for every component in the star.
-Unfortunately, it's only available in the C++ interface.
+A Star topology can be seen as a crossbar cluster that does not interconnect hosts, but subzones. It can for example be
+used to model a cluster of complex hosts, where each host is disaggregated, with CPUs, GPUs and maybe a network on chip. It
+is similar to a cluster topology, with the flexibility to set different route for every component in the star. Because of
+its complexity, this topology is only available from the C++ interface.
 
 .. image:: img/starzone.svg
     :scale: 80%

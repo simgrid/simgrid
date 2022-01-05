@@ -34,7 +34,8 @@ XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link
 void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* trace_connect)
 {
   surf_parse_assert(traces_set_list.find(trace_connect->trace) != traces_set_list.end(),
-         std::string("Cannot connect trace ")+ trace_connect->trace+ " to "+trace_connect->element+": trace unknown");
+                    std::string("Cannot connect trace ") + trace_connect->trace + " to " + trace_connect->element +
+                        ": trace unknown");
 
   switch (trace_connect->kind) {
     case simgrid::kernel::routing::TraceConnectKind::HOST_AVAIL:
@@ -106,7 +107,8 @@ void parse_platform_file(const std::string& file)
 
   /* connect all profiles relative to hosts */
   for (auto const& elm : trace_connect_list_host_avail) {
-    surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(), std::string("<trace_connect kind=\"HOST_AVAIL\">: Trace ")+elm.first+" undefined.");
+    surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(),
+                      std::string("<trace_connect kind=\"HOST_AVAIL\">: Trace ") + elm.first + " undefined.");
     auto profile = traces_set_list.at(elm.first);
 
     auto host = engine->host_by_name_or_null(elm.second);
@@ -115,7 +117,8 @@ void parse_platform_file(const std::string& file)
   }
 
   for (auto const& elm : trace_connect_list_host_speed) {
-    surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(), std::string("<trace_connect kind=\"SPEED\">: Trace ")+elm.first+" undefined.");
+    surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(),
+                      std::string("<trace_connect kind=\"SPEED\">: Trace ") + elm.first + " undefined.");
     auto profile = traces_set_list.at(elm.first);
 
     auto host = engine->host_by_name_or_null(elm.second);
@@ -124,7 +127,8 @@ void parse_platform_file(const std::string& file)
   }
 
   for (auto const& elm : trace_connect_list_link_avail) {
-    surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(), std::string("<trace_connect kind=\"LINK_AVAIL\">: Trace ")+elm.first+" undefined.");
+    surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(),
+                      std::string("<trace_connect kind=\"LINK_AVAIL\">: Trace ") + elm.first + " undefined.");
     auto profile = traces_set_list.at(elm.first);
 
     auto link = engine->link_by_name_or_null(elm.second);
@@ -133,7 +137,8 @@ void parse_platform_file(const std::string& file)
   }
 
   for (auto const& elm : trace_connect_list_link_bw) {
-    surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(), std::string("<trace_connect kind=\"BANDWIDTH\">: Trace ")+elm.first+" undefined.");
+    surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(),
+                      std::string("<trace_connect kind=\"BANDWIDTH\">: Trace ") + elm.first + " undefined.");
     auto profile = traces_set_list.at(elm.first);
 
     auto link = engine->link_by_name_or_null(elm.second);
@@ -142,7 +147,8 @@ void parse_platform_file(const std::string& file)
   }
 
   for (auto const& elm : trace_connect_list_link_lat) {
-    surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(), std::string("<trace_connect kind=\"LATENCY\">: Trace ")+elm.first+" undefined.");
+    surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(),
+                      std::string("<trace_connect kind=\"LATENCY\">: Trace ") + elm.first + " undefined.");
     auto profile = traces_set_list.at(elm.first);
 
     auto link = engine->link_by_name_or_null(elm.second);

@@ -57,4 +57,34 @@ void jxbt_throw_time_out_failure(JNIEnv* env, const std::string& details);
 /**Thrown when a task is canceled */
 void jxbt_throw_task_cancelled(JNIEnv* env, const std::string& details);
 
+class jstring_wrapper {
+  JNIEnv* env_  = nullptr;
+  jstring jstr_ = nullptr;
+
+public:
+  const char* value = nullptr;
+
+  jstring_wrapper(JNIEnv* env, jstring jstr) : env_(env), jstr_(jstr)
+  {
+    if (jstr != nullptr)
+      value = env_->GetStringUTFChars(jstr_, nullptr);
+  }
+  void reset(JNIEnv* env, jstring jstr)
+  {
+    if (jstr_ != nullptr)
+      env_->ReleaseStringUTFChars(jstr_, value);
+    env_  = env;
+    jstr_ = jstr;
+    if (jstr != nullptr)
+      value = env_->GetStringUTFChars(jstr_, nullptr);
+  }
+  ~jstring_wrapper()
+  {
+    if (jstr_ != nullptr)
+      env_->ReleaseStringUTFChars(jstr_, value);
+  }
+  operator const char*() const { return value; }
+  operator const std::string() const { return std::string(value); }
+};
+
 #endif

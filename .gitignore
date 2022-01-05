@@ -34,11 +34,8 @@ CTestCustom.cmake
 CTestResults.xml
 
 ### Maintainer mode
-src/simdag/dax_dtd.l
+src/dag/dax_dtd.l
 src/surf/xml/simgrid_dtd.l
-### Jedule
-examples/deprecated/simdag/scheduling/sd_scheduling.jed
-teshsuite/simdag/platforms/simgrid.jed
 ### Libraries links
 [Ss]im[Gg]rid-*.tar.gz
 simgrid.jar
@@ -152,8 +149,6 @@ examples/c/platform-failures/c-platform-failures
 examples/c/platform-properties/c-platform-properties
 examples/c/plugin-host-load/c-plugin-host-load
 examples/c/synchro-semaphore/c-synchro-semaphore
-examples/deprecated/msg/mc/bugged2_liveness
-examples/deprecated/msg/mc/centralized_mutex
 examples/cpp/actor-create/s4u-actor-create
 examples/cpp/actor-daemon/s4u-actor-daemon
 examples/cpp/actor-exiting/s4u-actor-exiting
@@ -172,15 +167,26 @@ examples/cpp/app-token-ring/s4u-app-token-ring
 examples/cpp/cloud-capping/s4u-cloud-capping
 examples/cpp/cloud-migration/s4u-cloud-migration
 examples/cpp/cloud-simple/s4u-cloud-simple
+examples/cpp/clusters-multicpu/s4u-clusters-multicpu
 examples/cpp/comm-dependent/s4u-comm-dependent
+examples/cpp/comm-failure/s4u-comm-failure
 examples/cpp/comm-host2host/s4u-comm-host2host
 examples/cpp/comm-pingpong/s4u-comm-pingpong
 examples/cpp/comm-ready/s4u-comm-ready
+examples/cpp/comm-serialize/s4u-comm-serialize
 examples/cpp/comm-suspend/s4u-comm-suspend
+examples/cpp/comm-throttling/s4u-comm-throttling
 examples/cpp/comm-wait/s4u-comm-wait
 examples/cpp/comm-waitall/s4u-comm-waitall
 examples/cpp/comm-waitany/s4u-comm-waitany
 examples/cpp/comm-waituntil/s4u-comm-waituntil
+examples/cpp/dag-comm/s4u-dag-comm
+examples/cpp/dag-failure/s4u-dag-failure
+examples/cpp/dag-from-dax/s4u-dag-from-dax
+examples/cpp/dag-from-dot/s4u-dag-from-dot
+examples/cpp/dag-io/s4u-dag-io
+examples/cpp/dag-scheduling/s4u-dag-scheduling
+examples/cpp/dag-simple/s4u-dag-simple
 examples/cpp/dht-chord/s4u-dht-chord
 examples/cpp/dht-kademlia/s4u-dht-kademlia
 examples/cpp/energy-boot/s4u-energy-boot
@@ -190,10 +196,14 @@ examples/cpp/energy-link/s4u-energy-link
 examples/cpp/energy-vm/s4u-energy-vm
 examples/cpp/energy-wifi/s4u-energy-wifi
 examples/cpp/engine-filtering/s4u-engine-filtering
+examples/cpp/engine-run-partial/s4u-engine-run-partial
 examples/cpp/exec-async/s4u-exec-async
 examples/cpp/exec-basic/s4u-exec-basic
+examples/cpp/exec-cpu-factors/s4u-exec-cpu-factors
+examples/cpp/exec-cpu-nonlinear/s4u-exec-cpu-nonlinear
 examples/cpp/exec-dependent/s4u-exec-dependent
 examples/cpp/exec-dvfs/s4u-exec-dvfs
+examples/cpp/exec-failure/s4u-exec-failure
 examples/cpp/exec-ptask/s4u-exec-ptask
 examples/cpp/exec-ptask-multicore/s4u-exec-ptask-multicore
 examples/cpp/exec-ptask-multicore-latency/s4u-exec-ptask-multicore-latency
@@ -203,15 +213,21 @@ examples/cpp/exec-waitany/s4u-exec-waitany
 examples/cpp/exec-waitfor/s4u-exec-waitfor
 examples/cpp/io-async/s4u-io-async
 examples/cpp/io-dependent/s4u-io-dependent
+examples/cpp/io-degradation/s4u-io-degradation
 examples/cpp/io-disk-raw/s4u-io-disk-raw
 examples/cpp/io-file-remote/s4u-io-file-remote
 examples/cpp/io-file-system/s4u-io-file-system
+examples/cpp/io-priority/s4u-io-priority
 examples/cpp/maestro-set/s4u-maestro-set
 examples/cpp/mc-bugged1/s4u-mc-bugged1
 examples/cpp/mc-bugged1-liveness/s4u-mc-bugged1-liveness
 examples/cpp/mc-bugged2/s4u-mc-bugged2
+examples/cpp/mc-bugged2-liveness/s4u-mc-bugged2-liveness
+examples/cpp/mc-centralized-mutex/s4u-mc-centralized-mutex
 examples/cpp/mc-electric-fence/s4u-mc-electric-fence
 examples/cpp/mc-failing-assert/s4u-mc-failing-assert
+examples/cpp/network-factors/s4u-network-factors
+examples/cpp/network-nonlinear/s4u-network-nonlinear
 examples/cpp/network-ns3/s4u-network-ns3
 examples/cpp/network-ns3-wifi/s4u-network-ns3-wifi
 examples/cpp/network-wifi/s4u-network-wifi
@@ -229,6 +245,7 @@ examples/cpp/synchro-condition-variable/s4u-synchro-condition-variable
 examples/cpp/synchro-condition-variable-waituntil/s4u-synchro-condition-variable-waituntil
 examples/cpp/synchro-mutex/s4u-synchro-mutex
 examples/cpp/synchro-semaphore/s4u-synchro-semaphore
+examples/cpp/torus-multicpu/
 examples/cpp/trace-categories/s4u-trace-categories
 examples/cpp/trace-host-user-variables/s4u-trace-host-user-variables
 examples/cpp/trace-link-user-variables/s4u-trace-link-user-variables
@@ -236,15 +253,6 @@ examples/cpp/trace-masterworkers/s4u-trace-masterworkers
 examples/cpp/trace-platform/s4u-trace-platform
 examples/cpp/trace-process-migration/s4u-trace-process-migration
 examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables
-examples/deprecated/simdag/dag-dotload/sd_dag-dotload
-examples/deprecated/simdag/daxload/sd_daxload
-examples/deprecated/simdag/fail/sd_fail
-examples/deprecated/simdag/ptg-dotload/sd_ptg-dotload
-examples/deprecated/simdag/schedule-dotload/sd_schedule-dotload
-examples/deprecated/simdag/scheduling/sd_scheduling
-examples/deprecated/simdag/test/sd_test
-examples/deprecated/simdag/throttling/sd_throttling
-examples/deprecated/simdag/typed_tasks/sd_typed_tasks
 examples/smpi/ampi_test/smpi_ampi_test
 examples/smpi/energy/smpi_energy
 examples/smpi/gemm/smpi_gemm
@@ -291,6 +299,7 @@ teshsuite/models/ptask_L07_usage/ptask_L07_usage
 teshsuite/models/wifi_usage/wifi_usage
 teshsuite/models/wifi_usage_decay/wifi_usage_decay
 teshsuite/msg/task_destroy_cancel/task_destroy_cancel
+teshsuite/platforms/flatifier
 teshsuite/s4u/activity-lifecycle/activity-lifecycle
 teshsuite/s4u/actor/actor
 teshsuite/s4u/actor-autorestart/actor-autorestart
@@ -316,9 +325,6 @@ teshsuite/s4u/storage_client_server/storage_client_server
 teshsuite/s4u/trace-integration/trace-integration
 teshsuite/s4u/vm-live-migration/vm-live-migration
 teshsuite/s4u/wait-any-for/wait-any-for
-teshsuite/simdag/availability/availability
-teshsuite/simdag/flatifier/flatifier
-teshsuite/simdag/incomplete/incomplete
 teshsuite/smpi/auto-shared/auto-shared
 teshsuite/smpi/bug-17132/bug-17132
 teshsuite/smpi/coll-allgather/coll-allgather

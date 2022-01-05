@@ -170,12 +170,12 @@ if(enable_maintainer_mode AND NOT WIN32)
 
     ADD_CUSTOM_COMMAND(
       OUTPUT 	${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.h
-                ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h
+                ${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.h
                 ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.c
-                ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.c
+                ${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.c
 
       DEPENDS	${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd
-                ${CMAKE_HOME_DIRECTORY}/src/simdag/dax.dtd
+                ${CMAKE_HOME_DIRECTORY}/src/dag/dax.dtd
 
       #${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.l: ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd
       COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/src/surf/xml
@@ -184,11 +184,11 @@ if(enable_maintainer_mode AND NOT WIN32)
       COMMAND mv src/surf/xml/simgrid_dtd.l.tmp src/surf/xml/simgrid_dtd.l
       COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/surf/xml/simgrid_dtd.l"
 
-      #${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.l: ${CMAKE_HOME_DIRECTORY}/src/simdag/dax.dtd
-      COMMAND ${FLEXML_EXE} -b 1000000 --root-tags adag -P dax_ --sysid=dax.dtd -S src/simdag/dax_dtd.l -L src/simdag/dax.dtd
-      COMMAND ${SED_EXE} -i ${string5} src/simdag/dax_dtd.l
-      COMMAND ${SED_EXE} -i ${string14} src/simdag/dax_dtd.l
-      COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/simdag/dax_dtd.l"
+      #${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.l: ${CMAKE_HOME_DIRECTORY}/src/dag/dax.dtd
+      COMMAND ${FLEXML_EXE} -b 1000000 --root-tags adag -P dax_ --sysid=dax.dtd -S src/dag/dax_dtd.l -L src/dag/dax.dtd
+      COMMAND ${SED_EXE} -i ${string5} src/dag/dax_dtd.l
+      COMMAND ${SED_EXE} -i ${string14} src/dag/dax_dtd.l
+      COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/dag/dax_dtd.l"
 
       #${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.h: ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/include/surf/simgrid.h
@@ -200,13 +200,13 @@ if(enable_maintainer_mode AND NOT WIN32)
       COMMAND ${SED_EXE} -i ${string14} src/surf/xml/simgrid_dtd.h
       COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/surf/xml/simgrid_dtd.h"
 
-      #${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h: ${CMAKE_HOME_DIRECTORY}/src/simdag/dax.dtd
-      COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h
-      COMMAND ${FLEXML_EXE} --root-tags adag -P dax_ --sysid=dax.dtd -H src/simdag/dax_dtd.h -L src/simdag/dax.dtd
-      COMMAND ${SED_EXE} -i ${string1} src/simdag/dax_dtd.h
-      COMMAND ${SED_EXE} -i ${string2} src/simdag/dax_dtd.h
-      COMMAND ${SED_EXE} -i ${string14} src/simdag/dax_dtd.h
-      COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/simdag/dax_dtd.h"
+      #${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.h: ${CMAKE_HOME_DIRECTORY}/src/dag/dax.dtd
+      COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.h
+      COMMAND ${FLEXML_EXE} --root-tags adag -P dax_ --sysid=dax.dtd -H src/dag/dax_dtd.h -L src/dag/dax.dtd
+      COMMAND ${SED_EXE} -i ${string1} src/dag/dax_dtd.h
+      COMMAND ${SED_EXE} -i ${string2} src/dag/dax_dtd.h
+      COMMAND ${SED_EXE} -i ${string14} src/dag/dax_dtd.h
+      COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/dag/dax_dtd.h"
 
       #surf/xml/simgrid_dtd.c: surf/xml/simgrid_dtd.l
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.c
@@ -214,12 +214,12 @@ if(enable_maintainer_mode AND NOT WIN32)
       COMMAND ${SED_EXE} -i ${string9} src/surf/xml/simgrid_dtd.c
       COMMAND ${CMAKE_COMMAND} -E echo "       Generated surf/xml/simgrid_dtd.c"
 
-      #simdag/dax_dtd.c: simdag/dax_dtd.l
-      COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.c
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/src/simdag
-      COMMAND ${FLEX_EXE} -o src/simdag/dax_dtd.c -Pdax_ --noline src/simdag/dax_dtd.l
-      COMMAND ${SED_EXE} -i ${string9}                        src/simdag/dax_dtd.c
-      COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/simdag/dax_dtd.c"
+      #dag/dax_dtd.c: dag/dax_dtd.l
+      COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.c
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/src/dag
+      COMMAND ${FLEX_EXE} -o src/dag/dax_dtd.c -Pdax_ --noline src/dag/dax_dtd.l
+      COMMAND ${SED_EXE} -i ${string9}                         src/dag/dax_dtd.c
+      COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/dag/dax_dtd.c"
 
       WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
       COMMENT "Generating files in maintainer mode..."
@@ -244,6 +244,6 @@ endif()
     add_custom_target(maintainer_files
       DEPENDS ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.h
               ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.c
-              ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.h
-              ${CMAKE_HOME_DIRECTORY}/src/simdag/dax_dtd.c
+              ${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.h
+              ${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.c
       )

@@ -20,6 +20,7 @@
 #include <ns3/global-route-manager.h>
 #include <ns3/internet-stack-helper.h>
 #include <ns3/ipv4-address-helper.h>
+#include <ns3/ipv4-global-routing-helper.h>
 #include <ns3/packet-sink-helper.h>
 #include <ns3/point-to-point-helper.h>
 
@@ -170,7 +171,6 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone)
 
   mobility.SetPositionAllocator(positionAllocS);
   mobility.Install(nodes);
-
   ns3::Ipv4AddressHelper address;
   std::string addr = simgrid::xbt::string_printf("%d.%d.0.0", number_of_networks, number_of_links);
   address.SetBase(addr.c_str(), "255.255.0.0");
@@ -187,6 +187,9 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone)
   } else {
     number_of_links++;
   }
+  /* in theory we can compute the routing table only only once at the platform seal
+   *  however put it here since or platform_created signal is called before the seal right now */
+  ns3::Ipv4GlobalRoutingHelper::RecomputeRoutingTables();
 }
 
 static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs const& cluster)
@@ -333,14 +336,14 @@ NetworkNS3Model::NetworkNS3Model(const std::string& name) : NetworkModel(name)
     XBT_VERB("Declare SimGrid's %s within ns-3", pt.get_cname());
   });
 
-  s4u::Engine::on_platform_created.connect([]() {
+  s4u::Engine::on_platform_created_cb([]() {
     /* Create the ns3 topology based on routing strategy */
     ns3::GlobalRouteManager::BuildGlobalRoutingDatabase();
     ns3::GlobalRouteManager::InitializeRoutes();
   });
   routing::on_cluster_creation.connect(&clusterCreation_cb);
   routing::NetZoneImpl::on_route_creation.connect(&routeCreation_cb);
-  s4u::NetZone::on_seal.connect(&zoneCreation_cb);
+  s4u::NetZone::on_seal_cb(&zoneCreation_cb);
 }
 
 LinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vector<double>& bandwidths)

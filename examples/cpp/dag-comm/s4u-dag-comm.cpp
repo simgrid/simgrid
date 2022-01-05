@@ -19,12 +19,12 @@ int main(int argc, char* argv[])
   auto jupiter  = e.host_by_name("Jupiter");
 
   // Display the details on vetoed activities
-  simgrid::s4u::Activity::on_veto.connect([](const simgrid::s4u::Activity& a) {
+  simgrid::s4u::Activity::on_veto_cb([](const simgrid::s4u::Activity& a) {
     XBT_INFO("Activity '%s' vetoed. Dependencies: %s; Ressources: %s", a.get_cname(),
              (a.dependencies_solved() ? "solved" : "NOT solved"), (a.is_assigned() ? "assigned" : "NOT assigned"));
   });
 
-  simgrid::s4u::Activity::on_completion.connect([](simgrid::s4u::Activity& activity) {
+  simgrid::s4u::Activity::on_completion_cb([](simgrid::s4u::Activity& activity) {
     const auto* exec = dynamic_cast<simgrid::s4u::Exec*>(&activity);
     if (exec != nullptr)
       XBT_INFO("Activity '%s' is complete (start time: %f, finish time: %f)", exec->get_cname(), exec->get_start_time(),

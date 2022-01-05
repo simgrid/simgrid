@@ -68,32 +68,47 @@ public:
   /** Retrieve a reference to myself */
   static Actor* self();
 
-  /** Fired when a new actor has been created **/
+#ifndef DOXYGEN
   static xbt::signal<void(Actor&)> on_creation;
-  /** Signal to others that an actor has been suspended**/
   static xbt::signal<void(Actor const&)> on_suspend;
-  /** Signal to others that an actor has been resumed **/
   static xbt::signal<void(Actor const&)> on_resume;
-  /** Signal to others that an actor is sleeping **/
   static xbt::signal<void(Actor const&)> on_sleep;
-  /** Signal to others that an actor wakes up for a sleep **/
   static xbt::signal<void(Actor const&)> on_wake_up;
-  /** Signal to others that an actor is has been migrated to another host **/
   static xbt::signal<void(const Actor&, const Host& previous_location)> on_host_change;
+  static xbt::signal<void(Actor const&)> on_termination;
+  static xbt::signal<void(Actor const&)> on_destruction;
+#endif
 
-  /** Signal indicating that an actor terminated its code.
+public:
+  /** Add a callback fired when a new actor has been created **/
+  static void on_creation_cb(const std::function<void(Actor&)>& cb) { on_creation.connect(cb); }
+  /** Add a callback fired when an actor has been suspended**/
+  static void on_suspend_cb(const std::function<void(Actor const&)> cb) { on_suspend.connect(cb); }
+  /** Add a callback fired when an actor has been resumed **/
+  static void on_resume_cb(const std::function<void(Actor const&)>& cb) { on_resume.connect(cb); }
+  /** Add a callback fired when an actor starts sleeping **/
+  static void on_sleep_cb(const std::function<void(Actor const&)>& cb) { on_sleep.connect(cb); }
+  /** Add a callback fired when an actor wakes up from a sleep **/
+  static void on_wake_up_cb(const std::function<void(Actor const&)>& cb) { on_wake_up.connect(cb); }
+  /** Add a callback fired when an actor is has been migrated to another host **/
+  static void on_host_change_cb(const std::function<void(const Actor&, const Host& previous_location)>& cb)
+  {
+    on_host_change.connect(cb);
+  }
+
+  /** Add a callback fired when an actor terminates its code.
    *  @beginrst
    *  The actor may continue to exist if it is still referenced in the simulation, but it's not active anymore.
    *  If you want to free extra data when the actor's destructor is called, use :cpp:var:`Actor::on_destruction`.
    *  If you want to register to the termination of a given actor, use :cpp:func:`this_actor::on_exit()` instead.
    *  @endrst
    */
-  static xbt::signal<void(Actor const&)> on_termination;
-  /** Signal indicating that an actor is about to disappear (its destructor was called).
+  static void on_termination_cb(const std::function<void(Actor const&)>& cb) { on_termination.connect(cb); }
+  /** Add a callback fired when an actor is about to disappear (its destructor was called).
    *  This signal is fired for any destructed actor, which is mostly useful when designing plugins and extensions.
    *  If you want to react to the end of the actor's code, use Actor::on_termination instead.
    *  If you want to register to the termination of a given actor, use this_actor::on_exit() instead.*/
-  static xbt::signal<void(Actor const&)> on_destruction;
+  static void on_destruction_cb(const std::function<void(Actor const&)>& cb) { on_destruction.connect(cb); }
 
   /** Create an actor from a std::function<void()>.
    *  If the actor is restarted, it gets a fresh copy of the function. */

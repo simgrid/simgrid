@@ -57,7 +57,7 @@ Shortest path
 =============
 
 SimGrid can compute automatically the paths between all pair of hosts in a zone. You just need to provide the one-hop routes to connect all hosts.
-Two algorithms are provided: 
+Several algorithms are provided: 
 
   - ``routing=Floyd``: use the number of hops to build shortest path. It is calculated only once at the beginning of the
     simulation.
@@ -92,14 +92,19 @@ computed automatically at startup. Another way to describe the same platform can
 .. image:: /tuto_smpi/3hosts.png
    :align: center
 
+.. _pf_rm_cluster:
+
 Clusters
 ========
 
-TODO
+Clusters constitute a fundamental building bricks of any cyberinfrastructure. SimGrid provides several kinds of clusters:
+crossbar clusters (contention-free internal network), backbone clusters (constrained internal network), fat-trees,
+DragonFly, Torus and generic Star clusters. Each of them are created through the :ref:`pf_tag_cluster` tag, and have a
+highly optimized implementation in SimGrid source code.
 
-  - **Cluster/Fat-Tree/DragonFly/Torus**: routing is defined by the topology, automatically created.
-    These zones must be defined through the :ref:`pf_tag_cluster` tag in the XML.
-  - **Star**: star-like topology. Users describe routes from/to every host in the zone.
+The documentation of each cluster kinds is given as :ref:`platform_examples`.
+
+.. _pf_rm_vivaldi:
 
 Vivaldi
 =======
@@ -150,6 +155,13 @@ Wi-Fi
 
 TODO
 
+ns-3
+====
+
+When using :ref:`model_ns3`, SimGrid does not uses its own platform or routing models. Your platform must be limited to one
+zone only, and any routing model will be ignored. Since ns-3 uses a shortest path algorithm on its side, all routes must be
+of length 1.
+
 .. _pf_routes:
 
 Describing routes
@@ -167,13 +179,19 @@ the common ancestor) and finally, move within zone ``dst`` from ``gw_dst`` to ``
 SimGrid enforces that each gateway is within its zone, either directly or in a sub-zone to ensure that the algorithm
 described in the next section actually works.
 
-TODO: bypassRoute
+One can also use :ref:`pf_tag_bypassRoute` and :ref:`pf_tag_bypassZoneRoute` to define exceptions to the classical routing
+algorithm. This advanced feature is also detailed in the next section.
+
+.. _pf_route_usage:
 
 Calculating network paths
 *************************
 
 Computing the path between two hosts is easy when they are located in the same zone. It is done directly by the routing
 algorithm of that zone. Full routing looks in its table, Vivaldi computes the distance between peers, etc.
+
+Another simple case is when a :ref:`pf_tag_bypassRoute` was provided. Such routes are used in priority, with no further
+routing computation. You can define a bypass between any hosts, even if they are not in the same zone.
 
 When communicating through several zones, a recursive algorithm is used. As an illustration, we will apply this
 algorithm to a communication between `host1` in `AS1` and `host2` in `AS5-4`, in our previous topology. This section
@@ -190,9 +208,9 @@ only gives an overview of the algorithm used. You should refer to the source cod
 
    .. code-block:: XML
 
-        <zoneRoute src="AS2" dst="AS5" gw_src="Host1" gw_dst"="gw1">
-            <link_ctn id="Link1">
-        </zoneRoute>
+      <zoneRoute src="AS2" dst="AS5" gw_src="Host1" gw_dst"="gw1">
+         <link_ctn id="Link1"/>
+      </zoneRoute>
 
 2. **Add the route up to the ancestor**, i.e. from ``src`` to the ``gw_src`` in the route between ancestor zones. This is a recursive call to the current algorithm.
 
@@ -207,10 +225,10 @@ only gives an overview of the algorithm used. You should refer to the source cod
    Here, we need the route from *gw1* and *host2*. The common ancestor is *AS5*, and the relative ancestors are *AS5-4* and *AS5-3*. This route is defined as follows (routes are symmetrical by default).
 
    .. code-block:: XML
-
-        <zoneRoute src="AS5-4" dst="AS5-3" gw_src="gw2" gw_dst"="gw1">
-            <link_ctn id="Link3">
-        </zoneRoute>
+      
+      <zoneRoute src="AS5-4" dst="AS5-3" gw_src="gw2" gw_dst"="gw1">
+         <link_ctn id="Link3"/>
+      </zoneRoute>
 
    So to compute the route from *gw1* to *Host2*, we need to add:
 
@@ -226,6 +244,9 @@ only gives an overview of the algorithm used. You should refer to the source cod
 
 In the end, our communication from *Host1@AS2* to *Host2@AS5-4* follows this path: ``{Link1, Link3, Link2}`` 
 
+It is possbile to use :ref:`pf_tag_bypassZoneRoute` to provide a path between two zones that are not necessarily sibilings.
+If such routes exist, SimGrid will try to match each of the ancestor zones of the source with each of the ancestor zone of
+the destination, looking for such a bypass to use intead of the common ancestor.
 
 Loopback links
 **************

@@ -18,12 +18,26 @@ XBT_LOG_EXTERNAL_CATEGORY(s4u);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_activity, s4u, "S4U activities");
 
 namespace simgrid {
+
+template class xbt::Extendable<s4u::Activity>;
+
 namespace s4u {
 
 xbt::signal<void(Activity&)> Activity::on_veto;
 xbt::signal<void(Activity&)> Activity::on_completion;
 
 std::set<Activity*>* Activity::vetoed_activities_ = nullptr;
+
+void Activity::destroy()
+{
+  /* First Remove all dependencies */
+  while (not dependencies_.empty())
+    (*(dependencies_.begin()))->remove_successor(this);
+  while (not successors_.empty())
+    this->remove_successor(successors_.front());
+
+  cancel();
+}
 
 void Activity::wait_until(double time_limit)
 {
@@ -76,7 +90,8 @@ Activity* Activity::cancel()
 {
   kernel::actor::simcall([this] {
     XBT_HERE();
-    pimpl_->cancel();
+    if (pimpl_)
+      pimpl_->cancel();
   });
   complete(State::CANCELED);
   return this;

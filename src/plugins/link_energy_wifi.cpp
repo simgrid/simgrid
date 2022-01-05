@@ -291,7 +291,7 @@ void sg_wifi_energy_plugin_init()
    * - Link::on_communication_state_change: to account for the energy when communications are updated
    * - CommImpl::on_start and CommImpl::on_completion: to account for the energy during communications
    */
-  simgrid::s4u::Link::on_creation.connect([](simgrid::s4u::Link& link) {
+  simgrid::s4u::Link::on_creation_cb([](simgrid::s4u::Link& link) {
     // verify the link is appropriate to WiFi energy computations
     if (link.get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI) {
       XBT_DEBUG("Wifi Link: %s, initialization of wifi energy plugin", link.get_cname());
@@ -302,7 +302,7 @@ void sg_wifi_energy_plugin_init()
     }
   });
 
-  simgrid::s4u::Link::on_destruction.connect([](simgrid::s4u::Link const& link) {
+  simgrid::s4u::Link::on_destruction_cb([](simgrid::s4u::Link const& link) {
     // output energy values if WiFi link
     if (link.get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI) {
       link.extension<LinkEnergyWifi>()->update_destroy();
@@ -314,16 +314,15 @@ void sg_wifi_energy_plugin_init()
     }
   });
 
-  simgrid::s4u::Link::on_communication_state_change.connect(
-      [](simgrid::kernel::resource::NetworkAction const& action,
-         simgrid::kernel::resource::Action::State /* previous */) {
-        // update WiFi links encountered during the communication
-        for (auto const* link : action.get_links()) {
-          if (link != nullptr && link->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI) {
-            link->get_iface()->extension<LinkEnergyWifi>()->update();
-          }
-        }
-      });
+  simgrid::s4u::Link::on_communication_state_change_cb([](simgrid::kernel::resource::NetworkAction const& action,
+                                                          simgrid::kernel::resource::Action::State /* previous */) {
+    // update WiFi links encountered during the communication
+    for (auto const* link : action.get_links()) {
+      if (link != nullptr && link->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI) {
+        link->get_iface()->extension<LinkEnergyWifi>()->update();
+      }
+    }
+  });
 
   simgrid::kernel::activity::CommImpl::on_start.connect(&on_communication);
   simgrid::kernel::activity::CommImpl::on_completion.connect(&on_communication);

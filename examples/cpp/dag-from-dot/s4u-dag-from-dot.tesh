@@ -48,5 +48,5 @@ $ ${bindir:=.}/s4u-dag-from-dot --log=no_loc ${platfdir}/cluster_backbone.xml ${
 
 ! expect return 2
 $ ${bindir:=.}/s4u-dag-from-dot --log=no_loc ${platfdir}/cluster_backbone.xml ${srcdir:=.}/dag_with_cycle.dot
-> [0.000000] [sd_dotparse/ERROR] The DOT described in dag_with_cycle.dot is not a DAG. It contains a cycle.
+> [0.000000] [dag_parsing/ERROR] The DOT described in dag_with_cycle.dot is not a DAG. It contains a cycle.
 > [0.000000] [dag_from_dot/CRITICAL] No dot loaded. Do you have a cycle in your graph?

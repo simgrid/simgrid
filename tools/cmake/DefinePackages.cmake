@@ -15,10 +15,9 @@ set(EXTRA_DIST
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
   src/msg/msg_private.hpp
-  src/simdag/dax.dtd
-  src/simdag/dax_dtd.c
-  src/simdag/dax_dtd.h
-  src/simdag/simdag_private.hpp
+  src/dag/dax.dtd
+  src/dag/dax_dtd.c
+  src/dag/dax_dtd.h
   src/simix/simcalls.in
   src/simix/simcalls.py
   src/simix/popping_private.hpp
@@ -470,11 +469,8 @@ set(MSG_SRC
   src/msg/msg_task.cpp
   )
 
-set(SIMDAG_SRC
-  src/simdag/sd_daxloader.cpp
-  src/simdag/sd_dotloader.cpp
-  src/simdag/sd_global.cpp
-  src/simdag/sd_task.cpp
+set(DAG_SRC
+  src/dag/loaders.cpp
   )
 
 set(BINDINGS_SRC
@@ -561,17 +557,6 @@ set(TRACING_SRC
   src/instr/instr_private.hpp
   src/instr/instr_smpi.hpp
   src/instr/instr_resource_utilization.cpp
-  )
-
-set(JEDULE_SRC
-  include/simgrid/jedule/jedule_events.hpp
-  include/simgrid/jedule/jedule.hpp
-  include/simgrid/jedule/jedule_platform.hpp
-  include/simgrid/jedule/jedule_sd_binding.h
-  src/instr/jedule/jedule_events.cpp
-  src/instr/jedule/jedule.cpp
-  src/instr/jedule/jedule_platform.cpp
-  src/instr/jedule/jedule_sd_binding.cpp
   )
 
 set(MC_SRC_BASE
@@ -682,7 +667,6 @@ set(headers_to_install
   include/simgrid/plugins/ProducerConsumer.hpp
   include/simgrid/instr.h
   include/simgrid/mailbox.h
-  include/simgrid/simdag.h
   include/simgrid/modelchecker.h
   include/simgrid/forward.h
   include/simgrid/simix.h
@@ -807,7 +791,7 @@ set(simgrid_sources
   ${XBT_SRC}
   ${PLUGINS_SRC}
   ${BINDINGS_SRC}
-  ${SIMDAG_SRC}
+  ${DAG_SRC}
   )
 
 if(${enable_msg})
@@ -816,12 +800,6 @@ if(${enable_msg})
 else()
   set(EXTRA_DIST         ${EXTRA_DIST}          include/simgrid/msg.h
                                                 ${MSG_SRC})
-endif()
-
-if(${SIMGRID_HAVE_JEDULE})
-  set(simgrid_sources  ${simgrid_sources}  ${JEDULE_SRC})
-else()
-  set(EXTRA_DIST       ${EXTRA_DIST}       ${JEDULE_SRC})
 endif()
 
 if(enable_smpi)
@@ -859,7 +837,6 @@ set(DOC_SOURCES
   doc/doxygen/platform.doc
   doc/doxygen/uhood.doc
   doc/doxygen/uhood_switch.doc
-  doc/doxygen/uhood_arch.doc
 
   examples/README.rst
 
@@ -918,6 +895,7 @@ set(DOC_SOURCES
   docs/source/app_s4u.rst
   docs/source/app_smpi.rst
   docs/source/The_XBT_toolbox.rst
+  docs/source/Calibrating_the_models.rst
   docs/source/community.rst
   docs/source/Configuring_SimGrid.rst
   docs/source/Deploying_your_application.rst
@@ -928,11 +906,11 @@ set(DOC_SOURCES
   docs/source/Installing_SimGrid.rst
   docs/source/Start_your_own_project.rst
   docs/source/Models.rst
+  docs/source/Modeling_howtos.rst
   docs/source/Outcomes.rst
   docs/source/Platform.rst
   docs/source/Platform_cpp.rst
   docs/source/Platform_examples.rst
-  docs/source/Platform_howtos.rst
   docs/source/Platform_routing.rst
   docs/source/Plugins.rst
   docs/source/Release_Notes.rst
@@ -1056,8 +1034,6 @@ set(CMAKEFILES_TXT
   examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
   examples/python/CMakeLists.txt
   examples/deprecated/java/CMakeLists.txt
-  examples/deprecated/msg/mc/CMakeLists.txt
-  examples/deprecated/simdag/CMakeLists.txt
 
   teshsuite/java/CMakeLists.txt
   teshsuite/kernel/CMakeLists.txt
@@ -1065,9 +1041,9 @@ set(CMAKEFILES_TXT
   teshsuite/mc/CMakeLists.txt
   teshsuite/models/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt
+  teshsuite/platforms/CMakeLists.txt
   teshsuite/python/CMakeLists.txt
   teshsuite/s4u/CMakeLists.txt
-  teshsuite/simdag/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
   teshsuite/surf/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
@@ -1164,10 +1140,12 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/bypassRoute.xml
   examples/platforms/cloud.xml
   examples/platforms/cluster_backbone.xml
+  examples/platforms/cluster_backbone.svg
   examples/platforms/cluster_multi.xml
   examples/platforms/cluster_and_one_host.xml
   examples/platforms/cluster_prototype.lua
   examples/platforms/cluster_crossbar.xml
+  examples/platforms/cluster_crossbar.svg
   examples/platforms/cluster_fat_tree.xml
   examples/platforms/cluster_fat_tree.svg
   examples/platforms/cluster_torus.xml

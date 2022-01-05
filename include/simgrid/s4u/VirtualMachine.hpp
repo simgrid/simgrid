@@ -69,15 +69,34 @@ public:
   VirtualMachine* set_bound(double bound);
 
   State get_state() const;
+  static void on_creation_cb(const std::function<void(VirtualMachine&)>& cb) { on_creation.connect(cb); }
+  static void on_start_cb(const std::function<void(VirtualMachine const&)>& cb) { on_start.connect(cb); }
+  static void on_started_cb(const std::function<void(VirtualMachine const&)>& cb) { on_started.connect(cb); }
+  static void on_shutdown_cb(const std::function<void(VirtualMachine const&)>& cb) { on_shutdown.connect(cb); }
+  static void on_suspend_cb(const std::function<void(VirtualMachine const&)>& cb) { on_suspend.connect(cb); }
+  static void on_resume_cb(const std::function<void(VirtualMachine const&)>& cb) { on_resume.connect(cb); }
+  static void on_destruction_cb(const std::function<void(VirtualMachine const&)>& cb) { on_destruction.connect(cb); }
+  static void on_migration_start_cb(const std::function<void(VirtualMachine const&)>& cb)
+  {
+    on_migration_start.connect(cb);
+  }
+  static void on_migration_end_cb(const std::function<void(VirtualMachine const&)>& cb)
+  {
+    on_migration_end.connect(cb);
+  }
+#ifndef DOXYGEN
+  /* FIXME the signals should be private */
+  static xbt::signal<void(VirtualMachine const&)> on_migration_start;
+  static xbt::signal<void(VirtualMachine const&)> on_migration_end;
+  static xbt::signal<void(VirtualMachine const&)> on_destruction;
+#endif
+private:
   static xbt::signal<void(VirtualMachine&)> on_creation;
   static xbt::signal<void(VirtualMachine const&)> on_start;
   static xbt::signal<void(VirtualMachine const&)> on_started;
   static xbt::signal<void(VirtualMachine const&)> on_shutdown;
   static xbt::signal<void(VirtualMachine const&)> on_suspend;
   static xbt::signal<void(VirtualMachine const&)> on_resume;
-  static xbt::signal<void(VirtualMachine const&)> on_migration_start;
-  static xbt::signal<void(VirtualMachine const&)> on_migration_end;
-  static xbt::signal<void(VirtualMachine const&)> on_destruction;
 };
 } // namespace s4u
 } // namespace simgrid

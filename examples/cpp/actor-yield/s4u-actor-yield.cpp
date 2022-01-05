@@ -15,32 +15,22 @@ namespace sg4 = simgrid::s4u;
  * It can also be used to benchmark our context-switching mechanism.
  */
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor_yield, "Messages specific for this s4u example");
-/* Main function of the Yielder actor */
-class yielder {
-  long number_of_yields;
 
-public:
-  explicit yielder(std::vector<std::string> args) { number_of_yields = std::stol(args[1]); }
-  void operator()() const
-  {
-    for (int i = 0; i < number_of_yields; i++)
-      sg4::this_actor::yield();
-    XBT_INFO("I yielded %ld times. Goodbye now!", number_of_yields);
-  }
-};
+static void yielder(long number_of_yields)
+{
+  for (int i = 0; i < number_of_yields; i++)
+    sg4::this_actor::yield();
+  XBT_INFO("I yielded %ld times. Goodbye now!", number_of_yields);
+}
 
 int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
 
-  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-                       "\tExample: %s platform.xml deployment.xml\n",
-             argv[0], argv[0]);
-
   e.load_platform(argv[1]);             /* Load the platform description */
-  e.register_actor<yielder>("yielder"); /* Register the class representing the actors */
 
-  e.load_deployment(argv[2]);
+  sg4::Actor::create("yielder", e.host_by_name("Tremblay"), yielder, 10);
+  sg4::Actor::create("yielder", e.host_by_name("Ruby"), yielder, 15);
 
   e.run(); /* - Run the simulation */
 

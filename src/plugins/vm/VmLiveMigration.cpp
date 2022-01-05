@@ -290,7 +290,7 @@ void sg_vm_live_migration_plugin_init()
 {
   sg_vm_dirty_page_tracking_init();
   VmMigrationExt::ensureVmMigrationExtInstalled();
-  simgrid::s4u::VirtualMachine::on_shutdown.connect(&onVirtualMachineShutdown);
+  simgrid::s4u::VirtualMachine::on_shutdown_cb(&onVirtualMachineShutdown);
 }
 
 simgrid::s4u::VirtualMachine* sg_vm_create_migratable(simgrid::s4u::Host* pm, const char* name, int coreAmount,

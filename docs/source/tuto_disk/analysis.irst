@@ -1,8 +1,8 @@
 .. This file has "irst" as an extension to ensure that it's not parsed by sphinx as is. Instead, it's included in another file that is parsed.
 .. _howto_disk:
 
-Modeling I/O: the realistic way
-*******************************
+I/O calibration
+***************
 
 Introduction
 ============

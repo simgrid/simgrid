@@ -261,10 +261,6 @@ enable_java (on/OFF)
   Generates the java bindings of SimGrid. You must also enable MSG for
   this to work.
 
-enable_jedule (on/OFF)
-  Produces execution traces from SimDag simulations, which can then be visualized with the
-  Jedule external tool.
-
 enable_lua (on/OFF)
   Generate the lua bindings to the SimGrid internals (requires lua-5.3).
 

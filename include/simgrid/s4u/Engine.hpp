@@ -58,6 +58,7 @@ public:
   static bool has_instance() { return instance_ != nullptr; }
 
   void load_platform(const std::string& platf) const;
+  void seal_platform() const;
 
   void register_function(const std::string& name, const std::function<void(int, char**)>& code);
   void register_function(const std::string& name, const std::function<void(std::vector<std::string>)>& code);
@@ -194,31 +195,39 @@ public:
   static void set_config(const std::string& name, const std::string& value);
 
   Engine* set_default_comm_data_copy_callback(void (*callback)(kernel::activity::CommImpl*, void*, size_t));
-  /** Callback fired when the platform is created (ie, the xml file parsed),
+
+  /** Add a callback fired when the platform is created (ie, the xml file parsed),
    * right before the actual simulation starts. */
-  static xbt::signal<void()> on_platform_created;
-
-  /** Callback fired when the platform is about to be created
+  static void on_platform_created_cb(const std::function<void()>& cb) { on_platform_created.connect(cb); }
+  /** Add a callback fired when the platform is about to be created
    * (ie, after any configuration change and just before the resource creation) */
+  static void on_platform_creation_cb(const std::function<void()>& cb) { on_platform_creation.connect(cb); }
+  /** Add a callback fired when the main simulation loop ends, just before the end of Engine::run() */
+  static void on_simulation_end_cb(const std::function<void()>& cb) { on_simulation_end.connect(cb); }
+
+  /** Add a callback fired when the time jumps into the future */
+  static void on_time_advance_cb(const std::function<void(double)>& cb) { on_time_advance.connect(cb); }
+
+  /** Add a callback fired when the time cannot advance because of inter-actors deadlock. Note that the on_exit of each
+   * actor is also executed on deadlock. */
+  static void on_deadlock_cb(const std::function<void(void)>& cb) { on_deadlock.connect(cb); }
+
+#ifndef DOXYGEN
+  /* FIXME signals should be private */
+  static xbt::signal<void()> on_platform_created;
   static xbt::signal<void()> on_platform_creation;
-
-  /** Callback fired when the main simulation loop ends, just before the end of Engine::run() */
-  static xbt::signal<void()> on_simulation_end;
-
-  /** Callback fired when the time jumps into the future */
-  static xbt::signal<void(double)> on_time_advance;
-
-  /** Callback fired when the time cannot advance because of inter-actors deadlock. Note that the on_exit of each actor
-   * is also executed on deadlock. */
-  static xbt::signal<void(void)> on_deadlock;
-
+#endif
 private:
+  static xbt::signal<void()> on_simulation_end;
+  static xbt::signal<void(double)> on_time_advance;
+  static xbt::signal<void(void)> on_deadlock;
   kernel::EngineImpl* const pimpl;
   static Engine* instance_;
   void initialize(int* argc, char** argv);
 };
 
 std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename);
+std::vector<ActivityPtr> create_DAG_from_DAX(const std::string& filename);
 
 #ifndef DOXYGEN /* Internal use only, no need to expose it */
 template <class T>
