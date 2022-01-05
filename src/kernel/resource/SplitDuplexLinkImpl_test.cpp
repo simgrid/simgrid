@@ -5,9 +5,10 @@
 
 #include "catch.hpp"
 
-#include "simgrid/s4u/Engine.hpp"
-#include "simgrid/s4u/Link.hpp"
-#include "src/surf/SplitDuplexLinkImpl.hpp"
+#include <simgrid/s4u/Engine.hpp>
+#include <simgrid/s4u/Link.hpp>
+
+#include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
 
 TEST_CASE("SplitDuplexLink: create", "")
 {

@@ -11,7 +11,7 @@
 #include "simgrid/zone.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/LinkImpl.hpp"
 #include "xbt/config.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");

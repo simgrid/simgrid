@@ -6,7 +6,7 @@
 #ifndef NETWORK_CONSTANT_HPP_
 #define NETWORK_CONSTANT_HPP_
 
-#include "network_interface.hpp"
+#include "src/kernel/resource/LinkImpl.hpp"
 
 namespace simgrid {
 namespace kernel {
@@ -19,8 +19,8 @@ public:
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 
-  LinkImpl* create_link(const std::string& name, const std::vector<double>& bws) override;
-  LinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bws) override;
+  StandardLinkImpl* create_link(const std::string& name, const std::vector<double>& bws) override;
+  StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bws) override;
 };
 
 class NetworkConstantAction final : public NetworkAction {

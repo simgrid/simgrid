@@ -222,7 +222,7 @@ public:
   VirtualMachine* create_vm(const std::string& name, int core_amount, size_t ramsize);
 
   void route_to(const Host* dest, std::vector<Link*>& links, double* latency) const;
-  void route_to(const Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency) const;
+  void route_to(const Host* dest, std::vector<kernel::resource::StandardLinkImpl*>& links, double* latency) const;
 
   /**
    * @brief Seal this host

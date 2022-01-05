@@ -12,10 +12,10 @@
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
+#include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
 #include "src/surf/HostImpl.hpp"
-#include "src/surf/SplitDuplexLinkImpl.hpp"
-#include "src/surf/network_interface.hpp"
 
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_route);
 
 namespace simgrid {
@@ -67,7 +67,7 @@ static void surf_config_models_setup()
 
 xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                  kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                 std::vector<kernel::resource::LinkImpl*> const& link_list)>
+                 std::vector<kernel::resource::StandardLinkImpl*> const& link_list)>
     NetZoneImpl::on_route_creation;
 
 NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
@@ -213,10 +213,10 @@ unsigned long NetZoneImpl::add_component(NetPoint* elm)
   return vertices_.size() - 1; // The rank of the newly created object
 }
 
-std::vector<resource::LinkImpl*> NetZoneImpl::get_link_list_impl(const std::vector<s4u::LinkInRoute>& link_list,
-                                                                 bool backroute) const
+std::vector<resource::StandardLinkImpl*> NetZoneImpl::get_link_list_impl(const std::vector<s4u::LinkInRoute>& link_list,
+                                                                         bool backroute) const
 {
-  std::vector<resource::LinkImpl*> links;
+  std::vector<resource::StandardLinkImpl*> links;
 
   for (const auto& link : link_list) {
     if (link.get_link()->get_sharing_policy() != s4u::Link::SharingPolicy::SPLITDUPLEX) {
@@ -227,7 +227,7 @@ std::vector<resource::LinkImpl*> NetZoneImpl::get_link_list_impl(const std::vect
     const auto* sd_link = dynamic_cast<const s4u::SplitDuplexLink*>(link.get_link());
     xbt_assert(sd_link,
                "Add_route: cast to SpliDuplexLink impossible. This should not happen, please contact SimGrid team");
-    resource::LinkImpl* link_impl;
+    resource::StandardLinkImpl* link_impl;
     switch (link.get_direction()) {
       case s4u::LinkInRoute::Direction::UP:
         if (backroute)
@@ -396,7 +396,7 @@ static void find_common_ancestors(const NetPoint* src, const NetPoint* dst,
 
 /* PRECONDITION: this is the common ancestor of src and dst */
 bool NetZoneImpl::get_bypass_route(const NetPoint* src, const NetPoint* dst,
-                                   /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency,
+                                   /* OUT */ std::vector<resource::StandardLinkImpl*>& links, double* latency,
                                    std::unordered_set<NetZoneImpl*>& netzones)
 {
   // If never set a bypass route return nullptr without any further computations
@@ -480,15 +480,15 @@ bool NetZoneImpl::get_bypass_route(const NetPoint* src, const NetPoint* dst,
 }
 
 void NetZoneImpl::get_global_route(const NetPoint* src, const NetPoint* dst,
-                                   /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency)
+                                   /* OUT */ std::vector<resource::StandardLinkImpl*>& links, double* latency)
 {
   std::unordered_set<NetZoneImpl*> netzones;
   get_global_route_with_netzones(src, dst, links, latency, netzones);
 }
 
 void NetZoneImpl::get_global_route_with_netzones(const NetPoint* src, const NetPoint* dst,
-                                                 /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency,
-                                                 std::unordered_set<NetZoneImpl*>& netzones)
+                                                 /* OUT */ std::vector<resource::StandardLinkImpl*>& links,
+                                                 double* latency, std::unordered_set<NetZoneImpl*>& netzones)
 {
   Route route;
 

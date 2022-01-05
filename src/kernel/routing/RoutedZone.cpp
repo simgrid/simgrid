@@ -5,7 +5,7 @@
 
 #include "simgrid/kernel/routing/RoutedZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "xbt/dict.h"
 #include "xbt/graph.h"
 #include "xbt/log.h"
@@ -111,7 +111,7 @@ void RoutedZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
 /* change a route containing link names into a route containing link entities */
 Route* RoutedZone::new_extended_route(RoutingMode hierarchy, NetPoint* gw_src, NetPoint* gw_dst,
-                                      const std::vector<resource::LinkImpl*>& link_list, bool preserve_order)
+                                      const std::vector<resource::StandardLinkImpl*>& link_list, bool preserve_order)
 {
   auto* result = new Route();
 

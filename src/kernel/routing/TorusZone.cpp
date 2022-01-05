@@ -6,7 +6,7 @@
 #include "simgrid/kernel/routing/TorusZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/LinkImpl.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -86,7 +86,7 @@ void TorusZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
     return;
 
   if (src->id() == dst->id() && has_loopback()) {
-    resource::LinkImpl* uplink = get_uplink_from(node_pos(src->id()));
+    resource::StandardLinkImpl* uplink = get_uplink_from(node_pos(src->id()));
 
     add_link_latency(route->link_list_, uplink, lat);
     return;
@@ -162,7 +162,7 @@ void TorusZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
       route->link_list_.push_back(get_uplink_from(node_pos_with_loopback(current_node)));
     }
 
-    resource::LinkImpl* lnk;
+    resource::StandardLinkImpl* lnk;
     if (use_lnk_up)
       lnk = get_uplink_from(linkOffset);
     else

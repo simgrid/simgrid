@@ -8,7 +8,7 @@
 #include <xbt/random.hpp>
 
 #include "src/instr/instr_private.hpp"
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 #include <algorithm>
 #include <cmath>
 
@@ -301,7 +301,7 @@ static void instr_user_srcdst_variable(double time, const char* src, const char*
   const simgrid::kernel::routing::NetPoint* dst_elm = sg_netpoint_by_name_or_null(dst);
   xbt_assert(dst_elm, "Element '%s' not found!", dst);
 
-  std::vector<simgrid::kernel::resource::LinkImpl*> route;
+  std::vector<simgrid::kernel::resource::StandardLinkImpl*> route;
   simgrid::kernel::routing::NetZoneImpl::get_global_route(src_elm, dst_elm, route, nullptr);
   for (auto const& link : route)
     instr_user_variable(time, link->get_cname(), variable, parent_type, value, what, nullptr, &user_link_variables);

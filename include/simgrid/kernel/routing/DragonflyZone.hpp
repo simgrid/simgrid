@@ -18,12 +18,12 @@ public:
   unsigned int group_;
   unsigned int chassis_;
   unsigned int blade_;
-  resource::LinkImpl* blue_link_ = nullptr;
-  resource::LinkImpl* limiter_   = nullptr;
-  std::vector<resource::LinkImpl*> black_links_;
-  std::vector<resource::LinkImpl*> green_links_;
-  std::vector<resource::LinkImpl*> my_nodes_;
-  DragonflyRouter(unsigned group, unsigned chassis, unsigned blade, resource::LinkImpl* limiter)
+  resource::StandardLinkImpl* blue_link_ = nullptr;
+  resource::StandardLinkImpl* limiter_   = nullptr;
+  std::vector<resource::StandardLinkImpl*> black_links_;
+  std::vector<resource::StandardLinkImpl*> green_links_;
+  std::vector<resource::StandardLinkImpl*> my_nodes_;
+  DragonflyRouter(unsigned group, unsigned chassis, unsigned blade, resource::StandardLinkImpl* limiter)
       : group_(group), chassis_(chassis), blade_(blade), limiter_(limiter)
   {
   }
@@ -96,7 +96,8 @@ public:
 private:
   void generate_routers(const s4u::ClusterCallbacks& set_callbacks);
   void generate_links();
-  void generate_link(const std::string& id, int numlinks, resource::LinkImpl** linkup, resource::LinkImpl** linkdown);
+  void generate_link(const std::string& id, int numlinks, resource::StandardLinkImpl** linkup,
+                     resource::StandardLinkImpl** linkdown);
 
   unsigned int num_nodes_per_blade_    = 0;
   unsigned int num_blades_per_chassis_ = 0;

@@ -10,7 +10,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/NetZone.hpp"
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 
 TEST_CASE("kernel::routing::StarZone: Creating Zone", "[creation]")
 {

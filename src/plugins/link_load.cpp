@@ -7,7 +7,7 @@
 #include <simgrid/s4u/Engine.hpp>
 
 #include "src/kernel/activity/CommImpl.hpp"
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 
 #include <limits>
 

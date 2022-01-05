@@ -31,15 +31,15 @@ namespace s4u {
  */
 class XBT_PUBLIC Link : public xbt::Extendable<Link> {
 #ifndef DOXYGEN
-  friend kernel::resource::LinkImpl;
+  friend kernel::resource::StandardLinkImpl;
 #endif
 
 protected:
   // Links are created from the NetZone, and destroyed by their private implementation when the simulation ends
-  explicit Link(kernel::resource::LinkImplIntf* pimpl) : pimpl_(pimpl) {}
+  explicit Link(kernel::resource::LinkImpl* pimpl) : pimpl_(pimpl) {}
   virtual ~Link() = default;
   // The implementation that never changes
-  kernel::resource::LinkImplIntf* const pimpl_;
+  kernel::resource::LinkImpl* const pimpl_;
 #ifndef DOXYGEN
   friend kernel::resource::NetworkAction; // signal comm_state_changed
 #endif
@@ -47,7 +47,7 @@ protected:
 public:
   enum class SharingPolicy { NONLINEAR = 4, WIFI = 3, SPLITDUPLEX = 2, SHARED = 1, FATPIPE = 0 };
 
-  kernel::resource::LinkImpl* get_impl() const;
+  kernel::resource::StandardLinkImpl* get_impl() const;
 
   /** @brief Retrieve a link from its name */
   static Link* by_name(const std::string& name);
@@ -177,7 +177,7 @@ public:
  */
 class XBT_PUBLIC SplitDuplexLink : public Link {
 public:
-  explicit SplitDuplexLink(kernel::resource::LinkImplIntf* pimpl) : Link(pimpl) {}
+  explicit SplitDuplexLink(kernel::resource::LinkImpl* pimpl) : Link(pimpl) {}
   /** @brief Get the link direction up*/
   Link* get_link_up() const;
   /** @brief Get the link direction down */

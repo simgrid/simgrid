@@ -46,12 +46,13 @@ public:
 
   /** Virtual link standing for the node global capacity.
    */
-  resource::LinkImpl* limiter_link_;
+  resource::StandardLinkImpl* limiter_link_;
   /** If present, communications from this node to this node will pass through it
    * instead of passing by an upper level switch.
    */
-  resource::LinkImpl* loopback_;
-  FatTreeNode(int id, int level, int position, resource::LinkImpl* limiter, resource::LinkImpl* loopback)
+  resource::StandardLinkImpl* loopback_;
+  FatTreeNode(int id, int level, int position, resource::StandardLinkImpl* limiter,
+              resource::StandardLinkImpl* loopback)
       : id(id), level(level), position(position), limiter_link_(limiter), loopback_(loopback)
   {
   }
@@ -64,7 +65,8 @@ public:
  */
 class FatTreeLink {
 public:
-  FatTreeLink(FatTreeNode* src, FatTreeNode* dst, resource::LinkImpl* linkup, resource::LinkImpl* linkdown)
+  FatTreeLink(FatTreeNode* src, FatTreeNode* dst, resource::StandardLinkImpl* linkup,
+              resource::StandardLinkImpl* linkdown)
       : up_node_(dst), down_node_(src), up_link_(linkup), down_link_(linkdown)
   {
   }
@@ -73,9 +75,9 @@ public:
   /** Lower end of the link */
   FatTreeNode* down_node_;
   /** Link going up in the tree */
-  resource::LinkImpl* up_link_;
+  resource::StandardLinkImpl* up_link_;
   /** Link going down in the tree */
-  resource::LinkImpl* down_link_;
+  resource::StandardLinkImpl* down_link_;
 };
 
 /** @ingroup ROUTING_API
@@ -148,7 +150,7 @@ public:
   /** @brief Set FatTree topology */
   void set_topology(unsigned int n_levels, const std::vector<unsigned int>& down_links,
                     const std::vector<unsigned int>& up_links, const std::vector<unsigned int>& link_count);
-  void add_processing_node(int id, resource::LinkImpl* limiter, resource::LinkImpl* loopback);
+  void add_processing_node(int id, resource::StandardLinkImpl* limiter, resource::StandardLinkImpl* loopback);
   /**
    * @brief Build upper levels (switches) in Fat-Tree
    *

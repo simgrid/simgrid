@@ -6,7 +6,7 @@
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <simgrid/kernel/routing/WifiZone.hpp>
 
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_wifi, surf, "Routing part of surf");
 

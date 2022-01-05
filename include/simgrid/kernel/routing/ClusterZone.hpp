@@ -88,9 +88,9 @@ protected:
 class XBT_PRIVATE ClusterBase : public ClusterZone {
   /* We use a map instead of a std::vector here because that's a sparse vector. Some values may not exist */
   /* The pair is {link_up, link_down} */
-  std::unordered_map<unsigned long, std::pair<resource::LinkImpl*, resource::LinkImpl*>> private_links_;
+  std::unordered_map<unsigned long, std::pair<resource::StandardLinkImpl*, resource::StandardLinkImpl*>> private_links_;
   std::unordered_map<unsigned long, NetPoint*> gateways_; //!< list of gateways for leafs (if they're netzones)
-  resource::LinkImpl* backbone_     = nullptr;
+  resource::StandardLinkImpl* backbone_ = nullptr;
   NetPoint* router_                 = nullptr;
   bool has_limiter_                 = false;
   bool has_loopback_                = false;
@@ -104,8 +104,14 @@ class XBT_PRIVATE ClusterBase : public ClusterZone {
 protected:
   using ClusterZone::ClusterZone;
   void set_num_links_per_node(unsigned long num) { num_links_per_node_ = num; }
-  resource::LinkImpl* get_uplink_from(unsigned long position) const { return private_links_.at(position).first; }
-  resource::LinkImpl* get_downlink_to(unsigned long position) const { return private_links_.at(position).second; }
+  resource::StandardLinkImpl* get_uplink_from(unsigned long position) const
+  {
+    return private_links_.at(position).first;
+  }
+  resource::StandardLinkImpl* get_downlink_to(unsigned long position) const
+  {
+    return private_links_.at(position).second;
+  }
 
   double get_link_latency() const { return link_lat_; }
   double get_link_bandwidth() const { return link_bw_; }
@@ -115,14 +121,15 @@ protected:
   bool has_loopback() const { return has_loopback_; }
   void set_limiter();
   bool has_limiter() const { return has_limiter_; }
-  void set_backbone(resource::LinkImpl* bb) { backbone_ = bb; }
+  void set_backbone(resource::StandardLinkImpl* bb) { backbone_ = bb; }
   bool has_backbone() const { return backbone_ != nullptr; }
   void set_router(NetPoint* router) { router_ = router; }
   /** @brief Sets gateway for the leaf */
   void set_gateway(unsigned long position, NetPoint* gateway);
   /** @brief Gets gateway for the leaf or nullptr */
   NetPoint* get_gateway(unsigned long position);
-  void add_private_link_at(unsigned long position, std::pair<resource::LinkImpl*, resource::LinkImpl*> link);
+  void add_private_link_at(unsigned long position,
+                           std::pair<resource::StandardLinkImpl*, resource::StandardLinkImpl*> link);
   bool private_link_exists_at(unsigned long position) const
   {
     return private_links_.find(position) != private_links_.end();

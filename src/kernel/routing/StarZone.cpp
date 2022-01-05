@@ -6,7 +6,7 @@
 #include "simgrid/kernel/routing/StarZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/RoutedZone.hpp"
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "xbt/string.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_star, surf, "Routing part of surf");
@@ -16,8 +16,8 @@ namespace kernel {
 namespace routing {
 StarZone::StarZone(const std::string& name) : ClusterZone(name) {}
 
-void StarZone::add_links_to_route(const std::vector<resource::LinkImpl*>& links, Route* route, double* latency,
-                                  std::unordered_set<resource::LinkImpl*>& added_links) const
+void StarZone::add_links_to_route(const std::vector<resource::StandardLinkImpl*>& links, Route* route, double* latency,
+                                  std::unordered_set<resource::StandardLinkImpl*>& added_links) const
 {
   for (auto* link : links) {
     /* do not add duplicated links in route->link_list_ */
@@ -34,7 +34,7 @@ void StarZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route* 
 
   const auto& src_route = routes_.at(src->id());
   const auto& dst_route = routes_.at(dst->id());
-  std::unordered_set<resource::LinkImpl*> added_links;
+  std::unordered_set<resource::StandardLinkImpl*> added_links;
   /* loopback */
   if (src == dst && src_route.has_loopback()) {
     add_links_to_route(src_route.loopback, route, latency, added_links);

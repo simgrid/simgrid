@@ -10,9 +10,9 @@
 #include <xbt/config.hpp>
 #include <xbt/parse_units.hpp>
 
-#include "src/surf/SplitDuplexLinkImpl.hpp"
-#include "src/surf/network_interface.hpp"
-#include "src/surf/network_wifi.hpp"
+#include "src/kernel/resource/LinkImpl.hpp"
+#include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
+#include "src/kernel/resource/WifiLinkImpl.hpp"
 
 namespace simgrid {
 
@@ -32,9 +32,9 @@ Link* Link::by_name(const std::string& name)
   return Engine::get_instance()->link_by_name(name);
 }
 
-kernel::resource::LinkImpl* Link::get_impl() const
+kernel::resource::StandardLinkImpl* Link::get_impl() const
 {
-  auto* link_impl = dynamic_cast<kernel::resource::LinkImpl*>(pimpl_);
+  auto* link_impl = dynamic_cast<kernel::resource::StandardLinkImpl*>(pimpl_);
   xbt_assert(link_impl != nullptr, "Impossible to get a LinkImpl* from link. %s.",
              (get_sharing_policy() == SharingPolicy::SPLITDUPLEX
                   ? "For a Split-Duplex link, you should call this method to each UP/DOWN member"
@@ -115,7 +115,7 @@ Link::SharingPolicy Link::get_sharing_policy() const
 
 void Link::set_host_wifi_rate(const s4u::Host* host, int level) const
 {
-  auto* wlink = dynamic_cast<kernel::resource::NetworkWifiLink*>(pimpl_);
+  auto* wlink = dynamic_cast<kernel::resource::WifiLinkImpl*>(pimpl_);
   xbt_assert(wlink != nullptr, "Link %s does not seem to be a wifi link.", get_cname());
   wlink->set_host_rate(host, level);
 }

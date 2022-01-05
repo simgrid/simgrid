@@ -6,7 +6,7 @@
 #include <simgrid/kernel/routing/FatTreeZone.hpp>
 #include <simgrid/kernel/routing/NetPoint.hpp>
 
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/surf/xml/platf.hpp" // surf_parse_error() and surf_parse_assert()
 
 #include <fstream>
@@ -249,8 +249,8 @@ void FatTreeZone::generate_switches(const s4u::ClusterCallbacks& set_callbacks)
   }
 
   /* get limiter for this router */
-  auto get_limiter = [this, &set_callbacks](unsigned long i, unsigned long j, long id) -> resource::LinkImpl* {
-    kernel::resource::LinkImpl* limiter = nullptr;
+  auto get_limiter = [this, &set_callbacks](unsigned long i, unsigned long j, long id) -> resource::StandardLinkImpl* {
+    kernel::resource::StandardLinkImpl* limiter = nullptr;
     if (set_callbacks.limiter) {
       const auto* s4u_link = set_callbacks.limiter(get_iface(), {i + 1, j}, id);
       if (s4u_link) {
@@ -333,7 +333,7 @@ int FatTreeZone::get_level_position(const unsigned int level)
   return tempPosition;
 }
 
-void FatTreeZone::add_processing_node(int id, resource::LinkImpl* limiter, resource::LinkImpl* loopback)
+void FatTreeZone::add_processing_node(int id, resource::StandardLinkImpl* limiter, resource::StandardLinkImpl* loopback)
 {
   using std::make_pair;
   static int position = 0;

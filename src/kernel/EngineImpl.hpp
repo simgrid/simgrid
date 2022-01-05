@@ -19,7 +19,7 @@
 #include "src/kernel/activity/SleepImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "src/surf/SplitDuplexLinkImpl.hpp"
+#include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
 
 #include <boost/intrusive/list.hpp>
 #include <map>
@@ -37,7 +37,7 @@ xbt_dynar_t get_dead_actors_addr();
 
 class EngineImpl {
   std::map<std::string, s4u::Host*, std::less<>> hosts_;
-  std::map<std::string, resource::LinkImpl*, std::less<>> links_;
+  std::map<std::string, resource::StandardLinkImpl*, std::less<>> links_;
   /* save split-duplex links separately, keep links_ with only LinkImpl* seen by the user
    * members of a split-duplex are saved in the links_ */
   std::map<std::string, std::unique_ptr<resource::SplitDuplexLinkImpl>, std::less<>> split_duplex_links_;

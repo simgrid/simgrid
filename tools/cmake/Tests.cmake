@@ -124,6 +124,7 @@ ENDIF()
 # New tests should use the Catch Framework
 set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
                 src/kernel/resource/NetworkModelIntf_test.cpp
+                src/kernel/resource/SplitDuplexLinkImpl_test.cpp
                 src/kernel/resource/profile/Profile_test.cpp
                 src/kernel/routing/DijkstraZone_test.cpp
                 src/kernel/routing/DragonflyZone_test.cpp
@@ -132,7 +133,6 @@ set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
                 src/kernel/routing/FullZone_test.cpp
                 src/kernel/routing/StarZone_test.cpp
                 src/kernel/routing/TorusZone_test.cpp
-                src/surf/SplitDuplexLinkImpl_test.cpp
                 src/xbt/config_test.cpp
                 src/xbt/dict_test.cpp
                 src/xbt/dynar_test.cpp

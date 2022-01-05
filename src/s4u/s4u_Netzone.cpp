@@ -12,14 +12,15 @@
 #include <simgrid/zone.h>
 #include <xbt/parse_units.hpp>
 
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/LinkImpl.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 
 namespace simgrid {
 namespace s4u {
 
 xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                  kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                 std::vector<kernel::resource::LinkImpl*> const& link_list)>
+                 std::vector<kernel::resource::StandardLinkImpl*> const& link_list)>
     NetZone::on_route_creation;
 xbt::signal<void(NetZone const&)> NetZone::on_creation;
 xbt::signal<void(NetZone const&)> NetZone::on_seal;
@@ -102,7 +103,8 @@ unsigned long NetZone::add_component(kernel::routing::NetPoint* elm)
 }
 
 // XBT_ATTRIB_DEPRECATED_v332
-std::vector<LinkInRoute> NetZone::convert_to_linkInRoute(const std::vector<kernel::resource::LinkImpl*>& link_list)
+std::vector<LinkInRoute>
+NetZone::convert_to_linkInRoute(const std::vector<kernel::resource::StandardLinkImpl*>& link_list)
 {
   std::vector<LinkInRoute> links;
   for (const auto* link : link_list) {
@@ -121,7 +123,7 @@ void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoin
 // XBT_ATTRIB_DEPRECATED_v332
 void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                        const std::vector<kernel::resource::LinkImpl*>& link_list, bool symmetrical)
+                        const std::vector<kernel::resource::StandardLinkImpl*>& link_list, bool symmetrical)
 {
   pimpl_->add_route(src, dst, gw_src, gw_dst, convert_to_linkInRoute(link_list), symmetrical);
 }
@@ -129,7 +131,7 @@ void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoin
 // XBT_ATTRIB_DEPRECATED_v332
 void NetZone::add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                                kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                               std::vector<kernel::resource::LinkImpl*>& link_list, bool /*symmetrical*/)
+                               std::vector<kernel::resource::StandardLinkImpl*>& link_list, bool /*symmetrical*/)
 {
   pimpl_->add_bypass_route(src, dst, gw_src, gw_dst, convert_to_linkInRoute(link_list));
 }

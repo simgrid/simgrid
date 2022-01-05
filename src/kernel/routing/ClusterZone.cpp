@@ -6,7 +6,7 @@
 #include "simgrid/kernel/routing/ClusterZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/RoutedZone.hpp"
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf");
 
@@ -40,7 +40,8 @@ void ClusterBase::set_link_characteristics(double bw, double lat, s4u::Link::Sha
   link_lat_            = lat;
 }
 
-void ClusterBase::add_private_link_at(unsigned long position, std::pair<resource::LinkImpl*, resource::LinkImpl*> link)
+void ClusterBase::add_private_link_at(unsigned long position,
+                                      std::pair<resource::StandardLinkImpl*, resource::StandardLinkImpl*> link)
 {
   private_links_.insert({position, link});
 }

@@ -6,16 +6,13 @@
 #ifndef SIMGRID_KERNEL_RESOURCE_SDLINKIMPL_HPP
 #define SIMGRID_KERNEL_RESOURCE_SDLINKIMPL_HPP
 
-#include "src/surf/LinkImpl.hpp"
-#include "src/surf/LinkImplIntf.hpp"
-
-/***********
- * Classes *
- ***********/
+#include "src/kernel/resource/LinkImpl.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 
 namespace simgrid {
 namespace kernel {
 namespace resource {
+
 /************
  * Resource *
  ************/
@@ -23,17 +20,17 @@ namespace resource {
  * @brief SURF network link interface class
  * @details A Link represents the link between two [hosts](@ref HostImpl)
  */
-class SplitDuplexLinkImpl : public LinkImplIntf {
+class SplitDuplexLinkImpl : public LinkImpl {
   s4u::SplitDuplexLink piface_;
-  LinkImpl* link_up_;
-  LinkImpl* link_down_;
+  StandardLinkImpl* link_up_;
+  StandardLinkImpl* link_down_;
 
 protected:
-  SplitDuplexLinkImpl(const LinkImpl&) = delete;
-  SplitDuplexLinkImpl& operator=(const LinkImpl&) = delete;
+  SplitDuplexLinkImpl(const StandardLinkImpl&) = delete;
+  SplitDuplexLinkImpl& operator=(const StandardLinkImpl&) = delete;
 
 public:
-  SplitDuplexLinkImpl(const std::string& name, LinkImpl* link_up, LinkImpl* link_down);
+  SplitDuplexLinkImpl(const std::string& name, StandardLinkImpl* link_up, StandardLinkImpl* link_down);
   /** @brief Public interface */
   const s4u::SplitDuplexLink* get_iface() const { return &piface_; }
   s4u::SplitDuplexLink* get_iface() { return &piface_; }

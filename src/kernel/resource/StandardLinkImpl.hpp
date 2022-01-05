@@ -3,10 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_KERNEL_RESOURCE_LINKIMPL_HPP
-#define SIMGRID_KERNEL_RESOURCE_LINKIMPL_HPP
+#ifndef SIMGRID_KERNEL_RESOURCE_STANDARDLINKIMPL_HPP
+#define SIMGRID_KERNEL_RESOURCE_STANDARDLINKIMPL_HPP
 
-#include "src/surf/LinkImplIntf.hpp"
+#include "src/kernel/resource/LinkImpl.hpp"
 
 /***********
  * Classes *
@@ -18,19 +18,15 @@ namespace resource {
 /************
  * Resource *
  ************/
-/** @ingroup SURF_network_interface
- * @brief SURF network link interface class
- * @details A Link represents the link between two [hosts](@ref simgrid::kernel::resource::HostImpl)
- */
-class LinkImpl : public LinkImplIntf {
+class StandardLinkImpl : public LinkImpl {
   s4u::Link piface_;
   s4u::Link::SharingPolicy sharing_policy_ = s4u::Link::SharingPolicy::SHARED;
 
 protected:
-  explicit LinkImpl(const std::string& name);
-  LinkImpl(const LinkImpl&) = delete;
-  LinkImpl& operator=(const LinkImpl&) = delete;
-  ~LinkImpl() override                 = default; // Use destroy() instead of this destructor.
+  explicit StandardLinkImpl(const std::string& name);
+  StandardLinkImpl(const StandardLinkImpl&) = delete;
+  StandardLinkImpl& operator=(const StandardLinkImpl&) = delete;
+  ~StandardLinkImpl() override                         = default; // Use destroy() instead of this destructor.
 
   Metric latency_   = {0.0, 1, nullptr};
   Metric bandwidth_ = {1.0, 1, nullptr};
@@ -75,4 +71,4 @@ public:
 } // namespace kernel
 } // namespace simgrid
 
-#endif /* SIMGRID_KERNEL_RESOURCE_LINKIMPL_HPP */
+#endif /* SIMGRID_KERNEL_RESOURCE_STANDARDLINKIMPL_HPP */

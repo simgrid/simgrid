@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/surf/SplitDuplexLinkImpl.hpp"
+#include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 
@@ -15,8 +15,9 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-SplitDuplexLinkImpl::SplitDuplexLinkImpl(const std::string& name, LinkImpl* link_up, LinkImpl* link_down)
-    : LinkImplIntf(name), piface_(this), link_up_(link_up), link_down_(link_down)
+SplitDuplexLinkImpl::SplitDuplexLinkImpl(const std::string& name, StandardLinkImpl* link_up,
+                                         StandardLinkImpl* link_down)
+    : LinkImpl(name), piface_(this), link_up_(link_up), link_down_(link_down)
 {
 }
 

@@ -12,6 +12,10 @@ set(EXTRA_DIST
   src/include/xbt/xbt_modinter.h
   src/include/catch.hpp
   src/include/xxhash.hpp
+  src/kernel/resource/LinkImpl.hpp
+  src/kernel/resource/SplitDuplexLinkImpl.hpp
+  src/kernel/resource/StandardLinkImpl.hpp
+  src/kernel/resource/WifiLinkImpl.hpp
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
   src/msg/msg_private.hpp
@@ -36,14 +40,9 @@ set(EXTRA_DIST
   src/surf/cpu_ti.hpp
   src/surf/network_cm02.hpp
   src/surf/network_constant.hpp
-  src/surf/network_interface.hpp
-  src/surf/LinkImpl.hpp
-  src/surf/LinkImplIntf.hpp
-  src/surf/SplitDuplexLinkImpl.hpp
   src/surf/network_ns3.hpp
   src/surf/network_smpi.hpp
   src/surf/network_ib.hpp
-  src/surf/network_wifi.hpp
   src/surf/ns3/ns3_simulator.hpp
   src/surf/xml/simgrid.dtd
   src/surf/xml/simgrid_dtd.h
@@ -312,8 +311,12 @@ set(SURF_SRC
   src/kernel/resource/DiskImpl.hpp
   src/kernel/resource/Model.cpp
   src/kernel/resource/Resource.hpp
+  src/kernel/resource/LinkImpl.cpp
+  src/kernel/resource/SplitDuplexLinkImpl.cpp
+  src/kernel/resource/StandardLinkImpl.cpp
   src/kernel/resource/VirtualMachineImpl.hpp
   src/kernel/resource/VirtualMachineImpl.cpp
+  src/kernel/resource/WifiLinkImpl.cpp
 
   src/kernel/resource/profile/DatedValue.cpp
   src/kernel/resource/profile/DatedValue.hpp
@@ -351,10 +354,6 @@ set(SURF_SRC
   src/surf/disk_s19.cpp
   src/surf/network_cm02.cpp
   src/surf/network_constant.cpp
-  src/surf/network_interface.cpp
-  src/surf/LinkImpl.cpp
-  src/surf/SplitDuplexLinkImpl.cpp
-  src/surf/network_wifi.cpp
   src/surf/sg_platf.cpp
   src/surf/surf_interface.cpp
   src/surf/xml/platf.hpp

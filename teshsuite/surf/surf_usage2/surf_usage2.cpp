@@ -11,7 +11,7 @@
 #include "simgrid/zone.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/LinkImpl.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "xbt/config.hpp"
 

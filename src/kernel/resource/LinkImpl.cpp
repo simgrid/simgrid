@@ -6,8 +6,9 @@
 #include <simgrid/s4u/Engine.hpp>
 
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/resource/LinkImpl.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
-#include "src/surf/network_interface.hpp"
 #include "src/surf/surf_interface.hpp"
 
 #include <numeric>
@@ -68,41 +69,43 @@ void NetworkAction::set_state(Action::State state)
 }
 
 /** @brief returns a list of all Links that this action is using */
-std::list<LinkImpl*> NetworkAction::get_links() const
+std::list<StandardLinkImpl*> NetworkAction::get_links() const
 {
-  std::list<LinkImpl*> retlist;
+  std::list<StandardLinkImpl*> retlist;
   int llen = get_variable()->get_number_of_constraint();
 
   for (int i = 0; i < llen; i++) {
     /* Beware of composite actions: ptasks put links and cpus together */
-    if (auto* link = dynamic_cast<LinkImpl*>(get_variable()->get_constraint(i)->get_id()))
+    if (auto* link = dynamic_cast<StandardLinkImpl*>(get_variable()->get_constraint(i)->get_id()))
       retlist.push_back(link);
   }
 
   return retlist;
 }
 
-static void add_latency(const std::vector<LinkImpl*>& links, double* latency)
+static void add_latency(const std::vector<StandardLinkImpl*>& links, double* latency)
 {
   if (latency)
     *latency = std::accumulate(begin(links), end(links), *latency,
                                [](double lat, const auto* link) { return lat + link->get_latency(); });
 }
 
-void add_link_latency(std::vector<LinkImpl*>& result, LinkImpl* link, double* latency)
+void add_link_latency(std::vector<StandardLinkImpl*>& result, StandardLinkImpl* link, double* latency)
 {
   result.push_back(link);
   if (latency)
     *latency += link->get_latency();
 }
 
-void add_link_latency(std::vector<LinkImpl*>& result, const std::vector<LinkImpl*>& links, double* latency)
+void add_link_latency(std::vector<StandardLinkImpl*>& result, const std::vector<StandardLinkImpl*>& links,
+                      double* latency)
 {
   result.insert(result.end(), begin(links), end(links));
   add_latency(links, latency);
 }
 
-void insert_link_latency(std::vector<LinkImpl*>& result, const std::vector<LinkImpl*>& links, double* latency)
+void insert_link_latency(std::vector<StandardLinkImpl*>& result, const std::vector<StandardLinkImpl*>& links,
+                         double* latency)
 {
   result.insert(result.begin(), rbegin(links), rend(links));
   add_latency(links, latency);

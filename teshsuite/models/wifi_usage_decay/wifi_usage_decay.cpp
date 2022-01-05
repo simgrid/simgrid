@@ -7,7 +7,7 @@
 #include "xbt/config.hpp"
 #include "xbt/log.h"
 
-#include "src/surf/network_wifi.hpp"
+#include "src/kernel/resource/WifiLinkImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(simulator, "[usage] wifi_usage <platform-file>");
 
@@ -77,7 +77,7 @@ void run_ping_test(const char* src, const char* dest, int data_size)
   });
   simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name(dest),
                               [mailbox]() { mailbox->get<std::string>(); });
-  auto* l = (simgrid::kernel::resource::NetworkWifiLink*)simgrid::s4u::Link::by_name("AP1")->get_impl();
+  auto* l = (simgrid::kernel::resource::WifiLinkImpl*)simgrid::s4u::Link::by_name("AP1")->get_impl();
   if (not l->toggle_decay_model())
     l->toggle_decay_model();
   l->set_host_rate(simgrid::s4u::Host::by_name("Station 1"), 0);

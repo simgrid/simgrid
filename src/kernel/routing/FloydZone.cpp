@@ -7,7 +7,7 @@
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <xbt/string.hpp>
 
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 
 #include <climits>
 

@@ -8,7 +8,7 @@
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
 
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 
 #include <boost/algorithm/string.hpp>
 

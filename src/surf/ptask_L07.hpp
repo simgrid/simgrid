@@ -65,8 +65,8 @@ public:
   NetworkL07Model(const NetworkL07Model&) = delete;
   NetworkL07Model& operator=(const NetworkL07Model&) = delete;
   ~NetworkL07Model() override;
-  LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) final;
-  LinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidths) override;
+  StandardLinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) final;
+  StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidths) override;
 
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
   void update_actions_state(double /*now*/, double /*delta*/) override{
@@ -101,7 +101,7 @@ protected:
   void on_speed_change() override;
 };
 
-class LinkL07 : public LinkImpl {
+class LinkL07 : public StandardLinkImpl {
 public:
   LinkL07(const std::string& name, double bandwidth, lmm::System* system);
   LinkL07(const LinkL07&) = delete;

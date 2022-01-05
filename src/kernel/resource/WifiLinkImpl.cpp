@@ -3,8 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "network_wifi.hpp"
-#include "simgrid/s4u/Host.hpp"
+#include <simgrid/s4u/Host.hpp>
+
+#include "src/kernel/resource/WifiLinkImpl.hpp"
 #include "src/surf/surf_interface.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
@@ -17,15 +18,15 @@ namespace resource {
  * Resource *
  ************/
 
-NetworkWifiLink::NetworkWifiLink(const std::string& name, const std::vector<double>& bandwidths, lmm::System* system)
-    : LinkImpl(name)
+WifiLinkImpl::WifiLinkImpl(const std::string& name, const std::vector<double>& bandwidths, lmm::System* system)
+    : StandardLinkImpl(name)
 {
   this->set_constraint(system->constraint_new(this, 1));
   for (auto bandwidth : bandwidths)
     bandwidths_.push_back({bandwidth, 1.0, nullptr});
 }
 
-void NetworkWifiLink::set_host_rate(const s4u::Host* host, int rate_level)
+void WifiLinkImpl::set_host_rate(const s4u::Host* host, int rate_level)
 {
   auto insert_done = host_rates_.insert(std::make_pair(host->get_name(), rate_level));
   if (not insert_done.second)
@@ -35,7 +36,7 @@ void NetworkWifiLink::set_host_rate(const s4u::Host* host, int rate_level)
   refresh_decay_bandwidths();
 }
 
-double NetworkWifiLink::get_host_rate(const s4u::Host* host) const
+double WifiLinkImpl::get_host_rate(const s4u::Host* host) const
 {
   auto host_rates_it = host_rates_.find(host->get_name());
 
@@ -54,44 +55,46 @@ double NetworkWifiLink::get_host_rate(const s4u::Host* host) const
   return rate.peak * rate.scale;
 }
 
-s4u::Link::SharingPolicy NetworkWifiLink::get_sharing_policy() const
+s4u::Link::SharingPolicy WifiLinkImpl::get_sharing_policy() const
 {
   return s4u::Link::SharingPolicy::WIFI;
 }
 
-int NetworkWifiLink::get_host_count() const
+int WifiLinkImpl::get_host_count() const
 {
   return static_cast<int>(host_rates_.size());
 }
 
-void NetworkWifiLink::refresh_decay_bandwidths(){
+void WifiLinkImpl::refresh_decay_bandwidths()
+{
   // Compute number of STAtion on the Access Point
   int nSTA = get_host_count();
 
   std::vector<Metric> new_bandwidths;
   for (auto const& bandwidth : bandwidths_) {
     // Instantiate decay model relatively to the actual bandwidth
-    double max_bw=bandwidth.peak;
-    double min_bw=bandwidth.peak-(wifi_max_rate_-wifi_min_rate_);
-    double model_rate=bandwidth.peak-(wifi_max_rate_-model_rate_);
+    double max_bw     = bandwidth.peak;
+    double min_bw     = bandwidth.peak - (wifi_max_rate_ - wifi_min_rate_);
+    double model_rate = bandwidth.peak - (wifi_max_rate_ - model_rate_);
 
     xbt_assert(min_bw > 0, "Your WIFI link is using bandwidth(s) which is too low for the decay model.");
 
-    double N0=max_bw-min_bw;
-    double lambda=(-log(model_rate-min_bw)+log(N0))/model_n_;
+    double N0     = max_bw - min_bw;
+    double lambda = (-log(model_rate - min_bw) + log(N0)) / model_n_;
     // Since decay model start at 0 we should use (nSTA-1)
-    double new_peak=N0*exp(-lambda*(nSTA-1))+min_bw;
+    double new_peak = N0 * exp(-lambda * (nSTA - 1)) + min_bw;
     new_bandwidths.push_back({new_peak, 1.0, nullptr});
   }
-  decay_bandwidths_=new_bandwidths;
+  decay_bandwidths_ = new_bandwidths;
 }
 
-bool NetworkWifiLink::toggle_decay_model(){
+bool WifiLinkImpl::toggle_decay_model()
+{
   use_decay_model_ = not use_decay_model_;
   return use_decay_model_;
 }
 
-void NetworkWifiLink::set_latency(double value)
+void WifiLinkImpl::set_latency(double value)
 {
   xbt_assert(value == 0, "Latency cannot be set for WiFi Links.");
 }

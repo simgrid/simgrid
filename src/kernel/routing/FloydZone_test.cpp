@@ -10,7 +10,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/s4u/NetZone.hpp"
-#include "src/surf/network_interface.hpp" //LinkImpl
+#include "src/kernel/resource/LinkImpl.hpp"
 
 TEST_CASE("kernel::routing::FloydZone: Creating Zone", "")
 {

@@ -169,7 +169,7 @@ L07Action::L07Action(Model* model, const std::vector<s4u::Host*>& host_list, con
         continue;
 
       double lat = 0.0;
-      std::vector<LinkImpl*> route;
+      std::vector<StandardLinkImpl*> route;
       hostList_[k / host_list.size()]->route_to(hostList_[k % host_list.size()], route, &lat);
       latency = std::max(latency, lat);
 
@@ -200,7 +200,7 @@ L07Action::L07Action(Model* model, const std::vector<s4u::Host*>& host_list, con
     for (size_t k = 0; k < host_list.size() * host_list.size(); k++) {
       if (bytes_amount[k] <= 0.0)
         continue;
-      std::vector<LinkImpl*> route;
+      std::vector<StandardLinkImpl*> route;
       hostList_[k / host_list.size()]->route_to(hostList_[k % host_list.size()], route, nullptr);
 
       for (auto const& link : route)
@@ -234,7 +234,7 @@ CpuImpl* CpuL07Model::create_cpu(s4u::Host* host, const std::vector<double>& spe
   return (new CpuL07(host, speed_per_pstate))->set_model(this);
 }
 
-LinkImpl* NetworkL07Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
+StandardLinkImpl* NetworkL07Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   xbt_assert(bandwidths.size() == 1, "Non WIFI link must have only 1 bandwidth.");
   auto link = new LinkL07(name, bandwidths[0], get_maxmin_system());
@@ -242,7 +242,7 @@ LinkImpl* NetworkL07Model::create_link(const std::string& name, const std::vecto
   return link;
 }
 
-LinkImpl* NetworkL07Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
+StandardLinkImpl* NetworkL07Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   THROW_UNIMPLEMENTED;
 }
@@ -290,7 +290,7 @@ void CpuL07::on_speed_change()
   CpuImpl::on_speed_change();
 }
 
-LinkL07::LinkL07(const std::string& name, double bandwidth, lmm::System* system) : LinkImpl(name)
+LinkL07::LinkL07(const std::string& name, double bandwidth, lmm::System* system) : StandardLinkImpl(name)
 {
   this->set_constraint(system->constraint_new(this, bandwidth));
   bandwidth_.peak = bandwidth;
@@ -344,7 +344,7 @@ void LinkL07::apply_event(profile::Event* triggered, double value)
 void LinkL07::set_bandwidth(double value)
 {
   bandwidth_.peak = value;
-  LinkImpl::on_bandwidth_change();
+  StandardLinkImpl::on_bandwidth_change();
 
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), bandwidth_.peak * bandwidth_.scale);
 }
@@ -389,7 +389,7 @@ double L07Action::calculateNetworkBound()
     for (size_t j = 0; j < host_count; j++) {
       if (communicationAmount_[i * host_count + j] > 0) {
         double lat = 0.0;
-        std::vector<LinkImpl*> route;
+        std::vector<StandardLinkImpl*> route;
         hostList_.at(i)->route_to(hostList_.at(j), route, &lat);
 
         lat_current = std::max(lat_current, lat * communicationAmount_[i * host_count + j]);

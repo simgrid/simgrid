@@ -7,7 +7,7 @@
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <xbt/string.hpp>
 
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 
 #include <climits>
 #include <queue>
@@ -184,7 +184,7 @@ void DijkstraZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rou
 
     if (get_hierarchy() == RoutingMode::recursive && v != dst_node_id &&
         gw_dst->get_name() != prev_gw_src->get_name()) {
-      std::vector<resource::LinkImpl*> e_route_as_to_as;
+      std::vector<resource::StandardLinkImpl*> e_route_as_to_as;
 
       const NetPoint* gw_dst_net_elm      = nullptr;
       const NetPoint* prev_gw_src_net_elm = nullptr;

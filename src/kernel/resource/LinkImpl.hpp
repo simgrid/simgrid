@@ -3,15 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_NETWORK_INTERFACE_HPP_
-#define SURF_NETWORK_INTERFACE_HPP_
+#ifndef SIMGRID_KERNEL_RESOURCE_LINKIMPL_HPP
+#define SIMGRID_KERNEL_RESOURCE_LINKIMPL_HPP
 
 #include "simgrid/kernel/resource/Model.hpp"
 #include "simgrid/kernel/resource/NetworkModelIntf.hpp"
 #include "simgrid/s4u/Link.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/kernel/resource/Resource.hpp"
-#include "src/surf/LinkImpl.hpp"
 #include "xbt/PropertyHolder.hpp"
 
 #include <list>
@@ -20,10 +19,12 @@
 /***********
  * Classes *
  ***********/
+class StandardLinkImpl;
 
 namespace simgrid {
 namespace kernel {
 namespace resource {
+
 /*********
  * Model *
  *********/
@@ -48,9 +49,9 @@ public:
    * @param name The name of the Link
    * @param bandwidths The vector of bandwidths of the Link in bytes per second
    */
-  virtual LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) = 0;
+  virtual StandardLinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) = 0;
 
-  virtual LinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidths) = 0;
+  virtual StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidths) = 0;
 
   /**
    * @brief Create a communication between two hosts.
@@ -91,7 +92,37 @@ public:
   void set_lat_factor_cb(const std::function<NetworkFactorCb>& cb) override { THROW_UNIMPLEMENTED; }
   void set_bw_factor_cb(const std::function<NetworkFactorCb>& cb) override { THROW_UNIMPLEMENTED; }
 
-  LinkImpl* loopback_ = nullptr;
+  StandardLinkImpl* loopback_ = nullptr;
+};
+
+/************
+ * Resource *
+ ************/
+class LinkImpl : public Resource_T<LinkImpl>, public xbt::PropertyHolder {
+public:
+  using Resource_T::Resource_T;
+  /** @brief Get the bandwidth in bytes per second of current Link */
+  virtual double get_bandwidth() const = 0;
+  /** @brief Update the bandwidth in bytes per second of current Link */
+  virtual void set_bandwidth(double value) = 0;
+
+  /** @brief Get the latency in seconds of current Link */
+  virtual double get_latency() const = 0;
+  /** @brief Update the latency in seconds of current Link */
+  virtual void set_latency(double value) = 0;
+
+  /** @brief The sharing policy */
+  virtual void set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb) = 0;
+  virtual s4u::Link::SharingPolicy get_sharing_policy() const                                          = 0;
+
+  /* setup the profile file with bandwidth events (peak speed changes due to external load).
+   * Profile must contain percentages (value between 0 and 1). */
+  virtual void set_bandwidth_profile(kernel::profile::Profile* profile) = 0;
+  /* setup the profile file with latency events (peak latency changes due to external load).
+   * Profile must contain absolute values */
+  virtual void set_latency_profile(kernel::profile::Profile* profile) = 0;
+  /** @brief Set the concurrency limit for this link */
+  virtual void set_concurrency_limit(int limit) const = 0;
 };
 
 /**********
@@ -129,7 +160,7 @@ public:
       : Action(model, cost, failed, var), src_(src), dst_(dst){};
 
   void set_state(Action::State state) override;
-  virtual std::list<LinkImpl*> get_links() const;
+  virtual std::list<StandardLinkImpl*> get_links() const;
 
   double latency_         = 0.; // Delay before the action starts
   double lat_current_     = 0.; // Used to compute the communication RTT, and accordingly limit the communication rate
@@ -142,12 +173,14 @@ public:
 /* Insert link(s) at the end of vector `result' (at the beginning, and reversed, for insert_link_latency()), and add
  * link->get_latency() to *latency when latency is not null
  */
-void add_link_latency(std::vector<LinkImpl*>& result, LinkImpl* link, double* latency);
-void add_link_latency(std::vector<LinkImpl*>& result, const std::vector<LinkImpl*>& links, double* latency);
-void insert_link_latency(std::vector<LinkImpl*>& result, const std::vector<LinkImpl*>& links, double* latency);
+void add_link_latency(std::vector<StandardLinkImpl*>& result, StandardLinkImpl* link, double* latency);
+void add_link_latency(std::vector<StandardLinkImpl*>& result, const std::vector<StandardLinkImpl*>& links,
+                      double* latency);
+void insert_link_latency(std::vector<StandardLinkImpl*>& result, const std::vector<StandardLinkImpl*>& links,
+                         double* latency);
 
 } // namespace resource
 } // namespace kernel
 } // namespace simgrid
 
-#endif /* SURF_NETWORK_INTERFACE_HPP_ */
+#endif /* SIMGRID_KERNEL_RESOURCE_LINKIMPL_HPP */

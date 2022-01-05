@@ -8,8 +8,8 @@
 #include <simgrid/s4u/Link.hpp>
 
 #include "src/kernel/activity/CommImpl.hpp"
-#include "src/surf/network_interface.hpp"
-#include "src/surf/network_wifi.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
+#include "src/kernel/resource/WifiLinkImpl.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -27,7 +27,7 @@ namespace plugin {
 
 class XBT_PRIVATE LinkEnergyWifi {
   // associative array keeping size of data already sent for a given flow (required for interleaved actions)
-  std::map<kernel::resource::NetworkWifiAction*, std::pair<int, double>> flowTmp{};
+  std::map<kernel::resource::WifiLinkAction*, std::pair<int, double>> flowTmp{};
 
   // WiFi link the plugin instance is attached to
   s4u::Link* link_{};
@@ -98,7 +98,7 @@ xbt::Extension<s4u::Link, LinkEnergyWifi> LinkEnergyWifi::EXTENSION_ID;
 
 void LinkEnergyWifi::update_destroy()
 {
-  auto const* wifi_link = static_cast<kernel::resource::NetworkWifiLink*>(link_->get_impl());
+  auto const* wifi_link = static_cast<kernel::resource::WifiLinkImpl*>(link_->get_impl());
   double duration       = simgrid::s4u::Engine::get_clock() - prev_update_;
   prev_update_          = simgrid::s4u::Engine::get_clock();
 
@@ -122,7 +122,7 @@ void LinkEnergyWifi::update()
   if(duration < 1e-6)
     return;
 
-  auto const* wifi_link = static_cast<kernel::resource::NetworkWifiLink*>(link_->get_impl());
+  auto const* wifi_link = static_cast<kernel::resource::WifiLinkImpl*>(link_->get_impl());
 
   const kernel::lmm::Element* elem = nullptr;
 
@@ -137,7 +137,7 @@ void LinkEnergyWifi::update()
    */
   double durUsage = 0;
   while (const auto* var = wifi_link->get_constraint()->get_variable(&elem)) {
-    auto* action = static_cast<kernel::resource::NetworkWifiAction*>(var->get_id());
+    auto* action = static_cast<kernel::resource::WifiLinkAction*>(var->get_id());
     XBT_DEBUG("cost: %f action value: %f link rate 1: %f link rate 2: %f", action->get_cost(), action->get_rate(),
               wifi_link->get_host_rate(&action->get_src()), wifi_link->get_host_rate(&action->get_dst()));
 

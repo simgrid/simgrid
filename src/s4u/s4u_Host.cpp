@@ -13,6 +13,7 @@
 #include <simgrid/s4u/VirtualMachine.hpp>
 #include <xbt/parse_units.hpp>
 
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/surf/HostImpl.hpp"
 
@@ -160,14 +161,14 @@ size_t Host::get_actor_count() const
  */
 void Host::route_to(const Host* dest, std::vector<Link*>& links, double* latency) const
 {
-  std::vector<kernel::resource::LinkImpl*> linkImpls;
+  std::vector<kernel::resource::StandardLinkImpl*> linkImpls;
   this->route_to(dest, linkImpls, latency);
   for (auto* l : linkImpls)
     links.push_back(l->get_iface());
 }
 
 /** @brief Just like Host::routeTo, but filling an array of link implementations */
-void Host::route_to(const Host* dest, std::vector<kernel::resource::LinkImpl*>& links, double* latency) const
+void Host::route_to(const Host* dest, std::vector<kernel::resource::StandardLinkImpl*>& links, double* latency) const
 {
   kernel::routing::NetZoneImpl::get_global_route(pimpl_netpoint_, dest->get_netpoint(), links, latency);
   if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {

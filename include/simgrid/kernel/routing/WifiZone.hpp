@@ -19,7 +19,7 @@ namespace routing {
  *  That link is used for all communications within the zone.
  */
 class XBT_PRIVATE WifiZone : public RoutedZone {
-  resource::LinkImpl* wifi_link_ = nullptr; // Representing the air media (there is no such thing in NS-3)
+  resource::StandardLinkImpl* wifi_link_ = nullptr; // Representing the air media (there is no such thing in NS-3)
   NetPoint* access_point_        = nullptr; // Zone's gateway to the external world
 
   void do_seal() override;

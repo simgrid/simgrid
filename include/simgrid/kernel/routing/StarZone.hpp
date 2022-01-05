@@ -75,9 +75,9 @@ public:
 private:
   class StarRoute {
   public:
-    std::vector<resource::LinkImpl*> links_up;   //!< list of links UP for route (can be empty)
-    std::vector<resource::LinkImpl*> links_down; //!< list of links DOWN for route (can be empty)
-    std::vector<resource::LinkImpl*> loopback;   //!< loopback links, cannot be empty if configured
+    std::vector<resource::StandardLinkImpl*> links_up;   //!< list of links UP for route (can be empty)
+    std::vector<resource::StandardLinkImpl*> links_down; //!< list of links DOWN for route (can be empty)
+    std::vector<resource::StandardLinkImpl*> loopback;   //!< loopback links, cannot be empty if configured
     bool links_up_set   = false;                 //!< bool to indicate that links_up was configured (empty or not)
     bool links_down_set = false;                 //!< same for links_down
     NetPoint* gateway   = nullptr;
@@ -86,8 +86,8 @@ private:
     bool has_links_down() const { return links_down_set; }
   };
   /** @brief Auxiliary method to add links to a route */
-  void add_links_to_route(const std::vector<resource::LinkImpl*>& links, Route* route, double* latency,
-                          std::unordered_set<resource::LinkImpl*>& added_links) const;
+  void add_links_to_route(const std::vector<resource::StandardLinkImpl*>& links, Route* route, double* latency,
+                          std::unordered_set<resource::StandardLinkImpl*>& added_links) const;
   /** @brief Auxiliary methods to check params received in add_route method */
   void check_add_route_param(const NetPoint* src, const NetPoint* dst, const NetPoint* gw_src, const NetPoint* gw_dst,
                              bool symmetrical) const;

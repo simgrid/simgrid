@@ -7,7 +7,7 @@
 #include "xbt/config.hpp"
 #include "xbt/log.h"
 
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/WifiLinkImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(simulator, "[usage] wifi_usage <platform-file>");
 

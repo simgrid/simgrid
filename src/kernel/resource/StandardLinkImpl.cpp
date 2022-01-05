@@ -6,8 +6,7 @@
 #include <simgrid/s4u/Engine.hpp>
 
 #include "src/kernel/EngineImpl.hpp"
-#include "src/surf/LinkImpl.hpp"
-
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 #include <numeric>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
@@ -20,7 +19,7 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-LinkImpl::LinkImpl(const std::string& name) : LinkImplIntf(name), piface_(this)
+StandardLinkImpl::StandardLinkImpl(const std::string& name) : LinkImpl(name), piface_(this)
 {
   if (name != "__loopback__")
     xbt_assert(not s4u::Link::by_name_or_null(name), "Link '%s' declared several times in the platform.", name.c_str());
@@ -33,7 +32,7 @@ LinkImpl::LinkImpl(const std::string& name) : LinkImplIntf(name), piface_(this)
  *
  * Don't delete directly a Link, call l->destroy() instead.
  */
-void LinkImpl::destroy()
+void StandardLinkImpl::destroy()
 {
   s4u::Link::on_destruction(piface_);
   s4u::Engine::get_instance()->link_unregister(get_name());
@@ -52,13 +51,13 @@ constexpr kernel::lmm::Constraint::SharingPolicy to_maxmin_policy(s4u::Link::Sha
   }
 }
 
-void LinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
+void StandardLinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
 {
   get_constraint()->set_sharing_policy(to_maxmin_policy(policy), cb);
   sharing_policy_ = policy;
 }
 
-void LinkImpl::latency_check(double latency) const
+void StandardLinkImpl::latency_check(double latency) const
 {
   static double last_warned_latency = sg_surf_precision;
   if (latency != 0.0 && latency < last_warned_latency) {
@@ -69,7 +68,7 @@ void LinkImpl::latency_check(double latency) const
   }
 }
 
-void LinkImpl::turn_on()
+void StandardLinkImpl::turn_on()
 {
   if (not is_on()) {
     Resource::turn_on();
@@ -77,7 +76,7 @@ void LinkImpl::turn_on()
   }
 }
 
-void LinkImpl::turn_off()
+void StandardLinkImpl::turn_off()
 {
   if (is_on()) {
     Resource::turn_off();
@@ -95,7 +94,7 @@ void LinkImpl::turn_off()
   }
 }
 
-void LinkImpl::seal()
+void StandardLinkImpl::seal()
 {
   if (is_sealed())
     return;
@@ -104,12 +103,12 @@ void LinkImpl::seal()
   Resource::seal();
 }
 
-void LinkImpl::on_bandwidth_change() const
+void StandardLinkImpl::on_bandwidth_change() const
 {
   s4u::Link::on_bandwidth_change(piface_);
 }
 
-void LinkImpl::set_bandwidth_profile(profile::Profile* profile)
+void StandardLinkImpl::set_bandwidth_profile(profile::Profile* profile)
 {
   if (profile) {
     xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth profile to Link %s", get_cname());
@@ -117,7 +116,7 @@ void LinkImpl::set_bandwidth_profile(profile::Profile* profile)
   }
 }
 
-void LinkImpl::set_latency_profile(profile::Profile* profile)
+void StandardLinkImpl::set_latency_profile(profile::Profile* profile)
 {
   if (profile) {
     xbt_assert(latency_.event == nullptr, "Cannot set a second latency profile to Link %s", get_cname());
@@ -125,7 +124,7 @@ void LinkImpl::set_latency_profile(profile::Profile* profile)
   }
 }
 
-void LinkImpl::set_concurrency_limit(int limit) const
+void StandardLinkImpl::set_concurrency_limit(int limit) const
 {
   if (limit != -1) {
     get_constraint()->reset_concurrency_maximum();

@@ -15,7 +15,7 @@
 
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/surf/surf_interface.hpp"
 
 #include <fstream>
@@ -344,7 +344,7 @@ static void on_action_state_change(kernel::resource::Action const& action,
       resource_set_utilization("HOST", "speed_used", cpu->get_cname(), action.get_category(), value,
                                action.get_last_update(), simgrid_get_clock() - action.get_last_update());
 
-    const kernel::resource::LinkImpl* link = dynamic_cast<kernel::resource::LinkImpl*>(resource);
+    const kernel::resource::StandardLinkImpl* link = dynamic_cast<kernel::resource::StandardLinkImpl*>(resource);
 
     if (link != nullptr)
       resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action.get_category(), value,

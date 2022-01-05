@@ -8,7 +8,7 @@
 
 #include "xbt/base.h"
 
-#include "network_interface.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 
 namespace simgrid {
 namespace kernel {
@@ -17,8 +17,8 @@ namespace resource {
 class NetworkNS3Model : public NetworkModel {
 public:
   explicit NetworkNS3Model(const std::string& name);
-  LinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidth) override;
-  LinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidth) override;
+  StandardLinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidth) override;
+  StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidth) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
   double next_occurring_event(double now) override;
   bool next_occurring_event_is_idempotent() override { return false; }
@@ -28,7 +28,7 @@ public:
 /************
  * Resource *
  ************/
-class LinkNS3 : public LinkImpl {
+class LinkNS3 : public StandardLinkImpl {
 public:
   explicit LinkNS3(const std::string& name, double bandwidth);
   ~LinkNS3() override;
@@ -52,7 +52,7 @@ public:
 
   void suspend() override;
   void resume() override;
-  std::list<LinkImpl*> get_links() const override;
+  std::list<StandardLinkImpl*> get_links() const override;
   void update_remains_lazy(double now) override;
 
   // private:

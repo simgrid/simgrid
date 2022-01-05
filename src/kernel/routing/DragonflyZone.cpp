@@ -5,7 +5,7 @@
 
 #include "simgrid/kernel/routing/DragonflyZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
-#include "src/surf/network_interface.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -144,8 +144,8 @@ void DragonflyZone::generate_routers(const s4u::ClusterCallbacks& set_callbacks)
   unsigned long id = 2UL * num_groups_ * num_chassis_per_group_ * num_blades_per_chassis_ * num_nodes_per_blade_;
   /* get limiter for this router */
   auto get_limiter = [this, &id, &set_callbacks](unsigned int i, unsigned int j,
-                                                 unsigned int k) -> resource::LinkImpl* {
-    kernel::resource::LinkImpl* limiter = nullptr;
+                                                 unsigned int k) -> resource::StandardLinkImpl* {
+    kernel::resource::StandardLinkImpl* limiter = nullptr;
     if (set_callbacks.limiter) {
       id--;
       const auto* s4u_link =
@@ -167,8 +167,8 @@ void DragonflyZone::generate_routers(const s4u::ClusterCallbacks& set_callbacks)
   }
 }
 
-void DragonflyZone::generate_link(const std::string& id, int numlinks, resource::LinkImpl** linkup,
-                                  resource::LinkImpl** linkdown)
+void DragonflyZone::generate_link(const std::string& id, int numlinks, resource::StandardLinkImpl** linkup,
+                                  resource::StandardLinkImpl** linkdown)
 {
   XBT_DEBUG("Generating link %s", id.c_str());
   *linkup   = nullptr;
@@ -189,8 +189,8 @@ void DragonflyZone::generate_link(const std::string& id, int numlinks, resource:
 void DragonflyZone::generate_links()
 {
   static int uniqueId = 0;
-  resource::LinkImpl* linkup;
-  resource::LinkImpl* linkdown;
+  resource::StandardLinkImpl* linkup;
+  resource::StandardLinkImpl* linkdown;
 
   unsigned int numRouters = num_groups_ * num_chassis_per_group_ * num_blades_per_chassis_;
 
@@ -279,7 +279,7 @@ void DragonflyZone::get_local_route(const NetPoint* src, const NetPoint* dst, Ro
            dst->id());
 
   if ((src->id() == dst->id()) && has_loopback()) {
-    resource::LinkImpl* uplink = get_uplink_from(node_pos(src->id()));
+    resource::StandardLinkImpl* uplink = get_uplink_from(node_pos(src->id()));
 
     add_link_latency(route->link_list_, uplink, latency);
     return;

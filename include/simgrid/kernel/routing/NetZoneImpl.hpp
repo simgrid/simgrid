@@ -31,7 +31,7 @@ public:
   NetPoint* dst_    = nullptr;
   NetPoint* gw_src_ = nullptr;
   NetPoint* gw_dst_ = nullptr;
-  std::vector<resource::LinkImpl*> link_list_;
+  std::vector<resource::StandardLinkImpl*> link_list_;
 };
 
 class BypassRoute {
@@ -39,7 +39,7 @@ public:
   explicit BypassRoute(NetPoint* gwSrc, NetPoint* gwDst) : gw_src(gwSrc), gw_dst(gwDst) {}
   NetPoint* gw_src;
   NetPoint* gw_dst;
-  std::vector<resource::LinkImpl*> links;
+  std::vector<resource::StandardLinkImpl*> links;
 };
 
 /** @ingroup ROUTING_API
@@ -104,15 +104,15 @@ protected:
   /** @brief retrieves the list of all routes of size 1 (of type src x dst x Link) */
   /* returns whether we found a bypass path */
   bool get_bypass_route(const routing::NetPoint* src, const routing::NetPoint* dst,
-                        /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency,
+                        /* OUT */ std::vector<resource::StandardLinkImpl*>& links, double* latency,
                         std::unordered_set<NetZoneImpl*>& netzones);
 
   /** @brief Get the NetZone that is represented by the netpoint */
   const NetZoneImpl* get_netzone_recursive(const NetPoint* netpoint) const;
 
   /** @brief Get the list of LinkImpl* to add in a route, considering split-duplex links and the direction */
-  std::vector<resource::LinkImpl*> get_link_list_impl(const std::vector<s4u::LinkInRoute>& link_list,
-                                                      bool backroute) const;
+  std::vector<resource::StandardLinkImpl*> get_link_list_impl(const std::vector<s4u::LinkInRoute>& link_list,
+                                                              bool backroute) const;
 
 public:
   enum class RoutingMode {
@@ -191,11 +191,11 @@ public:
    * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
   static void get_global_route(const NetPoint* src, const NetPoint* dst,
-                               /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency);
+                               /* OUT */ std::vector<resource::StandardLinkImpl*>& links, double* latency);
 
   /** @brief Similar to get_global_route but get the NetZones traversed by route */
   static void get_global_route_with_netzones(const NetPoint* src, const NetPoint* dst,
-                                             /* OUT */ std::vector<resource::LinkImpl*>& links, double* latency,
+                                             /* OUT */ std::vector<resource::StandardLinkImpl*>& links, double* latency,
                                              std::unordered_set<NetZoneImpl*>& netzones);
 
   virtual void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
@@ -203,7 +203,7 @@ public:
 
   /*** Called on each newly created regular route (not on bypass routes) */
   static xbt::signal<void(bool symmetrical, NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
-                          std::vector<resource::LinkImpl*> const& link_list)>
+                          std::vector<resource::StandardLinkImpl*> const& link_list)>
       on_route_creation; // XBT_ATTRIB_DEPRECATED_v332 : should be an internal signal used by NS3.. if necessary,
                          // callback shouldn't use LinkImpl*
 

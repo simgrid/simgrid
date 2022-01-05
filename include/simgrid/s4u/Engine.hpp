@@ -98,7 +98,7 @@ protected:
   friend kernel::routing::NetPoint;
   friend kernel::routing::NetZoneImpl;
   friend kernel::resource::HostImpl;
-  friend kernel::resource::LinkImpl;
+  friend kernel::resource::StandardLinkImpl;
   void host_register(const std::string& name, Host* host);
   void host_unregister(const std::string& name);
   void link_register(const std::string& name, const Link* link);

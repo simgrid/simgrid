@@ -241,7 +241,7 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs con
 static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoint* src,
                              simgrid::kernel::routing::NetPoint* dst, simgrid::kernel::routing::NetPoint* /*gw_src*/,
                              simgrid::kernel::routing::NetPoint* /*gw_dst*/,
-                             std::vector<simgrid::kernel::resource::LinkImpl*> const& link_list)
+                             std::vector<simgrid::kernel::resource::StandardLinkImpl*> const& link_list)
 {
   /* ignoring routes from StarZone, not supported */
   if (not src || not dst)
@@ -346,7 +346,7 @@ NetworkNS3Model::NetworkNS3Model(const std::string& name) : NetworkModel(name)
   s4u::NetZone::on_seal_cb(&zoneCreation_cb);
 }
 
-LinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
+StandardLinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   xbt_assert(bandwidths.size() == 1, "ns-3 links must use only 1 bandwidth.");
   auto* link = new LinkNS3(name, bandwidths[0]);
@@ -354,7 +354,7 @@ LinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vecto
   return link;
 }
 
-LinkImpl* NetworkNS3Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
+StandardLinkImpl* NetworkNS3Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   auto* link = create_link(name, bandwidths);
   link->set_sharing_policy(s4u::Link::SharingPolicy::WIFI, {});
@@ -420,7 +420,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     if (TRACE_is_enabled() && action->get_state() == kernel::resource::Action::State::STARTED) {
       double data_delta_sent = sgFlow->sent_bytes_ - action->last_sent_;
 
-      std::vector<LinkImpl*> route = std::vector<LinkImpl*>();
+      std::vector<StandardLinkImpl*> route = std::vector<StandardLinkImpl*>();
 
       action->get_src().route_to(&action->get_dst(), route, nullptr);
       for (auto const& link : route)
@@ -459,7 +459,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
  * Resource *
  ************/
 
-LinkNS3::LinkNS3(const std::string& name, double bandwidth) : LinkImpl(name)
+LinkNS3::LinkNS3(const std::string& name, double bandwidth) : StandardLinkImpl(name)
 {
   bandwidth_.peak = bandwidth;
 }
@@ -558,7 +558,7 @@ void NetworkNS3Action::resume()
   THROW_UNIMPLEMENTED;
 }
 
-std::list<LinkImpl*> NetworkNS3Action::get_links() const
+std::list<StandardLinkImpl*> NetworkNS3Action::get_links() const
 {
   THROW_UNIMPLEMENTED;
 }

@@ -9,8 +9,9 @@
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
+#include "src/kernel/resource/WifiLinkImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
-#include "src/surf/network_wifi.hpp"
 #include "src/surf/surf_interface.hpp"
 
 #include <algorithm>
@@ -128,7 +129,7 @@ void NetworkCm02Model::set_bw_factor_cb(const std::function<NetworkFactorCb>& cb
   bw_factor_cb_ = cb;
 }
 
-LinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
+StandardLinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   xbt_assert(bandwidths.size() == 1, "Non-WIFI links must use only 1 bandwidth.");
   auto link = new NetworkCm02Link(name, bandwidths[0], get_maxmin_system());
@@ -136,9 +137,9 @@ LinkImpl* NetworkCm02Model::create_link(const std::string& name, const std::vect
   return link;
 }
 
-LinkImpl* NetworkCm02Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
+StandardLinkImpl* NetworkCm02Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
 {
-  auto link = new NetworkWifiLink(name, bandwidths, get_maxmin_system());
+  auto link = new WifiLinkImpl(name, bandwidths, get_maxmin_system());
   link->set_model(this);
   return link;
 }
@@ -206,17 +207,17 @@ void NetworkCm02Model::update_actions_state_full(double /*now*/, double delta)
 
 void NetworkCm02Model::comm_action_expand_constraints(const s4u::Host* src, const s4u::Host* dst,
                                                       const NetworkCm02Action* action,
-                                                      const std::vector<LinkImpl*>& route,
-                                                      const std::vector<LinkImpl*>& back_route) const
+                                                      const std::vector<StandardLinkImpl*>& route,
+                                                      const std::vector<StandardLinkImpl*>& back_route) const
 {
   /* expand route links constraints for route and back_route */
-  const NetworkWifiLink* src_wifi_link = nullptr;
-  const NetworkWifiLink* dst_wifi_link = nullptr;
+  const WifiLinkImpl* src_wifi_link = nullptr;
+  const WifiLinkImpl* dst_wifi_link = nullptr;
   if (not route.empty() && route.front()->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
-    src_wifi_link = static_cast<NetworkWifiLink*>(route.front());
+    src_wifi_link = static_cast<WifiLinkImpl*>(route.front());
   }
   if (route.size() > 1 && route.back()->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
-    dst_wifi_link = static_cast<NetworkWifiLink*>(route.back());
+    dst_wifi_link = static_cast<WifiLinkImpl*>(route.back());
   }
 
   /* WI-FI links needs special treatment, do it here */
@@ -252,20 +253,20 @@ void NetworkCm02Model::comm_action_expand_constraints(const s4u::Host* src, cons
 }
 
 NetworkCm02Action* NetworkCm02Model::comm_action_create(s4u::Host* src, s4u::Host* dst, double size,
-                                                        const std::vector<LinkImpl*>& route, bool failed)
+                                                        const std::vector<StandardLinkImpl*>& route, bool failed)
 {
-  NetworkWifiLink* src_wifi_link = nullptr;
-  NetworkWifiLink* dst_wifi_link = nullptr;
+  WifiLinkImpl* src_wifi_link = nullptr;
+  WifiLinkImpl* dst_wifi_link = nullptr;
   /* many checks related to Wi-Fi links */
   if (not route.empty() && route.front()->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
-    src_wifi_link = static_cast<NetworkWifiLink*>(route.front());
+    src_wifi_link = static_cast<WifiLinkImpl*>(route.front());
     xbt_assert(src_wifi_link->get_host_rate(src) != -1,
                "The route from %s to %s begins with the WIFI link %s, but the host %s does not seem attached to that "
                "WIFI link. Did you call link->set_host_rate()?",
                src->get_cname(), dst->get_cname(), src_wifi_link->get_cname(), src->get_cname());
   }
   if (route.size() > 1 && route.back()->get_sharing_policy() == s4u::Link::SharingPolicy::WIFI) {
-    dst_wifi_link = static_cast<NetworkWifiLink*>(route.back());
+    dst_wifi_link = static_cast<WifiLinkImpl*>(route.back());
     xbt_assert(dst_wifi_link->get_host_rate(dst) != -1,
                "The route from %s to %s ends with the WIFI link %s, but the host %s does not seem attached to that "
                "WIFI link. Did you call link->set_host_rate()?",
@@ -292,7 +293,7 @@ NetworkCm02Action* NetworkCm02Model::comm_action_create(s4u::Host* src, s4u::Hos
   if (src_wifi_link == nullptr && dst_wifi_link == nullptr)
     action = new NetworkCm02Action(this, *src, *dst, size, failed);
   else
-    action = new NetworkWifiAction(this, *src, *dst, size, failed, src_wifi_link, dst_wifi_link);
+    action = new WifiLinkAction(this, *src, *dst, size, failed, src_wifi_link, dst_wifi_link);
 
   if (is_update_lazy()) {
     action->set_last_update();
@@ -302,7 +303,8 @@ NetworkCm02Action* NetworkCm02Model::comm_action_create(s4u::Host* src, s4u::Hos
 }
 
 bool NetworkCm02Model::comm_get_route_info(const s4u::Host* src, const s4u::Host* dst, double& latency,
-                                           std::vector<LinkImpl*>& route, std::vector<LinkImpl*>& back_route,
+                                           std::vector<StandardLinkImpl*>& route,
+                                           std::vector<StandardLinkImpl*>& back_route,
                                            std::unordered_set<kernel::routing::NetZoneImpl*>& netzones) const
 {
   kernel::routing::NetZoneImpl::get_global_route_with_netzones(src->get_netpoint(), dst->get_netpoint(), route,
@@ -312,19 +314,19 @@ bool NetworkCm02Model::comm_get_route_info(const s4u::Host* src, const s4u::Host
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
              src->get_cname(), dst->get_cname());
 
-  bool failed = std::any_of(route.begin(), route.end(), [](const LinkImpl* link) { return not link->is_on(); });
+  bool failed = std::any_of(route.begin(), route.end(), [](const StandardLinkImpl* link) { return not link->is_on(); });
 
   if (cfg_crosstraffic) {
     dst->route_to(src, back_route, nullptr);
     if (not failed)
-      failed =
-          std::any_of(back_route.begin(), back_route.end(), [](const LinkImpl* link) { return not link->is_on(); });
+      failed = std::any_of(back_route.begin(), back_route.end(),
+                           [](const StandardLinkImpl* link) { return not link->is_on(); });
   }
   return failed;
 }
 
 void NetworkCm02Model::comm_action_set_bounds(const s4u::Host* src, const s4u::Host* dst, double size,
-                                              NetworkCm02Action* action, const std::vector<LinkImpl*>& route,
+                                              NetworkCm02Action* action, const std::vector<StandardLinkImpl*>& route,
                                               const std::unordered_set<kernel::routing::NetZoneImpl*>& netzones,
                                               double rate)
 {
@@ -333,7 +335,8 @@ void NetworkCm02Model::comm_action_set_bounds(const s4u::Host* src, const s4u::H
 
   /* transform data to user structures if necessary */
   if (lat_factor_cb_ || bw_factor_cb_) {
-    std::for_each(route.begin(), route.end(), [&s4u_route](LinkImpl* l) { s4u_route.push_back(l->get_iface()); });
+    std::for_each(route.begin(), route.end(),
+                  [&s4u_route](StandardLinkImpl* l) { s4u_route.push_back(l->get_iface()); });
     std::for_each(netzones.begin(), netzones.end(),
                   [&s4u_netzones](kernel::routing::NetZoneImpl* n) { s4u_netzones.insert(n->get_iface()); });
   }
@@ -373,8 +376,8 @@ void NetworkCm02Model::comm_action_set_bounds(const s4u::Host* src, const s4u::H
   }
 }
 
-void NetworkCm02Model::comm_action_set_variable(NetworkCm02Action* action, const std::vector<LinkImpl*>& route,
-                                                const std::vector<LinkImpl*>& back_route)
+void NetworkCm02Model::comm_action_set_variable(NetworkCm02Action* action, const std::vector<StandardLinkImpl*>& route,
+                                                const std::vector<StandardLinkImpl*>& back_route)
 {
   size_t constraints_per_variable = route.size();
   constraints_per_variable += back_route.size();
@@ -408,8 +411,8 @@ void NetworkCm02Model::comm_action_set_variable(NetworkCm02Action* action, const
 Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
 {
   double latency = 0.0;
-  std::vector<LinkImpl*> back_route;
-  std::vector<LinkImpl*> route;
+  std::vector<StandardLinkImpl*> back_route;
+  std::vector<StandardLinkImpl*> route;
   std::unordered_set<kernel::routing::NetZoneImpl*> netzones;
 
   XBT_IN("(%s,%s,%g,%g)", src->get_cname(), dst->get_cname(), size, rate);
@@ -421,10 +424,10 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   action->latency_          = latency;
 
   if (sg_weight_S_parameter > 0) {
-    action->sharing_penalty_ =
-        std::accumulate(route.begin(), route.end(), action->sharing_penalty_, [](double total, LinkImpl* const& link) {
-          return total + sg_weight_S_parameter / link->get_bandwidth();
-        });
+    action->sharing_penalty_ = std::accumulate(route.begin(), route.end(), action->sharing_penalty_,
+                                               [](double total, StandardLinkImpl* const& link) {
+                                                 return total + sg_weight_S_parameter / link->get_bandwidth();
+                                               });
   }
 
   /* setting bandwidth and latency bounds considering route and configured bw/lat factors */
@@ -444,7 +447,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
  * Resource *
  ************/
 NetworkCm02Link::NetworkCm02Link(const std::string& name, double bandwidth, kernel::lmm::System* system)
-    : LinkImpl(name)
+    : StandardLinkImpl(name)
 {
   bandwidth_.scale = 1.0;
   bandwidth_.peak  = bandwidth;
@@ -483,7 +486,7 @@ void NetworkCm02Link::set_bandwidth(double value)
 
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), (bandwidth_.peak * bandwidth_.scale));
 
-  LinkImpl::on_bandwidth_change();
+  StandardLinkImpl::on_bandwidth_change();
 
   if (sg_weight_S_parameter > 0) {
     double delta = sg_weight_S_parameter / (bandwidth_.peak * bandwidth_.scale) -

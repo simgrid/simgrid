@@ -12,13 +12,13 @@
 
 #include "mc/mc.h"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
-#include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf.hpp"
-#include "xbt/xbt_modinter.h"     /* whether initialization was already done */
+#include "xbt/xbt_modinter.h" /* whether initialization was already done */
 
 #include <boost/algorithm/string/predicate.hpp>
 #ifndef _WIN32
