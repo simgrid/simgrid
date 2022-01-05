@@ -44,8 +44,9 @@ Python:
 
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GF: issues on GForge; GH: issues on GitHub)
+ - FG#95: Wrong computation time for multicore execution after pstate change
+ - FG#97: Wrong computation time for ptask+multicore+pstates
  - FG#99: Weird segfault when not sealing an host
-
 ----------------------------------------------------------------------------
 
 SimGrid (3.29) October 7. 2021
