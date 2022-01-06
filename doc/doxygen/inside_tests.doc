@@ -184,10 +184,10 @@ template with the following commands:
 #debian/ubuntu
 apt-get install gcc g++ gfortran automake cmake libboost-dev openjdk-8-jdk openjdk-8-jre libxslt-dev libxml2-dev libevent-dev libunwind-dev libdw-dev htop git python3 xsltproc libboost-context-dev
 #for dynamicanalysis:
-apt-get install jacoco libjacoco-java libns3-dev pcregrep gcovr ant lua5.3-dev sloccount
+apt-get install jacoco libjacoco-java libns3-dev pcregrep gcovr ant sloccount
 
 #fedora
-dnf install libboost-devel openjdk-8-jdk openjdk-8-jre libxslt-devel libxml2-devel xsltproc git python3 libdw-devel libevent-devel libunwind-devel htop lua5.3-devel
+dnf install libboost-devel openjdk-8-jdk openjdk-8-jre libxslt-devel libxml2-devel xsltproc git python3 libdw-devel libevent-devel libunwind-devel htop
 
 #netbsd
 pkg_add cmake gcc7 boost boost-headers automake openjdk8 libxslt libxml2 libunwind git htop python36

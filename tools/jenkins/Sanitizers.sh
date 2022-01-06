@@ -74,7 +74,7 @@ cd "$WORKSPACE"/build
 
 ctest -D ExperimentalStart || true
 
-cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=OFF \
+cmake -Denable_documentation=OFF -Denable_java=OFF \
       -Denable_compile_optimizations=ON -Denable_compile_warnings=ON \
       -Denable_mallocators=OFF \
       -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_model-checking=OFF \

@@ -31,8 +31,6 @@ install:
 # This package is so outdated and broken that we cannot use it anymore. So we build without perl
 # - choco install --limit-output strawberryperl --version 5.20.1.1
 # - SET PATH=C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;%PATH%
-# Lua
-#- choco install lua53
 # We need python v3
 - cmd: SET PATH=C:\Python37-x64;%PATH% # We need python v3
 # Ugly hack to ignore versions 3.8 and later of Python
@@ -47,7 +45,7 @@ install:
 - cmd: git clone --branch stable --depth=1 https://github.com/pybind/pybind11.git
 
 build_script:
-- cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_documentation=OFF -Denable_java=ON -Denable_msg=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
+- cmake -G "MinGW Makefiles" -Denable_documentation=OFF -Denable_java=ON -Denable_msg=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
 - mingw32-make.exe VERBOSE=1 java-all python-bindings # Only the Java and Python parts
 - ctest --output-on-failure -R java
 - ctest --output-on-failure -R python
