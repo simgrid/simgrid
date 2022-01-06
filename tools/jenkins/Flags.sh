@@ -94,4 +94,5 @@ cmake -Denable_documentation=OFF -Denable_java=${buildjava} -Denable_msg=${build
       -Denable_ns3=$(onoff test "$buildmc" != "ON") -Denable_coverage=OFF -DLTO_EXTRA_FLAG="auto" "$WORKSPACE"
 
 make -j$NUMPROC tests
-make clean
+cd ..
+rm -rf build
