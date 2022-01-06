@@ -3,25 +3,25 @@
 SimGrid (3.29.1) NOT RELEASED YET (v3.30 expected December 21. 2021, 15:59 UTC)
 
 Main user-visible changes:
- - The SimDag API for the simulation of the scheduling of Directed Acyclic 
-   Graphs has been dropped. It was marked as deprecated for a couple of years. 
-   We finally complete the implementation of what has been called SimDag++ 
-   internally, i.e., porting the different features of SimDag on top of S4U. 
-   The new way to simulate the execution of dependent activities directly by 
+ - The SimDag API for the simulation of the scheduling of Directed Acyclic
+   Graphs has been dropped. It was marked as deprecated for a couple of years.
+   We finally complete the implementation of what has been called SimDag++
+   internally, i.e., porting the different features of SimDag on top of S4U.
+   The new way to simulate the execution of dependent activities directly by
    maestro (without any other actor) is details in the examples/cpp/dag-* series
-   of examples. 
- - The removal of SimDag led us to also remove the export to Jedule files that 
-   was tightly coupled to SimDag. The instrumentation of DAG simulation is still 
+   of examples.
+ - The removal of SimDag led us to also remove the export to Jedule files that
+   was tightly coupled to SimDag. The instrumentation of DAG simulation is still
    possible through the regular instrumentation API based on the Paje format.
- - We also dropped the old and clumsy Lua bindings to create platforms in a 
-   programmatic way. It can be done in C++ in a much cleaner way now, which 
-   motivates this suppression.  
-   
+ - We also dropped the old and clumsy Lua bindings to create platforms in a
+   programmatic way. It can be done in C++ in a much cleaner way now, which
+   motivates this suppression.
+
 S4U:
  - Introduce on_X_cb() functions for all signals, to attach a new
    callback to the signal X. The signal variables are now hidden and
    only these functions should be used.
-   Rational: this enables the usual deprecation schema where functions
+   Rationale: this enables the usual deprecation schema where functions
    remain for 4 releases if we need to modify the signals, while the
    current code with the signal variables directly visible prevents any
    smooth transition.
@@ -50,7 +50,7 @@ Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  - FG#95: Wrong computation time for multicore execution after pstate change
  - FG#97: Wrong computation time for ptask+multicore+pstates
  - FG#99: Weird segfault when not sealing an host
- 
+
 ----------------------------------------------------------------------------
 
 SimGrid (3.29) October 7. 2021
