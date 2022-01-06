@@ -61,7 +61,6 @@ pip:
   except:
   - stable
   script:
-  - chmod -v -R u=rwX,og=rX /etc/apt/trusted.gpg.d/
   - apt-get --allow-releaseinfo-change update
   - apt install -y python3-pip cmake libboost-dev g++ gcc pybind11-dev
   - python3 setup.py sdist
