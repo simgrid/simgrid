@@ -281,6 +281,7 @@ std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename)
     for (const auto& a : dag)
       a->destroy();
     dag.clear();
+    dag.shrink_to_fit();
   }
 
   return dag;
