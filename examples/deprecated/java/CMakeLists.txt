@@ -29,12 +29,6 @@ if(enable_java)
   add_dependencies(java-all simgrid-java) # useful when the libs are not included in the jar
 endif()
 
-if (WIN32)
-  set (path_separator ";")
-else()
-  set (path_separator ":")
-endif()
-    
 foreach (example app-bittorrent app-centralizedmutex app-masterworker app-pingpong app-tokenring async-yield async-waitall async-dsend
          cloud-migration cloud-masterworker dht-chord dht-kademlia energy-consumption energy-pstate energy-vm hostload
          process-kill process-migration process-startkilltime process-suspend task-priority trace-pingpong)
@@ -52,7 +46,7 @@ foreach (example app-bittorrent app-centralizedmutex app-masterworker app-pingpo
     add_dependencies(java-all java-${example})
     
     string (REPLACE "-" "/" example_dir ${example})
-    ADD_TESH(java-${example}  --setenv javacmd=${Java_JAVA_EXECUTABLE} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/java --setenv LD_LIBRARY_PATH=${TESH_LIBRARY_PATH} --setenv classpath=""${TESH_CLASSPATH}${path_separator}${example}.jar"" --cd ${CMAKE_BINARY_DIR}/examples/deprecated/java/${example_dir} ${CMAKE_HOME_DIRECTORY}/examples/deprecated/java/${example_dir}/${example}.tesh)
+    ADD_TESH(java-${example}  --setenv javacmd=${Java_JAVA_EXECUTABLE} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/deprecated/java --setenv LD_LIBRARY_PATH=${TESH_LIBRARY_PATH} --setenv classpath=""${TESH_CLASSPATH}${TESH_CLASSPATH_SEPARATOR}${example}.jar"" --cd ${CMAKE_BINARY_DIR}/examples/deprecated/java/${example_dir} ${CMAKE_HOME_DIRECTORY}/examples/deprecated/java/${example_dir}/${example}.tesh)
   endif()
   set(examples_src  ${examples_src}  ${${example}_sources})
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example_dir}/${example}.tesh)
