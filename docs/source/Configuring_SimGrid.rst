@@ -242,8 +242,7 @@ models for all existing resources.
   end, you have two host models: The default one allows aggregation of
   an existing CPU model with an existing network model, but does not
   allow parallel tasks because these beasts need some collaboration
-  between the network and CPU model. That is why, ptask_07 is used by
-  default when using SimDag.
+  between the network and CPU model.
 
   - **default:** Default host model. Currently, CPU:Cas01 and
     network:LV08 (with cross traffic enabled)
@@ -943,7 +942,7 @@ Configuring the Tracing
 -----------------------
 
 The :ref:`tracing subsystem <outcome_vizu>` can be configured in
-several different ways depending on the used interface (S4U, SMPI, SimDag)
+several different ways depending on the used interface (S4U, SMPI)
 and the kind of traces that needs to be obtained. See the
 :ref:`Tracing Configuration Options subsection
 <tracing_tracing_options>` for a full description of each
@@ -953,7 +952,7 @@ We detail here a simple way to get the traces working for you, even if
 you never used the tracing API.
 
 
-- Any SimGrid-based simulator (MSG, SimDag, SMPI, ...) and raw traces:
+- Any SimGrid-based simulator (MSG, SMPI, ...) and raw traces:
 
   .. code-block:: none
 
@@ -963,7 +962,7 @@ you never used the tracing API.
   tells it to trace host and link utilization (without any
   categorization).
 
-- MSG or SimDag-based simulator and categorized traces (you need to
+- MSG-based simulator and categorized traces (you need to
   declare categories and classify your tasks according to them)
 
   .. code-block:: none

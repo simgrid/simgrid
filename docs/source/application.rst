@@ -31,16 +31,13 @@ to mix several interfaces in the same simulation.
    MPI profilers). You can reuse this mechanism for any kind of trace
    that you want to replay, for example to study how a P2P DHT overlay
    reacts to a given workload.
- - Simulating algorithms with one of the legacy interfaces: :ref:`MSG
-   for distributed algorithms <MSG_doc>` (in :ref:`C <MSG_doc>` or
-   :ref:`Java <Java_doc>`) and SimDAG for
-   centralized algorithms (in C). SimGrid was founded in 1998, and
-   many interfaces were proposed along the way. MSG (introduced
-   around 2002) and SimDag (introduced before 2000), are still present
-   in SimGrid. They do not evolve anymore, but given their popularity,
-   they will not be removed until at least 2020. That being said, our
-   goal is to make S4U so useful that these legacy APIs become useless
-   and obsolete.
+ - Simulating algorithms with the legacy interface: :ref:`MSG for distributed
+   algorithms <MSG_doc>` (in :ref:`C <MSG_doc>` or :ref:`Java
+   <Java_doc>`). SimGrid was founded in 1998, and many interfaces were proposed
+   along the way. MSG (introduced around 2002) is still present in SimGrid. It
+   does not evolve anymore, but given its popularity, it will not be removed
+   until at least 2020. That being said, our goal is to make S4U so useful that
+   this legacy API becomes useless and obsolete.
  - We are currently working on the ability to modify any existing
    application so that it can run on top of SimGrid. This project,
    called `Remote-SimGrid

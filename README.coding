@@ -74,7 +74,7 @@ We use @ as a command marker, not \ (so, use @brief not \brief)
 **
 *****************************************************
 
-SimGrid3 legacy interfaces (ie, MSG and SimDag) are following these rules:
+SimGrid3 legacy interface (ie, MSG) is following these rules:
 
   - ???_t is a valid type (built with typedef)
   - s_toto_t is a structure (access to fields with .)
