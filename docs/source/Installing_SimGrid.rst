@@ -1,4 +1,4 @@
-.. Copyright 2005-2021
+.. Copyright 2005-2022
 
 .. _install:
 

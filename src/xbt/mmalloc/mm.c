@@ -4,7 +4,7 @@
    behavior.  It should also still be possible to build the library
    as a standard library with multiple objects. */
 
-/* Copyright (c) 2010-2021. The SimGrid Team.
+/* Copyright (c) 2010-2022. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

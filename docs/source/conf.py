@@ -32,7 +32,7 @@ if read_the_docs_build:
 # -- Project information -----------------------------------------------------
 
 project = u'SimGrid'
-copyright = u'2002-2021, The SimGrid Team'
+copyright = u'2002-2022, The SimGrid Team'
 author = u'The SimGrid Team'
 
 # The short X.Y version

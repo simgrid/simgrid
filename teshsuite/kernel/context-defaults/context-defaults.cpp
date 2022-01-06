@@ -1,6 +1,6 @@
 /* check_defaults -- simple program displaying its context factory          */
 
-/* Copyright (c) 2013-2021. The SimGrid Team.
+/* Copyright (c) 2013-2022. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

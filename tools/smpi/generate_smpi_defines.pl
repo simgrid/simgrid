@@ -1,6 +1,6 @@
 #!/usr/bin/env perl
 #
-# Copyright (c) 2016-2021. The SimGrid Team. All rights reserved.
+# Copyright (c) 2016-2022. The SimGrid Team. All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -31,7 +31,7 @@ if (defined $options{f}) {
   $commentChar="!"
 }
 
-print "$commentChar Copyright (c) 2016-2021. The SimGrid Team. All rights reserved.\n";
+print "$commentChar Copyright (c) 2016-2022. The SimGrid Team. All rights reserved.\n";
 print "\n";
 print "$commentChar This program is free software; you can redistribute it and/or modify it\n";
 print "$commentChar under the terms of the license (GNU LGPL) which comes with this package.\n";

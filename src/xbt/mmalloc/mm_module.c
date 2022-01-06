@@ -1,6 +1,6 @@
 /* Initialization for access to a mmap'd malloc managed region. */
 
-/* Copyright (c) 2012-2021. The SimGrid Team.
+/* Copyright (c) 2012-2022. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

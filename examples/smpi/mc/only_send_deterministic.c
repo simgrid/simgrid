@@ -1,6 +1,6 @@
 /* ../../../smpi_script/bin/smpirun -hostfile hostfile_send_deterministic -platform ../../platforms/cluster_backbone.xml -np 3 --cfg=smpi/send-is-detached-thresh:0 gdb\ --args\ ./send_deterministic */
 
-/* Copyright (c) 2009-2021. The SimGrid Team.
+/* Copyright (c) 2009-2022. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it

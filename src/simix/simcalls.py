@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2014-2021. The SimGrid Team. All rights reserved.
+# Copyright (c) 2014-2022. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -235,7 +235,7 @@ def header(name):
     fd.write('/*                    DO NOT EVER CHANGE THIS FILE                    */\n')
     fd.write('/*                                                                    */\n')
     fd.write('/* change simcalls specification in src/simix/simcalls.in             */\n')
-    fd.write('/* Copyright (c) 2014-2021. The SimGrid Team. All rights reserved.    */\n')
+    fd.write('/* Copyright (c) 2014-2022. The SimGrid Team. All rights reserved.    */\n')
     fd.write('/**********************************************************************/\n\n')
     fd.write('/*\n')
     fd.write(' * Note that the name comes from http://en.wikipedia.org/wiki/Popping\n')

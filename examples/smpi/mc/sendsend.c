@@ -1,6 +1,6 @@
 /* A simple bugged MPI_Send and MPI_Recv test: it deadlocks when MPI_Send are blocking */
 
-/* Copyright (c) 2009-2021. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2009-2022. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
