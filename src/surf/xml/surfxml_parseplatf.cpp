@@ -13,14 +13,6 @@
 
 #include <vector>
 
-#if SIMGRID_HAVE_LUA
-#include "src/bindings/lua/simgrid_lua.hpp"
-
-#include <lua.h>                /* Always include this when calling Lua */
-#include <lauxlib.h>            /* Always include this when calling Lua */
-#include <lualib.h>             /* Prototype for luaL_openlibs(), */
-#endif
-
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 
 /* Trace related stuff */
@@ -64,37 +56,8 @@ void parse_platform_file(const std::string& file)
 {
   const char* cfile = file.c_str();
   size_t len        = strlen(cfile);
-  bool is_lua       = len > 3 && file[len - 3] == 'l' && file[len - 2] == 'u' && file[len - 1] == 'a';
 
   sg_platf_init();
-
-  /* Check if file extension is "lua". If so, we will use
-   * the lua bindings to parse the platform file (since it is
-   * written in lua). If not, we will use the (old?) XML parser
-   */
-  if (is_lua) {
-#if SIMGRID_HAVE_LUA
-    static bool already_warned = false;
-    if (not already_warned) { // XBT_ATTRIB_DEPRECATED_v332
-      XBT_WARN("You are using a lua platform file. This feature is deprecated and will disappear after SimGrid v3.31.");
-      already_warned = true;
-    }
-    lua_State* L = luaL_newstate();
-    luaL_openlibs(L);
-
-    luaL_loadfile(L, cfile); // This loads the file without executing it.
-
-    /* Run the script */
-    xbt_assert(lua_pcall(L, 0, 0, 0) == 0, "FATAL ERROR:\n  %s: %s\n\n", "Lua call failed. Error message:",
-               lua_tostring(L, -1));
-    lua_close(L);
-    return;
-#else
-    XBT_WARN("This looks like a lua platform file, but your SimGrid was not compiled with lua. Loading it as XML.");
-#endif
-  }
-
-  // Use XML parser
 
   /* init the flex parser */
   surf_parse_open(file);

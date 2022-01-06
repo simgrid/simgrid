@@ -24,12 +24,12 @@ Any SimGrid study entails the following components:
 
  - The **simulated platform**. This is a description of a given
    distributed system (machines, links, disks, clusters, etc). Most of
-   the platform files are written in XML although a Lua interface is
-   under development.  SimGrid makes it easy to augment the Simulated
-   Platform with a Dynamic Scenario where for example the links are
-   slowed down (because of external usage) or the machines fail. You
-   even have support to specify the applicative workload that you want
-   to feed to your application
+   the platform files are written in XML but a new C++ programmatic 
+   interface has recently been introduced. SimGrid makes it easy to 
+   augment the Simulated Platform with a Dynamic Scenario where for 
+   example the links are slowed down (because of external usage) or the 
+   machines fail. You even have support to specify the applicative 
+   workload that you want to feed to your application
    :ref:`(more info) <platform>`.
 
  - The application's **deployment description**. In SimGrid

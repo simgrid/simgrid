@@ -143,14 +143,6 @@
    fun:agconcat
 }
 
-# We're not interested by memory leaks in the Lua interpreter
-{
-   Memory leak in lua
-   Memcheck:Leak
-   ...
-   fun:luaD_precall
-}
-
 # libunwind seems to be using msync poorly, thus triggering these
 # https://github.com/JuliaLang/julia/issues/4533
 {

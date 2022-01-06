@@ -1962,7 +1962,6 @@ include examples/platforms/cluster_dragonfly.xml
 include examples/platforms/cluster_fat_tree.svg
 include examples/platforms/cluster_fat_tree.xml
 include examples/platforms/cluster_multi.xml
-include examples/platforms/cluster_prototype.lua
 include examples/platforms/cluster_torus.svg
 include examples/platforms/cluster_torus.xml
 include examples/platforms/config.xml
@@ -2000,11 +1999,9 @@ include examples/platforms/profiles/trace_B.txt
 include examples/platforms/prop.xml
 include examples/platforms/ptask_L07.xml
 include examples/platforms/routing_cluster.cpp
-include examples/platforms/routing_cluster.lua
 include examples/platforms/routing_cluster.xml
 include examples/platforms/routing_none.xml
 include examples/platforms/simulacrum_7_hosts.xml
-include examples/platforms/small_platform.lua
 include examples/platforms/small_platform.xml
 include examples/platforms/small_platform_constant.xml
 include examples/platforms/small_platform_failures.xml
@@ -2199,13 +2196,6 @@ include src/bindings/java/org/simgrid/msg/TimeoutException.java
 include src/bindings/java/org/simgrid/msg/TransferFailureException.java
 include src/bindings/java/org/simgrid/msg/VM.java
 include src/bindings/java/org/simgrid/trace/Trace.java
-include src/bindings/lua/lua_host.cpp
-include src/bindings/lua/lua_platf.cpp
-include src/bindings/lua/lua_private.hpp
-include src/bindings/lua/lua_utils.cpp
-include src/bindings/lua/lua_utils.hpp
-include src/bindings/lua/simgrid_lua.cpp
-include src/bindings/lua/simgrid_lua.hpp
 include src/bindings/python/simgrid_python.cpp
 include src/dag/dax.dtd
 include src/dag/dax_dtd.c
@@ -2740,8 +2730,6 @@ include src/xbt/xbt_str_test.cpp
 include src/xbt/xbt_virtu.cpp
 include teshsuite/java/CMakeLists.txt
 include teshsuite/kernel/CMakeLists.txt
-include teshsuite/lua/CMakeLists.txt
-include teshsuite/lua/lua_platforms.tesh
 include teshsuite/mc/CMakeLists.txt
 include teshsuite/models/CMakeLists.txt
 include teshsuite/msg/CMakeLists.txt
@@ -2800,7 +2788,6 @@ include tools/cmake/Modules/FindLibdw.cmake
 include tools/cmake/Modules/FindLibelf.cmake
 include tools/cmake/Modules/FindLibevent.cmake
 include tools/cmake/Modules/FindLibunwind.cmake
-include tools/cmake/Modules/FindLuaSimgrid.cmake
 include tools/cmake/Modules/FindNS3.cmake
 include tools/cmake/Modules/FindPAPI.cmake
 include tools/cmake/Modules/FindValgrind.cmake
@@ -2818,7 +2805,6 @@ include tools/cmake/test_prog/prog_stacksetup.c
 include tools/cmake/test_prog/prog_tsan.cpp
 include tools/doxygen/list_routing_models_examples.sh
 include tools/graphicator/CMakeLists.txt
-include tools/lualib.patch
 include tools/smpi/generate_smpi_defines.pl
 include tools/stack-cleaner/README
 include tools/stack-cleaner/as

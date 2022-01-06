@@ -92,7 +92,6 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	remove_directory ${CMAKE_INSTALL_PREFIX}/doc/simgrid
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall doc ok"
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/lib/libsimgrid*
-  COMMAND ${CMAKE_COMMAND} -E   remove -f ${CMAKE_INSTALL_PREFIX}/lib/lua/5.1/simgrid*
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall lib ok"
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpicc
   COMMAND ${CMAKE_COMMAND} -E	remove -f ${CMAKE_INSTALL_PREFIX}/bin/smpicxx
@@ -129,13 +128,6 @@ add_custom_target(uninstall
   COMMAND ${CMAKE_COMMAND} -E	echo "uninstall man ok"
   WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}")
 
-if(SIMGRID_HAVE_LUA)
-  add_custom_command(TARGET uninstall
-    COMMAND ${CMAKE_COMMAND} -E echo "uninstall binding lua ok"
-    COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_INSTALL_PREFIX}/lib/lua/5.1/simgrid.${LIB_EXE}
-    WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}/")
-endif()
-
 ################################################################
 ## Build a sain "make dist" target to build a source package ###
 ##    containing only the files that I explicitly state      ###
@@ -146,10 +138,8 @@ endif()
 set(source_to_pack
   ${headers_to_install}
   ${source_of_generated_headers}
-  ${BINDINGS_SRC}
   ${JMSG_C_SRC}
   ${JMSG_JAVA_SRC}
-  ${LUA_SRC}
   ${MC_SRC_BASE}
   ${MC_SRC}
   ${MC_SIMGRID_MC_SRC}

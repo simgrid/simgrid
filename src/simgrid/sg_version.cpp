@@ -64,12 +64,6 @@ void sg_version()
   XBT_HELP("   ns-3 support disabled at compilation.");
 #endif
 
-#if SIMGRID_HAVE_LUA
-  XBT_HELP("   Lua support compiled in.");
-#else
-  XBT_HELP("   Lua support disabled at compilation.");
-#endif
-
 #if SIMGRID_HAVE_MALLOCATOR
   XBT_HELP("   Mallocator support compiled in.");
 #else

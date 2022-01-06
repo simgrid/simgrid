@@ -32,8 +32,6 @@ if(minimal-bindings)
   set(enable_lib_in_jar on)
 endif()
 
-option(enable_lua            "Whether the Lua bindings are activated." off)
-
 option(enable_model-checking "Turn this on to experiment with our prototype of model-checker (hinders the simulation's performance even if turned off at runtime)" off)
 option(enable-model-checking "Please set 'enable_model-checking' instead" off)
 mark_as_advanced(enable-model-checking)

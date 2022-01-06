@@ -11,8 +11,6 @@
 
 /* Was MSG compiled in?  */
 #cmakedefine01 SIMGRID_HAVE_MSG
-/* Was the Lua support compiled in? */
-#cmakedefine01 SIMGRID_HAVE_LUA
 /* Were mallocators (object pools) compiled in? */
 #cmakedefine01 SIMGRID_HAVE_MALLOCATOR
 /* Was the model-checking compiled in? */

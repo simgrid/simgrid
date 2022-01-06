@@ -127,16 +127,6 @@ Java (optional):
   - Debian / Ubuntu: ``apt install default-jdk libgcj18-dev`` (or
     any version of libgcj)
   - macOS or Windows: Grab a `full JDK <http://www.oracle.com/technetwork/java/javase/downloads>`_
-Lua (optional -- must be v5.3)
-  - SimGrid won't work with any other version of Lua.
-  - Debian / Ubuntu: ``apt install liblua5.3-dev lua5.3``
-  - Windows: ``choco install lua53``
-  - From the source
-      - You need to patch the sources to build dynamic libraries. First `download lua 5.3 <http://www.lua.org/download.html>`_
-      - Open the archive: ``tar xvfz lua-5.3.*.tar.gz``
-      - Enter the directory: ``cd lua-5.3*``
-      - Patch the sources: ``patch -p1 < /path/to/simgrid/...../tools/lualib.patch``
-      - Build and install lua: ``make linux && sudo make install``
 
 For platform-specific details, please see below.
 
@@ -260,9 +250,6 @@ enable_documentation (on/OFF)
 enable_java (on/OFF)
   Generates the java bindings of SimGrid. You must also enable MSG for
   this to work.
-
-enable_lua (on/OFF)
-  Generate the lua bindings to the SimGrid internals (requires lua-5.3).
 
 enable_lib_in_jar (ON/off)
   Embeds the native java bindings into the produced jar file.

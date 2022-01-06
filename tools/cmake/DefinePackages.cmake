@@ -74,8 +74,6 @@ set(EXTRA_DIST
   src/xbt/mmalloc/mrealloc.c
   src/xbt/mmalloc/swag.c
   src/xbt/mmalloc/swag.h
-  tools/lualib.patch
-  teshsuite/lua/lua_platforms.tesh
   examples/smpi/mc/only_send_deterministic.tesh
   )
 
@@ -472,12 +470,6 @@ set(DAG_SRC
   src/dag/loaders.cpp
   )
 
-set(BINDINGS_SRC
-  src/bindings/lua/lua_private.hpp
-  src/bindings/lua/lua_utils.hpp
-  src/bindings/lua/simgrid_lua.hpp
-  )
-
 set(JMSG_C_SRC
   src/bindings/java/jmsg.cpp
   src/bindings/java/jmsg.hpp
@@ -532,13 +524,6 @@ set(JTRACE_JAVA_SRC src/bindings/java/org/simgrid/trace/Trace.java)
 
 list(APPEND JMSG_C_SRC ${JTRACE_C_SRC})
 list(APPEND JMSG_JAVA_SRC ${JTRACE_JAVA_SRC})
-
-set(LUA_SRC
-  src/bindings/lua/lua_host.cpp
-  src/bindings/lua/lua_platf.cpp
-  src/bindings/lua/lua_utils.cpp
-  src/bindings/lua/simgrid_lua.cpp
-  )
 
 set(TRACING_SRC
   src/instr/instr_config.cpp
@@ -789,7 +774,6 @@ set(simgrid_sources
   ${TRACING_SRC}
   ${XBT_SRC}
   ${PLUGINS_SRC}
-  ${BINDINGS_SRC}
   ${DAG_SRC}
   )
 
@@ -815,12 +799,6 @@ if(SIMGRID_HAVE_NS3)
   set(simgrid_sources  ${simgrid_sources}  ${NS3_SRC})
 else()  
   set(EXTRA_DIST ${EXTRA_DIST} include/simgrid/plugins/ns3.hpp)
-endif()
-
-if(SIMGRID_HAVE_LUA)
-  set(simgrid_sources  ${simgrid_sources}  ${LUA_SRC})
-else()
-  set(EXTRA_DIST       ${EXTRA_DIST}       ${LUA_SRC})
 endif()
 
 set(DOC_SOURCES
@@ -1036,7 +1014,6 @@ set(CMAKEFILES_TXT
 
   teshsuite/java/CMakeLists.txt
   teshsuite/kernel/CMakeLists.txt
-  teshsuite/lua/CMakeLists.txt
   teshsuite/mc/CMakeLists.txt
   teshsuite/models/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt
@@ -1105,7 +1082,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/FindLibelf.cmake
   tools/cmake/Modules/FindLibunwind.cmake
   tools/cmake/Modules/FindLibevent.cmake
-  tools/cmake/Modules/FindLuaSimgrid.cmake
   tools/cmake/Modules/FindNS3.cmake
   tools/cmake/Modules/FindPAPI.cmake
   tools/cmake/Modules/pybind11Config.cmake
@@ -1142,7 +1118,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/cluster_backbone.svg
   examples/platforms/cluster_multi.xml
   examples/platforms/cluster_and_one_host.xml
-  examples/platforms/cluster_prototype.lua
   examples/platforms/cluster_crossbar.xml
   examples/platforms/cluster_crossbar.svg
   examples/platforms/cluster_fat_tree.xml
@@ -1186,14 +1161,12 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/ptask_L07.xml
   examples/platforms/prop.xml
   examples/platforms/routing_cluster.xml
-  examples/platforms/routing_cluster.lua
   examples/platforms/routing_cluster.cpp
   examples/platforms/routing_none.xml
   examples/platforms/simulacrum_7_hosts.xml
   examples/platforms/storage/content/small_content.txt
   examples/platforms/storage/content/storage_content.txt
   examples/platforms/small_platform.xml
-  examples/platforms/small_platform.lua
   examples/platforms/small_platform_constant.xml
   examples/platforms/small_platform_failures.xml
   examples/platforms/small_platform_fatpipe.xml

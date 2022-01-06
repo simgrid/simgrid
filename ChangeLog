@@ -12,7 +12,10 @@ Main user-visible changes:
    of examples. 
  - The removal of SimDag led us to also remove the export to Jedule files that 
    was tightly coupled to SimDag. The instrumentation of DAG simulation is still 
-   possible through the regular instrumentation API based on the Paje format. 
+   possible through the regular instrumentation API based on the Paje format.
+ - We also dropped the old and clumsy Lua bindings to create platforms in a 
+   programmatic way. It can be done in C++ in a much cleaner way now, which 
+   motivates this suppression.  
    
 S4U:
  - Introduce on_X_cb() functions for all signals, to attach a new

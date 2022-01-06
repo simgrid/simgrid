@@ -63,13 +63,6 @@ if(CMAKE_USE_PTHREADS_INIT)
   target_link_libraries(simgrid ${CMAKE_THREAD_LIBS_INIT})
 endif()
 
-if(SIMGRID_HAVE_LUA)
-  ADD_CUSTOM_TARGET(link_simgrid_lua ALL
-    DEPENDS 	simgrid
-    )
-  SET(SIMGRID_DEP "${SIMGRID_DEP} ${LUA_LIBRARY}")
-endif()
-
 if(HAVE_PAPI)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lpapi")
 endif()

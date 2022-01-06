@@ -86,7 +86,7 @@ then
 fi
 
 echo "Step ${STEP}/${NSTEPS} - Building with java=${buildjava}, debug=${builddebug}, SMPI=${buildsmpi}, MC=${buildmc}, MSG=${buildmsg}"
-cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=${buildjava} -Denable_msg=${buildmsg} \
+cmake -Denable_documentation=OFF -Denable_java=${buildjava} -Denable_msg=${buildmsg} \
       -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
       -Denable_mallocators=ON -Denable_debug=${builddebug} \
       -Denable_smpi=${buildsmpi} -Denable_smpi_MPICH3_testsuite=${buildsmpi} -Denable_model-checking=${buildmc} \
