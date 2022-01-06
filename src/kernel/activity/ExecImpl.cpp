@@ -203,7 +203,6 @@ void ExecImpl::finish()
      * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
      * simcall */
     if (auto* observer = dynamic_cast<actor::ExecutionWaitanySimcall*>(simcall->observer_)) {
-
       const auto& execs = observer->get_execs();
 
       for (auto* exec : execs)

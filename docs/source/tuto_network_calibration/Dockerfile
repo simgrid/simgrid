@@ -52,8 +52,8 @@ RUN pip install --no-cache-dir --no-dependencies \
     descartes==1.1.0
 
 # R package not available at debian's cran
-RUN R -e "install.packages('remotes', dependencies=TRUE, repos='http://cran.rstudio.com/')"
-RUN R -e "require(remotes); install_version('Ckmeans.1d.dp','4.3.3', dependencies=TRUE, repos='http://cran.rstudio.com/')"
+RUN R -e "install.packages('remotes', dependencies=TRUE, repos='http://cran.rstudio.com/')" && \
+    R -e "require(remotes); install_version('Ckmeans.1d.dp','4.3.3', dependencies=TRUE, repos='http://cran.rstudio.com/')"
 
 # python jupyterlab packages
 RUN pip install --no-cache-dir --upgrade pip && \

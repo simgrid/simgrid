@@ -119,6 +119,7 @@ private:
   static xbt::signal<void(NetZone const&)> on_creation;
   static xbt::signal<void(NetZone const&)> on_seal;
 #endif
+
 public:
   static void on_creation_cb(const std::function<void(NetZone const&)>& cb) { on_creation.connect(cb); }
   static void on_seal_cb(const std::function<void(NetZone const&)>& cb) { on_seal.connect(cb); }

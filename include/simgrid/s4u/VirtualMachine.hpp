@@ -90,6 +90,7 @@ public:
   static xbt::signal<void(VirtualMachine const&)> on_migration_end;
   static xbt::signal<void(VirtualMachine const&)> on_destruction;
 #endif
+
 private:
   static xbt::signal<void(VirtualMachine&)> on_creation;
   static xbt::signal<void(VirtualMachine const&)> on_start;

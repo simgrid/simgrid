@@ -217,6 +217,7 @@ public:
   static xbt::signal<void()> on_platform_created;
   static xbt::signal<void()> on_platform_creation;
 #endif
+
 private:
   static xbt::signal<void()> on_simulation_end;
   static xbt::signal<void(double)> on_time_advance;

@@ -857,7 +857,6 @@ void EngineImpl::run(double max_date)
         maestro_->kill(kv.second);
       }
     }
-
   } while ((vetoed_activities == nullptr || vetoed_activities->empty()) &&
            ((elapsed_time > -1.0 && not double_equals(max_date, NOW, 0.00001)) || has_actors_to_run()));
 

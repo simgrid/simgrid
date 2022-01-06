@@ -212,7 +212,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setName(JNIEnv *env, jobject jt
 
   env->SetObjectField(jtask, jtask_field_Task_name, jname);
   MSG_task_set_name(task, name);
-
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_setPriority(JNIEnv * env, jobject jtask, jdouble priority)

@@ -20,6 +20,7 @@ class XBT_PUBLIC IoImpl : public ActivityImpl_T<IoImpl> {
   s4u::Io::OpType type_               = s4u::Io::OpType::READ;
   sg_size_t performed_ioops_          = 0;
   resource::Action* timeout_detector_ = nullptr;
+
 public:
   IoImpl();
 
