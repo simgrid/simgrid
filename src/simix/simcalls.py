@@ -192,7 +192,7 @@ def parse(fn):
         if line.startswith('#') or not line:
             continue
         match = re.match(
-            r'^(\S+)\s+([^\)\(\s]+)\s*\(*(.*)\)\s*(\[\[.*\]\])?\s*;\s*?$', line)
+            r'^(\S+)\s+([^\)\(\s]+)\s*\(*(.*)\)\s*(\[\[.*\]\])?\s*;\s*$', line)
         if not match:
             raise AssertionError(line)
         ret, name, args, attrs = match.groups()
