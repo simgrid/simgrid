@@ -114,11 +114,11 @@ ENDMACRO()
 
 IF(enable_java)
   IF(WIN32)
-    SET(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/deprecated/java/\;${CMAKE_BINARY_DIR}/teshsuite/java/\;${SIMGRID_JAR}")
-    STRING(REPLACE "\;" "§" TESH_CLASSPATH "${TESH_CLASSPATH}")
+    SET(TESH_CLASSPATH_SEPARATOR "§")
   ELSE()
-    SET(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/deprecated/java/:${CMAKE_BINARY_DIR}/teshsuite/java/:${SIMGRID_JAR}")
+    SET(TESH_CLASSPATH_SEPARATOR ":")
   ENDIF()
+  SET(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/deprecated/java/${TESH_CLASSPATH_SEPARATOR}${CMAKE_BINARY_DIR}/teshsuite/java/${TESH_CLASSPATH_SEPARATOR}${SIMGRID_JAR}")
 ENDIF()
 
 # New tests should use the Catch Framework
