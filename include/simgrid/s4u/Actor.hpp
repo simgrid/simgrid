@@ -22,6 +22,146 @@ extern template class XBT_PUBLIC xbt::Extendable<s4u::Actor>;
 
 namespace s4u {
 
+/** @ingroup s4u_api
+ *  @brief Static methods working on the current actor (see @ref s4u::Actor) */
+namespace this_actor {
+
+XBT_PUBLIC bool is_maestro();
+
+/** Block the current actor sleeping for that amount of seconds */
+XBT_PUBLIC void sleep_for(double duration);
+/** Block the current actor sleeping until the specified timestamp */
+XBT_PUBLIC void sleep_until(double wakeup_time);
+
+template <class Rep, class Period> inline void sleep_for(std::chrono::duration<Rep, Period> duration)
+{
+  auto seconds = std::chrono::duration_cast<SimulationClockDuration>(duration);
+  this_actor::sleep_for(seconds.count());
+}
+
+template <class Duration> inline void sleep_until(const SimulationTimePoint<Duration>& wakeup_time)
+{
+  auto timeout_native = std::chrono::time_point_cast<SimulationClockDuration>(wakeup_time);
+  this_actor::sleep_until(timeout_native.time_since_epoch().count());
+}
+
+/** Block the current actor, computing the given amount of flops */
+XBT_PUBLIC void execute(double flop);
+
+/** Block the current actor, computing the given amount of flops at the given priority.
+ *  An execution of priority 2 computes twice as fast as an execution at priority 1. */
+XBT_PUBLIC void execute(double flop, double priority);
+
+/**
+ * @example examples/cpp/exec-ptask/s4u-exec-ptask.cpp
+ */
+
+/** Block the current actor until the built parallel execution terminates
+ *
+ * @beginrst
+ * .. _API_s4u_parallel_execute:
+ *
+ * **Example of use:** `examples/cpp/exec-ptask/s4u-exec-ptask.cpp
+ * <https://framagit.org/simgrid/simgrid/tree/master/examples/cpp/exec-ptask/s4u-exec-ptask.cpp>`_
+ *
+ * Parallel executions convenient abstractions of parallel computational kernels that span over several machines,
+ * such as a PDGEM and the other ScaLAPACK routines. If you are interested in the effects of such parallel kernel
+ * on the platform (e.g. to schedule them wisely), there is no need to model them in all details of their internal
+ * execution and communications. It is much more convenient to model them as a single execution activity that spans
+ * over several hosts. This is exactly what s4u's Parallel Executions are.
+ *
+ * To build such an object, you need to provide a list of hosts that are involved in the parallel kernel (the
+ * actor's own host may or may not be in this list) and specify the amount of computations that should be done by
+ * each host, using a vector of flops amount. Then, you should specify the amount of data exchanged between each
+ * hosts during the parallel kernel. For that, a matrix of values is expected.
+ *
+ * It is OK to build a parallel execution without any computation and/or without any communication.
+ * Just pass an empty vector to the corresponding parameter.
+ *
+ * For example, if your list of hosts is ``[host0, host1]``, passing a vector ``[1000, 2000]`` as a `flops_amount`
+ * vector means that `host0` should compute 1000 flops while `host1` will compute 2000 flops. A matrix of
+ * communications' sizes of ``[0, 1, 2, 3]`` specifies the following data exchanges:
+ *
+ * - from host0: [ to host0:  0 bytes; to host1: 1 byte ]
+ *
+ * - from host1: [ to host0: 2 bytes; to host1: 3 bytes ]
+ *
+ * Or, in other words:
+ *
+ * - From host0 to host0: 0 bytes are exchanged
+ *
+ * - From host0 to host1: 1 byte is exchanged
+ *
+ * - From host1 to host0: 2 bytes are exchanged
+ *
+ * - From host1 to host1: 3 bytes are exchanged
+ *
+ * In a parallel execution, all parts (all executions on each hosts, all communications) progress exactly at the
+ * same pace, so they all terminate at the exact same pace. If one part is slow because of a slow resource or
+ * because of contention, this slows down the parallel execution as a whole.
+ *
+ * These objects are somewhat surprising from a modeling point of view. For example, the unit of their speed is
+ * somewhere between flop/sec and byte/sec. Arbitrary parallel executions will simply not work with the usual platform
+ * models, and you must :ref:`use the ptask_L07 host model <options_model_select>` for that. Note that you can mix
+ * regular executions and communications with parallel executions, provided that the host model is ptask_L07.
+ *
+ * @endrst
+ */
+/** Block the current actor until the built parallel execution completes */
+XBT_PUBLIC void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
+                                 const std::vector<double>& bytes_amounts);
+
+/** Initialize a sequential execution that must then be started manually */
+XBT_PUBLIC ExecPtr exec_init(double flops_amounts);
+/** Initialize a parallel execution that must then be started manually */
+XBT_PUBLIC ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
+                             const std::vector<double>& bytes_amounts);
+
+XBT_PUBLIC ExecPtr exec_async(double flops_amounts);
+
+/** @brief Returns the actor ID of the current actor. */
+XBT_PUBLIC aid_t get_pid();
+
+/** @brief Returns the ancestor's actor ID of the current actor. */
+XBT_PUBLIC aid_t get_ppid();
+
+/** @brief Returns the name of the current actor. */
+XBT_PUBLIC std::string get_name();
+/** @brief Returns the name of the current actor as a C string. */
+XBT_PUBLIC const char* get_cname();
+
+/** @brief Returns the name of the host on which the current actor is running. */
+XBT_PUBLIC Host* get_host();
+
+/** @brief Suspend the current actor, that is blocked until resume()ed by another actor. */
+XBT_PUBLIC void suspend();
+
+/** @brief Yield the current actor. */
+XBT_PUBLIC void yield();
+
+/** @brief kill the current actor. */
+XBT_ATTRIB_NORETURN XBT_PUBLIC void exit();
+
+/** @brief Add a function to the list of "on_exit" functions of the current actor.
+ *
+ * The on_exit functions are the functions executed when your actor is killed. You should use them to free the data used
+ * by your actor.
+ *
+ * Please note that functions registered in this signal cannot do any simcall themselves. It means that they cannot
+ * send or receive messages, acquire or release mutexes, nor even modify a host property or something. Not only are
+ * blocking functions forbidden in this setting, but also modifications to the global state.
+ *
+ * The parameter of on_exit's callbacks denotes whether or not the actor's execution failed.
+ * It will be set to true if the actor was killed or failed because of an exception or if the simulation deadlocked,
+ * while it will remain to false if the actor terminated gracefully.
+ */
+
+XBT_PUBLIC void on_exit(const std::function<void(bool)>& fun);
+
+/** @brief Migrate the current actor to a new host. */
+XBT_PUBLIC void set_host(Host* new_host);
+} // namespace this_actor
+
 /** An actor is an independent stream of execution in your distributed application.
  *
  * @beginrst
@@ -45,6 +185,8 @@ class XBT_PUBLIC Actor : public xbt::Extendable<Actor> {
   friend Mailbox;
   friend kernel::actor::ActorImpl;
   friend kernel::activity::MailboxImpl;
+  friend void this_actor::sleep_for(double);
+  friend void this_actor::suspend();
 
   kernel::actor::ActorImpl* const pimpl_;
 #endif
@@ -68,7 +210,7 @@ public:
   /** Retrieve a reference to myself */
   static Actor* self();
 
-#ifndef DOXYGEN
+private:
   static xbt::signal<void(Actor&)> on_creation;
   static xbt::signal<void(Actor const&)> on_suspend;
   static xbt::signal<void(Actor const&)> on_resume;
@@ -77,7 +219,6 @@ public:
   static xbt::signal<void(const Actor&, const Host& previous_location)> on_host_change;
   static xbt::signal<void(Actor const&)> on_termination;
   static xbt::signal<void(Actor const&)> on_destruction;
-#endif
 
 public:
   /** Add a callback fired when a new actor has been created **/
@@ -263,147 +404,6 @@ public:
   /** Set a property (old values will be overwritten) */
   void set_property(const std::string& key, const std::string& value);
 };
-
-/** @ingroup s4u_api
- *  @brief Static methods working on the current actor (see @ref s4u::Actor) */
-namespace this_actor {
-
-XBT_PUBLIC bool is_maestro();
-
-/** Block the current actor sleeping for that amount of seconds */
-XBT_PUBLIC void sleep_for(double duration);
-/** Block the current actor sleeping until the specified timestamp */
-XBT_PUBLIC void sleep_until(double wakeup_time);
-
-template <class Rep, class Period> inline void sleep_for(std::chrono::duration<Rep, Period> duration)
-{
-  auto seconds = std::chrono::duration_cast<SimulationClockDuration>(duration);
-  this_actor::sleep_for(seconds.count());
-}
-
-template <class Duration> inline void sleep_until(const SimulationTimePoint<Duration>& wakeup_time)
-{
-  auto timeout_native = std::chrono::time_point_cast<SimulationClockDuration>(wakeup_time);
-  this_actor::sleep_until(timeout_native.time_since_epoch().count());
-}
-
-/** Block the current actor, computing the given amount of flops */
-XBT_PUBLIC void execute(double flop);
-
-/** Block the current actor, computing the given amount of flops at the given priority.
- *  An execution of priority 2 computes twice as fast as an execution at priority 1. */
-XBT_PUBLIC void execute(double flop, double priority);
-
-/**
- * @example examples/cpp/exec-ptask/s4u-exec-ptask.cpp
- */
-
-/** Block the current actor until the built parallel execution terminates
- *
- * @beginrst
- * .. _API_s4u_parallel_execute:
- *
- * **Example of use:** `examples/cpp/exec-ptask/s4u-exec-ptask.cpp
- * <https://framagit.org/simgrid/simgrid/tree/master/examples/cpp/exec-ptask/s4u-exec-ptask.cpp>`_
- *
- * Parallel executions convenient abstractions of parallel computational kernels that span over several machines,
- * such as a PDGEM and the other ScaLAPACK routines. If you are interested in the effects of such parallel kernel
- * on the platform (e.g. to schedule them wisely), there is no need to model them in all details of their internal
- * execution and communications. It is much more convenient to model them as a single execution activity that spans
- * over several hosts. This is exactly what s4u's Parallel Executions are.
- *
- * To build such an object, you need to provide a list of hosts that are involved in the parallel kernel (the
- * actor's own host may or may not be in this list) and specify the amount of computations that should be done by
- * each host, using a vector of flops amount. Then, you should specify the amount of data exchanged between each
- * hosts during the parallel kernel. For that, a matrix of values is expected.
- *
- * It is OK to build a parallel execution without any computation and/or without any communication.
- * Just pass an empty vector to the corresponding parameter.
- *
- * For example, if your list of hosts is ``[host0, host1]``, passing a vector ``[1000, 2000]`` as a `flops_amount`
- * vector means that `host0` should compute 1000 flops while `host1` will compute 2000 flops. A matrix of
- * communications' sizes of ``[0, 1, 2, 3]`` specifies the following data exchanges:
- *
- * - from host0: [ to host0:  0 bytes; to host1: 1 byte ]
- *
- * - from host1: [ to host0: 2 bytes; to host1: 3 bytes ]
- *
- * Or, in other words:
- *
- * - From host0 to host0: 0 bytes are exchanged
- *
- * - From host0 to host1: 1 byte is exchanged
- *
- * - From host1 to host0: 2 bytes are exchanged
- *
- * - From host1 to host1: 3 bytes are exchanged
- *
- * In a parallel execution, all parts (all executions on each hosts, all communications) progress exactly at the
- * same pace, so they all terminate at the exact same pace. If one part is slow because of a slow resource or
- * because of contention, this slows down the parallel execution as a whole.
- *
- * These objects are somewhat surprising from a modeling point of view. For example, the unit of their speed is
- * somewhere between flop/sec and byte/sec. Arbitrary parallel executions will simply not work with the usual platform
- * models, and you must :ref:`use the ptask_L07 host model <options_model_select>` for that. Note that you can mix
- * regular executions and communications with parallel executions, provided that the host model is ptask_L07.
- *
- * @endrst
- */
-/** Block the current actor until the built parallel execution completes */
-XBT_PUBLIC void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
-                                 const std::vector<double>& bytes_amounts);
-
-/** Initialize a sequential execution that must then be started manually */
-XBT_PUBLIC ExecPtr exec_init(double flops_amounts);
-/** Initialize a parallel execution that must then be started manually */
-XBT_PUBLIC ExecPtr exec_init(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
-                             const std::vector<double>& bytes_amounts);
-
-XBT_PUBLIC ExecPtr exec_async(double flops_amounts);
-
-/** @brief Returns the actor ID of the current actor. */
-XBT_PUBLIC aid_t get_pid();
-
-/** @brief Returns the ancestor's actor ID of the current actor. */
-XBT_PUBLIC aid_t get_ppid();
-
-/** @brief Returns the name of the current actor. */
-XBT_PUBLIC std::string get_name();
-/** @brief Returns the name of the current actor as a C string. */
-XBT_PUBLIC const char* get_cname();
-
-/** @brief Returns the name of the host on which the current actor is running. */
-XBT_PUBLIC Host* get_host();
-
-/** @brief Suspend the current actor, that is blocked until resume()ed by another actor. */
-XBT_PUBLIC void suspend();
-
-/** @brief Yield the current actor. */
-XBT_PUBLIC void yield();
-
-/** @brief kill the current actor. */
-XBT_ATTRIB_NORETURN XBT_PUBLIC void exit();
-
-/** @brief Add a function to the list of "on_exit" functions of the current actor.
- *
- * The on_exit functions are the functions executed when your actor is killed. You should use them to free the data used
- * by your actor.
- *
- * Please note that functions registered in this signal cannot do any simcall themselves. It means that they cannot
- * send or receive messages, acquire or release mutexes, nor even modify a host property or something. Not only are
- * blocking functions forbidden in this setting, but also modifications to the global state.
- *
- * The parameter of on_exit's callbacks denotes whether or not the actor's execution failed.
- * It will be set to true if the actor was killed or failed because of an exception or if the simulation deadlocked,
- * while it will remain to false if the actor terminated gracefully.
- */
-
-XBT_PUBLIC void on_exit(const std::function<void(bool)>& fun);
-
-/** @brief Migrate the current actor to a new host. */
-XBT_PUBLIC void set_host(Host* new_host);
-}
-
 
 }} // namespace simgrid::s4u
 
