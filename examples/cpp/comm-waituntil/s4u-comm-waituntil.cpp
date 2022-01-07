@@ -38,8 +38,8 @@ static void sender(int messages_count, size_t payload_size)
 
   /* Start the finalize signal to the receiver*/
   auto* payload     = new std::string("finalize"); // Make a copy of the data we will send
-  sg4::CommPtr comm = mbox->put_async(payload, 0);
-  pending_comms.push_back(comm);
+  sg4::CommPtr final_comm = mbox->put_async(payload, 0);
+  pending_comms.push_back(final_comm);
   XBT_INFO("Send 'finalize' to 'receiver-0'");
 
   XBT_INFO("Done dispatching all messages");
