@@ -99,7 +99,7 @@ public:
       "Please use add_bypass_route() method which uses s4u::LinkInRoute instead of "
       "LinkImpl") void add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                                        std::vector<kernel::resource::StandardLinkImpl*>& link_list,
+                                        const std::vector<kernel::resource::StandardLinkImpl*>& link_list,
                                         bool /*symmetrical*/);
 #endif
 

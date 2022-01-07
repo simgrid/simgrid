@@ -131,7 +131,7 @@ void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoin
 // XBT_ATTRIB_DEPRECATED_v332
 void NetZone::add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                                kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                               std::vector<kernel::resource::StandardLinkImpl*>& link_list, bool /*symmetrical*/)
+                               const std::vector<kernel::resource::StandardLinkImpl*>& link_list, bool /*symmetrical*/)
 {
   pimpl_->add_bypass_route(src, dst, gw_src, gw_dst, convert_to_linkInRoute(link_list));
 }

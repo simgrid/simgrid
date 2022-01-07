@@ -165,7 +165,7 @@ public:
     on_communication_state_change.connect(cb);
   }
   /** @brief Add a callback fired when a Link is destroyed */
-  static void on_destruction_cb(std::function<void(Link const&)> cb) { on_destruction.connect(cb); }
+  static void on_destruction_cb(const std::function<void(Link const&)>& cb) { on_destruction.connect(cb); }
 };
 
 /**

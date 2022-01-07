@@ -83,7 +83,7 @@ public:
   /** Add a callback fired when a new actor has been created **/
   static void on_creation_cb(const std::function<void(Actor&)>& cb) { on_creation.connect(cb); }
   /** Add a callback fired when an actor has been suspended**/
-  static void on_suspend_cb(const std::function<void(Actor const&)> cb) { on_suspend.connect(cb); }
+  static void on_suspend_cb(const std::function<void(Actor const&)>& cb) { on_suspend.connect(cb); }
   /** Add a callback fired when an actor has been resumed **/
   static void on_resume_cb(const std::function<void(Actor const&)>& cb) { on_resume.connect(cb); }
   /** Add a callback fired when an actor starts sleeping **/

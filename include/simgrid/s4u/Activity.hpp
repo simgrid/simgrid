@@ -104,7 +104,7 @@ public:
    * resource assigned) */
   static void on_veto_cb(const std::function<void(Activity&)>& cb) { on_veto.connect(cb); }
   /*! Add a callback fired when theactivity completes (either normally, cancelled or failed) */
-  static void on_completion_cb(const std::function<void(Activity&)> cb) { on_completion.connect(cb); }
+  static void on_completion_cb(const std::function<void(Activity&)>& cb) { on_completion.connect(cb); }
 
   void vetoable_start()
   {
