@@ -114,16 +114,6 @@ simgrid::kernel::routing::NetPoint* sg_platf_new_router(const std::string& name,
   return netpoint;
 }
 
-static void sg_platf_set_link_properties(simgrid::s4u::Link* link,
-                                         const simgrid::kernel::routing::LinkCreationArgs* args)
-{
-  link->set_properties(args->properties)
-      ->set_state_profile(args->state_trace)
-      ->set_latency_profile(args->latency_trace)
-      ->set_bandwidth_profile(args->bandwidth_trace)
-      ->set_latency(args->latency);
-}
-
 void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* args)
 {
   simgrid::s4u::Link* link;
@@ -133,7 +123,13 @@ void sg_platf_new_link(const simgrid::kernel::routing::LinkCreationArgs* args)
     link = current_routing->create_link(args->id, args->bandwidths);
     link->get_impl()->set_sharing_policy(args->policy, {});
   }
-  sg_platf_set_link_properties(link, args);
+
+  link->set_properties(args->properties)
+      ->set_state_profile(args->state_trace)
+      ->set_latency_profile(args->latency_trace)
+      ->set_bandwidth_profile(args->bandwidth_trace)
+      ->set_latency(args->latency);
+
   link->seal();
 }
 
