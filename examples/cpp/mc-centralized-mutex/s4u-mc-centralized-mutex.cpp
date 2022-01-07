@@ -12,8 +12,8 @@
 
 #include "simgrid/s4u.hpp"
 
-#define AMOUNT_OF_CLIENTS 4
-#define CS_PER_PROCESS 2
+constexpr int AMOUNT_OF_CLIENTS = 4;
+constexpr int CS_PER_PROCESS    = 2;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(centralized, "my log messages");
 
@@ -77,7 +77,7 @@ static void client()
     simgrid::s4u::this_actor::sleep_for(1);
 
     simgrid::s4u::Mailbox::by_name("coordinator")->put(new Message(Message::Kind::RELEASE, my_mailbox), 1000);
-    simgrid::s4u::this_actor::sleep_for(my_pid);
+    simgrid::s4u::this_actor::sleep_for(static_cast<double>(my_pid));
   }
   XBT_INFO("Got all the CS I wanted, quit now");
 }
