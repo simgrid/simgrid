@@ -12,35 +12,32 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(dag_scheduling, "Logging specific to this example");
 
-typedef struct _HostAttribute* HostAttribute;
-struct _HostAttribute {
+struct HostAttribute {
   /* Earliest time at which a host is ready to execute a task */
-  double available_at;
-  simgrid::s4u::Exec* last_scheduled_task;
+  double available_at                     = 0.0;
+  simgrid::s4u::Exec* last_scheduled_task = nullptr;
 };
 
 static double sg_host_get_available_at(const simgrid::s4u::Host* host)
 {
-  return static_cast<HostAttribute>(host->get_data())->available_at;
+  return static_cast<HostAttribute*>(host->get_data())->available_at;
 }
 
 static void sg_host_set_available_at(simgrid::s4u::Host* host, double time)
 {
-  auto* attr         = static_cast<HostAttribute>(host->get_data());
+  auto* attr         = static_cast<HostAttribute*>(host->get_data());
   attr->available_at = time;
-  host->set_data(attr);
 }
 
 static simgrid::s4u::Exec* sg_host_get_last_scheduled_task(const simgrid::s4u::Host* host)
 {
-  return static_cast<HostAttribute>(host->get_data())->last_scheduled_task;
+  return static_cast<HostAttribute*>(host->get_data())->last_scheduled_task;
 }
 
 static void sg_host_set_last_scheduled_task(simgrid::s4u::Host* host, simgrid::s4u::ExecPtr task)
 {
-  auto* attr                = static_cast<HostAttribute>(host->get_data());
+  auto* attr                = static_cast<HostAttribute*>(host->get_data());
   attr->last_scheduled_task = task.get();
-  host->set_data(attr);
 }
 
 static bool dependency_exists(const simgrid::s4u::Exec* src, simgrid::s4u::Exec* dst)
@@ -174,9 +171,9 @@ int main(int argc, char** argv)
   /*  Allocating the host attribute */
   unsigned long total_nhosts = e.get_host_count();
   const auto hosts          = e.get_all_hosts();
-
+  std::vector<HostAttribute> host_attributes(total_nhosts);
   for (unsigned long i = 0; i < total_nhosts; i++)
-    hosts[i]->set_data(xbt_new0(struct _HostAttribute, 1));
+    hosts[i]->set_data(&host_attributes[i]);
 
   /* load the DAX file */
   std::vector<simgrid::s4u::ActivityPtr> dax = simgrid::s4u::create_DAG_from_DAX(argv[2]);
@@ -265,7 +262,6 @@ int main(int argc, char** argv)
   XBT_INFO("Simulation Time: %f", simgrid_get_clock());
 
   for (auto h : hosts) {
-    xbt_free(h->get_data());
     h->set_data(nullptr);
   }
 
