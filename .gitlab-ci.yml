@@ -55,7 +55,7 @@ release:
 
 pip:
   image:
-    name: debian:testing
+    name: python:3-bullseye
     entrypoint: ['/bin/bash', '-c', 'ln -snf /bin/bash /bin/sh && /bin/bash -c $0' ]
   stage: build
   except:
