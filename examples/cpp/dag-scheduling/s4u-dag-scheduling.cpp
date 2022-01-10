@@ -140,12 +140,27 @@ static simgrid::s4u::Host* get_best_host(const simgrid::s4u::ExecPtr exec)
   return best_host;
 }
 
+static void schedule_on(simgrid::s4u::ExecPtr exec, simgrid::s4u::Host* host)
+{
+  exec->set_host(host);
+  // we can also set the destination of all the input comms of this exec
+  for (const auto& pred : exec->get_dependencies()) {
+    auto* comm = dynamic_cast<simgrid::s4u::Comm*>(pred.get());
+    if (comm != nullptr) {
+      comm->set_destination(host);
+      delete static_cast<double*>(comm->get_data());
+    }
+  }
+  // we can also set the source of all the output comms of this exec
+  for (const auto& succ : exec->get_successors()) {
+    auto* comm = dynamic_cast<simgrid::s4u::Comm*>(succ.get());
+    if (comm != nullptr)
+      comm->set_source(host);
+  }
+}
+
 int main(int argc, char** argv)
 {
-  double min_finish_time            = -1.0;
-  simgrid::s4u::Exec* selected_task = nullptr;
-  simgrid::s4u::Host* selected_host = nullptr;
-
   simgrid::s4u::Engine e(&argc, argv);
   std::set<simgrid::s4u::Activity*> vetoed;
   e.track_vetoed_activities(&vetoed);
@@ -176,18 +191,12 @@ int main(int argc, char** argv)
     hosts[i]->set_data(&host_attributes[i]);
 
   /* load the DAX file */
-  std::vector<simgrid::s4u::ActivityPtr> dax = simgrid::s4u::create_DAG_from_DAX(argv[2]);
+  auto dax = simgrid::s4u::create_DAG_from_DAX(argv[2]);
 
   /* Schedule the root first */
   auto* root = static_cast<simgrid::s4u::Exec*>(dax.front().get());
   auto host  = get_best_host(root);
-  root->set_host(host);
-  // we can also set the source of all the output comms of the root node
-  for (const auto& succ : root->get_successors()) {
-    auto* comm = dynamic_cast<simgrid::s4u::Comm*>(succ.get());
-    if (comm != nullptr)
-      comm->set_source(host);
-  }
+  schedule_on(root, host);
 
   e.run();
 
@@ -198,7 +207,6 @@ int main(int argc, char** argv)
     vetoed.clear();
 
     if (ready_tasks.empty()) {
-      ready_tasks.clear();
       /* there is no ready task, let advance the simulation */
       e.run();
       continue;
@@ -207,6 +215,10 @@ int main(int argc, char** argv)
      * get the host that minimizes the completion time.
      * select the task that has the minimum completion time on its best host.
      */
+    double min_finish_time            = -1.0;
+    simgrid::s4u::Exec* selected_task = nullptr;
+    simgrid::s4u::Host* selected_host = nullptr;
+
     for (auto task : ready_tasks) {
       XBT_DEBUG("%s is ready", task->get_cname());
       host               = get_best_host(task);
@@ -219,21 +231,7 @@ int main(int argc, char** argv)
     }
 
     XBT_INFO("Schedule %s on %s", selected_task->get_cname(), selected_host->get_cname());
-    selected_task->set_host(selected_host);
-    // we can also set the destination of all the input comms of the selected task
-    for (const auto& pred : selected_task->get_dependencies()) {
-      auto* comm = dynamic_cast<simgrid::s4u::Comm*>(pred.get());
-      if (comm != nullptr) {
-        comm->set_destination(selected_host);
-        delete static_cast<double*>(comm->get_data());
-      }
-    }
-    // we can also set the source of all the output comms of the selected task
-    for (const auto& succ : selected_task->get_successors()) {
-      auto* comm = dynamic_cast<simgrid::s4u::Comm*>(succ.get());
-      if (comm != nullptr)
-        comm->set_source(selected_host);
-    }
+    schedule_on(selected_task, selected_host);
 
     /*
      * tasks can be executed concurrently when they can by default.
@@ -254,8 +252,6 @@ int main(int argc, char** argv)
     sg_host_set_available_at(selected_host, min_finish_time);
 
     ready_tasks.clear();
-    /* reset the min_finish_time for the next set of ready tasks */
-    min_finish_time = -1.;
     e.run();
   }
 
