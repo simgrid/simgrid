@@ -102,14 +102,14 @@ create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned long>& /*co
   /* setting my Torus parent zone */
   host_zone->set_parent(zone);
 
-  const sg4::Host* gateway = nullptr;
+  simgrid::kernel::routing::NetPoint* gateway = nullptr;
   /* create CPUs */
   for (int i = 0; i < num_cpus; i++) {
     std::string cpu_name  = hostname + "-cpu" + std::to_string(i);
     const sg4::Host* host = host_zone->create_host(cpu_name, speed)->seal();
     /* the first CPU is the gateway */
     if (i == 0)
-      gateway = host;
+      gateway = host->get_netpoint();
     /* create split-duplex link */
     sg4::SplitDuplexLink* link = host_zone->create_split_duplex_link("link-" + cpu_name, link_bw);
     link->set_latency(link_lat)->seal();
@@ -119,7 +119,7 @@ create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned long>& /*co
   }
   /* seal newly created netzone */
   host_zone->seal();
-  return std::make_pair(host_zone->get_netpoint(), gateway->get_netpoint());
+  return std::make_pair(host_zone->get_netpoint(), gateway);
 }
 
 /*************************************************************************************************/
