@@ -261,9 +261,5 @@ int main(int argc, char** argv)
 
   XBT_INFO("Simulation Time: %f", simgrid_get_clock());
 
-  for (auto h : hosts) {
-    h->set_data(nullptr);
-  }
-
   return 0;
 }

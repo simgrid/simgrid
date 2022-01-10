@@ -42,7 +42,7 @@ static void peer(int my_id, int messages_count, size_t payload_size, int peers_c
         sg4::Mailbox* mbox  = sg4::Mailbox::by_name(std::string("peer-") + std::to_string(peer_id));
         std::string message = std::string("Message ") + std::to_string(i) + " from peer " + std::to_string(my_id);
         auto* payload       = new std::string(message); // copy the data we send:
-        // 'msgName' is not a stable storage location
+        // 'message' is not a stable storage location
         XBT_INFO("Send '%s' to '%s'", message.c_str(), mbox->get_cname());
         /* Create a communication representing the ongoing communication */
         pending_comms.push_back(mbox->put_async(payload, payload_size));
