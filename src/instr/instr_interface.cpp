@@ -435,7 +435,7 @@ int TRACE_platform_graph_export_graphviz (const char *filename)
  */
 void TRACE_vm_variable_declare (const char *variable)
 {
-  instr_user_variable(0, nullptr, variable, "VM", 0, InstrUserVariable::DECLARE, nullptr, &user_vm_variables);
+  instr_user_variable(0, nullptr, variable, "VM", 0, InstrUserVariable::DECLARE, "", &user_vm_variables);
 }
 
 /** @ingroup TRACE_user_variables
@@ -512,7 +512,7 @@ void TRACE_vm_variable_sub (const char *vm, const char *variable, double value)
  */
 void TRACE_vm_variable_set_with_time (double time, const char *vm, const char *variable, double value)
 {
-  instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::SET, nullptr, &user_vm_variables);
+  instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::SET, "", &user_vm_variables);
 }
 
 /** @ingroup TRACE_user_variables
@@ -532,7 +532,7 @@ void TRACE_vm_variable_set_with_time (double time, const char *vm, const char *v
  */
 void TRACE_vm_variable_add_with_time (double time, const char *vm, const char *variable, double value)
 {
-  instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::ADD, nullptr, &user_vm_variables);
+  instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::ADD, "", &user_vm_variables);
 }
 
 /** @ingroup TRACE_user_variables
@@ -552,7 +552,7 @@ void TRACE_vm_variable_add_with_time (double time, const char *vm, const char *v
  */
 void TRACE_vm_variable_sub_with_time (double time, const char *vm, const char *variable, double value)
 {
-  instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::SUB, nullptr, &user_vm_variables);
+  instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::SUB, "", &user_vm_variables);
 }
 
 /* for host variables */
@@ -569,7 +569,7 @@ void TRACE_vm_variable_sub_with_time (double time, const char *vm, const char *v
  */
 void TRACE_host_variable_declare (const char *variable)
 {
-  instr_user_variable(0, nullptr, variable, "HOST", 0, InstrUserVariable::DECLARE, nullptr, &user_host_variables);
+  instr_user_variable(0, nullptr, variable, "HOST", 0, InstrUserVariable::DECLARE, "", &user_host_variables);
 }
 
 /** @ingroup TRACE_user_variables
@@ -646,7 +646,7 @@ void TRACE_host_variable_sub (const char *host, const char *variable, double val
  */
 void TRACE_host_variable_set_with_time (double time, const char *host, const char *variable, double value)
 {
-  instr_user_variable(time, host, variable, "HOST", value, InstrUserVariable::SET, nullptr, &user_host_variables);
+  instr_user_variable(time, host, variable, "HOST", value, InstrUserVariable::SET, "", &user_host_variables);
 }
 
 /** @ingroup TRACE_user_variables
@@ -666,7 +666,7 @@ void TRACE_host_variable_set_with_time (double time, const char *host, const cha
  */
 void TRACE_host_variable_add_with_time (double time, const char *host, const char *variable, double value)
 {
-  instr_user_variable(time, host, variable, "HOST", value, InstrUserVariable::ADD, nullptr, &user_host_variables);
+  instr_user_variable(time, host, variable, "HOST", value, InstrUserVariable::ADD, "", &user_host_variables);
 }
 
 /** @ingroup TRACE_user_variables
@@ -686,7 +686,7 @@ void TRACE_host_variable_add_with_time (double time, const char *host, const cha
  */
 void TRACE_host_variable_sub_with_time (double time, const char *host, const char *variable, double value)
 {
-  instr_user_variable(time, host, variable, "HOST", value, InstrUserVariable::SUB, nullptr, &user_host_variables);
+  instr_user_variable(time, host, variable, "HOST", value, InstrUserVariable::SUB, "", &user_host_variables);
 }
 
 /** @ingroup TRACE_user_variables
@@ -716,7 +716,7 @@ xbt_dynar_t TRACE_get_host_variables ()
  */
 void TRACE_link_variable_declare (const char *variable)
 {
-  instr_user_variable(0, nullptr, variable, "LINK", 0, InstrUserVariable::DECLARE, nullptr, &user_link_variables);
+  instr_user_variable(0, nullptr, variable, "LINK", 0, InstrUserVariable::DECLARE, "", &user_link_variables);
 }
 
 /** @ingroup TRACE_user_variables
@@ -793,7 +793,7 @@ void TRACE_link_variable_sub (const char *link, const char *variable, double val
  */
 void TRACE_link_variable_set_with_time (double time, const char *link, const char *variable, double value)
 {
-  instr_user_variable(time, link, variable, "LINK", value, InstrUserVariable::SET, nullptr, &user_link_variables);
+  instr_user_variable(time, link, variable, "LINK", value, InstrUserVariable::SET, "", &user_link_variables);
 }
 
 /** @ingroup TRACE_user_variables
@@ -813,7 +813,7 @@ void TRACE_link_variable_set_with_time (double time, const char *link, const cha
  */
 void TRACE_link_variable_add_with_time (double time, const char *link, const char *variable, double value)
 {
-  instr_user_variable(time, link, variable, "LINK", value, InstrUserVariable::ADD, nullptr, &user_link_variables);
+  instr_user_variable(time, link, variable, "LINK", value, InstrUserVariable::ADD, "", &user_link_variables);
 }
 
 /** @ingroup TRACE_user_variables
@@ -833,7 +833,7 @@ void TRACE_link_variable_add_with_time (double time, const char *link, const cha
  */
 void TRACE_link_variable_sub_with_time (double time, const char *link, const char *variable, double value)
 {
-  instr_user_variable(time, link, variable, "LINK", value, InstrUserVariable::SUB, nullptr, &user_link_variables);
+  instr_user_variable(time, link, variable, "LINK", value, InstrUserVariable::SUB, "", &user_link_variables);
 }
 
 /* for link variables, but with src and dst used for get_route */
