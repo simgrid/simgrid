@@ -36,9 +36,8 @@ void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
   }
 
   XBT_DEBUG("Active constraints : %zu", active_constraint_set.size());
-  for (Constraint& cnst : active_constraint_set) {
-    saturated_constraint_set.push_back(cnst);
-  }
+  saturated_constraint_set.insert(saturated_constraint_set.end(), active_constraint_set.begin(),
+                                  active_constraint_set.end());
   for (Constraint& cnst : saturated_constraint_set) {
     cnst.remaining_ = cnst.bound_;
     cnst.usage_     = 0.0;
