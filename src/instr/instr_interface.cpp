@@ -62,7 +62,7 @@ static void instr_user_variable(double time, const std::string& resource, const 
 static void instr_user_srcdst_variable(double time, const std::string& src, const std::string& dst,
                                        const std::string& variable, double value, InstrUserVariable what)
 {
-  auto* engine        = simgrid::s4u::Engine::get_instance();
+  const auto* engine  = simgrid::s4u::Engine::get_instance();
   const auto* src_elm = engine->netpoint_by_name_or_null(src);
   xbt_assert(src_elm, "Element '%s' not found!", src.c_str());
 

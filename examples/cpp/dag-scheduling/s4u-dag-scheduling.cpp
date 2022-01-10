@@ -23,7 +23,7 @@ static double sg_host_get_available_at(const simgrid::s4u::Host* host)
   return static_cast<HostAttribute*>(host->get_data())->available_at;
 }
 
-static void sg_host_set_available_at(simgrid::s4u::Host* host, double time)
+static void sg_host_set_available_at(const simgrid::s4u::Host* host, double time)
 {
   auto* attr         = static_cast<HostAttribute*>(host->get_data());
   attr->available_at = time;
@@ -34,7 +34,7 @@ static simgrid::s4u::Exec* sg_host_get_last_scheduled_task(const simgrid::s4u::H
   return static_cast<HostAttribute*>(host->get_data())->last_scheduled_task;
 }
 
-static void sg_host_set_last_scheduled_task(simgrid::s4u::Host* host, simgrid::s4u::ExecPtr task)
+static void sg_host_set_last_scheduled_task(const simgrid::s4u::Host* host, simgrid::s4u::ExecPtr task)
 {
   auto* attr                = static_cast<HostAttribute*>(host->get_data());
   attr->last_scheduled_task = task.get();
