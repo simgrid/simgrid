@@ -8,6 +8,48 @@
 
 #include <simgrid/msg.h>
 
+#ifdef __cplusplus
+#include <set>
+#include <string>
+
+namespace simgrid {
+namespace instr {
+void declare_host_variable(const std::string& variable, const std::string& color = std::string(""));
+void set_host_variable(const s4u::Host* host, const std::string& variable, double value,
+                       double time = simgrid_get_clock());
+void add_host_variable(const s4u::Host* host, const std::string& variable, double value,
+                       double time = simgrid_get_clock());
+void sub_host_variable(const s4u::Host* host, const std::string& variable, double value,
+                       double time = simgrid_get_clock());
+const std::set<std::string, std::less<>>& get_host_variables();
+
+void declare_link_variable(const std::string& variable, const std::string& color = std::string(""));
+void set_link_variable(const s4u::Link* link, const std::string& variable, double value,
+                       double time = simgrid_get_clock());
+void set_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
+                       double time = simgrid_get_clock());
+void add_link_variable(const s4u::Link* link, const std::string& variable, double value,
+                       double time = simgrid_get_clock());
+void add_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
+                       double time = simgrid_get_clock());
+void sub_link_variable(const s4u::Link* link, const std::string& variable, double value,
+                       double time = simgrid_get_clock());
+void sub_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
+                       double time = simgrid_get_clock());
+const std::set<std::string, std::less<>>& get_link_variables();
+
+void declare_mark(const std::string& mark_type);
+void declare_mark_value(const std::string& mark_type, const std::string& mark_value,
+                        const std::string& mark_color = std::string("1 1 1"));
+void mark(const std::string& mark_type, const std::string& mark_value);
+const std::set<std::string, std::less<>>& get_marks();
+
+void declare_tracing_category(const std::string& name, const std::string& color = "");
+const std::set<std::string, std::less<>>& get_tracing_categories();
+} // namespace instr
+} // namespace simgrid
+
+#endif
 SG_BEGIN_DECL
 
 /* Functions to manage tracing categories */

@@ -5,6 +5,7 @@
 
 #include <simgrid/Exception.hpp>
 #include <simgrid/kernel/routing/NetPoint.hpp>
+#include <simgrid/s4u/Host.hpp>
 #include <xbt/random.hpp>
 
 #include "src/instr/instr_private.hpp"
@@ -21,6 +22,227 @@ std::set<std::string, std::less<>> declared_marks;
 std::set<std::string, std::less<>> user_host_variables;
 std::set<std::string, std::less<>> user_vm_variables;
 std::set<std::string, std::less<>> user_link_variables;
+
+static void instr_user_variable(double time, const char* resource, const std::string& variable_name,
+                                const std::string& parent_type, double value, InstrUserVariable what,
+                                const std::string& color, std::set<std::string, std::less<>>* filter)
+{
+  /* safe switches. tracing has to be activated and if platform is not traced, we don't allow user variables */
+  if (not TRACE_is_enabled() || not TRACE_needs_platform())
+    return;
+
+  // check if variable is already declared
+  auto created = filter->find(variable_name);
+  if (what == InstrUserVariable::DECLARE) {
+    if (created == filter->end()) { // not declared yet
+      filter->insert(variable_name);
+      instr_new_user_variable_type(parent_type, variable_name, color);
+    }
+  } else {
+    if (created != filter->end()) { // declared, let's work
+      simgrid::instr::VariableType* variable =
+          simgrid::instr::Container::by_name(resource)->get_variable(variable_name);
+      switch (what) {
+        case InstrUserVariable::SET:
+          variable->set_event(time, value);
+          break;
+        case InstrUserVariable::ADD:
+          variable->add_event(time, value);
+          break;
+        case InstrUserVariable::SUB:
+          variable->sub_event(time, value);
+          break;
+        default:
+          THROW_IMPOSSIBLE;
+      }
+    }
+  }
+}
+
+static void instr_user_srcdst_variable(double time, const char* src, const char* dst, const std::string& variable,
+                                       const std::string& parent_type, double value, InstrUserVariable what)
+{
+  const simgrid::kernel::routing::NetPoint* src_elm = sg_netpoint_by_name_or_null(src);
+  xbt_assert(src_elm, "Element '%s' not found!", src);
+
+  const simgrid::kernel::routing::NetPoint* dst_elm = sg_netpoint_by_name_or_null(dst);
+  xbt_assert(dst_elm, "Element '%s' not found!", dst);
+
+  std::vector<simgrid::kernel::resource::StandardLinkImpl*> route;
+  simgrid::kernel::routing::NetZoneImpl::get_global_route(src_elm, dst_elm, route, nullptr);
+  for (auto const& link : route)
+    instr_user_variable(time, link->get_cname(), variable, parent_type, value, what, "", &user_link_variables);
+}
+
+namespace simgrid {
+namespace instr {
+
+void declare_host_variable(const std::string& variable, const std::string& color)
+{
+  instr_user_variable(0, nullptr, variable, "HOST", 0, InstrUserVariable::DECLARE, color, &user_host_variables);
+}
+
+void set_host_variable(const s4u::Host* host, const std::string& variable, double value, double time)
+{
+  instr_user_variable(time, host->get_cname(), variable, "HOST", value, InstrUserVariable::SET, "",
+                      &user_host_variables);
+}
+
+void add_host_variable(const s4u::Host* host, const std::string& variable, double value, double time)
+{
+  instr_user_variable(time, host->get_cname(), variable, "HOST", value, InstrUserVariable::ADD, "",
+                      &user_host_variables);
+}
+
+void sub_host_variable(const s4u::Host* host, const std::string& variable, double value, double time)
+{
+  instr_user_variable(time, host->get_cname(), variable, "HOST", value, InstrUserVariable::SUB, "",
+                      &user_host_variables);
+}
+
+const std::set<std::string, std::less<>>& get_host_variables()
+{
+  return user_host_variables;
+}
+
+void declare_link_variable(const std::string& variable, const std::string& color)
+{
+  instr_user_variable(0, nullptr, variable, "LINK", 0, InstrUserVariable::DECLARE, color, &user_link_variables);
+}
+
+void set_link_variable(const s4u::Link* link, const std::string& variable, double value, double time)
+{
+  instr_user_variable(time, link->get_cname(), variable, "LINK", value, InstrUserVariable::SET, "",
+                      &user_link_variables);
+}
+
+void set_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
+                       double time)
+{
+  instr_user_srcdst_variable(time, src->get_cname(), dst->get_cname(), variable, "LINK", value, InstrUserVariable::SET);
+}
+
+void add_link_variable(const s4u::Link* link, const std::string& variable, double value, double time)
+{
+  instr_user_variable(time, link->get_cname(), variable, "LINK", value, InstrUserVariable::ADD, "",
+                      &user_link_variables);
+}
+
+void add_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
+                       double time)
+{
+  instr_user_srcdst_variable(time, src->get_cname(), dst->get_cname(), variable, "LINK", value, InstrUserVariable::ADD);
+}
+
+void sub_link_variable(const s4u::Link* link, const std::string& variable, double value, double time)
+{
+  instr_user_variable(time, link->get_cname(), variable, "LINK", value, InstrUserVariable::SUB, "",
+                      &user_link_variables);
+}
+
+void sub_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
+                       double time)
+{
+  instr_user_srcdst_variable(time, src->get_cname(), dst->get_cname(), variable, "LINK", value, InstrUserVariable::SUB);
+}
+
+const std::set<std::string, std::less<>>& get_link_variables()
+{
+  return user_link_variables;
+}
+
+void declare_mark(const std::string& mark_type)
+{
+  /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with marks */
+  if (not TRACE_is_enabled() || not TRACE_needs_platform())
+    return;
+
+  // check if mark_type is already declared
+  if (declared_marks.find(mark_type) != declared_marks.end()) {
+    throw TracingError(XBT_THROW_POINT,
+                       xbt::string_printf("mark_type with name (%s) is already declared", mark_type.c_str()));
+  }
+
+  XBT_DEBUG("MARK,declare %s", mark_type.c_str());
+  Container::get_root()->get_type()->by_name_or_create<EventType>(mark_type);
+  declared_marks.emplace(mark_type);
+}
+
+void declare_mark_value(const std::string& mark_type, const std::string& mark_value, const std::string& mark_color)
+{
+  /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with marks */
+  if (not TRACE_is_enabled() || not TRACE_needs_platform())
+    return;
+
+  auto* type = static_cast<EventType*>(Container::get_root()->get_type()->by_name(mark_type));
+  if (not type) {
+    throw TracingError(XBT_THROW_POINT,
+                       xbt::string_printf("mark_type with name (%s) is not declared", mark_type.c_str()));
+  } else {
+    XBT_DEBUG("MARK, declare_value %s %s %s", mark_type.c_str(), mark_value.c_str(), mark_color.c_str());
+    type->add_entity_value(mark_value, mark_color);
+  }
+}
+
+void mark(const std::string& mark_type, const std::string& mark_value)
+{
+  /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with marks */
+  if (not TRACE_is_enabled() || not TRACE_needs_platform())
+    return;
+
+  // check if mark_type is already declared
+  auto* type = static_cast<EventType*>(Container::get_root()->get_type()->by_name(mark_type));
+  if (not type) {
+    throw TracingError(XBT_THROW_POINT,
+                       xbt::string_printf("mark_type with name (%s) is not declared", mark_type.c_str()));
+  } else {
+    XBT_DEBUG("MARK %s %s", mark_type.c_str(), mark_value.c_str());
+    new NewEvent(simgrid_get_clock(), Container::get_root(), type, type->get_entity_value(mark_value));
+  }
+}
+
+const std::set<std::string, std::less<>>& get_marks()
+{
+  return declared_marks;
+}
+
+void declare_tracing_category(const std::string& name, const std::string& color)
+{
+  /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with categories */
+  if (not TRACE_is_enabled() || not TRACE_needs_platform() || not TRACE_categorized())
+    return;
+
+  // check if category is already created
+  if (created_categories.find(name) != created_categories.end())
+    return;
+
+  created_categories.emplace(name);
+
+  // define final_color
+  std::string final_color;
+  if (color.empty()) {
+    // generate a random color
+    double red   = simgrid::xbt::random::uniform_real(0.0, std::nextafter(1.0, 2.0));
+    double green = simgrid::xbt::random::uniform_real(0.0, std::nextafter(1.0, 2.0));
+    double blue  = simgrid::xbt::random::uniform_real(0.0, std::nextafter(1.0, 2.0));
+    final_color  = std::to_string(red) + " " + std::to_string(green) + " " + std::to_string(blue);
+  } else {
+    final_color = std::string(color);
+  }
+
+  XBT_DEBUG("CAT,declare %s, \"%s\" \"%s\"", name.c_str(), color.c_str(), final_color.c_str());
+
+  // define the type of this category on top of hosts and links
+  instr_new_variable_type(name, final_color);
+}
+
+const std::set<std::string, std::less<>>& get_tracing_categories()
+{
+  return created_categories;
+}
+
+} // namespace instr
+} // namespace simgrid
 
 static xbt_dynar_t instr_set_to_dynar(const std::set<std::string, std::less<>>& filter)
 {
@@ -47,11 +269,11 @@ static xbt_dynar_t instr_set_to_dynar(const std::set<std::string, std::less<>>& 
  *
  *  @param category The name of the new tracing category to be created.
  *
- *  @see TRACE_category_with_color, MSG_task_set_category, SD_task_set_category
+ *  @see TRACE_category_with_color
  */
 void TRACE_category(const char *category)
 {
-  TRACE_category_with_color (category, nullptr);
+  simgrid::instr::declare_tracing_category(category);
 }
 
 /** @ingroup TRACE_category
@@ -67,39 +289,10 @@ void TRACE_category(const char *category)
  *  @param color The color of the category (see @ref outcomes_vizu to
  *  know how to correctly specify the color)
  *
- *  @see MSG_task_set_category, SD_task_set_category
  */
 void TRACE_category_with_color (const char *category, const char *color)
 {
-  /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with categories */
-  if (not TRACE_is_enabled() || not TRACE_needs_platform())
-    return;
-
-  if (not(TRACE_categorized() && category != nullptr))
-    return;
-
-  //check if category is already created
-  if (created_categories.find(category) != created_categories.end())
-    return;
-
-  created_categories.emplace(category);
-
-  //define final_color
-  std::string final_color;
-  if (not color) {
-    //generate a random color
-    double red   = simgrid::xbt::random::uniform_real(0.0, std::nextafter(1.0, 2.0));
-    double green = simgrid::xbt::random::uniform_real(0.0, std::nextafter(1.0, 2.0));
-    double blue  = simgrid::xbt::random::uniform_real(0.0, std::nextafter(1.0, 2.0));
-    final_color  = std::to_string(red) + " " + std::to_string(green) + " " + std::to_string(blue);
-  }else{
-    final_color = std::string(color);
-  }
-
-  XBT_DEBUG("CAT,declare %s, \"%s\" \"%s\"", category, color, final_color.c_str());
-
-  //define the type of this category on top of hosts and links
-  instr_new_variable_type (category, final_color);
+  simgrid::instr::declare_tracing_category(category, color);
 }
 
 /** @ingroup TRACE_category
@@ -112,7 +305,6 @@ void TRACE_category_with_color (const char *category, const char *color)
  *
  * @return A dynar with the declared categories, must be freed with xbt_dynar_free.
  *
- *  @see MSG_task_set_category, SD_task_set_category
  */
 xbt_dynar_t TRACE_get_categories ()
 {
@@ -133,21 +325,7 @@ xbt_dynar_t TRACE_get_categories ()
  */
 void TRACE_declare_mark(const char *mark_type)
 {
-  /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with marks */
-  if (not TRACE_is_enabled() || not TRACE_needs_platform())
-    return;
-
-  xbt_assert(mark_type, "mark_type is nullptr");
-
-  //check if mark_type is already declared
-  if (declared_marks.find(mark_type) != declared_marks.end()) {
-    throw simgrid::TracingError(XBT_THROW_POINT,
-                                simgrid::xbt::string_printf("mark_type with name (%s) is already declared", mark_type));
-  }
-
-  XBT_DEBUG("MARK,declare %s", mark_type);
-  simgrid::instr::Container::get_root()->get_type()->by_name_or_create<simgrid::instr::EventType>(mark_type);
-  declared_marks.emplace(mark_type);
+  simgrid::instr::declare_mark(mark_type);
 }
 
 /** @ingroup TRACE_mark
@@ -167,25 +345,7 @@ void TRACE_declare_mark(const char *mark_type)
  */
 void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mark_value, const char *mark_color)
 {
-  /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with marks */
-  if (not TRACE_is_enabled() || not TRACE_needs_platform())
-    return;
-
-  xbt_assert(mark_type, "mark_type is nullptr");
-  xbt_assert(mark_value, "mark_value is nullptr");
-
-  auto* type =
-      static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::get_root()->get_type()->by_name(mark_type));
-  if (not type) {
-    throw simgrid::TracingError(XBT_THROW_POINT,
-                                simgrid::xbt::string_printf("mark_type with name (%s) is not declared", mark_type));
-  } else {
-    if (not mark_color)
-      mark_color = "1.0 1.0 1.0" /*white*/;
-
-    XBT_DEBUG("MARK,declare_value %s %s %s", mark_type, mark_value, mark_color);
-    type->add_entity_value(mark_value, mark_color);
-  }
+  simgrid::instr::declare_mark_value(mark_type, mark_value, mark_color);
 }
 
 /** @ingroup TRACE_mark
@@ -202,7 +362,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
  */
 void TRACE_declare_mark_value (const char *mark_type, const char *mark_value)
 {
-  TRACE_declare_mark_value_with_color (mark_type, mark_value, nullptr);
+  simgrid::instr::declare_mark_value(mark_type, mark_value);
 }
 
 /**
@@ -221,24 +381,7 @@ void TRACE_declare_mark_value (const char *mark_type, const char *mark_value)
  */
 void TRACE_mark(const char *mark_type, const char *mark_value)
 {
-  /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with marks */
-  if (not TRACE_is_enabled() || not TRACE_needs_platform())
-    return;
-
-  xbt_assert(mark_type, "mark_type is nullptr");
-  xbt_assert(mark_value, "mark_value is nullptr");
-
-  //check if mark_type is already declared
-  auto* type =
-      static_cast<simgrid::instr::EventType*>(simgrid::instr::Container::get_root()->get_type()->by_name(mark_type));
-  if (not type) {
-    throw simgrid::TracingError(XBT_THROW_POINT,
-                                simgrid::xbt::string_printf("mark_type with name (%s) is not declared", mark_type));
-  } else {
-    XBT_DEBUG("MARK %s %s", mark_type, mark_value);
-    new simgrid::instr::NewEvent(simgrid_get_clock(), simgrid::instr::Container::get_root(), type,
-                                 type->get_entity_value(mark_value));
-  }
+  simgrid::instr::mark(mark_type, mark_value);
 }
 
 /** @ingroup TRACE_mark
@@ -254,57 +397,6 @@ xbt_dynar_t TRACE_get_marks ()
     return nullptr;
 
   return instr_set_to_dynar(declared_marks);
-}
-
-static void instr_user_variable(double time, const char* resource, const char* variable_name, const char* parent_type,
-                                double value, InstrUserVariable what, const char* color,
-                                std::set<std::string, std::less<>>* filter)
-{
-  /* safe switches. tracing has to be activated and if platform is not traced, we don't allow user variables */
-  if (not TRACE_is_enabled() || not TRACE_needs_platform())
-    return;
-
-  //check if variable is already declared
-  auto created = filter->find(variable_name);
-  if (what == InstrUserVariable::DECLARE) {
-    if (created == filter->end()) { // not declared yet
-      filter->insert(variable_name);
-      instr_new_user_variable_type(parent_type, variable_name, color == nullptr ? "" : color);
-    }
-  }else{
-    if (created != filter->end()) { // declared, let's work
-      simgrid::instr::VariableType* variable =
-          simgrid::instr::Container::by_name(resource)->get_variable(variable_name);
-      switch (what){
-        case InstrUserVariable::SET:
-          variable->set_event(time, value);
-          break;
-        case InstrUserVariable::ADD:
-          variable->add_event(time, value);
-          break;
-        case InstrUserVariable::SUB:
-          variable->sub_event(time, value);
-          break;
-        default:
-          THROW_IMPOSSIBLE;
-      }
-    }
-  }
-}
-
-static void instr_user_srcdst_variable(double time, const char* src, const char* dst, const char* variable,
-                                       const char* parent_type, double value, InstrUserVariable what)
-{
-  const simgrid::kernel::routing::NetPoint* src_elm = sg_netpoint_by_name_or_null(src);
-  xbt_assert(src_elm, "Element '%s' not found!", src);
-
-  const simgrid::kernel::routing::NetPoint* dst_elm = sg_netpoint_by_name_or_null(dst);
-  xbt_assert(dst_elm, "Element '%s' not found!", dst);
-
-  std::vector<simgrid::kernel::resource::StandardLinkImpl*> route;
-  simgrid::kernel::routing::NetZoneImpl::get_global_route(src_elm, dst_elm, route, nullptr);
-  for (auto const& link : route)
-    instr_user_variable(time, link->get_cname(), variable, parent_type, value, what, nullptr, &user_link_variables);
 }
 
 /** @ingroup TRACE_API

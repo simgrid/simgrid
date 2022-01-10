@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 
   e.load_platform(argv[1]);
 
-  TRACE_category("migration_order");
+  simgrid::instr::declare_tracing_category("migration_order");
 
   sg4::Actor::create("emigrant", e.host_by_name("Fafard"), emigrant);
   sg4::Actor::create("policeman", e.host_by_name("Tremblay"), policeman);

@@ -25,7 +25,7 @@ void TRACE_smpi_set_category(const char *category)
 
   if (category != nullptr) {
     // declare category
-    TRACE_category(category);
+    simgrid::instr::declare_tracing_category(category);
     smpi_process()->set_tracing_category(category);
   }
 }

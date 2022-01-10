@@ -15,18 +15,18 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 
 static void trace_fun()
 {
-  const char* hostname = simgrid::s4u::this_actor::get_host()->get_cname();
+  auto* host = simgrid::s4u::this_actor::get_host();
 
   // the hostname has an empty HDD with a capacity of 100000 (bytes)
-  TRACE_host_variable_set(hostname, "HDD_capacity", 100000);
-  TRACE_host_variable_set(hostname, "HDD_utilization", 0);
+  simgrid::instr::set_host_variable(host, "HDD_capacity", 100000);
+  simgrid::instr::set_host_variable(host, "HDD_utilization", 0);
 
   for (int i = 0; i < 10; i++) {
     // create and execute a task just to make the simulated time advance
     simgrid::s4u::this_actor::execute(1e4);
 
     // ADD: after the execution of this task, the HDD utilization increases by 100 (bytes)
-    TRACE_host_variable_add(hostname, "HDD_utilization", 100);
+    simgrid::instr::add_host_variable(host, "HDD_utilization", 100);
   }
 
   for (int i = 0; i < 10; i++) {
@@ -34,7 +34,7 @@ static void trace_fun()
     simgrid::s4u::this_actor::execute(1e4);
 
     // SUB: after the execution of this task, the HDD utilization decreases by 100 (bytes)
-    TRACE_host_variable_sub(hostname, "HDD_utilization", 100);
+    simgrid::instr::sub_host_variable(host, "HDD_utilization", 100);
   }
 }
 
@@ -46,29 +46,22 @@ int main(int argc, char* argv[])
   e.load_platform(argv[1]);
 
   // declaring user variables
-  TRACE_host_variable_declare("HDD_capacity");
-  TRACE_host_variable_declare("HDD_utilization");
+  simgrid::instr::declare_host_variable("HDD_capacity");
+  simgrid::instr::declare_host_variable("HDD_utilization", "1 0 0"); // red color
 
   simgrid::s4u::Actor::create("master", e.host_by_name("Tremblay"), trace_fun);
 
   e.run();
 
   // get user declared variables
-  xbt_dynar_t host_variables = TRACE_get_host_variables();
-  if (host_variables) {
+  auto host_variables = simgrid::instr::get_host_variables();
+  if (not host_variables.empty()) {
     XBT_INFO("Declared host variables:");
-    unsigned int cursor;
-    char* variable;
-    xbt_dynar_foreach (host_variables, cursor, variable) {
-      XBT_INFO("%s", variable);
-    }
-    xbt_dynar_free(&host_variables);
+    for (const auto& var : host_variables)
+      XBT_INFO("%s", var.c_str());
   }
-  xbt_dynar_t link_variables = TRACE_get_link_variables();
-  if (link_variables) {
-    xbt_assert(xbt_dynar_is_empty(link_variables), "Should not have any declared link variable!");
-    xbt_dynar_free(&link_variables);
-  }
+  auto link_variables = simgrid::instr::get_link_variables();
+  xbt_assert(link_variables.empty(), "Should not have any declared link variable!");
 
   return 0;
 }
