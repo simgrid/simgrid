@@ -63,10 +63,10 @@ static void instr_user_variable(double time, const char* resource, const std::st
 static void instr_user_srcdst_variable(double time, const char* src, const char* dst, const std::string& variable,
                                        const std::string& parent_type, double value, InstrUserVariable what)
 {
-  const simgrid::kernel::routing::NetPoint* src_elm = sg_netpoint_by_name_or_null(src);
+  const auto* src_elm = sg_netpoint_by_name_or_null(src);
   xbt_assert(src_elm, "Element '%s' not found!", src);
 
-  const simgrid::kernel::routing::NetPoint* dst_elm = sg_netpoint_by_name_or_null(dst);
+  const auto* dst_elm = sg_netpoint_by_name_or_null(dst);
   xbt_assert(dst_elm, "Element '%s' not found!", dst);
 
   std::vector<simgrid::kernel::resource::StandardLinkImpl*> route;
@@ -77,6 +77,21 @@ static void instr_user_srcdst_variable(double time, const char* src, const char*
 
 namespace simgrid {
 namespace instr {
+static void user_srcdst_variable(double time, const s4u::Host* src, const s4u::Host* dst, const std::string& variable,
+                                 double value, InstrUserVariable what)
+{
+  const auto* src_elm = src->get_netpoint();
+  xbt_assert(src_elm, "Element '%s' not found!", src->get_cname());
+
+  const auto* dst_elm = dst->get_netpoint();
+  xbt_assert(dst_elm, "Element '%s' not found!", dst->get_cname());
+
+  std::vector<kernel::resource::StandardLinkImpl*> route;
+  kernel::routing::NetZoneImpl::get_global_route(src_elm, dst_elm, route, nullptr);
+  for (auto const& link : route)
+    instr_user_variable(time, link->get_cname(), variable, "LINK", value, what, "", &user_link_variables);
+}
+
 /** @brief Declare a new user variable associated to hosts.
  *
  *  Declare a user variable that will be associated to hosts.
@@ -136,7 +151,7 @@ void set_link_variable(const s4u::Link* link, const std::string& variable, doubl
 void set_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
                        double time)
 {
-  instr_user_srcdst_variable(time, src->get_cname(), dst->get_cname(), variable, "LINK", value, InstrUserVariable::SET);
+  user_srcdst_variable(time, src, dst, variable, value, InstrUserVariable::SET);
 }
 
 /** @brief Add a value to a variable of a link */
@@ -150,7 +165,7 @@ void add_link_variable(const s4u::Link* link, const std::string& variable, doubl
 void add_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
                        double time)
 {
-  instr_user_srcdst_variable(time, src->get_cname(), dst->get_cname(), variable, "LINK", value, InstrUserVariable::ADD);
+  user_srcdst_variable(time, src, dst, variable, value, InstrUserVariable::ADD);
 }
 
 /** @brief Subtract a value to a variable of a link */
@@ -164,7 +179,7 @@ void sub_link_variable(const s4u::Link* link, const std::string& variable, doubl
 void sub_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
                        double time)
 {
-  instr_user_srcdst_variable(time, src->get_cname(), dst->get_cname(), variable, "LINK", value, InstrUserVariable::SUB);
+  user_srcdst_variable(time, src, dst, variable, value, InstrUserVariable::SUB);
 }
 
 /** @brief Get link variables that were already declared with #declare_link_variable. */
