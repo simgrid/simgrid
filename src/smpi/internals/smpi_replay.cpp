@@ -433,7 +433,7 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
   // MPI_REQUEST_NULL by Request::wait!
   bool is_wait_for_receive = (request->flags() & MPI_REQ_RECV);
 
-  TRACE_smpi_comm_in(get_pid(), __func__, new simgrid::instr::WaitTIData(args.src, args.dst, args.tag));
+  TRACE_smpi_comm_in(get_pid(), __func__, new simgrid::instr::WaitTIData("wait", args.src, args.dst, args.tag));
 
   MPI_Status status;
   Request::wait(&request, &status);
@@ -532,7 +532,7 @@ void TestAction::kernel(simgrid::xbt::ReplayAction&)
   // Different times in traced application and replayed version may lead to this
   // In this case, ignore the extra calls.
   if (request != MPI_REQUEST_NULL) {
-    TRACE_smpi_comm_in(get_pid(), __func__, new simgrid::instr::NoOpTIData("test"));
+    TRACE_smpi_comm_in(get_pid(), __func__, new simgrid::instr::WaitTIData("test", args.src, args.dst, args.tag));
 
     MPI_Status status;
     int flag = 0;
