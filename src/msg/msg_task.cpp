@@ -783,8 +783,6 @@ void MSG_task_set_bound(msg_task_t task, double bound)
  *
  * @param task the task that is going to be categorized
  * @param category the name of the category to be associated to the task
- *
- * @see MSG_task_get_category, TRACE_category, TRACE_category_with_color
  */
 void MSG_task_set_category(msg_task_t task, const char* category)
 {

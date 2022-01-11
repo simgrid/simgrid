@@ -6,6 +6,7 @@
 #include <simgrid/Exception.hpp>
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <simgrid/s4u/Host.hpp>
+#include <simgrid/s4u/VirtualMachine.hpp>
 #include <xbt/random.hpp>
 
 #include "src/instr/instr_private.hpp"
@@ -76,7 +77,13 @@ static void instr_user_srcdst_variable(double time, const char* src, const char*
 
 namespace simgrid {
 namespace instr {
-
+/** @brief Declare a new user variable associated to hosts.
+ *
+ *  Declare a user variable that will be associated to hosts.
+ *  A user host variable can be used to trace user variables such as the number of tasks in a server, the number of
+ *  clients in an application (for hosts), and so on. The color associated to this new variable will be random if
+ *  not given as parameter.
+ */
 void declare_host_variable(const std::string& variable, const std::string& color)
 {
   instr_user_variable(0, nullptr, variable, "HOST", 0, InstrUserVariable::DECLARE, color, &user_host_variables);
@@ -88,23 +95,33 @@ void set_host_variable(const s4u::Host* host, const std::string& variable, doubl
                       &user_host_variables);
 }
 
+/** @brief Add a value to a variable of a host */
 void add_host_variable(const s4u::Host* host, const std::string& variable, double value, double time)
 {
   instr_user_variable(time, host->get_cname(), variable, "HOST", value, InstrUserVariable::ADD, "",
                       &user_host_variables);
 }
 
+/** @brief Subtract a value to a variable of a host */
 void sub_host_variable(const s4u::Host* host, const std::string& variable, double value, double time)
 {
   instr_user_variable(time, host->get_cname(), variable, "HOST", value, InstrUserVariable::SUB, "",
                       &user_host_variables);
 }
 
+/** @brief Get host variables that were already declared with #declare_host_variable. */
 const std::set<std::string, std::less<>>& get_host_variables()
 {
   return user_host_variables;
 }
 
+/** @brief Declare a new user variable associated to links.
+ *
+ *  Declare a user variable that will be associated to links.
+ *  A user link variable can be used, for example, to trace user variables such as the number of messages being
+ *  transferred through network links. The color associated to this new variable will be random if not given as
+ *  parameter.
+ */
 void declare_link_variable(const std::string& variable, const std::string& color)
 {
   instr_user_variable(0, nullptr, variable, "LINK", 0, InstrUserVariable::DECLARE, color, &user_link_variables);
@@ -122,35 +139,79 @@ void set_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::st
   instr_user_srcdst_variable(time, src->get_cname(), dst->get_cname(), variable, "LINK", value, InstrUserVariable::SET);
 }
 
+/** @brief Add a value to a variable of a link */
 void add_link_variable(const s4u::Link* link, const std::string& variable, double value, double time)
 {
   instr_user_variable(time, link->get_cname(), variable, "LINK", value, InstrUserVariable::ADD, "",
                       &user_link_variables);
 }
 
+/** @brief Add a value to a variable of a link */
 void add_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
                        double time)
 {
   instr_user_srcdst_variable(time, src->get_cname(), dst->get_cname(), variable, "LINK", value, InstrUserVariable::ADD);
 }
 
+/** @brief Subtract a value to a variable of a link */
 void sub_link_variable(const s4u::Link* link, const std::string& variable, double value, double time)
 {
   instr_user_variable(time, link->get_cname(), variable, "LINK", value, InstrUserVariable::SUB, "",
                       &user_link_variables);
 }
 
+/** @brief Subtract a value to a variable of a link */
 void sub_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
                        double time)
 {
   instr_user_srcdst_variable(time, src->get_cname(), dst->get_cname(), variable, "LINK", value, InstrUserVariable::SUB);
 }
 
+/** @brief Get link variables that were already declared with #declare_link_variable. */
 const std::set<std::string, std::less<>>& get_link_variables()
 {
   return user_link_variables;
 }
 
+/** @brief Declare a new user variable associated to VMs.
+ *
+ *  Declare a user variable that will be associated to VMs. A user host variable can be used to trace user variables
+ *  such as the number of tasks in a VM, the number of clients in an application (for hosts), and so on. The color
+ *  associated to this new variable will be random if not given as parameter.
+ */
+void declare_vm_variable(const std::string& variable, const std::string& color)
+{
+  instr_user_variable(0, nullptr, variable, "VM", 0, InstrUserVariable::DECLARE, color, &user_vm_variables);
+}
+
+void set_vm_variable(const s4u::VirtualMachine* vm, const std::string& variable, double value, double time)
+{
+  instr_user_variable(time, vm->get_cname(), variable, "VM", value, InstrUserVariable::SET, "", &user_vm_variables);
+}
+
+/** @brief Add a value to a variable of a VM */
+void add_vm_variable(const s4u::VirtualMachine* vm, const std::string& variable, double value, double time)
+{
+  instr_user_variable(time, vm->get_cname(), variable, "HOST", value, InstrUserVariable::ADD, "", &user_vm_variables);
+}
+
+/** @brief Subtract a value from a variable of a VM */
+void sub_vm_variable(const s4u::VirtualMachine* vm, const std::string& variable, double value, double time)
+{
+  instr_user_variable(time, vm->get_cname(), variable, "HOST", value, InstrUserVariable::SUB, "", &user_vm_variables);
+}
+
+/** @brief Get VM variables that were already declared with #declare_vm_variable. */
+const std::set<std::string, std::less<>>& get_vm_variables()
+{
+  return user_vm_variables;
+}
+
+/**@brief Declare a new type for tracing mark.
+ *
+ * This function declares a new Paje event type in the trace file that can be used by simulators to declare
+ * application-level marks. This function is independent of which API is used in SimGrid.
+ */
 void declare_mark(const std::string& mark_type)
 {
   /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with marks */
@@ -168,6 +229,14 @@ void declare_mark(const std::string& mark_type)
   declared_marks.emplace(mark_type);
 }
 
+/** @brief Declare a new colored value for a previously declared mark type.
+ *
+ * This function declares a new colored value for a Paje event type in the trace file that can be used by simulators to
+ * declare application-level marks. This function is independent of which API is used in SimGrid. The color needs to be
+ * a string with three numbers separated by spaces in the range [0,1].
+ * A light-gray color can be specified using "0.7 0.7 0.7" as color. If no color is provided, the default color used
+ * will be white ("1 1 1").
+ */
 void declare_mark_value(const std::string& mark_type, const std::string& mark_value, const std::string& mark_color)
 {
   /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with marks */
@@ -184,6 +253,13 @@ void declare_mark_value(const std::string& mark_type, const std::string& mark_va
   }
 }
 
+/** @brief Create a new instance of a tracing mark type.
+ *
+ * This function creates a mark in the trace file. The first parameter had to be previously declared using
+ * #declare_mark, the second is the identifier for this mark instance. We recommend that the mark_value is a
+ * unique value for the whole simulation. Nevertheless, this is not a strong requirement: the trace will be valid even
+ * if there are multiple mark identifiers for the same trace.
+ */
 void mark(const std::string& mark_type, const std::string& mark_value)
 {
   /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with marks */
@@ -201,11 +277,22 @@ void mark(const std::string& mark_type, const std::string& mark_value)
   }
 }
 
+/** @brief Get marks that were already declared with #declare_mark. */
 const std::set<std::string, std::less<>>& get_marks()
 {
   return declared_marks;
 }
 
+/** @brief Declare a new category.
+ *
+ *  This function should be used to define a user category. The category can be used to differentiate the tasks that
+ *  are created during the simulation (for example, tasks from server1, server2, or request tasks, computation tasks,
+ *  communication tasks). All resource utilization (host power and link bandwidth) will be classified according to the
+ *  task category. Tasks that do not belong to a category are not traced. The color for the category that is being
+ *  declared is random. This function has no effect if a category with the same name has been already declared.
+ *
+ * See @ref outcomes_vizu for details on how to trace the (categorized) resource utilization.
+ */
 void declare_tracing_category(const std::string& name, const std::string& color)
 {
   /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with categories */
@@ -236,6 +323,10 @@ void declare_tracing_category(const std::string& name, const std::string& color)
   instr_new_variable_type(name, final_color);
 }
 
+/** @brief Get categories that were already declared with #declare_tracing_category.
+ *
+ * See @ref outcomes_vizu for details on how to trace the (categorized) resource utilization.
+ */
 const std::set<std::string, std::less<>>& get_tracing_categories()
 {
   return created_categories;
@@ -244,7 +335,7 @@ const std::set<std::string, std::less<>>& get_tracing_categories()
 } // namespace instr
 } // namespace simgrid
 
-static xbt_dynar_t instr_set_to_dynar(const std::set<std::string, std::less<>>& filter)
+static xbt_dynar_t instr_set_to_dynar(const std::set<std::string, std::less<>>& filter) // XBT_ATTRIB_DEPRECATED_v333
 {
   if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return nullptr;
@@ -256,142 +347,45 @@ static xbt_dynar_t instr_set_to_dynar(const std::set<std::string, std::less<>>& 
   return ret;
 }
 
-/** @ingroup TRACE_category
- *  @brief Declare a new category with a random color.
- *
- *  This function should be used to define a user category. The category can be used to differentiate the tasks that
- *  are created during the simulation (for example, tasks from server1, server2, or request tasks, computation tasks,
- *  communication tasks). All resource utilization (host power and link bandwidth) will be classified according to the
- *  task category. Tasks that do not belong to a category are not traced. The color for the category that is being
- *  declared is random. This function has no effect if a category with the same name has been already declared.
- *
- * See @ref outcomes_vizu for details on how to trace the (categorized) resource utilization.
- *
- *  @param category The name of the new tracing category to be created.
- *
- *  @see TRACE_category_with_color
- */
-void TRACE_category(const char *category)
+void TRACE_category(const char* category) // XBT_ATTRIB_DEPRECATED_v333
 {
   simgrid::instr::declare_tracing_category(category);
 }
 
-/** @ingroup TRACE_category
- *  @brief Declare a new category with a color.
- *
- *  Same as #TRACE_category, but let user specify a color encoded as an RGB-like string with three floats from 0 to 1.
- *  So, to specify a red color, pass "1 0 0" as color parameter. A light-gray color can be specified using "0.7 0.7 0.7"
- *   as color. This function has no effect if a category with the same name has been already declared.
- *
- * See @ref outcomes_vizu for details on how to trace the (categorized) resource utilization.
- *
- *  @param category The name of the new tracing category to be created.
- *  @param color The color of the category (see @ref outcomes_vizu to
- *  know how to correctly specify the color)
- *
- */
-void TRACE_category_with_color (const char *category, const char *color)
+void TRACE_category_with_color(const char* category, const char* color) // XBT_ATTRIB_DEPRECATED_v333
 {
   simgrid::instr::declare_tracing_category(category, color);
 }
 
-/** @ingroup TRACE_category
- *  @brief Get declared categories
- *
- * This function should be used to get categories that were already declared with #TRACE_category or with
- * #TRACE_category_with_color.
- *
- * See @ref outcomes_vizu for details on how to trace the (categorized) resource utilization.
- *
- * @return A dynar with the declared categories, must be freed with xbt_dynar_free.
- *
- */
-xbt_dynar_t TRACE_get_categories ()
+xbt_dynar_t TRACE_get_categories() // XBT_ATTRIB_DEPRECATED_v333
 {
   if (not TRACE_is_enabled() || not TRACE_categorized())
     return nullptr;
   return instr_set_to_dynar(created_categories);
 }
 
-/** @ingroup TRACE_mark
- * @brief Declare a new type for tracing mark.
- *
- * This function declares a new Paje event type in the trace file that can be used by simulators to declare
- * application-level marks. This function is independent of which API is used in SimGrid.
- *
- * @param mark_type The name of the new type.
- *
- * @see TRACE_mark
- */
-void TRACE_declare_mark(const char *mark_type)
+void TRACE_declare_mark(const char* mark_type) // XBT_ATTRIB_DEPRECATED_v333
 {
   simgrid::instr::declare_mark(mark_type);
 }
 
-/** @ingroup TRACE_mark
- * @brief Declare a new colored value for a previously declared mark type.
- *
- * This function declares a new colored value for a Paje event type in the trace file that can be used by simulators to
- * declare application-level marks. This function is independent of which API is used in SimGrid. The color needs to be
- * a string with three numbers separated by spaces in the range [0,1].
- * A light-gray color can be specified using "0.7 0.7 0.7" as color. If a nullptr color is provided, the color used will
- * be white ("1 1 1").
- *
- * @param mark_type The name of the new type.
- * @param mark_value The name of the new value for this type.
- * @param mark_color The color of the new value for this type.
- *
- * @see TRACE_mark
- */
-void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mark_value, const char *mark_color)
+void TRACE_declare_mark_value_with_color(const char* mark_type, const char* mark_value,
+                                         const char* mark_color) // XBT_ATTRIB_DEPRECATED_v333
 {
   simgrid::instr::declare_mark_value(mark_type, mark_value, mark_color);
 }
 
-/** @ingroup TRACE_mark
- * @brief Declare a new value for a previously declared mark type.
- *
- * This function declares a new value for a Paje event type in the trace file that can be used by simulators to declare
- * application-level marks. This function is independent of which API is used in SimGrid. Calling this function is the
- * same as calling @ref TRACE_declare_mark_value_with_color with a nullptr color.
- *
- * @param mark_type The name of the new type.
- * @param mark_value The name of the new value for this type.
- *
- * @see TRACE_mark
- */
-void TRACE_declare_mark_value (const char *mark_type, const char *mark_value)
+void TRACE_declare_mark_value(const char* mark_type, const char* mark_value) // XBT_ATTRIB_DEPRECATED_v333
 {
   simgrid::instr::declare_mark_value(mark_type, mark_value);
 }
 
-/**
- * @ingroup TRACE_mark
- * @brief Create a new instance of a tracing mark type.
- *
- * This function creates a mark in the trace file. The first parameter had to be previously declared using
- * #TRACE_declare_mark, the second is the identifier for this mark instance. We recommend that the mark_value is a
- * unique value for the whole simulation. Nevertheless, this is not a strong requirement: the trace will be valid even
- * if there are multiple mark identifiers for the same trace.
- *
- * @param mark_type The name of the type for which the new instance will belong.
- * @param mark_value The name of the new instance mark.
- *
- * @see TRACE_declare_mark
- */
-void TRACE_mark(const char *mark_type, const char *mark_value)
+void TRACE_mark(const char* mark_type, const char* mark_value) // XBT_ATTRIB_DEPRECATED_v333
 {
   simgrid::instr::mark(mark_type, mark_value);
 }
 
-/** @ingroup TRACE_mark
- *  @brief Get declared marks
- *
- * This function should be used to get marks that were already declared with #TRACE_declare_mark.
- *
- * @return A dynar with the declared marks, must be freed with xbt_dynar_free.
- */
-xbt_dynar_t TRACE_get_marks ()
+xbt_dynar_t TRACE_get_marks() // XBT_ATTRIB_DEPRECATED_v333
 {
   if (not TRACE_is_enabled())
     return nullptr;
@@ -399,18 +393,7 @@ xbt_dynar_t TRACE_get_marks ()
   return instr_set_to_dynar(declared_marks);
 }
 
-/** @ingroup TRACE_API
- *  @brief Creates a file with the topology of the platform file used for the simulator.
- *
- *  The graph topology will have the following properties: all hosts, links and routers of the platform file are mapped
- *  to graph nodes; routes are mapped to edges.
- *  The platform's zones are not represented in the output.
- *
- *  @param filename The name of the file that will hold the graph.
- *
- *  @return 1 of successful, 0 otherwise.
- */
-int TRACE_platform_graph_export_graphviz (const char *filename)
+int TRACE_platform_graph_export_graphviz(const char* filename) // XBT_ATTRIB_DEPRECATED_v333
 {
   simgrid::instr::platform_graph_export_graphviz(filename);
   return 1;
@@ -422,33 +405,11 @@ int TRACE_platform_graph_export_graphviz (const char *filename)
  */
 
 /* for VM variables */
-/** @ingroup TRACE_user_variables
- *  @brief Declare a new user variable associated to VMs.
- *
- *  Declare a user variable that will be associated to VMs. A user vm variable can be used to trace user variables
- *  such as the number of tasks in a VM, the number of clients in an application (for VMs), and so on. The color
- *  associated to this new variable will be random.
- *
- *  @param variable The name of the new variable to be declared.
- *
- *  @see TRACE_vm_variable_declare_with_color
- */
-void TRACE_vm_variable_declare (const char *variable)
+void TRACE_vm_variable_declare(const char* variable) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(0, nullptr, variable, "VM", 0, InstrUserVariable::DECLARE, "", &user_vm_variables);
 }
-
-/** @ingroup TRACE_user_variables
- *  @brief Declare a new user variable associated to VMs with a color.
- *
- *  Same as #TRACE_vm_variable_declare, but associated a color to the newly created user host variable. The color needs
- *  to be a string with three numbers separated by spaces in the range [0,1].
- *  A light-gray color can be specified using "0.7 0.7 0.7" as color.
- *
- *  @param variable The name of the new variable to be declared.
- *  @param color The color for the new variable.
- */
-void TRACE_vm_variable_declare_with_color (const char *variable, const char *color)
+void TRACE_vm_variable_declare_with_color(const char* variable, const char* color) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(0, nullptr, variable, "VM", 0, InstrUserVariable::DECLARE, color, &user_vm_variables);
 }
@@ -464,127 +425,44 @@ void TRACE_vm_variable_declare_with_color (const char *variable, const char *col
  */
 void TRACE_vm_variable_set (const char *vm, const char *variable, double value)
 {
-  TRACE_vm_variable_set_with_time(simgrid_get_clock(), vm, variable, value);
+  instr_user_variable(simgrid_get_clock(), vm, variable, "VM", value, InstrUserVariable::SET, "", &user_vm_variables);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Add a value to a variable of a VM.
- *
- *  @param vm The name of the VM to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The value to be added to the variable.
- *
- *  @see TRACE_vm_variable_declare, TRACE_vm_variable_set, TRACE_vm_variable_sub
- */
-void TRACE_vm_variable_add (const char *vm, const char *variable, double value)
+void TRACE_vm_variable_add(const char* vm, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
 {
-  TRACE_vm_variable_add_with_time(simgrid_get_clock(), vm, variable, value);
+  instr_user_variable(simgrid_get_clock(), vm, variable, "VM", value, InstrUserVariable::ADD, "", &user_vm_variables);
 }
-
-/** @ingroup TRACE_user_variables
- *  @brief Subtract a value from a variable of a VM.
- *
- *  @param vm The name of the vm to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The value to be subtracted from the variable.
- *
- *  @see TRACE_vm_variable_declare, TRACE_vm_variable_set, TRACE_vm_variable_add
- */
-void TRACE_vm_variable_sub (const char *vm, const char *variable, double value)
+void TRACE_vm_variable_sub(const char* vm, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
 {
-  TRACE_vm_variable_sub_with_time(simgrid_get_clock(), vm, variable, value);
+  instr_user_variable(simgrid_get_clock(), vm, variable, "VM", value, InstrUserVariable::SUB, "", &user_vm_variables);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Set the value of a variable of a VM at a given timestamp.
- *
- *  Same as #TRACE_vm_variable_set, but let user specify  the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core  simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
- *  also traced.
- *
- *  @param time The timestamp to be used to tag this change of value.
- *  @param vm The name of the VM to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The new value of the variable.
- *
- *  @see TRACE_vm_variable_declare, TRACE_vm_variable_add_with_time, TRACE_vm_variable_sub_with_time
- */
-void TRACE_vm_variable_set_with_time (double time, const char *vm, const char *variable, double value)
+void TRACE_vm_variable_set_with_time(double time, const char* vm, const char* variable,
+                                     double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::SET, "", &user_vm_variables);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Add a value to a variable of a VM at a given timestamp.
- *
- *  Same as #TRACE_vm_variable_add, but let user specify the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
- *  also traced.
- *
- *  @param time The timestamp to be used to tag this change of value.
- *  @param vm The name of the VM to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The value to be added to the variable.
- *
- *  @see TRACE_vm_variable_declare, TRACE_vm_variable_set_with_time, TRACE_vm_variable_sub_with_time
- */
-void TRACE_vm_variable_add_with_time (double time, const char *vm, const char *variable, double value)
+void TRACE_vm_variable_add_with_time(double time, const char* vm, const char* variable,
+                                     double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::ADD, "", &user_vm_variables);
 }
-
-/** @ingroup TRACE_user_variables
- *  @brief Subtract a value from a variable of a VM at a given timestamp.
- *
- *  Same as #TRACE_vm_variable_sub, but let user specify the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core  simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
- *  also traced.
- *
- *  @param time The timestamp to be used to tag this change of value.
- *  @param vm The name of the VM to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The value to be subtracted from the variable.
- *
- *  @see TRACE_vm_variable_declare, TRACE_vm_variable_set_with_time, TRACE_vm_variable_add_with_time
- */
-void TRACE_vm_variable_sub_with_time (double time, const char *vm, const char *variable, double value)
+void TRACE_vm_variable_sub_with_time(double time, const char* vm, const char* variable,
+                                     double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::SUB, "", &user_vm_variables);
 }
 
 /* for host variables */
-/** @ingroup TRACE_user_variables
- *  @brief Declare a new user variable associated to hosts.
- *
- *  Declare a user variable that will be associated to hosts.
- *  A user host variable can be used to trace user variables such as the number of tasks in a server, the number of
- *  clients in an application (for hosts), and so on. The color associated to this new variable will be random.
- *
- *  @param variable The name of the new variable to be declared.
- *
- *  @see TRACE_host_variable_declare_with_color
- */
-void TRACE_host_variable_declare (const char *variable)
+void TRACE_host_variable_declare(const char* variable) // XBT_ATTRIB_DEPRECATED_v333
 {
-  instr_user_variable(0, nullptr, variable, "HOST", 0, InstrUserVariable::DECLARE, "", &user_host_variables);
+  simgrid::instr::declare_host_variable(variable);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Declare a new user variable associated to hosts with a color.
- *
- *  Same as #TRACE_host_variable_declare, but associated a color to the newly created user host variable. The color
- *  needs to be a string with three numbers separated by spaces in the range [0,1].
- *  A light-gray color can be specified using "0.7 0.7 0.7" as color.
- *
- *  @param variable The name of the new variable to be declared.
- *  @param color The color for the new variable.
- */
-void TRACE_host_variable_declare_with_color (const char *variable, const char *color)
+void TRACE_host_variable_declare_with_color(const char* variable, const char* color) // XBT_ATTRIB_DEPRECATED_v333
 {
-  instr_user_variable(0, nullptr, variable, "HOST", 0, InstrUserVariable::DECLARE, color, &user_host_variables);
+  simgrid::instr::declare_host_variable(variable, color);
 }
 
 /** @ingroup TRACE_user_variables
@@ -598,21 +476,14 @@ void TRACE_host_variable_declare_with_color (const char *variable, const char *c
  */
 void TRACE_host_variable_set (const char *host, const char *variable, double value)
 {
-  TRACE_host_variable_set_with_time(simgrid_get_clock(), host, variable, value);
+  instr_user_variable(simgrid_get_clock(), host, variable, "HOST", value, InstrUserVariable::SET, "",
+                      &user_host_variables);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Add a value to a variable of a host.
- *
- *  @param host The name of the host to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The value to be added to the variable.
- *
- *  @see TRACE_host_variable_declare, TRACE_host_variable_set, TRACE_host_variable_sub
- */
-void TRACE_host_variable_add (const char *host, const char *variable, double value)
+void TRACE_host_variable_add(const char* host, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
 {
-  TRACE_host_variable_add_with_time(simgrid_get_clock(), host, variable, value);
+  instr_user_variable(simgrid_get_clock(), host, variable, "HOST", value, InstrUserVariable::ADD, "",
+                      &user_host_variables);
 }
 
 /** @ingroup TRACE_user_variables
@@ -624,99 +495,39 @@ void TRACE_host_variable_add (const char *host, const char *variable, double val
  *
  *  @see TRACE_host_variable_declare, TRACE_host_variable_set, TRACE_host_variable_add
  */
-void TRACE_host_variable_sub (const char *host, const char *variable, double value)
+void TRACE_host_variable_sub(const char* host, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
 {
-  TRACE_host_variable_sub_with_time(simgrid_get_clock(), host, variable, value);
+  instr_user_variable(simgrid_get_clock(), host, variable, "HOST", value, InstrUserVariable::SUB, "",
+                      &user_host_variables);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Set the value of a variable of a host at a given timestamp.
- *
- *  Same as #TRACE_host_variable_set, but let user specify  the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core  simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace  can be inconsistent if resource utilization traces are
- *  also traced.
- *
- *  @param time The timestamp to be used to tag this change of value.
- *  @param host The name of the host to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The new value of the variable.
- *
- *  @see TRACE_host_variable_declare, TRACE_host_variable_add_with_time, TRACE_host_variable_sub_with_time
- */
-void TRACE_host_variable_set_with_time (double time, const char *host, const char *variable, double value)
+void TRACE_host_variable_set_with_time(double time, const char* host, const char* variable,
+                                       double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(time, host, variable, "HOST", value, InstrUserVariable::SET, "", &user_host_variables);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Add a value to a variable of a host at a given timestamp.
- *
- *  Same as #TRACE_host_variable_add, but let user specify the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core  simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
- *  also traced.
- *
- *  @param time The timestamp to be used to tag this change of value.
- *  @param host The name of the host to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The value to be added to the variable.
- *
- *  @see TRACE_host_variable_declare, TRACE_host_variable_set_with_time, TRACE_host_variable_sub_with_time
- */
-void TRACE_host_variable_add_with_time (double time, const char *host, const char *variable, double value)
+void TRACE_host_variable_add_with_time(double time, const char* host, const char* variable,
+                                       double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(time, host, variable, "HOST", value, InstrUserVariable::ADD, "", &user_host_variables);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Subtract a value from a variable of a host at a given timestamp.
- *
- *  Same as #TRACE_host_variable_sub, but let user specify the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core  simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
- *  also traced.
- *
- *  @param time The timestamp to be used to tag this change of value.
- *  @param host The name of the host to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The value to be subtracted from the variable.
- *
- *  @see TRACE_host_variable_declare, TRACE_host_variable_set_with_time, TRACE_host_variable_add_with_time
- */
-void TRACE_host_variable_sub_with_time (double time, const char *host, const char *variable, double value)
+void TRACE_host_variable_sub_with_time(double time, const char* host, const char* variable,
+                                       double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(time, host, variable, "HOST", value, InstrUserVariable::SUB, "", &user_host_variables);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Get declared user host variables
- *
- * This function should be used to get host variables that were already declared with #TRACE_host_variable_declare or
- * with #TRACE_host_variable_declare_with_color.
- *
- * @return A dynar with the declared host variables, must be freed with xbt_dynar_free.
- */
-xbt_dynar_t TRACE_get_host_variables ()
+xbt_dynar_t TRACE_get_host_variables() // XBT_ATTRIB_DEPRECATED_v333
 {
   return instr_set_to_dynar(user_host_variables);
 }
 
 /* for link variables */
-/** @ingroup TRACE_user_variables
- *  @brief Declare a new user variable associated to links.
- *
- *  Declare a user variable that will be associated to links.
- *  A user link variable can be used, for example, to trace user variables such as the number of messages being
- *  transferred through network links. The color associated to this new variable will be random.
- *
- *  @param variable The name of the new variable to be declared.
- *
- *  @see TRACE_link_variable_declare_with_color
- */
-void TRACE_link_variable_declare (const char *variable)
+void TRACE_link_variable_declare(const char* variable) // XBT_ATTRIB_DEPRECATED_v333
 {
-  instr_user_variable(0, nullptr, variable, "LINK", 0, InstrUserVariable::DECLARE, "", &user_link_variables);
+  simgrid::instr::declare_link_variable(variable);
 }
 
 /** @ingroup TRACE_user_variables
@@ -729,9 +540,9 @@ void TRACE_link_variable_declare (const char *variable)
  *  @param variable The name of the new variable to be declared.
  *  @param color The color for the new variable.
  */
-void TRACE_link_variable_declare_with_color (const char *variable, const char *color)
+void TRACE_link_variable_declare_with_color(const char* variable, const char* color) // XBT_ATTRIB_DEPRECATED_v333
 {
-  instr_user_variable(0, nullptr, variable, "LINK", 0, InstrUserVariable::DECLARE, color, &user_link_variables);
+  simgrid::instr::declare_link_variable(variable, color);
 }
 
 /** @ingroup TRACE_user_variables
@@ -745,230 +556,76 @@ void TRACE_link_variable_declare_with_color (const char *variable, const char *c
  */
 void TRACE_link_variable_set (const char *link, const char *variable, double value)
 {
-  TRACE_link_variable_set_with_time(simgrid_get_clock(), link, variable, value);
+  instr_user_variable(simgrid_get_clock(), link, variable, "LINK", value, InstrUserVariable::SET, "",
+                      &user_link_variables);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Add a value to a variable of a link.
- *
- *  @param link The name of the link to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The value to be added to the variable.
- *
- *  @see TRACE_link_variable_declare, TRACE_link_variable_set, TRACE_link_variable_sub
- */
-void TRACE_link_variable_add (const char *link, const char *variable, double value)
+void TRACE_link_variable_add(const char* link, const char* variable, double value)
 {
-  TRACE_link_variable_add_with_time(simgrid_get_clock(), link, variable, value);
+  instr_user_variable(simgrid_get_clock(), link, variable, "LINK", value, InstrUserVariable::ADD, "",
+                      &user_link_variables);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Subtract a value from a variable of a link.
- *
- *  @param link The name of the link to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The value to be subtracted from the variable.
- *
- *  @see TRACE_link_variable_declare, TRACE_link_variable_set, TRACE_link_variable_add
- */
-void TRACE_link_variable_sub (const char *link, const char *variable, double value)
+void TRACE_link_variable_sub(const char* link, const char* variable, double value)
 {
-  TRACE_link_variable_sub_with_time(simgrid_get_clock(), link, variable, value);
+  instr_user_variable(simgrid_get_clock(), link, variable, "LINK", value, InstrUserVariable::SUB, "",
+                      &user_link_variables);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Set the value of a variable of a link at a given timestamp.
- *
- *  Same as #TRACE_link_variable_set, but let user specify the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
- *  also traced.
- *
- *  @param time The timestamp to be used to tag this change of value.
- *  @param link The name of the link to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The new value of the variable.
- *
- *  @see TRACE_link_variable_declare, TRACE_link_variable_add_with_time, TRACE_link_variable_sub_with_time
- */
-void TRACE_link_variable_set_with_time (double time, const char *link, const char *variable, double value)
+void TRACE_link_variable_set_with_time(double time, const char* link, const char* variable,
+                                       double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(time, link, variable, "LINK", value, InstrUserVariable::SET, "", &user_link_variables);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Add a value to a variable of a link at a given timestamp.
- *
- *  Same as #TRACE_link_variable_add, but let user specify the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
- *  also traced.
- *
- *  @param time The timestamp to be used to tag this change of value.
- *  @param link The name of the link to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The value to be added to the variable.
- *
- *  @see TRACE_link_variable_declare, TRACE_link_variable_set_with_time, TRACE_link_variable_sub_with_time
- */
-void TRACE_link_variable_add_with_time (double time, const char *link, const char *variable, double value)
+void TRACE_link_variable_add_with_time(double time, const char* link, const char* variable,
+                                       double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(time, link, variable, "LINK", value, InstrUserVariable::ADD, "", &user_link_variables);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Subtract a value from a variable of a link at a given timestamp.
- *
- *  Same as #TRACE_link_variable_sub, but let user specify the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
- *  also traced.
- *
- *  @param time The timestamp to be used to tag this change of value.
- *  @param link The name of the link to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The value to be subtracted from the variable.
- *
- *  @see TRACE_link_variable_declare, TRACE_link_variable_set_with_time, TRACE_link_variable_add_with_time
- */
-void TRACE_link_variable_sub_with_time (double time, const char *link, const char *variable, double value)
+void TRACE_link_variable_sub_with_time(double time, const char* link, const char* variable,
+                                       double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(time, link, variable, "LINK", value, InstrUserVariable::SUB, "", &user_link_variables);
 }
 
-/* for link variables, but with src and dst used for get_route */
-/** @ingroup TRACE_user_variables
- *  @brief Set the value of the variable present in the links connecting source and destination.
- *
- *  Same as #TRACE_link_variable_set, but instead of providing the name of link to be considered, provide the source
- *  and destination hosts. All links that are part of the route between source and destination will have the variable
- *  set to the provided value.
- *
- *  @param src The name of the source host for get route.
- *  @param dst The name of the destination host for get route.
- *  @param variable The name of the variable to be considered.
- *  @param value The new value of the variable.
- *
- *  @see TRACE_link_variable_declare, TRACE_link_srcdst_variable_add, TRACE_link_srcdst_variable_sub
- */
 void TRACE_link_srcdst_variable_set (const char *src, const char *dst, const char *variable, double value)
 {
-  TRACE_link_srcdst_variable_set_with_time(simgrid_get_clock(), src, dst, variable, value);
+  instr_user_srcdst_variable(simgrid_get_clock(), src, dst, variable, "LINK", value, InstrUserVariable::SET);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Add a value to the variable present in the links connecting source and destination.
- *
- *  Same as #TRACE_link_variable_add, but instead of providing the name of link to be considered, provide the source
- *  and destination hosts. All links that are part of the route between source and destination will have the value
- *  passed as parameter added to the current value of the variable name to be considered.
- *
- *  @param src The name of the source host for get route.
- *  @param dst The name of the destination host for get route.
- *  @param variable The name of the variable to be considered.
- *  @param value The value to be added to the variable.
- *
- *  @see TRACE_link_variable_declare, TRACE_link_srcdst_variable_set, TRACE_link_srcdst_variable_sub
- */
-void TRACE_link_srcdst_variable_add (const char *src, const char *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_add(const char* src, const char* dst, const char* variable,
+                                    double value) // XBT_ATTRIB_DEPRECATED_v333
 {
-  TRACE_link_srcdst_variable_add_with_time(simgrid_get_clock(), src, dst, variable, value);
+  instr_user_srcdst_variable(simgrid_get_clock(), src, dst, variable, "LINK", value, InstrUserVariable::ADD);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Subtract a value from the variable present in the links connecting source and destination.
- *
- *  Same as #TRACE_link_variable_sub, but instead of providing the name of link to be considered, provide the source
- *  and destination hosts. All links that are part of the route between source and destination will have the value
- *  passed as parameter subtracted from the current value of the variable name to be considered.
- *
- *  @param src The name of the source host for get route.
- *  @param dst The name of the destination host for get route.
- *  @param variable The name of the variable to be considered.
- *  @param value The value to be subtracted from the variable.
- *
- *  @see TRACE_link_variable_declare, TRACE_link_srcdst_variable_set, TRACE_link_srcdst_variable_add
- */
-void TRACE_link_srcdst_variable_sub (const char *src, const char *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_sub(const char* src, const char* dst, const char* variable,
+                                    double value) // XBT_ATTRIB_DEPRECATED_v333
 {
-  TRACE_link_srcdst_variable_sub_with_time(simgrid_get_clock(), src, dst, variable, value);
+  instr_user_srcdst_variable(simgrid_get_clock(), src, dst, variable, "LINK", value, InstrUserVariable::SUB);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Set the value of the variable present in the links connecting source and destination at a given timestamp.
- *
- *  Same as #TRACE_link_srcdst_variable_set, but let user specify the time used to trace it. Users can specify a time
- *  that is not the simulated clock time as defined by the core simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
- *  also traced.
- *
- *  @param time The timestamp to be used to tag this change of value.
- *  @param src The name of the source host for get route.
- *  @param dst The name of the destination host for get route.
- *  @param variable The name of the variable to be considered.
- *  @param value The new value of the variable.
- *
- *  @see TRACE_link_variable_declare, TRACE_link_srcdst_variable_add_with_time, TRACE_link_srcdst_variable_sub_with_time
- */
-void TRACE_link_srcdst_variable_set_with_time (double time, const char *src, const char *dst, const char *variable,
-                                               double value)
+void TRACE_link_srcdst_variable_set_with_time(double time, const char* src, const char* dst, const char* variable,
+                                              double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_srcdst_variable(time, src, dst, variable, "LINK", value, InstrUserVariable::SET);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Add a value to the variable present in the links connecting source and destination at a given timestamp.
- *
- *  Same as #TRACE_link_srcdst_variable_add, but let user specify the time used to trace it. Users can specify a time
- *  that is not the simulated clock time as defined by the core simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
- *  also traced.
- *
- *  @param time The timestamp to be used to tag this change of value.
- *  @param src The name of the source host for get route.
- *  @param dst The name of the destination host for get route.
- *  @param variable The name of the variable to be considered.
- *  @param value The value to be added to the variable.
- *
- *  @see TRACE_link_variable_declare, TRACE_link_srcdst_variable_set_with_time, TRACE_link_srcdst_variable_sub_with_time
- */
-void TRACE_link_srcdst_variable_add_with_time (double time, const char *src, const char *dst, const char *variable,
-                                               double value)
+void TRACE_link_srcdst_variable_add_with_time(double time, const char* src, const char* dst, const char* variable,
+                                              double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_srcdst_variable(time, src, dst, variable, "LINK", value, InstrUserVariable::ADD);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Subtract a value from the variable present in the links connecting source and dest. at a given timestamp.
- *
- *  Same as #TRACE_link_srcdst_variable_sub, but let user specify the time used to trace it. Users can specify a time
- *  that is not the simulated clock time as defined by the core simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
- *  also traced.
- *
- *  @param time The timestamp to be used to tag this change of value.
- *  @param src The name of the source host for get route.
- *  @param dst The name of the destination host for get route.
- *  @param variable The name of the variable to be considered.
- *  @param value The value to be subtracted from the variable.
- *
- *  @see TRACE_link_variable_declare, TRACE_link_srcdst_variable_set_with_time, TRACE_link_srcdst_variable_add_with_time
- */
-void TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, const char *dst, const char *variable,
-                                               double value)
+void TRACE_link_srcdst_variable_sub_with_time(double time, const char* src, const char* dst, const char* variable,
+                                              double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_srcdst_variable(time, src, dst, variable, "LINK", value, InstrUserVariable::SUB);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Get declared user link variables
- *
- * This function should be used to get link variables that were already declared with #TRACE_link_variable_declare or
- * with #TRACE_link_variable_declare_with_color.
- *
- * @return A dynar with the declared link variables, must be freed with xbt_dynar_free.
- */
-xbt_dynar_t TRACE_get_link_variables ()
+xbt_dynar_t TRACE_get_link_variables() // XBT_ATTRIB_DEPRECATED_v333
 {
   return instr_set_to_dynar(user_link_variables);
 }

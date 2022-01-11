@@ -47,8 +47,6 @@ extern double last_timestamp_to_dump;
 void init();
 void define_callbacks();
 
-void platform_graph_export_graphviz(const std::string& output_filename);
-
 void resource_set_utilization(const char* type, const char* name, const char* resource, const std::string& category,
                               double value, double now, double delta);
 void dump_buffer(bool force);

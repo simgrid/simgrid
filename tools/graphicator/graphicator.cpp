@@ -13,6 +13,6 @@ int main(int argc, char** argv)
   xbt_assert(argc == 3, "Usage: %s <platform_file.xml> <graphviz_file.dot>", argv[0]);
 
   e.load_platform(argv[1]);
-  TRACE_platform_graph_export_graphviz(argv[2]);
+  simgrid::instr::platform_graph_export_graphviz(argv[2]);
   return 0;
 }

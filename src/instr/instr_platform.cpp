@@ -210,6 +210,11 @@ void instr_new_value_for_user_state_type(const std::string& type_name, const cha
 namespace simgrid {
 namespace instr {
 
+/** @brief Creates a file with the topology of the platform file used for the simulator.
+ *
+ *  The graph topology will have the following properties: all hosts, links and routers of the platform file are mapped
+ *  to graph nodes; routes are mapped to edges. The platform's zones are not represented in the output.
+ */
 void platform_graph_export_graphviz(const std::string& output_filename)
 {
   auto* g     = xbt_graph_new_graph(0, nullptr);

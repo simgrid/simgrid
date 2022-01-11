@@ -14,17 +14,6 @@ int main(int argc, char* argv[])
 
   simgrid_load_platform(argv[1]);
 
-  /* Trace categories */
-  TRACE_category_with_color("host0", "0 0 1");
-  TRACE_category_with_color("host1", "0 1 0");
-  TRACE_category_with_color("host2", "0 1 1");
-  TRACE_category_with_color("host3", "1 0 0");
-  TRACE_category_with_color("host4", "1 0 1");
-  TRACE_category_with_color("host5", "0 0 0");
-  TRACE_category_with_color("host6", "1 1 0");
-  TRACE_category_with_color("host7", "1 1 1");
-  TRACE_category_with_color("host8", "0 1 0");
-
   /*   Application deployment */
   simgrid_register_function("broadcaster", broadcaster);
   simgrid_register_function("peer", peer);
