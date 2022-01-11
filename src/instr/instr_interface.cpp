@@ -400,11 +400,11 @@ int TRACE_platform_graph_export_graphviz(const char* filename) // XBT_ATTRIB_DEP
 
 void TRACE_vm_variable_declare(const char* variable) // XBT_ATTRIB_DEPRECATED_v333
 {
-  instr_user_variable(0, nullptr, variable, "VM", 0, InstrUserVariable::DECLARE, "", &user_vm_variables);
+  instr_user_variable(0, "", variable, "VM", 0, InstrUserVariable::DECLARE, "", &user_vm_variables);
 }
 void TRACE_vm_variable_declare_with_color(const char* variable, const char* color) // XBT_ATTRIB_DEPRECATED_v333
 {
-  instr_user_variable(0, nullptr, variable, "VM", 0, InstrUserVariable::DECLARE, color, &user_vm_variables);
+  instr_user_variable(0, "", variable, "VM", 0, InstrUserVariable::DECLARE, color, &user_vm_variables);
 }
 
 void TRACE_vm_variable_set(const char* vm, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
