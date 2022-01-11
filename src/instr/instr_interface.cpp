@@ -617,7 +617,7 @@ void TRACE_host_state_declare_value (const char *state, const char *value, const
  *  @param state_name The name of the state previously declared.
  *  @param value_name The new value of the state.
  *
- *  @see TRACE_host_state_declare, TRACE_host_push_state, TRACE_host_pop_state, TRACE_host_reset_state
+ *  @see TRACE_host_state_declare, TRACE_host_push_state, TRACE_host_pop_state
  */
 void TRACE_host_set_state(const char* host, const char* state_name, const char* value_name)
 {
@@ -635,7 +635,7 @@ void TRACE_host_set_state(const char* host, const char* state_name, const char* 
  *  @param state_name The name of the state previously declared.
  *  @param value_name The value to be pushed.
  *
- *  @see TRACE_host_state_declare, TRACE_host_set_state, TRACE_host_pop_state, TRACE_host_reset_state
+ *  @see TRACE_host_state_declare, TRACE_host_set_state, TRACE_host_pop_state
  */
 void TRACE_host_push_state(const char* host, const char* state_name, const char* value_name)
 {
@@ -650,7 +650,7 @@ void TRACE_host_push_state(const char* host, const char* state_name, const char*
  *  @param host The name of the host to be considered.
  *  @param state_name The name of the state to be popped.
  *
- *  @see TRACE_host_state_declare, TRACE_host_set_state, TRACE_host_push_state, TRACE_host_reset_state
+ *  @see TRACE_host_state_declare, TRACE_host_set_state, TRACE_host_push_state
  */
 void TRACE_host_pop_state(const char* host, const char* state_name)
 {

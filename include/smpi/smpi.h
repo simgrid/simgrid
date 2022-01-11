@@ -1161,7 +1161,7 @@ XBT_PUBLIC void smpi_sample_3(int global, const char* file, const char* tag);
 XBT_PUBLIC int smpi_sample_exit(int global, const char* file, const char* tag, int iter_count);
 /**
  * Need a public setter for SMPI copy_callback function, so users can define
- * their own while still using default SIMIX_copy_callback for S4U copies.
+ * their own while still using default copy callback for S4U copies.
  */
 XBT_PUBLIC void smpi_comm_set_copy_data_callback(void (*callback)(smx_activity_t, void*, size_t));
 
