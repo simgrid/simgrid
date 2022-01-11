@@ -495,7 +495,7 @@ void TRACE_host_variable_set (const char *host, const char *variable, double val
                       &user_host_variables);
 }
 
-void TRACE_host_variable_add(const char* host, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_host_variable_add(const char* host, const char* variable, double value)
 {
   instr_user_variable(simgrid_get_clock(), host, variable, "HOST", value, InstrUserVariable::ADD, "",
                       &user_host_variables);
@@ -510,7 +510,7 @@ void TRACE_host_variable_add(const char* host, const char* variable, double valu
  *
  *  @see TRACE_host_variable_declare, TRACE_host_variable_set, TRACE_host_variable_add
  */
-void TRACE_host_variable_sub(const char* host, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_host_variable_sub(const char* host, const char* variable, double value)
 {
   instr_user_variable(simgrid_get_clock(), host, variable, "HOST", value, InstrUserVariable::SUB, "",
                       &user_host_variables);
@@ -575,13 +575,13 @@ void TRACE_link_variable_set (const char *link, const char *variable, double val
                       &user_link_variables);
 }
 
-void TRACE_link_variable_add(const char* link, const char* variable, double value)
+void TRACE_link_variable_add(const char* link, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(simgrid_get_clock(), link, variable, "LINK", value, InstrUserVariable::ADD, "",
                       &user_link_variables);
 }
 
-void TRACE_link_variable_sub(const char* link, const char* variable, double value)
+void TRACE_link_variable_sub(const char* link, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(simgrid_get_clock(), link, variable, "LINK", value, InstrUserVariable::SUB, "",
                       &user_link_variables);

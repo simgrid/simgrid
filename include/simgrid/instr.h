@@ -14,51 +14,51 @@
 
 namespace simgrid {
 namespace instr {
-void declare_host_variable(const std::string& variable, const std::string& color = std::string(""));
-void set_host_variable(const s4u::Host* host, const std::string& variable, double value,
-                       double time = simgrid_get_clock());
-void add_host_variable(const s4u::Host* host, const std::string& variable, double value,
-                       double time = simgrid_get_clock());
-void sub_host_variable(const s4u::Host* host, const std::string& variable, double value,
-                       double time = simgrid_get_clock());
-const std::set<std::string, std::less<>>& get_host_variables();
+XBT_PUBLIC void declare_host_variable(const std::string& variable, const std::string& color = std::string(""));
+XBT_PUBLIC void set_host_variable(const s4u::Host* host, const std::string& variable, double value,
+                                  double time = simgrid_get_clock());
+XBT_PUBLIC void add_host_variable(const s4u::Host* host, const std::string& variable, double value,
+                                  double time = simgrid_get_clock());
+XBT_PUBLIC void sub_host_variable(const s4u::Host* host, const std::string& variable, double value,
+                                  double time = simgrid_get_clock());
+XBT_PUBLIC const std::set<std::string, std::less<>>& get_host_variables();
 
-void declare_link_variable(const std::string& variable, const std::string& color = std::string(""));
-void set_link_variable(const s4u::Link* link, const std::string& variable, double value,
-                       double time = simgrid_get_clock());
-void set_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
-                       double time = simgrid_get_clock());
-void add_link_variable(const s4u::Link* link, const std::string& variable, double value,
-                       double time = simgrid_get_clock());
-void add_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
-                       double time = simgrid_get_clock());
-void sub_link_variable(const s4u::Link* link, const std::string& variable, double value,
-                       double time = simgrid_get_clock());
-void sub_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
-                       double time = simgrid_get_clock());
-const std::set<std::string, std::less<>>& get_link_variables();
+XBT_PUBLIC void declare_link_variable(const std::string& variable, const std::string& color = std::string(""));
+XBT_PUBLIC void set_link_variable(const s4u::Link* link, const std::string& variable, double value,
+                                  double time = simgrid_get_clock());
+XBT_PUBLIC void set_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
+                                  double time = simgrid_get_clock());
+XBT_PUBLIC void add_link_variable(const s4u::Link* link, const std::string& variable, double value,
+                                  double time = simgrid_get_clock());
+XBT_PUBLIC void add_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
+                                  double time = simgrid_get_clock());
+XBT_PUBLIC void sub_link_variable(const s4u::Link* link, const std::string& variable, double value,
+                                  double time = simgrid_get_clock());
+XBT_PUBLIC void sub_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
+                                  double time = simgrid_get_clock());
+XBT_PUBLIC const std::set<std::string, std::less<>>& get_link_variables();
 
-void declare_vm_variable(const std::string& variable, const std::string& color = std::string(""));
-void set_vm_variable(const s4u::VirtualMachine* vm, const std::string& variable, double value,
-                     double time = simgrid_get_clock());
-void add_vm_variable(const s4u::VirtualMachine* vm, const std::string& variable, double value,
-                     double time = simgrid_get_clock());
-void sub_vm_variable(const s4u::VirtualMachine* vm, const std::string& variable, double value,
-                     double time = simgrid_get_clock());
-const std::set<std::string, std::less<>>& get_vm_variables();
+XBT_PUBLIC void declare_vm_variable(const std::string& variable, const std::string& color = std::string(""));
+XBT_PUBLIC void set_vm_variable(const s4u::VirtualMachine* vm, const std::string& variable, double value,
+                                double time = simgrid_get_clock());
+XBT_PUBLIC void add_vm_variable(const s4u::VirtualMachine* vm, const std::string& variable, double value,
+                                double time = simgrid_get_clock());
+XBT_PUBLIC void sub_vm_variable(const s4u::VirtualMachine* vm, const std::string& variable, double value,
+                                double time = simgrid_get_clock());
+XBT_PUBLIC const std::set<std::string, std::less<>>& get_vm_variables();
 
 /*  Functions to manage tracing marks (used for trace comparison experiments) */
-void declare_mark(const std::string& mark_type);
-void declare_mark_value(const std::string& mark_type, const std::string& mark_value,
-                        const std::string& mark_color = std::string("1 1 1"));
-void mark(const std::string& mark_type, const std::string& mark_value);
-const std::set<std::string, std::less<>>& get_marks();
+XBT_PUBLIC void declare_mark(const std::string& mark_type);
+XBT_PUBLIC void declare_mark_value(const std::string& mark_type, const std::string& mark_value,
+                                   const std::string& mark_color = std::string("1 1 1"));
+XBT_PUBLIC void mark(const std::string& mark_type, const std::string& mark_value);
+XBT_PUBLIC const std::set<std::string, std::less<>>& get_marks();
 
-void declare_tracing_category(const std::string& name, const std::string& color = "");
-const std::set<std::string, std::less<>>& get_tracing_categories();
+XBT_PUBLIC void declare_tracing_category(const std::string& name, const std::string& color = "");
+XBT_PUBLIC const std::set<std::string, std::less<>>& get_tracing_categories();
 
 /* Function used by graphicator (transform a SimGrid platform file in a graphviz dot file with the network topology) */
-void platform_graph_export_graphviz(const std::string& output_filename);
+XBT_PUBLIC void platform_graph_export_graphviz(const std::string& output_filename);
 } // namespace instr
 } // namespace simgrid
 
