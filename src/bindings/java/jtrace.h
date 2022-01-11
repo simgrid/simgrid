@@ -23,7 +23,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableDeclare (JNIEnv *env, jclass cls, jstring jvar);
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableDeclare (JNIEnv *env, jclass cls, jstring jvar);
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableDeclareWithColor (JNIEnv *env, jclass cls, jstring jvar,
@@ -61,16 +60,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostPushState (JNIEnv *env, 
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostPopState (JNIEnv *env, jclass cls, jstring js_host,
                                                                   jstring js_state);
 
-/* Missing calls:
-Java_org_simgrid_trace_Trace_linkVariableSetWithTime
-Java_org_simgrid_trace_Trace_linkVariableAddWithTime
-Java_org_simgrid_trace_Trace_linkVariableSubWithTime
-Java_org_simgrid_trace_Trace_linkSrcDstVariableAdd
-Java_org_simgrid_trace_Trace_linkSrcDstVariableSub
-Java_org_simgrid_trace_Trace_linkSrcDstVariableSetWithTime
-Java_org_simgrid_trace_Trace_linkSrcdstVariableAddWithTime
-Java_org_simgrid_trace_Trace_linkSrcDstVariableSubWithTime
-*/
 #ifdef __cplusplus
 }
 #endif

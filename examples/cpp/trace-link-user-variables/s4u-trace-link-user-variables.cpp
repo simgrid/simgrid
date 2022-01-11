@@ -15,31 +15,29 @@ static void trace_fun()
 {
   // set initial values for the link user variables this example only shows for links identified by "6" and "3" in the
   // platform file
-  const auto* link_3 = simgrid::s4u::Link::by_name("3");
-  const auto* link_6 = simgrid::s4u::Link::by_name("6");
   // Set the Link_Capacity variable
-  simgrid::instr::set_link_variable(link_6, "Link_Capacity", 12.34);
-  simgrid::instr::set_link_variable(link_3, "Link_Capacity", 56.78);
+  simgrid::instr::set_link_variable("6", "Link_Capacity", 12.34);
+  simgrid::instr::set_link_variable("3", "Link_Capacity", 56.78);
 
   // Set the Link_Utilization variable
-  simgrid::instr::set_link_variable(link_3, "Link_Utilization", 1.2);
-  simgrid::instr::set_link_variable(link_6, "Link_Utilization", 3.4);
+  simgrid::instr::set_link_variable("3", "Link_Utilization", 1.2);
+  simgrid::instr::set_link_variable("6", "Link_Utilization", 3.4);
 
   // run the simulation, update my variables accordingly
   for (int i = 0; i < 10; i++) {
     simgrid::s4u::this_actor::execute(1e6);
 
     // Add to link user variables
-    simgrid::instr::add_link_variable(link_3, "Link_Utilization", 5.6);
-    simgrid::instr::add_link_variable(link_6, "Link_Utilization", 7.8);
+    simgrid::instr::add_link_variable("3", "Link_Utilization", 5.6);
+    simgrid::instr::add_link_variable("6", "Link_Utilization", 7.8);
   }
 
   for (int i = 0; i < 10; i++) {
     simgrid::s4u::this_actor::execute(1e6);
 
     // Subtract from link user variables
-    simgrid::instr::sub_link_variable(link_3, "Link_Utilization", 3.4);
-    simgrid::instr::sub_link_variable(link_6, "Link_Utilization", 5.6);
+    simgrid::instr::sub_link_variable("3", "Link_Utilization", 3.4);
+    simgrid::instr::sub_link_variable("6", "Link_Utilization", 5.6);
   }
 }
 

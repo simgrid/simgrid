@@ -69,31 +69,31 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableDeclare(JNIEnv* 
   simgrid::instr::declare_host_variable(variable);
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSet (JNIEnv *env, jclass cls, jstring js_host,
-                                                                     jstring js_state, jdouble value)
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSet(JNIEnv* env, jclass cls, jstring js_host,
+                                                                    jstring js_variable, jdouble value)
 {
   jstring_wrapper host(env, js_host);
-  jstring_wrapper state(env, js_state);
+  jstring_wrapper variable(env, js_variable);
 
-  TRACE_host_variable_set(host, state, value);
+  simgrid::instr::set_host_variable(host, variable, value);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableAdd(JNIEnv* env, jclass cls, jstring js_host,
-                                                                    jstring js_state, jdouble value)
+                                                                    jstring js_variable, jdouble value)
 {
   jstring_wrapper host(env, js_host);
-  jstring_wrapper state(env, js_state);
+  jstring_wrapper variable(env, js_variable);
 
-  TRACE_host_variable_add(host, state, value);
+  simgrid::instr::add_host_variable(host, variable, value);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSub(JNIEnv* env, jclass cls, jstring js_host,
-                                                                    jstring js_state, jdouble value)
+                                                                    jstring js_variable, jdouble value)
 {
   jstring_wrapper host(env, js_host);
-  jstring_wrapper state(env, js_state);
+  jstring_wrapper variable(env, js_variable);
 
-  TRACE_host_variable_sub(host, state, value);
+  simgrid::instr::sub_host_variable(host, variable, value);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableDeclare(JNIEnv* env, jclass cls, jstring js_variable)
@@ -102,13 +102,13 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableDeclare(JNIEnv* en
   simgrid::instr::declare_vm_variable(variable);
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableSet (JNIEnv *env, jclass cls, jstring js_vm,
-                                                                   jstring js_state, jdouble value)
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableSet(JNIEnv* env, jclass cls, jstring js_vm,
+                                                                  jstring js_variable, jdouble value)
 {
   jstring_wrapper vm(env, js_vm);
-  jstring_wrapper state(env, js_state);
+  jstring_wrapper variable(env, js_variable);
 
-  TRACE_vm_variable_set(vm, state, value);
+  simgrid::instr::set_vm_variable(vm, variable, value);
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableDeclare (JNIEnv *env, jclass cls, jstring jvar) {
@@ -121,16 +121,19 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableDeclareWithColor
   jstring_wrapper color(env, jcolor);
   simgrid::instr::declare_link_variable(variable, color);
 }
+
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSet (JNIEnv *env, jclass cls, jstring jlink, jstring jvar, jdouble jvalue) {
   jstring_wrapper link(env, jlink);
   jstring_wrapper variable(env, jvar);
-  TRACE_link_variable_set(link, variable, jvalue);
+  simgrid::instr::set_link_variable(link, variable, jvalue);
 }
+
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSet
   (JNIEnv *env, jclass cls, jstring jsrc, jstring jdst, jstring jvar, jdouble jval)
 {
   jstring_wrapper src(env, jsrc);
   jstring_wrapper dst(env, jdst);
+
   jstring_wrapper variable(env, jvar);
-  TRACE_link_srcdst_variable_set(src, dst, variable, jval);
+  simgrid::instr::set_link_variable(src, dst, variable, jval);
 }

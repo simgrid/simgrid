@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 
 static void trace_fun()
 {
-  const auto* host = simgrid::s4u::this_actor::get_host();
+  const auto host = simgrid::s4u::this_actor::get_host()->get_name();
 
   // the hostname has an empty HDD with a capacity of 100000 (bytes)
   simgrid::instr::set_host_variable(host, "HDD_capacity", 100000);

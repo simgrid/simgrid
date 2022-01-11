@@ -5,8 +5,7 @@
 
 #include <simgrid/Exception.hpp>
 #include <simgrid/kernel/routing/NetPoint.hpp>
-#include <simgrid/s4u/Host.hpp>
-#include <simgrid/s4u/VirtualMachine.hpp>
+#include <simgrid/s4u/Engine.hpp>
 #include <xbt/random.hpp>
 
 #include "src/instr/instr_private.hpp"
@@ -24,7 +23,7 @@ std::set<std::string, std::less<>> user_host_variables;
 std::set<std::string, std::less<>> user_vm_variables;
 std::set<std::string, std::less<>> user_link_variables;
 
-static void instr_user_variable(double time, const char* resource, const std::string& variable_name,
+static void instr_user_variable(double time, const std::string& resource, const std::string& variable_name,
                                 const std::string& parent_type, double value, InstrUserVariable what,
                                 const std::string& color, std::set<std::string, std::less<>>* filter)
 {
@@ -60,38 +59,25 @@ static void instr_user_variable(double time, const char* resource, const std::st
   }
 }
 
-static void instr_user_srcdst_variable(double time, const char* src, const char* dst, const std::string& variable,
-                                       const std::string& parent_type, double value, InstrUserVariable what)
+static void instr_user_srcdst_variable(double time, const std::string& src, const std::string& dst,
+                                       const std::string& variable, double value, InstrUserVariable what)
 {
-  const auto* src_elm = sg_netpoint_by_name_or_null(src);
-  xbt_assert(src_elm, "Element '%s' not found!", src);
+  auto* engine        = simgrid::s4u::Engine::get_instance();
+  const auto* src_elm = engine->netpoint_by_name_or_null(src);
+  xbt_assert(src_elm, "Element '%s' not found!", src.c_str());
 
-  const auto* dst_elm = sg_netpoint_by_name_or_null(dst);
-  xbt_assert(dst_elm, "Element '%s' not found!", dst);
+  const auto* dst_elm = engine->netpoint_by_name_or_null(dst);
+  xbt_assert(dst_elm, "Element '%s' not found!", dst.c_str());
 
   std::vector<simgrid::kernel::resource::StandardLinkImpl*> route;
   simgrid::kernel::routing::NetZoneImpl::get_global_route(src_elm, dst_elm, route, nullptr);
   for (auto const& link : route)
-    instr_user_variable(time, link->get_cname(), variable, parent_type, value, what, "", &user_link_variables);
+    instr_user_variable(time, link->get_cname(), variable, "LINK", value, what, "", &user_link_variables);
 }
 
 namespace simgrid {
 namespace instr {
-static void user_srcdst_variable(double time, const s4u::Host* src, const s4u::Host* dst, const std::string& variable,
-                                 double value, InstrUserVariable what)
-{
-  const auto* src_elm = src->get_netpoint();
-  xbt_assert(src_elm, "Element '%s' not found!", src->get_cname());
-
-  const auto* dst_elm = dst->get_netpoint();
-  xbt_assert(dst_elm, "Element '%s' not found!", dst->get_cname());
-
-  std::vector<kernel::resource::StandardLinkImpl*> route;
-  kernel::routing::NetZoneImpl::get_global_route(src_elm, dst_elm, route, nullptr);
-  for (auto const& link : route)
-    instr_user_variable(time, link->get_cname(), variable, "LINK", value, what, "", &user_link_variables);
-}
-
+/* for host variables */
 /** @brief Declare a new user variable associated to hosts.
  *
  *  Declare a user variable that will be associated to hosts.
@@ -101,27 +87,24 @@ static void user_srcdst_variable(double time, const s4u::Host* src, const s4u::H
  */
 void declare_host_variable(const std::string& variable, const std::string& color)
 {
-  instr_user_variable(0, nullptr, variable, "HOST", 0, InstrUserVariable::DECLARE, color, &user_host_variables);
+  instr_user_variable(0, "", variable, "HOST", 0, InstrUserVariable::DECLARE, color, &user_host_variables);
 }
 
-void set_host_variable(const s4u::Host* host, const std::string& variable, double value, double time)
+void set_host_variable(const std::string& host, const std::string& variable, double value, double time)
 {
-  instr_user_variable(time, host->get_cname(), variable, "HOST", value, InstrUserVariable::SET, "",
-                      &user_host_variables);
+  instr_user_variable(time, host, variable, "HOST", value, InstrUserVariable::SET, "", &user_host_variables);
 }
 
 /** @brief Add a value to a variable of a host */
-void add_host_variable(const s4u::Host* host, const std::string& variable, double value, double time)
+void add_host_variable(const std::string& host, const std::string& variable, double value, double time)
 {
-  instr_user_variable(time, host->get_cname(), variable, "HOST", value, InstrUserVariable::ADD, "",
-                      &user_host_variables);
+  instr_user_variable(time, host, variable, "HOST", value, InstrUserVariable::ADD, "", &user_host_variables);
 }
 
 /** @brief Subtract a value to a variable of a host */
-void sub_host_variable(const s4u::Host* host, const std::string& variable, double value, double time)
+void sub_host_variable(const std::string& host, const std::string& variable, double value, double time)
 {
-  instr_user_variable(time, host->get_cname(), variable, "HOST", value, InstrUserVariable::SUB, "",
-                      &user_host_variables);
+  instr_user_variable(time, host, variable, "HOST", value, InstrUserVariable::SUB, "", &user_host_variables);
 }
 
 /** @brief Get host variables that were already declared with #declare_host_variable. */
@@ -130,6 +113,7 @@ const std::set<std::string, std::less<>>& get_host_variables()
   return user_host_variables;
 }
 
+/* for link variables */
 /** @brief Declare a new user variable associated to links.
  *
  *  Declare a user variable that will be associated to links.
@@ -139,47 +123,45 @@ const std::set<std::string, std::less<>>& get_host_variables()
  */
 void declare_link_variable(const std::string& variable, const std::string& color)
 {
-  instr_user_variable(0, nullptr, variable, "LINK", 0, InstrUserVariable::DECLARE, color, &user_link_variables);
+  instr_user_variable(0, "", variable, "LINK", 0, InstrUserVariable::DECLARE, color, &user_link_variables);
 }
 
-void set_link_variable(const s4u::Link* link, const std::string& variable, double value, double time)
+/** @brief Set the value of a variable of a link */
+void set_link_variable(const std::string& link, const std::string& variable, double value, double time)
 {
-  instr_user_variable(time, link->get_cname(), variable, "LINK", value, InstrUserVariable::SET, "",
-                      &user_link_variables);
+  instr_user_variable(time, link, variable, "LINK", value, InstrUserVariable::SET, "", &user_link_variables);
 }
 
-void set_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
+void set_link_variable(const std::string& src, const std::string& dst, const std::string& variable, double value,
                        double time)
 {
-  user_srcdst_variable(time, src, dst, variable, value, InstrUserVariable::SET);
+  instr_user_srcdst_variable(time, src, dst, variable, value, InstrUserVariable::SET);
 }
 
 /** @brief Add a value to a variable of a link */
-void add_link_variable(const s4u::Link* link, const std::string& variable, double value, double time)
+void add_link_variable(const std::string& link, const std::string& variable, double value, double time)
 {
-  instr_user_variable(time, link->get_cname(), variable, "LINK", value, InstrUserVariable::ADD, "",
-                      &user_link_variables);
+  instr_user_variable(time, link, variable, "LINK", value, InstrUserVariable::ADD, "", &user_link_variables);
 }
 
 /** @brief Add a value to a variable of a link */
-void add_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
+void add_link_variable(const std::string& src, const std::string& dst, const std::string& variable, double value,
                        double time)
 {
-  user_srcdst_variable(time, src, dst, variable, value, InstrUserVariable::ADD);
+  instr_user_srcdst_variable(time, src, dst, variable, value, InstrUserVariable::ADD);
 }
 
 /** @brief Subtract a value to a variable of a link */
-void sub_link_variable(const s4u::Link* link, const std::string& variable, double value, double time)
+void sub_link_variable(const std::string& link, const std::string& variable, double value, double time)
 {
-  instr_user_variable(time, link->get_cname(), variable, "LINK", value, InstrUserVariable::SUB, "",
-                      &user_link_variables);
+  instr_user_variable(time, link, variable, "LINK", value, InstrUserVariable::SUB, "", &user_link_variables);
 }
 
 /** @brief Subtract a value to a variable of a link */
-void sub_link_variable(const s4u::Host* src, const s4u::Host* dst, const std::string& variable, double value,
+void sub_link_variable(const std::string& src, const std::string& dst, const std::string& variable, double value,
                        double time)
 {
-  user_srcdst_variable(time, src, dst, variable, value, InstrUserVariable::SUB);
+  instr_user_srcdst_variable(time, src, dst, variable, value, InstrUserVariable::SUB);
 }
 
 /** @brief Get link variables that were already declared with #declare_link_variable. */
@@ -188,6 +170,7 @@ const std::set<std::string, std::less<>>& get_link_variables()
   return user_link_variables;
 }
 
+/* for VM variables */
 /** @brief Declare a new user variable associated to VMs.
  *
  *  Declare a user variable that will be associated to VMs. A user host variable can be used to trace user variables
@@ -196,24 +179,25 @@ const std::set<std::string, std::less<>>& get_link_variables()
  */
 void declare_vm_variable(const std::string& variable, const std::string& color)
 {
-  instr_user_variable(0, nullptr, variable, "VM", 0, InstrUserVariable::DECLARE, color, &user_vm_variables);
+  instr_user_variable(0, "", variable, "VM", 0, InstrUserVariable::DECLARE, color, &user_vm_variables);
 }
 
-void set_vm_variable(const s4u::VirtualMachine* vm, const std::string& variable, double value, double time)
+/** @brief Set the value of a variable of a vm */
+void set_vm_variable(const std::string& vm, const std::string& variable, double value, double time)
 {
-  instr_user_variable(time, vm->get_cname(), variable, "VM", value, InstrUserVariable::SET, "", &user_vm_variables);
+  instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::SET, "", &user_vm_variables);
 }
 
 /** @brief Add a value to a variable of a VM */
-void add_vm_variable(const s4u::VirtualMachine* vm, const std::string& variable, double value, double time)
+void add_vm_variable(const std::string& vm, const std::string& variable, double value, double time)
 {
-  instr_user_variable(time, vm->get_cname(), variable, "HOST", value, InstrUserVariable::ADD, "", &user_vm_variables);
+  instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::ADD, "", &user_vm_variables);
 }
 
 /** @brief Subtract a value from a variable of a VM */
-void sub_vm_variable(const s4u::VirtualMachine* vm, const std::string& variable, double value, double time)
+void sub_vm_variable(const std::string& vm, const std::string& variable, double value, double time)
 {
-  instr_user_variable(time, vm->get_cname(), variable, "HOST", value, InstrUserVariable::SUB, "", &user_vm_variables);
+  instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::SUB, "", &user_vm_variables);
 }
 
 /** @brief Get VM variables that were already declared with #declare_vm_variable. */
@@ -414,12 +398,6 @@ int TRACE_platform_graph_export_graphviz(const char* filename) // XBT_ATTRIB_DEP
   return 1;
 }
 
-/*
- * Derived functions that use instr_user_variable and TRACE_user_srcdst_variable. They were previously defined as
- * pre-processors directives, but were transformed into functions so the user can track them using gdb.
- */
-
-/* for VM variables */
 void TRACE_vm_variable_declare(const char* variable) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(0, nullptr, variable, "VM", 0, InstrUserVariable::DECLARE, "", &user_vm_variables);
@@ -429,16 +407,7 @@ void TRACE_vm_variable_declare_with_color(const char* variable, const char* colo
   instr_user_variable(0, nullptr, variable, "VM", 0, InstrUserVariable::DECLARE, color, &user_vm_variables);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Set the value of a variable of a host.
- *
- *  @param vm The name of the VM to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The new value of the variable.
- *
- *  @see TRACE_vm_variable_declare, TRACE_vm_variable_add, TRACE_vm_variable_sub
- */
-void TRACE_vm_variable_set (const char *vm, const char *variable, double value)
+void TRACE_vm_variable_set(const char* vm, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(simgrid_get_clock(), vm, variable, "VM", value, InstrUserVariable::SET, "", &user_vm_variables);
 }
@@ -469,7 +438,6 @@ void TRACE_vm_variable_sub_with_time(double time, const char* vm, const char* va
   instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::SUB, "", &user_vm_variables);
 }
 
-/* for host variables */
 void TRACE_host_variable_declare(const char* variable) // XBT_ATTRIB_DEPRECATED_v333
 {
   simgrid::instr::declare_host_variable(variable);
@@ -480,37 +448,19 @@ void TRACE_host_variable_declare_with_color(const char* variable, const char* co
   simgrid::instr::declare_host_variable(variable, color);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Set the value of a variable of a host.
- *
- *  @param host The name of the host to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The new value of the variable.
- *
- *  @see TRACE_host_variable_declare, TRACE_host_variable_add, TRACE_host_variable_sub
- */
-void TRACE_host_variable_set (const char *host, const char *variable, double value)
+void TRACE_host_variable_set(const char* host, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(simgrid_get_clock(), host, variable, "HOST", value, InstrUserVariable::SET, "",
                       &user_host_variables);
 }
 
-void TRACE_host_variable_add(const char* host, const char* variable, double value)
+void TRACE_host_variable_add(const char* host, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(simgrid_get_clock(), host, variable, "HOST", value, InstrUserVariable::ADD, "",
                       &user_host_variables);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Subtract a value from a variable of a host.
- *
- *  @param host The name of the host to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The value to be subtracted from the variable.
- *
- *  @see TRACE_host_variable_declare, TRACE_host_variable_set, TRACE_host_variable_add
- */
-void TRACE_host_variable_sub(const char* host, const char* variable, double value)
+void TRACE_host_variable_sub(const char* host, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(simgrid_get_clock(), host, variable, "HOST", value, InstrUserVariable::SUB, "",
                       &user_host_variables);
@@ -539,37 +489,17 @@ xbt_dynar_t TRACE_get_host_variables() // XBT_ATTRIB_DEPRECATED_v333
   return instr_set_to_dynar(user_host_variables);
 }
 
-/* for link variables */
 void TRACE_link_variable_declare(const char* variable) // XBT_ATTRIB_DEPRECATED_v333
 {
   simgrid::instr::declare_link_variable(variable);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Declare a new user variable associated to links with a color.
- *
- *  Same as #TRACE_link_variable_declare, but associated a color to the newly created user link variable. The color
- *  needs to be a string with three numbers separated by spaces in the range [0,1].
- *  A light-gray color can be specified using "0.7 0.7 0.7" as color.
- *
- *  @param variable The name of the new variable to be declared.
- *  @param color The color for the new variable.
- */
 void TRACE_link_variable_declare_with_color(const char* variable, const char* color) // XBT_ATTRIB_DEPRECATED_v333
 {
   simgrid::instr::declare_link_variable(variable, color);
 }
 
-/** @ingroup TRACE_user_variables
- *  @brief Set the value of a variable of a link.
- *
- *  @param link The name of the link to be considered.
- *  @param variable The name of the variable to be considered.
- *  @param value The new value of the variable.
- *
- *  @see TRACE_link_variable_declare, TRACE_link_variable_add, TRACE_link_variable_sub
- */
-void TRACE_link_variable_set (const char *link, const char *variable, double value)
+void TRACE_link_variable_set(const char* link, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
 {
   instr_user_variable(simgrid_get_clock(), link, variable, "LINK", value, InstrUserVariable::SET, "",
                       &user_link_variables);
@@ -605,39 +535,40 @@ void TRACE_link_variable_sub_with_time(double time, const char* link, const char
   instr_user_variable(time, link, variable, "LINK", value, InstrUserVariable::SUB, "", &user_link_variables);
 }
 
-void TRACE_link_srcdst_variable_set (const char *src, const char *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_set(const char* src, const char* dst, const char* variable,
+                                    double value) // XBT_ATTRIB_DEPRECATED_v333
 {
-  instr_user_srcdst_variable(simgrid_get_clock(), src, dst, variable, "LINK", value, InstrUserVariable::SET);
+  instr_user_srcdst_variable(simgrid_get_clock(), src, dst, variable, value, InstrUserVariable::SET);
 }
 
 void TRACE_link_srcdst_variable_add(const char* src, const char* dst, const char* variable,
                                     double value) // XBT_ATTRIB_DEPRECATED_v333
 {
-  instr_user_srcdst_variable(simgrid_get_clock(), src, dst, variable, "LINK", value, InstrUserVariable::ADD);
+  instr_user_srcdst_variable(simgrid_get_clock(), src, dst, variable, value, InstrUserVariable::ADD);
 }
 
 void TRACE_link_srcdst_variable_sub(const char* src, const char* dst, const char* variable,
                                     double value) // XBT_ATTRIB_DEPRECATED_v333
 {
-  instr_user_srcdst_variable(simgrid_get_clock(), src, dst, variable, "LINK", value, InstrUserVariable::SUB);
+  instr_user_srcdst_variable(simgrid_get_clock(), src, dst, variable, value, InstrUserVariable::SUB);
 }
 
 void TRACE_link_srcdst_variable_set_with_time(double time, const char* src, const char* dst, const char* variable,
                                               double value) // XBT_ATTRIB_DEPRECATED_v333
 {
-  instr_user_srcdst_variable(time, src, dst, variable, "LINK", value, InstrUserVariable::SET);
+  instr_user_srcdst_variable(time, src, dst, variable, value, InstrUserVariable::SET);
 }
 
 void TRACE_link_srcdst_variable_add_with_time(double time, const char* src, const char* dst, const char* variable,
                                               double value) // XBT_ATTRIB_DEPRECATED_v333
 {
-  instr_user_srcdst_variable(time, src, dst, variable, "LINK", value, InstrUserVariable::ADD);
+  instr_user_srcdst_variable(time, src, dst, variable, value, InstrUserVariable::ADD);
 }
 
 void TRACE_link_srcdst_variable_sub_with_time(double time, const char* src, const char* dst, const char* variable,
                                               double value) // XBT_ATTRIB_DEPRECATED_v333
 {
-  instr_user_srcdst_variable(time, src, dst, variable, "LINK", value, InstrUserVariable::SUB);
+  instr_user_srcdst_variable(time, src, dst, variable, value, InstrUserVariable::SUB);
 }
 
 xbt_dynar_t TRACE_get_link_variables() // XBT_ATTRIB_DEPRECATED_v333
