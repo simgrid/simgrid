@@ -22,7 +22,7 @@ static void master(std::vector<std::string> args)
   double compute_cost     = std::stod(args[2]);
   long communication_cost = std::stol(args[3]);
   size_t workers_count    = args.size() - 4;
-  auto* my_host           = simgrid::s4u::this_actor::get_host();
+  const auto* my_host     = simgrid::s4u::this_actor::get_host();
   auto mailbox            = simgrid::s4u::Mailbox::by_name("master_mailbox");
 
   XBT_DEBUG("Got %zu workers and %ld tasks to process", workers_count, tasks_count);
@@ -107,14 +107,14 @@ int main(int argc, char* argv[])
 
   XBT_DEBUG("Simulation is over");
 
-  auto categories = simgrid::instr::get_tracing_categories();
+  const auto& categories = simgrid::instr::get_tracing_categories();
   if (not categories.empty()) {
     XBT_INFO("Declared tracing categories:");
     for (const auto& category : categories)
       XBT_INFO("%s", category.c_str());
   }
 
-  auto marks = simgrid::instr::get_marks();
+  const auto& marks = simgrid::instr::get_marks();
   if (not marks.empty()) {
     XBT_INFO("Declared marks:");
     for (const auto& mark : marks)

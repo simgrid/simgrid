@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 
 static void trace_fun()
 {
-  auto* host = simgrid::s4u::this_actor::get_host();
+  const auto* host = simgrid::s4u::this_actor::get_host();
 
   // the hostname has an empty HDD with a capacity of 100000 (bytes)
   simgrid::instr::set_host_variable(host, "HDD_capacity", 100000);
@@ -54,13 +54,13 @@ int main(int argc, char* argv[])
   e.run();
 
   // get user declared variables
-  auto host_variables = simgrid::instr::get_host_variables();
+  const auto& host_variables = simgrid::instr::get_host_variables();
   if (not host_variables.empty()) {
     XBT_INFO("Declared host variables:");
     for (const auto& var : host_variables)
       XBT_INFO("%s", var.c_str());
   }
-  auto link_variables = simgrid::instr::get_link_variables();
+  const auto& link_variables = simgrid::instr::get_link_variables();
   xbt_assert(link_variables.empty(), "Should not have any declared link variable!");
 
   return 0;

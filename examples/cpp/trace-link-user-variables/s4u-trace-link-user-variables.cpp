@@ -15,8 +15,8 @@ static void trace_fun()
 {
   // set initial values for the link user variables this example only shows for links identified by "6" and "3" in the
   // platform file
-  auto* link_3 = simgrid::s4u::Link::by_name("3");
-  auto* link_6 = simgrid::s4u::Link::by_name("6");
+  const auto* link_3 = simgrid::s4u::Link::by_name("3");
+  const auto* link_6 = simgrid::s4u::Link::by_name("6");
   // Set the Link_Capacity variable
   simgrid::instr::set_link_variable(link_6, "Link_Capacity", 12.34);
   simgrid::instr::set_link_variable(link_3, "Link_Capacity", 56.78);
