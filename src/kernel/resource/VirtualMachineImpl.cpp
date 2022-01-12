@@ -195,7 +195,6 @@ VirtualMachineImpl::VirtualMachineImpl(const std::string& name, s4u::VirtualMach
 /** @brief A physical host does not disappear in the current SimGrid code, but a VM may disappear during a simulation */
 void VirtualMachineImpl::vm_destroy()
 {
-  s4u::VirtualMachine::on_destruction(*piface_);
   /* I was already removed from the allVms set if the VM was destroyed cleanly */
   auto iter = find(allVms_.begin(), allVms_.end(), piface_);
   if (iter != allVms_.end())

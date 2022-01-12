@@ -32,11 +32,6 @@ void VmHostExt::ensureVmExtInstalled()
     EXTENSION_ID = Host::extension_create<VmHostExt>();
 }
 
-VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host, int core_amount)
-    : VirtualMachine(name, physical_host, core_amount, 1024)
-{
-}
-
 VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host, int core_amount, size_t ramsize)
     : Host(new kernel::resource::VirtualMachineImpl(name, this, physical_host, core_amount, ramsize))
     , pimpl_vm_(dynamic_cast<kernel::resource::VirtualMachineImpl*>(Host::get_impl()))
@@ -125,7 +120,7 @@ void VirtualMachine::destroy()
     shutdown();
 
     XBT_DEBUG("destroy %s", get_cname());
-
+    on_destruction(*this);
     /* Then, destroy the VM object */
     kernel::actor::simcall([this]() {
       get_vm_impl()->vm_destroy();
@@ -204,6 +199,18 @@ VirtualMachine* VirtualMachine::set_bound(double bound)
 {
   kernel::actor::simcall([this, bound]() { pimpl_vm_->set_bound(bound); });
   return this;
+}
+
+void VirtualMachine::start_migration() const
+{
+  pimpl_vm_->start_migration();
+  on_migration_start(*this);
+}
+
+void VirtualMachine::end_migration() const
+{
+  pimpl_vm_->end_migration();
+  on_migration_end(*this);
 }
 
 } // namespace s4u

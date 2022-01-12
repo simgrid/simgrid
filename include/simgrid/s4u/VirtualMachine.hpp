@@ -34,9 +34,19 @@ public:
 class XBT_PUBLIC VirtualMachine : public s4u::Host {
   kernel::resource::VirtualMachineImpl* const pimpl_vm_;
 
+  /* Signals about the life cycle of the VM */
+  static xbt::signal<void(VirtualMachine&)> on_creation;
+  static xbt::signal<void(VirtualMachine const&)> on_start;
+  static xbt::signal<void(VirtualMachine const&)> on_started;
+  static xbt::signal<void(VirtualMachine const&)> on_shutdown;
+  static xbt::signal<void(VirtualMachine const&)> on_suspend;
+  static xbt::signal<void(VirtualMachine const&)> on_resume;
+  static xbt::signal<void(VirtualMachine const&)> on_migration_start;
+  static xbt::signal<void(VirtualMachine const&)> on_migration_end;
+  static xbt::signal<void(VirtualMachine const&)> on_destruction;
+
 public:
-  explicit VirtualMachine(const std::string& name, Host* physical_host, int core_amount);
-  explicit VirtualMachine(const std::string& name, Host* physical_host, int core_amount, size_t ramsize);
+  explicit VirtualMachine(const std::string& name, Host* physical_host, int core_amount, size_t ramsize = 1024);
 
 #ifndef DOXYGEN
   // No copy/move
@@ -67,8 +77,12 @@ public:
   size_t get_ramsize() const;
   VirtualMachine* set_ramsize(size_t ramsize);
   VirtualMachine* set_bound(double bound);
+  void start_migration() const;
+  void end_migration() const;
 
   State get_state() const;
+
+  /* Callbacks on signals */
   static void on_creation_cb(const std::function<void(VirtualMachine&)>& cb) { on_creation.connect(cb); }
   static void on_start_cb(const std::function<void(VirtualMachine const&)>& cb) { on_start.connect(cb); }
   static void on_started_cb(const std::function<void(VirtualMachine const&)>& cb) { on_started.connect(cb); }
@@ -84,20 +98,6 @@ public:
   {
     on_migration_end.connect(cb);
   }
-#ifndef DOXYGEN
-  /* FIXME the signals should be private */
-  static xbt::signal<void(VirtualMachine const&)> on_migration_start;
-  static xbt::signal<void(VirtualMachine const&)> on_migration_end;
-  static xbt::signal<void(VirtualMachine const&)> on_destruction;
-#endif
-
-private:
-  static xbt::signal<void(VirtualMachine&)> on_creation;
-  static xbt::signal<void(VirtualMachine const&)> on_start;
-  static xbt::signal<void(VirtualMachine const&)> on_started;
-  static xbt::signal<void(VirtualMachine const&)> on_shutdown;
-  static xbt::signal<void(VirtualMachine const&)> on_suspend;
-  static xbt::signal<void(VirtualMachine const&)> on_resume;
 };
 } // namespace s4u
 } // namespace simgrid

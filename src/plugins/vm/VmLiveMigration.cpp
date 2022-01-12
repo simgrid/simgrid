@@ -336,8 +336,7 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
         XBT_THROW_POINT,
         simgrid::xbt::string_printf("Cannot migrate VM '%s' that is already migrating.", vm->get_cname()));
 
-  vm->get_vm_impl()->start_migration();
-  simgrid::s4u::VirtualMachine::on_migration_start(*vm);
+  vm->start_migration();
 
   std::string rx_name =
       std::string("__pr_mig_rx:") + vm->get_cname() + "(" + src_pm->get_cname() + "-" + dst_pm->get_cname() + ")";
@@ -359,6 +358,5 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
   tx->join();
   rx->join();
 
-  vm->get_vm_impl()->end_migration();
-  simgrid::s4u::VirtualMachine::on_migration_end(*vm);
+  vm->end_migration();
 }
