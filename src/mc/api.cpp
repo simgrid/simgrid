@@ -153,7 +153,7 @@ static inline smx_simcall_t MC_state_choose_request_for_process(const RemoteProc
         const simgrid::kernel::activity::CommImpl* act = temp_act.get_buffer();
         if (act->src_actor_.get() && act->dst_actor_.get())
           state->transition_.times_considered_ = 0; // OK
-        else if (act->src_actor_.get() == nullptr && act->state_ == simgrid::kernel::activity::State::READY &&
+        else if (act->src_actor_.get() == nullptr && act->get_state() == simgrid::kernel::activity::State::READY &&
                  act->detached())
           state->transition_.times_considered_ = 0; // OK
         procstate->set_done();
