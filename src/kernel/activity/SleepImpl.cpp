@@ -40,11 +40,11 @@ void SleepImpl::post()
 {
   if (surf_action_->get_state() == resource::Action::State::FAILED) {
     if (host_ && not host_->is_on())
-      state_ = State::SRC_HOST_FAILURE;
+      set_state(State::SRC_HOST_FAILURE);
     else
-      state_ = State::CANCELED;
+      set_state(State::CANCELED);
   } else if (surf_action_->get_state() == resource::Action::State::FINISHED) {
-    state_ = State::DONE;
+    set_state(State::DONE);
   }
 
   clean_action();
@@ -57,7 +57,7 @@ void SleepImpl::set_exception(actor::ActorImpl* issuer)
 }
 void SleepImpl::finish()
 {
-  XBT_DEBUG("SleepImpl::finish() in state %s", to_c_str(state_));
+  XBT_DEBUG("SleepImpl::finish() in state %s", get_state_str());
   while (not simcalls_.empty()) {
     const s_smx_simcall* simcall = simcalls_.front();
     simcalls_.pop_front();

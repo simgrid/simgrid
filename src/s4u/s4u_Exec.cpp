@@ -32,9 +32,9 @@ ExecPtr Exec::init()
 {
   auto pimpl = kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl());
   unsigned int cb_id = Host::on_state_change.connect([pimpl](s4u::Host const& h) {
-    if (not h.is_on() && pimpl->state_ == kernel::activity::State::RUNNING &&
+    if (not h.is_on() && pimpl->get_state() == kernel::activity::State::RUNNING &&
         std::find(pimpl->get_hosts().begin(), pimpl->get_hosts().end(), &h) != pimpl->get_hosts().end()) {
-      pimpl->state_ = kernel::activity::State::FAILED;
+      pimpl->set_state(kernel::activity::State::FAILED);
       pimpl->post();
     }
   });

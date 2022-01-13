@@ -74,12 +74,12 @@ IoImpl& IoImpl::set_disk(resource::DiskImpl* disk)
 
 IoImpl* IoImpl::start()
 {
-  state_ = State::RUNNING;
+  set_state(State::RUNNING);
   surf_action_ =
       disk_->get_host()->get_netpoint()->get_englobing_zone()->get_disk_model()->io_start(disk_, size_, type_);
   surf_action_->set_sharing_penalty(sharing_penalty_);
   surf_action_->set_activity(this);
-  start_time_ = surf_action_->get_start_time();
+  set_start_time(surf_action_->get_start_time());
 
   XBT_DEBUG("Create IO synchro %p %s", this, get_cname());
 
@@ -91,18 +91,18 @@ void IoImpl::post()
   performed_ioops_ = surf_action_->get_cost();
   if (surf_action_->get_state() == resource::Action::State::FAILED) {
     if (disk_ && not disk_->is_on())
-      state_ = State::FAILED;
+      set_state(State::FAILED);
     else
-      state_ = State::CANCELED;
+      set_state(State::CANCELED);
   } else if (timeout_detector_ && timeout_detector_->get_state() == resource::Action::State::FINISHED) {
     if (surf_action_->get_remains() > 0.0) {
       surf_action_->set_state(resource::Action::State::FAILED);
-      state_ = State::TIMEOUT;
+      set_state(State::TIMEOUT);
     } else {
-      state_ = State::DONE;
+      set_state(State::DONE);
     }
   } else {
-    state_ = State::DONE;
+    set_state(State::DONE);
   }
 
   clean_action();
@@ -116,7 +116,7 @@ void IoImpl::post()
 }
 void IoImpl::set_exception(actor::ActorImpl* issuer)
 {
-  switch (state_) {
+  switch (get_state()) {
     case State::FAILED:
       issuer->context_->set_wannadie();
       static_cast<s4u::Io*>(get_iface())->complete(s4u::Activity::State::FAILED);
@@ -129,14 +129,14 @@ void IoImpl::set_exception(actor::ActorImpl* issuer)
       issuer->exception_ = std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Timeouted"));
       break;
     default:
-      xbt_assert(state_ == State::DONE, "Internal error in IoImpl::finish(): unexpected synchro state %s",
-                 to_c_str(state_));
+      xbt_assert(get_state() == State::DONE, "Internal error in IoImpl::finish(): unexpected synchro state %s",
+                 get_state_str());
   }
 }
 
 void IoImpl::finish()
 {
-  XBT_DEBUG("IoImpl::finish() in state %s", to_c_str(state_));
+  XBT_DEBUG("IoImpl::finish() in state %s", get_state_str());
   while (not simcalls_.empty()) {
     smx_simcall_t simcall = simcalls_.front();
     simcalls_.pop_front();
@@ -192,7 +192,7 @@ void IoImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<IoImpl*>& 
     io->simcalls_.push_back(&issuer->simcall_);
 
     /* see if the synchro is already finished */
-    if (io->state_ != State::WAITING && io->state_ != State::RUNNING) {
+    if (io->get_state() != State::WAITING && io->get_state() != State::RUNNING) {
       io->finish();
       break;
     }

@@ -26,7 +26,7 @@ xbt::signal<void(Comm const&)> Comm::on_completion;
 Comm::~Comm()
 {
   if (state_ == State::STARTED && not detached_ &&
-      (pimpl_ == nullptr || pimpl_->state_ == kernel::activity::State::RUNNING)) {
+      (pimpl_ == nullptr || pimpl_->get_state() == kernel::activity::State::RUNNING)) {
     XBT_INFO("Comm %p freed before its completion. Did you forget to detach it? (state: %s)", this, get_state_str());
     if (pimpl_ != nullptr)
       XBT_INFO("pimpl_->state: %s", pimpl_->get_state_str());
@@ -46,7 +46,7 @@ ssize_t Comm::wait_any_for(const std::vector<CommPtr>& comms, double timeout)
     changed_pos = simcall_comm_waitany(rcomms.data(), rcomms.size(), timeout);
   } catch (const NetworkFailureException& e) {
     for (auto c : comms) {
-      if (c->pimpl_->state_ == kernel::activity::State::FAILED) {
+      if (c->pimpl_->get_state() == kernel::activity::State::FAILED) {
         c->complete(State::FAILED);
       }
     }

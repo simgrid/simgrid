@@ -58,10 +58,10 @@ bool Mailbox::ready() const
 {
   bool comm_ready = false;
   if (not pimpl_->empty()) {
-    comm_ready = pimpl_->front()->state_ == kernel::activity::State::DONE;
+    comm_ready = pimpl_->front()->get_state() == kernel::activity::State::DONE;
 
   } else if (pimpl_->is_permanent() && pimpl_->has_some_done_comm()) {
-    comm_ready = pimpl_->done_front()->state_ == kernel::activity::State::DONE;
+    comm_ready = pimpl_->done_front()->get_state() == kernel::activity::State::DONE;
   }
   return comm_ready;
 }

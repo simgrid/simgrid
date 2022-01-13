@@ -55,11 +55,10 @@ void RawImpl::cancel()
 
 void RawImpl::post()
 {
-  if (surf_action_->get_state() == resource::Action::State::FAILED) {
-    state_ = State::FAILED;
-  } else if (surf_action_->get_state() == resource::Action::State::FINISHED) {
-    state_ = State::SRC_TIMEOUT;
-  }
+  if (surf_action_->get_state() == resource::Action::State::FAILED)
+    set_state(State::FAILED);
+  else if (surf_action_->get_state() == resource::Action::State::FINISHED)
+    set_state(State::SRC_TIMEOUT);
 
   clean_action();
   /* Answer all simcalls associated with the synchro */
@@ -67,18 +66,18 @@ void RawImpl::post()
 }
 void RawImpl::set_exception(actor::ActorImpl* issuer)
 {
-  if (state_ == State::FAILED) {
+  if (get_state() == State::FAILED) {
     issuer->context_->set_wannadie();
     issuer->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
   } else {
-    xbt_assert(state_ == State::SRC_TIMEOUT, "Internal error in RawImpl::finish() unexpected synchro state %s",
-               to_c_str(state_));
+    xbt_assert(get_state() == State::SRC_TIMEOUT, "Internal error in RawImpl::finish() unexpected synchro state %s",
+               get_state_str());
   }
 }
 
 void RawImpl::finish()
 {
-  XBT_DEBUG("RawImpl::finish() in state %s", to_c_str(state_));
+  XBT_DEBUG("RawImpl::finish() in state %s", get_state_str());
   xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
   smx_simcall_t simcall = simcalls_.front();
   simcalls_.pop_front();

@@ -562,10 +562,10 @@ void EngineImpl::display_all_actor_status() const
       if (boost::dynamic_pointer_cast<kernel::activity::IoImpl>(actor->waiting_synchro_) != nullptr)
         synchro_description = "I/O";
 
-      XBT_INFO("Actor %ld (%s@%s): waiting for %s activity %#zx (%s) in state %d to finish", actor->get_pid(),
+      XBT_INFO("Actor %ld (%s@%s): waiting for %s activity %#zx (%s) in state %s to finish", actor->get_pid(),
                actor->get_cname(), actor->get_host()->get_cname(), synchro_description,
                (xbt_log_no_loc ? (size_t)0xDEADBEEF : (size_t)actor->waiting_synchro_.get()),
-               actor->waiting_synchro_->get_cname(), (int)actor->waiting_synchro_->state_);
+               actor->waiting_synchro_->get_cname(), actor->waiting_synchro_->get_state_str());
     } else {
       XBT_INFO("Actor %ld (%s@%s) simcall %s", actor->get_pid(), actor->get_cname(), actor->get_host()->get_cname(),
                SIMIX_simcall_name(actor->simcall_));

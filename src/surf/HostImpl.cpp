@@ -105,7 +105,7 @@ void HostImpl::turn_off(const actor::ActorImpl* issuer)
       auto hosts = exec->get_hosts();
       if (std::find(hosts.begin(), hosts.end(), &piface_) != hosts.end()) {
         exec->cancel();
-        exec->state_ = activity::State::FAILED;
+        exec->set_state(activity::State::FAILED);
       }
     }
   }

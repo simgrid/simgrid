@@ -26,17 +26,17 @@ XBT_DECLARE_ENUM_CLASS(State, WAITING, READY, RUNNING, DONE, CANCELED, FAILED, S
 class XBT_PUBLIC ActivityImpl {
   std::atomic_int_fast32_t refcount_{0};
   std::string name_ = "";
+  actor::ActorImpl* actor_ = nullptr;
+  State state_             = State::WAITING; /* State of the activity */
+  double start_time_       = -1.0;
+  double finish_time_      = -1.0;
 
 public:
   virtual ~ActivityImpl();
   ActivityImpl() = default;
-  State state_   = State::WAITING;      /* State of the activity */
   std::list<smx_simcall_t> simcalls_;   /* List of simcalls waiting for this activity */
-  resource::Action* surf_action_ = nullptr;
-  actor::ActorImpl* actor_       = nullptr;
   s4u::Activity* piface_         = nullptr;
-  double start_time_             = -1.0;
-  double finish_time_            = -1.0;
+  resource::Action* surf_action_ = nullptr;
 
 protected:
   void inline set_name(const std::string& name)
@@ -45,6 +45,7 @@ protected:
     // child type
     name_ = name;
   }
+  void set_start_time(double start_time) { start_time_ = start_time; }
 
 public:
   const std::string& get_name() const { return name_; }
@@ -55,6 +56,10 @@ public:
 
   void set_iface(s4u::Activity* iface) { piface_ = iface; }
   s4u::Activity* get_iface() { return piface_; }
+
+  void set_state(State state) { state_ = state; }
+  const State& get_state() const { return state_; }
+  const char* get_state_str() const;
 
   double get_start_time() const { return start_time_; }
   void set_finish_time(double finish_time) { finish_time_ = finish_time; }
@@ -78,7 +83,6 @@ public:
   void unregister_simcall(smx_simcall_t simcall);
   void clean_action();
   virtual double get_remaining() const;
-  const char* get_state_str() const;
   // Support for the boost::intrusive_ptr<ActivityImpl> datatype
   friend XBT_PUBLIC void intrusive_ptr_add_ref(ActivityImpl* activity);
   friend XBT_PUBLIC void intrusive_ptr_release(ActivityImpl* activity);
@@ -91,7 +95,6 @@ public:
  * The difficulty is that set_name() must return a qualified child class, not the generic ancestor
  * But the getter is still in the ancestor to be usable on generic activities with no downcast */
 template <class AnyActivityImpl> class ActivityImpl_T : public ActivityImpl {
-private:
   std::string tracing_category_ = "";
 
 public:

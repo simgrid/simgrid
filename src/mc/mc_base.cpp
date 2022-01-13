@@ -110,7 +110,8 @@ bool actor_is_enabled(smx_actor_t actor)
           return true;
       }
       /* On the other hand if it hasn't a timeout, check if the comm is ready.*/
-      else if (act->detached() && act->src_actor_ == nullptr && act->state_ == simgrid::kernel::activity::State::READY)
+      else if (act->detached() && act->src_actor_ == nullptr &&
+               act->get_state() == simgrid::kernel::activity::State::READY)
         return (act->dst_actor_ != nullptr);
       return (act->src_actor_ && act->dst_actor_);
     }

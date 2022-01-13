@@ -206,7 +206,7 @@ void ActorImpl::exit()
   /* destroy the blocking synchro if any */
   if (waiting_synchro_ != nullptr) {
     waiting_synchro_->cancel();
-    waiting_synchro_->state_ = activity::State::FAILED;
+    waiting_synchro_->set_state(activity::State::FAILED);
 
     activity::ExecImplPtr exec = boost::dynamic_pointer_cast<activity::ExecImpl>(waiting_synchro_);
     activity::CommImplPtr comm = boost::dynamic_pointer_cast<activity::CommImpl>(waiting_synchro_);

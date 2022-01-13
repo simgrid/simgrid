@@ -57,7 +57,7 @@ XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr simcall_HANDLER_comm_isen
 
     if (mbox->is_permanent()) {
       // this mailbox is for small messages, which have to be sent right now
-      other_comm->state_     = simgrid::kernel::activity::State::READY;
+      other_comm->set_state(simgrid::kernel::activity::State::READY);
       other_comm->dst_actor_ = mbox->get_permanent_receiver().get();
       mbox->push_done(other_comm);
       XBT_DEBUG("pushing a message into the permanent receive list %p, comm %p", mbox, other_comm.get());
@@ -68,7 +68,7 @@ XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr simcall_HANDLER_comm_isen
   } else {
     XBT_DEBUG("Receive already pushed");
 
-    other_comm->state_ = simgrid::kernel::activity::State::READY;
+    other_comm->set_state(simgrid::kernel::activity::State::READY);
   }
 
   if (detached) {
@@ -88,7 +88,7 @@ XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr simcall_HANDLER_comm_isen
   other_comm->copy_data_fun = copy_data_fun;
 
   if (MC_is_active() || MC_record_replay_is_active())
-    other_comm->state_ = simgrid::kernel::activity::State::RUNNING;
+    other_comm->set_state(simgrid::kernel::activity::State::RUNNING);
   else
     other_comm->start();
 
@@ -134,7 +134,7 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
     } else {
       if (other_comm->surf_action_ && other_comm->get_remaining() < 1e-12) {
         XBT_DEBUG("comm %p has been already sent, and is finished, destroy it", other_comm.get());
-        other_comm->state_ = simgrid::kernel::activity::State::DONE;
+        other_comm->set_state(simgrid::kernel::activity::State::DONE);
         other_comm->set_mailbox(nullptr);
       }
     }
@@ -156,7 +156,7 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
     } else {
       XBT_DEBUG("Match my %p with the existing %p", this_synchro.get(), other_comm.get());
 
-      other_comm->state_ = simgrid::kernel::activity::State::READY;
+      other_comm->set_state(simgrid::kernel::activity::State::READY);
     }
     receiver->activities_.emplace_back(other_comm);
   }
@@ -173,7 +173,7 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
   other_comm->copy_data_fun = copy_data_fun;
 
   if (MC_is_active() || MC_record_replay_is_active()) {
-    other_comm->state_ = simgrid::kernel::activity::State::RUNNING;
+    other_comm->set_state(simgrid::kernel::activity::State::RUNNING);
     return other_comm;
   }
   other_comm->start();
@@ -276,7 +276,7 @@ CommImpl& CommImpl::detach()
 
 CommImpl::CommImpl(s4u::Host* from, s4u::Host* to, double bytes) : size_(bytes), detached_(true), from_(from), to_(to)
 {
-  state_ = State::READY;
+  set_state(State::READY);
 }
 
 CommImpl::~CommImpl()
@@ -285,7 +285,7 @@ CommImpl::~CommImpl()
 
   cleanup_surf();
 
-  if (detached_ && state_ != State::DONE) {
+  if (detached_ && get_state() != State::DONE) {
     /* the communication has failed and was detached:
      * we have to free the buffer */
     if (clean_fun)
@@ -300,7 +300,7 @@ CommImpl::~CommImpl()
 CommImpl* CommImpl::start()
 {
   /* If both the sender and the receiver are already there, start the communication */
-  if (state_ == State::READY) {
+  if (get_state() == State::READY) {
     from_ = from_ != nullptr ? from_ : src_actor_->get_host();
     to_   = to_ != nullptr ? to_ : dst_actor_->get_host();
     /* Getting the network_model from the origin host
@@ -311,8 +311,8 @@ CommImpl* CommImpl::start()
     surf_action_ = net_model->communicate(from_, to_, size_, rate_);
     surf_action_->set_activity(this);
     surf_action_->set_category(get_tracing_category());
-    start_time_ = surf_action_->get_start_time();
-    state_ = State::RUNNING;
+    set_start_time(surf_action_->get_start_time());
+    set_state(State::RUNNING);
     on_start(*this);
 
     XBT_DEBUG("Starting communication %p from '%s' to '%s' (surf_action: %p; state: %s)", this, from_->get_cname(),
@@ -322,7 +322,7 @@ CommImpl* CommImpl::start()
     if (surf_action_->get_state() == resource::Action::State::FAILED) {
       XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure", from_->get_cname(),
                 to_->get_cname());
-      state_ = State::LINK_FAILURE;
+      set_state(State::LINK_FAILURE);
       post();
 
     } else if ((src_actor_ != nullptr && src_actor_->is_suspended()) ||
@@ -347,7 +347,7 @@ CommImpl* CommImpl::start()
 
 std::vector<s4u::Link*> CommImpl::get_traversed_links() const
 {
-  xbt_assert(state_ != State::WAITING, "You cannot use %s() if your communication is not ready (%s)", __FUNCTION__,
+  xbt_assert(get_state() != State::WAITING, "You cannot use %s() if your communication is not ready (%s)", __FUNCTION__,
              get_state_str());
   std::vector<s4u::Link*> vlinks;
   XBT_ATTRIB_UNUSED double res = 0;
@@ -390,13 +390,13 @@ void CommImpl::copy_data()
 bool CommImpl::test()
 {
   if ((MC_is_active() || MC_record_replay_is_active()) && src_actor_ && dst_actor_)
-    state_ = State::DONE;
+    set_state(State::DONE);
   return ActivityImpl::test();
 }
 
 void CommImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 {
-  XBT_DEBUG("CommImpl::wait_for(%g), %p, state %s", timeout, this, to_c_str(state_));
+  XBT_DEBUG("CommImpl::wait_for(%g), %p, state %s", timeout, this, get_state_str());
 
   /* Associate this simcall to the wait synchro */
   register_simcall(&issuer->simcall_);
@@ -404,13 +404,13 @@ void CommImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   if (MC_is_active() || MC_record_replay_is_active()) {
     int idx = issuer->simcall_.mc_value_;
     if (idx == 0) {
-      state_ = State::DONE;
+      set_state(State::DONE);
     } else {
       /* If we reached this point, the wait simcall must have a timeout */
       /* Otherwise it shouldn't be enabled and executed by the MC */
       if (timeout < 0.0)
         THROW_IMPOSSIBLE;
-      state_ = (issuer == src_actor_ ? State::SRC_TIMEOUT : State::DST_TIMEOUT);
+      set_state(issuer == src_actor_ ? State::SRC_TIMEOUT : State::DST_TIMEOUT);
     }
     finish();
     return;
@@ -418,7 +418,7 @@ void CommImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 
   /* If the synchro has already finish perform the error handling, */
   /* otherwise set up a waiting timeout on the right side          */
-  if (state_ != State::WAITING && state_ != State::RUNNING) {
+  if (get_state() != State::WAITING && get_state() != State::RUNNING) {
     finish();
   } else { /* we need a sleep action (even when there is no timeout) to be notified of host failures */
     resource::Action* sleep = issuer->get_host()->get_cpu()->sleep(timeout);
@@ -454,7 +454,7 @@ void CommImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<CommImpl
     auto* comm = comms[idx];
     comm->simcalls_.push_back(&issuer->simcall_);
     simcall_comm_waitany__set__result(&issuer->simcall_, idx);
-    comm->state_ = State::DONE;
+    comm->set_state(State::DONE);
     comm->finish();
     return;
   }
@@ -478,7 +478,7 @@ void CommImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<CommImpl
     comm->simcalls_.push_back(&issuer->simcall_);
 
     /* see if the synchro is already finished */
-    if (comm->state_ != State::WAITING && comm->state_ != State::RUNNING) {
+    if (comm->get_state() != State::WAITING && comm->get_state() != State::RUNNING) {
       comm->finish();
       break;
     }
@@ -504,13 +504,13 @@ void CommImpl::resume()
 void CommImpl::cancel()
 {
   /* if the synchro is a waiting state means that it is still in a mbox so remove from it and delete it */
-  if (state_ == State::WAITING) {
+  if (get_state() == State::WAITING) {
     if (not detached_) {
       mbox_->remove(this);
-      state_ = State::CANCELED;
+      set_state(State::CANCELED);
     }
   } else if (not MC_is_active() /* when running the MC there are no surf actions */
-             && not MC_record_replay_is_active() && (state_ == State::READY || state_ == State::RUNNING)) {
+             && not MC_record_replay_is_active() && (get_state() == State::READY || get_state() == State::RUNNING)) {
     surf_action_->cancel();
   }
 }
@@ -537,17 +537,17 @@ void CommImpl::post()
 
   /* Update synchro state */
   if (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FINISHED)
-    state_ = State::SRC_TIMEOUT;
+    set_state(State::SRC_TIMEOUT);
   else if (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FINISHED)
-    state_ = State::DST_TIMEOUT;
+    set_state(State::DST_TIMEOUT);
   else if (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FAILED)
-    state_ = State::SRC_HOST_FAILURE;
+    set_state(State::SRC_HOST_FAILURE);
   else if (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FAILED)
-    state_ = State::DST_HOST_FAILURE;
+    set_state(State::DST_HOST_FAILURE);
   else if (surf_action_ && surf_action_->get_state() == resource::Action::State::FAILED) {
-    state_ = State::LINK_FAILURE;
+    set_state(State::LINK_FAILURE);
   } else
-    state_ = State::DONE;
+    set_state(State::DONE);
 
   XBT_DEBUG("CommImpl::post(): comm %p, state %s, src_proc %p, dst_proc %p, detached: %d", this, get_state_str(),
             src_actor_.get(), dst_actor_.get(), detached_);
@@ -560,7 +560,7 @@ void CommImpl::post()
 }
 void CommImpl::set_exception(actor::ActorImpl* issuer)
 {
-  switch (state_) {
+  switch (get_state()) {
     case State::FAILED:
       issuer->exception_ = std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
       break;
@@ -578,7 +578,7 @@ void CommImpl::set_exception(actor::ActorImpl* issuer)
       if (issuer == src_actor_)
         issuer->context_->set_wannadie();
       else {
-        state_             = kernel::activity::State::FAILED;
+        set_state(State::FAILED);
         issuer->exception_ = std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
       }
       break;
@@ -587,7 +587,7 @@ void CommImpl::set_exception(actor::ActorImpl* issuer)
       if (issuer == dst_actor_)
         issuer->context_->set_wannadie();
       else {
-        state_             = kernel::activity::State::FAILED;
+        set_state(State::FAILED);
         issuer->exception_ = std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
       }
       break;
@@ -604,7 +604,7 @@ void CommImpl::set_exception(actor::ActorImpl* issuer)
       } else {
         XBT_DEBUG("I'm neither source nor dest");
       }
-      state_ = kernel::activity::State::FAILED;
+      set_state(State::FAILED);
       issuer->throw_exception(std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Link failure")));
       break;
 
@@ -618,19 +618,19 @@ void CommImpl::set_exception(actor::ActorImpl* issuer)
       break;
 
     default:
-      xbt_assert(state_ == State::DONE, "Internal error in CommImpl::finish(): unexpected synchro state %s",
-                 to_c_str(state_));
+      xbt_assert(get_state() == State::DONE, "Internal error in CommImpl::finish(): unexpected synchro state %s",
+                 get_state_str());
   }
 }
 
 void CommImpl::finish()
 {
-  XBT_DEBUG("CommImpl::finish() in state %s", to_c_str(state_));
+  XBT_DEBUG("CommImpl::finish() in state %s", get_state_str());
   /* If the synchro is still in a rendez-vous point then remove from it */
   if (mbox_)
     mbox_->remove(this);
 
-  if (state_ == State::DONE)
+  if (get_state() == State::DONE)
     copy_data();
 
   while (not simcalls_.empty()) {
