@@ -334,7 +334,7 @@ const std::set<std::string, std::less<>>& get_tracing_categories()
 } // namespace instr
 } // namespace simgrid
 
-static xbt_dynar_t instr_set_to_dynar(const std::set<std::string, std::less<>>& filter) // XBT_ATTRIB_DEPRECATED_v333
+static xbt_dynar_t instr_set_to_dynar(const std::set<std::string, std::less<>>& filter) // XBT_ATTRIB_DEPRECATED_v334
 {
   if (not TRACE_is_enabled() || not TRACE_needs_platform())
     return nullptr;
@@ -346,45 +346,45 @@ static xbt_dynar_t instr_set_to_dynar(const std::set<std::string, std::less<>>& 
   return ret;
 }
 
-void TRACE_category(const char* category) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_category(const char* category) // XBT_ATTRIB_DEPRECATED_v334
 {
   simgrid::instr::declare_tracing_category(category);
 }
 
-void TRACE_category_with_color(const char* category, const char* color) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_category_with_color(const char* category, const char* color) // XBT_ATTRIB_DEPRECATED_v334
 {
   simgrid::instr::declare_tracing_category(category, color);
 }
 
-xbt_dynar_t TRACE_get_categories() // XBT_ATTRIB_DEPRECATED_v333
+xbt_dynar_t TRACE_get_categories() // XBT_ATTRIB_DEPRECATED_v334
 {
   if (not TRACE_is_enabled() || not TRACE_categorized())
     return nullptr;
   return instr_set_to_dynar(created_categories);
 }
 
-void TRACE_declare_mark(const char* mark_type) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_declare_mark(const char* mark_type) // XBT_ATTRIB_DEPRECATED_v334
 {
   simgrid::instr::declare_mark(mark_type);
 }
 
 void TRACE_declare_mark_value_with_color(const char* mark_type, const char* mark_value,
-                                         const char* mark_color) // XBT_ATTRIB_DEPRECATED_v333
+                                         const char* mark_color) // XBT_ATTRIB_DEPRECATED_v334
 {
   simgrid::instr::declare_mark_value(mark_type, mark_value, mark_color);
 }
 
-void TRACE_declare_mark_value(const char* mark_type, const char* mark_value) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_declare_mark_value(const char* mark_type, const char* mark_value) // XBT_ATTRIB_DEPRECATED_v334
 {
   simgrid::instr::declare_mark_value(mark_type, mark_value);
 }
 
-void TRACE_mark(const char* mark_type, const char* mark_value) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_mark(const char* mark_type, const char* mark_value) // XBT_ATTRIB_DEPRECATED_v334
 {
   simgrid::instr::mark(mark_type, mark_value);
 }
 
-xbt_dynar_t TRACE_get_marks() // XBT_ATTRIB_DEPRECATED_v333
+xbt_dynar_t TRACE_get_marks() // XBT_ATTRIB_DEPRECATED_v334
 {
   if (not TRACE_is_enabled())
     return nullptr;
@@ -392,186 +392,186 @@ xbt_dynar_t TRACE_get_marks() // XBT_ATTRIB_DEPRECATED_v333
   return instr_set_to_dynar(declared_marks);
 }
 
-int TRACE_platform_graph_export_graphviz(const char* filename) // XBT_ATTRIB_DEPRECATED_v333
+int TRACE_platform_graph_export_graphviz(const char* filename) // XBT_ATTRIB_DEPRECATED_v334
 {
   simgrid::instr::platform_graph_export_graphviz(filename);
   return 1;
 }
 
-void TRACE_vm_variable_declare(const char* variable) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_vm_variable_declare(const char* variable) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(0, "", variable, "VM", 0, InstrUserVariable::DECLARE, "", &user_vm_variables);
 }
-void TRACE_vm_variable_declare_with_color(const char* variable, const char* color) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_vm_variable_declare_with_color(const char* variable, const char* color) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(0, "", variable, "VM", 0, InstrUserVariable::DECLARE, color, &user_vm_variables);
 }
 
-void TRACE_vm_variable_set(const char* vm, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_vm_variable_set(const char* vm, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(simgrid_get_clock(), vm, variable, "VM", value, InstrUserVariable::SET, "", &user_vm_variables);
 }
 
-void TRACE_vm_variable_add(const char* vm, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_vm_variable_add(const char* vm, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(simgrid_get_clock(), vm, variable, "VM", value, InstrUserVariable::ADD, "", &user_vm_variables);
 }
-void TRACE_vm_variable_sub(const char* vm, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_vm_variable_sub(const char* vm, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(simgrid_get_clock(), vm, variable, "VM", value, InstrUserVariable::SUB, "", &user_vm_variables);
 }
 
 void TRACE_vm_variable_set_with_time(double time, const char* vm, const char* variable,
-                                     double value) // XBT_ATTRIB_DEPRECATED_v333
+                                     double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::SET, "", &user_vm_variables);
 }
 
 void TRACE_vm_variable_add_with_time(double time, const char* vm, const char* variable,
-                                     double value) // XBT_ATTRIB_DEPRECATED_v333
+                                     double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::ADD, "", &user_vm_variables);
 }
 void TRACE_vm_variable_sub_with_time(double time, const char* vm, const char* variable,
-                                     double value) // XBT_ATTRIB_DEPRECATED_v333
+                                     double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(time, vm, variable, "VM", value, InstrUserVariable::SUB, "", &user_vm_variables);
 }
 
-void TRACE_host_variable_declare(const char* variable) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_host_variable_declare(const char* variable) // XBT_ATTRIB_DEPRECATED_v334
 {
   simgrid::instr::declare_host_variable(variable);
 }
 
-void TRACE_host_variable_declare_with_color(const char* variable, const char* color) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_host_variable_declare_with_color(const char* variable, const char* color) // XBT_ATTRIB_DEPRECATED_v334
 {
   simgrid::instr::declare_host_variable(variable, color);
 }
 
-void TRACE_host_variable_set(const char* host, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_host_variable_set(const char* host, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(simgrid_get_clock(), host, variable, "HOST", value, InstrUserVariable::SET, "",
                       &user_host_variables);
 }
 
-void TRACE_host_variable_add(const char* host, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_host_variable_add(const char* host, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(simgrid_get_clock(), host, variable, "HOST", value, InstrUserVariable::ADD, "",
                       &user_host_variables);
 }
 
-void TRACE_host_variable_sub(const char* host, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_host_variable_sub(const char* host, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(simgrid_get_clock(), host, variable, "HOST", value, InstrUserVariable::SUB, "",
                       &user_host_variables);
 }
 
 void TRACE_host_variable_set_with_time(double time, const char* host, const char* variable,
-                                       double value) // XBT_ATTRIB_DEPRECATED_v333
+                                       double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(time, host, variable, "HOST", value, InstrUserVariable::SET, "", &user_host_variables);
 }
 
 void TRACE_host_variable_add_with_time(double time, const char* host, const char* variable,
-                                       double value) // XBT_ATTRIB_DEPRECATED_v333
+                                       double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(time, host, variable, "HOST", value, InstrUserVariable::ADD, "", &user_host_variables);
 }
 
 void TRACE_host_variable_sub_with_time(double time, const char* host, const char* variable,
-                                       double value) // XBT_ATTRIB_DEPRECATED_v333
+                                       double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(time, host, variable, "HOST", value, InstrUserVariable::SUB, "", &user_host_variables);
 }
 
-xbt_dynar_t TRACE_get_host_variables() // XBT_ATTRIB_DEPRECATED_v333
+xbt_dynar_t TRACE_get_host_variables() // XBT_ATTRIB_DEPRECATED_v334
 {
   return instr_set_to_dynar(user_host_variables);
 }
 
-void TRACE_link_variable_declare(const char* variable) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_link_variable_declare(const char* variable) // XBT_ATTRIB_DEPRECATED_v334
 {
   simgrid::instr::declare_link_variable(variable);
 }
 
-void TRACE_link_variable_declare_with_color(const char* variable, const char* color) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_link_variable_declare_with_color(const char* variable, const char* color) // XBT_ATTRIB_DEPRECATED_v334
 {
   simgrid::instr::declare_link_variable(variable, color);
 }
 
-void TRACE_link_variable_set(const char* link, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_link_variable_set(const char* link, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(simgrid_get_clock(), link, variable, "LINK", value, InstrUserVariable::SET, "",
                       &user_link_variables);
 }
 
-void TRACE_link_variable_add(const char* link, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_link_variable_add(const char* link, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(simgrid_get_clock(), link, variable, "LINK", value, InstrUserVariable::ADD, "",
                       &user_link_variables);
 }
 
-void TRACE_link_variable_sub(const char* link, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v333
+void TRACE_link_variable_sub(const char* link, const char* variable, double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(simgrid_get_clock(), link, variable, "LINK", value, InstrUserVariable::SUB, "",
                       &user_link_variables);
 }
 
 void TRACE_link_variable_set_with_time(double time, const char* link, const char* variable,
-                                       double value) // XBT_ATTRIB_DEPRECATED_v333
+                                       double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(time, link, variable, "LINK", value, InstrUserVariable::SET, "", &user_link_variables);
 }
 
 void TRACE_link_variable_add_with_time(double time, const char* link, const char* variable,
-                                       double value) // XBT_ATTRIB_DEPRECATED_v333
+                                       double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(time, link, variable, "LINK", value, InstrUserVariable::ADD, "", &user_link_variables);
 }
 
 void TRACE_link_variable_sub_with_time(double time, const char* link, const char* variable,
-                                       double value) // XBT_ATTRIB_DEPRECATED_v333
+                                       double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_variable(time, link, variable, "LINK", value, InstrUserVariable::SUB, "", &user_link_variables);
 }
 
 void TRACE_link_srcdst_variable_set(const char* src, const char* dst, const char* variable,
-                                    double value) // XBT_ATTRIB_DEPRECATED_v333
+                                    double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_srcdst_variable(simgrid_get_clock(), src, dst, variable, value, InstrUserVariable::SET);
 }
 
 void TRACE_link_srcdst_variable_add(const char* src, const char* dst, const char* variable,
-                                    double value) // XBT_ATTRIB_DEPRECATED_v333
+                                    double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_srcdst_variable(simgrid_get_clock(), src, dst, variable, value, InstrUserVariable::ADD);
 }
 
 void TRACE_link_srcdst_variable_sub(const char* src, const char* dst, const char* variable,
-                                    double value) // XBT_ATTRIB_DEPRECATED_v333
+                                    double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_srcdst_variable(simgrid_get_clock(), src, dst, variable, value, InstrUserVariable::SUB);
 }
 
 void TRACE_link_srcdst_variable_set_with_time(double time, const char* src, const char* dst, const char* variable,
-                                              double value) // XBT_ATTRIB_DEPRECATED_v333
+                                              double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_srcdst_variable(time, src, dst, variable, value, InstrUserVariable::SET);
 }
 
 void TRACE_link_srcdst_variable_add_with_time(double time, const char* src, const char* dst, const char* variable,
-                                              double value) // XBT_ATTRIB_DEPRECATED_v333
+                                              double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_srcdst_variable(time, src, dst, variable, value, InstrUserVariable::ADD);
 }
 
 void TRACE_link_srcdst_variable_sub_with_time(double time, const char* src, const char* dst, const char* variable,
-                                              double value) // XBT_ATTRIB_DEPRECATED_v333
+                                              double value) // XBT_ATTRIB_DEPRECATED_v334
 {
   instr_user_srcdst_variable(time, src, dst, variable, value, InstrUserVariable::SUB);
 }
 
-xbt_dynar_t TRACE_get_link_variables() // XBT_ATTRIB_DEPRECATED_v333
+xbt_dynar_t TRACE_get_link_variables() // XBT_ATTRIB_DEPRECATED_v334
 {
   return instr_set_to_dynar(user_link_variables);
 }
