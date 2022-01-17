@@ -68,7 +68,7 @@ class XBT_PUBLIC Action {
 
   double cost_;
   Model* model_;
-  void* data_                       = nullptr; /**< for your convenience */
+  void* data_                       = nullptr; /**< for your convenience - XBT_ATTRIB_DEPRECATED_v334 */
   activity::ActivityImpl* activity_ = nullptr;
 
   /* LMM */
@@ -158,9 +158,15 @@ public:
   double get_finish_time() const { return finish_time_; }
 
   /** @brief Get the user data associated to the current action */
-  void* get_data() const { return data_; }
+  XBT_ATTRIB_DEPRECATED_v334("Please manifest if you actually need this function") void* get_data() const
+  {
+    return data_;
+  }
   /** @brief Set the user data associated to the current action */
-  void set_data(void* data) { data_ = data; }
+  XBT_ATTRIB_DEPRECATED_v334("Please manifest if you actually need this function") void set_data(void* data)
+  {
+    data_ = data;
+  }
 
   /** @brief Get the user data associated to the current action */
   activity::ActivityImpl* get_activity() const { return activity_; }
