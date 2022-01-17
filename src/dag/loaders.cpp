@@ -41,7 +41,7 @@ static bool check_for_cycle(const std::vector<simgrid::s4u::ActivityPtr>& dag)
   std::vector<simgrid::s4u::ActivityPtr> current;
 
   for (const auto& a : dag)
-    if (dynamic_cast<simgrid::s4u::Exec*>(a.get()) != nullptr && a->is_waited_by() == 0)
+    if (dynamic_cast<simgrid::s4u::Exec*>(a.get()) != nullptr && a->has_no_successor())
       current.push_back(a);
 
   while (not current.empty()) {
@@ -123,7 +123,7 @@ std::vector<ActivityPtr> create_DAG_from_DAX(const std::string& filename)
         result.push_back(newfile);
       }
     }
-    if (file->is_waited_by() == 0) {
+    if (file->has_no_successor()) {
       for (auto const& it : file->get_dependencies()) {
         newfile = Comm::sendto_init()->set_name(file->get_name())->set_payload_size(file->get_remaining());
         it->add_successor(newfile);
@@ -162,7 +162,7 @@ std::vector<ActivityPtr> create_DAG_from_DAX(const std::string& filename)
       if ((a != root_task) && (a != end_task)) {
         if (a->dependencies_solved())
           root_task->add_successor(a);
-        if (a->is_waited_by() == 0)
+        if (a->has_no_successor())
           a->add_successor(end_task);
       }
     }
@@ -267,7 +267,7 @@ std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename)
       root->add_successor(a);
     }
 
-    if (a->is_waited_by() == 0 && a != end) {
+    if (a->has_no_successor() && a != end) {
       XBT_DEBUG("Activity '%s' has no successors. Add dependency to 'end'", a->get_cname());
       a->add_successor(end);
     }

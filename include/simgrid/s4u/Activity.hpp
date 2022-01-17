@@ -46,7 +46,7 @@ public:
 
   virtual bool is_assigned() const = 0;
   bool dependencies_solved() const { return dependencies_.empty(); }
-  unsigned long is_waited_by() const { return successors_.size(); }
+  bool has_no_successor() const { return successors_.empty(); }
   const std::set<ActivityPtr>& get_dependencies() const { return dependencies_; }
   const std::vector<ActivityPtr>& get_successors() const { return successors_; }
 
