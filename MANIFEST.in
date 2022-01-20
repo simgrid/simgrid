@@ -233,7 +233,6 @@ include examples/cpp/dht-kademlia/s4u-dht-kademlia.cpp
 include examples/cpp/dht-kademlia/s4u-dht-kademlia.hpp
 include examples/cpp/dht-kademlia/s4u-dht-kademlia.tesh
 include examples/cpp/dht-kademlia/s4u-dht-kademlia_d.xml
-include examples/cpp/energy-boot/platform_boot.xml
 include examples/cpp/energy-boot/s4u-energy-boot.cpp
 include examples/cpp/energy-boot/s4u-energy-boot.tesh
 include examples/cpp/energy-exec-ptask/s4u-energy-exec-ptask.cpp
@@ -337,7 +336,6 @@ include examples/cpp/platform-profile/s4u-platform-profile.cpp
 include examples/cpp/platform-profile/s4u-platform-profile.tesh
 include examples/cpp/platform-properties/s4u-platform-properties.cpp
 include examples/cpp/platform-properties/s4u-platform-properties.tesh
-include examples/cpp/platform-properties/s4u-platform-properties_d.xml
 include examples/cpp/plugin-host-load/s4u-plugin-host-load.cpp
 include examples/cpp/plugin-host-load/s4u-plugin-host-load.tesh
 include examples/cpp/plugin-link-load/s4u-plugin-link-load.cpp
@@ -1969,6 +1967,7 @@ include examples/platforms/config_tracing.xml
 include examples/platforms/crosstraffic.xml
 include examples/platforms/data_center.xml
 include examples/platforms/dogbone.xml
+include examples/platforms/energy_boot.xml
 include examples/platforms/energy_cluster.xml
 include examples/platforms/energy_platform.xml
 include examples/platforms/faulty_host.xml
@@ -2028,9 +2027,6 @@ include examples/platforms/wifi_ns3.xml
 include examples/python/CMakeLists.txt
 include examples/python/actor-create/actor-create_d.xml
 include examples/python/actor-lifetime/actor-lifetime_d.xml
-include examples/python/comm-wait/comm-wait_d.xml
-include examples/python/comm-waitall/comm-waitall_d.xml
-include examples/python/comm-waitany/comm-waitany_d.xml
 include examples/smpi/CMakeLists.txt
 include examples/smpi/NAS/CMakeLists.txt
 include examples/smpi/comm_dynamic_costs/CMakeLists.txt

@@ -2,7 +2,7 @@
 
 p Modeling the host energy consumption during boot and shutdown
 
-$ ${bindir:=.}/s4u-energy-boot ${srcdir:=.}/platform_boot.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+$ ${bindir:=.}/s4u-energy-boot ${platfdir:=.}/energy_boot.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (1:Boot Monitor@MyHost2) Initial pstate: 0; Energy dissipated so far:0E+00 J
 > [  0.000000] (1:Boot Monitor@MyHost2) Sleep for 10 seconds
 > [ 10.000000] (1:Boot Monitor@MyHost2) Done sleeping. Current pstate: 0; Energy dissipated so far: 950.00 J
@@ -23,7 +23,7 @@ $ ${bindir:=.}/s4u-energy-boot ${srcdir:=.}/platform_boot.xml "--log=root.fmt:[%
 > [177.000000] (0:maestro@) Energy consumption of host MyHost1: 19820.000000 Joules
 > [177.000000] (0:maestro@) Energy consumption of host MyHost2: 17700.000000 Joules
 
-$ ${bindir:=.}/s4u-energy-boot ${srcdir:=.}/platform_boot.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --cfg=host/model:ptask_L07
+$ ${bindir:=.}/s4u-energy-boot ${platfdir:=.}/energy_boot.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --cfg=host/model:ptask_L07
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'ptask_L07'
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > [  0.000000] (1:Boot Monitor@MyHost2) Initial pstate: 0; Energy dissipated so far:0E+00 J

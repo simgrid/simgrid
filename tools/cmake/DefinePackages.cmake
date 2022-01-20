@@ -1147,6 +1147,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/profiles/trace_B.txt
   examples/platforms/data_center.xml
   examples/platforms/dogbone.xml
+  examples/platforms/energy_boot.xml
   examples/platforms/energy_platform.xml
   examples/platforms/energy_cluster.xml
   examples/platforms/faulty_host.xml
