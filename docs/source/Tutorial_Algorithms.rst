@@ -4,8 +4,8 @@ Simulating Algorithms
 =====================
 
 SimGrid was conceived as a tool to study distributed algorithms. Its
-modern :ref:`S4U interface <S4U_doc>` makes it easy to assess Cloud,
-P2P, HPC, IoT, and similar settings.
+:ref:`S4U interface <S4U_doc>` makes it easy to assess Cloud,
+P2P, HPC, IoT, and other similar settings (:ref:`more info <index>`).
 
 A typical SimGrid simulation is composed of several |Actors|_, that
 execute user-provided functions. The actors have to explicitly use the
@@ -18,7 +18,7 @@ completion of these activities.
 
 Each actor executes a user-provided function on a simulated |Host|_
 with which it can interact. Communications are not directly sent to
-actors, but posted onto a |Mailbox|_ that serves as a rendezvous point
+actors, but posted onto a |Mailbox|_ that serves as a rendez-vous point
 between communicating actors.
 
 .. |Actors| replace:: **Actors**
@@ -62,8 +62,8 @@ fully-functioning example of SimGrid simulation: the Master/Workers
 application. We will detail each part of the code and the necessary
 configuration to make it work.  After this tour, several exercises
 are proposed to let you discover some of the SimGrid features, hands
-on the keyboard. This practical session will be given in C++, which you
-are supposed to know beforehand.
+on the keyboard. This practical session will be given in C++ or Python, 
+which you are supposed to know beforehand.
 
 
 Discover the Master/Workers

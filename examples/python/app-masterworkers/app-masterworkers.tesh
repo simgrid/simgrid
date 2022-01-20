@@ -1,0 +1,34 @@
+#!/usr/bin/env tesh
+
+p Testing a simple master/workers example application
+
+! output sort 19
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/app-masterworkers.py ${platfdir}/small_platform.xml app-masterworkers_d.xml --trace "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
+> [  0.000000] (master@Tremblay) Got 5 workers and 20 tasks to process
+> [  0.000000] (master@Tremblay) Sending task 0 of 20 to mailbox 'Tremblay'
+> [  0.002265] (master@Tremblay) Sending task 1 of 20 to mailbox 'Jupiter'
+> [  0.171420] (master@Tremblay) Sending task 2 of 20 to mailbox 'Fafard'
+> [  0.329817] (master@Tremblay) Sending task 3 of 20 to mailbox 'Ginette'
+> [  0.453549] (master@Tremblay) Sending task 4 of 20 to mailbox 'Bourassa'
+> [  0.586168] (master@Tremblay) Sending task 5 of 20 to mailbox 'Tremblay'
+> [  0.588433] (master@Tremblay) Sending task 6 of 20 to mailbox 'Jupiter'
+> [  0.995917] (master@Tremblay) Sending task 7 of 20 to mailbox 'Fafard'
+> [  1.154314] (master@Tremblay) Sending task 8 of 20 to mailbox 'Ginette'
+> [  1.608379] (master@Tremblay) Sending task 9 of 20 to mailbox 'Bourassa'
+> [  1.749885] (master@Tremblay) Sending task 10 of 20 to mailbox 'Tremblay'
+> [  1.752150] (master@Tremblay) Sending task 11 of 20 to mailbox 'Jupiter'
+> [  1.921304] (master@Tremblay) Sending task 12 of 20 to mailbox 'Fafard'
+> [  2.079701] (master@Tremblay) Sending task 13 of 20 to mailbox 'Ginette'
+> [  2.763209] (master@Tremblay) Sending task 14 of 20 to mailbox 'Bourassa'
+> [  2.913601] (master@Tremblay) Sending task 15 of 20 to mailbox 'Tremblay'
+> [  2.915867] (master@Tremblay) Sending task 16 of 20 to mailbox 'Jupiter'
+> [  3.085021] (master@Tremblay) Sending task 17 of 20 to mailbox 'Fafard'
+> [  3.243418] (master@Tremblay) Sending task 18 of 20 to mailbox 'Ginette'
+> [  3.918038] (master@Tremblay) Sending task 19 of 20 to mailbox 'Bourassa'
+> [  4.077318] (master@Tremblay) All tasks have been dispatched. Request all workers to stop.
+> [  4.077513] (worker@Tremblay) Exiting now.
+> [  4.096528] (worker@Jupiter) Exiting now.
+> [  4.122236] (worker@Fafard) Exiting now.
+> [  4.965689] (worker@Ginette) Exiting now.
+> [  5.133855] (maestro@) Simulation is over
+> [  5.133855] (worker@Bourassa) Exiting now.

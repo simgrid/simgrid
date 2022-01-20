@@ -1,5 +1,7 @@
 .. SimGrid documentation master file
 
+.. _index:
+
 The Modern Age of Computer Systems Simulation
 =============================================
 

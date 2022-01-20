@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* ************************************************************************* */
-/* Take this tutorial online: https://simgrid.frama.io/simgrid/tuto_s4u.html */
+/* Take this tutorial online: https://simgrid.org/doc/latest/Tutorial_Algorithms.html */
 /* ************************************************************************* */
 
 #include <simgrid/s4u.hpp>
