@@ -11,7 +11,7 @@ $ ${javacmd:=java} -classpath ${classpath:=.} energy/consumption/Main ${srcdir:=
 > [20.000000] [surf_energy/INFO] Total energy consumption: 6200.000000 Joules (used hosts: 2200.000000 Joules; unused/idle hosts: 4000.000000)
 > [20.000000] [java/INFO] Terminating the simulation...
 > [20.000000] [java/INFO] Total simulation time: 20.0
-> [20.000000] [surf_energy/INFO] Energy consumption of host MyHost1: 2200.000000 Joules
-> [20.000000] [surf_energy/INFO] Energy consumption of host MyHost2: 2000.000000 Joules
-> [20.000000] [surf_energy/INFO] Energy consumption of host MyHost3: 2000.000000 Joules
+> [20.000000] [host_energy/INFO] Energy consumption of host MyHost1: 2200.000000 Joules
+> [20.000000] [host_energy/INFO] Energy consumption of host MyHost2: 2000.000000 Joules
+> [20.000000] [host_energy/INFO] Energy consumption of host MyHost3: 2000.000000 Joules
 

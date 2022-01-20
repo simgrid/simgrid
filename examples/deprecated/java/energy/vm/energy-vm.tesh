@@ -14,8 +14,8 @@ $ ${javacmd:=java} -classpath ${classpath:=.} energy/vm/Main ${srcdir:=.}/../../
 > [vmHost1:p12:(3) 6.000000] [java/INFO] This worker is done.
 > [vmHost1:p11:(2) 6.000000] [java/INFO] This worker is done.
 > [vmHost3:p21:(4) 6.000000] [java/INFO] This worker is done.
-> [10.000000] [surf_energy/INFO] Total energy consumption: 4320.000000 Joules (used hosts: 4320.000000 Joules; unused/idle hosts: 0.000000)
+> [10.000000] [host_energy/INFO] Total energy consumption: 4320.000000 Joules (used hosts: 4320.000000 Joules; unused/idle hosts: 0.000000)
 > [10.000000] [java/INFO] Terminating the simulation...
-> [10.000000] [surf_energy/INFO] Energy consumption of host MyHost1: 1120.000000 Joules
-> [10.000000] [surf_energy/INFO] Energy consumption of host MyHost2: 1600.000000 Joules
-> [10.000000] [surf_energy/INFO] Energy consumption of host MyHost3: 1600.000000 Joules
+> [10.000000] [host_energy/INFO] Energy consumption of host MyHost1: 1120.000000 Joules
+> [10.000000] [host_energy/INFO] Energy consumption of host MyHost2: 1600.000000 Joules
+> [10.000000] [host_energy/INFO] Energy consumption of host MyHost3: 1600.000000 Joules
