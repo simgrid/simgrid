@@ -185,6 +185,8 @@ include examples/cpp/comm-serialize/s4u-comm-serialize.cpp
 include examples/cpp/comm-serialize/s4u-comm-serialize.tesh
 include examples/cpp/comm-suspend/s4u-comm-suspend.cpp
 include examples/cpp/comm-suspend/s4u-comm-suspend.tesh
+include examples/cpp/comm-testany/s4u-comm-testany.cpp
+include examples/cpp/comm-testany/s4u-comm-testany.tesh
 include examples/cpp/comm-throttling/s4u-comm-throttling.cpp
 include examples/cpp/comm-throttling/s4u-comm-throttling.tesh
 include examples/cpp/comm-wait/s4u-comm-wait.cpp

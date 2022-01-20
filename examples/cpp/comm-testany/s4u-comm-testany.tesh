@@ -1,0 +1,16 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-comm-testany ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e[%8h]%e[%a]%e%m%n"
+> [  0.000000] [Tremblay] [rank-0] Post my asynchronous receives
+> [  0.000000] [Tremblay] [rank-0] Send some data to rank-1
+> [  0.025708] [  Fafard] [rank-1] Received 0
+> [  0.025708] [  Fafard] [rank-1] Send 'Message 0'
+> [  0.209813] [  Fafard] [rank-1] Received 1
+> [  0.209813] [  Fafard] [rank-1] Send 'Message 1'
+> [  0.393918] [Tremblay] [rank-0] Test for completed comms
+> [  0.393918] [  Fafard] [rank-1] Received 2
+> [  0.393918] [  Fafard] [rank-1] Send 'Message 2'
+> [  0.393918] [Tremblay] [rank-0] Remove a pending comm.
+> [  0.393918] [Tremblay] [rank-0] Remove a pending comm.
+> [  0.593918] [Tremblay] [rank-0] Remove a pending comm.
+> [  0.593918] [Tremblay] [rank-0] Last comm is complete
