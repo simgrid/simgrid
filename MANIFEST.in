@@ -508,6 +508,8 @@ include examples/python/actor-suspend/actor-suspend.py
 include examples/python/actor-suspend/actor-suspend.tesh
 include examples/python/actor-yield/actor-yield.py
 include examples/python/actor-yield/actor-yield.tesh
+include examples/python/app-masterworkers/app-masterworkers.py
+include examples/python/app-masterworkers/app-masterworkers.tesh
 include examples/python/clusters-multicpu/clusters-multicpu.py
 include examples/python/clusters-multicpu/clusters-multicpu.tesh
 include examples/python/comm-wait/comm-wait.py
@@ -2027,6 +2029,7 @@ include examples/platforms/wifi_ns3.xml
 include examples/python/CMakeLists.txt
 include examples/python/actor-create/actor-create_d.xml
 include examples/python/actor-lifetime/actor-lifetime_d.xml
+include examples/python/app-masterworkers/app-masterworkers_d.xml
 include examples/smpi/CMakeLists.txt
 include examples/smpi/NAS/CMakeLists.txt
 include examples/smpi/comm_dynamic_costs/CMakeLists.txt

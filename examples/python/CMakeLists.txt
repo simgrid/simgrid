@@ -20,4 +20,5 @@ endforeach()
 
 set(examples_src  ${examples_src}                                                      PARENT_SCOPE)
 set(tesh_files    ${tesh_files}   examples/python/actor-create/actor-create_d.xml
-                                  examples/python/actor-lifetime/actor-lifetime_d.xml  PARENT_SCOPE)
+                                  examples/python/actor-lifetime/actor-lifetime_d.xml
+                                  examples/python/app-masterworkers/app-masterworkers_d.xml  PARENT_SCOPE)
