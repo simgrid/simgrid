@@ -8,7 +8,7 @@ $ ${javacmd:=java} -classpath ${classpath:=.} energy/consumption/Main ${srcdir:=
 > [MyHost1:energyConsumer:(1) 0.000000] [java/INFO] Initial peak speed= 1.0E8 flop/s; Energy dissipated = 0.0 J
 > [MyHost1:energyConsumer:(1) 10.000000] [java/INFO] Currently consumed energy after sleeping 10 sec: 1000.0
 > [MyHost1:energyConsumer:(1) 20.000000] [java/INFO] Currently consumed energy after executing 1E9 flops: 2200.0
-> [20.000000] [surf_energy/INFO] Total energy consumption: 6200.000000 Joules (used hosts: 2200.000000 Joules; unused/idle hosts: 4000.000000)
+> [20.000000] [host_energy/INFO] Total energy consumption: 6200.000000 Joules (used hosts: 2200.000000 Joules; unused/idle hosts: 4000.000000)
 > [20.000000] [java/INFO] Terminating the simulation...
 > [20.000000] [java/INFO] Total simulation time: 20.0
 > [20.000000] [host_energy/INFO] Energy consumption of host MyHost1: 2200.000000 Joules
