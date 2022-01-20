@@ -20,7 +20,7 @@ SIMGRID_REGISTER_PLUGIN(link_energy_wifi, "Energy wifi test", &sg_wifi_energy_pl
  * This is the WiFi energy plugin, accounting for the dissipated energy of WiFi links.
  */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(link_energy_wifi, surf, "Logging specific to the link energy wifi plugin");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(link_energy_wifi, kernel, "Logging specific to the link energy wifi plugin");
 
 namespace simgrid {
 namespace plugin {

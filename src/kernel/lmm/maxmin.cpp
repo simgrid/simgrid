@@ -7,7 +7,7 @@
 #include <boost/core/demangle.hpp>
 #include <typeinfo>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_maxmin, surf, "Logging specific to SURF (maxmin)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_lmm, kernel, "Kernel Linear Max-Min solver");
 
 double sg_maxmin_precision = 1E-5; /* Change this with --cfg=maxmin/precision:VALUE */
 double sg_surf_precision   = 1E-9; /* Change this with --cfg=surf/precision:VALUE */
@@ -55,7 +55,7 @@ void Element::increase_concurrency()
 void System::check_concurrency() const
 {
   // These checks are very expensive, so do them only if we want to debug SURF LMM
-  if (not XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug))
+  if (not XBT_LOG_ISENABLED(ker_lmm, xbt_log_priority_debug))
     return;
 
   for (Constraint const& cnst : constraint_set) {
@@ -657,7 +657,7 @@ template <class CnstList> void System::lmm_solve(CnstList& cnst_list)
   if (selective_update_active)
     remove_all_modified_set();
 
-  if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
+  if (XBT_LOG_ISENABLED(ker_lmm, xbt_log_priority_debug)) {
     print();
   }
 
@@ -720,7 +720,7 @@ int Variable::get_min_concurrency_slack() const
 // loops (after doing the first for enabling==1, and before doing the last for disabling==1)
 void System::enable_var(Variable* var)
 {
-  xbt_assert(not XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug) || var->can_enable());
+  xbt_assert(not XBT_LOG_ISENABLED(ker_lmm, xbt_log_priority_debug) || var->can_enable());
 
   var->sharing_penalty_ = var->staged_penalty_;
   var->staged_penalty_  = 0;

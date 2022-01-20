@@ -9,7 +9,7 @@
 #include <array>
 #include <cstdio> /* snprintf */
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(smpi_masterworkers, "Messages specific for this example");
 
 static void master(std::vector<std::string> args)
 {

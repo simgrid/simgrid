@@ -15,7 +15,7 @@ $ ${bindir:=.}/../smpi_script/bin/smpirun -np 2 -hostfile ${srcdir:=.}/hostfile 
 > [30.000000] [rank 1] Current pstate: 2; Current power: 20000000
 > [80.000000] [rank 0] Energy consumed: 8650 Joules.
 > [80.000000] [rank 1] Energy consumed: 12900 Joules.
-> [80.000000] [surf_energy/INFO] Total energy consumption: 29550.000000 Joules (used hosts: 21550.000000 Joules; unused/idle hosts: 8000.000000)
-> [80.000000] [surf_energy/INFO] Energy consumption of host MyHost1: 8650.000000 Joules
-> [80.000000] [surf_energy/INFO] Energy consumption of host MyHost2: 12900.000000 Joules
-> [80.000000] [surf_energy/INFO] Energy consumption of host MyHost3: 8000.000000 Joules
+> [80.000000] [host_energy/INFO] Total energy consumption: 29550.000000 Joules (used hosts: 21550.000000 Joules; unused/idle hosts: 8000.000000)
+> [80.000000] [host_energy/INFO] Energy consumption of host MyHost1: 8650.000000 Joules
+> [80.000000] [host_energy/INFO] Energy consumption of host MyHost2: 12900.000000 Joules
+> [80.000000] [host_energy/INFO] Energy consumption of host MyHost3: 8000.000000 Joules

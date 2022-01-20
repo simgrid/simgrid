@@ -9,7 +9,7 @@
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "xbt/string.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_star, surf, "Routing part of surf");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_star, ker_routing, "Kernel Star Routing");
 
 namespace simgrid {
 namespace kernel {

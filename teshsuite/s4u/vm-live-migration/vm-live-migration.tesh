@@ -4,6 +4,6 @@ $ ./vm-live-migration ${srcdir}/platform.xml
 > [host1:migration:(2) 0.000000] [example/INFO] VM0 migration started
 > [host1:migration:(2) 1.000000] [example/INFO] VM 'VM0' migrated from 'host1' to 'host2'
 > [VM0:executor:(1) 3.000000] [example/INFO] Task done. It's running on VM0@host2 that runs at 2e+09f/s. host2 runs at 2e+09f/s
-> [3.000000] [surf_energy/INFO] Total energy consumption: 12.000000 Joules (used hosts: 12.000000 Joules; unused/idle hosts: 0.000000)
-> [3.000000] [surf_energy/INFO] Energy consumption of host host1: 4.000000 Joules
-> [3.000000] [surf_energy/INFO] Energy consumption of host host2: 8.000000 Joules
+> [3.000000] [host_energy/INFO] Total energy consumption: 12.000000 Joules (used hosts: 12.000000 Joules; unused/idle hosts: 0.000000)
+> [3.000000] [host_energy/INFO] Energy consumption of host host1: 4.000000 Joules
+> [3.000000] [host_energy/INFO] Energy consumption of host host2: 8.000000 Joules

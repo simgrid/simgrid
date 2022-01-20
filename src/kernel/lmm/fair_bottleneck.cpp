@@ -13,7 +13,7 @@
 #include <cstdlib>
 #include <xbt/utility.hpp>
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_lmm);
 
 void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
 {
@@ -51,7 +51,7 @@ void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
   auto& var_list  = saturated_variable_set;
   auto& cnst_list = saturated_constraint_set;
   do {
-    if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
+    if (XBT_LOG_ISENABLED(ker_lmm, xbt_log_priority_debug)) {
       XBT_DEBUG("Fair bottleneck done");
       print();
     }
@@ -140,7 +140,7 @@ void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
 
   cnst_list.clear();
   modified_ = true;
-  if (XBT_LOG_ISENABLED(surf_maxmin, xbt_log_priority_debug)) {
+  if (XBT_LOG_ISENABLED(ker_lmm, xbt_log_priority_debug)) {
     XBT_DEBUG("Fair bottleneck done");
     print();
   }

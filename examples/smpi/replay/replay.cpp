@@ -10,7 +10,7 @@
 #include "xbt/str.h"
 
 #include "xbt/log.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(replay_test, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(replay_test, "Messages specific for this example");
 
 /* This shows how to extend the trace format by adding a new kind of events.
    This function is registered through xbt_replay_action_register() below. */

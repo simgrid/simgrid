@@ -8,7 +8,7 @@
 
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_wifi, surf, "Routing part of surf");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_wifi, ker_routing, "Kernel Wifi Routing");
 
 namespace simgrid {
 namespace kernel {

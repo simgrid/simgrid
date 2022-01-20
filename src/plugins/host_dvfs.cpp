@@ -63,7 +63,7 @@ static simgrid::config::Flag<int>
 
 */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_plugin_dvfs, surf, "Logging specific to the SURF HostDvfs plugin");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(host_dvfs, kernel, "Logging specific to the HostDvfs plugin");
 
 namespace simgrid {
 namespace plugin {

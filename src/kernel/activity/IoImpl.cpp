@@ -17,7 +17,7 @@
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_io, kernel, "Kernel io-related synchronization");
 
 namespace simgrid {
 namespace kernel {

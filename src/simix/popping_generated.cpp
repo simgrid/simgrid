@@ -24,7 +24,7 @@
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/kernel/context/Context.hpp"
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
 using simgrid::simix::Simcall;
 /** @brief Simcalls' names (generated from src/simix/simcalls.in) */

@@ -9,7 +9,7 @@
 #include "simgrid/s4u/Host.hpp"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_netpoint, ker_routing, "Kernel implementation of netpoints");
 
 namespace simgrid {
 

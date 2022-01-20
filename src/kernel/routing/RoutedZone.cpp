@@ -11,7 +11,7 @@
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_generic, ker_routing, "Kernel Generic Routing");
 
 /* ***************************************************************** */
 /* *********************** GENERIC METHODS ************************* */

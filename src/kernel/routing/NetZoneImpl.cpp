@@ -16,7 +16,8 @@
 #include "src/surf/HostImpl.hpp"
 
 #include "src/kernel/resource/StandardLinkImpl.hpp"
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_route);
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing, kernel, "Kernel routing-related information");
 
 namespace simgrid {
 namespace kernel {

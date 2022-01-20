@@ -9,7 +9,7 @@
 
 #include "simgrid/kernel/routing/EmptyZone.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_none, surf, "Routing part of surf");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_none, ker_routing, "Kernel No Routing");
 
 namespace simgrid {
 namespace kernel {

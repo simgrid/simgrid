@@ -210,28 +210,28 @@ $ ./cloud-sharing ${platfdir}/cluster_multi.xml
 >[node-0.1core.org:master:(1) 86.000000] [s4u_test/INFO] .
 >[node-0.1core.org:master:(1) 86.000000] [s4u_test/INFO] ## 0 test failed
 >[node-0.1core.org:master:(1) 86.000000] [s4u_test/INFO] .
->[86.000000] [surf_energy/INFO] Total energy consumption: 8.200000 Joules (used hosts: 8.200000 Joules; unused/idle hosts: 0.000000)
->[86.000000] [surf_energy/INFO] Energy consumption of host node-0.1core.org: 0.800000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-0.2cores.org: 3.700000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-0.4cores.org: 3.600000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-1.1core.org: 0.100000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-1.2cores.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-1.4cores.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-2.1core.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-2.2cores.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-2.4cores.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-3.1core.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-3.2cores.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-3.4cores.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-4.1core.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-4.2cores.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-4.4cores.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-5.1core.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-5.2cores.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-5.4cores.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-6.1core.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-6.2cores.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-6.4cores.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-7.1core.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-7.2cores.org: 0.000000 Joules
->[86.000000] [surf_energy/INFO] Energy consumption of host node-7.4cores.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Total energy consumption: 8.200000 Joules (used hosts: 8.200000 Joules; unused/idle hosts: 0.000000)
+>[86.000000] [host_energy/INFO] Energy consumption of host node-0.1core.org: 0.800000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-0.2cores.org: 3.700000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-0.4cores.org: 3.600000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-1.1core.org: 0.100000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-1.2cores.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-1.4cores.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-2.1core.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-2.2cores.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-2.4cores.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-3.1core.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-3.2cores.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-3.4cores.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-4.1core.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-4.2cores.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-4.4cores.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-5.1core.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-5.2cores.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-5.4cores.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-6.1core.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-6.2cores.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-6.4cores.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-7.1core.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-7.2cores.org: 0.000000 Joules
+>[86.000000] [host_energy/INFO] Energy consumption of host node-7.4cores.org: 0.000000 Joules

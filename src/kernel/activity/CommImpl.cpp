@@ -16,7 +16,7 @@
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix, "SIMIX network-related synchronization");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_network, kernel, "Kernel network-related synchronization");
 
 XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t src, smx_mailbox_t mbox, double task_size,
                                            double rate, unsigned char* src_buff, size_t src_buff_size,

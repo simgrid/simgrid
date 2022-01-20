@@ -12,7 +12,7 @@
 
 #include <boost/algorithm/string.hpp>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_vivaldi, surf, "Routing part of surf");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_vivaldi, ker_routing, "Kernel Vivaldi Routing");
 
 namespace simgrid {
 namespace kernel {

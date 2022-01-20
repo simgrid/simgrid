@@ -11,7 +11,7 @@
 
 #include <climits>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_floyd, surf, "Routing part of surf");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_floyd, ker_routing, "Kernel Floyd Routing");
 
 namespace simgrid {
 namespace kernel {

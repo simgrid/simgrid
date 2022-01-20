@@ -8,7 +8,7 @@
 
 #include <unordered_map>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_mailbox, simix, "Mailbox implementation");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_mailbox, kernel, "Mailbox implementation");
 
 /******************************************************************************/
 /*                           Rendez-Vous Points                               */

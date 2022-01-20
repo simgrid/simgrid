@@ -318,7 +318,7 @@ if __name__ == '__main__':
     fd.write('#include "src/kernel/context/Context.hpp"\n')
 
     fd.write('\n')
-    fd.write('XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);\n\n')
+    fd.write('XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);\n\n')
 
     fd.write('using simgrid::simix::Simcall;')
     fd.write('\n')

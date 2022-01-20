@@ -24,7 +24,7 @@
 #include "simgrid/s4u/Mailbox.hpp"
 #include "simgrid/s4u/Mutex.hpp"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(mutex_handling, "Messages specific for this test");
 
 static int receiver(const char* box_name)
 {

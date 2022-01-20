@@ -6,7 +6,7 @@
 
 #include "simgrid/s4u.hpp"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(test_trace_integration, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(test_trace_integration, "Messages specific for this example");
 
 /** test the trace integration cpu model */
 static void test_trace(std::vector<std::string> args)

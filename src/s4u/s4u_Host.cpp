@@ -20,7 +20,7 @@
 #include <string>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_host, s4u, "Logging specific to the S4U hosts");
-XBT_LOG_EXTERNAL_CATEGORY(surf_route);
+XBT_LOG_EXTERNAL_CATEGORY(ker_routing);
 
 namespace simgrid {
 
@@ -171,11 +171,11 @@ void Host::route_to(const Host* dest, std::vector<Link*>& links, double* latency
 void Host::route_to(const Host* dest, std::vector<kernel::resource::StandardLinkImpl*>& links, double* latency) const
 {
   kernel::routing::NetZoneImpl::get_global_route(pimpl_netpoint_, dest->get_netpoint(), links, latency);
-  if (XBT_LOG_ISENABLED(surf_route, xbt_log_priority_debug)) {
-    XBT_CDEBUG(surf_route, "Route from '%s' to '%s' (latency: %f):", get_cname(), dest->get_cname(),
+  if (XBT_LOG_ISENABLED(ker_routing, xbt_log_priority_debug)) {
+    XBT_CDEBUG(ker_routing, "Route from '%s' to '%s' (latency: %f):", get_cname(), dest->get_cname(),
                (latency == nullptr ? -1 : *latency));
     for (auto const* link : links)
-      XBT_CDEBUG(surf_route, "  Link '%s'", link->get_cname());
+      XBT_CDEBUG(ker_routing, "  Link '%s'", link->get_cname());
   }
 }
 

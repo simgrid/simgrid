@@ -24,7 +24,6 @@
 #include <boost/core/demangle.hpp>
 #include <string>
 #include <typeinfo>
-XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 
 unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count,
                                            double timeout) // XBT_ATTRIB_DEPRECATED_v331

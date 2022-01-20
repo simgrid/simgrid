@@ -17,7 +17,7 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_fat_tree, surf, "Routing for fat trees");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_fat_tree, ker_routing, "Kernel Fat-Tree Routing");
 
 namespace simgrid {
 namespace kernel {
@@ -135,7 +135,7 @@ void FatTreeZone::do_seal()
   if (this->levels_ == 0) {
     return;
   }
-  if (not XBT_LOG_ISENABLED(surf_route_fat_tree, xbt_log_priority_debug)) {
+  if (not XBT_LOG_ISENABLED(ker_routing_fat_tree, xbt_log_priority_debug)) {
     return;
   }
 
@@ -192,7 +192,7 @@ bool FatTreeZone::are_related(FatTreeNode* parent, FatTreeNode* child) const
 {
   std::stringstream msgBuffer;
 
-  if (XBT_LOG_ISENABLED(surf_route_fat_tree, xbt_log_priority_debug)) {
+  if (XBT_LOG_ISENABLED(ker_routing_fat_tree, xbt_log_priority_debug)) {
     msgBuffer << "Are " << child->id << "(" << child->level << "," << child->position << ") <";
 
     for (unsigned int i = 0; i < this->levels_; i++) {
@@ -291,7 +291,7 @@ void FatTreeZone::generate_labels()
     }
 
     for (unsigned int j = 0; j < this->nodes_by_level_[i]; j++) {
-      if (XBT_LOG_ISENABLED(surf_route_fat_tree, xbt_log_priority_debug)) {
+      if (XBT_LOG_ISENABLED(ker_routing_fat_tree, xbt_log_priority_debug)) {
         std::stringstream msgBuffer;
 
         msgBuffer << "Assigning label <";

@@ -14,7 +14,7 @@
 #include <sstream>
 #include <string>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(replay_multiple, "Messages specific for this example");
 
 static void smpi_replay(int argc, char* argv[])
 {

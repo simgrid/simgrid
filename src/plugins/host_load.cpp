@@ -32,7 +32,7 @@ It attaches an extension to each host to store some data, and places callbacks i
   @endrst
 */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_plugin_load, surf, "Logging specific to the HostLoad plugin");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(host_load, kernel, "Logging specific to the HostLoad plugin");
 
 namespace simgrid {
 namespace plugin {

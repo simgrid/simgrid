@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_torus, surf_route_cluster, "Torus Routing part of surf");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_torus, ker_routing, "Kernel Torus Routing");
 
 namespace simgrid {
 namespace kernel {

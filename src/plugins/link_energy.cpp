@@ -39,7 +39,7 @@ SIMGRID_REGISTER_PLUGIN(link_energy, "Link energy consumption.", &sg_link_energy
  and then use the following function to retrieve the consumption of a given link: sg_link_get_consumed_energy().
  */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(link_energy, surf, "Logging specific to the SURF LinkEnergy plugin");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(link_energy, kernel, "Logging specific to the LinkEnergy plugin");
 
 namespace simgrid {
 namespace plugin {

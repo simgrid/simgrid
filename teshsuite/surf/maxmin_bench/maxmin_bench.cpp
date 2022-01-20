@@ -137,11 +137,11 @@ int main(int argc, char **argv)
     mode=3;
 
   if(mode==1)
-    xbt_log_control_set("surf/maxmin.threshold:DEBUG surf/maxmin.fmt:\'[%r]: [%c/%p] %m%n\' "
-                        "surf.threshold:DEBUG surf.fmt:\'[%r]: [%c/%p] %m%n\' ");
+    xbt_log_control_set("ker_lmm.threshold:DEBUG ker_lmm.fmt:\'[%r]: [%c/%p] %m%n\' "
+                        "kernel.threshold:DEBUG kernel.fmt:\'[%r]: [%c/%p] %m%n\' ");
 
   if(mode==2)
-    xbt_log_control_set("surf/maxmin.threshold:DEBUG surf.threshold:DEBUG");
+    xbt_log_control_set("ker_lmm.threshold:DEBUG kernel.threshold:DEBUG");
 
   unsigned int nb_cnst= TestClasses[testclass][0];
   unsigned int nb_var= TestClasses[testclass][1];

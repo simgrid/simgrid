@@ -8,7 +8,7 @@
 #include "simgrid/kernel/routing/RoutedZone.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_cluster, ker_routing, "Kernel Cluster Routing");
 
 /* This routing is specifically setup to represent clusters, aka homogeneous sets of machines
  * Note that a router is created, easing the interconnection with the rest of the world. */

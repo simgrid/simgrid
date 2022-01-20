@@ -10,7 +10,7 @@
 #include <cinttypes>
 #include <string>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(replay_comm, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(replay_comm, "Messages specific for this example");
 
 #define ACT_DEBUG(...)                                                                                                 \
   if (XBT_LOG_ISENABLED(replay_comm, xbt_log_priority_verbose)) {                                                   \

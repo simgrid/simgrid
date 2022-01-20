@@ -15,7 +15,7 @@
 
 #include <stdio.h> /* snprintf */
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(comm_waitall, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(comm_waitall, "Messages specific for this example");
 
 static void sender(int argc, char* argv[])
 {

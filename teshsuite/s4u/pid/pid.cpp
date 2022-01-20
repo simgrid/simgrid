@@ -5,7 +5,7 @@
 
 #include "simgrid/s4u.hpp"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this example");
 
 static void sendpid()
 {

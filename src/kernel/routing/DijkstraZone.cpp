@@ -13,7 +13,7 @@
 #include <queue>
 #include <vector>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_dijkstra, surf, "Routing part of surf -- dijkstra routing logic");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_dijkstra, ker_routing, "Kernel Dijkstra Routing");
 
 namespace simgrid {
 namespace kernel {

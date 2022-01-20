@@ -6,8 +6,7 @@
 #include "src/simix/popping_private.hpp"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_popping, simix,
-                                "Popping part of SIMIX (transmuting from user request into kernel handlers)");
+XBT_LOG_NEW_DEFAULT_CATEGORY(simix, "transmuting from user request into kernel handlers");
 
 void SIMIX_run_kernel(std::function<void()> const* code)
 {

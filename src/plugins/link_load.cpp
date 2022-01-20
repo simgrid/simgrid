@@ -32,7 +32,7 @@ SIMGRID_REGISTER_PLUGIN(link_load, "Link cumulated load.", &sg_link_load_plugin_
  - Reset the counters on any tracked link via sg_link_load_reset().
 */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(link_load, surf, "Logging specific to the SURF LinkLoad plugin");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(link_load, kernel, "Logging specific to the LinkLoad plugin");
 
 namespace simgrid {
 namespace plugin {

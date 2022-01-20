@@ -9,7 +9,7 @@
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include <cmath>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this test");
 
 const int FAIL_ON_ERROR = 0;
 const int flop_amount   = 100000000; // 100Mf, so that computing this on a 1Gf core takes exactly 0.1s

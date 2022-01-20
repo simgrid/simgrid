@@ -12,7 +12,7 @@
 #include <numeric>
 #include <string>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_dragonfly, surf_route_cluster, "Dragonfly Routing part of surf");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_dragonfly, ker_routing, "Kernel Dragonfly Routing");
 
 namespace simgrid {
 namespace kernel {

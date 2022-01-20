@@ -14,7 +14,7 @@
 #include <boost/range/algorithm.hpp>
 #include <cmath> // isfinite()
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_actor);
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_activity, kernel, "Kernel activity-related synchronization");
 
 namespace simgrid {
 namespace kernel {

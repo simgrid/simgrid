@@ -15,7 +15,7 @@
 #include <stddef.h>
 #include <stdio.h>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(app_token_ring, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(app_token_ring, "Messages specific for this example");
 
 /* Main function of all actors used in this example */
 static void relay_runner(int argc, char* argv[])

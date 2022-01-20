@@ -110,7 +110,7 @@ before you can get accurate energy predictions.
   @endrst
  */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_energy, surf, "Logging specific to the SURF energy plugin");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(host_energy, kernel, "Logging specific to the host energy plugin");
 
 // Forwards declaration needed to make this function a friend (because friends have external linkage by default)
 static void on_simulation_end();
