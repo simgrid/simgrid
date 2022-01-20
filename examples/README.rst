@@ -613,12 +613,6 @@ Interacting with the Platform
 
       .. group-tab:: XML
 
-         **Deployment file:**
-
-         .. showfile:: examples/cpp/platform-properties/s4u-platform-properties_d.xml
-            :language: xml
-
-         |br|
          **Platform file:**
 
          .. showfile:: examples/platforms/prop.xml
