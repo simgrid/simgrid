@@ -88,6 +88,8 @@ PYBIND11_MODULE(simgrid, m)
   /* this_actor namespace */
   m.def_submodule("this_actor", "Bindings of the s4u::this_actor namespace. See the C++ documentation for details.")
       .def(
+          "debug", [](const char* s) { XBT_DEBUG("%s", s); }, "Display a logging message of 'debug' priority.")
+      .def(
           "info", [](const char* s) { XBT_INFO("%s", s); }, "Display a logging message of 'info' priority.")
       .def(
           "error", [](const char* s) { XBT_ERROR("%s", s); }, "Display a logging message of 'error' priority.")
@@ -123,17 +125,21 @@ PYBIND11_MODULE(simgrid, m)
               }
             });
           },
-          py::call_guard<py::gil_scoped_release>(), "");
+          py::call_guard<py::gil_scoped_release>(), "")
+      .def("get_pid", &simgrid::s4u::this_actor::get_pid, "Retrieves PID of the current actor")
+      .def("get_ppid", &simgrid::s4u::this_actor::get_ppid,
+           "Retrieves PPID of the current actor (i.e., the PID of its parent).");
 
   /* Class Engine */
   py::class_<Engine>(m, "Engine", "Simulation Engine")
       .def(py::init([](std::vector<std::string> args) {
-        auto argc           = static_cast<int>(args.size());
-        std::vector<char*> argv(args.size() + 1); // argv[argc] is nullptr
-        std::transform(begin(args), end(args), begin(argv), [](std::string& s) { return &s.front(); });
-        // Currently this can be dangling, we should wrap this somehow.
-        return new simgrid::s4u::Engine(&argc, argv.data());
-      }))
+             auto argc = static_cast<int>(args.size());
+             std::vector<char*> argv(args.size() + 1); // argv[argc] is nullptr
+             std::transform(begin(args), end(args), begin(argv), [](std::string& s) { return &s.front(); });
+             // Currently this can be dangling, we should wrap this somehow.
+             return new simgrid::s4u::Engine(&argc, argv.data());
+           }),
+           "The constructor should take the parameters from the command line, as is ")
       .def_static("get_clock", &Engine::get_clock,
                   "The simulation time, ie the amount of simulated seconds since the simulation start.")
       .def_static(

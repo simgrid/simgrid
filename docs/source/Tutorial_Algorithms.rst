@@ -683,23 +683,23 @@ Creating the workers from the master
 
       .. code-block:: cpp
 
-      void my_actor(int param1, double param2, std::string param3) {
-         ...
-      }
-      int main(int argc, char argv**) {
-         ...
-         simgrid::s4u::ActorPtr actor;
-         actor = simgrid::s4u::Actor::create("name", simgrid::s4u::Host::by_name("the_host"),
-                                             &my_actor, 42, 3.14, "thevalue");
-         ...
-      }
+         void my_actor(int param1, double param2, std::string param3) {
+            ...
+         }
+         int main(int argc, char argv**) {
+            ...
+            simgrid::s4u::ActorPtr actor;
+            actor = simgrid::s4u::Actor::create("name", simgrid::s4u::Host::by_name("the_host"),
+                                                &my_actor, 42, 3.14, "thevalue");
+            ...
+         }
 
    .. group-tab:: Python
 
       For that, the master needs to retrieve the list of hosts declared in
-      the platform with :py:func:`simgrid.Engine.get_all_hosts`.
-      Then, the master should start the worker actors with
-      :py:func:`simgrid.Actor.create`.
+      the platform with :py:func:`simgrid.Engine.get_all_hosts`. Since this method is not static, 
+      you may want to call it on the Engine instance, as in ``Engine.instance().get_all_hosts()``.
+      Then, the master should start the worker actors with :py:func:`simgrid.Actor.create`.
 
       ``Actor.create(name, host, func, params...)`` is a very flexible
       function. Its third parameter is the function that the actor should
@@ -727,11 +727,22 @@ Since we want later to study concurrent applications, it is advised to
 use a mailbox name that is unique over the simulation even if there is
 more than one master.
 
-One possibility for that is to use the actor ID (aid) of each worker
-as a mailbox name. The master can retrieve the aid of the newly
-created actor with ``get_pid()`` while the actor itself can
-retrieve its own aid with ``this_actor::get_pid()``.
-The retrieved value is an ``aid_t``, which is an alias for ``long``.
+.. tabs::
+
+   .. group-tab:: C++
+
+      One possibility for that is to use the actor ID (aid) of each worker
+      as a mailbox name. The master can retrieve the aid of the newly
+      created actor with :cpp:func:`simgrid::s4u::Actor::get_pid()` while the actor itself can
+      retrieve its own aid with :cpp:func:`simgrid::s4u::this_actor::get_pid()`.
+      The retrieved value is an :cpp:type:`aid_t`, which is an alias for ``long``.
+
+   .. group-tab:: Python
+
+      One possibility for that is to use the actor ID of each worker
+      as a mailbox name. The master can retrieve the aid of the newly
+      created actor with :py:func:`simgrid.Actor.pid` while the actor itself can
+      retrieve its own aid with :py:func:`simgrid.this_actor.get_pid()`.
 
 Wrap up
 .......
@@ -775,7 +786,7 @@ simulation. Instead, retrieve the time in the simulated world with
 
 You can still stop your workers with a specific task as previously,
 or you may kill them forcefully with :cpp:func:`simgrid::s4u::Actor::kill` (C++)
-:py:func:`simgrid.Actor.kill` (C++).
+:py:func:`simgrid.Actor.kill` (Python).
 
 Anyway, the new deployment `deployment3.xml` file should thus look
 like this:
@@ -787,8 +798,8 @@ Controlling the message verbosity
 .................................
 
 Not all messages are equally informative, so you probably want to
-change some of the *info* messages (C: :c:macro:`XBT_INFO`; Python: :py:func:`this_actor.info`) 
-into *debug* messages`(C: c:macro:`XBT_DEBUG`; Python: :py:func:`this_actor.debug`) so that they are
+change some of the *info* messages (C: :c:macro:`XBT_INFO`; Python: :py:func:`simgrid.this_actor.info`) 
+into *debug* messages`(C: :c:macro:`XBT_DEBUG`; Python: :py:func:`simgrid.this_actor.debug`) so that they are
 hidden by default. For example, you may want to use an *info* message once
 every 100 tasks and *debug* when sending all the other tasks. Or
 you could show only the total number of tasks processed by
@@ -888,11 +899,13 @@ will categorize the tasks.
 Instead of starting the execution in one function call only with
 ``this_actor::execute(cost)``, you need to
 create the execution activity, set its tracing category, start it 
-and wait for its completion, as follows:
+and wait for its completion, as follows.
 
 .. tabs::
 
    .. group-tab:: C++
+
+      Use :cpp:func:`simgrid::s4u::Exec::set_tracing_category` to change the category of an execution.
 
       .. code-block:: cpp
 
@@ -908,6 +921,8 @@ and wait for its completion, as follows:
          simgrid::s4u::this_actor::exec_init(compute_cost)->set_tracing_category(category)->wait();
 
    .. group-tab:: Python
+
+      Use :py:func:`simgrid.Exec.set_tracing_category` to change the category of an execution.
 
       .. code-block:: python
 

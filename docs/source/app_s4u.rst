@@ -670,6 +670,9 @@ Querying info
       .. autofunction:: simgrid.this_actor.get_host
       .. autofunction:: simgrid.this_actor.set_host
 
+      .. autofunction:: simgrid.this_actor.get_pid()
+      .. autofunction:: simgrid.this_actor.get_ppid()
+
    .. group-tab:: C
 
       .. doxygenfunction:: sg_actor_self_get_data()
@@ -704,8 +707,13 @@ Logging messages
 
 .. tabs::
 
+   .. group-tab:: C++
+
+      Please refer to :ref:`the relevant documentation <logging_prog>`.
+
    .. group-tab:: Python
 
+       .. autofunction:: simgrid.this_actor.debug
        .. autofunction:: simgrid.this_actor.info
        .. autofunction:: simgrid.this_actor.error
 
@@ -812,6 +820,7 @@ Engin initialization
 
    .. group-tab:: Python
 
+       .. automethod:: simgrid.Engine.__init__
        .. automethod:: simgrid.Engine.instance
 
    .. group-tab:: C
