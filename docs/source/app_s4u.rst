@@ -798,8 +798,8 @@ Exiting
    
       .. autoclass:: simgrid.Engine
 
-Initialization
---------------
+Engin initialization
+--------------------
 
 .. tabs::
 
@@ -808,6 +808,23 @@ Initialization
       .. doxygenfunction:: simgrid::s4u::Engine::Engine(int *argc, char **argv)
       .. doxygenfunction:: simgrid::s4u::Engine::is_initialized()
       .. doxygenfunction:: simgrid::s4u::Engine::shutdown()
+      .. doxygenfunction:: simgrid::s4u::Engine::get_instance()
+
+   .. group-tab:: Python
+
+       .. automethod:: simgrid.Engine.instance
+
+   .. group-tab:: C
+
+      .. doxygenfunction:: simgrid_init
+
+Simulation setup
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
       .. doxygenfunction:: simgrid::s4u::Engine::set_config(const std::string &str)
       .. doxygenfunction:: simgrid::s4u::Engine::set_config(const std::string &name, bool value)
       .. doxygenfunction:: simgrid::s4u::Engine::set_config(const std::string &name, double value)
@@ -833,12 +850,11 @@ Initialization
 
    .. group-tab:: C
 
-      .. doxygenfunction:: simgrid_init
-
       .. doxygenfunction:: simgrid_load_deployment
       .. doxygenfunction:: simgrid_load_platform
       .. doxygenfunction:: simgrid_register_default
       .. doxygenfunction:: simgrid_register_function
+
 
 Run the simulation
 ------------------
@@ -921,7 +937,6 @@ Interacting with the routing
 
       .. doxygenfunction:: simgrid::s4u::Engine::get_all_netpoints
       .. doxygenfunction:: simgrid::s4u::Engine::get_filtered_netzones
-      .. doxygenfunction:: simgrid::s4u::Engine::get_instance()
       .. doxygenfunction:: simgrid::s4u::Engine::get_netzone_root
       .. doxygenfunction:: simgrid::s4u::Engine::netpoint_by_name_or_null
       .. doxygenfunction:: simgrid::s4u::Engine::netzone_by_name_or_null

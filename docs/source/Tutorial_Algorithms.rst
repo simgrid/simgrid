@@ -704,14 +704,14 @@ Creating the workers from the master
       ``Actor.create(name, host, func, params...)`` is a very flexible
       function. Its third parameter is the function that the actor should
       execute. This function can take any kind of parameter, provided that
-      you pass similar parameters to ``Actor?create()``. For example, you
+      you pass similar parameters to ``Actor.create()``. For example, you
       could have something like this:
 
-      .. code-block:: cpp
+      .. code-block:: python
 
-      def my_actor(param1, param2, param3):
-         ...
-      actor = simgrid.Actor.create("name", the_host, my_actor, 42, 3.14, "thevalue")
+         def my_actor(param1, param2, param3):
+            # your code comes here
+         actor = simgrid.Actor.create("name", the_host, my_actor, 42, 3.14, "thevalue")
 
 
 Master-Workers Communication
@@ -840,7 +840,7 @@ Retrieve a link from its name with :cpp:func:`simgrid::s4u::Link::by_name()` (C+
 
 Retrieve all links in the platform with :cpp:func:`simgrid::s4u::Engine::get_all_links()` (C++) or :py:func:`simgrid.Engine.get_all_links()` (python).
 
-Retrieve the list of links from one host to another with :cpp:func:`simgrid::s4u::Host::route_to` (C++) or :cpp:func:`simgrid.Host.route_to` (python).
+Retrieve the list of links from one host to another with :cpp:func:`simgrid::s4u::Host::route_to` (C++) or :py:func:`simgrid.Host.route_to` (python).
 
 Modify the bandwidth of a given link with :cpp:func:`simgrid::s4u::Link::set_bandwidth` (C++) or :py:func:`simgrid.Link.set_bandwidth` (python).
 You can even have the bandwidth automatically vary over time with :cpp:func:`simgrid::s4u::Link::set_bandwidth_profile` (C++) or :py:func:`simgrid.Link.set_bandwidth_profile` (python). 
