@@ -38,17 +38,16 @@ jobs:
         run: |
           grep SIMGRID_VERSION_PATCH CMakeLists.txt| grep -q 'SIMGRID_VERSION_PATCH "0"' || (echo "Only run this action on stable source";exit 1)
           cd tools/docker
-          make stable tuto-smpi
-          docker push simgrid/stable
-          docker push simgrid/tuto-smpi
+          make tuto-s4u
+          docker push simgrid/tuto-s4u
       - name: Create the failure Message
         if: ${{ failure() }}
         run: |
-          echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"Failure when building STABLE docker images ! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+          echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"Failure when building tuto-s4u docker images ! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - name: Create the success Message
         if: ${{ success() }}
         run: |
-          echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"Docker STABLE images built and pushed successfully ! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+          echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"Docker tuto-s4u images built and pushed successfully ! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@master
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
