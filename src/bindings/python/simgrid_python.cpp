@@ -136,6 +136,8 @@ PYBIND11_MODULE(simgrid, m)
       }))
       .def_static("get_clock", &Engine::get_clock,
                   "The simulation time, ie the amount of simulated seconds since the simulation start.")
+      .def_static(
+          "instance", []() { return Engine::get_instance(); }, "Retrieve the simulation engine")
       .def("get_all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
       .def("load_platform", &Engine::load_platform, "Load a platform file describing the environment")
       .def("load_deployment", &Engine::load_deployment, "Load a deployment file and launch the actors that it contains")
@@ -330,6 +332,7 @@ PYBIND11_MODULE(simgrid, m)
            py::call_guard<py::gil_scoped_release>(), "Set concurrency limit for this link")
       .def("set_host_wifi_rate", &simgrid::s4u::Link::set_host_wifi_rate, py::call_guard<py::gil_scoped_release>(),
            "Set level of communication speed of given host on this Wi-Fi link")
+      .def("by_name", &simgrid::s4u::Link::by_name, "Retrieves a Link from its name, or dies")
       .def("seal", &simgrid::s4u::Link::seal, py::call_guard<py::gil_scoped_release>(), "Seal this link")
       .def_property_readonly(
           "name",

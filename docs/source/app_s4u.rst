@@ -1512,6 +1512,7 @@ Retrieving links
 
    .. group-tab:: Python
 
+      .. automethod:: simgrid.Link.by_name
       .. autoattribute:: simgrid.Link.name
 
    .. group-tab:: C

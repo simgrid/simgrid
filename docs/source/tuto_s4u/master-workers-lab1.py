@@ -12,20 +12,18 @@ import sys
 
 # master-begin
 def master(*args):
-  if len(args) < 2:
+  if len(args) == 2:
     raise AssertionError(
-            f"Actor master requires 3 parameters plus the workers' names, but got only {len(args)}")
-  tasks_count = int(args[0])
-  compute_cost = int(args[1])
-  communicate_cost = int(args[2])
-  workers = []
-  for i in range(3, len(args)): 
-    workers.append(Mailbox.by_name(args[i]))
-  this_actor.info(f"Got {len(workers)} workers and {tasks_count} tasks to process")
+            f"Actor master requires 4 parameters, but only {len(args)}")
+  worker_count = int(args[0])           
+  tasks_count = int(args[1])
+  compute_cost = int(args[2])
+  communicate_cost = int(args[3])
+  this_actor.info(f"Got {worker_count} workers and {tasks_count} tasks to process")
 
   for i in range(tasks_count): # For each task to be executed: 
       # - Select a worker in a round-robin way
-      mailbox = workers[i % len(workers)]
+      mailbox = Mailbox.by_name(str(i % worker_count))
 
       # - Send the computation amount to the worker
       if (tasks_count < 10000 or (tasks_count < 100000 and i % 10000 == 0) or i % 100000 == 0):
@@ -33,17 +31,17 @@ def master(*args):
       mailbox.put(compute_cost, communicate_cost)
 
   this_actor.info("All tasks have been dispatched. Request all workers to stop.")
-  for i in range (len(workers)):
+  for i in range (worker_count):
       # The workers stop when receiving a negative compute_cost
-      mailbox = workers[i]
+      mailbox = Mailbox.by_name(str(i))
       mailbox.put(-1, 0)
 # master-end
 
 # worker-begin
 def worker(*args):
-  assert len(args) == 0, "The worker expects to not get any argument"
+  assert len(args) == 1, "The worker expects one argument"
 
-  mailbox = Mailbox.by_name(this_actor.get_host().name)
+  mailbox = Mailbox.by_name(args[0])
   done = False
   while not done:
     compute_cost = mailbox.get()

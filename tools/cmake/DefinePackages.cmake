@@ -898,7 +898,7 @@ set(DOC_SOURCES
   docs/source/tuto_s4u/deployment1.xml
   docs/source/tuto_s4u/deployment2.xml
   docs/source/tuto_s4u/deployment3.xml
-  docs/source/tuto_s4u/deployment4.xml
+  docs/source/tuto_s4u/deployment5.xml
   docs/source/tuto_s4u/draw_gantt.R
   docs/source/tuto_s4u/img/intro.svg
   docs/source/tuto_s4u/img/question.svg
@@ -906,7 +906,9 @@ set(DOC_SOURCES
   docs/source/tuto_s4u/img/Rscript-screenshot.png
   docs/source/tuto_s4u/img/vite-screenshot.png
   docs/source/tuto_s4u/master-workers-lab1.cpp
+  docs/source/tuto_s4u/master-workers-lab1.py
   docs/source/tuto_s4u/master-workers-lab2.cpp
+  docs/source/tuto_s4u/master-workers-lab2.py
   docs/source/tuto_s4u/master-workers-lab3.cpp
   docs/source/tuto_s4u/master-workers-lab4.cpp
 

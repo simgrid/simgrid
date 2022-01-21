@@ -1927,7 +1927,7 @@ include docs/source/tuto_network_calibration/send_dhist.json
 include docs/source/tuto_s4u/deployment1.xml
 include docs/source/tuto_s4u/deployment2.xml
 include docs/source/tuto_s4u/deployment3.xml
-include docs/source/tuto_s4u/deployment4.xml
+include docs/source/tuto_s4u/deployment5.xml
 include docs/source/tuto_s4u/draw_gantt.R
 include docs/source/tuto_s4u/img/Rscript-screenshot.png
 include docs/source/tuto_s4u/img/intro.svg
@@ -1935,7 +1935,9 @@ include docs/source/tuto_s4u/img/question.svg
 include docs/source/tuto_s4u/img/result.png
 include docs/source/tuto_s4u/img/vite-screenshot.png
 include docs/source/tuto_s4u/master-workers-lab1.cpp
+include docs/source/tuto_s4u/master-workers-lab1.py
 include docs/source/tuto_s4u/master-workers-lab2.cpp
+include docs/source/tuto_s4u/master-workers-lab2.py
 include docs/source/tuto_s4u/master-workers-lab3.cpp
 include docs/source/tuto_s4u/master-workers-lab4.cpp
 include docs/source/tuto_smpi/3hosts.png
