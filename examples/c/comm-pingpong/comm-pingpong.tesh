@@ -41,7 +41,7 @@ $ ${bindir:=.}/c-comm-pingpong ${platfdir}/small_platform.xml comm-pingpong_d.xm
 
 p Testing the surf network constant model
 
-$ ${bindir:=.}/c-comm-pingpong ${platfdir}/small_platform_constant.xml comm-pingpong_d.xml "--cfg=host/model:compound cpu/model:Cas01 network/model:Constant" "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+$ ${bindir:=.}/c-comm-pingpong ${platfdir}/small_platform_routing_none.xml comm-pingpong_d.xml "--cfg=host/model:compound cpu/model:Cas01 network/model:Constant" "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'Constant'

@@ -2003,14 +2003,13 @@ include examples/platforms/prop.xml
 include examples/platforms/ptask_L07.xml
 include examples/platforms/routing_cluster.cpp
 include examples/platforms/routing_cluster.xml
-include examples/platforms/routing_none.xml
 include examples/platforms/simulacrum_7_hosts.xml
 include examples/platforms/small_platform.xml
-include examples/platforms/small_platform_constant.xml
 include examples/platforms/small_platform_failures.xml
 include examples/platforms/small_platform_fatpipe.xml
 include examples/platforms/small_platform_one_link_routes.xml
 include examples/platforms/small_platform_profile.xml
+include examples/platforms/small_platform_routing_none.xml
 include examples/platforms/small_platform_with_routers.xml
 include examples/platforms/storage/content/small_content.txt
 include examples/platforms/storage/content/storage_content.txt
