@@ -364,14 +364,14 @@ was obtained with the Triva software.
 Using Docker
 ............
 
-The easiest way to take the tutorial is to use the dedicated Docker
-image. Once you `installed Docker itself
-<https://docs.docker.com/install/>`_, simply do the following:
+The easiest way to take the tutorial is to use the dedicated Docker image. 
+Once you `installed Docker itself <https://docs.docker.com/install/>`_, simply do the following:
 
 .. code-block:: console
 
    $ docker pull simgrid/tuto-s4u
-   $ docker run -it --rm --name simgrid --volume ~/simgrid-tutorial:/source/tutorial simgrid/tuto-s4u bash
+   $ mkdir ~/simgrid-tutorial
+   $ docker run --user $UID:$GID -it --rm --name simgrid --volume ~/simgrid-tutorial:/source/tutorial simgrid/tuto-s4u bash
 
 This will start a new container with all you need to take this
 tutorial, and create a ``simgrid-tutorial`` directory in your home on

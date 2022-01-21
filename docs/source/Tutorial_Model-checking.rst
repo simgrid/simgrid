@@ -52,7 +52,7 @@ on Mac OS X yet, so mac users should stick to the docker method for now.
 
    $ docker image pull simgrid/tuto-mc
    $ mkdir ~/tuto-mcsimgrid # or chose another directory to share between your computer and the docker container
-   $ docker run -it --rm --name mcsimgrid --volume ~/tuto-mcsimgrid:/source/tutorial simgrid/tuto-mc bash
+   $ docker run --user $UID:$GID -it --rm --name mcsimgrid --volume ~/tuto-mcsimgrid:/source/tutorial simgrid/tuto-mc bash
 
 In the container, you have access to the following directories of interest:
 

@@ -268,7 +268,7 @@ image. Once you `installed Docker itself
 .. code-block:: console
 
    $ docker pull simgrid/tuto-smpi
-   $ docker run -it --rm --name simgrid --volume ~/smpi-tutorial:/source/tutorial simgrid/tuto-smpi bash
+   $ docker run --user $UID:$GID -it --rm --name simgrid --volume ~/smpi-tutorial:/source/tutorial simgrid/tuto-smpi bash
 
 This will start a new container with all you need to take this
 tutorial, and create a ``smpi-tutorial`` directory in your home on
