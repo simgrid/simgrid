@@ -27,6 +27,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_comm_waitall, "Messages specific for this s4u e
 
 static void sender(unsigned int messages_count, unsigned int receivers_count, long msg_size)
 {
+  if (messages_count == 0 || receivers_count == 0) {
+    XBT_WARN("Sender has nothing to do. Bail out!");
+    return;
+  }
   /* Vector in which we store all ongoing communications */
   std::vector<sg4::CommPtr> pending_comms;
 
