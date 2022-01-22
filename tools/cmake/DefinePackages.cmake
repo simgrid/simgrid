@@ -1165,12 +1165,11 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/prop.xml
   examples/platforms/routing_cluster.xml
   examples/platforms/routing_cluster.cpp
-  examples/platforms/routing_none.xml
   examples/platforms/simulacrum_7_hosts.xml
   examples/platforms/storage/content/small_content.txt
   examples/platforms/storage/content/storage_content.txt
   examples/platforms/small_platform.xml
-  examples/platforms/small_platform_constant.xml
+  examples/platforms/small_platform_routing_none.xml
   examples/platforms/small_platform_failures.xml
   examples/platforms/small_platform_fatpipe.xml
   examples/platforms/small_platform_one_link_routes.xml
