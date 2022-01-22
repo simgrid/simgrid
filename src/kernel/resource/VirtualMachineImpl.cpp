@@ -75,9 +75,9 @@ static void add_active_exec(s4u::Exec const& task)
   }
 }
 
-static void remove_active_exec(s4u::Activity& task)
+static void remove_active_exec(s4u::Activity const& task)
 {
-  const auto* exec = dynamic_cast<s4u::Exec*>(&task);
+  const auto* exec = dynamic_cast<s4u::Exec const*>(&task);
   if (exec == nullptr)
     return;
   if (not exec->is_assigned())

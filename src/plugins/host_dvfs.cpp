@@ -299,8 +299,8 @@ public:
       if (activity.get_host() == get_host())
         pre_task();
     });
-    simgrid::s4u::Activity::on_completion_cb([this](simgrid::s4u::Activity& activity) {
-      const auto* exec = dynamic_cast<simgrid::s4u::Exec*>(&activity);
+    simgrid::s4u::Activity::on_completion_cb([this](simgrid::s4u::Activity const& activity) {
+      const auto* exec = dynamic_cast<simgrid::s4u::Exec const*>(&activity);
       if (exec == nullptr) // Only Execs are concerned here
         return;
       // For more than one host (not yet supported), we can access the host via

@@ -26,8 +26,8 @@ int main(int argc, char* argv[])
              (exec.is_assigned() ? "assigned" : "NOT assigned"));
   });
 
-  simgrid::s4u::Activity::on_completion_cb([](simgrid::s4u::Activity& activity) {
-    const auto* exec = dynamic_cast<simgrid::s4u::Exec*>(&activity);
+  simgrid::s4u::Activity::on_completion_cb([](simgrid::s4u::Activity const& activity) {
+    const auto* exec = dynamic_cast<simgrid::s4u::Exec const*>(&activity);
     if (exec == nullptr) // Only Execs are concerned here
       return;
     XBT_INFO("Activity '%s' is complete (start time: %f, finish time: %f)", exec->get_cname(), exec->get_start_time(),

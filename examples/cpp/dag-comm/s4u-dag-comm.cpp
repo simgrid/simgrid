@@ -24,12 +24,12 @@ int main(int argc, char* argv[])
              (a.dependencies_solved() ? "solved" : "NOT solved"), (a.is_assigned() ? "assigned" : "NOT assigned"));
   });
 
-  simgrid::s4u::Activity::on_completion_cb([](simgrid::s4u::Activity& activity) {
-    const auto* exec = dynamic_cast<simgrid::s4u::Exec*>(&activity);
+  simgrid::s4u::Activity::on_completion_cb([](simgrid::s4u::Activity const& activity) {
+    const auto* exec = dynamic_cast<simgrid::s4u::Exec const*>(&activity);
     if (exec != nullptr)
       XBT_INFO("Activity '%s' is complete (start time: %f, finish time: %f)", exec->get_cname(), exec->get_start_time(),
                exec->get_finish_time());
-    const auto* comm = dynamic_cast<simgrid::s4u::Comm*>(&activity);
+    const auto* comm = dynamic_cast<simgrid::s4u::Comm const*>(&activity);
     if (comm != nullptr)
       XBT_INFO("Activity '%s' is complete", comm->get_cname());
   });
