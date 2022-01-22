@@ -32,131 +32,143 @@ Actors: the Active Entities
 Starting and Stopping Actors
 ----------------------------
 
-  - **Creating actors:**
-    Most actors are started from the deployment XML file because this
-    is a :ref:`better scientific habit <howto_science>`, but you can
-    also create them directly from your code.
+Creating actors
+^^^^^^^^^^^^^^^
 
-    .. tabs::
+Most actors are started from the deployment XML file because this
+is a :ref:`better scientific habit <howto_science>`, but you can
+also create them directly from your code.
 
-       .. example-tab:: examples/cpp/actor-create/s4u-actor-create.cpp
+.. tabs::
 
-          You create actors either:
+   .. example-tab:: examples/cpp/actor-create/s4u-actor-create.cpp
 
-          - Directly with :cpp:func:`simgrid::s4u::Actor::create`
-          - From XML with :cpp:func:`simgrid::s4u::Engine::register_actor` (if your actor is a class)
-            or :cpp:func:`simgrid::s4u::Engine::register_function` (if your actor is a function)
-            and then :cpp:func:`simgrid::s4u::Engine::load_deployment`
+      You create actors either:
 
-       .. example-tab:: examples/python/actor-create/actor-create.py
+      - Directly with :cpp:func:`simgrid::s4u::Actor::create`
+      - From XML with :cpp:func:`simgrid::s4u::Engine::register_actor` (if your actor is a class)
+        or :cpp:func:`simgrid::s4u::Engine::register_function` (if your actor is a function)
+        and then :cpp:func:`simgrid::s4u::Engine::load_deployment`
 
-          You create actors either:
+   .. example-tab:: examples/python/actor-create/actor-create.py
 
-          - Directly with :py:func:`simgrid.Actor.create()`
-          - From XML with :py:func:`simgrid.Engine.register_actor()` and then :py:func:`simgrid.Engine.load_deployment()`
+      You create actors either:
 
-       .. example-tab:: examples/c/actor-create/actor-create.c
+      - Directly with :py:func:`simgrid.Actor.create()`
+      - From XML with :py:func:`simgrid.Engine.register_actor()` and then :py:func:`simgrid.Engine.load_deployment()`
 
-          You create actors either:
+   .. example-tab:: examples/c/actor-create/actor-create.c
 
-          - Directly with :cpp:func:`sg_actor_create` followed by :cpp:func:`sg_actor_start`.
-          - From XML with :cpp:func:`simgrid_register_function` and then :cpp:func:`simgrid_load_deployment`.
+      You create actors either:
 
-       .. example-tab:: examples/python/actor-create/actor-create_d.xml
+      - Directly with :cpp:func:`sg_actor_create` followed by :cpp:func:`sg_actor_start`.
+      - From XML with :cpp:func:`simgrid_register_function` and then :cpp:func:`simgrid_load_deployment`.
 
-          The following file is used in both C++ and Python.
+   .. example-tab:: examples/python/actor-create/actor-create_d.xml
 
-  - **React to the end of actors:** You can attach callbacks to the end of
-    actors. There are several ways of doing so, depending on whether you want to
-    attach your callback to a given actor and on how you define the end of a
-    given actor. User code probably wants to react to the termination of an actor
-    while some plugins want to react to the destruction (memory collection) of
-    actors.
+      The following file is used in both C++ and Python.
 
-    .. tabs::
+Reacting to actors' end
+^^^^^^^^^^^^^^^^^^^^^^^
 
-       .. example-tab:: examples/cpp/actor-exiting/s4u-actor-exiting.cpp
+You can attach callbacks to the end of actors. There are several ways of doing so, depending on whether you want to
+attach your callback to a given actor and on how you define the end of a
+given actor. User code probably wants to react to the termination of an actor
+while some plugins want to react to the destruction (memory collection) of
+actors.
 
-          This example shows how to attach a callback to:
+.. tabs::
 
-          - the end of a specific actor: :cpp:func:`simgrid::s4u::Actor::on_exit()`
-          - the end of any actor: :cpp:member:`simgrid::s4u::Actor::on_termination()`
-          - the destruction of any actor: :cpp:member:`simgrid::s4u::Actor::on_destruction()`
+   .. example-tab:: examples/cpp/actor-exiting/s4u-actor-exiting.cpp
 
-       .. example-tab:: examples/c/actor-exiting/actor-exiting.c
+      This example shows how to attach a callback to:
 
-          This example shows how to attach a callback to the end of a specific actor with
-          :cpp:func:`sg_actor_on_exit()`.
+      - the end of a specific actor: :cpp:func:`simgrid::s4u::Actor::on_exit()`
+      - the end of any actor: :cpp:member:`simgrid::s4u::Actor::on_termination()`
+      - the destruction of any actor: :cpp:member:`simgrid::s4u::Actor::on_destruction()`
 
-  - **Kill actors:**
-    Actors can forcefully stop other actors.
+   .. example-tab:: examples/c/actor-exiting/actor-exiting.c
 
-    .. tabs::
+      This example shows how to attach a callback to the end of a specific actor with
+      :cpp:func:`sg_actor_on_exit()`.
 
-       .. example-tab:: examples/cpp/actor-kill/s4u-actor-kill.cpp
+Killing actors
+^^^^^^^^^^^^^^
 
-          See also :cpp:func:`void simgrid::s4u::Actor::kill(void)`, :cpp:func:`void simgrid::s4u::Actor::kill_all()`,
-          :cpp:func:`simgrid::s4u::this_actor::exit`, :cpp:func:`simgrid::s4u::Actor::on_exit`.
+Actors can forcefully stop other actors.
 
-       .. example-tab:: examples/python/actor-kill/actor-kill.py
+.. tabs::
 
-          See also :py:func:`simgrid.Actor.kill`, :py:func:`simgrid.Actor.kill_all`, :py:func:`simgrid.this_actor.exit`,
-          :py:func:`simgrid.this_actor.on_exit`.
+   .. example-tab:: examples/cpp/actor-kill/s4u-actor-kill.cpp
 
-       .. example-tab:: examples/c/actor-kill/actor-kill.c
+      See also :cpp:func:`void simgrid::s4u::Actor::kill(void)`, :cpp:func:`void simgrid::s4u::Actor::kill_all()`,
+      :cpp:func:`simgrid::s4u::this_actor::exit`, :cpp:func:`simgrid::s4u::Actor::on_exit`.
 
-          See also :cpp:func:`sg_actor_kill`, :cpp:func:`sg_actor_kill_all`, :cpp:func:`sg_actor_exit`, :cpp:func:`sg_actor_on_exit`.
+   .. example-tab:: examples/python/actor-kill/actor-kill.py
 
-  - **Controlling the actor life cycle from the XML:**
-    You can specify a start time and a kill time in the deployment file.
+      See also :py:func:`simgrid.Actor.kill`, :py:func:`simgrid.Actor.kill_all`, :py:func:`simgrid.this_actor.exit`,
+      :py:func:`simgrid.this_actor.on_exit`.
 
-    .. tabs::
+   .. example-tab:: examples/c/actor-kill/actor-kill.c
 
-       .. example-tab:: examples/cpp/actor-lifetime/s4u-actor-lifetime.cpp
+      See also :cpp:func:`sg_actor_kill`, :cpp:func:`sg_actor_kill_all`, :cpp:func:`sg_actor_exit`, :cpp:func:`sg_actor_on_exit`.
 
-          This file is not really interesting: the important matter is in the XML file.
+Actors' life cycle from XML_reference
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-       .. example-tab:: examples/cpp/actor-lifetime/s4u-actor-lifetime_d.xml
+You can specify a start time and a kill time in the deployment file.
 
-          This demonstrates the ``start_time`` and ``kill_time`` attribute of the :ref:`pf_tag_actor` tag.
+.. tabs::
 
-       .. example-tab:: examples/python/actor-lifetime/actor-lifetime.py
+   .. example-tab:: examples/cpp/actor-lifetime/s4u-actor-lifetime.cpp
 
-          This file is not really interesting: the important matter is in the XML file.
+      This file is not really interesting: the important matter is in the XML file.
 
-       .. example-tab:: examples/c/actor-lifetime/actor-lifetime.c
+   .. example-tab:: examples/cpp/actor-lifetime/s4u-actor-lifetime_d.xml
 
-          This file is not really interesting: the important matter is in the XML file.
+      This demonstrates the ``start_time`` and ``kill_time`` attribute of the :ref:`pf_tag_actor` tag.
 
-  - **Daemonize actors:**
-    Some actors may be intended to simulate daemons that run in the background.
-    This example shows how to transform a regular
-    actor into a daemon that will be automatically killed once the simulation is over.
+   .. example-tab:: examples/python/actor-lifetime/actor-lifetime.py
 
-    .. tabs::
+      This file is not really interesting: the important matter is in the XML file.
 
-       .. example-tab:: examples/cpp/actor-daemon/s4u-actor-daemon.cpp
+   .. example-tab:: examples/c/actor-lifetime/actor-lifetime.c
 
-          See also :cpp:func:`simgrid::s4u::Actor::daemonize()` and :cpp:func:`simgrid::s4u::Actor::is_daemon()`.
+      This file is not really interesting: the important matter is in the XML file.
 
-       .. example-tab:: examples/python/actor-daemon/actor-daemon.py
+Daemon actors
+^^^^^^^^^^^^^
 
-          See also :py:func:`simgrid.Actor.daemonize()` and :py:func:`simgrid.Actor.is_daemon()`.
+Some actors may be intended to simulate daemons that run in the background.
+This example shows how to transform a regular
+actor into a daemon that will be automatically killed once the simulation is over.
 
-       .. example-tab:: examples/c/actor-daemon/actor-daemon.c
+.. tabs::
 
-          See also :cpp:func:`sg_actor_daemonize` and :cpp:func:`sg_actor_is_daemon`.
+   .. example-tab:: examples/cpp/actor-daemon/s4u-actor-daemon.cpp
 
-  - **Specify the stack size to use**
-    The stack size can be specified by default on the command line,
-    globally by changing the configuration with :cpp:func:`simgrid::s4u::Engine::set_config`,
-    or for a specific actor using :cpp:func:`simgrid::s4u::Actor::set_stacksize` before its start.
+      See also :cpp:func:`simgrid::s4u::Actor::daemonize()` and :cpp:func:`simgrid::s4u::Actor::is_daemon()`.
 
-    .. tabs::
+   .. example-tab:: examples/python/actor-daemon/actor-daemon.py
 
-       .. example-tab:: examples/cpp/actor-stacksize/s4u-actor-stacksize.cpp
+      See also :py:func:`simgrid.Actor.daemonize()` and :py:func:`simgrid.Actor.is_daemon()`.
 
-       .. example-tab:: examples/c/actor-stacksize/actor-stacksize.c
+   .. example-tab:: examples/c/actor-daemon/actor-daemon.c
+
+      See also :cpp:func:`sg_actor_daemonize` and :cpp:func:`sg_actor_is_daemon`.
+
+Specifying the stack size
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The stack size can be specified by default on the command line,
+globally by changing the configuration with :cpp:func:`simgrid::s4u::Engine::set_config`,
+or for a specific actor using :cpp:func:`simgrid::s4u::Actor::set_stacksize` before its start.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/actor-stacksize/s4u-actor-stacksize.cpp
+
+   .. example-tab:: examples/c/actor-stacksize/actor-stacksize.c
 
 Inter-Actors Interactions
 -------------------------
@@ -165,80 +177,88 @@ See also the examples on :ref:`inter-actors communications
 <s4u_ex_communication>` and the ones on :ref:`classical
 synchronization objects <s4u_ex_IPC>`.
 
-  - **Suspend and Resume actors:**
-    Actors can be suspended and resumed during their executions.
+Suspending/resuming Actors
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    .. tabs::
+Actors can be suspended and resumed during their executions.
 
-       .. example-tab:: examples/cpp/actor-suspend/s4u-actor-suspend.cpp
+.. tabs::
 
-          See also :cpp:func:`simgrid::s4u::this_actor::suspend()`,
-          :cpp:func:`simgrid::s4u::Actor::suspend()`, :cpp:func:`simgrid::s4u::Actor::resume()`, and
-          :cpp:func:`simgrid::s4u::Actor::is_suspended()`.
+   .. example-tab:: examples/cpp/actor-suspend/s4u-actor-suspend.cpp
 
-       .. example-tab:: examples/python/actor-suspend/actor-suspend.py
+      See also :cpp:func:`simgrid::s4u::this_actor::suspend()`,
+      :cpp:func:`simgrid::s4u::Actor::suspend()`, :cpp:func:`simgrid::s4u::Actor::resume()`, and
+      :cpp:func:`simgrid::s4u::Actor::is_suspended()`.
 
-          See also :py:func:`simgrid.this_actor.suspend()`,
-          :py:func:`simgrid.Actor.suspend()`, :py:func:`simgrid.Actor.resume()`, and
-          :py:func:`simgrid.Actor.is_suspended()`.
+   .. example-tab:: examples/python/actor-suspend/actor-suspend.py
 
-       .. example-tab:: examples/c/actor-suspend/actor-suspend.c
+      See also :py:func:`simgrid.this_actor.suspend()`,
+      :py:func:`simgrid.Actor.suspend()`, :py:func:`simgrid.Actor.resume()`, and
+      :py:func:`simgrid.Actor.is_suspended()`.
 
-          See also :cpp:func:`sg_actor_suspend()`, :cpp:func:`sg_actor_resume()`, and
-          :cpp:func:`sg_actor_is_suspended()`.
+   .. example-tab:: examples/c/actor-suspend/actor-suspend.c
 
-  - **Migrating Actors:**
-    Actors can move or be moved from a host to another very easily. It amounts to setting them on a new host.
+      See also :cpp:func:`sg_actor_suspend()`, :cpp:func:`sg_actor_resume()`, and
+      :cpp:func:`sg_actor_is_suspended()`.
 
-    .. tabs::
+Migrating Actors
+^^^^^^^^^^^^^^^^
 
-       .. example-tab:: examples/cpp/actor-migrate/s4u-actor-migrate.cpp
+Actors can move or be moved from a host to another very easily. It amounts to setting them on a new host.
 
-          See also :cpp:func:`simgrid::s4u::this_actor::set_host()` and :cpp:func:`simgrid::s4u::Actor::set_host()`.
+.. tabs::
 
-       .. example-tab:: examples/python/actor-migrate/actor-migrate.py
+   .. example-tab:: examples/cpp/actor-migrate/s4u-actor-migrate.cpp
 
-          See also :py:func:`simgrid.this_actor.set_host()` and :py:func:`simgrid.Actor.set_host()`.
+      See also :cpp:func:`simgrid::s4u::this_actor::set_host()` and :cpp:func:`simgrid::s4u::Actor::set_host()`.
 
-       .. example-tab:: examples/c/actor-migrate/actor-migrate.c
+   .. example-tab:: examples/python/actor-migrate/actor-migrate.py
 
-          See also :cpp:func:`sg_actor_set_host()`.
+      See also :py:func:`simgrid.this_actor.set_host()` and :py:func:`simgrid.Actor.set_host()`.
 
-  - **Waiting for the termination of an actor:** (joining on it)
-    You can block the current actor until the end of another actor.
+   .. example-tab:: examples/c/actor-migrate/actor-migrate.c
 
-    .. tabs::
+      See also :cpp:func:`sg_actor_set_host()`.
 
-       .. example-tab:: examples/cpp/actor-join/s4u-actor-join.cpp
+Waiting for the termination of an actor (joining on it)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-          See also :cpp:func:`simgrid::s4u::Actor::join()`.
+You can block the current actor until the end of another actor.
 
-       .. example-tab:: examples/python/actor-join/actor-join.py
+.. tabs::
 
-          See also :py:func:`simgrid.Actor.join()`.
+   .. example-tab:: examples/cpp/actor-join/s4u-actor-join.cpp
 
-       .. example-tab:: examples/c/actor-join/actor-join.c
+      See also :cpp:func:`simgrid::s4u::Actor::join()`.
 
-          See also :cpp:func:`sg_actor_join`.
+   .. example-tab:: examples/python/actor-join/actor-join.py
 
-  - **Yielding to other actors**.
-    The ```yield()``` function interrupts the execution of the current
-    actor, leaving a chance to the other actors that are ready to run
-    at this timestamp.
+      See also :py:func:`simgrid.Actor.join()`.
 
-    .. tabs::
+   .. example-tab:: examples/c/actor-join/actor-join.c
 
-       .. example-tab:: examples/cpp/actor-yield/s4u-actor-yield.cpp
+      See also :cpp:func:`sg_actor_join`.
 
-          See also :cpp:func:`simgrid::s4u::this_actor::yield()`.
+Yielding to other actors
+^^^^^^^^^^^^^^^^^^^^^^^^
 
-       .. example-tab:: examples/python/actor-yield/actor-yield.py
+The ```yield()``` function interrupts the execution of the current
+actor, leaving a chance to the other actors that are ready to run
+at this timestamp.
 
-          See also :py:func:`simgrid.this_actor.yield_()`.
+.. tabs::
 
-       .. example-tab:: examples/c/actor-yield/actor-yield.c
+   .. example-tab:: examples/cpp/actor-yield/s4u-actor-yield.cpp
 
-          See also :cpp:func:`sg_actor_yield()`.
+      See also :cpp:func:`simgrid::s4u::this_actor::yield()`.
+
+   .. example-tab:: examples/python/actor-yield/actor-yield.py
+
+      See also :py:func:`simgrid.this_actor.yield_()`.
+
+   .. example-tab:: examples/c/actor-yield/actor-yield.c
+
+      See also :cpp:func:`sg_actor_yield()`.
 
 Traces Replay as a Workload
 ---------------------------
@@ -259,21 +279,23 @@ or a file per simulated process: the former may be easier to work
 with, but the second is more efficient on very large traces. Check
 also the tesh files in the example directories for details.
 
-  - **Communication replay:**
-    Presents a set of event handlers reproducing classical communication
-    primitives (asynchronous send/receive at the moment).
+Communication replay
+^^^^^^^^^^^^^^^^^^^^
 
-    .. tabs::
+Presents a set of event handlers reproducing classical communication primitives (asynchronous send/receive at the moment).
 
-       .. example-tab:: examples/cpp/replay-comm/s4u-replay-comm.cpp
+.. tabs::
 
-  - **I/O replay:**
-    Presents a set of event handlers reproducing classical I/O
-    primitives (open, read, close).
+   .. example-tab:: examples/cpp/replay-comm/s4u-replay-comm.cpp
 
-    .. tabs::
+I/O replay
+^^^^^^^^^^
 
-       .. example-tab:: examples/cpp/replay-io/s4u-replay-io.cpp
+Presents a set of event handlers reproducing classical I/O primitives (open, read, close).
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/replay-io/s4u-replay-io.cpp
 
 ==========================
 Activities: what Actors do
@@ -284,218 +306,231 @@ Activities: what Actors do
 Communications on the Network
 -----------------------------
 
-  - **Basic communications:**
-    This simple example just sends one message back and forth.
-    The tesh file laying in the directory shows how to start the simulator binary, highlighting how to pass options to
-    the simulators (as detailed in Section :ref:`options`).
+Basic communications
+^^^^^^^^^^^^^^^^^^^^
 
-    .. tabs::
+This simple example just sends one message back and forth.
+The tesh file laying in the directory shows how to start the simulator binary, highlighting how to pass options to
+the simulators (as detailed in Section :ref:`options`).
 
-       .. example-tab:: examples/cpp/comm-pingpong/s4u-comm-pingpong.cpp
+.. tabs::
 
-       .. example-tab:: examples/c/comm-pingpong/comm-pingpong.c
+   .. example-tab:: examples/cpp/comm-pingpong/s4u-comm-pingpong.cpp
 
-
- - **Basic asynchronous communications:**
-   Illustrates how to have non-blocking communications, that are
-   communications running in the background leaving the process free
-   to do something else during their completion.
-
-   .. tabs::
-
-      .. example-tab:: examples/cpp/comm-wait/s4u-comm-wait.cpp
-
-         See also :cpp:func:`simgrid::s4u::Mailbox::put_async()` and :cpp:func:`simgrid::s4u::Comm::wait()`.
-
-      .. example-tab:: examples/python/comm-wait/comm-wait.py
-
-         See also :py:func:`simgrid.Mailbox.put_async()` and :py:func:`simgrid.Comm.wait()`.
-
-      .. example-tab:: examples/c/comm-wait/comm-wait.c
-
-         See also :cpp:func:`sg_mailbox_put_async()` and :cpp:func:`sg_comm_wait()`.
-
- - **Waiting for communications with timeouts:**
-   This example is very similar to the previous one, simply adding how to declare timeouts when waiting on asynchronous communication.
-
-   .. tabs::
-
-      .. example-tab:: examples/cpp/comm-waituntil/s4u-comm-waituntil.cpp
-
-         See also :cpp:func:`simgrid::s4u::Activity::wait_until()` and :cpp:func:`simgrid::s4u::Comm::wait_for()`.
-
- - **Suspending communications:**
-   The ``suspend()`` and ``resume()`` functions allow to block the
-   progression of a given communication for a while and then unblock it.
-   ``is_suspended()`` can be used to retrieve whether the activity is
-   currently blocked or not.
-
-   .. tabs::
-
-      .. example-tab:: examples/cpp/comm-suspend/s4u-comm-suspend.cpp
-
-         See also :cpp:func:`simgrid::s4u::Activity::suspend()`
-	 :cpp:func:`simgrid::s4u::Activity::resume()` and
-	 :cpp:func:`simgrid::s4u::Activity::is_suspended()`.
+   .. example-tab:: examples/c/comm-pingpong/comm-pingpong.c
 
 
- - **Waiting for all communications in a set:**
-   The ``wait_all()`` function is useful when you want to block until
-   all activities in a given set have been completed.
+Basic asynchronous communications
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-   .. tabs::
+Illustrates how to have non-blocking communications, that are communications running in the background leaving the process 
+free to do something else during their completion.
 
-      .. example-tab:: examples/cpp/comm-waitall/s4u-comm-waitall.cpp
+.. tabs::
 
-         See also :cpp:func:`simgrid::s4u::Comm::wait_all()`.
+   .. example-tab:: examples/cpp/comm-wait/s4u-comm-wait.cpp
 
-      .. example-tab:: examples/python/comm-waitall/comm-waitall.py
+      See also :cpp:func:`simgrid::s4u::Mailbox::put_async()` and :cpp:func:`simgrid::s4u::Comm::wait()`.
 
-         See also :py:func:`simgrid.Comm.wait_all()`.
+   .. example-tab:: examples/python/comm-wait/comm-wait.py
 
-      .. example-tab:: examples/c/comm-waitall/comm-waitall.c
+      See also :py:func:`simgrid.Mailbox.put_async()` and :py:func:`simgrid.Comm.wait()`.
 
-         See also :cpp:func:`sg_comm_wait_all()`.
+   .. example-tab:: examples/c/comm-wait/comm-wait.c
 
- - **Waiting for the first completed communication in a set:**
-   The ``wait_any()`` function is useful
-   when you want to block until one activity of the set completes, no
-   matter which terminates first.
+      See also :cpp:func:`sg_mailbox_put_async()` and :cpp:func:`sg_comm_wait()`.
 
-   .. tabs::
+Waiting for communications with timeouts
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-      .. example-tab:: examples/cpp/comm-waitany/s4u-comm-waitany.cpp
+This example is very similar to the previous one, simply adding how to declare timeouts when waiting on asynchronous communication.
 
-         See also :cpp:func:`simgrid::s4u::Comm::wait_any()`.
+.. tabs::
 
-      .. example-tab:: examples/python/comm-waitany/comm-waitany.py
+   .. example-tab:: examples/cpp/comm-waituntil/s4u-comm-waituntil.cpp
 
-         See also :py:func:`simgrid.Comm.wait_any()`.
+      See also :cpp:func:`simgrid::s4u::Activity::wait_until()` and :cpp:func:`simgrid::s4u::Comm::wait_for()`.
 
-      .. example-tab:: examples/c/comm-waitany/comm-waitany.c
+Suspending communications
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-         See also :cpp:func:`sg_comm_wait_any`.
+The ``suspend()`` and ``resume()`` functions block the progression of a given communication for a while and then unblock it.
+``is_suspended()`` returns whether that activity is currently blocked or not.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/comm-suspend/s4u-comm-suspend.cpp
+
+      See also :cpp:func:`simgrid::s4u::Activity::suspend()`
+      :cpp:func:`simgrid::s4u::Activity::resume()` and
+      :cpp:func:`simgrid::s4u::Activity::is_suspended()`.
+
+Waiting for all communications in a set
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``wait_all()`` function is useful when you want to block until all activities in a given set have been completed.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/comm-waitall/s4u-comm-waitall.cpp
+
+      See also :cpp:func:`simgrid::s4u::Comm::wait_all()`.
+
+   .. example-tab:: examples/python/comm-waitall/comm-waitall.py
+
+      See also :py:func:`simgrid.Comm.wait_all()`.
+
+   .. example-tab:: examples/c/comm-waitall/comm-waitall.c
+
+      See also :cpp:func:`sg_comm_wait_all()`.
+
+Waiting for the first completed communication in a set
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``wait_any()`` function is useful when you want to block until one activity of the set completes, no matter which terminates first.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/comm-waitany/s4u-comm-waitany.cpp
+
+      See also :cpp:func:`simgrid::s4u::Comm::wait_any()`.
+
+   .. example-tab:: examples/python/comm-waitany/comm-waitany.py
+
+      See also :py:func:`simgrid.Comm.wait_any()`.
+
+   .. example-tab:: examples/c/comm-waitany/comm-waitany.c
+
+      See also :cpp:func:`sg_comm_wait_any`.
 
 .. _s4u_ex_execution:
 
 Executions on the CPU
 ---------------------
 
-  - **Basic execution:**
-    The computations done in your program are not reported to the
-    simulated world unless you explicitly request the simulator to pause
-    the actor until a given amount of flops gets computed on its simulated
-    host. Some executions can be given a higher priority so that they
-    get more resources.
+Basic execution
+^^^^^^^^^^^^^^^
 
-    .. tabs::
+The computations done in your program are not reported to the
+simulated world unless you explicitly request the simulator to pause
+the actor until a given amount of flops gets computed on its simulated
+host. Some executions can be given a higher priority so that they
+get more resources.
 
-       .. example-tab:: examples/cpp/exec-basic/s4u-exec-basic.cpp
+.. tabs::
 
-          See also :cpp:func:`void simgrid::s4u::this_actor::execute(double)`
-          and :cpp:func:`void simgrid::s4u::this_actor::execute(double, double)`.
+   .. example-tab:: examples/cpp/exec-basic/s4u-exec-basic.cpp
 
-       .. example-tab:: examples/python/exec-basic/exec-basic.py
+      See also :cpp:func:`void simgrid::s4u::this_actor::execute(double)`
+      and :cpp:func:`void simgrid::s4u::this_actor::execute(double, double)`.
 
-          See also :py:func:`simgrid.this_actor.execute()`.
+   .. example-tab:: examples/python/exec-basic/exec-basic.py
 
-       .. example-tab:: examples/c/exec-basic/exec-basic.c
+      See also :py:func:`simgrid.this_actor.execute()`.
 
-          See also :cpp:func:`void sg_actor_execute(double)`
-          and :cpp:func:`void sg_actor_execute_with_priority(double, double)`.
+   .. example-tab:: examples/c/exec-basic/exec-basic.c
 
-  - **Asynchronous execution:**
-    You can start asynchronous executions, just like you would fire
-    background threads.
+      See also :cpp:func:`void sg_actor_execute(double)`
+      and :cpp:func:`void sg_actor_execute_with_priority(double, double)`.
 
-    .. tabs::
+Asynchronous execution
+^^^^^^^^^^^^^^^^^^^^^^
 
-       .. example-tab:: examples/cpp/exec-async/s4u-exec-async.cpp
+You can start asynchronous executions, just like you would fire background threads.
 
-          See also :cpp:func:`simgrid::s4u::this_actor::exec_init()`,
-          :cpp:func:`simgrid::s4u::Activity::start()`,
-          :cpp:func:`simgrid::s4u::Activity::wait()`,
-          :cpp:func:`simgrid::s4u::Activity::get_remaining()`,
-          :cpp:func:`simgrid::s4u::Exec::get_remaining_ratio()`,
-          :cpp:func:`simgrid::s4u::this_actor::exec_async()` and
-          :cpp:func:`simgrid::s4u::Activity::cancel()`.
+.. tabs::
 
-       .. example-tab:: examples/python/exec-async/exec-async.py
+   .. example-tab:: examples/cpp/exec-async/s4u-exec-async.cpp
 
-          See also :py:func:`simgrid.this_actor::exec_init()`,
-          :py:func:`simgrid.Activity::start()`,
-          :py:func:`simgrid.Activity.wait()`,
-          :py:func:`simgrid.Activity.get_remaining()`,
-          :py:func:`simgrid.Exec.get_remaining_ratio()`,
-          :py:func:`simgrid.this_actor.exec_async()` and
-          :py:func:`simgrid.Activity.cancel()`.
+      See also :cpp:func:`simgrid::s4u::this_actor::exec_init()`,
+      :cpp:func:`simgrid::s4u::Activity::start()`,
+      :cpp:func:`simgrid::s4u::Activity::wait()`,
+      :cpp:func:`simgrid::s4u::Activity::get_remaining()`,
+      :cpp:func:`simgrid::s4u::Exec::get_remaining_ratio()`,
+      :cpp:func:`simgrid::s4u::this_actor::exec_async()` and
+      :cpp:func:`simgrid::s4u::Activity::cancel()`.
 
-       .. example-tab:: examples/c/exec-async/exec-async.c
+   .. example-tab:: examples/python/exec-async/exec-async.py
 
-          See also :cpp:func:`sg_actor_exec_init()`,
-          :cpp:func:`sg_exec_start()`,
-          :cpp:func:`sg_exec_wait()`,
-          :cpp:func:`sg_exec_get_remaining()`,
-          :cpp:func:`sg_exec_get_remaining_ratio()`,
-          :cpp:func:`sg_actor_exec_async()` and
-          :cpp:func:`sg_exec_cancel()`,
+      See also :py:func:`simgrid.this_actor.exec_init()`,
+      :py:func:`simgrid.Activity.start()`,
+      :py:func:`simgrid.Activity.wait()`,
+      :py:func:`simgrid.Activity.get_remaining()`,
+      :py:func:`simgrid.Exec.get_remaining_ratio()`,
+      :py:func:`simgrid.this_actor.exec_async()` and
+      :py:func:`simgrid.Activity.cancel()`.
 
-  - **Remote execution:**
-    You can start executions on remote hosts, or even change the host
-    on which they occur during their execution.
+   .. example-tab:: examples/c/exec-async/exec-async.c
 
-    .. tabs::
+      See also :cpp:func:`sg_actor_exec_init()`,
+      :cpp:func:`sg_exec_start()`,
+      :cpp:func:`sg_exec_wait()`,
+      :cpp:func:`sg_exec_get_remaining()`,
+      :cpp:func:`sg_exec_get_remaining_ratio()`,
+      :cpp:func:`sg_actor_exec_async()` and
+      :cpp:func:`sg_exec_cancel()`,
 
-       .. example-tab:: examples/cpp/exec-remote/s4u-exec-remote.cpp
+Remote execution
+^^^^^^^^^^^^^^^^
 
-          See also :cpp:func:`simgrid::s4u::Exec::set_host()`.
+You can start executions on remote hosts, or even change the host on which they occur during their execution.
 
-       .. example-tab:: examples/python/exec-remote/exec-remote.py
+.. tabs::
 
-          See also :py:func:`simgrid.Exec.set_host()`.
+   .. example-tab:: examples/cpp/exec-remote/s4u-exec-remote.cpp
 
-       .. example-tab:: examples/c/exec-remote/exec-remote.c
+      See also :cpp:func:`simgrid::s4u::Exec::set_host()`.
 
-          See also :cpp:func:`sg_exec_set_host()`.
+   .. example-tab:: examples/python/exec-remote/exec-remote.py
 
-  - **Parallel executions:**
-    These objects are convenient abstractions of parallel
-    computational kernels that span over several machines, such as a
-    PDGEM and the other ScaLAPACK routines. Note that this only works
-    with the "ptask_L07" host model (``--cfg=host/model:ptask_L07``).
+      See also :py:func:`simgrid.Exec.set_host()`.
 
-    This example demonstrates several kinds of parallel tasks: regular
-    ones, communication-only (without computation), computation-only
-    (without communication), synchronization-only (neither
-    communication nor computation). It also shows how to reconfigure a
-    task after its start, to change the number of hosts it runs onto.
-    This allows simulating malleable tasks.
+   .. example-tab:: examples/c/exec-remote/exec-remote.c
 
-    .. tabs::
+      See also :cpp:func:`sg_exec_set_host()`.
 
-       .. example-tab:: examples/cpp/exec-ptask/s4u-exec-ptask.cpp
+Parallel executions
+^^^^^^^^^^^^^^^^^^^
 
-          See also :cpp:func:`simgrid::s4u::this_actor::parallel_execute()`.
+These objects are convenient abstractions of parallel
+computational kernels that span over several machines, such as a
+PDGEM and the other ScaLAPACK routines. Note that this only works
+with the "ptask_L07" host model (``--cfg=host/model:ptask_L07``).
 
-  - **Using Pstates on a host:**
-    This example shows how to define a set of pstates in the XML. The current pstate
-    of a host can then be accessed and changed from the program.
+This example demonstrates several kinds of parallel tasks: regular
+ones, communication-only (without computation), computation-only
+(without communication), synchronization-only (neither
+communication nor computation). It also shows how to reconfigure a
+task after its start, to change the number of hosts it runs onto.
+This allows simulating malleable tasks.
 
-    .. tabs::
+.. tabs::
 
-       .. example-tab:: examples/cpp/exec-dvfs/s4u-exec-dvfs.cpp
+   .. example-tab:: examples/cpp/exec-ptask/s4u-exec-ptask.cpp
 
-          See also :cpp:func:`simgrid::s4u::Host::get_pstate_speed` and :cpp:func:`simgrid::s4u::Host::set_pstate`.
+      See also :cpp:func:`simgrid::s4u::this_actor::parallel_execute()`.
 
-       .. example-tab:: examples/c/exec-dvfs/exec-dvfs.c
+DVFS and pstates
+^^^^^^^^^^^^^^^^
 
-          See also :cpp:func:`sg_host_get_pstate_speed` and :cpp:func:`sg_host_set_pstate`.
+This example shows how to define a set of pstates in the XML. The current pstate
+of a host can then be accessed and changed from the program.
 
-       .. example-tab:: examples/python/exec-dvfs/exec-dvfs.py
+.. tabs::
 
-          See also :py:func:`Host.get_pstate_speed` and :py:func:`Host.set_pstate`.
+   .. example-tab:: examples/cpp/exec-dvfs/s4u-exec-dvfs.cpp
 
-       .. example-tab:: examples/platforms/energy_platform.xml
+      See also :cpp:func:`simgrid::s4u::Host::get_pstate_speed` and :cpp:func:`simgrid::s4u::Host::set_pstate`.
+
+   .. example-tab:: examples/c/exec-dvfs/exec-dvfs.c
+
+      See also :cpp:func:`sg_host_get_pstate_speed` and :cpp:func:`sg_host_set_pstate`.
+
+   .. example-tab:: examples/python/exec-dvfs/exec-dvfs.py
+
+      See also :py:func:`Host.get_pstate_speed` and :py:func:`Host.set_pstate`.
+
+   .. example-tab:: examples/platforms/energy_platform.xml
 
 .. _s4u_ex_disk_io:
 
@@ -506,19 +541,23 @@ SimGrid provides two levels of abstraction to interact with the
 simulated disks. At the simplest level, you simply create read and
 write actions on the disk resources.
 
-  - **Access to raw disk devices:**
-    This example illustrates how to simply read and write data on a
-    simulated disk resource.
+Access to raw disk devices
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    .. tabs::
+This example illustrates how to simply read and write data on a simulated disk resource.
 
-       .. example-tab:: examples/cpp/io-disk-raw/s4u-io-disk-raw.cpp
+.. tabs::
 
-       .. example-tab:: examples/c/io-disk-raw/io-disk-raw.c
+   .. example-tab:: examples/cpp/io-disk-raw/s4u-io-disk-raw.cpp
 
-       .. example-tab:: examples/platforms/hosts_with_disks.xml
+   .. example-tab:: examples/c/io-disk-raw/io-disk-raw.c
 
-          This shows how to declare disks in XML.
+   .. example-tab:: examples/platforms/hosts_with_disks.xml
+
+      This shows how to declare disks in XML.
+
+Filesystem plugin
+^^^^^^^^^^^^^^^^^
 
 The FileSystem plugin provides a more detailed view, with the
 classical operations over files: open, move, unlink, and of course,
@@ -548,111 +587,135 @@ result in short reads and short writes, as in reality.
 Classical synchronization objects
 ---------------------------------
 
- - **Barrier:**
-   Shows how to use :cpp:type:`simgrid::s4u::Barrier` synchronization objects.
+Barrier
+^^^^^^^
 
-   .. tabs::
+Shows how to use :cpp:type:`simgrid::s4u::Barrier` synchronization objects.
 
-      .. example-tab:: examples/cpp/synchro-barrier/s4u-synchro-barrier.cpp
+.. tabs::
 
- - **Condition variable: basic usage**
-   Shows how to use :cpp:type:`simgrid::s4u::ConditionVariable` synchronization objects.
+   .. example-tab:: examples/cpp/synchro-barrier/s4u-synchro-barrier.cpp
 
-   .. tabs::
+Condition variable: basic usage
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-      .. example-tab:: examples/cpp/synchro-condition-variable/s4u-synchro-condition-variable.cpp
+Shows how to use :cpp:type:`simgrid::s4u::ConditionVariable` synchronization objects.
 
- - **Condition variable: timeouts**
-   Shows how to specify timeouts when blocking on condition variables.
+.. tabs::
 
-   .. tabs::
+   .. example-tab:: examples/cpp/synchro-condition-variable/s4u-synchro-condition-variable.cpp
 
-      .. example-tab:: examples/cpp/synchro-condition-variable-waituntil/s4u-synchro-condition-variable-waituntil.cpp
+Condition variable: timeouts
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
- - **Mutex:**
-   Shows how to use :cpp:type:`simgrid::s4u::Mutex` synchronization objects.
+Shows how to specify timeouts when blocking on condition variables.
 
-   .. tabs::
+.. tabs::
 
-      .. example-tab:: examples/cpp/synchro-mutex/s4u-synchro-mutex.cpp
+   .. example-tab:: examples/cpp/synchro-condition-variable-waituntil/s4u-synchro-condition-variable-waituntil.cpp
 
- - **Semaphore:**
-   Shows how to use :cpp:type:`simgrid::s4u::Semaphore` synchronization objects.
+Mutex
+^^^^^
 
-   .. tabs::
+Shows how to use :cpp:type:`simgrid::s4u::Mutex` synchronization objects.
 
-      .. example-tab:: examples/cpp/synchro-semaphore/s4u-synchro-semaphore.cpp
+.. tabs::
 
-      .. example-tab:: examples/c/synchro-semaphore/synchro-semaphore.c
+   .. example-tab:: examples/cpp/synchro-mutex/s4u-synchro-mutex.cpp
+
+Semaphore
+^^^^^^^^^
+
+Shows how to use :cpp:type:`simgrid::s4u::Semaphore` synchronization objects.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/synchro-semaphore/s4u-synchro-semaphore.cpp
+
+   .. example-tab:: examples/c/synchro-semaphore/synchro-semaphore.c
 
 =============================
 Interacting with the Platform
 =============================
 
- - **User-defined properties:**
-   You can attach arbitrary information to most platform elements from
-   the XML file, and then interact with these values from your
-   program. Note that the changes are not written permanently on disk,
-   in the XML file nor anywhere else. They only last until the end of
-   your simulation.
+User-defined properties
+-----------------------
 
-   .. tabs::
+You can attach arbitrary information to most platform elements from the XML file, and then interact with these values from your
+program. Note that the changes are not written permanently on disk, in the XML file nor anywhere else. They only last until the end of
+your simulation.
 
-      .. example-tab:: examples/cpp/platform-properties/s4u-platform-properties.cpp
+.. tabs::
 
-         - :cpp:func:`simgrid::s4u::Actor::get_property()` and :cpp:func:`simgrid::s4u::Actor::set_property()`
-         - :cpp:func:`simgrid::s4u::Host::get_property()` and :cpp:func:`simgrid::s4u::Host::set_property()`
-         - :cpp:func:`simgrid::s4u::Link::get_property()` and :cpp:func:`simgrid::s4u::Link::set_property()`
-         - :cpp:func:`simgrid::s4u::NetZone::get_property()` and :cpp:func:`simgrid::s4u::NetZone::set_property()`
+   .. example-tab:: examples/cpp/platform-properties/s4u-platform-properties.cpp
 
-      .. example-tab:: examples/c/platform-properties/platform-properties.c
+      - :cpp:func:`simgrid::s4u::Actor::get_property()` and :cpp:func:`simgrid::s4u::Actor::set_property()`
+      - :cpp:func:`simgrid::s4u::Host::get_property()` and :cpp:func:`simgrid::s4u::Host::set_property()`
+      - :cpp:func:`simgrid::s4u::Link::get_property()` and :cpp:func:`simgrid::s4u::Link::set_property()`
+      - :cpp:func:`simgrid::s4u::NetZone::get_property()` and :cpp:func:`simgrid::s4u::NetZone::set_property()`
 
-         - :cpp:func:`sg_actor_get_property_value()`
-         - :cpp:func:`sg_host_get_property_value()` and :cpp:func:sg_host_set_property_value()`
-         - :cpp:func:`sg_zone_get_property_value()` and :cpp:func:`sg_zone_set_property_value()`
+   .. example-tab:: examples/c/platform-properties/platform-properties.c
 
-      .. group-tab:: XML
+      - :cpp:func:`sg_actor_get_property_value()`
+      - :cpp:func:`sg_host_get_property_value()` and :cpp:func:sg_host_set_property_value()`
+      - :cpp:func:`sg_zone_get_property_value()` and :cpp:func:`sg_zone_set_property_value()`
 
-         **Platform file:**
+   .. group-tab:: XML
 
-         .. showfile:: examples/platforms/prop.xml
-            :language: xml
+      **Platform file:**
 
- - **Retrieving the netzones matching given criteria:**
-   Shows how to filter the cluster netzones.
+      .. showfile:: examples/platforms/prop.xml
+         :language: xml
 
-   .. tabs::
+Element filtering
+-----------------
 
-      .. example-tab:: examples/cpp/routing-get-clusters/s4u-routing-get-clusters.cpp
+Retrieving the netzones matching given criteria
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
- - **Retrieving the list of hosts matching given criteria:**
-   Shows how to filter the actors that match given criteria.
+Shows how to filter the cluster netzones.
 
-   .. tabs::
+.. tabs::
 
-      .. example-tab:: examples/cpp/engine-filtering/s4u-engine-filtering.cpp
+   .. example-tab:: examples/cpp/routing-get-clusters/s4u-routing-get-clusters.cpp
 
- - **Specifying state profiles:** shows how to specify when the
-   resources must be turned off and on again, and how to react to such
-   failures in your code. See also :ref:`howto_churn`.
+Retrieving the list of hosts matching given criteria
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-   .. tabs::
+Shows how to filter the actors that match given criteria.
 
-      .. example-tab:: examples/cpp/platform-failures/s4u-platform-failures.cpp
+.. tabs::
 
-      .. example-tab:: examples/c/platform-failures/platform-failures.c
+   .. example-tab:: examples/cpp/engine-filtering/s4u-engine-filtering.cpp
 
-      .. group-tab:: XML
+Profiles
+--------
 
-         .. showfile:: examples/platforms/small_platform_failures.xml
-            :language: xml
+Specifying state profiles
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-         .. showfile:: examples/platforms/profiles/jupiter_state.profile
+Shows how to specify when the resources must be turned off and on again, and how to react to such
+failures in your code. See also :ref:`howto_churn`.
 
-         .. showfile:: examples/platforms/profiles/fafard_state.profile
+.. tabs::
 
- - **Specifying speed profiles:** shows how to specify an external
-   load to resources, variating their peak speed over time.
+   .. example-tab:: examples/cpp/platform-failures/s4u-platform-failures.cpp
+
+   .. example-tab:: examples/c/platform-failures/platform-failures.c
+
+   .. group-tab:: XML
+
+      .. showfile:: examples/platforms/small_platform_failures.xml
+         :language: xml
+
+      .. showfile:: examples/platforms/profiles/jupiter_state.profile
+
+      .. showfile:: examples/platforms/profiles/fafard_state.profile
+
+Specifying speed profiles
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Shows how to specify an external load to resources, variating their peak speed over time.
 
    .. tabs::
 
@@ -673,114 +736,131 @@ Interacting with the Platform
 Energy Simulation
 =================
 
-  - **Describing the energy profiles in the platform:**
-    The first platform file contains the energy profile of each link and
-    host for a wired network, which is necessary to get energy consumption
-    predictions. The second platform file is the equivalent for a wireless
-    network. As usual, you should not trust our example, and you should
-    strive to double-check that your instantiation matches your target
-    platform.
+Setup
+-----
 
-    .. tabs::
+Describing the energy profiles in the platform
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-       .. group-tab:: XML
+The first platform file contains the energy profile of each link and host for a wired network, which is necessary to get energy consumption
+predictions. The second platform file is the equivalent for a wireless network. As usual, you should not trust our example, and you should
+strive to double-check that your instantiation matches your target platform.
 
-	  .. showfile:: examples/platforms/energy_platform.xml
-	     :language: xml
+.. tabs::
 
-	  .. showfile:: examples/platforms/wifi_energy.xml
-	     :language: xml
+   .. group-tab:: XML
 
-  - **Consumption due to the CPU:**
-    This example shows how to retrieve the amount of energy consumed
-    by the CPU during computations, and the impact of the pstate.
+.. showfile:: examples/platforms/energy_platform.xml
+   :language: xml
 
-    .. tabs::
+.. showfile:: examples/platforms/wifi_energy.xml
+   :language: xml
 
-       .. example-tab:: examples/cpp/energy-exec/s4u-energy-exec.cpp
+Usage
+-----
 
-       .. example-tab:: examples/c/energy-exec/energy-exec.c
+CPU energy consumption
+^^^^^^^^^^^^^^^^^^^^^^
 
-  - **Consumption due to the wired network:**
-    This example shows how to retrieve and display the energy consumed
-    by the wired network during communications.
+This example shows how to retrieve the amount of energy consumed by the CPU during computations, and the impact of the pstate.
 
-    .. tabs::
+.. tabs::
 
-       .. example-tab:: examples/cpp/energy-link/s4u-energy-link.cpp
+   .. example-tab:: examples/cpp/energy-exec/s4u-energy-exec.cpp
 
-  - **Consumption due to the wireless network:**
-    This example shows how to retrieve and display the energy consumed
-    by the wireless network during communications.
+   .. example-tab:: examples/c/energy-exec/energy-exec.c
 
-    .. tabs::
+Wired network energy consumption
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-       .. example-tab:: examples/cpp/energy-wifi/s4u-energy-wifi.cpp
+This example shows how to retrieve and display the energy consumed by the wired network during communications.
 
-  - **Modeling the shutdown and boot of hosts:**
-    Simple example of a model for the energy consumption during
-    the host boot and shutdown periods.
+.. tabs::
 
-    .. tabs::
+   .. example-tab:: examples/cpp/energy-link/s4u-energy-link.cpp
 
-       .. example-tab:: examples/cpp/energy-boot/platform_boot.xml
+WiFi network energy consumption
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-       .. example-tab:: examples/cpp/energy-boot/s4u-energy-boot.cpp
+This example shows how to retrieve and display the energy consumed by the wireless network during communications.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/energy-wifi/s4u-energy-wifi.cpp
+
+Modeling the shutdown and boot of hosts
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Simple example of a model for the energy consumption during the host boot and shutdown periods.
+
+.. tabs::
+
+   .. example-tab:: examples/platforms/energy_boot.xml
+
+   .. example-tab:: examples/cpp/energy-boot/s4u-energy-boot.cpp
 
 =======================
 Tracing and Visualizing
 =======================
 
-Tracing can be activated by various configuration options which
-are illustrated in these examples. See also the
+Tracing can be activated by various configuration options which are illustrated in these examples. See also the
 :ref:`full list of options related to tracing <tracing_tracing_options>`.
+The following introduces  some option sets of interest that you may want to pass to your simulators.
 
-It is interesting to run the process-create example with the following
-options to see the task executions:
+.. todo::
+   These tracing examples should be integrated in the examples to not duplicate the C++ files.
+   A full command line to see the result in the right tool (vite/FrameSoc) should be given along with some screenshots.
 
-  - **Platform Tracing:**
-    This program is a toy example just loading the platform so that
-    you can play with the platform visualization. Recommended options:
-    ``--cfg=tracing:yes --cfg=tracing/categorized:yes``
+Platform Tracing
+----------------
 
-    .. tabs::
+Basic example
+^^^^^^^^^^^^^
 
-       .. example-tab:: examples/cpp/trace-platform/s4u-trace-platform.cpp
+This program is a toy example just loading the platform so that you can play with the platform visualization. Recommended options:
+``--cfg=tracing:yes --cfg=tracing/categorized:yes``
 
-  - **Setting Categories**
-    This example declares several tracing categories that are used to
-    classify its tasks. When the program is executed, the tracing mechanism
-    registers the resource utilization of hosts and links according to these
-    categories. Recommended options:
-    ``--cfg=tracing:yes --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes``
+.. tabs::
 
-    .. tabs::
+   .. example-tab:: examples/cpp/trace-platform/s4u-trace-platform.cpp
 
-       .. example-tab:: examples/cpp/trace-categories/s4u-trace-categories.cpp
+Setting Categories
+^^^^^^^^^^^^^^^^^^
 
-  - **Master Workers tracing**
-    This is an augmented version of our basic master/worker example using
-    several tracing features. It traces resource usage, sorted out in several
-    categories; Trace marks and user variables are also used. Recommended
-    options: ``--cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes``
+This example declares several tracing categories that are used to
+classify its tasks. When the program is executed, the tracing mechanism
+registers the resource utilization of hosts and links according to these
+categories. Recommended options:
+``--cfg=tracing:yes --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes``
 
-    .. tabs::
+.. tabs::
 
-       .. example-tab:: examples/cpp/trace-masterworkers/s4u-trace-masterworkers.cpp
+   .. example-tab:: examples/cpp/trace-categories/s4u-trace-categories.cpp
 
-  - **Process migration tracing**
-    This version is enhanced so that the process migrations can be displayed
-    as arrows in a Gantt-chart visualization. Recommended options to that
-    extend: ``--cfg=tracing:yes --cfg=tracing/actor:yes``
+Master Workers tracing
+^^^^^^^^^^^^^^^^^^^^^^
 
-    .. tabs::
+This is an augmented version of our basic master/worker example using
+several tracing features. It traces resource usage, sorted out in several
+categories; Trace marks and user variables are also used. Recommended
+options: ``--cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes``
 
-       .. example-tab:: examples/cpp/trace-process-migration/s4u-trace-process-migration.cpp
+.. tabs::
 
-..
-    TODO: These tracing examples should be integrated in the examples to not
-    duplicate the C++ files. A full command line to see the result in the right
-    tool (vite/FrameSoc) should be given along with some screenshots.
+   .. example-tab:: examples/cpp/trace-masterworkers/s4u-trace-masterworkers.cpp
+
+   .. example-tab:: examples/python/app-masterworkers/app-masterworkers.py
+
+Process migration tracing
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This version is enhanced so that the process migrations can be displayed
+as arrows in a Gantt-chart visualization. Recommended options to that
+extend: ``--cfg=tracing:yes --cfg=tracing/actor:yes``
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/trace-process-migration/s4u-trace-process-migration.cpp
 
 Tracing user variables
 ----------------------
@@ -789,246 +869,268 @@ You can also attach your own variables to any resource described in the platform
 file. The following examples illustrate this feature.  They have to be run with
 the following options: ``--cfg=tracing:yes --cfg=tracing/platform:yes``
 
-  - **Attaching variables to Hosts**
+Attaching variables to Hosts
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    .. tabs::
+.. tabs::
 
-       .. example-tab:: examples/cpp/trace-host-user-variables/s4u-trace-host-user-variables.cpp
+   .. example-tab:: examples/cpp/trace-host-user-variables/s4u-trace-host-user-variables.cpp
 
-  - **Attaching variables to Links**
-    The tricky part is that you have to know the name of the link you want to
-    enhance with a variable.
+Attaching variables to Links
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    .. tabs::
+The tricky part is that you have to know the name of the link you want to enhance with a variable.
 
-       .. example-tab:: examples/cpp/trace-link-user-variables/s4u-trace-link-user-variables.cpp
+.. tabs::
 
-  - **Attaching variables to network Routes**
-    It is often easier to update a given variable for all links of a given
-    network path (identified by its source and destination hosts) instead of
-    knowing the name of each specific link.
+   .. example-tab:: examples/cpp/trace-link-user-variables/s4u-trace-link-user-variables.cpp
 
-    .. tabs::
+Attaching variables to network routes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-       .. example-tab::  examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.cpp
+It is often easier to update a given variable for all links of a given network path (identified by its source and destination hosts) instead of
+knowing the name of each specific link.
+
+.. tabs::
+
+   .. example-tab::  examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.cpp
 
 ========================
 Larger SimGrid Exemplars
 ========================
 
-This section contains application examples that are somewhat larger
-than the previous examples.
+This section contains application examples that are somewhat larger than the previous examples.
 
-  - **Token ring:**
-    Shows how to implement a classical communication pattern, where a
-    token is exchanged along a ring to reach every participant.
+Classical examples
+------------------
 
-    .. tabs::
+Token ring
+^^^^^^^^^^
 
-       .. example-tab:: examples/cpp/app-token-ring/s4u-app-token-ring.cpp
+Shows how to implement a classical communication pattern, where a token is exchanged along a ring to reach every participant.
 
-       .. example-tab:: examples/c/app-token-ring/app-token-ring.c
+.. tabs::
 
-  - **Master Workers:**
-    Another good old example, where one Master process has a bunch of tasks to dispatch to a set of several Worker
-    processes.
+   .. example-tab:: examples/cpp/app-token-ring/s4u-app-token-ring.cpp
 
-    .. tabs::
+   .. example-tab:: examples/c/app-token-ring/app-token-ring.c
 
-       .. group-tab:: C++
+Master Workers
+^^^^^^^^^^^^^^
 
-          This example comes in two equivalent variants, one where the actors
-          are specified as simple functions (which is easier to understand for
-          newcomers) and one where the actors are specified as classes (which is
-          more powerful for the users wanting to build their own projects upon
-          the example).
+Another good old example, where one Master acto$ has a bunch of tasks to dispatch to a set of several Worker actors. 
+This example is used in the :ref:`SimGrid tutorial <usecase_simalgo>`.
 
-          .. showfile:: examples/cpp/app-masterworkers/s4u-app-masterworkers-class.cpp
-             :language: cpp
+.. tabs::
 
-          .. showfile:: examples/cpp/app-masterworkers/s4u-app-masterworkers-fun.cpp
-             :language: cpp
+   .. group-tab:: C++
 
-       .. group-tab:: C
+      This example comes in two equivalent variants, one where the actors
+      are specified as simple functions (which is easier to understand for
+      newcomers) and one where the actors are specified as classes (which is
+      more powerful for the users wanting to build their own projects upon
+      the example).
 
-          .. showfile:: examples/c/app-masterworker/app-masterworker.c
-             :language: cpp
+      .. showfile:: examples/cpp/app-masterworkers/s4u-app-masterworkers-class.cpp
+         :language: cpp
+
+      .. showfile:: examples/cpp/app-masterworkers/s4u-app-masterworkers-fun.cpp
+         :language: cpp
+
+   .. group-tab:: C
+
+      .. showfile:: examples/c/app-masterworker/app-masterworker.c
+         :language: cpp
 
 Data diffusion
 --------------
 
-  - **Bit Torrent:**
-    Classical protocol for Peer-to-Peer data diffusion.
+Bit Torrent
+^^^^^^^^^^^
 
-    .. tabs::
+Classical protocol for Peer-to-Peer data diffusion.
 
-       .. group-tab:: C++
+.. tabs::
 
-          .. showfile:: examples/cpp/app-bittorrent/s4u-bittorrent.cpp
-             :language: cpp
+   .. group-tab:: C++
 
-          .. showfile:: examples/cpp/app-bittorrent/s4u-peer.cpp
-             :language: cpp
+      .. showfile:: examples/cpp/app-bittorrent/s4u-bittorrent.cpp
+         :language: cpp
 
-          .. showfile:: examples/cpp/app-bittorrent/s4u-tracker.cpp
-             :language: cpp
+      .. showfile:: examples/cpp/app-bittorrent/s4u-peer.cpp
+         :language: cpp
 
-       .. group-tab:: C
+      .. showfile:: examples/cpp/app-bittorrent/s4u-tracker.cpp
+         :language: cpp
 
-          .. showfile:: examples/c/app-bittorrent/app-bittorrent.c
-             :language: cpp
+   .. group-tab:: C
 
-          .. showfile:: examples/c/app-bittorrent/bittorrent-peer.c
-             :language: cpp
+      .. showfile:: examples/c/app-bittorrent/app-bittorrent.c
+         :language: cpp
 
-          .. showfile:: examples/c/app-bittorrent/tracker.c
-             :language: cpp
+      .. showfile:: examples/c/app-bittorrent/bittorrent-peer.c
+         :language: cpp
 
-  - **Chained Send:**
-    Data broadcast over a ring of processes.
+      .. showfile:: examples/c/app-bittorrent/tracker.c
+         :language: cpp
 
-    .. tabs::
+Chained Send
+^^^^^^^^^^^^
 
-       .. example-tab:: examples/cpp/app-chainsend/s4u-app-chainsend.cpp
+Data broadcast over a ring of processes.
 
-       .. group-tab:: C
+.. tabs::
 
-          .. showfile:: examples/c/app-chainsend/chainsend.c
-             :language: c
+   .. example-tab:: examples/cpp/app-chainsend/s4u-app-chainsend.cpp
 
-          .. showfile:: examples/c/app-chainsend/broadcaster.c
-             :language: c
+   .. group-tab:: C
 
-          .. showfile:: examples/c/app-chainsend/peer.c
-             :language: c
+      .. showfile:: examples/c/app-chainsend/chainsend.c
+         :language: c
+
+      .. showfile:: examples/c/app-chainsend/broadcaster.c
+         :language: c
+
+      .. showfile:: examples/c/app-chainsend/peer.c
+         :language: c
 
 Distributed Hash Tables (DHT)
 -----------------------------
 
-  - **Chord Protocol**
-    One of the most famous DHT protocol.
+Chord Protocol
+^^^^^^^^^^^^^^
 
-    .. tabs::
+One of the most famous DHT protocol.
 
-       .. group-tab:: C++
+.. tabs::
 
-          .. showfile:: examples/cpp/dht-chord/s4u-dht-chord.cpp
-             :language: cpp
+   .. group-tab:: C++
 
-          .. showfile:: examples/cpp/dht-chord/s4u-dht-chord-node.cpp
-             :language: cpp
+      .. showfile:: examples/cpp/dht-chord/s4u-dht-chord.cpp
+         :language: cpp
 
-  - **Kademlia**
-    Another well-known DHT protocol.
+      .. showfile:: examples/cpp/dht-chord/s4u-dht-chord-node.cpp
+         :language: cpp
 
-    .. tabs::
+Kademlia
+^^^^^^^^
 
-       .. group-tab:: C++
+Another well-known DHT protocol.
 
-          .. showfile:: examples/cpp/dht-kademlia/s4u-dht-kademlia.cpp
-             :language: cpp
+.. tabs::
 
-          .. showfile:: examples/cpp/dht-kademlia/routing_table.cpp
-             :language: cpp
+   .. group-tab:: C++
 
-          .. showfile:: examples/cpp/dht-kademlia/answer.cpp
-             :language: cpp
+      .. showfile:: examples/cpp/dht-kademlia/s4u-dht-kademlia.cpp
+         :language: cpp
 
-          .. showfile:: examples/cpp/dht-kademlia/node.cpp
-             :language: cpp
+      .. showfile:: examples/cpp/dht-kademlia/routing_table.cpp
+         :language: cpp
 
-       .. group-tab:: C
+      .. showfile:: examples/cpp/dht-kademlia/answer.cpp
+         :language: cpp
 
-          .. showfile:: examples/c/dht-kademlia/dht-kademlia.c
-             :language: cpp
+      .. showfile:: examples/cpp/dht-kademlia/node.cpp
+         :language: cpp
 
-          .. showfile:: examples/c/dht-kademlia/routing_table.c
-             :language: cpp
+   .. group-tab:: C
 
-          .. showfile:: examples/c/dht-kademlia/answer.c
-             :language: cpp
+      .. showfile:: examples/c/dht-kademlia/dht-kademlia.c
+         :language: cpp
 
-          .. showfile:: examples/c/dht-kademlia/message.c
-             :language: cpp
+      .. showfile:: examples/c/dht-kademlia/routing_table.c
+         :language: cpp
 
-          .. showfile:: examples/c/dht-kademlia/node.c
-             :language: cpp
+      .. showfile:: examples/c/dht-kademlia/answer.c
+         :language: cpp
+
+      .. showfile:: examples/c/dht-kademlia/message.c
+         :language: cpp
+
+      .. showfile:: examples/c/dht-kademlia/node.c
+         :language: cpp
 
 .. _s4u_ex_clouds:
 
 Simulating Clouds
 -----------------
 
-  - **Cloud basics**
-    This example starts some computations both on PMs and VMs and
-    migrates some VMs around.
+Cloud basics
+^^^^^^^^^^^^
 
-    .. tabs::
+This example starts some computations both on PMs and VMs and migrates some VMs around.
 
-       .. example-tab:: examples/cpp/cloud-simple/s4u-cloud-simple.cpp
+.. tabs::
 
-       .. example-tab:: examples/c/cloud-simple/cloud-simple.c
+   .. example-tab:: examples/cpp/cloud-simple/s4u-cloud-simple.cpp
 
-  - **Migrating VMs**
-    This example shows how to migrate VMs between PMs.
+   .. example-tab:: examples/c/cloud-simple/cloud-simple.c
 
-    .. tabs::
+Migrating VMs
+^^^^^^^^^^^^^
 
-       .. example-tab:: examples/cpp/cloud-migration/s4u-cloud-migration.cpp
+This example shows how to migrate VMs between PMs.
 
-       .. example-tab:: examples/c/cloud-migration/cloud-migration.c
+.. tabs::
+
+   .. example-tab:: examples/cpp/cloud-migration/s4u-cloud-migration.cpp
+
+   .. example-tab:: examples/c/cloud-migration/cloud-migration.c
 
 =======================
 Model-Related Examples
 =======================
 
-  - **ns-3 as a SimGrid Network Model**
-    This simple ping-pong example demonstrates how to use the bindings to the Network
-    Simulator. The most interesting is probably not the C++ files since
-    they are unchanged from the other simulations, but the associated files,
-    such as the platform file to see how to declare a platform to be used
-    with the ns-3 bindings of SimGrid and the tesh file to see how to
-    start a simulation in these settings.
+ns-3 as a model
+---------------
 
-    .. tabs::
+This simple ping-pong example demonstrates how to use the bindings to the Network
+Simulator. The most interesting is probably not the C++ files since
+they are unchanged from the other simulations, but the associated files,
+such as the platform file to see how to declare a platform to be used
+with the ns-3 bindings of SimGrid and the tesh file to see how to
+start a simulation in these settings.
 
-      .. example-tab:: examples/cpp/network-ns3/s4u-network-ns3.cpp
+.. tabs::
 
-      .. group-tab:: XML
+   .. example-tab:: examples/cpp/network-ns3/s4u-network-ns3.cpp
 
-         **Platform files:**
+   .. group-tab:: XML
 
-         .. showfile:: examples/platforms/small_platform_one_link_routes.xml
-            :language: xml
+      **Platform files:**
 
-  - **wifi links**
+      .. showfile:: examples/platforms/small_platform_one_link_routes.xml
+         :language: xml
 
-    This demonstrates how to declare a wifi zone in your platform and
-    how to use it in your simulation. For that, you should have a link
-    whose sharing policy is set to `WIFI`. Such links can have more
-    than one bandwidth value (separated by commas), corresponding to
-    the several SNR level of your wifi link.
+WiFi links
+----------
 
-    In this case, SimGrid automatically switches to validated
-    performance models of wifi networks, where the time is shared
-    between users instead of the bandwidth for wired links (the
-    corresponding publication is currently being written).
+This demonstrates how to declare a wifi zone in your platform and
+how to use it in your simulation. For that, you should have a link
+whose sharing policy is set to `WIFI`. Such links can have more
+than one bandwidth value (separated by commas), corresponding to
+the several SNR level of your wifi link.
 
-    If your wifi link provides more than one SNR level, you can switch
-    the level of a given host using
-    :cpp:func:`simgrid::s4u::Link::set_host_wifi_rate`. By default,
-    the first level is used.
+In this case, SimGrid automatically switches to validated
+performance models of wifi networks, where the time is shared
+between users instead of the bandwidth for wired links (the
+corresponding publication is currently being written).
 
-    .. tabs::
+If your wifi link provides more than one SNR level, you can switch
+the level of a given host using
+:cpp:func:`simgrid::s4u::Link::set_host_wifi_rate`. By default,
+the first level is used.
 
-      .. example-tab:: examples/cpp/network-wifi/s4u-network-wifi.cpp
+.. tabs::
 
-      .. group-tab:: XML
+   .. example-tab:: examples/cpp/network-wifi/s4u-network-wifi.cpp
 
-         **Platform files:**
+   .. group-tab:: XML
 
-         .. showfile:: examples/platforms/wifi.xml
-            :language: xml
+      **Platform files:**
+
+      .. showfile:: examples/platforms/wifi.xml
+         :language: xml
 
 ===============
 Plugin Examples
@@ -1044,39 +1146,38 @@ This section documents how the existing plugins can be used. Remember
 that you are very welcome to modify the plugins to fit your needs. It
 should be much easier than modifying the SimGrid kernel.
 
-  - **Monitoring the host load**
+Monitoring the host load
+------------------------
 
-    .. tabs::
+.. tabs::
 
-      .. example-tab:: examples/cpp/plugin-host-load/s4u-plugin-host-load.cpp
+   .. example-tab:: examples/cpp/plugin-host-load/s4u-plugin-host-load.cpp
 
-      .. example-tab:: examples/c/plugin-host-load/plugin-host-load.c
+   .. example-tab:: examples/c/plugin-host-load/plugin-host-load.c
 
-  - **Monitoring the link load**
+Monitoring the link load
+------------------------
 
-    .. tabs::
+.. tabs::
 
-      .. example-tab:: examples/cpp/plugin-link-load/s4u-plugin-link-load.cpp
+   .. example-tab:: examples/cpp/plugin-link-load/s4u-plugin-link-load.cpp
 
 =======================
 Model-Checking Examples
 =======================
 
-The model-checker can be used to exhaustively search for issues in the
-tested application. It must be activated at compile-time, but this
-mode is rather experimental in SimGrid (as of v3.25). You should not
-enable it unless you really want to formally verify your applications:
-SimGrid is slower and may be less robust when MC is enabled.
+The model-checker can be used to exhaustively search for issues in the tested application. It must be activated at compile-time, but this
+mode is rather experimental in SimGrid (as of v3.25). We are working on it :)
 
-  - **Failing assert**
-    In this example, two actors send some data to a central server,
-    which asserts that the messages are always received in the same order.
-    This is wrong, and the model-checker correctly finds a
-    counter-example to that assertion.
+Failing assert
+^^^^^^^^^^^^^^
 
-    .. tabs::
+In this example, two actors send some data to a central server, which asserts that the messages are always received in the same order.
+This is wrong, and the model-checker correctly finds a counter-example to that assertion.
 
-       .. example-tab:: examples/cpp/mc-failing-assert/s4u-mc-failing-assert.cpp
+.. tabs::
+
+   .. example-tab:: examples/cpp/mc-failing-assert/s4u-mc-failing-assert.cpp
 
 .. |br| raw:: html
 
