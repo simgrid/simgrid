@@ -453,6 +453,8 @@ Basic management
 Creating actors
 ---------------
 
+See also :ref:`the relevant example <s4u_ex_actors_create>`.
+
 .. tabs::
 
    .. group-tab:: C++
@@ -958,11 +960,11 @@ Signals
 
    .. group-tab:: C++
 
-      .. doxygenvariable:: simgrid::s4u::Engine::on_deadlock
-      .. doxygenvariable:: simgrid::s4u::Engine::on_platform_created
-      .. doxygenvariable:: simgrid::s4u::Engine::on_platform_creation
-      .. doxygenvariable:: simgrid::s4u::Engine::on_simulation_end
-      .. doxygenvariable:: simgrid::s4u::Engine::on_time_advance
+      .. doxygenfunction:: simgrid::s4u::Engine::on_deadlock_cb
+      .. doxygenfunction:: simgrid::s4u::Engine::on_platform_created_cb
+      .. doxygenfunction:: simgrid::s4u::Engine::on_platform_creation_cb
+      .. doxygenfunction:: simgrid::s4u::Engine::on_simulation_end_cb
+      .. doxygenfunction:: simgrid::s4u::Engine::on_time_advance_cb
 
 .. _API_s4u_Mailbox:
 
@@ -1439,7 +1441,7 @@ using :cpp:func:`Comm::sendto() <simgrid::s4u::Comm::sendto()>`.
       .. doxygenfunction:: simgrid::s4u::Host::get_englobing_zone() const
       .. doxygenfunction:: simgrid::s4u::Host::get_netpoint() const
       .. doxygenfunction:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< Link * > &links, double *latency) const
-      .. doxygenfunction:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< kernel::resource::LinkImpl * > &links, double *latency) const
+      .. doxygenfunction:: simgrid::s4u::Host::route_to(const Host *dest, std::vector< kernel::resource::StandardLinkImpl * > &links, double *latency) const
       .. doxygenfunction:: simgrid::s4u::Host::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
       .. doxygenfunction:: simgrid::s4u::Host::create_disk(const std::string& name, const std::string& read_bandwidth, const std::string& write_bandwidth)
 
@@ -1462,10 +1464,10 @@ Signals
 
    .. group-tab:: C++
 
-      .. doxygenvariable:: simgrid::s4u::Host::on_creation
-      .. doxygenvariable:: simgrid::s4u::Host::on_destruction
-      .. doxygenvariable:: simgrid::s4u::Host::on_speed_change
-      .. doxygenvariable:: simgrid::s4u::Host::on_state_change
+      .. doxygenfunction:: simgrid::s4u::Host::on_creation_cb
+      .. doxygenfunction:: simgrid::s4u::Host::on_destruction_cb
+      .. doxygenfunction:: simgrid::s4u::Host::on_speed_change_cb
+      .. doxygenfunction:: simgrid::s4u::Host::on_state_change_cb
 
 .. _API_s4u_Link:
 
@@ -1652,11 +1654,11 @@ Signals
 
    .. group-tab:: C++
 
-      .. doxygenvariable:: simgrid::s4u::Link::on_bandwidth_change
-      .. doxygenvariable:: simgrid::s4u::Link::on_communication_state_change
-      .. doxygenvariable:: simgrid::s4u::Link::on_creation
-      .. doxygenvariable:: simgrid::s4u::Link::on_destruction
-      .. doxygenvariable:: simgrid::s4u::Link::on_state_change
+      .. doxygenfunction:: simgrid::s4u::Link::on_bandwidth_change_cb
+      .. doxygenfunction:: simgrid::s4u::Link::on_communication_state_change_cb
+      .. doxygenfunction:: simgrid::s4u::Link::on_creation_cb
+      .. doxygenfunction:: simgrid::s4u::Link::on_destruction_cb
+      .. doxygenfunction:: simgrid::s4u::Link::on_state_change_cb
 
 .. _API_s4u_NetZone:
 
@@ -1810,8 +1812,8 @@ Signals
 
   .. group-tab:: C++
 
-     .. doxygenvariable:: simgrid::s4u::NetZone::on_creation
-     .. doxygenvariable:: simgrid::s4u::NetZone::on_seal
+     .. doxygenfunction:: simgrid::s4u::NetZone::on_creation_cb
+     .. doxygenfunction:: simgrid::s4u::NetZone::on_seal_cb
 
 Creating resources
 ------------------
@@ -2190,9 +2192,9 @@ Signals
 
    .. group-tab:: C++
 
-      .. doxygenvariable:: simgrid::s4u::Comm::on_completion
-      .. doxygenvariable:: simgrid::s4u::Comm::on_recv
-      .. doxygenvariable:: simgrid::s4u::Comm::on_send
+      .. doxygenfunction:: simgrid::s4u::Comm::on_completion_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_recv_cb
+      .. doxygenfunction:: simgrid::s4u::Comm::on_send_cb
 
 .. _API_s4u_Exec:
 
@@ -2310,8 +2312,8 @@ Signals
 
    .. group-tab:: C++
 
-      .. doxygenvariable:: simgrid::s4u::Exec::on_start
-      .. doxygenvariable:: simgrid::s4u::Exec::on_completion
+      .. doxygenfunction:: simgrid::s4u::Exec::on_start_cb
+      .. doxygenfunction:: simgrid::s4u::Exec::on_completion_cb
 
 .. _API_s4u_Io:
 

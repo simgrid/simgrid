@@ -152,13 +152,19 @@ public:
   /** @brief Get the peak computing speed in flops/s at the current pstate, NOT taking the external load into account.
    *
    *  The amount of flops per second available for computing depends on several things:
-   *    - The current pstate determines the maximal peak computing speed (use @ref get_pstate_speed() to retrieve the
-   *      computing speed you would get at another pstate)
-   *    - If you declared an external load (with @ref set_speed_profile()), you must multiply the
-   * result of get_speed() by get_available_speed() to retrieve what a new computation would get.
+   *    - The current pstate determines the maximal peak computing speed (use
+   *      @verbatim embed:rst:inline :cpp:func:`get_pstate_speed() <simgrid::s4u::Host::get_pstate_speed>` @endverbatim
+   *      to retrieve the computing speed you would get at another pstate)
+   *    - If you declared an external load (with
+   *      @verbatim embed:rst:inline :cpp:func:`set_speed_profile() <simgrid::s4u::Host::set_speed_profile>`
+   * @endverbatim ), you must multiply the result of
+   *      @verbatim embed:rst:inline :cpp:func:`get_speed() <simgrid::s4u::Host::get_speed>` @endverbatim by
+   *      @verbatim embed:rst:inline :cpp:func:`get_available_speed() <simgrid::s4u::Host::get_available_speed>`
+   * @endverbatim to retrieve what a new computation would get.
    *
    *  The remaining speed is then shared between the executions located on this host.
-   *  You can retrieve the amount of tasks currently running on this host with @ref get_load().
+   *  You can retrieve the amount of tasks currently running on this host with
+   *  @verbatim embed:rst:inline :cpp:func:`get_load() <simgrid::s4u::Host::get_load>` @endverbatim .
    *
    *  The host may have multiple cores, and your executions may be able to use more than a single core.
    *
@@ -167,7 +173,8 @@ public:
   double get_speed() const;
   /** @brief Get the available speed ratio, between 0 and 1.
    *
-   * This accounts for external load (see @ref set_speed_profile()).
+   * This accounts for external load (see
+   * @verbatim embed:rst:inline :cpp:func:`set_speed_profile() <simgrid::s4u::Host::set_speed_profile>` @endverbatim ).
    */
   double get_available_speed() const;
 

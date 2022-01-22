@@ -66,7 +66,7 @@ public:
   static void on_send_cb(const std::function<void(Comm const&)>& cb) { on_send.connect(cb); }
   static void on_recv_cb(const std::function<void(Comm const&)>& cb) { on_recv.connect(cb); }
   static void on_start_cb(const std::function<void(Comm const&)>& cb) { on_start.connect(cb); }
-  static void on_completion_cb(const std::function<void(Comm const&)>& cb) { on_completion.connect(cb); }
+  static void on_completion_cb(const std::function<void(Activity const&)>& cb) { on_completion.connect(cb); }
 #ifndef DOXYGEN
   /* FIXME signals should be private */
   static xbt::signal<void(Comm const&)> on_send;

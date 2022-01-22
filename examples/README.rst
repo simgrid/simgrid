@@ -32,6 +32,8 @@ Actors: the Active Entities
 Starting and Stopping Actors
 ----------------------------
 
+.. _s4u_ex_actors_create:
+
 Creating actors
 ^^^^^^^^^^^^^^^
 
@@ -387,7 +389,7 @@ The ``wait_all()`` function is useful when you want to block until all activitie
 Waiting for the first completed communication in a set
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The ``wait_any()`` function is useful when you want to block until one activity of the set completes, no matter which terminates first.
+The ``wait_any()`` blocks until one activity of the set completes, no matter which terminates first.
 
 .. tabs::
 
@@ -402,6 +404,18 @@ The ``wait_any()`` function is useful when you want to block until one activity 
    .. example-tab:: examples/c/comm-waitany/comm-waitany.c
 
       See also :cpp:func:`sg_comm_wait_any`.
+
+Testing whether at least one communication completed
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``test_any()`` returns whether at least one activity of the set has completed, or -1.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/comm-testany/s4u-comm-testany.cpp
+
+      See also :cpp:func:`simgrid::s4u::Comm::test_any()`.
+
 
 .. _s4u_ex_execution:
 
@@ -769,6 +783,17 @@ This example shows how to retrieve the amount of energy consumed by the CPU duri
    .. example-tab:: examples/cpp/energy-exec/s4u-energy-exec.cpp
 
    .. example-tab:: examples/c/energy-exec/energy-exec.c
+
+Virtual machines consumption
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This example is very similar to the previous one, adding VMs to the picture.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/energy-vm/s4u-energy-vm.cpp
+
+   .. example-tab:: examples/c/energy-vm/energy-vm.c
 
 Wired network energy consumption
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1170,7 +1195,7 @@ The model-checker can be used to exhaustively search for issues in the tested ap
 mode is rather experimental in SimGrid (as of v3.25). We are working on it :)
 
 Failing assert
-^^^^^^^^^^^^^^
+--------------
 
 In this example, two actors send some data to a central server, which asserts that the messages are always received in the same order.
 This is wrong, and the model-checker correctly finds a counter-example to that assertion.

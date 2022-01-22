@@ -103,7 +103,7 @@ public:
   /*! Add a callback fired each time that the activity fails to start because of a veto (e.g., unsolved dependency or no
    * resource assigned) */
   static void on_veto_cb(const std::function<void(Activity&)>& cb) { on_veto.connect(cb); }
-  /*! Add a callback fired when theactivity completes (either normally, cancelled or failed) */
+  /*! Add a callback fired when the activity completes (either normally, cancelled or failed) */
   static void on_completion_cb(const std::function<void(Activity&)>& cb) { on_completion.connect(cb); }
 
   void vetoable_start()

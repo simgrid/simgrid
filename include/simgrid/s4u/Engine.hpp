@@ -60,13 +60,17 @@ public:
   void load_platform(const std::string& platf) const;
   void seal_platform() const;
 
+  /** @verbatim embed:rst:inline Bind an actor name that could be found in :ref:`pf_tag_actor` tag to a function taking classical argc/argv parameters. See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
   void register_function(const std::string& name, const std::function<void(int, char**)>& code);
+  /** @verbatim embed:rst:inline Bind an actor name that could be found in :ref:`pf_tag_actor` tag to a function taking a vector of strings as a parameter. See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
   void register_function(const std::string& name, const std::function<void(std::vector<std::string>)>& code);
   void register_function(const std::string& name, const kernel::actor::ActorCodeFactory& factory);
 
+  /** @verbatim embed:rst:inline Provide a default function to be used when the name used in a :ref:`pf_tag_actor` tag was not binded with ``register_function`` nor ``register_actor``. @endverbatim */
   void register_default(const std::function<void(int, char**)>& code);
   void register_default(const kernel::actor::ActorCodeFactory& factory);
 
+  /** @verbatim embed:rst:inline Bind an actor name that could be found in :ref:`pf_tag_actor` tag to a class name passed as a template parameter. See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
   template <class F> void register_actor(const std::string& name)
   {
     kernel::actor::ActorCodeFactory code_factory = [](std::vector<std::string> args) {
@@ -77,6 +81,7 @@ public:
     };
     register_function(name, code_factory);
   }
+  /** @verbatim embed:rst:inline Bind an actor name that could be found in :ref:`pf_tag_actor` tag to a function name passed as a parameter. See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
   template <class F> void register_actor(const std::string& name, F code)
   {
     kernel::actor::ActorCodeFactory code_factory = [code](std::vector<std::string> args) {
@@ -88,6 +93,7 @@ public:
   /** If non-null, the provided set will be filled with all activities that fail to start because of a veto */
   void track_vetoed_activities(std::set<Activity*>* vetoed_activities) const;
 
+  /** @verbatim embed:rst:inline Load a deployment file. See:ref:`deploy` and the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
   void load_deployment(const std::string& deploy) const;
 
 protected:

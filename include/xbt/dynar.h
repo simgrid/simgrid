@@ -18,7 +18,8 @@ SG_BEGIN_DECL
 /** @brief Dynar data type (opaque type)
  *
  * These are the SimGrid version of the DYNamically sized ARays, which all C programmer recode one day or another.
- * For performance concerns, the content of dynars must be homogeneous (in contrary to @ref xbt_dict_t).
+ * For performance concerns, the content of dynars must be homogeneous (in contrary to
+ * @verbatim embed:rst:inline :cpp:type:`xbt_dict_t` @endverbatim ).
  * You thus have to provide the function which will be used to free the content at
  * structure creation (of type void_f_pvoid_t).
  */

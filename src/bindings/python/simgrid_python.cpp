@@ -502,7 +502,7 @@ PYBIND11_MODULE(simgrid, m)
               }
             });
           },
-          py::call_guard<py::gil_scoped_release>(), "Create an actor from a function or an object.")
+          py::call_guard<py::gil_scoped_release>(), "Create an actor from a function or an object. See the :ref:`example <s4u_ex_actors_create>`.")
       .def_property(
           "host", &Actor::get_host,
           [](Actor* a, Host* h) {
