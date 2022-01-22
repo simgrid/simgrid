@@ -25,13 +25,15 @@ class XBT_PUBLIC Io : public Activity_T<Io> {
   friend kernel::EngineImpl;
 #endif
 
+  static xbt::signal<void(Io const&)> on_start;
+
 protected:
   explicit Io(kernel::activity::IoImplPtr pimpl);
 
 public:
   enum class OpType { READ, WRITE };
 
-  static xbt::signal<void(Io const&)> on_start;
+  static void on_start_cb(const std::function<void(Io const&)>& cb) { on_start.connect(cb); }
 
   static IoPtr init();
   Io* start() override;

@@ -5,18 +5,18 @@ object#TOC {
 div[itemprop="articleBody"] {
     word-wrap: break-word;
 }
-ul.learning-goals {
+ul.compact-list {
     line-height: 80%;
     margin-left: 2em;
     padding: 0.2em;
     margin-bottom: 1em;
 }
-ul.learning-goals li {
+ul.compact-list li {
     list-style: disc;
 }
-ul.learning-goals li p {
+ul.compact-list li p {
     margin-bottom: 0;
 }
-p.learning-goals {
+p.compact-list {
     margin-bottom: 0;
 }

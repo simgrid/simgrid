@@ -240,7 +240,7 @@ public:
   /** Add a callback fired when an actor terminates its code.
    *  @beginrst
    *  The actor may continue to exist if it is still referenced in the simulation, but it's not active anymore.
-   *  If you want to free extra data when the actor's destructor is called, use :cpp:var:`Actor::on_destruction`.
+   *  If you want to free extra data when the actor's destructor is called, use :cpp:func:`Actor::on_destruction_cb`.
    *  If you want to register to the termination of a given actor, use :cpp:func:`this_actor::on_exit()` instead.
    *  @endrst
    */

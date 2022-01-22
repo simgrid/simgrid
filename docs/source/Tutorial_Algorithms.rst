@@ -563,7 +563,7 @@ It produces a ``Rplots.pdf`` with the following content:
 Lab 1: Simpler deployments
 --------------------------
 
-.. rst-class:: learning-goals
+.. rst-class:: compact-list
 
    **Learning goals:** 
 
@@ -647,7 +647,7 @@ for more details.
 Lab 2: Using the Whole Platform
 -------------------------------
 
-.. rst-class:: learning-goals
+.. rst-class:: compact-list
 
    **Learning goals:** 
 
@@ -765,7 +765,7 @@ separation of concerns between things of different nature.
 Lab 3: Fixed Experiment Duration
 --------------------------------
 
-.. rst-class:: learning-goals
+.. rst-class:: compact-list
 
    **Learning goals:** 
 
@@ -812,7 +812,7 @@ default. You can still see the debug messages as follows:
 Lab 4: What-if analysis
 -----------------------
 
-.. rst-class:: learning-goals
+.. rst-class:: compact-list
 
    **Learning goals:** 
 
@@ -878,7 +878,7 @@ Again, there is a nice example demoing this feature, :ref:`under platform-failur
 Lab 5: Competing Applications
 -----------------------------
 
-.. rst-class:: learning-goals
+.. rst-class:: compact-list
 
    **Learning goals:** 
 

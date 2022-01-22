@@ -86,8 +86,8 @@ actors.
       This example shows how to attach a callback to:
 
       - the end of a specific actor: :cpp:func:`simgrid::s4u::Actor::on_exit()`
-      - the end of any actor: :cpp:member:`simgrid::s4u::Actor::on_termination()`
-      - the destruction of any actor: :cpp:member:`simgrid::s4u::Actor::on_destruction()`
+      - the end of any actor: :cpp:func:`simgrid::s4u::Actor::on_termination_cb`
+      - the destruction of any actor: :cpp:func:`simgrid::s4u::Actor::on_destruction_cb`
 
    .. example-tab:: examples/c/actor-exiting/actor-exiting.c
 

@@ -64,45 +64,34 @@ Virtual machines can also be migrated between hosts.
 The :ref:`simgrid::s4u::this_actor <API_s4u_this_actor>` namespace
 provides many helper functions to simplify the code of actors.
 
-- **Simulation Elements**
+.. rst-class:: compact-list
 
-  - :ref:`class Actor <API_s4u_Actor>`:
-    Active entities executing your application.
-  - :ref:`class Engine <API_s4u_Engine>`
-    Simulation engine (singleton).
-  - :ref:`class Mailbox <API_s4u_Mailbox>`
-    Communication rendezvous, with which actors meet each other.
+   - **Simulation Elements**
 
-- **Resources**
+      - :ref:`class Actor <API_s4u_Actor>`: Active entities executing your application.
+      - :ref:`class Engine <API_s4u_Engine>`: Simulation engine (singleton).
+      - :ref:`class Mailbox <API_s4u_Mailbox>`: Communication rendezvous, with which actors meet each other.
 
-  - :ref:`class Disk <API_s4u_Disk>`
-    Resource on which actors can write and read data.
-  - :ref:`class Host <API_s4u_Host>`:
-    Actor location, providing computational power.
-  - :ref:`class Link <API_s4u_Link>`
-    Interconnecting hosts.
-  - :ref:`class NetZone <API_s4u_NetZone>`:
-    Sub-region of the platform, containing resources (Hosts, Links, etc).
-  - :ref:`class VirtualMachine <API_s4u_VirtualMachine>`:
-    Execution containers that can be moved between Hosts.
+   - **Resources**
 
-- **Activities** (:ref:`class Activity <API_s4u_Activity>`):
-  The things that actors can do on resources
+      - :ref:`class Disk <API_s4u_Disk>`: Resource on which actors can write and read data.
+      - :ref:`class Host <API_s4u_Host>`: Actor location, providing computational power.
+      - :ref:`class Link <API_s4u_Link>`: Interconnecting hosts.
+      - :ref:`class NetZone <API_s4u_NetZone>`: Sub-region of the platform, containing resources (Hosts, Links, etc).
+      - :ref:`class VirtualMachine <API_s4u_VirtualMachine>`: Execution containers that can be moved between Hosts.
 
-  - :ref:`class Comm <API_s4u_Comm>`
-    Communication activity, started on Mailboxes and consuming links.
-  - :ref:`class Exec <API_s4u_Exec>`
-    Computation activity, started on Host and consuming CPU resources.
-  - :ref:`class Io <API_s4u_Io>`
-    I/O activity, started on and consuming disks.
+   - **Activities** (:ref:`class Activity <API_s4u_Activity>`): The things that actors can do on resources.
 
-- **Synchronization Objects**: Classical IPC that actors can use
+      - :ref:`class Comm <API_s4u_Comm>`: Communication activity, started on Mailboxes and consuming links.
+      - :ref:`class Exec <API_s4u_Exec>`: Computation activity, started on Host and consuming CPU resources.
+      - :ref:`class Io <API_s4u_Io>`: I/O activity, started on and consuming disks.
 
-  - :ref:`class Barrier <API_s4u_Barrier>`
-  - :ref:`class ConditionVariable <API_s4u_ConditionVariable>`
-  - :ref:`class Mutex <API_s4u_Mutex>`
-  - :ref:`class Semaphore <API_s4u_Semaphore>`
+   - **Synchronization Objects**: Classical IPC that actors can use
 
+      - :ref:`class Barrier <API_s4u_Barrier>`
+      - :ref:`class ConditionVariable <API_s4u_ConditionVariable>`
+      - :ref:`class Mutex <API_s4u_Mutex>`
+      - :ref:`class Semaphore <API_s4u_Semaphore>`
 
 .. |API_s4u_Actors| replace:: **Actors**
 .. _API_s4u_Actors: #api-s4u-actor
@@ -169,18 +158,14 @@ use  :cpp:func:`s4u::Activity::wait_for() <simgrid::s4u::Activity::wait_for>`.
 Finally, to wait at most until a specified time limit, use
 :cpp:func:`s4u::Activity::wait_until() <simgrid::s4u::Activity::wait_until>`.
 
-Every kind of activity can be asynchronous:
-
-  - :ref:`s4u::CommPtr <API_s4u_Comm>` are created with
-    :cpp:func:`s4u::Mailbox::put_async() <simgrid::s4u::Mailbox::put_async>` and
-    :cpp:func:`s4u::Mailbox::get_async() <simgrid::s4u::Mailbox::get_async>`.
-  - :ref:`s4u::IoPtr <API_s4u_Io>` are created with
-    :cpp:func:`s4u::Disk::read_async() <simgrid::s4u::Disk::read_async>` and
-    :cpp:func:`s4u::Disk::write_async() <simgrid::s4u::Disk::write_async>`.
-  - :ref:`s4u::ExecPtr <API_s4u_Exec>` are created with
-    :cpp:func:`s4u::Host::exec_async() <simgrid::s4u::Host::exec_async>`.
-  - In the future, it will become possible to have asynchronous IPC
-    such as asynchronous mutex lock requests.
+Every kind of activity can be asynchronous.
+:ref:`s4u::CommPtr <API_s4u_Comm>` are created with :cpp:func:`s4u::Mailbox::put_async() <simgrid::s4u::Mailbox::put_async>` and
+:cpp:func:`s4u::Mailbox::get_async() <simgrid::s4u::Mailbox::get_async>`;
+:ref:`s4u::IoPtr <API_s4u_Io>` are created with :cpp:func:`s4u::Disk::read_async() <simgrid::s4u::Disk::read_async>` and
+:cpp:func:`s4u::Disk::write_async() <simgrid::s4u::Disk::write_async>`; and
+:ref:`s4u::ExecPtr <API_s4u_Exec>` are created with
+:cpp:func:`s4u::Host::exec_async() <simgrid::s4u::Host::exec_async>`.
+In the future, it will become possible to have asynchronous IPC such as asynchronous mutex lock requests.
 
 The following example shows how to have several concurrent
 communications ongoing.  First, you have to declare a vector in which
@@ -191,20 +176,18 @@ vector of mailboxes.
    :language: c++
    :start-after: init-begin
    :end-before: init-end
-   :dedent: 4
+   :dedent: 2
 
 Then, you start all the communications that should occur concurrently with
 :cpp:func:`s4u::Mailbox::put_async() <simgrid::s4u::Mailbox::put_async>`.
 Finally, the actor waits for the completion of all of them at once
-with
-:cpp:func:`s4u::Comm::wait_all() <simgrid::s4u::Comm::wait_all>`.
+with :cpp:func:`s4u::Comm::wait_all() <simgrid::s4u::Comm::wait_all>`.
 
 .. literalinclude:: ../../examples/cpp/comm-waitall/s4u-comm-waitall.cpp
    :language: c++
    :start-after: put-begin
    :end-before: put-end
-   :dedent: 4
-
+   :dedent: 2
 
 =====================
 Activities Life cycle
@@ -632,14 +615,14 @@ Signals
 
    .. group-tab:: C++
 
-      .. doxygenvariable:: simgrid::s4u::Actor::on_creation
-      .. doxygenvariable:: simgrid::s4u::Actor::on_suspend
-      .. doxygenvariable:: simgrid::s4u::Actor::on_host_change
-      .. doxygenvariable:: simgrid::s4u::Actor::on_resume
-      .. doxygenvariable:: simgrid::s4u::Actor::on_sleep
-      .. doxygenvariable:: simgrid::s4u::Actor::on_wake_up
-      .. doxygenvariable:: simgrid::s4u::Actor::on_termination
-      .. doxygenvariable:: simgrid::s4u::Actor::on_destruction
+      .. doxygenfunction:: simgrid::s4u::Actor::on_creation_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_suspend_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_host_change_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_resume_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_sleep_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_wake_up_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_termination_cb
+      .. doxygenfunction:: simgrid::s4u::Actor::on_destruction_cb
 
 .. _API_s4u_this_actor:
 
@@ -1202,9 +1185,9 @@ Signals
 
    .. group-tab:: C++
 
-      .. doxygenvariable:: simgrid::s4u::Disk::on_creation
-      .. doxygenvariable:: simgrid::s4u::Disk::on_destruction
-      .. doxygenvariable:: simgrid::s4u::Disk::on_state_change
+      .. doxygenfunction:: simgrid::s4u::Disk::on_creation_cb
+      .. doxygenfunction:: simgrid::s4u::Disk::on_destruction_cb
+      .. doxygenfunction:: simgrid::s4u::Disk::on_state_change_cb
 
 
 .. _API_s4u_Host:
@@ -1999,15 +1982,15 @@ Signals
 
    .. group-tab:: C++
 
-      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_creation
-      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_destruction
-      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_migration_end
-      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_migration_start
-      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_resume
-      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_shutdown
-      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_start
-      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_started
-      .. doxygenvariable:: simgrid::s4u::VirtualMachine::on_suspend
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_creation_cb
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_destruction_cb
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_migration_end_cb
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_migration_start_cb
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_resume_cb
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_shutdown_cb
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_start_cb
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_started_cb
+      .. doxygenfunction:: simgrid::s4u::VirtualMachine::on_suspend_cb
 
 .. _API_s4u_Activity:
 
@@ -2192,6 +2175,7 @@ Signals
 
    .. group-tab:: C++
 
+      .. doxygenfunction:: simgrid::s4u::Comm::on_start_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_completion_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_recv_cb
       .. doxygenfunction:: simgrid::s4u::Comm::on_send_cb
@@ -2375,6 +2359,16 @@ Life cycle
       .. automethod:: simgrid.Io.wait
       .. automethod:: simgrid.Io.wait_any_for
       .. automethod:: simgrid.Io.wait_any
+
+Signals
+-------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Io::on_start_cb
+      .. doxygenfunction:: simgrid::s4u::Io::on_completion_cb
 
 .. _API_s4u_Synchronizations:
 
