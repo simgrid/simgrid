@@ -735,6 +735,8 @@ Shows how to specify an external load to resources, variating their peak speed o
 
       .. example-tab:: examples/cpp/platform-profile/s4u-platform-profile.cpp
 
+      .. example-tab:: examples/python/platform-profile/platform-profile.py
+
       .. group-tab:: XML
 
          .. showfile:: examples/platforms/small_platform_profile.xml

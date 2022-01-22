@@ -854,7 +854,7 @@ Retrieve all links in the platform with :cpp:func:`simgrid::s4u::Engine::get_all
 Retrieve the list of links from one host to another with :cpp:func:`simgrid::s4u::Host::route_to` (C++) or :py:func:`simgrid.Host.route_to` (python).
 
 Modify the bandwidth of a given link with :cpp:func:`simgrid::s4u::Link::set_bandwidth` (C++) or :py:func:`simgrid.Link.set_bandwidth` (python).
-You can even have the bandwidth automatically vary over time with :cpp:func:`simgrid::s4u::Link::set_bandwidth_profile` (C++) or :py:func:`simgrid.Link.set_bandwidth_profile` (python). 
+You can even have the bandwidth automatically vary over time with :cpp:func:`simgrid::s4u::Link::set_bandwidth_profile` (C++) or :py:func:`simgrid.Link.set_bandwidth_profile` (python).
 
 Once implemented, you will notice that slow communications may still result in situations
 where one worker only works at a given point of time. To overcome that, your master needs 

@@ -532,6 +532,8 @@ include examples/python/io-degradation/io-degradation.py
 include examples/python/io-degradation/io-degradation.tesh
 include examples/python/network-nonlinear/network-nonlinear.py
 include examples/python/network-nonlinear/network-nonlinear.tesh
+include examples/python/platform-profile/platform-profile.py
+include examples/python/platform-profile/platform-profile.tesh
 include examples/smpi/NAS/DGraph.c
 include examples/smpi/NAS/DGraph.h
 include examples/smpi/NAS/README.install

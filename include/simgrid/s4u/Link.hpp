@@ -134,8 +134,11 @@ public:
   /** @brief Check if the Link is shared (not a FATPIPE) */
   bool is_shared() const;
 
+  /** Turns the link on. */
   void turn_on();
+  /** Turns the link off. */
   void turn_off();
+  /** Checks whether the link is on. */
   bool is_on() const;
 
   Link* seal();

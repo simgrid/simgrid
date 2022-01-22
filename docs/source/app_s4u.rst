@@ -484,6 +484,7 @@ Retrieving actors
 
       .. doxygenfunction:: sg_actor_by_pid(aid_t pid)
       .. doxygenfunction:: sg_actor_self()
+      .. doxygenfunction:: sg_actor_list()
 
 Querying info
 -------------
@@ -655,8 +656,8 @@ Querying info
       .. autofunction:: simgrid.this_actor.get_host
       .. autofunction:: simgrid.this_actor.set_host
 
-      .. autofunction:: simgrid.this_actor.get_pid()
-      .. autofunction:: simgrid.this_actor.get_ppid()
+      .. autofunction:: simgrid.this_actor.get_pid
+      .. autofunction:: simgrid.this_actor.get_ppid
 
    .. group-tab:: C
 
@@ -922,6 +923,10 @@ Retrieving links
       .. doxygenfunction:: simgrid::s4u::Engine::link_by_name
       .. doxygenfunction:: simgrid::s4u::Engine::link_by_name_or_null
 
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Engine.get_all_links
+
 Interacting with the routing
 ----------------------------
 
@@ -935,6 +940,14 @@ Interacting with the routing
       .. doxygenfunction:: simgrid::s4u::Engine::netpoint_by_name_or_null
       .. doxygenfunction:: simgrid::s4u::Engine::netzone_by_name_or_null
       .. doxygenfunction:: simgrid::s4u::Engine::set_netzone_root(const NetZone *netzone)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Engine.get_all_netpoints
+      .. automethod:: simgrid.Engine.get_netzone_root
+      .. automethod:: simgrid.Engine.netpoint_by_name_or_null
+      .. automethod:: simgrid.Engine.netzone_by_name_or_null
+      .. automethod:: simgrid.Engine.set_netzone_root
 
 Signals
 -------
@@ -1109,6 +1122,11 @@ Resources
    .. group-tab:: Python
    
       .. autoclass:: simgrid.Disk
+
+   .. group-tab:: C
+
+      .. doxygentypedef:: sg_disk_t
+      .. doxygentypedef:: const_sg_disk_t
 
 Basic management
 ----------------
@@ -1391,6 +1409,7 @@ DVFS
 
       .. automethod:: simgrid.Host.get_pstate_count
       .. automethod:: simgrid.Host.get_pstate_speed
+      .. automethod:: simgrid.Host.set_speed_profile
 
    .. group-tab:: C
 
@@ -1432,6 +1451,8 @@ using :cpp:func:`Comm::sendto() <simgrid::s4u::Comm::sendto()>`.
 
       .. automethod:: simgrid.Host.get_netpoint
       .. automethod:: simgrid.Host.create_disk
+         
+      .. automethod:: simgrid.Host.route_to
 
    .. group-tab:: C
 
@@ -1521,6 +1542,8 @@ Retrieving links
 
    .. group-tab:: Python
 
+      See also :py:func:`simgrid.Engine.get_all_links`.
+
       .. automethod:: simgrid.Link.by_name
       .. autoattribute:: simgrid.Link.name
 
@@ -1545,6 +1568,11 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Link::get_usage() const
       .. doxygenfunction:: simgrid::s4u::Link::is_used() const
 
+   .. group-tab:: Python
+
+      .. autoattribute:: simgrid.Link.bandwidth
+      .. autoattribute:: simgrid.Link.latency
+
    .. group-tab:: C
 
       .. doxygenfunction:: sg_link_get_bandwidth(const_sg_link_t link)
@@ -1567,6 +1595,7 @@ Modifying characteristics
 
    .. group-tab:: Python
 
+      .. automethod:: simgrid.Link.set_bandwidth
       .. automethod:: simgrid.Link.set_latency
       .. automethod:: simgrid.Link.set_concurrency_limit
       .. automethod:: simgrid.Link.set_sharing_policy
@@ -1603,6 +1632,14 @@ On/Off
       .. doxygenfunction:: simgrid::s4u::Link::is_on() const
       .. doxygenfunction:: simgrid::s4u::Link::turn_off()
       .. doxygenfunction:: simgrid::s4u::Link::turn_on()
+
+   .. group-tab:: Python
+
+      See also :py:func:`simgrid.Link.set_state_profile`.
+
+      .. automethod:: simgrid.Link.is_on
+      .. automethod:: simgrid.Link.turn_off
+      .. automethod:: simgrid.Link.turn_on
 
 Dynamic profiles
 ----------------
@@ -2459,6 +2496,7 @@ Locking
          #include <simgrid/barrier.hpp>
 
       .. doxygentypedef:: sg_bar_t
+      .. doxygentypedef:: const_sg_bar_t
       .. cpp:type:: const s4u_Barrier* const_sg_bar_t
 
          Pointer to a constant barrier object.

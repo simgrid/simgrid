@@ -22,6 +22,7 @@
 #pragma GCC diagnostic pop
 #endif
 
+#include "simgrid/kernel/ProfileBuilder.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "src/kernel/context/Context.hpp"
 #include <simgrid/Exception.hpp>
@@ -145,6 +146,15 @@ PYBIND11_MODULE(simgrid, m)
       .def_static(
           "instance", []() { return Engine::get_instance(); }, "Retrieve the simulation engine")
       .def("get_all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
+      .def("get_all_links", &Engine::get_all_links, "Returns the list of all links found in the platform")
+
+      .def("get_netzone_root", &Engine::get_netzone_root, "Retrieve the root netzone, containing all others.")
+      .def("get_all_netpoints", &Engine::get_all_netpoints)
+      .def("get_netzone_root", &Engine::get_netzone_root)
+      .def("netpoint_by_name", &Engine::netpoint_by_name_or_null)
+      .def("netzone_by_name", &Engine::netzone_by_name_or_null)
+      .def("set_netzone_root", &Engine::set_netzone_root)
+
       .def("load_platform", &Engine::load_platform, "Load a platform file describing the environment")
       .def("load_deployment", &Engine::load_deployment, "Load a deployment file and launch the actors that it contains")
       .def("run", &Engine::run, py::call_guard<py::gil_scoped_release>(), "Run the simulation until its end")
@@ -251,6 +261,19 @@ PYBIND11_MODULE(simgrid, m)
   py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>> host(
       m, "Host", "Simulated host. See the C++ documentation for details.");
   host.def("by_name", &Host::by_name, "Retrieves a host from its name, or die")
+      .def(
+          "route_to",
+          [](simgrid::s4u::Host* h, simgrid::s4u::Host* to) {
+            auto* list = new std::vector<simgrid::s4u::Link*>();
+            double bw  = 0;
+            h->route_to(to, *list, &bw);
+            return make_tuple(list, bw);
+          },
+          "Retrieves the list of links and the bandwidth between two hosts")
+      .def("set_speed_profile",
+           [](Host* h, const std::string& profile, double period) {
+             h->set_speed_profile(simgrid::kernel::profile::ProfileBuilder::from_string("", profile, period));
+           })
       .def("get_pstate_count", &Host::get_pstate_count, "Retrieve the count of defined pstate levels")
       .def("get_pstate_speed", &Host::get_pstate_speed, "Retrieve the maximal speed at the given pstate")
       .def("get_netpoint", &Host::get_netpoint, "Retrieve the netpoint associated to this host")
@@ -282,13 +305,17 @@ PYBIND11_MODULE(simgrid, m)
             return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
           },
           "The name of this host")
-      .def_property_readonly(
-          "load", &Host::get_load,
-          "Returns the current computation load (in flops per second). This is the currently achieved speed.")
+      .def_property_readonly("load", &Host::get_load,
+                             "Returns the current computation load (in flops per second), NOT taking the external load "
+                             "into account. This is the currently achieved speed.")
       .def_property_readonly(
           "speed", &Host::get_speed,
-          "The peak computing speed in flops/s at the current pstate, taking the external load into account. "
-          "This is the max potential speed.");
+          "The peak computing speed in flops/s at the current pstate, NOT taking the external load into account. "
+          "This is the max potential speed.")
+      .def_property_readonly(
+          "available_speed", &Host::get_available_speed,
+          "Get the available speed ratio, between 0 and 1.\n"
+          "This accounts for external load (see :py:func:`set_speed_profile() <simgrid.Host.set_speed_profile>`).");
   py::enum_<simgrid::s4u::Host::SharingPolicy>(host, "SharingPolicy")
       .value("NONLINEAR", simgrid::s4u::Host::SharingPolicy::NONLINEAR)
       .value("LINEAR", simgrid::s4u::Host::SharingPolicy::LINEAR)
@@ -329,9 +356,18 @@ PYBIND11_MODULE(simgrid, m)
   py::class_<simgrid::s4u::Link, std::unique_ptr<simgrid::s4u::Link, py::nodelete>> link(
       m, "Link", "Network link. See the C++ documentation for details.");
   link.def("set_latency", py::overload_cast<const std::string&>(&simgrid::s4u::Link::set_latency),
-           py::call_guard<py::gil_scoped_release>(), "Set the latency")
+           py::call_guard<py::gil_scoped_release>(),
+           "Set the latency as a string. Accepts values with units, such as ‘1s’ or ‘7ms’.\nFull list of accepted "
+           "units: w (week), d (day), h, s, ms, us, ns, ps.")
       .def("set_latency", py::overload_cast<double>(&simgrid::s4u::Link::set_latency),
-           py::call_guard<py::gil_scoped_release>(), "Set the latency")
+           py::call_guard<py::gil_scoped_release>(), "Set the latency as a float (in seconds).")
+      .def("set_bandwidth", &simgrid::s4u::Link::set_bandwidth, py::call_guard<py::gil_scoped_release>(),
+           "Set the bandwidth (in byte per second).")
+
+      .def("turn_on", &simgrid::s4u::Link::turn_on, py::call_guard<py::gil_scoped_release>(), "Turns the link on.")
+      .def("turn_off", &simgrid::s4u::Link::turn_off, py::call_guard<py::gil_scoped_release>(), "Turns the link off.")
+      .def("is_on", &simgrid::s4u::Link::is_on, "Check whether the link is on.")
+
       .def("set_sharing_policy", &simgrid::s4u::Link::set_sharing_policy, py::call_guard<py::gil_scoped_release>(),
            "Set sharing policy for this link")
       .def("set_concurrency_limit", &simgrid::s4u::Link::set_concurrency_limit,
@@ -345,7 +381,10 @@ PYBIND11_MODULE(simgrid, m)
           [](const simgrid::s4u::Link* self) {
             return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
           },
-          "The name of this link");
+          "The name of this link")
+      .def_property_readonly("bandwidth", &simgrid::s4u::Link::get_bandwidth, "The bandwidth (in bytes per second)")
+      .def_property_readonly("latency", &simgrid::s4u::Link::get_latency, "The latency (in seconds)");
+
   py::enum_<simgrid::s4u::Link::SharingPolicy>(link, "SharingPolicy")
       .value("NONLINEAR", simgrid::s4u::Link::SharingPolicy::NONLINEAR)
       .value("WIFI", simgrid::s4u::Link::SharingPolicy::WIFI)
