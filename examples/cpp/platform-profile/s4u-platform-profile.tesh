@@ -1,6 +1,7 @@
 #!/usr/bin/env tesh
 
 $ ${bindir:=.}/s4u-platform-profile ${platfdir}/small_platform_profile.xml "--log=root.fmt:[%10.6r]%e[%a]%e%m%n"
+> [  0.000000] [watcher] Path from Jupiter to Fafard: link '1', link '2' (latency: 0.020000s).
 > [  0.000000] [watcher] Fafard: 25Mflops, Jupiter:   12Mflops, Lilibeth: 25.0Mflops, Link1: (1000.00MB/s 10ms), Link2: (1000.00MB/s 10ms)
 > [  1.000000] [watcher] Fafard: 25Mflops, Jupiter:   12Mflops, Lilibeth: 25.0Mflops, Link1: (1000.00MB/s 3ms), Link2: (1000.00MB/s 10ms)
 > [  2.000000] [watcher] Fafard: 25Mflops, Jupiter:   25Mflops, Lilibeth: 12.5Mflops, Link1: (2000.00MB/s 3ms), Link2: (1000.00MB/s 10ms)

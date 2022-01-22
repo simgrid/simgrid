@@ -19,6 +19,15 @@ static void watcher()
   const auto* link1    = simgrid::s4u::Link::by_name("1");
   const auto* link2    = simgrid::s4u::Link::by_name("2");
 
+  std::vector<simgrid::s4u::Link*> links;
+  double lat = 0;
+  jupiter->route_to(fafard, links, &lat);
+
+  std::string path;
+  for (auto* l : links)
+    path += (path.empty() ? "" : ", ") + std::string("link '") + l->get_name() + std::string("'");
+  XBT_INFO("Path from Jupiter to Fafard: %s (latency: %fs).", path.c_str(), lat);
+
   for (int i = 0; i < 10; i++) {
     XBT_INFO("Fafard: %.0fMflops, Jupiter: %4.0fMflops, Lilibeth: %3.1fMflops, Link1: (%.2fMB/s %.0fms), Link2: "
              "(%.2fMB/s %.0fms)",

@@ -12,6 +12,7 @@
       <link_ctn id="1"/>
     </route>
     <route src="Jupiter" dst="Fafard" symmetrical="NO">
+      <link_ctn id="1"/>
       <link_ctn id="2"/>
     </route>
   </zone>
