@@ -316,11 +316,10 @@ bool NetworkCm02Model::comm_get_route_info(const s4u::Host* src, const s4u::Host
 
   bool failed = std::any_of(route.begin(), route.end(), [](const StandardLinkImpl* link) { return not link->is_on(); });
 
-  if (cfg_crosstraffic) {
+  if (not failed && cfg_crosstraffic) {
     dst->route_to(src, back_route, nullptr);
-    if (not failed)
-      failed = std::any_of(back_route.begin(), back_route.end(),
-                           [](const StandardLinkImpl* link) { return not link->is_on(); });
+    failed = std::any_of(back_route.begin(), back_route.end(),
+                         [](const StandardLinkImpl* link) { return not link->is_on(); });
   }
   return failed;
 }
