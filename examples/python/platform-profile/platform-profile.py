@@ -38,10 +38,8 @@ if __name__ == '__main__':
 
   # Add a new host programmatically, and attach a simple speed profile to it (alternate between full and half speed every two seconds
   lili = e.get_netzone_root().create_host("Lilibeth", 25e6)
-  lili.set_speed_profile("""
-0 1.0
-2 0.5
-""", 2)
+  lili.set_speed_profile("""0 1.0
+2 0.5""", 2)
   lili.seal()
 
   # Add a watcher of the changes

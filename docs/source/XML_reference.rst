@@ -324,8 +324,8 @@ hyperlinks in an `hypergraph <https://en.wikipedia.org/wiki/Hypergraph>`_.
       8.0 60000000
       LOOPAFTER 12.0
 
-   - At time t = 4, the bandwidth is of 40 MBps.
-   - At time t = 8, it raises to 60MBps.
+   - At time t = 4, the bandwidth is of 40 Mb/s.
+   - At time t = 8, it raises to 60 Mb/s.
    - At time t = 24, it drops at 40 MBps again.
 
    If your profile does not contain any LOOPAFTER line, then it will

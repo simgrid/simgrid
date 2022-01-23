@@ -1324,6 +1324,7 @@ Querying info
       .. autoattribute:: simgrid.Host.load
       .. autoattribute:: simgrid.Host.pstate
       .. autoattribute:: simgrid.Host.speed
+      .. autoattribute:: simgrid.Host.available_speed
 
    .. group-tab:: C
 
@@ -1402,14 +1403,11 @@ DVFS
       .. doxygenfunction:: simgrid::s4u::Host::get_pstate_count() const
       .. doxygenfunction:: simgrid::s4u::Host::get_pstate_speed(unsigned long pstate_index) const
       .. doxygenfunction:: simgrid::s4u::Host::set_pstate(unsigned long pstate_index)
-      .. doxygenfunction:: simgrid::s4u::Host::set_speed_profile(kernel::profile::Profile *p)
-      .. doxygenfunction:: simgrid::s4u::Host::set_state_profile(kernel::profile::Profile *p)
 
    .. group-tab:: Python
 
       .. automethod:: simgrid.Host.get_pstate_count
       .. automethod:: simgrid.Host.get_pstate_speed
-      .. automethod:: simgrid.Host.set_speed_profile
 
    .. group-tab:: C
 
@@ -1418,6 +1416,21 @@ DVFS
       .. doxygenfunction:: sg_host_get_pstate(const_sg_host_t host)
       .. doxygenfunction:: sg_host_get_pstate_speed(const_sg_host_t host, unsigned long pstate_index)
       .. doxygenfunction:: sg_host_set_pstate(sg_host_t host, unsigned long pstate)
+
+Dynamic profiles
+----------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Host::set_speed_profile(kernel::profile::Profile *p)
+      .. doxygenfunction:: simgrid::s4u::Host::set_state_profile(kernel::profile::Profile *p)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Host.set_speed_profile
+      .. automethod:: simgrid.Host.set_state_profile
 
 Execution
 ---------
@@ -1653,6 +1666,12 @@ See :ref:`howto_churn` for more details.
       .. doxygenfunction:: simgrid::s4u::Link::set_bandwidth_profile(kernel::profile::Profile *profile)
       .. doxygenfunction:: simgrid::s4u::Link::set_latency_profile(kernel::profile::Profile *profile)
       .. doxygenfunction:: simgrid::s4u::Link::set_state_profile(kernel::profile::Profile *profile)
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Link.set_bandwidth_profile
+      .. automethod:: simgrid.Link.set_latency_profile
+      .. automethod:: simgrid.Link.set_state_profile
 
 WIFI links
 ----------
@@ -2497,9 +2516,6 @@ Locking
 
       .. doxygentypedef:: sg_bar_t
       .. doxygentypedef:: const_sg_bar_t
-      .. cpp:type:: const s4u_Barrier* const_sg_bar_t
-
-         Pointer to a constant barrier object.
 
       .. doxygenfunction:: sg_barrier_init(unsigned int count)
       .. doxygenfunction:: sg_barrier_destroy(const_sg_bar_t bar)

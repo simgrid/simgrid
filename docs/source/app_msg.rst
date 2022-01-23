@@ -359,6 +359,7 @@ Package org.simgrid.msg
 
    Class org.simgrid.msg.As <java/org/simgrid/msg/As>
    Class org.simgrid.msg.Comm <java/org/simgrid/msg/Comm>
+   Class org.simgrid.msg.File <java/org/simgrid/msg/File>
    Class org.simgrid.msg.Host <java/org/simgrid/msg/Host>
    Class org.simgrid.msg.HostFailureException <java/org/simgrid/msg/HostFailureException>
    Class org.simgrid.msg.HostNotFoundException <java/org/simgrid/msg/HostNotFoundException>
@@ -370,6 +371,8 @@ Package org.simgrid.msg
    Class org.simgrid.msg.ProcessKilledError <java/org/simgrid/msg/ProcessKilledError>
    Class org.simgrid.msg.ProcessNotFoundException <java/org/simgrid/msg/ProcessNotFoundException>
    Class org.simgrid.msg.Semaphore <java/org/simgrid/msg/Semaphore>
+   Class org.simgrid.msg.Storage <java/org/simgrid/msg/Storage>
+   Class org.simgrid.msg.StorageNotFoundException <java/org/simgrid/msg/StorageNotFoundException>
    Class org.simgrid.msg.Task <java/org/simgrid/msg/Task>
    Class org.simgrid.msg.TaskCancelledException <java/org/simgrid/msg/TaskCancelledException>
    Class org.simgrid.msg.TimeoutException <java/org/simgrid/msg/TimeoutException>

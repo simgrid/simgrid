@@ -819,15 +819,11 @@ Lab 4: What-if analysis
    * Change the platform characteristics during the simulation.
    * Explore other communication patterns.
 
-.. todo::
-
-   Some of the required functions are not implemented in Python yet. You can detect that if the method name is not a link to the documentation.
-
 Computational speed
 ...................
 
 Attach a profile to your hosts, so that their computational speed automatically vary over time, modeling an external load on these machines.
-This can be done with :cpp:func:`simgrid::s4u::Host::set_speed_profile` (C++) or :py:func:`simgrid.Host.set_speed_profile` (python). 
+This can be done with :cpp:func:`simgrid::s4u::Host::set_speed_profile` (C++) or :py:func:`simgrid.Host.set_speed_profile` (Python). 
 
 Make it so that one of the hosts get really really slow, and observe how your whole application performance decreases.
 This is because one slow host slows down the whole process. Instead of a round-robin dispatch push, 

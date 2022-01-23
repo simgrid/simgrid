@@ -269,11 +269,43 @@ PYBIND11_MODULE(simgrid, m)
             h->route_to(to, *list, &bw);
             return make_tuple(list, bw);
           },
-          "Retrieves the list of links and the bandwidth between two hosts")
-      .def("set_speed_profile",
-           [](Host* h, const std::string& profile, double period) {
-             h->set_speed_profile(simgrid::kernel::profile::ProfileBuilder::from_string("", profile, period));
-           })
+          "Retrieves the list of links and the bandwidth between two hosts.")
+      .def(
+          "set_speed_profile",
+          [](Host* h, const std::string& profile, double period) {
+            h->set_speed_profile(simgrid::kernel::profile::ProfileBuilder::from_string("", profile, period));
+          },
+          py::call_guard<py::gil_scoped_release>(),
+          "Specify a profile modeling the external load according to an exhaustive list. "
+          "Each line of the profile describes timed events as ``date ratio``. "
+          "For example, the following content describes an host which computational speed is initially 1 (i.e, 100%) "
+          "and then halved after 42 seconds:\n\n"
+          ".. code-block:: python\n\n"
+          "   \"\"\"\n"
+          "   0 1.0\n"
+          "   42 0.5\n"
+          "   \"\"\"\n\n"
+          ".. warning:: Don't get fooled: bandwidth and latency profiles of links contain absolute values,"
+          " while speed profiles of hosts contain ratios.\n\n"
+          "The second function parameter is the periodicity: the time to wait after the last event to start again over "
+          "the list. Set it to -1 to not loop over.")
+      .def(
+          "set_state_profile",
+          [](Host* h, const std::string& profile, double period) {
+            h->set_state_profile(simgrid::kernel::profile::ProfileBuilder::from_string("", profile, period));
+          },
+          py::call_guard<py::gil_scoped_release>(),
+          "Specify a profile modeling the churn. "
+          "Each line of the profile describes timed events as ``date boolean``, where the boolean (0 or 1) tells "
+          "whether the host is on. "
+          "For example, the following content describes a link which turns off at t=1 and back on at t=2:\n\n"
+          ".. code-block:: python\n\n"
+          "   \"\"\"\n"
+          "   1.0 0\n"
+          "   2.0 1\n"
+          "   \"\"\"\n\n"
+          "The second function parameter is the periodicity: the time to wait after the last event to start again over "
+          "the list. Set it to -1 to not loop over.")
       .def("get_pstate_count", &Host::get_pstate_count, "Retrieve the count of defined pstate levels")
       .def("get_pstate_speed", &Host::get_pstate_speed, "Retrieve the maximal speed at the given pstate")
       .def("get_netpoint", &Host::get_netpoint, "Retrieve the netpoint associated to this host")
@@ -363,6 +395,60 @@ PYBIND11_MODULE(simgrid, m)
            py::call_guard<py::gil_scoped_release>(), "Set the latency as a float (in seconds).")
       .def("set_bandwidth", &simgrid::s4u::Link::set_bandwidth, py::call_guard<py::gil_scoped_release>(),
            "Set the bandwidth (in byte per second).")
+      .def(
+          "set_bandwidth_profile",
+          [](simgrid::s4u::Link* l, const std::string& profile, double period) {
+            l->set_bandwidth_profile(simgrid::kernel::profile::ProfileBuilder::from_string("", profile, period));
+          },
+          py::call_guard<py::gil_scoped_release>(),
+          "Specify a profile modeling the external load according to an exhaustive list. "
+          "Each line of the profile describes timed events as ``date bandwidth`` (in bytes per second). "
+          "For example, the following content describes a link which bandwidth changes to 40 Mb/s at t=4, and to 6 "
+          "Mb/s at t=8:\n\n"
+          ".. code-block:: python\n\n"
+          "   \"\"\"\n"
+          "   4.0 40000000\n"
+          "   8.0 60000000\n"
+          "   \"\"\"\n\n"
+          ".. warning:: Don't get fooled: bandwidth and latency profiles of links contain absolute values,"
+          " while speed profiles of hosts contain ratios.\n\n"
+          "The second function parameter is the periodicity: the time to wait after the last event to start again over "
+          "the list. Set it to -1 to not loop over.")
+      .def(
+          "set_latency_profile",
+          [](simgrid::s4u::Link* l, const std::string& profile, double period) {
+            l->set_latency_profile(simgrid::kernel::profile::ProfileBuilder::from_string("", profile, period));
+          },
+          py::call_guard<py::gil_scoped_release>(),
+          "Specify a profile modeling the external load according to an exhaustive list. "
+          "Each line of the profile describes timed events as ``date latency`` (in seconds). "
+          "For example, the following content describes a link which latency changes to 1ms (0.001s) at t=1, and to 2s "
+          "at t=2:\n\n"
+          ".. code-block:: python\n\n"
+          "   \"\"\"\n"
+          "   1.0 0.001\n"
+          "   2.0 2\n"
+          "   \"\"\"\n\n"
+          ".. warning:: Don't get fooled: bandwidth and latency profiles of links contain absolute values,"
+          " while speed profiles of hosts contain ratios.\n\n"
+          "The second function parameter is the periodicity: the time to wait after the last event to start again over "
+          "the list. Set it to -1 to not loop over.")
+      .def(
+          "set_state_profile",
+          [](simgrid::s4u::Link* l, const std::string& profile, double period) {
+            l->set_state_profile(simgrid::kernel::profile::ProfileBuilder::from_string("", profile, period));
+          },
+          "Specify a profile modeling the churn. "
+          "Each line of the profile describes timed events as ``date boolean``, where the boolean (0 or 1) tells "
+          "whether the link is on. "
+          "For example, the following content describes a link which turns off at t=1 and back on at t=2:\n\n"
+          ".. code-block:: python\n\n"
+          "   \"\"\"\n"
+          "   1.0 0\n"
+          "   2.0 1\n"
+          "   \"\"\"\n\n"
+          "The second function parameter is the periodicity: the time to wait after the last event to start again over "
+          "the list. Set it to -1 to not loop over.")
 
       .def("turn_on", &simgrid::s4u::Link::turn_on, py::call_guard<py::gil_scoped_release>(), "Turns the link on.")
       .def("turn_off", &simgrid::s4u::Link::turn_off, py::call_guard<py::gil_scoped_release>(), "Turns the link off.")
