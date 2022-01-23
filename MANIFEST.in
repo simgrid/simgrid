@@ -532,6 +532,8 @@ include examples/python/io-degradation/io-degradation.py
 include examples/python/io-degradation/io-degradation.tesh
 include examples/python/network-nonlinear/network-nonlinear.py
 include examples/python/network-nonlinear/network-nonlinear.tesh
+include examples/python/platform-failures/platform-failures.py
+include examples/python/platform-failures/platform-failures.tesh
 include examples/python/platform-profile/platform-profile.py
 include examples/python/platform-profile/platform-profile.tesh
 include examples/smpi/NAS/DGraph.c
@@ -2033,6 +2035,7 @@ include examples/python/CMakeLists.txt
 include examples/python/actor-create/actor-create_d.xml
 include examples/python/actor-lifetime/actor-lifetime_d.xml
 include examples/python/app-masterworkers/app-masterworkers_d.xml
+include examples/python/platform-failures/platform-failures_d.xml
 include examples/smpi/CMakeLists.txt
 include examples/smpi/NAS/CMakeLists.txt
 include examples/smpi/comm_dynamic_costs/CMakeLists.txt

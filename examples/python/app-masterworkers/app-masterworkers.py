@@ -12,9 +12,7 @@ import sys
 
 # master-begin
 def master(*args):
-  if len(args) < 2:
-    raise AssertionError(
-            f"Actor master requires 3 parameters plus the workers' names, but got only {len(args)}")
+  assert len(args) > 3, f"Actor master requires 3 parameters plus the workers' names, but got {len(args)}"
   tasks_count = int(args[0])
   compute_cost = int(args[1])
   communicate_cost = int(args[2])

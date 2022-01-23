@@ -1,0 +1,116 @@
+#!/usr/bin/env tesh
+
+p Testing a simple master/workers example application handling failures
+
+! output sort 19
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/platform-failures.py ${platfdir}/small_platform_failures.xml ${srcdir:=.}/platform-failures_d.xml --log=xbt_cfg.thres:critical --log=no_loc --cfg=path:${srcdir} --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=res_cpu.t:verbose
+> [  0.000000] (0:maestro@) Cannot launch actor 'worker' on failed host 'Fafard'
+> [  0.000000] (0:maestro@) Deployment includes some initially turned off Hosts ... nevermind.
+> [  0.000000] (1:master@Tremblay) Got 5 workers and 20 tasks to process
+> [  0.000000] (1:master@Tremblay) Send a message to worker-0
+> [  0.000000] (7:sleeper@Lilibeth) Start sleeping...
+> [  0.010309] (1:master@Tremblay) Send to worker-0 completed
+> [  0.010309] (2:worker@Tremblay) Start execution...
+> [  0.000000] (2:worker@Tremblay) Waiting a message on worker-0
+> [  0.000000] (3:worker@Jupiter) Waiting a message on worker-1
+> [  0.000000] (5:worker@Ginette) Waiting a message on worker-3
+> [  0.000000] (6:worker@Bourassa) Waiting a message on worker-4
+> [  0.010309] (1:master@Tremblay) Send a message to worker-1
+> [  1.000000] (0:maestro@) Restart actors on host Fafard
+> [  1.000000] (8:worker@Fafard) Waiting a message on worker-2
+> [  1.000000] (1:master@Tremblay) Mmh. The communication with 'worker-1' failed. Nevermind. Let's keep going!
+> [  1.000000] (1:master@Tremblay) Send a message to worker-2
+> [  2.000000] (1:master@Tremblay) Mmh. The communication with 'worker-2' failed. Nevermind. Let's keep going!
+> [  2.000000] (0:maestro@) Restart actors on host Jupiter
+> [  2.000000] (1:master@Tremblay) Send a message to worker-3
+> [  2.000000] (9:worker@Jupiter) Waiting a message on worker-1
+> [  2.010309] (2:worker@Tremblay) Execution complete.
+> [  2.010309] (2:worker@Tremblay) Waiting a message on worker-0
+> [  3.030928] (1:master@Tremblay) Send to worker-3 completed
+> [  3.030928] (1:master@Tremblay) Send a message to worker-4
+> [  3.030928] (5:worker@Ginette) Start execution...
+> [  4.061856] (1:master@Tremblay) Send to worker-4 completed
+> [  4.061856] (1:master@Tremblay) Send a message to worker-0
+> [  4.061856] (6:worker@Bourassa) Start execution...
+> [  4.072165] (1:master@Tremblay) Send to worker-0 completed
+> [  4.072165] (1:master@Tremblay) Send a message to worker-1
+> [  4.072165] (2:worker@Tremblay) Start execution...
+> [  5.000000] (0:maestro@) Restart actors on host Lilibeth
+> [  5.000000] (10:sleeper@Lilibeth) Start sleeping...
+> [  5.030928] (5:worker@Ginette) Execution complete.
+> [  5.030928] (5:worker@Ginette) Waiting a message on worker-3
+> [  5.103093] (1:master@Tremblay) Send to worker-1 completed
+> [  5.103093] (1:master@Tremblay) Send a message to worker-2
+> [  5.103093] (9:worker@Jupiter) Start execution...
+> [  6.000000] (10:sleeper@Lilibeth) done sleeping.
+> [  6.061856] (6:worker@Bourassa) Execution complete.
+> [  6.061856] (6:worker@Bourassa) Waiting a message on worker-4
+> [  6.072165] (2:worker@Tremblay) Execution complete.
+> [  6.072165] (2:worker@Tremblay) Waiting a message on worker-0
+> [  7.103093] (9:worker@Jupiter) Execution complete.
+> [  7.103093] (9:worker@Jupiter) Waiting a message on worker-1
+> [ 15.103093] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'worker-2'. Nevermind. Let's keep going!
+> [ 15.103093] (1:master@Tremblay) Send a message to worker-3
+> [ 15.103093] (1:master@Tremblay) Mmh. The communication with 'worker-3' failed. Nevermind. Let's keep going!
+> [ 15.103093] (1:master@Tremblay) Send a message to worker-4
+> [ 15.103093] (5:worker@Ginette) Mmh. Something went wrong. Nevermind. Let's keep going!
+> [ 15.103093] (5:worker@Ginette) Waiting a message on worker-3
+> [ 16.134021] (1:master@Tremblay) Send to worker-4 completed
+> [ 16.134021] (1:master@Tremblay) Send a message to worker-0
+> [ 16.134021] (6:worker@Bourassa) Start execution...
+> [ 16.144330] (1:master@Tremblay) Send to worker-0 completed
+> [ 16.144330] (1:master@Tremblay) Send a message to worker-1
+> [ 16.144330] (2:worker@Tremblay) Start execution...
+> [ 17.175258] (1:master@Tremblay) Send to worker-1 completed
+> [ 17.175258] (1:master@Tremblay) Send a message to worker-2
+> [ 17.175258] (9:worker@Jupiter) Start execution...
+> [ 18.134021] (6:worker@Bourassa) Execution complete.
+> [ 18.134021] (6:worker@Bourassa) Waiting a message on worker-4
+> [ 18.144330] (2:worker@Tremblay) Execution complete.
+> [ 18.144330] (2:worker@Tremblay) Waiting a message on worker-0
+> [ 19.175258] (9:worker@Jupiter) Execution complete.
+> [ 19.175258] (9:worker@Jupiter) Waiting a message on worker-1
+> [ 20.000000] (0:maestro@) Restart actors on host Lilibeth
+> [ 20.000000] (11:sleeper@Lilibeth) Start sleeping...
+> [ 21.000000] (11:sleeper@Lilibeth) done sleeping.
+> [ 27.175258] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'worker-2'. Nevermind. Let's keep going!
+> [ 27.175258] (1:master@Tremblay) Send a message to worker-3
+> [ 28.206186] (1:master@Tremblay) Send to worker-3 completed
+> [ 28.206186] (1:master@Tremblay) Send a message to worker-4
+> [ 28.206186] (1:master@Tremblay) Mmh. The communication with 'worker-4' failed. Nevermind. Let's keep going!
+> [ 28.206186] (1:master@Tremblay) Send a message to worker-0
+> [ 28.206186] (5:worker@Ginette) Start execution...
+> [ 28.206186] (6:worker@Bourassa) Mmh. Something went wrong. Nevermind. Let's keep going!
+> [ 28.206186] (6:worker@Bourassa) Waiting a message on worker-4
+> [ 28.216495] (1:master@Tremblay) Send to worker-0 completed
+> [ 28.216495] (1:master@Tremblay) Send a message to worker-1
+> [ 28.216495] (2:worker@Tremblay) Start execution...
+> [ 29.247423] (1:master@Tremblay) Send to worker-1 completed
+> [ 29.247423] (1:master@Tremblay) Send a message to worker-2
+> [ 29.247423] (9:worker@Jupiter) Start execution...
+> [ 30.206186] (5:worker@Ginette) Execution complete.
+> [ 30.206186] (5:worker@Ginette) Waiting a message on worker-3
+> [ 30.216495] (2:worker@Tremblay) Execution complete.
+> [ 30.216495] (2:worker@Tremblay) Waiting a message on worker-0
+> [ 31.247423] (9:worker@Jupiter) Execution complete.
+> [ 31.247423] (9:worker@Jupiter) Waiting a message on worker-1
+> [ 35.000000] (0:maestro@) Restart actors on host Lilibeth
+> [ 35.000000] (12:sleeper@Lilibeth) Start sleeping...
+> [ 36.000000] (12:sleeper@Lilibeth) done sleeping.
+> [ 39.247423] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'worker-2'. Nevermind. Let's keep going!
+> [ 39.247423] (1:master@Tremblay) Send a message to worker-3
+> [ 40.278351] (1:master@Tremblay) Send to worker-3 completed
+> [ 40.278351] (1:master@Tremblay) Send a message to worker-4
+> [ 40.278351] (5:worker@Ginette) Start execution...
+> [ 41.309278] (1:master@Tremblay) Send to worker-4 completed
+> [ 41.309278] (1:master@Tremblay) All tasks have been dispatched. Let's tell everybody the computation is over.
+> [ 41.309278] (2:worker@Tremblay) I'm done. See you!
+> [ 41.309278] (6:worker@Bourassa) Start execution...
+> [ 41.309278] (9:worker@Jupiter) I'm done. See you!
+> [ 42.309278] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'worker-2'. Nevermind. Let's keep going!
+> [ 43.309278] (0:maestro@) Simulation time 43.3093
+> [ 43.309278] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'worker-3'. Nevermind. Let's keep going!
+> [ 43.309278] (1:master@Tremblay) Goodbye now!
+> [ 43.309278] (6:worker@Bourassa) Execution complete.
+> [ 43.309278] (6:worker@Bourassa) Waiting a message on worker-4
+> [ 43.309278] (6:worker@Bourassa) I'm done. See you!

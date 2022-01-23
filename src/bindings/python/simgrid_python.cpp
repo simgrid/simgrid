@@ -47,6 +47,7 @@ using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 using simgrid::s4u::Engine;
 using simgrid::s4u::Host;
+using simgrid::s4u::Link;
 using simgrid::s4u::Mailbox;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(python, "python");
@@ -86,6 +87,9 @@ PYBIND11_MODULE(simgrid, m)
   // Internal exception used to kill actors and sweep the RAII chimney (free objects living on the stack)
   static py::object pyForcefulKillEx(py::register_exception<simgrid::ForcefulKillException>(m, "ActorKilled"));
 
+  py::register_exception<simgrid::NetworkFailureException>(m, "NetworkFailureException");
+  py::register_exception<simgrid::TimeoutException>(m, "TimeoutException");
+
   /* this_actor namespace */
   m.def_submodule("this_actor", "Bindings of the s4u::this_actor namespace. See the C++ documentation for details.")
       .def(
@@ -115,7 +119,8 @@ PYBIND11_MODULE(simgrid, m)
       .def("exit", &simgrid::s4u::this_actor::exit, py::call_guard<py::gil_scoped_release>(), "kill the current actor")
       .def(
           "on_exit",
-          [](py::object fun) {
+          [](py::object cb) {
+            py::function fun = py::reinterpret_borrow<py::function>(cb);
             fun.inc_ref(); // FIXME: why is this needed for tests like actor-kill and actor-lifetime?
             simgrid::s4u::this_actor::on_exit([fun](bool /*failed*/) {
               try {
@@ -264,7 +269,7 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "route_to",
           [](simgrid::s4u::Host* h, simgrid::s4u::Host* to) {
-            auto* list = new std::vector<simgrid::s4u::Link*>();
+            auto* list = new std::vector<Link*>();
             double bw  = 0;
             h->route_to(to, *list, &bw);
             return make_tuple(list, bw);
@@ -347,7 +352,22 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly(
           "available_speed", &Host::get_available_speed,
           "Get the available speed ratio, between 0 and 1.\n"
-          "This accounts for external load (see :py:func:`set_speed_profile() <simgrid.Host.set_speed_profile>`).");
+          "This accounts for external load (see :py:func:`set_speed_profile() <simgrid.Host.set_speed_profile>`).")
+      .def(
+          "on_creation_cb",
+          [](py::object cb) {
+            Host::on_creation_cb([cb](Host& h) {
+              py::function fun = py::reinterpret_borrow<py::function>(cb);
+              try {
+                py::gil_scoped_acquire py_context; // need a new context for callback
+                fun(&h);
+              } catch (const py::error_already_set& e) {
+                xbt_die("Error while executing the on_creation lambda : %s", e.what());
+              }
+            });
+          },
+          py::call_guard<py::gil_scoped_release>(), "");
+
   py::enum_<simgrid::s4u::Host::SharingPolicy>(host, "SharingPolicy")
       .value("NONLINEAR", simgrid::s4u::Host::SharingPolicy::NONLINEAR)
       .value("LINEAR", simgrid::s4u::Host::SharingPolicy::LINEAR)
@@ -385,19 +405,19 @@ PYBIND11_MODULE(simgrid, m)
       netpoint(m, "NetPoint", "NetPoint object");
 
   /* Class Link */
-  py::class_<simgrid::s4u::Link, std::unique_ptr<simgrid::s4u::Link, py::nodelete>> link(
-      m, "Link", "Network link. See the C++ documentation for details.");
-  link.def("set_latency", py::overload_cast<const std::string&>(&simgrid::s4u::Link::set_latency),
+  py::class_<Link, std::unique_ptr<Link, py::nodelete>> link(m, "Link",
+                                                             "Network link. See the C++ documentation for details.");
+  link.def("set_latency", py::overload_cast<const std::string&>(&Link::set_latency),
            py::call_guard<py::gil_scoped_release>(),
            "Set the latency as a string. Accepts values with units, such as ‘1s’ or ‘7ms’.\nFull list of accepted "
            "units: w (week), d (day), h, s, ms, us, ns, ps.")
-      .def("set_latency", py::overload_cast<double>(&simgrid::s4u::Link::set_latency),
-           py::call_guard<py::gil_scoped_release>(), "Set the latency as a float (in seconds).")
-      .def("set_bandwidth", &simgrid::s4u::Link::set_bandwidth, py::call_guard<py::gil_scoped_release>(),
+      .def("set_latency", py::overload_cast<double>(&Link::set_latency), py::call_guard<py::gil_scoped_release>(),
+           "Set the latency as a float (in seconds).")
+      .def("set_bandwidth", &Link::set_bandwidth, py::call_guard<py::gil_scoped_release>(),
            "Set the bandwidth (in byte per second).")
       .def(
           "set_bandwidth_profile",
-          [](simgrid::s4u::Link* l, const std::string& profile, double period) {
+          [](Link* l, const std::string& profile, double period) {
             l->set_bandwidth_profile(simgrid::kernel::profile::ProfileBuilder::from_string("", profile, period));
           },
           py::call_guard<py::gil_scoped_release>(),
@@ -416,7 +436,7 @@ PYBIND11_MODULE(simgrid, m)
           "the list. Set it to -1 to not loop over.")
       .def(
           "set_latency_profile",
-          [](simgrid::s4u::Link* l, const std::string& profile, double period) {
+          [](Link* l, const std::string& profile, double period) {
             l->set_latency_profile(simgrid::kernel::profile::ProfileBuilder::from_string("", profile, period));
           },
           py::call_guard<py::gil_scoped_release>(),
@@ -435,7 +455,7 @@ PYBIND11_MODULE(simgrid, m)
           "the list. Set it to -1 to not loop over.")
       .def(
           "set_state_profile",
-          [](simgrid::s4u::Link* l, const std::string& profile, double period) {
+          [](Link* l, const std::string& profile, double period) {
             l->set_state_profile(simgrid::kernel::profile::ProfileBuilder::from_string("", profile, period));
           },
           "Specify a profile modeling the churn. "
@@ -450,39 +470,39 @@ PYBIND11_MODULE(simgrid, m)
           "The second function parameter is the periodicity: the time to wait after the last event to start again over "
           "the list. Set it to -1 to not loop over.")
 
-      .def("turn_on", &simgrid::s4u::Link::turn_on, py::call_guard<py::gil_scoped_release>(), "Turns the link on.")
-      .def("turn_off", &simgrid::s4u::Link::turn_off, py::call_guard<py::gil_scoped_release>(), "Turns the link off.")
-      .def("is_on", &simgrid::s4u::Link::is_on, "Check whether the link is on.")
+      .def("turn_on", &Link::turn_on, py::call_guard<py::gil_scoped_release>(), "Turns the link on.")
+      .def("turn_off", &Link::turn_off, py::call_guard<py::gil_scoped_release>(), "Turns the link off.")
+      .def("is_on", &Link::is_on, "Check whether the link is on.")
 
-      .def("set_sharing_policy", &simgrid::s4u::Link::set_sharing_policy, py::call_guard<py::gil_scoped_release>(),
+      .def("set_sharing_policy", &Link::set_sharing_policy, py::call_guard<py::gil_scoped_release>(),
            "Set sharing policy for this link")
-      .def("set_concurrency_limit", &simgrid::s4u::Link::set_concurrency_limit,
-           py::call_guard<py::gil_scoped_release>(), "Set concurrency limit for this link")
-      .def("set_host_wifi_rate", &simgrid::s4u::Link::set_host_wifi_rate, py::call_guard<py::gil_scoped_release>(),
+      .def("set_concurrency_limit", &Link::set_concurrency_limit, py::call_guard<py::gil_scoped_release>(),
+           "Set concurrency limit for this link")
+      .def("set_host_wifi_rate", &Link::set_host_wifi_rate, py::call_guard<py::gil_scoped_release>(),
            "Set level of communication speed of given host on this Wi-Fi link")
-      .def("by_name", &simgrid::s4u::Link::by_name, "Retrieves a Link from its name, or dies")
-      .def("seal", &simgrid::s4u::Link::seal, py::call_guard<py::gil_scoped_release>(), "Seal this link")
+      .def("by_name", &Link::by_name, "Retrieves a Link from its name, or dies")
+      .def("seal", &Link::seal, py::call_guard<py::gil_scoped_release>(), "Seal this link")
       .def_property_readonly(
           "name",
-          [](const simgrid::s4u::Link* self) {
+          [](const Link* self) {
             return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
           },
           "The name of this link")
-      .def_property_readonly("bandwidth", &simgrid::s4u::Link::get_bandwidth, "The bandwidth (in bytes per second)")
-      .def_property_readonly("latency", &simgrid::s4u::Link::get_latency, "The latency (in seconds)");
+      .def_property_readonly("bandwidth", &Link::get_bandwidth, "The bandwidth (in bytes per second)")
+      .def_property_readonly("latency", &Link::get_latency, "The latency (in seconds)");
 
-  py::enum_<simgrid::s4u::Link::SharingPolicy>(link, "SharingPolicy")
-      .value("NONLINEAR", simgrid::s4u::Link::SharingPolicy::NONLINEAR)
-      .value("WIFI", simgrid::s4u::Link::SharingPolicy::WIFI)
-      .value("SPLITDUPLEX", simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX)
-      .value("SHARED", simgrid::s4u::Link::SharingPolicy::SHARED)
-      .value("FATPIPE", simgrid::s4u::Link::SharingPolicy::FATPIPE)
+  py::enum_<Link::SharingPolicy>(link, "SharingPolicy")
+      .value("NONLINEAR", Link::SharingPolicy::NONLINEAR)
+      .value("WIFI", Link::SharingPolicy::WIFI)
+      .value("SPLITDUPLEX", Link::SharingPolicy::SPLITDUPLEX)
+      .value("SHARED", Link::SharingPolicy::SHARED)
+      .value("FATPIPE", Link::SharingPolicy::FATPIPE)
       .export_values();
 
   /* Class LinkInRoute */
   py::class_<simgrid::s4u::LinkInRoute> linkinroute(m, "LinkInRoute", "Abstraction to add link in routes");
-  linkinroute.def(py::init<const simgrid::s4u::Link*>());
-  linkinroute.def(py::init<const simgrid::s4u::Link*, simgrid::s4u::LinkInRoute::Direction>());
+  linkinroute.def(py::init<const Link*>());
+  linkinroute.def(py::init<const Link*, simgrid::s4u::LinkInRoute::Direction>());
   py::enum_<simgrid::s4u::LinkInRoute::Direction>(linkinroute, "Direction")
       .value("UP", simgrid::s4u::LinkInRoute::Direction::UP)
       .value("DOWN", simgrid::s4u::LinkInRoute::Direction::DOWN)
@@ -490,9 +510,8 @@ PYBIND11_MODULE(simgrid, m)
       .export_values();
 
   /* Class Split-Duplex Link */
-  py::class_<simgrid::s4u::SplitDuplexLink, simgrid::s4u::Link,
-             std::unique_ptr<simgrid::s4u::SplitDuplexLink, py::nodelete>>(m, "SplitDuplexLink",
-                                                                           "Network split-duplex link")
+  py::class_<simgrid::s4u::SplitDuplexLink, Link, std::unique_ptr<simgrid::s4u::SplitDuplexLink, py::nodelete>>(
+      m, "SplitDuplexLink", "Network split-duplex link")
       .def("get_link_up", &simgrid::s4u::SplitDuplexLink::get_link_up, "Get link direction up")
       .def("get_link_down", &simgrid::s4u::SplitDuplexLink::get_link_down, "Get link direction down");
 
@@ -509,6 +528,13 @@ PYBIND11_MODULE(simgrid, m)
             return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
           },
           "The name of that mailbox")
+      .def(
+          "put",
+          [](Mailbox* self, py::object data, int size, double timeout) {
+            data.inc_ref();
+            self->put(data.ptr(), size, timeout);
+          },
+          py::call_guard<py::gil_scoped_release>(), "Blocking data transmission with a timeout")
       .def(
           "put",
           [](Mailbox* self, py::object data, int size) {
@@ -627,7 +653,8 @@ PYBIND11_MODULE(simgrid, m)
               }
             });
           },
-          py::call_guard<py::gil_scoped_release>(), "Create an actor from a function or an object. See the :ref:`example <s4u_ex_actors_create>`.")
+          py::call_guard<py::gil_scoped_release>(),
+          "Create an actor from a function or an object. See the :ref:`example <s4u_ex_actors_create>`.")
       .def_property(
           "host", &Actor::get_host,
           [](Actor* a, Host* h) {
@@ -640,6 +667,8 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("ppid", &Actor::get_ppid,
                              "The PID (unique identifier) of the actor that created this one.")
       .def("by_pid", &Actor::by_pid, "Retrieve an actor by its PID")
+      .def("set_auto_restart", &Actor::set_auto_restart, py::call_guard<py::gil_scoped_release>(),
+           "Specify whether the actor shall restart when its host reboots.")
       .def("daemonize", &Actor::daemonize, py::call_guard<py::gil_scoped_release>(),
            "This actor will be automatically terminated when the last non-daemon actor finishes (more info in the C++ "
            "documentation).")

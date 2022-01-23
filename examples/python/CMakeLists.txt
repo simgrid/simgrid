@@ -2,7 +2,7 @@ foreach(example actor-create actor-daemon actor-join actor-kill actor-migrate ac
         app-masterworkers
         comm-wait comm-waitall comm-waitany
         exec-async exec-basic exec-dvfs exec-remote
-        platform-profile
+        platform-profile platform-failures
         network-nonlinear clusters-multicpu io-degradation exec-cpu-nonlinear)
   set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.py)
@@ -22,4 +22,6 @@ endforeach()
 set(examples_src  ${examples_src}                                                      PARENT_SCOPE)
 set(tesh_files    ${tesh_files}   examples/python/actor-create/actor-create_d.xml
                                   examples/python/actor-lifetime/actor-lifetime_d.xml
-                                  examples/python/app-masterworkers/app-masterworkers_d.xml  PARENT_SCOPE)
+                                  examples/python/app-masterworkers/app-masterworkers_d.xml
+                                  examples/python/platform-failures/platform-failures_d.xml
+                                  PARENT_SCOPE)
