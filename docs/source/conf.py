@@ -54,6 +54,7 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.autosummary',
     'sphinx_tabs.tabs',
+    'sphinx_copybutton',
     'javasphinx',
     'showfile',
 ]
@@ -63,6 +64,10 @@ todo_include_todos = True
 # Setup the breath extension
 breathe_projects = {'simgrid': '../build/xml'}
 breathe_default_project = "simgrid"
+
+# Setup the copybutton extension
+copybutton_prompt_text = r">>> |\.\.\. |\$ |In \[\d*\]: | {2,5}\.\.\.: | {5,8}: "
+copybutton_prompt_is_regexp = True
 
 # Generate a warning for all a cross-reference (such as :func:`myfunc`) that cannot be found
 nitpicky = True
