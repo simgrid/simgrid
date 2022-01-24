@@ -146,7 +146,7 @@ if __name__ == '__main__':
 
     try:
         # establish connection
-        irc_sock = ssl.wrap_socket(socket.socket(socket.AF_INET, socket.SOCK_STREAM))
+        irc_sock = ssl.wrap_socket(socket.socket(socket.AF_INET, socket.SOCK_STREAM), ssl_version=ssl.PROTOCOL_TLS)
         irc_sock.connect((socket.gethostbyname('irc.oftc.net'), 6697))
         irc_sock.send('NICK {0}\r\nUSER {0} * 0 :{0}\r\n'.format(irc_username).encode('utf_8'))
         irc_file = irc_sock.makefile()
