@@ -268,7 +268,7 @@ PYBIND11_MODULE(simgrid, m)
   host.def("by_name", &Host::by_name, "Retrieves a host from its name, or die")
       .def(
           "route_to",
-          [](simgrid::s4u::Host* h, simgrid::s4u::Host* to) {
+          [](const simgrid::s4u::Host* h, const simgrid::s4u::Host* to) {
             auto* list = new std::vector<Link*>();
             double bw  = 0;
             h->route_to(to, *list, &bw);
