@@ -521,7 +521,7 @@ void sg_file_dump(const_sg_file_t fd)
  */
 void* sg_file_get_data(const_sg_file_t fd)
 {
-  return fd->get_data();
+  return fd->get_data<void>();
 }
 
 /** Changes the user data associated with the file

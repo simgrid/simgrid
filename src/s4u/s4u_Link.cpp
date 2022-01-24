@@ -254,7 +254,7 @@ void sg_link_set_latency(sg_link_t link, double value)
 
 void* sg_link_get_data(const_sg_link_t link)
 {
-  return link->get_data();
+  return link->get_data<void>();
 }
 
 void sg_link_set_data(sg_link_t link, void* data)

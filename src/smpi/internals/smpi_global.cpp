@@ -120,7 +120,7 @@ MPI_Info smpi_process_info_env(){
 }
 
 void * smpi_process_get_user_data(){
-  return simgrid::s4u::Actor::self()->get_data();
+  return simgrid::s4u::Actor::self()->get_data<void>();
 }
 
 void smpi_process_set_user_data(void *data){

@@ -7,6 +7,7 @@
 #ifndef SIMGRID_XBT_LIB_HPP
 #define SIMGRID_XBT_LIB_HPP
 
+#include "xbt/base.h" // XBT_ATTRIB_DEPRECATED_v334
 #include <cstddef>
 #include <limits>
 #include <vector>
@@ -111,7 +112,11 @@ public:
   void set_data(void* data){
     extensions_[0]=data;
   }
-  void* get_data() const { return extensions_[0]; }
+  template <typename D> D* get_data() const { return static_cast<D*>(extensions_[0]); }
+  XBT_ATTRIB_DEPRECATED_v334("Please use typed template Extendable::get_data<>()") void* get_data() const
+  {
+    return get_data<void>();
+  }
   // Convenience extension access when the type has an associated EXTENSION ID:
   template <class U> U* extension() const { return extension<U>(U::EXTENSION_ID); }
   template<class U> void extension_set(U* p) { extension_set<U>(U::EXTENSION_ID, p); }

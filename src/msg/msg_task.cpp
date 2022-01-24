@@ -246,7 +246,7 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
 /** @brief Return the user data of the given task */
 void* MSG_task_get_data(const_msg_task_t task)
 {
-  return task->get_data();
+  return task->get_data<void>();
 }
 
 /** @brief Sets the user data of a given task */

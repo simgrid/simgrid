@@ -181,7 +181,7 @@ public:
   explicit ProcessArg(s4u::Host* host, ActorImpl* actor)
       : name(actor->get_name())
       , code(actor->code_)
-      , data(actor->get_ciface()->get_data())
+      , data(actor->get_ciface()->get_data<void>())
       , host(host)
       , kill_time(actor->get_kill_time())
       , auto_restart(actor->has_to_auto_restart())

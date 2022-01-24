@@ -74,10 +74,10 @@ static void get_set_disk_data(simgrid::s4u::Disk* disk)
 {
   XBT_INFO("*** GET/SET DATA for disk: %s ***", disk->get_cname());
 
-  const std::string* data = static_cast<std::string*>(disk->get_data());
+  const std::string* data = disk->get_data<std::string>();
   XBT_INFO("Get data: '%s'", data ? data->c_str() : "No User Data");
   disk->set_data(new std::string("Some data"));
-  data = static_cast<std::string*>(disk->get_data());
+  data = disk->get_data<std::string>();
   XBT_INFO("  Set and get data: '%s'", data->c_str());
   delete data;
 }

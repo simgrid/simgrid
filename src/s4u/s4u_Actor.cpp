@@ -756,7 +756,7 @@ const char* sg_actor_self_get_name()
 
 void* sg_actor_self_get_data()
 {
-  return simgrid::s4u::Actor::self()->get_data();
+  return simgrid::s4u::Actor::self()->get_data<void>();
 }
 
 void sg_actor_self_set_data(void* userdata)
@@ -805,7 +805,7 @@ void sg_actor_unref(const_sg_actor_t actor)
 /** @brief Return the user data of a #sg_actor_t */
 void* sg_actor_get_data(const_sg_actor_t actor)
 {
-  return actor->get_data();
+  return actor->get_data<void>();
 }
 
 /** @brief Set the user data of a #sg_actor_t */

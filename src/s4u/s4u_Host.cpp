@@ -462,7 +462,7 @@ sg_host_t sg_host_by_name(const char* name)
 // ========== User data Layer ==========
 void* sg_host_get_data(const_sg_host_t host)
 {
-  return host->get_data();
+  return host->get_data<void>();
 }
 void sg_host_set_data(sg_host_t host, void* userdata)
 {

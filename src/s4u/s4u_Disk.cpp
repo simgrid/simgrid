@@ -213,7 +213,7 @@ sg_size_t sg_disk_write(const_sg_disk_t disk, sg_size_t size)
 
 void* sg_disk_get_data(const_sg_disk_t disk)
 {
-  return disk->get_data();
+  return disk->get_data<void>();
 }
 
 void sg_disk_set_data(sg_disk_t disk, void* data)

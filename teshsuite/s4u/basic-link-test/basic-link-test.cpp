@@ -29,7 +29,7 @@ int main(int argc, char** argv)
   for (const auto& l : links) {
     XBT_INFO("%s: latency = %.5f, bandwidth = %f", l->get_cname(), l->get_latency(), l->get_bandwidth());
     l->set_data(&user_data);
-    xbt_assert(user_data == *static_cast<const std::string*>(l->get_data()), "User data was corrupted.");
+    xbt_assert(user_data == *l->get_data<std::string>(), "User data was corrupted.");
   }
 
   return 0;

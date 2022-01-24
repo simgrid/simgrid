@@ -20,24 +20,22 @@ struct HostAttribute {
 
 static double sg_host_get_available_at(const simgrid::s4u::Host* host)
 {
-  return static_cast<HostAttribute*>(host->get_data())->available_at;
+  return host->get_data<HostAttribute>()->available_at;
 }
 
 static void sg_host_set_available_at(const simgrid::s4u::Host* host, double time)
 {
-  auto* attr         = static_cast<HostAttribute*>(host->get_data());
-  attr->available_at = time;
+  host->get_data<HostAttribute>()->available_at = time;
 }
 
 static simgrid::s4u::Exec* sg_host_get_last_scheduled_task(const simgrid::s4u::Host* host)
 {
-  return static_cast<HostAttribute*>(host->get_data())->last_scheduled_task;
+  return host->get_data<HostAttribute>()->last_scheduled_task;
 }
 
 static void sg_host_set_last_scheduled_task(const simgrid::s4u::Host* host, simgrid::s4u::ExecPtr task)
 {
-  auto* attr                = static_cast<HostAttribute*>(host->get_data());
-  attr->last_scheduled_task = task.get();
+  host->get_data<HostAttribute>()->last_scheduled_task = task.get();
 }
 
 static bool dependency_exists(const simgrid::s4u::Exec* src, simgrid::s4u::Exec* dst)
@@ -102,7 +100,7 @@ static double finish_on_at(const simgrid::s4u::ExecPtr task, const simgrid::s4u:
         }
         // We use the user data field to store the finish time of the predecessor of the comm, i.e., its potential start
         // time
-        data_available = *(static_cast<double*>(comm->get_data())) + redist_time;
+        data_available = *comm->get_data<double>() + redist_time;
       }
 
       const auto* exec = dynamic_cast<simgrid::s4u::Exec*>(parent.get());
@@ -148,7 +146,7 @@ static void schedule_on(simgrid::s4u::ExecPtr exec, simgrid::s4u::Host* host)
     auto* comm = dynamic_cast<simgrid::s4u::Comm*>(pred.get());
     if (comm != nullptr) {
       comm->set_destination(host);
-      delete static_cast<double*>(comm->get_data());
+      delete comm->get_data<double>();
     }
   }
   // we can also set the source of all the output comms of this exec

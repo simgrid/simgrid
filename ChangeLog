@@ -36,6 +36,11 @@ SMPI:
    change injected costs for MPI_Recv, MPI_Send and MPI_Isend operations.
    Alternative for smpi/or, smpi/os and smpi/ois configuration options.
 
+XBT:
+ - Function xbt::Extendable::get_data() is now templated with the type of the
+   pointee. Untyped function is deprecated. Use get_data<void>() if you still
+   want to retrieve void*.
+
 Documentation:
  - New section: "SimGrid MPI calibration of a Grid5000 cluster"
    presenting how to properly calibrate MPI communications in SimGrid.
