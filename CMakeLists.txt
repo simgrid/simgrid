@@ -839,11 +839,9 @@ if(enable_python)
     add_dependencies(tests python-bindings)
     set_property(TARGET python-bindings
                  APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
-		 
+
     install(TARGETS python-bindings 
-            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
-	    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-	    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+      	    LIBRARY DESTINATION "${Python3_SITEARCH}")
   else()
     message(FATAL_ERROR "Please install pybind11-dev to build the Python bindings (or disable that option).")
   endif()
@@ -948,6 +946,7 @@ endif()
 if(pybind11_FOUND)
   message("        Compile Python bindings .....: ${enable_python}")
   message("          module ....................: ${PYTHON_MODULE_PREFIX}simgrid${PYTHON_MODULE_EXTENSION}")
+  message("          install path ..............: ${Python3_SITEARCH}")
 else()
   message("        Compile Python bindings .....: OFF (disabled, or pybind11 not found)")
 endif()
