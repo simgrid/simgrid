@@ -41,8 +41,17 @@ void mpi_file_seek_shared_(int* fh, MPI_Offset* offset, int* whence, int* ierr){
 void mpi_file_get_position_(int* fh, MPI_Offset* offset, int* ierr){
 	*ierr= MPI_File_get_position(simgrid::smpi::File::f2c(*fh), offset);
 }
+
 void mpi_file_get_position_shared_(int* fh, MPI_Offset* offset, int* ierr){
 	*ierr= MPI_File_get_position_shared(simgrid::smpi::File::f2c(*fh), offset);
+}
+
+void mpi_file_get_size_(int* fh, MPI_Offset* size, int* ierr){
+	*ierr= MPI_File_get_size(simgrid::smpi::File::f2c(*fh), size);
+}
+
+void mpi_file_set_size_(int* fh, MPI_Offset* size, int* ierr){
+	*ierr= MPI_File_set_size(simgrid::smpi::File::f2c(*fh), *size);
 }
 
 void mpi_file_read_ ( int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr){

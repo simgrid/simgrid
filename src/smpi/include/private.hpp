@@ -479,6 +479,8 @@ void mpi_file_seek_(int* fh, MPI_Offset* offset, int* whence, int* ierr);
 void mpi_file_seek_shared_(int* fh, MPI_Offset* offset, int* whence, int* ierr);
 void mpi_file_get_position_(int* fh, MPI_Offset* offset, int* ierr);
 void mpi_file_get_position_shared_(int* fh, MPI_Offset* offset, int* ierr);
+void mpi_file_set_size_(int* fh, MPI_Offset* size, int* ierr);
+void mpi_file_get_size_(int* fh, MPI_Offset* sier, int* ierr);
 void mpi_file_set_view_(int* fh, MPI_Offset* offset, int* etype, int* filetype, char* datarep, int* info, int* ierr);
 void mpi_file_get_view_(int* fh, MPI_Offset* disp, int* etype, int* filetype, char *datarep, int* ierr);
 void mpi_file_read_(int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr);
