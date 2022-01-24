@@ -3,7 +3,7 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
  
-from simgrid import Actor, Comm, Engine, Host, Mailbox, this_actor, NetworkFailureException, TimeoutException
+from simgrid import Actor, Engine, Host, Mailbox, this_actor, NetworkFailureException, TimeoutException
 import sys
 
 # This example shows how to work with the state profile of a host or a link,

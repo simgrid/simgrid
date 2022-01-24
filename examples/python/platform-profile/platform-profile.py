@@ -3,7 +3,7 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-from simgrid import Actor, Comm, Engine, Host, Mailbox, Link, this_actor
+from simgrid import Actor, Engine, Host, Link, this_actor
 import sys
 
 # This example demonstrates how to attach a profile to a host or a link, to specify external changes to the resource speed.

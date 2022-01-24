@@ -7,7 +7,7 @@
 # Take this tutorial online: https://simgrid.org/doc/latest/Tutorial_Algorithms.html
 # ##################################################################################
 
-from simgrid import Actor, Engine, Host, Mailbox, this_actor
+from simgrid import Engine, Mailbox, this_actor
 import sys
 
 # master-begin
