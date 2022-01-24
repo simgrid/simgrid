@@ -221,12 +221,12 @@ Comm* Comm::start()
   } else if (src_buff_ != nullptr) { // Sender side
     on_send(*this);
     pimpl_ = simcall_comm_isend(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
-                                clean_fun_, copy_data_function_, get_user_data(), detached_);
+                                clean_fun_, copy_data_function_, get_data<void>(), detached_);
   } else if (dst_buff_ != nullptr) { // Receiver side
     xbt_assert(not detached_, "Receive cannot be detached");
     on_recv(*this);
     pimpl_ = simcall_comm_irecv(receiver_, mailbox_->get_impl(), dst_buff_, &dst_buff_size_, match_fun_,
-                                copy_data_function_, get_user_data(), rate_);
+                                copy_data_function_, get_data<void>(), rate_);
 
   } else {
     xbt_die("Cannot start a communication before specifying whether we are the sender or the receiver");
@@ -265,12 +265,12 @@ Comm* Comm::wait_for(double timeout)
       } else if (src_buff_ != nullptr) {
         on_send(*this);
         simcall_comm_send(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
-                          copy_data_function_, get_user_data(), timeout);
+                          copy_data_function_, get_data<void>(), timeout);
 
       } else { // Receiver
         on_recv(*this);
         simcall_comm_recv(receiver_, mailbox_->get_impl(), dst_buff_, &dst_buff_size_, match_fun_, copy_data_function_,
-                          get_user_data(), timeout, rate_);
+                          get_data<void>(), timeout, rate_);
       }
       break;
 

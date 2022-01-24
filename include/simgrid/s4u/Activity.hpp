@@ -215,7 +215,6 @@ private:
 template <class AnyActivity> class Activity_T : public Activity {
   std::string name_             = "unnamed";
   std::string tracing_category_ = "";
-  void* user_data_              = nullptr;
 
 public:
   AnyActivity* add_successor(ActivityPtr a)
@@ -245,13 +244,16 @@ public:
   }
   const std::string& get_tracing_category() const { return tracing_category_; }
 
-  AnyActivity* set_user_data(void* data)
+  XBT_ATTRIB_DEPRECATED_v334("Please use Activity::set_data()") AnyActivity* set_user_data(void* data)
   {
-    user_data_ = data;
+    set_data(data);
     return static_cast<AnyActivity*>(this);
   }
 
-  void* get_user_data() const { return user_data_; }
+  XBT_ATTRIB_DEPRECATED_v334("Please use Activity::get_data<>()") void* get_user_data() const
+  {
+    return get_data<void>();
+  }
 
   AnyActivity* vetoable_start()
   {
