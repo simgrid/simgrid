@@ -22,7 +22,7 @@ def watcher():
     path += ("" if len(path)==0 else ", ") + "link '" + l.name + "'"
   this_actor.info(f"Path from Jupiter to Fafard: {path} (latency: {lat:.6f}s).")
 
-  for i in range(10):
+  for _ in range(10):
     this_actor.info("Fafard: %.0fMflops, Jupiter: %4.0fMflops, Lilibeth: %3.1fMflops, Link1: (%.2fMB/s %.0fms), Link2: (%.2fMB/s %.0fms)" % (
              fafard.speed * fafard.available_speed / 1000000,
              jupiter.speed * jupiter.available_speed / 1000000,

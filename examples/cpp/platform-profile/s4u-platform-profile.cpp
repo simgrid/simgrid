@@ -24,7 +24,7 @@ static void watcher()
   jupiter->route_to(fafard, links, &lat);
 
   std::string path;
-  for (auto* l : links)
+  for (const auto* l : links)
     path += (path.empty() ? "" : ", ") + std::string("link '") + l->get_name() + std::string("'");
   XBT_INFO("Path from Jupiter to Fafard: %s (latency: %fs).", path.c_str(), lat);
 

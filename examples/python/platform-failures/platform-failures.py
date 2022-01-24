@@ -56,9 +56,9 @@ def master(* args):
 
 def worker(* args):
   assert len(args) == 1, "Expecting one parameter"
-  id               = int(args[0])
+  my_id               = int(args[0])
 
-  mailbox = Mailbox.by_name(f"worker-{id}")
+  mailbox = Mailbox.by_name(f"worker-{my_id}")
   done = False
   while not done:
     try:
