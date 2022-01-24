@@ -122,7 +122,7 @@ def kill_process_group(pid):
 
     try:
         pgid = os.getpgid(pid)
-    except:
+    except OSError:
         # os.getpgid failed. Ok, don't cleanup.
         return
 

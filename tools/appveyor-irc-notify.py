@@ -174,7 +174,7 @@ if __name__ == '__main__':
                 # leave the channel
                 irc_sock.send('PART #{}\r\n'.format(channel).encode('utf_8'))
                 sys.exit()
-    except BaseException:
+    except Exception:
         e = sys.exc_info()[0]
         print(e)
         sys.exit()
