@@ -70,6 +70,7 @@ jobs:
 
       - name: build docker tuto-s4u
         run: |
+          cd tools/docker
           make tuto-s4u
           docker push simgrid/tuto-s4u
       - name: Create the failure Message
@@ -107,6 +108,7 @@ jobs:
 
       - name: build docker tuto-mc
         run: |
+          cd tools/docker
           make tuto-mc
           docker push simgrid/tuto-mc
 
