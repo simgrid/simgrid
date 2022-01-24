@@ -383,7 +383,6 @@ class Cmd(object):
         cmdName = FileReader().filename + ":" + str(self.linenumber)
         try:
             (stdout_data, stderr_data) = proc.communicate("\n".join(self.input_pipe), self.timeout)
-            local_pid = None
             timeout_reached = False
         except subprocess.TimeoutExpired:
             timeout_reached = True

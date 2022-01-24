@@ -70,8 +70,8 @@ def convert_trace(trace_path, base_path, output_path, trace_version="1.0"):
                         raise Exception("Invalid traces: No Isend or Irecv "
                                         "found before the wait in line " +
                                         str(line_num) + " in file " + old_file_path)
-                    new_line = insert_elem(split_line, 2, last_async_call_src)
-                    new_line = insert_elem(split_line, 3, last_async_call_dst)
+                    insert_elem(split_line, 2, last_async_call_src)
+                    insert_elem(split_line, 3, last_async_call_dst)
                     new_line = insert_elem(split_line, 4, "0")
 
                 if new_line is not None:
