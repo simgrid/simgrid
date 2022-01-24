@@ -7,8 +7,9 @@ name: Docker tutorial S4U
 
 on:
   workflow_dispatch:
-  # Rebuild when changing the stable branch
-  push:
+  schedule: # each week-end, since it's using the unstable docker image
+      - cron: '0 20 * * 0'
+  push: # when pushing on the stable branche, as this is intended to use the stable docker image when not needing the bleeding edge
       branches:
             - stable
 #  release:
