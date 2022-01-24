@@ -839,6 +839,11 @@ if(enable_python)
     add_dependencies(tests python-bindings)
     set_property(TARGET python-bindings
                  APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
+		 
+    install(TARGETS python-bindings 
+            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+	    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+	    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}")
   else()
     message(FATAL_ERROR "Please install pybind11-dev to build the Python bindings (or disable that option).")
   endif()
