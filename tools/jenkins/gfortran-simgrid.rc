@@ -27,5 +27,5 @@ module_autogenargs.update({
     " --enable-simgrid-shared --with-mpi-libs='-lsimgrid' --with-mpi-include=-I"+getcwd()+"/install/include/smpi FC="+getcwd()+"/install/bin/smpif90 CC=gcc SIMGRID_FC="+getcwd()+"/install/bin/smpif90",
 })
 module_cmakeargs.update({
-'ntpoly': "-DFORTRAN_ONLY=Yes -DCMAKE_Fortran_COMPILER="+getcwd()+"/install/bin/smpif90 -DCMAKE_Fortran_LINK_EXECUTABLE="+getcwd()+"/install/bin/smpif90 -DCMAKE_Fortran_FLAGS_RELEASE='-O3 -fPIC -g -fopenmp -std=legacy' -DBUILD_SHARED_LIBS=Yes"
+'ntpoly': "-DFORTRAN_ONLY=Yes -DCMAKE_Fortran_COMPILER="+getcwd()+"/install/bin/smpif90 -DCMAKE_Fortran_LINK_EXECUTABLE="+getcwd()+"/install/bin/smpif90 -DCMAKE_Fortran_FLAGS_RELEASE='-O3 -fPIC -g -fopenmp -std=legacy'"
 })
