@@ -65,6 +65,7 @@ cmake -Denable_documentation=OFF -Denable_python=OFF \
       -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
       -Denable_mallocators=OFF \
       -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_model-checking=OFF \
+      -Denable_ns3=ON \
       -Denable_memcheck_xml=ON -DLTO_EXTRA_FLAG="auto" "$WORKSPACE"
 
 
