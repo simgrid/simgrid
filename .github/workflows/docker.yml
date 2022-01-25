@@ -50,6 +50,7 @@ jobs:
 
   docker-tuto-s4u:
 
+    # the Dockerfile builds upon the docker-unstable image, so add a dependency
     needs: docker-unstable
     runs-on: ubuntu-latest
     permissions:
@@ -88,7 +89,7 @@ jobs:
 
   docker-tuto-mc:
 
-    needs: docker-unstable
+    # the Dockerfile builds upon debian:testing
     runs-on: ubuntu-latest
     permissions:
       contents: read
