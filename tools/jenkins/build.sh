@@ -156,6 +156,12 @@ if [ "$os" = "NixOS" ] ; then
 fi
 echo "XX have_NS3: ${have_NS3}"
 
+SIMGRID_PYTHON_LIBDIR=""
+if [ "$os" = "NixOS" ] ; then
+  SIMGRID_PYTHON_LIBDIR="/home/ci/simgrid_install/lib64"
+fi
+echo "XX SIMGRID_PYTHON_LIBDIR: ${SIMGRID_PYTHON_LIBDIR}"
+
 # This is for Windows:
 PATH="$WORKSPACE/build/lib:$PATH"
 
