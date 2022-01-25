@@ -290,6 +290,14 @@ minimal-bindings (on/OFF)
   Take as few optional dependencies as possible, to get minimal
   library bindings in Java and Python.
 
+NS3_HINT (empty by default)
+  Alternative path into which ns-3 should be searched for.
+
+SIMGRID_PYTHON_LIBDIR (auto-detected)
+  Where to install the Python module library. By default, it is set to the cmake Python3_SITEARCH variable if installing to /usr, 
+  and a modified version of that variable if installing to another path. Just force another value if the auto-detected default 
+  does not fit your setup.
+
 SMPI_C_FLAGS, SMPI_CXX_FLAGS, SMPI_Fortran_FLAGS (string)
   Default compiler options to use in smpicc, smpicxx, or smpiff.
   This can be useful to set options like "-m32" or "-m64".
