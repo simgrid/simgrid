@@ -7,7 +7,7 @@
 # under the terms of the license (GNU LGPL) which comes with this package.
 
 SIMGRID_VERSION="@SIMGRID_VERSION_STRING@"
-SIMGRID_GITHASH="@SIMGRID_GITHASH@"
+SIMGRID_GITHASH="@GIT_VERSION@"
 
 CXX=@CMAKE_CXX_COMPILER@
 
