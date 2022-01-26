@@ -244,7 +244,8 @@ PYBIND11_MODULE(simgrid, m)
       .def("get_netpoint", &simgrid::s4u::NetZone::get_netpoint, "Retrieve the netpoint associated to this zone")
       .def("seal", &simgrid::s4u::NetZone::seal, "Seal this NetZone")
       .def_property_readonly(
-          "name", [](const simgrid::s4u::NetZone* self) { return self->get_name(); }, "The name of this network zone");
+          "name", [](const simgrid::s4u::NetZone* self) { return self->get_name(); },
+          "The name of this network zone (read-only property).");
 
   /* Class ClusterCallbacks */
   py::class_<simgrid::s4u::ClusterCallbacks>(m, "ClusterCallbacks", "Callbacks used to create cluster zones")
@@ -333,7 +334,7 @@ PYBIND11_MODULE(simgrid, m)
             py::gil_scoped_release gil_guard;
             h->set_pstate(i);
           },
-          "The current pstate")
+          "The current pstate (read/write property).")
       .def("current", &Host::current, py::call_guard<py::gil_scoped_release>(),
            "Retrieves the host on which the running actor is located.")
       .def_property_readonly(
@@ -341,18 +342,18 @@ PYBIND11_MODULE(simgrid, m)
           [](const Host* self) {
             return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
           },
-          "The name of this host")
+          "The name of this host (read-only property).")
       .def_property_readonly("load", &Host::get_load,
                              "Returns the current computation load (in flops per second), NOT taking the external load "
-                             "into account. This is the currently achieved speed.")
+                             "into account. This is the currently achieved speed (read-only property).")
       .def_property_readonly(
           "speed", &Host::get_speed,
           "The peak computing speed in flops/s at the current pstate, NOT taking the external load into account. "
-          "This is the max potential speed.")
-      .def_property_readonly(
-          "available_speed", &Host::get_available_speed,
-          "Get the available speed ratio, between 0 and 1.\n"
-          "This accounts for external load (see :py:func:`set_speed_profile() <simgrid.Host.set_speed_profile>`).")
+          "This is the max potential speed (read-only property).")
+      .def_property_readonly("available_speed", &Host::get_available_speed,
+                             "Get the available speed ratio, between 0 and 1.\n"
+                             "This accounts for external load (see :py:func:`set_speed_profile() "
+                             "<simgrid.Host.set_speed_profile>`) (read-only property).")
       .def(
           "on_creation_cb",
           [](py::object cb) {
@@ -389,7 +390,8 @@ PYBIND11_MODULE(simgrid, m)
            py::arg("cb") = simgrid::s4u::NonLinearResourceCb())
       .def("seal", &simgrid::s4u::Disk::seal, py::call_guard<py::gil_scoped_release>(), "Seal this disk")
       .def_property_readonly(
-          "name", [](const simgrid::s4u::Disk* self) { return self->get_name(); }, "The name of this disk");
+          "name", [](const simgrid::s4u::Disk* self) { return self->get_name(); },
+          "The name of this disk (read-only property).");
   py::enum_<simgrid::s4u::Disk::SharingPolicy>(disk, "SharingPolicy")
       .value("NONLINEAR", simgrid::s4u::Disk::SharingPolicy::NONLINEAR)
       .value("LINEAR", simgrid::s4u::Disk::SharingPolicy::LINEAR)
@@ -480,7 +482,7 @@ PYBIND11_MODULE(simgrid, m)
            "Set concurrency limit for this link")
       .def("set_host_wifi_rate", &Link::set_host_wifi_rate, py::call_guard<py::gil_scoped_release>(),
            "Set level of communication speed of given host on this Wi-Fi link")
-      .def("by_name", &Link::by_name, "Retrieves a Link from its name, or dies")
+      .def_static("by_name", &Link::by_name, "Retrieves a Link from its name, or dies")
       .def("seal", &Link::seal, py::call_guard<py::gil_scoped_release>(), "Seal this link")
       .def_property_readonly(
           "name",
@@ -488,8 +490,9 @@ PYBIND11_MODULE(simgrid, m)
             return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
           },
           "The name of this link")
-      .def_property_readonly("bandwidth", &Link::get_bandwidth, "The bandwidth (in bytes per second)")
-      .def_property_readonly("latency", &Link::get_latency, "The latency (in seconds)");
+      .def_property_readonly("bandwidth", &Link::get_bandwidth,
+                             "The bandwidth (in bytes per second) (read-only property).")
+      .def_property_readonly("latency", &Link::get_latency, "The latency (in seconds) (read-only property).");
 
   py::enum_<Link::SharingPolicy>(link, "SharingPolicy")
       .value("NONLINEAR", Link::SharingPolicy::NONLINEAR)
@@ -527,7 +530,7 @@ PYBIND11_MODULE(simgrid, m)
           [](const Mailbox* self) {
             return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
           },
-          "The name of that mailbox")
+          "The name of that mailbox (read-only property).")
       .def(
           "put",
           [](Mailbox* self, py::object data, int size, double timeout) {
@@ -613,7 +616,7 @@ PYBIND11_MODULE(simgrid, m)
             py::gil_scoped_release gil_guard;
             return self->get_remaining();
           },
-          "Amount of flops that remain to be computed until completion.")
+          "Amount of flops that remain to be computed until completion (read-only property).")
       .def_property_readonly(
           "remaining_ratio",
           [](simgrid::s4u::ExecPtr self) {
@@ -621,9 +624,10 @@ PYBIND11_MODULE(simgrid, m)
             return self->get_remaining_ratio();
           },
           "Amount of work remaining until completion from 0 (completely done) to 1 (nothing done "
-          "yet).")
+          "yet) (read-only property).")
       .def_property("host", &simgrid::s4u::Exec::get_host, &simgrid::s4u::Exec::set_host,
-                    "Host on which this execution runs. Only the first host is returned for parallel executions.")
+                    "Host on which this execution runs. Only the first host is returned for parallel executions. "
+                    "Changing this value migrates the execution.")
       .def("test", &simgrid::s4u::Exec::test, py::call_guard<py::gil_scoped_release>(),
            "Test whether the execution is terminated.")
       .def("cancel", &simgrid::s4u::Exec::cancel, py::call_guard<py::gil_scoped_release>(), "Cancel that execution.")
@@ -661,11 +665,16 @@ PYBIND11_MODULE(simgrid, m)
             py::gil_scoped_release gil_guard;
             a->set_host(h);
           },
-          "The host on which this actor is located")
-      .def_property_readonly("name", &Actor::get_cname, "The name of this actor.")
-      .def_property_readonly("pid", &Actor::get_pid, "The PID (unique identifier) of this actor.")
+          "The host on which this actor is located. Changing this value migrates the actor.\n\n"
+          "If the actor is currently blocked on an execution activity, the activity is also migrated to the new host. "
+          "If it’s blocked on another kind of activity, an error is raised as the mandated code is not written yet. "
+          "Please report that bug if you need it.\n\n"
+          "Asynchronous activities started by the actor are not migrated automatically, so you have to take care of "
+          "this yourself (only you knows which ones should be migrated). ")
+      .def_property_readonly("name", &Actor::get_cname, "The name of this actor (read-only property).")
+      .def_property_readonly("pid", &Actor::get_pid, "The PID (unique identifier) of this actor (read-only property).")
       .def_property_readonly("ppid", &Actor::get_ppid,
-                             "The PID (unique identifier) of the actor that created this one.")
+                             "The PID (unique identifier) of the actor that created this one (read-only property).")
       .def("by_pid", &Actor::by_pid, "Retrieve an actor by its PID")
       .def("set_auto_restart", &Actor::set_auto_restart, py::call_guard<py::gil_scoped_release>(),
            "Specify whether the actor shall restart when its host reboots.")
