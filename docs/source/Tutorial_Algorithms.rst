@@ -924,7 +924,7 @@ and wait for its completion, as follows.
 
          exec = simgrid:.this_actor.exec_init(compute_cost)
          exec.set_tracing_category(category)
-         // exec.start() is optional here as wait() starts the activity on need
+         # exec.start() is optional here as wait() starts the activity on need
          exec->wait()
 
       You can shorten this code as follows:

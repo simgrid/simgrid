@@ -945,8 +945,8 @@ Interacting with the routing
 
       .. automethod:: simgrid.Engine.get_all_netpoints
       .. automethod:: simgrid.Engine.get_netzone_root
-      .. automethod:: simgrid.Engine.netpoint_by_name_or_null
-      .. automethod:: simgrid.Engine.netzone_by_name_or_null
+      .. automethod:: simgrid.Engine.netpoint_by_name
+      .. automethod:: simgrid.Engine.netzone_by_name
       .. automethod:: simgrid.Engine.set_netzone_root
 
 Signals

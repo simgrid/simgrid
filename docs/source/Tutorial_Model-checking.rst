@@ -85,7 +85,9 @@ that uses the :ref:`S4U interface <S4U_doc>` of SimGrid, but we provide a
 if you prefer (see below for details on using the MPI version).
 
 .. toggle-header::
-   :header: Code of ``ndet-receive-s4u.cpp``: click here to open it, or `view it online <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/ndet-receive-s4u.cpp>`_
+   :header: Code of ``ndet-receive-s4u.cpp``: click here to open
+   
+   You can also `view it online <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/ndet-receive-s4u.cpp>`_
 
    .. literalinclude:: tuto_mc/ndet-receive-s4u.cpp
       :language: cpp
@@ -249,7 +251,9 @@ If you prefer, you can use MPI instead of the SimGrid-specific interface. Inspec
 translation of ``ndet-receive-s4u.cpp`` to MPI.
 
 .. toggle-header::
-   :header: Code of ``ndet-receive-mpi.c``: click here to open it, or `view it online <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/ndet-receive-mpi.cpp>`_
+   :header: Code of ``ndet-receive-mpi.c``: click here to open
+
+   You can also `view it online <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/ndet-receive-mpi.c>`_.
 
    .. literalinclude:: tuto_mc/ndet-receive-mpi.c
       :language: cpp

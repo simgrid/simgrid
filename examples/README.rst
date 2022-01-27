@@ -216,7 +216,7 @@ Actors can move or be moved from a host to another very easily. It amounts to se
 
    .. example-tab:: examples/python/actor-migrate/actor-migrate.py
 
-      See also :py:func:`simgrid.this_actor.set_host()` and :py:func:`simgrid.Actor.set_host()`.
+      See also :py:func:`simgrid.this_actor.set_host()` and :py:func:`simgrid.Actor.host`.
 
    .. example-tab:: examples/c/actor-migrate/actor-migrate.c
 
@@ -497,7 +497,7 @@ You can start executions on remote hosts, or even change the host on which they 
 
    .. example-tab:: examples/python/exec-remote/exec-remote.py
 
-      See also :py:func:`simgrid.Exec.set_host()`.
+      See also :py:func:`simgrid.Exec.host`.
 
    .. example-tab:: examples/c/exec-remote/exec-remote.c
 
@@ -1076,6 +1076,15 @@ Another well-known DHT protocol.
 
       .. showfile:: examples/c/dht-kademlia/node.c
          :language: cpp
+
+Pastry
+^^^^^^
+
+Yet another well-known DHT protocol.
+
+.. tabs::
+
+   .. example-tab:: examples/c/dht-pastry/dht-pastry.c
 
 .. _s4u_ex_clouds:
 

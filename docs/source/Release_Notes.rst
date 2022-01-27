@@ -436,6 +436,7 @@ maestro to handle the execution of such DAGs.
 
 This release finishes this work, which is presented in a new set of examples (examples/cpp/dag-*). The direct consequences on the code base of this 
 new feature are:
+
  * The SimDag API for the simulation of the scheduling of Directed Acyclic Graphs has been finally dropped. It was marked as deprecated for a couple
    of years.
  * The removal of SimDag led us to also remove the export to Jedule files that was tightly coupled to SimDag. The instrumentation of DAG simulation
