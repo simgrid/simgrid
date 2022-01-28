@@ -53,7 +53,8 @@ def load_platform():
   msg_base = "Creating zone: "
   this_actor.info(msg_base + dijkstra.name)
   dijkstra.set_parent(root)
-  host1 = dijkstra.create_host("host1", [1e9, 1e8]).set_core_count(2)
+  host1 = dijkstra.create_host("host1", [1e9, 1e8])
+  host1.core_count = 2
   hosts.append(host1)
   host1.create_disk("disk1", 1e5, 1e4).seal()
   host1.create_disk("disk2", "1MBps", "1Mbps").seal()
@@ -62,8 +63,8 @@ def load_platform():
   hosts.append(host2)
   link1 = dijkstra.create_link("link1_up", [1e9]).set_latency(1e-3).set_concurrency_limit(10).seal()
   link2 = dijkstra.create_link("link1_down", ["1GBps"]).set_latency("1ms").seal()
-  dijkstra.add_route(host1.get_netpoint(), host2.get_netpoint(), None, None, [LinkInRoute(link1)], False)
-  dijkstra.add_route(host2.get_netpoint(), host1.get_netpoint(), None, None, [LinkInRoute(link2)], False)
+  dijkstra.add_route(host1.netpoint, host2.netpoint, None, None, [LinkInRoute(link1)], False)
+  dijkstra.add_route(host2.netpoint, host1.netpoint, None, None, [LinkInRoute(link2)], False)
   dijkstra.seal()
 
   # vivaldi
@@ -100,12 +101,9 @@ def load_platform():
   link_a = vivaldi.create_link("linkA", 1e9).seal()
   link_b = vivaldi.create_link("linkB", "1GBps").seal()
   link_c = vivaldi.create_link("linkC", "1GBps").seal()
-  root.add_route(dijkstra.get_netpoint(), vivaldi.get_netpoint(
-  ), host1.get_netpoint(), host3.get_netpoint(), [LinkInRoute(link_a)], True)
-  root.add_route(vivaldi.get_netpoint(), empty.get_netpoint(
-  ), host3.get_netpoint(), host5.get_netpoint(), [LinkInRoute(link_b)], True)
-  root.add_route(empty.get_netpoint(), wifi.get_netpoint(
-  ), host5.get_netpoint(), router, [LinkInRoute(link_c)], True)
+  root.add_route(dijkstra.netpoint, vivaldi.netpoint, host1.netpoint, host3.netpoint, [LinkInRoute(link_a)], True)
+  root.add_route(vivaldi.netpoint, empty.netpoint, host3.netpoint, host5.netpoint, [LinkInRoute(link_b)], True)
+  root.add_route(empty.netpoint, wifi.netpoint, host5.netpoint, router, [LinkInRoute(link_c)], True)
 
   # create actors Sender/Receiver
   Actor.create("sender", hosts[0], Sender(hosts))

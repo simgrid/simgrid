@@ -96,16 +96,16 @@ def load_platform():
 
   link = zone.create_split_duplex_link("link1", 1e6)
   # setting same callbacks (could be different) for link UP/DOWN in split-duplex link
-  link.get_link_up().set_sharing_policy(
+  link.link_up.set_sharing_policy(
       Link.SharingPolicy.NONLINEAR,
-      functools.partial(link_nonlinear, link.get_link_up()))
-  link.get_link_down().set_sharing_policy(
+      functools.partial(link_nonlinear, link.link_up))
+  link.link_down.set_sharing_policy(
       Link.SharingPolicy.NONLINEAR,
-      functools.partial(link_nonlinear, link.get_link_down()))
+      functools.partial(link_nonlinear, link.link_down))
   link.set_latency(10e-6).seal()
 
   # create routes between nodes
-  zone.add_route(sender.get_netpoint(), receiver.get_netpoint(), None, None,
+  zone.add_route(sender.netpoint, receiver.netpoint, None, None,
                  [LinkInRoute(link, LinkInRoute.Direction.UP)], True)
   zone.seal()
 

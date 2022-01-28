@@ -1298,7 +1298,7 @@ Modifying characteristics
 
    .. group-tab:: Python
 
-      .. automethod:: simgrid.Host.set_core_count
+      .. autoattribute:: simgrid.Host.core_count
       .. automethod:: simgrid.Host.set_coordinates
       .. automethod:: simgrid.Host.set_sharing_policy
 
@@ -1319,6 +1319,7 @@ Querying info
    .. group-tab:: Python
 
       .. autoattribute:: simgrid.Host.name
+      .. autoattribute:: simgrid.Host.core_count
       .. autoattribute:: simgrid.Host.load
       .. autoattribute:: simgrid.Host.pstate
       .. autoattribute:: simgrid.Host.speed
@@ -1404,8 +1405,8 @@ DVFS
 
    .. group-tab:: Python
 
-      .. automethod:: simgrid.Host.get_pstate_count
-      .. automethod:: simgrid.Host.get_pstate_speed
+      .. autoattribute:: simgrid.Host.pstate_count
+      .. automethod:: simgrid.Host.pstate_speed
 
    .. group-tab:: C
 
@@ -1460,7 +1461,7 @@ using :cpp:func:`Comm::sendto() <simgrid::s4u::Comm::sendto()>`.
 
    .. group-tab:: Python
 
-      .. automethod:: simgrid.Host.get_netpoint
+      .. autoattribute:: simgrid.Host.netpoint
       .. automethod:: simgrid.Host.create_disk
          
       .. automethod:: simgrid.Host.route_to
@@ -1779,7 +1780,7 @@ Querying info
    .. group-tab:: Python
 
       .. autoattribute:: simgrid.NetZone.name
-      .. automethod:: simgrid.NetZone.get_netpoint
+      .. autoattribute:: simgrid.NetZone.netpoint
 
    .. group-tab:: C
 

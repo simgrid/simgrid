@@ -12,7 +12,7 @@ class Dvfs:
         workload = 100E6
         host = this_actor.get_host()
 
-        nb = host.get_pstate_count()
+        nb = host.pstate_count
         this_actor.info("Count of Processor states={:d}".format(nb))
 
         this_actor.info("Current power peak={:f}".format(host.speed))
@@ -26,7 +26,7 @@ class Dvfs:
         # Change power peak
         new_pstate = 2
 
-        this_actor.info("Changing power peak value to {:f} (at index {:d})".format( host.get_pstate_speed(new_pstate), new_pstate))
+        this_actor.info("Changing power peak value to {:f} (at index {:d})".format( host.pstate_speed(new_pstate), new_pstate))
 
         host.pstate = new_pstate
 
@@ -40,7 +40,7 @@ class Dvfs:
 
         # Verify that the default pstate is set to 0
         host2 = Host.by_name("MyHost2")
-        this_actor.info("Count of Processor states={:d}".format(host2.get_pstate_count()))
+        this_actor.info("Count of Processor states={:d}".format(host2.pstate_count))
 
         this_actor.info("Final power peak={:f}".format(host2.speed))
 
