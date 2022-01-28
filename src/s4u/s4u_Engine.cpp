@@ -64,7 +64,9 @@ Engine::~Engine()
 /** @brief Retrieve the engine singleton */
 Engine* Engine::get_instance()
 {
-  return get_instance(nullptr, nullptr);
+  int argc      = 0;
+  char* argv[2] = {const_cast<char*>("noname"), nullptr};
+  return get_instance(&argc, argv);
 }
 Engine* Engine::get_instance(int* argc, char** argv)
 {
