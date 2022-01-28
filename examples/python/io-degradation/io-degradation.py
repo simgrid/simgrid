@@ -22,14 +22,14 @@ import functools
 def estimate_bw(disk: Disk, n_flows: int, read: bool):
     """ Calculates the bandwidth for disk doing async operations """
     size = 100000
-    cur_time = Engine.clock()
+    cur_time = Engine.clock
     activities = [disk.read_async(size) if read else disk.write_async(
         size) for _ in range(n_flows)]
 
     for act in activities:
         act.wait()
 
-    elapsed_time = Engine.clock() - cur_time
+    elapsed_time = Engine.clock - cur_time
     estimated_bw = float(size * n_flows) / elapsed_time
     this_actor.info("Disk: %s, concurrent %s: %d, estimated bandwidth: %f" % (
         disk.name, "read" if read else "write", n_flows, estimated_bw))
@@ -115,7 +115,7 @@ if __name__ == '__main__':
     Actor.create("runner", bob, host)
 
     e.run()
-    this_actor.info("Simulated time: %g" % Engine.clock())
+    this_actor.info("Simulated time: %g" % e.clock)
 
     # explicitly deleting Engine object to avoid segfault during cleanup phase.
     # During Engine destruction, the cleanup of std::function linked to non_linear callback is called.

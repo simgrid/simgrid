@@ -109,4 +109,4 @@ if __name__ == '__main__':
 
   e.run()
 
-  this_actor.info(f"Simulation time {e.clock():.4f}")
+  this_actor.info(f"Simulation time {e.clock:.4f}")

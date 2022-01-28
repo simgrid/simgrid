@@ -147,48 +147,49 @@ PYBIND11_MODULE(simgrid, m)
            }),
            "The constructor should take the parameters from the command line, as is ")
       .def_static("get_clock",
-                  [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v333
+                  [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v334
                   {
                     PyErr_WarnEx(PyExc_DeprecationWarning,
-                                 "get_clock() is deprecated and  will be dropped after v3.32, use clock() instead.", 1);
+                                 "get_clock() is deprecated and  will be dropped after v3.33, use clock() instead.", 1);
                     return self.attr("clock");
                   })
-      .def_static("clock", &Engine::get_clock,
-                  "The simulation time, ie the amount of simulated seconds since the simulation start.")
-      .def_static(
-          "instance", []() { return Engine::get_instance(); }, "Retrieve the simulation engine")
+      .def_property_readonly_static(
+          "clock", [](py::object /* self */) { return Engine::get_clock(); },
+          "The simulation time, ie the amount of simulated seconds since the simulation start.")
+      .def_property_readonly_static(
+          "instance", [](py::object /* self */) { return Engine::get_instance(); }, "Retrieve the simulation engine")
       .def("get_all_hosts",
-           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v333
+           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v334
            {
              PyErr_WarnEx(PyExc_DeprecationWarning,
-                          "get_all_hosts() is deprecated and  will be dropped after v3.32, use all_host() instead.", 1);
+                          "get_all_hosts() is deprecated and  will be dropped after v3.33, use all_host() instead.", 1);
              return self.attr("all_hosts");
            })
       .def_property_readonly("all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
       .def("get_all_links",
-           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v333
+           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v334
            {
              PyErr_WarnEx(PyExc_DeprecationWarning,
-                          "get_all_links() is deprecated and  will be dropped after v3.32, use all_links() instead.",
+                          "get_all_links() is deprecated and  will be dropped after v3.33, use all_links() instead.",
                           1);
              return self.attr("all_links");
            })
       .def_property_readonly("all_links", &Engine::get_all_links, "Returns the list of all links found in the platform")
       .def("get_all_netpoints",
-           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v333
+           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v334
            {
              PyErr_WarnEx(
                  PyExc_DeprecationWarning,
-                 "get_all_netpoints() is deprecated and  will be dropped after v3.32, use all_netpoints() instead.", 1);
+                 "get_all_netpoints() is deprecated and  will be dropped after v3.33, use all_netpoints() instead.", 1);
              return self.attr("all_netpoints");
            })
       .def_property_readonly("all_netpoints", &Engine::get_all_netpoints)
       .def("get_netzone_root",
-           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v333
+           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v334
            {
              PyErr_WarnEx(
                  PyExc_DeprecationWarning,
-                 "get_netzone_root() is deprecated and  will be dropped after v3.32, use netzone_root() instead.", 1);
+                 "get_netzone_root() is deprecated and  will be dropped after v3.3, use netzone_root() instead.", 1);
              return self.attr("netzone_root");
            })
       .def_property_readonly("netzone_root", &Engine::get_netzone_root,
