@@ -807,7 +807,7 @@ Engin initialization
    .. group-tab:: Python
 
        .. automethod:: simgrid.Engine.__init__
-       .. automethod:: simgrid.Engine.instance
+       .. autoattribute:: simgrid.Engine.instance
 
    .. group-tab:: C
 
@@ -864,7 +864,7 @@ Run the simulation
 
    .. group-tab:: Python
 
-      .. automethod:: simgrid.Engine.clock
+      .. autoattribute:: simgrid.Engine.clock
       .. automethod:: simgrid.Engine.run
       .. automethod:: simgrid.Engine.run_until
 
@@ -904,7 +904,7 @@ Retrieving hosts
 
    .. group-tab:: Python
 
-      .. automethod:: simgrid.Engine.all_hosts
+      .. autoattribute:: simgrid.Engine.all_hosts
 
    .. group-tab:: C
 
@@ -925,7 +925,7 @@ Retrieving links
 
    .. group-tab:: Python
 
-      .. automethod:: simgrid.Engine.all_links
+      .. autoattribute:: simgrid.Engine.all_links
 
 Interacting with the routing
 ----------------------------
@@ -942,8 +942,8 @@ Interacting with the routing
 
    .. group-tab:: Python
 
-      .. automethod:: simgrid.Engine.all_netpoints
-      .. automethod:: simgrid.Engine.netzone_root
+      .. autoattribute:: simgrid.Engine.all_netpoints
+      .. autoattribute:: simgrid.Engine.netzone_root
       .. automethod:: simgrid.Engine.netpoint_by_name
       .. automethod:: simgrid.Engine.netzone_by_name
 
@@ -1274,7 +1274,7 @@ Retrieving hosts
 
    .. group-tab:: Python
 
-      See also :py:func:`simgrid.Engine.get_all_hosts`.
+      See also :py:var:`simgrid.Engine.all_hosts`.
 
       .. automethod:: simgrid.Host.by_name
       .. automethod:: simgrid.Host.current
