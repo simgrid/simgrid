@@ -864,7 +864,7 @@ Run the simulation
 
    .. group-tab:: Python
 
-      .. automethod:: simgrid.Engine.get_clock
+      .. automethod:: simgrid.Engine.clock
       .. automethod:: simgrid.Engine.run
       .. automethod:: simgrid.Engine.run_until
 
@@ -904,7 +904,7 @@ Retrieving hosts
 
    .. group-tab:: Python
 
-      .. automethod:: simgrid.Engine.get_all_hosts
+      .. automethod:: simgrid.Engine.all_hosts
 
    .. group-tab:: C
 
@@ -925,7 +925,7 @@ Retrieving links
 
    .. group-tab:: Python
 
-      .. automethod:: simgrid.Engine.get_all_links
+      .. automethod:: simgrid.Engine.all_links
 
 Interacting with the routing
 ----------------------------
@@ -939,15 +939,13 @@ Interacting with the routing
       .. doxygenfunction:: simgrid::s4u::Engine::get_netzone_root
       .. doxygenfunction:: simgrid::s4u::Engine::netpoint_by_name_or_null
       .. doxygenfunction:: simgrid::s4u::Engine::netzone_by_name_or_null
-      .. doxygenfunction:: simgrid::s4u::Engine::set_netzone_root(const NetZone *netzone)
 
    .. group-tab:: Python
 
-      .. automethod:: simgrid.Engine.get_all_netpoints
-      .. automethod:: simgrid.Engine.get_netzone_root
+      .. automethod:: simgrid.Engine.all_netpoints
+      .. automethod:: simgrid.Engine.netzone_root
       .. automethod:: simgrid.Engine.netpoint_by_name
       .. automethod:: simgrid.Engine.netzone_by_name
-      .. automethod:: simgrid.Engine.set_netzone_root
 
 Signals
 -------
