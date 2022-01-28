@@ -108,7 +108,7 @@ Actors can forcefully stop other actors.
 
    .. example-tab:: examples/python/actor-kill/actor-kill.py
 
-      See also :py:func:`simgrid.Actor.kill`, :py:func:`simgrid.Actor.kill_all`, :py:func:`simgrid.this_actor.exit`,
+      See also :py:func:`simgrid.Actor.kill()`, :py:func:`simgrid.Actor.kill_all()`, :py:func:`simgrid.this_actor.exit()`,
       :py:func:`simgrid.this_actor.on_exit`.
 
    .. example-tab:: examples/c/actor-kill/actor-kill.c
@@ -216,7 +216,7 @@ Actors can move or be moved from a host to another very easily. It amounts to se
 
    .. example-tab:: examples/python/actor-migrate/actor-migrate.py
 
-      See also :py:func:`simgrid.this_actor.set_host()` and :py:func:`simgrid.Actor.host`.
+      See also :py:attr:`simgrid.Actor.host`.
 
    .. example-tab:: examples/c/actor-migrate/actor-migrate.c
 
@@ -469,8 +469,8 @@ You can start asynchronous executions, just like you would fire background threa
       See also :py:func:`simgrid.this_actor.exec_init()`,
       :py:func:`simgrid.Activity.start()`,
       :py:func:`simgrid.Activity.wait()`,
-      :py:func:`simgrid.Exec.remaining()`,
-      :py:func:`simgrid.Exec.remaining_ratio`,
+      :py:attr:`simgrid.Exec.remaining`,
+      :py:attr:`simgrid.Exec.remaining_ratio`,
       :py:func:`simgrid.this_actor.exec_async()` and
       :py:func:`simgrid.Activity.cancel()`.
 
@@ -497,7 +497,7 @@ You can start executions on remote hosts, or even change the host on which they 
 
    .. example-tab:: examples/python/exec-remote/exec-remote.py
 
-      See also :py:func:`simgrid.Exec.host`.
+      See also :py:attr:`simgrid.Exec.host`.
 
    .. example-tab:: examples/c/exec-remote/exec-remote.c
 
@@ -542,7 +542,7 @@ of a host can then be accessed and changed from the program.
 
    .. example-tab:: examples/python/exec-dvfs/exec-dvfs.py
 
-      See also :py:func:`Host.pstate_speed` and :py:func:`Host.set_pstate`.
+      See also :py:attr:`Host.pstate_speed` and :py:func:`Host.set_pstate()`.
 
    .. example-tab:: examples/platforms/energy_platform.xml
 

@@ -1554,7 +1554,7 @@ Retrieving links
 
    .. group-tab:: Python
 
-      See also :py:func:`simgrid.Engine.get_all_links`.
+      See also :py:attr:`simgrid.Engine.all_links`.
 
       .. automethod:: simgrid.Link.by_name
       .. autoattribute:: simgrid.Link.name
