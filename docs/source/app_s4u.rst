@@ -1274,7 +1274,7 @@ Retrieving hosts
 
    .. group-tab:: Python
 
-      See also :py:var:`simgrid.Engine.all_hosts`.
+      See also :py:attr:`simgrid.Engine.all_hosts`.
 
       .. automethod:: simgrid.Host.by_name
       .. automethod:: simgrid.Host.current
