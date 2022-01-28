@@ -111,6 +111,7 @@ protected:
   void link_unregister(const std::string& name);
   void netpoint_register(simgrid::kernel::routing::NetPoint* card);
   void netpoint_unregister(simgrid::kernel::routing::NetPoint* card);
+  void set_netzone_root(const NetZone* netzone);
 #endif /*DOXYGEN*/
 
 public:
@@ -154,7 +155,6 @@ public:
   kernel::routing::NetPoint* netpoint_by_name(const std::string& name) const;
 
   NetZone* get_netzone_root() const;
-  void set_netzone_root(const NetZone* netzone);
 
   NetZone* netzone_by_name_or_null(const std::string& name) const;
 
