@@ -17,6 +17,7 @@ namespace resource {
 class NetworkNS3Model : public NetworkModel {
 public:
   explicit NetworkNS3Model(const std::string& name);
+  ~NetworkNS3Model();
   StandardLinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidth) override;
   StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidth) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;

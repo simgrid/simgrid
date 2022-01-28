@@ -346,6 +346,11 @@ NetworkNS3Model::NetworkNS3Model(const std::string& name) : NetworkModel(name)
   s4u::NetZone::on_seal_cb(&zoneCreation_cb);
 }
 
+NetworkNS3Model::~NetworkNS3Model()
+{
+  ns3::Simulator::Destroy();
+}
+
 StandardLinkImpl* NetworkNS3Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   xbt_assert(bandwidths.size() == 1, "ns-3 links must use only 1 bandwidth.");
