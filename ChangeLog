@@ -21,27 +21,28 @@ S4U:
  - Introduce on_X_cb() functions for all signals, to attach a new
    callback to the signal X. The signal variables are now hidden and
    only these functions should be used.
-   Rationale: this enables the usual deprecation schema where functions
+   Rationale: this enables the usual deprecation scheme where functions
    remain for 4 releases if we need to modify the signals, while the
    current code with the signal variables directly visible prevents any
    smooth transition.
  - New function: Engine::run_until(date), to split the simulation.
  - New signal: Activity::on_veto, to detect when an activity fails to start.
- - Signal change: Comm::on_start(Comm&, bool) has been replaced by 
-   Comm::on_send and Comm::recv. These two signals respectively correspond to 
-   when the sending or receiving side of a Comm is ready. They are raised at 
-   the same locations as the former Comm::on_start signal.  
+ - Signal change: Comm::on_start(Comm&, bool) has been replaced by
+   Comm::on_send and Comm::recv. These two signals respectively correspond to
+   when the sending or receiving side of a Comm is ready. They are raised at
+   the same locations as the former Comm::on_start signal.
  - New function: Engine::track_vetoed_activities() to interrupt run()
    when an activity fails to start, and to keep track of such activities.
    Please see the corresponding example for more info.
  - New functions: s4u::Comm::{sendto_init, set_source, set_destination} to enable
-   the use of vetoers with direct host-to-host communications. Both source and 
+   the use of vetoers with direct host-to-host communications. Both source and
    destination have to set for a comm to start. Each call to these setters check
-   if all vetos are satistied. When it is the case, the comm starts. A use case of 
-   these functions is given in examples/cpp/dag-scheduling.   
+   if all vetoes are satisfied. When it is the case, the comm starts. A use case of
+   these functions is given in examples/cpp/dag-scheduling.
  - New functions: {Exec, Io}::update_priority allow you to modify the priority of
-   these kinds of activities during their execution. Behavior is detailed in 
-   examples/cpp/io-priority/
+   these kinds of activities during their execution. Behavior is detailed in
+   examples/cpp/io-priority/.
+
 SMPI:
  - Dynamic costs for MPI operations: New API to allow users to dynamically
    change injected costs for MPI_Recv, MPI_Send and MPI_Isend operations.
