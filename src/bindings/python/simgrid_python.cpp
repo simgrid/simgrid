@@ -191,12 +191,6 @@ PYBIND11_MODULE(simgrid, m)
                  "get_netzone_root() is deprecated and  will be dropped after v3.32, use netzone_root() instead.", 1);
              return self.attr("netzone_root");
            })
-      .def("set_netzone_root",
-           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v333
-           {
-             PyErr_WarnEx(PyExc_DeprecationWarning,
-                          "set_netzone_root() is deprecated and  will be dropped after v3.32.", 1);
-           })
       .def_property_readonly("netzone_root", &Engine::get_netzone_root,
                              "Retrieve the root netzone, containing all others.")
       .def("netpoint_by_name", &Engine::netpoint_by_name_or_null)
