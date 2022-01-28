@@ -289,7 +289,7 @@ if __name__ == '__main__':
     else:
         sys.exit("invalid param")
 
-    host_list = e.get_all_hosts()
+    host_list = e.all_hosts
     # create the sender actor running on first host
     simgrid.Actor.create("sender", host_list[0], Sender(host_list))
     # create receiver in every host

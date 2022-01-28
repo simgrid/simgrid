@@ -99,7 +99,7 @@ if __name__ == '__main__':
   e.load_deployment(sys.argv[2])
 
   # Add a new host programatically, and attach a state profile to it
-  lili = e.get_netzone_root().create_host("Lilibeth", 1e15)
+  lili = e.netzone_root.create_host("Lilibeth", 1e15)
   lili.set_state_profile("4 0\n5 1\n", 10)
   lili.seal()
 
@@ -109,4 +109,4 @@ if __name__ == '__main__':
 
   e.run()
 
-  this_actor.info(f"Simulation time {e.get_clock():.4f}")
+  this_actor.info(f"Simulation time {e.clock():.4f}")

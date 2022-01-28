@@ -20,7 +20,7 @@ class Dvfs:
         # Run a task
         this_actor.execute(workload)
 
-        task_time = Engine.get_clock()
+        task_time = Engine.clock()
         this_actor.info("Task1 duration: {:.2f}".format(task_time))
 
         # Change power peak
@@ -35,7 +35,7 @@ class Dvfs:
         # Run a second task
         this_actor.execute(workload)
 
-        task_time = Engine.get_clock() - task_time
+        task_time = Engine.clock() - task_time
         this_actor.info("Task2 duration: {:.2f}".format(task_time))
 
         # Verify that the default pstate is set to 0
