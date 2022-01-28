@@ -672,6 +672,7 @@ include examples/smpi/trace_call_location/trace_call_location.c
 include examples/smpi/trace_call_location/trace_call_location.tesh
 include examples/smpi/trace_simple/trace_simple.c
 include examples/smpi/trace_simple/trace_simple.tesh
+include src/include/catch_simgrid.hpp
 include teshsuite/java/semaphoregc/SemaphoreGC.java
 include teshsuite/java/semaphoregc/semaphoregc.tesh
 include teshsuite/java/sleephostoff/SleepHostOff.java
@@ -750,8 +751,7 @@ include teshsuite/python/corrupt-stack/corrupt-stack.tesh
 include teshsuite/python/corrupt-stack/corrupt-stack_d.xml
 include teshsuite/python/platform-mix/platform-mix.py
 include teshsuite/python/platform-mix/platform-mix.tesh
-include teshsuite/s4u/activity-lifecycle/activity-lifecycle.cpp
-include teshsuite/s4u/activity-lifecycle/activity-lifecycle.hpp
+include teshsuite/s4u/../catch_simgrid.cpp
 include teshsuite/s4u/activity-lifecycle/activity-lifecycle.tesh
 include teshsuite/s4u/activity-lifecycle/testing_comm.cpp
 include teshsuite/s4u/activity-lifecycle/testing_comm_direct.cpp

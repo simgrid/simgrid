@@ -5,7 +5,7 @@
 
 #define CATCH_CONFIG_RUNNER // we supply our own main()
 
-#include "activity-lifecycle.hpp"
+#include "catch_simgrid.hpp"
 
 #include <xbt/config.hpp>
 
@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
   e.load_platform(platf);
 
   int status = 42;
-  all_hosts = e.get_all_hosts();
+  all_hosts  = e.get_all_hosts();
   simgrid::s4u::Actor::create("main_dispatcher", all_hosts[0],
                               [&argc, &argv, &status]() { status = Catch::Session().run(argc, argv); });
 

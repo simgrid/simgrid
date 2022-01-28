@@ -24,8 +24,11 @@ extern void assert_exit(bool exp_success, double duration);
 extern void assert_cleanup();
 
 /* We need an extra actor here, so that it can sleep until the end of each test */
-#define BEGIN_SECTION(descr) SECTION(descr) { simgrid::s4u::Actor::create(descr, all_hosts[0], []()
-#define END_SECTION })
+#define BEGIN_SECTION(descr)                                                                                           \
+  SECTION(descr)                                                                                                       \
+  { simgrid::s4u::Actor::create(descr, all_hosts[0], []()
+#define END_SECTION                                                                                                    \
+  })
 
 #define RUN_SECTION(descr, ...) SECTION(descr) simgrid::s4u::Actor::create(descr, all_hosts[0], __VA_ARGS__)
 

@@ -1,3 +1,9 @@
+# Specify the source files of multi-files tests
+set(activity-lifecycle_sources ../catch_simgrid.cpp)
+foreach(x sleep exec comm comm_direct test-wait)
+  set(activity-lifecycle_sources ${activity-lifecycle_sources} activity-lifecycle/testing_${x}.cpp)
+endforeach()
+
 foreach(x actor actor-autorestart actor-suspend
         activity-lifecycle
         comm-get-sender comm-pt2pt wait-all-for wait-any-for
@@ -10,20 +16,24 @@ foreach(x actor actor-autorestart actor-suspend
         trace-integration
         seal-platform
 	vm-live-migration vm-suicide issue71)
-  add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
+
+  if(NOT DEFINED ${x}_sources)
+      set(${x}_sources ${x}/${x}.cpp)
+  endif()
+	  
+  add_executable       (${x}  EXCLUDE_FROM_ALL ${${x}_sources})
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
   add_dependencies(tests ${x})
 
-  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
-endforeach()
+  foreach(file ${${x}_sources})
+    set(teshsuite_src  ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${file})
+  endforeach()
 
-# Fix build rules for activity-lifecycle (multi-file)
-foreach(x sleep exec comm comm_direct test-wait)
-  target_sources(activity-lifecycle PRIVATE activity-lifecycle/testing_${x}.cpp)
-  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/activity-lifecycle/testing_${x}.cpp)
+  unset(${x}_sources)
 endforeach()
-set_property(TARGET activity-lifecycle APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}") # for <catch.hpp>
+set_property(TARGET activity-lifecycle APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}") # for <catch.hpp> and catch_simgrid
+
 
 ## Add the tests.
 ## Some need to be run with all factories, some don't need tesh to run
@@ -78,7 +88,7 @@ ADD_TEST(tesh-parser-full-links01    ${CMAKE_BINARY_DIR}/teshsuite/s4u/basic-par
 ADD_TEST(tesh-parser-full-links02    ${CMAKE_BINARY_DIR}/teshsuite/s4u/basic-parsing-test/basic-parsing-test ${CMAKE_HOME_DIRECTORY}/teshsuite/platforms/two_clusters_one_name.xml FULL_LINK)
 ADD_TEST(tesh-parser-one-link-g5k    ${CMAKE_BINARY_DIR}/teshsuite/s4u/basic-parsing-test/basic-parsing-test ${CMAKE_HOME_DIRECTORY}/examples/platforms/g5k.xml ONE_LINK)
 
-set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/activity-lifecycle/activity-lifecycle.hpp PARENT_SCOPE)
+set(teshsuite_src ${teshsuite_src}  ${CMAKE_SOURCE_DIR}/src/include/catch_simgrid.hpp PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/basic-parsing-test/basic-parsing-test-sym-full.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/basic-parsing-test/basic-parsing-test-bypass.tesh PARENT_SCOPE)
 set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/activity-lifecycle/testing_platform.xml
