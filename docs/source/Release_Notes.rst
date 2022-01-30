@@ -424,10 +424,10 @@ This release also paves the way for new models, with the introduction of two new
 
 These new features are not used yet in the provided models, but this will probably change in future releases.
 
-Version 3.30 (Not released)
+Version 3.30 (January 30. 2022)
 ---------------------------
 
-Release target: winter 2021
+The Sunday Bloody Sunday release.
 
 In may 2016, the future organization of the S4U activities was drafted on a Hawaiian whiteboard. We defined the life cycle of activities, their types,
 and the way to combine them. All of this had been implemented since, but one piece was still missing: the capacity to express dependencies and vetoes

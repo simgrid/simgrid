@@ -1,6 +1,8 @@
 ----------------------------------------------------------------------------
 
-SimGrid (3.29.1) NOT RELEASED YET (v3.30 expected December 21. 2021, 15:59 UTC)
+SimGrid (3.30) January 30. 2022.
+
+The Sunday Bloody Sunday release.
 
 Main user-visible changes:
  - The SimDag API for the simulation of the scheduling of Directed Acyclic
