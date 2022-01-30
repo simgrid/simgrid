@@ -1,6 +1,17 @@
-# MC-only C++ binaries
-foreach(x dwarf dwarf-expression)
-  if (SIMGRID_HAVE_MC)
+if (NOT SIMGRID_HAVE_MC)
+  set(dwarf_disable 1)
+  set(dwarf-expression_disable 1)
+endif()
+
+
+foreach(x dwarf dwarf-expression 
+          random-bug mutex-handling)
+
+  if(NOT DEFINED ${x}_sources)
+    set(${x}_sources ${x}/${x}.cpp)
+  endif()
+
+  if(NOT DEFINED ${x}_disable)
     add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
     target_link_libraries(${x}  simgrid)
     set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -9,19 +20,14 @@ foreach(x dwarf dwarf-expression)
   endif()
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
-  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
-endforeach()
 
-# MC-independent C++ binaries
-foreach(x random-bug mutex-handling)
-  add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
-  target_link_libraries(${x}  simgrid)
-  set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
-  set_property(TARGET ${x} APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
-  add_dependencies(tests-mc ${x})
+  foreach(file ${${x}_sources})
+    set(teshsuite_src  ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${file})
+  endforeach()
 
-  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
-  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
+  unset(${x}_sources)
+  unset(${x}_disable)
+
 endforeach()
 
 add_executable       (without-mutex-handling EXCLUDE_FROM_ALL mutex-handling/mutex-handling.cpp)
