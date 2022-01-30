@@ -15,7 +15,7 @@ on:
 #    types: [published, created, edited]
 
 jobs:
-  build:
+  docker-stable:
 
     runs-on: ubuntu-latest
     permissions:
@@ -38,17 +38,57 @@ jobs:
         run: |
           grep SIMGRID_VERSION_PATCH CMakeLists.txt| grep -q 'SIMGRID_VERSION_PATCH "0"' || (echo "Only run this action on stable source";exit 1)
           cd tools/docker
-          make stable tuto-smpi
+          make stable
           docker push simgrid/stable
+      - name: Create the failure Message
+        if: ${{ failure() }}
+        run: |
+          echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"Failure when building STABLE docker image! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+      - name: Create the success Message
+        if: ${{ success() }}
+        run: |
+          echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"Docker STABLE image built and pushed successfully! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+      - uses: mattermost/action-mattermost-notify@master
+        env:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
+
+  docker-smpi:
+
+    # the Dockerfile builds upon the docker-stable image, so add a dependency
+    needs: docker-stable
+    
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      # Login against a Docker registry except on PR
+      # https://github.com/docker/login-action
+      - name: Log into registry ${{ env.REGISTRY }}
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: build
+        run: |
+          grep SIMGRID_VERSION_PATCH CMakeLists.txt| grep -q 'SIMGRID_VERSION_PATCH "0"' || (echo "Only run this action on stable source";exit 1)
+          cd tools/docker
+          make tuto-smpi
           docker push simgrid/tuto-smpi
       - name: Create the failure Message
         if: ${{ failure() }}
         run: |
-          echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"Failure when building STABLE docker images ! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+          echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"Failure when building SMPI docker image on stable docker! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - name: Create the success Message
         if: ${{ success() }}
         run: |
-          echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"Docker STABLE images built and pushed successfully ! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+          echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"Docker SMPI stable image built and pushed successfully! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@master
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
