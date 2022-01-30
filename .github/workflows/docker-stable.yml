@@ -15,7 +15,7 @@ on:
 #    types: [published, created, edited]
 
 jobs:
-  docker-stable:
+  docker-simgrid:
 
     runs-on: ubuntu-latest
     permissions:
@@ -57,7 +57,7 @@ jobs:
   docker-tuto-s4u:
 
     # the Dockerfile builds upon the docker-unstable image, so add a dependency
-    needs: docker-unstable
+    needs: docker-simgrid
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -95,7 +95,7 @@ jobs:
 
   docker-tuto-smpi:
     # the Dockerfile builds upon the docker-stable image, so add a dependency
-    needs: docker-stable
+    needs: docker-simgrid
     
     runs-on: ubuntu-latest
     permissions:

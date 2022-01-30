@@ -11,7 +11,7 @@ on:
     - cron: '42 18 * * 0'
 
 jobs:
-  docker-unstable:
+  docker-simgrid:
 
     runs-on: ubuntu-latest
     permissions:
