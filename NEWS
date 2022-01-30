@@ -1,3 +1,11 @@
+                    _               _____  _____ _
+__   _____ _ __ ___(_) ___  _ __   |___ / |___ // |
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \| |
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) | |
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____/|_|
+               (unreleased)
+
+
                     _               _____  _____  ___
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ / / _ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \| | | |
@@ -7,7 +15,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ / / _ \
 
 The Sunday Bloody Sunday release.
 
-  * SimDAG is finally removed, fully superseeded by S4U.
+  * SimDAG is finally removed, fully superseded by S4U.
   * New documentation on calibrating MPI.
   * The Algorithms tutorial can now be taken in Python.
   * (+ many bug fixes and internal refactoring)
