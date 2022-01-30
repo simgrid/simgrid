@@ -360,7 +360,7 @@ void Comm::unref(Comm* comm){
       simgrid::smpi::Info::unref(comm->info_);
     if(comm->errhandlers_!=nullptr){
       for (int i=0; i<comm->size(); i++)
-	if (comm->errhandlers_[i]!=MPI_ERRHANDLER_NULL)
+        if (comm->errhandlers_[i]!=MPI_ERRHANDLER_NULL)
           simgrid::smpi::Errhandler::unref(comm->errhandlers_[i]);
       delete[] comm->errhandlers_;
     } else if (comm->errhandler_ != MPI_ERRHANDLER_NULL)
@@ -628,6 +628,30 @@ MPI_Comm Comm::split_type(int type, int /*key*/, const Info*)
     Comm::destroy(res);
     return MPI_COMM_NULL;
   }
+}
+
+static inline std::string hash_message(int src, int dst, int tag){
+  return std::to_string(tag) + '_' + std::to_string(src) + '_' + std::to_string(dst);
+}
+
+unsigned int Comm::get_sent_messages_count(int src, int dst, int tag)
+{
+  return sent_messages_[hash_message(src, dst, tag)];
+}
+
+void Comm::increment_sent_messages_count(int src, int dst, int tag)
+{
+  sent_messages_[hash_message(src, dst, tag)]++;
+}
+
+unsigned int Comm::get_received_messages_count(int src, int dst, int tag)
+{
+  return recv_messages_[hash_message(src, dst, tag)];
+}
+
+void Comm::increment_received_messages_count(int src, int dst, int tag)
+{
+  recv_messages_[hash_message(src, dst, tag)]++;
 }
 
 } // namespace smpi
