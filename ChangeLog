@@ -47,6 +47,7 @@ SMPI:
  - Dynamic costs for MPI operations: New API to allow users to dynamically
    change injected costs for MPI_Recv, MPI_Send and MPI_Isend operations.
    Alternative for smpi/or, smpi/os and smpi/ois configuration options.
+ - Fix some issues with the replay mechanism.
 
 XBT:
  - Function xbt::Extendable::get_data() is now templated with the type of the

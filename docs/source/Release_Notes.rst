@@ -444,3 +444,6 @@ new feature are:
  
 On the bindings front, we dropped the Lua bindings to create new platforms, as the C++ and Python interfaces are much better to that extend. 
 Also, the algorithm tutorial can now be taken in Python, for those of you alergic to C++.
+
+Finally, on the SMPI front, we introduced a new documentation section on calibrating the SMPI models from your measurements and fixed some issues
+with the replay mechanism.

@@ -7,7 +7,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ / / _ \
 
   * SimDAG is finally removed, fully superseeded by S4U.
   * New documentation on calibrating MPI.
-  *
+  * The Algorithms tutorial can now be taken in Python.
   * (+ many bug fixes and internal refactoring)
                     _               _____  ____   ___
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \ / _ \
