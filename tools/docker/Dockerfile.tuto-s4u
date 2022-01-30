@@ -1,5 +1,5 @@
 # Base image
-FROM simgrid/unstable
+FROM simgrid/stable
 
 RUN apt update && apt -y upgrade
 
