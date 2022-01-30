@@ -7,6 +7,7 @@
 #define SIMGRID_MC_SIMCALL_OBSERVER_HPP
 
 #include "simgrid/forward.h"
+#include "xbt/asserts.h"
 
 #include <string>
 
@@ -77,7 +78,10 @@ class RandomSimcall : public SimcallObserver {
   int next_value_ = 0;
 
 public:
-  RandomSimcall(smx_actor_t actor, int min, int max) : SimcallObserver(actor), min_(min), max_(max) {}
+  RandomSimcall(smx_actor_t actor, int min, int max) : SimcallObserver(actor), min_(min), max_(max)
+  {
+    xbt_assert(min < max);
+  }
   SimcallObserver* clone() override
   {
     auto res         = new RandomSimcall(get_issuer(), min_, max_);
