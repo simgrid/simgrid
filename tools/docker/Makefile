@@ -67,9 +67,9 @@ tuto-smpi:
                  . | tee tuto-smpi.log
 
 push:
-	docker push simgrid/build-deps
-	docker push simgrid/stable
-	docker push simgrid/unstable
-	docker push simgrid/tuto-s4u
-	docker push simgrid/tuto-smpi
-	docker push simgrid/tuto-mc
+	docker push --all-tags simgrid/build-deps
+	docker push --all-tags simgrid/stable
+	docker push --all-tags simgrid/unstable
+	docker push --all-tags simgrid/tuto-s4u
+	docker push --all-tags simgrid/tuto-smpi
+	docker push --all-tags simgrid/tuto-mc
