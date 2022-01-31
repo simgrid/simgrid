@@ -40,6 +40,8 @@ class Comm : public F2C, public Keyval{
   MPI_Errhandler errhandler_ =  _smpi_cfg_default_errhandler_is_error ? MPI_ERRORS_ARE_FATAL : MPI_ERRORS_RETURN;;
   MPI_Errhandler* errhandlers_ = nullptr; //for MPI_COMM_WORLD only
 
+  std::unordered_map<std::string, unsigned int> sent_messages_;
+  std::unordered_map<std::string, unsigned int> recv_messages_;
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;
   static int keyval_id_;
@@ -90,6 +92,11 @@ public:
   void remove_rma_win(MPI_Win win);
   void finish_rma_calls() const;
   MPI_Comm split_type(int type, int key, const Info* info);
+  unsigned int get_sent_messages_count(int src, int dst, int tag);
+  void increment_sent_messages_count(int src, int dst, int tag);
+  unsigned int get_received_messages_count(int src, int dst, int tag);
+  void increment_received_messages_count(int src, int dst, int tag);
+
 };
 
 } // namespace smpi

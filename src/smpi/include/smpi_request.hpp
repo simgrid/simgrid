@@ -48,6 +48,7 @@ class Request : public F2C {
   bool detached_;
   MPI_Request detached_sender_;
   int refcount_;
+  unsigned int message_id_;
   MPI_Op op_;
   std::unique_ptr<smpi_mpi_generalized_request_funcs_t> generalized_funcs;
   std::vector<MPI_Request> nbc_requests_;
