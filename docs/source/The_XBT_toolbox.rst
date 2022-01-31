@@ -206,7 +206,6 @@ Creation and destruction
 .. doxygenfunction:: xbt_dynar_new
 .. doxygenfunction:: xbt_dynar_free
 .. doxygenfunction:: xbt_dynar_free_container
-.. doxygenfunction:: xbt_dynar_shrink
 
 Dynars as regular arrays
 ========================

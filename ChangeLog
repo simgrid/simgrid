@@ -1,5 +1,8 @@
 SimGrid (3.30.1) NOT RELEASED YET (v3.31 expected March 20. 2022, 15:33 UTC)
 
+XBT:
+ - Drop xbt_dynar_shrink().
+
 ----------------------------------------------------------------------------
 
 SimGrid (3.30) January 30. 2022.

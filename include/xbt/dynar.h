@@ -38,7 +38,6 @@ typedef struct xbt_dynar_s {
 XBT_PUBLIC xbt_dynar_t xbt_dynar_new(const unsigned long elm_size, void_f_pvoid_t free_f);
 XBT_PUBLIC void xbt_dynar_free(xbt_dynar_t* dynar);
 XBT_PUBLIC void xbt_dynar_free_container(xbt_dynar_t* dynar);
-XBT_PUBLIC void xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots);
 
 /* Dynar as a regular array */
 XBT_PUBLIC void xbt_dynar_get_cpy(const_xbt_dynar_t dynar, unsigned long idx, void* dst);

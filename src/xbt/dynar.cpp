@@ -118,19 +118,6 @@ void xbt_dynar_reset(xbt_dynar_t dynar)
   dynar->used = 0;
 }
 
-/**
- * Shrinks (reduces) the dynar by removing empty slots in the internal storage to save memory.
- * If @c empty_slots_wanted is not zero, this operation preserves that amount of empty slot, for fast future additions.
- * Note that if @c empty_slots_wanted is large enough, the internal array is expanded instead of shrunk.
- *
- * @param dynar a dynar
- * @param empty_slots_wanted number of empty slots elements that can be inserted the internal storage without resizing it
- */
-void xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots_wanted)
-{
-  _xbt_dynar_resize(dynar, dynar->used + empty_slots_wanted);
-}
-
 /** @brief Destructor: kilkil a dynar and its content. */
 void xbt_dynar_free(xbt_dynar_t* dynar)
 {
