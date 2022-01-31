@@ -60,7 +60,6 @@ public:
   kernel::routing::NetPoint* get_netpoint();
 
 #ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v331("Please use get_parent()") NetZone* get_father() const;
   XBT_ATTRIB_DEPRECATED_v332("Please use set_parent() to manage NetZone's relationship") NetZone* add_child(
       NetZone* new_zone);
 #endif

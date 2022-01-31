@@ -537,21 +537,6 @@ sg_actor_t sg_actor_by_pid(aid_t pid)
   return simgrid::s4u::Actor::by_pid(pid).get();
 }
 
-aid_t sg_actor_get_PID(const_sg_actor_t actor) // XBT_ATTRIB_DEPRECATED_v331
-{
-  return sg_actor_get_pid(actor);
-}
-
-aid_t sg_actor_get_PPID(const_sg_actor_t actor) // XBT_ATTRIB_DEPRECATED_v331
-{
-  return sg_actor_get_ppid(actor);
-}
-
-sg_actor_t sg_actor_by_PID(aid_t pid) // XBT_ATTRIB_DEPRECATED_v331
-{
-  return sg_actor_by_pid(pid);
-}
-
 /** @brief Return the name of an actor. */
 const char* sg_actor_get_name(const_sg_actor_t actor)
 {

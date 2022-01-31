@@ -187,18 +187,6 @@ NetZone* Host::get_englobing_zone() const
   return pimpl_netpoint_->get_englobing_zone()->get_iface();
 }
 
-#ifndef DOXYGEN
-void Host::sendto(Host* dest, double byte_amount) // XBT_ATTRIB_DEPRECATED_v331
-{
-  Comm::sendto_async(this, dest, byte_amount)->wait();
-}
-
-CommPtr Host::sendto_async(Host* dest, double byte_amount) // XBT_ATTRIB_DEPRECATED_v331
-{
-  return Comm::sendto_async(this, dest, byte_amount);
-}
-#endif
-
 /** Get the properties assigned to a host */
 const std::unordered_map<std::string, std::string>* Host::get_properties() const
 {

@@ -25,20 +25,6 @@
 #include <string>
 #include <typeinfo>
 
-unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count,
-                                           double timeout) // XBT_ATTRIB_DEPRECATED_v331
-{
-  std::vector<simgrid::kernel::activity::ExecImpl*> execs_vec(execs, execs + count);
-  simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
-  simgrid::kernel::actor::ExecutionWaitanySimcall observer{issuer, execs_vec, timeout};
-  return simgrid::kernel::actor::simcall_blocking(
-      [&observer] {
-        simgrid::kernel::activity::ExecImpl::wait_any_for(observer.get_issuer(), observer.get_execs(),
-                                                          observer.get_timeout());
-      },
-      &observer);
-}
-
 /**
  * @ingroup simix_comm_management
  */
@@ -163,70 +149,6 @@ bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm)
   return simcall_BODY_comm_test(static_cast<simgrid::kernel::activity::CommImpl*>(comm));
 }
 
-/**
- * @ingroup simix_synchro_management
- *
- */
-void simcall_mutex_lock(smx_mutex_t mutex) // XBT_ATTRIB_DEPRECATD_v331
-{
-  mutex->mutex().lock();
-}
-
-/**
- * @ingroup simix_synchro_management
- *
- */
-int simcall_mutex_trylock(smx_mutex_t mutex) // XBT_ATTRIB_DEPRECATD_v331
-{
-  return mutex->mutex().try_lock();
-}
-
-/**
- * @ingroup simix_synchro_management
- *
- */
-void simcall_mutex_unlock(smx_mutex_t mutex) // XBT_ATTRIB_DEPRECATD_v331
-{
-  mutex->mutex().unlock();
-}
-
-/**
- * @ingroup simix_synchro_management
- *
- */
-void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex) // XBT_ATTRIB_DEPRECATED_v331
-{
-  cond->get_iface()->wait(std::unique_lock<simgrid::s4u::Mutex>(mutex->mutex()));
-}
-
-/**
- * @ingroup simix_synchro_management
- *
- */
-int simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout) // XBT_ATTRIB_DEPRECATD_v331
-{
-  return cond->get_iface()->wait_for(std::unique_lock<simgrid::s4u::Mutex>(mutex->mutex()), timeout) ==
-         std::cv_status::timeout;
-}
-
-/**
- * @ingroup simix_synchro_management
- *
- */
-void simcall_sem_acquire(smx_sem_t sem) // XBT_ATTRIB_DEPRECATD_v331
-{
-  return sem->sem().acquire();
-}
-
-/**
- * @ingroup simix_synchro_management
- *
- */
-int simcall_sem_acquire_timeout(smx_sem_t sem, double timeout) // XBT_ATTRIB_DEPRECATD_v331
-{
-  return sem->sem().acquire_timeout(timeout);
-}
-
 void simcall_run_kernel(std::function<void()> const& code, simgrid::kernel::actor::SimcallObserver* observer)
 {
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = observer;
@@ -239,11 +161,6 @@ void simcall_run_blocking(std::function<void()> const& code, simgrid::kernel::ac
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = observer;
   simcall_BODY_run_blocking(&code);
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = nullptr;
-}
-
-int simcall_mc_random(int min, int max) // XBT_ATTRIB_DEPRECATD_v331
-{
-  return MC_random(min, max);
 }
 
 /* ************************************************************************** */

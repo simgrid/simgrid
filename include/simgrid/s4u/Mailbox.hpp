@@ -122,12 +122,6 @@ public:
   /** Blocking data reception with timeout */
   template <typename T> T* get(double timeout);
   template <typename T> std::unique_ptr<T> get_unique(double timeout) { return std::unique_ptr<T>(get<T>(timeout)); }
-
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get_async<>()") CommPtr get_async(void** data);
-  XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get<>()") void* get();
-  XBT_ATTRIB_DEPRECATED_v331("Please use typed template Mailbox::get<>()") void* get(double timeout);
-#endif
 };
 
 template <typename T> CommPtr Mailbox::get_async(T** data)
@@ -150,21 +144,6 @@ template <typename T> T* Mailbox::get(double timeout)
   get_async<T>(&res)->wait_for(timeout);
   return res;
 }
-
-#ifndef DOXYGEN
-inline CommPtr Mailbox::get_async(void** data) // XBT_ATTRIB_DEPRECATED_v331
-{
-  return get_async<void>(data);
-}
-inline void* Mailbox::get() // XBT_ATTRIB_DEPRECATED_v331
-{
-  return get<void>();
-}
-inline void* Mailbox::get(double timeout) // XBT_ATTRIB_DEPRECATED_v331
-{
-  return get<void>(timeout);
-}
-#endif
 } // namespace s4u
 } // namespace simgrid
 

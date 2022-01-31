@@ -528,12 +528,6 @@ const char* SIMIX_process_self_get_name() // XBT_ATTRIB_DEPRECATED_v333
   return simgrid::s4u::Actor::is_maestro() ? "maestro" : simgrid::kernel::actor::ActorImpl::self()->get_cname();
 }
 
-/** @brief Returns the process from PID. */
-smx_actor_t SIMIX_process_from_PID(aid_t pid) // XBT_ATTRIB_DEPRECATED_v331
-{
-  return simgrid::kernel::actor::ActorImpl::by_pid(pid);
-}
-
 int SIMIX_is_maestro() // XBT_ATTRIB_DEPRECATED_v333
 {
   const auto* self = simgrid::kernel::actor::ActorImpl::self();

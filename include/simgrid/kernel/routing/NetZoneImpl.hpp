@@ -135,7 +135,6 @@ public:
   s4u::NetZone* get_iface() { return &piface_; }
   unsigned int get_table_size() const { return vertices_.size(); }
   std::vector<kernel::routing::NetPoint*> get_vertices() const { return vertices_; }
-  XBT_ATTRIB_DEPRECATED_v331("Please use get_parent()") NetZoneImpl* get_father() const { return parent_; }
   NetZoneImpl* get_parent() const { return parent_; }
   /** @brief Returns the list of direct children (no grand-children). This returns the internal data, no copy.
    * Don't mess with it.*/

@@ -20,9 +20,6 @@
 /******************************* Networking ***********************************/
 SG_BEGIN_DECL
 
-XBT_ATTRIB_DEPRECATED_v331("Please use sg_actor_by_pid() instead.") XBT_PUBLIC smx_actor_t
-    SIMIX_process_from_PID(aid_t pid);
-
 /* parallelism */
 XBT_ATTRIB_DEPRECATED_v333("Please use kernel::context::is_parallel()") XBT_PUBLIC int SIMIX_context_is_parallel();
 XBT_ATTRIB_DEPRECATED_v333("Please use kernel::context::get_nthreads()") XBT_PUBLIC int SIMIX_context_get_nthreads();
@@ -72,13 +69,6 @@ XBT_ATTRIB_DEPRECATED_v333("Please use Comm::copy_pointer_callback()") XBT_PUBLI
 /* They can also be called from maestro's context, and they are thread safe.  */
 /******************************************************************************/
 
-/******************************* Host simcalls ********************************/
-#ifdef __cplusplus
-XBT_ATTRIB_DEPRECATED_v331("Please use s4u::Exec::wait_any_for()") XBT_PUBLIC
-    unsigned int simcall_execution_waitany_for(simgrid::kernel::activity::ExecImpl* execs[], size_t count,
-                                               double timeout);
-#endif
-
 /************************** Communication simcalls ****************************/
 
 #ifdef __cplusplus
@@ -110,26 +100,4 @@ XBT_PUBLIC bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm)
 XBT_PUBLIC ssize_t simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count);
 
 #endif
-
-/************************** Synchro simcalls **********************************/
-SG_BEGIN_DECL
-XBT_ATTRIB_DEPRECATED_v331("Please use sg_mutex_lock()") XBT_PUBLIC void simcall_mutex_lock(smx_mutex_t mutex);
-XBT_ATTRIB_DEPRECATED_v331("Please use sg_mutex_try_lock()") XBT_PUBLIC int simcall_mutex_trylock(smx_mutex_t mutex);
-XBT_ATTRIB_DEPRECATED_v331("Please use sg_mutex_unlock()") XBT_PUBLIC void simcall_mutex_unlock(smx_mutex_t mutex);
-
-XBT_ATTRIB_DEPRECATED_v331("Please use sg_cond_wait()") XBT_PUBLIC
-    void simcall_cond_wait(smx_cond_t cond, smx_mutex_t mutex);
-XBT_ATTRIB_DEPRECATED_v331("Please use sg_cond_wait_for()") XBT_PUBLIC
-    int simcall_cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double max_duration);
-
-XBT_ATTRIB_DEPRECATED_v331("Please use sg_sem_acquire()") XBT_PUBLIC void simcall_sem_acquire(smx_sem_t sem);
-XBT_ATTRIB_DEPRECATED_v331("Please use sg_sem_acquire_timeout()") XBT_PUBLIC
-    int simcall_sem_acquire_timeout(smx_sem_t sem, double max_duration);
-SG_END_DECL
-
-/************************** MC simcalls   **********************************/
-SG_BEGIN_DECL
-XBT_ATTRIB_DEPRECATED_v331("Please use MC_random()") XBT_PUBLIC int simcall_mc_random(int min, int max);
-SG_END_DECL
-
 #endif

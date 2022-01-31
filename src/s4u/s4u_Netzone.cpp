@@ -66,11 +66,6 @@ const char* NetZone::get_cname() const
   return pimpl_->get_cname();
 }
 
-NetZone* NetZone::get_father() const // XBT_ATTRIB_DEPRECATED_v331
-{
-  return pimpl_->get_parent()->get_iface();
-}
-
 NetZone* NetZone::get_parent() const
 {
   return pimpl_->get_parent()->get_iface();
