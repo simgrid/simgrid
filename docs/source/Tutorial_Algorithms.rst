@@ -390,6 +390,19 @@ All needed dependencies are already installed in this container
 optional in this tutorial, it is not installed to reduce the image
 size.
 
+The docker does not run as root, so that the files can easily be exchanged between within the container and the outer world.
+If you need to run a command as root within the container, simply type the following in another terminal to join the same container as root:
+
+.. code-block:: console
+
+   $ docker container ls
+   # This lists all containers running on your machine. For example:
+   #    CONTAINER ID   IMAGE            COMMAND   CREATED         STATUS         PORTS     NAMES
+   #    7e921b1b18a7   simgrid/stable   "bash"    7 minutes ago   Up 7 minutes             adoring_shamir
+   
+   $ docker exec --user 0:0 -it {container_name} bash
+   # In the previous example, container_name was "adoring_shamir"
+
 The code template is available under ``/source/simgrid-template-s4u.git``
 in the image. You should copy it to your working directory and
 recompile it when you first log in:
