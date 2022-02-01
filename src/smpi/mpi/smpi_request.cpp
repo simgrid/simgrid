@@ -145,11 +145,10 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
     }
     if (receiver->tag_ == MPI_ANY_TAG)
       receiver->real_tag_ = sender->tag_;
-    if ((receiver->flags_ & MPI_REQ_PROBE) == 0 ){
-      if (receiver->real_size_ < sender->real_size_){
-        XBT_DEBUG("Truncating message - should not happen: receiver size : %zu < sender size : %zu", receiver->real_size_, sender->real_size_);
-        receiver->truncated_ = true;
-      }
+    if ((receiver->flags_ & MPI_REQ_PROBE) == 0 && receiver->real_size_ < sender->real_size_) {
+      XBT_DEBUG("Truncating message - should not happen: receiver size : %zu < sender size : %zu", receiver->real_size_,
+                sender->real_size_);
+      receiver->truncated_ = true;
     }
     //0-sized datatypes/counts should not interfere and match
     if ( sender->real_size_ != 0 && receiver->real_size_ != 0 &&
@@ -188,21 +187,32 @@ bool Request::match_recv(void* a, void* b, simgrid::kernel::activity::CommImpl*)
   auto ref = static_cast<MPI_Request>(a);
   auto req = static_cast<MPI_Request>(b);
   bool match = match_common(req, req, ref);
-  if (match && (ref->comm_ != MPI_COMM_UNINITIALIZED) && !ref->comm_->is_smp_comm()){
-    if (ref->comm_->get_received_messages_count(ref->comm_->group()->rank(req->src_), ref->comm_->group()->rank(req->dst_), req->tag_) == req->message_id_ ){
-      if (((ref->flags_ & MPI_REQ_PROBE) == 0 ) && ((req->flags_ & MPI_REQ_PROBE) == 0)){
-        XBT_DEBUG("increasing count in comm %p, which was %u from pid %ld, to pid %ld with tag %d", ref->comm_, ref->comm_->get_received_messages_count(ref->comm_->group()->rank(req->src_), ref->comm_->group()->rank(req->dst_), req->tag_), req->src_, req->dst_, req->tag_);
-        ref->comm_->increment_received_messages_count(ref->comm_->group()->rank(req->src_), ref->comm_->group()->rank(req->dst_), req->tag_);
-        if (ref->real_size_ > req->real_size_){
-          ref->real_size_=req->real_size_;
-        }
+  if (not match || ref->comm_ == MPI_COMM_UNINITIALIZED || ref->comm_->is_smp_comm())
+    return match;
+
+  if (ref->comm_->get_received_messages_count(ref->comm_->group()->rank(req->src_),
+                                              ref->comm_->group()->rank(req->dst_), req->tag_) == req->message_id_) {
+    if (((ref->flags_ & MPI_REQ_PROBE) == 0) && ((req->flags_ & MPI_REQ_PROBE) == 0)) {
+      XBT_DEBUG("increasing count in comm %p, which was %u from pid %ld, to pid %ld with tag %d", ref->comm_,
+                ref->comm_->get_received_messages_count(ref->comm_->group()->rank(req->src_),
+                                                        ref->comm_->group()->rank(req->dst_), req->tag_),
+                req->src_, req->dst_, req->tag_);
+      ref->comm_->increment_received_messages_count(ref->comm_->group()->rank(req->src_),
+                                                    ref->comm_->group()->rank(req->dst_), req->tag_);
+      if (ref->real_size_ > req->real_size_) {
+        ref->real_size_ = req->real_size_;
       }
-    } else {
-      match = false;
-      req->flags_ &= ~MPI_REQ_MATCHED;
-      ref->detached_sender_=nullptr;
-      XBT_DEBUG("Refusing to match message, as its ID is not the one I expect. in comm %p, %u != %u, from pid %ld to pid %ld, with tag %d",ref->comm_, ref->comm_->get_received_messages_count(ref->comm_->group()->rank(req->src_), ref->comm_->group()->rank(req->dst_), req->tag_), req->message_id_ , req->src_, req->dst_, req->tag_);
     }
+  } else {
+    match = false;
+    req->flags_ &= ~MPI_REQ_MATCHED;
+    ref->detached_sender_ = nullptr;
+    XBT_DEBUG("Refusing to match message, as its ID is not the one I expect. in comm %p, %u != %u, "
+              "from pid %ld to pid %ld, with tag %d",
+              ref->comm_,
+              ref->comm_->get_received_messages_count(ref->comm_->group()->rank(req->src_),
+                                                      ref->comm_->group()->rank(req->dst_), req->tag_),
+              req->message_id_, req->src_, req->dst_, req->tag_);
   }
   return match;
 }
