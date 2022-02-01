@@ -105,7 +105,7 @@ MPI_Datatype MPI_DEFAULT_TYPE;
 class RequestStorage {
 private:
   using req_key_t     = std::tuple</*sender*/ int, /* receiver */ int, /* tag */ int>;
-  using req_storage_t = std::unordered_map<req_key_t, MPI_Request, hash_tuple::hash<std::tuple<int, int, int>>>;
+  using req_storage_t = std::unordered_map<req_key_t, std::list<MPI_Request>, hash_tuple::hash<std::tuple<int, int, int>>>;
 
   req_storage_t store;
 
@@ -118,40 +118,49 @@ public:
   void get_requests(std::vector<MPI_Request>& vec) const
   {
     for (auto const& pair : store) {
-      auto& req       = pair.second;
+      auto& reqs       = pair.second;
       aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
-      if (req != MPI_REQUEST_NULL && (req->src() == my_proc_id || req->dst() == my_proc_id)) {
-        vec.push_back(pair.second);
-        pair.second->print_request("MM");
+      for (auto& req: reqs){
+        if (req != MPI_REQUEST_NULL && (req->src() == my_proc_id || req->dst() == my_proc_id)) {
+          vec.push_back(req);
+          req->print_request("MM");
+        }
       }
     }
   }
 
-    MPI_Request find(int src, int dst, int tag)
-    {
-      auto it = store.find(req_key_t(src, dst, tag));
-      return (it == store.end()) ? MPI_REQUEST_NULL : it->second;
-    }
+  MPI_Request pop(int src, int dst, int tag)
+  {
+    auto it = store.find(req_key_t(src, dst, tag));
+    if (it == store.end())
+     return MPI_REQUEST_NULL;
+    MPI_Request req = it->second.front();
+    it->second.pop_front();
+    if(it->second.empty())
+      store.erase(req_key_t(src, dst, tag));
+    return req;
+  }
 
-    void remove(const Request* req)
-    {
-      if (req == MPI_REQUEST_NULL) return;
-
-      store.erase(req_key_t(req->src()-1, req->dst()-1, req->tag()));
+  void add(MPI_Request req)
+  {
+    if (req != MPI_REQUEST_NULL){ // Can and does happen in the case of TestAction
+      auto it = store.find(req_key_t(req->src()-1, req->dst()-1, req->tag()));
+      if (it == store.end())
+        store.insert({req_key_t(req->src()-1, req->dst()-1, req->tag()), std::list<MPI_Request>()});
+      store[req_key_t(req->src()-1, req->dst()-1, req->tag())].push_back(req);
     }
+  }
 
-    void add(MPI_Request req)
-    {
-      if (req != MPI_REQUEST_NULL) // Can and does happen in the case of TestAction
-        store.insert({req_key_t(req->src()-1, req->dst()-1, req->tag()), req});
-    }
-
-    /* Sometimes we need to re-insert MPI_REQUEST_NULL but we still need src,dst and tag */
-    void addNullRequest(int src, int dst, int tag)
-    {
-      store.insert({req_key_t(MPI_COMM_WORLD->group()->actor(src) - 1, MPI_COMM_WORLD->group()->actor(dst) - 1, tag),
-                    MPI_REQUEST_NULL});
-    }
+  /* Sometimes we need to re-insert MPI_REQUEST_NULL but we still need src,dst and tag */
+  void addNullRequest(int src, int dst, int tag)
+  {
+    int src_pid = MPI_COMM_WORLD->group()->actor(src) - 1;
+    int dest_pid = MPI_COMM_WORLD->group()->actor(dst) - 1;
+    auto it = store.find(req_key_t(src_pid, dest_pid, tag));
+    if (it == store.end())
+      store.insert({req_key_t(src_pid, dest_pid, tag), std::list<MPI_Request>()});
+    store[req_key_t(src_pid, dest_pid, tag)].push_back(MPI_REQUEST_NULL);
+  }
 };
 
 void WaitTestParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
@@ -420,8 +429,7 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
   std::string s = boost::algorithm::join(action, " ");
   xbt_assert(req_storage.size(), "action wait not preceded by any irecv or isend: %s", s.c_str());
   const WaitTestParser& args = get_args();
-  MPI_Request request = req_storage.find(args.src, args.dst, args.tag);
-  req_storage.remove(request);
+  MPI_Request request = req_storage.pop(args.src, args.dst, args.tag);
 
   if (request == MPI_REQUEST_NULL) {
     /* Assume that the trace is well formed, meaning the comm might have been caught by an MPI_test. Then just
@@ -437,7 +445,8 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
 
   MPI_Status status;
   Request::wait(&request, &status);
-
+  if(request!=MPI_REQUEST_NULL)
+    Request::unref(&request);
   TRACE_smpi_comm_out(get_pid());
   if (is_wait_for_receive)
     TRACE_smpi_recv(MPI_COMM_WORLD->group()->actor(args.src), MPI_COMM_WORLD->group()->actor(args.dst), args.tag);
@@ -526,8 +535,7 @@ void LocationAction::kernel(simgrid::xbt::ReplayAction&)
 void TestAction::kernel(simgrid::xbt::ReplayAction&)
 {
   const WaitTestParser& args = get_args();
-  MPI_Request request = req_storage.find(args.src, args.dst, args.tag);
-  req_storage.remove(request);
+  MPI_Request request = req_storage.pop(args.src, args.dst, args.tag);
   // if request is null here, this may mean that a previous test has succeeded
   // Different times in traced application and replayed version may lead to this
   // In this case, ignore the extra calls.
@@ -567,13 +575,12 @@ void CommunicatorAction::kernel(simgrid::xbt::ReplayAction&)
 
 void WaitAllAction::kernel(simgrid::xbt::ReplayAction&)
 {
-  const size_t count_requests = req_storage.size();
-
-  if (count_requests > 0) {
-    TRACE_smpi_comm_in(get_pid(), __func__, new simgrid::instr::CpuTIData("waitall", count_requests));
+  if (req_storage.size() > 0) {
     std::vector<std::pair</*sender*/ aid_t, /*recv*/ aid_t>> sender_receiver;
     std::vector<MPI_Request> reqs;
     req_storage.get_requests(reqs);
+    unsigned long count_requests = reqs.size();
+    TRACE_smpi_comm_in(get_pid(), __func__, new simgrid::instr::CpuTIData("waitall", count_requests));
     for (auto const& req : reqs) {
       if (req && (req->flags() & MPI_REQ_RECV)) {
         sender_receiver.emplace_back(req->src(), req->dst());
@@ -581,6 +588,10 @@ void WaitAllAction::kernel(simgrid::xbt::ReplayAction&)
     }
     Request::waitall(count_requests, &(reqs.data())[0], MPI_STATUSES_IGNORE);
     req_storage.get_store().clear();
+
+    for (MPI_Request& req : reqs)
+      if (req != MPI_REQUEST_NULL)
+        Request::unref(&req);
 
     for (auto const& pair : sender_receiver) {
       TRACE_smpi_recv(pair.first, pair.second, 0);
@@ -874,7 +885,9 @@ void smpi_replay_main(int rank, const char* private_trace_filename)
     unsigned int i=0;
 
     for (auto const& pair : storage[simgrid::s4u::this_actor::get_pid()].get_store()) {
-      requests[i] = pair.second;
+      for (auto& req: pair.second){
+        requests[i] = req;
+      }
       i++;
     }
     simgrid::smpi::Request::waitall(count_requests, requests.data(), MPI_STATUSES_IGNORE);
