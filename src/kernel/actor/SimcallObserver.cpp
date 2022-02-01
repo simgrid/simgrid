@@ -233,9 +233,9 @@ std::string ActivityWaitSimcall::to_string(int times_considered) const
   if (comm == nullptr)
     return res;
   if (times_considered == -1) {
-    res += "WaitTimeout(comm=" + XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose)
-               ? xbt::string_printf("%p)", comm)
-               : "(verbose only))";
+    res += "WaitTimeout(comm=" + (XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose)
+                                      ? xbt::string_printf("%p)", comm)
+                                      : "(verbose only))");
   } else {
     res += "Wait(comm=";
 
@@ -317,9 +317,10 @@ std::string ActivityWaitanySimcall::to_string(int times_considered) const
   size_t count    = activities_.size();
   if (count > 0) {
     if (auto* comm = dynamic_cast<kernel::activity::CommImpl*>(activities_[times_considered]))
-      res += "comm=" + XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose)
-                 ? xbt::string_printf("%p", comm)
-                 : "(verbose only)" + xbt::string_printf("(%d of %zu))", times_considered + 1, count);
+      res += "comm=" +
+             (XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf("%p", comm)
+                                                                       : "(verbose only)") +
+             xbt::string_printf("(%d of %zu))", times_considered + 1, count);
   } else
     res += "comm at idx " + std::to_string(times_considered) + ")";
   return res;
