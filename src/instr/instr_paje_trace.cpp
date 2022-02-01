@@ -24,7 +24,7 @@ void dump_buffer(bool force)
   if (not TRACE_is_enabled())
     return;
   XBT_DEBUG("%s: dump until %f. starts", __func__, last_timestamp_to_dump);
-  if (force){
+  if (force || (trace_format == TraceFormat::Ti)){
     for (auto const& event : buffer) {
       event->print();
       delete event;
