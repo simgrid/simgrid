@@ -106,21 +106,50 @@ std::vector<VmMap> get_memory_map(pid_t pid)
     mach_msg_type_number_t info_count = VM_REGION_BASIC_INFO_COUNT;
 #endif
 
-    kr =
-      mach_vm_region(
-          map,
-          &address,
-          &size,
-          flavor,
-          (vm_region_info_t)&info,
-          &info_count,
-          &object);
+    kr = mach_vm_region(map, &address, &size, flavor, (vm_region_info_t)&info, &info_count, &object);
     if (kr == KERN_INVALID_ADDRESS) {
       break;
-    }
-    else if (kr != KERN_SUCCESS) {
+
+    } else if (kr != KERN_SUCCESS) {
       std::perror("mach_vm_region failed");
-      std::fprintf(stderr, "Cannot request authorization for kernel information access\n");
+      std::fprintf(stderr, "Cannot request authorization for kernel information access (kr=%d)\n", (int)kr);
+      switch (kr) { // https://github.com/apple/darwin-xnu/blob/main/bsd/kern/stackshot.c#L42
+        case KERN_SUCCESS:
+          XBT_INFO("kr=KERN_SUCCESS");
+          break;
+        case KERN_RESOURCE_SHORTAGE:
+          XBT_INFO("kr=KERN_RESOURCE_SHORTAGE (ENOMEM)");
+          break;
+        case KERN_INSUFFICIENT_BUFFER_SIZE:
+          XBT_INFO("kr=KERN_INSUFFICIENT_BUFFER_SIZE (ENOSPC)");
+          break;
+        case KERN_NO_SPACE:
+          XBT_INFO("kr=KERN_NO_SPACE (ENOSPC)");
+          break;
+        case KERN_NO_ACCESS:
+          XBT_INFO("kr=KERN_NO_ACCESS (EPERM)");
+          break;
+        case KERN_MEMORY_PRESENT:
+          XBT_INFO("kr=KERN_MEMORY_PRESENT (EEXIST)");
+          break;
+        case KERN_NOT_SUPPORTED:
+          XBT_INFO("kr=KERN_NOT_SUPPORTED (ENOTSUP)");
+          break;
+        case KERN_NOT_IN_SET:
+          XBT_INFO("kr=KERN_NOT_IN_SET (ENOENT)");
+          break;
+        case KERN_ABORTED:
+          XBT_INFO("kr=KERN_ABORTED (EINTR)");
+          break;
+        case KERN_FAILURE:
+          XBT_INFO("kr=KERN_FAILURE (EBUSY)");
+          break;
+        case KERN_OPERATION_TIMED_OUT:
+          XBT_INFO("kr=KERN_OPERATION_TIMED_OUT (ETIMEDOUT)");
+          break;
+        default:
+          XBT_INFO("kr=default case (EINVAL)");
+      }
       abort();
     }
 
