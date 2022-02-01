@@ -147,11 +147,11 @@ PYBIND11_MODULE(simgrid, m)
            }),
            "The constructor should take the parameters from the command line, as is ")
       .def_static("get_clock",
-                  [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v334
+                  []() // XBT_ATTRIB_DEPRECATED_v334
                   {
                     PyErr_WarnEx(PyExc_DeprecationWarning,
                                  "get_clock() is deprecated and  will be dropped after v3.33, use clock instead.", 1);
-                    return self.attr("clock");
+                    return Engine::get_clock();
                   })
       .def_property_readonly_static(
           "clock", [](py::object /* self */) { return Engine::get_clock(); },
