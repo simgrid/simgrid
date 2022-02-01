@@ -159,7 +159,7 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly_static(
           "instance", [](py::object /* self */) { return Engine::get_instance(); }, "Retrieve the simulation engine")
       .def("get_all_hosts",
-           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v334
+           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
            {
              PyErr_WarnEx(PyExc_DeprecationWarning,
                           "get_all_hosts() is deprecated and  will be dropped after v3.33, use all_hosts instead.", 1);
@@ -167,7 +167,7 @@ PYBIND11_MODULE(simgrid, m)
            })
       .def_property_readonly("all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
       .def("get_all_links",
-           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v334
+           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
            {
              PyErr_WarnEx(PyExc_DeprecationWarning,
                           "get_all_links() is deprecated and  will be dropped after v3.33, use all_links instead.", 1);
@@ -175,7 +175,7 @@ PYBIND11_MODULE(simgrid, m)
            })
       .def_property_readonly("all_links", &Engine::get_all_links, "Returns the list of all links found in the platform")
       .def("get_all_netpoints",
-           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v334
+           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
            {
              PyErr_WarnEx(
                  PyExc_DeprecationWarning,
@@ -184,7 +184,7 @@ PYBIND11_MODULE(simgrid, m)
            })
       .def_property_readonly("all_netpoints", &Engine::get_all_netpoints)
       .def("get_netzone_root",
-           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v334
+           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
            {
              PyErr_WarnEx(PyExc_DeprecationWarning,
                           "get_netzone_root() is deprecated and  will be dropped after v3.3, use netzone_root instead.",
@@ -277,7 +277,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("set_parent", &simgrid::s4u::NetZone::set_parent, "Set the parent of this zone")
       .def("set_property", &simgrid::s4u::NetZone::set_property, "Add a property to this zone")
       .def("get_netpoint",
-           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v334
+           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
            {
              PyErr_WarnEx(PyExc_DeprecationWarning,
                           "get_netpoint() is deprecated and  will be dropped after v3.33, use netpoint instead.", 1);
@@ -356,7 +356,7 @@ PYBIND11_MODULE(simgrid, m)
           "The second function parameter is the periodicity: the time to wait after the last event to start again over "
           "the list. Set it to -1 to not loop over.")
       .def("get_pstate_count",
-           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v334
+           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
            {
              PyErr_WarnEx(
                  PyExc_DeprecationWarning,
@@ -365,7 +365,7 @@ PYBIND11_MODULE(simgrid, m)
            })
       .def_property_readonly("pstate_count", &Host::get_pstate_count, "Retrieve the count of defined pstate levels")
       .def("get_pstate_speed",
-           [](pybind11::object& self, int state) // XBT_ATTRIB_DEPRECATED_v334
+           [](py::object self, int state) // XBT_ATTRIB_DEPRECATED_v334
            {
              PyErr_WarnEx(
                  PyExc_DeprecationWarning,
@@ -375,7 +375,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("pstate_speed", &Host::get_pstate_speed, py::call_guard<py::gil_scoped_release>(),
            "Retrieve the maximal speed at the given pstate")
       .def("get_netpoint",
-           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v334
+           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
            {
              PyErr_WarnEx(PyExc_DeprecationWarning,
                           "get_netpoint() is deprecated and  will be dropped after v3.33, use netpoint instead.", 1);
@@ -384,7 +384,7 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("netpoint", &Host::get_netpoint, "Retrieve the netpoint associated to this zone")
       .def("get_disks", &Host::get_disks, "Retrieve the list of disks in this host")
       .def("set_core_count",
-           [](pybind11::object& self, double count) // XBT_ATTRIB_DEPRECATED_v334
+           [](py::object self, double count) // XBT_ATTRIB_DEPRECATED_v334
            {
              PyErr_WarnEx(PyExc_DeprecationWarning,
                           "set_core_count() is deprecated and  will be dropped after v3.33, use core_count instead.",
@@ -596,7 +596,7 @@ PYBIND11_MODULE(simgrid, m)
   py::class_<simgrid::s4u::SplitDuplexLink, Link, std::unique_ptr<simgrid::s4u::SplitDuplexLink, py::nodelete>>(
       m, "SplitDuplexLink", "Network split-duplex link")
       .def("get_link_up",
-           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v334
+           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
            {
              PyErr_WarnEx(PyExc_DeprecationWarning,
                           "get_link_up() is deprecated and  will be dropped after v3.33, use link_up instead.", 1);
@@ -604,7 +604,7 @@ PYBIND11_MODULE(simgrid, m)
            })
       .def_property_readonly("link_up", &simgrid::s4u::SplitDuplexLink::get_link_up, "Get link direction up")
       .def("get_link_down",
-           [](pybind11::object& self) // XBT_ATTRIB_DEPRECATED_v334
+           [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
            {
              PyErr_WarnEx(PyExc_DeprecationWarning,
                           "get_link_down() is deprecated and  will be dropped after v3.33, use link_down instead.", 1);
@@ -649,7 +649,7 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "get",
           [](Mailbox* self) {
-            py::object data = pybind11::reinterpret_steal<py::object>(self->get<PyObject>());
+            py::object data = py::reinterpret_steal<py::object>(self->get<PyObject>());
             // data.dec_ref(); // FIXME: why does it break python-actor-create?
             return data;
           },
