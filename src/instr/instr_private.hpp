@@ -205,7 +205,7 @@ class WaitTIData : public TIData {
   int tag_;
 
 public:
-  WaitTIData(std::string name, int src, int dest, int tag) : TIData(name), src_(src), dest_(dest), tag_(tag){};
+  WaitTIData(const std::string& name, int src, int dest, int tag) : TIData(name), src_(src), dest_(dest), tag_(tag){};
 
   std::string print() override
   {
