@@ -125,7 +125,8 @@ void xbt_init(int *argc, char **argv)
 
   simgrid::xbt::install_exception_handler();
 
-  simgrid::xbt::binary_name = argv[0];
+  if (*argc > 0)
+    simgrid::xbt::binary_name = argv[0];
   for (int i = 0; i < *argc; i++)
     simgrid::xbt::cmdline.emplace_back(argv[i]);
 
