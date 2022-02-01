@@ -4,11 +4,14 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <simgrid/modelchecker.h>
+#include <simgrid/s4u/Engine.hpp>
 
 #include "src/kernel/activity/ActivityImpl.hpp"
+#include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
+#include "src/kernel/resource/CpuImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 
 #include <boost/range/algorithm.hpp>
@@ -58,18 +61,52 @@ const char* ActivityImpl::get_state_str() const
   return to_c_str(state_);
 }
 
-bool ActivityImpl::test()
+bool ActivityImpl::test(actor::ActorImpl* issuer)
 {
+  // Associate this simcall to the synchro
+  auto* observer = dynamic_cast<kernel::actor::ActivityTestSimcall*>(issuer->simcall_.observer_);
+  if (observer)
+    register_simcall(&issuer->simcall_);
+
   if (state_ != State::WAITING && state_ != State::RUNNING) {
     finish();
+    issuer->exception_ = nullptr; // Do not propagate exception in that case
     return true;
+  }
+
+  if (observer) {
+    observer->set_result(false);
+    issuer->waiting_synchro_ = nullptr;
+    unregister_simcall(&issuer->simcall_);
+    issuer->simcall_answer();
   }
   return false;
 }
 
+ssize_t ActivityImpl::test_any(actor::ActorImpl* issuer, const std::vector<ActivityImpl*>& activities)
+{
+  if (MC_is_active() || MC_record_replay_is_active()) {
+    int idx = issuer->simcall_.mc_value_;
+    xbt_assert(idx == -1 || activities[idx]->test(issuer));
+    return idx;
+  }
+
+  for (std::size_t i = 0; i < activities.size(); ++i) {
+    if (activities[i]->test(issuer)) {
+      auto* observer = dynamic_cast<kernel::actor::ActivityTestanySimcall*>(issuer->simcall_.observer_);
+      xbt_assert(observer != nullptr);
+      observer->set_result(i);
+      issuer->simcall_answer();
+      return i;
+    }
+  }
+  issuer->simcall_answer();
+  return -1;
+}
+
 void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 {
-  XBT_DEBUG("Wait for execution of synchro %p, state %s", this, to_c_str(state_));
+  XBT_DEBUG("Wait for execution of synchro %p, state %s", this, get_state_str());
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
 
   /* Associate this simcall to the synchro */
@@ -78,20 +115,58 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   xbt_assert(not MC_is_active() && not MC_record_replay_is_active(), "MC is currently not supported here.");
 
   /* If the synchro is already finished then perform the error handling */
-  if (state_ != State::RUNNING) {
+  if (state_ != State::WAITING && state_ != State::RUNNING) {
     finish();
   } else {
+    auto* comm = dynamic_cast<CommImpl*>(this);
+    if (comm != nullptr) {
+      resource::Action* sleep = issuer->get_host()->get_cpu()->sleep(timeout);
+      sleep->set_activity(comm);
+
+      if (issuer == comm->src_actor_)
+        comm->src_timeout_ = sleep;
+      else
+        comm->dst_timeout_ = sleep;
+    }
     /* we need a sleep action (even when the timeout is infinite) to be notified of host failures */
     RawImplPtr synchro(new RawImpl([this, issuer]() {
       this->unregister_simcall(&issuer->simcall_);
       issuer->waiting_synchro_ = nullptr;
-      auto* observer = dynamic_cast<kernel::actor::ActivityWaitSimcall*>(issuer->simcall_.observer_);
+      issuer->exception_       = nullptr;
+      auto* observer           = dynamic_cast<kernel::actor::ActivityWaitSimcall*>(issuer->simcall_.observer_);
       xbt_assert(observer != nullptr);
       observer->set_result(true);
     }));
     synchro->set_host(issuer->get_host()).set_timeout(timeout).start();
     synchro->register_simcall(&issuer->simcall_);
   }
+}
+
+void ActivityImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<ActivityImpl*>& activities, double timeout)
+{
+  XBT_DEBUG("Wait for execution of any synchro");
+  if (timeout < 0.0) {
+    issuer->simcall_.timeout_cb_ = nullptr;
+  } else {
+    issuer->simcall_.timeout_cb_ = timer::Timer::set(s4u::Engine::get_clock() + timeout, [issuer, &activities]() {
+      issuer->simcall_.timeout_cb_ = nullptr;
+      for (auto* act : activities)
+        act->unregister_simcall(&issuer->simcall_);
+      // default result (-1) is set in actor::ActivityWaitanySimcall
+      issuer->simcall_answer();
+    });
+  }
+
+  for (auto* act : activities) {
+    /* associate this simcall to the the synchro */
+    act->simcalls_.push_back(&issuer->simcall_);
+    /* see if the synchro is already finished */
+    if (act->get_state() != State::WAITING && act->get_state() != State::RUNNING) {
+      act->finish();
+      break;
+    }
+  }
+  XBT_DEBUG("Exit from ActivityImlp::wait_any_for");
 }
 
 void ActivityImpl::suspend()
@@ -118,6 +193,30 @@ void ActivityImpl::cancel()
   if (surf_action_ != nullptr)
     surf_action_->cancel();
   state_ = State::CANCELED;
+}
+
+void ActivityImpl::handle_activity_waitany(smx_simcall_t simcall)
+{
+  /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
+   * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
+   * simcall */
+  if (auto* observer = dynamic_cast<actor::ActivityWaitanySimcall*>(simcall->observer_)) {
+    if (simcall->timeout_cb_) {
+      simcall->timeout_cb_->remove();
+      simcall->timeout_cb_ = nullptr;
+    }
+
+    auto activities = observer->get_activities();
+    for (auto* act : activities)
+      act->unregister_simcall(simcall);
+
+    if (not MC_is_active() && not MC_record_replay_is_active()) {
+      auto element   = std::find(activities.begin(), activities.end(), this);
+      int rank       = element != activities.end() ? static_cast<int>(std::distance(activities.begin(), element)) : -1;
+      auto* observer = dynamic_cast<kernel::actor::ActivityWaitanySimcall*>(simcall->observer_);
+      observer->set_result(rank);
+    }
+  }
 }
 
 // boost::intrusive_ptr<Activity> support:

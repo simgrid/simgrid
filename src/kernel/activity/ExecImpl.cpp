@@ -199,26 +199,7 @@ void ExecImpl::finish()
     if (simcall->call_ == simix::Simcall::NONE) // FIXME: maybe a better way to handle this case
       continue;                                 // if process handling comm is killed
 
-    /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
-     * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
-     * simcall */
-    if (auto* observer = dynamic_cast<actor::ExecutionWaitanySimcall*>(simcall->observer_)) {
-      const auto& execs = observer->get_execs();
-
-      for (auto* exec : execs)
-        exec->unregister_simcall(simcall);
-
-      if (simcall->timeout_cb_) {
-        simcall->timeout_cb_->remove();
-        simcall->timeout_cb_ = nullptr;
-      }
-
-      if (not MC_is_active() && not MC_record_replay_is_active()) {
-        auto element = std::find(execs.begin(), execs.end(), this);
-        int rank     = element != execs.end() ? static_cast<int>(std::distance(execs.begin(), element)) : -1;
-        observer->set_result(rank);
-      }
-    }
+    handle_activity_waitany(simcall);
 
     set_exception(simcall->issuer_);
 
@@ -257,31 +238,6 @@ ActivityImpl* ExecImpl::migrate(s4u::Host* to)
 
   on_migration(*this, to);
   return this;
-}
-
-void ExecImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<ExecImpl*>& execs, double timeout)
-{
-  if (timeout < 0.0) {
-    issuer->simcall_.timeout_cb_ = nullptr;
-  } else {
-    issuer->simcall_.timeout_cb_ = timer::Timer::set(s4u::Engine::get_clock() + timeout, [issuer, &execs]() {
-      issuer->simcall_.timeout_cb_ = nullptr;
-      for (auto* exec : execs)
-        exec->unregister_simcall(&issuer->simcall_);
-      // default result (-1) is set in actor::ExecutionWaitanySimcall
-      issuer->simcall_answer();
-    });
-  }
-
-  for (auto* exec : execs) {
-    /* associate this simcall to the the synchro */
-    exec->simcalls_.push_back(&issuer->simcall_);
-    /* see if the synchro is already finished */
-    if (exec->get_state() != State::WAITING && exec->get_state() != State::RUNNING) {
-      exec->finish();
-      break;
-    }
-  }
 }
 
 /*************

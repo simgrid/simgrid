@@ -61,20 +61,10 @@ Exec* Exec::start()
 
 ssize_t Exec::wait_any_for(const std::vector<ExecPtr>& execs, double timeout)
 {
-  std::vector<kernel::activity::ExecImpl*> rexecs(execs.size());
-  std::transform(begin(execs), end(execs), begin(rexecs),
-                 [](const ExecPtr& exec) { return static_cast<kernel::activity::ExecImpl*>(exec->pimpl_.get()); });
-
-  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::ExecutionWaitanySimcall observer{issuer, rexecs, timeout};
-  ssize_t changed_pos = kernel::actor::simcall_blocking(
-      [&observer] {
-        kernel::activity::ExecImpl::wait_any_for(observer.get_issuer(), observer.get_execs(), observer.get_timeout());
-      },
-      &observer);
-  if (changed_pos != -1)
-    execs.at(changed_pos)->complete(State::FINISHED);
-  return changed_pos;
+  std::vector<ActivityPtr> activities;
+  for (const auto& exec : execs)
+    activities.push_back(boost::dynamic_pointer_cast<Activity>(exec));
+  return Activity::wait_any_for(activities, timeout);
 }
 
 /** @brief change the execution bound

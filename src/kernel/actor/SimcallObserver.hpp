@@ -60,14 +60,14 @@ public:
    * Most simcalls are not visible from the MC because they don't have an observer at all. */
   virtual bool is_visible() const { return true; }
   virtual std::string to_string(int times_considered) const = 0;
-  virtual std::string dot_label() const                     = 0;
+  virtual std::string dot_label(int times_considered) const = 0;
 };
 
 template <class T> class ResultingSimcall : public SimcallObserver {
   T result_;
 
 public:
-  ResultingSimcall(smx_actor_t actor, T default_result) : SimcallObserver(actor), result_(default_result) {}
+  ResultingSimcall(ActorImpl* actor, T default_result) : SimcallObserver(actor), result_(default_result) {}
   void set_result(T res) { result_ = res; }
   T get_result() const { return result_; }
 };
@@ -78,7 +78,7 @@ class RandomSimcall : public SimcallObserver {
   int next_value_ = 0;
 
 public:
-  RandomSimcall(smx_actor_t actor, int min, int max) : SimcallObserver(actor), min_(min), max_(max)
+  RandomSimcall(ActorImpl* actor, int min, int max) : SimcallObserver(actor), min_(min), max_(max)
   {
     xbt_assert(min < max);
   }
@@ -91,7 +91,7 @@ public:
   int get_max_consider() const override;
   void prepare(int times_considered) override;
   std::string to_string(int times_considered) const override;
-  std::string dot_label() const override;
+  std::string dot_label(int times_considered) const override;
   int get_value() const { return next_value_; }
   bool depends(SimcallObserver* other) override;
 };
@@ -100,7 +100,7 @@ class MutexSimcall : public SimcallObserver {
   activity::MutexImpl* const mutex_;
 
 public:
-  MutexSimcall(smx_actor_t actor, activity::MutexImpl* mutex) : SimcallObserver(actor), mutex_(mutex) {}
+  MutexSimcall(ActorImpl* actor, activity::MutexImpl* mutex) : SimcallObserver(actor), mutex_(mutex) {}
   activity::MutexImpl* get_mutex() const { return mutex_; }
   bool depends(SimcallObserver* other) override;
 };
@@ -111,21 +111,21 @@ class MutexUnlockSimcall : public MutexSimcall {
 public:
   SimcallObserver* clone() override { return new MutexUnlockSimcall(get_issuer(), get_mutex()); }
   std::string to_string(int times_considered) const override;
-  std::string dot_label() const override;
+  std::string dot_label(int times_considered) const override;
 };
 
 class MutexLockSimcall : public MutexSimcall {
   const bool blocking_;
 
 public:
-  MutexLockSimcall(smx_actor_t actor, activity::MutexImpl* mutex, bool blocking = true)
+  MutexLockSimcall(ActorImpl* actor, activity::MutexImpl* mutex, bool blocking = true)
       : MutexSimcall(actor, mutex), blocking_(blocking)
   {
   }
   SimcallObserver* clone() override { return new MutexLockSimcall(get_issuer(), get_mutex(), blocking_); }
   bool is_enabled() const override;
   std::string to_string(int times_considered) const override;
-  std::string dot_label() const override;
+  std::string dot_label(int times_considered) const override;
 };
 
 class ConditionWaitSimcall : public ResultingSimcall<bool> {
@@ -134,7 +134,7 @@ class ConditionWaitSimcall : public ResultingSimcall<bool> {
   const double timeout_;
 
 public:
-  ConditionWaitSimcall(smx_actor_t actor, activity::ConditionVariableImpl* cond, activity::MutexImpl* mutex,
+  ConditionWaitSimcall(ActorImpl* actor, activity::ConditionVariableImpl* cond, activity::MutexImpl* mutex,
                        double timeout = -1.0)
       : ResultingSimcall(actor, false), cond_(cond), mutex_(mutex), timeout_(timeout)
   {
@@ -143,7 +143,7 @@ public:
   bool is_enabled() const override;
   bool is_visible() const override { return false; }
   std::string to_string(int times_considered) const override;
-  std::string dot_label() const override;
+  std::string dot_label(int times_considered) const override;
   activity::ConditionVariableImpl* get_cond() const { return cond_; }
   activity::MutexImpl* get_mutex() const { return mutex_; }
   double get_timeout() const { return timeout_; }
@@ -154,7 +154,7 @@ class SemAcquireSimcall : public ResultingSimcall<bool> {
   const double timeout_;
 
 public:
-  SemAcquireSimcall(smx_actor_t actor, activity::SemaphoreImpl* sem, double timeout = -1.0)
+  SemAcquireSimcall(ActorImpl* actor, activity::SemaphoreImpl* sem, double timeout = -1.0)
       : ResultingSimcall(actor, false), sem_(sem), timeout_(timeout)
   {
   }
@@ -162,61 +162,80 @@ public:
   bool is_enabled() const override;
   bool is_visible() const override { return false; }
   std::string to_string(int times_considered) const override;
-  std::string dot_label() const override;
+  std::string dot_label(int times_considered) const override;
   activity::SemaphoreImpl* get_sem() const { return sem_; }
   double get_timeout() const { return timeout_; }
 };
 
-class ActivityWaitSimcall : public ResultingSimcall<bool> {
+class ActivityTestSimcall : public ResultingSimcall<bool> {
   activity::ActivityImpl* const activity_;
+
+public:
+  ActivityTestSimcall(ActorImpl* actor, activity::ActivityImpl* activity)
+      : ResultingSimcall(actor, true), activity_(activity)
+  {
+  }
+  SimcallObserver* clone() override { return new ActivityTestSimcall(get_issuer(), activity_); }
+  bool is_visible() const override { return true; }
+  std::string to_string(int times_considered) const override;
+  std::string dot_label(int times_considered) const override;
+  activity::ActivityImpl* get_activity() const { return activity_; }
+};
+
+class ActivityTestanySimcall : public ResultingSimcall<ssize_t> {
+  const std::vector<activity::ActivityImpl*>& activities_;
+
+public:
+  ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities)
+      : ResultingSimcall(actor, -1), activities_(activities)
+  {
+  }
+  SimcallObserver* clone() override { return new ActivityTestanySimcall(get_issuer(), activities_); }
+  bool is_visible() const override { return true; }
+  int get_max_consider() const override;
+  std::string to_string(int times_considered) const override;
+  std::string dot_label(int times_considered) const override;
+  const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }
+};
+
+class ActivityWaitSimcall : public ResultingSimcall<bool> {
+  activity::ActivityImpl* activity_;
   const double timeout_;
 
 public:
-  ActivityWaitSimcall(smx_actor_t actor, activity::ActivityImpl* activity, double timeout)
+  ActivityWaitSimcall(ActorImpl* actor, activity::ActivityImpl* activity, double timeout)
       : ResultingSimcall(actor, false), activity_(activity), timeout_(timeout)
   {
   }
   SimcallObserver* clone() override { return new ActivityWaitSimcall(get_issuer(), activity_, timeout_); }
-  bool is_visible() const override { return false; }
-  std::string to_string(int times_considered) const override { return SimcallObserver::to_string(times_considered); }
-  std::string dot_label() const override { return SimcallObserver::dot_label(); }
+  bool is_visible() const override { return true; }
+  bool is_enabled() const override;
+  std::string to_string(int times_considered) const override;
+  std::string dot_label(int times_considered) const override;
   activity::ActivityImpl* get_activity() const { return activity_; }
+  void set_activity(activity::ActivityImpl* activity) { activity_ = activity; }
   double get_timeout() const { return timeout_; }
 };
 
-class ExecutionWaitanySimcall : public ResultingSimcall<ssize_t> {
-  const std::vector<activity::ExecImpl*>& execs_;
+class ActivityWaitanySimcall : public ResultingSimcall<ssize_t> {
+  const std::vector<activity::ActivityImpl*>& activities_;
   const double timeout_;
 
 public:
-  ExecutionWaitanySimcall(smx_actor_t actor, const std::vector<activity::ExecImpl*>& execs, double timeout)
-      : ResultingSimcall(actor, -1), execs_(execs), timeout_(timeout)
+  ActivityWaitanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities, double timeout)
+      : ResultingSimcall(actor, -1), activities_(activities), timeout_(timeout)
   {
   }
-  SimcallObserver* clone() override { return new ExecutionWaitanySimcall(get_issuer(), execs_, timeout_); }
-  bool is_visible() const override { return false; }
+  SimcallObserver* clone() override { return new ActivityWaitanySimcall(get_issuer(), activities_, timeout_); }
+  bool is_enabled() const override;
+  bool is_visible() const override { return true; }
+  int get_max_consider() const override;
   std::string to_string(int times_considered) const override;
-  std::string dot_label() const override;
-  const std::vector<activity::ExecImpl*>& get_execs() const { return execs_; }
+  std::string dot_label(int times_considered) const override;
+  const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }
   double get_timeout() const { return timeout_; }
 };
 
-class IoWaitanySimcall : public ResultingSimcall<ssize_t> {
-  const std::vector<activity::IoImpl*>& ios_;
-  const double timeout_;
-
-public:
-  IoWaitanySimcall(smx_actor_t actor, const std::vector<activity::IoImpl*>& ios, double timeout)
-      : ResultingSimcall(actor, -1), ios_(ios), timeout_(timeout)
-  {
-  }
-  SimcallObserver* clone() override { return new IoWaitanySimcall(get_issuer(), ios_, timeout_); }
-  bool is_visible() const override { return false; }
-  std::string to_string(int times_considered) const override;
-  std::string dot_label() const override;
-  const std::vector<activity::IoImpl*>& get_ios() const { return ios_; }
-  double get_timeout() const { return timeout_; }
-};
 } // namespace actor
 } // namespace kernel
 } // namespace simgrid

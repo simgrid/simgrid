@@ -124,6 +124,10 @@ include examples/c/plugin-host-load/plugin-host-load.c
 include examples/c/plugin-host-load/plugin-host-load.tesh
 include examples/c/synchro-semaphore/synchro-semaphore.c
 include examples/c/synchro-semaphore/synchro-semaphore.tesh
+include examples/cpp/activity-testany/s4u-activity-testany.cpp
+include examples/cpp/activity-testany/s4u-activity-testany.tesh
+include examples/cpp/activity-waitany/s4u-activity-waitany.cpp
+include examples/cpp/activity-waitany/s4u-activity-waitany.tesh
 include examples/cpp/actor-create/s4u-actor-create.cpp
 include examples/cpp/actor-create/s4u-actor-create.tesh
 include examples/cpp/actor-create/s4u-actor-create_d.xml

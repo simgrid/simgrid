@@ -11,16 +11,18 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 
 static void test()
 {
-  std::vector<simgrid::s4u::IoPtr> pending_ios;
+  std::vector<simgrid::s4u::ActivityPtr> pending_activities;
 
   simgrid::s4u::ExecPtr bob_compute = simgrid::s4u::this_actor::exec_init(1e9);
+  pending_activities.push_back(boost::dynamic_pointer_cast<simgrid::s4u::Activity>(bob_compute));
   simgrid::s4u::IoPtr bob_write =
       simgrid::s4u::Host::current()->get_disks().front()->io_init(4000000, simgrid::s4u::Io::OpType::WRITE);
-  pending_ios.push_back(bob_write);
+  pending_activities.push_back(boost::dynamic_pointer_cast<simgrid::s4u::Activity>(bob_write));
   simgrid::s4u::IoPtr carl_read =
       simgrid::s4u::Host::by_name("carl")->get_disks().front()->io_init(4000000, simgrid::s4u::Io::OpType::READ);
-  pending_ios.push_back(carl_read);
+  pending_activities.push_back(boost::dynamic_pointer_cast<simgrid::s4u::Activity>(carl_read));
   simgrid::s4u::ExecPtr carl_compute = simgrid::s4u::Host::by_name("carl")->exec_init(1e9);
+  pending_activities.push_back(boost::dynamic_pointer_cast<simgrid::s4u::Activity>(carl_compute));
 
   // Name the activities (for logging purposes only)
   bob_compute->set_name("bob compute");
@@ -43,13 +45,11 @@ static void test()
   carl_compute->vetoable_start();
 
   // wait for the completion of all activities
-  bob_compute->wait();
-  while (not pending_ios.empty()) {
-    ssize_t changed_pos = simgrid::s4u::Io::wait_any(pending_ios);
-    XBT_INFO("Io '%s' is complete", pending_ios[changed_pos]->get_cname());
-    pending_ios.erase(pending_ios.begin() + changed_pos);
+  while (not pending_activities.empty()) {
+    ssize_t changed_pos = simgrid::s4u::Activity::wait_any(pending_activities);
+    XBT_INFO("Activity '%s' is complete", pending_activities[changed_pos]->get_cname());
+    pending_activities.erase(pending_activities.begin() + changed_pos);
   }
-  carl_compute->wait();
 }
 
 int main(int argc, char* argv[])

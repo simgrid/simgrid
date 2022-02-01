@@ -87,17 +87,16 @@ int MSG_comm_testany(const_xbt_dynar_t comms)
   ssize_t finished_index = -1;
 
   /* Create the equivalent array with SIMIX objects: */
-  std::vector<simgrid::kernel::activity::CommImpl*> s_comms;
+  std::vector<simgrid::s4u::CommPtr> s_comms;
   s_comms.reserve(xbt_dynar_length(comms));
   msg_comm_t comm;
   unsigned int cursor;
-  xbt_dynar_foreach (comms, cursor, comm) {
-    s_comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(comm->s_comm->get_impl()));
-  }
+  xbt_dynar_foreach (comms, cursor, comm)
+    s_comms.push_back(comm->s_comm);
 
   msg_error_t status = MSG_OK;
   try {
-    finished_index = simcall_comm_testany(s_comms.data(), s_comms.size());
+    finished_index = simgrid::s4u::Comm::test_any(s_comms);
   } catch (const simgrid::TimeoutException& e) {
     finished_index = e.get_value();
     status         = MSG_TIMEOUT;
@@ -164,17 +163,17 @@ int MSG_comm_waitany(const_xbt_dynar_t comms)
   ssize_t finished_index = -1;
 
   /* Create the equivalent array with SIMIX objects: */
-  std::vector<simgrid::kernel::activity::CommImpl*> s_comms;
+  std::vector<simgrid::s4u::CommPtr> s_comms;
   s_comms.reserve(xbt_dynar_length(comms));
   msg_comm_t comm;
   unsigned int cursor;
   xbt_dynar_foreach (comms, cursor, comm) {
-    s_comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(comm->s_comm->get_impl()));
+    s_comms.push_back(comm->s_comm);
   }
 
   msg_error_t status = MSG_OK;
   try {
-    finished_index = simcall_comm_waitany(s_comms.data(), s_comms.size(), -1);
+    finished_index = simgrid::s4u::Comm::wait_any_for(s_comms, -1);
   } catch (const simgrid::TimeoutException& e) {
     finished_index = e.get_value();
     status         = MSG_TIMEOUT;

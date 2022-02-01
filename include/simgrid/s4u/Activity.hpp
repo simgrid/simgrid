@@ -141,6 +141,11 @@ public:
    */
   virtual Activity* start() = 0;
   /** Blocks the current actor until the activity is terminated */
+  /** Tests whether the given activity is terminated yet. */
+  virtual bool test();
+  /*! take a vector s4u::ActivityPtr and return the rank of the first finished one (or -1 if none is done). */
+  static ssize_t test_any(const std::vector<ActivityPtr>& activities);
+
   Activity* wait() { return wait_for(-1.0); }
   /** Blocks the current actor until the activity is terminated, or until the timeout is elapsed\n
    *  Raises: timeout exception.*/
@@ -148,6 +153,11 @@ public:
   /** Blocks the current actor until the activity is terminated, or until the time limit is reached\n
    * Raises: timeout exception. */
   void wait_until(double time_limit);
+  /*! take a vector of s4u::ActivityPtr and return when one of them is finished.
+   * The return value is the rank of the first finished ActivityPtr. */
+  static ssize_t wait_any(const std::vector<ActivityPtr>& activities) { return wait_any_for(activities, -1); }
+  /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
+  static ssize_t wait_any_for(const std::vector<ActivityPtr>& activities, double timeout);
 
   /** Cancel that activity */
   Activity* cancel();
@@ -156,8 +166,6 @@ public:
   /** Return a string representation of the activity's state (one of INITED, STARTING, STARTED, CANCELED, FINISHED) */
   const char* get_state_str() const;
   void set_state(Activity::State state) { state_ = state; }
-  /** Tests whether the given activity is terminated yet. */
-  virtual bool test();
 
   /** Blocks the progression of this activity until it gets resumed */
   virtual Activity* suspend();

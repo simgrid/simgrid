@@ -175,7 +175,7 @@ void AppSide::handle_messages() const
         const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(msg_simcall->aid);
         xbt_assert(actor != nullptr, "Invalid pid %ld", msg_simcall->aid);
         xbt_assert(actor->simcall_.observer_, "The transition of %s has no observer", actor->get_cname());
-        std::string value = actor->simcall_.observer_->dot_label();
+        std::string value = actor->simcall_.observer_->dot_label(msg_simcall->time_considered);
 
         // Send result:
         s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, {0}};

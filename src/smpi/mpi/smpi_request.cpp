@@ -8,14 +8,16 @@
 #include "mc/mc.h"
 #include "private.hpp"
 #include "simgrid/Exception.hpp"
+#include "simgrid/s4u/ConditionVariable.hpp"
 #include "simgrid/s4u/Exec.hpp"
 #include "simgrid/s4u/Mutex.hpp"
-#include "simgrid/s4u/ConditionVariable.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_datatype.hpp"
 #include "smpi_host.hpp"
 #include "smpi_op.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
@@ -659,7 +661,10 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
   if (((*request)->flags_ & (MPI_REQ_PREPARED | MPI_REQ_FINISHED)) == 0) {
     if ((*request)->action_ != nullptr && ((*request)->flags_ & MPI_REQ_CANCELLED) == 0){
       try{
-        *flag = simcall_comm_test((*request)->action_.get());
+        kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+        kernel::actor::ActivityTestSimcall observer{issuer, (*request)->action_.get()};
+        *flag = kernel::actor::simcall_blocking([&observer] { observer.get_activity()->test(observer.get_issuer()); },
+                                                &observer);
       } catch (const Exception&) {
         *flag = 0;
         return ret;
@@ -725,7 +730,7 @@ int Request::testsome(int incount, MPI_Request requests[], int *count, int *indi
 
 int Request::testany(int count, MPI_Request requests[], int *index, int* flag, MPI_Status * status)
 {
-  std::vector<simgrid::kernel::activity::CommImpl*> comms;
+  std::vector<simgrid::kernel::activity::ActivityImpl*> comms;
   comms.reserve(count);
 
   *flag = 0;
@@ -735,7 +740,7 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
   std::vector<int> map; /** Maps all matching comms back to their location in requests **/
   for (int i = 0; i < count; i++) {
     if ((requests[i] != MPI_REQUEST_NULL) && requests[i]->action_ && not(requests[i]->flags_ & MPI_REQ_PREPARED)) {
-      comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(requests[i]->action_.get()));
+      comms.push_back(requests[i]->action_.get());
       map.push_back(i);
     }
   }
@@ -746,7 +751,11 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
       simgrid::s4u::this_actor::sleep_for(nsleeps * smpi_test_sleep);
     ssize_t i;
     try{
-      i = simcall_comm_testany(comms.data(), comms.size()); // The i-th element in comms matches!
+      kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+      kernel::actor::ActivityTestanySimcall observer{issuer, comms};
+      i = kernel::actor::simcall_blocking(
+          [&observer] { kernel::activity::ActivityImpl::test_any(observer.get_issuer(), observer.get_activities()); },
+          &observer);
     } catch (const Exception&) {
       XBT_DEBUG("Exception in testany");
       return 0;
@@ -1056,7 +1065,11 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
   if ((*request)->action_ != nullptr){
       try{
         // this is not a detached send
-        simcall_comm_wait((*request)->action_.get(), -1.0);
+        kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+        kernel::actor::ActivityWaitSimcall observer{issuer, (*request)->action_.get(), -1};
+        kernel::actor::simcall_blocking(
+            [&observer] { observer.get_activity()->wait_for(observer.get_issuer(), observer.get_timeout()); },
+            &observer);
       } catch (const CancelException&) {
         XBT_VERB("Request cancelled");
       }
@@ -1097,7 +1110,7 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
 
   if(count > 0) {
     // Wait for a request to complete
-    std::vector<simgrid::kernel::activity::CommImpl*> comms;
+    std::vector<simgrid::kernel::activity::ActivityImpl*> comms;
     std::vector<int> map;
     XBT_DEBUG("Wait for one of %d", count);
     for(int i = 0; i < count; i++) {
@@ -1105,7 +1118,7 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
           not(requests[i]->flags_ & MPI_REQ_FINISHED)) {
         if (requests[i]->action_ != nullptr) {
           XBT_DEBUG("Waiting any %p ", requests[i]);
-          comms.push_back(static_cast<simgrid::kernel::activity::CommImpl*>(requests[i]->action_.get()));
+          comms.push_back(requests[i]->action_.get());
           map.push_back(i);
         } else {
           // This is a finished detached request, let's return this one
@@ -1124,7 +1137,14 @@ int Request::waitany(int count, MPI_Request requests[], MPI_Status * status)
       XBT_DEBUG("Enter waitany for %zu comms", comms.size());
       ssize_t i;
       try{
-        i = simcall_comm_waitany(comms.data(), comms.size(), -1);
+        kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+        kernel::actor::ActivityWaitanySimcall observer{issuer, comms, -1};
+        i = kernel::actor::simcall_blocking(
+            [&observer] {
+              kernel::activity::ActivityImpl::wait_any_for(observer.get_issuer(), observer.get_activities(),
+                                                           observer.get_timeout());
+            },
+            &observer);
       } catch (const CancelException&) {
         XBT_INFO("request cancelled");
         i = -1;

@@ -74,7 +74,7 @@ void execute_actors()
  *  - if the wait will succeed immediately (if both peer of the comm are there already or if the mutex is available)
  *  - if a timeout is provided, because we can fire the timeout if the transition is not ready without blocking in this
  * transition for ever.
- *
+ * This is controlled in the is_enabled() method of the corresponding observers.
  */
 // Called from both MCer and MCed:
 bool actor_is_enabled(smx_actor_t actor)
@@ -94,43 +94,11 @@ bool actor_is_enabled(smx_actor_t actor)
   if (req->observer_ != nullptr)
     return req->observer_->is_enabled();
 
-  using simix::Simcall;
-  switch (req->call_) {
-    case Simcall::NONE:
-      return false;
-
-    case Simcall::COMM_WAIT: {
-      /* FIXME: check also that src and dst processes are not suspended */
-      const kernel::activity::CommImpl* act = simcall_comm_wait__getraw__comm(req);
-
-      if (act->src_timeout_ || act->dst_timeout_) {
-        /* If it has a timeout it will be always be enabled (regardless of who declared the timeout),
-         * because even if the communication is not ready, it can timeout and won't block. */
-        if (_sg_mc_timeout == 1)
-          return true;
-      }
-      /* On the other hand if it hasn't a timeout, check if the comm is ready.*/
-      else if (act->detached() && act->src_actor_ == nullptr &&
-               act->get_state() == simgrid::kernel::activity::State::READY)
-        return (act->dst_actor_ != nullptr);
-      return (act->src_actor_ && act->dst_actor_);
-    }
-
-    case Simcall::COMM_WAITANY: {
-      simgrid::kernel::activity::CommImpl** comms = simcall_comm_waitany__get__comms(req);
-      size_t count                                = simcall_comm_waitany__get__count(req);
-      for (unsigned int index = 0; index < count; ++index) {
-        auto const* comm = comms[index];
-        if (comm->src_actor_ && comm->dst_actor_)
-          return true;
-      }
-      return false;
-    }
-
-    default:
-      /* The rest of the requests are always enabled */
-      return true;
-  }
+  if (req->call_ == simix::Simcall::NONE)
+    return false;
+  else
+    /* The rest of the requests are always enabled */
+    return true;
 }
 
 /* This is the list of requests that are visible from the checker algorithm.
@@ -145,8 +113,7 @@ bool request_is_visible(const s_smx_simcall* req)
     return req->observer_->is_visible();
 
   using simix::Simcall;
-  return req->call_ == Simcall::COMM_ISEND || req->call_ == Simcall::COMM_IRECV || req->call_ == Simcall::COMM_WAIT ||
-         req->call_ == Simcall::COMM_WAITANY || req->call_ == Simcall::COMM_TEST || req->call_ == Simcall::COMM_TESTANY;
+  return req->call_ == Simcall::COMM_ISEND || req->call_ == Simcall::COMM_IRECV;
 }
 
 }

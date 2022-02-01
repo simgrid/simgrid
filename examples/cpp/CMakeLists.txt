@@ -95,7 +95,8 @@ endif()
 
 # Deal with each example
 
-foreach (example actor-create actor-daemon actor-exiting actor-join actor-kill
+foreach (example activity-testany activity-waitany
+                 actor-create actor-daemon actor-exiting actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-bittorrent app-chainsend app-token-ring
                  comm-pingpong comm-ready comm-serialize comm-suspend comm-testany comm-wait comm-waitany comm-waitall comm-waituntil

@@ -279,7 +279,6 @@ void ActorImpl::yield()
 
   /* Go into sleep and return control to maestro */
   context_->suspend();
-
   /* Ok, maestro returned control to us */
   XBT_DEBUG("Control returned to me: '%s'", get_cname());
 
@@ -305,7 +304,6 @@ void ActorImpl::yield()
       e.rethrow_nested(XBT_THROW_POINT, boost::core::demangle(typeid(e).name()) + " raised in kernel mode.");
     }
   }
-
 #if HAVE_SMPI
   if (not finished_)
     smpi_switch_data_segment(get_iface());

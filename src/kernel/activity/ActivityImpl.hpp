@@ -65,8 +65,11 @@ public:
   void set_finish_time(double finish_time) { finish_time_ = finish_time; }
   double get_finish_time() const { return finish_time_; }
 
-  virtual bool test();
+  virtual bool test(actor::ActorImpl* issuer);
+  static ssize_t test_any(actor::ActorImpl* issuer, const std::vector<ActivityImpl*>& activities);
+
   virtual void wait_for(actor::ActorImpl* issuer, double timeout);
+  static void wait_any_for(actor::ActorImpl* issuer, const std::vector<ActivityImpl*>& activities, double timeout);
   virtual ActivityImpl& set_timeout(double) { THROW_UNIMPLEMENTED; }
 
   virtual void suspend();
@@ -81,6 +84,7 @@ public:
 
   void register_simcall(smx_simcall_t simcall);
   void unregister_simcall(smx_simcall_t simcall);
+  void handle_activity_waitany(smx_simcall_t simcall);
   void clean_action();
   virtual double get_remaining() const;
   // Support for the boost::intrusive_ptr<ActivityImpl> datatype

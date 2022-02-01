@@ -737,7 +737,7 @@ void MSG_task_set_bytes_amount(msg_task_t task, double data_size)
  */
 double MSG_task_get_remaining_communication(const_msg_task_t task)
 {
-  XBT_DEBUG("calling simcall_communication_get_remains(%p)", task->comm.get());
+  XBT_DEBUG("calling s4u::Comm::get_remaining (%p)", task->comm.get());
   return task->comm->get_remaining();
 }
 

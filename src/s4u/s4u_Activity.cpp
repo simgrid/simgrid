@@ -5,6 +5,7 @@
 
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Activity.hpp>
+#include <simgrid/s4u/Comm.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Exec.hpp>
 #include <simgrid/s4u/Io.hpp>
@@ -52,6 +53,8 @@ Activity* Activity::wait_for(double timeout)
     vetoable_start();
 
   if (state_ == State::FAILED) {
+    if (dynamic_cast<Comm*>(this))
+      throw NetworkFailureException(XBT_THROW_POINT, "Cannot wait for a failed comm");
     if (dynamic_cast<Exec*>(this))
       throw HostFailureException(XBT_THROW_POINT, "Cannot wait for a failed exec");
     if (dynamic_cast<Io*>(this))
@@ -78,12 +81,49 @@ bool Activity::test()
   if (state_ == State::INITED || state_ == State::STARTING)
     this->vetoable_start();
 
-  if (kernel::actor::simcall([this] { return this->get_impl()->test(); })) {
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  kernel::actor::ActivityTestSimcall observer{issuer, pimpl_.get()};
+  if (kernel::actor::simcall_blocking([&observer] { observer.get_activity()->test(observer.get_issuer()); },
+                                      &observer)) {
     complete(State::FINISHED);
     return true;
   }
-
   return false;
+}
+
+ssize_t Activity::test_any(const std::vector<ActivityPtr>& activities)
+{
+  std::vector<kernel::activity::ActivityImpl*> ractivities(activities.size());
+  std::transform(begin(activities), end(activities), begin(ractivities),
+                 [](const ActivityPtr& act) { return act->pimpl_.get(); });
+
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  kernel::actor::ActivityTestanySimcall observer{issuer, ractivities};
+  ssize_t changed_pos = kernel::actor::simcall_blocking(
+      [&observer] { kernel::activity::ActivityImpl::test_any(observer.get_issuer(), observer.get_activities()); },
+      &observer);
+  if (changed_pos != -1)
+    activities.at(changed_pos)->complete(State::FINISHED);
+  return changed_pos;
+}
+
+ssize_t Activity::wait_any_for(const std::vector<ActivityPtr>& activities, double timeout)
+{
+  std::vector<kernel::activity::ActivityImpl*> ractivities(activities.size());
+  std::transform(begin(activities), end(activities), begin(ractivities),
+                 [](const ActivityPtr& activity) { return activity->pimpl_.get(); });
+
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  kernel::actor::ActivityWaitanySimcall observer{issuer, ractivities, timeout};
+  ssize_t changed_pos = kernel::actor::simcall_blocking(
+      [&observer] {
+        kernel::activity::ActivityImpl::wait_any_for(observer.get_issuer(), observer.get_activities(),
+                                                     observer.get_timeout());
+      },
+      &observer);
+  if (changed_pos != -1)
+    activities.at(changed_pos)->complete(State::FINISHED);
+  return changed_pos;
 }
 
 Activity* Activity::cancel()

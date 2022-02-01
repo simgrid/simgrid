@@ -4,10 +4,12 @@
 $ ${bindir:=.}/s4u-io-dependent ${platfdir}/hosts_with_disks.xml --log=s4u_activity.t:verbose "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  1.000000] (1:bob@bob) 'bob write' is assigned to a resource and all dependencies are solved. Let's start
 > [  1.000000] (1:bob@bob) Remove a dependency from 'bob compute' on 'bob write'
+> [  1.000000] (1:bob@bob) Activity 'bob compute' is complete
 > [  1.100000] (1:bob@bob) 'carl read' is assigned to a resource and all dependencies are solved. Let's start
-> [  1.100000] (1:bob@bob) Io 'bob write' is complete
+> [  1.100000] (1:bob@bob) Activity 'bob write' is complete
 > [  1.100000] (1:bob@bob) Remove a dependency from 'bob write' on 'carl read'
-> [  1.140000] (1:bob@bob) Io 'carl read' is complete
+> [  1.140000] (1:bob@bob) Activity 'carl read' is complete
 > [  1.140000] (1:bob@bob) 'carl compute' is assigned to a resource and all dependencies are solved. Let's start
 > [  1.140000] (1:bob@bob) Remove a dependency from 'carl read' on 'carl compute'
+> [  2.140000] (1:bob@bob) Activity 'carl compute' is complete
 > [  2.140000] (0:maestro@) Simulation time 2.14

@@ -1,0 +1,20 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-activity-testany ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%4.2r]%e[%5a]%e%m%n"
+> [0.00] [alice] Send 'Message'
+> [0.00] [  bob] Create my asynchronous activities
+> [0.00] [  bob] Sleep_for a while
+> [1.00] [  bob] Test for completed activities
+> [1.00] [  bob] Nothing matches, test again in 0.5s
+> [1.50] [  bob] Nothing matches, test again in 0.5s
+> [2.00] [  bob] Nothing matches, test again in 0.5s
+> [2.50] [  bob] Nothing matches, test again in 0.5s
+> [3.00] [  bob] Completed an I/O
+> [3.00] [  bob] Nothing matches, test again in 0.5s
+> [3.50] [  bob] Nothing matches, test again in 0.5s
+> [4.00] [  bob] Nothing matches, test again in 0.5s
+> [4.50] [  bob] Nothing matches, test again in 0.5s
+> [5.00] [  bob] Completed an Exec
+> [5.00] [  bob] Nothing matches, test again in 0.5s
+> [5.50] [  bob] Completed a Comm
+> [5.50] [  bob] Last activity is complete

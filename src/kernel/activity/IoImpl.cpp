@@ -147,55 +147,13 @@ void IoImpl::finish()
 
     if (simcall->call_ == simix::Simcall::NONE) // FIXME: maybe a better way to handle this case
       continue;                                 // if process handling comm is killed
-    if (auto* observer = dynamic_cast<kernel::actor::IoWaitanySimcall*>(simcall->observer_)) { // simcall is a wait_any?
-      const auto& ios = observer->get_ios();
 
-      for (auto* io : ios) {
-        io->unregister_simcall(simcall);
-
-        if (simcall->timeout_cb_) {
-          simcall->timeout_cb_->remove();
-          simcall->timeout_cb_ = nullptr;
-        }
-      }
-
-      if (not MC_is_active() && not MC_record_replay_is_active()) {
-        auto element = std::find(ios.begin(), ios.end(), this);
-        int rank     = element != ios.end() ? static_cast<int>(std::distance(ios.begin(), element)) : -1;
-        observer->set_result(rank);
-      }
-    }
+    handle_activity_waitany(simcall);
 
     set_exception(simcall->issuer_);
 
     simcall->issuer_->waiting_synchro_ = nullptr;
     simcall->issuer_->simcall_answer();
-  }
-}
-
-void IoImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<IoImpl*>& ios, double timeout)
-{
-  if (timeout < 0.0) {
-    issuer->simcall_.timeout_cb_ = nullptr;
-  } else {
-    issuer->simcall_.timeout_cb_ = timer::Timer::set(s4u::Engine::get_clock() + timeout, [issuer, &ios]() {
-      issuer->simcall_.timeout_cb_ = nullptr;
-      for (auto* io : ios)
-        io->unregister_simcall(&issuer->simcall_);
-      // default result (-1) is set in actor::IoWaitanySimcall
-      issuer->simcall_answer();
-    });
-  }
-
-  for (auto* io : ios) {
-    /* associate this simcall to the the synchro */
-    io->simcalls_.push_back(&issuer->simcall_);
-
-    /* see if the synchro is already finished */
-    if (io->get_state() != State::WAITING && io->get_state() != State::RUNNING) {
-      io->finish();
-      break;
-    }
   }
 }
 

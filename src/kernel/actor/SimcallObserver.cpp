@@ -5,8 +5,10 @@
 
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "src/mc/mc_config.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_observer, mc, "Logging specific to MC simcall observation");
 
@@ -52,10 +54,10 @@ std::string SimcallObserver::to_string(int /*times_considered*/) const
                                      issuer_->get_cname());
 }
 
-std::string SimcallObserver::dot_label() const
+std::string SimcallObserver::dot_label(int /*times_considered*/) const
 {
   if (issuer_->get_host())
-    return xbt::string_printf("[(%ld)%s] ", issuer_->get_pid(), issuer_->get_cname());
+    return xbt::string_printf("[(%ld)%s] ", issuer_->get_pid(), issuer_->get_host()->get_cname());
   return xbt::string_printf("[(%ld)] ", issuer_->get_pid());
 }
 
@@ -64,9 +66,9 @@ std::string RandomSimcall::to_string(int times_considered) const
   return SimcallObserver::to_string(times_considered) + "MC_RANDOM(" + std::to_string(times_considered) + ")";
 }
 
-std::string RandomSimcall::dot_label() const
+std::string RandomSimcall::dot_label(int times_considered) const
 {
-  return SimcallObserver::dot_label() + "MC_RANDOM(" + std::to_string(next_value_) + ")";
+  return SimcallObserver::dot_label(times_considered) + "MC_RANDOM(" + std::to_string(next_value_) + ")";
 }
 
 void RandomSimcall::prepare(int times_considered)
@@ -85,9 +87,9 @@ std::string MutexUnlockSimcall::to_string(int times_considered) const
   return SimcallObserver::to_string(times_considered) + "Mutex UNLOCK";
 }
 
-std::string MutexUnlockSimcall::dot_label() const
+std::string MutexUnlockSimcall::dot_label(int times_considered) const
 {
-  return SimcallObserver::dot_label() + "Mutex UNLOCK";
+  return SimcallObserver::dot_label(times_considered) + "Mutex UNLOCK";
 }
 
 std::string MutexLockSimcall::to_string(int times_considered) const
@@ -100,9 +102,9 @@ std::string MutexLockSimcall::to_string(int times_considered) const
   return res;
 }
 
-std::string MutexLockSimcall::dot_label() const
+std::string MutexLockSimcall::dot_label(int times_considered) const
 {
-  return SimcallObserver::dot_label() + (blocking_ ? "Mutex LOCK" : "Mutex TRYLOCK");
+  return SimcallObserver::dot_label(times_considered) + (blocking_ ? "Mutex LOCK" : "Mutex TRYLOCK");
 }
 
 bool MutexLockSimcall::is_enabled() const
@@ -117,9 +119,9 @@ std::string ConditionWaitSimcall::to_string(int times_considered) const
   return res;
 }
 
-std::string ConditionWaitSimcall::dot_label() const
+std::string ConditionWaitSimcall::dot_label(int times_considered) const
 {
-  return SimcallObserver::dot_label() + "Condition WAIT";
+  return SimcallObserver::dot_label(times_considered) + "Condition WAIT";
 }
 
 bool ConditionWaitSimcall::is_enabled() const
@@ -139,9 +141,9 @@ std::string SemAcquireSimcall::to_string(int times_considered) const
   return res;
 }
 
-std::string SemAcquireSimcall::dot_label() const
+std::string SemAcquireSimcall::dot_label(int times_considered) const
 {
-  return SimcallObserver::dot_label() + "Sem ACQUIRE";
+  return SimcallObserver::dot_label(times_considered) + "Sem ACQUIRE";
 }
 
 bool SemAcquireSimcall::is_enabled() const
@@ -154,28 +156,173 @@ bool SemAcquireSimcall::is_enabled() const
   return true;
 }
 
-std::string ExecutionWaitanySimcall::to_string(int times_considered) const
+int ActivityTestanySimcall::get_max_consider() const
 {
-  std::string res = SimcallObserver::to_string(times_considered) + "Execution WAITANY";
-  res += "(" + (timeout_ == -1.0 ? "" : std::to_string(timeout_)) + ")";
+  // Only Comms are of interest to MC for now. When all types of activities can be consider, this function can simply
+  // return the size of activities_.
+  int count = 0;
+  for (const auto& act : activities_)
+    if (dynamic_cast<activity::CommImpl*>(act) != nullptr)
+      count++;
+  return count;
+}
+
+std::string ActivityTestanySimcall::to_string(int times_considered) const
+{
+  std::string res = SimcallObserver::to_string(times_considered);
+  if (times_considered == -1) {
+    res += "TestAny FALSE(-)";
+  } else {
+    res += "TestAny(" + xbt::string_printf("(%d of %zu)", times_considered + 1, activities_.size());
+  }
+
   return res;
 }
 
-std::string ExecutionWaitanySimcall::dot_label() const
+std::string ActivityTestanySimcall::dot_label(int times_considered) const
 {
-  return SimcallObserver::dot_label() + "Execution WAITANY";
-}
-
-std::string IoWaitanySimcall::to_string(int times_considered) const
-{
-  std::string res = SimcallObserver::to_string(times_considered) + "I/O WAITANY";
-  res += "(" + (timeout_ == -1.0 ? "" : std::to_string(timeout_)) + ")";
+  std::string res = SimcallObserver::dot_label(times_considered) + "TestAny ";
+  if (times_considered == -1) {
+    res += "FALSE";
+  } else {
+    res += xbt::string_printf("TRUE [%d of %zu]", times_considered + 1, activities_.size());
+  }
   return res;
 }
 
-std::string IoWaitanySimcall::dot_label() const
+std::string ActivityTestSimcall::to_string(int times_considered) const
 {
-  return SimcallObserver::dot_label() + "I/O WAITANY";
+  std::string res = SimcallObserver::to_string(times_considered) + "Test ";
+  auto* comm      = dynamic_cast<activity::CommImpl*>(activity_);
+  if (comm) {
+    if (comm->src_actor_.get() == nullptr || comm->dst_actor_.get() == nullptr) {
+      res += "FALSE(comm=";
+      res += XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf("%p)", comm)
+                                                                      : "(verbose only))";
+    } else {
+      res += "TRUE(comm=";
+
+      auto src = comm->src_actor_;
+      auto dst = comm->dst_actor_;
+      res +=
+          XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf("%p", comm) : "(verbose only) ";
+      res += xbt::string_printf("[(%ld)%s (%s) ", src->get_pid(), src->get_host()->get_cname(), src->get_cname()) +
+             "-> " +
+             xbt::string_printf("(%ld)%s (%s)])", dst->get_pid(), dst->get_host()->get_cname(), dst->get_cname());
+    }
+  }
+  return res;
+}
+
+std::string ActivityTestSimcall::dot_label(int times_considered) const
+{
+  std::string res = SimcallObserver::dot_label(times_considered) + "Test ";
+  auto* comm      = dynamic_cast<activity::CommImpl*>(activity_);
+  if (comm && (comm->src_actor_.get() == nullptr || comm->dst_actor_.get() == nullptr)) {
+    res += "FALSE";
+  } else {
+    res += "TRUE";
+  }
+  return res;
+}
+
+std::string ActivityWaitSimcall::to_string(int times_considered) const
+{
+  std::string res = SimcallObserver::to_string(times_considered);
+  auto* comm      = dynamic_cast<activity::CommImpl*>(activity_);
+  if (comm == nullptr)
+    return res;
+  if (times_considered == -1) {
+    res += "WaitTimeout(comm=" + XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose)
+               ? xbt::string_printf("%p)", comm)
+               : "(verbose only))";
+  } else {
+    res += "Wait(comm=";
+
+    auto src = comm->src_actor_;
+    auto dst = comm->dst_actor_;
+    res +=
+        XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf("%p", comm) : "(verbose only) ";
+    res += xbt::string_printf("[(%ld)%s (%s) ", src->get_pid(), src->get_host()->get_cname(), src->get_cname()) +
+           "-> " + xbt::string_printf("(%ld)%s (%s)])", dst->get_pid(), dst->get_host()->get_cname(), dst->get_cname());
+  }
+  return res;
+}
+
+std::string ActivityWaitSimcall::dot_label(int times_considered) const
+{
+  std::string res = SimcallObserver::dot_label(times_considered);
+  res += (times_considered == -1) ? "WaitTimeout " : "Wait ";
+
+  auto* comm = dynamic_cast<activity::CommImpl*>(activity_);
+  if (comm) {
+    auto src = comm->src_actor_;
+    auto dst = comm->dst_actor_;
+    res += " [(" + std::to_string(src ? src->get_pid() : 0) + ")";
+    res += "->(" + std::to_string(dst ? dst->get_pid() : 0) + ")]";
+  }
+  return res;
+}
+
+bool ActivityWaitSimcall::is_enabled() const
+{
+  /* FIXME: check also that src and dst processes are not suspended */
+  const auto* comm = dynamic_cast<activity::CommImpl*>(activity_);
+  if (comm == nullptr)
+    return true;
+
+  if (comm->src_timeout_ || comm->dst_timeout_) {
+    /* If it has a timeout it will be always be enabled (regardless of who declared the timeout),
+     * because even if the communication is not ready, it can timeout and won't block. */
+    if (_sg_mc_timeout == 1)
+      return true;
+  }
+  /* On the other hand if it hasn't a timeout, check if the comm is ready.*/
+  else if (comm->detached() && comm->src_actor_ == nullptr && comm->get_state() == activity::State::READY)
+    return (comm->dst_actor_ != nullptr);
+  return (comm->src_actor_ && comm->dst_actor_);
+}
+
+std::string ActivityWaitanySimcall::dot_label(int times_considered) const
+{
+  return SimcallObserver::dot_label(times_considered) +
+         xbt::string_printf("WaitAny [%d of %zu]", times_considered + 1, activities_.size());
+}
+
+bool ActivityWaitanySimcall::is_enabled() const
+{
+  // FIXME: deal with other kind of activities (Exec and I/Os)
+  for (auto act : activities_) {
+    const auto* comm = dynamic_cast<activity::CommImpl*>(act);
+    if (comm != nullptr && comm->src_actor_ && comm->dst_actor_)
+      return true;
+  }
+  return false;
+}
+
+int ActivityWaitanySimcall::get_max_consider() const
+{
+  // Only Comms are of interest to MC for now. When all types of activities can be consider, this function can simply
+  // return the size of activities_.
+  int count = 0;
+  for (const auto& act : activities_)
+    if (dynamic_cast<activity::CommImpl*>(act) != nullptr)
+      count++;
+  return count;
+}
+
+std::string ActivityWaitanySimcall::to_string(int times_considered) const
+{
+  std::string res = SimcallObserver::to_string(times_considered) + "WaitAny(";
+  size_t count    = activities_.size();
+  if (count > 0) {
+    if (auto* comm = dynamic_cast<kernel::activity::CommImpl*>(activities_[times_considered]))
+      res += "comm=" + XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose)
+                 ? xbt::string_printf("%p", comm)
+                 : "(verbose only)" + xbt::string_printf("(%d of %zu))", times_considered + 1, count);
+  } else
+    res += "comm at idx " + std::to_string(times_considered) + ")";
+  return res;
 }
 
 } // namespace actor
