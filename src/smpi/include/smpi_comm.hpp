@@ -42,6 +42,7 @@ class Comm : public F2C, public Keyval{
 
   std::unordered_map<std::string, unsigned int> sent_messages_;
   std::unordered_map<std::string, unsigned int> recv_messages_;
+
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;
   static int keyval_id_;
@@ -96,7 +97,6 @@ public:
   void increment_sent_messages_count(int src, int dst, int tag);
   unsigned int get_received_messages_count(int src, int dst, int tag);
   void increment_received_messages_count(int src, int dst, int tag);
-
 };
 
 } // namespace smpi

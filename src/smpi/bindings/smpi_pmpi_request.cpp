@@ -464,9 +464,10 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
   } else {
     aid_t my_proc_id = ((*request)->comm() != MPI_COMM_NULL) ? simgrid::s4u::this_actor::get_pid() : -1;
 
-    TRACE_smpi_comm_in(my_proc_id, __func__, new simgrid::instr::WaitTIData("test", MPI_COMM_WORLD->group()->rank((*request)->src()),
-                                             MPI_COMM_WORLD->group()->rank((*request)->dst()),
-                                            (*request)->tag()));;
+    TRACE_smpi_comm_in(my_proc_id, __func__,
+                       new simgrid::instr::WaitTIData("test", MPI_COMM_WORLD->group()->rank((*request)->src()),
+                                                      MPI_COMM_WORLD->group()->rank((*request)->dst()),
+                                                      (*request)->tag()));
     retval = simgrid::smpi::Request::test(request,status, flag);
 
     TRACE_smpi_comm_out(my_proc_id);

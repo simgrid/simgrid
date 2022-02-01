@@ -19,6 +19,7 @@ The Sunday Bloody Sunday release.
   * New documentation on calibrating MPI.
   * The Algorithms tutorial can now be taken in Python.
   * (+ many bug fixes and internal refactoring)
+
                     _               _____  ____   ___
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ \ / _ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   __) | (_) |

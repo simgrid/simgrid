@@ -96,7 +96,7 @@ jobs:
   docker-tuto-smpi:
     # the Dockerfile builds upon the docker-stable image, so add a dependency
     needs: docker-simgrid
-    
+
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -132,4 +132,3 @@ jobs:
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
-
