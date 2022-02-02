@@ -116,7 +116,8 @@ simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, siz
 /**
  * @ingroup simix_comm_management
  */
-ssize_t simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_t count, double timeout)
+ssize_t simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_t count,
+                             double timeout) // XBT_ATTRIB_DEPRECATED_v335
 {
   return simcall_BODY_comm_waitany(comms, count, timeout);
 }
@@ -124,7 +125,7 @@ ssize_t simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_
 /**
  * @ingroup simix_comm_management
  */
-ssize_t simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count)
+ssize_t simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count) // XBT_ATTRIB_DEPRECATED_v335
 {
   if (count == 0)
     return -1;
@@ -144,7 +145,7 @@ void simcall_comm_wait(simgrid::kernel::activity::ActivityImpl* comm, double tim
  * @ingroup simix_comm_management
  *
  */
-bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm)
+bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm) // XBT_ATTRIB_DEPRECATED_v335
 {
   return simcall_BODY_comm_test(static_cast<simgrid::kernel::activity::CommImpl*>(comm));
 }
