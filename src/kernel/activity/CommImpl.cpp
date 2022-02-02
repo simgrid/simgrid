@@ -599,8 +599,11 @@ void CommImpl::finish()
     if (not simcall->issuer_->get_host()->is_on()) {
       simcall->issuer_->context_->set_wannadie();
     } else {
-      set_exception(simcall->issuer_);
-      simcall->issuer_->simcall_answer();
+      // Do not answer to dying actors
+      if (not simcall->issuer_->context_->wannadie()) {
+        set_exception(simcall->issuer_);
+        simcall->issuer_->simcall_answer();
+      }
     }
 
     simcall->issuer_->waiting_synchro_ = nullptr;

@@ -118,6 +118,8 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   if (state_ != State::WAITING && state_ != State::RUNNING) {
     finish();
   } else {
+    /* we need a sleep action (even when the timeout is infinite) to be notified of host failures */
+    /* Comms handle that a bit differently of the other activities */
     auto* comm = dynamic_cast<CommImpl*>(this);
     if (comm != nullptr) {
       resource::Action* sleep = issuer->get_host()->get_cpu()->sleep(timeout);
@@ -127,18 +129,18 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
         comm->src_timeout_ = sleep;
       else
         comm->dst_timeout_ = sleep;
+    } else {
+      RawImplPtr synchro(new RawImpl([this, issuer]() {
+        this->unregister_simcall(&issuer->simcall_);
+        issuer->waiting_synchro_ = nullptr;
+        issuer->exception_       = nullptr;
+        auto* observer           = dynamic_cast<kernel::actor::ActivityWaitSimcall*>(issuer->simcall_.observer_);
+        xbt_assert(observer != nullptr);
+        observer->set_result(true);
+      }));
+      synchro->set_host(issuer->get_host()).set_timeout(timeout).start();
+      synchro->register_simcall(&issuer->simcall_);
     }
-    /* we need a sleep action (even when the timeout is infinite) to be notified of host failures */
-    RawImplPtr synchro(new RawImpl([this, issuer]() {
-      this->unregister_simcall(&issuer->simcall_);
-      issuer->waiting_synchro_ = nullptr;
-      issuer->exception_       = nullptr;
-      auto* observer           = dynamic_cast<kernel::actor::ActivityWaitSimcall*>(issuer->simcall_.observer_);
-      xbt_assert(observer != nullptr);
-      observer->set_result(true);
-    }));
-    synchro->set_host(issuer->get_host()).set_timeout(timeout).start();
-    synchro->register_simcall(&issuer->simcall_);
   }
 }
 

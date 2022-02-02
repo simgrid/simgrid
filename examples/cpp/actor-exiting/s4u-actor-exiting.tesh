@@ -12,7 +12,7 @@ $ ${bindir:=.}/s4u-actor-exiting ${platfdir}/small_platform.xml "--log=root.fmt:
 > [  3.000000] (maestro@) Oops! Deadlock or code not perfectly clean.
 > [  3.000000] (maestro@) 1 actors are still running, waiting for something.
 > [  3.000000] (maestro@) Legend of the following listing: "Actor <pid> (<name>@<host>): <status>"
-> [  3.000000] (maestro@) Actor 3 (C@Ginette): waiting for synchronization activity 0xdeadbeef () in state WAITING to finish
+> [  3.000000] (maestro@) Actor 3 (C@Ginette): waiting for communication activity 0xdeadbeef () in state WAITING to finish
 > [  3.000000] (C@Ginette) I was killed!
 > [  3.000000] (C@Ginette) The backtrace would be displayed here if --log=no_loc would not have been passed
 > [  3.000000] (maestro@) Actor C terminates now
