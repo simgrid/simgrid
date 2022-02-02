@@ -54,32 +54,6 @@ static std::string buff_size_to_string(size_t buff_size)
 
 static void simcall_translate(smx_simcall_t req, Remote<kernel::activity::CommImpl>& buffered_comm);
 
-static bool request_is_enabled_by_idx(const RemoteProcess& process, smx_simcall_t req, unsigned int idx)
-{
-  kernel::activity::ActivityImpl* remote_act = nullptr;
-  if (auto wait = dynamic_cast<kernel::actor::ActivityWaitSimcall*>(req->observer_))
-    /* FIXME: check also that src and dst processes are not suspended */
-    remote_act = wait->get_activity();
-  else if (auto waitany = dynamic_cast<kernel::actor::ActivityWaitanySimcall*>(req->observer_))
-    remote_act = waitany->get_activities().at(idx);
-  else if (auto testany = dynamic_cast<kernel::actor::ActivityTestanySimcall*>(req->observer_))
-    remote_act = testany->get_activities().at(idx);
-
-  switch (req->call_) {
-    case Simcall::COMM_WAIT:
-    case Simcall::COMM_WAITANY:
-    case Simcall::COMM_TESTANY:
-      break;
-    default:
-      return true;
-  }
-
-  Remote<kernel::activity::CommImpl> temp_comm;
-  process.read(temp_comm, remote(static_cast<kernel::activity::CommImpl*>(remote_act)));
-  const kernel::activity::CommImpl* comm = temp_comm.get_buffer();
-  return comm->src_actor_.get() && comm->dst_actor_.get();
-}
-
 /* Search an enabled transition for the given process.
  *
  * This can be seen as an iterator returning the next transition of the process.
@@ -111,60 +85,11 @@ static inline smx_simcall_t MC_state_choose_request_for_process(const RemoteProc
     if (actor->simcall_.mc_max_consider_ <= procstate->get_times_considered())
       procstate->set_done();
     req = &actor->simcall_;
-  } else
-    switch (actor->simcall_.call_) {
-      case Simcall::COMM_WAITANY:
-        while (procstate->get_times_considered() < simcall_comm_waitany__get__count(&actor->simcall_)) {
-          if (simgrid::mc::request_is_enabled_by_idx(process, &actor->simcall_, procstate->get_times_considered())) {
-            state->transition_.times_considered_ = procstate->get_times_considered_and_inc();
-            break;
-          }
-          procstate->get_times_considered_and_inc();
-        }
-
-        if (procstate->get_times_considered() >= simcall_comm_waitany__get__count(&actor->simcall_))
-          procstate->set_done();
-        if (state->transition_.times_considered_ != -1)
-          req = &actor->simcall_;
-        break;
-
-      case Simcall::COMM_TESTANY:
-        while (procstate->get_times_considered() < simcall_comm_testany__get__count(&actor->simcall_)) {
-          if (simgrid::mc::request_is_enabled_by_idx(process, &actor->simcall_, procstate->get_times_considered())) {
-            state->transition_.times_considered_ = procstate->get_times_considered_and_inc();
-            break;
-          }
-          procstate->get_times_considered_and_inc();
-        }
-
-        if (procstate->get_times_considered() >= simcall_comm_testany__get__count(&actor->simcall_))
-          procstate->set_done();
-        if (state->transition_.times_considered_ != -1)
-          req = &actor->simcall_;
-        break;
-
-      case Simcall::COMM_WAIT: {
-        simgrid::mc::RemotePtr<simgrid::kernel::activity::CommImpl> remote_act =
-            remote(simcall_comm_wait__get__comm(&actor->simcall_));
-        simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_act;
-        process.read(temp_act, remote_act);
-        const simgrid::kernel::activity::CommImpl* act = temp_act.get_buffer();
-        if (act->src_actor_.get() && act->dst_actor_.get())
-          state->transition_.times_considered_ = 0; // OK
-        else if (act->src_actor_.get() == nullptr && act->get_state() == simgrid::kernel::activity::State::READY &&
-                 act->detached())
-          state->transition_.times_considered_ = 0; // OK
-        procstate->set_done();
-        req = &actor->simcall_;
-        break;
-      }
-
-      default:
-        procstate->set_done();
-        state->transition_.times_considered_ = 0;
-        req                                  = &actor->simcall_;
-        break;
-    }
+  } else {
+    procstate->set_done();
+    state->transition_.times_considered_ = 0;
+    req                                  = &actor->simcall_;
+  }
   if (not req)
     return nullptr;
 
@@ -256,18 +181,13 @@ bool Api::simcall_check_dependency(smx_simcall_t req1, smx_simcall_t req2) const
   const auto TEST  = Simcall::COMM_TEST;
   const auto WAIT  = Simcall::COMM_WAIT;
 
-  if (req1->issuer_ == req2->issuer_)
+  if (req1->issuer_ == req2->issuer_) // Done in observer for TEST and WAIT
     return false;
 
   /* The independence theorem only consider 4 simcalls. All others are dependent with anything. */
   if (req1->call_ != ISEND && req1->call_ != IRECV && req1->call_ != TEST && req1->call_ != WAIT)
     return true;
   if (req2->call_ != ISEND && req2->call_ != IRECV && req2->call_ != TEST && req2->call_ != WAIT)
-    return true;
-
-  /* Timeouts in wait transitions are not considered by the independence theorem, thus assumed dependent */
-  if ((req1->call_ == WAIT && simcall_comm_wait__get__timeout(req1) > 0) ||
-      (req2->call_ == WAIT && simcall_comm_wait__get__timeout(req2) > 0))
     return true;
 
   /* Make sure that req1 and req2 are in alphabetic order */
@@ -277,7 +197,6 @@ bool Api::simcall_check_dependency(smx_simcall_t req1, smx_simcall_t req2) const
     req2      = temp;
   }
 
-  auto comm1 = get_comm_or_nullptr(req1);
   auto comm2 = get_comm_or_nullptr(req2);
 
   /* First case: that's not the same kind of request (we also know that req1 < req2 alphabetically) */
@@ -313,26 +232,6 @@ bool Api::simcall_check_dependency(smx_simcall_t req1, smx_simcall_t req2) const
     return false;
 #endif
 
-    if (req1->call_ == TEST && req2->call_ == WAIT &&
-        (comm1->src_actor_.get() == nullptr || comm1->dst_actor_.get() == nullptr))
-      return false;
-
-    if (req1->call_ == TEST &&
-        (simcall_comm_test__get__comm(req1) == nullptr || comm1->src_buff_ == nullptr || comm1->dst_buff_ == nullptr))
-      return false;
-    if (req2->call_ == TEST &&
-        (simcall_comm_test__get__comm(req2) == nullptr || comm2->src_buff_ == nullptr || comm2->dst_buff_ == nullptr))
-      return false;
-
-    if (req1->call_ == TEST && req2->call_ == WAIT && comm1->src_buff_ == comm2->src_buff_ &&
-        comm1->dst_buff_ == comm2->dst_buff_)
-      return false;
-
-    if (req1->call_ == TEST && req2->call_ == WAIT && comm1->src_buff_ != nullptr && comm1->dst_buff_ != nullptr &&
-        comm2->src_buff_ != nullptr && comm2->dst_buff_ != nullptr && comm1->dst_buff_ != comm2->src_buff_ &&
-        comm1->dst_buff_ != comm2->dst_buff_ && comm2->dst_buff_ != comm1->src_buff_)
-      return false;
-
     return true;
   }
 
@@ -342,14 +241,6 @@ bool Api::simcall_check_dependency(smx_simcall_t req1, smx_simcall_t req2) const
       return simcall_comm_isend__get__mbox(req1) == simcall_comm_isend__get__mbox(req2);
     case IRECV:
       return simcall_comm_irecv__get__mbox(req1) == simcall_comm_irecv__get__mbox(req2);
-    case WAIT:
-      if (comm1->src_buff_ == comm2->src_buff_ && comm1->dst_buff_ == comm2->dst_buff_)
-        return false;
-      if (comm1->src_buff_ != nullptr && comm1->dst_buff_ != nullptr && comm2->src_buff_ != nullptr &&
-          comm2->dst_buff_ != nullptr && comm1->dst_buff_ != comm2->src_buff_ && comm1->dst_buff_ != comm2->dst_buff_ &&
-          comm2->dst_buff_ != comm1->src_buff_)
-        return false;
-      return true;
     default:
       return true;
   }

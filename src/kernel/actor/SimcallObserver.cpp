@@ -169,7 +169,7 @@ int ActivityTestanySimcall::get_max_consider() const
 
 void ActivityTestanySimcall::prepare(int times_considered)
 {
-  next_value_ = times_considered + 1;
+  next_value_ = times_considered;
 }
 
 std::string ActivityTestanySimcall::to_string(int times_considered) const
@@ -195,6 +195,48 @@ std::string ActivityTestanySimcall::dot_label(int times_considered) const
   return res;
 }
 
+bool ActivityTestSimcall::depends(SimcallObserver* other)
+{
+  if (get_issuer() == other->get_issuer())
+    return false;
+
+  if (dynamic_cast<ActivityTestSimcall*>(other))
+    return true;
+
+  auto* comm1 = dynamic_cast<activity::CommImpl*>(activity_);
+  if (comm1 == nullptr)
+    return false;
+
+  if (dynamic_cast<ActivityWaitSimcall*>(other) != nullptr &&
+      (comm1->src_actor_.get() == nullptr || comm1->dst_actor_.get() == nullptr))
+    return false;
+
+  if (comm1->src_buff_ == nullptr || comm1->dst_buff_ == nullptr)
+    return false;
+
+  if (auto* test = dynamic_cast<ActivityTestSimcall*>(other)) {
+    auto* comm2 = dynamic_cast<activity::CommImpl*>(test->get_activity());
+    if (comm2 == nullptr)
+      return false;
+    else if (comm2->src_buff_ == nullptr || comm2->dst_buff_ == nullptr)
+      return false;
+  }
+
+  if (auto* wait = dynamic_cast<ActivityWaitSimcall*>(other)) {
+    auto* comm2 = dynamic_cast<activity::CommImpl*>(wait->get_activity());
+    if (comm2 == nullptr)
+      return false;
+    if (comm1->src_buff_ == comm2->src_buff_ && comm1->dst_buff_ == comm2->dst_buff_)
+      return false;
+    if (comm1->src_buff_ != nullptr && comm1->dst_buff_ != nullptr && comm2->src_buff_ != nullptr &&
+        comm2->dst_buff_ != nullptr && comm1->dst_buff_ != comm2->src_buff_ && comm1->dst_buff_ != comm2->dst_buff_ &&
+        comm2->dst_buff_ != comm1->src_buff_)
+      return false;
+  }
+
+  return true;
+}
+
 std::string ActivityTestSimcall::to_string(int times_considered) const
 {
   std::string res = SimcallObserver::to_string(times_considered) + "Test ";
@@ -215,7 +257,8 @@ std::string ActivityTestSimcall::to_string(int times_considered) const
              "-> " +
              xbt::string_printf("(%ld)%s (%s)])", dst->get_pid(), dst->get_host()->get_cname(), dst->get_cname());
     }
-  }
+  } else
+    xbt_die("Only Comms are supported here for now");
   return res;
 }
 
@@ -231,12 +274,57 @@ std::string ActivityTestSimcall::dot_label(int times_considered) const
   return res;
 }
 
+bool ActivityWaitSimcall::is_enabled() const
+{
+  /* FIXME: check also that src and dst processes are not suspended */
+  const auto* comm = dynamic_cast<activity::CommImpl*>(activity_);
+  if (comm == nullptr)
+    xbt_die("Only Comms are supported here for now");
+
+  if (comm->src_timeout_ || comm->dst_timeout_) {
+    /* If it has a timeout it will be always be enabled (regardless of who declared the timeout),
+     * because even if the communication is not ready, it can timeout and won't block. */
+    if (_sg_mc_timeout == 1)
+      return true;
+  }
+  /* On the other hand if it hasn't a timeout, check if the comm is ready.*/
+  else if (comm->detached() && comm->src_actor_ == nullptr && comm->get_state() == activity::State::READY)
+    return (comm->dst_actor_ != nullptr);
+  return (comm->src_actor_ && comm->dst_actor_);
+}
+
+bool ActivityWaitSimcall::depends(SimcallObserver* other)
+{
+  if (get_issuer() == other->get_issuer())
+    return false;
+
+  /* Timeouts in wait transitions are not considered by the independence theorem, thus assumed dependent */
+  if (auto* wait = dynamic_cast<ActivityWaitSimcall*>(other)) {
+    if (timeout_ > 0 || wait->get_timeout() > 0)
+      return true;
+    auto* comm1 = dynamic_cast<activity::CommImpl*>(activity_);
+    auto* comm2 = dynamic_cast<activity::CommImpl*>(wait->get_activity());
+
+    if (comm1 == nullptr || comm2 == nullptr) // One wait at least in not on a Comm
+      return true;
+
+    if (comm1->src_buff_ == comm2->src_buff_ && comm1->dst_buff_ == comm2->dst_buff_)
+      return false;
+    if (comm1->src_buff_ != nullptr && comm1->dst_buff_ != nullptr && comm2->src_buff_ != nullptr &&
+        comm2->dst_buff_ != nullptr && comm1->dst_buff_ != comm2->src_buff_ && comm1->dst_buff_ != comm2->dst_buff_ &&
+        comm2->dst_buff_ != comm1->src_buff_)
+      return false;
+  }
+
+  return true;
+}
 std::string ActivityWaitSimcall::to_string(int times_considered) const
 {
   std::string res = SimcallObserver::to_string(times_considered);
   auto* comm      = dynamic_cast<activity::CommImpl*>(activity_);
   if (comm == nullptr)
-    return res;
+    xbt_die("Only Comms are supported here for now");
+
   if (times_considered == -1) {
     res += "WaitTimeout(comm=" + (XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose)
                                       ? xbt::string_printf("%p)", comm)
@@ -265,17 +353,24 @@ std::string ActivityWaitSimcall::dot_label(int times_considered) const
     auto dst = comm->dst_actor_;
     res += " [(" + std::to_string(src ? src->get_pid() : 0) + ")";
     res += "->(" + std::to_string(dst ? dst->get_pid() : 0) + ")]";
-  }
+  } else
+    xbt_die("Only Comms are supported here for now");
   return res;
 }
 
-bool ActivityWaitSimcall::is_enabled() const
+std::string ActivityWaitanySimcall::dot_label(int times_considered) const
 {
-  /* FIXME: check also that src and dst processes are not suspended */
-  const auto* comm = dynamic_cast<activity::CommImpl*>(activity_);
-  if (comm == nullptr)
-    return true;
+  return SimcallObserver::dot_label(times_considered) +
+         xbt::string_printf("WaitAny [%d of %zu]", times_considered + 1, activities_.size());
+}
 
+bool ActivityWaitanySimcall::is_enabled() const
+{
+  // FIXME: deal with other kind of activities (Exec and I/Os)
+  // FIXME: Can be factored with ActivityWaitSimcall::is_enabled()
+  const auto* comm = dynamic_cast<activity::CommImpl*>(activities_[next_value_]);
+  if (comm == nullptr)
+    xbt_die("Only Comms are supported here for now");
   if (comm->src_timeout_ || comm->dst_timeout_) {
     /* If it has a timeout it will be always be enabled (regardless of who declared the timeout),
      * because even if the communication is not ready, it can timeout and won't block. */
@@ -288,37 +383,14 @@ bool ActivityWaitSimcall::is_enabled() const
   return (comm->src_actor_ && comm->dst_actor_);
 }
 
-std::string ActivityWaitanySimcall::dot_label(int times_considered) const
-{
-  return SimcallObserver::dot_label(times_considered) +
-         xbt::string_printf("WaitAny [%d of %zu]", times_considered + 1, activities_.size());
-}
-
-bool ActivityWaitanySimcall::is_enabled() const
-{
-  // FIXME: deal with other kind of activities (Exec and I/Os)
-  for (auto act : activities_) {
-    const auto* comm = dynamic_cast<activity::CommImpl*>(act);
-    if (comm != nullptr && comm->src_actor_ && comm->dst_actor_)
-      return true;
-  }
-  return false;
-}
-
 int ActivityWaitanySimcall::get_max_consider() const
 {
-  // Only Comms are of interest to MC for now. When all types of activities can be consider, this function can simply
-  // return the size of activities_.
-  int count = 0;
-  for (const auto& act : activities_)
-    if (dynamic_cast<activity::CommImpl*>(act) != nullptr)
-      count++;
-  return count;
+  return static_cast<int>(activities_.size());
 }
 
 void ActivityWaitanySimcall::prepare(int times_considered)
 {
-  next_value_ = times_considered + 1;
+  next_value_ = times_considered;
 }
 
 std::string ActivityWaitanySimcall::to_string(int times_considered) const
@@ -331,6 +403,8 @@ std::string ActivityWaitanySimcall::to_string(int times_considered) const
              (XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf("%p", comm)
                                                                        : "(verbose only)") +
              xbt::string_printf("(%d of %zu))", times_considered + 1, count);
+    else
+      xbt_die("Only Comms are supported here for now");
   } else
     res += "comm at idx " + std::to_string(times_considered) + ")";
   return res;
