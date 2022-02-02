@@ -177,7 +177,7 @@ public:
   }
   SimcallObserver* clone() override { return new ActivityTestSimcall(get_issuer(), activity_); }
   bool is_visible() const override { return true; }
-  bool depends(SimcallObserver* other);
+  bool depends(SimcallObserver* other) override;
   std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override;
   activity::ActivityImpl* get_activity() const { return activity_; }
@@ -214,7 +214,7 @@ public:
   SimcallObserver* clone() override { return new ActivityWaitSimcall(get_issuer(), activity_, timeout_); }
   bool is_visible() const override { return true; }
   bool is_enabled() const override;
-  bool depends(SimcallObserver* other);
+  bool depends(SimcallObserver* other) override;
   std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override;
   activity::ActivityImpl* get_activity() const { return activity_; }
