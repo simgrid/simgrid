@@ -58,6 +58,37 @@ static void test_link_off_helper(double delay)
   simgrid::s4u::this_actor::sleep_for(1.5);
 };
 
+static simgrid::s4u::ActorPtr sender_basic(bool& ending_boolean, bool expected_success, double duration)
+{
+  return simgrid::s4u::Actor::create("sender", all_hosts[1], [&ending_boolean, expected_success, duration]() {
+    assert_exit(expected_success, duration);
+    // Encapsulate the payload in a std::unique_ptr so that it is correctly free'd if/when the sender is killed during
+    // its communication (thanks to RAII).  The pointer is then released when the communication is over.
+    std::unique_ptr<char, decltype(&xbt_free_f)> payload(xbt_strdup("toto"), &xbt_free_f);
+    simgrid::s4u::Mailbox::by_name("mb")->put(payload.get(), 5000);
+    payload.release();
+    ending_boolean = true;
+  });
+}
+static simgrid::s4u::ActorPtr receiver_basic(bool& ending_boolean, bool expected_success, double duration)
+{
+  return simgrid::s4u::Actor::create("receiver", all_hosts[2], [&ending_boolean, expected_success, duration]() {
+    assert_exit(expected_success, duration);
+    char* payload = simgrid::s4u::Mailbox::by_name("mb")->get<char>();
+    xbt_free(payload);
+    ending_boolean = true;
+  });
+}
+static simgrid::s4u::ActorPtr sender_dtach(bool& ending_boolean, bool expected_success, double duration)
+{
+  return simgrid::s4u::Actor::create("sender", all_hosts[1], [&ending_boolean, expected_success, duration]() {
+    assert_exit(expected_success, duration);
+    char* payload = xbt_strdup("toto");
+    simgrid::s4u::Mailbox::by_name("mb")->put_init(payload, 1000)->detach();
+    ending_boolean = true;
+  });
+}
+
 TEST_CASE("Activity lifecycle: comm activities")
 {
   XBT_INFO("#####[ launch next \"comm\" test ]#####");
@@ -68,19 +99,8 @@ TEST_CASE("Activity lifecycle: comm activities")
     bool send_done = false;
     bool recv_done = false;
 
-    simgrid::s4u::Actor::create("sender", all_hosts[1], [&send_done]() {
-      assert_exit(true, 5);
-      char* payload = xbt_strdup("toto");
-      simgrid::s4u::Mailbox::by_name("mb")->put(payload, 5000);
-      send_done = true;
-    });
-
-    simgrid::s4u::Actor::create("receiver", all_hosts[2], [&recv_done]() {
-      assert_exit(true, 5);
-      char* payload = simgrid::s4u::Mailbox::by_name("mb")->get<char>();
-      xbt_free(payload);
-      recv_done = true;
-    });
+    sender_basic(send_done, true, 5);
+    receiver_basic(recv_done, true, 5);
 
     simgrid::s4u::this_actor::sleep_for(9);
     INFO("Sender or receiver killed somehow. It shouldn't");
@@ -96,22 +116,11 @@ TEST_CASE("Activity lifecycle: comm activities")
     bool dsend_done = false;
     bool recv_done  = false;
 
-    simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[1], [&dsend_done]() {
-      assert_exit(true, 0);
-      char* payload = xbt_strdup("toto");
-      simgrid::s4u::Mailbox::by_name("mb")->put_init(payload, 1000)->detach();
-      dsend_done = true;
-    });
+    sender_dtach(dsend_done, true, 0);
+    simgrid::s4u::this_actor::sleep_for(2);
+    receiver_basic(recv_done, true, 1);
 
-    simgrid::s4u::Actor::create("receiver", all_hosts[2], [&recv_done]() {
-      assert_exit(true, 3);
-      simgrid::s4u::this_actor::sleep_for(2);
-      char* payload = simgrid::s4u::Mailbox::by_name("mb")->get<char>();
-      xbt_free(payload);
-      recv_done = true;
-    });
-
-    // Sleep long enough to let the test ends by itself. 3 + surf_precision should be enough.
+    // Sleep long enough to let the test ends by itself. 1 + surf_precision should be enough.
     simgrid::s4u::this_actor::sleep_for(4);
     INFO("Sender or receiver killed somehow. It shouldn't");
     REQUIRE(dsend_done);
@@ -126,20 +135,9 @@ TEST_CASE("Activity lifecycle: comm activities")
     bool dsend_done = false;
     bool recv_done  = false;
 
-    simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[1], [&dsend_done]() {
-      assert_exit(true, 2);
-      char* payload = xbt_strdup("toto");
-      simgrid::s4u::this_actor::sleep_for(2);
-      simgrid::s4u::Mailbox::by_name("mb")->put_init(payload, 1000)->detach();
-      dsend_done = true;
-    });
-
-    simgrid::s4u::Actor::create("receiver", all_hosts[2], [&recv_done]() {
-      assert_exit(true, 3);
-      char* payload = simgrid::s4u::Mailbox::by_name("mb")->get<char>();
-      xbt_free(payload);
-      recv_done = true;
-    });
+    receiver_basic(recv_done, true, 3);
+    simgrid::s4u::this_actor::sleep_for(2);
+    sender_dtach(dsend_done, true, 0);
 
     // Sleep long enough to let the test ends by itself. 3 + surf_precision should be enough.
     simgrid::s4u::this_actor::sleep_for(4);
