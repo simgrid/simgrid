@@ -944,7 +944,6 @@ set(DOC_SOURCES
   docs/source/tuto_network_calibration/fig/pingpong_simgrid.png
   docs/source/tuto_network_calibration/isend_ckmeans.json
   docs/source/tuto_network_calibration/isend_dhist.json
-  docs/source/tuto_network_calibration/network_calibration_tutorial.ipynb
   docs/source/tuto_network_calibration/network_calibration_tutorial.rst
   docs/source/tuto_network_calibration/pingpong_ckmeans.json
   docs/source/tuto_network_calibration/pingpong_dhist.json
