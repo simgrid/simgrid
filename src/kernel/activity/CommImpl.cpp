@@ -38,61 +38,8 @@ XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr simcall_HANDLER_comm_isen
     void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), // used to copy data if not default one
     void* data, bool detached)
 {
-  XBT_DEBUG("send from mailbox %p", mbox);
-
-  /* Prepare a synchro describing us, so that it gets passed to the user-provided filter of other side */
-  simgrid::kernel::activity::CommImplPtr this_comm(
-      new simgrid::kernel::activity::CommImpl(simgrid::kernel::activity::CommImpl::Type::SEND));
-
-  /* Look for communication synchro matching our needs. We also provide a description of
-   * ourself so that the other side also gets a chance of choosing if it wants to match with us.
-   *
-   * If it is not found then push our communication into the rendez-vous point */
-  simgrid::kernel::activity::CommImplPtr other_comm =
-      mbox->find_matching_comm(simgrid::kernel::activity::CommImpl::Type::RECEIVE, match_fun, data, this_comm,
-                               /*done*/ false, /*remove_matching*/ true);
-
-  if (not other_comm) {
-    other_comm = std::move(this_comm);
-
-    if (mbox->is_permanent()) {
-      // this mailbox is for small messages, which have to be sent right now
-      other_comm->set_state(simgrid::kernel::activity::State::READY);
-      other_comm->dst_actor_ = mbox->get_permanent_receiver().get();
-      mbox->push_done(other_comm);
-      XBT_DEBUG("pushing a message into the permanent receive list %p, comm %p", mbox, other_comm.get());
-
-    } else {
-      mbox->push(other_comm);
-    }
-  } else {
-    XBT_DEBUG("Receive already pushed");
-
-    other_comm->set_state(simgrid::kernel::activity::State::READY);
-  }
-
-  if (detached) {
-    other_comm->detach();
-    other_comm->clean_fun = clean_fun;
-  } else {
-    other_comm->clean_fun = nullptr;
-    src_proc->activities_.emplace_back(other_comm);
-  }
-
-  /* Setup the communication synchro */
-  other_comm->src_actor_ = src_proc;
-  other_comm->src_data_  = data;
-  (*other_comm).set_src_buff(src_buff, src_buff_size).set_size(task_size).set_rate(rate);
-
-  other_comm->match_fun     = match_fun;
-  other_comm->copy_data_fun = copy_data_fun;
-
-  if (MC_is_active() || MC_record_replay_is_active())
-    other_comm->set_state(simgrid::kernel::activity::State::RUNNING);
-  else
-    other_comm->start();
-
-  return (detached ? nullptr : other_comm);
+  return simgrid::kernel::activity::CommImpl::isend(src_proc, mbox, task_size, rate, src_buff, src_buff_size, match_fun,
+                                                    clean_fun, copy_data_fun, data, detached);
 }
 
 XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t receiver, smx_mailbox_t mbox,
@@ -113,71 +60,8 @@ simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_
                            void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data,
                            double rate)
 {
-  simgrid::kernel::activity::CommImplPtr this_synchro(
-      new simgrid::kernel::activity::CommImpl(simgrid::kernel::activity::CommImpl::Type::RECEIVE));
-  XBT_DEBUG("recv from mbox %p. this_synchro=%p", mbox, this_synchro.get());
-
-  simgrid::kernel::activity::CommImplPtr other_comm;
-  // communication already done, get it inside the list of completed comms
-  if (mbox->is_permanent() && mbox->has_some_done_comm()) {
-    XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
-    // find a match in the list of already received comms
-    other_comm = mbox->find_matching_comm(simgrid::kernel::activity::CommImpl::Type::SEND, match_fun, data,
-                                          this_synchro, /*done*/ true,
-                                          /*remove_matching*/ true);
-    // if not found, assume the receiver came first, register it to the mailbox in the classical way
-    if (not other_comm) {
-      XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request "
-                "into list");
-      other_comm = std::move(this_synchro);
-      mbox->push(other_comm);
-    } else {
-      if (other_comm->surf_action_ && other_comm->get_remaining() < 1e-12) {
-        XBT_DEBUG("comm %p has been already sent, and is finished, destroy it", other_comm.get());
-        other_comm->set_state(simgrid::kernel::activity::State::DONE);
-        other_comm->set_mailbox(nullptr);
-      }
-    }
-  } else {
-    /* Prepare a comm describing us, so that it gets passed to the user-provided filter of other side */
-
-    /* Look for communication activity matching our needs. We also provide a description of
-     * ourself so that the other side also gets a chance of choosing if it wants to match with us.
-     *
-     * If it is not found then push our communication into the rendez-vous point */
-    other_comm = mbox->find_matching_comm(simgrid::kernel::activity::CommImpl::Type::SEND, match_fun, data,
-                                          this_synchro, /*done*/ false,
-                                          /*remove_matching*/ true);
-
-    if (other_comm == nullptr) {
-      XBT_DEBUG("Receive pushed first (%zu comm enqueued so far)", mbox->size());
-      other_comm = std::move(this_synchro);
-      mbox->push(other_comm);
-    } else {
-      XBT_DEBUG("Match my %p with the existing %p", this_synchro.get(), other_comm.get());
-
-      other_comm->set_state(simgrid::kernel::activity::State::READY);
-    }
-    receiver->activities_.emplace_back(other_comm);
-  }
-
-  /* Setup communication synchro */
-  other_comm->dst_actor_ = receiver;
-  other_comm->dst_data_  = data;
-  other_comm->set_dst_buff(dst_buff, dst_buff_size);
-
-  if (rate > -1.0 && (other_comm->get_rate() < 0.0 || rate < other_comm->get_rate()))
-    other_comm->set_rate(rate);
-
-  other_comm->match_fun     = match_fun;
-  other_comm->copy_data_fun = copy_data_fun;
-
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    other_comm->set_state(simgrid::kernel::activity::State::RUNNING);
-    return other_comm;
-  }
-  other_comm->start();
-  return other_comm;
+  return simgrid::kernel::activity::CommImpl::irecv(receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun,
+                                                    data, rate);
 }
 
 void simcall_HANDLER_comm_wait(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comm, double timeout)
@@ -387,6 +271,135 @@ void CommImpl::copy_data()
   copied_ = true;
 }
 
+ActivityImplPtr
+CommImpl::isend(actor::ActorImpl* src_proc, MailboxImpl* mbox, double task_size, double rate, unsigned char* src_buff,
+                size_t src_buff_size, bool (*match_fun)(void*, void*, CommImpl*),
+                void (*clean_fun)(void*), // used to free the synchro in case of problem after a detached send
+                void (*copy_data_fun)(CommImpl*, void*, size_t), // used to copy data if not default one
+                void* data, bool detached)
+{
+  XBT_DEBUG("send from mailbox %p", mbox);
+
+  /* Prepare a synchro describing us, so that it gets passed to the user-provided filter of other side */
+  CommImplPtr this_comm(new CommImpl(CommImpl::Type::SEND));
+
+  /* Look for communication synchro matching our needs. We also provide a description of
+   * ourself so that the other side also gets a chance of choosing if it wants to match with us.
+   *
+   * If it is not found then push our communication into the rendez-vous point */
+  CommImplPtr other_comm = mbox->find_matching_comm(CommImpl::Type::RECEIVE, match_fun, data, this_comm,
+                                                    /*done*/ false, /*remove_matching*/ true);
+
+  if (not other_comm) {
+    other_comm = std::move(this_comm);
+
+    if (mbox->is_permanent()) {
+      // this mailbox is for small messages, which have to be sent right now
+      other_comm->set_state(State::READY);
+      other_comm->dst_actor_ = mbox->get_permanent_receiver().get();
+      mbox->push_done(other_comm);
+      XBT_DEBUG("pushing a message into the permanent receive list %p, comm %p", mbox, other_comm.get());
+
+    } else {
+      mbox->push(other_comm);
+    }
+  } else {
+    XBT_DEBUG("Receive already pushed");
+
+    other_comm->set_state(State::READY);
+  }
+
+  if (detached) {
+    other_comm->detach();
+    other_comm->clean_fun = clean_fun;
+  } else {
+    other_comm->clean_fun = nullptr;
+    src_proc->activities_.emplace_back(other_comm);
+  }
+
+  /* Setup the communication synchro */
+  other_comm->src_actor_ = src_proc;
+  other_comm->src_data_  = data;
+  (*other_comm).set_src_buff(src_buff, src_buff_size).set_size(task_size).set_rate(rate);
+
+  other_comm->match_fun     = match_fun;
+  other_comm->copy_data_fun = copy_data_fun;
+
+  if (MC_is_active() || MC_record_replay_is_active())
+    other_comm->set_state(simgrid::kernel::activity::State::RUNNING);
+  else
+    other_comm->start();
+
+  return (detached ? nullptr : other_comm);
+}
+
+ActivityImplPtr CommImpl::irecv(actor::ActorImpl* receiver, MailboxImpl* mbox, unsigned char* dst_buff,
+                                size_t* dst_buff_size, bool (*match_fun)(void*, void*, CommImpl*),
+                                void (*copy_data_fun)(CommImpl*, void*, size_t), void* data, double rate)
+{
+  CommImplPtr this_synchro(new CommImpl(CommImpl::Type::RECEIVE));
+  XBT_DEBUG("recv from mbox %p. this_synchro=%p", mbox, this_synchro.get());
+
+  CommImplPtr other_comm;
+  // communication already done, get it inside the list of completed comms
+  if (mbox->is_permanent() && mbox->has_some_done_comm()) {
+    XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
+    // find a match in the list of already received comms
+    other_comm = mbox->find_matching_comm(CommImpl::Type::SEND, match_fun, data, this_synchro, /*done*/ true,
+                                          /*remove_matching*/ true);
+    // if not found, assume the receiver came first, register it to the mailbox in the classical way
+    if (not other_comm) {
+      XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request "
+                "into list");
+      other_comm = std::move(this_synchro);
+      mbox->push(other_comm);
+    } else {
+      if (other_comm->surf_action_ && other_comm->get_remaining() < 1e-12) {
+        XBT_DEBUG("comm %p has been already sent, and is finished, destroy it", other_comm.get());
+        other_comm->set_state(State::DONE);
+        other_comm->set_mailbox(nullptr);
+      }
+    }
+  } else {
+    /* Prepare a comm describing us, so that it gets passed to the user-provided filter of other side */
+
+    /* Look for communication activity matching our needs. We also provide a description of
+     * ourself so that the other side also gets a chance of choosing if it wants to match with us.
+     *
+     * If it is not found then push our communication into the rendez-vous point */
+    other_comm = mbox->find_matching_comm(CommImpl::Type::SEND, match_fun, data, this_synchro, /*done*/ false,
+                                          /*remove_matching*/ true);
+
+    if (other_comm == nullptr) {
+      XBT_DEBUG("Receive pushed first (%zu comm enqueued so far)", mbox->size());
+      other_comm = std::move(this_synchro);
+      mbox->push(other_comm);
+    } else {
+      XBT_DEBUG("Match my %p with the existing %p", this_synchro.get(), other_comm.get());
+
+      other_comm->set_state(simgrid::kernel::activity::State::READY);
+    }
+    receiver->activities_.emplace_back(other_comm);
+  }
+
+  /* Setup communication synchro */
+  other_comm->dst_actor_ = receiver;
+  other_comm->dst_data_  = data;
+  other_comm->set_dst_buff(dst_buff, dst_buff_size);
+
+  if (rate > -1.0 && (other_comm->get_rate() < 0.0 || rate < other_comm->get_rate()))
+    other_comm->set_rate(rate);
+
+  other_comm->match_fun     = match_fun;
+  other_comm->copy_data_fun = copy_data_fun;
+
+  if (MC_is_active() || MC_record_replay_is_active()) {
+    other_comm->set_state(State::RUNNING);
+    return other_comm;
+  }
+  other_comm->start();
+  return other_comm;
+}
 bool CommImpl::test(actor::ActorImpl* issuer)
 {
   if ((MC_is_active() || MC_record_replay_is_active()) && src_actor_ && dst_actor_)

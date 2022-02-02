@@ -49,6 +49,16 @@ public:
   std::vector<s4u::Link*> get_traversed_links() const;
   void copy_data();
 
+  static ActivityImplPtr
+  isend(actor::ActorImpl*, MailboxImpl* mbox, double task_size, double rate, unsigned char* src_buff,
+        size_t src_buff_size, bool (*match_fun)(void*, void*, CommImpl*),
+        void (*clean_fun)(void*), // used to free the synchro in case of problem after a detached send
+        void (*copy_data_fun)(CommImpl*, void*, size_t), // used to copy data if not default one
+        void* data, bool detached);
+  static ActivityImplPtr irecv(actor::ActorImpl* receiver, MailboxImpl* mbox, unsigned char* dst_buff,
+                               size_t* dst_buff_size, bool (*match_fun)(void*, void*, CommImpl*),
+                               void (*copy_data_fun)(CommImpl*, void*, size_t), void* data, double rate);
+
   bool test(actor::ActorImpl* issuer) override;
   void wait_for(actor::ActorImpl* issuer, double timeout) override;
   static void wait_any_for(actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms, double timeout);
