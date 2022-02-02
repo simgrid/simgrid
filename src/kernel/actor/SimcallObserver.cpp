@@ -167,6 +167,11 @@ int ActivityTestanySimcall::get_max_consider() const
   return count;
 }
 
+void ActivityTestanySimcall::prepare(int times_considered)
+{
+  next_activity_ = activities_[times_considered];
+}
+
 std::string ActivityTestanySimcall::to_string(int times_considered) const
 {
   std::string res = SimcallObserver::to_string(times_considered);
@@ -309,6 +314,11 @@ int ActivityWaitanySimcall::get_max_consider() const
     if (dynamic_cast<activity::CommImpl*>(act) != nullptr)
       count++;
   return count;
+}
+
+void ActivityWaitanySimcall::prepare(int times_considered)
+{
+  next_activity_ = activities_[times_considered];
 }
 
 std::string ActivityWaitanySimcall::to_string(int times_considered) const

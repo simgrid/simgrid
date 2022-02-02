@@ -184,6 +184,7 @@ public:
 
 class ActivityTestanySimcall : public ResultingSimcall<ssize_t> {
   const std::vector<activity::ActivityImpl*>& activities_;
+  activity::ActivityImpl* next_activity_;
 
 public:
   ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities)
@@ -193,9 +194,11 @@ public:
   SimcallObserver* clone() override { return new ActivityTestanySimcall(get_issuer(), activities_); }
   bool is_visible() const override { return true; }
   int get_max_consider() const override;
+  void prepare(int times_considered) override;
   std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override;
   const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }
+  activity::ActivityImpl* get_next_activity() const { return next_activity_; }
 };
 
 class ActivityWaitSimcall : public ResultingSimcall<bool> {
@@ -219,6 +222,7 @@ public:
 
 class ActivityWaitanySimcall : public ResultingSimcall<ssize_t> {
   const std::vector<activity::ActivityImpl*>& activities_;
+  activity::ActivityImpl* next_activity_;
   const double timeout_;
 
 public:
@@ -229,11 +233,13 @@ public:
   SimcallObserver* clone() override { return new ActivityWaitanySimcall(get_issuer(), activities_, timeout_); }
   bool is_enabled() const override;
   bool is_visible() const override { return true; }
+  void prepare(int times_considered) override;
   int get_max_consider() const override;
   std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override;
   const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }
   double get_timeout() const { return timeout_; }
+  activity::ActivityImpl* get_next_activity() const { return next_activity_; }
 };
 
 } // namespace actor
