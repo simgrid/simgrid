@@ -240,8 +240,7 @@ bool ActivityTestSimcall::depends(SimcallObserver* other)
 std::string ActivityTestSimcall::to_string(int times_considered) const
 {
   std::string res = SimcallObserver::to_string(times_considered) + "Test ";
-  auto* comm      = dynamic_cast<activity::CommImpl*>(activity_);
-  if (comm) {
+  if (const auto* comm = dynamic_cast<activity::CommImpl*>(activity_)) {
     if (comm->src_actor_.get() == nullptr || comm->dst_actor_.get() == nullptr) {
       res += "FALSE(comm=";
       res += XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf("%p)", comm)
