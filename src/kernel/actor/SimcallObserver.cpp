@@ -169,7 +169,7 @@ int ActivityTestanySimcall::get_max_consider() const
 
 void ActivityTestanySimcall::prepare(int times_considered)
 {
-  next_activity_ = activities_[times_considered];
+  next_value_ = times_considered + 1;
 }
 
 std::string ActivityTestanySimcall::to_string(int times_considered) const
@@ -318,7 +318,7 @@ int ActivityWaitanySimcall::get_max_consider() const
 
 void ActivityWaitanySimcall::prepare(int times_considered)
 {
-  next_activity_ = activities_[times_considered];
+  next_value_ = times_considered + 1;
 }
 
 std::string ActivityWaitanySimcall::to_string(int times_considered) const

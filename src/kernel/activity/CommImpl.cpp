@@ -419,16 +419,6 @@ void CommImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 
 void CommImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<CommImpl*>& comms, double timeout)
 {
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    xbt_assert(timeout <= 0.0, "Timeout not implemented for waitany in the model-checker");
-    int idx    = issuer->simcall_.mc_value_;
-    auto* comm = comms[idx];
-    comm->simcalls_.push_back(&issuer->simcall_);
-    simcall_comm_waitany__set__result(&issuer->simcall_, idx);
-    comm->set_state(State::DONE);
-    comm->finish();
-    return;
-  }
   std::vector<ActivityImpl*> activities(comms.begin(), comms.end());
   ActivityImpl::wait_any_for(issuer, activities, timeout);
 }

@@ -184,7 +184,7 @@ public:
 
 class ActivityTestanySimcall : public ResultingSimcall<ssize_t> {
   const std::vector<activity::ActivityImpl*>& activities_;
-  activity::ActivityImpl* next_activity_;
+  int next_value_ = -1;
 
 public:
   ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities)
@@ -198,7 +198,7 @@ public:
   std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override;
   const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }
-  activity::ActivityImpl* get_next_activity() const { return next_activity_; }
+  int get_value() const { return next_value_; }
 };
 
 class ActivityWaitSimcall : public ResultingSimcall<bool> {
@@ -222,8 +222,8 @@ public:
 
 class ActivityWaitanySimcall : public ResultingSimcall<ssize_t> {
   const std::vector<activity::ActivityImpl*>& activities_;
-  activity::ActivityImpl* next_activity_;
   const double timeout_;
+  int next_value_ = -1;
 
 public:
   ActivityWaitanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities, double timeout)
@@ -239,7 +239,7 @@ public:
   std::string dot_label(int times_considered) const override;
   const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }
   double get_timeout() const { return timeout_; }
-  activity::ActivityImpl* get_next_activity() const { return next_activity_; }
+  int get_value() const { return next_value_; }
 };
 
 } // namespace actor

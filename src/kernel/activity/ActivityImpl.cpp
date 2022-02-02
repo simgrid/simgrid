@@ -85,16 +85,17 @@ bool ActivityImpl::test(actor::ActorImpl* issuer)
 
 ssize_t ActivityImpl::test_any(actor::ActorImpl* issuer, const std::vector<ActivityImpl*>& activities)
 {
+  auto* observer = dynamic_cast<kernel::actor::ActivityTestanySimcall*>(issuer->simcall_.observer_);
+  xbt_assert(observer != nullptr);
+
   if (MC_is_active() || MC_record_replay_is_active()) {
-    int idx = issuer->simcall_.mc_value_;
+    int idx = observer->get_value();
     xbt_assert(idx == -1 || activities[idx]->test(issuer));
     return idx;
   }
 
   for (std::size_t i = 0; i < activities.size(); ++i) {
     if (activities[i]->test(issuer)) {
-      auto* observer = dynamic_cast<kernel::actor::ActivityTestanySimcall*>(issuer->simcall_.observer_);
-      xbt_assert(observer != nullptr);
       observer->set_result(i);
       issuer->simcall_answer();
       return i;
@@ -147,6 +148,19 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 void ActivityImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<ActivityImpl*>& activities, double timeout)
 {
   XBT_DEBUG("Wait for execution of any synchro");
+  if (MC_is_active() || MC_record_replay_is_active()) {
+    auto* observer = dynamic_cast<kernel::actor::ActivityWaitanySimcall*>(issuer->simcall_.observer_);
+    xbt_assert(observer != nullptr);
+    xbt_assert(timeout <= 0.0, "Timeout not implemented for waitany in the model-checker");
+    int idx   = observer->get_value();
+    auto* act = activities[idx];
+    act->simcalls_.push_back(&issuer->simcall_);
+    observer->set_result(idx);
+    act->set_state(State::DONE);
+    act->finish();
+    return;
+  }
+
   if (timeout < 0.0) {
     issuer->simcall_.timeout_cb_ = nullptr;
   } else {
