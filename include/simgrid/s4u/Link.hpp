@@ -122,7 +122,10 @@ public:
    * current function to specify that a given host uses another level of bandwidth. This can be used to take the
    * location of hosts into account, or even to model mobility in your SimGrid simulation.
    *
-   * Note that this function asserts that the link is actually a wifi link */
+   * Note that this function asserts that the link is actually a wifi link
+   *
+   * warning: in the case where a 0Mbps data rate should be used, set that rate only once during the
+   * experiment, and don't modify the bandwidth of that host later */
   void set_host_wifi_rate(const s4u::Host* host, int level) const;
 
   /** @brief Returns the current load (in bytes per second) */
