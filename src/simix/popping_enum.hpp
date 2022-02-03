@@ -25,14 +25,12 @@ enum class Simcall {
   COMM_IRECV,
   COMM_SEND,
   COMM_ISEND,
-  COMM_TEST,
-  COMM_TESTANY,
   COMM_WAITANY,
   COMM_WAIT,
   RUN_KERNEL,
   RUN_BLOCKING,
 };
 
-constexpr int NUM_SIMCALLS = 11;
+constexpr int NUM_SIMCALLS = 9;
 } // namespace simix
 } // namespace simgrid

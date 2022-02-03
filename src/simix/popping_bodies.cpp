@@ -69,20 +69,6 @@ inline static boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl> simc
   return simcall<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>, smx_actor_t, smx_mailbox_t, double, double, unsigned char*, size_t, simix_match_func_t, simix_clean_func_t, simix_copy_data_func_t, void*, bool>(Simcall::COMM_ISEND, sender, mbox, task_size, rate, src_buff, src_buff_size, match_fun, clean_fun, copy_data_fun, data, detached);
 }
 
-inline static bool simcall_BODY_comm_test(simgrid::kernel::activity::CommImpl* comm)
-{
-  if (false) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_comm_test(&simgrid::kernel::actor::ActorImpl::self()->simcall_, comm);
-  return simcall<bool, simgrid::kernel::activity::CommImpl*>(Simcall::COMM_TEST, comm);
-}
-
-inline static ssize_t simcall_BODY_comm_testany(simgrid::kernel::activity::CommImpl** comms, size_t count)
-{
-  if (false) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_comm_testany(&simgrid::kernel::actor::ActorImpl::self()->simcall_, comms, count);
-  return simcall<ssize_t, simgrid::kernel::activity::CommImpl**, size_t>(Simcall::COMM_TESTANY, comms, count);
-}
-
 inline static ssize_t simcall_BODY_comm_waitany(simgrid::kernel::activity::CommImpl** comms, size_t count, double timeout)
 {
   if (false) /* Go to that function to follow the code flow through the simcall barrier */

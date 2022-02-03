@@ -70,17 +70,6 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, simgrid::kernel::activity:
   comm->wait_for(simcall->issuer_, timeout);
 }
 
-bool simcall_HANDLER_comm_test(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comm)
-{
-  return comm->test(simcall->issuer_);
-}
-
-ssize_t simcall_HANDLER_comm_testany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count)
-{
-  std::vector<simgrid::kernel::activity::ActivityImpl*> comms_vec(comms, comms + count);
-  return simgrid::kernel::activity::ActivityImpl::test_any(simcall->issuer_, comms_vec);
-}
-
 void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count,
                                   double timeout)
 {

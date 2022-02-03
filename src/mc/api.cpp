@@ -131,16 +131,15 @@ bool Api::simcall_check_dependency(smx_simcall_t req1, smx_simcall_t req2) const
 {
   const auto IRECV = Simcall::COMM_IRECV;
   const auto ISEND = Simcall::COMM_ISEND;
-  const auto TEST  = Simcall::COMM_TEST;
   const auto WAIT  = Simcall::COMM_WAIT;
 
   if (req1->issuer_ == req2->issuer_) // Done in observer for TEST and WAIT
     return false;
 
   /* The independence theorem only consider 4 simcalls. All others are dependent with anything. */
-  if (req1->call_ != ISEND && req1->call_ != IRECV && req1->call_ != TEST && req1->call_ != WAIT)
+  if (req1->call_ != ISEND && req1->call_ != IRECV && req1->call_ != WAIT)
     return true;
-  if (req2->call_ != ISEND && req2->call_ != IRECV && req2->call_ != TEST && req2->call_ != WAIT)
+  if (req2->call_ != ISEND && req2->call_ != IRECV && req2->call_ != WAIT)
     return true;
 
   /* Make sure that req1 and req2 are in alphabetic order */

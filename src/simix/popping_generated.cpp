@@ -34,8 +34,6 @@ constexpr std::array<const char*, simgrid::simix::NUM_SIMCALLS> simcall_names{{
     "Simcall::COMM_IRECV",
     "Simcall::COMM_SEND",
     "Simcall::COMM_ISEND",
-    "Simcall::COMM_TEST",
-    "Simcall::COMM_TESTANY",
     "Simcall::COMM_WAITANY",
     "Simcall::COMM_WAIT",
     "Simcall::RUN_KERNEL",
@@ -71,16 +69,6 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered)
 
     case Simcall::COMM_ISEND:
       simgrid::simix::marshal<boost::intrusive_ptr<simgrid::kernel::activity::ActivityImpl>>(simcall_.result_, simcall_HANDLER_comm_isend(&simcall_, simgrid::simix::unmarshal<smx_actor_t>(simcall_.args_[0]), simgrid::simix::unmarshal<smx_mailbox_t>(simcall_.args_[1]), simgrid::simix::unmarshal<double>(simcall_.args_[2]), simgrid::simix::unmarshal<double>(simcall_.args_[3]), simgrid::simix::unmarshal<unsigned char*>(simcall_.args_[4]), simgrid::simix::unmarshal<size_t>(simcall_.args_[5]), simgrid::simix::unmarshal<simix_match_func_t>(simcall_.args_[6]), simgrid::simix::unmarshal<simix_clean_func_t>(simcall_.args_[7]), simgrid::simix::unmarshal<simix_copy_data_func_t>(simcall_.args_[8]), simgrid::simix::unmarshal<void*>(simcall_.args_[9]), simgrid::simix::unmarshal<bool>(simcall_.args_[10])));
-      simcall_answer();
-      break;
-
-    case Simcall::COMM_TEST:
-      simgrid::simix::marshal<bool>(simcall_.result_, simcall_HANDLER_comm_test(&simcall_, simgrid::simix::unmarshal<simgrid::kernel::activity::CommImpl*>(simcall_.args_[0])));
-      simcall_answer();
-      break;
-
-    case Simcall::COMM_TESTANY:
-      simgrid::simix::marshal<ssize_t>(simcall_.result_, simcall_HANDLER_comm_testany(&simcall_, simgrid::simix::unmarshal<simgrid::kernel::activity::CommImpl**>(simcall_.args_[0]), simgrid::simix::unmarshal<size_t>(simcall_.args_[1])));
       simcall_answer();
       break;
 

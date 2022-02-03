@@ -129,7 +129,20 @@ ssize_t simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_
 {
   if (count == 0)
     return -1;
-  return simcall_BODY_comm_testany(comms, count);
+  std::vector<simgrid::kernel::activity::ActivityImpl*> activities;
+  for (size_t i = 0; i < count; i++)
+    activities.push_back(static_cast<simgrid::kernel::activity::ActivityImpl*>(comms[i]));
+
+  simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
+  simgrid::kernel::actor::ActivityTestanySimcall observer{issuer, activities};
+  ssize_t changed_pos = simgrid::kernel::actor::simcall_blocking(
+      [&observer] {
+        simgrid::kernel::activity::ActivityImpl::test_any(observer.get_issuer(), observer.get_activities());
+      },
+      &observer);
+  if (changed_pos != -1)
+    comms[changed_pos]->get_iface()->complete(simgrid::s4u::Activity::State::FINISHED);
+  return changed_pos;
 }
 
 /**
@@ -147,7 +160,14 @@ void simcall_comm_wait(simgrid::kernel::activity::ActivityImpl* comm, double tim
  */
 bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm) // XBT_ATTRIB_DEPRECATED_v335
 {
-  return simcall_BODY_comm_test(static_cast<simgrid::kernel::activity::CommImpl*>(comm));
+  simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
+  simgrid::kernel::actor::ActivityTestSimcall observer{issuer, comm};
+  if (simgrid::kernel::actor::simcall_blocking([&observer] { observer.get_activity()->test(observer.get_issuer()); },
+                                               &observer)) {
+    comm->get_iface()->complete(simgrid::s4u::Activity::State::FINISHED);
+    return true;
+  }
+  return false;
 }
 
 void simcall_run_kernel(std::function<void()> const& code, simgrid::kernel::actor::SimcallObserver* observer)
