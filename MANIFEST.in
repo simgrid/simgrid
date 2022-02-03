@@ -1917,7 +1917,6 @@ include docs/source/tuto_network_calibration/fig/pingpong_simgrid.drawio
 include docs/source/tuto_network_calibration/fig/pingpong_simgrid.png
 include docs/source/tuto_network_calibration/isend_ckmeans.json
 include docs/source/tuto_network_calibration/isend_dhist.json
-include docs/source/tuto_network_calibration/network_calibration_tutorial.ipynb
 include docs/source/tuto_network_calibration/network_calibration_tutorial.rst
 include docs/source/tuto_network_calibration/pingpong_ckmeans.json
 include docs/source/tuto_network_calibration/pingpong_dhist.json

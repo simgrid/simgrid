@@ -28,6 +28,7 @@
 + \.github/.*
 
 + docs/default.nix
++ docs/source/tuto_network_calibration/network_calibration_tutorial.ipynb
 
 + tools/appveyor-irc-notify\.py
 + tools/docker/.*
