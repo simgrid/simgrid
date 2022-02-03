@@ -50,7 +50,7 @@ public:
   void copy_data();
 
   static ActivityImplPtr
-  isend(actor::ActorImpl*, MailboxImpl* mbox, double task_size, double rate, unsigned char* src_buff,
+  isend(actor::ActorImpl* src, MailboxImpl* mbox, double task_size, double rate, unsigned char* src_buff,
         size_t src_buff_size, bool (*match_fun)(void*, void*, CommImpl*),
         void (*clean_fun)(void*), // used to free the synchro in case of problem after a detached send
         void (*copy_data_fun)(CommImpl*, void*, size_t), // used to copy data if not default one

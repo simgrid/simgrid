@@ -609,88 +609,23 @@ std::string Api::request_to_string(smx_simcall_t req, int value) const
 {
   xbt_assert(mc_model_checker != nullptr, "Must be called from MCer");
 
-  std::string type;
-  std::string args;
-
   smx_actor_t issuer = simcall_get_issuer(req);
 
   if (issuer->simcall_.observer_ != nullptr)
     return mc_model_checker->simcall_to_string(issuer->get_pid(), value);
-
-  switch (req->call_) {
-    case Simcall::COMM_ISEND:
-      type = "iSend";
-      args = "src=" + get_actor_string(issuer);
-      args += ", buff=" + pointer_to_string(simcall_comm_isend__get__src_buff(req));
-      args += ", size=" + buff_size_to_string(simcall_comm_isend__get__src_buff_size(req));
-      break;
-
-    case Simcall::COMM_IRECV: {
-      size_t* remote_size = simcall_comm_irecv__get__dst_buff_size(req);
-      size_t size         = 0;
-      if (remote_size)
-        mc_model_checker->get_remote_process().read_bytes(&size, sizeof(size), remote(remote_size));
-
-      type = "iRecv";
-      args = "dst=" + get_actor_string(issuer);
-      args += ", buff=" + pointer_to_string(simcall_comm_irecv__get__dst_buff(req));
-      args += ", size=" + buff_size_to_string(size);
-      break;
-    }
-
-    case Simcall::COMM_WAIT:
-      // See ActivityWaitSimcall::to_string(int times_considered)
-    case Simcall::COMM_TEST:
-      // See ActivityTestSimcall::to_string(int times_considered)
-    case Simcall::COMM_WAITANY:
-      // See ActivityWaitanySimcall::to_string(int times_considered)
-    case Simcall::COMM_TESTANY:
-      // See ActivityTestanySimcall::to_string(int times_considered)
-      break;
-
-    default:
-      type = SIMIX_simcall_name(*req);
-      args = "??";
-      break;
-  }
-
-  return "[" + get_actor_string(issuer) + "] " + type + "(" + args + ")";
+  else
+    return "[" + get_actor_string(issuer) + "] " + SIMIX_simcall_name(*req) + "(unknown?)";
 }
 
 std::string Api::request_get_dot_output(smx_simcall_t req, int value) const
 {
-  const smx_actor_t issuer = simcall_get_issuer(req);
-  const char* color        = get_color(issuer->get_pid() - 1);
-
-  std::string label;
-
   if (req->observer_ != nullptr) {
-    label = mc_model_checker->simcall_dot_label(issuer->get_pid(), value);
+    const smx_actor_t issuer = simcall_get_issuer(req);
+    const char* color        = get_color(issuer->get_pid() - 1);
+    return "label = \"" + mc_model_checker->simcall_dot_label(issuer->get_pid(), value) + "\", color = " + color +
+           ", fontcolor = " + color;
   } else
-    switch (req->call_) {
-      case Simcall::COMM_ISEND:
-        label = "[" + get_actor_dot_label(issuer) + "] iSend";
-        break;
-
-      case Simcall::COMM_IRECV:
-        label = "[" + get_actor_dot_label(issuer) + "] iRecv";
-        break;
-
-      case Simcall::COMM_WAIT:
-        // See ActivityWaitSimcall::dot_label(int times_considered)
-      case Simcall::COMM_TEST:
-        // See ActivityTestSimcall::dot_label(int times_considered)
-      case Simcall::COMM_WAITANY:
-        // See ActivityWaittanySimcall::dot_label(int times_considered)
-      case Simcall::COMM_TESTANY:
-        // See ActivityTestanySimcall::dot_label(int times_considered)
-        break;
-
-      default:
-        THROW_UNIMPLEMENTED;
-    }
-
-  return "label = \"" + label + "\", color = " + color + ", fontcolor = " + color;
+    return "UNIMPLEMENTED";
 }
 
 #if HAVE_SMPI

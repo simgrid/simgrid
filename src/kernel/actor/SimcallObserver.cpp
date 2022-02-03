@@ -410,6 +410,32 @@ std::string ActivityWaitanySimcall::to_string(int times_considered) const
   return res;
 }
 
+std::string CommIsendSimcall::to_string(int times_considered) const
+{
+  std::string res = SimcallObserver::to_string(times_considered) + "iSend(";
+  res += xbt::string_printf("src=[(%ld)%s (%s)]", get_issuer()->get_pid(), get_issuer()->get_host()->get_cname(),
+                            get_issuer()->get_cname());
+  res += XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf(", buff=%p", src_buff_)
+                                                                  : "(verbose only)";
+  res += ", size=" +
+         (XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? std::to_string(src_buff_size_) : "(verbose only)");
+  res += ")";
+  return res;
+}
+
+std::string CommIrecvSimcall::to_string(int times_considered) const
+{
+  std::string res = SimcallObserver::to_string(times_considered) + "iRecv(";
+  res += xbt::string_printf("dst=[(%ld)%s (%s)]", get_issuer()->get_pid(), get_issuer()->get_host()->get_cname(),
+                            get_issuer()->get_cname());
+  res += XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf(", buff=%p", dst_buff_)
+                                                                  : "(verbose only)";
+  res += ", size=" + (XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? std::to_string(*dst_buff_size_)
+                                                                               : "(verbose only)");
+  res += ")";
+  return res;
+}
+
 } // namespace actor
 } // namespace kernel
 } // namespace simgrid

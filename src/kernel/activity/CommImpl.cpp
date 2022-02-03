@@ -24,8 +24,8 @@ XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t sr
                                            void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
                                            void* data, double timeout)
 {
-  simgrid::kernel::activity::ActivityImplPtr comm = simcall_HANDLER_comm_isend(
-      simcall, src, mbox, task_size, rate, src_buff, src_buff_size, match_fun, nullptr, copy_data_fun, data, false);
+  simgrid::kernel::activity::ActivityImplPtr comm = simgrid::kernel::activity::CommImpl::isend(
+      src, mbox, task_size, rate, src_buff, src_buff_size, match_fun, nullptr, copy_data_fun, data, false);
   simcall->mc_value_ = 0;
   comm->wait_for(simcall->issuer_, timeout);
 }
@@ -48,8 +48,8 @@ XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t re
                                            void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
                                            void* data, double timeout, double rate)
 {
-  simgrid::kernel::activity::ActivityImplPtr comm = simcall_HANDLER_comm_irecv(
-      simcall, receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
+  simgrid::kernel::activity::ActivityImplPtr comm = simgrid::kernel::activity::CommImpl::irecv(
+      receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
   simcall->mc_value_ = 0;
   comm->wait_for(simcall->issuer_, timeout);
 }

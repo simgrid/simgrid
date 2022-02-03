@@ -244,6 +244,100 @@ public:
   int get_value() const { return next_value_; }
 };
 
+class CommIsendSimcall : public ResultingSimcall<activity::ActivityImplPtr> {
+  activity::MailboxImpl* mbox_;
+  size_t payload_size_;
+  double rate_;
+  unsigned char* src_buff_;
+  size_t src_buff_size_;
+  void* payload_;
+  bool detached_;
+
+public:
+  bool (*match_fun_)(void*, void*, activity::CommImpl*);
+  void (*clean_fun_)(void*); // used to free the synchro in case of problem after a detached send
+  void (*copy_data_fun_)(activity::CommImpl*, void*, size_t); // used to copy data if not default one
+
+  CommIsendSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, size_t payload_size, double rate,
+                   unsigned char* src_buff, size_t src_buff_size, bool (*match_fun)(void*, void*, activity::CommImpl*),
+                   void (*clean_fun)(void*), // used to free the synchro in case of problem after a detached send
+                   void (*copy_data_fun)(activity::CommImpl*, void*, size_t), // used to copy data if not default one
+                   void* payload, bool detached)
+      : ResultingSimcall(actor, nullptr)
+      , mbox_(mbox)
+      , payload_size_(payload_size)
+      , rate_(rate)
+      , src_buff_(src_buff)
+      , src_buff_size_(src_buff_size)
+      , payload_(payload)
+      , detached_(detached)
+      , match_fun_(match_fun)
+      , clean_fun_(clean_fun)
+      , copy_data_fun_(copy_data_fun)
+  {
+  }
+  CommIsendSimcall* clone() override
+  {
+    return new CommIsendSimcall(get_issuer(), mbox_, payload_size_, rate_, src_buff_, src_buff_size_, match_fun_,
+                                clean_fun_, copy_data_fun_, payload_, detached_);
+  }
+  bool is_visible() const override { return true; }
+  std::string to_string(int times_considered) const override;
+  std::string dot_label(int times_considered) const override
+  {
+    return SimcallObserver::dot_label(times_considered) + "iSend";
+  }
+  activity::MailboxImpl* get_mailbox() const { return mbox_; }
+  size_t get_payload_size() const { return payload_size_; }
+  double get_rate() const { return rate_; }
+  unsigned char* get_src_buff() const { return src_buff_; }
+  size_t get_src_buff_size() const { return src_buff_size_; }
+  void* get_payload() const { return payload_; }
+  bool is_detached() const { return detached_; }
+};
+
+class CommIrecvSimcall : public ResultingSimcall<activity::ActivityImplPtr> {
+  activity::MailboxImpl* mbox_;
+  unsigned char* dst_buff_;
+  size_t* dst_buff_size_;
+  void* payload_;
+  double rate_;
+
+public:
+  bool (*match_fun_)(void*, void*, activity::CommImpl*);
+  void (*copy_data_fun_)(activity::CommImpl*, void*, size_t); // used to copy data if not default one
+
+  CommIrecvSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, unsigned char* dst_buff, size_t* dst_buff_size,
+                   bool (*match_fun)(void*, void*, activity::CommImpl*),
+                   void (*copy_data_fun)(activity::CommImpl*, void*, size_t), void* payload, double rate)
+      : ResultingSimcall(actor, nullptr)
+      , mbox_(mbox)
+      , dst_buff_(dst_buff)
+      , dst_buff_size_(dst_buff_size)
+      , payload_(payload)
+      , rate_(rate)
+      , match_fun_(match_fun)
+      , copy_data_fun_(copy_data_fun)
+  {
+  }
+  CommIrecvSimcall* clone() override
+  {
+    return new CommIrecvSimcall(get_issuer(), mbox_, dst_buff_, dst_buff_size_, match_fun_, copy_data_fun_, payload_,
+                                rate_);
+  }
+  bool is_visible() const override { return true; }
+  std::string to_string(int times_considered) const override;
+  std::string dot_label(int times_considered) const override
+  {
+    return SimcallObserver::dot_label(times_considered) + "iRecv";
+  }
+  activity::MailboxImpl* get_mailbox() const { return mbox_; }
+  double get_rate() const { return rate_; }
+  unsigned char* get_dst_buff() const { return dst_buff_; }
+  size_t* get_dst_buff_size() const { return dst_buff_size_; }
+  void* get_payload() const { return payload_; }
+};
+
 } // namespace actor
 } // namespace kernel
 } // namespace simgrid
