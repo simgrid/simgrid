@@ -223,19 +223,18 @@ void NetworkCm02Model::comm_action_expand_constraints(const s4u::Host* src, cons
   /* WI-FI links needs special treatment, do it here */
   if (src_wifi_link != nullptr) {
     /* In case of 0Mbps data rate, don't consider it in the LMM */
-    if (src_wifi_link->get_host_rate(src) != 0)
+    if (src_wifi_link->get_host_rate(src) > 0)
       get_maxmin_system()->expand(src_wifi_link->get_constraint(), action->get_variable(),
                                   1.0 / src_wifi_link->get_host_rate(src));
     else
       get_maxmin_system()->update_variable_penalty(action->get_variable(), 0);
   }
   if (dst_wifi_link != nullptr) {
-    if (dst_wifi_link->get_host_rate(dst) != 0)
+    if (dst_wifi_link->get_host_rate(dst) > 0)
       get_maxmin_system()->expand(dst_wifi_link->get_constraint(), action->get_variable(),
                                   1.0 / dst_wifi_link->get_host_rate(dst));
-    else {
+    else
       get_maxmin_system()->update_variable_penalty(action->get_variable(), 0);
-    }
   }
 
   for (auto const* link : route) {

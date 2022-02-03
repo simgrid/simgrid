@@ -77,8 +77,6 @@ void WifiLinkImpl::refresh_decay_bandwidths()
     double min_bw     = bandwidth.peak - (wifi_max_rate_ - wifi_min_rate_);
     double model_rate = bandwidth.peak - (wifi_max_rate_ - model_rate_);
 
-    //xbt_assert(min_bw > 0, "Your WIFI link is using bandwidth(s) which is too low for the decay model.");
-
     double N0     = max_bw - min_bw;
     double lambda = (-log(model_rate - min_bw) + log(N0)) / model_n_;
     // Since decay model start at 0 we should use (nSTA-1)
