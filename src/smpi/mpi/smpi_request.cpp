@@ -510,10 +510,29 @@ void Request::start()
     }
     if(!is_probe)
       flags_ &= ~MPI_REQ_PROBE;
-
     action_   = simcall_comm_irecv(
         process->get_actor()->get_impl(), mailbox->get_impl(), buf_, &real_size_, &match_recv,
         process->replaying() ? &smpi_comm_null_copy_buffer_callback : smpi_comm_copy_data_callback, this, -1.0);
+
+    //    kernel::actor::CommIrecvSimcall observer{process->get_actor()->get_impl(),
+    //                                             mailbox->get_impl(),
+    //                                             static_cast<unsigned char*>(buf_),
+    //                                             &real_size_,
+    //                                             &match_recv,
+    //                                             process->replaying() ? &smpi_comm_null_copy_buffer_callback
+    //                                                                  : smpi_comm_copy_data_callback,
+    //                                             this,
+    //                                             -1.0};
+    //
+    //    action_ = kernel::actor::simcall_blocking(
+    //        [&observer] {
+    //          return kernel::activity::CommImpl::irecv(
+    //              observer.get_issuer(), observer.get_mailbox(), observer.get_dst_buff(),
+    //              observer.get_dst_buff_size(), observer.match_fun_, observer.copy_data_fun_, observer.get_payload(),
+    //              observer.get_rate());
+    //        },
+    //        &observer);
+
     XBT_DEBUG("recv simcall posted");
 
     if (smpi_cfg_async_small_thresh() != 0 || (flags_ & MPI_REQ_RMA) != 0)
@@ -609,13 +628,21 @@ void Request::start()
     }
 
     size_t payload_size_ = size_ + 16;//MPI enveloppe size (tag+dest+communicator)
-    action_              = simcall_comm_isend(
-        simgrid::kernel::actor::ActorImpl::by_pid(src_), mailbox->get_impl(), payload_size_, -1.0, buf, real_size_,
-        &match_send,
+    kernel::actor::CommIsendSimcall observer{
+        simgrid::kernel::actor::ActorImpl::by_pid(src_), mailbox->get_impl(), payload_size_, -1,
+        static_cast<unsigned char*>(buf), real_size_, &match_send,
         &xbt_free_f, // how to free the userdata if a detached send fails
         process->replaying() ? &smpi_comm_null_copy_buffer_callback : smpi_comm_copy_data_callback, this,
         // detach if msg size < eager/rdv switch limit
-        detached_);
+        detached_};
+    action_ = kernel::actor::simcall_blocking(
+        [&observer] {
+          return kernel::activity::CommImpl::isend(
+              observer.get_issuer(), observer.get_mailbox(), observer.get_payload_size(), observer.get_rate(),
+              observer.get_src_buff(), observer.get_src_buff_size(), observer.match_fun_, observer.clean_fun_,
+              observer.copy_data_fun_, observer.get_payload(), observer.is_detached());
+        },
+        &observer);
     XBT_DEBUG("send simcall posted");
 
     /* FIXME: detached sends are not traceable (action_ == nullptr) */

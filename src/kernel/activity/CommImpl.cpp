@@ -10,6 +10,7 @@
 
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
+#include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/LinkImpl.hpp"
@@ -272,7 +273,7 @@ void CommImpl::copy_data()
 }
 
 ActivityImplPtr
-CommImpl::isend(actor::ActorImpl* src_proc, MailboxImpl* mbox, double task_size, double rate, unsigned char* src_buff,
+CommImpl::isend(actor::ActorImpl* sender, MailboxImpl* mbox, double task_size, double rate, unsigned char* src_buff,
                 size_t src_buff_size, bool (*match_fun)(void*, void*, CommImpl*),
                 void (*clean_fun)(void*), // used to free the synchro in case of problem after a detached send
                 void (*copy_data_fun)(CommImpl*, void*, size_t), // used to copy data if not default one
@@ -314,11 +315,11 @@ CommImpl::isend(actor::ActorImpl* src_proc, MailboxImpl* mbox, double task_size,
     other_comm->clean_fun = clean_fun;
   } else {
     other_comm->clean_fun = nullptr;
-    src_proc->activities_.emplace_back(other_comm);
+    sender->activities_.emplace_back(other_comm);
   }
 
   /* Setup the communication synchro */
-  other_comm->src_actor_ = src_proc;
+  other_comm->src_actor_ = sender;
   other_comm->src_data_  = data;
   (*other_comm).set_src_buff(src_buff, src_buff_size).set_size(task_size).set_rate(rate);
 
@@ -329,6 +330,11 @@ CommImpl::isend(actor::ActorImpl* src_proc, MailboxImpl* mbox, double task_size,
     other_comm->set_state(simgrid::kernel::activity::State::RUNNING);
   else
     other_comm->start();
+
+  if (auto* observer = dynamic_cast<actor::CommIsendSimcall*>(sender->simcall_.observer_)) {
+    observer->set_result(detached ? nullptr : other_comm);
+    sender->simcall_answer();
+  }
 
   return (detached ? nullptr : other_comm);
 }
@@ -398,6 +404,12 @@ ActivityImplPtr CommImpl::irecv(actor::ActorImpl* receiver, MailboxImpl* mbox, u
     return other_comm;
   }
   other_comm->start();
+
+  if (auto* observer = dynamic_cast<actor::CommIrecvSimcall*>(receiver->simcall_.observer_)) {
+    observer->set_result(other_comm);
+    receiver->simcall_answer();
+  }
+
   return other_comm;
 }
 bool CommImpl::test(actor::ActorImpl* issuer)

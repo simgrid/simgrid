@@ -219,13 +219,43 @@ Comm* Comm::start()
 
   } else if (src_buff_ != nullptr) { // Sender side
     on_send(*this);
-    pimpl_ = simcall_comm_isend(sender_, mailbox_->get_impl(), remains_, rate_, src_buff_, src_buff_size_, match_fun_,
-                                clean_fun_, copy_data_function_, get_data<void>(), detached_);
+    kernel::actor::CommIsendSimcall observer{sender_,
+                                             mailbox_->get_impl(),
+                                             static_cast<size_t>(remains_),
+                                             rate_,
+                                             static_cast<unsigned char*>(src_buff_),
+                                             src_buff_size_,
+                                             match_fun_,
+                                             clean_fun_,
+                                             copy_data_function_,
+                                             get_data<void>(),
+                                             detached_};
+    pimpl_ = kernel::actor::simcall_blocking(
+        [&observer] {
+          return kernel::activity::CommImpl::isend(
+              observer.get_issuer(), observer.get_mailbox(), observer.get_payload_size(), observer.get_rate(),
+              observer.get_src_buff(), observer.get_src_buff_size(), observer.match_fun_, observer.clean_fun_,
+              observer.copy_data_fun_, observer.get_payload(), observer.is_detached());
+        },
+        &observer);
   } else if (dst_buff_ != nullptr) { // Receiver side
     xbt_assert(not detached_, "Receive cannot be detached");
     on_recv(*this);
-    pimpl_ = simcall_comm_irecv(receiver_, mailbox_->get_impl(), dst_buff_, &dst_buff_size_, match_fun_,
-                                copy_data_function_, get_data<void>(), rate_);
+    kernel::actor::CommIrecvSimcall observer{receiver_,
+                                             mailbox_->get_impl(),
+                                             static_cast<unsigned char*>(dst_buff_),
+                                             &dst_buff_size_,
+                                             match_fun_,
+                                             copy_data_function_,
+                                             get_data<void>(),
+                                             rate_};
+    pimpl_ = kernel::actor::simcall_blocking(
+        [&observer] {
+          return kernel::activity::CommImpl::irecv(
+              observer.get_issuer(), observer.get_mailbox(), observer.get_dst_buff(), observer.get_dst_buff_size(),
+              observer.match_fun_, observer.copy_data_fun_, observer.get_payload(), observer.get_rate());
+        },
+        &observer);
   } else {
     xbt_die("Cannot start a communication before specifying whether we are the sender or the receiver");
   }
