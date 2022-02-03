@@ -31,7 +31,7 @@ interaction with SimGrid is done by writing programs with the exposed
 functions to build your own simulator. This can be done in C/C++, Python or Java,
 on Linux, Mac OSX or Windows (using the WSL).
 
-SimGrid is a Free Software distributed under the LGPL-2.1 license. You are
+SimGrid is a Free Software distributed under the LGPL-2.1-only license. You are
 welcome to use, study, share and improve it, provided that your version is as
 free as ours. SimGrid is developed for 20 years by a lively community of users
 and researchers from several groups, initially in France and the U.S.A. It

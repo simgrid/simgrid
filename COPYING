@@ -4,7 +4,7 @@ Source: https://simgrid.org/
 
 Files: *
 Copyright: 2003-2022. The SimGrid team. All rights reserved.
-License: LGPL-2.1
+License: LGPL-2.1-only
 
 Files: src/xbt/snprintf.c
 Copyright: 1999, Mark Martinec <mark.martinec@ijs.si.
@@ -15,7 +15,7 @@ Files: src/xbt/mmalloc/* src/include/xbt/mmalloc.h
 Copyright:
   Copyright (C) 1991, 1992 Free Software Foundation, Inc.
   Copyright (C) 2003-2022. The SimGrid team.
-License: LGPL-2.1
+License: LGPL-2.1-only
 Comment: these files used to be part of gdb, but were removed there
 
 Files:
@@ -73,8 +73,8 @@ Copyright:
  FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
  FleXML is Copyright (C) 2003-2013 Martin Quinson.  All rights reserved.
  Copyright (C) 2003-2022. The SimGrid team.
-License: GPL-2+ and LGPL-2.1
-Comment: Generated with the FleXML XML processor generator (which is GPL-2+) using SimGrid configuration files (that are LGPL-2.1)
+License: GPL-2+ and LGPL-2.1-only
+Comment: Generated with the FleXML XML processor generator (which is GPL-2+) using SimGrid configuration files (that are LGPL-2.1-only)
 
 Files:
  src/smpi/colls/allgather/allgather-2dmesh.cpp
@@ -177,8 +177,8 @@ Files: src/xbt/automaton/parserPromela.tab.cacc
 Copyright:
  Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
  Copyright (C) 2003-2022. The SimGrid team.
-License: GPL-3+ and LGPL-2.1
-Comment: Generated with the Bison processor generator (which is GPL-3+) using SimGrid configuration files (that are LGPL-2.1)
+License: GPL-3+ and LGPL-2.1-only
+Comment: Generated with the Bison processor generator (which is GPL-3+) using SimGrid configuration files (that are LGPL-2.1-only)
 
 Files: src/include/catch.hpp
 Copyright:
