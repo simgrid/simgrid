@@ -156,7 +156,7 @@ In <host> and <peer>, rename the 'availability_file' attribute into 'speed_file'
 
 =head1 AUTHORS
 
- The SimGrid team (simgrid-devel@lists.gforge.inria.fr)
+ The SimGrid team
 
 =head1 COPYRIGHT AND LICENSE
 

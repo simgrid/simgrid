@@ -20,12 +20,10 @@ ask the community for help. If you do not have a question, just come
 to us and say hello! We love earing about how people use SimGrid.
 
  - For questions or remarks, drop us an email on the `user mailing
-   list <mailto:simgrid-user@lists.gforge.inria.fr>`_ (to subscribe,
+   list <mailto:simgrid-community@inria.fr>`_ (to subscribe,
    visit the `web interface
-   <http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user>`__);
-   you can also check out `our archives
-   <http://lists.gforge.inria.fr/pipermail/simgrid-user/>`_.  We
-   prefer you to **not use private emails**. SimGrid is an open
+   <https://sympa.inria.fr/sympa/info/simgrid-community>`__).
+   We prefer you to **not use private emails**. SimGrid is an open
    framework, and you never know who have the time and knowledge to
    answer your question, so please keep messages on the public mailing
    list.

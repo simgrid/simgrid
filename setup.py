@@ -90,7 +90,7 @@ setup(
     name='simgrid',
     version='3.30.1',
     author='Da SimGrid Team',
-    author_email='simgrid-devel@lists.gforge.inria.fr',
+    author_email='simgrid-community@inria.fr',
     description='Toolkit for scalable simulation of distributed applications',
     long_description=("SimGrid is a scientific instrument to study the behavior of "
                       "large-scale distributed systems such as Grids, Clouds, HPC or P2P "
