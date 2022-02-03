@@ -99,55 +99,8 @@ static inline smx_simcall_t MC_state_choose_request_for_process(const RemoteProc
   // Fetch the data of the request and translate it:
   state->internal_req_ = *req;
   state->internal_req_.mc_value_ = state->transition_.times_considered_;
-  simcall_translate(&state->internal_req_, state->internal_comm_);
 
   return req;
-}
-
-static void simcall_translate(smx_simcall_t req,
-                              simgrid::mc::Remote<simgrid::kernel::activity::CommImpl>& buffered_comm)
-{
-  simgrid::kernel::activity::CommImpl* chosen_comm;
-
-  /* The waitany and testany request are transformed into a wait or test request over the corresponding communication
-   * action so it can be treated later by the dependence function. */
-  switch (req->call_) {
-    case Simcall::COMM_WAITANY:
-      req->call_  = Simcall::COMM_WAIT;
-      chosen_comm =
-          mc_model_checker->get_remote_process().read(remote(simcall_comm_waitany__get__comms(req) + req->mc_value_));
-
-      mc_model_checker->get_remote_process().read(buffered_comm, remote(chosen_comm));
-      simcall_comm_wait__set__comm(req, buffered_comm.get_buffer());
-      simcall_comm_wait__set__timeout(req, 0);
-      break;
-
-    case Simcall::COMM_TESTANY:
-      req->call_  = Simcall::COMM_TEST;
-      chosen_comm =
-          mc_model_checker->get_remote_process().read(remote(simcall_comm_testany__get__comms(req) + req->mc_value_));
-
-      mc_model_checker->get_remote_process().read(buffered_comm, remote(chosen_comm));
-      simcall_comm_test__set__comm(req, buffered_comm.get_buffer());
-      simcall_comm_test__set__result(req, req->mc_value_);
-      break;
-
-    case Simcall::COMM_WAIT:
-      chosen_comm = simcall_comm_wait__get__comm(req);
-      mc_model_checker->get_remote_process().read(buffered_comm, remote(chosen_comm));
-      simcall_comm_wait__set__comm(req, buffered_comm.get_buffer());
-      break;
-
-    case Simcall::COMM_TEST:
-      chosen_comm = simcall_comm_test__get__comm(req);
-      mc_model_checker->get_remote_process().read(buffered_comm, remote(chosen_comm));
-      simcall_comm_test__set__comm(req, buffered_comm.get_buffer());
-      break;
-
-    default:
-      /* No translation needed */
-      break;
-  }
 }
 
 kernel::activity::CommImpl* Api::get_comm_or_nullptr(smx_simcall_t const r) const
