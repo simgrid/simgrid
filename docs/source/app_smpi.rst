@@ -90,7 +90,9 @@ Use the ``smpirun`` script as follows:
 
 - ``my_hostfile.txt`` is a classical MPI hostfile (that is, this file
   lists the machines on which the processes must be dispatched, one
-  per line)
+  per line). Using the ``hostname:num_procs`` syntax will deploy num_procs
+  MPI processes on the host, sharing available cores (equivalent to listing
+  the same host num_procs times on different lines).
 - ``my_platform.xml`` is a classical SimGrid platform file. Of course,
   the hosts of the hostfile must exist in the provided platform.
 - ``./program`` is the MPI program to simulate, that you compiled with ``smpicc``
