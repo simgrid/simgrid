@@ -246,7 +246,7 @@ public:
 
 class CommIsendSimcall : public ResultingSimcall<activity::ActivityImplPtr> {
   activity::MailboxImpl* mbox_;
-  size_t payload_size_;
+  double payload_size_;
   double rate_;
   unsigned char* src_buff_;
   size_t src_buff_size_;
@@ -258,7 +258,7 @@ public:
   void (*clean_fun_)(void*); // used to free the synchro in case of problem after a detached send
   void (*copy_data_fun_)(activity::CommImpl*, void*, size_t); // used to copy data if not default one
 
-  CommIsendSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, size_t payload_size, double rate,
+  CommIsendSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, double payload_size, double rate,
                    unsigned char* src_buff, size_t src_buff_size, bool (*match_fun)(void*, void*, activity::CommImpl*),
                    void (*clean_fun)(void*), // used to free the synchro in case of problem after a detached send
                    void (*copy_data_fun)(activity::CommImpl*, void*, size_t), // used to copy data if not default one
@@ -288,7 +288,7 @@ public:
     return SimcallObserver::dot_label(times_considered) + "iSend";
   }
   activity::MailboxImpl* get_mailbox() const { return mbox_; }
-  size_t get_payload_size() const { return payload_size_; }
+  double get_payload_size() const { return payload_size_; }
   double get_rate() const { return rate_; }
   unsigned char* get_src_buff() const { return src_buff_; }
   size_t get_src_buff_size() const { return src_buff_size_; }

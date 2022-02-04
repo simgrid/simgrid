@@ -221,7 +221,7 @@ Comm* Comm::start()
     on_send(*this);
     kernel::actor::CommIsendSimcall observer{sender_,
                                              mailbox_->get_impl(),
-                                             static_cast<size_t>(remains_),
+                                             remains_,
                                              rate_,
                                              static_cast<unsigned char*>(src_buff_),
                                              src_buff_size_,
