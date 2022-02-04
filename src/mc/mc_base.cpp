@@ -111,7 +111,9 @@ bool request_is_visible(const s_smx_simcall* req)
 #endif
   if (req->observer_ != nullptr)
     return req->observer_->is_visible();
+  else
+    return false;
 }
 
-}
-}
+} // namespace mc
+} // namespace simgrid
