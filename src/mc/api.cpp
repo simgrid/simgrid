@@ -52,8 +52,6 @@ static std::string buff_size_to_string(size_t buff_size)
   return XBT_LOG_ISENABLED(Api, xbt_log_priority_verbose) ? std::to_string(buff_size) : "(verbose only)";
 }
 
-static void simcall_translate(smx_simcall_t req, Remote<kernel::activity::CommImpl>& buffered_comm);
-
 /* Search an enabled transition for the given process.
  *
  * This can be seen as an iterator returning the next transition of the process.
@@ -129,73 +127,14 @@ simgrid::mc::ActorInformation* Api::actor_info_cast(smx_actor_t actor) const
 
 bool Api::simcall_check_dependency(smx_simcall_t req1, smx_simcall_t req2) const
 {
-  const auto IRECV = Simcall::COMM_IRECV;
-  const auto ISEND = Simcall::COMM_ISEND;
-  const auto WAIT  = Simcall::COMM_WAIT;
-
-  if (req1->issuer_ == req2->issuer_) // Done in observer for TEST and WAIT
-    return false;
-
-  /* The independence theorem only consider 4 simcalls. All others are dependent with anything. */
-  if (req1->call_ != ISEND && req1->call_ != IRECV && req1->call_ != WAIT)
-    return true;
-  if (req2->call_ != ISEND && req2->call_ != IRECV && req2->call_ != WAIT)
-    return true;
-
+  // FIXME: this should be removed now
   /* Make sure that req1 and req2 are in alphabetic order */
   if (req1->call_ > req2->call_) {
     auto temp = req1;
     req1      = req2;
     req2      = temp;
   }
-
-  auto comm2 = get_comm_or_nullptr(req2);
-
-  /* First case: that's not the same kind of request (we also know that req1 < req2 alphabetically) */
-  if (req1->call_ != req2->call_) {
-    if (req1->call_ == IRECV && req2->call_ == ISEND)
-      return false;
-
-    if ((req1->call_ == IRECV || req1->call_ == ISEND) && req2->call_ == WAIT) {
-      auto mbox1 = get_mbox_remote_addr(req1);
-      auto mbox2 = remote(comm2->mbox_cpy);
-
-      if (mbox1 != mbox2 && simcall_comm_wait__get__timeout(req2) <= 0)
-        return false;
-
-      if ((req1->issuer_ != comm2->src_actor_.get()) && (req1->issuer_ != comm2->dst_actor_.get()) &&
-          simcall_comm_wait__get__timeout(req2) <= 0)
-        return false;
-
-      if ((req1->call_ == ISEND) && (comm2->type_ == kernel::activity::CommImpl::Type::SEND) &&
-          (comm2->src_buff_ != simcall_comm_isend__get__src_buff(req1)) && simcall_comm_wait__get__timeout(req2) <= 0)
-        return false;
-
-      if ((req1->call_ == IRECV) && (comm2->type_ == kernel::activity::CommImpl::Type::RECEIVE) &&
-          (comm2->dst_buff_ != simcall_comm_irecv__get__dst_buff(req1)) && simcall_comm_wait__get__timeout(req2) <= 0)
-        return false;
-    }
-
-    /* FIXME: the following rule assumes that the result of the isend/irecv call is not stored in a buffer used in the
-     * test call. */
-#if 0
-  if((req1->call == ISEND || req1->call == IRECV)
-      &&  req2->call == TEST)
-    return false;
-#endif
-
-    return true;
-  }
-
-  /* Second case: req1 and req2 are of the same call type */
-  switch (req1->call_) {
-    case ISEND:
-      return simcall_comm_isend__get__mbox(req1) == simcall_comm_isend__get__mbox(req2);
-    case IRECV:
-      return simcall_comm_irecv__get__mbox(req1) == simcall_comm_irecv__get__mbox(req2);
-    default:
-      return true;
-  }
+  return true;
 }
 
 xbt::string const& Api::get_actor_host_name(smx_actor_t actor) const

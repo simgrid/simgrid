@@ -282,6 +282,7 @@ public:
                                 clean_fun_, copy_data_fun_, payload_, detached_);
   }
   bool is_visible() const override { return true; }
+  bool depends(SimcallObserver* other) override;
   std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override
   {
@@ -326,6 +327,7 @@ public:
                                 rate_);
   }
   bool is_visible() const override { return true; }
+  bool depends(SimcallObserver* other) override;
   std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override
   {
