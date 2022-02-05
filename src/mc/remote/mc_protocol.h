@@ -29,9 +29,10 @@ namespace simgrid {
 namespace mc {
 
 XBT_DECLARE_ENUM_CLASS(MessageType, NONE, INITIAL_ADDRESSES, CONTINUE, IGNORE_HEAP, UNIGNORE_HEAP, IGNORE_MEMORY,
-                       STACK_REGION, REGISTER_SYMBOL, DEADLOCK_CHECK, DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_HANDLE,
-                       SIMCALL_IS_VISIBLE, SIMCALL_IS_VISIBLE_ANSWER, SIMCALL_TO_STRING, SIMCALL_TO_STRING_ANSWER,
-                       SIMCALL_DOT_LABEL, ASSERTION_FAILED, ACTOR_ENABLED, ACTOR_ENABLED_REPLY, FINALIZE);
+                       STACK_REGION, REGISTER_SYMBOL, DEADLOCK_CHECK, DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_EXECUTE,
+                       SIMCALL_EXECUTE_ANSWER, SIMCALL_IS_VISIBLE, SIMCALL_IS_VISIBLE_ANSWER, SIMCALL_TO_STRING,
+                       SIMCALL_TO_STRING_ANSWER, SIMCALLS_DEPENDENT, SIMCALLS_DEPENDENT_ANSWER, SIMCALL_DOT_LABEL,
+                       ASSERTION_FAILED, ACTOR_ENABLED, ACTOR_ENABLED_REPLY, FINALIZE);
 
 } // namespace mc
 } // namespace simgrid
@@ -94,10 +95,14 @@ struct s_mc_message_register_symbol_t {
 };
 
 /* Server -> client */
-struct s_mc_message_simcall_handle_t {
+struct s_mc_message_simcall_execute_t {
   simgrid::mc::MessageType type;
   aid_t aid_;
   int times_considered_;
+};
+struct s_mc_message_simcall_execute_answer_t {
+  simgrid::mc::MessageType type;
+  simgrid::kernel::actor::SimcallObserver* observer;
 };
 
 struct s_mc_message_restore_t {
@@ -128,6 +133,16 @@ struct s_mc_message_simcall_to_string_t { // MessageType::SIMCALL_TO_STRING or M
 struct s_mc_message_simcall_to_string_answer_t { // MessageType::SIMCALL_TO_STRING_ANSWER
   simgrid::mc::MessageType type;
   char value[1024];
+};
+
+struct s_mc_message_simcalls_dependent_t { // MessageType::SIMCALLS_DEPENDENT
+  simgrid::mc::MessageType type;
+  simgrid::kernel::actor::SimcallObserver* obs1;
+  simgrid::kernel::actor::SimcallObserver* obs2;
+};
+struct s_mc_message_simcalls_dependent_answer_t { // MessageType::SIMCALLS_DEPENDENT_ANSWER
+  simgrid::mc::MessageType type;
+  bool value;
 };
 
 #endif // __cplusplus

@@ -107,10 +107,11 @@ void Session::take_initial_snapshot()
   initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0);
 }
 
-void Session::execute(Transition const& transition) const
+simgrid::mc::RemotePtr<simgrid::kernel::actor::SimcallObserver> Session::execute(Transition const& transition) const
 {
-  model_checker_->handle_simcall(transition);
+  simgrid::mc::RemotePtr<simgrid::kernel::actor::SimcallObserver> res = model_checker_->handle_simcall(transition);
   model_checker_->wait_for_requests();
+  return res;
 }
 
 void Session::restore_initial_state() const

@@ -125,16 +125,12 @@ simgrid::mc::ActorInformation* Api::actor_info_cast(smx_actor_t actor) const
   return process_info;
 }
 
-bool Api::simcall_check_dependency(smx_simcall_t req1, smx_simcall_t req2) const
+bool Api::requests_are_dependent(RemotePtr<kernel::actor::SimcallObserver> obs1,
+                                 RemotePtr<kernel::actor::SimcallObserver> obs2) const
 {
-  // FIXME: this should be removed now
-  /* Make sure that req1 and req2 are in alphabetic order */
-  if (req1->call_ > req2->call_) {
-    auto temp = req1;
-    req1      = req2;
-    req2      = temp;
-  }
-  return true;
+  xbt_assert(mc_model_checker != nullptr, "Must be called from MCer");
+
+  return mc_model_checker->requests_are_dependent(obs1, obs2);
 }
 
 xbt::string const& Api::get_actor_host_name(smx_actor_t actor) const
@@ -563,11 +559,11 @@ void Api::s_close() const
   session_singleton->close();
 }
 
-void Api::execute(Transition& transition, smx_simcall_t simcall) const
+RemotePtr<simgrid::kernel::actor::SimcallObserver> Api::execute(Transition& transition, smx_simcall_t simcall) const
 {
   /* FIXME: once all simcalls have observers, kill the simcall parameter and use mc_model_checker->simcall_to_string() */
   transition.textual = request_to_string(simcall, transition.times_considered_);
-  session_singleton->execute(transition);
+  return session_singleton->execute(transition);
 }
 
 void Api::automaton_load(const char* file) const

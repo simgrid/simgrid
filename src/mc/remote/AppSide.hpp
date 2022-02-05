@@ -31,7 +31,7 @@ public:
 
 private:
   void handle_deadlock_check(const s_mc_message_t* msg) const;
-  void handle_simcall_execute(const s_mc_message_simcall_handle_t* message) const;
+  void handle_simcall_execute(const s_mc_message_simcall_execute_t* message) const;
   void handle_actor_enabled(const s_mc_message_actor_enabled_t* msg) const;
 
 public:

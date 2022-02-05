@@ -93,13 +93,24 @@ void AppSide::handle_deadlock_check(const s_mc_message_t*) const
   s_mc_message_int_t answer{MessageType::DEADLOCK_CHECK_REPLY, deadlock};
   xbt_assert(channel_.send(answer) == 0, "Could not send response");
 }
-void AppSide::handle_simcall_execute(const s_mc_message_simcall_handle_t* message) const
+void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* message) const
 {
   kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(message->aid_);
   xbt_assert(actor != nullptr, "Invalid pid %ld", message->aid_);
-  if (actor->simcall_.observer_ != nullptr)
-    actor->observer_stack_.push_back(actor->simcall_.observer_->clone());
+  simgrid::kernel::actor::SimcallObserver* observer = nullptr;
+  if (actor->simcall_.observer_ != nullptr) {
+    observer = actor->simcall_.observer_->clone();
+    actor->observer_stack_.push_back(observer);
+  }
+  // Finish the RPC from the server: we need to return a pointer to the observer, saved in a stable storage
+  s_mc_message_simcall_execute_answer_t answer{MessageType::SIMCALL_EXECUTE_ANSWER, observer};
+  XBT_DEBUG("send SIMCALL_EXECUTE_ANSWER(%p)", observer);
+  xbt_assert(channel_.send(answer) == 0, "Could not send response");
+
+  // The client may send some messages to the server while processing the transition
   actor->simcall_handle(message->times_considered_);
+
+  // Say the server that the transition is over and that it should proceed
   xbt_assert(channel_.send(MessageType::WAITING) == 0, "Could not send MESSAGE_WAITING to model-checker");
 }
 
@@ -136,9 +147,9 @@ void AppSide::handle_messages() const
         assert_msg_size("MESSAGE_CONTINUE", s_mc_message_t);
         return;
 
-      case MessageType::SIMCALL_HANDLE:
-        assert_msg_size("SIMCALL_HANDLE", s_mc_message_simcall_handle_t);
-        handle_simcall_execute((s_mc_message_simcall_handle_t*)message_buffer.data());
+      case MessageType::SIMCALL_EXECUTE:
+        assert_msg_size("SIMCALL_EXECUTE", s_mc_message_simcall_execute_t);
+        handle_simcall_execute((s_mc_message_simcall_execute_t*)message_buffer.data());
         break;
 
       case MessageType::SIMCALL_IS_VISIBLE: {
@@ -166,6 +177,26 @@ void AppSide::handle_messages() const
         // Send result:
         s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, {0}};
         value.copy(answer.value, (sizeof answer.value) - 1); // last byte was set to '\0' by initialization above
+        xbt_assert(channel_.send(answer) == 0, "Could not send response");
+        break;
+      }
+
+      case MessageType::SIMCALLS_DEPENDENT: {
+        assert_msg_size("SIMCALLS_DEPENDENT", s_mc_message_simcalls_dependent_t);
+        auto msg_simcalls = (s_mc_message_simcalls_dependent_t*)message_buffer.data();
+        auto* obs1        = msg_simcalls->obs1;
+        auto* obs2        = msg_simcalls->obs2;
+        bool res          = true;
+
+        if (obs1 != nullptr && obs2 != nullptr)
+          res = obs1->depends(obs2);
+
+        XBT_DEBUG("return SIMCALLS_DEPENDENT(%s, %s) = %s", obs1->to_string(0).c_str(), obs2->to_string(0).c_str(),
+                  (res ? "true" : "false"));
+
+        // Send result:
+        s_mc_message_simcalls_dependent_answer_t answer{MessageType::SIMCALLS_DEPENDENT_ANSWER, {0}};
+        answer.value = res;
         xbt_assert(channel_.send(answer) == 0, "Could not send response");
         break;
       }

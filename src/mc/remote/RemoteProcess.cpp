@@ -556,7 +556,7 @@ void RemoteProcess::dump_stack() const
   if (unw_init_remote(&cursor, as, context) != 0) {
     _UPT_destroy(context);
     unw_destroy_addr_space(as);
-    XBT_ERROR("Could not initialiez ptrace cursor");
+    XBT_ERROR("Could not initialize ptrace cursor");
     return;
   }
 

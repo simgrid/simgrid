@@ -90,7 +90,8 @@ void SafetyChecker::run()
     // Backtrack if we reached the maximum depth
     if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
       if (reductionMode_ == ReductionMode::dpor) {
-        XBT_ERROR("/!\\ Max depth reached! THIS WILL PROBABLY BREAK the dpor reduction /!\\");
+        XBT_ERROR("/!\\ Max depth of %d reached! THIS WILL PROBABLY BREAK the dpor reduction /!\\",
+                  _sg_mc_max_depth.get());
         XBT_ERROR("/!\\ If bad things happen, disable dpor with --cfg=model-check/reduction:none /!\\");
       } else
         XBT_WARN("/!\\ Max depth reached ! /!\\ ");
@@ -114,7 +115,7 @@ void SafetyChecker::run()
     // req is now the transition of the process that was selected to be executed
 
     if (req == nullptr) {
-      XBT_DEBUG("There remains %zu actors, but no more processes to interleave. (depth %zu)",
+      XBT_DEBUG("There remains %zu actors, but none to interleave (depth %zu).",
                 mc_model_checker->get_remote_process().actors().size(), stack_.size() + 1);
 
       if (mc_model_checker->get_remote_process().actors().empty())
@@ -134,11 +135,13 @@ void SafetyChecker::run()
     api::get().mc_inc_executed_trans();
 
     /* Actually answer the request: let execute the selected request (MCed does one step) */
-    api::get().execute(state->transition_, &state->executed_req_);
+    RemotePtr<simgrid::kernel::actor::SimcallObserver> remote_observer =
+        api::get().execute(state->transition_, &state->executed_req_);
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     ++expanded_states_count_;
     auto next_state = std::make_unique<State>(expanded_states_count_);
+    next_state->remote_observer_ = remote_observer;
 
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
@@ -197,7 +200,7 @@ void SafetyChecker::backtrack()
           XBT_DEBUG("Simcall %s and %s with same issuer", SIMIX_simcall_name(state->executed_req_),
                     SIMIX_simcall_name(prev_state->executed_req_));
           break;
-        } else if (api::get().simcall_check_dependency(&state->internal_req_, &prev_state->internal_req_)) {
+        } else if (api::get().requests_are_dependent(state->remote_observer_, state->remote_observer_)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
             int value              = prev_state->transition_.times_considered_;

@@ -27,6 +27,9 @@ public:
   /** The simcall which was executed, going out of that state */
   s_smx_simcall executed_req_;
 
+  /** Observer of the transition leading to that sate */
+  RemotePtr<kernel::actor::SimcallObserver> remote_observer_;
+
   /* Internal translation of the executed_req simcall
    *
    * Simcall::COMM_TESTANY is translated to a Simcall::COMM_TEST

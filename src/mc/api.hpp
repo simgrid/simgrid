@@ -111,12 +111,13 @@ public:
   std::list<transition_detail_t> get_enabled_transitions(simgrid::mc::State* state) const;
 
   // SIMCALL APIs
+  bool requests_are_dependent(RemotePtr<kernel::actor::SimcallObserver> obs1,
+                              RemotePtr<kernel::actor::SimcallObserver> obs2) const;
   std::string request_to_string(smx_simcall_t req, int value) const;
   std::string request_get_dot_output(smx_simcall_t req, int value) const;
   smx_actor_t simcall_get_issuer(s_smx_simcall const* req) const;
   RemotePtr<kernel::activity::MailboxImpl> get_mbox_remote_addr(smx_simcall_t const req) const;
   RemotePtr<kernel::activity::ActivityImpl> get_comm_remote_addr(smx_simcall_t const req) const;
-  bool simcall_check_dependency(smx_simcall_t const req1, smx_simcall_t const req2) const;
 
 #if HAVE_SMPI
   int get_smpi_request_tag(smx_simcall_t const& simcall, simgrid::simix::Simcall type) const;
@@ -132,7 +133,7 @@ public:
 
   // SESSION APIs
   void s_close() const;
-  void execute(Transition& transition, smx_simcall_t simcall) const;
+  RemotePtr<simgrid::kernel::actor::SimcallObserver> execute(Transition& transition, smx_simcall_t simcall) const;
 
 // AUTOMATION APIs
 #if SIMGRID_HAVE_MC

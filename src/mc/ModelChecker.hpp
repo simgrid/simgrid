@@ -7,6 +7,7 @@
 #define SIMGRID_MC_MODEL_CHECKER_HPP
 
 #include "src/mc/remote/CheckerSide.hpp"
+#include "src/mc/remote/RemotePtr.hpp"
 #include "src/mc/sosp/PageStore.hpp"
 #include "xbt/base.h"
 #include "xbt/string.hpp"
@@ -49,10 +50,12 @@ public:
   void shutdown();
   void resume();
   void wait_for_requests();
-  void handle_simcall(Transition const& transition);
+  RemotePtr<simgrid::kernel::actor::SimcallObserver> handle_simcall(Transition const& transition);
 
   /* Interactions with the simcall observer */
   bool simcall_is_visible(aid_t aid);
+  bool requests_are_dependent(RemotePtr<kernel::actor::SimcallObserver> obs1,
+                              RemotePtr<kernel::actor::SimcallObserver> obs2) const;
   std::string simcall_to_string(aid_t aid, int times_considered);
   std::string simcall_dot_label(aid_t aid, int times_considered);
 

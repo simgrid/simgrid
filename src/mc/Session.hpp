@@ -8,6 +8,7 @@
 
 #include "simgrid/forward.h"
 #include "src/mc/ModelChecker.hpp"
+#include "src/mc/remote/RemotePtr.hpp"
 
 #include <functional>
 
@@ -45,7 +46,7 @@ public:
   void close();
 
   void take_initial_snapshot();
-  void execute(Transition const& transition) const;
+  simgrid::mc::RemotePtr<simgrid::kernel::actor::SimcallObserver> execute(Transition const& transition) const;
   void log_state() const;
 
   void restore_initial_state() const;

@@ -308,17 +308,29 @@ void ModelChecker::wait_for_requests()
     checker_side_.dispatch();
 }
 
-void ModelChecker::handle_simcall(Transition const& transition)
+RemotePtr<simgrid::kernel::actor::SimcallObserver> ModelChecker::handle_simcall(Transition const& transition)
 {
-  s_mc_message_simcall_handle_t m;
+  s_mc_message_simcall_execute_t m;
   memset(&m, 0, sizeof(m));
-  m.type  = MessageType::SIMCALL_HANDLE;
+  m.type              = MessageType::SIMCALL_EXECUTE;
   m.aid_              = transition.aid_;
   m.times_considered_ = transition.times_considered_;
   checker_side_.get_channel().send(m);
+
+  s_mc_message_simcall_execute_answer_t answer;
+  ssize_t s = checker_side_.get_channel().receive(answer);
+  xbt_assert(s != -1, "Could not receive message");
+  xbt_assert(s == sizeof(answer) && answer.type == MessageType::SIMCALL_EXECUTE_ANSWER,
+             "Received unexpected message %s (%i, size=%i) "
+             "expected MessageType::SIMCALL_EXECUTE_ANSWER (%i, size=%i)",
+             to_c_str(answer.type), (int)answer.type, (int)s, (int)MessageType::SIMCALL_EXECUTE_ANSWER,
+             (int)sizeof(answer));
+
   this->remote_process_->clear_cache();
   if (this->remote_process_->running())
-    checker_side_.dispatch();
+    checker_side_.dispatch(); // The app may send messages while processing the transition
+
+  return remote(answer.observer);
 }
 bool ModelChecker::simcall_is_visible(aid_t aid)
 {
@@ -342,6 +354,30 @@ bool ModelChecker::simcall_is_visible(aid_t aid)
   XBT_DEBUG("is_visible(%ld) is returning %s", aid, answer.value ? "true" : "false");
 
   this->remote_process_->clear_cache();
+  return answer.value;
+}
+
+bool ModelChecker::requests_are_dependent(RemotePtr<kernel::actor::SimcallObserver> obs1,
+                                          RemotePtr<kernel::actor::SimcallObserver> obs2) const
+{
+  xbt_assert(mc_model_checker != nullptr, "This should be called from the checker side");
+
+  s_mc_message_simcalls_dependent_t m;
+  memset(&m, 0, sizeof(m));
+  m.type = MessageType::SIMCALLS_DEPENDENT;
+  m.obs1 = obs1.local();
+  m.obs2 = obs2.local();
+  checker_side_.get_channel().send(m);
+
+  s_mc_message_simcalls_dependent_answer_t answer;
+  ssize_t s = checker_side_.get_channel().receive(answer);
+  xbt_assert(s != -1, "Could not receive message");
+  xbt_assert(s == sizeof(answer) && answer.type == MessageType::SIMCALLS_DEPENDENT_ANSWER,
+             "Received unexpected message %s (%i, size=%i) "
+             "expected MessageType::SIMCALLS_DEPENDENT_ANSWER (%i, size=%i)",
+             to_c_str(answer.type), (int)answer.type, (int)s, (int)MessageType::SIMCALLS_DEPENDENT_ANSWER,
+             (int)sizeof(answer));
+
   return answer.value;
 }
 

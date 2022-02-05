@@ -323,8 +323,10 @@ std::string ActivityWaitSimcall::to_string(int times_considered) const
 {
   std::string res = SimcallObserver::to_string(times_considered);
   auto* comm      = dynamic_cast<activity::CommImpl*>(activity_);
-  if (comm == nullptr)
-    xbt_die("Only Comms are supported here for now");
+  if (comm == nullptr) {
+    res += "ActivityWait on non-Comm (FIXME)"; // FIXME
+    return res;
+  }
 
   if (times_considered == -1) {
     res += "WaitTimeout(comm=" + (XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose)
