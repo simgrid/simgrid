@@ -457,41 +457,6 @@ smx_simcall_t Api::mc_state_choose_request(simgrid::mc::State* state) const
   return nullptr;
 }
 
-std::list<transition_detail_t> Api::get_enabled_transitions(simgrid::mc::State* state) const
-{
-  std::list<transition_detail_t> tr_list{};
-
-  for (auto& actor : mc_model_checker->get_remote_process().actors()) {
-    auto actor_pid  = actor.copy.get_buffer()->get_pid();
-    auto actor_impl = actor.copy.get_buffer();
-
-    // Only consider the actors that were marked as interleaving by the checker algorithm
-    if (not state->actor_states_[actor_pid].is_todo())
-      continue;
-    // Not executable in the application
-    if (not simgrid::mc::actor_is_enabled(actor_impl))
-      continue;
-
-    auto transition       = std::make_unique<s_transition_detail>();
-    Simcall simcall_call  = actor_impl->simcall_.call_;
-    smx_simcall_t simcall = &actor_impl->simcall_;
-    transition->call_     = simcall_call;
-    switch (simcall_call) {
-      case Simcall::COMM_ISEND:
-      case Simcall::COMM_IRECV:
-        transition->mbox_remote_addr = get_mbox_remote_addr(simcall);
-        transition->comm_remote_addr = get_comm_remote_addr(simcall);
-        break;
-
-      default:
-        break;
-    }
-    tr_list.emplace_back(std::move(transition));
-  }
-
-  return tr_list;
-}
-
 std::string Api::request_to_string(smx_simcall_t req, int value) const
 {
   xbt_assert(mc_model_checker != nullptr, "Must be called from MCer");

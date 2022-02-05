@@ -107,9 +107,6 @@ public:
   void dump_record_path() const;
   smx_simcall_t mc_state_choose_request(simgrid::mc::State* state) const;
 
-  // UDPOR APIs
-  std::list<transition_detail_t> get_enabled_transitions(simgrid::mc::State* state) const;
-
   // SIMCALL APIs
   bool requests_are_dependent(RemotePtr<kernel::actor::SimcallObserver> obs1,
                               RemotePtr<kernel::actor::SimcallObserver> obs2) const;
