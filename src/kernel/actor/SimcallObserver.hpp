@@ -244,7 +244,7 @@ public:
   int get_value() const { return next_value_; }
 };
 
-class CommIsendSimcall : public ResultingSimcall<activity::ActivityImplPtr> {
+class CommIsendSimcall : public SimcallObserver {
   activity::MailboxImpl* mbox_;
   double payload_size_;
   double rate_;
@@ -263,7 +263,7 @@ public:
                    void (*clean_fun)(void*), // used to free the synchro in case of problem after a detached send
                    void (*copy_data_fun)(activity::CommImpl*, void*, size_t), // used to copy data if not default one
                    void* payload, bool detached)
-      : ResultingSimcall(actor, nullptr)
+      : SimcallObserver(actor)
       , mbox_(mbox)
       , payload_size_(payload_size)
       , rate_(rate)
@@ -297,7 +297,7 @@ public:
   bool is_detached() const { return detached_; }
 };
 
-class CommIrecvSimcall : public ResultingSimcall<activity::ActivityImplPtr> {
+class CommIrecvSimcall : public SimcallObserver {
   activity::MailboxImpl* mbox_;
   unsigned char* dst_buff_;
   size_t* dst_buff_size_;
@@ -311,7 +311,7 @@ public:
   CommIrecvSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, unsigned char* dst_buff, size_t* dst_buff_size,
                    bool (*match_fun)(void*, void*, activity::CommImpl*),
                    void (*copy_data_fun)(activity::CommImpl*, void*, size_t), void* payload, double rate)
-      : ResultingSimcall(actor, nullptr)
+      : SimcallObserver(actor)
       , mbox_(mbox)
       , dst_buff_(dst_buff)
       , dst_buff_size_(dst_buff_size)

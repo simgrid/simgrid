@@ -320,11 +320,6 @@ CommImpl::isend(actor::ActorImpl* sender, MailboxImpl* mbox, double task_size, d
   else
     other_comm->start();
 
-  if (auto* observer = dynamic_cast<actor::CommIsendSimcall*>(sender->simcall_.observer_)) {
-    observer->set_result(detached ? nullptr : other_comm);
-    sender->simcall_answer();
-  }
-
   return (detached ? nullptr : other_comm);
 }
 
@@ -394,13 +389,9 @@ ActivityImplPtr CommImpl::irecv(actor::ActorImpl* receiver, MailboxImpl* mbox, u
   }
   other_comm->start();
 
-  if (auto* observer = dynamic_cast<actor::CommIrecvSimcall*>(receiver->simcall_.observer_)) {
-    observer->set_result(other_comm);
-    receiver->simcall_answer();
-  }
-
   return other_comm;
 }
+
 bool CommImpl::test(actor::ActorImpl* issuer)
 {
   if ((MC_is_active() || MC_record_replay_is_active()) && src_actor_ && dst_actor_)
