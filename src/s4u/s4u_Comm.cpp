@@ -230,7 +230,7 @@ Comm* Comm::start()
                                              copy_data_function_,
                                              get_data<void>(),
                                              detached_};
-    pimpl_ = kernel::actor::simcall_blocking(
+    pimpl_ = kernel::actor::simcall(
         [&observer] {
           return kernel::activity::CommImpl::isend(
               observer.get_issuer(), observer.get_mailbox(), observer.get_payload_size(), observer.get_rate(),
@@ -249,7 +249,7 @@ Comm* Comm::start()
                                              copy_data_function_,
                                              get_data<void>(),
                                              rate_};
-    pimpl_ = kernel::actor::simcall_blocking(
+    pimpl_ = kernel::actor::simcall(
         [&observer] {
           return kernel::activity::CommImpl::irecv(
               observer.get_issuer(), observer.get_mailbox(), observer.get_dst_buff(), observer.get_dst_buff_size(),

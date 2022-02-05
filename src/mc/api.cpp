@@ -449,14 +449,18 @@ void Api::dump_record_path() const
 smx_simcall_t Api::mc_state_choose_request(simgrid::mc::State* state) const
 {
   RemoteProcess& process = mc_model_checker->get_remote_process();
+  XBT_DEBUG("Search for an actor to run. %zu actors to consider", process.actors().size());
   for (auto& actor : process.actors()) {
     /* Only consider the actors that were marked as interleaving by the checker algorithm */
     if (not state->actor_states_[actor.copy.get_buffer()->get_pid()].is_todo())
       continue;
 
     smx_simcall_t res = MC_state_choose_request_for_process(process, state, actor.copy.get_buffer());
-    if (res)
+    if (res) {
+      XBT_DEBUG("Let's run actor %ld, going for transition %s", actor.copy.get_buffer()->get_pid(),
+                SIMIX_simcall_name(*res));
       return res;
+    }
   }
   return nullptr;
 }

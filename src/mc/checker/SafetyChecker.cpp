@@ -280,15 +280,18 @@ SafetyChecker::SafetyChecker(Session* session) : Checker(session)
   auto initial_state = std::make_unique<State>(expanded_states_count_);
 
   XBT_DEBUG("**************************************************");
-  XBT_DEBUG("Initial state");
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   auto actors = api::get().get_actors();
+  XBT_DEBUG("Initial state. %zu actors to consider", actors.size());
   for (auto& actor : actors)
     if (get_session().actor_is_enabled(actor.copy.get_buffer()->get_pid())) {
       initial_state->mark_todo(actor.copy.get_buffer());
-      if (reductionMode_ != ReductionMode::none)
+      if (reductionMode_ == ReductionMode::dpor) {
+        XBT_DEBUG("Actor %ld is TODO, DPOR is ON so let's go for this one.", actor.copy.get_buffer()->get_pid());
         break;
+      }
+      XBT_DEBUG("Actor %ld is TODO", actor.copy.get_buffer()->get_pid());
     }
 
   stack_.push_back(std::move(initial_state));
