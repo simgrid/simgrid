@@ -94,10 +94,6 @@ static inline smx_simcall_t MC_state_choose_request_for_process(const RemoteProc
   state->transition_.aid_ = actor->get_pid();
   state->executed_req_    = *req;
 
-  // Fetch the data of the request and translate it:
-  state->internal_req_ = *req;
-  state->internal_req_.mc_value_ = state->transition_.times_considered_;
-
   return req;
 }
 

@@ -30,16 +30,6 @@ public:
   /** Observer of the transition leading to that sate */
   RemotePtr<kernel::actor::SimcallObserver> remote_observer_;
 
-  /* Internal translation of the executed_req simcall
-   *
-   * Simcall::COMM_TESTANY is translated to a Simcall::COMM_TEST
-   * and Simcall::COMM_WAITANY to a Simcall::COMM_WAIT.
-   */
-  s_smx_simcall internal_req_;
-
-  /* Can be used as a copy of the remote synchro object */
-  simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> internal_comm_;
-
   /** Snapshot of system state (if needed) */
   std::shared_ptr<simgrid::mc::Snapshot> system_state_;
 
