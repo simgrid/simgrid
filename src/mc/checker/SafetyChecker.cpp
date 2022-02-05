@@ -200,7 +200,7 @@ void SafetyChecker::backtrack()
           XBT_DEBUG("Simcall %s and %s with same issuer", SIMIX_simcall_name(state->executed_req_),
                     SIMIX_simcall_name(prev_state->executed_req_));
           break;
-        } else if (api::get().requests_are_dependent(state->remote_observer_, state->remote_observer_)) {
+        } else if (api::get().requests_are_dependent(prev_state->remote_observer_, state->remote_observer_)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
             int value              = prev_state->transition_.times_considered_;
