@@ -36,7 +36,7 @@ public:
   int times_considered_ = 0;
 
   /* Textual representation of the transition, to display backtraces */
-  std::string textual;
+  std::string textual = "";
 };
 
 } // namespace mc

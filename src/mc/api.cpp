@@ -52,51 +52,6 @@ static std::string buff_size_to_string(size_t buff_size)
   return XBT_LOG_ISENABLED(Api, xbt_log_priority_verbose) ? std::to_string(buff_size) : "(verbose only)";
 }
 
-/* Search an enabled transition for the given process.
- *
- * This can be seen as an iterator returning the next transition of the process.
- *
- * We only consider the processes that are both
- *  - marked "to be interleaved" in their ActorState (controlled by the checker algorithm).
- *  - which simcall can currently be executed (like a comm where the other partner is already known)
- * Once we returned the last enabled transition of a process, it is marked done.
- *
- * Things can get muddled with the WAITANY and TESTANY simcalls, that are rewritten on the fly to a bunch of WAIT
- * (resp TEST) transitions using the transition.argument field to remember what was the last returned sub-transition.
- */
-static inline smx_simcall_t MC_state_choose_request_for_process(const RemoteProcess& process, simgrid::mc::State* state,
-                                                                smx_actor_t actor)
-{
-  /* reset the outgoing transition */
-  simgrid::mc::ActorState* procstate = &state->actor_states_[actor->get_pid()];
-  state->transition_.aid_              = -1;
-  state->transition_.times_considered_ = -1;
-  state->transition_.textual[0]        = '\0';
-  state->executed_req_.call_         = Simcall::NONE;
-
-  if (not simgrid::mc::actor_is_enabled(actor))
-    return nullptr; // Not executable in the application
-
-  smx_simcall_t req = nullptr;
-  if (actor->simcall_.observer_ != nullptr) {
-    state->transition_.times_considered_ = procstate->get_times_considered_and_inc();
-    if (actor->simcall_.mc_max_consider_ <= procstate->get_times_considered())
-      procstate->set_done();
-    req = &actor->simcall_;
-  } else {
-    procstate->set_done();
-    state->transition_.times_considered_ = 0;
-    req                                  = &actor->simcall_;
-  }
-  if (not req)
-    return nullptr;
-
-  state->transition_.aid_ = actor->get_pid();
-  state->executed_req_    = *req;
-
-  return req;
-}
-
 /** Statically "upcast" a s_smx_actor_t into an ActorInformation
  *
  *  This gets 'actorInfo' from '&actorInfo->copy'. It upcasts in the
@@ -429,21 +384,42 @@ void Api::dump_record_path() const
   simgrid::mc::dumpRecordPath();
 }
 
+/* Search for an enabled transition amongst actors
+ *
+ * This is the frist actor marked TODO by the checker, and currently enabled in the application.
+ *
+ * Once we found it, prepare its execution (increase the times_considered of its observer and remove it as done on need)
+ *  - marked "to be interleaved" in their ActorState (controlled by the checker algorithm).
+ */
+
 smx_simcall_t Api::mc_state_choose_request(simgrid::mc::State* state) const
 {
   RemoteProcess& process = mc_model_checker->get_remote_process();
   XBT_DEBUG("Search for an actor to run. %zu actors to consider", process.actors().size());
-  for (auto& actor : process.actors()) {
-    /* Only consider the actors that were marked as interleaving by the checker algorithm */
-    if (not state->actor_states_[actor.copy.get_buffer()->get_pid()].is_todo())
+  for (auto& actor_info : process.actors()) {
+    auto actor                           = actor_info.copy.get_buffer();
+    simgrid::mc::ActorState* actor_state = &state->actor_states_[actor->get_pid()];
+
+    /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application*/
+    if (not actor_state->is_todo() || not simgrid::mc::actor_is_enabled(actor))
       continue;
 
-    smx_simcall_t res = MC_state_choose_request_for_process(process, state, actor.copy.get_buffer());
-    if (res) {
-      XBT_DEBUG("Let's run actor %ld, going for transition %s", actor.copy.get_buffer()->get_pid(),
-                SIMIX_simcall_name(*res));
-      return res;
+    /* This actor is ready to be executed. Prepare its execution when simcall_handle will be called on it */
+    if (actor->simcall_.observer_ != nullptr) {
+      state->transition_.times_considered_ = actor_state->get_times_considered_and_inc();
+      if (actor->simcall_.mc_max_consider_ <= actor_state->get_times_considered())
+        actor_state->set_done();
+    } else {
+      state->transition_.times_considered_ = 0;
+      actor_state->set_done();
     }
+
+    state->transition_.aid_ = actor->get_pid();
+    state->executed_req_    = actor->simcall_;
+
+    XBT_DEBUG("Let's run actor %ld, going for transition %s", actor->get_pid(),
+              SIMIX_simcall_name(state->executed_req_));
+    return &state->executed_req_;
   }
   return nullptr;
 }
