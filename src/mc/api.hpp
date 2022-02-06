@@ -129,7 +129,7 @@ public:
 
   // SESSION APIs
   void s_close() const;
-  RemotePtr<simgrid::kernel::actor::SimcallObserver> execute(Transition& transition, smx_simcall_t simcall) const;
+  RemotePtr<simgrid::kernel::actor::SimcallObserver> execute(Transition& transition) const;
 
 // AUTOMATION APIs
 #if SIMGRID_HAVE_MC

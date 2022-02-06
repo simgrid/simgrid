@@ -479,7 +479,7 @@ void Api::s_close() const
   session_singleton->close();
 }
 
-RemotePtr<simgrid::kernel::actor::SimcallObserver> Api::execute(Transition& transition, smx_simcall_t simcall) const
+RemotePtr<simgrid::kernel::actor::SimcallObserver> Api::execute(Transition& transition) const
 {
   /* FIXME: once all simcalls have observers, kill the simcall parameter and use mc_model_checker->simcall_to_string() */
   transition.textual = request_to_string(transition.aid_, transition.times_considered_);

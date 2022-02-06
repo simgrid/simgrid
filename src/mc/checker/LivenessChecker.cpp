@@ -122,21 +122,12 @@ void LivenessChecker::replay()
     std::shared_ptr<State> state = pair->graph_state;
 
     if (pair->exploration_started) {
-      const s_smx_simcall* saved_req = &state->executed_req_;
-
-      smx_simcall_t req = nullptr;
-
-      /* because we got a copy of the executed request, we have to fetch the
-         real one, pointed by the request field of the issuer process */
-      const smx_actor_t issuer = api::get().simcall_get_issuer(saved_req);
-      req                      = &issuer->simcall_;
-
       /* Debug information */
       XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth,
                 api::get().request_to_string(state->transition_.aid_, state->transition_.times_considered_).c_str(),
                 state.get());
 
-      api::get().execute(state->transition_, req);
+      api::get().execute(state->transition_);
     }
 
     /* Update statistics */
