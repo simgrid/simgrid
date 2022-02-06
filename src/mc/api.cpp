@@ -97,15 +97,6 @@ static inline smx_simcall_t MC_state_choose_request_for_process(const RemoteProc
   return req;
 }
 
-kernel::activity::CommImpl* Api::get_comm_or_nullptr(smx_simcall_t const r) const
-{
-  if (auto wait = dynamic_cast<kernel::actor::ActivityWaitSimcall*>(r->observer_))
-    return static_cast<kernel::activity::CommImpl*>(wait->get_activity());
-  if (auto test = dynamic_cast<kernel::actor::ActivityTestSimcall*>(r->observer_))
-    return static_cast<kernel::activity::CommImpl*>(test->get_activity());
-  return nullptr;
-}
-
 /** Statically "upcast" a s_smx_actor_t into an ActorInformation
  *
  *  This gets 'actorInfo' from '&actorInfo->copy'. It upcasts in the

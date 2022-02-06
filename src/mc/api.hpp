@@ -52,7 +52,6 @@ private:
     }
   };
 
-  simgrid::kernel::activity::CommImpl* get_comm_or_nullptr(smx_simcall_t const r) const;
   bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const;
   simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor) const;
 
