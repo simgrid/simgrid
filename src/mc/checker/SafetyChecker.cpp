@@ -123,20 +123,18 @@ void SafetyChecker::run()
       continue;
     }
 
-    smx_simcall_t req = &state->executed_req_;
+    /* Actually answer the request: let execute the selected request (MCed does one step) */
+    auto remote_observer = api::get().execute(state->transition_, &state->executed_req_);
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_DEBUG("Execute: %s", api::get().request_to_string(req, state->transition_.times_considered_).c_str());
+    XBT_DEBUG("Execute: %s", state->transition_.textual.c_str());
 
     std::string req_str;
     if (dot_output != nullptr)
-      req_str = api::get().request_get_dot_output(req, state->transition_.times_considered_);
+      req_str = api::get().request_get_dot_output(state->transition_.aid_, state->transition_.times_considered_);
 
     api::get().mc_inc_executed_trans();
-
-    /* Actually answer the request: let execute the selected request (MCed does one step) */
-    auto remote_observer = api::get().execute(state->transition_, &state->executed_req_);
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     ++expanded_states_count_;

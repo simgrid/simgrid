@@ -122,7 +122,6 @@ void LivenessChecker::replay()
     std::shared_ptr<State> state = pair->graph_state;
 
     if (pair->exploration_started) {
-      int req_num                    = state->transition_.times_considered_;
       const s_smx_simcall* saved_req = &state->executed_req_;
 
       smx_simcall_t req = nullptr;
@@ -133,7 +132,8 @@ void LivenessChecker::replay()
       req                      = &issuer->simcall_;
 
       /* Debug information */
-      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, api::get().request_to_string(req, req_num).c_str(),
+      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth,
+                api::get().request_to_string(state->transition_.aid_, state->transition_.times_considered_).c_str(),
                 state.get());
 
       api::get().execute(state->transition_, req);
@@ -230,10 +230,10 @@ std::vector<std::string> LivenessChecker::get_textual_trace() // override
 {
   std::vector<std::string> trace;
   for (std::shared_ptr<Pair> const& pair : exploration_stack_) {
-    int req_num       = pair->graph_state->transition_.times_considered_;
     smx_simcall_t req = &pair->graph_state->executed_req_;
     if (req->call_ != simix::Simcall::NONE)
-      trace.push_back(api::get().request_to_string(req, req_num));
+      trace.push_back(api::get().request_to_string(pair->graph_state->transition_.aid_,
+                                                   pair->graph_state->transition_.times_considered_));
   }
   return trace;
 }
@@ -353,7 +353,7 @@ void LivenessChecker::run()
     }
 
     api::get().mc_state_choose_request(current_pair->graph_state.get());
-    smx_simcall_t req = &current_pair->graph_state->executed_req_;
+    aid_t aid         = current_pair->graph_state->transition_.aid_;
     int req_num       = current_pair->graph_state->transition_.times_considered_;
 
     if (dot_output != nullptr) {
@@ -363,13 +363,13 @@ void LivenessChecker::run()
         this->previous_request_.clear();
       }
       this->previous_pair_    = current_pair->num;
-      this->previous_request_ = api::get().request_get_dot_output(req, req_num);
+      this->previous_request_ = api::get().request_get_dot_output(aid, req_num);
       if (current_pair->search_cycle)
         fprintf(dot_output, "%d [shape=doublecircle];\n", current_pair->num);
       fflush(dot_output);
     }
 
-    XBT_DEBUG("Execute: %s", api::get().request_to_string(req, req_num).c_str());
+    XBT_DEBUG("Execute: %s", api::get().request_to_string(aid, req_num).c_str());
 
     /* Update stats */
     api::get().mc_inc_executed_trans();

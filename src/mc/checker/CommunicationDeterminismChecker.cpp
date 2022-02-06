@@ -269,10 +269,8 @@ RecordTrace CommunicationDeterminismChecker::get_record_trace() // override
 std::vector<std::string> CommunicationDeterminismChecker::get_textual_trace() // override
 {
   std::vector<std::string> trace;
-  for (auto const& state : stack_) {
-    smx_simcall_t req = &state->executed_req_;
-    trace.push_back(api::get().request_to_string(req, state->transition_.times_considered_));
-  }
+  for (auto const& state : stack_)
+    trace.push_back(api::get().request_to_string(state->transition_.aid_, state->transition_.times_considered_));
   return trace;
 }
 
@@ -427,14 +425,15 @@ void CommunicationDeterminismChecker::real_run()
       found_transition = api::get().mc_state_choose_request(cur_state);
 
     if (found_transition && visited_state == nullptr) {
+      aid_t aid         = cur_state->transition_.aid_;
       int req_num = cur_state->transition_.times_considered_;
       smx_simcall_t req = &cur_state->executed_req_;
 
-      XBT_DEBUG("Execute: %s", api::get().request_to_string(req, req_num).c_str());
+      XBT_DEBUG("Execute: %s", api::get().request_to_string(aid, req_num).c_str());
 
       std::string req_str;
       if (dot_output != nullptr)
-        req_str = api::get().request_get_dot_output(req, req_num);
+        req_str = api::get().request_get_dot_output(aid, req_num);
 
       api::get().mc_inc_executed_trans();
 

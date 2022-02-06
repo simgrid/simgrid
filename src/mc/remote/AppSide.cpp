@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/remote/AppSide.hpp"
+#include "simgrid/s4u/Host.hpp"
 #include "src/internal_config.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
@@ -172,7 +173,30 @@ void AppSide::handle_messages() const
         const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(msg_simcall->aid);
         xbt_assert(actor != nullptr, "Invalid pid %ld", msg_simcall->aid);
         xbt_assert(actor->simcall_.observer_, "The transition of %s has no observer", actor->get_cname());
-        std::string value = actor->simcall_.observer_->to_string(msg_simcall->time_considered);
+        std::string value = "";
+        if (actor->simcall_.observer_ != nullptr)
+          value = actor->simcall_.observer_->to_string(msg_simcall->time_considered);
+        else
+          value = "[(" + std::to_string(actor->get_pid()) + ")" + actor->get_host()->get_cname() + " (" +
+                  actor->get_cname() + ")] " + SIMIX_simcall_name(actor->simcall_) + "(unknown?)";
+
+        // Send result:
+        s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, {0}};
+        value.copy(answer.value, (sizeof answer.value) - 1); // last byte was set to '\0' by initialization above
+        xbt_assert(channel_.send(answer) == 0, "Could not send response");
+        break;
+      }
+
+      case MessageType::SIMCALL_DOT_LABEL: {
+        assert_msg_size("SIMCALL_DOT_LABEL", s_mc_message_simcall_to_string_t);
+        auto msg_simcall                      = (s_mc_message_simcall_to_string_t*)message_buffer.data();
+        const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(msg_simcall->aid);
+        xbt_assert(actor != nullptr, "Invalid pid %ld", msg_simcall->aid);
+        std::string value = "";
+        if (actor->simcall_.observer_ != nullptr)
+          value = actor->simcall_.observer_->dot_label(msg_simcall->time_considered);
+        else
+          value = "UNIMPLEMENTED";
 
         // Send result:
         s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, {0}};
@@ -197,21 +221,6 @@ void AppSide::handle_messages() const
         // Send result:
         s_mc_message_simcalls_dependent_answer_t answer{MessageType::SIMCALLS_DEPENDENT_ANSWER, 0};
         answer.value = res;
-        xbt_assert(channel_.send(answer) == 0, "Could not send response");
-        break;
-      }
-
-      case MessageType::SIMCALL_DOT_LABEL: {
-        assert_msg_size("SIMCALL_DOT_LABEL", s_mc_message_simcall_to_string_t);
-        auto msg_simcall                = (s_mc_message_simcall_to_string_t*)message_buffer.data();
-        const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(msg_simcall->aid);
-        xbt_assert(actor != nullptr, "Invalid pid %ld", msg_simcall->aid);
-        xbt_assert(actor->simcall_.observer_, "The transition of %s has no observer", actor->get_cname());
-        std::string value = actor->simcall_.observer_->dot_label(msg_simcall->time_considered);
-
-        // Send result:
-        s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, {0}};
-        value.copy(answer.value, (sizeof answer.value) - 1); // last byte was set to '\0' by initialization above
         xbt_assert(channel_.send(answer) == 0, "Could not send response");
         break;
       }

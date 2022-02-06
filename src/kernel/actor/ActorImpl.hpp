@@ -49,7 +49,7 @@ public:
   const char* get_cname() const { return name_.c_str(); }
 
   // Accessors to private fields
-  s4u::Host* get_host() { return host_; }
+  s4u::Host* get_host() const { return host_; }
   void set_host(s4u::Host* dest);
   aid_t get_pid() const { return pid_; }
   aid_t get_ppid() const { return ppid_; }
