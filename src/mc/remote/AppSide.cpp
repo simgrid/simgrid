@@ -195,7 +195,7 @@ void AppSide::handle_messages() const
                   (res ? "true" : "false"));
 
         // Send result:
-        s_mc_message_simcalls_dependent_answer_t answer{MessageType::SIMCALLS_DEPENDENT_ANSWER, {0}};
+        s_mc_message_simcalls_dependent_answer_t answer{MessageType::SIMCALLS_DEPENDENT_ANSWER, 0};
         answer.value = res;
         xbt_assert(channel_.send(answer) == 0, "Could not send response");
         break;
