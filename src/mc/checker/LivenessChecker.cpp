@@ -255,7 +255,7 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(const Pair* current_pair, xbt
   for (auto& act : api::get().get_actors()) {
     auto actor = act.copy.get_buffer();
     if (get_session().actor_is_enabled(actor->get_pid()))
-      next_pair->graph_state->mark_todo(actor);
+      next_pair->graph_state->mark_todo(actor->get_pid());
   }
 
   next_pair->requests = next_pair->graph_state->count_todo();

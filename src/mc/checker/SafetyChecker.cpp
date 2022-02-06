@@ -135,8 +135,7 @@ void SafetyChecker::run()
     api::get().mc_inc_executed_trans();
 
     /* Actually answer the request: let execute the selected request (MCed does one step) */
-    RemotePtr<simgrid::kernel::actor::SimcallObserver> remote_observer =
-        api::get().execute(state->transition_, &state->executed_req_);
+    auto remote_observer = api::get().execute(state->transition_, &state->executed_req_);
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     ++expanded_states_count_;
@@ -157,7 +156,7 @@ void SafetyChecker::run()
       for (auto& remoteActor : actors) {
         auto actor = remoteActor.copy.get_buffer();
         if (get_session().actor_is_enabled(actor->get_pid())) {
-          next_state->mark_todo(actor);
+          next_state->mark_todo(actor->get_pid());
           if (reductionMode_ == ReductionMode::dpor)
             break; // With DPOR, we take the first enabled transition
         }
@@ -193,34 +192,31 @@ void SafetyChecker::backtrack()
     std::unique_ptr<State> state = std::move(stack_.back());
     stack_.pop_back();
     if (reductionMode_ == ReductionMode::dpor) {
-      kernel::actor::ActorImpl* issuer = api::get().simcall_get_issuer(&state->executed_req_);
+      aid_t issuer_id = state->transition_.aid_;
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         State* prev_state = i->get();
-        if (state->executed_req_.issuer_ == prev_state->executed_req_.issuer_) {
-          XBT_DEBUG("Simcall %s and %s with same issuer", SIMIX_simcall_name(state->executed_req_),
-                    SIMIX_simcall_name(prev_state->executed_req_));
+        if (state->transition_.aid_ == prev_state->transition_.aid_) {
+          XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->transition_.textual.c_str(),
+                    prev_state->transition_.textual.c_str(), issuer_id);
           break;
         } else if (api::get().requests_are_dependent(prev_state->remote_observer_, state->remote_observer_)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
-            int value              = prev_state->transition_.times_considered_;
-            smx_simcall_t prev_req = &prev_state->executed_req_;
-            XBT_DEBUG("%s (state=%d)", api::get().request_to_string(prev_req, value).c_str(), prev_state->num_);
-            value    = state->transition_.times_considered_;
-            prev_req = &state->executed_req_;
-            XBT_DEBUG("%s (state=%d)", api::get().request_to_string(prev_req, value).c_str(), state->num_);
+            XBT_DEBUG("  %s (state=%d)", prev_state->transition_.textual.c_str(), prev_state->num_);
+            XBT_DEBUG("  %s (state=%d)", state->transition_.textual.c_str(), state->num_);
           }
 
-          if (not prev_state->actor_states_[issuer->get_pid()].is_done())
-            prev_state->mark_todo(issuer);
+          if (not prev_state->actor_states_[issuer_id].is_done())
+            prev_state->mark_todo(issuer_id);
           else
-            XBT_DEBUG("Actor %s %ld is in done set", api::get().get_actor_name(issuer).c_str(), issuer->get_pid());
+            XBT_DEBUG("Actor %ld is in done set", issuer_id);
           break;
         } else {
-          const kernel::actor::ActorImpl* previous_issuer = api::get().simcall_get_issuer(&prev_state->executed_req_);
-          XBT_DEBUG("Simcall %s, process %ld (state %d) and simcall %s, process %ld (state %d) are independent",
-                    SIMIX_simcall_name(state->executed_req_), issuer->get_pid(), state->num_,
-                    SIMIX_simcall_name(prev_state->executed_req_), previous_issuer->get_pid(), prev_state->num_);
+          if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
+            XBT_DEBUG("INDEPENDENT Transitions:");
+            XBT_DEBUG("  %s (state=%d)", prev_state->transition_.textual.c_str(), prev_state->num_);
+            XBT_DEBUG("  %s (state=%d)", state->transition_.textual.c_str(), state->num_);
+          }
         }
       }
     }
@@ -287,15 +283,17 @@ SafetyChecker::SafetyChecker(Session* session) : Checker(session)
   /* Get an enabled actor and insert it in the interleave set of the initial state */
   auto actors = api::get().get_actors();
   XBT_DEBUG("Initial state. %zu actors to consider", actors.size());
-  for (auto& actor : actors)
-    if (get_session().actor_is_enabled(actor.copy.get_buffer()->get_pid())) {
-      initial_state->mark_todo(actor.copy.get_buffer());
+  for (auto& actor : actors) {
+    aid_t aid = actor.copy.get_buffer()->get_pid();
+    if (get_session().actor_is_enabled(aid)) {
+      initial_state->mark_todo(aid);
       if (reductionMode_ == ReductionMode::dpor) {
-        XBT_DEBUG("Actor %ld is TODO, DPOR is ON so let's go for this one.", actor.copy.get_buffer()->get_pid());
+        XBT_DEBUG("Actor %ld is TODO, DPOR is ON so let's go for this one.", aid);
         break;
       }
-      XBT_DEBUG("Actor %ld is TODO", actor.copy.get_buffer()->get_pid());
+      XBT_DEBUG("Actor %ld is TODO", aid);
     }
+  }
 
   stack_.push_back(std::move(initial_state));
 }

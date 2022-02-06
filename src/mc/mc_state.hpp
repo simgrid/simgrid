@@ -40,7 +40,7 @@ public:
   explicit State(unsigned long state_number);
 
   std::size_t count_todo() const;
-  void mark_todo(const simgrid::kernel::actor::ActorImpl* actor) { this->actor_states_[actor->get_pid()].mark_todo(); }
+  void mark_todo(aid_t actor) { this->actor_states_[actor].mark_todo(); }
   Transition get_transition() const;
 
 private:

@@ -316,7 +316,7 @@ void CommunicationDeterminismChecker::prepare()
   for (auto& act : api::get().get_actors()) {
     auto actor = act.copy.get_buffer();
     if (get_session().actor_is_enabled(actor->get_pid()))
-      initial_state->mark_todo(actor);
+      initial_state->mark_todo(actor->get_pid());
   }
 
   stack_.push_back(std::move(initial_state));
@@ -471,7 +471,7 @@ void CommunicationDeterminismChecker::real_run()
         for (auto& act : api::get().get_actors()) {
           auto actor = act.copy.get_buffer();
           if (get_session().actor_is_enabled(actor->get_pid()))
-            next_state->mark_todo(actor);
+            next_state->mark_todo(actor->get_pid());
         }
 
         if (dot_output != nullptr)
