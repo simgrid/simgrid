@@ -28,14 +28,14 @@ private:
   void prepare();
   void real_run();
   void log_state() override;
-  void deterministic_comm_pattern(aid_t process, const PatternCommunication* comm, int backtracking);
+  void deterministic_comm_pattern(aid_t process, const PatternCommunication* comm, bool backtracking);
   void restoreState();
-  void handle_comm_pattern(simgrid::mc::CallType call_type, smx_simcall_t req, int value, int backtracking);
+  void handle_comm_pattern(simgrid::mc::CallType call_type, smx_simcall_t req, int value, bool backtracking);
 
 public:
   // These are used by functions which should be moved in CommunicationDeterminismChecker:
-  void get_comm_pattern(smx_simcall_t request, CallType call_type, int backtracking);
-  void complete_comm_pattern(RemotePtr<kernel::activity::CommImpl> const& comm_addr, aid_t issuer, int backtracking);
+  void get_comm_pattern(smx_simcall_t request, CallType call_type, bool backtracking);
+  void complete_comm_pattern(RemotePtr<kernel::activity::CommImpl> const& comm_addr, aid_t issuer, bool backtracking);
 
 private:
   /** Stack representing the position in the exploration graph */

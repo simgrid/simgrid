@@ -125,7 +125,7 @@ namespace simgrid {
 namespace mc {
 
 void CommunicationDeterminismChecker::deterministic_comm_pattern(aid_t process, const PatternCommunication* comm,
-                                                                 int backtracking)
+                                                                 bool backtracking)
 {
   if (not backtracking) {
     PatternCommunicationList& list = initial_communications_pattern[process];
@@ -175,7 +175,7 @@ void CommunicationDeterminismChecker::deterministic_comm_pattern(aid_t process, 
 
 /********** Non Static functions ***********/
 
-void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, CallType call_type, int backtracking)
+void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, CallType call_type, bool backtracking)
 {
   const smx_actor_t issuer                                     = api::get().simcall_get_issuer(request);
   const mc::PatternCommunicationList& initial_pattern          = initial_communications_pattern[issuer->get_pid()];
@@ -228,8 +228,8 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
   incomplete_communications_pattern[issuer->get_pid()].push_back(pattern.release());
 }
 
-void CommunicationDeterminismChecker::complete_comm_pattern(RemotePtr<kernel::activity::CommImpl> const& comm_addr, aid_t issuer,
-                                                            int backtracking)
+void CommunicationDeterminismChecker::complete_comm_pattern(RemotePtr<kernel::activity::CommImpl> const& comm_addr,
+                                                            aid_t issuer, bool backtracking)
 {
   /* Complete comm pattern */
   std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[issuer];
@@ -381,7 +381,8 @@ void CommunicationDeterminismChecker::restoreState()
   }
 }
 
-void CommunicationDeterminismChecker::handle_comm_pattern(simgrid::mc::CallType call_type, smx_simcall_t req, int value, int backtracking)
+void CommunicationDeterminismChecker::handle_comm_pattern(simgrid::mc::CallType call_type, smx_simcall_t req, int value,
+                                                          bool backtracking)
 {
   using simgrid::mc::CallType;
   switch(call_type) {
