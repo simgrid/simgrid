@@ -109,12 +109,11 @@ void SafetyChecker::run()
       continue;
     }
 
-    // Search an enabled transition in the current state; backtrack if the interleave set is empty
-    // get_request also sets state.transition to be the one corresponding to the returned req
-    smx_simcall_t req = api::get().mc_state_choose_request(state);
-    // req is now the transition of the process that was selected to be executed
+    // Search for the next transition. If found, state is modified accordingly (transition and executed_req are set)
+    // If there is no more transition in the current state, backtrack.
 
-    if (req == nullptr) {
+    if (not api::get().mc_state_choose_request(state)) {
+
       XBT_DEBUG("There remains %zu actors, but none to interleave (depth %zu).",
                 mc_model_checker->get_remote_process().actors().size(), stack_.size() + 1);
 
@@ -123,6 +122,8 @@ void SafetyChecker::run()
       this->backtrack();
       continue;
     }
+
+    smx_simcall_t req = &state->executed_req_;
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.

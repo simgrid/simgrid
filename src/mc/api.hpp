@@ -104,7 +104,7 @@ public:
   void mc_wait_for_requests() const;
   XBT_ATTRIB_NORETURN void mc_exit(int status) const;
   void dump_record_path() const;
-  smx_simcall_t mc_state_choose_request(simgrid::mc::State* state) const;
+  bool mc_state_choose_request(simgrid::mc::State* state) const;
 
   // SIMCALL APIs
   bool requests_are_dependent(RemotePtr<kernel::actor::SimcallObserver> obs1,

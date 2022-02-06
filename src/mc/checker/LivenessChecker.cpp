@@ -352,7 +352,8 @@ void LivenessChecker::run()
       }
     }
 
-    smx_simcall_t req = api::get().mc_state_choose_request(current_pair->graph_state.get());
+    api::get().mc_state_choose_request(current_pair->graph_state.get());
+    smx_simcall_t req = &current_pair->graph_state->executed_req_;
     int req_num       = current_pair->graph_state->transition_.times_considered_;
 
     if (dot_output != nullptr) {

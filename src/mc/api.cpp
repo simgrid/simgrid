@@ -386,13 +386,14 @@ void Api::dump_record_path() const
 
 /* Search for an enabled transition amongst actors
  *
- * This is the frist actor marked TODO by the checker, and currently enabled in the application.
+ * This is the first actor marked TODO by the checker, and currently enabled in the application.
  *
  * Once we found it, prepare its execution (increase the times_considered of its observer and remove it as done on need)
- *  - marked "to be interleaved" in their ActorState (controlled by the checker algorithm).
+ *
+ * If we can't find any actor, return false
  */
 
-smx_simcall_t Api::mc_state_choose_request(simgrid::mc::State* state) const
+bool Api::mc_state_choose_request(simgrid::mc::State* state) const
 {
   RemoteProcess& process = mc_model_checker->get_remote_process();
   XBT_DEBUG("Search for an actor to run. %zu actors to consider", process.actors().size());
@@ -419,9 +420,9 @@ smx_simcall_t Api::mc_state_choose_request(simgrid::mc::State* state) const
 
     XBT_DEBUG("Let's run actor %ld, going for transition %s", actor->get_pid(),
               SIMIX_simcall_name(state->executed_req_));
-    return &state->executed_req_;
+    return true;
   }
-  return nullptr;
+  return false;
 }
 
 std::string Api::request_to_string(smx_simcall_t req, int value) const

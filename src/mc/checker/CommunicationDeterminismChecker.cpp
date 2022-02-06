@@ -410,7 +410,6 @@ void CommunicationDeterminismChecker::handle_comm_pattern(simgrid::mc::CallType 
 void CommunicationDeterminismChecker::real_run()
 {
   std::unique_ptr<VisitedState> visited_state = nullptr;
-  smx_simcall_t req                           = nullptr;
 
   while (not stack_.empty()) {
     /* Get current state */
@@ -423,13 +422,13 @@ void CommunicationDeterminismChecker::real_run()
     /* Update statistics */
     api::get().mc_inc_visited_states();
 
+    bool found_transition = false;
     if (stack_.size() <= (std::size_t)_sg_mc_max_depth)
-      req = api::get().mc_state_choose_request(cur_state);
-    else
-      req = nullptr;
+      found_transition = api::get().mc_state_choose_request(cur_state);
 
-    if (req != nullptr && visited_state == nullptr) {
+    if (found_transition && visited_state == nullptr) {
       int req_num = cur_state->transition_.times_considered_;
+      smx_simcall_t req = &cur_state->executed_req_;
 
       XBT_DEBUG("Execute: %s", api::get().request_to_string(req, req_num).c_str());
 
