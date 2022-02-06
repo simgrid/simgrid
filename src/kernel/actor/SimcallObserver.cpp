@@ -298,6 +298,12 @@ bool ActivityWaitSimcall::depends(SimcallObserver* other)
   if (get_issuer() == other->get_issuer())
     return false;
 
+  if (auto* isend = dynamic_cast<CommIsendSimcall*>(other))
+    return isend->depends(this);
+
+  if (auto* irecv = dynamic_cast<CommIrecvSimcall*>(other))
+    return irecv->depends(this);
+
   /* Timeouts in wait transitions are not considered by the independence theorem, thus assumed dependent */
   if (auto* wait = dynamic_cast<ActivityWaitSimcall*>(other)) {
     if (timeout_ > 0 || wait->get_timeout() > 0)
@@ -474,8 +480,8 @@ bool CommIrecvSimcall::depends(SimcallObserver* other)
   if (auto* other_irecv = dynamic_cast<CommIrecvSimcall*>(other))
     return mbox_ == other_irecv->get_mailbox();
 
-  if (dynamic_cast<CommIsendSimcall*>(other) != nullptr)
-    return false;
+  if (auto* isend = dynamic_cast<CommIsendSimcall*>(other))
+    return isend->depends(this);
 
 #if SIMGRID_HAVE_MC // FIXME needed to access mbox_cpy
   if (auto* wait = dynamic_cast<ActivityWaitSimcall*>(other)) {
