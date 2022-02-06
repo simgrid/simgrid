@@ -63,23 +63,15 @@ const char* ActivityImpl::get_state_str() const
 
 bool ActivityImpl::test(actor::ActorImpl* issuer)
 {
-  // Associate this simcall to the synchro
-  auto* observer = dynamic_cast<kernel::actor::ActivityTestSimcall*>(issuer->simcall_.observer_);
-  if (observer)
-    register_simcall(&issuer->simcall_);
-
   if (state_ != State::WAITING && state_ != State::RUNNING) {
     finish();
     issuer->exception_ = nullptr; // Do not propagate exception in that case
     return true;
   }
 
-  if (observer) {
+  if (auto* observer = dynamic_cast<kernel::actor::ActivityTestSimcall*>(issuer->simcall_.observer_))
     observer->set_result(false);
-    issuer->waiting_synchro_ = nullptr;
-    unregister_simcall(&issuer->simcall_);
-    issuer->simcall_answer();
-  }
+
   return false;
 }
 
@@ -97,11 +89,9 @@ ssize_t ActivityImpl::test_any(actor::ActorImpl* issuer, const std::vector<Activ
   for (std::size_t i = 0; i < activities.size(); ++i) {
     if (activities[i]->test(issuer)) {
       observer->set_result(i);
-      issuer->simcall_answer();
       return i;
     }
   }
-  issuer->simcall_answer();
   return -1;
 }
 

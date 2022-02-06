@@ -695,8 +695,8 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
       try{
         kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
         kernel::actor::ActivityTestSimcall observer{issuer, (*request)->action_.get()};
-        *flag = kernel::actor::simcall_blocking([&observer] { observer.get_activity()->test(observer.get_issuer()); },
-                                                &observer);
+        *flag = kernel::actor::simcall([&observer] { return observer.get_activity()->test(observer.get_issuer()); },
+                                       &observer);
       } catch (const Exception&) {
         *flag = 0;
         return ret;
@@ -785,8 +785,10 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
     try{
       kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
       kernel::actor::ActivityTestanySimcall observer{issuer, comms};
-      i = kernel::actor::simcall_blocking(
-          [&observer] { kernel::activity::ActivityImpl::test_any(observer.get_issuer(), observer.get_activities()); },
+      i = kernel::actor::simcall(
+          [&observer] {
+            return kernel::activity::ActivityImpl::test_any(observer.get_issuer(), observer.get_activities());
+          },
           &observer);
     } catch (const Exception&) {
       XBT_DEBUG("Exception in testany");
