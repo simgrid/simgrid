@@ -456,10 +456,10 @@ bool CommIsendSimcall::depends(SimcallObserver* other)
 std::string CommIsendSimcall::to_string(int times_considered) const
 {
   std::string res = SimcallObserver::to_string(times_considered) + "iSend(";
-  res += xbt::string_printf("src=[(%ld)%s (%s)]", get_issuer()->get_pid(), get_issuer()->get_host()->get_cname(),
+  res += xbt::string_printf("src=(%ld)%s (%s)", get_issuer()->get_pid(), get_issuer()->get_host()->get_cname(),
                             get_issuer()->get_cname());
-  res += XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf(", buff=%p", src_buff_)
-                                                                  : "(verbose only)";
+  res += ", buff=" + (XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf("%p", src_buff_)
+                                                                               : "(verbose only)");
   res += ", size=" +
          (XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? std::to_string(src_buff_size_) : "(verbose only)");
   res += ")";
@@ -509,10 +509,10 @@ bool CommIrecvSimcall::depends(SimcallObserver* other)
 std::string CommIrecvSimcall::to_string(int times_considered) const
 {
   std::string res = SimcallObserver::to_string(times_considered) + "iRecv(";
-  res += xbt::string_printf("dst=[(%ld)%s (%s)]", get_issuer()->get_pid(), get_issuer()->get_host()->get_cname(),
+  res += xbt::string_printf("dst=(%ld)%s (%s)", get_issuer()->get_pid(), get_issuer()->get_host()->get_cname(),
                             get_issuer()->get_cname());
-  res += XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf(", buff=%p", dst_buff_)
-                                                                  : "(verbose only)";
+  res += ", buff=" + (XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf("%p", dst_buff_)
+                                                                               : "(verbose only)");
   res += ", size=" + (XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? std::to_string(*dst_buff_size_)
                                                                                : "(verbose only)");
   res += ")";
