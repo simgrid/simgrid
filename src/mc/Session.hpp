@@ -46,7 +46,6 @@ public:
   void close();
 
   void take_initial_snapshot();
-  simgrid::mc::RemotePtr<simgrid::kernel::actor::SimcallObserver> execute(Transition const& transition) const;
   void log_state() const;
 
   void restore_initial_state() const;

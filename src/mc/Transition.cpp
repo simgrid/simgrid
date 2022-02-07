@@ -22,7 +22,11 @@ RemotePtr<simgrid::kernel::actor::SimcallObserver> Transition::execute()
 {
   textual_ = mc_model_checker->simcall_to_string(aid_, times_considered_);
   executed_transitions_++;
-  return session_singleton->execute(*this);
+
+  simgrid::mc::RemotePtr<simgrid::kernel::actor::SimcallObserver> res = mc_model_checker->handle_simcall(*this);
+  mc_model_checker->wait_for_requests();
+
+  return res;
 }
 } // namespace mc
 } // namespace simgrid
