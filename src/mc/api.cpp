@@ -354,16 +354,6 @@ RemotePtr<kernel::activity::ActivityImpl> Api::get_comm_remote_addr(smx_simcall_
   THROW_IMPOSSIBLE;
 }
 
-void Api::handle_simcall(Transition const& transition) const
-{
-  mc_model_checker->handle_simcall(transition);
-}
-
-void Api::mc_wait_for_requests() const
-{
-  mc_model_checker->wait_for_requests();
-}
-
 void Api::mc_exit(int status) const
 {
   mc_model_checker->exit(status);

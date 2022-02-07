@@ -98,8 +98,6 @@ public:
   void mc_inc_visited_states() const;
   unsigned long mc_get_visited_states() const;
   void mc_check_deadlock() const;
-  void handle_simcall(Transition const& transition) const;
-  void mc_wait_for_requests() const;
   XBT_ATTRIB_NORETURN void mc_exit(int status) const;
   void dump_record_path() const;
   bool mc_state_choose_request(simgrid::mc::State* state) const;

@@ -369,9 +369,8 @@ void CommunicationDeterminismChecker::restoreState()
 
     /* TODO : handle test and testany simcalls */
     CallType call = MC_get_call_type(req);
-    api::get().handle_simcall(state->transition_);
+    state->transition_.execute();
     handle_comm_pattern(call, req, req_num, 1);
-    api::get().mc_wait_for_requests();
 
     /* Update statistics */
     api::get().mc_inc_visited_states();
@@ -440,13 +439,10 @@ void CommunicationDeterminismChecker::real_run()
         call = MC_get_call_type(req);
 
       /* Answer the request */
-      api::get().handle_simcall(cur_state->transition_);
+      cur_state->transition_.execute();
       /* After this call req is no longer useful */
 
       handle_comm_pattern(call, req, req_num, 0);
-
-      /* Wait for requests (schedules processes) */
-      api::get().mc_wait_for_requests();
 
       /* Create the new expanded state */
       ++expanded_states_count_;

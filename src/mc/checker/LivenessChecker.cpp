@@ -353,16 +353,11 @@ void LivenessChecker::run()
       fflush(dot_output);
     }
 
+    current_pair->graph_state->transition_.execute();
     XBT_DEBUG("Execute: %s", current_pair->graph_state->transition_.to_string().c_str());
 
     if (not current_pair->exploration_started)
       visited_pairs_count_++;
-
-    /* Answer the request */
-    api::get().handle_simcall(current_pair->graph_state->transition_);
-
-    /* Wait for requests (schedules processes) */
-    api::get().mc_wait_for_requests();
 
     current_pair->requests--;
     current_pair->exploration_started = true;
