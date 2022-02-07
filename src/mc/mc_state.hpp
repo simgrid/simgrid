@@ -39,6 +39,9 @@ public:
 
   explicit State(unsigned long state_number);
 
+  /* Returns a positive number if there is another transition to pick, or -1 if not */
+  int next_transition() const;
+
   std::size_t count_todo() const;
   void mark_todo(aid_t actor) { this->actor_states_[actor].mark_todo(); }
   Transition get_transition() const;

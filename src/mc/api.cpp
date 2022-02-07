@@ -364,47 +364,6 @@ void Api::dump_record_path() const
   simgrid::mc::dumpRecordPath();
 }
 
-/* Search for an enabled transition amongst actors
- *
- * This is the first actor marked TODO by the checker, and currently enabled in the application.
- *
- * Once we found it, prepare its execution (increase the times_considered of its observer and remove it as done on need)
- *
- * If we can't find any actor, return false
- */
-
-bool Api::mc_state_choose_request(simgrid::mc::State* state) const
-{
-  RemoteProcess& process = mc_model_checker->get_remote_process();
-  XBT_DEBUG("Search for an actor to run. %zu actors to consider", process.actors().size());
-  for (auto& actor_info : process.actors()) {
-    auto actor                           = actor_info.copy.get_buffer();
-    simgrid::mc::ActorState* actor_state = &state->actor_states_[actor->get_pid()];
-
-    /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application*/
-    if (not actor_state->is_todo() || not simgrid::mc::actor_is_enabled(actor))
-      continue;
-
-    /* This actor is ready to be executed. Prepare its execution when simcall_handle will be called on it */
-    if (actor->simcall_.observer_ != nullptr) {
-      state->transition_.times_considered_ = actor_state->get_times_considered_and_inc();
-      if (actor->simcall_.mc_max_consider_ <= actor_state->get_times_considered())
-        actor_state->set_done();
-    } else {
-      state->transition_.times_considered_ = 0;
-      actor_state->set_done();
-    }
-
-    state->transition_.aid_ = actor->get_pid();
-    state->executed_req_    = actor->simcall_;
-
-    XBT_DEBUG("Let's run actor %ld, going for transition %s", actor->get_pid(),
-              SIMIX_simcall_name(state->executed_req_));
-    return true;
-  }
-  return false;
-}
-
 std::string Api::request_get_dot_output(aid_t aid, int value) const
 {
   const char* color = get_color(aid - 1);

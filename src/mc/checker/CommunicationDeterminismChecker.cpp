@@ -369,7 +369,7 @@ void CommunicationDeterminismChecker::restoreState()
 
     /* TODO : handle test and testany simcalls */
     CallType call = MC_get_call_type(req);
-    state->transition_.execute();
+    state->transition_.replay();
     handle_comm_pattern(call, req, req_num, 1);
 
     /* Update statistics */
@@ -418,11 +418,13 @@ void CommunicationDeterminismChecker::real_run()
     /* Update statistics */
     api::get().mc_inc_visited_states();
 
-    bool found_transition = false;
+    int next_transition = -1;
     if (stack_.size() <= (std::size_t)_sg_mc_max_depth)
-      found_transition = api::get().mc_state_choose_request(cur_state);
+      next_transition = cur_state->next_transition();
 
-    if (found_transition && visited_state == nullptr) {
+    if (next_transition >= 0 && visited_state == nullptr) {
+      cur_state->transition_.execute(cur_state, next_transition);
+
       aid_t aid         = cur_state->transition_.aid_;
       int req_num = cur_state->transition_.times_considered_;
       smx_simcall_t req = &cur_state->executed_req_;
@@ -437,10 +439,6 @@ void CommunicationDeterminismChecker::real_run()
       CallType call = CallType::NONE;
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
         call = MC_get_call_type(req);
-
-      /* Answer the request */
-      cur_state->transition_.execute();
-      /* After this call req is no longer useful */
 
       handle_comm_pattern(call, req, req_num, 0);
 

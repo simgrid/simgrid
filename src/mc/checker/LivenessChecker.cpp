@@ -122,7 +122,7 @@ void LivenessChecker::replay()
     std::shared_ptr<State> state = pair->graph_state;
 
     if (pair->exploration_started) {
-      state->transition_.execute();
+      state->transition_.replay();
       XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, state->transition_.to_string().c_str(), state.get());
     }
 
@@ -336,9 +336,13 @@ void LivenessChecker::run()
       }
     }
 
-    api::get().mc_state_choose_request(current_pair->graph_state.get());
-    aid_t aid         = current_pair->graph_state->transition_.aid_;
-    int req_num       = current_pair->graph_state->transition_.times_considered_;
+    int next = current_pair->graph_state->next_transition();
+
+    current_pair->graph_state->transition_.execute(current_pair->graph_state.get(), next);
+
+    aid_t aid   = current_pair->graph_state->transition_.aid_;
+    int req_num = current_pair->graph_state->transition_.times_considered_;
+    XBT_DEBUG("Execute: %s", current_pair->graph_state->transition_.to_string().c_str());
 
     if (dot_output != nullptr) {
       if (this->previous_pair_ != 0 && this->previous_pair_ != current_pair->num) {
@@ -352,9 +356,6 @@ void LivenessChecker::run()
         fprintf(dot_output, "%d [shape=doublecircle];\n", current_pair->num);
       fflush(dot_output);
     }
-
-    current_pair->graph_state->transition_.execute();
-    XBT_DEBUG("Execute: %s", current_pair->graph_state->transition_.to_string().c_str());
 
     if (not current_pair->exploration_started)
       visited_pairs_count_++;

@@ -4,10 +4,13 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/mc_state.hpp"
-#include "src/mc/mc_config.hpp"
+#include "src/mc/Session.hpp"
 #include "src/mc/api.hpp"
+#include "src/mc/mc_config.hpp"
 
 #include <boost/range/algorithm.hpp>
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc, "Logging specific to MC states");
 
 using simgrid::mc::remote;
 using api = simgrid::mc::Api;
@@ -38,6 +41,23 @@ std::size_t State::count_todo() const
 Transition State::get_transition() const
 {
   return this->transition_;
+}
+
+int State::next_transition() const
+{
+  std::vector<ActorInformation>& actors = mc_model_checker->get_remote_process().actors();
+  XBT_DEBUG("Search for an actor to run. %zu actors to consider", actors.size());
+  for (unsigned int i = 0; i < actors.size(); i++) {
+    aid_t aid                     = actors[i].copy.get_buffer()->get_pid();
+    const ActorState* actor_state = &actor_states_[aid];
+
+    /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application*/
+    if (not actor_state->is_todo() || not simgrid::mc::session_singleton->actor_is_enabled(aid))
+      continue;
+
+    return i;
+  }
+  return -1;
 }
 
 void State::copy_incomplete_comm_pattern()

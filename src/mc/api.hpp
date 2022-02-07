@@ -100,7 +100,6 @@ public:
   void mc_check_deadlock() const;
   XBT_ATTRIB_NORETURN void mc_exit(int status) const;
   void dump_record_path() const;
-  bool mc_state_choose_request(simgrid::mc::State* state) const;
 
   // SIMCALL APIs
   bool requests_are_dependent(RemotePtr<kernel::actor::SimcallObserver> obs1,

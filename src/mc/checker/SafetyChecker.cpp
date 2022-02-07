@@ -109,10 +109,10 @@ void SafetyChecker::run()
       continue;
     }
 
-    // Search for the next transition. If found, state is modified accordingly (transition and executed_req are set)
-    // If there is no more transition in the current state, backtrack.
+    // Search for the next transition
+    int next = state->next_transition();
 
-    if (not api::get().mc_state_choose_request(state)) {
+    if (next < 0) { // If there is no more transition in the current state, backtrack.
 
       XBT_DEBUG("There remains %zu actors, but none to interleave (depth %zu).",
                 mc_model_checker->get_remote_process().actors().size(), stack_.size() + 1);
@@ -124,7 +124,7 @@ void SafetyChecker::run()
     }
 
     /* Actually answer the request: let execute the selected request (MCed does one step) */
-    auto remote_observer = state->transition_.execute();
+    auto remote_observer = state->transition_.execute(state, next);
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
@@ -246,7 +246,7 @@ void SafetyChecker::restore_state()
   for (std::unique_ptr<State> const& state : stack_) {
     if (state == stack_.back())
       break;
-    state->transition_.execute();
+    state->transition_.replay();
     /* Update statistics */
     api::get().mc_inc_visited_states();
   }
