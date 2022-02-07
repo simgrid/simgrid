@@ -42,6 +42,9 @@ public:
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   int next_transition() const;
 
+  /* Explore a new path */
+  RemotePtr<simgrid::kernel::actor::SimcallObserver> execute_next(int next);
+
   std::size_t count_todo() const;
   void mark_todo(aid_t actor) { this->actor_states_[actor].mark_todo(); }
   Transition* get_transition() const;

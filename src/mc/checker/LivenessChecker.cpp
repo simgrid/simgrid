@@ -338,7 +338,7 @@ void LivenessChecker::run()
 
     int next = current_pair->graph_state->next_transition();
 
-    current_pair->graph_state->get_transition()->execute(current_pair->graph_state.get(), next);
+    current_pair->graph_state->execute_next(next);
 
     aid_t aid   = current_pair->graph_state->get_transition()->aid_;
     int req_num = current_pair->graph_state->get_transition()->times_considered_;

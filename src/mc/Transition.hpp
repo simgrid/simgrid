@@ -40,10 +40,10 @@ public:
    */
   int times_considered_ = 0;
 
+  void init(aid_t aid, int times_considered);
+
   std::string to_string() const;
 
-  /* Explore a new path */
-  RemotePtr<simgrid::kernel::actor::SimcallObserver> execute(simgrid::mc::State* state, int next);
   /* Moves the application toward a path that was already explored, but don't change the current transition */
   RemotePtr<simgrid::kernel::actor::SimcallObserver> replay() const;
 

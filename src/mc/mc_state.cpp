@@ -59,6 +59,32 @@ int State::next_transition() const
   }
   return -1;
 }
+RemotePtr<simgrid::kernel::actor::SimcallObserver> State::execute_next(int next)
+{
+  std::vector<ActorInformation>& actors = mc_model_checker->get_remote_process().actors();
+
+  kernel::actor::ActorImpl* actor = actors[next].copy.get_buffer();
+  aid_t aid                       = actor->get_pid();
+  int times_considered;
+
+  simgrid::mc::ActorState* actor_state = &actor_states_[aid];
+  /* This actor is ready to be executed. Prepare its execution when simcall_handle will be called on it */
+  if (actor->simcall_.observer_ != nullptr) {
+    times_considered = actor_state->get_times_considered_and_inc();
+    if (actor->simcall_.mc_max_consider_ <= actor_state->get_times_considered())
+      actor_state->set_done();
+  } else {
+    times_considered = 0;
+    actor_state->set_done();
+  }
+
+  transition_.init(aid, times_considered);
+  executed_req_ = actor->simcall_;
+
+  XBT_DEBUG("Let's run actor %ld, going for transition %s", aid, transition_.to_string().c_str());
+
+  return transition_.replay();
+}
 
 void State::copy_incomplete_comm_pattern()
 {

@@ -423,7 +423,7 @@ void CommunicationDeterminismChecker::real_run()
       next_transition = cur_state->next_transition();
 
     if (next_transition >= 0 && visited_state == nullptr) {
-      cur_state->get_transition()->execute(cur_state, next_transition);
+      cur_state->execute_next(next_transition);
 
       aid_t aid         = cur_state->get_transition()->aid_;
       int req_num       = cur_state->get_transition()->times_considered_;
