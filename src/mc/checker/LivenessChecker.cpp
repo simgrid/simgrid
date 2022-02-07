@@ -122,8 +122,8 @@ void LivenessChecker::replay()
     std::shared_ptr<State> state = pair->graph_state;
 
     if (pair->exploration_started) {
-      state->transition_.replay();
-      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, state->transition_.to_string().c_str(), state.get());
+      state->get_transition()->replay();
+      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, state->get_transition()->to_string().c_str(), state.get());
     }
 
     /* Update statistics */
@@ -187,7 +187,7 @@ RecordTrace LivenessChecker::get_record_trace() // override
 {
   RecordTrace res;
   for (std::shared_ptr<Pair> const& pair : exploration_stack_)
-    res.push_back(pair->graph_state->get_transition());
+    res.push_back(*pair->graph_state->get_transition());
   return res;
 }
 
@@ -217,7 +217,7 @@ std::vector<std::string> LivenessChecker::get_textual_trace() // override
   for (std::shared_ptr<Pair> const& pair : exploration_stack_) {
     smx_simcall_t req = &pair->graph_state->executed_req_;
     if (req->call_ != simix::Simcall::NONE)
-      trace.push_back(pair->graph_state->transition_.to_string());
+      trace.push_back(pair->graph_state->get_transition()->to_string());
   }
   return trace;
 }
@@ -338,11 +338,11 @@ void LivenessChecker::run()
 
     int next = current_pair->graph_state->next_transition();
 
-    current_pair->graph_state->transition_.execute(current_pair->graph_state.get(), next);
+    current_pair->graph_state->get_transition()->execute(current_pair->graph_state.get(), next);
 
-    aid_t aid   = current_pair->graph_state->transition_.aid_;
-    int req_num = current_pair->graph_state->transition_.times_considered_;
-    XBT_DEBUG("Execute: %s", current_pair->graph_state->transition_.to_string().c_str());
+    aid_t aid   = current_pair->graph_state->get_transition()->aid_;
+    int req_num = current_pair->graph_state->get_transition()->times_considered_;
+    XBT_DEBUG("Execute: %s", current_pair->graph_state->get_transition()->to_string().c_str());
 
     if (dot_output != nullptr) {
       if (this->previous_pair_ != 0 && this->previous_pair_ != current_pair->num) {

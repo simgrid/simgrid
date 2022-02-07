@@ -15,14 +15,14 @@ namespace mc {
 
 /* A node in the exploration graph (kind-of) */
 class XBT_PRIVATE State {
+  Transition transition_;
+
 public:
   /** Sequential state number (used for debugging) */
   int num_ = 0;
 
   /** State's exploration status by process */
   std::vector<ActorState> actor_states_;
-
-  Transition transition_;
 
   /** The simcall which was executed, going out of that state */
   s_smx_simcall executed_req_;
@@ -44,7 +44,7 @@ public:
 
   std::size_t count_todo() const;
   void mark_todo(aid_t actor) { this->actor_states_[actor].mark_todo(); }
-  Transition get_transition() const;
+  Transition* get_transition() const;
 
 private:
   void copy_incomplete_comm_pattern();

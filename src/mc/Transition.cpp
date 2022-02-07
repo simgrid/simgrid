@@ -16,7 +16,7 @@ namespace simgrid {
 namespace mc {
 unsigned long Transition::executed_transitions_ = 0;
 
-std::string Transition::to_string()
+std::string Transition::to_string() const
 {
   xbt_assert(mc_model_checker != nullptr, "Must be called from MCer");
 
@@ -28,18 +28,20 @@ RemotePtr<simgrid::kernel::actor::SimcallObserver> Transition::execute(simgrid::
 
   kernel::actor::ActorImpl* actor = actors[next].copy.get_buffer();
   aid_t aid                       = actor->get_pid();
+  int times_considered;
 
   simgrid::mc::ActorState* actor_state = &state->actor_states_[aid];
   /* This actor is ready to be executed. Prepare its execution when simcall_handle will be called on it */
   if (actor->simcall_.observer_ != nullptr) {
-    state->transition_.times_considered_ = actor_state->get_times_considered_and_inc();
+    times_considered = actor_state->get_times_considered_and_inc();
     if (actor->simcall_.mc_max_consider_ <= actor_state->get_times_considered())
       actor_state->set_done();
   } else {
-    state->transition_.times_considered_ = 0;
+    times_considered = 0;
     actor_state->set_done();
   }
 
+  times_considered_    = times_considered;
   aid_                 = aid;
   state->executed_req_ = actor->simcall_;
 
@@ -48,7 +50,7 @@ RemotePtr<simgrid::kernel::actor::SimcallObserver> Transition::execute(simgrid::
 
   return replay();
 }
-RemotePtr<simgrid::kernel::actor::SimcallObserver> Transition::replay()
+RemotePtr<simgrid::kernel::actor::SimcallObserver> Transition::replay() const
 {
   executed_transitions_++;
 

@@ -52,7 +52,7 @@ RecordTrace SafetyChecker::get_record_trace() // override
 {
   RecordTrace res;
   for (auto const& state : stack_)
-    res.push_back(state->get_transition());
+    res.push_back(*state->get_transition());
   return res;
 }
 
@@ -60,7 +60,7 @@ std::vector<std::string> SafetyChecker::get_textual_trace() // override
 {
   std::vector<std::string> trace;
   for (auto const& state : stack_)
-    trace.push_back(state->transition_.to_string());
+    trace.push_back(state->get_transition()->to_string());
   return trace;
 }
 
@@ -124,15 +124,16 @@ void SafetyChecker::run()
     }
 
     /* Actually answer the request: let execute the selected request (MCed does one step) */
-    auto remote_observer = state->transition_.execute(state, next);
+    auto remote_observer = state->get_transition()->execute(state, next);
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_DEBUG("Execute: %s", state->transition_.to_string().c_str());
+    XBT_DEBUG("Execute: %s", state->get_transition()->to_string().c_str());
 
     std::string req_str;
     if (dot_output != nullptr)
-      req_str = api::get().request_get_dot_output(state->transition_.aid_, state->transition_.times_considered_);
+      req_str =
+          api::get().request_get_dot_output(state->get_transition()->aid_, state->get_transition()->times_considered_);
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     ++expanded_states_count_;
@@ -189,18 +190,18 @@ void SafetyChecker::backtrack()
     std::unique_ptr<State> state = std::move(stack_.back());
     stack_.pop_back();
     if (reductionMode_ == ReductionMode::dpor) {
-      aid_t issuer_id = state->transition_.aid_;
+      aid_t issuer_id = state->get_transition()->aid_;
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         State* prev_state = i->get();
-        if (state->transition_.aid_ == prev_state->transition_.aid_) {
-          XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->transition_.to_string().c_str(),
-                    prev_state->transition_.to_string().c_str(), issuer_id);
+        if (state->get_transition()->aid_ == prev_state->get_transition()->aid_) {
+          XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->get_transition()->to_string().c_str(),
+                    prev_state->get_transition()->to_string().c_str(), issuer_id);
           break;
         } else if (api::get().requests_are_dependent(prev_state->remote_observer_, state->remote_observer_)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
-            XBT_DEBUG("  %s (state=%d)", prev_state->transition_.to_string().c_str(), prev_state->num_);
-            XBT_DEBUG("  %s (state=%d)", state->transition_.to_string().c_str(), state->num_);
+            XBT_DEBUG("  %s (state=%d)", prev_state->get_transition()->to_string().c_str(), prev_state->num_);
+            XBT_DEBUG("  %s (state=%d)", state->get_transition()->to_string().c_str(), state->num_);
           }
 
           if (not prev_state->actor_states_[issuer_id].is_done())
@@ -211,8 +212,8 @@ void SafetyChecker::backtrack()
         } else {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("INDEPENDENT Transitions:");
-            XBT_DEBUG("  %s (state=%d)", prev_state->transition_.to_string().c_str(), prev_state->num_);
-            XBT_DEBUG("  %s (state=%d)", state->transition_.to_string().c_str(), state->num_);
+            XBT_DEBUG("  %s (state=%d)", prev_state->get_transition()->to_string().c_str(), prev_state->num_);
+            XBT_DEBUG("  %s (state=%d)", state->get_transition()->to_string().c_str(), state->num_);
           }
         }
       }
@@ -246,7 +247,7 @@ void SafetyChecker::restore_state()
   for (std::unique_ptr<State> const& state : stack_) {
     if (state == stack_.back())
       break;
-    state->transition_.replay();
+    state->get_transition()->replay();
     /* Update statistics */
     api::get().mc_inc_visited_states();
   }

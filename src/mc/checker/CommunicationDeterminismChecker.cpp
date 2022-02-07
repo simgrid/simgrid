@@ -262,7 +262,7 @@ RecordTrace CommunicationDeterminismChecker::get_record_trace() // override
 {
   RecordTrace res;
   for (auto const& state : stack_)
-    res.push_back(state->get_transition());
+    res.push_back(*state->get_transition());
   return res;
 }
 
@@ -270,7 +270,7 @@ std::vector<std::string> CommunicationDeterminismChecker::get_textual_trace() //
 {
   std::vector<std::string> trace;
   for (auto const& state : stack_)
-    trace.push_back(state->transition_.to_string());
+    trace.push_back(state->get_transition()->to_string());
   return trace;
 }
 
@@ -357,7 +357,7 @@ void CommunicationDeterminismChecker::restoreState()
     if (state == stack_.back())
       break;
 
-    int req_num                    = state->transition_.times_considered_;
+    int req_num                    = state->get_transition()->times_considered_;
     const s_smx_simcall* saved_req = &state->executed_req_;
     xbt_assert(saved_req);
 
@@ -369,7 +369,7 @@ void CommunicationDeterminismChecker::restoreState()
 
     /* TODO : handle test and testany simcalls */
     CallType call = MC_get_call_type(req);
-    state->transition_.replay();
+    state->get_transition()->replay();
     handle_comm_pattern(call, req, req_num, 1);
 
     /* Update statistics */
@@ -423,13 +423,13 @@ void CommunicationDeterminismChecker::real_run()
       next_transition = cur_state->next_transition();
 
     if (next_transition >= 0 && visited_state == nullptr) {
-      cur_state->transition_.execute(cur_state, next_transition);
+      cur_state->get_transition()->execute(cur_state, next_transition);
 
-      aid_t aid         = cur_state->transition_.aid_;
-      int req_num = cur_state->transition_.times_considered_;
+      aid_t aid         = cur_state->get_transition()->aid_;
+      int req_num       = cur_state->get_transition()->times_considered_;
       smx_simcall_t req = &cur_state->executed_req_;
 
-      XBT_DEBUG("Execute: %s", cur_state->transition_.to_string().c_str());
+      XBT_DEBUG("Execute: %s", cur_state->get_transition()->to_string().c_str());
 
       std::string req_str;
       if (dot_output != nullptr)

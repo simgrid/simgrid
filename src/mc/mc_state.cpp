@@ -38,9 +38,9 @@ std::size_t State::count_todo() const
   return boost::range::count_if(this->actor_states_, [](simgrid::mc::ActorState const& a) { return a.is_todo(); });
 }
 
-Transition State::get_transition() const
+Transition* State::get_transition() const
 {
-  return this->transition_;
+  return const_cast<Transition*>(&this->transition_);
 }
 
 int State::next_transition() const

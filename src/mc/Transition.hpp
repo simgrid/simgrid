@@ -40,12 +40,12 @@ public:
    */
   int times_considered_ = 0;
 
-  std::string to_string();
+  std::string to_string() const;
 
   /* Explore a new path */
   RemotePtr<simgrid::kernel::actor::SimcallObserver> execute(simgrid::mc::State* state, int next);
   /* Moves the application toward a path that was already explored, but don't change the current transition */
-  RemotePtr<simgrid::kernel::actor::SimcallObserver> replay();
+  RemotePtr<simgrid::kernel::actor::SimcallObserver> replay() const;
 
   /* Returns the total amount of transitions executed so far (for statistics) */
   static unsigned long get_executed_transitions() { return executed_transitions_; }
