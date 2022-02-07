@@ -47,7 +47,7 @@ VisitedStates::addVisitedState(unsigned long state_number, simgrid::mc::State* g
 {
   auto new_state             = std::make_unique<simgrid::mc::VisitedState>(state_number);
   graph_state->system_state_ = new_state->system_state;
-  XBT_DEBUG("Snapshot %p of visited state %d (exploration stack state %d)", new_state->system_state.get(),
+  XBT_DEBUG("Snapshot %p of visited state %ld (exploration stack state %ld)", new_state->system_state.get(),
             new_state->num, graph_state->num_);
 
   auto range =
@@ -68,24 +68,22 @@ VisitedStates::addVisitedState(unsigned long state_number, simgrid::mc::State* g
           new_state->original_num = old_state->original_num;
 
         if (dot_output == nullptr)
-          XBT_DEBUG("State %d already visited ! (equal to state %d)",
-                    new_state->num, old_state->num);
+          XBT_DEBUG("State %ld already visited ! (equal to state %ld)", new_state->num, old_state->num);
         else
-          XBT_DEBUG("State %d already visited ! (equal to state %d (state %d in dot_output))",
-                    new_state->num, old_state->num, new_state->original_num);
+          XBT_DEBUG("State %ld already visited ! (equal to state %ld (state %ld in dot_output))", new_state->num,
+                    old_state->num, new_state->original_num);
 
         /* Replace the old state with the new one (with a bigger num)
            (when the max number of visited states is reached,  the oldest
            one is removed according to its number (= with the min number) */
-        XBT_DEBUG("Replace visited state %d with the new visited state %d",
-          old_state->num, new_state->num);
+        XBT_DEBUG("Replace visited state %ld with the new visited state %ld", old_state->num, new_state->num);
 
         visited_state = std::move(new_state);
         return old_state;
       }
     }
 
-  XBT_DEBUG("Insert new visited state %d (total : %lu)", new_state->num, (unsigned long) states_.size());
+  XBT_DEBUG("Insert new visited state %ld (total : %lu)", new_state->num, (unsigned long)states_.size());
   states_.insert(range.first, std::move(new_state));
   this->prune();
   return nullptr;

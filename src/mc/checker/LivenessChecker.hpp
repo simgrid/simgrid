@@ -75,7 +75,6 @@ private:
   std::list<std::shared_ptr<VisitedPair>> visited_pairs_;
   unsigned long visited_pairs_count_   = 0;
   unsigned long expanded_pairs_count_  = 0;
-  unsigned long expanded_states_count_ = 0;
   int previous_pair_                   = 0;
   std::string previous_request_;
 };

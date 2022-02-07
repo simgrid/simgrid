@@ -38,7 +38,6 @@ private:
   std::list<std::unique_ptr<State>> stack_;
   VisitedStates visited_states_;
   std::unique_ptr<VisitedState> visited_state_;
-  unsigned long expanded_states_count_ = 0;
 };
 
 } // namespace mc

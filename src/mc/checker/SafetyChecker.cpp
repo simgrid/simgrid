@@ -34,7 +34,7 @@ void SafetyChecker::check_non_termination(const State* current_state)
 {
   for (auto state = stack_.rbegin(); state != stack_.rend(); ++state)
     if (api::get().snapshot_equal((*state)->system_state_.get(), current_state->system_state_.get())) {
-      XBT_INFO("Non-progressive cycle: state %d -> state %d", (*state)->num_, current_state->num_);
+      XBT_INFO("Non-progressive cycle: state %ld -> state %ld", (*state)->num_, current_state->num_);
       XBT_INFO("******************************************");
       XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
       XBT_INFO("******************************************");
@@ -66,7 +66,7 @@ std::vector<std::string> SafetyChecker::get_textual_trace() // override
 
 void SafetyChecker::log_state() // override
 {
-  XBT_INFO("Expanded states = %lu", expanded_states_count_);
+  XBT_INFO("Expanded states = %ld", State::get_expanded_states());
   XBT_INFO("Visited states = %lu", api::get().mc_get_visited_states());
   XBT_INFO("Executed transitions = %lu", Transition::get_executed_transitions());
 }
@@ -82,7 +82,7 @@ void SafetyChecker::run()
     State* state = stack_.back().get();
 
     XBT_DEBUG("**************************************************");
-    XBT_VERB("Exploration depth=%zu (state=%p, num %d)(%zu interleave)", stack_.size(), state, state->num_,
+    XBT_VERB("Exploration depth=%zu (state=%p, num %ld)(%zu interleave)", stack_.size(), state, state->num_,
              state->count_todo());
 
     api::get().mc_inc_visited_states();
@@ -101,7 +101,7 @@ void SafetyChecker::run()
 
     // Backtrack if we are revisiting a state we saw previously
     if (visited_state_ != nullptr) {
-      XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.",
+      XBT_DEBUG("State already visited (equal to state %ld), exploration stopped on this path.",
                 visited_state_->original_num == -1 ? visited_state_->num : visited_state_->original_num);
 
       visited_state_ = nullptr;
@@ -136,8 +136,7 @@ void SafetyChecker::run()
           api::get().request_get_dot_output(state->get_transition()->aid_, state->get_transition()->times_considered_);
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    ++expanded_states_count_;
-    auto next_state = std::make_unique<State>(expanded_states_count_);
+    auto next_state              = std::make_unique<State>();
     next_state->remote_observer_ = remote_observer;
 
     if (_sg_mc_termination)
@@ -145,7 +144,7 @@ void SafetyChecker::run()
 
     /* Check whether we already explored next_state in the past (but only if interested in state-equality reduction) */
     if (_sg_mc_max_visited_states > 0)
-      visited_state_ = visited_states_.addVisitedState(expanded_states_count_, next_state.get(), true);
+      visited_state_ = visited_states_.addVisitedState(next_state->num_, next_state.get(), true);
 
     /* If this is a new state (or if we don't care about state-equality reduction) */
     if (visited_state_ == nullptr) {
@@ -161,10 +160,10 @@ void SafetyChecker::run()
       }
 
       if (dot_output != nullptr)
-        std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num_, next_state->num_, req_str.c_str());
+        std::fprintf(dot_output, "\"%ld\" -> \"%ld\" [%s];\n", state->num_, next_state->num_, req_str.c_str());
 
     } else if (dot_output != nullptr)
-      std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num_,
+      std::fprintf(dot_output, "\"%ld\" -> \"%ld\" [%s];\n", state->num_,
                    visited_state_->original_num == -1 ? visited_state_->num : visited_state_->original_num,
                    req_str.c_str());
 
@@ -200,8 +199,8 @@ void SafetyChecker::backtrack()
         } else if (api::get().requests_are_dependent(prev_state->remote_observer_, state->remote_observer_)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
-            XBT_DEBUG("  %s (state=%d)", prev_state->get_transition()->to_cstring(), prev_state->num_);
-            XBT_DEBUG("  %s (state=%d)", state->get_transition()->to_cstring(), state->num_);
+            XBT_DEBUG("  %s (state=%ld)", prev_state->get_transition()->to_cstring(), prev_state->num_);
+            XBT_DEBUG("  %s (state=%ld)", state->get_transition()->to_cstring(), state->num_);
           }
 
           if (not prev_state->actor_states_[issuer_id].is_done())
@@ -212,8 +211,8 @@ void SafetyChecker::backtrack()
         } else {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("INDEPENDENT Transitions:");
-            XBT_DEBUG("  %s (state=%d)", prev_state->get_transition()->to_cstring(), prev_state->num_);
-            XBT_DEBUG("  %s (state=%d)", state->get_transition()->to_cstring(), state->num_);
+            XBT_DEBUG("  %s (state=%ld)", prev_state->get_transition()->to_cstring(), prev_state->num_);
+            XBT_DEBUG("  %s (state=%ld)", state->get_transition()->to_cstring(), state->num_);
           }
         }
       }
@@ -221,13 +220,13 @@ void SafetyChecker::backtrack()
 
     if (state->count_todo() && stack_.size() < (std::size_t)_sg_mc_max_depth) {
       /* We found a back-tracking point, let's loop */
-      XBT_DEBUG("Back-tracking to state %d at depth %zu", state->num_, stack_.size() + 1);
+      XBT_DEBUG("Back-tracking to state %ld at depth %zu", state->num_, stack_.size() + 1);
       stack_.push_back(std::move(state));
       this->restore_state();
-      XBT_DEBUG("Back-tracking to state %d at depth %zu done", stack_.back()->num_, stack_.size());
+      XBT_DEBUG("Back-tracking to state %ld at depth %zu done", stack_.back()->num_, stack_.size());
       break;
     } else {
-      XBT_DEBUG("Delete state %d at depth %zu", state->num_, stack_.size() + 1);
+      XBT_DEBUG("Delete state %ld at depth %zu", state->num_, stack_.size() + 1);
     }
   }
 }
@@ -272,8 +271,7 @@ SafetyChecker::SafetyChecker(Session* session) : Checker(session)
 
   XBT_DEBUG("Starting the safety algorithm");
 
-  ++expanded_states_count_;
-  auto initial_state = std::make_unique<State>(expanded_states_count_);
+  auto initial_state = std::make_unique<State>();
 
   XBT_DEBUG("**************************************************");
 

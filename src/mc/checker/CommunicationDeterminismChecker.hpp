@@ -41,7 +41,6 @@ private:
   /** Stack representing the position in the exploration graph */
   std::list<std::unique_ptr<State>> stack_;
   VisitedStates visited_states_;
-  unsigned long expanded_states_count_ = 0;
 
   bool initial_communications_pattern_done = false;
   bool recv_deterministic                  = true;

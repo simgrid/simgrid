@@ -18,12 +18,14 @@ using api = simgrid::mc::Api;
 namespace simgrid {
 namespace mc {
 
-State::State(unsigned long state_number) : num_(state_number)
+long State::expended_states_ = 0;
+
+State::State() : num_(++expended_states_)
 {
   const unsigned long maxpid = api::get().get_maxpid();
   actor_states_.resize(maxpid);
   /* Stateful model checking */
-  if ((_sg_mc_checkpoint > 0 && (state_number % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
+  if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
     auto snapshot_ptr = api::get().take_snapshot(num_);
     system_state_ = std::shared_ptr<simgrid::mc::Snapshot>(snapshot_ptr);
     if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {

@@ -290,7 +290,7 @@ void CommunicationDeterminismChecker::log_state() // override
       XBT_INFO("%s", this->send_diff);
     }
   }
-  XBT_INFO("Expanded states = %lu", expanded_states_count_);
+  XBT_INFO("Expanded states = %ld", State::get_expanded_states());
   XBT_INFO("Visited states = %lu", api::get().mc_get_visited_states());
   XBT_INFO("Executed transitions = %lu", Transition::get_executed_transitions());
   XBT_INFO("Send-deterministic : %s", this->send_deterministic ? "Yes" : "No");
@@ -305,8 +305,7 @@ void CommunicationDeterminismChecker::prepare()
   initial_communications_pattern.resize(maxpid);
   incomplete_communications_pattern.resize(maxpid);
 
-  ++expanded_states_count_;
-  auto initial_state = std::make_unique<State>(expanded_states_count_);
+  auto initial_state = std::make_unique<State>();
 
   XBT_DEBUG("********* Start communication determinism verification *********");
 
@@ -412,7 +411,7 @@ void CommunicationDeterminismChecker::real_run()
     State* cur_state = stack_.back().get();
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth = %zu (state = %d, interleaved processes = %zu)", stack_.size(), cur_state->num_,
+    XBT_DEBUG("Exploration depth = %zu (state = %ld, interleaved processes = %zu)", stack_.size(), cur_state->num_,
               cur_state->count_todo());
 
     /* Update statistics */
@@ -443,8 +442,7 @@ void CommunicationDeterminismChecker::real_run()
       handle_comm_pattern(call, req, req_num, 0);
 
       /* Create the new expanded state */
-      ++expanded_states_count_;
-      auto next_state = std::make_unique<State>(expanded_states_count_);
+      auto next_state = std::make_unique<State>();
 
       /* If comm determinism verification, we cannot stop the exploration if some communications are not finished (at
        * least, data are transferred). These communications  are incomplete and they cannot be analyzed and compared
@@ -452,7 +450,7 @@ void CommunicationDeterminismChecker::real_run()
       bool compare_snapshots = this->initial_communications_pattern_done && all_communications_are_finished();
 
       if (_sg_mc_max_visited_states != 0)
-        visited_state = visited_states_.addVisitedState(expanded_states_count_, next_state.get(), compare_snapshots);
+        visited_state = visited_states_.addVisitedState(next_state->num_, next_state.get(), compare_snapshots);
       else
         visited_state = nullptr;
 
@@ -465,10 +463,10 @@ void CommunicationDeterminismChecker::real_run()
         }
 
         if (dot_output != nullptr)
-          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", cur_state->num_, next_state->num_, req_str.c_str());
+          fprintf(dot_output, "\"%ld\" -> \"%ld\" [%s];\n", cur_state->num_, next_state->num_, req_str.c_str());
 
       } else if (dot_output != nullptr)
-        fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", cur_state->num_,
+        fprintf(dot_output, "\"%ld\" -> \"%ld\" [%s];\n", cur_state->num_,
                 visited_state->original_num == -1 ? visited_state->num : visited_state->original_num, req_str.c_str());
 
       stack_.push_back(std::move(next_state));
@@ -476,7 +474,7 @@ void CommunicationDeterminismChecker::real_run()
       if (stack_.size() > (std::size_t)_sg_mc_max_depth)
         XBT_WARN("/!\\ Max depth reached! /!\\ ");
       else if (visited_state != nullptr)
-        XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.",
+        XBT_DEBUG("State already visited (equal to state %ld), exploration stopped on this path.",
                   visited_state->original_num == -1 ? visited_state->num : visited_state->original_num);
       else
         XBT_DEBUG("There are no more processes to interleave. (depth %zu)", stack_.size());
@@ -484,7 +482,7 @@ void CommunicationDeterminismChecker::real_run()
       this->initial_communications_pattern_done = true;
 
       /* Trash the current state, no longer needed */
-      XBT_DEBUG("Delete state %d at depth %zu", cur_state->num_, stack_.size());
+      XBT_DEBUG("Delete state %ld at depth %zu", cur_state->num_, stack_.size());
       stack_.pop_back();
 
       visited_state = nullptr;
@@ -496,16 +494,16 @@ void CommunicationDeterminismChecker::real_run()
         stack_.pop_back();
         if (state->count_todo() && stack_.size() < (std::size_t)_sg_mc_max_depth) {
           /* We found a back-tracking point, let's loop */
-          XBT_DEBUG("Back-tracking to state %d at depth %zu", state->num_, stack_.size() + 1);
+          XBT_DEBUG("Back-tracking to state %ld at depth %zu", state->num_, stack_.size() + 1);
           stack_.push_back(std::move(state));
 
           this->restoreState();
 
-          XBT_DEBUG("Back-tracking to state %d at depth %zu done", stack_.back()->num_, stack_.size());
+          XBT_DEBUG("Back-tracking to state %ld at depth %zu done", stack_.back()->num_, stack_.size());
 
           break;
         } else {
-          XBT_DEBUG("Delete state %d at depth %zu", state->num_, stack_.size() + 1);
+          XBT_DEBUG("Delete state %ld at depth %zu", state->num_, stack_.size() + 1);
         }
       }
     }
