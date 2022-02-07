@@ -212,11 +212,12 @@ void AppSide::handle_messages() const
         auto* obs2        = msg_simcalls->obs2;
         bool res          = true;
 
-        if (obs1 != nullptr && obs2 != nullptr)
+        if (obs1 != nullptr && obs2 != nullptr) {
           res = obs1->depends(obs2);
 
-        XBT_DEBUG("return SIMCALLS_DEPENDENT(%s, %s) = %s", obs1->to_string(0).c_str(), obs2->to_string(0).c_str(),
-                  (res ? "true" : "false"));
+          XBT_DEBUG("return SIMCALLS_DEPENDENT(%s, %s) = %s", obs1->to_string(0).c_str(), obs2->to_string(0).c_str(),
+                    (res ? "true" : "false"));
+        }
 
         // Send result:
         s_mc_message_simcalls_dependent_answer_t answer{MessageType::SIMCALLS_DEPENDENT_ANSWER, 0};

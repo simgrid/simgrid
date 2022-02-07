@@ -367,6 +367,9 @@ bool ModelChecker::requests_are_dependent(RemotePtr<kernel::actor::SimcallObserv
   m.type = MessageType::SIMCALLS_DEPENDENT;
   m.obs1 = obs1.local();
   m.obs2 = obs2.local();
+
+  if (m.obs1 == nullptr || m.obs2 == nullptr)
+    return true;
   checker_side_.get_channel().send(m);
 
   s_mc_message_simcalls_dependent_answer_t answer;
