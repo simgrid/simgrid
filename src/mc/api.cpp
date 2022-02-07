@@ -425,13 +425,6 @@ bool Api::mc_state_choose_request(simgrid::mc::State* state) const
   return false;
 }
 
-std::string Api::request_to_string(aid_t aid, int value) const
-{
-  xbt_assert(mc_model_checker != nullptr, "Must be called from MCer");
-
-  return mc_model_checker->simcall_to_string(aid, value);
-}
-
 std::string Api::request_get_dot_output(aid_t aid, int value) const
 {
   const char* color = get_color(aid - 1);
@@ -477,13 +470,6 @@ simgrid::mc::Snapshot* Api::take_snapshot(int num_state) const
 void Api::s_close() const
 {
   session_singleton->close();
-}
-
-RemotePtr<simgrid::kernel::actor::SimcallObserver> Api::execute(Transition& transition) const
-{
-  /* FIXME: once all simcalls have observers, kill the simcall parameter and use mc_model_checker->simcall_to_string() */
-  transition.textual = request_to_string(transition.aid_, transition.times_considered_);
-  return session_singleton->execute(transition);
 }
 
 void Api::automaton_load(const char* file) const

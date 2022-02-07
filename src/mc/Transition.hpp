@@ -8,6 +8,7 @@
 #define SIMGRID_MC_TRANSITION_HPP
 
 #include "simgrid/forward.h" // aid_t
+#include "src/mc/remote/RemotePtr.hpp"
 #include <string>
 
 namespace simgrid {
@@ -37,6 +38,9 @@ public:
 
   /* Textual representation of the transition, to display backtraces */
   std::string textual = "";
+
+  std::string to_string();
+  RemotePtr<simgrid::kernel::actor::SimcallObserver> execute();
 };
 
 } // namespace mc

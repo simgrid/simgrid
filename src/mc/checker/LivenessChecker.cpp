@@ -122,12 +122,8 @@ void LivenessChecker::replay()
     std::shared_ptr<State> state = pair->graph_state;
 
     if (pair->exploration_started) {
-      /* Debug information */
-      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth,
-                api::get().request_to_string(state->transition_.aid_, state->transition_.times_considered_).c_str(),
-                state.get());
-
-      api::get().execute(state->transition_);
+      state->transition_.execute();
+      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, state->transition_.to_string().c_str(), state.get());
     }
 
     /* Update statistics */
@@ -223,8 +219,7 @@ std::vector<std::string> LivenessChecker::get_textual_trace() // override
   for (std::shared_ptr<Pair> const& pair : exploration_stack_) {
     smx_simcall_t req = &pair->graph_state->executed_req_;
     if (req->call_ != simix::Simcall::NONE)
-      trace.push_back(api::get().request_to_string(pair->graph_state->transition_.aid_,
-                                                   pair->graph_state->transition_.times_considered_));
+      trace.push_back(pair->graph_state->transition_.to_string());
   }
   return trace;
 }
@@ -360,7 +355,7 @@ void LivenessChecker::run()
       fflush(dot_output);
     }
 
-    XBT_DEBUG("Execute: %s", api::get().request_to_string(aid, req_num).c_str());
+    XBT_DEBUG("Execute: %s", current_pair->graph_state->transition_.to_string().c_str());
 
     /* Update stats */
     api::get().mc_inc_executed_trans();

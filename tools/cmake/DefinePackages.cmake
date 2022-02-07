@@ -628,6 +628,7 @@ set(MC_SRC
   src/mc/mc_client_api.cpp
   src/mc/mc_smx.cpp
   src/mc/mc_exit.hpp
+  src/mc/Transition.cpp
   src/mc/Transition.hpp
   src/mc/udpor_global.cpp
   src/mc/udpor_global.hpp

@@ -124,11 +124,11 @@ void SafetyChecker::run()
     }
 
     /* Actually answer the request: let execute the selected request (MCed does one step) */
-    auto remote_observer = api::get().execute(state->transition_);
+    auto remote_observer = state->transition_.execute();
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_DEBUG("Execute: %s", state->transition_.textual.c_str());
+    XBT_DEBUG("Execute: %s", state->transition_.to_string().c_str());
 
     std::string req_str;
     if (dot_output != nullptr)
@@ -248,7 +248,7 @@ void SafetyChecker::restore_state()
   for (std::unique_ptr<State> const& state : stack_) {
     if (state == stack_.back())
       break;
-    api::get().execute(state->transition_);
+    state->transition_.execute();
     /* Update statistics */
     api::get().mc_inc_visited_states();
     api::get().mc_inc_executed_trans();
