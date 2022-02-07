@@ -60,7 +60,7 @@ std::vector<std::string> SafetyChecker::get_textual_trace() // override
 {
   std::vector<std::string> trace;
   for (auto const& state : stack_)
-    trace.push_back(state->transition_.textual);
+    trace.push_back(state->transition_.to_string());
   return trace;
 }
 
@@ -68,7 +68,7 @@ void SafetyChecker::log_state() // override
 {
   XBT_INFO("Expanded states = %lu", expanded_states_count_);
   XBT_INFO("Visited states = %lu", api::get().mc_get_visited_states());
-  XBT_INFO("Executed transitions = %lu", api::get().mc_get_executed_trans());
+  XBT_INFO("Executed transitions = %lu", Transition::get_executed_transitions());
 }
 
 void SafetyChecker::run()
@@ -134,8 +134,6 @@ void SafetyChecker::run()
     if (dot_output != nullptr)
       req_str = api::get().request_get_dot_output(state->transition_.aid_, state->transition_.times_considered_);
 
-    api::get().mc_inc_executed_trans();
-
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     ++expanded_states_count_;
     auto next_state = std::make_unique<State>(expanded_states_count_);
@@ -195,14 +193,14 @@ void SafetyChecker::backtrack()
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         State* prev_state = i->get();
         if (state->transition_.aid_ == prev_state->transition_.aid_) {
-          XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->transition_.textual.c_str(),
-                    prev_state->transition_.textual.c_str(), issuer_id);
+          XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->transition_.to_string().c_str(),
+                    prev_state->transition_.to_string().c_str(), issuer_id);
           break;
         } else if (api::get().requests_are_dependent(prev_state->remote_observer_, state->remote_observer_)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
-            XBT_DEBUG("  %s (state=%d)", prev_state->transition_.textual.c_str(), prev_state->num_);
-            XBT_DEBUG("  %s (state=%d)", state->transition_.textual.c_str(), state->num_);
+            XBT_DEBUG("  %s (state=%d)", prev_state->transition_.to_string().c_str(), prev_state->num_);
+            XBT_DEBUG("  %s (state=%d)", state->transition_.to_string().c_str(), state->num_);
           }
 
           if (not prev_state->actor_states_[issuer_id].is_done())
@@ -213,8 +211,8 @@ void SafetyChecker::backtrack()
         } else {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("INDEPENDENT Transitions:");
-            XBT_DEBUG("  %s (state=%d)", prev_state->transition_.textual.c_str(), prev_state->num_);
-            XBT_DEBUG("  %s (state=%d)", state->transition_.textual.c_str(), state->num_);
+            XBT_DEBUG("  %s (state=%d)", prev_state->transition_.to_string().c_str(), prev_state->num_);
+            XBT_DEBUG("  %s (state=%d)", state->transition_.to_string().c_str(), state->num_);
           }
         }
       }
@@ -251,7 +249,6 @@ void SafetyChecker::restore_state()
     state->transition_.execute();
     /* Update statistics */
     api::get().mc_inc_visited_states();
-    api::get().mc_inc_executed_trans();
   }
 }
 

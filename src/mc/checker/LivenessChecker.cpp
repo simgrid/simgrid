@@ -128,8 +128,6 @@ void LivenessChecker::replay()
 
     /* Update statistics */
     visited_pairs_count_++;
-    api::get().mc_inc_executed_trans();
-
     depth++;
   }
   XBT_DEBUG("**** End Replay ****");
@@ -197,7 +195,7 @@ void LivenessChecker::log_state() // override
 {
   XBT_INFO("Expanded pairs = %lu", expanded_pairs_count_);
   XBT_INFO("Visited pairs = %lu", visited_pairs_count_);
-  XBT_INFO("Executed transitions = %lu", api::get().mc_get_executed_trans());
+  XBT_INFO("Executed transitions = %lu", Transition::get_executed_transitions());
 }
 
 void LivenessChecker::show_acceptance_cycle(std::size_t depth)
@@ -356,9 +354,6 @@ void LivenessChecker::run()
     }
 
     XBT_DEBUG("Execute: %s", current_pair->graph_state->transition_.to_string().c_str());
-
-    /* Update stats */
-    api::get().mc_inc_executed_trans();
 
     if (not current_pair->exploration_started)
       visited_pairs_count_++;

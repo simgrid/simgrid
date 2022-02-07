@@ -10,16 +10,18 @@
 
 namespace simgrid {
 namespace mc {
+unsigned long Transition::executed_transitions_ = 0;
 
 std::string Transition::to_string()
 {
   xbt_assert(mc_model_checker != nullptr, "Must be called from MCer");
 
-  return textual;
+  return textual_;
 }
 RemotePtr<simgrid::kernel::actor::SimcallObserver> Transition::execute()
 {
-  textual = mc_model_checker->simcall_to_string(aid_, times_considered_);
+  textual_ = mc_model_checker->simcall_to_string(aid_, times_considered_);
+  executed_transitions_++;
   return session_singleton->execute(*this);
 }
 } // namespace mc

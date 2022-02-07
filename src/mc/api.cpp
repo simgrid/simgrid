@@ -289,19 +289,9 @@ void Api::mc_inc_visited_states() const
   mc_model_checker->visited_states++;
 }
 
-void Api::mc_inc_executed_trans() const
-{
-  mc_model_checker->executed_transitions++;
-}
-
 unsigned long Api::mc_get_visited_states() const
 {
   return mc_model_checker->visited_states;
-}
-
-unsigned long Api::mc_get_executed_trans() const
-{
-  return mc_model_checker->executed_transitions;
 }
 
 void Api::mc_check_deadlock() const

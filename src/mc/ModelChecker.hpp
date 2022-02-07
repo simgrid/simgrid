@@ -74,7 +74,6 @@ private:
 
 public:
   unsigned long visited_states = 0;
-  unsigned long executed_transitions = 0;
 };
 
 }

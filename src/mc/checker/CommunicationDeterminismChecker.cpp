@@ -292,7 +292,7 @@ void CommunicationDeterminismChecker::log_state() // override
   }
   XBT_INFO("Expanded states = %lu", expanded_states_count_);
   XBT_INFO("Visited states = %lu", api::get().mc_get_visited_states());
-  XBT_INFO("Executed transitions = %lu", api::get().mc_get_executed_trans());
+  XBT_INFO("Executed transitions = %lu", Transition::get_executed_transitions());
   XBT_INFO("Send-deterministic : %s", this->send_deterministic ? "Yes" : "No");
   if (_sg_mc_comms_determinism)
     XBT_INFO("Recv-deterministic : %s", this->recv_deterministic ? "Yes" : "No");
@@ -375,7 +375,6 @@ void CommunicationDeterminismChecker::restoreState()
 
     /* Update statistics */
     api::get().mc_inc_visited_states();
-    api::get().mc_inc_executed_trans();
   }
 }
 
@@ -434,8 +433,6 @@ void CommunicationDeterminismChecker::real_run()
       std::string req_str;
       if (dot_output != nullptr)
         req_str = api::get().request_get_dot_output(aid, req_num);
-
-      api::get().mc_inc_executed_trans();
 
       /* TODO : handle test and testany simcalls */
       CallType call = CallType::NONE;

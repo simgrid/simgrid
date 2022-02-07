@@ -23,6 +23,10 @@ namespace mc {
  *  calls.
  */
 class Transition {
+  /* Textual representation of the transition, to display backtraces */
+  std::string textual_ = "";
+  static unsigned long executed_transitions_;
+
 public:
   aid_t aid_ = 0;
 
@@ -36,11 +40,10 @@ public:
    */
   int times_considered_ = 0;
 
-  /* Textual representation of the transition, to display backtraces */
-  std::string textual = "";
-
   std::string to_string();
   RemotePtr<simgrid::kernel::actor::SimcallObserver> execute();
+
+  static unsigned long get_executed_transitions() { return executed_transitions_; }
 };
 
 } // namespace mc

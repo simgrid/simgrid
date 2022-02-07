@@ -96,9 +96,7 @@ public:
 
   // MODEL CHECKER APIs
   void mc_inc_visited_states() const;
-  void mc_inc_executed_trans() const;
   unsigned long mc_get_visited_states() const;
-  unsigned long mc_get_executed_trans() const;
   void mc_check_deadlock() const;
   void handle_simcall(Transition const& transition) const;
   void mc_wait_for_requests() const;
