@@ -43,6 +43,7 @@ public:
   void init(aid_t aid, int times_considered);
 
   std::string to_string() const;
+  const char* to_cstring() const;
 
   /* Moves the application toward a path that was already explored, but don't change the current transition */
   RemotePtr<simgrid::kernel::actor::SimcallObserver> replay() const;

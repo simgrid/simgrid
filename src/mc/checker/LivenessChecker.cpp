@@ -123,7 +123,7 @@ void LivenessChecker::replay()
 
     if (pair->exploration_started) {
       state->get_transition()->replay();
-      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, state->get_transition()->to_string().c_str(), state.get());
+      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, state->get_transition()->to_cstring(), state.get());
     }
 
     /* Update statistics */
@@ -342,7 +342,7 @@ void LivenessChecker::run()
 
     aid_t aid   = current_pair->graph_state->get_transition()->aid_;
     int req_num = current_pair->graph_state->get_transition()->times_considered_;
-    XBT_DEBUG("Execute: %s", current_pair->graph_state->get_transition()->to_string().c_str());
+    XBT_DEBUG("Execute: %s", current_pair->graph_state->get_transition()->to_cstring());
 
     if (dot_output != nullptr) {
       if (this->previous_pair_ != 0 && this->previous_pair_ != current_pair->num) {

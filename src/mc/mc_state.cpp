@@ -81,7 +81,7 @@ RemotePtr<simgrid::kernel::actor::SimcallObserver> State::execute_next(int next)
   transition_.init(aid, times_considered);
   executed_req_ = actor->simcall_;
 
-  XBT_DEBUG("Let's run actor %ld, going for transition %s", aid, transition_.to_string().c_str());
+  XBT_DEBUG("Let's run actor %ld, going for transition %s", aid, transition_.to_cstring());
 
   return transition_.replay();
 }

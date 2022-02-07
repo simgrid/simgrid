@@ -429,7 +429,7 @@ void CommunicationDeterminismChecker::real_run()
       int req_num       = cur_state->get_transition()->times_considered_;
       smx_simcall_t req = &cur_state->executed_req_;
 
-      XBT_DEBUG("Execute: %s", cur_state->get_transition()->to_string().c_str());
+      XBT_DEBUG("Execute: %s", cur_state->get_transition()->to_cstring());
 
       std::string req_str;
       if (dot_output != nullptr)

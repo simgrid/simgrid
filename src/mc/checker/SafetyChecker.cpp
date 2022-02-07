@@ -128,7 +128,7 @@ void SafetyChecker::run()
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_DEBUG("Execute: %s", state->get_transition()->to_string().c_str());
+    XBT_DEBUG("Execute: %s", state->get_transition()->to_cstring());
 
     std::string req_str;
     if (dot_output != nullptr)
@@ -194,14 +194,14 @@ void SafetyChecker::backtrack()
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         State* prev_state = i->get();
         if (state->get_transition()->aid_ == prev_state->get_transition()->aid_) {
-          XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->get_transition()->to_string().c_str(),
-                    prev_state->get_transition()->to_string().c_str(), issuer_id);
+          XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->get_transition()->to_cstring(),
+                    prev_state->get_transition()->to_cstring(), issuer_id);
           break;
         } else if (api::get().requests_are_dependent(prev_state->remote_observer_, state->remote_observer_)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
-            XBT_DEBUG("  %s (state=%d)", prev_state->get_transition()->to_string().c_str(), prev_state->num_);
-            XBT_DEBUG("  %s (state=%d)", state->get_transition()->to_string().c_str(), state->num_);
+            XBT_DEBUG("  %s (state=%d)", prev_state->get_transition()->to_cstring(), prev_state->num_);
+            XBT_DEBUG("  %s (state=%d)", state->get_transition()->to_cstring(), state->num_);
           }
 
           if (not prev_state->actor_states_[issuer_id].is_done())
@@ -212,8 +212,8 @@ void SafetyChecker::backtrack()
         } else {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("INDEPENDENT Transitions:");
-            XBT_DEBUG("  %s (state=%d)", prev_state->get_transition()->to_string().c_str(), prev_state->num_);
-            XBT_DEBUG("  %s (state=%d)", state->get_transition()->to_string().c_str(), state->num_);
+            XBT_DEBUG("  %s (state=%d)", prev_state->get_transition()->to_cstring(), prev_state->num_);
+            XBT_DEBUG("  %s (state=%d)", state->get_transition()->to_cstring(), state->num_);
           }
         }
       }

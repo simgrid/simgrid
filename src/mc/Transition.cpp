@@ -22,6 +22,12 @@ std::string Transition::to_string() const
 
   return textual_;
 }
+const char* Transition::to_cstring() const
+{
+  xbt_assert(mc_model_checker != nullptr, "Must be called from MCer");
+
+  return textual_.c_str();
+}
 void Transition::init(aid_t aid, int times_considered)
 {
   aid_              = aid;
