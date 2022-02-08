@@ -9,9 +9,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(dependencies, "Logging specific to this test");
 
 int main(int argc, char** argv)
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  simgrid::s4u::Engine engine(&argc, argv);
   xbt_assert(argc > 1, "Usage: %s platform_file\n\nExample: %s two_clusters.xml", argv[0], argv[0]);
-  e.load_platform(argv[1]);
+  engine.load_platform(argv[1]);
 
   simgrid::s4u::Activity::on_completion_cb([](simgrid::s4u::Activity const& activity) {
     const auto* exec = dynamic_cast<simgrid::s4u::Exec const*>(&activity);
@@ -63,7 +63,7 @@ int main(int argc, char** argv)
   }
 
   /* scheduling parameters */
-  const auto hosts                           = e.get_all_hosts();
+  const auto hosts                           = engine.get_all_hosts();
   std::vector<simgrid::s4u::Host*> host_list = {hosts[2], hosts[4]};
   std::vector<double> flops_amounts          = {2000000, 1000000};
   std::vector<double> bytes_amounts          = {0, 2000000, 3000000, 0};
@@ -73,6 +73,6 @@ int main(int argc, char** argv)
   C->set_flops_amounts(flops_amounts)->set_bytes_amounts(bytes_amounts)->set_hosts(host_list);
   D->set_flops_amounts(flops_amounts)->set_bytes_amounts(bytes_amounts)->set_hosts(host_list);
 
-  e.run();
+  engine.run();
   return 0;
 }
