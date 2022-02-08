@@ -47,7 +47,6 @@ public:
   void operator()() const
   {
     auto mbox     = sg4::Mailbox::by_name(sg4::this_actor::get_host()->get_name());
-    auto comm     = mbox->get_init();
     auto received = mbox->get_unique<std::string>();
     XBT_INFO("I got a '%s'.", received->c_str());
 
