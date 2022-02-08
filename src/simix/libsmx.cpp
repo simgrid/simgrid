@@ -49,14 +49,7 @@ void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size,
         sender,  mbox,          task_size, rate, static_cast<unsigned char*>(src_buff), src_buff_size, match_fun,
         nullptr, copy_data_fun, data,      false};
     comm = simgrid::kernel::actor::simcall(
-        [&send_observer] {
-          return simgrid::kernel::activity::CommImpl::isend(
-              send_observer.get_issuer(), send_observer.get_mailbox(), send_observer.get_payload_size(),
-              send_observer.get_rate(), send_observer.get_src_buff(), send_observer.get_src_buff_size(),
-              send_observer.match_fun_, send_observer.clean_fun_, send_observer.copy_data_fun_,
-              send_observer.get_payload(), send_observer.is_detached());
-        },
-        &send_observer);
+        [&send_observer] { return simgrid::kernel::activity::CommImpl::isend(&send_observer); }, &send_observer);
 
     simgrid::kernel::actor::ActivityWaitSimcall wait_observer{sender, comm.get(), timeout};
     if (simgrid::kernel::actor::simcall_blocking(
@@ -111,12 +104,7 @@ void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff,
     simgrid::kernel::actor::CommIrecvSimcall observer{
         receiver, mbox, static_cast<unsigned char*>(dst_buff), dst_buff_size, match_fun, copy_data_fun, data, rate};
     comm = simgrid::kernel::actor::simcall(
-        [&observer] {
-          return simgrid::kernel::activity::CommImpl::irecv(
-              observer.get_issuer(), observer.get_mailbox(), observer.get_dst_buff(), observer.get_dst_buff_size(),
-              observer.match_fun_, observer.copy_data_fun_, observer.get_payload(), observer.get_rate());
-        },
-        &observer);
+        [&observer] { return simgrid::kernel::activity::CommImpl::irecv(&observer); }, &observer);
 
     simgrid::kernel::actor::ActivityWaitSimcall wait_observer{receiver, comm.get(), timeout};
     if (simgrid::kernel::actor::simcall_blocking(

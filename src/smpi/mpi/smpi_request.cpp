@@ -520,13 +520,7 @@ void Request::start()
                                              this,
                                              -1.0};
 
-    action_ = kernel::actor::simcall(
-        [&observer] {
-          return kernel::activity::CommImpl::irecv(
-              observer.get_issuer(), observer.get_mailbox(), observer.get_dst_buff(), observer.get_dst_buff_size(),
-              observer.match_fun_, observer.copy_data_fun_, observer.get_payload(), observer.get_rate());
-        },
-        &observer);
+    action_ = kernel::actor::simcall([&observer] { return kernel::activity::CommImpl::irecv(&observer); }, &observer);
 
     XBT_DEBUG("recv simcall posted");
 
@@ -630,14 +624,7 @@ void Request::start()
         process->replaying() ? &smpi_comm_null_copy_buffer_callback : smpi_comm_copy_data_callback, this,
         // detach if msg size < eager/rdv switch limit
         detached_};
-    action_ = kernel::actor::simcall(
-        [&observer] {
-          return kernel::activity::CommImpl::isend(
-              observer.get_issuer(), observer.get_mailbox(), observer.get_payload_size(), observer.get_rate(),
-              observer.get_src_buff(), observer.get_src_buff_size(), observer.match_fun_, observer.clean_fun_,
-              observer.copy_data_fun_, observer.get_payload(), observer.is_detached());
-        },
-        &observer);
+    action_ = kernel::actor::simcall([&observer] { return kernel::activity::CommImpl::isend(&observer); }, &observer);
     XBT_DEBUG("send simcall posted");
 
     /* FIXME: detached sends are not traceable (action_ == nullptr) */

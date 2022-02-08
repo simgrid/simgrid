@@ -230,14 +230,7 @@ Comm* Comm::start()
                                              copy_data_function_,
                                              get_data<void>(),
                                              detached_};
-    pimpl_ = kernel::actor::simcall(
-        [&observer] {
-          return kernel::activity::CommImpl::isend(
-              observer.get_issuer(), observer.get_mailbox(), observer.get_payload_size(), observer.get_rate(),
-              observer.get_src_buff(), observer.get_src_buff_size(), observer.match_fun_, observer.clean_fun_,
-              observer.copy_data_fun_, observer.get_payload(), observer.is_detached());
-        },
-        &observer);
+    pimpl_ = kernel::actor::simcall([&observer] { return kernel::activity::CommImpl::isend(&observer); }, &observer);
   } else if (dst_buff_ != nullptr) { // Receiver side
     xbt_assert(not detached_, "Receive cannot be detached");
     on_recv(*this);
@@ -249,13 +242,7 @@ Comm* Comm::start()
                                              copy_data_function_,
                                              get_data<void>(),
                                              rate_};
-    pimpl_ = kernel::actor::simcall(
-        [&observer] {
-          return kernel::activity::CommImpl::irecv(
-              observer.get_issuer(), observer.get_mailbox(), observer.get_dst_buff(), observer.get_dst_buff_size(),
-              observer.match_fun_, observer.copy_data_fun_, observer.get_payload(), observer.get_rate());
-        },
-        &observer);
+    pimpl_ = kernel::actor::simcall([&observer] { return kernel::activity::CommImpl::irecv(&observer); }, &observer);
   } else {
     xbt_die("Cannot start a communication before specifying whether we are the sender or the receiver");
   }
