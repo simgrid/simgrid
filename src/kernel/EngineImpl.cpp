@@ -542,7 +542,7 @@ void EngineImpl::display_all_actor_status() const
   /*  List the actors and their state */
   XBT_INFO("Legend of the following listing: \"Actor <pid> (<name>@<host>): <status>\"");
   for (auto const& kv : actor_list_) {
-    actor::ActorImpl* actor = kv.second;
+    const actor::ActorImpl* actor = kv.second;
 
     if (actor->waiting_synchro_) {
       const char* synchro_description = "unknown";

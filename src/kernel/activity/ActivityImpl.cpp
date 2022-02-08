@@ -219,7 +219,6 @@ void ActivityImpl::handle_activity_waitany(smx_simcall_t simcall)
     if (not MC_is_active() && not MC_record_replay_is_active()) {
       auto element   = std::find(activities.begin(), activities.end(), this);
       int rank       = element != activities.end() ? static_cast<int>(std::distance(activities.begin(), element)) : -1;
-      auto* observer = dynamic_cast<kernel::actor::ActivityWaitanySimcall*>(simcall->observer_);
       observer->set_result(rank);
     }
   }

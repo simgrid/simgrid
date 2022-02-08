@@ -203,7 +203,7 @@ bool ActivityTestSimcall::depends(SimcallObserver* other)
   if (dynamic_cast<ActivityTestSimcall*>(other))
     return true;
 
-  auto* comm1 = dynamic_cast<activity::CommImpl*>(activity_);
+  const auto* comm1 = dynamic_cast<activity::CommImpl*>(activity_);
   if (comm1 == nullptr)
     return false;
 
@@ -214,8 +214,8 @@ bool ActivityTestSimcall::depends(SimcallObserver* other)
   if (comm1->src_buff_ == nullptr || comm1->dst_buff_ == nullptr)
     return false;
 
-  if (auto* test = dynamic_cast<ActivityTestSimcall*>(other)) {
-    auto* comm2 = dynamic_cast<activity::CommImpl*>(test->get_activity());
+  if (const auto* test = dynamic_cast<ActivityTestSimcall*>(other)) {
+    const auto* comm2 = dynamic_cast<activity::CommImpl*>(test->get_activity());
     if (comm2 == nullptr)
       return false;
     else if (comm2->src_buff_ == nullptr || comm2->dst_buff_ == nullptr)
@@ -264,8 +264,8 @@ std::string ActivityTestSimcall::to_string(int times_considered) const
 
 std::string ActivityTestSimcall::dot_label(int times_considered) const
 {
-  std::string res = SimcallObserver::dot_label(times_considered) + "Test ";
-  auto* comm      = dynamic_cast<activity::CommImpl*>(activity_);
+  std::string res  = SimcallObserver::dot_label(times_considered) + "Test ";
+  const auto* comm = dynamic_cast<activity::CommImpl*>(activity_);
   if (comm && (comm->src_actor_.get() == nullptr || comm->dst_actor_.get() == nullptr)) {
     res += "FALSE";
   } else {
@@ -305,11 +305,11 @@ bool ActivityWaitSimcall::depends(SimcallObserver* other)
     return irecv->depends(this);
 
   /* Timeouts in wait transitions are not considered by the independence theorem, thus assumed dependent */
-  if (auto* wait = dynamic_cast<ActivityWaitSimcall*>(other)) {
+  if (const auto* wait = dynamic_cast<ActivityWaitSimcall*>(other)) {
     if (timeout_ > 0 || wait->get_timeout() > 0)
       return true;
-    auto* comm1 = dynamic_cast<activity::CommImpl*>(activity_);
-    auto* comm2 = dynamic_cast<activity::CommImpl*>(wait->get_activity());
+    const auto* comm1 = dynamic_cast<activity::CommImpl*>(activity_);
+    const auto* comm2 = dynamic_cast<activity::CommImpl*>(wait->get_activity());
 
     if (comm1 == nullptr || comm2 == nullptr) // One wait at least in not on a Comm
       return true;
@@ -356,7 +356,7 @@ std::string ActivityWaitSimcall::dot_label(int times_considered) const
   std::string res = SimcallObserver::dot_label(times_considered);
   res += (times_considered == -1) ? "WaitTimeout " : "Wait ";
 
-  auto* comm = dynamic_cast<activity::CommImpl*>(activity_);
+  const auto* comm = dynamic_cast<activity::CommImpl*>(activity_);
   if (comm) {
     auto src = comm->src_actor_;
     auto dst = comm->dst_actor_;
@@ -424,7 +424,7 @@ bool CommIsendSimcall::depends(SimcallObserver* other)
   if (get_issuer() == other->get_issuer())
     return false;
 
-  if (auto* other_isend = dynamic_cast<CommIsendSimcall*>(other))
+  if (const auto* other_isend = dynamic_cast<CommIsendSimcall*>(other))
     return mbox_ == other_isend->get_mailbox();
 
   // FIXME: Not in the former dependency check because of the ordering but seems logical to add it
@@ -432,10 +432,10 @@ bool CommIsendSimcall::depends(SimcallObserver* other)
     return false;
 
 #if SIMGRID_HAVE_MC // FIXME needed to access mbox_cpy
-  if (auto* wait = dynamic_cast<ActivityWaitSimcall*>(other)) {
-    if (auto* comm2 = dynamic_cast<activity::CommImpl*>(wait->get_activity())) { // this is a Comm::wait_for
-      auto* mbox1 = mbox_;
-      auto* mbox2 = comm2->mbox_cpy;
+  if (const auto* wait = dynamic_cast<ActivityWaitSimcall*>(other)) {
+    if (const auto* comm2 = dynamic_cast<activity::CommImpl*>(wait->get_activity())) { // this is a Comm::wait_for
+      const auto* mbox1 = mbox_;
+      const auto* mbox2 = comm2->mbox_cpy;
 
       if (mbox1 != mbox2 && wait->get_timeout() <= 0)
         return false;
@@ -477,7 +477,7 @@ bool CommIrecvSimcall::depends(SimcallObserver* other)
   if (get_issuer() == other->get_issuer())
     return false;
 
-  if (auto* other_irecv = dynamic_cast<CommIrecvSimcall*>(other))
+  if (const auto* other_irecv = dynamic_cast<CommIrecvSimcall*>(other))
     return mbox_ == other_irecv->get_mailbox();
 
   if (auto* isend = dynamic_cast<CommIsendSimcall*>(other))
@@ -486,8 +486,8 @@ bool CommIrecvSimcall::depends(SimcallObserver* other)
 #if SIMGRID_HAVE_MC // FIXME needed to access mbox_cpy
   if (auto* wait = dynamic_cast<ActivityWaitSimcall*>(other)) {
     if (auto* comm2 = dynamic_cast<activity::CommImpl*>(wait->get_activity())) { // this is a Comm::wait_for
-      auto* mbox1 = mbox_;
-      auto* mbox2 = comm2->mbox_cpy;
+      const auto* mbox1 = mbox_;
+      const auto* mbox2 = comm2->mbox_cpy;
 
       if (mbox1 != mbox2 && wait->get_timeout() <= 0)
         return false;

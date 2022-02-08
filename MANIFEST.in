@@ -2335,6 +2335,7 @@ include src/mc/ModelChecker.cpp
 include src/mc/ModelChecker.hpp
 include src/mc/Session.cpp
 include src/mc/Session.hpp
+include src/mc/Transition.cpp
 include src/mc/Transition.hpp
 include src/mc/VisitedState.cpp
 include src/mc/VisitedState.hpp
