@@ -4,15 +4,16 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u.hpp"
+#include <string>
+#include <unordered_map>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
 int timer_start; // set as 1 in the master actor
 
-#define NTASKS 1500
 double start_time;
-const char* workernames[NTASKS];
-const char* masternames[NTASKS];
+std::unordered_map<int, std::string> workernames;
+std::unordered_map<int, std::string> masternames;
 int count_finished = 0;
 
 static void master(int argc, char* argv[])
@@ -26,11 +27,11 @@ static void master(int argc, char* argv[])
   int id          = std::stoi(argv[3]); // unique id to control statistics
 
   /* worker name */
-  workernames[id] = xbt_strdup(argv[2]);
+  workernames[id] = argv[2];
 
   simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(argv[3]);
 
-  masternames[id] = simgrid::s4u::Host::current()->get_cname();
+  masternames[id] = simgrid::s4u::Host::current()->get_name();
 
   auto* payload = new double(msg_size);
 
@@ -81,7 +82,8 @@ static void worker(int argc, char* argv[])
 
   double elapsed_time = simgrid::s4u::Engine::get_clock() - start_time;
 
-  XBT_INFO("FLOW[%d] : Receive %.0f bytes from %s to %s", id, *payload, masternames[id], workernames[id]);
+  XBT_INFO("FLOW[%d] : Receive %.0f bytes from %s to %s", id, *payload, masternames.at(id).c_str(),
+           workernames.at(id).c_str());
   XBT_DEBUG("FLOW[%d] : transferred in  %f seconds", id, elapsed_time);
 
   XBT_DEBUG("Finished");
