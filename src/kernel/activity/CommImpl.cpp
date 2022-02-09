@@ -41,7 +41,7 @@ XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr simcall_HANDLER_comm_isen
     void* data, bool detached)
 {
   simgrid::kernel::actor::CommIsendSimcall observer(src_proc, mbox, task_size, rate, src_buff, src_buff_size, match_fun,
-                                                    nullptr, copy_data_fun, data, false);
+                                                    clean_fun, copy_data_fun, data, detached);
   return simgrid::kernel::activity::CommImpl::isend(&observer);
 }
 
