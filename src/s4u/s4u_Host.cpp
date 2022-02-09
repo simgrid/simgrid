@@ -79,7 +79,7 @@ Host* Host::by_name_or_null(const std::string& name)
 
 Host* Host::current()
 {
-  kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
+  const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
   xbt_assert(self != nullptr, "Cannot call Host::current() from the maestro context");
   return self->get_host();
 }

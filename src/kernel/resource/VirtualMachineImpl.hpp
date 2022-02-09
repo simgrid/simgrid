@@ -32,7 +32,7 @@ public:
   explicit VirtualMachineImpl(const std::string& name, s4u::VirtualMachine* piface, s4u::Host* host, int core_amount,
                               size_t ramsize);
 
-  void suspend(actor::ActorImpl* issuer);
+  void suspend(const actor::ActorImpl* issuer);
   void resume();
   void shutdown(kernel::actor::ActorImpl* issuer);
   void vm_destroy();

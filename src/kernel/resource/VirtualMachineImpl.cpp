@@ -205,7 +205,7 @@ void VirtualMachineImpl::vm_destroy()
   xbt_assert(ret, "Bug: some resource still remains");
 }
 
-void VirtualMachineImpl::suspend(smx_actor_t issuer)
+void VirtualMachineImpl::suspend(const actor::ActorImpl* issuer)
 {
   if (vm_state_ != s4u::VirtualMachine::State::RUNNING)
     throw VmFailureException(XBT_THROW_POINT,
@@ -253,7 +253,7 @@ void VirtualMachineImpl::resume()
  *
  * @param issuer the actor requesting the shutdown
  */
-void VirtualMachineImpl::shutdown(smx_actor_t issuer)
+void VirtualMachineImpl::shutdown(actor::ActorImpl* issuer)
 {
   if (vm_state_ != s4u::VirtualMachine::State::RUNNING)
     XBT_VERB("Shutting down the VM %s even if it's not running but in state %s", piface_->get_cname(),
