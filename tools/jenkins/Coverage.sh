@@ -116,7 +116,7 @@ if [ -f Testing/TAG ] ; then
   sloccount --duplicates --wide --details "$WORKSPACE" | grep -v -e '.git' -e 'mpich3-test' -e 'sloccount.sc' -e 'isp/umpire' -e 'build/' -e 'xml_coverage.xml' -e 'CTestResults_memcheck.xml' -e 'DynamicAnalysis.xml' > "$WORKSPACE"/sloccount.sc
 
   #generate PVS-studio report
-  EXCLUDEDPATH="-e $WORKSPACE/src/include/catch.hpp -e $WORKSPACE/src/include/xxhash.hpp -e $WORKSPACE/teshsuite/smpi/mpich3-test/ -e $WORKSPACE/teshsuite/smpi/isp/ -e *_dtd.c -e *_dtd.h -e *yy.c -e  $WORKSPACE/src/xbt/automaton/ -e $WORKSPACE/src/smpi/colls/ -e $WORKSPACE/examples/smpi/NAS/ -e $WORKSPACE/examples/smpi/gemm/gemm.c -e $WORKSPACE/src/msg/ -e $WORKSPACE/include/msg/ -e $WORKSPACE/examples/deprecated/ -e $WORKSPACE/teshsuite/msg/"
+  EXCLUDEDPATH="-e $WORKSPACE/src/include/catch.hpp -e $WORKSPACE/src/include/xxhash.hpp -e $WORKSPACE/teshsuite/smpi/mpich3-test/ -e $WORKSPACE/teshsuite/smpi/isp/ -e *_dtd.c -e *_dtd.h -e *.yy.c -e *.tab.cacc -e *.tab.hacc -e $WORKSPACE/src/smpi/colls/ -e $WORKSPACE/examples/smpi/NAS/ -e $WORKSPACE/examples/smpi/gemm/gemm.c -e $WORKSPACE/src/msg/ -e $WORKSPACE/include/msg/ -e $WORKSPACE/examples/deprecated/ -e $WORKSPACE/teshsuite/msg/"
   pvs-studio-analyzer analyze -f "$BUILDFOLDER"/compile_commands.json -o "$WORKSPACE"/pvs.log $EXCLUDEDPATH -j$NUMPROC
   # Disable:
   # V521 Such expressions using the ',' operator are dangerous. (-> commas in catch.hpp),
