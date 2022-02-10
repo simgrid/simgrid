@@ -96,7 +96,7 @@ void VirtualMachine::start()
 void VirtualMachine::suspend()
 {
   on_suspend(*this);
-  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  const kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::simcall([this, issuer]() { pimpl_vm_->suspend(issuer); });
 }
 
