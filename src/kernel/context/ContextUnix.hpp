@@ -28,7 +28,7 @@ public:
   UContext(std::function<void()>&& code, actor::ActorImpl* actor, SwappedContextFactory* factory);
 
 private:
-  ucontext_t uc_;         /* the ucontext that executes the code */
+  ucontext_t uc_{}; /* the ucontext that executes the code */
 
   void swap_into_for_real(SwappedContext* to) override;
 };

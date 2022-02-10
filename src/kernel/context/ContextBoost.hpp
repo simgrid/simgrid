@@ -36,10 +36,10 @@ public:
 
 private:
 #if BOOST_VERSION < 106100
-  boost::context::fcontext_t fc_;
+  boost::context::fcontext_t fc_{};
   using arg_type = intptr_t;
 #else
-  boost::context::detail::fcontext_t fc_;
+  boost::context::detail::fcontext_t fc_{};
   using arg_type = boost::context::detail::transfer_t;
 #endif
 

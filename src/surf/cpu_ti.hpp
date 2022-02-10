@@ -47,7 +47,7 @@ class CpuTiTmgr {
     DYNAMIC /*< Dynamic, have an availability file */
   };
   Type type_ = Type::FIXED;
-  double value_; /*< Percentage of cpu speed available. Value fixed between 0 and 1 */
+  double value_ = 0.0; /*< Percentage of cpu speed available. Value fixed between 0 and 1 */
 
   /* Dynamic */
   double last_time_ = 0.0; /*< Integral interval last point (discrete time) */
