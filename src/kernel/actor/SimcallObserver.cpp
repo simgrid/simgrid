@@ -223,7 +223,7 @@ void ActivityWaitSimcall::serialize(Simcall& type, char* buffer)
   std::stringstream stream;
   if (auto* comm = dynamic_cast<activity::CommImpl*>(activity_)) {
     type = Simcall::COMM_WAIT;
-    stream << timeout_ << ' ' << comm;
+    stream << (timeout_ > 0) << ' ' << comm;
     stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
     stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
     stream << ' ' << (comm->get_mailbox() != nullptr ? comm->get_mailbox()->get_id() : 666);

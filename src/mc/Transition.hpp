@@ -69,7 +69,7 @@ class CommSendTransition;
 class CommRecvTransition;
 
 class CommWaitTransition : public Transition {
-  double timeout_;
+  bool timeout_;
   void* comm_;
   aid_t sender_;
   aid_t receiver_;

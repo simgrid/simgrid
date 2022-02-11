@@ -50,14 +50,14 @@ CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, char*
 {
   std::stringstream stream(buffer);
   stream >> timeout_ >> comm_ >> sender_ >> receiver_ >> mbox_ >> src_buff_ >> dst_buff_ >> size_;
-  XBT_DEBUG("CommWaitTransition tout:%f comm:%p, sender:%ld receiver:%ld mbox:%u sbuff:%p rbuff:%p size:%zu", timeout_,
-            comm_, sender_, receiver_, mbox_, src_buff_, dst_buff_, size_);
+  XBT_DEBUG("CommWaitTransition %s comm:%p, sender:%ld receiver:%ld mbox:%u sbuff:%p rbuff:%p size:%zu",
+            (timeout_ ? "timeout" : "no-timeout"), comm_, sender_, receiver_, mbox_, src_buff_, dst_buff_, size_);
 }
 std::string CommWaitTransition::to_string(bool verbose)
 {
   textual_ = Transition::to_string(verbose);
-  textual_ +=
-      xbt::string_printf("%ld: WaitComm(from %ld to %ld, mbox=%u, tout=%f", aid_, sender_, receiver_, mbox_, timeout_);
+  textual_ += xbt::string_printf("%ld: WaitComm(from %ld to %ld, mbox=%u, %s", aid_, sender_, receiver_, mbox_,
+                                 (timeout_ ? "timeout" : "no timeout"));
   if (verbose) {
     textual_ += ", src_buff=" + xbt::string_printf("%p", src_buff_) + ", size=" + std::to_string(size_);
     textual_ += ", dst_buff=" + xbt::string_printf("%p", dst_buff_);
@@ -78,7 +78,7 @@ bool CommWaitTransition::depends(const Transition* other) const
 
   /* Timeouts in wait transitions are not considered by the independence theorem, thus assumed dependent */
   if (const auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
-    if (timeout_ > 0 || wait->timeout_ > 0)
+    if (timeout_ || wait->timeout_)
       return true;
 
     if (src_buff_ == wait->src_buff_ && dst_buff_ == wait->dst_buff_)
@@ -117,7 +117,7 @@ bool CommRecvTransition::depends(const Transition* other) const
     return isend->depends(this);
 
   if (auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
-    if (wait->timeout_ > 0)
+    if (wait->timeout_)
       return true;
 
     if (mbox_ != wait->mbox_)
@@ -168,7 +168,7 @@ bool CommSendTransition::depends(const Transition* other) const
     return false;
 
   if (const auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
-    if (wait->timeout_ > 0)
+    if (wait->timeout_)
       return true;
 
     if (mbox_ != wait->mbox_)
