@@ -128,6 +128,8 @@ CommImpl& CommImpl::set_rate(double rate)
 }
 CommImpl& CommImpl::set_mailbox(MailboxImpl* mbox)
 {
+  if (mbox != nullptr)
+    mbox_id_ = mbox->get_id();
   mbox_ = mbox;
   return *this;
 }

@@ -24,7 +24,9 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   double size_       = 0.0;
   bool detached_     = false;   /* If detached or not */
   bool copied_       = false;   /* whether the data were already copied */
-  MailboxImpl* mbox_ = nullptr; /* Rendez-vous where the comm is queued */
+  MailboxImpl* mbox_ = nullptr; /* Rendez-vous where the comm is queued. nullptr once the comm is matched with both a
+                                   sender and receiver */
+  long mbox_id_      = -1;      /* ID of the rendez-vous where the comm was first queued (for MC) */
   s4u::Host* from_   = nullptr; /* Pre-determined only for direct host-to-host communications */
   s4u::Host* to_     = nullptr; /* Otherwise, computed at start() time from the actors */
 
@@ -45,6 +47,7 @@ public:
 
   double get_rate() const { return rate_; }
   MailboxImpl* get_mailbox() const { return mbox_; }
+  long get_mailbox_id() const { return mbox_id_; }
   bool detached() const { return detached_; }
 
   std::vector<s4u::Link*> get_traversed_links() const;

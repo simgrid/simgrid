@@ -235,7 +235,7 @@ void ActivityWaitSimcall::serialize(Simcall& type, char* buffer)
     stream << (timeout_ > 0) << ' ' << comm;
     stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
     stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
-    stream << ' ' << (comm->get_mailbox() != nullptr ? comm->get_mailbox()->get_id() : 666);
+    stream << ' ' << comm->get_mailbox_id();
     stream << ' ' << (void*)comm->src_buff_ << ' ' << (void*)comm->dst_buff_ << ' ' << comm->src_buff_size_;
     strcpy(buffer, stream.str().c_str());
   } else {
