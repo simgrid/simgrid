@@ -12,4 +12,4 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-electric-fence ${plat
 > [0.000000] [mc_safety/INFO] No property violation found.
 > [0.000000] [mc_safety/INFO] Expanded states = 15
 > [0.000000] [mc_safety/INFO] Visited states = 32
-> [0.000000] [mc_safety/INFO] Executed transitions = 27
+> [0.000000] [mc_safety/INFO] Executed transitions = 14
