@@ -295,7 +295,7 @@ void Api::mc_check_deadlock() const
     XBT_CINFO(mc_global, "Counter-example execution trace:");
     for (auto const& s : mc_model_checker->getChecker()->get_textual_trace())
       XBT_CINFO(mc_global, "  %s", s.c_str());
-    simgrid::mc::dumpRecordPath();
+    XBT_INFO("Path = %s", mc_model_checker->getChecker()->get_record_trace().to_string().c_str());
     simgrid::mc::session_singleton->log_state();
     throw DeadlockError();
   }

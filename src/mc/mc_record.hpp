@@ -45,8 +45,6 @@ public:
   static void replay(const std::string& trace);
 };
 
-XBT_PRIVATE void dumpRecordPath();
-
 }
 }
 
