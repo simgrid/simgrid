@@ -67,14 +67,6 @@ simgrid::mc::ActorInformation* Api::actor_info_cast(smx_actor_t actor) const
   return process_info;
 }
 
-bool Api::requests_are_dependent(RemotePtr<kernel::actor::SimcallObserver> obs1,
-                                 RemotePtr<kernel::actor::SimcallObserver> obs2) const
-{
-  xbt_assert(mc_model_checker != nullptr, "Must be called from MCer");
-
-  return mc_model_checker->requests_are_dependent(obs1, obs2);
-}
-
 xbt::string const& Api::get_actor_host_name(smx_actor_t actor) const
 {
   if (mc_model_checker == nullptr)

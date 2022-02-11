@@ -16,6 +16,8 @@
 
 #ifdef __cplusplus
 
+#include "src/kernel/actor/SimcallObserver.hpp"
+
 #include "mc/datatypes.h"
 #include "simgrid/forward.h" // aid_t
 #include <array>
@@ -30,9 +32,8 @@ namespace mc {
 
 XBT_DECLARE_ENUM_CLASS(MessageType, NONE, INITIAL_ADDRESSES, CONTINUE, IGNORE_HEAP, UNIGNORE_HEAP, IGNORE_MEMORY,
                        STACK_REGION, REGISTER_SYMBOL, DEADLOCK_CHECK, DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_EXECUTE,
-                       SIMCALL_EXECUTE_ANSWER, SIMCALL_IS_VISIBLE, SIMCALL_IS_VISIBLE_ANSWER, SIMCALL_TO_STRING,
-                       SIMCALL_TO_STRING_ANSWER, SIMCALLS_DEPENDENT, SIMCALLS_DEPENDENT_ANSWER, SIMCALL_DOT_LABEL,
-                       ASSERTION_FAILED, ACTOR_ENABLED, ACTOR_ENABLED_REPLY, FINALIZE);
+                       SIMCALL_EXECUTE_ANSWER, SIMCALL_IS_VISIBLE, SIMCALL_IS_VISIBLE_ANSWER, SIMCALL_DOT_LABEL,
+                       SIMCALL_DOT_LABEL_ANSWER, ASSERTION_FAILED, ACTOR_ENABLED, ACTOR_ENABLED_REPLY, FINALIZE);
 
 } // namespace mc
 } // namespace simgrid
@@ -102,7 +103,8 @@ struct s_mc_message_simcall_execute_t {
 };
 struct s_mc_message_simcall_execute_answer_t {
   simgrid::mc::MessageType type;
-  simgrid::kernel::actor::SimcallObserver* observer;
+  simgrid::kernel::actor::SimcallObserver::Simcall simcall;
+  char buffer[2048];
 };
 
 struct s_mc_message_restore_t {
@@ -125,24 +127,14 @@ struct s_mc_message_simcall_is_visible_answer_t { // MessageType::SIMCALL_IS_VIS
   bool value;
 };
 
-struct s_mc_message_simcall_to_string_t { // MessageType::SIMCALL_TO_STRING or MessageType::SIMCALL_DOT_LABEL
+struct s_mc_message_simcall_to_string_t { // MessageType::SIMCALL_DOT_LABEL
   simgrid::mc::MessageType type;
   aid_t aid;
   int time_considered;
 };
-struct s_mc_message_simcall_to_string_answer_t { // MessageType::SIMCALL_TO_STRING_ANSWER
+struct s_mc_message_simcall_to_string_answer_t { // MessageType::SIMCALL_DOT_LABEL_ANSWER
   simgrid::mc::MessageType type;
   char value[1024];
-};
-
-struct s_mc_message_simcalls_dependent_t { // MessageType::SIMCALLS_DEPENDENT
-  simgrid::mc::MessageType type;
-  simgrid::kernel::actor::SimcallObserver* obs1;
-  simgrid::kernel::actor::SimcallObserver* obs2;
-};
-struct s_mc_message_simcalls_dependent_answer_t { // MessageType::SIMCALLS_DEPENDENT_ANSWER
-  simgrid::mc::MessageType type;
-  bool value;
 };
 
 #endif // __cplusplus

@@ -18,7 +18,7 @@ class XBT_PRIVATE State {
   static long expended_states_; /* Count total amount of states, for stats */
 
   /* Outgoing transition: what was the last transition that we took to leave this state? Useful for replay */
-  Transition transition_;
+  std::unique_ptr<Transition> transition_;
 
 public:
   explicit State();
@@ -32,9 +32,6 @@ public:
   /** The simcall which was executed, going out of that state */
   s_smx_simcall executed_req_;
 
-  /** Observer of the transition leading to that sate */
-  RemotePtr<kernel::actor::SimcallObserver> remote_observer_;
-
   /** Snapshot of system state (if needed) */
   std::shared_ptr<simgrid::mc::Snapshot> system_state_;
 
@@ -47,11 +44,12 @@ public:
   int next_transition() const;
 
   /* Explore a new path */
-  RemotePtr<simgrid::kernel::actor::SimcallObserver> execute_next(int next);
+  Transition* execute_next(int next);
 
   std::size_t count_todo() const;
   void mark_todo(aid_t actor) { this->actor_states_[actor].mark_todo(); }
   Transition* get_transition() const;
+  void set_transition(Transition* t) { transition_.reset(t); }
 
   /* Returns the total amount of states created so far (for statistics) */
   static long get_expanded_states() { return expended_states_; }

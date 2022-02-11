@@ -124,7 +124,7 @@ void SafetyChecker::run()
     }
 
     /* Actually answer the request: let execute the selected request (MCed does one step) */
-    auto remote_observer = state->execute_next(next);
+    state->set_transition(state->execute_next(next));
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
@@ -137,7 +137,6 @@ void SafetyChecker::run()
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     auto next_state              = std::make_unique<State>();
-    next_state->remote_observer_ = remote_observer;
 
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
@@ -196,7 +195,7 @@ void SafetyChecker::backtrack()
           XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->get_transition()->to_cstring(),
                     prev_state->get_transition()->to_cstring(), issuer_id);
           break;
-        } else if (api::get().requests_are_dependent(prev_state->remote_observer_, state->remote_observer_)) {
+        } else if (prev_state->get_transition()->depends(state->get_transition())) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
             XBT_DEBUG("  %s (state=%ld)", prev_state->get_transition()->to_cstring(), prev_state->num_);

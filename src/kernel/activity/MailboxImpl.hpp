@@ -36,10 +36,14 @@ class MailboxImpl {
   friend s4u::Mailbox* s4u::Mailbox::by_name(const std::string& name);
   friend mc::CommunicationDeterminismChecker;
 
-  explicit MailboxImpl(const std::string& name) : piface_(this), name_(name) {}
+  static unsigned next_id_; // Next ID to be given
+  unsigned id_;
+  explicit MailboxImpl(const std::string& name) : piface_(this), name_(name), id_(next_id_++) {}
 
 public:
   /** @brief Public interface */
+  unsigned get_id() { return id_; }
+
   const s4u::Mailbox* get_iface() const { return &piface_; }
   s4u::Mailbox* get_iface() { return &piface_; }
 

@@ -24,6 +24,7 @@ State::State() : num_(++expended_states_)
 {
   const unsigned long maxpid = api::get().get_maxpid();
   actor_states_.resize(maxpid);
+  transition_.reset(new Transition());
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
     auto snapshot_ptr = api::get().take_snapshot(num_);
@@ -42,7 +43,7 @@ std::size_t State::count_todo() const
 
 Transition* State::get_transition() const
 {
-  return const_cast<Transition*>(&this->transition_);
+  return transition_.get();
 }
 
 int State::next_transition() const
@@ -61,7 +62,7 @@ int State::next_transition() const
   }
   return -1;
 }
-RemotePtr<simgrid::kernel::actor::SimcallObserver> State::execute_next(int next)
+Transition* State::execute_next(int next)
 {
   std::vector<ActorInformation>& actors = mc_model_checker->get_remote_process().actors();
 
@@ -80,12 +81,17 @@ RemotePtr<simgrid::kernel::actor::SimcallObserver> State::execute_next(int next)
     actor_state->set_done();
   }
 
-  transition_.init(aid, times_considered);
+  transition_->init(aid, times_considered);
   executed_req_ = actor->simcall_;
 
-  XBT_DEBUG("Let's run actor %ld, going for transition %s", aid, transition_.to_cstring());
+  XBT_DEBUG("Let's run actor %ld, going for transition %s", aid, transition_->to_cstring());
 
-  return transition_.replay();
+  Transition::executed_transitions_++;
+
+  Transition* res = mc_model_checker->handle_simcall(*transition_, true);
+  mc_model_checker->wait_for_requests();
+
+  return res;
 }
 
 void State::copy_incomplete_comm_pattern()

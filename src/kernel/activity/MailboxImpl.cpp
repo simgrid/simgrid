@@ -18,6 +18,8 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
+unsigned MailboxImpl::next_id_ = 0;
+
 /** @brief set the receiver of the mailbox to allow eager sends
  *  @param actor The receiving dude
  */

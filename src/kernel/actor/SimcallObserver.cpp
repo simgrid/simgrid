@@ -6,9 +6,12 @@
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
+#include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/mc_config.hpp"
+
+#include <sstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_observer, mc, "Logging specific to MC simcall observation");
 
@@ -48,22 +51,18 @@ bool MutexSimcall::depends(SimcallObserver* other)
   return true; // Depend on things we don't know for sure that they are independent
 }
 
-std::string SimcallObserver::to_string(int /*times_considered*/) const
+/*
+std::string SimcallObserver::to_string(int) const
 {
   return simgrid::xbt::string_printf("[(%ld)%s (%s)] ", issuer_->get_pid(), issuer_->get_host()->get_cname(),
                                      issuer_->get_cname());
-}
+}*/
 
 std::string SimcallObserver::dot_label(int /*times_considered*/) const
 {
   if (issuer_->get_host())
     return xbt::string_printf("[(%ld)%s] ", issuer_->get_pid(), issuer_->get_host()->get_cname());
   return xbt::string_printf("[(%ld)] ", issuer_->get_pid());
-}
-
-std::string RandomSimcall::to_string(int times_considered) const
-{
-  return SimcallObserver::to_string(times_considered) + "MC_RANDOM(" + std::to_string(times_considered) + ")";
 }
 
 std::string RandomSimcall::dot_label(int times_considered) const
@@ -82,16 +81,12 @@ int RandomSimcall::get_max_consider() const
   return max_ - min_ + 1;
 }
 
-std::string MutexUnlockSimcall::to_string(int times_considered) const
-{
-  return SimcallObserver::to_string(times_considered) + "Mutex UNLOCK";
-}
-
 std::string MutexUnlockSimcall::dot_label(int times_considered) const
 {
   return SimcallObserver::dot_label(times_considered) + "Mutex UNLOCK";
 }
 
+/*
 std::string MutexLockSimcall::to_string(int times_considered) const
 {
   auto mutex      = get_mutex();
@@ -100,7 +95,7 @@ std::string MutexLockSimcall::to_string(int times_considered) const
   res += ", owner = " + std::to_string(mutex->get_owner() ? mutex->get_owner()->get_pid() : -1);
   res += ", sleeping = n/a)";
   return res;
-}
+}*/
 
 std::string MutexLockSimcall::dot_label(int times_considered) const
 {
@@ -110,13 +105,6 @@ std::string MutexLockSimcall::dot_label(int times_considered) const
 bool MutexLockSimcall::is_enabled() const
 {
   return not blocking_ || get_mutex()->get_owner() == nullptr || get_mutex()->get_owner() == get_issuer();
-}
-
-std::string ConditionWaitSimcall::to_string(int times_considered) const
-{
-  std::string res = SimcallObserver::to_string(times_considered) + "Condition WAIT";
-  res += "(" + (timeout_ == -1.0 ? "" : std::to_string(timeout_)) + ")";
-  return res;
 }
 
 std::string ConditionWaitSimcall::dot_label(int times_considered) const
@@ -132,13 +120,6 @@ bool ConditionWaitSimcall::is_enabled() const
     warned = true;
   }
   return true;
-}
-
-std::string SemAcquireSimcall::to_string(int times_considered) const
-{
-  std::string res = SimcallObserver::to_string(times_considered) + "Sem ACQUIRE";
-  res += "(" + (timeout_ == -1.0 ? "" : std::to_string(timeout_)) + ")";
-  return res;
 }
 
 std::string SemAcquireSimcall::dot_label(int times_considered) const
@@ -172,6 +153,7 @@ void ActivityTestanySimcall::prepare(int times_considered)
   next_value_ = times_considered;
 }
 
+/*
 std::string ActivityTestanySimcall::to_string(int times_considered) const
 {
   std::string res = SimcallObserver::to_string(times_considered);
@@ -182,7 +164,7 @@ std::string ActivityTestanySimcall::to_string(int times_considered) const
   }
 
   return res;
-}
+}*/
 
 std::string ActivityTestanySimcall::dot_label(int times_considered) const
 {
@@ -236,7 +218,24 @@ bool ActivityTestSimcall::depends(SimcallObserver* other)
 
   return true;
 }
+void ActivityWaitSimcall::serialize(Simcall& type, char* buffer)
+{
+  std::stringstream stream;
+  if (auto* comm = dynamic_cast<activity::CommImpl*>(activity_)) {
+    type = Simcall::COMM_WAIT;
+    stream << timeout_ << ' ' << comm;
+    stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
+    stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
+    stream << ' ' << (comm->get_mailbox() != nullptr ? comm->get_mailbox()->get_id() : 666);
+    stream << ' ' << (void*)comm->src_buff_ << ' ' << (void*)comm->dst_buff_ << ' ' << comm->src_buff_size_;
+    strcpy(buffer, stream.str().c_str());
+  } else {
+    type = Simcall::UNKNOWN;
+    strcpy(buffer, stream.str().c_str());
+  }
+}
 
+/*
 std::string ActivityTestSimcall::to_string(int times_considered) const
 {
   std::string res = SimcallObserver::to_string(times_considered) + "Test ";
@@ -259,7 +258,7 @@ std::string ActivityTestSimcall::to_string(int times_considered) const
   } else
     xbt_die("Only Comms are supported here for now");
   return res;
-}
+}*/
 
 std::string ActivityTestSimcall::dot_label(int times_considered) const
 {
@@ -324,32 +323,6 @@ bool ActivityWaitSimcall::depends(SimcallObserver* other)
   return true;
 }
 
-std::string ActivityWaitSimcall::to_string(int times_considered) const
-{
-  std::string res = SimcallObserver::to_string(times_considered);
-  auto* comm      = dynamic_cast<activity::CommImpl*>(activity_);
-  if (comm == nullptr) {
-    res += "ActivityWait on non-Comm (FIXME)"; // FIXME
-    return res;
-  }
-
-  if (times_considered == -1) {
-    res += "WaitTimeout(comm=" + (XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose)
-                                      ? xbt::string_printf("%p)", comm)
-                                      : "(verbose only))");
-  } else {
-    res += "Wait(comm=";
-
-    auto src = comm->src_actor_;
-    auto dst = comm->dst_actor_;
-    res +=
-        XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf("%p", comm) : "(verbose only) ";
-    res += xbt::string_printf("[(%ld)%s (%s) ", src->get_pid(), src->get_host()->get_cname(), src->get_cname()) +
-           "-> " + xbt::string_printf("(%ld)%s (%s)])", dst->get_pid(), dst->get_host()->get_cname(), dst->get_cname());
-  }
-  return res;
-}
-
 std::string ActivityWaitSimcall::dot_label(int times_considered) const
 {
   std::string res = SimcallObserver::dot_label(times_considered);
@@ -401,23 +374,6 @@ void ActivityWaitanySimcall::prepare(int times_considered)
   next_value_ = times_considered;
 }
 
-std::string ActivityWaitanySimcall::to_string(int times_considered) const
-{
-  std::string res = SimcallObserver::to_string(times_considered) + "WaitAny(";
-  size_t count    = activities_.size();
-  if (count > 0) {
-    if (auto* comm = dynamic_cast<kernel::activity::CommImpl*>(activities_[times_considered]))
-      res += "comm=" +
-             (XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf("%p", comm)
-                                                                       : "(verbose only)") +
-             xbt::string_printf("(%d of %zu))", times_considered + 1, count);
-    else
-      xbt_die("Only Comms are supported here for now");
-  } else
-    res += "comm at idx " + std::to_string(times_considered) + ")";
-  return res;
-}
-
 bool CommIsendSimcall::depends(SimcallObserver* other)
 {
   if (get_issuer() == other->get_issuer())
@@ -457,18 +413,20 @@ bool CommIsendSimcall::depends(SimcallObserver* other)
 
   return true;
 }
-
-std::string CommIsendSimcall::to_string(int times_considered) const
+void CommIsendSimcall::serialize(Simcall& type, char* buffer)
 {
-  std::string res = SimcallObserver::to_string(times_considered) + "iSend(";
-  res += xbt::string_printf("src=(%ld)%s (%s)", get_issuer()->get_pid(), get_issuer()->get_host()->get_cname(),
-                            get_issuer()->get_cname());
-  res += ", buff=" + (XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf("%p", src_buff_)
-                                                                               : "(verbose only)");
-  res += ", size=" +
-         (XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? std::to_string(src_buff_size_) : "(verbose only)");
-  res += ")";
-  return res;
+  type = Simcall::ISEND;
+  std::stringstream stream;
+  stream << mbox_->get_id() << ' ' << (void*)src_buff_ << ' ' << src_buff_size_;
+  strcpy(buffer, stream.str().c_str());
+}
+
+void CommIrecvSimcall::serialize(Simcall& type, char* buffer)
+{
+  type = Simcall::IRECV;
+  std::stringstream stream;
+  stream << mbox_->get_id() << dst_buff_;
+  strcpy(buffer, stream.str().c_str());
 }
 
 bool CommIrecvSimcall::depends(SimcallObserver* other)
@@ -511,6 +469,7 @@ bool CommIrecvSimcall::depends(SimcallObserver* other)
   return true;
 }
 
+/*
 std::string CommIrecvSimcall::to_string(int times_considered) const
 {
   std::string res = SimcallObserver::to_string(times_considered) + "iRecv(";
@@ -523,6 +482,7 @@ std::string CommIrecvSimcall::to_string(int times_considered) const
   res += ")";
   return res;
 }
+*/
 
 } // namespace actor
 } // namespace kernel

@@ -50,13 +50,10 @@ public:
   void shutdown();
   void resume();
   void wait_for_requests();
-  RemotePtr<simgrid::kernel::actor::SimcallObserver> handle_simcall(Transition const& transition);
+  Transition* handle_simcall(Transition const& transition, bool new_transition);
 
   /* Interactions with the simcall observer */
   bool simcall_is_visible(aid_t aid);
-  bool requests_are_dependent(RemotePtr<kernel::actor::SimcallObserver> obs1,
-                              RemotePtr<kernel::actor::SimcallObserver> obs2) const;
-  std::string simcall_to_string(aid_t aid, int times_considered);
   std::string simcall_dot_label(aid_t aid, int times_considered);
 
   XBT_ATTRIB_NORETURN void exit(int status);

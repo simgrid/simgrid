@@ -104,8 +104,13 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
     actor->observer_stack_.push_back(observer);
   }
   // Finish the RPC from the server: we need to return a pointer to the observer, saved in a stable storage
-  s_mc_message_simcall_execute_answer_t answer{MessageType::SIMCALL_EXECUTE_ANSWER, observer};
-  XBT_DEBUG("send SIMCALL_EXECUTE_ANSWER(%p)", observer);
+  s_mc_message_simcall_execute_answer_t answer;
+  memset(&answer, 0, sizeof(answer));
+  answer.type = MessageType::SIMCALL_EXECUTE_ANSWER;
+  if (observer != nullptr)
+    observer->serialize(answer.simcall, answer.buffer);
+  XBT_DEBUG("send SIMCALL_EXECUTE_ANSWER(%s) ~> %s '%s'", actor->get_cname(),
+            simgrid::kernel::actor::SimcallObserver::to_c_str(answer.simcall), answer.buffer);
   xbt_assert(channel_.send(answer) == 0, "Could not send response");
 
   // The client may send some messages to the server while processing the transition
@@ -167,26 +172,6 @@ void AppSide::handle_messages() const
         break;
       }
 
-      case MessageType::SIMCALL_TO_STRING: {
-        assert_msg_size("SIMCALL_TO_STRING", s_mc_message_simcall_to_string_t);
-        auto msg_simcall                = (s_mc_message_simcall_to_string_t*)message_buffer.data();
-        const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(msg_simcall->aid);
-        xbt_assert(actor != nullptr, "Invalid pid %ld", msg_simcall->aid);
-        xbt_assert(actor->simcall_.observer_, "The transition of %s has no observer", actor->get_cname());
-        std::string value = "";
-        if (actor->simcall_.observer_ != nullptr)
-          value = actor->simcall_.observer_->to_string(msg_simcall->time_considered);
-        else
-          value = "[(" + std::to_string(actor->get_pid()) + ")" + actor->get_host()->get_cname() + " (" +
-                  actor->get_cname() + ")] " + SIMIX_simcall_name(actor->simcall_) + "(unknown?)";
-
-        // Send result:
-        s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, {0}};
-        value.copy(answer.value, (sizeof answer.value) - 1); // last byte was set to '\0' by initialization above
-        xbt_assert(channel_.send(answer) == 0, "Could not send response");
-        break;
-      }
-
       case MessageType::SIMCALL_DOT_LABEL: {
         assert_msg_size("SIMCALL_DOT_LABEL", s_mc_message_simcall_to_string_t);
         auto msg_simcall                      = (s_mc_message_simcall_to_string_t*)message_buffer.data();
@@ -199,29 +184,8 @@ void AppSide::handle_messages() const
           value = "UNIMPLEMENTED";
 
         // Send result:
-        s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_TO_STRING_ANSWER, {0}};
+        s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_DOT_LABEL_ANSWER, {0}};
         value.copy(answer.value, (sizeof answer.value) - 1); // last byte was set to '\0' by initialization above
-        xbt_assert(channel_.send(answer) == 0, "Could not send response");
-        break;
-      }
-
-      case MessageType::SIMCALLS_DEPENDENT: {
-        assert_msg_size("SIMCALLS_DEPENDENT", s_mc_message_simcalls_dependent_t);
-        auto msg_simcalls = (s_mc_message_simcalls_dependent_t*)message_buffer.data();
-        auto* obs1        = msg_simcalls->obs1;
-        auto* obs2        = msg_simcalls->obs2;
-        bool res          = true;
-
-        if (obs1 != nullptr && obs2 != nullptr) {
-          res = obs1->depends(obs2);
-
-          XBT_DEBUG("return SIMCALLS_DEPENDENT(%s, %s) = %s", obs1->to_string(0).c_str(), obs2->to_string(0).c_str(),
-                    (res ? "true" : "false"));
-        }
-
-        // Send result:
-        s_mc_message_simcalls_dependent_answer_t answer{MessageType::SIMCALLS_DEPENDENT_ANSWER, 0};
-        answer.value = res;
         xbt_assert(channel_.send(answer) == 0, "Could not send response");
         break;
       }

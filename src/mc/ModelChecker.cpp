@@ -308,7 +308,7 @@ void ModelChecker::wait_for_requests()
     checker_side_.dispatch();
 }
 
-RemotePtr<simgrid::kernel::actor::SimcallObserver> ModelChecker::handle_simcall(Transition const& transition)
+Transition* ModelChecker::handle_simcall(Transition const& transition, bool new_transition)
 {
   s_mc_message_simcall_execute_t m;
   memset(&m, 0, sizeof(m));
@@ -330,7 +330,10 @@ RemotePtr<simgrid::kernel::actor::SimcallObserver> ModelChecker::handle_simcall(
   if (this->remote_process_->running())
     checker_side_.dispatch(); // The app may send messages while processing the transition
 
-  return remote(answer.observer);
+  if (new_transition)
+    return recv_transition(transition.aid_, transition.times_considered_, answer.simcall, answer.buffer);
+  else
+    return nullptr;
 }
 bool ModelChecker::simcall_is_visible(aid_t aid)
 {
@@ -357,40 +360,13 @@ bool ModelChecker::simcall_is_visible(aid_t aid)
   return answer.value;
 }
 
-bool ModelChecker::requests_are_dependent(RemotePtr<kernel::actor::SimcallObserver> obs1,
-                                          RemotePtr<kernel::actor::SimcallObserver> obs2) const
-{
-  xbt_assert(mc_model_checker != nullptr, "This should be called from the checker side");
-
-  s_mc_message_simcalls_dependent_t m;
-  memset(&m, 0, sizeof(m));
-  m.type = MessageType::SIMCALLS_DEPENDENT;
-  m.obs1 = obs1.local();
-  m.obs2 = obs2.local();
-
-  if (m.obs1 == nullptr || m.obs2 == nullptr)
-    return true;
-  checker_side_.get_channel().send(m);
-
-  s_mc_message_simcalls_dependent_answer_t answer;
-  ssize_t s = checker_side_.get_channel().receive(answer);
-  xbt_assert(s != -1, "Could not receive message");
-  xbt_assert(s == sizeof(answer) && answer.type == MessageType::SIMCALLS_DEPENDENT_ANSWER,
-             "Received unexpected message %s (%i, size=%i) "
-             "expected MessageType::SIMCALLS_DEPENDENT_ANSWER (%i, size=%i)",
-             to_c_str(answer.type), (int)answer.type, (int)s, (int)MessageType::SIMCALLS_DEPENDENT_ANSWER,
-             (int)sizeof(answer));
-
-  return answer.value;
-}
-
-std::string ModelChecker::simcall_to_string(MessageType type, aid_t aid, int times_considered)
+std::string ModelChecker::simcall_dot_label(aid_t aid, int times_considered)
 {
   xbt_assert(mc_model_checker != nullptr, "This should be called from the checker side");
 
   s_mc_message_simcall_to_string_t m;
   memset(&m, 0, sizeof(m));
-  m.type            = type;
+  m.type            = MessageType::SIMCALL_DOT_LABEL;
   m.aid             = aid;
   m.time_considered = times_considered;
   checker_side_.get_channel().send(m);
@@ -398,27 +374,14 @@ std::string ModelChecker::simcall_to_string(MessageType type, aid_t aid, int tim
   s_mc_message_simcall_to_string_answer_t answer;
   ssize_t s = checker_side_.get_channel().receive(answer);
   xbt_assert(s != -1, "Could not receive message");
-  xbt_assert(s == sizeof(answer) && answer.type == MessageType::SIMCALL_TO_STRING_ANSWER,
+  xbt_assert(s == sizeof(answer) && answer.type == MessageType::SIMCALL_DOT_LABEL_ANSWER,
              "Received unexpected message %s (%i, size=%i) "
              "expected MessageType::SIMCALL_TO_STRING_ANSWER (%i, size=%i)",
-             to_c_str(answer.type), (int)answer.type, (int)s, (int)MessageType::SIMCALL_TO_STRING_ANSWER,
+             to_c_str(answer.type), (int)answer.type, (int)s, (int)MessageType::SIMCALL_DOT_LABEL_ANSWER,
              (int)sizeof(answer));
 
-  return std::string(answer.value);
-}
-
-std::string ModelChecker::simcall_to_string(aid_t aid, int times_considered)
-{
-  std::string answer = simcall_to_string(MessageType::SIMCALL_TO_STRING, aid, times_considered);
-  XBT_DEBUG("to_string(%ld) is returning %s", aid, answer.c_str());
-  return answer;
-}
-
-std::string ModelChecker::simcall_dot_label(aid_t aid, int times_considered)
-{
-  std::string answer = simcall_to_string(MessageType::SIMCALL_DOT_LABEL, aid, times_considered);
-  XBT_DEBUG("dot_label(%ld) is returning %s", aid, answer.c_str());
-  return answer;
+  XBT_DEBUG("dot_label(%ld) is returning %s", aid, answer.value);
+  return answer.value;
 }
 
 void ModelChecker::finalize_app(bool terminate_asap)

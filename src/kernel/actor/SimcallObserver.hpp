@@ -8,6 +8,7 @@
 
 #include "simgrid/forward.h"
 #include "xbt/asserts.h"
+#include "xbt/utility.hpp"
 
 #include <string>
 
@@ -19,6 +20,9 @@ class SimcallObserver {
   ActorImpl* const issuer_;
 
 public:
+  XBT_DECLARE_ENUM_CLASS(Simcall, UNKNOWN, RANDOM, ISEND, IRECV, COMM_WAIT, COMM_TEST);
+
+  SimcallObserver() = default;
   explicit SimcallObserver(ActorImpl* issuer) : issuer_(issuer) {}
   ActorImpl* get_issuer() const { return issuer_; }
   /** Whether this transition can currently be taken without blocking.
@@ -56,10 +60,12 @@ public:
   /** Computes the dependency relation */
   virtual bool depends(SimcallObserver* other);
 
+  /** Serialize to the given buffer */
+  virtual void serialize(Simcall& type, char* buffer) { type = Simcall::UNKNOWN; }
+
   /** Some simcalls may only be observable under some conditions.
    * Most simcalls are not visible from the MC because they don't have an observer at all. */
   virtual bool is_visible() const { return true; }
-  virtual std::string to_string(int times_considered) const = 0;
   virtual std::string dot_label(int times_considered) const = 0;
 };
 
@@ -67,6 +73,7 @@ template <class T> class ResultingSimcall : public SimcallObserver {
   T result_;
 
 public:
+  ResultingSimcall() = default;
   ResultingSimcall(ActorImpl* actor, T default_result) : SimcallObserver(actor), result_(default_result) {}
   void set_result(T res) { result_ = res; }
   T get_result() const { return result_; }
@@ -88,9 +95,9 @@ public:
     res->next_value_ = next_value_;
     return res;
   }
+  void serialize(Simcall& type, char* buffer) override { type = Simcall::RANDOM; }
   int get_max_consider() const override;
   void prepare(int times_considered) override;
-  std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override;
   int get_value() const { return next_value_; }
   bool depends(SimcallObserver* other) override;
@@ -110,7 +117,6 @@ class MutexUnlockSimcall : public MutexSimcall {
 
 public:
   SimcallObserver* clone() override { return new MutexUnlockSimcall(get_issuer(), get_mutex()); }
-  std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override;
 };
 
@@ -124,7 +130,6 @@ public:
   }
   SimcallObserver* clone() override { return new MutexLockSimcall(get_issuer(), get_mutex(), blocking_); }
   bool is_enabled() const override;
-  std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override;
 };
 
@@ -142,7 +147,6 @@ public:
   SimcallObserver* clone() override { return new ConditionWaitSimcall(get_issuer(), cond_, mutex_, timeout_); }
   bool is_enabled() const override;
   bool is_visible() const override { return false; }
-  std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override;
   activity::ConditionVariableImpl* get_cond() const { return cond_; }
   activity::MutexImpl* get_mutex() const { return mutex_; }
@@ -161,7 +165,6 @@ public:
   SimcallObserver* clone() override { return new SemAcquireSimcall(get_issuer(), sem_, timeout_); }
   bool is_enabled() const override;
   bool is_visible() const override { return false; }
-  std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override;
   activity::SemaphoreImpl* get_sem() const { return sem_; }
   double get_timeout() const { return timeout_; }
@@ -178,7 +181,6 @@ public:
   SimcallObserver* clone() override { return new ActivityTestSimcall(get_issuer(), activity_); }
   bool is_visible() const override { return true; }
   bool depends(SimcallObserver* other) override;
-  std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override;
   activity::ActivityImpl* get_activity() const { return activity_; }
 };
@@ -196,7 +198,6 @@ public:
   bool is_visible() const override { return true; }
   int get_max_consider() const override;
   void prepare(int times_considered) override;
-  std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override;
   const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }
   int get_value() const { return next_value_; }
@@ -212,10 +213,10 @@ public:
   {
   }
   SimcallObserver* clone() override { return new ActivityWaitSimcall(get_issuer(), activity_, timeout_); }
+  void serialize(Simcall& type, char* buffer);
   bool is_visible() const override { return true; }
   bool is_enabled() const override;
   bool depends(SimcallObserver* other) override;
-  std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override;
   activity::ActivityImpl* get_activity() const { return activity_; }
   void set_activity(activity::ActivityImpl* activity) { activity_ = activity; }
@@ -237,7 +238,6 @@ public:
   bool is_visible() const override { return true; }
   void prepare(int times_considered) override;
   int get_max_consider() const override;
-  std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override;
   const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }
   double get_timeout() const { return timeout_; }
@@ -276,6 +276,7 @@ public:
       , copy_data_fun_(copy_data_fun)
   {
   }
+  void serialize(Simcall& type, char* buffer) override;
   CommIsendSimcall* clone() override
   {
     return new CommIsendSimcall(get_issuer(), mbox_, payload_size_, rate_, src_buff_, src_buff_size_, match_fun_,
@@ -283,7 +284,6 @@ public:
   }
   bool is_visible() const override { return true; }
   bool depends(SimcallObserver* other) override;
-  std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override
   {
     return SimcallObserver::dot_label(times_considered) + "iSend";
@@ -326,9 +326,9 @@ public:
     return new CommIrecvSimcall(get_issuer(), mbox_, dst_buff_, dst_buff_size_, match_fun_, copy_data_fun_, payload_,
                                 rate_);
   }
+  void serialize(Simcall& type, char* buffer) override;
   bool is_visible() const override { return true; }
   bool depends(SimcallObserver* other) override;
-  std::string to_string(int times_considered) const override;
   std::string dot_label(int times_considered) const override
   {
     return SimcallObserver::dot_label(times_considered) + "iRecv";

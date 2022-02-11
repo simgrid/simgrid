@@ -102,8 +102,6 @@ public:
   void dump_record_path() const;
 
   // SIMCALL APIs
-  bool requests_are_dependent(RemotePtr<kernel::actor::SimcallObserver> obs1,
-                              RemotePtr<kernel::actor::SimcallObserver> obs2) const;
   std::string request_get_dot_output(aid_t aid, int value) const;
   smx_actor_t simcall_get_issuer(s_smx_simcall const* req) const;
   RemotePtr<kernel::activity::MailboxImpl> get_mbox_remote_addr(smx_simcall_t const req) const;
