@@ -7,8 +7,9 @@
 #ifndef SIMGRID_MC_TRANSITION_COMM_HPP
 #define SIMGRID_MC_TRANSITION_COMM_HPP
 
-#include "simgrid/forward.h" // aid_t
 #include "src/kernel/actor/SimcallObserver.hpp"
+#include "src/mc/Transition.hpp"
+
 #include <string>
 
 namespace simgrid {
