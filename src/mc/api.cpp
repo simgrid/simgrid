@@ -351,11 +351,6 @@ void Api::mc_exit(int status) const
   mc_model_checker->exit(status);
 }
 
-void Api::dump_record_path() const
-{
-  simgrid::mc::dumpRecordPath();
-}
-
 std::string Api::request_get_dot_output(aid_t aid, int value) const
 {
   const char* color = get_color(aid - 1);

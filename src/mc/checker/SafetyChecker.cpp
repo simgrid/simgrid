@@ -41,7 +41,7 @@ void SafetyChecker::check_non_termination(const State* current_state)
       XBT_INFO("Counter-example execution trace:");
       for (auto const& s : get_textual_trace())
         XBT_INFO("  %s", s.c_str());
-      api::get().dump_record_path();
+      simgrid::mc::dumpRecordPath();
       api::get().log_state();
 
       throw TerminationError();

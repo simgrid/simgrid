@@ -99,7 +99,6 @@ public:
   unsigned long mc_get_visited_states() const;
   void mc_check_deadlock() const;
   XBT_ATTRIB_NORETURN void mc_exit(int status) const;
-  void dump_record_path() const;
 
   // SIMCALL APIs
   std::string request_get_dot_output(aid_t aid, int value) const;
