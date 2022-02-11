@@ -50,6 +50,8 @@ CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, char*
 {
   std::stringstream stream(buffer);
   stream >> timeout_ >> comm_ >> sender_ >> receiver_ >> mbox_ >> src_buff_ >> dst_buff_ >> size_;
+  XBT_DEBUG("CommWaitTransition tout:%f comm:%p, sender:%ld receiver:%ld mbox:%u sbuff:%p rbuff:%p size:%zu", timeout_,
+            comm_, sender_, receiver_, mbox_, src_buff_, dst_buff_, size_);
 }
 std::string CommWaitTransition::to_string(bool verbose)
 {
@@ -143,6 +145,7 @@ CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, char*
 {
   std::stringstream stream(buffer);
   stream >> mbox_ >> src_buff_ >> size_;
+  XBT_DEBUG("SendTransition mbox:%u buff:%p size:%zu", mbox_, src_buff_, size_);
 }
 std::string CommSendTransition::to_string(bool verbose = false)
 {

@@ -70,12 +70,12 @@ class CommRecvTransition;
 
 class CommWaitTransition : public Transition {
   double timeout_;
-  uintptr_t comm_;
+  void* comm_;
   aid_t sender_;
   aid_t receiver_;
   unsigned mbox_;
-  unsigned char* src_buff_;
-  unsigned char* dst_buff_;
+  void* src_buff_;
+  void* dst_buff_;
   size_t size_;
   friend CommSendTransition;
   friend CommRecvTransition;

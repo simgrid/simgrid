@@ -348,6 +348,7 @@ void CommIsendSimcall::serialize(Simcall& type, char* buffer)
   std::stringstream stream;
   stream << mbox_->get_id() << ' ' << (void*)src_buff_ << ' ' << src_buff_size_;
   strcpy(buffer, stream.str().c_str());
+  XBT_DEBUG("SendObserver mbox:%u buff:%p size:%zu", mbox_->get_id(), src_buff_, src_buff_size_);
 }
 
 void CommIrecvSimcall::serialize(Simcall& type, char* buffer)
