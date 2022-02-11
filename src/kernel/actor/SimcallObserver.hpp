@@ -216,7 +216,6 @@ public:
   void serialize(Simcall& type, char* buffer);
   bool is_visible() const override { return true; }
   bool is_enabled() const override;
-  bool depends(SimcallObserver* other) override;
   std::string dot_label(int times_considered) const override;
   activity::ActivityImpl* get_activity() const { return activity_; }
   void set_activity(activity::ActivityImpl* activity) { activity_ = activity; }
@@ -283,7 +282,6 @@ public:
                                 clean_fun_, copy_data_fun_, payload_, detached_);
   }
   bool is_visible() const override { return true; }
-  bool depends(SimcallObserver* other) override;
   std::string dot_label(int times_considered) const override
   {
     return SimcallObserver::dot_label(times_considered) + "iSend";
@@ -328,7 +326,6 @@ public:
   }
   void serialize(Simcall& type, char* buffer) override;
   bool is_visible() const override { return true; }
-  bool depends(SimcallObserver* other) override;
   std::string dot_label(int times_considered) const override
   {
     return SimcallObserver::dot_label(times_considered) + "iRecv";

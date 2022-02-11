@@ -57,13 +57,16 @@ public:
   /* Moves the application toward a path that was already explored, but don't change the current transition */
   void replay() const;
 
-  virtual bool depends(Transition* other) { return true; }
+  virtual bool depends(const Transition* other) const { return true; }
 
   /* Returns the total amount of transitions executed so far (for statistics) */
   static unsigned long get_executed_transitions() { return executed_transitions_; }
   /* Returns the total amount of transitions replayed so far while backtracing (for statistics) */
   static unsigned long get_replayed_transitions() { return replayed_transitions_; }
 };
+
+class CommSendTransition;
+class CommRecvTransition;
 
 class CommWaitTransition : public Transition {
   double timeout_;
@@ -74,10 +77,13 @@ class CommWaitTransition : public Transition {
   unsigned char* src_buff_;
   unsigned char* dst_buff_;
   size_t size_;
+  friend CommSendTransition;
+  friend CommRecvTransition;
 
 public:
   CommWaitTransition(aid_t issuer, int times_considered, char* buffer);
   std::string to_string(bool verbose) override;
+  bool depends(const Transition* other) const override;
 };
 
 class CommRecvTransition : public Transition {
@@ -87,6 +93,7 @@ class CommRecvTransition : public Transition {
 public:
   CommRecvTransition(aid_t issuer, int times_considered, char* buffer);
   std::string to_string(bool verbose) override;
+  bool depends(const Transition* other) const override;
 };
 
 class CommSendTransition : public Transition {
@@ -97,6 +104,7 @@ class CommSendTransition : public Transition {
 public:
   CommSendTransition(aid_t issuer, int times_considered, char* buffer);
   std::string to_string(bool verbose) override;
+  bool depends(const Transition* other) const override;
 };
 
 /** Make a new transition from serialized description */

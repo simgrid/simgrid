@@ -291,38 +291,6 @@ bool ActivityWaitSimcall::is_enabled() const
   return (comm->src_actor_ && comm->dst_actor_);
 }
 
-bool ActivityWaitSimcall::depends(SimcallObserver* other)
-{
-  if (get_issuer() == other->get_issuer())
-    return false;
-
-  if (auto* isend = dynamic_cast<CommIsendSimcall*>(other))
-    return isend->depends(this);
-
-  if (auto* irecv = dynamic_cast<CommIrecvSimcall*>(other))
-    return irecv->depends(this);
-
-  /* Timeouts in wait transitions are not considered by the independence theorem, thus assumed dependent */
-  if (const auto* wait = dynamic_cast<ActivityWaitSimcall*>(other)) {
-    if (timeout_ > 0 || wait->get_timeout() > 0)
-      return true;
-    const auto* comm1 = dynamic_cast<activity::CommImpl*>(activity_);
-    const auto* comm2 = dynamic_cast<activity::CommImpl*>(wait->get_activity());
-
-    if (comm1 == nullptr || comm2 == nullptr) // One wait at least in not on a Comm
-      return true;
-
-    if (comm1->src_buff_ == comm2->src_buff_ && comm1->dst_buff_ == comm2->dst_buff_)
-      return false;
-    if (comm1->src_buff_ != nullptr && comm1->dst_buff_ != nullptr && comm2->src_buff_ != nullptr &&
-        comm2->dst_buff_ != nullptr && comm1->dst_buff_ != comm2->src_buff_ && comm1->dst_buff_ != comm2->dst_buff_ &&
-        comm2->dst_buff_ != comm1->src_buff_)
-      return false;
-  }
-
-  return true;
-}
-
 std::string ActivityWaitSimcall::dot_label(int times_considered) const
 {
   std::string res = SimcallObserver::dot_label(times_considered);
@@ -374,45 +342,6 @@ void ActivityWaitanySimcall::prepare(int times_considered)
   next_value_ = times_considered;
 }
 
-bool CommIsendSimcall::depends(SimcallObserver* other)
-{
-  if (get_issuer() == other->get_issuer())
-    return false;
-
-  if (const auto* other_isend = dynamic_cast<CommIsendSimcall*>(other))
-    return mbox_ == other_isend->get_mailbox();
-
-  // FIXME: Not in the former dependency check because of the ordering but seems logical to add it
-  if (dynamic_cast<CommIrecvSimcall*>(other) != nullptr)
-    return false;
-
-#if SIMGRID_HAVE_MC // FIXME needed to access mbox_cpy
-  if (const auto* wait = dynamic_cast<ActivityWaitSimcall*>(other)) {
-    if (const auto* comm2 = dynamic_cast<activity::CommImpl*>(wait->get_activity())) { // this is a Comm::wait_for
-      const auto* mbox1 = mbox_;
-      const auto* mbox2 = comm2->mbox_cpy;
-
-      if (mbox1 != mbox2 && wait->get_timeout() <= 0)
-        return false;
-
-      if ((get_issuer() != comm2->src_actor_.get()) && (get_issuer() != comm2->dst_actor_.get()) &&
-          wait->get_timeout() <= 0)
-        return false;
-
-      if (comm2->type_ == activity::CommImpl::Type::SEND && comm2->src_buff_ != src_buff_ && wait->get_timeout() <= 0)
-        return false;
-    }
-  }
-#endif
-  /* FIXME: the following rule assumes that the result of the isend/irecv call is not stored in a buffer used in the
-   * test call. */
-#if 0
-  if (dynamic_cast<ActivityTestSimcall*>(other))
-    return false;
-#endif
-
-  return true;
-}
 void CommIsendSimcall::serialize(Simcall& type, char* buffer)
 {
   type = Simcall::ISEND;
@@ -429,45 +358,6 @@ void CommIrecvSimcall::serialize(Simcall& type, char* buffer)
   strcpy(buffer, stream.str().c_str());
 }
 
-bool CommIrecvSimcall::depends(SimcallObserver* other)
-{
-  if (get_issuer() == other->get_issuer())
-    return false;
-
-  if (const auto* other_irecv = dynamic_cast<CommIrecvSimcall*>(other))
-    return mbox_ == other_irecv->get_mailbox();
-
-  if (auto* isend = dynamic_cast<CommIsendSimcall*>(other))
-    return isend->depends(this);
-
-#if SIMGRID_HAVE_MC // FIXME needed to access mbox_cpy
-  if (auto* wait = dynamic_cast<ActivityWaitSimcall*>(other)) {
-    if (auto* comm2 = dynamic_cast<activity::CommImpl*>(wait->get_activity())) { // this is a Comm::wait_for
-      const auto* mbox1 = mbox_;
-      const auto* mbox2 = comm2->mbox_cpy;
-
-      if (mbox1 != mbox2 && wait->get_timeout() <= 0)
-        return false;
-
-      if ((get_issuer() != comm2->src_actor_.get()) && (get_issuer() != comm2->dst_actor_.get()) &&
-          wait->get_timeout() <= 0)
-        return false;
-
-      if (comm2->type_ == activity::CommImpl::Type::RECEIVE && comm2->dst_buff_ != dst_buff_ &&
-          wait->get_timeout() <= 0)
-        return false;
-    }
-  }
-#endif
-  /* FIXME: the following rule assumes that the result of the isend/irecv call is not stored in a buffer used in the
-   * test call. */
-#if 0
-  if (dynamic_cast<ActivityTestSimcall*>(other))
-    return false;
-#endif
-
-  return true;
-}
 
 /*
 std::string CommIrecvSimcall::to_string(int times_considered) const
