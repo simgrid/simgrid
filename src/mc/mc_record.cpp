@@ -25,18 +25,18 @@ void replay(RecordTrace const& trace)
 {
   simgrid::mc::execute_actors();
 
-  for (simgrid::mc::Transition const& transition : trace) {
-    XBT_DEBUG("Executing %ld$%i", transition.aid_, transition.times_considered_);
+  for (simgrid::mc::Transition* const transition : trace) {
+    XBT_DEBUG("Executing %ld$%i", transition->aid_, transition->times_considered_);
 
     // Choose a request:
-    kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(transition.aid_);
-    xbt_assert(actor != nullptr, "Unexpected actor (id:%ld).", transition.aid_);
+    kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(transition->aid_);
+    xbt_assert(actor != nullptr, "Unexpected actor (id:%ld).", transition->aid_);
     const s_smx_simcall* simcall = &(actor->simcall_);
-    xbt_assert(simcall->call_ != simix::Simcall::NONE, "No simcall for process %ld.", transition.aid_);
+    xbt_assert(simcall->call_ != simix::Simcall::NONE, "No simcall for process %ld.", transition->aid_);
     xbt_assert(simgrid::mc::request_is_visible(simcall) && simgrid::mc::actor_is_enabled(actor), "Unexpected simcall.");
 
     // Execute the request:
-    simcall->issuer_->simcall_handle(transition.times_considered_);
+    simcall->issuer_->simcall_handle(transition->times_considered_);
     simgrid::mc::execute_actors();
   }
 }
@@ -46,6 +46,8 @@ void replay(const std::string& path_string)
   simgrid::mc::processes_time.resize(simgrid::kernel::actor::get_maxpid());
   simgrid::mc::RecordTrace trace = simgrid::mc::parseRecordTrace(path_string.c_str());
   simgrid::mc::replay(trace);
+  for (auto* item : trace)
+    delete item;
   simgrid::mc::processes_time.clear();
 }
 
@@ -61,11 +63,10 @@ RecordTrace parseRecordTrace(const char* data)
     long aid;
     int times_considered;
     int count = sscanf(current, "%ld/%d", &aid, &times_considered);
-    simgrid::mc::Transition item(aid, times_considered);
 
     if(count != 2 && count != 1)
       throw std::invalid_argument("Could not parse record path");
-    res.push_back(item);
+    res.push_back(new simgrid::mc::Transition(aid, times_considered));
 
     // Find next chunk:
     const char* end = std::strchr(current, ';');
@@ -86,9 +87,9 @@ std::string traceToString(simgrid::mc::RecordTrace const& trace)
   for (auto i = trace.begin(); i != trace.end(); ++i) {
     if (i != trace.begin())
       stream << ';';
-    stream << i->aid_;
-    if (i->times_considered_ > 0)
-      stream << '/' << i->times_considered_;
+    stream << (*i)->aid_;
+    if ((*i)->times_considered_ > 0)
+      stream << '/' << (*i)->times_considered_;
   }
   return stream.str();
 }

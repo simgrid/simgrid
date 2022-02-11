@@ -52,7 +52,7 @@ RecordTrace SafetyChecker::get_record_trace() // override
 {
   RecordTrace res;
   for (auto const& state : stack_)
-    res.push_back(*state->get_transition());
+    res.push_back(state->get_transition());
   return res;
 }
 

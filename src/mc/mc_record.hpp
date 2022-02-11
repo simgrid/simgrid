@@ -25,7 +25,7 @@
 namespace simgrid {
 namespace mc {
 
-using RecordTrace = std::vector<Transition>;
+using RecordTrace = std::vector<Transition*>;
 
 /** Convert a string representation of the path into an array of `simgrid::mc::Transition`
  */
