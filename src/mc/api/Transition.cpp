@@ -3,8 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/Transition.hpp"
-#include "src/mc/TransitionComm.hpp"
+#include "src/mc/api/Transition.hpp"
 #include "xbt/asserts.h"
 #include <simgrid/config.h>
 #if SIMGRID_HAVE_MC

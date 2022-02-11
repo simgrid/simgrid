@@ -7,8 +7,8 @@
 #ifndef SIMGRID_MC_LIVENESS_CHECKER_HPP
 #define SIMGRID_MC_LIVENESS_CHECKER_HPP
 
+#include "src/mc/api/State.hpp"
 #include "src/mc/checker/Checker.hpp"
-#include "src/mc/mc_state.hpp"
 #include "xbt/automaton.hpp"
 
 #include <list>

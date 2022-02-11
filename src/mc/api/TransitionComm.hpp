@@ -8,7 +8,7 @@
 #define SIMGRID_MC_TRANSITION_COMM_HPP
 
 #include "src/kernel/actor/SimcallObserver.hpp"
-#include "src/mc/Transition.hpp"
+#include "src/mc/api/Transition.hpp"
 
 #include <string>
 

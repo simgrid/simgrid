@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/mc_state.hpp"
+#include "src/mc/api/State.hpp"
 #include "src/mc/Session.hpp"
 #include "src/mc/api.hpp"
 #include "src/mc/mc_config.hpp"
@@ -28,7 +28,7 @@ State::State() : num_(++expended_states_)
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
     auto snapshot_ptr = api::get().take_snapshot(num_);
-    system_state_ = std::shared_ptr<simgrid::mc::Snapshot>(snapshot_ptr);
+    system_state_     = std::shared_ptr<simgrid::mc::Snapshot>(snapshot_ptr);
     if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
       copy_incomplete_comm_pattern();
       copy_index_comm_pattern();
@@ -113,5 +113,5 @@ void State::copy_index_comm_pattern()
     this->communication_indices_.push_back(list_process_comm.index_comm);
 }
 
-}
-}
+} // namespace mc
+} // namespace simgrid

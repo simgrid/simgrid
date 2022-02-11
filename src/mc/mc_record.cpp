@@ -6,14 +6,14 @@
 #include "src/mc/mc_record.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/context/Context.hpp"
-#include "src/mc/Transition.hpp"
+#include "src/mc/api/Transition.hpp"
 #include "src/mc/mc_base.hpp"
 #include "src/mc/mc_replay.hpp"
 
 #if SIMGRID_HAVE_MC
+#include "src/mc/api/State.hpp"
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/mc_state.hpp"
 #endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc, "Logging specific to MC record/replay facility");

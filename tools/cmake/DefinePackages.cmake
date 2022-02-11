@@ -552,7 +552,7 @@ set(MC_SRC_BASE
   src/mc/mc_config.cpp
   src/mc/mc_config.hpp
   src/mc/mc_global.cpp
-  src/mc/Transition.cpp
+  src/mc/api/Transition.cpp
   )
 
 set(MC_SRC
@@ -622,16 +622,16 @@ set(MC_SRC
   src/mc/mc_record.cpp
   src/mc/mc_private.hpp
   src/mc/mc_safety.hpp
-  src/mc/mc_state.hpp
-  src/mc/mc_state.cpp
   src/mc/VisitedState.cpp
   src/mc/VisitedState.hpp
   src/mc/mc_client_api.cpp
   src/mc/mc_smx.cpp
   src/mc/mc_exit.hpp
-  src/mc/Transition.hpp
-  src/mc/TransitionComm.cpp
-  src/mc/TransitionComm.hpp
+  src/mc/api/State.hpp
+  src/mc/api/State.cpp
+  src/mc/api/Transition.hpp
+  src/mc/api/TransitionComm.cpp
+  src/mc/api/TransitionComm.hpp
   src/mc/udpor_global.cpp
   src/mc/udpor_global.hpp
   )

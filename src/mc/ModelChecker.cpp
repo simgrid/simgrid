@@ -5,8 +5,8 @@
 
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/Session.hpp"
-#include "src/mc/Transition.hpp"
-#include "src/mc/TransitionComm.hpp"
+#include "src/mc/api/Transition.hpp"
+#include "src/mc/api/TransitionComm.hpp"
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"

@@ -11,8 +11,8 @@
 #include "smpi/smpi.h"
 #include "src/smpi/include/private.hpp"
 #endif
+#include "src/mc/api/State.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/mc_state.hpp"
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
 

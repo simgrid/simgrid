@@ -6,7 +6,7 @@
 #ifndef SIMGRID_MC_VISITED_STATE_HPP
 #define SIMGRID_MC_VISITED_STATE_HPP
 
-#include "src/mc/mc_state.hpp"
+#include "src/mc/api/State.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
 
 #include <cstddef>

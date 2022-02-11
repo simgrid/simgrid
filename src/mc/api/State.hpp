@@ -6,9 +6,9 @@
 #ifndef SIMGRID_MC_STATE_HPP
 #define SIMGRID_MC_STATE_HPP
 
-#include "src/mc/Transition.hpp"
-#include "src/mc/sosp/Snapshot.hpp"
+#include "src/mc/api/Transition.hpp"
 #include "src/mc/mc_comm_pattern.hpp"
+#include "src/mc/sosp/Snapshot.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -39,7 +39,6 @@ public:
   std::vector<std::vector<simgrid::mc::PatternCommunication>> incomplete_comm_pattern_;
   std::vector<unsigned> communication_indices_;
 
-
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   int next_transition() const;
 
@@ -58,7 +57,7 @@ private:
   void copy_incomplete_comm_pattern();
   void copy_index_comm_pattern();
 };
-}
-}
+} // namespace mc
+} // namespace simgrid
 
 #endif

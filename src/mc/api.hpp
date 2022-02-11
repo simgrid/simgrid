@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "simgrid/forward.h"
+#include "src/mc/api/State.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_record.hpp"
-#include "src/mc/mc_state.hpp"
 #include "xbt/automaton.hpp"
 #include "xbt/base.h"
 

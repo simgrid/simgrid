@@ -3,13 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/TransitionComm.hpp"
+#include "src/mc/api/TransitionComm.hpp"
 #include "xbt/asserts.h"
 #include <simgrid/config.h>
 #if SIMGRID_HAVE_MC
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/Session.hpp"
-#include "src/mc/mc_state.hpp"
+#include "src/mc/api/State.hpp"
 #endif
 
 #include <sstream>

@@ -3,10 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/Session.hpp"
-#include "src/mc/Transition.hpp"
-#include "src/mc/VisitedState.hpp"
 #include "src/mc/checker/SafetyChecker.hpp"
+#include "src/mc/Session.hpp"
+#include "src/mc/VisitedState.hpp"
+#include "src/mc/api/Transition.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
