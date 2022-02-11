@@ -79,14 +79,6 @@ void MC_run()
   simgrid::mc::AppSide::get()->main_loop();
 }
 
-void MC_automaton_load(const char *file)
-{
-  if (simgrid::mc::property_automaton == nullptr)
-    simgrid::mc::property_automaton = xbt_automaton_new();
-
-  xbt_automaton_load(simgrid::mc::property_automaton, file);
-}
-
 namespace simgrid {
 namespace mc {
 

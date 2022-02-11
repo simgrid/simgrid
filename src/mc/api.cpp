@@ -400,7 +400,10 @@ void Api::s_close() const
 
 void Api::automaton_load(const char* file) const
 {
-  MC_automaton_load(file);
+  if (simgrid::mc::property_automaton == nullptr)
+    simgrid::mc::property_automaton = xbt_automaton_new();
+
+  xbt_automaton_load(simgrid::mc::property_automaton, file);
 }
 
 std::vector<int> Api::automaton_propositional_symbol_evaluate() const

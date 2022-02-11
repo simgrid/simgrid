@@ -7,6 +7,7 @@
 #define SIMGRID_MC_PATTERN_H
 
 #include "src/kernel/activity/CommImpl.hpp"
+#include "src/mc/remote/RemotePtr.hpp"
 
 namespace simgrid {
 namespace mc {
