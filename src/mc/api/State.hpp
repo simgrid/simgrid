@@ -43,7 +43,7 @@ public:
   int next_transition() const;
 
   /* Explore a new path */
-  Transition* execute_next(int next);
+  void execute_next(int next);
 
   std::size_t count_todo() const;
   void mark_todo(aid_t actor) { this->actor_states_[actor].mark_todo(); }

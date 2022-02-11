@@ -62,7 +62,7 @@ int State::next_transition() const
   }
   return -1;
 }
-Transition* State::execute_next(int next)
+void State::execute_next(int next)
 {
   std::vector<ActorInformation>& actors = mc_model_checker->get_remote_process().actors();
 
@@ -84,14 +84,12 @@ Transition* State::execute_next(int next)
   transition_->init(aid, times_considered);
   executed_req_ = actor->simcall_;
 
-  XBT_DEBUG("Let's run actor %ld, going for transition %s", aid, transition_->to_cstring());
+  XBT_DEBUG("Let's run actor %ld (times_considered = %d)", aid, times_considered);
 
   Transition::executed_transitions_++;
 
-  Transition* res = mc_model_checker->handle_simcall(*transition_, true);
+  transition_.reset(mc_model_checker->handle_simcall(*transition_, true));
   mc_model_checker->wait_for_requests();
-
-  return res;
 }
 
 void State::copy_incomplete_comm_pattern()

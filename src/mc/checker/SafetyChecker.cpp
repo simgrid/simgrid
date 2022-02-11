@@ -124,7 +124,7 @@ void SafetyChecker::run()
     }
 
     /* Actually answer the request: let execute the selected request (MCed does one step) */
-    state->set_transition(state->execute_next(next));
+    state->execute_next(next);
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
