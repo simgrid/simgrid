@@ -22,7 +22,6 @@ class SimcallObserver {
 public:
   XBT_DECLARE_ENUM_CLASS(Simcall, UNKNOWN, RANDOM, ISEND, IRECV, COMM_WAIT, COMM_TEST);
 
-  SimcallObserver() = default;
   explicit SimcallObserver(ActorImpl* issuer) : issuer_(issuer) {}
   ActorImpl* get_issuer() const { return issuer_; }
   /** Whether this transition can currently be taken without blocking.
@@ -213,7 +212,7 @@ public:
   {
   }
   SimcallObserver* clone() override { return new ActivityWaitSimcall(get_issuer(), activity_, timeout_); }
-  void serialize(Simcall& type, char* buffer);
+  void serialize(Simcall& type, char* buffer) override;
   bool is_visible() const override { return true; }
   bool is_enabled() const override;
   std::string dot_label(int times_considered) const override;

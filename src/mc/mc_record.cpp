@@ -87,7 +87,7 @@ std::string traceToString(simgrid::mc::RecordTrace const& trace)
     if (i != trace.begin())
       stream << ';';
     stream << i->aid_;
-    if (i->times_considered_)
+    if (i->times_considered_ > 0)
       stream << '/' << i->times_considered_;
   }
   return stream.str();

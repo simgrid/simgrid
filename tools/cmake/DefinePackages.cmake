@@ -552,6 +552,7 @@ set(MC_SRC_BASE
   src/mc/mc_config.cpp
   src/mc/mc_config.hpp
   src/mc/mc_global.cpp
+  src/mc/Transition.cpp
   )
 
 set(MC_SRC
@@ -628,8 +629,9 @@ set(MC_SRC
   src/mc/mc_client_api.cpp
   src/mc/mc_smx.cpp
   src/mc/mc_exit.hpp
-  src/mc/Transition.cpp
   src/mc/Transition.hpp
+  src/mc/TransitionComm.cpp
+  src/mc/TransitionComm.hpp
   src/mc/udpor_global.cpp
   src/mc/udpor_global.hpp
   )
