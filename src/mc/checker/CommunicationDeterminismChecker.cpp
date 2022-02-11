@@ -113,8 +113,6 @@ static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
   auto dst_proc = api::get().get_dst_actor(comm_addr);
   comm_pattern->src_proc = src_proc->get_pid();
   comm_pattern->dst_proc = dst_proc->get_pid();
-  comm_pattern->src_host = &api::get().get_actor_host_name(src_proc);
-  comm_pattern->dst_host = &api::get().get_actor_host_name(dst_proc);
 
   if (comm_pattern->data.empty()) {
     comm_pattern->data = api::get().get_pattern_comm_data(comm_addr);
@@ -190,7 +188,6 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
     pattern->comm_addr = api::get().get_comm_isend_raw_addr(request);
     pattern->rdv       = api::get().get_pattern_comm_rdv(pattern->comm_addr);
     pattern->src_proc  = api::get().get_pattern_comm_src_proc(pattern->comm_addr);
-    pattern->src_host  = &api::get().get_actor_host_name(issuer);
 
 #if HAVE_SMPI
     pattern->tag = api::get().get_smpi_request_tag(request, simgrid::simix::Simcall::COMM_ISEND);
@@ -220,7 +217,6 @@ void CommunicationDeterminismChecker::get_comm_pattern(smx_simcall_t request, Ca
 #endif
     pattern->rdv = api::get().get_pattern_comm_rdv(pattern->comm_addr);
     pattern->dst_proc = api::get().get_pattern_comm_dst_proc(pattern->comm_addr);
-    pattern->dst_host = &api::get().get_actor_host_name(issuer);
   } else
     xbt_die("Unexpected call_type %i", (int)call_type);
 

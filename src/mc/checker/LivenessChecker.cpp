@@ -214,11 +214,9 @@ void LivenessChecker::show_acceptance_cycle(std::size_t depth)
 std::vector<std::string> LivenessChecker::get_textual_trace() // override
 {
   std::vector<std::string> trace;
-  for (std::shared_ptr<Pair> const& pair : exploration_stack_) {
-    smx_simcall_t req = &pair->graph_state->executed_req_;
-    if (req->call_ != simix::Simcall::NONE)
-      trace.push_back(pair->graph_state->get_transition()->to_string());
-  }
+  for (std::shared_ptr<Pair> const& pair : exploration_stack_)
+    trace.push_back(pair->graph_state->get_transition()->to_string());
+
   return trace;
 }
 
