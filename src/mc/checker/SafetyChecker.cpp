@@ -196,11 +196,9 @@ void SafetyChecker::backtrack()
                     prev_state->get_transition()->to_cstring(), issuer_id);
           break;
         } else if (prev_state->get_transition()->depends(state->get_transition())) {
-          if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
-            XBT_DEBUG("Dependent Transitions:");
-            XBT_DEBUG("  %s (state=%ld)", prev_state->get_transition()->to_cstring(), prev_state->num_);
-            XBT_DEBUG("  %s (state=%ld)", state->get_transition()->to_cstring(), state->num_);
-          }
+          XBT_VERB("Dependent Transitions:");
+          XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_cstring(), prev_state->num_);
+          XBT_VERB("  %s (state=%ld)", state->get_transition()->to_cstring(), state->num_);
 
           if (not prev_state->actor_states_[issuer_id].is_done())
             prev_state->mark_todo(issuer_id);
@@ -208,11 +206,9 @@ void SafetyChecker::backtrack()
             XBT_DEBUG("Actor %ld is in done set", issuer_id);
           break;
         } else {
-          if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
-            XBT_DEBUG("INDEPENDENT Transitions:");
-            XBT_DEBUG("  %s (state=%ld)", prev_state->get_transition()->to_cstring(), prev_state->num_);
-            XBT_DEBUG("  %s (state=%ld)", state->get_transition()->to_cstring(), state->num_);
-          }
+          XBT_VERB("INDEPENDENT Transitions:");
+          XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_cstring(), prev_state->num_);
+          XBT_VERB("  %s (state=%ld)", state->get_transition()->to_cstring(), state->num_);
         }
       }
     }

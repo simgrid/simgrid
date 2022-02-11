@@ -55,9 +55,8 @@ CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, char*
 }
 std::string CommWaitTransition::to_string(bool verbose)
 {
-  textual_ = Transition::to_string(verbose);
-  textual_ += xbt::string_printf("%ld: WaitComm(from %ld to %ld, mbox=%u, %s", aid_, sender_, receiver_, mbox_,
-                                 (timeout_ ? "timeout" : "no timeout"));
+  textual_ = xbt::string_printf("%ld: WaitComm(from %ld to %ld, mbox=%u, %s", aid_, sender_, receiver_, mbox_,
+                                (timeout_ ? "timeout" : "no timeout"));
   if (verbose) {
     textual_ += ", src_buff=" + xbt::string_printf("%p", src_buff_) + ", size=" + std::to_string(size_);
     textual_ += ", dst_buff=" + xbt::string_printf("%p", dst_buff_);
@@ -99,7 +98,7 @@ CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, char*
 }
 std::string CommRecvTransition::to_string(bool verbose)
 {
-  textual_ = xbt::string_printf("%ld: Recv(mbox=%u", aid_, mbox_);
+  textual_ = xbt::string_printf("%ld: iRecv(mbox=%u", aid_, mbox_);
   if (verbose)
     textual_ += ", buff=" + xbt::string_printf("%p", dst_buff_);
   textual_ += ")";
@@ -149,7 +148,7 @@ CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, char*
 }
 std::string CommSendTransition::to_string(bool verbose = false)
 {
-  textual_ = xbt::string_printf("%ld: Send(mbox=%u", aid_, mbox_);
+  textual_ = xbt::string_printf("%ld: iSend(mbox=%u", aid_, mbox_);
   if (verbose)
     textual_ += ", buff=" + xbt::string_printf("%p", src_buff_) + ", size=" + std::to_string(size_);
   textual_ += ")";
