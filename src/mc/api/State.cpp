@@ -81,14 +81,13 @@ void State::execute_next(int next)
     actor_state->set_done();
   }
 
-  transition_->init(aid, times_considered);
   executed_req_ = actor->simcall_;
 
   XBT_DEBUG("Let's run actor %ld (times_considered = %d)", aid, times_considered);
 
   Transition::executed_transitions_++;
 
-  transition_.reset(mc_model_checker->handle_simcall(*transition_, true));
+  transition_.reset(mc_model_checker->handle_simcall(aid, times_considered, true));
   mc_model_checker->wait_for_requests();
 }
 

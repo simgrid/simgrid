@@ -309,13 +309,13 @@ void ModelChecker::wait_for_requests()
     checker_side_.dispatch();
 }
 
-Transition* ModelChecker::handle_simcall(Transition const& transition, bool new_transition)
+Transition* ModelChecker::handle_simcall(aid_t aid, int times_considered, bool new_transition)
 {
   s_mc_message_simcall_execute_t m;
   memset(&m, 0, sizeof(m));
   m.type              = MessageType::SIMCALL_EXECUTE;
-  m.aid_              = transition.aid_;
-  m.times_considered_ = transition.times_considered_;
+  m.aid_              = aid;
+  m.times_considered_ = times_considered;
   checker_side_.get_channel().send(m);
 
   s_mc_message_simcall_execute_answer_t answer;
@@ -332,7 +332,7 @@ Transition* ModelChecker::handle_simcall(Transition const& transition, bool new_
     checker_side_.dispatch(); // The app may send messages while processing the transition
 
   if (new_transition)
-    return recv_transition(transition.aid_, transition.times_considered_, answer.simcall, answer.buffer);
+    return recv_transition(aid, times_considered, answer.simcall, answer.buffer);
   else
     return nullptr;
 }

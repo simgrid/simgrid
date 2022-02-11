@@ -31,17 +31,12 @@ const char* Transition::to_cstring(bool verbose)
   to_string();
   return textual_.c_str();
 }
-void Transition::init(aid_t aid, int times_considered)
-{
-  aid_              = aid;
-  times_considered_ = times_considered;
-}
 void Transition::replay() const
 {
   replayed_transitions_++;
 
 #if SIMGRID_HAVE_MC
-  mc_model_checker->handle_simcall(*this, false);
+  mc_model_checker->handle_simcall(aid_, times_considered_, false);
   mc_model_checker->wait_for_requests();
 #endif
 }

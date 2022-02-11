@@ -50,7 +50,9 @@ public:
   void shutdown();
   void resume();
   void wait_for_requests();
-  Transition* handle_simcall(Transition const& transition, bool new_transition);
+
+  /** Let the application take a transition. A new Transition is created iff the last parameter is true */
+  Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition);
 
   /* Interactions with the simcall observer */
   bool simcall_is_visible(aid_t aid);

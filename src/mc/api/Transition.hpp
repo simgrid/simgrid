@@ -49,8 +49,6 @@ public:
   virtual ~Transition();
   Transition(aid_t issuer, int times_considered) : aid_(issuer), times_considered_(times_considered) {}
 
-  void init(aid_t aid, int times_considered);
-
   virtual std::string to_string(bool verbose = false);
   const char* to_cstring(bool verbose = false);
 
