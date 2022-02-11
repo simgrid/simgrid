@@ -25,19 +25,29 @@
 namespace simgrid {
 namespace mc {
 
-using RecordTrace = std::vector<Transition*>;
+class RecordTrace {
+  std::vector<Transition*> transitions_;
 
-/** Convert a string representation of the path into an array of `simgrid::mc::Transition`
- */
-XBT_PRIVATE RecordTrace parseRecordTrace(const char* data);
-XBT_PRIVATE std::string traceToString(simgrid::mc::RecordTrace const& trace);
+public:
+  RecordTrace() = default;
+
+  /** Build a trace that can be replayed from a string representation */
+  explicit RecordTrace(const char* data);
+  /** Make a string representation that can later be used to create a new trace */
+  std::string to_string() const;
+
+  void push_back(Transition* t) { transitions_.push_back(t); }
+
+  /** Replay all transitions of a trace */
+  void replay();
+
+  /** Parse and replay a string representation */
+  static void replay(const std::string& trace);
+};
+
 XBT_PRIVATE void dumpRecordPath();
 
-XBT_PRIVATE void replay(RecordTrace const& trace);
-XBT_PRIVATE void replay(const std::string& trace);
 }
 }
-
-// **** Data conversion
 
 #endif

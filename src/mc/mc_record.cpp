@@ -21,11 +21,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc, "Logging specific to MC record/re
 namespace simgrid {
 namespace mc {
 
-void replay(RecordTrace const& trace)
+void RecordTrace::replay()
 {
   simgrid::mc::execute_actors();
 
-  for (simgrid::mc::Transition* const transition : trace) {
+  for (simgrid::mc::Transition* const transition : transitions_) {
     XBT_DEBUG("Executing %ld$%i", transition->aid_, transition->times_considered_);
 
     // Choose a request:
@@ -41,19 +41,18 @@ void replay(RecordTrace const& trace)
   }
 }
 
-void replay(const std::string& path_string)
+void simgrid::mc::RecordTrace::replay(const std::string& path_string)
 {
   simgrid::mc::processes_time.resize(simgrid::kernel::actor::get_maxpid());
-  simgrid::mc::RecordTrace trace = simgrid::mc::parseRecordTrace(path_string.c_str());
-  simgrid::mc::replay(trace);
-  for (auto* item : trace)
+  simgrid::mc::RecordTrace trace(path_string.c_str());
+  trace.replay();
+  for (auto* item : trace.transitions_)
     delete item;
   simgrid::mc::processes_time.clear();
 }
 
-RecordTrace parseRecordTrace(const char* data)
+simgrid::mc::RecordTrace::RecordTrace(const char* data)
 {
-  RecordTrace res;
   XBT_INFO("path=%s", data);
   if (data == nullptr || data[0] == '\0')
     throw std::invalid_argument("Could not parse record path");
@@ -66,7 +65,7 @@ RecordTrace parseRecordTrace(const char* data)
 
     if(count != 2 && count != 1)
       throw std::invalid_argument("Could not parse record path");
-    res.push_back(new simgrid::mc::Transition(aid, times_considered));
+    push_back(new simgrid::mc::Transition(aid, times_considered));
 
     // Find next chunk:
     const char* end = std::strchr(current, ';');
@@ -75,17 +74,15 @@ RecordTrace parseRecordTrace(const char* data)
     else
       current = end + 1;
   }
-
-  return res;
 }
 
 #if SIMGRID_HAVE_MC
 
-std::string traceToString(simgrid::mc::RecordTrace const& trace)
+std::string simgrid::mc::RecordTrace::to_string() const
 {
   std::ostringstream stream;
-  for (auto i = trace.begin(); i != trace.end(); ++i) {
-    if (i != trace.begin())
+  for (auto i = transitions_.begin(); i != transitions_.end(); ++i) {
+    if (i != transitions_.begin())
       stream << ';';
     stream << (*i)->aid_;
     if ((*i)->times_considered_ > 0)
@@ -96,8 +93,7 @@ std::string traceToString(simgrid::mc::RecordTrace const& trace)
 
 void dumpRecordPath()
 {
-  RecordTrace trace = mc_model_checker->getChecker()->get_record_trace();
-  XBT_INFO("Path = %s", traceToString(trace).c_str());
+  XBT_INFO("Path = %s", mc_model_checker->getChecker()->get_record_trace().to_string().c_str());
 }
 
 #endif
