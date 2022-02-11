@@ -98,17 +98,13 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
 {
   kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(message->aid_);
   xbt_assert(actor != nullptr, "Invalid pid %ld", message->aid_);
-  simgrid::kernel::actor::SimcallObserver* observer = nullptr;
-  if (actor->simcall_.observer_ != nullptr) {
-    observer = actor->simcall_.observer_->clone();
-    actor->observer_stack_.push_back(observer);
-  }
-  // Finish the RPC from the server: we need to return a pointer to the observer, saved in a stable storage
+
+  // Finish the RPC from the server: return a serialized observer, to build a Transition on Checker side
   s_mc_message_simcall_execute_answer_t answer;
   memset(&answer, 0, sizeof(answer));
   answer.type = MessageType::SIMCALL_EXECUTE_ANSWER;
-  if (observer != nullptr)
-    observer->serialize(answer.simcall, answer.buffer);
+  if (actor->simcall_.observer_ != nullptr)
+    actor->simcall_.observer_->serialize(answer.simcall, answer.buffer);
   XBT_DEBUG("send SIMCALL_EXECUTE_ANSWER(%s) ~> %s '%s'", actor->get_cname(),
             simgrid::kernel::actor::SimcallObserver::to_c_str(answer.simcall), answer.buffer);
   xbt_assert(channel_.send(answer) == 0, "Could not send response");

@@ -71,7 +71,6 @@ public:
   activity::ActivityImplPtr waiting_synchro_ = nullptr; /* the current blocking synchro if any */
   std::list<activity::ActivityImplPtr> activities_;     /* the current non-blocking synchros */
   s_smx_simcall simcall_;
-  std::vector<SimcallObserver*> observer_stack_;
   /* list of functions executed when the actor dies */
   std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit =
       std::make_shared<std::vector<std::function<void(bool)>>>();
