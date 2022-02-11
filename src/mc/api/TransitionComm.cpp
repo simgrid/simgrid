@@ -103,10 +103,7 @@ bool CommRecvTransition::depends(const Transition* other) const
     if (mbox_ != wait->mbox_)
       return false;
 
-    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_))
-      return false;
-
-    if (wait->dst_buff_ != dst_buff_)
+    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_) && (wait->dst_buff_ != dst_buff_))
       return false;
   }
 
@@ -146,7 +143,6 @@ bool CommSendTransition::depends(const Transition* other) const
   if (const auto* other_isend = dynamic_cast<const CommSendTransition*>(other))
     return mbox_ == other_isend->mbox_;
 
-  // FIXME: Not in the former dependency check because of the ordering but seems logical to add it
   if (dynamic_cast<const CommRecvTransition*>(other) != nullptr)
     return false;
 
@@ -157,10 +153,7 @@ bool CommSendTransition::depends(const Transition* other) const
     if (mbox_ != wait->mbox_)
       return false;
 
-    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_))
-      return false;
-
-    if (wait->src_buff_ != src_buff_)
+    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_) && (wait->src_buff_ != src_buff_))
       return false;
   }
 

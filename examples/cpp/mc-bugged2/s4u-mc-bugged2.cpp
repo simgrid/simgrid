@@ -20,25 +20,25 @@ static void server()
 
   received1 = simgrid::s4u::Mailbox::by_name("mymailbox")->get<int>();
   long val1 = *received1;
-  received1 = nullptr;
-  XBT_INFO("Received %ld", val1);
+  delete received1;
 
   received2 = simgrid::s4u::Mailbox::by_name("mymailbox")->get<int>();
   long val2 = *received2;
-  received2 = nullptr;
-  XBT_INFO("Received %ld", val2);
+  delete received2;
 
-  MC_assert(std::min(val1, val2) == 1);
+  XBT_INFO("First pair received: %ld %ld", val1, val2);
+
+  MC_assert(std::min(val1, val2) == 1); // if the two messages of the second client arrive first, this is violated.
 
   received1 = simgrid::s4u::Mailbox::by_name("mymailbox")->get<int>();
   val1      = *received1;
-  XBT_INFO("Received %ld", val1);
+  delete received1;
 
   received2 = simgrid::s4u::Mailbox::by_name("mymailbox")->get<int>();
   val2      = *received2;
-  XBT_INFO("Received %ld", val2);
+  delete received2;
 
-  XBT_INFO("OK");
+  XBT_INFO("Second pair received: %ld %ld", val1, val2);
 }
 
 static void client(int id)
@@ -46,10 +46,7 @@ static void client(int id)
   auto* payload1 = new int(id);
   auto* payload2 = new int(id);
 
-  XBT_INFO("Send %d", id);
   simgrid::s4u::Mailbox::by_name("mymailbox")->put(payload1, 10000);
-
-  XBT_INFO("Send %d", id);
   simgrid::s4u::Mailbox::by_name("mymailbox")->put(payload2, 10000);
 }
 
