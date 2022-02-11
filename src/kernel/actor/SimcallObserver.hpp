@@ -94,7 +94,7 @@ public:
     res->next_value_ = next_value_;
     return res;
   }
-  void serialize(Simcall& type, char* buffer) override { type = Simcall::RANDOM; }
+  void serialize(Simcall& type, char* buffer) override;
   int get_max_consider() const override;
   void prepare(int times_considered) override;
   std::string dot_label(int times_considered) const override;

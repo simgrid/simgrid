@@ -63,6 +63,16 @@ public:
   static unsigned long get_replayed_transitions() { return replayed_transitions_; }
 };
 
+class RandomTransition : public Transition {
+  int min_;
+  int max_;
+
+public:
+  std::string to_string(bool verbose) override;
+  RandomTransition(aid_t issuer, int times_considered, char* buffer);
+  bool depends(const Transition* other) const override { return false; } // Independent with any other transition
+};
+
 } // namespace mc
 } // namespace simgrid
 

@@ -28,6 +28,15 @@ bool RandomSimcall::depends(SimcallObserver* other)
 {
   return get_issuer() == other->get_issuer();
 }
+void RandomSimcall::serialize(Simcall& type, char* buffer)
+{
+  type = Simcall::RANDOM;
+  std::stringstream stream;
+
+  stream << min_ << ' ' << max_;
+  strcpy(buffer, stream.str().c_str());
+}
+
 bool MutexSimcall::depends(SimcallObserver* other)
 {
   if (dynamic_cast<RandomSimcall*>(other) != nullptr)

@@ -5,7 +5,9 @@
 
 #include "src/mc/api/Transition.hpp"
 #include "xbt/asserts.h"
+#include "xbt/string.hpp"
 #include <simgrid/config.h>
+
 #if SIMGRID_HAVE_MC
 #include "src/mc/ModelChecker.hpp"
 #endif
@@ -39,6 +41,17 @@ void Transition::replay() const
   mc_model_checker->handle_simcall(aid_, times_considered_, false);
   mc_model_checker->wait_for_requests();
 #endif
+}
+std::string RandomTransition::to_string(bool verbose)
+{
+  return xbt::string_printf("Random([%d;%d] ~> %d)", min_, max_, times_considered_);
+}
+
+RandomTransition::RandomTransition(aid_t issuer, int times_considered, char* buffer)
+    : Transition(issuer, times_considered)
+{
+  std::stringstream stream(buffer);
+  stream >> min_ >> max_;
 }
 
 } // namespace mc

@@ -44,6 +44,9 @@ bool CommWaitTransition::depends(const Transition* other) const
   if (aid_ == other->aid_)
     return false;
 
+  if (dynamic_cast<const RandomTransition*>(other) != nullptr)
+    return false; // Random is indep with any transition
+
   if (auto* send = dynamic_cast<const CommSendTransition*>(other))
     return send->depends(this);
 
@@ -83,6 +86,9 @@ bool CommRecvTransition::depends(const Transition* other) const
 {
   if (aid_ == other->aid_)
     return false;
+
+  if (dynamic_cast<const RandomTransition*>(other) != nullptr)
+    return false; // Random is indep with any transition
 
   if (const auto* other_irecv = dynamic_cast<const CommRecvTransition*>(other))
     return mbox_ == other_irecv->mbox_;
@@ -134,6 +140,9 @@ bool CommSendTransition::depends(const Transition* other) const
   if (aid_ == other->aid_)
     return false;
 
+  if (dynamic_cast<const RandomTransition*>(other) != nullptr)
+    return false; // Random is indep with any transition
+
   if (const auto* other_isend = dynamic_cast<const CommSendTransition*>(other))
     return mbox_ == other_isend->mbox_;
 
@@ -175,6 +184,10 @@ Transition* recv_transition(aid_t issuer, int times_considered, kernel::actor::S
       return new CommRecvTransition(issuer, times_considered, buffer);
     case kernel::actor::SimcallObserver::Simcall::ISEND:
       return new CommSendTransition(issuer, times_considered, buffer);
+
+    case kernel::actor::SimcallObserver::Simcall::RANDOM:
+      return new RandomTransition(issuer, times_considered, buffer);
+
     case kernel::actor::SimcallObserver::Simcall::UNKNOWN:
       return new Transition(issuer, times_considered);
     default:

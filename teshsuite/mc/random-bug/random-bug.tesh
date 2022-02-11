@@ -7,12 +7,12 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug assert ${platfdir
 > [  0.000000] (0:maestro@) *** PROPERTY NOT VALID ***
 > [  0.000000] (0:maestro@) **************************
 > [  0.000000] (0:maestro@) Counter-example execution trace:
-> [  0.000000] (0:maestro@)   [(1)Fafard (app)] MC_RANDOM(3)
-> [  0.000000] (0:maestro@)   [(1)Fafard (app)] MC_RANDOM(4)
+> [  0.000000] (0:maestro@)   Random([0;5] ~> 3)
+> [  0.000000] (0:maestro@)   Random([0;5] ~> 4)
 > [  0.000000] (0:maestro@) Path = 1/3;1/4
 > [  0.000000] (0:maestro@) Expanded states = 27
 > [  0.000000] (0:maestro@) Visited states = 68
-> [  0.000000] (0:maestro@) Executed transitions = 46
+> [  0.000000] (0:maestro@) Executed transitions = 27
 
 ! expect return 6
 # because SIMGRID_MC_EXIT_PROGRAM_CRASH = 6
@@ -24,12 +24,12 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug abort ${platfdir}
 > [  0.000000] (0:maestro@) **************************
 > [  0.000000] (0:maestro@) From signal: Aborted
 > [  0.000000] (0:maestro@) Counter-example execution trace:
-> [  0.000000] (0:maestro@)   [(1)Fafard (app)] MC_RANDOM(3)
-> [  0.000000] (0:maestro@)   [(1)Fafard (app)] MC_RANDOM(4)
+> [  0.000000] (0:maestro@)   Random([0;5] ~> 3)
+> [  0.000000] (0:maestro@)   Random([0;5] ~> 4)
 > [  0.000000] (0:maestro@) Path = 1/3;1/4
 > [  0.000000] (0:maestro@) Expanded states = 27
 > [  0.000000] (0:maestro@) Visited states = 68
-> [  0.000000] (0:maestro@) Executed transitions = 46
+> [  0.000000] (0:maestro@) Executed transitions = 27
 > [  0.000000] (0:maestro@) Stack trace not displayed because you passed --log=no_loc
 
 $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug printf ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning
@@ -39,7 +39,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug printf ${platfdir
 > [  0.000000] (0:maestro@) No property violation found.
 > [  0.000000] (0:maestro@) Expanded states = 43
 > [  0.000000] (0:maestro@) Visited states = 108
-> [  0.000000] (0:maestro@) Executed transitions = 72
+> [  0.000000] (0:maestro@) Executed transitions = 42
 
 ! expect return 6
 # because SIMGRID_MC_EXIT_PROGRAM_CRASH = 6
@@ -52,10 +52,10 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug segv ${platfdir}/
 > [  0.000000] (0:maestro@) **************************
 > [  0.000000] (0:maestro@) From signal: Segmentation fault
 > [  0.000000] (0:maestro@) Counter-example execution trace:
-> [  0.000000] (0:maestro@)   [(1)Fafard (app)] MC_RANDOM(3)
-> [  0.000000] (0:maestro@)   [(1)Fafard (app)] MC_RANDOM(4)
+> [  0.000000] (0:maestro@)   Random([0;5] ~> 3)
+> [  0.000000] (0:maestro@)   Random([0;5] ~> 4)
 > [  0.000000] (0:maestro@) Path = 1/3;1/4
 > [  0.000000] (0:maestro@) Expanded states = 27
 > [  0.000000] (0:maestro@) Visited states = 68
-> [  0.000000] (0:maestro@) Executed transitions = 46
+> [  0.000000] (0:maestro@) Executed transitions = 27
 > [  0.000000] (0:maestro@) Stack trace not displayed because you passed --log=no_loc
