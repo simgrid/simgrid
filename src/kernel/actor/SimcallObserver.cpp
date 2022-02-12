@@ -34,7 +34,9 @@ void RandomSimcall::serialize(Simcall& type, char* buffer)
   std::stringstream stream;
 
   stream << min_ << ' ' << max_;
-  strcpy(buffer, stream.str().c_str());
+  xbt_assert(stream.str().size() < SIMCALL_SERIALIZATION_BUFFER_SIZE,
+             "The serialized simcall is too large for the buffer. Please fix the code.");
+  strncpy(buffer, stream.str().c_str(), SIMCALL_SERIALIZATION_BUFFER_SIZE);
 }
 
 bool MutexSimcall::depends(SimcallObserver* other)
@@ -237,10 +239,12 @@ void ActivityWaitSimcall::serialize(Simcall& type, char* buffer)
     stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
     stream << ' ' << comm->get_mailbox_id();
     stream << ' ' << (void*)comm->src_buff_ << ' ' << (void*)comm->dst_buff_ << ' ' << comm->src_buff_size_;
-    strcpy(buffer, stream.str().c_str());
+    xbt_assert(stream.str().size() < SIMCALL_SERIALIZATION_BUFFER_SIZE,
+               "The serialized simcall is too large for the buffer. Please fix the code.");
+    strncpy(buffer, stream.str().c_str(), SIMCALL_SERIALIZATION_BUFFER_SIZE);
   } else {
     type = Simcall::UNKNOWN;
-    strcpy(buffer, stream.str().c_str());
+    buffer[0] = '\0';
   }
 }
 
@@ -356,7 +360,9 @@ void CommIsendSimcall::serialize(Simcall& type, char* buffer)
   type = Simcall::ISEND;
   std::stringstream stream;
   stream << mbox_->get_id() << ' ' << (void*)src_buff_ << ' ' << src_buff_size_;
-  strcpy(buffer, stream.str().c_str());
+  xbt_assert(stream.str().size() < SIMCALL_SERIALIZATION_BUFFER_SIZE,
+             "The serialized simcall is too large for the buffer. Please fix the code.");
+  strncpy(buffer, stream.str().c_str(), SIMCALL_SERIALIZATION_BUFFER_SIZE);
   XBT_DEBUG("SendObserver mbox:%u buff:%p size:%zu", mbox_->get_id(), src_buff_, src_buff_size_);
 }
 
@@ -365,7 +371,9 @@ void CommIrecvSimcall::serialize(Simcall& type, char* buffer)
   type = Simcall::IRECV;
   std::stringstream stream;
   stream << mbox_->get_id() << dst_buff_;
-  strcpy(buffer, stream.str().c_str());
+  xbt_assert(stream.str().size() < SIMCALL_SERIALIZATION_BUFFER_SIZE,
+             "The serialized simcall is too large for the buffer. Please fix the code.");
+  strncpy(buffer, stream.str().c_str(), SIMCALL_SERIALIZATION_BUFFER_SIZE);
 }
 
 

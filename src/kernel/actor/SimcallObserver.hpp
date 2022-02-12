@@ -12,6 +12,8 @@
 
 #include <string>
 
+#define SIMCALL_SERIALIZATION_BUFFER_SIZE 2048
+
 namespace simgrid {
 namespace kernel {
 namespace actor {
