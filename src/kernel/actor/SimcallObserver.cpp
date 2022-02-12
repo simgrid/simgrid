@@ -28,15 +28,10 @@ bool RandomSimcall::depends(SimcallObserver* other)
 {
   return get_issuer() == other->get_issuer();
 }
-void RandomSimcall::serialize(Simcall& type, char* buffer)
+void RandomSimcall::serialize(Simcall& type, std::stringstream& stream)
 {
   type = Simcall::RANDOM;
-  std::stringstream stream;
-
   stream << min_ << ' ' << max_;
-  xbt_assert(stream.str().size() < SIMCALL_SERIALIZATION_BUFFER_SIZE,
-             "The serialized simcall is too large for the buffer. Please fix the code.");
-  strncpy(buffer, stream.str().c_str(), SIMCALL_SERIALIZATION_BUFFER_SIZE);
 }
 
 bool MutexSimcall::depends(SimcallObserver* other)
@@ -229,9 +224,8 @@ bool ActivityTestSimcall::depends(SimcallObserver* other)
 
   return true;
 }
-void ActivityWaitSimcall::serialize(Simcall& type, char* buffer)
+void ActivityWaitSimcall::serialize(Simcall& type, std::stringstream& stream)
 {
-  std::stringstream stream;
   if (auto* comm = dynamic_cast<activity::CommImpl*>(activity_)) {
     type = Simcall::COMM_WAIT;
     stream << (timeout_ > 0) << ' ' << comm;
@@ -239,12 +233,8 @@ void ActivityWaitSimcall::serialize(Simcall& type, char* buffer)
     stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
     stream << ' ' << comm->get_mailbox_id();
     stream << ' ' << (void*)comm->src_buff_ << ' ' << (void*)comm->dst_buff_ << ' ' << comm->src_buff_size_;
-    xbt_assert(stream.str().size() < SIMCALL_SERIALIZATION_BUFFER_SIZE,
-               "The serialized simcall is too large for the buffer. Please fix the code.");
-    strncpy(buffer, stream.str().c_str(), SIMCALL_SERIALIZATION_BUFFER_SIZE);
   } else {
     type = Simcall::UNKNOWN;
-    buffer[0] = '\0';
   }
 }
 
@@ -355,42 +345,18 @@ void ActivityWaitanySimcall::prepare(int times_considered)
   next_value_ = times_considered;
 }
 
-void CommIsendSimcall::serialize(Simcall& type, char* buffer)
+void CommIsendSimcall::serialize(Simcall& type, std::stringstream& stream)
 {
   type = Simcall::ISEND;
-  std::stringstream stream;
   stream << mbox_->get_id() << ' ' << (void*)src_buff_ << ' ' << src_buff_size_;
-  xbt_assert(stream.str().size() < SIMCALL_SERIALIZATION_BUFFER_SIZE,
-             "The serialized simcall is too large for the buffer. Please fix the code.");
-  strncpy(buffer, stream.str().c_str(), SIMCALL_SERIALIZATION_BUFFER_SIZE);
   XBT_DEBUG("SendObserver mbox:%u buff:%p size:%zu", mbox_->get_id(), src_buff_, src_buff_size_);
 }
 
-void CommIrecvSimcall::serialize(Simcall& type, char* buffer)
+void CommIrecvSimcall::serialize(Simcall& type, std::stringstream& stream)
 {
   type = Simcall::IRECV;
-  std::stringstream stream;
   stream << mbox_->get_id() << dst_buff_;
-  xbt_assert(stream.str().size() < SIMCALL_SERIALIZATION_BUFFER_SIZE,
-             "The serialized simcall is too large for the buffer. Please fix the code.");
-  strncpy(buffer, stream.str().c_str(), SIMCALL_SERIALIZATION_BUFFER_SIZE);
 }
-
-
-/*
-std::string CommIrecvSimcall::to_string(int times_considered) const
-{
-  std::string res = SimcallObserver::to_string(times_considered) + "iRecv(";
-  res += xbt::string_printf("dst=(%ld)%s (%s)", get_issuer()->get_pid(), get_issuer()->get_host()->get_cname(),
-                            get_issuer()->get_cname());
-  res += ", buff=" + (XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf("%p", dst_buff_)
-                                                                               : "(verbose only)");
-  res += ", size=" + (XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? std::to_string(*dst_buff_size_)
-                                                                               : "(verbose only)");
-  res += ")";
-  return res;
-}
-*/
 
 } // namespace actor
 } // namespace kernel

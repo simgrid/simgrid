@@ -12,8 +12,6 @@
 
 #include <string>
 
-#define SIMCALL_SERIALIZATION_BUFFER_SIZE 2048
-
 namespace simgrid {
 namespace kernel {
 namespace actor {
@@ -61,8 +59,8 @@ public:
   /** Computes the dependency relation */
   virtual bool depends(SimcallObserver* other);
 
-  /** Serialize to the given buffer */
-  virtual void serialize(Simcall& type, char* buffer) { type = Simcall::UNKNOWN; }
+  /** Serialize to the given string buffer */
+  virtual void serialize(Simcall& type, std::stringstream& stream) { type = Simcall::UNKNOWN; }
 
   /** Some simcalls may only be observable under some conditions.
    * Most simcalls are not visible from the MC because they don't have an observer at all. */
@@ -96,7 +94,7 @@ public:
     res->next_value_ = next_value_;
     return res;
   }
-  void serialize(Simcall& type, char* buffer) override;
+  void serialize(Simcall& type, std::stringstream& stream) override;
   int get_max_consider() const override;
   void prepare(int times_considered) override;
   std::string dot_label(int times_considered) const override;
@@ -214,7 +212,7 @@ public:
   {
   }
   SimcallObserver* clone() override { return new ActivityWaitSimcall(get_issuer(), activity_, timeout_); }
-  void serialize(Simcall& type, char* buffer) override;
+  void serialize(Simcall& type, std::stringstream& stream) override;
   bool is_visible() const override { return true; }
   bool is_enabled() const override;
   std::string dot_label(int times_considered) const override;
@@ -276,7 +274,7 @@ public:
       , copy_data_fun_(copy_data_fun)
   {
   }
-  void serialize(Simcall& type, char* buffer) override;
+  void serialize(Simcall& type, std::stringstream& stream) override;
   CommIsendSimcall* clone() override
   {
     return new CommIsendSimcall(get_issuer(), mbox_, payload_size_, rate_, src_buff_, src_buff_size_, match_fun_,
@@ -325,7 +323,7 @@ public:
     return new CommIrecvSimcall(get_issuer(), mbox_, dst_buff_, dst_buff_size_, match_fun_, copy_data_fun_, payload_,
                                 rate_);
   }
-  void serialize(Simcall& type, char* buffer) override;
+  void serialize(Simcall& type, std::stringstream& stream) override;
   bool is_visible() const override { return true; }
   std::string dot_label(int times_considered) const override
   {
