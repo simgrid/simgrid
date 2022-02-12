@@ -52,10 +52,6 @@ public:
   { /* Nothing to do by default */
   }
 
-  /** We need to save the observer of simcalls as they get executed to later compute their dependencies in classical
-   * DPOR */
-  virtual SimcallObserver* clone() = 0;
-
   /** Computes the dependency relation */
   virtual bool depends(SimcallObserver* other);
 
@@ -88,12 +84,6 @@ public:
   {
     xbt_assert(min < max);
   }
-  SimcallObserver* clone() override
-  {
-    auto res         = new RandomSimcall(get_issuer(), min_, max_);
-    res->next_value_ = next_value_;
-    return res;
-  }
   void serialize(Simcall& type, std::stringstream& stream) override;
   int get_max_consider() const override;
   void prepare(int times_considered) override;
@@ -115,7 +105,6 @@ class MutexUnlockSimcall : public MutexSimcall {
   using MutexSimcall::MutexSimcall;
 
 public:
-  SimcallObserver* clone() override { return new MutexUnlockSimcall(get_issuer(), get_mutex()); }
   std::string dot_label(int times_considered) const override;
 };
 
@@ -127,7 +116,6 @@ public:
       : MutexSimcall(actor, mutex), blocking_(blocking)
   {
   }
-  SimcallObserver* clone() override { return new MutexLockSimcall(get_issuer(), get_mutex(), blocking_); }
   bool is_enabled() const override;
   std::string dot_label(int times_considered) const override;
 };
@@ -143,7 +131,6 @@ public:
       : ResultingSimcall(actor, false), cond_(cond), mutex_(mutex), timeout_(timeout)
   {
   }
-  SimcallObserver* clone() override { return new ConditionWaitSimcall(get_issuer(), cond_, mutex_, timeout_); }
   bool is_enabled() const override;
   bool is_visible() const override { return false; }
   std::string dot_label(int times_considered) const override;
@@ -161,7 +148,6 @@ public:
       : ResultingSimcall(actor, false), sem_(sem), timeout_(timeout)
   {
   }
-  SimcallObserver* clone() override { return new SemAcquireSimcall(get_issuer(), sem_, timeout_); }
   bool is_enabled() const override;
   bool is_visible() const override { return false; }
   std::string dot_label(int times_considered) const override;
@@ -177,7 +163,6 @@ public:
       : ResultingSimcall(actor, true), activity_(activity)
   {
   }
-  SimcallObserver* clone() override { return new ActivityTestSimcall(get_issuer(), activity_); }
   bool is_visible() const override { return true; }
   bool depends(SimcallObserver* other) override;
   std::string dot_label(int times_considered) const override;
@@ -193,7 +178,6 @@ public:
       : ResultingSimcall(actor, -1), activities_(activities)
   {
   }
-  SimcallObserver* clone() override { return new ActivityTestanySimcall(get_issuer(), activities_); }
   bool is_visible() const override { return true; }
   int get_max_consider() const override;
   void prepare(int times_considered) override;
@@ -211,7 +195,6 @@ public:
       : ResultingSimcall(actor, false), activity_(activity), timeout_(timeout)
   {
   }
-  SimcallObserver* clone() override { return new ActivityWaitSimcall(get_issuer(), activity_, timeout_); }
   void serialize(Simcall& type, std::stringstream& stream) override;
   bool is_visible() const override { return true; }
   bool is_enabled() const override;
@@ -231,7 +214,6 @@ public:
       : ResultingSimcall(actor, -1), activities_(activities), timeout_(timeout)
   {
   }
-  SimcallObserver* clone() override { return new ActivityWaitanySimcall(get_issuer(), activities_, timeout_); }
   bool is_enabled() const override;
   bool is_visible() const override { return true; }
   void prepare(int times_considered) override;
@@ -275,11 +257,6 @@ public:
   {
   }
   void serialize(Simcall& type, std::stringstream& stream) override;
-  CommIsendSimcall* clone() override
-  {
-    return new CommIsendSimcall(get_issuer(), mbox_, payload_size_, rate_, src_buff_, src_buff_size_, match_fun_,
-                                clean_fun_, copy_data_fun_, payload_, detached_);
-  }
   bool is_visible() const override { return true; }
   std::string dot_label(int times_considered) const override
   {
@@ -317,11 +294,6 @@ public:
       , match_fun_(match_fun)
       , copy_data_fun_(copy_data_fun)
   {
-  }
-  CommIrecvSimcall* clone() override
-  {
-    return new CommIrecvSimcall(get_issuer(), mbox_, dst_buff_, dst_buff_size_, match_fun_, copy_data_fun_, payload_,
-                                rate_);
   }
   void serialize(Simcall& type, std::stringstream& stream) override;
   bool is_visible() const override { return true; }
