@@ -10,6 +10,7 @@
 #include "simgrid/forward.h" // aid_t
 #include "xbt/utility.hpp"   // XBT_DECLARE_ENUM_CLASS
 
+#include <sstream>
 #include <string>
 
 namespace simgrid {
@@ -74,7 +75,7 @@ class RandomTransition : public Transition {
 public:
   std::string to_string(bool verbose) const override;
   std::string dot_label() const override;
-  RandomTransition(aid_t issuer, int times_considered, char* buffer);
+  RandomTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   bool depends(const Transition* other) const override { return false; } // Independent with any other transition
 };
 

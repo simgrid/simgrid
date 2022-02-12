@@ -20,10 +20,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_comm, mc_transition,
 namespace simgrid {
 namespace mc {
 
-CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, char* buffer)
+CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_WAIT, issuer, times_considered)
 {
-  std::stringstream stream(buffer);
   stream >> timeout_ >> comm_ >> sender_ >> receiver_ >> mbox_ >> src_buff_ >> dst_buff_ >> size_;
   XBT_DEBUG("CommWaitTransition %s comm:%p, sender:%ld receiver:%ld mbox:%u sbuff:%p rbuff:%p size:%zu",
             (timeout_ ? "timeout" : "no-timeout"), comm_, sender_, receiver_, mbox_, src_buff_, dst_buff_, size_);
@@ -69,10 +68,9 @@ bool CommWaitTransition::depends(const Transition* other) const
 
   return true;
 }
-CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, char* buffer)
+CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_TEST, issuer, times_considered)
 {
-  std::stringstream stream(buffer);
   stream >> comm_ >> sender_ >> receiver_ >> mbox_ >> src_buff_ >> dst_buff_ >> size_;
   XBT_DEBUG("CommTestTransition comm:%p, sender:%ld receiver:%ld mbox:%u sbuff:%p rbuff:%p size:%zu", comm_, sender_,
             receiver_, mbox_, src_buff_, dst_buff_, size_);
@@ -115,10 +113,9 @@ bool CommTestTransition::depends(const Transition* other) const
   return true;
 }
 
-CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, char* buffer)
+CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_RECV, issuer, times_considered)
 {
-  std::stringstream stream(buffer);
   stream >> mbox_ >> dst_buff_;
 }
 std::string CommRecvTransition::to_string(bool verbose) const
@@ -165,10 +162,9 @@ bool CommRecvTransition::depends(const Transition* other) const
   return true;
 }
 
-CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, char* buffer)
+CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_SEND, issuer, times_considered)
 {
-  std::stringstream stream(buffer);
   stream >> mbox_ >> src_buff_ >> size_;
   XBT_DEBUG("SendTransition mbox:%u buff:%p size:%zu", mbox_, src_buff_, size_);
 }
@@ -217,20 +213,25 @@ bool CommSendTransition::depends(const Transition* other) const
   return true;
 }
 
-Transition* recv_transition(aid_t issuer, int times_considered, Transition::Type simcall, char* buffer)
+Transition* recv_transition(aid_t issuer, int times_considered, char* buffer)
 {
+  std::stringstream stream(buffer);
+  short type;
+  stream >> type;
+  Transition::Type simcall = static_cast<Transition::Type>(type);
+
   switch (simcall) {
     case Transition::Type::COMM_RECV:
-      return new CommRecvTransition(issuer, times_considered, buffer);
+      return new CommRecvTransition(issuer, times_considered, stream);
     case Transition::Type::COMM_SEND:
-      return new CommSendTransition(issuer, times_considered, buffer);
+      return new CommSendTransition(issuer, times_considered, stream);
     case Transition::Type::COMM_TEST:
-      return new CommTestTransition(issuer, times_considered, buffer);
+      return new CommTestTransition(issuer, times_considered, stream);
     case Transition::Type::COMM_WAIT:
-      return new CommWaitTransition(issuer, times_considered, buffer);
+      return new CommWaitTransition(issuer, times_considered, stream);
 
     case Transition::Type::RANDOM:
-      return new RandomTransition(issuer, times_considered, buffer);
+      return new RandomTransition(issuer, times_considered, stream);
 
     case Transition::Type::UNKNOWN:
       return new Transition(Transition::Type::UNKNOWN, issuer, times_considered);

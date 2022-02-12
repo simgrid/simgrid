@@ -46,10 +46,9 @@ std::string RandomTransition::to_string(bool verbose) const
   return xbt::string_printf("Random([%d;%d] ~> %d)", min_, max_, times_considered_);
 }
 
-RandomTransition::RandomTransition(aid_t issuer, int times_considered, char* buffer)
+RandomTransition::RandomTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::RANDOM, issuer, times_considered)
 {
-  std::stringstream stream(buffer);
   stream >> min_ >> max_;
 }
 std::string RandomTransition::dot_label() const

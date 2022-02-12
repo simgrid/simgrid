@@ -332,7 +332,7 @@ Transition* ModelChecker::handle_simcall(aid_t aid, int times_considered, bool n
     checker_side_.dispatch(); // The app may send messages while processing the transition
 
   if (new_transition)
-    return recv_transition(aid, times_considered, answer.simcall, answer.buffer);
+    return recv_transition(aid, times_considered, answer.buffer);
   else
     return nullptr;
 }

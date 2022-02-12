@@ -10,6 +10,7 @@
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/api/Transition.hpp"
 
+#include <sstream>
 #include <string>
 
 namespace simgrid {
@@ -33,7 +34,7 @@ class CommWaitTransition : public Transition {
   friend CommTestTransition;
 
 public:
-  CommWaitTransition(aid_t issuer, int times_considered, char* buffer);
+  CommWaitTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
 };
@@ -49,7 +50,7 @@ class CommTestTransition : public Transition {
   friend CommRecvTransition;
 
 public:
-  CommTestTransition(aid_t issuer, int times_considered, char* buffer);
+  CommTestTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
 };
@@ -59,7 +60,7 @@ class CommRecvTransition : public Transition {
   void* dst_buff_;
 
 public:
-  CommRecvTransition(aid_t issuer, int times_considered, char* buffer);
+  CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
 };
@@ -70,13 +71,13 @@ class CommSendTransition : public Transition {
   size_t size_;
 
 public:
-  CommSendTransition(aid_t issuer, int times_considered, char* buffer);
+  CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
 };
 
 /** Make a new transition from serialized description */
-Transition* recv_transition(aid_t issuer, int times_considered, Transition::Type simcall, char* buffer);
+Transition* recv_transition(aid_t issuer, int times_considered, char* buffer);
 
 } // namespace mc
 } // namespace simgrid

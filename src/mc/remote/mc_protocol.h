@@ -105,7 +105,6 @@ struct s_mc_message_simcall_execute_t {
 };
 struct s_mc_message_simcall_execute_answer_t {
   simgrid::mc::MessageType type;
-  simgrid::mc::Transition::Type simcall;
   char buffer[SIMCALL_SERIALIZATION_BUFFER_SIZE];
 };
 

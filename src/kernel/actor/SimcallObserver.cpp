@@ -19,6 +19,10 @@ namespace simgrid {
 namespace kernel {
 namespace actor {
 
+void SimcallObserver::serialize(std::stringstream& stream) const
+{
+  stream << (short)mc::Transition::Type::UNKNOWN;
+}
 bool SimcallObserver::depends(SimcallObserver* other)
 {
   THROW_UNIMPLEMENTED;
@@ -28,9 +32,9 @@ bool RandomSimcall::depends(SimcallObserver* other)
 {
   return get_issuer() == other->get_issuer();
 }
-void RandomSimcall::serialize(mc::Transition::Type& type, std::stringstream& stream)
+void RandomSimcall::serialize(std::stringstream& stream) const
 {
-  type = mc::Transition::Type::RANDOM;
+  stream << (short)mc::Transition::Type::RANDOM << ' ';
   stream << min_ << ' ' << max_;
 }
 
@@ -132,29 +136,29 @@ std::string ActivityTestanySimcall::to_string(int times_considered) const
 
   return res;
 }*/
-void ActivityWaitSimcall::serialize(mc::Transition::Type& type, std::stringstream& stream)
+void ActivityWaitSimcall::serialize(std::stringstream& stream) const
 {
   if (auto* comm = dynamic_cast<activity::CommImpl*>(activity_)) {
-    type = mc::Transition::Type::COMM_WAIT;
+    stream << (short)mc::Transition::Type::COMM_WAIT << ' ';
     stream << (timeout_ > 0) << ' ' << comm;
     stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
     stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
     stream << ' ' << comm->get_mailbox_id();
     stream << ' ' << (void*)comm->src_buff_ << ' ' << (void*)comm->dst_buff_ << ' ' << comm->src_buff_size_;
   } else {
-    type = mc::Transition::Type::UNKNOWN;
+    stream << (short)mc::Transition::Type::UNKNOWN;
   }
 }
-void ActivityTestSimcall::serialize(mc::Transition::Type& type, std::stringstream& stream)
+void ActivityTestSimcall::serialize(std::stringstream& stream) const
 {
   if (auto* comm = dynamic_cast<activity::CommImpl*>(activity_)) {
-    type = mc::Transition::Type::COMM_TEST;
+    stream << (short)mc::Transition::Type::COMM_TEST << ' ';
     stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
     stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
     stream << ' ' << comm->get_mailbox_id();
     stream << ' ' << (void*)comm->src_buff_ << ' ' << (void*)comm->dst_buff_ << ' ' << comm->src_buff_size_;
   } else {
-    type = mc::Transition::Type::UNKNOWN;
+    stream << (short)mc::Transition::Type::UNKNOWN;
   }
 }
 
@@ -206,17 +210,17 @@ void ActivityWaitanySimcall::prepare(int times_considered)
   next_value_ = times_considered;
 }
 
-void CommIsendSimcall::serialize(mc::Transition::Type& type, std::stringstream& stream)
+void CommIsendSimcall::serialize(std::stringstream& stream) const
 {
-  type = mc::Transition::Type::COMM_SEND;
+  stream << (short)mc::Transition::Type::COMM_SEND << ' ';
   stream << mbox_->get_id() << ' ' << (void*)src_buff_ << ' ' << src_buff_size_;
   XBT_DEBUG("SendObserver mbox:%u buff:%p size:%zu", mbox_->get_id(), src_buff_, src_buff_size_);
 }
 
-void CommIrecvSimcall::serialize(mc::Transition::Type& type, std::stringstream& stream)
+void CommIrecvSimcall::serialize(std::stringstream& stream) const
 {
-  type = mc::Transition::Type::COMM_RECV;
-  stream << mbox_->get_id() << dst_buff_;
+  stream << (short)mc::Transition::Type::COMM_RECV << ' ';
+  stream << mbox_->get_id() << ' ' << dst_buff_;
 }
 
 } // namespace actor

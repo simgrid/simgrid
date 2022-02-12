@@ -103,18 +103,17 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
   s_mc_message_simcall_execute_answer_t answer;
   memset(&answer, 0, sizeof(answer));
   answer.type = MessageType::SIMCALL_EXECUTE_ANSWER;
+  std::stringstream stream;
   if (actor->simcall_.observer_ != nullptr) {
-    std::stringstream stream;
-    actor->simcall_.observer_->serialize(answer.simcall, stream);
-    xbt_assert(stream.str().size() < sizeof(answer.buffer) - 1,
-               "The serialized simcall is too large for the buffer. Please fix the code.");
-    strncpy(answer.buffer, stream.str().c_str(), sizeof(answer.buffer) - 1);
+    actor->simcall_.observer_->serialize(stream);
   } else {
-    answer.simcall = mc::Transition::Type::UNKNOWN;
+    stream << (short)mc::Transition::Type::UNKNOWN;
   }
+  xbt_assert(stream.str().size() < sizeof(answer.buffer) - 1,
+             "The serialized simcall is too large for the buffer. Please fix the code.");
+  strncpy(answer.buffer, stream.str().c_str(), sizeof(answer.buffer) - 1);
 
-  XBT_DEBUG("send SIMCALL_EXECUTE_ANSWER(%s) ~> %s '%s'", actor->get_cname(), mc::Transition::to_c_str(answer.simcall),
-            answer.buffer);
+  XBT_DEBUG("send SIMCALL_EXECUTE_ANSWER(%s) ~> '%s'", actor->get_cname(), answer.buffer);
   xbt_assert(channel_.send(answer) == 0, "Could not send response");
 
   // The client may send some messages to the server while processing the transition

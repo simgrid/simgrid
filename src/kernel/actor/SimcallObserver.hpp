@@ -54,10 +54,7 @@ public:
   virtual bool depends(SimcallObserver* other);
 
   /** Serialize to the given string buffer */
-  virtual void serialize(mc::Transition::Type& type, std::stringstream& stream)
-  {
-    type = mc::Transition::Type::UNKNOWN;
-  }
+  virtual void serialize(std::stringstream& stream) const;
 
   /** Some simcalls may only be observable under some conditions.
    * Most simcalls are not visible from the MC because they don't have an observer at all. */
@@ -84,7 +81,7 @@ public:
   {
     xbt_assert(min < max);
   }
-  void serialize(mc::Transition::Type& type, std::stringstream& stream) override;
+  void serialize(std::stringstream& stream) const override;
   int get_max_consider() const override;
   void prepare(int times_considered) override;
   int get_value() const { return next_value_; }
@@ -158,7 +155,7 @@ public:
   }
   bool is_visible() const override { return true; }
   activity::ActivityImpl* get_activity() const { return activity_; }
-  void serialize(mc::Transition::Type& type, std::stringstream& stream) override;
+  void serialize(std::stringstream& stream) const override;
 };
 
 class ActivityTestanySimcall : public ResultingSimcall<ssize_t> {
@@ -186,7 +183,7 @@ public:
       : ResultingSimcall(actor, false), activity_(activity), timeout_(timeout)
   {
   }
-  void serialize(mc::Transition::Type& type, std::stringstream& stream) override;
+  void serialize(std::stringstream& stream) const override;
   bool is_visible() const override { return true; }
   bool is_enabled() const override;
   activity::ActivityImpl* get_activity() const { return activity_; }
@@ -245,7 +242,7 @@ public:
       , copy_data_fun_(copy_data_fun)
   {
   }
-  void serialize(mc::Transition::Type& type, std::stringstream& stream) override;
+  void serialize(std::stringstream& stream) const override;
   bool is_visible() const override { return true; }
   activity::MailboxImpl* get_mailbox() const { return mbox_; }
   double get_payload_size() const { return payload_size_; }
@@ -280,7 +277,7 @@ public:
       , copy_data_fun_(copy_data_fun)
   {
   }
-  void serialize(mc::Transition::Type& type, std::stringstream& stream) override;
+  void serialize(std::stringstream& stream) const override;
   bool is_visible() const override { return true; }
   activity::MailboxImpl* get_mailbox() const { return mbox_; }
   double get_rate() const { return rate_; }
