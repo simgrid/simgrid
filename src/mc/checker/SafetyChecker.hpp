@@ -21,6 +21,7 @@ namespace mc {
 
 class XBT_PRIVATE SafetyChecker : public Checker {
   ReductionMode reductionMode_ = ReductionMode::unset;
+  long backtrack_count_        = 0;
 
 public:
   explicit SafetyChecker(Session* session);

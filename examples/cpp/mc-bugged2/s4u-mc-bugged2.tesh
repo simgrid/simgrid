@@ -552,6 +552,4 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-bugged2 ${platfdir:=.
 > [  0.000000] (0:maestro@)   3: iSend(mbox=0)
 > [  0.000000] (0:maestro@)   1: WaitComm(from 3 to 1, mbox=0, no timeout)
 > [  0.000000] (0:maestro@) Path = 1;3;1;3;1;3;1
-> [  0.000000] (0:maestro@) Expanded states = 1006
-> [  0.000000] (0:maestro@) Visited states = 5319
-> [  0.000000] (0:maestro@) Executed transitions = 1006
+> [  0.000000] (0:maestro@) 1006 unique states visited; 350 backtracks (5319 transition replays, 3963 states visited overall)
