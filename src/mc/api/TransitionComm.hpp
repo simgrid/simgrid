@@ -15,11 +15,29 @@
 namespace simgrid {
 namespace mc {
 
-class CommSendTransition;
 class CommRecvTransition;
+class CommSendTransition;
+class CommTestTransition;
 
 class CommWaitTransition : public Transition {
   bool timeout_;
+  void* comm_;
+  aid_t sender_;
+  aid_t receiver_;
+  unsigned mbox_;
+  void* src_buff_;
+  void* dst_buff_;
+  size_t size_;
+  friend CommRecvTransition;
+  friend CommSendTransition;
+  friend CommTestTransition;
+
+public:
+  CommWaitTransition(aid_t issuer, int times_considered, char* buffer);
+  std::string to_string(bool verbose) const override;
+  bool depends(const Transition* other) const override;
+};
+class CommTestTransition : public Transition {
   void* comm_;
   aid_t sender_;
   aid_t receiver_;
@@ -31,7 +49,7 @@ class CommWaitTransition : public Transition {
   friend CommRecvTransition;
 
 public:
-  CommWaitTransition(aid_t issuer, int times_considered, char* buffer);
+  CommTestTransition(aid_t issuer, int times_considered, char* buffer);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
 };

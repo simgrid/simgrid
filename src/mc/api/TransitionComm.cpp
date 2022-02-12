@@ -47,16 +47,18 @@ bool CommWaitTransition::depends(const Transition* other) const
   if (dynamic_cast<const RandomTransition*>(other) != nullptr)
     return false; // Random is indep with any transition
 
-  if (auto* send = dynamic_cast<const CommSendTransition*>(other))
-    return send->depends(this);
-
   if (auto* recv = dynamic_cast<const CommRecvTransition*>(other))
     return recv->depends(this);
 
-  /* Timeouts in wait transitions are not considered by the independence theorem, thus assumed dependent */
+  if (auto* send = dynamic_cast<const CommSendTransition*>(other))
+    return send->depends(this);
+
+  if (auto* test = dynamic_cast<const CommTestTransition*>(other))
+    return test->depends(this);
+
   if (const auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
     if (timeout_ || wait->timeout_)
-      return true;
+      return true; // Timeouts are not considered by the independence theorem, thus assumed dependent
 
     if (src_buff_ == wait->src_buff_ && dst_buff_ == wait->dst_buff_)
       return false;
@@ -67,9 +69,54 @@ bool CommWaitTransition::depends(const Transition* other) const
 
   return true;
 }
+CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, char* buffer)
+    : Transition(Type::COMM_TEST, issuer, times_considered)
+{
+  std::stringstream stream(buffer);
+  stream >> comm_ >> sender_ >> receiver_ >> mbox_ >> src_buff_ >> dst_buff_ >> size_;
+  XBT_DEBUG("CommTestTransition comm:%p, sender:%ld receiver:%ld mbox:%u sbuff:%p rbuff:%p size:%zu", comm_, sender_,
+            receiver_, mbox_, src_buff_, dst_buff_, size_);
+}
+std::string CommTestTransition::to_string(bool verbose) const
+{
+  auto res = xbt::string_printf("%ld: TestComm(from %ld to %ld, mbox=%u", aid_, sender_, receiver_, mbox_);
+  if (verbose) {
+    res += ", src_buff=" + xbt::string_printf("%p", src_buff_) + ", size=" + std::to_string(size_);
+    res += ", dst_buff=" + xbt::string_printf("%p", dst_buff_);
+  }
+  res += ")";
+  return res;
+}
+bool CommTestTransition::depends(const Transition* other) const
+{
+  if (aid_ == other->aid_)
+    return false;
+
+  if (dynamic_cast<const RandomTransition*>(other) != nullptr)
+    return false; // Test & Random are independent (Random is independent with anything)
+
+  if (auto* recv = dynamic_cast<const CommRecvTransition*>(other))
+    return recv->depends(this); // Recv < Test (alphabetical ordering)
+
+  if (auto* send = dynamic_cast<const CommSendTransition*>(other))
+    return send->depends(this); // Send < Test (alphabetical ordering)
+
+  if (dynamic_cast<const CommTestTransition*>(other) != nullptr)
+    return false; // Test & Test are independent
+
+  if (const auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
+    if (wait->timeout_)
+      return true; // Timeouts are not considered by the independence theorem, thus assumed dependent
+
+    /* Wait & Test are independent */
+    return false;
+  }
+
+  return true;
+}
 
 CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, char* buffer)
-    : Transition(Type::IRECV, issuer, times_considered)
+    : Transition(Type::COMM_RECV, issuer, times_considered)
 {
   std::stringstream stream(buffer);
   stream >> mbox_ >> dst_buff_;
@@ -90,11 +137,19 @@ bool CommRecvTransition::depends(const Transition* other) const
   if (dynamic_cast<const RandomTransition*>(other) != nullptr)
     return false; // Random is indep with any transition
 
-  if (const auto* other_irecv = dynamic_cast<const CommRecvTransition*>(other))
-    return mbox_ == other_irecv->mbox_;
+  if (const auto* recv = dynamic_cast<const CommRecvTransition*>(other))
+    return mbox_ == recv->mbox_;
 
-  if (auto* isend = dynamic_cast<const CommSendTransition*>(other))
-    return isend->depends(this);
+  if (dynamic_cast<const CommSendTransition*>(other) != nullptr)
+    return false;
+
+  if (const auto* test = dynamic_cast<const CommTestTransition*>(other)) {
+    if (mbox_ != test->mbox_)
+      return false;
+
+    if ((aid_ != test->sender_) && (aid_ != test->receiver_) && (test->dst_buff_ != dst_buff_))
+      return false;
+  }
 
   if (auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
     if (wait->timeout_)
@@ -107,18 +162,11 @@ bool CommRecvTransition::depends(const Transition* other) const
       return false;
   }
 
-  /* FIXME: the following rule assumes that the result of the isend/irecv call is not stored in a buffer used in the
-   * test call. */
-#if 0
-  if (dynamic_cast<ActivityTestSimcall*>(other))
-    return false;
-#endif
-
   return true;
 }
 
 CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, char* buffer)
-    : Transition(Type::ISEND, issuer, times_considered)
+    : Transition(Type::COMM_SEND, issuer, times_considered)
 {
   std::stringstream stream(buffer);
   stream >> mbox_ >> src_buff_ >> size_;
@@ -147,6 +195,14 @@ bool CommSendTransition::depends(const Transition* other) const
   if (dynamic_cast<const CommRecvTransition*>(other) != nullptr)
     return false;
 
+  if (const auto* test = dynamic_cast<const CommTestTransition*>(other)) {
+    if (mbox_ != test->mbox_)
+      return false;
+
+    if ((aid_ != test->sender_) && (aid_ != test->receiver_) && (test->src_buff_ != src_buff_))
+      return false;
+  }
+
   if (const auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
     if (wait->timeout_)
       return true;
@@ -158,25 +214,20 @@ bool CommSendTransition::depends(const Transition* other) const
       return false;
   }
 
-  /* FIXME: the following rule assumes that the result of the isend/irecv call is not stored in a buffer used in the
-   * test call. */
-#if 0
-  if (dynamic_cast<ActivityTestSimcall*>(other))
-    return false;
-#endif
-
   return true;
 }
 
 Transition* recv_transition(aid_t issuer, int times_considered, Transition::Type simcall, char* buffer)
 {
   switch (simcall) {
+    case Transition::Type::COMM_RECV:
+      return new CommRecvTransition(issuer, times_considered, buffer);
+    case Transition::Type::COMM_SEND:
+      return new CommSendTransition(issuer, times_considered, buffer);
+    case Transition::Type::COMM_TEST:
+      return new CommTestTransition(issuer, times_considered, buffer);
     case Transition::Type::COMM_WAIT:
       return new CommWaitTransition(issuer, times_considered, buffer);
-    case Transition::Type::IRECV:
-      return new CommRecvTransition(issuer, times_considered, buffer);
-    case Transition::Type::ISEND:
-      return new CommSendTransition(issuer, times_considered, buffer);
 
     case Transition::Type::RANDOM:
       return new RandomTransition(issuer, times_considered, buffer);

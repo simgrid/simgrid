@@ -132,48 +132,6 @@ std::string ActivityTestanySimcall::to_string(int times_considered) const
 
   return res;
 }*/
-
-bool ActivityTestSimcall::depends(SimcallObserver* other)
-{
-  if (get_issuer() == other->get_issuer())
-    return false;
-
-  if (dynamic_cast<ActivityTestSimcall*>(other))
-    return true;
-
-  const auto* comm1 = dynamic_cast<activity::CommImpl*>(activity_);
-  if (comm1 == nullptr)
-    return false;
-
-  if (dynamic_cast<ActivityWaitSimcall*>(other) != nullptr &&
-      (comm1->src_actor_.get() == nullptr || comm1->dst_actor_.get() == nullptr))
-    return false;
-
-  if (comm1->src_buff_ == nullptr || comm1->dst_buff_ == nullptr)
-    return false;
-
-  if (const auto* test = dynamic_cast<ActivityTestSimcall*>(other)) {
-    const auto* comm2 = dynamic_cast<activity::CommImpl*>(test->get_activity());
-    if (comm2 == nullptr)
-      return false;
-    else if (comm2->src_buff_ == nullptr || comm2->dst_buff_ == nullptr)
-      return false;
-  }
-
-  if (auto* wait = dynamic_cast<ActivityWaitSimcall*>(other)) {
-    auto* comm2 = dynamic_cast<activity::CommImpl*>(wait->get_activity());
-    if (comm2 == nullptr)
-      return false;
-    if (comm1->src_buff_ == comm2->src_buff_ && comm1->dst_buff_ == comm2->dst_buff_)
-      return false;
-    if (comm1->src_buff_ != nullptr && comm1->dst_buff_ != nullptr && comm2->src_buff_ != nullptr &&
-        comm2->dst_buff_ != nullptr && comm1->dst_buff_ != comm2->src_buff_ && comm1->dst_buff_ != comm2->dst_buff_ &&
-        comm2->dst_buff_ != comm1->src_buff_)
-      return false;
-  }
-
-  return true;
-}
 void ActivityWaitSimcall::serialize(mc::Transition::Type& type, std::stringstream& stream)
 {
   if (auto* comm = dynamic_cast<activity::CommImpl*>(activity_)) {
@@ -187,31 +145,18 @@ void ActivityWaitSimcall::serialize(mc::Transition::Type& type, std::stringstrea
     type = mc::Transition::Type::UNKNOWN;
   }
 }
-
-/*
-std::string ActivityTestSimcall::to_string(int times_considered) const
+void ActivityTestSimcall::serialize(mc::Transition::Type& type, std::stringstream& stream)
 {
-  std::string res = SimcallObserver::to_string(times_considered) + "Test ";
-  if (const auto* comm = dynamic_cast<activity::CommImpl*>(activity_)) {
-    if (comm->src_actor_.get() == nullptr || comm->dst_actor_.get() == nullptr) {
-      res += "FALSE(comm=";
-      res += XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf("%p)", comm)
-                                                                      : "(verbose only))";
-    } else {
-      res += "TRUE(comm=";
-
-      auto src = comm->src_actor_;
-      auto dst = comm->dst_actor_;
-      res +=
-          XBT_LOG_ISENABLED(mc_observer, xbt_log_priority_verbose) ? xbt::string_printf("%p", comm) : "(verbose only) ";
-      res += xbt::string_printf("[(%ld)%s (%s) ", src->get_pid(), src->get_host()->get_cname(), src->get_cname()) +
-             "-> " +
-             xbt::string_printf("(%ld)%s (%s)])", dst->get_pid(), dst->get_host()->get_cname(), dst->get_cname());
-    }
-  } else
-    xbt_die("Only Comms are supported here for now");
-  return res;
-}*/
+  if (auto* comm = dynamic_cast<activity::CommImpl*>(activity_)) {
+    type = mc::Transition::Type::COMM_TEST;
+    stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
+    stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
+    stream << ' ' << comm->get_mailbox_id();
+    stream << ' ' << (void*)comm->src_buff_ << ' ' << (void*)comm->dst_buff_ << ' ' << comm->src_buff_size_;
+  } else {
+    type = mc::Transition::Type::UNKNOWN;
+  }
+}
 
 bool ActivityWaitSimcall::is_enabled() const
 {
@@ -263,14 +208,14 @@ void ActivityWaitanySimcall::prepare(int times_considered)
 
 void CommIsendSimcall::serialize(mc::Transition::Type& type, std::stringstream& stream)
 {
-  type = mc::Transition::Type::ISEND;
+  type = mc::Transition::Type::COMM_SEND;
   stream << mbox_->get_id() << ' ' << (void*)src_buff_ << ' ' << src_buff_size_;
   XBT_DEBUG("SendObserver mbox:%u buff:%p size:%zu", mbox_->get_id(), src_buff_, src_buff_size_);
 }
 
 void CommIrecvSimcall::serialize(mc::Transition::Type& type, std::stringstream& stream)
 {
-  type = mc::Transition::Type::IRECV;
+  type = mc::Transition::Type::COMM_RECV;
   stream << mbox_->get_id() << dst_buff_;
 }
 

@@ -31,7 +31,7 @@ class Transition {
   friend State; // FIXME remove this once we have a proper class to handle the statistics
 
 public:
-  XBT_DECLARE_ENUM_CLASS(Type, UNKNOWN, RANDOM, ISEND, IRECV, COMM_WAIT, COMM_TEST);
+  XBT_DECLARE_ENUM_CLASS(Type, UNKNOWN, RANDOM, COMM_RECV, COMM_SEND, COMM_TEST, COMM_WAIT);
   Type type_ = Type::UNKNOWN;
 
   aid_t aid_ = 0;

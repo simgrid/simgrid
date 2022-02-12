@@ -157,8 +157,8 @@ public:
   {
   }
   bool is_visible() const override { return true; }
-  bool depends(SimcallObserver* other) override;
   activity::ActivityImpl* get_activity() const { return activity_; }
+  void serialize(mc::Transition::Type& type, std::stringstream& stream) override;
 };
 
 class ActivityTestanySimcall : public ResultingSimcall<ssize_t> {
