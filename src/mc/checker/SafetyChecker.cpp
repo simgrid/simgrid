@@ -66,7 +66,7 @@ std::vector<std::string> SafetyChecker::get_textual_trace() // override
 
 void SafetyChecker::log_state() // override
 {
-  XBT_INFO("%ld unique states visited; %ld backtracks (%ld transition replays, %ld states visited overall)",
+  XBT_INFO("%ld unique states visited; %ld backtracks (%lu transition replays, %lu states visited overall)",
            State::get_expanded_states(), backtrack_count_, api::get().mc_get_visited_states(),
            Transition::get_replayed_transitions());
 }
