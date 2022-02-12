@@ -106,9 +106,9 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
   if (actor->simcall_.observer_ != nullptr) {
     std::stringstream stream;
     actor->simcall_.observer_->serialize(answer.simcall, stream);
-    xbt_assert(stream.str().size() < sizeof(answer.buffer),
+    xbt_assert(stream.str().size() < sizeof(answer.buffer) - 1,
                "The serialized simcall is too large for the buffer. Please fix the code.");
-    strncpy(answer.buffer, stream.str().c_str(), SIMCALL_SERIALIZATION_BUFFER_SIZE);
+    strncpy(answer.buffer, stream.str().c_str(), sizeof(answer.buffer) - 1);
   } else {
     answer.simcall = mc::Transition::Type::UNKNOWN;
   }
