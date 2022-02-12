@@ -108,34 +108,45 @@ bool SemAcquireSimcall::is_enabled() const
   return true;
 }
 
+ActivityTestanySimcall::ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities)
+    : ResultingSimcall(actor, -1), activities_(activities)
+{
+  // list all the activities that are ready
+  for (unsigned i = 0; i < activities_.size(); i++)
+    if (activities_[i]->test(get_issuer()))
+      indexes_.push_back(i);
+}
+
 int ActivityTestanySimcall::get_max_consider() const
 {
-  // Only Comms are of interest to MC for now. When all types of activities can be consider, this function can simply
-  // return the size of activities_.
-  int count = 0;
-  for (const auto& act : activities_)
-    if (dynamic_cast<activity::CommImpl*>(act) != nullptr)
-      count++;
-  return count;
+  return indexes_.size() + 1;
 }
 
 void ActivityTestanySimcall::prepare(int times_considered)
 {
-  next_value_ = times_considered;
+  if (times_considered < static_cast<int>(indexes_.size()))
+    next_value_ = indexes_.at(times_considered);
+  else
+    next_value_ = -1;
 }
-
-/*
-std::string ActivityTestanySimcall::to_string(int times_considered) const
+static void serialize_activity(const activity::ActivityImpl* act, std::stringstream& stream)
 {
-  std::string res = SimcallObserver::to_string(times_considered);
-  if (times_considered == -1) {
-    res += "TestAny FALSE(-)";
+  if (auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
+    stream << (short)mc::Transition::Type::COMM_TEST << ' ';
+    stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
+    stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
+    stream << ' ' << comm->get_mailbox_id();
+    stream << ' ' << (void*)comm->src_buff_ << ' ' << (void*)comm->dst_buff_ << ' ' << comm->src_buff_size_;
   } else {
-    res += "TestAny(" + xbt::string_printf("(%d of %zu)", times_considered + 1, activities_.size());
+    stream << (short)mc::Transition::Type::UNKNOWN;
   }
-
-  return res;
-}*/
+}
+void ActivityTestanySimcall::serialize(std::stringstream& stream) const
+{
+  stream << (short)mc::Transition::Type::TESTANY << ' ' << activities_.size() << ' ';
+  for (auto const& act : activities_)
+    serialize_activity(act, stream);
+}
 void ActivityWaitSimcall::serialize(std::stringstream& stream) const
 {
   if (auto* comm = dynamic_cast<activity::CommImpl*>(activity_)) {
@@ -151,15 +162,7 @@ void ActivityWaitSimcall::serialize(std::stringstream& stream) const
 }
 void ActivityTestSimcall::serialize(std::stringstream& stream) const
 {
-  if (auto* comm = dynamic_cast<activity::CommImpl*>(activity_)) {
-    stream << (short)mc::Transition::Type::COMM_TEST << ' ';
-    stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
-    stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
-    stream << ' ' << comm->get_mailbox_id();
-    stream << ' ' << (void*)comm->src_buff_ << ' ' << (void*)comm->dst_buff_ << ' ' << comm->src_buff_size_;
-  } else {
-    stream << (short)mc::Transition::Type::UNKNOWN;
-  }
+  serialize_activity(activity_, stream);
 }
 
 bool ActivityWaitSimcall::is_enabled() const

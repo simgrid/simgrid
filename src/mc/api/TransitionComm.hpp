@@ -76,8 +76,17 @@ public:
   bool depends(const Transition* other) const override;
 };
 
+class TestAnyTransition : public Transition {
+  std::vector<Transition*> transitions_;
+
+public:
+  TestAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream);
+  std::string to_string(bool verbose) const override;
+  bool depends(const Transition* other) const override;
+};
+
 /** Make a new transition from serialized description */
-Transition* recv_transition(aid_t issuer, int times_considered, char* buffer);
+Transition* recv_transition(aid_t issuer, int times_considered, std::stringstream& stream);
 
 } // namespace mc
 } // namespace simgrid

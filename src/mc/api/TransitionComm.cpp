@@ -176,6 +176,28 @@ std::string CommSendTransition::to_string(bool verbose = false) const
   res += ")";
   return res;
 }
+TestAnyTransition::TestAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+{
+  int size;
+  stream >> size;
+  for (int i = 0; i < size; i++) {
+
+    Transition* t = recv_transition(issuer, 0, stream);
+    transitions_.push_back(t);
+  }
+}
+std::string TestAnyTransition::to_string(bool verbose) const
+{
+  auto res = xbt::string_printf("%ld: TestAny{ ", aid_);
+  for (auto const* t : transitions_)
+    res += t->to_string(verbose);
+  res += "}";
+  return res;
+}
+bool TestAnyTransition::depends(const Transition* other) const
+{
+  return true;
+}
 
 bool CommSendTransition::depends(const Transition* other) const
 {
@@ -213,9 +235,8 @@ bool CommSendTransition::depends(const Transition* other) const
   return true;
 }
 
-Transition* recv_transition(aid_t issuer, int times_considered, char* buffer)
+Transition* recv_transition(aid_t issuer, int times_considered, std::stringstream& stream)
 {
-  std::stringstream stream(buffer);
   short type;
   stream >> type;
   Transition::Type simcall = static_cast<Transition::Type>(type);
@@ -229,6 +250,9 @@ Transition* recv_transition(aid_t issuer, int times_considered, char* buffer)
       return new CommTestTransition(issuer, times_considered, stream);
     case Transition::Type::COMM_WAIT:
       return new CommWaitTransition(issuer, times_considered, stream);
+
+    case Transition::Type::TESTANY:
+      return new TestAnyTransition(issuer, times_considered, stream);
 
     case Transition::Type::RANDOM:
       return new RandomTransition(issuer, times_considered, stream);

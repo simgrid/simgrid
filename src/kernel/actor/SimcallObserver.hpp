@@ -160,14 +160,14 @@ public:
 
 class ActivityTestanySimcall : public ResultingSimcall<ssize_t> {
   const std::vector<activity::ActivityImpl*>& activities_;
+  std::vector<int> indexes_; // indexes in activities_ pointing to ready activities (=whose test() is positive)
   int next_value_ = 0;
 
 public:
-  ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities)
-      : ResultingSimcall(actor, -1), activities_(activities)
-  {
-  }
+  ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities);
   bool is_visible() const override { return true; }
+  bool is_enabled() const override { return true; /* can return -1 if no activity is ready */ }
+  void serialize(std::stringstream& stream) const override;
   int get_max_consider() const override;
   void prepare(int times_considered) override;
   const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }

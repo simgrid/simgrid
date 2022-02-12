@@ -331,9 +331,10 @@ Transition* ModelChecker::handle_simcall(aid_t aid, int times_considered, bool n
   if (this->remote_process_->running())
     checker_side_.dispatch(); // The app may send messages while processing the transition
 
-  if (new_transition)
-    return recv_transition(aid, times_considered, answer.buffer);
-  else
+  if (new_transition) {
+    std::stringstream stream(answer.buffer);
+    return recv_transition(aid, times_considered, stream);
+  } else
     return nullptr;
 }
 bool ModelChecker::simcall_is_visible(aid_t aid)

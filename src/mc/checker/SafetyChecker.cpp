@@ -123,7 +123,7 @@ void SafetyChecker::run()
       continue;
     }
 
-    /* Actually answer the request: let execute the selected request (MCed does one step) */
+    /* Actually answer the request: let's execute the selected request (MCed does one step) */
     state->execute_next(next);
 
     // If there are processes to interleave and the maximum depth has not been
@@ -135,7 +135,7 @@ void SafetyChecker::run()
       req_str = api::get().request_get_dot_output(state->get_transition());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    auto next_state              = std::make_unique<State>();
+    auto next_state = std::make_unique<State>();
 
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
