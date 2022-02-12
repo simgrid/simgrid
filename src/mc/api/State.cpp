@@ -66,7 +66,7 @@ void State::execute_next(int next)
 {
   std::vector<ActorInformation>& actors = mc_model_checker->get_remote_process().actors();
 
-  kernel::actor::ActorImpl* actor = actors[next].copy.get_buffer();
+  const kernel::actor::ActorImpl* actor = actors[next].copy.get_buffer();
   aid_t aid                       = actor->get_pid();
   int times_considered;
 

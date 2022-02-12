@@ -21,16 +21,16 @@ namespace mc {
 unsigned long Transition::executed_transitions_ = 0;
 unsigned long Transition::replayed_transitions_ = 0;
 
-Transition::~Transition() {
-} // Make sure that we have a vtable for Transition by putting this virtual function out of the header
+// Do not move this to the header, to ensure that we have a vtable for Transition
+Transition::~Transition() = default;
 
-std::string Transition::to_string(bool verbose)
+std::string Transition::to_string(bool)
 {
   return textual_;
 }
 const char* Transition::to_cstring(bool verbose)
 {
-  to_string();
+  to_string(verbose);
   return textual_.c_str();
 }
 void Transition::replay() const

@@ -116,7 +116,7 @@ public:
 
   // SNAPSHOT APIs
   bool snapshot_equal(const Snapshot* s1, const Snapshot* s2) const;
-  simgrid::mc::Snapshot* take_snapshot(int num_state) const;
+  simgrid::mc::Snapshot* take_snapshot(long num_state) const;
 
   // SESSION APIs
   void s_close() const;

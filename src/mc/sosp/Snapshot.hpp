@@ -60,7 +60,7 @@ namespace mc {
 class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
   /* Initialization */
-  Snapshot(int num_state, RemoteProcess* process = &mc_model_checker->get_remote_process());
+  Snapshot(long num_state, RemoteProcess* process = &mc_model_checker->get_remote_process());
 
   /* Regular use */
   bool on_heap(const void* address) const
@@ -76,7 +76,7 @@ public:
   void restore(RemoteProcess* process) const;
 
   // To be private
-  int num_state_;
+  long num_state_;
   std::size_t heap_bytes_used_ = 0;
   std::vector<std::unique_ptr<Region>> snapshot_regions_;
   std::set<pid_t> enabled_processes_;

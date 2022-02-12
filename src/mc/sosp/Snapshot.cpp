@@ -194,9 +194,9 @@ static void snapshot_ignore_restore(const simgrid::mc::Snapshot* snapshot)
                                                 remote(ignored_data.start));
 }
 
-Snapshot::Snapshot(int num_state, RemoteProcess* process) : AddressSpace(process), num_state_(num_state)
+Snapshot::Snapshot(long num_state, RemoteProcess* process) : AddressSpace(process), num_state_(num_state)
 {
-  XBT_DEBUG("Taking snapshot %i", num_state);
+  XBT_DEBUG("Taking snapshot %ld", num_state);
 
   for (auto const& p : process->actors())
     enabled_processes_.insert(p.copy.get_buffer()->get_pid());
@@ -271,7 +271,7 @@ Region* Snapshot::get_region(const void* addr, Region* hinted_region) const
 
 void Snapshot::restore(RemoteProcess* process) const
 {
-  XBT_DEBUG("Restore snapshot %i", num_state_);
+  XBT_DEBUG("Restore snapshot %ld", num_state_);
 
   // Restore regions
   for (std::unique_ptr<Region> const& region : snapshot_regions_) {
