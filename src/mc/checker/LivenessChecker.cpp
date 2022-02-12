@@ -123,7 +123,7 @@ void LivenessChecker::replay()
 
     if (pair->exploration_started) {
       state->get_transition()->replay();
-      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, state->get_transition()->to_cstring(), state.get());
+      XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, state->get_transition()->to_string().c_str(), state.get());
     }
 
     /* Update statistics */
@@ -333,13 +333,8 @@ void LivenessChecker::run()
       }
     }
 
-    int next = current_pair->graph_state->next_transition();
-
-    current_pair->graph_state->execute_next(next);
-
-    aid_t aid   = current_pair->graph_state->get_transition()->aid_;
-    int req_num = current_pair->graph_state->get_transition()->times_considered_;
-    XBT_DEBUG("Execute: %s", current_pair->graph_state->get_transition()->to_cstring());
+    current_pair->graph_state->execute_next(current_pair->graph_state->next_transition());
+    XBT_DEBUG("Execute: %s", current_pair->graph_state->get_transition()->to_string().c_str());
 
     if (dot_output != nullptr) {
       if (this->previous_pair_ != 0 && this->previous_pair_ != current_pair->num) {
@@ -348,7 +343,7 @@ void LivenessChecker::run()
         this->previous_request_.clear();
       }
       this->previous_pair_    = current_pair->num;
-      this->previous_request_ = api::get().request_get_dot_output(aid, req_num);
+      this->previous_request_ = api::get().request_get_dot_output(current_pair->graph_state->get_transition());
       if (current_pair->search_cycle)
         fprintf(dot_output, "%d [shape=doublecircle];\n", current_pair->num);
       fflush(dot_output);

@@ -65,7 +65,7 @@ simgrid::mc::RecordTrace::RecordTrace(const char* data)
 
     if(count != 2 && count != 1)
       throw std::invalid_argument("Could not parse record path");
-    push_back(new simgrid::mc::Transition(aid, times_considered));
+    push_back(new simgrid::mc::Transition(simgrid::mc::Transition::Type::UNKNOWN, aid, times_considered));
 
     // Find next chunk:
     const char* end = std::strchr(current, ';');

@@ -7,8 +7,8 @@
 #define SIMGRID_MC_SIMCALL_OBSERVER_HPP
 
 #include "simgrid/forward.h"
+#include "src/mc/api/Transition.hpp"
 #include "xbt/asserts.h"
-#include "xbt/utility.hpp"
 
 #include <string>
 
@@ -20,8 +20,6 @@ class SimcallObserver {
   ActorImpl* const issuer_;
 
 public:
-  XBT_DECLARE_ENUM_CLASS(Simcall, UNKNOWN, RANDOM, ISEND, IRECV, COMM_WAIT, COMM_TEST);
-
   explicit SimcallObserver(ActorImpl* issuer) : issuer_(issuer) {}
   ActorImpl* get_issuer() const { return issuer_; }
   /** Whether this transition can currently be taken without blocking.
@@ -56,12 +54,14 @@ public:
   virtual bool depends(SimcallObserver* other);
 
   /** Serialize to the given string buffer */
-  virtual void serialize(Simcall& type, std::stringstream& stream) { type = Simcall::UNKNOWN; }
+  virtual void serialize(mc::Transition::Type& type, std::stringstream& stream)
+  {
+    type = mc::Transition::Type::UNKNOWN;
+  }
 
   /** Some simcalls may only be observable under some conditions.
    * Most simcalls are not visible from the MC because they don't have an observer at all. */
   virtual bool is_visible() const { return true; }
-  virtual std::string dot_label(int times_considered) const = 0;
 };
 
 template <class T> class ResultingSimcall : public SimcallObserver {
@@ -84,10 +84,9 @@ public:
   {
     xbt_assert(min < max);
   }
-  void serialize(Simcall& type, std::stringstream& stream) override;
+  void serialize(mc::Transition::Type& type, std::stringstream& stream) override;
   int get_max_consider() const override;
   void prepare(int times_considered) override;
-  std::string dot_label(int times_considered) const override;
   int get_value() const { return next_value_; }
   bool depends(SimcallObserver* other) override;
 };
@@ -103,9 +102,6 @@ public:
 
 class MutexUnlockSimcall : public MutexSimcall {
   using MutexSimcall::MutexSimcall;
-
-public:
-  std::string dot_label(int times_considered) const override;
 };
 
 class MutexLockSimcall : public MutexSimcall {
@@ -117,7 +113,6 @@ public:
   {
   }
   bool is_enabled() const override;
-  std::string dot_label(int times_considered) const override;
 };
 
 class ConditionWaitSimcall : public ResultingSimcall<bool> {
@@ -133,7 +128,6 @@ public:
   }
   bool is_enabled() const override;
   bool is_visible() const override { return false; }
-  std::string dot_label(int times_considered) const override;
   activity::ConditionVariableImpl* get_cond() const { return cond_; }
   activity::MutexImpl* get_mutex() const { return mutex_; }
   double get_timeout() const { return timeout_; }
@@ -150,7 +144,6 @@ public:
   }
   bool is_enabled() const override;
   bool is_visible() const override { return false; }
-  std::string dot_label(int times_considered) const override;
   activity::SemaphoreImpl* get_sem() const { return sem_; }
   double get_timeout() const { return timeout_; }
 };
@@ -165,7 +158,6 @@ public:
   }
   bool is_visible() const override { return true; }
   bool depends(SimcallObserver* other) override;
-  std::string dot_label(int times_considered) const override;
   activity::ActivityImpl* get_activity() const { return activity_; }
 };
 
@@ -181,7 +173,6 @@ public:
   bool is_visible() const override { return true; }
   int get_max_consider() const override;
   void prepare(int times_considered) override;
-  std::string dot_label(int times_considered) const override;
   const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }
   int get_value() const { return next_value_; }
 };
@@ -195,10 +186,9 @@ public:
       : ResultingSimcall(actor, false), activity_(activity), timeout_(timeout)
   {
   }
-  void serialize(Simcall& type, std::stringstream& stream) override;
+  void serialize(mc::Transition::Type& type, std::stringstream& stream) override;
   bool is_visible() const override { return true; }
   bool is_enabled() const override;
-  std::string dot_label(int times_considered) const override;
   activity::ActivityImpl* get_activity() const { return activity_; }
   void set_activity(activity::ActivityImpl* activity) { activity_ = activity; }
   double get_timeout() const { return timeout_; }
@@ -218,7 +208,6 @@ public:
   bool is_visible() const override { return true; }
   void prepare(int times_considered) override;
   int get_max_consider() const override;
-  std::string dot_label(int times_considered) const override;
   const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }
   double get_timeout() const { return timeout_; }
   int get_value() const { return next_value_; }
@@ -256,12 +245,8 @@ public:
       , copy_data_fun_(copy_data_fun)
   {
   }
-  void serialize(Simcall& type, std::stringstream& stream) override;
+  void serialize(mc::Transition::Type& type, std::stringstream& stream) override;
   bool is_visible() const override { return true; }
-  std::string dot_label(int times_considered) const override
-  {
-    return SimcallObserver::dot_label(times_considered) + "iSend";
-  }
   activity::MailboxImpl* get_mailbox() const { return mbox_; }
   double get_payload_size() const { return payload_size_; }
   double get_rate() const { return rate_; }
@@ -295,12 +280,8 @@ public:
       , copy_data_fun_(copy_data_fun)
   {
   }
-  void serialize(Simcall& type, std::stringstream& stream) override;
+  void serialize(mc::Transition::Type& type, std::stringstream& stream) override;
   bool is_visible() const override { return true; }
-  std::string dot_label(int times_considered) const override
-  {
-    return SimcallObserver::dot_label(times_considered) + "iRecv";
-  }
   activity::MailboxImpl* get_mailbox() const { return mbox_; }
   double get_rate() const { return rate_; }
   unsigned char* get_dst_buff() const { return dst_buff_; }

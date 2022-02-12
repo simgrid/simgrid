@@ -351,11 +351,10 @@ void Api::mc_exit(int status) const
   mc_model_checker->exit(status);
 }
 
-std::string Api::request_get_dot_output(aid_t aid, int value) const
+std::string Api::request_get_dot_output(const Transition* t) const
 {
-  const char* color = get_color(aid - 1);
-  return "label = \"" + mc_model_checker->simcall_dot_label(aid, value) + "\", color = " + color +
-         ", fontcolor = " + color;
+  const char* color = get_color(t->aid_ - 1);
+  return "label = \"" + t->dot_label() + "\", color = " + color + ", fontcolor = " + color;
 }
 
 #if HAVE_SMPI

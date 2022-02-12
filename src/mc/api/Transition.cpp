@@ -24,14 +24,13 @@ unsigned long Transition::replayed_transitions_ = 0;
 // Do not move this to the header, to ensure that we have a vtable for Transition
 Transition::~Transition() = default;
 
-std::string Transition::to_string(bool)
+std::string Transition::to_string(bool) const
 {
-  return textual_;
+  return "";
 }
-const char* Transition::to_cstring(bool verbose)
+std::string Transition::dot_label() const
 {
-  to_string(verbose);
-  return textual_.c_str();
+  return xbt::string_printf("[(%ld)] %s", aid_, Transition::to_c_str(type_));
 }
 void Transition::replay() const
 {
@@ -42,16 +41,20 @@ void Transition::replay() const
   mc_model_checker->wait_for_requests();
 #endif
 }
-std::string RandomTransition::to_string(bool verbose)
+std::string RandomTransition::to_string(bool verbose) const
 {
   return xbt::string_printf("Random([%d;%d] ~> %d)", min_, max_, times_considered_);
 }
 
 RandomTransition::RandomTransition(aid_t issuer, int times_considered, char* buffer)
-    : Transition(issuer, times_considered)
+    : Transition(Type::RANDOM, issuer, times_considered)
 {
   std::stringstream stream(buffer);
   stream >> min_ >> max_;
+}
+std::string RandomTransition::dot_label() const
+{
+  return Transition::dot_label() + to_c_str(type_);
 }
 
 } // namespace mc

@@ -28,9 +28,9 @@ bool RandomSimcall::depends(SimcallObserver* other)
 {
   return get_issuer() == other->get_issuer();
 }
-void RandomSimcall::serialize(Simcall& type, std::stringstream& stream)
+void RandomSimcall::serialize(mc::Transition::Type& type, std::stringstream& stream)
 {
-  type = Simcall::RANDOM;
+  type = mc::Transition::Type::RANDOM;
   stream << min_ << ' ' << max_;
 }
 
@@ -57,25 +57,6 @@ bool MutexSimcall::depends(SimcallObserver* other)
   return true; // Depend on things we don't know for sure that they are independent
 }
 
-/*
-std::string SimcallObserver::to_string(int) const
-{
-  return simgrid::xbt::string_printf("[(%ld)%s (%s)] ", issuer_->get_pid(), issuer_->get_host()->get_cname(),
-                                     issuer_->get_cname());
-}*/
-
-std::string SimcallObserver::dot_label(int /*times_considered*/) const
-{
-  if (issuer_->get_host())
-    return xbt::string_printf("[(%ld)%s] ", issuer_->get_pid(), issuer_->get_host()->get_cname());
-  return xbt::string_printf("[(%ld)] ", issuer_->get_pid());
-}
-
-std::string RandomSimcall::dot_label(int times_considered) const
-{
-  return SimcallObserver::dot_label(times_considered) + "MC_RANDOM(" + std::to_string(next_value_) + ")";
-}
-
 void RandomSimcall::prepare(int times_considered)
 {
   next_value_ = min_ + times_considered;
@@ -85,11 +66,6 @@ void RandomSimcall::prepare(int times_considered)
 int RandomSimcall::get_max_consider() const
 {
   return max_ - min_ + 1;
-}
-
-std::string MutexUnlockSimcall::dot_label(int times_considered) const
-{
-  return SimcallObserver::dot_label(times_considered) + "Mutex UNLOCK";
 }
 
 /*
@@ -103,19 +79,9 @@ std::string MutexLockSimcall::to_string(int times_considered) const
   return res;
 }*/
 
-std::string MutexLockSimcall::dot_label(int times_considered) const
-{
-  return SimcallObserver::dot_label(times_considered) + (blocking_ ? "Mutex LOCK" : "Mutex TRYLOCK");
-}
-
 bool MutexLockSimcall::is_enabled() const
 {
   return not blocking_ || get_mutex()->get_owner() == nullptr || get_mutex()->get_owner() == get_issuer();
-}
-
-std::string ConditionWaitSimcall::dot_label(int times_considered) const
-{
-  return SimcallObserver::dot_label(times_considered) + "Condition WAIT";
 }
 
 bool ConditionWaitSimcall::is_enabled() const
@@ -126,11 +92,6 @@ bool ConditionWaitSimcall::is_enabled() const
     warned = true;
   }
   return true;
-}
-
-std::string SemAcquireSimcall::dot_label(int times_considered) const
-{
-  return SimcallObserver::dot_label(times_considered) + "Sem ACQUIRE";
 }
 
 bool SemAcquireSimcall::is_enabled() const
@@ -171,17 +132,6 @@ std::string ActivityTestanySimcall::to_string(int times_considered) const
 
   return res;
 }*/
-
-std::string ActivityTestanySimcall::dot_label(int times_considered) const
-{
-  std::string res = SimcallObserver::dot_label(times_considered) + "TestAny ";
-  if (times_considered == -1) {
-    res += "FALSE";
-  } else {
-    res += xbt::string_printf("TRUE [%d of %zu]", times_considered + 1, activities_.size());
-  }
-  return res;
-}
 
 bool ActivityTestSimcall::depends(SimcallObserver* other)
 {
@@ -224,17 +174,17 @@ bool ActivityTestSimcall::depends(SimcallObserver* other)
 
   return true;
 }
-void ActivityWaitSimcall::serialize(Simcall& type, std::stringstream& stream)
+void ActivityWaitSimcall::serialize(mc::Transition::Type& type, std::stringstream& stream)
 {
   if (auto* comm = dynamic_cast<activity::CommImpl*>(activity_)) {
-    type = Simcall::COMM_WAIT;
+    type = mc::Transition::Type::COMM_WAIT;
     stream << (timeout_ > 0) << ' ' << comm;
     stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
     stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
     stream << ' ' << comm->get_mailbox_id();
     stream << ' ' << (void*)comm->src_buff_ << ' ' << (void*)comm->dst_buff_ << ' ' << comm->src_buff_size_;
   } else {
-    type = Simcall::UNKNOWN;
+    type = mc::Transition::Type::UNKNOWN;
   }
 }
 
@@ -263,18 +213,6 @@ std::string ActivityTestSimcall::to_string(int times_considered) const
   return res;
 }*/
 
-std::string ActivityTestSimcall::dot_label(int times_considered) const
-{
-  std::string res  = SimcallObserver::dot_label(times_considered) + "Test ";
-  const auto* comm = dynamic_cast<activity::CommImpl*>(activity_);
-  if (comm && (comm->src_actor_.get() == nullptr || comm->dst_actor_.get() == nullptr)) {
-    res += "FALSE";
-  } else {
-    res += "TRUE";
-  }
-  return res;
-}
-
 bool ActivityWaitSimcall::is_enabled() const
 {
   /* FIXME: check also that src and dst processes are not suspended */
@@ -292,28 +230,6 @@ bool ActivityWaitSimcall::is_enabled() const
   else if (comm->detached() && comm->src_actor_ == nullptr && comm->get_state() == activity::State::READY)
     return (comm->dst_actor_ != nullptr);
   return (comm->src_actor_ && comm->dst_actor_);
-}
-
-std::string ActivityWaitSimcall::dot_label(int times_considered) const
-{
-  std::string res = SimcallObserver::dot_label(times_considered);
-  res += (times_considered == -1) ? "WaitTimeout " : "Wait ";
-
-  const auto* comm = dynamic_cast<activity::CommImpl*>(activity_);
-  if (comm) {
-    auto src = comm->src_actor_;
-    auto dst = comm->dst_actor_;
-    res += " [(" + std::to_string(src ? src->get_pid() : 0) + ")";
-    res += "->(" + std::to_string(dst ? dst->get_pid() : 0) + ")]";
-  } else
-    xbt_die("Only Comms are supported here for now");
-  return res;
-}
-
-std::string ActivityWaitanySimcall::dot_label(int times_considered) const
-{
-  return SimcallObserver::dot_label(times_considered) +
-         xbt::string_printf("WaitAny [%d of %zu]", times_considered + 1, activities_.size());
 }
 
 bool ActivityWaitanySimcall::is_enabled() const
@@ -345,16 +261,16 @@ void ActivityWaitanySimcall::prepare(int times_considered)
   next_value_ = times_considered;
 }
 
-void CommIsendSimcall::serialize(Simcall& type, std::stringstream& stream)
+void CommIsendSimcall::serialize(mc::Transition::Type& type, std::stringstream& stream)
 {
-  type = Simcall::ISEND;
+  type = mc::Transition::Type::ISEND;
   stream << mbox_->get_id() << ' ' << (void*)src_buff_ << ' ' << src_buff_size_;
   XBT_DEBUG("SendObserver mbox:%u buff:%p size:%zu", mbox_->get_id(), src_buff_, src_buff_size_);
 }
 
-void CommIrecvSimcall::serialize(Simcall& type, std::stringstream& stream)
+void CommIrecvSimcall::serialize(mc::Transition::Type& type, std::stringstream& stream)
 {
-  type = Simcall::IRECV;
+  type = mc::Transition::Type::IRECV;
   stream << mbox_->get_id() << dst_buff_;
 }
 

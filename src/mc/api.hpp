@@ -101,7 +101,7 @@ public:
   XBT_ATTRIB_NORETURN void mc_exit(int status) const;
 
   // SIMCALL APIs
-  std::string request_get_dot_output(aid_t aid, int value) const;
+  std::string request_get_dot_output(const Transition* t) const;
   smx_actor_t simcall_get_issuer(s_smx_simcall const* req) const;
   RemotePtr<kernel::activity::MailboxImpl> get_mbox_remote_addr(smx_simcall_t const req) const;
   RemotePtr<kernel::activity::ActivityImpl> get_comm_remote_addr(smx_simcall_t const req) const;

@@ -110,11 +110,11 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
                "The serialized simcall is too large for the buffer. Please fix the code.");
     strncpy(answer.buffer, stream.str().c_str(), SIMCALL_SERIALIZATION_BUFFER_SIZE);
   } else {
-    answer.simcall = kernel::actor::SimcallObserver::Simcall::UNKNOWN;
+    answer.simcall = mc::Transition::Type::UNKNOWN;
   }
 
-  XBT_DEBUG("send SIMCALL_EXECUTE_ANSWER(%s) ~> %s '%s'", actor->get_cname(),
-            simgrid::kernel::actor::SimcallObserver::to_c_str(answer.simcall), answer.buffer);
+  XBT_DEBUG("send SIMCALL_EXECUTE_ANSWER(%s) ~> %s '%s'", actor->get_cname(), mc::Transition::to_c_str(answer.simcall),
+            answer.buffer);
   xbt_assert(channel_.send(answer) == 0, "Could not send response");
 
   // The client may send some messages to the server while processing the transition
@@ -172,24 +172,6 @@ void AppSide::handle_messages() const
 
         // Send result:
         s_mc_message_simcall_is_visible_answer_t answer{MessageType::SIMCALL_IS_VISIBLE_ANSWER, value};
-        xbt_assert(channel_.send(answer) == 0, "Could not send response");
-        break;
-      }
-
-      case MessageType::SIMCALL_DOT_LABEL: {
-        assert_msg_size("SIMCALL_DOT_LABEL", s_mc_message_simcall_to_string_t);
-        auto msg_simcall                      = (s_mc_message_simcall_to_string_t*)message_buffer.data();
-        const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(msg_simcall->aid);
-        xbt_assert(actor != nullptr, "Invalid pid %ld", msg_simcall->aid);
-        std::string value = "";
-        if (actor->simcall_.observer_ != nullptr)
-          value = actor->simcall_.observer_->dot_label(msg_simcall->time_considered);
-        else
-          value = "UNIMPLEMENTED";
-
-        // Send result:
-        s_mc_message_simcall_to_string_answer_t answer{MessageType::SIMCALL_DOT_LABEL_ANSWER, {0}};
-        value.copy(answer.value, (sizeof answer.value) - 1); // last byte was set to '\0' by initialization above
         xbt_assert(channel_.send(answer) == 0, "Could not send response");
         break;
       }

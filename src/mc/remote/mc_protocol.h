@@ -32,8 +32,8 @@ namespace mc {
 
 XBT_DECLARE_ENUM_CLASS(MessageType, NONE, INITIAL_ADDRESSES, CONTINUE, IGNORE_HEAP, UNIGNORE_HEAP, IGNORE_MEMORY,
                        STACK_REGION, REGISTER_SYMBOL, DEADLOCK_CHECK, DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_EXECUTE,
-                       SIMCALL_EXECUTE_ANSWER, SIMCALL_IS_VISIBLE, SIMCALL_IS_VISIBLE_ANSWER, SIMCALL_DOT_LABEL,
-                       SIMCALL_DOT_LABEL_ANSWER, ASSERTION_FAILED, ACTOR_ENABLED, ACTOR_ENABLED_REPLY, FINALIZE);
+                       SIMCALL_EXECUTE_ANSWER, SIMCALL_IS_VISIBLE, SIMCALL_IS_VISIBLE_ANSWER, ASSERTION_FAILED,
+                       ACTOR_ENABLED, ACTOR_ENABLED_REPLY, FINALIZE);
 
 #define SIMCALL_SERIALIZATION_BUFFER_SIZE 2048
 
@@ -105,7 +105,7 @@ struct s_mc_message_simcall_execute_t {
 };
 struct s_mc_message_simcall_execute_answer_t {
   simgrid::mc::MessageType type;
-  simgrid::kernel::actor::SimcallObserver::Simcall simcall;
+  simgrid::mc::Transition::Type simcall;
   char buffer[SIMCALL_SERIALIZATION_BUFFER_SIZE];
 };
 
@@ -127,16 +127,6 @@ struct s_mc_message_simcall_is_visible_t { // MessageType::SIMCALL_IS_VISIBLE
 struct s_mc_message_simcall_is_visible_answer_t { // MessageType::SIMCALL_IS_VISIBLE_ANSWER
   simgrid::mc::MessageType type;
   bool value;
-};
-
-struct s_mc_message_simcall_to_string_t { // MessageType::SIMCALL_DOT_LABEL
-  simgrid::mc::MessageType type;
-  aid_t aid;
-  int time_considered;
-};
-struct s_mc_message_simcall_to_string_answer_t { // MessageType::SIMCALL_DOT_LABEL_ANSWER
-  simgrid::mc::MessageType type;
-  char value[1024];
 };
 
 #endif // __cplusplus

@@ -8,6 +8,7 @@
 #define SIMGRID_MC_TRANSITION_HPP
 
 #include "simgrid/forward.h" // aid_t
+#include "xbt/utility.hpp"   // XBT_DECLARE_ENUM_CLASS
 
 #include <string>
 
@@ -29,10 +30,10 @@ class Transition {
 
   friend State; // FIXME remove this once we have a proper class to handle the statistics
 
-protected:
-  std::string textual_ = "";
-
 public:
+  XBT_DECLARE_ENUM_CLASS(Type, UNKNOWN, RANDOM, ISEND, IRECV, COMM_WAIT, COMM_TEST);
+  Type type_ = Type::UNKNOWN;
+
   aid_t aid_ = 0;
 
   /* Which transition was executed for this simcall
@@ -46,11 +47,14 @@ public:
   int times_considered_ = 0;
 
   Transition() = default;
+  Transition(Type type, aid_t issuer, int times_considered)
+      : type_(type), aid_(issuer), times_considered_(times_considered)
+  {
+  }
   virtual ~Transition();
-  Transition(aid_t issuer, int times_considered) : aid_(issuer), times_considered_(times_considered) {}
 
-  virtual std::string to_string(bool verbose = false);
-  const char* to_cstring(bool verbose = false);
+  virtual std::string to_string(bool verbose = false) const;
+  virtual std::string dot_label() const;
 
   /* Moves the application toward a path that was already explored, but don't change the current transition */
   void replay() const;
@@ -68,7 +72,8 @@ class RandomTransition : public Transition {
   int max_;
 
 public:
-  std::string to_string(bool verbose) override;
+  std::string to_string(bool verbose) const override;
+  std::string dot_label() const override;
   RandomTransition(aid_t issuer, int times_considered, char* buffer);
   bool depends(const Transition* other) const override { return false; } // Independent with any other transition
 };

@@ -361,30 +361,6 @@ bool ModelChecker::simcall_is_visible(aid_t aid)
   return answer.value;
 }
 
-std::string ModelChecker::simcall_dot_label(aid_t aid, int times_considered)
-{
-  xbt_assert(mc_model_checker != nullptr, "This should be called from the checker side");
-
-  s_mc_message_simcall_to_string_t m;
-  memset(&m, 0, sizeof(m));
-  m.type            = MessageType::SIMCALL_DOT_LABEL;
-  m.aid             = aid;
-  m.time_considered = times_considered;
-  checker_side_.get_channel().send(m);
-
-  s_mc_message_simcall_to_string_answer_t answer;
-  ssize_t s = checker_side_.get_channel().receive(answer);
-  xbt_assert(s != -1, "Could not receive message");
-  xbt_assert(s == sizeof(answer) && answer.type == MessageType::SIMCALL_DOT_LABEL_ANSWER,
-             "Received unexpected message %s (%i, size=%i) "
-             "expected MessageType::SIMCALL_TO_STRING_ANSWER (%i, size=%i)",
-             to_c_str(answer.type), (int)answer.type, (int)s, (int)MessageType::SIMCALL_DOT_LABEL_ANSWER,
-             (int)sizeof(answer));
-
-  XBT_DEBUG("dot_label(%ld) is returning %s", aid, answer.value);
-  return answer.value;
-}
-
 void ModelChecker::finalize_app(bool terminate_asap)
 {
   s_mc_message_int_t m;

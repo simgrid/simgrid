@@ -21,23 +21,23 @@ namespace simgrid {
 namespace mc {
 
 CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, char* buffer)
-    : Transition(issuer, times_considered)
+    : Transition(Type::COMM_WAIT, issuer, times_considered)
 {
   std::stringstream stream(buffer);
   stream >> timeout_ >> comm_ >> sender_ >> receiver_ >> mbox_ >> src_buff_ >> dst_buff_ >> size_;
   XBT_DEBUG("CommWaitTransition %s comm:%p, sender:%ld receiver:%ld mbox:%u sbuff:%p rbuff:%p size:%zu",
             (timeout_ ? "timeout" : "no-timeout"), comm_, sender_, receiver_, mbox_, src_buff_, dst_buff_, size_);
 }
-std::string CommWaitTransition::to_string(bool verbose)
+std::string CommWaitTransition::to_string(bool verbose) const
 {
-  textual_ = xbt::string_printf("%ld: WaitComm(from %ld to %ld, mbox=%u, %s", aid_, sender_, receiver_, mbox_,
+  auto res = xbt::string_printf("%ld: WaitComm(from %ld to %ld, mbox=%u, %s", aid_, sender_, receiver_, mbox_,
                                 (timeout_ ? "timeout" : "no timeout"));
   if (verbose) {
-    textual_ += ", src_buff=" + xbt::string_printf("%p", src_buff_) + ", size=" + std::to_string(size_);
-    textual_ += ", dst_buff=" + xbt::string_printf("%p", dst_buff_);
+    res += ", src_buff=" + xbt::string_printf("%p", src_buff_) + ", size=" + std::to_string(size_);
+    res += ", dst_buff=" + xbt::string_printf("%p", dst_buff_);
   }
-  textual_ += ")";
-  return textual_;
+  res += ")";
+  return res;
 }
 bool CommWaitTransition::depends(const Transition* other) const
 {
@@ -69,18 +69,18 @@ bool CommWaitTransition::depends(const Transition* other) const
 }
 
 CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, char* buffer)
-    : Transition(issuer, times_considered)
+    : Transition(Type::IRECV, issuer, times_considered)
 {
   std::stringstream stream(buffer);
   stream >> mbox_ >> dst_buff_;
 }
-std::string CommRecvTransition::to_string(bool verbose)
+std::string CommRecvTransition::to_string(bool verbose) const
 {
-  textual_ = xbt::string_printf("%ld: iRecv(mbox=%u", aid_, mbox_);
+  auto res = xbt::string_printf("%ld: iRecv(mbox=%u", aid_, mbox_);
   if (verbose)
-    textual_ += ", buff=" + xbt::string_printf("%p", dst_buff_);
-  textual_ += ")";
-  return textual_;
+    res += ", buff=" + xbt::string_printf("%p", dst_buff_);
+  res += ")";
+  return res;
 }
 bool CommRecvTransition::depends(const Transition* other) const
 {
@@ -118,20 +118,21 @@ bool CommRecvTransition::depends(const Transition* other) const
 }
 
 CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, char* buffer)
-    : Transition(issuer, times_considered)
+    : Transition(Type::ISEND, issuer, times_considered)
 {
   std::stringstream stream(buffer);
   stream >> mbox_ >> src_buff_ >> size_;
   XBT_DEBUG("SendTransition mbox:%u buff:%p size:%zu", mbox_, src_buff_, size_);
 }
-std::string CommSendTransition::to_string(bool verbose = false)
+std::string CommSendTransition::to_string(bool verbose = false) const
 {
-  textual_ = xbt::string_printf("%ld: iSend(mbox=%u", aid_, mbox_);
+  auto res = xbt::string_printf("%ld: iSend(mbox=%u", aid_, mbox_);
   if (verbose)
-    textual_ += ", buff=" + xbt::string_printf("%p", src_buff_) + ", size=" + std::to_string(size_);
-  textual_ += ")";
-  return textual_;
+    res += ", buff=" + xbt::string_printf("%p", src_buff_) + ", size=" + std::to_string(size_);
+  res += ")";
+  return res;
 }
+
 bool CommSendTransition::depends(const Transition* other) const
 {
   if (aid_ == other->aid_)
@@ -167,24 +168,23 @@ bool CommSendTransition::depends(const Transition* other) const
   return true;
 }
 
-Transition* recv_transition(aid_t issuer, int times_considered, kernel::actor::SimcallObserver::Simcall simcall,
-                            char* buffer)
+Transition* recv_transition(aid_t issuer, int times_considered, Transition::Type simcall, char* buffer)
 {
   switch (simcall) {
-    case kernel::actor::SimcallObserver::Simcall::COMM_WAIT:
+    case Transition::Type::COMM_WAIT:
       return new CommWaitTransition(issuer, times_considered, buffer);
-    case kernel::actor::SimcallObserver::Simcall::IRECV:
+    case Transition::Type::IRECV:
       return new CommRecvTransition(issuer, times_considered, buffer);
-    case kernel::actor::SimcallObserver::Simcall::ISEND:
+    case Transition::Type::ISEND:
       return new CommSendTransition(issuer, times_considered, buffer);
 
-    case kernel::actor::SimcallObserver::Simcall::RANDOM:
+    case Transition::Type::RANDOM:
       return new RandomTransition(issuer, times_considered, buffer);
 
-    case kernel::actor::SimcallObserver::Simcall::UNKNOWN:
-      return new Transition(issuer, times_considered);
+    case Transition::Type::UNKNOWN:
+      return new Transition(Transition::Type::UNKNOWN, issuer, times_considered);
     default:
-      xbt_die("recv_transition of type %s unimplemented", kernel::actor::SimcallObserver::to_c_str(simcall));
+      xbt_die("recv_transition of type %s unimplemented", Transition::to_c_str(simcall));
   }
 }
 

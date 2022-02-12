@@ -56,7 +56,6 @@ public:
 
   /* Interactions with the simcall observer */
   bool simcall_is_visible(aid_t aid);
-  std::string simcall_dot_label(aid_t aid, int times_considered);
 
   XBT_ATTRIB_NORETURN void exit(int status);
 

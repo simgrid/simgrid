@@ -32,7 +32,7 @@ class CommWaitTransition : public Transition {
 
 public:
   CommWaitTransition(aid_t issuer, int times_considered, char* buffer);
-  std::string to_string(bool verbose) override;
+  std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
 };
 
@@ -42,7 +42,7 @@ class CommRecvTransition : public Transition {
 
 public:
   CommRecvTransition(aid_t issuer, int times_considered, char* buffer);
-  std::string to_string(bool verbose) override;
+  std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
 };
 
@@ -53,13 +53,12 @@ class CommSendTransition : public Transition {
 
 public:
   CommSendTransition(aid_t issuer, int times_considered, char* buffer);
-  std::string to_string(bool verbose) override;
+  std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
 };
 
 /** Make a new transition from serialized description */
-Transition* recv_transition(aid_t issuer, int times_considered, kernel::actor::SimcallObserver::Simcall simcall,
-                            char* buffer);
+Transition* recv_transition(aid_t issuer, int times_considered, Transition::Type simcall, char* buffer);
 
 } // namespace mc
 } // namespace simgrid

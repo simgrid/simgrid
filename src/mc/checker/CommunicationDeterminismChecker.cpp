@@ -420,15 +420,14 @@ void CommunicationDeterminismChecker::real_run()
     if (next_transition >= 0 && visited_state == nullptr) {
       cur_state->execute_next(next_transition);
 
-      aid_t aid         = cur_state->get_transition()->aid_;
       int req_num       = cur_state->get_transition()->times_considered_;
       smx_simcall_t req = &cur_state->executed_req_;
 
-      XBT_DEBUG("Execute: %s", cur_state->get_transition()->to_cstring());
+      XBT_DEBUG("Execute: %s", cur_state->get_transition()->to_string().c_str());
 
       std::string req_str;
       if (dot_output != nullptr)
-        req_str = api::get().request_get_dot_output(aid, req_num);
+        req_str = api::get().request_get_dot_output(cur_state->get_transition());
 
       /* TODO : handle test and testany simcalls */
       CallType call = CallType::NONE;

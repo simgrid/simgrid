@@ -128,12 +128,11 @@ void SafetyChecker::run()
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_DEBUG("Execute: %s", state->get_transition()->to_cstring());
+    XBT_DEBUG("Execute: %s", state->get_transition()->to_string().c_str());
 
     std::string req_str;
     if (dot_output != nullptr)
-      req_str =
-          api::get().request_get_dot_output(state->get_transition()->aid_, state->get_transition()->times_considered_);
+      req_str = api::get().request_get_dot_output(state->get_transition());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     auto next_state              = std::make_unique<State>();
@@ -193,13 +192,13 @@ void SafetyChecker::backtrack()
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         State* prev_state = i->get();
         if (state->get_transition()->aid_ == prev_state->get_transition()->aid_) {
-          XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->get_transition()->to_cstring(),
-                    prev_state->get_transition()->to_cstring(), issuer_id);
+          XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->get_transition()->to_string().c_str(),
+                    prev_state->get_transition()->to_string().c_str(), issuer_id);
           break;
         } else if (prev_state->get_transition()->depends(state->get_transition())) {
           XBT_VERB("Dependent Transitions:");
-          XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_cstring(), prev_state->num_);
-          XBT_VERB("  %s (state=%ld)", state->get_transition()->to_cstring(), state->num_);
+          XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_string().c_str(), prev_state->num_);
+          XBT_VERB("  %s (state=%ld)", state->get_transition()->to_string().c_str(), state->num_);
 
           if (not prev_state->actor_states_[issuer_id].is_done())
             prev_state->mark_todo(issuer_id);
@@ -208,8 +207,8 @@ void SafetyChecker::backtrack()
           break;
         } else {
           XBT_VERB("INDEPENDENT Transitions:");
-          XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_cstring(), prev_state->num_);
-          XBT_VERB("  %s (state=%ld)", state->get_transition()->to_cstring(), state->num_);
+          XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_string().c_str(), prev_state->num_);
+          XBT_VERB("  %s (state=%ld)", state->get_transition()->to_string().c_str(), state->num_);
         }
       }
     }
