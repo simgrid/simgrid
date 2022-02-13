@@ -417,8 +417,8 @@ void CommImpl::wait_for(actor::ActorImpl* issuer, double timeout)
     } else {
       /* If we reached this point, the wait simcall must have a timeout */
       /* Otherwise it shouldn't be enabled and executed by the MC */
-      if (timeout < 0.0)
-        THROW_IMPOSSIBLE;
+      xbt_assert(timeout >= 0.0,
+                 "The checker asked me to raise a timeout on a communication that is not expecting any timeout");
       set_state(issuer == src_actor_ ? State::SRC_TIMEOUT : State::DST_TIMEOUT);
     }
     finish();

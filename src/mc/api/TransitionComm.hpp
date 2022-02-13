@@ -85,6 +85,15 @@ public:
   bool depends(const Transition* other) const override;
 };
 
+class WaitAnyTransition : public Transition {
+  std::vector<Transition*> transitions_;
+
+public:
+  WaitAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream);
+  std::string to_string(bool verbose) const override;
+  bool depends(const Transition* other) const override;
+};
+
 /** Make a new transition from serialized description */
 Transition* deserialize_transition(aid_t issuer, int times_considered, std::stringstream& stream);
 

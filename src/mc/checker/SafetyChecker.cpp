@@ -175,6 +175,7 @@ void SafetyChecker::run()
 void SafetyChecker::backtrack()
 {
   backtrack_count_++;
+  XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
   stack_.pop_back();
 
   api::get().mc_check_deadlock();

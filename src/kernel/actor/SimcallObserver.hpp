@@ -27,7 +27,7 @@ public:
    * For example, a mutex_lock is not enabled when the mutex is not free.
    * A comm_receive is not enabled before the corresponding send has been issued.
    */
-  virtual bool is_enabled() const { return true; }
+  virtual bool is_enabled() { return true; }
 
   /** Returns the amount of time that this transition can be used.
    *
@@ -35,7 +35,7 @@ public:
    * If it's more than one (as with mc_random or waitany), we need to consider this transition several times to start
    * differing branches
    */
-  virtual int get_max_consider() const { return 1; }
+  virtual int get_max_consider() { return 1; }
 
   /** Prepares the simcall to be used.
    *
@@ -82,7 +82,7 @@ public:
     xbt_assert(min < max);
   }
   void serialize(std::stringstream& stream) const override;
-  int get_max_consider() const override;
+  int get_max_consider() override;
   void prepare(int times_considered) override;
   int get_value() const { return next_value_; }
   bool depends(SimcallObserver* other) override;
@@ -109,7 +109,7 @@ public:
       : MutexSimcall(actor, mutex), blocking_(blocking)
   {
   }
-  bool is_enabled() const override;
+  bool is_enabled() override;
 };
 
 class ConditionWaitSimcall : public ResultingSimcall<bool> {
@@ -123,7 +123,7 @@ public:
       : ResultingSimcall(actor, false), cond_(cond), mutex_(mutex), timeout_(timeout)
   {
   }
-  bool is_enabled() const override;
+  bool is_enabled() override;
   bool is_visible() const override { return false; }
   activity::ConditionVariableImpl* get_cond() const { return cond_; }
   activity::MutexImpl* get_mutex() const { return mutex_; }
@@ -139,7 +139,7 @@ public:
       : ResultingSimcall(actor, false), sem_(sem), timeout_(timeout)
   {
   }
-  bool is_enabled() const override;
+  bool is_enabled() override;
   bool is_visible() const override { return false; }
   activity::SemaphoreImpl* get_sem() const { return sem_; }
   double get_timeout() const { return timeout_; }
@@ -166,9 +166,9 @@ class ActivityTestanySimcall : public ResultingSimcall<ssize_t> {
 public:
   ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities);
   bool is_visible() const override { return true; }
-  bool is_enabled() const override { return true; /* can return -1 if no activity is ready */ }
+  bool is_enabled() override { return true; /* can return -1 if no activity is ready */ }
   void serialize(std::stringstream& stream) const override;
-  int get_max_consider() const override;
+  int get_max_consider() override;
   void prepare(int times_considered) override;
   const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }
   int get_value() const { return next_value_; }
@@ -185,7 +185,7 @@ public:
   }
   void serialize(std::stringstream& stream) const override;
   bool is_visible() const override { return true; }
-  bool is_enabled() const override;
+  bool is_enabled() override;
   activity::ActivityImpl* get_activity() const { return activity_; }
   void set_activity(activity::ActivityImpl* activity) { activity_ = activity; }
   double get_timeout() const { return timeout_; }
@@ -193,18 +193,17 @@ public:
 
 class ActivityWaitanySimcall : public ResultingSimcall<ssize_t> {
   const std::vector<activity::ActivityImpl*>& activities_;
+  std::vector<int> indexes_; // indexes in activities_ pointing to ready activities (=whose test() is positive)
   const double timeout_;
   int next_value_ = 0;
 
 public:
-  ActivityWaitanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities, double timeout)
-      : ResultingSimcall(actor, -1), activities_(activities), timeout_(timeout)
-  {
-  }
-  bool is_enabled() const override;
+  ActivityWaitanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities, double timeout);
+  bool is_enabled() override;
+  void serialize(std::stringstream& stream) const override;
   bool is_visible() const override { return true; }
   void prepare(int times_considered) override;
-  int get_max_consider() const override;
+  int get_max_consider() override;
   const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }
   double get_timeout() const { return timeout_; }
   int get_value() const { return next_value_; }

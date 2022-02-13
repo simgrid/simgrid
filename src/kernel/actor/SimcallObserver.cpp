@@ -67,7 +67,7 @@ void RandomSimcall::prepare(int times_considered)
   XBT_DEBUG("MC_RANDOM(%d, %d) will return %d after %d times", min_, max_, next_value_, times_considered);
 }
 
-int RandomSimcall::get_max_consider() const
+int RandomSimcall::get_max_consider()
 {
   return max_ - min_ + 1;
 }
@@ -83,12 +83,12 @@ std::string MutexLockSimcall::to_string(int times_considered) const
   return res;
 }*/
 
-bool MutexLockSimcall::is_enabled() const
+bool MutexLockSimcall::is_enabled()
 {
   return not blocking_ || get_mutex()->get_owner() == nullptr || get_mutex()->get_owner() == get_issuer();
 }
 
-bool ConditionWaitSimcall::is_enabled() const
+bool ConditionWaitSimcall::is_enabled()
 {
   static bool warned = false;
   if (not warned) {
@@ -98,7 +98,7 @@ bool ConditionWaitSimcall::is_enabled() const
   return true;
 }
 
-bool SemAcquireSimcall::is_enabled() const
+bool SemAcquireSimcall::is_enabled()
 {
   static bool warned = false;
   if (not warned) {
@@ -111,14 +111,15 @@ bool SemAcquireSimcall::is_enabled() const
 ActivityTestanySimcall::ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities)
     : ResultingSimcall(actor, -1), activities_(activities)
 {
+}
+
+int ActivityTestanySimcall::get_max_consider()
+{
+  indexes_.clear();
   // list all the activities that are ready
   for (unsigned i = 0; i < activities_.size(); i++)
     if (activities_[i]->test(get_issuer()))
       indexes_.push_back(i);
-}
-
-int ActivityTestanySimcall::get_max_consider() const
-{
   return indexes_.size() + 1;
 }
 
@@ -129,10 +130,11 @@ void ActivityTestanySimcall::prepare(int times_considered)
   else
     next_value_ = -1;
 }
-static void serialize_activity(const activity::ActivityImpl* act, std::stringstream& stream)
+static void serialize_activity_test(const activity::ActivityImpl* act, std::stringstream& stream)
 {
   if (auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
-    stream << (short)mc::Transition::Type::COMM_TEST << ' ';
+    stream << "  " << (short)mc::Transition::Type::COMM_TEST;
+    stream << ' ' << (void*)comm;
     stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
     stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
     stream << ' ' << comm->get_mailbox_id();
@@ -144,14 +146,21 @@ static void serialize_activity(const activity::ActivityImpl* act, std::stringstr
 void ActivityTestanySimcall::serialize(std::stringstream& stream) const
 {
   stream << (short)mc::Transition::Type::TESTANY << ' ' << activities_.size() << ' ';
-  for (auto const& act : activities_)
-    serialize_activity(act, stream);
+  for (auto const& act : activities_) {
+    serialize_activity_test(act, stream);
+    stream << ' ';
+  }
 }
-void ActivityWaitSimcall::serialize(std::stringstream& stream) const
+void ActivityTestSimcall::serialize(std::stringstream& stream) const
 {
-  if (auto* comm = dynamic_cast<activity::CommImpl*>(activity_)) {
+  serialize_activity_test(activity_, stream);
+}
+static void serialize_activity_wait(const activity::ActivityImpl* act, bool timeout, std::stringstream& stream)
+{
+  if (auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
     stream << (short)mc::Transition::Type::COMM_WAIT << ' ';
-    stream << (timeout_ > 0) << ' ' << comm;
+    stream << timeout << ' ' << comm;
+
     stream << ' ' << (comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1);
     stream << ' ' << (comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1);
     stream << ' ' << comm->get_mailbox_id();
@@ -160,57 +169,69 @@ void ActivityWaitSimcall::serialize(std::stringstream& stream) const
     stream << (short)mc::Transition::Type::UNKNOWN;
   }
 }
-void ActivityTestSimcall::serialize(std::stringstream& stream) const
+
+void ActivityWaitSimcall::serialize(std::stringstream& stream) const
 {
-  serialize_activity(activity_, stream);
+  serialize_activity_wait(activity_, timeout_ > 0, stream);
 }
-
-bool ActivityWaitSimcall::is_enabled() const
+void ActivityWaitanySimcall::serialize(std::stringstream& stream) const
 {
-  /* FIXME: check also that src and dst processes are not suspended */
-  const auto* comm = dynamic_cast<activity::CommImpl*>(activity_);
-  if (comm == nullptr)
-    xbt_die("Only Comms are supported here for now");
-
-  if (comm->src_timeout_ || comm->dst_timeout_) {
-    /* If it has a timeout it will be always be enabled (regardless of who declared the timeout),
-     * because even if the communication is not ready, it can timeout and won't block. */
-    if (_sg_mc_timeout == 1)
-      return true;
+  stream << (short)mc::Transition::Type::WAITANY << ' ' << activities_.size() << ' ';
+  for (auto const& act : activities_) {
+    serialize_activity_wait(act, timeout_ > 0, stream);
+    stream << ' ';
   }
-  /* On the other hand if it hasn't a timeout, check if the comm is ready.*/
-  else if (comm->detached() && comm->src_actor_ == nullptr && comm->get_state() == activity::State::READY)
-    return (comm->dst_actor_ != nullptr);
-  return (comm->src_actor_ && comm->dst_actor_);
+}
+ActivityWaitanySimcall::ActivityWaitanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities,
+                                               double timeout)
+    : ResultingSimcall(actor, -1), activities_(activities), timeout_(timeout)
+{
 }
 
-bool ActivityWaitanySimcall::is_enabled() const
+bool ActivityWaitSimcall::is_enabled()
 {
-  // FIXME: deal with other kind of activities (Exec and I/Os)
-  // FIXME: Can be factored with ActivityWaitSimcall::is_enabled()
-  const auto* comm = dynamic_cast<activity::CommImpl*>(activities_[next_value_]);
-  if (comm == nullptr)
-    xbt_die("Only Comms are supported here for now");
-  if (comm->src_timeout_ || comm->dst_timeout_) {
-    /* If it has a timeout it will be always be enabled (regardless of who declared the timeout),
-     * because even if the communication is not ready, it can timeout and won't block. */
-    if (_sg_mc_timeout == 1)
-      return true;
-  }
-  /* On the other hand if it hasn't a timeout, check if the comm is ready.*/
-  else if (comm->detached() && comm->src_actor_ == nullptr && comm->get_state() == activity::State::READY)
-    return (comm->dst_actor_ != nullptr);
-  return (comm->src_actor_ && comm->dst_actor_);
+  // FIXME: if _sg_mc_timeout == 1 and if we have either a sender or receiver timeout, the transition is enabled
+  // because even if the communication is not ready, it can timeout and won't block.
+
+  return activity_->test(get_issuer());
 }
 
-int ActivityWaitanySimcall::get_max_consider() const
+bool ActivityWaitanySimcall::is_enabled()
 {
-  return static_cast<int>(activities_.size());
+  // list all the activities that are ready
+  indexes_.clear();
+  for (unsigned i = 0; i < activities_.size(); i++)
+    if (activities_[i]->test(get_issuer()))
+      indexes_.push_back(i);
+
+  //  if (_sg_mc_timeout && timeout_)  FIXME: deal with the potential timeout of the WaitAny
+
+  // FIXME: even if the WaitAny has no timeout, some of the activities may still have one.
+  // we should iterate over the vector searching for them
+  return not indexes_.empty();
+}
+
+int ActivityWaitanySimcall::get_max_consider()
+{
+  // list all the activities that are ready
+  indexes_.clear();
+  for (unsigned i = 0; i < activities_.size(); i++)
+    if (activities_[i]->test(get_issuer()))
+      indexes_.push_back(i);
+
+  int res = indexes_.size();
+  //  if (_sg_mc_timeout && timeout_)
+  //    res++;
+
+  return res;
 }
 
 void ActivityWaitanySimcall::prepare(int times_considered)
 {
-  next_value_ = times_considered;
+  if (times_considered < static_cast<int>(indexes_.size()))
+    next_value_ = indexes_.at(times_considered);
+  else
+    next_value_ = -1;
 }
 
 void CommIsendSimcall::serialize(std::stringstream& stream) const

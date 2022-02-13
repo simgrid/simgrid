@@ -46,6 +46,11 @@ bool CommWaitTransition::depends(const Transition* other) const
   if (dynamic_cast<const RandomTransition*>(other) != nullptr)
     return false; // Random is indep with any transition
 
+  if (auto* any = dynamic_cast<const WaitAnyTransition*>(other))
+    return any->depends(this);
+  if (auto* any = dynamic_cast<const TestAnyTransition*>(other))
+    return any->depends(this);
+
   if (auto* recv = dynamic_cast<const CommRecvTransition*>(other))
     return recv->depends(this);
 
@@ -93,6 +98,11 @@ bool CommTestTransition::depends(const Transition* other) const
   if (dynamic_cast<const RandomTransition*>(other) != nullptr)
     return false; // Test & Random are independent (Random is independent with anything)
 
+  if (auto* any = dynamic_cast<const WaitAnyTransition*>(other))
+    return any->depends(this);
+  if (auto* any = dynamic_cast<const TestAnyTransition*>(other))
+    return any->depends(this);
+
   if (auto* recv = dynamic_cast<const CommRecvTransition*>(other))
     return recv->depends(this); // Recv < Test (alphabetical ordering)
 
@@ -133,6 +143,10 @@ bool CommRecvTransition::depends(const Transition* other) const
 
   if (dynamic_cast<const RandomTransition*>(other) != nullptr)
     return false; // Random is indep with any transition
+  if (auto* any = dynamic_cast<const WaitAnyTransition*>(other))
+    return any->depends(this);
+  if (auto* any = dynamic_cast<const TestAnyTransition*>(other))
+    return any->depends(this);
 
   if (const auto* recv = dynamic_cast<const CommRecvTransition*>(other))
     return mbox_ == recv->mbox_;
@@ -184,6 +198,7 @@ TestAnyTransition::TestAnyTransition(aid_t issuer, int times_considered, std::st
   for (int i = 0; i < size; i++) {
 
     Transition* t = deserialize_transition(issuer, 0, stream);
+    XBT_DEBUG("TestAny received a transition %s", t->to_string(true).c_str());
     transitions_.push_back(t);
   }
 }
@@ -197,7 +212,29 @@ std::string TestAnyTransition::to_string(bool verbose) const
 }
 bool TestAnyTransition::depends(const Transition* other) const
 {
-  return true;
+  return transitions_[times_considered_]->depends(other);
+}
+WaitAnyTransition::WaitAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+    : Transition(Type::WAITANY, issuer, times_considered)
+{
+  int size;
+  stream >> size;
+  for (int i = 0; i < size; i++) {
+    Transition* t = deserialize_transition(issuer, 0, stream);
+    transitions_.push_back(t);
+  }
+}
+std::string WaitAnyTransition::to_string(bool verbose) const
+{
+  auto res = xbt::string_printf("%ld: WaitAny{ ", aid_);
+  for (auto const* t : transitions_)
+    res += t->to_string(verbose);
+  res += "}";
+  return res;
+}
+bool WaitAnyTransition::depends(const Transition* other) const
+{
+  return transitions_[times_considered_]->depends(other);
 }
 
 bool CommSendTransition::depends(const Transition* other) const
@@ -207,6 +244,11 @@ bool CommSendTransition::depends(const Transition* other) const
 
   if (dynamic_cast<const RandomTransition*>(other) != nullptr)
     return false; // Random is indep with any transition
+
+  if (auto* any = dynamic_cast<const WaitAnyTransition*>(other))
+    return any->depends(this);
+  if (auto* any = dynamic_cast<const TestAnyTransition*>(other))
+    return any->depends(this);
 
   if (const auto* other_isend = dynamic_cast<const CommSendTransition*>(other))
     return mbox_ == other_isend->mbox_;
@@ -257,6 +299,8 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, std::stri
 
     case Transition::Type::TESTANY:
       return new TestAnyTransition(issuer, times_considered, stream);
+    case Transition::Type::WAITANY:
+      return new WaitAnyTransition(issuer, times_considered, stream);
 
     case Transition::Type::RANDOM:
       return new RandomTransition(issuer, times_considered, stream);
