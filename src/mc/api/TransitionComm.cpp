@@ -239,6 +239,9 @@ Transition* recv_transition(aid_t issuer, int times_considered, std::stringstrea
 {
   short type;
   stream >> type;
+  xbt_assert(type >= 0 && type <= static_cast<short>(Transition::Type::UNKNOWN), "Invalid transition type %d received",
+             type);
+
   Transition::Type simcall = static_cast<Transition::Type>(type);
 
   switch (simcall) {
@@ -259,9 +262,8 @@ Transition* recv_transition(aid_t issuer, int times_considered, std::stringstrea
 
     case Transition::Type::UNKNOWN:
       return new Transition(Transition::Type::UNKNOWN, issuer, times_considered);
-    default:
-      xbt_die("recv_transition of type %s unimplemented", Transition::to_c_str(simcall));
   }
+  THROW_IMPOSSIBLE; // Some compilers don't detect that each branch of the above switch has a return
 }
 
 } // namespace mc
