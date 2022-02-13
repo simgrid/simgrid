@@ -34,24 +34,6 @@ using Simcall = simgrid::simix::Simcall;
 namespace simgrid {
 namespace mc {
 
-static inline const char* get_color(int id)
-{
-  static constexpr std::array<const char*, 13> colors{{"blue", "red", "green3", "goldenrod", "brown", "purple",
-                                                       "magenta", "turquoise4", "gray25", "forestgreen", "hotpink",
-                                                       "lightblue", "tan"}};
-  return colors[id % colors.size()];
-}
-
-static std::string pointer_to_string(void* pointer)
-{
-  return XBT_LOG_ISENABLED(Api, xbt_log_priority_verbose) ? xbt::string_printf("%p", pointer) : "(verbose only)";
-}
-
-static std::string buff_size_to_string(size_t buff_size)
-{
-  return XBT_LOG_ISENABLED(Api, xbt_log_priority_verbose) ? std::to_string(buff_size) : "(verbose only)";
-}
-
 /** Statically "upcast" a s_smx_actor_t into an ActorInformation
  *
  *  This gets 'actorInfo' from '&actorInfo->copy'. It upcasts in the
@@ -353,7 +335,11 @@ void Api::mc_exit(int status) const
 
 std::string Api::request_get_dot_output(const Transition* t) const
 {
-  const char* color = get_color(t->aid_ - 1);
+  static constexpr std::array<const char*, 13> colors{{"blue", "red", "green3", "goldenrod", "brown", "purple",
+                                                       "magenta", "turquoise4", "gray25", "forestgreen", "hotpink",
+                                                       "lightblue", "tan"}};
+  const char* color = colors[(t->aid_ - 1) % colors.size()];
+
   return "label = \"" + t->dot_label() + "\", color = " + color + ", fontcolor = " + color;
 }
 

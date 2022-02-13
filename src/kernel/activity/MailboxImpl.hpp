@@ -37,12 +37,12 @@ class MailboxImpl {
   friend mc::CommunicationDeterminismChecker;
 
   static unsigned next_id_; // Next ID to be given
-  unsigned id_;
-  explicit MailboxImpl(const std::string& name) : piface_(this), name_(name), id_(next_id_++) {}
+  const unsigned id_ = next_id_++;
+  explicit MailboxImpl(const std::string& name) : piface_(this), name_(name) {}
 
 public:
   /** @brief Public interface */
-  unsigned get_id() { return id_; }
+  unsigned get_id() const { return id_; }
 
   const s4u::Mailbox* get_iface() const { return &piface_; }
   s4u::Mailbox* get_iface() { return &piface_; }

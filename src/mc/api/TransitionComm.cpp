@@ -177,6 +177,7 @@ std::string CommSendTransition::to_string(bool verbose = false) const
   return res;
 }
 TestAnyTransition::TestAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream)
+    : Transition(Type::TESTANY, issuer, times_considered)
 {
   int size;
   stream >> size;
@@ -242,7 +243,7 @@ Transition* recv_transition(aid_t issuer, int times_considered, std::stringstrea
   xbt_assert(type >= 0 && type <= static_cast<short>(Transition::Type::UNKNOWN), "Invalid transition type %d received",
              type);
 
-  Transition::Type simcall = static_cast<Transition::Type>(type);
+  auto simcall = static_cast<Transition::Type>(type);
 
   switch (simcall) {
     case Transition::Type::COMM_RECV:

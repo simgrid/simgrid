@@ -365,7 +365,7 @@ void CommunicationDeterminismChecker::restoreState()
     /* TODO : handle test and testany simcalls */
     CallType call = MC_get_call_type(req);
     state->get_transition()->replay();
-    handle_comm_pattern(call, req, req_num, 1);
+    handle_comm_pattern(call, req, req_num, true);
 
     /* Update statistics */
     api::get().mc_inc_visited_states();
@@ -434,7 +434,7 @@ void CommunicationDeterminismChecker::real_run()
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
         call = MC_get_call_type(req);
 
-      handle_comm_pattern(call, req, req_num, 0);
+      handle_comm_pattern(call, req, req_num, false);
 
       /* Create the new expanded state */
       auto next_state = std::make_unique<State>();

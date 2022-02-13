@@ -58,7 +58,7 @@ void execute_actors()
   engine->reset_actor_dynar();
   for (auto const& kv : engine->get_actor_list()) {
     auto actor = kv.second;
-    if (auto* observer = actor->simcall_.observer_)
+    if (const auto* observer = actor->simcall_.observer_)
       actor->simcall_.mc_max_consider_ = observer->get_max_consider();
     engine->add_actor_to_dynar(actor);
   }
