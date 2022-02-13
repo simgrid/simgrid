@@ -333,7 +333,7 @@ Transition* ModelChecker::handle_simcall(aid_t aid, int times_considered, bool n
 
   if (new_transition) {
     std::stringstream stream(answer.buffer);
-    return recv_transition(aid, times_considered, stream);
+    return deserialize_transition(aid, times_considered, stream);
   } else
     return nullptr;
 }

@@ -183,7 +183,7 @@ TestAnyTransition::TestAnyTransition(aid_t issuer, int times_considered, std::st
   stream >> size;
   for (int i = 0; i < size; i++) {
 
-    Transition* t = recv_transition(issuer, 0, stream);
+    Transition* t = deserialize_transition(issuer, 0, stream);
     transitions_.push_back(t);
   }
 }
@@ -236,7 +236,7 @@ bool CommSendTransition::depends(const Transition* other) const
   return true;
 }
 
-Transition* recv_transition(aid_t issuer, int times_considered, std::stringstream& stream)
+Transition* deserialize_transition(aid_t issuer, int times_considered, std::stringstream& stream)
 {
   short type;
   stream >> type;
