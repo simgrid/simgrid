@@ -43,22 +43,8 @@ bool CommWaitTransition::depends(const Transition* other) const
   if (aid_ == other->aid_)
     return false;
 
-  if (dynamic_cast<const RandomTransition*>(other) != nullptr)
-    return false; // Random is indep with any transition
-
-  if (auto* any = dynamic_cast<const WaitAnyTransition*>(other))
-    return any->depends(this);
-  if (auto* any = dynamic_cast<const TestAnyTransition*>(other))
-    return any->depends(this);
-
-  if (auto* recv = dynamic_cast<const CommRecvTransition*>(other))
-    return recv->depends(this);
-
-  if (auto* send = dynamic_cast<const CommSendTransition*>(other))
-    return send->depends(this);
-
-  if (auto* test = dynamic_cast<const CommTestTransition*>(other))
-    return test->depends(this);
+  if (other->type_ < type_)
+    return other->depends(this);
 
   if (const auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
     if (timeout_ || wait->timeout_)
@@ -95,19 +81,8 @@ bool CommTestTransition::depends(const Transition* other) const
   if (aid_ == other->aid_)
     return false;
 
-  if (dynamic_cast<const RandomTransition*>(other) != nullptr)
-    return false; // Test & Random are independent (Random is independent with anything)
-
-  if (auto* any = dynamic_cast<const WaitAnyTransition*>(other))
-    return any->depends(this);
-  if (auto* any = dynamic_cast<const TestAnyTransition*>(other))
-    return any->depends(this);
-
-  if (auto* recv = dynamic_cast<const CommRecvTransition*>(other))
-    return recv->depends(this); // Recv < Test (alphabetical ordering)
-
-  if (auto* send = dynamic_cast<const CommSendTransition*>(other))
-    return send->depends(this); // Send < Test (alphabetical ordering)
+  if (other->type_ < type_)
+    return other->depends(this);
 
   if (dynamic_cast<const CommTestTransition*>(other) != nullptr)
     return false; // Test & Test are independent
@@ -141,12 +116,8 @@ bool CommRecvTransition::depends(const Transition* other) const
   if (aid_ == other->aid_)
     return false;
 
-  if (dynamic_cast<const RandomTransition*>(other) != nullptr)
-    return false; // Random is indep with any transition
-  if (auto* any = dynamic_cast<const WaitAnyTransition*>(other))
-    return any->depends(this);
-  if (auto* any = dynamic_cast<const TestAnyTransition*>(other))
-    return any->depends(this);
+  if (other->type_ < type_)
+    return other->depends(this);
 
   if (const auto* recv = dynamic_cast<const CommRecvTransition*>(other))
     return mbox_ == recv->mbox_;
@@ -242,13 +213,8 @@ bool CommSendTransition::depends(const Transition* other) const
   if (aid_ == other->aid_)
     return false;
 
-  if (dynamic_cast<const RandomTransition*>(other) != nullptr)
-    return false; // Random is indep with any transition
-
-  if (auto* any = dynamic_cast<const WaitAnyTransition*>(other))
-    return any->depends(this);
-  if (auto* any = dynamic_cast<const TestAnyTransition*>(other))
-    return any->depends(this);
+  if (other->type_ < type_)
+    return other->depends(this);
 
   if (const auto* other_isend = dynamic_cast<const CommSendTransition*>(other))
     return mbox_ == other_isend->mbox_;
