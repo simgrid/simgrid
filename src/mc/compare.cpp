@@ -11,7 +11,7 @@
 
 #include <algorithm>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, xbt, "Logging specific to mc_compare in mc");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, mc, "Logging specific to mc_compare in mc");
 
 using simgrid::mc::remote;
 
