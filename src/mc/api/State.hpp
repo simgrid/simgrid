@@ -14,7 +14,7 @@ namespace simgrid {
 namespace mc {
 
 /* A node in the exploration graph (kind-of) */
-class XBT_PRIVATE State {
+class XBT_PRIVATE State : public xbt::Extendable<State> {
   static long expended_states_; /* Count total amount of states, for stats */
 
   /* Outgoing transition: what was the last transition that we took to leave this state? Useful for replay */
@@ -35,14 +35,10 @@ public:
   /** Snapshot of system state (if needed) */
   std::shared_ptr<simgrid::mc::Snapshot> system_state_;
 
-  // For CommunicationDeterminismChecker
-  std::vector<std::vector<simgrid::mc::PatternCommunication>> incomplete_comm_pattern_;
-  std::vector<unsigned> communication_indices_;
-
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   int next_transition() const;
 
-  /* Explore a new path */
+  /* Explore a new path; the parameter must be the result of a previous call to next_transition() */
   void execute_next(int next);
 
   std::size_t count_todo() const;
@@ -52,10 +48,6 @@ public:
 
   /* Returns the total amount of states created so far (for statistics) */
   static long get_expanded_states() { return expended_states_; }
-
-private:
-  void copy_incomplete_comm_pattern();
-  void copy_index_comm_pattern();
 };
 } // namespace mc
 } // namespace simgrid

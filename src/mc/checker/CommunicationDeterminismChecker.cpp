@@ -23,6 +23,48 @@ std::vector<std::vector<simgrid::mc::PatternCommunication*>> incomplete_communic
 
 /********** Static functions ***********/
 
+namespace simgrid {
+namespace mc {
+
+class StateCommDet {
+  // State* state_;
+
+public:
+  std::vector<std::vector<simgrid::mc::PatternCommunication>> incomplete_comm_pattern_;
+  std::vector<unsigned> communication_indices_;
+
+  static simgrid::xbt::Extension<simgrid::mc::State, StateCommDet> EXTENSION_ID;
+  explicit StateCommDet(State* /* ptr*/) //: state_(ptr)
+  {
+    copy_incomplete_comm_pattern();
+    copy_index_comm_pattern();
+  }
+
+  void copy_incomplete_comm_pattern()
+  {
+    incomplete_comm_pattern_.clear();
+    const unsigned long maxpid = api::get().get_maxpid();
+    for (unsigned long i = 0; i < maxpid; i++) {
+      std::vector<simgrid::mc::PatternCommunication> res;
+      for (auto const& comm : incomplete_communications_pattern[i])
+        res.push_back(comm->dup());
+      incomplete_comm_pattern_.push_back(std::move(res));
+    }
+  }
+
+  void copy_index_comm_pattern()
+  {
+    communication_indices_.clear();
+    for (auto const& list_process_comm : initial_communications_pattern)
+      this->communication_indices_.push_back(list_process_comm.index_comm);
+  }
+};
+
+simgrid::xbt::Extension<simgrid::mc::State, StateCommDet> StateCommDet::EXTENSION_ID;
+
+} // namespace mc
+} // namespace simgrid
+
 static simgrid::mc::CommPatternDifference compare_comm_pattern(const simgrid::mc::PatternCommunication* comm1,
                                                                const simgrid::mc::PatternCommunication* comm2)
 {
@@ -57,11 +99,13 @@ static void patterns_copy(std::vector<simgrid::mc::PatternCommunication*>& dest,
 static void restore_communications_pattern(simgrid::mc::State* state)
 {
   for (size_t i = 0; i < initial_communications_pattern.size(); i++)
-    initial_communications_pattern[i].index_comm = state->communication_indices_[i];
+    initial_communications_pattern[i].index_comm =
+        state->extension<simgrid::mc::StateCommDet>()->communication_indices_[i];
 
   const unsigned long maxpid = api::get().get_maxpid();
   for (unsigned long i = 0; i < maxpid; i++)
-    patterns_copy(incomplete_communications_pattern[i], state->incomplete_comm_pattern_[i]);
+    patterns_copy(incomplete_communications_pattern[i],
+                  state->extension<simgrid::mc::StateCommDet>()->incomplete_comm_pattern_[i]);
 }
 
 static char* print_determinism_result(simgrid::mc::CommPatternDifference diff, aid_t process,
@@ -250,7 +294,10 @@ void CommunicationDeterminismChecker::complete_comm_pattern(RemotePtr<kernel::ac
   }
 }
 
-CommunicationDeterminismChecker::CommunicationDeterminismChecker(Session* session) : Checker(session) {}
+CommunicationDeterminismChecker::CommunicationDeterminismChecker(Session* session) : Checker(session)
+{
+  StateCommDet::EXTENSION_ID = simgrid::mc::State::extension_create<StateCommDet>();
+}
 
 CommunicationDeterminismChecker::~CommunicationDeterminismChecker() = default;
 
@@ -302,6 +349,7 @@ void CommunicationDeterminismChecker::prepare()
   incomplete_communications_pattern.resize(maxpid);
 
   auto initial_state = std::make_unique<State>();
+  initial_state->extension_set(new StateCommDet(initial_state.get()));
 
   XBT_DEBUG("********* Start communication determinism verification *********");
 
@@ -438,6 +486,7 @@ void CommunicationDeterminismChecker::real_run()
 
       /* Create the new expanded state */
       auto next_state = std::make_unique<State>();
+      next_state->extension_set(new StateCommDet(next_state.get()));
 
       /* If comm determinism verification, we cannot stop the exploration if some communications are not finished (at
        * least, data are transferred). These communications  are incomplete and they cannot be analyzed and compared
