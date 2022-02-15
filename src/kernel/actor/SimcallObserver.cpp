@@ -244,7 +244,7 @@ void CommIsendSimcall::serialize(std::stringstream& stream) const
 void CommIrecvSimcall::serialize(std::stringstream& stream) const
 {
   stream << (short)mc::Transition::Type::COMM_RECV << ' ';
-  stream << mbox_->get_id() << ' ' << dst_buff_;
+  stream << mbox_->get_id() << ' ' << (void*)dst_buff_;
 }
 
 } // namespace actor
