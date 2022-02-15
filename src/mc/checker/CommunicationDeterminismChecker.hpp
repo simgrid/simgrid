@@ -5,7 +5,6 @@
 
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/checker/Checker.hpp"
-#include "src/mc/mc_comm_pattern.hpp"
 
 #include <string>
 #include <vector>
@@ -28,25 +27,11 @@ private:
   void prepare();
   void real_run();
   void log_state() override;
-  void deterministic_comm_pattern(aid_t process, const PatternCommunication* comm, bool backtracking);
   void restoreState();
-  void handle_comm_pattern(simgrid::mc::CallType call_type, smx_simcall_t req, int value, bool backtracking);
 
-public:
-  // These are used by functions which should be moved in CommunicationDeterminismChecker:
-  void get_comm_pattern(smx_simcall_t request, CallType call_type, bool backtracking);
-  void complete_comm_pattern(RemotePtr<kernel::activity::CommImpl> const& comm_addr, aid_t issuer, bool backtracking);
-
-private:
   /** Stack representing the position in the exploration graph */
   std::list<std::unique_ptr<State>> stack_;
   VisitedStates visited_states_;
-
-  bool initial_communications_pattern_done = false;
-  bool recv_deterministic                  = true;
-  bool send_deterministic                  = true;
-  char *send_diff = nullptr;
-  char *recv_diff = nullptr;
 };
 } // namespace mc
 } // namespace simgrid

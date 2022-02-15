@@ -2377,7 +2377,6 @@ include src/mc/inspect/mc_unw_vmread.cpp
 include src/mc/mc_base.cpp
 include src/mc/mc_base.hpp
 include src/mc/mc_client_api.cpp
-include src/mc/mc_comm_pattern.hpp
 include src/mc/mc_config.cpp
 include src/mc/mc_config.hpp
 include src/mc/mc_exit.hpp

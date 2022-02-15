@@ -7,7 +7,7 @@
 #define SIMGRID_MC_STATE_HPP
 
 #include "src/mc/api/Transition.hpp"
-#include "src/mc/mc_comm_pattern.hpp"
+#include "src/mc/mc_pattern.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
 
 namespace simgrid {

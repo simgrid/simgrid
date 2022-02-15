@@ -25,7 +25,7 @@ namespace mc {
  * `Session` interface (but currently the `Session` interface does not
  *  have all the necessary features). */
 // abstract
-class Checker {
+class Checker : public xbt::Extendable<Checker> {
   Session* session_;
 
 public:
