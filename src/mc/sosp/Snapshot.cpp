@@ -58,6 +58,12 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame, Frame* sco
     if (not valid_variable(&current_variable, scope, (void*)stack_frame->ip))
       continue;
 
+    if (not current_variable.type) {
+      XBT_VERB("Ignore local variable without type: '%s' [%s]", current_variable.name.c_str(),
+               stack_frame->frame->name.c_str());
+      continue;
+    }
+
     s_local_variable_t new_var;
     new_var.subprogram = stack_frame->frame;
     new_var.ip         = stack_frame->ip;
