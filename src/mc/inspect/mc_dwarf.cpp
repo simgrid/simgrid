@@ -224,23 +224,12 @@ static const char* MC_dwarf_attr_integrate_string(Dwarf_Die* die, int attribute)
     return dwarf_formstring(&attr);
 }
 
-static Dwarf_Off MC_dwarf_attr_dieoffset(Dwarf_Die* die, int attribute)
-{
-  Dwarf_Attribute attr;
-  if (dwarf_hasattr_integrate(die, attribute) == 0)
-    return 0;
-  dwarf_attr_integrate(die, attribute, &attr);
-  Dwarf_Die subtype_die;
-  xbt_assert(dwarf_formref_die(&attr, &subtype_die) != nullptr, "Could not find DIE");
-  return dwarf_dieoffset(&subtype_die);
-}
-
 static Dwarf_Off MC_dwarf_attr_integrate_dieoffset(Dwarf_Die* die, int attribute)
 {
   Dwarf_Attribute attr;
   if (dwarf_hasattr_integrate(die, attribute) == 0)
     return 0;
-  dwarf_attr_integrate(die, DW_AT_type, &attr);
+  dwarf_attr_integrate(die, attribute, &attr);
   Dwarf_Die subtype_die;
   xbt_assert(dwarf_formref_die(&attr, &subtype_die) != nullptr, "Could not find DIE");
   return dwarf_dieoffset(&subtype_die);
@@ -741,7 +730,7 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
       frame.name = name;
   }
 
-  frame.abstract_origin_id = MC_dwarf_attr_dieoffset(die, DW_AT_abstract_origin);
+  frame.abstract_origin_id = MC_dwarf_attr_integrate_dieoffset(die, DW_AT_abstract_origin);
 
   // This is the base address for DWARF addresses.
   // Relocated addresses are offset from this base address.
@@ -984,7 +973,7 @@ static int find_by_build_id(std::vector<char> id)
 
 /** @brief Populate the debugging information of the given ELF object
  *
- *  Read the DWARf information of the EFFL object and populate the
+ *  Read the DWARF information of the ELF object and populate the
  *  lists of types, variables, functions.
  */
 static void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
