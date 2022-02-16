@@ -49,8 +49,9 @@ std::string RandomTransition::to_string(bool verbose) const
 RandomTransition::RandomTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::RANDOM, issuer, times_considered)
 {
-  stream >> min_ >> max_;
+  xbt_assert(stream >> min_ >> max_);
 }
+
 std::string RandomTransition::dot_label() const
 {
   return Transition::dot_label() + to_c_str(type_);

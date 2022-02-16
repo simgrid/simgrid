@@ -23,7 +23,7 @@ namespace mc {
 CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_WAIT, issuer, times_considered)
 {
-  stream >> timeout_ >> comm_ >> sender_ >> receiver_ >> mbox_ >> src_buff_ >> dst_buff_ >> size_;
+  xbt_assert(stream >> timeout_ >> comm_ >> sender_ >> receiver_ >> mbox_ >> src_buff_ >> dst_buff_ >> size_);
   XBT_DEBUG("CommWaitTransition %s comm:%p, sender:%ld receiver:%ld mbox:%u sbuff:%p rbuff:%p size:%zu",
             (timeout_ ? "timeout" : "no-timeout"), comm_, sender_, receiver_, mbox_, src_buff_, dst_buff_, size_);
 }
@@ -62,7 +62,7 @@ bool CommWaitTransition::depends(const Transition* other) const
 CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_TEST, issuer, times_considered)
 {
-  stream >> comm_ >> sender_ >> receiver_ >> mbox_ >> src_buff_ >> dst_buff_ >> size_;
+  xbt_assert(stream >> comm_ >> sender_ >> receiver_ >> mbox_ >> src_buff_ >> dst_buff_ >> size_);
   XBT_DEBUG("CommTestTransition comm:%p, sender:%ld receiver:%ld mbox:%u sbuff:%p rbuff:%p size:%zu", comm_, sender_,
             receiver_, mbox_, src_buff_, dst_buff_, size_);
 }
@@ -101,7 +101,7 @@ bool CommTestTransition::depends(const Transition* other) const
 CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_RECV, issuer, times_considered)
 {
-  stream >> mbox_ >> dst_buff_;
+  xbt_assert(stream >> mbox_ >> dst_buff_);
 }
 std::string CommRecvTransition::to_string(bool verbose) const
 {
@@ -150,7 +150,7 @@ bool CommRecvTransition::depends(const Transition* other) const
 CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_SEND, issuer, times_considered)
 {
-  stream >> mbox_ >> src_buff_ >> size_;
+  xbt_assert(stream >> mbox_ >> src_buff_ >> size_);
   XBT_DEBUG("SendTransition mbox:%u buff:%p size:%zu", mbox_, src_buff_, size_);
 }
 std::string CommSendTransition::to_string(bool verbose = false) const
@@ -165,7 +165,7 @@ TestAnyTransition::TestAnyTransition(aid_t issuer, int times_considered, std::st
     : Transition(Type::TESTANY, issuer, times_considered)
 {
   int size;
-  stream >> size;
+  xbt_assert(stream >> size);
   for (int i = 0; i < size; i++) {
     Transition* t = deserialize_transition(issuer, 0, stream);
     XBT_DEBUG("TestAny received a transition %s", t->to_string(true).c_str());
@@ -188,7 +188,7 @@ WaitAnyTransition::WaitAnyTransition(aid_t issuer, int times_considered, std::st
     : Transition(Type::WAITANY, issuer, times_considered)
 {
   int size;
-  stream >> size;
+  xbt_assert(stream >> size);
   for (int i = 0; i < size; i++) {
     Transition* t = deserialize_transition(issuer, 0, stream);
     transitions_.push_back(t);
@@ -246,7 +246,7 @@ bool CommSendTransition::depends(const Transition* other) const
 Transition* deserialize_transition(aid_t issuer, int times_considered, std::stringstream& stream)
 {
   short type;
-  stream >> type;
+  xbt_assert(stream >> type);
   xbt_assert(type >= 0 && type <= static_cast<short>(Transition::Type::UNKNOWN), "Invalid transition type %d received",
              type);
 
