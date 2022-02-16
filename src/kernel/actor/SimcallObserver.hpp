@@ -218,11 +218,11 @@ class CommIsendSimcall : public SimcallObserver {
   void* payload_;
   bool detached_;
 
-public:
   bool (*match_fun_)(void*, void*, activity::CommImpl*);
   void (*clean_fun_)(void*); // used to free the synchro in case of problem after a detached send
   void (*copy_data_fun_)(activity::CommImpl*, void*, size_t); // used to copy data if not default one
 
+public:
   CommIsendSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, double payload_size, double rate,
                    unsigned char* src_buff, size_t src_buff_size, bool (*match_fun)(void*, void*, activity::CommImpl*),
                    void (*clean_fun)(void*), // used to free the synchro in case of problem after a detached send
@@ -250,6 +250,10 @@ public:
   size_t get_src_buff_size() const { return src_buff_size_; }
   void* get_payload() const { return payload_; }
   bool is_detached() const { return detached_; }
+
+  auto get_match_fun() const { return match_fun_; }
+  auto get_clean_fun() const { return clean_fun_; }
+  auto get_copy_data_fun() const { return copy_data_fun_; }
 };
 
 class CommIrecvSimcall : public SimcallObserver {
@@ -259,10 +263,10 @@ class CommIrecvSimcall : public SimcallObserver {
   void* payload_;
   double rate_;
 
-public:
   bool (*match_fun_)(void*, void*, activity::CommImpl*);
   void (*copy_data_fun_)(activity::CommImpl*, void*, size_t); // used to copy data if not default one
 
+public:
   CommIrecvSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, unsigned char* dst_buff, size_t* dst_buff_size,
                    bool (*match_fun)(void*, void*, activity::CommImpl*),
                    void (*copy_data_fun)(activity::CommImpl*, void*, size_t), void* payload, double rate)
@@ -283,6 +287,9 @@ public:
   unsigned char* get_dst_buff() const { return dst_buff_; }
   size_t* get_dst_buff_size() const { return dst_buff_size_; }
   void* get_payload() const { return payload_; }
+
+  auto get_match_fun() const { return match_fun_; };
+  auto get_copy_data_fun() const { return copy_data_fun_; }
 };
 
 } // namespace actor

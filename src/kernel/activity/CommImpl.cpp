@@ -267,7 +267,7 @@ void CommImpl::copy_data()
   copied_ = true;
 }
 
-ActivityImplPtr CommImpl::isend(actor::CommIsendSimcall* observer)
+ActivityImplPtr CommImpl::isend(const actor::CommIsendSimcall* observer)
 {
   auto* mbox = observer->get_mailbox();
   XBT_DEBUG("send from mailbox %p", mbox);
@@ -280,7 +280,7 @@ ActivityImplPtr CommImpl::isend(actor::CommIsendSimcall* observer)
    *
    * If it is not found then push our communication into the rendez-vous point */
   CommImplPtr other_comm =
-      mbox->find_matching_comm(CommImpl::Type::RECEIVE, observer->match_fun_, observer->get_payload(), this_comm,
+      mbox->find_matching_comm(CommImpl::Type::RECEIVE, observer->get_match_fun(), observer->get_payload(), this_comm,
                                /*done*/ false, /*remove_matching*/ true);
 
   if (not other_comm) {
@@ -304,7 +304,7 @@ ActivityImplPtr CommImpl::isend(actor::CommIsendSimcall* observer)
 
   if (observer->is_detached()) {
     other_comm->detach();
-    other_comm->clean_fun = observer->clean_fun_;
+    other_comm->clean_fun = observer->get_clean_fun();
   } else {
     other_comm->clean_fun = nullptr;
     observer->get_issuer()->activities_.emplace_back(other_comm);
@@ -318,8 +318,8 @@ ActivityImplPtr CommImpl::isend(actor::CommIsendSimcall* observer)
       .set_size(observer->get_payload_size())
       .set_rate(observer->get_rate());
 
-  other_comm->match_fun     = observer->match_fun_;
-  other_comm->copy_data_fun = observer->copy_data_fun_;
+  other_comm->match_fun     = observer->get_match_fun();
+  other_comm->copy_data_fun = observer->get_copy_data_fun();
 
   if (MC_is_active() || MC_record_replay_is_active())
     other_comm->set_state(simgrid::kernel::activity::State::RUNNING);
@@ -329,7 +329,7 @@ ActivityImplPtr CommImpl::isend(actor::CommIsendSimcall* observer)
   return (observer->is_detached() ? nullptr : other_comm);
 }
 
-ActivityImplPtr CommImpl::irecv(actor::CommIrecvSimcall* observer)
+ActivityImplPtr CommImpl::irecv(const actor::CommIrecvSimcall* observer)
 {
   CommImplPtr this_synchro(new CommImpl(CommImpl::Type::RECEIVE));
   auto* mbox = observer->get_mailbox();
@@ -340,7 +340,7 @@ ActivityImplPtr CommImpl::irecv(actor::CommIrecvSimcall* observer)
   if (mbox->is_permanent() && mbox->has_some_done_comm()) {
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
     // find a match in the list of already received comms
-    other_comm = mbox->find_matching_comm(CommImpl::Type::SEND, observer->match_fun_, observer->get_payload(),
+    other_comm = mbox->find_matching_comm(CommImpl::Type::SEND, observer->get_match_fun(), observer->get_payload(),
                                           this_synchro, /*done*/ true, /*remove_matching*/ true);
     // if not found, assume the receiver came first, register it to the mailbox in the classical way
     if (not other_comm) {
@@ -362,7 +362,7 @@ ActivityImplPtr CommImpl::irecv(actor::CommIrecvSimcall* observer)
      * ourself so that the other side also gets a chance of choosing if it wants to match with us.
      *
      * If it is not found then push our communication into the rendez-vous point */
-    other_comm = mbox->find_matching_comm(CommImpl::Type::SEND, observer->match_fun_, observer->get_payload(),
+    other_comm = mbox->find_matching_comm(CommImpl::Type::SEND, observer->get_match_fun(), observer->get_payload(),
                                           this_synchro, /*done*/ false, /*remove_matching*/ true);
 
     if (other_comm == nullptr) {
@@ -385,8 +385,8 @@ ActivityImplPtr CommImpl::irecv(actor::CommIrecvSimcall* observer)
   if (observer->get_rate() > -1.0 && (other_comm->get_rate() < 0.0 || observer->get_rate() < other_comm->get_rate()))
     other_comm->set_rate(observer->get_rate());
 
-  other_comm->match_fun     = observer->match_fun_;
-  other_comm->copy_data_fun = observer->copy_data_fun_;
+  other_comm->match_fun     = observer->get_match_fun();
+  other_comm->copy_data_fun = observer->get_copy_data_fun();
 
   if (MC_is_active() || MC_record_replay_is_active()) {
     other_comm->set_state(State::RUNNING);
