@@ -224,7 +224,7 @@ const char* SIMIX_simcall_name(const s_smx_simcall& simcall)
       cname += 17; // strip prefix "simgrid::kernel::"
     return cname;
   } else {
-    return simcall_names[static_cast<int>(simcall.call_)];
+    return simcall_names.at(static_cast<int>(simcall.call_));
   }
 }
 

@@ -22,7 +22,7 @@
   static constexpr char const* to_c_str(EnumType value)                                                                \
   {                                                                                                                    \
     constexpr std::array<const char*, _XBT_COUNT_ARGS(__VA_ARGS__)> names{{_XBT_STRINGIFY_ARGS(__VA_ARGS__)}};         \
-    return names[static_cast<int>(value)];                                                                             \
+    return names.at(static_cast<int>(value));                                                                          \
   }                                                                                                                    \
   enum class EnumType { __VA_ARGS__ } /* defined here to handle trailing semicolon */
 
