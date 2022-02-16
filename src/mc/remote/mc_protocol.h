@@ -35,12 +35,11 @@ XBT_DECLARE_ENUM_CLASS(MessageType, NONE, INITIAL_ADDRESSES, CONTINUE, IGNORE_HE
                        SIMCALL_EXECUTE_ANSWER, SIMCALL_IS_VISIBLE, SIMCALL_IS_VISIBLE_ANSWER, ASSERTION_FAILED,
                        ACTOR_ENABLED, ACTOR_ENABLED_REPLY, FINALIZE);
 
-#define SIMCALL_SERIALIZATION_BUFFER_SIZE 2048
-
 } // namespace mc
 } // namespace simgrid
 
 constexpr unsigned MC_MESSAGE_LENGTH = 512;
+constexpr unsigned SIMCALL_SERIALIZATION_BUFFER_SIZE = 2048;
 
 /** Basic structure for a MC message
  *
@@ -105,7 +104,7 @@ struct s_mc_message_simcall_execute_t {
 };
 struct s_mc_message_simcall_execute_answer_t {
   simgrid::mc::MessageType type;
-  char buffer[SIMCALL_SERIALIZATION_BUFFER_SIZE];
+  std::array<char, SIMCALL_SERIALIZATION_BUFFER_SIZE> buffer;
 };
 
 struct s_mc_message_restore_t {
