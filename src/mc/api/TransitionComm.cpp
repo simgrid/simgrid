@@ -167,7 +167,6 @@ TestAnyTransition::TestAnyTransition(aid_t issuer, int times_considered, std::st
   int size;
   stream >> size;
   for (int i = 0; i < size; i++) {
-
     Transition* t = deserialize_transition(issuer, 0, stream);
     XBT_DEBUG("TestAny received a transition %s", t->to_string(true).c_str());
     transitions_.push_back(t);

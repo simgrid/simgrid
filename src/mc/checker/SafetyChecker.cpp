@@ -113,7 +113,6 @@ void SafetyChecker::run()
     int next = state->next_transition();
 
     if (next < 0) { // If there is no more transition in the current state, backtrack.
-
       XBT_DEBUG("There remains %zu actors, but none to interleave (depth %zu).",
                 mc_model_checker->get_remote_process().actors().size(), stack_.size() + 1);
 

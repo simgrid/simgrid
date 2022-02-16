@@ -548,8 +548,8 @@ namespace xxh
 	enum class error_code : uint8_t { ok = 0, error };
 
 	template <size_t N>
-	class hash_state_t {
-
+	class hash_state_t
+	{
 		uint64_t total_len = 0;
 		hash_t<N> v1 = 0, v2 = 0, v3 = 0, v4 = 0;
 		std::array<hash_t<N>, 4> mem = {{ 0,0,0,0 }};
