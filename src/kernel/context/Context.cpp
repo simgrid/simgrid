@@ -25,7 +25,7 @@ unsigned stack_size;
 unsigned guard_size;
 
 /** @brief Returns whether some parallel threads are used for the user contexts. */
-int is_parallel()
+bool is_parallel()
 {
   return parallel_contexts > 1;
 }

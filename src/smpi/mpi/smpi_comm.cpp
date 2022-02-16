@@ -242,14 +242,14 @@ bool Comm::is_uniform() const
 {
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->is_uniform();
-  return is_uniform_ != 0;
+  return is_uniform_;
 }
 
 bool Comm::is_blocked() const
 {
   if (this == MPI_COMM_UNINITIALIZED)
     return smpi_process()->comm_world()->is_blocked();
-  return is_blocked_ != 0;
+  return is_blocked_;
 }
 
 bool Comm::is_smp_comm() const
@@ -474,8 +474,9 @@ void Comm::init_smp(){
 
   // Are the nodes uniform ? = same number of process/node
   int my_local_size=comm_intra->size();
+  int is_uniform;
   if(comm_intra->rank()==0) {
-    int is_uniform       = 1;
+    is_uniform            = 1;
     auto* non_uniform_map = xbt_new0(int, leader_group_size);
     allgather__ring(&my_local_size, 1, MPI_INT,
         non_uniform_map, 1, MPI_INT, leader_comm);
@@ -490,9 +491,9 @@ void Comm::init_smp(){
     }else{
       xbt_free(non_uniform_map);
     }
-    is_uniform_=is_uniform;
   }
-  bcast__scatter_LR_allgather(&is_uniform_, 1, MPI_INT, 0, comm_intra);
+  bcast__scatter_LR_allgather(&is_uniform, 1, MPI_INT, 0, comm_intra);
+  is_uniform_ = (is_uniform != 0);
 
   // we need to switch as the called function may silently touch global variables
   smpi_switch_data_segment(s4u::Actor::self());
@@ -512,13 +513,8 @@ void Comm::init_smp(){
   int global_blocked;
   allreduce__default(&is_blocked, &global_blocked, 1, MPI_INT, MPI_LAND, this);
 
-  if(MPI_COMM_WORLD==MPI_COMM_UNINITIALIZED || this==MPI_COMM_WORLD){
-    if(this->rank()==0){
-      is_blocked_ = global_blocked;
-    }
-  }else{
-    is_blocked_=global_blocked;
-  }
+  if ((MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED && this != MPI_COMM_WORLD) || this->rank() == 0)
+    is_blocked_ = (global_blocked != 0);
   delete[] leader_list;
 
   if(replaying)

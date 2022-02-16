@@ -110,7 +110,7 @@ XBT_PRIVATE ContextFactory* sysv_factory();
 XBT_PRIVATE ContextFactory* raw_factory();
 XBT_PRIVATE ContextFactory* boost_factory();
 
-XBT_PUBLIC int is_parallel();
+XBT_PUBLIC bool is_parallel();
 XBT_PUBLIC int get_nthreads();
 XBT_PUBLIC void set_nthreads(int nb_threads);
 XBT_PUBLIC void set_parallel_mode(e_xbt_parmap_mode_t mode);
