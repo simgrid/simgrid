@@ -21,6 +21,40 @@ namespace mc {
 
 enum class CallType { NONE, SEND, RECV, WAIT, WAITANY };
 enum class CommPatternDifference { NONE, TYPE, RDV, TAG, SRC_PROC, DST_PROC, DATA_SIZE, DATA };
+enum class PatternCommunicationType {
+  none    = 0,
+  send    = 1,
+  receive = 2,
+};
+
+class PatternCommunication {
+public:
+  int num = 0;
+  RemotePtr<simgrid::kernel::activity::CommImpl> comm_addr{nullptr};
+  PatternCommunicationType type = PatternCommunicationType::send;
+  unsigned long src_proc        = 0;
+  unsigned long dst_proc        = 0;
+  std::string rdv;
+  std::vector<char> data;
+  int tag   = 0;
+  int index = 0;
+
+  PatternCommunication dup() const
+  {
+    simgrid::mc::PatternCommunication res;
+    // num?
+    res.comm_addr = this->comm_addr;
+    res.type      = this->type;
+    // src_proc?
+    // dst_proc?
+    res.dst_proc = this->dst_proc;
+    res.rdv      = this->rdv;
+    res.data     = this->data;
+    // tag?
+    res.index = this->index;
+    return res;
+  }
+};
 
 struct PatternCommunicationList {
   unsigned int index_comm = 0;
