@@ -222,7 +222,7 @@ void ActorExt::init()
 
   const simgrid::s4u::Actor* self = simgrid::s4u::Actor::self();
   ext->instance_id_ = self->get_property("instance_id");
-  const int rank    = xbt_str_parse_int(self->get_property("rank"), "Cannot parse rank");
+  const int rank = static_cast<int>(xbt_str_parse_int(self->get_property("rank"), "Cannot parse rank"));
 
   ext->state_ = SmpiProcessState::INITIALIZING;
   smpi_deployment_register_process(ext->instance_id_, rank, self);
