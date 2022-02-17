@@ -166,16 +166,6 @@ static simgrid::mc::CommPatternDifference compare_comm_pattern(const simgrid::mc
   return CommPatternDifference::NONE;
 }
 
-static void patterns_copy(std::vector<simgrid::mc::PatternCommunication*>& dest,
-                             std::vector<simgrid::mc::PatternCommunication> const& source)
-{
-  dest.clear();
-  for (simgrid::mc::PatternCommunication const& comm : source) {
-    auto* copy_comm = new simgrid::mc::PatternCommunication(comm.dup());
-    dest.push_back(copy_comm);
-  }
-}
-
 void CommDetExtension::restore_communications_pattern(simgrid::mc::State* state)
 {
   for (size_t i = 0; i < initial_communications_pattern.size(); i++)
@@ -183,9 +173,12 @@ void CommDetExtension::restore_communications_pattern(simgrid::mc::State* state)
         state->extension<simgrid::mc::StateCommDet>()->communication_indices_[i];
 
   const unsigned long maxpid = api::get().get_maxpid();
-  for (unsigned long i = 0; i < maxpid; i++)
-    patterns_copy(incomplete_communications_pattern[i],
-                  state->extension<simgrid::mc::StateCommDet>()->incomplete_comm_pattern_[i]);
+  for (unsigned long i = 0; i < maxpid; i++) {
+    incomplete_communications_pattern[i].clear();
+    for (simgrid::mc::PatternCommunication const& comm :
+         state->extension<simgrid::mc::StateCommDet>()->incomplete_comm_pattern_[i])
+      incomplete_communications_pattern[i].push_back(new simgrid::mc::PatternCommunication(comm.dup()));
+  }
 }
 
 static std::string print_determinism_result(simgrid::mc::CommPatternDifference diff, aid_t process,
@@ -428,7 +421,7 @@ void CommunicationDeterminismChecker::restoreState()
 {
   auto extension = this->extension<CommDetExtension>();
 
-  /* Intermediate backtracking */
+  /* If asked to rollback on a state that has a snapshot, restore it */
   State* last_state = stack_.back().get();
   if (last_state->system_state_) {
     api::get().restore_state(last_state->system_state_);
@@ -436,6 +429,7 @@ void CommunicationDeterminismChecker::restoreState()
     return;
   }
 
+  /* if no snapshot, we need to restore the initial state and replay the transitions */
   get_session().restore_initial_state();
 
   const unsigned long maxpid = api::get().get_maxpid();
@@ -451,8 +445,8 @@ void CommunicationDeterminismChecker::restoreState()
     if (state == stack_.back())
       break;
 
-    int req_num                    = state->get_transition()->times_considered_;
-    const s_smx_simcall* saved_req = &state->executed_req_;
+    auto* transition = state->get_transition();
+    auto* saved_req  = &state->executed_req_;
     xbt_assert(saved_req);
 
     /* because we got a copy of the executed request, we have to fetch the
@@ -463,8 +457,8 @@ void CommunicationDeterminismChecker::restoreState()
 
     /* TODO : handle test and testany simcalls */
     CallType call = MC_get_call_type(req);
-    state->get_transition()->replay();
-    extension->handle_comm_pattern(call, req, req_num, true);
+    transition->replay();
+    extension->handle_comm_pattern(call, req, transition->times_considered_, true);
 
     /* Update statistics */
     api::get().mc_inc_visited_states();
