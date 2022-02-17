@@ -6,6 +6,10 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
+"""
+Usage: python generate.py nb_nodes nb_bits end_date > deployment_file.xml
+"""
+
 import sys
 import random
 

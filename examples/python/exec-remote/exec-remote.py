@@ -3,8 +3,8 @@
 # This program is free software you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-from simgrid import Actor, Engine, Host, this_actor
 import sys
+from simgrid import Actor, Engine, Host, this_actor
 
 
 class Wizard:
@@ -21,7 +21,8 @@ class Wizard:
         this_actor.info("It started. Running 48.492Mf takes exactly one second on Ginette (but not on Fafard).")
 
         this_actor.sleep_for(0.1)
-        this_actor.info("Loads in flops/s: Boivin={:.0f}; Fafard={:.0f}; Ginette={:.0f}".format(boivin.load, fafard.load,
+        this_actor.info("Loads in flops/s: Boivin={:.0f}; Fafard={:.0f}; Ginette={:.0f}".format(boivin.load,
+                                                                                                fafard.load,
                                                                                                 ginette.load))
         activity.wait()
         this_actor.info("Done!")

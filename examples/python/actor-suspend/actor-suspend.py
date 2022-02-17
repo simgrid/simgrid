@@ -3,8 +3,12 @@
 # This program is free software you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-from simgrid import Actor, Engine, this_actor
+"""
+Usage: actor-suspend.py platform_file [other parameters]
+"""
+
 import sys
+from simgrid import Actor, Engine, this_actor
 
 
 def lazy_guy():

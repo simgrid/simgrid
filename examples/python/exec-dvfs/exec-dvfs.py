@@ -3,8 +3,12 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-from simgrid import Actor, Engine, Host, this_actor
+"""
+Usage: exec-dvfs.py platform_file [other parameters]
+"""
+
 import sys
+from simgrid import Actor, Engine, Host, this_actor
 
 
 class Dvfs:
@@ -26,7 +30,8 @@ class Dvfs:
         # Change power peak
         new_pstate = 2
 
-        this_actor.info("Changing power peak value to {:f} (at index {:d})".format( host.pstate_speed(new_pstate), new_pstate))
+        this_actor.info("Changing power peak value to {:f} (at index {:d})".format(host.pstate_speed(new_pstate),
+                                                                                   new_pstate))
 
         host.pstate = new_pstate
 
@@ -47,7 +52,8 @@ class Dvfs:
 if __name__ == '__main__':
     e = Engine(sys.argv)
     if len(sys.argv) < 2:
-        raise AssertionError("Usage: exec-dvfs.py platform_file [other parameters] (got {:d} params)".format(len(sys.argv)))
+        raise AssertionError("Usage: exec-dvfs.py platform_file [other parameters] (got {:d} params)"
+                             .format(len(sys.argv)))
 
     e.load_platform(sys.argv[1])
     Actor.create("dvfs_test", Host.by_name("MyHost1"), Dvfs())

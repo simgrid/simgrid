@@ -6,10 +6,12 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-# This script generates a specific deployment file for the Bittorrent example.
-# It assumes that the platform will be a cluster.
-# Usage: python generate.py nb_nodes nb_bits end_date percentage
-# Example: python generate.py 10000 5000
+"""
+This script generates a specific deployment file for the Bittorrent example.
+It assumes that the platform will be a cluster.
+Usage: python generate.py nb_nodes nb_bits end_date percentage
+Example: python generate.py 10000 5000
+"""
 
 import sys
 import random

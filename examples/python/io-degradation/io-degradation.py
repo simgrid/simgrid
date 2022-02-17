@@ -3,20 +3,22 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-# This example shows how to simulate a non-linear resource sharing for disk
-# operations.
-#
-# It is inspired on the paper
-# "Adding Storage Simulation Capacities to the SimGridToolkit: Concepts, Models, and API"
-# Available at : https://hal.inria.fr/hal-01197128/document
-#
-# It shows how to simulate concurrent operations degrading overall performance of IO
-# operations (specifically the effects presented in Fig. 8 of the paper).
+"""
+This example shows how to simulate a non-linear resource sharing for disk
+operations.
+
+It is inspired on the paper
+"Adding Storage Simulation Capacities to the SimGridToolkit: Concepts, Models, and API"
+Available at : https://hal.inria.fr/hal-01197128/document
+
+It shows how to simulate concurrent operations degrading overall performance of IO
+operations (specifically the effects presented in Fig. 8 of the paper).
+"""
 
 
-from simgrid import Actor, Engine, NetZone, Host, Disk, this_actor
-import sys
 import functools
+import sys
+from simgrid import Actor, Engine, NetZone, Host, Disk, this_actor
 
 
 def estimate_bw(disk: Disk, n_flows: int, read: bool):
@@ -35,7 +37,7 @@ def estimate_bw(disk: Disk, n_flows: int, read: bool):
         disk.name, "read" if read else "write", n_flows, estimated_bw))
 
 
-def host():
+def host_runner():
     # Estimating bw for each disk and considering concurrent flows
     for n in range(1, 15, 2):
         for disk in Host.current().get_disks():
@@ -57,11 +59,12 @@ def ssd_dynamic_sharing(disk: Disk, op: str, capacity: float, n: int) -> float:
     # measurements for SSD disks
     speed = {
         "write": {1: 131.},
-        "read": {1: 152., 2: 161., 3: 184., 4: 197., 5: 207., 6: 215., 7: 220., 8: 224., 9: 227., 10: 231., 11: 233., 12: 235., 13: 237., 14: 238., 15: 239.}
+        "read": {1: 152., 2: 161., 3: 184., 4: 197., 5: 207., 6: 215., 7: 220., 8: 224., 9: 227., 10: 231., 11: 233.,
+                 12: 235., 13: 237., 14: 238., 15: 239.}
     }
 
     # no special bandwidth for this disk sharing N flows, just returns maximal capacity
-    if (n in speed[op]):
+    if n in speed[op]:
         capacity = speed[op][n]
 
     return capacity
@@ -112,7 +115,7 @@ if __name__ == '__main__':
     create_sata_disk(bob, "Griffon (SATA II)")
     zone.seal()
 
-    Actor.create("runner", bob, host)
+    Actor.create("runner", bob, host_runner)
 
     e.run()
     this_actor.info("Simulated time: %g" % e.clock)
@@ -121,4 +124,4 @@ if __name__ == '__main__':
     # During Engine destruction, the cleanup of std::function linked to non_linear callback is called.
     # If we let the cleanup by itself, it fails trying on its destruction because the python main program
     # has already freed its variables
-    del(e)
+    del e

@@ -3,21 +3,23 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-# This example shows how to declare and start your actors.
-#
-# The first step is to declare the code of your actors (what they do exactly does not matter to this example) and then
-# you ask SimGrid to start your actors. There is three ways of doing so:
-# - Directly, by instantiating your actor as parameter to Actor::create()
-# - By first registering your actors before instantiating it;
-# - Through the deployment file.
-#
-# This example shows all these solutions, even if you obviously should use only one of these solutions to start your
-# actors. The most advised solution is to use a deployment file, as it creates a clear separation between your
-# application and the settings to test it. This is a better scientific methodology. Actually, starting an actor with
-# Actor.create() is mostly useful to start an actor from another actor.
+"""
+This example shows how to declare and start your actors.
 
-from simgrid import Actor, Engine, Host, Mailbox, this_actor
+The first step is to declare the code of your actors (what they do exactly does not matter to this example) and then
+you ask SimGrid to start your actors. There is three ways of doing so:
+- Directly, by instantiating your actor as parameter to Actor::create()
+- By first registering your actors before instantiating it;
+- Through the deployment file.
+
+This example shows all these solutions, even if you obviously should use only one of these solutions to start your
+actors. The most advised solution is to use a deployment file, as it creates a clear separation between your
+application and the settings to test it. This is a better scientific methodology. Actually, starting an actor with
+Actor.create() is mostly useful to start an actor from another actor.
+"""
+
 import sys
+from simgrid import Actor, Engine, Host, Mailbox, this_actor
 
 
 def receiver(mailbox_name):

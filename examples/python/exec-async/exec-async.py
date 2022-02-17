@@ -3,12 +3,19 @@
 # This program is free software you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-from simgrid import Actor, Engine, Host, this_actor
+"""
+Usage: exec-async.py platform_file [other parameters]
+"""
+
 import sys
+from simgrid import Actor, Engine, Host, this_actor
 
 
 class Waiter:
-    """ This actor simply waits for its task completion after starting it. That's exactly equivalent to synchronous execution. """
+    """
+    This actor simply waits for its task completion after starting it.
+    That's exactly equivalent to synchronous execution.
+    """
 
     def __call__(self):
         computation_amount = this_actor.get_host().speed

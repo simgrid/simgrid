@@ -3,21 +3,21 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-# This example shows how to simulate a non-linear resource sharing for
-# CPUs.
+"""
+This example shows how to simulate a non-linear resource sharing for CPUs.
+"""
 
-
-from simgrid import Actor, Engine, NetZone, Host, this_actor
-import sys
 import functools
+import sys
+from simgrid import Actor, Engine, NetZone, Host, this_actor
 
 
 def runner():
     computation_amount = this_actor.get_host().speed
     n_task = 10
 
-    this_actor.info("Execute %d tasks of %g flops, should take %d second in a CPU without degradation. It will take the double here." % (
-        n_task, computation_amount, n_task))
+    this_actor.info("Execute %d tasks of %g flops, should take %d second in a CPU without degradation. \
+It will take the double here." % (n_task, computation_amount, n_task))
     tasks = [this_actor.exec_init(computation_amount).start()
              for _ in range(n_task)]
 
@@ -64,4 +64,4 @@ if __name__ == '__main__':
     # During Engine destruction, the cleanup of std::function linked to non_linear callback is called.
     # If we let the cleanup by itself, it fails trying on its destruction because the python main program
     # has already freed its variables
-    del(e)
+    del e

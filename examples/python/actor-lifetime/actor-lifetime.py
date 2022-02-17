@@ -3,17 +3,19 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-# This Python file acts as the foil to the corresponding XML file, where the
-# action takes place: Actors are started and stopped at predefined time
+"""
+This Python file acts as the foil to the corresponding XML file, where the
+action takes place: Actors are started and stopped at predefined time
+"""
 
-from simgrid import Engine, this_actor
 import sys
+from simgrid import Engine, this_actor
 
 
 class Sleeper:
     """This actor just sleeps until termination"""
 
-    def __init__(self, *args):
+    def __init__(self):
         this_actor.on_exit(lambda: this_actor.info("Exiting now (done sleeping or got killed)."))
 
     def __call__(self):
