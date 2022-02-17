@@ -188,8 +188,8 @@ void CommDetExtension::restore_communications_pattern(simgrid::mc::State* state)
                   state->extension<simgrid::mc::StateCommDet>()->incomplete_comm_pattern_[i]);
 }
 
-std::string print_determinism_result(simgrid::mc::CommPatternDifference diff, aid_t process,
-                                     const simgrid::mc::PatternCommunication* comm, unsigned int cursor)
+static std::string print_determinism_result(simgrid::mc::CommPatternDifference diff, aid_t process,
+                                            const simgrid::mc::PatternCommunication* comm, unsigned int cursor)
 {
   std::string type;
   std::string res;
@@ -243,19 +243,19 @@ static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
   }
 }
 
-void CommDetExtension::deterministic_comm_pattern(aid_t process, const PatternCommunication* comm, bool backtracking)
+void CommDetExtension::deterministic_comm_pattern(aid_t actor, const PatternCommunication* comm, bool backtracking)
 {
   if (not backtracking) {
-    PatternCommunicationList& list = initial_communications_pattern[process];
+    PatternCommunicationList& list = initial_communications_pattern[actor];
     CommPatternDifference diff     = compare_comm_pattern(list.list[list.index_comm].get(), comm);
 
     if (diff != CommPatternDifference::NONE) {
       if (comm->type == PatternCommunicationType::send) {
         send_deterministic = false;
-        send_diff = print_determinism_result(diff, process, comm, list.index_comm + 1);
+        send_diff          = print_determinism_result(diff, actor, comm, list.index_comm + 1);
       } else {
         recv_deterministic = false;
-        recv_diff = print_determinism_result(diff, process, comm, list.index_comm + 1);
+        recv_diff          = print_determinism_result(diff, actor, comm, list.index_comm + 1);
       }
       if (_sg_mc_send_determinism && not send_deterministic) {
         XBT_INFO("*********************************************************");
