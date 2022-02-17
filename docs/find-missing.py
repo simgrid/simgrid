@@ -15,7 +15,6 @@ This script is tailored to SimGrid own needs.
 If you are missing some dependencies, try:  pip3 install --requirement docs/requirements.txt
 """
 
-import fnmatch
 import os
 import re
 import sys
@@ -81,7 +80,7 @@ def handle_python_module(fullname, englobing, elm):
 
 
     if fullname in python_ignore:
-        print ("Ignore Python symbol '{}' as requested.".format(fullname))
+        print("Ignore Python symbol '{}' as requested.".format(fullname))
         return
 
     if inspect.isroutine(elm) and inspect.isclass(englobing):
@@ -93,7 +92,7 @@ def handle_python_module(fullname, englobing, elm):
     elif inspect.isdatadescriptor(elm):
         found_decl("attribute", fullname)
 #        print('.. autoattribute:: {}'.format(fullname))
-    elif isinstance(elm, str) or isinstance(elm, int): # We do have such a data, directly in the SimGrid top module
+    elif isinstance(elm, (int, str)): # We do have such a data, directly in the SimGrid top module
         found_decl("data", fullname)
 #        print('.. autodata:: {}'.format(fullname))
     elif inspect.ismodule(elm) or inspect.isclass(elm):
@@ -149,7 +148,7 @@ doxy_type = {} # {classname: [names]}
 # find the declarations in the XML files
 for arg in xml_files:
     if arg[-4:] != '.xml':
-        print ("Argument '{}' does not end with '.xml'".format(arg))
+        print("Argument '{}' does not end with '.xml'".format(arg))
         continue
     #print("Parse file {}".format(arg))
     tree = ET.parse(arg)
@@ -160,7 +159,7 @@ for arg in xml_files:
             if "compoundname" in elem:
                 raise Exception("Compound {} has no 'compoundname' child tag.".format(elem))
             compoundname = elem.find("compoundname").text
-            #print ("compoundname {}".format(compoundname))
+            #print("compoundname {}".format(compoundname))
         elif elem.attrib["kind"] == "file":
             compoundname = ""
         elif elem.attrib["kind"] == "namespace":
@@ -180,7 +179,7 @@ for arg in xml_files:
                 doxy_vars[compoundname].append(name)
             elif kind == "function":
                 args = member.find('argsstring').text
-                args = re.sub('\)[^)]*$', ')', args) # ignore what's after the parameters (eg, '=0' or ' const')
+                args = re.sub(r'\)[^)]*$', ')', args) # ignore what's after the parameters (eg, '=0' or ' const')
 
                 if compoundname not in doxy_funs:
                     doxy_funs[compoundname] = {}
@@ -194,7 +193,7 @@ for arg in xml_files:
             elif kind == "friend":
                 pass # Ignore friendship
             else:
-                print ("member {}::{} is of kind {}".format(compoundname, name, kind))
+                print("member {}::{} is of kind {}".format(compoundname, name, kind))
 
 # Forget about the declarations that are done in the RST
 with os.popen('grep doxygenfunction:: find-missing.ignore source/*rst|sed \'s/^.*doxygenfunction:: //\'|sed \'s/ *const//\'') as pse:
@@ -215,7 +214,7 @@ with os.popen('grep doxygenfunction:: find-missing.ignore source/*rst|sed \'s/^.
             print("Warning: Object '{}' documented but not found in '{}'".format(line, klass))
 #            for obj in doxy_funs[klass]:
 #                print("  found: {}::{}".format(klass, obj))
-        elif len(doxy_funs[klass][obj])==1:
+        elif len(doxy_funs[klass][obj]) == 1:
             del doxy_funs[klass][obj]
         elif args not in doxy_funs[klass][obj]:
             print("Warning: Function {}{} not found in {}".format(obj, args, klass))

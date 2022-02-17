@@ -10,11 +10,12 @@ import re
 import glob
 import sys
 
-class Arg(object):
+class Arg:
 
     def __init__(self, name, thetype):
         self.name = name
         self.type = thetype
+        self.simcall_types = []
 
     def field(self):
         return self.simcall_types[self.type]
@@ -23,7 +24,7 @@ class Arg(object):
         return self.type
 
 
-class Simcall(object):
+class Simcall:
     simcalls_body = None
     simcalls_pre = None
 
@@ -41,13 +42,13 @@ class Simcall(object):
             self.simcalls_body = set(re.findall(r'simcall_BODY_(.*?)\(', f.read()))
             f.close()
         if self.name not in self.simcalls_body:
-            print ('# ERROR: No function calling simcall_BODY_%s' % self.name)
-            print ('# Add something like this to libsmx.c:')
-            print ('%s simcall_%s(%s)' % (self.res.rettype(), self.name, ', '.
-                                          join('%s %s' % (arg.rettype(), arg.name) for arg in self.args)))
-            print ('{')
-            print ('  return simcall_BODY_%s(%s);' % (self.name, "..."))
-            print ('}')
+            print('# ERROR: No function calling simcall_BODY_%s' % self.name)
+            print('# Add something like this to libsmx.c:')
+            print('%s simcall_%s(%s)' % (self.res.rettype(), self.name, ', '.
+                                         join('%s %s' % (arg.rettype(), arg.name) for arg in self.args)))
+            print('{')
+            print('  return simcall_BODY_%s(%s);' % (self.name, "..."))
+            print('}')
             return False
 
         # smx_*.c void simcall_HANDLER_host_on(smx_simcall_t simcall,
@@ -61,20 +62,20 @@ class Simcall(object):
                 f.close()
         if self.need_handler:
             if self.name not in self.simcalls_pre:
-                print ('# ERROR: No function called simcall_HANDLER_%s' % self.name)
-                print ('# Add something like this to the relevant C file (like smx_io.c if it\'s an IO call):')
-                print ('%s simcall_HANDLER_%s(smx_simcall_t simcall%s)' % (self.res.rettype(), self.name, ''.
-                                                                           join(', %s %s' % (arg.rettype(), arg.name)for arg in self.args)))
-                print ('{')
-                print ('  // Your code handling the simcall')
-                print ('}')
+                print('# ERROR: No function called simcall_HANDLER_%s' % self.name)
+                print('# Add something like this to the relevant C file (like smx_io.c if it\'s an IO call):')
+                print('%s simcall_HANDLER_%s(smx_simcall_t simcall%s)' % (self.res.rettype(), self.name, ''.
+                                                                          join(', %s %s' % (arg.rettype(), arg.name)for arg in self.args)))
+                print('{')
+                print('  // Your code handling the simcall')
+                print('}')
                 return False
         else:
             if self.name in self.simcalls_pre:
-                print (
+                print(
                     '# ERROR: You have a function called simcall_HANDLER_%s, but that simcall is not using any handler' %
                     self.name)
-                print ('# Either change your simcall definition, or kill that function')
+                print('# Either change your simcall definition, or kill that function')
                 return False
         return True
 
@@ -89,8 +90,7 @@ class Simcall(object):
         res.append('')
         regex = re.compile(r"^boost::intrusive_ptr<(.*?)>(.*)$")  # to compute the raw type
         # Arguments getter/setters
-        for i in range(len(self.args)):
-            arg = self.args[i]
+        for i, arg in enumerate(self.args):
             rawtype = regex.sub(r'\1*\2', arg.rettype())
             res.append('static inline %s simcall_%s__get__%s(smx_simcall_t simcall)' % (
                 arg.rettype(), self.name, arg.name))
@@ -135,8 +135,8 @@ class Simcall(object):
         res.append(indent + 'case Simcall::%s:' % (self.name.upper()))
         if self.need_handler:
             call = "simcall_HANDLER_%s(&simcall_%s%s)" % (self.name,
-                                                        ", " if args else "",
-                                                        ', '.join(args))
+                                                          ", " if args else "",
+                                                          ', '.join(args))
         else:
             call = "SIMIX_%s(%s)" % (self.name, ', '.join(args))
         if self.call_kind == 'Func':
@@ -258,16 +258,16 @@ def handle(fd, func, simcalls, guarded_simcalls):
 
     fd.write('\n')
 
-if __name__ == '__main__':
+def main():
     simcalls, simcalls_dict = parse('simcalls.in')
 
     ok = True
     ok &= all(map(Simcall.check, simcalls))
-    for k, v in simcalls_dict.items():
+    for _k, v in simcalls_dict.items():
         ok &= all(map(Simcall.check, v))
     if not ok:
-      print ("Some checks fail!")
-      sys.exit(1)
+        print("Some checks fail!")
+        sys.exit(1)
 
     #
     # popping_accessors.hpp
@@ -394,3 +394,6 @@ inline static R simcall(Simcall call, T const&... t)
     handle(fd, Simcall.body, simcalls, simcalls_dict)
     fd.write("/** @endcond */\n")
     fd.close()
+
+if __name__ == '__main__':
+    main()
