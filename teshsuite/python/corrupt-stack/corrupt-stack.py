@@ -3,9 +3,11 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-# Second failing example for bug #9 on Framagit (Python bindings crashing)
-#
-# An intricate recursion is used to make the crash happen.
+"""
+Second failing example for bug #9 on Framagit (Python bindings crashing)
+
+An intricate recursion is used to make the crash happen.
+"""
 
 import sys
 from simgrid import Engine, this_actor

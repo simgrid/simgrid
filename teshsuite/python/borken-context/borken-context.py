@@ -3,12 +3,14 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-# First failing example for bug #9 on Framagit (Python bindings crashing)
-#
-# A heavy operation is added after e.run() (here, it's "import gc"). Note that
-# the failure only occurs when the actor "sender" starts first, and the
-# scheduling is interlaced: sender starts, receiver starts, sender terminates,
-# receiver terminates.
+"""
+First failing example for bug #9 on Framagit (Python bindings crashing)
+
+A heavy operation is added after e.run() (here, it's "import gc"). Note that
+the failure only occurs when the actor "sender" starts first, and the
+scheduling is interlaced: sender starts, receiver starts, sender terminates,
+receiver terminates.
+"""
 
 import sys
 from simgrid import Engine, this_actor
