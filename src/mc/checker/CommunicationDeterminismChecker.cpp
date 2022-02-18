@@ -83,7 +83,7 @@ struct CommDetExtension {
   std::string recv_diff;
 
   void restore_communications_pattern(const simgrid::mc::State* state);
-  void deterministic_comm_pattern(aid_t process, const PatternCommunication* comm, bool backtracking);
+  void deterministic_comm_pattern(aid_t process, const PatternCommunication* comm);
   void get_comm_pattern(const Transition* transition, bool backtracking);
   void complete_comm_pattern(const CommWaitTransition* transition, bool backtracking);
   void handle_comm_pattern(const Transition* transition, bool backtracking);
@@ -199,38 +199,36 @@ static std::string print_determinism_result(simgrid::mc::CommPatternDifference d
   return res;
 }
 
-void CommDetExtension::deterministic_comm_pattern(aid_t actor, const PatternCommunication* comm, bool backtracking)
+void CommDetExtension::deterministic_comm_pattern(aid_t actor, const PatternCommunication* comm)
 {
-  if (not backtracking) {
-    PatternCommunicationList& list = initial_communications_pattern[actor];
-    CommPatternDifference diff     = compare_comm_pattern(list.list[list.index_comm].get(), comm);
+  PatternCommunicationList& list = initial_communications_pattern[actor];
+  CommPatternDifference diff     = compare_comm_pattern(list.list[list.index_comm].get(), comm);
 
-    if (diff != CommPatternDifference::NONE) {
-      if (comm->type == PatternCommunicationType::send) {
-        send_deterministic = false;
-        send_diff          = print_determinism_result(diff, actor, comm, list.index_comm + 1);
-      } else {
-        recv_deterministic = false;
-        recv_diff          = print_determinism_result(diff, actor, comm, list.index_comm + 1);
-      }
-      if (_sg_mc_send_determinism && not send_deterministic) {
-        XBT_INFO("*********************************************************");
-        XBT_INFO("***** Non-send-deterministic communications pattern *****");
-        XBT_INFO("*********************************************************");
+  if (diff != CommPatternDifference::NONE) {
+    if (comm->type == PatternCommunicationType::send) {
+      send_deterministic = false;
+      send_diff          = print_determinism_result(diff, actor, comm, list.index_comm + 1);
+    } else {
+      recv_deterministic = false;
+      recv_diff          = print_determinism_result(diff, actor, comm, list.index_comm + 1);
+    }
+    if (_sg_mc_send_determinism && not send_deterministic) {
+      XBT_INFO("*********************************************************");
+      XBT_INFO("***** Non-send-deterministic communications pattern *****");
+      XBT_INFO("*********************************************************");
+      XBT_INFO("%s", send_diff.c_str());
+      api::get().log_state();
+      api::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
+    } else if (_sg_mc_comms_determinism && (not send_deterministic && not recv_deterministic)) {
+      XBT_INFO("****************************************************");
+      XBT_INFO("***** Non-deterministic communications pattern *****");
+      XBT_INFO("****************************************************");
+      if (not send_diff.empty())
         XBT_INFO("%s", send_diff.c_str());
-        api::get().log_state();
-        api::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
-      } else if (_sg_mc_comms_determinism && (not send_deterministic && not recv_deterministic)) {
-        XBT_INFO("****************************************************");
-        XBT_INFO("***** Non-deterministic communications pattern *****");
-        XBT_INFO("****************************************************");
-        if (not send_diff.empty())
-          XBT_INFO("%s", send_diff.c_str());
-        if (not recv_diff.empty())
-          XBT_INFO("%s", recv_diff.c_str());
-        api::get().log_state();
-        api::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
-      }
+      if (not recv_diff.empty())
+        XBT_INFO("%s", recv_diff.c_str());
+      api::get().log_state();
+      api::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
     }
   }
 }
@@ -259,7 +257,8 @@ void CommDetExtension::get_comm_pattern(const Transition* transition, bool backt
     if (false) { // send_detached) {
       if (initial_communications_pattern_done) {
         /* Evaluate comm determinism */
-        deterministic_comm_pattern(pattern->src_proc, pattern.get(), backtracking);
+        if (not backtracking)
+          deterministic_comm_pattern(pattern->src_proc, pattern.get());
         initial_communications_pattern[pattern->src_proc].index_comm++;
       } else {
         /* Store comm pattern */
@@ -303,7 +302,8 @@ void CommDetExtension::complete_comm_pattern(const CommWaitTransition* transitio
 
   if (initial_communications_pattern_done) {
     /* Evaluate comm determinism */
-    deterministic_comm_pattern(transition->aid_, comm_pattern.get(), backtracking);
+    if (not backtracking)
+      deterministic_comm_pattern(transition->aid_, comm_pattern.get());
     initial_communications_pattern[transition->aid_].index_comm++;
   } else {
     /* Store comm pattern */
