@@ -318,6 +318,10 @@ Transition* ModelChecker::handle_simcall(aid_t aid, int times_considered, bool n
   m.times_considered_ = times_considered;
   checker_side_.get_channel().send(m);
 
+  this->remote_process_->clear_cache();
+  if (this->remote_process_->running())
+    checker_side_.dispatch(); // The app may send messages while processing the transition
+
   s_mc_message_simcall_execute_answer_t answer;
   ssize_t s = checker_side_.get_channel().receive(answer);
   xbt_assert(s != -1, "Could not receive message");
@@ -326,10 +330,6 @@ Transition* ModelChecker::handle_simcall(aid_t aid, int times_considered, bool n
              "expected MessageType::SIMCALL_EXECUTE_ANSWER (%i, size=%i)",
              to_c_str(answer.type), (int)answer.type, (int)s, (int)MessageType::SIMCALL_EXECUTE_ANSWER,
              (int)sizeof(answer));
-
-  this->remote_process_->clear_cache();
-  if (this->remote_process_->running())
-    checker_side_.dispatch(); // The app may send messages while processing the transition
 
   if (new_transition) {
     std::stringstream stream(answer.buffer.data());

@@ -99,6 +99,11 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
   kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(message->aid_);
   xbt_assert(actor != nullptr, "Invalid pid %ld", message->aid_);
 
+  // The client may send some messages to the server while processing the transition
+  actor->simcall_handle(message->times_considered_);
+  // Say the server that the transition is over and that it should proceed
+  xbt_assert(channel_.send(MessageType::WAITING) == 0, "Could not send MESSAGE_WAITING to model-checker");
+
   // Finish the RPC from the server: return a serialized observer, to build a Transition on Checker side
   s_mc_message_simcall_execute_answer_t answer;
   memset(&answer, 0, sizeof(answer));
@@ -118,11 +123,6 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
   XBT_DEBUG("send SIMCALL_EXECUTE_ANSWER(%s) ~> '%s'", actor->get_cname(), str.c_str());
   xbt_assert(channel_.send(answer) == 0, "Could not send response");
 
-  // The client may send some messages to the server while processing the transition
-  actor->simcall_handle(message->times_considered_);
-
-  // Say the server that the transition is over and that it should proceed
-  xbt_assert(channel_.send(MessageType::WAITING) == 0, "Could not send MESSAGE_WAITING to model-checker");
 }
 
 void AppSide::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg) const
