@@ -1,5 +1,4 @@
-/* Copyright (c) 2015-2022. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2022. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,7 +7,7 @@
 #define SIMGRID_MC_TRANSITION_COMM_HPP
 
 #include "src/kernel/actor/SimcallObserver.hpp"
-#include "src/mc/api/Transition.hpp"
+#include "src/mc/transition/Transition.hpp"
 
 #include <sstream>
 #include <string>
@@ -129,28 +128,6 @@ public:
   size_t get_size() const { return size_; }
   /** If using SMPI, the tag */
   int get_tag() const { return tag_; }
-};
-
-class TestAnyTransition : public Transition {
-  std::vector<Transition*> transitions_;
-
-public:
-  TestAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream);
-  std::string to_string(bool verbose) const override;
-  bool depends(const Transition* other) const override;
-
-  Transition* get_current_transition() const { return transitions_.at(times_considered_); }
-};
-
-class WaitAnyTransition : public Transition {
-  std::vector<Transition*> transitions_;
-
-public:
-  WaitAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream);
-  std::string to_string(bool verbose) const override;
-  bool depends(const Transition* other) const override;
-
-  Transition* get_current_transition() const { return transitions_.at(times_considered_); }
 };
 
 /** Make a new transition from serialized description */

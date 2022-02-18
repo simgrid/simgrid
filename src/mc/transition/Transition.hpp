@@ -1,5 +1,4 @@
-/* Copyright (c) 2015-2022. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2022. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -70,16 +69,8 @@ public:
   static unsigned long get_replayed_transitions() { return replayed_transitions_; }
 };
 
-class RandomTransition : public Transition {
-  int min_;
-  int max_;
-
-public:
-  std::string to_string(bool verbose) const override;
-  std::string dot_label() const override;
-  RandomTransition(aid_t issuer, int times_considered, std::stringstream& stream);
-  bool depends(const Transition* other) const override { return false; } // Independent with any other transition
-};
+/** Make a new transition from serialized description */
+Transition* deserialize_transition(aid_t issuer, int times_considered, std::stringstream& stream);
 
 } // namespace mc
 } // namespace simgrid

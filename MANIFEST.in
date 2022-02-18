@@ -2341,10 +2341,6 @@ include src/mc/api.cpp
 include src/mc/api.hpp
 include src/mc/api/State.cpp
 include src/mc/api/State.hpp
-include src/mc/api/Transition.cpp
-include src/mc/api/Transition.hpp
-include src/mc/api/TransitionComm.cpp
-include src/mc/api/TransitionComm.hpp
 include src/mc/checker/Checker.hpp
 include src/mc/checker/CommunicationDeterminismChecker.cpp
 include src/mc/checker/LivenessChecker.cpp
@@ -2412,6 +2408,14 @@ include src/mc/sosp/Region.hpp
 include src/mc/sosp/Snapshot.cpp
 include src/mc/sosp/Snapshot.hpp
 include src/mc/sosp/Snapshot_test.cpp
+include src/mc/transition/Transition.cpp
+include src/mc/transition/Transition.hpp
+include src/mc/transition/TransitionAny.cpp
+include src/mc/transition/TransitionAny.hpp
+include src/mc/transition/TransitionComm.cpp
+include src/mc/transition/TransitionComm.hpp
+include src/mc/transition/TransitionRandom.cpp
+include src/mc/transition/TransitionRandom.hpp
 include src/mc/udpor_global.cpp
 include src/mc/udpor_global.hpp
 include src/msg/msg_comm.cpp

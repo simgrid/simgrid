@@ -6,11 +6,11 @@
 #include "src/mc/checker/SafetyChecker.hpp"
 #include "src/mc/Session.hpp"
 #include "src/mc/VisitedState.hpp"
-#include "src/mc/api/Transition.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
+#include "src/mc/transition/Transition.hpp"
 
 #include "src/xbt/mmalloc/mmprivate.h"
 #include "xbt/log.h"

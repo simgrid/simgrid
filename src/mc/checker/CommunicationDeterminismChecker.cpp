@@ -5,11 +5,12 @@
 
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/mc/Session.hpp"
-#include "src/mc/api/TransitionComm.hpp"
 #include "src/mc/checker/SafetyChecker.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
+#include "src/mc/transition/TransitionAny.hpp"
+#include "src/mc/transition/TransitionComm.hpp"
 
 #include <cstdint>
 

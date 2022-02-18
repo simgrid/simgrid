@@ -5,13 +5,12 @@
 
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/Session.hpp"
-#include "src/mc/api/Transition.hpp"
-#include "src/mc/api/TransitionComm.hpp"
 #include "src/mc/checker/Checker.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/remote/RemoteProcess.hpp"
+#include "src/mc/transition/TransitionComm.hpp"
 #include "xbt/automaton.hpp"
 #include "xbt/system_error.hpp"
 

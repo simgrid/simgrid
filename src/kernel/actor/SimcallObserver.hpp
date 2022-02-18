@@ -7,7 +7,7 @@
 #define SIMGRID_MC_SIMCALL_OBSERVER_HPP
 
 #include "simgrid/forward.h"
-#include "src/mc/api/Transition.hpp"
+#include "src/mc/transition/Transition.hpp"
 #include "xbt/asserts.h"
 
 #include <string>
