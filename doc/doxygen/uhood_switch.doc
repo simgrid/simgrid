@@ -336,7 +336,6 @@ struct s_smx_simcall {
   union u_smx_scalar result;
   // Some additional stuff:
   smx_timer_t timer;
-  int mc_value;
 };
 @endcode
 

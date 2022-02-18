@@ -31,6 +31,7 @@ public:
 
   /** Returns the amount of time that this transition can be used.
    *
+   * If it's 0, the transition is not enabled.
    * If it's 1 (as with send/wait), there is no need to fork the state space exploration on this point.
    * If it's more than one (as with mc_random or waitany), we need to consider this transition several times to start
    * differing branches

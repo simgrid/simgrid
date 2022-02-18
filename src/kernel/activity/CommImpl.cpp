@@ -28,7 +28,6 @@ XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t sr
   simgrid::kernel::actor::CommIsendSimcall observer(src, mbox, task_size, rate, src_buff, src_buff_size, match_fun,
                                                     nullptr, copy_data_fun, data, false);
   simgrid::kernel::activity::ActivityImplPtr comm = simgrid::kernel::activity::CommImpl::isend(&observer);
-  simcall->mc_value_ = 0;
   comm->wait_for(simcall->issuer_, timeout);
 }
 
@@ -54,7 +53,6 @@ XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t re
   simgrid::kernel::actor::CommIrecvSimcall observer(receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun,
                                                     data, rate);
   simgrid::kernel::activity::ActivityImplPtr comm = simgrid::kernel::activity::CommImpl::irecv(&observer);
-  simcall->mc_value_ = 0;
   comm->wait_for(simcall->issuer_, timeout);
 }
 
@@ -413,16 +411,8 @@ void CommImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   /* Associate this simcall to the wait synchro */
   register_simcall(&issuer->simcall_);
   if (MC_is_active() || MC_record_replay_is_active()) {
-    int idx = issuer->simcall_.mc_value_;
-    if (idx == 0) {
-      set_state(State::DONE);
-    } else {
-      /* If we reached this point, the wait simcall must have a timeout */
-      /* Otherwise it shouldn't be enabled and executed by the MC */
-      xbt_assert(timeout >= 0.0,
-                 "The checker asked me to raise a timeout on a communication that is not expecting any timeout");
-      set_state(issuer == src_actor_ ? State::SRC_TIMEOUT : State::DST_TIMEOUT);
-    }
+    // FIXME: what about timeouts?
+    set_state(State::DONE);
     finish();
     return;
   }
