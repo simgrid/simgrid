@@ -18,7 +18,7 @@ public:
   Message(const std::string& sender_, int size_) : sender(sender_), size(size_) {}
 };
 
-static void sender(const std::string& mailbox, double msg_size, unsigned sleep_time)
+static void sender(const std::string& mailbox, int msg_size, unsigned sleep_time)
 {
   simgrid::s4u::this_actor::sleep_for(sleep_time);
   auto* mbox = simgrid::s4u::Mailbox::by_name(mailbox);
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
   simgrid::s4u::Engine e(&argc, argv);
 
   e.load_platform(argv[1]);
-  double msg_size = 1E5;
+  int msg_size = 1e5;
 
   /* Communication between STA in the same wifi zone */
   simgrid::s4u::Actor::create("sender", e.host_by_name("STA0-0"), sender, "1", msg_size, 10);

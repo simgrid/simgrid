@@ -9,76 +9,46 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
-int timer_start; // set as 1 in the master actor
-
 double start_time;
 std::unordered_map<int, std::string> workernames;
 std::unordered_map<int, std::string> masternames;
-int count_finished = 0;
 
-static void master(int argc, char* argv[])
+static void master(std::vector<std::string> args)
 {
-  xbt_assert(argc == 4, "Strange number of arguments expected 3 got %d", argc - 1);
+  xbt_assert(args.size() == 4, "Strange number of arguments expected 3 got %zu", args.size() - 1);
 
   XBT_DEBUG("Master started");
 
   /* data size */
-  double msg_size = std::stod(argv[1]);
-  int id          = std::stoi(argv[3]); // unique id to control statistics
+  double msg_size = std::stod(args[1]);
+  int id          = std::stoi(args[3]); // unique id to control statistics
 
   /* worker name */
-  workernames[id] = argv[2];
+  workernames[id] = args[2];
 
-  simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(argv[3]);
+  simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(args[3]);
 
   masternames[id] = simgrid::s4u::Host::current()->get_name();
 
   auto* payload = new double(msg_size);
 
-  count_finished++;
-  timer_start = 1;
-
   /* time measurement */
   start_time = simgrid::s4u::Engine::get_clock();
-  mbox->put(payload, msg_size);
+  mbox->put(payload, static_cast<uint64_t>(msg_size));
 
   XBT_DEBUG("Finished");
 }
 
-static void timer(int argc, char* argv[])
+static void worker(std::vector<std::string> args)
 {
-  xbt_assert(argc == 3, "Strange number of arguments expected 2 got %d", argc - 1);
-  double first_sleep = std::stod(argv[1]);
-  double sleep_time  = std::stod(argv[2]);
+  xbt_assert(args.size() == 2, "Strange number of arguments expected 1 got %zu", args.size() - 1);
 
-  XBT_DEBUG("Timer started");
-
-  if (first_sleep)
-    simgrid::s4u::this_actor::sleep_for(first_sleep);
-
-  do {
-    XBT_DEBUG("Get sleep");
-    simgrid::s4u::this_actor::sleep_for(sleep_time);
-  } while (timer_start);
-
-  XBT_DEBUG("Finished");
-}
-
-static void worker(int argc, char* argv[])
-{
-  xbt_assert(argc == 2, "Strange number of arguments expected 1 got %d", argc - 1);
-
-  int id                      = std::stoi(argv[1]);
-  simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(argv[1]);
+  int id                      = std::stoi(args[1]);
+  simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(args[1]);
 
   XBT_DEBUG("Worker started");
 
   auto payload = mbox->get_unique<double>();
-
-  count_finished--;
-  if (count_finished == 0) {
-    timer_start = 0;
-  }
 
   double elapsed_time = simgrid::s4u::Engine::get_clock() - start_time;
 
@@ -101,7 +71,6 @@ int main(int argc, char* argv[])
 
   e.register_function("master", master);
   e.register_function("worker", worker);
-  e.register_function("timer", timer);
 
   e.load_deployment(argv[2]);
 
