@@ -8,6 +8,7 @@
 #include <xbt/config.hpp>
 
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/lmm/bmf.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/surf/ptask_L07.hpp"
 
@@ -23,7 +24,19 @@ void surf_host_model_init_ptask_L07()
 {
   XBT_CINFO(xbt_cfg, "Switching to the L07 model to handle parallel tasks.");
 
-  auto host_model = std::make_shared<simgrid::kernel::resource::HostL07Model>("Host_Ptask");
+  auto* system    = new simgrid::kernel::lmm::FairBottleneck(true /* selective update */);
+  auto host_model = std::make_shared<simgrid::kernel::resource::HostL07Model>("Host_Ptask", system);
+  auto* engine    = simgrid::kernel::EngineImpl::get_instance();
+  engine->add_model(host_model);
+  engine->get_netzone_root()->set_host_model(host_model);
+}
+
+void surf_host_model_init_ptask_BMF()
+{
+  XBT_CINFO(xbt_cfg, "Switching to the BMF model to handle parallel tasks.");
+
+  auto* system    = new simgrid::kernel::lmm::BmfSystem(false);
+  auto host_model = std::make_shared<simgrid::kernel::resource::HostL07Model>("Host_Ptask", system);
   auto* engine    = simgrid::kernel::EngineImpl::get_instance();
   engine->add_model(host_model);
   engine->get_netzone_root()->set_host_model(host_model);
@@ -33,17 +46,16 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-HostL07Model::HostL07Model(const std::string& name) : HostModel(name)
+HostL07Model::HostL07Model(const std::string& name, lmm::System* sys) : HostModel(name)
 {
-  auto* maxmin_system = new lmm::FairBottleneck(true /* selective update */);
-  set_maxmin_system(maxmin_system);
+  set_maxmin_system(sys);
 
-  auto net_model = std::make_shared<NetworkL07Model>("Network_Ptask", this, maxmin_system);
+  auto net_model = std::make_shared<NetworkL07Model>("Network_Ptask", this, sys);
   auto engine    = EngineImpl::get_instance();
   engine->add_model(net_model);
   engine->get_netzone_root()->set_network_model(net_model);
 
-  auto cpu_model = std::make_shared<CpuL07Model>("Cpu_Ptask", this, maxmin_system);
+  auto cpu_model = std::make_shared<CpuL07Model>("Cpu_Ptask", this, sys);
   engine->add_model(cpu_model);
   engine->get_netzone_root()->set_cpu_pm_model(cpu_model);
 }

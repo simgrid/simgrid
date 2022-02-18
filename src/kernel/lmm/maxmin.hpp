@@ -169,6 +169,8 @@ public:
   //   - if CPU, then probably 1.
   //   - If network, then 1 in forward direction and 0.05 backward for the ACKs
   double consumption_weight;
+  // maximum consumption weight (can be different from consumption_weight with subflows/ptasks)
+  double max_consumption_weight = 0;
 };
 
 class ConstraintLight {

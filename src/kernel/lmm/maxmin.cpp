@@ -240,6 +240,7 @@ void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
   Element& elem = var->cnsts_.back();
 
   elem.consumption_weight = consumption_weight;
+  elem.max_consumption_weight = consumption_weight;
   elem.constraint         = cnst;
   elem.variable           = var;
 
@@ -276,6 +277,7 @@ void System::expand_add(Constraint* cnst, Variable* var, double value)
     if (var->sharing_penalty_ != 0.0)
       elem.decrease_concurrency();
 
+    elem.max_consumption_weight = std::max(elem.max_consumption_weight, value);
     if (cnst->sharing_policy_ != Constraint::SharingPolicy::FATPIPE)
       elem.consumption_weight += value;
     else
