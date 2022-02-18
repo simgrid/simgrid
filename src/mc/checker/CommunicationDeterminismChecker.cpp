@@ -83,10 +83,10 @@ struct CommDetExtension {
   std::string recv_diff;
 
   void restore_communications_pattern(const simgrid::mc::State* state);
-  void deterministic_comm_pattern(aid_t process, const PatternCommunication* comm);
-  void get_comm_pattern(const Transition* transition, bool backtracking);
-  void complete_comm_pattern(const CommWaitTransition* transition, bool backtracking);
-  void handle_comm_pattern(const Transition* transition, bool backtracking);
+  void enforce_deterministic_pattern(aid_t process, const PatternCommunication* comm);
+  void get_comm_pattern(const Transition* transition);
+  void complete_comm_pattern(const CommWaitTransition* transition);
+  void handle_comm_pattern(const Transition* transition);
 };
 simgrid::xbt::Extension<simgrid::mc::Checker, CommDetExtension> CommDetExtension::EXTENSION_ID;
 /********** State Extension ***********/
@@ -199,7 +199,7 @@ static std::string print_determinism_result(simgrid::mc::CommPatternDifference d
   return res;
 }
 
-void CommDetExtension::deterministic_comm_pattern(aid_t actor, const PatternCommunication* comm)
+void CommDetExtension::enforce_deterministic_pattern(aid_t actor, const PatternCommunication* comm)
 {
   PatternCommunicationList& list = initial_communications_pattern[actor];
   CommPatternDifference diff     = compare_comm_pattern(list.list[list.index_comm].get(), comm);
@@ -235,7 +235,7 @@ void CommDetExtension::deterministic_comm_pattern(aid_t actor, const PatternComm
 
 /********** Non Static functions ***********/
 
-void CommDetExtension::get_comm_pattern(const Transition* transition, bool backtracking)
+void CommDetExtension::get_comm_pattern(const Transition* transition)
 {
   const mc::PatternCommunicationList& initial_pattern          = initial_communications_pattern[transition->aid_];
   const std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[transition->aid_];
@@ -248,8 +248,6 @@ void CommDetExtension::get_comm_pattern(const Transition* transition, bool backt
     /* Create comm pattern */
     pattern->type      = PatternCommunicationType::send;
     pattern->comm_addr = send->get_comm();
-    pattern->mbox      = send->get_mailbox();
-    pattern->src_proc  = send->aid_;
     pattern->tag       = send->get_tag();
 
 #if HAVE_SMPI
@@ -257,8 +255,7 @@ void CommDetExtension::get_comm_pattern(const Transition* transition, bool backt
     if (false) { // send_detached) {
       if (initial_communications_pattern_done) {
         /* Evaluate comm determinism */
-        if (not backtracking)
-          deterministic_comm_pattern(pattern->src_proc, pattern.get());
+        enforce_deterministic_pattern(pattern->src_proc, pattern.get());
         initial_communications_pattern[pattern->src_proc].index_comm++;
       } else {
         /* Store comm pattern */
@@ -273,8 +270,6 @@ void CommDetExtension::get_comm_pattern(const Transition* transition, bool backt
     pattern->type = PatternCommunicationType::receive;
     pattern->comm_addr = recv->get_comm();
     pattern->tag       = recv->get_tag();
-    pattern->mbox     = recv->get_mailbox();
-    pattern->dst_proc = recv->aid_;
   }
 
   XBT_DEBUG("Insert incomplete comm pattern %p type:%d for process %ld (comm: %" PRIxPTR ")", pattern.get(),
@@ -282,7 +277,7 @@ void CommDetExtension::get_comm_pattern(const Transition* transition, bool backt
   incomplete_communications_pattern[transition->aid_].push_back(pattern.release());
 }
 
-void CommDetExtension::complete_comm_pattern(const CommWaitTransition* transition, bool backtracking)
+void CommDetExtension::complete_comm_pattern(const CommWaitTransition* transition)
 {
   /* Complete comm pattern */
   std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[transition->aid_];
@@ -295,6 +290,7 @@ void CommDetExtension::complete_comm_pattern(const CommWaitTransition* transitio
 
   comm_pattern->src_proc = transition->get_sender();
   comm_pattern->dst_proc = transition->get_receiver();
+  comm_pattern->mbox     = transition->get_mailbox();
 
   XBT_DEBUG("Remove incomplete comm pattern for actor %ld at cursor %zd", transition->aid_,
             std::distance(begin(incomplete_pattern), current_comm_pattern));
@@ -302,8 +298,7 @@ void CommDetExtension::complete_comm_pattern(const CommWaitTransition* transitio
 
   if (initial_communications_pattern_done) {
     /* Evaluate comm determinism */
-    if (not backtracking)
-      deterministic_comm_pattern(transition->aid_, comm_pattern.get());
+    enforce_deterministic_pattern(transition->aid_, comm_pattern.get());
     initial_communications_pattern[transition->aid_].index_comm++;
   } else {
     /* Store comm pattern */
@@ -407,34 +402,34 @@ void CommunicationDeterminismChecker::restoreState()
 
     auto* transition = state->get_transition();
     transition->replay();
-    extension->handle_comm_pattern(transition, true);
+    extension->handle_comm_pattern(transition);
 
     /* Update statistics */
     api::get().mc_inc_visited_states();
   }
 }
 
-void CommDetExtension::handle_comm_pattern(const Transition* transition, bool backtracking)
+void CommDetExtension::handle_comm_pattern(const Transition* transition)
 {
   if (not _sg_mc_comms_determinism && not _sg_mc_send_determinism)
     return;
 
   switch (transition->type_) {
     case Transition::Type::COMM_SEND:
-      get_comm_pattern(transition, backtracking);
+      get_comm_pattern(transition);
       break;
     case Transition::Type::COMM_RECV:
-      get_comm_pattern(transition, backtracking);
+      get_comm_pattern(transition);
       break;
     case Transition::Type::COMM_WAIT: {
-      complete_comm_pattern(static_cast<const CommWaitTransition*>(transition), backtracking);
+      complete_comm_pattern(static_cast<const CommWaitTransition*>(transition));
       break;
     }
     case Transition::Type::WAITANY: {
       auto const* t    = static_cast<const WaitAnyTransition*>(transition)->get_current_transition();
       auto const* wait = dynamic_cast<const CommWaitTransition*>(t);
       if (wait != nullptr) // Ignore wait on non-comm
-        complete_comm_pattern(wait, backtracking);
+        complete_comm_pattern(wait);
     } break;
     default: /* Ignore unhandled transition types */
       break;
@@ -473,7 +468,7 @@ void CommunicationDeterminismChecker::real_run()
       if (dot_output != nullptr)
         req_str = api::get().request_get_dot_output(transition);
 
-      extension->handle_comm_pattern(transition, false);
+      extension->handle_comm_pattern(transition);
 
       /* Create the new expanded state */
       auto next_state = std::make_unique<State>();
