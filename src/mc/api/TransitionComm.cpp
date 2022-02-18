@@ -101,7 +101,7 @@ bool CommTestTransition::depends(const Transition* other) const
 CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_RECV, issuer, times_considered)
 {
-  xbt_assert(stream >> mbox_ >> dst_buff_);
+  xbt_assert(stream >> comm_ >> mbox_ >> dst_buff_);
 }
 std::string CommRecvTransition::to_string(bool verbose) const
 {
@@ -150,8 +150,8 @@ bool CommRecvTransition::depends(const Transition* other) const
 CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_SEND, issuer, times_considered)
 {
-  xbt_assert(stream >> mbox_ >> src_buff_ >> size_);
-  XBT_DEBUG("SendTransition mbox:%u buff:%p size:%zu", mbox_, src_buff_, size_);
+  xbt_assert(stream >> comm_ >> mbox_ >> src_buff_ >> size_);
+  XBT_DEBUG("SendTransition comm:%p mbox:%u buff:%p size:%zu", comm_, mbox_, src_buff_, size_);
 }
 std::string CommSendTransition::to_string(bool verbose = false) const
 {

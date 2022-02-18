@@ -53,8 +53,8 @@ public:
   std::vector<s4u::Link*> get_traversed_links() const;
   void copy_data();
 
-  static ActivityImplPtr isend(const actor::CommIsendSimcall* observer);
-  static ActivityImplPtr irecv(const actor::CommIrecvSimcall* observer);
+  static ActivityImplPtr isend(actor::CommIsendSimcall* observer);
+  static ActivityImplPtr irecv(actor::CommIrecvSimcall* observer);
 
   bool test(actor::ActorImpl* issuer) override;
   void wait_for(actor::ActorImpl* issuer, double timeout) override;

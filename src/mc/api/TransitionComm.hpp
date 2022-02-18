@@ -56,6 +56,7 @@ public:
 };
 
 class CommRecvTransition : public Transition {
+  void* comm_; /* Addr of the CommImpl */
   unsigned mbox_;
   void* dst_buff_;
 
@@ -66,6 +67,7 @@ public:
 };
 
 class CommSendTransition : public Transition {
+  void* comm_; /* Addr of the CommImpl */
   unsigned mbox_;
   void* src_buff_;
   size_t size_;

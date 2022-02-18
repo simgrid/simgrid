@@ -267,7 +267,7 @@ void CommImpl::copy_data()
   copied_ = true;
 }
 
-ActivityImplPtr CommImpl::isend(const actor::CommIsendSimcall* observer)
+ActivityImplPtr CommImpl::isend(actor::CommIsendSimcall* observer)
 {
   auto* mbox = observer->get_mailbox();
   XBT_DEBUG("send from mailbox %p", mbox);
@@ -301,6 +301,7 @@ ActivityImplPtr CommImpl::isend(const actor::CommIsendSimcall* observer)
 
     other_comm->set_state(State::READY);
   }
+  observer->set_comm(other_comm.get());
 
   if (observer->is_detached()) {
     other_comm->detach();
@@ -329,7 +330,7 @@ ActivityImplPtr CommImpl::isend(const actor::CommIsendSimcall* observer)
   return (observer->is_detached() ? nullptr : other_comm);
 }
 
-ActivityImplPtr CommImpl::irecv(const actor::CommIrecvSimcall* observer)
+ActivityImplPtr CommImpl::irecv(actor::CommIrecvSimcall* observer)
 {
   CommImplPtr this_synchro(new CommImpl(CommImpl::Type::RECEIVE));
   auto* mbox = observer->get_mailbox();
@@ -376,6 +377,7 @@ ActivityImplPtr CommImpl::irecv(const actor::CommIrecvSimcall* observer)
     }
     observer->get_issuer()->activities_.emplace_back(other_comm);
   }
+  observer->set_comm(other_comm.get());
 
   /* Setup communication synchro */
   other_comm->dst_actor_ = observer->get_issuer();

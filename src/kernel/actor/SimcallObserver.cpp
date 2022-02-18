@@ -237,14 +237,14 @@ void ActivityWaitanySimcall::prepare(int times_considered)
 void CommIsendSimcall::serialize(std::stringstream& stream) const
 {
   stream << (short)mc::Transition::Type::COMM_SEND << ' ';
-  stream << mbox_->get_id() << ' ' << (void*)src_buff_ << ' ' << src_buff_size_;
+  stream << (void*)comm_ << ' ' << mbox_->get_id() << ' ' << (void*)src_buff_ << ' ' << src_buff_size_;
   XBT_DEBUG("SendObserver mbox:%u buff:%p size:%zu", mbox_->get_id(), src_buff_, src_buff_size_);
 }
 
 void CommIrecvSimcall::serialize(std::stringstream& stream) const
 {
   stream << (short)mc::Transition::Type::COMM_RECV << ' ';
-  stream << mbox_->get_id() << ' ' << (void*)dst_buff_;
+  stream << (void*)comm_ << ' ' << mbox_->get_id() << ' ' << (void*)dst_buff_;
 }
 
 } // namespace actor
