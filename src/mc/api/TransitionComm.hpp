@@ -22,12 +22,12 @@ class CommTestTransition;
 
 class CommWaitTransition : public Transition {
   bool timeout_;
-  void* comm_;
+  uintptr_t comm_;
   aid_t sender_;
   aid_t receiver_;
   unsigned mbox_;
-  void* src_buff_;
-  void* dst_buff_;
+  uintptr_t sbuff_;
+  uintptr_t rbuff_;
   size_t size_;
   friend CommRecvTransition;
   friend CommSendTransition;
@@ -39,12 +39,12 @@ public:
   bool depends(const Transition* other) const override;
 };
 class CommTestTransition : public Transition {
-  void* comm_;
+  uintptr_t comm_;
   aid_t sender_;
   aid_t receiver_;
   unsigned mbox_;
-  void* src_buff_;
-  void* dst_buff_;
+  uintptr_t sbuff_;
+  uintptr_t rbuff_;
   size_t size_;
   friend CommSendTransition;
   friend CommRecvTransition;
@@ -56,9 +56,9 @@ public:
 };
 
 class CommRecvTransition : public Transition {
-  void* comm_; /* Addr of the CommImpl */
+  uintptr_t comm_; /* Addr of the CommImpl */
   unsigned mbox_;
-  void* dst_buff_;
+  uintptr_t rbuff_;
 
 public:
   CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream);
@@ -67,9 +67,9 @@ public:
 };
 
 class CommSendTransition : public Transition {
-  void* comm_; /* Addr of the CommImpl */
+  uintptr_t comm_; /* Addr of the CommImpl */
   unsigned mbox_;
-  void* src_buff_;
+  uintptr_t sbuff_;
   size_t size_;
 
 public:

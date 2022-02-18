@@ -23,17 +23,17 @@ namespace mc {
 CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_WAIT, issuer, times_considered)
 {
-  xbt_assert(stream >> timeout_ >> comm_ >> sender_ >> receiver_ >> mbox_ >> src_buff_ >> dst_buff_ >> size_);
-  XBT_DEBUG("CommWaitTransition %s comm:%p, sender:%ld receiver:%ld mbox:%u sbuff:%p rbuff:%p size:%zu",
-            (timeout_ ? "timeout" : "no-timeout"), comm_, sender_, receiver_, mbox_, src_buff_, dst_buff_, size_);
+  xbt_assert(stream >> timeout_ >> comm_ >> sender_ >> receiver_ >> mbox_ >> sbuff_ >> rbuff_ >> size_);
+  XBT_DEBUG("CommWaitTransition %s comm:%lx, sender:%ld receiver:%ld mbox:%u sbuff:%lx rbuff:%lx size:%zu",
+            (timeout_ ? "timeout" : "no-timeout"), comm_, sender_, receiver_, mbox_, sbuff_, rbuff_, size_);
 }
 std::string CommWaitTransition::to_string(bool verbose) const
 {
   auto res = xbt::string_printf("%ld: WaitComm(from %ld to %ld, mbox=%u, %s", aid_, sender_, receiver_, mbox_,
                                 (timeout_ ? "timeout" : "no timeout"));
   if (verbose) {
-    res += ", src_buff=" + xbt::string_printf("%p", src_buff_) + ", size=" + std::to_string(size_);
-    res += ", dst_buff=" + xbt::string_printf("%p", dst_buff_);
+    res += ", sbuff=" + xbt::string_printf("%lx", sbuff_) + ", size=" + std::to_string(size_);
+    res += ", rbuff=" + xbt::string_printf("%lx", rbuff_);
   }
   res += ")";
   return res;
@@ -50,10 +50,10 @@ bool CommWaitTransition::depends(const Transition* other) const
     if (timeout_ || wait->timeout_)
       return true; // Timeouts are not considered by the independence theorem, thus assumed dependent
 
-    if (src_buff_ == wait->src_buff_ && dst_buff_ == wait->dst_buff_)
+    if (sbuff_ == wait->sbuff_ && rbuff_ == wait->rbuff_)
       return false;
-    if (src_buff_ != nullptr && dst_buff_ != nullptr && wait->src_buff_ != nullptr && wait->dst_buff_ != nullptr &&
-        dst_buff_ != wait->src_buff_ && dst_buff_ != wait->dst_buff_ && dst_buff_ != src_buff_)
+    if (sbuff_ != 0 && rbuff_ != 0 && wait->sbuff_ != 0 && wait->rbuff_ != 0 && rbuff_ != wait->sbuff_ &&
+        rbuff_ != wait->rbuff_ && rbuff_ != sbuff_)
       return false;
   }
 
@@ -62,16 +62,16 @@ bool CommWaitTransition::depends(const Transition* other) const
 CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_TEST, issuer, times_considered)
 {
-  xbt_assert(stream >> comm_ >> sender_ >> receiver_ >> mbox_ >> src_buff_ >> dst_buff_ >> size_);
-  XBT_DEBUG("CommTestTransition comm:%p, sender:%ld receiver:%ld mbox:%u sbuff:%p rbuff:%p size:%zu", comm_, sender_,
-            receiver_, mbox_, src_buff_, dst_buff_, size_);
+  xbt_assert(stream >> comm_ >> sender_ >> receiver_ >> mbox_ >> sbuff_ >> rbuff_ >> size_);
+  XBT_DEBUG("CommTestTransition comm:%lx, sender:%ld receiver:%ld mbox:%u sbuff:%lx rbuff:%lx size:%zu", comm_, sender_,
+            receiver_, mbox_, sbuff_, rbuff_, size_);
 }
 std::string CommTestTransition::to_string(bool verbose) const
 {
   auto res = xbt::string_printf("%ld: TestComm(from %ld to %ld, mbox=%u", aid_, sender_, receiver_, mbox_);
   if (verbose) {
-    res += ", src_buff=" + xbt::string_printf("%p", src_buff_) + ", size=" + std::to_string(size_);
-    res += ", dst_buff=" + xbt::string_printf("%p", dst_buff_);
+    res += ", sbuff=" + xbt::string_printf("%lx", sbuff_) + ", size=" + std::to_string(size_);
+    res += ", rbuff=" + xbt::string_printf("%lx", rbuff_);
   }
   res += ")";
   return res;
@@ -101,13 +101,13 @@ bool CommTestTransition::depends(const Transition* other) const
 CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_RECV, issuer, times_considered)
 {
-  xbt_assert(stream >> comm_ >> mbox_ >> dst_buff_);
+  xbt_assert(stream >> comm_ >> mbox_ >> rbuff_);
 }
 std::string CommRecvTransition::to_string(bool verbose) const
 {
   auto res = xbt::string_printf("%ld: iRecv(mbox=%u", aid_, mbox_);
   if (verbose)
-    res += ", buff=" + xbt::string_printf("%p", dst_buff_);
+    res += ", rbuff=" + xbt::string_printf("%lx", rbuff_);
   res += ")";
   return res;
 }
@@ -129,7 +129,7 @@ bool CommRecvTransition::depends(const Transition* other) const
     if (mbox_ != test->mbox_)
       return false;
 
-    if ((aid_ != test->sender_) && (aid_ != test->receiver_) && (test->dst_buff_ != dst_buff_))
+    if ((aid_ != test->sender_) && (aid_ != test->receiver_) && (test->rbuff_ != rbuff_))
       return false;
   }
 
@@ -140,7 +140,7 @@ bool CommRecvTransition::depends(const Transition* other) const
     if (mbox_ != wait->mbox_)
       return false;
 
-    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_) && (wait->dst_buff_ != dst_buff_))
+    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_) && (wait->rbuff_ != rbuff_))
       return false;
   }
 
@@ -150,14 +150,14 @@ bool CommRecvTransition::depends(const Transition* other) const
 CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_SEND, issuer, times_considered)
 {
-  xbt_assert(stream >> comm_ >> mbox_ >> src_buff_ >> size_);
-  XBT_DEBUG("SendTransition comm:%p mbox:%u buff:%p size:%zu", comm_, mbox_, src_buff_, size_);
+  xbt_assert(stream >> comm_ >> mbox_ >> sbuff_ >> size_);
+  XBT_DEBUG("SendTransition comm:%lx mbox:%u sbuff:%lx size:%ld", comm_, mbox_, sbuff_, size_);
 }
 std::string CommSendTransition::to_string(bool verbose = false) const
 {
   auto res = xbt::string_printf("%ld: iSend(mbox=%u", aid_, mbox_);
   if (verbose)
-    res += ", buff=" + xbt::string_printf("%p", src_buff_) + ", size=" + std::to_string(size_);
+    res += ", sbuff=" + xbt::string_printf("%lx", sbuff_) + ", size=" + std::to_string(size_);
   res += ")";
   return res;
 }
@@ -225,7 +225,7 @@ bool CommSendTransition::depends(const Transition* other) const
     if (mbox_ != test->mbox_)
       return false;
 
-    if ((aid_ != test->sender_) && (aid_ != test->receiver_) && (test->src_buff_ != src_buff_))
+    if ((aid_ != test->sender_) && (aid_ != test->receiver_) && (test->sbuff_ != sbuff_))
       return false;
   }
 
@@ -236,7 +236,7 @@ bool CommSendTransition::depends(const Transition* other) const
     if (mbox_ != wait->mbox_)
       return false;
 
-    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_) && (wait->src_buff_ != src_buff_))
+    if ((aid_ != wait->sender_) && (aid_ != wait->receiver_) && (wait->sbuff_ != sbuff_))
       return false;
   }
 

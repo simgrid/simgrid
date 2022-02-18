@@ -101,11 +101,11 @@ struct CommDetExtension {
   std::string send_diff;
   std::string recv_diff;
 
-  void restore_communications_pattern(simgrid::mc::State* state);
+  void restore_communications_pattern(const simgrid::mc::State* state);
   void deterministic_comm_pattern(aid_t process, const PatternCommunication* comm, bool backtracking);
   void get_comm_pattern(smx_simcall_t request, CallType call_type, bool backtracking);
   void complete_comm_pattern(RemotePtr<kernel::activity::CommImpl> const& comm_addr, aid_t issuer, bool backtracking);
-  void handle_comm_pattern(Transition* transition, smx_simcall_t req, int value, bool backtracking);
+  void handle_comm_pattern(const Transition* transition, smx_simcall_t req, int value, bool backtracking);
 };
 simgrid::xbt::Extension<simgrid::mc::Checker, CommDetExtension> CommDetExtension::EXTENSION_ID;
 /********** State Extension ***********/
@@ -166,7 +166,7 @@ static simgrid::mc::CommPatternDifference compare_comm_pattern(const simgrid::mc
   return CommPatternDifference::NONE;
 }
 
-void CommDetExtension::restore_communications_pattern(simgrid::mc::State* state)
+void CommDetExtension::restore_communications_pattern(const simgrid::mc::State* state)
 {
   for (size_t i = 0; i < initial_communications_pattern.size(); i++)
     initial_communications_pattern[i].index_comm =
@@ -453,7 +453,8 @@ void CommunicationDeterminismChecker::restoreState()
   }
 }
 
-void CommDetExtension::handle_comm_pattern(Transition* transition, smx_simcall_t req, int value, bool backtracking)
+void CommDetExtension::handle_comm_pattern(const Transition* transition, smx_simcall_t req, int value,
+                                           bool backtracking)
 {
   if (not _sg_mc_comms_determinism && not _sg_mc_send_determinism)
     return;
@@ -476,7 +477,6 @@ void CommDetExtension::handle_comm_pattern(Transition* transition, smx_simcall_t
     }
     case CallType::WAITANY: {
       auto comm_addr = api::get().get_comm_waitany_raw_addr(req, value);
-      ;
       auto simcall_issuer = api::get().simcall_get_issuer(req);
       complete_comm_pattern(comm_addr, simcall_issuer->get_pid(), backtracking);
     } break;
