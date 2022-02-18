@@ -413,6 +413,8 @@ set(SIMIX_SRC
   src/kernel/activity/SynchroRaw.hpp
   src/kernel/actor/ActorImpl.cpp
   src/kernel/actor/ActorImpl.hpp
+  src/kernel/actor/CommObserver.cpp
+  src/kernel/actor/CommObserver.hpp
   src/kernel/actor/SimcallObserver.cpp
   src/kernel/actor/SimcallObserver.hpp
 

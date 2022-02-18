@@ -8,7 +8,7 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "src/kernel/actor/SimcallObserver.hpp"
+#include "src/kernel/actor/CommObserver.hpp"
 
 namespace simgrid {
 namespace kernel {

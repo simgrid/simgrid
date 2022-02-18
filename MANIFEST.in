@@ -2258,6 +2258,8 @@ include src/kernel/activity/SynchroRaw.cpp
 include src/kernel/activity/SynchroRaw.hpp
 include src/kernel/actor/ActorImpl.cpp
 include src/kernel/actor/ActorImpl.hpp
+include src/kernel/actor/CommObserver.cpp
+include src/kernel/actor/CommObserver.hpp
 include src/kernel/actor/SimcallObserver.cpp
 include src/kernel/actor/SimcallObserver.hpp
 include src/kernel/context/Context.cpp
