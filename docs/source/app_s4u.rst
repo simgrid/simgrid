@@ -1328,7 +1328,6 @@ Querying info
    .. group-tab:: C
 
       .. doxygenfunction:: sg_host_core_count(const_sg_host_t host)
-      .. doxygenfunction:: sg_host_dump(const_sg_host_t ws)
       .. doxygenfunction:: sg_host_get_name(const_sg_host_t host)
       .. doxygenfunction:: sg_host_get_load(const_sg_host_t host)
       .. doxygenfunction:: sg_host_get_speed(const_sg_host_t host)

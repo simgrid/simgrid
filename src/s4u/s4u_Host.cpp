@@ -649,7 +649,7 @@ void sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount)
 }
 
 /** @brief Displays debugging information about a host */
-void sg_host_dump(const_sg_host_t host)
+void sg_host_dump(const_sg_host_t host) // XBT_ATTRIB_DEPRECATED_v335
 {
   XBT_INFO("Displaying host %s", host->get_cname());
   XBT_INFO("  - speed: %.0f", host->get_speed());

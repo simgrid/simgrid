@@ -114,7 +114,8 @@ XBT_PUBLIC double sg_host_get_route_latency(const_sg_host_t from, const_sg_host_
 XBT_PUBLIC double sg_host_get_route_bandwidth(const_sg_host_t from, const_sg_host_t to);
 XBT_PUBLIC void sg_host_sendto(sg_host_t from, sg_host_t to, double byte_amount);
 
-XBT_PUBLIC void sg_host_dump(const_sg_host_t ws);
+XBT_ATTRIB_DEPRECATED_v335("Please manifest if you actually need this function") XBT_PUBLIC
+    void sg_host_dump(const_sg_host_t ws);
 
 XBT_PUBLIC void sg_host_get_actor_list(const_sg_host_t host, xbt_dynar_t whereto);
 SG_END_DECL
