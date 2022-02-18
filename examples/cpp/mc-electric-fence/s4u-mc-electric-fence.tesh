@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 
 $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-electric-fence ${platfdir}/model_checker_platform.xml
-> [0.000000] [mc_safety/INFO] Check a safety property. Reduction is: dpor.
+> [0.000000] [mc_safety/INFO] Start a DFS exploration. Reduction is: dpor.
 > [HostB:client:(2) 0.000000] [electric_fence/INFO] Sent!
 > [HostA:server:(1) 0.000000] [electric_fence/INFO] OK
 > [HostC:client:(3) 0.000000] [electric_fence/INFO] Sent!
@@ -9,5 +9,4 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/s4u-mc-electric-fence ${plat
 > [HostA:server:(1) 0.000000] [electric_fence/INFO] OK
 > [HostB:client:(2) 0.000000] [electric_fence/INFO] Sent!
 > [HostC:client:(3) 0.000000] [electric_fence/INFO] Sent!
-> [0.000000] [mc_safety/INFO] No property violation found.
-> [0.000000] [mc_safety/INFO] 15 unique states visited; 5 backtracks (32 transition replays, 13 states visited overall)
+> [0.000000] [mc_safety/INFO] DFS exploration ended. 15 unique states visited; 5 backtracks (32 transition replays, 13 states visited overall)

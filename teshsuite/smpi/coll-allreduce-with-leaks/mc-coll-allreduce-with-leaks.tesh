@@ -2,7 +2,7 @@
 
 p Test allreduce
 $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper "${bindir:=.}/../../../bin/simgrid-mc" -map -hostfile ../hostfile_coll -platform  ${platfdir:=.}/small_platform.xml -np 4 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce-with-leaks --log=smpi_config.thres:warning --cfg=smpi/display-allocs:yes --cfg=smpi/simulate-computation:no --log=smpi_coll.thres:error --log=smpi_mpi.thres:error --log=smpi_pmpi.thres:error --cfg=smpi/list-leaks:10 --log=no_loc
-> [0.000000] [mc_safety/INFO] Check a safety property. Reduction is: dpor.
+> [0.000000] [mc_safety/INFO] Start a DFS exploration. Reduction is: dpor.
 > [0.000000] [smpi/INFO] [rank 0] -> Tremblay
 > [0.000000] [smpi/INFO] [rank 1] -> Tremblay
 > [0.000000] [smpi/INFO] [rank 2] -> Tremblay
@@ -51,5 +51,4 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [mc_safety/INFO] No property violation found.
-> [0.000000] [mc_safety/INFO] 73 unique states visited; 18 backtracks (592 transition replays, 502 states visited overall)
+> [0.000000] [mc_safety/INFO] DFS exploration ended. 73 unique states visited; 18 backtracks (592 transition replays, 502 states visited overall)

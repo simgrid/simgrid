@@ -1,7 +1,7 @@
 #!/usr/bin/env tesh
 ! expect return 1
 $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug assert ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning
-> [  0.000000] (0:maestro@) Check a safety property. Reduction is: dpor.
+> [  0.000000] (0:maestro@) Start a DFS exploration. Reduction is: dpor.
 > [  0.000000] (0:maestro@) Behavior: assert
 > [  0.000000] (0:maestro@) **************************
 > [  0.000000] (0:maestro@) *** PROPERTY NOT VALID ***
@@ -13,7 +13,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug assert ${platfdir
 > [  0.000000] (0:maestro@) 27 unique states visited; 22 backtracks (68 transition replays, 19 states visited overall)
 
 $ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/random-bug printf ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=xbt_cfg.thresh:warning
-> [  0.000000] (0:maestro@) Check a safety property. Reduction is: dpor.
+> [  0.000000] (0:maestro@) Start a DFS exploration. Reduction is: dpor.
 > [  0.000000] (0:maestro@) Behavior: printf
 > [  0.000000] (1:app@Fafard) Error reached
 > [  0.000000] (0:maestro@) No property violation found.

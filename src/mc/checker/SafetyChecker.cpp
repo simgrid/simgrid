@@ -79,7 +79,7 @@ std::vector<std::string> SafetyChecker::get_textual_trace() // override
 void SafetyChecker::log_state() // override
 {
   on_log_state_signal();
-  XBT_INFO("DFS exploration successful. %ld unique states visited; %ld backtracks (%lu transition replays, %lu states "
+  XBT_INFO("DFS exploration ended. %ld unique states visited; %ld backtracks (%lu transition replays, %lu states "
            "visited overall)",
            State::get_expanded_states(), backtrack_count_, api::get().mc_get_visited_states(),
            Transition::get_replayed_transitions());
