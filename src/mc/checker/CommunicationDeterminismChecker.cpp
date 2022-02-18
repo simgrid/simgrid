@@ -101,13 +101,6 @@ public:
   static simgrid::xbt::Extension<simgrid::mc::State, StateCommDet> EXTENSION_ID;
   explicit StateCommDet(CommDetExtension* checker) : checker_(checker)
   {
-    copy_incomplete_comm_pattern();
-    copy_index_comm_pattern();
-  }
-
-  void copy_incomplete_comm_pattern()
-  {
-    incomplete_comm_pattern_.clear();
     const unsigned long maxpid = api::get().get_maxpid();
     for (unsigned long i = 0; i < maxpid; i++) {
       std::vector<simgrid::mc::PatternCommunication> res;
@@ -115,11 +108,7 @@ public:
         res.push_back(comm->dup());
       incomplete_comm_pattern_.push_back(std::move(res));
     }
-  }
 
-  void copy_index_comm_pattern()
-  {
-    communication_indices_.clear();
     for (auto const& list_process_comm : checker_->initial_communications_pattern)
       this->communication_indices_.push_back(list_process_comm.index_comm);
   }
@@ -409,16 +398,15 @@ void CommDetExtension::handle_comm_pattern(const Transition* transition)
     case Transition::Type::COMM_RECV:
       get_comm_pattern(transition);
       break;
-    case Transition::Type::COMM_WAIT: {
+    case Transition::Type::COMM_WAIT:
       complete_comm_pattern(static_cast<const CommWaitTransition*>(transition));
       break;
-    }
-    case Transition::Type::WAITANY: {
-      auto const* t    = static_cast<const WaitAnyTransition*>(transition)->get_current_transition();
-      auto const* wait = dynamic_cast<const CommWaitTransition*>(t);
-      if (wait != nullptr) // Ignore wait on non-comm
+    case Transition::Type::WAITANY:
+      // Ignore wait on non-comm
+      if (auto const* wait = dynamic_cast<const CommWaitTransition*>(
+              static_cast<const WaitAnyTransition*>(transition)->get_current_transition()))
         complete_comm_pattern(wait);
-    } break;
+      break;
     default: /* Ignore unhandled transition types */
       break;
   }
