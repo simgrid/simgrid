@@ -244,26 +244,14 @@ void CommDetExtension::get_comm_pattern(const Transition* transition)
   pattern->index = initial_pattern.index_comm + incomplete_pattern.size();
 
   if (transition->type_ == Transition::Type::COMM_SEND) {
-    auto* send = dynamic_cast<const CommSendTransition*>(transition);
-    /* Create comm pattern */
+    auto* send = static_cast<const CommSendTransition*>(transition);
+
     pattern->type      = PatternCommunicationType::send;
     pattern->comm_addr = send->get_comm();
     pattern->tag       = send->get_tag();
 
-#if HAVE_SMPI
-    // auto send_detached = api::get().check_send_request_detached(request);
-    if (false) { // send_detached) {
-      if (initial_communications_pattern_done) {
-        /* Evaluate comm determinism */
-        enforce_deterministic_pattern(pattern->src_proc, pattern.get());
-        initial_communications_pattern[pattern->src_proc].index_comm++;
-      } else {
-        /* Store comm pattern */
-        initial_communications_pattern[pattern->src_proc].list.push_back(std::move(pattern));
-      }
-      return;
-    }
-#endif
+    // FIXME: Detached sends should be enforced when the receive is waited
+
   } else if (transition->type_ == Transition::Type::COMM_RECV) {
     auto* recv = static_cast<const CommRecvTransition*>(transition);
 
