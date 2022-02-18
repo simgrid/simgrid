@@ -37,6 +37,22 @@ public:
   CommWaitTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
+
+  bool get_timeout() const { return timeout_; }
+  /** Address of the corresponding Communication object in the application */
+  uintptr_t get_comm() const { return comm_; }
+  /** Sender ID */
+  aid_t get_sender() const { return sender_; }
+  /** Receiver ID */
+  aid_t get_receiver() const { return receiver_; }
+  /** Mailbox ID */
+  unsigned get_mailbox() const { return mbox_; }
+  /** Sender buffer */
+  uintptr_t get_sbuff() const { return sbuff_; }
+  /** Receiver buffer */
+  uintptr_t get_rbuff() const { return rbuff_; }
+  /** data size */
+  size_t get_size() const { return size_; }
 };
 class CommTestTransition : public Transition {
   uintptr_t comm_;
@@ -53,6 +69,21 @@ public:
   CommTestTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
+
+  /** Address of the corresponding Communication object in the application */
+  uintptr_t get_comm() const { return comm_; }
+  /** Sender ID */
+  aid_t get_sender() const { return sender_; }
+  /** Receiver ID */
+  aid_t get_receiver() const { return receiver_; }
+  /** Mailbox ID */
+  unsigned get_mailbox() const { return mbox_; }
+  /** Sender buffer */
+  uintptr_t get_sbuff() const { return sbuff_; }
+  /** Receiver buffer */
+  uintptr_t get_rbuff() const { return rbuff_; }
+  /** data size */
+  size_t get_size() const { return size_; }
 };
 
 class CommRecvTransition : public Transition {
@@ -64,6 +95,13 @@ public:
   CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
+
+  /** Address of the corresponding Communication object in the application */
+  uintptr_t get_comm() const { return comm_; }
+  /** Mailbox ID */
+  unsigned get_mailbox() const { return mbox_; }
+  /** Receiver buffer */
+  uintptr_t get_rbuff() const { return rbuff_; }
 };
 
 class CommSendTransition : public Transition {
@@ -76,6 +114,15 @@ public:
   CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
+
+  /** Address of the corresponding Communication object in the application */
+  uintptr_t get_comm() const { return comm_; }
+  /** Mailbox ID */
+  unsigned get_mailbox() const { return mbox_; }
+  /** Sender buffer */
+  uintptr_t get_sbuff() const { return sbuff_; }
+  /** data size */
+  size_t get_size() const { return size_; }
 };
 
 class TestAnyTransition : public Transition {
@@ -85,6 +132,8 @@ public:
   TestAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
+
+  Transition* get_current_transition() const { return transitions_.at(times_considered_); }
 };
 
 class WaitAnyTransition : public Transition {
@@ -94,6 +143,8 @@ public:
   WaitAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   std::string to_string(bool verbose) const override;
   bool depends(const Transition* other) const override;
+
+  Transition* get_current_transition() const { return transitions_.at(times_considered_); }
 };
 
 /** Make a new transition from serialized description */
