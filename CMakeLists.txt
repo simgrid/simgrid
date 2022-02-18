@@ -409,7 +409,7 @@ if(enable_java AND NOT enable_msg)
 endif()
 
 if (enable_model-checking AND enable_ns3)
-  message(FATAL_ERROR "Cannot activate both model-checking and ns-3 bindings: ns-3 pulls too much dependencies for the MC to work")
+  message(WARNING "Activating both model-checking and ns-3 bindings is considered experimental.")
 endif()
 
 if(enable_smpi)

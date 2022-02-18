@@ -69,6 +69,7 @@ ctest -D ExperimentalStart || true
 cmake -Denable_documentation=OFF \
       -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
       -Denable_mallocators=ON \
+      -Denable_ns3=ON \
       -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_model-checking=ON \
       -Denable_smpi_papi=ON \
       -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=ON \
