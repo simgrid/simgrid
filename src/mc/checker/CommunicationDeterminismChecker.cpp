@@ -285,8 +285,8 @@ void CommDetExtension::get_comm_pattern(const Transition* transition, bool backt
     pattern->dst_proc = recv->aid_;
   }
 
-  XBT_DEBUG("Insert incomplete comm pattern %p type:%d for process %ld (comm: %lx)", pattern.get(), (int)pattern->type,
-            transition->aid_, pattern->comm_addr);
+  XBT_DEBUG("Insert incomplete comm pattern %p type:%d for process %ld (comm: %" PRIxPTR ")", pattern.get(),
+            (int)pattern->type, transition->aid_, pattern->comm_addr);
   incomplete_communications_pattern[transition->aid_].push_back(pattern.release());
 }
 
