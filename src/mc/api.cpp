@@ -162,94 +162,6 @@ int Api::get_actors_size() const
   return mc_model_checker->get_remote_process().actors().size();
 }
 
-RemotePtr<kernel::activity::CommImpl> Api::get_comm_isend_raw_addr(smx_simcall_t request) const
-{
-  return remote(static_cast<kernel::activity::CommImpl*>(simcall_comm_isend__getraw__result(request)));
-}
-
-RemotePtr<kernel::activity::CommImpl> Api::get_comm_waitany_raw_addr(smx_simcall_t request, int value) const
-{
-  auto addr      = simcall_comm_waitany__getraw__comms(request) + value;
-  auto comm_addr = mc_model_checker->get_remote_process().read(remote(addr));
-  return RemotePtr<kernel::activity::CommImpl>(static_cast<kernel::activity::CommImpl*>(comm_addr));
-}
-
-std::string Api::get_pattern_comm_rdv(RemotePtr<kernel::activity::CommImpl> const& addr) const
-{
-  Remote<kernel::activity::CommImpl> temp_activity;
-  mc_model_checker->get_remote_process().read(temp_activity, addr);
-  const kernel::activity::CommImpl* activity = temp_activity.get_buffer();
-
-  char* remote_name = mc_model_checker->get_remote_process().read<char*>(RemotePtr<char*>(
-      (uint64_t)(activity->get_mailbox() ? &activity->get_mailbox()->get_name() : &activity->mbox_cpy->get_name())));
-  auto rdv          = mc_model_checker->get_remote_process().read_string(RemotePtr<char>(remote_name));
-  return rdv;
-}
-
-unsigned long Api::get_pattern_comm_src_proc(RemotePtr<kernel::activity::CommImpl> const& addr) const
-{
-  Remote<kernel::activity::CommImpl> temp_activity;
-  mc_model_checker->get_remote_process().read(temp_activity, addr);
-  const kernel::activity::CommImpl* activity = temp_activity.get_buffer();
-  auto src_proc =
-      mc_model_checker->get_remote_process().resolve_actor(mc::remote(activity->src_actor_.get()))->get_pid();
-  return src_proc;
-}
-
-unsigned long Api::get_pattern_comm_dst_proc(RemotePtr<kernel::activity::CommImpl> const& addr) const
-{
-  Remote<kernel::activity::CommImpl> temp_activity;
-  mc_model_checker->get_remote_process().read(temp_activity, addr);
-  const kernel::activity::CommImpl* activity = temp_activity.get_buffer();
-  auto src_proc =
-      mc_model_checker->get_remote_process().resolve_actor(mc::remote(activity->dst_actor_.get()))->get_pid();
-  return src_proc;
-}
-
-std::vector<char> Api::get_pattern_comm_data(RemotePtr<kernel::activity::CommImpl> const& addr) const
-{
-  simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-  mc_model_checker->get_remote_process().read(temp_comm, addr);
-  const simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
-
-  std::vector<char> buffer{};
-  if (comm->src_buff_ != nullptr) {
-    buffer.resize(comm->src_buff_size_);
-    mc_model_checker->get_remote_process().read_bytes(buffer.data(), buffer.size(), remote(comm->src_buff_));
-  }
-  return buffer;
-}
-
-#if HAVE_SMPI
-bool Api::check_send_request_detached(smx_simcall_t const& simcall) const
-{
-  Remote<simgrid::smpi::Request> mpi_request;
-  mc_model_checker->get_remote_process().read(
-      mpi_request, remote(static_cast<smpi::Request*>(simcall_comm_isend__get__data(simcall))));
-  return mpi_request.get_buffer()->detached();
-}
-#endif
-
-smx_actor_t Api::get_src_actor(RemotePtr<kernel::activity::CommImpl> const& comm_addr) const
-{
-  simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-  mc_model_checker->get_remote_process().read(temp_comm, comm_addr);
-  const simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
-
-  auto src_proc = mc_model_checker->get_remote_process().resolve_actor(simgrid::mc::remote(comm->src_actor_.get()));
-  return src_proc;
-}
-
-smx_actor_t Api::get_dst_actor(RemotePtr<kernel::activity::CommImpl> const& comm_addr) const
-{
-  simgrid::mc::Remote<simgrid::kernel::activity::CommImpl> temp_comm;
-  mc_model_checker->get_remote_process().read(temp_comm, comm_addr);
-  const simgrid::kernel::activity::CommImpl* comm = temp_comm.get_buffer();
-
-  auto dst_proc = mc_model_checker->get_remote_process().resolve_actor(simgrid::mc::remote(comm->dst_actor_.get()));
-  return dst_proc;
-}
-
 std::size_t Api::get_remote_heap_bytes() const
 {
   RemoteProcess& process    = mc_model_checker->get_remote_process();
@@ -282,51 +194,6 @@ void Api::mc_check_deadlock() const
   }
 }
 
-/** Get the issuer of a simcall (`req->issuer`)
- *
- *  In split-process mode, it does the black magic necessary to get an address
- *  of a (shallow) copy of the data structure the issuer SIMIX actor in the local
- *  address space.
- *
- *  @param process the MCed process
- *  @param req     the simcall (copied in the local process)
- */
-smx_actor_t Api::simcall_get_issuer(s_smx_simcall const* req) const
-{
-  xbt_assert(mc_model_checker != nullptr);
-
-  // This is the address of the smx_actor in the MCed process:
-  auto address = simgrid::mc::remote(req->issuer_);
-
-  // Lookup by address:
-  for (auto& actor : mc_model_checker->get_remote_process().actors())
-    if (actor.address == address)
-      return actor.copy.get_buffer();
-  for (auto& actor : mc_model_checker->get_remote_process().dead_actors())
-    if (actor.address == address)
-      return actor.copy.get_buffer();
-
-  xbt_die("Issuer not found");
-}
-
-RemotePtr<kernel::activity::MailboxImpl> Api::get_mbox_remote_addr(smx_simcall_t const req) const
-{
-  if (req->call_ == Simcall::COMM_ISEND)
-    return remote(simcall_comm_isend__get__mbox(req));
-  if (req->call_ == Simcall::COMM_IRECV)
-    return remote(simcall_comm_irecv__get__mbox(req));
-  THROW_IMPOSSIBLE;
-}
-
-RemotePtr<kernel::activity::ActivityImpl> Api::get_comm_remote_addr(smx_simcall_t const req) const
-{
-  if (req->call_ == Simcall::COMM_ISEND)
-    return remote(simcall_comm_isend__getraw__result(req));
-  if (req->call_ == Simcall::COMM_IRECV)
-    return remote(simcall_comm_irecv__getraw__result(req));
-  THROW_IMPOSSIBLE;
-}
-
 void Api::mc_exit(int status) const
 {
   mc_model_checker->exit(status);
@@ -341,20 +208,6 @@ std::string Api::request_get_dot_output(const Transition* t) const
 
   return "label = \"" + t->dot_label() + "\", color = " + color + ", fontcolor = " + color;
 }
-
-#if HAVE_SMPI
-int Api::get_smpi_request_tag(smx_simcall_t const& simcall, simgrid::simix::Simcall type) const
-{
-  void* simcall_data = nullptr;
-  if (type == Simcall::COMM_ISEND)
-    simcall_data = simcall_comm_isend__get__data(simcall);
-  else if (type == Simcall::COMM_IRECV)
-    simcall_data = simcall_comm_irecv__get__data(simcall);
-  Remote<simgrid::smpi::Request> mpi_request;
-  mc_model_checker->get_remote_process().read(mpi_request, remote(static_cast<smpi::Request*>(simcall_data)));
-  return mpi_request.get_buffer()->tag();
-}
-#endif
 
 void Api::restore_state(std::shared_ptr<simgrid::mc::Snapshot> system_state) const
 {

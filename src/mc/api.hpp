@@ -77,19 +77,8 @@ public:
   int get_actors_size() const;
 
   // COMMUNICATION APIs
-  RemotePtr<kernel::activity::CommImpl> get_comm_isend_raw_addr(smx_simcall_t request) const;
-  RemotePtr<kernel::activity::CommImpl> get_comm_waitany_raw_addr(smx_simcall_t request, int value) const;
-  std::string get_pattern_comm_rdv(RemotePtr<kernel::activity::CommImpl> const& addr) const;
-  unsigned long get_pattern_comm_src_proc(RemotePtr<kernel::activity::CommImpl> const& addr) const;
-  unsigned long get_pattern_comm_dst_proc(RemotePtr<kernel::activity::CommImpl> const& addr) const;
-  std::vector<char> get_pattern_comm_data(RemotePtr<kernel::activity::CommImpl> const& addr) const;
   xbt::string const& get_actor_name(smx_actor_t actor) const;
   xbt::string const& get_actor_host_name(smx_actor_t actor) const;
-#if HAVE_SMPI
-  bool check_send_request_detached(smx_simcall_t const& simcall) const;
-#endif
-  smx_actor_t get_src_actor(RemotePtr<kernel::activity::CommImpl> const& comm_addr) const;
-  smx_actor_t get_dst_actor(RemotePtr<kernel::activity::CommImpl> const& comm_addr) const;
 
   // REMOTE APIs
   std::size_t get_remote_heap_bytes() const;
@@ -102,13 +91,6 @@ public:
 
   // SIMCALL APIs
   std::string request_get_dot_output(const Transition* t) const;
-  smx_actor_t simcall_get_issuer(s_smx_simcall const* req) const;
-  RemotePtr<kernel::activity::MailboxImpl> get_mbox_remote_addr(smx_simcall_t const req) const;
-  RemotePtr<kernel::activity::ActivityImpl> get_comm_remote_addr(smx_simcall_t const req) const;
-
-#if HAVE_SMPI
-  int get_smpi_request_tag(smx_simcall_t const& simcall, simgrid::simix::Simcall type) const;
-#endif
 
   // STATE APIs
   void restore_state(std::shared_ptr<simgrid::mc::Snapshot> system_state) const;
