@@ -519,6 +519,7 @@ void Request::start()
                                                                   : smpi_comm_copy_data_callback,
                                              this,
                                              -1.0};
+    observer.set_tag(tag_);
 
     action_ = kernel::actor::simcall([&observer] { return kernel::activity::CommImpl::irecv(&observer); }, &observer);
 
@@ -624,6 +625,7 @@ void Request::start()
         process->replaying() ? &smpi_comm_null_copy_buffer_callback : smpi_comm_copy_data_callback, this,
         // detach if msg size < eager/rdv switch limit
         detached_};
+    observer.set_tag(tag_);
     action_ = kernel::actor::simcall([&observer] { return kernel::activity::CommImpl::isend(&observer); }, &observer);
     XBT_DEBUG("send simcall posted");
 

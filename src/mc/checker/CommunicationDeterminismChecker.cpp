@@ -46,11 +46,10 @@ public:
     // num?
     res.comm_addr = this->comm_addr;
     res.type      = this->type;
-    // src_proc?
-    // dst_proc?
+    res.src_proc  = this->src_proc;
     res.dst_proc = this->dst_proc;
     res.mbox     = this->mbox;
-    // tag?
+    res.tag       = this->tag;
     res.index = this->index;
     return res;
   }
@@ -253,10 +252,7 @@ void CommDetExtension::get_comm_pattern(const Transition* transition, bool backt
     pattern->comm_addr = send->get_comm();
     pattern->mbox      = send->get_mailbox();
     pattern->src_proc  = send->aid_;
-
-#if HAVE_SMPI
-    pattern->tag = 0; // FIXME: replace it by the real tag from the observer
-#endif
+    pattern->tag       = send->get_tag();
 
 #if HAVE_SMPI
     // auto send_detached = api::get().check_send_request_detached(request);
@@ -277,10 +273,7 @@ void CommDetExtension::get_comm_pattern(const Transition* transition, bool backt
 
     pattern->type = PatternCommunicationType::receive;
     pattern->comm_addr = recv->get_comm();
-
-#if HAVE_SMPI
-    pattern->tag = 0; // FIXME: replace it by the real tag from the observer
-#endif
+    pattern->tag       = recv->get_tag();
     pattern->mbox     = recv->get_mailbox();
     pattern->dst_proc = recv->aid_;
   }

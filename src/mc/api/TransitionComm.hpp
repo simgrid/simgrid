@@ -90,6 +90,7 @@ class CommRecvTransition : public Transition {
   uintptr_t comm_; /* Addr of the CommImpl */
   unsigned mbox_;
   uintptr_t rbuff_;
+  int tag_;
 
 public:
   CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream);
@@ -102,6 +103,8 @@ public:
   unsigned get_mailbox() const { return mbox_; }
   /** Receiver buffer */
   uintptr_t get_rbuff() const { return rbuff_; }
+  /** If using SMPI, the tag */
+  int get_tag() const { return tag_; }
 };
 
 class CommSendTransition : public Transition {
@@ -109,6 +112,7 @@ class CommSendTransition : public Transition {
   unsigned mbox_;
   uintptr_t sbuff_;
   size_t size_;
+  int tag_;
 
 public:
   CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream);
@@ -123,6 +127,8 @@ public:
   uintptr_t get_sbuff() const { return sbuff_; }
   /** data size */
   size_t get_size() const { return size_; }
+  /** If using SMPI, the tag */
+  int get_tag() const { return tag_; }
 };
 
 class TestAnyTransition : public Transition {

@@ -218,6 +218,7 @@ class CommIsendSimcall : public SimcallObserver {
   void* payload_;
   bool detached_;
   activity::CommImpl* comm_;
+  int tag_;
 
   bool (*match_fun_)(void*, void*, activity::CommImpl*);
   void (*clean_fun_)(void*); // used to free the synchro in case of problem after a detached send
@@ -252,6 +253,7 @@ public:
   void* get_payload() const { return payload_; }
   bool is_detached() const { return detached_; }
   void set_comm(activity::CommImpl* comm) { comm_ = comm; }
+  void set_tag(int tag) { tag_ = tag; }
 
   auto get_match_fun() const { return match_fun_; }
   auto get_clean_fun() const { return clean_fun_; }
@@ -264,6 +266,7 @@ class CommIrecvSimcall : public SimcallObserver {
   size_t* dst_buff_size_;
   void* payload_;
   double rate_;
+  int tag_;
   activity::CommImpl* comm_;
 
   bool (*match_fun_)(void*, void*, activity::CommImpl*);
@@ -291,6 +294,7 @@ public:
   size_t* get_dst_buff_size() const { return dst_buff_size_; }
   void* get_payload() const { return payload_; }
   void set_comm(activity::CommImpl* comm) { comm_ = comm; }
+  void set_tag(int tag) { tag_ = tag; }
 
   auto get_match_fun() const { return match_fun_; };
   auto get_copy_data_fun() const { return copy_data_fun_; }

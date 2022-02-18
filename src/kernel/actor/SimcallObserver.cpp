@@ -237,15 +237,17 @@ void ActivityWaitanySimcall::prepare(int times_considered)
 void CommIsendSimcall::serialize(std::stringstream& stream) const
 {
   stream << (short)mc::Transition::Type::COMM_SEND << ' ';
-  stream << (uintptr_t)comm_ << ' ' << mbox_->get_id() << ' ' << (uintptr_t)src_buff_ << ' ' << src_buff_size_;
-  XBT_DEBUG("SendObserver comm:%p mbox:%u buff:%p size:%zu", comm_, mbox_->get_id(), src_buff_, src_buff_size_);
+  stream << (uintptr_t)comm_ << ' ' << mbox_->get_id() << ' ' << (uintptr_t)src_buff_ << ' ' << src_buff_size_ << ' '
+         << tag_;
+  XBT_DEBUG("SendObserver comm:%p mbox:%u buff:%p size:%zu tag:%d", comm_, mbox_->get_id(), src_buff_, src_buff_size_,
+            tag_);
 }
 
 void CommIrecvSimcall::serialize(std::stringstream& stream) const
 {
   stream << (short)mc::Transition::Type::COMM_RECV << ' ';
-  stream << (uintptr_t)comm_ << ' ' << mbox_->get_id() << ' ' << (uintptr_t)dst_buff_;
-  XBT_DEBUG("RecvObserver comm:%p mbox:%u buff:%p", comm_, mbox_->get_id(), dst_buff_);
+  stream << (uintptr_t)comm_ << ' ' << mbox_->get_id() << ' ' << (uintptr_t)dst_buff_ << ' ' << tag_;
+  XBT_DEBUG("RecvObserver comm:%p mbox:%u buff:%p tag:%d", comm_, mbox_->get_id(), dst_buff_, tag_);
 }
 
 } // namespace actor
