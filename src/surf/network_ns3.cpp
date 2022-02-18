@@ -5,6 +5,7 @@
 
 #include "simgrid/plugins/ns3.hpp"
 
+#include <random>
 #include <string>
 #include <unordered_set>
 
@@ -55,17 +56,6 @@ static ns3::InternetStackHelper stack;
 static int number_of_links    = 1;
 static int number_of_networks = 1;
 
-/* wifi globals */
-static ns3::WifiHelper wifi;
-#if NS3_MINOR_VERSION < 33
-static ns3::YansWifiPhyHelper wifiPhy = ns3::YansWifiPhyHelper::Default();
-#else
-static ns3::YansWifiPhyHelper wifiPhy;
-#endif
-static ns3::YansWifiChannelHelper wifiChannel = ns3::YansWifiChannelHelper::Default();
-static ns3::WifiMacHelper wifiMac;
-static ns3::MobilityHelper mobility;
-
 simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetPointNs3> NetPointNs3::EXTENSION_ID;
 
 static std::string transformIpv4Address(ns3::Ipv4Address from)
@@ -75,7 +65,7 @@ static std::string transformIpv4Address(ns3::Ipv4Address from)
   return sstream.str();
 }
 
-NetPointNs3::NetPointNs3() : ns3_node_(ns3::CreateObject<ns3::Node>(0))
+NetPointNs3::NetPointNs3()
 {
   stack.Install(ns3_node_);
 }
@@ -91,9 +81,20 @@ static void resumeWifiDevice(ns3::Ptr<ns3::WifiNetDevice> device)
 
 static void zoneCreation_cb(simgrid::s4u::NetZone const& zone)
 {
-  simgrid::kernel::routing::WifiZone* wifizone = dynamic_cast<simgrid::kernel::routing::WifiZone*>(zone.get_impl());
+  auto const* wifizone = dynamic_cast<simgrid::kernel::routing::WifiZone*>(zone.get_impl());
   if (wifizone == nullptr)
     return;
+
+  /* wifi globals */
+  static ns3::WifiHelper wifi;
+#if NS3_MINOR_VERSION < 33
+  static ns3::YansWifiPhyHelper wifiPhy = ns3::YansWifiPhyHelper::Default();
+#else
+  static ns3::YansWifiPhyHelper wifiPhy;
+#endif
+  static ns3::YansWifiChannelHelper wifiChannel = ns3::YansWifiChannelHelper::Default();
+  static ns3::WifiMacHelper wifiMac;
+  static ns3::MobilityHelper mobility;
 
 #if NS3_MINOR_VERSION < 32
   wifi.SetStandard(ns3::WIFI_PHY_STANDARD_80211n_5GHZ);
@@ -139,7 +140,7 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone)
   ns3::Ptr<ns3::Node> station_ns3_node = nullptr;
   double distance;
   double angle    = 0;
-  int nb_stations = wifizone->get_all_hosts().size() - 1;
+  auto nb_stations = wifizone->get_all_hosts().size() - 1;
   double step     = 2 * M_PI / nb_stations;
   for (auto station_host : wifizone->get_all_hosts()) {
     station_netpoint_ns3 = station_host->get_netpoint()->extension<NetPointNs3>();
@@ -202,12 +203,11 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs con
   for (int const& i : cluster.radicals) {
     // Create private link
     std::string host_id = cluster.prefix + std::to_string(i) + cluster.suffix;
-    auto* src           = simgrid::s4u::Host::by_name(host_id)->get_netpoint();
-    auto* dst           = simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(cluster.router_id);
+    auto const* src     = simgrid::s4u::Host::by_name(host_id)->get_netpoint();
+    auto const* dst     = simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(cluster.router_id);
     xbt_assert(dst != nullptr, "No router named %s", cluster.router_id.c_str());
 
-    ns3_add_direct_route(src, dst, cluster.bw, cluster.lat, cluster.id,
-                         cluster.sharing_policy); // Any ns-3 route is symmetrical
+    ns3_add_direct_route(src, dst, cluster.bw, cluster.lat, cluster.sharing_policy); // Any ns-3 route is symmetrical
 
     // Also add the host to the list of hosts that will be connected to the backbone
     Nodes.Add(src->extension<NetPointNs3>()->ns3_node_);
@@ -238,9 +238,10 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs con
   }
 }
 
-static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoint* src,
-                             simgrid::kernel::routing::NetPoint* dst, simgrid::kernel::routing::NetPoint* /*gw_src*/,
-                             simgrid::kernel::routing::NetPoint* /*gw_dst*/,
+static void routeCreation_cb(bool symmetrical, const simgrid::kernel::routing::NetPoint* src,
+                             const simgrid::kernel::routing::NetPoint* dst,
+                             const simgrid::kernel::routing::NetPoint* /*gw_src*/,
+                             const simgrid::kernel::routing::NetPoint* /*gw_dst*/,
                              std::vector<simgrid::kernel::resource::StandardLinkImpl*> const& link_list)
 {
   /* ignoring routes from StarZone, not supported */
@@ -254,11 +255,9 @@ static void routeCreation_cb(bool symmetrical, simgrid::kernel::routing::NetPoin
               (link->get_sharing_policy() == simgrid::s4u::Link::SharingPolicy::WIFI ? "(wifi)" : "(wired)"),
               (symmetrical ? "(symmetrical)" : "(not symmetrical)"));
 
-    //   XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
     XBT_DEBUG("\tLink (%s) bw:%fbps lat:%fs", link->get_cname(), link->get_bandwidth(), link->get_latency());
 
-    ns3_add_direct_route(src, dst, link->get_bandwidth(), link->get_latency(), link->get_name(),
-                         link->get_sharing_policy());
+    ns3_add_direct_route(src, dst, link->get_bandwidth(), link->get_latency(), link->get_sharing_policy());
   } else {
     static bool warned_about_long_routes = false;
 
@@ -293,12 +292,12 @@ static simgrid::config::Flag<std::string> ns3_seed(
       if (val.length() == 0)
         return;
       if (strcasecmp(val.c_str(), "time") == 0) {
-        std::srand(time(NULL));
-        ns3::RngSeedManager::SetSeed(std::rand());
-        ns3::RngSeedManager::SetRun(std::rand());
+        std::default_random_engine prng(time(nullptr));
+        ns3::RngSeedManager::SetSeed(prng());
+        ns3::RngSeedManager::SetRun(prng());
       } else {
-        int v = xbt_str_parse_int(
-            val.c_str(), "Invalid value for option ns3/seed. It must be either 'time', a number, or left empty.");
+        int v = static_cast<int>(xbt_str_parse_int(
+            val.c_str(), "Invalid value for option ns3/seed. It must be either 'time', a number, or left empty."));
         ns3::RngSeedManager::SetSeed(v);
         ns3::RngSeedManager::SetRun(v);
       }
@@ -319,7 +318,7 @@ NetworkNS3Model::NetworkNS3Model(const std::string& name) : NetworkModel(name)
   ns3::Config::SetDefault("ns3::TcpSocket::DelAckCount", ns3::UintegerValue(1));
   ns3::Config::SetDefault("ns3::TcpSocketBase::Timestamp", ns3::BooleanValue(false));
 
-  auto TcpProtocol = ns3_tcp_model.get();
+  auto const& TcpProtocol = ns3_tcp_model.get();
   if (TcpProtocol == "default") {
     /* nothing to do */
 
@@ -419,19 +418,18 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
     // inconsistent state (i.e. remains_ == 0 but finished_ == false).
     // However, SimGrid considers sometimes that an action with remains_ == 0 is finished.
     // Thus, to avoid inconsistencies between SimGrid and NS3, set remains to 0 only when the flow is finished in NS3
-    int remains = action->get_cost() - sgFlow->sent_bytes_;
+    double remains = action->get_cost() - sgFlow->sent_bytes_;
     if (remains > 0)
       action->set_remains(remains);
 
     if (TRACE_is_enabled() && action->get_state() == kernel::resource::Action::State::STARTED) {
       double data_delta_sent = sgFlow->sent_bytes_ - action->last_sent_;
 
-      std::vector<StandardLinkImpl*> route = std::vector<StandardLinkImpl*>();
-
+      std::vector<StandardLinkImpl*> route;
       action->get_src().route_to(&action->get_dst(), route, nullptr);
       for (auto const& link : route)
         instr::resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action->get_category(),
-                                        (data_delta_sent) / delta, now - delta, delta);
+                                        data_delta_sent / delta, now - delta, delta);
 
       action->last_sent_ = sgFlow->sent_bytes_;
     }
@@ -531,7 +529,7 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
   ns3::Ptr<ns3::Node> src_node = get_ns3node_from_sghost(src);
   ns3::Ptr<ns3::Node> dst_node = get_ns3node_from_sghost(dst);
 
-  std::string& addr = dst->get_netpoint()->extension<NetPointNs3>()->ipv4_address_;
+  const std::string& addr = dst->get_netpoint()->extension<NetPointNs3>()->ipv4_address_;
   xbt_assert(not addr.empty(), "Element %s is unknown to ns-3. Is it connected to any one-hop link?",
              dst->get_netpoint()->get_cname());
 
@@ -576,7 +574,7 @@ void NetworkNS3Action::update_remains_lazy(double /*now*/)
 } // namespace resource
 } // namespace kernel
 
-ns3::Ptr<ns3::Node> get_ns3node_from_sghost(simgrid::s4u::Host* host)
+ns3::Ptr<ns3::Node> get_ns3node_from_sghost(const simgrid::s4u::Host* host)
 {
   xbt_assert(host->get_netpoint()->extension<NetPointNs3>() != nullptr, "Please only use this function on ns-3 nodes");
   return host->get_netpoint()->extension<NetPointNs3>()->ns3_node_;
@@ -597,8 +595,8 @@ void ns3_simulator(double maxSeconds)
     id.Cancel();
 }
 
-void ns3_add_direct_route(simgrid::kernel::routing::NetPoint* src, simgrid::kernel::routing::NetPoint* dst, double bw,
-                          double lat, const std::string& link_name, simgrid::s4u::Link::SharingPolicy policy)
+void ns3_add_direct_route(const simgrid::kernel::routing::NetPoint* src, const simgrid::kernel::routing::NetPoint* dst,
+                          double bw, double lat, simgrid::s4u::Link::SharingPolicy policy)
 {
   ns3::Ipv4AddressHelper address;
   ns3::NetDeviceContainer netA;

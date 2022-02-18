@@ -20,13 +20,13 @@ public:
   static simgrid::xbt::Extension<simgrid::kernel::routing::NetPoint, NetPointNs3> EXTENSION_ID;
 
   explicit NetPointNs3();
-  ns3::Ptr<ns3::Node> ns3_node_;
+  ns3::Ptr<ns3::Node> ns3_node_ = ns3::CreateObject<ns3::Node>(0);
   std::string ipv4_address_;
 };
 
 XBT_PRIVATE void ns3_simulator(double max_seconds);
-XBT_PRIVATE void ns3_add_direct_route(simgrid::kernel::routing::NetPoint* src, simgrid::kernel::routing::NetPoint* dst,
-                                      double bw, double lat, const std::string& link_name,
+XBT_PRIVATE void ns3_add_direct_route(const simgrid::kernel::routing::NetPoint* src,
+                                      const simgrid::kernel::routing::NetPoint* dst, double bw, double lat,
                                       simgrid::s4u::Link::SharingPolicy policy);
 
 class XBT_PRIVATE SgFlow {
@@ -36,8 +36,8 @@ public:
   // private:
   std::uint32_t buffered_bytes_ = 0;
   std::uint32_t sent_bytes_     = 0;
-  std::uint32_t remaining_;
   std::uint32_t total_bytes_;
+  std::uint32_t remaining_;
   bool finished_ = false;
   simgrid::kernel::resource::NetworkNS3Action* action_;
 };

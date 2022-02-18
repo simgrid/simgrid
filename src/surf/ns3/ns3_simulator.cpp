@@ -25,10 +25,8 @@ static void datasent_cb(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent);
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_ns3);
 
 SgFlow::SgFlow(uint32_t totalBytes, simgrid::kernel::resource::NetworkNS3Action* action)
+    : total_bytes_(totalBytes), remaining_(totalBytes), action_(action)
 {
-  total_bytes_ = totalBytes;
-  remaining_  = totalBytes;
-  action_     = action;
 }
 
 static SgFlow* getFlowFromSocket(ns3::Ptr<ns3::Socket> socket)
@@ -56,10 +54,10 @@ static void receive_callback(ns3::Ptr<ns3::Socket> socket)
   }
 }
 
-static void send_cb(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace)
+static void send_cb(ns3::Ptr<ns3::Socket> sock, uint32_t /*txSpace*/)
 {
   SgFlow* flow = getFlowFromSocket(sock);
-  ns3::ApplicationContainer* sink = getSinkFromSocket(sock);
+  const ns3::ApplicationContainer* sink = getSinkFromSocket(sock);
   XBT_DEBUG("Asked to write on F[%p, total: %u, remain: %u]", flow, flow->total_bytes_, flow->remaining_);
 
   if (flow->remaining_ == 0) // all data was already buffered (and socket was already closed)
@@ -119,7 +117,7 @@ static void normalClose_callback(ns3::Ptr<ns3::Socket> socket)
   receive_callback(socket);
 }
 
-static void errorClose_callback(ns3::Ptr<ns3::Socket> socket)
+XBT_ATTRIB_NORETURN static void errorClose_callback(ns3::Ptr<ns3::Socket> socket)
 {
   SgFlow* flow = getFlowFromSocket(socket);
   XBT_DEBUG("errorClose_cb of F[%p, %p, %u]", flow, flow->action_, flow->total_bytes_);
@@ -132,7 +130,7 @@ static void succeededConnect_callback(ns3::Ptr<ns3::Socket> socket)
   XBT_DEBUG("succeededConnect_cb of F[%p, %p, %u]", flow, flow->action_, flow->total_bytes_);
 }
 
-static void failedConnect_callback(ns3::Ptr<ns3::Socket> socket)
+XBT_ATTRIB_NORETURN static void failedConnect_callback(ns3::Ptr<ns3::Socket> socket)
 {
   SgFlow* mysocket = getFlowFromSocket(socket);
   XBT_DEBUG("failedConnect_cb of F[%p, %p, %u]", mysocket, mysocket->action_, mysocket->total_bytes_);

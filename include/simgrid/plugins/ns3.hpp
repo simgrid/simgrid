@@ -14,7 +14,7 @@
 
 namespace simgrid {
 /** Returns the ns3 node from a simgrid host */
-XBT_PUBLIC ns3::Ptr<ns3::Node> get_ns3node_from_sghost(simgrid::s4u::Host* host);
+XBT_PUBLIC ns3::Ptr<ns3::Node> get_ns3node_from_sghost(const simgrid::s4u::Host* host);
 }; // namespace simgrid
 
 #endif
