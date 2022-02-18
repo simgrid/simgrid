@@ -111,9 +111,9 @@ static void normalClose_callback(ns3::Ptr<ns3::Socket> socket)
   SgFlow* flow = getFlowFromSocket(socket);
   XBT_DEBUG("normalClose_cb of F[%p, %p] total: %u; sent: %u", flow, flow->action_, flow->total_bytes_,
             flow->sent_bytes_);
-  // xbt_assert(flow->total_bytes_ == flow->sent_bytes_,
-  //    "total_bytes (=%u) is not sent_bytes(=%u)", flow->total_bytes_ , flow->sent_bytes_);
-  // xbt_assert(flow->remaining_ == 0, "Remaining is not 0 but %u", flow->remaining_);
+  xbt_assert(flow->total_bytes_ == flow->sent_bytes_, "total_bytes (=%u) is not sent_bytes(=%u)", flow->total_bytes_,
+             flow->sent_bytes_);
+  xbt_assert(flow->remaining_ == 0, "Remaining is not 0 but %u", flow->remaining_);
   receive_callback(socket);
 }
 
