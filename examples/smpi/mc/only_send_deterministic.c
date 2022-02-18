@@ -1,14 +1,12 @@
 /* ../../../smpi_script/bin/smpirun -hostfile hostfile_send_deterministic -platform ../../platforms/cluster_backbone.xml -np 3 --cfg=smpi/send-is-detached-thresh:0 gdb\ --args\ ./send_deterministic */
 
-/* Copyright (c) 2009-2022. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2022. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
 #include <mpi.h>
-#include <simgrid/modelchecker.h>
 
 int main(int argc, char **argv)
 {

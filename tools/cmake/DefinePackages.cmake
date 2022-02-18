@@ -558,7 +558,6 @@ set(MC_SRC_BASE
 set(MC_SRC
   src/mc/checker/Checker.hpp
   src/mc/checker/CommunicationDeterminismChecker.cpp
-  src/mc/checker/CommunicationDeterminismChecker.hpp
   src/mc/checker/SafetyChecker.cpp
   src/mc/checker/SafetyChecker.hpp
   src/mc/checker/LivenessChecker.cpp

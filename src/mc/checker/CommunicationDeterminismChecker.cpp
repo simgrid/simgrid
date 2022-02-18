@@ -3,10 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/checker/CommunicationDeterminismChecker.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/mc/Session.hpp"
 #include "src/mc/api/TransitionComm.hpp"
+#include "src/mc/checker/SafetyChecker.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
@@ -65,14 +65,6 @@ struct PatternCommunicationList {
 struct CommDetExtension {
   static simgrid::xbt::Extension<simgrid::mc::Checker, CommDetExtension> EXTENSION_ID;
 
-  CommDetExtension()
-  {
-    const unsigned long maxpid = api::get().get_maxpid();
-
-    initial_communications_pattern.resize(maxpid);
-    incomplete_communications_pattern.resize(maxpid);
-  }
-
   std::vector<simgrid::mc::PatternCommunicationList> initial_communications_pattern;
   std::vector<std::vector<simgrid::mc::PatternCommunication*>> incomplete_communications_pattern;
 
@@ -82,6 +74,13 @@ struct CommDetExtension {
   std::string send_diff;
   std::string recv_diff;
 
+  void exploration_start()
+  {
+    const unsigned long maxpid = api::get().get_maxpid();
+
+    initial_communications_pattern.resize(maxpid);
+    incomplete_communications_pattern.resize(maxpid);
+  }
   void restore_communications_pattern(const simgrid::mc::State* state);
   void enforce_deterministic_pattern(aid_t process, const PatternCommunication* comm);
   void get_comm_pattern(const Transition* transition);
@@ -149,16 +148,16 @@ void CommDetExtension::restore_communications_pattern(const simgrid::mc::State* 
   }
 }
 
-static std::string print_determinism_result(simgrid::mc::CommPatternDifference diff, aid_t process,
+static std::string print_determinism_result(simgrid::mc::CommPatternDifference diff, aid_t actor,
                                             const simgrid::mc::PatternCommunication* comm, unsigned int cursor)
 {
   std::string type;
   std::string res;
 
   if (comm->type == simgrid::mc::PatternCommunicationType::send)
-    type = xbt::string_printf("The send communications pattern of the process %ld is different!", process - 1);
+    type = xbt::string_printf("The send communications pattern of the actor %ld is different!", actor - 1);
   else
-    type = xbt::string_printf("The recv communications pattern of the process %ld is different!", process - 1);
+    type = xbt::string_printf("The recv communications pattern of the actor %ld is different!", actor - 1);
 
   using simgrid::mc::CommPatternDifference;
   switch (diff) {
@@ -199,7 +198,8 @@ void CommDetExtension::enforce_deterministic_pattern(aid_t actor, const PatternC
       send_diff          = print_determinism_result(diff, actor, comm, list.index_comm + 1);
     } else {
       recv_deterministic = false;
-      recv_diff          = print_determinism_result(diff, actor, comm, list.index_comm + 1);
+      if (recv_diff.empty())
+        recv_diff = print_determinism_result(diff, actor, comm, list.index_comm + 1);
     }
     if (_sg_mc_send_determinism && not send_deterministic) {
       XBT_INFO("*********************************************************");
@@ -283,108 +283,6 @@ void CommDetExtension::complete_comm_pattern(const CommWaitTransition* transitio
   }
 }
 
-CommunicationDeterminismChecker::CommunicationDeterminismChecker(Session* session) : Checker(session)
-{
-  CommDetExtension::EXTENSION_ID = simgrid::mc::Checker::extension_create<CommDetExtension>();
-  StateCommDet::EXTENSION_ID = simgrid::mc::State::extension_create<StateCommDet>();
-}
-
-CommunicationDeterminismChecker::~CommunicationDeterminismChecker() = default;
-
-RecordTrace CommunicationDeterminismChecker::get_record_trace() // override
-{
-  RecordTrace res;
-  for (auto const& state : stack_)
-    res.push_back(state->get_transition());
-  return res;
-}
-
-std::vector<std::string> CommunicationDeterminismChecker::get_textual_trace() // override
-{
-  std::vector<std::string> trace;
-  for (auto const& state : stack_)
-    trace.push_back(state->get_transition()->to_string());
-  return trace;
-}
-
-void CommunicationDeterminismChecker::log_state() // override
-{
-  if (_sg_mc_comms_determinism) {
-    if (extension<CommDetExtension>()->send_deterministic && not extension<CommDetExtension>()->recv_deterministic) {
-      XBT_INFO("*******************************************************");
-      XBT_INFO("**** Only-send-deterministic communication pattern ****");
-      XBT_INFO("*******************************************************");
-      XBT_INFO("%s", extension<CommDetExtension>()->recv_diff.c_str());
-    }
-    if (not extension<CommDetExtension>()->send_deterministic && extension<CommDetExtension>()->recv_deterministic) {
-      XBT_INFO("*******************************************************");
-      XBT_INFO("**** Only-recv-deterministic communication pattern ****");
-      XBT_INFO("*******************************************************");
-      XBT_INFO("%s", extension<CommDetExtension>()->send_diff.c_str());
-    }
-  }
-  XBT_INFO("Expanded states = %ld", State::get_expanded_states());
-  XBT_INFO("Visited states = %lu", api::get().mc_get_visited_states());
-  XBT_INFO("Executed transitions = %lu", Transition::get_executed_transitions());
-  XBT_INFO("Send-deterministic : %s", extension<CommDetExtension>()->send_deterministic ? "Yes" : "No");
-  if (_sg_mc_comms_determinism)
-    XBT_INFO("Recv-deterministic : %s", extension<CommDetExtension>()->recv_deterministic ? "Yes" : "No");
-}
-
-void CommunicationDeterminismChecker::prepare()
-{
-  auto initial_state = std::make_unique<State>();
-  extension_set(new CommDetExtension());
-  initial_state->extension_set(new StateCommDet(extension<CommDetExtension>()));
-
-  XBT_DEBUG("********* Start communication determinism verification *********");
-
-  /* Add all enabled actors to the interleave set of the initial state */
-  for (auto& act : api::get().get_actors()) {
-    auto actor = act.copy.get_buffer();
-    if (get_session().actor_is_enabled(actor->get_pid()))
-      initial_state->mark_todo(actor->get_pid());
-  }
-
-  stack_.push_back(std::move(initial_state));
-}
-
-void CommunicationDeterminismChecker::restoreState()
-{
-  auto extension = this->extension<CommDetExtension>();
-
-  /* If asked to rollback on a state that has a snapshot, restore it */
-  State* last_state = stack_.back().get();
-  if (last_state->system_state_) {
-    api::get().restore_state(last_state->system_state_);
-    extension->restore_communications_pattern(last_state);
-    return;
-  }
-
-  /* if no snapshot, we need to restore the initial state and replay the transitions */
-  get_session().restore_initial_state();
-
-  const unsigned long maxpid = api::get().get_maxpid();
-  assert(maxpid == extension->incomplete_communications_pattern.size());
-  assert(maxpid == extension->initial_communications_pattern.size());
-  for (unsigned long j = 0; j < maxpid; j++) {
-    extension->incomplete_communications_pattern[j].clear();
-    extension->initial_communications_pattern[j].index_comm = 0;
-  }
-
-  /* Traverse the stack from the state at position start and re-execute the transitions */
-  for (std::unique_ptr<simgrid::mc::State> const& state : stack_) {
-    if (state == stack_.back())
-      break;
-
-    auto* transition = state->get_transition();
-    transition->replay();
-    extension->handle_comm_pattern(transition);
-
-    /* Update statistics */
-    api::get().mc_inc_visited_states();
-  }
-}
 
 void CommDetExtension::handle_comm_pattern(const Transition* transition)
 {
@@ -412,44 +310,7 @@ void CommDetExtension::handle_comm_pattern(const Transition* transition)
   }
 }
 
-void CommunicationDeterminismChecker::real_run()
-{
-  auto extension = this->extension<CommDetExtension>();
-
-  std::unique_ptr<VisitedState> visited_state = nullptr;
-  const unsigned long maxpid                  = api::get().get_maxpid();
-
-  while (not stack_.empty()) {
-    /* Get current state */
-    State* cur_state = stack_.back().get();
-
-    XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth = %zu (state = %ld, interleaved processes = %zu)", stack_.size(), cur_state->num_,
-              cur_state->count_todo());
-
-    /* Update statistics */
-    api::get().mc_inc_visited_states();
-
-    int next_transition = -1;
-    if (stack_.size() <= (std::size_t)_sg_mc_max_depth)
-      next_transition = cur_state->next_transition();
-
-    if (next_transition >= 0 && visited_state == nullptr) {
-      cur_state->execute_next(next_transition);
-
-      auto* transition  = cur_state->get_transition();
-      XBT_DEBUG("Execute: %s", transition->to_string().c_str());
-
-      std::string req_str;
-      if (dot_output != nullptr)
-        req_str = api::get().request_get_dot_output(transition);
-
-      extension->handle_comm_pattern(transition);
-
-      /* Create the new expanded state */
-      auto next_state = std::make_unique<State>();
-      next_state->extension_set(new StateCommDet(extension));
-
+/* FIXME: CommDet probably don't play nicely with stateful exploration
       bool all_communications_are_finished = true;
       for (size_t current_actor = 1; all_communications_are_finished && current_actor < maxpid; current_actor++) {
         if (not extension->incomplete_communications_pattern[current_actor].empty()) {
@@ -457,87 +318,61 @@ void CommunicationDeterminismChecker::real_run()
           all_communications_are_finished = false;
         }
       }
-
-      /* If comm determinism verification, we cannot stop the exploration if some communications are not finished (at
-       * least, data are transferred). These communications  are incomplete and they cannot be analyzed and compared
-       * with the initial pattern. */
-      bool compare_snapshots = extension->initial_communications_pattern_done && all_communications_are_finished;
-
-      if (_sg_mc_max_visited_states != 0)
-        visited_state = visited_states_.addVisitedState(next_state->num_, next_state.get(), compare_snapshots);
-      else
-        visited_state = nullptr;
-
-      if (visited_state == nullptr) {
-        /* Add all enabled actors to the interleave set of the next state */
-        for (auto& act : api::get().get_actors()) {
-          auto actor = act.copy.get_buffer();
-          if (get_session().actor_is_enabled(actor->get_pid()))
-            next_state->mark_todo(actor->get_pid());
-        }
-
-        if (dot_output != nullptr)
-          fprintf(dot_output, "\"%ld\" -> \"%ld\" [%s];\n", cur_state->num_, next_state->num_, req_str.c_str());
-
-      } else if (dot_output != nullptr)
-        fprintf(dot_output, "\"%ld\" -> \"%ld\" [%s];\n", cur_state->num_,
-                visited_state->original_num == -1 ? visited_state->num : visited_state->original_num, req_str.c_str());
-
-      stack_.push_back(std::move(next_state));
-    } else {
-      if (stack_.size() > (std::size_t)_sg_mc_max_depth)
-        XBT_WARN("/!\\ Max depth reached! /!\\ ");
-      else if (visited_state != nullptr)
-        XBT_DEBUG("State already visited (equal to state %ld), exploration stopped on this path.",
-                  visited_state->original_num == -1 ? visited_state->num : visited_state->original_num);
-      else
-        XBT_DEBUG("There are no more processes to interleave. (depth %zu)", stack_.size());
-
-      extension->initial_communications_pattern_done = true;
-
-      /* Trash the current state, no longer needed */
-      XBT_DEBUG("Delete state %ld at depth %zu", cur_state->num_, stack_.size());
-      stack_.pop_back();
-
-      visited_state = nullptr;
-
-      api::get().mc_check_deadlock();
-
-      while (not stack_.empty()) {
-        std::unique_ptr<State> state(std::move(stack_.back()));
-        stack_.pop_back();
-        if (state->count_todo() && stack_.size() < (std::size_t)_sg_mc_max_depth) {
-          /* We found a back-tracking point, let's loop */
-          XBT_DEBUG("Back-tracking to state %ld at depth %zu", state->num_, stack_.size() + 1);
-          stack_.push_back(std::move(state));
-
-          this->restoreState();
-
-          XBT_DEBUG("Back-tracking to state %ld at depth %zu done", stack_.back()->num_, stack_.size());
-
-          break;
-        } else {
-          XBT_DEBUG("Delete state %ld at depth %zu", state->num_, stack_.size() + 1);
-        }
-      }
-    }
-  }
-
-  api::get().log_state();
-}
-
-void CommunicationDeterminismChecker::run()
-{
-  XBT_INFO("Check communication determinism");
-  get_session().take_initial_snapshot();
-
-  this->prepare();
-  this->real_run();
-}
+      */
 
 Checker* create_communication_determinism_checker(Session* session)
 {
-  return new CommunicationDeterminismChecker(session);
+  CommDetExtension::EXTENSION_ID = simgrid::mc::Checker::extension_create<CommDetExtension>();
+  StateCommDet::EXTENSION_ID     = simgrid::mc::State::extension_create<StateCommDet>();
+
+  XBT_DEBUG("********* Start communication determinism verification *********");
+
+  auto extension = new CommDetExtension();
+
+  SafetyChecker::on_exploration_start([&extension]() {
+    XBT_INFO("Check communication determinism");
+    extension->exploration_start();
+  });
+  SafetyChecker::on_backtracking([&extension]() { extension->initial_communications_pattern_done = true; });
+  SafetyChecker::on_state_creation([&extension](State* state) { state->extension_set(new StateCommDet(extension)); });
+
+  SafetyChecker::on_restore_system_state(
+      [&extension](State* state) { extension->restore_communications_pattern(state); });
+
+  SafetyChecker::on_restore_initial_state([&extension]() {
+    const unsigned long maxpid = api::get().get_maxpid();
+    assert(maxpid == extension->incomplete_communications_pattern.size());
+    assert(maxpid == extension->initial_communications_pattern.size());
+    for (unsigned long j = 0; j < maxpid; j++) {
+      extension->incomplete_communications_pattern[j].clear();
+      extension->initial_communications_pattern[j].index_comm = 0;
+    }
+  });
+
+  SafetyChecker::on_transition_replay([&extension](Transition* t) { extension->handle_comm_pattern(t); });
+  SafetyChecker::on_transition_execute([&extension](Transition* t) { extension->handle_comm_pattern(t); });
+
+  SafetyChecker::on_log_state([&extension]() {
+    if (_sg_mc_comms_determinism) {
+      if (extension->send_deterministic && not extension->recv_deterministic) {
+        XBT_INFO("*******************************************************");
+        XBT_INFO("**** Only-send-deterministic communication pattern ****");
+        XBT_INFO("*******************************************************");
+        XBT_INFO("%s", extension->recv_diff.c_str());
+      }
+      if (not extension->send_deterministic && extension->recv_deterministic) {
+        XBT_INFO("*******************************************************");
+        XBT_INFO("**** Only-recv-deterministic communication pattern ****");
+        XBT_INFO("*******************************************************");
+        XBT_INFO("%s", extension->send_diff.c_str());
+      }
+    }
+    XBT_INFO("Send-deterministic : %s", extension->send_deterministic ? "Yes" : "No");
+    if (_sg_mc_comms_determinism)
+      XBT_INFO("Recv-deterministic : %s", extension->recv_deterministic ? "Yes" : "No");
+  });
+
+  return new SafetyChecker(session);
 }
 
 } // namespace mc

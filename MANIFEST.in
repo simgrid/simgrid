@@ -2347,7 +2347,6 @@ include src/mc/api/TransitionComm.cpp
 include src/mc/api/TransitionComm.hpp
 include src/mc/checker/Checker.hpp
 include src/mc/checker/CommunicationDeterminismChecker.cpp
-include src/mc/checker/CommunicationDeterminismChecker.hpp
 include src/mc/checker/LivenessChecker.cpp
 include src/mc/checker/LivenessChecker.hpp
 include src/mc/checker/SafetyChecker.cpp

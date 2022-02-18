@@ -34,7 +34,6 @@ class MailboxImpl {
   friend s4u::Mailbox;
   friend s4u::Mailbox* s4u::Engine::mailbox_by_name_or_create(const std::string& name) const;
   friend s4u::Mailbox* s4u::Mailbox::by_name(const std::string& name);
-  friend mc::CommunicationDeterminismChecker;
 
   static unsigned next_id_; // Next ID to be given
   const unsigned id_ = next_id_++;

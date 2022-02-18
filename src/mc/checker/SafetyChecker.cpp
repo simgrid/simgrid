@@ -30,6 +30,18 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc, "Logging specific to MC safety ve
 namespace simgrid {
 namespace mc {
 
+xbt::signal<void()> SafetyChecker::on_exploration_start_signal;
+xbt::signal<void()> SafetyChecker::on_backtracking_signal;
+
+xbt::signal<void(State*)> SafetyChecker::on_state_creation_signal;
+
+xbt::signal<void(State*)> SafetyChecker::on_restore_system_state_signal;
+xbt::signal<void()> SafetyChecker::on_restore_initial_state_signal;
+xbt::signal<void(Transition*)> SafetyChecker::on_transition_replay_signal;
+xbt::signal<void(Transition*)> SafetyChecker::on_transition_execute_signal;
+
+xbt::signal<void()> SafetyChecker::on_log_state_signal;
+
 void SafetyChecker::check_non_termination(const State* current_state)
 {
   for (auto state = stack_.rbegin(); state != stack_.rend(); ++state)
@@ -66,13 +78,16 @@ std::vector<std::string> SafetyChecker::get_textual_trace() // override
 
 void SafetyChecker::log_state() // override
 {
-  XBT_INFO("%ld unique states visited; %ld backtracks (%lu transition replays, %lu states visited overall)",
+  on_log_state_signal();
+  XBT_INFO("DFS exploration successful. %ld unique states visited; %ld backtracks (%lu transition replays, %lu states "
+           "visited overall)",
            State::get_expanded_states(), backtrack_count_, api::get().mc_get_visited_states(),
            Transition::get_replayed_transitions());
 }
 
 void SafetyChecker::run()
 {
+  on_exploration_start_signal();
   /* This function runs the DFS algorithm the state space.
    * We do so iteratively instead of recursively, dealing with the call stack manually.
    * This allows one to explore the call stack at will. */
@@ -124,6 +139,7 @@ void SafetyChecker::run()
 
     /* Actually answer the request: let's execute the selected request (MCed does one step) */
     state->execute_next(next);
+    on_transition_execute_signal(state->get_transition());
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
@@ -135,6 +151,7 @@ void SafetyChecker::run()
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     auto next_state = std::make_unique<State>();
+    on_state_creation_signal(next_state.get());
 
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
@@ -167,7 +184,6 @@ void SafetyChecker::run()
     stack_.push_back(std::move(next_state));
   }
 
-  XBT_INFO("No property violation found.");
   api::get().log_state();
 }
 
@@ -175,6 +191,7 @@ void SafetyChecker::backtrack()
 {
   backtrack_count_++;
   XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
+  on_backtracking_signal();
   stack_.pop_back();
 
   api::get().mc_check_deadlock();
@@ -228,20 +245,24 @@ void SafetyChecker::backtrack()
 
 void SafetyChecker::restore_state()
 {
-  /* Intermediate backtracking */
-  const State* last_state = stack_.back().get();
+  /* If asked to rollback on a state that has a snapshot, restore it */
+  State* last_state = stack_.back().get();
   if (last_state->system_state_) {
     api::get().restore_state(last_state->system_state_);
+    on_restore_system_state_signal(last_state);
     return;
   }
 
+  /* if no snapshot, we need to restore the initial state and replay the transitions */
   get_session().restore_initial_state();
+  on_restore_initial_state_signal();
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
   for (std::unique_ptr<State> const& state : stack_) {
-    if (state == stack_.back())
+    if (state == stack_.back()) // If we are arrived on the target state, don't replay the outgoing transition *.
       break;
     state->get_transition()->replay();
+    on_transition_replay_signal(state->get_transition());
     /* Update statistics */
     api::get().mc_inc_visited_states();
   }
@@ -258,7 +279,7 @@ SafetyChecker::SafetyChecker(Session* session) : Checker(session)
   if (_sg_mc_termination)
     XBT_INFO("Check non progressive cycles");
   else
-    XBT_INFO("Check a safety property. Reduction is: %s.",
+    XBT_INFO("Start a DFS exploration. Reduction is: %s.",
              (reductionMode_ == ReductionMode::none ? "none"
                                                     : (reductionMode_ == ReductionMode::dpor ? "dpor" : "unknown")));
 

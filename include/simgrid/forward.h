@@ -195,7 +195,6 @@ class Profile;
 } // namespace profile
 } // namespace kernel
 namespace mc {
-class CommunicationDeterminismChecker;
 class State;
 }
 } // namespace simgrid

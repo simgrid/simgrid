@@ -2,6 +2,8 @@ SimGrid (3.30.1) NOT RELEASED YET (v3.31 expected March 20. 2022, 15:33 UTC)
 
 MC:
  - Rework the internals, for simpler and modern code. This shall unlock many future improvements.
+ - You can now define plugins onto SafetyChecker (a simple DFS explorer), using the declared signals.
+   See CommunicationDeterminism for an example.
 
 SMPI:
  - fix for FG#100 by ensuring small asynchronous messages never overtake larger
