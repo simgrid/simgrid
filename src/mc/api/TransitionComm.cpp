@@ -151,7 +151,7 @@ CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, std::
     : Transition(Type::COMM_SEND, issuer, times_considered)
 {
   xbt_assert(stream >> comm_ >> mbox_ >> sbuff_ >> size_);
-  XBT_DEBUG("SendTransition comm:%lx mbox:%u sbuff:%lx size:%ld", comm_, mbox_, sbuff_, size_);
+  XBT_DEBUG("SendTransition comm:%lx mbox:%u sbuff:%lx size:%zu", comm_, mbox_, sbuff_, size_);
 }
 std::string CommSendTransition::to_string(bool verbose = false) const
 {

@@ -6,6 +6,7 @@
 #include "src/mc/checker/CommunicationDeterminismChecker.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/mc/Session.hpp"
+#include "src/mc/api/TransitionComm.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
@@ -20,7 +21,7 @@ namespace simgrid {
 namespace mc {
 
 enum class CallType { NONE, SEND, RECV, WAIT, WAITANY };
-enum class CommPatternDifference { NONE, TYPE, RDV, TAG, SRC_PROC, DST_PROC, DATA_SIZE, DATA };
+enum class CommPatternDifference { NONE, TYPE, MBOX, TAG, SRC_PROC, DST_PROC, DATA_SIZE };
 enum class PatternCommunicationType {
   none    = 0,
   send    = 1,
@@ -30,12 +31,12 @@ enum class PatternCommunicationType {
 class PatternCommunication {
 public:
   int num = 0;
-  RemotePtr<simgrid::kernel::activity::CommImpl> comm_addr{nullptr};
+  uintptr_t comm_addr           = 0;
   PatternCommunicationType type = PatternCommunicationType::send;
   unsigned long src_proc        = 0;
   unsigned long dst_proc        = 0;
-  std::string rdv;
-  std::vector<char> data;
+  unsigned mbox                 = 0;
+  unsigned size                 = 0;
   int tag   = 0;
   int index = 0;
 
@@ -48,8 +49,7 @@ public:
     // src_proc?
     // dst_proc?
     res.dst_proc = this->dst_proc;
-    res.rdv      = this->rdv;
-    res.data     = this->data;
+    res.mbox     = this->mbox;
     // tag?
     res.index = this->index;
     return res;
@@ -60,24 +60,6 @@ struct PatternCommunicationList {
   unsigned int index_comm = 0;
   std::vector<std::unique_ptr<simgrid::mc::PatternCommunication>> list;
 };
-
-static inline simgrid::mc::CallType MC_get_call_type(const s_smx_simcall* req)
-{
-  using simgrid::mc::CallType;
-  using simgrid::simix::Simcall;
-  switch (req->call_) {
-    case Simcall::COMM_ISEND:
-      return CallType::SEND;
-    case Simcall::COMM_IRECV:
-      return CallType::RECV;
-    case Simcall::COMM_WAIT:
-      return CallType::WAIT;
-    case Simcall::COMM_WAITANY:
-      return CallType::WAITANY;
-    default:
-      return CallType::NONE;
-  }
-}
 
 /********** Checker extension **********/
 
@@ -103,9 +85,9 @@ struct CommDetExtension {
 
   void restore_communications_pattern(const simgrid::mc::State* state);
   void deterministic_comm_pattern(aid_t process, const PatternCommunication* comm, bool backtracking);
-  void get_comm_pattern(smx_simcall_t request, CallType call_type, bool backtracking);
-  void complete_comm_pattern(RemotePtr<kernel::activity::CommImpl> const& comm_addr, aid_t issuer, bool backtracking);
-  void handle_comm_pattern(const Transition* transition, smx_simcall_t req, int value, bool backtracking);
+  void get_comm_pattern(const Transition* transition, bool backtracking);
+  void complete_comm_pattern(const CommWaitTransition* transition, bool backtracking);
+  void handle_comm_pattern(const Transition* transition, bool backtracking);
 };
 simgrid::xbt::Extension<simgrid::mc::Checker, CommDetExtension> CommDetExtension::EXTENSION_ID;
 /********** State Extension ***********/
@@ -151,18 +133,16 @@ static simgrid::mc::CommPatternDifference compare_comm_pattern(const simgrid::mc
   using simgrid::mc::CommPatternDifference;
   if (comm1->type != comm2->type)
     return CommPatternDifference::TYPE;
-  if (comm1->rdv != comm2->rdv)
-    return CommPatternDifference::RDV;
+  if (comm1->mbox != comm2->mbox)
+    return CommPatternDifference::MBOX;
   if (comm1->src_proc != comm2->src_proc)
     return CommPatternDifference::SRC_PROC;
   if (comm1->dst_proc != comm2->dst_proc)
     return CommPatternDifference::DST_PROC;
   if (comm1->tag != comm2->tag)
     return CommPatternDifference::TAG;
-  if (comm1->data.size() != comm2->data.size())
+  if (comm1->size != comm2->size)
     return CommPatternDifference::DATA_SIZE;
-  if (comm1->data != comm2->data)
-    return CommPatternDifference::DATA;
   return CommPatternDifference::NONE;
 }
 
@@ -197,8 +177,8 @@ static std::string print_determinism_result(simgrid::mc::CommPatternDifference d
     case CommPatternDifference::TYPE:
       res = xbt::string_printf("%s Different type for communication #%u", type.c_str(), cursor);
       break;
-    case CommPatternDifference::RDV:
-      res = xbt::string_printf("%s Different rdv for communication #%u", type.c_str(), cursor);
+    case CommPatternDifference::MBOX:
+      res = xbt::string_printf("%s Different mailbox for communication #%u", type.c_str(), cursor);
       break;
     case CommPatternDifference::TAG:
       res = xbt::string_printf("%s Different tag for communication #%u", type.c_str(), cursor);
@@ -211,9 +191,6 @@ static std::string print_determinism_result(simgrid::mc::CommPatternDifference d
       break;
     case CommPatternDifference::DATA_SIZE:
       res = xbt::string_printf("%s Different data size for communication #%u", type.c_str(), cursor);
-      break;
-    case CommPatternDifference::DATA:
-      res = xbt::string_printf("%s Different data for communication #%u", type.c_str(), cursor);
       break;
     default:
       res = "";
@@ -261,30 +238,29 @@ void CommDetExtension::deterministic_comm_pattern(aid_t actor, const PatternComm
 
 /********** Non Static functions ***********/
 
-void CommDetExtension::get_comm_pattern(smx_simcall_t request, CallType call_type, bool backtracking)
+void CommDetExtension::get_comm_pattern(const Transition* transition, bool backtracking)
 {
-  const smx_actor_t issuer                                     = api::get().simcall_get_issuer(request);
-  const mc::PatternCommunicationList& initial_pattern          = initial_communications_pattern[issuer->get_pid()];
-  const std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[issuer->get_pid()];
+  const mc::PatternCommunicationList& initial_pattern          = initial_communications_pattern[transition->aid_];
+  const std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[transition->aid_];
 
   auto pattern   = std::make_unique<PatternCommunication>();
   pattern->index = initial_pattern.index_comm + incomplete_pattern.size();
 
-  if (call_type == CallType::SEND) {
+  if (transition->type_ == Transition::Type::COMM_SEND) {
+    auto* send = dynamic_cast<const CommSendTransition*>(transition);
     /* Create comm pattern */
     pattern->type      = PatternCommunicationType::send;
-    pattern->comm_addr = api::get().get_comm_isend_raw_addr(request);
-    pattern->rdv       = api::get().get_pattern_comm_rdv(pattern->comm_addr);
-    pattern->src_proc  = api::get().get_pattern_comm_src_proc(pattern->comm_addr);
+    pattern->comm_addr = send->get_comm();
+    pattern->mbox      = send->get_mailbox();
+    pattern->src_proc  = send->aid_;
 
 #if HAVE_SMPI
-    pattern->tag = api::get().get_smpi_request_tag(request, simgrid::simix::Simcall::COMM_ISEND);
+    pattern->tag = 0; // FIXME: replace it by the real tag from the observer
 #endif
-    pattern->data = api::get().get_pattern_comm_data(pattern->comm_addr);
 
 #if HAVE_SMPI
-    auto send_detached = api::get().check_send_request_detached(request);
-    if (send_detached) {
+    // auto send_detached = api::get().check_send_request_detached(request);
+    if (false) { // send_detached) {
       if (initial_communications_pattern_done) {
         /* Evaluate comm determinism */
         deterministic_comm_pattern(pattern->src_proc, pattern.get(), backtracking);
@@ -296,49 +272,49 @@ void CommDetExtension::get_comm_pattern(smx_simcall_t request, CallType call_typ
       return;
     }
 #endif
-  } else if (call_type == CallType::RECV) {
+  } else if (transition->type_ == Transition::Type::COMM_RECV) {
+    auto* recv = static_cast<const CommRecvTransition*>(transition);
+
     pattern->type = PatternCommunicationType::receive;
-    pattern->comm_addr = api::get().get_comm_isend_raw_addr(request);
+    pattern->comm_addr = recv->get_comm();
 
 #if HAVE_SMPI
-    pattern->tag = api::get().get_smpi_request_tag(request, simgrid::simix::Simcall::COMM_IRECV);
+    pattern->tag = 0; // FIXME: replace it by the real tag from the observer
 #endif
-    pattern->rdv = api::get().get_pattern_comm_rdv(pattern->comm_addr);
-    pattern->dst_proc = api::get().get_pattern_comm_dst_proc(pattern->comm_addr);
-  } else
-    xbt_die("Unexpected call_type %i", (int)call_type);
+    pattern->mbox     = recv->get_mailbox();
+    pattern->dst_proc = recv->aid_;
+  }
 
-  XBT_DEBUG("Insert incomplete comm pattern %p for process %ld", pattern.get(), issuer->get_pid());
-  incomplete_communications_pattern[issuer->get_pid()].push_back(pattern.release());
+  XBT_DEBUG("Insert incomplete comm pattern %p type:%d for process %ld (comm: %lx)", pattern.get(), (int)pattern->type,
+            transition->aid_, pattern->comm_addr);
+  incomplete_communications_pattern[transition->aid_].push_back(pattern.release());
 }
 
-void CommDetExtension::complete_comm_pattern(RemotePtr<kernel::activity::CommImpl> const& comm_addr, aid_t issuer,
-                                             bool backtracking)
+void CommDetExtension::complete_comm_pattern(const CommWaitTransition* transition, bool backtracking)
 {
   /* Complete comm pattern */
-  std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[issuer];
+  std::vector<PatternCommunication*>& incomplete_pattern = incomplete_communications_pattern[transition->aid_];
+  uintptr_t comm_addr                                    = transition->get_comm();
   auto current_comm_pattern =
       std::find_if(begin(incomplete_pattern), end(incomplete_pattern),
                    [&comm_addr](const PatternCommunication* comm) { return (comm->comm_addr == comm_addr); });
   xbt_assert(current_comm_pattern != std::end(incomplete_pattern), "Corresponding communication not found!");
   std::unique_ptr<PatternCommunication> comm_pattern(*current_comm_pattern);
 
-  comm_pattern->src_proc = api::get().get_src_actor(comm_addr)->get_pid();
-  comm_pattern->dst_proc = api::get().get_dst_actor(comm_addr)->get_pid();
-  if (comm_pattern->data.empty())
-    comm_pattern->data = api::get().get_pattern_comm_data(comm_addr);
+  comm_pattern->src_proc = transition->get_sender();
+  comm_pattern->dst_proc = transition->get_receiver();
 
-  XBT_DEBUG("Remove incomplete comm pattern for process %ld at cursor %zd", issuer,
+  XBT_DEBUG("Remove incomplete comm pattern for actor %ld at cursor %zd", transition->aid_,
             std::distance(begin(incomplete_pattern), current_comm_pattern));
   incomplete_pattern.erase(current_comm_pattern);
 
   if (initial_communications_pattern_done) {
     /* Evaluate comm determinism */
-    deterministic_comm_pattern(issuer, comm_pattern.get(), backtracking);
-    initial_communications_pattern[issuer].index_comm++;
+    deterministic_comm_pattern(transition->aid_, comm_pattern.get(), backtracking);
+    initial_communications_pattern[transition->aid_].index_comm++;
   } else {
     /* Store comm pattern */
-    initial_communications_pattern[issuer].list.push_back(std::move(comm_pattern));
+    initial_communications_pattern[transition->aid_].list.push_back(std::move(comm_pattern));
   }
 }
 
@@ -437,51 +413,38 @@ void CommunicationDeterminismChecker::restoreState()
       break;
 
     auto* transition = state->get_transition();
-
-    /* because we got a copy of the executed request, we have to fetch the real one,
-       pointed by the request field of the issuer process */
-    auto* saved_req          = &state->executed_req_;
-    const smx_actor_t issuer = api::get().simcall_get_issuer(saved_req);
-    smx_simcall_t req        = &issuer->simcall_;
-
-    /* TODO : handle test and testany simcalls */
     transition->replay();
-    extension->handle_comm_pattern(transition, req, transition->times_considered_, true);
+    extension->handle_comm_pattern(transition, true);
 
     /* Update statistics */
     api::get().mc_inc_visited_states();
   }
 }
 
-void CommDetExtension::handle_comm_pattern(const Transition* transition, smx_simcall_t req, int value,
-                                           bool backtracking)
+void CommDetExtension::handle_comm_pattern(const Transition* transition, bool backtracking)
 {
   if (not _sg_mc_comms_determinism && not _sg_mc_send_determinism)
     return;
 
-  using simgrid::mc::CallType;
-  switch (MC_get_call_type(req)) {
-    case CallType::NONE:
+  switch (transition->type_) {
+    case Transition::Type::COMM_SEND:
+      get_comm_pattern(transition, backtracking);
       break;
-    case CallType::SEND:
-      get_comm_pattern(req, CallType::SEND, backtracking);
+    case Transition::Type::COMM_RECV:
+      get_comm_pattern(transition, backtracking);
       break;
-    case CallType::RECV:
-      get_comm_pattern(req, CallType::RECV, backtracking);
-      break;
-    case CallType::WAIT: {
-      auto comm_addr      = remote(simcall_comm_wait__getraw__comm(req));
-      auto simcall_issuer = api::get().simcall_get_issuer(req);
-      complete_comm_pattern(comm_addr, simcall_issuer->get_pid(), backtracking);
+    case Transition::Type::COMM_WAIT: {
+      complete_comm_pattern(static_cast<const CommWaitTransition*>(transition), backtracking);
       break;
     }
-    case CallType::WAITANY: {
-      auto comm_addr = api::get().get_comm_waitany_raw_addr(req, value);
-      auto simcall_issuer = api::get().simcall_get_issuer(req);
-      complete_comm_pattern(comm_addr, simcall_issuer->get_pid(), backtracking);
+    case Transition::Type::WAITANY: {
+      auto const* t    = static_cast<const WaitAnyTransition*>(transition)->get_current_transition();
+      auto const* wait = dynamic_cast<const CommWaitTransition*>(t);
+      if (wait != nullptr) // Ignore wait on non-comm
+        complete_comm_pattern(wait, backtracking);
     } break;
-  default:
-    xbt_die("Unexpected call type %i", (int)MC_get_call_type(req));
+    default: /* Ignore unhandled transition types */
+      break;
   }
 }
 
@@ -511,15 +474,13 @@ void CommunicationDeterminismChecker::real_run()
       cur_state->execute_next(next_transition);
 
       auto* transition  = cur_state->get_transition();
-      smx_simcall_t req = &cur_state->executed_req_;
-
       XBT_DEBUG("Execute: %s", transition->to_string().c_str());
 
       std::string req_str;
       if (dot_output != nullptr)
         req_str = api::get().request_get_dot_output(transition);
 
-      extension->handle_comm_pattern(transition, req, transition->times_considered_, false);
+      extension->handle_comm_pattern(transition, false);
 
       /* Create the new expanded state */
       auto next_state = std::make_unique<State>();
