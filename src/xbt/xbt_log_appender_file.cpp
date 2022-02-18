@@ -70,17 +70,12 @@ static void open_append2_file(xbt_log_append2_file_t data){
     //Split
     if(data->file)
       fclose(data->file);
-    char* pre=xbt_strdup(data->filename);
-    char* sep=strchr(pre,'%');
-    if (not sep)
-      sep=pre+strlen(pre);
-    const char* post    = sep + 1;
-    *sep                = '\0';
-    std::string newname = pre + std::to_string(data->count) + post;
+    std::string newname = data->filename;
+    size_t sep          = std::min(newname.find_first_of('%'), newname.size());
+    newname.replace(sep, 1, std::to_string(data->count));
     data->count++;
     data->file = fopen(newname.c_str(), "w");
     xbt_assert(data->file != nullptr, "Cannot open file: %s: %s", newname.c_str(), strerror(errno));
-    xbt_free(pre);
   }
 }
 

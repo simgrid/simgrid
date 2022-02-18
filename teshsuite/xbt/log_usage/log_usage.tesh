@@ -62,6 +62,8 @@ $ cat ${bindir:=.}/log_usage.log
 >
 >                    
 
+$ rm -f ${bindir:=.}/log_usage.log
+
 p Check the "splitfile" log appender
 $ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n" --log=root.app:splitfile:500:${bindir:=.}/log_usage_%.log
 $ cat ${bindir:=.}/log_usage_0.log
@@ -86,4 +88,30 @@ $ cat ${bindir:=.}/log_usage_1.log
 > [  0.000000] [0:maestro@] Test with the settings ' test.thres:critical '
 > [  0.000000] [0:maestro@] false alarm!
 
-$ rm -f ${bindir:=.}/log_usage.log ${bindir:=.}/log_usage_0.log ${bindir:=.}/log_usage_1.log
+$ rm -f ${bindir:=.}/log_usage_0.log ${bindir:=.}/log_usage_1.log
+
+p Check the "splitfile" log appender without percent in template
+$ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n" --log=root.app:splitfile:500:${bindir:=.}/log_usage.log.
+$ cat ${bindir:=.}/log_usage.log.0
+> [  0.000000] [0:maestro@] Test with the settings ''
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' '
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:info root.thres:info  '
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:debug '
+> [  0.000000] [0:maestro@] val=1
+
+$ cat ${bindir:=.}/log_usage.log.1
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:verbose root.thres:error '
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:critical '
+> [  0.000000] [0:maestro@] false alarm!
+
+$ rm -f ${bindir:=.}/log_usage.log.0 ${bindir:=.}/log_usage.log.1
