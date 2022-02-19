@@ -62,8 +62,13 @@ void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size,
     comm = nullptr;
   }
   else {
-    simcall_BODY_comm_send(sender, mbox, task_size, rate, static_cast<unsigned char*>(src_buff), src_buff_size,
-                           match_fun, copy_data_fun, data, timeout);
+    simgrid::kernel::actor::CommIsendSimcall observer(sender, mbox, task_size, rate,
+                                                      static_cast<unsigned char*>(src_buff), src_buff_size, match_fun,
+                                                      nullptr, copy_data_fun, data, false);
+    simgrid::kernel::actor::simcall_blocking([&observer, timeout] {
+      simgrid::kernel::activity::ActivityImplPtr comm = simgrid::kernel::activity::CommImpl::isend(&observer);
+      comm->wait_for(observer.get_issuer(), timeout);
+    });
   }
 }
 
@@ -82,8 +87,10 @@ simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, dou
 
   xbt_assert(mbox, "No rendez-vous point defined for isend");
 
-  return simcall_BODY_comm_isend(sender, mbox, task_size, rate, static_cast<unsigned char*>(src_buff), src_buff_size,
-                                 match_fun, clean_fun, copy_data_fun, data, detached);
+  simgrid::kernel::actor::CommIsendSimcall observer(sender, mbox, task_size, rate,
+                                                    static_cast<unsigned char*>(src_buff), src_buff_size, match_fun,
+                                                    clean_fun, copy_data_fun, data, detached);
+  return simgrid::kernel::actor::simcall([&observer] { return simgrid::kernel::activity::CommImpl::isend(&observer); });
 }
 
 /**
@@ -117,8 +124,12 @@ void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff,
     comm = nullptr;
   }
   else {
-    simcall_BODY_comm_recv(receiver, mbox, static_cast<unsigned char*>(dst_buff), dst_buff_size, match_fun,
-                           copy_data_fun, data, timeout, rate);
+    simgrid::kernel::actor::CommIrecvSimcall observer(receiver, mbox, static_cast<unsigned char*>(dst_buff),
+                                                      dst_buff_size, match_fun, copy_data_fun, data, rate);
+    simgrid::kernel::actor::simcall_blocking([&observer, timeout] {
+      simgrid::kernel::activity::ActivityImplPtr comm = simgrid::kernel::activity::CommImpl::irecv(&observer);
+      comm->wait_for(observer.get_issuer(), timeout);
+    });
   }
 }
 /**
@@ -131,8 +142,9 @@ simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, siz
 {
   xbt_assert(mbox, "No rendez-vous point defined for irecv");
 
-  return simcall_BODY_comm_irecv(receiver, mbox, static_cast<unsigned char*>(dst_buff), dst_buff_size, match_fun,
-                                 copy_data_fun, data, rate);
+  simgrid::kernel::actor::CommIrecvSimcall observer(receiver, mbox, static_cast<unsigned char*>(dst_buff),
+                                                    dst_buff_size, match_fun, copy_data_fun, data, rate);
+  return simgrid::kernel::actor::simcall([&observer] { return simgrid::kernel::activity::CommImpl::irecv(&observer); });
 }
 
 /**

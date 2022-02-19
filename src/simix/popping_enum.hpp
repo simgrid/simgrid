@@ -21,16 +21,12 @@ namespace simix {
  */
 enum class Simcall {
   NONE,
-  COMM_RECV,
-  COMM_IRECV,
-  COMM_SEND,
-  COMM_ISEND,
   COMM_WAITANY,
   COMM_WAIT,
   RUN_KERNEL,
   RUN_BLOCKING,
 };
 
-constexpr int NUM_SIMCALLS = 9;
+constexpr int NUM_SIMCALLS = 5;
 } // namespace simix
 } // namespace simgrid

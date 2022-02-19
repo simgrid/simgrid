@@ -19,54 +19,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_network, kernel, "Kernel network-related synchronization");
 
-XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t src, smx_mailbox_t mbox, double task_size,
-                                           double rate, unsigned char* src_buff, size_t src_buff_size,
-                                           bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                                           void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
-                                           void* data, double timeout)
-{
-  simgrid::kernel::actor::CommIsendSimcall observer(src, mbox, task_size, rate, src_buff, src_buff_size, match_fun,
-                                                    nullptr, copy_data_fun, data, false);
-  simgrid::kernel::activity::ActivityImplPtr comm = simgrid::kernel::activity::CommImpl::isend(&observer);
-  comm->wait_for(simcall->issuer_, timeout);
-}
-
-XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr simcall_HANDLER_comm_isend(
-    smx_simcall_t /*simcall*/, smx_actor_t src_proc, smx_mailbox_t mbox, double task_size, double rate,
-    unsigned char* src_buff, size_t src_buff_size,
-    bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-    void (*clean_fun)(void*), // used to free the synchro in case of problem after a detached send
-    void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), // used to copy data if not default one
-    void* data, bool detached)
-{
-  simgrid::kernel::actor::CommIsendSimcall observer(src_proc, mbox, task_size, rate, src_buff, src_buff_size, match_fun,
-                                                    clean_fun, copy_data_fun, data, detached);
-  return simgrid::kernel::activity::CommImpl::isend(&observer);
-}
-
-XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t receiver, smx_mailbox_t mbox,
-                                           unsigned char* dst_buff, size_t* dst_buff_size,
-                                           bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                                           void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
-                                           void* data, double timeout, double rate)
-{
-  simgrid::kernel::actor::CommIrecvSimcall observer(receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun,
-                                                    data, rate);
-  simgrid::kernel::activity::ActivityImplPtr comm = simgrid::kernel::activity::CommImpl::irecv(&observer);
-  comm->wait_for(simcall->issuer_, timeout);
-}
-
-XBT_PRIVATE simgrid::kernel::activity::ActivityImplPtr
-simcall_HANDLER_comm_irecv(smx_simcall_t /*simcall*/, smx_actor_t receiver, smx_mailbox_t mbox, unsigned char* dst_buff,
-                           size_t* dst_buff_size, bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                           void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data,
-                           double rate)
-{
-  simgrid::kernel::actor::CommIrecvSimcall observer(receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun,
-                                                    data, rate);
-  return simgrid::kernel::activity::CommImpl::irecv(&observer);
-}
-
 void simcall_HANDLER_comm_wait(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comm, double timeout)
 {
   comm->wait_for(simcall->issuer_, timeout);
