@@ -68,14 +68,9 @@ void State::execute_next(int next)
 
   simgrid::mc::ActorState* actor_state = &actor_states_[aid];
   /* This actor is ready to be executed. Prepare its execution when simcall_handle will be called on it */
-  if (actor->simcall_.observer_ != nullptr) {
-    times_considered = actor_state->get_times_considered_and_inc();
-    if (actor->simcall_.mc_max_consider_ <= actor_state->get_times_considered())
-      actor_state->set_done();
-  } else {
-    times_considered = 0;
+  times_considered = actor_state->get_times_considered_and_inc();
+  if (actor->simcall_.mc_max_consider_ <= actor_state->get_times_considered())
     actor_state->set_done();
-  }
 
   executed_req_ = actor->simcall_;
 
