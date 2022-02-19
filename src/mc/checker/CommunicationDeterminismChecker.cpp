@@ -312,6 +312,7 @@ void CommDetExtension::handle_comm_pattern(const Transition* transition)
 }
 
 /* FIXME: CommDet probably don't play nicely with stateful exploration
+
       bool all_communications_are_finished = true;
       for (size_t current_actor = 1; all_communications_are_finished && current_actor < maxpid; current_actor++) {
         if (not extension->incomplete_communications_pattern[current_actor].empty()) {
@@ -319,7 +320,7 @@ void CommDetExtension::handle_comm_pattern(const Transition* transition)
           all_communications_are_finished = false;
         }
       }
-      */
+ */
 
 Checker* create_communication_determinism_checker(Session* session)
 {
@@ -330,17 +331,17 @@ Checker* create_communication_determinism_checker(Session* session)
 
   auto extension = new CommDetExtension();
 
-  SafetyChecker::on_exploration_start([&extension]() {
+  SafetyChecker::on_exploration_start([extension]() {
     XBT_INFO("Check communication determinism");
     extension->exploration_start();
   });
-  SafetyChecker::on_backtracking([&extension]() { extension->initial_communications_pattern_done = true; });
-  SafetyChecker::on_state_creation([&extension](State* state) { state->extension_set(new StateCommDet(extension)); });
+  SafetyChecker::on_backtracking([extension]() { extension->initial_communications_pattern_done = true; });
+  SafetyChecker::on_state_creation([extension](State* state) { state->extension_set(new StateCommDet(extension)); });
 
   SafetyChecker::on_restore_system_state(
-      [&extension](State* state) { extension->restore_communications_pattern(state); });
+      [extension](State* state) { extension->restore_communications_pattern(state); });
 
-  SafetyChecker::on_restore_initial_state([&extension]() {
+  SafetyChecker::on_restore_initial_state([extension]() {
     const unsigned long maxpid = api::get().get_maxpid();
     assert(maxpid == extension->incomplete_communications_pattern.size());
     assert(maxpid == extension->initial_communications_pattern.size());
@@ -350,10 +351,10 @@ Checker* create_communication_determinism_checker(Session* session)
     }
   });
 
-  SafetyChecker::on_transition_replay([&extension](Transition* t) { extension->handle_comm_pattern(t); });
-  SafetyChecker::on_transition_execute([&extension](Transition* t) { extension->handle_comm_pattern(t); });
+  SafetyChecker::on_transition_replay([extension](Transition* t) { extension->handle_comm_pattern(t); });
+  SafetyChecker::on_transition_execute([extension](Transition* t) { extension->handle_comm_pattern(t); });
 
-  SafetyChecker::on_log_state([&extension]() {
+  SafetyChecker::on_log_state([extension]() {
     if (_sg_mc_comms_determinism) {
       if (extension->send_deterministic && not extension->recv_deterministic) {
         XBT_INFO("*******************************************************");
@@ -371,6 +372,7 @@ Checker* create_communication_determinism_checker(Session* session)
     XBT_INFO("Send-deterministic : %s", extension->send_deterministic ? "Yes" : "No");
     if (_sg_mc_comms_determinism)
       XBT_INFO("Recv-deterministic : %s", extension->recv_deterministic ? "Yes" : "No");
+    delete extension;
   });
 
   return new SafetyChecker(session);
