@@ -54,7 +54,7 @@ void SafetyChecker::check_non_termination(const State* current_state)
       for (auto const& s : get_textual_trace())
         XBT_INFO("  %s", s.c_str());
       XBT_INFO("Path = %s", get_record_trace().to_string().c_str());
-      api::get().log_state();
+      log_state();
 
       throw TerminationError();
     }
@@ -184,7 +184,7 @@ void SafetyChecker::run()
     stack_.push_back(std::move(next_state));
   }
 
-  api::get().log_state();
+  log_state();
 }
 
 void SafetyChecker::backtrack()

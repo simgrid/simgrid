@@ -39,7 +39,7 @@ namespace mc {
  *  sense that we could achieve the same thing by having ActorInformation
  *  inherit from s_smx_actor_t but we don't really want to do that.
  */
-simgrid::mc::ActorInformation* Api::actor_info_cast(smx_actor_t actor) const
+static simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor)
 {
   simgrid::mc::ActorInformation temp;
   std::size_t offset = (char*)temp.copy.get_buffer() - (char*)&temp;
@@ -212,11 +212,6 @@ std::string Api::request_get_dot_output(const Transition* t) const
 void Api::restore_state(std::shared_ptr<simgrid::mc::Snapshot> system_state) const
 {
   system_state->restore(&mc_model_checker->get_remote_process());
-}
-
-void Api::log_state() const
-{
-  session_singleton->log_state();
 }
 
 bool Api::snapshot_equal(const Snapshot* s1, const Snapshot* s2) const

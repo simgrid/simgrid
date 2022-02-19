@@ -207,7 +207,7 @@ void LivenessChecker::show_acceptance_cycle(std::size_t depth)
   for (auto const& s : this->get_textual_trace())
     XBT_INFO("  %s", s.c_str());
   XBT_INFO("Path = %s", get_record_trace().to_string().c_str());
-  api::get().log_state();
+  log_state();
   XBT_INFO("Counter-example depth: %zu", depth);
 }
 
@@ -369,7 +369,7 @@ void LivenessChecker::run()
   }
 
   XBT_INFO("No property violation found.");
-  api::get().log_state();
+  log_state();
 }
 
 Checker* create_liveness_checker(Session* session)

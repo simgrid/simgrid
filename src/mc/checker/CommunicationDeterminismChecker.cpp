@@ -8,6 +8,7 @@
 #include "src/mc/checker/SafetyChecker.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/transition/TransitionAny.hpp"
 #include "src/mc/transition/TransitionComm.hpp"
@@ -207,7 +208,7 @@ void CommDetExtension::enforce_deterministic_pattern(aid_t actor, const PatternC
       XBT_INFO("***** Non-send-deterministic communications pattern *****");
       XBT_INFO("*********************************************************");
       XBT_INFO("%s", send_diff.c_str());
-      api::get().log_state();
+      session_singleton->log_state();
       api::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
     } else if (_sg_mc_comms_determinism && (not send_deterministic && not recv_deterministic)) {
       XBT_INFO("****************************************************");
@@ -217,7 +218,7 @@ void CommDetExtension::enforce_deterministic_pattern(aid_t actor, const PatternC
         XBT_INFO("%s", send_diff.c_str());
       if (not recv_diff.empty())
         XBT_INFO("%s", recv_diff.c_str());
-      api::get().log_state();
+      session_singleton->log_state();
       api::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
     }
   }

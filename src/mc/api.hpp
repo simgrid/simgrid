@@ -52,9 +52,6 @@ private:
     }
   };
 
-  bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2) const;
-  simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor) const;
-
 public:
   std::string get_actor_string(smx_actor_t actor) const;
   std::string get_actor_dot_label(smx_actor_t actor) const;
@@ -94,7 +91,6 @@ public:
 
   // STATE APIs
   void restore_state(std::shared_ptr<simgrid::mc::Snapshot> system_state) const;
-  void log_state() const;
 
   // SNAPSHOT APIs
   bool snapshot_equal(const Snapshot* s1, const Snapshot* s2) const;
