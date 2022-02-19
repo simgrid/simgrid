@@ -53,9 +53,6 @@ private:
   };
 
 public:
-  std::string get_actor_string(smx_actor_t actor) const;
-  std::string get_actor_dot_label(smx_actor_t actor) const;
-
   // No copy:
   Api(Api const&) = delete;
   void operator=(Api const&) = delete;

@@ -85,28 +85,6 @@ xbt::string const& Api::get_actor_name(smx_actor_t actor) const
   return info->name;
 }
 
-std::string Api::get_actor_string(smx_actor_t actor) const
-{
-  std::string res;
-  if (actor) {
-    res = "(" + std::to_string(actor->get_pid()) + ")";
-    if (actor->get_host())
-      res += std::string(get_actor_host_name(actor)) + " (" + std::string(get_actor_name(actor)) + ")";
-    else
-      res += get_actor_name(actor);
-  } else
-    res = "(0) ()";
-  return res;
-}
-
-std::string Api::get_actor_dot_label(smx_actor_t actor) const
-{
-  std::string res = "(" + std::to_string(actor->get_pid()) + ")";
-  if (actor->get_host())
-    res += get_actor_host_name(actor);
-  return res;
-}
-
 simgrid::mc::Checker* Api::initialize(char** argv, simgrid::mc::CheckerAlgorithm algo) const
 {
   auto session = new simgrid::mc::Session([argv] {
