@@ -343,7 +343,7 @@ void LivenessChecker::run()
         this->previous_request_.clear();
       }
       this->previous_pair_    = current_pair->num;
-      this->previous_request_ = api::get().request_get_dot_output(current_pair->graph_state->get_transition());
+      this->previous_request_ = current_pair->graph_state->get_transition()->dot_string();
       if (current_pair->search_cycle)
         fprintf(dot_output, "%d [shape=doublecircle];\n", current_pair->num);
       fflush(dot_output);

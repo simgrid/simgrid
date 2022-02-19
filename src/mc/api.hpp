@@ -81,9 +81,6 @@ public:
   unsigned long mc_get_visited_states() const;
   XBT_ATTRIB_NORETURN void mc_exit(int status) const;
 
-  // SIMCALL APIs
-  std::string request_get_dot_output(const Transition* t) const;
-
   // STATE APIs
   void restore_state(std::shared_ptr<simgrid::mc::Snapshot> system_state) const;
 

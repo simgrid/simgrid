@@ -24,10 +24,5 @@ RandomTransition::RandomTransition(aid_t issuer, int times_considered, std::stri
   xbt_assert(stream >> min_ >> max_);
 }
 
-std::string RandomTransition::dot_label() const
-{
-  return Transition::dot_label() + to_c_str(type_);
-}
-
 } // namespace mc
 } // namespace simgrid

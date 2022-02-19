@@ -31,9 +31,15 @@ std::string Transition::to_string(bool) const
 {
   return "";
 }
-std::string Transition::dot_label() const
+std::string Transition::dot_string() const
 {
-  return xbt::string_printf("[(%ld)] %s", aid_, Transition::to_c_str(type_));
+  static constexpr std::array<const char*, 13> colors{{"blue", "red", "green3", "goldenrod", "brown", "purple",
+                                                       "magenta", "turquoise4", "gray25", "forestgreen", "hotpink",
+                                                       "lightblue", "tan"}};
+  const char* color = colors[(aid_ - 1) % colors.size()];
+
+  return xbt::string_printf("label = \"[(%ld)] %s\", color = %s, fontcolor = %s", aid_, Transition::to_c_str(type_),
+                            color, color);
 }
 void Transition::replay() const
 {

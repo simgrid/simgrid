@@ -147,7 +147,7 @@ void SafetyChecker::run()
 
     std::string req_str;
     if (dot_output != nullptr)
-      req_str = api::get().request_get_dot_output(state->get_transition());
+      req_str = state->get_transition()->dot_string();
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     auto next_state = std::make_unique<State>();

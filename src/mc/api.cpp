@@ -157,16 +157,6 @@ void Api::mc_exit(int status) const
   mc_model_checker->exit(status);
 }
 
-std::string Api::request_get_dot_output(const Transition* t) const
-{
-  static constexpr std::array<const char*, 13> colors{{"blue", "red", "green3", "goldenrod", "brown", "purple",
-                                                       "magenta", "turquoise4", "gray25", "forestgreen", "hotpink",
-                                                       "lightblue", "tan"}};
-  const char* color = colors[(t->aid_ - 1) % colors.size()];
-
-  return "label = \"" + t->dot_label() + "\", color = " + color + ", fontcolor = " + color;
-}
-
 void Api::restore_state(std::shared_ptr<simgrid::mc::Snapshot> system_state) const
 {
   system_state->restore(&mc_model_checker->get_remote_process());

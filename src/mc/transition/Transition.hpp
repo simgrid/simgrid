@@ -55,8 +55,10 @@ public:
   }
   virtual ~Transition();
 
+  /** Returns a textual representation of the transition. Pointer adresses are omitted if verbose=false */
   virtual std::string to_string(bool verbose = false) const;
-  virtual std::string dot_label() const;
+  /** Returns something like >>label = "desc", color = c<< to describe the transition in dot format */
+  virtual std::string dot_string() const;
 
   /* Moves the application toward a path that was already explored, but don't change the current transition */
   void replay() const;

@@ -17,7 +17,6 @@ class RandomTransition : public Transition {
 
 public:
   std::string to_string(bool verbose) const override;
-  std::string dot_label() const override;
   RandomTransition(aid_t issuer, int times_considered, std::stringstream& stream);
   bool depends(const Transition* other) const override { return false; } // Independent with any other transition
 };
