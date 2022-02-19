@@ -109,9 +109,6 @@ public:
   }
   xbt_automaton_exp_label_t get_automaton_transition_label(xbt_dynar_t const& dynar, int index) const;
   xbt_automaton_state_t get_automaton_transition_dst(xbt_dynar_t const& dynar, int index) const;
-
-  // DYNAR APIs
-  inline unsigned long get_dynar_length(const_xbt_dynar_t const& dynar) const { return xbt_dynar_length(dynar); }
 };
 
 } // namespace mc
