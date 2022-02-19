@@ -46,9 +46,13 @@ public:
   void close();
 
   void take_initial_snapshot();
+  void restore_initial_state() const;
+
+  /** Ask to the application to check for a deadlock. If so, do an error message and throw a DeadlockError. */
+  void check_deadlock();
+
   void log_state() const;
 
-  void restore_initial_state() const;
   bool actor_is_enabled(aid_t pid) const;
 };
 

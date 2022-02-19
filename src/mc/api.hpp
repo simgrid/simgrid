@@ -71,7 +71,6 @@ public:
   // ACTOR APIs
   std::vector<simgrid::mc::ActorInformation>& get_actors() const;
   unsigned long get_maxpid() const;
-  int get_actors_size() const;
 
   // COMMUNICATION APIs
   xbt::string const& get_actor_name(smx_actor_t actor) const;
@@ -83,7 +82,6 @@ public:
   // MODEL CHECKER APIs
   void mc_inc_visited_states() const;
   unsigned long mc_get_visited_states() const;
-  void mc_check_deadlock() const;
   XBT_ATTRIB_NORETURN void mc_exit(int status) const;
 
   // SIMCALL APIs

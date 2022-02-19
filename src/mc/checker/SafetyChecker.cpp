@@ -194,7 +194,7 @@ void SafetyChecker::backtrack()
   on_backtracking_signal();
   stack_.pop_back();
 
-  api::get().mc_check_deadlock();
+  session_singleton->check_deadlock();
 
   /* Traverse the stack backwards until a state with a non empty interleave set is found, deleting all the states that
    *  have it empty in the way. For each deleted state, check if the request that has generated it (from its

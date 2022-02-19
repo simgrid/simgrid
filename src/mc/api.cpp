@@ -157,11 +157,6 @@ unsigned long Api::get_maxpid() const
   return mc_model_checker->get_remote_process().get_maxpid();
 }
 
-int Api::get_actors_size() const
-{
-  return mc_model_checker->get_remote_process().actors().size();
-}
-
 std::size_t Api::get_remote_heap_bytes() const
 {
   RemoteProcess& process    = mc_model_checker->get_remote_process();
@@ -177,21 +172,6 @@ void Api::mc_inc_visited_states() const
 unsigned long Api::mc_get_visited_states() const
 {
   return mc_model_checker->visited_states;
-}
-
-void Api::mc_check_deadlock() const
-{
-  if (mc_model_checker->checkDeadlock()) {
-    XBT_CINFO(mc_global, "**************************");
-    XBT_CINFO(mc_global, "*** DEADLOCK DETECTED ***");
-    XBT_CINFO(mc_global, "**************************");
-    XBT_CINFO(mc_global, "Counter-example execution trace:");
-    for (auto const& s : mc_model_checker->getChecker()->get_textual_trace())
-      XBT_CINFO(mc_global, "  %s", s.c_str());
-    XBT_INFO("Path = %s", mc_model_checker->getChecker()->get_record_trace().to_string().c_str());
-    simgrid::mc::session_singleton->log_state();
-    throw DeadlockError();
-  }
 }
 
 void Api::mc_exit(int status) const

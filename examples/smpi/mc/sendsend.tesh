@@ -22,6 +22,6 @@ $ ../../../smpi_script/bin/smpirun -quiet -wrapper "${bindir:=.}/../../../bin/si
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
 > [0.000000] [mc_global/INFO]   1: iSend(mbox=2)
 > [0.000000] [mc_global/INFO]   2: iSend(mbox=0)
-> [0.000000] [Api/INFO] Path = 1;2
+> [0.000000] [mc_global/INFO] Path = 1;2
 > [0.000000] [mc_safety/INFO] DFS exploration ended. 3 unique states visited; 1 backtracks (3 transition replays, 0 states visited overall)
 > Execution failed with code 3.

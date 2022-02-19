@@ -12,6 +12,7 @@
 #include "src/smpi/include/private.hpp"
 #endif
 #include "src/mc/api/State.hpp"
+#include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
@@ -27,6 +28,7 @@
 #endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
+XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
 namespace simgrid {
 namespace mc {
@@ -148,6 +150,31 @@ bool Session::actor_is_enabled(aid_t pid) const
   ssize_t received = model_checker_->channel().receive(buff.data(), buff.size(), true);
   xbt_assert(received == sizeof(s_mc_message_int_t), "Unexpected size in answer to ACTOR_ENABLED");
   return ((s_mc_message_int_t*)buff.data())->value;
+}
+
+void Session::check_deadlock()
+{
+  xbt_assert(model_checker_->channel().send(MessageType::DEADLOCK_CHECK) == 0, "Could not check deadlock state");
+  s_mc_message_int_t message;
+  ssize_t s = model_checker_->channel().receive(message);
+  xbt_assert(s != -1, "Could not receive message");
+  xbt_assert(s == sizeof(message) && message.type == MessageType::DEADLOCK_CHECK_REPLY,
+             "Received unexpected message %s (%i, size=%i) "
+             "expected MessageType::DEADLOCK_CHECK_REPLY (%i, size=%i)",
+             to_c_str(message.type), (int)message.type, (int)s, (int)MessageType::DEADLOCK_CHECK_REPLY,
+             (int)sizeof(message));
+
+  if (message.value != 0) {
+    XBT_CINFO(mc_global, "**************************");
+    XBT_CINFO(mc_global, "*** DEADLOCK DETECTED ***");
+    XBT_CINFO(mc_global, "**************************");
+    XBT_CINFO(mc_global, "Counter-example execution trace:");
+    for (auto const& s : model_checker_->getChecker()->get_textual_trace())
+      XBT_CINFO(mc_global, "  %s", s.c_str());
+    XBT_CINFO(mc_global, "Path = %s", model_checker_->getChecker()->get_record_trace().to_string().c_str());
+    log_state();
+    throw DeadlockError();
+  }
 }
 
 simgrid::mc::Session* session_singleton;

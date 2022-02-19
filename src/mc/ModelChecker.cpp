@@ -349,19 +349,5 @@ void ModelChecker::finalize_app(bool terminate_asap)
   xbt_assert(checker_side_.get_channel().receive(answer) != -1, "Could not receive answer to FINALIZE");
 }
 
-bool ModelChecker::checkDeadlock()
-{
-  xbt_assert(checker_side_.get_channel().send(MessageType::DEADLOCK_CHECK) == 0, "Could not check deadlock state");
-  s_mc_message_int_t message;
-  ssize_t s = checker_side_.get_channel().receive(message);
-  xbt_assert(s != -1, "Could not receive message");
-  xbt_assert(s == sizeof(message) && message.type == MessageType::DEADLOCK_CHECK_REPLY,
-             "Received unexpected message %s (%i, size=%i) "
-             "expected MessageType::DEADLOCK_CHECK_REPLY (%i, size=%i)",
-             to_c_str(message.type), (int)message.type, (int)s, (int)MessageType::DEADLOCK_CHECK_REPLY,
-             (int)sizeof(message));
-  return message.value != 0;
-}
-
 } // namespace mc
 } // namespace simgrid
