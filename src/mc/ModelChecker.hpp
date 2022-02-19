@@ -55,8 +55,6 @@ public:
   Transition* handle_simcall(aid_t aid, int times_considered, bool new_transition);
 
   /* Interactions with the simcall observer */
-  bool simcall_is_visible(aid_t aid);
-
   XBT_ATTRIB_NORETURN void exit(int status);
 
   bool checkDeadlock();

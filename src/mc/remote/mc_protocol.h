@@ -32,8 +32,7 @@ namespace mc {
 
 XBT_DECLARE_ENUM_CLASS(MessageType, NONE, INITIAL_ADDRESSES, CONTINUE, IGNORE_HEAP, UNIGNORE_HEAP, IGNORE_MEMORY,
                        STACK_REGION, REGISTER_SYMBOL, DEADLOCK_CHECK, DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_EXECUTE,
-                       SIMCALL_EXECUTE_ANSWER, SIMCALL_IS_VISIBLE, SIMCALL_IS_VISIBLE_ANSWER, ASSERTION_FAILED,
-                       ACTOR_ENABLED, ACTOR_ENABLED_REPLY, FINALIZE);
+                       SIMCALL_EXECUTE_ANSWER, ASSERTION_FAILED, ACTOR_ENABLED, ACTOR_ENABLED_REPLY, FINALIZE);
 
 } // namespace mc
 } // namespace simgrid
@@ -115,16 +114,6 @@ struct s_mc_message_restore_t {
 struct s_mc_message_actor_enabled_t {
   simgrid::mc::MessageType type;
   aid_t aid; // actor ID
-};
-
-/* RPC */
-struct s_mc_message_simcall_is_visible_t { // MessageType::SIMCALL_IS_VISIBLE
-  simgrid::mc::MessageType type;
-  aid_t aid;
-};
-struct s_mc_message_simcall_is_visible_answer_t { // MessageType::SIMCALL_IS_VISIBLE_ANSWER
-  simgrid::mc::MessageType type;
-  bool value;
 };
 
 #endif // __cplusplus

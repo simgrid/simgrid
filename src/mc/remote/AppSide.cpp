@@ -163,20 +163,6 @@ void AppSide::handle_messages() const
         handle_simcall_execute((s_mc_message_simcall_execute_t*)message_buffer.data());
         break;
 
-      case MessageType::SIMCALL_IS_VISIBLE: {
-        assert_msg_size("SIMCALL_IS_VISIBLE", s_mc_message_simcall_is_visible_t);
-        auto msg_simcall                = (s_mc_message_simcall_is_visible_t*)message_buffer.data();
-        const kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(msg_simcall->aid);
-        xbt_assert(actor != nullptr, "Invalid pid %ld", msg_simcall->aid);
-        xbt_assert(actor->simcall_.observer_, "The transition of %s has no observer", actor->get_cname());
-        bool value = actor->simcall_.observer_->is_visible();
-
-        // Send result:
-        s_mc_message_simcall_is_visible_answer_t answer{MessageType::SIMCALL_IS_VISIBLE_ANSWER, value};
-        xbt_assert(channel_.send(answer) == 0, "Could not send response");
-        break;
-      }
-
       case MessageType::ACTOR_ENABLED:
         assert_msg_size("ACTOR_ENABLED", s_mc_message_actor_enabled_t);
         handle_actor_enabled((s_mc_message_actor_enabled_t*)message_buffer.data());
