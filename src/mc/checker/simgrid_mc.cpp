@@ -69,6 +69,6 @@ int main(int argc, char** argv)
   }
   api::get().s_close();
   delete[] argv_copy;
-  delete checker;
+  // delete checker; SEGFAULT in liveness
   return res;
 }
