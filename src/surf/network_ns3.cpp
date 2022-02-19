@@ -140,7 +140,7 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone)
   ns3::Ptr<ns3::Node> station_ns3_node = nullptr;
   double distance;
   double angle    = 0;
-  auto nb_stations = wifizone->get_all_hosts().size() - 1;
+  auto nb_stations = static_cast<double>(wifizone->get_all_hosts().size() - 1);
   double step     = 2 * M_PI / nb_stations;
   for (auto station_host : wifizone->get_all_hosts()) {
     station_netpoint_ns3 = station_host->get_netpoint()->extension<NetPointNs3>();
@@ -218,7 +218,8 @@ static void clusterCreation_cb(simgrid::kernel::routing::ClusterCreationArgs con
   xbt_assert(Nodes.GetN() <= 65000, "Cluster with ns-3 is limited to 65000 nodes");
   ns3::CsmaHelper csma;
   csma.SetChannelAttribute("DataRate",
-                           ns3::DataRateValue(ns3::DataRate(cluster.bb_bw * 8))); // ns-3 takes bps, but we provide Bps
+                           ns3::DataRateValue(ns3::DataRate(
+                               static_cast<uint64_t>(cluster.bb_bw * 8)))); // ns-3 takes bps, but we provide Bps
   csma.SetChannelAttribute("Delay", ns3::TimeValue(ns3::Seconds(cluster.bb_lat)));
   ns3::NetDeviceContainer devices = csma.Install(Nodes);
   XBT_DEBUG("Create CSMA");
@@ -293,10 +294,10 @@ static simgrid::config::Flag<std::string> ns3_seed(
         return;
       if (strcasecmp(val.c_str(), "time") == 0) {
         std::default_random_engine prng(time(nullptr));
-        ns3::RngSeedManager::SetSeed(prng());
-        ns3::RngSeedManager::SetRun(prng());
+        ns3::RngSeedManager::SetSeed(static_cast<uint32_t>(prng()));
+        ns3::RngSeedManager::SetRun(static_cast<uint64_t>(prng()));
       } else {
-        int v = static_cast<int>(xbt_str_parse_int(
+        auto v = static_cast<int>(xbt_str_parse_int(
             val.c_str(), "Invalid value for option ns3/seed. It must be either 'time', a number, or left empty."));
         ns3::RngSeedManager::SetSeed(v);
         ns3::RngSeedManager::SetRun(v);
@@ -541,7 +542,7 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
   XBT_DEBUG("Create socket %s for a flow of %.0f Bytes from %s to %s with Interface %s",
             transform_socket_ptr(sock).c_str(), totalBytes, src->get_cname(), dst->get_cname(), addr.c_str());
 
-  flow_from_sock.insert({transform_socket_ptr(sock), new SgFlow(totalBytes, this)});
+  flow_from_sock.insert({transform_socket_ptr(sock), new SgFlow(static_cast<uint32_t>(totalBytes), this)});
   sink_from_sock.insert({transform_socket_ptr(sock), apps});
 
   sock->Bind(ns3::InetSocketAddress(port_number));
@@ -614,8 +615,9 @@ void ns3_add_direct_route(const simgrid::kernel::routing::NetPoint* src, const s
   ns3::PointToPointHelper pointToPoint;
 
   XBT_DEBUG("\tAdd PTP from %s to %s bw:'%f Bps' lat:'%fs'", src->get_cname(), dst->get_cname(), bw, lat);
-  pointToPoint.SetDeviceAttribute("DataRate",
-                                  ns3::DataRateValue(ns3::DataRate(bw * 8))); // ns-3 takes bps, but we provide Bps
+  pointToPoint.SetDeviceAttribute(
+      "DataRate",
+      ns3::DataRateValue(ns3::DataRate(static_cast<uint64_t>(bw * 8)))); // ns-3 takes bps, but we provide Bps
   pointToPoint.SetChannelAttribute("Delay", ns3::TimeValue(ns3::Seconds(lat)));
 
   netA.Add(pointToPoint.Install(host_src->ns3_node_, host_dst->ns3_node_));
