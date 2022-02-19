@@ -17,7 +17,7 @@ namespace mc {
 class XBT_PRIVATE State : public xbt::Extendable<State> {
   static long expended_states_; /* Count total amount of states, for stats */
 
-  /* Outgoing transition: what was the last transition that we took to leave this state? Useful for replay */
+  /* Outgoing transition: what was the last transition that we took to leave this state? */
   std::unique_ptr<Transition> transition_;
 
 public:
@@ -28,9 +28,6 @@ public:
 
   /** State's exploration status by process */
   std::vector<ActorState> actor_states_;
-
-  /** The simcall which was executed, going out of that state */
-  s_smx_simcall executed_req_;
 
   /** Snapshot of system state (if needed) */
   std::shared_ptr<simgrid::mc::Snapshot> system_state_;

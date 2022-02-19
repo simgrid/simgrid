@@ -72,8 +72,6 @@ void State::execute_next(int next)
   if (actor->simcall_.mc_max_consider_ <= actor_state->get_times_considered())
     actor_state->set_done();
 
-  executed_req_ = actor->simcall_;
-
   XBT_DEBUG("Let's run actor %ld (times_considered = %d)", aid, times_considered);
 
   Transition::executed_transitions_++;
