@@ -64,31 +64,6 @@ static inline void simcall_comm_waitany__set__result(smx_simcall_t simcall, ssiz
   simgrid::simix::marshal<ssize_t>(simcall->result_, result);
 }
 
-static inline simgrid::kernel::activity::CommImpl* simcall_comm_wait__get__comm(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<simgrid::kernel::activity::CommImpl*>(simcall->args_[0]);
-}
-static inline simgrid::kernel::activity::CommImpl* simcall_comm_wait__getraw__comm(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<simgrid::kernel::activity::CommImpl*>(simcall->args_[0]);
-}
-static inline void simcall_comm_wait__set__comm(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* arg)
-{
-  simgrid::simix::marshal<simgrid::kernel::activity::CommImpl*>(simcall->args_[0], arg);
-}
-static inline double simcall_comm_wait__get__timeout(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal<double>(simcall->args_[1]);
-}
-static inline double simcall_comm_wait__getraw__timeout(smx_simcall_t simcall)
-{
-  return simgrid::simix::unmarshal_raw<double>(simcall->args_[1]);
-}
-static inline void simcall_comm_wait__set__timeout(smx_simcall_t simcall, double arg)
-{
-  simgrid::simix::marshal<double>(simcall->args_[1], arg);
-}
-
 static inline std::function<void()> const* simcall_run_kernel__get__code(smx_simcall_t simcall)
 {
   return simgrid::simix::unmarshal<std::function<void()> const*>(simcall->args_[0]);
@@ -118,4 +93,3 @@ static inline void simcall_run_blocking__set__code(smx_simcall_t simcall, std::f
 /* The prototype of all simcall handlers, automatically generated for you */
 
 XBT_PRIVATE void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl** comms, size_t count, double timeout);
-XBT_PRIVATE void simcall_HANDLER_comm_wait(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comm, double timeout);

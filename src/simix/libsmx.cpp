@@ -185,7 +185,10 @@ ssize_t simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_
 void simcall_comm_wait(simgrid::kernel::activity::ActivityImpl* comm, double timeout)
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
-  simcall_BODY_comm_wait(static_cast<simgrid::kernel::activity::CommImpl*>(comm), timeout);
+
+  simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
+
+  simgrid::kernel::actor::simcall_blocking([issuer, comm, timeout] { comm->wait_for(issuer, timeout); });
 }
 
 /**

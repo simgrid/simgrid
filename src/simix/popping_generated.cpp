@@ -31,7 +31,6 @@ using simgrid::simix::Simcall;
 constexpr std::array<const char*, simgrid::simix::NUM_SIMCALLS> simcall_names{{
     "Simcall::NONE",
     "Simcall::COMM_WAITANY",
-    "Simcall::COMM_WAIT",
     "Simcall::RUN_KERNEL",
     "Simcall::RUN_BLOCKING",
 }};
@@ -51,10 +50,6 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered)
   switch (simcall_.call_) {
     case Simcall::COMM_WAITANY:
       simcall_HANDLER_comm_waitany(&simcall_, simgrid::simix::unmarshal<simgrid::kernel::activity::CommImpl**>(simcall_.args_[0]), simgrid::simix::unmarshal<size_t>(simcall_.args_[1]), simgrid::simix::unmarshal<double>(simcall_.args_[2]));
-      break;
-
-    case Simcall::COMM_WAIT:
-      simcall_HANDLER_comm_wait(&simcall_, simgrid::simix::unmarshal<simgrid::kernel::activity::CommImpl*>(simcall_.args_[0]), simgrid::simix::unmarshal<double>(simcall_.args_[1]));
       break;
 
     case Simcall::RUN_KERNEL:

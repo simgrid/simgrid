@@ -48,13 +48,6 @@ inline static ssize_t simcall_BODY_comm_waitany(simgrid::kernel::activity::CommI
   return simcall<ssize_t, simgrid::kernel::activity::CommImpl**, size_t, double>(Simcall::COMM_WAITANY, comms, count, timeout);
 }
 
-inline static void simcall_BODY_comm_wait(simgrid::kernel::activity::CommImpl* comm, double timeout)
-{
-  if (false) /* Go to that function to follow the code flow through the simcall barrier */
-    simcall_HANDLER_comm_wait(&simgrid::kernel::actor::ActorImpl::self()->simcall_, comm, timeout);
-  return simcall<void, simgrid::kernel::activity::CommImpl*, double>(Simcall::COMM_WAIT, comm, timeout);
-}
-
 inline static void simcall_BODY_run_kernel(std::function<void()> const* code)
 {
   if (false) /* Go to that function to follow the code flow through the simcall barrier */
