@@ -19,13 +19,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_network, kernel, "Kernel network-related synchronization");
 
-void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, simgrid::kernel::activity::CommImpl* comms[], size_t count,
-                                  double timeout)
-{
-  std::vector<simgrid::kernel::activity::CommImpl*> comms_vec(comms, comms + count);
-  simgrid::kernel::activity::CommImpl::wait_any_for(simcall->issuer_, comms_vec, timeout);
-}
-
 /******************************************************************************/
 /*                    SIMIX_comm_copy_data callbacks                       */
 /******************************************************************************/

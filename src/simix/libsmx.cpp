@@ -153,7 +153,20 @@ simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, siz
 ssize_t simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_t count,
                              double timeout) // XBT_ATTRIB_DEPRECATED_v335
 {
-  return simcall_BODY_comm_waitany(comms, count, timeout);
+  std::vector<simgrid::kernel::activity::ActivityImpl*> activities;
+  for (size_t i = 0; i < count; i++)
+    activities.push_back(static_cast<simgrid::kernel::activity::ActivityImpl*>(comms[i]));
+  simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
+  simgrid::kernel::actor::ActivityWaitanySimcall observer{issuer, activities, timeout};
+  ssize_t changed_pos = simgrid::kernel::actor::simcall_blocking(
+      [&observer] {
+        simgrid::kernel::activity::ActivityImpl::wait_any_for(observer.get_issuer(), observer.get_activities(),
+                                                              observer.get_timeout());
+      },
+      &observer);
+  if (changed_pos != -1)
+    activities.at(changed_pos)->get_iface()->complete(simgrid::s4u::Activity::State::FINISHED);
+  return changed_pos;
 }
 
 /**

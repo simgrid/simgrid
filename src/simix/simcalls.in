@@ -35,7 +35,5 @@
 # Last but not the least, you should declare the new simix call in
 # ./include/simgrid/simix.h (otherwise you will get a warning at compile time)
 
-ssize_t        comm_waitany(simgrid::kernel::activity::CommImpl** comms, size_t count, double timeout) [[block]];
-
 void       run_kernel(std::function<void()> const* code) [[nohandler]];
 void       run_blocking(std::function<void()> const* code) [[block,nohandler]];
