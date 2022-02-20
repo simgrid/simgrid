@@ -152,7 +152,7 @@ bool Session::actor_is_enabled(aid_t pid) const
   return ((s_mc_message_int_t*)buff.data())->value;
 }
 
-void Session::check_deadlock()
+void Session::check_deadlock() const
 {
   xbt_assert(model_checker_->channel().send(MessageType::DEADLOCK_CHECK) == 0, "Could not check deadlock state");
   s_mc_message_int_t message;
@@ -169,8 +169,8 @@ void Session::check_deadlock()
     XBT_CINFO(mc_global, "*** DEADLOCK DETECTED ***");
     XBT_CINFO(mc_global, "**************************");
     XBT_CINFO(mc_global, "Counter-example execution trace:");
-    for (auto const& s : model_checker_->getChecker()->get_textual_trace())
-      XBT_CINFO(mc_global, "  %s", s.c_str());
+    for (auto const& frame : model_checker_->getChecker()->get_textual_trace())
+      XBT_CINFO(mc_global, "  %s", frame.c_str());
     XBT_CINFO(mc_global, "Path = %s", model_checker_->getChecker()->get_record_trace().to_string().c_str());
     log_state();
     throw DeadlockError();

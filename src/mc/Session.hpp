@@ -49,7 +49,7 @@ public:
   void restore_initial_state() const;
 
   /** Ask to the application to check for a deadlock. If so, do an error message and throw a DeadlockError. */
-  void check_deadlock();
+  void check_deadlock() const;
 
   void log_state() const;
 
