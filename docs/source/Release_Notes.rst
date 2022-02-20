@@ -1,9 +1,10 @@
 .. release_notes:
 
-Release Notes
-=============
+SimGrid 4 Release Notes
+=======================
 
 This page gathers some release notes, to shed light on the recent and current development of SimGrid.
+Version 3.12 was the last pure release of SimGrid 3 while all versions starting with v3.13 can be seen as usable pre-versions of SimGrid 4.
 Ancient versions are not documented here (the project started in 1998), but in the ChangeLog file only.
 
 Version 3.13 (Apr 27. 2016)
@@ -11,19 +12,15 @@ Version 3.13 (Apr 27. 2016)
 
 The Half Release, a.k.a. the Zealous Easter Trim:
 
- * Half of the lines of code are gone.
+.. rst-class:: compact-list
 
-   * v3.12: 286k lines; v3.13: 142k lines (+ comments)
-   * Experimental untested unused "features" removed
-   * We rewrote several parts in C++ instead of C
+  * Remove half of the lines of code: v3.12 was 286k lines while v3.13 is only 142k lines.  |br|
+    Experimental untested unused "features" removed, and several parts were rewritten from C to C++.
 
- * Introducing v4 of the XML platform format (many long-due cleanups)
- * MSG examples fully reorganized (in C and Java)
- * The S4U interface is rising, toward SimGrid 4
-
-   * All host manipulations now done in S4U
-   * SimDag was mostly rewritten on top of S4U
-   * MSG & SimDag interfaces mostly unchanged
+  * Introducing v4 of the XML platform format (many long-due cleanups)
+  * MSG examples fully reorganized (in C and Java)
+  * The S4U interface is rising, toward SimGrid 4:|br| All host manipulations now done in S4U, 
+    SimDag was mostly rewritten on top of S4U but MSG & SimDag interfaces mostly unchanged.
 
 Version 3.14 (Dec 25. 2016)
 ---------------------------
@@ -38,14 +35,12 @@ subsystem of Win10), FreeBSD and NetBSD.
 
 Main changes:
 
- * Documentation reorganized and improved
- * S4U interface further rising, toward SimGrid 4
+.. rst-class:: compact-list
 
-   - Routing code rewritten for readability
-   - Virtual Machines almost turned into a plugin
-   - MSG, SimDag, MPI interfaces mostly unchanged
-
- * The model-checker now works on NetBSD too.
+  * Documentation reorganized and improved
+  * S4U interface further rising, toward SimGrid 4: |br|
+    Routing code rewritten for readability; Virtual Machines almost turned into a plugin; MSG, SimDag, MPI interfaces mostly unchanged.
+  * The model-checker now works on NetBSD too.
 
 Version 3.14.159 (Dec 29. 2016)
 -------------------------------
@@ -57,10 +52,12 @@ Version 3.15 (March 22 2017)
 
 The Spring Release: continuous integration servers become green.
 
- * S4U: progress, integrating more parts of SimDag; New examples.
- * SMPI: Support MPI 2.2; Convert internals to C++ (TBC).
- * Java: Massive memleaks and performance issues fixed.
- * Plus the usual bug fixes, cleanups and documentation improvements.
+.. rst-class:: compact-list
+
+  * S4U: progress, integrating more parts of SimDag; New examples.
+  * SMPI: Support MPI 2.2; Convert internals to C++ (TBC).
+  * Java: Massive memleaks and performance issues fixed.
+  * Plus the usual bug fixes, cleanups and documentation improvements.
 
 Users are expected to switch to this new version at their own pace, as we do not have the manpower to do any bugfixing on the old releases.
 This version was tested on several Linux distributions, Mac OSX, Windows (restricted to our Java bindings), FreeBSD and NetBSD.
@@ -71,11 +68,13 @@ Version 3.16 (June 22 2017)
 
 The Blooming Spring Release: developments are budding.
 
- * S4U: Progress; Activity refcounting is now automatic.
- * XML: <AS> can now be named <zone> as they should.
- * SMPI: Further performance improvements; RMA support.
- * Cloud: Multi-core VMs (do not overcommit them yet)
- * (+ bug fixes, cleanups and documentation improvements)
+.. rst-class:: compact-list
+
+  * S4U: Progress; Activity refcounting is now automatic.
+  * XML: <AS> can now be named <zone> as they should.
+  * SMPI: Further performance improvements; RMA support.
+  * Cloud: Multi-core VMs (do not overcommit them yet)
+  * (+ bug fixes, cleanups and documentation improvements)
 
 SMPI performance was further improved, using various OS-level magic to speed up our virtualization of the MPI code to be run. This allowed
 Tom to run a simulation of HPL involving 10^6 processes... Wow. The dlopen privatization schema should even allows to run your ranks
@@ -108,19 +107,23 @@ that should now be clear of any memory leak.
 
 In addition, the future already started. We have ongoing changesets that were not ready for 3.16 but should be part of 3.17:
 
- - Energy modeling for the network too
- - New reduction algorithm for the model-checker, based on event folding structures
- - Multi-model simulations, to specify a differing networking model for each netzone.
+.. rst-class:: compact-list
+
+  - Energy modeling for the network too
+  - New reduction algorithm for the model-checker, based on event folding structures
+  - Multi-model simulations, to specify a differing networking model for each netzone.
 
 Version 3.17 (Oct 8. 2017)
 --------------------------
 
 This version is dubbed the "The Drained Leaks release", because almost no known memleak remains, despite testing.
 
- * Many many internal cleanups (almost 700 commits since 3.16).
- * The coverage of our tests is above 80%.
- * All memleaks but one plugged; A dozen of bugs fixed.
- * XBT: Further replace XBT with std::* constructs.
+.. rst-class:: compact-list
+
+  * Many many internal cleanups (almost 700 commits since 3.16).
+  * The coverage of our tests is above 80%.
+  * All memleaks but one plugged; A dozen of bugs fixed.
+  * XBT: Further replace XBT with std::* constructs.
 
 Version 3.18 (Dec. 24 2017)
 ---------------------------
@@ -130,10 +133,12 @@ There is still some work to do before SimGrid 4: S4U is not ready for SimDag use
 
 Main changes in the "Ho Ho Ho! SimGrid 4 beta is coming to town" release:
 
- * Convert almost all interesting MSG examples to S4U.
- * New model: energy consumption due to the network.
- * Major cleanups in the disk and storage subsystems.
- * (+ further deprecate XBT, bug fixes and doc improvement)
+.. rst-class:: compact-list
+
+  * Convert almost all interesting MSG examples to S4U.
+  * New model: energy consumption due to the network.
+  * Major cleanups in the disk and storage subsystems.
+  * (+ further deprecate XBT, bug fixes and doc improvement)
 
 SimGrid 4 *may* be there by the next solstice.
 
@@ -142,10 +147,12 @@ Version 3.19 (March 21. 2018)
 
 In total, this "Moscovitly-cold Spring" release brings more than 500 commits made by 7 individuals over the last 3 months.
 
- * SMPI: Allow to start new actors and ranks after simulation start.
- * SMPI: Support ICC, better testing on classical proxy apps.
- * Some kernel headers are now installed, allowing external plugins.
- * (+ the classical bug fixes and doc improvement)
+.. rst-class:: compact-list
+
+  * SMPI: Allow to start new actors and ranks after simulation start.
+  * SMPI: Support ICC, better testing on classical proxy apps.
+  * Some kernel headers are now installed, allowing external plugins.
+  * (+ the classical bug fixes and doc improvement)
 
 Version 3.19.1 (March 22. 2018)
 -------------------------------
@@ -176,8 +183,8 @@ interfaces and converting them to snake_case() is one release goal of v3.20. But
 Once the S4U interface stabilizes, we will provide C bindings on top of it, along with Java and Python ones. Maybe in 3.21 or 3.22.
 
 All this is not contradictory with the fact that MSG as a whole is deprecated, because this deprecation only means that new projects
-should go for MSG but for S4U (to benefit of the future). Despite this deprecation, old MSG projects should still be usable with no change,
-if we manage to. This is a matter of scientific reproducibility to us.
+should go for S4U instead of MSG to benefit of the future. Despite this deprecation, old MSG projects should still be usable with no 
+change, if we manage to. This is a matter of scientific reproducibility to us.
 
 Version 3.20 (June 25 2018)
 ---------------------------
@@ -190,14 +197,16 @@ change your code until v3.24 if you can live with warnings. The MSG API was not 
 
 The robustness of SMPI continues to improve. It was rock stable, and you can now use it to move the world (if your lever is long enough).
 We now use several full-scale projects as nightly integration tests: StarPU, BigDFT and also 45 Proxy Apps from various collections.
-https://github.com/simgrid/SMPI-proxy-apps/
+https://framagit.org/simgrid/SMPI-proxy-apps
 
 Main changes in the "proxy snake_case()" release are:
 
- * Sanitize the public API. Compatibility wrappers in place for one year.
- * More CI: ~45 Proxy Apps + BigDFT + StarPU now tested nightly
- * MPI: Port the trace replay engine to C++, fix visualization
- * (+ the classical bug fixes and doc improvement)
+.. rst-class:: compact-list
+
+  * Sanitize the public API. Compatibility wrappers in place for one year.
+  * More CI: ~45 Proxy Apps + BigDFT + StarPU now tested nightly
+  * MPI: Port the trace replay engine to C++, fix visualization
+  * (+ the classical bug fixes and doc improvement)
 
 Version 3.21 (October 5. 2018)
 ------------------------------
@@ -215,10 +224,12 @@ develop an Open Source project as ours. Head now to https://simgrid.org You can 
 
 Main changes of The Restarting Documentation (TRD) release:
 
- * Start to overhaul the documentation, and move to Sphinx + RTD.
- * Allow dynamic replay of MPI apps, controlled by S4U actors
- * Rewrite the support for auto-restarted actors (was utterly broken)
- * (+ the classical bug fixes and doc improvement)
+.. rst-class:: compact-list
+
+  * Start to overhaul the documentation, and move to Sphinx + RTD.
+  * Allow dynamic replay of MPI apps, controlled by S4U actors
+  * Rewrite the support for auto-restarted actors (was utterly broken)
+  * (+ the classical bug fixes and doc improvement)
 
 Version 3.22 (April 2. 2019)
 ----------------------------
@@ -226,10 +237,12 @@ Version 3.22 (April 2. 2019)
 The Easter Christmas Release. It was expected from Chrismas, but I was so late that I even managed to miss the spring deadline.
 This started to be a running joke, so I decided to release it for April 1. But I'm even late for this... Sorry :)
 
- * Introducing the Python bindings (still beta)
- * Doc: SMPI tutorial and platform description ported to RTD
- * Many internal cleanups leading to some user-level speedups
- * (+ the classical bug fixes and internal refactorings)
+.. rst-class:: compact-list
+
+  * Introducing the Python bindings (still beta)
+  * Doc: SMPI tutorial and platform description ported to RTD
+  * Many internal cleanups leading to some user-level speedups
+  * (+ the classical bug fixes and internal refactorings)
 
 The most visible change is certainly the new Python bindings. They are rather experimental yet, and their API may change a bit in future
 release, but you are already welcome to test them. Many examples are now also available in Python, and the missing ones are on their way.
@@ -250,20 +263,24 @@ Version 3.23 (June 25. 2019)
 
 Main change in the "Exotic Solstice" Release:
 
- * Support for Solaris and Haiku OSes. Just for fun :)
- * SMPI: more of MPI3.1; some MPI/IO and async collectives.
- * Python bindings can now be installed from pip.
- * (+ many many bug fixes and internal refactorings)
+.. rst-class:: compact-list
+
+  * Support for Solaris and Haiku OSes. Just for fun :)
+  * SMPI: more of MPI3.1; some MPI/IO and async collectives.
+  * Python bindings can now be installed from pip.
+  * (+ many many bug fixes and internal refactorings)
 
 Version 3.24 (October 10. 2019)
 -------------------------------
 
 This is the Clean Disk Release:
 
- * Introduce an experimental Wifi network model.
- * Introduce <disk> (cleaner logic than <storage>).
- * SMPI: Implement Errhandlers and some more MPI3.1 calls.
- * (+ many bug fixes and internal refactorings)
+.. rst-class:: compact-list
+
+  * Introduce an experimental Wifi network model.
+  * Introduce <disk> (cleaner logic than <storage>).
+  * SMPI: Implement Errhandlers and some more MPI3.1 calls.
+  * (+ many bug fixes and internal refactorings)
 
 Since June, we continued our new release schema: v3.23.2 got released at some point as an interim release for people wanting something
 between stable releases (tested on many systems but coming at most once per quarter) and git version (almost always working but you never
@@ -285,25 +302,20 @@ Version 3.25 (Feb 2. 2020)
 
 This is the "Palindrom Day" release (today is 02 02 2020).
 
-* Improve the Python usability (stability and documentation).
+.. rst-class:: compact-list
 
-  - A nasty synchronization bug was ironed out, see full changelog.
-  - Python's doc now integrated with C++ (was organized as a separate tree).
-  - C bindings of S4U were not even part of the doc.
-  - The C++ doc was also improved as methods are now split by theme.
-  - See https://simgrid.org/doc/latest/app_s4u.html#api-reference
+   * Improve the Python usability (stability and documentation). |br|
+     A nasty synchronization bug (due to a bad handling of the GIL) was ironed out, so that no known bug remains in Python examples.
+     The Python documentation is now integrated with the C++ one, also along with the C bindings that were previously not documented.
+     The API documentation is now split by theme in the hope to keep it readable.
 
-* Further deprecate MSG: you now have to pass -Denable_msg=ON to cmake.
+   * Further deprecate MSG: you now have to pass -Denable_msg=ON to cmake. |br|
+     This is OFF by default (also disabling the Java API that is still based on MSG).
+     The plan is to completely remove MSG by 2020Q4 or 2021Q1.
 
-  - This is mandatory to use the Java bindings.
-  - OFF by default; The plan is to completely remove MSG by 2020Q4 or 2021Q1.
-
-* SimDAG++: Automatic dependencies on S4U activities (experimental)
-
-  - Some features are already implemented but not all of them
-  - Cannot block an activity until it's scheduled on a resource
-  - No heterogeneous wait_any() that would mix Exec/Comm/Io activities.
-  - See examples/s4u/{io,exec,comm}-dependent for what's already there.
+   * SimDAG++: Automatic dependencies on S4U activities (experimental). |br|
+     This implements some features of SimDAG within S4U, but not all of them: you cannot block an activity until it's scheduled on a resource 
+     and there is no heterogeneous wait_any() that would mix Exec/Comm/Io activities. See ``examples/s4u/{io,exec,comm}-dependent`` for what's already there.
 
 Since last fall, we continued to push toward the future SimGrid4 release. This requires to remove MSG and SimDAG once all users have
 migrated to S4U. The two old interfaces are still here, but this release gives another gentle incitative toward the migration. You now
@@ -319,10 +331,12 @@ Version 3.26 (Dec 16. 2020)
 To celebrate the ease of the lockdown in France, we decided to bring another version of SimGrid to the world.
 This is the "Release" release. Indeed a small contribution to the event, but this release was long overdue anyway.
 
- * SMPI: improved support of the proxy apps (including those using petsc)
- * WiFi: easier description in XML; energy plugin; more examples.
- * ns-3: Many bug fixes, can use the wifi models too.
- * (+ many bug fixes, documentation improvement and internal refactoring)
+.. rst-class:: compact-list
+
+  * SMPI: improved support of the proxy apps (including those using petsc)
+  * WiFi: easier description in XML; energy plugin; more examples.
+  * ns-3: Many bug fixes, can use the wifi models too.
+  * (+ many bug fixes, documentation improvement and internal refactoring)
 
 Version 3.27 (March 29. 2021)
 -----------------------------
@@ -330,9 +344,11 @@ Version 3.27 (March 29. 2021)
 To celebrate the 1176th anniversary of the siege of Paris by Vikings in 845, we just released another version of SimGrid, the Ragnar Release.
 Yeah, that's a stupid release name, but we already had 4 "spring release" in the past, so we needed another name.
 
- * SMPI: can now report leaks and hint about the mallocs and kernels hindering simulation scalability
- * Doc: Several new sections in the user manual, and start documenting the internals.
- * S4U: Direct comms from host to host, without mailboxes.
+.. rst-class:: compact-list
+
+  * SMPI: can now report leaks and hint about the mallocs and kernels hindering simulation scalability.
+  * Doc: Several new sections in the user manual, and start documenting the internals.
+  * S4U: Direct comms from host to host, without mailboxes.
 
 In some sense, these changes are just the tip of the iceberg, as we had many refactoring and internal cleanups in this release cycle too. Actually, we have 3
 main ongoing refactoring that should bring us closer to SimGrid4, that will eventually occur.
@@ -362,11 +378,13 @@ Version 3.28 (July 14. 2021)
 
 To celebrate the birthday of Crown Princess Victoria, we just released another version of SimGrid, the "Victoriadagarna" release.
 
- * Programmatic platform description (only C++ for now).
- * New plugin to simplify producer/consumer applications.
- * MC: new tutorial and associated docker image.
- * SMPI: improve error handling for incorrect advanced usages.
- * Many internal cleanups and refactoring to prepare the future.
+.. rst-class:: compact-list
+
+  * Programmatic platform description (only C++ for now).
+  * New plugin to simplify producer/consumer applications.
+  * MC: new tutorial and associated docker image.
+  * SMPI: improve error handling for incorrect advanced usages.
+  * Many internal cleanups and refactoring to prepare the future.
 
 As usual, even the full changelog is only the tip of the iceberg, given the amount of changes in the backstage.
 
@@ -398,10 +416,12 @@ On `Mattermost <https://framateam.org/simgrid/channels/town-square>`_,
 `Stack Overflow <https://stackoverflow.com/questions/tagged/simgrid>`_,
 or using the `issues tracker <https://framagit.org/simgrid/simgrid/-/issues>`_.
 
-  * Python bindings for the platform creation API
-  * Introduce non-linear resource sharing, allowing decay models
-  * New documentation section on realistic I/O modeling
-  * (+ many bug fixes and internal refactoring)
+.. rst-class:: compact-list
+
+   * Python bindings for the platform creation API
+   * Introduce non-linear resource sharing, allowing decay models
+   * New documentation section on realistic I/O modeling
+   * (+ many bug fixes and internal refactoring)
 
 This release finishes the work on programmatic platforms, that was ongoing since 3.27. It is now possible to define a complete platform in either C++
 or python, and the XML approach is now deprecated. It will probably remain around for a long time, but no evolution is planned. New features will not
@@ -409,23 +429,23 @@ be ported to the XML parser (unless you provide a patch, of course).
 
 This release also paves the way for new models, with the introduction of two new features to the model solver:
 
- * Non-linear resource sharing was introduced, allowing to model resource whose performance heavily degrades with contention. This may be used in the
-   future for Wi-Fi links, where the total amount of data exchanged in a cell drops when the amount of stations reaches a threshold.
- * Dynamic factors model variability in the speed of activities. This can be used to model an overhead (e.g., there is a 20 bytes header in a 480
-   bytes TCP packet so the factor 0.9583) but the novelty is this factor can now easily be adjusted depending on activity's and resources
-   characteristics.
+.. rst-class:: compact-list
 
-   This existed for network (e.g., the effective bandwidth depends on the message in SMPI piecewise-linear network model) but it is now more general
-   (the factor may depend on the source and destination and thus account to different behaviors for intra-node communications and extra-node
-   communications) and is available for CPUs (e.g., if you want to model an affinity as in the "Unrelated Machines" problem in scheduling) and disks
-   (e.g., if you want to model a stochastic capacity) too.
-
-   The same mechanism is also available for the latency, which allows to easily introduce complex variability patterns.
+   * Non-linear resource sharing was introduced, allowing to model resource whose performance heavily degrades with contention. This may be used in the
+     future for Wi-Fi links, where the total amount of data exchanged in a cell drops when the amount of stations reaches a threshold.
+   * Dynamic factors model variability in the speed of activities. This can be used to model an overhead (e.g., there is a 20 bytes header in a 480
+     bytes TCP packet so the factor 0.9583) but the novelty is this factor can now easily be adjusted depending on activity's and resources
+     characteristics. |br|
+     This existed for network (e.g., the effective bandwidth depends on the message in SMPI piecewise-linear network model) but it is now more general
+     (the factor may depend on the source and destination and thus account to different behaviors for intra-node communications and extra-node
+     communications) and is available for CPUs (e.g., if you want to model an affinity as in the "Unrelated Machines" problem in scheduling) and disks
+     (e.g., if you want to model a stochastic capacity) too. |br|
+     The same mechanism is also available for the latency, which allows to easily introduce complex variability patterns.
 
 These new features are not used yet in the provided models, but this will probably change in future releases.
 
 Version 3.30 (January 30. 2022)
----------------------------
+-------------------------------
 
 The Sunday Bloody Sunday release.
 
@@ -434,7 +454,7 @@ and the way to combine them. All of this had been implemented since, but one pie
 that can prevent an activity to start. The underlying idea was to be able to manage application DAGs, a la SimDag, through the S4U API, and have
 maestro to handle the execution of such DAGs.
 
-This release finishes this work, which is presented in a new set of examples (`examples/cpp/dag-*`). The direct consequences on the code base of this
+This release finishes this work, which is presented in a new set of examples (``examples/cpp/dag-*``). The direct consequences on the code base of this
 new feature are:
 
  * The SimDag API for the simulation of the scheduling of Directed Acyclic Graphs has been finally dropped. It was marked as deprecated for a couple
@@ -447,3 +467,32 @@ Also, the algorithm tutorial can now be taken in Python, for those of you alergi
 
 Finally, on the SMPI front, we introduced a new documentation section on calibrating the SMPI models from your measurements and fixed some issues
 with the replay mechanism.
+
+Version 3.31 (expected spring 2021)
+-----------------------------------
+
+On the model checking front, the long awaited big bang finally occurred, greatly simplifying future evolution. 
+
+A formal verification with Mc SimGrid implies two processes: a verified application that is an almost regular SimGrid simulation, and a checker that
+is an external process guiding the verified application to ensure that it explores every possible execution scenario. When formal verification was
+initially introduced in SimGrid 15 years ago, both processes were intertwined in the same system process but the mandated system tricks made it
+impossible to use classical debugging tools such as gdb or valgrind on that Frankenstein process. Having more than one heap in your process is not 
+usually supported.
+
+The design was simplified in v3.12 (2015) by splitting the application and the checker in separate system process. But both processes remained tightly
+coupled: when the checker needed some information (for example the mailbox implied in a send operation to compute whether this operation `commutes
+with another one <https://en.wikipedia.org/wiki/Partial_order_reduction>`_), the checker was directly reading the memory of the other system process.
+This was efficient and nice in C, but it prevented us from using C++ features such as opaque ``std::function`` data types. As such, it hindered the
+ongoing SimDAG++ code reorganization toward SimGrid4, where all activity classes should be homogeneously written in modern C++.
+
+This release introduces a new design, where the simcalls are given object-oriented Observers that can serialize the relevant information over the wire. 
+This information is used on the checker side to build Transition objects, representing the application simcalls. This explanation may not be crystal 
+clear, but the checker code is now much easier to work with as the formal logic is not spoiled with system-level tricks to retrieve the needed information.
+
+Future work on the model checker include: support for mutexes (that are still not handled), implementation of another exploration algorithm based on UDPOR
+(`The Anh Pham's thesis <https://tel.archives-ouvertes.fr/tel-02462074/document>`_ was defended in 2019), and robustness improvement using the `MPI Bug 
+Initiative <https://hal.archives-ouvertes.fr/hal-03474762>`_ tests. Many things that were long dreamed of now become technically possible in this code base.
+
+.. |br| raw:: html
+
+   <br />
