@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/SemaphoreImpl.hpp"
-#include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/kernel/activity/Synchro.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include <cmath> // std::isfinite
 
@@ -20,7 +20,7 @@ void SemaphoreImpl::acquire(actor::ActorImpl* issuer, double timeout)
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
 
   if (value_ <= 0) {
-    RawImplPtr synchro(new RawImpl([this, issuer]() {
+    RawImplPtr synchro(new SynchroImpl([this, issuer]() {
       this->remove_sleeping_actor(*issuer);
       auto* observer = dynamic_cast<kernel::actor::SemAcquireSimcall*>(issuer->simcall_.observer_);
       xbt_assert(observer != nullptr);

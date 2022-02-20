@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/MutexImpl.hpp"
-#include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/kernel/activity/Synchro.hpp"
 
 #if SIMGRID_HAVE_MC
 #include "simgrid/modelchecker.h"
@@ -30,7 +30,7 @@ void MutexImpl::lock(actor::ActorImpl* issuer)
   if (locked_) {
     /* FIXME: check if the host is active ? */
     /* Somebody using the mutex, use a synchronization to get host failures */
-    RawImplPtr synchro(new RawImpl([this, issuer]() { this->remove_sleeping_actor(*issuer); }));
+    RawImplPtr synchro(new SynchroImpl([this, issuer]() { this->remove_sleeping_actor(*issuer); }));
     (*synchro).set_host(issuer->get_host()).start();
     synchro->register_simcall(&issuer->simcall_);
     sleeping_.push_back(*issuer);

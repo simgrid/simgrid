@@ -409,8 +409,8 @@ set(SIMIX_SRC
   src/kernel/activity/SemaphoreImpl.hpp
   src/kernel/activity/SleepImpl.cpp
   src/kernel/activity/SleepImpl.hpp
-  src/kernel/activity/SynchroRaw.cpp
-  src/kernel/activity/SynchroRaw.hpp
+  src/kernel/activity/Synchro.cpp
+  src/kernel/activity/Synchro.hpp
   src/kernel/actor/ActorImpl.cpp
   src/kernel/actor/ActorImpl.hpp
   src/kernel/actor/CommObserver.cpp

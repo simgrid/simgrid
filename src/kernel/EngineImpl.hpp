@@ -17,7 +17,7 @@
 #include "src/kernel/activity/IoImpl.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/SleepImpl.hpp"
-#include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/kernel/activity/Synchro.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
 

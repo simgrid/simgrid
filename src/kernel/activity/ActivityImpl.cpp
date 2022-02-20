@@ -8,7 +8,7 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
-#include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/kernel/activity/Synchro.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
@@ -120,7 +120,7 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
       else
         comm->dst_timeout_ = sleep;
     } else {
-      RawImplPtr synchro(new RawImpl([this, issuer]() {
+      RawImplPtr synchro(new SynchroImpl([this, issuer]() {
         this->unregister_simcall(&issuer->simcall_);
         issuer->waiting_synchro_ = nullptr;
         issuer->exception_       = nullptr;

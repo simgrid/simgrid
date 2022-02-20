@@ -14,18 +14,18 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-  /** Used to implement mutexes, semaphores and conditions */
-class XBT_PUBLIC RawImpl : public ActivityImpl_T<RawImpl> {
+/** Used to implement mutexes, semaphores and conditions */
+class XBT_PUBLIC SynchroImpl : public ActivityImpl_T<SynchroImpl> {
   sg_host_t host_ = nullptr;
   double timeout_ = -1;
   std::function<void()> finish_callback_;
 
 public:
-  explicit RawImpl(const std::function<void()>& finish_callback) : finish_callback_(finish_callback) {}
-  RawImpl& set_host(s4u::Host* host);
-  RawImpl& set_timeout(double timeout) override;
+  explicit SynchroImpl(const std::function<void()>& finish_callback) : finish_callback_(finish_callback) {}
+  SynchroImpl& set_host(s4u::Host* host);
+  SynchroImpl& set_timeout(double timeout) override;
 
-  RawImpl* start();
+  SynchroImpl* start();
   void suspend() override;
   void resume() override;
   void cancel() override;

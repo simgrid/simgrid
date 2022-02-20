@@ -5,7 +5,7 @@
 
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
-#include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/kernel/activity/Synchro.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include <cmath> // std::isfinite
 
@@ -73,7 +73,7 @@ void ConditionVariableImpl::wait(smx_mutex_t mutex, double timeout, actor::Actor
     mutex->unlock(issuer);
   }
 
-  RawImplPtr synchro(new RawImpl([this, issuer]() {
+  RawImplPtr synchro(new SynchroImpl([this, issuer]() {
     this->remove_sleeping_actor(*issuer);
     auto* observer = dynamic_cast<kernel::actor::ConditionWaitSimcall*>(issuer->simcall_.observer_);
     xbt_assert(observer != nullptr);
