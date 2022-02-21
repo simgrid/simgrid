@@ -29,8 +29,7 @@ class Frame;
 class ActorInformation;
 
 class Session;
-class Checker;
-
+class Exploration;
 }
 }
 

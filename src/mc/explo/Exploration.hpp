@@ -12,7 +12,7 @@
 namespace simgrid {
 namespace mc {
 
-/** A model-checking algorithm
+/** A model-checking exploration algorithm
  *
  *  This is an abstract base class used to group the data, state, configuration
  *  of a model-checking algorithm.
@@ -25,17 +25,17 @@ namespace mc {
  * `Session` interface (but currently the `Session` interface does not
  *  have all the necessary features). */
 // abstract
-class Checker : public xbt::Extendable<Checker> {
+class Exploration : public xbt::Extendable<Exploration> {
   Session* session_;
 
 public:
-  explicit Checker(Session* session) : session_(session) {}
+  explicit Exploration(Session* session) : session_(session) {}
 
   // No copy:
-  Checker(Checker const&) = delete;
-  Checker& operator=(Checker const&) = delete;
+  Exploration(Exploration const&) = delete;
+  Exploration& operator=(Exploration const&) = delete;
 
-  virtual ~Checker() = default;
+  virtual ~Exploration() = default;
 
   /** Main function of this algorithm */
   virtual void run() = 0;
@@ -59,10 +59,10 @@ public:
 };
 
 // External constructors so that the types (and the types of their content) remain hidden
-XBT_PUBLIC Checker* create_liveness_checker(Session* session);
-XBT_PUBLIC Checker* create_safety_checker(Session* session);
-XBT_PUBLIC Checker* create_communication_determinism_checker(Session* session);
-XBT_PUBLIC Checker* create_udpor_checker(Session* session);
+XBT_PUBLIC Exploration* create_liveness_checker(Session* session);
+XBT_PUBLIC Exploration* create_safety_checker(Session* session);
+XBT_PUBLIC Exploration* create_communication_determinism_checker(Session* session);
+XBT_PUBLIC Exploration* create_udpor_checker(Session* session);
 
 } // namespace mc
 } // namespace simgrid

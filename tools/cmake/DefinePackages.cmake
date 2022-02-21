@@ -558,14 +558,14 @@ set(MC_SRC_BASE
   )
 
 set(MC_SRC
-  src/mc/checker/Checker.hpp
-  src/mc/checker/CommunicationDeterminismChecker.cpp
-  src/mc/checker/SafetyChecker.cpp
-  src/mc/checker/SafetyChecker.hpp
-  src/mc/checker/LivenessChecker.cpp
-  src/mc/checker/LivenessChecker.hpp
-  src/mc/checker/UdporChecker.cpp
-  src/mc/checker/UdporChecker.hpp
+  src/mc/explo/Exploration.hpp
+  src/mc/explo/CommunicationDeterminismChecker.cpp
+  src/mc/explo/SafetyChecker.cpp
+  src/mc/explo/SafetyChecker.hpp
+  src/mc/explo/LivenessChecker.cpp
+  src/mc/explo/LivenessChecker.hpp
+  src/mc/explo/UdporChecker.cpp
+  src/mc/explo/UdporChecker.hpp
 
   src/mc/inspect/DwarfExpression.hpp
   src/mc/inspect/DwarfExpression.cpp
@@ -640,7 +640,7 @@ set(MC_SRC
   src/mc/udpor_global.hpp
   )
 
-set(MC_SIMGRID_MC_SRC  src/mc/checker/simgrid_mc.cpp)
+set(MC_SIMGRID_MC_SRC  src/mc/explo/simgrid_mc.cpp)
 
 set(headers_to_install
   include/simgrid/actor.h

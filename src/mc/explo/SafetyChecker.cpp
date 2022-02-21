@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/checker/SafetyChecker.hpp"
+#include "src/mc/explo/SafetyChecker.hpp"
 #include "src/mc/Session.hpp"
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/mc_config.hpp"
@@ -268,7 +268,7 @@ void SafetyChecker::restore_state()
   }
 }
 
-SafetyChecker::SafetyChecker(Session* session) : Checker(session)
+SafetyChecker::SafetyChecker(Session* session) : Exploration(session)
 {
   reductionMode_ = reduction_mode;
   if (_sg_mc_termination)
@@ -309,7 +309,7 @@ SafetyChecker::SafetyChecker(Session* session) : Checker(session)
   stack_.push_back(std::move(initial_state));
 }
 
-Checker* create_safety_checker(Session* session)
+Exploration* create_safety_checker(Session* session)
 {
   return new SafetyChecker(session);
 }

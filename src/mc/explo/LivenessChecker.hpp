@@ -8,7 +8,7 @@
 #define SIMGRID_MC_LIVENESS_CHECKER_HPP
 
 #include "src/mc/api/State.hpp"
-#include "src/mc/checker/Checker.hpp"
+#include "src/mc/explo/Exploration.hpp"
 #include "xbt/automaton.hpp"
 
 #include <list>
@@ -20,13 +20,13 @@ namespace mc {
 
 class XBT_PRIVATE Pair {
 public:
-  int num = 0;
-  bool search_cycle = false;
+  int num                               = 0;
+  bool search_cycle                     = false;
   std::shared_ptr<State> graph_state    = nullptr; /* System state included */
   xbt_automaton_state_t automaton_state = nullptr;
   std::shared_ptr<const std::vector<int>> atomic_propositions;
-  int requests = 0;
-  int depth = 0;
+  int requests             = 0;
+  int depth                = 0;
   bool exploration_started = false;
 
   explicit Pair(unsigned long expanded_pairs);
@@ -38,7 +38,7 @@ public:
 class XBT_PRIVATE VisitedPair {
 public:
   int num;
-  int other_num = 0; /* Dot output for */
+  int other_num                      = 0;       /* Dot output for */
   std::shared_ptr<State> graph_state = nullptr; /* System state included */
   xbt_automaton_state_t automaton_state;
   std::shared_ptr<const std::vector<int>> atomic_propositions;
@@ -49,7 +49,7 @@ public:
               std::shared_ptr<const std::vector<int>> atomic_propositions, std::shared_ptr<State> graph_state);
 };
 
-class XBT_PRIVATE LivenessChecker : public Checker {
+class XBT_PRIVATE LivenessChecker : public Exploration {
 public:
   explicit LivenessChecker(Session* session);
   void run() override;
@@ -73,9 +73,9 @@ private:
   std::list<std::shared_ptr<Pair>> exploration_stack_;
   std::list<std::shared_ptr<VisitedPair>> acceptance_pairs_;
   std::list<std::shared_ptr<VisitedPair>> visited_pairs_;
-  unsigned long visited_pairs_count_   = 0;
-  unsigned long expanded_pairs_count_  = 0;
-  int previous_pair_                   = 0;
+  unsigned long visited_pairs_count_  = 0;
+  unsigned long expanded_pairs_count_ = 0;
+  int previous_pair_                  = 0;
   std::string previous_request_;
 };
 

@@ -7,13 +7,13 @@
 #ifndef SIMGRID_MC_UDPOR_CHECKER_HPP
 #define SIMGRID_MC_UDPOR_CHECKER_HPP
 
-#include "src/mc/checker/Checker.hpp"
+#include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_record.hpp"
 
 namespace simgrid {
 namespace mc {
 
-class XBT_PRIVATE UdporChecker : public Checker {
+class XBT_PRIVATE UdporChecker : public Exploration {
 public:
   explicit UdporChecker(Session* session);
   void run() override;

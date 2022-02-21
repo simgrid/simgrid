@@ -12,7 +12,7 @@
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/api/State.hpp"
-#include "src/mc/checker/Checker.hpp"
+#include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_private.hpp"
 #endif
 

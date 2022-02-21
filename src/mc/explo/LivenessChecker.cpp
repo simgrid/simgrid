@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/checker/LivenessChecker.hpp"
+#include "src/mc/explo/LivenessChecker.hpp"
 #include "src/mc/Session.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -29,34 +29,31 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
   this->graph_state = std::move(graph_state);
   if (this->graph_state->system_state_ == nullptr)
     this->graph_state->system_state_ = std::make_shared<Snapshot>(pair_num);
-  this->heap_bytes_used = api::get().get_remote_heap_bytes();
+  this->heap_bytes_used     = api::get().get_remote_heap_bytes();
   this->actors_count        = api::get().get_actors().size();
-  this->other_num = -1;
+  this->other_num           = -1;
   this->atomic_propositions = std::move(atomic_propositions);
 }
 
 static bool evaluate_label(const xbt_automaton_exp_label* l, std::vector<int> const& values)
 {
   switch (l->type) {
-  case xbt_automaton_exp_label::AUT_OR:
-    return evaluate_label(l->u.or_and.left_exp, values)
-      || evaluate_label(l->u.or_and.right_exp, values);
-  case xbt_automaton_exp_label::AUT_AND:
-    return evaluate_label(l->u.or_and.left_exp, values)
-      && evaluate_label(l->u.or_and.right_exp, values);
-  case xbt_automaton_exp_label::AUT_NOT:
-    return not evaluate_label(l->u.exp_not, values);
-  case xbt_automaton_exp_label::AUT_PREDICAT:
-    return values.at(api::get().compare_automaton_exp_label(l)) != 0;
-  case xbt_automaton_exp_label::AUT_ONE:
-    return true;
-  default:
-    xbt_die("Unexpected value for automaton");
+    case xbt_automaton_exp_label::AUT_OR:
+      return evaluate_label(l->u.or_and.left_exp, values) || evaluate_label(l->u.or_and.right_exp, values);
+    case xbt_automaton_exp_label::AUT_AND:
+      return evaluate_label(l->u.or_and.left_exp, values) && evaluate_label(l->u.or_and.right_exp, values);
+    case xbt_automaton_exp_label::AUT_NOT:
+      return not evaluate_label(l->u.exp_not, values);
+    case xbt_automaton_exp_label::AUT_PREDICAT:
+      return values.at(api::get().compare_automaton_exp_label(l)) != 0;
+    case xbt_automaton_exp_label::AUT_ONE:
+      return true;
+    default:
+      xbt_die("Unexpected value for automaton");
   }
 }
 
-Pair::Pair(unsigned long expanded_pairs) : num(expanded_pairs)
-{}
+Pair::Pair(unsigned long expanded_pairs) : num(expanded_pairs) {}
 
 std::shared_ptr<const std::vector<int>> LivenessChecker::get_proposition_values() const
 {
@@ -71,19 +68,21 @@ std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc
 
   auto res = boost::range::equal_range(acceptance_pairs_, new_pair.get(), api::get().compare_pair());
 
-  if (pair->search_cycle) for (auto i = res.first; i != res.second; ++i) {
-    std::shared_ptr<simgrid::mc::VisitedPair> const& pair_test = *i;
-    if (api::get().automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) != 0 ||
-        *(pair_test->atomic_propositions) != *(new_pair->atomic_propositions) ||
-        not api::get().snapshot_equal(pair_test->graph_state->system_state_.get(), new_pair->graph_state->system_state_.get()))
-      continue;
-    XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
-    exploration_stack_.pop_back();
-    if (dot_output != nullptr)
-      fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", this->previous_pair_, pair_test->num,
-              this->previous_request_.c_str());
-    return nullptr;
-  }
+  if (pair->search_cycle)
+    for (auto i = res.first; i != res.second; ++i) {
+      std::shared_ptr<simgrid::mc::VisitedPair> const& pair_test = *i;
+      if (api::get().automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) != 0 ||
+          *(pair_test->atomic_propositions) != *(new_pair->atomic_propositions) ||
+          not api::get().snapshot_equal(pair_test->graph_state->system_state_.get(),
+                                        new_pair->graph_state->system_state_.get()))
+        continue;
+      XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
+      exploration_stack_.pop_back();
+      if (dot_output != nullptr)
+        fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", this->previous_pair_, pair_test->num,
+                this->previous_request_.c_str());
+      return nullptr;
+    }
 
   acceptance_pairs_.insert(res.first, new_pair);
   return new_pair;
@@ -103,7 +102,7 @@ void LivenessChecker::replay()
   XBT_DEBUG("**** Begin Replay ****");
 
   /* Intermediate backtracking */
-  if(_sg_mc_checkpoint > 0) {
+  if (_sg_mc_checkpoint > 0) {
     const Pair* pair = exploration_stack_.back().get();
     if (pair->graph_state->system_state_) {
       api::get().restore_state(pair->graph_state->system_state_);
@@ -151,7 +150,8 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
     const VisitedPair* pair_test = i->get();
     if (api::get().automaton_state_compare(pair_test->automaton_state, visited_pair->automaton_state) != 0 ||
         *(pair_test->atomic_propositions) != *(visited_pair->atomic_propositions) ||
-        not api::get().snapshot_equal(pair_test->graph_state->system_state_.get(), visited_pair->graph_state->system_state_.get()))
+        not api::get().snapshot_equal(pair_test->graph_state->system_state_.get(),
+                                      visited_pair->graph_state->system_state_.get()))
       continue;
     if (pair_test->other_num == -1)
       visited_pair->other_num = pair_test->num;
@@ -160,8 +160,8 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
     if (dot_output == nullptr)
       XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", visited_pair->num, pair_test->num);
     else
-      XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))",
-        visited_pair->num, pair_test->num, visited_pair->other_num);
+      XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))", visited_pair->num,
+                pair_test->num, visited_pair->other_num);
     (*i) = std::move(visited_pair);
     return (*i)->other_num;
   }
@@ -181,7 +181,7 @@ void LivenessChecker::purge_visited_pairs()
   }
 }
 
-LivenessChecker::LivenessChecker(Session* session) : Checker(session) {}
+LivenessChecker::LivenessChecker(Session* session) : Exploration(session) {}
 
 RecordTrace LivenessChecker::get_record_trace() // override
 {
@@ -224,10 +224,10 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(const Pair* current_pair, xbt
                                                    std::shared_ptr<const std::vector<int>> propositions)
 {
   ++expanded_pairs_count_;
-  auto next_pair                  = std::make_shared<Pair>(expanded_pairs_count_);
-  next_pair->automaton_state      = state;
-  next_pair->graph_state          = std::make_shared<State>();
-  next_pair->atomic_propositions  = std::move(propositions);
+  auto next_pair                 = std::make_shared<Pair>(expanded_pairs_count_);
+  next_pair->automaton_state     = state;
+  next_pair->graph_state         = std::make_shared<State>();
+  next_pair->atomic_propositions = std::move(propositions);
   if (current_pair)
     next_pair->depth = current_pair->depth + 1;
   else
@@ -372,7 +372,7 @@ void LivenessChecker::run()
   log_state();
 }
 
-Checker* create_liveness_checker(Session* session)
+Exploration* create_liveness_checker(Session* session)
 {
   return new LivenessChecker(session);
 }

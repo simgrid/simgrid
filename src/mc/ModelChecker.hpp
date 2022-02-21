@@ -27,7 +27,7 @@ class ModelChecker {
   // This is the parent snapshot of the current state:
   PageStore page_store_{500};
   std::unique_ptr<RemoteProcess> remote_process_;
-  Checker* checker_ = nullptr;
+  Exploration* exploration_ = nullptr;
 
   // Expect MessageType::SIMCALL_TO_STRING or MessageType::SIMCALL_DOT_LABEL
   std::string simcall_to_string(MessageType type, aid_t aid, int times_considered);
@@ -59,8 +59,8 @@ public:
 
   void finalize_app(bool terminate_asap = false);
 
-  Checker* getChecker() const { return checker_; }
-  void setChecker(Checker* checker) { checker_ = checker; }
+  Exploration* get_exploration() const { return exploration_; }
+  void set_exploration(Exploration* exploration) { exploration_ = exploration; }
 
 private:
   void setup_ignore();

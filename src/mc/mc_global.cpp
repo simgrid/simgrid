@@ -8,7 +8,7 @@
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/Session.hpp"
-#include "src/mc/checker/Checker.hpp"
+#include "src/mc/explo/Exploration.hpp"
 #include "src/mc/inspect/mc_unw.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_private.hpp"

@@ -63,7 +63,7 @@ public:
     return api;
   }
 
-  simgrid::mc::Checker* initialize(char** argv, simgrid::mc::CheckerAlgorithm algo) const;
+  simgrid::mc::Exploration* initialize(char** argv, simgrid::mc::CheckerAlgorithm algo) const;
 
   // ACTOR APIs
   std::vector<simgrid::mc::ActorInformation>& get_actors() const;

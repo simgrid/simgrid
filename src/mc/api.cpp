@@ -9,7 +9,7 @@
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/Session.hpp"
-#include "src/mc/checker/Checker.hpp"
+#include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_base.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_pattern.hpp"
@@ -85,7 +85,7 @@ xbt::string const& Api::get_actor_name(smx_actor_t actor) const
   return info->name;
 }
 
-simgrid::mc::Checker* Api::initialize(char** argv, simgrid::mc::CheckerAlgorithm algo) const
+simgrid::mc::Exploration* Api::initialize(char** argv, simgrid::mc::CheckerAlgorithm algo) const
 {
   auto session = new simgrid::mc::Session([argv] {
     int i = 1;
@@ -97,22 +97,22 @@ simgrid::mc::Checker* Api::initialize(char** argv, simgrid::mc::CheckerAlgorithm
     xbt_die("The model-checked process failed to exec(%s): %s", argv[i], strerror(errno));
   });
 
-  simgrid::mc::Checker* checker;
+  simgrid::mc::Exploration* explo;
   switch (algo) {
     case CheckerAlgorithm::CommDeterminism:
-      checker = simgrid::mc::create_communication_determinism_checker(session);
+      explo = simgrid::mc::create_communication_determinism_checker(session);
       break;
 
     case CheckerAlgorithm::UDPOR:
-      checker = simgrid::mc::create_udpor_checker(session);
+      explo = simgrid::mc::create_udpor_checker(session);
       break;
 
     case CheckerAlgorithm::Safety:
-      checker = simgrid::mc::create_safety_checker(session);
+      explo = simgrid::mc::create_safety_checker(session);
       break;
 
     case CheckerAlgorithm::Liveness:
-      checker = simgrid::mc::create_liveness_checker(session);
+      explo = simgrid::mc::create_liveness_checker(session);
       break;
 
     default:
@@ -121,8 +121,8 @@ simgrid::mc::Checker* Api::initialize(char** argv, simgrid::mc::CheckerAlgorithm
 
   // FIXME: session and checker are never deleted
   simgrid::mc::session_singleton = session;
-  mc_model_checker->setChecker(checker);
-  return checker;
+  mc_model_checker->set_exploration(explo);
+  return explo;
 }
 
 std::vector<simgrid::mc::ActorInformation>& Api::get_actors() const

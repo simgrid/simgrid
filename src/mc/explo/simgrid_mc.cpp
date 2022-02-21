@@ -1,14 +1,13 @@
-/* Copyright (c) 2015-2022. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2022. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/sg_config.hpp"
-#include "src/mc/checker/Checker.hpp"
+#include "src/internal_config.h"
+#include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
-#include "src/internal_config.h"
 
 #if HAVE_SMPI
 #include "smpi/smpi.h"
@@ -20,8 +19,7 @@
 
 using api = simgrid::mc::Api;
 
-static inline
-char** argvdup(int argc, char** argv)
+static inline char** argvdup(int argc, char** argv)
 {
   auto* argv_copy = new char*[argc + 1];
   std::memcpy(argv_copy, argv, sizeof(char*) * argc);

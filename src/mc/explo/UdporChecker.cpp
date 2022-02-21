@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/checker/UdporChecker.hpp"
+#include "src/mc/explo/UdporChecker.hpp"
 #include <xbt/log.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor, mc, "Logging specific to MC safety verification ");
@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor, mc, "Logging specific to MC safety ver
 namespace simgrid {
 namespace mc {
 
-UdporChecker::UdporChecker(Session* session) : Checker(session) {}
+UdporChecker::UdporChecker(Session* session) : Exploration(session) {}
 
 void UdporChecker::run() {}
 
@@ -29,7 +29,7 @@ std::vector<std::string> UdporChecker::get_textual_trace()
 
 void UdporChecker::log_state() {}
 
-Checker* create_udpor_checker(Session* session)
+Exploration* create_udpor_checker(Session* session)
 {
   return new UdporChecker(session);
 }

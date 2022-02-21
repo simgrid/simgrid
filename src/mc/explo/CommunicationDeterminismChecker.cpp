@@ -5,7 +5,7 @@
 
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/mc/Session.hpp"
-#include "src/mc/checker/SafetyChecker.hpp"
+#include "src/mc/explo/SafetyChecker.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_forward.hpp"
@@ -32,15 +32,15 @@ enum class PatternCommunicationType {
 
 class PatternCommunication {
 public:
-  int num = 0;
+  int num                       = 0;
   uintptr_t comm_addr           = 0;
   PatternCommunicationType type = PatternCommunicationType::send;
   unsigned long src_proc        = 0;
   unsigned long dst_proc        = 0;
   unsigned mbox                 = 0;
   unsigned size                 = 0;
-  int tag   = 0;
-  int index = 0;
+  int tag                       = 0;
+  int index                     = 0;
 
   PatternCommunication dup() const
   {
@@ -49,10 +49,10 @@ public:
     res.comm_addr = this->comm_addr;
     res.type      = this->type;
     res.src_proc  = this->src_proc;
-    res.dst_proc = this->dst_proc;
-    res.mbox     = this->mbox;
+    res.dst_proc  = this->dst_proc;
+    res.mbox      = this->mbox;
     res.tag       = this->tag;
-    res.index = this->index;
+    res.index     = this->index;
     return res;
   }
 };
@@ -65,7 +65,7 @@ struct PatternCommunicationList {
 /********** Checker extension **********/
 
 struct CommDetExtension {
-  static simgrid::xbt::Extension<simgrid::mc::Checker, CommDetExtension> EXTENSION_ID;
+  static simgrid::xbt::Extension<simgrid::mc::Exploration, CommDetExtension> EXTENSION_ID;
 
   std::vector<simgrid::mc::PatternCommunicationList> initial_communications_pattern;
   std::vector<std::vector<simgrid::mc::PatternCommunication*>> incomplete_communications_pattern;
@@ -89,7 +89,7 @@ struct CommDetExtension {
   void complete_comm_pattern(const CommWaitTransition* transition);
   void handle_comm_pattern(const Transition* transition);
 };
-simgrid::xbt::Extension<simgrid::mc::Checker, CommDetExtension> CommDetExtension::EXTENSION_ID;
+simgrid::xbt::Extension<simgrid::mc::Exploration, CommDetExtension> CommDetExtension::EXTENSION_ID;
 /********** State Extension ***********/
 
 class StateCommDet {
@@ -246,7 +246,7 @@ void CommDetExtension::get_comm_pattern(const Transition* transition)
   } else if (transition->type_ == Transition::Type::COMM_RECV) {
     auto* recv = static_cast<const CommRecvTransition*>(transition);
 
-    pattern->type = PatternCommunicationType::receive;
+    pattern->type      = PatternCommunicationType::receive;
     pattern->comm_addr = recv->get_comm();
     pattern->tag       = recv->get_tag();
   }
@@ -285,7 +285,6 @@ void CommDetExtension::complete_comm_pattern(const CommWaitTransition* transitio
   }
 }
 
-
 void CommDetExtension::handle_comm_pattern(const Transition* transition)
 {
   if (not _sg_mc_comms_determinism && not _sg_mc_send_determinism)
@@ -323,9 +322,9 @@ void CommDetExtension::handle_comm_pattern(const Transition* transition)
       }
  */
 
-Checker* create_communication_determinism_checker(Session* session)
+Exploration* create_communication_determinism_checker(Session* session)
 {
-  CommDetExtension::EXTENSION_ID = simgrid::mc::Checker::extension_create<CommDetExtension>();
+  CommDetExtension::EXTENSION_ID = simgrid::mc::Exploration::extension_create<CommDetExtension>();
   StateCommDet::EXTENSION_ID     = simgrid::mc::State::extension_create<StateCommDet>();
 
   XBT_DEBUG("********* Start communication determinism verification *********");

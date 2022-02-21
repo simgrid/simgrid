@@ -4,9 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/Session.hpp"
-#include "src/mc/checker/Checker.hpp"
-#include "src/mc/mc_config.hpp"
 #include "src/internal_config.h" // HAVE_SMPI
+#include "src/mc/explo/Exploration.hpp"
+#include "src/mc/mc_config.hpp"
 #if HAVE_SMPI
 #include "smpi/smpi.h"
 #include "src/smpi/include/private.hpp"
@@ -116,7 +116,7 @@ void Session::restore_initial_state() const
 
 void Session::log_state() const
 {
-  model_checker_->getChecker()->log_state();
+  model_checker_->get_exploration()->log_state();
 
   if (not _sg_mc_dot_output_file.get().empty()) {
     fprintf(dot_output, "}\n");
@@ -169,9 +169,9 @@ void Session::check_deadlock() const
     XBT_CINFO(mc_global, "*** DEADLOCK DETECTED ***");
     XBT_CINFO(mc_global, "**************************");
     XBT_CINFO(mc_global, "Counter-example execution trace:");
-    for (auto const& frame : model_checker_->getChecker()->get_textual_trace())
+    for (auto const& frame : model_checker_->get_exploration()->get_textual_trace())
       XBT_CINFO(mc_global, "  %s", frame.c_str());
-    XBT_CINFO(mc_global, "Path = %s", model_checker_->getChecker()->get_record_trace().to_string().c_str());
+    XBT_CINFO(mc_global, "Path = %s", model_checker_->get_exploration()->get_record_trace().to_string().c_str());
     log_state();
     throw DeadlockError();
   }

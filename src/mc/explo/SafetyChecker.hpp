@@ -8,7 +8,7 @@
 #define SIMGRID_MC_SAFETY_CHECKER_HPP
 
 #include "src/mc/VisitedState.hpp"
-#include "src/mc/checker/Checker.hpp"
+#include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_safety.hpp"
 
 #include <list>
@@ -19,7 +19,7 @@
 namespace simgrid {
 namespace mc {
 
-class XBT_PRIVATE SafetyChecker : public Checker {
+class XBT_PRIVATE SafetyChecker : public Exploration {
   ReductionMode reductionMode_ = ReductionMode::unset;
   long backtrack_count_        = 0;
 
