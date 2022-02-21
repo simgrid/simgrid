@@ -140,12 +140,12 @@ public:
    * This function is optional: you can call wait() even if you didn't call start()
    */
   virtual Activity* start() = 0;
-  /** Blocks the current actor until the activity is terminated */
   /** Tests whether the given activity is terminated yet. */
   virtual bool test();
   /*! take a vector s4u::ActivityPtr and return the rank of the first finished one (or -1 if none is done). */
   static ssize_t test_any(const std::vector<ActivityPtr>& activities);
 
+  /** Blocks the current actor until the activity is terminated */
   Activity* wait() { return wait_for(-1.0); }
   /** Blocks the current actor until the activity is terminated, or until the timeout is elapsed\n
    *  Raises: timeout exception.*/
