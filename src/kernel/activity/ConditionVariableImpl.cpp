@@ -39,7 +39,7 @@ void ConditionVariableImpl::signal()
     smx_simcall_t simcall = &proc.simcall_;
     const auto* observer  = dynamic_cast<kernel::actor::ConditionWaitSimcall*>(simcall->observer_);
     xbt_assert(observer != nullptr);
-    observer->get_mutex()->lock(simcall->issuer_);
+    observer->get_mutex()->lock_async(simcall->issuer_)->wait_for(simcall->issuer_, -1);
   }
   XBT_OUT();
 }
@@ -73,7 +73,7 @@ void ConditionVariableImpl::wait(smx_mutex_t mutex, double timeout, actor::Actor
     mutex->unlock(issuer);
   }
 
-  RawImplPtr synchro(new SynchroImpl([this, issuer]() {
+  SynchroImplPtr synchro(new SynchroImpl([this, issuer]() {
     this->remove_sleeping_actor(*issuer);
     auto* observer = dynamic_cast<kernel::actor::ConditionWaitSimcall*>(issuer->simcall_.observer_);
     xbt_assert(observer != nullptr);

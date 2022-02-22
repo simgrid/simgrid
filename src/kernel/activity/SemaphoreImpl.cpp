@@ -20,7 +20,7 @@ void SemaphoreImpl::acquire(actor::ActorImpl* issuer, double timeout)
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
 
   if (value_ <= 0) {
-    RawImplPtr synchro(new SynchroImpl([this, issuer]() {
+    SynchroImplPtr synchro(new SynchroImpl([this, issuer]() {
       this->remove_sleeping_actor(*issuer);
       auto* observer = dynamic_cast<kernel::actor::SemAcquireSimcall*>(issuer->simcall_.observer_);
       xbt_assert(observer != nullptr);

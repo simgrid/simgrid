@@ -22,25 +22,50 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-void MutexImpl::lock(actor::ActorImpl* issuer)
+bool MutexAcquisitionImpl::test(actor::ActorImpl*)
 {
-  XBT_IN("(%p; %p)", this, issuer);
-  MC_CHECK_NO_DPOR();
+  return mutex_->owner_ == issuer_;
+}
+void MutexAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
+{
+  xbt_assert(mutex_->locked_); // it was locked either by someone else or by me during the lock_async
+  xbt_assert(
+      issuer == issuer_,
+      "Actors can only wait acquisitions that they created themselves while this one was created by actor id %ld.",
+      issuer_->get_pid());
+  xbt_assert(timeout < 0, "Timeouts on mutex acquisitions are not implemented yet.");
+
+  this->register_simcall(&issuer_->simcall_); // Block on that acquisition
+
+  if (mutex_->get_owner() == issuer_) { // I'm the owner
+    finish();
+  } else {
+    // Already in the queue
+  }
+}
+void MutexAcquisitionImpl::finish()
+{
+  xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
+  smx_simcall_t simcall = simcalls_.front();
+  simcalls_.pop_front();
+
+  simcall->issuer_->waiting_synchro_ = nullptr;
+  simcall->issuer_->simcall_answer();
+}
+
+MutexAcquisitionImplPtr MutexImpl::lock_async(actor::ActorImpl* issuer)
+{
+  auto res = MutexAcquisitionImplPtr(new kernel::activity::MutexAcquisitionImpl(issuer, this), true);
 
   if (locked_) {
     /* FIXME: check if the host is active ? */
     /* Somebody using the mutex, use a synchronization to get host failures */
-    RawImplPtr synchro(new SynchroImpl([this, issuer]() { this->remove_sleeping_actor(*issuer); }));
-    (*synchro).set_host(issuer->get_host()).start();
-    synchro->register_simcall(&issuer->simcall_);
-    sleeping_.push_back(*issuer);
+    sleeping_.push_back(res);
   } else {
-    /* mutex free */
     locked_ = true;
     owner_  = issuer;
-    issuer->simcall_answer();
   }
-  XBT_OUT();
+  return res;
 }
 
 /** Tries to lock the mutex for a actor
@@ -78,10 +103,13 @@ void MutexImpl::unlock(actor::ActorImpl* issuer)
 
   if (not sleeping_.empty()) {
     /* Give the ownership to the first waiting actor */
-    owner_ = &sleeping_.front();
+    auto acq = sleeping_.front();
+    owner_   = acq->get_issuer();
+
+    if (acq == owner_->waiting_synchro_)
+      acq->finish();
+
     sleeping_.pop_front();
-    owner_->waiting_synchro_ = nullptr;
-    owner_->simcall_answer();
   } else {
     /* nobody to wake up */
     locked_ = false;

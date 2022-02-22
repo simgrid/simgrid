@@ -138,10 +138,12 @@ namespace activity {
   using IoImplPtr = boost::intrusive_ptr<IoImpl>;
   class MutexImpl;
   using MutexImplPtr = boost::intrusive_ptr<MutexImpl>;
+  class MutexAcquisitionImpl;
+  using MutexAcquisitionImplPtr = boost::intrusive_ptr<MutexAcquisitionImpl>;
   XBT_PUBLIC void intrusive_ptr_add_ref(MutexImpl* mutex);
   XBT_PUBLIC void intrusive_ptr_release(MutexImpl* mutex);
   class SynchroImpl;
-  using RawImplPtr = boost::intrusive_ptr<SynchroImpl>;
+  using SynchroImplPtr = boost::intrusive_ptr<SynchroImpl>;
   class SemaphoreImpl;
   using SemaphoreImplPtr = boost::intrusive_ptr<SemaphoreImpl>;
   XBT_PUBLIC void intrusive_ptr_add_ref(SemaphoreImpl* sem);

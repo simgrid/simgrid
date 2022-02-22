@@ -89,30 +89,6 @@ public:
   bool depends(SimcallObserver* other) override;
 };
 
-class MutexSimcall : public SimcallObserver {
-  activity::MutexImpl* const mutex_;
-
-public:
-  MutexSimcall(ActorImpl* actor, activity::MutexImpl* mutex) : SimcallObserver(actor), mutex_(mutex) {}
-  activity::MutexImpl* get_mutex() const { return mutex_; }
-  bool depends(SimcallObserver* other) override;
-};
-
-class MutexUnlockSimcall : public MutexSimcall {
-  using MutexSimcall::MutexSimcall;
-};
-
-class MutexLockSimcall : public MutexSimcall {
-  const bool blocking_;
-
-public:
-  MutexLockSimcall(ActorImpl* actor, activity::MutexImpl* mutex, bool blocking = true)
-      : MutexSimcall(actor, mutex), blocking_(blocking)
-  {
-  }
-  bool is_enabled() override;
-};
-
 class ConditionWaitSimcall : public ResultingSimcall<bool> {
   activity::ConditionVariableImpl* const cond_;
   activity::MutexImpl* const mutex_;

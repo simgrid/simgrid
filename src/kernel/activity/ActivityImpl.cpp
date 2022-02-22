@@ -120,7 +120,7 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
       else
         comm->dst_timeout_ = sleep;
     } else {
-      RawImplPtr synchro(new SynchroImpl([this, issuer]() {
+      SynchroImplPtr synchro(new SynchroImpl([this, issuer]() {
         this->unregister_simcall(&issuer->simcall_);
         issuer->waiting_synchro_ = nullptr;
         issuer->exception_       = nullptr;

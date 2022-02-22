@@ -3,10 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/modelchecker.h>
 #include <simgrid/mutex.h>
 #include <simgrid/s4u/Mutex.hpp>
 #include <src/kernel/activity/MutexImpl.hpp>
-#include <src/kernel/actor/SimcallObserver.hpp>
+#include <src/kernel/actor/MutexObserver.hpp>
+#include <src/mc/mc_replay.hpp>
 
 namespace simgrid {
 namespace s4u {
@@ -15,8 +17,18 @@ namespace s4u {
 void Mutex::lock()
 {
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::MutexLockSimcall observer{issuer, pimpl_};
-  kernel::actor::simcall_blocking([&observer] { observer.get_mutex()->lock(observer.get_issuer()); }, &observer);
+
+  if (MC_is_active() || MC_record_replay_is_active()) { // Split in 2 simcalls for transition persistency
+    kernel::actor::MutexLockAsyncObserver lock_observer{issuer, pimpl_};
+    auto acquisition = kernel::actor::simcall([issuer, this] { return pimpl_->lock_async(issuer); }, &lock_observer);
+
+    kernel::actor::MutexLockWaitObserver wait_observer{issuer, acquisition};
+    kernel::actor::simcall_blocking([issuer, acquisition] { return acquisition->wait_for(issuer, -1); },
+                                    &wait_observer);
+
+  } else { // Do it in one simcall only
+    kernel::actor::simcall_blocking([issuer, this] { pimpl_->lock_async(issuer)->wait_for(issuer, -1); });
+  }
 }
 
 /** @brief Release the ownership of the mutex, unleashing a blocked actor (if any)
@@ -26,7 +38,7 @@ void Mutex::lock()
 void Mutex::unlock()
 {
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::MutexUnlockSimcall observer{issuer, pimpl_};
+  kernel::actor::MutexUnlockObserver observer{issuer, pimpl_};
   kernel::actor::simcall([this, issuer] { this->pimpl_->unlock(issuer); }, &observer);
 }
 
@@ -34,7 +46,7 @@ void Mutex::unlock()
 bool Mutex::try_lock()
 {
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::MutexLockSimcall observer{issuer, pimpl_, false};
+  kernel::actor::MutexTestObserver observer{issuer, pimpl_};
   return kernel::actor::simcall([&observer] { return observer.get_mutex()->try_lock(observer.get_issuer()); },
                                 &observer);
 }
