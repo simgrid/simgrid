@@ -77,7 +77,7 @@ Engine* Engine::get_instance(int* argc, char** argv)
   return Engine::instance_;
 }
 
-void Engine::shutdown()
+void Engine::shutdown() // XBT_ATTRIB_DEPRECATED_v335
 {
   delete Engine::instance_;
 }

@@ -42,7 +42,7 @@ public:
 #endif
 
   /** Finalize the default engine and all its dependencies */
-  void shutdown();
+  XBT_ATTRIB_DEPRECATED_v335("Users are not supposed to shutdown the Engine") void shutdown();
 
   /** Run the simulation until its end */
   void run() const;
