@@ -1,5 +1,6 @@
 #!/usr/bin/env tesh
 
+p Check different log thresholds
 $ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Test with the settings ''
 > [  0.000000] [0:maestro@] val=2
@@ -15,3 +16,86 @@ $ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > [  0.000000] [0:maestro@] false alarm!
 > [  0.000000] [0:maestro@] Test with the settings ' test.thres:critical '
 > [  0.000000] [0:maestro@] false alarm!
+
+p Check the "file" log appender
+$ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n" --log=root.app:file:${bindir:=.}/log_usage.log
+$ cat ${bindir:=.}/log_usage.log
+> [  0.000000] [0:maestro@] Test with the settings ''
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' '
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:info root.thres:info  '
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:verbose root.thres:error '
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:critical '
+> [  0.000000] [0:maestro@] false alarm!
+
+p Check the "rollfile" log appender
+$ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n" --log=root.app:rollfile:500:${bindir:=.}/log_usage.log
+$ cat ${bindir:=.}/log_usage.log
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:critical '
+> [  0.000000] [0:maestro@] false alarm!
+>
+> [End of log]
+>ttings ' '
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:info root.thres:info  '
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:verbose root.thres:error '
+> [  0.000000] [0:maestro@] val=2
+>
+>                    
+
+$ rm -f ${bindir:=.}/log_usage.log
+
+p Check the "splitfile" log appender
+$ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n" --log=root.app:splitfile:500:${bindir:=.}/log_usage_%.log
+$ cat ${bindir:=.}/log_usage_0.log
+> [  0.000000] [0:maestro@] Test with the settings ''
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' '
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:info root.thres:info  '
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:verbose root.thres:error '
+> [  0.000000] [0:maestro@] val=2
+
+$ cat ${bindir:=.}/log_usage_1.log
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:critical '
+> [  0.000000] [0:maestro@] false alarm!
+
+$ rm -f ${bindir:=.}/log_usage_0.log ${bindir:=.}/log_usage_1.log
+
+p Check the "splitfile" log appender without percent in template
+$ ${bindir:=.}/log_usage "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n" --log=root.app:splitfile:500:${bindir:=.}/log_usage.log.
+$ cat ${bindir:=.}/log_usage.log.0
+> [  0.000000] [0:maestro@] Test with the settings ''
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' '
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:info root.thres:info  '
+> [  0.000000] [0:maestro@] val=2
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:verbose root.thres:error '
+> [  0.000000] [0:maestro@] val=2
+
+$ cat ${bindir:=.}/log_usage.log.1
+> [  0.000000] [0:maestro@] false alarm!
+> [  0.000000] [0:maestro@] Test with the settings ' test.thres:critical '
+> [  0.000000] [0:maestro@] false alarm!
+
+$ rm -f ${bindir:=.}/log_usage.log.0 ${bindir:=.}/log_usage.log.1

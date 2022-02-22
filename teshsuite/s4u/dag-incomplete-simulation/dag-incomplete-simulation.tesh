@@ -1,5 +1,5 @@
 ! output sort
-$ ./dag-incomplete-simulation ${platfdir}/two_hosts_platform_shared.xml "--log=root.fmt:[%10.6r]%e%m%n" --log=s4u_activity.t:debug
+$ ./dag-incomplete-simulation ${platfdir}/two_hosts_platform_shared.xml "--log=root.fmt:[%10.6r]%e%m%n" --log=s4u_activity.t:verbose
 > [  0.000000] 'A' is assigned to a resource and all dependencies are solved. Let's start
 > [  0.000000] 'Init' is assigned to a resource and all dependencies are solved. Let's start
 > [  0.000000] Remove a dependency from 'Init' on 'A'
