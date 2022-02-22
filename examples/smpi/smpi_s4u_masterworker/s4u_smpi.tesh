@@ -3,42 +3,42 @@ p Test the use of SMPI+MSG in the same file, as well as several different SMPI i
 $ ./masterworker_mailbox_smpi ${srcdir:=.}/../../platforms/small_platform_with_routers.xml ${srcdir:=.}/deployment_masterworker_mailbox_smpi.xml --log=smpi.:info --cfg=smpi/simulate-computation:no
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/simulate-computation' to 'no'
 > [0.000000] [smpi_config/INFO] You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/host-speed:<flops>" to set its value.  Check https://simgrid.org/doc/latest/Configuring_SimGrid.html#automatic-benchmarking-of-smpi-code for more information.
-> [Ginette:master_mpi:(4) 0.000000] [smpi_masterworkers/INFO] here for rank 0
-> [Bourassa:master_mpi:(5) 0.000000] [smpi_masterworkers/INFO] here for rank 1
-> [Ginette:alltoall_mpi:(6) 0.000000] [smpi_masterworkers/INFO] alltoall for rank 0
+> [11.586581] [smpi_masterworkers/INFO] Simulation time 11.5866
 > [Bourassa:alltoall_mpi:(7) 0.000000] [smpi_masterworkers/INFO] alltoall for rank 1
-> [Jupiter:alltoall_mpi:(8) 0.000000] [smpi_masterworkers/INFO] alltoall for rank 2
+> [Bourassa:alltoall_mpi:(7) 0.047272] [smpi_masterworkers/INFO] after alltoall 1
+> [Bourassa:master_mpi:(5) 0.000000] [smpi_masterworkers/INFO] here for rank 1
+> [Bourassa:master_mpi:(5) 0.017245] [smpi_masterworkers/INFO] After comm 1
+> [Bourassa:master_mpi:(5) 0.017245] [smpi_masterworkers/INFO] After finalize 1 0
 > [Fafard:alltoall_mpi:(9) 0.000000] [smpi_masterworkers/INFO] alltoall for rank 3
-> [Tremblay:master:(1) 0.000000] [smpi_masterworkers/INFO] Got 2 workers and 20 tasks to process
-> [Tremblay:master:(1) 0.000000] [smpi_masterworkers/INFO] Sending task 0 of 20 to mailbox 'Ginette'
+> [Fafard:alltoall_mpi:(9) 0.047582] [smpi_masterworkers/INFO] after alltoall 3
+> [Ginette:alltoall_mpi:(6) 0.000000] [smpi_masterworkers/INFO] alltoall for rank 0
+> [Ginette:alltoall_mpi:(6) 0.037258] [smpi_masterworkers/INFO] after alltoall 0
 > [Ginette:master_mpi:(4) 0.000000] [smpi_masterworkers/INFO] After comm 0
 > [Ginette:master_mpi:(4) 0.000000] [smpi_masterworkers/INFO] After finalize 0 0
-> [Bourassa:master_mpi:(5) 0.016871] [smpi_masterworkers/INFO] After comm 1
-> [Bourassa:master_mpi:(5) 0.016871] [smpi_masterworkers/INFO] After finalize 1 0
-> [Ginette:alltoall_mpi:(6) 0.100236] [smpi_masterworkers/INFO] after alltoall 0
-> [Fafard:alltoall_mpi:(9) 0.100642] [smpi_masterworkers/INFO] after alltoall 3
-> [Tremblay:master:(1) 0.125471] [smpi_masterworkers/INFO] Sending task 1 of 20 to mailbox 'Jupiter'
-> [Bourassa:alltoall_mpi:(7) 0.129102] [smpi_masterworkers/INFO] after alltoall 1
-> [Jupiter:alltoall_mpi:(8) 0.129378] [smpi_masterworkers/INFO] after alltoall 2
-> [Tremblay:master:(1) 0.294626] [smpi_masterworkers/INFO] Sending task 2 of 20 to mailbox 'Ginette'
-> [Tremblay:master:(1) 1.280301] [smpi_masterworkers/INFO] Sending task 3 of 20 to mailbox 'Jupiter'
-> [Tremblay:master:(1) 1.449456] [smpi_masterworkers/INFO] Sending task 4 of 20 to mailbox 'Ginette'
-> [Tremblay:master:(1) 2.435131] [smpi_masterworkers/INFO] Sending task 5 of 20 to mailbox 'Jupiter'
-> [Tremblay:master:(1) 2.604286] [smpi_masterworkers/INFO] Sending task 6 of 20 to mailbox 'Ginette'
-> [Tremblay:master:(1) 3.589961] [smpi_masterworkers/INFO] Sending task 7 of 20 to mailbox 'Jupiter'
-> [Tremblay:master:(1) 3.759116] [smpi_masterworkers/INFO] Sending task 8 of 20 to mailbox 'Ginette'
-> [Tremblay:master:(1) 4.744791] [smpi_masterworkers/INFO] Sending task 9 of 20 to mailbox 'Jupiter'
-> [Tremblay:master:(1) 4.913945] [smpi_masterworkers/INFO] Sending task 10 of 20 to mailbox 'Ginette'
-> [Tremblay:master:(1) 5.899621] [smpi_masterworkers/INFO] Sending task 11 of 20 to mailbox 'Jupiter'
-> [Tremblay:master:(1) 6.068775] [smpi_masterworkers/INFO] Sending task 12 of 20 to mailbox 'Ginette'
-> [Tremblay:master:(1) 7.054451] [smpi_masterworkers/INFO] Sending task 13 of 20 to mailbox 'Jupiter'
-> [Tremblay:master:(1) 7.223605] [smpi_masterworkers/INFO] Sending task 14 of 20 to mailbox 'Ginette'
-> [Tremblay:master:(1) 8.209280] [smpi_masterworkers/INFO] Sending task 15 of 20 to mailbox 'Jupiter'
-> [Tremblay:master:(1) 8.378435] [smpi_masterworkers/INFO] Sending task 16 of 20 to mailbox 'Ginette'
-> [Tremblay:master:(1) 9.364110] [smpi_masterworkers/INFO] Sending task 17 of 20 to mailbox 'Jupiter'
-> [Tremblay:master:(1) 9.533265] [smpi_masterworkers/INFO] Sending task 18 of 20 to mailbox 'Ginette'
-> [Tremblay:master:(1) 10.518940] [smpi_masterworkers/INFO] Sending task 19 of 20 to mailbox 'Jupiter'
-> [Tremblay:master:(1) 10.688095] [smpi_masterworkers/INFO] All tasks have been dispatched. Request all workers to stop.
-> [Ginette:worker:(2) 11.566591] [smpi_masterworkers/INFO] Exiting now.
-> [Jupiter:worker:(3) 11.585605] [smpi_masterworkers/INFO] Exiting now.
-> [11.585605] [smpi_masterworkers/INFO] Simulation time 11.5856
+> [Ginette:master_mpi:(4) 0.000000] [smpi_masterworkers/INFO] here for rank 0
+> [Ginette:worker:(2) 11.567566] [smpi_masterworkers/INFO] Exiting now.
+> [Jupiter:alltoall_mpi:(8) 0.000000] [smpi_masterworkers/INFO] alltoall for rank 2
+> [Jupiter:alltoall_mpi:(8) 0.047582] [smpi_masterworkers/INFO] after alltoall 2
+> [Jupiter:worker:(3) 11.586581] [smpi_masterworkers/INFO] Exiting now.
+> [Tremblay:master:(1) 0.000000] [smpi_masterworkers/INFO] Got 2 workers and 20 tasks to process
+> [Tremblay:master:(1) 0.000000] [smpi_masterworkers/INFO] Sending task 0 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 0.126447] [smpi_masterworkers/INFO] Sending task 1 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 0.295602] [smpi_masterworkers/INFO] Sending task 2 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 1.281277] [smpi_masterworkers/INFO] Sending task 3 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 1.450431] [smpi_masterworkers/INFO] Sending task 4 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 10.519916] [smpi_masterworkers/INFO] Sending task 19 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 10.689071] [smpi_masterworkers/INFO] All tasks have been dispatched. Request all workers to stop.
+> [Tremblay:master:(1) 2.436107] [smpi_masterworkers/INFO] Sending task 5 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 2.605261] [smpi_masterworkers/INFO] Sending task 6 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 3.590937] [smpi_masterworkers/INFO] Sending task 7 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 3.760091] [smpi_masterworkers/INFO] Sending task 8 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 4.745767] [smpi_masterworkers/INFO] Sending task 9 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 4.914921] [smpi_masterworkers/INFO] Sending task 10 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 5.900596] [smpi_masterworkers/INFO] Sending task 11 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 6.069751] [smpi_masterworkers/INFO] Sending task 12 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 7.055426] [smpi_masterworkers/INFO] Sending task 13 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 7.224581] [smpi_masterworkers/INFO] Sending task 14 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 8.210256] [smpi_masterworkers/INFO] Sending task 15 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 8.379411] [smpi_masterworkers/INFO] Sending task 16 of 20 to mailbox 'Ginette'
+> [Tremblay:master:(1) 9.365086] [smpi_masterworkers/INFO] Sending task 17 of 20 to mailbox 'Jupiter'
+> [Tremblay:master:(1) 9.534241] [smpi_masterworkers/INFO] Sending task 18 of 20 to mailbox 'Ginette'
