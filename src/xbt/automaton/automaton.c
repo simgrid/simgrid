@@ -33,8 +33,8 @@ xbt_automaton_state_t xbt_automaton_state_new(const_xbt_automaton_t a, int type,
   xbt_automaton_state_t state = xbt_new0(struct xbt_automaton_state, 1);
   state->type = type;
   state->id = xbt_strdup(id);
-  state->in = xbt_dynar_new(sizeof(xbt_automaton_transition_t), xbt_automaton_transition_free_voidp);
-  state->out = xbt_dynar_new(sizeof(xbt_automaton_transition_t), xbt_automaton_transition_free_voidp);
+  state->in                   = xbt_dynar_new(sizeof(xbt_automaton_transition_t), NULL);
+  state->out                  = xbt_dynar_new(sizeof(xbt_automaton_transition_t), NULL);
   xbt_dynar_push(a->states, &state);
   return state;
 }
@@ -346,12 +346,12 @@ static void xbt_automaton_exp_label_free(xbt_automaton_exp_label_t e);
 static void xbt_automaton_propositional_symbol_free(xbt_automaton_propositional_symbol_t ps);
 
 void xbt_automaton_state_free(xbt_automaton_state_t s){
-  if (s != NULL) {
-    xbt_free(s->id);
-    xbt_dynar_free(&(s->in));
-    xbt_dynar_free(&(s->out));
-    xbt_free(s);
-  }
+  if (s == NULL)
+    return;
+  xbt_free(s->id);
+  xbt_dynar_free(&(s->in));
+  xbt_dynar_free(&(s->out));
+  xbt_free(s);
 }
 
 void xbt_automaton_state_free_voidp(void *s){
@@ -359,11 +359,10 @@ void xbt_automaton_state_free_voidp(void *s){
 }
 
 static void xbt_automaton_transition_free(xbt_automaton_transition_t t){
-  if(t){
-    xbt_automaton_exp_label_free(t->label);
-    xbt_free(t);
-    t = NULL;
-  }
+  if (t == NULL)
+    return;
+  xbt_automaton_exp_label_free(t->label);
+  xbt_free(t);
 }
 
 void xbt_automaton_transition_free_voidp(void *t){
@@ -371,8 +370,9 @@ void xbt_automaton_transition_free_voidp(void *t){
 }
 
 static void xbt_automaton_exp_label_free(xbt_automaton_exp_label_t e){
-  if(e){
-    switch(e->type){
+  if (e == NULL)
+    return;
+  switch (e->type) {
     case AUT_OR:
     case AUT_AND:
       xbt_automaton_exp_label_free(e->u.or_and.left_exp);
@@ -386,10 +386,8 @@ static void xbt_automaton_exp_label_free(xbt_automaton_exp_label_t e){
       break;
     default:
       break;
-    }
-    xbt_free(e);
-    e = NULL;
   }
+  xbt_free(e);
 }
 
 void xbt_automaton_exp_label_free_voidp(void *e){
@@ -397,27 +395,23 @@ void xbt_automaton_exp_label_free_voidp(void *e){
 }
 
 static void xbt_automaton_propositional_symbol_free(xbt_automaton_propositional_symbol_t ps){
-  if(ps){
-    xbt_free(ps->pred);
-    xbt_free(ps);
-    ps = NULL;
-  }
+  if (ps == NULL)
+    return;
+  if (ps->free_function)
+    ps->free_function(ps->data);
+  xbt_free(ps->pred);
+  xbt_free(ps);
 }
 
 void xbt_automaton_propositional_symbol_free_voidp(void *ps){
-  xbt_automaton_propositional_symbol_t symbol = (xbt_automaton_propositional_symbol_t) * (void **) ps;
-  if (symbol->free_function)
-    symbol->free_function(symbol->data);
-  xbt_automaton_propositional_symbol_free(symbol);
+  xbt_automaton_propositional_symbol_free((xbt_automaton_propositional_symbol_t) * (void**)ps);
 }
 
 void xbt_automaton_free(xbt_automaton_t a){
-  if(a){
-    xbt_dynar_free(&(a->propositional_symbols));
-    xbt_dynar_free(&(a->transitions));
-    xbt_dynar_free(&(a->states));
-    xbt_automaton_state_free(a->current_state);
-    xbt_free(a);
-    a = NULL;
-  }
+  if (a == NULL)
+    return;
+  xbt_dynar_free(&(a->propositional_symbols));
+  xbt_dynar_free(&(a->transitions));
+  xbt_dynar_free(&(a->states));
+  xbt_free(a);
 }
