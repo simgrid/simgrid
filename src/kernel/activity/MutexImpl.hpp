@@ -65,7 +65,6 @@ public:
 class XBT_PUBLIC MutexImpl {
   std::atomic_int_fast32_t refcount_{1};
   s4u::Mutex piface_;
-  bool locked_ = false;
   actor::ActorImpl* owner_ = nullptr;
   // List of sleeping actors:
   std::deque<MutexAcquisitionImplPtr> sleeping_;
@@ -80,7 +79,6 @@ public:
   MutexAcquisitionImplPtr lock_async(actor::ActorImpl* issuer);
   bool try_lock(actor::ActorImpl* issuer);
   void unlock(actor::ActorImpl* issuer);
-  bool is_locked() const { return locked_; }
 
   MutexImpl* ref();
   void unref();

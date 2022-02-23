@@ -4,6 +4,7 @@ MC:
  - Rework the internals, for simpler and modern code. This shall unlock many future improvements.
  - You can now define plugins onto SafetyChecker (a simple DFS explorer), using the declared signals.
    See CommunicationDeterminism for an example.
+ - Seems to work on Arm64 architectures too.
 
 SMPI:
  - fix for FG#100 by ensuring small asynchronous messages never overtake larger

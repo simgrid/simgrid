@@ -28,7 +28,7 @@ bool MutexAcquisitionImpl::test(actor::ActorImpl*)
 }
 void MutexAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 {
-  xbt_assert(mutex_->locked_); // it was locked either by someone else or by me during the lock_async
+  xbt_assert(mutex_->owner_ != nullptr); // it was locked either by someone else or by me during the lock_async
   xbt_assert(
       issuer == issuer_,
       "Actors can only wait acquisitions that they created themselves while this one was created by actor id %ld.",
@@ -57,12 +57,11 @@ MutexAcquisitionImplPtr MutexImpl::lock_async(actor::ActorImpl* issuer)
 {
   auto res = MutexAcquisitionImplPtr(new kernel::activity::MutexAcquisitionImpl(issuer, this), true);
 
-  if (locked_) {
+  if (owner_ != nullptr) {
     /* FIXME: check if the host is active ? */
     /* Somebody using the mutex, use a synchronization to get host failures */
     sleeping_.push_back(res);
   } else {
-    locked_ = true;
     owner_  = issuer;
   }
   return res;
@@ -77,12 +76,11 @@ bool MutexImpl::try_lock(actor::ActorImpl* issuer)
 {
   XBT_IN("(%p, %p)", this, issuer);
   MC_CHECK_NO_DPOR();
-  if (locked_) {
+  if (owner_ != nullptr) {
     XBT_OUT();
     return false;
   }
 
-  locked_ = true;
   owner_  = issuer;
   XBT_OUT();
   return true;
@@ -97,9 +95,8 @@ bool MutexImpl::try_lock(actor::ActorImpl* issuer)
 void MutexImpl::unlock(actor::ActorImpl* issuer)
 {
   XBT_IN("(%p, %p)", this, issuer);
-  xbt_assert(locked_, "Cannot release that mutex: it was not locked.");
-  xbt_assert(issuer == owner_, "Cannot release that mutex: it was locked by %s (pid:%ld), not by you.",
-             owner_->get_cname(), owner_->get_pid());
+  xbt_assert(issuer == owner_, "Cannot release that mutex: you're not the owner. %s is (pid:%ld).",
+             owner_ != nullptr ? owner_->get_cname() : "(nobody)", owner_ != nullptr ? owner_->get_pid() : -1);
 
   if (not sleeping_.empty()) {
     /* Give the ownership to the first waiting actor */
@@ -112,7 +109,6 @@ void MutexImpl::unlock(actor::ActorImpl* issuer)
     sleeping_.pop_front();
   } else {
     /* nobody to wake up */
-    locked_ = false;
     owner_  = nullptr;
   }
   XBT_OUT();

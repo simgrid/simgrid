@@ -233,7 +233,8 @@ void SafetyChecker::backtrack()
     if (state->count_todo() && stack_.size() < (std::size_t)_sg_mc_max_depth) {
       /* We found a back-tracking point, let's loop */
       XBT_DEBUG("Back-tracking to state %ld at depth %zu", state->num_, stack_.size() + 1);
-      stack_.push_back(std::move(state));
+      stack_.push_back(
+          std::move(state)); // Put it back on the stack from which it was removed earlier in this while loop
       this->restore_state();
       XBT_DEBUG("Back-tracking to state %ld at depth %zu done", stack_.back()->num_, stack_.size());
       break;
@@ -259,7 +260,7 @@ void SafetyChecker::restore_state()
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
   for (std::unique_ptr<State> const& state : stack_) {
-    if (state == stack_.back()) // If we are arrived on the target state, don't replay the outgoing transition *.
+    if (state == stack_.back()) /* If we are arrived on the target state, don't replay the outgoing transition */
       break;
     state->get_transition()->replay();
     on_transition_replay_signal(state->get_transition());
