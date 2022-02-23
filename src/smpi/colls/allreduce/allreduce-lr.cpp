@@ -38,7 +38,7 @@ int allreduce__lr(const void *sbuf, void *rbuf, int rcount,
 
   if (rcount < size) {
     XBT_INFO("MPI_allreduce_lr: communication size smaller than number of process, use default MPI_allreduce.");
-    allreduce__default(sbuf, rbuf, rcount, dtype, op, comm);
+    allreduce__redbcast(sbuf, rbuf, rcount, dtype, op, comm);
     return MPI_SUCCESS;
   }
 
