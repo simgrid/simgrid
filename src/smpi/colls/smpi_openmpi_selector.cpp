@@ -30,8 +30,8 @@ int allreduce__ompi(const void *sbuf, void *rbuf, int count,
     int communicator_size = comm->size();
     int alg = 1;
     int(*funcs[]) (const void*, void*, int, MPI_Datatype, MPI_Op, MPI_Comm)={
-        &allreduce__lr,
-        &allreduce__lr,
+        &allreduce__redbcast,
+        &allreduce__redbcast,
         &allreduce__rdb,
         &allreduce__lr,
         &allreduce__ompi_ring_segmented,
