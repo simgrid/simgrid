@@ -13,6 +13,7 @@
 #include "src/mc/transition/TransitionAny.hpp"
 #include "src/mc/transition/TransitionComm.hpp"
 #include "src/mc/transition/TransitionRandom.hpp"
+#include "src/mc/transition/TransitionSynchro.hpp"
 #endif
 
 #include <sstream>
@@ -78,6 +79,13 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, std::stri
 
     case Transition::Type::RANDOM:
       return new RandomTransition(issuer, times_considered, stream);
+
+    case Transition::Type::MUTEX_TRYLOCK:
+    case Transition::Type::MUTEX_LOCK:
+    case Transition::Type::MUTEX_TEST:
+    case Transition::Type::MUTEX_WAIT:
+    case Transition::Type::MUTEX_UNLOCK:
+      return new MutexTransition(issuer, times_considered, simcall, stream);
 
     case Transition::Type::UNKNOWN:
       return new Transition(Transition::Type::UNKNOWN, issuer, times_considered);

@@ -42,21 +42,21 @@ bool MutexSimcall::depends(SimcallObserver* other)
 }
 #endif
 
-MutexObserver::MutexObserver(ActorImpl* actor, activity::MutexImpl* mutex) : SimcallObserver(actor), mutex_(mutex) {}
-MutexTestObserver::MutexTestObserver(ActorImpl* actor, activity::MutexImpl* mutex) : MutexObserver(actor, mutex) {}
-
-MutexLockAsyncObserver::MutexLockAsyncObserver(ActorImpl* actor, activity::MutexImpl* mutex)
-    : MutexObserver(actor, mutex)
-{
-}
-MutexLockWaitObserver::MutexLockWaitObserver(ActorImpl* actor, activity::MutexAcquisitionImplPtr synchro)
-    : MutexObserver(actor, synchro->get_mutex().get()), synchro_(synchro)
+MutexObserver::MutexObserver(ActorImpl* actor, mc::Transition::Type type, activity::MutexImpl* mutex)
+    : SimcallObserver(actor), type_(type), mutex_(mutex)
 {
 }
 
-bool MutexLockWaitObserver::is_enabled()
+void MutexObserver::serialize(std::stringstream& stream) const
 {
-  return synchro_->test();
+  auto* owner = get_mutex()->get_owner();
+  stream << (short)type_ << ' ' << (uintptr_t)get_mutex() << ' ' << (owner != nullptr ? owner->get_pid() : -1);
+}
+
+bool MutexObserver::is_enabled()
+{
+  // Only wait can be disabled
+  return type_ != mc::Transition::Type::MUTEX_WAIT || mutex_->get_owner() == get_issuer();
 }
 
 } // namespace actor

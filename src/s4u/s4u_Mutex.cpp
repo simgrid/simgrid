@@ -19,10 +19,10 @@ void Mutex::lock()
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
 
   if (MC_is_active() || MC_record_replay_is_active()) { // Split in 2 simcalls for transition persistency
-    kernel::actor::MutexLockAsyncObserver lock_observer{issuer, pimpl_};
+    kernel::actor::MutexObserver lock_observer{issuer, mc::Transition::Type::MUTEX_LOCK, pimpl_};
     auto acquisition = kernel::actor::simcall([issuer, this] { return pimpl_->lock_async(issuer); }, &lock_observer);
 
-    kernel::actor::MutexLockWaitObserver wait_observer{issuer, acquisition};
+    kernel::actor::MutexObserver wait_observer{issuer, mc::Transition::Type::MUTEX_WAIT, pimpl_};
     kernel::actor::simcall_blocking([issuer, acquisition] { return acquisition->wait_for(issuer, -1); },
                                     &wait_observer);
 
@@ -38,7 +38,7 @@ void Mutex::lock()
 void Mutex::unlock()
 {
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::MutexUnlockObserver observer{issuer, pimpl_};
+  kernel::actor::MutexObserver observer{issuer, mc::Transition::Type::MUTEX_UNLOCK, pimpl_};
   kernel::actor::simcall([this, issuer] { this->pimpl_->unlock(issuer); }, &observer);
 }
 
@@ -46,7 +46,7 @@ void Mutex::unlock()
 bool Mutex::try_lock()
 {
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::MutexTestObserver observer{issuer, pimpl_};
+  kernel::actor::MutexObserver observer{issuer, mc::Transition::Type::MUTEX_TRYLOCK, pimpl_};
   return kernel::actor::simcall([&observer] { return observer.get_mutex()->try_lock(observer.get_issuer()); },
                                 &observer);
 }

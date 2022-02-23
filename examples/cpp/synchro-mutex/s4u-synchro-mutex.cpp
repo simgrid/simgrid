@@ -3,10 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <mutex> /* std::mutex and std::lock_guard */
 #include "simgrid/s4u.hpp" /* All of S4U */
+#include "simgrid/modelchecker.h" // This example is also used to test the modelchecker on mutexes
 
-constexpr int NB_ACTOR = 6;
+#include <mutex> /* std::mutex and std::lock_guard */
+
+int NB_ACTOR = 6;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 
@@ -62,6 +64,10 @@ static void master()
 int main(int argc, char **argv)
 {
   simgrid::s4u::Engine e(&argc, argv);
+
+  if (MC_is_active()) // Reduce the size of that test when running in the model-checker
+    NB_ACTOR = 2;
+
   e.load_platform("../../platforms/two_hosts.xml");
   simgrid::s4u::Actor::create("main", e.host_by_name("Tremblay"), master);
   e.run();

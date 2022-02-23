@@ -4,6 +4,7 @@ MC:
  - Rework the internals, for simpler and modern code. This shall unlock many future improvements.
  - You can now define plugins onto SafetyChecker (a simple DFS explorer), using the declared signals.
    See CommunicationDeterminism for an example.
+ - Support mutex in DPOR reduction
  - Seems to work on Arm64 architectures too.
 
 SMPI:
@@ -22,6 +23,7 @@ Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GH: issues on GitHub)
  - FG#100: [SMPI] Order of the message matching is not guaranteed
  - FG#101: LGPL 2.1 is deprecated license
+ - GH#151: Missing mutexes for DPOR.
 
 ----------------------------------------------------------------------------
 

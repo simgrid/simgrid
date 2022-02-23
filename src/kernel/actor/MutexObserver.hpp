@@ -17,36 +17,17 @@ namespace simgrid {
 namespace kernel {
 namespace actor {
 
-/* abstract */
+/* All the observers of Mutex transitions are very similar, so implement them all together in this class */
 class MutexObserver : public SimcallObserver {
-  activity::MutexImpl* const mutex_;
+  mc::Transition::Type type_;
+  activity::MutexImpl* const mutex_ = nullptr;
 
 public:
-  MutexObserver(ActorImpl* actor, activity::MutexImpl* mutex);
-  virtual ~MutexObserver() = default;
+  MutexObserver(ActorImpl* actor, mc::Transition::Type type, activity::MutexImpl* mutex);
+
+  void serialize(std::stringstream& stream) const override;
   activity::MutexImpl* get_mutex() const { return mutex_; }
-};
-
-class MutexTestObserver : public MutexObserver {
-public:
-  MutexTestObserver(ActorImpl* actor, activity::MutexImpl* mutex);
-};
-
-class MutexLockAsyncObserver : public MutexObserver {
-public:
-  MutexLockAsyncObserver(ActorImpl* actor, activity::MutexImpl* mutex);
-};
-
-class MutexLockWaitObserver : public MutexObserver {
-  activity::MutexAcquisitionImplPtr synchro_;
-
-public:
-  MutexLockWaitObserver(ActorImpl* actor, activity::MutexAcquisitionImplPtr synchro);
   bool is_enabled() override;
-};
-
-class MutexUnlockObserver : public MutexObserver {
-  using MutexObserver::MutexObserver;
 };
 
 } // namespace actor

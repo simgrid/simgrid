@@ -638,6 +638,8 @@ set(MC_SRC
   src/mc/transition/TransitionComm.hpp
   src/mc/transition/TransitionRandom.cpp
   src/mc/transition/TransitionRandom.hpp
+  src/mc/transition/TransitionSynchro.cpp
+  src/mc/transition/TransitionSynchro.hpp
   src/mc/udpor_global.cpp
   src/mc/udpor_global.hpp
   )

@@ -1,8 +1,7 @@
-/* Copyright (c) 2010-2022. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2022. The SimGrid Team. All rights reserved.            */
 
 /* This program is free software; you can redistribute it and/or modify it
- * under the terms of the license (GNU LGPL) which comes with this package. */
+ * under the terms of the license (GNU LGPL) which comes with this package.   */
 
 /***************** Centralized Mutual Exclusion Algorithm *********************/
 /* This example implements a centralized mutual exclusion algorithm.          */

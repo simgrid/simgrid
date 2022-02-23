@@ -2420,6 +2420,8 @@ include src/mc/transition/TransitionComm.cpp
 include src/mc/transition/TransitionComm.hpp
 include src/mc/transition/TransitionRandom.cpp
 include src/mc/transition/TransitionRandom.hpp
+include src/mc/transition/TransitionSynchro.cpp
+include src/mc/transition/TransitionSynchro.hpp
 include src/mc/udpor_global.cpp
 include src/mc/udpor_global.hpp
 include src/msg/msg_comm.cpp

@@ -32,7 +32,10 @@ class Transition {
 
 public:
   /* Ordering is important here. depends() implementations only consider subsequent types in this ordering */
-  XBT_DECLARE_ENUM_CLASS(Type, RANDOM, TESTANY, WAITANY, COMM_RECV, COMM_SEND, COMM_TEST, COMM_WAIT,
+  XBT_DECLARE_ENUM_CLASS(Type, RANDOM,     /* First because indep with anybody */
+                         TESTANY, WAITANY, /* high priority because they can rewrite themselves to *_WAIT */
+                         COMM_RECV, COMM_SEND, COMM_TEST, COMM_WAIT, /* Alphabetical ordering of COMM_* */
+                         MUTEX_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT, /* alphabetical */
                          /* UNKNOWN must be last */ UNKNOWN);
   Type type_ = Type::UNKNOWN;
 
