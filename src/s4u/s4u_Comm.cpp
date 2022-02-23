@@ -46,6 +46,7 @@ ssize_t Comm::wait_any_for(const std::vector<CommPtr>& comms, double timeout)
   try {
     changed_pos = Activity::wait_any_for(activities, timeout);
   } catch (const NetworkFailureException& e) {
+    changed_pos = -1;
     for (auto c : comms) {
       if (c->pimpl_->get_state() == kernel::activity::State::FAILED) {
         c->complete(State::FAILED);
