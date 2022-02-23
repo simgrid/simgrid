@@ -12,6 +12,7 @@ SMPI:
    their handles.
  - tracing: ensure that we dump the TI traces continuously during execution and
    not just at the end, reducing memory cost and performance hit.
+ - Update OpenMPI collectives selection logic to match current one (4.1.2)
 
 XBT:
  - Drop xbt_dynar_shrink().
