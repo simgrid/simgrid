@@ -22,7 +22,8 @@ private:
   void bottleneck_solve();
   void set_matrix_A();
   void set_vector_C();
-  std::unordered_map<int, std::vector<int>> get_alloc(const Eigen::VectorXd& fair_sharing) const;
+  std::unordered_map<int, std::vector<int>> get_alloc(const Eigen::VectorXd& fair_sharing, bool initial) const;
+  double get_resource_capacity(int resource, const std::vector<int>& bounded_players) const;
   Eigen::VectorXd equilibrium(const std::unordered_map<int, std::vector<int>>& alloc) const;
 
   void set_fair_sharing(const std::unordered_map<int, std::vector<int>>& alloc, const Eigen::VectorXd& rho,
@@ -49,6 +50,7 @@ private:
   std::unordered_map<int, Variable*> idx2Var_;
   Eigen::VectorXd C_;
   std::unordered_map<const Constraint*, int> cnst2idx_;
+  static constexpr int NO_RESOURCE = -1; //!< flag to indicate player has selected no resource
 };
 
 } // namespace lmm

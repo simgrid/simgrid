@@ -54,18 +54,19 @@ void simgrid::kernel::lmm::BmfSystem::set_vector_C()
 }
 
 std::unordered_map<int, std::vector<int>>
-simgrid::kernel::lmm::BmfSystem::get_alloc(const Eigen::VectorXd& fair_sharing) const
+simgrid::kernel::lmm::BmfSystem::get_alloc(const Eigen::VectorXd& fair_sharing, bool initial) const
 {
   std::unordered_map<int, std::vector<int>> alloc;
   for (int player_idx = 0; player_idx < A_.cols(); player_idx++) {
-    int selected_resource = -1;
-    double min_share      = 0;
+    int selected_resource = NO_RESOURCE;
+    double bound          = idx2Var_.at(player_idx)->get_bound();
+    double min_share      = (bound <= 0 || initial) ? -1 : bound;
     for (int cnst_idx = 0; cnst_idx < A_.rows(); cnst_idx++) {
       if (A_(cnst_idx, player_idx) <= 0.0)
         continue;
 
       double share = fair_sharing[cnst_idx] / A_(cnst_idx, player_idx);
-      if (selected_resource == -1 || double_positive(min_share - share, sg_maxmin_precision)) {
+      if (min_share == -1 || double_positive(min_share - share, sg_maxmin_precision)) {
         selected_resource = cnst_idx;
         min_share         = share;
       }
@@ -122,6 +123,16 @@ std::string simgrid::kernel::lmm::BmfSystem::debug_alloc(const std::unordered_ma
   return debug.str();
 }
 
+double simgrid::kernel::lmm::BmfSystem::get_resource_capacity(int resource,
+                                                              const std::vector<int>& bounded_players) const
+{
+  double capacity = C_[resource];
+  for (int p : bounded_players) {
+    capacity -= A_(resource, p) * idx2Var_.at(p)->get_bound();
+  }
+  return capacity;
+}
+
 Eigen::VectorXd
 simgrid::kernel::lmm::BmfSystem::equilibrium(const std::unordered_map<int, std::vector<int>>& alloc) const
 {
@@ -133,11 +144,16 @@ simgrid::kernel::lmm::BmfSystem::equilibrium(const std::unordered_map<int, std::
   // if so, they must have a fair sharing of this resource, adjust A_p and C_p accordingly
   int last_row = n_players - 1;
   int first_row = 0;
+  std::vector<int> bounded_players;
   for (const auto& e : alloc) {
     // add one row for the resource with A[r,]
     int cur_resource   = e.first;
+    if (cur_resource == NO_RESOURCE) {
+      bounded_players.insert(bounded_players.end(), e.second.begin(), e.second.end());
+      continue;
+    }
     A_p.row(first_row) = A_.row(cur_resource);
-    C_p[first_row]     = C_[cur_resource];
+    C_p[first_row]     = get_resource_capacity(cur_resource, bounded_players);
     first_row++;
     if (e.second.size() > 1) {
       int i = e.second[0];                                 // first player
@@ -151,11 +167,19 @@ simgrid::kernel::lmm::BmfSystem::equilibrium(const std::unordered_map<int, std::
       }
     }
   }
+  /* clear players which are externally bounded */
+  for (int p : bounded_players) {
+    A_p.col(p).setZero();
+  }
 
   XBT_DEBUG("A':\n%s", debug_eigen(A_p).c_str());
 
   XBT_DEBUG("C':\n%s", debug_eigen(C_p).c_str());
-  return Eigen::FullPivLU<Eigen::MatrixXd>(A_p).solve(C_p);
+  Eigen::VectorXd rho = Eigen::FullPivLU<Eigen::MatrixXd>(A_p).solve(C_p);
+  for (int p : bounded_players) {
+    rho[p] = idx2Var_.at(p)->get_bound();
+  }
+  return rho;
 }
 
 bool simgrid::kernel::lmm::BmfSystem::is_bmf(const Eigen::VectorXd& rho) const
@@ -167,9 +191,6 @@ bool simgrid::kernel::lmm::BmfSystem::is_bmf(const Eigen::VectorXd& rho) const
   bmf                       = bmf && (not std::any_of(remaining.data(), remaining.data() + remaining.size(),
                                 [](double v) { return double_positive(v, sg_maxmin_precision); }));
 
-  // 2) at least 1 resource is saturated
-  bmf = bmf && (std::any_of(remaining.data(), remaining.data() + remaining.size(),
-                            [](double v) { return double_equals(v, 0.0, sg_maxmin_precision); }));
   // 3) every player receives maximum share in at least 1 saturated resource
   // due to subflows, compare with the maximum consumption and not the A matrix
   Eigen::MatrixXd usage =
@@ -186,6 +207,17 @@ bool simgrid::kernel::lmm::BmfSystem::is_bmf(const Eigen::VectorXd& rho) const
   XBT_DEBUG("Saturated_j resources:\n%s", debug_eigen(saturated).c_str());
   player_max_share.array().colwise() *= saturated.array();
 
+  // just check if it has received at least it's bound
+  for (int p = 0; p < rho.size(); p++) {
+    if (double_equals(rho[p], idx2Var_.at(p)->get_bound(), sg_maxmin_precision)) {
+      player_max_share(0, p) = 1; // it doesn't really matter, just to say that it's a bmf
+      saturated[0]           = 1;
+    }
+  }
+
+  // 2) at least 1 resource is saturated
+  bmf = bmf && (saturated.array() == 1).any();
+
   XBT_DEBUG("Player_ji usage of saturated resources:\n%s", debug_eigen(player_max_share).c_str());
   // for all columns(players) it has to be the max at least in 1
   bmf = bmf && (player_max_share.colwise().sum().all() >= 1);
@@ -197,6 +229,8 @@ void simgrid::kernel::lmm::BmfSystem::bottleneck_solve()
   if (not modified_)
     return;
 
+  XBT_DEBUG("");
+  XBT_DEBUG("Starting BMF solver");
   /* initialize players' weight and constraint matrices */
   set_vector_C();
   set_matrix_A();
@@ -212,7 +246,7 @@ void simgrid::kernel::lmm::BmfSystem::bottleneck_solve()
 
   /* BMF allocation for each player (current and last one) stop when are equal */
   std::unordered_map<int, std::vector<int>> last_alloc;
-  auto cur_alloc = get_alloc(fair_sharing);
+  auto cur_alloc = get_alloc(fair_sharing, true);
   Eigen::VectorXd rho;
   while (it < max_iteration_ && last_alloc != cur_alloc) {
     last_alloc = cur_alloc;
@@ -228,7 +262,7 @@ void simgrid::kernel::lmm::BmfSystem::bottleneck_solve()
     XBT_DEBUG("Fair sharing vector (per resource):\n%s", debug_eigen(fair_sharing).c_str());
 
     // get new allocation for players
-    cur_alloc = get_alloc(fair_sharing);
+    cur_alloc = get_alloc(fair_sharing, false);
     XBT_DEBUG("B (new allocation): %s", debug_alloc(cur_alloc).c_str());
     it++;
   }
