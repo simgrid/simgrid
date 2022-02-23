@@ -11,13 +11,6 @@
 
 #include <memory>
 
-/* FIXME
-add algos:
-allreduce nonoverlapping, basic linear
-alltoall linear_sync
-bcast chain
-*/
-
 namespace simgrid {
 namespace smpi {
 
