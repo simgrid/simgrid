@@ -176,6 +176,10 @@ simgrid::mc::Snapshot* Api::take_snapshot(long num_state) const
 void Api::s_close() const
 {
   session_singleton->close();
+  if (simgrid::mc::property_automaton != nullptr) {
+    xbt_automaton_free(simgrid::mc::property_automaton);
+    simgrid::mc::property_automaton = nullptr;
+  }
 }
 
 void Api::automaton_load(const char* file) const
