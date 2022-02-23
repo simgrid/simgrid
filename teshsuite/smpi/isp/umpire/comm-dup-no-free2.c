@@ -16,8 +16,8 @@ static char *rcsid =
 /* Umpire failure is graceful - comm creates are identified... */
 /* UNKNOWN N breaks umpire due to running out of memory as of 1/13/03... */
 /* UMPIRE FAILURE IS NOT GRACEFUL AS OF THIS TIME IN THIS CASE... */
-#define ITERATIONS               3
-#define COMMS_PER_ITERATION          3
+#define ITERATIONS               2
+#define COMMS_PER_ITERATION          2
 #define COMMS_LOST_PER_ITERATION     1
 
 
