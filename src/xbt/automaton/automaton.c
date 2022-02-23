@@ -373,15 +373,15 @@ void xbt_automaton_transition_free_voidp(void *t){
 static void xbt_automaton_exp_label_free(xbt_automaton_exp_label_t e){
   if(e){
     switch(e->type){
-    case 0:
-    case 1:
+    case AUT_OR:
+    case AUT_AND:
       xbt_automaton_exp_label_free(e->u.or_and.left_exp);
       xbt_automaton_exp_label_free(e->u.or_and.right_exp);
       break;
-    case 2:
+    case AUT_NOT:
       xbt_automaton_exp_label_free(e->u.exp_not);
       break;
-    case 3:
+    case AUT_PREDICAT:
       xbt_free(e->u.predicat);
       break;
     default:

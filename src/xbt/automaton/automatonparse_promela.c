@@ -63,8 +63,8 @@ static void new_transition(const char* id, xbt_automaton_exp_label_t label)
 void xbt_automaton_load(xbt_automaton_t a, const char *file)
 {
   parsed_automaton = a;
-  yyin = fopen(file, "r");
-  xbt_assert(yyin != NULL, "Failed to open automaton file `%s': %s", file, strerror(errno));
-  yyparse();
-  fclose(yyin);
+  xbt_automaton_parser_in = fopen(file, "r");
+  xbt_assert(xbt_automaton_parser_in != NULL, "Failed to open automaton file `%s': %s", file, strerror(errno));
+  xbt_automaton_parser_parse();
+  fclose(xbt_automaton_parser_in);
 }
