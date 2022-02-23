@@ -19,14 +19,6 @@
 
 using api = simgrid::mc::Api;
 
-static inline char** argvdup(int argc, char** argv)
-{
-  auto* argv_copy = new char*[argc + 1];
-  std::memcpy(argv_copy, argv, sizeof(char*) * argc);
-  argv_copy[argc] = nullptr;
-  return argv_copy;
-}
-
 int main(int argc, char** argv)
 {
   xbt_assert(argc >= 2, "Missing arguments");
@@ -36,7 +28,7 @@ int main(int argc, char** argv)
 
   // The initialization function can touch argv.
   // We make a copy of argv before modifying it in order to pass the original value to the model-checked application:
-  char** argv_copy = argvdup(argc, argv);
+  std::vector<char*> argv_copy{argv, argv + argc + 1};
 
   xbt_log_init(&argc, argv);
 #if HAVE_SMPI
@@ -55,7 +47,7 @@ int main(int argc, char** argv)
     algo = simgrid::mc::CheckerAlgorithm::Liveness;
 
   int res      = SIMGRID_MC_EXIT_SUCCESS;
-  auto checker = api::get().initialize(argv_copy, algo);
+  auto checker = api::get().initialize(argv_copy.data(), algo);
   try {
     checker->run();
   } catch (const simgrid::mc::DeadlockError&) {
@@ -66,7 +58,6 @@ int main(int argc, char** argv)
     res = SIMGRID_MC_EXIT_LIVENESS;
   }
   api::get().s_close();
-  delete[] argv_copy;
   // delete checker; SEGFAULT in liveness
   return res;
 }
