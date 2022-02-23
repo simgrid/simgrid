@@ -116,6 +116,7 @@ std::map<std::string, std::vector<s_mpi_coll_description_t>, std::less<>> smpi_c
       {{"default", "scatter default collective", (void*)scatter__default},
        {"ompi", "scatter ompi collective", (void*)scatter__ompi},
        {"ompi_basic_linear", "scatter ompi_basic_linear collective", (void*)scatter__ompi_basic_linear},
+       {"ompi_linear_nb", "scatter ompi_linear nonblocking collective", (void*)scatter__ompi_linear_nb},
        {"ompi_binomial", "scatter ompi_binomial collective", (void*)scatter__ompi_binomial},
        {"mpich", "scatter mpich collective", (void*)scatter__mpich},
        {"mvapich2", "scatter mvapich2 collective", (void*)scatter__mvapich2},

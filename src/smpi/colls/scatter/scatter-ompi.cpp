@@ -248,5 +248,79 @@ int scatter__ompi_basic_linear(const void* sbuf, int scount, MPI_Datatype sdtype
     return MPI_SUCCESS;
 }
 
+/*
+ * Use isends for distributing the data with periodic sync by blocking send.
+ * Blocking send acts like a local resources flush, because it ensures
+ * progression until the message is sent/(copied to some sort of transmit buffer).
+ */
+int scatter__ompi_linear_nb(const void *sbuf, int scount,
+                            MPI_Datatype sdtype,
+                            void *rbuf, int rcount,
+                            MPI_Datatype rdtype,
+                            int root,
+                            MPI_Comm comm)
+{
+    int i, rank, size, err, line, nreqs;
+    ptrdiff_t incr;
+    char *ptmp;
+    MPI_Request *reqs = nullptr;
+    MPI_Request *preq = nullptr;
+
+    rank = comm->rank();
+    size = comm->size();
+
+    /* If not root, receive data. */
+    if (rank != root) {
+        Request::recv(rbuf, rcount, rdtype, root,
+                      COLL_TAG_SCATTER,
+                      comm, MPI_STATUS_IGNORE);
+        return MPI_SUCCESS;
+    }
+
+    nreqs = size - 1; /* no send for myself */
+
+    reqs = new MPI_Request[nreqs];
+    if (NULL == reqs) {
+        err = MPI_ERR_OTHER;
+        line = __LINE__; goto err_hndl;
+    }
+
+    incr = sdtype->get_extent();
+    incr *= scount;
+
+    /* I am the root, loop sending data. */
+    for (i = 0, ptmp = (char *)sbuf, preq = reqs; i < size; ++i, ptmp += incr) {
+        /* simple optimization */
+        if (i == rank) {
+            if (MPI_IN_PLACE != rbuf) {
+                err = Datatype::copy(ptmp, scount, sdtype, rbuf, rcount,
+                                           rdtype);
+            }
+        } else {
+            *preq = Request::isend(ptmp, scount, sdtype, i,
+                                   COLL_TAG_SCATTER, comm);
+            preq++;
+        }
+        if (MPI_SUCCESS != err) {
+            line = __LINE__; goto err_hndl;
+        }
+    }
+
+    err = Request::waitall(preq - reqs, reqs, MPI_STATUSES_IGNORE);
+    if (MPI_SUCCESS != err) {
+        line = __LINE__; goto err_hndl;
+    }
+
+    return MPI_SUCCESS;
+
+err_hndl:
+    if (NULL != reqs) {
+        delete reqs;
+    }
+    XBT_DEBUG("%s:%4d\tError occurred %d, rank %2d", __FILE__, line, err, rank);
+    (void)line;  /* silence compiler warning */
+    return err;
+}
+
 }
 }

@@ -16,7 +16,6 @@ add algos:
 allreduce nonoverlapping, basic linear
 alltoall linear_sync
 bcast chain
-scatter linear_nb
 */
 
 namespace simgrid {
@@ -1273,7 +1272,7 @@ int scatter__ompi(const void *sbuf, int scount,
     int (*funcs[])(const void*, int, MPI_Datatype, void*, int, MPI_Datatype, int, MPI_Comm) = {
         &scatter__ompi_basic_linear,
         &scatter__ompi_binomial,
-	&scatter__ompi_basic_linear
+	&scatter__ompi_linear_nb
     };
     /** Algorithms:
      *  {1, "basic_linear"},

@@ -130,7 +130,7 @@ if(enable_smpi)
     ADD_TESH(tesh-smpi-coll-reduce-scatter-${REDUCE_SCATTER} --cfg smpi/reduce_scatter:${REDUCE_SCATTER} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-reduce-scatter --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-reduce-scatter ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-reduce-scatter/coll-reduce-scatter.tesh)
   endforeach()
 
-  foreach (SCATTER ompi mpich ompi_basic_linear ompi_binomial mvapich2 mvapich2_two_level_binomial mvapich2_two_level_direct impi)
+  foreach (SCATTER ompi mpich ompi_basic_linear ompi_binomial ompi_linear_nb mvapich2 mvapich2_two_level_binomial mvapich2_two_level_direct impi)
     ADD_TESH(tesh-smpi-coll-scatter-${SCATTER} --cfg smpi/scatter:${SCATTER} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-scatter --cd ${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-scatter ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-scatter/coll-scatter.tesh)
   endforeach()
 

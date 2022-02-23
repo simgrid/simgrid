@@ -294,6 +294,7 @@ MPI_Scatter
 ``impi``: use intel mpi selector for the scatter operations. |br|
 ``automatic (experimental)``: use an automatic self-benchmarking algorithm. |br|
 ``ompi_basic_linear``: basic linear scatter. |br|
+``ompi_linear_nb``: linear scatter, non blocking sends. |br|
 ``ompi_binomial``: binomial tree scatter. |br|
 ``mvapich2_two_level_direct``: SMP aware algorithm, with an intra-node stage (default set to mpich selector), and then a basic linear inter node stage. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster. |br|
 ``mvapich2_two_level_binomial``: SMP aware algorithm, with an intra-node stage (default set to mpich selector), and then a binomial phase. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster. |br|
