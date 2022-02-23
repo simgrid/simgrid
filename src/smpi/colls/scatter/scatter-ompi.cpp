@@ -315,7 +315,7 @@ int scatter__ompi_linear_nb(const void *sbuf, int scount,
 
 err_hndl:
     if (NULL != reqs) {
-        delete reqs;
+        delete[] reqs;
     }
     XBT_DEBUG("%s:%4d\tError occurred %d, rank %2d", __FILE__, line, err, rank);
     (void)line;  /* silence compiler warning */
