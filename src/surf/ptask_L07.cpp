@@ -204,8 +204,8 @@ L07Action::L07Action(Model* model, const std::vector<s4u::Host*>& host_list, con
   /* Expand it for the CPUs even if there is nothing to compute, to make sure that it gets expended even if there is no
    * communication either */
   for (size_t i = 0; i < host_list.size(); i++) {
-    model->get_maxmin_system()->expand(host_list[i]->get_cpu()->get_constraint(), get_variable(),
-                                       (flops_amount == nullptr ? 0.0 : flops_amount[i]));
+    model->get_maxmin_system()->expand_add(host_list[i]->get_cpu()->get_constraint(), get_variable(),
+                                           (flops_amount == nullptr ? 0.0 : flops_amount[i]));
   }
 
   if (bytes_amount != nullptr) {
