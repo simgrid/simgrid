@@ -643,10 +643,10 @@ int reduce_scatter__ompi_butterfly(
     precv = tmpbuf[1] - gap;
 
     if (sbuf != MPI_IN_PLACE) {
-	err = Datatype::copy(sbuf, totalcount, dtype, psend, totalcount, dtype);
- 	if (MPI_SUCCESS != err) { goto cleanup_and_return; }
+        err = Datatype::copy(sbuf, totalcount, dtype, psend, totalcount, dtype);
+        if (MPI_SUCCESS != err) { goto cleanup_and_return; }
     } else {
-	err = Datatype::copy(rbuf, totalcount, dtype, psend, totalcount, dtype);
+        err = Datatype::copy(rbuf, totalcount, dtype, psend, totalcount, dtype);
         if (MPI_SUCCESS != err) { goto cleanup_and_return; }
     }
 
@@ -683,7 +683,7 @@ int reduce_scatter__ompi_butterfly(
             /* Odd process */
             Request::recv(precv, totalcount, dtype, rank - 1,
                                     COLL_TAG_REDUCE_SCATTER, comm, MPI_STATUS_IGNORE);
-	    op->apply(precv, psend, (int*)&totalcount, dtype);
+            op->apply(precv, psend, (int*)&totalcount, dtype);
             /* Adjust rank to be the bottom "remain" ranks */
             vrank = rank / 2;
         }
