@@ -228,7 +228,7 @@ void UnwindContext::initialize(simgrid::mc::RemoteProcess* process, unw_context_
 
   // Take a copy of the context for our own purpose:
   this->unwind_context_ = *c;
-#if SIMGRID_PROCESSOR_x86_64 || SIMGRID_PROCESSOR_i686
+#if SIMGRID_PROCESSOR_x86_64 || SIMGRID_PROCESSOR_i686 || defined(__aarch64__)
 #ifdef __linux__
   // On x86_64, ucontext_t contains a pointer to itself for FP registers.
   // We don't really need support for FR registers as they are caller saved

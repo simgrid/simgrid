@@ -1198,7 +1198,7 @@ namespace dwarf {
  */
 int dwarf_register_to_libunwind(int dwarf_register)
 {
-#if defined(__x86_64__)
+#if defined(__x86_64__) || defined(__aarch64__)
   // It seems for this arch, DWARF and libunwind agree in the numbering:
   return dwarf_register;
 #elif defined(__i386__)
