@@ -103,6 +103,7 @@ std::map<std::string, std::vector<s_mpi_coll_description_t>, std::less<>> smpi_c
        {"ompi_basic_recursivehalving", "reduce_scatter ompi_basic_recursivehalving collective",
         (void*)reduce_scatter__ompi_basic_recursivehalving},
        {"ompi_ring", "reduce_scatter ompi_ring collective", (void*)reduce_scatter__ompi_ring},
+       {"ompi_butterfly", "reduce_scatter ompi_butterfly collective", (void*)reduce_scatter__ompi_butterfly},
        {"mpich", "reduce_scatter mpich collective", (void*)reduce_scatter__mpich},
        {"mpich_pair", "reduce_scatter mpich_pair collective", (void*)reduce_scatter__mpich_pair},
        {"mpich_rdb", "reduce_scatter mpich_rdb collective", (void*)reduce_scatter__mpich_rdb},

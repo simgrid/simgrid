@@ -177,7 +177,7 @@ of the targeted MPI implementations.
 You can switch the automatic selector through the
 ``smpi/coll-selector`` configuration item. Possible values:
 
- - **ompi:** default selection logic of OpenMPI (version 3.1.2)
+ - **ompi:** default selection logic of OpenMPI (version 4.1.2)
  - **mpich**: default selection logic of MPICH (version 3.3b)
  - **mvapich2**: selection logic of MVAPICH2 (version 1.9) tuned
    on the Stampede cluster
@@ -359,6 +359,7 @@ MPI_Reduce_scatter
 ``automatic (experimental)``: use an automatic self-benchmarking algorithm. |br|
 ``ompi_basic_recursivehalving``: recursive halving version from OpenMPI. |br|
 ``ompi_ring``: ring version from OpenMPI. |br|
+``ompi_butterfly``: butterfly version from OpenMPI. |br|
 ``mpich_pair``: pairwise exchange version from MPICH. |br|
 ``mpich_rdb``: recursive doubling version from MPICH. |br|
 ``mpich_noncomm``: only works for power of 2 procs, recursive doubling for noncommutative ops. |br|

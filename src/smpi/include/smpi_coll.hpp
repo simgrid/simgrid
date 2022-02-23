@@ -300,8 +300,9 @@ int reduce__automatic(const void *buf, void *rbuf, int count, MPI_Datatype datat
 int reduce_scatter__default(const void *sbuf, void *rbuf, const int *rcounts, MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
 int reduce_scatter__ompi(const void *sbuf, void *rbuf, const int *rcounts, MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
 int reduce_scatter__ompi_basic_recursivehalving(const void *sbuf, void *rbuf, const int *rcounts, MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
-int reduce_scatter__ompi_ring(const void *sbuf, void *rbuf, const int *rcounts, MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
 int reduce_scatter__mpich(const void *sbuf, void *rbuf, const int *rcounts, MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
+int reduce_scatter__ompi_ring(const void *sbuf, void *rbuf, const int *rcounts, MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
+int reduce_scatter__ompi_butterfly(const void *sbuf, void *rbuf, const int *rcounts, MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
 int reduce_scatter__mpich_pair(const void *sbuf, void *rbuf, const int *rcounts, MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
 int reduce_scatter__mpich_rdb(const void *sbuf, void *rbuf, const int *rcounts, MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
 int reduce_scatter__mpich_noncomm(const void *sbuf, void *rbuf, const int *rcounts, MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);

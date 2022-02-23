@@ -16,7 +16,6 @@ add algos:
 allreduce nonoverlapping, basic linear
 alltoall linear_sync
 bcast chain
-reduce_scatter butterfly
 scatter linear_nb
 */
 
@@ -780,7 +779,7 @@ int reduce_scatter__ompi(const void *sbuf, void *rbuf,
         &reduce_scatter__default,
         &reduce_scatter__ompi_basic_recursivehalving,
         &reduce_scatter__ompi_ring,
-        &reduce_scatter__ompi_ring,
+        &reduce_scatter__ompi_butterfly,
     };
     /** Algorithms:
      *  {1, "non-overlapping"},
