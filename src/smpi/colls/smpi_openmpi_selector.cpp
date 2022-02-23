@@ -1061,10 +1061,10 @@ int allgatherv__ompi(const void *sbuf, int scount,
 
     int (*funcs[])(const void*, int, MPI_Datatype, void*, const int*, const int*, MPI_Datatype, MPI_Comm) = {
         &allgatherv__GB,
-	&allgatherv__ompi_bruck,
-	&allgatherv__mpich_ring,
-	&allgatherv__ompi_neighborexchange,
-	&allgatherv__pair
+        &allgatherv__ompi_bruck,
+        &allgatherv__mpich_ring,
+        &allgatherv__ompi_neighborexchange,
+        &allgatherv__pair
     };
     /** Algorithms:
      *  {1, "default"},
@@ -1187,8 +1187,8 @@ int gather__ompi(const void *sbuf, int scount,
     }
     int (*funcs[])(const void*, int, MPI_Datatype, void*, int, MPI_Datatype, int, MPI_Comm) = {
         &gather__ompi_basic_linear,
-	&gather__ompi_binomial,
-	&gather__ompi_linear_sync
+        &gather__ompi_binomial,
+        &gather__ompi_linear_sync
     };
     /** Algorithms:
      *  {1, "basic_linear"},
@@ -1265,7 +1265,7 @@ int scatter__ompi(const void *sbuf, int scount,
     int (*funcs[])(const void*, int, MPI_Datatype, void*, int, MPI_Datatype, int, MPI_Comm) = {
         &scatter__ompi_basic_linear,
         &scatter__ompi_binomial,
-	&scatter__ompi_linear_nb
+        &scatter__ompi_linear_nb
     };
     /** Algorithms:
      *  {1, "basic_linear"},
