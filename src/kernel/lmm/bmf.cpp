@@ -6,115 +6,81 @@
 #include "src/kernel/lmm/bmf.hpp"
 #include <eigen3/Eigen/LU>
 #include <iostream>
+#include <numeric>
 #include <sstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_bmf, kernel, "Kernel BMF solver");
 
-void simgrid::kernel::lmm::BmfSystem::set_matrix_A()
-{
-  A_.resize(active_constraint_set.size(), variable_set.size());
-  A_.setZero();
-  maxA_.resize(active_constraint_set.size(), variable_set.size());
+int sg_bmf_max_iterations = 1000; /* Change this with --cfg=bmf/max-iterations:VALUE */
 
-  int var_idx = 0;
-  for (Variable& var : variable_set) {
-    if (var.sharing_penalty_ <= 0)
+namespace simgrid {
+namespace kernel {
+namespace lmm {
+
+AllocationGenerator::AllocationGenerator(Eigen::MatrixXd A) : A_(std::move(A)), alloc_(A_.cols(), 0)
+{
+  // got a first valid allocation
+  for (size_t p = 0; p < alloc_.size(); p++) {
+    for (int r = 0; r < A_.rows(); r++) {
+      if (A_(r, p) > 0) {
+        alloc_[p] = r;
+        break;
+      }
+    }
+  }
+}
+
+bool AllocationGenerator::next(std::vector<int>& next_alloc)
+{
+  if (first_) {
+    next_alloc = alloc_;
+    first_     = false;
+    return true;
+  }
+
+  int n_resources = A_.rows();
+  size_t idx      = 0;
+  while (idx < alloc_.size()) {
+    alloc_[idx] = (++alloc_[idx]) % n_resources;
+    if (alloc_[idx] == 0) {
+      idx++;
       continue;
-    bool active = false;
-    var.value_  = 1; // assign something by default for tasks with 0 consumption
-    for (const Element& elem : var.cnsts_) {
-      double consumption = elem.consumption_weight;
-      if (consumption > 0) {
-        int cnst_idx             = cnst2idx_[elem.constraint];
-        A_(cnst_idx, var_idx)    = consumption;
-        maxA_(cnst_idx, var_idx) = elem.max_consumption_weight;
-        active                   = true;
-      }
+    } else {
+      idx = 0;
     }
-    if (active) {
-      idx2Var_[var_idx] = &var;
-      var_idx++;
+    if (A_(alloc_[idx], idx) > 0) {
+      next_alloc = alloc_;
+      return true;
     }
   }
-  // resize matrix to active variables only
-  A_.conservativeResize(Eigen::NoChange_t::NoChange, var_idx);
-  maxA_.conservativeResize(Eigen::NoChange_t::NoChange, var_idx);
+  return false;
 }
 
-void simgrid::kernel::lmm::BmfSystem::set_vector_C()
+/*****************************************************************************/
+
+BmfSolver::BmfSolver(Eigen::MatrixXd A, Eigen::MatrixXd maxA, Eigen::VectorXd C, Eigen::VectorXd phi)
+    : A_(std::move(A)), maxA_(std::move(maxA)), C_(std::move(C)), phi_(std::move(phi)), gen_(A_)
 {
-  C_.resize(active_constraint_set.size());
-  cnst2idx_.clear();
-  int cnst_idx = 0;
-  for (const Constraint& cnst : active_constraint_set) {
-    C_(cnst_idx)     = cnst.bound_;
-    cnst2idx_[&cnst] = cnst_idx;
-    cnst_idx++;
-  }
+  xbt_assert(max_iteration_ > 0,
+             "Invalid number of iterations for BMF solver. Please check your \"bmf/max-iterations\" configuration.");
 }
 
-std::unordered_map<int, std::vector<int>>
-simgrid::kernel::lmm::BmfSystem::get_alloc(const Eigen::VectorXd& fair_sharing, bool initial) const
-{
-  std::unordered_map<int, std::vector<int>> alloc;
-  for (int player_idx = 0; player_idx < A_.cols(); player_idx++) {
-    int selected_resource = NO_RESOURCE;
-    double bound          = idx2Var_.at(player_idx)->get_bound();
-    double min_share      = (bound <= 0 || initial) ? -1 : bound;
-    for (int cnst_idx = 0; cnst_idx < A_.rows(); cnst_idx++) {
-      if (A_(cnst_idx, player_idx) <= 0.0)
-        continue;
-
-      double share = fair_sharing[cnst_idx] / A_(cnst_idx, player_idx);
-      if (min_share == -1 || double_positive(min_share - share, sg_maxmin_precision)) {
-        selected_resource = cnst_idx;
-        min_share         = share;
-      }
-    }
-    alloc[selected_resource].push_back(player_idx);
-  }
-  return alloc;
-}
-
-void simgrid::kernel::lmm::BmfSystem::set_fair_sharing(const std::unordered_map<int, std::vector<int>>& alloc,
-                                                       const Eigen::VectorXd& rho, Eigen::VectorXd& fair_sharing) const
-{
-  for (int r = 0; r < fair_sharing.size(); r++) {
-    auto it = alloc.find(r);
-    if (it != alloc.end()) {      // resource selected by some player, fair share depends on rho
-      int player = it->second[0]; // equilibrium assures that every player receives the same, use one of them to
-                                  // calculate the fair sharing for resource r
-      fair_sharing[r] = A_(r, player) * rho[player];
-    } else { // nobody selects this resource, fair_sharing depends on resource saturation
-      // resource r is saturated (A[r,*] * rho > C), divide it among players
-      double consumption_r = A_.row(r) * rho;
-      double_update(&consumption_r, C_[r], sg_maxmin_precision);
-      if (consumption_r > 0.0) {
-        int n_players   = std::count_if(A_.row(r).data(), A_.row(r).data() + A_.row(r).size(),
-                                      [](double v) { return double_positive(v, sg_maxmin_precision); });
-        fair_sharing[r] = C_[r] / n_players;
-      } else {
-        fair_sharing[r] = C_[r];
-      }
-    }
-  }
-}
-
-template <typename T> std::string simgrid::kernel::lmm::BmfSystem::debug_eigen(const T& obj) const
+template <typename T> std::string BmfSolver::debug_eigen(const T& obj) const
 {
   std::stringstream debug;
   debug << obj;
   return debug.str();
 }
 
-template <typename T> std::string simgrid::kernel::lmm::BmfSystem::debug_vector(const std::vector<T>& vector) const
+template <typename C> std::string BmfSolver::debug_vector(const C& container) const
 {
   std::stringstream debug;
-  std::copy(vector.begin(), vector.end(), std::ostream_iterator<T>(debug, " "));
+  std::copy(container.begin(), container.end(),
+            std::ostream_iterator<typename std::remove_reference<decltype(container)>::type::value_type>(debug, " "));
   return debug.str();
 }
 
-std::string simgrid::kernel::lmm::BmfSystem::debug_alloc(const std::unordered_map<int, std::vector<int>>& alloc) const
+std::string BmfSolver::debug_alloc(const allocation_map_t& alloc) const
 {
   std::stringstream debug;
   for (const auto& e : alloc) {
@@ -123,18 +89,27 @@ std::string simgrid::kernel::lmm::BmfSystem::debug_alloc(const std::unordered_ma
   return debug.str();
 }
 
-double simgrid::kernel::lmm::BmfSystem::get_resource_capacity(int resource,
-                                                              const std::vector<int>& bounded_players) const
+double BmfSolver::get_resource_capacity(int resource, const std::vector<int>& bounded_players) const
 {
   double capacity = C_[resource];
   for (int p : bounded_players) {
-    capacity -= A_(resource, p) * idx2Var_.at(p)->get_bound();
+    capacity -= A_(resource, p) * phi_[p];
   }
   return capacity;
 }
 
-Eigen::VectorXd
-simgrid::kernel::lmm::BmfSystem::equilibrium(const std::unordered_map<int, std::vector<int>>& alloc) const
+std::vector<int> BmfSolver::alloc_map_to_vector(const allocation_map_t& alloc) const
+{
+  std::vector<int> alloc_by_player(A_.cols(), -1);
+  for (auto it : alloc) {
+    for (auto p : it.second) {
+      alloc_by_player[p] = it.first;
+    }
+  }
+  return alloc_by_player;
+}
+
+Eigen::VectorXd BmfSolver::equilibrium(const allocation_map_t& alloc) const
 {
   int n_players       = A_.cols();
   Eigen::MatrixXd A_p = Eigen::MatrixXd::Zero(n_players, n_players); // square matrix with number of players
@@ -142,12 +117,12 @@ simgrid::kernel::lmm::BmfSystem::equilibrium(const std::unordered_map<int, std::
 
   // iterate over alloc to verify if 2 players have chosen the same resource
   // if so, they must have a fair sharing of this resource, adjust A_p and C_p accordingly
-  int last_row = n_players - 1;
+  int last_row  = n_players - 1;
   int first_row = 0;
   std::vector<int> bounded_players;
   for (const auto& e : alloc) {
     // add one row for the resource with A[r,]
-    int cur_resource   = e.first;
+    int cur_resource = e.first;
     if (cur_resource == NO_RESOURCE) {
       bounded_players.insert(bounded_players.end(), e.second.begin(), e.second.end());
       continue;
@@ -156,10 +131,12 @@ simgrid::kernel::lmm::BmfSystem::equilibrium(const std::unordered_map<int, std::
     C_p[first_row]     = get_resource_capacity(cur_resource, bounded_players);
     first_row++;
     if (e.second.size() > 1) {
-      int i = e.second[0];                                 // first player
-      for (size_t idx = 1; idx < e.second.size(); idx++) { // for each other player sharing this resource
+      auto it = e.second.begin();
+      int i   = *it; // first player
+      /* for each other player sharing this resource */
+      for (++it; it != e.second.end(); ++it) {
         /* player i and k on this resource j: so maxA_ji*rho_i - maxA_jk*rho_k = 0 */
-        int k            = e.second[idx];
+        int k            = *it;
         C_p[last_row]    = 0;
         A_p(last_row, i) = maxA_(cur_resource, i);
         A_p(last_row, k) = -maxA_(cur_resource, k);
@@ -177,12 +154,107 @@ simgrid::kernel::lmm::BmfSystem::equilibrium(const std::unordered_map<int, std::
   XBT_DEBUG("C':\n%s", debug_eigen(C_p).c_str());
   Eigen::VectorXd rho = Eigen::FullPivLU<Eigen::MatrixXd>(A_p).solve(C_p);
   for (int p : bounded_players) {
-    rho[p] = idx2Var_.at(p)->get_bound();
+    rho[p] = phi_[p];
   }
   return rho;
 }
 
-bool simgrid::kernel::lmm::BmfSystem::is_bmf(const Eigen::VectorXd& rho) const
+bool BmfSolver::disturb_allocation(allocation_map_t& alloc, std::vector<int>& alloc_by_player)
+{
+  while (gen_.next(alloc_by_player)) {
+    if (allocations_.find(alloc_by_player) == allocations_.end()) {
+      allocations_.clear();
+      allocations_.insert(alloc_by_player);
+      alloc.clear();
+      for (size_t p = 0; p < alloc_by_player.size(); p++) {
+        alloc[alloc_by_player[p]].insert(p);
+      }
+      return false;
+    }
+  }
+  return true;
+}
+
+bool BmfSolver::get_alloc(const Eigen::VectorXd& fair_sharing, const allocation_map_t& last_alloc,
+                          allocation_map_t& alloc, bool initial)
+{
+  alloc.clear();
+  for (int player_idx = 0; player_idx < A_.cols(); player_idx++) {
+    int selected_resource = NO_RESOURCE;
+    double bound          = phi_[player_idx];
+    double min_share      = (bound <= 0 || initial) ? -1 : bound;
+    for (int cnst_idx = 0; cnst_idx < A_.rows(); cnst_idx++) {
+      if (A_(cnst_idx, player_idx) <= 0.0)
+        continue;
+
+      double share = fair_sharing[cnst_idx] / A_(cnst_idx, player_idx);
+      if (min_share == -1 || double_positive(min_share - share, sg_maxmin_precision)) {
+        selected_resource = cnst_idx;
+        min_share         = share;
+      }
+    }
+    alloc[selected_resource].insert(player_idx);
+  }
+  bool is_stable = (alloc == last_alloc);
+  if (is_stable)
+    return true;
+
+  std::vector<int> alloc_by_player      = alloc_map_to_vector(alloc);
+#if 0
+  std::vector<int> last_alloc_by_player = alloc_map_to_vector(last_alloc);
+  if (not initial) {
+    std::for_each(allocations_age_.begin(), allocations_age_.end(), [](int& n) { n++; });
+    std::vector<int> age_idx(allocations_age_.size());
+    std::iota(age_idx.begin(), age_idx.end(), 0);
+    std::stable_sort(age_idx.begin(), age_idx.end(),
+                     [this](auto a, auto b) { return this->allocations_age_[a] > this->allocations_age_[b]; });
+    for (int p : age_idx) {
+      if (alloc_by_player[p] != last_alloc_by_player[p]) {
+        alloc = last_alloc;
+        alloc[last_alloc_by_player[p]].erase(p);
+        if (alloc[last_alloc_by_player[p]].empty())
+          alloc.erase(last_alloc_by_player[p]);
+        alloc[alloc_by_player[p]].insert(p);
+        allocations_age_[p] = 0;
+      }
+    }
+    alloc_by_player = alloc_map_to_vector(alloc);
+  }
+#endif
+  auto ret = allocations_.insert(alloc_by_player);
+  /* oops, allocation already tried, let's pertube it a bit */
+  if (not ret.second) {
+    XBT_DEBUG("Allocation already tried: %s", debug_alloc(alloc).c_str());
+    return disturb_allocation(alloc, alloc_by_player);
+  }
+  return false;
+}
+
+void BmfSolver::set_fair_sharing(const allocation_map_t& alloc, const Eigen::VectorXd& rho,
+                                 Eigen::VectorXd& fair_sharing) const
+{
+  for (int r = 0; r < fair_sharing.size(); r++) {
+    auto it = alloc.find(r);
+    if (it != alloc.end()) {              // resource selected by some player, fair share depends on rho
+      int player = *(it->second.begin()); // equilibrium assures that every player receives the same, use one of them to
+                                          // calculate the fair sharing for resource r
+      fair_sharing[r] = A_(r, player) * rho[player];
+    } else { // nobody selects this resource, fair_sharing depends on resource saturation
+      // resource r is saturated (A[r,*] * rho > C), divide it among players
+      double consumption_r = A_.row(r) * rho;
+      double_update(&consumption_r, C_[r], sg_maxmin_precision);
+      if (consumption_r > 0.0) {
+        int n_players   = std::count_if(A_.row(r).data(), A_.row(r).data() + A_.row(r).size(),
+                                      [](double v) { return double_positive(v, sg_maxmin_precision); });
+        fair_sharing[r] = C_[r] / n_players;
+      } else {
+        fair_sharing[r] = C_[r];
+      }
+    }
+  }
+}
+
+bool BmfSolver::is_bmf(const Eigen::VectorXd& rho) const
 {
   bool bmf = true;
 
@@ -209,7 +281,7 @@ bool simgrid::kernel::lmm::BmfSystem::is_bmf(const Eigen::VectorXd& rho) const
 
   // just check if it has received at least it's bound
   for (int p = 0; p < rho.size(); p++) {
-    if (double_equals(rho[p], idx2Var_.at(p)->get_bound(), sg_maxmin_precision)) {
+    if (double_equals(rho[p], phi_[p], sg_maxmin_precision)) {
       player_max_share(0, p) = 1; // it doesn't really matter, just to say that it's a bmf
       saturated[0]           = 1;
     }
@@ -224,31 +296,26 @@ bool simgrid::kernel::lmm::BmfSystem::is_bmf(const Eigen::VectorXd& rho) const
   return bmf;
 }
 
-void simgrid::kernel::lmm::BmfSystem::bottleneck_solve()
+Eigen::VectorXd BmfSolver::solve()
 {
-  if (not modified_)
-    return;
-
-  XBT_DEBUG("");
   XBT_DEBUG("Starting BMF solver");
-  /* initialize players' weight and constraint matrices */
-  set_vector_C();
-  set_matrix_A();
+
   XBT_DEBUG("A:\n%s", debug_eigen(A_).c_str());
+  XBT_DEBUG("maxA:\n%s", debug_eigen(maxA_).c_str());
   XBT_DEBUG("C:\n%s", debug_eigen(C_).c_str());
 
   /* no flows to share, just returns */
   if (A_.cols() == 0)
-    return;
+    return {};
 
   int it            = 0;
   auto fair_sharing = C_;
 
   /* BMF allocation for each player (current and last one) stop when are equal */
-  std::unordered_map<int, std::vector<int>> last_alloc;
-  auto cur_alloc = get_alloc(fair_sharing, true);
+  allocation_map_t last_alloc, cur_alloc;
   Eigen::VectorXd rho;
-  while (it < max_iteration_ && last_alloc != cur_alloc) {
+
+  while (it < max_iteration_ && not get_alloc(fair_sharing, last_alloc, cur_alloc, it == 0)) {
     last_alloc = cur_alloc;
     XBT_DEBUG("BMF: iteration %d", it);
     XBT_DEBUG("B (current allocation): %s", debug_alloc(cur_alloc).c_str());
@@ -262,18 +329,103 @@ void simgrid::kernel::lmm::BmfSystem::bottleneck_solve()
     XBT_DEBUG("Fair sharing vector (per resource):\n%s", debug_eigen(fair_sharing).c_str());
 
     // get new allocation for players
-    cur_alloc = get_alloc(fair_sharing, false);
-    XBT_DEBUG("B (new allocation): %s", debug_alloc(cur_alloc).c_str());
     it++;
   }
 
-  xbt_assert(is_bmf(rho), "Not a BMF allocation");
+  /* Not mandatory but a safe check to assure we have a proper solution */
+  if (not is_bmf(rho)) {
+    fprintf(stderr, "Unable to find a BMF allocation for your system.\n"
+                    "You may try to increase the maximum number of iterations performed by BMF solver "
+                    "(\"--cfg=bmf/max-iterations\").\n"
+                    "Additionally, you could decrease numerical precision (\"--cfg=surf/precision\").\n");
+    fprintf(stderr, "Internal states (after %d iterations):\n", it);
+    fprintf(stderr, "A:\n%s\n", debug_eigen(A_).c_str());
+    fprintf(stderr, "maxA:\n%s\n", debug_eigen(maxA_).c_str());
+    fprintf(stderr, "C:\n%s\n", debug_eigen(C_).c_str());
+    fprintf(stderr, "rho:\n%s\n", debug_eigen(rho).c_str());
+    xbt_abort();
+  }
+
+  XBT_DEBUG("BMF done after %d iterations", it);
+  return rho;
+}
+
+/*****************************************************************************/
+
+void BmfSystem::get_flows_data(Eigen::MatrixXd& A, Eigen::MatrixXd& maxA, Eigen::VectorXd& phi)
+{
+  A.resize(active_constraint_set.size(), variable_set.size());
+  A.setZero();
+  maxA.resize(active_constraint_set.size(), variable_set.size());
+  maxA.setZero();
+  phi.resize(variable_set.size());
+
+  int var_idx = 0;
+  for (Variable& var : variable_set) {
+    if (var.sharing_penalty_ <= 0)
+      continue;
+    bool active = false;
+    var.value_  = 1; // assign something by default for tasks with 0 consumption
+    for (const Element& elem : var.cnsts_) {
+      double consumption = elem.consumption_weight;
+      if (consumption > 0) {
+        int cnst_idx            = cnst2idx_[elem.constraint];
+        A(cnst_idx, var_idx)    = consumption;
+        maxA(cnst_idx, var_idx) = elem.max_consumption_weight;
+        active                  = true;
+      }
+    }
+    if (active) {
+      phi[var_idx] = var.get_bound();
+      idx2Var_[var_idx] = &var;
+      var_idx++;
+    }
+  }
+  // resize matrix to active variables only
+  A.conservativeResize(Eigen::NoChange_t::NoChange, var_idx);
+  maxA.conservativeResize(Eigen::NoChange_t::NoChange, var_idx);
+  phi.conservativeResize(var_idx);
+}
+
+void BmfSystem::get_constraint_data(Eigen::VectorXd& C)
+{
+  C.resize(active_constraint_set.size());
+  cnst2idx_.clear();
+  int cnst_idx = 0;
+  for (const Constraint& cnst : active_constraint_set) {
+    C(cnst_idx)      = cnst.bound_;
+    cnst2idx_[&cnst] = cnst_idx;
+    cnst_idx++;
+  }
+}
+
+void BmfSystem::bmf_solve()
+{
+  if (not modified_)
+    return;
+
+  /* initialize players' weight and constraint matrices */
+  idx2Var_.clear();
+  cnst2idx_.clear();
+  Eigen::MatrixXd A, maxA;
+  Eigen::VectorXd C, bounds;
+  get_constraint_data(C);
+  get_flows_data(A, maxA, bounds);
+
+  auto solver = BmfSolver(A, maxA, C, bounds);
+  auto rho    = solver.solve();
+
+  if (rho.size() == 0)
+    return;
 
   /* setting rhos */
   for (int i = 0; i < rho.size(); i++) {
     idx2Var_[i]->value_ = rho[i];
   }
 
-  XBT_DEBUG("BMF done after %d iterations", it);
   print();
 }
+
+} // namespace lmm
+} // namespace kernel
+} // namespace simgrid

@@ -29,6 +29,7 @@ XBT_PRIVATE std::ifstream* surf_ifsopen(const std::string& name);
 XBT_PUBLIC_DATA double sg_maxmin_precision;
 XBT_PUBLIC_DATA double sg_surf_precision;
 XBT_PUBLIC_DATA int sg_concurrency_limit;
+XBT_PUBLIC_DATA int sg_bmf_max_iterations;
 
 extern XBT_PRIVATE double sg_latency_factor;
 extern XBT_PRIVATE double sg_bandwidth_factor;
