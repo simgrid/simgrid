@@ -2261,10 +2261,10 @@ include src/kernel/actor/ActorImpl.cpp
 include src/kernel/actor/ActorImpl.hpp
 include src/kernel/actor/CommObserver.cpp
 include src/kernel/actor/CommObserver.hpp
-include src/kernel/actor/MutexObserver.cpp
-include src/kernel/actor/MutexObserver.hpp
 include src/kernel/actor/SimcallObserver.cpp
 include src/kernel/actor/SimcallObserver.hpp
+include src/kernel/actor/SynchroObserver.cpp
+include src/kernel/actor/SynchroObserver.hpp
 include src/kernel/context/Context.cpp
 include src/kernel/context/Context.hpp
 include src/kernel/context/ContextBoost.cpp

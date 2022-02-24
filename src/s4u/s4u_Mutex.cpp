@@ -7,7 +7,7 @@
 #include <simgrid/mutex.h>
 #include <simgrid/s4u/Mutex.hpp>
 #include <src/kernel/activity/MutexImpl.hpp>
-#include <src/kernel/actor/MutexObserver.hpp>
+#include <src/kernel/actor/SynchroObserver.hpp>
 #include <src/mc/mc_replay.hpp>
 
 namespace simgrid {

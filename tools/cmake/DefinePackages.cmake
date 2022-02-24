@@ -415,10 +415,10 @@ set(SIMIX_SRC
   src/kernel/actor/ActorImpl.hpp
   src/kernel/actor/CommObserver.cpp
   src/kernel/actor/CommObserver.hpp
-  src/kernel/actor/MutexObserver.cpp
-  src/kernel/actor/MutexObserver.hpp
   src/kernel/actor/SimcallObserver.cpp
   src/kernel/actor/SimcallObserver.hpp
+  src/kernel/actor/SynchroObserver.cpp
+  src/kernel/actor/SynchroObserver.hpp
 
   ${SIMIX_GENERATED_SRC}
   )
