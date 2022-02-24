@@ -20,6 +20,7 @@ namespace actor {
 MutexObserver::MutexObserver(ActorImpl* actor, mc::Transition::Type type, activity::MutexImpl* mutex)
     : SimcallObserver(actor), type_(type), mutex_(mutex)
 {
+  xbt_assert(mutex_);
 }
 
 void MutexObserver::serialize(std::stringstream& stream) const
