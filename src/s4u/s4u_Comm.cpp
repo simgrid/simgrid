@@ -24,6 +24,29 @@ xbt::signal<void(Comm const&)> Comm::on_send;
 xbt::signal<void(Comm const&)> Comm::on_recv;
 xbt::signal<void(Comm const&)> Comm::on_completion;
 
+CommPtr Comm::set_copy_data_callback(void (*callback)(kernel::activity::CommImpl*, void*, size_t))
+{
+  copy_data_function_ = callback;
+  return this;
+}
+
+void Comm::copy_buffer_callback(kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
+{
+  XBT_DEBUG("Copy the data over");
+  memcpy(comm->dst_buff_, buff, buff_size);
+  if (comm->detached()) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the
+                          // original buffer available to the application ASAP
+    xbt_free(buff);
+    comm->src_buff_ = nullptr;
+  }
+}
+
+void Comm::copy_pointer_callback(kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
+{
+  xbt_assert((buff_size == sizeof(void*)), "Cannot copy %zu bytes: must be sizeof(void*)", buff_size);
+  *(void**)(comm->dst_buff_) = buff;
+}
+
 Comm::~Comm()
 {
   if (state_ == State::STARTED && not detached_ &&
@@ -37,52 +60,32 @@ Comm::~Comm()
   }
 }
 
-ssize_t Comm::wait_any_for(const std::vector<CommPtr>& comms, double timeout)
+CommPtr Comm::sendto_init()
 {
-  std::vector<ActivityPtr> activities;
-  for (const auto& comm : comms)
-    activities.push_back(boost::dynamic_pointer_cast<Activity>(comm));
-  ssize_t changed_pos;
-  try {
-    changed_pos = Activity::wait_any_for(activities, timeout);
-  } catch (const NetworkFailureException& e) {
-    changed_pos = -1;
-    for (auto c : comms) {
-      if (c->pimpl_->get_state() == kernel::activity::State::FAILED) {
-        c->complete(State::FAILED);
-      }
-    }
-    e.rethrow_nested(XBT_THROW_POINT, boost::core::demangle(typeid(e).name()) + " raised in kernel mode.");
-  }
-  return changed_pos;
+  CommPtr res(new Comm());
+  res->sender_ = kernel::actor::ActorImpl::self();
+  return res;
 }
 
-void Comm::wait_all(const std::vector<CommPtr>& comms)
+CommPtr Comm::sendto_init(Host* from, Host* to)
 {
-  // TODO: this should be a simcall or something
-  for (auto& comm : comms)
-    comm->wait();
+  auto res   = Comm::sendto_init();
+  res->from_ = from;
+  res->to_   = to;
+
+  return res;
 }
 
-size_t Comm::wait_all_for(const std::vector<CommPtr>& comms, double timeout)
+CommPtr Comm::sendto_async(Host* from, Host* to, uint64_t simulated_size_in_bytes)
 {
-  if (timeout < 0.0) {
-    wait_all(comms);
-    return comms.size();
-  }
+  auto res = Comm::sendto_init(from, to)->set_payload_size(simulated_size_in_bytes);
+  res->vetoable_start();
+  return res;
+}
 
-  double deadline = Engine::get_clock() + timeout;
-  std::vector<CommPtr> waited_comm(1, nullptr);
-  for (size_t i = 0; i < comms.size(); i++) {
-    double wait_timeout = std::max(0.0, deadline - Engine::get_clock());
-    waited_comm[0]      = comms[i];
-    // Using wait_any_for() here (and not wait_for) because we don't want comms to be invalidated on timeout
-    if (wait_any_for(waited_comm, wait_timeout) == -1) {
-      XBT_DEBUG("Timeout (%g): i = %zu", wait_timeout, i);
-      return i;
-    }
-  }
-  return comms.size();
+void Comm::sendto(Host* from, Host* to, uint64_t simulated_size_in_bytes)
+{
+  sendto_async(from, to, simulated_size_in_bytes)->wait();
 }
 
 CommPtr Comm::set_source(Host* from)
@@ -112,6 +115,14 @@ CommPtr Comm::set_rate(double rate)
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
              __FUNCTION__);
   rate_ = rate;
+  return this;
+}
+
+CommPtr Comm::set_mailbox(Mailbox* mailbox)
+{
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
+             __FUNCTION__);
+  mailbox_ = mailbox;
   return this;
 }
 
@@ -151,15 +162,7 @@ CommPtr Comm::set_dst_data(void** buff)
   dst_buff_ = buff;
   return this;
 }
-void* Comm::get_dst_data()
-{
-  return dst_buff_;
-}
 
-size_t Comm::get_dst_data_size() const
-{
-  return dst_buff_size_;
-}
 CommPtr Comm::set_dst_data(void** buff, size_t size)
 {
   xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication started (not implemented)",
@@ -170,38 +173,19 @@ CommPtr Comm::set_dst_data(void** buff, size_t size)
   dst_buff_size_ = size;
   return this;
 }
+
 CommPtr Comm::set_payload_size(uint64_t bytes)
 {
   Activity::set_remaining(bytes);
   return this;
 }
 
-CommPtr Comm::sendto_init()
+Actor* Comm::get_sender() const
 {
-  CommPtr res(new Comm());
-  res->sender_ = kernel::actor::ActorImpl::self();
-  return res;
-}
-
-CommPtr Comm::sendto_init(Host* from, Host* to)
-{
-  auto res   = Comm::sendto_init();
-  res->from_ = from;
-  res->to_   = to;
-
-  return res;
-}
-
-CommPtr Comm::sendto_async(Host* from, Host* to, uint64_t simulated_size_in_bytes)
-{
-  auto res = Comm::sendto_init(from, to)->set_payload_size(simulated_size_in_bytes);
-  res->vetoable_start();
-  return res;
-}
-
-void Comm::sendto(Host* from, Host* to, uint64_t simulated_size_in_bytes)
-{
-  sendto_async(from, to, simulated_size_in_bytes)->wait();
+  kernel::actor::ActorImplPtr sender = nullptr;
+  if (pimpl_)
+    sender = boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->src_actor_;
+  return sender ? sender->get_ciface() : nullptr;
 }
 
 Comm* Comm::start()
@@ -262,6 +246,24 @@ Comm* Comm::start()
   return this;
 }
 
+Comm* Comm::detach()
+{
+  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication is %s (not implemented)",
+             __FUNCTION__, get_state_str());
+  xbt_assert(dst_buff_ == nullptr && dst_buff_size_ == 0, "You can only detach sends, not recvs");
+  detached_ = true;
+  vetoable_start();
+  return this;
+}
+
+ssize_t Comm::test_any(const std::vector<CommPtr>& comms)
+{
+  std::vector<ActivityPtr> activities;
+  for (const auto& comm : comms)
+    activities.push_back(boost::dynamic_pointer_cast<Activity>(comm));
+  return Activity::test_any(activities);
+}
+
 /** @brief Block the calling actor until the communication is finished, or until timeout
  *
  * On timeout, an exception is thrown and the communication is invalidated.
@@ -317,60 +319,53 @@ Comm* Comm::wait_for(double timeout)
   complete(State::FINISHED);
   return this;
 }
-
-ssize_t Comm::test_any(const std::vector<CommPtr>& comms)
+ssize_t Comm::wait_any_for(const std::vector<CommPtr>& comms, double timeout)
 {
   std::vector<ActivityPtr> activities;
   for (const auto& comm : comms)
     activities.push_back(boost::dynamic_pointer_cast<Activity>(comm));
-  return Activity::test_any(activities);
-}
-
-Comm* Comm::detach()
-{
-  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication is %s (not implemented)",
-             __FUNCTION__, get_state_str());
-  xbt_assert(dst_buff_ == nullptr && dst_buff_size_ == 0, "You can only detach sends, not recvs");
-  detached_ = true;
-  vetoable_start();
-  return this;
-}
-
-Mailbox* Comm::get_mailbox() const
-{
-  return mailbox_;
-}
-
-Actor* Comm::get_sender() const
-{
-  kernel::actor::ActorImplPtr sender = nullptr;
-  if (pimpl_)
-    sender = boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->src_actor_;
-  return sender ? sender->get_ciface() : nullptr;
-}
-
-CommPtr Comm::set_copy_data_callback(void (*callback)(kernel::activity::CommImpl*, void*, size_t))
-{
-  copy_data_function_ = callback;
-  return this;
-}
-void Comm::copy_buffer_callback(kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
-{
-  XBT_DEBUG("Copy the data over");
-  memcpy(comm->dst_buff_, buff, buff_size);
-  if (comm->detached()) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the
-                          // original buffer available to the application ASAP
-    xbt_free(buff);
-    comm->src_buff_ = nullptr;
+  ssize_t changed_pos;
+  try {
+    changed_pos = Activity::wait_any_for(activities, timeout);
+  } catch (const NetworkFailureException& e) {
+    changed_pos = -1;
+    for (auto c : comms) {
+      if (c->pimpl_->get_state() == kernel::activity::State::FAILED) {
+        c->complete(State::FAILED);
+      }
+    }
+    e.rethrow_nested(XBT_THROW_POINT, boost::core::demangle(typeid(e).name()) + " raised in kernel mode.");
   }
+  return changed_pos;
 }
 
-void Comm::copy_pointer_callback(kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
+void Comm::wait_all(const std::vector<CommPtr>& comms)
 {
-  xbt_assert((buff_size == sizeof(void*)), "Cannot copy %zu bytes: must be sizeof(void*)", buff_size);
-  *(void**)(comm->dst_buff_) = buff;
+  // TODO: this should be a simcall or something
+  for (auto& comm : comms)
+    comm->wait();
 }
 
+size_t Comm::wait_all_for(const std::vector<CommPtr>& comms, double timeout)
+{
+  if (timeout < 0.0) {
+    wait_all(comms);
+    return comms.size();
+  }
+
+  double deadline = Engine::get_clock() + timeout;
+  std::vector<CommPtr> waited_comm(1, nullptr);
+  for (size_t i = 0; i < comms.size(); i++) {
+    double wait_timeout = std::max(0.0, deadline - Engine::get_clock());
+    waited_comm[0]      = comms[i];
+    // Using wait_any_for() here (and not wait_for) because we don't want comms to be invalidated on timeout
+    if (wait_any_for(waited_comm, wait_timeout) == -1) {
+      XBT_DEBUG("Timeout (%g): i = %zu", wait_timeout, i);
+      return i;
+    }
+  }
+  return comms.size();
+}
 } // namespace s4u
 } // namespace simgrid
 /* **************************** Public C interface *************************** */

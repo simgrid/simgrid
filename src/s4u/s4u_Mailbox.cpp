@@ -88,7 +88,7 @@ CommPtr Mailbox::put_init()
 {
   CommPtr res(new Comm());
   res->sender_  = kernel::actor::ActorImpl::self();
-  res->mailbox_ = this;
+  res->set_mailbox(this);
   return res;
 }
 
@@ -123,9 +123,8 @@ void Mailbox::put(void* payload, uint64_t simulated_size_in_bytes, double timeou
 
 CommPtr Mailbox::get_init()
 {
-  CommPtr res(new Comm());
+  auto res       = CommPtr(new Comm())->set_mailbox(this);
   res->receiver_ = kernel::actor::ActorImpl::self();
-  res->mailbox_  = this;
   return res;
 }
 
