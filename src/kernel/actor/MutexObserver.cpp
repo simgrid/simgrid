@@ -25,7 +25,7 @@ MutexObserver::MutexObserver(ActorImpl* actor, mc::Transition::Type type, activi
 void MutexObserver::serialize(std::stringstream& stream) const
 {
   auto* owner = get_mutex()->get_owner();
-  stream << (short)type_ << ' ' << (uintptr_t)get_mutex() << ' ' << (owner != nullptr ? owner->get_pid() : -1);
+  stream << (short)type_ << ' ' << get_mutex()->get_id() << ' ' << (owner != nullptr ? owner->get_pid() : -1);
 }
 
 bool MutexObserver::is_enabled()

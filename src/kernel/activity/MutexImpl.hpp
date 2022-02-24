@@ -68,17 +68,20 @@ class XBT_PUBLIC MutexImpl {
   actor::ActorImpl* owner_ = nullptr;
   // List of sleeping actors:
   std::deque<MutexAcquisitionImplPtr> sleeping_;
+  static unsigned next_id_;
+  unsigned id_;
 
   friend MutexAcquisitionImpl;
 
 public:
-  MutexImpl() : piface_(this) {}
+  MutexImpl() : piface_(this), id_(next_id_++) {}
   MutexImpl(MutexImpl const&) = delete;
   MutexImpl& operator=(MutexImpl const&) = delete;
 
   MutexAcquisitionImplPtr lock_async(actor::ActorImpl* issuer);
   bool try_lock(actor::ActorImpl* issuer);
   void unlock(actor::ActorImpl* issuer);
+  unsigned get_id() const { return id_; }
 
   MutexImpl* ref();
   void unref();

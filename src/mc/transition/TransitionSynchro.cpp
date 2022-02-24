@@ -16,7 +16,7 @@ namespace simgrid {
 namespace mc {
 std::string MutexTransition::to_string(bool verbose) const
 {
-  return xbt::string_printf("%s(%" PRIxPTR ", owner:%ld)", Transition::to_c_str(type_), mutex_, owner_);
+  return xbt::string_printf("%s(mutex: %" PRIxPTR ", owner:%ld)", Transition::to_c_str(type_), mutex_, owner_);
 }
 
 MutexTransition::MutexTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream)

@@ -5,6 +5,7 @@
 
 #include "simgrid/s4u.hpp" /* All of S4U */
 #include "xbt/config.hpp"
+namespace sg4 = simgrid::s4u;
 
 #include <mutex> /* std::mutex and std::lock_guard */
 
@@ -13,7 +14,7 @@ static simgrid::config::Flag<int> cfg_actor_count("actors", "How many pairs of a
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 
 /* This worker uses a classical mutex */
-static void worker(simgrid::s4u::MutexPtr mutex, int& result)
+static void worker(sg4::MutexPtr mutex, int& result)
 {
   // lock the mutex before enter in the critical section
   mutex->lock();
@@ -28,11 +29,11 @@ static void worker(simgrid::s4u::MutexPtr mutex, int& result)
   mutex->unlock();
 }
 
-static void workerLockGuard(simgrid::s4u::MutexPtr mutex, int& result)
+static void workerLockGuard(sg4::MutexPtr mutex, int& result)
 {
   // Simply use the std::lock_guard like this
   // It's like a lock() that would do the unlock() automatically when getting out of scope
-  std::lock_guard<simgrid::s4u::Mutex> lock(*mutex);
+  std::lock_guard<sg4::Mutex> lock(*mutex);
 
   // then you are in a safe zone
   XBT_INFO("Hello s4u, I'm ready to compute after a lock_guard");
@@ -46,26 +47,22 @@ static void workerLockGuard(simgrid::s4u::MutexPtr mutex, int& result)
 static void master()
 {
   int result = 0;
-  simgrid::s4u::MutexPtr mutex = simgrid::s4u::Mutex::create();
 
-  for (int i = 0; i < cfg_actor_count * 2; i++) {
-    // To create a worker use the static method simgrid::s4u::Actor.
-    if((i % 2) == 0 )
-      simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Jupiter"), workerLockGuard, mutex,
-                                  std::ref(result));
-    else
-      simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Tremblay"), worker, mutex, std::ref(result));
+  for (int i = 0; i < cfg_actor_count; i++) {
+    sg4::MutexPtr mutex = sg4::Mutex::create();
+    sg4::Actor::create("worker", sg4::Host::by_name("Jupiter"), workerLockGuard, mutex, std::ref(result));
+    sg4::Actor::create("worker", sg4::Host::by_name("Tremblay"), worker, mutex, std::ref(result));
   }
 
-  simgrid::s4u::this_actor::sleep_for(10);
+  sg4::this_actor::sleep_for(10);
   XBT_INFO("Results is -> %d", result);
 }
 
 int main(int argc, char **argv)
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   e.load_platform("../../platforms/two_hosts.xml");
-  simgrid::s4u::Actor::create("main", e.host_by_name("Tremblay"), master);
+  sg4::Actor::create("main", e.host_by_name("Tremblay"), master);
   e.run();
 
   return 0;

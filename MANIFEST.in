@@ -365,6 +365,7 @@ include examples/cpp/synchro-condition-variable-waituntil/s4u-synchro-condition-
 include examples/cpp/synchro-condition-variable-waituntil/s4u-synchro-condition-variable-waituntil.tesh
 include examples/cpp/synchro-condition-variable/s4u-synchro-condition-variable.cpp
 include examples/cpp/synchro-condition-variable/s4u-synchro-condition-variable.tesh
+include examples/cpp/synchro-mutex/s4u-mc-synchro-mutex.tesh
 include examples/cpp/synchro-mutex/s4u-synchro-mutex.cpp
 include examples/cpp/synchro-mutex/s4u-synchro-mutex.tesh
 include examples/cpp/synchro-semaphore/s4u-synchro-semaphore.cpp

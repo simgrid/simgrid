@@ -26,10 +26,6 @@ if(SIMGRID_HAVE_MC)
      set(_${example}_factories "^thread") # Timeout
      add_dependencies(tests-mc s4u-${example})
   endforeach()
-
-  # Make all MC tests buildable together
-  #foreach(example ) # no test to be build in any case
-  #endforeach()
   
   if(HAVE_C_STACK_CLEANER)
     add_executable       (s4u-mc-bugged1-liveness-cleaner-on  EXCLUDE_FROM_ALL s4u-mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
@@ -62,7 +58,6 @@ if(SIMGRID_HAVE_MC)
                        --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
                        --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
                        ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-mc-${example}.tesh)
-    set(tesh_files ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-mc-${example}.tesh)
   endforeach()
 
 
@@ -95,6 +90,11 @@ else()
     set(_${example}_disable 1)
   endforeach()
 endif()
+# The tesh files of MC hijacked tests must always be added to the distribution
+foreach (example synchro-mutex)
+  set(tesh_files ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-mc-${example}.tesh)
+endforeach()
+
 
 if(NOT HAVE_GRAPHVIZ)
   set(_dag-from-dot_disable 1)

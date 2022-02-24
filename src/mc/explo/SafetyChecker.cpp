@@ -97,8 +97,7 @@ void SafetyChecker::run()
     State* state = stack_.back().get();
 
     XBT_DEBUG("**************************************************");
-    XBT_VERB("Exploration depth=%zu (state=%p, num %ld)(%zu interleave)", stack_.size(), state, state->num_,
-             state->count_todo());
+    XBT_DEBUG("Exploration depth=%zu (state:%ld; %zu interleaves)", stack_.size(), state->num_, state->count_todo());
 
     api::get().mc_inc_visited_states();
 
@@ -143,7 +142,8 @@ void SafetyChecker::run()
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_DEBUG("Execute: %s", state->get_transition()->to_string().c_str());
+    XBT_VERB("Execute %ld: %.60s (stack depth: %ld, state: %zu, %zu interleaves)", state->get_transition()->aid_,
+             state->get_transition()->to_string().c_str(), stack_.size(), state->num_, state->count_todo());
 
     std::string req_str;
     if (dot_output != nullptr)

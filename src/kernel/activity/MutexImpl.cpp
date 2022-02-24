@@ -53,6 +53,8 @@ void MutexAcquisitionImpl::finish()
   simcall->issuer_->simcall_answer();
 }
 
+unsigned MutexImpl::next_id_ = 0;
+
 MutexAcquisitionImplPtr MutexImpl::lock_async(actor::ActorImpl* issuer)
 {
   auto res = MutexAcquisitionImplPtr(new kernel::activity::MutexAcquisitionImpl(issuer, this), true);
