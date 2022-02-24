@@ -20,7 +20,7 @@ namespace actor {
 /* All the observers of Mutex transitions are very similar, so implement them all together in this class */
 class MutexObserver : public SimcallObserver {
   mc::Transition::Type type_;
-  activity::MutexImpl* const mutex_ = nullptr;
+  activity::MutexImpl* const mutex_;
 
 public:
   MutexObserver(ActorImpl* actor, mc::Transition::Type type, activity::MutexImpl* mutex);
