@@ -36,9 +36,6 @@ public:
   unsigned int get_capacity() const { return value_; }
   bool is_used() const { return not sleeping_.empty(); }
 
-  SemaphoreImpl* ref();
-  void unref();
-
   friend void intrusive_ptr_add_ref(SemaphoreImpl* sem)
   {
     XBT_ATTRIB_UNUSED auto previous = sem->refcount_.fetch_add(1);

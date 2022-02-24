@@ -64,13 +64,11 @@ MutexPtr Mutex::create()
 /* refcounting of the intrusive_ptr is delegated to the implementation object */
 void intrusive_ptr_add_ref(const Mutex* mutex)
 {
-  xbt_assert(mutex);
-  mutex->pimpl_->ref();
+  intrusive_ptr_add_ref(mutex->pimpl_);
 }
 void intrusive_ptr_release(const Mutex* mutex)
 {
-  xbt_assert(mutex);
-  mutex->pimpl_->unref();
+  intrusive_ptr_release(mutex->pimpl_);
 }
 
 } // namespace s4u

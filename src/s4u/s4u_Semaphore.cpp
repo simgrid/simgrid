@@ -51,14 +51,12 @@ bool Semaphore::would_block() const
 /* refcounting of the intrusive_ptr is delegated to the implementation object */
 void intrusive_ptr_add_ref(const Semaphore* sem)
 {
-  xbt_assert(sem);
-  sem->pimpl_->ref();
+  intrusive_ptr_add_ref(sem->pimpl_);
 }
 
 void intrusive_ptr_release(const Semaphore* sem)
 {
-  xbt_assert(sem);
-  sem->pimpl_->unref();
+  intrusive_ptr_release(sem->pimpl_);
 }
 
 } // namespace s4u

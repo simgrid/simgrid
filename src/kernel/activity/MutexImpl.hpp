@@ -83,9 +83,6 @@ public:
   void unlock(actor::ActorImpl* issuer);
   unsigned get_id() const { return id_; }
 
-  MutexImpl* ref();
-  void unref();
-
   actor::ActorImpl* get_owner() const { return owner_; }
 
   // boost::intrusive_ptr<Mutex> support:

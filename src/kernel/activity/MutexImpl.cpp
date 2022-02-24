@@ -115,18 +115,6 @@ void MutexImpl::unlock(actor::ActorImpl* issuer)
   }
   XBT_OUT();
 }
-/** Increase the refcount for this mutex */
-MutexImpl* MutexImpl::ref()
-{
-  intrusive_ptr_add_ref(this);
-  return this;
-}
-
-/** Decrease the refcount for this mutex */
-void MutexImpl::unref()
-{
-  intrusive_ptr_release(this);
-}
 
 } // namespace activity
 } // namespace kernel
