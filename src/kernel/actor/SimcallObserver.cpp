@@ -22,15 +22,6 @@ void SimcallObserver::serialize(std::stringstream& stream) const
 {
   stream << (short)mc::Transition::Type::UNKNOWN;
 }
-bool SimcallObserver::depends(SimcallObserver* other)
-{
-  THROW_UNIMPLEMENTED;
-}
-/* Random is only dependent when issued by the same actor (ie, always independent) */
-bool RandomSimcall::depends(SimcallObserver* other)
-{
-  return get_issuer() == other->get_issuer();
-}
 void RandomSimcall::serialize(std::stringstream& stream) const
 {
   stream << (short)mc::Transition::Type::RANDOM << ' ';

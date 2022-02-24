@@ -51,9 +51,6 @@ public:
   { /* Nothing to do by default */
   }
 
-  /** Computes the dependency relation */
-  virtual bool depends(SimcallObserver* other);
-
   /** Serialize to the given string buffer */
   virtual void serialize(std::stringstream& stream) const;
 
@@ -86,7 +83,6 @@ public:
   int get_max_consider() override;
   void prepare(int times_considered) override;
   int get_value() const { return next_value_; }
-  bool depends(SimcallObserver* other) override;
 };
 
 class ConditionWaitSimcall : public ResultingSimcall<bool> {
