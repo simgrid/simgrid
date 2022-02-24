@@ -57,7 +57,7 @@ public:
 };
 
 // Temporary :)
-extern simgrid::mc::Session* session_singleton;
+extern std::unique_ptr<simgrid::mc::Session> session_singleton;
 }
 }
 

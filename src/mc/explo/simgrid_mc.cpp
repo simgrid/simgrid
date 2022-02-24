@@ -47,7 +47,7 @@ int main(int argc, char** argv)
     algo = simgrid::mc::CheckerAlgorithm::Liveness;
 
   int res      = SIMGRID_MC_EXIT_SUCCESS;
-  auto checker = api::get().initialize(argv_copy.data(), algo);
+  std::unique_ptr<simgrid::mc::Exploration> checker{api::get().initialize(argv_copy.data(), algo)};
   try {
     checker->run();
   } catch (const simgrid::mc::DeadlockError&) {
@@ -58,6 +58,6 @@ int main(int argc, char** argv)
     res = SIMGRID_MC_EXIT_LIVENESS;
   }
   api::get().s_close();
-  // delete checker; SEGFAULT in liveness
+  checker.release(); // FIXME: this line should not exist, but it segfaults in liveness
   return res;
 }

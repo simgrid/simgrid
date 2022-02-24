@@ -87,7 +87,7 @@ xbt::string const& Api::get_actor_name(smx_actor_t actor) const
 
 simgrid::mc::Exploration* Api::initialize(char** argv, simgrid::mc::CheckerAlgorithm algo) const
 {
-  auto session = new simgrid::mc::Session([argv] {
+  simgrid::mc::session_singleton = std::make_unique<simgrid::mc::Session>([argv] {
     int i = 1;
     while (argv[i] != nullptr && argv[i][0] == '-')
       i++;
@@ -100,27 +100,25 @@ simgrid::mc::Exploration* Api::initialize(char** argv, simgrid::mc::CheckerAlgor
   simgrid::mc::Exploration* explo;
   switch (algo) {
     case CheckerAlgorithm::CommDeterminism:
-      explo = simgrid::mc::create_communication_determinism_checker(session);
+      explo = simgrid::mc::create_communication_determinism_checker(session_singleton.get());
       break;
 
     case CheckerAlgorithm::UDPOR:
-      explo = simgrid::mc::create_udpor_checker(session);
+      explo = simgrid::mc::create_udpor_checker(session_singleton.get());
       break;
 
     case CheckerAlgorithm::Safety:
-      explo = simgrid::mc::create_safety_checker(session);
+      explo = simgrid::mc::create_safety_checker(session_singleton.get());
       break;
 
     case CheckerAlgorithm::Liveness:
-      explo = simgrid::mc::create_liveness_checker(session);
+      explo = simgrid::mc::create_liveness_checker(session_singleton.get());
       break;
 
     default:
       THROW_IMPOSSIBLE;
   }
 
-  // FIXME: session and checker are never deleted
-  simgrid::mc::session_singleton = session;
   mc_model_checker->set_exploration(explo);
   return explo;
 }
@@ -176,6 +174,7 @@ simgrid::mc::Snapshot* Api::take_snapshot(long num_state) const
 void Api::s_close() const
 {
   session_singleton->close();
+  session_singleton.reset();
   if (simgrid::mc::property_automaton != nullptr) {
     xbt_automaton_free(simgrid::mc::property_automaton);
     simgrid::mc::property_automaton = nullptr;
