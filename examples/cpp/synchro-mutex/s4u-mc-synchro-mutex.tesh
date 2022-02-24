@@ -1,0 +1,11 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/../../../bin/simgrid-mc -- ${bindir:=.}/s4u-synchro-mutex --cfg=actors:1 --log=s4u_test.thres:critical
+> [0.000000] [mc_safety/INFO] Start a DFS exploration. Reduction is: dpor.
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'actors' to '1'
+> [0.000000] [mc_safety/INFO] DFS exploration ended. 13 unique states visited; 3 backtracks (18 transition replays, 3 states visited overall)
+
+$ ${bindir:=.}/../../../bin/simgrid-mc -- ${bindir:=.}/s4u-synchro-mutex --cfg=actors:2 --log=s4u_test.thres:critical
+> [0.000000] [mc_safety/INFO] Start a DFS exploration. Reduction is: dpor.
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'actors' to '2'
+> [0.000000] [mc_safety/INFO] DFS exploration ended. 241 unique states visited; 79 backtracks (744 transition replays, 425 states visited overall)

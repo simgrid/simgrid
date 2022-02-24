@@ -204,9 +204,9 @@ bind_flag(T& value, const char* name, const char* description, F callback)
 /** A variable bound to a CLI option
  *
  *  <pre><code>
- *  static simgrid::config::flag<int> answer("answer", "Expected answer", 42);
- *  static simgrid::config::flag<std::string> name("name", "Ford Perfect", "John Doe");
- *  static simgrid::config::flag<double> gamma("gamma", "Gamma factor", 1.987);
+ *  static simgrid::config::Flag<int> answer("answer", "Expected answer", 42);
+ *  static simgrid::config::Flag<std::string> name("name", "Ford Perfect", "John Doe");
+ *  static simgrid::config::Flag<double> gamma("gamma", "Gamma factor", 1.987);
  *  </code></pre>
  */
 template<class T>

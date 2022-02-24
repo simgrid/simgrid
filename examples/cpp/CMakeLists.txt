@@ -53,6 +53,19 @@ if(SIMGRID_HAVE_MC)
     set(_mc-bugged1-liveness_disable 1)
   endif()
 
+  # Hijack some regular tests to run them on top of the MC
+  foreach (example synchro-mutex)
+    ADD_TESH(s4u-mc-${example} 
+                       --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+                       --setenv libdir=${CMAKE_BINARY_DIR}/lib
+                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                       --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
+                       --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
+                       ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-mc-${example}.tesh)
+    set(tesh_files ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-mc-${example}.tesh)
+  endforeach()
+
+
   # This example never ends, disable it for now
   set(_mc-bugged2-liveness_disable 1)
   

@@ -4,11 +4,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/s4u.hpp" /* All of S4U */
-#include "simgrid/modelchecker.h" // This example is also used to test the modelchecker on mutexes
+#include "xbt/config.hpp"
 
 #include <mutex> /* std::mutex and std::lock_guard */
 
-int NB_ACTOR = 6;
+static simgrid::config::Flag<int> cfg_actor_count("actors", "How many pairs of actors should be started?", 6);
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 
@@ -48,7 +48,7 @@ static void master()
   int result = 0;
   simgrid::s4u::MutexPtr mutex = simgrid::s4u::Mutex::create();
 
-  for (int i = 0; i < NB_ACTOR * 2 ; i++) {
+  for (int i = 0; i < cfg_actor_count * 2; i++) {
     // To create a worker use the static method simgrid::s4u::Actor.
     if((i % 2) == 0 )
       simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Jupiter"), workerLockGuard, mutex,
@@ -64,10 +64,6 @@ static void master()
 int main(int argc, char **argv)
 {
   simgrid::s4u::Engine e(&argc, argv);
-
-  if (MC_is_active()) // Reduce the size of that test when running in the model-checker
-    NB_ACTOR = 2;
-
   e.load_platform("../../platforms/two_hosts.xml");
   simgrid::s4u::Actor::create("main", e.host_by_name("Tremblay"), master);
   e.run();
