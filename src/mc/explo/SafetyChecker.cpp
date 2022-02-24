@@ -142,7 +142,7 @@ void SafetyChecker::run()
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    XBT_VERB("Execute %ld: %.60s (stack depth: %ld, state: %zu, %zu interleaves)", state->get_transition()->aid_,
+    XBT_VERB("Execute %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", state->get_transition()->aid_,
              state->get_transition()->to_string().c_str(), stack_.size(), state->num_, state->count_todo());
 
     std::string req_str;
