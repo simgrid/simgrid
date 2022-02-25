@@ -52,7 +52,7 @@ void SemAcquisitionImpl::finish()
     if (surf_action_->get_state() == resource::Action::State::FINISHED) { // The timeout elapsed
       if (granted_) { // but we got the semaphore, just in time!
         set_state(State::DONE);
-        
+
       } else { // we have to report that timeout
         /* Remove myself from the list of interested parties */
         auto issuer = get_issuer();
@@ -68,6 +68,7 @@ void SemAcquisitionImpl::finish()
       }
     }
     surf_action_->unref();
+    surf_action_ = nullptr;
   }
 
   simcall->issuer_->waiting_synchro_ = nullptr;
