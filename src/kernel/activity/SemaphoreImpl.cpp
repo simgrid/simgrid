@@ -56,10 +56,11 @@ void SemAcquisitionImpl::finish()
       } else { // we have to report that timeout
         /* Remove myself from the list of interested parties */
         auto issuer = get_issuer();
-        auto it     = std::find_if(semaphore_->sleeping_.begin(), semaphore_->sleeping_.end(),
+        auto it     = std::find_if(semaphore_->ongoing_acquisitions_.begin(), semaphore_->ongoing_acquisitions_.end(),
                                    [issuer](SemAcquisitionImplPtr acqui) { return acqui->get_issuer() == issuer; });
-        xbt_assert(it != semaphore_->sleeping_.end(), "Cannot find myself in the waiting queue that I have to leave");
-        semaphore_->sleeping_.erase(it);
+        xbt_assert(it != semaphore_->ongoing_acquisitions_.end(),
+                   "Cannot find myself in the waiting queue that I have to leave");
+        semaphore_->ongoing_acquisitions_.erase(it);
 
         /* Return to the englobing simcall that the wait_for timeouted */
         auto* observer = dynamic_cast<kernel::actor::SemAcquireSimcall*>(issuer->simcall_.observer_);
@@ -81,7 +82,7 @@ SemAcquisitionImplPtr SemaphoreImpl::acquire_async(actor::ActorImpl* issuer)
 
   if (value_ <= 0) {
     /* No free token in the semaphore; register the acquisition */
-    sleeping_.push_back(res);
+    ongoing_acquisitions_.push_back(res);
   } else {
     value_--;
     res->granted_ = true;
@@ -92,11 +93,11 @@ void SemaphoreImpl::release()
 {
   XBT_DEBUG("Sem release semaphore %p", this);
 
-  if (not sleeping_.empty()) {
+  if (not ongoing_acquisitions_.empty()) {
     /* Release the first waiting actor */
 
-    auto acqui = sleeping_.front();
-    sleeping_.pop_front();
+    auto acqui = ongoing_acquisitions_.front();
+    ongoing_acquisitions_.pop_front();
 
     acqui->granted_ = true;
     if (acqui == acqui->get_issuer()->waiting_synchro_)

@@ -46,7 +46,7 @@ class XBT_PUBLIC SemaphoreImpl {
   std::atomic_int_fast32_t refcount_{1};
   s4u::Semaphore piface_;
   unsigned int value_;
-  std::deque<SemAcquisitionImplPtr> sleeping_; /* ongoing acquisitions */
+  std::deque<SemAcquisitionImplPtr> ongoing_acquisitions_;
 
   friend SemAcquisitionImpl;
 
@@ -61,7 +61,7 @@ public:
   bool would_block() const { return (value_ == 0); }
 
   unsigned int get_capacity() const { return value_; }
-  bool is_used() const { return not sleeping_.empty(); }
+  bool is_used() const { return not ongoing_acquisitions_.empty(); }
 
   friend void intrusive_ptr_add_ref(SemaphoreImpl* sem)
   {

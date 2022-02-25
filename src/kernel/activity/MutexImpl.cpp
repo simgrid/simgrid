@@ -58,7 +58,7 @@ MutexAcquisitionImplPtr MutexImpl::lock_async(actor::ActorImpl* issuer)
 
   if (owner_ != nullptr) {
     /* Somebody is using the mutex; register the acquisition */
-    sleeping_.push_back(res);
+    ongoing_acquisitions_.push_back(res);
   } else {
     owner_  = issuer;
   }
@@ -96,10 +96,10 @@ void MutexImpl::unlock(actor::ActorImpl* issuer)
   xbt_assert(issuer == owner_, "Cannot release that mutex: you're not the owner. %s is (pid:%ld).",
              owner_ != nullptr ? owner_->get_cname() : "(nobody)", owner_ != nullptr ? owner_->get_pid() : -1);
 
-  if (not sleeping_.empty()) {
+  if (not ongoing_acquisitions_.empty()) {
     /* Give the ownership to the first waiting actor */
-    auto acq = sleeping_.front();
-    sleeping_.pop_front();
+    auto acq = ongoing_acquisitions_.front();
+    ongoing_acquisitions_.pop_front();
 
     owner_ = acq->get_issuer();
     if (acq == owner_->waiting_synchro_)
