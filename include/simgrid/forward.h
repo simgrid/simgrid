@@ -146,6 +146,8 @@ namespace activity {
   using SynchroImplPtr = boost::intrusive_ptr<SynchroImpl>;
   class SemaphoreImpl;
   using SemaphoreImplPtr = boost::intrusive_ptr<SemaphoreImpl>;
+  class SemAcquisitionImpl;
+  using SemAcquisitionImplPtr = boost::intrusive_ptr<SemAcquisitionImpl>;
   XBT_PUBLIC void intrusive_ptr_add_ref(SemaphoreImpl* sem);
   XBT_PUBLIC void intrusive_ptr_release(SemaphoreImpl* sem);
   class SleepImpl;

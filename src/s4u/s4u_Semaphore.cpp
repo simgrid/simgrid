@@ -22,7 +22,7 @@ void Semaphore::acquire()
 {
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::SemAcquireSimcall observer{issuer, pimpl_};
-  kernel::actor::simcall_blocking([&observer] { observer.get_sem()->acquire(observer.get_issuer(), -1.0); }, &observer);
+  kernel::actor::simcall_blocking([this, issuer] { pimpl_->acquire_async(issuer)->wait_for(issuer, -1.0); }, &observer);
 }
 
 bool Semaphore::acquire_timeout(double timeout)
@@ -30,7 +30,7 @@ bool Semaphore::acquire_timeout(double timeout)
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::SemAcquireSimcall observer{issuer, pimpl_, timeout};
   return kernel::actor::simcall_blocking(
-      [&observer] { observer.get_sem()->acquire(observer.get_issuer(), observer.get_timeout()); }, &observer);
+      [this, issuer, timeout] { pimpl_->acquire_async(issuer)->wait_for(issuer, timeout); }, &observer);
 }
 
 void Semaphore::release()

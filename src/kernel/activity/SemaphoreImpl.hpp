@@ -16,11 +16,39 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
+/** Semaphore Acquisition: the act / process of acquiring the semaphore.
+ *
+ * You can declare some interest on a semaphore without being blocked waiting if it's already empty.
+ * See the documentation of the MutexAcquisitionImpl for further details.
+ */
+class XBT_PUBLIC SemAcquisitionImpl : public ActivityImpl_T<SemAcquisitionImpl> {
+  actor::ActorImpl* issuer_ = nullptr;
+  SemaphoreImpl* semaphore_ = nullptr;
+  bool granted_             = false;
+
+  friend SemaphoreImpl;
+
+public:
+  SemAcquisitionImpl(actor::ActorImpl* issuer, SemaphoreImpl* sem) : issuer_(issuer), semaphore_(sem) {}
+  SemaphoreImplPtr get_semaphore() { return semaphore_; }
+  actor::ActorImpl* get_issuer() { return issuer_; }
+
+  bool test(actor::ActorImpl* issuer = nullptr) override { return granted_; }
+  void wait_for(actor::ActorImpl* issuer, double timeout) override;
+  void post() override;
+  void finish() override;
+  void set_exception(actor::ActorImpl* issuer) override
+  { /* nothing to do */
+  }
+};
+
 class XBT_PUBLIC SemaphoreImpl {
   std::atomic_int_fast32_t refcount_{1};
   s4u::Semaphore piface_;
   unsigned int value_;
-  actor::SynchroList sleeping_; /* list of sleeping actors*/
+  std::deque<SemAcquisitionImplPtr> sleeping_; /* ongoing acquisitions */
+
+  friend SemAcquisitionImpl;
 
 public:
   explicit SemaphoreImpl(unsigned int value) : piface_(this), value_(value){};
@@ -28,10 +56,9 @@ public:
   SemaphoreImpl(SemaphoreImpl const&) = delete;
   SemaphoreImpl& operator=(SemaphoreImpl const&) = delete;
 
-  void acquire(actor::ActorImpl* issuer, double timeout);
+  SemAcquisitionImplPtr acquire_async(actor::ActorImpl* issuer);
   void release();
   bool would_block() const { return (value_ == 0); }
-  void remove_sleeping_actor(actor::ActorImpl& actor) { xbt::intrusive_erase(sleeping_, actor); }
 
   unsigned int get_capacity() const { return value_; }
   bool is_used() const { return not sleeping_.empty(); }

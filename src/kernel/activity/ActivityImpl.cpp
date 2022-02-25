@@ -126,7 +126,7 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
         issuer->exception_       = nullptr;
         auto* observer           = dynamic_cast<kernel::actor::ActivityWaitSimcall*>(issuer->simcall_.observer_);
         xbt_assert(observer != nullptr);
-        observer->set_result(true);
+        observer->set_result(true); // Returns that the wait_for timeouted
       }));
       synchro->set_host(issuer->get_host()).set_timeout(timeout).start();
       synchro->register_simcall(&issuer->simcall_);

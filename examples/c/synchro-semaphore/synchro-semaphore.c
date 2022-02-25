@@ -23,22 +23,24 @@ static void peer(int argc, char* argv[])
     double wait_time = xbt_str_parse_double(argv[i], "Invalid wait time");
     i++;
     sg_actor_sleep_for(wait_time);
-    XBT_INFO("Trying to acquire %d (%sblocking)", i, sg_sem_would_block(sem) ? "" : "not ");
     // cover the two cases: with and without timeout
     if (i > 1) {
-      while (sg_sem_acquire_timeout(sem, 3.0))
-        XBT_INFO("Timeout.. Try again %d", i);
+      XBT_INFO("Trying for 1 sec to acquire #%d (that is %sfree)", i, sg_sem_would_block(sem) ? "not " : "");
+      while (sg_sem_acquire_timeout(sem, 1.)) {
+        XBT_INFO("Timeout.. Try #%d for another second.", i);
+      }
     } else {
+      XBT_INFO("Acquire #%d (that is %sfree)", i, sg_sem_would_block(sem) ? "not " : "");
       sg_sem_acquire(sem);
     }
-    XBT_INFO("Acquired %d", i);
+    XBT_INFO("Acquired #%d", i);
 
     wait_time = xbt_str_parse_double(argv[i], "Invalid wait time");
     i++;
     sg_actor_sleep_for(wait_time);
-    XBT_INFO("Releasing %d", i);
+    XBT_INFO("Releasing #%d", i);
     sg_sem_release(sem);
-    XBT_INFO("Released %d", i);
+    XBT_INFO("Released #%d", i);
   }
   sg_actor_sleep_for(50);
   XBT_INFO("Done");

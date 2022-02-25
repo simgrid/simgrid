@@ -41,8 +41,7 @@ namespace activity {
  * of a set if some transitions may become disabled in between, while you don't have to reconsider them if you can reuse
  * your previous computations).
  */
-class XBT_PUBLIC MutexAcquisitionImpl
-    : public ActivityImpl_T<MutexAcquisitionImpl> { // Acquisition: n. The act or process of acquiring.
+class XBT_PUBLIC MutexAcquisitionImpl : public ActivityImpl_T<MutexAcquisitionImpl> {
   actor::ActorImpl* issuer_ = nullptr;
   MutexImpl* mutex_         = nullptr;
 

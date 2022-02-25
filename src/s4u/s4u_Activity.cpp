@@ -59,6 +59,7 @@ Activity* Activity::wait_for(double timeout)
       throw HostFailureException(XBT_THROW_POINT, "Cannot wait for a failed exec");
     if (dynamic_cast<Io*>(this))
       throw StorageFailureException(XBT_THROW_POINT, "Cannot wait for a failed I/O");
+    THROW_IMPOSSIBLE;
   }
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();

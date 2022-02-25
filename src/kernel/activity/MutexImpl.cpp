@@ -29,10 +29,7 @@ bool MutexAcquisitionImpl::test(actor::ActorImpl*)
 void MutexAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 {
   xbt_assert(mutex_->owner_ != nullptr); // it was locked either by someone else or by me during the lock_async
-  xbt_assert(
-      issuer == issuer_,
-      "Actors can only wait acquisitions that they created themselves while this one was created by actor id %ld.",
-      issuer_->get_pid());
+  xbt_assert(issuer == issuer_, "Cannot wait on acquisitions created by another actor (id %ld)", issuer_->get_pid());
   xbt_assert(timeout < 0, "Timeouts on mutex acquisitions are not implemented yet.");
 
   this->register_simcall(&issuer_->simcall_); // Block on that acquisition
@@ -60,8 +57,7 @@ MutexAcquisitionImplPtr MutexImpl::lock_async(actor::ActorImpl* issuer)
   auto res = MutexAcquisitionImplPtr(new kernel::activity::MutexAcquisitionImpl(issuer, this), true);
 
   if (owner_ != nullptr) {
-    /* FIXME: check if the host is active ? */
-    /* Somebody using the mutex, use a synchronization to get host failures */
+    /* Somebody is using the mutex; register the acquisition */
     sleeping_.push_back(res);
   } else {
     owner_  = issuer;
@@ -103,12 +99,13 @@ void MutexImpl::unlock(actor::ActorImpl* issuer)
   if (not sleeping_.empty()) {
     /* Give the ownership to the first waiting actor */
     auto acq = sleeping_.front();
-    owner_   = acq->get_issuer();
+    sleeping_.pop_front();
 
+    owner_ = acq->get_issuer();
     if (acq == owner_->waiting_synchro_)
       acq->finish();
+    // else, the issuer is not blocked on this acquisition so no need to release it
 
-    sleeping_.pop_front();
   } else {
     /* nobody to wake up */
     owner_  = nullptr;
