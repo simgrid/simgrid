@@ -54,16 +54,10 @@ void SemAcquisitionImpl::finish()
         set_state(State::DONE);
 
       } else { // we have to report that timeout
-        /* Remove myself from the list of interested parties */
-        auto issuer = get_issuer();
-        auto it     = std::find_if(semaphore_->ongoing_acquisitions_.begin(), semaphore_->ongoing_acquisitions_.end(),
-                                   [issuer](SemAcquisitionImplPtr acqui) { return acqui->get_issuer() == issuer; });
-        xbt_assert(it != semaphore_->ongoing_acquisitions_.end(),
-                   "Cannot find myself in the waiting queue that I have to leave");
-        semaphore_->ongoing_acquisitions_.erase(it);
+        cancel(); // Unregister the acquisition from the semaphore
 
         /* Return to the englobing simcall that the wait_for timeouted */
-        auto* observer = dynamic_cast<kernel::actor::SemAcquireSimcall*>(issuer->simcall_.observer_);
+        auto* observer = dynamic_cast<kernel::actor::SemAcquireSimcall*>(get_issuer()->simcall_.observer_);
         xbt_assert(observer != nullptr);
         observer->set_result(true);
       }
@@ -75,7 +69,16 @@ void SemAcquisitionImpl::finish()
   simcall->issuer_->waiting_synchro_ = nullptr;
   simcall->issuer_->simcall_answer();
 }
-
+void SemAcquisitionImpl::cancel()
+{
+  /* Remove myself from the list of interested parties */
+  auto issuer = get_issuer();
+  auto it     = std::find_if(semaphore_->ongoing_acquisitions_.begin(), semaphore_->ongoing_acquisitions_.end(),
+                             [issuer](SemAcquisitionImplPtr acqui) { return acqui->get_issuer() == issuer; });
+  xbt_assert(it != semaphore_->ongoing_acquisitions_.end(),
+             "Cannot find myself in the waiting queue that I have to leave");
+  semaphore_->ongoing_acquisitions_.erase(it);
+}
 SemAcquisitionImplPtr SemaphoreImpl::acquire_async(actor::ActorImpl* issuer)
 {
   auto res = SemAcquisitionImplPtr(new kernel::activity::SemAcquisitionImpl(issuer, this), true);
