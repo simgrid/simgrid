@@ -310,7 +310,9 @@ int scatter__ompi_linear_nb(const void *sbuf, int scount,
     if (MPI_SUCCESS != err) {
         line = __LINE__; goto err_hndl;
     }
-
+    if (NULL != reqs) {
+        delete[] reqs;
+    }
     return MPI_SUCCESS;
 
 err_hndl:
