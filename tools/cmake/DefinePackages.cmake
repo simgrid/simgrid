@@ -28,7 +28,6 @@ set(EXTRA_DIST
   src/simix/popping_bodies.cpp
   src/simix/popping_generated.cpp
   src/simix/popping_enum.hpp
-  src/simix/popping_accessors.hpp
   src/smpi/colls/coll_tuned_topo.hpp
   src/smpi/colls/colls_private.hpp
   src/smpi/colls/smpi_mvapich2_selector_stampede.hpp

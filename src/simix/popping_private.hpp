@@ -62,9 +62,6 @@ XBT_PRIVATE void SIMIX_run_blocking(std::function<void()> const* code);
 
 /* Defines the marshal/unmarshal functions for each type of parameters.
  *
- * They will be used in popping_accessors.hpp to define the functions allowing
- * to retrieve/set each parameter of each simcall.
- *
  * There is a unmarshal_raw() function, which is exactly similar to unmarshal()
  * for all types but boost::intrusive_ptr(T). For that type, the unmarshal()
  * function builds a new intrusive_ptr wrapping the pointer (that is stored raw
@@ -202,7 +199,5 @@ template <class... A> inline void marshal(smx_simcall_t simcall, Simcall call, A
 }
 }
 }
-
-#include "popping_accessors.hpp"
 
 #endif

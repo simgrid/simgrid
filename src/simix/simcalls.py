@@ -270,17 +270,6 @@ def main():
         sys.exit(1)
 
     #
-    # popping_accessors.hpp
-    #
-    fd = header('popping_accessors.hpp')
-    fd.write('#include "src/simix/popping_private.hpp"')
-    handle(fd, Simcall.accessors, simcalls, simcalls_dict)
-    fd.write(
-        "\n/* The prototype of all simcall handlers, automatically generated for you */\n\n")
-    handle(fd, Simcall.handler_prototype, simcalls, simcalls_dict)
-    fd.close()
-
-    #
     # popping_enum.hpp
     #
     fd = header("popping_enum.hpp")
