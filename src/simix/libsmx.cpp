@@ -254,16 +254,3 @@ void simcall_run_blocking(std::function<void()> const& code, simgrid::kernel::ac
   simcall(simgrid::simix::Simcall::RUN_BLOCKING, code);
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = nullptr;
 }
-
-/* ************************************************************************** */
-
-namespace simgrid {
-namespace simix {
-
-void unblock(smx_actor_t actor)
-{
-  xbt_assert(s4u::Actor::is_maestro());
-  actor->simcall_answer();
-}
-} // namespace simix
-} // namespace simgrid

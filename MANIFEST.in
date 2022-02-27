@@ -687,9 +687,6 @@ include teshsuite/kernel/context-defaults/factory_boost.tesh
 include teshsuite/kernel/context-defaults/factory_raw.tesh
 include teshsuite/kernel/context-defaults/factory_thread.tesh
 include teshsuite/kernel/context-defaults/factory_ucontext.tesh
-include teshsuite/kernel/simcall-generic/blocking_simcall.hpp
-include teshsuite/kernel/simcall-generic/simcall-generic.cpp
-include teshsuite/kernel/simcall-generic/simcall-generic.tesh
 include teshsuite/kernel/stack-overflow/stack-overflow.cpp
 include teshsuite/kernel/stack-overflow/stack-overflow.tesh
 include teshsuite/mc/dwarf-expression/dwarf-expression.cpp
@@ -2063,7 +2060,6 @@ include include/simgrid/host.h
 include include/simgrid/instr.h
 include include/simgrid/kernel/ProfileBuilder.hpp
 include include/simgrid/kernel/Timer.hpp
-include include/simgrid/kernel/future.hpp
 include include/simgrid/kernel/resource/Action.hpp
 include include/simgrid/kernel/resource/Model.hpp
 include include/simgrid/kernel/resource/NetworkModelIntf.hpp
@@ -2278,7 +2274,6 @@ include src/kernel/context/ContextThread.cpp
 include src/kernel/context/ContextThread.hpp
 include src/kernel/context/ContextUnix.cpp
 include src/kernel/context/ContextUnix.hpp
-include src/kernel/future.cpp
 include src/kernel/lmm/fair_bottleneck.cpp
 include src/kernel/lmm/maxmin.cpp
 include src/kernel/lmm/maxmin.hpp

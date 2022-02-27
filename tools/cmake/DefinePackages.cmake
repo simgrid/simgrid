@@ -373,7 +373,6 @@ set(PLUGINS_SRC
   )
 
 set(SIMIX_SRC
-  src/kernel/future.cpp
   src/simix/libsmx.cpp
   src/simix/smx_context.cpp
   src/kernel/context/Context.cpp
@@ -660,7 +659,6 @@ set(headers_to_install
   include/simgrid/simix.hpp
   include/simgrid/kernel/ProfileBuilder.hpp
   include/simgrid/kernel/Timer.hpp
-  include/simgrid/kernel/future.hpp
   include/simgrid/disk.h
   include/simgrid/host.h
   include/simgrid/link.h

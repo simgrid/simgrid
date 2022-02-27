@@ -1,4 +1,4 @@
-foreach(x context-defaults simcall-generic stack-overflow)
+foreach(x context-defaults stack-overflow)
   add_executable       (${x}  EXCLUDE_FROM_ALL ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -6,12 +6,6 @@ foreach(x context-defaults simcall-generic stack-overflow)
   add_dependencies(tests ${x})
 
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
-endforeach()
-
-## Add the easy tests: only simcall-generic for now
-foreach(x simcall-generic)
-  set(tesh_files    ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
-  ADD_TESH_FACTORIES(tesh-${x} "*" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/kernel/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/kernel/${x} ${x}.tesh)
 endforeach()
 
 ## Add the tests for stack-overflow
@@ -48,6 +42,6 @@ endforeach()
 
 
 # Pack the files in the archive
-set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/simcall-generic/blocking_simcall.hpp PARENT_SCOPE)
+set(teshsuite_src ${teshsuite_src}  PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     PARENT_SCOPE)
 set(xml_files     ${xml_files}      PARENT_SCOPE)

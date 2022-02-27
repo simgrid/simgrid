@@ -94,12 +94,6 @@ auto simcall_blocking(F&& code, Observer* observer) -> decltype(observer->get_re
 }
 } // namespace actor
 } // namespace kernel
-
-namespace simix {
-
-XBT_PUBLIC void unblock(smx_actor_t process);
-
-} // namespace simix
 } // namespace simgrid
 
 #endif
