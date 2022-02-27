@@ -34,13 +34,13 @@ static simgrid::config::Flag<double> cfg_deadline{"deadline", "When to fail the 
 static simgrid::config::Flag<int> cfg_task_count{"task-count", "Amount of tasks that must be executed to succeed", 1};
 
 int todo; // remaining amount of tasks to execute, a global variable
+sg4::Mailbox* mailbox; // as a global to reduce the amount of simcalls during actor reboot
 
 static void master(double comp_size, long comm_size)
 {
   XBT_INFO("Master booting");
   sg4::Actor::self()->daemonize();
 
-  auto mailbox = sg4::Mailbox::by_name("mailbox");
   while (true) { // This is a daemon
     xbt_assert(sg4::Engine::get_clock() < cfg_deadline,
                "Failed to run all tasks in less than %d seconds. Is this an infinite loop?", (int)cfg_deadline);
@@ -63,7 +63,6 @@ static void master(double comp_size, long comm_size)
 static void worker(int id)
 {
   XBT_INFO("Worker booting");
-  sg4::Mailbox* mailbox = sg4::Mailbox::by_name("mailbox");
   while (todo > 0) {
     xbt_assert(sg4::Engine::get_clock() < cfg_deadline,
                "Failed to run all tasks in less than %d seconds. Is this an infinite loop?", (int)cfg_deadline);
@@ -120,6 +119,7 @@ int main(int argc, char* argv[])
 
   todo = cfg_task_count;
   xbt_assert(todo > 0, "Please give more than %d tasks to run", todo);
+  mailbox = sg4::Mailbox::by_name("mailbox");
 
   e.run();
 
