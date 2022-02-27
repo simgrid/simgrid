@@ -2466,11 +2466,7 @@ include src/simgrid/sg_version.cpp
 include src/simgrid/util.hpp
 include src/simix/libsmx.cpp
 include src/simix/popping.cpp
-include src/simix/popping_enum.hpp
-include src/simix/popping_generated.cpp
 include src/simix/popping_private.hpp
-include src/simix/simcalls.in
-include src/simix/simcalls.py
 include src/simix/smx_context.cpp
 include src/smpi/bindings/smpi_f77.cpp
 include src/smpi/bindings/smpi_f77_coll.cpp

@@ -22,8 +22,6 @@ set(EXTRA_DIST
   src/dag/dax.dtd
   src/dag/dax_dtd.c
   src/dag/dax_dtd.h
-  src/simix/simcalls.in
-  src/simix/simcalls.py
   src/simix/popping_private.hpp
   src/smpi/colls/coll_tuned_topo.hpp
   src/smpi/colls/colls_private.hpp
