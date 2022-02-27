@@ -18,7 +18,7 @@ namespace simix {
 /** All possible simcalls. */
 enum class Simcall {
   NONE,
-  RUN_KERNEL,
+  RUN_ANSWERED,
   RUN_BLOCKING,
 };
 constexpr int NUM_SIMCALLS = 3;

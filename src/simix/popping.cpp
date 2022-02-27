@@ -10,15 +10,11 @@
 #include "src/simix/popping_private.hpp"
 #include "xbt/log.h"
 
-#if SIMGRID_HAVE_MC
-#include "src/mc/mc_forward.hpp"
-#endif
-
 XBT_LOG_NEW_DEFAULT_CATEGORY(simix, "transmuting from user request into kernel handlers");
 
 constexpr std::array<const char*, simgrid::simix::NUM_SIMCALLS> simcall_names{{
     "Simcall::NONE",
-    "Simcall::RUN_KERNEL",
+    "Simcall::RUN_ANSWERED",
     "Simcall::RUN_BLOCKING",
 }};
 
@@ -33,32 +29,19 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered)
     simcall_.observer_->prepare(times_considered);
   if (context_->wannadie())
     return;
-  switch (simcall_.call_) {
-    case simgrid::simix::Simcall::RUN_KERNEL:
-      (*simcall_.code_)();
-      simcall_answer();
-      break;
 
-    case simgrid::simix::Simcall::RUN_BLOCKING:
-      (*simcall_.code_)();
-      break;
+  xbt_assert(simcall_.call_ != simgrid::simix::Simcall::NONE, "Asked to do the noop syscall on %s@%s", get_cname(),
+             get_host()->get_cname());
 
-    case simgrid::simix::Simcall::NONE:
-      throw std::invalid_argument(
-          simgrid::xbt::string_printf("Asked to do the noop syscall on %s@%s", get_cname(), get_host()->get_cname()));
-    default:
-      THROW_IMPOSSIBLE;
-  }
+  (*simcall_.code_)();
+  if (simcall_.call_ == simgrid::simix::Simcall::RUN_ANSWERED)
+    simcall_answer();
 }
 
 /** @brief returns a printable string representing a simcall */
 const char* SIMIX_simcall_name(const s_smx_simcall& simcall)
 {
   if (simcall.observer_ != nullptr) {
-#if SIMGRID_HAVE_MC
-    if (mc_model_checker != nullptr) // Do not try to use the observer from the MCer
-      return "(remotely observed)";
-#endif
 
     static std::string name;
     name              = boost::core::demangle(typeid(*simcall.observer_).name());

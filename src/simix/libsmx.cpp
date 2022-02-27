@@ -22,10 +22,6 @@
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Activity.hpp>
 
-#if SIMGRID_HAVE_MC
-#include "src/mc/mc_forward.hpp"
-#endif
-
 #include <boost/core/demangle.hpp>
 #include <string>
 #include <typeinfo>
@@ -244,7 +240,7 @@ void simcall_run_kernel(std::function<void()> const& code, simgrid::kernel::acto
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = observer;
   // The function `code` is called in kernel mode (either because we are already in maestor or after a context switch)
   // and simcall_answer() is called
-  simcall(simgrid::simix::Simcall::RUN_KERNEL, code);
+  simcall(simgrid::simix::Simcall::RUN_ANSWERED, code);
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = nullptr;
 }
 
