@@ -114,8 +114,7 @@ class Simcall:
     def case(self):
         res = []
         indent = '    '
-        args = ["simgrid::simix::unmarshal<%s>(simcall_.args_[%d])" % (arg.rettype(), i)
-                for i, arg in enumerate(self.args)]
+        args = ["simcall_.code_"]
         res.append(indent + 'case Simcall::%s:' % (self.name.upper()))
         if self.need_handler:
             call = "simcall_HANDLER_%s(&simcall_%s%s)" % (self.name,
@@ -123,10 +122,7 @@ class Simcall:
                                                           ', '.join(args))
         else:
             call = "SIMIX_%s(%s)" % (self.name, ', '.join(args))
-        if self.call_kind == 'Func':
-            res.append(indent + "  simgrid::simix::marshal<%s>(simcall_.result_, %s);" % (self.res.rettype(), call))
-        else:
-            res.append(indent + "  " + call + ";")
+        res.append(indent + "  " + call + ";")
         if self.call_kind != 'Blck':
             res.append(indent + '  simcall_answer();')
         res.append(indent + '  break;')
@@ -135,8 +131,7 @@ class Simcall:
 
     def handler_prototype(self):
         if self.need_handler:
-            return "XBT_PRIVATE %s simcall_HANDLER_%s(smx_simcall_t simcall%s);" % (self.res.rettype() if self.call_kind == 'Func' else 'void',
-                                                                                    self.name,
+            return "XBT_PRIVATE void simcall_HANDLER_%s(smx_simcall_t simcall%s);" % (self.name,
                                                                                     ''.join(', %s %s' % (arg.rettype(), arg.name)
                                                                                             for i, arg in enumerate(self.args)))
         return ""
@@ -166,10 +161,9 @@ def parse(fn):
                 t = t.strip()
                 n = n.strip()
                 sargs.append(Arg(n, t))
-        if ret == "void":
-            ans = "Proc"
-        else:
-            ans = "Func"
+        if ret != "void":
+            raise Exception ("Func simcalls (ie, returning a value) not supported anymore")
+        ans = 'Proc'
         handler = True
         if attrs:
             attrs = attrs[2:-2]

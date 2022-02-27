@@ -48,12 +48,12 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered)
     return;
   switch (simcall_.call_) {
     case Simcall::RUN_KERNEL:
-      SIMIX_run_kernel(simgrid::simix::unmarshal<std::function<void()> const*>(simcall_.args_[0]));
+      SIMIX_run_kernel(simcall_.code_);
       simcall_answer();
       break;
 
     case Simcall::RUN_BLOCKING:
-      SIMIX_run_blocking(simgrid::simix::unmarshal<std::function<void()> const*>(simcall_.args_[0]));
+      SIMIX_run_blocking(simcall_.code_);
       break;
 
     case Simcall::NONE:

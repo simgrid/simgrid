@@ -229,7 +229,8 @@ bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm) // XBT_ATT
 static void simcall(simgrid::simix::Simcall call, std::function<void()> const& code)
 {
   auto self = simgrid::kernel::actor::ActorImpl::self();
-  simgrid::simix::marshal(&self->simcall_, call, &code);
+  self->simcall_.call_ = call;
+  self->simcall_.code_ = &code;
   if (not simgrid::kernel::EngineImpl::get_instance()->is_maestro(self)) {
     XBT_DEBUG("Yield process '%s' on simcall %s", self->get_cname(), SIMIX_simcall_name(self->simcall_));
     self->yield();
