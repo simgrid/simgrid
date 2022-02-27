@@ -209,7 +209,7 @@ void ActorImpl::exit()
     } else if (auto comm = boost::dynamic_pointer_cast<activity::CommImpl>(waiting_synchro_)) {
       comm->unregister_simcall(&simcall_);
     } else {
-      waiting_synchro_->finish();
+      activity::ActivityImplPtr(waiting_synchro_)->finish();
     }
 
     activities_.remove(waiting_synchro_);
