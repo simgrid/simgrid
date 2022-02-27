@@ -48,43 +48,6 @@ static simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor)
   return process_info;
 }
 
-xbt::string const& Api::get_actor_host_name(smx_actor_t actor) const
-{
-  if (mc_model_checker == nullptr)
-    return actor->get_host()->get_name();
-
-  const simgrid::mc::RemoteProcess* process = &mc_model_checker->get_remote_process();
-
-  // Read the simgrid::xbt::string in the MCed process:
-  simgrid::mc::ActorInformation* info = actor_info_cast(actor);
-
-  if (not info->hostname) {
-    Remote<s4u::Host> temp_host = process->read(remote(actor->get_host()));
-    auto remote_string_address  = remote(&xbt::string::to_string_data(temp_host.get_buffer()->get_impl()->get_name()));
-    simgrid::xbt::string_data remote_string = process->read(remote_string_address);
-    std::vector<char> hostname(remote_string.len + 1);
-    // no need to read the terminating null byte, and thus hostname[remote_string.len] is guaranteed to be '\0'
-    process->read_bytes(hostname.data(), remote_string.len, remote(remote_string.data));
-    info->hostname = &mc_model_checker->get_host_name(hostname.data());
-  }
-  return *info->hostname;
-}
-
-xbt::string const& Api::get_actor_name(smx_actor_t actor) const
-{
-  if (mc_model_checker == nullptr)
-    return actor->get_name();
-
-  simgrid::mc::ActorInformation* info = actor_info_cast(actor);
-  if (info->name.empty()) {
-    const simgrid::mc::RemoteProcess* process = &mc_model_checker->get_remote_process();
-
-    simgrid::xbt::string_data string_data = simgrid::xbt::string::to_string_data(actor->name_);
-    info->name = process->read_string(remote(string_data.data), string_data.len);
-  }
-  return info->name;
-}
-
 simgrid::mc::Exploration* Api::initialize(char** argv, simgrid::mc::CheckerAlgorithm algo) const
 {
   simgrid::mc::session_singleton = std::make_unique<simgrid::mc::Session>([argv] {

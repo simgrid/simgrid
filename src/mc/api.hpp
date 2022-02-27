@@ -21,18 +21,6 @@ namespace mc {
 
 XBT_DECLARE_ENUM_CLASS(CheckerAlgorithm, Safety, UDPOR, Liveness, CommDeterminism);
 
-/**
- * @brief Maintains the transition's information.
- */
-struct s_transition_detail {
-  simgrid::simix::Simcall call_ = simgrid::simix::Simcall::NONE;
-  long issuer_id                = -1;
-  RemotePtr<kernel::activity::MailboxImpl> mbox_remote_addr {}; // used to represent mailbox remote address for isend and ireceive transitions
-  RemotePtr<kernel::activity::ActivityImpl> comm_remote_addr {}; // the communication this transition concerns (to be used only for isend, ireceive, wait and test)
-};
-
-using transition_detail_t = std::unique_ptr<s_transition_detail>;
-
 /*
 ** This class aimes to implement FACADE APIs for simgrid. The FACADE layer sits between the CheckerSide
 ** (Unfolding_Checker, DPOR, ...) layer and the
@@ -69,10 +57,6 @@ public:
   std::vector<simgrid::mc::ActorInformation>& get_actors() const;
   unsigned long get_maxpid() const;
 
-  // COMMUNICATION APIs
-  xbt::string const& get_actor_name(smx_actor_t actor) const;
-  xbt::string const& get_actor_host_name(smx_actor_t actor) const;
-
   // REMOTE APIs
   std::size_t get_remote_heap_bytes() const;
 
@@ -92,9 +76,7 @@ public:
   void s_close() const;
 
 // AUTOMATION APIs
-#if SIMGRID_HAVE_MC
   void automaton_load(const char* file) const;
-#endif
   std::vector<int> automaton_propositional_symbol_evaluate() const;
   std::vector<xbt_automaton_state_t> get_automaton_state() const;
   int compare_automaton_exp_label(const xbt_automaton_exp_label* l) const;
@@ -102,10 +84,6 @@ public:
   inline DerefAndCompareByActorsCountAndUsedHeap compare_pair() const
   {
     return DerefAndCompareByActorsCountAndUsedHeap();
-  }
-  inline int automaton_state_compare(const_xbt_automaton_state_t const& s1, const_xbt_automaton_state_t const& s2) const
-  {
-    return xbt_automaton_state_compare(s1, s2);
   }
   xbt_automaton_exp_label_t get_automaton_transition_label(xbt_dynar_t const& dynar, int index) const;
   xbt_automaton_state_t get_automaton_transition_dst(xbt_dynar_t const& dynar, int index) const;
