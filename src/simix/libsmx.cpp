@@ -226,34 +226,33 @@ bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm) // XBT_ATT
   return false;
 }
 
-template <class R, class... T> static R simcall(simgrid::simix::Simcall call, T const&... t)
+static void simcall(simgrid::simix::Simcall call, std::function<void()> const& code)
 {
   auto self = simgrid::kernel::actor::ActorImpl::self();
-  simgrid::simix::marshal(&self->simcall_, call, t...);
+  simgrid::simix::marshal(&self->simcall_, call, &code);
   if (not simgrid::kernel::EngineImpl::get_instance()->is_maestro(self)) {
     XBT_DEBUG("Yield process '%s' on simcall %s", self->get_cname(), SIMIX_simcall_name(self->simcall_));
     self->yield();
   } else {
     self->simcall_handle(0);
   }
-  return simgrid::simix::unmarshal<R>(self->simcall_.result_);
 }
 
 void simcall_run_kernel(std::function<void()> const& code, simgrid::kernel::actor::SimcallObserver* observer)
 {
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = observer;
-  if (false) /* Go to that function to follow the code flow through the simcall barrier */
-    SIMIX_run_kernel(&code);
-  simcall<void, std::function<void()> const*>(simgrid::simix::Simcall::RUN_KERNEL, &code);
+  // The function `code` is called in kernel mode (either because we are already in maestor or after a context switch)
+  // and simcall_answer() is called
+  simcall(simgrid::simix::Simcall::RUN_KERNEL, code);
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = nullptr;
 }
 
 void simcall_run_blocking(std::function<void()> const& code, simgrid::kernel::actor::SimcallObserver* observer)
 {
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = observer;
-  if (false) /* Go to that function to follow the code flow through the simcall barrier */
-    SIMIX_run_kernel(&code);
-  simcall<void, std::function<void()> const*>(simgrid::simix::Simcall::RUN_BLOCKING, &code);
+  // The function `code` is called in kernel mode (either because we are already in maestor or after a context switch)
+  // BUT simcall_answer IS NOT CALLED
+  simcall(simgrid::simix::Simcall::RUN_BLOCKING, code);
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = nullptr;
 }
 
