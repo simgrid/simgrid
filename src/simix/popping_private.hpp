@@ -13,7 +13,18 @@
 #include <boost/intrusive_ptr.hpp>
 
 /********************************* Simcalls *********************************/
-#include "popping_enum.hpp" /* Definition of Simcall, with one value per simcall */
+namespace simgrid {
+namespace simix {
+/** All possible simcalls. */
+enum class Simcall {
+  NONE,
+  RUN_KERNEL,
+  RUN_BLOCKING,
+};
+constexpr int NUM_SIMCALLS = 3;
+/** @brief Simcalls' names */
+} // namespace simix
+} // namespace simgrid
 
 XBT_PUBLIC_DATA const std::array<const char*, simgrid::simix::NUM_SIMCALLS> simcall_names; /* Name of each simcall */
 

@@ -25,8 +25,6 @@ set(EXTRA_DIST
   src/simix/simcalls.in
   src/simix/simcalls.py
   src/simix/popping_private.hpp
-  src/simix/popping_generated.cpp
-  src/simix/popping_enum.hpp
   src/smpi/colls/coll_tuned_topo.hpp
   src/smpi/colls/colls_private.hpp
   src/smpi/colls/smpi_mvapich2_selector_stampede.hpp
@@ -376,7 +374,6 @@ set(PLUGINS_SRC
   src/plugins/vm/VmLiveMigration.hpp
   )
 
-set(SIMIX_GENERATED_SRC   src/simix/popping_generated.cpp  )
 set(SIMIX_SRC
   src/kernel/future.cpp
   src/simix/libsmx.cpp
@@ -418,8 +415,6 @@ set(SIMIX_SRC
   src/kernel/actor/SimcallObserver.hpp
   src/kernel/actor/SynchroObserver.cpp
   src/kernel/actor/SynchroObserver.hpp
-
-  ${SIMIX_GENERATED_SRC}
   )
 
 # Boost context may not be available

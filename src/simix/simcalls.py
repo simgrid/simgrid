@@ -63,9 +63,6 @@ class Simcall:
                 return False
         return True
 
-    def enum(self):
-        return '  %s,' % (self.name.upper())
-
     def string(self):
         return '    "Simcall::%s",' % self.name.upper()
 
@@ -224,83 +221,6 @@ def main():
         print("Some checks fail!")
         sys.exit(1)
 
-    #
-    # popping_enum.hpp
-    #
-    fd = header("popping_enum.hpp")
-    fd.write('namespace simgrid {\n')
-    fd.write('namespace simix {\n')
-    fd.write('/**\n')
-    fd.write(' * @brief All possible simcalls.\n')
-    fd.write(' */\n')
-    fd.write('enum class Simcall {\n')
-    fd.write('  NONE,\n')
-
-    handle(fd, Simcall.enum, simcalls, simcalls_dict)
-
-    fd.write('};\n')
-    fd.write('\n')
-    fd.write('constexpr int NUM_SIMCALLS = ' + str(1 + len(simcalls)) + ';\n')
-    fd.write('} // namespace simix\n')
-    fd.write('} // namespace simgrid\n')
-    fd.close()
-
-    #
-    # popping_generated.cpp
-    #
-
-    fd = header("popping_generated.cpp")
-
-    fd.write('#include <simgrid/config.h>\n')
-    fd.write('#include <simgrid/host.h>\n')
-    fd.write('#include <xbt/base.h>\n')
-    fd.write('#if SIMGRID_HAVE_MC\n')
-    fd.write('#include "src/mc/mc_forward.hpp"\n')
-    fd.write('#endif\n')
-    fd.write('#include "src/kernel/activity/ConditionVariableImpl.hpp"\n')
-    fd.write('#include "src/kernel/actor/SimcallObserver.hpp"\n')
-    fd.write('#include "src/kernel/context/Context.hpp"\n')
-
-    fd.write('\n')
-    fd.write('XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);\n\n')
-
-    fd.write('using simgrid::simix::Simcall;')
-    fd.write('\n')
-    fd.write('/** @brief Simcalls\' names (generated from src/simix/simcalls.in) */\n')
-    fd.write('constexpr std::array<const char*, simgrid::simix::NUM_SIMCALLS> simcall_names{{\n')
-
-    fd.write('    "Simcall::NONE",\n')
-    handle(fd, Simcall.string, simcalls, simcalls_dict)
-
-    fd.write('}};\n\n')
-
-    fd.write('/** @private\n')
-    fd.write(' * @brief (in kernel mode) unpack the simcall and activate the handler\n')
-    fd.write(' *\n')
-    fd.write(' * This function is generated from src/simix/simcalls.in\n')
-    fd.write(' */\n')
-    fd.write('void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered)\n')
-    fd.write('{\n')
-    fd.write('  XBT_DEBUG("Handling simcall %p: %s", &simcall_, SIMIX_simcall_name(simcall_));\n')
-    fd.write('  if (simcall_.observer_ != nullptr)\n')
-    fd.write('    simcall_.observer_->prepare(times_considered);\n')
-
-    fd.write('  if (context_->wannadie())\n')
-    fd.write('    return;\n')
-    fd.write('  switch (simcall_.call_) {\n')
-
-    handle(fd, Simcall.case, simcalls, simcalls_dict)
-
-    fd.write('    case Simcall::NONE:\n')
-    fd.write('      throw std::invalid_argument(simgrid::xbt::string_printf("Asked to do the noop syscall on %s@%s",\n')
-    fd.write('                                                              get_cname(),\n')
-    fd.write('                                                              sg_host_get_name(get_host())));\n')
-    fd.write('    default:\n')
-    fd.write('      THROW_IMPOSSIBLE;\n')
-    fd.write('  }\n')
-    fd.write('}\n')
-
-    fd.close()
 
 if __name__ == '__main__':
     main()
