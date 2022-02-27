@@ -14,6 +14,8 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
+enum class CommImplType { SEND, RECEIVE };
+
 class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   ~CommImpl() override;
   void cleanup_surf();
@@ -29,15 +31,16 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   long mbox_id_      = -1;      /* ID of the rendez-vous where the comm was first queued (for MC) */
   s4u::Host* from_   = nullptr; /* Pre-determined only for direct host-to-host communications */
   s4u::Host* to_     = nullptr; /* Otherwise, computed at start() time from the actors */
+  CommImplType type_ = CommImplType::SEND; /* Type of the communication (SEND or RECEIVE) */
 
 public:
-  enum class Type { SEND, RECEIVE };
-
   static void set_copy_data_callback(void (*callback)(CommImpl*, void*, size_t));
 
-  explicit CommImpl(Type type) : type_(type) {}
+  CommImpl() = default;
   CommImpl(s4u::Host* from, s4u::Host* to, double bytes);
 
+  CommImpl& set_type(CommImplType type);
+  CommImplType get_type() const { return type_; }
   CommImpl& set_size(double size);
   CommImpl& set_src_buff(unsigned char* buff, size_t size);
   CommImpl& set_dst_buff(unsigned char* buff, size_t* size);
@@ -68,7 +71,6 @@ public:
   void set_exception(actor::ActorImpl* issuer) override;
   void finish() override;
 
-  const Type type_ = Type::SEND; /* Type of the communication (SEND or RECEIVE) */
 
 #if SIMGRID_HAVE_MC
   MailboxImpl* mbox_cpy = nullptr; /* Copy of the rendez-vous where the comm is queued, MC needs it for DPOR

@@ -60,23 +60,23 @@ CommImplPtr MailboxImpl::iprobe(int type, bool (*match_fun)(void*, void*, CommIm
 {
   XBT_DEBUG("iprobe from %p %p", this, &comm_queue_);
 
-  CommImplPtr this_comm;
-  CommImpl::Type smx_type;
+  CommImplPtr this_comm(new CommImpl);
+  CommImplType other_type;
   if (type == 1) {
-    this_comm = CommImplPtr(new CommImpl(CommImpl::Type::SEND));
-    smx_type  = CommImpl::Type::RECEIVE;
+    this_comm->set_type(CommImplType::SEND);
+    other_type = CommImplType::RECEIVE;
   } else {
-    this_comm = CommImplPtr(new CommImpl(CommImpl::Type::RECEIVE));
-    smx_type  = CommImpl::Type::SEND;
+    this_comm->set_type(CommImplType::RECEIVE);
+    other_type = CommImplType::SEND;
   }
   CommImplPtr other_comm = nullptr;
   if (permanent_receiver_ != nullptr && not done_comm_queue_.empty()) {
     XBT_DEBUG("first check in the permanent recv mailbox, to see if we already got something");
-    other_comm = find_matching_comm(smx_type, match_fun, data, this_comm, /*done*/ true, /*remove_matching*/ false);
+    other_comm = find_matching_comm(other_type, match_fun, data, this_comm, /*done*/ true, /*remove_matching*/ false);
   }
   if (not other_comm) {
     XBT_DEBUG("check if we have more luck in the normal mailbox");
-    other_comm = find_matching_comm(smx_type, match_fun, data, this_comm, /*done*/ false, /*remove_matching*/ false);
+    other_comm = find_matching_comm(other_type, match_fun, data, this_comm, /*done*/ false, /*remove_matching*/ false);
   }
 
   return other_comm;
@@ -91,7 +91,7 @@ CommImplPtr MailboxImpl::iprobe(int type, bool (*match_fun)(void*, void*, CommIm
  *  @param remove_matching whether or not to clean the found object from the queue
  *  @return The communication activity if found, nullptr otherwise
  */
-CommImplPtr MailboxImpl::find_matching_comm(CommImpl::Type type, bool (*match_fun)(void*, void*, CommImpl*),
+CommImplPtr MailboxImpl::find_matching_comm(CommImplType type, bool (*match_fun)(void*, void*, CommImpl*),
                                             void* this_user_data, const CommImplPtr& my_synchro, bool done,
                                             bool remove_matching)
 {
@@ -99,8 +99,8 @@ CommImplPtr MailboxImpl::find_matching_comm(CommImpl::Type type, bool (*match_fu
 
   auto iter = std::find_if(
       comm_queue.begin(), comm_queue.end(), [&type, &match_fun, &this_user_data, &my_synchro](const CommImplPtr& comm) {
-        void* other_user_data = (comm->type_ == CommImpl::Type::SEND ? comm->src_data_ : comm->dst_data_);
-        return (comm->type_ == type && (not match_fun || match_fun(this_user_data, other_user_data, comm.get())) &&
+        void* other_user_data = (comm->get_type() == CommImplType::SEND ? comm->src_data_ : comm->dst_data_);
+        return (comm->get_type() == type && (not match_fun || match_fun(this_user_data, other_user_data, comm.get())) &&
                 (not comm->match_fun || comm->match_fun(other_user_data, this_user_data, my_synchro.get())));
       });
   if (iter == comm_queue.end()) {

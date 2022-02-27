@@ -53,6 +53,12 @@ void CommImpl::set_copy_data_callback(void (*callback)(CommImpl*, void*, size_t)
   copy_data_callback_ = callback;
 }
 
+CommImpl& CommImpl::set_type(CommImplType type)
+{
+  type_ = type;
+  return *this;
+}
+
 CommImpl& CommImpl::set_size(double size)
 {
   size_ = size;
@@ -211,14 +217,15 @@ ActivityImplPtr CommImpl::isend(actor::CommIsendSimcall* observer)
   XBT_DEBUG("send from mailbox %p", mbox);
 
   /* Prepare a synchro describing us, so that it gets passed to the user-provided filter of other side */
-  CommImplPtr this_comm(new CommImpl(CommImpl::Type::SEND));
+  CommImplPtr this_comm(new CommImpl());
+  this_comm->set_type(CommImplType::SEND);
 
   /* Look for communication synchro matching our needs. We also provide a description of
    * ourself so that the other side also gets a chance of choosing if it wants to match with us.
    *
    * If it is not found then push our communication into the rendez-vous point */
   CommImplPtr other_comm =
-      mbox->find_matching_comm(CommImpl::Type::RECEIVE, observer->get_match_fun(), observer->get_payload(), this_comm,
+      mbox->find_matching_comm(CommImplType::RECEIVE, observer->get_match_fun(), observer->get_payload(), this_comm,
                                /*done*/ false, /*remove_matching*/ true);
 
   if (not other_comm) {
@@ -270,7 +277,9 @@ ActivityImplPtr CommImpl::isend(actor::CommIsendSimcall* observer)
 
 ActivityImplPtr CommImpl::irecv(actor::CommIrecvSimcall* observer)
 {
-  CommImplPtr this_synchro(new CommImpl(CommImpl::Type::RECEIVE));
+  CommImplPtr this_synchro(new CommImpl());
+  this_synchro->set_type(CommImplType::RECEIVE);
+
   auto* mbox = observer->get_mailbox();
   XBT_DEBUG("recv from mbox %p. this_synchro=%p", mbox, this_synchro.get());
 
@@ -279,7 +288,7 @@ ActivityImplPtr CommImpl::irecv(actor::CommIrecvSimcall* observer)
   if (mbox->is_permanent() && mbox->has_some_done_comm()) {
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
     // find a match in the list of already received comms
-    other_comm = mbox->find_matching_comm(CommImpl::Type::SEND, observer->get_match_fun(), observer->get_payload(),
+    other_comm = mbox->find_matching_comm(CommImplType::SEND, observer->get_match_fun(), observer->get_payload(),
                                           this_synchro, /*done*/ true, /*remove_matching*/ true);
     // if not found, assume the receiver came first, register it to the mailbox in the classical way
     if (not other_comm) {
@@ -301,7 +310,7 @@ ActivityImplPtr CommImpl::irecv(actor::CommIrecvSimcall* observer)
      * ourself so that the other side also gets a chance of choosing if it wants to match with us.
      *
      * If it is not found then push our communication into the rendez-vous point */
-    other_comm = mbox->find_matching_comm(CommImpl::Type::SEND, observer->get_match_fun(), observer->get_payload(),
+    other_comm = mbox->find_matching_comm(CommImplType::SEND, observer->get_match_fun(), observer->get_payload(),
                                           this_synchro, /*done*/ false, /*remove_matching*/ true);
 
     if (other_comm == nullptr) {

@@ -53,7 +53,7 @@ public:
   void push_done(CommImplPtr done_comm) { done_comm_queue_.push_back(done_comm); }
   void remove(const CommImplPtr& comm);
   CommImplPtr iprobe(int type, bool (*match_fun)(void*, void*, CommImpl*), void* data);
-  CommImplPtr find_matching_comm(CommImpl::Type type, bool (*match_fun)(void*, void*, CommImpl*), void* this_user_data,
+  CommImplPtr find_matching_comm(CommImplType type, bool (*match_fun)(void*, void*, CommImpl*), void* this_user_data,
                                  const CommImplPtr& my_synchro, bool done, bool remove_matching);
   bool is_permanent() const { return permanent_receiver_ != nullptr; }
   actor::ActorImplPtr get_permanent_receiver() const { return permanent_receiver_; }
