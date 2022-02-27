@@ -66,7 +66,6 @@ void RemoteProcess::refresh_simix()
     return;
 
   MC_process_refresh_simix_actor_dynar(this, this->smx_actors_infos, actors_addr_);
-  MC_process_refresh_simix_actor_dynar(this, this->smx_dead_actors_infos, dead_actors_addr_);
 
   this->cache_flags_ |= RemoteProcess::cache_simix_processes;
 }

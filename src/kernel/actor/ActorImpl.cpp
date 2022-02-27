@@ -141,12 +141,8 @@ void ActorImpl::cleanup_from_simix()
   engine->remove_actor(pid_);
   if (host_ && host_actor_list_hook.is_linked())
     host_->get_impl()->remove_actor(this);
-  if (not kernel_destroy_list_hook.is_linked()) {
-#if SIMGRID_HAVE_MC
-    engine->add_dead_actor_to_dynar(this);
-#endif
+  if (not kernel_destroy_list_hook.is_linked())
     engine->add_actor_to_destroy_list(*this);
-  }
 }
 
 void ActorImpl::cleanup()

@@ -66,7 +66,6 @@ struct s_mc_message_initial_addresses_t {
   xbt_mheap_t mmalloc_default_mdp;
   unsigned long* maxpid;
   xbt_dynar_t actors;
-  xbt_dynar_t dead_actors;
 };
 
 struct s_mc_message_ignore_heap_t {

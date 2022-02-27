@@ -123,7 +123,7 @@ int main(int argc, char** argv)
   simgrid::mc::Type* type;
 
   simgrid::mc::RemoteProcess process(getpid());
-  process.init(nullptr, nullptr, nullptr, nullptr);
+  process.init(nullptr, nullptr, nullptr);
 
   test_global_variable(process, process.binary_info.get(), "some_local_variable", &some_local_variable, sizeof(int));
 

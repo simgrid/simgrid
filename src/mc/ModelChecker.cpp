@@ -162,7 +162,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       xbt_assert(size == sizeof(message), "Broken message. Got %d bytes instead of %d.", (int)size, (int)sizeof(message));
       memcpy(&message, buffer, sizeof(message));
 
-      get_remote_process().init(message.mmalloc_default_mdp, message.maxpid, message.actors, message.dead_actors);
+      get_remote_process().init(message.mmalloc_default_mdp, message.maxpid, message.actors);
       break;
     }
 

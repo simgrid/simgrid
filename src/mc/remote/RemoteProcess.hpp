@@ -77,7 +77,7 @@ private:
 public:
   explicit RemoteProcess(pid_t pid);
   ~RemoteProcess() override;
-  void init(xbt_mheap_t mmalloc_default_mdp, unsigned long* maxpid, xbt_dynar_t actors, xbt_dynar_t dead_actors);
+  void init(xbt_mheap_t mmalloc_default_mdp, unsigned long* maxpid, xbt_dynar_t actors);
 
   RemoteProcess(RemoteProcess const&) = delete;
   RemoteProcess(RemoteProcess&&)      = delete;
@@ -170,37 +170,9 @@ private:
   // Cache the address of the variables we read directly in the memory of remote
   RemotePtr<unsigned long> maxpid_addr_;
   RemotePtr<s_xbt_dynar_t> actors_addr_;
-  RemotePtr<s_xbt_dynar_t> dead_actors_addr_;
 
 public:
   std::vector<ActorInformation>& actors();
-  std::vector<ActorInformation>& dead_actors();
-
-  /** Get a local description of a remote SIMIX actor */
-  ActorInformation* resolve_actor_info(RemotePtr<kernel::actor::ActorImpl> actor)
-  {
-    xbt_assert(mc_model_checker != nullptr);
-    if (not actor)
-      return nullptr;
-    this->refresh_simix();
-    for (auto& actor_info : this->smx_actors_infos)
-      if (actor_info.address == actor)
-        return &actor_info;
-    for (auto& actor_info : this->smx_dead_actors_infos)
-      if (actor_info.address == actor)
-        return &actor_info;
-    return nullptr;
-  }
-
-  /** Get a local copy of the SIMIX actor structure */
-  kernel::actor::ActorImpl* resolve_actor(RemotePtr<kernel::actor::ActorImpl> process)
-  {
-    ActorInformation* actor_info = this->resolve_actor_info(process);
-    if (actor_info)
-      return actor_info->copy.get_buffer();
-    else
-      return nullptr;
-  }
 
   unsigned long get_maxpid() const { return this->read(maxpid_addr_); }
 
@@ -228,12 +200,6 @@ private:
    *  See mc_smx.cpp.
    */
   std::vector<ActorInformation> smx_actors_infos;
-
-  /** Copy of `EngineImpl::actors_to_destroy_`
-   *
-   *  See mc_smx.cpp.
-   */
-  std::vector<ActorInformation> smx_dead_actors_infos;
 
   /** State of the cache (which variables are up to date) */
   int cache_flags_ = RemoteProcess::cache_none;

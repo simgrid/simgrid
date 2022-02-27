@@ -108,13 +108,11 @@ int open_vm(pid_t pid, int flags)
 
 RemoteProcess::RemoteProcess(pid_t pid) : AddressSpace(this), pid_(pid), running_(true) {}
 
-void RemoteProcess::init(xbt_mheap_t mmalloc_default_mdp, unsigned long* maxpid, xbt_dynar_t actors,
-                         xbt_dynar_t dead_actors)
+void RemoteProcess::init(xbt_mheap_t mmalloc_default_mdp, unsigned long* maxpid, xbt_dynar_t actors)
 {
   this->heap_address      = remote(mmalloc_default_mdp);
   this->maxpid_addr_      = remote(maxpid);
   this->actors_addr_      = remote(actors);
-  this->dead_actors_addr_ = remote(dead_actors);
 
   this->memory_map_ = simgrid::xbt::get_memory_map(this->pid_);
   this->init_memory_map_info();
@@ -124,7 +122,6 @@ void RemoteProcess::init(xbt_mheap_t mmalloc_default_mdp, unsigned long* maxpid,
   this->memory_file = fd;
 
   this->smx_actors_infos.clear();
-  this->smx_dead_actors_infos.clear();
   this->unw_addr_space            = simgrid::mc::UnwindContext::createUnwindAddressSpace();
   this->unw_underlying_addr_space = simgrid::unw::create_addr_space();
   this->unw_underlying_context    = simgrid::unw::create_context(this->unw_underlying_addr_space, this->pid_);
@@ -421,12 +418,6 @@ std::vector<simgrid::mc::ActorInformation>& RemoteProcess::actors()
 {
   this->refresh_simix();
   return smx_actors_infos;
-}
-
-std::vector<simgrid::mc::ActorInformation>& RemoteProcess::dead_actors()
-{
-  this->refresh_simix();
-  return smx_dead_actors_infos;
 }
 
 void RemoteProcess::dump_stack() const

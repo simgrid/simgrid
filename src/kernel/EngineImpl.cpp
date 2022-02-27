@@ -50,15 +50,6 @@ xbt_dynar_t get_actors_addr()
 #endif
 }
 
-xbt_dynar_t get_dead_actors_addr()
-{
-#if SIMGRID_HAVE_MC
-  return EngineImpl::get_instance()->get_dead_actors_vector();
-#else
-  xbt_die("This function is intended to be used when compiling with MC");
-#endif
-}
-
 constexpr std::initializer_list<std::pair<const char*, context::ContextFactoryInitializer>> context_factories = {
 #if HAVE_RAW_CONTEXTS
     {"raw", &context::raw_factory},
@@ -203,7 +194,6 @@ EngineImpl::~EngineImpl()
     /* Free the remaining data structures */
 #if SIMGRID_HAVE_MC
   xbt_dynar_free(&actors_vector_);
-  xbt_dynar_free(&dead_actors_vector_);
 #endif
   /* clear models before freeing handle, network models can use external callback defined in the handle */
   models_prio_.clear();
@@ -531,9 +521,6 @@ void EngineImpl::empty_trash()
     XBT_DEBUG("Getting rid of %s (refcount: %d)", actor->get_cname(), actor->get_refcount());
     intrusive_ptr_release(actor);
   }
-#if SIMGRID_HAVE_MC
-  xbt_dynar_reset(dead_actors_vector_);
-#endif
 }
 
 void EngineImpl::display_all_actor_status() const
