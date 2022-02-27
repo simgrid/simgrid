@@ -211,7 +211,10 @@ public:
   /** Add a callback fired when the main simulation loop ends, just before the end of Engine::run() */
   static void on_simulation_end_cb(const std::function<void()>& cb) { on_simulation_end.connect(cb); }
 
-  /** Add a callback fired when the time jumps into the future */
+  /** Add a callback fired when the time jumps into the future.
+   *
+   * It is fired right after the time change (use get_clock() to get the new timestamp).
+   * The callback parameter is the time delta since previous timestamp. */
   static void on_time_advance_cb(const std::function<void(double)>& cb) { on_time_advance.connect(cb); }
 
   /** Add a callback fired when the time cannot advance because of inter-actors deadlock. Note that the on_exit of each

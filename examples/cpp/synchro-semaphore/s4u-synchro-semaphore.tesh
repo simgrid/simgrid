@@ -1,13 +1,13 @@
 #!/usr/bin/env tesh
 
 $ ${bindir:=.}/s4u-synchro-semaphore
-> [Tremblay:producer:(1) 0.000000] [s4u_test/INFO] Pushing 'one'
-> [Jupiter:consumer:(2) 0.000000] [s4u_test/INFO] Receiving 'one'
-> [Tremblay:producer:(1) 0.000000] [s4u_test/INFO] Pushing 'two'
-> [Jupiter:consumer:(2) 0.000000] [s4u_test/INFO] Receiving 'two'
-> [Tremblay:producer:(1) 0.000000] [s4u_test/INFO] Pushing 'three'
-> [Jupiter:consumer:(2) 0.000000] [s4u_test/INFO] Receiving 'three'
-> [Tremblay:producer:(1) 0.000000] [s4u_test/INFO] Pushing ''
-> [Jupiter:consumer:(2) 0.000000] [s4u_test/INFO] Receiving ''
-> [Tremblay:producer:(1) 0.000000] [s4u_test/INFO] Bye!
-> [Jupiter:consumer:(2) 0.000000] [s4u_test/INFO] Bye!
+> [Tremblay:producer:(1) 0.000000] [sem_test/INFO] Pushing 'one'
+> [Jupiter:consumer:(2) 0.000000] [sem_test/INFO] Receiving 'one'
+> [Tremblay:producer:(1) 0.000000] [sem_test/INFO] Pushing 'two'
+> [Jupiter:consumer:(2) 0.000000] [sem_test/INFO] Receiving 'two'
+> [Tremblay:producer:(1) 0.000000] [sem_test/INFO] Pushing 'three'
+> [Jupiter:consumer:(2) 0.000000] [sem_test/INFO] Receiving 'three'
+> [Tremblay:producer:(1) 0.000000] [sem_test/INFO] Pushing ''
+> [Jupiter:consumer:(2) 0.000000] [sem_test/INFO] Receiving ''
+> [Tremblay:producer:(1) 0.000000] [sem_test/INFO] Bye!
+> [Jupiter:consumer:(2) 0.000000] [sem_test/INFO] Bye!
