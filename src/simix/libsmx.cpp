@@ -259,26 +259,6 @@ void simcall_run_blocking(std::function<void()> const& code, simgrid::kernel::ac
 
 /* ************************************************************************** */
 
-/** @brief returns a printable string representing a simcall */
-const char* SIMIX_simcall_name(const s_smx_simcall& simcall)
-{
-  if (simcall.observer_ != nullptr) {
-#if SIMGRID_HAVE_MC
-    if (mc_model_checker != nullptr) // Do not try to use the observer from the MCer
-      return "(remotely observed)";
-#endif
-
-    static std::string name;
-    name              = boost::core::demangle(typeid(*simcall.observer_).name());
-    const char* cname = name.c_str();
-    if (name.rfind("simgrid::kernel::", 0) == 0)
-      cname += 17; // strip prefix "simgrid::kernel::"
-    return cname;
-  } else {
-    return simcall_names.at(static_cast<int>(simcall.call_));
-  }
-}
-
 namespace simgrid {
 namespace simix {
 

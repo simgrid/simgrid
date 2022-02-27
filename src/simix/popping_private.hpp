@@ -22,15 +22,9 @@ enum class Simcall {
   RUN_BLOCKING,
 };
 constexpr int NUM_SIMCALLS = 3;
-/** @brief Simcalls' names */
 } // namespace simix
 } // namespace simgrid
 
-XBT_PUBLIC_DATA const std::array<const char*, simgrid::simix::NUM_SIMCALLS> simcall_names; /* Name of each simcall */
-
-using simix_match_func_t     = bool (*)(void*, void*, simgrid::kernel::activity::CommImpl*);
-using simix_copy_data_func_t = void (*)(simgrid::kernel::activity::CommImpl*, void*, size_t);
-using simix_clean_func_t     = void (*)(void*);
 
 /**
  * @brief Represents a simcall to the kernel.
@@ -48,7 +42,5 @@ struct s_smx_simcall {
 /******************************** General *************************************/
 
 XBT_PRIVATE const char* SIMIX_simcall_name(const s_smx_simcall& simcall);
-XBT_PRIVATE void SIMIX_run_kernel(std::function<void()> const* code);
-XBT_PRIVATE void SIMIX_run_blocking(std::function<void()> const* code);
 
 #endif

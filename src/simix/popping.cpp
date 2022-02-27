@@ -10,6 +10,10 @@
 #include "src/simix/popping_private.hpp"
 #include "xbt/log.h"
 
+#if SIMGRID_HAVE_MC
+#include "src/mc/mc_forward.hpp"
+#endif
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(simix, "transmuting from user request into kernel handlers");
 
 constexpr std::array<const char*, simgrid::simix::NUM_SIMCALLS> simcall_names{{
@@ -21,7 +25,6 @@ constexpr std::array<const char*, simgrid::simix::NUM_SIMCALLS> simcall_names{{
 /** @private
  * @brief (in kernel mode) unpack the simcall and activate the handler
  *
- * This function is generated from src/simix/simcalls.in
  */
 void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered)
 {
@@ -32,12 +35,12 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered)
     return;
   switch (simcall_.call_) {
     case simgrid::simix::Simcall::RUN_KERNEL:
-      SIMIX_run_kernel(simcall_.code_);
+      (*simcall_.code_)();
       simcall_answer();
       break;
 
     case simgrid::simix::Simcall::RUN_BLOCKING:
-      SIMIX_run_blocking(simcall_.code_);
+      (*simcall_.code_)();
       break;
 
     case simgrid::simix::Simcall::NONE:
@@ -48,20 +51,22 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered)
   }
 }
 
-void SIMIX_run_kernel(std::function<void()> const* code)
+/** @brief returns a printable string representing a simcall */
+const char* SIMIX_simcall_name(const s_smx_simcall& simcall)
 {
-  (*code)();
-}
+  if (simcall.observer_ != nullptr) {
+#if SIMGRID_HAVE_MC
+    if (mc_model_checker != nullptr) // Do not try to use the observer from the MCer
+      return "(remotely observed)";
+#endif
 
-/** Kernel code for run_blocking
- *
- * The implementation looks a lot like SIMIX_run_kernel ^^
- *
- * However, this `run_blocking` is blocking so the process will not be woken
- * up until `ActorImpl::simcall_answer()`` is called by the kernel.
- * This means that `code` is responsible for doing this.
- */
-void SIMIX_run_blocking(std::function<void()> const* code)
-{
-  (*code)();
+    static std::string name;
+    name              = boost::core::demangle(typeid(*simcall.observer_).name());
+    const char* cname = name.c_str();
+    if (name.rfind("simgrid::kernel::", 0) == 0)
+      cname += 17; // strip prefix "simgrid::kernel::"
+    return cname;
+  } else {
+    return simcall_names.at(static_cast<int>(simcall.call_));
+  }
 }

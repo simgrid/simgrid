@@ -10,7 +10,6 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
-#include "src/simix/popping_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_synchro, kernel,
                                 "Kernel synchronization activity (lock/acquire on a mutex, semaphore or condition)");
