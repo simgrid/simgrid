@@ -66,7 +66,7 @@ void VirtualMachine::start()
 
   VmHostExt::ensureVmExtInstalled();
 
-  kernel::actor::simcall([this]() {
+  kernel::actor::simcall_answered([this]() {
     Host* pm = this->pimpl_vm_->get_physical_host();
     if (pm->extension<VmHostExt>() == nullptr)
       pm->extension_set(new VmHostExt());
@@ -97,7 +97,7 @@ void VirtualMachine::suspend()
 {
   on_suspend(*this);
   const kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::simcall([this, issuer]() { pimpl_vm_->suspend(issuer); });
+  kernel::actor::simcall_answered([this, issuer]() { pimpl_vm_->suspend(issuer); });
 }
 
 void VirtualMachine::resume()
@@ -109,7 +109,7 @@ void VirtualMachine::resume()
 void VirtualMachine::shutdown()
 {
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::simcall([this, issuer]() { pimpl_vm_->shutdown(issuer); });
+  kernel::actor::simcall_answered([this, issuer]() { pimpl_vm_->shutdown(issuer); });
   on_shutdown(*this);
 }
 
@@ -122,7 +122,7 @@ void VirtualMachine::destroy()
     XBT_DEBUG("destroy %s", get_cname());
     on_destruction(*this);
     /* Then, destroy the VM object */
-    kernel::actor::simcall([this]() {
+    kernel::actor::simcall_answered([this]() {
       get_vm_impl()->vm_destroy();
       get_impl()->destroy();
 
@@ -150,13 +150,13 @@ simgrid::s4u::Host* VirtualMachine::get_pm() const
 
 VirtualMachine* VirtualMachine::set_pm(simgrid::s4u::Host* pm)
 {
-  kernel::actor::simcall([this, pm]() { pimpl_vm_->set_physical_host(pm); });
+  kernel::actor::simcall_answered([this, pm]() { pimpl_vm_->set_physical_host(pm); });
   return this;
 }
 
 VirtualMachine::State VirtualMachine::get_state() const
 {
-  return kernel::actor::simcall([this]() { return pimpl_vm_->get_state(); });
+  return kernel::actor::simcall_answered([this]() { return pimpl_vm_->get_state(); });
 }
 
 size_t VirtualMachine::get_ramsize() const
@@ -197,7 +197,7 @@ VirtualMachine* VirtualMachine::set_ramsize(size_t ramsize)
  */
 VirtualMachine* VirtualMachine::set_bound(double bound)
 {
-  kernel::actor::simcall([this, bound]() { pimpl_vm_->set_bound(bound); });
+  kernel::actor::simcall_answered([this, bound]() { pimpl_vm_->set_bound(bound); });
   return this;
 }
 

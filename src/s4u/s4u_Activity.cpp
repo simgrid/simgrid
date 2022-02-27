@@ -84,7 +84,8 @@ bool Activity::test()
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::ActivityTestSimcall observer{issuer, pimpl_.get()};
-  if (kernel::actor::simcall([&observer] { return observer.get_activity()->test(observer.get_issuer()); }, &observer)) {
+  if (kernel::actor::simcall_answered([&observer] { return observer.get_activity()->test(observer.get_issuer()); },
+                                      &observer)) {
     complete(State::FINISHED);
     return true;
   }
@@ -99,7 +100,7 @@ ssize_t Activity::test_any(const std::vector<ActivityPtr>& activities)
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::ActivityTestanySimcall observer{issuer, ractivities};
-  ssize_t changed_pos = kernel::actor::simcall(
+  ssize_t changed_pos = kernel::actor::simcall_answered(
       [&observer] {
         return kernel::activity::ActivityImpl::test_any(observer.get_issuer(), observer.get_activities());
       },
@@ -130,7 +131,7 @@ ssize_t Activity::wait_any_for(const std::vector<ActivityPtr>& activities, doubl
 
 Activity* Activity::cancel()
 {
-  kernel::actor::simcall([this] {
+  kernel::actor::simcall_answered([this] {
     XBT_HERE();
     if (pimpl_)
       pimpl_->cancel();

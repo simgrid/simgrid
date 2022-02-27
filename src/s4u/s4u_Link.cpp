@@ -72,7 +72,7 @@ double Link::get_latency() const
 
 Link* Link::set_latency(double value)
 {
-  kernel::actor::simcall([this, value] { pimpl_->set_latency(value); });
+  kernel::actor::simcall_answered([this, value] { pimpl_->set_latency(value); });
   return this;
 }
 
@@ -95,7 +95,7 @@ double Link::get_bandwidth() const
 
 Link* Link::set_bandwidth(double value)
 {
-  kernel::actor::simcall([this, value] { pimpl_->set_bandwidth(value); });
+  kernel::actor::simcall_answered([this, value] { pimpl_->set_bandwidth(value); });
   return this;
 }
 
@@ -105,7 +105,7 @@ Link* Link::set_sharing_policy(Link::SharingPolicy policy, const NonLinearResour
     throw std::invalid_argument(std::string("Impossible to set wifi or split-duplex for the link: ") + get_name() +
                                 std::string(". Use appropriate create function in NetZone."));
 
-  kernel::actor::simcall([this, policy, &cb] { pimpl_->set_sharing_policy(policy, cb); });
+  kernel::actor::simcall_answered([this, policy, &cb] { pimpl_->set_sharing_policy(policy, cb); });
   return this;
 }
 Link::SharingPolicy Link::get_sharing_policy() const
@@ -122,7 +122,7 @@ void Link::set_host_wifi_rate(const s4u::Host* host, int level) const
 
 Link* Link::set_concurrency_limit(int limit)
 {
-  kernel::actor::simcall([this, limit] { pimpl_->set_concurrency_limit(limit); });
+  kernel::actor::simcall_answered([this, limit] { pimpl_->set_concurrency_limit(limit); });
   return this;
 }
 
@@ -133,15 +133,15 @@ double Link::get_usage() const
 
 void Link::turn_on()
 {
-  kernel::actor::simcall([this]() { this->pimpl_->turn_on(); });
+  kernel::actor::simcall_answered([this]() { this->pimpl_->turn_on(); });
 }
 void Link::turn_off()
 {
-  kernel::actor::simcall([this]() { this->pimpl_->turn_off(); });
+  kernel::actor::simcall_answered([this]() { this->pimpl_->turn_off(); });
 }
 Link* Link::seal()
 {
-  kernel::actor::simcall([this]() { this->pimpl_->seal(); });
+  kernel::actor::simcall_answered([this]() { this->pimpl_->seal(); });
   s4u::Link::on_creation(*this); // notify the signal
   return this;
 }
@@ -154,21 +154,21 @@ bool Link::is_on() const
 Link* Link::set_state_profile(kernel::profile::Profile* profile)
 {
   xbt_assert(not pimpl_->is_sealed(), "Cannot set a state profile once the Link is sealed");
-  kernel::actor::simcall([this, profile]() { this->pimpl_->set_state_profile(profile); });
+  kernel::actor::simcall_answered([this, profile]() { this->pimpl_->set_state_profile(profile); });
   return this;
 }
 
 Link* Link::set_bandwidth_profile(kernel::profile::Profile* profile)
 {
   xbt_assert(not pimpl_->is_sealed(), "Cannot set a bandwidth profile once the Link is sealed");
-  kernel::actor::simcall([this, profile]() { this->pimpl_->set_bandwidth_profile(profile); });
+  kernel::actor::simcall_answered([this, profile]() { this->pimpl_->set_bandwidth_profile(profile); });
   return this;
 }
 
 Link* Link::set_latency_profile(kernel::profile::Profile* profile)
 {
   xbt_assert(not pimpl_->is_sealed(), "Cannot set a latency profile once the Link is sealed");
-  kernel::actor::simcall([this, profile]() { this->pimpl_->set_latency_profile(profile); });
+  kernel::actor::simcall_answered([this, profile]() { this->pimpl_->set_latency_profile(profile); });
   return this;
 }
 
@@ -178,7 +178,7 @@ const char* Link::get_property(const std::string& key) const
 }
 Link* Link::set_property(const std::string& key, const std::string& value)
 {
-  kernel::actor::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
+  kernel::actor::simcall_answered([this, &key, &value] { this->pimpl_->set_property(key, value); });
   return this;
 }
 
@@ -189,7 +189,7 @@ const std::unordered_map<std::string, std::string>* Link::get_properties() const
 
 Link* Link::set_properties(const std::unordered_map<std::string, std::string>& properties)
 {
-  kernel::actor::simcall([this, &properties] { this->pimpl_->set_properties(properties); });
+  kernel::actor::simcall_answered([this, &properties] { this->pimpl_->set_properties(properties); });
   return this;
 }
 

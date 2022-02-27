@@ -94,7 +94,7 @@ double Engine::get_clock()
 void Engine::add_model(std::shared_ptr<kernel::resource::Model> model,
                        const std::vector<kernel::resource::Model*>& dependencies)
 {
-  kernel::actor::simcall([this, &model, &dependencies] { pimpl->add_model(std::move(model), dependencies); });
+  kernel::actor::simcall_answered([this, &model, &dependencies] { pimpl->add_model(std::move(model), dependencies); });
 }
 
 const std::vector<simgrid::kernel::resource::Model*>& Engine::get_all_models() const
@@ -152,12 +152,12 @@ void Engine::register_default(const std::function<void(int, char**)>& code)
 }
 void Engine::register_default(const kernel::actor::ActorCodeFactory& code)
 {
-  simgrid::kernel::actor::simcall([this, &code]() { pimpl->register_default(code); });
+  simgrid::kernel::actor::simcall_answered([this, &code]() { pimpl->register_default(code); });
 }
 
 void Engine::register_function(const std::string& name, const kernel::actor::ActorCodeFactory& code)
 {
-  simgrid::kernel::actor::simcall([this, name, &code]() { pimpl->register_function(name, code); });
+  simgrid::kernel::actor::simcall_answered([this, name, &code]() { pimpl->register_function(name, code); });
 }
 
 /** Load a deployment file and launch the actors that it contains
@@ -256,7 +256,7 @@ Link* Engine::link_by_name_or_null(const std::string& name) const
 Mailbox* Engine::mailbox_by_name_or_create(const std::string& name) const
 {
   /* two actors may have pushed the same mbox_create simcall at the same time */
-  kernel::activity::MailboxImpl* mbox = kernel::actor::simcall([&name, this] {
+  kernel::activity::MailboxImpl* mbox = kernel::actor::simcall_answered([&name, this] {
     auto m = pimpl->mailboxes_.emplace(name, nullptr);
     if (m.second) {
       m.first->second = new kernel::activity::MailboxImpl(name);
@@ -410,13 +410,13 @@ std::vector<kernel::routing::NetPoint*> Engine::get_all_netpoints() const
 /** @brief Register a new netpoint to the system */
 void Engine::netpoint_register(kernel::routing::NetPoint* point)
 {
-  simgrid::kernel::actor::simcall([this, point] { pimpl->netpoints_[point->get_name()] = point; });
+  simgrid::kernel::actor::simcall_answered([this, point] { pimpl->netpoints_[point->get_name()] = point; });
 }
 
 /** @brief Unregister a given netpoint */
 void Engine::netpoint_unregister(kernel::routing::NetPoint* point)
 {
-  kernel::actor::simcall([this, point] {
+  kernel::actor::simcall_answered([this, point] {
     pimpl->netpoints_.erase(point->get_name());
     delete point;
   });

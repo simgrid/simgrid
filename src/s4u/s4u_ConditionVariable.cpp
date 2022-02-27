@@ -18,7 +18,7 @@ namespace s4u {
 ConditionVariablePtr ConditionVariable::create()
 {
   kernel::activity::ConditionVariableImpl* cond =
-      kernel::actor::simcall([] { return new kernel::activity::ConditionVariableImpl(); });
+      kernel::actor::simcall_answered([] { return new kernel::activity::ConditionVariableImpl(); });
   return ConditionVariablePtr(cond->get_iface(), false);
 }
 
@@ -77,12 +77,12 @@ std::cv_status ConditionVariable::wait_until(const std::unique_lock<Mutex>& lock
  */
 void ConditionVariable::notify_one()
 {
-  simgrid::kernel::actor::simcall([this]() { pimpl_->signal(); });
+  simgrid::kernel::actor::simcall_answered([this]() { pimpl_->signal(); });
 }
 
 void ConditionVariable::notify_all()
 {
-  simgrid::kernel::actor::simcall([this]() { pimpl_->broadcast(); });
+  simgrid::kernel::actor::simcall_answered([this]() { pimpl_->broadcast(); });
 }
 
 void intrusive_ptr_add_ref(const ConditionVariable* cond)

@@ -212,7 +212,7 @@ Comm* Comm::start()
     xbt_assert(from_ != nullptr && to_ != nullptr, "When either from_ or to_ is specified, both must be.");
     xbt_assert(src_buff_ == nullptr && dst_buff_ == nullptr,
                "Direct host-to-host communications cannot carry any data.");
-    pimpl_ = kernel::actor::simcall([this] {
+    pimpl_ = kernel::actor::simcall_answered([this] {
       kernel::activity::CommImplPtr res(new kernel::activity::CommImpl(this->from_, this->to_, this->get_remaining()));
       res->start();
       return res;
@@ -231,7 +231,8 @@ Comm* Comm::start()
                                              copy_data_function_,
                                              get_data<void>(),
                                              detached_};
-    pimpl_ = kernel::actor::simcall([&observer] { return kernel::activity::CommImpl::isend(&observer); }, &observer);
+    pimpl_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::CommImpl::isend(&observer); },
+                                             &observer);
   } else if (dst_buff_ != nullptr) { // Receiver side
     xbt_assert(not detached_, "Receive cannot be detached");
     on_recv(*this);
@@ -243,7 +244,8 @@ Comm* Comm::start()
                                              copy_data_function_,
                                              get_data<void>(),
                                              rate_};
-    pimpl_ = kernel::actor::simcall([&observer] { return kernel::activity::CommImpl::irecv(&observer); }, &observer);
+    pimpl_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::CommImpl::irecv(&observer); },
+                                             &observer);
   } else {
     xbt_die("Cannot start a communication before specifying whether we are the sender or the receiver");
   }

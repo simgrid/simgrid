@@ -73,7 +73,7 @@ kernel::activity::CommImplPtr Mailbox::front() const
 
 void Mailbox::set_receiver(ActorPtr actor)
 {
-  kernel::actor::simcall([this, actor]() { this->pimpl_->set_receiver(actor); });
+  kernel::actor::simcall_answered([this, actor]() { this->pimpl_->set_receiver(actor); });
 }
 
 /** @brief get the receiver (process associated to the mailbox) */
@@ -132,7 +132,8 @@ CommPtr Mailbox::get_init()
 kernel::activity::ActivityImplPtr
 Mailbox::iprobe(int type, bool (*match_fun)(void*, void*, kernel::activity::CommImpl*), void* data)
 {
-  return kernel::actor::simcall([this, type, match_fun, data] { return pimpl_->iprobe(type, match_fun, data); });
+  return kernel::actor::simcall_answered(
+      [this, type, match_fun, data] { return pimpl_->iprobe(type, match_fun, data); });
 }
 } // namespace s4u
 } // namespace simgrid

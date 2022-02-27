@@ -15,8 +15,8 @@
 #include <string>
 #include <unordered_map>
 
-XBT_PUBLIC void simcall_run_kernel(std::function<void()> const& code,
-                                   simgrid::kernel::actor::SimcallObserver* observer);
+XBT_PUBLIC void simcall_run_answered(std::function<void()> const& code,
+                                     simgrid::kernel::actor::SimcallObserver* observer);
 XBT_PUBLIC void simcall_run_blocking(std::function<void()> const& code,
                                      simgrid::kernel::actor::SimcallObserver* observer);
 
@@ -43,7 +43,7 @@ namespace actor {
  * you may need to wait for that mutex to be unlocked by its current owner.
  * Potentially blocking simcall must be issued using simcall_blocking(), right below in this file.
  */
-template <class F> typename std::result_of_t<F()> simcall(F&& code, SimcallObserver* observer = nullptr)
+template <class F> typename std::result_of_t<F()> simcall_answered(F&& code, SimcallObserver* observer = nullptr)
 {
   // If we are in the maestro, we take the fast path and execute the
   // code directly without simcall marshalling/unmarshalling/dispatch:
@@ -55,7 +55,7 @@ template <class F> typename std::result_of_t<F()> simcall(F&& code, SimcallObser
   // conveniently handles the success/failure value for us.
   using R = typename std::result_of_t<F()>;
   simgrid::xbt::Result<R> result;
-  simcall_run_kernel([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); }, observer);
+  simcall_run_answered([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); }, observer);
   return result.get();
 }
 

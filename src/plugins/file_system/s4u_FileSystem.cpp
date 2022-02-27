@@ -71,7 +71,7 @@ File::File(const std::string& fullpath, void* userdata) : File(fullpath, Host::c
 
 File::File(const std::string& fullpath, const_sg_host_t host, void* userdata) : fullpath_(fullpath)
 {
-  kernel::actor::simcall([this, &host, userdata] {
+  kernel::actor::simcall_answered([this, &host, userdata] {
     this->set_data(userdata);
     // this cannot fail because we get a xbt_die if the mountpoint does not exist
     local_disk_ = find_local_disk_on(host);
@@ -108,7 +108,7 @@ File::~File()
 {
   std::vector<int>* desc_table =
       Host::current()->extension<simgrid::s4u::FileDescriptorHostExt>()->file_descriptor_table.get();
-  kernel::actor::simcall([this, desc_table] { desc_table->push_back(this->desc_id); });
+  kernel::actor::simcall_answered([this, desc_table] { desc_table->push_back(this->desc_id); });
 }
 
 File* File::open(const std::string& fullpath, void* userdata)
@@ -193,7 +193,7 @@ sg_size_t File::write(sg_size_t size, bool write_inside)
     if (current_position_ > size_)
       size_ = current_position_;
   }
-  kernel::actor::simcall([this] {
+  kernel::actor::simcall_answered([this] {
     std::map<std::string, sg_size_t, std::less<>>* content = local_disk_->extension<FileSystemDiskExt>()->get_content();
 
     content->erase(path_);
@@ -379,12 +379,12 @@ std::map<std::string, sg_size_t, std::less<>>* FileSystemDiskExt::parse_content(
 
 void FileSystemDiskExt::decr_used_size(sg_size_t size)
 {
-  simgrid::kernel::actor::simcall([this, size] { used_size_ -= size; });
+  simgrid::kernel::actor::simcall_answered([this, size] { used_size_ -= size; });
 }
 
 void FileSystemDiskExt::incr_used_size(sg_size_t size)
 {
-  simgrid::kernel::actor::simcall([this, size] { used_size_ += size; });
+  simgrid::kernel::actor::simcall_answered([this, size] { used_size_ += size; });
 }
 }
 }

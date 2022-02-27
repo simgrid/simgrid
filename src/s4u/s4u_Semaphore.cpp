@@ -35,17 +35,17 @@ bool Semaphore::acquire_timeout(double timeout)
 
 void Semaphore::release()
 {
-  kernel::actor::simcall([this] { pimpl_->release(); });
+  kernel::actor::simcall_answered([this] { pimpl_->release(); });
 }
 
 int Semaphore::get_capacity() const
 {
-  return kernel::actor::simcall([this] { return pimpl_->get_capacity(); });
+  return kernel::actor::simcall_answered([this] { return pimpl_->get_capacity(); });
 }
 
 bool Semaphore::would_block() const
 {
-  return kernel::actor::simcall([this] { return pimpl_->would_block(); });
+  return kernel::actor::simcall_answered([this] { return pimpl_->would_block(); });
 }
 
 /* refcounting of the intrusive_ptr is delegated to the implementation object */

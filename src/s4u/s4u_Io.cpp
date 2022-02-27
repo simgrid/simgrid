@@ -28,7 +28,7 @@ IoPtr Io::init()
 
 Io* Io::start()
 {
-  kernel::actor::simcall(
+  kernel::actor::simcall_answered(
       [this] { (*boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)).set_name(get_name()).start(); });
 
   if (suspended_)
@@ -51,7 +51,7 @@ IoPtr Io::set_disk(const_sg_disk_t disk)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING, "Cannot set disk once the Io is started");
 
-  kernel::actor::simcall(
+  kernel::actor::simcall_answered(
       [this, disk] { boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_disk(disk->get_impl()); });
 
   // Setting the disk may allow to start the activity, let's try
@@ -65,7 +65,7 @@ IoPtr Io::set_priority(double priority)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
              "Cannot change the priority of an io after its start");
-  kernel::actor::simcall([this, priority] {
+  kernel::actor::simcall_answered([this, priority] {
     boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_sharing_penalty(1. / priority);
   });
   return this;
@@ -74,7 +74,7 @@ IoPtr Io::set_priority(double priority)
 IoPtr Io::set_size(sg_size_t size)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING, "Cannot set size once the Io is started");
-  kernel::actor::simcall(
+  kernel::actor::simcall_answered(
       [this, size] { boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_size(size); });
   Activity::set_remaining(size);
   return this;
@@ -83,14 +83,14 @@ IoPtr Io::set_size(sg_size_t size)
 IoPtr Io::set_op_type(OpType type)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING, "Cannot set size once the Io is started");
-  kernel::actor::simcall(
+  kernel::actor::simcall_answered(
       [this, type] { boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_type(type); });
   return this;
 }
 
 IoPtr Io::update_priority(double priority)
 {
-  kernel::actor::simcall([this, priority] {
+  kernel::actor::simcall_answered([this, priority] {
     boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->update_sharing_penalty(1. / priority);
   });
   return this;
@@ -99,7 +99,7 @@ IoPtr Io::update_priority(double priority)
 /** @brief Returns the amount of flops that remain to be done */
 double Io::get_remaining() const
 {
-  return kernel::actor::simcall(
+  return kernel::actor::simcall_answered(
       [this]() { return boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->get_remaining(); });
 }
 

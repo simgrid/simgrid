@@ -65,7 +65,7 @@ Host::~Host()
  */
 void Host::destroy()
 {
-  kernel::actor::simcall([this] { this->pimpl_->destroy(); });
+  kernel::actor::simcall_answered([this] { this->pimpl_->destroy(); });
 }
 
 Host* Host::by_name(const std::string& name)
@@ -97,7 +97,7 @@ const char* Host::get_cname() const
 void Host::turn_on()
 {
   if (not is_on()) {
-    kernel::actor::simcall([this] {
+    kernel::actor::simcall_answered([this] {
       this->pimpl_cpu_->turn_on();
       this->pimpl_->turn_on();
       on_state_change(*this);
@@ -110,7 +110,7 @@ void Host::turn_off()
 {
   if (is_on()) {
     const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
-    kernel::actor::simcall([this, self] {
+    kernel::actor::simcall_answered([this, self] {
       for (VirtualMachine* const& vm : kernel::resource::VirtualMachineImpl::allVms_)
         if (vm->get_pm() == this) {
           vm->shutdown();
@@ -201,13 +201,13 @@ const char* Host::get_property(const std::string& key) const
 
 Host* Host::set_property(const std::string& key, const std::string& value)
 {
-  kernel::actor::simcall([this, &key, &value] { this->pimpl_->set_property(key, value); });
+  kernel::actor::simcall_answered([this, &key, &value] { this->pimpl_->set_property(key, value); });
   return this;
 }
 
 Host* Host::set_properties(const std::unordered_map<std::string, std::string>& properties)
 {
-  kernel::actor::simcall([this, &properties] { this->pimpl_->set_properties(properties); });
+  kernel::actor::simcall_answered([this, &properties] { this->pimpl_->set_properties(properties); });
   return this;
 }
 
@@ -215,7 +215,7 @@ Host* Host::set_properties(const std::unordered_map<std::string, std::string>& p
  * The profile must contain boolean values. */
 Host* Host::set_state_profile(kernel::profile::Profile* p)
 {
-  kernel::actor::simcall([this, p] { pimpl_cpu_->set_state_profile(p); });
+  kernel::actor::simcall_answered([this, p] { pimpl_cpu_->set_state_profile(p); });
   return this;
 }
 /** Specify a profile modeling the external load according to an exhaustive list or a stochastic law.
@@ -226,7 +226,7 @@ Host* Host::set_state_profile(kernel::profile::Profile* p)
  */
 Host* Host::set_speed_profile(kernel::profile::Profile* p)
 {
-  kernel::actor::simcall([this, p] { pimpl_cpu_->set_speed_profile(p); });
+  kernel::actor::simcall_answered([this, p] { pimpl_cpu_->set_speed_profile(p); });
   return this;
 }
 
@@ -251,7 +251,7 @@ double Host::get_available_speed() const
 
 Host* Host::set_sharing_policy(SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
 {
-  kernel::actor::simcall([this, policy, &cb] { pimpl_cpu_->set_sharing_policy(policy, cb); });
+  kernel::actor::simcall_answered([this, policy, &cb] { pimpl_cpu_->set_sharing_policy(policy, cb); });
   return this;
 }
 
@@ -267,13 +267,13 @@ int Host::get_core_count() const
 
 Host* Host::set_core_count(int core_count)
 {
-  kernel::actor::simcall([this, core_count] { this->pimpl_cpu_->set_core_count(core_count); });
+  kernel::actor::simcall_answered([this, core_count] { this->pimpl_cpu_->set_core_count(core_count); });
   return this;
 }
 
 Host* Host::set_pstate_speed(const std::vector<double>& speed_per_state)
 {
-  kernel::actor::simcall([this, &speed_per_state] { pimpl_cpu_->set_pstate_speed(speed_per_state); });
+  kernel::actor::simcall_answered([this, &speed_per_state] { pimpl_cpu_->set_pstate_speed(speed_per_state); });
   return this;
 }
 
@@ -301,7 +301,7 @@ Host* Host::set_pstate_speed(const std::vector<std::string>& speed_per_state)
 /** @brief Set the pstate at which the host should run */
 Host* Host::set_pstate(unsigned long pstate_index)
 {
-  kernel::actor::simcall([this, pstate_index] { this->pimpl_cpu_->set_pstate(pstate_index); });
+  kernel::actor::simcall_answered([this, pstate_index] { this->pimpl_cpu_->set_pstate(pstate_index); });
   return this;
 }
 
@@ -313,14 +313,14 @@ unsigned long Host::get_pstate() const
 
 Host* Host::set_factor_cb(const std::function<CpuFactorCb>& cb)
 {
-  kernel::actor::simcall([this, &cb] { pimpl_cpu_->set_factor_cb(cb); });
+  kernel::actor::simcall_answered([this, &cb] { pimpl_cpu_->set_factor_cb(cb); });
   return this;
 }
 
 Host* Host::set_coordinates(const std::string& coords)
 {
   if (not coords.empty())
-    kernel::actor::simcall([this, coords] { this->pimpl_netpoint_->set_coordinates(coords); });
+    kernel::actor::simcall_answered([this, coords] { this->pimpl_netpoint_->set_coordinates(coords); });
   return this;
 }
 std::vector<Disk*> Host::get_disks() const
@@ -330,7 +330,7 @@ std::vector<Disk*> Host::get_disks() const
 
 Disk* Host::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
-  return kernel::actor::simcall([this, &name, read_bandwidth, write_bandwidth] {
+  return kernel::actor::simcall_answered([this, &name, read_bandwidth, write_bandwidth] {
     auto* disk = pimpl_->create_disk(name, read_bandwidth, write_bandwidth);
     pimpl_->add_disk(disk);
     return disk;
@@ -358,12 +358,12 @@ Disk* Host::create_disk(const std::string& name, const std::string& read_bandwid
 
 void Host::add_disk(const Disk* disk)
 {
-  kernel::actor::simcall([this, disk] { this->pimpl_->add_disk(disk); });
+  kernel::actor::simcall_answered([this, disk] { this->pimpl_->add_disk(disk); });
 }
 
 void Host::remove_disk(const std::string& disk_name)
 {
-  kernel::actor::simcall([this, disk_name] { this->pimpl_->remove_disk(disk_name); });
+  kernel::actor::simcall_answered([this, disk_name] { this->pimpl_->remove_disk(disk_name); });
 }
 
 VirtualMachine* Host::create_vm(const std::string& name, int core_amount)
@@ -398,7 +398,7 @@ void Host::execute(double flops, double priority) const
 
 Host* Host::seal()
 {
-  kernel::actor::simcall([this]() { this->pimpl_->seal(); });
+  kernel::actor::simcall_answered([this]() { this->pimpl_->seal(); });
   simgrid::s4u::Host::on_creation(*this); // notify the signal
   return this;
 }

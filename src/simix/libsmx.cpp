@@ -50,7 +50,7 @@ void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size,
     simgrid::kernel::actor::CommIsendSimcall send_observer{
         sender,  mbox,          task_size, rate, static_cast<unsigned char*>(src_buff), src_buff_size, match_fun,
         nullptr, copy_data_fun, data,      false};
-    comm = simgrid::kernel::actor::simcall(
+    comm = simgrid::kernel::actor::simcall_answered(
         [&send_observer] { return simgrid::kernel::activity::CommImpl::isend(&send_observer); }, &send_observer);
 
     simgrid::kernel::actor::ActivityWaitSimcall wait_observer{sender, comm.get(), timeout};
@@ -92,7 +92,8 @@ simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, dou
   simgrid::kernel::actor::CommIsendSimcall observer(sender, mbox, task_size, rate,
                                                     static_cast<unsigned char*>(src_buff), src_buff_size, match_fun,
                                                     clean_fun, copy_data_fun, data, detached);
-  return simgrid::kernel::actor::simcall([&observer] { return simgrid::kernel::activity::CommImpl::isend(&observer); });
+  return simgrid::kernel::actor::simcall_answered(
+      [&observer] { return simgrid::kernel::activity::CommImpl::isend(&observer); });
 }
 
 /**
@@ -112,7 +113,7 @@ void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff,
 
     simgrid::kernel::actor::CommIrecvSimcall observer{
         receiver, mbox, static_cast<unsigned char*>(dst_buff), dst_buff_size, match_fun, copy_data_fun, data, rate};
-    comm = simgrid::kernel::actor::simcall(
+    comm = simgrid::kernel::actor::simcall_answered(
         [&observer] { return simgrid::kernel::activity::CommImpl::irecv(&observer); }, &observer);
 
     simgrid::kernel::actor::ActivityWaitSimcall wait_observer{receiver, comm.get(), timeout};
@@ -146,7 +147,8 @@ simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, siz
 
   simgrid::kernel::actor::CommIrecvSimcall observer(receiver, mbox, static_cast<unsigned char*>(dst_buff),
                                                     dst_buff_size, match_fun, copy_data_fun, data, rate);
-  return simgrid::kernel::actor::simcall([&observer] { return simgrid::kernel::activity::CommImpl::irecv(&observer); });
+  return simgrid::kernel::actor::simcall_answered(
+      [&observer] { return simgrid::kernel::activity::CommImpl::irecv(&observer); });
 }
 
 /**
@@ -235,7 +237,7 @@ static void simcall(simgrid::simix::Simcall call, std::function<void()> const& c
   }
 }
 
-void simcall_run_kernel(std::function<void()> const& code, simgrid::kernel::actor::SimcallObserver* observer)
+void simcall_run_answered(std::function<void()> const& code, simgrid::kernel::actor::SimcallObserver* observer)
 {
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = observer;
   // The function `code` is called in kernel mode (either because we are already in maestor or after a context switch)

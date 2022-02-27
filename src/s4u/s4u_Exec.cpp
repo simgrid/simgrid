@@ -44,7 +44,7 @@ ExecPtr Exec::init()
 
 Exec* Exec::start()
 {
-  kernel::actor::simcall([this] {
+  kernel::actor::simcall_answered([this] {
     (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
         .set_name(get_name())
         .set_tracing_category(get_tracing_category())
@@ -75,7 +75,7 @@ ExecPtr Exec::set_bound(double bound)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
              "Cannot change the bound of an exec after its start");
-  kernel::actor::simcall(
+  kernel::actor::simcall_answered(
       [this, bound] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_bound(bound); });
   return this;
 }
@@ -90,7 +90,7 @@ ExecPtr Exec::set_priority(double priority)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
              "Cannot change the priority of an exec after its start");
-  kernel::actor::simcall([this, priority] {
+  kernel::actor::simcall_answered([this, priority] {
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_sharing_penalty(1. / priority);
   });
   return this;
@@ -98,7 +98,7 @@ ExecPtr Exec::set_priority(double priority)
 
 ExecPtr Exec::update_priority(double priority)
 {
-  kernel::actor::simcall([this, priority] {
+  kernel::actor::simcall_answered([this, priority] {
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->update_sharing_penalty(1. / priority);
   });
   return this;
@@ -108,7 +108,7 @@ ExecPtr Exec::set_flops_amount(double flops_amount)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
       "Cannot change the flop_amount of an exec after its start");
-  kernel::actor::simcall([this, flops_amount] {
+  kernel::actor::simcall_answered([this, flops_amount] {
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_flops_amount(flops_amount);
   });
   Activity::set_remaining(flops_amount);
@@ -119,7 +119,7 @@ ExecPtr Exec::set_flops_amounts(const std::vector<double>& flops_amounts)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
       "Cannot change the flops_amounts of an exec after its start");
-  kernel::actor::simcall([this, flops_amounts] {
+  kernel::actor::simcall_answered([this, flops_amounts] {
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_flops_amounts(flops_amounts);
   });
   parallel_      = true;
@@ -130,7 +130,7 @@ ExecPtr Exec::set_bytes_amounts(const std::vector<double>& bytes_amounts)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
       "Cannot change the bytes_amounts of an exec after its start");
-  kernel::actor::simcall([this, bytes_amounts] {
+  kernel::actor::simcall_answered([this, bytes_amounts] {
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_bytes_amounts(bytes_amounts);
   });
   parallel_      = true;
@@ -160,7 +160,7 @@ ExecPtr Exec::set_host(Host* host)
   if (state_ == State::STARTED)
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->migrate(host);
 
-  kernel::actor::simcall(
+  kernel::actor::simcall_answered(
       [this, host] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_host(host); });
 
   if (state_ == State::STARTING)
@@ -175,7 +175,7 @@ ExecPtr Exec::set_hosts(const std::vector<Host*>& hosts)
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
              "Cannot change the hosts of an exec once it's done (state: %s)", to_c_str(state_));
 
-  kernel::actor::simcall(
+  kernel::actor::simcall_answered(
       [this, hosts] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_hosts(hosts); });
   parallel_ = true;
 
@@ -213,7 +213,7 @@ double Exec::get_remaining() const
     XBT_WARN("Calling get_remaining() on a parallel execution is not allowed. Call get_remaining_ratio() instead.");
     return get_remaining_ratio();
   } else
-    return kernel::actor::simcall(
+    return kernel::actor::simcall_answered(
         [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_remaining(); });
 }
 
@@ -224,10 +224,10 @@ double Exec::get_remaining() const
 double Exec::get_remaining_ratio() const
 {
   if (is_parallel())
-    return kernel::actor::simcall(
+    return kernel::actor::simcall_answered(
         [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_par_remaining_ratio(); });
   else
-    return kernel::actor::simcall(
+    return kernel::actor::simcall_answered(
         [this]() { return boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_seq_remaining_ratio(); });
 }
 

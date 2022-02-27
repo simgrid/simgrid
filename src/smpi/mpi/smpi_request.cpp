@@ -521,7 +521,8 @@ void Request::start()
                                              -1.0};
     observer.set_tag(tag_);
 
-    action_ = kernel::actor::simcall([&observer] { return kernel::activity::CommImpl::irecv(&observer); }, &observer);
+    action_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::CommImpl::irecv(&observer); },
+                                              &observer);
 
     XBT_DEBUG("recv simcall posted");
 
@@ -626,7 +627,8 @@ void Request::start()
         // detach if msg size < eager/rdv switch limit
         detached_};
     observer.set_tag(tag_);
-    action_ = kernel::actor::simcall([&observer] { return kernel::activity::CommImpl::isend(&observer); }, &observer);
+    action_ = kernel::actor::simcall_answered([&observer] { return kernel::activity::CommImpl::isend(&observer); },
+                                              &observer);
     XBT_DEBUG("send simcall posted");
 
     /* FIXME: detached sends are not traceable (action_ == nullptr) */
@@ -684,8 +686,8 @@ int Request::test(MPI_Request * request, MPI_Status * status, int* flag) {
       try{
         kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
         kernel::actor::ActivityTestSimcall observer{issuer, (*request)->action_.get()};
-        *flag = kernel::actor::simcall([&observer] { return observer.get_activity()->test(observer.get_issuer()); },
-                                       &observer);
+        *flag = kernel::actor::simcall_answered(
+            [&observer] { return observer.get_activity()->test(observer.get_issuer()); }, &observer);
       } catch (const Exception&) {
         *flag = 0;
         return ret;
@@ -774,7 +776,7 @@ int Request::testany(int count, MPI_Request requests[], int *index, int* flag, M
     try{
       kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
       kernel::actor::ActivityTestanySimcall observer{issuer, comms};
-      i = kernel::actor::simcall(
+      i = kernel::actor::simcall_answered(
           [&observer] {
             return kernel::activity::ActivityImpl::test_any(observer.get_issuer(), observer.get_activities());
           },

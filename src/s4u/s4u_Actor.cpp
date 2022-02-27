@@ -51,7 +51,7 @@ ActorPtr Actor::init(const std::string& name, s4u::Host* host)
 {
   const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
   kernel::actor::ActorImpl* actor =
-      kernel::actor::simcall([self, &name, host] { return self->init(name, host).get(); });
+      kernel::actor::simcall_answered([self, &name, host] { return self->init(name, host).get(); });
   return actor->get_iface();
 }
 
@@ -66,7 +66,7 @@ ActorPtr Actor::set_stacksize(unsigned stacksize)
 
 ActorPtr Actor::start(const std::function<void()>& code)
 {
-  simgrid::kernel::actor::simcall([this, &code] { pimpl_->start(code); });
+  simgrid::kernel::actor::simcall_answered([this, &code] { pimpl_->start(code); });
   return this;
 }
 
@@ -74,7 +74,7 @@ ActorPtr Actor::create(const std::string& name, s4u::Host* host, const std::func
 {
   const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
   kernel::actor::ActorImpl* actor =
-      kernel::actor::simcall([self, &name, host, &code] { return self->init(name, host)->start(code); });
+      kernel::actor::simcall_answered([self, &name, host, &code] { return self->init(name, host)->start(code); });
 
   return actor->get_iface();
 }
@@ -124,7 +124,7 @@ void Actor::join(double timeout) const
 
 Actor* Actor::set_auto_restart(bool autorestart)
 {
-  kernel::actor::simcall([this, autorestart]() {
+  kernel::actor::simcall_answered([this, autorestart]() {
     xbt_assert(autorestart && not pimpl_->has_to_auto_restart()); // FIXME: handle all cases
     pimpl_->set_auto_restart(autorestart);
 
@@ -137,14 +137,14 @@ Actor* Actor::set_auto_restart(bool autorestart)
 
 void Actor::on_exit(const std::function<void(bool /*failed*/)>& fun) const
 {
-  kernel::actor::simcall([this, &fun] { pimpl_->on_exit->emplace_back(fun); });
+  kernel::actor::simcall_answered([this, &fun] { pimpl_->on_exit->emplace_back(fun); });
 }
 
 void Actor::set_host(Host* new_host)
 {
   const s4u::Host* previous_location = get_host();
 
-  kernel::actor::simcall([this, new_host]() {
+  kernel::actor::simcall_answered([this, new_host]() {
     for (auto const& activity : pimpl_->activities_) {
       // FIXME: implement the migration of other kinds of activities
       if (auto exec = boost::dynamic_pointer_cast<kernel::activity::ExecImpl>(activity))
@@ -163,7 +163,7 @@ s4u::Host* Actor::get_host() const
 
 Actor* Actor::daemonize()
 {
-  kernel::actor::simcall([this]() { pimpl_->daemonize(); });
+  kernel::actor::simcall_answered([this]() { pimpl_->daemonize(); });
   return this;
 }
 
@@ -214,7 +214,7 @@ void Actor::suspend()
 
 void Actor::resume()
 {
-  kernel::actor::simcall([this] { pimpl_->resume(); });
+  kernel::actor::simcall_answered([this] { pimpl_->resume(); });
   s4u::Actor::on_resume(*this);
 }
 
@@ -225,7 +225,7 @@ bool Actor::is_suspended() const
 
 void Actor::set_kill_time(double kill_time)
 {
-  kernel::actor::simcall([this, kill_time] { pimpl_->set_kill_time(kill_time); });
+  kernel::actor::simcall_answered([this, kill_time] { pimpl_->set_kill_time(kill_time); });
 }
 
 /** @brief Get the kill time of an actor(or 0 if unset). */
@@ -237,7 +237,7 @@ double Actor::get_kill_time() const
 void Actor::kill()
 {
   const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
-  kernel::actor::simcall([this, self] { self->kill(pimpl_); });
+  kernel::actor::simcall_answered([this, self] { self->kill(pimpl_); });
 }
 
 // ***** Static functions *****
@@ -254,7 +254,7 @@ ActorPtr Actor::by_pid(aid_t pid)
 void Actor::kill_all()
 {
   const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
-  kernel::actor::simcall([self] { self->kill_all(); });
+  kernel::actor::simcall_answered([self] { self->kill_all(); });
 }
 
 const std::unordered_map<std::string, std::string>* Actor::get_properties() const
@@ -270,12 +270,12 @@ const char* Actor::get_property(const std::string& key) const
 
 void Actor::set_property(const std::string& key, const std::string& value)
 {
-  kernel::actor::simcall([this, &key, &value] { pimpl_->set_property(key, value); });
+  kernel::actor::simcall_answered([this, &key, &value] { pimpl_->set_property(key, value); });
 }
 
 Actor* Actor::restart()
 {
-  return kernel::actor::simcall([this]() { return pimpl_->restart(); });
+  return kernel::actor::simcall_answered([this]() { return pimpl_->restart(); });
 }
 
 // ***** this_actor *****
@@ -332,7 +332,7 @@ void sleep_for(double duration)
 
 void yield()
 {
-  kernel::actor::simcall([] { /* do nothing*/ });
+  kernel::actor::simcall_answered([] { /* do nothing*/ });
 }
 
 XBT_PUBLIC void sleep_until(double wakeup_time)
@@ -431,7 +431,7 @@ void suspend()
 void exit()
 {
   kernel::actor::ActorImpl* self = simgrid::kernel::actor::ActorImpl::self();
-  simgrid::kernel::actor::simcall([self] { self->exit(); });
+  simgrid::kernel::actor::simcall_answered([self] { self->exit(); });
   THROW_IMPOSSIBLE;
 }
 

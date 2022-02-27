@@ -149,7 +149,7 @@ template <class F> auto kernel_async(F code) -> Future<decltype(code().get())>
   using T = decltype(code().get());
 
   // Execute the code in the kernel and get the kernel future:
-  kernel::Future<T> future = kernel::actor::simcall(std::move(code));
+  kernel::Future<T> future = kernel::actor::simcall_answered(std::move(code));
 
   // Wrap the kernel future in an actor future:
   return Future<T>(std::move(future));

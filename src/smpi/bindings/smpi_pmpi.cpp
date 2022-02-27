@@ -135,10 +135,10 @@ int PMPI_Abort(MPI_Comm comm, int /*errorcode*/)
   for (int i = 0; i < comm->size(); i++){
     auto actor = simgrid::kernel::actor::ActorImpl::by_pid(comm->group()->actor(i));
     if (actor != nullptr && actor != myself)
-      simgrid::kernel::actor::simcall([actor] { actor->exit(); });
+      simgrid::kernel::actor::simcall_answered([actor] { actor->exit(); });
   }
   // now ourself
-  simgrid::kernel::actor::simcall([myself] { myself->exit(); });
+  simgrid::kernel::actor::simcall_answered([myself] { myself->exit(); });
   return MPI_SUCCESS;
 }
 

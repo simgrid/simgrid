@@ -138,7 +138,7 @@ double LinkEnergy::get_power() const
 double LinkEnergy::get_consumed_energy()
 {
   if (last_updated_ < simgrid::s4u::Engine::get_clock()) // We need to simcall this as it modifies the environment
-    kernel::actor::simcall(std::bind(&LinkEnergy::update, this));
+    kernel::actor::simcall_answered(std::bind(&LinkEnergy::update, this));
   return this->total_energy_;
 }
 } // namespace plugin

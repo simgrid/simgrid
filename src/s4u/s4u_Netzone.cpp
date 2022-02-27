@@ -38,7 +38,7 @@ const char* NetZone::get_property(const std::string& key) const
 
 void NetZone::set_property(const std::string& key, const std::string& value)
 {
-  kernel::actor::simcall([this, &key, &value] { pimpl_->set_property(key, value); });
+  kernel::actor::simcall_answered([this, &key, &value] { pimpl_->set_property(key, value); });
 }
 
 /** @brief Returns the list of direct children (no grand-children) */
@@ -73,7 +73,7 @@ NetZone* NetZone::get_parent() const
 
 NetZone* NetZone::set_parent(const NetZone* parent)
 {
-  kernel::actor::simcall([this, parent] { pimpl_->set_parent(parent->get_impl()); });
+  kernel::actor::simcall_answered([this, parent] { pimpl_->set_parent(parent->get_impl()); });
   return this;
 }
 
@@ -149,7 +149,7 @@ void NetZone::extract_xbt_graph(const s_xbt_graph_t* graph, std::map<std::string
 
 NetZone* NetZone::seal()
 {
-  kernel::actor::simcall([this] { pimpl_->seal(); });
+  kernel::actor::simcall_answered([this] { pimpl_->seal(); });
   return this;
 }
 
@@ -160,7 +160,7 @@ s4u::Host* NetZone::create_host(const std::string& name, double speed)
 
 s4u::Host* NetZone::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
 {
-  return kernel::actor::simcall(
+  return kernel::actor::simcall_answered(
       [this, &name, &speed_per_pstate] { return pimpl_->create_host(name, speed_per_pstate); });
 }
 
@@ -181,7 +181,7 @@ s4u::Link* NetZone::create_link(const std::string& name, double bandwidth)
 
 s4u::Link* NetZone::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
-  return kernel::actor::simcall([this, &name, &bandwidths] { return pimpl_->create_link(name, bandwidths); });
+  return kernel::actor::simcall_answered([this, &name, &bandwidths] { return pimpl_->create_link(name, bandwidths); });
 }
 
 s4u::Link* NetZone::create_link(const std::string& name, const std::string& bandwidth)
@@ -203,7 +203,7 @@ s4u::SplitDuplexLink* NetZone::create_split_duplex_link(const std::string& name,
 
 s4u::SplitDuplexLink* NetZone::create_split_duplex_link(const std::string& name, double bandwidth)
 {
-  return kernel::actor::simcall(
+  return kernel::actor::simcall_answered(
       [this, &name, &bandwidth] { return pimpl_->create_split_duplex_link(name, std::vector<double>{bandwidth}); });
 }
 
@@ -225,7 +225,7 @@ s4u::Link* NetZone::create_link(const std::string& name, const std::vector<std::
 
 kernel::routing::NetPoint* NetZone::create_router(const std::string& name)
 {
-  return kernel::actor::simcall([this, &name] { return pimpl_->create_router(name); });
+  return kernel::actor::simcall_answered([this, &name] { return pimpl_->create_router(name); });
 }
 
 kernel::routing::NetPoint* NetZone::get_netpoint()

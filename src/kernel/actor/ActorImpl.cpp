@@ -189,7 +189,7 @@ void ActorImpl::cleanup()
   cleanup_from_simix();
 
   context_->set_wannadie(false); // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
-  actor::simcall([this] { s4u::Actor::on_termination(*get_ciface()); });
+  actor::simcall_answered([this] { s4u::Actor::on_termination(*get_ciface()); });
   context_->set_wannadie();
 }
 

@@ -34,7 +34,7 @@ int MC_random(int min, int max)
     return prng.uniform_int(min, max);
   }
   simgrid::kernel::actor::RandomSimcall observer{simgrid::kernel::actor::ActorImpl::self(), min, max};
-  return simgrid::kernel::actor::simcall([&observer] { return observer.get_value(); }, &observer);
+  return simgrid::kernel::actor::simcall_answered([&observer] { return observer.get_value(); }, &observer);
 }
 
 namespace simgrid {
