@@ -25,7 +25,6 @@ set(EXTRA_DIST
   src/simix/simcalls.in
   src/simix/simcalls.py
   src/simix/popping_private.hpp
-  src/simix/popping_bodies.cpp
   src/simix/popping_generated.cpp
   src/simix/popping_enum.hpp
   src/smpi/colls/coll_tuned_topo.hpp

@@ -11,6 +11,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc.h"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
@@ -19,12 +20,17 @@
 #include "src/mc/mc_replay.hpp"
 #include "xbt/random.hpp"
 #include <simgrid/Exception.hpp>
+#include <simgrid/s4u/Activity.hpp>
 
-#include "popping_bodies.cpp"
+#if SIMGRID_HAVE_MC
+#include "src/mc/mc_forward.hpp"
+#endif
 
 #include <boost/core/demangle.hpp>
 #include <string>
 #include <typeinfo>
+
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
 /**
  * @ingroup simix_comm_management
@@ -220,17 +226,34 @@ bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm) // XBT_ATT
   return false;
 }
 
+template <class R, class... T> static R simcall(simgrid::simix::Simcall call, T const&... t)
+{
+  auto self = simgrid::kernel::actor::ActorImpl::self();
+  simgrid::simix::marshal(&self->simcall_, call, t...);
+  if (not simgrid::kernel::EngineImpl::get_instance()->is_maestro(self)) {
+    XBT_DEBUG("Yield process '%s' on simcall %s", self->get_cname(), SIMIX_simcall_name(self->simcall_));
+    self->yield();
+  } else {
+    self->simcall_handle(0);
+  }
+  return simgrid::simix::unmarshal<R>(self->simcall_.result_);
+}
+
 void simcall_run_kernel(std::function<void()> const& code, simgrid::kernel::actor::SimcallObserver* observer)
 {
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = observer;
-  simcall_BODY_run_kernel(&code);
+  if (false) /* Go to that function to follow the code flow through the simcall barrier */
+    SIMIX_run_kernel(&code);
+  simcall<void, std::function<void()> const*>(simgrid::simix::Simcall::RUN_KERNEL, &code);
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = nullptr;
 }
 
 void simcall_run_blocking(std::function<void()> const& code, simgrid::kernel::actor::SimcallObserver* observer)
 {
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = observer;
-  simcall_BODY_run_blocking(&code);
+  if (false) /* Go to that function to follow the code flow through the simcall barrier */
+    SIMIX_run_kernel(&code);
+  simcall<void, std::function<void()> const*>(simgrid::simix::Simcall::RUN_BLOCKING, &code);
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = nullptr;
 }
 

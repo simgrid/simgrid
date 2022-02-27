@@ -25,7 +25,6 @@ class Arg:
 
 
 class Simcall:
-    simcalls_body = None
     simcalls_pre = None
 
     def __init__(self, name, handler, res, args, call_kind):
@@ -36,21 +35,6 @@ class Simcall:
         self.call_kind = call_kind
 
     def check(self):
-        # libsmx.c  simcall_BODY_
-        if self.simcalls_body is None:
-            f = open('libsmx.cpp')
-            self.simcalls_body = set(re.findall(r'simcall_BODY_(.*?)\(', f.read()))
-            f.close()
-        if self.name not in self.simcalls_body:
-            print('# ERROR: No function calling simcall_BODY_%s' % self.name)
-            print('# Add something like this to libsmx.c:')
-            print('%s simcall_%s(%s)' % (self.res.rettype(), self.name, ', '.
-                                         join('%s %s' % (arg.rettype(), arg.name) for arg in self.args)))
-            print('{')
-            print('  return simcall_BODY_%s(%s);' % (self.name, "..."))
-            print('}')
-            return False
-
         # smx_*.c void simcall_HANDLER_host_on(smx_simcall_t simcall,
         # smx_host_t h)
         if self.simcalls_pre is None:
@@ -147,29 +131,6 @@ class Simcall:
             res.append(indent + '  simcall_answer();')
         res.append(indent + '  break;')
         res.append('')
-        return '\n'.join(res)
-
-    def body(self):
-        res = ['']
-        res.append(
-            'inline static %s simcall_BODY_%s(%s)' % (self.res.rettype(),
-                                                      self.name,
-                                                      ', '.join('%s %s' % (arg.rettype(), arg.name) for arg in self.args)))
-        res.append('{')
-        res.append('  if (false) /* Go to that function to follow the code flow through the simcall barrier */')
-        if self.need_handler:
-            res.append('    simcall_HANDLER_%s(%s);' % (self.name,
-                                                        ', '.join(["&simgrid::kernel::actor::ActorImpl::self()->simcall_"] + [arg.name for arg in self.args])))
-        else:
-            res.append('    SIMIX_%s(%s);' % (self.name,
-                                              ', '.join(arg.name for arg in self.args)))
-        res.append('  return simcall<%s%s>(Simcall::%s%s);' % (
-            self.res.rettype(),
-            "".join([", " + arg.rettype() for i, arg in enumerate(self.args)]),
-            self.name.upper(),
-            "".join([", " + arg.name for i, arg in enumerate(self.args)])
-        ))
-        res.append('}')
         return '\n'.join(res)
 
     def handler_prototype(self):
@@ -345,42 +306,6 @@ def main():
     fd.write('  }\n')
     fd.write('}\n')
 
-    fd.close()
-
-    #
-    # popping_bodies.cpp
-    #
-    fd = header('popping_bodies.cpp')
-    fd.write('#include "src/kernel/EngineImpl.hpp"\n')
-    fd.write('#include "src/kernel/actor/ActorImpl.hpp"\n')
-    fd.write('#include "src/mc/mc_forward.hpp"\n')
-    fd.write('#include "xbt/ex.h"\n')
-    fd.write('#include <functional>\n')
-    fd.write('#include <simgrid/simix.hpp>\n')
-    fd.write('#include <xbt/log.h>\n')
-
-    fd.write("/** @cond */ // Please Doxygen, don't look at this\n")
-    fd.write('''
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
-
-using simgrid::simix::Simcall;
-
-template<class R, class... T>
-inline static R simcall(Simcall call, T const&... t)
-{
-  auto self = simgrid::kernel::actor::ActorImpl::self();
-  simgrid::simix::marshal(&self->simcall_, call, t...);
-  if (not simgrid::kernel::EngineImpl::get_instance()->is_maestro(self)) {
-    XBT_DEBUG("Yield process '%s' on simcall %s", self->get_cname(), SIMIX_simcall_name(self->simcall_));
-    self->yield();
-  } else {
-    self->simcall_handle(0);
-  }
-  return simgrid::simix::unmarshal<R>(self->simcall_.result_);
-}
-''')
-    handle(fd, Simcall.body, simcalls, simcalls_dict)
-    fd.write("/** @endcond */\n")
     fd.close()
 
 if __name__ == '__main__':
