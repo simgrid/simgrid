@@ -122,7 +122,7 @@ void Actor::join(double timeout) const
   });
 }
 
-void Actor::set_auto_restart(bool autorestart)
+Actor* Actor::set_auto_restart(bool autorestart)
 {
   kernel::actor::simcall([this, autorestart]() {
     xbt_assert(autorestart && not pimpl_->has_to_auto_restart()); // FIXME: handle all cases
@@ -132,6 +132,7 @@ void Actor::set_auto_restart(bool autorestart)
     XBT_DEBUG("Adding %s to the actors_at_boot_ list of Host %s", arg->name.c_str(), arg->host->get_cname());
     pimpl_->get_host()->get_impl()->add_actor_at_boot(arg);
   });
+  return this;
 }
 
 void Actor::on_exit(const std::function<void(bool /*failed*/)>& fun) const
@@ -160,9 +161,10 @@ s4u::Host* Actor::get_host() const
   return this->pimpl_->get_host();
 }
 
-void Actor::daemonize()
+Actor* Actor::daemonize()
 {
   kernel::actor::simcall([this]() { pimpl_->daemonize(); });
+  return this;
 }
 
 bool Actor::is_daemon() const

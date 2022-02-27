@@ -308,7 +308,7 @@ public:
 
   // ***** Methods *****
   /** This actor will be automatically terminated when the last non-daemon actor finishes **/
-  void daemonize();
+  Actor* daemonize();
 
   /** Returns whether or not this actor has been daemonized or not **/
   bool is_daemon() const;
@@ -335,7 +335,7 @@ public:
   bool is_suspended() const;
 
   /** If set to true, the actor will automatically restart when its host reboots */
-  void set_auto_restart(bool autorestart);
+  Actor* set_auto_restart(bool autorestart);
 
   /** Add a function to the list of "on_exit" functions for the current actor. The on_exit functions are the functions
    * executed when your actor is killed. You should use them to free the data used by your actor.
