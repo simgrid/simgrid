@@ -8,6 +8,7 @@ foreach(x actor actor-autorestart actor-suspend
         activity-lifecycle
         comm-get-sender comm-pt2pt wait-all-for wait-any-for
         cloud-interrupt-migration cloud-two-execs
+	monkey-masterworkers
         concurrent_rw
         dag-incomplete-simulation dependencies
         host-on-off host-on-off-actors host-on-off-recv host-multicore-speed-file io-set-bw

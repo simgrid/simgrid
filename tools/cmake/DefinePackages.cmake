@@ -364,6 +364,7 @@ set(SURF_SRC
 
 set(PLUGINS_SRC
   src/plugins/ProducerConsumer.cpp
+  src/plugins/chaos_monkey.cpp
   src/plugins/host_dvfs.cpp
   src/plugins/host_energy.cpp
   src/plugins/link_energy.cpp
@@ -1107,6 +1108,7 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/test_prog/prog_stacksetup.c
   tools/cmake/test_prog/prog_tsan.cpp
   tools/cmake/cross-mingw.cmake
+  tools/simgrid-monkey
   tools/smpi/generate_smpi_defines.pl
   tools/stack-cleaner/as
   tools/stack-cleaner/cc

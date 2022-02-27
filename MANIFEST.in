@@ -808,6 +808,7 @@ include teshsuite/s4u/issue71/issue71.tesh
 include teshsuite/s4u/issue71/platform_bad.xml
 include teshsuite/s4u/listen_async/listen_async.cpp
 include teshsuite/s4u/listen_async/listen_async.tesh
+include teshsuite/s4u/monkey-masterworkers/monkey-masterworkers.cpp
 include teshsuite/s4u/ns3-from-src-to-itself/ns3-from-src-to-itself.cpp
 include teshsuite/s4u/ns3-from-src-to-itself/ns3-from-src-to-itself.tesh
 include teshsuite/s4u/ns3-simultaneous-send-rcv/ns3-simultaneous-send-rcv.cpp
@@ -2432,6 +2433,7 @@ include src/msg/msg_private.hpp
 include src/msg/msg_process.cpp
 include src/msg/msg_task.cpp
 include src/plugins/ProducerConsumer.cpp
+include src/plugins/chaos_monkey.cpp
 include src/plugins/file_system/s4u_FileSystem.cpp
 include src/plugins/host_dvfs.cpp
 include src/plugins/host_energy.cpp
@@ -2824,6 +2826,7 @@ include tools/cmake/test_prog/prog_stacksetup.c
 include tools/cmake/test_prog/prog_tsan.cpp
 include tools/doxygen/list_routing_models_examples.sh
 include tools/graphicator/CMakeLists.txt
+include tools/simgrid-monkey
 include tools/smpi/generate_smpi_defines.pl
 include tools/stack-cleaner/README
 include tools/stack-cleaner/as

@@ -1,0 +1,98 @@
+#! /usr/bin/python3
+
+# The goal is to introduce random failures in a simulation, to test simgrid under extreme conditions.
+# 
+# It is made of several components.
+# 
+# * a plugin: cmonkey. Can be used from the command line as follows:
+#   * --cfg=plugin:cmonkey --cfg=cmonkey/tell:1
+#     Get information about the resource count and the timestamps of each scheduling rounds.
+#   * --cfg=plugin:cmonkey --cfg=cmonkey/time:42 --cfg=cmonkey/host:1
+#     Kill the host #1 after 42 seconds (using a kernel::Timer so that no actor gets involved in the killing)
+#   * --cfg=plugin:cmonkey --cfg=cmonkey/time:42 --cfg=cmonkey/link:0
+#     Kill the link #0 after 42 seconds (using a kernel::Timer)
+# 
+# * a python script: tools/simgrid-monkey (this file)
+#   * It takes a regular simgrid simulation as a parameter, use the cmonkey plugin to get the information about it, 
+#     and then restart many runs, with one resource being turn_off() + turn_on() in each run.
+#   * Each resource gets killed between each timestamps, and on each timestamp.
+#   * So the amount of simulations is: 1 + (host_c+link_c) * timestamps * 2
+# 
+# * Test program, written to resist these extreme conditions:
+#   * teshsuite/s4u/monkey-masterworkers: tests synchronous comms and execs
+
+import multiprocessing as mp
+import sys
+import os
+import argparse
+import subprocess
+import copy
+import re
+
+
+def get_info(cmd):
+    cmd_tell = copy.deepcopy(cmd)
+    cmd_tell.append("--cfg=plugin:cmonkey")
+    cmd_tell.append("--cfg=cmonkey/tell:1")
+    cmd_tell.append("--log=root.t:critical")
+    cmd_tell.append("--log=cmonkey.t:info")
+    cmd_tell.append("--log=cmonkey.fmt:%m%n")
+    print(f"Get the initial info from the command ``{' '.join(cmd_tell)}``")
+    first_run = subprocess.run(cmd_tell, shell=False, cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+    if first_run.returncode != 0:
+        msg = f"Peek run of the command raised an error (retcode: {first_run.returncode})\n"
+        msg += f"Full command was {' '.join(cmd_tell)}\n"
+        if first_run.stdout is not None:
+            msg += str(first_run.stdout, errors='replace')
+        raise Exception(msg)
+
+    host_count=0
+    link_count=0
+    timestamps=[]
+    for line in str(first_run.stdout, errors='replace').split("\n"):
+        if re.match("^HOST_COUNT=(.*)", line):
+            m = re.match("^HOST_COUNT=(.*)", line)
+            host_count = int(m.group(1))
+        if re.match("^LINK_COUNT=(.*)", line):
+            m = re.match("^LINK_COUNT=(.*)", line)
+            link_count = int(m.group(1))
+        if re.match("^TIMESTAMP=(.*)", line):
+            m = re.match("^TIMESTAMP=(.*)", line)
+            timestamps.append(float(m.group(1)))
+
+    #print(f"hosts:{host_count} links:{link_count} timestamps:{' '.join(([str(i) for i in timestamps]))}")
+    return (host_count,  link_count,  timestamps)
+
+parser = argparse.ArgumentParser(description='Run a simgrid simulation, and turn off/on resources at random.')
+parser.add_argument('--valgrind', help="Run the simulations in valgrind")
+parser.add_argument('command', nargs='*')
+args = parser.parse_args()
+
+(host_count,  link_count,  timestamps) = get_info(args.command)
+print(f"hosts:{host_count} links:{link_count} timestamps:{' '.join(([str(i) for i in timestamps]))}")
+
+def do_run(cmd, extra_params):
+    cmd = copy.deepcopy(cmd)
+    cmd.append("--cfg=plugin:cmonkey")
+    for p in extra_params:
+        cmd.append(p)
+    print(f"\n#################################################################################\nStart {' '.join(cmd)}")
+    run = subprocess.run(cmd, shell=False, cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+    if run.returncode != 0:
+        msg = f"ERROR (retcode: {run.returncode}). Output:\n"
+        msg += str(run.stdout, errors='replace')
+        print(msg)
+        os.exit(1)
+    print ("Success.")
+
+def doit():
+    prev = 0
+    for pos in range(len(timestamps)):
+        now = timestamps[pos]
+        for host in range(host_count):
+            do_run(args.command, [f"--cfg=cmonkey/time:{(now-prev)/2}",f"--cfg=cmonkey/host:{host}"])
+        for link in range(link_count):
+            do_run(args.command, [f"--cfg=cmonkey/time:{(now-prev)/2}",f"--cfg=cmonkey/link:{link}"])
+doit()
