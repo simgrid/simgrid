@@ -80,14 +80,9 @@ void execute_actors()
 // Called from both MCer and MCed:
 bool actor_is_enabled(smx_actor_t actor)
 {
-// #del
 #if SIMGRID_HAVE_MC
-  // If in the MCer, ask the client app since it has all the data
-  if (mc_model_checker != nullptr) {
-    return simgrid::mc::session_singleton->actor_is_enabled(actor->get_pid());
-  }
+  xbt_assert(mc_model_checker == nullptr, "This should be called from the client side");
 #endif
-// #
 
   // Now, we are in the client app, no need for remote memory reading.
   smx_simcall_t req = &actor->simcall_;
