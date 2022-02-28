@@ -20,8 +20,12 @@ $ ${bindir:=.}/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1 --
 > [lilibeth 2:worker:(3) 3.082786] [s4u_test/INFO] Start execution...
 > [lilibeth 0:master:(1) 3.082786] [s4u_test/INFO] Try to send a message
 > [lilibeth 2:worker:(3) 3.083786] [s4u_test/INFO] Execution complete.
-> [lilibeth 2:worker:(3) 3.083786] [s4u_test/INFO] worker 1 dying peacefully.
-> [lilibeth 0:master:(1) 3.083786] [s4u_test/INFO] Master dying forcefully.
+> [lilibeth 2:worker:(3) 3.083786] [s4u_test/INFO] Waiting a message on mailbox
+> [lilibeth 0:master:(1) 4.166573] [s4u_test/INFO] Try to send a message
+> [lilibeth 2:worker:(3) 4.166573] [s4u_test/INFO] Start execution...
+> [lilibeth 2:worker:(3) 4.167573] [s4u_test/INFO] Execution complete.
+> [lilibeth 2:worker:(3) 4.167573] [s4u_test/INFO] worker 1 dying peacefully.
+> [lilibeth 0:master:(1) 4.167573] [s4u_test/INFO] Master dying forcefully.
 > [31.000000] [cmonkey/INFO] Restart host lilibeth 1
 > [lilibeth 1:worker:(4) 31.000000] [s4u_test/INFO] Worker booting
 > [lilibeth 1:worker:(4) 31.000000] [s4u_test/INFO] worker 0 dying peacefully.
