@@ -120,7 +120,10 @@ CommImpl* CommImpl::start()
   /* If both the sender and the receiver are already there, start the communication */
   if (get_state() == State::READY) {
     from_ = from_ != nullptr ? from_ : src_actor_->get_host();
+    xbt_assert(from_->is_on());
     to_   = to_ != nullptr ? to_ : dst_actor_->get_host();
+    xbt_assert(to_->is_on());
+
     /* Getting the network_model from the origin host
      * Valid while we have a single network model, otherwise we would need to change this function to first get the
      * routes and later create the respective surf actions */
@@ -420,14 +423,17 @@ void CommImpl::post()
     set_state(State::SRC_TIMEOUT);
   else if (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FINISHED)
     set_state(State::DST_TIMEOUT);
-  else if (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FAILED)
+  else if ((from_ && !from_->is_on()) || (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FAILED))
     set_state(State::SRC_HOST_FAILURE);
-  else if (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FAILED)
+  else if ((to_ && !to_->is_on()) || (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FAILED))
     set_state(State::DST_HOST_FAILURE);
   else if (surf_action_ && surf_action_->get_state() == resource::Action::State::FAILED) {
     set_state(State::LINK_FAILURE);
-  } else
+  } else if(get_state() == State::RUNNING ) {
+    xbt_assert(from_ && from_->is_on());
+    xbt_assert(to_ && to_->is_on());
     set_state(State::DONE);
+  }
 
   XBT_DEBUG("CommImpl::post(): comm %p, state %s, src_proc %p, dst_proc %p, detached: %d", this, get_state_str(),
             src_actor_.get(), dst_actor_.get(), detached_);
