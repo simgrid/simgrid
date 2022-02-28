@@ -307,7 +307,11 @@ public:
                          std::vector<std::string> args);
 
   // ***** Methods *****
-  /** This actor will be automatically terminated when the last non-daemon actor finishes **/
+  /** This actor will be automatically terminated when the last non-daemon actor finishes.
+   *
+   * Daemons are killed as soon as the last regular actor disappears. If another regular actor
+   * gets restarted later on by a timer or when its host reboots, the daemons do not get restarted.
+   **/
   Actor* daemonize();
 
   /** Returns whether or not this actor has been daemonized or not **/
