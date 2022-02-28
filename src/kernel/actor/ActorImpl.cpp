@@ -200,20 +200,13 @@ void ActorImpl::exit()
   exception_          = nullptr;
 
   /* destroy the blocking synchro if any */
-  if (waiting_synchro_ != nullptr) {
-    waiting_synchro_->cancel();
-    waiting_synchro_->set_state(activity::State::FAILED);
-
-    if (auto exec = boost::dynamic_pointer_cast<activity::ExecImpl>(waiting_synchro_)) {
-      exec->clean_action();
-    } else if (auto comm = boost::dynamic_pointer_cast<activity::CommImpl>(waiting_synchro_)) {
-      comm->unregister_simcall(&simcall_);
-    } else {
-      activity::ActivityImplPtr(waiting_synchro_)->finish();
-    }
-
+  if (auto activity = waiting_synchro_) {
     activities_.remove(waiting_synchro_);
     waiting_synchro_ = nullptr;
+
+    activity->cancel();
+    activity->set_state(activity::State::FAILED);
+    activity->post();
   }
   for (auto const& activity : activities_)
     activity->cancel();
