@@ -1,0 +1,219 @@
+
+$ ${rootdir:=.}//tools/simgrid-monkey ${bindir:=.}/monkey-masterworkers
+> Get the initial info from the command.
+> Monkey informations: hosts:3 links:3 timestamps:0.000312 1.082786 1.083099 1.083786 2.165573 2.166573
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.000156 --cfg=cmonkey/host:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.000312 --cfg=cmonkey/host:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.000156 --cfg=cmonkey/host:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.000312 --cfg=cmonkey/host:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.000156 --cfg=cmonkey/host:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.000312 --cfg=cmonkey/host:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.000156 --cfg=cmonkey/link:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.000312 --cfg=cmonkey/link:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.000156 --cfg=cmonkey/link:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.000312 --cfg=cmonkey/link:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.000156 --cfg=cmonkey/link:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.000312 --cfg=cmonkey/link:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.541393 --cfg=cmonkey/host:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.082786 --cfg=cmonkey/host:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.541393 --cfg=cmonkey/host:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.082786 --cfg=cmonkey/host:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.541393 --cfg=cmonkey/host:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.082786 --cfg=cmonkey/host:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.541393 --cfg=cmonkey/link:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.082786 --cfg=cmonkey/link:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.541393 --cfg=cmonkey/link:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.082786 --cfg=cmonkey/link:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.541393 --cfg=cmonkey/link:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.082786 --cfg=cmonkey/link:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.5415495 --cfg=cmonkey/host:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.083099 --cfg=cmonkey/host:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.5415495 --cfg=cmonkey/host:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.083099 --cfg=cmonkey/host:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.5415495 --cfg=cmonkey/host:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.083099 --cfg=cmonkey/host:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.5415495 --cfg=cmonkey/link:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.083099 --cfg=cmonkey/link:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.5415495 --cfg=cmonkey/link:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.083099 --cfg=cmonkey/link:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.5415495 --cfg=cmonkey/link:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.083099 --cfg=cmonkey/link:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.541893 --cfg=cmonkey/host:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.083786 --cfg=cmonkey/host:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.541893 --cfg=cmonkey/host:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.083786 --cfg=cmonkey/host:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.541893 --cfg=cmonkey/host:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.083786 --cfg=cmonkey/host:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.541893 --cfg=cmonkey/link:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.083786 --cfg=cmonkey/link:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.541893 --cfg=cmonkey/link:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.083786 --cfg=cmonkey/link:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:0.541893 --cfg=cmonkey/link:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.083786 --cfg=cmonkey/link:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.0827865 --cfg=cmonkey/host:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:2.165573 --cfg=cmonkey/host:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.0827865 --cfg=cmonkey/host:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:2.165573 --cfg=cmonkey/host:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.0827865 --cfg=cmonkey/host:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:2.165573 --cfg=cmonkey/host:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.0827865 --cfg=cmonkey/link:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:2.165573 --cfg=cmonkey/link:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.0827865 --cfg=cmonkey/link:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:2.165573 --cfg=cmonkey/link:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.0827865 --cfg=cmonkey/link:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:2.165573 --cfg=cmonkey/link:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.0832865 --cfg=cmonkey/host:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:2.166573 --cfg=cmonkey/host:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.0832865 --cfg=cmonkey/host:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:2.166573 --cfg=cmonkey/host:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.0832865 --cfg=cmonkey/host:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:2.166573 --cfg=cmonkey/host:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.0832865 --cfg=cmonkey/link:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:2.166573 --cfg=cmonkey/link:0
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.0832865 --cfg=cmonkey/link:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:2.166573 --cfg=cmonkey/link:1
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1.0832865 --cfg=cmonkey/link:2
+> Success.
+> 
+> Start /home/mquinson/Code/simgrid/build/default/teshsuite/s4u/monkey-masterworkers/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:2.166573 --cfg=cmonkey/link:2
+> Success.

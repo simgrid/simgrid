@@ -37,7 +37,8 @@ def get_info(cmd):
     cmd_tell.append("--log=root.t:critical")
     cmd_tell.append("--log=cmonkey.t:info")
     cmd_tell.append("--log=cmonkey.fmt:%m%n")
-    print(f"Get the initial info from the command ``{' '.join(cmd_tell)}``")
+    print(f"Get the initial info from the command.") 
+    # print(f"from ``{' '.join(cmd_tell)}``")
     first_run = subprocess.run(cmd_tell, shell=False, cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     if first_run.returncode != 0:
@@ -70,14 +71,14 @@ parser.add_argument('command', nargs='*')
 args = parser.parse_args()
 
 (host_count,  link_count,  timestamps) = get_info(args.command)
-print(f"hosts:{host_count} links:{link_count} timestamps:{' '.join(([str(i) for i in timestamps]))}")
+print(f"Monkey informations: hosts:{host_count} links:{link_count} timestamps:{' '.join(([str(i) for i in timestamps]))}")
 
 def do_run(cmd, extra_params):
     cmd = copy.deepcopy(cmd)
     cmd.append("--cfg=plugin:cmonkey")
     for p in extra_params:
         cmd.append(p)
-    print(f"\n#################################################################################\nStart {' '.join(cmd)}")
+    print(f"Start {' '.join(cmd)}")
     run = subprocess.run(cmd, shell=False, cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
     if run.returncode != 0:
@@ -85,7 +86,7 @@ def do_run(cmd, extra_params):
         msg += str(run.stdout, errors='replace')
         print(msg)
         os.exit(1)
-    print ("Success.")
+    print ("Success.\n")
 
 def doit():
     prev = 0
