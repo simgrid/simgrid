@@ -423,13 +423,13 @@ void CommImpl::post()
     set_state(State::SRC_TIMEOUT);
   else if (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FINISHED)
     set_state(State::DST_TIMEOUT);
-  else if ((from_ && !from_->is_on()) || (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FAILED))
+  else if ((from_ && not from_->is_on()) || (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FAILED))
     set_state(State::SRC_HOST_FAILURE);
-  else if ((to_ && !to_->is_on()) || (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FAILED))
+  else if ((to_ && not to_->is_on()) || (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FAILED))
     set_state(State::DST_HOST_FAILURE);
   else if (surf_action_ && surf_action_->get_state() == resource::Action::State::FAILED) {
     set_state(State::LINK_FAILURE);
-  } else if(get_state() == State::RUNNING ) {
+  } else if (get_state() == State::RUNNING) {
     xbt_assert(from_ && from_->is_on());
     xbt_assert(to_ && to_->is_on());
     set_state(State::DONE);

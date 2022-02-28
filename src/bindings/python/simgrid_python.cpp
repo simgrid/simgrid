@@ -90,7 +90,7 @@ PYBIND11_MODULE(simgrid, m)
   py::register_exception<simgrid::StorageFailureException>(m, "StorageFailureException");
   py::register_exception<simgrid::VmFailureException>(m, "VmFailureException");
   py::register_exception<simgrid::CancelException>(m, "CancelException");
-  
+
   /* this_actor namespace */
   m.def_submodule("this_actor", "Bindings of the s4u::this_actor namespace. See the C++ documentation for details.")
       .def(

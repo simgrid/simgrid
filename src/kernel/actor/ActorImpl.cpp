@@ -169,7 +169,7 @@ void ActorImpl::cleanup()
     activity->cancel();
   activities_.clear();
 
-  while(!mailboxes.empty())
+  while (not mailboxes.empty())
     mailboxes.back()->set_receiver(nullptr);
 
   XBT_DEBUG("%s@%s(%ld) should not run anymore", get_cname(), get_host()->get_cname(), get_pid());
@@ -215,7 +215,7 @@ void ActorImpl::exit()
     activity->cancel();
   activities_.clear();
 
-  while(!mailboxes.empty())
+  while (not mailboxes.empty())
     mailboxes.back()->set_receiver(nullptr);
 
   // Forcefully kill the actor if its host is turned off. Not a HostFailureException because you should not survive that
