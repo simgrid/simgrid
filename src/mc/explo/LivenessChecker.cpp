@@ -14,8 +14,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc, "Logging specific to algorithms for liveness properties verification");
 
-using api = simgrid::mc::Api;
-
 /********* Static functions *********/
 
 namespace simgrid {
@@ -29,8 +27,8 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
   this->graph_state = std::move(graph_state);
   if (this->graph_state->system_state_ == nullptr)
     this->graph_state->system_state_ = std::make_shared<Snapshot>(pair_num);
-  this->heap_bytes_used     = api::get().get_remote_heap_bytes();
-  this->actors_count        = api::get().get_actors().size();
+  this->heap_bytes_used     = Api::get().get_remote_heap_bytes();
+  this->actors_count        = Api::get().get_actors().size();
   this->other_num           = -1;
   this->atomic_propositions = std::move(atomic_propositions);
 }
@@ -45,7 +43,7 @@ static bool evaluate_label(const xbt_automaton_exp_label* l, std::vector<int> co
     case xbt_automaton_exp_label::AUT_NOT:
       return not evaluate_label(l->u.exp_not, values);
     case xbt_automaton_exp_label::AUT_PREDICAT:
-      return values.at(api::get().compare_automaton_exp_label(l)) != 0;
+      return values.at(Api::get().compare_automaton_exp_label(l)) != 0;
     case xbt_automaton_exp_label::AUT_ONE:
       return true;
     default:
@@ -57,7 +55,7 @@ Pair::Pair(unsigned long expanded_pairs) : num(expanded_pairs) {}
 
 std::shared_ptr<const std::vector<int>> LivenessChecker::get_proposition_values() const
 {
-  auto values = api::get().automaton_propositional_symbol_evaluate();
+  auto values = Api::get().automaton_propositional_symbol_evaluate();
   return std::make_shared<const std::vector<int>>(std::move(values));
 }
 
@@ -66,14 +64,14 @@ std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc
   auto new_pair =
       std::make_shared<VisitedPair>(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
 
-  auto res = boost::range::equal_range(acceptance_pairs_, new_pair.get(), api::get().compare_pair());
+  auto res = boost::range::equal_range(acceptance_pairs_, new_pair.get(), Api::get().compare_pair());
 
   if (pair->search_cycle)
     for (auto i = res.first; i != res.second; ++i) {
       std::shared_ptr<simgrid::mc::VisitedPair> const& pair_test = *i;
       if (xbt_automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) != 0 ||
           *(pair_test->atomic_propositions) != *(new_pair->atomic_propositions) ||
-          not api::get().snapshot_equal(pair_test->graph_state->system_state_.get(),
+          not Api::get().snapshot_equal(pair_test->graph_state->system_state_.get(),
                                         new_pair->graph_state->system_state_.get()))
         continue;
       XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
@@ -105,7 +103,7 @@ void LivenessChecker::replay()
   if (_sg_mc_checkpoint > 0) {
     const Pair* pair = exploration_stack_.back().get();
     if (pair->graph_state->system_state_) {
-      api::get().restore_state(pair->graph_state->system_state_);
+      Api::get().restore_state(pair->graph_state->system_state_);
       return;
     }
   }
@@ -144,13 +142,13 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
     visited_pair =
         std::make_shared<VisitedPair>(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
 
-  auto range = boost::range::equal_range(visited_pairs_, visited_pair.get(), api::get().compare_pair());
+  auto range = boost::range::equal_range(visited_pairs_, visited_pair.get(), Api::get().compare_pair());
 
   for (auto i = range.first; i != range.second; ++i) {
     const VisitedPair* pair_test = i->get();
     if (xbt_automaton_state_compare(pair_test->automaton_state, visited_pair->automaton_state) != 0 ||
         *(pair_test->atomic_propositions) != *(visited_pair->atomic_propositions) ||
-        not api::get().snapshot_equal(pair_test->graph_state->system_state_.get(),
+        not Api::get().snapshot_equal(pair_test->graph_state->system_state_.get(),
                                       visited_pair->graph_state->system_state_.get()))
       continue;
     if (pair_test->other_num == -1)
@@ -233,7 +231,7 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(const Pair* current_pair, xbt
   else
     next_pair->depth = 1;
   /* Add all enabled actors to the interleave set of the initial state */
-  for (auto& act : api::get().get_actors()) {
+  for (auto& act : Api::get().get_actors()) {
     auto actor = act.copy.get_buffer();
     if (get_session().actor_is_enabled(actor->get_pid()))
       next_pair->graph_state->mark_todo(actor->get_pid());
@@ -273,7 +271,7 @@ void LivenessChecker::backtrack()
 void LivenessChecker::run()
 {
   XBT_INFO("Check the liveness property %s", _sg_mc_property_file.get().c_str());
-  api::get().automaton_load(_sg_mc_property_file.get().c_str());
+  Api::get().automaton_load(_sg_mc_property_file.get().c_str());
 
   XBT_DEBUG("Starting the liveness algorithm");
   get_session().take_initial_snapshot();
@@ -285,7 +283,7 @@ void LivenessChecker::run()
 
   // For each initial state of the property automaton, push a
   // (application_state, automaton_state) pair to the exploration stack:
-  auto automaton_stack = api::get().get_automaton_state();
+  auto automaton_stack = Api::get().get_automaton_state();
   for (auto* automaton_state : automaton_stack) {
     if (automaton_state->type == -1)
       exploration_stack_.push_back(this->create_pair(nullptr, automaton_state, propos));
@@ -296,7 +294,7 @@ void LivenessChecker::run()
     std::shared_ptr<Pair> current_pair = exploration_stack_.back();
 
     /* Update current state in buchi automaton */
-    api::get().set_property_automaton(current_pair->automaton_state);
+    Api::get().set_property_automaton(current_pair->automaton_state);
 
     XBT_DEBUG(
         "********************* ( Depth = %d, search_cycle = %d, interleave size = %zu, pair_num = %d, requests = %d)",
@@ -361,8 +359,8 @@ void LivenessChecker::run()
     // For each enabled transition in the property automaton, push a
     // (application_state, automaton_state) pair to the exploration stack:
     for (int i = xbt_dynar_length(current_pair->automaton_state->out) - 1; i >= 0; i--) {
-      auto transition_succ_label = api::get().get_automaton_transition_label(current_pair->automaton_state->out, i);
-      auto transition_succ_dst   = api::get().get_automaton_transition_dst(current_pair->automaton_state->out, i);
+      auto transition_succ_label = Api::get().get_automaton_transition_label(current_pair->automaton_state->out, i);
+      auto transition_succ_dst   = Api::get().get_automaton_transition_dst(current_pair->automaton_state->out, i);
       if (evaluate_label(transition_succ_label, *prop_values))
         exploration_stack_.push_back(this->create_pair(current_pair.get(), transition_succ_dst, prop_values));
     }

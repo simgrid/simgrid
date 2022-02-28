@@ -13,7 +13,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc, "Logging specific to MC states");
 
 using simgrid::mc::remote;
-using api = simgrid::mc::Api;
 
 namespace simgrid {
 namespace mc {
@@ -22,12 +21,12 @@ long State::expended_states_ = 0;
 
 State::State() : num_(++expended_states_)
 {
-  const unsigned long maxpid = api::get().get_maxpid();
+  const unsigned long maxpid = Api::get().get_maxpid();
   actor_states_.resize(maxpid);
   transition_.reset(new Transition());
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
-    auto snapshot_ptr = api::get().take_snapshot(num_);
+    auto snapshot_ptr = Api::get().take_snapshot(num_);
     system_state_     = std::shared_ptr<simgrid::mc::Snapshot>(snapshot_ptr);
   }
 }

@@ -15,8 +15,6 @@
 
 #include <cstdint>
 
-using api = simgrid::mc::Api;
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_determinism, mc, "Logging specific to MC communication determinism detection");
 
 namespace simgrid {
@@ -78,7 +76,7 @@ struct CommDetExtension {
 
   void exploration_start()
   {
-    const unsigned long maxpid = api::get().get_maxpid();
+    const unsigned long maxpid = Api::get().get_maxpid();
 
     initial_communications_pattern.resize(maxpid);
     incomplete_communications_pattern.resize(maxpid);
@@ -102,7 +100,7 @@ public:
   static simgrid::xbt::Extension<simgrid::mc::State, StateCommDet> EXTENSION_ID;
   explicit StateCommDet(CommDetExtension* checker) : checker_(checker)
   {
-    const unsigned long maxpid = api::get().get_maxpid();
+    const unsigned long maxpid = Api::get().get_maxpid();
     for (unsigned long i = 0; i < maxpid; i++) {
       std::vector<simgrid::mc::PatternCommunication> res;
       for (auto const& comm : checker_->incomplete_communications_pattern[i])
@@ -141,7 +139,7 @@ void CommDetExtension::restore_communications_pattern(const simgrid::mc::State* 
     initial_communications_pattern[i].index_comm =
         state->extension<simgrid::mc::StateCommDet>()->communication_indices_[i];
 
-  const unsigned long maxpid = api::get().get_maxpid();
+  const unsigned long maxpid = Api::get().get_maxpid();
   for (unsigned long i = 0; i < maxpid; i++) {
     incomplete_communications_pattern[i].clear();
     for (simgrid::mc::PatternCommunication const& comm :
@@ -209,7 +207,7 @@ void CommDetExtension::enforce_deterministic_pattern(aid_t actor, const PatternC
       XBT_INFO("*********************************************************");
       XBT_INFO("%s", send_diff.c_str());
       session_singleton->log_state();
-      api::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
+      Api::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
     } else if (_sg_mc_comms_determinism && (not send_deterministic && not recv_deterministic)) {
       XBT_INFO("****************************************************");
       XBT_INFO("***** Non-deterministic communications pattern *****");
@@ -219,7 +217,7 @@ void CommDetExtension::enforce_deterministic_pattern(aid_t actor, const PatternC
       if (not recv_diff.empty())
         XBT_INFO("%s", recv_diff.c_str());
       session_singleton->log_state();
-      api::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
+      Api::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
     }
   }
 }
@@ -342,7 +340,7 @@ Exploration* create_communication_determinism_checker(Session* session)
       [extension](State* state) { extension->restore_communications_pattern(state); });
 
   SafetyChecker::on_restore_initial_state([extension]() {
-    const unsigned long maxpid = api::get().get_maxpid();
+    const unsigned long maxpid = Api::get().get_maxpid();
     assert(maxpid == extension->incomplete_communications_pattern.size());
     assert(maxpid == extension->initial_communications_pattern.size());
     for (unsigned long j = 0; j < maxpid; j++) {

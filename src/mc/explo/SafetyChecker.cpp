@@ -23,8 +23,6 @@
 #include <string>
 #include <vector>
 
-using api = simgrid::mc::Api;
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc, "Logging specific to MC safety verification ");
 
 namespace simgrid {
@@ -45,7 +43,7 @@ xbt::signal<void()> SafetyChecker::on_log_state_signal;
 void SafetyChecker::check_non_termination(const State* current_state)
 {
   for (auto state = stack_.rbegin(); state != stack_.rend(); ++state)
-    if (api::get().snapshot_equal((*state)->system_state_.get(), current_state->system_state_.get())) {
+    if (Api::get().snapshot_equal((*state)->system_state_.get(), current_state->system_state_.get())) {
       XBT_INFO("Non-progressive cycle: state %ld -> state %ld", (*state)->num_, current_state->num_);
       XBT_INFO("******************************************");
       XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
@@ -81,7 +79,7 @@ void SafetyChecker::log_state() // override
   on_log_state_signal();
   XBT_INFO("DFS exploration ended. %ld unique states visited; %ld backtracks (%lu transition replays, %lu states "
            "visited overall)",
-           State::get_expanded_states(), backtrack_count_, api::get().mc_get_visited_states(),
+           State::get_expanded_states(), backtrack_count_, Api::get().mc_get_visited_states(),
            Transition::get_replayed_transitions());
 }
 
@@ -99,7 +97,7 @@ void SafetyChecker::run()
     XBT_DEBUG("**************************************************");
     XBT_DEBUG("Exploration depth=%zu (state:%ld; %zu interleaves)", stack_.size(), state->num_, state->count_todo());
 
-    api::get().mc_inc_visited_states();
+    Api::get().mc_inc_visited_states();
 
     // Backtrack if we reached the maximum depth
     if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
@@ -163,7 +161,7 @@ void SafetyChecker::run()
     /* If this is a new state (or if we don't care about state-equality reduction) */
     if (visited_state_ == nullptr) {
       /* Get an enabled process and insert it in the interleave set of the next state */
-      auto actors = api::get().get_actors();
+      auto actors = Api::get().get_actors();
       for (auto& remoteActor : actors) {
         auto actor = remoteActor.copy.get_buffer();
         if (get_session().actor_is_enabled(actor->get_pid())) {
@@ -249,7 +247,7 @@ void SafetyChecker::restore_state()
   /* If asked to rollback on a state that has a snapshot, restore it */
   State* last_state = stack_.back().get();
   if (last_state->system_state_) {
-    api::get().restore_state(last_state->system_state_);
+    Api::get().restore_state(last_state->system_state_);
     on_restore_system_state_signal(last_state);
     return;
   }
@@ -265,7 +263,7 @@ void SafetyChecker::restore_state()
     state->get_transition()->replay();
     on_transition_replay_signal(state->get_transition());
     /* Update statistics */
-    api::get().mc_inc_visited_states();
+    Api::get().mc_inc_visited_states();
   }
 }
 
@@ -293,7 +291,7 @@ SafetyChecker::SafetyChecker(Session* session) : Exploration(session)
   XBT_DEBUG("**************************************************");
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
-  auto actors = api::get().get_actors();
+  auto actors = Api::get().get_actors();
   XBT_DEBUG("Initial state. %zu actors to consider", actors.size());
   for (auto& actor : actors) {
     aid_t aid = actor.copy.get_buffer()->get_pid();

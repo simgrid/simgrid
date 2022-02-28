@@ -14,16 +14,14 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_VisitedState, mc, "Logging specific to state equality detection mechanisms");
 
-using api = simgrid::mc::Api;
-
 namespace simgrid {
 namespace mc {
 
 /** @brief Save the current state */
 VisitedState::VisitedState(unsigned long state_number) : num(state_number)
 {
-  this->heap_bytes_used = api::get().get_remote_heap_bytes();
-  this->actors_count    = api::get().get_actors().size();
+  this->heap_bytes_used = Api::get().get_remote_heap_bytes();
+  this->actors_count    = Api::get().get_actors().size();
   this->system_state = std::make_shared<simgrid::mc::Snapshot>(state_number);
 }
 
@@ -50,13 +48,12 @@ VisitedStates::addVisitedState(unsigned long state_number, simgrid::mc::State* g
   XBT_DEBUG("Snapshot %p of visited state %ld (exploration stack state %ld)", new_state->system_state.get(),
             new_state->num, graph_state->num_);
 
-  auto range =
-      boost::range::equal_range(states_, new_state.get(), api::get().compare_pair());
+  auto range = boost::range::equal_range(states_, new_state.get(), Api::get().compare_pair());
 
   if (compare_snapshots)
     for (auto i = range.first; i != range.second; ++i) {
       auto& visited_state = *i;
-      if (api::get().snapshot_equal(visited_state->system_state.get(), new_state->system_state.get())) {
+      if (Api::get().snapshot_equal(visited_state->system_state.get(), new_state->system_state.get())) {
         // The state has been visited:
 
         std::unique_ptr<simgrid::mc::VisitedState> old_state =

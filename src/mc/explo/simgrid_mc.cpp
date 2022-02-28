@@ -17,8 +17,6 @@
 #include <memory>
 #include <unistd.h>
 
-using api = simgrid::mc::Api;
-
 int main(int argc, char** argv)
 {
   xbt_assert(argc >= 2, "Missing arguments");
@@ -47,7 +45,7 @@ int main(int argc, char** argv)
     algo = simgrid::mc::CheckerAlgorithm::Liveness;
 
   int res      = SIMGRID_MC_EXIT_SUCCESS;
-  std::unique_ptr<simgrid::mc::Exploration> checker{api::get().initialize(argv_copy.data(), algo)};
+  std::unique_ptr<simgrid::mc::Exploration> checker{simgrid::mc::Api::get().initialize(argv_copy.data(), algo)};
   try {
     checker->run();
   } catch (const simgrid::mc::DeadlockError&) {
@@ -57,7 +55,7 @@ int main(int argc, char** argv)
   } catch (const simgrid::mc::LivenessError&) {
     res = SIMGRID_MC_EXIT_LIVENESS;
   }
-  api::get().s_close();
+  simgrid::mc::Api::get().s_close();
   checker.release(); // FIXME: this line should not exist, but it segfaults in liveness
   return res;
 }
