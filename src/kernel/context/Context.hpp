@@ -66,7 +66,7 @@ public:
   virtual ~Context();
 
   bool wannadie() const { return iwannadie_; }
-  void set_wannadie(bool value = true) { iwannadie_ = value; }
+  void set_wannadie(bool value = true);
   bool is_maestro() const { return is_maestro_; }
   void operator()() const { code_(); }
   bool has_code() const { return static_cast<bool>(code_); }

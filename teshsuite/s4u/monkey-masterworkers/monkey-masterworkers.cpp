@@ -40,6 +40,8 @@ static void master(double comp_size, long comm_size)
 {
   XBT_INFO("Master booting");
   sg4::Actor::self()->daemonize();
+  sg4::this_actor::on_exit(
+      [](bool forcefully) { XBT_INFO("Master dying %s.", forcefully ? "forcefully" : "peacefully"); });
 
   while (true) { // This is a daemon
     xbt_assert(sg4::Engine::get_clock() < cfg_deadline,
@@ -63,6 +65,9 @@ static void master(double comp_size, long comm_size)
 static void worker(int id)
 {
   XBT_INFO("Worker booting");
+  sg4::this_actor::on_exit(
+      [id](bool forcefully) { XBT_INFO("worker %d dying %s.", id, forcefully ? "forcefully" : "peacefully"); });
+
   while (todo > 0) {
     xbt_assert(sg4::Engine::get_clock() < cfg_deadline,
                "Failed to run all tasks in less than %d seconds. Is this an infinite loop?", (int)cfg_deadline);

@@ -141,6 +141,11 @@ void Context::stop()
   this->actor_->cleanup();
 }
 
+void Context::set_wannadie(bool value)
+{
+  XBT_DEBUG("Actor %s gonna die.", actor_->get_cname());
+  iwannadie_ = value;
+}
 AttachContext::~AttachContext() = default;
 
 } // namespace context
