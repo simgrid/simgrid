@@ -132,6 +132,27 @@ void AppSide::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg) cons
   xbt_assert(channel_.send(answer) == 0, "Could not send ACTOR_ENABLED_REPLY");
 }
 
+void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
+{
+  bool terminate_asap = msg->value;
+  XBT_DEBUG("Finalize (terminate = %d)", (int)terminate_asap);
+  if (not terminate_asap) {
+    if (XBT_LOG_ISENABLED(mc_client, xbt_log_priority_debug))
+      kernel::EngineImpl::get_instance()->display_all_actor_status();
+#if HAVE_SMPI
+    XBT_DEBUG("Smpi_enabled: %d", (int)smpi_enabled());
+    if (smpi_enabled())
+      SMPI_finalize();
+#endif
+  }
+  coverage_checkpoint();
+  xbt_assert(channel_.send(MessageType::DEADLOCK_CHECK_REPLY) == 0, // DEADLOCK_CHECK_REPLY, really?
+             "Could not answer to FINALIZE");
+  std::fflush(stdout);
+  if (terminate_asap)
+    ::_Exit(0);
+}
+
 #define assert_msg_size(_name_, _type_)                                                                                \
   xbt_assert(received_size == sizeof(_type_), "Unexpected size for " _name_ " (%zd != %zu)", received_size,            \
              sizeof(_type_))
@@ -167,27 +188,10 @@ void AppSide::handle_messages() const
         handle_actor_enabled((s_mc_message_actor_enabled_t*)message_buffer.data());
         break;
 
-      case MessageType::FINALIZE: {
+      case MessageType::FINALIZE:
         assert_msg_size("FINALIZE", s_mc_message_int_t);
-        bool terminate_asap = ((s_mc_message_int_t*)message_buffer.data())->value;
-        XBT_DEBUG("Finalize (terminate = %d)", (int)terminate_asap);
-        if (not terminate_asap) {
-          if (XBT_LOG_ISENABLED(mc_client, xbt_log_priority_debug))
-            kernel::EngineImpl::get_instance()->display_all_actor_status();
-#if HAVE_SMPI
-          XBT_DEBUG("Smpi_enabled: %d", (int)smpi_enabled());
-          if (smpi_enabled())
-            SMPI_finalize();
-#endif
-        }
-        coverage_checkpoint();
-        xbt_assert(channel_.send(MessageType::DEADLOCK_CHECK_REPLY) == 0, // DEADLOCK_CHECK_REPLY, really?
-                   "Could not answer to FINALIZE");
-        std::fflush(stdout);
-        if (terminate_asap)
-          ::_Exit(0);
+        handle_finalize((s_mc_message_int_t*)message_buffer.data());
         break;
-      }
 
       default:
         xbt_die("Received unexpected message %s (%i)", to_c_str(message->type), static_cast<int>(message->type));
