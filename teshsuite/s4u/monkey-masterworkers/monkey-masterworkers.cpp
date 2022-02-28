@@ -49,15 +49,14 @@ XBT_ATTRIB_NORETURN static void master()
     xbt_assert(sg4::Engine::get_clock() < cfg_deadline,
                "Failed to run all tasks in less than %d seconds. Is this an infinite loop?", (int)cfg_deadline);
 
-    auto* payload = new double(comp_size);
+    auto payload = std::make_unique<double>(comp_size);
     try {
       XBT_INFO("Try to send a message");
-      mailbox->put(payload, comm_size, 10.0);
+      mailbox->put(payload.get(), comm_size, 10.0);
+      payload.release();
     } catch (const simgrid::TimeoutException&) {
-      delete payload;
       XBT_INFO("Timeouted while sending a task");
     } catch (const simgrid::NetworkFailureException&) {
-      delete payload;
       XBT_INFO("Got a NetworkFailureException. Wait a second before starting again.");
       sg4::this_actor::sleep_for(1);
     }
