@@ -107,6 +107,9 @@ int main(int argc, char* argv[])
   auto* rootzone = sg4::create_full_zone("root");
   sg4::Host* main; // First host created, where the master will stay
   std::vector<sg4::Host*> worker_hosts;
+
+  xbt_assert(cfg_host_count > 2, "You need at least 2 workers (i.e., 3 hosts) or the master will be auto-killed when "
+                                 "the only worker gets killed.");
   for (int i = 0; i < cfg_host_count; i++) {
     auto hostname = std::string("lilibeth ") + std::to_string(i);
     auto* host    = rootzone->create_host(hostname, 1e9);
@@ -129,8 +132,6 @@ int main(int argc, char* argv[])
   todo = cfg_task_count;
   xbt_assert(todo > 0, "Please give more than %d tasks to run", todo);
   mailbox = sg4::Mailbox::by_name("mailbox");
-  xbt_assert(cfg_host_count > 2, "You need at least 2 workers (i.e., 3 hosts) or the master will be auto-killed when "
-                                 "the only worker gets killed.");
 
   e.run();
 
