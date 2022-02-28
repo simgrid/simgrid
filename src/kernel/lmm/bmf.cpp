@@ -352,11 +352,11 @@ Eigen::VectorXd BmfSolver::solve()
 
 /*****************************************************************************/
 
-void BmfSystem::get_flows_data(Eigen::MatrixXd& A, Eigen::MatrixXd& maxA, Eigen::VectorXd& phi)
+void BmfSystem::get_flows_data(int number_cnsts, Eigen::MatrixXd& A, Eigen::MatrixXd& maxA, Eigen::VectorXd& phi)
 {
-  A.resize(active_constraint_set.size(), variable_set.size());
+  A.resize(number_cnsts, variable_set.size());
   A.setZero();
-  maxA.resize(active_constraint_set.size(), variable_set.size());
+  maxA.resize(number_cnsts, variable_set.size());
   maxA.setZero();
   phi.resize(variable_set.size());
 
@@ -365,8 +365,15 @@ void BmfSystem::get_flows_data(Eigen::MatrixXd& A, Eigen::MatrixXd& maxA, Eigen:
     if (var.sharing_penalty_ <= 0)
       continue;
     bool active = false;
-    var.value_  = 1; // assign something by default for tasks with 0 consumption
+    bool linked = false; // variable is linked to some constraint (specially for selective_update)
     for (const Element& elem : var.cnsts_) {
+      boost::intrusive::list_member_hook<>& cnst_hook = selective_update_active
+                                                            ? elem.constraint->modified_constraint_set_hook_
+                                                            : elem.constraint->active_constraint_set_hook_;
+      if (not cnst_hook.is_linked())
+        continue;
+      /* active and linked variable, lets check its consumption */
+      linked             = true;
       double consumption = elem.consumption_weight;
       if (consumption > 0) {
         int cnst_idx            = cnst2idx_[elem.constraint];
@@ -375,10 +382,15 @@ void BmfSystem::get_flows_data(Eigen::MatrixXd& A, Eigen::MatrixXd& maxA, Eigen:
         active                  = true;
       }
     }
+    /* skip variables not linked to any modified or active constraint */
+    if (not linked)
+      continue;
     if (active) {
-      phi[var_idx] = var.get_bound();
+      phi[var_idx]      = var.get_bound();
       idx2Var_[var_idx] = &var;
       var_idx++;
+    } else {
+      var.value_ = 1; // assign something by default for tasks with 0 consumption
     }
   }
   // resize matrix to active variables only
@@ -387,30 +399,37 @@ void BmfSystem::get_flows_data(Eigen::MatrixXd& A, Eigen::MatrixXd& maxA, Eigen:
   phi.conservativeResize(var_idx);
 }
 
-void BmfSystem::get_constraint_data(Eigen::VectorXd& C)
+template <class CnstList> void BmfSystem::get_constraint_data(const CnstList& cnst_list, Eigen::VectorXd& C)
 {
-  C.resize(active_constraint_set.size());
+  C.resize(cnst_list.size());
   cnst2idx_.clear();
   int cnst_idx = 0;
-  for (const Constraint& cnst : active_constraint_set) {
+  for (const Constraint& cnst : cnst_list) {
     C(cnst_idx)      = cnst.bound_;
     cnst2idx_[&cnst] = cnst_idx;
     cnst_idx++;
   }
 }
 
-void BmfSystem::bmf_solve()
+void BmfSystem::solve()
 {
-  if (not modified_)
-    return;
+  if (modified_) {
+    if (selective_update_active)
+      bmf_solve(modified_constraint_set);
+    else
+      bmf_solve(active_constraint_set);
+  }
+}
 
+template <class CnstList> void BmfSystem::bmf_solve(const CnstList& cnst_list)
+{
   /* initialize players' weight and constraint matrices */
   idx2Var_.clear();
   cnst2idx_.clear();
   Eigen::MatrixXd A, maxA;
   Eigen::VectorXd C, bounds;
-  get_constraint_data(C);
-  get_flows_data(A, maxA, bounds);
+  get_constraint_data(cnst_list, C);
+  get_flows_data(C.size(), A, maxA, bounds);
 
   auto solver = BmfSolver(A, maxA, C, bounds);
   auto rho    = solver.solve();

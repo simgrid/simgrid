@@ -136,12 +136,16 @@ class XBT_PUBLIC BmfSystem : public System {
 public:
   using System::System;
   /** @brief Implements the solve method to calculate a BMF allocation */
-  void solve() final { bmf_solve(); }
+  void solve() final;
 
 private:
   using allocation_map_t = std::unordered_map<int, std::unordered_set<int>>;
-  /** @brief Solve equation system to find a fair-sharing of resources */
-  void bmf_solve();
+  /**
+   * @brief Solve equation system to find a fair-sharing of resources
+   *
+   * @param cnst_list Constraint list (modified for selective update or active)
+   */
+  template <class CnstList> void bmf_solve(const CnstList& cnst_list);
   /**
    * @brief Iterates over system and build the consumption matrix A_ji and maxA_ji
    *
@@ -149,17 +153,19 @@ private:
    *
    * Considers only active variables to build the matrix.
    *
+   * @param number_cnsts Number of constraints in the system
    * @param A Consumption matrix (OUTPUT)
    * @param maxA Max subflow consumption matrix (OUTPUT)
    * @param phi Bounds for variables
    */
-  void get_flows_data(Eigen::MatrixXd& A, Eigen::MatrixXd& maxA, Eigen::VectorXd& phi);
+  void get_flows_data(int number_cnsts, Eigen::MatrixXd& A, Eigen::MatrixXd& maxA, Eigen::VectorXd& phi);
   /**
    * @brief Builds the vector C_ with resource's capacity
    *
+   * @param cnst_list Constraint list (modified for selective update or active)
    * @param C Resource capacity vector
    */
-  void get_constraint_data(Eigen::VectorXd& C);
+  template <class CnstList> void get_constraint_data(const CnstList& cnst_list, Eigen::VectorXd& C);
 
   std::unordered_map<int, Variable*> idx2Var_; //!< Map player index (and position in matrices) to system's variable
   std::unordered_map<const Constraint*, int> cnst2idx_; //!< Conversely map constraint to index

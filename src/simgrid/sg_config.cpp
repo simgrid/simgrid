@@ -269,6 +269,11 @@ void sg_config_init(int *argc, char **argv)
   simgrid::config::bind_flag(sg_bmf_max_iterations, "bmf/max-iterations",
                              "Maximum number of steps to be performed while searching for a BMF allocation");
 
+  simgrid::config::declare_flag<bool>("bmf/selective-update",
+                                      "Update the constraint set propagating recursively to others constraints "
+                                      "(off by default)",
+                                      false);
+
   /* The parameters of network models */
 
   sg_latency_factor = 13.01; // comes from the default LV08 network model
