@@ -28,7 +28,7 @@ namespace sg4 = simgrid::s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
-static simgrid::config::Flag<int> cfg_host_count{"host-count", "Host count (master on one, workers on the others)", 2};
+static simgrid::config::Flag<int> cfg_host_count{"host-count", "Host count (master on one, workers on the others)", 3};
 static simgrid::config::Flag<double> cfg_deadline{"deadline", "When to fail the simulation (infinite loop detection)",
                                                   120};
 static simgrid::config::Flag<int> cfg_task_count{"task-count", "Amount of tasks that must be executed to succeed", 1};
@@ -36,8 +36,10 @@ static simgrid::config::Flag<int> cfg_task_count{"task-count", "Amount of tasks 
 int todo; // remaining amount of tasks to execute, a global variable
 sg4::Mailbox* mailbox; // as a global to reduce the amount of simcalls during actor reboot
 
-static void master(double comp_size, long comm_size)
+static void master()
 {
+  double comp_size = 1e6;
+  long comm_size   = 1e6;
   XBT_INFO("Master booting");
   sg4::Actor::self()->daemonize();
   sg4::this_actor::on_exit(
@@ -56,7 +58,8 @@ static void master(double comp_size, long comm_size)
       XBT_INFO("Timeouted while sending a task");
     } catch (const simgrid::NetworkFailureException&) {
       delete payload;
-      XBT_INFO("Network error while sending a task");
+      XBT_INFO("Got a NetworkFailureException. Wait a second before starting again.");
+      sg4::this_actor::sleep_for(1);
     }
   }
   THROW_IMPOSSIBLE;
@@ -89,7 +92,8 @@ static void worker(int id)
       XBT_INFO("Timeouted while getting a task.");
 
     } catch (const simgrid::NetworkFailureException&) {
-      XBT_INFO("Mmh. Something went wrong. Nevermind. Let's keep going!");
+      XBT_INFO("Got a NetworkFailureException. Wait a second before starting again.");
+      sg4::this_actor::sleep_for(1);
     }
   }
 }
@@ -105,7 +109,7 @@ int main(int argc, char* argv[])
   std::vector<sg4::Host*> worker_hosts;
   for (int i = 0; i < cfg_host_count; i++) {
     auto hostname = std::string("lilibeth ") + std::to_string(i);
-    auto* host    = rootzone->create_host(hostname, 1e15);
+    auto* host    = rootzone->create_host(hostname, 1e9);
     if (i == 0) {
       main = host;
     } else {
@@ -117,7 +121,7 @@ int main(int argc, char* argv[])
   rootzone->seal();
   sg4::Engine::get_instance()->on_platform_created(); // FIXME this should not be necessary
 
-  sg4::Actor::create("master", main, master, 50000000, 1000000)->set_auto_restart(true);
+  sg4::Actor::create("master", main, master)->set_auto_restart(true);
   int id = 0;
   for (auto* h : worker_hosts)
     sg4::Actor::create("worker", h, worker, id++)->set_auto_restart(true);
@@ -125,6 +129,8 @@ int main(int argc, char* argv[])
   todo = cfg_task_count;
   xbt_assert(todo > 0, "Please give more than %d tasks to run", todo);
   mailbox = sg4::Mailbox::by_name("mailbox");
+  xbt_assert(cfg_host_count > 2, "You need at least 2 workers (i.e., 3 hosts) or the master will be auto-killed when "
+                                 "the only worker gets killed.");
 
   e.run();
 

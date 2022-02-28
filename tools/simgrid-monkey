@@ -92,7 +92,9 @@ def doit():
     for pos in range(len(timestamps)):
         now = timestamps[pos]
         for host in range(host_count):
-            do_run(args.command, [f"--cfg=cmonkey/time:{(now-prev)/2}",f"--cfg=cmonkey/host:{host}"])
+            do_run(args.command, [f"--cfg=cmonkey/time:{(now-prev)/2}", f"--cfg=cmonkey/host:{host}"])
+            do_run(args.command, [f"--cfg=cmonkey/time:{now}", f"--cfg=cmonkey/host:{host}"])
         for link in range(link_count):
-            do_run(args.command, [f"--cfg=cmonkey/time:{(now-prev)/2}",f"--cfg=cmonkey/link:{link}"])
+            do_run(args.command, [f"--cfg=cmonkey/time:{(now-prev)/2}", f"--cfg=cmonkey/link:{link}"])
+            do_run(args.command, [f"--cfg=cmonkey/time:{now}", f"--cfg=cmonkey/link:{link}"])
 doit()
