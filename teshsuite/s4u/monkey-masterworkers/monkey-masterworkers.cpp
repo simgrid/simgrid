@@ -124,8 +124,10 @@ int main(int argc, char* argv[])
 
   sg4::Actor::create("master", main, master)->set_auto_restart(true);
   int id = 0;
-  for (auto* h : worker_hosts)
-    sg4::Actor::create("worker", h, worker, id++)->set_auto_restart(true);
+  for (auto* h : worker_hosts) {
+    sg4::Actor::create("worker", h, worker, id)->set_auto_restart(true);
+    id++;
+  }
 
   todo = cfg_task_count;
   xbt_assert(todo > 0, "Please give more than %d tasks to run", todo);
