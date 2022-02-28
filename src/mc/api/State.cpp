@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/api/State.hpp"
-#include "src/mc/Session.hpp"
 #include "src/mc/api.hpp"
 #include "src/mc/mc_config.hpp"
 
@@ -50,7 +49,7 @@ int State::next_transition() const
     const ActorState* actor_state = &actor_states_[aid];
 
     /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application*/
-    if (not actor_state->is_todo() || not simgrid::mc::session_singleton->actor_is_enabled(aid))
+    if (not actor_state->is_todo() || not Api::get().get_session().actor_is_enabled(aid))
       continue;
 
     return i;

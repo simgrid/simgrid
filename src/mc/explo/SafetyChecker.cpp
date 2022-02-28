@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/SafetyChecker.hpp"
-#include "src/mc/Session.hpp"
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -192,7 +191,7 @@ void SafetyChecker::backtrack()
   on_backtracking_signal();
   stack_.pop_back();
 
-  session_singleton->check_deadlock();
+  get_session().check_deadlock();
 
   /* Traverse the stack backwards until a state with a non empty interleave set is found, deleting all the states that
    *  have it empty in the way. For each deleted state, check if the request that has generated it (from its

@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/MailboxImpl.hpp"
-#include "src/mc/Session.hpp"
 #include "src/mc/explo/SafetyChecker.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -206,7 +205,7 @@ void CommDetExtension::enforce_deterministic_pattern(aid_t actor, const PatternC
       XBT_INFO("***** Non-send-deterministic communications pattern *****");
       XBT_INFO("*********************************************************");
       XBT_INFO("%s", send_diff.c_str());
-      session_singleton->log_state();
+      Api::get().get_session().log_state();
       Api::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
     } else if (_sg_mc_comms_determinism && (not send_deterministic && not recv_deterministic)) {
       XBT_INFO("****************************************************");
@@ -216,7 +215,7 @@ void CommDetExtension::enforce_deterministic_pattern(aid_t actor, const PatternC
         XBT_INFO("%s", send_diff.c_str());
       if (not recv_diff.empty())
         XBT_INFO("%s", recv_diff.c_str());
-      session_singleton->log_state();
+      Api::get().get_session().log_state();
       Api::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
     }
   }

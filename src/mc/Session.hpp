@@ -55,9 +55,6 @@ public:
 
   bool actor_is_enabled(aid_t pid) const;
 };
-
-// Temporary :)
-extern std::unique_ptr<simgrid::mc::Session> session_singleton;
 }
 }
 

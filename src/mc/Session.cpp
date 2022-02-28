@@ -176,7 +176,5 @@ void Session::check_deadlock() const
     throw DeadlockError();
   }
 }
-
-std::unique_ptr<simgrid::mc::Session> session_singleton;
 }
 }

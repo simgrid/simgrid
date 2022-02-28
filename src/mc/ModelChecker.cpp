@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/Session.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -140,7 +139,7 @@ static void MC_report_crash(int status)
     for (auto const& s : mc_model_checker->get_exploration()->get_textual_trace())
       XBT_INFO("  %s", s.c_str());
     XBT_INFO("Path = %s", mc_model_checker->get_exploration()->get_record_trace().to_string().c_str());
-    session_singleton->log_state();
+    Api::get().get_session().log_state();
     if (xbt_log_no_loc) {
       XBT_INFO("Stack trace not displayed because you passed --log=no_loc");
     } else {
@@ -232,7 +231,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       for (auto const& s : get_exploration()->get_textual_trace())
         XBT_INFO("  %s", s.c_str());
       XBT_INFO("Path = %s", get_exploration()->get_record_trace().to_string().c_str());
-      session_singleton->log_state();
+      Api::get().get_session().log_state();
 
       this->exit(SIMGRID_MC_EXIT_SAFETY);
 

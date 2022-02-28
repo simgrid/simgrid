@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "simgrid/forward.h"
+#include "src/mc/Session.hpp"
 #include "src/mc/api/State.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_record.hpp"
@@ -40,6 +41,8 @@ private:
     }
   };
 
+  std::unique_ptr<simgrid::mc::Session> session_;
+
 public:
   // No copy:
   Api(Api const&) = delete;
@@ -51,7 +54,7 @@ public:
     return api;
   }
 
-  simgrid::mc::Exploration* initialize(char** argv, simgrid::mc::CheckerAlgorithm algo) const;
+  simgrid::mc::Exploration* initialize(char** argv, simgrid::mc::CheckerAlgorithm algo);
 
   // ACTOR APIs
   std::vector<simgrid::mc::ActorInformation>& get_actors() const;
@@ -73,9 +76,10 @@ public:
   simgrid::mc::Snapshot* take_snapshot(long num_state) const;
 
   // SESSION APIs
-  void s_close() const;
+  simgrid::mc::Session const& get_session() { return *session_; }
+  void s_close();
 
-// AUTOMATION APIs
+  // AUTOMATION APIs
   void automaton_load(const char* file) const;
   std::vector<int> automaton_propositional_symbol_evaluate() const;
   std::vector<xbt_automaton_state_t> get_automaton_state() const;
