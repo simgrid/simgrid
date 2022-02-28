@@ -219,7 +219,7 @@ PYBIND11_MODULE(simgrid, m)
                   res();
               } catch (const py::error_already_set& ex) {
                 XBT_VERB("Actor killed");
-                simgrid::ForcefulKillException::do_throw(); // Forward that ForcefulKill exception
+                simgrid::ForcefulKillException::do_throw();
                 throw;
               }
             });
@@ -743,7 +743,7 @@ PYBIND11_MODULE(simgrid, m)
                 fun(*args);
               } catch (const py::error_already_set& ex) {
                 XBT_VERB("Actor killed");
-                simgrid::ForcefulKillException::do_throw(); // Forward that ForcefulKill exception
+                simgrid::ForcefulKillException::do_throw();
                 throw;
               }
             });
