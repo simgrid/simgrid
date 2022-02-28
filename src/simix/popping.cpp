@@ -42,7 +42,6 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered)
 const char* SIMIX_simcall_name(const s_smx_simcall& simcall)
 {
   if (simcall.observer_ != nullptr) {
-
     static std::string name;
     name              = boost::core::demangle(typeid(*simcall.observer_).name());
     const char* cname = name.c_str();

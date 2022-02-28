@@ -21,11 +21,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc, "Logging specific to MC record/re
 namespace simgrid {
 namespace mc {
 
-void RecordTrace::replay()
+void RecordTrace::replay() const
 {
   simgrid::mc::execute_actors();
 
-  for (simgrid::mc::Transition* const transition : transitions_) {
+  for (const simgrid::mc::Transition* transition : transitions_) {
     XBT_DEBUG("Executing %ld$%i", transition->aid_, transition->times_considered_);
 
     // Choose a request:

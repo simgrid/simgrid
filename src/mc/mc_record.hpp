@@ -39,7 +39,7 @@ public:
   void push_back(Transition* t) { transitions_.push_back(t); }
 
   /** Replay all transitions of a trace */
-  void replay();
+  void replay() const;
 
   /** Parse and replay a string representation */
   static void replay(const std::string& trace);

@@ -5,9 +5,9 @@
 
 #include "simgrid/s4u.hpp" /* All of S4U */
 #include "xbt/config.hpp"
-namespace sg4 = simgrid::s4u;
-
 #include <mutex> /* std::mutex and std::lock_guard */
+
+namespace sg4 = simgrid::s4u;
 
 static simgrid::config::Flag<int> cfg_actor_count("actors", "How many pairs of actors should be started?", 6);
 

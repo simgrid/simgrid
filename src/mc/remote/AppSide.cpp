@@ -121,7 +121,6 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
 
   XBT_DEBUG("send SIMCALL_EXECUTE_ANSWER(%s) ~> '%s'", actor->get_cname(), str.c_str());
   xbt_assert(channel_.send(answer) == 0, "Could not send response");
-
 }
 
 void AppSide::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg) const

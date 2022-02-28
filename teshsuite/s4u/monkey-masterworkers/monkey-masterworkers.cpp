@@ -36,7 +36,7 @@ static simgrid::config::Flag<int> cfg_task_count{"task-count", "Amount of tasks 
 int todo; // remaining amount of tasks to execute, a global variable
 sg4::Mailbox* mailbox; // as a global to reduce the amount of simcalls during actor reboot
 
-static void master()
+XBT_ATTRIB_NORETURN static void master()
 {
   double comp_size = 1e6;
   long comm_size   = 1e6;
@@ -90,7 +90,6 @@ static void worker(int id)
       todo--;
     } catch (const simgrid::TimeoutException&) {
       XBT_INFO("Timeouted while getting a task.");
-
     } catch (const simgrid::NetworkFailureException&) {
       XBT_INFO("Got a NetworkFailureException. Wait a second before starting again.");
       sg4::this_actor::sleep_for(1);
@@ -122,7 +121,7 @@ int main(int argc, char* argv[])
     }
   }
   rootzone->seal();
-  sg4::Engine::get_instance()->on_platform_created(); // FIXME this should not be necessary
+  sg4::Engine::on_platform_created(); // FIXME this should not be necessary
 
   sg4::Actor::create("master", main, master)->set_auto_restart(true);
   int id = 0;
