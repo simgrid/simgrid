@@ -43,22 +43,31 @@ public:
   void log_state() override;
 
   /** Called once when the exploration starts */
-  static void on_exploration_start(std::function<void()> f) { on_exploration_start_signal.connect(f); }
+  static void on_exploration_start(std::function<void()> const& f) { on_exploration_start_signal.connect(f); }
   /** Called each time that the exploration backtracks from a exploration end */
-  static void on_backtracking(std::function<void()> f) { on_backtracking_signal.connect(f); }
+  static void on_backtracking(std::function<void()> const& f) { on_backtracking_signal.connect(f); }
   /** Called each time that a new state is create */
-  static void on_state_creation(std::function<void(State*)> f) { on_state_creation_signal.connect(f); }
+  static void on_state_creation(std::function<void(State*)> const& f) { on_state_creation_signal.connect(f); }
   /** Called when rollbacking directly onto a previously checkpointed state */
-  static void on_restore_system_state(std::function<void(State*)> f) { on_restore_system_state_signal.connect(f); }
+  static void on_restore_system_state(std::function<void(State*)> const& f)
+  {
+    on_restore_system_state_signal.connect(f);
+  }
   /** Called when the state to which we backtrack was not checkpointed state, forcing us to restore the initial state
    * before replaying some transitions */
-  static void on_restore_initial_state(std::function<void()> f) { on_restore_initial_state_signal.connect(f); }
+  static void on_restore_initial_state(std::function<void()> const& f) { on_restore_initial_state_signal.connect(f); }
   /** Called when replaying a transition that was previously executed, to reach a backtracked state */
-  static void on_transition_replay(std::function<void(Transition*)> f) { on_transition_replay_signal.connect(f); }
+  static void on_transition_replay(std::function<void(Transition*)> const& f)
+  {
+    on_transition_replay_signal.connect(f);
+  }
   /** Called when executing a new transition */
-  static void on_transition_execute(std::function<void(Transition*)> f) { on_transition_execute_signal.connect(f); }
+  static void on_transition_execute(std::function<void(Transition*)> const& f)
+  {
+    on_transition_execute_signal.connect(f);
+  }
   /** Called when displaying the statistics at the end of the exploration */
-  static void on_log_state(std::function<void()> f) { on_log_state_signal.connect(f); }
+  static void on_log_state(std::function<void()> const& f) { on_log_state_signal.connect(f); }
 
 private:
   void check_non_termination(const State* current_state);
