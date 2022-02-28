@@ -1,0 +1,30 @@
+
+p Smoke test: do one arbitrary run of the monkey, just to make sure that *something* is happening.
+
+$ ${bindir:=.}/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1 --cfg=cmonkey/host:1
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'plugin' to 'cmonkey'
+> [0.000000] [cmonkey/INFO] Initializing the chaos monkey
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cmonkey/time' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cmonkey/host' to '1'
+> [0.000000] [s4u_test/INFO] host count: 3 
+> [lilibeth 0:master:(1) 0.000000] [s4u_test/INFO] Master booting
+> [lilibeth 1:worker:(2) 0.000000] [s4u_test/INFO] Worker booting
+> [lilibeth 2:worker:(3) 0.000000] [s4u_test/INFO] Worker booting
+> [lilibeth 1:worker:(2) 0.000000] [s4u_test/INFO] Waiting a message on mailbox
+> [lilibeth 2:worker:(3) 0.000000] [s4u_test/INFO] Waiting a message on mailbox
+> [lilibeth 0:master:(1) 0.000000] [s4u_test/INFO] Try to send a message
+> [1.000000] [cmonkey/INFO] Kill host lilibeth 1
+> [lilibeth 1:worker:(2) 1.000000] [s4u_test/INFO] worker 0 dying forcefully.
+> [lilibeth 0:master:(1) 1.000000] [s4u_test/INFO] Got a NetworkFailureException. Wait a second before starting again.
+> [lilibeth 0:master:(1) 2.000000] [s4u_test/INFO] Try to send a message
+> [lilibeth 2:worker:(3) 3.082786] [s4u_test/INFO] Start execution...
+> [lilibeth 0:master:(1) 3.082786] [s4u_test/INFO] Try to send a message
+> [lilibeth 2:worker:(3) 3.083786] [s4u_test/INFO] Execution complete.
+> [lilibeth 2:worker:(3) 3.083786] [s4u_test/INFO] worker 1 dying peacefully.
+> [lilibeth 0:master:(1) 3.083786] [s4u_test/INFO] Master dying forcefully.
+> [31.000000] [cmonkey/INFO] Restart host lilibeth 1
+> [lilibeth 1:worker:(4) 31.000000] [s4u_test/INFO] Worker booting
+> [lilibeth 1:worker:(4) 31.000000] [s4u_test/INFO] worker 0 dying peacefully.
+> [lilibeth 1:worker:(4) 31.000000] [s4u_test/INFO] worker 0 dying peacefully.
+> [31.000000] [cmonkey/INFO] Chaos Monkey done!
+> [31.000000] [s4u_test/INFO] WE SURVIVED!
