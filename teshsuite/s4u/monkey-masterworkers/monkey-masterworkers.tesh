@@ -1,3 +1,0 @@
-
-! output display
-$ ${rootdir:=.}/tools/simgrid-monkey ${bindir:=.}/monkey-masterworkers

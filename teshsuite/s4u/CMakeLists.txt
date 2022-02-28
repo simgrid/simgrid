@@ -52,6 +52,12 @@ foreach(x basic-link-test basic-parsing-test host-on-off host-on-off-actors host
   ADD_TESH(tesh-s4u-${x} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x} --setenv rootdir=${CMAKE_HOME_DIRECTORY} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}.tesh)
 endforeach()
 
+# Monkey tests are launched directly, not with tesh
+foreach(x  monkey-masterworkers)
+  ADD_TEST(monkey-s4u-${x} "${PYTHON_EXECUTABLE}" ${CMAKE_HOME_DIRECTORY}/tools/simgrid-monkey ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x}/${x})
+endforeach()
+
+
 # The output is not relevant
 ADD_TEST(tesh-s4u-comm-pt2pt    ${CMAKE_BINARY_DIR}/teshsuite/s4u/comm-pt2pt/comm-pt2pt    ${CMAKE_HOME_DIRECTORY}/examples/platforms/cluster_backbone.xml)
 

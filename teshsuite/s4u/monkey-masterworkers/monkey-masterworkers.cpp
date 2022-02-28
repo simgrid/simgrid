@@ -31,7 +31,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 static simgrid::config::Flag<int> cfg_host_count{"host-count", "Host count (master on one, workers on the others)", 3};
 static simgrid::config::Flag<double> cfg_deadline{"deadline", "When to fail the simulation (infinite loop detection)",
                                                   120};
-static simgrid::config::Flag<int> cfg_task_count{"task-count", "Amount of tasks that must be executed to succeed", 1};
+static simgrid::config::Flag<int> cfg_task_count{"task-count", "Amount of tasks that must be executed to succeed", 2};
 
 int todo; // remaining amount of tasks to execute, a global variable
 sg4::Mailbox* mailbox; // as a global to reduce the amount of simcalls during actor reboot
