@@ -181,6 +181,7 @@ private:
 
   std::unordered_map<int, Variable*> idx2Var_; //!< Map player index (and position in matrices) to system's variable
   std::unordered_map<const Constraint*, int> cnst2idx_; //!< Conversely map constraint to index
+  bool warned_nonlinear_ = false;
 };
 
 } // namespace lmm

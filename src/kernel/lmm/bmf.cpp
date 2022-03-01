@@ -435,6 +435,16 @@ void BmfSystem::get_constraint_data(const CnstList& cnst_list, Eigen::VectorXd& 
   int cnst_idx = 0;
   for (const Constraint& cnst : cnst_list) {
     C(cnst_idx)      = cnst.bound_;
+    if (cnst.get_sharing_policy() == Constraint::SharingPolicy::NONLINEAR && cnst.dyn_constraint_cb_) {
+      C(cnst_idx) = cnst.dyn_constraint_cb_(cnst.bound_, cnst.concurrency_current_);
+      if (not warned_nonlinear_) {
+        XBT_WARN("You are using dynamic constraint bound with parallel tasks and BMF model."
+                 " The BMF solver assumes that all flows (and subflows) are always active and executing."
+                 " This is quite pessimist, specially considering parallel tasks with small subflows."
+                 " Analyze your results with caution.");
+        warned_nonlinear_ = true;
+      }
+    }
     cnst2idx_[&cnst] = cnst_idx;
     // FATPIPE links aren't really shared
     shared[cnst_idx] = (cnst.sharing_policy_ != Constraint::SharingPolicy::FATPIPE);
