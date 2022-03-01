@@ -71,31 +71,58 @@ parser.add_argument('command', nargs='*')
 args = parser.parse_args()
 
 (host_count,  link_count,  timestamps) = get_info(args.command)
+timestamps = sorted([*{*timestamps}]) # kill duplicates
 print(f"Monkey informations: hosts:{host_count} links:{link_count} timestamps:{' '.join(([str(i) for i in timestamps]))}")
 
-def do_run(cmd, extra_params):
+error_count = 0
+test_count = 0
+def do_run(cmd, extra_params, test_todo):
+    global test_count, error_count
+    test_count = test_count + 1
     cmd = copy.deepcopy(cmd)
     cmd.append("--cfg=plugin:cmonkey")
     for p in extra_params:
         cmd.append(p)
     print(f"Start {' '.join(cmd)}")
+    sys.stdout.flush()
+
     run = subprocess.run(cmd, shell=False, cwd=os.getcwd(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
+    out = str(run.stdout, errors='replace')
     if run.returncode != 0:
         msg = f"ERROR (retcode: {run.returncode}). Output:\n"
-        msg += str(run.stdout, errors='replace')
+        msg += out
         print(msg)
         os.exit(1)
-    print ("Success.\n")
+    for line in out.split("\n"):
+        if re.match("==.*    in use at exit: ", line) and not re.match("==.* in use at exit: 0 bytes in 0 blocks", line):
+            m = re.match("==.*    in use at exit: (.*)", line)
+            print(f"LEAK SUMMARY: {m.group(1)} in use at exit")
+            error_count += 1
+        
+        if re.match("==.* ERROR SUMMARY: ", line):
+            m = re.match("==.* ERROR SUMMARY: (.*)", line)
+            print(f"valgrind summary: {m.group(1)}")
+            if not re.match("==.* 0 errors from 0 contexts", line):
+                error_count += 1
+    print (f"Test {test_count} out of {test_todo} succeded.\n")
+        
 
 def doit():
-    prev = 0
+    prev_time = 0
+    test_count = 0
+    test_todo = 2 * len(timestamps) * (host_count + link_count)
     for pos in range(len(timestamps)):
         now = timestamps[pos]
         for host in range(host_count):
-            do_run(args.command, [f"--cfg=cmonkey/time:{(now-prev)/2}", f"--cfg=cmonkey/host:{host}"])
-            do_run(args.command, [f"--cfg=cmonkey/time:{now}", f"--cfg=cmonkey/host:{host}"])
+            do_run(args.command, [f"--cfg=cmonkey/time:{(now-prev_time)/2}", f"--cfg=cmonkey/host:{host}"], test_todo)
         for link in range(link_count):
-            do_run(args.command, [f"--cfg=cmonkey/time:{(now-prev)/2}", f"--cfg=cmonkey/link:{link}"])
-            do_run(args.command, [f"--cfg=cmonkey/time:{now}", f"--cfg=cmonkey/link:{link}"])
+            do_run(args.command, [f"--cfg=cmonkey/time:{(now-prev_time)/2}", f"--cfg=cmonkey/link:{link}"], test_todo)
+        for host in range(host_count):
+            do_run(args.command, [f"--cfg=cmonkey/time:{now}", f"--cfg=cmonkey/host:{host}"], test_todo)
+        for link in range(link_count):
+            do_run(args.command, [f"--cfg=cmonkey/time:{now}", f"--cfg=cmonkey/link:{link}"], test_todo)
 doit()
+
+print(f"In total, the monkey found {error_count} errors.")
+sys.exit(error_count)
