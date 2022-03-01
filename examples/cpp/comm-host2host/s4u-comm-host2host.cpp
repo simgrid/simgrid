@@ -28,12 +28,12 @@ static void sender(sg4::Host* h1, sg4::Host* h2, sg4::Host* h3, sg4::Host* h4)
   auto c12 = sg4::Comm::sendto_async(h1, h2, 1.5e7); // Creates and start a direct communication
 
   auto c34 = sg4::Comm::sendto_init(h3, h4); // Creates but do not start another direct communication
-  c34->set_remaining(1e7);                   // Specify the amount of bytes to exchange in this comm
+  c34->set_payload_size(1e7);                // Specify the amount of bytes to exchange in this comm
 
   // You can also detach() communications that you never plan to test() or wait().
   // Here we create a communication that only slows down the other ones
   auto noise = sg4::Comm::sendto_init(h1, h2);
-  noise->set_remaining(10000);
+  noise->set_payload_size(10000);
   noise->detach();
 
   XBT_INFO("After creation,  c12 is %s (remaining: %.2e bytes); c34 is %s (remaining: %.2e bytes)",
@@ -54,7 +54,7 @@ static void sender(sg4::Host* h1, sg4::Host* h2, sg4::Host* h3, sg4::Host* h4)
   /* As usual, you don't have to explicitly start communications that were just init()ed.
      The wait() will start it automatically. */
   auto c14 = sg4::Comm::sendto_init(h1, h4);
-  c14->set_remaining(100)->wait(); // Chaining 2 operations on this new communication
+  c14->set_payload_size(100)->wait(); // Chaining 2 operations on this new communication
 }
 
 int main(int argc, char* argv[])

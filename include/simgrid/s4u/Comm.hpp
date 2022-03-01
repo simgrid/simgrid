@@ -30,10 +30,6 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
   void* src_buff_                     = nullptr;
   size_t src_buff_size_               = sizeof(void*);
 
-  /* specified only for direct host-to-host communications */
-  Host* from_ = nullptr;
-  Host* to_   = nullptr;
-
   /* FIXME: expose these elements in the API */
   bool detached_                                                          = false;
   bool (*match_fun_)(void*, void*, kernel::activity::CommImpl*)           = nullptr;
@@ -74,9 +70,9 @@ public:
   static void sendto(Host* from, Host* to, uint64_t simulated_size_in_bytes);
 
   CommPtr set_source(Host* from);
-  Host* get_source() const { return from_; }
+  Host* get_source() const;
   CommPtr set_destination(Host* to);
-  Host* get_destination() const { return to_; }
+  Host* get_destination() const;
 
   /* Mailbox-based communications */
   CommPtr set_mailbox(Mailbox* mailbox);
@@ -140,7 +136,7 @@ public:
   /** Sets the maximal communication rate (in byte/sec). Must be done before start */
   CommPtr set_rate(double rate);
 
-  bool is_assigned() const override { return (to_ != nullptr && from_ != nullptr) || (mailbox_ != nullptr); }
+  bool is_assigned() const override;
   Actor* get_sender() const;
 
   /* Comm life cycle */

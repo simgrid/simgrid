@@ -34,13 +34,16 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   CommImplType type_ = CommImplType::SEND; /* Type of the communication (SEND or RECEIVE) */
 
 public:
-  static void set_copy_data_callback(void (*callback)(CommImpl*, void*, size_t));
-
   CommImpl() = default;
-  CommImpl(s4u::Host* from, s4u::Host* to, double bytes);
+
+  static void set_copy_data_callback(void (*callback)(CommImpl*, void*, size_t));
 
   CommImpl& set_type(CommImplType type);
   CommImplType get_type() const { return type_; }
+  CommImpl& set_source(s4u::Host* from);
+  s4u::Host* get_source() const { return from_; }
+  CommImpl& set_destination(s4u::Host* to);
+  s4u::Host* get_destination() const { return to_; }
   CommImpl& set_size(double size);
   CommImpl& set_src_buff(unsigned char* buff, size_t size);
   CommImpl& set_dst_buff(unsigned char* buff, size_t* size);
@@ -52,6 +55,7 @@ public:
   MailboxImpl* get_mailbox() const { return mbox_; }
   long get_mailbox_id() const { return mbox_id_; }
   bool detached() const { return detached_; }
+  bool is_assigned() { return (to_ != nullptr && from_ != nullptr); }
 
   std::vector<s4u::Link*> get_traversed_links() const;
   void copy_data();

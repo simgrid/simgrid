@@ -63,24 +63,22 @@ Comm::~Comm()
 CommPtr Comm::sendto_init()
 {
   CommPtr res(new Comm());
+  res->pimpl_ = kernel::activity::CommImplPtr(new kernel::activity::CommImpl());
+  boost::static_pointer_cast<kernel::activity::CommImpl>(res->pimpl_)->detach();
   res->sender_ = kernel::actor::ActorImpl::self();
   return res;
 }
 
 CommPtr Comm::sendto_init(Host* from, Host* to)
 {
-  auto res   = Comm::sendto_init();
-  res->from_ = from;
-  res->to_   = to;
-
+  auto res = Comm::sendto_init()->set_source(from)->set_destination(to);
+  res->set_state(State::STARTING);
   return res;
 }
 
 CommPtr Comm::sendto_async(Host* from, Host* to, uint64_t simulated_size_in_bytes)
 {
-  auto res = Comm::sendto_init(from, to)->set_payload_size(simulated_size_in_bytes);
-  res->vetoable_start();
-  return res;
+  return Comm::sendto_init()->set_payload_size(simulated_size_in_bytes)->set_source(from)->set_destination(to);
 }
 
 void Comm::sendto(Host* from, Host* to, uint64_t simulated_size_in_bytes)
@@ -92,22 +90,37 @@ CommPtr Comm::set_source(Host* from)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
              "Cannot change the source of a Comm once it's started (state: %s)", to_c_str(state_));
-  from_ = from;
-  // Setting 'from_' may allow to start the activity, let's try
-  vetoable_start();
+  boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->set_source(from);
+  // Setting 'source' may allow to start the activity, let's try
+  if (state_ == State::STARTING && remains_ <= 0)
+    XBT_DEBUG("This communication has a payload size of 0 byte. It cannot start yet");
+  else
+    vetoable_start();
 
   return this;
+}
+Host* Comm::get_source() const
+{
+  return pimpl_ ? boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->get_source() : nullptr;
 }
 
 CommPtr Comm::set_destination(Host* to)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
              "Cannot change the destination of a Comm once it's started (state: %s)", to_c_str(state_));
-  to_ = to;
-  // Setting 'to_' may allow to start the activity, let's try
-  vetoable_start();
+  boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->set_destination(to);
+  // Setting 'destination' may allow to start the activity, let's try
+  if (state_ == State::STARTING && remains_ <= 0)
+    XBT_DEBUG("This communication has a payload size of 0 byte. It cannot start yet");
+  else
+    vetoable_start();
 
   return this;
+}
+
+Host* Comm::get_destination() const
+{
+  return pimpl_ ? boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->get_destination() : nullptr;
 }
 
 CommPtr Comm::set_rate(double rate)
@@ -177,6 +190,9 @@ CommPtr Comm::set_dst_data(void** buff, size_t size)
 CommPtr Comm::set_payload_size(uint64_t bytes)
 {
   Activity::set_remaining(bytes);
+  if (pimpl_) {
+    boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->set_size(bytes);
+  }
   return this;
 }
 
@@ -188,20 +204,25 @@ Actor* Comm::get_sender() const
   return sender ? sender->get_ciface() : nullptr;
 }
 
+bool Comm::is_assigned() const
+{
+  return (pimpl_ && boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->is_assigned()) ||
+         mailbox_ != nullptr;
+}
+
 Comm* Comm::start()
 {
   xbt_assert(get_state() == State::INITED || get_state() == State::STARTING,
              "You cannot use %s() once your communication started (not implemented)", __FUNCTION__);
-  if (from_ != nullptr || to_ != nullptr) {
-    xbt_assert(from_ != nullptr && to_ != nullptr, "When either from_ or to_ is specified, both must be.");
+  if (get_source() != nullptr || get_destination() != nullptr) {
+    xbt_assert(is_assigned(), "When either from_ or to_ is specified, both must be.");
     xbt_assert(src_buff_ == nullptr && dst_buff_ == nullptr,
                "Direct host-to-host communications cannot carry any data.");
-    pimpl_ = kernel::actor::simcall_answered([this] {
-      kernel::activity::CommImplPtr res(new kernel::activity::CommImpl(this->from_, this->to_, this->get_remaining()));
-      res->start();
-      return res;
+    XBT_DEBUG("host-to-host Comm. Pimpl already created and set, just start it.");
+    kernel::actor::simcall_answered([this] {
+      pimpl_->set_state(kernel::activity::State::READY);
+      boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->start();
     });
-
   } else if (src_buff_ != nullptr) { // Sender side
     on_send(*this);
     kernel::actor::CommIsendSimcall observer{sender_,
@@ -248,8 +269,8 @@ Comm* Comm::start()
 
 Comm* Comm::detach()
 {
-  xbt_assert(state_ == State::INITED, "You cannot use %s() once your communication is %s (not implemented)",
-             __FUNCTION__, get_state_str());
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+             "You cannot use %s() once your communication is %s (not implemented)", __FUNCTION__, get_state_str());
   xbt_assert(dst_buff_ == nullptr && dst_buff_size_ == 0, "You can only detach sends, not recvs");
   detached_ = true;
   vetoable_start();
@@ -281,7 +302,7 @@ Comm* Comm::wait_for(double timeout)
       throw NetworkFailureException(XBT_THROW_POINT, "Cannot wait for a failed communication");
     case State::INITED:
     case State::STARTING: // It's not started yet. Do it in one simcall if it's a regular communication
-      if (from_ != nullptr || to_ != nullptr) {
+      if (get_source() != nullptr || get_destination() != nullptr) {
         return vetoable_start()->wait_for(timeout); // In the case of host2host comm, do it in two simcalls
       } else if (src_buff_ != nullptr) {
         on_send(*this);
@@ -319,6 +340,7 @@ Comm* Comm::wait_for(double timeout)
   complete(State::FINISHED);
   return this;
 }
+
 ssize_t Comm::wait_any_for(const std::vector<CommPtr>& comms, double timeout)
 {
   std::vector<ActivityPtr> activities;

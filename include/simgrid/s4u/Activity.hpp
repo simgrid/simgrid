@@ -237,7 +237,6 @@ public:
   }
   AnyActivity* set_name(const std::string& name)
   {
-    xbt_assert(get_state() == State::INITED, "Cannot change the name of an activity after its start");
     name_ = name;
     return static_cast<AnyActivity*>(this);
   }

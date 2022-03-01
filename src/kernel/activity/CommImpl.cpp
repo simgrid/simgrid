@@ -59,6 +59,18 @@ CommImpl& CommImpl::set_type(CommImplType type)
   return *this;
 }
 
+CommImpl& CommImpl::set_source(s4u::Host* from)
+{
+  from_ = from;
+  return *this;
+}
+
+CommImpl& CommImpl::set_destination(s4u::Host* to)
+{
+  to_ = to;
+  return *this;
+}
+
 CommImpl& CommImpl::set_size(double size)
 {
   size_ = size;
@@ -96,11 +108,6 @@ CommImpl& CommImpl::detach()
 {
   detached_ = true;
   return *this;
-}
-
-CommImpl::CommImpl(s4u::Host* from, s4u::Host* to, double bytes) : size_(bytes), detached_(true), from_(from), to_(to)
-{
-  set_state(State::READY);
 }
 
 CommImpl::~CommImpl()
