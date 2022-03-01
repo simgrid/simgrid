@@ -110,7 +110,7 @@ if [ -f Testing/TAG ] ; then
 
   cd "$WORKSPACE"
   #convert all gcov reports to xml cobertura reports
-  gcovr -r . --xml-pretty -e teshsuite -e examples/smpi/NAS -e examples/smpi/mc -u -o "$BUILDFOLDER"/xml_coverage.xml
+  gcovr -g -r . --xml-pretty -e teshsuite -e examples/smpi/NAS -e examples/smpi/mc -u -o "$BUILDFOLDER"/xml_coverage.xml
   xsltproc "$WORKSPACE"/tools/jenkins/ctest2junit.xsl build/Testing/"$( head -n 1 < build/Testing/TAG )"/Test.xml > CTestResults_memcheck.xml
 
   #generate sloccount report
