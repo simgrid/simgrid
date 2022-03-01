@@ -27,7 +27,7 @@ $ ./host-on-off-actors ${platfdir}/small_platform.xml 4 --log=no_loc
 > [Tremblay:test_launcher:(1) 20.000000] [s4u_test/INFO]   Turn Jupiter off
 > [Tremblay:test_launcher:(1) 20.000000] [s4u_test/INFO] Test 4 is ok.  (number of actors : 2, it should be 1 or 2 if RX has not been satisfied). An exception is raised when we turn off a node that has an actor sleeping
 > [Tremblay:test_launcher:(1) 20.000000] [s4u_test/INFO]   Test done. See you!
-> [Tremblay:commRX:(2) 25.033047] [s4u_test/INFO]   Receive message: COMM
+> [Tremblay:commRX:(2) 25.033047] [s4u_test/INFO]   Receive message: TRANSFER_FAILURE
 > [Tremblay:commRX:(2) 25.033047] [s4u_test/INFO]   RX Done
 > [25.033047] [s4u_test/INFO] Simulation time 25.033
 

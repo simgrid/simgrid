@@ -169,6 +169,9 @@ void ActorImpl::cleanup()
     activity->cancel();
   activities_.clear();
 
+  while (not mailboxes.empty())
+    mailboxes.back()->set_receiver(nullptr);
+
   XBT_DEBUG("%s@%s(%ld) should not run anymore", get_cname(), get_host()->get_cname(), get_pid());
 
   if (EngineImpl::get_instance()->is_maestro(this)) /* Do not cleanup maestro */
@@ -211,6 +214,9 @@ void ActorImpl::exit()
   for (auto const& activity : activities_)
     activity->cancel();
   activities_.clear();
+
+  while (not mailboxes.empty())
+    mailboxes.back()->set_receiver(nullptr);
 
   // Forcefully kill the actor if its host is turned off. Not a HostFailureException because you should not survive that
   this->throw_exception(std::make_exception_ptr(ForcefulKillException(host_->is_on() ? "exited" : "host failed")));

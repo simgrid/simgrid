@@ -20,11 +20,22 @@ namespace activity {
 
 unsigned MailboxImpl::next_id_ = 0;
 
+MailboxImpl::~MailboxImpl()
+{
+  clear();
+  set_receiver(nullptr);
+}
+
 /** @brief set the receiver of the mailbox to allow eager sends
  *  @param actor The receiving dude
  */
 void MailboxImpl::set_receiver(s4u::ActorPtr actor)
 {
+  if (this->permanent_receiver_) {
+    std::vector<MailboxImpl*>& mboxes = this->permanent_receiver_->mailboxes;
+    mboxes.erase(std::remove(mboxes.begin(), mboxes.end(), this), mboxes.end());
+  }
+
   if (actor != nullptr)
     this->permanent_receiver_ = actor->get_impl();
   else
@@ -54,6 +65,27 @@ void MailboxImpl::remove(const CommImplPtr& comm)
       return;
     }
   xbt_die("Comm %p not found in mailbox %s", comm.get(), this->get_cname());
+}
+
+/** @brief Removes all communication activities from a mailbox
+ */
+void MailboxImpl::clear()
+{
+  for (auto comm : done_comm_queue_) {
+    comm->cancel();
+    comm->set_state(State::DST_HOST_FAILURE);
+  }
+  done_comm_queue_.clear();
+
+  // CommImpl::cancel() will remove the comm from the mailbox..
+  while (not comm_queue_.empty()) {
+    auto comm = comm_queue_.back();
+    if (comm->get_state() == State::WAITING && not comm->detached()) {
+      comm->cancel();
+      comm->set_state(State::DST_HOST_FAILURE);
+    } else
+      comm_queue_.pop_back();
+  }
 }
 
 CommImplPtr MailboxImpl::iprobe(int type, bool (*match_fun)(void*, void*, CommImpl*), void* data)

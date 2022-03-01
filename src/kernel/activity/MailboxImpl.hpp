@@ -43,6 +43,8 @@ public:
   /** @brief Public interface */
   unsigned get_id() const { return id_; }
 
+  ~MailboxImpl();
+
   const s4u::Mailbox* get_iface() const { return &piface_; }
   s4u::Mailbox* get_iface() { return &piface_; }
 
@@ -52,6 +54,7 @@ public:
   void push(CommImplPtr comm);
   void push_done(CommImplPtr done_comm) { done_comm_queue_.push_back(done_comm); }
   void remove(const CommImplPtr& comm);
+  void clear();
   CommImplPtr iprobe(int type, bool (*match_fun)(void*, void*, CommImpl*), void* data);
   CommImplPtr find_matching_comm(CommImplType type, bool (*match_fun)(void*, void*, CommImpl*), void* this_user_data,
                                  const CommImplPtr& my_synchro, bool done, bool remove_matching);

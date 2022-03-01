@@ -28,6 +28,9 @@ class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder {
   bool auto_restart_ = false;
   unsigned stacksize_; // set to default value in constructor
 
+  std::vector<activity::MailboxImpl*> mailboxes;
+  friend activity::MailboxImpl;
+
 public:
   xbt::string name_;
   ActorImpl(xbt::string name, s4u::Host* host);
