@@ -124,8 +124,8 @@ PYBIND11_MODULE(simgrid, m)
             py::function fun = py::reinterpret_borrow<py::function>(cb);
             fun.inc_ref(); // FIXME: why is this needed for tests like actor-kill and actor-lifetime?
             simgrid::s4u::this_actor::on_exit([fun](bool /*failed*/) {
+              py::gil_scoped_acquire py_context; // need a new context for callback
               try {
-                py::gil_scoped_acquire py_context; // need a new context for callback
                 fun();
               } catch (const py::error_already_set& e) {
                 xbt_die("Error while executing the on_exit lambda: %s", e.what());
@@ -206,8 +206,8 @@ PYBIND11_MODULE(simgrid, m)
           "register_actor",
           [](Engine* e, const std::string& name, py::object fun_or_class) {
             e->register_actor(name, [fun_or_class](std::vector<std::string> args) {
+              py::gil_scoped_acquire py_context;
               try {
-                py::gil_scoped_acquire py_context;
                 /* Convert the std::vector into a py::tuple */
                 py::tuple params(args.size() - 1);
                 for (size_t i = 1; i < args.size(); i++)
@@ -218,17 +218,11 @@ PYBIND11_MODULE(simgrid, m)
                 if (py::isinstance<py::function>(res))
                   res();
               } catch (const py::error_already_set& ex) {
-                XBT_VERB("Actor killed because %s",ex.what());
-		if(ex.matches(PyExc_FileNotFoundError)) {
-                  XBT_INFO("Took if");
-		  simgrid::ForcefulKillException::do_throw();
-		} 
-                XBT_INFO("Over");
-		//if(ex.matches(PyExc_RuntimeError)) {
-                //  simgrid::ForcefulKillException::do_throw();
-		//} else
-		//  xbt_die("Did not expect this kind of exception from Python");
-                throw;
+                XBT_VERB("Actor killed");
+                if (ex.matches(PyExc_RuntimeError)) {
+                  simgrid::ForcefulKillException::do_throw();
+                  throw;
+                }
               }
             });
           },
@@ -446,8 +440,8 @@ PYBIND11_MODULE(simgrid, m)
           [](py::object cb) {
             Host::on_creation_cb([cb](Host& h) {
               py::function fun = py::reinterpret_borrow<py::function>(cb);
+              py::gil_scoped_acquire py_context; // need a new context for callback
               try {
-                py::gil_scoped_acquire py_context; // need a new context for callback
                 fun(&h);
               } catch (const py::error_already_set& e) {
                 xbt_die("Error while executing the on_creation lambda : %s", e.what());
@@ -746,17 +740,15 @@ PYBIND11_MODULE(simgrid, m)
             fun.inc_ref();  // FIXME: why is this needed for tests like exec-async, exec-dvfs and exec-remote?
             args.inc_ref(); // FIXME: why is this needed for tests like actor-migrate?
             return simgrid::s4u::Actor::create(name, h, [fun, args]() {
+              py::gil_scoped_acquire py_context;
               try {
-                py::gil_scoped_acquire py_context;
                 fun(*args);
               } catch (const py::error_already_set& ex) {
-                XBT_INFO("Actor killed because %s",ex.what());
-		if(ex.matches(PyExc_FileNotFoundError)) {
-                  XBT_INFO("Took if");
-		  simgrid::ForcefulKillException::do_throw();
-		} 
-                XBT_INFO("Over");
-                throw;
+                XBT_VERB("Actor killed");
+                if (ex.matches(PyExc_RuntimeError)) {
+                  simgrid::ForcefulKillException::do_throw();
+                  throw;
+                }
               }
             });
           },
