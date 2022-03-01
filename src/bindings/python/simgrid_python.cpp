@@ -218,11 +218,11 @@ PYBIND11_MODULE(simgrid, m)
                 if (py::isinstance<py::function>(res))
                   res();
               } catch (const py::error_already_set& ex) {
-                XBT_VERB("Actor killed");
                 if (ex.matches(PyExc_RuntimeError)) {
+                  XBT_VERB("Actor killed");
                   simgrid::ForcefulKillException::do_throw();
-                  throw;
                 }
+                throw;
               }
             });
           },
@@ -744,11 +744,11 @@ PYBIND11_MODULE(simgrid, m)
               try {
                 fun(*args);
               } catch (const py::error_already_set& ex) {
-                XBT_VERB("Actor killed");
                 if (ex.matches(PyExc_RuntimeError)) {
+                  XBT_VERB("Actor killed");
                   simgrid::ForcefulKillException::do_throw();
-                  throw;
                 }
+                throw;
               }
             });
           },
