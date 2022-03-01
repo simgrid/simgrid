@@ -218,8 +218,16 @@ PYBIND11_MODULE(simgrid, m)
                 if (py::isinstance<py::function>(res))
                   res();
               } catch (const py::error_already_set& ex) {
-                XBT_VERB("Actor killed");
-                simgrid::ForcefulKillException::do_throw();
+                XBT_VERB("Actor killed because %s",ex.what());
+		if(ex.matches(PyExc_FileNotFoundError)) {
+                  XBT_INFO("Took if");
+		  simgrid::ForcefulKillException::do_throw();
+		} 
+                XBT_INFO("Over");
+		//if(ex.matches(PyExc_RuntimeError)) {
+                //  simgrid::ForcefulKillException::do_throw();
+		//} else
+		//  xbt_die("Did not expect this kind of exception from Python");
                 throw;
               }
             });
@@ -742,8 +750,12 @@ PYBIND11_MODULE(simgrid, m)
                 py::gil_scoped_acquire py_context;
                 fun(*args);
               } catch (const py::error_already_set& ex) {
-                XBT_VERB("Actor killed");
-                simgrid::ForcefulKillException::do_throw();
+                XBT_INFO("Actor killed because %s",ex.what());
+		if(ex.matches(PyExc_FileNotFoundError)) {
+                  XBT_INFO("Took if");
+		  simgrid::ForcefulKillException::do_throw();
+		} 
+                XBT_INFO("Over");
                 throw;
               }
             });
