@@ -33,21 +33,6 @@ using Simcall = simgrid::simix::Simcall;
 namespace simgrid {
 namespace mc {
 
-/** Statically "upcast" a s_smx_actor_t into an ActorInformation
- *
- *  This gets 'actorInfo' from '&actorInfo->copy'. It upcasts in the
- *  sense that we could achieve the same thing by having ActorInformation
- *  inherit from s_smx_actor_t but we don't really want to do that.
- */
-static simgrid::mc::ActorInformation* actor_info_cast(smx_actor_t actor)
-{
-  simgrid::mc::ActorInformation temp;
-  std::size_t offset = (char*)temp.copy.get_buffer() - (char*)&temp;
-
-  auto* process_info = reinterpret_cast<simgrid::mc::ActorInformation*>((char*)actor - offset);
-  return process_info;
-}
-
 simgrid::mc::Exploration* Api::initialize(char** argv, simgrid::mc::CheckerAlgorithm algo)
 {
   session_ = std::make_unique<simgrid::mc::Session>([argv] {
