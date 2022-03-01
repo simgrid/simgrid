@@ -141,6 +141,34 @@ TEST_CASE("kernel::bmf Basic tests", "[kernel-bmf-basic]")
     REQUIRE(double_equals(rho_2->get_value(), .8, sg_maxmin_precision));
   }
 
+  SECTION("Fatpipe")
+  {
+    /*
+     * Two flows using a fatpipe resource
+     *
+     * In details:
+     *   o System:  a1 * p1 * \rho1 < C and  a2 * p2 * \rho2 < C
+     *   o consumption_weight: a1=1 ; a2=1
+     *   o sharing_penalty:    p1=1 ; p2=1
+     *
+     * Expectations
+     *   o a1*rho1 = C
+     *   o a2*rho2 = C
+     */
+
+    lmm::Constraint* sys_cnst = Sys.constraint_new(nullptr, 3);
+    sys_cnst->set_sharing_policy(lmm::Constraint::SharingPolicy::FATPIPE, {});
+    lmm::Variable* rho_1 = Sys.variable_new(nullptr, 1);
+    lmm::Variable* rho_2 = Sys.variable_new(nullptr, 1);
+
+    Sys.expand(sys_cnst, rho_1, 1);
+    Sys.expand(sys_cnst, rho_2, 1);
+    Sys.solve();
+
+    REQUIRE(double_equals(rho_1->get_value(), 3.0, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_2->get_value(), 3.0, sg_maxmin_precision));
+  }
+
   Sys.variable_free_all();
 }
 

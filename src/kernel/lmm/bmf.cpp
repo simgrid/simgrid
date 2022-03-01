@@ -58,11 +58,21 @@ bool AllocationGenerator::next(std::vector<int>& next_alloc)
 
 /*****************************************************************************/
 
-BmfSolver::BmfSolver(Eigen::MatrixXd A, Eigen::MatrixXd maxA, Eigen::VectorXd C, Eigen::VectorXd phi)
-    : A_(std::move(A)), maxA_(std::move(maxA)), C_(std::move(C)), phi_(std::move(phi)), gen_(A_)
+BmfSolver::BmfSolver(Eigen::MatrixXd A, Eigen::MatrixXd maxA, Eigen::VectorXd C, std::vector<bool> shared,
+                     Eigen::VectorXd phi)
+    : A_(std::move(A))
+    , maxA_(std::move(maxA))
+    , C_(std::move(C))
+    , C_shared_(std::move(shared))
+    , phi_(std::move(phi))
+    , gen_(A_)
 {
   xbt_assert(max_iteration_ > 0,
              "Invalid number of iterations for BMF solver. Please check your \"bmf/max-iterations\" configuration.");
+  xbt_assert(A_.cols() == maxA_.cols(), "Invalid number of cols in matrix A (%ld) or maxA (%ld)", A_.cols(),
+             maxA_.cols());
+  xbt_assert(A_.cols() == static_cast<long>(phi_.size()), "Invalid size of phi vector (%ld)", phi_.size());
+  xbt_assert(static_cast<long>(C_shared_.size()) == C_.size(), "Invalid size param shared (%zu)", C_shared_.size());
 }
 
 template <typename T> std::string BmfSolver::debug_eigen(const T& obj) const
@@ -92,6 +102,9 @@ std::string BmfSolver::debug_alloc(const allocation_map_t& alloc) const
 double BmfSolver::get_resource_capacity(int resource, const std::vector<int>& bounded_players) const
 {
   double capacity = C_[resource];
+  if (not C_shared_[resource])
+    return capacity;
+
   for (int p : bounded_players) {
     capacity -= A_(resource, p) * phi_[p];
   }
@@ -115,10 +128,7 @@ Eigen::VectorXd BmfSolver::equilibrium(const allocation_map_t& alloc) const
   Eigen::MatrixXd A_p = Eigen::MatrixXd::Zero(n_players, n_players); // square matrix with number of players
   Eigen::VectorXd C_p = Eigen::VectorXd::Zero(n_players);
 
-  // iterate over alloc to verify if 2 players have chosen the same resource
-  // if so, they must have a fair sharing of this resource, adjust A_p and C_p accordingly
-  int last_row  = n_players - 1;
-  int first_row = 0;
+  int row = 0;
   std::vector<int> bounded_players;
   for (const auto& e : alloc) {
     // add one row for the resource with A[r,]
@@ -127,20 +137,32 @@ Eigen::VectorXd BmfSolver::equilibrium(const allocation_map_t& alloc) const
       bounded_players.insert(bounded_players.end(), e.second.begin(), e.second.end());
       continue;
     }
-    A_p.row(first_row) = A_.row(cur_resource);
-    C_p[first_row]     = get_resource_capacity(cur_resource, bounded_players);
-    first_row++;
-    if (e.second.size() > 1) {
-      auto it = e.second.begin();
-      int i   = *it; // first player
-      /* for each other player sharing this resource */
-      for (++it; it != e.second.end(); ++it) {
-        /* player i and k on this resource j: so maxA_ji*rho_i - maxA_jk*rho_k = 0 */
-        int k            = *it;
-        C_p[last_row]    = 0;
-        A_p(last_row, i) = maxA_(cur_resource, i);
-        A_p(last_row, k) = -maxA_(cur_resource, k);
-        last_row--;
+    if (C_shared_[cur_resource]) {
+      /* shared resource: fairly share it between players */
+      A_p.row(row) = A_.row(cur_resource);
+      C_p[row]     = get_resource_capacity(cur_resource, bounded_players);
+      row++;
+      if (e.second.size() > 1) {
+        // if 2 players have chosen the same resource
+        // they must have a fair sharing of this resource, adjust A_p and C_p accordingly
+        auto it = e.second.begin();
+        int i   = *it; // first player
+        /* for each other player sharing this resource */
+        for (++it; it != e.second.end(); ++it) {
+          /* player i and k on this resource j: so maxA_ji*rho_i - maxA_jk*rho_k = 0 */
+          int k       = *it;
+          C_p[row]    = 0;
+          A_p(row, i) = maxA_(cur_resource, i);
+          A_p(row, k) = -maxA_(cur_resource, k);
+          row++;
+        }
+      }
+    } else {
+      /* not shared resource, each player can receive the full capacity of the resource */
+      for (int i : e.second) {
+        C_p[row]    = get_resource_capacity(cur_resource, bounded_players);
+        A_p(row, i) = A_(cur_resource, i);
+        row++;
       }
     }
   }
@@ -259,7 +281,12 @@ bool BmfSolver::is_bmf(const Eigen::VectorXd& rho) const
   bool bmf = true;
 
   // 1) the capacity of all resources is respected
+  Eigen::VectorXd shared(C_shared_.size());
+  for (int j = 0; j < shared.size(); j++)
+    shared[j] = C_shared_[j] ? 1.0 : 0.0;
+
   Eigen::VectorXd remaining = (A_ * rho) - C_;
+  remaining                 = remaining.array() * shared.array(); // ignore non shared resources
   bmf                       = bmf && (not std::any_of(remaining.data(), remaining.data() + remaining.size(),
                                 [](double v) { return double_positive(v, sg_maxmin_precision); }));
 
@@ -399,14 +426,18 @@ void BmfSystem::get_flows_data(int number_cnsts, Eigen::MatrixXd& A, Eigen::Matr
   phi.conservativeResize(var_idx);
 }
 
-template <class CnstList> void BmfSystem::get_constraint_data(const CnstList& cnst_list, Eigen::VectorXd& C)
+template <class CnstList>
+void BmfSystem::get_constraint_data(const CnstList& cnst_list, Eigen::VectorXd& C, std::vector<bool>& shared)
 {
   C.resize(cnst_list.size());
+  shared.resize(cnst_list.size());
   cnst2idx_.clear();
   int cnst_idx = 0;
   for (const Constraint& cnst : cnst_list) {
     C(cnst_idx)      = cnst.bound_;
     cnst2idx_[&cnst] = cnst_idx;
+    // FATPIPE links aren't really shared
+    shared[cnst_idx] = (cnst.sharing_policy_ != Constraint::SharingPolicy::FATPIPE);
     cnst_idx++;
   }
 }
@@ -428,10 +459,11 @@ template <class CnstList> void BmfSystem::bmf_solve(const CnstList& cnst_list)
   cnst2idx_.clear();
   Eigen::MatrixXd A, maxA;
   Eigen::VectorXd C, bounds;
-  get_constraint_data(cnst_list, C);
+  std::vector<bool> shared;
+  get_constraint_data(cnst_list, C, shared);
   get_flows_data(C.size(), A, maxA, bounds);
 
-  auto solver = BmfSolver(A, maxA, C, bounds);
+  auto solver = BmfSolver(std::move(A), std::move(maxA), std::move(C), std::move(shared), std::move(bounds));
   auto rho    = solver.solve();
 
   if (rho.size() == 0)

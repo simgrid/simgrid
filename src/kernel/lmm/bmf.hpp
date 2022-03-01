@@ -29,7 +29,16 @@ private:
 
 class XBT_PUBLIC BmfSolver {
 public:
-  BmfSolver(Eigen::MatrixXd A, Eigen::MatrixXd maxA, Eigen::VectorXd C, Eigen::VectorXd phi);
+  /**
+   * @brief Instantiate the BMF solver
+   *
+   * @param A A_ji: consumption of player i on resource j
+   * @param maxA maxA_ji: consumption of larger player i on resource j
+   * @param C Resource capacity
+   * @param shared Is resource shared between player or each player receives the full capacity (FATPIPE links)
+   * @param phi Bound for each player
+   */
+  BmfSolver(Eigen::MatrixXd A, Eigen::MatrixXd maxA, Eigen::VectorXd C, std::vector<bool> shared, Eigen::VectorXd phi);
   /** @brief Solve equation system to find a fair-sharing of resources */
   Eigen::VectorXd solve();
 
@@ -120,12 +129,13 @@ private:
   Eigen::MatrixXd maxA_; //!< maxA_ji,  similar as A_, but containing the maximum consumption of player i (if player a
                          //!< single flow it's equal to A_)
   Eigen::VectorXd C_;    //!< C_j Capacity of each resource
-  Eigen::VectorXd phi_;  //!< phi_i bound for each player
+  std::vector<bool> C_shared_; //!< shared_j Resource j is shared or not
+  Eigen::VectorXd phi_;        //!< phi_i bound for each player
 
   std::unordered_set<std::vector<int>, boost::hash<std::vector<int>>> allocations_;
   AllocationGenerator gen_;
   std::vector<int> allocations_age_;
-  static constexpr int NO_RESOURCE = -1;     //!< flag to indicate player has selected no resource
+  static constexpr int NO_RESOURCE = -1;                    //!< flag to indicate player has selected no resource
   int max_iteration_               = sg_bmf_max_iterations; //!< number maximum of iterations of BMF algorithm
 };
 
@@ -164,8 +174,10 @@ private:
    *
    * @param cnst_list Constraint list (modified for selective update or active)
    * @param C Resource capacity vector
+   * @param shared Resource is shared or not (fatpipe links)
    */
-  template <class CnstList> void get_constraint_data(const CnstList& cnst_list, Eigen::VectorXd& C);
+  template <class CnstList>
+  void get_constraint_data(const CnstList& cnst_list, Eigen::VectorXd& C, std::vector<bool>& shared);
 
   std::unordered_map<int, Variable*> idx2Var_; //!< Map player index (and position in matrices) to system's variable
   std::unordered_map<const Constraint*, int> cnst2idx_; //!< Conversely map constraint to index
