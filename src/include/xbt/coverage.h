@@ -11,8 +11,15 @@
 SG_BEGIN_DECL
 
 #ifdef COVERAGE
+
+#if defined(__GNUC__) && __GNUC__ >= 11
+#include "gcov.h"
+#define coverage_checkpoint() __gcov_dump()
+#else
 extern void __gcov_flush();
 #define coverage_checkpoint() __gcov_flush()
+#endif
+
 #else
 #define coverage_checkpoint() (void)0
 #endif
