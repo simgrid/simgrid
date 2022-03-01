@@ -84,6 +84,9 @@ PYBIND11_MODULE(simgrid, m)
   // Swapped contexts are broken, starting from pybind11 v2.8.0.  Use thread contexts by default.
   simgrid::s4u::Engine::set_config("contexts/factory:thread");
 
+  // Internal exception used to kill actors and sweep the RAII chimney (free objects living on the stack)
+  static py::object pyForcefulKillEx(py::register_exception<simgrid::ForcefulKillException>(m, "ActorKilled"));
+
   py::register_exception<simgrid::NetworkFailureException>(m, "NetworkFailureException");
   py::register_exception<simgrid::TimeoutException>(m, "TimeoutException");
   py::register_exception<simgrid::HostFailureException>(m, "HostFailureException");
@@ -218,9 +221,9 @@ PYBIND11_MODULE(simgrid, m)
                 if (py::isinstance<py::function>(res))
                   res();
               } catch (const py::error_already_set& ex) {
-                if (ex.matches(PyExc_RuntimeError)) {
+                if (ex.matches(pyForcefulKillEx)) {
                   XBT_VERB("Actor killed");
-                  simgrid::ForcefulKillException::do_throw();
+                  simgrid::ForcefulKillException::do_throw(); // Forward that ForcefulKill exception
                 }
                 throw;
               }
@@ -744,9 +747,9 @@ PYBIND11_MODULE(simgrid, m)
               try {
                 fun(*args);
               } catch (const py::error_already_set& ex) {
-                if (ex.matches(PyExc_RuntimeError)) {
+                if (ex.matches(pyForcefulKillEx)) {
                   XBT_VERB("Actor killed");
-                  simgrid::ForcefulKillException::do_throw();
+                  simgrid::ForcefulKillException::do_throw(); // Forward that ForcefulKill exception
                 }
                 throw;
               }
