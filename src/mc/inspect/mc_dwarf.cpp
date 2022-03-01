@@ -486,7 +486,7 @@ static void MC_dwarf_add_members(const simgrid::mc::ObjectInformation* /*info*/,
       member.type_id   = MC_dwarf_at_type(&child);
 
       if (dwarf_hasattr(&child, DW_AT_data_bit_offset)) {
-        XBT_WARN("Can't groke DW_AT_data_bit_offset.");
+        XBT_WARN("Can't groke DW_AT_data_bit_offset for %s", name);
         continue;
       }
 
