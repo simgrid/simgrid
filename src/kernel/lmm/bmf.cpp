@@ -222,27 +222,6 @@ bool BmfSolver::get_alloc(const Eigen::VectorXd& fair_sharing, const allocation_
     return true;
 
   std::vector<int> alloc_by_player      = alloc_map_to_vector(alloc);
-#if 0
-  std::vector<int> last_alloc_by_player = alloc_map_to_vector(last_alloc);
-  if (not initial) {
-    std::for_each(allocations_age_.begin(), allocations_age_.end(), [](int& n) { n++; });
-    std::vector<int> age_idx(allocations_age_.size());
-    std::iota(age_idx.begin(), age_idx.end(), 0);
-    std::stable_sort(age_idx.begin(), age_idx.end(),
-                     [this](auto a, auto b) { return this->allocations_age_[a] > this->allocations_age_[b]; });
-    for (int p : age_idx) {
-      if (alloc_by_player[p] != last_alloc_by_player[p]) {
-        alloc = last_alloc;
-        alloc[last_alloc_by_player[p]].erase(p);
-        if (alloc[last_alloc_by_player[p]].empty())
-          alloc.erase(last_alloc_by_player[p]);
-        alloc[alloc_by_player[p]].insert(p);
-        allocations_age_[p] = 0;
-      }
-    }
-    alloc_by_player = alloc_map_to_vector(alloc);
-  }
-#endif
   auto ret = allocations_.insert(alloc_by_player);
   /* oops, allocation already tried, let's pertube it a bit */
   if (not ret.second) {
