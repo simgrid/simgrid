@@ -485,7 +485,10 @@ static void MC_dwarf_add_members(const simgrid::mc::ObjectInformation* /*info*/,
       member.byte_size = MC_dwarf_attr_integrate_uint(&child, DW_AT_byte_size, 0);
       member.type_id   = MC_dwarf_at_type(&child);
 
-      xbt_assert(not dwarf_hasattr(&child, DW_AT_data_bit_offset), "Can't groke DW_AT_data_bit_offset.");
+      if (dwarf_hasattr(&child, DW_AT_data_bit_offset)) {
+        XBT_WARN("Can't groke DW_AT_data_bit_offset.");
+        continue;
+      }
 
       MC_dwarf_fill_member_location(type, &member, &child);
 
