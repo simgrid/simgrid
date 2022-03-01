@@ -76,7 +76,7 @@ public:
   simgrid::mc::Snapshot* take_snapshot(long num_state) const;
 
   // SESSION APIs
-  simgrid::mc::Session const& get_session() { return *session_; }
+  simgrid::mc::Session const& get_session() const { return *session_; }
   void s_close();
 
   // AUTOMATION APIs
