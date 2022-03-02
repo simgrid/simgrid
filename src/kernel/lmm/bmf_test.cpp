@@ -307,6 +307,46 @@ TEST_CASE("kernel::bmf Advanced tests", "[kernel-bmf-advanced]")
     REQUIRE(double_equals(rho_3->get_value(), 4.0 / 9.0, sg_maxmin_precision));
   }
 
+  SECTION("IO - example")
+  {
+    /*
+     * Two flows sharing 1 disk
+     * read, write and readwrite constraint
+     *
+     * In details:
+     *   o System:  a1 * p1 * \rho1 + a2 * p2 * \rho2 < C1
+     *   o System:  a1 * p1 * \rho1 + a2 * p2 * \rho2 < C2
+     *   o System:  a1 * p1 * \rho1 + a2 * p2 * \rho2 < C3
+     *   o C1 == C2 == C3
+     *   o consumption_weight: a1=1, a2=1
+     *   o sharing_penalty:    p1=1, p2=1
+     *
+     * Expectations
+     *   o rho1 = rho2 = C/2
+
+     * Matrices:
+     * [1 10] * [rho1 rho2] = [1]
+     * [10 1]                 [1]
+     */
+
+    lmm::Constraint* sys_cnst  = Sys.constraint_new(nullptr, 1e6);
+    lmm::Constraint* sys_cnst2 = Sys.constraint_new(nullptr, 1e6);
+    lmm::Constraint* sys_cnst3 = Sys.constraint_new(nullptr, 1e6);
+    lmm::Variable* rho_1       = Sys.variable_new(nullptr, 1, -1, 3);
+    lmm::Variable* rho_2       = Sys.variable_new(nullptr, 1, -1, 3);
+
+    /* A' and C' matrices are dependent on the order of initialization
+     * this order is needed to identify a bug in the solver */
+    Sys.expand(sys_cnst2, rho_2, 1);
+    Sys.expand(sys_cnst, rho_1, 1);
+    Sys.expand(sys_cnst3, rho_1, 1);
+    Sys.expand(sys_cnst3, rho_2, 1);
+    Sys.solve();
+
+    REQUIRE(double_equals(rho_1->get_value(), 1e6 / 2.0, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_2->get_value(), 1e6 / 2.0, sg_maxmin_precision));
+  }
+
   Sys.variable_free_all();
 }
 

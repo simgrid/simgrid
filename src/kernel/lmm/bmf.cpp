@@ -245,8 +245,7 @@ void BmfSolver::set_fair_sharing(const allocation_map_t& alloc, const Eigen::Vec
       double consumption_r = A_.row(r) * rho;
       double_update(&consumption_r, C_[r], sg_maxmin_precision);
       if (consumption_r > 0.0) {
-        int n_players   = std::count_if(A_.row(r).data(), A_.row(r).data() + A_.row(r).size(),
-                                      [](double v) { return double_positive(v, sg_maxmin_precision); });
+        int n_players   = (A_.row(r).array() > 0).count();
         fair_sharing[r] = C_[r] / n_players;
       } else {
         fair_sharing[r] = C_[r];
