@@ -4,11 +4,11 @@ $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/actor-lifetime.py 
 > [  0.000000] (1:sleeper@node-0.simgrid.org) Hello! I go to sleep.
 > [  0.000000] (2:sleeper@node-1.simgrid.org) Hello! I go to sleep.
 > [  2.000000] (3:sleeper@node-0.simgrid.org) Hello! I go to sleep.
-> [  3.000000] (2:sleeper@node-1.simgrid.org) Exiting now (done sleeping or got killed).
+> [  3.000000] (2:sleeper@node-1.simgrid.org) Exiting now (killed).
 > [  4.000000] (4:sleeper@node-2.simgrid.org) Hello! I go to sleep.
-> [  7.000000] (4:sleeper@node-2.simgrid.org) Exiting now (done sleeping or got killed).
+> [  7.000000] (4:sleeper@node-2.simgrid.org) Exiting now (killed).
 > [ 10.000000] (1:sleeper@node-0.simgrid.org) Done sleeping.
-> [ 10.000000] (1:sleeper@node-0.simgrid.org) Exiting now (done sleeping or got killed).
+> [ 10.000000] (1:sleeper@node-0.simgrid.org) Exiting now (finishing).
 > [ 12.000000] (3:sleeper@node-0.simgrid.org) Done sleeping.
-> [ 12.000000] (3:sleeper@node-0.simgrid.org) Exiting now (done sleeping or got killed).
+> [ 12.000000] (3:sleeper@node-0.simgrid.org) Exiting now (finishing).
 

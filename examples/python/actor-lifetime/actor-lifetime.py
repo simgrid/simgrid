@@ -16,7 +16,7 @@ class Sleeper:
     """This actor just sleeps until termination"""
 
     def __init__(self):
-        this_actor.on_exit(lambda: this_actor.info("Exiting now (done sleeping or got killed)."))
+        this_actor.on_exit(lambda killed: this_actor.info("Exiting now (killed)." if killed else "Exiting now (finishing)."))
 
     def __call__(self):
         this_actor.info("Hello! I go to sleep.")

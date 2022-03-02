@@ -126,16 +126,18 @@ PYBIND11_MODULE(simgrid, m)
           [](py::object cb) {
             py::function fun = py::reinterpret_borrow<py::function>(cb);
             fun.inc_ref(); // FIXME: why is this needed for tests like actor-kill and actor-lifetime?
-            simgrid::s4u::this_actor::on_exit([fun](bool /*failed*/) {
+            simgrid::s4u::this_actor::on_exit([fun](bool failed) {
               py::gil_scoped_acquire py_context; // need a new context for callback
               try {
-                fun();
+                fun(failed);
               } catch (const py::error_already_set& e) {
                 xbt_die("Error while executing the on_exit lambda: %s", e.what());
               }
             });
           },
-          py::call_guard<py::gil_scoped_release>(), "")
+          py::call_guard<py::gil_scoped_release>(),
+          "Define a lambda to be called when the actor ends. It takes a bool parameter indicating whether the actor "
+          "was killed. If False, the actor finished peacefully.")
       .def("get_pid", &simgrid::s4u::this_actor::get_pid, "Retrieves PID of the current actor")
       .def("get_ppid", &simgrid::s4u::this_actor::get_ppid,
            "Retrieves PPID of the current actor (i.e., the PID of its parent).");

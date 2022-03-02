@@ -12,7 +12,7 @@ from simgrid import Actor, Engine, Host, this_actor
 
 
 def victim_a_fun():
-    this_actor.on_exit(lambda: this_actor.info("I have been killed!"))
+    this_actor.on_exit(lambda forcefully: this_actor.info("I have been killed!" if forcefully else "I finish now."))
     this_actor.info("Hello!")
     this_actor.info("Suspending myself")
     this_actor.suspend()                        # - Start by suspending itself
