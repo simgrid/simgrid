@@ -34,8 +34,8 @@ void Comm::copy_buffer_callback(kernel::activity::CommImpl* comm, void* buff, si
 {
   XBT_DEBUG("Copy the data over");
   memcpy(comm->dst_buff_, buff, buff_size);
-  if (comm->detached()) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the
-                          // original buffer available to the application ASAP
+  if (comm->is_detached()) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the
+                             // original buffer available to the application ASAP
     xbt_free(buff);
     comm->src_buff_ = nullptr;
   }

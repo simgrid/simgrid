@@ -80,7 +80,7 @@ void MailboxImpl::clear()
   // CommImpl::cancel() will remove the comm from the mailbox..
   while (not comm_queue_.empty()) {
     auto comm = comm_queue_.back();
-    if (comm->get_state() == State::WAITING && not comm->detached()) {
+    if (comm->get_state() == State::WAITING && not comm->is_detached()) {
       comm->cancel();
       comm->set_state(State::DST_HOST_FAILURE);
     } else

@@ -149,7 +149,7 @@ static void check_blocks(const std::vector<std::pair<size_t, size_t>>& private_b
 }
 
 static void smpi_cleanup_comm_after_copy(simgrid::kernel::activity::CommImpl* comm, void* buff){
-  if (comm->detached()) {
+  if (comm->is_detached()) {
     // if this is a detached send, the source buffer was duplicated by SMPI
     // sender to make the original buffer available to the application ASAP
     xbt_free(buff);

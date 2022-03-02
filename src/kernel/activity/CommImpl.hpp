@@ -54,7 +54,7 @@ public:
   double get_rate() const { return rate_; }
   MailboxImpl* get_mailbox() const { return mbox_; }
   long get_mailbox_id() const { return mbox_id_; }
-  bool detached() const { return detached_; }
+  bool is_detached() const { return detached_; }
   bool is_assigned() const { return (to_ != nullptr && from_ != nullptr); }
 
   std::vector<s4u::Link*> get_traversed_links() const;
