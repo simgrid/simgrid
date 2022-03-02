@@ -38,6 +38,8 @@ class MailboxImpl {
   static unsigned next_id_; // Next ID to be given
   const unsigned id_ = next_id_++;
   explicit MailboxImpl(const std::string& name) : piface_(this), name_(name) {}
+  MailboxImpl(const MailboxImpl&) = delete;
+  MailboxImpl& operator=(const MailboxImpl&) = delete;
 
 public:
   /** @brief Public interface */
