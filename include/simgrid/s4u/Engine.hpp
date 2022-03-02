@@ -208,6 +208,8 @@ public:
   /** Add a callback fired when the platform is about to be created
    * (ie, after any configuration change and just before the resource creation) */
   static void on_platform_creation_cb(const std::function<void()>& cb) { on_platform_creation.connect(cb); }
+  /** Add a callback fired when the main simulation loop starts, at the beginning of the first call to Engine::run() */
+  static void on_simulation_start_cb(const std::function<void()>& cb) { on_simulation_start.connect(cb); }
   /** Add a callback fired when the main simulation loop ends, just before the end of Engine::run() */
   static void on_simulation_end_cb(const std::function<void()>& cb) { on_simulation_end.connect(cb); }
 
@@ -228,9 +230,11 @@ public:
 #endif
 
 private:
-  static xbt::signal<void()> on_simulation_end;
+  static xbt::signal<void()> on_simulation_start;
   static xbt::signal<void(double)> on_time_advance;
   static xbt::signal<void(void)> on_deadlock;
+  static xbt::signal<void()> on_simulation_end;
+
   kernel::EngineImpl* const pimpl;
   static Engine* instance_;
   void initialize(int* argc, char** argv);

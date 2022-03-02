@@ -26,6 +26,7 @@ namespace simgrid {
 namespace s4u {
 xbt::signal<void()> Engine::on_platform_creation;
 xbt::signal<void()> Engine::on_platform_created;
+xbt::signal<void()> Engine::on_simulation_start;
 xbt::signal<void()> Engine::on_simulation_end;
 xbt::signal<void(double)> Engine::on_time_advance;
 xbt::signal<void(void)> Engine::on_deadlock;
@@ -333,6 +334,11 @@ void Engine::run() const
 }
 void Engine::run_until(double max_date) const
 {
+  static bool callback_called = false;
+  if (not callback_called) {
+    on_simulation_start();
+    callback_called = true;
+  }
   /* Clean IO before the run */
   fflush(stdout);
   fflush(stderr);

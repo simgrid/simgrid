@@ -957,6 +957,7 @@ Signals
       .. doxygenfunction:: simgrid::s4u::Engine::on_deadlock_cb
       .. doxygenfunction:: simgrid::s4u::Engine::on_platform_created_cb
       .. doxygenfunction:: simgrid::s4u::Engine::on_platform_creation_cb
+      .. doxygenfunction:: simgrid::s4u::Engine::on_simulation_start_cb
       .. doxygenfunction:: simgrid::s4u::Engine::on_simulation_end_cb
       .. doxygenfunction:: simgrid::s4u::Engine::on_time_advance_cb
 

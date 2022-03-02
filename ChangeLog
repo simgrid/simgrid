@@ -16,6 +16,9 @@ SMPI:
    not just at the end, reducing memory cost and performance hit.
  - Update OpenMPI collectives selection logic to match current one (4.1.2)
 
+S4U:
+ - New signal: Engine::on_simulation_start_cb()
+
 XBT:
  - Drop xbt_dynar_shrink().
 
