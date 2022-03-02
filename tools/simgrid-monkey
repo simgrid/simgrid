@@ -93,7 +93,7 @@ def do_run(cmd, extra_params, test_todo):
         msg = f"ERROR (retcode: {run.returncode}). Output:\n"
         msg += out
         print(msg)
-        os.exit(1)
+        sys.exit(1)
     for line in out.split("\n"):
         if re.match("==.*    in use at exit: ", line) and not re.match("==.* in use at exit: 0 bytes in 0 blocks", line):
             m = re.match("==.*    in use at exit: (.*)", line)

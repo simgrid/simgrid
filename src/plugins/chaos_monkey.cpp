@@ -29,7 +29,7 @@ static void sg_chaos_monkey_plugin_init()
   XBT_INFO("Initializing the chaos monkey");
 
   // delay the initialization until after the parameter are parsed
-  sg4::Engine::on_platform_created_cb([]() {
+  sg4::Engine::on_simulation_start_cb([]() {
     auto engine = sg4::Engine::get_instance();
     auto hosts  = engine->get_all_hosts();
     auto links  = engine->get_all_links();

@@ -78,11 +78,7 @@ static void worker(int id)
       auto payload = mailbox->get_unique<double>(10);
       xbt_assert(payload != nullptr, "mailbox->get() failed");
       double comp_size = *payload;
-      if (comp_size < 0) { /* - Exit when -1.0 is received */
-        XBT_INFO("I'm done. See you!");
-        break;
-      }
-      /*  - Otherwise, process the task */
+
       XBT_INFO("Start execution...");
       sg4::this_actor::execute(comp_size);
       XBT_INFO("Execution complete.");
@@ -120,7 +116,6 @@ int main(int argc, char* argv[])
     }
   }
   rootzone->seal();
-  sg4::Engine::on_platform_created(); // FIXME this should not be necessary
 
   sg4::Actor::create("master", main, master)->set_auto_restart(true);
   int id = 0;
