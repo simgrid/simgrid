@@ -49,12 +49,38 @@ foreach(x basic-link-test basic-parsing-test host-on-off host-on-off-actors host
         monkey-masterworkers
         pid storage_client_server trace-integration seal-platform issue71)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
-  ADD_TESH(tesh-s4u-${x} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x} --setenv rootdir=${CMAKE_HOME_DIRECTORY} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}.tesh)
+  ADD_TESH(tesh-s4u-${x}
+           --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/s4u/${x}
+           --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${x}
+           --setenv rootdir=${CMAKE_HOME_DIRECTORY}
+           --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+           --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x}
+           ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}.tesh)
 endforeach()
+
+# Python tesh tests
+foreach(x monkey-masterworkers)
+  if(enable_python)
+    ADD_TESH(tesh-python-${x}
+             --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${x}
+             --setenv pythoncmd=${PYTHON_EXECUTABLE}
+             --setenv LD_LIBRARY_PATH=${TESH_LIBRARY_PATH}
+             --setenv PYTHONPATH=${CMAKE_BINARY_DIR}/lib
+             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+             --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x}
+             ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}.py.tesh)
+
+  endif()
+endforeach()
+
 
 # Monkey tests are launched directly, not with tesh
 foreach(x  monkey-masterworkers)
   ADD_TEST(monkey-s4u-${x} "${PYTHON_EXECUTABLE}" ${CMAKE_HOME_DIRECTORY}/tools/simgrid-monkey ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x}/${x})
+  if(enable_python)
+    ADD_TEST(monkey-python-${x} "${PYTHON_EXECUTABLE}" ${CMAKE_HOME_DIRECTORY}/tools/simgrid-monkey "${PYTHON_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.py)
+    set_tests_properties(monkey-python-${x} PROPERTIES ENVIRONMENT "PYTHONPATH=${CMAKE_BINARY_DIR}/lib")
+  endif()
 endforeach()
 
 

@@ -96,8 +96,6 @@ int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
 
-  XBT_INFO("host count: %d ", (int)cfg_host_count);
-
   auto* rootzone = sg4::create_full_zone("root");
   sg4::Host* main; // First host created, where the master will stay
   std::vector<sg4::Host*> worker_hosts;

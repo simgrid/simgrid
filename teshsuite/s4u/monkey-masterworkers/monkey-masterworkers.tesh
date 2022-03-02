@@ -6,7 +6,6 @@ $ ${bindir:=.}/monkey-masterworkers --cfg=plugin:cmonkey --cfg=cmonkey/time:1 --
 > [0.000000] [cmonkey/INFO] Initializing the chaos monkey
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cmonkey/time' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cmonkey/host' to '1'
-> [0.000000] [s4u_test/INFO] host count: 3 
 > [lilibeth 0:master:(1) 0.000000] [s4u_test/INFO] Master booting
 > [lilibeth 1:worker:(2) 0.000000] [s4u_test/INFO] Worker booting
 > [lilibeth 2:worker:(3) 0.000000] [s4u_test/INFO] Worker booting

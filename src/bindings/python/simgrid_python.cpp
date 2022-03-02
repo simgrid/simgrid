@@ -155,8 +155,9 @@ PYBIND11_MODULE(simgrid, m)
       .def_static("get_clock",
                   []() // XBT_ATTRIB_DEPRECATED_v334
                   {
-                    PyErr_WarnEx(PyExc_DeprecationWarning,
-                                 "get_clock() is deprecated and  will be dropped after v3.33, use clock instead.", 1);
+                    PyErr_WarnEx(
+                        PyExc_DeprecationWarning,
+                        "get_clock() is deprecated and  will be dropped after v3.33, use `Engine.clock` instead.", 1);
                     return Engine::get_clock();
                   })
       .def_property_readonly_static(
