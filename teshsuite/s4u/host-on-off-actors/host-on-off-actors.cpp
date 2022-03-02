@@ -25,15 +25,14 @@ XBT_ATTRIB_NORETURN static void actor_daemon()
 static void commTX()
 {
   XBT_INFO("  Start TX");
-  auto* payload = new std::string("COMM");
-  simgrid::s4u::Mailbox::by_name("comm")->put_init(payload, 100000000)->detach();
+  static std::string payload = "COMM";
+  simgrid::s4u::Mailbox::by_name("comm")->put_init(&payload, 100000000)->detach();
   // We should wait a bit (if not the process will end before the communication, hence an exception on the other side).
   try {
     simgrid::s4u::this_actor::sleep_for(30);
   } catch (const simgrid::HostFailureException&) {
     XBT_INFO("The host has died ... as expected.");
   }
-  delete payload;
 
   XBT_INFO("  TX done");
 }
@@ -42,7 +41,7 @@ static void commRX()
 {
   XBT_INFO("  Start RX");
   try {
-    auto payload = simgrid::s4u::Mailbox::by_name("comm")->get_unique<std::string>();
+    auto payload = simgrid::s4u::Mailbox::by_name("comm")->get<std::string>();
     XBT_INFO("  Receive message: %s", payload->c_str());
   } catch (const simgrid::HostFailureException&) {
     XBT_INFO("  Receive message: HOST_FAILURE");
