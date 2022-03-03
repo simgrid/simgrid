@@ -368,6 +368,7 @@ include examples/cpp/synchro-condition-variable/s4u-synchro-condition-variable.t
 include examples/cpp/synchro-mutex/s4u-mc-synchro-mutex.tesh
 include examples/cpp/synchro-mutex/s4u-synchro-mutex.cpp
 include examples/cpp/synchro-mutex/s4u-synchro-mutex.tesh
+include examples/cpp/synchro-semaphore/s4u-mc-synchro-semaphore.tesh
 include examples/cpp/synchro-semaphore/s4u-synchro-semaphore.cpp
 include examples/cpp/synchro-semaphore/s4u-synchro-semaphore.tesh
 include examples/cpp/trace-categories/s4u-trace-categories.cpp
@@ -809,6 +810,8 @@ include teshsuite/s4u/monkey-masterworkers/monkey-masterworkers.cpp
 include teshsuite/s4u/monkey-masterworkers/monkey-masterworkers.py
 include teshsuite/s4u/monkey-masterworkers/monkey-masterworkers.py.tesh
 include teshsuite/s4u/monkey-masterworkers/monkey-masterworkers.tesh
+include teshsuite/s4u/monkey-semaphore/monkey-semaphore.cpp
+include teshsuite/s4u/monkey-semaphore/monkey-semaphore.tesh
 include teshsuite/s4u/ns3-from-src-to-itself/ns3-from-src-to-itself.cpp
 include teshsuite/s4u/ns3-from-src-to-itself/ns3-from-src-to-itself.tesh
 include teshsuite/s4u/ns3-simultaneous-send-rcv/ns3-simultaneous-send-rcv.cpp
