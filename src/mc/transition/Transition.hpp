@@ -36,6 +36,7 @@ public:
                          TESTANY, WAITANY, /* high priority because they can rewrite themselves to *_WAIT */
                          COMM_RECV, COMM_SEND, COMM_TEST, COMM_WAIT, /* Alphabetical ordering of COMM_* */
                          MUTEX_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT, /* alphabetical */
+                         SEM_LOCK, SEM_UNLOCK, SEM_WAIT, /* alphabetical ordering of SEM transitions */
                          /* UNKNOWN must be last */ UNKNOWN);
   Type type_ = Type::UNKNOWN;
 

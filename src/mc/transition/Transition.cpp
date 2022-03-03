@@ -87,6 +87,11 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, std::stri
     case Transition::Type::MUTEX_UNLOCK:
       return new MutexTransition(issuer, times_considered, simcall, stream);
 
+    case Transition::Type::SEM_LOCK:
+    case Transition::Type::SEM_UNLOCK:
+    case Transition::Type::SEM_WAIT:
+      return new SemaphoreTransition(issuer, times_considered, simcall, stream);
+
     case Transition::Type::UNKNOWN:
       return new Transition(Transition::Type::UNKNOWN, issuer, times_considered);
   }

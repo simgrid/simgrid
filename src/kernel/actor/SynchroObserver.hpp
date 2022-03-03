@@ -26,8 +26,38 @@ public:
   MutexObserver(ActorImpl* actor, mc::Transition::Type type, activity::MutexImpl* mutex);
 
   void serialize(std::stringstream& stream) const override;
-  activity::MutexImpl* get_mutex() const { return mutex_; }
   bool is_enabled() override;
+
+  activity::MutexImpl* get_mutex() const { return mutex_; }
+};
+
+/* This observer is used for SEM_LOCK and SEM_UNLOCK (only) */
+class SemaphoreObserver : public SimcallObserver {
+  mc::Transition::Type type_;
+  activity::SemaphoreImpl* const sem_;
+
+public:
+  SemaphoreObserver(ActorImpl* actor, mc::Transition::Type type, activity::SemaphoreImpl* sem);
+
+  void serialize(std::stringstream& stream) const override;
+
+  activity::SemaphoreImpl* get_sem() const { return sem_; }
+};
+
+/* This observer is ued for SEM_WAIT, that is returning and needs the acquisition (in MC mode) */
+class SemaphoreAcquisitionObserver : public ResultingSimcall<bool> {
+  mc::Transition::Type type_;
+  activity::SemAcquisitionImpl* const acquisition_;
+  const double timeout_;
+
+public:
+  SemaphoreAcquisitionObserver(ActorImpl* actor, mc::Transition::Type type, activity::SemAcquisitionImpl* acqui,
+                               double timeout = -1.0);
+
+  void serialize(std::stringstream& stream) const override;
+  bool is_enabled() override;
+
+  double get_timeout() const { return timeout_; }
 };
 
 } // namespace actor

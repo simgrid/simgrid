@@ -22,6 +22,8 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
+/* -------- Acquisition -------- */
+
 bool MutexAcquisitionImpl::test(actor::ActorImpl*)
 {
   return mutex_->owner_ == issuer_;
@@ -49,6 +51,8 @@ void MutexAcquisitionImpl::finish()
   simcall->issuer_->waiting_synchro_ = nullptr;
   simcall->issuer_->simcall_answer();
 }
+
+/* -------- Mutex -------- */
 
 unsigned MutexImpl::next_id_ = 0;
 

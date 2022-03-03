@@ -6,6 +6,7 @@
 #include "src/kernel/actor/SynchroObserver.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
+#include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/mc_config.hpp"
 
@@ -33,6 +34,31 @@ bool MutexObserver::is_enabled()
 {
   // Only wait can be disabled
   return type_ != mc::Transition::Type::MUTEX_WAIT || mutex_->get_owner() == get_issuer();
+}
+
+SemaphoreObserver::SemaphoreObserver(ActorImpl* actor, mc::Transition::Type type, activity::SemaphoreImpl* sem)
+    : SimcallObserver(actor), type_(type), sem_(sem)
+{
+  xbt_assert(sem_);
+}
+
+void SemaphoreObserver::serialize(std::stringstream& stream) const
+{
+  stream << (short)type_ << ' ' << get_sem()->get_id() << ' ' << false /* Granted is ignored for LOCK/UNLOCK */;
+}
+
+SemaphoreAcquisitionObserver::SemaphoreAcquisitionObserver(ActorImpl* actor, mc::Transition::Type type,
+                                                           activity::SemAcquisitionImpl* acqui, double timeout)
+    : ResultingSimcall(actor, false), type_(type), acquisition_(acqui), timeout_(timeout)
+{
+}
+bool SemaphoreAcquisitionObserver::is_enabled()
+{
+  return acquisition_->granted_;
+}
+void SemaphoreAcquisitionObserver::serialize(std::stringstream& stream) const
+{
+  stream << (short)type_ << ' ' << acquisition_->semaphore_->get_id() << ' ' << acquisition_->granted_;
 }
 
 } // namespace actor

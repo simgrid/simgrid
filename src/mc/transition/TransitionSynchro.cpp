@@ -5,6 +5,7 @@
 
 #include "src/mc/transition/TransitionSynchro.hpp"
 #include "xbt/asserts.h"
+#include "xbt/ex.h"
 #include "xbt/string.hpp"
 
 #include <inttypes.h>
@@ -59,9 +60,59 @@ bool MutexTransition::depends(const Transition* o) const
       return false;
 
     // FIXME: UNLOCK indep WAIT/TEST iff wait/test are not first in the waiting queue
+    return true;
   }
 
-  return true; // FIXME: TODO
+  return false; // mutexes are INDEP with non-mutex transitions
+}
+
+std::string SemaphoreTransition::to_string(bool verbose) const
+{
+  if (type_ == Type::SEM_LOCK || type_ == Type::SEM_UNLOCK)
+    return xbt::string_printf("%s(semaphore: %" PRIxPTR ")", Transition::to_c_str(type_), sem_);
+  if (type_ == Type::SEM_WAIT)
+    return xbt::string_printf("%s(semaphore: %" PRIxPTR ", granted: %s)", Transition::to_c_str(type_), sem_,
+                              granted_ ? "yes" : "no");
+  THROW_IMPOSSIBLE;
+}
+SemaphoreTransition::SemaphoreTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream)
+    : Transition(type, issuer, times_considered)
+{
+  xbt_assert(stream >> sem_ >> granted_);
+}
+bool SemaphoreTransition::depends(const Transition* o) const
+{
+  if (o->type_ < type_)
+    return o->depends(this);
+
+  if (auto* other = dynamic_cast<const SemaphoreTransition*>(o)) {
+    if (sem_ != other->sem_)
+      return false;
+
+    // LOCK indep UNLOCK: pop_front and push_back are independent.
+    if (type_ == Type::SEM_LOCK && other->type_ == Type::SEM_UNLOCK)
+      return false;
+
+    // LOCK indep WAIT: If both enabled, ordering has no impact on the result. If WAIT is not enabled, LOCK won't enable
+    // it.
+    if (type_ == Type::SEM_LOCK && other->type_ == Type::SEM_WAIT)
+      return false;
+
+    // UNLOCK indep UNLOCK: ordering of two pop_front has no impact
+    if (type_ == Type::SEM_UNLOCK && other->type_ == Type::SEM_UNLOCK)
+      return false;
+
+    // WAIT indep WAIT:
+    // if both enabled (may happen in the initial value is sufficient), the ordering has no impact on the result.
+    // If only one enabled, the other won't be enabled by the first one.
+    // If none enabled, well, nothing will change.
+    if (type_ == Type::SEM_WAIT && other->type_ == Type::SEM_WAIT)
+      return false;
+
+    return true; // Other semaphore cases are dependent
+  }
+
+  return false; // semaphores are INDEP with non-semaphore transitions
 }
 
 } // namespace mc

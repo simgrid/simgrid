@@ -8,7 +8,7 @@
 
 #include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/kernel/activity/Synchro.hpp"
-#include "src/kernel/actor/SimcallObserver.hpp"
+#include "src/kernel/actor/SynchroObserver.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 
 #include <cmath> // std::isfinite
@@ -18,6 +18,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_semaphore, ker_synchro, "Semaphore kernel-sp
 namespace simgrid {
 namespace kernel {
 namespace activity {
+
+/* -------- Acquisition -------- */
 
 void SemAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 {
@@ -57,7 +59,7 @@ void SemAcquisitionImpl::finish()
         cancel(); // Unregister the acquisition from the semaphore
 
         /* Return to the englobing simcall that the wait_for timeouted */
-        auto* observer = dynamic_cast<kernel::actor::SemAcquireSimcall*>(get_issuer()->simcall_.observer_);
+        auto* observer = dynamic_cast<kernel::actor::SemaphoreAcquisitionObserver*>(get_issuer()->simcall_.observer_);
         xbt_assert(observer != nullptr);
         observer->set_result(true);
       }
@@ -79,6 +81,10 @@ void SemAcquisitionImpl::cancel()
              "Cannot find myself in the waiting queue that I have to leave");
   semaphore_->ongoing_acquisitions_.erase(it);
 }
+
+/* -------- Semaphore -------- */
+unsigned SemaphoreImpl::next_id_ = 0;
+
 SemAcquisitionImplPtr SemaphoreImpl::acquire_async(actor::ActorImpl* issuer)
 {
   auto res = SemAcquisitionImplPtr(new kernel::activity::SemAcquisitionImpl(issuer, this), true);

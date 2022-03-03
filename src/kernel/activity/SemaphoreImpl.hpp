@@ -11,6 +11,7 @@
 
 #include "simgrid/s4u/Semaphore.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "src/kernel/actor/SynchroObserver.hpp"
 
 namespace simgrid {
 namespace kernel {
@@ -27,6 +28,7 @@ class XBT_PUBLIC SemAcquisitionImpl : public ActivityImpl_T<SemAcquisitionImpl> 
   bool granted_             = false;
 
   friend SemaphoreImpl;
+  friend actor::SemaphoreAcquisitionObserver;
 
 public:
   SemAcquisitionImpl(actor::ActorImpl* issuer, SemaphoreImpl* sem) : issuer_(issuer), semaphore_(sem) {}
@@ -49,7 +51,11 @@ class XBT_PUBLIC SemaphoreImpl {
   unsigned int value_;
   std::deque<SemAcquisitionImplPtr> ongoing_acquisitions_;
 
+  static unsigned next_id_;
+  unsigned id_ = next_id_++;
+
   friend SemAcquisitionImpl;
+  friend actor::SemaphoreObserver;
 
 public:
   explicit SemaphoreImpl(unsigned int value) : piface_(this), value_(value){};
@@ -76,6 +82,7 @@ public:
       delete sem;
     }
   }
+  unsigned get_id() { return id_; }
 
   s4u::Semaphore& sem() { return piface_; }
 };

@@ -48,17 +48,6 @@ bool ConditionWaitSimcall::is_enabled()
   }
   return true;
 }
-
-bool SemAcquireSimcall::is_enabled()
-{
-  static bool warned = false;
-  if (not warned) {
-    XBT_INFO("Using semaphore in model-checked code is still experimental. Use at your own risk");
-    warned = true;
-  }
-  return true;
-}
-
 } // namespace actor
 } // namespace kernel
 } // namespace simgrid

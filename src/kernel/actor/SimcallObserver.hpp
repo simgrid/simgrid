@@ -103,21 +103,6 @@ public:
   double get_timeout() const { return timeout_; }
 };
 
-class SemAcquireSimcall : public ResultingSimcall<bool> {
-  activity::SemaphoreImpl* const sem_;
-  const double timeout_;
-
-public:
-  SemAcquireSimcall(ActorImpl* actor, activity::SemaphoreImpl* sem, double timeout = -1.0)
-      : ResultingSimcall(actor, false), sem_(sem), timeout_(timeout)
-  {
-  }
-  bool is_enabled() override;
-  bool is_visible() const override { return false; }
-  activity::SemaphoreImpl* get_sem() const { return sem_; }
-  double get_timeout() const { return timeout_; }
-};
-
 } // namespace actor
 } // namespace kernel
 } // namespace simgrid

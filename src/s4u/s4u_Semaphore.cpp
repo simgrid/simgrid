@@ -3,11 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/modelchecker.h>
 #include <simgrid/s4u/Semaphore.hpp>
 #include <simgrid/semaphore.h>
 
 #include "src/kernel/activity/SemaphoreImpl.hpp"
-#include "src/kernel/actor/SimcallObserver.hpp"
+#include "src/kernel/actor/SynchroObserver.hpp"
+#include "src/mc/mc_replay.hpp"
 
 namespace simgrid {
 namespace s4u {
@@ -20,32 +22,46 @@ SemaphorePtr Semaphore::create(unsigned int initial_capacity)
 
 void Semaphore::acquire()
 {
-  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::SemAcquireSimcall observer{issuer, pimpl_};
-  kernel::actor::simcall_blocking([this, issuer] { pimpl_->acquire_async(issuer)->wait_for(issuer, -1.0); }, &observer);
+  acquire_timeout(-1);
 }
 
 bool Semaphore::acquire_timeout(double timeout)
 {
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
-  kernel::actor::SemAcquireSimcall observer{issuer, pimpl_, timeout};
-  return kernel::actor::simcall_blocking(
-      [this, issuer, timeout] { pimpl_->acquire_async(issuer)->wait_for(issuer, timeout); }, &observer);
+
+  if (MC_is_active() || MC_record_replay_is_active()) { // Split in 2 simcalls for transition persistency
+    kernel::actor::SemaphoreObserver lock_observer{issuer, mc::Transition::Type::SEM_LOCK, pimpl_};
+    auto acquisition =
+        kernel::actor::simcall_answered([issuer, this] { return pimpl_->acquire_async(issuer); }, &lock_observer);
+
+    kernel::actor::SemaphoreAcquisitionObserver wait_observer{issuer, mc::Transition::Type::SEM_WAIT, acquisition.get(),
+                                                              timeout};
+    return kernel::actor::simcall_blocking(
+        [issuer, acquisition, timeout] { return acquisition->wait_for(issuer, timeout); }, &wait_observer);
+
+  } else { // Do it in one simcall only and without observer
+    kernel::actor::SemaphoreAcquisitionObserver observer{issuer, mc::Transition::Type::SEM_WAIT, nullptr, timeout};
+    return kernel::actor::simcall_blocking(
+        [this, issuer, timeout] { return pimpl_->acquire_async(issuer)->wait_for(issuer, timeout); }, &observer);
+  }
 }
 
 void Semaphore::release()
 {
-  kernel::actor::simcall_answered([this] { pimpl_->release(); });
+  kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
+  kernel::actor::SemaphoreObserver observer{issuer, mc::Transition::Type::SEM_UNLOCK, pimpl_};
+
+  kernel::actor::simcall_answered([this] { pimpl_->release(); }, &observer);
 }
 
 int Semaphore::get_capacity() const
 {
-  return kernel::actor::simcall_answered([this] { return pimpl_->get_capacity(); });
+  return pimpl_->get_capacity();
 }
 
 bool Semaphore::would_block() const
 {
-  return kernel::actor::simcall_answered([this] { return pimpl_->would_block(); });
+  return pimpl_->would_block();
 }
 
 /* refcounting of the intrusive_ptr is delegated to the implementation object */

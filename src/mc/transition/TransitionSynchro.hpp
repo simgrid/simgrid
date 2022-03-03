@@ -21,6 +21,16 @@ public:
   bool depends(const Transition* other) const override;
 };
 
+class SemaphoreTransition : public Transition {
+  uintptr_t sem_;
+  bool granted_;
+
+public:
+  std::string to_string(bool verbose) const override;
+  SemaphoreTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream);
+  bool depends(const Transition* other) const override;
+};
+
 } // namespace mc
 } // namespace simgrid
 
