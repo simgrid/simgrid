@@ -60,6 +60,9 @@ endforeach()
 
 # Python tesh tests
 foreach(x monkey-masterworkers)
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.py.tesh)
+  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.py)
+
   if(enable_python)
     ADD_TESH(tesh-python-${x}
              --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${x}
