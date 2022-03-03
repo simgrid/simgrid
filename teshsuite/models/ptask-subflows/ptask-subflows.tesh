@@ -1,0 +1,49 @@
+p Test subflows with new BMF model
+$ ${bindir:=.}/ptask-subflows --cfg=host/model:ptask_BMF
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'host/model' to 'ptask_BMF'
+> [0.000000] [xbt_cfg/INFO] Switching to the BMF model to handle parallel tasks.
+> [hostA:ptask:(1) 0.000000] [ptask_subflows_test/INFO] TEST: 1 parallel task with 2 flows
+> [hostA:ptask:(1) 0.000000] [ptask_subflows_test/INFO] Parallel task sends 1.5B to other host.
+> [hostA:ptask:(1) 0.000000] [ptask_subflows_test/INFO] Same result for L07 and BMF since the ptask is alone.
+> [hostA:ptask:(1) 0.000000] [ptask_subflows_test/INFO] Should be done in 2.5 seconds: 1s latency and 1.5 second for transfer
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] Parallel task finished after 2.500000 seconds
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] TEST: Same parallel task but with a noisy communication at the side
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] Parallel task sends 1.5B to other host.
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] With BMF: Should be done in 3.5 seconds: 1s latency and 2 second for transfer.
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] With L07: Should be done in 4 seconds: 1s latency and 3 second for transfer.
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] With BMF, ptask gets 50% more bandwidth than the noisy flow (because of the sub).
+> [hostA:ptask:(1) 6.000000] [ptask_subflows_test/INFO] Parallel task finished after 3.500000 seconds
+
+
+p Test subflows with old L07 model to verify the difference
+$ ${bindir:=.}/ptask-subflows --cfg=host/model:ptask_L07
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'host/model' to 'ptask_L07'
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
+> [hostA:ptask:(1) 0.000000] [ptask_subflows_test/INFO] TEST: 1 parallel task with 2 flows
+> [hostA:ptask:(1) 0.000000] [ptask_subflows_test/INFO] Parallel task sends 1.5B to other host.
+> [hostA:ptask:(1) 0.000000] [ptask_subflows_test/INFO] Same result for L07 and BMF since the ptask is alone.
+> [hostA:ptask:(1) 0.000000] [ptask_subflows_test/INFO] Should be done in 2.5 seconds: 1s latency and 1.5 second for transfer
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] Parallel task finished after 2.500000 seconds
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] TEST: Same parallel task but with a noisy communication at the side
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] Parallel task sends 1.5B to other host.
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] With BMF: Should be done in 3.5 seconds: 1s latency and 2 second for transfer.
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] With L07: Should be done in 4 seconds: 1s latency and 3 second for transfer.
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] With BMF, ptask gets 50% more bandwidth than the noisy flow (because of the sub).
+> [hostA:ptask:(1) 6.500000] [ptask_subflows_test/INFO] Parallel task finished after 4.000000 seconds
+
+p Test selective_update enable
+$ ${bindir:=.}/ptask-subflows --cfg=host/model:ptask_BMF --cfg=bmf/selective-update:true
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'host/model' to 'ptask_BMF'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'bmf/selective-update' to 'true'
+> [0.000000] [xbt_cfg/INFO] Switching to the BMF model to handle parallel tasks.
+> [hostA:ptask:(1) 0.000000] [ptask_subflows_test/INFO] TEST: 1 parallel task with 2 flows
+> [hostA:ptask:(1) 0.000000] [ptask_subflows_test/INFO] Parallel task sends 1.5B to other host.
+> [hostA:ptask:(1) 0.000000] [ptask_subflows_test/INFO] Same result for L07 and BMF since the ptask is alone.
+> [hostA:ptask:(1) 0.000000] [ptask_subflows_test/INFO] Should be done in 2.5 seconds: 1s latency and 1.5 second for transfer
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] Parallel task finished after 2.500000 seconds
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] TEST: Same parallel task but with a noisy communication at the side
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] Parallel task sends 1.5B to other host.
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] With BMF: Should be done in 3.5 seconds: 1s latency and 2 second for transfer.
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] With L07: Should be done in 4 seconds: 1s latency and 3 second for transfer.
+> [hostA:ptask:(1) 2.500000] [ptask_subflows_test/INFO] With BMF, ptask gets 50% more bandwidth than the noisy flow (because of the sub).
+> [hostA:ptask:(1) 6.000000] [ptask_subflows_test/INFO] Parallel task finished after 3.500000 seconds
