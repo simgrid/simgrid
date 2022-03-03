@@ -50,7 +50,7 @@ if(SIMGRID_HAVE_MC)
   endif()
 
   # Hijack some regular tests to run them on top of the MC
-  foreach (example synchro-mutex)
+  foreach (example synchro-mutex synchro-semaphore)
     ADD_TESH(s4u-mc-${example} 
                        --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
                        --setenv libdir=${CMAKE_BINARY_DIR}/lib
