@@ -491,7 +491,9 @@ This release introduces a new design, where the simcalls are given object-orient
 This information is used on the checker side to build Transition objects, representing the application simcalls. This explanation may not be crystal 
 clear, but the checker code is now much easier to work with as the formal logic is not spoiled with system-level tricks to retrieve the needed information.
 
-Future work on the model checker include: support for mutexes (that are still not handled), implementation of another exploration algorithm based on UDPOR
+This cleaned design allowed us to finally implement the support for mutexes and semaphores in the model-checker.
+
+Future work on the model checker include: support for condition variables and barriers (that are still not handled), implementation of another exploration algorithm based on UDPOR
 (`The Anh Pham's thesis <https://tel.archives-ouvertes.fr/tel-02462074/document>`_ was defended in 2019), and robustness improvement using the `MPI Bug 
 Initiative <https://hal.archives-ouvertes.fr/hal-03474762>`_ tests. Many things that were long dreamed of now become technically possible in this code base.
 

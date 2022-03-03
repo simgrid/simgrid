@@ -4,7 +4,7 @@ MC:
  - Rework the internals, for simpler and modern code. This shall unlock many future improvements.
  - You can now define plugins onto SafetyChecker (a simple DFS explorer), using the declared signals.
    See CommunicationDeterminism for an example.
- - Support mutex in DPOR reduction
+ - Support mutex and semaphore in DPOR reduction
  - Seems to work on Arm64 architectures too.
  - Display a nice error message when ptrace is not usable.
 
@@ -19,6 +19,12 @@ SMPI:
 
 S4U:
  - New signal: Engine::on_simulation_start_cb()
+
+New plugin: the Chaos Monkey (killing actors at any time)
+ - Along with the new simgrid-monkey script, it tests whether your simulation 
+   resists resource failures at any possible timestamp in your simulation. 
+ - It is mostly intended to test the simgrid core in extreme conditions, 
+   but users may find it interesting too.
 
 XBT:
  - Drop xbt_dynar_shrink().
