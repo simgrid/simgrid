@@ -49,18 +49,6 @@ if(SIMGRID_HAVE_MC)
     set(_mc-bugged1-liveness_disable 1)
   endif()
 
-  # Hijack some regular tests to run them on top of the MC
-  foreach (example synchro-mutex synchro-semaphore)
-    ADD_TESH(s4u-mc-${example} 
-                       --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
-                       --setenv libdir=${CMAKE_BINARY_DIR}/lib
-                       --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                       --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
-                       --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
-                       ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-mc-${example}.tesh)
-  endforeach()
-
-
   # This example never ends, disable it for now
   set(_mc-bugged2-liveness_disable 1)
   
@@ -90,9 +78,20 @@ else()
     set(_${example}_disable 1)
   endforeach()
 endif()
-# The tesh files of MC hijacked tests must always be added to the distribution
-foreach (example synchro-mutex)
+
+# Hijack some regular tests to run them on top of the MC
+foreach (example synchro-mutex synchro-semaphore)
   set(tesh_files ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-mc-${example}.tesh)
+
+  if (SIMGRID_HAVE_MC)
+    ADD_TESH(s4u-mc-${example}
+             --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+             --setenv libdir=${CMAKE_BINARY_DIR}/lib
+             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+             --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
+             --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
+             ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-mc-${example}.tesh)
+  endif()
 endforeach()
 
 
