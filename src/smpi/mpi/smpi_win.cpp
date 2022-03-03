@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/modelchecker.h>
 #include "smpi_win.hpp"
 
 #include "private.hpp"
@@ -13,6 +14,7 @@
 #include "smpi_keyvals.hpp"
 #include "smpi_request.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
+#include "src/mc/mc_replay.hpp"
 
 #include <algorithm>
 
@@ -59,14 +61,24 @@ Win::Win(void* base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
 
   colls::allgather(&connected_wins_[rank_], sizeof(MPI_Win), MPI_BYTE, connected_wins_.data(), sizeof(MPI_Win),
                    MPI_BYTE, comm);
-
-  colls::barrier(comm);
+  if  (MC_is_active() || MC_record_replay_is_active()){
+    if(rank_==0){
+      bar_ = new s4u::Barrier(comm->size());
+    }
+    colls::bcast(&bar_, sizeof(s4u::Barrier*), MPI_BYTE, 0, comm);
+    bar_->wait();
+  }else{
+    colls::barrier(comm);
+  }
   this->add_f();
 }
 
 Win::~Win(){
   //As per the standard, perform a barrier to ensure every async comm is finished
-  colls::barrier(comm_);
+  if  (MC_is_active() || MC_record_replay_is_active())
+    bar_->wait();
+  else
+    colls::barrier(comm_);
   flush_local_all();
 
   if (info_ != MPI_INFO_NULL)
@@ -78,6 +90,9 @@ Win::~Win(){
 
   colls::barrier(comm_);
   Comm::unref(comm_);
+
+  if (rank_ == 0)
+    delete bar_;
 
   if (allocated_)
     xbt_free(base_);
@@ -173,7 +188,10 @@ int Win::fence(int assert)
   opened_++;
   if (not (assert & MPI_MODE_NOPRECEDE)) {
     // This is not the first fence => finalize what came before
-    colls::barrier(comm_);
+    if (MC_is_active() || MC_record_replay_is_active())
+      bar_->wait();
+    else
+      colls::barrier(comm_);
     flush_local_all();
     count_=0;
   }
@@ -181,7 +199,10 @@ int Win::fence(int assert)
   if (assert & MPI_MODE_NOSUCCEED) // there should be no ops after this one, tell we are closed.
     opened_=0;
   assert_ = assert;
-  colls::barrier(comm_);
+  if (MC_is_active() || MC_record_replay_is_active())
+    bar_->wait();
+  else
+    colls::barrier(comm_);
   XBT_DEBUG("Leaving fence");
 
   return MPI_SUCCESS;
