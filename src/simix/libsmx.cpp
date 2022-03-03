@@ -81,7 +81,7 @@ simgrid::kernel::activity::ActivityImplPtr
 simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
                    size_t src_buff_size, bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                    void (*clean_fun)(void*), void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t),
-                   void* data, bool detached)
+                   void* data, bool detached) // XBT_ATTRIB_DEPRECATED_v335
 {
   /* checking for infinite values */
   xbt_assert(std::isfinite(task_size), "task_size is not finite!");
@@ -141,7 +141,8 @@ void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff,
 simgrid::kernel::activity::ActivityImplPtr
 simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size,
                    bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                   void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data, double rate)
+                   void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data,
+                   double rate) // XBT_ATTRIB_DEPRECATED_v335
 {
   xbt_assert(mbox, "No rendez-vous point defined for irecv");
 
@@ -199,12 +200,10 @@ ssize_t simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_
 /**
  * @ingroup simix_comm_management
  */
-void simcall_comm_wait(simgrid::kernel::activity::ActivityImpl* comm, double timeout)
+void simcall_comm_wait(simgrid::kernel::activity::ActivityImpl* comm, double timeout) // XBT_ATTRIB_DEPRECATED_v335
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
-
   simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();
-
   simgrid::kernel::actor::simcall_blocking([issuer, comm, timeout] { comm->wait_for(issuer, timeout); });
 }
 
