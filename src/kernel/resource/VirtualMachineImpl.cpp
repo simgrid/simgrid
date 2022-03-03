@@ -184,7 +184,7 @@ VirtualMachineImpl::VirtualMachineImpl(const std::string& name, s4u::VirtualMach
    * The value for GUESTOS_NOISE corresponds to the cost of the global action associated to the VM.  It corresponds to
    * the cost of a VM running no tasks.
    */
-  action_ = physical_host_->get_cpu()->execution_start(0, core_amount_);
+  action_ = physical_host_->get_cpu()->execution_start(0, core_amount_, 0);
 
   // It's empty for now, so it should not request resources in the PM
   update_action_weight();
