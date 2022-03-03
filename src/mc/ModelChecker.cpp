@@ -74,6 +74,7 @@ void ModelChecker::start()
 
   setup_ignore();
 
+  errno = 0;
 #ifdef __linux__
   ptrace(PTRACE_SETOPTIONS, pid, nullptr, PTRACE_O_TRACEEXIT);
   ptrace(PTRACE_CONT, pid, 0, 0);
@@ -82,6 +83,11 @@ void ModelChecker::start()
 #else
 # error "no ptrace equivalent coded for this platform"
 #endif
+  xbt_assert(errno == 0,
+             "Ptrace does not seem to be usable in your setup (errno: %d). "
+             "If you run from within a docker, adding `--cap-add SYS_PTRACE` to the docker line may help. "
+             "If it does not help, please report this bug.",
+             errno);
 }
 
 static constexpr auto ignored_local_variables = {
