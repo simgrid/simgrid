@@ -53,9 +53,6 @@ Win::Win(void* base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   if(info!=MPI_INFO_NULL)
     info->ref();
   connected_wins_[rank_] = this;
-  if(rank_==0){
-    bar_ = new s4u::Barrier(comm->size());
-  }
   errhandler_->ref();
   comm->add_rma_win(this);
   comm->ref();
@@ -63,16 +60,13 @@ Win::Win(void* base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   colls::allgather(&connected_wins_[rank_], sizeof(MPI_Win), MPI_BYTE, connected_wins_.data(), sizeof(MPI_Win),
                    MPI_BYTE, comm);
 
-  colls::bcast(&bar_, sizeof(s4u::Barrier*), MPI_BYTE, 0, comm);
-
   colls::barrier(comm);
   this->add_f();
 }
 
 Win::~Win(){
   //As per the standard, perform a barrier to ensure every async comm is finished
-  bar_->wait();
-
+  colls::barrier(comm_);
   flush_local_all();
 
   if (info_ != MPI_INFO_NULL)
@@ -84,9 +78,6 @@ Win::~Win(){
 
   colls::barrier(comm_);
   Comm::unref(comm_);
-
-  if (rank_ == 0)
-    delete bar_;
 
   if (allocated_)
     xbt_free(base_);
@@ -182,7 +173,7 @@ int Win::fence(int assert)
   opened_++;
   if (not (assert & MPI_MODE_NOPRECEDE)) {
     // This is not the first fence => finalize what came before
-    bar_->wait();
+    colls::barrier(comm_);
     flush_local_all();
     count_=0;
   }
@@ -190,8 +181,7 @@ int Win::fence(int assert)
   if (assert & MPI_MODE_NOSUCCEED) // there should be no ops after this one, tell we are closed.
     opened_=0;
   assert_ = assert;
-
-  bar_->wait();
+  colls::barrier(comm_);
   XBT_DEBUG("Leaving fence");
 
   return MPI_SUCCESS;

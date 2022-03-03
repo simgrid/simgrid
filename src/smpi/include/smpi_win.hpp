@@ -28,7 +28,6 @@ class Win : public F2C, public Keyval {
   MPI_Comm comm_;
   std::vector<MPI_Request> requests_;
   s4u::MutexPtr mut_ = s4u::Mutex::create();
-  s4u::Barrier* bar_ = nullptr;
   std::vector<MPI_Win> connected_wins_;
   std::string name_;
   int opened_               = 0;
