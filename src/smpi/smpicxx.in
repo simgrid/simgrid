@@ -11,10 +11,10 @@ SIMGRID_GITHASH="@GIT_VERSION@"
 
 CXX=@CMAKE_CXX_COMPILER@
 
-INCLUDEARGS="@includeflag@"
-CMAKE_LINKARGS="-L@libdir@"
-
 @SMPITOOLS_SH@
+
+list_set INCLUDEARGS @includeflag@
+list_set CMAKE_LINKARGS "-L@libdir@"
 
 list_set CXXFLAGS "-std=gnu++11" @SMPI_CXX_FLAGS@
 list_set LINKARGS
@@ -92,7 +92,7 @@ done
 
 list_set CMDLINE "${CXX}"
 list_add_not_empty CMDLINE "${CXXFLAGS}"
-list_add_not_empty CMDLINE ${INCLUDEARGS}
+list_add_not_empty CMDLINE "${INCLUDEARGS}"
 list_add_not_empty CMDLINE "${CMAKE_LINKARGS}"
 list_add_not_empty CMDLINE "${CMDARGS}"
 list_add_not_empty CMDLINE "${LINKARGS}"

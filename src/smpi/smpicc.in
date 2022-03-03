@@ -11,10 +11,10 @@ SIMGRID_GITHASH="@GIT_VERSION@"
 
 CC=@CMAKE_C_COMPILER@
 
-INCLUDEARGS="@includeflag@"
-CMAKE_LINKARGS="-L@libdir@"
-
 @SMPITOOLS_SH@
+
+list_set INCLUDEARGS @includeflag@
+list_set CMAKE_LINKARGS "-L@libdir@"
 
 # Don't use -Wl,-z-defs with Clang and address sanitizer
 if [ "@CMAKE_C_COMPILER_ID@" = "Clang" ] && [ "@HAVE_SANITIZER_ADDRESS@" = "TRUE" ]; then
@@ -95,7 +95,7 @@ done
 
 list_set CMDLINE "${CC}"
 list_add_not_empty CMDLINE "${CFLAGS}"
-list_add_not_empty CMDLINE ${INCLUDEARGS}
+list_add_not_empty CMDLINE "${INCLUDEARGS}"
 list_add_not_empty CMDLINE "${CMAKE_LINKARGS}"
 list_add_not_empty CMDLINE "${CMDARGS}"
 list_add_not_empty CMDLINE "${LINKARGS}"
