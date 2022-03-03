@@ -381,9 +381,10 @@ void BmfSystem::get_flows_data(int number_cnsts, Eigen::MatrixXd& A, Eigen::Matr
       linked             = true;
       double consumption = elem.consumption_weight;
       if (consumption > 0) {
-        int cnst_idx            = cnst2idx_[elem.constraint];
-        A(cnst_idx, var_idx)    = consumption;
-        maxA(cnst_idx, var_idx) = elem.max_consumption_weight;
+        int cnst_idx = cnst2idx_[elem.constraint];
+        A(cnst_idx, var_idx) += consumption;
+        // a variable with double penalty must receive half share, so it max weight is greater
+        maxA(cnst_idx, var_idx) = std::max(maxA(cnst_idx, var_idx), elem.max_consumption_weight * var.sharing_penalty_);
         active                  = true;
       }
     }

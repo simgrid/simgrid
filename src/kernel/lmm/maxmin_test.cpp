@@ -424,3 +424,44 @@ TEST_CASE("kernel::lmm dynamic constraint shared systems", "[kernel-lmm-shared-s
 
   Sys.variable_free_all();
 }
+
+TEST_CASE("kernel::lmm shared systems with crosstraffic", "[kernel-lmm-shared-crosstraffic]")
+{
+  lmm::System Sys(false);
+
+  SECTION("3 flows, 3 resource: crosstraffic")
+  {
+    /*
+     * 3 flows sharing 2 constraints, single
+     *
+     * In details:
+     *   o System:  a1 * \rho1 + a2 * \rho2 + epsilon * \rho3 < C1
+     *              epsilon * \rho1 + epsilon * \rho2 + a3 * \rho3 < C2
+     *   o consumption_weight: a1=1, a2=1, a3=1, epsilon=0.05
+     *   o C1 = C2 = 1
+     *
+     * Expectations
+     *   o rho1 = rho2 = rho3 = 1/2
+     */
+    lmm::Constraint* sys_cnst  = Sys.constraint_new(nullptr, 1);
+    lmm::Constraint* sys_cnst2 = Sys.constraint_new(nullptr, 1);
+    lmm::Variable* rho_1       = Sys.variable_new(nullptr, 1, -1, 2);
+    lmm::Variable* rho_2       = Sys.variable_new(nullptr, 1, -1, 2);
+    lmm::Variable* rho_3       = Sys.variable_new(nullptr, 1, -1, 2);
+
+    double epsilon = 0.05;
+    Sys.expand(sys_cnst, rho_1, 1.0);
+    Sys.expand(sys_cnst2, rho_1, epsilon);
+    Sys.expand(sys_cnst, rho_2, 1.0);
+    Sys.expand(sys_cnst2, rho_2, epsilon);
+    Sys.expand(sys_cnst2, rho_3, 1.0);
+    Sys.expand(sys_cnst, rho_3, epsilon);
+    Sys.solve();
+
+    REQUIRE(double_equals(rho_1->get_value(), 1.0 / (2.0 + epsilon), sg_maxmin_precision));
+    REQUIRE(double_equals(rho_2->get_value(), 1.0 / (2.0 + epsilon), sg_maxmin_precision));
+    REQUIRE(double_equals(rho_3->get_value(), 1.0 / (2.0 + epsilon), sg_maxmin_precision));
+  }
+
+  Sys.variable_free_all();
+}

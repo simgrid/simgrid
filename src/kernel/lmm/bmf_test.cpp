@@ -65,6 +65,33 @@ TEST_CASE("kernel::bmf Basic tests", "[kernel-bmf-basic]")
     REQUIRE(double_equals(rho_2->get_value(), (3.0 / 2.0) / 10.0, sg_maxmin_precision));
   }
 
+  SECTION("Variable penalty/priority")
+  {
+    /*
+     * A variable with twice the penalty gets half of the share
+     *
+     * In details:
+     *   o System:  a1 * p1 * \rho1  +  a2 * p2 * \rho2 < C
+     *   o consumption_weight: a1=1 ; a2=1
+     *   o sharing_penalty:    p1=1 ; p2=2
+     *
+     * Expectations
+     *   o rho1 = 2* rho2 (because rho2 has twice the penalty)
+     *   o rho1 + rho2 = C (because all weights are 1)
+     */
+
+    lmm::Constraint* sys_cnst = Sys.constraint_new(nullptr, 3);
+    lmm::Variable* rho_1      = Sys.variable_new(nullptr, 1);
+    lmm::Variable* rho_2      = Sys.variable_new(nullptr, 2);
+
+    Sys.expand(sys_cnst, rho_1, 1);
+    Sys.expand(sys_cnst, rho_2, 1);
+    Sys.solve();
+
+    REQUIRE(double_equals(rho_1->get_value(), 2, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_2->get_value(), 1, sg_maxmin_precision));
+  }
+
   SECTION("Disable variable doesn't count")
   {
     /*
@@ -345,6 +372,37 @@ TEST_CASE("kernel::bmf Advanced tests", "[kernel-bmf-advanced]")
 
     REQUIRE(double_equals(rho_1->get_value(), 1e6 / 2.0, sg_maxmin_precision));
     REQUIRE(double_equals(rho_2->get_value(), 1e6 / 2.0, sg_maxmin_precision));
+  }
+
+  SECTION("Proportional fairness")
+  {
+    /*
+     * 3 flows sharing 2 resources with crosstraffic
+     *
+     * Regular max-min would give B/2 for every flow.
+     * BMF is equivalent to proportional fairness in this case, and give a quite
+     * different sharing.
+     *
+     */
+
+    lmm::Constraint* sys_cnst  = Sys.constraint_new(nullptr, 1);
+    lmm::Constraint* sys_cnst2 = Sys.constraint_new(nullptr, 1);
+    lmm::Variable* rho_1       = Sys.variable_new(nullptr, 1, -1, 2);
+    lmm::Variable* rho_2       = Sys.variable_new(nullptr, 1, -1, 2);
+    lmm::Variable* rho_3       = Sys.variable_new(nullptr, 1, -1, 2);
+
+    double epsilon = 0.05;
+    Sys.expand(sys_cnst, rho_1, 1.0);
+    Sys.expand(sys_cnst2, rho_1, epsilon);
+    Sys.expand(sys_cnst, rho_2, 1.0);
+    Sys.expand(sys_cnst2, rho_2, epsilon);
+    Sys.expand(sys_cnst2, rho_3, 1.0);
+    Sys.expand(sys_cnst, rho_3, epsilon);
+    Sys.solve();
+
+    REQUIRE(double_equals(rho_1->get_value(), 1.0 / (2.0 + 2 * epsilon), sg_maxmin_precision));
+    REQUIRE(double_equals(rho_2->get_value(), 1.0 / (2.0 + 2 * epsilon), sg_maxmin_precision));
+    REQUIRE(double_equals(rho_3->get_value(), 1.0 / (1.0 + epsilon), sg_maxmin_precision));
   }
 
   Sys.variable_free_all();
