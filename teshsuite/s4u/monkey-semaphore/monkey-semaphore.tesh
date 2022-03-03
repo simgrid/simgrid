@@ -1,0 +1,29 @@
+
+p Smoke test: do one arbitrary run of the monkey, just to make sure that *something* is happening.
+
+$ ${bindir:=.}/monkey-semaphore --cfg=plugin:cmonkey --cfg=cmonkey/time:1 --cfg=cmonkey/host:1
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'plugin' to 'cmonkey'
+> [0.000000] [cmonkey/INFO] Initializing the chaos monkey
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cmonkey/time' to '1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cmonkey/host' to '1'
+> [Paul:producer:(1) 0.000000] [sem_monkey/INFO] Producer booting
+> [Carol:consumer:(2) 0.000000] [sem_monkey/INFO] Consumer booting
+> [1.000000] [cmonkey/INFO] Kill host Paul
+> [Paul:producer:(1) 1.000000] [sem_monkey/INFO] Producer dying forcefully.
+> [Carol:consumer:(2) 10.750000] [sem_monkey/INFO] Timeouted
+> [Carol:consumer:(2) 20.750000] [sem_monkey/INFO] Timeouted
+> [Carol:consumer:(2) 30.750000] [sem_monkey/INFO] Timeouted
+> [31.000000] [cmonkey/INFO] Restart host Paul
+> [Paul:producer:(3) 31.000000] [sem_monkey/INFO] Producer rebooting
+> [Paul:producer:(3) 32.000000] [sem_monkey/INFO] sem_empty acquired
+> [Paul:producer:(3) 33.000000] [sem_monkey/INFO] Pushing item 1
+> [Paul:producer:(3) 33.000000] [sem_monkey/INFO] sem_empty removed from to_release
+> [Carol:consumer:(2) 33.750000] [sem_monkey/INFO] Receiving item 1
+> [Paul:producer:(3) 34.000000] [sem_monkey/INFO] sem_empty acquired
+> [Paul:producer:(3) 35.000000] [sem_monkey/INFO] Pushing item 0
+> [Paul:producer:(3) 35.000000] [sem_monkey/INFO] sem_empty removed from to_release
+> [Paul:producer:(3) 35.000000] [sem_monkey/INFO] Producer dying peacefully.
+> [Carol:consumer:(2) 35.750000] [sem_monkey/INFO] Receiving item 0
+> [Carol:consumer:(2) 35.750000] [sem_monkey/INFO] Bye!
+> [Carol:consumer:(2) 35.750000] [sem_monkey/INFO] Consumer dying peacefully.
+> [35.750000] [cmonkey/INFO] Chaos Monkey done!

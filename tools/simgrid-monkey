@@ -19,7 +19,8 @@
 #   * So the amount of simulations is: 1 + (host_c+link_c) * timestamps * 2
 # 
 # * Test program, written to resist these extreme conditions:
-#   * teshsuite/s4u/monkey-masterworkers: tests synchronous comms and execs
+#   * teshsuite/s4u/monkey-masterworkers: tests synchronous comms and execs (C++ and python)
+#   * teshsuite/s4u/monkey-semaphore: tests async semaphores (C++ only)
 
 import multiprocessing as mp
 import sys

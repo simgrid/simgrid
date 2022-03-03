@@ -8,7 +8,7 @@ foreach(x actor actor-autorestart actor-suspend
         activity-lifecycle
         comm-get-sender comm-pt2pt wait-all-for wait-any-for
         cloud-interrupt-migration cloud-two-execs
-      	monkey-masterworkers
+      	monkey-masterworkers monkey-semaphore
         concurrent_rw
         dag-incomplete-simulation dependencies
         host-on-off host-on-off-actors host-on-off-recv host-multicore-speed-file io-set-bw
@@ -46,7 +46,7 @@ foreach(x actor actor-autorestart actor-suspend activity-lifecycle comm-get-send
 endforeach()
 
 foreach(x basic-link-test basic-parsing-test host-on-off host-on-off-actors host-on-off-recv host-multicore-speed-file is-router listen_async
-        monkey-masterworkers
+        monkey-masterworkers monkey-semaphore
         pid storage_client_server trace-integration seal-platform issue71)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
   ADD_TESH(tesh-s4u-${x}
@@ -78,14 +78,16 @@ endforeach()
 
 
 # Monkey tests are launched directly, not with tesh
-foreach(x  monkey-masterworkers)
+set(_monkey-semaphore_disable_python 1) # Semaphore not exposed to python
+foreach(x  monkey-masterworkers monkey-semaphore)
   ADD_TEST(monkey-s4u-${x} "${PYTHON_EXECUTABLE}" ${CMAKE_HOME_DIRECTORY}/tools/simgrid-monkey ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x}/${x})
   if(enable_python)
-    ADD_TEST(monkey-python-${x} "${PYTHON_EXECUTABLE}" ${CMAKE_HOME_DIRECTORY}/tools/simgrid-monkey "${PYTHON_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.py)
-    set_tests_properties(monkey-python-${x} PROPERTIES ENVIRONMENT "PYTHONPATH=${CMAKE_BINARY_DIR}/lib")
+    if(NOT DEFINED _${x}_disable_python)
+      ADD_TEST(monkey-python-${x} "${PYTHON_EXECUTABLE}" ${CMAKE_HOME_DIRECTORY}/tools/simgrid-monkey "${PYTHON_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.py)
+      set_tests_properties(monkey-python-${x} PROPERTIES ENVIRONMENT "PYTHONPATH=${CMAKE_BINARY_DIR}/lib")
+    endif()
   endif()
 endforeach()
-
 
 # The output is not relevant
 ADD_TEST(tesh-s4u-comm-pt2pt    ${CMAKE_BINARY_DIR}/teshsuite/s4u/comm-pt2pt/comm-pt2pt    ${CMAKE_HOME_DIRECTORY}/examples/platforms/cluster_backbone.xml)

@@ -339,7 +339,7 @@ public:
   bool is_suspended() const;
 
   /** If set to true, the actor will automatically restart when its host reboots */
-  Actor* set_auto_restart(bool autorestart);
+  Actor* set_auto_restart(bool autorestart = true);
 
   /** Add a function to the list of "on_exit" functions for the current actor. The on_exit functions are the functions
    * executed when your actor is killed. You should use them to free the data used by your actor.
