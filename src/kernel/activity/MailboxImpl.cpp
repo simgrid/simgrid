@@ -142,9 +142,6 @@ CommImplPtr MailboxImpl::find_matching_comm(CommImplType type, bool (*match_fun)
 
   const CommImplPtr& comm = *iter;
   XBT_DEBUG("Found a matching communication synchro %p", comm.get());
-#if SIMGRID_HAVE_MC
-  comm->mbox_cpy = comm->get_mailbox();
-#endif
   comm->set_mailbox(nullptr);
   CommImplPtr comm_cpy = comm;
   if (remove_matching)

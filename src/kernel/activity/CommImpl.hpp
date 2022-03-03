@@ -75,13 +75,6 @@ public:
   void set_exception(actor::ActorImpl* issuer) override;
   void finish() override;
 
-
-#if SIMGRID_HAVE_MC
-  MailboxImpl* mbox_cpy = nullptr; /* Copy of the rendez-vous where the comm is queued, MC needs it for DPOR
-                                     (comm.mbox set to nullptr when the communication is removed from the mailbox
-                                     (used as garbage collector)) */
-#endif
-
   void (*clean_fun)(void*) = nullptr; /* Function to clean the detached src_buf if something goes wrong */
   bool (*match_fun)(void*, void*, CommImpl*) = nullptr; /* Filter function used by the other side. It is used when
 looking if a given communication matches my needs. For that, myself must match the
