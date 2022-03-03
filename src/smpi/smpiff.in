@@ -12,7 +12,7 @@ REAL_FORTRAN_COMPILER=@SMPI_Fortran_COMPILER@
 
 @SMPITOOLS_SH@
 
-list_add INCLUDEARGS @includeflag@
+list_set INCLUDEARGS @includeflag@
 list_set CMAKE_LINKARGS "-L@libdir@"
 
 list_set FFLAGS @SMPI_Fortran_FLAGS@
