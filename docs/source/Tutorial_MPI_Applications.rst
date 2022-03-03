@@ -186,8 +186,8 @@ cluster (and thus reduce its price) while maintaining a high bisection
 bandwidth and a relatively low diameter. To model this in SimGrid,
 pass a ``topology="FAT_TREE"`` attribute to your cluster. The
 ``topo_parameters=#levels;#downlinks;#uplinks;link count`` follows the
-semantic introduced in `Figure 1B of this article
-<http://webee.eedev.technion.ac.il/wp-content/uploads/2014/08/publication_574.pdf>`_.
+semantic introduced in `Figure 1(b) of this article
+<https://ece.technion.ac.il/wp-content/uploads/2021/01/publication_776.pdf>`_.
 
 Here is the meaning of this example: ``2 ; 4,4 ; 1,2 ; 1,2``
 
