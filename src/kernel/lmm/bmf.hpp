@@ -15,18 +15,56 @@ namespace simgrid {
 namespace kernel {
 namespace lmm {
 
+/** @brief Generate all combinations of valid allocation */
 class XBT_PUBLIC AllocationGenerator {
 public:
   explicit AllocationGenerator(Eigen::MatrixXd A);
 
+  /**
+   * @brief Get next valid allocation
+   *
+   * @param next_alloc Allocation (OUTPUT)
+   * @return true if there's an allocation not tested yet, false otherwise
+   */
   bool next(std::vector<int>& next_alloc);
 
 private:
-  Eigen::MatrixXd A_; //!< A_ji: resource usage matrix, each row j represents a resource and col i a flow/player
+  Eigen::MatrixXd A_;
   std::vector<int> alloc_;
   bool first_ = true;
 };
 
+/**
+ * @beginrst
+ *
+ * Despite the simplicity of BMF fairness definition, it's quite hard to
+ * find a BMF allocation in the general case.
+ *
+ * This solver implements one possible algorithm to find a BMF, as proposed
+ * at: https://hal.archives-ouvertes.fr/hal-01552739.
+ *
+ * The idea of this algorithm is that each player/flow "selects" a resource to
+ * saturate. Then, we calculate the rate each flow would have with this allocation.
+ * If the allocation is a valid BMF and no one needs to move, it's over. Otherwise,
+ * each player selects a new resource to saturate based on the minimim rate possible
+ * between all resources.
+ *
+ * The steps:
+ * 1) Given an initial allocation B_i
+ * 2) Build a matrix A'_ji and C'_ji which assures that the player receives the most
+ * share at selected resources
+ * 3) Solve: A'_ji * rho_i = C'_j
+ * 4) Calculate the minimum fair rate for each resource j: f_j. The f_j represents
+ * the maximum each flow can receive at the resource j.
+ * 5) Builds a new vector B'_i = arg min(f_j/A_ji).
+ * 6) Stop if B == B' (nobody needs to move), go to step 2 otherwise
+ *
+ * Despite the overall good performance of this algorithm, which converges in a few
+ * iterations, we don't have any assurance about its convergence. In the worst case,
+ * it may be needed to test all possible combination of allocations (which is exponential).
+ *
+ * @endrst
+ */
 class XBT_PUBLIC BmfSolver {
 public:
   /**
@@ -139,6 +177,41 @@ private:
   int max_iteration_               = sg_bmf_max_iterations; //!< number maximum of iterations of BMF algorithm
 };
 
+/**
+ * @beginrst
+ *
+ * A BMF (bottleneck max fairness) solver to resolve inequation systems.
+ *
+ * Usually, SimGrid relies on a *max-min fairness* solver to share the resources.
+ * Max-min is great when sharing homogenous resources, however it cannot be used with heterogeneous resources.
+ *
+ * BMF is a natural alternative to max-min, providing a fair-sharing of heterogeneous resources (CPU, network, disk).
+ * It is specially relevant for the implementation of parallel tasks whose sharing involves different
+ * kinds of resources.
+ *
+ * BMF assures that every flow receives the maximum share possible in at least 1 bottleneck (fully used) resource.
+ *
+ * The BMF is characterized by:
+ * - A_ji: a matrix of requirement for flows/player. For each resource j, and flow i, A_ji represents the utilization
+ * of resource j for 1 unit of the flow i.
+ * - rho_i: the rate allocated for flow i (same among all resources)
+ * - C_j: the capacity of each resource (can be bytes/s, flops/s, etc)
+ *
+ * Therefore, these conditions need to satisfied to an allocation be considered a BMF:
+ * 1) All constraints are respected (flows cannot use more than the resource has available)
+ *   - for all resource j and player i: A_ji * rho_i <= C_j
+ * 2) At least 1 resource is fully used (bottleneck).
+ *   - for some resource j: A_ji * rho_i = C_j
+ * 3) Each flow (player) receives the maximum share in at least 1 bottleneck.
+ *   - for all player i: exist a resource j: A_ji * rho_i >= A_jk * rho_k for all other player k
+ *
+ * Despite the prove of existence of a BMF allocation in the general case, it may not
+ * be unique, which leads to possible different rate for the applications.
+ *
+ * More details about BMF can be found at: https://hal.inria.fr/hal-01243985/document
+ *
+ * @endrst
+ */
 /**
  * @brief Bottleneck max-fair system
  */

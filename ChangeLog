@@ -34,6 +34,21 @@ New plugin: the Chaos Monkey (killing actors at any time)
  - It is mostly intended to test the simgrid core in extreme conditions, 
    but users may find it interesting too.
 
+Models:
+ - New model for parallel task: ptask_BMF.
+   - More realistic sharing of heterogeneous resources compared to ptask_L07.
+   - Implement the BMF (Bottleneck max fairness) fairness.
+   - Improved resource sharing for parallel tasks with sub-flows (parallel
+   communications between same source and destination inside the ptask).
+   - Parameters:
+     - "--cfg=host/model:ptask_BMF": enable the model.
+     - "--cfg=bmf/max-iterations: <N>" - maximum number of iterations performed
+	 by BMF solver (default: 1000).
+	 - "--cfg=bmf/selective-update:<true/false>" - enable/disable the
+	 selective-update optimization. Only invalidates and recomputes modified
+	 parts of inequations system. May speed up simulation if sparse resource
+	 utilization (default: false).
+
 XBT:
  - Drop xbt_dynar_shrink().
 

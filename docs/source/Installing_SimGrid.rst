@@ -123,6 +123,9 @@ cmake (v3.5).
 boost (at least v1.48, v1.59 recommended)
   - On Debian / Ubuntu: ``apt install libboost-dev libboost-context-dev``
   - On macOS with homebrew: ``brew install boost``
+Eigen3
+  - On Debian / Ubuntu: ``apt install libeigen3-dev``
+  - On macOS with homebrew: ``brew install eigen``
 Java (optional):
   - Debian / Ubuntu: ``apt install default-jdk libgcj18-dev`` (or
     any version of libgcj)
