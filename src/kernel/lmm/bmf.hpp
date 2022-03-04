@@ -93,6 +93,13 @@ private:
    * @return Actual resource capacity
    */
   double get_resource_capacity(int resource, const std::vector<int>& bounded_players) const;
+  /**
+   * @brief Auxiliary method to get list of bounded player from allocation
+   *
+   * @param alloc Current allocation
+   * @return list of bounded players
+   */
+  std::vector<int> get_bounded_players(const allocation_map_t& alloc) const;
 
   /**
    * @brief Given an allocation calculates the speed/rho for each player

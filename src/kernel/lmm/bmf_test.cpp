@@ -568,6 +568,56 @@ TEST_CASE("kernel::bmf Loop", "[kernel-bmf-loop]")
   Sys.variable_free_all();
 }
 
+TEST_CASE("kernel::bmf Bugs", "[kernel-bmf-bug]")
+{
+  lmm::BmfSystem Sys(false);
+  xbt_log_control_set("ker_bmf.thres:debug");
+
+  SECTION("DadOu's bug: sum of bounds/phi greater than C")
+  {
+    /*
+     * Ptasks in a g5k platform.
+     * Extracted from original test.
+     * The sum of bounds for 1 resource exceed its capacity, giving a negative value in C'
+     */
+
+    lmm::Constraint* sys_cnst  = Sys.constraint_new(nullptr, 2.5e9);
+    lmm::Constraint* sys_cnst2 = Sys.constraint_new(nullptr, 2.5e9);
+    lmm::Variable* rho_1       = Sys.variable_new(nullptr, 1, 2.27328e-10, 2);
+    lmm::Variable* rho_2       = Sys.variable_new(nullptr, 1, 2.27328e-10, 2);
+    lmm::Variable* rho_3       = Sys.variable_new(nullptr, 1);
+
+    Sys.expand_add(sys_cnst, rho_1, 1.84467e+19);
+    Sys.expand_add(sys_cnst2, rho_1, 1.84467e+19);
+    Sys.expand_add(sys_cnst, rho_2, 1.84467e+19);
+    Sys.expand_add(sys_cnst, rho_3, 1.91268e+11);
+    Sys.solve();
+  }
+
+  SECTION("is_bmf bug: all limited by bound")
+  {
+    /*
+     * Particular case, 1 flow is saturated and the other increases
+     * its speed until the contraint is reached
+     */
+
+    lmm::Constraint* sys_cnst  = Sys.constraint_new(nullptr, 10);
+    lmm::Constraint* sys_cnst2 = Sys.constraint_new(nullptr, 8);
+    lmm::Variable* rho_1       = Sys.variable_new(nullptr, 1, 1.5, 2);
+    lmm::Variable* rho_2       = Sys.variable_new(nullptr, 1, 3, 2);
+
+    Sys.expand_add(sys_cnst, rho_1, 5.0);
+    Sys.expand_add(sys_cnst2, rho_1, 1.0);
+    Sys.expand_add(sys_cnst, rho_2, 1.0);
+    Sys.expand_add(sys_cnst2, rho_2, 1.0);
+    Sys.solve();
+    REQUIRE(double_equals(rho_1->get_value(), 1.4, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_2->get_value(), 3, sg_maxmin_precision));
+  }
+
+  Sys.variable_free_all();
+}
+
 TEST_CASE("kernel::bmf Stress-tests", "[.kernel-bmf-stress]")
 {
   lmm::BmfSystem Sys(false);

@@ -108,7 +108,7 @@ double BmfSolver::get_resource_capacity(int resource, const std::vector<int>& bo
   for (int p : bounded_players) {
     capacity -= A_(resource, p) * phi_[p];
   }
-  return capacity;
+  return std::max(0.0, capacity);
 }
 
 std::vector<int> BmfSolver::alloc_map_to_vector(const allocation_map_t& alloc) const
@@ -122,6 +122,17 @@ std::vector<int> BmfSolver::alloc_map_to_vector(const allocation_map_t& alloc) c
   return alloc_by_player;
 }
 
+std::vector<int> BmfSolver::get_bounded_players(const allocation_map_t& alloc) const
+{
+  std::vector<int> bounded_players;
+  for (const auto& e : alloc) {
+    if (e.first == NO_RESOURCE) {
+      bounded_players.insert(bounded_players.end(), e.second.begin(), e.second.end());
+    }
+  }
+  return bounded_players;
+}
+
 Eigen::VectorXd BmfSolver::equilibrium(const allocation_map_t& alloc) const
 {
   int n_players       = A_.cols();
@@ -129,14 +140,13 @@ Eigen::VectorXd BmfSolver::equilibrium(const allocation_map_t& alloc) const
   Eigen::VectorXd C_p = Eigen::VectorXd::Zero(n_players);
 
   int row = 0;
-  std::vector<int> bounded_players;
+  auto bounded_players = get_bounded_players(alloc);
   for (const auto& e : alloc) {
     // add one row for the resource with A[r,]
     int cur_resource = e.first;
-    if (cur_resource == NO_RESOURCE) {
-      bounded_players.insert(bounded_players.end(), e.second.begin(), e.second.end());
+    if (cur_resource == NO_RESOURCE)
       continue;
-    }
+
     if (C_shared_[cur_resource]) {
       /* shared resource: fairly share it between players */
       A_p.row(row) = A_.row(cur_resource);
@@ -210,7 +220,8 @@ bool BmfSolver::get_alloc(const Eigen::VectorXd& fair_sharing, const allocation_
         continue;
 
       double share = fair_sharing[cnst_idx] / A_(cnst_idx, player_idx);
-      if (min_share == -1 || double_positive(min_share - share, sg_maxmin_precision)) {
+      if (min_share == -1 || share < min_share) {
+
         selected_resource = cnst_idx;
         min_share         = share;
       }
@@ -234,6 +245,8 @@ bool BmfSolver::get_alloc(const Eigen::VectorXd& fair_sharing, const allocation_
 void BmfSolver::set_fair_sharing(const allocation_map_t& alloc, const Eigen::VectorXd& rho,
                                  Eigen::VectorXd& fair_sharing) const
 {
+  std::vector<int> bounded_players = get_bounded_players(alloc);
+
   for (int r = 0; r < fair_sharing.size(); r++) {
     auto it = alloc.find(r);
     if (it != alloc.end()) {              // resource selected by some player, fair share depends on rho
@@ -248,7 +261,7 @@ void BmfSolver::set_fair_sharing(const allocation_map_t& alloc, const Eigen::Vec
         int n_players   = (A_.row(r).array() > 0).count();
         fair_sharing[r] = C_[r] / n_players;
       } else {
-        fair_sharing[r] = C_[r];
+        fair_sharing[r] = get_resource_capacity(r, bounded_players);
       }
     }
   }
@@ -347,6 +360,8 @@ Eigen::VectorXd BmfSolver::solve()
     fprintf(stderr, "A:\n%s\n", debug_eigen(A_).c_str());
     fprintf(stderr, "maxA:\n%s\n", debug_eigen(maxA_).c_str());
     fprintf(stderr, "C:\n%s\n", debug_eigen(C_).c_str());
+    fprintf(stderr, "C_shared:\n%s\n", debug_vector(C_shared_).c_str());
+    fprintf(stderr, "phi:\n%s\n", debug_eigen(phi_).c_str());
     fprintf(stderr, "rho:\n%s\n", debug_eigen(rho).c_str());
     xbt_abort();
   }
