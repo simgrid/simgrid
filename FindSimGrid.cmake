@@ -13,7 +13,7 @@
 #    CMAKE_PREFIX_PATH="/path/to/FindSimGrid.cmake:$CMAKE_PREFIX_PATH"  cmake .
 #
 # If this file does not find SimGrid, define SimGrid_PATH:
-#    SimGrid_PATH=/path/to/simgrid  cmake .
+#    cmake -DSimGrid_PATH=/path/to/simgrid .
 
 #
 # DEVELOPERS OF PROGRAMS USING SIMGRID
