@@ -410,7 +410,7 @@ typedef sg_bar_t msg_bar_t;
 /** @brief Initializes a barrier, with count elements */
 XBT_PUBLIC msg_bar_t MSG_barrier_init(unsigned int count);
 /** @brief Destroys barrier */
-XBT_PUBLIC void MSG_barrier_destroy(const_sg_bar_t bar);
+XBT_PUBLIC void MSG_barrier_destroy(sg_bar_t bar);
 /** @brief Performs a barrier already initialized */
 XBT_PUBLIC int MSG_barrier_wait(msg_bar_t bar);
 

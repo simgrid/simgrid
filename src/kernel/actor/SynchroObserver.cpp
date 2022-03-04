@@ -5,6 +5,7 @@
 
 #include "src/kernel/actor/SynchroObserver.hpp"
 #include "simgrid/s4u/Host.hpp"
+#include "src/kernel/activity/BarrierImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
@@ -59,6 +60,27 @@ bool SemaphoreAcquisitionObserver::is_enabled()
 void SemaphoreAcquisitionObserver::serialize(std::stringstream& stream) const
 {
   stream << (short)type_ << ' ' << acquisition_->semaphore_->get_id() << ' ' << acquisition_->granted_;
+}
+
+BarrierObserver::BarrierObserver(ActorImpl* actor, mc::Transition::Type type, activity::BarrierImpl* bar)
+    : ResultingSimcall(actor, false), type_(type), barrier_(bar), timeout_(-1)
+{
+  xbt_assert(type_ == mc::Transition::Type::BARRIER_LOCK);
+}
+BarrierObserver::BarrierObserver(ActorImpl* actor, mc::Transition::Type type, activity::BarrierAcquisitionImpl* acqui,
+                                 double timeout)
+    : ResultingSimcall(actor, false), type_(type), acquisition_(acqui), timeout_(timeout)
+{
+  xbt_assert(type_ == mc::Transition::Type::BARRIER_WAIT);
+}
+void BarrierObserver::serialize(std::stringstream& stream) const
+{
+  stream << (short)type_ << ' ' << (barrier_ != nullptr ? barrier_->get_id() : acquisition_->barrier_->get_id());
+}
+bool BarrierObserver::is_enabled()
+{
+  return type_ == mc::Transition::Type::BARRIER_LOCK ||
+         (type_ == mc::Transition::Type::BARRIER_WAIT && acquisition_ != nullptr && acquisition_->granted_);
 }
 
 } // namespace actor

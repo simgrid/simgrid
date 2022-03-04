@@ -359,6 +359,7 @@ include examples/cpp/replay-io/s4u-replay-io.txt
 include examples/cpp/replay-io/s4u-replay-io_d.xml
 include examples/cpp/routing-get-clusters/s4u-routing-get-clusters.cpp
 include examples/cpp/routing-get-clusters/s4u-routing-get-clusters.tesh
+include examples/cpp/synchro-barrier/s4u-mc-synchro-barrier.tesh
 include examples/cpp/synchro-barrier/s4u-synchro-barrier.cpp
 include examples/cpp/synchro-barrier/s4u-synchro-barrier.tesh
 include examples/cpp/synchro-condition-variable-waituntil/s4u-synchro-condition-variable-waituntil.cpp
@@ -2242,6 +2243,8 @@ include src/kernel/EngineImpl.cpp
 include src/kernel/EngineImpl.hpp
 include src/kernel/activity/ActivityImpl.cpp
 include src/kernel/activity/ActivityImpl.hpp
+include src/kernel/activity/BarrierImpl.cpp
+include src/kernel/activity/BarrierImpl.hpp
 include src/kernel/activity/CommImpl.cpp
 include src/kernel/activity/CommImpl.hpp
 include src/kernel/activity/ConditionVariableImpl.cpp

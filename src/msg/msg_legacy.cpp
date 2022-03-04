@@ -403,7 +403,7 @@ sg_bar_t MSG_barrier_init(unsigned int count)
   return sg_barrier_init(count);
 }
 
-void MSG_barrier_destroy(const_sg_bar_t bar)
+void MSG_barrier_destroy(sg_bar_t bar)
 {
   sg_barrier_destroy(bar);
 }

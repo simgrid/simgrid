@@ -63,6 +63,10 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, std::stri
   auto simcall = static_cast<Transition::Type>(type);
 
   switch (simcall) {
+    case Transition::Type::BARRIER_LOCK:
+    case Transition::Type::BARRIER_WAIT:
+      return new BarrierTransition(issuer, times_considered, simcall, stream);
+
     case Transition::Type::COMM_RECV:
       return new CommRecvTransition(issuer, times_considered, stream);
     case Transition::Type::COMM_SEND:

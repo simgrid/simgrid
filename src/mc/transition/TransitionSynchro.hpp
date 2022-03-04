@@ -11,6 +11,15 @@
 namespace simgrid {
 namespace mc {
 
+class BarrierTransition : public Transition {
+  unsigned bar_;
+
+public:
+  std::string to_string(bool verbose) const override;
+  BarrierTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream);
+  bool depends(const Transition* other) const override;
+};
+
 class MutexTransition : public Transition {
   uintptr_t mutex_;
   aid_t owner_;

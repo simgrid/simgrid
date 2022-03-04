@@ -80,7 +80,7 @@ else()
 endif()
 
 # Hijack some regular tests to run them on top of the MC
-foreach (example synchro-mutex synchro-semaphore)
+foreach (example synchro-barrier synchro-mutex synchro-semaphore)
   set(tesh_files ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-mc-${example}.tesh)
 
   if (SIMGRID_HAVE_MC)

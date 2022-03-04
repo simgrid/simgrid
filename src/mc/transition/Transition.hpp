@@ -32,8 +32,9 @@ class Transition {
 
 public:
   /* Ordering is important here. depends() implementations only consider subsequent types in this ordering */
-  XBT_DECLARE_ENUM_CLASS(Type, RANDOM,     /* First because indep with anybody */
-                         TESTANY, WAITANY, /* high priority because they can rewrite themselves to *_WAIT */
+  XBT_DECLARE_ENUM_CLASS(Type, RANDOM,               /* First because indep with anybody */
+                         TESTANY, WAITANY,           /* high priority because they can rewrite themselves to *_WAIT */
+                         BARRIER_LOCK, BARRIER_WAIT, /* BARRIER transitions sorted alphabetically */
                          COMM_RECV, COMM_SEND, COMM_TEST, COMM_WAIT, /* Alphabetical ordering of COMM_* */
                          MUTEX_LOCK, MUTEX_TEST, MUTEX_TRYLOCK, MUTEX_UNLOCK, MUTEX_WAIT, /* alphabetical */
                          SEM_LOCK, SEM_UNLOCK, SEM_WAIT, /* alphabetical ordering of SEM transitions */

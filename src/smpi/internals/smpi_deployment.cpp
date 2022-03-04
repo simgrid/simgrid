@@ -26,9 +26,9 @@ public:
     auto* group = new simgrid::smpi::Group(size_);
     comm_world_ = new simgrid::smpi::Comm(group, nullptr, false, -1);
     universe_size += max_no_processes;
-    bar_ = std::make_shared<s4u::Barrier>(size_);
+    bar_ = s4u::Barrier::create(size_);
   }
-  std::shared_ptr<s4u::Barrier> bar_;
+  s4u::BarrierPtr bar_;
   unsigned int size_;
   unsigned int finalized_ranks_ = 0;
   MPI_Comm comm_world_;

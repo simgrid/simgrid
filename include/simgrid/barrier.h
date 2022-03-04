@@ -1,4 +1,4 @@
-/* Public interface to the Link datatype                                    */
+/* Public interface to the Barrier datatype                                 */
 
 /* Copyright (c) 2018-2022. The SimGrid Team. All rights reserved.          */
 
@@ -11,7 +11,7 @@
 #include <simgrid/forward.h>
 
 #ifdef __cplusplus
-constexpr int SG_BARRIER_SERIAL_THREAD = -1;
+constexpr bool SG_BARRIER_SERIAL_THREAD = true;
 #else
 #define SG_BARRIER_SERIAL_THREAD -1
 #endif
@@ -20,7 +20,7 @@ constexpr int SG_BARRIER_SERIAL_THREAD = -1;
 SG_BEGIN_DECL
 
 XBT_PUBLIC sg_bar_t sg_barrier_init(unsigned int count);
-XBT_PUBLIC void sg_barrier_destroy(const_sg_bar_t bar);
+XBT_PUBLIC void sg_barrier_destroy(sg_bar_t bar);
 XBT_PUBLIC int sg_barrier_wait(sg_bar_t bar);
 
 SG_END_DECL

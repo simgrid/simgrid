@@ -60,6 +60,24 @@ public:
   double get_timeout() const { return timeout_; }
 };
 
+/* This observer is ued for BARRIER_LOCK and BARRIER_WAIT. WAIT is returning and needs the acquisition */
+class BarrierObserver : public ResultingSimcall<bool> {
+  mc::Transition::Type type_;
+  activity::BarrierImpl* const barrier_                = nullptr;
+  activity::BarrierAcquisitionImpl* const acquisition_ = nullptr;
+  const double timeout_;
+
+public:
+  BarrierObserver(ActorImpl* actor, mc::Transition::Type type, activity::BarrierImpl* bar);
+  BarrierObserver(ActorImpl* actor, mc::Transition::Type type, activity::BarrierAcquisitionImpl* acqui,
+                  double timeout = -1.0);
+
+  void serialize(std::stringstream& stream) const override;
+  bool is_enabled() override;
+
+  double get_timeout() const { return timeout_; }
+};
+
 } // namespace actor
 } // namespace kernel
 } // namespace simgrid

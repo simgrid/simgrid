@@ -15,6 +15,39 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_synchro, mc_transition, "Logging specif
 
 namespace simgrid {
 namespace mc {
+
+std::string BarrierTransition::to_string(bool verbose) const
+{
+  return xbt::string_printf("%s(barrier: %u)", Transition::to_c_str(type_), bar_);
+}
+BarrierTransition::BarrierTransition(aid_t issuer, int times_considered, Type type, std::stringstream& stream)
+    : Transition(type, issuer, times_considered)
+{
+  xbt_assert(stream >> bar_);
+}
+bool BarrierTransition::depends(const Transition* o) const
+{
+  if (o->type_ < type_)
+    return o->depends(this);
+
+  if (auto* other = dynamic_cast<const BarrierTransition*>(o)) {
+    if (bar_ != other->bar_)
+      return false;
+
+    // LOCK indep LOCK: requests are not ordered in a barrier
+    if (type_ == Type::BARRIER_LOCK && other->type_ == Type::BARRIER_LOCK)
+      return false;
+
+    // WAIT indep WAIT: requests are not ordered
+    if (type_ == Type::BARRIER_WAIT && other->type_ == Type::BARRIER_WAIT)
+      return false;
+
+    return true; // LOCK/WAIT is dependent because lock may enable wait
+  }
+
+  return false; // barriers are INDEP with non-barrier transitions
+}
+
 std::string MutexTransition::to_string(bool verbose) const
 {
   return xbt::string_printf("%s(mutex: %" PRIxPTR ", owner:%ld)", Transition::to_c_str(type_), mutex_, owner_);

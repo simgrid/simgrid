@@ -19,18 +19,12 @@ namespace simgrid {
 namespace s4u {
 
 class XBT_PUBLIC Barrier {
-private:
-  MutexPtr mutex_            = Mutex::create();
-  ConditionVariablePtr cond_ = ConditionVariable::create();
-  unsigned int expected_actors_;
-  unsigned int arrived_actors_ = 0;
+  kernel::activity::BarrierImpl* pimpl_;
+  friend kernel::activity::BarrierImpl;
 
-  /* refcounting */
-  std::atomic_int_fast32_t refcount_{0};
+  explicit Barrier(kernel::activity::BarrierImpl* pimpl) : pimpl_(pimpl) {}
 
 public:
-  /** Creates a barrier for the given amount of actors */
-  explicit Barrier(unsigned int expected_actors) : expected_actors_(expected_actors) {}
 #ifndef DOXYGEN
   Barrier(Barrier const&) = delete;
   Barrier& operator=(Barrier const&) = delete;

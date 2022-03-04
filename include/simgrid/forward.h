@@ -125,6 +125,13 @@ namespace activity {
   XBT_PUBLIC void intrusive_ptr_add_ref(ActivityImpl* activity);
   XBT_PUBLIC void intrusive_ptr_release(ActivityImpl* activity);
 
+  class BarrierImpl;
+  using BarrierImplPtr = boost::intrusive_ptr<BarrierImpl>;
+  XBT_PUBLIC void intrusive_ptr_add_ref(BarrierImpl* cond);
+  XBT_PUBLIC void intrusive_ptr_release(BarrierImpl* cond);
+  class BarrierAcquisitionImpl;
+  using BarrierAcquisitionImplPtr = boost::intrusive_ptr<BarrierAcquisitionImpl>;
+
   class ConditionVariableImpl;
   using ConditionVariableImplPtr = boost::intrusive_ptr<ConditionVariableImpl>;
   XBT_PUBLIC void intrusive_ptr_add_ref(ConditionVariableImpl* cond);

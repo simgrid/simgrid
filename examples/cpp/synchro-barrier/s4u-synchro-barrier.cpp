@@ -41,7 +41,7 @@ int main(int argc, char **argv)
   int actor_count = std::stoi(argv[1]);
   xbt_assert(actor_count > 0, "<actor-count> must be greater than 0");
 
-  e.load_platform("../../platforms/two_hosts.xml");
+  e.load_platform(argc > 2 ? argv[2] : "../../platforms/two_hosts.xml");
   simgrid::s4u::Actor::create("master", e.host_by_name("Tremblay"), master, actor_count);
   e.run();
 
