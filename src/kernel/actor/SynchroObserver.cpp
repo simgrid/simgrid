@@ -75,6 +75,7 @@ BarrierObserver::BarrierObserver(ActorImpl* actor, mc::Transition::Type type, ac
 }
 void BarrierObserver::serialize(std::stringstream& stream) const
 {
+  xbt_assert(barrier_ != nullptr || (acquisition_ != nullptr && acquisition_->barrier_ != nullptr));
   stream << (short)type_ << ' ' << (barrier_ != nullptr ? barrier_->get_id() : acquisition_->barrier_->get_id());
 }
 bool BarrierObserver::is_enabled()
