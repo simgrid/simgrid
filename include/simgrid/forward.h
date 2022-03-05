@@ -262,9 +262,9 @@ typedef struct s_smx_sem* smx_sem_t;
 /** Pointer to a SimGrid barrier object */
 typedef s4u_Barrier* sg_bar_t;
 /** Constant pointer to a SimGrid barrier object */
-typedef const s4u_Barrier* const_sg_bar_t;
+XBT_ATTRIB_DEPRECATED_v335("Please stop using this type alias") typedef const s4u_Barrier* const_sg_bar_t;
 typedef s4u_Comm* sg_comm_t;
-typedef const s4u_Comm* const_sg_comm_t;
+XBT_ATTRIB_DEPRECATED_v335("Please stop using this type alias") typedef const s4u_Comm* const_sg_comm_t;
 typedef s4u_Exec* sg_exec_t;
 typedef const s4u_Exec* const_sg_exec_t;
 typedef s4u_ConditionVariable* sg_cond_t;

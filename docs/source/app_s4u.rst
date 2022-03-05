@@ -2161,7 +2161,6 @@ Basic management
          #include <simgrid/comm.h>
 
       .. doxygentypedef:: sg_comm_t
-      .. doxygentypedef:: const_sg_comm_t
 
 Querying info
 -------------
@@ -2516,10 +2515,9 @@ Locking
          #include <simgrid/barrier.hpp>
 
       .. doxygentypedef:: sg_bar_t
-      .. doxygentypedef:: const_sg_bar_t
 
       .. doxygenfunction:: sg_barrier_init(unsigned int count)
-      .. doxygenfunction:: sg_barrier_destroy(const_sg_bar_t bar)
+      .. doxygenfunction:: sg_barrier_destroy(sg_bar_t bar)
       .. doxygenfunction:: sg_barrier_wait(sg_bar_t bar)
 
 
