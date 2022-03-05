@@ -7,6 +7,7 @@ MC:
  - Support mutex, semaphore and barrier in DPOR reduction
  - Seems to work on Arm64 architectures too.
  - Display a nice error message when ptrace is not usable.
+ - Remove the ISP test suite: it's not free software, and it's superseeded by MBI
 
 SMPI:
  - fix for FG#100 by ensuring small asynchronous messages never overtake larger

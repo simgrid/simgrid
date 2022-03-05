@@ -1028,7 +1028,6 @@ set(CMAKEFILES_TXT
   teshsuite/surf/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
 
-  teshsuite/smpi/isp/umpire/CMakeLists.txt
   teshsuite/smpi/mpich3-test/CMakeLists.txt
   teshsuite/smpi/mpich3-test/attr/CMakeLists.txt
   teshsuite/smpi/mpich3-test/coll/CMakeLists.txt
