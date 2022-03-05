@@ -23,7 +23,7 @@ namespace s4u {
 BarrierPtr Barrier::create(unsigned int expected_actors)
 {
   auto* res = new kernel::activity::BarrierImpl(expected_actors);
-  return BarrierPtr(&res->piface_);
+  return BarrierPtr(&res->piface_, false);
 }
 
 /** @brief Block the current actor until all expected actors reach the barrier.
