@@ -688,6 +688,9 @@ PYBIND11_MODULE(simgrid, m)
            "Test whether the communication is terminated.")
       .def("wait", &simgrid::s4u::Comm::wait, py::call_guard<py::gil_scoped_release>(),
            "Block until the completion of that communication.")
+      .def("wait_for", &simgrid::s4u::Comm::wait_for,
+           py::call_guard<py::gil_scoped_release>(),
+           "Block until the completion of that communication, or raises TimeoutException after the specified timeout.")
       // use py::overload_cast for wait_all/wait_any, until the overload marked XBT_ATTRIB_DEPRECATED_v332 is removed
       .def_static(
           "wait_all", py::overload_cast<const std::vector<simgrid::s4u::CommPtr>&>(&simgrid::s4u::Comm::wait_all),
@@ -695,7 +698,14 @@ PYBIND11_MODULE(simgrid, m)
       .def_static(
           "wait_any", py::overload_cast<const std::vector<simgrid::s4u::CommPtr>&>(&simgrid::s4u::Comm::wait_any),
           py::call_guard<py::gil_scoped_release>(),
-          "Block until the completion of any communication in the list and return the index of the terminated one.");
+          "Block until the completion of any communication in the list and return the index of the terminated one.")
+      .def_static(
+          "wait_any_for",
+          py::overload_cast<const std::vector<simgrid::s4u::CommPtr>&, double>(&simgrid::s4u::Comm::wait_any_for),
+          py::call_guard<py::gil_scoped_release>(),
+          "Block until the completion of any communication in the list and return the index of the terminated "
+          "one, or -1 if a timeout occurred."
+      );
 
   /* Class Io */
   py::class_<simgrid::s4u::Io, simgrid::s4u::IoPtr>(m, "Io", "I/O activities. See the C++ documentation for details.")

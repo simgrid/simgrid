@@ -2213,8 +2213,10 @@ also start direct communications as shown below.
 
       .. automethod:: simgrid.Comm.test
       .. automethod:: simgrid.Comm.wait
+      .. automethod:: simgrid.Comm.wait_for
       .. automethod:: simgrid.Comm.wait_all
       .. automethod:: simgrid.Comm.wait_any
+      .. automethod:: simgrid.Comm.wait_any_for
 
    .. group-tab:: C
 
