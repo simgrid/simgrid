@@ -36,7 +36,7 @@ if (enable_smpi_MBI_testsuite)
   file(GLOB cfiles RELATIVE ${CMAKE_BINARY_DIR}/MBI/tmp ${CMAKE_BINARY_DIR}/MBI/tmp/*.c )
   foreach(cfile ${cfiles})
     # Copy the generated files only if different
-    file(COPY_FILE ${CMAKE_BINARY_DIR}/MBI/tmp/${cfile} ${CMAKE_BINARY_DIR}/MBI/${cfile} ONLY_IF_DIFFERENT)
+    file(COPY ${CMAKE_BINARY_DIR}/MBI/tmp/${cfile} DESTINATION ${CMAKE_BINARY_DIR}/MBI/)
     string(REGEX REPLACE "[.]c" "" basefile ${cfile})
     
     # Generate an executable for each of them
