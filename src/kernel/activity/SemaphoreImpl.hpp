@@ -82,8 +82,7 @@ public:
       delete sem;
     }
   }
-  unsigned get_id() { return id_; }
-
+  unsigned get_id() const { return id_; }
   s4u::Semaphore& sem() { return piface_; }
 };
 } // namespace activity

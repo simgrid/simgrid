@@ -57,6 +57,7 @@ if (enable_smpi_MBI_testsuite)
     SET_TESTS_PROPERTIES(mbi-${basefile}  PROPERTIES DEPENDS mbi-${basefile})
     SET_TESTS_PROPERTIES(mbi-${basefile}  PROPERTIES DEPENDS simgrid-mc)
   endforeach()
+  file(REMOVE_RECURSE ${CMAKE_BINARY_DIR}/MBI/tmp) # Clean temp files
 
   if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
   else()

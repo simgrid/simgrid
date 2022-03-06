@@ -46,7 +46,6 @@ class XBT_PUBLIC BarrierImpl {
   std::atomic_int_fast32_t refcount_{1};
   s4u::Barrier piface_;
   unsigned int expected_actors_;
-  // std::vector<actor::ActorImpl*> arrived_actors_;
   std::deque<BarrierAcquisitionImplPtr> ongoing_acquisitions_;
   static unsigned next_id_;
   unsigned id_ = next_id_++;
@@ -55,7 +54,7 @@ class XBT_PUBLIC BarrierImpl {
   friend s4u::Barrier;
 
 public:
-  BarrierImpl(int expected_actors) : piface_(this), expected_actors_(expected_actors) {}
+  explicit BarrierImpl(int expected_actors) : piface_(this), expected_actors_(expected_actors) {}
   BarrierImpl(BarrierImpl const&) = delete;
   BarrierImpl& operator=(BarrierImpl const&) = delete;
 

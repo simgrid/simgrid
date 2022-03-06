@@ -62,7 +62,7 @@ Win::Win(void* base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   colls::allgather(&connected_wins_[rank_], sizeof(MPI_Win), MPI_BYTE, connected_wins_.data(), sizeof(MPI_Win),
                    MPI_BYTE, comm);
   if  (MC_is_active() || MC_record_replay_is_active()){
-    if (bar_.get() == 0) // First to arrive on the barrier
+    if (bar_.get() == nullptr) // First to arrive on the barrier
       bar_ = s4u::Barrier::create(comm->size());
     bar_->wait();
   }else{
