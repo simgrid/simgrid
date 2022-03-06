@@ -11,6 +11,7 @@
 #include <boost/algorithm/string/join.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(replay_io, "Messages specific for this example");
+namespace sg4 = simgrid::s4u;
 
 #define ACT_DEBUG(...)                                                                                                 \
   if (XBT_LOG_ISENABLED(replay_io, xbt_log_priority_verbose)) {                                                        \
@@ -20,7 +21,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(replay_io, "Messages specific for this example");
     ((void)0)
 
 class Replayer {
-  static std::unordered_map<std::string, simgrid::s4u::File> opened_files;
+  static std::unordered_map<std::string, sg4::File> opened_files;
 
   static void log_action(const simgrid::xbt::ReplayAction& action, double date)
   {
@@ -30,9 +31,9 @@ class Replayer {
     }
   }
 
-  static simgrid::s4u::File* get_file_descriptor(const std::string& file_name)
+  static sg4::File* get_file_descriptor(const std::string& file_name)
   {
-    std::string full_name = simgrid::s4u::this_actor::get_name() + ":" + file_name;
+    std::string full_name = sg4::this_actor::get_name() + ":" + file_name;
     return &opened_files.at(full_name);
   }
 
@@ -57,48 +58,48 @@ public:
   static void open(simgrid::xbt::ReplayAction& action)
   {
     std::string file_name = action[2];
-    double clock          = simgrid::s4u::Engine::get_clock();
-    std::string full_name = simgrid::s4u::this_actor::get_name() + ":" + file_name;
+    double clock          = sg4::Engine::get_clock();
+    std::string full_name = sg4::this_actor::get_name() + ":" + file_name;
 
     ACT_DEBUG("Entering Open: %s (filename: %s)", NAME.c_str(), file_name.c_str());
     opened_files.emplace(std::piecewise_construct, std::forward_as_tuple(full_name),
                          std::forward_as_tuple(file_name, nullptr));
 
-    log_action(action, simgrid::s4u::Engine::get_clock() - clock);
+    log_action(action, sg4::Engine::get_clock() - clock);
   }
 
   static void read(simgrid::xbt::ReplayAction& action)
   {
     std::string file_name = action[2];
     sg_size_t size        = std::stoul(action[3]);
-    double clock          = simgrid::s4u::Engine::get_clock();
+    double clock          = sg4::Engine::get_clock();
 
-    simgrid::s4u::File* file = get_file_descriptor(file_name);
+    sg4::File* file = get_file_descriptor(file_name);
 
     ACT_DEBUG("Entering Read: %s (size: %llu)", NAME.c_str(), size);
     file->read(size);
 
-    log_action(action, simgrid::s4u::Engine::get_clock() - clock);
+    log_action(action, sg4::Engine::get_clock() - clock);
   }
 
   static void close(simgrid::xbt::ReplayAction& action)
   {
     std::string file_name = action[2];
-    std::string full_name = simgrid::s4u::this_actor::get_name() + ":" + file_name;
-    double clock          = simgrid::s4u::Engine::get_clock();
+    std::string full_name = sg4::this_actor::get_name() + ":" + file_name;
+    double clock          = sg4::Engine::get_clock();
 
     ACT_DEBUG("Entering Close: %s (filename: %s)", NAME.c_str(), file_name.c_str());
     xbt_assert(opened_files.erase(full_name) == 1, "File not found in opened files: %s", full_name.c_str());
 
-    log_action(action, simgrid::s4u::Engine::get_clock() - clock);
+    log_action(action, sg4::Engine::get_clock() - clock);
   }
 };
 
-std::unordered_map<std::string, simgrid::s4u::File> Replayer::opened_files;
+std::unordered_map<std::string, sg4::File> Replayer::opened_files;
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   sg_storage_file_system_init();
 
   xbt_assert(argc > 3,
@@ -122,7 +123,7 @@ int main(int argc, char* argv[])
 
   e.run();
 
-  XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
 
   return 0;
 }

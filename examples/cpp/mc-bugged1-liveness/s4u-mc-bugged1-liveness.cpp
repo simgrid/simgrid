@@ -20,13 +20,14 @@
 #include <xbt/dynar.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(bugged1_liveness, "my log messages");
+namespace sg4 = simgrid::s4u;
 
 class Message {
 public:
   enum class Kind { GRANT, REQUEST, RELEASE };
   Kind kind                             = Kind::GRANT;
-  simgrid::s4u::Mailbox* return_mailbox = nullptr;
-  explicit Message(Message::Kind kind, simgrid::s4u::Mailbox* mbox) : kind(kind), return_mailbox(mbox) {}
+  sg4::Mailbox* return_mailbox          = nullptr;
+  explicit Message(Message::Kind kind, sg4::Mailbox* mbox) : kind(kind), return_mailbox(mbox) {}
 };
 
 int r  = 0;
@@ -47,9 +48,9 @@ static void garbage_stack(void)
 static void coordinator()
 {
   bool CS_used = false;
-  std::queue<simgrid::s4u::Mailbox*> requests;
+  std::queue<sg4::Mailbox*> requests;
 
-  simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name("coordinator");
+  sg4::Mailbox* mbox = sg4::Mailbox::by_name("coordinator");
 
   while (true) {
     auto m = mbox->get_unique<Message>();
@@ -67,7 +68,7 @@ static void coordinator()
     } else {
       if (not requests.empty()) {
         XBT_INFO("CS release. Grant to queued requests (queue size: %zu)", requests.size());
-        simgrid::s4u::Mailbox* req = requests.front();
+        sg4::Mailbox* req = requests.front();
         requests.pop();
         if (req->get_name() != "1") {
           req->put(new Message(Message::Kind::GRANT, mbox), 1000);
@@ -85,13 +86,13 @@ static void coordinator()
 
 static void client(int id)
 {
-  aid_t my_pid = simgrid::s4u::this_actor::get_pid();
+  aid_t my_pid = sg4::this_actor::get_pid();
 
-  simgrid::s4u::Mailbox* my_mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id));
+  sg4::Mailbox* my_mailbox = sg4::Mailbox::by_name(std::to_string(id));
 
   while (true) {
     XBT_INFO("Ask the request");
-    simgrid::s4u::Mailbox::by_name("coordinator")->put(new Message(Message::Kind::REQUEST, my_mailbox), 1000);
+    sg4::Mailbox::by_name("coordinator")->put(new Message(Message::Kind::REQUEST, my_mailbox), 1000);
 
     if (id == 1) {
       r  = 1;
@@ -109,11 +110,11 @@ static void client(int id)
 
     XBT_INFO("%d got the answer. Sleep a bit and release it", id);
 
-    simgrid::s4u::this_actor::sleep_for(1);
+    sg4::this_actor::sleep_for(1);
 
-    simgrid::s4u::Mailbox::by_name("coordinator")->put(new Message(Message::Kind::RELEASE, my_mailbox), 1000);
+    sg4::Mailbox::by_name("coordinator")->put(new Message(Message::Kind::RELEASE, my_mailbox), 1000);
 
-    simgrid::s4u::this_actor::sleep_for(static_cast<double>(my_pid));
+    sg4::this_actor::sleep_for(static_cast<double>(my_pid));
 
     if (id == 1) {
       cs = 0;
@@ -136,21 +137,21 @@ static void raw_client(int id)
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   MC_automaton_new_propositional_symbol_pointer("r", &r);
   MC_automaton_new_propositional_symbol_pointer("cs", &cs);
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("coordinator", e.host_by_name("Tremblay"), coordinator)
+  sg4::Actor::create("coordinator", e.host_by_name("Tremblay"), coordinator)
       ->set_kill_time(argc > 3 ? std::stod(argv[3]) : -1.0);
   if (std::stod(argv[2]) == 0) {
-    simgrid::s4u::Actor::create("client", e.host_by_name("Boivin"), raw_client, 1);
-    simgrid::s4u::Actor::create("client", e.host_by_name("Fafard"), raw_client, 2);
+    sg4::Actor::create("client", e.host_by_name("Boivin"), raw_client, 1);
+    sg4::Actor::create("client", e.host_by_name("Fafard"), raw_client, 2);
   } else { // "Visited" case
-    simgrid::s4u::Actor::create("client", e.host_by_name("Boivin"), raw_client, 2);
-    simgrid::s4u::Actor::create("client", e.host_by_name("Fafard"), raw_client, 1);
+    sg4::Actor::create("client", e.host_by_name("Boivin"), raw_client, 2);
+    sg4::Actor::create("client", e.host_by_name("Fafard"), raw_client, 1);
   }
   e.run();
 

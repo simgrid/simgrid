@@ -7,6 +7,7 @@
 #include "routing_table.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(kademlia_node, "Messages specific for this example");
+namespace sg4 = simgrid::s4u;
 
 namespace kademlia {
 static void destroy(void* message)
@@ -18,7 +19,7 @@ static void destroy(void* message)
 /**
   * Try to asynchronously get a new message from given mailbox. Return null if none available.
   */
-Message* Node::receive(simgrid::s4u::Mailbox* mailbox)
+Message* Node::receive(sg4::Mailbox* mailbox)
 {
   if (receive_comm == nullptr)
     receive_comm = mailbox->get_async<kademlia::Message>(&received_msg);
@@ -43,7 +44,7 @@ bool Node::join(unsigned int known_id)
   /* First step: Send a "FIND_NODE" request to the node we know */
   sendFindNode(known_id, id_);
 
-  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id_));
+  sg4::Mailbox* mailbox = sg4::Mailbox::by_name(std::to_string(id_));
   do {
     if (Message* msg = receive(mailbox)) {
       XBT_DEBUG("Received an answer from the node I know.");
@@ -58,7 +59,7 @@ bool Node::join(unsigned int known_id)
       }
       delete msg;
     } else
-      simgrid::s4u::this_actor::sleep_for(1);
+      sg4::this_actor::sleep_for(1);
   } while (not got_answer);
 
   /* Second step: Send a FIND_NODE to a random node in buckets */
@@ -84,11 +85,11 @@ bool Node::join(unsigned int known_id)
 void Node::sendFindNode(unsigned int id, unsigned int destination) const
 {
   /* Gets the mailbox to send to */
-  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id));
+  sg4::Mailbox* mailbox = sg4::Mailbox::by_name(std::to_string(id));
   /* Build the task */
 
-  auto* msg = new Message(id_, destination, simgrid::s4u::Mailbox::by_name(std::to_string(id_)),
-                          simgrid::s4u::Host::current()->get_cname());
+  auto* msg =
+      new Message(id_, destination, sg4::Mailbox::by_name(std::to_string(id_)), sg4::Host::current()->get_cname());
 
   /* Send the task */
   mailbox->put_init(msg, 1)->detach(kademlia::destroy);
@@ -188,7 +189,7 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
   unsigned int answers;
   bool destination_found   = false;
   unsigned int nodes_added = 0;
-  double global_timeout    = simgrid::s4u::Engine::get_clock() + FIND_NODE_GLOBAL_TIMEOUT;
+  double global_timeout    = sg4::Engine::get_clock() + FIND_NODE_GLOBAL_TIMEOUT;
   unsigned int steps       = 0;
 
   /* First we build a list of who we already know */
@@ -201,11 +202,11 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
     answers        = 0;
     queries        = sendFindNodeToBest(node_list.get());
     nodes_added    = 0;
-    double timeout = simgrid::s4u::Engine::get_clock() + FIND_NODE_TIMEOUT;
+    double timeout = sg4::Engine::get_clock() + FIND_NODE_TIMEOUT;
     steps++;
-    double time_beginreceive = simgrid::s4u::Engine::get_clock();
+    double time_beginreceive = sg4::Engine::get_clock();
 
-    simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id_));
+    sg4::Mailbox* mailbox = sg4::Mailbox::by_name(std::to_string(id_));
     do {
       if (Message* msg = receive(mailbox)) {
         // Check if what we have received is what we are looking for.
@@ -227,17 +228,17 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
             handleFindNode(msg);
           }
           // Update the timeout if we didn't have our answer
-          timeout += simgrid::s4u::Engine::get_clock() - time_beginreceive;
-          time_beginreceive = simgrid::s4u::Engine::get_clock();
+          timeout += sg4::Engine::get_clock() - time_beginreceive;
+          time_beginreceive = sg4::Engine::get_clock();
         }
         delete msg;
       } else {
-        simgrid::s4u::this_actor::sleep_for(1);
+        sg4::this_actor::sleep_for(1);
       }
-    } while (simgrid::s4u::Engine::get_clock() < timeout && answers < queries);
+    } while (sg4::Engine::get_clock() < timeout && answers < queries);
     destination_found = node_list->destinationFound();
-  } while (not destination_found && (nodes_added > 0 || answers == 0) &&
-           simgrid::s4u::Engine::get_clock() < global_timeout && steps < MAX_STEPS);
+  } while (not destination_found && (nodes_added > 0 || answers == 0) && sg4::Engine::get_clock() < global_timeout &&
+           steps < MAX_STEPS);
 
   if (destination_found) {
     if (count_in_stats)
@@ -272,9 +273,8 @@ void Node::handleFindNode(const Message* msg)
   XBT_VERB("Received a FIND_NODE from %s (%s), he's trying to find %08x", msg->answer_to_->get_cname(),
            msg->issuer_host_name_.c_str(), msg->destination_id_);
   // Building the answer to the request
-  auto* answer =
-      new Message(id_, msg->destination_id_, findClosest(msg->destination_id_),
-                  simgrid::s4u::Mailbox::by_name(std::to_string(id_)), simgrid::s4u::Host::current()->get_cname());
+  auto* answer = new Message(id_, msg->destination_id_, findClosest(msg->destination_id_),
+                             sg4::Mailbox::by_name(std::to_string(id_)), sg4::Host::current()->get_cname());
   // Sending the answer
   msg->answer_to_->put_init(answer, 1)->detach(kademlia::destroy);
 }

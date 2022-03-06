@@ -19,7 +19,7 @@ int main(int argc, char** argv)
   auto* faulty = e.host_by_name("Faulty Host");
   auto* safe   = e.host_by_name("Safe Host");
   sg4::Activity::on_completion_cb([](sg4::Activity const& activity) {
-    const auto* exec = dynamic_cast<simgrid::s4u::Exec const*>(&activity);
+    const auto* exec = dynamic_cast<sg4::Exec const*>(&activity);
     if (exec == nullptr) // Only Execs are concerned here
       return;
     if (exec->get_state() == sg4::Activity::State::FINISHED)

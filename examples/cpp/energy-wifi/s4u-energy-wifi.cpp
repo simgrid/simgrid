@@ -18,14 +18,15 @@
 #include "simgrid/s4u/Mailbox.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test_wifi, "Wifi energy demo");
+namespace sg4 = simgrid::s4u;
 
 static void sender()
 {
   // start sending after 5 seconds
-  simgrid::s4u::this_actor::sleep_until(5);
+  sg4::this_actor::sleep_until(5);
 
   std::string mbName = "MailBoxRCV";
-  simgrid::s4u::Mailbox *dst = simgrid::s4u::Mailbox::by_name(mbName);
+  sg4::Mailbox* dst  = sg4::Mailbox::by_name(mbName);
 
   int size = 6750000;
 
@@ -39,7 +40,7 @@ static void receiver()
 {
   std::string mbName = "MailBoxRCV";
   XBT_INFO("RECEIVING on mb %s", mbName.c_str());
-  simgrid::s4u::Mailbox *myBox = simgrid::s4u::Mailbox::by_name(mbName);
+  sg4::Mailbox* myBox = sg4::Mailbox::by_name(mbName);
   myBox->get<std::string>();
 
   XBT_INFO("received all messages");
@@ -47,7 +48,7 @@ static void receiver()
 
 int main(int argc, char** argv)
 {
-  simgrid::s4u::Engine engine(&argc, argv);
+  sg4::Engine engine(&argc, argv);
   sg_wifi_energy_plugin_init();
   engine.load_platform(argv[1]);
 
@@ -57,8 +58,8 @@ int main(int argc, char** argv)
   l->set_host_wifi_rate(engine.host_by_name("Station 2"), 0);
 
   // create the two actors for the test
-  simgrid::s4u::Actor::create("act0", engine.host_by_name("Station 1"), sender);
-  simgrid::s4u::Actor::create("act1", engine.host_by_name("Station 2"), receiver);
+  sg4::Actor::create("act0", engine.host_by_name("Station 1"), sender);
+  sg4::Actor::create("act1", engine.host_by_name("Station 2"), receiver);
 
   engine.run();
 

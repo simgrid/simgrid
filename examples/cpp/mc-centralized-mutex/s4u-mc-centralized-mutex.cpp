@@ -15,19 +15,20 @@ constexpr int AMOUNT_OF_CLIENTS = 4;
 constexpr int CS_PER_PROCESS    = 2;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(centralized, "my log messages");
+namespace sg4 = simgrid::s4u;
 
 class Message {
 public:
   enum class Kind { GRANT, REQUEST, RELEASE };
   Kind kind                             = Kind::GRANT;
-  simgrid::s4u::Mailbox* return_mailbox = nullptr;
-  explicit Message(Message::Kind kind, simgrid::s4u::Mailbox* mbox) : kind(kind), return_mailbox(mbox) {}
+  sg4::Mailbox* return_mailbox          = nullptr;
+  explicit Message(Message::Kind kind, sg4::Mailbox* mbox) : kind(kind), return_mailbox(mbox) {}
 };
 
 static void coordinator()
 {
-  std::queue<simgrid::s4u::Mailbox*> requests;
-  simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name("coordinator");
+  std::queue<sg4::Mailbox*> requests;
+  sg4::Mailbox* mbox = sg4::Mailbox::by_name("coordinator");
 
   bool CS_used = false;                              // initially the CS is idle
   int todo     = AMOUNT_OF_CLIENTS * CS_PER_PROCESS; // amount of releases we are expecting
@@ -46,7 +47,7 @@ static void coordinator()
     } else { // that's a release. Check if someone was waiting for the lock
       if (not requests.empty()) {
         XBT_INFO("CS release. Grant to queued requests (queue size: %zu)", requests.size());
-        simgrid::s4u::Mailbox* req = requests.front();
+        sg4::Mailbox* req = requests.front();
         requests.pop();
         req->put(new Message(Message::Kind::GRANT, mbox), 1000);
         todo--;
@@ -62,36 +63,36 @@ static void coordinator()
 
 static void client()
 {
-  aid_t my_pid = simgrid::s4u::this_actor::get_pid();
+  aid_t my_pid = sg4::this_actor::get_pid();
 
-  simgrid::s4u::Mailbox* my_mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(my_pid));
+  sg4::Mailbox* my_mailbox = sg4::Mailbox::by_name(std::to_string(my_pid));
 
   // request the CS 3 times, sleeping a bit in between
   for (int i = 0; i < CS_PER_PROCESS; i++) {
     XBT_INFO("Ask the request");
-    simgrid::s4u::Mailbox::by_name("coordinator")->put(new Message(Message::Kind::REQUEST, my_mailbox), 1000);
+    sg4::Mailbox::by_name("coordinator")->put(new Message(Message::Kind::REQUEST, my_mailbox), 1000);
     // wait for the answer
     auto grant = my_mailbox->get_unique<Message>();
     XBT_INFO("got the answer. Sleep a bit and release it");
-    simgrid::s4u::this_actor::sleep_for(1);
+    sg4::this_actor::sleep_for(1);
 
-    simgrid::s4u::Mailbox::by_name("coordinator")->put(new Message(Message::Kind::RELEASE, my_mailbox), 1000);
-    simgrid::s4u::this_actor::sleep_for(static_cast<double>(my_pid));
+    sg4::Mailbox::by_name("coordinator")->put(new Message(Message::Kind::RELEASE, my_mailbox), 1000);
+    sg4::this_actor::sleep_for(static_cast<double>(my_pid));
   }
   XBT_INFO("Got all the CS I wanted, quit now");
 }
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("coordinator", e.host_by_name("Tremblay"), coordinator);
-  simgrid::s4u::Actor::create("client", e.host_by_name("Fafard"), client);
-  simgrid::s4u::Actor::create("client", e.host_by_name("Boivin"), client);
-  simgrid::s4u::Actor::create("client", e.host_by_name("Jacquelin"), client);
-  simgrid::s4u::Actor::create("client", e.host_by_name("Ginette"), client);
+  sg4::Actor::create("coordinator", e.host_by_name("Tremblay"), coordinator);
+  sg4::Actor::create("client", e.host_by_name("Fafard"), client);
+  sg4::Actor::create("client", e.host_by_name("Boivin"), client);
+  sg4::Actor::create("client", e.host_by_name("Jacquelin"), client);
+  sg4::Actor::create("client", e.host_by_name("Ginette"), client);
 
   e.run();
 

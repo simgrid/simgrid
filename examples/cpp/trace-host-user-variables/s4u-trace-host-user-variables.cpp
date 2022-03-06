@@ -12,10 +12,11 @@
 #include "simgrid/s4u.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
+namespace sg4 = simgrid::s4u;
 
 static void trace_fun()
 {
-  const auto host = simgrid::s4u::this_actor::get_host()->get_name();
+  const auto host = sg4::this_actor::get_host()->get_name();
 
   // the hostname has an empty HDD with a capacity of 100000 (bytes)
   simgrid::instr::set_host_variable(host, "HDD_capacity", 100000);
@@ -23,7 +24,7 @@ static void trace_fun()
 
   for (int i = 0; i < 10; i++) {
     // create and execute a task just to make the simulated time advance
-    simgrid::s4u::this_actor::execute(1e4);
+    sg4::this_actor::execute(1e4);
 
     // ADD: after the execution of this task, the HDD utilization increases by 100 (bytes)
     simgrid::instr::add_host_variable(host, "HDD_utilization", 100);
@@ -31,7 +32,7 @@ static void trace_fun()
 
   for (int i = 0; i < 10; i++) {
     // create and execute a task just to make the simulated time advance
-    simgrid::s4u::this_actor::execute(1e4);
+    sg4::this_actor::execute(1e4);
 
     // SUB: after the execution of this task, the HDD utilization decreases by 100 (bytes)
     simgrid::instr::sub_host_variable(host, "HDD_utilization", 100);
@@ -40,7 +41,7 @@ static void trace_fun()
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   xbt_assert(argc > 1, "Usage: %s platform_file\n \tExample: %s small_platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
@@ -49,7 +50,7 @@ int main(int argc, char* argv[])
   simgrid::instr::declare_host_variable("HDD_capacity");
   simgrid::instr::declare_host_variable("HDD_utilization", "1 0 0"); // red color
 
-  simgrid::s4u::Actor::create("master", e.host_by_name("Tremblay"), trace_fun);
+  sg4::Actor::create("master", e.host_by_name("Tremblay"), trace_fun);
 
   e.run();
 

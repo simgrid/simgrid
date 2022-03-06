@@ -8,17 +8,18 @@
 #include <unordered_map>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(disk_test, "Messages specific for this simulation");
+namespace sg4 = simgrid::s4u;
 
 static void host()
 {
   /* -Add an extra disk in a programmatic way */
-  simgrid::s4u::Host::current()->create_disk("Disk3", /*read bandwidth*/ 9.6e7, /*write bandwidth*/6.4e7)->seal();
+  sg4::Host::current()->create_disk("Disk3", /*read bandwidth*/ 9.6e7, /*write bandwidth*/ 6.4e7)->seal();
 
   /* - Display information on the disks mounted by the current host */
-  XBT_INFO("*** Storage info on %s ***", simgrid::s4u::Host::current()->get_cname());
+  XBT_INFO("*** Storage info on %s ***", sg4::Host::current()->get_cname());
 
   /* - Retrieve all disks from current host */
-  std::vector<simgrid::s4u::Disk*> const& disk_list = simgrid::s4u::Host::current()->get_disks();
+  std::vector<sg4::Disk*> const& disk_list = sg4::Host::current()->get_disks();
 
   /* - For each disk mounted on host, display disk name and mount point */
   for (auto const& disk : disk_list)
@@ -26,7 +27,7 @@ static void host()
              disk->get_write_bandwidth());
 
   /* - Write 400,000 bytes on Disk1 */
-  simgrid::s4u::Disk* disk = disk_list.front();
+  sg4::Disk* disk          = disk_list.front();
   sg_size_t write          = disk->write(400000);
   XBT_INFO("Wrote %llu bytes on '%s'", write, disk->get_cname());
 
@@ -35,7 +36,7 @@ static void host()
   XBT_INFO("Read %llu bytes on '%s'", read, disk->get_cname());
 
   /* - Write 800,000 bytes on Disk3 */
-  const simgrid::s4u::Disk* disk3 = disk_list.back();
+  const sg4::Disk* disk3          = disk_list.back();
   sg_size_t write_on_disk3        = disk3->write(800000);
   XBT_INFO("Wrote %llu bytes on '%s'", write_on_disk3, disk3->get_cname());
 
@@ -54,7 +55,7 @@ static void host()
 
 int main(int argc, char** argv)
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
   /* - Display Host properties */
@@ -64,10 +65,10 @@ int main(int argc, char** argv)
       XBT_INFO("  %s -> %s", kv.first.c_str(), kv.second.c_str());
   }
 
-  simgrid::s4u::Actor::create("", e.host_by_name("bob"), host);
+  sg4::Actor::create("", e.host_by_name("bob"), host);
 
   e.run();
-  XBT_INFO("Simulated time: %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulated time: %g", sg4::Engine::get_clock());
 
   return 0;
 }

@@ -13,6 +13,7 @@ static const int min_size = 1e6;
 static const int max_size = 1e9;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_energyconsumption, "Messages specific for this s4u example");
+namespace sg4 = simgrid::s4u;
 
 static void sender(std::vector<std::string> args)
 {
@@ -21,10 +22,10 @@ static void sender(std::vector<std::string> args)
   long comm_size  = std::stol(args.at(1));
   XBT_INFO("Send %ld bytes, in %d flows", comm_size, flow_amount);
 
-  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::string("message"));
+  sg4::Mailbox* mailbox = sg4::Mailbox::by_name(std::string("message"));
 
   /* Sleep a while before starting the example */
-  simgrid::s4u::this_actor::sleep_for(10);
+  sg4::this_actor::sleep_for(10);
 
   if (flow_amount == 1) {
     /* - Send the task to the @ref worker */
@@ -32,10 +33,10 @@ static void sender(std::vector<std::string> args)
     mailbox->put(payload, comm_size);
   } else {
     // Start all comms in parallel, and wait for all completions in one shot
-    std::vector<simgrid::s4u::CommPtr> comms;
+    std::vector<sg4::CommPtr> comms;
     for (int i = 0; i < flow_amount; i++)
       comms.push_back(mailbox->put_async(bprintf("%d", i), comm_size));
-    simgrid::s4u::Comm::wait_all(comms);
+    sg4::Comm::wait_all(comms);
   }
   XBT_INFO("sender done.");
 }
@@ -46,7 +47,7 @@ static void receiver(std::vector<std::string> args)
 
   XBT_INFO("Receiving %d flows ...", flow_amount);
 
-  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::string("message"));
+  sg4::Mailbox* mailbox = sg4::Mailbox::by_name(std::string("message"));
 
   if (flow_amount == 1) {
     char* res = mailbox->get<char>();
@@ -55,11 +56,11 @@ static void receiver(std::vector<std::string> args)
     std::vector<char*> data(flow_amount);
 
     // Start all comms in parallel, and wait for their completion in one shot
-    std::vector<simgrid::s4u::CommPtr> comms;
+    std::vector<sg4::CommPtr> comms;
     for (int i = 0; i < flow_amount; i++)
       comms.push_back(mailbox->get_async<char>(&data[i]));
 
-    simgrid::s4u::Comm::wait_all(comms);
+    sg4::Comm::wait_all(comms);
     for (int i = 0; i < flow_amount; i++)
       xbt_free(data[i]);
   }
@@ -68,7 +69,7 @@ static void receiver(std::vector<std::string> args)
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   XBT_INFO("Activating the SimGrid link energy plugin");
   sg_link_energy_plugin_init();
@@ -99,8 +100,8 @@ int main(int argc, char* argv[])
   } else { // No parameter at all? Then use the default value
     argSender.emplace_back("25000");
   }
-  simgrid::s4u::Actor::create("sender", e.host_by_name("MyHost1"), sender, argSender);
-  simgrid::s4u::Actor::create("receiver", e.host_by_name("MyHost2"), receiver, argReceiver);
+  sg4::Actor::create("sender", e.host_by_name("MyHost1"), sender, argSender);
+  sg4::Actor::create("receiver", e.host_by_name("MyHost2"), receiver, argReceiver);
 
   /* And now, launch the simulation */
   e.run();

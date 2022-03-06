@@ -16,9 +16,8 @@
 
 #include <simgrid/s4u.hpp>
 
-namespace sg4 = simgrid::s4u;
-
 XBT_LOG_NEW_DEFAULT_CATEGORY(disk_test, "Messages specific for this simulation");
+namespace sg4 = simgrid::s4u;
 
 /** @brief Calculates the bandwidth for disk doing async operations */
 static void estimate_bw(const sg4::Disk* disk, int n_flows, bool read)
@@ -143,10 +142,10 @@ int main(int argc, char** argv)
   create_sata_disk(bob, "Griffon (SATA II)");
   zone->seal();
 
-  simgrid::s4u::Actor::create("", bob, host);
+  sg4::Actor::create("", bob, host);
 
   e.run();
-  XBT_INFO("Simulated time: %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulated time: %g", sg4::Engine::get_clock());
 
   return 0;
 }

@@ -51,7 +51,7 @@ static void dispatcher(sg4::Host* host1, sg4::Host* host2)
   }
   pending_execs.pop_back();
   XBT_INFO("Wait for remaining exec, just to be nice");
-  simgrid::s4u::Exec::wait_any(pending_execs);
+  sg4::Exec::wait_any(pending_execs);
   XBT_INFO("Dispatcher ends");
 }
 

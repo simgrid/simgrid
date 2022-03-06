@@ -6,11 +6,12 @@
 #include "simgrid/s4u.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Pstate properties test");
+namespace sg4 = simgrid::s4u;
 
 static int dvfs()
 {
   double workload = 100E6;
-  simgrid::s4u::Host* host = simgrid::s4u::this_actor::get_host();
+  sg4::Host* host = sg4::this_actor::get_host();
 
   unsigned long nb = host->get_pstate_count();
   XBT_INFO("Count of Processor states=%lu", nb);
@@ -18,9 +19,9 @@ static int dvfs()
   XBT_INFO("Current power peak=%f", host->get_speed());
 
   // Run a Computation
-  simgrid::s4u::this_actor::execute(workload);
+  sg4::this_actor::execute(workload);
 
-  double exec_time = simgrid::s4u::Engine::get_clock();
+  double exec_time = sg4::Engine::get_clock();
   XBT_INFO("Computation1 duration: %.2f", exec_time);
 
   // Change power peak
@@ -33,13 +34,13 @@ static int dvfs()
   XBT_INFO("Current power peak=%f", host->get_speed());
 
   // Run a second Computation
-  simgrid::s4u::this_actor::execute(workload);
+  sg4::this_actor::execute(workload);
 
-  exec_time = simgrid::s4u::Engine::get_clock() - exec_time;
+  exec_time = sg4::Engine::get_clock() - exec_time;
   XBT_INFO("Computation2 duration: %.2f", exec_time);
 
   // Verify that the default pstate is set to 0
-  host = simgrid::s4u::Host::by_name_or_null("MyHost2");
+  host = sg4::Host::by_name_or_null("MyHost2");
   XBT_INFO("Count of Processor states=%lu", host->get_pstate_count());
 
   XBT_INFO("Current power peak=%f", host->get_speed());
@@ -48,18 +49,18 @@ static int dvfs()
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/energy_platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("dvfs_test", e.host_by_name("MyHost1"), dvfs);
-  simgrid::s4u::Actor::create("dvfs_test", e.host_by_name("MyHost2"), dvfs);
+  sg4::Actor::create("dvfs_test", e.host_by_name("MyHost1"), dvfs);
+  sg4::Actor::create("dvfs_test", e.host_by_name("MyHost2"), dvfs);
 
   e.run();
 
-  XBT_INFO("Total simulation time: %e", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Total simulation time: %e", sg4::Engine::get_clock());
 
   return 0;
 }

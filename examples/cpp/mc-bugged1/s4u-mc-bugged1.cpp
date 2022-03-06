@@ -14,6 +14,7 @@
 constexpr int N = 3;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(example, "this example");
+namespace sg4 = simgrid::s4u;
 
 static void server()
 {
@@ -21,7 +22,7 @@ static void server()
   int count     = 0;
   while (count < N) {
     received.reset();
-    received = simgrid::s4u::Mailbox::by_name("mymailbox")->get_unique<int>();
+    received = sg4::Mailbox::by_name("mymailbox")->get_unique<int>();
     count++;
   }
   int value_got = *received;
@@ -33,21 +34,21 @@ static void server()
 static void client(int id)
 {
   auto* payload = new int(id);
-  simgrid::s4u::Mailbox::by_name("mymailbox")->put(payload, 10000);
+  sg4::Mailbox::by_name("mymailbox")->put(payload, 10000);
 
   XBT_INFO("Sent!");
 }
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("server", e.host_by_name("HostA"), server);
-  simgrid::s4u::Actor::create("client", e.host_by_name("HostB"), client, 1);
-  simgrid::s4u::Actor::create("client", e.host_by_name("HostC"), client, 2);
-  simgrid::s4u::Actor::create("client", e.host_by_name("HostD"), client, 3);
+  sg4::Actor::create("server", e.host_by_name("HostA"), server);
+  sg4::Actor::create("client", e.host_by_name("HostB"), client, 1);
+  sg4::Actor::create("client", e.host_by_name("HostC"), client, 2);
+  sg4::Actor::create("client", e.host_by_name("HostD"), client, 3);
 
   e.run();
   return 0;

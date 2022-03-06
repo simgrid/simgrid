@@ -6,7 +6,6 @@
 #include <simgrid/s4u.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_ptask_multicore, "Messages specific for this s4u example");
-
 namespace sg4 = simgrid::s4u;
 
 static void runner()
@@ -62,7 +61,7 @@ static void runner()
 
   // Add a background task and change ptask on the fly
   auto MyHost1                          = e->host_by_name("MyHost1");
-  simgrid::s4u::ExecPtr background_task = MyHost1->exec_async(5e9);
+  sg4::ExecPtr background_task          = MyHost1->exec_async(5e9);
   XBT_INFO("Start a 1-core background task on the 4-core host.");
 
   start_time = sg4::Engine::get_clock();

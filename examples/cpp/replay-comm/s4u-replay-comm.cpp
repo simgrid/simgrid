@@ -11,6 +11,7 @@
 #include <string>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(replay_comm, "Messages specific for this example");
+namespace sg4 = simgrid::s4u;
 
 #define ACT_DEBUG(...)                                                                                                 \
   if (XBT_LOG_ISENABLED(replay_comm, xbt_log_priority_verbose)) {                                                   \
@@ -49,40 +50,38 @@ public:
   static void compute(simgrid::xbt::ReplayAction& action)
   {
     double amount = std::stod(action[2]);
-    double clock  = simgrid::s4u::Engine::get_clock();
+    double clock  = sg4::Engine::get_clock();
     ACT_DEBUG("Entering %s", NAME.c_str());
-    simgrid::s4u::this_actor::execute(amount);
-    log_action(action, simgrid::s4u::Engine::get_clock() - clock);
+    sg4::this_actor::execute(amount);
+    log_action(action, sg4::Engine::get_clock() - clock);
   }
 
   static void send(simgrid::xbt::ReplayAction& action)
   {
     auto size                 = static_cast<uint64_t>(std::stod(action[3]));
     auto* payload             = new std::string(action[3]);
-    double clock              = simgrid::s4u::Engine::get_clock();
-    simgrid::s4u::Mailbox* to = simgrid::s4u::Mailbox::by_name(simgrid::s4u::this_actor::get_name() + "_" + action[2]);
+    double clock              = sg4::Engine::get_clock();
+    sg4::Mailbox* to          = sg4::Mailbox::by_name(sg4::this_actor::get_name() + "_" + action[2]);
     ACT_DEBUG("Entering Send: %s (size: %" PRIu64 ") -- Actor %s on mailbox %s", NAME.c_str(), size,
-              simgrid::s4u::this_actor::get_cname(), to->get_cname());
+              sg4::this_actor::get_cname(), to->get_cname());
     to->put(payload, size);
-    log_action(action, simgrid::s4u::Engine::get_clock() - clock);
+    log_action(action, sg4::Engine::get_clock() - clock);
   }
 
   static void recv(simgrid::xbt::ReplayAction& action)
   {
-    double clock = simgrid::s4u::Engine::get_clock();
-    simgrid::s4u::Mailbox* from =
-        simgrid::s4u::Mailbox::by_name(std::string(action[2]) + "_" + simgrid::s4u::this_actor::get_name());
+    double clock       = sg4::Engine::get_clock();
+    sg4::Mailbox* from = sg4::Mailbox::by_name(std::string(action[2]) + "_" + sg4::this_actor::get_name());
 
-    ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME.c_str(), simgrid::s4u::this_actor::get_cname(),
-              from->get_cname());
+    ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME.c_str(), sg4::this_actor::get_cname(), from->get_cname());
     from->get_unique<std::string>();
-    log_action(action, simgrid::s4u::Engine::get_clock() - clock);
+    log_action(action, sg4::Engine::get_clock() - clock);
   }
 };
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   xbt_assert(argc > 2,
              "Usage: %s platform_file deployment_file [action_files]\n"
@@ -106,7 +105,7 @@ int main(int argc, char* argv[])
 
   e.run();
 
-  XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
 
   return 0;
 }

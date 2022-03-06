@@ -6,6 +6,7 @@
 #include "s4u-dht-chord.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(s4u_chord);
+namespace sg4 = simgrid::s4u;
 
 /* Returns whether an id belongs to the interval [start, end].
  *
@@ -54,13 +55,13 @@ Node::Node(std::vector<std::string> args)
   id_                = std::stoi(args[1]);
   XBT_DEBUG("Initialize node with id: %d", id_);
   random.set_seed(id_);
-  mailbox_           = simgrid::s4u::Mailbox::by_name(std::to_string(id_));
+  mailbox_           = sg4::Mailbox::by_name(std::to_string(id_));
   next_finger_to_fix = 0;
   fingers_.resize(nb_bits, id_);
 
   if (args.size() == 3) { // first ring
     deadline_   = std::stod(args[2]);
-    start_time_ = simgrid::s4u::Engine::get_clock();
+    start_time_ = sg4::Engine::get_clock();
     XBT_DEBUG("Create a new Chord ring...");
   } else {
     known_id_   = std::stoi(args[2]);
@@ -110,7 +111,7 @@ void Node::notifyAndQuit()
 
   XBT_DEBUG("Sending a 'PREDECESSOR_LEAVING' to my successor %d", fingers_[0]);
   try {
-    simgrid::s4u::Mailbox::by_name(std::to_string(fingers_[0]))->put(pred_msg, 10, timeout);
+    sg4::Mailbox::by_name(std::to_string(fingers_[0]))->put(pred_msg, 10, timeout);
   } catch (const simgrid::TimeoutException&) {
     XBT_DEBUG("Timeout expired when sending a 'PREDECESSOR_LEAVING' to my successor %d", fingers_[0]);
     delete pred_msg;
@@ -124,7 +125,7 @@ void Node::notifyAndQuit()
     XBT_DEBUG("Sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
 
     try {
-      simgrid::s4u::Mailbox::by_name(std::to_string(pred_id_))->put(succ_msg, 10, timeout);
+      sg4::Mailbox::by_name(std::to_string(pred_id_))->put(succ_msg, 10, timeout);
     } catch (const simgrid::TimeoutException&) {
       XBT_DEBUG("Timeout expired when sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
       delete succ_msg;
@@ -204,8 +205,8 @@ void Node::checkPredecessor()
   if (pred_id_ == -1)
     return;
 
-  simgrid::s4u::Mailbox* mailbox        = simgrid::s4u::Mailbox::by_name(std::to_string(pred_id_));
-  simgrid::s4u::Mailbox* return_mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_is_alive");
+  sg4::Mailbox* mailbox        = sg4::Mailbox::by_name(std::to_string(pred_id_));
+  sg4::Mailbox* return_mailbox = sg4::Mailbox::by_name(std::to_string(id_) + "_is_alive");
 
   auto* message         = new ChordMessage(MessageType::PREDECESSOR_ALIVE);
   message->request_id   = pred_id_;
@@ -224,7 +225,7 @@ void Node::checkPredecessor()
   XBT_DEBUG("Sent 'Predecessor Alive' request to %d, waiting for the answer on my mailbox '%s'", pred_id_,
             message->answer_to->get_cname());
   ChordMessage* answer       = nullptr;
-  simgrid::s4u::CommPtr comm = return_mailbox->get_async<ChordMessage>(&answer);
+  sg4::CommPtr comm          = return_mailbox->get_async<ChordMessage>(&answer);
 
   try {
     comm->wait_for(timeout);
@@ -244,8 +245,8 @@ void Node::checkPredecessor()
 int Node::remoteGetPredecessor(int ask_to)
 {
   int predecessor_id                      = -1;
-  simgrid::s4u::Mailbox* mailbox          = simgrid::s4u::Mailbox::by_name(std::to_string(ask_to));
-  simgrid::s4u::Mailbox* return_mailbox   = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_pred");
+  sg4::Mailbox* mailbox                   = sg4::Mailbox::by_name(std::to_string(ask_to));
+  sg4::Mailbox* return_mailbox            = sg4::Mailbox::by_name(std::to_string(id_) + "_pred");
 
   auto* message         = new ChordMessage(MessageType::GET_PREDECESSOR);
   message->request_id   = id_;
@@ -265,7 +266,7 @@ int Node::remoteGetPredecessor(int ask_to)
   XBT_DEBUG("Sent 'Get Predecessor' request to %d, waiting for the answer on my mailbox '%s'", ask_to,
             message->answer_to->get_cname());
   ChordMessage* answer       = nullptr;
-  simgrid::s4u::CommPtr comm = return_mailbox->get_async<ChordMessage>(&answer);
+  sg4::CommPtr comm          = return_mailbox->get_async<ChordMessage>(&answer);
 
   try {
     comm->wait_for(timeout);
@@ -315,8 +316,8 @@ int Node::findSuccessor(int id)
 int Node::remoteFindSuccessor(int ask_to, int id)
 {
   int successor                           = -1;
-  simgrid::s4u::Mailbox* mailbox          = simgrid::s4u::Mailbox::by_name(std::to_string(ask_to));
-  simgrid::s4u::Mailbox* return_mailbox   = simgrid::s4u::Mailbox::by_name(std::to_string(id_) + "_succ");
+  sg4::Mailbox* mailbox                   = sg4::Mailbox::by_name(std::to_string(ask_to));
+  sg4::Mailbox* return_mailbox            = sg4::Mailbox::by_name(std::to_string(id_) + "_succ");
 
   auto* message         = new ChordMessage(MessageType::FIND_SUCCESSOR);
   message->request_id   = id_;
@@ -334,7 +335,7 @@ int Node::remoteFindSuccessor(int ask_to, int id)
   // receive the answer
   XBT_DEBUG("Sent a 'Find Successor' request to %d for key %d, waiting for the answer", ask_to, id);
   ChordMessage* answer       = nullptr;
-  simgrid::s4u::CommPtr comm = return_mailbox->get_async<ChordMessage>(&answer);
+  sg4::CommPtr comm          = return_mailbox->get_async<ChordMessage>(&answer);
 
   try {
     comm->wait_for(timeout);
@@ -370,7 +371,7 @@ void Node::remoteNotify(int notify_id, int predecessor_candidate_id) const
 
   // send a "Notify" request to notify_id
   XBT_DEBUG("Sending a 'Notify' request to %d", notify_id);
-  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(notify_id));
+  sg4::Mailbox* mailbox = sg4::Mailbox::by_name(std::to_string(notify_id));
   mailbox->put_init(message, 10)->detach(ChordMessage::destroy);
 }
 
@@ -417,7 +418,7 @@ void Node::handleMessage(ChordMessage* message)
         int closest = closestPrecedingFinger(message->request_id);
         XBT_DEBUG("Forwarding the 'Find Successor' request for id %d to my closest preceding finger %d",
                   message->request_id, closest);
-        simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(closest));
+        sg4::Mailbox* mailbox = sg4::Mailbox::by_name(std::to_string(closest));
         mailbox->put_init(message, 10)->detach(ChordMessage::destroy);
       }
       break;
@@ -478,7 +479,7 @@ void Node::handleMessage(ChordMessage* message)
 
 void Node::operator()()
 {
-  simgrid::s4u::this_actor::sleep_for(start_time_);
+  sg4::this_actor::sleep_for(start_time_);
   if (known_id_ == -1) {
     setPredecessor(-1); // -1 means that I have no predecessor
     printFingerTable();
@@ -490,12 +491,12 @@ void Node::operator()()
   if (not joined)
     return;
   ChordMessage* message              = nullptr;
-  double now                         = simgrid::s4u::Engine::get_clock();
+  double now                         = sg4::Engine::get_clock();
   double next_stabilize_date         = start_time_ + PERIODIC_STABILIZE_DELAY;
   double next_fix_fingers_date       = start_time_ + PERIODIC_FIX_FINGERS_DELAY;
   double next_check_predecessor_date = start_time_ + PERIODIC_CHECK_PREDECESSOR_DELAY;
   double next_lookup_date            = start_time_ + PERIODIC_LOOKUP_DELAY;
-  simgrid::s4u::CommPtr comm_receive = nullptr;
+  sg4::CommPtr comm_receive          = nullptr;
   while (now < std::min(start_time_ + deadline_, MAX_SIMULATION_TIME)) {
     if (comm_receive == nullptr)
       comm_receive = mailbox_->get_async<ChordMessage>(&message);
@@ -517,23 +518,23 @@ void Node::operator()()
       // no task was received: make some periodic calls
       if (now >= next_stabilize_date) {
         stabilize();
-        next_stabilize_date = simgrid::s4u::Engine::get_clock() + PERIODIC_STABILIZE_DELAY;
+        next_stabilize_date = sg4::Engine::get_clock() + PERIODIC_STABILIZE_DELAY;
       } else if (now >= next_fix_fingers_date) {
         fixFingers();
-        next_fix_fingers_date = simgrid::s4u::Engine::get_clock() + PERIODIC_FIX_FINGERS_DELAY;
+        next_fix_fingers_date = sg4::Engine::get_clock() + PERIODIC_FIX_FINGERS_DELAY;
       } else if (now >= next_check_predecessor_date) {
         checkPredecessor();
-        next_check_predecessor_date = simgrid::s4u::Engine::get_clock() + PERIODIC_CHECK_PREDECESSOR_DELAY;
+        next_check_predecessor_date = sg4::Engine::get_clock() + PERIODIC_CHECK_PREDECESSOR_DELAY;
       } else if (now >= next_lookup_date) {
         randomLookup();
-        next_lookup_date = simgrid::s4u::Engine::get_clock() + PERIODIC_LOOKUP_DELAY;
+        next_lookup_date = sg4::Engine::get_clock() + PERIODIC_LOOKUP_DELAY;
       } else {
         // nothing to do: sleep for a while
-        simgrid::s4u::this_actor::sleep_for(SLEEP_DELAY);
+        sg4::this_actor::sleep_for(SLEEP_DELAY);
       }
     }
 
-    now = simgrid::s4u::Engine::get_clock();
+    now = sg4::Engine::get_clock();
   }
   if (comm_receive != nullptr) {
     try {

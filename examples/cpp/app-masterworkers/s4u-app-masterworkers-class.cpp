@@ -10,12 +10,13 @@
 #include <simgrid/s4u.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_masterworker, "Messages specific for this s4u example");
+namespace sg4 = simgrid::s4u;
 
 class Master {
   long tasks_count      = 0;
   double compute_cost   = 0;
   long communicate_cost = 0;
-  std::vector<simgrid::s4u::Mailbox*> workers;
+  std::vector<sg4::Mailbox*> workers;
 
 public:
   explicit Master(std::vector<std::string> args)
@@ -26,7 +27,7 @@ public:
     compute_cost     = std::stod(args[2]);
     communicate_cost = std::stol(args[3]);
     for (unsigned int i = 4; i < args.size(); i++)
-      workers.push_back(simgrid::s4u::Mailbox::by_name(args[i]));
+      workers.push_back(sg4::Mailbox::by_name(args[i]));
 
     XBT_INFO("Got %zu workers and %ld tasks to process", workers.size(), tasks_count);
   }
@@ -35,7 +36,7 @@ public:
   {
     for (int i = 0; i < tasks_count; i++) { /* For each task to be executed: */
       /* - Select a worker in a round-robin way */
-      simgrid::s4u::Mailbox* mailbox = workers[i % workers.size()];
+      sg4::Mailbox* mailbox = workers[i % workers.size()];
 
       /* - Send the computation amount to the worker */
       if (tasks_count < 10000 || (tasks_count < 100000 && i % 10000 == 0) || i % 100000 == 0)
@@ -46,21 +47,21 @@ public:
     XBT_INFO("All tasks have been dispatched. Request all workers to stop.");
     for (unsigned int i = 0; i < workers.size(); i++) {
       /* The workers stop when receiving a negative compute_cost */
-      simgrid::s4u::Mailbox* mailbox = workers[i % workers.size()];
+      sg4::Mailbox* mailbox = workers[i % workers.size()];
       mailbox->put(new double(-1.0), 0);
     }
   }
 };
 
 class Worker {
-  simgrid::s4u::Mailbox* mailbox = nullptr;
+  sg4::Mailbox* mailbox = nullptr;
 
 public:
   explicit Worker(std::vector<std::string> args)
   {
     xbt_assert(args.size() == 1, "The worker expects to not get any argument");
 
-    mailbox = simgrid::s4u::Mailbox::by_name(simgrid::s4u::this_actor::get_host()->get_name());
+    mailbox = sg4::Mailbox::by_name(sg4::this_actor::get_host()->get_name());
   }
 
   void operator()()
@@ -71,7 +72,7 @@ public:
       compute_cost = *msg;
 
       if (compute_cost > 0) /* If compute_cost is valid, execute a computation of that cost */
-        simgrid::s4u::this_actor::execute(compute_cost);
+        sg4::this_actor::execute(compute_cost);
     } while (compute_cost > 0); /* Stop when receiving an invalid compute_cost */
 
     XBT_INFO("Exiting now.");
@@ -80,7 +81,7 @@ public:
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
 
   /* Register the classes representing the actors */

@@ -11,6 +11,8 @@
 #include "simgrid/instr.h"
 #include "simgrid/s4u.hpp"
 
+namespace sg4 = simgrid::s4u;
+
 struct Task {
   std::string name;
   std::string category;
@@ -20,7 +22,7 @@ struct Task {
 
 static void master()
 {
-  auto mbox = simgrid::s4u::Mailbox::by_name("master_mailbox");
+  auto mbox = sg4::Mailbox::by_name("master_mailbox");
   for (int i = 0; i < 10; i++) {
     Task task;
     if (i % 2)
@@ -37,23 +39,20 @@ static void master()
 
 static void worker()
 {
-  auto mbox = simgrid::s4u::Mailbox::by_name("master_mailbox");
+  auto mbox = sg4::Mailbox::by_name("master_mailbox");
   while (true) {
     auto task = mbox->get_unique<Task>();
     if (task->name == "finalize") {
       break;
     }
     // creating task and setting its category
-    simgrid::s4u::this_actor::exec_init(task->flops)
-        ->set_name(task->name)
-        ->set_tracing_category(task->category)
-        ->wait();
+    sg4::this_actor::exec_init(task->flops)->set_name(task->name)->set_tracing_category(task->category)->wait();
   }
 }
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   xbt_assert(argc > 1, "Usage: %s platform_file\n \tExample: %s small_platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
@@ -64,8 +63,8 @@ int main(int argc, char* argv[])
   simgrid::instr::declare_tracing_category("data", "0 0 1");     // blue
   simgrid::instr::declare_tracing_category("finalize", "0 0 0"); // black
 
-  simgrid::s4u::Actor::create("master", e.host_by_name("Tremblay"), master);
-  simgrid::s4u::Actor::create("worker", e.host_by_name("Fafard"), worker);
+  sg4::Actor::create("master", e.host_by_name("Tremblay"), master);
+  sg4::Actor::create("worker", e.host_by_name("Fafard"), worker);
 
   e.run();
   return 0;

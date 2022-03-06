@@ -12,6 +12,7 @@
 #include "simgrid/s4u.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
+namespace sg4 = simgrid::s4u;
 
 static void trace_fun()
 {
@@ -29,7 +30,7 @@ static void trace_fun()
 
   // run the simulation, update my variables accordingly
   for (int i = 0; i < 10; i++) {
-    simgrid::s4u::this_actor::execute(1e6);
+    sg4::this_actor::execute(1e6);
 
     // Add to link user variables
     simgrid::instr::add_link_variable("Tremblay", "Bourassa", "Link_Utilization", 5.6);
@@ -37,7 +38,7 @@ static void trace_fun()
   }
 
   for (int i = 0; i < 10; i++) {
-    simgrid::s4u::this_actor::execute(1e6);
+    sg4::this_actor::execute(1e6);
 
     // Subtract from link user variables
     simgrid::instr::sub_link_variable("Tremblay", "Bourassa", "Link_Utilization", 3.4);
@@ -47,7 +48,7 @@ static void trace_fun()
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   xbt_assert(argc > 1, "Usage: %s platform_file\n \tExample: %s small_platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
@@ -56,12 +57,12 @@ int main(int argc, char* argv[])
   simgrid::instr::declare_link_variable("Link_Capacity");
   simgrid::instr::declare_link_variable("Link_Utilization", "0.9 0.1 0.1");
 
-  simgrid::s4u::Actor::create("master", e.host_by_name("Tremblay"), trace_fun);
-  simgrid::s4u::Actor::create("worker", e.host_by_name("Tremblay"), trace_fun);
-  simgrid::s4u::Actor::create("worker", e.host_by_name("Jupiter"), trace_fun);
-  simgrid::s4u::Actor::create("worker", e.host_by_name("Fafard"), trace_fun);
-  simgrid::s4u::Actor::create("worker", e.host_by_name("Ginette"), trace_fun);
-  simgrid::s4u::Actor::create("worker", e.host_by_name("Bourassa"), trace_fun);
+  sg4::Actor::create("master", e.host_by_name("Tremblay"), trace_fun);
+  sg4::Actor::create("worker", e.host_by_name("Tremblay"), trace_fun);
+  sg4::Actor::create("worker", e.host_by_name("Jupiter"), trace_fun);
+  sg4::Actor::create("worker", e.host_by_name("Fafard"), trace_fun);
+  sg4::Actor::create("worker", e.host_by_name("Ginette"), trace_fun);
+  sg4::Actor::create("worker", e.host_by_name("Bourassa"), trace_fun);
 
   e.run();
   return 0;

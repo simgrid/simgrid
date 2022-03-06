@@ -7,13 +7,14 @@
 #include <simgrid/s4u.hpp> /* All of S4U */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
+namespace sg4 = simgrid::s4u;
 
 std::string data;
 bool done = false;
 
-static void worker_fun(simgrid::s4u::ConditionVariablePtr cv, simgrid::s4u::MutexPtr mutex)
+static void worker_fun(sg4::ConditionVariablePtr cv, sg4::MutexPtr mutex)
 {
-  std::unique_lock<simgrid::s4u::Mutex> lock(*mutex);
+  std::unique_lock<sg4::Mutex> lock(*mutex);
 
   XBT_INFO("Start processing data which is '%s'.", data.c_str());
   data += std::string(" after processing");
@@ -27,13 +28,13 @@ static void worker_fun(simgrid::s4u::ConditionVariablePtr cv, simgrid::s4u::Mute
 
 static void master_fun()
 {
-  auto mutex  = simgrid::s4u::Mutex::create();
-  auto cv     = simgrid::s4u::ConditionVariable::create();
+  auto mutex  = sg4::Mutex::create();
+  auto cv     = sg4::ConditionVariable::create();
   data        = std::string("Example data");
-  auto worker = simgrid::s4u::Actor::create("worker", simgrid::s4u::Host::by_name("Jupiter"), worker_fun, cv, mutex);
+  auto worker = sg4::Actor::create("worker", sg4::Host::by_name("Jupiter"), worker_fun, cv, mutex);
 
   // wait for the worker
-  cv->wait(std::unique_lock<simgrid::s4u::Mutex>(*mutex), []() { return done; });
+  cv->wait(std::unique_lock<sg4::Mutex>(*mutex), []() { return done; });
   XBT_INFO("data is now '%s'.", data.c_str());
 
   worker->join();
@@ -41,9 +42,9 @@ static void master_fun()
 
 int main(int argc, char** argv)
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   e.load_platform("../../platforms/two_hosts.xml");
-  simgrid::s4u::Actor::create("main", e.host_by_name("Tremblay"), master_fun);
+  sg4::Actor::create("main", e.host_by_name("Tremblay"), master_fun);
   e.run();
 
   return 0;

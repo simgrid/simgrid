@@ -12,11 +12,12 @@
 #include <simgrid/s4u.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(mc_assert_example, "Logging channel used in this example");
+namespace sg4 = simgrid::s4u;
 
 static int server(int worker_amount)
 {
   int value_got             = -1;
-  simgrid::s4u::Mailbox* mb = simgrid::s4u::Mailbox::by_name("server");
+  sg4::Mailbox* mb          = sg4::Mailbox::by_name("server");
   for (int count = 0; count < worker_amount; count++) {
     auto msg  = mb->get_unique<int>();
     value_got = *msg;
@@ -36,7 +37,7 @@ static int client(int rank)
   /* I just send my rank onto the mailbox. It must be passed as a stable memory block (thus the new) so that that
    * memory survives even after the end of the client */
 
-  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name("server");
+  sg4::Mailbox* mailbox = sg4::Mailbox::by_name("server");
   mailbox->put(new int(rank), 1 /* communication cost is not really relevant in MC mode */);
 
   XBT_INFO("Sent!");
@@ -45,16 +46,16 @@ static int client(int rank)
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   xbt_assert(argc > 1, "Usage: %s platform_file\n", argv[0]);
 
   e.load_platform(argv[1]);
   auto hosts = e.get_all_hosts();
   xbt_assert(hosts.size() >= 3, "This example requires at least 3 hosts");
 
-  simgrid::s4u::Actor::create("server", hosts[0], &server, 2);
-  simgrid::s4u::Actor::create("client1", hosts[1], &client, 1);
-  simgrid::s4u::Actor::create("client2", hosts[2], &client, 2);
+  sg4::Actor::create("server", hosts[0], &server, 2);
+  sg4::Actor::create("client1", hosts[1], &client, 1);
+  sg4::Actor::create("client2", hosts[2], &client, 2);
 
   e.run();
   return 0;

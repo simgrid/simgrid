@@ -5,7 +5,7 @@
 
 #include <simgrid/s4u.hpp>
 
-/* This example shows how to use simgrid::s4u::Engine::get_filtered_hosts() to retrieve
+/* This example shows how to use sg4::Engine::get_filtered_hosts() to retrieve
  * all hosts that match a given criteria. This criteria can be specified either with:
  *   - an inlined callback
  *   - a boolean function, such as filter_speed_more_than_50Mf() below
@@ -16,10 +16,11 @@
  */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_engine_filtering, "Messages specific for this s4u example");
+namespace sg4 = simgrid::s4u;
 
 namespace filter {
 /* First example of thing that we can use as a filtering criteria: a simple boolean function */
-static bool filter_speed_more_than_50Mf(const simgrid::s4u::Host* host)
+static bool filter_speed_more_than_50Mf(const sg4::Host* host)
 {
   return host->get_speed() > 50E6;
 }
@@ -29,38 +30,37 @@ static bool filter_speed_more_than_50Mf(const simgrid::s4u::Host* host)
  */
 class SingleCore {
 public:
-  bool operator()(const simgrid::s4u::Host* host) const { return host->get_core_count() == 1; }
+  bool operator()(const sg4::Host* host) const { return host->get_core_count() == 1; }
 };
 
 /* This functor is a bit more complex, as it saves the current state when created.
  * Then, it allows one to easily retrieve the hosts which frequency changed since the functor creation.
  */
 class FrequencyChanged {
-  std::map<simgrid::s4u::Host*, unsigned long> host_list;
+  std::map<sg4::Host*, unsigned long> host_list;
 
 public:
-  explicit FrequencyChanged(const simgrid::s4u::Engine& e)
+  explicit FrequencyChanged(const sg4::Engine& e)
   {
-    std::vector<simgrid::s4u::Host*> list = e.get_all_hosts();
+    std::vector<sg4::Host*> list = e.get_all_hosts();
     for (auto& host : list) {
       host_list.insert({host, host->get_pstate()});
     }
   }
 
-  bool operator()(simgrid::s4u::Host* host) { return host->get_pstate() != host_list.at(host); }
+  bool operator()(sg4::Host* host) { return host->get_pstate() != host_list.at(host); }
 
-  unsigned long get_old_speed_state(simgrid::s4u::Host* host) { return host_list.at(host); }
+  unsigned long get_old_speed_state(sg4::Host* host) { return host_list.at(host); }
 };
 }
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
   /* Use a lambda function to filter hosts: We only want multicore hosts */
   XBT_INFO("Hosts currently registered with this engine: %zu", e.get_host_count());
-  std::vector<simgrid::s4u::Host*> list =
-      e.get_filtered_hosts([](const simgrid::s4u::Host* host) { return host->get_core_count() > 1; });
+  std::vector<sg4::Host*> list = e.get_filtered_hosts([](const sg4::Host* host) { return host->get_core_count() > 1; });
 
   for (auto& host : list)
     XBT_INFO("The following hosts have more than one core: %s", host->get_cname());

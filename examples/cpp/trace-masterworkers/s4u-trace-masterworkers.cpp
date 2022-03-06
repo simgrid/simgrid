@@ -7,6 +7,7 @@
 #include <simgrid/s4u.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_trace_masterworker, "Messages specific for this example");
+namespace sg4 = simgrid::s4u;
 
 struct Task {
   std::string name;
@@ -22,8 +23,8 @@ static void master(std::vector<std::string> args)
   double compute_cost     = std::stod(args[2]);
   long communication_cost = std::stol(args[3]);
   size_t workers_count    = args.size() - 4;
-  const auto& my_host     = simgrid::s4u::this_actor::get_host()->get_name();
-  auto mailbox            = simgrid::s4u::Mailbox::by_name("master_mailbox");
+  const auto& my_host     = sg4::this_actor::get_host()->get_name();
+  auto mailbox            = sg4::Mailbox::by_name("master_mailbox");
 
   XBT_DEBUG("Got %zu workers and %ld tasks to process", workers_count, tasks_count);
 
@@ -52,8 +53,8 @@ static void worker(std::vector<std::string> args)
 {
   xbt_assert(args.size() == 1, "The worker expects no argument");
 
-  const auto& my_host = simgrid::s4u::this_actor::get_host()->get_name();
-  auto mailbox = simgrid::s4u::Mailbox::by_name("master_mailbox");
+  const auto& my_host = sg4::this_actor::get_host()->get_name();
+  auto mailbox        = sg4::Mailbox::by_name("master_mailbox");
 
   simgrid::instr::set_host_variable(my_host, "is_worker", 1);
   simgrid::instr::set_host_variable(my_host, "task_computation", 0);
@@ -65,10 +66,7 @@ static void worker(std::vector<std::string> args)
     }
     // adding the task's cost to the variable "task_computation"
     simgrid::instr::add_host_variable(my_host, "task_computation", task->flops);
-    simgrid::s4u::this_actor::exec_init(task->flops)
-        ->set_name(task->name)
-        ->set_tracing_category(task->category)
-        ->wait();
+    sg4::this_actor::exec_init(task->flops)->set_name(task->name)->set_tracing_category(task->category)->wait();
   }
 
   XBT_DEBUG("Exiting now.");
@@ -76,7 +74,7 @@ static void worker(std::vector<std::string> args)
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n", argv[0]);
 
   e.load_platform(argv[1]);

@@ -10,12 +10,13 @@
 #include "simgrid/s4u.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
+namespace sg4 = simgrid::s4u;
 
 class MyHost {
 public:
-  void show_info(std::vector<simgrid::s4u::Disk*> const& disks) const
+  void show_info(std::vector<sg4::Disk*> const& disks) const
   {
-    XBT_INFO("Storage info on %s:", simgrid::s4u::Host::current()->get_cname());
+    XBT_INFO("Storage info on %s:", sg4::Host::current()->get_cname());
 
     for (auto const& d : disks) {
       // Retrieve disk's information
@@ -26,13 +27,13 @@ public:
 
   void operator()() const
   {
-    std::vector<simgrid::s4u::Disk*> const& disks = simgrid::s4u::Host::current()->get_disks();
+    std::vector<sg4::Disk*> const& disks = sg4::Host::current()->get_disks();
 
     show_info(disks);
 
     // Open a non-existing file to create it
     std::string filename     = "/scratch/tmp/data.txt";
-    auto* file               = simgrid::s4u::File::open(filename, nullptr);
+    auto* file               = sg4::File::open(filename, nullptr);
 
     sg_size_t write = file->write(200000); // Write 200,000 bytes
     XBT_INFO("Create a %llu bytes file named '%s' on /scratch", write, filename.c_str());
@@ -67,7 +68,7 @@ public:
     show_info(disks);
 
     // Reopen the file and then unlink it
-    file = simgrid::s4u::File::open("/scratch/tmp/simgrid.readme", nullptr);
+    file = sg4::File::open("/scratch/tmp/simgrid.readme", nullptr);
     XBT_INFO("Unlink file: '%s'", file->get_path());
     file->unlink();
     file->close(); // Unlinking the file on "disk" does not close the file and free the object
@@ -78,10 +79,10 @@ public:
 
 int main(int argc, char** argv)
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   sg_storage_file_system_init();
   e.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("host", e.host_by_name("bob"), MyHost());
+  sg4::Actor::create("host", e.host_by_name("bob"), MyHost());
   e.run();
 
   return 0;

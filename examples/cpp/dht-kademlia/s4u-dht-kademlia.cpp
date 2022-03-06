@@ -1,5 +1,4 @@
-/* Copyright (c) 2012-2022. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2022. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,6 +10,7 @@
 #include "simgrid/s4u.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(kademlia, "Messages specific for this example");
+namespace sg4 = simgrid::s4u;
 
 /** @brief Node function
   * @param my node ID
@@ -40,25 +40,25 @@ static void node(std::vector<std::string> args)
   if (join_success) {
     XBT_VERB("Ok, I'm joining the network with id %u", node.getId());
     // We start the main loop
-    double next_lookup_time = simgrid::s4u::Engine::get_clock() + RANDOM_LOOKUP_INTERVAL;
+    double next_lookup_time = sg4::Engine::get_clock() + RANDOM_LOOKUP_INTERVAL;
 
     XBT_VERB("Main loop start");
 
-    simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(std::to_string(node.getId()));
+    sg4::Mailbox* mailbox = sg4::Mailbox::by_name(std::to_string(node.getId()));
 
-    while (simgrid::s4u::Engine::get_clock() < deadline) {
+    while (sg4::Engine::get_clock() < deadline) {
       if (kademlia::Message* msg = node.receive(mailbox)) {
         // There has been a message, we need to handle it !
         node.handleFindNode(msg);
         delete msg;
       } else {
         /* We search for a pseudo random node */
-        if (simgrid::s4u::Engine::get_clock() >= next_lookup_time) {
+        if (sg4::Engine::get_clock() >= next_lookup_time) {
           node.randomLookup();
           next_lookup_time += RANDOM_LOOKUP_INTERVAL;
         } else {
           // Didn't get a message: sleep for a while...
-          simgrid::s4u::this_actor::sleep_for(1);
+          sg4::this_actor::sleep_for(1);
         }
       }
     }
@@ -72,7 +72,7 @@ static void node(std::vector<std::string> args)
 /** @brief Main function */
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   /* Check the arguments */
   xbt_assert(argc > 2,
@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
 
   e.run();
 
-  XBT_INFO("Simulated time: %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulated time: %g", sg4::Engine::get_clock());
 
   return 0;
 }

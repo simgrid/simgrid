@@ -8,10 +8,11 @@
 #include "simgrid/s4u.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
+namespace sg4 = simgrid::s4u;
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   e.load_platform(argv[1]);
 
   std::vector<simgrid::kernel::routing::ClusterZone*> clusters =
@@ -19,7 +20,7 @@ int main(int argc, char* argv[])
 
   for (auto c : clusters) {
     XBT_INFO("%s", c->get_cname());
-    std::vector<simgrid::s4u::Host*> hosts = c->get_all_hosts();
+    std::vector<sg4::Host*> hosts = c->get_all_hosts();
     for (auto h : hosts)
       XBT_INFO("   %s", h->get_cname());
   }

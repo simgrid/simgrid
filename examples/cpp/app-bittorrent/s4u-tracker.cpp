@@ -1,5 +1,4 @@
-/* Copyright (c) 2012-2022. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2022. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,6 +7,7 @@
 #include <algorithm>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_bt_tracker, "Messages specific for the tracker");
+namespace sg4 = simgrid::s4u;
 
 Tracker::Tracker(std::vector<std::string> args)
 {
@@ -21,16 +21,16 @@ Tracker::Tracker(std::vector<std::string> args)
   }
   xbt_assert(deadline > 0, "Wrong deadline supplied");
 
-  mailbox = simgrid::s4u::Mailbox::by_name(TRACKER_MAILBOX);
+  mailbox = sg4::Mailbox::by_name(TRACKER_MAILBOX);
 
   XBT_INFO("Tracker launched.");
 }
 
 void Tracker::operator()()
 {
-  simgrid::s4u::CommPtr comm = nullptr;
+  sg4::CommPtr comm          = nullptr;
   TrackerQuery* query        = nullptr;
-  while (simgrid::s4u::Engine::get_clock() < deadline) {
+  while (sg4::Engine::get_clock() < deadline) {
     if (comm == nullptr)
       comm = mailbox->get_async<TrackerQuery>(&query);
     if (comm->test()) {
@@ -59,7 +59,7 @@ void Tracker::operator()()
       delete query;
       comm = nullptr;
     } else {
-      simgrid::s4u::this_actor::sleep_for(1);
+      sg4::this_actor::sleep_for(1);
     }
   }
   XBT_INFO("Tracker is leaving");

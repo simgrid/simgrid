@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
+namespace sg4 = simgrid::s4u;
 
 double start_time;
 std::unordered_map<int, std::string> workernames;
@@ -26,14 +27,14 @@ static void master(std::vector<std::string> args)
   /* worker name */
   workernames[id] = args[2];
 
-  simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(args[3]);
+  sg4::Mailbox* mbox = sg4::Mailbox::by_name(args[3]);
 
-  masternames[id] = simgrid::s4u::Host::current()->get_name();
+  masternames[id] = sg4::Host::current()->get_name();
 
   auto* payload = new double(msg_size);
 
   /* time measurement */
-  start_time = simgrid::s4u::Engine::get_clock();
+  start_time = sg4::Engine::get_clock();
   mbox->put(payload, static_cast<uint64_t>(msg_size));
 
   XBT_DEBUG("Finished");
@@ -44,13 +45,13 @@ static void worker(std::vector<std::string> args)
   xbt_assert(args.size() == 2, "Strange number of arguments expected 1 got %zu", args.size() - 1);
 
   int id                      = std::stoi(args[1]);
-  simgrid::s4u::Mailbox* mbox = simgrid::s4u::Mailbox::by_name(args[1]);
+  sg4::Mailbox* mbox          = sg4::Mailbox::by_name(args[1]);
 
   XBT_DEBUG("Worker started");
 
   auto payload = mbox->get_unique<double>();
 
-  double elapsed_time = simgrid::s4u::Engine::get_clock() - start_time;
+  double elapsed_time = sg4::Engine::get_clock() - start_time;
 
   XBT_INFO("FLOW[%d] : Receive %.0f bytes from %s to %s", id, *payload, masternames.at(id).c_str(),
            workernames.at(id).c_str());
@@ -61,7 +62,7 @@ static void worker(std::vector<std::string> args)
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   xbt_assert(argc > 2,
              "Usage: %s platform_file deployment_file\n"
              "\tExample: %s platform.xml deployment.xml\n",

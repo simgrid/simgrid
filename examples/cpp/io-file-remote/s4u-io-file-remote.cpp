@@ -10,10 +10,11 @@
 #define INMEGA (1024 * 1024)
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(remote_io, "Messages specific for this io example");
+namespace sg4 = simgrid::s4u;
 
 static void host(std::vector<std::string> args)
 {
-  simgrid::s4u::File* file = simgrid::s4u::File::open(args[1], nullptr);
+  sg4::File* file          = sg4::File::open(args[1], nullptr);
   const char* filename     = file->get_path();
   XBT_INFO("Opened file '%s'", filename);
   file->dump();
@@ -23,13 +24,13 @@ static void host(std::vector<std::string> args)
 
   if (args.size() > 4) {
     if (std::stoi(args[4]) != 0) {
-      XBT_INFO("Move '%s' (of size %llu) from '%s' to '%s'", filename, file->size(),
-               simgrid::s4u::Host::current()->get_cname(), args[2].c_str());
-      file->remote_move(simgrid::s4u::Host::by_name(args[2]), args[3]);
+      XBT_INFO("Move '%s' (of size %llu) from '%s' to '%s'", filename, file->size(), sg4::Host::current()->get_cname(),
+               args[2].c_str());
+      file->remote_move(sg4::Host::by_name(args[2]), args[3]);
     } else {
-      XBT_INFO("Copy '%s' (of size %llu) from '%s' to '%s'", filename, file->size(),
-               simgrid::s4u::Host::current()->get_cname(), args[2].c_str());
-      file->remote_copy(simgrid::s4u::Host::by_name(args[2]), args[3]);
+      XBT_INFO("Copy '%s' (of size %llu) from '%s' to '%s'", filename, file->size(), sg4::Host::current()->get_cname(),
+               args[2].c_str());
+      file->remote_copy(sg4::Host::by_name(args[2]), args[3]);
     }
   }
   file->close();
@@ -37,12 +38,12 @@ static void host(std::vector<std::string> args)
 
 int main(int argc, char** argv)
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   sg_storage_file_system_init();
   e.load_platform(argv[1]);
   e.register_function("host", host);
   e.load_deployment(argv[2]);
-  std::vector<simgrid::s4u::Host*> all_hosts = e.get_all_hosts();
+  std::vector<sg4::Host*> all_hosts = e.get_all_hosts();
 
   for (auto const& h : all_hosts) {
     for (auto const& d : h->get_disks())
@@ -58,6 +59,6 @@ int main(int argc, char** argv)
                sg_disk_get_size_free(d) / INMEGA, d->get_cname(), h->get_cname());
   }
 
-  XBT_INFO("Simulation time %g", simgrid::s4u::Engine::get_clock());
+  XBT_INFO("Simulation time %g", sg4::Engine::get_clock());
   return 0;
 }

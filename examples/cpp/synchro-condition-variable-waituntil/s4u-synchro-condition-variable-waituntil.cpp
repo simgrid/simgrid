@@ -7,17 +7,18 @@
 #include <simgrid/s4u.hpp> /* All of S4U */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
+namespace sg4 = simgrid::s4u;
 
-simgrid::s4u::MutexPtr mtx = nullptr;
-simgrid::s4u::ConditionVariablePtr cv = nullptr;
+sg4::MutexPtr mtx            = nullptr;
+sg4::ConditionVariablePtr cv = nullptr;
 bool ready = false;
 
 static void competitor(int id)
 {
   XBT_INFO("Entering the race...");
-  std::unique_lock<simgrid::s4u::Mutex> lck(*mtx);
+  std::unique_lock<sg4::Mutex> lck(*mtx);
   while (not ready) {
-    auto now = simgrid::s4u::Engine::get_clock();
+    auto now = sg4::Engine::get_clock();
     if (cv->wait_until(lck, now + (id+1)*0.25) == std::cv_status::timeout) {
       XBT_INFO("Out of wait_until (timeout)");
     }
@@ -31,8 +32,8 @@ static void competitor(int id)
 static void go()
 {
   XBT_INFO("Are you ready? ...");
-  simgrid::s4u::this_actor::sleep_for(3);
-  std::unique_lock<simgrid::s4u::Mutex> lck(*mtx);
+  sg4::this_actor::sleep_for(3);
+  std::unique_lock<sg4::Mutex> lck(*mtx);
   XBT_INFO("Go go go!");
   ready = true;
   cv->notify_all();
@@ -40,21 +41,21 @@ static void go()
 
 static void main_actor()
 {
-  mtx = simgrid::s4u::Mutex::create();
-  cv = simgrid::s4u::ConditionVariable::create();
+  mtx = sg4::Mutex::create();
+  cv  = sg4::ConditionVariable::create();
 
-  auto host = simgrid::s4u::this_actor::get_host();
+  auto host = sg4::this_actor::get_host();
   for (int i = 0; i < 10; ++i)
-    simgrid::s4u::Actor::create("competitor", host, competitor, i);
-  simgrid::s4u::Actor::create("go", host, go);
+    sg4::Actor::create("competitor", host, competitor, i);
+  sg4::Actor::create("go", host, go);
 }
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   e.load_platform("../../platforms/small_platform.xml");
 
-  simgrid::s4u::Actor::create("main", e.host_by_name("Tremblay"), main_actor);
+  sg4::Actor::create("main", e.host_by_name("Tremblay"), main_actor);
 
   e.run();
   return 0;

@@ -3,14 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/** @addtogroup S4U_examples
+/** Switch the system thread hosting our maestro.
  *
- *  - <b>maestro-set/maestro-set.cpp: Switch the system thread hosting our maestro</b>.
- *    That's a very advanced example in which we move the maestro context to another system thread.
- *    Not many users need it (maybe only one, actually), but this example is also a regression test.
+ *  That's a very advanced example in which we move the maestro context to another system thread.
+ *  Not many users need it (maybe only one, actually), but this example is also a regression test.
  *
- *    This example is in C++ because we use C++11 threads to ensure that the feature is working as
- *    expected. You can still use that feature from a C code.
+ *  This example is in C++ because we use C++11 threads to ensure that the feature is working as
+ *  expected. You can still use that feature from a C code.
  */
 
 #include "simgrid/Exception.hpp"
@@ -21,6 +20,7 @@
 #include <thread>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
+namespace sg4 = simgrid::s4u;
 
 const std::thread::id root_id = std::this_thread::get_id();
 
@@ -41,22 +41,22 @@ static void sender()
 {
   ensure_root_tid();
   auto* payload = new std::string("some message");
-  simgrid::s4u::Mailbox::by_name("some mailbox")->put(payload, 10e8);
+  sg4::Mailbox::by_name("some mailbox")->put(payload, 10e8);
 }
 
 static void receiver()
 {
   ensure_other_tid();
 
-  simgrid::s4u::Mailbox::by_name("some mailbox")->get_unique<std::string>();
+  sg4::Mailbox::by_name("some mailbox")->get_unique<std::string>();
   XBT_INFO("Task received");
 }
 
 static void maestro(void* /* data */)
 {
   ensure_other_tid();
-  simgrid::s4u::Actor::create("receiver", simgrid::s4u::Host::by_name("Jupiter"), receiver);
-  simgrid::s4u::Engine::get_instance()->run();
+  sg4::Actor::create("receiver", sg4::Host::by_name("Jupiter"), receiver);
+  sg4::Engine::get_instance()->run();
 }
 
 /** Main function */
@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
    * actor by the subsequent sg_actor_attach(). This must be done before the creation of the engine. */
   simgrid_set_maestro(maestro, nullptr);
 
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   xbt_assert(argc == 2, "Usage: %s platform_file\n"
                         "example: %s ../platforms/small_platform.xml\n",

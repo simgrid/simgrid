@@ -6,11 +6,12 @@
 #include "simgrid/s4u.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
+namespace sg4 = simgrid::s4u;
 
 static void writer()
 {
   /* - Retrieve all disks from current host */
-  std::vector<simgrid::s4u::Disk*> const& disk_list = simgrid::s4u::Host::current()->get_disks();
+  std::vector<sg4::Disk*> const& disk_list = sg4::Host::current()->get_disks();
   /* - Write 4,000,000 bytes on Disk1 */
   disk_list.front()->write(4000000);
   XBT_INFO("First write done.");
@@ -22,7 +23,7 @@ static void writer()
 static void privileged_writer()
 {
   /* - Retrieve all disks from current host */
-  std::vector<simgrid::s4u::Disk*> const& disk_list = simgrid::s4u::Host::current()->get_disks();
+  std::vector<sg4::Disk*> const& disk_list = sg4::Host::current()->get_disks();
 
   /* - Write 4,000,000 bytes on Disk1 but specifies that this I/O operation gets a larger share of the resource.
    *
@@ -37,7 +38,7 @@ static void privileged_writer()
    * quickly. */
 
   /* Resynchronize actors before second write */
-  simgrid::s4u::this_actor::sleep_for(0.05);
+  sg4::this_actor::sleep_for(0.05);
 
   /* - Write 4,000,000 bytes on Disk1 again and this time :
    *    - Start the I/O operation asynchronously to get an IoPtr
@@ -51,8 +52,8 @@ static void privileged_writer()
    *   0.025s to write the last MB.
    */
 
-  simgrid::s4u::IoPtr io = disk_list.front()->write_async(4000000);
-  simgrid::s4u::this_actor::sleep_for(0.1);
+  sg4::IoPtr io = disk_list.front()->write_async(4000000);
+  sg4::this_actor::sleep_for(0.1);
   XBT_INFO("Increase priority for the priviledged writer (%.0f bytes remaining to write)", io->get_remaining());
   io->update_priority(2);
   io->wait();
@@ -61,13 +62,13 @@ static void privileged_writer()
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
   xbt_assert(argc > 1, "Usage: %s platform_file\n\tExample: %s platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
 
-  simgrid::s4u::Actor::create("writer", e.host_by_name("bob"), writer);
-  simgrid::s4u::Actor::create("privileged_writer", e.host_by_name("bob"), privileged_writer);
+  sg4::Actor::create("writer", e.host_by_name("bob"), writer);
+  sg4::Actor::create("privileged_writer", e.host_by_name("bob"), privileged_writer);
 
   e.run();
 

@@ -62,7 +62,7 @@ public:
     }
     XBT_INFO("Wait for remaining comm, just to be nice");
     pending_comms.erase(pending_comms.begin());
-    simgrid::s4u::Comm::wait_any(pending_comms);
+    sg4::Comm::wait_any(pending_comms);
   }
 };
 

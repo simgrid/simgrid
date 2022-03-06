@@ -34,8 +34,9 @@
 #include "simgrid/plugins/energy.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this example");
+namespace sg4 = simgrid::s4u;
 
-static void simulate_bootup(simgrid::s4u::Host* host)
+static void simulate_bootup(sg4::Host* host)
 {
   unsigned long previous_pstate = host->get_pstate();
 
@@ -46,13 +47,13 @@ static void simulate_bootup(simgrid::s4u::Host* host)
   host->turn_on();
 
   XBT_INFO("Wait 150s to simulate the boot time.");
-  simgrid::s4u::this_actor::sleep_for(150);
+  sg4::this_actor::sleep_for(150);
 
   XBT_INFO("The host is now up and running. Switch back to previous pstate %lu", previous_pstate);
   host->set_pstate(previous_pstate);
 }
 
-static void simulate_shutdown(simgrid::s4u::Host* host)
+static void simulate_shutdown(sg4::Host* host)
 {
   unsigned long previous_pstate = host->get_pstate();
 
@@ -60,7 +61,7 @@ static void simulate_shutdown(simgrid::s4u::Host* host)
   host->set_pstate(4);
 
   XBT_INFO("Wait 7 seconds to simulate the shutdown time.");
-  simgrid::s4u::this_actor::sleep_for(7);
+  sg4::this_actor::sleep_for(7);
 
   XBT_INFO("Switch back to previous pstate %lu, that will be used on reboot.", previous_pstate);
   host->set_pstate(previous_pstate);
@@ -71,13 +72,13 @@ static void simulate_shutdown(simgrid::s4u::Host* host)
 
 static void monitor()
 {
-  simgrid::s4u::Host* host1 = simgrid::s4u::Host::by_name("MyHost1");
+  sg4::Host* host1 = sg4::Host::by_name("MyHost1");
 
   XBT_INFO("Initial pstate: %lu; Energy dissipated so far:%.0E J", host1->get_pstate(),
            sg_host_get_consumed_energy(host1));
 
   XBT_INFO("Sleep for 10 seconds");
-  simgrid::s4u::this_actor::sleep_for(10);
+  sg4::this_actor::sleep_for(10);
   XBT_INFO("Done sleeping. Current pstate: %lu; Energy dissipated so far: %.2f J", host1->get_pstate(),
            sg_host_get_consumed_energy(host1));
 
@@ -86,7 +87,7 @@ static void monitor()
            sg_host_get_consumed_energy(host1));
 
   XBT_INFO("Sleep for 10 seconds");
-  simgrid::s4u::this_actor::sleep_for(10);
+  sg4::this_actor::sleep_for(10);
   XBT_INFO("Done sleeping. Current pstate: %lu; Energy dissipated so far: %.2f J", host1->get_pstate(),
            sg_host_get_consumed_energy(host1));
 
@@ -98,12 +99,12 @@ static void monitor()
 int main(int argc, char* argv[])
 {
   sg_host_energy_plugin_init();
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("Boot Monitor", e.host_by_name("MyHost2"), monitor);
+  sg4::Actor::create("Boot Monitor", e.host_by_name("MyHost2"), monitor);
 
   e.run();
 

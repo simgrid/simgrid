@@ -21,11 +21,12 @@
 #include <simgrid/s4u.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_ptask, "Messages specific for this s4u example");
+namespace sg4 = simgrid::s4u;
 
 static void runner()
 {
   /* Retrieve the list of all hosts as an array of hosts */
-  auto hosts         = simgrid::s4u::Engine::get_instance()->get_all_hosts();
+  auto hosts         = sg4::Engine::get_instance()->get_all_hosts();
   size_t hosts_count = hosts.size();
 
   std::vector<double> computation_amounts;
@@ -41,7 +42,7 @@ static void runner()
     for (size_t j = i + 1; j < hosts_count; j++)
       communication_amounts[i * hosts_count + j] = 1e7; // 10 MB
 
-  simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
+  sg4::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
 
   /* ------[ test 2 ]----------------- */
   XBT_INFO("We can do the same with a timeout of 10 seconds enabled.");
@@ -51,8 +52,7 @@ static void runner()
     for (size_t j = i + 1; j < hosts_count; j++)
       communication_amounts[i * hosts_count + j] = 1e7; // 10 MB
 
-  simgrid::s4u::ExecPtr activity =
-      simgrid::s4u::this_actor::exec_init(hosts, computation_amounts, communication_amounts);
+  sg4::ExecPtr activity = sg4::this_actor::exec_init(hosts, computation_amounts, communication_amounts);
   try {
     activity->wait_for(10.0 /* timeout (in seconds)*/);
     xbt_die("Woops, this did not timeout as expected... Please report that bug.");
@@ -65,24 +65,24 @@ static void runner()
   XBT_INFO("Then, build a parallel activity involving only computations (of different amounts) and no communication");
   computation_amounts = {3e8, 6e8, 1e9}; // 300Mflop, 600Mflop, 1Gflop
   communication_amounts.clear();         // no comm
-  simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
+  sg4::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
 
   /* ------[ test 4 ]----------------- */
   XBT_INFO("Then, build a parallel activity with no computation nor communication (synchro only)");
   computation_amounts.clear();
   communication_amounts.clear();
-  simgrid::s4u::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
+  sg4::this_actor::parallel_execute(hosts, computation_amounts, communication_amounts);
 
   /* ------[ test 5 ]----------------- */
   XBT_INFO("Then, Monitor the execution of a parallel activity");
   computation_amounts.assign(hosts_count, 1e6 /*1Mflop*/);
   communication_amounts = {0, 1e6, 0, 0, 0, 1e6, 1e6, 0, 0};
-  activity              = simgrid::s4u::this_actor::exec_init(hosts, computation_amounts, communication_amounts);
+  activity              = sg4::this_actor::exec_init(hosts, computation_amounts, communication_amounts);
   activity->start();
 
   while (not activity->test()) {
     XBT_INFO("Remaining flop ratio: %.0f%%", 100 * activity->get_remaining_ratio());
-    simgrid::s4u::this_actor::sleep_for(5);
+    sg4::this_actor::sleep_for(5);
   }
   activity->wait();
 
@@ -91,10 +91,10 @@ static void runner()
   XBT_INFO("  - Start a regular parallel execution, with both comm and computation");
   computation_amounts.assign(hosts_count, 1e6 /*1Mflop*/);
   communication_amounts = {0, 1e6, 0, 0, 1e6, 0, 1e6, 0, 0};
-  activity              = simgrid::s4u::this_actor::exec_init(hosts, computation_amounts, communication_amounts);
+  activity              = sg4::this_actor::exec_init(hosts, computation_amounts, communication_amounts);
   activity->start();
 
-  simgrid::s4u::this_actor::sleep_for(10);
+  sg4::this_actor::sleep_for(10);
   double remaining_ratio = activity->get_remaining_ratio();
   XBT_INFO("  - After 10 seconds, %.2f%% remains to be done. Change it from 3 hosts to 2 hosts only.",
            remaining_ratio * 100);
@@ -104,7 +104,7 @@ static void runner()
   XBT_INFO("  - Now, simulate the reconfiguration (modeled as a comm from the removed host to the remaining ones).");
   std::vector<double> rescheduling_comp{0, 0, 0};
   std::vector<double> rescheduling_comm{0, 0, 0, 0, 0, 0, 25000, 25000, 0};
-  simgrid::s4u::this_actor::parallel_execute(hosts, rescheduling_comp, rescheduling_comm);
+  sg4::this_actor::parallel_execute(hosts, rescheduling_comp, rescheduling_comm);
 
   XBT_INFO("  - Now, let's cancel the old task and create a new task with modified comm and computation vectors:");
   XBT_INFO("    What was already done is removed, and the load of the removed host is shared between remaining ones.");
@@ -122,7 +122,7 @@ static void runner()
   communication_amounts = {0, remaining_comm, remaining_comm, 0}; // Resizing a linearized matrix is hairly
 
   activity->cancel();
-  activity = simgrid::s4u::this_actor::exec_init(hosts, computation_amounts, communication_amounts);
+  activity = sg4::this_actor::exec_init(hosts, computation_amounts, communication_amounts);
 
   XBT_INFO("  - Done, let's wait for the task completion");
   activity->wait();
@@ -132,12 +132,12 @@ static void runner()
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   xbt_assert(argc == 2, "Usage: %s <platform file>", argv[0]);
 
   e.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("test", e.host_by_name("MyHost1"), runner);
+  sg4::Actor::create("test", e.host_by_name("MyHost1"), runner);
 
   e.run();
   XBT_INFO("Simulation done.");

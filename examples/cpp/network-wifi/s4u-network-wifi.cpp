@@ -10,15 +10,16 @@
  */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_network_wifi, "Messages specific for this s4u example");
+namespace sg4 = simgrid::s4u;
 
-static void sender(simgrid::s4u::Mailbox* mailbox, int data_size)
+static void sender(sg4::Mailbox* mailbox, int data_size)
 {
   XBT_INFO("Send a message to the other station.");
   static std::string message = "message";
   mailbox->put(&message, data_size);
   XBT_INFO("Done.");
 }
-static void receiver(simgrid::s4u::Mailbox* mailbox)
+static void receiver(sg4::Mailbox* mailbox)
 {
   XBT_INFO("Wait for a message.");
   mailbox->get<std::string>();
@@ -27,18 +28,18 @@ static void receiver(simgrid::s4u::Mailbox* mailbox)
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   xbt_assert(argc > 1, "Usage: %s platform_file\n\tExample: %s platform.xml deployment.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
 
   /* Exchange a message between the 2 stations */
-  auto mailbox  = simgrid::s4u::Mailbox::by_name("mailbox");
+  auto mailbox  = sg4::Mailbox::by_name("mailbox");
   auto station1 = e.host_by_name("Station 1");
   auto station2 = e.host_by_name("Station 2");
-  simgrid::s4u::Actor::create("sender", station1, sender, mailbox, 1e7);
-  simgrid::s4u::Actor::create("receiver", station2, receiver, mailbox);
+  sg4::Actor::create("sender", station1, sender, mailbox, 1e7);
+  sg4::Actor::create("receiver", station2, receiver, mailbox);
 
   /* Declare that the stations are not at the same distance from their AP */
   auto ap = e.link_by_name("AP1");

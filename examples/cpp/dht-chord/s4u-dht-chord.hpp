@@ -10,6 +10,8 @@
 #include <xbt/random.hpp>
 #include <xbt/str.h>
 
+namespace sg4 = simgrid::s4u;
+
 constexpr double MAX_SIMULATION_TIME              = 1000;
 constexpr double PERIODIC_STABILIZE_DELAY         = 20;
 constexpr double PERIODIC_FIX_FINGERS_DELAY       = 120;
@@ -37,11 +39,11 @@ enum class MessageType {
 class ChordMessage {
 public:
   MessageType type;                                                                    // type of message
-  std::string issuer_host_name     = simgrid::s4u::this_actor::get_host()->get_name(); // used for logging
+  std::string issuer_host_name = sg4::this_actor::get_host()->get_name();              // used for logging
   int request_id     = -1;            // id (used by some types of messages)
   int request_finger = 1;             // finger parameter (used by some types of messages)
   int answer_id      = -1;            // answer (used by some types of messages)
-  simgrid::s4u::Mailbox* answer_to = nullptr;       // mailbox to send an answer to (if any)
+  sg4::Mailbox* answer_to      = nullptr;       // mailbox to send an answer to (if any)
 
   explicit ChordMessage(MessageType type) : type(type) {}
 
@@ -56,7 +58,7 @@ class Node {
   int id_;                           // my id
   int pred_id_ = -1;                 // predecessor id
   simgrid::xbt::random::XbtRandom random; // random number generator for this node
-  simgrid::s4u::Mailbox* mailbox_;   // my mailbox
+  sg4::Mailbox* mailbox_;                 // my mailbox
   std::vector<int> fingers_;         // finger table,(fingers[0] is my successor)
   int next_finger_to_fix;            // index of the next finger to fix in fix_fingers()
 

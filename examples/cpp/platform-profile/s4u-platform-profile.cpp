@@ -10,16 +10,17 @@
  * speed. The first way to do so is to use a file in the XML, while the second is to use the programmatic interface. */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_platform_profile, "Messages specific for this s4u example");
+namespace sg4 = simgrid::s4u;
 
 static void watcher()
 {
-  const auto* jupiter  = simgrid::s4u::Host::by_name("Jupiter");
-  const auto* fafard   = simgrid::s4u::Host::by_name("Fafard");
-  const auto* lilibeth = simgrid::s4u::Host::by_name("Lilibeth");
-  const auto* link1    = simgrid::s4u::Link::by_name("1");
-  const auto* link2    = simgrid::s4u::Link::by_name("2");
+  const auto* jupiter  = sg4::Host::by_name("Jupiter");
+  const auto* fafard   = sg4::Host::by_name("Fafard");
+  const auto* lilibeth = sg4::Host::by_name("Lilibeth");
+  const auto* link1    = sg4::Link::by_name("1");
+  const auto* link2    = sg4::Link::by_name("2");
 
-  std::vector<simgrid::s4u::Link*> links;
+  std::vector<sg4::Link*> links;
   double lat = 0;
   jupiter->route_to(fafard, links, &lat);
 
@@ -35,13 +36,13 @@ static void watcher()
              jupiter->get_speed() * jupiter->get_available_speed() / 1000000,
              lilibeth->get_speed() * lilibeth->get_available_speed() / 1000000, link1->get_bandwidth() / 1000,
              link1->get_latency() * 1000, link2->get_bandwidth() / 1000, link2->get_latency() * 1000);
-    simgrid::s4u::this_actor::sleep_for(1);
+    sg4::this_actor::sleep_for(1);
   }
 }
 
 int main(int argc, char* argv[])
 {
-  simgrid::s4u::Engine e(&argc, argv);
+  sg4::Engine e(&argc, argv);
 
   xbt_assert(argc > 1, "Usage: %s platform_file\n\tExample: %s platform.xml\n", argv[0], argv[0]);
 
@@ -59,7 +60,7 @@ int main(int argc, char* argv[])
       ->seal();
 
   // Add a watcher of the changes
-  simgrid::s4u::Actor::create("watcher", e.host_by_name("Fafard"), watcher);
+  sg4::Actor::create("watcher", e.host_by_name("Fafard"), watcher);
 
   e.run();
 

@@ -7,12 +7,13 @@
 #include "simgrid/plugins/energy.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
+namespace sg4 = simgrid::s4u;
 
 static void runner()
 {
-  simgrid::s4u::Host* host1 = simgrid::s4u::Host::by_name("MyHost1");
-  simgrid::s4u::Host* host2 = simgrid::s4u::Host::by_name("MyHost2");
-  std::vector<simgrid::s4u::Host*> hosts{host1, host2};
+  sg4::Host* host1 = sg4::Host::by_name("MyHost1");
+  sg4::Host* host2 = sg4::Host::by_name("MyHost2");
+  std::vector<sg4::Host*> hosts{host1, host2};
 
   double old_energy_host1 = sg_host_get_consumed_energy(host1);
   double old_energy_host2 = sg_host_get_consumed_energy(host2);
@@ -24,39 +25,41 @@ static void runner()
   XBT_INFO("[%s] Initial peak speed=%.0E flop/s; Total energy dissipated =%.0E J", host2->get_cname(), host2->get_speed(),
            old_energy_host2);
 
-  double start = simgrid::s4u::Engine::get_clock();
+  double start = sg4::Engine::get_clock();
   XBT_INFO("Sleep for 10 seconds");
-  simgrid::s4u::this_actor::sleep_for(10);
+  sg4::this_actor::sleep_for(10);
 
   double new_energy_host1 = sg_host_get_consumed_energy(host1);
   double new_energy_host2 = sg_host_get_consumed_energy(host2);
   XBT_INFO("Done sleeping (duration: %.2f s).\n"
            "[%s] Current peak speed=%.0E; Energy dissipated during this step=%.2f J; Total energy dissipated=%.2f J\n"
            "[%s] Current peak speed=%.0E; Energy dissipated during this step=%.2f J; Total energy dissipated=%.2f J\n",
-           simgrid::s4u::Engine::get_clock() - start,
-           host1->get_cname(), host1->get_speed(), (new_energy_host1 - old_energy_host1), sg_host_get_consumed_energy(host1),
-           host2->get_cname(), host2->get_speed(), (new_energy_host2 - old_energy_host2), sg_host_get_consumed_energy(host2));
+           sg4::Engine::get_clock() - start, host1->get_cname(), host1->get_speed(),
+           (new_energy_host1 - old_energy_host1), sg_host_get_consumed_energy(host1), host2->get_cname(),
+           host2->get_speed(), (new_energy_host2 - old_energy_host2), sg_host_get_consumed_energy(host2));
 
   old_energy_host1 = new_energy_host1;
   old_energy_host2 = new_energy_host2;
 
 
   // ========= Execute something =========
-  start             = simgrid::s4u::Engine::get_clock();
+  start             = sg4::Engine::get_clock();
   double flopAmount = 1E9;
   std::vector<double> cpu_amounts{flopAmount, flopAmount};
   std::vector<double> com_amounts{0, 0, 0, 0};
   XBT_INFO("Run a task of %.0E flops on two hosts", flopAmount);
-  simgrid::s4u::this_actor::parallel_execute(hosts, cpu_amounts, com_amounts);
+  sg4::this_actor::parallel_execute(hosts, cpu_amounts, com_amounts);
 
   new_energy_host1 = sg_host_get_consumed_energy(host1);
   new_energy_host2 = sg_host_get_consumed_energy(host2);
-  XBT_INFO("Task done (duration: %.2f s).\n"
-           "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n"
-           "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n",
-           simgrid::s4u::Engine::get_clock() - start,
-           host1->get_cname(), host1->get_speed(), (new_energy_host1 - old_energy_host1), sg_host_get_consumed_energy(host1),
-           host2->get_cname(), host2->get_speed(), (new_energy_host2 - old_energy_host2), sg_host_get_consumed_energy(host2));
+  XBT_INFO(
+      "Task done (duration: %.2f s).\n"
+      "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n"
+      "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f "
+      "J\n",
+      sg4::Engine::get_clock() - start, host1->get_cname(), host1->get_speed(), (new_energy_host1 - old_energy_host1),
+      sg_host_get_consumed_energy(host1), host2->get_cname(), host2->get_speed(), (new_energy_host2 - old_energy_host2),
+      sg_host_get_consumed_energy(host2));
 
   old_energy_host1 = new_energy_host1;
   old_energy_host2 = new_energy_host2;
@@ -71,84 +74,92 @@ static void runner()
 
 
   // ========= Run another ptask =========
-  start             = simgrid::s4u::Engine::get_clock();
+  start = sg4::Engine::get_clock();
   std::vector<double> cpu_amounts2{flopAmount, flopAmount};
   std::vector<double> com_amounts2{0, 0, 0, 0};
   XBT_INFO("Run a task of %.0E flops on %s and %.0E flops on %s.", flopAmount, host1->get_cname(), flopAmount, host2->get_cname());
-  simgrid::s4u::this_actor::parallel_execute(hosts, cpu_amounts2, com_amounts2);
+  sg4::this_actor::parallel_execute(hosts, cpu_amounts2, com_amounts2);
 
   new_energy_host1 = sg_host_get_consumed_energy(host1);
   new_energy_host2 = sg_host_get_consumed_energy(host2);
-  XBT_INFO("Task done (duration: %.2f s).\n"
-           "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n"
-           "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n",
-           simgrid::s4u::Engine::get_clock() - start,
-           host1->get_cname(), host1->get_speed(), (new_energy_host1 - old_energy_host1), sg_host_get_consumed_energy(host1),
-           host2->get_cname(), host2->get_speed(), (new_energy_host2 - old_energy_host2), sg_host_get_consumed_energy(host2));
+  XBT_INFO(
+      "Task done (duration: %.2f s).\n"
+      "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n"
+      "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f "
+      "J\n",
+      sg4::Engine::get_clock() - start, host1->get_cname(), host1->get_speed(), (new_energy_host1 - old_energy_host1),
+      sg_host_get_consumed_energy(host1), host2->get_cname(), host2->get_speed(), (new_energy_host2 - old_energy_host2),
+      sg_host_get_consumed_energy(host2));
 
   old_energy_host1 = new_energy_host1;
   old_energy_host2 = new_energy_host2;
 
 
   // ========= A new ptask with computation and communication =========
-  start             = simgrid::s4u::Engine::get_clock();
+  start            = sg4::Engine::get_clock();
   double comAmount = 1E7;
   std::vector<double> cpu_amounts3{flopAmount, flopAmount};
   std::vector<double> com_amounts3{0, comAmount, comAmount, 0};
   XBT_INFO("Run a task with computation and communication on two hosts.");
-  simgrid::s4u::this_actor::parallel_execute(hosts, cpu_amounts3, com_amounts3);
+  sg4::this_actor::parallel_execute(hosts, cpu_amounts3, com_amounts3);
 
   new_energy_host1 = sg_host_get_consumed_energy(host1);
   new_energy_host2 = sg_host_get_consumed_energy(host2);
-  XBT_INFO("Task done (duration: %.2f s).\n"
-           "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n"
-           "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n",
-           simgrid::s4u::Engine::get_clock() - start,
-           host1->get_cname(), host1->get_speed(), (new_energy_host1 - old_energy_host1), sg_host_get_consumed_energy(host1),
-           host2->get_cname(), host2->get_speed(), (new_energy_host2 - old_energy_host2), sg_host_get_consumed_energy(host2));
+  XBT_INFO(
+      "Task done (duration: %.2f s).\n"
+      "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n"
+      "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f "
+      "J\n",
+      sg4::Engine::get_clock() - start, host1->get_cname(), host1->get_speed(), (new_energy_host1 - old_energy_host1),
+      sg_host_get_consumed_energy(host1), host2->get_cname(), host2->get_speed(), (new_energy_host2 - old_energy_host2),
+      sg_host_get_consumed_energy(host2));
 
   old_energy_host1 = new_energy_host1;
   old_energy_host2 = new_energy_host2;
 
 
   // ========= A new ptask with communication only =========
-  start             = simgrid::s4u::Engine::get_clock();
+  start = sg4::Engine::get_clock();
   std::vector<double> cpu_amounts4{0, 0};
   std::vector<double> com_amounts4{0, comAmount, comAmount, 0};
   XBT_INFO("Run a task with only communication on two hosts.");
-  simgrid::s4u::this_actor::parallel_execute(hosts, cpu_amounts4, com_amounts4);
+  sg4::this_actor::parallel_execute(hosts, cpu_amounts4, com_amounts4);
 
   new_energy_host1 = sg_host_get_consumed_energy(host1);
   new_energy_host2 = sg_host_get_consumed_energy(host2);
-  XBT_INFO("Task done (duration: %.2f s).\n"
-           "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n"
-           "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n",
-           simgrid::s4u::Engine::get_clock() - start,
-           host1->get_cname(), host1->get_speed(), (new_energy_host1 - old_energy_host1), sg_host_get_consumed_energy(host1),
-           host2->get_cname(), host2->get_speed(), (new_energy_host2 - old_energy_host2), sg_host_get_consumed_energy(host2));
+  XBT_INFO(
+      "Task done (duration: %.2f s).\n"
+      "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n"
+      "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f "
+      "J\n",
+      sg4::Engine::get_clock() - start, host1->get_cname(), host1->get_speed(), (new_energy_host1 - old_energy_host1),
+      sg_host_get_consumed_energy(host1), host2->get_cname(), host2->get_speed(), (new_energy_host2 - old_energy_host2),
+      sg_host_get_consumed_energy(host2));
 
   old_energy_host1 = new_energy_host1;
   old_energy_host2 = new_energy_host2;
 
   // ========= A new ptask with computation and a timeout =========
-  start             = simgrid::s4u::Engine::get_clock();
+  start = sg4::Engine::get_clock();
   std::vector<double> cpu_amounts5{flopAmount, flopAmount};
   std::vector<double> com_amounts5{0, 0, 0, 0};
   XBT_INFO("Run a task with computation on two hosts and a timeout of 20s.");
   try {
-    simgrid::s4u::this_actor::exec_init(hosts, cpu_amounts5, com_amounts5)->wait_for(20);
+    sg4::this_actor::exec_init(hosts, cpu_amounts5, com_amounts5)->wait_for(20);
   } catch (const simgrid::TimeoutException &){
     XBT_INFO("Finished WITH timeout");
   }
 
   new_energy_host1 = sg_host_get_consumed_energy(host1);
   new_energy_host2 = sg_host_get_consumed_energy(host2);
-  XBT_INFO("Task ended (duration: %.2f s).\n"
-           "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n"
-           "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n",
-           simgrid::s4u::Engine::get_clock() - start,
-           host1->get_cname(), host1->get_speed(), (new_energy_host1 - old_energy_host1), sg_host_get_consumed_energy(host1),
-           host2->get_cname(), host2->get_speed(), (new_energy_host2 - old_energy_host2), sg_host_get_consumed_energy(host2));
+  XBT_INFO(
+      "Task ended (duration: %.2f s).\n"
+      "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f J\n"
+      "[%s] Current peak speed=%.0E flop/s; Energy dissipated during this step=%.2f J; Total energy dissipated=%.0f "
+      "J\n",
+      sg4::Engine::get_clock() - start, host1->get_cname(), host1->get_speed(), (new_energy_host1 - old_energy_host1),
+      sg_host_get_consumed_energy(host1), host2->get_cname(), host2->get_speed(), (new_energy_host2 - old_energy_host2),
+      sg_host_get_consumed_energy(host2));
 
   XBT_INFO("Now is time to quit!");
 }
@@ -156,13 +167,13 @@ static void runner()
 int main(int argc, char* argv[])
 {
   sg_host_energy_plugin_init();
-  simgrid::s4u::Engine e(&argc, argv);
-  simgrid::s4u::Engine::set_config("host/model:ptask_L07");
+  sg4::Engine e(&argc, argv);
+  sg4::Engine::set_config("host/model:ptask_L07");
 
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s ../platforms/energy_platform.xml\n", argv[0], argv[0]);
 
   e.load_platform(argv[1]);
-  simgrid::s4u::Actor::create("energy_ptask_test", e.host_by_name("MyHost1"), runner);
+  sg4::Actor::create("energy_ptask_test", e.host_by_name("MyHost1"), runner);
 
   e.run();
   XBT_INFO("End of simulation.");
