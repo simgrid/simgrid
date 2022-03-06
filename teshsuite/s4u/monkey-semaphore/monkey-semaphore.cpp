@@ -23,22 +23,32 @@ static simgrid::config::Flag<double> cfg_deadline{"deadline", "When to fail the 
 
 int todo; // remaining amount of items to exchange
 
+// A stack to keep track of semaphores.  When destroyed, semaphores remaining on stack are automatically released.
+class SemStack {
+  std::vector<sg4::Semaphore*> to_release;
+
+public:
+  void push(sg4::SemaphorePtr& sem) { to_release.push_back(sem.get()); }
+  void pop() { to_release.pop_back(); }
+  ~SemStack()
+  {
+    for (auto* sem : to_release) {
+      sem->release();
+      XBT_INFO("Released a semaphore on exit. It's now %d", sem->get_capacity());
+    }
+  }
+};
+
 static void producer()
 {
   static bool inited = false;
-  static std::vector<sg4::Semaphore*> to_release;
+  SemStack to_release;
   XBT_INFO("Producer %s", inited ? "rebooting" : "booting");
 
   if (not inited) {
     sg4::this_actor::on_exit(
         [](bool forcefully) { XBT_INFO("Producer dying %s.", forcefully ? "forcefully" : "peacefully"); });
     inited = true;
-  }
-  while (not to_release.empty()) { // Clean up a previous run. Cannot be done in on_exit, as it entails a simcall
-    auto* sem = to_release.back();
-    sem->release();
-    XBT_INFO("Released a semaphore on reboot. It's now %d", sem->get_capacity());
-    to_release.pop_back();
   }
 
   while (todo > 0) {
@@ -49,7 +59,7 @@ static void producer()
 
     while (sem_empty->acquire_timeout(10))
       XBT_INFO("Timeouted");
-    to_release.push_back(sem_empty.get());
+    to_release.push(sem_empty);
     XBT_INFO("sem_empty acquired");
 
     sg4::this_actor::sleep_for(1); // Give a chance to the monkey to kill this actor at this point
@@ -57,14 +67,14 @@ static void producer()
     XBT_INFO("Pushing item %d", todo - 1);
     buffer = todo - 1;
     sem_full->release();
-    to_release.pop_back();
+    to_release.pop();
     XBT_INFO("sem_empty removed from to_release");
     todo--;
   }
 }
 static void consumer()
 {
-  static std::vector<sg4::Semaphore*> to_release;
+  SemStack to_release;
 
   static bool inited = false;
   XBT_INFO("Consumer %s", inited ? "rebooting" : "booting");
@@ -72,12 +82,6 @@ static void consumer()
     sg4::this_actor::on_exit(
         [](bool forcefully) { XBT_INFO("Consumer dying %s.", forcefully ? "forcefully" : "peacefully"); });
     inited = true;
-  }
-  while (not to_release.empty()) { // Clean up a previous run. Cannot be done in on_exit, as it entails a simcall
-    auto* sem = to_release.back();
-    sem->release();
-    XBT_INFO("Released a semaphore on reboot. It's now %d", sem->get_capacity());
-    to_release.pop_back();
   }
 
   int item;
@@ -89,14 +93,14 @@ static void consumer()
 
     while (sem_full->acquire_timeout(10))
       XBT_INFO("Timeouted");
-    to_release.push_back(sem_full.get());
+    to_release.push(sem_full);
 
     sg4::this_actor::sleep_for(0.75); // Give a chance to the monkey to kill this actor at this point
 
     item = buffer;
     XBT_INFO("Receiving item %d", item);
     sem_empty->release();
-    to_release.pop_back();
+    to_release.pop();
   } while (item != 0);
 
   XBT_INFO("Bye!");
