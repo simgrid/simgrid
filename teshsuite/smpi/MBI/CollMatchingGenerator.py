@@ -1,4 +1,8 @@
 #! /usr/bin/python3
+
+# Copyright 2021-2022. The MBI project. All rights reserved.
+# This program is free software; you can redistribute it and/or modify it under the terms of the license (GNU GPL).
+
 import sys
 from generator_utils import *
 

@@ -5,7 +5,7 @@
 # Only the python scripts are embeeded in the archive, and the C test files are generated at config time using these scripts.
 # These python scripts are copied over from the MBI repository with as little changes as possible.
 
-set(generator_scripts CollMatchingGenerator.py) # More generators to come
+set(generator_scripts CollMatchingGenerator.py ResleakGenerator.py) # More generators to come
 
 if (enable_smpi_MBI_testsuite)
   if (NOT enable_smpi)
