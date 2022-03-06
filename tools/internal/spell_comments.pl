@@ -30,7 +30,7 @@ $DICTFILE="./spell_dict.txt" unless (-e $DICTFILE);
 die "Call this script from its location or from the SimGrid root directory\n" unless (-e $DICTFILE);
 
 die "Usage: ". ($DICTFILE eq "./spell_dict.txt"? "./":"tools/internal/")."spell_comments.pl "
-           ."`find ". ($DICTFILE eq "./spell_dict.txt"? "../../":".")." -name '*.[ch]' -o -name '*.hpp' -o -name '*.cpp' |grep -v umpire|grep -v smpi/mpich3-test|grep -v NAS | grep -v src/smpi/colls`\n"
+           ."`find ". ($DICTFILE eq "./spell_dict.txt"? "../../":".")." -name '*.[ch]' -o -name '*.hpp' -o -name '*.cpp' |grep -v smpi/mpich3-test|grep -v NAS | grep -v src/smpi/colls`\n"
   unless scalar(@ARGV)>0;
 
 my $total = 0;
