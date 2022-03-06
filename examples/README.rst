@@ -353,6 +353,10 @@ This example is very similar to the previous one, simply adding how to declare t
 
       See also :cpp:func:`simgrid::s4u::Activity::wait_until()` and :cpp:func:`simgrid::s4u::Comm::wait_for()`.
 
+   .. example-tab:: examples/python/comm-waitfor/comm-waitfor.py
+
+      See also :py:func:`simgrid.Comm.wait_for()` and :py:func:`simgrid.Comm.wait_any_for()`
+
 Suspending communications
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
