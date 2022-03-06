@@ -280,7 +280,7 @@ enable_ns3 (on/OFF)
 enable_smpi (ON/off)
   Allows one to run MPI code on top of SimGrid.
 
-enable_smpi_ISP_testsuite (on/OFF)
+enable_smpi_MBI_testsuite (on/OFF)
   Adds many extra tests for the model checker module.
 
 enable_smpi_MPICH3_testsuite (on/OFF)

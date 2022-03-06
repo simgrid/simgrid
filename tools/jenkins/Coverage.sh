@@ -72,7 +72,7 @@ cmake -Denable_documentation=OFF \
       -Denable_ns3=ON \
       -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_model-checking=ON \
       -Denable_smpi_papi=ON \
-      -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=ON \
+      -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_MBI_testsuite=OFF \
       -Denable_coverage=ON -DLTO_EXTRA_FLAG="auto" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON "$WORKSPACE"
 
 #build with sonarqube scanner wrapper

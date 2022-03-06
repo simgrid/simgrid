@@ -48,7 +48,7 @@ else()
   option(enable_smpi_papi    "Whether SMPI supports PAPI bindings." off)
 endif()
 option(enable_smpi_MPICH3_testsuite "Whether the test suite form MPICH 3 should be built" off)
-option(enable_smpi_ISP_testsuite "Whether the test suite from ISP should be built." off)
+option(enable_smpi_MBI_testsuite "Whether the test suite from MBI should be built." off)
 
 # Internal targets used by jenkins
 ###

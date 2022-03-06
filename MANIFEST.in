@@ -846,6 +846,11 @@ include teshsuite/s4u/wait-all-for/wait-all-for.cpp
 include teshsuite/s4u/wait-all-for/wait-all-for.tesh
 include teshsuite/s4u/wait-any-for/wait-any-for.cpp
 include teshsuite/s4u/wait-any-for/wait-any-for.tesh
+include teshsuite/smpi/MBI/CollMatchingGenerator.py
+include teshsuite/smpi/MBI/MBI.py
+include teshsuite/smpi/MBI/MBIutils.py
+include teshsuite/smpi/MBI/generator_utils.py
+include teshsuite/smpi/MBI/simgrid.py
 include teshsuite/smpi/auto-shared/auto-shared.c
 include teshsuite/smpi/auto-shared/auto-shared.tesh
 include teshsuite/smpi/bug-17132/bug-17132.c
@@ -2608,6 +2613,7 @@ include teshsuite/platforms/CMakeLists.txt
 include teshsuite/python/CMakeLists.txt
 include teshsuite/s4u/CMakeLists.txt
 include teshsuite/smpi/CMakeLists.txt
+include teshsuite/smpi/MBI/CMakeLists.txt
 include teshsuite/smpi/mpich3-test/CMakeLists.txt
 include teshsuite/smpi/mpich3-test/attr/CMakeLists.txt
 include teshsuite/smpi/mpich3-test/coll/CMakeLists.txt
