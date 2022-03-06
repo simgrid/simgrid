@@ -1,4 +1,4 @@
-# Copyright 2021-2022. The MBI project. All rights reserved. 
+# Copyright 2021-2022. The MBI project. All rights reserved.
 # This program is free software; you can redistribute it and/or modify it under the terms of the license (GNU GPL).
 
 # This is a simple templating system, dedicated to the systematic generation of MPI source code
@@ -259,9 +259,9 @@ write['MPI_Ialltoallv'] = lambda n: f"rbuf{n}[0]++;"
 
 init['MPI_Comm_split'] = lambda n: f'MPI_Comm com[size]; color = rank % 2; int key = 1;'
 start['MPI_Comm_split'] = lambda n: ""
-operation['MPI_Comm_split'] = lambda n: 'MPI_Comm_split(MPI_COMM_WORLD,color,key, &com[j]);'
+operation['MPI_Comm_split'] = lambda n: 'MPI_Comm_split(MPI_COMM_WORLD,color,key, com + j);'
 error['MPI_Comm_split'] = 'CommunicatorLeak'
-fini['MPI_Comm_split'] = lambda n: "if(com[j] != MPI_COMM_NULL) MPI_Comm_free(&com[j]);"
+fini['MPI_Comm_split'] = lambda n: "if(com[j] != MPI_COMM_NULL) MPI_Comm_free(com + j);"
 free['MPI_Comm_split'] = lambda n: ""
 
 
@@ -280,27 +280,27 @@ fini['MPI_Op_create'] = lambda n: "MPI_Op_free(&op[j]);"
 free['MPI_Op_create'] = lambda n: ""
 
 init['MPI_Comm_group'] = lambda n: 'MPI_Group grp[size];'
-operation['MPI_Comm_group'] = lambda n: 'MPI_Comm_group(MPI_COMM_WORLD, &grp[j]);'
+operation['MPI_Comm_group'] = lambda n: 'MPI_Comm_group(MPI_COMM_WORLD, grp + j);'
 error['MPI_Comm_group'] = 'GroupLeak'
-fini['MPI_Comm_group'] = lambda n: "MPI_Group_free(&grp[j]);"
+fini['MPI_Comm_group'] = lambda n: "MPI_Group_free(grp + j);"
 free['MPI_Comm_group'] = lambda n: "" 
 
 init['MPI_Group_excl'] = lambda n: 'MPI_Group worldgroup, grp[size];\n MPI_Comm_group(MPI_COMM_WORLD, &worldgroup);'
-operation['MPI_Group_excl'] = lambda n: 'MPI_Group_excl(worldgroup, 1, &rank, &grp[j]);' 
+operation['MPI_Group_excl'] = lambda n: 'MPI_Group_excl(worldgroup, 1, &rank, grp + j);'
 error['MPI_Group_excl'] = 'GroupLeak'
-fini['MPI_Group_excl'] = lambda n: "MPI_Group_free(&grp[j]);"
+fini['MPI_Group_excl'] = lambda n: "MPI_Group_free(grp + j);"
 free['MPI_Group_excl'] = lambda n: "MPI_Group_free(&worldgroup);"
 
 init['MPI_Comm_create'] = lambda n: 'MPI_Comm com[size]; MPI_Group grp[size];'
-operation['MPI_Comm_create'] = lambda n: 'MPI_Comm_group(MPI_COMM_WORLD, &grp[j]);\n MPI_Comm_create(MPI_COMM_WORLD, grp[j], &com[j]);\n MPI_Group_free(&grp[j]);'
+operation['MPI_Comm_create'] = lambda n: 'MPI_Comm_group(MPI_COMM_WORLD, grp + j);\n MPI_Comm_create(MPI_COMM_WORLD, grp[j], com + j);\n MPI_Group_free(grp + j);'
 error['MPI_Comm_create'] = 'CommunicatorLeak'
-fini['MPI_Comm_create'] = lambda n: "MPI_Comm_free(&com[j]);"
+fini['MPI_Comm_create'] = lambda n: "MPI_Comm_free(com + j);"
 free['MPI_Comm_create'] = lambda n: ""
 
 init['MPI_Comm_dup'] = lambda n: f'MPI_Comm com[size];'
-operation['MPI_Comm_dup'] = lambda n: 'MPI_Comm_dup(MPI_COMM_WORLD, &com[j]);'
+operation['MPI_Comm_dup'] = lambda n: 'MPI_Comm_dup(MPI_COMM_WORLD, com + j);'
 error['MPI_Comm_dup'] = 'CommunicatorLeak'
-fini['MPI_Comm_dup'] = lambda n: "MPI_Comm_free(&com[j]);"
+fini['MPI_Comm_dup'] = lambda n: "MPI_Comm_free(com + j);"
 free['MPI_Comm_dup'] = lambda n: "" 
 
 init['MPI_Type_contiguous'] = lambda n: 'MPI_Datatype type[size];'
