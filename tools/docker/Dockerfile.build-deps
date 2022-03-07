@@ -12,6 +12,7 @@ RUN apt-get --allow-releaseinfo-change update && \
        git \
        valgrind \
        libboost-dev libboost-all-dev \
+       libeigen3-dev \
        cmake \
        python3-pip \
        doxygen fig2dev \

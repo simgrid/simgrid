@@ -23,6 +23,7 @@ RUN printf '%s\n' \
     gfortran \
     libboost-dev \
     libboost-all-dev \
+    libeigen3-dev \
     cmake \
     dpkg-dev \
 # misc tools

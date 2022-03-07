@@ -122,9 +122,11 @@ cmake (v3.5).
   configuration options (e.g., if your Python installation is not standard).
 boost (at least v1.48, v1.59 recommended)
   - On Debian / Ubuntu: ``apt install libboost-dev libboost-context-dev``
+  - On CentOS / Fedora: ``yum install boost-devel``
   - On macOS with homebrew: ``brew install boost``
 Eigen3
   - On Debian / Ubuntu: ``apt install libeigen3-dev``
+  - On CentOS / Fedora: ``yum install eigen3-devel``
   - On macOS with homebrew: ``brew install eigen``
 Java (optional):
   - Debian / Ubuntu: ``apt install default-jdk libgcj18-dev`` (or
