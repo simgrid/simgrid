@@ -69,9 +69,9 @@ BmfSolver::BmfSolver(Eigen::MatrixXd A, Eigen::MatrixXd maxA, Eigen::VectorXd C,
 {
   xbt_assert(max_iteration_ > 0,
              "Invalid number of iterations for BMF solver. Please check your \"bmf/max-iterations\" configuration.");
-  xbt_assert(A_.cols() == maxA_.cols(), "Invalid number of cols in matrix A (%ld) or maxA (%ld)", A_.cols(),
+  xbt_assert(A_.cols() == maxA_.cols(), "Invalid number of cols in matrix A (%td) or maxA (%td)", A_.cols(),
              maxA_.cols());
-  xbt_assert(A_.cols() == static_cast<long>(phi_.size()), "Invalid size of phi vector (%ld)", phi_.size());
+  xbt_assert(A_.cols() == phi_.size(), "Invalid size of phi vector (%td)", phi_.size());
   xbt_assert(static_cast<long>(C_shared_.size()) == C_.size(), "Invalid size param shared (%zu)", C_shared_.size());
 }
 

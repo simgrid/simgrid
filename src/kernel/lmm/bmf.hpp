@@ -7,7 +7,6 @@
 #define SURF_BMF_HPP
 
 #include "src/kernel/lmm/maxmin.hpp"
-#include <boost/container_hash/hash.hpp>
 #include <eigen3/Eigen/Dense>
 #include <unordered_set>
 
@@ -177,7 +176,7 @@ private:
   std::vector<bool> C_shared_; //!< shared_j Resource j is shared or not
   Eigen::VectorXd phi_;        //!< phi_i bound for each player
 
-  std::unordered_set<std::vector<int>, boost::hash<std::vector<int>>> allocations_;
+  std::set<std::vector<int>> allocations_; //!< set of already tested allocations, since last identified loop
   AllocationGenerator gen_;
   std::vector<int> allocations_age_;
   static constexpr int NO_RESOURCE = -1;                    //!< flag to indicate player has selected no resource
