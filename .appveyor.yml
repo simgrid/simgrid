@@ -57,7 +57,7 @@ before_build:
          ) else (echo Using cached Eigen3)
 
 build_script:
-- cmake -G "MinGW Makefiles" -Denable_documentation=OFF -Denable_java=ON -Denable_msg=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF -DEIGEN3_INCLUDE_DIR="C:\Program Files\Eigen\include\eigen3" .
+- cmake -G "MinGW Makefiles" -Denable_documentation=OFF -Denable_java=ON -Denable_msg=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF -DEIGEN3_INCLUDE_DIR="C:\Program Files\Eigen\include\" .
 - mingw32-make.exe VERBOSE=1 java-all python-bindings # Only the Java and Python parts
 - ctest --output-on-failure -R java
 - ctest --output-on-failure -R python
