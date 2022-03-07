@@ -51,7 +51,7 @@ before_build:
             cd eigen-3.4.0 &&
             mkdir build &&
             cd build &&
-            cmake -G "Visual Studio 16 2019"  .. &&
+            cmake -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX=C:\projects .. &&
             cmake --build . --target install &&
             cd ..\..
          ) else (echo Using cached Eigen3)
