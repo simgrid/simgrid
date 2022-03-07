@@ -251,6 +251,9 @@ models for all existing resources.
   - **ptask_L07:** Host model somehow similar to Cas01+CM02 but
     allowing "parallel tasks", that are intended to model the moldable
     tasks of the grid scheduling literature.
+  - **ptask_BMF:** More realistic model for heterogeneous resource sharing.
+    Implements BMF (Bottleneck max fairness) fairness. To be used with
+    parallel tasks instead of ptask_L07.
 
 - ``storage/model``: specify the used storage model. Only one model is
   provided so far.

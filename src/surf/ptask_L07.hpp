@@ -33,7 +33,7 @@ class XBT_PRIVATE L07Action;
  *********/
 class HostL07Model : public HostModel {
 public:
-  explicit HostL07Model(const std::string& name);
+  HostL07Model(const std::string& name, lmm::System* sys);
   HostL07Model(const HostL07Model&) = delete;
   HostL07Model& operator=(const HostL07Model&) = delete;
 

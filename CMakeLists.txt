@@ -67,6 +67,9 @@ endif()
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 find_package(Threads)
 
+### Check for Eigen library
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+
 ### Setup Options
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Option.cmake)
 

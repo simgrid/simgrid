@@ -169,6 +169,8 @@ public:
   //   - if CPU, then probably 1.
   //   - If network, then 1 in forward direction and 0.05 backward for the ACKs
   double consumption_weight;
+  // maximum consumption weight (can be different from consumption_weight with subflows/ptasks)
+  double max_consumption_weight = 0;
 };
 
 class ConstraintLight {
@@ -546,6 +548,12 @@ public:
 
   std::unique_ptr<resource::Action::ModifiedSet> modified_set_ = nullptr;
 
+protected:
+  bool selective_update_active; /* flag to update partially the system only selecting changed portions */
+  boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
+                                                                   &Constraint::modified_constraint_set_hook_>>
+      modified_constraint_set;
+
 private:
   using dyn_light_t = std::vector<int>;
 
@@ -553,15 +561,11 @@ private:
   std::vector<ConstraintLight> cnst_light_vec;
   dyn_light_t saturated_constraints;
 
-  bool selective_update_active; /* flag to update partially the system only selecting changed portions */
   unsigned visited_counter_ = 1; /* used by System::update_modified_set() and System::remove_all_modified_set() to
                                   * cleverly (un-)flag the constraints (more details in these functions) */
   boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
                                                                    &Constraint::constraint_set_hook_>>
       constraint_set;
-  boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
-                                                                   &Constraint::modified_constraint_set_hook_>>
-      modified_constraint_set;
   xbt_mallocator_t variable_mallocator_ =
       xbt_mallocator_new(65536, System::variable_mallocator_new_f, System::variable_mallocator_free_f, nullptr);
 };

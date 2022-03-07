@@ -5,13 +5,13 @@ FROM debian:testing
 # - Compile and install SimGrid itself. Clean the tree.
 # - Remove everything that was installed, and re-install what's needed by the SimGrid libraries before the Gran Final Cleanup
 RUN apt-get --allow-releaseinfo-change update && apt -y upgrade && \
-    apt install -y g++ gcc git valgrind gfortran libboost-dev libboost-all-dev cmake dpkg-dev python3-dev pybind11-dev && \
+    apt install -y g++ gcc git valgrind gfortran libboost-dev libboost-all-dev libeigen3-dev cmake dpkg-dev python3-dev pybind11-dev && \
     mkdir /source/ && cd /source && git clone --depth=1 https://framagit.org/simgrid/simgrid.git simgrid.git && \
     cd simgrid.git && \
     cmake -DCMAKE_INSTALL_PREFIX=/usr/ -Denable_documentation=OFF -Denable_smpi=ON -Denable_compile_optimizations=ON . && \
     make -j4 install && \
     mkdir debian/ && touch debian/control && dpkg-shlibdeps --ignore-missing-info lib/*.so -llib/ -O/tmp/deps && \
     git reset --hard master && git clean -dfx && \
-    apt remove -y  g++ gcc git valgrind default-jdk gfortran libboost-dev libboost-all-dev cmake dpkg-dev python3-dev pybind11-dev && \
+    apt remove -y  g++ gcc git valgrind default-jdk gfortran libboost-dev libboost-all-dev libeigen3-dev cmake dpkg-dev python3-dev pybind11-dev && \
     apt install `sed -e 's/shlibs:Depends=//' -e 's/([^)]*)//g' -e 's/,//g' /tmp/deps` && \
     apt autoremove -y && apt autoclean && apt clean

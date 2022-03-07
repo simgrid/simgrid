@@ -22,7 +22,7 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
 
   static void (*copy_data_callback_)(CommImpl*, void*, size_t);
 
-  double rate_       = 0.0;
+  double rate_       = -1.0;
   double size_       = 0.0;
   bool detached_     = false;   /* If detached or not */
   bool copied_       = false;   /* whether the data were already copied */

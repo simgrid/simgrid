@@ -8,6 +8,7 @@
 #include <xbt/config.hpp>
 
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/lmm/bmf.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/surf/ptask_L07.hpp"
 
@@ -23,7 +24,20 @@ void surf_host_model_init_ptask_L07()
 {
   XBT_CINFO(xbt_cfg, "Switching to the L07 model to handle parallel tasks.");
 
-  auto host_model = std::make_shared<simgrid::kernel::resource::HostL07Model>("Host_Ptask");
+  auto* system    = new simgrid::kernel::lmm::FairBottleneck(true /* selective update */);
+  auto host_model = std::make_shared<simgrid::kernel::resource::HostL07Model>("Host_Ptask", system);
+  auto* engine    = simgrid::kernel::EngineImpl::get_instance();
+  engine->add_model(host_model);
+  engine->get_netzone_root()->set_host_model(host_model);
+}
+
+void surf_host_model_init_ptask_BMF()
+{
+  XBT_CINFO(xbt_cfg, "Switching to the BMF model to handle parallel tasks.");
+
+  bool select     = simgrid::config::get_value<bool>("bmf/selective-update");
+  auto* system    = new simgrid::kernel::lmm::BmfSystem(select);
+  auto host_model = std::make_shared<simgrid::kernel::resource::HostL07Model>("Host_Ptask", system);
   auto* engine    = simgrid::kernel::EngineImpl::get_instance();
   engine->add_model(host_model);
   engine->get_netzone_root()->set_host_model(host_model);
@@ -33,17 +47,16 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-HostL07Model::HostL07Model(const std::string& name) : HostModel(name)
+HostL07Model::HostL07Model(const std::string& name, lmm::System* sys) : HostModel(name)
 {
-  auto* maxmin_system = new lmm::FairBottleneck(true /* selective update */);
-  set_maxmin_system(maxmin_system);
+  set_maxmin_system(sys);
 
-  auto net_model = std::make_shared<NetworkL07Model>("Network_Ptask", this, maxmin_system);
+  auto net_model = std::make_shared<NetworkL07Model>("Network_Ptask", this, sys);
   auto engine    = EngineImpl::get_instance();
   engine->add_model(net_model);
   engine->get_netzone_root()->set_network_model(net_model);
 
-  auto cpu_model = std::make_shared<CpuL07Model>("Cpu_Ptask", this, maxmin_system);
+  auto cpu_model = std::make_shared<CpuL07Model>("Cpu_Ptask", this, sys);
   engine->add_model(cpu_model);
   engine->get_netzone_root()->set_cpu_pm_model(cpu_model);
 }
@@ -192,8 +205,8 @@ L07Action::L07Action(Model* model, const std::vector<s4u::Host*>& host_list, con
   /* Expand it for the CPUs even if there is nothing to compute, to make sure that it gets expended even if there is no
    * communication either */
   for (size_t i = 0; i < host_list.size(); i++) {
-    model->get_maxmin_system()->expand(host_list[i]->get_cpu()->get_constraint(), get_variable(),
-                                       (flops_amount == nullptr ? 0.0 : flops_amount[i]));
+    model->get_maxmin_system()->expand_add(host_list[i]->get_cpu()->get_constraint(), get_variable(),
+                                           (flops_amount == nullptr ? 0.0 : flops_amount[i]));
   }
 
   if (bytes_amount != nullptr) {

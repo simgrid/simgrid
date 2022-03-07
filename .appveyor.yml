@@ -44,8 +44,20 @@ install:
 # We need pybind11. SimGrid will pick it automatically if the subdir is here
 - cmd: git clone --branch stable --depth=1 https://github.com/pybind/pybind11.git
 
+before_build:
+  - cmd: if not exist C:\"Program Files"\Eigen\include\eigen3\Eigen\Core (
+            curl -LO https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz &&
+            cmake -E tar zxf eigen-3.4.0.tar.gz &&
+            cd eigen-3.4.0 &&
+            mkdir build &&
+            cd build &&
+            cmake -G "Visual Studio 2019"  .. &&
+            cmake --build . --target install &&
+            cd ..\..
+         ) else (echo Using cached Eigen3)
+
 build_script:
-- cmake -G "MinGW Makefiles" -Denable_documentation=OFF -Denable_java=ON -Denable_msg=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
+- cmake -G "MinGW Makefiles" -Denable_documentation=OFF -Denable_java=ON -Denable_msg=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF -DEIGEN3_INCLUDE_DIR="C:\Program Files\Eigen\include\eigen3" .
 - mingw32-make.exe VERBOSE=1 java-all python-bindings # Only the Java and Python parts
 - ctest --output-on-failure -R java
 - ctest --output-on-failure -R python
