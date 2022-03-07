@@ -151,13 +151,13 @@ if [ "$os" = "Debian" ] || [ "$os" = "Ubuntu" ] ; then
     have_NS3="yes"
   fi
 fi
-if [ "$os" = "NixOS" ] ; then
+if [ "$os" = "nixos" ] ; then
   have_NS3="yes"
 fi
 echo "XX have_NS3: ${have_NS3}"
 
 SIMGRID_PYTHON_LIBDIR=""
-if [ "$os" = "NixOS" ] ; then
+if [ "$os" = "nixos" ] ; then
   SIMGRID_PYTHON_LIBDIR="/home/ci/simgrid_install/lib64"
 fi
 echo "XX SIMGRID_PYTHON_LIBDIR: ${SIMGRID_PYTHON_LIBDIR}"
