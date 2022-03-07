@@ -7,7 +7,7 @@
 #define SURF_BMF_HPP
 
 #include "src/kernel/lmm/maxmin.hpp"
-#include <eigen3/Eigen/Dense>
+#include <Eigen/Dense>
 #include <unordered_set>
 
 namespace simgrid {

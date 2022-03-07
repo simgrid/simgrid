@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/lmm/bmf.hpp"
-#include <eigen3/Eigen/LU>
+#include <Eigen/LU>
 #include <iostream>
 #include <numeric>
 #include <sstream>
