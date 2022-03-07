@@ -184,7 +184,14 @@ Eigen::VectorXd BmfSolver::equilibrium(const allocation_map_t& alloc) const
   XBT_DEBUG("A':\n%s", debug_eigen(A_p).c_str());
 
   XBT_DEBUG("C':\n%s", debug_eigen(C_p).c_str());
-  Eigen::VectorXd rho = Eigen::FullPivLU<Eigen::MatrixXd>(A_p).solve(C_p);
+  /* Being optimist, PartialPivLU is much faster than FullPivLU but requires that the matrix is invertible
+   * FullPivLU however assures that it finds come solution even if the matrix is singular */
+  Eigen::VectorXd rho = Eigen::PartialPivLU<Eigen::MatrixXd>(A_p).solve(C_p);
+  if (rho.array().isNaN().any()) {
+    XBT_DEBUG("rho with nan values, falling back to FullPivLU, rho:\n%s", debug_eigen(rho).c_str());
+    rho = Eigen::FullPivLU<Eigen::MatrixXd>(A_p).solve(C_p);
+  }
+
   for (int p : bounded_players) {
     rho[p] = phi_[p];
   }
