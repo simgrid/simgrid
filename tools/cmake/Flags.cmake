@@ -181,9 +181,7 @@ if(enable_model-checking AND enable_compile_optimizations)
   list(REMOVE_ITEM src_list ${SIMIX_SRC} ${S4U_SRC})
   # but...
   list(APPEND src_list
-    src/simix/popping.cpp
-    src/simix/popping_generated.cpp
-    src/simix/smx_global.cpp)
+    src/simix/popping.cpp)
   foreach(src ${src_list})
       set (mcCFLAGS "-O3 -funroll-loops -fno-strict-aliasing")
       if(CMAKE_COMPILER_IS_GNUCC)

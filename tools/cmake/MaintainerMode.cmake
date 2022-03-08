@@ -8,39 +8,6 @@ set(FLEX_MIN_MAJOR 2)
 set(FLEX_MIN_MINOR 5)
 set(FLEX_MIN_PATCH 39)
 
-# the rest should only be changed if you understand what you're doing
-if(enable_maintainer_mode AND NOT WIN32)
-  if (PYTHON_EXECUTABLE)
-    add_custom_command(
-      OUTPUT
-      ${CMAKE_HOME_DIRECTORY}/src/simix/popping_generated.cpp
-      ${CMAKE_HOME_DIRECTORY}/src/simix/popping_bodies.cpp
-      ${CMAKE_HOME_DIRECTORY}/src/simix/popping_enum.hpp
-      ${CMAKE_HOME_DIRECTORY}/src/simix/popping_accessors.hpp
-
-      DEPENDS
-      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls.py
-      ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls.in
-
-      COMMENT "Generating simcalls source files"
-      COMMAND ${PYTHON_EXECUTABLE} simcalls.py
-      WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/src/simix/
-      )
-
-    add_custom_target(simcalls_generated_src
-      DEPENDS
-      ${CMAKE_HOME_DIRECTORY}/src/simix/popping_generated.cpp
-      ${CMAKE_HOME_DIRECTORY}/src/simix/popping_bodies.cpp
-      ${CMAKE_HOME_DIRECTORY}/src/simix/popping_enum.hpp
-      ${CMAKE_HOME_DIRECTORY}/src/simix/popping_accessors.hpp
-      )
-
-    SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
-      "${CMAKE_HOME_DIRECTORY}/src/simix/popping_enum.hpp;${CMAKE_HOME_DIRECTORY}/src/simix/popping_generated.cpp;${CMAKE_HOME_DIRECTORY}/src/simix/popping_bodies.cpp;${CMAKE_HOME_DIRECTORY}/src/simix/popping_accessors.hpp"
-      )
-  endif()
-endif()
-
 # Let's generate header files required by SMPI when the call location tracing
 # has been activated.
 if(enable_maintainer_mode AND NOT WIN32)
