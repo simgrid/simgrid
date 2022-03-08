@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/s4u-exec-thread ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e%m%n"
+$ ${bindir:=.}/s4u-exec-threads ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e%m%n"
 > [ 10.000000] Computed 2-thread activity on a 4-core host. Took 10 s
 > [ 20.000000] Computed 4-thread activity on a 4-core host. Took 10 s
 > [ 35.000000] Computed 6-thread activity on a 4-core host. Took 15 s
