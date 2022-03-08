@@ -558,7 +558,7 @@ void EngineImpl::display_all_actor_status() const
                actor->waiting_synchro_->get_cname(), actor->waiting_synchro_->get_state_str());
     } else {
       XBT_INFO("Actor %ld (%s@%s) simcall %s", actor->get_pid(), actor->get_cname(), actor->get_host()->get_cname(),
-               SIMIX_simcall_name(actor->simcall_));
+               actor->simcall_.get_cname());
     }
   }
 }
@@ -744,7 +744,7 @@ void EngineImpl::run(double max_date)
        */
 
       for (auto const& actor : actors_that_ran_) {
-        if (actor->simcall_.call_ != simix::Simcall::NONE) {
+        if (actor->simcall_.call_ != simix::Simcall::Type::NONE) {
           actor->simcall_handle(0);
         }
       }

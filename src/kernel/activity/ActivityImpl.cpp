@@ -29,13 +29,13 @@ ActivityImpl::~ActivityImpl()
   XBT_DEBUG("Destroy activity %p", this);
 }
 
-void ActivityImpl::register_simcall(smx_simcall_t simcall)
+void ActivityImpl::register_simcall(simix::Simcall* simcall)
 {
   simcalls_.push_back(simcall);
   simcall->issuer_->waiting_synchro_ = this;
 }
 
-void ActivityImpl::unregister_simcall(smx_simcall_t simcall)
+void ActivityImpl::unregister_simcall(simix::Simcall* simcall)
 {
   // Remove the first occurrence of simcall:
   auto j = boost::range::find(simcalls_, simcall);
@@ -200,7 +200,7 @@ void ActivityImpl::cancel()
   state_ = State::CANCELED;
 }
 
-void ActivityImpl::handle_activity_waitany(smx_simcall_t simcall)
+void ActivityImpl::handle_activity_waitany(simix::Simcall* simcall)
 {
   /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
    * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the

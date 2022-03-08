@@ -8,34 +8,32 @@
 
 #include "simgrid/forward.h"
 #include "src/kernel/activity/ActivityImpl.hpp"
-
-#include <array>
-#include <boost/intrusive_ptr.hpp>
+#include "xbt/utility.hpp"
 
 /********************************* Simcalls *********************************/
 namespace simgrid {
 namespace simix {
-/** All possible simcalls. */
-XBT_DECLARE_ENUM_CLASS(Simcall, NONE, RUN_ANSWERED, RUN_BLOCKING);
-} // namespace simix
-} // namespace simgrid
-
 
 /**
  * @brief Represents a simcall to the kernel.
  */
-struct s_smx_simcall {
-  simgrid::simix::Simcall call_                      = simgrid::simix::Simcall::NONE;
+class Simcall {
+public:
+  /** All possible simcalls. */
+  XBT_DECLARE_ENUM_CLASS(Type, NONE, RUN_ANSWERED, RUN_BLOCKING);
+
+  Type call_                                         = Type::NONE;
   smx_actor_t issuer_                                = nullptr;
   simgrid::kernel::timer::Timer* timeout_cb_         = nullptr; // Callback to timeouts
   simgrid::kernel::actor::SimcallObserver* observer_ = nullptr; // makes that simcall observable by the MC
   unsigned int mc_max_consider_ =
       0; // How many times this simcall should be used. If >1, this will be a fork in the state space.
   std::function<void()> const* code_      = nullptr;
+
+  const char* get_cname() const;
 };
 
-/******************************** General *************************************/
-
-XBT_PRIVATE const char* SIMIX_simcall_name(const s_smx_simcall& simcall);
+} // namespace simix
+} // namespace simgrid
 
 #endif

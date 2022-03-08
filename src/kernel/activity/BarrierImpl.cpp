@@ -33,7 +33,7 @@ void BarrierAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 void BarrierAcquisitionImpl::finish()
 {
   xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
-  smx_simcall_t simcall = simcalls_.front();
+  simix::Simcall* simcall = simcalls_.front();
   simcalls_.pop_front();
 
   simcall->issuer_->waiting_synchro_ = nullptr;

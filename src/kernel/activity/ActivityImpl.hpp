@@ -34,7 +34,7 @@ class XBT_PUBLIC ActivityImpl {
 public:
   virtual ~ActivityImpl();
   ActivityImpl() = default;
-  std::list<smx_simcall_t> simcalls_;   /* List of simcalls waiting for this activity */
+  std::list<simix::Simcall*> simcalls_; /* List of simcalls waiting for this activity */
   s4u::Activity* piface_         = nullptr;
   resource::Action* surf_action_ = nullptr;
 
@@ -82,9 +82,9 @@ public:
   virtual void finish() = 0; // Unlock all simcalls blocked on that activity, either because it was marked as done by
                              // the model or because it terminated without waiting for the model
 
-  void register_simcall(smx_simcall_t simcall);
-  void unregister_simcall(smx_simcall_t simcall);
-  void handle_activity_waitany(smx_simcall_t simcall);
+  void register_simcall(simix::Simcall* simcall);
+  void unregister_simcall(simix::Simcall* simcall);
+  void handle_activity_waitany(simix::Simcall* simcall);
   void clean_action();
   virtual double get_remaining() const;
   // Support for the boost::intrusive_ptr<ActivityImpl> datatype

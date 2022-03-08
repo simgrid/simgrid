@@ -18,31 +18,31 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(simix, "transmuting from user request into kernel h
  */
 void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered)
 {
-  XBT_DEBUG("Handling simcall %p: %s", &simcall_, SIMIX_simcall_name(simcall_));
+  XBT_DEBUG("Handling simcall %p: %s", &simcall_, simcall_.get_cname());
   if (simcall_.observer_ != nullptr)
     simcall_.observer_->prepare(times_considered);
   if (context_->wannadie())
     return;
 
-  xbt_assert(simcall_.call_ != simgrid::simix::Simcall::NONE, "Asked to do the noop syscall on %s@%s", get_cname(),
-             get_host()->get_cname());
+  xbt_assert(simcall_.call_ != simgrid::simix::Simcall::Type::NONE, "Asked to do the noop syscall on %s@%s",
+             get_cname(), get_host()->get_cname());
 
   (*simcall_.code_)();
-  if (simcall_.call_ == simgrid::simix::Simcall::RUN_ANSWERED)
+  if (simcall_.call_ == simgrid::simix::Simcall::Type::RUN_ANSWERED)
     simcall_answer();
 }
 
 /** @brief returns a printable string representing a simcall */
-const char* SIMIX_simcall_name(const s_smx_simcall& simcall)
+const char* simgrid::simix::Simcall::get_cname() const
 {
-  if (simcall.observer_ != nullptr) {
+  if (observer_ != nullptr) {
     static std::string name;
-    name              = boost::core::demangle(typeid(*simcall.observer_).name());
+    name              = boost::core::demangle(typeid(*observer_).name());
     const char* cname = name.c_str();
     if (name.rfind("simgrid::kernel::", 0) == 0)
       cname += 17; // strip prefix "simgrid::kernel::"
     return cname;
   } else {
-    return to_c_str(simcall.call_);
+    return to_c_str(call_);
   }
 }

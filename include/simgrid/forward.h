@@ -205,6 +205,9 @@ class FutureEvtSet;
 class Profile;
 } // namespace profile
 } // namespace kernel
+namespace simix {
+class Simcall;
+}
 namespace mc {
 class State;
 }
@@ -293,8 +296,6 @@ typedef const s4u_VM* const_sg_vm_t;
 typedef s4u_Actor* sg_actor_t;
 /** Pointer to a constant actor object */
 typedef const s4u_Actor* const_sg_actor_t;
-
-typedef struct s_smx_simcall* smx_simcall_t;
 
 /** @ingroup m_datatypes_management_details
  * @brief Type for any simgrid size
