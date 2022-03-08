@@ -180,9 +180,9 @@ include examples/cpp/comm-failure/s4u-comm-failure.cpp
 include examples/cpp/comm-failure/s4u-comm-failure.tesh
 include examples/cpp/comm-host2host/s4u-comm-host2host.cpp
 include examples/cpp/comm-host2host/s4u-comm-host2host.tesh
+include examples/cpp/comm-pingpong/debug-breakpoint.tesh
 include examples/cpp/comm-pingpong/s4u-comm-pingpong.cpp
 include examples/cpp/comm-pingpong/s4u-comm-pingpong.tesh
-include examples/cpp/comm-pingpong/simix-breakpoint.tesh
 include examples/cpp/comm-ready/s4u-comm-ready.cpp
 include examples/cpp/comm-ready/s4u-comm-ready.tesh
 include examples/cpp/comm-serialize/s4u-comm-serialize.cpp

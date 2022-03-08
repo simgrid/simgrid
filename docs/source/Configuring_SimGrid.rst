@@ -1663,12 +1663,12 @@ reaches the given time, a SIGTRAP is raised.  This can be used to stop
 the execution and get a backtrace with a debugger.
 
 It is also possible to set the breakpoint from inside the debugger, by
-writing in global variable simgrid::simix::breakpoint. For example,
+writing in global variable simgrid::kernel::cfg_breakpoint. For example,
 with gdb:
 
 .. code-block:: none
 
-   set variable simgrid::simix::breakpoint = 3.1416
+   set variable simgrid::kernel::cfg_breakpoint = 3.1416
 
 .. _cfg=debug/verbose-exit:
 

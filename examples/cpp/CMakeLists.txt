@@ -226,15 +226,15 @@ foreach (example exec-ptask trace-categories trace-masterworkers trace-platform 
 endforeach()
 
 if (NOT enable_memcheck AND NOT WIN32)
-  ADD_TESH(simix-breakpoint --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/comm-pingpong
+  ADD_TESH(debug-breakpoint --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/comm-pingpong
                             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                            ${CMAKE_CURRENT_SOURCE_DIR}/comm-pingpong/simix-breakpoint.tesh)
+                            ${CMAKE_CURRENT_SOURCE_DIR}/comm-pingpong/debug-breakpoint.tesh)
 endif()
 
 # Add all extra files to the archive
 ####################################
 set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp        PARENT_SCOPE)
-set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/comm-pingpong/simix-breakpoint.tesh
+set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/comm-pingpong/debug-breakpoint.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh  PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actor-create/s4u-actor-create_d.xml
