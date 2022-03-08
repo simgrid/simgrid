@@ -80,7 +80,7 @@ TEST_CASE("kernel::bmf Basic tests", "[kernel-bmf-basic]")
      *   o rho1 + rho2 = C (because all weights are 1)
      */
 
-    lmm::Constraint* sys_cnst = Sys.constraint_new(nullptr, 3);
+    lmm::Constraint* sys_cnst = Sys.constraint_new(nullptr, 1);
     lmm::Variable* rho_1      = Sys.variable_new(nullptr, 1);
     lmm::Variable* rho_2      = Sys.variable_new(nullptr, 2);
 
@@ -88,14 +88,14 @@ TEST_CASE("kernel::bmf Basic tests", "[kernel-bmf-basic]")
     Sys.expand(sys_cnst, rho_2, 1);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 2, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 1, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 2.0 / 3.0, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_2->get_value(), 1.0 / 3.0, sg_maxmin_precision));
   }
 
   SECTION("Disable variable doesn't count")
   {
     /*
-     * Two flows sharing a single resource, but only disabled
+     * Two flows sharing a single resource, but one is disabled
      *
      * In details:
      *   o System:  a1 * p1 * \rho1  +  a2 * p2 * \rho2 < C
@@ -106,7 +106,7 @@ TEST_CASE("kernel::bmf Basic tests", "[kernel-bmf-basic]")
      *   o a1*rho1 = C
      */
 
-    lmm::Constraint* sys_cnst = Sys.constraint_new(nullptr, 3);
+    lmm::Constraint* sys_cnst = Sys.constraint_new(nullptr, 1);
     lmm::Variable* rho_1      = Sys.variable_new(nullptr, 1);
     lmm::Variable* rho_2      = Sys.variable_new(nullptr, 0);
 
@@ -114,7 +114,7 @@ TEST_CASE("kernel::bmf Basic tests", "[kernel-bmf-basic]")
     Sys.expand(sys_cnst, rho_2, 10);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 3.0, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 1.0, sg_maxmin_precision));
     REQUIRE(double_equals(rho_2->get_value(), 0.0, sg_maxmin_precision));
   }
 
@@ -550,9 +550,8 @@ TEST_CASE("kernel::bmf Loop", "[kernel-bmf-loop]")
       sys_cnst.push_back(Sys.constraint_new(nullptr, c));
     }
     std::vector<lmm::Variable*> vars;
-    for (size_t i = 0; i < A[0].size(); i++) {
-      vars.push_back(Sys.variable_new(nullptr, 1, -1, A.size()));
-    }
+    std::for_each(A[0].begin(), A[0].end(),
+                  [&vars, &Sys, &A](const auto&) { vars.push_back(Sys.variable_new(nullptr, 1, -1, A.size())); });
     for (size_t j = 0; j < A.size(); j++) {
       for (size_t i = 0; i < A[j].size(); i++) {
         Sys.expand_add(sys_cnst[j], vars[i], A[j][i]);
@@ -560,7 +559,7 @@ TEST_CASE("kernel::bmf Loop", "[kernel-bmf-loop]")
     }
     Sys.solve();
 
-    for (auto* rho : vars) {
+    for (const auto* rho : vars) {
       REQUIRE(double_positive(rho->get_value(), sg_maxmin_precision));
     }
   }
@@ -622,15 +621,32 @@ TEST_CASE("kernel::bmf Stress-tests", "[.kernel-bmf-stress]")
 {
   lmm::BmfSystem Sys(false);
 
-  SECTION("Random consumptions - independent flows")
+  auto create_cnsts = [&Sys](int C, int capacity) -> auto
   {
-    int C     = 5;
-    int N     = 2;
-    auto data = GENERATE_COPY(chunk(C * N, take(100000, random(0., 1.0))));
     std::vector<lmm::Constraint*> sys_cnst;
     for (int i = 0; i < C; i++) {
-      sys_cnst.push_back(Sys.constraint_new(nullptr, 1));
+      sys_cnst.push_back(Sys.constraint_new(nullptr, capacity));
     }
+    return sys_cnst;
+  };
+
+  auto test_shared = [&Sys, &create_cnsts](int C, int N, int capacity, const auto& data) {
+    auto sys_cnst = create_cnsts(C, capacity);
+    for (int j = 0; j < N; j++) {
+      lmm::Variable* rho = Sys.variable_new(nullptr, 1, -1, C);
+      for (int i = 0; i < C; i++) {
+        Sys.expand_add(sys_cnst[i], rho, data[i * j + j]);
+      }
+    }
+    Sys.solve();
+  };
+
+  SECTION("Random consumptions - independent flows")
+  {
+    int C         = 5;
+    int N         = 2;
+    auto data     = GENERATE_COPY(chunk(C * N, take(100000, random(0., 1.0))));
+    auto sys_cnst = create_cnsts(C, 1);
     for (int j = 0; j < N; j++) {
       for (int i = 0; i < C; i++) {
         lmm::Variable* rho = Sys.variable_new(nullptr, 1);
@@ -645,19 +661,7 @@ TEST_CASE("kernel::bmf Stress-tests", "[.kernel-bmf-stress]")
     int C     = 5;
     int N     = 10;
     auto data = GENERATE_COPY(chunk(C * N, take(100000, random(0., 1.0))));
-
-    std::vector<lmm::Constraint*> sys_cnst;
-    for (int i = 0; i < C; i++) {
-      sys_cnst.push_back(Sys.constraint_new(nullptr, 1));
-    }
-    for (int j = 0; j < N; j++) {
-      lmm::Variable* rho = Sys.variable_new(nullptr, 1, -1, C);
-      for (int i = 0; i < C; i++) {
-        Sys.expand_add(sys_cnst[i], rho, data[i * j + j]);
-      }
-    }
-
-    Sys.solve();
+    test_shared(C, N, 1, data);
   }
 
   SECTION("Random integer consumptions - flows sharing resources")
@@ -665,18 +669,7 @@ TEST_CASE("kernel::bmf Stress-tests", "[.kernel-bmf-stress]")
     int C     = 5;
     int N     = 10;
     auto data = GENERATE_COPY(chunk(C * N, take(100000, random(1, 10))));
-
-    std::vector<lmm::Constraint*> sys_cnst;
-    for (int i = 0; i < C; i++) {
-      sys_cnst.push_back(Sys.constraint_new(nullptr, 10));
-    }
-    for (int j = 0; j < N; j++) {
-      lmm::Variable* rho = Sys.variable_new(nullptr, 1, -1, C);
-      for (int i = 0; i < C; i++) {
-        Sys.expand_add(sys_cnst[i], rho, data[i * j + j]);
-      }
-    }
-    Sys.solve();
+    test_shared(C, N, 10, data);
   }
 
   SECTION("Random consumptions - high number of constraints")
@@ -684,18 +677,7 @@ TEST_CASE("kernel::bmf Stress-tests", "[.kernel-bmf-stress]")
     int C     = 500;
     int N     = 10;
     auto data = GENERATE_COPY(chunk(C * N, take(100000, random(0., 1.0))));
-
-    std::vector<lmm::Constraint*> sys_cnst;
-    for (int i = 0; i < C; i++) {
-      sys_cnst.push_back(Sys.constraint_new(nullptr, 1));
-    }
-    for (int j = 0; j < N; j++) {
-      lmm::Variable* rho = Sys.variable_new(nullptr, 1, -1, C);
-      for (int i = 0; i < C; i++) {
-        Sys.expand_add(sys_cnst[i], rho, data[i * j + j]);
-      }
-    }
-    Sys.solve();
+    test_shared(C, N, 1, data);
   }
 
   SECTION("Random integer consumptions - high number of constraints")
@@ -703,18 +685,7 @@ TEST_CASE("kernel::bmf Stress-tests", "[.kernel-bmf-stress]")
     int C     = 500;
     int N     = 10;
     auto data = GENERATE_COPY(chunk(C * N, take(100000, random(1, 10))));
-
-    std::vector<lmm::Constraint*> sys_cnst;
-    for (int i = 0; i < C; i++) {
-      sys_cnst.push_back(Sys.constraint_new(nullptr, 10));
-    }
-    for (int j = 0; j < N; j++) {
-      lmm::Variable* rho = Sys.variable_new(nullptr, 1, -1, C);
-      for (int i = 0; i < C; i++) {
-        Sys.expand_add(sys_cnst[i], rho, data[i * j + j]);
-      }
-    }
-    Sys.solve();
+    test_shared(C, N, 10, data);
   }
 
   Sys.variable_free_all();

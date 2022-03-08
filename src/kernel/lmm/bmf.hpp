@@ -247,7 +247,7 @@ private:
    * @param maxA Max subflow consumption matrix (OUTPUT)
    * @param phi Bounds for variables
    */
-  void get_flows_data(int number_cnsts, Eigen::MatrixXd& A, Eigen::MatrixXd& maxA, Eigen::VectorXd& phi);
+  void get_flows_data(Eigen::Index number_cnsts, Eigen::MatrixXd& A, Eigen::MatrixXd& maxA, Eigen::VectorXd& phi);
   /**
    * @brief Builds the vector C_ with resource's capacity
    *

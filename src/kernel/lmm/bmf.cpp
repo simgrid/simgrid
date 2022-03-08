@@ -38,7 +38,7 @@ bool AllocationGenerator::next(std::vector<int>& next_alloc)
     return true;
   }
 
-  int n_resources = A_.rows();
+  auto n_resources = A_.rows();
   size_t idx      = 0;
   while (idx < alloc_.size()) {
     alloc_[idx] = (++alloc_[idx]) % n_resources;
@@ -114,7 +114,7 @@ double BmfSolver::get_resource_capacity(int resource, const std::vector<int>& bo
 std::vector<int> BmfSolver::alloc_map_to_vector(const allocation_map_t& alloc) const
 {
   std::vector<int> alloc_by_player(A_.cols(), -1);
-  for (auto it : alloc) {
+  for (const auto& it : alloc) {
     for (auto p : it.second) {
       alloc_by_player[p] = it.first;
     }
@@ -135,7 +135,7 @@ std::vector<int> BmfSolver::get_bounded_players(const allocation_map_t& alloc) c
 
 Eigen::VectorXd BmfSolver::equilibrium(const allocation_map_t& alloc) const
 {
-  int n_players       = A_.cols();
+  auto n_players      = A_.cols();
   Eigen::MatrixXd A_p = Eigen::MatrixXd::Zero(n_players, n_players); // square matrix with number of players
   Eigen::VectorXd C_p = Eigen::VectorXd::Zero(n_players);
 
@@ -144,34 +144,35 @@ Eigen::VectorXd BmfSolver::equilibrium(const allocation_map_t& alloc) const
   for (const auto& e : alloc) {
     // add one row for the resource with A[r,]
     int cur_resource = e.first;
+    /* bounded players, nothing to do */
     if (cur_resource == NO_RESOURCE)
       continue;
-
-    if (C_shared_[cur_resource]) {
-      /* shared resource: fairly share it between players */
-      A_p.row(row) = A_.row(cur_resource);
-      C_p[row]     = get_resource_capacity(cur_resource, bounded_players);
-      row++;
-      if (e.second.size() > 1) {
-        // if 2 players have chosen the same resource
-        // they must have a fair sharing of this resource, adjust A_p and C_p accordingly
-        auto it = e.second.begin();
-        int i   = *it; // first player
-        /* for each other player sharing this resource */
-        for (++it; it != e.second.end(); ++it) {
-          /* player i and k on this resource j: so maxA_ji*rho_i - maxA_jk*rho_k = 0 */
-          int k       = *it;
-          C_p[row]    = 0;
-          A_p(row, i) = maxA_(cur_resource, i);
-          A_p(row, k) = -maxA_(cur_resource, k);
-          row++;
-        }
-      }
-    } else {
-      /* not shared resource, each player can receive the full capacity of the resource */
+    /* not shared resource, each player can receive the full capacity of the resource */
+    if (not C_shared_[cur_resource]) {
       for (int i : e.second) {
         C_p[row]    = get_resource_capacity(cur_resource, bounded_players);
         A_p(row, i) = A_(cur_resource, i);
+        row++;
+      }
+      continue;
+    }
+
+    /* shared resource: fairly share it between players */
+    A_p.row(row) = A_.row(cur_resource);
+    C_p[row]     = get_resource_capacity(cur_resource, bounded_players);
+    row++;
+    if (e.second.size() > 1) {
+      // if 2 players have chosen the same resource
+      // they must have a fair sharing of this resource, adjust A_p and C_p accordingly
+      auto it = e.second.begin();
+      int i   = *it; // first player
+      /* for each other player sharing this resource */
+      for (++it; it != e.second.end(); ++it) {
+        /* player i and k on this resource j: so maxA_ji*rho_i - maxA_jk*rho_k = 0 */
+        int k       = *it;
+        C_p[row]    = 0;
+        A_p(row, i) = maxA_(cur_resource, i);
+        A_p(row, k) = -maxA_(cur_resource, k);
         row++;
       }
     }
@@ -258,7 +259,7 @@ void BmfSolver::set_fair_sharing(const allocation_map_t& alloc, const Eigen::Vec
       double consumption_r = A_.row(r) * rho;
       double_update(&consumption_r, C_[r], sg_maxmin_precision);
       if (consumption_r > 0.0) {
-        int n_players   = (A_.row(r).array() > 0).count();
+        auto n_players  = (A_.row(r).array() > 0).count();
         fair_sharing[r] = C_[r] / n_players;
       } else {
         fair_sharing[r] = get_resource_capacity(r, bounded_players);
@@ -293,7 +294,7 @@ bool BmfSolver::is_bmf(const Eigen::VectorXd& rho) const
   Eigen::MatrixXi player_max_share =
       ((usage.array().colwise() - max_share.array()).abs() <= sg_maxmin_precision).cast<int>();
   // but only saturated resources must be considered
-  Eigen::VectorXi saturated = ((remaining.array().abs() <= sg_maxmin_precision)).cast<int>();
+  Eigen::VectorXi saturated = (remaining.array().abs() <= sg_maxmin_precision).cast<int>();
   XBT_DEBUG("Saturated_j resources:\n%s", debug_eigen(saturated).c_str());
   player_max_share.array().colwise() *= saturated.array();
 
@@ -310,7 +311,7 @@ bool BmfSolver::is_bmf(const Eigen::VectorXd& rho) const
 
   XBT_DEBUG("Player_ji usage of saturated resources:\n%s", debug_eigen(player_max_share).c_str());
   // for all columns(players) it has to be the max at least in 1
-  bmf = bmf && (player_max_share.colwise().sum().all() >= 1);
+  bmf = bmf && (player_max_share.colwise().sum().array() >= 1).all();
   return bmf;
 }
 
@@ -330,7 +331,8 @@ Eigen::VectorXd BmfSolver::solve()
   auto fair_sharing = C_;
 
   /* BMF allocation for each player (current and last one) stop when are equal */
-  allocation_map_t last_alloc, cur_alloc;
+  allocation_map_t last_alloc;
+  allocation_map_t cur_alloc;
   Eigen::VectorXd rho;
 
   while (it < max_iteration_ && not get_alloc(fair_sharing, last_alloc, cur_alloc, it == 0)) {
@@ -372,7 +374,8 @@ Eigen::VectorXd BmfSolver::solve()
 
 /*****************************************************************************/
 
-void BmfSystem::get_flows_data(int number_cnsts, Eigen::MatrixXd& A, Eigen::MatrixXd& maxA, Eigen::VectorXd& phi)
+void BmfSystem::get_flows_data(Eigen::Index number_cnsts, Eigen::MatrixXd& A, Eigen::MatrixXd& maxA,
+                               Eigen::VectorXd& phi)
 {
   A.resize(number_cnsts, variable_set.size());
   A.setZero();
@@ -387,9 +390,9 @@ void BmfSystem::get_flows_data(int number_cnsts, Eigen::MatrixXd& A, Eigen::Matr
     bool active = false;
     bool linked = false; // variable is linked to some constraint (specially for selective_update)
     for (const Element& elem : var.cnsts_) {
-      boost::intrusive::list_member_hook<>& cnst_hook = selective_update_active
-                                                            ? elem.constraint->modified_constraint_set_hook_
-                                                            : elem.constraint->active_constraint_set_hook_;
+      const boost::intrusive::list_member_hook<>& cnst_hook = selective_update_active
+                                                                  ? elem.constraint->modified_constraint_set_hook_
+                                                                  : elem.constraint->active_constraint_set_hook_;
       if (not cnst_hook.is_linked())
         continue;
       /* active and linked variable, lets check its consumption */
@@ -461,8 +464,10 @@ template <class CnstList> void BmfSystem::bmf_solve(const CnstList& cnst_list)
   /* initialize players' weight and constraint matrices */
   idx2Var_.clear();
   cnst2idx_.clear();
-  Eigen::MatrixXd A, maxA;
-  Eigen::VectorXd C, bounds;
+  Eigen::MatrixXd A;
+  Eigen::MatrixXd maxA;
+  Eigen::VectorXd C;
+  Eigen::VectorXd bounds;
   std::vector<bool> shared;
   get_constraint_data(cnst_list, C, shared);
   get_flows_data(C.size(), A, maxA, bounds);
