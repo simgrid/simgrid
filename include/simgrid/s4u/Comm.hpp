@@ -59,6 +59,15 @@ public:
 
   ~Comm() override;
 
+  static void send(kernel::actor::ActorImpl* sender, const Mailbox* mbox, double task_size, double rate, void* src_buff,
+                   size_t src_buff_size, bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                   void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data,
+                   double timeout);
+  static void recv(kernel::actor::ActorImpl* receiver, const Mailbox* mbox, void* dst_buff, size_t* dst_buff_size,
+                   bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+                   void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data,
+                   double timeout, double rate);
+
   /* "One-sided" communications. This way of communicating bypasses the mailbox and actors mechanism. It creates a
    * communication (vetoabled, asynchronous, or synchronous) directly between two hosts. There is really no limit on
    * the hosts involved. In particular, the actor creating such a communication does not have to be on one of the

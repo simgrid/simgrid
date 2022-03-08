@@ -10,21 +10,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "mc/mc.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
-#include "src/kernel/activity/ConditionVariableImpl.hpp"
-#include "src/kernel/activity/MutexImpl.hpp"
-#include "src/kernel/activity/SemaphoreImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
-#include "src/mc/mc_replay.hpp"
-#include "xbt/random.hpp"
-#include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Activity.hpp>
-
-#include <boost/core/demangle.hpp>
-#include <string>
-#include <typeinfo>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
@@ -34,44 +23,11 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff,
                        size_t src_buff_size, bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                        void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data,
-                       double timeout)
+                       double timeout) // XBT_ATTRIB_DEPRECATED_v335
 {
-  /* checking for infinite values */
-  xbt_assert(std::isfinite(task_size), "task_size is not finite!");
-  xbt_assert(std::isfinite(rate), "rate is not finite!");
-  xbt_assert(std::isfinite(timeout), "timeout is not finite!");
-
   xbt_assert(mbox, "No rendez-vous point defined for send");
-
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    /* the model-checker wants two separate simcalls, and wants comm to be nullptr during the simcall */
-    simgrid::kernel::activity::ActivityImplPtr comm = nullptr;
-
-    simgrid::kernel::actor::CommIsendSimcall send_observer{
-        sender,  mbox,          task_size, rate, static_cast<unsigned char*>(src_buff), src_buff_size, match_fun,
-        nullptr, copy_data_fun, data,      false};
-    comm = simgrid::kernel::actor::simcall_answered(
-        [&send_observer] { return simgrid::kernel::activity::CommImpl::isend(&send_observer); }, &send_observer);
-
-    simgrid::kernel::actor::ActivityWaitSimcall wait_observer{sender, comm.get(), timeout};
-    if (simgrid::kernel::actor::simcall_blocking(
-            [&wait_observer] {
-              wait_observer.get_activity()->wait_for(wait_observer.get_issuer(), wait_observer.get_timeout());
-            },
-            &wait_observer)) {
-      throw simgrid::TimeoutException(XBT_THROW_POINT, "Timeouted");
-    }
-    comm = nullptr;
-  }
-  else {
-    simgrid::kernel::actor::CommIsendSimcall observer(sender, mbox, task_size, rate,
-                                                      static_cast<unsigned char*>(src_buff), src_buff_size, match_fun,
-                                                      nullptr, copy_data_fun, data, false);
-    simgrid::kernel::actor::simcall_blocking([&observer, timeout] {
-      simgrid::kernel::activity::ActivityImplPtr comm = simgrid::kernel::activity::CommImpl::isend(&observer);
-      comm->wait_for(observer.get_issuer(), timeout);
-    });
-  }
+  simgrid::s4u::Comm::send(sender, mbox->get_iface(), task_size, rate, src_buff, src_buff_size, match_fun,
+                           copy_data_fun, data, timeout);
 }
 
 /**
@@ -102,39 +58,13 @@ simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, dou
 void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size,
                        bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                        void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data,
-                       double timeout, double rate)
+                       double timeout, double rate) // XBT_ATTRIB_DEPRECATED_v335
 {
-  xbt_assert(std::isfinite(timeout), "timeout is not finite!");
   xbt_assert(mbox, "No rendez-vous point defined for recv");
-
-  if (MC_is_active() || MC_record_replay_is_active()) {
-    /* the model-checker wants two separate simcalls, and wants comm to be nullptr during the simcall */
-    simgrid::kernel::activity::ActivityImplPtr comm = nullptr;
-
-    simgrid::kernel::actor::CommIrecvSimcall observer{
-        receiver, mbox, static_cast<unsigned char*>(dst_buff), dst_buff_size, match_fun, copy_data_fun, data, rate};
-    comm = simgrid::kernel::actor::simcall_answered(
-        [&observer] { return simgrid::kernel::activity::CommImpl::irecv(&observer); }, &observer);
-
-    simgrid::kernel::actor::ActivityWaitSimcall wait_observer{receiver, comm.get(), timeout};
-    if (simgrid::kernel::actor::simcall_blocking(
-            [&wait_observer] {
-              wait_observer.get_activity()->wait_for(wait_observer.get_issuer(), wait_observer.get_timeout());
-            },
-            &wait_observer)) {
-      throw simgrid::TimeoutException(XBT_THROW_POINT, "Timeouted");
-    }
-    comm = nullptr;
-  }
-  else {
-    simgrid::kernel::actor::CommIrecvSimcall observer(receiver, mbox, static_cast<unsigned char*>(dst_buff),
-                                                      dst_buff_size, match_fun, copy_data_fun, data, rate);
-    simgrid::kernel::actor::simcall_blocking([&observer, timeout] {
-      simgrid::kernel::activity::ActivityImplPtr comm = simgrid::kernel::activity::CommImpl::irecv(&observer);
-      comm->wait_for(observer.get_issuer(), timeout);
-    });
-  }
+  simgrid::s4u::Comm::recv(receiver, mbox->get_iface(), dst_buff, dst_buff_size, match_fun, copy_data_fun, data,
+                           timeout, rate);
 }
+
 /**
  * @ingroup simix_comm_management
  */
