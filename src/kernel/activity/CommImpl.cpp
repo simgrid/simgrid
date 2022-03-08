@@ -8,6 +8,9 @@
 #include <simgrid/modelchecker.h>
 #include <simgrid/s4u/Host.hpp>
 
+#define SIMIX_H_NO_DEPRECATED_WARNING // avoid deprecation warning on include (remove with XBT_ATTRIB_DEPRECATED_v333)
+#include <simgrid/simix.h>
+
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"

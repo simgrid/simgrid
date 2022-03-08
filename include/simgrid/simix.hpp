@@ -8,7 +8,6 @@
 #define SIMGRID_SIMIX_HPP
 
 #include <simgrid/s4u/Actor.hpp>
-#include <simgrid/simix.h>
 #include <xbt/promise.hpp>
 #include <xbt/signal.hpp>
 

@@ -7,14 +7,10 @@
 #define SIMGRID_SIMIX_H
 
 #include <simgrid/forward.h>
-#include <xbt/dynar.h>
-#include <xbt/ex.h>
 #include <xbt/parmap.h>
-#ifdef __cplusplus
-#include <functional>
-#include <string>
-#include <unordered_map>
-#include <vector>
+
+#ifndef SIMIX_H_NO_DEPRECATED_WARNING
+#warning simgrid/simix.h is deprecated and will be removed in v3.35.
 #endif
 
 /******************************* Networking ***********************************/

@@ -7,6 +7,9 @@
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Host.hpp>
 
+#define SIMIX_H_NO_DEPRECATED_WARNING // avoid deprecation warning on include (remove with XBT_ATTRIB_DEPRECATED_v333)
+#include <simgrid/simix.h>
+
 #include "src/kernel/EngineImpl.hpp"
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"

@@ -20,11 +20,11 @@
 #include <sys/mman.h>
 #include <unistd.h>
 
-#include "src/internal_config.h"
-#include "src/xbt/memory_map.hpp"
-
 #include "private.hpp"
+#include "src/internal_config.h"
 #include "src/smpi/include/smpi_actor.hpp"
+#include "src/xbt/memory_map.hpp"
+#include "xbt/virtu.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi, "Memory layout support for SMPI");
 

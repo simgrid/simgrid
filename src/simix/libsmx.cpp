@@ -15,6 +15,9 @@
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include <simgrid/s4u/Activity.hpp>
 
+#define SIMIX_H_NO_DEPRECATED_WARNING // avoid deprecation warning on include (remove with XBT_ATTRIB_DEPRECATED_v335)
+#include <simgrid/simix.h>
+
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
 /**

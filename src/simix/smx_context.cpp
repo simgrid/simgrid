@@ -7,6 +7,9 @@
 
 #include "src/kernel/context/Context.hpp"
 
+#define SIMIX_H_NO_DEPRECATED_WARNING // avoid deprecation warning on include (remove with XBT_ATTRIB_DEPRECATED_v333)
+#include <simgrid/simix.h>
+
 int SIMIX_context_is_parallel() // XBT_ATTRIB_DEPRECATED_v333
 {
   return simgrid::kernel::context::is_parallel();

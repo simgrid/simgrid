@@ -9,6 +9,9 @@
 #include <simgrid/modelchecker.h>
 #include <simgrid/s4u/Engine.hpp>
 
+#define SIMIX_H_NO_DEPRECATED_WARNING // avoid deprecation warning on include (remove with XBT_ATTRIB_DEPRECATED_v333)
+#include <simgrid/simix.h>
+
 #include "mc/mc.h"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"

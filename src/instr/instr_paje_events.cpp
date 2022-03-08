@@ -7,6 +7,7 @@
 #include "src/instr/instr_smpi.hpp"
 #include "src/smpi/include/private.hpp"
 #include "src/surf/surf_interface.hpp"
+#include "xbt/ex.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_events, instr, "Paje tracing event system (events)");
 

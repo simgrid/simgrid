@@ -4,8 +4,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/engine.h"
-#include "simgrid/simix.h" // we don't need it, but someone must check that this file is actually usable in plain C
 #include <xbt.h>
+
+#define SIMIX_H_NO_DEPRECATED_WARNING // avoid deprecation warning on include (remove with XBT_ATTRIB_DEPRECATED_v335)
+#include "simgrid/simix.h" // we don't need it, but someone must check that this file is actually usable in plain C
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Logging specific to this test");
 

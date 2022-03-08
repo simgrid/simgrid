@@ -29,8 +29,6 @@
 #endif
 
 #ifdef __cplusplus
-#include <map>
-#include <simgrid/simix.h>
 namespace simgrid {
 namespace msg {
 class Comm;
