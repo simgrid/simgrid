@@ -23,7 +23,7 @@ XBT_PRIVATE void execute_actors();
 XBT_PRIVATE extern std::vector<double> processes_time;
 
 /** Execute a given simcall */
-XBT_PRIVATE void handle_simcall(simix::Simcall* req, int req_num);
+XBT_PRIVATE void handle_simcall(kernel::actor::Simcall* req, int req_num);
 
 /** Is the process ready to execute its simcall?
  *
@@ -37,7 +37,7 @@ XBT_PRIVATE void handle_simcall(simix::Simcall* req, int req_num);
 XBT_PRIVATE bool actor_is_enabled(smx_actor_t process);
 
 /** Check if the given simcall is visible */
-XBT_PRIVATE bool request_is_visible(const simix::Simcall* req);
+XBT_PRIVATE bool request_is_visible(const kernel::actor::Simcall* req);
 } // namespace mc
 } // namespace simgrid
 

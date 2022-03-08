@@ -539,14 +539,14 @@ void CommImpl::finish()
     copy_data();
 
   while (not simcalls_.empty()) {
-    simix::Simcall* simcall = simcalls_.front();
+    actor::Simcall* simcall = simcalls_.front();
     simcalls_.pop_front();
 
     /* If a waitany simcall is waiting for this synchro to finish, then remove it from the other synchros in the waitany
      * list. Afterwards, get the position of the actual synchro in the waitany list and return it as the result of the
      * simcall */
 
-    if (simcall->call_ == simix::Simcall::Type::NONE) // FIXME: maybe a better way to handle this case
+    if (simcall->call_ == actor::Simcall::Type::NONE) // FIXME: maybe a better way to handle this case
       continue;                                       // if actor handling comm is killed
 
     handle_activity_waitany(simcall);

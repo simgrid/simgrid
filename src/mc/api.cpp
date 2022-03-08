@@ -28,8 +28,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(Api, mc, "Logging specific to MC Facade APIs ");
 XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
-using Simcall = simgrid::simix::Simcall;
-
 namespace simgrid {
 namespace mc {
 

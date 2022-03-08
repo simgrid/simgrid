@@ -49,8 +49,8 @@ void execute_actors()
   while (engine->has_actors_to_run()) {
     engine->run_all_actors();
     for (auto const& actor : engine->get_actors_that_ran()) {
-      const simix::Simcall* req = &actor->simcall_;
-      if (req->call_ != simix::Simcall::Type::NONE && not simgrid::mc::request_is_visible(req))
+      const kernel::actor::Simcall* req = &actor->simcall_;
+      if (req->call_ != kernel::actor::Simcall::Type::NONE && not simgrid::mc::request_is_visible(req))
         actor->simcall_handle(0);
     }
   }
@@ -85,12 +85,12 @@ bool actor_is_enabled(smx_actor_t actor)
 #endif
 
   // Now, we are in the client app, no need for remote memory reading.
-  simix::Simcall* req = &actor->simcall_;
+  kernel::actor::Simcall* req = &actor->simcall_;
 
   if (req->observer_ != nullptr)
     return req->observer_->is_enabled();
 
-  if (req->call_ == simix::Simcall::Type::NONE)
+  if (req->call_ == kernel::actor::Simcall::Type::NONE)
     return false;
   else
     /* The rest of the requests are always enabled */
@@ -100,7 +100,7 @@ bool actor_is_enabled(smx_actor_t actor)
 /* This is the list of requests that are visible from the checker algorithm.
  * Any other requests are handled right away on the application side.
  */
-bool request_is_visible(const simix::Simcall* req)
+bool request_is_visible(const kernel::actor::Simcall* req)
 {
 #if SIMGRID_HAVE_MC
   xbt_assert(mc_model_checker == nullptr, "This should be called from the client side");

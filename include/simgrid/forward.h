@@ -115,6 +115,7 @@ using ActorCode = std::function<void()>;
 // Create an ActorCode from the parameters parsed in the XML file (or elsewhere)
 using ActorCodeFactory = std::function<ActorCode(std::vector<std::string> args)>;
 
+class Simcall;
 class SimcallObserver;
 } // namespace actor
 
@@ -205,9 +206,6 @@ class FutureEvtSet;
 class Profile;
 } // namespace profile
 } // namespace kernel
-namespace simix {
-class Simcall;
-}
 namespace mc {
 class State;
 }

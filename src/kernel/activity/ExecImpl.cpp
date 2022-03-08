@@ -204,10 +204,10 @@ void ExecImpl::finish()
 {
   XBT_DEBUG("ExecImpl::finish() in state %s", get_state_str());
   while (not simcalls_.empty()) {
-    simix::Simcall* simcall = simcalls_.front();
+    actor::Simcall* simcall = simcalls_.front();
     simcalls_.pop_front();
 
-    if (simcall->call_ == simix::Simcall::Type::NONE) // FIXME: maybe a better way to handle this case
+    if (simcall->call_ == actor::Simcall::Type::NONE) // FIXME: maybe a better way to handle this case
       continue;                                       // if process handling comm is killed
 
     handle_activity_waitany(simcall);

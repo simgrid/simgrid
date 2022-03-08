@@ -12,6 +12,7 @@ set(EXTRA_DIST
   src/include/xbt/xbt_modinter.h
   src/include/catch.hpp
   src/include/xxhash.hpp
+  src/kernel/actor/Simcall.hpp
   src/kernel/resource/LinkImpl.hpp
   src/kernel/resource/SplitDuplexLinkImpl.hpp
   src/kernel/resource/StandardLinkImpl.hpp
@@ -22,7 +23,6 @@ set(EXTRA_DIST
   src/dag/dax.dtd
   src/dag/dax_dtd.c
   src/dag/dax_dtd.h
-  src/simix/simcall.hpp
   src/smpi/colls/coll_tuned_topo.hpp
   src/smpi/colls/colls_private.hpp
   src/smpi/colls/smpi_mvapich2_selector_stampede.hpp
@@ -409,12 +409,12 @@ set(SIMIX_SRC
   src/kernel/actor/ActorImpl.hpp
   src/kernel/actor/CommObserver.cpp
   src/kernel/actor/CommObserver.hpp
+  src/kernel/actor/Simcall.cpp
   src/kernel/actor/SimcallObserver.cpp
   src/kernel/actor/SimcallObserver.hpp
   src/kernel/actor/SynchroObserver.cpp
   src/kernel/actor/SynchroObserver.hpp
   src/simix/libsmx.cpp
-  src/simix/simcall.cpp
   src/simix/smx_context.cpp
   )
 

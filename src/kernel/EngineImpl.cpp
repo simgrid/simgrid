@@ -744,7 +744,7 @@ void EngineImpl::run(double max_date)
        */
 
       for (auto const& actor : actors_that_ran_) {
-        if (actor->simcall_.call_ != simix::Simcall::Type::NONE) {
+        if (actor->simcall_.call_ != actor::Simcall::Type::NONE) {
           actor->simcall_handle(0);
         }
       }

@@ -2130,6 +2130,8 @@ include src/kernel/actor/ActorImpl.cpp
 include src/kernel/actor/ActorImpl.hpp
 include src/kernel/actor/CommObserver.cpp
 include src/kernel/actor/CommObserver.hpp
+include src/kernel/actor/Simcall.cpp
+include src/kernel/actor/Simcall.hpp
 include src/kernel/actor/SimcallObserver.cpp
 include src/kernel/actor/SimcallObserver.hpp
 include src/kernel/actor/SynchroObserver.cpp
@@ -2335,8 +2337,6 @@ include src/simgrid/sg_config.cpp
 include src/simgrid/sg_version.cpp
 include src/simgrid/util.hpp
 include src/simix/libsmx.cpp
-include src/simix/simcall.cpp
-include src/simix/simcall.hpp
 include src/simix/smx_context.cpp
 include src/smpi/bindings/smpi_f77.cpp
 include src/smpi/bindings/smpi_f77_coll.cpp

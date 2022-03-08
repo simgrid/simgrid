@@ -421,8 +421,8 @@ void ActorImpl::simcall_answer()
   auto* engine = EngineImpl::get_instance();
   if (not this->is_maestro()) {
     XBT_DEBUG("Answer simcall %s issued by %s (%p)", simcall_.get_cname(), get_cname(), this);
-    xbt_assert(simcall_.call_ != simix::Simcall::Type::NONE);
-    simcall_.call_            = simix::Simcall::Type::NONE;
+    xbt_assert(simcall_.call_ != Simcall::Type::NONE);
+    simcall_.call_            = Simcall::Type::NONE;
     const auto& actors_to_run = engine->get_actors_to_run();
     xbt_assert(not XBT_LOG_ISENABLED(ker_actor, xbt_log_priority_debug) ||
                    std::find(begin(actors_to_run), end(actors_to_run), this) == end(actors_to_run),

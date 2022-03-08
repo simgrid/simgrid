@@ -3,20 +3,24 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/simix/simcall.hpp"
+#include "Simcall.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "xbt/log.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(simix, "transmuting from user request into kernel handlers");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_simcall, kernel, "transmuting from user request into kernel handlers");
+
+namespace simgrid {
+namespace kernel {
+namespace actor {
 
 /** @private
  * @brief (in kernel mode) unpack the simcall and activate the handler
  *
  */
-void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered)
+void ActorImpl::simcall_handle(int times_considered)
 {
   XBT_DEBUG("Handling simcall %p: %s", &simcall_, simcall_.get_cname());
   if (simcall_.observer_ != nullptr)
@@ -24,16 +28,16 @@ void simgrid::kernel::actor::ActorImpl::simcall_handle(int times_considered)
   if (context_->wannadie())
     return;
 
-  xbt_assert(simcall_.call_ != simgrid::simix::Simcall::Type::NONE, "Asked to do the noop syscall on %s@%s",
-             get_cname(), get_host()->get_cname());
+  xbt_assert(simcall_.call_ != Simcall::Type::NONE, "Asked to do the noop syscall on %s@%s", get_cname(),
+             get_host()->get_cname());
 
   (*simcall_.code_)();
-  if (simcall_.call_ == simgrid::simix::Simcall::Type::RUN_ANSWERED)
+  if (simcall_.call_ == Simcall::Type::RUN_ANSWERED)
     simcall_answer();
 }
 
 /** @brief returns a printable string representing a simcall */
-const char* simgrid::simix::Simcall::get_cname() const
+const char* Simcall::get_cname() const
 {
   if (observer_ != nullptr) {
     static std::string name;
@@ -46,3 +50,7 @@ const char* simgrid::simix::Simcall::get_cname() const
     return to_c_str(call_);
   }
 }
+
+} // namespace actor
+} // namespace kernel
+} // namespace simgrid

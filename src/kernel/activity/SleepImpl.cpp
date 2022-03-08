@@ -58,7 +58,7 @@ void SleepImpl::finish()
 {
   XBT_DEBUG("SleepImpl::finish() in state %s", get_state_str());
   while (not simcalls_.empty()) {
-    const simix::Simcall* simcall = simcalls_.front();
+    const actor::Simcall* simcall = simcalls_.front();
     simcalls_.pop_front();
 
     simcall->issuer_->waiting_synchro_ = nullptr;

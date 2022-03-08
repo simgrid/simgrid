@@ -47,7 +47,7 @@ void SemAcquisitionImpl::post()
 void SemAcquisitionImpl::finish()
 {
   xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
-  simix::Simcall* simcall = simcalls_.front();
+  actor::Simcall* simcall = simcalls_.front();
   simcalls_.pop_front();
 
   if (surf_action_ != nullptr) { // A timeout was declared

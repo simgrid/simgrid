@@ -12,7 +12,8 @@
 
 /********************************* Simcalls *********************************/
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace actor {
 
 /**
  * @brief Represents a simcall to the kernel.
@@ -33,7 +34,8 @@ public:
   const char* get_cname() const;
 };
 
-} // namespace simix
+} // namespace actor
+} // namespace kernel
 } // namespace simgrid
 
 #endif

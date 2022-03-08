@@ -36,7 +36,7 @@ void ConditionVariableImpl::signal()
     proc.waiting_synchro_ = nullptr;
 
     /* Now transform the cond wait simcall into a mutex lock one */
-    simix::Simcall* simcall = &proc.simcall_;
+    actor::Simcall* simcall = &proc.simcall_;
     const auto* observer  = dynamic_cast<kernel::actor::ConditionWaitSimcall*>(simcall->observer_);
     xbt_assert(observer != nullptr);
     observer->get_mutex()->lock_async(simcall->issuer_)->wait_for(simcall->issuer_, -1);

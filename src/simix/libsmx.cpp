@@ -18,7 +18,7 @@
 #define SIMIX_H_NO_DEPRECATED_WARNING // avoid deprecation warning on include (remove with XBT_ATTRIB_DEPRECATED_v335)
 #include <simgrid/simix.h>
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_simcall);
 
 /**
  * @ingroup simix_comm_management
@@ -156,7 +156,7 @@ bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm) // XBT_ATT
   return false;
 }
 
-static void simcall(simgrid::simix::Simcall::Type call, std::function<void()> const& code)
+static void simcall(simgrid::kernel::actor::Simcall::Type call, std::function<void()> const& code)
 {
   auto self = simgrid::kernel::actor::ActorImpl::self();
   self->simcall_.call_ = call;
@@ -174,7 +174,7 @@ void simcall_run_answered(std::function<void()> const& code, simgrid::kernel::ac
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = observer;
   // The function `code` is called in kernel mode (either because we are already in maestor or after a context switch)
   // and simcall_answer() is called
-  simcall(simgrid::simix::Simcall::Type::RUN_ANSWERED, code);
+  simcall(simgrid::kernel::actor::Simcall::Type::RUN_ANSWERED, code);
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = nullptr;
 }
 
@@ -183,6 +183,6 @@ void simcall_run_blocking(std::function<void()> const& code, simgrid::kernel::ac
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = observer;
   // The function `code` is called in kernel mode (either because we are already in maestor or after a context switch)
   // BUT simcall_answer IS NOT CALLED
-  simcall(simgrid::simix::Simcall::Type::RUN_BLOCKING, code);
+  simcall(simgrid::kernel::actor::Simcall::Type::RUN_BLOCKING, code);
   simgrid::kernel::actor::ActorImpl::self()->simcall_.observer_ = nullptr;
 }

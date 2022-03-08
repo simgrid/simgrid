@@ -6,9 +6,9 @@
 #ifndef SIMGRID_KERNEL_ACTOR_ACTORIMPL_HPP
 #define SIMGRID_KERNEL_ACTOR_ACTORIMPL_HPP
 
+#include "Simcall.hpp"
 #include "simgrid/kernel/Timer.hpp"
 #include "simgrid/s4u/Actor.hpp"
-#include "src/simix/simcall.hpp"
 #include "xbt/PropertyHolder.hpp"
 #include <boost/intrusive/list.hpp>
 #include <functional>
@@ -73,7 +73,7 @@ public:
 
   activity::ActivityImplPtr waiting_synchro_ = nullptr; /* the current blocking synchro if any */
   std::list<activity::ActivityImplPtr> activities_;     /* the current non-blocking synchros */
-  simix::Simcall simcall_;
+  Simcall simcall_;
   /* list of functions executed when the actor dies */
   std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit =
       std::make_shared<std::vector<std::function<void(bool)>>>();
