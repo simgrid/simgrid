@@ -18,9 +18,6 @@ using simgrid::mc::remote;
  *   - `model_checker->process.smx_process_infos`
  *      (copy of `EngineImpl::actor_list_`);
  *
- *   - `model_checker->process.smx_old_process_infos`
- *      (copy of `EngineImpl::actors_to_destroy_`);
- *
  *   - `model_checker->hostnames`.
  *
  * The process lists are currently refreshed each time MCed code is executed.
