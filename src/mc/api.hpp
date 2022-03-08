@@ -20,7 +20,7 @@
 namespace simgrid {
 namespace mc {
 
-XBT_DECLARE_ENUM_CLASS(CheckerAlgorithm, Safety, UDPOR, Liveness, CommDeterminism);
+XBT_DECLARE_ENUM_CLASS(ExplorationAlgorithm, Safety, UDPOR, Liveness, CommDeterminism);
 
 /*
 ** This class aimes to implement FACADE APIs for simgrid. The FACADE layer sits between the CheckerSide
@@ -54,7 +54,7 @@ public:
     return api;
   }
 
-  simgrid::mc::Exploration* initialize(char** argv, simgrid::mc::CheckerAlgorithm algo);
+  simgrid::mc::Exploration* initialize(char** argv, simgrid::mc::ExplorationAlgorithm algo);
 
   // ACTOR APIs
   std::vector<simgrid::mc::ActorInformation>& get_actors() const;

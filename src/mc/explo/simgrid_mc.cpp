@@ -34,15 +34,15 @@ int main(int argc, char** argv)
 #endif
   sg_config_init(&argc, argv);
 
-  simgrid::mc::CheckerAlgorithm algo;
+  simgrid::mc::ExplorationAlgorithm algo;
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
-    algo = simgrid::mc::CheckerAlgorithm::CommDeterminism;
+    algo = simgrid::mc::ExplorationAlgorithm::CommDeterminism;
   else if (_sg_mc_unfolding_checker)
-    algo = simgrid::mc::CheckerAlgorithm::UDPOR;
+    algo = simgrid::mc::ExplorationAlgorithm::UDPOR;
   else if (_sg_mc_property_file.get().empty())
-    algo = simgrid::mc::CheckerAlgorithm::Safety;
+    algo = simgrid::mc::ExplorationAlgorithm::Safety;
   else
-    algo = simgrid::mc::CheckerAlgorithm::Liveness;
+    algo = simgrid::mc::ExplorationAlgorithm::Liveness;
 
   int res      = SIMGRID_MC_EXIT_SUCCESS;
   std::unique_ptr<simgrid::mc::Exploration> checker{simgrid::mc::Api::get().initialize(argv_copy.data(), algo)};

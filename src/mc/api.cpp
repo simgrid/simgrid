@@ -31,7 +31,7 @@ XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 namespace simgrid {
 namespace mc {
 
-simgrid::mc::Exploration* Api::initialize(char** argv, simgrid::mc::CheckerAlgorithm algo)
+simgrid::mc::Exploration* Api::initialize(char** argv, simgrid::mc::ExplorationAlgorithm algo)
 {
   session_ = std::make_unique<simgrid::mc::Session>([argv] {
     int i = 1;
@@ -45,19 +45,19 @@ simgrid::mc::Exploration* Api::initialize(char** argv, simgrid::mc::CheckerAlgor
 
   simgrid::mc::Exploration* explo;
   switch (algo) {
-    case CheckerAlgorithm::CommDeterminism:
+    case ExplorationAlgorithm::CommDeterminism:
       explo = simgrid::mc::create_communication_determinism_checker(session_.get());
       break;
 
-    case CheckerAlgorithm::UDPOR:
+    case ExplorationAlgorithm::UDPOR:
       explo = simgrid::mc::create_udpor_checker(session_.get());
       break;
 
-    case CheckerAlgorithm::Safety:
+    case ExplorationAlgorithm::Safety:
       explo = simgrid::mc::create_safety_checker(session_.get());
       break;
 
-    case CheckerAlgorithm::Liveness:
+    case ExplorationAlgorithm::Liveness:
       explo = simgrid::mc::create_liveness_checker(session_.get());
       break;
 
