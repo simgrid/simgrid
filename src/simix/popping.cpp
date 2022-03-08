@@ -12,12 +12,6 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(simix, "transmuting from user request into kernel handlers");
 
-constexpr std::array<const char*, simgrid::simix::NUM_SIMCALLS> simcall_names{{
-    "Simcall::NONE",
-    "Simcall::RUN_ANSWERED",
-    "Simcall::RUN_BLOCKING",
-}};
-
 /** @private
  * @brief (in kernel mode) unpack the simcall and activate the handler
  *
@@ -49,6 +43,6 @@ const char* SIMIX_simcall_name(const s_smx_simcall& simcall)
       cname += 17; // strip prefix "simgrid::kernel::"
     return cname;
   } else {
-    return simcall_names.at(static_cast<int>(simcall.call_));
+    return to_c_str(simcall.call_);
   }
 }

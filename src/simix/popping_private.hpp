@@ -16,12 +16,7 @@
 namespace simgrid {
 namespace simix {
 /** All possible simcalls. */
-enum class Simcall {
-  NONE,
-  RUN_ANSWERED,
-  RUN_BLOCKING,
-};
-constexpr int NUM_SIMCALLS = 3;
+XBT_DECLARE_ENUM_CLASS(Simcall, NONE, RUN_ANSWERED, RUN_BLOCKING);
 } // namespace simix
 } // namespace simgrid
 
