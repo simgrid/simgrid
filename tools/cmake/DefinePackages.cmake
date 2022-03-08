@@ -22,7 +22,7 @@ set(EXTRA_DIST
   src/dag/dax.dtd
   src/dag/dax_dtd.c
   src/dag/dax_dtd.h
-  src/simix/popping_private.hpp
+  src/simix/simcall.hpp
   src/smpi/colls/coll_tuned_topo.hpp
   src/smpi/colls/colls_private.hpp
   src/smpi/colls/smpi_mvapich2_selector_stampede.hpp
@@ -375,8 +375,6 @@ set(PLUGINS_SRC
   )
 
 set(SIMIX_SRC
-  src/simix/libsmx.cpp
-  src/simix/smx_context.cpp
   src/kernel/context/Context.cpp
   src/kernel/context/Context.hpp
   src/kernel/context/ContextRaw.cpp
@@ -385,7 +383,6 @@ set(SIMIX_SRC
   src/kernel/context/ContextSwapped.hpp
   src/kernel/context/ContextThread.cpp
   src/kernel/context/ContextThread.hpp
-  src/simix/popping.cpp
   src/kernel/activity/ActivityImpl.cpp
   src/kernel/activity/ActivityImpl.hpp
   src/kernel/activity/BarrierImpl.cpp
@@ -416,6 +413,9 @@ set(SIMIX_SRC
   src/kernel/actor/SimcallObserver.hpp
   src/kernel/actor/SynchroObserver.cpp
   src/kernel/actor/SynchroObserver.hpp
+  src/simix/libsmx.cpp
+  src/simix/simcall.cpp
+  src/simix/smx_context.cpp
   )
 
 # Boost context may not be available

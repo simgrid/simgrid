@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SG_POPPING_PRIVATE_HPP
-#define SG_POPPING_PRIVATE_HPP
+#ifndef SIMCALL_HPP
+#define SIMCALL_HPP
 
 #include "simgrid/forward.h"
 #include "src/kernel/activity/ActivityImpl.hpp"
@@ -28,7 +28,7 @@ public:
   simgrid::kernel::actor::SimcallObserver* observer_ = nullptr; // makes that simcall observable by the MC
   unsigned int mc_max_consider_ =
       0; // How many times this simcall should be used. If >1, this will be a fork in the state space.
-  std::function<void()> const* code_      = nullptr;
+  std::function<void()> const* code_ = nullptr;
 
   const char* get_cname() const;
 };

@@ -8,7 +8,7 @@
 
 #include "simgrid/kernel/Timer.hpp"
 #include "simgrid/s4u/Actor.hpp"
-#include "src/simix/popping_private.hpp"
+#include "src/simix/simcall.hpp"
 #include "xbt/PropertyHolder.hpp"
 #include <boost/intrusive/list.hpp>
 #include <functional>
