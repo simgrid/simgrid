@@ -1,5 +1,4 @@
-/* Copyright (c) 2008-2022. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2022. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -19,7 +18,7 @@
 namespace simgrid {
 namespace mc {
 
-class XBT_PRIVATE SafetyChecker : public Exploration {
+class XBT_PRIVATE DFSExplorer : public Exploration {
   ReductionMode reductionMode_ = ReductionMode::unset;
   long backtrack_count_        = 0;
 
@@ -36,7 +35,7 @@ class XBT_PRIVATE SafetyChecker : public Exploration {
   static xbt::signal<void()> on_log_state_signal;
 
 public:
-  explicit SafetyChecker(Session* session);
+  explicit DFSExplorer(Session* session);
   void run() override;
   RecordTrace get_record_trace() override;
   std::vector<std::string> get_textual_trace() override;

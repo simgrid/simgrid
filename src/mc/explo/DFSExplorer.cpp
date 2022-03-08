@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/explo/SafetyChecker.hpp"
+#include "src/mc/explo/DFSExplorer.hpp"
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -22,24 +22,24 @@
 #include <string>
 #include <vector>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc, "Logging specific to MC safety verification ");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dfs, mc, "DFS exploration algorithm of the model-checker");
 
 namespace simgrid {
 namespace mc {
 
-xbt::signal<void()> SafetyChecker::on_exploration_start_signal;
-xbt::signal<void()> SafetyChecker::on_backtracking_signal;
+xbt::signal<void()> DFSExplorer::on_exploration_start_signal;
+xbt::signal<void()> DFSExplorer::on_backtracking_signal;
 
-xbt::signal<void(State*)> SafetyChecker::on_state_creation_signal;
+xbt::signal<void(State*)> DFSExplorer::on_state_creation_signal;
 
-xbt::signal<void(State*)> SafetyChecker::on_restore_system_state_signal;
-xbt::signal<void()> SafetyChecker::on_restore_initial_state_signal;
-xbt::signal<void(Transition*)> SafetyChecker::on_transition_replay_signal;
-xbt::signal<void(Transition*)> SafetyChecker::on_transition_execute_signal;
+xbt::signal<void(State*)> DFSExplorer::on_restore_system_state_signal;
+xbt::signal<void()> DFSExplorer::on_restore_initial_state_signal;
+xbt::signal<void(Transition*)> DFSExplorer::on_transition_replay_signal;
+xbt::signal<void(Transition*)> DFSExplorer::on_transition_execute_signal;
 
-xbt::signal<void()> SafetyChecker::on_log_state_signal;
+xbt::signal<void()> DFSExplorer::on_log_state_signal;
 
-void SafetyChecker::check_non_termination(const State* current_state)
+void DFSExplorer::check_non_termination(const State* current_state)
 {
   for (auto state = stack_.rbegin(); state != stack_.rend(); ++state)
     if (Api::get().snapshot_equal((*state)->system_state_.get(), current_state->system_state_.get())) {
@@ -57,7 +57,7 @@ void SafetyChecker::check_non_termination(const State* current_state)
     }
 }
 
-RecordTrace SafetyChecker::get_record_trace() // override
+RecordTrace DFSExplorer::get_record_trace() // override
 {
   RecordTrace res;
   for (auto const& state : stack_)
@@ -65,7 +65,7 @@ RecordTrace SafetyChecker::get_record_trace() // override
   return res;
 }
 
-std::vector<std::string> SafetyChecker::get_textual_trace() // override
+std::vector<std::string> DFSExplorer::get_textual_trace() // override
 {
   std::vector<std::string> trace;
   for (auto const& state : stack_)
@@ -73,7 +73,7 @@ std::vector<std::string> SafetyChecker::get_textual_trace() // override
   return trace;
 }
 
-void SafetyChecker::log_state() // override
+void DFSExplorer::log_state() // override
 {
   on_log_state_signal();
   XBT_INFO("DFS exploration ended. %ld unique states visited; %ld backtracks (%lu transition replays, %lu states "
@@ -82,7 +82,7 @@ void SafetyChecker::log_state() // override
            Transition::get_replayed_transitions());
 }
 
-void SafetyChecker::run()
+void DFSExplorer::run()
 {
   on_exploration_start_signal();
   /* This function runs the DFS algorithm the state space.
@@ -184,7 +184,7 @@ void SafetyChecker::run()
   log_state();
 }
 
-void SafetyChecker::backtrack()
+void DFSExplorer::backtrack()
 {
   backtrack_count_++;
   XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
@@ -241,7 +241,7 @@ void SafetyChecker::backtrack()
   }
 }
 
-void SafetyChecker::restore_state()
+void DFSExplorer::restore_state()
 {
   /* If asked to rollback on a state that has a snapshot, restore it */
   State* last_state = stack_.back().get();
@@ -266,7 +266,7 @@ void SafetyChecker::restore_state()
   }
 }
 
-SafetyChecker::SafetyChecker(Session* session) : Exploration(session)
+DFSExplorer::DFSExplorer(Session* session) : Exploration(session)
 {
   reductionMode_ = reduction_mode;
   if (_sg_mc_termination)
@@ -283,7 +283,7 @@ SafetyChecker::SafetyChecker(Session* session) : Exploration(session)
 
   get_session().take_initial_snapshot();
 
-  XBT_DEBUG("Starting the safety algorithm");
+  XBT_DEBUG("Starting the DFS exploration");
 
   auto initial_state = std::make_unique<State>();
 
@@ -307,9 +307,9 @@ SafetyChecker::SafetyChecker(Session* session) : Exploration(session)
   stack_.push_back(std::move(initial_state));
 }
 
-Exploration* create_safety_checker(Session* session)
+Exploration* create_dfs_exploration(Session* session)
 {
-  return new SafetyChecker(session);
+  return new DFSExplorer(session);
 }
 
 } // namespace mc

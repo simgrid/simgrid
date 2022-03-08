@@ -60,7 +60,7 @@ public:
 
 // External constructors so that the types (and the types of their content) remain hidden
 XBT_PUBLIC Exploration* create_liveness_checker(Session* session);
-XBT_PUBLIC Exploration* create_safety_checker(Session* session);
+XBT_PUBLIC Exploration* create_dfs_exploration(Session* session);
 XBT_PUBLIC Exploration* create_communication_determinism_checker(Session* session);
 XBT_PUBLIC Exploration* create_udpor_checker(Session* session);
 

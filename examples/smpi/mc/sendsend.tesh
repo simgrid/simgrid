@@ -3,19 +3,19 @@
 p Testing the permissive model
 ! timeout 60
 $ ../../../smpi_script/bin/smpirun -quiet -wrapper "${bindir:=.}/../../../bin/simgrid-mc" -np 2 -platform ${platfdir:=.}/cluster_backbone.xml --cfg=smpi/buffering:infty --log=xbt_cfg.thresh:warning ./smpi_sendsend
-> [0.000000] [mc_safety/INFO] Start a DFS exploration. Reduction is: dpor.
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
 > Sent 0 to rank 1
 > Sent 1 to rank 0
 > rank 0 recv the data
 > rank 1 recv the data
 > Sent 0 to rank 1
-> [0.000000] [mc_safety/INFO] DFS exploration ended. 7 unique states visited; 2 backtracks (10 transition replays, 2 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 7 unique states visited; 2 backtracks (10 transition replays, 2 states visited overall)
 
 p Testing the paranoid model
 ! timeout 60
 ! expect return 3
 $ ../../../smpi_script/bin/smpirun -quiet -wrapper "${bindir:=.}/../../../bin/simgrid-mc" -np 2 -platform ${platfdir:=.}/cluster_backbone.xml --cfg=smpi/buffering:zero --log=xbt_cfg.thresh:warning ./smpi_sendsend
-> [0.000000] [mc_safety/INFO] Start a DFS exploration. Reduction is: dpor.
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
 > [0.000000] [mc_global/INFO] **************************
 > [0.000000] [mc_global/INFO] *** DEADLOCK DETECTED ***
 > [0.000000] [mc_global/INFO] **************************
@@ -23,5 +23,5 @@ $ ../../../smpi_script/bin/smpirun -quiet -wrapper "${bindir:=.}/../../../bin/si
 > [0.000000] [mc_global/INFO]   1: iSend(mbox=2)
 > [0.000000] [mc_global/INFO]   2: iSend(mbox=0)
 > [0.000000] [mc_global/INFO] Path = 1;2
-> [0.000000] [mc_safety/INFO] DFS exploration ended. 3 unique states visited; 1 backtracks (3 transition replays, 0 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 3 unique states visited; 1 backtracks (3 transition replays, 0 states visited overall)
 > Execution failed with code 3.

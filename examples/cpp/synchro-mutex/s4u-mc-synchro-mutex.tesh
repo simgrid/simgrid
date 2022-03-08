@@ -2,7 +2,7 @@
 
 p This file tests the dependencies between MUTEX transitions
 
-$ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_safety.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-mutex --cfg=actors:1 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
+$ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-mutex --cfg=actors:1 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
 > [Checker] Start a DFS exploration. Reduction is: dpor.
 > [App    ] Configuration change: Set 'actors' to '1'
 > [Checker] Execute 2: MUTEX_LOCK(mutex: 0, owner:2) (stack depth: 1, state: 1, 0 interleaves)
@@ -40,7 +40,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_safety.thres:verbose --log=root.
 > [Checker]   MUTEX_LOCK(mutex: 0, owner:3) (state=8)
 > [Checker] DFS exploration ended. 13 unique states visited; 3 backtracks (18 transition replays, 3 states visited overall)
 
-$ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_safety.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-mutex --cfg=actors:2 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
+$ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-mutex --cfg=actors:2 --log=s4u_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
 > [Checker] Start a DFS exploration. Reduction is: dpor.
 > [App    ] Configuration change: Set 'actors' to '2'
 > [Checker] Execute 2: MUTEX_LOCK(mutex: 0, owner:2) (stack depth: 1, state: 1, 0 interleaves)
@@ -215,6 +215,6 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_safety.thres:verbose --log=root.
 > [Checker] DFS exploration ended. 37 unique states visited; 7 backtracks (76 transition replays, 33 states visited overall)
 
 $ ${bindir:=.}/../../../bin/simgrid-mc -- ${bindir:=.}/s4u-synchro-mutex --cfg=actors:3 --log=s4u_test.thres:critical
-> [0.000000] [mc_safety/INFO] Start a DFS exploration. Reduction is: dpor.
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'actors' to '3'
-> [0.000000] [mc_safety/INFO] DFS exploration ended. 85 unique states visited; 15 backtracks (240 transition replays, 141 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 85 unique states visited; 15 backtracks (240 transition replays, 141 states visited overall)

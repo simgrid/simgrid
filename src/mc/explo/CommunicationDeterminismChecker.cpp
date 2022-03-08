@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/MailboxImpl.hpp"
-#include "src/mc/explo/SafetyChecker.hpp"
+#include "src/mc/explo/DFSExplorer.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_forward.hpp"
@@ -328,17 +328,16 @@ Exploration* create_communication_determinism_checker(Session* session)
 
   auto extension = new CommDetExtension();
 
-  SafetyChecker::on_exploration_start([extension]() {
+  DFSExplorer::on_exploration_start([extension]() {
     XBT_INFO("Check communication determinism");
     extension->exploration_start();
   });
-  SafetyChecker::on_backtracking([extension]() { extension->initial_communications_pattern_done = true; });
-  SafetyChecker::on_state_creation([extension](State* state) { state->extension_set(new StateCommDet(extension)); });
+  DFSExplorer::on_backtracking([extension]() { extension->initial_communications_pattern_done = true; });
+  DFSExplorer::on_state_creation([extension](State* state) { state->extension_set(new StateCommDet(extension)); });
 
-  SafetyChecker::on_restore_system_state(
-      [extension](State* state) { extension->restore_communications_pattern(state); });
+  DFSExplorer::on_restore_system_state([extension](State* state) { extension->restore_communications_pattern(state); });
 
-  SafetyChecker::on_restore_initial_state([extension]() {
+  DFSExplorer::on_restore_initial_state([extension]() {
     const unsigned long maxpid = Api::get().get_maxpid();
     assert(maxpid == extension->incomplete_communications_pattern.size());
     assert(maxpid == extension->initial_communications_pattern.size());
@@ -348,10 +347,10 @@ Exploration* create_communication_determinism_checker(Session* session)
     }
   });
 
-  SafetyChecker::on_transition_replay([extension](Transition* t) { extension->handle_comm_pattern(t); });
-  SafetyChecker::on_transition_execute([extension](Transition* t) { extension->handle_comm_pattern(t); });
+  DFSExplorer::on_transition_replay([extension](Transition* t) { extension->handle_comm_pattern(t); });
+  DFSExplorer::on_transition_execute([extension](Transition* t) { extension->handle_comm_pattern(t); });
 
-  SafetyChecker::on_log_state([extension]() {
+  DFSExplorer::on_log_state([extension]() {
     if (_sg_mc_comms_determinism) {
       if (extension->send_deterministic && not extension->recv_deterministic) {
         XBT_INFO("*******************************************************");
@@ -372,7 +371,7 @@ Exploration* create_communication_determinism_checker(Session* session)
     delete extension;
   });
 
-  return new SafetyChecker(session);
+  return new DFSExplorer(session);
 }
 
 } // namespace mc

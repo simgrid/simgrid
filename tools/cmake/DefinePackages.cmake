@@ -557,8 +557,8 @@ set(MC_SRC_BASE
 set(MC_SRC
   src/mc/explo/Exploration.hpp
   src/mc/explo/CommunicationDeterminismChecker.cpp
-  src/mc/explo/SafetyChecker.cpp
-  src/mc/explo/SafetyChecker.hpp
+  src/mc/explo/DFSExplorer.cpp
+  src/mc/explo/DFSExplorer.hpp
   src/mc/explo/LivenessChecker.cpp
   src/mc/explo/LivenessChecker.hpp
   src/mc/explo/UdporChecker.cpp

@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_safety.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-semaphore --log=sem_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
+$ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt="[Checker]%e%m%n" -- ${bindir:=.}/s4u-synchro-semaphore --log=sem_test.thres:critical --log=root.fmt="[App%e%e%e%e]%e%m%n"
 > [Checker] Start a DFS exploration. Reduction is: dpor.
 > [Checker] Execute 1: SEM_LOCK(semaphore: 0) (stack depth: 1, state: 1, 0 interleaves)
 > [Checker] Execute 1: SEM_WAIT(semaphore: 0, granted: yes) (stack depth: 2, state: 2, 0 interleaves)

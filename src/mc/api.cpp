@@ -54,7 +54,7 @@ simgrid::mc::Exploration* Api::initialize(char** argv, simgrid::mc::ExplorationA
       break;
 
     case ExplorationAlgorithm::Safety:
-      explo = simgrid::mc::create_safety_checker(session_.get());
+      explo = simgrid::mc::create_dfs_exploration(session_.get());
       break;
 
     case ExplorationAlgorithm::Liveness:
