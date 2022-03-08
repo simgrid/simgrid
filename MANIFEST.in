@@ -275,6 +275,8 @@ include examples/cpp/exec-ptask/s4u-exec-ptask.cpp
 include examples/cpp/exec-ptask/s4u-exec-ptask.tesh
 include examples/cpp/exec-remote/s4u-exec-remote.cpp
 include examples/cpp/exec-remote/s4u-exec-remote.tesh
+include examples/cpp/exec-thread/s4u-exec-thread.cpp
+include examples/cpp/exec-thread/s4u-exec-thread.tesh
 include examples/cpp/exec-unassigned/s4u-exec-unassigned.cpp
 include examples/cpp/exec-unassigned/s4u-exec-unassigned.tesh
 include examples/cpp/exec-waitany/s4u-exec-waitany.cpp
@@ -525,6 +527,8 @@ include examples/python/comm-waitall/comm-waitall.py
 include examples/python/comm-waitall/comm-waitall.tesh
 include examples/python/comm-waitany/comm-waitany.py
 include examples/python/comm-waitany/comm-waitany.tesh
+include examples/python/comm-waitfor/comm-waitfor.py
+include examples/python/comm-waitfor/comm-waitfor.tesh
 include examples/python/exec-async/exec-async.py
 include examples/python/exec-async/exec-async.tesh
 include examples/python/exec-basic/exec-basic.py
@@ -851,6 +855,7 @@ include teshsuite/s4u/wait-any-for/wait-any-for.tesh
 include teshsuite/smpi/MBI/CollMatchingGenerator.py
 include teshsuite/smpi/MBI/MBI.py
 include teshsuite/smpi/MBI/MBIutils.py
+include teshsuite/smpi/MBI/ResleakGenerator.py
 include teshsuite/smpi/MBI/generator_utils.py
 include teshsuite/smpi/MBI/simgrid.py
 include teshsuite/smpi/auto-shared/auto-shared.c

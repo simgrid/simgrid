@@ -70,14 +70,25 @@ ExecImpl& ExecImpl::set_bytes_amounts(const std::vector<double>& bytes_amounts)
 
   return *this;
 }
+ExecImpl& ExecImpl::set_thread_count(int thread_count)
+{
+  thread_count_ = thread_count;
+
+  return *this;
+}
 
 ExecImpl* ExecImpl::start()
 {
   set_state(State::RUNNING);
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     if (hosts_.size() == 1) {
-      surf_action_ = hosts_.front()->get_cpu()->execution_start(flops_amounts_.front(), bound_);
-      surf_action_->set_sharing_penalty(sharing_penalty_);
+      if (thread_count_ == 1) {
+        surf_action_ = hosts_.front()->get_cpu()->execution_start(flops_amounts_.front(), bound_);
+        surf_action_->set_sharing_penalty(sharing_penalty_);
+      } else {
+        auto host_model = hosts_.front()->get_netpoint()->get_englobing_zone()->get_host_model();
+        surf_action_    = host_model->execute_thread(hosts_.front(), flops_amounts_.front(), thread_count_);
+      }
       surf_action_->set_category(get_tracing_category());
     } else {
       // get the model from first host since we have only 1 by now

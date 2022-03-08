@@ -39,6 +39,7 @@ public:
 
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
+  Action* execute_thread(const s4u::Host* host, double flops_amount, int thread_count) override { return nullptr; }
   CpuAction* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                               const double* bytes_amount, double rate) override;
 };

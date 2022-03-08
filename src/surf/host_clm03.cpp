@@ -94,6 +94,17 @@ Action* HostCLM03Model::execute_parallel(const std::vector<s4u::Host*>& host_lis
   return action;
 }
 
+Action* HostCLM03Model::execute_thread(const s4u::Host* host, double flops_amount, int thread_count)
+{
+  auto cpu = host->get_cpu();
+  /* Create a single action whose cost is thread_count * flops_amount,, that requests thread_count cores and
+   * is bounded to the currently available speed (i.e., under current load) time the minimum  between the
+   * number of thread and the number of cores of the host */
+  return cpu->execution_start(thread_count * flops_amount, thread_count,
+                              cpu->get_speed(1.0) / cpu->get_speed_ratio() *
+                                  std::min(thread_count, cpu->get_core_count()));
+}
+
 } // namespace resource
 } // namespace kernel
 } // namespace simgrid

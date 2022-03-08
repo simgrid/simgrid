@@ -21,6 +21,10 @@ SMPI:
 
 S4U:
  - New signal: Engine::on_simulation_start_cb()
+ - Introduce a new execution mode with this_actor::thread_execute(). This simulate 
+   the execution of a certain amount of flops by multiple threads ran by a host. Each
+   thread executes the same number of flops, given as argument. An example of this new
+   function can be found in examples/cpp/exec-thread.
  - Reimplementation of barriers natively. 
    Previously, they were implemented on top of s4u::Mutex and s4u::ConditionVariable. 
    The new version should be faster (and can be used in the model-checker).

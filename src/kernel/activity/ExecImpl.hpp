@@ -23,6 +23,7 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
   std::vector<s4u::Host*> hosts_;
   std::vector<double> flops_amounts_;
   std::vector<double> bytes_amounts_;
+  int thread_count_ = 1;
   int cb_id_ = -1; // callback id from Host::on_state_change.connect()
 
 public:
@@ -42,6 +43,7 @@ public:
 
   ExecImpl& set_flops_amounts(const std::vector<double>& flops_amounts);
   ExecImpl& set_bytes_amounts(const std::vector<double>& bytes_amounts);
+  ExecImpl& set_thread_count(int thread_count);
   ExecImpl& set_hosts(const std::vector<s4u::Host*>& hosts);
 
   unsigned int get_host_number() const { return hosts_.size(); }

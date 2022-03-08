@@ -358,6 +358,10 @@ void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<do
   exec_init(hosts, flops_amounts, bytes_amounts)->wait();
 }
 
+void thread_execute(s4u::Host* host, double flops_amount, int thread_count)
+{
+  Exec::init()->set_flops_amount(flops_amount)->set_host(host)->set_thread_count(thread_count)->wait();
+}
 ExecPtr exec_init(double flops_amount)
 {
   return Exec::init()->set_flops_amount(flops_amount)->set_host(get_host());

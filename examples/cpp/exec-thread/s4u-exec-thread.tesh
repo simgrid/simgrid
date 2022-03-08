@@ -1,0 +1,11 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/s4u-exec-thread ${platfdir}/energy_platform.xml "--log=root.fmt:[%10.6r]%e%m%n"
+> [ 10.000000] Computed 2-thread activity on a 4-core host. Took 10 s
+> [ 20.000000] Computed 4-thread activity on a 4-core host. Took 10 s
+> [ 35.000000] Computed 6-thread activity on a 4-core host. Took 15 s
+> [ 35.000000] Start a 1-core background task on the 4-core host.
+> [ 45.000000] Computed 2-thread activity on a 4-core host. Took 10 s
+> [ 57.500000] Computed 4-thread activity on a 4-core host. Took 12.5 s
+> [ 62.500000] The background task has ended.
+> [ 62.500000] Simulation done.

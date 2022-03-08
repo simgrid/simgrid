@@ -81,6 +81,8 @@ public:
   ExecPtr set_flops_amounts(const std::vector<double>& flops_amounts);
   ExecPtr set_bytes_amounts(const std::vector<double>& bytes_amounts);
 
+  ExecPtr set_thread_count(int thread_count);
+
   ExecPtr set_bound(double bound);
   ExecPtr set_priority(double priority);
   ExecPtr update_priority(double priority);

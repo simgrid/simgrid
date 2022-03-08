@@ -137,6 +137,16 @@ ExecPtr Exec::set_bytes_amounts(const std::vector<double>& bytes_amounts)
   return this;
 }
 
+ExecPtr Exec::set_thread_count(int thread_count)
+{
+  xbt_assert(state_ == State::INITED || state_ == State::STARTING,
+             "Cannot change the bytes_amounts of an exec after its start");
+  kernel::actor::simcall_answered([this, thread_count] {
+    boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_thread_count(thread_count);
+  });
+  return this;
+}
+
 /** @brief Retrieve the host on which this activity takes place.
  *  If it runs on more than one host, only the first host is returned.
  */

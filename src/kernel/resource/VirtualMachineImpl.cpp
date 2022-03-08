@@ -14,6 +14,8 @@
 #include "src/surf/cpu_cas01.hpp"
 #include "src/surf/cpu_ti.hpp"
 
+#include <numeric>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_vm, ker_resource, "Virtual Machines, containing actors and mobile across hosts");
 
 void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model)
@@ -167,6 +169,14 @@ double VMModel::next_occurring_event(double now)
   }
   /* actual next occurring event is determined by VM CPU model at EngineImpl::solve */
   return -1.0;
+}
+
+Action* VMModel::execute_thread(const s4u::Host* host, double flops_amount, int thread_count)
+{
+  auto cpu = host->get_cpu();
+  return cpu->execution_start(thread_count * flops_amount, thread_count,
+                              cpu->get_speed(1.0) / cpu->get_speed_ratio() *
+                                  std::min(thread_count, cpu->get_core_count()));
 }
 
 /************

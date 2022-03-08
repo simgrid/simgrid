@@ -28,6 +28,8 @@ namespace resource {
 class XBT_PRIVATE HostModel : public Model {
 public:
   using Model::Model;
+  virtual Action* execute_thread(const s4u::Host* host, double flops_amount, int thread_count) = 0;
+
   virtual Action* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                                    const double* bytes_amount, double rate) = 0;
 };
