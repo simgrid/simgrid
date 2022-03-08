@@ -209,7 +209,7 @@ void EngineImpl::initialize(int* argc, char** argv)
   EngineImpl::instance_ = this;
 #if SIMGRID_HAVE_MC
   // The communication initialization is done ASAP, as we need to get some init parameters from the MC for different
-  // layers. But simix_global needs to be created, as we send the address of some of its fields to the MC that wants to
+  // layers. But instance_ needs to be created, as we send the address of some of its fields to the MC that wants to
   // read them directly.
   simgrid::mc::AppSide::initialize();
 #endif
