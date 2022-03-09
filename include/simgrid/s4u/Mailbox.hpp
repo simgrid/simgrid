@@ -99,8 +99,8 @@ public:
    */
   CommPtr put_async(void* data, uint64_t simulated_size_in_bytes);
 
-  kernel::activity::ActivityImplPtr iprobe(int type, bool (*match_fun)(void*, void*, kernel::activity::CommImpl*),
-                                           void* data);
+  kernel::activity::ActivityImplPtr
+  iprobe(int type, const std::function<bool(void*, void*, kernel::activity::CommImpl*)>& match_fun, void* data);
   /** Blocking data transmission.
    *
    * Please note that if you send a pointer to some data, you must ensure that your data remains live during the

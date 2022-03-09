@@ -32,9 +32,9 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
 
   /* FIXME: expose these elements in the API */
   bool detached_                                                          = false;
-  bool (*match_fun_)(void*, void*, kernel::activity::CommImpl*)           = nullptr;
-  void (*clean_fun_)(void*)                                               = nullptr;
-  void (*copy_data_function_)(kernel::activity::CommImpl*, void*, size_t) = nullptr;
+  std::function<bool(void*, void*, kernel::activity::CommImpl*)> match_fun_;
+  std::function<void(void*)> clean_fun_;
+  std::function<void(kernel::activity::CommImpl*, void*, size_t)> copy_data_function_;
 
   Comm() = default;
 
@@ -53,20 +53,21 @@ public:
   static void on_start_cb(const std::function<void(Comm const&)>& cb) { on_start.connect(cb); }
   static void on_completion_cb(const std::function<void(Activity const&)>& cb) { on_completion.connect(cb); }
   /* More callbacks */
-  CommPtr set_copy_data_callback(void (*callback)(kernel::activity::CommImpl*, void*, size_t));
+  CommPtr set_copy_data_callback(const std::function<void(kernel::activity::CommImpl*, void*, size_t)>& callback);
   static void copy_buffer_callback(kernel::activity::CommImpl*, void*, size_t);
   static void copy_pointer_callback(kernel::activity::CommImpl*, void*, size_t);
 
   ~Comm() override;
 
   static void send(kernel::actor::ActorImpl* sender, const Mailbox* mbox, double task_size, double rate, void* src_buff,
-                   size_t src_buff_size, bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                   void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data,
-                   double timeout);
+                   size_t src_buff_size,
+                   const std::function<bool(void*, void*, simgrid::kernel::activity::CommImpl*)>& match_fun,
+                   const std::function<void(simgrid::kernel::activity::CommImpl*, void*, size_t)>& copy_data_fun,
+                   void* data, double timeout);
   static void recv(kernel::actor::ActorImpl* receiver, const Mailbox* mbox, void* dst_buff, size_t* dst_buff_size,
-                   bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                   void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data,
-                   double timeout, double rate);
+                   const std::function<bool(void*, void*, simgrid::kernel::activity::CommImpl*)>& match_fun,
+                   const std::function<void(simgrid::kernel::activity::CommImpl*, void*, size_t)>& copy_data_fun,
+                   void* data, double timeout, double rate);
 
   /* "One-sided" communications. This way of communicating bypasses the mailbox and actors mechanism. It creates a
    * communication (vetoabled, asynchronous, or synchronous) directly between two hosts. There is really no limit on
@@ -153,7 +154,7 @@ public:
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */
   Comm* detach();
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */
-  Comm* detach(void (*clean_function)(void*))
+  Comm* detach(const std::function<void(void*)>& clean_function)
   {
     clean_fun_ = clean_function;
     return detach();

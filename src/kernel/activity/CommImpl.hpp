@@ -20,7 +20,7 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   ~CommImpl() override;
   void cleanup_surf();
 
-  static void (*copy_data_callback_)(CommImpl*, void*, size_t);
+  static std::function<void(CommImpl*, void*, size_t)> copy_data_callback_;
 
   double rate_       = -1.0;
   double size_       = 0.0;
@@ -36,7 +36,7 @@ class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
 public:
   CommImpl() = default;
 
-  static void set_copy_data_callback(void (*callback)(CommImpl*, void*, size_t));
+  static void set_copy_data_callback(const std::function<void(CommImpl*, void*, size_t)>& callback);
 
   CommImpl& set_type(CommImplType type);
   CommImplType get_type() const { return type_; }
@@ -75,11 +75,11 @@ public:
   void set_exception(actor::ActorImpl* issuer) override;
   void finish() override;
 
-  void (*clean_fun)(void*) = nullptr; /* Function to clean the detached src_buf if something goes wrong */
-  bool (*match_fun)(void*, void*, CommImpl*) = nullptr; /* Filter function used by the other side. It is used when
+  std::function<void(void*)> clean_fun; /* Function to clean the detached src_buf if something goes wrong */
+  std::function<bool(void*, void*, CommImpl*)> match_fun; /* Filter function used by the other side. It is used when
 looking if a given communication matches my needs. For that, myself must match the
 expectations of the other side, too. See  */
-  void (*copy_data_fun)(CommImpl*, void*, size_t) = nullptr;
+  std::function<void(CommImpl*, void*, size_t)> copy_data_fun;
 
   /* Surf action data */
   resource::Action* src_timeout_ = nullptr; /* Surf's actions to instrument the timeouts */

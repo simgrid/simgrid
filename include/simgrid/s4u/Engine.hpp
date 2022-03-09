@@ -200,7 +200,8 @@ public:
   static void set_config(const std::string& name, double value);
   static void set_config(const std::string& name, const std::string& value);
 
-  Engine* set_default_comm_data_copy_callback(void (*callback)(kernel::activity::CommImpl*, void*, size_t));
+  Engine*
+  set_default_comm_data_copy_callback(const std::function<void(kernel::activity::CommImpl*, void*, size_t)>& callback);
 
   /** Add a callback fired when the platform is created (ie, the xml file parsed),
    * right before the actual simulation starts. */

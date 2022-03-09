@@ -129,10 +129,10 @@ CommPtr Mailbox::get_init()
 }
 
 kernel::activity::ActivityImplPtr
-Mailbox::iprobe(int type, bool (*match_fun)(void*, void*, kernel::activity::CommImpl*), void* data)
+Mailbox::iprobe(int type, const std::function<bool(void*, void*, kernel::activity::CommImpl*)>& match_fun, void* data)
 {
   return kernel::actor::simcall_answered(
-      [this, type, match_fun, data] { return pimpl_->iprobe(type, match_fun, data); });
+      [this, type, &match_fun, data] { return pimpl_->iprobe(type, match_fun, data); });
 }
 } // namespace s4u
 } // namespace simgrid

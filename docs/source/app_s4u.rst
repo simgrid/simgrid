@@ -1069,7 +1069,7 @@ Receiving data
       .. doxygenfunction:: simgrid::s4u::Mailbox::get(double timeout)
       .. doxygenfunction:: simgrid::s4u::Mailbox::get_async(T **data)
       .. doxygenfunction:: simgrid::s4u::Mailbox::get_init()
-      .. doxygenfunction:: simgrid::s4u::Mailbox::iprobe(int type, bool(*match_fun)(void *, void *, kernel::activity::CommImpl *), void *data)
+      .. doxygenfunction:: simgrid::s4u::Mailbox::iprobe(int type, const std::function<bool(void *, void *, kernel::activity::CommImpl *)>& match_fun, void *data)
       .. doxygenfunction:: simgrid::s4u::Mailbox::listen
       .. doxygenfunction:: simgrid::s4u::Mailbox::ready
 
@@ -2176,7 +2176,7 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Comm::set_dst_data(void **buff)
       .. doxygenfunction:: simgrid::s4u::Comm::set_dst_data(void **buff, size_t size)
       .. doxygenfunction:: simgrid::s4u::Comm::detach()
-      .. doxygenfunction:: simgrid::s4u::Comm::detach(void(*clean_function)(void *))
+      .. doxygenfunction:: simgrid::s4u::Comm::detach(const std::function<void(void*)>& clean_function)
       .. doxygenfunction:: simgrid::s4u::Comm::set_payload_size(uint64_t bytes)
       .. doxygenfunction:: simgrid::s4u::Comm::set_rate(double rate)
       .. doxygenfunction:: simgrid::s4u::Comm::set_src_data(void *buff)

@@ -452,7 +452,8 @@ void Engine::set_config(const std::string& name, const std::string& value)
   config::set_value(name.c_str(), value);
 }
 
-Engine* Engine::set_default_comm_data_copy_callback(void (*callback)(kernel::activity::CommImpl*, void*, size_t))
+Engine* Engine::set_default_comm_data_copy_callback(
+    const std::function<void(kernel::activity::CommImpl*, void*, size_t)>& callback)
 {
   kernel::activity::CommImpl::set_copy_data_callback(callback);
   return this;

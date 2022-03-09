@@ -49,9 +49,9 @@ namespace activity {
 xbt::signal<void(CommImpl const&)> CommImpl::on_start;
 xbt::signal<void(CommImpl const&)> CommImpl::on_completion;
 
-void (*CommImpl::copy_data_callback_)(CommImpl*, void*, size_t) = &s4u::Comm::copy_pointer_callback;
+std::function<void(CommImpl*, void*, size_t)> CommImpl::copy_data_callback_ = &s4u::Comm::copy_pointer_callback;
 
-void CommImpl::set_copy_data_callback(void (*callback)(CommImpl*, void*, size_t))
+void CommImpl::set_copy_data_callback(const std::function<void(CommImpl*, void*, size_t)>& callback)
 {
   copy_data_callback_ = callback;
 }

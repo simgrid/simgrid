@@ -92,16 +92,18 @@ class CommIsendSimcall : public SimcallObserver {
   activity::CommImpl* comm_;
   int tag_;
 
-  bool (*match_fun_)(void*, void*, activity::CommImpl*);
-  void (*clean_fun_)(void*); // used to free the synchro in case of problem after a detached send
-  void (*copy_data_fun_)(activity::CommImpl*, void*, size_t); // used to copy data if not default one
+  std::function<bool(void*, void*, activity::CommImpl*)> match_fun_;
+  std::function<void(void*)> clean_fun_; // used to free the synchro in case of problem after a detached send
+  std::function<void(activity::CommImpl*, void*, size_t)> copy_data_fun_; // used to copy data if not default one
 
 public:
-  CommIsendSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, double payload_size, double rate,
-                   unsigned char* src_buff, size_t src_buff_size, bool (*match_fun)(void*, void*, activity::CommImpl*),
-                   void (*clean_fun)(void*), // used to free the synchro in case of problem after a detached send
-                   void (*copy_data_fun)(activity::CommImpl*, void*, size_t), // used to copy data if not default one
-                   void* payload, bool detached)
+  CommIsendSimcall(
+      ActorImpl* actor, activity::MailboxImpl* mbox, double payload_size, double rate, unsigned char* src_buff,
+      size_t src_buff_size, const std::function<bool(void*, void*, activity::CommImpl*)>& match_fun,
+      const std::function<void(void*)>& clean_fun, // used to free the synchro in case of problem after a detached send
+      const std::function<void(activity::CommImpl*, void*, size_t)>&
+          copy_data_fun, // used to copy data if not default one
+      void* payload, bool detached)
       : SimcallObserver(actor)
       , mbox_(mbox)
       , payload_size_(payload_size)
@@ -127,9 +129,9 @@ public:
   void set_comm(activity::CommImpl* comm) { comm_ = comm; }
   void set_tag(int tag) { tag_ = tag; }
 
-  auto get_match_fun() const { return match_fun_; }
-  auto get_clean_fun() const { return clean_fun_; }
-  auto get_copy_data_fun() const { return copy_data_fun_; }
+  auto const& get_match_fun() const { return match_fun_; }
+  auto const& get_clean_fun() const { return clean_fun_; }
+  auto const& get_copy_data_fun() const { return copy_data_fun_; }
 };
 
 class CommIrecvSimcall : public SimcallObserver {
@@ -141,13 +143,14 @@ class CommIrecvSimcall : public SimcallObserver {
   int tag_;
   activity::CommImpl* comm_;
 
-  bool (*match_fun_)(void*, void*, activity::CommImpl*);
-  void (*copy_data_fun_)(activity::CommImpl*, void*, size_t); // used to copy data if not default one
+  std::function<bool(void*, void*, activity::CommImpl*)> match_fun_;
+  std::function<void(activity::CommImpl*, void*, size_t)> copy_data_fun_; // used to copy data if not default one
 
 public:
   CommIrecvSimcall(ActorImpl* actor, activity::MailboxImpl* mbox, unsigned char* dst_buff, size_t* dst_buff_size,
-                   bool (*match_fun)(void*, void*, activity::CommImpl*),
-                   void (*copy_data_fun)(activity::CommImpl*, void*, size_t), void* payload, double rate)
+                   const std::function<bool(void*, void*, activity::CommImpl*)>& match_fun,
+                   const std::function<void(activity::CommImpl*, void*, size_t)>& copy_data_fun, void* payload,
+                   double rate)
       : SimcallObserver(actor)
       , mbox_(mbox)
       , dst_buff_(dst_buff)
@@ -168,8 +171,8 @@ public:
   void set_comm(activity::CommImpl* comm) { comm_ = comm; }
   void set_tag(int tag) { tag_ = tag; }
 
-  auto get_match_fun() const { return match_fun_; };
-  auto get_copy_data_fun() const { return copy_data_fun_; }
+  auto const& get_match_fun() const { return match_fun_; };
+  auto const& get_copy_data_fun() const { return copy_data_fun_; }
 };
 
 } // namespace actor

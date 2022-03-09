@@ -24,7 +24,7 @@ xbt::signal<void(Comm const&)> Comm::on_send;
 xbt::signal<void(Comm const&)> Comm::on_recv;
 xbt::signal<void(Comm const&)> Comm::on_completion;
 
-CommPtr Comm::set_copy_data_callback(void (*callback)(kernel::activity::CommImpl*, void*, size_t))
+CommPtr Comm::set_copy_data_callback(const std::function<void(kernel::activity::CommImpl*, void*, size_t)>& callback)
 {
   copy_data_function_ = callback;
   return this;
@@ -61,8 +61,10 @@ Comm::~Comm()
 }
 
 void Comm::send(kernel::actor::ActorImpl* sender, const Mailbox* mbox, double task_size, double rate, void* src_buff,
-                size_t src_buff_size, bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data, double timeout)
+                size_t src_buff_size,
+                const std::function<bool(void*, void*, simgrid::kernel::activity::CommImpl*)>& match_fun,
+                const std::function<void(simgrid::kernel::activity::CommImpl*, void*, size_t)>& copy_data_fun,
+                void* data, double timeout)
 {
   /* checking for infinite values */
   xbt_assert(std::isfinite(task_size), "task_size is not finite!");
@@ -102,9 +104,9 @@ void Comm::send(kernel::actor::ActorImpl* sender, const Mailbox* mbox, double ta
 }
 
 void Comm::recv(kernel::actor::ActorImpl* receiver, const Mailbox* mbox, void* dst_buff, size_t* dst_buff_size,
-                bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
-                void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data, double timeout,
-                double rate)
+                const std::function<bool(void*, void*, simgrid::kernel::activity::CommImpl*)>& match_fun,
+                const std::function<void(simgrid::kernel::activity::CommImpl*, void*, size_t)>& copy_data_fun,
+                void* data, double timeout, double rate)
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
   xbt_assert(mbox, "No rendez-vous point defined for recv");
