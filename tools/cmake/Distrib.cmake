@@ -129,7 +129,7 @@ add_custom_target(uninstall
   WORKING_DIRECTORY "${CMAKE_INSTALL_PREFIX}")
 
 ################################################################
-## Build a sain "make dist" target to build a source package ###
+## Build a sane "make dist" target to build a source package ###
 ##    containing only the files that I explicitly state      ###
 ##   (instead of any cruft laying on my disk as CPack does)  ###
 ################################################################
@@ -331,13 +331,5 @@ else()
   add_custom_target(check COMMAND make test)
 endif()
 add_dependencies(check tests)
-
-#######################################
-### Fill in the "make xxx-clean" target ###
-#######################################
-
-add_custom_target(maintainer-clean
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/mpif.f90
-  WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}")
 
 include(CPack)
