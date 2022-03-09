@@ -21,13 +21,23 @@ namespace kernel {
 namespace actor {
 class ProcessArg;
 
-class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder {
+class XBT_PUBLIC ActorRestartingTrait {
+  bool auto_restart_ = false;
+  int restart_count_ = 0;
+
+  friend ActorImpl;
+
+public:
+  bool has_to_auto_restart() const { return auto_restart_; }
+  void set_auto_restart(bool autorestart) { auto_restart_ = autorestart; }
+  int get_restart_count() const { return restart_count_; }
+};
+
+class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder, public ActorRestartingTrait {
   s4u::Host* host_   = nullptr; /* the host on which the actor is running */
   aid_t pid_         = 0;
   aid_t ppid_        = -1;
   bool daemon_       = false; /* Daemon actors are automatically killed when the last non-daemon leaves */
-  bool auto_restart_ = false;
-  int restart_count_ = 0;
   unsigned stacksize_; // set to default value in constructor
 
   std::vector<activity::MailboxImpl*> mailboxes;
@@ -62,9 +72,6 @@ public:
   bool is_daemon() const { return daemon_; } /** Whether this actor has been daemonized */
   bool is_maestro() const; /** Whether this actor is actually maestro (cheap call but may segfault before actor creation
                               / after terminaison) */
-  bool has_to_auto_restart() const { return auto_restart_; }
-  void set_auto_restart(bool autorestart) { auto_restart_ = autorestart; }
-  int get_restart_count() { return restart_count_; }
   void set_stacksize(unsigned stacksize) { stacksize_ = stacksize; }
   unsigned get_stacksize() const { return stacksize_; }
 
@@ -163,7 +170,7 @@ public:
   double kill_time                                                         = 0.0;
   const std::unordered_map<std::string, std::string> properties{};
   bool auto_restart                                                        = false;
-  bool daemon_                                                             = false;
+  bool daemon_;
   /* list of functions executed when the actor dies */
   const std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit;
   int restart_count_ = 0;
@@ -174,7 +181,7 @@ public:
 
   explicit ProcessArg(const std::string& name, const std::function<void()>& code, void* data, s4u::Host* host,
                       double kill_time, const std::unordered_map<std::string, std::string>& properties,
-                      bool auto_restart, int restart_count)
+                      bool auto_restart, bool daemon, int restart_count)
       : name(name)
       , code(code)
       , data(data)
@@ -182,6 +189,7 @@ public:
       , kill_time(kill_time)
       , properties(properties)
       , auto_restart(auto_restart)
+      , daemon_(daemon)
       , restart_count_(restart_count)
   {
   }

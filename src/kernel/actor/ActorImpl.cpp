@@ -490,9 +490,8 @@ ActorImplPtr ActorImpl::create(const std::string& name, const ActorCode& code, v
 }
 ActorImplPtr ActorImpl::create(ProcessArg* args)
 {
-  actor::ActorImplPtr actor   = actor::ActorImpl::create(args->name, args->code, nullptr, args->host, nullptr);
-  auto* naked_actor           = actor.get();
-  naked_actor->restart_count_ = args->restart_count_;
+  ActorImplPtr actor    = ActorImpl::create(args->name, args->code, nullptr, args->host, nullptr);
+  actor->restart_count_ = args->restart_count_;
   actor->set_properties(args->properties);
   if (args->on_exit)
     *actor->on_exit = *args->on_exit;
