@@ -31,7 +31,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example")
 static simgrid::config::Flag<int> cfg_host_count{"host-count", "Host count (master on one, workers on the others)", 3};
 static simgrid::config::Flag<double> cfg_deadline{"deadline", "When to fail the simulation (infinite loop detection)",
                                                   120};
-static simgrid::config::Flag<int> cfg_task_count{"task-count", "Amount of tasks that must be executed to succeed", 2};
+static simgrid::config::Flag<int> cfg_task_count{"task-count", "Amount of tasks that must be executed to succeed", 1};
 
 int todo; // remaining amount of tasks to execute, a global variable
 sg4::Mailbox* mailbox; // as a global to reduce the amount of simcalls during actor reboot
@@ -40,10 +40,12 @@ XBT_ATTRIB_NORETURN static void master()
 {
   double comp_size = 1e6;
   long comm_size   = 1e6;
-  XBT_INFO("Master booting");
-  sg4::Actor::self()->daemonize();
-  sg4::this_actor::on_exit(
-      [](bool forcefully) { XBT_INFO("Master dying %s.", forcefully ? "forcefully" : "peacefully"); });
+  bool rebooting   = sg4::Actor::self()->get_restart_count() > 0;
+
+  XBT_INFO("Master %s", rebooting ? "rebooting" : "booting");
+  if (not rebooting) // Starting for the first time
+    sg4::this_actor::on_exit(
+        [](bool forcefully) { XBT_INFO("Master dying %s.", forcefully ? "forcefully" : "peacefully"); });
 
   while (true) { // This is a daemon
     xbt_assert(sg4::Engine::get_clock() < cfg_deadline,
@@ -66,9 +68,12 @@ XBT_ATTRIB_NORETURN static void master()
 
 static void worker(int id)
 {
-  XBT_INFO("Worker booting");
-  sg4::this_actor::on_exit(
-      [id](bool forcefully) { XBT_INFO("worker %d dying %s.", id, forcefully ? "forcefully" : "peacefully"); });
+  bool rebooting = sg4::Actor::self()->get_restart_count() > 0;
+
+  XBT_INFO("Worker %s", rebooting ? "rebooting" : "booting");
+  if (not rebooting) // Starting for the first time
+    sg4::this_actor::on_exit(
+        [id](bool forcefully) { XBT_INFO("worker %d dying %s.", id, forcefully ? "forcefully" : "peacefully"); });
 
   while (todo > 0) {
     xbt_assert(sg4::Engine::get_clock() < cfg_deadline,
@@ -115,7 +120,7 @@ int main(int argc, char* argv[])
   }
   rootzone->seal();
 
-  sg4::Actor::create("master", main, master)->set_auto_restart(true);
+  sg4::Actor::create("master", main, master)->daemonize()->set_auto_restart(true);
   int id = 0;
   for (auto* h : worker_hosts) {
     sg4::Actor::create("worker", h, worker, id)->set_auto_restart(true);
