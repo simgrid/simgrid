@@ -18,7 +18,7 @@ static simgrid::config::Flag<double> cfg_deadline{"deadline", "When to fail the 
                                                   120};
 
 struct SharedBuffer {
-  int value;                                               /* Where the data is exchanged */
+  int value                   = 0;                         /* Where the data is exchanged */
   sg4::SemaphorePtr sem_empty = sg4::Semaphore::create(1); /* indicates whether the buffer is empty */
   sg4::SemaphorePtr sem_full  = sg4::Semaphore::create(0); /* indicates whether the buffer is full */
 };
