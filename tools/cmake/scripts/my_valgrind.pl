@@ -8,7 +8,7 @@
 use strict;
 use warnings;
 
-my @argv = ("valgrind");
+my @argv = ("valgrind", "--quiet");
 my $count = 0;
 
 while (defined(my $arg = shift)) {
