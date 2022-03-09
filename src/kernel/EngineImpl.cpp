@@ -342,6 +342,12 @@ void EngineImpl::shutdown()
 
 void EngineImpl::seal_platform() const
 {
+  /* Seal only once */
+  static bool sealed = false;
+  if (sealed)
+    return;
+  sealed = true;
+
   /* sealing resources before run: links */
   for (auto const& kv : links_)
     kv.second->get_iface()->seal();
@@ -743,11 +749,9 @@ void EngineImpl::run(double max_date)
        *   and would thus be a pure waste of time.
        */
 
-      for (auto const& actor : actors_that_ran_) {
-        if (actor->simcall_.call_ != actor::Simcall::Type::NONE) {
+      for (auto const& actor : actors_that_ran_)
+        if (actor->simcall_.call_ != actor::Simcall::Type::NONE)
           actor->simcall_handle(0);
-        }
-      }
 
       execute_tasks();
       do {
