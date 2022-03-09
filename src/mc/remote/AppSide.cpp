@@ -35,7 +35,7 @@ namespace mc {
 
 std::unique_ptr<AppSide> AppSide::instance_;
 
-AppSide* AppSide::initialize()
+AppSide* AppSide::initialize(xbt_dynar_t actors_addr)
 {
   if (not std::getenv(MC_ENV_SOCKET_FD)) // We are not in MC mode: don't initialize the MC world
     return nullptr;
@@ -75,7 +75,7 @@ AppSide* AppSide::initialize()
              strerror(errno));
 
   s_mc_message_initial_addresses_t message{MessageType::INITIAL_ADDRESSES, mmalloc_preinit(),
-                                           kernel::actor::get_maxpid_addr(), kernel::get_actors_addr()};
+                                           kernel::actor::get_maxpid_addr(), actors_addr};
   xbt_assert(instance_->channel_.send(message) == 0, "Could not send the initial message with addresses.");
 
   instance_->handle_messages();

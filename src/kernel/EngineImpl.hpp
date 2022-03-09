@@ -31,8 +31,6 @@
 
 namespace simgrid {
 namespace kernel {
-// In MC mode, the application sends these pointers to the MC
-xbt_dynar_t get_actors_addr();
 
 class EngineImpl {
   std::map<std::string, s4u::Host*, std::less<>> hosts_;
@@ -153,7 +151,6 @@ public:
   void add_split_duplex_link(const std::string& name, std::unique_ptr<resource::SplitDuplexLinkImpl> link);
 
 #if SIMGRID_HAVE_MC
-  xbt_dynar_t get_actors_vector() const { return actors_vector_; }
   void reset_actor_dynar() { xbt_dynar_reset(actors_vector_); }
   void add_actor_to_dynar(actor::ActorImpl* actor) { xbt_dynar_push_as(actors_vector_, actor::ActorImpl*, actor); }
 #endif

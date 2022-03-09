@@ -44,15 +44,6 @@ config::Flag<double> cfg_breakpoint{"debug/breakpoint",
                                     "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
 config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit", "Display the actor status at exit", true};
 
-xbt_dynar_t get_actors_addr()
-{
-#if SIMGRID_HAVE_MC
-  return EngineImpl::get_instance()->get_actors_vector();
-#else
-  xbt_die("This function is intended to be used when compiling with MC");
-#endif
-}
-
 constexpr std::initializer_list<std::pair<const char*, context::ContextFactoryInitializer>> context_factories = {
 #if HAVE_RAW_CONTEXTS
     {"raw", &context::raw_factory},
@@ -211,7 +202,7 @@ void EngineImpl::initialize(int* argc, char** argv)
   // The communication initialization is done ASAP, as we need to get some init parameters from the MC for different
   // layers. But instance_ needs to be created, as we send the address of some of its fields to the MC that wants to
   // read them directly.
-  simgrid::mc::AppSide::initialize();
+  simgrid::mc::AppSide::initialize(actors_vector_);
 #endif
 
   if (xbt_initialized == 0) {
