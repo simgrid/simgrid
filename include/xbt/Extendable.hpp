@@ -9,6 +9,7 @@
 
 #include "xbt/base.h" // XBT_ATTRIB_DEPRECATED_v334
 #include <cstddef>
+#include <functional>
 #include <limits>
 #include <vector>
 
@@ -48,20 +49,16 @@ public:
 template<class T>
 class Extendable {
 private:
-  static std::vector<void(*)(void*)> deleters_;
-  std::vector<void*> extensions_{std::max<decltype(deleters_.size())>(1, deleters_.size()), nullptr};
+  static std::vector<std::function<void(void*)>> deleters_;
+  std::vector<void*> extensions_{deleters_.size(), nullptr};
 
 public:
-  static size_t extension_create(void (*deleter)(void*))
+  static size_t extension_create(const std::function<void(void*)>& deleter)
   {
-    if (deleters_.empty()) { // Save space for void* user data
-      deleters_.push_back(nullptr);
-    }
-    deleters_.push_back(deleter);
+    deleters_.emplace_back(deleter);
     return deleters_.size() - 1;
   }
-  template<class U>
-  static Extension<T,U> extension_create(void (*deleter)(void*))
+  template <class U> static Extension<T, U> extension_create(const std::function<void(void*)>& deleter)
   {
     return Extension<T,U>(extension_create(deleter));
   }
@@ -82,7 +79,7 @@ public:
      * an extension of B might need to have the extension of A around when executing
      * its cleanup function/destructor. */
     for (std::size_t i = extensions_.size(); i > 1; --i) // rank=0 is the spot of user's void*
-      if (extensions_[i - 1] != nullptr && deleters_[i - 1] != nullptr)
+      if (extensions_[i - 1] != nullptr && deleters_[i - 1])
         deleters_[i - 1](extensions_[i - 1]);
   }
 
@@ -122,7 +119,8 @@ public:
   template<class U> void extension_set(U* p) { extension_set<U>(U::EXTENSION_ID, p); }
 };
 
-template <class T> std::vector<void (*)(void*)> Extendable<T>::deleters_;
+// Initialized with a first element, to save space for void* user data
+template <class T> std::vector<std::function<void(void*)>> Extendable<T>::deleters_{1};
 }
 }
 
