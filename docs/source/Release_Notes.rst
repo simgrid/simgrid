@@ -494,9 +494,14 @@ clear, but the checker code is now much easier to work with as the formal logic 
 This cleaned design allowed us to finally implement the support for mutexes, semaphores and barriers in the model-checker. In particular, this should 
 enable the verification of RMA primitives with Mc SimGrid, as their implementation in SMPI is based on mutexes and barriers.
 
+We replaced the old, non-free ISP test suite by the one from the `MPI Bug Initiative <https://hal.archives-ouvertes.fr/hal-03474762>`_, but not all 
+tests are activated yet. This should eventually help improving the robustness of Mc SimGrid.
+
 Future work on the model checker include: support for condition variables (that are still not handled), implementation of another exploration algorithm based on UDPOR
-(`The Anh Pham's thesis <https://tel.archives-ouvertes.fr/tel-02462074/document>`_ was defended in 2019), and robustness improvement using the `MPI Bug 
-Initiative <https://hal.archives-ouvertes.fr/hal-03474762>`_ tests. Many things that were long dreamed of now become technically possible in this code base.
+(`The Anh Pham's thesis <https://tel.archives-ouvertes.fr/tel-02462074/document>`_ was defended in 2019).
+Many things that were long dreamed of now become technically possible in this code base.
+
+On the model front, we added BMF...
 
 .. |br| raw:: html
 
