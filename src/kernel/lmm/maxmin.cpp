@@ -22,6 +22,11 @@ using dyn_light_t = std::vector<int>;
 int Variable::next_rank_   = 1;
 int Constraint::next_rank_ = 1;
 
+Element::Element(Constraint* constraint, Variable* variable, double cweight)
+    : constraint(constraint), variable(variable), consumption_weight(cweight), max_consumption_weight(cweight)
+{
+}
+
 int Element::get_concurrency() const
 {
   // Ignore element with weight less than one (e.g. cross-traffic)
@@ -236,13 +241,8 @@ void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
 
   xbt_assert(var->cnsts_.size() < var->cnsts_.capacity(), "Too much constraints");
 
-  var->cnsts_.emplace_back();
+  var->cnsts_.emplace_back(cnst, var, consumption_weight);
   Element& elem = var->cnsts_.back();
-
-  elem.consumption_weight = consumption_weight;
-  elem.max_consumption_weight = consumption_weight;
-  elem.constraint         = cnst;
-  elem.variable           = var;
 
   if (var->sharing_penalty_ != 0.0) {
     elem.constraint->enabled_element_set_.push_front(elem);

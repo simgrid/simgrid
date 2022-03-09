@@ -146,7 +146,7 @@ class XBT_PUBLIC Element {
 public:
   // Use rule-of-three, and implicitely disable the move constructor which should be 'noexcept' according to C++ Core
   // Guidelines.
-  Element()               = default;
+  Element(Constraint* constraint, Variable* variable, double cweight);
   Element(const Element&) = default;
   ~Element()              = default;
 
@@ -170,7 +170,7 @@ public:
   //   - If network, then 1 in forward direction and 0.05 backward for the ACKs
   double consumption_weight;
   // maximum consumption weight (can be different from consumption_weight with subflows/ptasks)
-  double max_consumption_weight = 0;
+  double max_consumption_weight;
 };
 
 class ConstraintLight {
@@ -192,7 +192,6 @@ class XBT_PUBLIC Constraint {
 public:
   enum class SharingPolicy { NONLINEAR = 2, SHARED = 1, FATPIPE = 0 };
 
-  Constraint() = delete;
   Constraint(resource::Resource* id_value, double bound_value);
 
   /** @brief Unshare a constraint. */
