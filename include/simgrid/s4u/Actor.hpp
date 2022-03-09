@@ -332,7 +332,7 @@ public:
   /** Retrieves the actor ID of that actor's creator */
   aid_t get_ppid() const;
 
-  /** Suspend an actor, that is blocked until resumeed by another actor */
+  /** Suspend an actor, that is blocked until resumed by another actor. */
   void suspend();
 
   /** Resume an actor that was previously suspended */
@@ -341,7 +341,17 @@ public:
   /** Returns true if the actor is suspended. */
   bool is_suspended() const;
 
-  /** If set to true, the actor will automatically restart when its host reboots */
+  /** If set to true, the actor will automatically restart when its host reboots.
+   *
+   * Some elements of the actor are remembered over reboots: name, host, properties, the on_exit functions, whether it
+   * is daemonized and whether it should automatically restart when its host reboots. Note that the state after reboot
+   * is the one when set_auto_restart() is called.
+   *
+   * If you daemonize your actor after marking it auto_restart, then the new actor after rebooot will not be a daemon.
+   *
+   * The on_exit functions are the one defined when the actor dies, not the ones given when it was marked auto_restart
+   * (sorry for the inconsistency -- speak to us if it's too hard to bear).
+   */
   Actor* set_auto_restart(bool autorestart = true);
   /** Returns the number of reboots that this actor did. Before the first reboot, this function returns 0. */
   int get_restart_count();
