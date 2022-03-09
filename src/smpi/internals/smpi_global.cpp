@@ -575,14 +575,11 @@ int smpi_main(const char* executable, int argc, char* argv[])
   fflush(stdout);
   fflush(stderr);
 
-  if (MC_is_active()) {
-    MC_run();
-  } else {
-    engine.get_impl()->run(-1);
+  engine.get_impl()->run(-1);
 
-    xbt_os_walltimer_stop(global_timer);
-    simgrid::smpi::utils::print_time_analysis(xbt_os_timer_elapsed(global_timer));
-  }
+  xbt_os_walltimer_stop(global_timer);
+  simgrid::smpi::utils::print_time_analysis(xbt_os_timer_elapsed(global_timer));
+
   SMPI_finalize();
 
 #if SMPI_IFORT

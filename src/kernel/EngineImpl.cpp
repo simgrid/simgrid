@@ -687,6 +687,15 @@ void EngineImpl::run(double max_date)
 {
   seal_platform();
 
+  if (MC_is_active()) {
+#if SIMGRID_HAVE_MC
+    mc::AppSide::get()->main_loop();
+#else
+    xbt_die("MC_is_active() is not supposed to return true in non-MC settings");
+#endif
+    return;
+  }
+
   if (MC_record_replay_is_active()) {
     mc::RecordTrace::replay(MC_record_path());
     empty_trash();

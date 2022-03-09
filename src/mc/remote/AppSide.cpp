@@ -200,6 +200,10 @@ void AppSide::handle_messages() const
 
 void AppSide::main_loop() const
 {
+  simgrid::mc::processes_time.resize(simgrid::kernel::actor::get_maxpid());
+  MC_ignore_heap(simgrid::mc::processes_time.data(),
+                 simgrid::mc::processes_time.size() * sizeof(simgrid::mc::processes_time[0]));
+
   coverage_checkpoint();
   while (true) {
     simgrid::mc::execute_actors();

@@ -346,11 +346,7 @@ void Engine::run_until(double max_date) const
   fflush(stdout);
   fflush(stderr);
 
-  if (MC_is_active()) {
-    MC_run();
-  } else {
-    pimpl->run(max_date);
-  }
+  pimpl->run(max_date);
 }
 
 void Engine::track_vetoed_activities(std::set<Activity*>* vetoed_activities) const

@@ -41,22 +41,8 @@ std::vector<double> processes_time;
 
 #if SIMGRID_HAVE_MC
 
-/* Liveness */
-
-namespace simgrid {
-namespace mc {
-
-xbt_automaton_t property_automaton = nullptr;
-
-}
-}
-
 /* Dot output */
 FILE *dot_output = nullptr;
-
-
-/*******************************  Initialization of MC *******************************/
-/*********************************************************************************/
 
 void MC_init_dot_output()
 {
@@ -67,20 +53,15 @@ void MC_init_dot_output()
           "digraph graphname{\n fixedsize=true; rankdir=TB; ranksep=.25; edge [fontsize=12]; node [fontsize=10, shape=circle,width=.5 ]; graph [resolution=20, fontsize=10];\n");
 }
 
-/*******************************  Core of MC *******************************/
-/**************************************************************************/
-
-void MC_run()
-{
-  simgrid::mc::processes_time.resize(simgrid::kernel::actor::get_maxpid());
-  MC_ignore_heap(simgrid::mc::processes_time.data(),
-    simgrid::mc::processes_time.size() * sizeof(simgrid::mc::processes_time[0]));
-  simgrid::mc::AppSide::get()->main_loop();
-}
 
 namespace simgrid {
 namespace mc {
 
+/* Liveness */
+xbt_automaton_t property_automaton = nullptr;
+
+/*******************************  Core of MC *******************************/
+/**************************************************************************/
 void dumpStack(FILE* file, unw_cursor_t* cursor)
 {
   int nframe = 0;

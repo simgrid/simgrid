@@ -9,13 +9,6 @@
 #include <simgrid/forward.h>
 #include <simgrid/modelchecker.h> /* our public interface (and definition of SIMGRID_HAVE_MC) */
 
-SG_BEGIN_DECL
-
-/********************************* Global *************************************/
-XBT_ATTRIB_NORETURN XBT_PUBLIC void MC_run();
-
-SG_END_DECL
-
 #ifdef __cplusplus
 XBT_PUBLIC void MC_process_clock_add(const simgrid::kernel::actor::ActorImpl*, double);
 XBT_PUBLIC double MC_process_clock_get(const simgrid::kernel::actor::ActorImpl*);
