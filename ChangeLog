@@ -38,8 +38,15 @@ XBT:
  - Drop xbt_dynar_shrink().
 
 Python:
- - Added the following bindings: Comm.wait_for() and Comm.wait_any_for()
-   Example: examples/python/comm-waitfor/
+ - Fixed the following bindings:
+   - Actor.kill_all() [previously declared a member of the Actor class although it is a static member]
+ - Added the following bindings:
+     - this_actor.warning()
+     - Mailbox.put_init() [example: examples/python/comm-waitallfor]
+     - Comm.detach() [example: examples/python/comm-waitallfor]
+     - Comm.wait_for() [example: examples/python/comm-waitfor/]
+     - Comm.wait_any_for()
+     - Comm.wait_all_for() [example: examples/python/comm-waitallfor]
 
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GH: issues on GitHub)

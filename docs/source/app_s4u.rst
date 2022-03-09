@@ -701,6 +701,7 @@ Logging messages
 
        .. autofunction:: simgrid.this_actor.debug
        .. autofunction:: simgrid.this_actor.info
+       .. autofunction:: simgrid.this_actor.warning
        .. autofunction:: simgrid.this_actor.error
 
 Sleeping
@@ -1047,6 +1048,7 @@ Sending data
 
       .. automethod:: simgrid.Mailbox.put
       .. automethod:: simgrid.Mailbox.put_async
+      .. automethod:: simgrid.Mailbox.put_init
 
    .. group-tab:: C
 
@@ -2183,6 +2185,10 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Comm::set_src_data(void *buff, size_t size)
       .. doxygenfunction:: simgrid::s4u::Comm::set_src_data_size(size_t size)
 
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Comm.detach
+
 Life cycle
 ----------
 
@@ -2215,6 +2221,7 @@ also start direct communications as shown below.
       .. automethod:: simgrid.Comm.wait
       .. automethod:: simgrid.Comm.wait_for
       .. automethod:: simgrid.Comm.wait_all
+      .. automethod:: simgrid.Comm.wait_all_for
       .. automethod:: simgrid.Comm.wait_any
       .. automethod:: simgrid.Comm.wait_any_for
 
