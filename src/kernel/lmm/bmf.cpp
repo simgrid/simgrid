@@ -41,7 +41,7 @@ bool AllocationGenerator::next(std::vector<int>& next_alloc)
   auto n_resources = A_.rows();
   size_t idx      = 0;
   while (idx < alloc_.size()) {
-    alloc_[idx] = (++alloc_[idx]) % n_resources;
+    alloc_[idx] = (alloc_[idx] + 1) % n_resources;
     if (alloc_[idx] == 0) {
       idx++;
       continue;
@@ -222,7 +222,6 @@ bool BmfSolver::get_alloc(const Eigen::VectorXd& fair_sharing, const allocation_
 
       double share = fair_sharing[cnst_idx] / A_(cnst_idx, player_idx);
       if (min_share == -1 || share < min_share) {
-
         selected_resource = cnst_idx;
         min_share         = share;
       }
