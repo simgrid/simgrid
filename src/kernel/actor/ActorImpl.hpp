@@ -78,7 +78,6 @@ public:
   std::unique_ptr<context::Context> context_; /* the context (uctx/raw/thread) that executes the user function */
 
   std::exception_ptr exception_;
-  bool finished_  = false;
   bool suspended_ = false;
 
   activity::ActivityImplPtr waiting_synchro_ = nullptr; /* the current blocking synchro if any */
@@ -123,7 +122,6 @@ public:
 private:
   s4u::Actor piface_; // Our interface is part of ourselves
 
-  void cleanup_from_simix();
   void undaemonize();
 
 public:
@@ -138,7 +136,8 @@ public:
   static ActorImplPtr create(ProcessArg* args);
   static ActorImplPtr attach(const std::string& name, void* data, s4u::Host* host);
   static void detach();
-  void cleanup();
+  void cleanup_from_self();
+  void cleanup_from_kernel();
   void exit();
   void kill(ActorImpl* actor) const;
   void kill_all() const;

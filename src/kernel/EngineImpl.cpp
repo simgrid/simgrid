@@ -453,6 +453,10 @@ void EngineImpl::run_all_actors()
 {
   instance_->get_context_factory()->run_all();
 
+  for (auto const& actor : actors_to_run_)
+    if (actor->context_->to_be_freed())
+      actor->cleanup_from_kernel();
+
   actors_to_run_.swap(actors_that_ran_);
   actors_to_run_.clear();
 }

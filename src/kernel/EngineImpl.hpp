@@ -67,7 +67,6 @@ class EngineImpl {
 
   std::vector<xbt::Task<void()>> tasks;
 
-  std::mutex mutex_;
   static EngineImpl* instance_;
   actor::ActorImpl* maestro_ = nullptr;
   context::ContextFactory* context_factory_ = nullptr;
@@ -159,7 +158,6 @@ public:
   const std::vector<actor::ActorImpl*>& get_actors_to_run() const { return actors_to_run_; }
   const std::vector<actor::ActorImpl*>& get_actors_that_ran() const { return actors_that_ran_; }
 
-  std::mutex& get_mutex() { return mutex_; }
   bool execute_tasks();
   void add_task(xbt::Task<void()>&& t) { tasks.push_back(std::move(t)); }
   void wake_all_waiting_actors() const;

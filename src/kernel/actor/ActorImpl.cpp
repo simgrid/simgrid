@@ -127,7 +127,7 @@ void ActorImpl::detach()
   auto* context = dynamic_cast<context::AttachContext*>(context::Context::self());
   xbt_assert(context != nullptr, "Not a suitable context");
 
-  context->get_actor()->cleanup();
+  context->get_actor()->cleanup_from_self();
   context->attach_stop();
 }
 
@@ -137,26 +137,36 @@ bool ActorImpl::is_maestro() const
   return context_->is_maestro();
 }
 
-void ActorImpl::cleanup_from_simix()
+void ActorImpl::cleanup_from_kernel()
 {
+  xbt_assert(s4u::Actor::is_maestro(), "Cleanup_from_kernel called from '%s' on '%s'", ActorImpl::self()->get_cname(),
+             get_cname());
+
   auto* engine = EngineImpl::get_instance();
-  const std::lock_guard<std::mutex> lock(engine->get_mutex());
   engine->remove_actor(pid_);
   if (host_ && host_actor_list_hook.is_linked())
     host_->get_impl()->remove_actor(this);
   if (not kernel_destroy_list_hook.is_linked())
     engine->add_actor_to_destroy_list(*this);
-}
-
-void ActorImpl::cleanup()
-{
-  finished_ = true;
 
   if (has_to_auto_restart() && not get_host()->is_on()) {
     XBT_DEBUG("Insert host %s to watched_hosts because it's off and %s needs to restart", get_host()->get_cname(),
               get_cname());
     watched_hosts().insert(get_host()->get_name());
   }
+
+  undaemonize();
+
+  while (not mailboxes.empty())
+    mailboxes.back()->set_receiver(nullptr);
+}
+
+/* Do all the cleanups from the actor context. Warning, the simcall mechanism was not reignited so doing simcalls in
+ * this context is dangerous */
+void ActorImpl::cleanup_from_self()
+{
+  xbt_assert(not ActorImpl::is_maestro(), "Cleanup_from_self called from maestro on '%s'", get_cname());
+  context_->set_to_be_freed();
 
   if (on_exit) {
     // Execute the termination callbacks
@@ -165,22 +175,13 @@ void ActorImpl::cleanup()
       (*exit_fun)(failed);
     on_exit.reset();
   }
-  undaemonize();
 
   /* cancel non-blocking activities */
   for (auto activity : activities_)
     activity->cancel();
   activities_.clear();
 
-  while (not mailboxes.empty())
-    mailboxes.back()->set_receiver(nullptr);
-
   XBT_DEBUG("%s@%s(%ld) should not run anymore", get_cname(), get_host()->get_cname(), get_pid());
-
-  if (EngineImpl::get_instance()->is_maestro(this)) /* Do not cleanup maestro */
-    return;
-
-  XBT_DEBUG("Cleanup actor %s (%p), waiting synchro %p", get_cname(), this, waiting_synchro_.get());
 
   /* Unregister associated timers if any */
   if (kill_timer_ != nullptr) {
@@ -192,8 +193,6 @@ void ActorImpl::cleanup()
     simcall_.timeout_cb_ = nullptr;
   }
 
-  cleanup_from_simix();
-
   context_->set_wannadie(false); // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
   actor::simcall_answered([this] { s4u::Actor::on_termination(*get_ciface()); });
   context_->set_wannadie();
@@ -202,8 +201,8 @@ void ActorImpl::cleanup()
 void ActorImpl::exit()
 {
   context_->set_wannadie();
-  suspended_          = false;
-  exception_          = nullptr;
+  suspended_ = false;
+  exception_ = nullptr;
 
   /* destroy the blocking synchro if any */
   if (auto activity = waiting_synchro_) {
@@ -228,7 +227,7 @@ void ActorImpl::exit()
 void ActorImpl::kill(ActorImpl* actor) const
 {
   xbt_assert(not actor->is_maestro(), "Killing maestro is a rather bad idea.");
-  if (actor->finished_) {
+  if (actor->context_->wannadie()) {
     XBT_DEBUG("Ignoring request to kill actor %s@%s that is already dead", actor->get_cname(),
               actor->host_->get_cname());
     return;
@@ -300,7 +299,7 @@ void ActorImpl::yield()
     }
   }
 #if HAVE_SMPI
-  if (not finished_)
+  if (not context_->wannadie())
     smpi_switch_data_segment(get_iface());
 #endif
 }
@@ -357,7 +356,7 @@ void ActorImpl::resume()
   XBT_IN("actor = %p", this);
 
   if (context_->wannadie()) {
-    XBT_VERB("Ignoring request to suspend an actor that is currently dying.");
+    XBT_VERB("Ignoring request to resume an actor that is currently dying.");
     return;
   }
 

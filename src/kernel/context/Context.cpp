@@ -138,7 +138,7 @@ Context::~Context()
 
 void Context::stop()
 {
-  this->actor_->cleanup();
+  this->actor_->cleanup_from_self();
 }
 
 void Context::set_wannadie(bool value)

@@ -72,7 +72,7 @@ static void test_launcher(int test_number)
                simgrid::s4u::Engine::get_instance()->get_actor_count(), tasks_done);
       break;
     case 2:
-      // Create an actorthat on a host that is turned off (this is not allowed)
+      // Create an actor on an host that is turned off (this is not allowed)
       XBT_INFO("Test 2:");
       XBT_INFO("  Turn off Jupiter");
       // adsein: Jupiter is already off, hence nothing should happen
@@ -101,6 +101,7 @@ static void test_launcher(int test_number)
       simgrid::s4u::this_actor::sleep_for(10);
       XBT_INFO("  Turn Jupiter off");
       jupiter->turn_off();
+      simgrid::s4u::this_actor::sleep_for(1); // Allow some time to the other actors to die
       XBT_INFO("Test 4 is ok.  (number of actors : %zu, it should be 1 or 2 if RX has not been satisfied)."
                " An exception is raised when we turn off a node that has an actor sleeping",
                simgrid::s4u::Engine::get_instance()->get_actor_count());
@@ -116,6 +117,7 @@ static void test_launcher(int test_number)
       simgrid::s4u::this_actor::sleep_for(10);
       XBT_INFO("  Turn Jupiter off");
       jupiter->turn_off();
+      simgrid::s4u::this_actor::sleep_for(1); // Allow some time to the other actors to die
       XBT_INFO("Test 5 seems ok (number of actors: %zu, it should be 2)",
                simgrid::s4u::Engine::get_instance()->get_actor_count());
       break;

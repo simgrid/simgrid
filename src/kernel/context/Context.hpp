@@ -51,7 +51,8 @@ class XBT_PUBLIC Context {
 
   std::function<void()> code_;
   actor::ActorImpl* actor_ = nullptr;
-  bool iwannadie_          = false;
+  bool iwannadie_          = false; // True if we need to do some cleanups in actor mode.
+  bool to_be_freed_        = false; // True if cleanups in actor mode done, but cleanups in kernel mode pending
   bool is_maestro_;
   void declare_context(std::size_t size);
 
@@ -67,6 +68,8 @@ public:
 
   bool wannadie() const { return iwannadie_; }
   void set_wannadie(bool value = true);
+  bool to_be_freed() const { return to_be_freed_; }
+  void set_to_be_freed() { to_be_freed_ = true; }
   bool is_maestro() const { return is_maestro_; }
   void operator()() const { code_(); }
   bool has_code() const { return static_cast<bool>(code_); }
