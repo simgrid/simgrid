@@ -188,8 +188,8 @@ class XBT_PUBLIC Actor : public xbt::Extendable<Actor> {
   friend Mailbox;
   friend kernel::actor::ActorImpl;
   friend kernel::activity::MailboxImpl;
-  friend void this_actor::sleep_for(double);
-  friend void this_actor::suspend();
+  friend XBT_PUBLIC void this_actor::sleep_for(double);
+  friend XBT_PUBLIC void this_actor::suspend();
 
   kernel::actor::ActorImpl* const pimpl_;
 #endif
