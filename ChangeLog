@@ -28,6 +28,7 @@ S4U:
  - Reimplementation of barriers natively. 
    Previously, they were implemented on top of s4u::Mutex and s4u::ConditionVariable. 
    The new version should be faster (and can be used in the model-checker).
+ - Actor::get_restart_count(): Returns the number of reboots that this actor did.
 
 MSG:
  - MSG_barrier_destroy now expects a non-const msg_barrier parameter.

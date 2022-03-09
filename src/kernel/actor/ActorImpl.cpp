@@ -329,19 +329,13 @@ s4u::Actor* ActorImpl::restart()
   XBT_DEBUG("Restarting actor %s on %s", get_cname(), host_->get_cname());
 
   // retrieve the arguments of the old actor
-  ProcessArg arg(host_, this);
+  ProcessArg args(host_, this);
 
   // kill the old actor
   context::Context::self()->get_actor()->kill(this);
 
   // start the new actor
-  ActorImplPtr actor = ActorImpl::create(arg.name, arg.code, arg.data, arg.host, nullptr);
-  actor->set_properties(arg.properties);
-  *actor->on_exit = std::move(*arg.on_exit);
-  actor->set_kill_time(arg.kill_time);
-  actor->set_auto_restart(arg.auto_restart);
-
-  return actor->get_ciface();
+  return create(&args)->get_ciface();
 }
 
 void ActorImpl::suspend()
@@ -492,6 +486,22 @@ ActorImplPtr ActorImpl::create(const std::string& name, const ActorCode& code, v
 
   actor->start(code);
 
+  return actor;
+}
+ActorImplPtr ActorImpl::create(ProcessArg* args)
+{
+  actor::ActorImplPtr actor   = actor::ActorImpl::create(args->name, args->code, nullptr, args->host, nullptr);
+  auto* naked_actor           = actor.get();
+  naked_actor->restart_count_ = args->restart_count_;
+  actor->set_properties(args->properties);
+  if (args->on_exit)
+    *actor->on_exit = *args->on_exit;
+  if (args->kill_time >= 0)
+    actor->set_kill_time(args->kill_time);
+  if (args->auto_restart)
+    actor->set_auto_restart(args->auto_restart);
+  if (args->daemon_)
+    actor->daemonize();
   return actor;
 }
 

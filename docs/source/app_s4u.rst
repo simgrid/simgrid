@@ -598,6 +598,7 @@ Reacting to the end of actors
       .. doxygenfunction:: simgrid::s4u::Actor::join() const
       .. doxygenfunction:: simgrid::s4u::Actor::join(double timeout) const
       .. doxygenfunction:: simgrid::s4u::Actor::set_auto_restart(bool autorestart)
+      .. doxygenfunction:: simgrid::s4u::Actor::get_restart_count()
 
    .. group-tab:: Python
 

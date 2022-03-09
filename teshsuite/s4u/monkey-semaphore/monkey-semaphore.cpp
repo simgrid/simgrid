@@ -44,16 +44,14 @@ public:
 
 static void producer(SharedBuffer& buf)
 {
-  static bool inited = false;
   static int todo    = cfg_item_count; // remaining amount of items to exchange
   SemStack to_release;
-  XBT_INFO("Producer %s", inited ? "rebooting" : "booting");
+  bool rebooting = sg4::Actor::self()->get_restart_count() > 0;
 
-  if (not inited) {
+  XBT_INFO("Producer %s", rebooting ? "rebooting" : "booting");
+  if (not rebooting) // Starting for the first time
     sg4::this_actor::on_exit(
         [](bool forcefully) { XBT_INFO("Producer dying %s.", forcefully ? "forcefully" : "peacefully"); });
-    inited = true;
-  }
 
   while (todo > 0) {
     xbt_assert(sg4::Engine::get_clock() < cfg_deadline,
@@ -80,14 +78,12 @@ static void producer(SharedBuffer& buf)
 static void consumer(const SharedBuffer& buf)
 {
   SemStack to_release;
+  bool rebooting = sg4::Actor::self()->get_restart_count() > 0;
 
-  static bool inited = false;
-  XBT_INFO("Consumer %s", inited ? "rebooting" : "booting");
-  if (not inited) {
+  XBT_INFO("Consumer %s", rebooting ? "rebooting" : "booting");
+  if (not rebooting) // Starting for the first time
     sg4::this_actor::on_exit(
         [](bool forcefully) { XBT_INFO("Consumer dying %s.", forcefully ? "forcefully" : "peacefully"); });
-    inited = true;
-  }
 
   int item;
   do {

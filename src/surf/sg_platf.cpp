@@ -477,39 +477,26 @@ void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
   simgrid::kernel::actor::ActorCode code = factory(std::move(actor->args));
 
   auto* arg = new simgrid::kernel::actor::ProcessArg(actor_name, code, nullptr, host, kill_time, actor->properties,
-                                                     auto_restart);
+                                                     auto_restart, /*restart_count=*/0);
 
   host->get_impl()->add_actor_at_boot(arg);
 
   if (start_time > simgrid::s4u::Engine::get_clock()) {
     arg = new simgrid::kernel::actor::ProcessArg(actor_name, code, nullptr, host, kill_time, actor->properties,
-                                                 auto_restart);
+                                                 auto_restart, /*restart_count=*/0);
 
-    XBT_DEBUG("Process %s@%s will be started at time %f", arg->name.c_str(), arg->host->get_cname(), start_time);
+    XBT_DEBUG("Actor %s@%s will be started at time %f", arg->name.c_str(), arg->host->get_cname(), start_time);
     simgrid::kernel::timer::Timer::set(start_time, [arg, auto_restart]() {
-      simgrid::kernel::actor::ActorImplPtr new_actor =
-          simgrid::kernel::actor::ActorImpl::create(arg->name.c_str(), arg->code, arg->data, arg->host, nullptr);
-      new_actor->set_properties(arg->properties);
-      if (arg->kill_time >= 0)
-        new_actor->set_kill_time(arg->kill_time);
-      if (auto_restart)
-        new_actor->set_auto_restart(auto_restart);
+      simgrid::kernel::actor::ActorImplPtr new_actor = simgrid::kernel::actor::ActorImpl::create(arg);
       delete arg;
     });
   } else { // start_time <= simgrid::s4u::Engine::get_clock()
-    XBT_DEBUG("Starting Process %s(%s) right now", arg->name.c_str(), host->get_cname());
+    XBT_DEBUG("Starting actor %s(%s) right now", arg->name.c_str(), host->get_cname());
 
     try {
-      simgrid::kernel::actor::ActorImplPtr new_actor = nullptr;
-      new_actor = simgrid::kernel::actor::ActorImpl::create(arg->name.c_str(), code, nullptr, host, nullptr);
-      new_actor->set_properties(arg->properties);
-      /* The actor creation will fail if the host is currently dead, but that's fine */
-      if (arg->kill_time >= 0)
-        new_actor->set_kill_time(arg->kill_time);
-      if (auto_restart)
-        new_actor->set_auto_restart(auto_restart);
+      simgrid::kernel::actor::ActorImplPtr new_actor = simgrid::kernel::actor::ActorImpl::create(arg);
     } catch (simgrid::HostFailureException const&) {
-      XBT_WARN("Deployment includes some initially turned off Hosts ... nevermind.");
+      XBT_WARN("Starting actor %s(%s) failed because its host is turned off.", arg->name.c_str(), host->get_cname());
     }
   }
 }

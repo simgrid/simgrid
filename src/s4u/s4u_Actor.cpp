@@ -124,8 +124,11 @@ void Actor::join(double timeout) const
 
 Actor* Actor::set_auto_restart(bool autorestart)
 {
+  if (autorestart == pimpl_->has_to_auto_restart()) // not changed
+    return this;
+
   kernel::actor::simcall_answered([this, autorestart]() {
-    xbt_assert(autorestart && not pimpl_->has_to_auto_restart()); // FIXME: handle all cases
+    xbt_assert(autorestart, "Asking an actor to stop being autorestart is not implemented yet. Ask us if you need it.");
     pimpl_->set_auto_restart(autorestart);
 
     auto* arg = new kernel::actor::ProcessArg(pimpl_->get_host(), pimpl_);
@@ -133,6 +136,10 @@ Actor* Actor::set_auto_restart(bool autorestart)
     pimpl_->get_host()->get_impl()->add_actor_at_boot(arg);
   });
   return this;
+}
+int Actor::get_restart_count()
+{
+  return pimpl_->get_restart_count();
 }
 
 void Actor::on_exit(const std::function<void(bool /*failed*/)>& fun) const

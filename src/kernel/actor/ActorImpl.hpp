@@ -19,6 +19,7 @@
 namespace simgrid {
 namespace kernel {
 namespace actor {
+class ProcessArg;
 
 class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder {
   s4u::Host* host_   = nullptr; /* the host on which the actor is running */
@@ -26,6 +27,7 @@ class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder {
   aid_t ppid_        = -1;
   bool daemon_       = false; /* Daemon actors are automatically killed when the last non-daemon leaves */
   bool auto_restart_ = false;
+  int restart_count_ = 0;
   unsigned stacksize_; // set to default value in constructor
 
   std::vector<activity::MailboxImpl*> mailboxes;
@@ -62,6 +64,7 @@ public:
                               / after terminaison) */
   bool has_to_auto_restart() const { return auto_restart_; }
   void set_auto_restart(bool autorestart) { auto_restart_ = autorestart; }
+  int get_restart_count() { return restart_count_; }
   void set_stacksize(unsigned stacksize) { stacksize_ = stacksize; }
   unsigned get_stacksize() const { return stacksize_; }
 
@@ -125,6 +128,7 @@ public:
 
   static ActorImplPtr create(const std::string& name, const ActorCode& code, void* data, s4u::Host* host,
                              const ActorImpl* parent_actor);
+  static ActorImplPtr create(ProcessArg* args);
   static ActorImplPtr attach(const std::string& name, void* data, s4u::Host* host);
   static void detach();
   void cleanup();
@@ -162,6 +166,7 @@ public:
   bool daemon_                                                             = false;
   /* list of functions executed when the actor dies */
   const std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit;
+  int restart_count_ = 0;
 
   ProcessArg()                  = delete;
   ProcessArg(const ProcessArg&) = delete;
@@ -169,7 +174,7 @@ public:
 
   explicit ProcessArg(const std::string& name, const std::function<void()>& code, void* data, s4u::Host* host,
                       double kill_time, const std::unordered_map<std::string, std::string>& properties,
-                      bool auto_restart)
+                      bool auto_restart, int restart_count)
       : name(name)
       , code(code)
       , data(data)
@@ -177,6 +182,7 @@ public:
       , kill_time(kill_time)
       , properties(properties)
       , auto_restart(auto_restart)
+      , restart_count_(restart_count)
   {
   }
 
@@ -189,6 +195,7 @@ public:
       , auto_restart(actor->has_to_auto_restart())
       , daemon_(actor->is_daemon())
       , on_exit(actor->on_exit)
+      , restart_count_(actor->get_restart_count() + 1)
   {
   }
 };

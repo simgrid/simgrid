@@ -5,7 +5,7 @@ p Testing a simple master/worker example application handling failures TCP cross
 ! output sort 19
 $ ${bindir:=.}/c-platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${platfdir}/small_platform_failures.xml ${srcdir:=.}/../../cpp/platform-failures/s4u-platform-failures_d.xml --cfg=path:${srcdir} --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=res_cpu.t:verbose
 > [  0.000000] (0:maestro@) Cannot launch actor 'worker' on failed host 'Fafard'
-> [  0.000000] (0:maestro@) Deployment includes some initially turned off Hosts ... nevermind.
+> [  0.000000] (0:maestro@) Starting actor worker(Fafard) failed because its host is turned off.
 > [  0.000000] (1:master@Tremblay) Got 5 workers and 20 tasks to process
 > [  0.000000] (1:master@Tremblay) Send a message to worker-0
 > [  0.010309] (1:master@Tremblay) Send to worker-0 completed
@@ -110,7 +110,7 @@ p Testing a simple master/worker example application handling failures. TCP cros
 ! output sort 19
 $ ${bindir:=.}/c-platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${platfdir}/small_platform_failures.xml ${srcdir:=.}/../../cpp/platform-failures/s4u-platform-failures_d.xml --cfg=path:${srcdir} "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=res_cpu.t:verbose
 > [  0.000000] (0:maestro@) Cannot launch actor 'worker' on failed host 'Fafard'
-> [  0.000000] (0:maestro@) Deployment includes some initially turned off Hosts ... nevermind.
+> [  0.000000] (0:maestro@) Starting actor worker(Fafard) failed because its host is turned off.
 > [  0.000000] (1:master@Tremblay) Got 5 workers and 20 tasks to process
 > [  0.000000] (1:master@Tremblay) Send a message to worker-0
 > [  0.000000] (2:worker@Tremblay) Waiting a message on worker-0

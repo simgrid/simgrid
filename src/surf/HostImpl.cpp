@@ -78,16 +78,7 @@ void HostImpl::turn_on() const
 {
   for (auto const& arg : actors_at_boot_) {
     XBT_DEBUG("Booting Actor %s(%s) right now", arg->name.c_str(), arg->host->get_cname());
-    actor::ActorImplPtr actor = actor::ActorImpl::create(arg->name, arg->code, nullptr, arg->host, nullptr);
-    actor->set_properties(arg->properties);
-    if (arg->on_exit)
-      *actor->on_exit = *arg->on_exit;
-    if (arg->kill_time >= 0)
-      actor->set_kill_time(arg->kill_time);
-    if (arg->auto_restart)
-      actor->set_auto_restart(arg->auto_restart);
-    if (arg->daemon_)
-      actor->daemonize();
+    actor::ActorImplPtr actor = actor::ActorImpl::create(arg);
   }
 }
 

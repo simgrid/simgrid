@@ -343,6 +343,8 @@ public:
 
   /** If set to true, the actor will automatically restart when its host reboots */
   Actor* set_auto_restart(bool autorestart = true);
+  /** Returns the number of reboots that this actor did. Before the first reboot, this function returns 0. */
+  int get_restart_count();
 
   /** Add a function to the list of "on_exit" functions for the current actor. The on_exit functions are the functions
    * executed when your actor is killed. You should use them to free the data used by your actor.
