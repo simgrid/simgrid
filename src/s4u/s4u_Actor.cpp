@@ -137,7 +137,7 @@ Actor* Actor::set_auto_restart(bool autorestart)
   });
   return this;
 }
-int Actor::get_restart_count()
+int Actor::get_restart_count() const
 {
   return pimpl_->get_restart_count();
 }

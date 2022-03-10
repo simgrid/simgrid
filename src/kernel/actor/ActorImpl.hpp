@@ -35,6 +35,7 @@ public:
 
 class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder, public ActorRestartingTrait {
   s4u::Host* host_   = nullptr; /* the host on which the actor is running */
+  xbt::string name_;
   aid_t pid_         = 0;
   aid_t ppid_        = -1;
   bool daemon_       = false; /* Daemon actors are automatically killed when the last non-daemon leaves */
@@ -44,7 +45,6 @@ class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder, public ActorRestartingT
   friend activity::MailboxImpl;
 
 public:
-  xbt::string name_;
   ActorImpl(xbt::string name, s4u::Host* host);
   ActorImpl(const ActorImpl&) = delete;
   ActorImpl& operator=(const ActorImpl&) = delete;
