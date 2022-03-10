@@ -58,23 +58,41 @@ static void test_link_off_helper(double delay)
   simgrid::s4u::this_actor::sleep_for(1.5);
 };
 
-static simgrid::s4u::ActorPtr sender_basic(bool& ending_boolean, bool expected_success, double duration)
+static simgrid::s4u::ActorPtr sender_basic(bool& ending_boolean, bool expected_success, double duration,
+                                           double delay = -1.0)
 {
-  return simgrid::s4u::Actor::create("sender", all_hosts[1], [&ending_boolean, expected_success, duration]() {
+  return simgrid::s4u::Actor::create("sender", all_hosts[1], [&ending_boolean, expected_success, duration, delay]() {
     assert_exit(expected_success, duration);
     // Encapsulate the payload in a std::unique_ptr so that it is correctly free'd if/when the sender is killed during
     // its communication (thanks to RAII).  The pointer is then released when the communication is over.
     std::unique_ptr<char, decltype(&xbt_free_f)> payload(xbt_strdup("toto"), &xbt_free_f);
-    simgrid::s4u::Mailbox::by_name("mb")->put(payload.get(), 5000);
+    if (delay > 0.0) {
+      simgrid::s4u::this_actor::sleep_for(delay / 2.0);
+      auto comm = simgrid::s4u::Mailbox::by_name("mb")->put_init(payload.get(), 5000);
+      simgrid::s4u::this_actor::sleep_for(delay / 2.0);
+      comm->wait();
+    } else {
+      simgrid::s4u::Mailbox::by_name("mb")->put(payload.get(), 5000);
+    }
     payload.release();
     ending_boolean = true;
   });
 }
-static simgrid::s4u::ActorPtr receiver_basic(bool& ending_boolean, bool expected_success, double duration)
+static simgrid::s4u::ActorPtr receiver_basic(bool& ending_boolean, bool expected_success, double duration,
+                                             double delay = -1.0)
 {
-  return simgrid::s4u::Actor::create("receiver", all_hosts[2], [&ending_boolean, expected_success, duration]() {
+  return simgrid::s4u::Actor::create("receiver", all_hosts[2], [&ending_boolean, expected_success, duration, delay]() {
     assert_exit(expected_success, duration);
-    char* payload = simgrid::s4u::Mailbox::by_name("mb")->get<char>();
+    char* payload;
+    if (delay > 0.0) {
+      simgrid::s4u::this_actor::sleep_for(delay / 2.0);
+      auto comm = simgrid::s4u::Mailbox::by_name("mb")->get_init()->set_dst_data(reinterpret_cast<void**>(&payload),
+                                                                                 sizeof(void*));
+      simgrid::s4u::this_actor::sleep_for(delay / 2.0);
+      comm->wait();
+    } else {
+      payload = simgrid::s4u::Mailbox::by_name("mb")->get<char>();
+    }
     xbt_free(payload);
     ending_boolean = true;
   });
@@ -101,6 +119,40 @@ TEST_CASE("Activity lifecycle: comm activities")
 
     sender_basic(send_done, true, 5);
     receiver_basic(recv_done, true, 5);
+
+    simgrid::s4u::this_actor::sleep_for(9);
+    INFO("Sender or receiver killed somehow. It shouldn't");
+    REQUIRE(send_done);
+    REQUIRE(recv_done);
+
+    END_SECTION;
+  }
+
+  BEGIN_SECTION("comm (delayed send)")
+  {
+    XBT_INFO("Launch a communication with a delay for the send");
+    bool send_done = false;
+    bool recv_done = false;
+
+    sender_basic(send_done, true, 6, 1); // cover Comm::send
+    receiver_basic(recv_done, true, 6);
+
+    simgrid::s4u::this_actor::sleep_for(9);
+    INFO("Sender or receiver killed somehow. It shouldn't");
+    REQUIRE(send_done);
+    REQUIRE(recv_done);
+
+    END_SECTION;
+  }
+
+  BEGIN_SECTION("comm (delayed recv)")
+  {
+    XBT_INFO("Launch a communication with a delay for the recv");
+    bool send_done = false;
+    bool recv_done = false;
+
+    sender_basic(send_done, true, 6);
+    receiver_basic(recv_done, true, 6, 1); // cover Comm::recv
 
     simgrid::s4u::this_actor::sleep_for(9);
     INFO("Sender or receiver killed somehow. It shouldn't");
