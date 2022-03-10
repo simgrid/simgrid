@@ -474,27 +474,6 @@ actor::ActorImpl* EngineImpl::get_actor_by_pid(aid_t pid)
   return nullptr; // Not found, even in the trash
 }
 
-/** Execute all the tasks that are queued, e.g. `.then()` callbacks of futures. */
-bool EngineImpl::execute_tasks()
-{
-  if (tasks.empty())
-    return false;
-
-  std::vector<xbt::Task<void()>> tasksTemp;
-  do {
-    // We don't want the callbacks to modify the vector we are iterating over:
-    tasks.swap(tasksTemp);
-
-    // Execute all the queued tasks:
-    for (auto& task : tasksTemp)
-      task();
-
-    tasksTemp.clear();
-  } while (not tasks.empty());
-
-  return true;
-}
-
 void EngineImpl::remove_daemon(actor::ActorImpl* actor)
 {
   auto it = daemons_.find(actor);
@@ -722,8 +701,6 @@ void EngineImpl::run(double max_date)
 #endif
     }
 
-    execute_tasks();
-
     while (not actors_to_run_.empty()) {
       XBT_DEBUG("New Sub-Schedule Round; size(queue)=%zu", actors_to_run_.size());
 
@@ -757,10 +734,7 @@ void EngineImpl::run(double max_date)
         if (actor->simcall_.call_ != actor::Simcall::Type::NONE)
           actor->simcall_handle(0);
 
-      execute_tasks();
-      do {
-        wake_all_waiting_actors();
-      } while (execute_tasks());
+      wake_all_waiting_actors();
 
       /* If only daemon actors remain, cancel their actions, mark them to die and reschedule them */
       if (actor_list_.size() == daemons_.size())
@@ -787,12 +761,10 @@ void EngineImpl::run(double max_date)
     /* FIXME: iterate through the list of failed host and mark each of them */
     /* as failed. On each host, signal all the running actors with host_fail */
 
-    // Execute timers and tasks until there isn't anything to be done:
+    // Execute timers until there isn't anything to be done:
     bool again = false;
     do {
       again = timer::Timer::execute_all();
-      if (execute_tasks())
-        again = true;
       wake_all_waiting_actors();
     } while (again);
 

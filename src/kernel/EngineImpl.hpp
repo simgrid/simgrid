@@ -65,8 +65,6 @@ class EngineImpl {
   xbt_dynar_t actors_vector_      = xbt_dynar_new(sizeof(actor::ActorImpl*), nullptr);
 #endif
 
-  std::vector<xbt::Task<void()>> tasks;
-
   static EngineImpl* instance_;
   actor::ActorImpl* maestro_ = nullptr;
   context::ContextFactory* context_factory_ = nullptr;
@@ -158,8 +156,6 @@ public:
   const std::vector<actor::ActorImpl*>& get_actors_to_run() const { return actors_to_run_; }
   const std::vector<actor::ActorImpl*>& get_actors_that_ran() const { return actors_that_ran_; }
 
-  bool execute_tasks();
-  void add_task(xbt::Task<void()>&& t) { tasks.push_back(std::move(t)); }
   void wake_all_waiting_actors() const;
   /**
    * Garbage collection
