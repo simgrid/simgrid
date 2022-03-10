@@ -91,8 +91,8 @@ static simgrid::config::Flag<int> smpi_np("smpi/np", "Number of processes to be 
 
 static simgrid::config::Flag<int> smpi_map("smpi/map", "Display the mapping between nodes and processes", 0);
 
-void (*smpi_comm_copy_data_callback)(simgrid::kernel::activity::CommImpl*, void*,
-                                     size_t) = &smpi_comm_copy_buffer_callback;
+std::function<void(simgrid::kernel::activity::CommImpl*, void*, size_t)> smpi_comm_copy_data_callback =
+    &smpi_comm_copy_buffer_callback;
 
 simgrid::smpi::ActorExt* smpi_process()
 {
@@ -129,11 +129,7 @@ void smpi_process_set_user_data(void *data){
 
 void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, size_t))
 {
-  static void (*saved_callback)(smx_activity_t, void*, size_t);
-  saved_callback               = callback;
-  smpi_comm_copy_data_callback = [](simgrid::kernel::activity::CommImpl* comm, void* buff, size_t size) {
-    saved_callback(comm, buff, size);
-  };
+  smpi_comm_copy_data_callback = callback;
 }
 
 static void memcpy_private(void* dest, const void* src, const std::vector<std::pair<size_t, size_t>>& private_blocks)

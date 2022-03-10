@@ -33,7 +33,7 @@ static simgrid::config::Flag<double> smpi_test_sleep(
 
 std::vector<s_smpi_factor_t> smpi_ois_values;
 
-extern void (*smpi_comm_copy_data_callback)(simgrid::kernel::activity::CommImpl*, void*, size_t);
+extern std::function<void(simgrid::kernel::activity::CommImpl*, void*, size_t)> smpi_comm_copy_data_callback;
 
 namespace simgrid{
 namespace smpi{
