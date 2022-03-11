@@ -66,7 +66,7 @@ ThreadContext::ThreadContext(std::function<void()>&& code, actor::ActorImpl* act
   if (has_code()) {
     /* create and start the actor */
     this->thread_ = new std::thread(ThreadContext::wrapper, this);
-    /* wait the starting of the newly created actor */
+    /* wait the start of the newly created actor */
     this->end_.acquire();
   }
 

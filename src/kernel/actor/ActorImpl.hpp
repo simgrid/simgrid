@@ -87,7 +87,7 @@ public:
   std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit =
       std::make_shared<std::vector<std::function<void(bool)>>>();
 
-  std::function<void()> code_;
+  std::function<void()> code_; // to restart the actor on host reboot
   timer::Timer* kill_timer_ = nullptr;
 
 private:

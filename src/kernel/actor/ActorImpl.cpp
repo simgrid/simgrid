@@ -205,13 +205,12 @@ void ActorImpl::exit()
   exception_ = nullptr;
 
   /* destroy the blocking synchro if any */
-  if (auto activity = waiting_synchro_) {
+  if (waiting_synchro_ != nullptr) {
     activities_.remove(waiting_synchro_);
+    waiting_synchro_->cancel();
+    waiting_synchro_->set_state(activity::State::FAILED);
+    waiting_synchro_->post();
     waiting_synchro_ = nullptr;
-
-    activity->cancel();
-    activity->set_state(activity::State::FAILED);
-    activity->post();
   }
   for (auto const& activity : activities_)
     activity->cancel();
