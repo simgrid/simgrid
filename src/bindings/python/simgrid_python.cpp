@@ -101,6 +101,8 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "info", [](const char* s) { XBT_INFO("%s", s); }, "Display a logging message of 'info' priority.")
       .def(
+          "warning", [](const char* s) { XBT_WARN("%s", s); }, "Display a logging message of 'warning' priority.")
+      .def(
           "error", [](const char* s) { XBT_ERROR("%s", s); }, "Display a logging message of 'error' priority.")
       .def("execute", py::overload_cast<double, double>(&simgrid::s4u::this_actor::execute),
            py::call_guard<py::gil_scoped_release>(),
@@ -654,6 +656,14 @@ PYBIND11_MODULE(simgrid, m)
           },
           py::call_guard<py::gil_scoped_release>(), "Non-blocking data transmission")
       .def(
+          "put_init",
+          [](Mailbox* self, py::object data, int size) {
+            data.inc_ref();
+            return self->put_init(data.ptr(), size);
+          },
+          py::call_guard<py::gil_scoped_release>(),
+          "Creates (but don’t start) a data transmission to that mailbox.")
+      .def(
           "get",
           [](Mailbox* self) {
             py::object data = py::reinterpret_steal<py::object>(self->get<PyObject>());
@@ -689,19 +699,35 @@ PYBIND11_MODULE(simgrid, m)
       .def("wait", &simgrid::s4u::Comm::wait, py::call_guard<py::gil_scoped_release>(),
            "Block until the completion of that communication.")
       .def("wait_for", &simgrid::s4u::Comm::wait_for,
+           py::arg("timeout"),
            py::call_guard<py::gil_scoped_release>(),
            "Block until the completion of that communication, or raises TimeoutException after the specified timeout.")
+      .def("detach", [](simgrid::s4u::Comm* self) {
+              return self->detach();
+           },
+           py::return_value_policy::reference_internal,
+           py::call_guard<py::gil_scoped_release>(),
+           "Start the comm, and ignore its result. It can be completely forgotten after that.")
       // use py::overload_cast for wait_all/wait_any, until the overload marked XBT_ATTRIB_DEPRECATED_v332 is removed
       .def_static(
           "wait_all", py::overload_cast<const std::vector<simgrid::s4u::CommPtr>&>(&simgrid::s4u::Comm::wait_all),
-          py::call_guard<py::gil_scoped_release>(), "Block until the completion of all communications in the list.")
+          py::arg("comms"),
+          py::call_guard<py::gil_scoped_release>(),
+          "Block until the completion of all communications in the list.")
+      .def_static("wait_all_for", &simgrid::s4u::Comm::wait_all_for,
+                  py::arg("comms"), py::arg("timeout"),
+                  py::call_guard<py::gil_scoped_release>(),
+                  "Block until the completion of all communications in the list, or raises TimeoutException after "
+                  "the specified timeout.")
       .def_static(
           "wait_any", py::overload_cast<const std::vector<simgrid::s4u::CommPtr>&>(&simgrid::s4u::Comm::wait_any),
+          py::arg("comms"),
           py::call_guard<py::gil_scoped_release>(),
           "Block until the completion of any communication in the list and return the index of the terminated one.")
       .def_static(
           "wait_any_for",
           py::overload_cast<const std::vector<simgrid::s4u::CommPtr>&, double>(&simgrid::s4u::Comm::wait_any_for),
+          py::arg("comms"), py::arg("timeout"),
           py::call_guard<py::gil_scoped_release>(),
           "Block until the completion of any communication in the list and return the index of the terminated "
           "one, or -1 if a timeout occurred."
@@ -798,11 +824,11 @@ PYBIND11_MODULE(simgrid, m)
       .def("join", py::overload_cast<double>(&Actor::join, py::const_), py::call_guard<py::gil_scoped_release>(),
            "Wait for the actor to finish (more info in the C++ documentation).", py::arg("timeout"))
       .def("kill", &Actor::kill, py::call_guard<py::gil_scoped_release>(), "Kill that actor")
-      .def("kill_all", &Actor::kill_all, py::call_guard<py::gil_scoped_release>(), "Kill all actors but the caller.")
       .def("self", &Actor::self, "Retrieves the current actor.")
       .def("is_suspended", &Actor::is_suspended, "Returns True if that actor is currently suspended.")
       .def("suspend", &Actor::suspend, py::call_guard<py::gil_scoped_release>(),
            "Suspend that actor, that is blocked until resume()ed by another actor.")
       .def("resume", &Actor::resume, py::call_guard<py::gil_scoped_release>(),
-           "Resume that actor, that was previously suspend()ed.");
+           "Resume that actor, that was previously suspend()ed.")
+      .def_static("kill_all", &Actor::kill_all, py::call_guard<py::gil_scoped_release>(), "Kill all actors but the caller.");
 }
