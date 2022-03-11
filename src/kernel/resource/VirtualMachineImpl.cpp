@@ -174,9 +174,7 @@ double VMModel::next_occurring_event(double now)
 Action* VMModel::execute_thread(const s4u::Host* host, double flops_amount, int thread_count)
 {
   auto cpu = host->get_cpu();
-  return cpu->execution_start(thread_count * flops_amount, thread_count,
-                              cpu->get_speed(1.0) / cpu->get_speed_ratio() *
-                                  std::min(thread_count, cpu->get_core_count()));
+  return cpu->execution_start(thread_count * flops_amount, thread_count, -1);
 }
 
 /************
