@@ -185,6 +185,20 @@ Eigen::VectorXd BmfSolver::equilibrium(const allocation_map_t& alloc) const
   XBT_DEBUG("A':\n%s", debug_eigen(A_p).c_str());
 
   XBT_DEBUG("C':\n%s", debug_eigen(C_p).c_str());
+  /* PartialPivLU is much faster than FullPivLU but requires that the matrix is invertible
+   * FullPivLU however assures that it finds come solution even if the matrix is singular
+   * Ideally we would like to be optimist and try Partial and in case of error, go back
+   * to FullPivLU.
+   * However, this with isNaN doesn't work if compiler uses -Ofastmath. In our case,
+   * the icc compiler raises an error when compiling the code (comparison with NaN always evaluates to false in fast
+   * floating point modes).
+   * Eigen::VectorXd rho = Eigen::PartialPivLU<Eigen::MatrixXd>(A_p).solve(C_p);
+   * if (rho.array().isNaN().any()) {
+   *   XBT_DEBUG("rho with nan values, falling back to FullPivLU, rho:\n%s", debug_eigen(rho).c_str());
+   *   rho = Eigen::FullPivLU<Eigen::MatrixXd>(A_p).solve(C_p);
+   * }
+   */
+
   Eigen::VectorXd rho = Eigen::FullPivLU<Eigen::MatrixXd>(A_p).solve(C_p);
   for (int p : bounded_players) {
     rho[p] = phi_[p];
