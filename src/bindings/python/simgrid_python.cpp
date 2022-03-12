@@ -318,7 +318,7 @@ PYBIND11_MODULE(simgrid, m)
   /* Class Host */
   py::class_<simgrid::s4u::Host, std::unique_ptr<Host, py::nodelete>> host(
       m, "Host", "Simulated host. See the C++ documentation for details.");
-  host.def("by_name", &Host::by_name, "Retrieves a host from its name, or die")
+  host.def_static("by_name", &Host::by_name, py::arg("name"), "Retrieves a host from its name, or die")
       .def(
           "route_to",
           [](const simgrid::s4u::Host* h, const simgrid::s4u::Host* to) {
@@ -424,7 +424,7 @@ PYBIND11_MODULE(simgrid, m)
             h->set_pstate(i);
           },
           "The current pstate (read/write property).")
-      .def("current", &Host::current, py::call_guard<py::gil_scoped_release>(),
+      .def_static("current", &Host::current, py::call_guard<py::gil_scoped_release>(),
            "Retrieves the host on which the running actor is located.")
       .def_property_readonly(
           "name",
@@ -443,7 +443,7 @@ PYBIND11_MODULE(simgrid, m)
                              "Get the available speed ratio, between 0 and 1.\n"
                              "This accounts for external load (see :py:func:`set_speed_profile() "
                              "<simgrid.Host.set_speed_profile>`) (read-only property).")
-      .def(
+      .def_static(
           "on_creation_cb",
           [](py::object cb) {
             Host::on_creation_cb([cb](Host& h) {
@@ -627,7 +627,10 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "__str__", [](const Mailbox* self) { return std::string("Mailbox(") + self->get_cname() + ")"; },
           "Textual representation of the Mailbox`")
-      .def("by_name", &Mailbox::by_name, py::call_guard<py::gil_scoped_release>(), "Retrieve a Mailbox from its name")
+      .def_static("by_name", &Mailbox::by_name,
+                  py::call_guard<py::gil_scoped_release>(),
+                  py::arg("name"),
+                  "Retrieve a Mailbox from its name")
       .def_property_readonly(
           "name",
           [](const Mailbox* self) {
@@ -812,7 +815,7 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("pid", &Actor::get_pid, "The PID (unique identifier) of this actor (read-only property).")
       .def_property_readonly("ppid", &Actor::get_ppid,
                              "The PID (unique identifier) of the actor that created this one (read-only property).")
-      .def("by_pid", &Actor::by_pid, "Retrieve an actor by its PID")
+      .def_static("by_pid", &Actor::by_pid, py::arg("pid"), "Retrieve an actor by its PID")
       .def("set_auto_restart", &Actor::set_auto_restart, py::call_guard<py::gil_scoped_release>(),
            "Specify whether the actor shall restart when its host reboots.")
       .def("daemonize", &Actor::daemonize, py::call_guard<py::gil_scoped_release>(),
