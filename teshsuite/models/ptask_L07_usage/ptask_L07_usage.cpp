@@ -318,7 +318,6 @@ static void main_dispatcher()
   c1->wait();
   end_time = sg4::Engine::get_clock();
   XBT_INFO("Actual result: Sending 1B while computing 2 flops takes %.4f seconds.", end_time - start_time);
-  XBT_INFO("\n");
 }
 
 int main(int argc, char** argv)

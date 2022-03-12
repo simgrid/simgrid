@@ -66,8 +66,9 @@ int main(int argc, char *argv[])
     printf("%d ", rb[i]);
   printf("]\n");
 
-  if (rank == 0 && status != MPI_SUCCESS) {
-    printf("all_to_all returned %d\n", status);
+  if (rank == 0) {
+    if (status != MPI_SUCCESS)
+      printf("all_to_all returned %d\n", status);
     fflush(stdout);
   }
   xbt_free(sb);

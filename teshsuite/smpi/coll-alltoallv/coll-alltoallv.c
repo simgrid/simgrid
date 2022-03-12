@@ -141,6 +141,7 @@ int main(int argc, char **argv)
   MPI_Barrier(MPI_COMM_WORLD);
   if (0 == rank) {
     printf("Alltoallv TEST COMPLETE.\n");
+    fflush(stdout);
   }
   free(sdispls);
   free(rdispls);
