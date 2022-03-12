@@ -23,10 +23,10 @@ jobs:
           echo "CXX=${{ matrix.config.cxx }}" >> GITHUB_ENV
     - name: Install boost on ubuntu
       if: matrix.config.os == 'ubuntu'
-      run: sudo apt-get update && sudo apt-get install -yq libboost-dev
+      run: sudo apt-get update && sudo apt-get install -yq libboost-dev libeigen3-dev
     - name: Install boost on macos
       if: matrix.config.os == 'macos'
-      run: brew install boost
+      run: brew install boost eigen
     - name: Install boost and gcc on windows
       if: matrix.config.os == 'windows'
       run: |
@@ -44,6 +44,10 @@ jobs:
         echo "BOOST_ROOT=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
         echo "BOOST_INCLUDEDIR=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64\boost\include" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
         echo "BOOST_LIBRARYDIR=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64\lib" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+        $url = "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz"
+        (New-Object System.Net.WebClient).DownloadFile($url, "$env:TEMP\eigen.tar.gz")
+        7z.exe x "$env:TEMP\eigen.tar.gz" -o"$env:TEMP\eigenArchive" -y | Out-Null
+        7z.exe x "$env:TEMP\eigenArchive" -o"C:\Program Files\Eigen3" -y | Out-Null
     - name: Build jar with Cmake
       run: |
           mkdir build
