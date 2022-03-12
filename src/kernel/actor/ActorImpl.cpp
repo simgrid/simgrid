@@ -258,6 +258,7 @@ void ActorImpl::set_kill_time(double kill_time)
   kill_timer_ = timer::Timer::set(kill_time, [this] {
     this->exit();
     kill_timer_ = nullptr;
+    EngineImpl::get_instance()->add_actor_to_run_list(this);
   });
 }
 
