@@ -8,6 +8,7 @@
 #include "JavaContext.hpp"
 #include "jxbt_utilities.hpp"
 #include "simgrid/Exception.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 
 #include <functional>
 #include <utility>
@@ -60,21 +61,26 @@ void JavaContext::start_hook()
   this->jenv_ = env;
 }
 
-void JavaContext::stop_hook()
+void JavaContext::stop()
 {
-    JNIEnv* env = this->jenv_;
-    env->DeleteGlobalRef(this->jprocess_);
-    jint error = __java_vm->DetachCurrentThread();
-    if (error != JNI_OK) {
-      /* This is probably a Java thread, ie an actor not created from the XML (and thus from the C++),
-       * but from Java with something like new Process().start().
-       *
-       * We should not even try to detach such threads. Instead, we throw a Java exception that will raise up
-       * until run_jprocess(), IIUC.
-       */
-      jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
-      XBT_DEBUG("Cannot detach the current thread");
-    }
+  this->get_actor()->cleanup_from_self();
+
+  /* Unregister the thread from the JVM */
+  JNIEnv* env = this->jenv_;
+  env->DeleteGlobalRef(this->jprocess_);
+  jint error = __java_vm->DetachCurrentThread();
+  if (error != JNI_OK) {
+    /* This is probably a Java thread, ie an actor not created from the XML (and thus from the C++),
+     * but from Java with something like new Process().start().
+     *
+     * We should not even try to detach such threads. Instead, we throw a Java exception that will raise up
+     * until run_jprocess(), IIUC.
+     */
+    jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", "Process killed");
+    XBT_DEBUG("Cannot detach the current thread");
+  }
+
+  throw ForcefulKillException(); // clean RAII variables with the dedicated exception
 }
 
 }}} // namespace simgrid::kernel::context

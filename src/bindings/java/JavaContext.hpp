@@ -33,7 +33,7 @@ public:
   JavaContext(std::function<void()>&& code, actor::ActorImpl* actor);
 
   void start_hook() override;
-  void stop_hook() override;
+  void stop() override;
 };
 
 class JavaContextFactory : public ContextFactory {

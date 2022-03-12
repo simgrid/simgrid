@@ -49,7 +49,7 @@ void smx_ctx_wrapper(simgrid::kernel::context::SwappedContext* context)
 #endif
   try {
     (*context)();
-    context->Context::stop();
+    context->stop();
   } catch (simgrid::ForcefulKillException const&) {
     XBT_DEBUG("Caught a ForcefulKillException");
   } catch (simgrid::Exception const& e) {
@@ -176,13 +176,6 @@ unsigned char* SwappedContext::get_stack_bottom() const
 #else
   return stack_ + get_actor()->get_stacksize();
 #endif
-}
-
-void SwappedContext::stop()
-{
-  Context::stop();
-  /* We must cut the actor execution using an exception to properly free the C++ RAII variables */
-  throw ForcefulKillException();
 }
 
 void SwappedContext::swap_into(SwappedContext* to)

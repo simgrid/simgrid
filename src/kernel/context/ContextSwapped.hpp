@@ -54,7 +54,6 @@ public:
 
   void suspend() override;
   virtual void resume();
-  XBT_ATTRIB_NORETURN void stop() override;
 
   void swap_into(SwappedContext* to);
 

@@ -97,10 +97,8 @@ void ThreadContext::wrapper(ThreadContext* context)
 
   try {
     (*context)();
-    if (not context->is_maestro()) { // Just in case somebody detached maestro
-      context->Context::stop();
-      context->stop_hook();
-    }
+    if (not context->is_maestro()) // Just in case somebody detached maestro
+      context->stop();
   } catch (ForcefulKillException const&) {
     XBT_DEBUG("Caught a ForcefulKillException in Thread::wrapper");
     xbt_assert(not context->is_maestro(), "Maestro shall not receive ForcefulKillExceptions, even when detached.");
@@ -138,13 +136,6 @@ void ThreadContext::yield()
 {
   this->yield_hook();
   this->end_.release();
-}
-
-void ThreadContext::stop()
-{
-  Context::stop();
-  stop_hook();
-  throw ForcefulKillException();
 }
 
 void ThreadContext::suspend()

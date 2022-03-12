@@ -5,6 +5,7 @@
 
 #include "mc/mc.h"
 
+#include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/context/Context.hpp"
@@ -139,6 +140,7 @@ Context::~Context()
 void Context::stop()
 {
   this->actor_->cleanup_from_self();
+  throw ForcefulKillException(); // clean RAII variables with the dedicated exception
 }
 
 void Context::set_wannadie(bool value)

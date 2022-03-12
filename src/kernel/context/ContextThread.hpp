@@ -24,7 +24,6 @@ public:
   ThreadContext(const ThreadContext&) = delete;
   ThreadContext& operator=(const ThreadContext&) = delete;
   ~ThreadContext() override;
-  XBT_ATTRIB_NORETURN void stop() override;
   void suspend() override;
   void attach_start() override;
   void attach_stop() override;
@@ -44,7 +43,6 @@ private:
   void yield();                // match a call to yield()
   virtual void start_hook() { /* empty placeholder, called after start(). Used in parallel mode and Java */}
   virtual void yield_hook() { /* empty placeholder, called before yield(). Used in parallel mode */}
-  virtual void stop_hook() { /* empty placeholder, called at stop(). Used in Java */}
 
   static void wrapper(ThreadContext* context);
 };
