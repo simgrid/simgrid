@@ -50,6 +50,7 @@ public:
   static SemaphorePtr create(unsigned int initial_capacity);
 
   void acquire();
+  /** Returns true if there was a timeout */
   bool acquire_timeout(double timeout);
   void release();
   int get_capacity() const;
