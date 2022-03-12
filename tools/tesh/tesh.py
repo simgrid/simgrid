@@ -429,9 +429,9 @@ class Cmd:
             logs.append("(ignoring the output of <{cmd}> as requested)".format(cmd=cmd_name))
         else:
             stdouta = stdout_data.split("\n")
+            stdouta = self.remove_ignored_lines(stdouta)
             while stdouta and stdouta[-1] == "":
                 del stdouta[-1]
-            stdouta = self.remove_ignored_lines(stdouta)
             stdcpy = stdouta[:]
 
             # Mimic the "sort" bash command, which is case unsensitive.
