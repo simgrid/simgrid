@@ -30,7 +30,8 @@ jobs:
     - name: Install boost and gcc on windows
       if: matrix.config.os == 'windows'
       run: |
-        Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh') -RunAsAdmin
+        iwr -useb get.scoop.sh -outfile 'install.ps1'
+        .\install.ps1 -RunAsAdmin
         scoop install gcc --global
         If ((Test-Path "C:\hostedtoolcache\windows\Boost") -eq $False){
           # Use the boost-1.72.0-win32-msvc14.1-x86_64.tar.gz for Windows 2016
