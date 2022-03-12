@@ -204,12 +204,14 @@ void ActorImpl::exit()
   suspended_ = false;
   exception_ = nullptr;
 
-  /* destroy the blocking synchro if any */
   if (waiting_synchro_ != nullptr) {
+    /* Take an extra reference on the activity object that may be unref by Comm::finish() or friends */
+    activity::ActivityImplPtr activity = waiting_synchro_;
+    activity->cancel();
+    activity->set_state(activity::State::FAILED);
+    activity->post();
+
     activities_.remove(waiting_synchro_);
-    waiting_synchro_->cancel();
-    waiting_synchro_->set_state(activity::State::FAILED);
-    waiting_synchro_->post();
     waiting_synchro_ = nullptr;
   }
   for (auto const& activity : activities_)
