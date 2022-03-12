@@ -375,10 +375,15 @@ void ActorImpl::resume()
 activity::ActivityImplPtr ActorImpl::join(const ActorImpl* actor, double timeout)
 {
   activity::ActivityImplPtr sleep = this->sleep(timeout);
-  actor->on_exit->emplace_back([sleep](bool) {
+  if (actor->context_->wannadie() || actor->context_->to_be_freed()) {
     if (sleep->surf_action_)
       sleep->surf_action_->finish(resource::Action::State::FINISHED);
-  });
+  } else {
+    actor->on_exit->emplace_back([sleep](bool) {
+      if (sleep->surf_action_)
+        sleep->surf_action_->finish(resource::Action::State::FINISHED);
+    });
+  }
   return sleep;
 }
 
