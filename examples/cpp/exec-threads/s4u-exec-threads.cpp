@@ -26,8 +26,7 @@ static void runner()
   sg4::this_actor::thread_execute(multicore_host, 1e9, 6);
   XBT_INFO("Computed 6-thread activity on a 4-core host. Took %g s", e->get_clock() - start_time);
 
-  auto MyHost1                          = e->host_by_name("MyHost1");
-  simgrid::s4u::ExecPtr background_task = MyHost1->exec_async(2.5e9);
+  simgrid::s4u::ExecPtr background_task = sg4::this_actor::exec_async(2.5e9);
   XBT_INFO("Start a 1-core background task on the 4-core host.");
 
   start_time = sg4::Engine::get_clock();
@@ -37,6 +36,19 @@ static void runner()
   start_time = sg4::Engine::get_clock();
   sg4::this_actor::thread_execute(multicore_host, 1e9, 4);
   XBT_INFO("Computed 4-thread activity on a 4-core host. Took %g s", e->get_clock() - start_time);
+
+  background_task->wait();
+  XBT_INFO("The background task has ended.");
+
+  background_task = sg4::this_actor::exec_init(2e9)->set_thread_count(4)->start();
+  XBT_INFO("Start a 4-core background task on the 4-core host.");
+
+  XBT_INFO("Sleep for 5 seconds before starting another competing task");
+  sg4::this_actor::sleep_for(5);
+
+  start_time = sg4::Engine::get_clock();
+  sg4::this_actor::execute(1e9);
+  XBT_INFO("Computed 1-thread activity on a 4-core host. Took %g s", e->get_clock() - start_time);
 
   background_task->wait();
   XBT_INFO("The background task has ended.");

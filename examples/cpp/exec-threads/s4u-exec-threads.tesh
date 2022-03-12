@@ -8,4 +8,8 @@ $ ${bindir:=.}/s4u-exec-threads ${platfdir}/energy_platform.xml "--log=root.fmt:
 > [ 45.000000] Computed 2-thread activity on a 4-core host. Took 10 s
 > [ 57.500000] Computed 4-thread activity on a 4-core host. Took 12.5 s
 > [ 62.500000] The background task has ended.
-> [ 62.500000] Simulation done.
+> [ 62.500000] Start a 4-core background task on the 4-core host.
+> [ 62.500000] Sleep for 5 seconds before starting another competing task
+> [ 80.000000] Computed 1-thread activity on a 4-core host. Took 12.5 s
+> [ 85.000000] The background task has ended.
+> [ 85.000000] Simulation done.
