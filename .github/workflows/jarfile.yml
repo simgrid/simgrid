@@ -40,7 +40,7 @@ jobs:
           7z.exe x "$env:TEMP\boost.tar.gz" -o"$env:TEMP\boostArchive" -y | Out-Null
           7z.exe x "$env:TEMP\boostArchive" -o"$env:TEMP\boost" -y | Out-Null
           Push-Location -Path "$env:TEMP\boost"
-          Invoke-Expression .\setup.ps1 -RunAsAdmin
+          Invoke-Expression .\setup.ps1
         }
         echo "BOOST_ROOT=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
         echo "BOOST_INCLUDEDIR=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64\boost\include" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
