@@ -34,6 +34,7 @@ public:
   ~SemStack()
   {
     for (auto* sem : to_release) {
+      XBT_INFO("Go release a semaphore");
       sem->release();
       XBT_INFO("Released a semaphore on exit. It's now %d", sem->get_capacity());
     }
@@ -54,13 +55,13 @@ static void producer(SharedBuffer& buf)
         [](bool forcefully) { XBT_INFO("Producer dying %s.", forcefully ? "forcefully" : "peacefully"); });
 
   while (todo > 0) {
-    xbt_assert(sg4::Engine::get_clock() < cfg_deadline,
-               "Failed to exchange all tasks in less than %d seconds. Is this an infinite loop?", (int)cfg_deadline);
-
     sg4::this_actor::sleep_for(1); // Give a chance to the monkey to kill this actor at this point
 
-    while (buf.sem_empty->acquire_timeout(10))
+    while (buf.sem_empty->acquire_timeout(10)) {
       XBT_INFO("Timeouted");
+      xbt_assert(sg4::Engine::get_clock() < cfg_deadline,
+                 "Failed to exchange all tasks in less than %d seconds. Is this an infinite loop?", (int)cfg_deadline);
+    }
     to_release.push(buf.sem_empty);
     XBT_INFO("sem_empty acquired");
 
@@ -87,13 +88,13 @@ static void consumer(const SharedBuffer& buf)
 
   int item;
   do {
-    xbt_assert(sg4::Engine::get_clock() < cfg_deadline,
-               "Failed to exchange all tasks in less than %d seconds. Is this an infinite loop?", (int)cfg_deadline);
-
     sg4::this_actor::sleep_for(0.75); // Give a chance to the monkey to kill this actor at this point
 
-    while (buf.sem_full->acquire_timeout(10))
+    while (buf.sem_full->acquire_timeout(10)) {
       XBT_INFO("Timeouted");
+      xbt_assert(sg4::Engine::get_clock() < cfg_deadline,
+                 "Failed to exchange all tasks in less than %d seconds. Is this an infinite loop?", (int)cfg_deadline);
+    }
     to_release.push(buf.sem_full);
 
     sg4::this_actor::sleep_for(0.75); // Give a chance to the monkey to kill this actor at this point
