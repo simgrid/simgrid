@@ -49,6 +49,7 @@ jobs:
         (New-Object System.Net.WebClient).DownloadFile($url, "$env:TEMP\eigen.tar.gz")
         7z.exe x "$env:TEMP\eigen.tar.gz" -o"$env:TEMP\eigenArchive" -y | Out-Null
         7z.exe x "$env:TEMP\eigenArchive" -o"C:\Program Files\Eigen3" -y
+        ls C:\Program Files\Eigen3
         echo "Eigen3_DIR=C:\Program Files\Eigen3\cmake" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
     - name: Build jar with Cmake
       run: |
