@@ -41,7 +41,7 @@ class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder, public ActorRestartingT
   bool daemon_       = false; /* Daemon actors are automatically killed when the last non-daemon leaves */
   unsigned stacksize_; // set to default value in constructor
 
-  std::vector<activity::MailboxImpl*> mailboxes;
+  std::vector<activity::MailboxImpl*> mailboxes_;
   friend activity::MailboxImpl;
 
 public:

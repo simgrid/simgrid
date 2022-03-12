@@ -32,7 +32,7 @@ MailboxImpl::~MailboxImpl()
 void MailboxImpl::set_receiver(s4u::ActorPtr actor)
 {
   if (this->permanent_receiver_) {
-    std::vector<MailboxImpl*>& mboxes = this->permanent_receiver_->mailboxes;
+    std::vector<MailboxImpl*>& mboxes = this->permanent_receiver_->mailboxes_;
     mboxes.erase(std::remove(mboxes.begin(), mboxes.end(), this), mboxes.end());
   }
 
