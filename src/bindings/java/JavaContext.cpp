@@ -80,7 +80,7 @@ void JavaContext::stop()
     XBT_DEBUG("Cannot detach the current thread");
   }
 
-  throw ForcefulKillException(); // clean RAII variables with the dedicated exception
+  simgrid::ForcefulKillException::do_throw(); // clean RAII variables with the dedicated exception
 }
 
 }}} // namespace simgrid::kernel::context
