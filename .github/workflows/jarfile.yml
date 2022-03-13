@@ -51,7 +51,7 @@ jobs:
         cmake -E tar zxf "$env:TEMP\eigen.tar.gz"
         mkdir "$env:TEMP\eigen-3.4.0\build"
         cd "$env:TEMP\eigen-3.4.0\build"
-        cmake -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX="C:\Program Files" ..
+        cmake -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX="C:\Program Files\Eigen" ..
         cmake --build . --target install
     - name: Build jar with Cmake
       run: |
