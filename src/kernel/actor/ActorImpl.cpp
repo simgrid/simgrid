@@ -38,6 +38,7 @@ namespace simgrid {
 namespace kernel {
 namespace actor {
 
+/*------------------------- [ ActorIDTrait ] -------------------------*/
 static unsigned long maxpid = 0;
 unsigned long get_maxpid()
 {
@@ -47,7 +48,6 @@ unsigned long* get_maxpid_addr()
 {
   return &maxpid;
 }
-
 ActorIDTrait::ActorIDTrait(std::string name, aid_t ppid) : name_(std::move(name)), pid_(maxpid++), ppid_(ppid) {}
 
 ActorImpl* ActorImpl::by_pid(aid_t pid)

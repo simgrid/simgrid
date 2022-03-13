@@ -21,18 +21,7 @@ namespace kernel {
 namespace actor {
 class ProcessArg;
 
-class XBT_PUBLIC ActorRestartingTrait {
-  bool auto_restart_ = false;
-  int restart_count_ = 0;
-
-  friend ActorImpl;
-
-public:
-  bool has_to_auto_restart() const { return auto_restart_; }
-  void set_auto_restart(bool autorestart) { auto_restart_ = autorestart; }
-  int get_restart_count() const { return restart_count_; }
-};
-
+/*------------------------- [ ActorIDTrait ] -------------------------*/
 class XBT_PUBLIC ActorIDTrait {
   xbt::string name_;
   aid_t pid_         = 0;
@@ -48,7 +37,21 @@ public:
 XBT_PUBLIC unsigned long get_maxpid();
 XBT_PUBLIC unsigned long* get_maxpid_addr(); // In MC mode, the application sends this pointers to the MC
 
-class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder, public ActorRestartingTrait, public ActorIDTrait {
+/*------------------------- [ ActorRestartingTrait ] -------------------------*/
+class XBT_PUBLIC ActorRestartingTrait {
+  bool auto_restart_ = false;
+  int restart_count_ = 0;
+
+  friend ActorImpl;
+
+public:
+  bool has_to_auto_restart() const { return auto_restart_; }
+  void set_auto_restart(bool autorestart) { auto_restart_ = autorestart; }
+  int get_restart_count() const { return restart_count_; }
+};
+
+/*------------------------- [ ActorImpl ] -------------------------*/
+class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder, public ActorIDTrait, public ActorRestartingTrait {
   s4u::Host* host_   = nullptr; /* the host on which the actor is running */
   bool daemon_       = false; /* Daemon actors are automatically killed when the last non-daemon leaves */
   unsigned stacksize_; // set to default value in constructor
@@ -84,11 +87,15 @@ public:
   // Accessors to private fields
   s4u::Host* get_host() const { return host_; }
   void set_host(s4u::Host* dest);
-  bool is_daemon() const { return daemon_; } /** Whether this actor has been daemonized */
   bool is_maestro() const; /** Whether this actor is actually maestro (cheap call but may segfault before actor creation
                               / after terminaison) */
   void set_stacksize(unsigned stacksize) { stacksize_ = stacksize; }
   unsigned get_stacksize() const { return stacksize_; }
+
+  // Daemonize
+  bool is_daemon() const { return daemon_; } /** Whether this actor has been daemonized */
+  void daemonize();
+  void undaemonize();
 
   std::unique_ptr<context::Context> context_; /* the context (uctx/raw/thread) that executes the user function */
 
@@ -137,7 +144,6 @@ public:
 private:
   s4u::Actor piface_; // Our interface is part of ourselves
 
-  void undaemonize();
 
 public:
   s4u::ActorPtr get_iface() { return s4u::ActorPtr(&piface_); }
@@ -158,7 +164,6 @@ public:
   void kill_all() const;
 
   void yield();
-  void daemonize();
   bool is_suspended() const { return suspended_; }
   s4u::Actor* restart();
   void suspend();
