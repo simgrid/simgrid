@@ -11,7 +11,7 @@ jobs:
     strategy:
         matrix:
           config:
-          - { name: "Windows MingW", os: windows, cc: "gcc", cxx: "g++", generator: "MinGW Makefiles", cmake_extra_options: '-Denable_lto=OFF -DCMAKE_MODULE_PATH="C:/Program Files/Eigen/cmake"' }
+          - { name: "Windows MingW", os: windows, cc: "gcc", cxx: "g++", generator: "MinGW Makefiles", cmake_extra_options: '-Denable_lto=OFF -DCMAKE_MODULE_PATH="C:/Program Files/Eigen3/cmake"' }
           - { name: "Ubuntu gcc", os: ubuntu, cc: "gcc", cxx: "g++", generator: "Unix Makefiles", cmake_extra_options: "-DLTO_EXTRA_FLAG=auto" }
           - { name: "MacOS clang", os: macos, cc: "clang", cxx: "clang++", generator: "Unix Makefiles", cmake_extra_options: "-DLTO_EXTRA_FLAG=auto" }
     steps:
@@ -44,15 +44,13 @@ jobs:
         }
         echo "BOOST_ROOT=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
         echo "BOOST_INCLUDEDIR=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64\boost\include" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-        echo "BOOST_LIBRARYDIR=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64\lib" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+        echo "BOOST_LIBRARYDIR=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64\lib" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append    
         $url = "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz"
         (New-Object System.Net.WebClient).DownloadFile($url, "$env:TEMP\eigen.tar.gz")
-        Push-Location -Path "$env:TEMP"      
-        cmake -E tar zxf "$env:TEMP\eigen.tar.gz"
-        mkdir "$env:TEMP\eigen-3.4.0\build"
-        cd "$env:TEMP\eigen-3.4.0\build"
-        cmake -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX="C:\Program Files\Eigen" ..
-        cmake --build . --target install
+        7z.exe x "$env:TEMP\eigen.tar.gz" -o"$env:TEMP\eigenArchive" -y | Out-Null
+        7z.exe x "$env:TEMP\eigenArchive" -o"$env:TEMP\Eigen3" -y | Out-Null
+        mv "$env:TEMP\Eigen3\eigen-3.4.0" "C:\Program Files\Eigen3"
+        ls "C:\Program Files\Eigen3"
     - name: Build jar with Cmake
       run: |
           mkdir build
