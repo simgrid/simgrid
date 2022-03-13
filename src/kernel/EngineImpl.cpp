@@ -467,11 +467,7 @@ actor::ActorImpl* EngineImpl::get_actor_by_pid(aid_t pid)
   if (item != actor_list_.end())
     return item->second;
 
-  // Search the trash
-  for (auto& a : actors_to_destroy_)
-    if (a.get_pid() == pid)
-      return &a;
-  return nullptr; // Not found, even in the trash
+  return nullptr; // Not found
 }
 
 void EngineImpl::remove_daemon(actor::ActorImpl* actor)

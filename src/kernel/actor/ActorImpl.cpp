@@ -137,10 +137,12 @@ bool ActorImpl::is_maestro() const
 
 void ActorImpl::cleanup_from_kernel()
 {
-  xbt_assert(s4u::Actor::is_maestro(), "Cleanup_from_kernel called from '%s' on '%s'", ActorImpl::self()->get_cname(),
-             get_cname());
+  xbt_assert(s4u::Actor::is_maestro(), "Cleanup_from_kernel must be called in maestro context");
 
   auto* engine = EngineImpl::get_instance();
+  if (engine->get_actor_by_pid(get_pid()) == nullptr)
+    return; // Already cleaned
+
   engine->remove_actor(get_pid());
   if (host_ && host_actor_list_hook.is_linked())
     host_->get_impl()->remove_actor(this);
@@ -154,6 +156,7 @@ void ActorImpl::cleanup_from_kernel()
   }
 
   undaemonize();
+  s4u::Actor::on_termination(*get_ciface());
 
   while (not mailboxes_.empty())
     mailboxes_.back()->set_receiver(nullptr);
@@ -192,7 +195,7 @@ void ActorImpl::cleanup_from_self()
   }
 
   set_wannadie(false); // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
-  actor::simcall_answered([this] { s4u::Actor::on_termination(*get_ciface()); });
+  actor::simcall_answered([] {}); // This empty callback is mandatory even if it drives me nuts.
   set_wannadie();
 }
 
