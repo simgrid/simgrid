@@ -47,7 +47,7 @@ jobs:
         echo "BOOST_LIBRARYDIR=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64\lib" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
         $url = "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz"
         (New-Object System.Net.WebClient).DownloadFile($url, "$env:TEMP\eigen.tar.gz")
-        Push-Location -Path "$env:TEMP"      
+        Push-Location -Path "$env:TEMP"
         cmake -E tar zxf "$env:TEMP\eigen.tar.gz"
         mkdir "$env:TEMP\eigen-3.4.0\build"
         cd "$env:TEMP\eigen-3.4.0\build"
