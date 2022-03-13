@@ -62,8 +62,10 @@ XBT:
  - Drop xbt_dynar_shrink().
 
 Python:
- - Fixed the following bindings:
-   - Actor.kill_all() [previously declared a member of the Actor class although it is a static member]
+ - Made the following bindings static (previously member functions):
+   - Actor: Actor.kill_all(), Actor.by_pid()
+   - Host: Host.by_name(), Host.current(), Host.on_creation_cb()
+   - Mailbox: Mailbox.by_name()
  - Added the following bindings:
      - this_actor.warning()
      - Mailbox.put_init() [example: examples/python/comm-waitallfor]
