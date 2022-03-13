@@ -49,9 +49,10 @@ jobs:
         (New-Object System.Net.WebClient).DownloadFile($url, "$env:TEMP\eigen.tar.gz")
         Push-Location -Path "$env:TEMP"      
         cmake -E tar zxf "$env:TEMP\eigen.tar.gz"
-        Push-Location -Path "$env:TEMP\eigen-3.4.0"
-        cmake -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX="C:\Program Files" .
-        cmake --build . --target install
+        mkdir "$env:TEMP\eigen-3.4.0\build"
+        cd "$env:TEMP\eigen-3.4.0\build"
+        cmake -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX="C:\Program Files" ..
+        cmake --build .. --target install
     - name: Build jar with Cmake
       run: |
           mkdir build
