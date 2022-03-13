@@ -59,7 +59,7 @@ jobs:
           cd build
           cmake -Denable_documentation=OFF -Denable_java=ON -Denable_msg=ON -Denable_lib_in_jar=ON -Dminimal-bindings=ON -Denable_compile_optimizations=ON -Denable_smpi=OFF ${{ matrix.config.cmake_extra_options }} -G "${{ matrix.config.generator }}" ..
           make -j2 simgrid-java_jar java-all
-	  ctest -j2 -R java
+          ctest -j2 -R java
     - name: Upload jar
       uses: actions/upload-artifact@v2
       with:
