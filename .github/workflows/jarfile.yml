@@ -11,7 +11,7 @@ jobs:
     strategy:
         matrix:
           config:
-          - { name: "Windows MingW", os: windows, cc: "gcc", cxx: "g++", generator: "MinGW Makefiles", cmake_extra_options: '-Denable_lto=OFF -DEigen3_DIR="C:/Program Files/Eigen3/"' }
+          - { name: "Windows MingW", os: windows, cc: "gcc", cxx: "g++", generator: "MinGW Makefiles", cmake_extra_options: '-Denable_lto=OFF -DEigen3_DIR="C:/Program Files/Eigen3/cmake"' }
           - { name: "Ubuntu gcc", os: ubuntu, cc: "gcc", cxx: "g++", generator: "Unix Makefiles", cmake_extra_options: "-DLTO_EXTRA_FLAG=auto" }
           - { name: "MacOS clang", os: macos, cc: "clang", cxx: "clang++", generator: "Unix Makefiles", cmake_extra_options: "-DLTO_EXTRA_FLAG=auto" }
     steps:
