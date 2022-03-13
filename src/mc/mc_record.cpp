@@ -5,7 +5,6 @@
 
 #include "src/mc/mc_record.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
-#include "src/kernel/context/Context.hpp"
 #include "src/mc/mc_base.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/mc/transition/Transition.hpp"

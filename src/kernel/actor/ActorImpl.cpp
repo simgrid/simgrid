@@ -166,11 +166,11 @@ void ActorImpl::cleanup_from_kernel()
 void ActorImpl::cleanup_from_self()
 {
   xbt_assert(not ActorImpl::is_maestro(), "Cleanup_from_self called from maestro on '%s'", get_cname());
-  context_->set_to_be_freed();
+  set_to_be_freed();
 
   if (on_exit) {
     // Execute the termination callbacks
-    bool failed = context_->wannadie();
+    bool failed = wannadie();
     for (auto exit_fun = on_exit->crbegin(); exit_fun != on_exit->crend(); ++exit_fun)
       (*exit_fun)(failed);
     on_exit.reset();
@@ -193,14 +193,14 @@ void ActorImpl::cleanup_from_self()
     simcall_.timeout_cb_ = nullptr;
   }
 
-  context_->set_wannadie(false); // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
+  set_wannadie(false); // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
   actor::simcall_answered([this] { s4u::Actor::on_termination(*get_ciface()); });
-  context_->set_wannadie();
+  set_wannadie();
 }
 
 void ActorImpl::exit()
 {
-  context_->set_wannadie();
+  set_wannadie();
   suspended_ = false;
   exception_ = nullptr;
 
@@ -225,7 +225,7 @@ void ActorImpl::exit()
 void ActorImpl::kill(ActorImpl* actor) const
 {
   xbt_assert(not actor->is_maestro(), "Killing maestro is a rather bad idea.");
-  if (actor->context_->wannadie()) {
+  if (actor->wannadie()) {
     XBT_DEBUG("Ignoring request to kill actor %s@%s that is already dead", actor->get_cname(),
               actor->host_->get_cname());
     return;
@@ -275,7 +275,7 @@ void ActorImpl::yield()
   /* Ok, maestro returned control to us */
   XBT_DEBUG("Control returned to me: '%s'", get_cname());
 
-  if (context_->wannadie()) {
+  if (wannadie()) {
     XBT_DEBUG("Actor %s@%s is dead", get_cname(), host_->get_cname());
     context_->stop();
     THROW_IMPOSSIBLE;
@@ -298,7 +298,7 @@ void ActorImpl::yield()
     }
   }
 #if HAVE_SMPI
-  if (not context_->wannadie())
+  if (not wannadie())
     smpi_switch_data_segment(get_iface());
 #endif
 }
@@ -354,7 +354,7 @@ void ActorImpl::resume()
 {
   XBT_IN("actor = %p", this);
 
-  if (context_->wannadie()) {
+  if (wannadie()) {
     XBT_VERB("Ignoring request to resume an actor that is currently dying.");
     return;
   }
@@ -375,7 +375,7 @@ void ActorImpl::resume()
 activity::ActivityImplPtr ActorImpl::join(const ActorImpl* actor, double timeout)
 {
   activity::ActivityImplPtr sleep = this->sleep(timeout);
-  if (actor->context_->wannadie() || actor->context_->to_be_freed()) {
+  if (actor->wannadie() || actor->to_be_freed()) {
     if (sleep->surf_action_)
       sleep->surf_action_->finish(resource::Action::State::FINISHED);
   } else {
@@ -505,6 +505,11 @@ ActorImplPtr ActorImpl::create(ProcessArg* args)
   if (args->daemon_)
     actor->daemonize();
   return actor;
+}
+void ActorImpl::set_wannadie(bool value)
+{
+  XBT_DEBUG("Actor %s gonna die.", get_cname());
+  iwannadie_ = value;
 }
 
 void create_maestro(const std::function<void()>& code)

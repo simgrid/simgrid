@@ -40,6 +40,8 @@ class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder, public ActorRestartingT
   aid_t ppid_        = -1;
   bool daemon_       = false; /* Daemon actors are automatically killed when the last non-daemon leaves */
   unsigned stacksize_; // set to default value in constructor
+  bool iwannadie_   = false; // True if we need to do some cleanups in actor mode.
+  bool to_be_freed_ = false; // True if cleanups in actor mode done, but cleanups in kernel mode pending
 
   std::vector<activity::MailboxImpl*> mailboxes_;
   friend activity::MailboxImpl;
@@ -62,6 +64,12 @@ public:
 
   const xbt::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
+
+  // Life-cycle
+  bool wannadie() const { return iwannadie_; }
+  void set_wannadie(bool value = true);
+  bool to_be_freed() const { return to_be_freed_; }
+  void set_to_be_freed() { to_be_freed_ = true; }
 
   // Accessors to private fields
   s4u::Host* get_host() const { return host_; }

@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/Exception.hpp"
-#include "src/kernel/context/Context.hpp"
 #include <xbt/config.hpp>
 #include <xbt/log.hpp>
 

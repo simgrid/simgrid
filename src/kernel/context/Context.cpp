@@ -142,12 +142,6 @@ void Context::stop()
   this->actor_->cleanup_from_self();
   throw ForcefulKillException(); // clean RAII variables with the dedicated exception
 }
-
-void Context::set_wannadie(bool value)
-{
-  XBT_DEBUG("Actor %s gonna die.", actor_->get_cname());
-  iwannadie_ = value;
-}
 AttachContext::~AttachContext() = default;
 
 } // namespace context

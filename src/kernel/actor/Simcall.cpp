@@ -25,7 +25,7 @@ void ActorImpl::simcall_handle(int times_considered)
   XBT_DEBUG("Handling simcall %p: %s", &simcall_, simcall_.get_cname());
   if (simcall_.observer_ != nullptr)
     simcall_.observer_->prepare(times_considered);
-  if (context_->wannadie())
+  if (wannadie())
     return;
 
   xbt_assert(simcall_.call_ != Simcall::Type::NONE, "Asked to do the noop syscall on %s@%s", get_cname(),

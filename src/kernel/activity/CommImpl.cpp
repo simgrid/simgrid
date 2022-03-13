@@ -14,7 +14,6 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
-#include "src/kernel/context/Context.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/LinkImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
@@ -481,7 +480,7 @@ void CommImpl::set_exception(actor::ActorImpl* issuer)
 
     case State::SRC_HOST_FAILURE:
       if (issuer == src_actor_)
-        issuer->context_->set_wannadie();
+        issuer->set_wannadie();
       else {
         set_state(State::FAILED);
         issuer->exception_ = std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
@@ -490,7 +489,7 @@ void CommImpl::set_exception(actor::ActorImpl* issuer)
 
     case State::DST_HOST_FAILURE:
       if (issuer == dst_actor_)
-        issuer->context_->set_wannadie();
+        issuer->set_wannadie();
       else {
         set_state(State::FAILED);
         issuer->exception_ = std::make_exception_ptr(NetworkFailureException(XBT_THROW_POINT, "Remote peer failed"));
@@ -554,10 +553,10 @@ void CommImpl::finish()
     /* Check out for errors */
 
     if (not simcall->issuer_->get_host()->is_on()) {
-      simcall->issuer_->context_->set_wannadie();
+      simcall->issuer_->set_wannadie();
     } else {
       // Do not answer to dying actors
-      if (not simcall->issuer_->context_->wannadie()) {
+      if (not simcall->issuer_->wannadie()) {
         set_exception(simcall->issuer_);
         simcall->issuer_->simcall_answer();
       }

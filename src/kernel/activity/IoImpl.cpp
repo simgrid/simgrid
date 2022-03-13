@@ -12,7 +12,6 @@
 #include "src/kernel/activity/IoImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
-#include "src/kernel/context/Context.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/mc/mc_replay.hpp"
@@ -118,7 +117,7 @@ void IoImpl::set_exception(actor::ActorImpl* issuer)
 {
   switch (get_state()) {
     case State::FAILED:
-      issuer->context_->set_wannadie();
+      issuer->set_wannadie();
       static_cast<s4u::Io*>(get_iface())->complete(s4u::Activity::State::FAILED);
       issuer->exception_ = std::make_exception_ptr(StorageFailureException(XBT_THROW_POINT, "Storage failed"));
       break;

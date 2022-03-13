@@ -14,7 +14,6 @@
 #include "src/include/mc/mc.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "src/kernel/context/Context.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/surf/HostImpl.hpp"
 
@@ -112,7 +111,7 @@ void Actor::join(double timeout) const
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   const kernel::actor::ActorImpl* target = pimpl_;
   kernel::actor::simcall_blocking([issuer, target, timeout] {
-    if (target->context_->wannadie()) {
+    if (target->wannadie()) {
       // The joined actor is already finished, just wake up the issuer right away
       issuer->simcall_answer();
     } else {

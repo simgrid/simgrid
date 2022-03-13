@@ -22,7 +22,6 @@
 #include <xbt/parmap.hpp>
 
 #include "src/internal_config.h"
-#include "src/kernel/context/Context.hpp"
 #include "src/kernel/context/ContextSwapped.hpp"
 
 namespace simgrid {

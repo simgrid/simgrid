@@ -24,7 +24,6 @@
 
 #include "simgrid/kernel/ProfileBuilder.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
-#include "src/kernel/context/Context.hpp"
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Comm.hpp>

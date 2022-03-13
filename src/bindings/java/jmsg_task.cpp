@@ -7,7 +7,6 @@
 
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "src/kernel/context/Context.hpp"
 
 #include "jmsg.hpp"
 #include "jmsg_host.h"

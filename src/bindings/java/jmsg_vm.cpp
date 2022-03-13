@@ -10,7 +10,6 @@
 #include "jxbt_utilities.hpp"
 #include "simgrid/Exception.hpp"
 #include "simgrid/plugins/live_migration.h"
-#include "src/kernel/context/Context.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(java);

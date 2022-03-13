@@ -8,7 +8,6 @@
 
 #include "src/kernel/activity/Synchro.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "src/kernel/context/Context.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_synchro, kernel,
@@ -66,7 +65,7 @@ void SynchroImpl::post()
 void SynchroImpl::set_exception(actor::ActorImpl* issuer)
 {
   if (get_state() == State::FAILED) {
-    issuer->context_->set_wannadie();
+    issuer->set_wannadie();
     issuer->exception_ = std::make_exception_ptr(HostFailureException(XBT_THROW_POINT, "Host failed"));
   } else {
     xbt_assert(get_state() == State::SRC_TIMEOUT, "Internal error in SynchroImpl::finish() unexpected synchro state %s",
