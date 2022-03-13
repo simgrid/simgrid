@@ -95,7 +95,7 @@ void AppSide::handle_deadlock_check(const s_mc_message_t*) const
 }
 void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* message) const
 {
-  kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(message->aid_);
+  kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(message->aid_);
   xbt_assert(actor != nullptr, "Invalid pid %ld", message->aid_);
 
   // The client may send some messages to the server while processing the transition
@@ -125,7 +125,7 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
 
 void AppSide::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg) const
 {
-  bool res = mc::actor_is_enabled(kernel::actor::ActorImpl::by_pid(msg->aid));
+  bool res = mc::actor_is_enabled(kernel::EngineImpl::get_instance()->get_actor_by_pid(msg->aid));
   s_mc_message_int_t answer{MessageType::ACTOR_ENABLED_REPLY, res};
   xbt_assert(channel_.send(answer) == 0, "Could not send ACTOR_ENABLED_REPLY");
 }

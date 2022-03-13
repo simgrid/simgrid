@@ -50,11 +50,6 @@ unsigned long* get_maxpid_addr()
 }
 ActorIDTrait::ActorIDTrait(std::string name, aid_t ppid) : name_(std::move(name)), pid_(maxpid++), ppid_(ppid) {}
 
-ActorImpl* ActorImpl::by_pid(aid_t pid)
-{
-  return EngineImpl::get_instance()->get_actor_by_pid(pid);
-}
-
 ActorImpl* ActorImpl::self()
 {
   const context::Context* self_context = context::Context::self();

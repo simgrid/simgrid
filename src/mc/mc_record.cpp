@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/mc_record.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/mc_base.hpp"
 #include "src/mc/mc_replay.hpp"
@@ -28,7 +29,7 @@ void RecordTrace::replay() const
     XBT_DEBUG("Executing %ld$%i", transition->aid_, transition->times_considered_);
 
     // Choose a request:
-    kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(transition->aid_);
+    kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(transition->aid_);
     xbt_assert(actor != nullptr, "Unexpected actor (id:%ld).", transition->aid_);
     const kernel::actor::Simcall* simcall = &(actor->simcall_);
     xbt_assert(simcall->call_ != kernel::actor::Simcall::Type::NONE, "No simcall for process %ld.", transition->aid_);

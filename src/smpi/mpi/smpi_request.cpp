@@ -15,6 +15,7 @@
 #include "smpi_datatype.hpp"
 #include "smpi_host.hpp"
 #include "smpi_op.hpp"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
@@ -620,8 +621,8 @@ void Request::start()
 
     size_t payload_size_ = size_ + 16;//MPI enveloppe size (tag+dest+communicator)
     kernel::actor::CommIsendSimcall observer{
-        simgrid::kernel::actor::ActorImpl::by_pid(src_), mailbox->get_impl(), static_cast<double>(payload_size_), -1,
-        static_cast<unsigned char*>(buf), real_size_, &match_send,
+        simgrid::kernel::EngineImpl::get_instance()->get_actor_by_pid(src_), mailbox->get_impl(),
+        static_cast<double>(payload_size_), -1, static_cast<unsigned char*>(buf), real_size_, &match_send,
         &xbt_free_f, // how to free the userdata if a detached send fails
         process->replaying() ? &smpi_comm_null_copy_buffer_callback : smpi_comm_copy_data_callback, this,
         // detach if msg size < eager/rdv switch limit

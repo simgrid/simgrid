@@ -250,7 +250,7 @@ void Actor::kill()
 
 ActorPtr Actor::by_pid(aid_t pid)
 {
-  kernel::actor::ActorImpl* actor = kernel::actor::ActorImpl::by_pid(pid);
+  kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(pid);
   if (actor != nullptr)
     return actor->get_iface();
   else
