@@ -33,11 +33,23 @@ public:
   int get_restart_count() const { return restart_count_; }
 };
 
-class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder, public ActorRestartingTrait {
-  s4u::Host* host_   = nullptr; /* the host on which the actor is running */
+class XBT_PUBLIC ActorIDTrait {
   xbt::string name_;
   aid_t pid_         = 0;
   aid_t ppid_        = -1;
+
+public:
+  explicit ActorIDTrait(std::string name, aid_t ppid);
+  const xbt::string& get_name() const { return name_; }
+  const char* get_cname() const { return name_.c_str(); }
+  aid_t get_pid() const { return pid_; }
+  aid_t get_ppid() const { return ppid_; }
+};
+XBT_PUBLIC unsigned long get_maxpid();
+XBT_PUBLIC unsigned long* get_maxpid_addr(); // In MC mode, the application sends this pointers to the MC
+
+class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder, public ActorRestartingTrait, public ActorIDTrait {
+  s4u::Host* host_   = nullptr; /* the host on which the actor is running */
   bool daemon_       = false; /* Daemon actors are automatically killed when the last non-daemon leaves */
   unsigned stacksize_; // set to default value in constructor
   bool iwannadie_   = false; // True if we need to do some cleanups in actor mode.
@@ -47,7 +59,7 @@ class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder, public ActorRestartingT
   friend activity::MailboxImpl;
 
 public:
-  ActorImpl(xbt::string name, s4u::Host* host);
+  ActorImpl(xbt::string name, s4u::Host* host, aid_t ppid);
   ActorImpl(const ActorImpl&) = delete;
   ActorImpl& operator=(const ActorImpl&) = delete;
   ~ActorImpl();
@@ -62,8 +74,6 @@ public:
   boost::intrusive::list_member_hook<> kernel_destroy_list_hook; /* EngineImpl actors_to_destroy */
   boost::intrusive::list_member_hook<> smx_synchro_hook;       /* {mutex,cond,sem}->sleeping */
 
-  const xbt::string& get_name() const { return name_; }
-  const char* get_cname() const { return name_.c_str(); }
 
   // Life-cycle
   bool wannadie() const { return iwannadie_; }
@@ -74,9 +84,6 @@ public:
   // Accessors to private fields
   s4u::Host* get_host() const { return host_; }
   void set_host(s4u::Host* dest);
-  aid_t get_pid() const { return pid_; }
-  aid_t get_ppid() const { return ppid_; }
-  void set_ppid(aid_t ppid) { ppid_ = ppid; }
   bool is_daemon() const { return daemon_; } /** Whether this actor has been daemonized */
   bool is_maestro() const; /** Whether this actor is actually maestro (cheap call but may segfault before actor creation
                               / after terminaison) */
@@ -221,8 +228,6 @@ using SynchroList =
                                                                     &ActorImpl::smx_synchro_hook>>;
 
 XBT_PUBLIC void create_maestro(const std::function<void()>& code);
-XBT_PUBLIC unsigned long get_maxpid();
-XBT_PUBLIC unsigned long* get_maxpid_addr(); // In MC mode, the application sends this pointers to the MC
 
 } // namespace actor
 } // namespace kernel

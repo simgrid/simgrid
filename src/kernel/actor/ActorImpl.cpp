@@ -47,6 +47,9 @@ unsigned long* get_maxpid_addr()
 {
   return &maxpid;
 }
+
+ActorIDTrait::ActorIDTrait(std::string name, aid_t ppid) : name_(std::move(name)), pid_(maxpid++), ppid_(ppid) {}
+
 ActorImpl* ActorImpl::by_pid(aid_t pid)
 {
   return EngineImpl::get_instance()->get_actor_by_pid(pid);
@@ -59,9 +62,9 @@ ActorImpl* ActorImpl::self()
   return (self_context != nullptr) ? self_context->get_actor() : nullptr;
 }
 
-ActorImpl::ActorImpl(xbt::string name, s4u::Host* host) : host_(host), name_(std::move(name)), piface_(this)
+ActorImpl::ActorImpl(xbt::string name, s4u::Host* host, aid_t ppid)
+    : ActorIDTrait(std::move(name), ppid), host_(host), piface_(this)
 {
-  pid_            = maxpid++;
   simcall_.issuer_ = this;
   stacksize_       = context::stack_size;
 }
@@ -91,7 +94,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
     throw HostFailureException(XBT_THROW_POINT, "Cannot attach actor on failed host.");
   }
 
-  auto* actor = new ActorImpl(xbt::string(name), host);
+  auto* actor = new ActorImpl(xbt::string(name), host, /*ppid*/ -1);
   /* Actor data */
   actor->piface_.set_data(data);
   actor->code_ = nullptr;
@@ -143,7 +146,7 @@ void ActorImpl::cleanup_from_kernel()
              get_cname());
 
   auto* engine = EngineImpl::get_instance();
-  engine->remove_actor(pid_);
+  engine->remove_actor(get_pid());
   if (host_ && host_actor_list_hook.is_linked())
     host_->get_impl()->remove_actor(this);
   if (not kernel_destroy_list_hook.is_linked())
@@ -437,8 +440,7 @@ void ActorImpl::set_host(s4u::Host* dest)
 
 ActorImplPtr ActorImpl::init(const std::string& name, s4u::Host* host) const
 {
-  auto* actor = new ActorImpl(xbt::string(name), host);
-  actor->set_ppid(this->pid_);
+  auto* actor = new ActorImpl(xbt::string(name), host, get_pid());
 
   intrusive_ptr_add_ref(actor);
   /* The on_creation() signal must be delayed until there, where the pid and everything is set */
@@ -453,7 +455,7 @@ ActorImpl* ActorImpl::start(const ActorCode& code)
   auto* engine = EngineImpl::get_instance();
 
   if (not host_->is_on()) {
-    XBT_WARN("Cannot launch actor '%s' on failed host '%s'", name_.c_str(), host_->get_cname());
+    XBT_WARN("Cannot launch actor '%s' on failed host '%s'", get_cname(), host_->get_cname());
     intrusive_ptr_release(this);
     throw HostFailureException(XBT_THROW_POINT, "Cannot start actor on failed host.");
   }
@@ -466,7 +468,7 @@ ActorImpl* ActorImpl::start(const ActorCode& code)
 
   /* Add the actor to its host's actor list */
   host_->get_impl()->add_actor(this);
-  engine->add_actor(pid_, this);
+  engine->add_actor(get_pid(), this);
 
   /* Now insert it in the global actor list and in the actor to run list */
   engine->add_actor_to_run_list_no_check(this);
@@ -516,7 +518,7 @@ void create_maestro(const std::function<void()>& code)
 {
   auto* engine = EngineImpl::get_instance();
   /* Create maestro actor and initialize it */
-  auto* maestro = new ActorImpl(xbt::string(""), /*host*/ nullptr);
+  auto* maestro = new ActorImpl(xbt::string(""), /*host*/ nullptr, /*ppid*/ -1);
 
   if (not code) {
     maestro->context_.reset(engine->get_context_factory()->create_context(ActorCode(), maestro));
