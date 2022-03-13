@@ -156,7 +156,7 @@ public:
   const std::vector<actor::ActorImpl*>& get_actors_to_run() const { return actors_to_run_; }
   const std::vector<actor::ActorImpl*>& get_actors_that_ran() const { return actors_that_ran_; }
 
-  void wake_all_waiting_actors() const;
+  void handle_ended_actions() const;
   /**
    * Garbage collection
    *

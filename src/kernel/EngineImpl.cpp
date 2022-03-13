@@ -409,15 +409,14 @@ void EngineImpl::add_split_duplex_link(const std::string& name, std::unique_ptr<
 }
 
 /** Wake up all actors waiting for a Surf action to finish */
-void EngineImpl::wake_all_waiting_actors() const
+void EngineImpl::handle_ended_actions() const
 {
   for (auto const& model : models_) {
     XBT_DEBUG("Handling the failed actions (if any)");
     while (auto* action = model->extract_failed_action()) {
       XBT_DEBUG("   Handling Action %p", action);
-      if (action->get_activity() != nullptr) {
-        // If nobody told the interface that the activity has failed, that's because no actor waits on it (maestro
-        // started it). SimDAG I see you!
+      if (action->get_activity() != nullptr) { // Skip vcpu actions
+        // Action failures are not automatically reported when the action is started by maestro (as in SimDAG)
         if (action->get_activity()->get_actor() == maestro_)
           action->get_activity()->get_iface()->complete(s4u::Activity::State::FAILED);
 
@@ -427,11 +426,8 @@ void EngineImpl::wake_all_waiting_actors() const
     XBT_DEBUG("Handling the terminated actions (if any)");
     while (auto* action = model->extract_done_action()) {
       XBT_DEBUG("   Handling Action %p", action);
-      if (action->get_activity() == nullptr)
-        XBT_DEBUG("probably vcpu's action %p, skip", action);
-      else {
-        // If nobody told the interface that the activity is finished, that's because no actor waits on it (maestro
-        // started it). SimDAG I see you!
+      if (action->get_activity() != nullptr) {
+        // Action termination are not automatically reported when the action is started by maestro (as in SimDAG)
         action->get_activity()->set_finish_time(action->get_finish_time());
 
         if (action->get_activity()->get_actor() == maestro_)
@@ -689,7 +685,6 @@ void EngineImpl::run(double max_date)
 
     if (cfg_breakpoint >= 0.0 && simgrid_get_clock() >= cfg_breakpoint) {
       XBT_DEBUG("Breakpoint reached (%g)", cfg_breakpoint.get());
-      cfg_breakpoint = -1.0;
 #ifdef SIGTRAP
       std::raise(SIGTRAP);
 #else
@@ -703,34 +698,16 @@ void EngineImpl::run(double max_date)
       /* Run all actors that are ready to run, possibly in parallel */
       run_all_actors();
 
-      /* answer sequentially and in a fixed arbitrary order all the simcalls that were issued during that sub-round */
-
-      /* WARNING, the order *must* be fixed or you'll jeopardize the simulation reproducibility (see RR-7653) */
-
-      /* Here, the order is ok because:
-       *
-       *   Only maestro adds stuff to the actors_to_run array, so the execution order of user contexts do not impact its order.
-       * 
-       *   In addition, actors remain sorted through an arbitrary but fixed order in all cases:
-       *
-       *   - If there is no killing during the simulation, actors remain sorted according by their PID.
-       *   - Killer actors are moved to the end of the scheduling round (to let victims finish their simcall before dying), but 
-       *      (1) this decision of killing is reproducible because the simulation was reproducible until then
-       *      (2) this reordering introduces no reproducibility hazard in the subsequent simulation. 
-       *          Even the order change induced by the actor killing is perfectly reproducible.
-       * 
-       *   So the array order is implicit and somewhat complex, but fixed and reproducible (science works, http://xkcd.com/54/).
-       *
-       *   We could manually sort the actors_that_ran array so that simcalls are handled in an easy to predict order 
-       *  (e.g. "according to the PID of issuer"), but it's not mandatory for the simulation soundness and reproducibility, 
-       *   and would thus be a pure waste of time.
+      /* answer sequentially and in a fixed arbitrary order all the simcalls that were issued during that sub-round.
+       * The order must be fixed for the simulation to be reproducible (see RR-7653). It's OK here because only maestro
+       * changes the list. Killer actors are moved to the end to let victims finish their simcall before dying, but
+       * the order remains reproducible (even if arbitrarily). No need to sort the vector for sake of reproducibility.
        */
-
       for (auto const& actor : actors_that_ran_)
         if (actor->simcall_.call_ != actor::Simcall::Type::NONE)
           actor->simcall_handle(0);
 
-      wake_all_waiting_actors();
+      handle_ended_actions();
 
       /* If only daemon actors remain, cancel their actions, mark them to die and reschedule them */
       if (actor_list_.size() == daemons_.size())
@@ -753,15 +730,11 @@ void EngineImpl::run(double max_date)
     elapsed_time = solve(next_time);
     XBT_DEBUG("Moving time ahead. NOW=%g; elapsed: %g", NOW, elapsed_time);
 
-    /* Notify all the hosts that have failed */
-    /* FIXME: iterate through the list of failed host and mark each of them */
-    /* as failed. On each host, signal all the running actors with host_fail */
-
     // Execute timers until there isn't anything to be done:
     bool again = false;
     do {
       again = timer::Timer::execute_all();
-      wake_all_waiting_actors();
+      handle_ended_actions();
     } while (again);
 
     /* Clean actors to destroy */

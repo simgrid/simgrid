@@ -1,5 +1,4 @@
-/* Copyright (c) 2021-2022. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2021-2022. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -32,7 +31,6 @@ class Timer {
 
 public:
   double get_date() const { return date_; }
-
 
   Timer(double date, xbt::Task<void()>&& callback) : date_(date), callback(std::move(callback)) {}
 

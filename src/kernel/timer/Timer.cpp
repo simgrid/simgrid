@@ -30,7 +30,6 @@ bool Timer::execute_all()
   bool result = false;
   while (not kernel_timers().empty() && s4u::Engine::get_clock() >= kernel_timers().top().first) {
     result = true;
-    // FIXME: make the timers being real callbacks (i.e. provide dispatchers that read and expand the args)
     Timer* timer = kernel_timers().top().second;
     kernel_timers().pop();
     timer->callback();
