@@ -197,7 +197,7 @@ void SwappedContext::swap_into(SwappedContext* to)
 }
 
 /** Maestro wants to run all ready actors */
-void SwappedContextFactory::run_all()
+void SwappedContextFactory::run_all(std::vector<actor::ActorImpl*> const& actors_list)
 {
   const auto* engine = EngineImpl::get_instance();
   /* This function is called by maestro at the beginning of a scheduling round to get all working threads executing some
@@ -220,9 +220,9 @@ void SwappedContextFactory::run_all()
           auto* context = static_cast<SwappedContext*>(actor->context_.get());
           context->resume();
         },
-        engine->get_actors_to_run());
+        actors_list);
   } else { // sequential execution
-    if (not engine->has_actors_to_run())
+    if (actors_list.empty())
       return;
 
     /* maestro is already saved in the first slot of workers_context_ */

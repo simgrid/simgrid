@@ -33,7 +33,7 @@ public:
   /** Turn the current thread into maestro (the old maestro becomes a regular actor) */
   virtual Context* create_maestro(std::function<void()>&& code, actor::ActorImpl* actor);
 
-  virtual void run_all() = 0;
+  virtual void run_all(std::vector<actor::ActorImpl*> const& actors_list) = 0;
 
 protected:
   template <class T, class... Args> T* new_context(Args&&... args)

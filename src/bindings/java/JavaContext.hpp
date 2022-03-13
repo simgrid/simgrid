@@ -41,7 +41,7 @@ public:
   JavaContextFactory();
   ~JavaContextFactory() override;
   Context* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override;
-  void run_all() override;
+  void run_all(std::vector<actor::ActorImpl*> const& actors) override;
 };
 
 XBT_PRIVATE ContextFactory* java_factory();

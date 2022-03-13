@@ -46,15 +46,13 @@ ThreadContext* ThreadContextFactory::create_context(std::function<void()>&& code
     return this->new_context<SerialThreadContext>(std::move(code), actor, maestro);
 }
 
-void ThreadContextFactory::run_all()
+void ThreadContextFactory::run_all(std::vector<actor::ActorImpl*> const& actors_list)
 {
-  if (is_parallel()) {
-    // Parallel execution
-    ParallelThreadContext::run_all();
-  } else {
-    // Serial execution
-    SerialThreadContext::run_all();
-  }
+  if (is_parallel())
+    ParallelThreadContext::run_all(actors_list);
+
+  else
+    SerialThreadContext::run_all(actors_list);
 }
 
 // ThreadContext
@@ -166,10 +164,9 @@ void ThreadContext::attach_stop()
 
 // SerialThreadContext
 
-void SerialThreadContext::run_all()
+void SerialThreadContext::run_all(std::vector<actor::ActorImpl*> const& actors_list)
 {
-  const auto& to_run = EngineImpl::get_instance()->get_actors_to_run();
-  for (smx_actor_t const& actor : to_run) {
+  for (smx_actor_t const& actor : actors_list) {
     XBT_DEBUG("Handling %p", actor);
     auto* context = static_cast<ThreadContext*>(actor->context_.get());
     context->release();
@@ -192,13 +189,12 @@ void ParallelThreadContext::finalize()
   thread_sem_ = nullptr;
 }
 
-void ParallelThreadContext::run_all()
+void ParallelThreadContext::run_all(std::vector<actor::ActorImpl*> const& actors_list)
 {
-  const auto& to_release = EngineImpl::get_instance()->get_actors_to_run();
-  for (smx_actor_t const& actor : to_release)
+  for (smx_actor_t const& actor : actors_list)
     static_cast<ThreadContext*>(actor->context_.get())->release();
-  const auto& to_wait = EngineImpl::get_instance()->get_actors_to_run();
-  for (smx_actor_t const& actor : to_wait)
+
+  for (smx_actor_t const& actor : actors_list)
     static_cast<ThreadContext*>(actor->context_.get())->wait();
 }
 

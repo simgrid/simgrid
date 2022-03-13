@@ -54,7 +54,7 @@ public:
   {
   }
 
-  static void run_all();
+  static void run_all(std::vector<actor::ActorImpl*> const& actors_list);
 };
 
 class ParallelThreadContext : public ThreadContext {
@@ -66,7 +66,7 @@ public:
 
   static void initialize();
   static void finalize();
-  static void run_all();
+  static void run_all(std::vector<actor::ActorImpl*> const& actors_list);
 
 private:
   static xbt::OsSemaphore* thread_sem_;
@@ -86,7 +86,7 @@ public:
     bool maestro = not code;
     return create_context(std::move(code), actor, maestro);
   }
-  void run_all() override;
+  void run_all(std::vector<actor::ActorImpl*> const& actors) override;
 
   // Optional methods:
   ThreadContext* attach(actor::ActorImpl* actor) override

@@ -39,9 +39,9 @@ Context* JavaContextFactory::create_context(std::function<void()>&& code, actor:
   return this->new_context<JavaContext>(std::move(code), actor);
 }
 
-void JavaContextFactory::run_all()
+void JavaContextFactory::run_all(std::vector<actor::ActorImpl*> const& actors)
 {
-  SerialThreadContext::run_all();
+  SerialThreadContext::run_all(actors);
 }
 
 JavaContext::JavaContext(std::function<void()>&& code, smx_actor_t actor)

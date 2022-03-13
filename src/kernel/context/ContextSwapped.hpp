@@ -32,7 +32,7 @@ public:
   SwappedContextFactory()                             = default;
   SwappedContextFactory(const SwappedContextFactory&) = delete;
   SwappedContextFactory& operator=(const SwappedContextFactory&) = delete;
-  void run_all() override;
+  void run_all(std::vector<actor::ActorImpl*> const& actors) override;
 
 private:
   /* For the sequential execution */

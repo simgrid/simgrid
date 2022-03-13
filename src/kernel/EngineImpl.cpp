@@ -451,7 +451,7 @@ void EngineImpl::wake_all_waiting_actors() const
  */
 void EngineImpl::run_all_actors()
 {
-  instance_->get_context_factory()->run_all();
+  instance_->get_context_factory()->run_all(actors_to_run_);
 
   for (auto const& actor : actors_to_run_)
     if (actor->to_be_freed())
