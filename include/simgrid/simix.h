@@ -73,28 +73,30 @@ XBT_ATTRIB_DEPRECATED_v333("Please use Comm::copy_pointer_callback()") XBT_PUBLI
 /************************** Communication simcalls ****************************/
 
 XBT_ATTRIB_DEPRECATED_v335("Please use s4u::Comm::send()") XBT_PUBLIC
-    void simcall_comm_send(simgrid::kernel::actor::ActorImpl* sender, smx_mailbox_t mbox, double task_size, double rate,
-                           void* src_buff, size_t src_buff_size,
+    void simcall_comm_send(simgrid::kernel::actor::ActorImpl* sender, simgrid::kernel::activity::MailboxImpl* mbox,
+                           double task_size, double rate, void* src_buff, size_t src_buff_size,
                            bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                            void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data,
                            double timeout);
 
 XBT_ATTRIB_DEPRECATED_v335("Please use s4u::Comm::isend()") XBT_PUBLIC simgrid::kernel::activity::ActivityImplPtr
-    simcall_comm_isend(simgrid::kernel::actor::ActorImpl* sender, smx_mailbox_t mbox, double task_size, double rate,
-                       void* src_buff, size_t src_buff_size,
+    simcall_comm_isend(simgrid::kernel::actor::ActorImpl* sender, simgrid::kernel::activity::MailboxImpl* mbox,
+                       double task_size, double rate, void* src_buff, size_t src_buff_size,
                        bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*), void (*clean_fun)(void*),
                        void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data,
                        bool detached);
 
 XBT_ATTRIB_DEPRECATED_v335("Please use s4u::Comm::recv()") XBT_PUBLIC
-    void simcall_comm_recv(simgrid::kernel::actor::ActorImpl* receiver, smx_mailbox_t mbox, void* dst_buff,
-                           size_t* dst_buff_size, bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+    void simcall_comm_recv(simgrid::kernel::actor::ActorImpl* receiver, simgrid::kernel::activity::MailboxImpl* mbox,
+                           void* dst_buff, size_t* dst_buff_size,
+                           bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                            void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data,
                            double timeout, double rate);
 
 XBT_ATTRIB_DEPRECATED_v335("Please use s4u::Comm::irecv()") XBT_PUBLIC simgrid::kernel::activity::ActivityImplPtr
-    simcall_comm_irecv(simgrid::kernel::actor::ActorImpl* receiver, smx_mailbox_t mbox, void* dst_buff,
-                       size_t* dst_buff_size, bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
+    simcall_comm_irecv(simgrid::kernel::actor::ActorImpl* receiver, simgrid::kernel::activity::MailboxImpl* mbox,
+                       void* dst_buff, size_t* dst_buff_size,
+                       bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
                        void (*copy_data_fun)(simgrid::kernel::activity::CommImpl*, void*, size_t), void* data,
                        double rate);
 

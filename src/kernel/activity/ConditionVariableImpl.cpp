@@ -59,7 +59,7 @@ void ConditionVariableImpl::broadcast()
     signal();
 }
 
-void ConditionVariableImpl::wait(smx_mutex_t mutex, double timeout, actor::ActorImpl* issuer)
+void ConditionVariableImpl::wait(MutexImpl* mutex, double timeout, actor::ActorImpl* issuer)
 {
   XBT_DEBUG("Wait condition %p", this);
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");

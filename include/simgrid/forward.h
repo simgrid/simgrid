@@ -226,14 +226,19 @@ using s4u_Disk              = simgrid::s4u::Disk;
 using s4u_NetZone           = simgrid::s4u::NetZone;
 using s4u_VM                = simgrid::s4u::VirtualMachine;
 
-using smx_timer_t    = simgrid::kernel::timer::Timer*;
+using smx_timer_t
+    XBT_ATTRIB_DEPRECATED_v335("Please use simgrid::kernel::timer::Timer*") = simgrid::kernel::timer::Timer*;
 using smx_actor_t
     XBT_ATTRIB_DEPRECATED_v335("Please use simgrid::kernel::actor::ActorImpl*") = simgrid::kernel::actor::ActorImpl*;
 using smx_activity_t = simgrid::kernel::activity::ActivityImpl*;
-using smx_cond_t     = simgrid::kernel::activity::ConditionVariableImpl*;
-using smx_mailbox_t  = simgrid::kernel::activity::MailboxImpl*;
-using smx_mutex_t    = simgrid::kernel::activity::MutexImpl*;
-using smx_sem_t      = simgrid::kernel::activity::SemaphoreImpl*;
+using smx_cond_t XBT_ATTRIB_DEPRECATED_v335("Please use simgrid::kernel::activity::ConditionVariableImpl*") =
+    simgrid::kernel::activity::ConditionVariableImpl*;
+using smx_mailbox_t XBT_ATTRIB_DEPRECATED_v335("Please use simgrid::kernel::activity::MailboxImpl*") =
+    simgrid::kernel::activity::MailboxImpl*;
+using smx_mutex_t XBT_ATTRIB_DEPRECATED_v335("Please use simgrid::kernel::activity::MutexImpl*") =
+    simgrid::kernel::activity::MutexImpl*;
+using smx_sem_t XBT_ATTRIB_DEPRECATED_v335("Please use simgrid::kernel::activity::SemaphoreImpl*") =
+    simgrid::kernel::activity::SemaphoreImpl*;
 #else
 
 typedef struct s4u_Actor s4u_Actor;
@@ -251,13 +256,13 @@ typedef struct s4u_Disk s4u_Disk;
 typedef struct s4u_NetZone s4u_NetZone;
 typedef struct s4u_VM s4u_VM;
 
-typedef struct s_smx_timer* smx_timer_t;
+XBT_ATTRIB_DEPRECATED_v335("Please stop using this type alias") typedef struct s_smx_timer* smx_timer_t;
 XBT_ATTRIB_DEPRECATED_v335("Please stop using this type alias") typedef struct s_smx_actor* smx_actor_t;
 typedef struct s_smx_activity* smx_activity_t;
-typedef struct s_smx_cond_t* smx_cond_t;
-typedef struct s_smx_mailbox* smx_mailbox_t;
-typedef struct s_smx_mutex* smx_mutex_t;
-typedef struct s_smx_sem* smx_sem_t;
+XBT_ATTRIB_DEPRECATED_v335("Please stop using this type alias") typedef struct s_smx_cond_t* smx_cond_t;
+XBT_ATTRIB_DEPRECATED_v335("Please stop using this type alias") typedef struct s_smx_mailbox* smx_mailbox_t;
+XBT_ATTRIB_DEPRECATED_v335("Please stop using this type alias") typedef struct s_smx_mutex* smx_mutex_t;
+XBT_ATTRIB_DEPRECATED_v335("Please stop using this type alias") typedef struct s_smx_sem* smx_sem_t;
 
 #endif
 
