@@ -74,11 +74,12 @@ Python:
    - Mailbox: Mailbox.by_name()
  - Added the following bindings:
      - this_actor.warning()
-     - Mailbox.put_init() [example: examples/python/comm-waitallfor]
-     - Comm.detach() [example: examples/python/comm-waitallfor]
+     - Mailbox.put_init() [example: examples/python/comm-waitallfor/]
+     - Comm.detach() [example: examples/python/comm-waitallfor/]
      - Comm.wait_for() [example: examples/python/comm-waitfor/]
      - Comm.wait_any_for()
-     - Comm.wait_all_for() [example: examples/python/comm-waitallfor]
+     - Comm.wait_all_for() [example: examples/python/comm-waitallfor/]
+     - Mutex [example: examples/python/synchro-mutex/]
 
 Build System:
  - Remove target "make uninstall" which was incomplete and no longer maintained.

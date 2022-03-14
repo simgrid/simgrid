@@ -641,6 +641,8 @@ Shows how to use :cpp:type:`simgrid::s4u::Mutex` synchronization objects.
 
    .. example-tab:: examples/cpp/synchro-mutex/s4u-synchro-mutex.cpp
 
+   .. example-tab:: examples/python/synchro-mutex/synchro-mutex.py
+
 Semaphore
 ^^^^^^^^^
 

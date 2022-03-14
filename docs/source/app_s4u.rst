@@ -2446,7 +2446,15 @@ Synchronization Objects
 ⁣  Mutex
 ==============
 
-.. doxygenclass:: simgrid::s4u::Mutex
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::Mutex
+
+   .. group-tab:: Python
+
+      .. autoclass:: simgrid.Mutex
 
 Basic management
 ----------------
@@ -2462,6 +2470,13 @@ Basic management
          .. doxygentypedef:: MutexPtr
 
          .. doxygenfunction:: simgrid::s4u::Mutex::create()
+
+      .. group-tab:: Python
+
+         .. code-block:: Python
+
+            from simgrid import Mutex
+            mutex = Mutex()
 
       .. group-tab:: C
 
@@ -2487,6 +2502,12 @@ Locking
          .. doxygenfunction:: simgrid::s4u::Mutex::lock()
          .. doxygenfunction:: simgrid::s4u::Mutex::try_lock()
          .. doxygenfunction:: simgrid::s4u::Mutex::unlock()
+
+      .. group-tab:: Python
+
+         .. automethod:: simgrid.Mutex.lock()
+         .. automethod:: simgrid.Mutex.try_lock()
+         .. automethod:: simgrid.Mutex.unlock()
 
       .. group-tab:: C
 

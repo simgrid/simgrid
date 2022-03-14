@@ -1,0 +1,101 @@
+#!/usr/bin/env tesh
+
+p Testing Mutex
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/synchro-mutex.py --platform ${platfdir}/two_hosts.xml --workers 0 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+>[  0.000000] (1:master@Tremblay) The final result is: 0
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/synchro-mutex.py --platform ${platfdir}/two_hosts.xml --workers 1 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+>[  0.000000] (2:worker-0(mgr)@Jupiter) I just started
+>[  0.000000] (2:worker-0(mgr)@Jupiter) acquired the mutex with context manager
+>[  1.000000] (2:worker-0(mgr)@Jupiter) updated shared result, which is now 1
+>[  1.000000] (2:worker-0(mgr)@Jupiter) released the mutex after leaving the context manager
+>[  1.000000] (2:worker-0(mgr)@Jupiter) Bye now!
+>[  1.000000] (1:master@Tremblay) The final result is: 1
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/synchro-mutex.py --platform ${platfdir}/two_hosts.xml --workers 1 --trials-before-success 5 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+>[  0.000000] (2:worker-0(mgr)@Jupiter) I just started
+>[  0.000000] (2:worker-0(mgr)@Jupiter) acquired the mutex with context manager
+>[  1.000000] (2:worker-0(mgr)@Jupiter) ran in trouble while calculating: did not manage to find the correct answer. Will retry shortly.
+>[  1.000000] (2:worker-0(mgr)@Jupiter) released the mutex after leaving the context manager
+>[  1.000000] (2:worker-0(mgr)@Jupiter) acquired the mutex with context manager
+>[  2.000000] (2:worker-0(mgr)@Jupiter) ran in trouble while calculating: did not manage to find the correct answer. Will retry shortly.
+>[  2.000000] (2:worker-0(mgr)@Jupiter) released the mutex after leaving the context manager
+>[  2.000000] (2:worker-0(mgr)@Jupiter) acquired the mutex with context manager
+>[  3.000000] (2:worker-0(mgr)@Jupiter) ran in trouble while calculating: did not manage to find the correct answer. Will retry shortly.
+>[  3.000000] (2:worker-0(mgr)@Jupiter) released the mutex after leaving the context manager
+>[  3.000000] (2:worker-0(mgr)@Jupiter) acquired the mutex with context manager
+>[  4.000000] (2:worker-0(mgr)@Jupiter) ran in trouble while calculating: did not manage to find the correct answer. Will retry shortly.
+>[  4.000000] (2:worker-0(mgr)@Jupiter) released the mutex after leaving the context manager
+>[  4.000000] (2:worker-0(mgr)@Jupiter) acquired the mutex with context manager
+>[  5.000000] (2:worker-0(mgr)@Jupiter) ran in trouble while calculating: did not manage to find the correct answer. Will retry shortly.
+>[  5.000000] (2:worker-0(mgr)@Jupiter) released the mutex after leaving the context manager
+>[  5.000000] (2:worker-0(mgr)@Jupiter) acquired the mutex with context manager
+>[  6.000000] (2:worker-0(mgr)@Jupiter) updated shared result, which is now 1
+>[  6.000000] (2:worker-0(mgr)@Jupiter) released the mutex after leaving the context manager
+>[  6.000000] (2:worker-0(mgr)@Jupiter) Bye now!
+>[  6.000000] (1:master@Tremblay) The final result is: 1
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/synchro-mutex.py --platform ${platfdir}/two_hosts.xml --workers 5 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+>[  0.000000] (2:worker-0(mgr)@Jupiter) I just started
+>[  0.000000] (2:worker-0(mgr)@Jupiter) acquired the mutex with context manager
+>[  0.000000] (3:worker-1@Tremblay) I just started
+>[  0.000000] (4:worker-2(mgr)@Jupiter) I just started
+>[  0.000000] (5:worker-3@Tremblay) I just started
+>[  0.000000] (6:worker-4(mgr)@Jupiter) I just started
+>[  1.000000] (2:worker-0(mgr)@Jupiter) updated shared result, which is now 1
+>[  1.000000] (3:worker-1@Tremblay) acquired the mutex manually
+>[  1.000000] (2:worker-0(mgr)@Jupiter) released the mutex after leaving the context manager
+>[  1.000000] (2:worker-0(mgr)@Jupiter) Bye now!
+>[  2.000000] (3:worker-1@Tremblay) updated shared result, which is now 2
+>[  2.000000] (3:worker-1@Tremblay) released the mutex manually
+>[  2.000000] (4:worker-2(mgr)@Jupiter) acquired the mutex with context manager
+>[  2.000000] (3:worker-1@Tremblay) Bye now!
+>[  3.000000] (4:worker-2(mgr)@Jupiter) updated shared result, which is now 3
+>[  3.000000] (5:worker-3@Tremblay) acquired the mutex manually
+>[  3.000000] (4:worker-2(mgr)@Jupiter) released the mutex after leaving the context manager
+>[  3.000000] (4:worker-2(mgr)@Jupiter) Bye now!
+>[  4.000000] (5:worker-3@Tremblay) updated shared result, which is now 4
+>[  4.000000] (5:worker-3@Tremblay) released the mutex manually
+>[  4.000000] (6:worker-4(mgr)@Jupiter) acquired the mutex with context manager
+>[  4.000000] (5:worker-3@Tremblay) Bye now!
+>[  5.000000] (6:worker-4(mgr)@Jupiter) updated shared result, which is now 5
+>[  5.000000] (6:worker-4(mgr)@Jupiter) released the mutex after leaving the context manager
+>[  5.000000] (6:worker-4(mgr)@Jupiter) Bye now!
+>[  5.000000] (1:master@Tremblay) The final result is: 5
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/synchro-mutex.py --platform ${platfdir}/two_hosts.xml --workers 3 --trials-before-success 2 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+>[  0.000000] (2:worker-0(mgr)@Jupiter) I just started
+>[  0.000000] (2:worker-0(mgr)@Jupiter) acquired the mutex with context manager
+>[  0.000000] (3:worker-1@Tremblay) I just started
+>[  0.000000] (4:worker-2(mgr)@Jupiter) I just started
+>[  1.000000] (3:worker-1@Tremblay) acquired the mutex manually
+>[  1.000000] (2:worker-0(mgr)@Jupiter) ran in trouble while calculating: did not manage to find the correct answer. Will retry shortly.
+>[  1.000000] (2:worker-0(mgr)@Jupiter) released the mutex after leaving the context manager
+>[  2.000000] (3:worker-1@Tremblay) ran in trouble while calculating: did not manage to find the correct answer. Will retry shortly.
+>[  2.000000] (3:worker-1@Tremblay) released the mutex manually
+>[  2.000000] (4:worker-2(mgr)@Jupiter) acquired the mutex with context manager
+>[  3.000000] (2:worker-0(mgr)@Jupiter) acquired the mutex with context manager
+>[  3.000000] (4:worker-2(mgr)@Jupiter) ran in trouble while calculating: did not manage to find the correct answer. Will retry shortly.
+>[  3.000000] (4:worker-2(mgr)@Jupiter) released the mutex after leaving the context manager
+>[  4.000000] (3:worker-1@Tremblay) acquired the mutex manually
+>[  4.000000] (2:worker-0(mgr)@Jupiter) ran in trouble while calculating: did not manage to find the correct answer. Will retry shortly.
+>[  4.000000] (2:worker-0(mgr)@Jupiter) released the mutex after leaving the context manager
+>[  5.000000] (3:worker-1@Tremblay) ran in trouble while calculating: did not manage to find the correct answer. Will retry shortly.
+>[  5.000000] (3:worker-1@Tremblay) released the mutex manually
+>[  5.000000] (4:worker-2(mgr)@Jupiter) acquired the mutex with context manager
+>[  6.000000] (2:worker-0(mgr)@Jupiter) acquired the mutex with context manager
+>[  6.000000] (4:worker-2(mgr)@Jupiter) ran in trouble while calculating: did not manage to find the correct answer. Will retry shortly.
+>[  6.000000] (4:worker-2(mgr)@Jupiter) released the mutex after leaving the context manager
+>[  7.000000] (2:worker-0(mgr)@Jupiter) updated shared result, which is now 1
+>[  7.000000] (3:worker-1@Tremblay) acquired the mutex manually
+>[  7.000000] (2:worker-0(mgr)@Jupiter) released the mutex after leaving the context manager
+>[  7.000000] (2:worker-0(mgr)@Jupiter) Bye now!
+>[  8.000000] (3:worker-1@Tremblay) updated shared result, which is now 2
+>[  8.000000] (3:worker-1@Tremblay) released the mutex manually
+>[  8.000000] (4:worker-2(mgr)@Jupiter) acquired the mutex with context manager
+>[  8.000000] (3:worker-1@Tremblay) Bye now!
+>[  9.000000] (4:worker-2(mgr)@Jupiter) updated shared result, which is now 3
+>[  9.000000] (4:worker-2(mgr)@Jupiter) released the mutex after leaving the context manager
+>[  9.000000] (4:worker-2(mgr)@Jupiter) Bye now!
+>[  9.000000] (1:master@Tremblay) The final result is: 3
