@@ -2478,6 +2478,12 @@ Basic management
             from simgrid import Mutex
             mutex = Mutex()
 
+            # Use a context manager to acquire and automatically release the mutex
+            # when leaving the scope.
+            with mutex:
+                # Access shared resource ...
+                pass
+
       .. group-tab:: C
 
          .. code-block:: C

@@ -19,13 +19,6 @@ def create_parser() -> ArgumentParser:
         default=6,
         help='number of workers to start'
     )
-    parser.add_argument(
-        '--trials-before-success',
-        type=int,
-        default=0,
-        help='number of attempts each workers need to make before getting the correct answer'
-             ' (i.e. number of simulated failures)'
-    )
     return parser
 
 
@@ -34,56 +27,32 @@ class ResultHolder:
     value: int
 
 
-class CalculationError(RuntimeError):
-    """ Fake calculation error
-    """
-    pass
-
-
-def worker_context_manager(mutex: Mutex, trials_before_success: int, result: ResultHolder):
+def worker_context_manager(mutex: Mutex, result: ResultHolder):
     """ Worker that uses a context manager to acquire/release the shared mutex
     :param mutex: Shared mutex that guards read/write access to the shared result
-    :param trials_before_success: Number of simulated calculation failures before success
     :param result: Shared result which will be updated by the worker
     """
     this_actor.info(f"I just started")
-    for trial in range(trials_before_success + 1):
-        try:
-            with mutex:
-                this_actor.info(f"acquired the mutex with context manager")
-                this_actor.sleep_for(1)
-                if trial < trials_before_success:
-                    raise CalculationError("did not manage to find the correct answer")
-                result.value += 1
-                this_actor.info(f"updated shared result, which is now {result.value}")
-        except CalculationError as e:
-            this_actor.warning(f"ran in trouble while calculating: {e}. Will retry shortly.")
-        finally:
-            this_actor.info(f"released the mutex after leaving the context manager")
+    with mutex:
+        this_actor.info(f"acquired the mutex with context manager")
+        result.value += 1
+        this_actor.info(f"updated shared result, which is now {result.value}")
+    this_actor.info(f"released the mutex after leaving the context manager")
     this_actor.info("Bye now!")
 
 
-def worker(mutex: Mutex, trials_before_success: int, result: ResultHolder):
+def worker(mutex: Mutex, result: ResultHolder):
     """ Worker that manually acquires/releases the shared mutex
     :param mutex: Shared mutex that guards read/write access to the shared result
-    :param trials_before_success: Number of simulated calculation failures before success
     :param result: Shared result which will be updated by the worker
     """
     this_actor.info(f"I just started")
-    for trial in range(trials_before_success + 1):
-        try:
-            mutex.lock()
-            this_actor.info(f"acquired the mutex manually")
-            this_actor.sleep_for(1)
-            if trial < trials_before_success:
-                raise CalculationError("did not manage to find the correct answer")
-            result.value += 1
-            this_actor.info(f"updated shared result, which is now {result.value}")
-        except CalculationError as e:
-            this_actor.warning(f"ran in trouble while calculating: {e}. Will retry shortly.")
-        finally:
-            this_actor.info(f"released the mutex manually")
-            mutex.unlock()
+    mutex.lock()
+    this_actor.info(f"acquired the mutex manually")
+    result.value += 1
+    this_actor.info(f"updated shared result, which is now {result.value}")
+    mutex.unlock()
+    this_actor.info(f"released the mutex manually")
     this_actor.info("Bye now!")
 
 
@@ -103,11 +72,10 @@ def master(settings):
                 Host.by_name("Jupiter" if use_worker_context_manager else "Tremblay"),
                 worker_context_manager if use_worker_context_manager else worker,
                 mutex,
-                settings.trials_before_success,
                 result
             )
         )
-    [actor.join() for actor in actors]
+    this_actor.sleep_for(10)
     this_actor.info(f"The final result is: {result.value}")
 
 
