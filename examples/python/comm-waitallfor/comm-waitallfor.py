@@ -16,6 +16,7 @@ from argparse import ArgumentParser
 from dataclasses import dataclass
 from uuid import uuid4
 import sys
+import typing
 
 from simgrid import Actor, Comm, Engine, Host, Mailbox, PyGetAsync, this_actor
 
@@ -24,7 +25,7 @@ SIMULATED_JOB_SIZE_BYTES = 1024
 SIMULATED_RESULT_SIZE_BYTES = 1024 * 1024
 
 
-def parse_requests(requests_str: str) -> list[float]:
+def parse_requests(requests_str: str) -> typing.List[float]:
     return [float(item.strip()) for item in requests_str.split(",")]
 
 
@@ -88,7 +89,7 @@ class AsyncJobResult:
         return "complete" if self.complete else "pending"
 
 
-def client(client_id: str, jobs: list[float], wait_timeout: float):
+def client(client_id: str, jobs: typing.List[float], wait_timeout: float):
     worker_mailbox: Mailbox = Mailbox.by_name("worker")
     this_actor.info(f"{client_id} started")
     async_job_results: list[AsyncJobResult] = []
