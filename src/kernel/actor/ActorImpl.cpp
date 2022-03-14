@@ -29,7 +29,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_actor, kernel, "Logging specific to Actor's 
  *
  * @return The SIMIX process
  */
-smx_actor_t SIMIX_process_self() // XBT_ATTRIB_DEPRECATED_v333
+simgrid::kernel::actor::ActorImpl* SIMIX_process_self() // XBT_ATTRIB_DEPRECATED_v333
 {
   return simgrid::kernel::actor::ActorImpl::self();
 }

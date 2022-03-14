@@ -166,7 +166,7 @@ void ThreadContext::attach_stop()
 
 void SerialThreadContext::run_all(std::vector<actor::ActorImpl*> const& actors_list)
 {
-  for (smx_actor_t const& actor : actors_list) {
+  for (auto const* actor : actors_list) {
     XBT_DEBUG("Handling %p", actor);
     auto* context = static_cast<ThreadContext*>(actor->context_.get());
     context->release();
@@ -191,10 +191,10 @@ void ParallelThreadContext::finalize()
 
 void ParallelThreadContext::run_all(std::vector<actor::ActorImpl*> const& actors_list)
 {
-  for (smx_actor_t const& actor : actors_list)
+  for (auto const* actor : actors_list)
     static_cast<ThreadContext*>(actor->context_.get())->release();
 
-  for (smx_actor_t const& actor : actors_list)
+  for (auto const* actor : actors_list)
     static_cast<ThreadContext*>(actor->context_.get())->wait();
 }
 

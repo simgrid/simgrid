@@ -29,7 +29,7 @@ using simgrid::mc::remote;
 /** Load the remote list of processes into a vector
  *
  *  @param process      MCed process
- *  @param target       Local vector (to be filled with copies of `s_smx_actor_t`)
+ *  @param target       Local vector (to be filled with `simgrid::mc::ActorInformation`)
  *  @param remote_dynar Address of the process dynar in the remote list
  */
 static void MC_process_refresh_simix_actor_dynar(const simgrid::mc::RemoteProcess* process,
@@ -41,7 +41,7 @@ static void MC_process_refresh_simix_actor_dynar(const simgrid::mc::RemoteProces
   s_xbt_dynar_t dynar;
   process->read_bytes(&dynar, sizeof(dynar), remote_dynar);
 
-  auto* data = static_cast<smx_actor_t*>(::operator new(dynar.elmsize * dynar.used));
+  auto* data = static_cast<simgrid::kernel::actor::ActorImpl**>(::operator new(dynar.elmsize * dynar.used));
   process->read_bytes(data, dynar.elmsize * dynar.used, simgrid::mc::RemotePtr<void>(dynar.data));
 
   // Load each element of the vector from the MCed process:

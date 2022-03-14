@@ -227,7 +227,8 @@ using s4u_NetZone           = simgrid::s4u::NetZone;
 using s4u_VM                = simgrid::s4u::VirtualMachine;
 
 using smx_timer_t    = simgrid::kernel::timer::Timer*;
-using smx_actor_t    = simgrid::kernel::actor::ActorImpl*;
+using smx_actor_t
+    XBT_ATTRIB_DEPRECATED_v335("Please use simgrid::kernel::actor::ActorImpl*") = simgrid::kernel::actor::ActorImpl*;
 using smx_activity_t = simgrid::kernel::activity::ActivityImpl*;
 using smx_cond_t     = simgrid::kernel::activity::ConditionVariableImpl*;
 using smx_mailbox_t  = simgrid::kernel::activity::MailboxImpl*;
@@ -251,7 +252,7 @@ typedef struct s4u_NetZone s4u_NetZone;
 typedef struct s4u_VM s4u_VM;
 
 typedef struct s_smx_timer* smx_timer_t;
-typedef struct s_smx_actor* smx_actor_t;
+XBT_ATTRIB_DEPRECATED_v335("Please stop using this type alias") typedef struct s_smx_actor* smx_actor_t;
 typedef struct s_smx_activity* smx_activity_t;
 typedef struct s_smx_cond_t* smx_cond_t;
 typedef struct s_smx_mailbox* smx_mailbox_t;

@@ -24,7 +24,7 @@ public:
   XBT_DECLARE_ENUM_CLASS(Type, NONE, RUN_ANSWERED, RUN_BLOCKING);
 
   Type call_                                         = Type::NONE;
-  smx_actor_t issuer_                                = nullptr;
+  simgrid::kernel::actor::ActorImpl* issuer_         = nullptr;
   simgrid::kernel::timer::Timer* timeout_cb_         = nullptr; // Callback to timeouts
   simgrid::kernel::actor::SimcallObserver* observer_ = nullptr; // makes that simcall observable by the MC
   unsigned int mc_max_consider_ =

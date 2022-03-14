@@ -70,7 +70,7 @@ namespace context {
 /* thread-specific storage for the worker's context */
 thread_local SwappedContext* SwappedContext::worker_context_ = nullptr;
 
-SwappedContext::SwappedContext(std::function<void()>&& code, smx_actor_t actor, SwappedContextFactory* factory)
+SwappedContext::SwappedContext(std::function<void()>&& code, actor::ActorImpl* actor, SwappedContextFactory* factory)
     : Context(std::move(code), actor, not code /* maestro if no code */), factory_(*factory)
 {
   // Save maestro (=first created context) in preparation for run_all
@@ -207,7 +207,7 @@ void SwappedContextFactory::run_all(std::vector<actor::ActorImpl*> const& actors
   if (is_parallel()) {
     // We lazily create the parmap so that all options are actually processed when doing so.
     if (parmap_ == nullptr)
-      parmap_ = std::make_unique<simgrid::xbt::Parmap<smx_actor_t>>(get_nthreads(), get_parallel_mode());
+      parmap_ = std::make_unique<simgrid::xbt::Parmap<actor::ActorImpl*>>(get_nthreads(), get_parallel_mode());
 
     // Usually, Parmap::apply() executes the provided function on all elements of the array.
     // Here, the executed function does not return the control to the parmap before all the array is processed:
@@ -266,7 +266,7 @@ void SwappedContext::suspend()
   SwappedContext* next_context;
   if (is_parallel()) {
     // Get some more work to directly swap into the next executable actor instead of yielding back to the parmap
-    boost::optional<smx_actor_t> next_work = factory_.parmap_->next();
+    boost::optional<actor::ActorImpl*> next_work = factory_.parmap_->next();
     if (next_work) {
       // There is a next soul to embody (ie, another executable actor)
       XBT_DEBUG("Run next process");

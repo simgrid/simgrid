@@ -720,7 +720,7 @@ sg_actor_t sg_actor_attach(const char* name, void* data, sg_host_t host, xbt_dic
   xbt_dict_free(&properties);
 
   /* Let's create the actor: SIMIX may decide to start it right now, even before returning the flow control to us */
-  smx_actor_t actor = nullptr;
+  simgrid::kernel::actor::ActorImpl* actor = nullptr;
   try {
     actor = simgrid::kernel::actor::ActorImpl::attach(name, data, host).get();
     actor->set_properties(props);

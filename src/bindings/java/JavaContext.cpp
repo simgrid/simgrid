@@ -44,7 +44,7 @@ void JavaContextFactory::run_all(std::vector<actor::ActorImpl*> const& actors)
   SerialThreadContext::run_all(actors);
 }
 
-JavaContext::JavaContext(std::function<void()>&& code, smx_actor_t actor)
+JavaContext::JavaContext(std::function<void()>&& code, actor::ActorImpl* actor)
     : SerialThreadContext(std::move(code), actor, false /* not maestro */)
 {
   /* ThreadContext already does all we need */

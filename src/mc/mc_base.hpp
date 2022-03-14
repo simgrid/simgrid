@@ -34,7 +34,7 @@ XBT_PRIVATE void handle_simcall(kernel::actor::Simcall* req, int req_num);
  *  have both a source and a destination yet is not enabled
  *  (unless timeout is enabled in the wait and enabled in SimGridMC).
  */
-XBT_PRIVATE bool actor_is_enabled(smx_actor_t process);
+XBT_PRIVATE bool actor_is_enabled(kernel::actor::ActorImpl* process);
 
 /** Check if the given simcall is visible */
 XBT_PRIVATE bool request_is_visible(const kernel::actor::Simcall* req);

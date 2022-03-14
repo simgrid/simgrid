@@ -78,7 +78,7 @@ void execute_actors()
  * This is controlled in the is_enabled() method of the corresponding observers.
  */
 // Called from both MCer and MCed:
-bool actor_is_enabled(smx_actor_t actor)
+bool actor_is_enabled(kernel::actor::ActorImpl* actor)
 {
 #if SIMGRID_HAVE_MC
   xbt_assert(mc_model_checker == nullptr, "This should be called from the client side");
