@@ -93,6 +93,13 @@ private:
    */
   double get_resource_capacity(int resource, const std::vector<int>& bounded_players) const;
   /**
+   * @brief Get maxmin share of the resource
+   *
+   * @param resource Internal index of resource in C_ vector
+   * @return maxmin share
+   */
+  double get_maxmin_share(int resource) const;
+  /**
    * @brief Auxiliary method to get list of bounded player from allocation
    *
    * @param alloc Current allocation

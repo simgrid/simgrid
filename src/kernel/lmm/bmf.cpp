@@ -121,6 +121,12 @@ double BmfSolver::get_resource_capacity(int resource, const std::vector<int>& bo
   return std::max(0.0, capacity);
 }
 
+double BmfSolver::get_maxmin_share(int resource) const
+{
+  auto n_players = (A_.row(resource).array() > 0).count();
+  return C_[resource] / n_players;
+}
+
 std::vector<int> BmfSolver::alloc_map_to_vector(const allocation_map_t& alloc) const
 {
   std::vector<int> alloc_by_player(A_.cols(), -1);
@@ -239,15 +245,16 @@ bool BmfSolver::get_alloc(const Eigen::VectorXd& fair_sharing, const allocation_
   for (int player_idx = 0; player_idx < A_.cols(); player_idx++) {
     int selected_resource = NO_RESOURCE;
     double bound          = phi_[player_idx];
-    double min_share      = (bound <= 0 || initial) ? -1 : bound;
+    /* the player's maximal rate is the minimum among all resources */
+    double min_rate = (bound <= 0 || initial) ? -1 : bound;
     for (int cnst_idx = 0; cnst_idx < A_.rows(); cnst_idx++) {
       if (A_(cnst_idx, player_idx) <= 0.0)
         continue;
 
-      double share = fair_sharing[cnst_idx] / A_(cnst_idx, player_idx);
-      if (min_share == -1 || share < min_share) {
+      double rate = fair_sharing[cnst_idx] / A_(cnst_idx, player_idx);
+      if (min_rate == -1 || rate < min_rate) {
         selected_resource = cnst_idx;
-        min_share         = share;
+        min_rate          = rate;
       }
     }
     alloc[selected_resource].insert(player_idx);
@@ -276,14 +283,17 @@ void BmfSolver::set_fair_sharing(const allocation_map_t& alloc, const Eigen::Vec
     if (it != alloc.end()) {              // resource selected by some player, fair share depends on rho
       int player = *(it->second.begin()); // equilibrium assures that every player receives the same, use one of them to
                                           // calculate the fair sharing for resource r
-      fair_sharing[r] = A_(r, player) * rho[player];
+      if (rho[player] < 0) { // negative rho doesn't make sense, consider the resource is saturated in this case
+        fair_sharing[r] = get_maxmin_share(r);
+      } else {
+        fair_sharing[r] = A_(r, player) * rho[player];
+      }
     } else { // nobody selects this resource, fair_sharing depends on resource saturation
       // resource r is saturated (A[r,*] * rho > C), divide it among players
       double consumption_r = A_.row(r) * rho;
       double_update(&consumption_r, C_[r], sg_maxmin_precision);
       if (consumption_r > 0.0) {
-        auto n_players  = (A_.row(r).array() > 0).count();
-        fair_sharing[r] = C_[r] / n_players;
+        fair_sharing[r] = get_maxmin_share(r);
       } else {
         fair_sharing[r] = get_resource_capacity(r, bounded_players);
       }
