@@ -820,7 +820,8 @@ static bool heap_area_differ(const RemoteProcess& process, StateComparator& stat
 
     if (type_size != -1 && type_size != (ssize_t)heapinfo1->busy_block.busy_size &&
         type_size != (ssize_t)heapinfo2->busy_block.busy_size &&
-        (type->name.empty() || type->name == "struct s_smx_context")) {
+        (type->name.empty() ||
+         type->name == "struct s_smx_context")) { // FIXME: there is no struct s_smx_context anymore
       if (match_pairs)
         state.match_equals(previous);
       return false;

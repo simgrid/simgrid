@@ -30,7 +30,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (ke
 simgrid::kernel::profile::FutureEvtSet future_evt_set;
 std::vector<std::string> surf_path;
 
-/* Don't forget to update the option description in smx_config when you change this */
 const std::vector<surf_model_description_t> surf_network_model_description = {
     {"LV08",
      "Realistic network analytic model (slow-start modeled by multiplying latency by 13.01, bandwidth by .97; "
