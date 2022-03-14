@@ -97,11 +97,6 @@ public:
   context::ContextFactory* get_context_factory() const { return context_factory_; }
   void set_context_factory(context::ContextFactory* factory) { context_factory_ = factory; }
   bool has_context_factory() const { return context_factory_ != nullptr; }
-  void destroy_context_factory()
-  {
-    delete context_factory_;
-    context_factory_ = nullptr;
-  }
 
   void context_mod_init() const;
   /**

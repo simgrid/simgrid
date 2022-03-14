@@ -185,7 +185,15 @@ EngineImpl::~EngineImpl()
   for (auto const& kv : mailboxes_)
     delete kv.second;
 
-    /* Free the remaining data structures */
+  /* Kill all actors (but maestro) */
+  maestro_->kill_all();
+  run_all_actors();
+  empty_trash();
+
+  delete maestro_;
+  delete context_factory_;
+
+  /* Free the remaining data structures */
 #if SIMGRID_HAVE_MC
   xbt_dynar_free(&actors_vector_);
 #endif
@@ -306,18 +314,6 @@ void EngineImpl::shutdown()
     XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
     xbt_die("Bailing out to avoid that stop-before-start madness. Please fix your code.");
   }
-
-  /* Kill all actors (but maestro) */
-  instance_->maestro_->kill_all();
-  instance_->run_all_actors();
-  instance_->empty_trash();
-
-  /* Let's free maestro now */
-  delete instance_->maestro_;
-  instance_->maestro_ = nullptr;
-
-  /* Finish context module and SURF */
-  instance_->destroy_context_factory();
 
   while (not timer::kernel_timers().empty()) {
     delete timer::kernel_timers().top().second;
