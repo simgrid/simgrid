@@ -359,7 +359,6 @@ if some do not work for you.
 - **make java-all**: Build all Java examples and their dependencies
 - **make clean**: Clean the results of a previous compilation
 - **make install**: Install the project (doc/ bin/ lib/ include/)
-- **make uninstall**: Uninstall the project (doc/ bin/ lib/ include/)
 - **make dist**: Build a distribution archive (tar.gz)
 - **make distcheck**: Check the dist (make + make dist + tests on the distribution)
 - **make documentation**: Create SimGrid documentation

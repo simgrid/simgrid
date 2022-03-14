@@ -74,12 +74,16 @@ Python:
      - Comm.wait_any_for()
      - Comm.wait_all_for() [example: examples/python/comm-waitallfor]
 
+Build System:
+ - Remove target "make uninstall" which was incomplete and no longer maintained.
+
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GH: issues on GitHub)
  - FG#57: Mc SimGrid should test whether ptrace is usable
  - FG#87: Smpi scripts fail with spaces in paths
  - FG#100: [SMPI] Order of the message matching is not guaranteed
  - FG#101: LGPL 2.1 is deprecated license
+ - FG#104: "make uninstall" not up-to-date
  - GH#151: Missing mutexes for DPOR.
 
 ----------------------------------------------------------------------------
