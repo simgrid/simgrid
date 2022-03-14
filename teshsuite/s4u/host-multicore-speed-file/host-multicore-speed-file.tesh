@@ -2,22 +2,21 @@
 $ ./host-multicore-speed-file
 > [carol:carol:(1) 0.000000] [s4u_test/INFO] Running 1 tasks (1.5e6) in a 2*(1e6) speed host. Should take 2s (1 (limited by core) + 1 (limited by speed file)
 > [erin:erin:(2) 0.000000] [s4u_test/INFO] Running a 2 tasks: a small .5e6 and a big 2e6.
-> [erin:erin:(3) 0.000000] [s4u_test/INFO] Running a 2 tasks: a small .5e6 and a big 2e6.
-> [erin:erin:(3) 0.500000] [s4u_test/INFO] Finished the small task
-> [erin:erin:(3) 0.500000] [s4u_test/INFO] Waiting big task to finish
-> [erin:erin:(3) 1.000000] [s4u_test/INFO] Unable to finish big task, host went down
-> [carol:carol:(1) 2.000000] [s4u_test/INFO] Finished running 2 activities, elapsed 2.000000
-> [carol:carol:(1) 2.000000] [s4u_test/INFO] Running 1 tasks (.8e6) in a 2*(1e6) speed host with limited rate (.4e6). Should take 2s (limited by rate)
-> [carol:carol:(1) 4.000000] [s4u_test/INFO] Finished running 2 activities, elapsed 2.000000
-> [carol:carol:(1) 4.000000] [s4u_test/INFO] Running 1 tasks (1.1e6) in a 2*(1e6) speed host with limited rate (.6e6). Should take 2s (.6 limited by rate + .5 limited by speed file)
-> [carol:carol:(1) 6.000000] [s4u_test/INFO] Finished running 2 activities, elapsed 2.000000
-> [carol:carol:(1) 6.000000] [s4u_test/INFO] Running 2 tasks (1e6) in a 2*(1e6) speed host. Should take 1s
-> [carol:carol:(1) 7.000000] [s4u_test/INFO] Finished running 2 activities, elapsed 1.000000
-> [carol:carol:(1) 7.000000] [s4u_test/INFO] Running 2 tasks (.5e6) in a .5*2*(1e6) speed host. Should take 1s
-> [carol:carol:(1) 8.000000] [s4u_test/INFO] Finished running 2 activities, elapsed 1.000000
-> [carol:carol:(1) 8.000000] [s4u_test/INFO] Running 2 tasks (1.1e6) with limited rate (.6e6). Should take 2s (0.6 limited by rate + 0.5 limited by speed file)
-> [carol:carol:(1) 10.000000] [s4u_test/INFO] Finished running 2 activities, elapsed 2.000000
-> [carol:carol:(1) 10.000000] [s4u_test/INFO] Running 2 tasks (.8e6) with limited rate (.4e6). Should take 2s (limited by rate)
-> [carol:carol:(1) 12.000000] [s4u_test/INFO] Finished running 2 activities, elapsed 2.000000
-> [carol:carol:(1) 12.000000] [s4u_test/INFO] I'm done. See you!
-> [12.000000] [s4u_test/INFO] Simulation time 12
+> [erin:erin:(2) 0.500000] [s4u_test/INFO] Finished the small task
+> [erin:erin:(2) 0.500000] [s4u_test/INFO] Waiting big task to finish
+> [erin:erin:(2) 1.000000] [s4u_test/INFO] Unable to finish big task, host went down
+> [carol:carol:(1) 1.500000] [s4u_test/INFO] Finished running 2 activities, elapsed 1.500000
+> [carol:carol:(1) 1.500000] [s4u_test/INFO] Running 1 tasks (.8e6) in a 2*(1e6) speed host with limited rate (.4e6). Should take 2s (limited by rate)
+> [carol:carol:(1) 3.500000] [s4u_test/INFO] Finished running 2 activities, elapsed 2.000000
+> [carol:carol:(1) 3.500000] [s4u_test/INFO] Running 1 tasks (1.1e6) in a 2*(1e6) speed host with limited rate (.6e6). Should take 2s (.6 limited by rate + .5 limited by speed file)
+> [carol:carol:(1) 5.333333] [s4u_test/INFO] Finished running 2 activities, elapsed 1.833333
+> [carol:carol:(1) 5.333333] [s4u_test/INFO] Running 2 tasks (1e6) in a 2*(1e6) speed host. Should take 1s
+> [carol:carol:(1) 6.333333] [s4u_test/INFO] Finished running 2 activities, elapsed 1.000000
+> [carol:carol:(1) 6.333333] [s4u_test/INFO] Running 2 tasks (.5e6) in a .5*2*(1e6) speed host. Should take 1s
+> [carol:carol:(1) 6.833333] [s4u_test/INFO] Finished running 2 activities, elapsed 0.500000
+> [carol:carol:(1) 6.833333] [s4u_test/INFO] Running 2 tasks (1.1e6) with limited rate (.6e6). Should take 2s (0.6 limited by rate + 0.5 limited by speed file)
+> [carol:carol:(1) 8.666667] [s4u_test/INFO] Finished running 2 activities, elapsed 1.833333
+> [carol:carol:(1) 8.666667] [s4u_test/INFO] Running 2 tasks (.8e6) with limited rate (.4e6). Should take 2s (limited by rate)
+> [carol:carol:(1) 10.666667] [s4u_test/INFO] Finished running 2 activities, elapsed 2.000000
+> [carol:carol:(1) 10.666667] [s4u_test/INFO] I'm done. See you!
+> [10.666667] [s4u_test/INFO] Simulation time 10.6667

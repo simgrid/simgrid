@@ -13,7 +13,7 @@
     <host id="erin" speed="500Mf" speed_file="erin.avail"/> <!--uses someone else's trace -->
   </zone>
 
-  <trace id="myTrace" periodicity="1.0">
+  <trace id="myTrace" periodicity="21.0">
     0.0 1.0
     11.0 0.5
     20.0 0.8
@@ -21,6 +21,6 @@
 
   <trace_connect trace="myTrace" element="alice" kind="SPEED"/>
 
-  <trace id="myTrace" file="bob.trace" periodicity="1.0"/>
+  <trace id="myTrace" file="bob.trace" periodicity="21.0"/>
   <trace_connect trace="myTrace" element="bob" kind="SPEED"/>
 </platform>

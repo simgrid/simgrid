@@ -6,9 +6,8 @@
 #include "catch.hpp"
 
 #include "src/kernel/resource/Resource.hpp"
-#include "src/kernel/resource/profile/DatedValue.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
-#include "src/kernel/resource/profile/Profile.hpp"
+#include "simgrid/kernel/ProfileBuilder.hpp"
 #include "src/kernel/resource/profile/StochasticDatedValue.hpp"
 #include "src/surf/surf_interface.hpp"
 
@@ -38,7 +37,7 @@ double MockedResource::the_date;
 static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char* str)
 {
   std::vector<simgrid::kernel::profile::DatedValue> res;
-  simgrid::kernel::profile::Profile* trace = simgrid::kernel::profile::Profile::from_string("TheName", str, 0);
+  simgrid::kernel::profile::Profile* trace = simgrid::kernel::profile::ProfileBuilder::from_string("TheName", str, 0);
   XBT_VERB("---------------------------------------------------------");
   XBT_VERB("data>>\n%s<<data\n", str);
   for (auto const& evt : trace->get_event_list())
@@ -66,14 +65,6 @@ static std::vector<simgrid::kernel::profile::DatedValue> trace2vector(const char
   }
   tmgr_finalize();
   return res;
-}
-
-static std::vector<simgrid::kernel::profile::StochasticDatedValue> trace2selist(const char* str)
-{
-  const simgrid::kernel::profile::Profile* trace = simgrid::kernel::profile::Profile::from_string("TheName", str, 0);
-  std::vector<simgrid::kernel::profile::StochasticDatedValue> stocevlist = trace->get_stochastic_event_list();
-  tmgr_finalize();
-  return stocevlist;
 }
 
 TEST_CASE("kernel::profile: Resource profiles, defining the external load", "kernel::profile")
@@ -154,7 +145,7 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
 
     REQUIRE(want == got);
   }
-
+/*
   SECTION("One stochastic event (parsing)")
   {
     using simgrid::kernel::profile::Distribution;
@@ -186,7 +177,7 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
 
     REQUIRE(want == got);
   }
-
+*/
   SECTION("Two stochastic events (drawing each distribution)")
   {
     simgrid::xbt::random::set_implem_xbt();

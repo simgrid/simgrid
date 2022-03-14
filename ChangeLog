@@ -58,6 +58,12 @@ Models:
      https://simgrid.org/doc/latest/Installing_SimGrid.html#installing-from-the-source.
      No action is required if you use pre-compiled packages.
 
+General:
+  - Modifications of the Profile mechanism, with some impact on users 
+    - Addition of a new (S4U) method to init profiles from generic functions to improve versatility
+    - Fix initial behaviour of state_profiles 
+    - Modify periodicity to behave like a period, and not like a loop delay
+
 XBT:
  - Drop xbt_dynar_shrink().
 
