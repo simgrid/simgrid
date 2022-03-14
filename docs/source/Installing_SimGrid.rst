@@ -357,6 +357,7 @@ if some do not work for you.
 - **make simgrid**: Build only the SimGrid library. Not any example nor the helper tools.
 - **make s4u-comm-pingpong**: Build only this example (works for any example)
 - **make java-all**: Build all Java examples and their dependencies
+- **make python-bindings**: Build the Python bindings
 - **make clean**: Clean the results of a previous compilation
 - **make install**: Install the project (doc/ bin/ lib/ include/)
 - **make dist**: Build a distribution archive (tar.gz)
