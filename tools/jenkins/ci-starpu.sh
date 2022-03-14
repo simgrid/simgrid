@@ -33,7 +33,7 @@ for i in master 1.3 ; do
     CXXFLAGS=""
   fi
   if ! ./configure CFLAGS="$CFLAGS" CXXFLAGS="$CXXFLAGS" \
-                   --enable-simgrid --disable-shared --enable-mpi-check --disable-cuda \
+                   --enable-simgrid --disable-shared --enable-mpi --enable-mpi-check --disable-cuda \
                    --disable-build-doc --enable-quick-check
   then
     cat ./config.log
