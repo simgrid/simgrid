@@ -25,4 +25,9 @@ $ ${bindir:=.}/s4u-synchro-mutex
 > [Jupiter:worker:(12) 0.000000] [s4u_test/INFO] I'm done, good bye
 > [Tremblay:worker:(13) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to compute after a regular lock
 > [Tremblay:worker:(13) 0.000000] [s4u_test/INFO] I'm done, good bye
-> [Tremblay:main:(1) 10.000000] [s4u_test/INFO] Results is -> 12
+> [Tremblay:main:(1) 10.000000] [s4u_test/INFO] Result[0] -> 2
+> [Tremblay:main:(1) 10.000000] [s4u_test/INFO] Result[1] -> 2
+> [Tremblay:main:(1) 10.000000] [s4u_test/INFO] Result[2] -> 2
+> [Tremblay:main:(1) 10.000000] [s4u_test/INFO] Result[3] -> 2
+> [Tremblay:main:(1) 10.000000] [s4u_test/INFO] Result[4] -> 2
+> [Tremblay:main:(1) 10.000000] [s4u_test/INFO] Result[5] -> 2
