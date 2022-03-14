@@ -6,6 +6,7 @@
 #include "cpu_ti.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "simgrid/s4u/Engine.hpp"
+#include "xbt/asserts.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
@@ -30,15 +31,26 @@ CpuTiProfile::CpuTiProfile(const profile::Profile* profile)
 {
   double integral    = 0;
   double time        = 0;
-  unsigned long nb_points = profile->get_event_list().size() + 1;
+  double prev_value  = 1;
+  const std::vector<profile::DatedValue>& events=profile->get_event_list();
+  xbt_assert(not events.empty());
+  unsigned long nb_points = events.size() + 1;
   time_points_.reserve(nb_points);
   integral_.reserve(nb_points);
-  for (auto const& val : profile->get_event_list()) {
+  for (auto const& val :  events) {
+    time += val.date_;
+    integral += val.date_ * prev_value;
     time_points_.push_back(time);
     integral_.push_back(integral);
-    time += val.date_;
-    integral += val.date_ * val.value_;
+    prev_value = val.value_;
   }
+
+  double delay=profile->get_repeat_delay()+ events.at(0).date_;
+
+  xbt_assert( events.back().value_==prev_value,"Profiles need to end as they start");
+  time     += delay; 
+  integral += delay*prev_value;
+
   time_points_.push_back(time);
   integral_.push_back(integral);
 }
@@ -228,6 +240,8 @@ CpuTiTmgr::CpuTiTmgr(kernel::profile::Profile* speed_profile, double value) : sp
     return;
   }
 
+  xbt_assert(speed_profile->is_repeating());
+
   /* only one point available, fixed trace */
   if (speed_profile->get_event_list().size() == 1) {
     value_ = speed_profile->get_event_list().front().value_;
@@ -239,6 +253,7 @@ CpuTiTmgr::CpuTiTmgr(kernel::profile::Profile* speed_profile, double value) : sp
   /* count the total time of trace file */
   for (auto const& val : speed_profile->get_event_list())
     total_time += val.date_;
+  total_time += speed_profile->get_repeat_delay();
 
   profile_   = std::make_unique<CpuTiProfile>(speed_profile);
   last_time_ = total_time;
@@ -336,7 +351,7 @@ CpuImpl* CpuTi::set_speed_profile(kernel::profile::Profile* profile)
   if (profile && profile->get_event_list().size() > 1) {
     kernel::profile::DatedValue val = profile->get_event_list().back();
     if (val.date_ < 1e-12) {
-      auto* prof   = new kernel::profile::Profile();
+      auto* prof   = profile::ProfileBuilder::from_void();
       speed_.event = prof->schedule(&profile::future_evt_set, this);
     }
   }

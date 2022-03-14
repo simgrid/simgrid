@@ -4,8 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/resource/profile/Profile.hpp"
-#include "simgrid/forward.h"
-#include "src/kernel/resource/profile/DatedValue.hpp"
+#include "xbt/asserts.h"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
 #include "src/kernel/resource/profile/StochasticDatedValue.hpp"
@@ -17,21 +16,15 @@
 #include <ostream>
 #include <sstream>
 #include <unordered_map>
+#include <utility>
 #include <vector>
+#include <string>
 
 static std::unordered_map<std::string, simgrid::kernel::profile::Profile*> trace_list;
 
 namespace simgrid {
 namespace kernel {
 namespace profile {
-
-Profile::Profile()
-{
-  /* Add the first fake event storing the time at which the trace begins */
-  event_list.emplace_back(0, -1);
-  stochastic_event_list.emplace_back(0, -1);
-}
-Profile::~Profile() = default;
 
 /** @brief Register this profile for that resource onto that FES,
  * and get an iterator over the integrated trace  */
@@ -43,15 +36,18 @@ Event* Profile::schedule(FutureEvtSet* fes, resource::Resource* resource)
   event->resource = resource;
   event->free_me  = false;
 
-  xbt_assert((event->idx < event_list.size()), "Your profile should have at least one event!");
-
   fes_ = fes;
-  fes_->add_event(0.0 /* start time */, event);
-  if (stochastic) {
-    xbt_assert(event->idx < stochastic_event_list.size(), "Your profile should have at least one stochastic event!");
-    futureDV = stochastic_event_list.at(event->idx).get_datedvalue();
-  }
 
+  if(event_list.empty())
+    cb(event_list);
+
+  if(event_list.empty()) {
+    event->free_me  = false;
+  } else {
+    //FIXME: This is a bug, but keep old behaviour for now
+    //fes_->add_event(0, event);
+    fes_->add_event(event_list[0].date_, event);
+  }
   return event;
 }
 
@@ -60,181 +56,27 @@ DatedValue Profile::next(Event* event)
 {
   double event_date  = fes_->next_date();
 
-  if (not stochastic) {
-    DatedValue dateVal = event_list.at(event->idx);
+  DatedValue dateVal = event_list.at(event->idx);
 
-    if (event->idx < event_list.size() - 1) {
-      fes_->add_event(event_date + dateVal.date_, event);
-      event->idx++;
-    } else if (dateVal.date_ > 0) { /* Last element. Shall we loop? */
-      fes_->add_event(event_date + dateVal.date_, event);
-      event->idx = 1; /* idx=0 is a placeholder to store when events really start */
-    } else {          /* If we don't loop, we don't need this event anymore */
-      event->free_me = true;
-    }
-    return dateVal;
-  } else {
-    DatedValue dateVal = futureDV;
-    if (event->idx < stochastic_event_list.size() - 1) {
-      event->idx++;
-    } else if (stochasticloop) { /* We have reached the last element and we have to loop. */
-      event->idx = 1;
-    } else {
-      event->free_me = true; /* We have reached the last element, but we don't need to loop. */
-    }
+  event->idx++;
 
-    if (not event->free_me) { // In the case there is an element, we draw the next event
-      futureDV = stochastic_event_list.at(event->idx).get_datedvalue();
-      fes_->add_event(event_date + futureDV.date_, event);
-    }
-    return dateVal;
+  if (event->idx == event_list.size())
+    cb(event_list);
+  if(event->idx>=event_list.size())
+    event->free_me = true;
+  else {
+    DatedValue& nextDateVal=event_list.at(event->idx);
+    xbt_assert(nextDateVal.date_>=0);
+    xbt_assert(nextDateVal.value_>=0);
+    fes_->add_event(event_date +nextDateVal.date_, event);
   }
+  return dateVal;
 }
 
-static bool is_comment_or_empty_line(const std::string& val)
-{
-  return (val[0] == '#' || val[0] == '\0' || val[0] == '%');
-}
-
-static bool is_normal_distribution(const std::string& val)
-{
-  return (val == "NORM" || val == "NORMAL" || val == "GAUSS" || val == "GAUSSIAN");
-}
-
-static bool is_exponential_distribution(const std::string& val)
-{
-  return (val == "EXP" || val == "EXPONENTIAL");
-}
-
-static bool is_uniform_distribution(const std::string& val)
-{
-  return (val == "UNIF" || val == "UNIFORM");
-}
-
-Profile* Profile::from_string(const std::string& name, const std::string& input, double periodicity)
-{
-  int linecount                                    = 0;
-  auto* profile                                    = new simgrid::kernel::profile::Profile();
-  simgrid::kernel::profile::DatedValue* last_event = &(profile->event_list.back());
-
+Profile::Profile(const std::string& name, const std::function<ProfileBuilder::UpdateCb>& cb, double repeat_delay): name(name),cb(std::move(cb)),repeat_delay(repeat_delay) {
   xbt_assert(trace_list.find(name) == trace_list.end(), "Refusing to define trace %s twice", name.c_str());
-
-  std::vector<std::string> list;
-  boost::split(list, input, boost::is_any_of("\n\r"));
-  for (auto val : list) {
-    simgrid::kernel::profile::DatedValue event;
-    simgrid::kernel::profile::StochasticDatedValue stochevent;
-    linecount++;
-    boost::trim(val);
-    if (is_comment_or_empty_line(val))
-      continue;
-    if (sscanf(val.c_str(), "PERIODICITY %lg\n", &periodicity) == 1)
-      continue;
-    if (sscanf(val.c_str(), "LOOPAFTER %lg\n", &periodicity) == 1)
-      continue;
-    if (val == "STOCHASTIC LOOP") {
-      profile->stochastic     = true;
-      profile->stochasticloop = true;
-      continue;
-    }
-    if (val == "STOCHASTIC") {
-      profile->stochastic = true;
-      continue;
-    }
-
-    if (profile->stochastic) {
-      unsigned int i;
-      unsigned int j;
-      std::istringstream iss(val);
-      std::vector<std::string> splittedval((std::istream_iterator<std::string>(iss)),
-                                           std::istream_iterator<std::string>());
-
-      xbt_assert(not splittedval.empty(), "Invalid profile line");
-
-      if (splittedval[0] == "DET") {
-        stochevent.date_law = Distribution::DET;
-        i                   = 2;
-      } else if (is_normal_distribution(splittedval[0])) {
-        stochevent.date_law = Distribution::NORM;
-        i                   = 3;
-      } else if (is_exponential_distribution(splittedval[0])) {
-        stochevent.date_law = Distribution::EXP;
-        i                   = 2;
-      } else if (is_uniform_distribution(splittedval[0])) {
-        stochevent.date_law = Distribution::UNIF;
-        i                   = 3;
-      } else {
-        xbt_die("Unknown law %s", splittedval[0].c_str());
-      }
-
-      xbt_assert(splittedval.size() > i, "Invalid profile line");
-      if (i == 2) {
-        stochevent.date_params = {std::stod(splittedval[1])};
-      } else if (i == 3) {
-        stochevent.date_params = {std::stod(splittedval[1]), std::stod(splittedval[2])};
-      }
-
-      if (splittedval[i] == "DET") {
-        stochevent.value_law = Distribution::DET;
-        j                    = 1;
-      } else if (is_normal_distribution(splittedval[i])) {
-        stochevent.value_law = Distribution::NORM;
-        j                    = 2;
-      } else if (is_exponential_distribution(splittedval[i])) {
-        stochevent.value_law = Distribution::EXP;
-        j                    = 1;
-      } else if (is_uniform_distribution(splittedval[i])) {
-        stochevent.value_law = Distribution::UNIF;
-        j                    = 2;
-      } else {
-        xbt_die("Unknown law %s", splittedval[i].c_str());
-      }
-
-      xbt_assert(splittedval.size() > i + j, "Invalid profile line");
-      if (j == 1) {
-        stochevent.value_params = {std::stod(splittedval[i + 1])};
-      } else if (j == 2) {
-        stochevent.value_params = {std::stod(splittedval[i + 1]), std::stod(splittedval[i + 2])};
-      }
-
-      profile->stochastic_event_list.emplace_back(stochevent);
-    } else {
-      xbt_assert(sscanf(val.c_str(), "%lg  %lg\n", &event.date_, &event.value_) == 2,
-                 "%s:%d: Syntax error in trace\n%s", name.c_str(), linecount, input.c_str());
-
-      xbt_assert(last_event->date_ <= event.date_,
-                 "%s:%d: Invalid trace: Events must be sorted, but time %g > time %g.\n%s", name.c_str(), linecount,
-                 last_event->date_, event.date_, input.c_str());
-      last_event->date_ = event.date_ - last_event->date_;
-
-      profile->event_list.emplace_back(event);
-      last_event = &(profile->event_list.back());
-    }
-  }
-  if (last_event) {
-    if (periodicity > 0) {
-      last_event->date_ = periodicity + profile->event_list.at(0).date_;
-    } else {
-      last_event->date_ = -1;
-    }
-  }
-
-  trace_list.insert({name, profile});
-
-  return profile;
-}
-Profile* Profile::from_file(const std::string& path)
-{
-  xbt_assert(not path.empty(), "Cannot parse a trace from an empty filename");
-  xbt_assert(trace_list.find(path) == trace_list.end(), "Refusing to define trace %s twice", path.c_str());
-
-  auto f = std::unique_ptr<std::ifstream>(surf_ifsopen(path));
-  xbt_assert(not f->fail(), "Cannot open file '%s' (path=%s)", path.c_str(), (boost::join(surf_path, ":")).c_str());
-
-  std::stringstream buffer;
-  buffer << f->rdbuf();
-
-  return Profile::from_string(path, buffer.str(), -1);
+  trace_list.insert({name,this});
+  cb(event_list);
 }
 
 } // namespace profile

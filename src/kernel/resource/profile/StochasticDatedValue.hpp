@@ -7,7 +7,7 @@
 #define SIMGRID_KERNEL_PROFILE_STOCHASTICDATEDVALUE
 
 #include "simgrid/forward.h"
-#include "src/kernel/resource/profile/DatedValue.hpp"
+#include "simgrid/kernel/ProfileBuilder.hpp"
 #include <vector>
 
 namespace simgrid {

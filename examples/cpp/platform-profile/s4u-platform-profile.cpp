@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 0 1.0
 2 0.5
 )",
-                                                                                2))
+                                                                                4))
       ->seal();
 
   // Add a watcher of the changes

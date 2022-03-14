@@ -595,11 +595,11 @@ void sg_platf_new_trace(simgrid::kernel::routing::ProfileCreationArgs* args)
 {
   simgrid::kernel::profile::Profile* profile;
   if (not args->file.empty()) {
-    profile = simgrid::kernel::profile::Profile::from_file(args->file);
+    profile = simgrid::kernel::profile::ProfileBuilder::from_file(args->file);
   } else {
     xbt_assert(not args->pc_data.empty(), "Trace '%s' must have either a content, or point to a file on disk.",
                args->id.c_str());
-    profile = simgrid::kernel::profile::Profile::from_string(args->id, args->pc_data, args->periodicity);
+    profile = simgrid::kernel::profile::ProfileBuilder::from_string(args->id, args->pc_data, args->periodicity);
   }
   traces_set_list.insert({args->id, profile});
 }

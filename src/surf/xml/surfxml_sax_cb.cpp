@@ -244,12 +244,12 @@ void STag_surfxml_host()
 
   if (A_surfxml_host_availability___file[0] != '\0') {
     XBT_WARN("The availability_file attribute in <host> is now deprecated. Please, use 'speed_file' instead.");
-    host.speed_trace = simgrid::kernel::profile::Profile::from_file(A_surfxml_host_availability___file);
+    host.speed_trace = simgrid::kernel::profile::ProfileBuilder::from_file(A_surfxml_host_availability___file);
   }
   if (A_surfxml_host_speed___file[0] != '\0')
-    host.speed_trace = simgrid::kernel::profile::Profile::from_file(A_surfxml_host_speed___file);
+    host.speed_trace = simgrid::kernel::profile::ProfileBuilder::from_file(A_surfxml_host_speed___file);
   host.state_trace = A_surfxml_host_state___file[0]
-                         ? simgrid::kernel::profile::Profile::from_file(A_surfxml_host_state___file)
+                         ? simgrid::kernel::profile::ProfileBuilder::from_file(A_surfxml_host_state___file)
                          : nullptr;
   host.coord       = A_surfxml_host_coordinates;
 
@@ -415,12 +415,12 @@ void STag_surfxml_peer(){
   peer.speed_trace = nullptr;
   if (A_surfxml_peer_availability___file[0] != '\0') {
     XBT_WARN("The availability_file attribute in <peer> is now deprecated. Please, use 'speed_file' instead.");
-    peer.speed_trace = simgrid::kernel::profile::Profile::from_file(A_surfxml_peer_availability___file);
+    peer.speed_trace = simgrid::kernel::profile::ProfileBuilder::from_file(A_surfxml_peer_availability___file);
   }
   if (A_surfxml_peer_speed___file[0] != '\0')
-    peer.speed_trace = simgrid::kernel::profile::Profile::from_file(A_surfxml_peer_speed___file);
+    peer.speed_trace = simgrid::kernel::profile::ProfileBuilder::from_file(A_surfxml_peer_speed___file);
   peer.state_trace = A_surfxml_peer_state___file[0]
-                         ? simgrid::kernel::profile::Profile::from_file(A_surfxml_peer_state___file)
+                         ? simgrid::kernel::profile::ProfileBuilder::from_file(A_surfxml_peer_state___file)
                          : nullptr;
 
   if (A_surfxml_peer_lat[0] != '\0')
@@ -444,15 +444,15 @@ void ETag_surfxml_link(){
   link.bandwidths          = xbt_parse_get_bandwidths(surf_parsed_filename, surf_parse_lineno, A_surfxml_link_bandwidth,
                                              "bandwidth of link " + link.id);
   link.bandwidth_trace     = A_surfxml_link_bandwidth___file[0]
-                             ? simgrid::kernel::profile::Profile::from_file(A_surfxml_link_bandwidth___file)
+                             ? simgrid::kernel::profile::ProfileBuilder::from_file(A_surfxml_link_bandwidth___file)
                              : nullptr;
   link.latency =
       xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_link_latency, "latency of link " + link.id);
   link.latency_trace       = A_surfxml_link_latency___file[0]
-                           ? simgrid::kernel::profile::Profile::from_file(A_surfxml_link_latency___file)
+                           ? simgrid::kernel::profile::ProfileBuilder::from_file(A_surfxml_link_latency___file)
                            : nullptr;
   link.state_trace = A_surfxml_link_state___file[0]
-                         ? simgrid::kernel::profile::Profile::from_file(A_surfxml_link_state___file)
+                         ? simgrid::kernel::profile::ProfileBuilder::from_file(A_surfxml_link_state___file)
                          : nullptr;
 
   switch (A_surfxml_link_sharing___policy) {

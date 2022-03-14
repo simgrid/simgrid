@@ -312,8 +312,6 @@ set(SURF_SRC
   src/kernel/resource/VirtualMachineImpl.cpp
   src/kernel/resource/WifiLinkImpl.cpp
 
-  src/kernel/resource/profile/DatedValue.cpp
-  src/kernel/resource/profile/DatedValue.hpp
   src/kernel/resource/profile/Event.hpp
   src/kernel/resource/profile/FutureEvtSet.cpp
   src/kernel/resource/profile/FutureEvtSet.hpp

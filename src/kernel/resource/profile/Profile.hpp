@@ -7,12 +7,13 @@
 #define SIMGRID_KERNEL_PROFILE_HPP
 
 #include "simgrid/forward.h"
-#include "src/kernel/resource/profile/DatedValue.hpp"
+#include "simgrid/kernel/ProfileBuilder.hpp"
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
 #include "src/kernel/resource/profile/StochasticDatedValue.hpp"
 
 #include <queue>
 #include <vector>
+#include <string>
 
 namespace simgrid {
 namespace kernel {
@@ -23,29 +24,36 @@ namespace profile {
  * It is useful to model dynamic platforms, where an external load that makes the resource availability change over
  * time. To model that, you have to set several profiles per resource: one for the on/off state and one for each
  * numerical value (computational speed, bandwidth and/or latency).
+ *
+ * There are two behaviours. Either a callback is used to populate the profile when the set has been exhausted, 
+ * or the callback is called only during construction and the initial set is repeated over and over, after a fixed repeating delay. 
  */
 class XBT_PUBLIC Profile {
 public:
-  /**  Creates an empty trace */
-  explicit Profile();
-  virtual ~Profile();
+
+  /** @brief Create a profile. There are two behaviours. Either the callback is 
+  *
+  * @param name The name of the profile (checked for uniqueness)
+  * @param cb A callback object/function that populates the profile. 
+  * @param repeat_delay If strictly negative, it is ignored and the callback is called when an event reached the end of the event_list. 
+  *                     If zero or positive, the initial set repeats after the provided delay.                          
+  */
+  explicit Profile(const std::string& name, const std::function<ProfileBuilder::UpdateCb>& cb, double repeat_delay);
+  virtual ~Profile()=default;
   Event* schedule(FutureEvtSet* fes, resource::Resource* resource);
   DatedValue next(Event* event);
 
   const std::vector<DatedValue>& get_event_list() const { return event_list; }
-  const std::vector<StochasticDatedValue>& get_stochastic_event_list() const { return stochastic_event_list; }
-
-  static Profile* from_file(const std::string& path);
-  static Profile* from_string(const std::string& name, const std::string& input, double periodicity);
-
+  const std::string get_name() const { return name; }
+  bool is_repeating() const { return repeat_delay>=0;}
+  double get_repeat_delay() const { return repeat_delay;}
+  
 private:
+  std::string name;
+  std::function<ProfileBuilder::UpdateCb> cb;
   std::vector<DatedValue> event_list;
-  std::vector<StochasticDatedValue> stochastic_event_list;
-
   FutureEvtSet* fes_  = nullptr;
-  bool stochastic     = false;
-  bool stochasticloop = false;
-  DatedValue futureDV;
+  double repeat_delay;
 };
 
 } // namespace profile
