@@ -1,6 +1,6 @@
 foreach(example actor-create actor-daemon actor-join actor-kill actor-migrate actor-suspend actor-yield actor-lifetime
         app-masterworkers
-        comm-wait comm-waitall comm-waitany comm-waitfor
+        comm-wait comm-waitall comm-waitallfor comm-waitany comm-waitfor
         exec-async exec-basic exec-dvfs exec-remote
         platform-profile platform-failures
         network-nonlinear clusters-multicpu io-degradation exec-cpu-nonlinear)
