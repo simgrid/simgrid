@@ -14,10 +14,10 @@ def create_parser() -> ArgumentParser:
         help='path to the platform description'
     )
     parser.add_argument(
-        '--workers',
+        '--actors',
         type=int,
         default=6,
-        help='number of workers to start'
+        help='how many pairs of actors should be started?'
     )
     return parser
 
@@ -63,18 +63,9 @@ def master(settings):
     """
     result = ResultHolder(value=0)
     mutex = Mutex()
-    actors = []
-    for i in range(settings.workers):
-        use_worker_context_manager = i % 2 == 0
-        actors.append(
-            Actor.create(
-                f"worker-{i}(mgr)" if use_worker_context_manager else f"worker-{i}",
-                Host.by_name("Jupiter" if use_worker_context_manager else "Tremblay"),
-                worker_context_manager if use_worker_context_manager else worker,
-                mutex,
-                result
-            )
-        )
+    for i in range(settings.actors):
+        Actor.create(f"worker-{i}(mgr)", Host.by_name("Jupiter"), worker_context_manager, mutex, result)
+        Actor.create(f"worker-{i}", Host.by_name("Tremblay"), worker, mutex, result)
     this_actor.sleep_for(10)
     this_actor.info(f"The final result is: {result.value}")
 
