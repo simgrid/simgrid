@@ -681,6 +681,7 @@ void EngineImpl::run(double max_date)
 
     if (cfg_breakpoint >= 0.0 && simgrid_get_clock() >= cfg_breakpoint) {
       XBT_DEBUG("Breakpoint reached (%g)", cfg_breakpoint.get());
+      cfg_breakpoint = -1.0; // Let the simulation continue without hiting the breakpoint again and again
 #ifdef SIGTRAP
       std::raise(SIGTRAP);
 #else
