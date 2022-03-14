@@ -103,7 +103,6 @@ public:
     double last_date=0;
     boost::split(list, input, boost::is_any_of("\n\r"));
     for (auto val : list) {
-      simgrid::kernel::profile::DatedValue event;
       simgrid::kernel::profile::StochasticDatedValue stochevent;
       linecount++;
       boost::trim(val);
