@@ -67,11 +67,6 @@ endif()
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 find_package(Threads)
 
-### Check for Eigen library
-find_package (Eigen3 3.3 REQUIRED NO_MODULE)
-message(STATUS "Found Eigen3: ${EIGEN3_INCLUDE_DIR}")
-include_directories(${EIGEN3_INCLUDE_DIR})
-
 ### Setup Options
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Option.cmake)
 
@@ -242,6 +237,15 @@ if(enable_ns3)
   else()
     message(FATAL_ERROR "Cannot find ns-3. Please install it (apt-get install ns3 libns3-dev) or disable that cmake option")
   endif()
+endif()
+
+### Check for Eigen library
+find_package (Eigen3 3.3 REQUIRED NO_MODULE)
+message(STATUS "Found Eigen3: ${EIGEN3_INCLUDE_DIR}")
+include_directories(${EIGEN3_INCLUDE_DIR})
+if ("3.3.4" EQUAL EIGEN3_VERSION_STRING)
+  message(STATUS "Avoid build error of Eigen3 v3.3.4 using -Wno-error=int-in-bool-context")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-error=int-in-bool-context")
 endif()
 
 set(SIMGRID_HAVE_MSG 0)

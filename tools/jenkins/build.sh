@@ -204,10 +204,6 @@ if [ "$os" = "CentOS" ]; then
     else
         MAY_DISABLE_LTO=
     fi
-    if [ "$(rpm -q eigen3-devel --qf '%{VERSION}')" = "3.3.4" ]; then
-        echo "Temporary avoid build error seen with eigen3 version 3.3.4"
-        export CXXFLAGS=-Wno-error=int-in-bool-context
-    fi
 fi
 
 cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
