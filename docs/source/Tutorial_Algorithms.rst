@@ -478,6 +478,15 @@ Using your Computer Natively
       your :ref:`SimGrid installation <install>`.  On need, please refer to
       the :ref:`Troubleshooting your Project Setup <install_yours_troubleshooting>` section.
 
+.. warning::
+
+   If you use the stable version of Debian 11, Ubuntu 21.04 or Ubuntu 21.10, then you need the right version of this tutorial 
+   (add ``--branch simgrid-v3.25`` as below). These distributions only contain SimGrid v3.25 while the latest version of this
+   tutorial needs at least SimGrid v3.27.
+
+   .. code-block:: console
+
+      $ git clone --branch simgrid-v3.25 https://framagit.org/simgrid/simgrid-template-s4u.git
 
 For R analysis of the produced traces, you may want to install R
 and the `pajengr <https://github.com/schnorr/pajengr#installation/>`_ package.
@@ -506,6 +515,9 @@ Discovering the Provided Code
          $ make master-workers
          $ ./master-workers small_platform.xml master-workers_d.xml
 
+      If you get an error message complaining that ``simgrid::s4u::Mailbox::get()`` does not exist, 
+      then your version of SimGrid is too old for the version of the tutorial that you got. Check again previous section.
+
    .. group-tab:: Python
 
       Please execute the provided simulator as follows:
@@ -513,6 +525,9 @@ Discovering the Provided Code
       .. code-block:: console
 
          $ python master-workers.py small_platform.xml master-workers_d.xml
+
+      If you get an error stating that the simgrid module does not exist, you need to get a newer version of SimGrid. 
+      You may want to take the tutorial from the docker to get the newest version.
 
 For a more "fancy" output, you can use simgrid-colorizer.
 
