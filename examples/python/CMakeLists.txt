@@ -3,7 +3,8 @@ foreach(example actor-create actor-daemon actor-join actor-kill actor-migrate ac
         comm-wait comm-waitall comm-waitallfor comm-waitany comm-waitfor
         exec-async exec-basic exec-dvfs exec-remote
         platform-profile platform-failures
-        network-nonlinear clusters-multicpu io-degradation exec-cpu-nonlinear)
+        network-nonlinear clusters-multicpu io-degradation exec-cpu-nonlinear
+        synchro-mutex)
   set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.py)
 

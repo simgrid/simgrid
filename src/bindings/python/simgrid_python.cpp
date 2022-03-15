@@ -33,6 +33,7 @@
 #include <simgrid/s4u/Host.hpp>
 #include <simgrid/s4u/Link.hpp>
 #include <simgrid/s4u/Mailbox.hpp>
+#include <simgrid/s4u/Mutex.hpp>
 #include <simgrid/s4u/NetZone.hpp>
 #include <simgrid/version.h>
 
@@ -48,6 +49,8 @@ using simgrid::s4u::Engine;
 using simgrid::s4u::Host;
 using simgrid::s4u::Link;
 using simgrid::s4u::Mailbox;
+using simgrid::s4u::Mutex;
+using simgrid::s4u::MutexPtr;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(python, "python");
 
@@ -774,6 +777,20 @@ PYBIND11_MODULE(simgrid, m)
       .def("wait", &simgrid::s4u::Exec::wait, py::call_guard<py::gil_scoped_release>(),
            "Block until the completion of that execution.");
 
+  /* Class Mutex */
+  py::class_<Mutex, MutexPtr>(m, "Mutex",
+                              "A classical mutex, but blocking in the simulation world."
+                              "See the C++ documentation for details.")
+      .def(py::init<>(&Mutex::create))
+      .def("lock", &Mutex::lock, py::call_guard<py::gil_scoped_release>(), "Block until the mutex is acquired.")
+      .def("try_lock", &Mutex::try_lock, py::call_guard<py::gil_scoped_release>(),
+           "Try to acquire the mutex. Return true if the mutex was acquired, false otherwise.")
+      .def("unlock", &Mutex::unlock, py::call_guard<py::gil_scoped_release>(), "Release the mutex")
+      // Allow mutexes to be automatically acquired/released with a context manager: `with mutex: ...`
+      .def("__enter__", [](Mutex* self){ self->lock(); }, py::call_guard<py::gil_scoped_release>())
+      .def("__exit__", [](Mutex* self, py::object&, py::object&, py::object&){ self->unlock(); },
+          py::call_guard<py::gil_scoped_release>());
+
   /* Class Actor */
   py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor",
                                             "An actor is an independent stream of execution in your distributed "
@@ -824,7 +841,7 @@ PYBIND11_MODULE(simgrid, m)
            "Returns True if that actor is a daemon and will be terminated automatically when the last non-daemon actor "
            "terminates.")
       .def("join", py::overload_cast<double>(&Actor::join, py::const_), py::call_guard<py::gil_scoped_release>(),
-           "Wait for the actor to finish (more info in the C++ documentation).", py::arg("timeout"))
+           "Wait for the actor to finish (more info in the C++ documentation).", py::arg("timeout") = -1)
       .def("kill", &Actor::kill, py::call_guard<py::gil_scoped_release>(), "Kill that actor")
       .def("self", &Actor::self, "Retrieves the current actor.")
       .def("is_suspended", &Actor::is_suspended, "Returns True if that actor is currently suspended.")
