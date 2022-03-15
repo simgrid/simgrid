@@ -206,15 +206,7 @@ TEST_CASE("Activity lifecycle: comm activities")
     bool send_done = false;
     bool recv_done = false;
 
-    simgrid::s4u::ActorPtr sender = simgrid::s4u::Actor::create("sender", all_hosts[1], [&send_done]() {
-      assert_exit(false, 2);
-      // Encapsulate the payload in a std::unique_ptr so that it is correctly free'd when the sender is killed during
-      // its communication (thanks to RAII).  The pointer is then released when the communication is over.
-      std::unique_ptr<char, decltype(&xbt_free_f)> payload(xbt_strdup("toto"), &xbt_free_f);
-      simgrid::s4u::Mailbox::by_name("mb")->put(payload.get(), 5000);
-      payload.release();
-      send_done = true;
-    });
+    simgrid::s4u::ActorPtr sender = sender_basic(send_done, false, 2);
 
     simgrid::s4u::Actor::create("receiver", all_hosts[2], [&recv_done]() {
       assert_exit(true, 2);
