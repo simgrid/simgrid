@@ -472,14 +472,12 @@ void BmfSystem::get_constraint_data(const CnstList& cnst_list, Eigen::VectorXd& 
   }
 }
 
-void BmfSystem::solve()
+void BmfSystem::do_solve()
 {
-  if (modified_) {
-    if (selective_update_active)
-      bmf_solve(modified_constraint_set);
-    else
-      bmf_solve(active_constraint_set);
-  }
+  if (selective_update_active)
+    bmf_solve(modified_constraint_set);
+  else
+    bmf_solve(active_constraint_set);
 }
 
 template <class CnstList> void BmfSystem::bmf_solve(const CnstList& cnst_list)
@@ -505,8 +503,16 @@ template <class CnstList> void BmfSystem::bmf_solve(const CnstList& cnst_list)
   for (int i = 0; i < rho.size(); i++) {
     idx2Var_[i]->value_ = rho[i];
   }
-
-  print();
+  /* updating modified_set */
+  for (const Constraint& cnst : cnst_list) {
+    for (const Element& elem : cnst.enabled_element_set_) {
+      if (elem.consumption_weight > 0) {
+        resource::Action* action = elem.variable->id_;
+        if (modified_set_ && not action->is_within_modified_set())
+          modified_set_->push_back(*action);
+      }
+    }
+  }
 }
 
 } // namespace lmm

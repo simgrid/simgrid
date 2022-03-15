@@ -31,7 +31,7 @@ static void test1()
   double a = 1.0;
   double b = 10.0;
 
-  lmm::System Sys(false);
+  lmm::MaxMin Sys(false);
   lmm::Constraint* L1 = Sys.constraint_new(nullptr, a);
   lmm::Constraint* L2 = Sys.constraint_new(nullptr, b);
   lmm::Constraint* L3 = Sys.constraint_new(nullptr, a);
@@ -69,7 +69,7 @@ static void test1()
 
 static void test2()
 {
-  lmm::System Sys(false);
+  lmm::MaxMin Sys(false);
 
   lmm::Constraint* CPU1 = Sys.constraint_new(nullptr, 200.0);
   lmm::Constraint* CPU2 = Sys.constraint_new(nullptr, 100.0);
@@ -127,7 +127,7 @@ static void test3()
   A[13][14] =                                        1.0;
   A[14][15] =                                        1.0;
 
-  lmm::System Sys(false);
+  lmm::MaxMin Sys(false);
 
   /* Creates the constraints */
   std::array<lmm::Constraint*, 15> tmp_cnst;

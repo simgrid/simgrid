@@ -12,7 +12,7 @@ namespace lmm = simgrid::kernel::lmm;
 
 TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-single-sys]")
 {
-  lmm::System Sys(false);
+  lmm::MaxMin Sys(false);
 
   SECTION("Variable penalty")
   {
@@ -144,7 +144,7 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
 
 TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshared-single-sys]")
 {
-  lmm::System Sys(false);
+  lmm::MaxMin Sys(false);
 
   SECTION("Variable penalty")
   {
@@ -287,7 +287,7 @@ TEST_CASE("kernel::lmm dynamic constraint shared systems", "[kernel-lmm-shared-s
     // decrease 10 % for each extra flow sharing this resource
     return bound - (flows - 1) * .10 * bound;
   };
-  lmm::System Sys(false);
+  lmm::MaxMin Sys(false);
   lmm::Constraint* sys_cnst = Sys.constraint_new(nullptr, 10);
   sys_cnst->set_sharing_policy(lmm::Constraint::SharingPolicy::NONLINEAR, cb);
 
@@ -427,7 +427,7 @@ TEST_CASE("kernel::lmm dynamic constraint shared systems", "[kernel-lmm-shared-s
 
 TEST_CASE("kernel::lmm shared systems with crosstraffic", "[kernel-lmm-shared-crosstraffic]")
 {
-  lmm::System Sys(false);
+  lmm::MaxMin Sys(false);
 
   SECTION("3 flows, 3 resource: crosstraffic")
   {

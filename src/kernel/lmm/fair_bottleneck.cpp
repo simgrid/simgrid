@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/kernel/lmm/maxmin.hpp"
+#include "src/kernel/lmm/fair_bottleneck.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "xbt/sysdep.h"
 
@@ -15,11 +15,8 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_lmm);
 
-void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
+void simgrid::kernel::lmm::FairBottleneck::do_solve()
 {
-  if (not modified_)
-    return;
-
   XBT_DEBUG("Variable set : %zu", variable_set.size());
   for (Variable& var : variable_set) {
     var.value_ = 0.0;
@@ -139,9 +136,4 @@ void simgrid::kernel::lmm::FairBottleneck::bottleneck_solve()
   } while (not var_list.empty());
 
   cnst_list.clear();
-  modified_ = true;
-  if (XBT_LOG_ISENABLED(ker_lmm, xbt_log_priority_debug)) {
-    XBT_DEBUG("Fair bottleneck done");
-    print();
-  }
 }

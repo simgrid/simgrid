@@ -3,10 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_BMF_HPP
-#define SURF_BMF_HPP
+#ifndef SIMGRID_KERNEL_LMM_BMF_HPP
+#define SIMGRID_KERNEL_LMM_BMF_HPP
 
-#include "src/kernel/lmm/maxmin.hpp"
+#include "src/kernel/lmm/System.hpp"
 #include <Eigen/Dense>
 #include <unordered_set>
 
@@ -224,10 +224,10 @@ private:
 class XBT_PUBLIC BmfSystem : public System {
 public:
   using System::System;
-  /** @brief Implements the solve method to calculate a BMF allocation */
-  void solve() final;
 
 private:
+  /** @brief Implements the solve method to calculate a BMF allocation */
+  void do_solve() final;
   using allocation_map_t = std::unordered_map<int, std::unordered_set<int>>;
   /**
    * @brief Solve equation system to find a fair-sharing of resources

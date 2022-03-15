@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_MAXMIN_HPP
-#define SURF_MAXMIN_HPP
+#ifndef SIMGRID_KERNEL_LMM_SYSTEM_HPP
+#define SIMGRID_KERNEL_LMM_SYSTEM_HPP
 
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/kernel/resource/Model.hpp"
@@ -471,15 +471,14 @@ public:
   /** @brief Print the lmm system */
   void print() const;
 
-  /** @brief Solve the lmm system */
-  void lmm_solve();
-
   /** @brief Solve the lmm system. May be specialized in subclasses. */
-  virtual void solve() { lmm_solve(); }
+  void solve();
 
 private:
   static void* variable_mallocator_new_f();
   static void variable_mallocator_free_f(void* var);
+  /** @brief Implements the solver. Must be specialized in subclasses. */
+  virtual void do_solve() = 0;
 
   void var_free(Variable * var);
   void cnst_free(Constraint * cnst);
@@ -535,12 +534,6 @@ private:
   void update_modified_set(Constraint* cnst);
   void update_modified_set_rec(const Constraint* cnst);
 
-  /** @brief Remove all constraints of the modified_constraint_set. */
-  void remove_all_modified_set();
-  void check_concurrency() const;
-
-  template <class CnstList> void lmm_solve(CnstList& cnst_list);
-
 public:
   bool modified_ = false;
   boost::intrusive::list<Variable, boost::intrusive::member_hook<Variable, boost::intrusive::list_member_hook<>,
@@ -564,13 +557,11 @@ protected:
                                                                    &Constraint::modified_constraint_set_hook_>>
       modified_constraint_set;
 
+  /** @brief Remove all constraints of the modified_constraint_set. */
+  void remove_all_modified_set();
+  void check_concurrency() const;
+
 private:
-  using dyn_light_t = std::vector<int>;
-
-  //Data used in lmm::solve
-  std::vector<ConstraintLight> cnst_light_vec;
-  dyn_light_t saturated_constraints;
-
   unsigned visited_counter_ = 1; /* used by System::update_modified_set() and System::remove_all_modified_set() to
                                   * cleverly (un-)flag the constraints (more details in these functions) */
   boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
@@ -578,15 +569,6 @@ private:
       constraint_set;
   xbt_mallocator_t variable_mallocator_ =
       xbt_mallocator_new(65536, System::variable_mallocator_new_f, System::variable_mallocator_free_f, nullptr);
-};
-
-class XBT_PUBLIC FairBottleneck : public System {
-public:
-  using System::System;
-  void solve() final { bottleneck_solve(); }
-
-private:
-  void bottleneck_solve();
 };
 
 /** @} */

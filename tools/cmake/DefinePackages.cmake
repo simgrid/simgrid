@@ -292,8 +292,10 @@ set(NS3_SRC  src/surf/network_ns3.cpp
              src/surf/ns3/ns3_simulator.cpp )
 
 set(SURF_SRC
+  src/kernel/lmm/fair_bottleneck.hpp
   src/kernel/lmm/fair_bottleneck.cpp
   src/kernel/lmm/maxmin.hpp
+  src/kernel/lmm/maxmin.cpp
   src/kernel/lmm/System.hpp
   src/kernel/lmm/System.cpp
 

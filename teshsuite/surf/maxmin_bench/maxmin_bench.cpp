@@ -24,7 +24,7 @@ static double test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_li
   std::vector<simgrid::kernel::lmm::Variable*> variables(nb_var);
 
   /* We cannot activate the selective update as we pass nullptr as an Action when creating the variables */
-  simgrid::kernel::lmm::System Sys(false);
+  simgrid::kernel::lmm::MaxMin Sys(false);
 
   for (auto& cnst : constraints) {
     cnst = Sys.constraint_new(nullptr, simgrid::xbt::random::uniform_real(0.0, 10.0));

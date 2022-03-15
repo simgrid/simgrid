@@ -50,7 +50,7 @@ double Model::next_occurring_event(double now)
 double Model::next_occurring_event_lazy(double now)
 {
   XBT_DEBUG("Before share resources, the size of modified actions set is %zu", maxmin_system_->modified_set_->size());
-  maxmin_system_->lmm_solve();
+  maxmin_system_->solve();
   XBT_DEBUG("After share resources, The size of modified actions set is %zu", maxmin_system_->modified_set_->size());
 
   while (not maxmin_system_->modified_set_->empty()) {
