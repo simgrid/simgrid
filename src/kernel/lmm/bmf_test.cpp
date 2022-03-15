@@ -13,7 +13,6 @@ namespace lmm = simgrid::kernel::lmm;
 TEST_CASE("kernel::bmf Basic tests", "[kernel-bmf-basic]")
 {
   lmm::BmfSystem Sys(false);
-  xbt_log_control_set("ker_bmf.thres:debug");
 
   SECTION("Single flow")
   {
@@ -260,7 +259,6 @@ TEST_CASE("kernel::bmf Basic tests", "[kernel-bmf-basic]")
 TEST_CASE("kernel::bmf Advanced tests", "[kernel-bmf-advanced]")
 {
   lmm::BmfSystem Sys(false);
-  xbt_log_control_set("ker_bmf.thres:debug");
 
   SECTION("2 flows, 2 resources")
   {
@@ -411,7 +409,6 @@ TEST_CASE("kernel::bmf Advanced tests", "[kernel-bmf-advanced]")
 TEST_CASE("kernel::bmf Subflows", "[kernel-bmf-subflow]")
 {
   lmm::BmfSystem Sys(false);
-  xbt_log_control_set("ker_bmf.thres:debug");
 
   SECTION("2 subflows and 1 resource")
   {
@@ -526,7 +523,6 @@ TEST_CASE("kernel::bmf Subflows", "[kernel-bmf-subflow]")
 TEST_CASE("kernel::bmf Loop", "[kernel-bmf-loop]")
 {
   lmm::BmfSystem Sys(false);
-  xbt_log_control_set("ker_bmf.thres:debug");
 
   SECTION("Initial allocation loops")
   {
@@ -570,7 +566,6 @@ TEST_CASE("kernel::bmf Loop", "[kernel-bmf-loop]")
 TEST_CASE("kernel::bmf Bugs", "[kernel-bmf-bug]")
 {
   lmm::BmfSystem Sys(false);
-  xbt_log_control_set("ker_bmf.thres:debug");
 
   SECTION("DadOu's bug: sum of bounds/phi greater than C")
   {
