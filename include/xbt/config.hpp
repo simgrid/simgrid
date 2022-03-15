@@ -303,7 +303,24 @@ public:
 XBT_PUBLIC void finalize();
 XBT_PUBLIC void show_aliases();
 XBT_PUBLIC void help();
+
 } // namespace config
 } // namespace simgrid
+
+/******************************** Configuration of Simgrid **************************************/
+extern XBT_PUBLIC simgrid::config::Flag<int> _sg_context_stack_size;
+extern XBT_PUBLIC simgrid::config::Flag<int> _sg_context_guard_size;
+extern XBT_PUBLIC simgrid::config::Flag<int> _sg_context_nthreads;
+extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_context_synchro;
+
+extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_cpu_maxmin_selective_update;
+
+extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_bmf_selective_update;
+
+extern XBT_PUBLIC simgrid::config::Flag<double> _sg_network_loopback_bandwidth;
+extern XBT_PUBLIC simgrid::config::Flag<double> _sg_network_loopback_latency;
+extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_network_maxmin_selective_update;
+
+extern XBT_PUBLIC simgrid::config::Flag<bool> _sg_execution_cutpath;
 
 #endif

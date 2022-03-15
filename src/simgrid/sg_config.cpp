@@ -269,10 +269,11 @@ void sg_config_init(int *argc, char **argv)
   simgrid::config::bind_flag(sg_bmf_max_iterations, "bmf/max-iterations",
                              "Maximum number of steps to be performed while searching for a BMF allocation");
 
-  simgrid::config::declare_flag<bool>("bmf/selective-update",
-                                      "Update the constraint set propagating recursively to others constraints "
-                                      "(off by default)",
-                                      false);
+  simgrid::config::Flag<bool> _sg_bmf_selective_update{
+      "bmf/selective-update",
+      "Update the constraint set propagating recursively to others constraints "
+      "(off by default)",
+      false};
 
   /* The parameters of network models */
 
@@ -290,15 +291,17 @@ void sg_config_init(int *argc, char **argv)
       sg_weight_S_parameter, "network/weight-S",
       "Correction factor to apply to the weight of competing streams (default value set by network model)");
 
-  simgrid::config::declare_flag<double>("network/loopback-lat",
-                                      "For network models with an implicit loopback link (L07, CM02, LV08), "
-                                      "latency of the loopback link. 0 by default",
-                                      0);
+  simgrid::config::Flag<double> _sg_network_loopback_latency{
+      "network/loopback-lat",
+      "For network models with an implicit loopback link (L07, CM02, LV08), "
+      "latency of the loopback link. 0 by default",
+      0.0};
 
-  simgrid::config::declare_flag<double>("network/loopback-bw",
-                                      "For network models with an implicit loopback link (L07, CM02, LV08), "
-                                      "bandwidth of the loopback link. 10GBps by default",
-                                      10e9);
+  simgrid::config::Flag<double> _sg_network_loopback_bandwidth{
+      "network/loopback-bw",
+      "For network models with an implicit loopback link (L07, CM02, LV08), "
+      "bandwidth of the loopback link. 10GBps by default",
+      10e9};
 
   /* Inclusion path */
   simgrid::config::declare_flag<std::string>("path", "Lookup path for inclusions in platform and deployment XML files",
@@ -307,17 +310,20 @@ void sg_config_init(int *argc, char **argv)
                                                  surf_path.push_back(path);
                                              });
 
-  simgrid::config::declare_flag<bool>("cpu/maxmin-selective-update",
-                                      "Update the constraint set propagating recursively to others constraints "
-                                      "(off by default unless optim is set to lazy)",
-                                      "no");
-  simgrid::config::declare_flag<bool>("network/maxmin-selective-update", "Update the constraint set propagating "
-                                                                         "recursively to others constraints (off by "
-                                                                         "default unless optim is set to lazy)",
-                                      "no");
+  simgrid::config::Flag<bool> _sg_cpu_maxmin_selective_update{
+      "cpu/maxmin-selective-update",
+      "Update the constraint set propagating recursively to others constraints "
+      "(off by default unless optim is set to lazy)",
+      false};
+  simgrid::config::Flag<bool> _sg_network_maxmin_selective_update{"network/maxmin-selective-update",
+                                                                  "Update the constraint set propagating "
+                                                                  "recursively to others constraints (off by "
+                                                                  "default unless optim is set to lazy)",
+                                                                  false};
 
-  simgrid::config::declare_flag<int>("contexts/stack-size", "Stack size of contexts in KiB (not with threads)",
-                                     8 * 1024, [](int value) { simgrid::kernel::context::stack_size = value * 1024; });
+  simgrid::config::Flag<int> _sg_context_stack_size{
+      "contexts/stack-size", "Stack size of contexts in KiB (not with threads)", 8 * 1024,
+      [](int value) { simgrid::kernel::context::stack_size = value * 1024; }};
 
   /* guard size for contexts stacks in memory pages */
 #if defined(_WIN32) || (PTH_STACKGROWTH != -1)
@@ -325,11 +331,12 @@ void sg_config_init(int *argc, char **argv)
 #else
   int default_guard_size = 1;
 #endif
-  simgrid::config::declare_flag<int>("contexts/guard-size", "Guard size for contexts stacks in memory pages",
-                                     default_guard_size,
-                                     [](int value) { simgrid::kernel::context::guard_size = value * xbt_pagesize; });
-  simgrid::config::declare_flag<int>("contexts/nthreads", "Number of parallel threads used to execute user contexts", 1,
-                                     &simgrid::kernel::context::set_nthreads);
+  simgrid::config::Flag<int> _sg_context_guard_size{
+      "contexts/guard-size", "Guard size for contexts stacks in memory pages", default_guard_size,
+      [](int value) { simgrid::kernel::context::guard_size = value * xbt_pagesize; }};
+  simgrid::config::Flag<int> _sg_context_nthreads{"contexts/nthreads",
+                                                  "Number of parallel threads used to execute user contexts", 1,
+                                                  &simgrid::kernel::context::set_nthreads};
 
   /* synchronization mode for parallel user contexts */
 #if HAVE_FUTEX_H
@@ -337,9 +344,10 @@ void sg_config_init(int *argc, char **argv)
 #else // No futex on mac and posix is unimplemented yet
   std::string default_synchro_mode = "busy_wait";
 #endif
-  simgrid::config::declare_flag<std::string>("contexts/synchro", "Synchronization mode to use when running contexts in "
-                                                                 "parallel (either futex, posix or busy_wait)",
-                                             default_synchro_mode, &_sg_cfg_cb_contexts_parallel_mode);
+  simgrid::config::Flag<std::string> _sg_context_synchro{"contexts/synchro",
+                                                         "Synchronization mode to use when running contexts in "
+                                                         "parallel (either futex, posix or busy_wait)",
+                                                         default_synchro_mode, &_sg_cfg_cb_contexts_parallel_mode};
 
   // For smpi/bw-factor and smpi/lat-factor
   // SMPI model can be used without enable_smpi, so keep this out of the ifdef.
@@ -359,8 +367,8 @@ void sg_config_init(int *argc, char **argv)
                                              "0.965;0.925;1.35");
   /* Others */
 
-  simgrid::config::declare_flag<bool>(
-      "exception/cutpath", "Whether to cut all path information from call traces, used e.g. in exceptions.", false);
+  simgrid::config::Flag<bool> _sg_execution_cutpath{
+      "exception/cutpath", "Whether to cut all path information from call traces, used e.g. in exceptions.", false};
 
   if (surf_path.empty())
     simgrid::config::set_default<std::string>("path", "./");
