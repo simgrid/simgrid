@@ -110,8 +110,9 @@ public:
   /** Blocking data transmission with timeout */
   void put(void* payload, uint64_t simulated_size_in_bytes, double timeout);
 
-  /** Creates (but don't start) a data reception onto that mailbox. 
-   * @verbatim embed:rst:inline You probably want to use :cpp:func:`simgrid::s4u::Comm::set_dst_data` and friends before starting that activity. @endverbatim  */
+  /** Creates (but don't start) a data reception onto that mailbox.
+   * @verbatim embed:rst:inline You probably want to use :cpp:func:`simgrid::s4u::Comm::set_dst_data` and friends before
+   * starting that activity. @endverbatim  */
   CommPtr get_init();
   /** Creates and start an async data reception to that mailbox */
   template <typename T> CommPtr get_async(T** data);

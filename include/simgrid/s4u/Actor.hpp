@@ -255,7 +255,7 @@ public:
   static void on_destruction_cb(const std::function<void(Actor const&)>& cb) { on_destruction.connect(cb); }
 
   /** Create an actor from a @c std::function<void()>.
-   *  If the actor is restarted, it gets a fresh copy of the function. 
+   *  If the actor is restarted, it gets a fresh copy of the function.
    *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
   static ActorPtr create(const std::string& name, s4u::Host* host, const std::function<void()>& code);
   /** Create an actor, but don't start it yet.
@@ -281,7 +281,7 @@ public:
 
   ActorPtr start(const std::function<void()>& code, std::vector<std::string> args);
 
-  /** Create an actor from a callable thing. 
+  /** Create an actor from a callable thing.
    *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
   template <class F> static ActorPtr create(const std::string& name, s4u::Host* host, F code)
   {
@@ -290,7 +290,7 @@ public:
 
   /** Create an actor using a callable thing and its arguments.
    *
-   * Note that the arguments will be copied, so move-only parameters are forbidden. 
+   * Note that the arguments will be copied, so move-only parameters are forbidden.
    * @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
 
   template <class F, class... Args,
@@ -304,7 +304,7 @@ public:
     return create(name, host, std::bind(std::move(code), std::move(args)...));
   }
 
-  /** Create actor from function name and a vector of strings as arguments. 
+  /** Create actor from function name and a vector of strings as arguments.
    *  @verbatim embed:rst:inline See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
   static ActorPtr create(const std::string& name, s4u::Host* host, const std::string& function,
                          std::vector<std::string> args);

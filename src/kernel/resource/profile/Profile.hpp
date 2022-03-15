@@ -30,7 +30,6 @@ namespace profile {
  */
 class XBT_PUBLIC Profile {
 public:
-
   /** @brief Create a profile. There are two behaviours. Either the callback is 
   *
   * @param name The name of the profile (checked for uniqueness)

@@ -42,18 +42,17 @@ std::ostream& operator << (std::ostream& out, const DatedValue& dv);
  */
 class XBT_PUBLIC ProfileBuilder {
 public:
-  
   /** @brief A function called to populate the set of timed-values of a profile.
    *
-   * When the profile is repeating, the callback is called only once upon Profile construction. 
+   * When the profile is repeating, the callback is called only once upon Profile construction.
    * Then the timed values are repeated after a fixed repeat_delay.
    *
-   * When the profile is not repeating, the callback is called each time the profile data has been exhausted. 
-   * More precisely, each time an FutureEvtSet reached the end of the vector of timed values of the profile. 
+   * When the profile is not repeating, the callback is called each time the profile data has been exhausted.
+   * More precisely, each time an FutureEvtSet reached the end of the vector of timed values of the profile.
    *
-   * Note that the callback is only supposed to append values to the values vector, not modify or remove existing ones, 
+   * Note that the callback is only supposed to append values to the values vector, not modify or remove existing ones,
    * because other FutureEvtSet may still need previous values.
-   *   
+   *
    * @param values The vector of the profile values, where new data can be appended.
    *
    */
@@ -62,18 +61,18 @@ public:
   static Profile* from_file(const std::string& path);
   static Profile* from_string(const std::string& name, const std::string& input, double periodicity);
 
-  static Profile* from_void();  
+  static Profile* from_void();
 
   /** Create a profile from a callback
-  * 
-  * @param name: The *unique* name of the profile 
-  * @param cb: A callback object/function to populate the profile
-  * @param repeat_delay: Ignored if strictly negative. Otherwise, profile is repeating and repeat_delay is inserted between two iterations.
-  *
-  * @return the newly created profile
-  */
+   *
+   * @param name: The *unique* name of the profile
+   * @param cb: A callback object/function to populate the profile
+   * @param repeat_delay: Ignored if strictly negative. Otherwise, profile is repeating and repeat_delay is inserted
+   * between two iterations.
+   *
+   * @return the newly created profile
+   */
   static Profile* from_callback(const std::string& name, const std::function<UpdateCb>& cb, double repeat_delay);
-
 };
 
 } // namespace profile
