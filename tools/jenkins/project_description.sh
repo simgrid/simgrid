@@ -22,12 +22,7 @@ get_cmake(){
 }
 
 get_eigen3(){
-  found=$(grep -c "Found Eigen3:" ./consoleText)
-  if [ "$found" != 0 ]; then
-    echo "✔"
-  else
-    echo ""
-  fi
+  sed -n 's/.* Eigen3 library \.\+: \([^ ]*\) in .*/\1/p;T;q' ./consoleText
 }
 
 get_ns3(){
@@ -142,7 +137,7 @@ function sortTable(n, type) {
     <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Boost</td>
     <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Java</td>
     <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Cmake</td>
-    <td class=matrix-header style=min-width:50px onclick='sortTable($((++col)));'>Eigen3</td>
+    <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">Eigen3</td>
     <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">ns-3</td>
     <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">Python</td>
   </tr>
