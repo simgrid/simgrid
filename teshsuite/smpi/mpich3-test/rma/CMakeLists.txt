@@ -42,7 +42,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 endif()
 
 if (enable_smpi_MPICH3_testsuite AND HAVE_RAW_CONTEXTS)
-  ADD_TEST(test-smpi-mpich3-rma-raw       ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/rma ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests "-wrapper=${TESH_WRAPPER}" -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/rma -tests=testlist -execarg=--cfg=contexts/factory:raw)
+  ADD_TEST(test-smpi-mpich3-rma-raw       ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/rma ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests "-wrapper=${VALGRIND_WRAPPER}" -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/rma -tests=testlist -execarg=--cfg=contexts/factory:raw)
   SET_TESTS_PROPERTIES(test-smpi-mpich3-rma-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
   if (enable_thread_sanitizer)
     SET_TESTS_PROPERTIES(test-smpi-mpich3-rma-raw PROPERTIES TIMEOUT 1500)

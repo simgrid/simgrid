@@ -61,7 +61,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
       set(NAME "${NAME}-${FACTORY}")
       set(ARGS ${ARGS} "-execarg=--cfg=contexts/factory:${FACTORY}")
     endif()
-    ADD_TEST(${NAME} ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests "-wrapper=${TESH_WRAPPER}" -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist ${ARGS})
+    ADD_TEST(${NAME} ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests "-wrapper=${VALGRIND_WRAPPER}" -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist ${ARGS})
     SET_TESTS_PROPERTIES(${NAME} PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
   ENDMACRO()
 

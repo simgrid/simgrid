@@ -80,7 +80,7 @@ endforeach()
 # Monkey tests are launched directly, not with tesh
 set(_monkey-semaphore_disable_python 1) # Semaphore not exposed to python
 foreach(x  monkey-masterworkers monkey-semaphore)
-  ADD_TEST(monkey-s4u-${x} "${PYTHON_EXECUTABLE}" ${CMAKE_HOME_DIRECTORY}/tools/simgrid-monkey -- ${TESH_WRAPPER_UNBOXED} ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x}/${x})
+  ADD_TEST(monkey-s4u-${x} "${PYTHON_EXECUTABLE}" ${CMAKE_HOME_DIRECTORY}/tools/simgrid-monkey -- ${VALGRIND_WRAPPER_UNBOXED} ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x}/${x})
   if(enable_python)
     if(NOT DEFINED _${x}_disable_python)
       ADD_TEST(monkey-python-${x} "${PYTHON_EXECUTABLE}" ${CMAKE_HOME_DIRECTORY}/tools/simgrid-monkey "${PYTHON_EXECUTABLE}" ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.py)
@@ -115,9 +115,9 @@ foreach(x ns3-simultaneous-send-rcv ns3-from-src-to-itself)
 endforeach()
 
 # test for code coverage
-ADD_TEST(test-help-version ${TESH_WRAPPER_UNBOXED} ${CMAKE_BINARY_DIR}/teshsuite/s4u/basic-parsing-test/basic-parsing-test
+ADD_TEST(test-help-version ${VALGRIND_WRAPPER_UNBOXED} ${CMAKE_BINARY_DIR}/teshsuite/s4u/basic-parsing-test/basic-parsing-test
   --version --help --help-aliases --help-models --help-tracing)
-ADD_TEST(test-help-logs    ${TESH_WRAPPER_UNBOXED} ${CMAKE_BINARY_DIR}/teshsuite/s4u/basic-parsing-test/basic-parsing-test
+ADD_TEST(test-help-logs    ${VALGRIND_WRAPPER_UNBOXED} ${CMAKE_BINARY_DIR}/teshsuite/s4u/basic-parsing-test/basic-parsing-test
   --help-logs --help-log-categories)
 
 ADD_TESH(tesh-parser-bypass   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/s4u/basic-parsing-test --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/basic-parsing-test --setenv srcdir=${CMAKE_HOME_DIRECTORY} basic-parsing-test-bypass.tesh)
