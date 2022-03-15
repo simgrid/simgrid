@@ -24,7 +24,7 @@ xbt::signal<void(DiskAction const&, Action::State, Action::State)> DiskAction::o
 
 DiskModel::DiskModel(const std::string& name) : Model(name)
 {
-  set_maxmin_system(new lmm::System(true /* selective update */));
+  set_maxmin_system(lmm::System::build("maxmin", true /* selective update */));
 }
 
 /************

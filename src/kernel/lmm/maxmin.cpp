@@ -4,6 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/lmm/maxmin.hpp"
+#if SIMGRID_HAVE_EIGEN3
+#include "src/kernel/lmm/bmf.hpp"
+#endif
 #include <boost/core/demangle.hpp>
 #include <typeinfo>
 
@@ -55,6 +58,34 @@ void Element::increase_concurrency()
   xbt_assert(constraint->get_concurrency_limit() < 0 ||
                  constraint->concurrency_current_ <= constraint->get_concurrency_limit(),
              "Concurrency limit overflow!");
+}
+
+System* System::build(const std::string& solver_name, bool selective_update)
+{
+  System* system = nullptr;
+  if (solver_name == "bmf") {
+#if SIMGRID_HAVE_EIGEN3
+    system = new lmm::BmfSystem(selective_update);
+#endif
+  } else if (solver_name == "fairbottleneck") {
+    system = new FairBottleneck(selective_update);
+  } else {
+    system = new System(selective_update);
+  }
+  return system;
+}
+
+void System::validate_solver(const std::string& solver_name)
+{
+  static const std::vector<std::string> opts{"bmf", "maxmin", "fairbottleneck"};
+  if (solver_name == "bmf") {
+#if !SIMGRID_HAVE_EIGEN3
+    xbt_die("Cannot use the BMF solver without installing Eigen3.");
+#endif
+  }
+  if (std::find(opts.begin(), opts.end(), solver_name) == std::end(opts)) {
+    xbt_die("Invalid system solver, it should be one of: \"maxmin\", \"fairbottleneck\" or \"bmf\"");
+  }
 }
 
 void System::check_concurrency() const

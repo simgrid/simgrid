@@ -34,6 +34,9 @@ static simgrid::config::Flag<std::string>
                                "Cannot change the optimization algorithm after the initialization");
                   });
 
+static simgrid::config::Flag<std::string> cfg_cpu_solver("cpu/solver", "Set linear equations solver used by CPU model",
+                                                         "maxmin", &simgrid::kernel::lmm::System::validate_solver);
+
 /*********
  * Model *
  *********/
@@ -67,7 +70,7 @@ CpuCas01Model::CpuCas01Model(const std::string& name) : CpuModel(name)
     select = true;
   }
 
-  set_maxmin_system(new lmm::System(select));
+  set_maxmin_system(lmm::System::build(config::get_value<std::string>("cpu/solver"), select));
 }
 
 CpuImpl* CpuCas01Model::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)

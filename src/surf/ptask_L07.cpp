@@ -27,7 +27,7 @@ void surf_host_model_init_ptask_L07()
 {
   XBT_CINFO(xbt_cfg, "Switching to the L07 model to handle parallel tasks.");
 
-  auto* system    = new simgrid::kernel::lmm::FairBottleneck(true /* selective update */);
+  auto* system    = simgrid::kernel::lmm::System::build("fairbottleneck", true /* selective update */);
   auto host_model = std::make_shared<simgrid::kernel::resource::HostL07Model>("Host_Ptask", system);
   auto* engine    = simgrid::kernel::EngineImpl::get_instance();
   engine->add_model(host_model);
@@ -40,7 +40,7 @@ void surf_host_model_init_ptask_BMF()
   XBT_CINFO(xbt_cfg, "Switching to the BMF model to handle parallel tasks.");
 
   bool select     = simgrid::config::get_value<bool>("bmf/selective-update");
-  auto* system    = new simgrid::kernel::lmm::BmfSystem(select);
+  auto* system    = simgrid::kernel::lmm::System::build("bmf", select);
   auto host_model = std::make_shared<simgrid::kernel::resource::HostL07Model>("Host_Ptask", system);
   auto* engine    = simgrid::kernel::EngineImpl::get_instance();
   engine->add_model(host_model);

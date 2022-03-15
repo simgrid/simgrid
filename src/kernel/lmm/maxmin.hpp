@@ -397,6 +397,17 @@ inline void Element::make_inactive()
 class XBT_PUBLIC System {
 public:
   /**
+   * @brief Creates a new System solver
+   *
+   * @param solver_name Name of the solver to be used
+   * @param selective_update Enables lazy updates
+   * @return pointer to System instance
+   */
+  static System* build(const std::string& solver_name, bool selective_update);
+  /** @brief Validates solver configuration */
+  static void validate_solver(const std::string& solver_name);
+
+  /**
    * @brief Create a new Linear MaxMim system
    * @param selective_update whether we should do lazy updates
    */
