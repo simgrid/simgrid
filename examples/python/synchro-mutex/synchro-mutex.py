@@ -17,7 +17,7 @@ def create_parser() -> ArgumentParser:
         '--actors',
         type=int,
         default=6,
-        help='how many pairs of actors should be started?'
+        help='how many pairs of actors should be started'
     )
     return parser
 
@@ -28,46 +28,30 @@ class ResultHolder:
 
 
 def worker_context_manager(mutex: Mutex, result: ResultHolder):
-    """ Worker that uses a context manager to acquire/release the shared mutex
-    :param mutex: Shared mutex that guards read/write access to the shared result
-    :param result: Shared result which will be updated by the worker
-    """
-    this_actor.info(f"I just started")
     with mutex:
-        this_actor.info(f"acquired the mutex with context manager")
+        this_actor.info(f"Hello simgrid, I'm ready to compute after acquiring the mutex from a context manager")
         result.value += 1
-        this_actor.info(f"updated shared result, which is now {result.value}")
-    this_actor.info(f"released the mutex after leaving the context manager")
-    this_actor.info("Bye now!")
+    this_actor.info(f"I'm done, good bye")
 
 
 def worker(mutex: Mutex, result: ResultHolder):
-    """ Worker that manually acquires/releases the shared mutex
-    :param mutex: Shared mutex that guards read/write access to the shared result
-    :param result: Shared result which will be updated by the worker
-    """
-    this_actor.info(f"I just started")
     mutex.lock()
-    this_actor.info(f"acquired the mutex manually")
+    this_actor.info("Hello simgrid, I'm ready to compute after a regular lock")
     result.value += 1
-    this_actor.info(f"updated shared result, which is now {result.value}")
     mutex.unlock()
-    this_actor.info(f"released the mutex manually")
-    this_actor.info("Bye now!")
+    this_actor.info("I'm done, good bye")
 
 
 def master(settings):
-    """ Spawns `--workers` workers and wait until they have all updated the shared result, then displays it before
-        leaving. Alternatively spawns `worker_context_manager()` and `worker()` workers.
-    :param settings: Simulation settings
-    """
-    result = ResultHolder(value=0)
-    mutex = Mutex()
+    results = [ResultHolder(value=0) for _ in range(settings.actors)]
     for i in range(settings.actors):
-        Actor.create(f"worker-{i}(mgr)", Host.by_name("Jupiter"), worker_context_manager, mutex, result)
-        Actor.create(f"worker-{i}", Host.by_name("Tremblay"), worker, mutex, result)
+        mutex = Mutex()
+        Actor.create(f"worker-{i}(mgr)", Host.by_name("Jupiter"), worker_context_manager, mutex, results[i])
+        Actor.create(f"worker-{i}", Host.by_name("Tremblay"), worker, mutex, results[i])
     this_actor.sleep_for(10)
-    this_actor.info(f"The final result is: {result.value}")
+    for i in range(settings.actors):
+        this_actor.info(f"Result[{i}] -> {results[i].value}")
+    this_actor.info("I'm done, good bye")
 
 
 def main():
