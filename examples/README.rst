@@ -614,6 +614,8 @@ Shows how to use :cpp:type:`simgrid::s4u::Barrier` synchronization objects.
 
    .. example-tab:: examples/cpp/synchro-barrier/s4u-synchro-barrier.cpp
 
+   .. example-tab:: examples/python/synchro-barrier/synchro-barrier.py
+
 Condition variable: basic usage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

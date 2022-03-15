@@ -80,6 +80,7 @@ Python:
      - Comm.wait_any_for()
      - Comm.wait_all_for() [example: examples/python/comm-waitallfor/]
      - Mutex [example: examples/python/synchro-mutex/]
+     - Barrier [example: examples/python/synchro-barrier/]
 
 Build System:
  - Remove target "make uninstall" which was incomplete and no longer maintained.

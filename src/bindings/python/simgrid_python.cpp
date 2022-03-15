@@ -26,6 +26,7 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Actor.hpp>
+#include <simgrid/s4u/Barrier.hpp>
 #include <simgrid/s4u/Comm.hpp>
 #include <simgrid/s4u/Disk.hpp>
 #include <simgrid/s4u/Engine.hpp>
@@ -45,6 +46,8 @@
 namespace py = pybind11;
 using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
+using simgrid::s4u::Barrier;
+using simgrid::s4u::BarrierPtr;
 using simgrid::s4u::Engine;
 using simgrid::s4u::Host;
 using simgrid::s4u::Link;
@@ -790,6 +793,14 @@ PYBIND11_MODULE(simgrid, m)
       .def("__enter__", [](Mutex* self){ self->lock(); }, py::call_guard<py::gil_scoped_release>())
       .def("__exit__", [](Mutex* self, py::object&, py::object&, py::object&){ self->unlock(); },
           py::call_guard<py::gil_scoped_release>());
+
+  /* Class Barrier */
+  py::class_<Barrier, BarrierPtr>(m, "Barrier",
+                                  "A classical barrier, but blocking in the simulation world.")
+      .def(py::init<>(&Barrier::create), py::call_guard<py::gil_scoped_release>(), py::arg("expected_actors"))
+      .def("wait", &Barrier::wait, py::call_guard<py::gil_scoped_release>(),
+           "Blocks into the barrier. Every waiting actors will be unlocked once the expected amount of actors reaches "
+           "the barrier");
 
   /* Class Actor */
   py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor",
