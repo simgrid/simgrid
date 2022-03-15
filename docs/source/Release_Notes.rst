@@ -29,7 +29,7 @@ This version (aka, the Christmas Pi) mainly introduces internal reorganization o
 These changes should be transparent to the users of the MSG, SMPI and SimDag interfaces, even if some buggy features were reworked
 while some new features were added.
 
-Users are expected to switch to this new version at their own pace, as we do not have the manpower to do any bugfixing on the old releases.
+Users are expected to switch to this new version at their own pace, as we do not have the manpower to do any bug fixing on the old releases.
 This version was tested on several Linux distributions, Mac OSX, Windows (restricted to the Java bindings when not using the Ubuntu
 subsystem of Win10), FreeBSD and NetBSD.
 
@@ -59,7 +59,7 @@ The Spring Release: continuous integration servers become green.
   * Java: Massive memleaks and performance issues fixed.
   * Plus the usual bug fixes, cleanups and documentation improvements.
 
-Users are expected to switch to this new version at their own pace, as we do not have the manpower to do any bugfixing on the old releases.
+Users are expected to switch to this new version at their own pace, as we do not have the manpower to do any bug fixing on the old releases.
 This version was tested on several Linux distributions, Mac OSX, Windows (restricted to our Java bindings), FreeBSD and NetBSD.
 None of our 600+ integration tests is known to fail on any of these.
 
@@ -83,19 +83,19 @@ in parallel (even if it's not well tested yet).
 On the Cloud side, we implemented multi-core VMs, which naturally acts as containers of processes;
 S4U, the future interface of SimGrid 4.0 also progressed quite a bit.
 
-The Storage is currently cleaned up by Fred, and some API changes are to be expected. We are sorry but the exisiting API is so crappy that
+The Storage is currently cleaned up by Fred, and some API changes are to be expected. We are sorry but the existing API is so crappy that
 nobody ever used it, I guess. If you need it, please speak up soon!
 
 We renamed AS into NetZone in the XML files (but the old one still work so no rush to update your platform). Since our platforms are
 hierarchical, it makes no sense to name our zones "Autonomous Systems". Some other documentation pages got updated and modified. If
 you see a particularly old, misleading or otherwise ugly doc page, please tell us and we'll fix it. Even typo reports are welcome.
 
-But most of the work on S4U is not directly visible from the user. We rewamped the whole code of activities (comms, execs, mutex, etc) to
+But most of the work on S4U is not directly visible from the user. We revamped the whole code of activities (comms, execs, mutex, etc) to
 not mix the applicative logic (calling test() or wait()) with the object refcounting. Now, you can test your comm object as many time as
 you want. This change was really intrusive in our internals, and we're not done with restabilizing every bits, but we're on it.
 
 Still on the S4U front, we managed to remove a few more XBT modules. We prefer to use the std or boost libraries nowadays, and switching
-away from the XBT module enable to reduce our maintainance burden. Be warned that XBT will not always remain included in SimGrid.
+away from the XBT module enable to reduce our maintenance burden. Be warned that XBT will not always remain included in SimGrid.
 
 On the infrastructure side, we are trying to setup a regular build task for the main projects using SimGrid, to check that our changes
 don't break them. The one of StarPU is close to be working (even if not completely). If you want to have your own code tested regularly
@@ -166,13 +166,13 @@ SimGrid remains open during works: The last pure SimGrid3 release was v3.12 whil
 SimGrid4: Existing interfaces remain unchanged, but the new S4U interface is budding and the internals are deeply reorganized.
 
 Since 2015, we work hard to reduce the changes to public APIs. When we need to rename a public library symbol in S4U, we let your compiler
-issue an explicative warning when you use the deprecated function. These messages remain for four releases, i.e. for one full year,
+issue an explicit warning when you use the deprecated function. These messages remain for four releases, i.e. for one full year,
 before turning into an error. Starting with v3.15, your can also adapt to API changes with the SIMGRID_VERSION macro, that is defined to
 31500 for v3.15, to 31901 for v3.19.1 and so on.
 
 Starting with this v3.19.1, our commitment to reduce the changes to the public interfaces is extended from the API to the ABI: a program
-using only MSG or SimDag and compiled against a given version of simgrid can probably be used with a later version of SimGrid without
-recompilation. We will do our best... but don't expect too much of it, that's a really difficult goal during such profund refactoring.
+using only MSG or SimDag and compiled against a given version of SimGrid can probably be used with a later version of SimGrid without
+recompilation. We will do our best... but don't expect too much of it, that's a really difficult goal during such profound refactoring.
 
 The difference between v3.19 and v3.19.1 is that the former was accidentally breaking the ABI of MSG, while the later is restoring the
 previous ABI.
@@ -234,7 +234,7 @@ Main changes of The Restarting Documentation (TRD) release:
 Version 3.22 (April 2. 2019)
 ----------------------------
 
-The Easter Christmas Release. It was expected from Chrismas, but I was so late that I even managed to miss the spring deadline.
+The Easter Christmas Release. It was expected from Christmas, but I was so late that I even managed to miss the spring deadline.
 This started to be a running joke, so I decided to release it for April 1. But I'm even late for this... Sorry :)
 
 .. rst-class:: compact-list
@@ -251,7 +251,7 @@ This new bindings further deprecates the old MSG and Java interfaces, which are 
 for the existing users). Their examples are now hidden in deprecated/ Please switch to S4U if you like C++ or to Python if not.
 
 This new version also introduce a heavy load of internal cleanups. Fred converted more internals to real C++, with more classes and less
-procedural cruft. Henri and the other Wrench developpers reported many bugs around activity canceling and resource failures, and we fixed
+procedural cruft. Henri and the other Wrench developers reported many bugs around activity canceling and resource failures, and we fixed
 quite a bit of them, but many dark snakes remain in that lake. Fred and Martin converted more doc to the new system (the platform chapter
 is not finished, but it's not worse than the old one either) while Augustin completed the tutorial for MPI applications. Augustin also
 added several non-blocking collectives to SMPI, even if Martin finally decided to release right before he could complete the last ones
@@ -288,7 +288,7 @@ know). We plan to do so more often in the future, maybe with one interim version
 version number: v3.23.1 then 3.23.3 until yesterday, and soon 3.24.1.
 
 As a user, there is no urgency to upgrade, even if you should not wait more than 9 months to upgrade to another stable version: our policy is
-to keep backward compatibility and nice upgrading pathes for 3 stable versions.  v3.24 removes symbols that got deprecated in v3.20, last
+to keep backward compatibility and nice upgrading patches for 3 stable versions.  v3.24 removes symbols that got deprecated in v3.20, last
 year. It deprecates things that will continue to work until v3.27.
 
 Speaking of deprecation, we would like to hear from you if you are using the Java bindings under Windows without the WSL installed.
@@ -300,7 +300,7 @@ reports are welcome :)
 Version 3.25 (Feb 2. 2020)
 --------------------------
 
-This is the "Palindrom Day" release (today is 02 02 2020).
+This is the "Palindrome Day" release (today is 02 02 2020).
 
 .. rst-class:: compact-list
 
@@ -318,7 +318,7 @@ This is the "Palindrom Day" release (today is 02 02 2020).
      and there is no heterogeneous wait_any() that would mix Exec/Comm/Io activities. See ``examples/s4u/{io,exec,comm}-dependent`` for what's already there.
 
 Since last fall, we continued to push toward the future SimGrid4 release. This requires to remove MSG and SimDAG once all users have
-migrated to S4U. The two old interfaces are still here, but this release gives another gentle incitative toward the migration. You now
+migrated to S4U. The two old interfaces are still here, but this release gives another gentle incentive toward the migration. You now
 have to explicitly ask for MSG to be compiled in (and it may be removed by Q42020 or Q12021 along with the current Java bindings), and
 this release proposes a nice S4U replacement for some parts of SimDAG.
 
@@ -463,7 +463,7 @@ new feature are:
    is still possible through the regular instrumentation API based on the Paje format.
  
 On the bindings front, we dropped the Lua bindings to create new platforms, as the C++ and Python interfaces are much better to that extend. 
-Also, the algorithm tutorial can now be taken in Python, for those of you alergic to C++.
+Also, the algorithm tutorial can now be taken in Python, for those of you allergic to C++.
 
 Finally, on the SMPI front, we introduced a new documentation section on calibrating the SMPI models from your measurements and fixed some issues
 with the replay mechanism.
@@ -500,21 +500,14 @@ Future work on the model checker include: support for condition variables (that 
 based on event unfoldings (`The Anh Pham's thesis <https://tel.archives-ouvertes.fr/tel-02462074/document>`_ was defended in 2019), and the exploration 
 of scenarios where the actors get killed and communications timeout. Many things that were long dreamed of now become technically possible in this code base.
 
-**On the model front**, we continued our quest for the modeling of parallel tasks. The LV07 model, around since 15 years (its name is the shorthand for
-Legrand Vehlo 2007), allows to efficiently model a parallel computational kernel like dgemm. You specify the amount of computations for each host, the 
-amount of communications between each host pairs, and you're set. SimGrid should handle this activity like every other activity. This is not completely
-the case, though, as the usual SimGrid model cannot cope with ptasks, that request the specific LV07 model on the command line. This is because ptasks 
-mix oranges and potatoes by considering that computed flops and communicated bytes are equivalent. Doing so in the MaxMin model would not be mathematically 
-sound, so we have to rely on the bottleneck modeling, that is less satisfying and accurate than MaxMin in our context. 
 
-As a partial solution, this release introduces ``this_actor::thread_execute()``, that creates a parallel task that do not involve any computation.
-It's intended to model multithreaded computational kernels, and comes with a relevant example. Since it's not mixing bytes and flops, it fits with the 
-classical SimGrid model. Note that this is the second specific case of ptasks that we add to the interface. SimGrid v3.27 introduced ``Comm::sent_to()``
-for direct communications between arbitrary hosts, without any mailbox involved.
 
-A new model called Bounded MaxMin Fairness (BMF) was also introduced in this release, toward the use of general-case ptasks in the classical SimGrid 
-models, but the truth is that this work is still ongoing. It works in many cases, but we have found other cases where the algorithm fails to find any 
-solution to the sharing problem, for some reason. We hope to have a better understanding of this issue in the next release.
+**On the model front,** we continued our quest for the modeling of parallel tasks (ptasks for short). Parallel tasks are intended to be an extension of the max-min fairness model (for communication flows or computation tasks) to tasks using both network and CPU resources at the same time (e.g., a [p]dgemm or a video stream with IO read, network transfer and decompression on the CPU). Just specify the amount of computation for each involved host, the amount of data to transfer between each host pair, and you're set. The model will identify bottleneck resources and fairly share them across activities within a ptask. From a user-level perspective, SimGrid handles ptasks just like every other activity except that the usual SimGrid models (LV08 or SMPI) rely on an optimized algorithm that cannot handle ptasks. Only the L07 model can handle them and it should be specified on the command line. The L07 "model", proposed 15 years ago (its name is the shorthand for Legrand 2007 although there is no corresponding publication), has never been well defined and was considered as sort of a hack for which we only had an efficient algorithm. We have striven to unify L07 and max-min based models since their introduction, but we never succeeded. One of the underlying reasons is that when mixing flops and communicated bytes, rates become ptask specific and we did not manage to properly define fairness in this context. Furthermore, unlike our network models, this model had never been thoroughly validated with respect to real experiments until recently (in the thesis of Adrien Faure `<https://tel.archives-ouvertes.fr/tel-03155702>`_ and the outcome was quite disappointing). It turns out that a 2015 article by Bonald and Roberts (`<https://hal.inria.fr/hal-01243985>`_) properly defines exactly the allocation objective we had in mind. In a later article (`<https://hal.archives-ouvertes.fr/hal-01552739>`), they proved several properties (existence, non-uniqueness) and studied the convergence of the microscopic dynamic model to a macroscopic equilibrium, but it turned out to be surprisingly difficulty and could only be proved in rather simple cases. Even worse, how to efficiently compute a BMF remains an open question! BMF appears quite sound while we have exhibited very simple scenarios where the solution returned by L07 is irrelevant.
+
+L07 should thus be avoided as much as possible. Instead, a new model called Bounded MaxMin Fairness (BMF) was introduced in this release (thereby allowing to have a fully unified model for both classical tasks and parallel tasks) but this is still ongoing work. We have implemented a heuristic similar to what was suggested in the 2017 article. It works very well for most SimGrid tests, but we have found some (not so prevalent) corner cases where the algorithm fails to find any solution to the sharing problem in a reasonable amount of time (e.g., over 10 minutes). So all this should still be considered highly experimental and we expect to have a better understanding of this issue by the next release.
+
+On a related topic, this release introduces ``this_actor::thread_execute()``, which allows creating a computation that comprises several threads, and thus capable of utilizing more cores than a classical ``this_actor::execute()`` action. The goal is to make it straightforward to model multithreaded computational kernels, and it comes with an illustrating example. It can be seen as a simplified ptask, but since it does not mix bytes and flops and has a homogeneous consumption over a single CPU, it perfectly fits with the classical SimGrid model.
+
 
 .. |br| raw:: html
 
