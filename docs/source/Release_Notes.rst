@@ -473,7 +473,7 @@ Version 3.31 (not released yet)
 
 Expected: spring 2022
 
-On the model checking front, the long awaited big bang finally occurred, greatly simplifying future evolution. 
+**On the model checking front**, the long awaited big bang finally occurred, greatly simplifying future evolution.
 
 A formal verification with Mc SimGrid implies two processes: a verified application that is an almost regular SimGrid simulation, and a checker that
 is an external process guiding the verified application to ensure that it explores every possible execution scenario. When formal verification was
@@ -500,7 +500,21 @@ Future work on the model checker include: support for condition variables (that 
 based on event unfoldings (`The Anh Pham's thesis <https://tel.archives-ouvertes.fr/tel-02462074/document>`_ was defended in 2019), and the exploration 
 of scenarios where the actors get killed and communications timeout. Many things that were long dreamed of now become technically possible in this code base.
 
-On the model front, we added BMF...
+**On the model front**, we continued our quest for the modeling of parallel tasks. The LV07 model, around since 15 years (its name is the shorthand for
+Legrand Vehlo 2007), allows to efficiently model a parallel computational kernel like dgemm. You specify the amount of computations for each host, the 
+amount of communications between each host pairs, and you're set. SimGrid should handle this activity like every other activity. This is not completely
+the case, though, as the usual SimGrid model cannot cope with ptasks, that request the specific LV07 model on the command line. This is because ptasks 
+mix oranges and potatoes by considering that computed flops and communicated bytes are equivalent. Doing so in the MaxMin model would not be mathematically 
+sound, so we have to rely on the bottleneck modeling, that is less satisfying and accurate than MaxMin in our context. 
+
+As a partial solution, this release introduces ``this_actor::thread_execute()``, that creates a parallel task that do not involve any computation.
+It's intended to model multithreaded computational kernels, and comes with a relevant example. Since it's not mixing bytes and flops, it fits with the 
+classical SimGrid model. Note that this is the second specific case of ptasks that we add to the interface. SimGrid v3.27 introduced ``Comm::sent_to()``
+for direct communications between arbitrary hosts, without any mailbox involved.
+
+A new model called Bounded MaxMin Fairness (BMF) was also introduced in this release, toward the use of general-case ptasks in the classical SimGrid 
+models, but the truth is that this work is still ongoing. It works in many cases, but we have found other cases where the algorithm fails to find any 
+solution to the sharing problem, for some reason. We hope to have a better understanding of this issue in the next release.
 
 .. |br| raw:: html
 
