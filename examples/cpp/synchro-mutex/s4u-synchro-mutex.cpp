@@ -49,7 +49,6 @@ static void master()
   /* Create the requested amount of actors pairs. Each pair has a specific mutex and cell in `result`. */
   int result[cfg_actor_count.get()];
 
-  sg4::MutexPtr mutex = sg4::Mutex::create();
   for (int i = 0; i < cfg_actor_count; i++) {
     result[i]           = 0;
     sg4::MutexPtr mutex = sg4::Mutex::create();
