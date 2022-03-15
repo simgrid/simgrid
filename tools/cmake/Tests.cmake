@@ -154,7 +154,7 @@ set(EXTRA_DIST ${EXTRA_DIST} src/kernel/routing/NetZone_test.hpp)
 add_executable       (unit-tests EXCLUDE_FROM_ALL ${UNIT_TESTS})
 add_dependencies     (tests unit-tests)
 target_link_libraries(unit-tests simgrid)
-ADD_TEST(unit-tests ${CMAKE_BINARY_DIR}/unit-tests)
+ADD_TEST(unit-tests ${VALGRIND_WRAPPER_UNBOXED} ${CMAKE_BINARY_DIR}/unit-tests)
 set_property(TARGET unit-tests APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
 set(EXTRA_DIST ${EXTRA_DIST} ${UNIT_TESTS})
 
