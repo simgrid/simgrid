@@ -7,8 +7,11 @@
 #include <simgrid/s4u/Engine.hpp>
 #include <xbt/config.hpp>
 
+#include "simgrid/config.h"
 #include "src/kernel/EngineImpl.hpp"
+#if SIMGRID_HAVE_EIGEN3
 #include "src/kernel/lmm/bmf.hpp"
+#endif
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/surf/ptask_L07.hpp"
 
@@ -33,6 +36,7 @@ void surf_host_model_init_ptask_L07()
 
 void surf_host_model_init_ptask_BMF()
 {
+#if SIMGRID_HAVE_EIGEN3
   XBT_CINFO(xbt_cfg, "Switching to the BMF model to handle parallel tasks.");
 
   bool select     = simgrid::config::get_value<bool>("bmf/selective-update");
@@ -41,6 +45,9 @@ void surf_host_model_init_ptask_BMF()
   auto* engine    = simgrid::kernel::EngineImpl::get_instance();
   engine->add_model(host_model);
   engine->get_netzone_root()->set_host_model(host_model);
+#else
+  xbt_die("Cannot use the BMF ptask model without installing Eigen3.");
+#endif
 }
 
 namespace simgrid {

@@ -292,8 +292,6 @@ set(NS3_SRC  src/surf/network_ns3.cpp
              src/surf/ns3/ns3_simulator.cpp )
 
 set(SURF_SRC
-  src/kernel/lmm/bmf.hpp
-  src/kernel/lmm/bmf.cpp
   src/kernel/lmm/fair_bottleneck.cpp
   src/kernel/lmm/maxmin.hpp
   src/kernel/lmm/maxmin.cpp
@@ -356,6 +354,17 @@ set(SURF_SRC
   src/surf/HostImpl.cpp
   src/surf/ptask_L07.cpp
   )
+if (Eigen3_FOUND)
+  set(SURF_SRC
+    ${SURF_SRC}
+    src/kernel/lmm/bmf.hpp
+    src/kernel/lmm/bmf.cpp)
+else()
+  set(EXTRA_DIST
+    ${EXTRA_DIST}
+    src/kernel/lmm/bmf.hpp
+    src/kernel/lmm/bmf.cpp)
+endif()
 
 set(PLUGINS_SRC
   src/plugins/ProducerConsumer.cpp

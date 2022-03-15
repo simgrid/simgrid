@@ -18,4 +18,6 @@
 /* Was the ns-3 support compiled in? */
 #cmakedefine01 SIMGRID_HAVE_NS3
 #cmakedefine NS3_MINOR_VERSION @NS3_MINOR_VERSION@
+/* Was the Eigen3 support compiled in? */
+#cmakedefine01 SIMGRID_HAVE_EIGEN3
 #endif /* SIMGRID_PUBLIC_CONFIG_H */

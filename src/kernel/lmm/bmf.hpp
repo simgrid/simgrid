@@ -180,7 +180,7 @@ private:
   AllocationGenerator gen_;
   std::vector<int> allocations_age_;
   static constexpr int NO_RESOURCE = -1;                    //!< flag to indicate player has selected no resource
-  int max_iteration_               = sg_bmf_max_iterations; //!< number maximum of iterations of BMF algorithm
+  int max_iteration_;                                       //!< number maximum of iterations of BMF algorithm
 };
 
 /**

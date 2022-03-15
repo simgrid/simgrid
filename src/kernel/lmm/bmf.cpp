@@ -4,6 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/lmm/bmf.hpp"
+#include "xbt/config.hpp"
+
 #include <Eigen/LU>
 #include <iostream>
 #include <numeric>
@@ -11,7 +13,13 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_bmf, kernel, "Kernel BMF solver");
 
-int sg_bmf_max_iterations = 1000; /* Change this with --cfg=bmf/max-iterations:VALUE */
+simgrid::config::Flag<int>
+    cfg_bmf_max_iteration("bmf/max-iterations",
+                          "Maximum number of steps to be performed while searching for a BMF allocation", 1000);
+
+simgrid::config::Flag<bool> cfg_bmf_selective_update{
+    "bmf/selective-update", "Update the constraint set propagating recursively to others constraints (off by default)",
+    false};
 
 namespace simgrid {
 namespace kernel {
@@ -66,6 +74,8 @@ BmfSolver::BmfSolver(Eigen::MatrixXd A, Eigen::MatrixXd maxA, Eigen::VectorXd C,
     , C_shared_(std::move(shared))
     , phi_(std::move(phi))
     , gen_(A_)
+    , max_iteration_(cfg_bmf_max_iteration)
+
 {
   xbt_assert(max_iteration_ > 0,
              "Invalid number of iterations for BMF solver. Please check your \"bmf/max-iterations\" configuration.");

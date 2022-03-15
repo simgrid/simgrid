@@ -136,14 +136,18 @@ set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
                 src/xbt/config_test.cpp
                 src/xbt/dict_test.cpp
                 src/xbt/dynar_test.cpp
-		src/xbt/random_test.cpp
+                src/xbt/random_test.cpp
                 src/xbt/xbt_str_test.cpp
-                src/kernel/lmm/bmf_test.cpp
-		        src/kernel/lmm/maxmin_test.cpp)
+                src/kernel/lmm/maxmin_test.cpp)
 if (SIMGRID_HAVE_MC)
   set(UNIT_TESTS ${UNIT_TESTS} src/mc/sosp/Snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
 else()
   set(EXTRA_DIST ${EXTRA_DIST} src/mc/sosp/Snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
+endif()
+if (SIMGRID_HAVE_EIGEN3)
+  set(UNIT_TESTS ${UNIT_TESTS} src/kernel/lmm/bmf_test.cpp)
+else()
+  set(EXTRA_DIST ${EXTRA_DIST} src/kernel/lmm/bmf_test.cpp)
 endif()
 set(EXTRA_DIST ${EXTRA_DIST} src/kernel/routing/NetZone_test.hpp)
 

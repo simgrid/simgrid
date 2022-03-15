@@ -266,15 +266,6 @@ void sg_config_init(int *argc, char **argv)
                              "Maximum number of concurrent variables in the maxmim system. Also limits the number of "
                              "processes on each host, at higher level. (default: -1 means no such limitation)");
 
-  simgrid::config::bind_flag(sg_bmf_max_iterations, "bmf/max-iterations",
-                             "Maximum number of steps to be performed while searching for a BMF allocation");
-
-  simgrid::config::Flag<bool> _sg_bmf_selective_update{
-      "bmf/selective-update",
-      "Update the constraint set propagating recursively to others constraints "
-      "(off by default)",
-      false};
-
   /* The parameters of network models */
 
   sg_latency_factor = 13.01; // comes from the default LV08 network model

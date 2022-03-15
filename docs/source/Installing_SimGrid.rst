@@ -124,10 +124,11 @@ boost (at least v1.48, v1.59 recommended)
   - On Debian / Ubuntu: ``apt install libboost-dev libboost-context-dev``
   - On CentOS / Fedora: ``yum install boost-devel``
   - On macOS with homebrew: ``brew install boost``
-Eigen3
+Eigen3 (optional)
   - On Debian / Ubuntu: ``apt install libeigen3-dev``
   - On CentOS / Fedora: ``yum install eigen3-devel``
   - On macOS with homebrew: ``brew install eigen``
+  - Use EIGEN3_HINT to specify where it's installed if cmake doesn't find it automatically.
 Java (optional):
   - Debian / Ubuntu: ``apt install default-jdk libgcj18-dev`` (or
     any version of libgcj)
@@ -297,6 +298,9 @@ minimal-bindings (on/OFF)
 
 NS3_HINT (empty by default)
   Alternative path into which ns-3 should be searched for.
+
+EIGEN3_HINT (empty by default)
+  Alternative path into which Eigen3 should be searched for.
 
 SIMGRID_PYTHON_LIBDIR (auto-detected)
   Where to install the Python module library. By default, it is set to the cmake Python3_SITEARCH variable if installing to /usr, 
