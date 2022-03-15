@@ -57,8 +57,8 @@ wget --quiet ${BUILD_URL}/consoleText >/dev/null 2>&1
 nodes=($(sed -n 's/^Triggering SimGrid [^ ]* Debug,//p' ./consoleText| sort))
 rm consoleText
 
-
-echo "<br>Description of the nodes - Automatically updated by project_description.sh script - Don't edit here<br><br>
+cat <<EOF
+<br>Description of the nodes - Automatically updated by project_description.sh script - Don't edit here<br><br>
 <script>
 function compareVersion(v1, v2) {
     if (typeof v1 !== 'string') return false;
@@ -130,9 +130,23 @@ function sortTable(n, type) {
       }
     }
   }
-}</script>
+}
+</script>
 <table id=configuration-matrix>
-<tr class=matrix-row>  <td class=matrix-header style=min-width:75px onclick='sortTable(0);'>Name of the Builder</td><td class=matrix-header style=min-width:75px onclick='sortTable(1);'>OS</td><td class=matrix-header style=min-width:75px onclick='sortTable(2);'>Compiler</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(3, 'version');\">Boost</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(4,'version');\">Java</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(5,'version');\">Cmake</td><td class=matrix-header style=min-width:50px onclick='sortTable(6);'>Eigen3</td><td class=matrix-header style=min-width:50px onclick=\"sortTable(7,'version');\">ns-3</td><td class=matrix-header style=min-width:50px onclick='sortTable(8);'>Python</td><td class=matrix-header style=min-width:50px onclick='sortTable(1);'>Debug</td><td class=matrix-header style=min-width:50px onclick='sortTable(1);'>MC</td></tr>"
+  <tr class=matrix-row>
+    <td class=matrix-header style=min-width:75px onclick='sortTable($((col=0)));'>Name of the Builder</td>
+    <td class=matrix-header style=min-width:75px onclick='sortTable($((++col)));'>OS</td>
+    <td class=matrix-header style=min-width:50px onclick='sortTable(0);'>Debug</td>
+    <td class=matrix-header style=min-width:50px onclick='sortTable(0);'>MC</td>
+    <td class=matrix-header style=min-width:75px onclick='sortTable($((++col)));'>Compiler</td>
+    <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Boost</td>
+    <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Java</td>
+    <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Cmake</td>
+    <td class=matrix-header style=min-width:50px onclick='sortTable($((++col)));'>Eigen3</td>
+    <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">ns-3</td>
+    <td class=matrix-header style=min-width:50px onclick='sortTable($((++col)));'>Python</td>
+  </tr>
+EOF
 
 declare -A icons
 icons=(
@@ -164,11 +178,14 @@ do
     color2=""
     #in case of success, replace blue by green in status balls
     wget --quiet https://ci.inria.fr/simgrid/buildStatus/text?job=SimGrid%2Fbuild_mode%3DDebug%2Cnode%3D"${node}" -O status  >/dev/null 2>&1
+
     status=$(cat status)
     if [ "$status" == "Success" ]; then
       color1="&color=green"
     fi
     rm status
+    statusdebug="<a href=\"build_mode=Debug,node=${node}/\"><img src=\"https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Debug,node=${node}/badge/icon?style=ball-24x24${color1}\"/>"
+
     statusmc="<${icons[disabled]}>"
     wget --quiet https://ci.inria.fr/simgrid/buildStatus/text?job=SimGrid%2Fbuild_mode%3DModelChecker%2Cnode%3D"${node}" -O status >/dev/null 2>&1
     status=$(cat status)
@@ -179,7 +196,22 @@ do
       statusmc="<a href=\"build_mode=ModelChecker,node=${node}/\"><img src=\"https://ci.inria.fr/simgrid/job/SimGrid/build_mode=ModelChecker,node=${node}/badge/icon?style=ball-24x24${color2}\"/>"
     fi
     rm status
-    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$eigen3</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td><td class=\"matrix-cell\" style=\"text-align:center\"><a href=\"build_mode=Debug,node=${node}/\"><img src=\"https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Debug,node=${node}/badge/icon?style=ball-24x24${color1}\"/></td><td class=\"matrix-cell\" style=\"text-align:center\">${statusmc}</td></tr>"
+
+    cat <<EOF
+  <tr>
+    <td class="matrix-leftcolumn">$node</td>
+    <td class="matrix-cell" style="text-align:left">$os</td>
+    <td class="matrix-cell" style="text-align:center">${statusdebug}</td>
+    <td class="matrix-cell" style="text-align:center">${statusmc}</td>
+    <td class="matrix-cell" style="text-align:left">$compiler</td>
+    <td class="matrix-cell" style="text-align:left">$boost</td>
+    <td class="matrix-cell" style="text-align:left">$java</td>
+    <td class="matrix-cell" style="text-align:left">$cmake</td>
+    <td class="matrix-cell" style="text-align:center">$eigen3</td>
+    <td class="matrix-cell" style="text-align:left">$ns3</td>
+    <td class="matrix-cell" style="text-align:left">$py</td>
+  </tr>
+EOF
     rm consoleText
 done
 
@@ -202,7 +234,21 @@ ball="${icons[failure]}"
 if [ -n "$success" ]; then
   ball="${icons[success]}"
 fi
-echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$eigen3</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td><td class=\"matrix-cell\" style=\"text-align:center\"><${ball}></td><td class=\"matrix-cell\" style=\"text-align:center\"><${icons[disabled]}></td></tr>"
+cat <<EOF
+  <tr>
+    <td class="matrix-leftcolumn">$node</td>
+    <td class="matrix-cell" style="text-align:left">$os</td>
+    <td class="matrix-cell" style="text-align:center"><${ball}></td>
+    <td class="matrix-cell" style="text-align:center"><${icons[disabled]}></td>
+    <td class="matrix-cell" style="text-align:left">$compiler</td>
+    <td class="matrix-cell" style="text-align:left">$boost</td>
+    <td class="matrix-cell" style="text-align:left">$java</td>
+    <td class="matrix-cell" style="text-align:left">$cmake</td>
+    <td class="matrix-cell" style="text-align:center">$eigen3</td>
+    <td class="matrix-cell" style="text-align:left">$ns3</td>
+    <td class="matrix-cell" style="text-align:left">$py</td>
+  </tr>
+EOF
 rm consoleText
 
 echo "</table>"
