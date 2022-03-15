@@ -136,15 +136,15 @@ function sortTable(n, type) {
   <tr class=matrix-row>
     <td class=matrix-header style=min-width:75px onclick='sortTable($((col=0)));'>Name of the Builder</td>
     <td class=matrix-header style=min-width:75px onclick='sortTable($((++col)));'>OS</td>
-    <td class=matrix-header style=min-width:50px onclick='sortTable(0);'>Debug</td>
-    <td class=matrix-header style=min-width:50px onclick='sortTable(0);'>MC</td>
+    <td class=matrix-header style=min-width:50px onclick='sortTable($((++col,0)));'>Debug</td>
+    <td class=matrix-header style=min-width:50px onclick='sortTable($((++col,0)));'>MC</td>
     <td class=matrix-header style=min-width:75px onclick='sortTable($((++col)));'>Compiler</td>
     <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Boost</td>
     <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Java</td>
     <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Cmake</td>
     <td class=matrix-header style=min-width:50px onclick='sortTable($((++col)));'>Eigen3</td>
     <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">ns-3</td>
-    <td class=matrix-header style=min-width:50px onclick='sortTable($((++col)));'>Python</td>
+    <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">Python</td>
   </tr>
 EOF
 
