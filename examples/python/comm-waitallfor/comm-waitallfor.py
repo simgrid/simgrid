@@ -14,7 +14,7 @@ This example implements the following scenario:
 
 from argparse import ArgumentParser
 from dataclasses import dataclass
-from typing import List;
+from typing import List
 from uuid import uuid4
 import sys
 
