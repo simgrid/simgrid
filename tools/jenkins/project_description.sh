@@ -21,14 +21,17 @@ get_cmake(){
     grep -m 1 "Cmake version" ./consoleText| sed "s/.*-- Cmake version \([a-zA-Z0-9\.]*\)/\1/g"
 }
 
+get_eigen3(){
+  found=$(grep -c "Found Eigen3:" ./consoleText)
+  if [ "$found" != 0 ]; then
+    echo "✔"
+  else
+    echo ""
+  fi
+}
+
 get_ns3(){
   grep -m 1 "ns-3 found (v3.[0-9]*; incl:" ./consoleText | sed "s/.*-- ns-3 found .v\(3.[0-9]*\); incl:.*/\1/g"
-#  found=$(grep -c "ns-3 found" ./consoleText)
-#  if [ "$found" != 0 ]; then
-#    echo "✔"
-#  else
-#    echo ""
-#  fi
 }
 
 get_python(){
@@ -129,7 +132,14 @@ function sortTable(n, type) {
   }
 }</script>
 <table id=configuration-matrix>
-<tr class=matrix-row>  <td class=matrix-header style=min-width:75px onclick='sortTable(0);'>Name of the Builder</td><td class=matrix-header style=min-width:75px onclick='sortTable(1);'>OS</td><td class=matrix-header style=min-width:75px onclick='sortTable(2);'>Compiler</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(3, 'version');\">Boost</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(4,'version');\">Java</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(5,'version');\">Cmake</td><td class=matrix-header style=min-width:50px onclick='sortTable(6);'>ns-3</td><td class=matrix-header style=min-width:50px onclick='sortTable(7);'>Python</td><td class=matrix-header style=min-width:50px onclick='sortTable(1);'>Debug</td><td class=matrix-header style=min-width:50px onclick='sortTable(1);'>MC</td></tr>"
+<tr class=matrix-row>  <td class=matrix-header style=min-width:75px onclick='sortTable(0);'>Name of the Builder</td><td class=matrix-header style=min-width:75px onclick='sortTable(1);'>OS</td><td class=matrix-header style=min-width:75px onclick='sortTable(2);'>Compiler</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(3, 'version');\">Boost</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(4,'version');\">Java</td><td class=matrix-header style=min-width:75px onclick=\"sortTable(5,'version');\">Cmake</td><td class=matrix-header style=min-width:50px onclick='sortTable(6);'>Eigen3</td><td class=matrix-header style=min-width:50px onclick=\"sortTable(7,'version');\">ns-3</td><td class=matrix-header style=min-width:50px onclick='sortTable(8);'>Python</td><td class=matrix-header style=min-width:50px onclick='sortTable(1);'>Debug</td><td class=matrix-header style=min-width:50px onclick='sortTable(1);'>MC</td></tr>"
+
+declare -A icons
+icons=(
+    [success]="img src=https://ci.inria.fr/simgrid/images/24x24/blue.png"
+    [failure]="img src=https://ci.inria.fr/simgrid/images/24x24/red.png"
+    [disabled]="img src=https://ci.inria.fr/simgrid/images/24x24/disabled.png"
+)
 
 for node in "${nodes[@]}"
 do
@@ -145,6 +155,7 @@ do
     compiler=$(get_compiler)
     java=$(get_java)
     cmake=$(get_cmake)
+    eigen3=$(get_eigen3)
     ns3=$(get_ns3)
     py=$(get_python)
     os=$(grep -m 1 "OS Version" ./consoleText| sed "s/OS Version : \(.*\)/\1/g")
@@ -158,7 +169,7 @@ do
       color1="&color=green"
     fi
     rm status
-    statusmc="<img src=https://ci.inria.fr/simgrid/images/24x24/disabled.png>"
+    statusmc="<${icons[disabled]}>"
     wget --quiet https://ci.inria.fr/simgrid/buildStatus/text?job=SimGrid%2Fbuild_mode%3DModelChecker%2Cnode%3D"${node}" -O status >/dev/null 2>&1
     status=$(cat status)
     if [ "$status" ]; then
@@ -168,7 +179,7 @@ do
       statusmc="<a href=\"build_mode=ModelChecker,node=${node}/\"><img src=\"https://ci.inria.fr/simgrid/job/SimGrid/build_mode=ModelChecker,node=${node}/badge/icon?style=ball-24x24${color2}\"/>"
     fi
     rm status
-    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td><td class=\"matrix-cell\" style=\"text-align:center\"><a href=\"build_mode=Debug,node=${node}/\"><img src=\"https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Debug,node=${node}/badge/icon?style=ball-24x24${color1}\"/></td><td class=\"matrix-cell\" style=\"text-align:center\">${statusmc}</td></tr>"
+    echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$eigen3</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td><td class=\"matrix-cell\" style=\"text-align:center\"><a href=\"build_mode=Debug,node=${node}/\"><img src=\"https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Debug,node=${node}/badge/icon?style=ball-24x24${color1}\"/></td><td class=\"matrix-cell\" style=\"text-align:center\">${statusmc}</td></tr>"
     rm consoleText
 done
 
@@ -183,14 +194,15 @@ boost=$(get_boost)
 compiler=$(get_compiler)
 java=$(get_java)
 cmake=$(get_cmake)
+eigen3=$(get_eigen3)
 ns3=$(get_ns3)
 py=$(get_python)
 success=$(grep -m 1 "Build success" ./consoleText)
-ball="red.png"
+ball="${icons[failure]}"
 if [ -n "$success" ]; then
-  ball="blue.png"
+  ball="${icons[success]}"
 fi
-echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td><td class=\"matrix-cell\" style=\"text-align:center\"><img src=https://ci.inria.fr/simgrid/images/24x24/${ball}></td><td class=\"matrix-cell\" style=\"text-align:center\"><img src=https://ci.inria.fr/simgrid/images/24x24/disabled.png></td></tr>"
+echo "<tr> <td class=\"matrix-leftcolumn\">$node</td><td class=\"matrix-cell\" style=\"text-align:left\">$os</td><td class=\"matrix-cell\" style=\"text-align:left\">$compiler</td><td class=\"matrix-cell\" style=\"text-align:left\">$boost</td><td class=\"matrix-cell\" style=\"text-align:left\">$java</td><td class=\"matrix-cell\" style=\"text-align:left\">$cmake</td><td class=\"matrix-cell\" style=\"text-align:center\">$eigen3</td><td class=\"matrix-cell\" style=\"text-align:center\">$ns3</td><td class=\"matrix-cell\" style=\"text-align:center\">$py</td><td class=\"matrix-cell\" style=\"text-align:center\"><${ball}></td><td class=\"matrix-cell\" style=\"text-align:center\"><${icons[disabled]}></td></tr>"
 rm consoleText
 
 echo "</table>"
