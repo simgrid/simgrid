@@ -104,12 +104,7 @@ File::File(const std::string& fullpath, const_sg_host_t host, void* userdata) : 
   });
 }
 
-File::~File()
-{
-  std::vector<int>* desc_table =
-      Host::current()->extension<simgrid::s4u::FileDescriptorHostExt>()->file_descriptor_table.get();
-  kernel::actor::simcall_answered([this, desc_table] { desc_table->push_back(this->desc_id); });
-}
+File::~File() = default;
 
 File* File::open(const std::string& fullpath, void* userdata)
 {
@@ -119,6 +114,14 @@ File* File::open(const std::string& fullpath, void* userdata)
 File* File::open(const std::string& fullpath, const_sg_host_t host, void* userdata)
 {
   return new File(fullpath, host, userdata);
+}
+
+void File::close()
+{
+  std::vector<int>* desc_table =
+      Host::current()->extension<simgrid::s4u::FileDescriptorHostExt>()->file_descriptor_table.get();
+  kernel::actor::simcall_answered([this, desc_table] { desc_table->push_back(this->desc_id); });
+  delete this;
 }
 
 void File::dump() const

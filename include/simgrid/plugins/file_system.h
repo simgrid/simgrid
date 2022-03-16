@@ -110,7 +110,7 @@ public:
 
   static File* open(const std::string& fullpath, void* userdata);
   static File* open(const std::string& fullpath, const_sg_host_t host, void* userdata);
-  void close() { delete this; };
+  void close();
 
   /** Retrieves the path to the file */
   const char* get_path() const { return fullpath_.c_str(); }
