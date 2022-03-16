@@ -2156,10 +2156,13 @@ include src/kernel/context/ContextThread.cpp
 include src/kernel/context/ContextThread.hpp
 include src/kernel/context/ContextUnix.cpp
 include src/kernel/context/ContextUnix.hpp
+include src/kernel/lmm/System.cpp
+include src/kernel/lmm/System.hpp
 include src/kernel/lmm/bmf.cpp
 include src/kernel/lmm/bmf.hpp
 include src/kernel/lmm/bmf_test.cpp
 include src/kernel/lmm/fair_bottleneck.cpp
+include src/kernel/lmm/fair_bottleneck.hpp
 include src/kernel/lmm/maxmin.cpp
 include src/kernel/lmm/maxmin.hpp
 include src/kernel/lmm/maxmin_test.cpp
