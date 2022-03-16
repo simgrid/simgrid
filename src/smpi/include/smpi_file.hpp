@@ -150,8 +150,7 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
   chunks.push_back(ranges[0]);
 
   unsigned int nchunks = 0;
-  unsigned int i       = 1;
-  while (i < ranges.size()) {
+  for (unsigned i = 1; i < ranges.size(); i++) {
     if (ranges[i].second > chunks[nchunks].second) {
       // else range included - ignore
       if (ranges[i].first > chunks[nchunks].second) {
@@ -163,11 +162,10 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
         chunks[nchunks].second = ranges[i].second;
       }
     }
-    i++;
   }
   // what do I need to read ?
   MPI_Offset totreads = 0;
-  for (i = 0; i < chunks.size(); i++) {
+  for (unsigned i = 0; i < chunks.size(); i++) {
     if (chunks[i].second < my_chunk_start)
       continue;
     else if (chunks[i].first > my_chunk_end)

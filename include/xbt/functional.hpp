@@ -168,7 +168,7 @@ public:
   }
 
 private:
-  template <class F> typename std::enable_if_t<canSBO<F>()> init(F code)
+  template <class F> typename std::enable_if_t<canSBO<F>()> init(F task_code)
   {
     const static TaskVtable vtable {
       // Call:
@@ -194,11 +194,11 @@ private:
         src_code->~F();
       }
     };
-    new(&buffer_) F(std::move(code));
+    new (&buffer_) F(std::move(task_code));
     vtable_ = &vtable;
   }
 
-  template <class F> typename std::enable_if_t<not canSBO<F>()> init(F code)
+  template <class F> typename std::enable_if_t<not canSBO<F>()> init(F task_code)
   {
     const static TaskVtable vtable {
       // Call:
@@ -216,7 +216,7 @@ private:
       // Move:
       nullptr
     };
-    *reinterpret_cast<F**>(&buffer_) = new F(std::move(code));
+    *reinterpret_cast<F**>(&buffer_) = new F(std::move(task_code));
     vtable_ = &vtable;
   }
 

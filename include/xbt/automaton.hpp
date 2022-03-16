@@ -23,11 +23,7 @@ template <class F> xbt_automaton_propositional_symbol_t add_proposition(const_xb
 {
   auto* callback = new F(std::move(f));
   return xbt_automaton_propositional_symbol_new_callback(
-    a, id,
-    [](void* callback) -> int { return (*(F*)callback)(); },
-    callback,
-    [](void* callback) -> void { delete (F*)callback; }
-  );
+      a, id, [](void* cb) -> int { return (*(F*)cb)(); }, callback, [](void* cb) -> void { delete (F*)cb; });
 }
 
 }
