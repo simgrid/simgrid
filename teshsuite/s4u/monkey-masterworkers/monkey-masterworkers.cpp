@@ -102,25 +102,21 @@ int main(int argc, char* argv[])
   sg4::Engine e(&argc, argv);
 
   auto* rootzone = sg4::create_full_zone("root");
-  sg4::Host* main; // First host created, where the master will stay
   std::vector<sg4::Host*> worker_hosts;
 
   xbt_assert(cfg_host_count > 2, "You need at least 2 workers (i.e., 3 hosts) or the master will be auto-killed when "
                                  "the only worker gets killed.");
-  for (int i = 0; i < cfg_host_count; i++) {
+  sg4::Host* master_host = rootzone->create_host("lilibeth 0", 1e9); // Host where the master will stay
+  for (int i = 1; i < cfg_host_count; i++) {
     auto hostname = std::string("lilibeth ") + std::to_string(i);
     auto* host    = rootzone->create_host(hostname, 1e9);
-    if (i == 0) {
-      main = host;
-    } else {
-      sg4::LinkInRoute link(rootzone->create_link(hostname, "1MBps")->set_latency("24us")->seal());
-      rootzone->add_route(main->get_netpoint(), host->get_netpoint(), nullptr, nullptr, {link}, true);
-      worker_hosts.push_back(host);
-    }
+    sg4::LinkInRoute link(rootzone->create_link(hostname, "1MBps")->set_latency("24us")->seal());
+    rootzone->add_route(master_host->get_netpoint(), host->get_netpoint(), nullptr, nullptr, {link}, true);
+    worker_hosts.push_back(host);
   }
   rootzone->seal();
 
-  sg4::Actor::create("master", main, master)->daemonize()->set_auto_restart(true);
+  sg4::Actor::create("master", master_host, master)->daemonize()->set_auto_restart(true);
   int id = 0;
   for (auto* h : worker_hosts) {
     sg4::Actor::create("worker", h, worker, id)->set_auto_restart(true);
