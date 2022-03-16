@@ -89,8 +89,8 @@ class CommIsendSimcall : public SimcallObserver {
   size_t src_buff_size_;
   void* payload_;
   bool detached_;
-  activity::CommImpl* comm_;
-  int tag_;
+  activity::CommImpl* comm_ = {};
+  int tag_                  = {};
 
   std::function<bool(void*, void*, activity::CommImpl*)> match_fun_;
   std::function<void(void*)> clean_fun_; // used to free the synchro in case of problem after a detached send
@@ -140,8 +140,8 @@ class CommIrecvSimcall : public SimcallObserver {
   size_t* dst_buff_size_;
   void* payload_;
   double rate_;
-  int tag_;
-  activity::CommImpl* comm_;
+  activity::CommImpl* comm_ = {};
+  int tag_                  = {};
 
   std::function<bool(void*, void*, activity::CommImpl*)> match_fun_;
   std::function<void(activity::CommImpl*, void*, size_t)> copy_data_fun_; // used to copy data if not default one

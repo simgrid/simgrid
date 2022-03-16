@@ -68,12 +68,9 @@ std::ostream& operator << (std::ostream& out, const DatedValue& dv) {
 
 class LegacyUpdateCb {
   std::vector<StochasticDatedValue> pattern;
-
-  bool stochastic;
-
+  bool stochastic = false;
   bool loop;
-
-  double loop_delay;
+  double loop_delay = 0.0;
 
   static bool is_comment_or_empty_line(const std::string& val)
   {
@@ -90,7 +87,7 @@ class LegacyUpdateCb {
   static bool is_uniform_distribution(const std::string& val) { return (val == "UNIF" || val == "UNIFORM"); }
 
 public:
-  LegacyUpdateCb(const std::string& input, double periodicity) : stochastic(false), loop(periodicity > 0), loop_delay(0)
+  LegacyUpdateCb(const std::string& input, double periodicity) : loop(periodicity > 0)
   {
     int linecount = 0;
     std::vector<std::string> list;
