@@ -27,19 +27,21 @@ static void display_disk_properties(const simgrid::s4u::Disk* disk)
 
 static sg_size_t write_local_file(const std::string& dest, sg_size_t file_size)
 {
-  simgrid::s4u::File file(dest, nullptr);
-  sg_size_t written = file.write(file_size);
+  auto* file        = simgrid::s4u::File::open(dest, nullptr);
+  sg_size_t written = file->write(file_size);
   XBT_INFO("%llu bytes on %llu bytes have been written by %s on /sd1", written, file_size,
            simgrid::s4u::Actor::self()->get_cname());
+  file->close();
   return written;
 }
 
 static sg_size_t read_local_file(const std::string& src)
 {
-  simgrid::s4u::File file(src, nullptr);
-  sg_size_t file_size = file.size();
-  sg_size_t read      = file.read(file_size);
+  auto* file          = simgrid::s4u::File::open(src, nullptr);
+  sg_size_t file_size = file->size();
+  sg_size_t read      = file->read(file_size);
   XBT_INFO("%s has read %llu on %s", simgrid::s4u::Actor::self()->get_cname(), read, src.c_str());
+  file->close();
   return read;
 }
 
