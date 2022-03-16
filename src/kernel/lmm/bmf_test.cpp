@@ -609,6 +609,25 @@ TEST_CASE("kernel::bmf Bugs", "[kernel-bmf-bug]")
     REQUIRE(double_equals(rho_2->get_value(), 3, sg_maxmin_precision));
   }
 
+  SECTION("Variable penalty with bounds: thread bug")
+  {
+    /*
+     * Detected by exec-thread.
+     * Fair-sharing vector depends on the penalty too.
+     */
+
+    /* don't change the order of creation, important to trigger the bug */
+    lmm::Constraint* sys_cnst = Sys.constraint_new(nullptr, 4e8);
+    lmm::Variable* rho_2      = Sys.variable_new(nullptr, .25, 4e8, 1);
+    lmm::Variable* rho_1      = Sys.variable_new(nullptr, 1, 1e8, 1);
+    Sys.expand(sys_cnst, rho_2, 1);
+    Sys.expand(sys_cnst, rho_1, 1);
+    Sys.solve();
+
+    REQUIRE(double_equals(rho_1->get_value(), 8e7, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_2->get_value(), 3.2e8, sg_maxmin_precision));
+  }
+
   Sys.variable_free_all();
 }
 

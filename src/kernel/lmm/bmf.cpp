@@ -251,7 +251,7 @@ bool BmfSolver::get_alloc(const Eigen::VectorXd& fair_sharing, const allocation_
       if (A_(cnst_idx, player_idx) <= 0.0)
         continue;
 
-      double rate = fair_sharing[cnst_idx] / A_(cnst_idx, player_idx);
+      double rate = fair_sharing[cnst_idx] / maxA_(cnst_idx, player_idx);
       if (min_rate == -1 || rate < min_rate) {
         selected_resource = cnst_idx;
         min_rate          = rate;
@@ -286,7 +286,7 @@ void BmfSolver::set_fair_sharing(const allocation_map_t& alloc, const Eigen::Vec
       if (rho[player] < 0) { // negative rho doesn't make sense, consider the resource is saturated in this case
         fair_sharing[r] = get_maxmin_share(r);
       } else {
-        fair_sharing[r] = A_(r, player) * rho[player];
+        fair_sharing[r] = maxA_(r, player) * rho[player];
       }
     } else { // nobody selects this resource, fair_sharing depends on resource saturation
       // resource r is saturated (A[r,*] * rho > C), divide it among players
