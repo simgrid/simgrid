@@ -19,6 +19,9 @@ namespace resource {
  * @brief Network Model interface class
  */
 class XBT_PUBLIC NetworkModelIntf {
+protected:
+  ~NetworkModelIntf() = default;
+
 public:
   /**
    * @brief Callback to set the bandwidth and latency factors used in a communication

@@ -17,7 +17,7 @@ namespace simgrid {
 namespace kernel {
 namespace actor {
 
-class ActivityTestSimcall : public ResultingSimcall<bool> {
+class ActivityTestSimcall final : public ResultingSimcall<bool> {
   activity::ActivityImpl* const activity_;
 
 public:
@@ -30,7 +30,7 @@ public:
   void serialize(std::stringstream& stream) const override;
 };
 
-class ActivityTestanySimcall : public ResultingSimcall<ssize_t> {
+class ActivityTestanySimcall final : public ResultingSimcall<ssize_t> {
   const std::vector<activity::ActivityImpl*>& activities_;
   std::vector<int> indexes_; // indexes in activities_ pointing to ready activities (=whose test() is positive)
   int next_value_ = 0;
@@ -46,7 +46,7 @@ public:
   int get_value() const { return next_value_; }
 };
 
-class ActivityWaitSimcall : public ResultingSimcall<bool> {
+class ActivityWaitSimcall final : public ResultingSimcall<bool> {
   activity::ActivityImpl* activity_;
   const double timeout_;
 
@@ -63,7 +63,7 @@ public:
   double get_timeout() const { return timeout_; }
 };
 
-class ActivityWaitanySimcall : public ResultingSimcall<ssize_t> {
+class ActivityWaitanySimcall final : public ResultingSimcall<ssize_t> {
   const std::vector<activity::ActivityImpl*>& activities_;
   std::vector<int> indexes_; // indexes in activities_ pointing to ready activities (=whose test() is positive)
   const double timeout_;
@@ -81,7 +81,7 @@ public:
   int get_value() const { return next_value_; }
 };
 
-class CommIsendSimcall : public SimcallObserver {
+class CommIsendSimcall final : public SimcallObserver {
   activity::MailboxImpl* mbox_;
   double payload_size_;
   double rate_;
@@ -134,7 +134,7 @@ public:
   auto const& get_copy_data_fun() const { return copy_data_fun_; }
 };
 
-class CommIrecvSimcall : public SimcallObserver {
+class CommIrecvSimcall final : public SimcallObserver {
   activity::MailboxImpl* mbox_;
   unsigned char* dst_buff_;
   size_t* dst_buff_size_;

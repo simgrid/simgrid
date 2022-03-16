@@ -19,6 +19,9 @@ namespace actor {
 class SimcallObserver {
   ActorImpl* const issuer_;
 
+protected:
+  ~SimcallObserver() = default;
+
 public:
   explicit SimcallObserver(ActorImpl* issuer) : issuer_(issuer) {}
   ActorImpl* get_issuer() const { return issuer_; }
@@ -62,6 +65,9 @@ public:
 template <class T> class ResultingSimcall : public SimcallObserver {
   T result_;
 
+protected:
+  ~ResultingSimcall() = default;
+
 public:
   ResultingSimcall() = default;
   ResultingSimcall(ActorImpl* actor, T default_result) : SimcallObserver(actor), result_(default_result) {}
@@ -69,7 +75,7 @@ public:
   T get_result() const { return result_; }
 };
 
-class RandomSimcall : public SimcallObserver {
+class RandomSimcall final : public SimcallObserver {
   const int min_;
   const int max_;
   int next_value_ = 0;
@@ -85,7 +91,7 @@ public:
   int get_value() const { return next_value_; }
 };
 
-class ConditionWaitSimcall : public ResultingSimcall<bool> {
+class ConditionWaitSimcall final : public ResultingSimcall<bool> {
   activity::ConditionVariableImpl* const cond_;
   activity::MutexImpl* const mutex_;
   const double timeout_;

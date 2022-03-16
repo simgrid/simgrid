@@ -18,7 +18,7 @@ namespace kernel {
 namespace actor {
 
 /* All the observers of Mutex transitions are very similar, so implement them all together in this class */
-class MutexObserver : public SimcallObserver {
+class MutexObserver final : public SimcallObserver {
   mc::Transition::Type type_;
   activity::MutexImpl* const mutex_;
 
@@ -32,7 +32,7 @@ public:
 };
 
 /* This observer is used for SEM_LOCK and SEM_UNLOCK (only) */
-class SemaphoreObserver : public SimcallObserver {
+class SemaphoreObserver final : public SimcallObserver {
   mc::Transition::Type type_;
   activity::SemaphoreImpl* const sem_;
 
@@ -45,7 +45,7 @@ public:
 };
 
 /* This observer is ued for SEM_WAIT, that is returning and needs the acquisition (in MC mode) */
-class SemaphoreAcquisitionObserver : public ResultingSimcall<bool> {
+class SemaphoreAcquisitionObserver final : public ResultingSimcall<bool> {
   mc::Transition::Type type_;
   activity::SemAcquisitionImpl* const acquisition_;
   const double timeout_;
@@ -61,7 +61,7 @@ public:
 };
 
 /* This observer is ued for BARRIER_LOCK and BARRIER_WAIT. WAIT is returning and needs the acquisition */
-class BarrierObserver : public ResultingSimcall<bool> {
+class BarrierObserver final : public ResultingSimcall<bool> {
   mc::Transition::Type type_;
   activity::BarrierImpl* const barrier_                = nullptr;
   activity::BarrierAcquisitionImpl* const acquisition_ = nullptr;
