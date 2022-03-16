@@ -464,6 +464,11 @@ void System::print() const
   }
 }
 
+resource::Action::ModifiedSet* System::get_modified_action_set() const
+{
+  return modified_set_.get();
+}
+
 void System::solve()
 {
   if (not modified_)
@@ -472,8 +477,20 @@ void System::solve()
   do_solve();
 
   modified_ = false;
-  if (selective_update_active)
+  if (selective_update_active) {
+    /* update list of modified variables */
+    for (const Constraint& cnst : modified_constraint_set) {
+      for (const Element& elem : cnst.enabled_element_set_) {
+        if (elem.consumption_weight > 0) {
+          resource::Action* action = elem.variable->id_;
+          if (not action->is_within_modified_set())
+            modified_set_->push_back(*action);
+        }
+      }
+    }
+    /* clear list of modified constraint */
     remove_all_modified_cnst_set();
+  }
 
   if (XBT_LOG_ISENABLED(ker_lmm, xbt_log_priority_debug)) {
     print();

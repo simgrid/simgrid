@@ -432,6 +432,9 @@ public:
   Variable* variable_new(resource::Action* id, double sharing_penalty, double bound = -1.0,
                          size_t number_of_constraints = 1);
 
+  /** @brief Get the list of modified actions since last solve() */
+  resource::Action::ModifiedSet* get_modified_action_set() const;
+
   /**
    * @brief Free a variable
    * @param var The variable to free
@@ -551,8 +554,6 @@ public:
                                                                    &Constraint::saturated_constraint_set_hook_>>
       saturated_constraint_set;
 
-  std::unique_ptr<resource::Action::ModifiedSet> modified_set_ = nullptr;
-
 protected:
   bool selective_update_active; /* flag to update partially the system only selecting changed portions */
   boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
@@ -572,6 +573,8 @@ private:
       constraint_set;
   xbt_mallocator_t variable_mallocator_ =
       xbt_mallocator_new(65536, System::variable_mallocator_new_f, System::variable_mallocator_free_f, nullptr);
+
+  std::unique_ptr<resource::Action::ModifiedSet> modified_set_ = nullptr;
 };
 
 /** @} */

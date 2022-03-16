@@ -86,9 +86,6 @@ template <class CnstList> void MaxMin::maxmin_solve(CnstList& cnst_list)
           cnst.usage_ = elem.consumption_weight / elem.variable->sharing_penalty_;
 
         elem.make_active();
-        resource::Action* action = elem.variable->id_;
-        if (modified_set_ && not action->is_within_modified_set())
-          modified_set_->push_back(*action);
       }
     }
     XBT_DEBUG("Constraint '%d' usage: %f remaining: %f concurrency: %i<=%i<=%i", cnst.rank_, cnst.usage_,

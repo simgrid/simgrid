@@ -503,16 +503,6 @@ template <class CnstList> void BmfSystem::bmf_solve(const CnstList& cnst_list)
   for (int i = 0; i < rho.size(); i++) {
     idx2Var_[i]->value_ = rho[i];
   }
-  /* updating modified_set */
-  for (const Constraint& cnst : cnst_list) {
-    for (const Element& elem : cnst.enabled_element_set_) {
-      if (elem.consumption_weight > 0) {
-        resource::Action* action = elem.variable->id_;
-        if (modified_set_ && not action->is_within_modified_set())
-          modified_set_->push_back(*action);
-      }
-    }
-  }
 }
 
 } // namespace lmm

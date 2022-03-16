@@ -27,7 +27,7 @@ Model* Model::set_update_algorithm(Model::UpdateAlgo algo)
 
 Action::ModifiedSet* Model::get_modified_set() const
 {
-  return maxmin_system_->modified_set_.get();
+  return maxmin_system_->get_modified_action_set();
 }
 
 void Model::set_maxmin_system(lmm::System* system)
@@ -49,13 +49,15 @@ double Model::next_occurring_event(double now)
 
 double Model::next_occurring_event_lazy(double now)
 {
-  XBT_DEBUG("Before share resources, the size of modified actions set is %zu", maxmin_system_->modified_set_->size());
+  XBT_DEBUG("Before share resources, the size of modified actions set is %zu",
+            maxmin_system_->get_modified_action_set()->size());
   maxmin_system_->solve();
-  XBT_DEBUG("After share resources, The size of modified actions set is %zu", maxmin_system_->modified_set_->size());
+  Action::ModifiedSet* modified_action_set = maxmin_system_->get_modified_action_set();
+  XBT_DEBUG("After share resources, The size of modified actions set is %zu", modified_action_set->size());
 
-  while (not maxmin_system_->modified_set_->empty()) {
-    Action* action = &(maxmin_system_->modified_set_->front());
-    maxmin_system_->modified_set_->pop_front();
+  while (not modified_action_set->empty()) {
+    Action* action = &(modified_action_set->front());
+    modified_action_set->pop_front();
     ActionHeap::Type action_type = ActionHeap::Type::normal;
 
     if (action->get_state_set() != &started_action_set_)
