@@ -2527,7 +2527,15 @@ Locking
 ⁣  Barrier
 ================
 
-.. doxygenclass:: simgrid::s4u::Barrier
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::Barrier
+
+   .. group-tab:: Python
+
+      .. autoclass:: simgrid.Barrier
 
 .. tabs::
 
@@ -2542,6 +2550,15 @@ Locking
       .. doxygenfunction:: simgrid::s4u::Barrier::Barrier(unsigned int expected_actors)
       .. doxygenfunction:: simgrid::s4u::Barrier::create(unsigned int expected_actors)
       .. doxygenfunction:: simgrid::s4u::Barrier::wait()
+
+   .. group-tab:: Python
+
+      .. code-block:: Python
+
+         from simgrid import Barrier
+         barrier = Barrier(2)
+
+      .. automethod:: simgrid.Barrier.wait()
 
    .. group-tab:: C
 

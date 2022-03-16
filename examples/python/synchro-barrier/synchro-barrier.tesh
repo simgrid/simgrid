@@ -1,0 +1,38 @@
+#!/usr/bin/env tesh
+
+p Testing Barrier
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/synchro-barrier.py --platform ${platfdir}/two_hosts.xml --actors 1 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+>[  0.000000] (1:master@Tremblay) Spawning 0 workers
+>[  0.000000] (1:master@Tremblay) Waiting on the barrier
+>[  0.000000] (1:master@Tremblay) Bye
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/synchro-barrier.py --platform ${platfdir}/two_hosts.xml --actors 2 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+>[  0.000000] (1:master@Tremblay) Spawning 1 workers
+>[  0.000000] (2:worker-0@Jupiter) Waiting on the barrier
+>[  0.000000] (1:master@Tremblay) Waiting on the barrier
+>[  0.000000] (2:worker-0@Jupiter) Bye
+>[  0.000000] (1:master@Tremblay) Bye
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/synchro-barrier.py --platform ${platfdir}/two_hosts.xml --actors 10 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+>[  0.000000] (1:master@Tremblay) Spawning 9 workers
+>[  0.000000] (2:worker-0@Jupiter) Waiting on the barrier
+>[  0.000000] (3:worker-1@Jupiter) Waiting on the barrier
+>[  0.000000] (4:worker-2@Jupiter) Waiting on the barrier
+>[  0.000000] (5:worker-3@Jupiter) Waiting on the barrier
+>[  0.000000] (6:worker-4@Jupiter) Waiting on the barrier
+>[  0.000000] (7:worker-5@Jupiter) Waiting on the barrier
+>[  0.000000] (8:worker-6@Jupiter) Waiting on the barrier
+>[  0.000000] (9:worker-7@Jupiter) Waiting on the barrier
+>[  0.000000] (10:worker-8@Jupiter) Waiting on the barrier
+>[  0.000000] (1:master@Tremblay) Waiting on the barrier
+>[  0.000000] (2:worker-0@Jupiter) Bye
+>[  0.000000] (3:worker-1@Jupiter) Bye
+>[  0.000000] (4:worker-2@Jupiter) Bye
+>[  0.000000] (5:worker-3@Jupiter) Bye
+>[  0.000000] (6:worker-4@Jupiter) Bye
+>[  0.000000] (7:worker-5@Jupiter) Bye
+>[  0.000000] (8:worker-6@Jupiter) Bye
+>[  0.000000] (9:worker-7@Jupiter) Bye
+>[  0.000000] (10:worker-8@Jupiter) Bye
+>[  0.000000] (1:master@Tremblay) Bye
