@@ -101,13 +101,14 @@ class XBT_PUBLIC File : public xbt::Extendable<File> {
 
   const Disk* find_local_disk_on(const Host* host);
 
-public:
+protected:
   File(const std::string& fullpath, void* userdata);
   File(const std::string& fullpath, const_sg_host_t host, void* userdata);
   File(const File&) = delete;
   File& operator=(const File&) = delete;
   ~File();
 
+public:
   static File* open(const std::string& fullpath, void* userdata);
   static File* open(const std::string& fullpath, const_sg_host_t host, void* userdata);
   void close();
