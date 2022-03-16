@@ -35,3 +35,42 @@ $ ./concurrent_rw ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%10.6r]%e(%a
 > [ 10.800000] (host@bob) actor 4 is reading again!
 > [ 11.800000] (host@bob) actor 5 is reading again!
 > [ 11.840000] (maestro@) Simulation time 11.84
+
+$ ./concurrent_rw ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n" --cfg=disk/solver:bmf
+> [  0.000000] (maestro@) Configuration change: Set 'disk/solver' to 'bmf'
+> [  0.000000] (host@bob) actor 1 is writing!
+> [  0.000000] (host@bob) actor 2 is writing!
+> [  0.000000] (host@bob) actor 3 is writing!
+> [  0.000000] (host@bob) actor 4 is writing!
+> [  0.000000] (host@bob) actor 5 is writing!
+> [  0.500000] (host@bob) actor 1 goes to sleep for 1 seconds
+> [  0.500000] (host@bob) actor 2 goes to sleep for 2 seconds
+> [  0.500000] (host@bob) actor 3 goes to sleep for 3 seconds
+> [  0.500000] (host@bob) actor 4 goes to sleep for 4 seconds
+> [  0.500000] (host@bob) actor 5 goes to sleep for 5 seconds
+> [  1.500000] (host@bob) actor 1 is writing again!
+> [  1.600000] (host@bob) actor 1 goes to sleep for 5 seconds
+> [  2.500000] (host@bob) actor 2 is writing again!
+> [  2.600000] (host@bob) actor 2 goes to sleep for 4 seconds
+> [  3.500000] (host@bob) actor 3 is writing again!
+> [  3.600000] (host@bob) actor 3 goes to sleep for 3 seconds
+> [  4.500000] (host@bob) actor 4 is writing again!
+> [  4.600000] (host@bob) actor 4 goes to sleep for 2 seconds
+> [  5.500000] (host@bob) actor 5 is writing again!
+> [  5.600000] (host@bob) actor 5 goes to sleep for 1 seconds
+> [  6.600000] (host@bob) actor 1 is reading!
+> [  6.600000] (host@bob) actor 2 is reading!
+> [  6.600000] (host@bob) actor 3 is reading!
+> [  6.600000] (host@bob) actor 4 is reading!
+> [  6.600000] (host@bob) actor 5 is reading!
+> [  6.800000] (host@bob) actor 1 goes to sleep for 1 seconds
+> [  6.800000] (host@bob) actor 2 goes to sleep for 2 seconds
+> [  6.800000] (host@bob) actor 3 goes to sleep for 3 seconds
+> [  6.800000] (host@bob) actor 4 goes to sleep for 4 seconds
+> [  6.800000] (host@bob) actor 5 goes to sleep for 5 seconds
+> [  7.800000] (host@bob) actor 1 is reading again!
+> [  8.800000] (host@bob) actor 2 is reading again!
+> [  9.800000] (host@bob) actor 3 is reading again!
+> [ 10.800000] (host@bob) actor 4 is reading again!
+> [ 11.800000] (host@bob) actor 5 is reading again!
+> [ 11.840000] (maestro@) Simulation time 11.84
