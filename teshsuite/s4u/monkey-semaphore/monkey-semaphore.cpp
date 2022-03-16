@@ -28,15 +28,14 @@ class SemStack {
   std::vector<sg4::Semaphore*> to_release;
 
 public:
-  SemStack()                = default;
-  SemStack(const SemStack&) = delete;
-  SemStack& operator=(const SemStack&) = delete;
-  ~SemStack()
+  void clear()
   {
-    for (auto* sem : to_release) {
+    while (not to_release.empty()) {
+      auto* sem = to_release.back();
       XBT_INFO("Go release a semaphore");
       sem->release();
-      XBT_INFO("Released a semaphore on exit. It's now %d", sem->get_capacity());
+      XBT_INFO("Released a semaphore on reboot. It's now %d", sem->get_capacity());
+      to_release.pop_back();
     }
   }
   void push(const sg4::SemaphorePtr& sem) { to_release.push_back(sem.get()); }
@@ -46,13 +45,14 @@ public:
 static void producer(SharedBuffer& buf)
 {
   static int todo    = cfg_item_count; // remaining amount of items to exchange
-  SemStack to_release;
+  static SemStack to_release;
   bool rebooting = sg4::Actor::self()->get_restart_count() > 0;
 
   XBT_INFO("Producer %s", rebooting ? "rebooting" : "booting");
   if (not rebooting) // Starting for the first time
     sg4::this_actor::on_exit(
         [](bool forcefully) { XBT_INFO("Producer dying %s.", forcefully ? "forcefully" : "peacefully"); });
+  to_release.clear();
 
   while (todo > 0) {
     sg4::this_actor::sleep_for(1); // Give a chance to the monkey to kill this actor at this point
@@ -78,13 +78,14 @@ static void producer(SharedBuffer& buf)
 
 static void consumer(const SharedBuffer& buf)
 {
-  SemStack to_release;
+  static SemStack to_release;
   bool rebooting = sg4::Actor::self()->get_restart_count() > 0;
 
   XBT_INFO("Consumer %s", rebooting ? "rebooting" : "booting");
   if (not rebooting) // Starting for the first time
     sg4::this_actor::on_exit(
         [](bool forcefully) { XBT_INFO("Consumer dying %s.", forcefully ? "forcefully" : "peacefully"); });
+  to_release.clear();
 
   int item;
   do {
