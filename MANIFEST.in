@@ -549,6 +549,8 @@ include examples/python/platform-failures/platform-failures.py
 include examples/python/platform-failures/platform-failures.tesh
 include examples/python/platform-profile/platform-profile.py
 include examples/python/platform-profile/platform-profile.tesh
+include examples/python/synchro-barrier/synchro-barrier.py
+include examples/python/synchro-barrier/synchro-barrier.tesh
 include examples/python/synchro-mutex/synchro-mutex.py
 include examples/python/synchro-mutex/synchro-mutex.tesh
 include examples/smpi/NAS/DGraph.c
