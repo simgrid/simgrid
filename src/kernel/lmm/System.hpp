@@ -374,7 +374,7 @@ public:
   short int concurrency_share_; /* The maximum number of elements that variable will add to a constraint */
   resource::Action* id_;
   int rank_;         // Only used in debug messages to identify the variable
-  unsigned visited_; /* used by System::update_modified_set() */
+  unsigned visited_; /* used by System::update_modified_cnst_set() */
   double mu_;
 
 private:
@@ -531,10 +531,10 @@ private:
    */
   void update(Constraint * cnst, Variable * var, double value);
 
-  /** @brief Given a variable, update modified_set_ */
-  void update_modified_set_from_variable(const Variable* var);
-  void update_modified_set(Constraint* cnst);
-  void update_modified_set_rec(const Constraint* cnst);
+  /** @brief Given a variable, update modified_constraint_set_ */
+  void update_modified_cnst_set_from_variable(const Variable* var);
+  void update_modified_cnst_set(Constraint* cnst);
+  void update_modified_cnst_set_rec(const Constraint* cnst);
 
 public:
   bool modified_ = false;
@@ -560,12 +560,13 @@ protected:
       modified_constraint_set;
 
   /** @brief Remove all constraints of the modified_constraint_set. */
-  void remove_all_modified_set();
+  void remove_all_modified_cnst_set();
   void check_concurrency() const;
 
 private:
-  unsigned visited_counter_ = 1; /* used by System::update_modified_set() and System::remove_all_modified_set() to
-                                  * cleverly (un-)flag the constraints (more details in these functions) */
+  unsigned visited_counter_ =
+      1; /* used by System::update_modified_cnst_set() and System::remove_all_modified_cnst_set() to
+          * cleverly (un-)flag the constraints (more details in these functions) */
   boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
                                                                    &Constraint::constraint_set_hook_>>
       constraint_set;

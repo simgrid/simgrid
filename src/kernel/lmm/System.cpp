@@ -140,7 +140,7 @@ void System::var_free(Variable* var)
 
   // TODOLATER Can do better than that by leaving only the variable in only one enabled_element_set, call
   // update_modified_set, and then remove it..
-  update_modified_set_from_variable(var);
+  update_modified_cnst_set_from_variable(var);
 
   for (Element& elem : var->cnsts_) {
     if (var->sharing_penalty_ > 0)
@@ -283,10 +283,10 @@ void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
     make_constraint_active(cnst);
   } else if (elem.consumption_weight > 0 || var->sharing_penalty_ > 0) {
     make_constraint_active(cnst);
-    update_modified_set(cnst);
+    update_modified_cnst_set(cnst);
     // TODOLATER: Why do we need this second call?
     if (var->cnsts_.size() > 1)
-      update_modified_set(var->cnsts_[0].constraint);
+      update_modified_cnst_set(var->cnsts_[0].constraint);
   }
 
   check_concurrency();
@@ -324,7 +324,7 @@ void System::expand_add(Constraint* cnst, Variable* var, double value)
       }
       elem.increase_concurrency();
     }
-    update_modified_set(cnst);
+    update_modified_cnst_set(cnst);
   } else
     expand(cnst, var, value);
 
@@ -473,7 +473,7 @@ void System::solve()
 
   modified_ = false;
   if (selective_update_active)
-    remove_all_modified_set();
+    remove_all_modified_cnst_set();
 
   if (XBT_LOG_ISENABLED(ker_lmm, xbt_log_priority_debug)) {
     print();
@@ -497,7 +497,7 @@ void System::update_variable_bound(Variable* var, double bound)
 
   if (not var->cnsts_.empty()) {
     for (Element const& elem : var->cnsts_) {
-      update_modified_set(elem.constraint);
+      update_modified_cnst_set(elem.constraint);
     }
   }
 }
@@ -536,9 +536,9 @@ int Variable::get_min_concurrency_slack() const
 }
 
 // Small remark: In this implementation of System::enable_var() and System::disable_var(), we will meet multiple times
-// with var when running System::update_modified_set().
-// A priori not a big performance issue, but we might do better by calling System::update_modified_set() within the for
-// loops (after doing the first for enabling==1, and before doing the last for disabling==1)
+// with var when running System::update_modified_cnst_set().
+// A priori not a big performance issue, but we might do better by calling System::update_modified_cnst_set() within the
+// for loops (after doing the first for enabling==1, and before doing the last for disabling==1)
 void System::enable_var(Variable* var)
 {
   xbt_assert(not XBT_LOG_ISENABLED(ker_lmm, xbt_log_priority_debug) || var->can_enable());
@@ -546,7 +546,7 @@ void System::enable_var(Variable* var)
   var->sharing_penalty_ = var->staged_penalty_;
   var->staged_penalty_  = 0;
 
-  // Enabling the variable, move var to list head. Subtlety is: here, we need to call update_modified_set AFTER
+  // Enabling the variable, move var to list head. Subtlety is: here, we need to call update_modified_cnst_set AFTER
   // moving at least one element of var.
 
   simgrid::xbt::intrusive_erase(variable_set, *var);
@@ -556,7 +556,7 @@ void System::enable_var(Variable* var)
     elem.constraint->enabled_element_set_.push_front(elem);
     elem.increase_concurrency();
   }
-  update_modified_set_from_variable(var);
+  update_modified_cnst_set_from_variable(var);
 
   // When used within on_disabled_var, we would get an assertion fail, because transiently there can be variables
   // that are staged and could be activated.
@@ -566,11 +566,11 @@ void System::enable_var(Variable* var)
 void System::disable_var(Variable* var)
 {
   xbt_assert(not var->staged_penalty_, "Staged penalty should have been cleared");
-  // Disabling the variable, move to var to list tail. Subtlety is: here, we need to call update_modified_set
+  // Disabling the variable, move to var to list tail. Subtlety is: here, we need to call update_modified_cnst_set
   // BEFORE moving the last element of var.
   simgrid::xbt::intrusive_erase(variable_set, *var);
   variable_set.push_back(*var);
-  update_modified_set_from_variable(var);
+  update_modified_cnst_set_from_variable(var);
   for (Element& elem : var->cnsts_) {
     simgrid::xbt::intrusive_erase(elem.constraint->enabled_element_set_, elem);
     elem.constraint->disabled_element_set_.push_back(elem);
@@ -662,7 +662,7 @@ void System::update_variable_penalty(Variable* var, double penalty)
     disable_var(var);
   } else {
     var->sharing_penalty_ = penalty;
-    update_modified_set_from_variable(var);
+    update_modified_cnst_set_from_variable(var);
   }
 
   check_concurrency();
@@ -673,7 +673,7 @@ void System::update_variable_penalty(Variable* var, double penalty)
 void System::update_constraint_bound(Constraint* cnst, double bound)
 {
   modified_ = true;
-  update_modified_set(cnst);
+  update_modified_cnst_set(cnst);
   cnst->bound_ = bound;
 }
 
@@ -685,7 +685,7 @@ void System::update_constraint_bound(Constraint* cnst, double bound)
  *  A recursive algorithm to optimize the system recalculation selecting only constraints that have changed. Each
  *  constraint change is propagated to the list of constraints for each variable.
  */
-void System::update_modified_set_rec(const Constraint* cnst)
+void System::update_modified_cnst_set_rec(const Constraint* cnst)
 {
   for (Element const& elem : cnst->enabled_element_set_) {
     Variable* var = elem.variable;
@@ -694,7 +694,7 @@ void System::update_modified_set_rec(const Constraint* cnst)
         break;
       if (elem2.constraint != cnst && not elem2.constraint->modified_constraint_set_hook_.is_linked()) {
         modified_constraint_set.push_back(*elem2.constraint);
-        update_modified_set_rec(elem2.constraint);
+        update_modified_cnst_set_rec(elem2.constraint);
       }
     }
     // var will be ignored in later visits as long as sys->visited_counter does not move
@@ -702,32 +702,32 @@ void System::update_modified_set_rec(const Constraint* cnst)
   }
 }
 
-void System::update_modified_set_from_variable(const Variable* var)
+void System::update_modified_cnst_set_from_variable(const Variable* var)
 {
   /* nothing to update in these cases:
    * - selective update not active, all variables are active
    * - variable doesn't use any constraint
    * - variable is disabled (sharing penalty <= 0): we iterate only through the enabled_variables in
-   * update_modified_set_rec */
+   * update_modified_cnst_set_rec */
   if (not selective_update_active || var->cnsts_.empty() || var->sharing_penalty_ <= 0)
     return;
 
   /* Normally, if the conditions above are true, specially variable is enabled, we can call
-   * modified_set over the first contraint only, since the recursion in update_modified_set_rec
+   * modified_set over the first contraint only, since the recursion in update_modified_cnst_set_rec
    * will iterate over the other constraints of this variable */
-  update_modified_set(var->cnsts_[0].constraint);
+  update_modified_cnst_set(var->cnsts_[0].constraint);
 }
 
-void System::update_modified_set(Constraint* cnst)
+void System::update_modified_cnst_set(Constraint* cnst)
 {
   /* nothing to do if selective update isn't active */
   if (selective_update_active && not cnst->modified_constraint_set_hook_.is_linked()) {
     modified_constraint_set.push_back(*cnst);
-    update_modified_set_rec(cnst);
+    update_modified_cnst_set_rec(cnst);
   }
 }
 
-void System::remove_all_modified_set()
+void System::remove_all_modified_cnst_set()
 {
   // We cleverly un-flag all variables just by incrementing visited_counter
   // In effect, the var->visited value will no more be equal to visited counter
