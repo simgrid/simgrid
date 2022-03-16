@@ -276,18 +276,12 @@ bool BmfSolver::get_alloc(const Eigen::VectorXd& fair_sharing, const allocation_
 void BmfSolver::set_fair_sharing(const allocation_map_t& alloc, const Eigen::VectorXd& rho,
                                  Eigen::VectorXd& fair_sharing) const
 {
-  std::vector<int> bounded_players = get_bounded_players(alloc);
-
   for (int r = 0; r < fair_sharing.size(); r++) {
     auto it = alloc.find(r);
     if (it != alloc.end()) {              // resource selected by some player, fair share depends on rho
       int player = *(it->second.begin()); // equilibrium assures that every player receives the same, use one of them to
                                           // calculate the fair sharing for resource r
-      if (rho[player] < 0) { // negative rho doesn't make sense, consider the resource is saturated in this case
-        fair_sharing[r] = get_maxmin_share(r);
-      } else {
-        fair_sharing[r] = maxA_(r, player) * rho[player];
-      }
+      fair_sharing[r] = maxA_(r, player) * rho[player];
     } else { // nobody selects this resource, fair_sharing depends on resource saturation
       // resource r is saturated (A[r,*] * rho > C), divide it among players
       double consumption_r = A_.row(r) * rho;
@@ -295,7 +289,7 @@ void BmfSolver::set_fair_sharing(const allocation_map_t& alloc, const Eigen::Vec
       if (consumption_r > 0.0) {
         fair_sharing[r] = get_maxmin_share(r);
       } else {
-        fair_sharing[r] = get_resource_capacity(r, bounded_players);
+        fair_sharing[r] = C_[r];
       }
     }
   }
@@ -355,6 +349,7 @@ Eigen::VectorXd BmfSolver::solve()
   XBT_DEBUG("A:\n%s", debug_eigen(A_).c_str());
   XBT_DEBUG("maxA:\n%s", debug_eigen(maxA_).c_str());
   XBT_DEBUG("C:\n%s", debug_eigen(C_).c_str());
+  XBT_DEBUG("phi:\n%s", debug_eigen(phi_).c_str());
 
   /* no flows to share, just returns */
   if (A_.cols() == 0)
