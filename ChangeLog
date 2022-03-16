@@ -1,5 +1,10 @@
 SimGrid (3.30.1) NOT RELEASED YET (v3.31 expected March 20. 2022, 15:33 UTC)
 
+The ненасильство release. We stand against war.
+
+Against the agression by a sick system that forces peoples to take arms against each other.
+
+
 MC:
  - Rework the internals, for simpler and modern code. This shall unlock many future improvements.
  - You can now define plugins onto the DFS explorer (previously called SafetyChecker), using the 
@@ -44,19 +49,16 @@ Models:
    - More realistic sharing of heterogeneous resources compared to ptask_L07.
    - Implement the BMF (Bottleneck max fairness) fairness.
    - Improved resource sharing for parallel tasks with sub-flows (parallel
-   communications between same source and destination inside the ptask).
+     communications between same source and destination inside the ptask).
    - Parameters:
      - "--cfg=host/model:ptask_BMF": enable the model.
-     - "--cfg=bmf/max-iterations: <N>" - maximum number of iterations performed
-	     by BMF solver (default: 1000).
-	 - "--cfg=bmf/selective-update:<true/false>" - enable/disable the
-	    selective-update optimization. Only invalidates and recomputes modified
-	    parts of inequations system. May speed up simulation if sparse resource
-	    utilization (default: false).
-   - ATTENTION: this model requires Eigen3 library. If you install SimGrid
-     from source, please see the "Installing from source" section:
-     https://simgrid.org/doc/latest/Installing_SimGrid.html#installing-from-the-source.
-     No action is required if you use pre-compiled packages.
+     - "--cfg=bmf/max-iterations: <N>": maximum number of iterations performed 
+        by BMF solver (default: 1000).
+     - "--cfg=bmf/selective-update:<true/false>": enable/disable the
+      selective-update optimization. Only invalidates and recomputes modified
+      parts of inequations system. May speed up simulation if sparse resource
+      utilization (default: false).
+   - This model requires Eigen3 library. Make sure Eigen3 is installed to use BMF.
 
 General:
   - Modifications of the Profile mechanism, with some impact on users 
