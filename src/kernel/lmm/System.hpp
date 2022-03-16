@@ -525,6 +525,7 @@ private:
   void enable_var(Variable * var);
   void disable_var(Variable * var);
   void on_disabled_var(Constraint * cnstr);
+  void check_concurrency() const;
 
   /**
    * @brief Update the value of element linking the constraint and the variable
@@ -538,6 +539,8 @@ private:
   void update_modified_cnst_set_from_variable(const Variable* var);
   void update_modified_cnst_set(Constraint* cnst);
   void update_modified_cnst_set_rec(const Constraint* cnst);
+  /** @brief Remove all constraints of the modified_constraint_set. */
+  void remove_all_modified_cnst_set();
 
 public:
   bool modified_ = false;
@@ -559,10 +562,6 @@ protected:
   boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
                                                                    &Constraint::modified_constraint_set_hook_>>
       modified_constraint_set;
-
-  /** @brief Remove all constraints of the modified_constraint_set. */
-  void remove_all_modified_cnst_set();
-  void check_concurrency() const;
 
 private:
   unsigned visited_counter_ =
