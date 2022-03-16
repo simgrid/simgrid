@@ -116,6 +116,11 @@ File* File::open(const std::string& fullpath, void* userdata)
   return new File(fullpath, userdata);
 }
 
+File* File::open(const std::string& fullpath, const_sg_host_t host, void* userdata)
+{
+  return new File(fullpath, host, userdata);
+}
+
 void File::dump() const
 {
   XBT_INFO("File Descriptor information:\n"
