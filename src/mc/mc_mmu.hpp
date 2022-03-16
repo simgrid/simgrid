@@ -23,11 +23,6 @@ namespace mc {
 // TODO, do not depend on xbt_pagesize/xbt_pagebits but our own chunk size
 namespace mmu {
 
-static int chunk_size()
-{
-  return xbt_pagesize;
-}
-
 /** @brief How many memory pages are necessary to store size bytes?
  *
  *  @param size Byte size
