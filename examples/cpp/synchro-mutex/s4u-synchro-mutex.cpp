@@ -47,10 +47,9 @@ static void workerLockGuard(sg4::MutexPtr mutex, int& result)
 static void master()
 {
   /* Create the requested amount of actors pairs. Each pair has a specific mutex and cell in `result`. */
-  int result[cfg_actor_count.get()];
+  std::vector<int> result(cfg_actor_count.get());
 
   for (int i = 0; i < cfg_actor_count; i++) {
-    result[i]           = 0;
     sg4::MutexPtr mutex = sg4::Mutex::create();
     sg4::Actor::create("worker", sg4::Host::by_name("Jupiter"), workerLockGuard, mutex, std::ref(result[i]));
     sg4::Actor::create("worker", sg4::Host::by_name("Tremblay"), worker, mutex, std::ref(result[i]));

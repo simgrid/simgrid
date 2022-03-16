@@ -150,16 +150,16 @@ def parse_one_code(filename):
         raise Exception(f"No test found in {filename}. Please fix it.")
     return res
 
-def categorize(tool, toolname, test_ID, expected):
-    outcome = tool.parse(test_ID)
+def categorize(tool, toolname, test_id, expected):
+    outcome = tool.parse(test_id)
 
-    if not os.path.exists(f'{test_ID}.elapsed') and not os.path.exists(f'logs/{toolname}/{test_ID}.elapsed'):
+    if not os.path.exists(f'{test_id}.elapsed') and not os.path.exists(f'logs/{toolname}/{test_id}.elapsed'):
         if outcome == 'failure':
             elapsed = 0
         else:
-            raise Exception(f"Invalid test result: {test_ID}.txt exists but not {test_ID}.elapsed")
+            raise Exception(f"Invalid test result: {test_id}.txt exists but not {test_id}.elapsed")
     else:
-        with open(f'{test_ID}.elapsed' if os.path.exists(f'{test_ID}.elapsed') else f'logs/{toolname}/{test_ID}.elapsed', 'r') as infile:
+        with open(f'{test_id}.elapsed' if os.path.exists(f'{test_id}.elapsed') else f'logs/{toolname}/{test_id}.elapsed', 'r') as infile:
             elapsed = infile.read()
 
     # Properly categorize this run
@@ -314,10 +314,10 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
     with open(f'{cachefile}.txt', 'w') as outfile:
         outfile.write(output)
     with open(f'{cachefile}.md5sum', 'w') as outfile:
-        hash = hashlib.md5()
+        hashed = hashlib.md5()
         with open(filename, 'rb') as sourcefile :
             for chunk in iter(lambda: sourcefile.read(4096), b""):
-                hash.update(chunk)
-        outfile.write(hash.hexdigest())
+                hashed.update(chunk)
+        outfile.write(hashed.hexdigest())
     
     return True

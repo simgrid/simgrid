@@ -65,7 +65,7 @@ DatedValue Profile::next(Event* event)
   if(event->idx>=event_list.size())
     event->free_me = true;
   else {
-    DatedValue& nextDateVal=event_list.at(event->idx);
+    const DatedValue& nextDateVal = event_list.at(event->idx);
     xbt_assert(nextDateVal.date_>=0);
     xbt_assert(nextDateVal.value_>=0);
     fes_->add_event(event_date +nextDateVal.date_, event);
@@ -73,7 +73,9 @@ DatedValue Profile::next(Event* event)
   return dateVal;
 }
 
-Profile::Profile(const std::string& name, const std::function<ProfileBuilder::UpdateCb>& cb, double repeat_delay): name(name),cb(std::move(cb)),repeat_delay(repeat_delay) {
+Profile::Profile(const std::string& name, const std::function<ProfileBuilder::UpdateCb>& cb, double repeat_delay)
+    : name(name), cb(cb), repeat_delay(repeat_delay)
+{
   xbt_assert(trace_list.find(name) == trace_list.end(), "Refusing to define trace %s twice", name.c_str());
   trace_list.insert({name,this});
   cb(event_list);

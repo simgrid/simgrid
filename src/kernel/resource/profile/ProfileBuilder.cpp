@@ -200,18 +200,18 @@ public:
     xbt_assert(loop_delay >= 0, "Profile loop conditions are not realizable!");
   }
 
-  double get_repeat_delay()
+  double get_repeat_delay() const
   {
     if (not stochastic and loop)
       return loop_delay;
     return -1.0;
   }
 
-  void operator()(std::vector<DatedValue>& event_list)
+  void operator()(std::vector<DatedValue>& event_list) const
   {
     size_t initial_size = event_list.size();
     if (loop or not initial_size) {
-      for (auto dv : pattern)
+      for (auto const& dv : pattern)
         event_list.emplace_back(dv.get_datedvalue());
       if (initial_size)
         event_list.at(initial_size).date_ += loop_delay;

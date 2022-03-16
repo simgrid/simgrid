@@ -43,7 +43,7 @@ public:
   DatedValue next(Event* event);
 
   const std::vector<DatedValue>& get_event_list() const { return event_list; }
-  const std::string get_name() const { return name; }
+  const std::string& get_name() const { return name; }
   bool is_repeating() const { return repeat_delay>=0;}
   double get_repeat_delay() const { return repeat_delay;}
   

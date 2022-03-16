@@ -791,7 +791,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("unlock", &Mutex::unlock, py::call_guard<py::gil_scoped_release>(), "Release the mutex")
       // Allow mutexes to be automatically acquired/released with a context manager: `with mutex: ...`
       .def("__enter__", [](Mutex* self){ self->lock(); }, py::call_guard<py::gil_scoped_release>())
-      .def("__exit__", [](Mutex* self, py::object&, py::object&, py::object&){ self->unlock(); },
+      .def("__exit__", [](Mutex* self, const py::object&, const py::object&, const py::object&) { self->unlock(); },
           py::call_guard<py::gil_scoped_release>());
 
   /* Class Barrier */

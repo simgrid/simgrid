@@ -28,7 +28,7 @@ class XBT_PUBLIC ActorIDTrait {
   aid_t ppid_        = -1;
 
 public:
-  explicit ActorIDTrait(std::string name, aid_t ppid);
+  explicit ActorIDTrait(const std::string& name, aid_t ppid);
   const xbt::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
   aid_t get_pid() const { return pid_; }

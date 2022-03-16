@@ -48,7 +48,7 @@ unsigned long* get_maxpid_addr()
 {
   return &maxpid;
 }
-ActorIDTrait::ActorIDTrait(std::string name, aid_t ppid) : name_(std::move(name)), pid_(maxpid++), ppid_(ppid) {}
+ActorIDTrait::ActorIDTrait(const std::string& name, aid_t ppid) : name_(name), pid_(maxpid++), ppid_(ppid) {}
 
 ActorImpl* ActorImpl::self()
 {
