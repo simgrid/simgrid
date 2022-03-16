@@ -282,37 +282,37 @@ void sg_config_init(int *argc, char **argv)
       sg_weight_S_parameter, "network/weight-S",
       "Correction factor to apply to the weight of competing streams (default value set by network model)");
 
-  simgrid::config::Flag<double> _sg_network_loopback_latency{
+  static simgrid::config::Flag<double> _sg_network_loopback_latency{
       "network/loopback-lat",
       "For network models with an implicit loopback link (L07, CM02, LV08), "
       "latency of the loopback link. 0 by default",
       0.0};
 
-  simgrid::config::Flag<double> _sg_network_loopback_bandwidth{
+  static simgrid::config::Flag<double> _sg_network_loopback_bandwidth{
       "network/loopback-bw",
       "For network models with an implicit loopback link (L07, CM02, LV08), "
       "bandwidth of the loopback link. 10GBps by default",
       10e9};
 
   /* Inclusion path */
-  simgrid::config::Flag<std::string> cfg_path{"path", "Lookup path for inclusions in platform and deployment XML files",
-                                              "", [](std::string const& path) {
-                                                if (not path.empty())
-                                                  surf_path.push_back(path);
-                                              }};
+  static simgrid::config::Flag<std::string> cfg_path{
+      "path", "Lookup path for inclusions in platform and deployment XML files", "", [](std::string const& path) {
+        if (not path.empty())
+          surf_path.push_back(path);
+      }};
 
-  simgrid::config::Flag<bool> cfg_cpu_maxmin_selective_update{
+  static simgrid::config::Flag<bool> cfg_cpu_maxmin_selective_update{
       "cpu/maxmin-selective-update",
       "Update the constraint set propagating recursively to others constraints "
       "(off by default unless optim is set to lazy)",
       false};
-  simgrid::config::Flag<bool> cfg_network_maxmin_selective_update{"network/maxmin-selective-update",
-                                                                  "Update the constraint set propagating "
-                                                                  "recursively to others constraints (off by "
-                                                                  "default unless optim is set to lazy)",
-                                                                  false};
+  static simgrid::config::Flag<bool> cfg_network_maxmin_selective_update{"network/maxmin-selective-update",
+                                                                         "Update the constraint set propagating "
+                                                                         "recursively to others constraints (off by "
+                                                                         "default unless optim is set to lazy)",
+                                                                         false};
 
-  simgrid::config::Flag<int> cfg_context_stack_size{
+  static simgrid::config::Flag<int> cfg_context_stack_size{
       "contexts/stack-size", "Stack size of contexts in KiB (not with threads)", 8 * 1024,
       [](int value) { simgrid::kernel::context::stack_size = value * 1024; }};
 
@@ -322,12 +322,12 @@ void sg_config_init(int *argc, char **argv)
 #else
   int default_guard_size = 1;
 #endif
-  simgrid::config::Flag<int> cfg_context_guard_size{
+  static simgrid::config::Flag<int> cfg_context_guard_size{
       "contexts/guard-size", "Guard size for contexts stacks in memory pages", default_guard_size,
       [](int value) { simgrid::kernel::context::guard_size = value * xbt_pagesize; }};
-  simgrid::config::Flag<int> cfg_context_nthreads{"contexts/nthreads",
-                                                  "Number of parallel threads used to execute user contexts", 1,
-                                                  &simgrid::kernel::context::set_nthreads};
+  static simgrid::config::Flag<int> cfg_context_nthreads{"contexts/nthreads",
+                                                         "Number of parallel threads used to execute user contexts", 1,
+                                                         &simgrid::kernel::context::set_nthreads};
 
   /* synchronization mode for parallel user contexts */
 #if HAVE_FUTEX_H
@@ -335,10 +335,11 @@ void sg_config_init(int *argc, char **argv)
 #else // No futex on mac and posix is unimplemented yet
   std::string default_synchro_mode = "busy_wait";
 #endif
-  simgrid::config::Flag<std::string> cfg_context_synchro{"contexts/synchro",
-                                                         "Synchronization mode to use when running contexts in "
-                                                         "parallel (either futex, posix or busy_wait)",
-                                                         default_synchro_mode, &_sg_cfg_cb_contexts_parallel_mode};
+  static simgrid::config::Flag<std::string> cfg_context_synchro{"contexts/synchro",
+                                                                "Synchronization mode to use when running contexts in "
+                                                                "parallel (either futex, posix or busy_wait)",
+                                                                default_synchro_mode,
+                                                                &_sg_cfg_cb_contexts_parallel_mode};
 
   // For smpi/bw-factor and smpi/lat-factor
   // SMPI model can be used without enable_smpi, so keep this out of the ifdef.
@@ -352,14 +353,14 @@ void sg_config_init(int *argc, char **argv)
   simgrid::config::declare_flag<std::string>("smpi/lat-factor", "Latency factors for smpi.",
                                              "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;"
                                              "1426:1.61075;732:1.9503;257:1.95341;0:2.01467");
-  simgrid::config::Flag<std::string> cfg_smpi_IB_penalty_factors{
+  static simgrid::config::Flag<std::string> cfg_smpi_IB_penalty_factors{
       "smpi/IB-penalty-factors",
       "Correction factor to communications using Infiniband model with "
       "contention (default value based on Stampede cluster profiling)",
       "0.965;0.925;1.35"};
   /* Others */
 
-  simgrid::config::Flag<bool> cfg_execution_cutpath{
+  static simgrid::config::Flag<bool> cfg_execution_cutpath{
       "exception/cutpath", "Whether to cut all path information from call traces, used e.g. in exceptions.", false};
 
   if (surf_path.empty())
