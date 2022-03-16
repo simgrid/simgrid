@@ -531,6 +531,8 @@ private:
    */
   void update(Constraint * cnst, Variable * var, double value);
 
+  /** @brief Given a variable, update modified_set_ */
+  void update_modified_set_from_variable(const Variable* var);
   void update_modified_set(Constraint* cnst);
   void update_modified_set_rec(const Constraint* cnst);
 

@@ -140,8 +140,7 @@ void System::var_free(Variable* var)
 
   // TODOLATER Can do better than that by leaving only the variable in only one enabled_element_set, call
   // update_modified_set, and then remove it..
-  if (not var->cnsts_.empty())
-    update_modified_set(var->cnsts_[0].constraint);
+  update_modified_set_from_variable(var);
 
   for (Element& elem : var->cnsts_) {
     if (var->sharing_penalty_ > 0)
@@ -557,8 +556,7 @@ void System::enable_var(Variable* var)
     elem.constraint->enabled_element_set_.push_front(elem);
     elem.increase_concurrency();
   }
-  if (not var->cnsts_.empty())
-    update_modified_set(var->cnsts_[0].constraint);
+  update_modified_set_from_variable(var);
 
   // When used within on_disabled_var, we would get an assertion fail, because transiently there can be variables
   // that are staged and could be activated.
@@ -572,8 +570,7 @@ void System::disable_var(Variable* var)
   // BEFORE moving the last element of var.
   simgrid::xbt::intrusive_erase(variable_set, *var);
   variable_set.push_back(*var);
-  if (not var->cnsts_.empty())
-    update_modified_set(var->cnsts_[0].constraint);
+  update_modified_set_from_variable(var);
   for (Element& elem : var->cnsts_) {
     simgrid::xbt::intrusive_erase(elem.constraint->enabled_element_set_, elem);
     elem.constraint->disabled_element_set_.push_back(elem);
@@ -665,8 +662,7 @@ void System::update_variable_penalty(Variable* var, double penalty)
     disable_var(var);
   } else {
     var->sharing_penalty_ = penalty;
-    if (not var->cnsts_.empty())
-      update_modified_set(var->cnsts_[0].constraint);
+    update_modified_set_from_variable(var);
   }
 
   check_concurrency();
@@ -704,6 +700,22 @@ void System::update_modified_set_rec(const Constraint* cnst)
     // var will be ignored in later visits as long as sys->visited_counter does not move
     var->visited_ = visited_counter_;
   }
+}
+
+void System::update_modified_set_from_variable(const Variable* var)
+{
+  /* nothing to update in these cases:
+   * - selective update not active, all variables are active
+   * - variable doesn't use any constraint
+   * - variable is disabled (sharing penalty <= 0): we iterate only through the enabled_variables in
+   * update_modified_set_rec */
+  if (not selective_update_active || var->cnsts_.empty() || var->sharing_penalty_ <= 0)
+    return;
+
+  /* Normally, if the conditions above are true, specially variable is enabled, we can call
+   * modified_set over the first contraint only, since the recursion in update_modified_set_rec
+   * will iterate over the other constraints of this variable */
+  update_modified_set(var->cnsts_[0].constraint);
 }
 
 void System::update_modified_set(Constraint* cnst)
