@@ -194,8 +194,9 @@ void ActorImpl::cleanup_from_self()
     simcall_.timeout_cb_ = nullptr;
   }
 
-  set_wannadie(false); // don't let the simcall's yield() do a Context::stop(), to avoid infinite loops
-  actor::simcall_answered([] {}); // This empty callback is mandatory even if it drives me nuts.
+  /* maybe the actor was killed during a simcall, reset its observer */
+  simcall_.observer_ = nullptr;
+
   set_wannadie();
 }
 
