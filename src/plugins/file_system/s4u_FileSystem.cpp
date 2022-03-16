@@ -324,8 +324,9 @@ int File::remote_copy(sg_host_t host, const std::string& fullpath)
   }
 
   /* Create file on remote host, write it and close it */
-  File fd(fullpath, dst_host, nullptr);
-  fd.write(read_size);
+  auto* fd = File::open(fullpath, dst_host, nullptr);
+  fd->write(read_size);
+  fd->close();
   return 0;
 }
 
@@ -565,7 +566,7 @@ void sg_file_move(const_sg_file_t fd, const char* fullpath)
 void sg_file_unlink(sg_file_t fd)
 {
   fd->unlink();
-  delete fd;
+  fd->close();
 }
 
 /**
