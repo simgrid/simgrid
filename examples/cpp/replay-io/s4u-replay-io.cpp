@@ -21,7 +21,7 @@ namespace sg4 = simgrid::s4u;
     ((void)0)
 
 class Replayer {
-  static std::unordered_map<std::string, sg4::File> opened_files;
+  static std::unordered_map<std::string, sg4::File*> opened_files;
 
   static void log_action(const simgrid::xbt::ReplayAction& action, double date)
   {
@@ -34,7 +34,7 @@ class Replayer {
   static sg4::File* get_file_descriptor(const std::string& file_name)
   {
     std::string full_name = sg4::this_actor::get_name() + ":" + file_name;
-    return &opened_files.at(full_name);
+    return opened_files.at(full_name);
   }
 
 public:
@@ -62,8 +62,8 @@ public:
     std::string full_name = sg4::this_actor::get_name() + ":" + file_name;
 
     ACT_DEBUG("Entering Open: %s (filename: %s)", NAME.c_str(), file_name.c_str());
-    opened_files.emplace(std::piecewise_construct, std::forward_as_tuple(full_name),
-                         std::forward_as_tuple(file_name, nullptr));
+    auto* file = sg4::File::open(file_name, nullptr);
+    opened_files.emplace(full_name, file);
 
     log_action(action, sg4::Engine::get_clock() - clock);
   }
@@ -89,13 +89,15 @@ public:
     double clock          = sg4::Engine::get_clock();
 
     ACT_DEBUG("Entering Close: %s (filename: %s)", NAME.c_str(), file_name.c_str());
-    xbt_assert(opened_files.erase(full_name) == 1, "File not found in opened files: %s", full_name.c_str());
-
+    auto entry = opened_files.find(full_name);
+    xbt_assert(entry != opened_files.end(), "File not found in opened files: %s", full_name.c_str());
+    entry->second->close();
+    opened_files.erase(entry);
     log_action(action, sg4::Engine::get_clock() - clock);
   }
 };
 
-std::unordered_map<std::string, sg4::File> Replayer::opened_files;
+std::unordered_map<std::string, sg4::File*> Replayer::opened_files;
 
 int main(int argc, char* argv[])
 {
