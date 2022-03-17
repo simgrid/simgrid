@@ -6,7 +6,7 @@ endforeach()
 
 foreach(x actor actor-autorestart actor-suspend
         activity-lifecycle
-        comm-get-sender comm-pt2pt wait-all-for wait-any-for
+        comm-get-sender comm-pt2pt comm-fault-scenarios wait-all-for wait-any-for
         cloud-interrupt-migration cloud-two-execs
       	monkey-masterworkers monkey-semaphore
         concurrent_rw
