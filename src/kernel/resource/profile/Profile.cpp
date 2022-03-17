@@ -42,10 +42,9 @@ Event* Profile::schedule(FutureEvtSet* fes, resource::Resource* resource)
     cb(event_list);
 
   if(event_list.empty()) {
-    event->free_me  = false;
+    event->free_me  = true;
+    tmgr_trace_event_unref(&event);
   } else {
-    //FIXME: This is a bug, but keep old behaviour for now
-    //fes_->add_event(0, event);
     fes_->add_event(event_list[0].date_, event);
   }
   return event;
