@@ -48,12 +48,12 @@ class Tool(AbstractTool):
                 outfile.write(' <cluster id="acme" prefix="node-" radical="0-99" suffix="" speed="1Gf" bw="125MBps" lat="50us"/>\n')
                 outfile.write('</platform>\n')
 
-        execcmd = re.sub("mpirun", "smpirun -wrapper simgrid-mc -platform ./cluster.xml -analyze --cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000", execcmd)
+        execcmd = execcmd.replace("mpirun", "smpirun -wrapper simgrid-mc -platform ./cluster.xml -analyze --cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000")
         if re.search("Concurrency", binary):  # DPOR reduction in simgrid cannot deal with RMA calls as they contain mutexes
-            execcmd = re.sub("smpirun", "smpirun --cfg=model-check/reduction:none", execcmd)
-        execcmd = re.sub('\${EXE}', binary, execcmd)
-        execcmd = re.sub('\$zero_buffer', "--cfg=smpi/buffering:zero", execcmd)
-        execcmd = re.sub('\$infty_buffer', "--cfg=smpi/buffering:infty", execcmd)
+            execcmd = execcmd.replace("smpirun", "smpirun --cfg=model-check/reduction:none")
+        execcmd = execcmd.replace('${EXE}', binary)
+        execcmd = execcmd.replace('$zero_buffer', "--cfg=smpi/buffering:zero")
+        execcmd = execcmd.replace('$infty_buffer', "--cfg=smpi/buffering:infty")
 
         run_cmd(
             buildcmd=f"smpicc {filename} -trace-call-location -g -Wl,-znorelro -Wl,-znoseparate-code -o {binary}",

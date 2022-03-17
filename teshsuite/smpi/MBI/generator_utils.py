@@ -438,7 +438,7 @@ def find_line(content, target, filename):
 
 def make_file(template, filename, replace):
     output = template
-    filename = re.sub("_MPI_", "_", filename)
+    filename = filename.replace("_MPI_", "_")
     replace['filename'] = filename
     # Replace all variables that don't have a ':' in their name
     while re.search("@\{[^@:]*\}@", output):
