@@ -2485,6 +2485,8 @@ Basic management
                 # Access shared resource ...
                 pass
 
+         .. automethod:: simgrid.Mutex.__init__
+
       .. group-tab:: C
 
          .. code-block:: C
@@ -2512,9 +2514,9 @@ Locking
 
       .. group-tab:: Python
 
-         .. automethod:: simgrid.Mutex.lock()
-         .. automethod:: simgrid.Mutex.try_lock()
-         .. automethod:: simgrid.Mutex.unlock()
+         .. automethod:: simgrid.Mutex.lock
+         .. automethod:: simgrid.Mutex.try_lock
+         .. automethod:: simgrid.Mutex.unlock
 
       .. group-tab:: C
 
@@ -2558,7 +2560,8 @@ Locking
          from simgrid import Barrier
          barrier = Barrier(2)
 
-      .. automethod:: simgrid.Barrier.wait()
+      .. automethod:: simgrid.Barrier.__init__
+      .. automethod:: simgrid.Barrier.wait
 
    .. group-tab:: C
 
@@ -2641,8 +2644,15 @@ Waiting and notifying
 ⁣  Semaphore
 ==================
 
-.. doxygenclass:: simgrid::s4u::Semaphore
+.. tabs::
 
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::s4u::Semaphore
+
+   .. group-tab:: Python
+
+      .. autoclass:: simgrid.Semaphore
 
 Basic management
 ----------------
@@ -2657,6 +2667,19 @@ Basic management
 
          .. doxygentypedef:: SemaphorePtr
          .. doxygenfunction:: simgrid::s4u::Semaphore::create(unsigned int initial_capacity)
+
+      .. group-tab:: Python
+
+         .. code-block:: Python
+
+            from simgrid import Semaphore
+            semaphore = Semaphore(1)
+            # Automatically acquire the semaphore, and release it after leaving the scope.
+            with semaphore:
+                # Do something with the shared resource
+                pass
+
+         .. automethod:: simgrid.Semaphore.__init__
 
       .. group-tab:: C
 
@@ -2684,6 +2707,14 @@ Locking
          .. doxygenfunction:: simgrid::s4u::Semaphore::get_capacity() const
          .. doxygenfunction:: simgrid::s4u::Semaphore::release()
          .. doxygenfunction:: simgrid::s4u::Semaphore::would_block() const
+
+      .. group-tab:: Python
+
+         .. automethod:: simgrid.Semaphore.acquire
+         .. automethod:: simgrid.Semaphore.acquire_timeout
+         .. autoattribute:: simgrid.Semaphore.capacity
+         .. automethod:: simgrid.Semaphore.release
+         .. autoattribute:: simgrid.Semaphore.would_block
 
       .. group-tab:: C
 

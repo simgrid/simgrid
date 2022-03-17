@@ -36,6 +36,7 @@
 #include <simgrid/s4u/Mailbox.hpp>
 #include <simgrid/s4u/Mutex.hpp>
 #include <simgrid/s4u/NetZone.hpp>
+#include <simgrid/s4u/Semaphore.hpp>
 #include <simgrid/version.h>
 
 #include <algorithm>
@@ -54,6 +55,8 @@ using simgrid::s4u::Link;
 using simgrid::s4u::Mailbox;
 using simgrid::s4u::Mutex;
 using simgrid::s4u::MutexPtr;
+using simgrid::s4u::Semaphore;
+using simgrid::s4u::SemaphorePtr;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(python, "python");
 
@@ -780,15 +783,37 @@ PYBIND11_MODULE(simgrid, m)
       .def("wait", &simgrid::s4u::Exec::wait, py::call_guard<py::gil_scoped_release>(),
            "Block until the completion of that execution.");
 
+  /* Class Semaphore */
+  py::class_<Semaphore, SemaphorePtr>(m, "Semaphore",
+                                      "A classical semaphore, but blocking in the simulation world. See the C++ "
+                                      "documentation for details.")
+      .def(py::init<>(&Semaphore::create), py::call_guard<py::gil_scoped_release>(), py::arg("capacity"),
+           "Semaphore constructor.")
+      .def("acquire", &Semaphore::acquire, py::call_guard<py::gil_scoped_release>(),
+           "Acquire on the semaphore object with no timeout. Blocks until the semaphore is acquired.")
+      .def("acquire_timeout", &Semaphore::acquire_timeout, py::call_guard<py::gil_scoped_release>(), py::arg("timeout"),
+           "Acquire on the semaphore object with no timeout. Blocks until the semaphore is acquired or return "
+           "true if it has not been acquired after the specified timeout.")
+      .def("release", &Semaphore::release, py::call_guard<py::gil_scoped_release>(),
+           "Release the semaphore.")
+      .def_property_readonly("capacity", &Semaphore::get_capacity, py::call_guard<py::gil_scoped_release>(),
+                             "Get the semaphore capacity.")
+      .def_property_readonly("would_block", &Semaphore::would_block, py::call_guard<py::gil_scoped_release>(),
+                             "Check whether trying to acquire the semaphore would block (in other word, checks whether "
+                             "this semaphore has capacity).")
+      // Allow semaphores to be automatically acquired/released with a context manager: `with semaphore: ...`
+      .def("__enter__", [](Semaphore* self){ self->acquire(); }, py::call_guard<py::gil_scoped_release>())
+      .def("__exit__", [](Semaphore* self){ self->release(); }, py::call_guard<py::gil_scoped_release>());
+
   /* Class Mutex */
   py::class_<Mutex, MutexPtr>(m, "Mutex",
                               "A classical mutex, but blocking in the simulation world."
                               "See the C++ documentation for details.")
-      .def(py::init<>(&Mutex::create))
+      .def(py::init<>(&Mutex::create), py::call_guard<py::gil_scoped_release>(), "Mutex constructor.")
       .def("lock", &Mutex::lock, py::call_guard<py::gil_scoped_release>(), "Block until the mutex is acquired.")
       .def("try_lock", &Mutex::try_lock, py::call_guard<py::gil_scoped_release>(),
            "Try to acquire the mutex. Return true if the mutex was acquired, false otherwise.")
-      .def("unlock", &Mutex::unlock, py::call_guard<py::gil_scoped_release>(), "Release the mutex")
+      .def("unlock", &Mutex::unlock, py::call_guard<py::gil_scoped_release>(), "Release the mutex.")
       // Allow mutexes to be automatically acquired/released with a context manager: `with mutex: ...`
       .def("__enter__", [](Mutex* self){ self->lock(); }, py::call_guard<py::gil_scoped_release>())
       .def("__exit__", [](Mutex* self, const py::object&, const py::object&, const py::object&) { self->unlock(); },
@@ -797,10 +822,11 @@ PYBIND11_MODULE(simgrid, m)
   /* Class Barrier */
   py::class_<Barrier, BarrierPtr>(m, "Barrier",
                                   "A classical barrier, but blocking in the simulation world.")
-      .def(py::init<>(&Barrier::create), py::call_guard<py::gil_scoped_release>(), py::arg("expected_actors"))
+      .def(py::init<>(&Barrier::create), py::call_guard<py::gil_scoped_release>(), py::arg("expected_actors"),
+           "Barrier constructor.")
       .def("wait", &Barrier::wait, py::call_guard<py::gil_scoped_release>(),
            "Blocks into the barrier. Every waiting actors will be unlocked once the expected amount of actors reaches "
-           "the barrier");
+           "the barrier.");
 
   /* Class Actor */
   py::class_<simgrid::s4u::Actor, ActorPtr>(m, "Actor",

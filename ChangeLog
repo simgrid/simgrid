@@ -52,7 +52,7 @@ Models:
      communications between same source and destination inside the ptask).
    - Parameters:
      - "--cfg=host/model:ptask_BMF": enable the model.
-     - "--cfg=bmf/max-iterations: <N>": maximum number of iterations performed 
+     - "--cfg=bmf/max-iterations: <N>": maximum number of iterations performed
         by BMF solver (default: 1000).
      - "--cfg=bmf/selective-update:<true/false>": enable/disable the
       selective-update optimization. Only invalidates and recomputes modified
@@ -61,9 +61,9 @@ Models:
    - This model requires Eigen3 library. Make sure Eigen3 is installed to use BMF.
 
 General:
-  - Modifications of the Profile mechanism, with some impact on users 
+  - Modifications of the Profile mechanism, with some impact on users
     - Addition of a new (S4U) method to init profiles from generic functions to improve versatility
-    - Fix initial behaviour of state_profiles 
+    - Fix initial behaviour of state_profiles
     - Modify periodicity to behave like a period, and not like a loop delay
 
 XBT:
@@ -83,6 +83,7 @@ Python:
      - Comm.wait_all_for() [example: examples/python/comm-waitallfor/]
      - Mutex [example: examples/python/synchro-mutex/]
      - Barrier [example: examples/python/synchro-barrier/]
+     - Semaphore [example: examples/python/synchro-semaphore/]
 
 Build System:
  - Remove target "make uninstall" which was incomplete and no longer maintained.
