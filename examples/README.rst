@@ -507,6 +507,8 @@ You can start executions on remote hosts, or even change the host on which they 
 
       See also :cpp:func:`sg_exec_set_host()`.
 
+.. _s4u_ex_ptasks:
+
 Parallel executions
 ^^^^^^^^^^^^^^^^^^^
 

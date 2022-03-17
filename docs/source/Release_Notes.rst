@@ -465,8 +465,8 @@ new feature are:
 On the bindings front, we dropped the Lua bindings to create new platforms, as the C++ and Python interfaces are much better to that extend. 
 Also, the algorithm tutorial can now be taken in Python, for those of you allergic to C++.
 
-Finally, on the SMPI front, we introduced a new documentation section on calibrating the SMPI models from your measurements and fixed some issues
-with the replay mechanism.
+Finally, on the SMPI front, we introduced a :ref:`new documentation section <models_calibration>` on calibrating the SMPI models from your
+measurements and fixed some issues with the replay mechanism.
 
 Version 3.31 (not released yet)
 -------------------------------
@@ -478,28 +478,28 @@ Expected: spring 2022
 A formal verification with Mc SimGrid implies two processes: a verified application that is an almost regular SimGrid simulation, and a checker that
 is an external process guiding the verified application to ensure that it explores every possible execution scenario. When formal verification was
 initially introduced in SimGrid 15 years ago, both processes were intertwined in the same system process, but the mandated system tricks made it
-impossible to use gdb or valgrind on that Frankenstein process. Having more than one heap in your process is not usually supported.
+impossible to use gdb or valgrind on that Frankenstein process. Having two heaps in one process is not usually supported.
 
 The design was simplified in v3.12 (2015) by splitting the application and the checker in separate system processes. But both processes remained tightly
-coupled: when the checker needed some information (for example the mailbox implied in a send operation to compute whether this operation `commutes
+coupled: when the checker needed some information (such as the mailbox implied in a send operation, to compute whether this operation `commutes
 with another one <https://en.wikipedia.org/wiki/Partial_order_reduction>`_), the checker was directly reading the memory of the other system process.
 This was efficient and nice in C, but it prevented us from using C++ features such as opaque ``std::function`` data types. As such, it hindered the
 ongoing SimDAG++ code reorganization toward SimGrid4, where all activity classes should be homogeneously written in modern C++.
 
-This release introduces a new design, where the simcalls are given object-oriented Observers that can serialize the relevant information over the wire. 
-This information is used on the checker side to build Transition objects, representing the application simcalls. This explanation may not be crystal 
-clear, but the checker code is now much easier to work with as the formal logic is not spoiled with system-level tricks to retrieve the needed information.
+This release introduces a new design, where the simcalls are given object-oriented ``Observers`` that can serialize the relevant information over the wire. 
+This information is used on the checker side to build ``Transition`` objects that the application simcalls. The checker code is now much simpler, as the 
+formal logic is not spoiled with system-level tricks to retrieve the needed information.
 
-This cleaned design allowed us to finally implement the support for mutexes, semaphores and barriers in the model-checker. In particular, this should 
-enable the verification of RMA primitives with Mc SimGrid, as their implementation in SMPI is based on mutexes and barriers. Simix, a central element of 
-the SimGrid 3 design, was also finally removed: the last bits are deprecated and will be removed in 3.35. We also replaced the old, non-free ISP test suite 
-by the one from the `MPI Bug Initiative <https://hal.archives-ouvertes.fr/hal-03474762>`_, but not all tests are activated yet. This should eventually 
-help improving the robustness of Mc SimGrid.
+This cleaned design allowed us to finally implement the support for mutexes, semaphores and barriers in the model-checker (condition variables are still
+missing). This enables in particular the verification of RMA primitives with Mc SimGrid, as their implementation in SMPI is based on mutexes and barriers.
+Simix, a central element of the SimGrid 3 design, was also finally removed: the last bits are deprecated and will be removed in 3.35. We also replaced the
+old, non-free ISP test suite by the one from the `MPI Bug Initiative <https://hal.archives-ouvertes.fr/hal-03474762>`_ (not all tests are activated yet).
+This will eventually help improving the robustness of Mc SimGrid.
 
-Future work on the model checker include: support for condition variables (that are still not handled), implementation of another exploration algorithm 
-based on event unfoldings (`The Anh Pham's thesis <https://tel.archives-ouvertes.fr/tel-02462074/document>`_ was defended in 2019), and the exploration 
-of scenarios where the actors get killed and communications timeout. Many things that were long dreamed of now become technically possible in this code base.
-
+These changes unlock the future of Mc SimGrid. For the next releases, we plan to implement another exploration algorithm based on event unfoldings (using 
+`The Anh Pham's thesis <https://tel.archives-ouvertes.fr/tel-02462074/document>`_), the exploration of scenarios where the actors get killed and/or where
+communications timeout, and the addition of a `wrapper to pthreads <https://hal.inria.fr/hal-02449080>`, opening the path to the verification classical
+multithreaded applications.
 
 
 **On the model front,** we continued our quest for the modeling of parallel tasks (ptasks for short). Parallel tasks are intended to be an extension
@@ -508,7 +508,7 @@ computationnal kernel with computations and communications, or a video stream wi
 specify the amount of computation for each involved host, the amount of data to transfer between each host pair, and you're set. The model will
 identify bottleneck resources and fairly share them across activities within a ptask. From a user-level perspective, SimGrid handles ptasks just like
 every other activity except that the usual SimGrid models (LV08 or SMPI) rely on an optimized algorithm that cannot handle ptasks. You must
-:ref:`activate the L07 model <options_model_select>` on the command line. This "model" remains a sort of hack since its introduction 15 years ago, as
+activate :ref:`the L07 model <s4u_ex_ptasks>` on :ref:`the command line <options_model_select>`. This "model" remains a sort of hack since its introduction 15 years ago, as
 it has never been well defined. We never succeded to unify L07 and max-min based models: Fairness is still to be defined in this context that mixes
 flops and communicated bytes. The resulting activity rates are then specific to ptasks. Furthermore, unlike our network models, this model were not
 thoroughly validated with respect to real experiments before `the thesis of Adrien Faure <https://tel.archives-ouvertes.fr/tel-03155702>`_ (and the
@@ -518,9 +518,9 @@ of the microscopic dynamic model to a macroscopic equilibrium, but this converge
 no known algorithm to efficiently compute a BMF!
 
 L07 should still be avoided as we have exhibited simple scenarios where its solution is irrelevant to the BMF one (that is mathematically sound). This
-release thus introduces a new BMF model to finally unify both classical tasks and parallel tasks, but this is still ongoing work. The implemented
+release thus introduces a new BMF model to finally unify both classical and parallel tasks, but this is still ongoing work. The implemented
 heuristic works very well for most SimGrid tests, but we have found some (not so prevalent) corner cases where our code fails to solve the sharing
-problem in over 10 minutes... So all this should still be considered an ongoing research effort. We expect to have a better understanding of this issue
+problem in over 10 minutes... So this all should still be considered an ongoing research effort. We expect to have a better understanding of this issue
 by the next release.
 
 On a related topic, this release introduces :cpp:func:`simgrid::s4u::this_actor::thread_execute`, which allows creating a computation that comprises
