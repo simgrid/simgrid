@@ -598,7 +598,7 @@ Reacting to the end of actors
       .. doxygenfunction:: simgrid::s4u::Actor::join() const
       .. doxygenfunction:: simgrid::s4u::Actor::join(double timeout) const
       .. doxygenfunction:: simgrid::s4u::Actor::set_auto_restart(bool autorestart)
-      .. doxygenfunction:: simgrid::s4u::Actor::get_restart_count()
+      .. doxygenfunction:: simgrid::s4u::Actor::get_restart_count
 
    .. group-tab:: Python
 
@@ -743,6 +743,7 @@ the execution, or start an asynchronous activity.
       .. doxygenfunction:: simgrid::s4u::this_actor::execute(double flop)
       .. doxygenfunction:: simgrid::s4u::this_actor::execute(double flop, double priority)
       .. doxygenfunction:: simgrid::s4u::this_actor::parallel_execute(const std::vector< s4u::Host * > &hosts, const std::vector< double > &flops_amounts, const std::vector< double > &bytes_amounts)
+      .. doxygenfunction:: simgrid::s4u::this_actor::thread_execute
 
    .. group-tab:: Python
 
@@ -2414,8 +2415,8 @@ Life cycle
       .. doxygenfunction:: simgrid::s4u::Io::test
       .. doxygenfunction:: simgrid::s4u::Io::wait
       .. doxygenfunction:: simgrid::s4u::Io::wait_for
-      .. doxygenfunction:: simgrid::s4u::Io::wait_any
-      .. doxygenfunction:: simgrid::s4u::Io::wait_any_for
+      .. doxygenfunction:: simgrid::s4u::Io::wait_any(const std::vector<IoPtr> &ios)
+      .. doxygenfunction:: simgrid::s4u::Io::wait_any_for(const std::vector<IoPtr> &ios, double timeout)
 
    .. group-tab:: Python
 
@@ -2547,7 +2548,6 @@ Locking
 
       .. doxygentypedef:: BarrierPtr
 
-      .. doxygenfunction:: simgrid::s4u::Barrier::Barrier(unsigned int expected_actors)
       .. doxygenfunction:: simgrid::s4u::Barrier::create(unsigned int expected_actors)
       .. doxygenfunction:: simgrid::s4u::Barrier::wait()
 
