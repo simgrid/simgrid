@@ -21,7 +21,7 @@ foreach(x actor actor-autorestart actor-suspend
   if(NOT DEFINED ${x}_sources)
       set(${x}_sources ${x}/${x}.cpp)
   endif()
-	  
+
   add_executable       (${x}  EXCLUDE_FROM_ALL ${${x}_sources})
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})

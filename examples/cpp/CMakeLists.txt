@@ -1,4 +1,3 @@
-
 # Regular examples: with only one source and tested with all factories by default
 #################################################################################
 ### Define the examples' specificities
@@ -26,7 +25,7 @@ if(SIMGRID_HAVE_MC)
      set(_${example}_factories "^thread") # Timeout
      add_dependencies(tests-mc s4u-${example})
   endforeach()
-  
+
   if(HAVE_C_STACK_CLEANER)
     add_executable       (s4u-mc-bugged1-liveness-cleaner-on  EXCLUDE_FROM_ALL s4u-mc-bugged1-liveness/s4u-mc-bugged1-liveness.cpp)
     target_link_libraries(s4u-mc-bugged1-liveness-cleaner-on  simgrid)
@@ -40,7 +39,7 @@ if(SIMGRID_HAVE_MC)
   endif()
 
   # Model-checking liveness
-  if(HAVE_UCONTEXT_CONTEXTS AND SIMGRID_PROCESSOR_x86_64) 
+  if(HAVE_UCONTEXT_CONTEXTS AND SIMGRID_PROCESSOR_x86_64)
     # liveness model-checking works only on 64bits (for now ...)
     set(_mc-bugged1-liveness_factories "ucontext") # Timeout
     add_dependencies(tests-mc s4u-mc-bugged1-liveness)
@@ -51,7 +50,7 @@ if(SIMGRID_HAVE_MC)
 
   # This example never ends, disable it for now
   set(_mc-bugged2-liveness_disable 1)
-  
+
   # This example hit the 5' timeout on CI, disable it for now
   #    ADD_TESH(s4u-mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness
   #                                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
@@ -64,7 +63,7 @@ if(SIMGRID_HAVE_MC)
                                                    ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/
                                                    ${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness/)
   ENDIF()
-  
+
   if(enable_coverage)
     foreach (example mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert)
       ADD_TEST(cover-${example} ${CMAKE_CURRENT_BINARY_DIR}/${example}/s4u-${example} ${CMAKE_HOME_DIRECTORY}/examples/platforms/model_checker_platform.xml)
@@ -73,7 +72,7 @@ if(SIMGRID_HAVE_MC)
   endif()
 
 else()
-  foreach (example mc-bugged1 mc-bugged2  mc-centralized-mutex mc-failing-assert mc-electric-fence 
+  foreach (example mc-bugged1 mc-bugged2  mc-centralized-mutex mc-failing-assert mc-electric-fence
                    mc-bugged1-liveness mc-bugged2-liveness)
     set(_${example}_disable 1)
   endforeach()
@@ -261,7 +260,7 @@ set(bin_files     ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/gener
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness/promela_bugged1_liveness
                                   ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged2-liveness/promela_bugged2_liveness PARENT_SCOPE)
 set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax/simple_dax_with_cycle.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax/smalldax.xml     
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dax/smalldax.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/dag.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-from-dot/dag_with_cycle.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay-comm/s4u-replay-comm-split-p0.txt

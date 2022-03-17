@@ -243,7 +243,7 @@ endif()
 set(SIMGRID_HAVE_EIGEN3 0)
 find_package (Eigen3 3.3 CONFIG
               HINTS ${EIGEN3_HINT})
-if (Eigen3_FOUND)      
+if (Eigen3_FOUND)
   set(SIMGRID_HAVE_EIGEN3 1)
   message(STATUS "Found Eigen3: ${EIGEN3_INCLUDE_DIR}")
   include_directories(${EIGEN3_INCLUDE_DIR})
@@ -863,7 +863,7 @@ if(enable_python)
         string(REGEX REPLACE "^/usr/" "${CMAKE_INSTALL_PREFIX}/" SIMGRID_PYTHON_LIBDIR ${Python3_SITEARCH})
       endif("${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr")
     endif()
-    install(TARGETS python-bindings 
+    install(TARGETS python-bindings
       	    LIBRARY DESTINATION "${SIMGRID_PYTHON_LIBDIR}")
   else()
     message(FATAL_ERROR "Please install pybind11-dev to build the Python bindings (or disable that option).")

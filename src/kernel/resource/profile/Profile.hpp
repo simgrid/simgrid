@@ -25,18 +25,19 @@ namespace profile {
  * time. To model that, you have to set several profiles per resource: one for the on/off state and one for each
  * numerical value (computational speed, bandwidth and/or latency).
  *
- * There are two behaviours. Either a callback is used to populate the profile when the set has been exhausted, 
- * or the callback is called only during construction and the initial set is repeated over and over, after a fixed repeating delay. 
+ * There are two behaviours. Either a callback is used to populate the profile when the set has been exhausted,
+ * or the callback is called only during construction and the initial set is repeated over and over, after a fixed
+ * repeating delay.
  */
 class XBT_PUBLIC Profile {
 public:
-  /** @brief Create a profile. There are two behaviours. Either the callback is 
-  *
-  * @param name The name of the profile (checked for uniqueness)
-  * @param cb A callback object/function that populates the profile. 
-  * @param repeat_delay If strictly negative, it is ignored and the callback is called when an event reached the end of the event_list. 
-  *                     If zero or positive, the initial set repeats after the provided delay.                          
-  */
+  /** @brief Create a profile. There are two behaviours. Either the callback is
+   *
+   * @param name The name of the profile (checked for uniqueness)
+   * @param cb A callback object/function that populates the profile.
+   * @param repeat_delay If strictly negative, it is ignored and the callback is called when an event reached the end of
+   * the event_list. If zero or positive, the initial set repeats after the provided delay.
+   */
   explicit Profile(const std::string& name, const std::function<ProfileBuilder::UpdateCb>& cb, double repeat_delay);
   virtual ~Profile()=default;
   Event* schedule(FutureEvtSet* fes, resource::Resource* resource);
@@ -46,7 +47,7 @@ public:
   const std::string& get_name() const { return name; }
   bool is_repeating() const { return repeat_delay>=0;}
   double get_repeat_delay() const { return repeat_delay;}
-  
+
 private:
   std::string name;
   std::function<ProfileBuilder::UpdateCb> cb;

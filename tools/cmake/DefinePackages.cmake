@@ -809,7 +809,7 @@ if(SIMGRID_HAVE_NS3)
   set(headers_to_install ${headers_to_install} include/simgrid/plugins/ns3.hpp)
 
   set(simgrid_sources  ${simgrid_sources}  ${NS3_SRC})
-else()  
+else()
   set(EXTRA_DIST ${EXTRA_DIST} include/simgrid/plugins/ns3.hpp)
 endif()
 

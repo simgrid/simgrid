@@ -1,4 +1,4 @@
-# Copyright 2021-2022. The SimGrid Team. All rights reserved. 
+# Copyright 2021-2022. The SimGrid Team. All rights reserved.
 
 # Integrates the MBI tests into the SimGrid build chain when asked to
 
@@ -42,7 +42,7 @@ if (enable_smpi_MBI_testsuite)
       file(COPY_FILE ${CMAKE_BINARY_DIR}/MBI/tmp/${cfile} ${CMAKE_BINARY_DIR}/MBI/${cfile} ONLY_IF_DIFFERENT)
     endif()
     string(REGEX REPLACE "[.]c" "" basefile ${cfile})
-    
+
     # Generate an executable for each of them
     add_executable(mbi_${basefile} EXCLUDE_FROM_ALL ${CMAKE_BINARY_DIR}/MBI/${cfile})
     target_link_libraries(mbi_${basefile} simgrid)
@@ -61,7 +61,7 @@ if (enable_smpi_MBI_testsuite)
 
   if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
   else()
-    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/MBIutils.py DESTINATION ${CMAKE_BINARY_DIR}/MBI) 
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/MBIutils.py DESTINATION ${CMAKE_BINARY_DIR}/MBI)
   endif()
 endif()
 

@@ -7,7 +7,7 @@ Against the agression by a sick system that forces peoples to take arms against 
 
 MC:
  - Rework the internals, for simpler and modern code. This shall unlock many future improvements.
- - You can now define plugins onto the DFS explorer (previously called SafetyChecker), using the 
+ - You can now define plugins onto the DFS explorer (previously called SafetyChecker), using the
    declared signals. See CommunicationDeterminism for an example.
  - Support mutex, semaphore and barrier in DPOR reduction
  - Seems to work on Arm64 architectures too.
@@ -26,12 +26,12 @@ SMPI:
 
 S4U:
  - New signal: Engine::on_simulation_start_cb()
- - Introduce a new execution mode with this_actor::thread_execute(). This simulate 
+ - Introduce a new execution mode with this_actor::thread_execute(). This simulate
    the execution of a certain amount of flops by multiple threads ran by a host. Each
    thread executes the same number of flops, given as argument. An example of this new
    function can be found in examples/cpp/exec-threads.
- - Reimplementation of barriers natively. 
-   Previously, they were implemented on top of s4u::Mutex and s4u::ConditionVariable. 
+ - Reimplementation of barriers natively.
+   Previously, they were implemented on top of s4u::Mutex and s4u::ConditionVariable.
    The new version should be faster (and can be used in the model-checker).
  - Actor::get_restart_count(): Returns the number of reboots that this actor did.
 
@@ -39,9 +39,9 @@ MSG:
  - MSG_barrier_destroy now expects a non-const msg_barrier parameter.
 
 New plugin: the Chaos Monkey (killing actors at any time)
- - Along with the new simgrid-monkey script, it tests whether your simulation 
-   resists resource failures at any possible timestamp in your simulation. 
- - It is mostly intended to test the simgrid core in extreme conditions, 
+ - Along with the new simgrid-monkey script, it tests whether your simulation
+   resists resource failures at any possible timestamp in your simulation.
+ - It is mostly intended to test the simgrid core in extreme conditions,
    but some users may find it interesting too.
 
 Models:

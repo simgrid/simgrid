@@ -48,7 +48,7 @@ CpuTiProfile::CpuTiProfile(const profile::Profile* profile)
   double delay=profile->get_repeat_delay()+ events.at(0).date_;
 
   xbt_assert( events.back().value_==prev_value,"Profiles need to end as they start");
-  time     += delay; 
+  time += delay;
   integral += delay*prev_value;
 
   time_points_.push_back(time);

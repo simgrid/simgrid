@@ -4,8 +4,7 @@ if (NOT SIMGRID_HAVE_MC)
 endif()
 
 
-foreach(x dwarf dwarf-expression 
-          random-bug mutex-handling)
+foreach(x dwarf dwarf-expression random-bug mutex-handling)
 
   if(NOT DEFINED ${x}_sources)
     set(${x}_sources ${x}/${x}.cpp)
