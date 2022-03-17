@@ -165,13 +165,13 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
   }
   // what do I need to read ?
   MPI_Offset totreads = 0;
-  for (unsigned i = 0; i < chunks.size(); i++) {
-    if (chunks[i].second < my_chunk_start)
+  for (auto const& chunk : chunks) {
+    if (chunk.second < my_chunk_start)
       continue;
-    else if (chunks[i].first > my_chunk_end)
+    else if (chunk.first > my_chunk_end)
       continue;
     else
-      totreads += (std::min(chunks[i].second, my_chunk_end - 1) - std::max(chunks[i].first, my_chunk_start));
+      totreads += (std::min(chunk.second, my_chunk_end - 1) - std::max(chunk.first, my_chunk_start));
   }
   XBT_CDEBUG(smpi_pmpi, "will have to access %lld from my chunk", totreads);
 
