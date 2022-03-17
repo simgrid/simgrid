@@ -46,7 +46,7 @@ public:
   ExecImpl& set_thread_count(int thread_count);
   ExecImpl& set_hosts(const std::vector<s4u::Host*>& hosts);
 
-  unsigned int get_host_number() const { return hosts_.size(); }
+  unsigned int get_host_number() const { return static_cast<unsigned>(hosts_.size()); }
   double get_seq_remaining_ratio();
   double get_par_remaining_ratio();
   double get_remaining() const override;

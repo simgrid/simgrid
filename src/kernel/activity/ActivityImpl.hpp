@@ -90,7 +90,7 @@ public:
   // Support for the boost::intrusive_ptr<ActivityImpl> datatype
   friend XBT_PUBLIC void intrusive_ptr_add_ref(ActivityImpl* activity);
   friend XBT_PUBLIC void intrusive_ptr_release(ActivityImpl* activity);
-  int get_refcount() const { return refcount_; } // For debugging purpose
+  int get_refcount() const { return static_cast<int>(refcount_); } // For debugging purpose
 
   static xbt::signal<void(ActivityImpl const&)> on_suspended;
   static xbt::signal<void(ActivityImpl const&)> on_resumed;

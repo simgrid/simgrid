@@ -114,7 +114,7 @@ private:
   std::atomic_int_fast32_t refcount_{0};
 
 public:
-  int get_refcount() const { return refcount_; }
+  int get_refcount() const { return static_cast<int>(refcount_); }
   friend void intrusive_ptr_add_ref(ActorImpl* actor)
   {
     // This whole memory consistency semantic drives me nuts.

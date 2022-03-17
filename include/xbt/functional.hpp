@@ -37,11 +37,10 @@ public:
   }
   void operator()() const
   {
-    const int argc                = args_->size();
     std::vector<std::string> args = *args_;
     std::vector<char*> argv(args.size() + 1); // argv[argc] is nullptr
     std::transform(begin(args), end(args), begin(argv), [](std::string& s) { return &s.front(); });
-    code_(argc, argv.data());
+    code_(static_cast<int>(args.size()), argv.data());
   }
 };
 

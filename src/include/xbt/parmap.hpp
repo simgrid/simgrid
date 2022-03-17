@@ -238,7 +238,7 @@ template <typename T> boost::optional<T> Parmap<T>::next()
  */
 template <typename T> void Parmap<T>::work()
 {
-  unsigned length = common_data->size();
+  unsigned length = static_cast<unsigned>(common_data->size());
   unsigned index  = common_index.fetch_add(1, std::memory_order_relaxed);
   while (index < length) {
     worker_fun((*common_data)[index]);
