@@ -134,6 +134,11 @@ Mailbox::iprobe(int type, const std::function<bool(void*, void*, kernel::activit
   return kernel::actor::simcall_answered(
       [this, type, &match_fun, data] { return pimpl_->iprobe(type, match_fun, data); });
 }
+
+void Mailbox::clear() {
+  pimpl_->clear();
+}
+
 } // namespace s4u
 } // namespace simgrid
 
