@@ -32,7 +32,7 @@ class XBT_PUBLIC Mutex {
 #ifndef DOXYGEN
   friend ConditionVariable;
   friend kernel::activity::MutexImpl;
-  friend void kernel::activity::intrusive_ptr_release(kernel::activity::MutexImpl* mutex);
+  friend XBT_PUBLIC void kernel::activity::intrusive_ptr_release(kernel::activity::MutexImpl* mutex);
 #endif
 
   kernel::activity::MutexImpl* const pimpl_;
