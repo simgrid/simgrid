@@ -74,8 +74,10 @@ public:
    * @param C Resource capacity
    * @param shared Is resource shared between player or each player receives the full capacity (FATPIPE links)
    * @param phi Bound for each player
+   * @param weight Weight/priority for each player
    */
-  BmfSolver(Eigen::MatrixXd A, Eigen::MatrixXd maxA, Eigen::VectorXd C, std::vector<bool> shared, Eigen::VectorXd phi);
+  BmfSolver(Eigen::MatrixXd A, Eigen::MatrixXd maxA, Eigen::VectorXd C, std::vector<bool> shared, Eigen::VectorXd phi,
+            Eigen::VectorXd weight);
   /** @brief Solve equation system to find a fair-sharing of resources */
   Eigen::VectorXd solve();
 
@@ -96,9 +98,10 @@ private:
    * @brief Get maxmin share of the resource
    *
    * @param resource Internal index of resource in C_ vector
+   * @param bounded_players List of players that are externally bounded
    * @return maxmin share
    */
-  double get_maxmin_share(int resource) const;
+  double get_maxmin_share(int resource, const std::vector<int>& bounded_players) const;
   /**
    * @brief Auxiliary method to get list of bounded player from allocation
    *
@@ -182,6 +185,7 @@ private:
   Eigen::VectorXd C_;    //!< C_j Capacity of each resource
   std::vector<bool> C_shared_; //!< shared_j Resource j is shared or not
   Eigen::VectorXd phi_;        //!< phi_i bound for each player
+  Eigen::VectorXd weight_;     //!< weight_i for each player
 
   std::set<std::vector<int>> allocations_; //!< set of already tested allocations, since last identified loop
   AllocationGenerator gen_;
@@ -253,8 +257,10 @@ private:
    * @param A Consumption matrix (OUTPUT)
    * @param maxA Max subflow consumption matrix (OUTPUT)
    * @param phi Bounds for variables
+   * @param weight Priority/weight for variables
    */
-  void get_flows_data(Eigen::Index number_cnsts, Eigen::MatrixXd& A, Eigen::MatrixXd& maxA, Eigen::VectorXd& phi);
+  void get_flows_data(Eigen::Index number_cnsts, Eigen::MatrixXd& A, Eigen::MatrixXd& maxA, Eigen::VectorXd& phi,
+                      Eigen::VectorXd& weight);
   /**
    * @brief Builds the vector C_ with resource's capacity
    *

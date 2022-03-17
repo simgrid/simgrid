@@ -587,6 +587,7 @@ TEST_CASE("kernel::bmf Bugs", "[kernel-bmf-bug]")
     Sys.expand_add(sys_cnst, rho_3, 1.91268e+11);
     Sys.solve();
   }
+
   SECTION("DadOu's bug: complete matrix")
   {
     constexpr int cnsts = 71;
@@ -632,7 +633,9 @@ TEST_CASE("kernel::bmf Bugs", "[kernel-bmf-bug]")
     phi << 1.35273, 2.27328e-10, 2.27328e-10;
 
     std::vector<bool> shared(cnsts, true);
-    lmm::BmfSolver solver(A, maxA, C, shared, phi);
+    Eigen::VectorXd weight(flows);
+    weight << 1, 1, 1;
+    lmm::BmfSolver solver(A, maxA, C, shared, phi, weight);
     auto rho = solver.solve();
     REQUIRE((rho.array() > 0).all());
   }
@@ -695,6 +698,20 @@ TEST_CASE("kernel::bmf Bugs", "[kernel-bmf-bug]")
 
     REQUIRE(double_equals(rho_1->get_value(), 8e7, sg_maxmin_precision));
     REQUIRE(double_equals(rho_2->get_value(), 3.2e8, sg_maxmin_precision));
+  }
+
+  SECTION("Variable penalty with bounds greater than C")
+  {
+    /*
+     * Detected by exec-thread. 6 thread running in a 4 core CPU.
+     */
+
+    lmm::Constraint* sys_cnst = Sys.constraint_new(nullptr, 4e8);
+    lmm::Variable* rho_1      = Sys.variable_new(nullptr, 1.0 / 6.0, 6e8, 1);
+    Sys.expand(sys_cnst, rho_1, 1);
+    Sys.solve();
+
+    REQUIRE(double_equals(rho_1->get_value(), 4e8, sg_maxmin_precision));
   }
 
   Sys.variable_free_all();
