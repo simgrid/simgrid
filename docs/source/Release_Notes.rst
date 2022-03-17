@@ -502,11 +502,31 @@ of scenarios where the actors get killed and communications timeout. Many things
 
 
 
-**On the model front,** we continued our quest for the modeling of parallel tasks (ptasks for short). Parallel tasks are intended to be an extension of the max-min fairness model (for communication flows or computation tasks) to tasks using both network and CPU resources at the same time (e.g., a [p]dgemm or a video stream with IO read, network transfer and decompression on the CPU). Just specify the amount of computation for each involved host, the amount of data to transfer between each host pair, and you're set. The model will identify bottleneck resources and fairly share them across activities within a ptask. From a user-level perspective, SimGrid handles ptasks just like every other activity except that the usual SimGrid models (LV08 or SMPI) rely on an optimized algorithm that cannot handle ptasks. Only the L07 model can handle them and it should be specified on the command line. The L07 "model", proposed 15 years ago (its name is the shorthand for Legrand 2007 although there is no corresponding publication), has never been well defined and was considered as sort of a hack for which we only had an efficient algorithm. We have striven to unify L07 and max-min based models since their introduction, but we never succeeded. One of the underlying reasons is that when mixing flops and communicated bytes, rates become ptask specific and we did not manage to properly define fairness in this context. Furthermore, unlike our network models, this model had never been thoroughly validated with respect to real experiments until recently (in the thesis of Adrien Faure `<https://tel.archives-ouvertes.fr/tel-03155702>`_ and the outcome was quite disappointing). It turns out that a 2015 article by Bonald and Roberts (`<https://hal.inria.fr/hal-01243985>`_) properly defines exactly the allocation objective we had in mind. In a later article (`<https://hal.archives-ouvertes.fr/hal-01552739>`), they proved several properties (existence, non-uniqueness) and studied the convergence of the microscopic dynamic model to a macroscopic equilibrium, but it turned out to be surprisingly difficulty and could only be proved in rather simple cases. Even worse, how to efficiently compute a BMF remains an open question! BMF appears quite sound while we have exhibited very simple scenarios where the solution returned by L07 is irrelevant.
+**On the model front,** we continued our quest for the modeling of parallel tasks (ptasks for short). Parallel tasks are intended to be an extension
+of the max-min fairness model (that computes the sharing of communication flows or computation tasks) to tasks mixing resource kinds (e.g., a MPI
+computationnal kernel with computations and communications, or a video stream with IO read, network transfer and decompression on the CPU). Just
+specify the amount of computation for each involved host, the amount of data to transfer between each host pair, and you're set. The model will
+identify bottleneck resources and fairly share them across activities within a ptask. From a user-level perspective, SimGrid handles ptasks just like
+every other activity except that the usual SimGrid models (LV08 or SMPI) rely on an optimized algorithm that cannot handle ptasks. You must
+:ref:`activate the L07 model <options_model_select>` on the command line. This "model" remains a sort of hack since its introduction 15 years ago, as
+it has never been well defined. We never succeded to unify L07 and max-min based models: Fairness is still to be defined in this context that mixes
+flops and communicated bytes. The resulting activity rates are then specific to ptasks. Furthermore, unlike our network models, this model were not
+thoroughly validated with respect to real experiments before `the thesis of Adrien Faure <https://tel.archives-ouvertes.fr/tel-03155702>`_ (and the
+outcome was quite disappointing). Recent articles by Bonald and Roberts `properly define <https://hal.inria.fr/hal-01243985>`_ the allocation
+objective we had in mind (under the name Bounded MaxMin Fairness -- BMF) and `study the convergence <https://hal.archives-ouvertes.fr/hal-01552739>`_
+of the microscopic dynamic model to a macroscopic equilibrium, but this convergence could only be proved in rather simple cases. Even worse, there is
+no known algorithm to efficiently compute a BMF!
 
-L07 should thus be avoided as much as possible. Instead, a new model called Bounded MaxMin Fairness (BMF) was introduced in this release (thereby allowing to have a fully unified model for both classical tasks and parallel tasks) but this is still ongoing work. We have implemented a heuristic similar to what was suggested in the 2017 article. It works very well for most SimGrid tests, but we have found some (not so prevalent) corner cases where the algorithm fails to find any solution to the sharing problem in a reasonable amount of time (e.g., over 10 minutes). So all this should still be considered highly experimental and we expect to have a better understanding of this issue by the next release.
+L07 should still be avoided as we have exhibited simple scenarios where its solution is irrelevant to the BMF one (that is mathematically sound). This
+release thus introduces a new BMF model to finally unify both classical tasks and parallel tasks, but this is still ongoing work. The implemented
+heuristic works very well for most SimGrid tests, but we have found some (not so prevalent) corner cases where our code fails to solve the sharing
+problem in over 10 minutes... So all this should still be considered an ongoing research effort. We expect to have a better understanding of this issue
+by the next release.
 
-On a related topic, this release introduces ``this_actor::thread_execute()``, which allows creating a computation that comprises several threads, and thus capable of utilizing more cores than a classical ``this_actor::execute()`` action. The goal is to make it straightforward to model multithreaded computational kernels, and it comes with an illustrating example. It can be seen as a simplified ptask, but since it does not mix bytes and flops and has a homogeneous consumption over a single CPU, it perfectly fits with the classical SimGrid model.
+On a related topic, this release introduces :cpp:func:`simgrid::s4u::this_actor::thread_execute`, which allows creating a computation that comprises
+several threads, and thus capable of utilizing more cores than a classical :cpp:func:`simgrid::s4u::this_actor::execute` action. The goal is to make
+it straightforward to model multithreaded computational kernels, and it comes with an illustrating example. It can be seen as a simplified ptask, but
+since it does not mix bytes and flops and has a homogeneous consumption over a single CPU, it perfectly fits with the classical SimGrid model.
 
 
 .. |br| raw:: html
