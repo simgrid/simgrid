@@ -433,7 +433,7 @@ def find_line(content, target, filename):
             #print(f'Found {target} at {line}')
             return res
         res += 1
-    raise Exception(f"Line target {target} not found in {filename}.")
+    raise ValueError(f"Line target {target} not found in {filename}.")
 
 
 def make_file(template, filename, replace):
@@ -449,7 +449,7 @@ def make_file(template, filename, replace):
             output = re.sub(f'@\{{{target}\}}@', replace[target], output)
             #print(f"Replace {target} -> {replace[target]}")
         else:
-            raise Exception(f"Variable {target} used in template, but not defined.")
+            raise ValueError(f"Variable {target} used in template, but not defined.")
     # Now replace all variables with a ':' in their name: line targets are like that, and we don't want to resolve them before the others change the lines
     while re.search("@\{([^:@]*):([^@]*)\}@", output):
         m = re.search("@\{([^:@]*):([^@]*)\}@", output)
@@ -459,7 +459,7 @@ def make_file(template, filename, replace):
             #print(f"Replace @{{line:{target}}}@ with '{replace}'")
             output = re.sub(f'@\{{line:{target}\}}@', replace, output)
         else:
-            raise Exception(f"Unknown variable kind: {kind}:{target}")
+            raise ValueError(f"Unknown variable kind: {kind}:{target}")
 
     if os.path.exists(filename):
         with open(filename, 'r') as file:

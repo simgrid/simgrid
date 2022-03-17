@@ -113,12 +113,12 @@ def parse_one_code(filename):
                 if state == 0:
                     state = 1
                 else:
-                    raise Exception(f"MBI_TESTS header appears a second time at line {line_num}: \n{line}")
+                    raise ValueError(f"MBI_TESTS header appears a second time at line {line_num}: \n{line}")
             elif re.match(".*END_MBI_TESTS.*", line):
                 if state == 1:
                     state = 2
                 else:
-                    raise Exception(f"Unexpected end of MBI_TESTS header at line {line_num}: \n{line}")
+                    raise ValueError(f"Unexpected end of MBI_TESTS header at line {line_num}: \n{line}")
             if state == 1 and re.match("\s+\$ ?.*", line):
                 m = re.match('\s+\$ ?(.*)', line)
                 cmd = m.group(1)
@@ -129,12 +129,12 @@ def parse_one_code(filename):
                 else:
                     m = re.match('[ |]*ERROR: *(.*)', nextline)
                     if not m:
-                        raise Exception(
+                        raise ValueError(
                             f"\n{filename}:{line_num}: MBI parse error: Test not followed by a proper 'ERROR' line:\n{line}{nextline}")
                     expect = 'ERROR'
                     detail = m.group(1)
                     if detail not in possible_details:
-                        raise Exception(
+                        raise ValueError(
                             f"\n{filename}:{line_num}: MBI parse error: Detailled outcome {detail} is not one of the allowed ones.")
                 test = {'filename': filename, 'id': test_num, 'cmd': cmd, 'expect': expect, 'detail': detail}
                 res.append(test.copy())
@@ -142,12 +142,12 @@ def parse_one_code(filename):
                 line_num += 1
 
     if state == 0:
-        raise Exception(f"MBI_TESTS header not found in file '{filename}'.")
+        raise ValueError(f"MBI_TESTS header not found in file '{filename}'.")
     if state == 1:
-        raise Exception(f"MBI_TESTS header not properly ended in file '{filename}'.")
+        raise ValueError(f"MBI_TESTS header not properly ended in file '{filename}'.")
 
     if len(res) == 0:
-        raise Exception(f"No test found in {filename}. Please fix it.")
+        raise ValueError(f"No test found in {filename}. Please fix it.")
     return res
 
 def categorize(tool, toolname, test_id, expected):
@@ -157,7 +157,7 @@ def categorize(tool, toolname, test_id, expected):
         if outcome == 'failure':
             elapsed = 0
         else:
-            raise Exception(f"Invalid test result: {test_id}.txt exists but not {test_id}.elapsed")
+            raise ValueError(f"Invalid test result: {test_id}.txt exists but not {test_id}.elapsed")
     else:
         with open(f'{test_id}.elapsed' if os.path.exists(f'{test_id}.elapsed') else f'logs/{toolname}/{test_id}.elapsed', 'r') as infile:
             elapsed = infile.read()
@@ -193,7 +193,7 @@ def categorize(tool, toolname, test_id, expected):
             res_category = 'TRUE_POS'
             diagnostic =  f'correctly detected an error'
     else:
-        raise Exception(f"Unexpected expectation: {expected} (must be OK or ERROR)")
+        raise ValueError(f"Unexpected expectation: {expected} (must be OK or ERROR)")
 
     return (res_category, elapsed, diagnostic, outcome)
 
