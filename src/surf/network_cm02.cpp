@@ -19,6 +19,13 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 
+/***********
+ * Options *
+ ***********/
+static simgrid::config::Flag<std::string> cfg_network_solver("network/solver",
+                                                             "Set linear equations solver used by network model",
+                                                             "maxmin", &simgrid::kernel::lmm::System::validate_solver);
+
 double sg_latency_factor     = 1.0; /* default value; can be set by model or from command line */
 double sg_bandwidth_factor   = 1.0; /* default value; can be set by model or from command line */
 double sg_weight_S_parameter = 0.0; /* default value; can be set by model or from command line */
@@ -88,7 +95,7 @@ NetworkCm02Model::NetworkCm02Model(const std::string& name) : NetworkModel(name)
     select = true;
   }
 
-  set_maxmin_system(lmm::System::build("maxmin", select));
+  set_maxmin_system(lmm::System::build(cfg_network_solver, select));
 
   loopback_ = create_link("__loopback__", {config::get_value<double>("network/loopback-bw")});
   loopback_->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE, {});
