@@ -553,6 +553,8 @@ include examples/python/synchro-barrier/synchro-barrier.py
 include examples/python/synchro-barrier/synchro-barrier.tesh
 include examples/python/synchro-mutex/synchro-mutex.py
 include examples/python/synchro-mutex/synchro-mutex.tesh
+include examples/python/synchro-semaphore/synchro-semaphore.py
+include examples/python/synchro-semaphore/synchro-semaphore.tesh
 include examples/smpi/NAS/DGraph.c
 include examples/smpi/NAS/DGraph.h
 include examples/smpi/NAS/README.install
