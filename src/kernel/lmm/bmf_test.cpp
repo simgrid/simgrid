@@ -434,10 +434,10 @@ TEST_CASE("kernel::bmf Subflows", "[kernel-bmf-subflow]")
     lmm::Variable* rho_1      = Sys.variable_new(nullptr, 1);
     lmm::Variable* rho_2      = Sys.variable_new(nullptr, 1);
 
-    Sys.expand_add(sys_cnst, rho_1, 5);
-    Sys.expand_add(sys_cnst, rho_1, 7);
-    Sys.expand_add(sys_cnst, rho_2, 7);
-    Sys.expand_add(sys_cnst, rho_2, 5);
+    Sys.expand(sys_cnst, rho_1, 5);
+    Sys.expand(sys_cnst, rho_1, 7);
+    Sys.expand(sys_cnst, rho_2, 7);
+    Sys.expand(sys_cnst, rho_2, 5);
     Sys.solve();
 
     REQUIRE(double_equals(rho_1->get_value(), 5.0 / 24.0, sg_maxmin_precision));
@@ -470,8 +470,8 @@ TEST_CASE("kernel::bmf Subflows", "[kernel-bmf-subflow]")
     lmm::Variable* rho_1      = Sys.variable_new(nullptr, 1);
     lmm::Variable* rho_2      = Sys.variable_new(nullptr, 1);
 
-    Sys.expand_add(sys_cnst, rho_1, 10);
-    Sys.expand_add(sys_cnst, rho_1, 5);
+    Sys.expand(sys_cnst, rho_1, 10);
+    Sys.expand(sys_cnst, rho_1, 5);
     Sys.expand(sys_cnst, rho_2, 10);
     Sys.solve();
 
@@ -505,11 +505,11 @@ TEST_CASE("kernel::bmf Subflows", "[kernel-bmf-subflow]")
     lmm::Variable* rho_1       = Sys.variable_new(nullptr, 1, -1, 2);
     lmm::Variable* rho_2       = Sys.variable_new(nullptr, 1, -1, 2);
 
-    Sys.expand_add(sys_cnst, rho_1, 1.0);
-    Sys.expand_add(sys_cnst, rho_1, 1.0);
+    Sys.expand(sys_cnst, rho_1, 1.0);
+    Sys.expand(sys_cnst, rho_1, 1.0);
     Sys.expand(sys_cnst, rho_2, 1);
-    Sys.expand_add(sys_cnst2, rho_1, 1.0 / 2.0);
-    Sys.expand_add(sys_cnst2, rho_1, 1.0 / 2.0);
+    Sys.expand(sys_cnst2, rho_1, 1.0 / 2.0);
+    Sys.expand(sys_cnst2, rho_1, 1.0 / 2.0);
     Sys.expand(sys_cnst2, rho_2, 3.0 / 2.0);
     Sys.solve();
 
@@ -550,7 +550,7 @@ TEST_CASE("kernel::bmf Loop", "[kernel-bmf-loop]")
                   [&vars, &Sys, &A](const auto&) { vars.push_back(Sys.variable_new(nullptr, 1, -1, A.size())); });
     for (size_t j = 0; j < A.size(); j++) {
       for (size_t i = 0; i < A[j].size(); i++) {
-        Sys.expand_add(sys_cnst[j], vars[i], A[j][i]);
+        Sys.expand(sys_cnst[j], vars[i], A[j][i]);
       }
     }
     Sys.solve();
@@ -581,10 +581,10 @@ TEST_CASE("kernel::bmf Bugs", "[kernel-bmf-bug]")
     lmm::Variable* rho_2       = Sys.variable_new(nullptr, 1, 2.27328e-10, 2);
     lmm::Variable* rho_3       = Sys.variable_new(nullptr, 1);
 
-    Sys.expand_add(sys_cnst, rho_1, 1.84467e+19);
-    Sys.expand_add(sys_cnst2, rho_1, 1.84467e+19);
-    Sys.expand_add(sys_cnst, rho_2, 1.84467e+19);
-    Sys.expand_add(sys_cnst, rho_3, 1.91268e+11);
+    Sys.expand(sys_cnst, rho_1, 1.84467e+19);
+    Sys.expand(sys_cnst2, rho_1, 1.84467e+19);
+    Sys.expand(sys_cnst, rho_2, 1.84467e+19);
+    Sys.expand(sys_cnst, rho_3, 1.91268e+11);
     Sys.solve();
   }
 
@@ -650,10 +650,10 @@ TEST_CASE("kernel::bmf Bugs", "[kernel-bmf-bug]")
     lmm::Variable* rho_1       = Sys.variable_new(nullptr, 1, 1.5, 2);
     lmm::Variable* rho_2       = Sys.variable_new(nullptr, 1, 3, 2);
 
-    Sys.expand_add(sys_cnst, rho_1, 5.0);
-    Sys.expand_add(sys_cnst2, rho_1, 1.0);
-    Sys.expand_add(sys_cnst, rho_2, 1.0);
-    Sys.expand_add(sys_cnst2, rho_2, 1.0);
+    Sys.expand(sys_cnst, rho_1, 5.0);
+    Sys.expand(sys_cnst2, rho_1, 1.0);
+    Sys.expand(sys_cnst, rho_2, 1.0);
+    Sys.expand(sys_cnst2, rho_2, 1.0);
     Sys.solve();
     REQUIRE(double_equals(rho_1->get_value(), 1.4, sg_maxmin_precision));
     REQUIRE(double_equals(rho_2->get_value(), 3, sg_maxmin_precision));
@@ -672,8 +672,8 @@ TEST_CASE("kernel::bmf Bugs", "[kernel-bmf-bug]")
     lmm::Variable* rho_1      = Sys.variable_new(nullptr, 1, 7.6296e+06, 1);
     lmm::Variable* rho_2      = Sys.variable_new(nullptr, 1, 3.8148e+07, 1);
 
-    Sys.expand_add(sys_cnst, rho_1, 1);
-    Sys.expand_add(sys_cnst, rho_2, 1);
+    Sys.expand(sys_cnst, rho_1, 1);
+    Sys.expand(sys_cnst, rho_2, 1);
     Sys.solve();
     REQUIRE(double_equals(rho_1->get_value(), 7.6296e+06, sg_maxmin_precision));
     REQUIRE(double_equals(rho_2->get_value(), 3.8148e+07, sg_maxmin_precision));
@@ -733,7 +733,7 @@ TEST_CASE("kernel::bmf Stress-tests", "[.kernel-bmf-stress]")
     for (int j = 0; j < N; j++) {
       lmm::Variable* rho = Sys.variable_new(nullptr, 1, -1, C);
       for (int i = 0; i < C; i++) {
-        Sys.expand_add(sys_cnst[i], rho, data[i * j + j]);
+        Sys.expand(sys_cnst[i], rho, data[i * j + j]);
       }
     }
     Sys.solve();
@@ -748,7 +748,7 @@ TEST_CASE("kernel::bmf Stress-tests", "[.kernel-bmf-stress]")
     for (int j = 0; j < N; j++) {
       for (int i = 0; i < C; i++) {
         lmm::Variable* rho = Sys.variable_new(nullptr, 1);
-        Sys.expand_add(sys_cnst[i], rho, data[i * j + j]);
+        Sys.expand(sys_cnst[i], rho, data[i * j + j]);
       }
     }
     Sys.solve();

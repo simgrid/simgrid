@@ -309,11 +309,6 @@ void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
   check_concurrency();
 }
 
-void System::expand_add(Constraint* cnst, Variable* var, double value)
-{
-  return expand(cnst, var, value);
-}
-
 Variable* Constraint::get_variable(const Element** elem) const
 {
   if (*elem == nullptr) {
