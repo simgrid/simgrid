@@ -317,8 +317,9 @@ configurations.
 Numerical Precision
 ...................
 
-**Option** ``maxmin/precision`` **Default:** 0.00001 (in flops or bytes) |br|
-**Option** ``surf/precision`` **Default:** 0.00001 (in seconds)
+**Option** ``maxmin/precision`` **Default:** 1e-5 (in flops or bytes) |br|
+**Option** ``surf/precision`` **Default:** 1e-9 (in seconds) |br|
+**Option** ``bmf/precision`` **Default:** 1e-12 (no unit)
 
 The analytical models handle a lot of floating point values. It is
 possible to change the epsilon used to update and compare them through
