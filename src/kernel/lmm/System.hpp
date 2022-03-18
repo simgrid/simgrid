@@ -152,7 +152,11 @@ public:
 
   int get_concurrency() const;
   void decrease_concurrency();
-  void increase_concurrency();
+  /**
+   *  @brief Increase constraint concurrency
+   *  @param check_limit Don't check constraint concurrency overflow right now
+   */
+  void increase_concurrency(bool check_limit = true);
 
   void make_active();
   void make_inactive();
@@ -452,14 +456,6 @@ public:
    */
   void expand(Constraint * cnst, Variable * var, double value);
 
-  /**
-   * @brief Add value to the coefficient between a constraint and a variable or create one
-   * @param cnst A constraint
-   * @param var A variable
-   * @param value The value to add to the coefficient associated to the variable in the constraint
-   */
-  void expand_add(Constraint * cnst, Variable * var, double value);
-
   /** @brief Update the bound of a variable */
   void update_variable_bound(Variable * var, double bound);
 
@@ -526,6 +522,25 @@ private:
   void disable_var(Variable * var);
   void on_disabled_var(Constraint * cnstr);
   void check_concurrency() const;
+
+  /**
+   * @brief Auxiliary method to create a new Element which links a variable to a constraint
+   *
+   * @param cnst Constraint (resource)
+   * @param var Variable (action)
+   * @param consumption_weight how much of the resource is used for each unit of the action
+   * @return A reference to the new element
+   */
+  Element& expand_create_elem(Constraint* cnst, Variable* var, double consumption_weight);
+  /**
+   * @brief Increments the element usage
+   *
+   * @param elem Element linking variable/action to resource
+   * @param cnst Constraint (resource)
+   * @param consumption_weight how much of the resource is used for each unit of the action
+   * @return elem itself
+   */
+  Element& expand_add_to_elem(Element& elem, const Constraint* cnst, double consumption_weight) const;
 
   /**
    * @brief Update the value of element linking the constraint and the variable

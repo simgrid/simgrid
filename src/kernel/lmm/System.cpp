@@ -47,14 +47,14 @@ void Element::decrease_concurrency()
   constraint->concurrency_current_ -= get_concurrency();
 }
 
-void Element::increase_concurrency()
+void Element::increase_concurrency(bool check_limit)
 {
   constraint->concurrency_current_ += get_concurrency();
 
   if (constraint->concurrency_current_ > constraint->concurrency_maximum_)
     constraint->concurrency_maximum_ = constraint->concurrency_current_;
 
-  xbt_assert(constraint->get_concurrency_limit() < 0 ||
+  xbt_assert(not check_limit || constraint->get_concurrency_limit() < 0 ||
                  constraint->concurrency_current_ <= constraint->get_concurrency_limit(),
              "Concurrency limit overflow!");
 }
@@ -243,31 +243,8 @@ void System::variable_free_all()
     variable_free(var);
 }
 
-void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
+Element& System::expand_create_elem(Constraint* cnst, Variable* var, double consumption_weight)
 {
-  modified_ = true;
-
-  // Check if this variable already has an active element in this constraint
-  // If it does, subtract it from the required slack
-  int current_share = 0;
-  if (var->concurrency_share_ > 1) {
-    for (const Element& elem : var->cnsts_) {
-      if (elem.constraint == cnst && elem.enabled_element_set_hook.is_linked())
-        current_share += elem.get_concurrency();
-    }
-  }
-
-  // Check if we need to disable the variable
-  if (var->sharing_penalty_ > 0 && var->concurrency_share_ - current_share > cnst->get_concurrency_slack()) {
-    double penalty = var->sharing_penalty_;
-    disable_var(var);
-    for (Element const& elem : var->cnsts_)
-      on_disabled_var(elem.constraint);
-    consumption_weight = 0;
-    var->staged_penalty_ = penalty;
-    xbt_assert(not var->sharing_penalty_);
-  }
-
   xbt_assert(var->cnsts_.size() < var->cnsts_.capacity(), "Too much constraints");
 
   var->cnsts_.emplace_back(cnst, var, consumption_weight);
@@ -275,60 +252,66 @@ void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
 
   if (var->sharing_penalty_ != 0.0) {
     elem.constraint->enabled_element_set_.push_front(elem);
-    elem.increase_concurrency();
   } else
     elem.constraint->disabled_element_set_.push_back(elem);
 
-  if (not selective_update_active) {
+  if (elem.consumption_weight > 0 || var->sharing_penalty_ > 0) {
     make_constraint_active(cnst);
-  } else if (elem.consumption_weight > 0 || var->sharing_penalty_ > 0) {
-    make_constraint_active(cnst);
-    update_modified_cnst_set(cnst);
-    // TODOLATER: Why do we need this second call?
-    if (var->cnsts_.size() > 1)
-      update_modified_cnst_set(var->cnsts_[0].constraint);
   }
+  return elem;
+}
+
+Element& System::expand_add_to_elem(Element& elem, const Constraint* cnst, double consumption_weight) const
+{
+  elem.max_consumption_weight = std::max(elem.max_consumption_weight, consumption_weight);
+  if (cnst->sharing_policy_ != Constraint::SharingPolicy::FATPIPE)
+    elem.consumption_weight += consumption_weight;
+  else
+    elem.consumption_weight = std::max(elem.consumption_weight, consumption_weight);
+  return elem;
+}
+
+void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
+{
+  modified_ = true;
+
+  auto elem_it =
+      std::find_if(begin(var->cnsts_), end(var->cnsts_), [&cnst](Element const& x) { return x.constraint == cnst; });
+  if (elem_it != end(var->cnsts_)) {
+    /* before changing it, decreases concurrency on constraint, it'll be added back later */
+    if (var->sharing_penalty_ != 0.0)
+      elem_it->decrease_concurrency();
+  }
+  Element& elem = elem_it != end(var->cnsts_) ? expand_add_to_elem(*elem_it, cnst, consumption_weight)
+                                              : expand_create_elem(cnst, var, consumption_weight);
+
+  // Check if we need to disable the variable
+  if (var->sharing_penalty_ != 0) {
+    /* increase concurrency in constraint that this element uses.
+     * as we don't check if constraint has reached its limit before increasing,
+     * we can't check the correct state at increase_concurrency, anyway
+     * it'll check if the slack is smaller than 0 just below */
+    elem.increase_concurrency(false);
+    if (cnst->get_concurrency_slack() < 0) {
+      double penalty = var->sharing_penalty_;
+      disable_var(var);
+      for (Element const& elem2 : var->cnsts_)
+        on_disabled_var(elem2.constraint);
+      var->staged_penalty_ = penalty;
+      xbt_assert(not var->sharing_penalty_);
+    }
+  }
+
+  /* update modified constraint set accordingly */
+  if (elem.consumption_weight > 0 || var->sharing_penalty_ > 0)
+    update_modified_cnst_set(cnst);
 
   check_concurrency();
 }
 
 void System::expand_add(Constraint* cnst, Variable* var, double value)
 {
-  modified_ = true;
-
-  check_concurrency();
-
-  // BEWARE: In case you have multiple elements in one constraint, this will always add value to the first element.
-  auto elem_it =
-      std::find_if(begin(var->cnsts_), end(var->cnsts_), [&cnst](Element const& x) { return x.constraint == cnst; });
-  if (elem_it != end(var->cnsts_)) {
-    Element& elem = *elem_it;
-    if (var->sharing_penalty_ != 0.0)
-      elem.decrease_concurrency();
-
-    elem.max_consumption_weight = std::max(elem.max_consumption_weight, value);
-    if (cnst->sharing_policy_ != Constraint::SharingPolicy::FATPIPE)
-      elem.consumption_weight += value;
-    else
-      elem.consumption_weight = std::max(elem.consumption_weight, value);
-
-    // We need to check that increasing value of the element does not cross the concurrency limit
-    if (var->sharing_penalty_ != 0.0) {
-      if (cnst->get_concurrency_slack() < elem.get_concurrency()) {
-        double penalty = var->sharing_penalty_;
-        disable_var(var);
-        for (Element const& elem2 : var->cnsts_)
-          on_disabled_var(elem2.constraint);
-        var->staged_penalty_ = penalty;
-        xbt_assert(not var->sharing_penalty_);
-      }
-      elem.increase_concurrency();
-    }
-    update_modified_cnst_set(cnst);
-  } else
-    expand(cnst, var, value);
-
-  check_concurrency();
+  return expand(cnst, var, value);
 }
 
 Variable* Constraint::get_variable(const Element** elem) const
