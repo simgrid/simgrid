@@ -1,8 +1,9 @@
 #!/usr/bin/env tesh
 
-p Testing a vm with two successive execs
+p Testing BMF solver for CPU
 
-$ ${bindir:=.}/cloud-two-execs ${platfdir}/small_platform.xml
+$ ${bindir:=.}/cloud-two-execs --cfg=cpu/solver:bmf ${platfdir}/small_platform.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/solver' to 'bmf'
 > [VM0:compute:(2) 0.000000] [s4u_test/INFO] VM0:compute Exec 1 start 0
 > [Fafard:master_:(1) 1.000000] [s4u_test/INFO] exec remaining duration: 9.23704e+08
 > [Fafard:master_:(1) 2.000000] [s4u_test/INFO] exec remaining duration: 8.47408e+08

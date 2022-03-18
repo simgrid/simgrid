@@ -19,5 +19,21 @@ foreach(x cloud-sharing ptask_L07_usage wifi_usage wifi_usage_decay cm02-set-lat
   ADD_TESH(tesh-model-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/models/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/models/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/models/${x}/${x}.tesh)
 endforeach()
 
+# BMF specific tesh tests
+foreach(x cm02-set-lat-bw)
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}-bmf.tesh)
+
+  if(Eigen3_FOUND)
+    ADD_TESH(tesh-model-${x}-bmf
+             --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/models/${x}
+             --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/teshsuite/models/${x}
+             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+             --cd ${CMAKE_BINARY_DIR}/teshsuite/models/${x}
+             ${CMAKE_HOME_DIRECTORY}/teshsuite/models/${x}/${x}-bmf.tesh)
+
+  endif()
+endforeach()
+
+
 set(teshsuite_src ${teshsuite_src}  PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     PARENT_SCOPE)

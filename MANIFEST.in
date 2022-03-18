@@ -716,6 +716,7 @@ include teshsuite/mc/random-bug/random-bug.cpp
 include teshsuite/mc/random-bug/random-bug.tesh
 include teshsuite/models/cloud-sharing/cloud-sharing.cpp
 include teshsuite/models/cloud-sharing/cloud-sharing.tesh
+include teshsuite/models/cm02-set-lat-bw/cm02-set-lat-bw-bmf.tesh
 include teshsuite/models/cm02-set-lat-bw/cm02-set-lat-bw.cpp
 include teshsuite/models/cm02-set-lat-bw/cm02-set-lat-bw.tesh
 include teshsuite/models/ptask-subflows/ptask-subflows.cpp
@@ -791,11 +792,13 @@ include teshsuite/s4u/basic-parsing-test/basic-parsing-test.cpp
 include teshsuite/s4u/basic-parsing-test/basic-parsing-test.tesh
 include teshsuite/s4u/cloud-interrupt-migration/cloud-interrupt-migration.cpp
 include teshsuite/s4u/cloud-interrupt-migration/cloud-interrupt-migration.tesh
+include teshsuite/s4u/cloud-two-execs/cloud-two-execs-bmf.tesh
 include teshsuite/s4u/cloud-two-execs/cloud-two-execs.cpp
 include teshsuite/s4u/cloud-two-execs/cloud-two-execs.tesh
 include teshsuite/s4u/comm-get-sender/comm-get-sender.cpp
 include teshsuite/s4u/comm-get-sender/comm-get-sender.tesh
 include teshsuite/s4u/comm-pt2pt/comm-pt2pt.cpp
+include teshsuite/s4u/concurrent_rw/concurrent_rw-bmf.tesh
 include teshsuite/s4u/concurrent_rw/concurrent_rw.cpp
 include teshsuite/s4u/concurrent_rw/concurrent_rw.tesh
 include teshsuite/s4u/dag-incomplete-simulation/dag-incomplete-simulation.cpp

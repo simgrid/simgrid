@@ -109,6 +109,22 @@ if(SIMGRID_HAVE_NS3)
   endforeach()
 endif()
 
+# BMF specific tesh tests
+foreach(x cloud-two-execs concurrent_rw)
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}-bmf.tesh)
+
+  if(Eigen3_FOUND)
+    ADD_TESH(tesh-s4u-${x}-bmf
+             --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/s4u/${x}
+             --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${x}
+             --setenv rootdir=${CMAKE_HOME_DIRECTORY}
+             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+             --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x}
+             ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}-bmf.tesh)
+
+  endif()
+endforeach()
+
 foreach(x ns3-simultaneous-send-rcv ns3-from-src-to-itself)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)

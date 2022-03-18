@@ -1,6 +1,7 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/cm02-set-lat-bw  "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
+$ ${bindir:=.}/cm02-set-lat-bw  "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n" --cfg=network/solver:bmf
+> [  0.000000] [0:maestro@] Configuration change: Set 'network/solver' to 'bmf'
 > [  0.000000] [0:maestro@] Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] [0:maestro@] Configuration change: Set 'network/weight-S' to '20537'
 > [  0.000000] [0:maestro@] Configuration change: Set 'network/crosstraffic' to '0'

@@ -1,4 +1,5 @@
-$ ${bindir:=.}/concurrent_rw ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n"
+$ ${bindir:=.}/concurrent_rw ${platfdir}/hosts_with_disks.xml "--log=root.fmt:[%10.6r]%e(%a@%h)%e%m%n" --cfg=disk/solver:bmf
+> [  0.000000] (maestro@) Configuration change: Set 'disk/solver' to 'bmf'
 > [  0.000000] (host@bob) actor 1 is writing!
 > [  0.000000] (host@bob) actor 2 is writing!
 > [  0.000000] (host@bob) actor 3 is writing!
