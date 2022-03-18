@@ -32,10 +32,10 @@ TestAnyTransition::TestAnyTransition(aid_t issuer, int times_considered, std::st
 }
 std::string TestAnyTransition::to_string(bool verbose) const
 {
-  auto res = xbt::string_printf("%ld: TestAny{ ", aid_);
+  auto res = xbt::string_printf("TestAny{ ");
   for (auto const* t : transitions_)
     res += t->to_string(verbose);
-  res += "}";
+  res += " }";
   return res;
 }
 bool TestAnyTransition::depends(const Transition* other) const
@@ -54,10 +54,10 @@ WaitAnyTransition::WaitAnyTransition(aid_t issuer, int times_considered, std::st
 }
 std::string WaitAnyTransition::to_string(bool verbose) const
 {
-  auto res = xbt::string_printf("%ld: WaitAny{ ", aid_);
+  auto res = xbt::string_printf("WaitAny{ ");
   for (auto const* t : transitions_)
     res += t->to_string(verbose);
-  res += "}";
+  res += " }";
   return res;
 }
 bool WaitAnyTransition::depends(const Transition* other) const

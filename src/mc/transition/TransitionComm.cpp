@@ -30,7 +30,7 @@ CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, std::
 }
 std::string CommWaitTransition::to_string(bool verbose) const
 {
-  auto res = xbt::string_printf("%ld: WaitComm(from %ld to %ld, mbox=%u, %s", aid_, sender_, receiver_, mbox_,
+  auto res = xbt::string_printf("WaitComm(from %ld to %ld, mbox=%u, %s", sender_, receiver_, mbox_,
                                 (timeout_ ? "timeout" : "no timeout"));
   if (verbose) {
     res += ", sbuff=" + xbt::string_printf("%" PRIxPTR, sbuff_) + ", size=" + std::to_string(size_);
@@ -70,7 +70,7 @@ CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, std::
 }
 std::string CommTestTransition::to_string(bool verbose) const
 {
-  auto res = xbt::string_printf("%ld: TestComm(from %ld to %ld, mbox=%u", aid_, sender_, receiver_, mbox_);
+  auto res = xbt::string_printf("TestComm(from %ld to %ld, mbox=%u", sender_, receiver_, mbox_);
   if (verbose) {
     res += ", sbuff=" + xbt::string_printf("%" PRIxPTR, sbuff_) + ", size=" + std::to_string(size_);
     res += ", rbuff=" + xbt::string_printf("%" PRIxPTR, rbuff_);
@@ -107,7 +107,7 @@ CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, std::
 }
 std::string CommRecvTransition::to_string(bool verbose) const
 {
-  auto res = xbt::string_printf("%ld: iRecv(mbox=%u", aid_, mbox_);
+  auto res = xbt::string_printf("iRecv(mbox=%u", mbox_);
   if (verbose)
     res += ", rbuff=" + xbt::string_printf("%" PRIxPTR, rbuff_);
   res += ")";
@@ -157,7 +157,7 @@ CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, std::
 }
 std::string CommSendTransition::to_string(bool verbose = false) const
 {
-  auto res = xbt::string_printf("%ld: iSend(mbox=%u", aid_, mbox_);
+  auto res = xbt::string_printf("iSend(mbox=%u", mbox_);
   if (verbose)
     res += ", sbuff=" + xbt::string_printf("%" PRIxPTR, sbuff_) + ", size=" + std::to_string(size_);
   res += ")";
