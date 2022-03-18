@@ -320,12 +320,6 @@ public:
   double get_bound() const { return bound_; }
 
   /**
-   * @brief Set the concurrent share of the variable
-   * @param value The new concurrency share
-   */
-  void set_concurrency_share(short int value) { concurrency_share_ = value; }
-
-  /**
    * @brief Get the numth constraint associated to the variable
    * @param num The rank of constraint we want to get
    * @return The numth constraint
@@ -357,7 +351,7 @@ public:
   /** @brief Check if a variable can be enabled
    * Make sure to set staged_penalty before, if your intent is only to check concurrency
    */
-  bool can_enable() const { return staged_penalty_ > 0 && get_min_concurrency_slack() >= concurrency_share_; }
+  bool can_enable() const { return staged_penalty_ > 0 && get_min_concurrency_slack() > 0; }
 
   /* hookup to system */
   boost::intrusive::list_member_hook<> variable_set_hook_;
@@ -375,7 +369,6 @@ public:
                             met */
   double bound_;
   double value_;
-  short int concurrency_share_; /* The maximum number of elements that variable will add to a constraint */
   resource::Action* id_;
   int rank_;         // Only used in debug messages to identify the variable
   unsigned visited_; /* used by System::update_modified_cnst_set() */

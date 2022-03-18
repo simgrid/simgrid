@@ -103,7 +103,7 @@ void System::check_concurrency() const
     for (Element const& elem : cnst.disabled_element_set_) {
       // We should have staged variables only if concurrency is reached in some constraint
       xbt_assert(cnst.get_concurrency_limit() < 0 || elem.variable->staged_penalty_ == 0 ||
-                     elem.variable->get_min_concurrency_slack() < elem.variable->concurrency_share_,
+                     elem.variable->get_min_concurrency_slack() == 0,
                  "should not have staged variable!");
     }
 
@@ -506,7 +506,6 @@ void Variable::initialize(resource::Action* id_value, double sharing_penalty, do
   sharing_penalty_   = sharing_penalty;
   staged_penalty_    = 0.0;
   bound_             = bound_value;
-  concurrency_share_ = 1;
   value_             = 0.0;
   visited_           = visited_value;
   mu_                = 0.0;
@@ -645,10 +644,8 @@ void System::update_variable_penalty(Variable* var, double penalty)
   if (enabling_var) {
     var->staged_penalty_ = penalty;
     int minslack       = var->get_min_concurrency_slack();
-    if (minslack < var->concurrency_share_) {
-      XBT_DEBUG("Staging var (instead of enabling) because min concurrency slack %i, with penalty %f and concurrency"
-                " share %i",
-                minslack, penalty, var->concurrency_share_);
+    if (minslack == 0) {
+      XBT_DEBUG("Staging var (instead of enabling) because min concurrency slack is 0");
       return;
     }
     XBT_DEBUG("Enabling var with min concurrency slack %i", minslack);
