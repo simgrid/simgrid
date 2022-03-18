@@ -144,7 +144,7 @@ public:
       }
 
       xbt_assert(splittedval.size() > i, "Invalid profile line");
-      if (i == 1 or i == 2) {
+      if (i == 1 || i == 2) {
         stochevent.date_params = {std::stod(splittedval[i - 1])};
       } else if (i == 3) {
         stochevent.date_params = {std::stod(splittedval[1]), std::stod(splittedval[2])};
@@ -169,7 +169,7 @@ public:
       }
 
       xbt_assert(splittedval.size() > i + j, "Invalid profile line");
-      if (j == 0 or j == 1) {
+      if (j == 0 || j == 1) {
         stochevent.value_params = {std::stod(splittedval[i + j])};
       } else if (j == 2) {
         stochevent.value_params = {std::stod(splittedval[i + 1]), std::stod(splittedval[i + 2])};
@@ -188,9 +188,9 @@ public:
       pattern.emplace_back(stochevent);
     }
 
-    xbt_assert(not stochastic or periodicity <= 0, "If you want periodicity with stochastic profiles, use LOOP_AFTER");
+    xbt_assert(not stochastic || periodicity <= 0, "If you want periodicity with stochastic profiles, use LOOP_AFTER");
     if (periodicity > 0) {
-      xbt_assert(loop and loop_delay == 0);
+      xbt_assert(loop && loop_delay == 0);
       loop_delay = periodicity - last_date;
     }
 
@@ -199,7 +199,7 @@ public:
 
   double get_repeat_delay() const
   {
-    if (not stochastic and loop)
+    if (not stochastic && loop)
       return loop_delay;
     return -1.0;
   }
@@ -207,7 +207,7 @@ public:
   void operator()(std::vector<DatedValue>& event_list) const
   {
     size_t initial_size = event_list.size();
-    if (loop or not initial_size) {
+    if (loop || not initial_size) {
       for (auto const& dv : pattern)
         event_list.emplace_back(dv.get_datedvalue());
       if (initial_size)

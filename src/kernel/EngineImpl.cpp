@@ -345,7 +345,7 @@ void EngineImpl::seal_platform() const
 void EngineImpl::load_platform(const std::string& platf)
 {
   double start = xbt_os_time();
-  if (boost::algorithm::ends_with(platf, ".so") or boost::algorithm::ends_with(platf, ".dylib")) {
+  if (boost::algorithm::ends_with(platf, ".so") || boost::algorithm::ends_with(platf, ".dylib")) {
 #ifdef _WIN32
     xbt_die("loading platform through shared library isn't supported on windows");
 #else
