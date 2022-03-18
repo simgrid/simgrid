@@ -17,10 +17,6 @@ simgrid::config::Flag<int>
     cfg_bmf_max_iteration("bmf/max-iterations",
                           "Maximum number of steps to be performed while searching for a BMF allocation", 1000);
 
-simgrid::config::Flag<bool> cfg_bmf_selective_update{
-    "bmf/selective-update", "Update the constraint set propagating recursively to others constraints (off by default)",
-    false};
-
 simgrid::config::Flag<double> cfg_bmf_precision{"bmf/precision",
                                                 "Numerical precision used when computing resource sharing", 1E-12};
 
@@ -406,7 +402,7 @@ Eigen::VectorXd BmfSolver::solve()
     fprintf(stderr, "Unable to find a BMF allocation for your system.\n"
                     "You may try to increase the maximum number of iterations performed by BMF solver "
                     "(\"--cfg=bmf/max-iterations\").\n"
-                    "Additionally, you could decrease numerical precision (\"--cfg=bmf/precision\").\n");
+                    "Additionally, you could adjust numerical precision (\"--cfg=bmf/precision\").\n");
     fprintf(stderr, "Internal states (after %d iterations):\n", it);
     fprintf(stderr, "A:\n%s\n", debug_eigen(A_).c_str());
     fprintf(stderr, "maxA:\n%s\n", debug_eigen(maxA_).c_str());

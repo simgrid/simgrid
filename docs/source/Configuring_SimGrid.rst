@@ -251,9 +251,6 @@ models for all existing resources.
   - **ptask_L07:** Host model somehow similar to Cas01+CM02 but
     allowing "parallel tasks", that are intended to model the moldable
     tasks of the grid scheduling literature.
-  - **ptask_BMF:** More realistic model for heterogeneous resource sharing.
-    Implements BMF (Bottleneck max fairness) fairness. To be used with
-    parallel tasks instead of ptask_L07.
 
 - ``storage/model``: specify the used storage model. Only one model is
   provided so far.
@@ -262,12 +259,32 @@ models for all existing resources.
 
 .. todo: make 'compound' the default host model.
 
+.. _options_model_solver:
+
+Solver
+......
+
+The different models rely on a linear inequalities solver to share
+the underlying resources. SimGrid allows you to change the solver, but
+be cautious, **don't change it unless you are 100% sure**.
+ 
+  - items ``cpu/solver``, ``network/solver``, ``disk/solver`` and  ``host/solver``
+    allow you to change the solver for each model:
+
+    - **maxmin:** The default solver for all models except ptask. Provides a
+      max-min fairness allocation.
+    - **fairbottleneck:** The default solver for ptasks. Extends max-min to
+      allow heterogeneous resources.
+    - **bmf:** More realistic solver for heterogeneous resource sharing.
+      Implements BMF (Bottleneck max fairness) fairness. To be used with
+      parallel tasks instead of fair-bottleneck.
+
 .. _options_model_optim:
 
 Optimization Level
 ..................
 
-The network and CPU models that are based on lmm_solve (that
+The network and CPU models that are based on linear inequalities solver (that
 is, all our analytical models) accept specific optimization
 configurations.
 

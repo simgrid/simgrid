@@ -81,8 +81,6 @@ const std::vector<surf_model_description_t> surf_host_model_description = {
      &surf_host_model_init_compound},
     {"ptask_L07", "Host model somehow similar to Cas01+CM02 but allowing parallel tasks",
      &surf_host_model_init_ptask_L07},
-    {"ptask_BMF", "Host model which implements BMF resource allocation and allows parallel tasks",
-     &surf_host_model_init_ptask_BMF},
 };
 
 const std::vector<surf_model_description_t> surf_optimization_mode_description = {

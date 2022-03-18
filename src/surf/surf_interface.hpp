@@ -182,14 +182,6 @@ XBT_PUBLIC void surf_host_model_init_current_default();
  */
 XBT_PUBLIC void surf_host_model_init_ptask_L07();
 
-/** @ingroup SURF_models
- *  @brief Initializes the platform with the model BMF
- *
- *  With this model, only parallel tasks can be used.
- *  Resource sharing is done by calculating a BMF (bottleneck max fairness) allocation
- */
-XBT_PUBLIC void surf_host_model_init_ptask_BMF();
-
 XBT_PUBLIC void surf_disk_model_init_default();
 
 /* --------------------

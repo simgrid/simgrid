@@ -20,34 +20,27 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_host);
 XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
 
+/***********
+ * Options *
+ ***********/
+static simgrid::config::Flag<std::string> cfg_ptask_solver("host/solver",
+                                                           "Set linear equations solver used by ptask model",
+                                                           "fairbottleneck",
+                                                           &simgrid::kernel::lmm::System::validate_solver);
+
 /**************************************/
 /*** Resource Creation & Destruction **/
 /**************************************/
 void surf_host_model_init_ptask_L07()
 {
   XBT_CINFO(xbt_cfg, "Switching to the L07 model to handle parallel tasks.");
+  xbt_assert(cfg_ptask_solver != "maxmin", "Invalid configuration. Cannot use maxmin solver with parallel tasks.");
 
-  auto* system    = simgrid::kernel::lmm::System::build("fairbottleneck", true /* selective update */);
+  auto* system    = simgrid::kernel::lmm::System::build(cfg_ptask_solver, true /* selective update */);
   auto host_model = std::make_shared<simgrid::kernel::resource::HostL07Model>("Host_Ptask", system);
   auto* engine    = simgrid::kernel::EngineImpl::get_instance();
   engine->add_model(host_model);
   engine->get_netzone_root()->set_host_model(host_model);
-}
-
-void surf_host_model_init_ptask_BMF()
-{
-#if SIMGRID_HAVE_EIGEN3
-  XBT_CINFO(xbt_cfg, "Switching to the BMF model to handle parallel tasks.");
-
-  bool select     = simgrid::config::get_value<bool>("bmf/selective-update");
-  auto* system    = simgrid::kernel::lmm::System::build("bmf", select);
-  auto host_model = std::make_shared<simgrid::kernel::resource::HostL07Model>("Host_Ptask", system);
-  auto* engine    = simgrid::kernel::EngineImpl::get_instance();
-  engine->add_model(host_model);
-  engine->get_netzone_root()->set_host_model(host_model);
-#else
-  xbt_die("Cannot use the BMF ptask model without installing Eigen3.");
-#endif
 }
 
 namespace simgrid {

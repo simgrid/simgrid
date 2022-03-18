@@ -45,19 +45,19 @@ New plugin: the Chaos Monkey (killing actors at any time)
    but some users may find it interesting too.
 
 Models:
- - New model for parallel task: ptask_BMF.
-   - More realistic sharing of heterogeneous resources compared to ptask_L07.
+ - New solver for parallel task: BMF.
+   - More realistic sharing of heterogeneous resources compared to the fair
+   bottleneck solver used by ptask_L07.
    - Implement the BMF (Bottleneck max fairness) fairness.
    - Improved resource sharing for parallel tasks with sub-flows (parallel
      communications between same source and destination inside the ptask).
    - Parameters:
-     - "--cfg=host/model:ptask_BMF": enable the model.
+     - "--cfg=host/model:ptask_L07 --cfg=host/solver:bmf": enable the ptask
+	 model with BMF solver.
      - "--cfg=bmf/max-iterations: <N>": maximum number of iterations performed
         by BMF solver (default: 1000).
-     - "--cfg=bmf/selective-update:<true/false>": enable/disable the
-      selective-update optimization. Only invalidates and recomputes modified
-      parts of inequations system. May speed up simulation if sparse resource
-      utilization (default: false).
+     - "--cfg=bmf/precision: <N>": numerical precision used when computing
+	 resource sharing (default: 1e-12).
    - This model requires Eigen3 library. Make sure Eigen3 is installed to use BMF.
 
 General:
