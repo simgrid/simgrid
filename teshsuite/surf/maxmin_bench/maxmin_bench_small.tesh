@@ -9,156 +9,160 @@ $ ${bindir:=.}/maxmin_bench small  10 test
 > Starting to solve(729)
 > [0.000000]: [ker_lmm/DEBUG] Active constraints : 10
 > [0.000000]: [ker_lmm/DEBUG] Constraint '5' usage: 2.376644 remaining: 3.965807 concurrency: 1<=1<=-1
-> [0.000000]: [ker_lmm/DEBUG] Constraint '8' usage: 4.287274 remaining: 8.463109 concurrency: 2<=2<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '8' usage: 6.082750 remaining: 8.463109 concurrency: 3<=3<=4
 > [0.000000]: [ker_lmm/DEBUG] Constraint '4' usage: 4.744865 remaining: 2.360890 concurrency: 3<=4<=-1
 > [0.000000]: [ker_lmm/DEBUG] Constraint '3' usage: 3.249585 remaining: 3.023326 concurrency: 1<=1<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '6' usage: 4.666459 remaining: 3.879107 concurrency: 3<=3<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '2' usage: 7.030584 remaining: 0.001144 concurrency: 3<=3<=-1
+> [0.000000]: [ker_lmm/DEBUG] Constraint '6' usage: 6.519579 remaining: 3.879107 concurrency: 3<=4<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '2' usage: 7.295469 remaining: 0.001144 concurrency: 3<=3<=-1
 > [0.000000]: [ker_lmm/DEBUG] Constraint '9' usage: 5.171734 remaining: 6.852195 concurrency: 3<=3<=4
 > [0.000000]: [ker_lmm/DEBUG] Constraint '10' usage: 4.610601 remaining: 4.434529 concurrency: 2<=2<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '1' usage: 3.612665 remaining: 9.971848 concurrency: 2<=2<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '1' usage: 5.679416 remaining: 9.971848 concurrency: 3<=4<=3
 > [0.000000]: [ker_lmm/DEBUG] Constraint '7' usage: 2.607649 remaining: 3.967675 concurrency: 1<=1<=3
-> [0.000000]: [ker_lmm/DEBUG] var=2, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.000163, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=3, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.000163, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=4, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.000163, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=8, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.000163, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (2) value to 0.000163
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.000163, Var(2).penalty: 1.000000, Var(2).value: 0.000163
-> [0.000000]: [ker_lmm/DEBUG] Setting var (3) value to 0.000163
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.000163, Var(3).penalty: 1.000000, Var(3).value: 0.000163
-> [0.000000]: [ker_lmm/DEBUG] Setting var (4) value to 0.000163
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.000163, Var(4).penalty: 1.000000, Var(4).value: 0.000163
-> [0.000000]: [ker_lmm/DEBUG] index: 4 	 cnst_light_num: 10 	 || usage: 0.000000 remaining: 3.878348 bound: 3.879107
-> [0.000000]: [ker_lmm/DEBUG] Setting var (8) value to 0.000163
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.000163, Var(8).penalty: 1.000000, Var(8).value: 0.000163
+> [0.000000]: [ker_lmm/DEBUG] var=2, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.000157, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=3, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.000157, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=4, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.000157, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=5, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.000157, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=8, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.000157, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (2) value to 0.000157
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.000157, Var(2).penalty: 1.000000, Var(2).value: 0.000157
+> [0.000000]: [ker_lmm/DEBUG] Setting var (3) value to 0.000157
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.000157, Var(3).penalty: 1.000000, Var(3).value: 0.000157
+> [0.000000]: [ker_lmm/DEBUG] Setting var (4) value to 0.000157
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.000157, Var(4).penalty: 1.000000, Var(4).value: 0.000157
+> [0.000000]: [ker_lmm/DEBUG] Setting var (5) value to 0.000157
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.000157, Var(5).penalty: 1.000000, Var(5).value: 0.000157
+> [0.000000]: [ker_lmm/DEBUG] index: 4 	 cnst_light_num: 10 	 || usage: 0.000000 remaining: 3.878085 bound: 3.879107
+> [0.000000]: [ker_lmm/DEBUG] Setting var (8) value to 0.000157
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.000157, Var(8).penalty: 1.000000, Var(8).value: 0.000157
 > [0.000000]: [ker_lmm/DEBUG] index: 5 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.000000 bound: 0.001144
-> [0.000000]: [ker_lmm/DEBUG] var=1, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.854362, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=6, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.854362, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (1) value to 0.854362
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.854362, Var(1).penalty: 1.000000, Var(1).value: 0.854362
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 1.935293 bound: 3.965807
-> [0.000000]: [ker_lmm/DEBUG] Setting var (6) value to 0.854362
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.854362, Var(6).penalty: 1.000000, Var(6).value: 0.854362
-> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 6.321717 bound: 8.463109
+> [0.000000]: [ker_lmm/DEBUG] var=1, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.854366, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=6, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.854366, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (1) value to 0.854366
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.854366, Var(1).penalty: 1.000000, Var(1).value: 0.854366
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 1.935283 bound: 3.965807
+> [0.000000]: [ker_lmm/DEBUG] Setting var (6) value to 0.854366
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.854366, Var(6).penalty: 1.000000, Var(6).value: 0.854366
+> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 6.321436 bound: 8.463109
 > [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 0.000000 bound: 2.360890
-> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 8.958390 bound: 9.971848
-> [0.000000]: [ker_lmm/DEBUG] var=9, var.bound=-1.000000, var.penalty=1.000000, min_usage=1.134766, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (9) value to 1.134766
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 1.134766, Var(9).penalty: 1.000000, Var(9).value: 1.134766
-> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 1.480555 bound: 3.967675
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 1.975904 bound: 4.434529
+> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 8.958075 bound: 9.971848
+> [0.000000]: [ker_lmm/DEBUG] var=9, var.bound=-1.000000, var.penalty=1.000000, min_usage=1.134755, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (9) value to 1.134755
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 1.134755, Var(9).penalty: 1.000000, Var(9).value: 1.134755
+> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 1.480559 bound: 3.967675
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 1.975943 bound: 4.434529
 > [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 0.000000 bound: 3.023326
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 5.531932 bound: 6.852195
-> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '9'(1.000000) '8'(1.000000) '6'(1.000000) '4'(1.000000) '3'(1.000000) '2'(1.000000) '1'(1.000000) '5'(0.000000) '7'(0.000000) '10'(0.000000) )
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 5.531969 bound: 6.852195
+> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '9'(1.000000) '8'(1.000000) '6'(1.000000) '5'(1.000000) '4'(1.000000) '3'(1.000000) '2'(1.000000) '1'(1.000000) '7'(0.000000) '10'(0.000000) )
 > [0.000000]: [ker_lmm/DEBUG] Constraints
-> [0.000000]: [ker_lmm/DEBUG] 	(2.376644.'1'(0.854362) + 0) <= 3.965807 ('5')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.781190.'8'(0.000163) + 0.982242.'6'(0.854362) + 1.523842.'1'(0.854362) + 1.795476.'5'(0.000000) + 0) <= 8.463109 ('8')
-> [0.000000]: [ker_lmm/DEBUG] 	(0.885831.'8'(0.000163) + 1.143688.'6'(0.854362) + 1.096074.'3'(0.000163) + 1.619272.'1'(0.854362) + 1.710044.'7'(0.000000) + 0) <= 2.360890 ('4')
-> [0.000000]: [ker_lmm/DEBUG] 	(0.880885.'9'(1.134766) + 2.368701.'1'(0.854362) + 2.360266.'10'(0.000000) + 0) <= 3.023326 ('3')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.176473.'4'(0.000163) + 1.038484.'2'(0.000163) + 2.451501.'2'(0.000163) + 1.183919.'5'(0.000000) + 1.391263.'10'(0.000000) + 0) <= 3.879107 ('6')
-> [0.000000]: [ker_lmm/DEBUG] 	(0.871863.'8'(0.000163) + 2.113202.'4'(0.000163) + 1.406079.'3'(0.000163) + 2.639440.'2'(0.000163) + 0.264885.'5'(0.000000) + 1.378162.'10'(0.000000) + 0) <= 0.001144 ('2')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.162892.'9'(1.134766) + 0.982283.'8'(0.000163) + 0.686454.'4'(0.000163) + 1.037119.'3'(0.000163) + 1.302987.'2'(0.000163) + 0) <= 6.852195 ('9')
-> [0.000000]: [ker_lmm/DEBUG] 	(2.166285.'9'(1.134766) + 2.444315.'3'(0.000163) + 1.654896.'7'(0.000000) + 0) <= 4.434529 ('10')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.185755.'6'(0.854362) + 2.426910.'4'(0.000163) + 2.066751.'5'(0.000000) + 1.849810.'7'(0.000000) + 0.153502.'7'(0.000000) + 0) <= 9.971848 ('1')
-> [0.000000]: [ker_lmm/DEBUG] 	(0.924535.'9'(1.134766) + 1.683115.'6'(0.854362) + 2.045752.'10'(0.000000) + 0) <= 3.967675 ('7')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.376644.'1'(0.854366) + 0) <= 3.965807 ('5')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.781190.'8'(0.000157) + 0.982242.'6'(0.854366) + 1.795476.'5'(0.000157) + 1.523842.'1'(0.854366) + 0) <= 8.463109 ('8')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.885831.'8'(0.000157) + 1.143688.'6'(0.854366) + 1.096074.'3'(0.000157) + 1.619272.'1'(0.854366) + 1.710044.'7'(0.000000) + 0) <= 2.360890 ('4')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.880885.'9'(1.134755) + 2.368701.'1'(0.854366) + 2.360266.'10'(0.000000) + 0) <= 3.023326 ('3')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.853121.'5'(0.000157) + 1.176473.'4'(0.000157) + 3.489985.'2'(0.000157) + 2.369711.'10'(0.000000) + 0) <= 3.879107 ('6')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.871863.'8'(0.000157) + 0.264885.'5'(0.000157) + 2.113202.'4'(0.000157) + 1.406079.'3'(0.000157) + 2.639440.'2'(0.000157) + 1.378162.'10'(0.000000) + 0) <= 0.001144 ('2')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.162892.'9'(1.134755) + 0.982283.'8'(0.000157) + 0.686454.'4'(0.000157) + 1.037119.'3'(0.000157) + 1.302987.'2'(0.000157) + 0) <= 6.852195 ('9')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.166285.'9'(1.134755) + 2.444315.'3'(0.000157) + 1.654896.'7'(0.000000) + 0) <= 4.434529 ('10')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.185755.'6'(0.854366) + 2.066751.'5'(0.000157) + 2.426910.'4'(0.000157) + 2.394780.'7'(0.000000) + 0) <= 9.971848 ('1')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.924535.'9'(1.134755) + 1.683115.'6'(0.854366) + 2.045752.'10'(0.000000) + 0) <= 3.967675 ('7')
 > [0.000000]: [ker_lmm/DEBUG] Variables
-> [0.000000]: [ker_lmm/DEBUG] '9'(1.000000) : 1.134766
-> [0.000000]: [ker_lmm/DEBUG] '8'(1.000000) : 0.000163
-> [0.000000]: [ker_lmm/DEBUG] '6'(1.000000) : 0.854362
-> [0.000000]: [ker_lmm/DEBUG] '4'(1.000000) : 0.000163
-> [0.000000]: [ker_lmm/DEBUG] '3'(1.000000) : 0.000163
-> [0.000000]: [ker_lmm/DEBUG] '2'(1.000000) : 0.000163
-> [0.000000]: [ker_lmm/DEBUG] '1'(1.000000) : 0.854362
-> [0.000000]: [ker_lmm/DEBUG] '5'(0.000000) : 0.000000
+> [0.000000]: [ker_lmm/DEBUG] '9'(1.000000) : 1.134755
+> [0.000000]: [ker_lmm/DEBUG] '8'(1.000000) : 0.000157
+> [0.000000]: [ker_lmm/DEBUG] '6'(1.000000) : 0.854366
+> [0.000000]: [ker_lmm/DEBUG] '5'(1.000000) : 0.000157
+> [0.000000]: [ker_lmm/DEBUG] '4'(1.000000) : 0.000157
+> [0.000000]: [ker_lmm/DEBUG] '3'(1.000000) : 0.000157
+> [0.000000]: [ker_lmm/DEBUG] '2'(1.000000) : 0.000157
+> [0.000000]: [ker_lmm/DEBUG] '1'(1.000000) : 0.854366
 > [0.000000]: [ker_lmm/DEBUG] '7'(0.000000) : 0.000000
 > [0.000000]: [ker_lmm/DEBUG] '10'(0.000000) : 0.000000
 > Starting 1: (848)
 > [0.000000]: [ker_lmm/DEBUG] Setting selective_update_active flag to 0
 > Starting to solve(28)
 > [0.000000]: [ker_lmm/DEBUG] Active constraints : 10
-> [0.000000]: [ker_lmm/DEBUG] Constraint '16' usage: 4.049244 remaining: 1.199505 concurrency: 2<=2<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '12' usage: 8.681117 remaining: 9.315409 concurrency: 4<=4<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '16' usage: 6.259633 remaining: 1.199505 concurrency: 3<=3<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '12' usage: 6.825516 remaining: 9.315409 concurrency: 4<=5<=4
 > [0.000000]: [ker_lmm/DEBUG] Constraint '20' usage: 0.384945 remaining: 5.867970 concurrency: 0<=0<=-1
-> [0.000000]: [ker_lmm/DEBUG] Constraint '11' usage: 4.958247 remaining: 1.850821 concurrency: 3<=3<=-1
+> [0.000000]: [ker_lmm/DEBUG] Constraint '11' usage: 3.533113 remaining: 1.850821 concurrency: 2<=3<=-1
 > [0.000000]: [ker_lmm/DEBUG] Constraint '18' usage: 6.197159 remaining: 8.182267 concurrency: 3<=3<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '19' usage: 6.324096 remaining: 1.345799 concurrency: 3<=3<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '13' usage: 5.807235 remaining: 4.353224 concurrency: 3<=3<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '15' usage: 3.331655 remaining: 2.046486 concurrency: 1<=1<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '17' usage: 0.000000 remaining: 2.668273 concurrency: 0<=0<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '14' usage: 1.677831 remaining: 3.205364 concurrency: 1<=1<=4
-> [0.000000]: [ker_lmm/DEBUG] var=12, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.212805, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=14, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.212805, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=15, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.212805, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (12) value to 0.212805
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.212805, Var(12).penalty: 1.000000, Var(12).value: 0.212805
-> [0.000000]: [ker_lmm/DEBUG] Setting var (14) value to 0.212805
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.212805, Var(14).penalty: 1.000000, Var(14).value: 0.212805
-> [0.000000]: [ker_lmm/DEBUG] Setting var (15) value to 0.212805
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.212805, Var(15).penalty: 1.000000, Var(15).value: 0.212805
-> [0.000000]: [ker_lmm/DEBUG] index: 5 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.000000 bound: 1.345799
-> [0.000000]: [ker_lmm/DEBUG] var=11, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.307087, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=13, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.307087, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (11) value to 0.307087
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.307087, Var(11).penalty: 1.000000, Var(11).value: 0.307087
-> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 5.749758 bound: 5.867970
-> [0.000000]: [ker_lmm/DEBUG] Setting var (13) value to 0.307087
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.307087, Var(13).penalty: 1.000000, Var(13).value: 0.307087
+> [0.000000]: [ker_lmm/DEBUG] Constraint '19' usage: 6.324096 remaining: 1.345799 concurrency: 3<=4<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '13' usage: 5.807235 remaining: 4.353224 concurrency: 3<=4<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '15' usage: 4.312073 remaining: 2.046486 concurrency: 2<=2<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '17' usage: 2.823234 remaining: 2.668273 concurrency: 1<=1<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '14' usage: 0.000000 remaining: 3.205364 concurrency: 0<=1<=4
+> [0.000000]: [ker_lmm/DEBUG] var=11, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.191626, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=13, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.191626, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=14, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.191626, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=17, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.191626, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (11) value to 0.191626
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.191626, Var(11).penalty: 1.000000, Var(11).value: 0.191626
+> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 5.794204 bound: 5.867970
+> [0.000000]: [ker_lmm/DEBUG] Setting var (13) value to 0.191626
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.191626, Var(13).penalty: 1.000000, Var(13).value: 0.191626
+> [0.000000]: [ker_lmm/DEBUG] Setting var (14) value to 0.191626
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.191626, Var(14).penalty: 1.000000, Var(14).value: 0.191626
+> [0.000000]: [ker_lmm/DEBUG] Setting var (17) value to 0.191626
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.191626, Var(17).penalty: 1.000000, Var(17).value: 0.191626
+> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 2.127269 bound: 2.668273
 > [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 0.000000 bound: 1.199505
-> [0.000000]: [ker_lmm/DEBUG] var=16, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.459141, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=18, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.459141, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (16) value to 0.459141
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.459141, Var(16).penalty: 1.000000, Var(16).value: 0.459141
-> [0.000000]: [ker_lmm/DEBUG] index: 4 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 6.098007 bound: 8.182267
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 2.521143 bound: 4.353224
-> [0.000000]: [ker_lmm/DEBUG] Setting var (18) value to 0.459141
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.459141, Var(18).penalty: 1.000000, Var(18).value: 0.459141
-> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 1.097225 bound: 2.046486
+> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 1.220183 bound: 2.046486
+> [0.000000]: [ker_lmm/DEBUG] var=12, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.228843, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=15, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.228843, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (12) value to 0.228843
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.228843, Var(12).penalty: 1.000000, Var(12).value: 0.228843
+> [0.000000]: [ker_lmm/DEBUG] Setting var (15) value to 0.228843
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.228843, Var(15).penalty: 1.000000, Var(15).value: 0.228843
+> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 0.000000 bound: 1.345799
+> [0.000000]: [ker_lmm/DEBUG] var=16, var.bound=-1.000000, var.penalty=1.000000, min_usage=1.037471, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (16) value to 1.037471
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 1.037471, Var(16).penalty: 1.000000, Var(16).value: 1.037471
+> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 4.741536 bound: 8.182267
 > [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 0.000000 bound: 1.850821
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 2.435004 bound: 3.205364
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 6.269740 bound: 9.315409
-> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '18'(1.000000) '16'(1.000000) '15'(1.000000) '14'(1.000000) '13'(1.000000) '12'(1.000000) '11'(1.000000) '17'(0.000000) '19'(0.000000) '20'(0.000000) )
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 1.643730 bound: 4.353224
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 7.132568 bound: 9.315409
+> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '17'(1.000000) '16'(1.000000) '15'(1.000000) '14'(1.000000) '13'(1.000000) '12'(1.000000) '11'(1.000000) '18'(0.000000) '19'(0.000000) '20'(0.000000) )
 > [0.000000]: [ker_lmm/DEBUG] Constraints
-> [0.000000]: [ker_lmm/DEBUG] 	(0.466295.'14'(0.212805) + 1.914239.'13'(0.307087) + 1.668710.'11'(0.307087) + 2.210389.'17'(0.000000) + 2.494941.'19'(0.000000) + 0) <= 1.199505 ('16')
-> [0.000000]: [ker_lmm/DEBUG] 	(2.873673.'18'(0.459141) + 0.940910.'16'(0.459141) + 1.660185.'15'(0.212805) + 1.390702.'13'(0.307087) + 0.463331.'12'(0.212805) + 1.352317.'11'(0.307087) + 0.647307.'17'(0.000000) + 1.417068.'20'(0.000000) + 0) <= 9.315409 ('12')
-> [0.000000]: [ker_lmm/DEBUG] 	(0.384945.'11'(0.307087) + 0) <= 5.867970 ('20')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.425134.'18'(0.459141) + 1.344350.'16'(0.459141) + 0.985367.'15'(0.212805) + 1.203397.'11'(0.307087) + 1.171235.'19'(0.000000) + 1.515507.'20'(0.000000) + 0) <= 1.850821 ('11')
-> [0.000000]: [ker_lmm/DEBUG] 	(2.627914.'16'(0.459141) + 1.499884.'14'(0.212805) + 1.252888.'13'(0.307087) + 0.816473.'12'(0.212805) + 0) <= 8.182267 ('18')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.855082.'15'(0.212805) + 2.725248.'14'(0.212805) + 1.743766.'12'(0.212805) + 0.756001.'19'(0.000000) + 0) <= 1.345799 ('19')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.783841.'16'(0.459141) + 1.866603.'15'(0.212805) + 1.663620.'13'(0.307087) + 0.493171.'12'(0.212805) + 0.019526.'20'(0.000000) + 0) <= 4.353224 ('13')
-> [0.000000]: [ker_lmm/DEBUG] 	(0.975371.'18'(0.459141) + 2.356284.'14'(0.212805) + 1.955789.'17'(0.000000) + 0) <= 2.046486 ('15')
-> [0.000000]: [ker_lmm/DEBUG] 	(2.823234.'17'(0.000000) + 0.583315.'20'(0.000000) + 0) <= 2.668273 ('17')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.677831.'18'(0.459141) + 1.315763.'19'(0.000000) + 0) <= 3.205364 ('14')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.210389.'17'(0.191626) + 0.466295.'14'(0.191626) + 1.914239.'13'(0.191626) + 1.668710.'11'(0.191626) + 2.494941.'19'(0.000000) + 0) <= 1.199505 ('16')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.018073.'17'(0.191626) + 0.940910.'16'(1.037471) + 1.660185.'15'(0.228843) + 1.390702.'13'(0.191626) + 0.463331.'12'(0.228843) + 1.352317.'11'(0.191626) + 2.873673.'18'(0.000000) + 1.417068.'20'(0.000000) + 0) <= 9.315409 ('12')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.384945.'11'(0.191626) + 0) <= 5.867970 ('20')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.344350.'16'(1.037471) + 0.985367.'15'(0.228843) + 1.203397.'11'(0.191626) + 1.425134.'18'(0.000000) + 1.171235.'19'(0.000000) + 1.515507.'20'(0.000000) + 0) <= 1.850821 ('11')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.627914.'16'(1.037471) + 1.499884.'14'(0.191626) + 1.252888.'13'(0.191626) + 0.816473.'12'(0.228843) + 0) <= 8.182267 ('18')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.855082.'15'(0.228843) + 2.725248.'14'(0.191626) + 1.743766.'12'(0.228843) + 1.532147.'19'(0.000000) + 0) <= 1.345799 ('19')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.783841.'16'(1.037471) + 1.866603.'15'(0.228843) + 1.663620.'13'(0.191626) + 0.493171.'12'(0.228843) + 1.112274.'20'(0.000000) + 0) <= 4.353224 ('13')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.955789.'17'(0.191626) + 2.356284.'14'(0.191626) + 0.975371.'18'(0.000000) + 0) <= 2.046486 ('15')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.823234.'17'(0.191626) + 0.583315.'20'(0.000000) + 0) <= 2.668273 ('17')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.677831.'18'(0.000000) + 1.315763.'19'(0.000000) + 0) <= 3.205364 ('14')
 > [0.000000]: [ker_lmm/DEBUG] Variables
-> [0.000000]: [ker_lmm/DEBUG] '18'(1.000000) : 0.459141
-> [0.000000]: [ker_lmm/DEBUG] '16'(1.000000) : 0.459141
-> [0.000000]: [ker_lmm/DEBUG] '15'(1.000000) : 0.212805
-> [0.000000]: [ker_lmm/DEBUG] '14'(1.000000) : 0.212805
-> [0.000000]: [ker_lmm/DEBUG] '13'(1.000000) : 0.307087
-> [0.000000]: [ker_lmm/DEBUG] '12'(1.000000) : 0.212805
-> [0.000000]: [ker_lmm/DEBUG] '11'(1.000000) : 0.307087
-> [0.000000]: [ker_lmm/DEBUG] '17'(0.000000) : 0.000000
+> [0.000000]: [ker_lmm/DEBUG] '17'(1.000000) : 0.191626
+> [0.000000]: [ker_lmm/DEBUG] '16'(1.000000) : 1.037471
+> [0.000000]: [ker_lmm/DEBUG] '15'(1.000000) : 0.228843
+> [0.000000]: [ker_lmm/DEBUG] '14'(1.000000) : 0.191626
+> [0.000000]: [ker_lmm/DEBUG] '13'(1.000000) : 0.191626
+> [0.000000]: [ker_lmm/DEBUG] '12'(1.000000) : 0.228843
+> [0.000000]: [ker_lmm/DEBUG] '11'(1.000000) : 0.191626
+> [0.000000]: [ker_lmm/DEBUG] '18'(0.000000) : 0.000000
 > [0.000000]: [ker_lmm/DEBUG] '19'(0.000000) : 0.000000
 > [0.000000]: [ker_lmm/DEBUG] '20'(0.000000) : 0.000000
 > Starting 2: (986)
 > [0.000000]: [ker_lmm/DEBUG] Setting selective_update_active flag to 0
 > Starting to solve(831)
 > [0.000000]: [ker_lmm/DEBUG] Active constraints : 10
-> [0.000000]: [ker_lmm/DEBUG] Constraint '21' usage: 8.690964 remaining: 0.707249 concurrency: 4<=4<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '25' usage: 4.708991 remaining: 1.255853 concurrency: 3<=3<=-1
+> [0.000000]: [ker_lmm/DEBUG] Constraint '21' usage: 8.690964 remaining: 0.707249 concurrency: 4<=5<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '25' usage: 4.708991 remaining: 1.255853 concurrency: 2<=2<=-1
 > [0.000000]: [ker_lmm/DEBUG] Constraint '23' usage: 5.339459 remaining: 5.108276 concurrency: 2<=2<=4
 > [0.000000]: [ker_lmm/DEBUG] Constraint '22' usage: 5.763865 remaining: 2.909047 concurrency: 2<=3<=-1
 > [0.000000]: [ker_lmm/DEBUG] Constraint '26' usage: 2.252880 remaining: 2.072429 concurrency: 1<=1<=4
@@ -170,10 +174,10 @@ $ ${bindir:=.}/maxmin_bench small  10 test
 > [0.000000]: [ker_lmm/DEBUG] var=23, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.069564, var.bound*var.penalty=-1.000000
 > [0.000000]: [ker_lmm/DEBUG] var=30, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.069564, var.bound*var.penalty=-1.000000
 > [0.000000]: [ker_lmm/DEBUG] Setting var (23) value to 0.069564
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 0.069564, Var(23).penalty: 1.000000, Var(23).value: 0.069564
 > [0.000000]: [ker_lmm/DEBUG] Setting var (30) value to 0.069564
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 0.069564, Var(30).penalty: 1.000000, Var(30).value: 0.069564
 > [0.000000]: [ker_lmm/DEBUG] index: 7 	 cnst_light_num: 10 	 || usage: 0.000000 remaining: 0.000000 bound: 0.298762
 > [0.000000]: [ker_lmm/DEBUG] var=21, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.084555, var.bound*var.penalty=-1.000000
@@ -181,29 +185,29 @@ $ ${bindir:=.}/maxmin_bench small  10 test
 > [0.000000]: [ker_lmm/DEBUG] var=25, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.084555, var.bound*var.penalty=-1.000000
 > [0.000000]: [ker_lmm/DEBUG] var=27, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.084555, var.bound*var.penalty=-1.000000
 > [0.000000]: [ker_lmm/DEBUG] Setting var (21) value to 0.084555
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 0.084555, Var(21).penalty: 1.000000, Var(21).value: 0.084555
 > [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.898490 bound: 1.255853
 > [0.000000]: [ker_lmm/DEBUG] Setting var (24) value to 0.084555
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 0.084555, Var(24).penalty: 1.000000, Var(24).value: 0.084555
 > [0.000000]: [ker_lmm/DEBUG] Setting var (25) value to 0.084555
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 0.084555, Var(25).penalty: 1.000000, Var(25).value: 0.084555
 > [0.000000]: [ker_lmm/DEBUG] Setting var (27) value to 0.084555
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 0.084555, Var(27).penalty: 1.000000, Var(27).value: 0.084555
 > [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 0.000000 bound: 0.707249
 > [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 4.284889 bound: 4.568332
 > [0.000000]: [ker_lmm/DEBUG] var=22, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.290535, var.bound*var.penalty=-1.000000
 > [0.000000]: [ker_lmm/DEBUG] var=26, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.290535, var.bound*var.penalty=-1.000000
 > [0.000000]: [ker_lmm/DEBUG] Setting var (22) value to 0.290535
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 0.290535, Var(22).penalty: 1.000000, Var(22).value: 0.290535
 > [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 1.965196 bound: 2.909047
 > [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 1.494649 bound: 2.155770
 > [0.000000]: [ker_lmm/DEBUG] Setting var (26) value to 0.290535
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 0.290535, Var(26).penalty: 1.000000, Var(26).value: 0.290535
 > [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 4.086431 bound: 4.370619
 > [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 1.574207 bound: 2.072429
@@ -211,14 +215,14 @@ $ ${bindir:=.}/maxmin_bench small  10 test
 > [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 0.000000 bound: 0.935515
 > [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '30'(1.000000) '27'(1.000000) '26'(1.000000) '25'(1.000000) '24'(1.000000) '23'(1.000000) '22'(1.000000) '21'(1.000000) '28'(0.000000) '29'(0.000000) )
 > [0.000000]: [ker_lmm/DEBUG] Constraints
-> [0.000000]: [ker_lmm/DEBUG] 	(1.086775.'27'(0.084555) + 0.879379.'25'(0.084555) + 2.049329.'25'(0.084555) + 0.577023.'24'(0.084555) + 1.842210.'23'(0.069564) + 2.256246.'21'(0.084555) + 0.488711.'28'(0.000000) + 0.723669.'29'(0.000000) + 0) <= 0.707249 ('21')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.038976.'30'(0.069564) + 1.682994.'30'(0.069564) + 1.987021.'21'(0.084555) + 2.089678.'29'(0.000000) + 0) <= 1.255853 ('25')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.086775.'27'(0.084555) + 2.928708.'25'(0.084555) + 0.577023.'24'(0.084555) + 1.842210.'23'(0.069564) + 2.256246.'21'(0.084555) + 1.727903.'28'(0.000000) + 1.760885.'29'(0.000000) + 0) <= 0.707249 ('21')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.721970.'30'(0.069564) + 1.987021.'21'(0.084555) + 2.089678.'29'(0.000000) + 0) <= 1.255853 ('25')
 > [0.000000]: [ker_lmm/DEBUG] 	(0.397723.'26'(0.290535) + 2.271247.'25'(0.084555) + 1.678069.'23'(0.069564) + 0.992420.'21'(0.084555) + 0.825119.'29'(0.000000) + 0) <= 5.108276 ('23')
 > [0.000000]: [ker_lmm/DEBUG] 	(2.482209.'23'(0.069564) + 2.396828.'22'(0.290535) + 0.884829.'21'(0.084555) + 1.319952.'28'(0.000000) + 0) <= 2.909047 ('22')
 > [0.000000]: [ker_lmm/DEBUG] 	(0.420916.'26'(0.290535) + 0.758904.'24'(0.084555) + 1.073061.'22'(0.290535) + 0) <= 2.072429 ('26')
 > [0.000000]: [ker_lmm/DEBUG] 	(1.894261.'27'(0.084555) + 1.169795.'26'(0.290535) + 1.498885.'22'(0.290535) + 0) <= 0.935515 ('27')
-> [0.000000]: [ker_lmm/DEBUG] 	(2.246314.'27'(0.084555) + 0.473651.'24'(0.084555) + 2.627249.'24'(0.084555) + 0.719315.'22'(0.290535) + 0) <= 2.155770 ('30')
-> [0.000000]: [ker_lmm/DEBUG] 	(0.227791.'30'(0.069564) + 2.199900.'30'(0.069564) + 1.867113.'23'(0.069564) + 0.817409.'28'(0.000000) + 0) <= 0.298762 ('28')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.246314.'27'(0.084555) + 3.100900.'24'(0.084555) + 0.719315.'22'(0.290535) + 0) <= 2.155770 ('30')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.427692.'30'(0.069564) + 1.867113.'23'(0.069564) + 0.817409.'28'(0.000000) + 0) <= 0.298762 ('28')
 > [0.000000]: [ker_lmm/DEBUG] 	(1.826081.'27'(0.084555) + 1.526090.'25'(0.084555) + 0.881617.'28'(0.000000) + 1.124948.'29'(0.000000) + 0) <= 4.568332 ('29')
 > [0.000000]: [ker_lmm/DEBUG] 	(0.978153.'26'(0.290535) + 0) <= 4.370619 ('24')
 > [0.000000]: [ker_lmm/DEBUG] Variables
@@ -236,211 +240,228 @@ $ ${bindir:=.}/maxmin_bench small  10 test
 > [0.000000]: [ker_lmm/DEBUG] Setting selective_update_active flag to 0
 > Starting to solve(591)
 > [0.000000]: [ker_lmm/DEBUG] Active constraints : 10
-> [0.000000]: [ker_lmm/DEBUG] Constraint '40' usage: 3.186779 remaining: 9.834007 concurrency: 2<=2<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '38' usage: 4.727149 remaining: 0.051591 concurrency: 3<=3<=-1
-> [0.000000]: [ker_lmm/DEBUG] Constraint '37' usage: 6.513351 remaining: 4.347915 concurrency: 3<=3<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '35' usage: 4.981305 remaining: 9.762745 concurrency: 2<=2<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '40' usage: 4.888570 remaining: 9.834007 concurrency: 3<=3<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '38' usage: 5.165237 remaining: 0.051591 concurrency: 2<=2<=-1
+> [0.000000]: [ker_lmm/DEBUG] Constraint '37' usage: 6.513351 remaining: 4.347915 concurrency: 3<=4<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '35' usage: 6.494833 remaining: 9.762745 concurrency: 3<=3<=3
 > [0.000000]: [ker_lmm/DEBUG] Constraint '31' usage: 2.087675 remaining: 9.006215 concurrency: 1<=1<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '33' usage: 7.070785 remaining: 6.090356 concurrency: 3<=3<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '33' usage: 9.418162 remaining: 6.090356 concurrency: 4<=4<=4
 > [0.000000]: [ker_lmm/DEBUG] Constraint '36' usage: 3.169386 remaining: 6.984202 concurrency: 2<=2<=4
 > [0.000000]: [ker_lmm/DEBUG] Constraint '32' usage: 2.508806 remaining: 9.726844 concurrency: 2<=2<=4
 > [0.000000]: [ker_lmm/DEBUG] Constraint '34' usage: 1.414360 remaining: 2.160895 concurrency: 1<=1<=-1
 > [0.000000]: [ker_lmm/DEBUG] Constraint '39' usage: 1.672413 remaining: 5.723565 concurrency: 1<=1<=3
-> [0.000000]: [ker_lmm/DEBUG] var=31, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.010914, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=32, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.010914, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=34, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.010914, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=36, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.010914, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (31) value to 0.010914
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.010914, Var(31).penalty: 1.000000, Var(31).value: 0.010914
-> [0.000000]: [ker_lmm/DEBUG] Setting var (32) value to 0.010914
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.010914, Var(32).penalty: 1.000000, Var(32).value: 0.010914
-> [0.000000]: [ker_lmm/DEBUG] Setting var (34) value to 0.010914
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.010914, Var(34).penalty: 1.000000, Var(34).value: 0.010914
-> [0.000000]: [ker_lmm/DEBUG] index: 4 	 cnst_light_num: 10 	 || usage: 0.000000 remaining: 8.983430 bound: 9.006215
-> [0.000000]: [ker_lmm/DEBUG] Setting var (36) value to 0.010914
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.010914, Var(36).penalty: 1.000000, Var(36).value: 0.010914
-> [0.000000]: [ker_lmm/DEBUG] index: 8 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 2.145459 bound: 2.160895
+> [0.000000]: [ker_lmm/DEBUG] var=31, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.009988, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=32, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.009988, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=34, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.009988, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=36, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.009988, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=40, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.009988, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (31) value to 0.009988
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.009988, Var(31).penalty: 1.000000, Var(31).value: 0.009988
+> [0.000000]: [ker_lmm/DEBUG] Setting var (32) value to 0.009988
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.009988, Var(32).penalty: 1.000000, Var(32).value: 0.009988
+> [0.000000]: [ker_lmm/DEBUG] Setting var (34) value to 0.009988
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.009988, Var(34).penalty: 1.000000, Var(34).value: 0.009988
+> [0.000000]: [ker_lmm/DEBUG] index: 4 	 cnst_light_num: 10 	 || usage: 0.000000 remaining: 8.985362 bound: 9.006215
+> [0.000000]: [ker_lmm/DEBUG] Setting var (36) value to 0.009988
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.009988, Var(36).penalty: 1.000000, Var(36).value: 0.009988
+> [0.000000]: [ker_lmm/DEBUG] index: 8 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 2.146768 bound: 2.160895
+> [0.000000]: [ker_lmm/DEBUG] Setting var (40) value to 0.009988
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.009988, Var(40).penalty: 1.000000, Var(40).value: 0.009988
 > [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 0.000000 bound: 0.051591
-> [0.000000]: [ker_lmm/DEBUG] var=33, var.bound=-1.000000, var.penalty=1.000000, min_usage=1.199995, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=37, var.bound=-1.000000, var.penalty=1.000000, min_usage=1.199995, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (33) value to 1.199995
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 1.199995, Var(33).penalty: 1.000000, Var(33).value: 1.199995
-> [0.000000]: [ker_lmm/DEBUG] Setting var (37) value to 1.199995
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 1.199995, Var(37).penalty: 1.000000, Var(37).value: 1.199995
-> [0.000000]: [ker_lmm/DEBUG] index: 5 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 0.192028 bound: 6.090356
+> [0.000000]: [ker_lmm/DEBUG] var=33, var.bound=-1.000000, var.penalty=1.000000, min_usage=1.200746, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=37, var.bound=-1.000000, var.penalty=1.000000, min_usage=1.200746, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (33) value to 1.200746
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 1.200746, Var(33).penalty: 1.000000, Var(33).value: 1.200746
+> [0.000000]: [ker_lmm/DEBUG] Setting var (37) value to 1.200746
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 1.200746, Var(37).penalty: 1.000000, Var(37).value: 1.200746
+> [0.000000]: [ker_lmm/DEBUG] index: 5 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 0.166920 bound: 6.090356
 > [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 0.000000 bound: 4.347915
-> [0.000000]: [ker_lmm/DEBUG] index: 4 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 3.716677 bound: 5.723565
-> [0.000000]: [ker_lmm/DEBUG] var=35, var.bound=-1.000000, var.penalty=1.000000, min_usage=4.005178, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (35) value to 4.005178
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 4.005178, Var(35).penalty: 1.000000, Var(35).value: 4.005178
-> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 3.517521 bound: 9.762745
+> [0.000000]: [ker_lmm/DEBUG] index: 4 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 3.715422 bound: 5.723565
+> [0.000000]: [ker_lmm/DEBUG] var=35, var.bound=-1.000000, var.penalty=1.000000, min_usage=4.003830, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (35) value to 4.003830
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 4.003830, Var(35).penalty: 1.000000, Var(35).value: 4.003830
+> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 3.507279 bound: 9.762745
 > [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 0.000000 bound: 6.984202
-> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 4.581572 bound: 9.726844
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 3.075176 bound: 9.834007
-> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '37'(1.000000) '36'(1.000000) '35'(1.000000) '34'(1.000000) '33'(1.000000) '32'(1.000000) '31'(1.000000) '38'(0.000000) '39'(0.000000) '40'(0.000000) )
+> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 4.584434 bound: 9.726844
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 3.061140 bound: 9.834007
+> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '40'(1.000000) '37'(1.000000) '36'(1.000000) '35'(1.000000) '34'(1.000000) '33'(1.000000) '32'(1.000000) '31'(1.000000) '38'(0.000000) '39'(0.000000) )
 > [0.000000]: [ker_lmm/DEBUG] Constraints
-> [0.000000]: [ker_lmm/DEBUG] 	(0.387228.'37'(1.199995) + 1.568150.'35'(4.005178) + 1.231401.'31'(0.010914) + 1.422837.'38'(0.000000) + 1.701792.'40'(0.000000) + 0) <= 9.834007 ('40')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.216357.'36'(0.010914) + 1.185662.'36'(0.010914) + 1.134575.'34'(0.010914) + 0.210987.'32'(0.010914) + 0.979568.'31'(0.010914) + 0.438088.'40'(0.000000) + 0) <= 0.051591 ('38')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.718792.'37'(1.199995) + 1.877958.'33'(1.199995) + 0.515750.'32'(0.010914) + 2.400851.'31'(0.010914) + 2.457026.'38'(0.000000) + 1.268165.'38'(0.000000) + 0.895900.'39'(0.000000) + 0) <= 4.347915 ('37')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.485656.'35'(4.005178) + 0.215927.'33'(1.199995) + 2.596965.'32'(0.010914) + 0.682757.'31'(0.010914) + 0.922672.'39'(0.000000) + 1.415926.'40'(0.000000) + 0) <= 9.762745 ('35')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.158403.'34'(0.010914) + 0.929272.'32'(0.010914) + 0) <= 9.006215 ('31')
-> [0.000000]: [ker_lmm/DEBUG] 	(2.798186.'37'(1.199995) + 1.211476.'36'(0.010914) + 0.963801.'34'(0.010914) + 2.097323.'33'(1.199995) + 1.942004.'38'(0.000000) + 2.347376.'40'(0.000000) + 0) <= 6.090356 ('33')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.133956.'35'(4.005178) + 2.035429.'33'(1.199995) + 0) <= 6.984202 ('36')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.281310.'35'(4.005178) + 1.227496.'34'(0.010914) + 0) <= 9.726844 ('32')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.414360.'36'(0.010914) + 0.510978.'39'(0.000000) + 0) <= 2.160895 ('34')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.672413.'37'(1.199995) + 1.668122.'39'(0.000000) + 0) <= 5.723565 ('39')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.701792.'40'(0.009988) + 0.387228.'37'(1.200746) + 1.568150.'35'(4.003830) + 1.231401.'31'(0.009988) + 1.422837.'38'(0.000000) + 0) <= 9.834007 ('40')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.438088.'40'(0.009988) + 2.402019.'36'(0.009988) + 1.134575.'34'(0.009988) + 0.210987.'32'(0.009988) + 0.979568.'31'(0.009988) + 0) <= 0.051591 ('38')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.718792.'37'(1.200746) + 1.877958.'33'(1.200746) + 0.515750.'32'(0.009988) + 2.400851.'31'(0.009988) + 4.332429.'38'(0.000000) + 1.015869.'39'(0.000000) + 0) <= 4.347915 ('37')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.513528.'40'(0.009988) + 1.485656.'35'(4.003830) + 0.215927.'33'(1.200746) + 2.596965.'32'(0.009988) + 0.682757.'31'(0.009988) + 0.922672.'39'(0.000000) + 0) <= 9.762745 ('35')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.158403.'34'(0.009988) + 0.929272.'32'(0.009988) + 0) <= 9.006215 ('31')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.347376.'40'(0.009988) + 2.798186.'37'(1.200746) + 1.211476.'36'(0.009988) + 0.963801.'34'(0.009988) + 2.097323.'33'(1.200746) + 1.942004.'38'(0.000000) + 0) <= 6.090356 ('33')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.133956.'35'(4.003830) + 2.035429.'33'(1.200746) + 0) <= 6.984202 ('36')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.281310.'35'(4.003830) + 1.227496.'34'(0.009988) + 0) <= 9.726844 ('32')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.414360.'36'(0.009988) + 0.510978.'39'(0.000000) + 0) <= 2.160895 ('34')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.672413.'37'(1.200746) + 1.668122.'39'(0.000000) + 0) <= 5.723565 ('39')
 > [0.000000]: [ker_lmm/DEBUG] Variables
-> [0.000000]: [ker_lmm/DEBUG] '37'(1.000000) : 1.199995
-> [0.000000]: [ker_lmm/DEBUG] '36'(1.000000) : 0.010914
-> [0.000000]: [ker_lmm/DEBUG] '35'(1.000000) : 4.005178
-> [0.000000]: [ker_lmm/DEBUG] '34'(1.000000) : 0.010914
-> [0.000000]: [ker_lmm/DEBUG] '33'(1.000000) : 1.199995
-> [0.000000]: [ker_lmm/DEBUG] '32'(1.000000) : 0.010914
-> [0.000000]: [ker_lmm/DEBUG] '31'(1.000000) : 0.010914
+> [0.000000]: [ker_lmm/DEBUG] '40'(1.000000) : 0.009988
+> [0.000000]: [ker_lmm/DEBUG] '37'(1.000000) : 1.200746
+> [0.000000]: [ker_lmm/DEBUG] '36'(1.000000) : 0.009988
+> [0.000000]: [ker_lmm/DEBUG] '35'(1.000000) : 4.003830
+> [0.000000]: [ker_lmm/DEBUG] '34'(1.000000) : 0.009988
+> [0.000000]: [ker_lmm/DEBUG] '33'(1.000000) : 1.200746
+> [0.000000]: [ker_lmm/DEBUG] '32'(1.000000) : 0.009988
+> [0.000000]: [ker_lmm/DEBUG] '31'(1.000000) : 0.009988
 > [0.000000]: [ker_lmm/DEBUG] '38'(0.000000) : 0.000000
 > [0.000000]: [ker_lmm/DEBUG] '39'(0.000000) : 0.000000
-> [0.000000]: [ker_lmm/DEBUG] '40'(0.000000) : 0.000000
 > Starting 4: (411)
 > [0.000000]: [ker_lmm/DEBUG] Setting selective_update_active flag to 0
 > Starting to solve(649)
 > [0.000000]: [ker_lmm/DEBUG] Active constraints : 10
-> [0.000000]: [ker_lmm/DEBUG] Constraint '45' usage: 0.799996 remaining: 3.541380 concurrency: 0<=0<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '41' usage: 5.752746 remaining: 0.551801 concurrency: 3<=3<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '46' usage: 5.476668 remaining: 2.968005 concurrency: 3<=3<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '45' usage: 2.373810 remaining: 3.541380 concurrency: 1<=1<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '41' usage: 6.307754 remaining: 0.551801 concurrency: 3<=3<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '46' usage: 3.944411 remaining: 2.968005 concurrency: 2<=2<=4
 > [0.000000]: [ker_lmm/DEBUG] Constraint '44' usage: 0.420600 remaining: 6.117439 concurrency: 0<=0<=4
 > [0.000000]: [ker_lmm/DEBUG] Constraint '43' usage: 1.620214 remaining: 9.794450 concurrency: 1<=1<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '47' usage: 1.466486 remaining: 8.082817 concurrency: 1<=2<=-1
-> [0.000000]: [ker_lmm/DEBUG] Constraint '50' usage: 10.056288 remaining: 7.643726 concurrency: 3<=3<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '48' usage: 1.837183 remaining: 6.494589 concurrency: 1<=1<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '42' usage: 4.537079 remaining: 2.067192 concurrency: 3<=3<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '47' usage: 2.780818 remaining: 8.082817 concurrency: 2<=3<=-1
+> [0.000000]: [ker_lmm/DEBUG] Constraint '50' usage: 8.631195 remaining: 7.643726 concurrency: 3<=4<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '48' usage: 2.532360 remaining: 6.494589 concurrency: 1<=1<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '42' usage: 5.066148 remaining: 2.067192 concurrency: 3<=4<=3
 > [0.000000]: [ker_lmm/DEBUG] Constraint '49' usage: 0.000000 remaining: 4.413092 concurrency: 0<=1<=4
-> [0.000000]: [ker_lmm/DEBUG] var=41, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.095920, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=43, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.095920, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=48, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.095920, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (41) value to 0.095920
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.095920, Var(41).penalty: 1.000000, Var(41).value: 0.095920
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 3.464645 bound: 3.541380
-> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 6.077095 bound: 6.117439
-> [0.000000]: [ker_lmm/DEBUG] Setting var (43) value to 0.095920
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.095920, Var(43).penalty: 1.000000, Var(43).value: 0.095920
-> [0.000000]: [ker_lmm/DEBUG] Setting var (48) value to 0.095920
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.095920, Var(48).penalty: 1.000000, Var(48).value: 0.095920
+> [0.000000]: [ker_lmm/DEBUG] var=41, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.087480, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=43, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.087480, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=45, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.087480, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (41) value to 0.087480
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.087480, Var(41).penalty: 1.000000, Var(41).value: 0.087480
+> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 6.080645 bound: 6.117439
+> [0.000000]: [ker_lmm/DEBUG] Setting var (43) value to 0.087480
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.087480, Var(43).penalty: 1.000000, Var(43).value: 0.087480
+> [0.000000]: [ker_lmm/DEBUG] Setting var (45) value to 0.087480
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.087480, Var(45).penalty: 1.000000, Var(45).value: 0.087480
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 3.333720 bound: 3.541380
 > [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 0.000000 bound: 0.551801
-> [0.000000]: [ker_lmm/DEBUG] var=44, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.912955, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (44) value to 0.912955
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.912955, Var(44).penalty: 1.000000, Var(44).value: 0.912955
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 0.000000 bound: 2.067192
-> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 0.558345 bound: 2.968005
-> [0.000000]: [ker_lmm/DEBUG] var=42, var.bound=-1.000000, var.penalty=1.000000, min_usage=1.466672, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (42) value to 1.466672
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 1.466672, Var(42).penalty: 1.000000, Var(42).value: 1.466672
-> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 7.418128 bound: 9.794450
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 5.931963 bound: 8.082817
+> [0.000000]: [ker_lmm/DEBUG] var=44, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.489142, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=46, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.489142, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (44) value to 0.489142
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.489142, Var(44).penalty: 1.000000, Var(44).value: 0.489142
+> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 1.696590 bound: 2.968005
+> [0.000000]: [ker_lmm/DEBUG] Setting var (46) value to 0.489142
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.489142, Var(46).penalty: 1.000000, Var(46).value: 0.489142
+> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 0.000000 bound: 2.067192
+> [0.000000]: [ker_lmm/DEBUG] var=42, var.bound=-1.000000, var.penalty=1.000000, min_usage=2.337099, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (42) value to 2.337099
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 2.337099, Var(42).penalty: 1.000000, Var(42).value: 2.337099
+> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 6.007850 bound: 9.794450
+> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 4.012599 bound: 8.082817
 > [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 0.000000 bound: 7.643726
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 5.744782 bound: 6.494589
-> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '48'(1.000000) '44'(1.000000) '43'(1.000000) '42'(1.000000) '41'(1.000000) '45'(0.000000) '46'(0.000000) '47'(0.000000) '49'(0.000000) '50'(0.000000) )
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 5.331716 bound: 6.494589
+> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '46'(1.000000) '45'(1.000000) '44'(1.000000) '43'(1.000000) '42'(1.000000) '41'(1.000000) '47'(0.000000) '48'(0.000000) '49'(0.000000) '50'(0.000000) )
 > [0.000000]: [ker_lmm/DEBUG] Constraints
-> [0.000000]: [ker_lmm/DEBUG] 	(0.799996.'41'(0.095920) + 1.573815.'45'(0.000000) + 0) <= 3.541380 ('45')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.177881.'48'(0.095920) + 2.314828.'43'(0.095920) + 2.260036.'41'(0.095920) + 1.732889.'45'(0.000000) + 1.670857.'47'(0.000000) + 1.006444.'49'(0.000000) + 0) <= 0.551801 ('41')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.532257.'48'(0.095920) + 2.306313.'44'(0.912955) + 1.638098.'41'(0.095920) + 1.518946.'47'(0.000000) + 0) <= 2.968005 ('46')
-> [0.000000]: [ker_lmm/DEBUG] 	(0.420600.'41'(0.095920) + 0) <= 6.117439 ('44')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.620214.'42'(1.466672) + 0) <= 9.794450 ('43')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.466486.'42'(1.466672) + 0.602858.'46'(0.000000) + 0.711475.'46'(0.000000) + 1.360665.'47'(0.000000) + 1.542968.'50'(0.000000) + 0) <= 8.082817 ('47')
-> [0.000000]: [ker_lmm/DEBUG] 	(2.473412.'48'(0.095920) + 0.388646.'44'(0.912955) + 3.947741.'44'(0.912955) + 0.958587.'43'(0.095920) + 2.287901.'42'(1.466672) + 0.003321.'45'(0.000000) + 0.965523.'49'(0.000000) + 0.339878.'50'(0.000000) + 0) <= 7.643726 ('50')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.418738.'43'(0.095920) + 0.418445.'42'(1.466672) + 0.695178.'45'(0.000000) + 1.393992.'49'(0.000000) + 2.482409.'50'(0.000000) + 0) <= 6.494589 ('48')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.516683.'48'(0.095920) + 1.997460.'44'(0.912955) + 1.022936.'43'(0.095920) + 0.759682.'46'(0.000000) + 0.129789.'46'(0.000000) + 1.414580.'47'(0.000000) + 0) <= 2.067192 ('42')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.573815.'45'(0.087480) + 0.799996.'41'(0.087480) + 0) <= 3.541380 ('45')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.732889.'45'(0.087480) + 2.314828.'43'(0.087480) + 2.260036.'41'(0.087480) + 1.670857.'47'(0.000000) + 1.177881.'48'(0.000000) + 1.006444.'49'(0.000000) + 0) <= 0.551801 ('41')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.306313.'44'(0.489142) + 1.638098.'41'(0.087480) + 1.518946.'47'(0.000000) + 1.532257.'48'(0.000000) + 0) <= 2.968005 ('46')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.420600.'41'(0.087480) + 0) <= 6.117439 ('44')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.620214.'42'(2.337099) + 0) <= 9.794450 ('43')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.314333.'46'(0.489142) + 1.466486.'42'(2.337099) + 1.360665.'47'(0.000000) + 1.542968.'50'(0.000000) + 0) <= 8.082817 ('47')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.048319.'45'(0.087480) + 4.336388.'44'(0.489142) + 0.958587.'43'(0.087480) + 2.287901.'42'(2.337099) + 2.473412.'48'(0.000000) + 1.513740.'49'(0.000000) + 1.080000.'50'(0.000000) + 0) <= 7.643726 ('50')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.695178.'45'(0.087480) + 1.418738.'43'(0.087480) + 0.418445.'42'(2.337099) + 1.393992.'49'(0.000000) + 2.482409.'50'(0.000000) + 0) <= 6.494589 ('48')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.045752.'46'(0.489142) + 1.997460.'44'(0.489142) + 1.022936.'43'(0.087480) + 2.639571.'47'(0.000000) + 1.516683.'48'(0.000000) + 0) <= 2.067192 ('42')
 > [0.000000]: [ker_lmm/DEBUG] 	(1.536723.'49'(0.000000) + 2.744981.'50'(0.000000) + 0) <= 4.413092 ('49')
 > [0.000000]: [ker_lmm/DEBUG] Variables
-> [0.000000]: [ker_lmm/DEBUG] '48'(1.000000) : 0.095920
-> [0.000000]: [ker_lmm/DEBUG] '44'(1.000000) : 0.912955
-> [0.000000]: [ker_lmm/DEBUG] '43'(1.000000) : 0.095920
-> [0.000000]: [ker_lmm/DEBUG] '42'(1.000000) : 1.466672
-> [0.000000]: [ker_lmm/DEBUG] '41'(1.000000) : 0.095920
-> [0.000000]: [ker_lmm/DEBUG] '45'(0.000000) : 0.000000
-> [0.000000]: [ker_lmm/DEBUG] '46'(0.000000) : 0.000000
+> [0.000000]: [ker_lmm/DEBUG] '46'(1.000000) : 0.489142
+> [0.000000]: [ker_lmm/DEBUG] '45'(1.000000) : 0.087480
+> [0.000000]: [ker_lmm/DEBUG] '44'(1.000000) : 0.489142
+> [0.000000]: [ker_lmm/DEBUG] '43'(1.000000) : 0.087480
+> [0.000000]: [ker_lmm/DEBUG] '42'(1.000000) : 2.337099
+> [0.000000]: [ker_lmm/DEBUG] '41'(1.000000) : 0.087480
 > [0.000000]: [ker_lmm/DEBUG] '47'(0.000000) : 0.000000
+> [0.000000]: [ker_lmm/DEBUG] '48'(0.000000) : 0.000000
 > [0.000000]: [ker_lmm/DEBUG] '49'(0.000000) : 0.000000
 > [0.000000]: [ker_lmm/DEBUG] '50'(0.000000) : 0.000000
 > Starting 5: (130)
 > [0.000000]: [ker_lmm/DEBUG] Setting selective_update_active flag to 0
 > Starting to solve(901)
 > [0.000000]: [ker_lmm/DEBUG] Active constraints : 10
-> [0.000000]: [ker_lmm/DEBUG] Constraint '53' usage: 6.754969 remaining: 0.416966 concurrency: 3<=3<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '52' usage: 6.539701 remaining: 8.212291 concurrency: 3<=4<=-1
-> [0.000000]: [ker_lmm/DEBUG] Constraint '54' usage: 4.205093 remaining: 9.850288 concurrency: 3<=4<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '51' usage: 6.169162 remaining: 9.474761 concurrency: 3<=3<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '57' usage: 4.830475 remaining: 6.225194 concurrency: 3<=3<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '53' usage: 9.055137 remaining: 0.416966 concurrency: 3<=3<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '52' usage: 8.646158 remaining: 8.212291 concurrency: 4<=5<=-1
+> [0.000000]: [ker_lmm/DEBUG] Constraint '54' usage: 5.139453 remaining: 9.850288 concurrency: 3<=4<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '51' usage: 9.825402 remaining: 9.474761 concurrency: 3<=4<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '57' usage: 4.830475 remaining: 6.225194 concurrency: 3<=4<=3
 > [0.000000]: [ker_lmm/DEBUG] Constraint '55' usage: 3.907363 remaining: 5.298174 concurrency: 2<=2<=4
 > [0.000000]: [ker_lmm/DEBUG] Constraint '56' usage: 3.773201 remaining: 5.303965 concurrency: 2<=2<=4
 > [0.000000]: [ker_lmm/DEBUG] Constraint '60' usage: 2.790951 remaining: 1.556151 concurrency: 1<=2<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '58' usage: 0.000000 remaining: 7.550130 concurrency: 0<=0<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '58' usage: 3.909122 remaining: 7.550130 concurrency: 1<=1<=3
 > [0.000000]: [ker_lmm/DEBUG] Constraint '59' usage: 0.983317 remaining: 5.180364 concurrency: 0<=1<=4
-> [0.000000]: [ker_lmm/DEBUG] var=51, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.061727, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=52, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.061727, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=58, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.061727, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (51) value to 0.061727
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.061727, Var(51).penalty: 1.000000, Var(51).value: 0.061727
-> [0.000000]: [ker_lmm/DEBUG] Setting var (52) value to 0.061727
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.061727, Var(52).penalty: 1.000000, Var(52).value: 0.061727
-> [0.000000]: [ker_lmm/DEBUG] Setting var (58) value to 0.061727
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.061727, Var(58).penalty: 1.000000, Var(58).value: 0.061727
+> [0.000000]: [ker_lmm/DEBUG] var=51, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.046047, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=52, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.046047, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=56, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.046047, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=57, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.046047, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=58, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.046047, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (51) value to 0.046047
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.046047, Var(51).penalty: 1.000000, Var(51).value: 0.046047
+> [0.000000]: [ker_lmm/DEBUG] Setting var (52) value to 0.046047
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.046047, Var(52).penalty: 1.000000, Var(52).value: 0.046047
+> [0.000000]: [ker_lmm/DEBUG] Setting var (56) value to 0.046047
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.046047, Var(56).penalty: 1.000000, Var(56).value: 0.046047
+> [0.000000]: [ker_lmm/DEBUG] Setting var (57) value to 0.046047
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.046047, Var(57).penalty: 1.000000, Var(57).value: 0.046047
+> [0.000000]: [ker_lmm/DEBUG] index: 8 	 cnst_light_num: 10 	 || usage: 0.000000 remaining: 7.370124 bound: 7.550130
+> [0.000000]: [ker_lmm/DEBUG] Setting var (58) value to 0.046047
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.046047, Var(58).penalty: 1.000000, Var(58).value: 0.046047
 > [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.000000 bound: 0.416966
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 5.119667 bound: 5.180364
-> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 7.808613 bound: 8.212291
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 5.135085 bound: 5.180364
+> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 7.814157 bound: 8.212291
 > [0.000000]: [ker_lmm/DEBUG] var=54, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.557570, var.bound*var.penalty=-1.000000
 > [0.000000]: [ker_lmm/DEBUG] var=55, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.557570, var.bound*var.penalty=-1.000000
 > [0.000000]: [ker_lmm/DEBUG] Setting var (54) value to 0.557570
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 0.557570, Var(54).penalty: 1.000000, Var(54).value: 0.557570
 > [0.000000]: [ker_lmm/DEBUG] Setting var (55) value to 0.557570
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 0.557570, Var(55).penalty: 1.000000, Var(55).value: 0.557570
 > [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 0.000000 bound: 1.556151
-> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 8.881565 bound: 9.850288
+> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 8.882050 bound: 9.850288
 > [0.000000]: [ker_lmm/DEBUG] var=53, var.bound=-1.000000, var.penalty=1.000000, min_usage=2.031309, var.bound*var.penalty=-1.000000
 > [0.000000]: [ker_lmm/DEBUG] Setting var (53) value to 2.031309
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 2.031309, Var(53).penalty: 1.000000, Var(53).value: 2.031309
-> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 3.587933 bound: 9.474761
-> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 2.552231 bound: 6.225194
+> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 3.424503 bound: 9.474761
+> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 2.577268 bound: 6.225194
 > [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 0.000000 bound: 5.298174
 > [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 0.022547 bound: 5.303965
-> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '58'(1.000000) '55'(1.000000) '54'(1.000000) '53'(1.000000) '52'(1.000000) '51'(1.000000) '56'(0.000000) '57'(0.000000) '59'(0.000000) '60'(0.000000) )
+> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '58'(1.000000) '57'(1.000000) '56'(1.000000) '55'(1.000000) '54'(1.000000) '53'(1.000000) '52'(1.000000) '51'(1.000000) '59'(0.000000) '60'(0.000000) )
 > [0.000000]: [ker_lmm/DEBUG] Constraints
-> [0.000000]: [ker_lmm/DEBUG] 	(1.551765.'58'(0.061727) + 0.931720.'52'(0.061727) + 1.017756.'51'(0.061727) + 3.253728.'51'(0.061727) + 1.422923.'56'(0.000000) + 0.593585.'57'(0.000000) + 0) <= 0.416966 ('53')
-> [0.000000]: [ker_lmm/DEBUG] 	(2.587460.'58'(0.061727) + 2.029325.'52'(0.061727) + 1.922916.'51'(0.061727) + 2.106457.'57'(0.000000) + 1.104637.'60'(0.000000) + 0) <= 8.212291 ('52')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.430199.'55'(0.557570) + 1.475171.'52'(0.061727) + 1.299723.'51'(0.061727) + 0.934360.'56'(0.000000) + 1.750104.'59'(0.000000) + 1.029406.'60'(0.000000) + 0) <= 9.850288 ('54')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.118063.'54'(0.557570) + 2.970325.'54'(0.557570) + 1.766276.'53'(2.031309) + 0.314498.'52'(0.061727) + 1.946019.'56'(0.000000) + 0.425789.'56'(0.000000) + 0.062063.'60'(0.000000) + 0) <= 9.474761 ('51')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.596755.'58'(0.061727) + 2.031760.'55'(0.557570) + 1.201960.'53'(2.031309) + 0.001279.'59'(0.000000) + 0) <= 6.225194 ('57')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.551765.'58'(0.046047) + 0.877245.'57'(0.046047) + 1.422923.'56'(0.046047) + 0.931720.'52'(0.046047) + 4.271484.'51'(0.046047) + 0) <= 0.416966 ('53')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.587460.'58'(0.046047) + 2.106457.'57'(0.046047) + 2.029325.'52'(0.046047) + 1.922916.'51'(0.046047) + 1.104637.'60'(0.000000) + 0) <= 8.212291 ('52')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.934360.'56'(0.046047) + 1.430199.'55'(0.557570) + 1.475171.'52'(0.046047) + 1.299723.'51'(0.046047) + 1.750104.'59'(0.000000) + 1.029406.'60'(0.000000) + 0) <= 9.850288 ('54')
+> [0.000000]: [ker_lmm/DEBUG] 	(3.656240.'56'(0.046047) + 4.088388.'54'(0.557570) + 1.766276.'53'(2.031309) + 0.314498.'52'(0.046047) + 1.005576.'60'(0.000000) + 0) <= 9.474761 ('51')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.596755.'58'(0.046047) + 2.031760.'55'(0.557570) + 1.201960.'53'(2.031309) + 1.388469.'59'(0.000000) + 0) <= 6.225194 ('57')
 > [0.000000]: [ker_lmm/DEBUG] 	(1.790607.'54'(0.557570) + 2.116755.'53'(2.031309) + 0) <= 5.298174 ('55')
 > [0.000000]: [ker_lmm/DEBUG] 	(1.617056.'55'(0.557570) + 2.156145.'53'(2.031309) + 0) <= 5.303965 ('56')
 > [0.000000]: [ker_lmm/DEBUG] 	(1.951588.'55'(0.557570) + 0.839363.'54'(0.557570) + 1.849659.'59'(0.000000) + 0) <= 1.556151 ('60')
-> [0.000000]: [ker_lmm/DEBUG] 	(3.215581.'57'(0.000000) + 0.693541.'57'(0.000000) + 0) <= 7.550130 ('58')
-> [0.000000]: [ker_lmm/DEBUG] 	(0.983317.'58'(0.061727) + 0.900259.'59'(0.000000) + 1.103442.'60'(0.000000) + 0) <= 5.180364 ('59')
+> [0.000000]: [ker_lmm/DEBUG] 	(3.909122.'57'(0.046047) + 0) <= 7.550130 ('58')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.983317.'58'(0.046047) + 0.900259.'59'(0.000000) + 1.103442.'60'(0.000000) + 0) <= 5.180364 ('59')
 > [0.000000]: [ker_lmm/DEBUG] Variables
-> [0.000000]: [ker_lmm/DEBUG] '58'(1.000000) : 0.061727
+> [0.000000]: [ker_lmm/DEBUG] '58'(1.000000) : 0.046047
+> [0.000000]: [ker_lmm/DEBUG] '57'(1.000000) : 0.046047
+> [0.000000]: [ker_lmm/DEBUG] '56'(1.000000) : 0.046047
 > [0.000000]: [ker_lmm/DEBUG] '55'(1.000000) : 0.557570
 > [0.000000]: [ker_lmm/DEBUG] '54'(1.000000) : 0.557570
 > [0.000000]: [ker_lmm/DEBUG] '53'(1.000000) : 2.031309
-> [0.000000]: [ker_lmm/DEBUG] '52'(1.000000) : 0.061727
-> [0.000000]: [ker_lmm/DEBUG] '51'(1.000000) : 0.061727
-> [0.000000]: [ker_lmm/DEBUG] '56'(0.000000) : 0.000000
-> [0.000000]: [ker_lmm/DEBUG] '57'(0.000000) : 0.000000
+> [0.000000]: [ker_lmm/DEBUG] '52'(1.000000) : 0.046047
+> [0.000000]: [ker_lmm/DEBUG] '51'(1.000000) : 0.046047
 > [0.000000]: [ker_lmm/DEBUG] '59'(0.000000) : 0.000000
 > [0.000000]: [ker_lmm/DEBUG] '60'(0.000000) : 0.000000
 > Starting 6: (615)
@@ -448,64 +469,63 @@ $ ${bindir:=.}/maxmin_bench small  10 test
 > Starting to solve(609)
 > [0.000000]: [ker_lmm/DEBUG] Active constraints : 10
 > [0.000000]: [ker_lmm/DEBUG] Constraint '61' usage: 2.299142 remaining: 2.273391 concurrency: 1<=1<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '66' usage: 5.011946 remaining: 4.193722 concurrency: 2<=2<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '68' usage: 2.976955 remaining: 8.688015 concurrency: 2<=3<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '70' usage: 4.268924 remaining: 6.743304 concurrency: 3<=3<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '66' usage: 6.422125 remaining: 4.193722 concurrency: 3<=4<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '68' usage: 1.163493 remaining: 8.688015 concurrency: 1<=2<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '70' usage: 7.043145 remaining: 6.743304 concurrency: 3<=4<=3
 > [0.000000]: [ker_lmm/DEBUG] Constraint '63' usage: 3.069264 remaining: 4.555849 concurrency: 2<=2<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '69' usage: 4.270254 remaining: 3.809411 concurrency: 2<=2<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '64' usage: 4.457141 remaining: 5.384959 concurrency: 3<=3<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '69' usage: 7.109223 remaining: 3.809411 concurrency: 3<=3<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '64' usage: 2.733798 remaining: 5.384959 concurrency: 2<=2<=3
 > [0.000000]: [ker_lmm/DEBUG] Constraint '62' usage: 1.822730 remaining: 4.384092 concurrency: 1<=2<=4
 > [0.000000]: [ker_lmm/DEBUG] Constraint '67' usage: 0.000000 remaining: 4.998825 concurrency: 0<=1<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '65' usage: 2.538214 remaining: 0.867434 concurrency: 1<=2<=-1
-> [0.000000]: [ker_lmm/DEBUG] var=67, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.341750, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (67) value to 0.341750
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.341750, Var(67).penalty: 1.000000, Var(67).value: 0.341750
-> [0.000000]: [ker_lmm/DEBUG] index: 8 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.000000 bound: 0.867434
-> [0.000000]: [ker_lmm/DEBUG] var=61, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.836745, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=63, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.836745, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=64, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.836745, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (61) value to 0.836745
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.836745, Var(61).penalty: 1.000000, Var(61).value: 0.836745
-> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 7.094717 bound: 8.688015
-> [0.000000]: [ker_lmm/DEBUG] Setting var (63) value to 0.836745
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.836745, Var(63).penalty: 1.000000, Var(63).value: 0.836745
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 0.349595 bound: 2.273391
-> [0.000000]: [ker_lmm/DEBUG] Setting var (64) value to 0.836745
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.836745, Var(64).penalty: 1.000000, Var(64).value: 0.836745
-> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 2.858932 bound: 4.384092
-> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 0.000000 bound: 4.193722
-> [0.000000]: [ker_lmm/DEBUG] var=62, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.922047, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (62) value to 0.922047
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.922047, Var(62).penalty: 1.000000, Var(62).value: 0.922047
-> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 1.895206 bound: 4.555849
-> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 0.000000 bound: 3.809411
-> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 3.543398 bound: 6.743304
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 2.366758 bound: 5.384959
-> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '67'(1.000000) '64'(1.000000) '63'(1.000000) '62'(1.000000) '61'(1.000000) '65'(0.000000) '66'(0.000000) '68'(0.000000) '69'(0.000000) '70'(0.000000) )
+> [0.000000]: [ker_lmm/DEBUG] Constraint '65' usage: 0.000000 remaining: 0.867434 concurrency: 0<=1<=-1
+> [0.000000]: [ker_lmm/DEBUG] var=62, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.535841, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=64, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.535841, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=65, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.535841, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (62) value to 0.535841
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.535841, Var(62).penalty: 1.000000, Var(62).value: 0.535841
+> [0.000000]: [ker_lmm/DEBUG] Setting var (64) value to 0.535841
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.535841, Var(64).penalty: 1.000000, Var(64).value: 0.535841
+> [0.000000]: [ker_lmm/DEBUG] index: 7 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 3.407399 bound: 4.384092
+> [0.000000]: [ker_lmm/DEBUG] Setting var (65) value to 0.535841
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.535841, Var(65).penalty: 1.000000, Var(65).value: 0.535841
+> [0.000000]: [ker_lmm/DEBUG] index: 5 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 0.000000 bound: 3.809411
+> [0.000000]: [ker_lmm/DEBUG] var=61, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.742372, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=63, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.742372, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (61) value to 0.742372
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.742372, Var(61).penalty: 1.000000, Var(61).value: 0.742372
+> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 7.824270 bound: 8.688015
+> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 2.595987 bound: 6.743304
+> [0.000000]: [ker_lmm/DEBUG] Setting var (63) value to 0.742372
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.742372, Var(63).penalty: 1.000000, Var(63).value: 0.742372
+> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 0.000000 bound: 4.193722
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 0.566571 bound: 2.273391
+> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 2.501154 bound: 4.555849
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 3.698683 bound: 5.384959
+> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '65'(1.000000) '64'(1.000000) '63'(1.000000) '62'(1.000000) '61'(1.000000) '66'(0.000000) '67'(0.000000) '68'(0.000000) '69'(0.000000) '70'(0.000000) )
 > [0.000000]: [ker_lmm/DEBUG] Constraints
-> [0.000000]: [ker_lmm/DEBUG] 	(1.460104.'63'(0.836745) + 0.839037.'61'(0.836745) + 0) <= 2.273391 ('61')
-> [0.000000]: [ker_lmm/DEBUG] 	(0.214074.'64'(0.836745) + 1.154431.'64'(0.836745) + 0.852340.'63'(0.836745) + 2.791101.'61'(0.836745) + 0.424080.'65'(0.000000) + 0.388704.'66'(0.000000) + 1.493331.'69'(0.000000) + 0.059469.'69'(0.000000) + 0) <= 4.193722 ('66')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.813462.'67'(0.341750) + 1.163493.'61'(0.836745) + 1.389494.'66'(0.000000) + 1.228992.'70'(0.000000) + 0) <= 8.688015 ('68')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.003031.'67'(0.341750) + 1.458358.'62'(0.922047) + 1.807535.'61'(0.836745) + 2.698266.'65'(0.000000) + 1.078986.'65'(0.000000) + 0.973678.'68'(0.000000) + 0.248252.'70'(0.000000) + 0) <= 6.743304 ('70')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.985450.'63'(0.836745) + 1.083814.'62'(0.922047) + 0) <= 4.555849 ('63')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.500117.'64'(0.836745) + 2.770137.'62'(0.922047) + 2.838970.'65'(0.000000) + 1.188801.'68'(0.000000) + 0) <= 3.809411 ('69')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.723344.'67'(0.341750) + 1.071970.'63'(0.836745) + 1.661828.'62'(0.922047) + 0) <= 5.384959 ('64')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.822730.'64'(0.836745) + 1.626636.'66'(0.000000) + 1.510680.'68'(0.000000) + 2.261451.'69'(0.000000) + 1.239524.'70'(0.000000) + 0) <= 4.384092 ('62')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.460104.'63'(0.742372) + 0.839037.'61'(0.742372) + 0) <= 2.273391 ('61')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.410179.'65'(0.535841) + 1.368505.'64'(0.535841) + 0.852340.'63'(0.742372) + 2.791101.'61'(0.742372) + 1.173063.'66'(0.000000) + 1.749466.'69'(0.000000) + 0) <= 4.193722 ('66')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.163493.'61'(0.742372) + 1.389494.'66'(0.000000) + 1.813462.'67'(0.000000) + 1.228992.'70'(0.000000) + 0) <= 8.688015 ('68')
+> [0.000000]: [ker_lmm/DEBUG] 	(3.777252.'65'(0.535841) + 1.458358.'62'(0.535841) + 1.807535.'61'(0.742372) + 1.003031.'67'(0.000000) + 1.436957.'68'(0.000000) + 1.426977.'70'(0.000000) + 0) <= 6.743304 ('70')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.985450.'63'(0.742372) + 1.083814.'62'(0.535841) + 0) <= 4.555849 ('63')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.838970.'65'(0.535841) + 1.500117.'64'(0.535841) + 2.770137.'62'(0.535841) + 1.188801.'68'(0.000000) + 0) <= 3.809411 ('69')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.071970.'63'(0.742372) + 1.661828.'62'(0.535841) + 1.723344.'67'(0.000000) + 0) <= 5.384959 ('64')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.822730.'64'(0.535841) + 1.626636.'66'(0.000000) + 1.510680.'68'(0.000000) + 2.261451.'69'(0.000000) + 1.239524.'70'(0.000000) + 0) <= 4.384092 ('62')
 > [0.000000]: [ker_lmm/DEBUG] 	(1.886454.'66'(0.000000) + 1.927080.'70'(0.000000) + 0) <= 4.998825 ('67')
-> [0.000000]: [ker_lmm/DEBUG] 	(2.538214.'67'(0.341750) + 1.662899.'68'(0.000000) + 2.254780.'69'(0.000000) + 0) <= 0.867434 ('65')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.538214.'67'(0.000000) + 1.662899.'68'(0.000000) + 2.254780.'69'(0.000000) + 0) <= 0.867434 ('65')
 > [0.000000]: [ker_lmm/DEBUG] Variables
-> [0.000000]: [ker_lmm/DEBUG] '67'(1.000000) : 0.341750
-> [0.000000]: [ker_lmm/DEBUG] '64'(1.000000) : 0.836745
-> [0.000000]: [ker_lmm/DEBUG] '63'(1.000000) : 0.836745
-> [0.000000]: [ker_lmm/DEBUG] '62'(1.000000) : 0.922047
-> [0.000000]: [ker_lmm/DEBUG] '61'(1.000000) : 0.836745
-> [0.000000]: [ker_lmm/DEBUG] '65'(0.000000) : 0.000000
+> [0.000000]: [ker_lmm/DEBUG] '65'(1.000000) : 0.535841
+> [0.000000]: [ker_lmm/DEBUG] '64'(1.000000) : 0.535841
+> [0.000000]: [ker_lmm/DEBUG] '63'(1.000000) : 0.742372
+> [0.000000]: [ker_lmm/DEBUG] '62'(1.000000) : 0.535841
+> [0.000000]: [ker_lmm/DEBUG] '61'(1.000000) : 0.742372
 > [0.000000]: [ker_lmm/DEBUG] '66'(0.000000) : 0.000000
+> [0.000000]: [ker_lmm/DEBUG] '67'(0.000000) : 0.000000
 > [0.000000]: [ker_lmm/DEBUG] '68'(0.000000) : 0.000000
 > [0.000000]: [ker_lmm/DEBUG] '69'(0.000000) : 0.000000
 > [0.000000]: [ker_lmm/DEBUG] '70'(0.000000) : 0.000000
@@ -513,214 +533,238 @@ $ ${bindir:=.}/maxmin_bench small  10 test
 > [0.000000]: [ker_lmm/DEBUG] Setting selective_update_active flag to 0
 > Starting to solve(306)
 > [0.000000]: [ker_lmm/DEBUG] Active constraints : 10
-> [0.000000]: [ker_lmm/DEBUG] Constraint '78' usage: 3.198380 remaining: 5.433860 concurrency: 2<=2<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '76' usage: 6.233480 remaining: 5.226747 concurrency: 3<=3<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '80' usage: 2.488814 remaining: 6.196821 concurrency: 1<=1<=-1
+> [0.000000]: [ker_lmm/DEBUG] Constraint '78' usage: 4.017810 remaining: 5.433860 concurrency: 2<=2<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '76' usage: 6.266897 remaining: 5.226747 concurrency: 3<=3<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '80' usage: 4.310903 remaining: 6.196821 concurrency: 2<=2<=-1
 > [0.000000]: [ker_lmm/DEBUG] Constraint '71' usage: 3.565174 remaining: 0.111144 concurrency: 2<=2<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '72' usage: 2.521887 remaining: 8.691945 concurrency: 1<=2<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '79' usage: 2.413421 remaining: 4.026774 concurrency: 2<=2<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '72' usage: 6.104798 remaining: 8.691945 concurrency: 3<=4<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '79' usage: 4.612928 remaining: 4.026774 concurrency: 3<=4<=3
 > [0.000000]: [ker_lmm/DEBUG] Constraint '74' usage: 6.129271 remaining: 0.113988 concurrency: 3<=3<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '73' usage: 4.947543 remaining: 8.164613 concurrency: 3<=4<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '73' usage: 6.623818 remaining: 8.164613 concurrency: 4<=4<=4
 > [0.000000]: [ker_lmm/DEBUG] Constraint '75' usage: 4.819708 remaining: 7.660629 concurrency: 3<=3<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '77' usage: 1.230945 remaining: 9.264384 concurrency: 1<=1<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '77' usage: 1.922042 remaining: 9.264384 concurrency: 1<=1<=4
 > [0.000000]: [ker_lmm/DEBUG] var=72, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.018597, var.bound*var.penalty=-1.000000
 > [0.000000]: [ker_lmm/DEBUG] var=73, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.018597, var.bound*var.penalty=-1.000000
 > [0.000000]: [ker_lmm/DEBUG] var=77, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.018597, var.bound*var.penalty=-1.000000
 > [0.000000]: [ker_lmm/DEBUG] Setting var (72) value to 0.018597
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 0.018597, Var(72).penalty: 1.000000, Var(72).value: 0.018597
 > [0.000000]: [ker_lmm/DEBUG] Setting var (73) value to 0.018597
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 0.018597, Var(73).penalty: 1.000000, Var(73).value: 0.018597
-> [0.000000]: [ker_lmm/DEBUG] index: 5 	 cnst_light_num: 10 	 || usage: 0.000000 remaining: 3.981891 bound: 4.026774
 > [0.000000]: [ker_lmm/DEBUG] Setting var (77) value to 0.018597
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 0.018597, Var(77).penalty: 1.000000, Var(77).value: 0.018597
-> [0.000000]: [ker_lmm/DEBUG] index: 6 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.000000 bound: 0.113988
+> [0.000000]: [ker_lmm/DEBUG] index: 6 	 cnst_light_num: 10 	 || usage: 0.000000 remaining: 0.000000 bound: 0.113988
 > [0.000000]: [ker_lmm/DEBUG] var=71, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.031175, var.bound*var.penalty=-1.000000
 > [0.000000]: [ker_lmm/DEBUG] var=76, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.031175, var.bound*var.penalty=-1.000000
 > [0.000000]: [ker_lmm/DEBUG] Setting var (71) value to 0.031175
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 0.031175, Var(71).penalty: 1.000000, Var(71).value: 0.031175
-> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 6.141366 bound: 6.196821
 > [0.000000]: [ker_lmm/DEBUG] Setting var (76) value to 0.031175
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 0.031175, Var(76).penalty: 1.000000, Var(76).value: 0.031175
-> [0.000000]: [ker_lmm/DEBUG] index: 5 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 9.226009 bound: 9.264384
-> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 0.000000 bound: 0.111144
-> [0.000000]: [ker_lmm/DEBUG] index: 4 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 8.625075 bound: 8.691945
-> [0.000000]: [ker_lmm/DEBUG] var=75, var.bound=-1.000000, var.penalty=1.000000, min_usage=2.643929, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (75) value to 2.643929
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 2.643929, Var(75).penalty: 1.000000, Var(75).value: 2.643929
-> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 4.713707 bound: 7.660629
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 0.000000 bound: 5.433860
-> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 0.303323 bound: 5.226747
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 4.744122 bound: 8.164613
-> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '77'(1.000000) '76'(1.000000) '75'(1.000000) '73'(1.000000) '72'(1.000000) '71'(1.000000) '74'(0.000000) '78'(0.000000) '79'(0.000000) '80'(0.000000) )
+> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.000000 bound: 0.111144
+> [0.000000]: [ker_lmm/DEBUG] var=74, var.bound=-1.000000, var.penalty=1.000000, min_usage=1.810357, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (74) value to 1.810357
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 1.810357, Var(74).penalty: 1.000000, Var(74).value: 1.810357
+> [0.000000]: [ker_lmm/DEBUG] index: 5 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 0.000000 bound: 4.026774
+> [0.000000]: [ker_lmm/DEBUG] var=75, var.bound=-1.000000, var.penalty=1.000000, min_usage=1.917307, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (75) value to 1.917307
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 1.917307, Var(75).penalty: 1.000000, Var(75).value: 1.917307
+> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 5.497313 bound: 7.660629
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 0.000000 bound: 5.433860
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 2.630702 bound: 8.164613
+> [0.000000]: [ker_lmm/DEBUG] var=78, var.bound=-1.000000, var.penalty=1.000000, min_usage=3.065266, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (78) value to 3.065266
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 3.065266, Var(78).penalty: 1.000000, Var(78).value: 3.065266
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 0.000000 bound: 8.691945
+> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 1.525167 bound: 5.226747
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 7.107613 bound: 9.264384
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 0.556176 bound: 6.196821
+> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '78'(1.000000) '77'(1.000000) '76'(1.000000) '75'(1.000000) '74'(1.000000) '73'(1.000000) '72'(1.000000) '71'(1.000000) '79'(0.000000) '80'(0.000000) )
 > [0.000000]: [ker_lmm/DEBUG] Constraints
-> [0.000000]: [ker_lmm/DEBUG] 	(2.041582.'75'(2.643929) + 1.156799.'71'(0.031175) + 0.819429.'74'(0.000000) + 0) <= 5.433860 ('78')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.822511.'75'(2.643929) + 1.831327.'73'(0.018597) + 0.766757.'72'(0.018597) + 1.812885.'71'(0.031175) + 0.020109.'78'(0.000000) + 1.410049.'79'(0.000000) + 0.743360.'79'(0.000000) + 1.394747.'80'(0.000000) + 0) <= 5.226747 ('76')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.759771.'77'(0.018597) + 0.729042.'71'(0.031175) + 1.822089.'78'(0.000000) + 0) <= 6.196821 ('80')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.041582.'75'(1.917307) + 0.819429.'74'(1.810357) + 1.156799.'71'(0.031175) + 0) <= 5.433860 ('78')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.033418.'78'(3.065266) + 1.822511.'75'(1.917307) + 1.831327.'73'(0.018597) + 0.766757.'72'(0.018597) + 1.812885.'71'(0.031175) + 2.947966.'79'(0.000000) + 2.694139.'80'(0.000000) + 0) <= 5.226747 ('76')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.822089.'78'(3.065266) + 1.759771.'77'(0.018597) + 0.729042.'71'(0.031175) + 0) <= 6.196821 ('80')
 > [0.000000]: [ker_lmm/DEBUG] 	(1.652654.'76'(0.031175) + 1.912520.'71'(0.031175) + 0) <= 0.111144 ('71')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.587764.'76'(0.031175) + 0.934123.'72'(0.018597) + 1.878623.'74'(0.000000) + 1.704288.'78'(0.000000) + 2.233739.'80'(0.000000) + 0) <= 8.691945 ('72')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.026485.'73'(0.018597) + 1.386937.'72'(0.018597) + 1.201584.'74'(0.000000) + 2.199875.'79'(0.000000) + 0) <= 4.026774 ('79')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.704288.'78'(3.065266) + 1.587764.'76'(0.031175) + 1.878623.'74'(1.810357) + 0.934123.'72'(0.018597) + 2.233739.'80'(0.000000) + 0) <= 8.691945 ('72')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.199506.'74'(1.810357) + 1.026485.'73'(0.018597) + 1.386937.'72'(0.018597) + 2.199875.'79'(0.000000) + 0) <= 4.026774 ('79')
 > [0.000000]: [ker_lmm/DEBUG] 	(2.354927.'77'(0.018597) + 1.659686.'73'(0.018597) + 2.114659.'72'(0.018597) + 1.579691.'79'(0.000000) + 0) <= 0.113988 ('74')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.677954.'77'(0.018597) + 1.267832.'75'(2.643929) + 2.001758.'73'(0.018597) + 1.676275.'74'(0.000000) + 1.438621.'80'(0.000000) + 0) <= 8.164613 ('73')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.668512.'77'(0.018597) + 2.072773.'76'(0.031175) + 1.078423.'75'(2.643929) + 0) <= 7.660629 ('75')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.230945.'76'(0.031175) + 0.691097.'78'(0.000000) + 0.926100.'80'(0.000000) + 0) <= 9.264384 ('77')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.677954.'77'(0.018597) + 1.267832.'75'(1.917307) + 1.676275.'74'(1.810357) + 2.001758.'73'(0.018597) + 1.438621.'80'(0.000000) + 0) <= 8.164613 ('73')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.668512.'77'(0.018597) + 2.072773.'76'(0.031175) + 1.078423.'75'(1.917307) + 0) <= 7.660629 ('75')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.691097.'78'(3.065266) + 1.230945.'76'(0.031175) + 0.926100.'80'(0.000000) + 0) <= 9.264384 ('77')
 > [0.000000]: [ker_lmm/DEBUG] Variables
+> [0.000000]: [ker_lmm/DEBUG] '78'(1.000000) : 3.065266
 > [0.000000]: [ker_lmm/DEBUG] '77'(1.000000) : 0.018597
 > [0.000000]: [ker_lmm/DEBUG] '76'(1.000000) : 0.031175
-> [0.000000]: [ker_lmm/DEBUG] '75'(1.000000) : 2.643929
+> [0.000000]: [ker_lmm/DEBUG] '75'(1.000000) : 1.917307
+> [0.000000]: [ker_lmm/DEBUG] '74'(1.000000) : 1.810357
 > [0.000000]: [ker_lmm/DEBUG] '73'(1.000000) : 0.018597
 > [0.000000]: [ker_lmm/DEBUG] '72'(1.000000) : 0.018597
 > [0.000000]: [ker_lmm/DEBUG] '71'(1.000000) : 0.031175
-> [0.000000]: [ker_lmm/DEBUG] '74'(0.000000) : 0.000000
-> [0.000000]: [ker_lmm/DEBUG] '78'(0.000000) : 0.000000
 > [0.000000]: [ker_lmm/DEBUG] '79'(0.000000) : 0.000000
 > [0.000000]: [ker_lmm/DEBUG] '80'(0.000000) : 0.000000
 > Starting 8: (670)
 > [0.000000]: [ker_lmm/DEBUG] Setting selective_update_active flag to 0
 > Starting to solve(148)
 > [0.000000]: [ker_lmm/DEBUG] Active constraints : 10
-> [0.000000]: [ker_lmm/DEBUG] Constraint '85' usage: 7.178533 remaining: 4.185082 concurrency: 4<=5<=-1
-> [0.000000]: [ker_lmm/DEBUG] Constraint '81' usage: 8.476100 remaining: 3.644610 concurrency: 4<=4<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '87' usage: 5.905621 remaining: 0.840597 concurrency: 4<=4<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '85' usage: 9.540643 remaining: 4.185082 concurrency: 5<=6<=-1
+> [0.000000]: [ker_lmm/DEBUG] Constraint '81' usage: 10.060112 remaining: 3.644610 concurrency: 4<=5<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '87' usage: 4.327647 remaining: 0.840597 concurrency: 3<=4<=4
 > [0.000000]: [ker_lmm/DEBUG] Constraint '83' usage: 3.131650 remaining: 1.338295 concurrency: 2<=2<=4
 > [0.000000]: [ker_lmm/DEBUG] Constraint '86' usage: 4.117081 remaining: 2.481012 concurrency: 2<=2<=-1
-> [0.000000]: [ker_lmm/DEBUG] Constraint '88' usage: 8.831579 remaining: 4.946545 concurrency: 3<=3<=-1
-> [0.000000]: [ker_lmm/DEBUG] Constraint '82' usage: 4.447821 remaining: 4.957733 concurrency: 2<=2<=-1
+> [0.000000]: [ker_lmm/DEBUG] Constraint '88' usage: 8.162066 remaining: 4.946545 concurrency: 2<=2<=-1
+> [0.000000]: [ker_lmm/DEBUG] Constraint '82' usage: 3.995486 remaining: 4.957733 concurrency: 2<=2<=-1
 > [0.000000]: [ker_lmm/DEBUG] Constraint '89' usage: 2.610616 remaining: 3.157089 concurrency: 2<=2<=3
 > [0.000000]: [ker_lmm/DEBUG] Constraint '90' usage: 2.381237 remaining: 9.509640 concurrency: 1<=1<=3
 > [0.000000]: [ker_lmm/DEBUG] Constraint '84' usage: 3.078695 remaining: 0.133220 concurrency: 2<=2<=3
 > [0.000000]: [ker_lmm/DEBUG] var=85, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.043272, var.bound*var.penalty=-1.000000
 > [0.000000]: [ker_lmm/DEBUG] var=87, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.043272, var.bound*var.penalty=-1.000000
 > [0.000000]: [ker_lmm/DEBUG] Setting var (85) value to 0.043272
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 0.043272, Var(85).penalty: 1.000000, Var(85).value: 0.043272
 > [0.000000]: [ker_lmm/DEBUG] Setting var (87) value to 0.043272
->
+> 
 > [0.000000]: [ker_lmm/DEBUG] Min usage: 0.043272, Var(87).penalty: 1.000000, Var(87).value: 0.043272
 > [0.000000]: [ker_lmm/DEBUG] index: 9 	 cnst_light_num: 10 	 || usage: 0.000000 remaining: 0.000000 bound: 0.133220
-> [0.000000]: [ker_lmm/DEBUG] var=81, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.142338, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=83, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.142338, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=84, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.142338, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=88, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.142338, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (81) value to 0.142338
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.142338, Var(81).penalty: 1.000000, Var(81).value: 0.142338
-> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 1.051802 bound: 1.338295
-> [0.000000]: [ker_lmm/DEBUG] Setting var (83) value to 0.142338
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.142338, Var(83).penalty: 1.000000, Var(83).value: 0.142338
-> [0.000000]: [ker_lmm/DEBUG] Setting var (84) value to 0.142338
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.142338, Var(84).penalty: 1.000000, Var(84).value: 0.142338
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 3.310191 bound: 4.185082
-> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 9.343978 bound: 9.509640
-> [0.000000]: [ker_lmm/DEBUG] Setting var (88) value to 0.142338
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.142338, Var(88).penalty: 1.000000, Var(88).value: 0.142338
-> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 0.000000 bound: 0.840597
-> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 2.636440 bound: 3.644610
-> [0.000000]: [ker_lmm/DEBUG] var=82, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.594365, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=90, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.594365, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (82) value to 0.594365
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.594365, Var(82).penalty: 1.000000, Var(82).value: 0.594365
-> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 0.941735 bound: 2.481012
-> [0.000000]: [ker_lmm/DEBUG] Setting var (90) value to 0.594365
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.594365, Var(90).penalty: 1.000000, Var(90).value: 0.594365
-> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 3.215631 bound: 4.957733
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 2.151237 bound: 3.157089
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 0.000000 bound: 4.946545
-> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '90'(1.000000) '88'(1.000000) '87'(1.000000) '85'(1.000000) '84'(1.000000) '83'(1.000000) '82'(1.000000) '81'(1.000000) '86'(0.000000) '89'(0.000000) )
+> [0.000000]: [ker_lmm/DEBUG] var=81, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.194239, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=83, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.194239, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=84, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.194239, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (81) value to 0.194239
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.194239, Var(81).penalty: 1.000000, Var(81).value: 0.194239
+> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.972704 bound: 1.338295
+> [0.000000]: [ker_lmm/DEBUG] Setting var (83) value to 0.194239
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.194239, Var(83).penalty: 1.000000, Var(83).value: 0.194239
+> [0.000000]: [ker_lmm/DEBUG] Setting var (84) value to 0.194239
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.194239, Var(84).penalty: 1.000000, Var(84).value: 0.194239
+> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 9.311171 bound: 9.509640
+> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 0.000000 bound: 0.840597
+> [0.000000]: [ker_lmm/DEBUG] var=82, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.606041, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=90, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.606041, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (82) value to 0.606041
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.606041, Var(82).penalty: 1.000000, Var(82).value: 0.606041
+> [0.000000]: [ker_lmm/DEBUG] index: 4 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 0.837211 bound: 2.481012
+> [0.000000]: [ker_lmm/DEBUG] Setting var (90) value to 0.606041
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.606041, Var(90).penalty: 1.000000, Var(90).value: 0.606041
+> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 3.248134 bound: 4.957733
+> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 2.072186 bound: 3.157089
+> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 0.000000 bound: 4.946545
+> [0.000000]: [ker_lmm/DEBUG] var=86, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.738218, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (86) value to 0.738218
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.738218, Var(86).penalty: 1.000000, Var(86).value: 0.738218
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 1.270826 bound: 4.185082
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 0.000000 bound: 3.644610
+> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '90'(1.000000) '87'(1.000000) '86'(1.000000) '85'(1.000000) '84'(1.000000) '83'(1.000000) '82'(1.000000) '81'(1.000000) '88'(0.000000) '89'(0.000000) )
 > [0.000000]: [ker_lmm/DEBUG] Constraints
-> [0.000000]: [ker_lmm/DEBUG] 	(1.482735.'87'(0.043272) + 2.501577.'84'(0.142338) + 1.282758.'83'(0.142338) + 1.911462.'81'(0.142338) + 1.942518.'86'(0.000000) + 0.419592.'86'(0.000000) + 1.720571.'89'(0.000000) + 0) <= 4.185082 ('85')
-> [0.000000]: [ker_lmm/DEBUG] 	(2.079257.'88'(0.142338) + 2.001718.'85'(0.043272) + 2.844104.'83'(0.142338) + 1.551021.'81'(0.142338) + 1.225846.'86'(0.000000) + 0.957081.'86'(0.000000) + 0.479633.'89'(0.000000) + 0) <= 3.644610 ('81')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.577974.'88'(0.142338) + 1.155912.'84'(0.142338) + 1.288511.'83'(0.142338) + 1.883225.'81'(0.142338) + 0) <= 0.840597 ('87')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.607607.'85'(0.043272) + 1.524042.'81'(0.142338) + 1.148263.'89'(0.000000) + 0) <= 1.338295 ('83')
-> [0.000000]: [ker_lmm/DEBUG] 	(0.400642.'87'(0.043272) + 1.519780.'83'(0.142338) + 2.196658.'82'(0.594365) + 0) <= 2.481012 ('86')
-> [0.000000]: [ker_lmm/DEBUG] 	(0.645070.'90'(0.594365) + 2.501628.'90'(0.594365) + 0.669514.'88'(0.142338) + 1.205610.'82'(0.594365) + 3.809758.'82'(0.594365) + 0) <= 4.946545 ('88')
-> [0.000000]: [ker_lmm/DEBUG] 	(2.319476.'90'(0.594365) + 0.452335.'88'(0.142338) + 1.264869.'87'(0.043272) + 0.411141.'82'(0.594365) + 0) <= 4.957733 ('82')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.403149.'90'(0.594365) + 1.207467.'84'(0.142338) + 0) <= 3.157089 ('89')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.749117.'85'(0.043272) + 0.632120.'84'(0.142338) + 0.992685.'89'(0.000000) + 0) <= 9.509640 ('90')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.482735.'87'(0.043272) + 2.362110.'86'(0.738218) + 2.501577.'84'(0.194239) + 1.282758.'83'(0.194239) + 1.911462.'81'(0.194239) + 1.720571.'89'(0.000000) + 0) <= 4.185082 ('85')
+> [0.000000]: [ker_lmm/DEBUG] 	(3.663269.'86'(0.738218) + 2.001718.'85'(0.043272) + 2.844104.'83'(0.194239) + 1.551021.'81'(0.194239) + 2.079257.'88'(0.000000) + 1.101152.'89'(0.000000) + 0) <= 3.644610 ('81')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.155912.'84'(0.194239) + 1.288511.'83'(0.194239) + 1.883225.'81'(0.194239) + 1.577974.'88'(0.000000) + 0) <= 0.840597 ('87')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.607607.'85'(0.043272) + 1.524042.'81'(0.194239) + 1.148263.'89'(0.000000) + 0) <= 1.338295 ('83')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.400642.'87'(0.043272) + 1.519780.'83'(0.194239) + 2.196658.'82'(0.606041) + 0) <= 2.481012 ('86')
+> [0.000000]: [ker_lmm/DEBUG] 	(3.146698.'90'(0.606041) + 5.015368.'82'(0.606041) + 0.669514.'88'(0.000000) + 0) <= 4.946545 ('88')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.319476.'90'(0.606041) + 1.264869.'87'(0.043272) + 0.411141.'82'(0.606041) + 0.452335.'88'(0.000000) + 0) <= 4.957733 ('82')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.403149.'90'(0.606041) + 1.207467.'84'(0.194239) + 0) <= 3.157089 ('89')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.749117.'85'(0.043272) + 0.632120.'84'(0.194239) + 0.992685.'89'(0.000000) + 0) <= 9.509640 ('90')
 > [0.000000]: [ker_lmm/DEBUG] 	(1.458012.'87'(0.043272) + 1.620683.'85'(0.043272) + 0) <= 0.133220 ('84')
 > [0.000000]: [ker_lmm/DEBUG] Variables
-> [0.000000]: [ker_lmm/DEBUG] '90'(1.000000) : 0.594365
-> [0.000000]: [ker_lmm/DEBUG] '88'(1.000000) : 0.142338
+> [0.000000]: [ker_lmm/DEBUG] '90'(1.000000) : 0.606041
 > [0.000000]: [ker_lmm/DEBUG] '87'(1.000000) : 0.043272
+> [0.000000]: [ker_lmm/DEBUG] '86'(1.000000) : 0.738218
 > [0.000000]: [ker_lmm/DEBUG] '85'(1.000000) : 0.043272
-> [0.000000]: [ker_lmm/DEBUG] '84'(1.000000) : 0.142338
-> [0.000000]: [ker_lmm/DEBUG] '83'(1.000000) : 0.142338
-> [0.000000]: [ker_lmm/DEBUG] '82'(1.000000) : 0.594365
-> [0.000000]: [ker_lmm/DEBUG] '81'(1.000000) : 0.142338
-> [0.000000]: [ker_lmm/DEBUG] '86'(0.000000) : 0.000000
+> [0.000000]: [ker_lmm/DEBUG] '84'(1.000000) : 0.194239
+> [0.000000]: [ker_lmm/DEBUG] '83'(1.000000) : 0.194239
+> [0.000000]: [ker_lmm/DEBUG] '82'(1.000000) : 0.606041
+> [0.000000]: [ker_lmm/DEBUG] '81'(1.000000) : 0.194239
+> [0.000000]: [ker_lmm/DEBUG] '88'(0.000000) : 0.000000
 > [0.000000]: [ker_lmm/DEBUG] '89'(0.000000) : 0.000000
 > Starting 9: (937)
 > [0.000000]: [ker_lmm/DEBUG] Setting selective_update_active flag to 0
 > Starting to solve(77)
 > [0.000000]: [ker_lmm/DEBUG] Active constraints : 9
-> [0.000000]: [ker_lmm/DEBUG] Constraint '95' usage: 4.419336 remaining: 1.980629 concurrency: 3<=3<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '100' usage: 5.499631 remaining: 3.360716 concurrency: 2<=2<=3
-> [0.000000]: [ker_lmm/DEBUG] Constraint '96' usage: 2.312398 remaining: 2.655661 concurrency: 1<=1<=-1
-> [0.000000]: [ker_lmm/DEBUG] Constraint '97' usage: 3.720743 remaining: 2.636028 concurrency: 2<=2<=-1
-> [0.000000]: [ker_lmm/DEBUG] Constraint '99' usage: 4.936228 remaining: 9.533933 concurrency: 2<=3<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '95' usage: 8.234685 remaining: 1.980629 concurrency: 3<=4<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '100' usage: 8.708310 remaining: 3.360716 concurrency: 3<=3<=3
+> [0.000000]: [ker_lmm/DEBUG] Constraint '96' usage: 4.676000 remaining: 2.655661 concurrency: 2<=2<=-1
+> [0.000000]: [ker_lmm/DEBUG] Constraint '97' usage: 7.541930 remaining: 2.636028 concurrency: 4<=4<=-1
+> [0.000000]: [ker_lmm/DEBUG] Constraint '99' usage: 7.345339 remaining: 9.533933 concurrency: 3<=4<=4
 > [0.000000]: [ker_lmm/DEBUG] Constraint '92' usage: 2.624988 remaining: 4.945899 concurrency: 2<=2<=4
 > [0.000000]: [ker_lmm/DEBUG] Constraint '98' usage: 2.356019 remaining: 1.503779 concurrency: 1<=1<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '93' usage: 1.752531 remaining: 7.488039 concurrency: 1<=1<=4
-> [0.000000]: [ker_lmm/DEBUG] Constraint '94' usage: 4.092524 remaining: 5.833217 concurrency: 2<=3<=4
-> [0.000000]: [ker_lmm/DEBUG] var=91, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.448173, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=93, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.448173, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (91) value to 0.448173
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.448173, Var(91).penalty: 1.000000, Var(91).value: 0.448173
-> [0.000000]: [ker_lmm/DEBUG] Setting var (93) value to 0.448173
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.448173, Var(93).penalty: 1.000000, Var(93).value: 0.448173
-> [0.000000]: [ker_lmm/DEBUG] index: 6 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.447874 bound: 1.503779
+> [0.000000]: [ker_lmm/DEBUG] Constraint '93' usage: 2.540282 remaining: 7.488039 concurrency: 1<=1<=4
+> [0.000000]: [ker_lmm/DEBUG] Constraint '94' usage: 7.417233 remaining: 5.833217 concurrency: 3<=3<=4
+> [0.000000]: [ker_lmm/DEBUG] var=91, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.240523, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=93, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.240523, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=94, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.240523, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=97, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.240523, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=99, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.240523, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (91) value to 0.240523
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.240523, Var(91).penalty: 1.000000, Var(91).value: 0.240523
+> [0.000000]: [ker_lmm/DEBUG] Setting var (93) value to 0.240523
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.240523, Var(93).penalty: 1.000000, Var(93).value: 0.240523
+> [0.000000]: [ker_lmm/DEBUG] index: 6 	 cnst_light_num: 9 	 || usage: 0.000000 remaining: 0.937103 bound: 1.503779
+> [0.000000]: [ker_lmm/DEBUG] Setting var (94) value to 0.240523
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.240523, Var(94).penalty: 1.000000, Var(94).value: 0.240523
+> [0.000000]: [ker_lmm/DEBUG] Setting var (97) value to 0.240523
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.240523, Var(97).penalty: 1.000000, Var(97).value: 0.240523
+> [0.000000]: [ker_lmm/DEBUG] Setting var (99) value to 0.240523
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.240523, Var(99).penalty: 1.000000, Var(99).value: 0.240523
 > [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 8 	 || usage: 0.000000 remaining: 0.000000 bound: 1.980629
-> [0.000000]: [ker_lmm/DEBUG] var=92, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.708468, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] var=95, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.708468, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (92) value to 0.708468
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.708468, Var(92).penalty: 1.000000, Var(92).value: 0.708468
-> [0.000000]: [ker_lmm/DEBUG] Setting var (95) value to 0.708468
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.708468, Var(95).penalty: 1.000000, Var(95).value: 0.708468
-> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 0.000000 bound: 2.636028
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 6.246426 bound: 7.488039
-> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 0.297082 bound: 3.360716
-> [0.000000]: [ker_lmm/DEBUG] var=96, var.bound=-1.000000, var.penalty=1.000000, min_usage=1.883920, var.bound*var.penalty=-1.000000
-> [0.000000]: [ker_lmm/DEBUG] Setting var (96) value to 1.883920
->
-> [0.000000]: [ker_lmm/DEBUG] Min usage: 1.883920, Var(96).penalty: 1.000000, Var(96).value: 1.883920
-> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 0.330591 bound: 2.655661
-> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 0.000000 bound: 5.833217
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 1.522899 bound: 4.945899
-> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 3.856333 bound: 9.533933
-> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '96'(1.000000) '95'(1.000000) '93'(1.000000) '92'(1.000000) '91'(1.000000) '94'(0.000000) '97'(0.000000) '98'(0.000000) '99'(0.000000) '100'(0.000000) )
+> [0.000000]: [ker_lmm/DEBUG] var=92, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.373508, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=95, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.373508, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] var=98, var.bound=-1.000000, var.penalty=1.000000, min_usage=0.373508, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (92) value to 0.373508
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.373508, Var(92).penalty: 1.000000, Var(92).value: 0.373508
+> [0.000000]: [ker_lmm/DEBUG] Setting var (95) value to 0.373508
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.373508, Var(95).penalty: 1.000000, Var(95).value: 0.373508
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 7 	 || usage: 0.000000 remaining: 6.643983 bound: 7.488039
+> [0.000000]: [ker_lmm/DEBUG] Setting var (98) value to 0.373508
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 0.373508, Var(98).penalty: 1.000000, Var(98).value: 0.373508
+> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 6 	 || usage: 0.000000 remaining: 0.842905 bound: 3.360716
+> [0.000000]: [ker_lmm/DEBUG] index: 3 	 cnst_light_num: 5 	 || usage: 0.000000 remaining: 0.000000 bound: 2.636028
+> [0.000000]: [ker_lmm/DEBUG] var=96, var.bound=-1.000000, var.penalty=1.000000, min_usage=1.734605, var.bound*var.penalty=-1.000000
+> [0.000000]: [ker_lmm/DEBUG] Setting var (96) value to 1.734605
+> 
+> [0.000000]: [ker_lmm/DEBUG] Min usage: 1.734605, Var(96).penalty: 1.000000, Var(96).value: 1.734605
+> [0.000000]: [ker_lmm/DEBUG] index: 2 	 cnst_light_num: 4 	 || usage: 0.000000 remaining: 0.428182 bound: 2.655661
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 3 	 || usage: 0.000000 remaining: 0.000000 bound: 5.833217
+> [0.000000]: [ker_lmm/DEBUG] index: 1 	 cnst_light_num: 2 	 || usage: 0.000000 remaining: 1.976701 bound: 4.945899
+> [0.000000]: [ker_lmm/DEBUG] index: 0 	 cnst_light_num: 1 	 || usage: 0.000000 remaining: 4.421725 bound: 9.533933
+> [0.000000]: [ker_lmm/DEBUG] MAX-MIN ( '99'(1.000000) '98'(1.000000) '97'(1.000000) '96'(1.000000) '95'(1.000000) '94'(1.000000) '93'(1.000000) '92'(1.000000) '91'(1.000000) '100'(0.000000) )
 > [0.000000]: [ker_lmm/DEBUG] Constraints
-> [0.000000]: [ker_lmm/DEBUG] 	(1.700386.'93'(0.448173) + 1.316422.'91'(0.448173) + 1.402528.'91'(0.448173) + 1.279564.'94'(0.000000) + 0.377061.'97'(0.000000) + 0.519521.'99'(0.000000) + 1.523019.'100'(0.000000) + 0.201844.'100'(0.000000) + 0) <= 1.980629 ('95')
-> [0.000000]: [ker_lmm/DEBUG] 	(0.948629.'95'(0.708468) + 1.352015.'92'(0.708468) + 0.197187.'91'(0.448173) + 3.001799.'91'(0.448173) + 2.326532.'94'(0.000000) + 0.823225.'98'(0.000000) + 2.139422.'100'(0.000000) + 0) <= 3.360716 ('100')
-> [0.000000]: [ker_lmm/DEBUG] 	(0.584294.'96'(1.883920) + 1.728104.'92'(0.708468) + 1.949994.'97'(0.000000) + 0.413608.'99'(0.000000) + 0) <= 2.655661 ('96')
-> [0.000000]: [ker_lmm/DEBUG] 	(2.435596.'95'(0.708468) + 1.285148.'92'(0.708468) + 1.360617.'97'(0.000000) + 1.470623.'98'(0.000000) + 0.989947.'98'(0.000000) + 0) <= 2.636028 ('97')
-> [0.000000]: [ker_lmm/DEBUG] 	(2.070922.'96'(1.883920) + 0.975162.'93'(0.448173) + 1.890144.'92'(0.708468) + 1.599412.'94'(0.000000) + 0.809700.'99'(0.000000) + 1.930577.'100'(0.000000) + 0) <= 9.533933 ('99')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.564726.'96'(1.883920) + 1.060262.'93'(0.448173) + 0) <= 4.945899 ('92')
-> [0.000000]: [ker_lmm/DEBUG] 	(2.356019.'93'(0.448173) + 0) <= 1.503779 ('98')
-> [0.000000]: [ker_lmm/DEBUG] 	(1.752531.'95'(0.708468) + 0.787750.'94'(0.000000) + 0) <= 7.488039 ('93')
-> [0.000000]: [ker_lmm/DEBUG] 	(2.495885.'96'(1.883920) + 1.596639.'95'(0.708468) + 1.565153.'97'(0.000000) + 0.810748.'98'(0.000000) + 0.948808.'99'(0.000000) + 0) <= 5.833217 ('94')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.691494.'99'(0.240523) + 0.601268.'97'(0.240523) + 2.522586.'94'(0.240523) + 1.700386.'93'(0.240523) + 2.718951.'91'(0.240523) + 2.251301.'100'(0.000000) + 0) <= 1.980629 ('95')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.882147.'98'(0.373508) + 0.948629.'95'(0.373508) + 2.326532.'94'(0.240523) + 1.352015.'92'(0.373508) + 3.198986.'91'(0.240523) + 2.139422.'100'(0.000000) + 0) <= 3.360716 ('100')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.413608.'99'(0.240523) + 1.949994.'97'(0.240523) + 0.584294.'96'(1.734605) + 1.728104.'92'(0.373508) + 0) <= 2.655661 ('96')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.460570.'98'(0.373508) + 1.360617.'97'(0.240523) + 2.435596.'95'(0.373508) + 1.285148.'92'(0.373508) + 0) <= 2.636028 ('97')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.809700.'99'(0.240523) + 2.070922.'96'(1.734605) + 1.599412.'94'(0.240523) + 0.975162.'93'(0.240523) + 1.890144.'92'(0.373508) + 1.930577.'100'(0.000000) + 0) <= 9.533933 ('99')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.564726.'96'(1.734605) + 1.060262.'93'(0.240523) + 0) <= 4.945899 ('92')
+> [0.000000]: [ker_lmm/DEBUG] 	(2.356019.'93'(0.240523) + 0) <= 1.503779 ('98')
+> [0.000000]: [ker_lmm/DEBUG] 	(1.752531.'95'(0.373508) + 0.787750.'94'(0.240523) + 0) <= 7.488039 ('93')
+> [0.000000]: [ker_lmm/DEBUG] 	(0.948808.'99'(0.240523) + 0.810748.'98'(0.373508) + 1.565153.'97'(0.240523) + 2.495885.'96'(1.734605) + 1.596639.'95'(0.373508) + 0) <= 5.833217 ('94')
 > [0.000000]: [ker_lmm/DEBUG] Variables
-> [0.000000]: [ker_lmm/DEBUG] '96'(1.000000) : 1.883920
-> [0.000000]: [ker_lmm/DEBUG] '95'(1.000000) : 0.708468
-> [0.000000]: [ker_lmm/DEBUG] '93'(1.000000) : 0.448173
-> [0.000000]: [ker_lmm/DEBUG] '92'(1.000000) : 0.708468
-> [0.000000]: [ker_lmm/DEBUG] '91'(1.000000) : 0.448173
-> [0.000000]: [ker_lmm/DEBUG] '94'(0.000000) : 0.000000
-> [0.000000]: [ker_lmm/DEBUG] '97'(0.000000) : 0.000000
-> [0.000000]: [ker_lmm/DEBUG] '98'(0.000000) : 0.000000
-> [0.000000]: [ker_lmm/DEBUG] '99'(0.000000) : 0.000000
+> [0.000000]: [ker_lmm/DEBUG] '99'(1.000000) : 0.240523
+> [0.000000]: [ker_lmm/DEBUG] '98'(1.000000) : 0.373508
+> [0.000000]: [ker_lmm/DEBUG] '97'(1.000000) : 0.240523
+> [0.000000]: [ker_lmm/DEBUG] '96'(1.000000) : 1.734605
+> [0.000000]: [ker_lmm/DEBUG] '95'(1.000000) : 0.373508
+> [0.000000]: [ker_lmm/DEBUG] '94'(1.000000) : 0.240523
+> [0.000000]: [ker_lmm/DEBUG] '93'(1.000000) : 0.240523
+> [0.000000]: [ker_lmm/DEBUG] '92'(1.000000) : 0.373508
+> [0.000000]: [ker_lmm/DEBUG] '91'(1.000000) : 0.240523
 > [0.000000]: [ker_lmm/DEBUG] '100'(0.000000) : 0.000000
 > 10x One shot execution time for a total of 10 constraints, 10 variables with 4 active constraint each, concurrency in [2,6] and max concurrency share 2
