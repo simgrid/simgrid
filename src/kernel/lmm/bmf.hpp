@@ -74,10 +74,8 @@ public:
    * @param C Resource capacity
    * @param shared Is resource shared between player or each player receives the full capacity (FATPIPE links)
    * @param phi Bound for each player
-   * @param weight Weight/priority for each player
    */
-  BmfSolver(Eigen::MatrixXd A, Eigen::MatrixXd maxA, Eigen::VectorXd C, std::vector<bool> shared, Eigen::VectorXd phi,
-            Eigen::VectorXd weight);
+  BmfSolver(Eigen::MatrixXd A, Eigen::MatrixXd maxA, Eigen::VectorXd C, std::vector<bool> shared, Eigen::VectorXd phi);
   /** @brief Solve equation system to find a fair-sharing of resources */
   Eigen::VectorXd solve();
 
@@ -185,11 +183,9 @@ private:
   Eigen::VectorXd C_;    //!< C_j Capacity of each resource
   std::vector<bool> C_shared_; //!< shared_j Resource j is shared or not
   Eigen::VectorXd phi_;        //!< phi_i bound for each player
-  Eigen::VectorXd weight_;     //!< weight_i for each player
 
   std::set<std::vector<int>> allocations_; //!< set of already tested allocations, since last identified loop
   AllocationGenerator gen_;
-  std::vector<int> allocations_age_;
   static constexpr int NO_RESOURCE = -1;                    //!< flag to indicate player has selected no resource
   int max_iteration_;                                       //!< number maximum of iterations of BMF algorithm
 };
@@ -257,10 +253,8 @@ private:
    * @param A Consumption matrix (OUTPUT)
    * @param maxA Max subflow consumption matrix (OUTPUT)
    * @param phi Bounds for variables
-   * @param weight Priority/weight for variables
    */
-  void get_flows_data(Eigen::Index number_cnsts, Eigen::MatrixXd& A, Eigen::MatrixXd& maxA, Eigen::VectorXd& phi,
-                      Eigen::VectorXd& weight);
+  void get_flows_data(Eigen::Index number_cnsts, Eigen::MatrixXd& A, Eigen::MatrixXd& maxA, Eigen::VectorXd& phi);
   /**
    * @brief Builds the vector C_ with resource's capacity
    *

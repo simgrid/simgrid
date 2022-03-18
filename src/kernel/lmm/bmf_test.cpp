@@ -633,9 +633,7 @@ TEST_CASE("kernel::bmf Bugs", "[kernel-bmf-bug]")
     phi << 1.35273, 2.27328e-10, 2.27328e-10;
 
     std::vector<bool> shared(cnsts, true);
-    Eigen::VectorXd weight(flows);
-    weight << 1, 1, 1;
-    lmm::BmfSolver solver(A, maxA, C, shared, phi, weight);
+    lmm::BmfSolver solver(A, maxA, C, shared, phi);
     auto rho = solver.solve();
     REQUIRE((rho.array() > 0).all());
   }

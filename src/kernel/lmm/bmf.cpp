@@ -70,13 +70,12 @@ bool AllocationGenerator::next(std::vector<int>& next_alloc)
 /*****************************************************************************/
 
 BmfSolver::BmfSolver(Eigen::MatrixXd A, Eigen::MatrixXd maxA, Eigen::VectorXd C, std::vector<bool> shared,
-                     Eigen::VectorXd phi, Eigen::VectorXd weight)
+                     Eigen::VectorXd phi)
     : A_(std::move(A))
     , maxA_(std::move(maxA))
     , C_(std::move(C))
     , C_shared_(std::move(shared))
     , phi_(std::move(phi))
-    , weight_(std::move(weight))
     , gen_(A_)
     , max_iteration_(cfg_bmf_max_iteration)
 
@@ -86,11 +85,7 @@ BmfSolver::BmfSolver(Eigen::MatrixXd A, Eigen::MatrixXd maxA, Eigen::VectorXd C,
   xbt_assert(A_.cols() == maxA_.cols(), "Invalid number of cols in matrix A (%td) or maxA (%td)", A_.cols(),
              maxA_.cols());
   xbt_assert(A_.cols() == phi_.size(), "Invalid size of phi vector (%td)", phi_.size());
-  xbt_assert(A_.cols() == weight_.size(), "Invalid size of weight vector (%td)", weight_.size());
   xbt_assert(static_cast<long>(C_shared_.size()) == C_.size(), "Invalid size param shared (%zu)", C_shared_.size());
-
-  /* maxA_ must consider the weight for each player */
-  maxA_ = maxA_.array().rowwise() * weight_.transpose().array();
 }
 
 template <typename T> std::string BmfSolver::debug_eigen(const T& obj) const
@@ -262,15 +257,15 @@ bool BmfSolver::get_alloc(const Eigen::VectorXd& fair_sharing, const allocation_
       if (A_(cnst_idx, player_idx) <= 0.0)
         continue;
 
-      /* Note: the weight_ may artificially increase the rate if < 0
+      /* Note: the max_ may artificially increase the rate if priority < 0
        * The equilibrium sets a rho which respects the C_ though */
-      double rate = fair_sharing[cnst_idx] / (weight_[player_idx] * A_(cnst_idx, player_idx));
+      double rate = fair_sharing[cnst_idx] / maxA_(cnst_idx, player_idx);
       if (min_rate == -1 || double_positive(min_rate - rate, cfg_bmf_precision)) {
         selected_resource = cnst_idx;
         min_rate          = rate;
       }
       double bound = initial ? -1 : phi_[player_idx];
-      /* Given that the weight_ may artificially increase the rate,
+      /* Given that the priority may artificially increase the rate,
        * we need to check that the bound given by user respects the resource capacity C_ */
       if (bound > 0 && bound * A_(cnst_idx, player_idx) < C_[cnst_idx] &&
           double_positive(min_rate - bound, cfg_bmf_precision)) {
@@ -376,7 +371,6 @@ Eigen::VectorXd BmfSolver::solve()
   XBT_DEBUG("maxA:\n%s", debug_eigen(maxA_).c_str());
   XBT_DEBUG("C:\n%s", debug_eigen(C_).c_str());
   XBT_DEBUG("phi:\n%s", debug_eigen(phi_).c_str());
-  XBT_DEBUG("weight:\n%s", debug_eigen(weight_).c_str());
 
   /* no flows to share, just returns */
   if (A_.cols() == 0)
@@ -419,7 +413,6 @@ Eigen::VectorXd BmfSolver::solve()
     fprintf(stderr, "C:\n%s\n", debug_eigen(C_).c_str());
     fprintf(stderr, "C_shared:\n%s\n", debug_vector(C_shared_).c_str());
     fprintf(stderr, "phi:\n%s\n", debug_eigen(phi_).c_str());
-    fprintf(stderr, "weight:\n%s\n", debug_eigen(weight_).c_str());
     fprintf(stderr, "rho:\n%s\n", debug_eigen(rho).c_str());
     xbt_abort();
   }
@@ -431,14 +424,13 @@ Eigen::VectorXd BmfSolver::solve()
 /*****************************************************************************/
 
 void BmfSystem::get_flows_data(Eigen::Index number_cnsts, Eigen::MatrixXd& A, Eigen::MatrixXd& maxA,
-                               Eigen::VectorXd& phi, Eigen::VectorXd& weight)
+                               Eigen::VectorXd& phi)
 {
   A.resize(number_cnsts, variable_set.size());
   A.setZero();
   maxA.resize(number_cnsts, variable_set.size());
   maxA.setZero();
   phi.resize(variable_set.size());
-  weight.resize(variable_set.size());
 
   int var_idx = 0;
   for (Variable& var : variable_set) {
@@ -459,7 +451,7 @@ void BmfSystem::get_flows_data(Eigen::Index number_cnsts, Eigen::MatrixXd& A, Ei
         int cnst_idx = cnst2idx_[elem.constraint];
         A(cnst_idx, var_idx) += consumption;
         // a variable with double penalty must receive half share, so it max weight is greater
-        maxA(cnst_idx, var_idx) = std::max(maxA(cnst_idx, var_idx), elem.max_consumption_weight);
+        maxA(cnst_idx, var_idx) = std::max(maxA(cnst_idx, var_idx), elem.max_consumption_weight * var.sharing_penalty_);
         active                  = true;
       }
     }
@@ -468,7 +460,6 @@ void BmfSystem::get_flows_data(Eigen::Index number_cnsts, Eigen::MatrixXd& A, Ei
       continue;
     if (active) {
       phi[var_idx]      = var.get_bound();
-      weight[var_idx]   = var.sharing_penalty_;
       idx2Var_[var_idx] = &var;
       var_idx++;
     } else {
@@ -479,7 +470,6 @@ void BmfSystem::get_flows_data(Eigen::Index number_cnsts, Eigen::MatrixXd& A, Ei
   A.conservativeResize(Eigen::NoChange_t::NoChange, var_idx);
   maxA.conservativeResize(Eigen::NoChange_t::NoChange, var_idx);
   phi.conservativeResize(var_idx);
-  weight.conservativeResize(var_idx);
 }
 
 template <class CnstList>
@@ -511,20 +501,17 @@ void BmfSystem::do_solve()
 
 template <class CnstList> void BmfSystem::bmf_solve(const CnstList& cnst_list)
 {
-  /* initialize players' weight and constraint matrices */
   idx2Var_.clear();
   cnst2idx_.clear();
   Eigen::MatrixXd A;
   Eigen::MatrixXd maxA;
   Eigen::VectorXd C;
   Eigen::VectorXd bounds;
-  Eigen::VectorXd weight;
   std::vector<bool> shared;
   get_constraint_data(cnst_list, C, shared);
-  get_flows_data(C.size(), A, maxA, bounds, weight);
+  get_flows_data(C.size(), A, maxA, bounds);
 
-  auto solver =
-      BmfSolver(std::move(A), std::move(maxA), std::move(C), std::move(shared), std::move(bounds), std::move(weight));
+  auto solver = BmfSolver(std::move(A), std::move(maxA), std::move(C), std::move(shared), std::move(bounds));
   auto rho    = solver.solve();
 
   if (rho.size() == 0)
