@@ -84,6 +84,9 @@ Existing Configuration Items
   option. For example, ``--cfg=plugin:help`` will give you the list
   of plugins available in your installation of SimGrid.
 
+- **bmf/max-iterations:** :ref:`cfg=bmf/max-iterations`
+- **bmf/precision:** :ref:`cfg=bmf/precision`
+
 - **contexts/factory:** :ref:`cfg=contexts/factory`
 - **contexts/guard-size:** :ref:`cfg=contexts/guard-size`
 - **contexts/nthreads:** :ref:`cfg=contexts/nthreads`
@@ -311,6 +314,7 @@ configurations.
     the dependency induced by the backbone), but through a complicated
     and slow pattern that follows the actual dependencies.
 
+.. _cfg=bmf/precision:
 .. _cfg=maxmin/precision:
 .. _cfg=surf/precision:
 
@@ -347,6 +351,17 @@ resource lowers under the given boundary.
 Such limitations help both to the simulation speed and simulation accuracy
 on highly constrained scenarios, but the simulation speed suffers of this
 setting on regular (less constrained) scenarios so it is off by default.
+
+.. _cfg=bmf/max-iterations:
+
+BMF settings
+............
+
+**Option** ``bmf/max-iterations`` **Default:** 1000
+
+It may happen in some settings that the BMF solver fails to converge to
+a solution, so there is a hard limit on the amount of iteration count to
+avoid infinite loops.
 
 .. _options_model_network:
 
