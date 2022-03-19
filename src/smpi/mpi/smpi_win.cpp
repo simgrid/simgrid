@@ -62,8 +62,14 @@ Win::Win(void* base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   colls::allgather(&connected_wins_[rank_], sizeof(MPI_Win), MPI_BYTE, connected_wins_.data(), sizeof(MPI_Win),
                    MPI_BYTE, comm);
   if  (MC_is_active() || MC_record_replay_is_active()){
-    if (bar_.get() == nullptr) // First to arrive on the barrier
+    s4u::Barrier* bar_ptr;
+    if (rank_ == 0) {
       bar_ = s4u::Barrier::create(comm->size());
+      bar_ptr = bar_.get();
+    }
+    colls::bcast(&bar_ptr, sizeof(s4u::Barrier*), MPI_BYTE, 0, comm);
+    if (rank_ != 0)
+      bar_ = s4u::BarrierPtr(bar_ptr);
     bar_->wait();
   }else{
     colls::barrier(comm);
