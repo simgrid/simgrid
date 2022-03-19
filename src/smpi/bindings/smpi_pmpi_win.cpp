@@ -30,6 +30,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi_pmpi);
 int PMPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm, MPI_Win *win){
   int retval = 0;
   CHECK_COMM(5)
+  CHECK_BUFFER(1, base, size, MPI_CHAR)
   CHECK_NEGATIVE(2, MPI_ERR_OTHER, size)
   CHECK_NEGATIVE(3, MPI_ERR_OTHER, disp_unit)
   const SmpiBenchGuard suspend_bench;
