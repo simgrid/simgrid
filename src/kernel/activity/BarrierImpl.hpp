@@ -77,7 +77,7 @@ public:
 
   std::string to_string()
   {
-    return xbt::string_printf("Barrier %d: %zu of %u", id_, ongoing_acquisitions_.size(), expected_actors_);
+    return xbt::string_printf("Barrier %u: %zu of %u", id_, ongoing_acquisitions_.size(), expected_actors_);
   }
 };
 } // namespace activity
