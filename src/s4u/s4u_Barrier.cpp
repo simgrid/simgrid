@@ -53,6 +53,11 @@ int Barrier::wait()
   }
 }
 
+std::string Barrier::to_string()
+{
+  return pimpl_->to_string();
+}
+
 void intrusive_ptr_add_ref(Barrier* barrier)
 {
   intrusive_ptr_add_ref(barrier->pimpl_);

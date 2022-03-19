@@ -34,6 +34,8 @@ public:
   static BarrierPtr create(unsigned int expected_actors);
   /** Blocks into the barrier. Every waiting actors will be unlocked once the expected amount of actors reaches the barrier */
   int wait();
+  /** Returns some debug information about the barrier */
+  std::string to_string();
 
 #ifndef DOXYGEN
   /* refcounting */
