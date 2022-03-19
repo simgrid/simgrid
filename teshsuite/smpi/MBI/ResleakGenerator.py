@@ -42,7 +42,7 @@ END_MBI_TESTS
 #define PARAM_PER_ITERATION 3
 #define PARAM_LOST_PER_ITERATION 1
 
-void myOp(int *invec, int *inoutvec, int *len, MPI_Datatype *dtype) {
+static void myOp(int *invec, int *inoutvec, int *len, MPI_Datatype *dtype) {
   for (int i = 0; i < *len; i++)
     inoutvec[i] += invec[i];
 }
