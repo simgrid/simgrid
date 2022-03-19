@@ -1093,9 +1093,8 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
         // this is not a detached send
         kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
         kernel::actor::ActivityWaitSimcall observer{issuer, (*request)->action_.get(), -1};
-        kernel::actor::simcall_blocking(
-            [&observer] { observer.get_activity()->wait_for(observer.get_issuer(), observer.get_timeout()); },
-            &observer);
+        kernel::actor::simcall_blocking([issuer, &observer] { observer.get_activity()->wait_for(issuer, -1); },
+                                        &observer);
       } catch (const CancelException&) {
         XBT_VERB("Request cancelled");
       }
