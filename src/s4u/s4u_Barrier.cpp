@@ -42,7 +42,7 @@ int Barrier::wait()
         kernel::actor::simcall_answered([issuer, this] { return pimpl_->acquire_async(issuer); }, &lock_observer);
 
     kernel::actor::BarrierObserver wait_observer{issuer, mc::Transition::Type::BARRIER_WAIT, acquisition.get()};
-    return kernel::actor::simcall_blocking([issuer, acquisition] { return acquisition->wait_for(issuer, -1); },
+    return kernel::actor::simcall_blocking([issuer, acquisition] { acquisition->wait_for(issuer, -1); },
                                            &wait_observer);
 
   } else { // Do it in one simcall only

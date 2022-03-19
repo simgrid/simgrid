@@ -36,13 +36,13 @@ bool Semaphore::acquire_timeout(double timeout)
 
     kernel::actor::SemaphoreAcquisitionObserver wait_observer{issuer, mc::Transition::Type::SEM_WAIT, acquisition.get(),
                                                               timeout};
-    return kernel::actor::simcall_blocking(
-        [issuer, acquisition, timeout] { return acquisition->wait_for(issuer, timeout); }, &wait_observer);
+    return kernel::actor::simcall_blocking([issuer, acquisition, timeout] { acquisition->wait_for(issuer, timeout); },
+                                           &wait_observer);
 
   } else { // Do it in one simcall only and without observer
     kernel::actor::SemaphoreAcquisitionObserver observer{issuer, mc::Transition::Type::SEM_WAIT, nullptr, timeout};
     return kernel::actor::simcall_blocking(
-        [this, issuer, timeout] { return pimpl_->acquire_async(issuer)->wait_for(issuer, timeout); }, &observer);
+        [this, issuer, timeout] { pimpl_->acquire_async(issuer)->wait_for(issuer, timeout); }, &observer);
   }
 }
 

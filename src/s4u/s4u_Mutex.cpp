@@ -25,8 +25,7 @@ void Mutex::lock()
         kernel::actor::simcall_answered([issuer, this] { return pimpl_->lock_async(issuer); }, &lock_observer);
 
     kernel::actor::MutexObserver wait_observer{issuer, mc::Transition::Type::MUTEX_WAIT, pimpl_};
-    kernel::actor::simcall_blocking([issuer, acquisition] { return acquisition->wait_for(issuer, -1); },
-                                    &wait_observer);
+    kernel::actor::simcall_blocking([issuer, &acquisition] { acquisition->wait_for(issuer, -1); }, &wait_observer);
 
   } else { // Do it in one simcall only
     kernel::actor::simcall_blocking([issuer, this] { pimpl_->lock_async(issuer)->wait_for(issuer, -1); });
