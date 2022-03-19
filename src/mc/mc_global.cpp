@@ -96,12 +96,12 @@ double MC_process_clock_get(const simgrid::kernel::actor::ActorImpl* process)
 {
   if (simgrid::mc::processes_time.empty())
     return 0;
-  if (process != nullptr)
-    return simgrid::mc::processes_time[process->get_pid()];
-  return -1;
+  if (process == nullptr)
+    return -1;
+  return simgrid::mc::processes_time.at(process->get_pid());
 }
 
 void MC_process_clock_add(const simgrid::kernel::actor::ActorImpl* process, double amount)
 {
-  simgrid::mc::processes_time[process->get_pid()] += amount;
+  simgrid::mc::processes_time.at(process->get_pid()) += amount;
 }
