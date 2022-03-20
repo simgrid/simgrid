@@ -99,6 +99,19 @@ void ActorExt::mark_as_initialized()
     state_ = SmpiProcessState::INITIALIZED;
 }
 
+/** @brief Mark a process as finalizing (=MPI_Finalize called) */
+void ActorExt::mark_as_finalizing()
+{
+  if (state_ != SmpiProcessState::FINALIZED)
+    state_ = SmpiProcessState::FINALIZING;
+}
+
+/** @brief Check if a process is finalizing */
+int ActorExt::finalizing() const
+{
+  return (state_ == SmpiProcessState::FINALIZING);
+}
+
 void ActorExt::set_replaying(bool value)
 {
   if (state_ != SmpiProcessState::FINALIZED)

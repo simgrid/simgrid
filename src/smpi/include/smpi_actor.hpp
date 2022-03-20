@@ -56,7 +56,9 @@ public:
   int finalized() const;
   int initializing() const;
   int initialized() const;
+  int finalizing() const;
   void mark_as_initialized();
+  void mark_as_finalizing();
   void set_replaying(bool value);
   bool replaying() const;
   std::string get_instance_id() const { return instance_id_;}

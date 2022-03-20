@@ -22,6 +22,7 @@
 
 #include "../coll_tuned_topo.hpp"
 #include "../colls_private.hpp"
+#include "smpi_actor.hpp"
 
 /*
  * Barrier is meant to be a synchronous operation, as some BTLs can mark
@@ -52,35 +53,35 @@ int barrier__ompi_doublering(MPI_Comm comm)
 
     rank = comm->rank();
     size = comm->size();
-
+    int tag = smpi_process()->finalizing() ? COLL_TAG_BARRIER-1: COLL_TAG_BARRIER;
     XBT_DEBUG("ompi_coll_tuned_barrier_ompi_doublering rank %d", rank);
 
     left = ((rank-1+size)%size);
     right = ((rank+1)%size);
 
     if (rank > 0) { /* receive message from the left */
-      Request::recv(nullptr, 0, MPI_BYTE, left, COLL_TAG_BARRIER, comm, MPI_STATUS_IGNORE);
+      Request::recv(nullptr, 0, MPI_BYTE, left, tag, comm, MPI_STATUS_IGNORE);
     }
 
     /* Send message to the right */
-    Request::send(nullptr, 0, MPI_BYTE, right, COLL_TAG_BARRIER, comm);
+    Request::send(nullptr, 0, MPI_BYTE, right, tag, comm);
 
     /* root needs to receive from the last node */
     if (rank == 0) {
-      Request::recv(nullptr, 0, MPI_BYTE, left, COLL_TAG_BARRIER, comm, MPI_STATUS_IGNORE);
+      Request::recv(nullptr, 0, MPI_BYTE, left, tag, comm, MPI_STATUS_IGNORE);
     }
 
     /* Allow nodes to exit */
     if (rank > 0) { /* post Receive from left */
-      Request::recv(nullptr, 0, MPI_BYTE, left, COLL_TAG_BARRIER, comm, MPI_STATUS_IGNORE);
+      Request::recv(nullptr, 0, MPI_BYTE, left, tag, comm, MPI_STATUS_IGNORE);
     }
 
     /* send message to the right one */
-    Request::send(nullptr, 0, MPI_BYTE, right, COLL_TAG_BARRIER, comm);
+    Request::send(nullptr, 0, MPI_BYTE, right, tag, comm);
 
     /* rank 0 post receive from the last node */
     if (rank == 0) {
-      Request::recv(nullptr, 0, MPI_BYTE, left, COLL_TAG_BARRIER, comm, MPI_STATUS_IGNORE);
+      Request::recv(nullptr, 0, MPI_BYTE, left, tag, comm, MPI_STATUS_IGNORE);
     }
 
     return MPI_SUCCESS;
@@ -99,6 +100,7 @@ int barrier__ompi_recursivedoubling(MPI_Comm comm)
 
     rank = comm->rank();
     size = comm->size();
+    int tag = smpi_process()->finalizing() ? COLL_TAG_BARRIER-1: COLL_TAG_BARRIER;
     XBT_DEBUG(
                  "ompi_coll_tuned_barrier_ompi_recursivedoubling rank %d",
                  rank);
@@ -112,13 +114,13 @@ int barrier__ompi_recursivedoubling(MPI_Comm comm)
         if (rank >= adjsize) {
             /* send message to lower ranked node */
             remote = rank - adjsize;
-            Request::sendrecv(nullptr, 0, MPI_BYTE, remote, COLL_TAG_BARRIER, nullptr, 0, MPI_BYTE, remote,
-                              COLL_TAG_BARRIER, comm, MPI_STATUS_IGNORE);
+            Request::sendrecv(nullptr, 0, MPI_BYTE, remote, tag, nullptr, 0, MPI_BYTE, remote,
+                              tag, comm, MPI_STATUS_IGNORE);
 
         } else if (rank < (size - adjsize)) {
 
             /* receive message from high level rank */
-            Request::recv(nullptr, 0, MPI_BYTE, rank + adjsize, COLL_TAG_BARRIER, comm, MPI_STATUS_IGNORE);
+            Request::recv(nullptr, 0, MPI_BYTE, rank + adjsize, tag, comm, MPI_STATUS_IGNORE);
         }
     }
 
@@ -131,8 +133,8 @@ int barrier__ompi_recursivedoubling(MPI_Comm comm)
             if (remote >= adjsize) continue;
 
             /* post receive from the remote node */
-            Request::sendrecv(nullptr, 0, MPI_BYTE, remote, COLL_TAG_BARRIER, nullptr, 0, MPI_BYTE, remote,
-                              COLL_TAG_BARRIER, comm, MPI_STATUS_IGNORE);
+            Request::sendrecv(nullptr, 0, MPI_BYTE, remote, tag, nullptr, 0, MPI_BYTE, remote,
+                              tag, comm, MPI_STATUS_IGNORE);
         }
     }
 
@@ -141,7 +143,7 @@ int barrier__ompi_recursivedoubling(MPI_Comm comm)
         if (rank < (size - adjsize)) {
             /* send enter message to higher ranked node */
             remote = rank + adjsize;
-            Request::send(nullptr, 0, MPI_BYTE, remote, COLL_TAG_BARRIER, comm);
+            Request::send(nullptr, 0, MPI_BYTE, remote, tag, comm);
         }
     }
 
@@ -161,6 +163,7 @@ int barrier__ompi_bruck(MPI_Comm comm)
 
     rank = comm->rank();
     size = comm->size();
+    int tag = smpi_process()->finalizing() ? COLL_TAG_BARRIER-1: COLL_TAG_BARRIER;
     XBT_DEBUG(
                  "ompi_coll_tuned_barrier_ompi_bruck rank %d", rank);
 
@@ -170,7 +173,7 @@ int barrier__ompi_bruck(MPI_Comm comm)
         to   = (rank + distance) % size;
 
         /* send message to lower ranked node */
-        Request::sendrecv(nullptr, 0, MPI_BYTE, to, COLL_TAG_BARRIER, nullptr, 0, MPI_BYTE, from, COLL_TAG_BARRIER,
+        Request::sendrecv(nullptr, 0, MPI_BYTE, to, tag, nullptr, 0, MPI_BYTE, from, tag,
                           comm, MPI_STATUS_IGNORE);
     }
 
@@ -188,11 +191,12 @@ int barrier__ompi_two_procs(MPI_Comm comm)
     int remote;
 
     remote = comm->rank();
+    int tag = smpi_process()->finalizing() ? COLL_TAG_BARRIER-1: COLL_TAG_BARRIER;
     XBT_DEBUG(
                  "ompi_coll_tuned_barrier_ompi_two_procs rank %d", remote);
     remote = (remote + 1) & 0x1;
 
-    Request::sendrecv(nullptr, 0, MPI_BYTE, remote, COLL_TAG_BARRIER, nullptr, 0, MPI_BYTE, remote, COLL_TAG_BARRIER,
+    Request::sendrecv(nullptr, 0, MPI_BYTE, remote, tag, nullptr, 0, MPI_BYTE, remote, tag,
                       comm, MPI_STATUS_IGNORE);
     return (MPI_SUCCESS);
 }
@@ -218,12 +222,13 @@ int barrier__ompi_basic_linear(MPI_Comm comm)
     int size = comm->size();
     int rank = comm->rank();
 
+    int tag = smpi_process()->finalizing() ? COLL_TAG_BARRIER-1: COLL_TAG_BARRIER;
     /* All non-root send & receive zero-length message. */
 
     if (rank > 0) {
-      Request::send(nullptr, 0, MPI_BYTE, 0, COLL_TAG_BARRIER, comm);
+      Request::send(nullptr, 0, MPI_BYTE, 0, tag, comm);
 
-      Request::recv(nullptr, 0, MPI_BYTE, 0, COLL_TAG_BARRIER, comm, MPI_STATUS_IGNORE);
+      Request::recv(nullptr, 0, MPI_BYTE, 0, tag, comm, MPI_STATUS_IGNORE);
     }
 
     /* The root collects and broadcasts the messages. */
@@ -233,12 +238,12 @@ int barrier__ompi_basic_linear(MPI_Comm comm)
 
         requests = new MPI_Request[size];
         for (i = 1; i < size; ++i) {
-          requests[i] = Request::irecv(nullptr, 0, MPI_BYTE, i, COLL_TAG_BARRIER, comm);
+          requests[i] = Request::irecv(nullptr, 0, MPI_BYTE, i, tag, comm);
         }
         Request::waitall( size-1, requests+1, MPI_STATUSES_IGNORE );
 
         for (i = 1; i < size; ++i) {
-          requests[i] = Request::isend(nullptr, 0, MPI_BYTE, i, COLL_TAG_BARRIER, comm);
+          requests[i] = Request::isend(nullptr, 0, MPI_BYTE, i, tag, comm);
         }
         Request::waitall( size-1, requests+1, MPI_STATUSES_IGNORE );
         delete[] requests;
@@ -262,6 +267,7 @@ int barrier__ompi_tree(MPI_Comm comm)
 
     rank = comm->rank();
     size = comm->size();
+    int tag = smpi_process()->finalizing() ? COLL_TAG_BARRIER-1: COLL_TAG_BARRIER;
     XBT_DEBUG(
                  "ompi_coll_tuned_barrier_ompi_tree %d",
                  rank);
@@ -273,9 +279,9 @@ int barrier__ompi_tree(MPI_Comm comm)
         partner = rank ^ jump;
         if (!(partner & (jump-1)) && partner < size) {
             if (partner > rank) {
-              Request::recv(nullptr, 0, MPI_BYTE, partner, COLL_TAG_BARRIER, comm, MPI_STATUS_IGNORE);
+              Request::recv(nullptr, 0, MPI_BYTE, partner, tag, comm, MPI_STATUS_IGNORE);
             } else if (partner < rank) {
-              Request::send(nullptr, 0, MPI_BYTE, partner, COLL_TAG_BARRIER, comm);
+              Request::send(nullptr, 0, MPI_BYTE, partner, tag, comm);
             }
         }
     }
@@ -285,9 +291,9 @@ int barrier__ompi_tree(MPI_Comm comm)
         partner = rank ^ jump;
         if (!(partner & (jump-1)) && partner < size) {
             if (partner > rank) {
-              Request::send(nullptr, 0, MPI_BYTE, partner, COLL_TAG_BARRIER, comm);
+              Request::send(nullptr, 0, MPI_BYTE, partner, tag, comm);
             } else if (partner < rank) {
-              Request::recv(nullptr, 0, MPI_BYTE, partner, COLL_TAG_BARRIER, comm, MPI_STATUS_IGNORE);
+              Request::recv(nullptr, 0, MPI_BYTE, partner, tag, comm, MPI_STATUS_IGNORE);
             }
         }
     }

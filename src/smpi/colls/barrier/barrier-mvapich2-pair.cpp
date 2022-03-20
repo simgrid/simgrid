@@ -41,6 +41,7 @@
 
 #include "../coll_tuned_topo.hpp"
 #include "../colls_private.hpp"
+#include "smpi_actor.hpp"
 namespace simgrid{
 namespace smpi{
 int barrier__mvapich2_pair(MPI_Comm comm)
@@ -49,6 +50,7 @@ int barrier__mvapich2_pair(MPI_Comm comm)
     int size, rank;
     int d, dst, src;
     int mpi_errno = MPI_SUCCESS;
+    int tag = smpi_process()->finalizing() ? COLL_TAG_BARRIER-1: COLL_TAG_BARRIER;
 
     size = comm->size();
     /* Trivial barriers return immediately */
@@ -68,25 +70,25 @@ int barrier__mvapich2_pair(MPI_Comm comm)
         if (rank < surfeit) {
             /* get the fanin letter from the upper "half" process: */
             dst = N2_prev + rank;
-            Request::recv(nullptr, 0, MPI_BYTE, dst, COLL_TAG_BARRIER, comm, MPI_STATUS_IGNORE);
+            Request::recv(nullptr, 0, MPI_BYTE, dst, tag, comm, MPI_STATUS_IGNORE);
         }
 
         /* combine on embedded N2_prev power-of-two processes */
         for (d = 1; d < N2_prev; d <<= 1) {
             dst = (rank ^ d);
-            Request::sendrecv(nullptr, 0, MPI_BYTE, dst, COLL_TAG_BARRIER, nullptr, 0, MPI_BYTE, dst, COLL_TAG_BARRIER,
+            Request::sendrecv(nullptr, 0, MPI_BYTE, dst, tag, nullptr, 0, MPI_BYTE, dst, tag,
                               comm, MPI_STATUS_IGNORE);
         }
 
         /* fanout data to nodes above N2_prev... */
         if (rank < surfeit) {
             dst = N2_prev + rank;
-            Request::send(nullptr, 0, MPI_BYTE, dst, COLL_TAG_BARRIER, comm);
+            Request::send(nullptr, 0, MPI_BYTE, dst, tag, comm);
         }
     } else {
         /* fanin data to power of 2 subset */
         src = rank - N2_prev;
-        Request::sendrecv(nullptr, 0, MPI_BYTE, src, COLL_TAG_BARRIER, nullptr, 0, MPI_BYTE, src, COLL_TAG_BARRIER,
+        Request::sendrecv(nullptr, 0, MPI_BYTE, src, tag, nullptr, 0, MPI_BYTE, src, tag,
                           comm, MPI_STATUS_IGNORE);
     }
 
