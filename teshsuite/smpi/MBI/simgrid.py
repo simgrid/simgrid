@@ -1,4 +1,4 @@
-# Copyright 2021-2022. The MBI project. All rights reserved. 
+# Copyright 2021-2022. The MBI project. All rights reserved.
 # This program is free software; you can redistribute it and/or modify it under the terms of the license (GNU GPL).
 
 import re
@@ -49,8 +49,6 @@ class Tool(AbstractTool):
                 outfile.write('</platform>\n')
 
         execcmd = execcmd.replace("mpirun", "smpirun -wrapper simgrid-mc -platform ./cluster.xml -analyze --cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000 --cfg=smpi/pedantic:true")
-        if re.search("Concurrency", binary):  # DPOR reduction in simgrid cannot deal with RMA calls as they contain mutexes
-            execcmd = execcmd.replace("smpirun", "smpirun --cfg=model-check/reduction:none")
         execcmd = execcmd.replace('${EXE}', binary)
         execcmd = execcmd.replace('$zero_buffer', "--cfg=smpi/buffering:zero")
         execcmd = execcmd.replace('$infty_buffer', "--cfg=smpi/buffering:infty")
@@ -64,7 +62,7 @@ class Tool(AbstractTool):
             timeout=timeout,
             batchinfo=batchinfo)
 
-    def teardown(self): 
+    def teardown(self):
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated cruft (binary files)
         subprocess.run("rm -f smpitmp-* core", shell=True, check=True) 
 
@@ -85,6 +83,9 @@ class Tool(AbstractTool):
 
         if re.search('MC is currently not supported here', output):
             return 'failure'
+
+        if re.search('Collective communication mismatch', output):
+            return 'Collective mismatch'
 
         if re.search('DEADLOCK DETECTED', output):
             return 'deadlock'
