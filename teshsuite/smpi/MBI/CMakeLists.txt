@@ -5,7 +5,31 @@
 # Only the python scripts are embeeded in the archive, and the C test files are generated at config time using these scripts.
 # These python scripts are copied over from the MBI repository with as little changes as possible.
 
-set(generator_scripts CollMatchingGenerator.py ResleakGenerator.py) # More generators to come
+set(generator_scripts 
+    CollArgGenerator.py
+    CollComGenerator.py
+    CollLocalConcurrencyGenerator.py
+    CollMatchingGenerator.py
+    CollP2PMatchingGenerator.py
+    CollP2PMessageRaceGenerator.py
+    CollTopoGenerator.py
+    MissingWaitandStartGenerator.py
+    P2PArgGenerator.py
+    P2PComGenerator.py
+    P2PInvalidComGenerator.py
+    P2PLocalConcurrencyGenerator.py
+    P2PMatchingANYSRCGenerator.py
+    P2PMatchingGenerator.py
+    P2PProbeGenerator.py
+    ResleakGenerator.py
+    RMAArgGenerator.py
+    RMAInvalidArgGenerator.py
+    RMALocalLocalConcurrencyGenerator.py
+  # RMAP2PGlobalConcurrencyGenerator.py
+    RMARemoteLocalConcurrencyGenerator.py
+    RMARemoteRemoteConcurrencyGenerator.py
+    RMAReqLifecycleGenerator.py
+    RMAWinBufferGenerator.py)
 
 if (enable_smpi_MBI_testsuite)
   if (NOT enable_smpi)
