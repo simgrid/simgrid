@@ -2,41 +2,36 @@
 
 p Testing Mutex
 
-$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/synchro-mutex.py --platform ${platfdir}/two_hosts.xml --actors 0 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
->[ 10.000000] (1:master@Tremblay) I'm done, good bye
-
 $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/synchro-mutex.py --platform ${platfdir}/two_hosts.xml --actors 1 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
->[  0.000000] (2:worker-0(mgr)@Jupiter) Hello simgrid, I'm ready to compute after acquiring the mutex from a context manager
->[  0.000000] (2:worker-0(mgr)@Jupiter) I'm done, good bye
->[  0.000000] (3:worker-0@Tremblay) Hello simgrid, I'm ready to compute after a regular lock
->[  0.000000] (3:worker-0@Tremblay) I'm done, good bye
->[ 10.000000] (1:master@Tremblay) Result[0] -> 2
->[ 10.000000] (1:master@Tremblay) I'm done, good bye
+>[  0.000000] (1:worker-0(mgr)@Jupiter) Hello simgrid, I'm ready to compute after acquiring the mutex from a context manager
+>[  0.000000] (2:worker-0@Tremblay) Hello simgrid, I'm ready to compute after a regular lock
+>[  0.000000] (1:worker-0(mgr)@Jupiter) I'm done, good bye
+>[  0.000000] (2:worker-0@Tremblay) I'm done, good bye
+>[  0.000000] (0:maestro@) Result[0] -> 2
 
 $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/synchro-mutex.py --platform ${platfdir}/two_hosts.xml --actors 5 "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
->[  0.000000] (2:worker-0(mgr)@Jupiter) Hello simgrid, I'm ready to compute after acquiring the mutex from a context manager
->[  0.000000] (2:worker-0(mgr)@Jupiter) I'm done, good bye
->[  0.000000] (3:worker-0@Tremblay) Hello simgrid, I'm ready to compute after a regular lock
->[  0.000000] (3:worker-0@Tremblay) I'm done, good bye
->[  0.000000] (4:worker-1(mgr)@Jupiter) Hello simgrid, I'm ready to compute after acquiring the mutex from a context manager
->[  0.000000] (4:worker-1(mgr)@Jupiter) I'm done, good bye
->[  0.000000] (5:worker-1@Tremblay) Hello simgrid, I'm ready to compute after a regular lock
->[  0.000000] (5:worker-1@Tremblay) I'm done, good bye
->[  0.000000] (6:worker-2(mgr)@Jupiter) Hello simgrid, I'm ready to compute after acquiring the mutex from a context manager
->[  0.000000] (6:worker-2(mgr)@Jupiter) I'm done, good bye
->[  0.000000] (7:worker-2@Tremblay) Hello simgrid, I'm ready to compute after a regular lock
->[  0.000000] (7:worker-2@Tremblay) I'm done, good bye
->[  0.000000] (8:worker-3(mgr)@Jupiter) Hello simgrid, I'm ready to compute after acquiring the mutex from a context manager
->[  0.000000] (8:worker-3(mgr)@Jupiter) I'm done, good bye
->[  0.000000] (9:worker-3@Tremblay) Hello simgrid, I'm ready to compute after a regular lock
->[  0.000000] (9:worker-3@Tremblay) I'm done, good bye
->[  0.000000] (10:worker-4(mgr)@Jupiter) Hello simgrid, I'm ready to compute after acquiring the mutex from a context manager
->[  0.000000] (10:worker-4(mgr)@Jupiter) I'm done, good bye
->[  0.000000] (11:worker-4@Tremblay) Hello simgrid, I'm ready to compute after a regular lock
->[  0.000000] (11:worker-4@Tremblay) I'm done, good bye
->[ 10.000000] (1:master@Tremblay) Result[0] -> 2
->[ 10.000000] (1:master@Tremblay) Result[1] -> 2
->[ 10.000000] (1:master@Tremblay) Result[2] -> 2
->[ 10.000000] (1:master@Tremblay) Result[3] -> 2
->[ 10.000000] (1:master@Tremblay) Result[4] -> 2
->[ 10.000000] (1:master@Tremblay) I'm done, good bye
+>[  0.000000] (1:worker-0(mgr)@Jupiter) Hello simgrid, I'm ready to compute after acquiring the mutex from a context manager
+>[  0.000000] (3:worker-1(mgr)@Jupiter) Hello simgrid, I'm ready to compute after acquiring the mutex from a context manager
+>[  0.000000] (5:worker-2(mgr)@Jupiter) Hello simgrid, I'm ready to compute after acquiring the mutex from a context manager
+>[  0.000000] (7:worker-3(mgr)@Jupiter) Hello simgrid, I'm ready to compute after acquiring the mutex from a context manager
+>[  0.000000] (9:worker-4(mgr)@Jupiter) Hello simgrid, I'm ready to compute after acquiring the mutex from a context manager
+>[  0.000000] (2:worker-0@Tremblay) Hello simgrid, I'm ready to compute after a regular lock
+>[  0.000000] (1:worker-0(mgr)@Jupiter) I'm done, good bye
+>[  0.000000] (4:worker-1@Tremblay) Hello simgrid, I'm ready to compute after a regular lock
+>[  0.000000] (3:worker-1(mgr)@Jupiter) I'm done, good bye
+>[  0.000000] (6:worker-2@Tremblay) Hello simgrid, I'm ready to compute after a regular lock
+>[  0.000000] (5:worker-2(mgr)@Jupiter) I'm done, good bye
+>[  0.000000] (8:worker-3@Tremblay) Hello simgrid, I'm ready to compute after a regular lock
+>[  0.000000] (7:worker-3(mgr)@Jupiter) I'm done, good bye
+>[  0.000000] (10:worker-4@Tremblay) Hello simgrid, I'm ready to compute after a regular lock
+>[  0.000000] (9:worker-4(mgr)@Jupiter) I'm done, good bye
+>[  0.000000] (2:worker-0@Tremblay) I'm done, good bye
+>[  0.000000] (4:worker-1@Tremblay) I'm done, good bye
+>[  0.000000] (6:worker-2@Tremblay) I'm done, good bye
+>[  0.000000] (8:worker-3@Tremblay) I'm done, good bye
+>[  0.000000] (10:worker-4@Tremblay) I'm done, good bye
+>[  0.000000] (0:maestro@) Result[0] -> 2
+>[  0.000000] (0:maestro@) Result[1] -> 2
+>[  0.000000] (0:maestro@) Result[2] -> 2
+>[  0.000000] (0:maestro@) Result[3] -> 2
+>[  0.000000] (0:maestro@) Result[4] -> 2
