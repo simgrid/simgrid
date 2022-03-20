@@ -108,6 +108,9 @@ void Actor::join() const
 
 void Actor::join(double timeout) const
 {
+  xbt_assert(not(MC_is_active() || MC_record_replay_is_active()),
+             "Actor::join() is not usable in MC yet. Please report this bug.");
+
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   const kernel::actor::ActorImpl* target = pimpl_;
   kernel::actor::simcall_blocking([issuer, target, timeout] {
