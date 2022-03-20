@@ -81,7 +81,7 @@ File::~File()
     delete shared_file_pointer_;
     delete[] list_;
   }
-  delete win_;
+  simgrid::smpi::Win::del(win_);
   file_->close();
   F2C::free_f(this->f2c_id());
   if (info_ != MPI_INFO_NULL)

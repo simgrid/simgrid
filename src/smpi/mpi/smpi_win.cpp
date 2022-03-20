@@ -77,29 +77,35 @@ Win::Win(void* base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
   this->add_f();
 }
 
-Win::~Win(){
+int Win::del(Win* win){
   //As per the standard, perform a barrier to ensure every async comm is finished
   if  (MC_is_active() || MC_record_replay_is_active())
-    bar_->wait();
+    win->bar_->wait();
   else
-    colls::barrier(comm_);
-  flush_local_all();
+    colls::barrier(win->comm_);
+  win->flush_local_all();
 
-  if (info_ != MPI_INFO_NULL)
-    simgrid::smpi::Info::unref(info_);
-  if (errhandler_ != MPI_ERRHANDLER_NULL)
-    simgrid::smpi::Errhandler::unref(errhandler_);
+  if (win->info_ != MPI_INFO_NULL)
+    simgrid::smpi::Info::unref(win->info_);
+  if (win->errhandler_ != MPI_ERRHANDLER_NULL)
+    simgrid::smpi::Errhandler::unref(win->errhandler_);
 
-  comm_->remove_rma_win(this);
+  win->comm_->remove_rma_win(win);
 
-  colls::barrier(comm_);
-  Comm::unref(comm_);
+  colls::barrier(win->comm_);
+  Comm::unref(win->comm_);
+  if (!win->lockers_.empty() || win->opened_ < 0){
+    XBT_WARN("Freeing a locked or opened window");
+    return MPI_ERR_WIN;
+  }
+  if (win->allocated_)
+    xbt_free(win->base_);
 
-  if (allocated_)
-    xbt_free(base_);
+  F2C::free_f(win->f2c_id());
+  win->cleanup_attr<Win>();
 
-  F2C::free_f(this->f2c_id());
-  cleanup_attr<Win>();
+  delete win;
+  return MPI_SUCCESS;
 }
 
 int Win::attach(void* /*base*/, MPI_Aint size)
@@ -434,7 +440,7 @@ int Win::start(MPI_Group group, int /*assert*/)
 
   group->ref();
   dst_group_ = group;
-  opened_++; // we're open for business !
+  opened_--; // we're open for business !
   XBT_DEBUG("Leaving MPI_Win_Start");
   return MPI_SUCCESS;
 }
@@ -459,7 +465,7 @@ int Win::post(MPI_Group group, int /*assert*/)
 
   group->ref();
   src_group_ = group;
-  opened_++; // we're open for business !
+  opened_--; // we're open for business !
   XBT_DEBUG("Leaving MPI_Win_Post");
   return MPI_SUCCESS;
 }
@@ -485,7 +491,7 @@ int Win::complete(){
 
   flush_local_all();
 
-  opened_--; //we're closed for business !
+  opened_++; //we're closed for business !
   Group::unref(dst_group_);
   dst_group_ = MPI_GROUP_NULL;
   return MPI_SUCCESS;
@@ -511,7 +517,7 @@ int Win::wait(){
 
   flush_local_all();
 
-  opened_--; //we're closed for business !
+  opened_++; //we're closed for business !
   Group::unref(src_group_);
   src_group_ = MPI_GROUP_NULL;
   return MPI_SUCCESS;

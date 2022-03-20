@@ -58,7 +58,7 @@ int alltoall__pair_rma(const void *send_buff, int send_count, MPI_Datatype send_
             rank /* send_chunk*/, send_count, send_type);
   }
   win->fence(assert);
-  delete win;
+  simgrid::smpi::Win::del(win);
   return 0;
 }
 
