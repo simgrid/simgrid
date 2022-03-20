@@ -75,7 +75,7 @@ public:
 
   s4u::Barrier& get_iface() { return piface_; }
 
-  std::string to_string()
+  std::string to_string() const
   {
     return xbt::string_printf("Barrier %u: %zu of %u", id_, ongoing_acquisitions_.size(), expected_actors_);
   }

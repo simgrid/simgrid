@@ -108,7 +108,6 @@ int PMPI_Win_free( MPI_Win* win){
   }
   const SmpiBenchGuard suspend_bench;
   return simgrid::smpi::Win::del(*win);
-  return MPI_SUCCESS;
 }
 
 int PMPI_Win_set_name(MPI_Win  win, const char * name)
