@@ -55,7 +55,6 @@ Comm::Comm(MPI_Group group, MPI_Topology topo, bool smp, int in_id)
     colls::bcast(&id, 1, MPI_INT, 0, this);
     XBT_DEBUG("Communicator %p has id %d", this, id);
     id_=id;//only set here, as we don't want to change it in the middle of the bcast
-    colls::barrier(this);
   }
 }
 

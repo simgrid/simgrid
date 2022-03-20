@@ -70,9 +70,6 @@ Win::Win(void* base, MPI_Aint size, int disp_unit, MPI_Info info, MPI_Comm comm,
     colls::bcast(&bar_ptr, sizeof(s4u::Barrier*), MPI_BYTE, 0, comm);
     if (rank_ != 0)
       bar_ = s4u::BarrierPtr(bar_ptr);
-    bar_->wait();
-  }else{
-    colls::barrier(comm);
   }
   this->add_f();
 }
