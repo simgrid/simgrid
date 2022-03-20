@@ -128,6 +128,7 @@ int PMPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out)
 {
   CHECK_NULL(4, MPI_ERR_ARG, comm_out)
   CHECK_COMM2(1, comm)
+  CHECK_COLLECTIVE(comm, __func__)
   if( color != MPI_UNDEFINED)//we use a negative value for MPI_UNDEFINED
     CHECK_NEGATIVE(3, MPI_ERR_ARG, color)
   const SmpiBenchGuard suspend_bench;
@@ -139,6 +140,7 @@ int PMPI_Comm_split_type(MPI_Comm comm, int split_type, int key, MPI_Info info, 
 {
   CHECK_COMM(1)
   CHECK_NULL(5, MPI_ERR_ARG, newcomm)
+  CHECK_COLLECTIVE(comm, __func__)
   const SmpiBenchGuard suspend_bench;
   *newcomm = comm->split_type(split_type, key, info);
   return MPI_SUCCESS;

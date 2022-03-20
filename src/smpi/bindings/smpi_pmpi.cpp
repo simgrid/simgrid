@@ -57,6 +57,7 @@ int PMPI_Init(int*, char***)
   smpi_process()->mark_as_initialized();
 
   smpi_mpi_init();
+  CHECK_COLLECTIVE(smpi_process()->comm_world(), "MPI_Init")
 
   return MPI_SUCCESS;
 }
@@ -64,6 +65,7 @@ int PMPI_Init(int*, char***)
 int PMPI_Finalize()
 {
   smpi_bench_end();
+  CHECK_COLLECTIVE(smpi_process()->comm_world(), "MPI_Finalize")
   aid_t rank_traced = simgrid::s4u::this_actor::get_pid();
   smpi_process()->mark_as_finalizing();
   TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::NoOpTIData("finalize"));

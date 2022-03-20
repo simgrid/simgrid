@@ -33,6 +33,7 @@ int PMPI_Win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info info, MP
   CHECK_BUFFER(1, base, size, MPI_BYTE)
   CHECK_NEGATIVE(2, MPI_ERR_OTHER, size)
   CHECK_NEGATIVE(3, MPI_ERR_OTHER, disp_unit)
+  CHECK_COLLECTIVE(comm, __func__)
   const SmpiBenchGuard suspend_bench;
   if (base == nullptr && size != 0){
     retval= MPI_ERR_OTHER;
@@ -100,6 +101,7 @@ int PMPI_Win_detach(MPI_Win win, const void* base)
 int PMPI_Win_free( MPI_Win* win){
   CHECK_NULL(1, MPI_ERR_WIN, win)
   CHECK_WIN(1, (*win))
+  CHECK_COLLECTIVE((*win)->comm(), __func__)
   if (_smpi_cfg_pedantic && (*win)->opened() == 1){//only check in pedantic mode, as it's not clear this is illegal
     XBT_WARN("Attempt to destroy a MPI_Win too early -missing MPI_Win_fence ?");
     return MPI_ERR_WIN;

@@ -37,7 +37,7 @@ int PMPI_Ibarrier(MPI_Comm comm, MPI_Request *request)
 {
   CHECK_COMM(1)
   CHECK_REQUEST(2)
-
+  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Barrier" : "PMPI_Ibarrier")
   const SmpiBenchGuard suspend_bench;
   aid_t pid = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Barrier" : "PMPI_Ibarrier",
@@ -67,6 +67,7 @@ int PMPI_Ibcast(void* buf, int count, MPI_Datatype datatype, int root, MPI_Comm 
   CHECK_BUFFER(1, buf, count, datatype)
   CHECK_ROOT(4)
   CHECK_REQUEST(6)
+  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Bcast" : "PMPI_Ibcast")
 
   const SmpiBenchGuard suspend_bench;
   aid_t pid = simgrid::s4u::this_actor::get_pid();
@@ -115,6 +116,7 @@ int PMPI_Igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void
   }
   CHECK_ROOT(7)
   CHECK_REQUEST(9)
+  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Gather" : "PMPI_Igather")
 
   const void* real_sendbuf   = sendbuf;
   int real_sendcount         = sendcount;
@@ -175,6 +177,7 @@ int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
   }
   CHECK_ROOT(8)
   CHECK_REQUEST(10)
+  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Gatherv" : "PMPI_Igatherv")
 
   if (rank == root){
     for (int i = 0; i < comm->size(); i++) {
@@ -239,6 +242,7 @@ int PMPI_Iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
   CHECK_BUFFER(1, sendbuf, sendcount, sendtype)
   CHECK_BUFFER(4, recvbuf, recvcount, recvtype)
   CHECK_REQUEST(8)
+  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Allgather" : "PMPI_Iallggather")
 
   if (sendbuf == MPI_IN_PLACE) {
     sendbuf   = static_cast<char*>(recvbuf) + recvtype->get_extent() * recvcount * comm->rank();
@@ -296,6 +300,7 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
     CHECK_COUNT(5, recvcounts[i])
     CHECK_BUFFER(4, recvbuf, recvcounts[i], recvtype)
   }
+  CHECK_COLLECTIVE(comm, MPI_REQUEST_IGNORED ? "PMPI_Allgatherv" : "PMPI_Iallgatherv")
 
   const SmpiBenchGuard suspend_bench;
   if (sendbuf == MPI_IN_PLACE) {
@@ -351,6 +356,7 @@ int PMPI_Iscatter(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
   }
   CHECK_ROOT(8)
   CHECK_REQUEST(9)
+  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Scatter" : "PMPI_Iscatter")
 
   if (recvbuf == MPI_IN_PLACE) {
     recvtype  = sendtype;
@@ -415,6 +421,7 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
   } else {
     CHECK_NOT_IN_PLACE_ROOT(4, recvbuf)
   }
+  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Scatterv" : "PMPI_Iscatterv")
 
   const SmpiBenchGuard suspend_bench;
 
@@ -464,6 +471,7 @@ int PMPI_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
   CHECK_OP(5, op, datatype)
   CHECK_ROOT(7)
   CHECK_REQUEST(8)
+  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce" : "PMPI_Ireduce")
 
   const SmpiBenchGuard suspend_bench;
   aid_t pid = simgrid::s4u::this_actor::get_pid();
@@ -514,6 +522,7 @@ int PMPI_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype 
   CHECK_BUFFER(1, sendbuf, count, datatype)
   CHECK_BUFFER(2, recvbuf, count, datatype)
   CHECK_REQUEST(7)
+  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Allreduce" : "PMPI_Iallreduce")
 
   const SmpiBenchGuard suspend_bench;
   std::vector<unsigned char> tmp_sendbuf;
@@ -551,6 +560,7 @@ int PMPI_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   CHECK_BUFFER(2,recvbuf,count, datatype)
   CHECK_REQUEST(7)
   CHECK_OP(5, op, datatype)
+  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Scan" : "PMPI_Iscan")
 
   const SmpiBenchGuard suspend_bench;
   aid_t pid = simgrid::s4u::this_actor::get_pid();
@@ -586,6 +596,7 @@ int PMPI_Iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
   CHECK_BUFFER(2, recvbuf, count, datatype)
   CHECK_REQUEST(7)
   CHECK_OP(5, op, datatype)
+  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Exscan" : "PMPI_Iexscan")
 
   const SmpiBenchGuard suspend_bench;
   aid_t pid = simgrid::s4u::this_actor::get_pid();
@@ -627,6 +638,7 @@ int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcoun
     CHECK_BUFFER(1, sendbuf, recvcounts[i], datatype)
     CHECK_BUFFER(2, recvbuf, recvcounts[i], datatype)
   }
+  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter" : "PMPI_Ireduce_scatter")
 
   const SmpiBenchGuard suspend_bench;
   aid_t pid                          = simgrid::s4u::this_actor::get_pid();
@@ -673,6 +685,7 @@ int PMPI_Ireduce_scatter_block(const void* sendbuf, void* recvbuf, int recvcount
   CHECK_BUFFER(2, recvbuf, recvcount, datatype)
   CHECK_REQUEST(7)
   CHECK_OP(5, op, datatype)
+  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Reduce_scatter_block" : "PMPI_Ireduce_scatter_block")
 
   const SmpiBenchGuard suspend_bench;
   int count = comm->size();
@@ -721,6 +734,7 @@ int PMPI_Ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
   CHECK_COUNT(5, recvcount)
   CHECK_BUFFER(4, recvbuf, recvcount, recvtype)
   CHECK_REQUEST(8)
+  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoall" : "PMPI_Ialltoall")
 
   aid_t pid                  = simgrid::s4u::this_actor::get_pid();
   int real_sendcount         = sendcount;
@@ -779,6 +793,7 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
   CHECK_NULL(6, MPI_ERR_COUNT, recvcounts)
   CHECK_NULL(7, MPI_ERR_ARG, recvdispls)
   CHECK_REQUEST(10)
+  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoallv" : "PMPI_Ialltoallv")
 
   aid_t pid = simgrid::s4u::this_actor::get_pid();
   int size = comm->size();
@@ -883,6 +898,7 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
     CHECK_TYPE(8, recvtypes[i])
     CHECK_BUFFER(5, recvbuf, recvcounts[i], recvtypes[i])
   }
+  CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoallw" : "PMPI_Ialltoallw")
 
   const SmpiBenchGuard suspend_bench;
 

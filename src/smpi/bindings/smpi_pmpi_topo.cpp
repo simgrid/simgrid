@@ -24,6 +24,7 @@ int PMPI_Cart_create(MPI_Comm comm, int ndims, const int* dims, const int* perio
   CHECK_NEGATIVE(2, MPI_ERR_ARG, ndims)
   for (int i = 0; i < ndims; i++)
     CHECK_NEGATIVE(2, MPI_ERR_ARG, dims[i])
+  CHECK_COLLECTIVE(comm, __func__)
   const auto* topo = new simgrid::smpi::Topo_Cart(comm, ndims, dims, periodic, reorder, comm_cart);
   if (*comm_cart == MPI_COMM_NULL) {
     delete topo;
@@ -109,6 +110,7 @@ int PMPI_Cart_sub(MPI_Comm comm, const int* remain_dims, MPI_Comm* comm_new) {
   CHECK_COMM(1)
   CHECK_NULL(1, MPI_ERR_TOPOLOGY, comm->topo())
   CHECK_NULL(3, MPI_ERR_ARG, comm_new)
+  CHECK_COLLECTIVE(comm, __func__)
   auto* topo = static_cast<MPIR_Cart_Topology>(comm->topo().get());
   if (topo==nullptr) {
     return MPI_ERR_ARG;
