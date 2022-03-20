@@ -8,6 +8,7 @@
 #include <xbt/base.h>
 
 #include "smpi_f2c.hpp"
+#include "smpi_comm.hpp"
 
 #include <cstddef>
 #include <string>
@@ -35,6 +36,7 @@ XBT_PUBLIC void set_current_handle(F2C* handle);
 XBT_PUBLIC void set_current_buffer(int i, const char* name, const void* handle);
 XBT_PUBLIC size_t get_buffer_size(const void* ptr);
 XBT_PUBLIC void account_free(const void* ptr);
+XBT_PUBLIC int check_collectives_ordering(MPI_Comm comm, std::string call);
 
 } // namespace utils
 } // namespace smpi

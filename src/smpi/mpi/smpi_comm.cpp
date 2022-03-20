@@ -365,6 +365,8 @@ void Comm::unref(Comm* comm){
       delete[] comm->errhandlers_;
     } else if (comm->errhandler_ != MPI_ERRHANDLER_NULL)
       simgrid::smpi::Errhandler::unref(comm->errhandler_);
+    if(comm->collectives_counts_!=nullptr)
+      delete[] comm->collectives_counts_;
   }
   Group::unref(comm->group_);
   if(comm->refcount_==0)
@@ -648,6 +650,32 @@ unsigned int Comm::get_received_messages_count(int src, int dst, int tag)
 void Comm::increment_received_messages_count(int src, int dst, int tag)
 {
   recv_messages_[hash_message(src, dst, tag)]++;
+}
+
+unsigned int Comm::get_collectives_count()
+{
+  if (this==MPI_COMM_UNINITIALIZED){
+    return smpi_process()->comm_world()->get_collectives_count();
+  }else if(this == MPI_COMM_WORLD || this == smpi_process()->comm_world()){
+    if(collectives_counts_==nullptr)
+      collectives_counts_=new unsigned int[this->size()]{0};
+    return collectives_counts_[this->rank()];
+  }else{
+    return collectives_count_;
+  }
+}
+
+void Comm::increment_collectives_count()
+{
+   if (this==MPI_COMM_UNINITIALIZED){
+    smpi_process()->comm_world()->increment_collectives_count();
+  }else if (this == MPI_COMM_WORLD || this == smpi_process()->comm_world()){
+    if(collectives_counts_==nullptr)
+      collectives_counts_=new unsigned int[this->size()]{0};
+    collectives_counts_[this->rank()]++;
+  }else{
+    collectives_count_++;
+  }
 }
 
 } // namespace smpi

@@ -11,6 +11,7 @@
 #include "src/surf/xml/platf.hpp"
 #include "xbt/file.hpp"
 #include "xbt/log.h"
+#include "xbt/ex.h"
 #include "xbt/parse_units.hpp"
 #include "xbt/sysdep.h"
 #include <algorithm>
@@ -47,6 +48,8 @@ current_buffer_metadata_t current_buffer1;
 current_buffer_metadata_t current_buffer2;
 
 std::unordered_map<const void*, alloc_metadata_t> allocs;
+
+std::unordered_map<int, std::vector<std::string>> collective_calls;
 
 std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string)
 {
@@ -343,6 +346,30 @@ void account_free(const void* ptr){
   if (smpi_cfg_display_alloc()) {
     allocs.erase(ptr);
   }
+}
+
+int check_collectives_ordering(MPI_Comm comm, std::string call){
+  if(_smpi_cfg_pedantic){
+    unsigned int count = comm->get_collectives_count();
+    comm->increment_collectives_count();
+    auto vec = collective_calls.find(comm->id());
+    if (vec == collective_calls.end()) {
+      collective_calls.emplace(comm->id(), std::vector<std::string>{call});
+    }else{
+      //are we the first ? add the call
+      if (vec->second.size() == (count)){
+        vec->second.push_back(call);
+      } else if (vec->second.size() > count){
+        if (vec->second[count] != call){
+          XBT_WARN("Collective communication mismatch. For process %ld, expected %s, got %s", simgrid::s4u::this_actor::get_pid(), vec->second[count].c_str(), call.c_str());
+          return MPI_ERR_OTHER;
+        }
+      } else {
+        THROW_IMPOSSIBLE;
+      }
+    }
+  }
+  return MPI_SUCCESS;
 }
 
 }
