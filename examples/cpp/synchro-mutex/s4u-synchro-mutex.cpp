@@ -44,8 +44,11 @@ static void workerLockGuard(sg4::MutexPtr mutex, int& result)
   // Nothing specific here: the unlock will be automatic
 }
 
-static void master()
+int main(int argc, char** argv)
 {
+  sg4::Engine e(&argc, argv);
+  e.load_platform("../../platforms/two_hosts.xml");
+
   /* Create the requested amount of actors pairs. Each pair has a specific mutex and cell in `result`. */
   std::vector<int> result(cfg_actor_count.get());
 
@@ -55,17 +58,10 @@ static void master()
     sg4::Actor::create("worker", sg4::Host::by_name("Tremblay"), worker, mutex, std::ref(result[i]));
   }
 
-  sg4::this_actor::sleep_for(10);
+  e.run();
+
   for (int i = 0; i < cfg_actor_count; i++)
     XBT_INFO("Result[%d] -> %d", i, result[i]);
-}
-
-int main(int argc, char **argv)
-{
-  sg4::Engine e(&argc, argv);
-  e.load_platform("../../platforms/two_hosts.xml");
-  sg4::Actor::create("main", e.host_by_name("Tremblay"), master);
-  e.run();
 
   return 0;
 }
