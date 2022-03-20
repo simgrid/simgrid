@@ -361,7 +361,7 @@ int check_collectives_ordering(MPI_Comm comm, std::string call){
         vec->second.push_back(call);
       } else if (vec->second.size() > count){
         if (vec->second[count] != call){
-          XBT_WARN("Collective communication mismatch. For process %ld, expected %s, got %s", simgrid::s4u::this_actor::get_pid(), vec->second[count].c_str(), call.c_str());
+          XBT_WARN("Collective operation mismatch. For process %ld, expected %s, got %s", simgrid::s4u::this_actor::get_pid(), vec->second[count].c_str(), call.c_str());
           return MPI_ERR_OTHER;
         }
       } else {
