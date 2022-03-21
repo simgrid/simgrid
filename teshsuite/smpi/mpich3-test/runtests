@@ -161,7 +161,7 @@ foreach $_ (@ARGV) {
     elsif (/--?platformfile=(.*)/) { $platformfile = $1; }
     elsif (/--?hostfile=(.*)/) { $hostfile = $1; }
     elsif (/--?srcdir=(.*)/) { $srcdir = $1;
-	$mpiexec="$mpiexec  -platform ${srcdir}/$platformfile -hostfile ${srcdir}/$hostfile --log=root.thr:critical --log=smpi_kernel.thr:warning --cfg=smpi/host-speed:1e9f  --cfg=smpi/async-small-thresh:65536"; }
+	$mpiexec="$mpiexec  -platform ${srcdir}/$platformfile -hostfile ${srcdir}/$hostfile --log=root.thr:critical --log=smpi_kernel.thr:warning --cfg=smpi/host-speed:1e9f  --cfg=smpi/async-small-thresh:65536 --cfg=smpi/os:1:0.0000003:0.0000002 --cfg=smpi/ois:1:0.0000003:0.0000002"; }
     elsif (/--?verbose/) { $verbose = 1; }
     elsif (/--?showprogress/) { $showProgress = 1; }
     elsif (/--?debug/) { $debug = 1; }
