@@ -23,6 +23,9 @@ SMPI:
  - tracing: ensure that we dump the TI traces continuously during execution and
    not just at the end, reducing memory cost and performance hit.
  - Update OpenMPI collectives selection logic to match current one (4.1.2)
+ - Add a coherence check for collective operation order and root/MPI_Op
+   coherence. Potentially costly so not activated unless smpi:pendantic is set
+   or -analyze is given.
 
 S4U:
  - New signal: Engine::on_simulation_start_cb()
