@@ -233,7 +233,7 @@ while true; do
             shift 1
             ;;
         "-analyze")
-            SIMOPTS="$SIMOPTS --cfg=smpi/display-timing:yes --cfg=smpi/display-allocs:yes --cfg=smpi/list-leaks:50"
+            SIMOPTS="$SIMOPTS --cfg=smpi/display-timing:yes --cfg=smpi/display-allocs:yes --cfg=smpi/list-leaks:50 --cfg=smpi/pedantic:true"
             shift 1
             ;;
         "-help" | "--help" | "-h")
