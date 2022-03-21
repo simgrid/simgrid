@@ -30,7 +30,7 @@ simgrid = simgrid.Tool()
 
 (name, path, binary, filename) = sys.argv
 for test in parse_one_code(filename):
-    execcmd = test['cmd'].replace("mpirun", f"{path}/smpi_script/bin/smpirun -wrapper '{path}/bin/simgrid-mc --log=mc_safety.t:info' -platform ./cluster.xml -analyze --cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000 --cfg=smpi/pedantic:true")
+    execcmd = test['cmd'].replace("mpirun", f"{path}/smpi_script/bin/smpirun -wrapper '{path}/bin/simgrid-mc --log=mc_safety.t:info' -platform ./cluster.xml -analyze --cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000")
     execcmd = execcmd.replace('${EXE}', binary)
     execcmd = execcmd.replace('$zero_buffer', "--cfg=smpi/buffering:zero")
     execcmd = execcmd.replace('$infty_buffer', "--cfg=smpi/buffering:infty")
