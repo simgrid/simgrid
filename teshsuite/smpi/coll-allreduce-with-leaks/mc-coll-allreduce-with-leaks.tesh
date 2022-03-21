@@ -17,28 +17,6 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > Largest allocation at once from a single process was 28 bytes, at coll-allreduce-with-leaks.c:28. It was called 1 times during the whole simulation.
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
->
-> [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
-> [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
-> [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
-> [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Group
-> [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed buffers:
-> [0.000000] [smpi_utils/INFO] leaked allocations of total size 152, called 8 times, with minimum size 16 and maximum size 28
-> [0.000000] [smpi_utils/INFO] Memory Usage: Simulated application allocated 152 bytes during its lifetime through malloc/calloc calls.
-> Largest allocation at once from a single process was 28 bytes, at coll-allreduce-with-leaks.c:28. It was called 1 times during the whole simulation.
-> If this is too much, consider sharing allocations for computation buffers.
-> This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
->
-> [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
-> [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
-> [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Comm
-> [0.000000] [smpi_utils/INFO] 4 leaked handles of type MPI_Group
-> [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed buffers:
-> [0.000000] [smpi_utils/INFO] leaked allocations of total size 152, called 8 times, with minimum size 16 and maximum size 28
-> [0.000000] [smpi_utils/INFO] Memory Usage: Simulated application allocated 152 bytes during its lifetime through malloc/calloc calls.
-> Largest allocation at once from a single process was 28 bytes, at coll-allreduce-with-leaks.c:28. It was called 1 times during the whole simulation.
-> If this is too much, consider sharing allocations for computation buffers.
-> This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
 > [0.000000] [smpi_utils/INFO] Probable memory leaks in your code: SMPI detected 8 unfreed MPI handles:
 > [0.000000] [smpi_utils/WARNING] To get more information (location of allocations), compile your code with -trace-call-location flag of smpicc/f90
@@ -51,4 +29,4 @@ $ $VALGRIND_NO_LEAK_CHECK ${bindir:=.}/../../../smpi_script/bin/smpirun -wrapper
 > If this is too much, consider sharing allocations for computation buffers.
 > This can be done automatically by setting --cfg=smpi/auto-shared-malloc-thresh to the minimum size wanted size (this can alter execution if data content is necessary)
 > 
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 73 unique states visited; 18 backtracks (592 transition replays, 502 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 33 unique states visited; 7 backtracks (140 transition replays, 101 states visited overall)
