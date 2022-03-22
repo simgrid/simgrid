@@ -35,7 +35,7 @@ public:
   /** Blocks into the barrier. Every waiting actors will be unlocked once the expected amount of actors reaches the barrier */
   int wait();
   /** Returns some debug information about the barrier */
-  std::string to_string();
+  std::string to_string() const;
 
 #ifndef DOXYGEN
   /* refcounting */

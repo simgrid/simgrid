@@ -69,7 +69,7 @@ std::vector<std::string> DFSExplorer::get_textual_trace() // override
 {
   std::vector<std::string> trace;
   for (auto const& state : stack_) {
-    auto* t = state->get_transition();
+    const auto* t = state->get_transition();
     trace.push_back(xbt::string_printf("%ld: %s", t->aid_, t->to_string().c_str()));
   }
   return trace;

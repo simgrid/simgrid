@@ -53,7 +53,7 @@ int Barrier::wait()
   }
 }
 
-std::string Barrier::to_string()
+std::string Barrier::to_string() const
 {
   return pimpl_->to_string();
 }
