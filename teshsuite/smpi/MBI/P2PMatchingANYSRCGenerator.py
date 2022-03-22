@@ -107,4 +107,3 @@ for s in send + isend:
         replace['outcome'] = 'ERROR: MessageRace' 
         replace['errormsg'] = 'P2P message race which can cause a deadlock. @{r}@ at @{filename}@:@{line:MBIERROR}@ is called with ANY_SRC.'
         make_file(template, f'MessageRace_{r}_{s}_nok.c', replace)
-

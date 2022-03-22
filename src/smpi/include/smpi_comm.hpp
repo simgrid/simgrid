@@ -102,7 +102,6 @@ public:
   void increment_received_messages_count(int src, int dst, int tag);
   unsigned int get_collectives_count();
   void increment_collectives_count();
-
 };
 
 } // namespace smpi

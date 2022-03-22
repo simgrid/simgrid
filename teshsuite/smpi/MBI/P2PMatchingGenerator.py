@@ -133,4 +133,3 @@ for s in send + isend + ssend + bsend:
         replace['operation1'] =  operation[s]("1")
         replace['operation2'] = operation[r]("2")
         make_file(template, f'CallOrdering_{r}_{s}_nok.c', replace)
-

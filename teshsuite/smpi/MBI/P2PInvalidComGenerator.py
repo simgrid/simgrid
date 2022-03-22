@@ -118,4 +118,3 @@ for p1 in send + isend + psend:
         replace['change_com1'] = 'newcom = MPI_COMM_NULL;'
         replace['change_com2'] = ""
         make_file(template, f'InvalidParam_ComNull_{p1}_{p2}nok.c', replace)
-

@@ -94,4 +94,3 @@ for e in epoch:
         replace['outcome'] = 'ERROR: GlobalConcurrency' 
         replace['errormsg'] = 'Global Concurrency error. @{p1}@ at @{filename}@:@{line:MBIERROR1}@ conflicts in process 1'
         make_file(template, f'GlobalConcurrency_rr_{e}_{p1}_nok.c', replace)
-
