@@ -7,6 +7,10 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ // |
 
 The ненасильство release. We stand against war.
 
+  * Refactoring the model-checker, enabling synchronization objects and future improvements
+  * Introducing BMF sharing, enabling ptasks in regular models (experimental)
+  * Further complete Python bindings (Mutex, Semaphore and Barrier)
+ * (+ internal refactoring, many bug fixes and documentation improvement)
                     _               _____  _____  ___
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ / / _ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \| | | |

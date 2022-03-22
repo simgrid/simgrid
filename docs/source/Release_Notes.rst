@@ -528,6 +528,7 @@ several threads, and thus capable of utilizing more cores than a classical :cpp:
 it straightforward to model multithreaded computational kernels, and it comes with an illustrating example. It can be seen as a simplified ptask, but
 since it does not mix bytes and flops and has a homogeneous consumption over a single CPU, it perfectly fits with the classical SimGrid model.
 
+This release also introduces steadily progress **on the bindings front**, introducing in particular the Mutex, Barrier and Semaphore to your python scripts.
 
 .. |br| raw:: html
 
