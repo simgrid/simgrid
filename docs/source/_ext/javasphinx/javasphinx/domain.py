@@ -356,7 +356,7 @@ class JavaType(JavaObject):
         return member.name
 
     def get_index_text(self, package, typ, name):
-        return _('%s (Java %s)' % (name, self.declaration_typ))
+        return _('%s (Java %s)' % (name, self.declaration_type))
 
 class JavaField(JavaObject):
     def handle_field_signature(self, sig, signode):
