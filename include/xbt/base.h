@@ -59,6 +59,8 @@
   XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v3.33)")
 #define XBT_ATTRIB_DEPRECATED_v335(mesg)                                                                               \
   XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v3.34)")
+#define XBT_ATTRIB_DEPRECATED_v336(mesg)                                                                               \
+  XBT_ATTRIB_DEPRECATED(mesg " (this compatibility wrapper will be dropped after v3.35)")
 
 /* Work around https://github.com/microsoft/vscode-cpptools/issues/4503 */
 #ifdef __INTELLISENSE__
