@@ -58,7 +58,7 @@ bool CommWaitTransition::depends(const Transition* other) const
       return false;
   }
 
-  return true;
+  return false; // Comm transitions are INDEP with non-comm transitions
 }
 CommTestTransition::CommTestTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_TEST, issuer, times_considered)
@@ -97,7 +97,7 @@ bool CommTestTransition::depends(const Transition* other) const
     return false;
   }
 
-  return true;
+  return false; // Comm transitions are INDEP with non-comm transitions
 }
 
 CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream)
@@ -146,7 +146,7 @@ bool CommRecvTransition::depends(const Transition* other) const
       return false;
   }
 
-  return true;
+  return false; // Comm transitions are INDEP with non-comm transitions
 }
 
 CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream)
@@ -197,7 +197,7 @@ bool CommSendTransition::depends(const Transition* other) const
       return false;
   }
 
-  return true;
+  return false; // Comm transitions are INDEP with non-comm transitions
 }
 
 } // namespace mc
