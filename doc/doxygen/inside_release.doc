@@ -23,6 +23,7 @@ Please apply the following checklist before releasing.
 - Release notes in the documentation
   - The content of the future mail is part of the documentation, since
     we won't send mails once gforge is definitly turned off.
+  - The date of the release is marked in the title
 - Tests
   - The "make distcheck" target works (tested by jenkins)
   - All tests pass on everything on ci + AppVeyor

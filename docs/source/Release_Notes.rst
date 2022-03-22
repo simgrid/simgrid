@@ -468,10 +468,8 @@ Also, the algorithm tutorial can now be taken in Python, for those of you allerg
 Finally, on the SMPI front, we introduced a :ref:`new documentation section <models_calibration>` on calibrating the SMPI models from your
 measurements and fixed some issues with the replay mechanism.
 
-Version 3.31 (not released yet)
--------------------------------
-
-Expected: spring 2022
+Version 3.31 (March 22. 2022)
+-----------------------------
 
 **On the model checking front**, the long awaited big bang finally occurred, greatly simplifying future evolution.
 
