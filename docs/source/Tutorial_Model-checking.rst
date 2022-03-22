@@ -187,16 +187,16 @@ now read it together. It can be split in several parts:
     .. code-block:: console
 
        [0.000000] [mc_ModelChecker/INFO] Counter-example execution trace:
-       [0.000000] [mc_ModelChecker/INFO]   [(1)Tremblay (server)] iRecv(dst=(1)Tremblay (server), buff=(verbose only), size=(verbose only))
-       [0.000000] [mc_ModelChecker/INFO]   [(2)Jupiter (client)] iSend(src=(2)Jupiter (client), buff=(verbose only), size=(verbose only))
-       [0.000000] [mc_ModelChecker/INFO]   [(1)Tremblay (server)] Wait(comm=(verbose only) [(2)Jupiter (client)-> (1)Tremblay (server)])
-       [0.000000] [mc_ModelChecker/INFO]   [(1)Tremblay (server)] iRecv(dst=(1)Tremblay (server), buff=(verbose only), size=(verbose only))
-       [0.000000] [mc_ModelChecker/INFO]   [(2)Jupiter (client)] Wait(comm=(verbose only) [(2)Jupiter (client)-> (1)Tremblay (server)])
-       [0.000000] [mc_ModelChecker/INFO]   [(4)Ginette (client)] iSend(src=(4)Ginette (client), buff=(verbose only), size=(verbose only))
-       [0.000000] [mc_ModelChecker/INFO]   [(1)Tremblay (server)] Wait(comm=(verbose only) [(4)Ginette (client)-> (1)Tremblay (server)])
-       [0.000000] [mc_ModelChecker/INFO]   [(1)Tremblay (server)] iRecv(dst=(1)Tremblay (server), buff=(verbose only), size=(verbose only))
-       [0.000000] [mc_ModelChecker/INFO]   [(3)Bourassa (client)] iSend(src=(3)Bourassa (client), buff=(verbose only), size=(verbose only))
-       [0.000000] [mc_ModelChecker/INFO]   [(1)Tremblay (server)] Wait(comm=(verbose only) [(3)Bourassa (client)-> (1)Tremblay (server)])
+       [0.000000] [mc_ModelChecker/INFO]   1: iRecv(mbox=0)
+       [0.000000] [mc_ModelChecker/INFO]   2: iSend(mbox=0)
+       [0.000000] [mc_ModelChecker/INFO]   1: WaitComm(from 2 to 1, mbox=0, no timeout)
+       [0.000000] [mc_ModelChecker/INFO]   1: iRecv(mbox=0)
+       [0.000000] [mc_ModelChecker/INFO]   2: WaitComm(from 2 to 1, mbox=0, no timeout)
+       [0.000000] [mc_ModelChecker/INFO]   4: iSend(mbox=0)
+       [0.000000] [mc_ModelChecker/INFO]   1: WaitComm(from 4 to 1, mbox=0, no timeout)
+       [0.000000] [mc_ModelChecker/INFO]   1: iRecv(mbox=0)
+       [0.000000] [mc_ModelChecker/INFO]   3: iSend(mbox=0)
+       [0.000000] [mc_ModelChecker/INFO]   1: WaitComm(from 3 to 1, mbox=0, no timeout)
 
   - Then, the execution path is given.
 
@@ -237,9 +237,7 @@ now read it together. It can be split in several parts:
 
     .. code-block:: console
 
-       [0.000000] [mc_safety/INFO] Expanded states = 22
-       [0.000000] [mc_safety/INFO] Visited states = 56
-       [0.000000] [mc_safety/INFO] Executed transitions = 52
+       [0.000000] [mc_dfs/INFO] DFS exploration ended. 22 unique states visited; 4 backtracks (56 transition replays, 30 states visited overall)
 
   - Finally, the application stack trace is displayed as the model-checker sees it. It should be the same as the one displayed from the
     application side, unless you found a bug our tools.
