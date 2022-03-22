@@ -30,13 +30,13 @@ namespace s4u {
 class XBT_PUBLIC Semaphore {
 #ifndef DOXYGEN
   friend kernel::activity::SemaphoreImpl;
-  friend void kernel::activity::intrusive_ptr_release(kernel::activity::SemaphoreImpl* sem);
+  friend XBT_PUBLIC void kernel::activity::intrusive_ptr_release(kernel::activity::SemaphoreImpl* sem);
 #endif
 
   kernel::activity::SemaphoreImpl* const pimpl_;
 
-  friend void intrusive_ptr_add_ref(const Semaphore* sem);
-  friend void intrusive_ptr_release(const Semaphore* sem);
+  friend XBT_PUBLIC void intrusive_ptr_add_ref(const Semaphore* sem);
+  friend XBT_PUBLIC void intrusive_ptr_release(const Semaphore* sem);
 
   explicit Semaphore(kernel::activity::SemaphoreImpl* sem) : pimpl_(sem) {}
   ~Semaphore() = default;
