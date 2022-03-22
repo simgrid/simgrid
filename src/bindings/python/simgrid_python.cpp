@@ -719,9 +719,8 @@ PYBIND11_MODULE(simgrid, m)
            py::return_value_policy::reference_internal,
            py::call_guard<py::gil_scoped_release>(),
            "Start the comm, and ignore its result. It can be completely forgotten after that.")
-      // use py::overload_cast for wait_all/wait_any, until the overload marked XBT_ATTRIB_DEPRECATED_v332 is removed
       .def_static(
-          "wait_all", py::overload_cast<const std::vector<simgrid::s4u::CommPtr>&>(&simgrid::s4u::Comm::wait_all),
+          "wait_all", &simgrid::s4u::Comm::wait_all,
           py::arg("comms"),
           py::call_guard<py::gil_scoped_release>(),
           "Block until the completion of all communications in the list.")
@@ -731,13 +730,13 @@ PYBIND11_MODULE(simgrid, m)
                   "Block until the completion of all communications in the list, or raises TimeoutException after "
                   "the specified timeout.")
       .def_static(
-          "wait_any", py::overload_cast<const std::vector<simgrid::s4u::CommPtr>&>(&simgrid::s4u::Comm::wait_any),
+          "wait_any", &simgrid::s4u::Comm::wait_any,
           py::arg("comms"),
           py::call_guard<py::gil_scoped_release>(),
           "Block until the completion of any communication in the list and return the index of the terminated one.")
       .def_static(
           "wait_any_for",
-          py::overload_cast<const std::vector<simgrid::s4u::CommPtr>&, double>(&simgrid::s4u::Comm::wait_any_for),
+          &simgrid::s4u::Comm::wait_any_for,
           py::arg("comms"), py::arg("timeout"),
           py::call_guard<py::gil_scoped_release>(),
           "Block until the completion of any communication in the list and return the index of the terminated "

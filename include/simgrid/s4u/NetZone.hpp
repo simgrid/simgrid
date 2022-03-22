@@ -59,11 +59,6 @@ public:
   /** @brief Get the netpoint associated to this netzone */
   kernel::routing::NetPoint* get_netpoint();
 
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v332("Please use set_parent() to manage NetZone's relationship") NetZone* add_child(
-      NetZone* new_zone);
-#endif
-
   void extract_xbt_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
                          std::map<std::string, xbt_edge_t, std::less<>>* edges);
 
@@ -87,34 +82,12 @@ public:
   void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst, kernel::routing::NetPoint* gw_src,
                  kernel::routing::NetPoint* gw_dst, const std::vector<LinkInRoute>& link_list, bool symmetrical = true);
 
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v332(
-      "Please use add_route() method which uses s4u::LinkInRoute instead of "
-      "LinkImpl") void add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                                 kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                                 const std::vector<kernel::resource::StandardLinkImpl*>& link_list, bool symmetrical);
-
-  XBT_ATTRIB_DEPRECATED_v332(
-      "Please use add_bypass_route() method which uses s4u::LinkInRoute instead of "
-      "LinkImpl") void add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                                        kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                                        const std::vector<kernel::resource::StandardLinkImpl*>& link_list,
-                                        bool /*symmetrical*/);
-#endif
-
   void add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                         const std::vector<LinkInRoute>& link_list);
 
-#ifndef DOXYGEN
-  /*** Called on each newly created regular route (not on bypass routes) */
-  static xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                          kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                          std::vector<kernel::resource::StandardLinkImpl*> const& link_list)>
-      on_route_creation; // XBT_ATTRIB_DEPRECATED_v332 : should not be used by users, used by ns3.. if necessary,
-                         // signal shouldn't use LinkImpl*
-
 private:
+#ifndef DOXYGEN
   static xbt::signal<void(NetZone const&)> on_creation;
   static xbt::signal<void(NetZone const&)> on_seal;
 #endif
@@ -180,13 +153,6 @@ public:
 
   /** @brief Seal this netzone configuration */
   NetZone* seal();
-
-private:
-#ifndef DOXYGEN
-  /** @brief XBT_ATTRIB_DEPRECATED_v332 Auxiliary function to convert types */
-  static std::vector<LinkInRoute>
-  convert_to_linkInRoute(const std::vector<kernel::resource::StandardLinkImpl*>& link_list);
-#endif
 };
 
 // External constructors so that the types (and the types of their content) remain hidden

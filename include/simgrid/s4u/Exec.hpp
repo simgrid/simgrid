@@ -61,13 +61,6 @@ public:
   /*! Same as wait_any, but with a timeout. If the timeout occurs, parameter last is returned.*/
   static ssize_t wait_any_for(const std::vector<ExecPtr>& execs, double timeout);
 
-#ifndef DOXYGEN
-  XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for parameter")
-  static int wait_any(std::vector<ExecPtr>* execs) { return static_cast<int>(wait_any_for(*execs, -1)); }
-  XBT_ATTRIB_DEPRECATED_v332("Please use a plain vector for first parameter")
-  static int wait_any_for(std::vector<ExecPtr>* execs, double timeout) { return static_cast<int>(wait_any_for(*execs, timeout)); }
-#endif
-
   /** @brief On sequential executions, returns the amount of flops that remain to be done; This cannot be used on
    * parallel executions. */
   double get_remaining() const override;

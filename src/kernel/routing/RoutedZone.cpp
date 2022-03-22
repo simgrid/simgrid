@@ -165,7 +165,6 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
     xbt_assert(not dst->is_netzone(),
                "When defining a route, dst cannot be a netzone such as '%s'. Did you meant to have a NetzoneRoute?",
                dstName);
-    s4u::NetZone::on_route_creation(symmetrical, src, dst, gw_src, gw_dst, get_link_list_impl(link_list, false));
     NetZoneImpl::on_route_creation(symmetrical, src, dst, gw_src, gw_dst, get_link_list_impl(link_list, false));
   } else {
     XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", srcName, gw_src->get_cname(), dstName, gw_dst->get_cname());
@@ -196,7 +195,6 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
                "Invalid NetzoneRoute from %s@%s to %s@%s: gw_dst %s belongs to %s, not to %s.", srcName,
                gw_src->get_cname(), dstName, gw_dst->get_cname(), gw_dst->get_cname(),
                gw_dst->get_englobing_zone()->get_cname(), dst->get_cname());
-    s4u::NetZone::on_route_creation(symmetrical, gw_src, gw_dst, gw_src, gw_dst, get_link_list_impl(link_list, false));
     NetZoneImpl::on_route_creation(symmetrical, gw_src, gw_dst, gw_src, gw_dst, get_link_list_impl(link_list, false));
   }
 }

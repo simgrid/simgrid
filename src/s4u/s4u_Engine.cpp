@@ -462,11 +462,6 @@ Engine* Engine::set_default_comm_data_copy_callback(
 } // namespace s4u
 } // namespace simgrid
 
-double SIMIX_get_clock() // XBT_ATTRIB_DEPRECATED_v332
-{
-  return simgrid::s4u::Engine::get_clock();
-}
-
 /* **************************** Public C interface *************************** */
 void simgrid_init(int* argc, char** argv)
 {

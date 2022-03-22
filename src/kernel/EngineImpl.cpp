@@ -10,9 +10,6 @@
 #include <simgrid/s4u/Host.hpp>
 #include <simgrid/sg_config.hpp>
 
-#define SIMIX_H_NO_DEPRECATED_WARNING // avoid deprecation warning on include (remove with XBT_ATTRIB_DEPRECATED_v332)
-#include <simgrid/simix.h>
-
 #include "mc/mc.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
@@ -769,8 +766,3 @@ double EngineImpl::get_clock()
 }
 } // namespace kernel
 } // namespace simgrid
-
-void SIMIX_run() // XBT_ATTRIB_DEPRECATED_v332
-{
-  simgrid::kernel::EngineImpl::get_instance()->run(-1);
-}

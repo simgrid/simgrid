@@ -18,10 +18,6 @@
 namespace simgrid {
 namespace s4u {
 
-xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                 kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                 std::vector<kernel::resource::StandardLinkImpl*> const& link_list)>
-    NetZone::on_route_creation;
 xbt::signal<void(NetZone const&)> NetZone::on_creation;
 xbt::signal<void(NetZone const&)> NetZone::on_seal;
 
@@ -48,12 +44,6 @@ std::vector<NetZone*> NetZone::get_children() const
   for (auto child : pimpl_->get_children())
     res.push_back(child->get_iface());
   return res;
-}
-
-NetZone* NetZone::add_child(NetZone* new_zone) // XBT_ATTRIB_DEPRECATED_v332
-{
-  new_zone->set_parent(this);
-  return this;
 }
 
 const std::string& NetZone::get_name() const
@@ -97,38 +87,11 @@ unsigned long NetZone::add_component(kernel::routing::NetPoint* elm)
   return pimpl_->add_component(elm);
 }
 
-// XBT_ATTRIB_DEPRECATED_v332
-std::vector<LinkInRoute>
-NetZone::convert_to_linkInRoute(const std::vector<kernel::resource::StandardLinkImpl*>& link_list)
-{
-  std::vector<LinkInRoute> links;
-  for (const auto* link : link_list) {
-    links.emplace_back(LinkInRoute(link->get_iface()));
-  }
-  return links;
-}
-
 void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                         kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                         const std::vector<LinkInRoute>& link_list, bool symmetrical)
 {
   pimpl_->add_route(src, dst, gw_src, gw_dst, link_list, symmetrical);
-}
-
-// XBT_ATTRIB_DEPRECATED_v332
-void NetZone::add_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                        kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                        const std::vector<kernel::resource::StandardLinkImpl*>& link_list, bool symmetrical)
-{
-  pimpl_->add_route(src, dst, gw_src, gw_dst, convert_to_linkInRoute(link_list), symmetrical);
-}
-
-// XBT_ATTRIB_DEPRECATED_v332
-void NetZone::add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
-                               kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
-                               const std::vector<kernel::resource::StandardLinkImpl*>& link_list, bool /*symmetrical*/)
-{
-  pimpl_->add_bypass_route(src, dst, gw_src, gw_dst, convert_to_linkInRoute(link_list));
 }
 
 void NetZone::add_bypass_route(kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
