@@ -31,6 +31,8 @@ set(generator_scripts
     RMAReqLifecycleGenerator.py
     RMAWinBufferGenerator.py)
 
+set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/RMAP2PGlobalConcurrencyGenerator.py)
+
 if (enable_smpi_MBI_testsuite)
   if (NOT enable_smpi)
     message(FATAL_ERROR "MBI test suite cannot be enabled without SMPI. Please change either setting.")
