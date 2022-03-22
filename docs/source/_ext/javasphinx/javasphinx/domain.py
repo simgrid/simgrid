@@ -132,9 +132,9 @@ class JavaObject(ObjectDescription):
                     parts.append(nodes.Text(dim, dim))
 
             return parts
-        else:
-            type_repr = formatter.output_type(typ).build()
-            return [nodes.Text(type_repr, type_repr)]
+
+        type_repr = formatter.output_type(typ).build()
+        return [nodes.Text(type_repr, type_repr)]
 
     def _build_type_node_list(self, types):
         parts = self._build_type_node(types[0])
@@ -149,10 +149,9 @@ class JavaObject(ObjectDescription):
 
         if handle:
             return handle(sig, signode)
-        else:
-            raise NotImplementedError
+        raise NotImplementedError
 
-    def get_index_text(self, package, type, name):
+    def get_index_text(self, package, typ, name):
         raise NotImplementedError
 
     def get_package(self):
@@ -163,9 +162,9 @@ class JavaObject(ObjectDescription):
 
     def add_target_and_index(self, name, sig, signode):
         package = self.get_package()
-        type = self.get_type();
+        typ = self.get_type()
 
-        fullname = '.'.join(filter(None, (package, type, name)))
+        fullname = '.'.join(filter(None, (package, typ, name)))
         basename = fullname.partition('(')[0]
 
         # note target
@@ -185,7 +184,7 @@ class JavaObject(ObjectDescription):
 
             objects[fullname] = (self.env.docname, self.objtype, basename)
 
-        indextext = self.get_index_text(package, type, name)
+        indextext = self.get_index_text(package, typ, name)
         if indextext:
             self.indexnode['entries'].append(_create_indexnode(indextext, fullname))
 
@@ -249,7 +248,7 @@ class JavaMethod(JavaObject):
         param_reprs = [formatter.output_type(param.type, with_generics=False).build() for param in member.parameters]
         return member.name + '(' + ', '.join(param_reprs) + ')'
 
-    def get_index_text(self, package, type, name):
+    def get_index_text(self, package, typ, name):
         return _('%s (Java method)' % (name,))
 
 class JavaConstructor(JavaObject):
@@ -289,7 +288,7 @@ class JavaConstructor(JavaObject):
         param_reprs = [formatter.output_type(param.type, with_generics=False).build() for param in member.parameters]
         return '%s(%s)' % (member.name, ', '.join(param_reprs))
 
-    def get_index_text(self, package, type, name):
+    def get_index_text(self, package, typ, name):
         return _('%s (Java constructor)' % (name,))
 
 class JavaType(JavaObject):
@@ -356,8 +355,8 @@ class JavaType(JavaObject):
 
         return member.name
 
-    def get_index_text(self, package, type, name):
-        return _('%s (Java %s)' % (name, self.declaration_type))
+    def get_index_text(self, package, typ, name):
+        return _('%s (Java %s)' % (name, self.declaration_typ))
 
 class JavaField(JavaObject):
     def handle_field_signature(self, sig, signode):
@@ -392,7 +391,7 @@ class JavaField(JavaObject):
 
         return declarator.name
 
-    def get_index_text(self, package, type, name):
+    def get_index_text(self, package, typ, name):
         return _('%s (Java field)' % (name,))
 
 class JavaPackage(Directive):
@@ -557,7 +556,7 @@ class JavaDomain(Domain):
         for fullname, (_, _, basename) in objects.items():
             if fullname.endswith(suffix):
                 return make_ref(fullname)
-            elif basename.endswith(basename_suffix):
+            if basename.endswith(basename_suffix):
                 basename_match = fullname
 
         if basename_match:
@@ -578,17 +577,15 @@ class JavaDomain(Domain):
         if ref:
             ref.append(contnode)
             return ref
-        else:
-            return None
+        return None
 
     def get_objects(self):
-        for refname, (docname, type, _) in self.data['objects'].items():
-            yield (refname, refname, type, docname, refname, 1)
+        for refname, (docname, typ, _) in self.data['objects'].items():
+            yield (refname, refname, typ, docname, refname, 1)
 
 
 def _create_indexnode(indextext, fullname):
     # See https://github.com/sphinx-doc/sphinx/issues/2673
     if version_info < (1, 4):
         return ('single', indextext, fullname, '')
-    else:
-        return ('single', indextext, fullname, '', None)
+    return ('single', indextext, fullname, '', None)

@@ -50,28 +50,28 @@ def output_annotation(annotation, output):
     output.append(' ')
 
 @formatter
-def output_type(type, output, with_generics=True):
-    if not type:
+def output_type(typ, output, with_generics=True):
+    if not typ:
         output.append('void')
         return
 
-    if type.dimensions:
-        dim = '[]' * len(type.dimensions)
+    if typ.dimensions:
+        dim = '[]' * len(typ.dimensions)
     else:
         dim = ''
 
-    if isinstance(type, javalang.tree.BasicType):
-        output.append(type.name)
+    if isinstance(typ, javalang.tree.BasicType):
+        output.append(typ.name)
     else:
-        while type:
-            output.append(type.name)
+        while typ:
+            output.append(typ.name)
 
             if with_generics:
-                output_type_args(type.arguments, output)
+                output_type_args(typ.arguments, output)
 
-            type = type.sub_type
+            typ = typ.sub_type
 
-            if type:
+            if typ:
                 output.append('.')
     output.append(dim)
 

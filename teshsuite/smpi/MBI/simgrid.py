@@ -37,8 +37,8 @@ class Tool(AbstractTool):
         os.environ['PATH'] = os.environ['PATH'] + ":" + rootdir + "/builds/SimGrid/bin"
         os.environ['VERBOSE'] = '1'
 
-    def run(self, execcmd, filename, binary, id, timeout, batchinfo):
-        cachefile = f'{binary}_{id}'
+    def run(self, execcmd, filename, binary, num_id, timeout, batchinfo):
+        cachefile = f'{binary}_{num_id}'
 
         if not os.path.exists("cluster.xml"):
             with open('cluster.xml', 'w') as outfile:

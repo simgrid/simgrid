@@ -31,18 +31,18 @@ class AbstractTool:
         Ensure that this tool (previously built) is usable in this environment: setup the PATH, etc.
         This is called only once for all tests, from the logs directory.
         """
-        pass
+        # pass
 
-    def run(execcmd, filename, binary, id, timeout):
+    def run(execcmd, filename, binary, num_id, timeout):
         """Compile that test code and anaylse it with the Tool if needed (a cache system should be used)"""
-        pass
+        # pass
 
     def teardown(self):
         """
         Clean the results of all test runs: remove temp files and binaries.
         This is called only once for all tests, from the logs directory.
         """
-        pass
+        # pass
 
     def parse(self, cachefile):
         """Read the result of a previous run from the cache, and compute the test outcome"""
@@ -105,10 +105,10 @@ def parse_one_code(filename):
     """
     res = []
     test_num = 0
-    with open(filename, "r") as input:
+    with open(filename, "r") as input_file:
         state = 0  # 0: before header; 1: in header; 2; after header
         line_num = 1
-        for line in input:
+        for line in input_file:
             if re.match(".*BEGIN_MBI_TESTS.*", line):
                 if state == 0:
                     state = 1
@@ -122,7 +122,7 @@ def parse_one_code(filename):
             if state == 1 and re.match("\s+\$ ?.*", line):
                 m = re.match('\s+\$ ?(.*)', line)
                 cmd = m.group(1)
-                nextline = next(input)
+                nextline = next(input_file)
                 detail = 'OK'
                 if re.match('[ |]*OK *', nextline):
                     expect = 'OK'
@@ -224,13 +224,12 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
         if olddigest == newdigest:
             print(f" (result cached -- digest: {olddigest})")
             return False
-        else:
-            os.remove(f'{cachefile}.txt')
+        os.remove(f'{cachefile}.txt')
 
     print(f"Wait up to {timeout} seconds")
 
     start_time = time.time()
-    if buildcmd == None:
+    if buildcmd is None:
         output = f"No need to compile {binary}.c (batchinfo:{batchinfo})\n\n"
     else:
         output = f"Compiling {binary}.c (batchinfo:{batchinfo})\n\n"

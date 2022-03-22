@@ -54,10 +54,10 @@ def master():
 
   assert False, "The impossible just happened (yet again): daemons shall not finish."
 
-def worker(id):
+def worker(my_id):
   global todo
-  this_actor.info(f"Worker {id} booting")
-  this_actor.on_exit(lambda killed: this_actor.info(f"Worker {id} dying {'forcefully' if killed else 'peacefully'}."))
+  this_actor.info(f"Worker {my_id} booting")
+  this_actor.on_exit(lambda killed: this_actor.info(f"Worker {my_id} dying {'forcefully' if killed else 'peacefully'}."))
 
   while todo > 0:
     assert Engine.clock < deadline, f"Failed to run all tasks in less than {deadline} seconds. Is this an infinite loop?"
@@ -78,7 +78,6 @@ def worker(id):
       this_actor.info("Timeouted while getting a task.")
 
 if __name__ == '__main__':
-  global mailbox
   e = Engine(sys.argv)
 
   assert host_count > 2, "You need at least 2 workers (i.e., 3 hosts) or the master will be auto-killed when the only worker gets killed."

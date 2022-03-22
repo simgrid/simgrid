@@ -47,8 +47,7 @@ class Converter(object):
     def _unicode(self, s):
         if isinstance(s, unicode):
             return s
-        else:
-            return unicode(s, 'utf8')
+        return unicode(s, 'utf8')
 
     def _separate(self, s):
         return u'\n\n' + s + u'\n\n'
@@ -72,16 +71,14 @@ class Converter(object):
     def _role(self, role, s, label=None):
         if label:
             return self._escape_inline(':%s:`%s <%s>`' % (role, label, s))
-        else:
-            return self._escape_inline(':%s:`%s`' % (role, s))
+        return self._escape_inline(':%s:`%s`' % (role, s))
 
     def _directive(self, directive, body=None):
         header = '\n\n.. %s::\n\n' % (directive,)
 
         if body:
             return header + self._left_justify(body, 3) + '\n\n'
-        else:
-            return header + '\n'
+        return header + '\n'
 
     def _hyperlink(self, target, label):
         return self._escape_inline('`%s <%s>`_' % (label, target))
@@ -102,15 +99,14 @@ class Converter(object):
 
         if shift < 0:
             return '\n'.join(l[-shift:] for l in lines)
-        else:
-            prefix = ' ' * shift
-            return '\n'.join(prefix + l for l in lines)
+
+        prefix = ' ' * shift
+        return '\n'.join(prefix + l for l in lines)
 
     def _compress_whitespace(self, s, replace=' ', newlines=True):
         if newlines:
             return self._whitespace_with_newline.sub(replace, s)
-        else:
-            return self._whitespace.sub(replace, s)
+        return self._whitespace.sub(replace, s)
 
     # --------------------------------------------------------------------------
     # ---- DOM Tree Processing ----
@@ -269,16 +265,15 @@ class Converter(object):
         if node.name == 'a':
             if 'name' in node.attrs:
                 return self._separate('.. _' + node['name'] + ':')
-            elif 'href' in node.attrs:
+            if 'href' in node.attrs:
                 target = node['href']
                 label = self._compress_whitespace(self._process_text(node).strip('\n'))
 
                 if target.startswith('#'):
                     return self._role('ref', target[1:], label)
-                elif target.startswith('@'):
+                if target.startswith('@'):
                     return self._role('java:ref', target[1:], label)
-                else:
-                    return self._hyperlink(target, label)
+                return self._hyperlink(target, label)
 
         if node.name == 'ul':
             items = [self._process(n) for n in node.find_all('li', recursive=False)]

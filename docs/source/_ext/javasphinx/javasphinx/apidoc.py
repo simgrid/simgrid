@@ -18,7 +18,7 @@ from __future__ import print_function, unicode_literals
 
 try:
    import cPickle as pickle
-except:
+except ImportError:
    import pickle
 
 import hashlib
@@ -37,8 +37,7 @@ import javasphinx.util as util
 def encode_output(s):
    if isinstance(s, str):
       return s
-   else:
-      return s.encode('utf-8')
+   return s.encode('utf-8')
 
 def find_source_files(input_path, excludes):
     """ Get a list of filenames for all Java source files within the given

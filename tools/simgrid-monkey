@@ -22,7 +22,6 @@
 #   * teshsuite/s4u/monkey-masterworkers: tests synchronous comms and execs (C++ and python)
 #   * teshsuite/s4u/monkey-semaphore: tests async semaphores (C++ only)
 
-import multiprocessing as mp
 import sys
 import os
 import argparse
@@ -111,7 +110,6 @@ def do_run(cmd, extra_params, test_todo):
 
 def doit():
     prev_time = 0
-    test_count = 0
     test_todo = 2 * len(timestamps) * (host_count + link_count)
     for pos in range(len(timestamps)):
         now = timestamps[pos]

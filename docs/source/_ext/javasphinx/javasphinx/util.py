@@ -30,8 +30,8 @@ class StringBuilder(list):
 
 class Directive(object):
 
-    def __init__(self, type, argument=''):
-        self.type = type
+    def __init__(self, typ, argument=''):
+        self.type = typ
         self.argument = argument
 
         self.options = []

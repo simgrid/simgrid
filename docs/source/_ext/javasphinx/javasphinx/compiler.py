@@ -98,12 +98,12 @@ class JavadocRestCompiler(object):
         if see.startswith('<a href'):
             # HTML link -- <a href="...">...</a>
             return self.__html_to_rst(see)
-        elif '"' in see:
+        if '"' in see:
             # Plain text
             return see
-        else:
-            # Type reference (default)
-            return ':java:ref:`%s`' % (see.replace('#', '.').replace(' ', ''),)
+
+        # Type reference (default)
+        return ':java:ref:`%s`' % (see.replace('#', '.').replace(' ', ''),)
 
     def compile_type(self, declaration):
         signature = util.StringBuilder()
