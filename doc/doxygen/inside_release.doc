@@ -74,7 +74,7 @@ Please apply the following checklist before releasing.
 @subsection inside_release_c_publishing Publishing the release if it's a stable one (3.XX not 3.XX.Y)
 
 - Announce the release
- - Mail the simgrid-user mailing list
+ - Mail the https://sympa.inria.fr/sympa/review/simgrid-community mailing list
     - the NEWS chunk in the mail;
     - Hall of Fame in the mail
       git shortlog -se v3.29..
