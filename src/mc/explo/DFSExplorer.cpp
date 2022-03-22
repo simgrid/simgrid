@@ -129,8 +129,11 @@ void DFSExplorer::run()
       XBT_DEBUG("There remains %zu actors, but none to interleave (depth %zu).",
                 mc_model_checker->get_remote_process().actors().size(), stack_.size() + 1);
 
-      if (mc_model_checker->get_remote_process().actors().empty())
+      if (mc_model_checker->get_remote_process().actors().empty()) {
         mc_model_checker->finalize_app();
+        XBT_INFO("Execution came to an end at %s (state: %ld, depth: %zu)", get_record_trace().to_string().c_str(),
+                 state->num_, stack_.size());
+      }
       this->backtrack();
       continue;
     }
