@@ -4,6 +4,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt
 > [Checker] Start a DFS exploration. Reduction is: dpor.
 > [Checker] Execute 1: BARRIER_LOCK(barrier: 0) (stack depth: 1, state: 1, 0 interleaves)
 > [Checker] Execute 1: BARRIER_WAIT(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
+> [Checker] Execution came to an end at 1;1;0 (state: 3, depth: 3)
 > [Checker] Backtracking from 1;1;0
 > [Checker] DFS exploration ended. 3 unique states visited; 1 backtracks (3 transition replays, 0 states visited overall)
 
@@ -13,6 +14,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt
 > [Checker] Execute 2: BARRIER_LOCK(barrier: 0) (stack depth: 2, state: 2, 0 interleaves)
 > [Checker] Execute 1: BARRIER_WAIT(barrier: 0) (stack depth: 3, state: 3, 0 interleaves)
 > [Checker] Execute 2: BARRIER_WAIT(barrier: 0) (stack depth: 4, state: 4, 0 interleaves)
+> [Checker] Execution came to an end at 1;2;1;2;0 (state: 5, depth: 5)
 > [Checker] Backtracking from 1;2;1;2;0
 > [Checker] INDEPENDENT Transitions:
 > [Checker]   BARRIER_WAIT(barrier: 0) (state=3)
@@ -34,6 +36,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt
 > [Checker] Execute 1: BARRIER_WAIT(barrier: 0) (stack depth: 4, state: 4, 0 interleaves)
 > [Checker] Execute 2: BARRIER_WAIT(barrier: 0) (stack depth: 5, state: 5, 0 interleaves)
 > [Checker] Execute 3: BARRIER_WAIT(barrier: 0) (stack depth: 6, state: 6, 0 interleaves)
+> [Checker] Execution came to an end at 1;2;3;1;2;3;0 (state: 7, depth: 7)
 > [Checker] Backtracking from 1;2;3;1;2;3;0
 > [Checker] INDEPENDENT Transitions:
 > [Checker]   BARRIER_WAIT(barrier: 0) (state=5)

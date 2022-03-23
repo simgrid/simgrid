@@ -26,6 +26,7 @@ $ ${bindir:=.}/../../../bin/simgrid-mc --log=mc_dfs.thres:verbose --log=root.fmt
 > [Checker] Execute 2: SEM_LOCK(semaphore: 1) (stack depth: 22, state: 22, 0 interleaves)
 > [Checker] Execute 2: SEM_WAIT(semaphore: 1, granted: yes) (stack depth: 23, state: 23, 0 interleaves)
 > [Checker] Execute 2: SEM_UNLOCK(semaphore: 0) (stack depth: 24, state: 24, 0 interleaves)
+> [Checker] Execution came to an end at 1;1;1;1;2;2;2;1;1;1;2;2;2;1;1;1;2;2;2;1;1;2;2;2;0 (state: 25, depth: 25)
 > [Checker] Backtracking from 1;1;1;1;2;2;2;1;1;1;2;2;2;1;1;1;2;2;2;1;1;2;2;2;0
 > [Checker] INDEPENDENT Transitions:
 > [Checker]   SEM_UNLOCK(semaphore: 1) (state=21)
