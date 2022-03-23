@@ -582,9 +582,14 @@ XBT_PRIVATE void private_execute_flops(double flops);
 #define CHECK_COMM2(num, comm)\
   CHECK_MPI_NULL((num), MPI_COMM_NULL, MPI_ERR_COMM, (comm))
 
-#define CHECK_COLLECTIVE(comm, call)\
-  CHECK_ARGS((simgrid::smpi::utils::check_collectives_ordering((comm), std::string(call)) != MPI_SUCCESS), MPI_ERR_OTHER,\
-                   "%s: collective mismatch", call)
+#define CHECK_COLLECTIVE(comm, call)                                                                                   \
+  {                                                                                                                    \
+    if (_smpi_cfg_pedantic) {                                                                                          \
+      std::string call_string = (call);                                                                                \
+      CHECK_ARGS((simgrid::smpi::utils::check_collectives_ordering((comm), call_string) != MPI_SUCCESS),               \
+                 MPI_ERR_OTHER, "%s: collective mismatch", call_string.c_str())                                        \
+    }                                                                                                                  \
+  }
 
 #define CHECK_DELETED(num, err, obj)\
   CHECK_ARGS((obj)->deleted(), (err), "%s: param %d %s has already been freed", __func__, (num),\
