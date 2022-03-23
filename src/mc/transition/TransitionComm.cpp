@@ -56,6 +56,8 @@ bool CommWaitTransition::depends(const Transition* other) const
     if (sbuff_ != 0 && rbuff_ != 0 && wait->sbuff_ != 0 && wait->rbuff_ != 0 && rbuff_ != wait->sbuff_ &&
         rbuff_ != wait->rbuff_ && rbuff_ != sbuff_)
       return false;
+
+    return true;
   }
 
   return false; // Comm transitions are INDEP with non-comm transitions
@@ -133,6 +135,8 @@ bool CommRecvTransition::depends(const Transition* other) const
 
     if ((aid_ != test->sender_) && (aid_ != test->receiver_) && (test->rbuff_ != rbuff_))
       return false;
+
+    return true; // DEP with other send transitions
   }
 
   if (auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
@@ -144,6 +148,8 @@ bool CommRecvTransition::depends(const Transition* other) const
 
     if ((aid_ != wait->sender_) && (aid_ != wait->receiver_) && (wait->rbuff_ != rbuff_))
       return false;
+
+    return true; // DEP with other wait transitions
   }
 
   return false; // Comm transitions are INDEP with non-comm transitions
@@ -184,6 +190,8 @@ bool CommSendTransition::depends(const Transition* other) const
 
     if ((aid_ != test->sender_) && (aid_ != test->receiver_) && (test->sbuff_ != sbuff_))
       return false;
+
+    return true; // DEP with other test transitions
   }
 
   if (const auto* wait = dynamic_cast<const CommWaitTransition*>(other)) {
@@ -195,6 +203,8 @@ bool CommSendTransition::depends(const Transition* other) const
 
     if ((aid_ != wait->sender_) && (aid_ != wait->receiver_) && (wait->sbuff_ != sbuff_))
       return false;
+
+    return true; // DEP with other wait transitions
   }
 
   return false; // Comm transitions are INDEP with non-comm transitions
