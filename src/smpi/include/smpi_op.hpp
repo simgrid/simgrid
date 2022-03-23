@@ -22,7 +22,12 @@ class Op : public F2C{
   std::string name_;
 
 public:
-  Op(MPI_User_function* function, bool commutative, bool predefined=false, int types=0, std::string name="MPI_Op") : func_(function), is_commutative_(commutative), is_predefined_(predefined), types_(types), name_(name) {if(not predefined) this->add_f();}
+  Op(MPI_User_function* function, bool commutative, bool predefined = false, int types = 0, std::string name = "MPI_Op")
+      : func_(function), is_commutative_(commutative), is_predefined_(predefined), types_(types), name_(std::move(name))
+  {
+    if (not predefined)
+      this->add_f();
+  }
   bool is_commutative() const { return is_commutative_; }
   bool is_predefined() const { return is_predefined_; }
   bool is_fortran_op() const { return is_fortran_op_; }

@@ -238,9 +238,8 @@ static void no_func(void*, void*, int*, MPI_Datatype*)
   /* obviously a no-op */
 }
 
-
-#define CREATE_MPI_OP(name, func, types)                                                                                      \
-  SMPI_Op _XBT_CONCAT(smpi_MPI_, name)(&(func) /* func */, true, true, types, std::string(_XBT_STRINGIFY(MPI_##name)));
+#define CREATE_MPI_OP(name, func, types)                                                                               \
+  SMPI_Op _XBT_CONCAT(smpi_MPI_, name)(&(func), true, true, types, _XBT_STRINGIFY(MPI_##name));
 
 #define MAX_TYPES DT_FLAG_C_INTEGER|DT_FLAG_F_INTEGER|DT_FLAG_FP|DT_FLAG_MULTILANG
 #define LAND_TYPES DT_FLAG_C_INTEGER|DT_FLAG_FP|DT_FLAG_LOGICAL|DT_FLAG_MULTILANG

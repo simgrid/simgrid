@@ -348,7 +348,8 @@ void account_free(const void* ptr){
   }
 }
 
-int check_collectives_ordering(MPI_Comm comm, std::string call){
+int check_collectives_ordering(MPI_Comm comm, const std::string& call)
+{
   if(_smpi_cfg_pedantic){
     unsigned int count = comm->get_collectives_count();
     comm->increment_collectives_count();
@@ -358,7 +359,7 @@ int check_collectives_ordering(MPI_Comm comm, std::string call){
     }else{
       //are we the first ? add the call
       if (vec->second.size() == count) {
-        vec->second.push_back(call);
+        vec->second.emplace_back(call);
       } else if (vec->second.size() > count) {
         if (vec->second[count] != call){
           XBT_WARN("Collective operation mismatch. For process %ld, expected %s, got %s", simgrid::s4u::this_actor::get_pid(), vec->second[count].c_str(), call.c_str());
@@ -371,7 +372,6 @@ int check_collectives_ordering(MPI_Comm comm, std::string call){
   }
   return MPI_SUCCESS;
 }
-
 }
 }
 } // namespace simgrid
