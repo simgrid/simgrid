@@ -11,17 +11,17 @@ template = """// @{generatedby}@
   Description: @{shortdesc}@
     @{longdesc}@
 
-	 Version of MPI: Conforms to MPI 1.1, does not require MPI 2 implementation
+   Version of MPI: Conforms to MPI 1.1, does not require MPI 2 implementation
 
 BEGIN_MPI_FEATURES
-	P2P!basic: @{p2pfeature}@ 
-	P2P!nonblocking: @{ip2pfeature}@
-	P2P!persistent: @{persfeature}@
-	COLL!basic: Lacking
-	COLL!nonblocking: Lacking
-	COLL!persistent: Lacking
-	COLL!tools: Lacking
-	RMA: Lacking
+  P2P!basic: @{p2pfeature}@
+  P2P!nonblocking: @{ip2pfeature}@
+  P2P!persistent: @{persfeature}@
+  COLL!basic: Lacking
+  COLL!nonblocking: Lacking
+  COLL!persistent: Lacking
+  COLL!tools: Lacking
+  RMA: Lacking
 END_MPI_FEATURES
 
 BEGIN_MBI_TESTS
@@ -39,8 +39,8 @@ END_MBI_TESTS
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
-	int dest=0, src=0;
-	int stag = 0, rtag = 0;
+  int dest=0, src=0;
+  int stag = 0, rtag = 0;
   int buff_size = 1;
 
   MPI_Init(&argc, &argv);
@@ -52,25 +52,25 @@ int main(int argc, char **argv) {
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
   MPI_Comm newcom = MPI_COMM_WORLD;
-	MPI_Datatype type = MPI_INT;
+  MPI_Datatype type = MPI_INT;
 
   @{init1}@
   @{init2}@
-	if (rank == 0) {
-		dest = 1; src = 1;
-  	@{operation1}@ 
-		@{start1}@
-		@{write1}@ /* MBIERROR1 */ 
-		@{fini1}@
-		@{free1}@
-	}else if (rank == 1){
-		dest = 0; src = 0;
-  	@{operation2}@
-		@{start2}@
-		@{write2}@ /* MBIERROR2 */
-		@{fini2}@
-		@{free2}@
-	}
+  if (rank == 0) {
+    dest = 1; src = 1;
+    @{operation1}@
+    @{start1}@
+    @{write1}@ /* MBIERROR1 */
+    @{fini1}@
+    @{free1}@
+  }else if (rank == 1){
+    dest = 0; src = 0;
+    @{operation2}@
+    @{start2}@
+    @{write2}@ /* MBIERROR2 */
+    @{fini2}@
+    @{free2}@
+  }
 
   MPI_Finalize();
   printf("Rank %d finished normally\\n", rank);
@@ -104,23 +104,23 @@ for s in send + isend + psend:
 
         # Generate a message race
         if s in send and r in irecv + precv:
-            replace = patterns 
+            replace = patterns
             replace['shortdesc'] = ' Local Concurrency with a P2P'
             replace['longdesc'] = f'The message buffer in {r} is modified before the call has been completed.'
-            replace['outcome'] = 'ERROR: LocalConcurrency' 
+            replace['outcome'] = 'ERROR: LocalConcurrency'
             replace['errormsg'] = 'Local Concurrency with a P2P. The receive buffer in @{r}@ is modified at @{filename}@:@{line:MBIERROR2}@ whereas there is no guarantee the message has been received.'
             make_file(template, f'LocalConcurrency_{r}_{s}_nok.c', replace)
         if s in isend + psend and r in recv:
-            replace = patterns 
+            replace = patterns
             replace['shortdesc'] = ' Local Concurrency with a P2P'
             replace['longdesc'] = f'The message buffer in {s} is modified before the call has been completed.'
-            replace['outcome'] = 'ERROR: LocalConcurrency' 
+            replace['outcome'] = 'ERROR: LocalConcurrency'
             replace['errormsg'] = 'Local Concurrency with a P2P. The send buffer in @{s}@ is modified at @{filename}@:@{line:MBIERROR1}@ whereas there is no guarantee the message has been sent.'
             make_file(template, f'LocalConcurrency_{r}_{s}_nok.c', replace)
         if s in isend + psend and r in irecv + precv:
-            replace = patterns 
+            replace = patterns
             replace['shortdesc'] = ' Local Concurrency with a P2P'
             replace['longdesc'] = f'The message buffer in {s} and {r} are modified before the calls have completed.'
-            replace['outcome'] = 'ERROR: LocalConcurrency' 
+            replace['outcome'] = 'ERROR: LocalConcurrency'
             replace['errormsg'] = 'Local Concurrency with a P2P. The message buffers in @{s}@ and @{r}@ are modified at @{filename}@:@{line:MBIERROR1}@ and @{filename}@:@{line:MBIERROR2}@ whereas there is no guarantee the calls have been completed.'
             make_file(template, f'LocalConcurrency_{r}_{s}_nok.c', replace)

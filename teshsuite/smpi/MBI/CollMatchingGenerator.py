@@ -15,17 +15,17 @@ template = """// @{generatedby}@
   Description: @{shortdesc}@
     @{longdesc}@
 
-	 Version of MPI: Conforms to MPI 1.1, does not require MPI 2 implementation
+   Version of MPI: Conforms to MPI 1.1, does not require MPI 2 implementation
 
 BEGIN_MPI_FEATURES
-	P2P!basic: Lacking
-	P2P!nonblocking: Lacking
-	P2P!persistent: Lacking
-	COLL!basic: @{collfeature}@
-	COLL!nonblocking: @{icollfeature}@
-	COLL!persistent: Lacking
-	COLL!tools: Lacking
-	RMA: Lacking
+  P2P!basic: Lacking
+  P2P!nonblocking: Lacking
+  P2P!persistent: Lacking
+  COLL!basic: @{collfeature}@
+  COLL!nonblocking: @{icollfeature}@
+  COLL!persistent: Lacking
+  COLL!tools: Lacking
+  RMA: Lacking
 END_MPI_FEATURES
 
 BEGIN_MBI_TESTS
@@ -44,7 +44,7 @@ END_MBI_TESTS
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
-	int root = 0;
+  int root = 0;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -54,8 +54,8 @@ int main(int argc, char **argv) {
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug.\\n");
 
-	MPI_Comm newcom = MPI_COMM_WORLD;
-	MPI_Datatype type = MPI_INT;
+  MPI_Comm newcom = MPI_COMM_WORLD;
+  MPI_Datatype type = MPI_INT;
   MPI_Op op = MPI_SUM;
 
   int dbs = sizeof(int)*nprocs; /* Size of the dynamic buffers for alltoall and friends */
@@ -64,19 +64,19 @@ int main(int argc, char **argv) {
 
   if (@{change_cond}@) {
     @{operation1a}@ /* MBIERROR1 */
-  	@{fini1a}@
+    @{fini1a}@
     @{operation2a}@
-  	@{fini2a}@
+    @{fini2a}@
   } else {
     @{operation1b}@ /* MBIERROR2 */
-  	@{fini1b}@
+    @{fini1b}@
     @{operation2b}@
-  	@{fini2b}@
+    @{fini2b}@
   }
 
   @{free1}@
   @{free2}@
-  
+
   MPI_Finalize();
   printf("Rank %d finished normally\\n", rank);
   return 0;
@@ -147,7 +147,7 @@ for c1 in coll + icoll + ibarrier:
             replace['fini2a'] = fini[c2]("2")
             replace['fini1b'] = fini[c2]("2") # Inversion
             replace['fini2b'] = fini[c1]("1")
-            replace['free1'] = free[c2]("2") 
+            replace['free1'] = free[c2]("2")
             replace['free2'] = free[c1]("1")
 
             make_file(template, f'CallOrdering_{c1}_{c2}_nok.c', replace)

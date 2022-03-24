@@ -11,17 +11,17 @@ template = """// @{generatedby}@
   Description: @{shortdesc}@
     @{longdesc}@
 
-	 Version of MPI: Conforms to MPI 1.1, does not require MPI 2 implementation
+   Version of MPI: Conforms to MPI 1.1, does not require MPI 2 implementation
 
 BEGIN_MPI_FEATURES
-	P2P!basic: Lacking
-	P2P!nonblocking: Lacking
-	P2P!persistent: Lacking
-	COLL!basic: @{collfeature}@
-	COLL!nonblocking: @{icollfeature}@
-	COLL!persistent: Lacking
-	COLL!tools: Yes
-	RMA: Lacking
+  P2P!basic: Lacking
+  P2P!nonblocking: Lacking
+  P2P!persistent: Lacking
+  COLL!basic: @{collfeature}@
+  COLL!nonblocking: @{icollfeature}@
+  COLL!persistent: Lacking
+  COLL!tools: Yes
+  RMA: Lacking
 END_MPI_FEATURES
 
 BEGIN_MBI_TESTS
@@ -40,7 +40,7 @@ END_MBI_TESTS
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
-	int root = 0;
+  int root = 0;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -49,23 +49,23 @@ int main(int argc, char **argv) {
 
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
-  
+
   MPI_Op op = MPI_SUM;
   MPI_Datatype type = MPI_INT;
-	MPI_Comm newcom;
+  MPI_Comm newcom;
   MPI_Comm_split(MPI_COMM_WORLD, 0, nprocs - rank, &newcom);
 
   @{change_com}@
 
-	int dbs = sizeof(int)*nprocs; /* Size of the dynamic buffers for alltoall and friends */
+  int dbs = sizeof(int)*nprocs; /* Size of the dynamic buffers for alltoall and friends */
   @{init}@
   @{start}@
-  @{operation}@ /* MBIERROR */ 
-	@{fini}@
-	@{free}@
+  @{operation}@ /* MBIERROR */
+  @{fini}@
+  @{free}@
 
-	if(newcom != MPI_COMM_NULL && newcom != MPI_COMM_WORLD)
-		MPI_Comm_free(&newcom);
+  if(newcom != MPI_COMM_NULL && newcom != MPI_COMM_WORLD)
+    MPI_Comm_free(&newcom);
 
   MPI_Finalize();
   printf("Rank %d finished normally\\n", rank);
@@ -108,7 +108,7 @@ for c in coll + icoll + ibarrier:
 
     # Generate the coll with newcom=MPI_COMM_NULL
     replace = patterns
-    replace['shortdesc'] = f'Collective @{c}@ with newcom=MPI_COMM_NULL' 
+    replace['shortdesc'] = f'Collective @{c}@ with newcom=MPI_COMM_NULL'
     replace['longdesc'] = f'Collective @{c}@ with newcom=MPI_COMM_NULL'
     replace['outcome'] = 'ERROR: InvalidCommunicator'
     replace['errormsg'] = 'Invalid communicator. @{c}@ at @{filename}@:@{line:MBIERROR}@ has MPI_COMM_NULL as a communicator.'

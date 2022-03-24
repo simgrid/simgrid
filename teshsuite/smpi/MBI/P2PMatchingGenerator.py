@@ -11,17 +11,17 @@ template = """// @{generatedby}@
   Description: @{shortdesc}@
     @{longdesc}@
 
-	Version of MPI: Conforms to MPI 1.1, does not require MPI 2 implementation
+  Version of MPI: Conforms to MPI 1.1, does not require MPI 2 implementation
 
 BEGIN_MPI_FEATURES
-	P2P!basic: @{p2pfeature}@ 
-	P2P!nonblocking: @{ip2pfeature}@
-	P2P!persistent: @{persfeature}0@
-	COLL!basic: Lacking
-	COLL!nonblocking: Lacking
-	COLL!persistent: Lacking
-	COLL!tools: Lacking
-	RMA: Lacking
+  P2P!basic: @{p2pfeature}@
+  P2P!nonblocking: @{ip2pfeature}@
+  P2P!persistent: @{persfeature}0@
+  COLL!basic: Lacking
+  COLL!nonblocking: Lacking
+  COLL!persistent: Lacking
+  COLL!tools: Lacking
+  RMA: Lacking
 END_MPI_FEATURES
 
 BEGIN_MBI_TESTS
@@ -41,8 +41,8 @@ int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
   int its_raining = 0;
-	int src=0, dest=1;
-	int stag=0, rtag=0;
+  int src=0, dest=1;
+  int stag=0, rtag=0;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -52,18 +52,18 @@ int main(int argc, char **argv) {
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
-	MPI_Comm newcom = MPI_COMM_WORLD;
-	MPI_Datatype type = MPI_INT;
+  MPI_Comm newcom = MPI_COMM_WORLD;
+  MPI_Datatype type = MPI_INT;
 
   @{init1}@
   @{init2}@
-	if (rank == 0) {
-  	@{operation1}@ /* MBIERROR1 */
-		@{fini1}@
-	}else if (@{change_cond}@){
-  	@{operation2}@ /* MBIERROR2 */
-		@{fini2}@
-	}
+  if (rank == 0) {
+    @{operation1}@ /* MBIERROR1 */
+    @{fini1}@
+  }else if (@{change_cond}@){
+    @{operation2}@ /* MBIERROR2 */
+    @{fini2}@
+  }
 
   MPI_Finalize();
   printf("Rank %d finished normally\\n", rank);
@@ -91,7 +91,7 @@ for p in send + ssend + bsend + recv + irecv + isend:
 
     # Generate the incorrect matching with one call
     replace = patterns
-    replace['shortdesc'] = 'Point to point @{p}@ is not matched' 
+    replace['shortdesc'] = 'Point to point @{p}@ is not matched'
     replace['longdesc'] = 'Process 0 calls @{p}@ and is not matched'
     replace['outcome'] = 'ERROR: CallMatching'
     replace['errormsg'] = 'P2P mistmatch. @{p}@ at @{filename}@:@{line:MBIERROR1}@ is not matched.'
@@ -99,7 +99,7 @@ for p in send + ssend + bsend + recv + irecv + isend:
 
     # Generate the incorrect matching with two calls
     replace = patterns
-    replace['shortdesc'] = 'Both point to point @{p}@ are not matched' 
+    replace['shortdesc'] = 'Both point to point @{p}@ are not matched'
     replace['longdesc'] = 'Processes 0 and 1 both call @{p}@ which are not matched'
     replace['outcome'] = 'ERROR: CallMatching'
     replace['errormsg'] = 'P2P mismatch. @{p}@ at @{filename}@:@{line:MBIERROR1}@ and @{p}@ at @{filename}@:@{line:MBIERROR2}@ are not matched.'
@@ -125,11 +125,11 @@ for s in send + isend + ssend + bsend:
         patterns['change_cond'] = '(rank == 1) && (its_raining)'
 
         # Generate the incorrect matching because of the conditional
-        replace = patterns 
+        replace = patterns
         replace['shortdesc'] = 'Point to point @{r}@ is never called.'
-        replace['longdesc'] = 'Point to point @{r}@ is never executed. Process 1 calls MPI_Finalize and causes a deadlock.' 
-        replace['outcome'] = 'ERROR: CallMatching' 
-        replace['errormsg'] = 'P2P mistmatch. @{r}@ at @{filename}@:@{line:MBIERROR2}@ is never called because of the conditional (@{change_cond}@).' 
+        replace['longdesc'] = 'Point to point @{r}@ is never executed. Process 1 calls MPI_Finalize and causes a deadlock.'
+        replace['outcome'] = 'ERROR: CallMatching'
+        replace['errormsg'] = 'P2P mistmatch. @{r}@ at @{filename}@:@{line:MBIERROR2}@ is never called because of the conditional (@{change_cond}@).'
         replace['operation1'] =  operation[s]("1")
         replace['operation2'] = operation[r]("2")
         make_file(template, f'CallOrdering_{r}_{s}_nok.c', replace)

@@ -11,17 +11,17 @@ template = """// @{generatedby}@
   Description: @{shortdesc}@
     @{longdesc}@
 
-	Version of MPI: Conforms to MPI 1.1, does not require MPI 2 implementation
+  Version of MPI: Conforms to MPI 1.1, does not require MPI 2 implementation
 
 BEGIN_MPI_FEATURES
-	P2P!basic: @{p2pfeature}@ 
-	P2P!nonblocking: @{ip2pfeature}@
-	P2P!persistent: Lacking
-	COLL!basic: Lacking
-	COLL!nonblocking: Lacking
-	COLL!persistent: Lacking
-	COLL!tools: Lacking
-	RMA: Lacking
+  P2P!basic: @{p2pfeature}@
+  P2P!nonblocking: @{ip2pfeature}@
+  P2P!persistent: Lacking
+  COLL!basic: Lacking
+  COLL!nonblocking: Lacking
+  COLL!persistent: Lacking
+  COLL!tools: Lacking
+  RMA: Lacking
 END_MPI_FEATURES
 
 BEGIN_MBI_TESTS
@@ -39,9 +39,9 @@ END_MBI_TESTS
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
-	int src=MPI_ANY_SOURCE, dest=0;
-	int stag = 42, rtag = MPI_ANY_TAG;
-	int buff_size = 1;
+  int src=MPI_ANY_SOURCE, dest=0;
+  int stag = 42, rtag = MPI_ANY_TAG;
+  int buff_size = 1;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -51,28 +51,28 @@ int main(int argc, char **argv) {
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
-	int recv_buffer=-1;
-	int send_buffer=rank;
+  int recv_buffer=-1;
+  int send_buffer=rank;
 
-	MPI_Datatype type = MPI_INT;
-	MPI_Comm newcom = MPI_COMM_WORLD;
+  MPI_Datatype type = MPI_INT;
+  MPI_Comm newcom = MPI_COMM_WORLD;
 
   @{init1}@
   @{init2}@
 
   if (rank == 0) {
     for (int i = 0; i < nprocs - 1; i++) {
-  		@{operation1}@ /* MBIERROR */
-			@{fini1}@
+      @{operation1}@ /* MBIERROR */
+      @{fini1}@
     }
-	if (@{cond}@ != 3) {
+  if (@{cond}@ != 3) {
       printf("MBI_MSG_RACE: The last received message is not 3 but %d!\\n", recv_buffer);
       fflush(stdout);
       abort();
     }
   }else{
-  	@{operation2}@
-		@{fini2}@
+    @{operation2}@
+    @{fini2}@
   }
 
 
@@ -101,9 +101,9 @@ for s in send + isend:
         patterns['operation1'] = operation[r]("1")
 
         # Generate the incorrect matching
-        replace = patterns 
+        replace = patterns
         replace['shortdesc'] = 'The message ordering is non-deterministic.'
-        replace['longdesc'] = f'The code assumes a fixed order in the reception of messages while the message ordering is non-deterministic.' 
-        replace['outcome'] = 'ERROR: MessageRace' 
+        replace['longdesc'] = f'The code assumes a fixed order in the reception of messages while the message ordering is non-deterministic.'
+        replace['outcome'] = 'ERROR: MessageRace'
         replace['errormsg'] = 'P2P message race which can cause a deadlock. @{r}@ at @{filename}@:@{line:MBIERROR}@ is called with ANY_SRC.'
         make_file(template, f'MessageRace_{r}_{s}_nok.c', replace)

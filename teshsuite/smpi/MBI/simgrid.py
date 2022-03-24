@@ -64,7 +64,7 @@ class Tool(AbstractTool):
 
     def teardown(self):
         subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated cruft (binary files)
-        subprocess.run("rm -f smpitmp-* core", shell=True, check=True) 
+        subprocess.run("rm -f smpitmp-* core", shell=True, check=True)
 
     def parse(self, cachefile):
         if os.path.exists(f'{cachefile}.timeout') or os.path.exists(f'logs/simgrid/{cachefile}.timeout'):

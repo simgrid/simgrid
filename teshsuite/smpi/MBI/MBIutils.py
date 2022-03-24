@@ -1,4 +1,4 @@
-# Copyright 2021-2022. The MBI project. All rights reserved. 
+# Copyright 2021-2022. The MBI project. All rights reserved.
 # This program is free software; you can redistribute it and/or modify it under the terms of the license (GNU GPL).
 
 import os
@@ -52,17 +52,17 @@ class AbstractTool:
 possible_details = {
     # scope limited to one call
     'InvalidBuffer':'AInvalidParam', 'InvalidCommunicator':'AInvalidParam', 'InvalidDatatype':'AInvalidParam', 'InvalidRoot':'AInvalidParam', 'InvalidTag':'AInvalidParam', 'InvalidWindow':'AInvalidParam', 'InvalidOperator':'AInvalidParam', 'InvalidOtherArg':'AInvalidParam', 'ActualDatatype':'AInvalidParam',
-    'InvalidSrcDest':'AInvalidParam', 
+    'InvalidSrcDest':'AInvalidParam',
     # scope: Process-wide
-#    'OutOfInitFini':'BInitFini', 
+#    'OutOfInitFini':'BInitFini',
     'CommunicatorLeak':'BResLeak', 'DatatypeLeak':'BResLeak', 'GroupLeak':'BResLeak', 'OperatorLeak':'BResLeak', 'TypeLeak':'BResLeak', 'RequestLeak':'BResLeak',
     'MissingStart':'BReqLifecycle', 'MissingWait':'BReqLifecycle',
     'LocalConcurrency':'BLocalConcurrency',
     # scope: communicator
-    'CallMatching':'DMatch', 
+    'CallMatching':'DMatch',
     'CommunicatorMatching':'CMatch', 'DatatypeMatching':'CMatch', 'OperatorMatching':'CMatch', 'RootMatching':'CMatch', 'TagMatching':'CMatch',
-    'MessageRace':'DRace', 
-    
+    'MessageRace':'DRace',
+
     'GlobalConcurrency':'DGlobalConcurrency',
     # larger scope
 #    'BufferingHazard':'EBufferingHazard',
@@ -201,11 +201,11 @@ def categorize(tool, toolname, test_id, expected):
 def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, read_line_lambda=None):
     """
     Runs the test on need. Returns True if the test was ran, and False if it was cached.
-    
+
     The result is cached if possible, and the test is rerun only if the `test.txt` (containing the tool output) or the `test.elapsed` (containing the timing info) do not exist, or if `test.md5sum` (containing the md5sum of the code to compile) does not match.
 
     Parameters:
-     - buildcmd and execcmd are shell commands to run. buildcmd can be any shell line (incuding && groups), but execcmd must be a single binary to run. 
+     - buildcmd and execcmd are shell commands to run. buildcmd can be any shell line (incuding && groups), but execcmd must be a single binary to run.
      - cachefile is the name of the test
      - filename is the source file containing the code
      - binary the file name in which to compile the code
@@ -318,5 +318,5 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
             for chunk in iter(lambda: sourcefile.read(4096), b""):
                 hashed.update(chunk)
         outfile.write(hashed.hexdigest())
-    
+
     return True

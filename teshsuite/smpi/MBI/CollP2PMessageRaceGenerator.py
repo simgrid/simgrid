@@ -11,17 +11,17 @@ template = """// @{generatedby}@
   Description: @{shortdesc}@
     @{longdesc}@
 
-	Version of MPI: Conforms to MPI 1.1, does not require MPI 2 implementation
+  Version of MPI: Conforms to MPI 1.1, does not require MPI 2 implementation
 
 BEGIN_MPI_FEATURES
-	P2P!basic: @{p2pfeature}@ 
-	P2P!nonblocking: @{ip2pfeature}@
-	P2P!persistent: Lacking
-	COLL!basic: @{collfeature}@ 
-	COLL!nonblocking: Lacking
-	COLL!persistent: Lacking
-	COLL!tools: Lacking
-	RMA: Lacking
+  P2P!basic: @{p2pfeature}@
+  P2P!nonblocking: @{ip2pfeature}@
+  P2P!persistent: Lacking
+  COLL!basic: @{collfeature}@
+  COLL!nonblocking: Lacking
+  COLL!persistent: Lacking
+  COLL!tools: Lacking
+  RMA: Lacking
 END_MPI_FEATURES
 
 BEGIN_MBI_TESTS
@@ -40,10 +40,10 @@ int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
   int dest, src;
-	int i=0;
+  int i=0;
   int root = 0;
-	int stag = 0, rtag = 0;
-	int buff_size = 1;
+  int stag = 0, rtag = 0;
+  int buff_size = 1;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -54,9 +54,9 @@ int main(int argc, char **argv) {
     printf("MBI ERROR: This test needs 4 processes to produce a bug!\\n");
 
   int dbs = sizeof(int)*nprocs; /* Size of the dynamic buffers for alltoall and friends */
-	MPI_Comm newcom = MPI_COMM_WORLD;
-	MPI_Datatype type = MPI_INT;
-	MPI_Op op = MPI_SUM;  
+  MPI_Comm newcom = MPI_COMM_WORLD;
+  MPI_Datatype type = MPI_INT;
+  MPI_Op op = MPI_SUM;
 
 
 
@@ -64,38 +64,38 @@ int main(int argc, char **argv) {
   @{init2}@
   @{init3}@
   @{init4}@
-	if (rank == 0) {
-		dest=1;
-  	@{operation1}@
-		@{fini1}@
-  	@{operation2}@ 
-		@{fini2}@
-	}else if (rank==2) {
-		dest=1;
-  	@{operation1}@
-		@{fini1}@
-  	@{operation2}@ 
-		@{fini2}@
-	}else if (rank==1) {
-		src = MPI_ANY_SOURCE;
-		rtag = MPI_ANY_TAG;
-  	@{operation3}@ /* MBIERROR1 */
-  	@{operation1}@
-		@{fini1}@
-  	@{operation4}@ /* MBIERROR2 */
-		@{fini3}@
-		@{fini4}@
-	}else if (rank==3) { 
-  	@{operation1}@
-		@{fini1}@
-	}
+  if (rank == 0) {
+    dest=1;
+    @{operation1}@
+    @{fini1}@
+    @{operation2}@
+    @{fini2}@
+  }else if (rank==2) {
+    dest=1;
+    @{operation1}@
+    @{fini1}@
+    @{operation2}@
+    @{fini2}@
+  }else if (rank==1) {
+    src = MPI_ANY_SOURCE;
+    rtag = MPI_ANY_TAG;
+    @{operation3}@ /* MBIERROR1 */
+    @{operation1}@
+    @{fini1}@
+    @{operation4}@ /* MBIERROR2 */
+    @{fini3}@
+    @{fini4}@
+  }else if (rank==3) {
+    @{operation1}@
+    @{fini1}@
+  }
 
-	@{free1}@
-	@{free2}@
-	@{free3}@
-	@{free4}@
-  
-	MPI_Finalize();
+  @{free1}@
+  @{free2}@
+  @{free3}@
+  @{free4}@
+
+  MPI_Finalize();
   printf("Rank %d finished normally\\n", rank);
   return 0;
 }
@@ -132,9 +132,9 @@ for s in send + isend:
             patterns['operation4'] = operation[r]("4")
 
             # Generate the incorrect matching because of the conditional
-            replace = patterns 
+            replace = patterns
             replace['shortdesc'] = 'Message race'
             replace['longdesc'] = 'Message race in @{r}@ with @{c}@.'
-            replace['outcome'] = 'ERROR: MessageRace' 
+            replace['outcome'] = 'ERROR: MessageRace'
             replace['errormsg'] = 'Message race. The use of wildcard receive calls (@{r}@ at @{filename}@:@{line:MBIERROR1}@ and @{r}@ at @{filename}@:@{line:MBIERROR2}@) leads to nondeterministic matching.'
             make_file(template, f'MessageRace_{c}_{s}_{r}_nok.c', replace)
