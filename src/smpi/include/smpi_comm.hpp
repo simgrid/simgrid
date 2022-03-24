@@ -43,8 +43,7 @@ class Comm : public F2C, public Keyval{
   std::unordered_map<std::string, unsigned int> sent_messages_;
   std::unordered_map<std::string, unsigned int> recv_messages_;
   unsigned int collectives_count_ = 0;
-  unsigned int* collectives_counts_ = nullptr; //for MPI_COMM_WORLD only
-
+  std::unique_ptr<unsigned int[]> collectives_counts_; // for MPI_COMM_WORLD only
 
 public:
   static std::unordered_map<int, smpi_key_elem> keyvals_;
