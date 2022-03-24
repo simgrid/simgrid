@@ -34,13 +34,11 @@ or on the #simgrid IRC channel of the oftc network.
 Last, the main development of SimGrid is done on [Framagit](https://framagit.org/simgrid/simgrid/),
 but we also maintain a [GitHub mirror](https://github.com/simgrid/simgrid/) and an [Inria GitLab mirror](https://gitlab.inria.fr/simgrid/simgrid),
 
-Thanks for using our software. Please do great things with it and tell
-the world about it. Tell us, too, because we love to have positive
-feedback. Welcome to our community.
+Thanks for using our software. Please do great things with it and tell the world about it.
+Tell us, too, because we love to have positive feedback. Welcome to our community.
 
 Cheers,
 Da SimGrid Team.
 
 [license-badge]: https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg
 [release-badge]: https://img.shields.io/github/release/simgrid/simgrid.svg
-[release-link]:  https://gforge.inria.fr/frs/?group_id=12
