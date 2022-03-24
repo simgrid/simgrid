@@ -43,7 +43,7 @@ void RecordTrace::replay() const
 
 void simgrid::mc::RecordTrace::replay(const std::string& path_string)
 {
-  simgrid::mc::processes_time.resize(simgrid::kernel::actor::get_maxpid());
+  simgrid::mc::processes_time.resize(kernel::actor::ActorIDTrait::get_maxpid());
   simgrid::mc::RecordTrace trace(path_string.c_str());
   trace.replay();
   for (auto* item : trace.transitions_)

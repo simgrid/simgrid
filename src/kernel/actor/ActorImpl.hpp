@@ -27,15 +27,19 @@ class XBT_PUBLIC ActorIDTrait {
   aid_t pid_         = 0;
   aid_t ppid_        = -1;
 
+  static unsigned long maxpid_;
+
 public:
   explicit ActorIDTrait(const std::string& name, aid_t ppid);
   const xbt::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
   aid_t get_pid() const { return pid_; }
   aid_t get_ppid() const { return ppid_; }
+
+  static unsigned long get_maxpid() { return maxpid_; }
+  // In MC mode, the application sends this pointer to the MC
+  static unsigned long* get_maxpid_addr() { return &maxpid_; }
 };
-XBT_PUBLIC unsigned long get_maxpid();
-XBT_PUBLIC unsigned long* get_maxpid_addr(); // In MC mode, the application sends this pointers to the MC
 
 /*------------------------- [ ActorRestartingTrait ] -------------------------*/
 class XBT_PUBLIC ActorRestartingTrait {

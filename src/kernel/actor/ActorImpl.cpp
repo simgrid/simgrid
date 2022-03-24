@@ -39,16 +39,9 @@ namespace kernel {
 namespace actor {
 
 /*------------------------- [ ActorIDTrait ] -------------------------*/
-static unsigned long maxpid = 0;
-unsigned long get_maxpid()
-{
-  return maxpid;
-}
-unsigned long* get_maxpid_addr()
-{
-  return &maxpid;
-}
-ActorIDTrait::ActorIDTrait(const std::string& name, aid_t ppid) : name_(name), pid_(maxpid++), ppid_(ppid) {}
+unsigned long ActorIDTrait::maxpid_ = 0;
+
+ActorIDTrait::ActorIDTrait(const std::string& name, aid_t ppid) : name_(name), pid_(maxpid_++), ppid_(ppid) {}
 
 ActorImpl* ActorImpl::self()
 {
