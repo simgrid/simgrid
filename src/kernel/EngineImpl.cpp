@@ -29,12 +29,11 @@
 #include "src/mc/remote/AppSide.hpp"
 #endif
 
-double NOW = 0;
-
 XBT_LOG_NEW_DEFAULT_CATEGORY(ker_engine, "Logging specific to Engine (kernel)");
 
 namespace simgrid {
 namespace kernel {
+double EngineImpl::now_           = 0.0;
 EngineImpl* EngineImpl::instance_ = nullptr; /* That singleton is awful too. */
 
 config::Flag<double> cfg_breakpoint{"debug/breakpoint",
@@ -533,7 +532,7 @@ void EngineImpl::presolve() const
   XBT_DEBUG("Consume all trace events occurring before the starting time.");
   double next_event_date;
   while ((next_event_date = profile::future_evt_set.next_date()) != -1.0) {
-    if (next_event_date > NOW)
+    if (next_event_date > now_)
       break;
 
     double value                 = -1.0;
@@ -546,7 +545,7 @@ void EngineImpl::presolve() const
 
   XBT_DEBUG("Set every models in the right state by updating them to 0.");
   for (auto const& model : models_)
-    model->update_actions_state(NOW, 0.0);
+    model->update_actions_state(now_, 0.0);
 }
 
 double EngineImpl::solve(double max_date) const
@@ -556,9 +555,9 @@ double EngineImpl::solve(double max_date) const
   resource::Resource* resource = nullptr;
 
   if (max_date != -1.0) {
-    xbt_assert(max_date >= NOW, "You asked to simulate up to %f, but that's in the past already", max_date);
+    xbt_assert(max_date >= now_, "You asked to simulate up to %f, but that's in the past already", max_date);
 
-    time_delta = max_date - NOW;
+    time_delta = max_date - now_;
   }
 
   XBT_DEBUG("Looking for next event in all models");
@@ -566,7 +565,7 @@ double EngineImpl::solve(double max_date) const
     if (not model->next_occurring_event_is_idempotent()) {
       continue;
     }
-    double next_event = model->next_occurring_event(NOW);
+    double next_event = model->next_occurring_event(now_);
     if ((time_delta < 0.0 || next_event < time_delta) && next_event >= 0.0) {
       time_delta = next_event;
     }
@@ -587,9 +586,9 @@ double EngineImpl::solve(double max_date) const
         continue;
 
       if (next_event_date != -1.0) {
-        time_delta = std::min(next_event_date - NOW, time_delta);
+        time_delta = std::min(next_event_date - now_, time_delta);
       } else {
-        time_delta = std::max(next_event_date - NOW, time_delta); // Get the positive component
+        time_delta = std::max(next_event_date - now_, time_delta); // Get the positive component
       }
 
       XBT_DEBUG("Run the NS3 network at most %fs", time_delta);
@@ -601,29 +600,29 @@ double EngineImpl::solve(double max_date) const
         time_delta = model_next_action_end;
     }
 
-    if (next_event_date < 0.0 || (next_event_date > NOW + time_delta)) {
+    if (next_event_date < 0.0 || (next_event_date > now_ + time_delta)) {
       // next event may have already occurred or will after the next resource change, then bail out
       XBT_DEBUG("no next usable TRACE event. Stop searching for it");
       break;
     }
 
-    XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", time_delta, NOW, next_event_date);
+    XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", time_delta, now_, next_event_date);
 
     while (auto* event = profile::future_evt_set.pop_leq(next_event_date, &value, &resource)) {
       if (resource->is_used() || (watched_hosts().find(resource->get_cname()) != watched_hosts().end())) {
-        time_delta = next_event_date - NOW;
+        time_delta = next_event_date - now_;
         XBT_DEBUG("This event invalidates the next_occurring_event() computation of models. Next event set to %f",
                   time_delta);
       }
-      // FIXME: I'm too lame to update NOW live, so I change it and restore it so that the real update with surf_min
+      // FIXME: I'm too lame to update now_ live, so I change it and restore it so that the real update with surf_min
       // will work
-      double round_start = NOW;
-      NOW                = next_event_date;
+      double round_start = now_;
+      now_               = next_event_date;
       /* update state of the corresponding resource to the new value. Does not touch lmm.
          It will be modified if needed when updating actions */
       XBT_DEBUG("Calling update_resource_state for resource %s", resource->get_cname());
       resource->apply_event(event, value);
-      NOW = round_start;
+      now_ = round_start;
     }
   }
 
@@ -640,11 +639,11 @@ double EngineImpl::solve(double max_date) const
   XBT_DEBUG("Duration set to %f", time_delta);
 
   // Bump the time: jump into the future
-  NOW = NOW + time_delta;
+  now_ += time_delta;
 
   // Inform the models of the date change
   for (auto const& model : models_)
-    model->update_actions_state(NOW, time_delta);
+    model->update_actions_state(now_, time_delta);
 
   s4u::Engine::on_time_advance(time_delta);
 
@@ -720,9 +719,9 @@ void EngineImpl::run(double max_date)
       next_time = std::min(next_time, max_date);
     }
 
-    XBT_DEBUG("Calling solve(%g) %g", next_time, NOW);
+    XBT_DEBUG("Calling solve(%g) %g", next_time, now_);
     elapsed_time = solve(next_time);
-    XBT_DEBUG("Moving time ahead. NOW=%g; elapsed: %g", NOW, elapsed_time);
+    XBT_DEBUG("Moving time ahead. NOW=%g; elapsed: %g", now_, elapsed_time);
 
     // Execute timers until there isn't anything to be done:
     bool again = false;
@@ -752,7 +751,7 @@ void EngineImpl::run(double max_date)
       }
     }
   } while ((vetoed_activities == nullptr || vetoed_activities->empty()) &&
-           ((elapsed_time > -1.0 && not double_equals(max_date, NOW, 0.00001)) || has_actors_to_run()));
+           ((elapsed_time > -1.0 && not double_equals(max_date, now_, 0.00001)) || has_actors_to_run()));
 
   if (not actor_list_.empty() && max_date < 0 && not(vetoed_activities == nullptr || vetoed_activities->empty()))
     THROW_IMPOSSIBLE;
@@ -762,7 +761,7 @@ void EngineImpl::run(double max_date)
 
 double EngineImpl::get_clock()
 {
-  return NOW;
+  return now_;
 }
 } // namespace kernel
 } // namespace simgrid

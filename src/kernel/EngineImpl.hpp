@@ -65,6 +65,7 @@ class EngineImpl {
   xbt_dynar_t actors_vector_      = xbt_dynar_new(sizeof(actor::ActorImpl*), nullptr);
 #endif
 
+  static double now_;
   static EngineImpl* instance_;
   actor::ActorImpl* maestro_ = nullptr;
   context::ContextFactory* context_factory_ = nullptr;
