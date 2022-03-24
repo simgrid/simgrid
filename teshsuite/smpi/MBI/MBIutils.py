@@ -12,14 +12,14 @@ import signal
 import hashlib
 
 class AbstractTool:
-    def ensure_image(self, params=""):
+    def ensure_image(self, params="", dockerparams=""):
         """Verify that this is executed from the right docker image, and complain if not."""
         if os.path.exists("/MBI") or os.path.exists("trust_the_installation"):
             print("This seems to be a MBI docker image. Good.")
         else:
             print("Please run this script in a MBI docker image. Run these commands:")
             print("  docker build -f Dockerfile -t mpi-bugs-initiative:latest . # Only the first time")
-            print(f"  docker run -it --rm --name MIB --volume $(pwd):/MBI mpi-bugs-initiative /MBI/MBI.py {params}")
+            print(f"  docker run -it --rm --name MIB --volume $(pwd):/MBI {dockerparams}mpi-bugs-initiative /MBI/MBI.py {params}")
             sys.exit(1)
 
     def build(self, rootdir, cached=True):
@@ -169,7 +169,7 @@ def categorize(tool, toolname, test_id, expected):
             diagnostic = f'hard timeout'
         else:
             diagnostic = f'timeout after {elapsed} sec'
-    elif outcome == 'failure':
+    elif outcome == 'failure' or outcome == 'segfault':
         res_category = 'failure'
         diagnostic = f'tool error, or test not run'
     elif outcome == 'UNIMPLEMENTED':

@@ -35,7 +35,7 @@ END_MBI_TESTS
 #include <stdio.h>
 #include <stdlib.h>
 
-#define buff_size 128
+#define buff_size 1
 
 int main(int argc, char **argv) {
   int nprocs = -1;

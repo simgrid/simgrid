@@ -55,9 +55,21 @@ int main(int argc, char *argv[]) {
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   printf("Hello from rank %d \\n", rank);
 
+  if (numProcs < 2)
+    printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
+
   MPI_Win win;
 
   get_win(&win);
+
+  MPI_Win_fence(0, win);
+
+  if (rank == 0) {
+    int localbuf[N] = {12345};
+    MPI_Put(&localbuf, N, MPI_INT, 1, 0, N, MPI_INT, win);
+  }
+
+  MPI_Win_fence(0, win);
 
   MPI_Win_free(&win);
 
