@@ -19,7 +19,8 @@ namespace simgrid {
 namespace kernel {
 namespace context {
 
-ContextFactoryInitializer factory_initializer = nullptr;
+std::function<ContextFactory*(void)> ContextFactory::initializer;
+
 static e_xbt_parmap_mode_t parallel_synchronization_mode = XBT_PARMAP_DEFAULT;
 static int parallel_contexts                             = 1;
 unsigned stack_size;

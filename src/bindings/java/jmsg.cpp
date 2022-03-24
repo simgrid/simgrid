@@ -84,7 +84,10 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv* env, jclass, jobjec
 {
   env->GetJavaVM(&__java_vm);
 
-  simgrid::kernel::context::factory_initializer = &simgrid::kernel::context::java_factory;
+  simgrid::kernel::context::ContextFactory::initializer = []() {
+    XBT_INFO("Using regular java threads.");
+    return new simgrid::kernel::context::JavaContextFactory();
+  };
   const _jthrowable* exc                        = env->ExceptionOccurred();
   if (exc) {
     env->ExceptionClear();

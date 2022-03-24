@@ -35,6 +35,9 @@ public:
 
   virtual void run_all(std::vector<actor::ActorImpl*> const& actors_list) = 0;
 
+  /* This allows Java to hijack the context factory (Java induces factories of factory :) */
+  static std::function<ContextFactory*(void)> initializer;
+
 protected:
   template <class T, class... Args> T* new_context(Args&&... args)
   {
@@ -96,11 +99,6 @@ public:
   /** Called by the context when it has finished its job */
   virtual void attach_stop() = 0;
 };
-
-
-/* This allows Java to hijack the context factory (Java induces factories of factory :) */
-using ContextFactoryInitializer = ContextFactory* (*)();
-XBT_PUBLIC_DATA ContextFactoryInitializer factory_initializer;
 
 XBT_PRIVATE ContextFactory* thread_factory();
 XBT_PRIVATE ContextFactory* sysv_factory();

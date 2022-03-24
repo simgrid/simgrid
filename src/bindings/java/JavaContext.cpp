@@ -21,12 +21,6 @@ namespace simgrid {
 namespace kernel {
 namespace context {
 
-ContextFactory* java_factory()
-{
-  XBT_INFO("Using regular java threads.");
-  return new JavaContextFactory();
-}
-
 JavaContextFactory::JavaContextFactory() : ContextFactory()
 {
   xbt_assert(xbt::binary_name == "java");

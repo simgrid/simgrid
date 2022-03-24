@@ -41,7 +41,7 @@ config::Flag<double> cfg_breakpoint{"debug/breakpoint",
                                     "When non-negative, raise a SIGTRAP after given (simulated) time", -1.0};
 config::Flag<bool> cfg_verbose_exit{"debug/verbose-exit", "Display the actor status at exit", true};
 
-constexpr std::initializer_list<std::pair<const char*, context::ContextFactoryInitializer>> context_factories = {
+constexpr std::initializer_list<std::pair<const char*, context::ContextFactory* (*)()>> context_factories = {
 #if HAVE_RAW_CONTEXTS
     {"raw", &context::raw_factory},
 #endif
@@ -255,8 +255,8 @@ void EngineImpl::context_mod_init() const
 #endif
 
   /* select the context factory to use to create the contexts */
-  if (context::factory_initializer != nullptr) { // Give Java a chance to hijack the factory mechanism
-    instance_->set_context_factory(context::factory_initializer());
+  if (context::ContextFactory::initializer) { // Give Java a chance to hijack the factory mechanism
+    instance_->set_context_factory(context::ContextFactory::initializer());
     return;
   }
   /* use the factory specified by --cfg=contexts/factory:value */
