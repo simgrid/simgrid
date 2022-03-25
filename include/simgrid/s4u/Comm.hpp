@@ -45,13 +45,11 @@ public:
   static xbt::signal<void(Comm const&)> on_send;
   static xbt::signal<void(Comm const&)> on_recv;
   static xbt::signal<void(Comm const&)> on_start;
-  static xbt::signal<void(Comm const&)> on_completion;
 #endif
 
   static void on_send_cb(const std::function<void(Comm const&)>& cb) { on_send.connect(cb); }
   static void on_recv_cb(const std::function<void(Comm const&)>& cb) { on_recv.connect(cb); }
   static void on_start_cb(const std::function<void(Comm const&)>& cb) { on_start.connect(cb); }
-  static void on_completion_cb(const std::function<void(Activity const&)>& cb) { on_completion.connect(cb); }
   /* More callbacks */
   CommPtr set_copy_data_callback(const std::function<void(kernel::activity::CommImpl*, void*, size_t)>& callback);
   static void copy_buffer_callback(kernel::activity::CommImpl*, void*, size_t);

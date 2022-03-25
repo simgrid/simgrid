@@ -22,7 +22,6 @@ namespace simgrid {
 namespace s4u {
 xbt::signal<void(Comm const&)> Comm::on_send;
 xbt::signal<void(Comm const&)> Comm::on_recv;
-xbt::signal<void(Comm const&)> Comm::on_completion;
 
 CommPtr Comm::set_copy_data_callback(const std::function<void(kernel::activity::CommImpl*, void*, size_t)>& callback)
 {
