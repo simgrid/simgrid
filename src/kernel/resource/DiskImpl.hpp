@@ -58,16 +58,16 @@ class DiskImpl : public Resource_T<DiskImpl>, public xbt::PropertyHolder {
   std::unordered_map<s4u::Disk::Operation, s4u::NonLinearResourceCb> sharing_policy_cb_ = {};
   std::function<s4u::Disk::IoFactorCb> factor_cb_                                       = {};
 
+  Metric read_bw_      = {0.0, 0, nullptr};
+  Metric write_bw_     = {0.0, 0, nullptr};
+  double readwrite_bw_ = -1; /* readwrite constraint bound, usually max(read, write) */
+
   void apply_sharing_policy_cfg();
 
 protected:
   ~DiskImpl() override = default; // Disallow direct deletion. Call destroy() instead.
 
 public:
-  Metric read_bw_  = {0.0, 0, nullptr};
-  Metric write_bw_ = {0.0, 0, nullptr};
-  double readwrite_bw_ = -1; /* readwrite constraint bound, usually max(read, write) */
-
   explicit DiskImpl(const std::string& name, double read_bandwidth, double write_bandwidth);
   DiskImpl(const DiskImpl&) = delete;
   DiskImpl& operator=(const DiskImpl&) = delete;
@@ -78,19 +78,26 @@ public:
   DiskImpl* set_host(s4u::Host* host);
   s4u::Host* get_host() const { return host_; }
 
-  virtual void set_read_bandwidth(double read_bw) = 0;
+  virtual void set_read_bandwidth(double value) { read_bw_.peak = value; }
   double get_read_bandwidth() const { return read_bw_.peak * read_bw_.scale; }
 
-  virtual void set_write_bandwidth(double write_bw) = 0;
+  virtual void set_write_bandwidth(double value) { write_bw_.peak = value; }
   double get_write_bandwidth() const { return write_bw_.peak * write_bw_.scale; }
 
-  virtual void set_readwrite_bandwidth(double bw) = 0;
+  virtual void set_readwrite_bandwidth(double value) { readwrite_bw_ = value; }
+  double get_readwrite_bandwidth() const { return readwrite_bw_; }
 
   DiskImpl* set_read_constraint(lmm::Constraint* constraint_read);
   lmm::Constraint* get_read_constraint() const { return constraint_read_; }
 
   DiskImpl* set_write_constraint(lmm::Constraint* constraint_write);
   lmm::Constraint* get_write_constraint() const { return constraint_write_; }
+
+  profile::Event* get_read_event() const { return read_bw_.event; }
+  void unref_read_event() { tmgr_trace_event_unref(&read_bw_.event); }
+
+  profile::Event* get_write_event() const { return write_bw_.event; }
+  void unref_write_event() { tmgr_trace_event_unref(&write_bw_.event); }
 
   DiskImpl* set_read_bandwidth_profile(profile::Profile* profile);
   DiskImpl* set_write_bandwidth_profile(profile::Profile* profile);

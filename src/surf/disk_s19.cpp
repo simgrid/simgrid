@@ -77,41 +77,37 @@ DiskAction* DiskS19Model::io_start(const DiskImpl* disk, sg_size_t size, s4u::Io
  ************/
 void DiskS19::set_read_bandwidth(double value)
 {
-  read_bw_.peak = value;
-
+  DiskImpl::set_read_bandwidth(value);
   if (get_read_constraint()) {
-    get_model()->get_maxmin_system()->update_constraint_bound(get_read_constraint(), read_bw_.peak * read_bw_.scale);
+    get_model()->get_maxmin_system()->update_constraint_bound(get_read_constraint(), get_read_bandwidth());
   }
 }
 
 void DiskS19::set_write_bandwidth(double value)
 {
-  write_bw_.peak = value;
-
+  DiskImpl::set_write_bandwidth(value);
   if (get_write_constraint()) {
-    get_model()->get_maxmin_system()->update_constraint_bound(get_write_constraint(), write_bw_.peak * write_bw_.scale);
+    get_model()->get_maxmin_system()->update_constraint_bound(get_write_constraint(), get_write_bandwidth());
   }
 }
 
 void DiskS19::set_readwrite_bandwidth(double value)
 {
-  readwrite_bw_ = value;
+  DiskImpl::set_readwrite_bandwidth(value);
   if (get_constraint()) {
-    get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), readwrite_bw_);
+    get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), get_readwrite_bandwidth());
   }
 }
 
 void DiskS19::apply_event(kernel::profile::Event* triggered, double value)
 {
   /* Find out which of my iterators was triggered, and react accordingly */
-  if (triggered == read_bw_.event) {
+  if (triggered == get_read_event()) {
     set_read_bandwidth(value);
-    tmgr_trace_event_unref(&read_bw_.event);
-
-  } else if (triggered == write_bw_.event) {
+    unref_read_event();
+  } else if (triggered == get_write_event()) {
     set_write_bandwidth(value);
-    tmgr_trace_event_unref(&write_bw_.event);
-
+    unref_write_event();
   } else if (triggered == get_state_event()) {
     if (value > 0)
       turn_on();
