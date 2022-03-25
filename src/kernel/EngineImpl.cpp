@@ -741,7 +741,8 @@ void EngineImpl::run(double max_date)
         XBT_CRITICAL("Oops! Daemon actors cannot do any blocking activity (communications, synchronization, etc) "
                      "once the simulation is over. Please fix your on_exit() functions.");
       } else {
-        XBT_CRITICAL("Oops! Deadlock or code not perfectly clean.");
+        XBT_CRITICAL("Oops! Deadlock detected, some activities are still around but will never complete. "
+                     "This usually happens when the user code is not perfectly clean.");
       }
       display_all_actor_status();
       simgrid::s4u::Engine::on_deadlock();

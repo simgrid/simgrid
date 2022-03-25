@@ -9,7 +9,7 @@ $ ${bindir:=.}/s4u-actor-exiting ${platfdir}/small_platform.xml "--log=root.fmt:
 > [  3.000000] (C@Ginette) And now, induce a deadlock by waiting for a message that will never come
 >
 >
-> [  3.000000] (maestro@) Oops! Deadlock or code not perfectly clean.
+> [  3.000000] (maestro@) Oops! Deadlock detected, some activities are still around but will never complete. This usually happens when the user code is not perfectly clean.
 > [  3.000000] (maestro@) 1 actors are still running, waiting for something.
 > [  3.000000] (maestro@) Legend of the following listing: "Actor <pid> (<name>@<host>): <status>"
 > [  3.000000] (maestro@) Actor 3 (C@Ginette): waiting for communication activity 0xdeadbeef () in state WAITING to finish
