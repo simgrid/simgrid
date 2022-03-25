@@ -29,6 +29,8 @@ class ModelChecker {
   std::unique_ptr<RemoteProcess> remote_process_;
   Exploration* exploration_ = nullptr;
 
+  unsigned long visited_states_ = 0;
+
   // Expect MessageType::SIMCALL_TO_STRING or MessageType::SIMCALL_DOT_LABEL
   std::string simcall_to_string(MessageType type, aid_t aid, int times_considered);
 
@@ -62,13 +64,13 @@ public:
   Exploration* get_exploration() const { return exploration_; }
   void set_exploration(Exploration* exploration) { exploration_ = exploration; }
 
+  unsigned long get_visited_states() const { return visited_states_; }
+  void inc_visited_states() { visited_states_++; }
+
 private:
   void setup_ignore();
   bool handle_message(const char* buffer, ssize_t size);
   void handle_waitpid();
-
-public:
-  unsigned long visited_states = 0;
 };
 
 }

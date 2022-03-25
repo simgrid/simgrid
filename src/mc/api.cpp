@@ -88,12 +88,12 @@ std::size_t Api::get_remote_heap_bytes() const
 
 void Api::mc_inc_visited_states() const
 {
-  mc_model_checker->visited_states++;
+  mc_model_checker->inc_visited_states();
 }
 
 unsigned long Api::mc_get_visited_states() const
 {
-  return mc_model_checker->visited_states;
+  return mc_model_checker->get_visited_states();
 }
 
 void Api::mc_exit(int status) const
