@@ -107,6 +107,7 @@ Please apply the following checklist before releasing.
   - Kill the one for the current release and remove all code that were
     mandated by the deprecated functions (both in source and headers).
   - Do the possible cleanups now that these features are gone.
+- Regenerate the unstable docker with this new version
 
 Release numbering semantic:
   - 3.X is a named release.
