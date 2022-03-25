@@ -32,10 +32,11 @@ namespace s4u {
  * That is, activities are all the things that do take time to the actor in the simulated world.
  */
 class XBT_PUBLIC Activity : public xbt::Extendable<Activity> {
+#ifndef DOXYGEN
   friend Comm;
   friend Exec;
   friend Io;
-#ifndef DOXYGEN
+  friend kernel::activity::ActivityImpl;
   friend std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename);
   friend std::vector<ActivityPtr> create_DAG_from_DAX(const std::string& filename);
 #endif
@@ -97,7 +98,9 @@ protected:
 
 private:
   static xbt::signal<void(Activity&)> on_veto;
-  static xbt::signal<void(Activity&)> on_completion;
+  static xbt::signal<void(Activity const&)> on_completion;
+  static xbt::signal<void(Activity const&)> on_suspended;
+  static xbt::signal<void(Activity const&)> on_resumed;
 
 public:
   /*! Add a callback fired each time that the activity fails to start because of a veto (e.g., unsolved dependency or no
@@ -105,6 +108,10 @@ public:
   static void on_veto_cb(const std::function<void(Activity&)>& cb) { on_veto.connect(cb); }
   /*! Add a callback fired when the activity completes (either normally, cancelled or failed) */
   static void on_completion_cb(const std::function<void(Activity const&)>& cb) { on_completion.connect(cb); }
+  /*! Add a callback fired when the activity is suspended */
+  static void on_suspended_cb(const std::function<void(Activity const&)>& cb) { on_suspended.connect(cb); }
+  /*! Add a callback fired when the activity is resumed after being suspended */
+  static void on_resumed_cb(const std::function<void(Activity const&)>& cb) { on_resumed.connect(cb); }
 
   void vetoable_start()
   {

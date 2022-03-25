@@ -25,7 +25,9 @@ template class xbt::Extendable<s4u::Activity>;
 namespace s4u {
 
 xbt::signal<void(Activity&)> Activity::on_veto;
-xbt::signal<void(Activity&)> Activity::on_completion;
+xbt::signal<void(Activity const&)> Activity::on_completion;
+xbt::signal<void(Activity const&)> Activity::on_suspended;
+xbt::signal<void(Activity const&)> Activity::on_resumed;
 
 std::set<Activity*>* Activity::vetoed_activities_ = nullptr;
 

@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <simgrid/modelchecker.h>
+#include <simgrid/s4u/Activity.hpp>
 #include <simgrid/s4u/Engine.hpp>
 
 #include "src/kernel/activity/ActivityImpl.hpp"
@@ -180,7 +181,7 @@ void ActivityImpl::suspend()
     return;
   XBT_VERB("This activity is suspended (remain: %f)", surf_action_->get_remains());
   surf_action_->suspend();
-  on_suspended(*this);
+  s4u::Activity::on_suspended(*get_iface());
 }
 
 void ActivityImpl::resume()
@@ -189,7 +190,7 @@ void ActivityImpl::resume()
     return;
   XBT_VERB("This activity is resumed (remain: %f)", surf_action_->get_remains());
   surf_action_->resume();
-  on_resumed(*this);
+  s4u::Activity::on_resumed(*get_iface());
 }
 
 void ActivityImpl::cancel()
@@ -236,8 +237,6 @@ void intrusive_ptr_release(ActivityImpl* activity)
     delete activity;
   }
 }
-xbt::signal<void(ActivityImpl const&)> ActivityImpl::on_resumed;
-xbt::signal<void(ActivityImpl const&)> ActivityImpl::on_suspended;
 }
 }
 } // namespace simgrid::kernel::activity::

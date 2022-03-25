@@ -2123,6 +2123,17 @@ Suspending and resuming an activity
       .. doxygenfunction:: simgrid::s4u::Activity::resume
       .. doxygenfunction:: simgrid::s4u::Activity::is_suspended
 
+Signals
+-------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Activity::on_completion_cb
+      .. doxygenfunction:: simgrid::s4u::Activity::on_suspend_cb
+      .. doxygenfunction:: simgrid::s4u::Activity::on_resume_cb
+
 .. _API_s4u_Comm:
 
 =============
