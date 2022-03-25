@@ -237,7 +237,7 @@ Profile* ProfileBuilder::from_file(const std::string& path)
 
 
 Profile* ProfileBuilder::from_void() {
-  static Profile void_profile("__void__",[](std::vector<DatedValue>&){},-1.0);
+  static Profile void_profile("__void__", nullptr, -1.0);
   return &void_profile;
 }
 

@@ -38,14 +38,11 @@ Event* Profile::schedule(FutureEvtSet* fes, resource::Resource* resource)
 
   fes_ = fes;
 
-  if(event_list.empty())
-    cb(event_list);
-
-  if(event_list.empty()) {
+  if (get_enough_events(0)) {
+    fes_->add_event(event_list[0].date_, event);
+  } else {
     event->free_me  = true;
     tmgr_trace_event_unref(&event);
-  } else {
-    fes_->add_event(event_list[0].date_, event);
   }
   return event;
 }
@@ -59,15 +56,13 @@ DatedValue Profile::next(Event* event)
 
   event->idx++;
 
-  if (event->idx == event_list.size())
-    cb(event_list);
-  if(event->idx>=event_list.size())
-    event->free_me = true;
-  else {
-    const DatedValue& nextDateVal = event_list.at(event->idx);
+  if (get_enough_events(event->idx)) {
+    const DatedValue& nextDateVal = event_list[event->idx];
     xbt_assert(nextDateVal.date_>=0);
     xbt_assert(nextDateVal.value_>=0);
     fes_->add_event(event_date +nextDateVal.date_, event);
+  } else {
+    event->free_me = true;
   }
   return dateVal;
 }
@@ -77,7 +72,7 @@ Profile::Profile(const std::string& name, const std::function<ProfileBuilder::Up
 {
   xbt_assert(trace_list.find(name) == trace_list.end(), "Refusing to define trace %s twice", name.c_str());
   trace_list.insert({name,this});
-  cb(event_list);
+  get_enough_events(0);
 }
 
 } // namespace profile

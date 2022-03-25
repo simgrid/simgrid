@@ -54,6 +54,13 @@ private:
   std::vector<DatedValue> event_list;
   FutureEvtSet* fes_  = nullptr;
   double repeat_delay;
+
+  bool get_enough_events(size_t index)
+  {
+    if (index >= event_list.size() && cb)
+      cb(event_list);
+    return index < event_list.size();
+  }
 };
 
 } // namespace profile
