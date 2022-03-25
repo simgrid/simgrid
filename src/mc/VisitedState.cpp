@@ -44,9 +44,9 @@ std::unique_ptr<simgrid::mc::VisitedState>
 VisitedStates::addVisitedState(unsigned long state_number, simgrid::mc::State* graph_state, bool compare_snapshots)
 {
   auto new_state             = std::make_unique<simgrid::mc::VisitedState>(state_number);
-  graph_state->system_state_ = new_state->system_state;
+  graph_state->set_system_state(new_state->system_state);
   XBT_DEBUG("Snapshot %p of visited state %ld (exploration stack state %ld)", new_state->system_state.get(),
-            new_state->num, graph_state->num_);
+            new_state->num, graph_state->get_num());
 
   auto range = boost::range::equal_range(states_, new_state.get(), Api::get().compare_pair());
 

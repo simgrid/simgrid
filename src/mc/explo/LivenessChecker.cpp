@@ -25,8 +25,8 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
     : num(pair_num), automaton_state(automaton_state)
 {
   this->graph_state = std::move(graph_state);
-  if (this->graph_state->system_state_ == nullptr)
-    this->graph_state->system_state_ = std::make_shared<Snapshot>(pair_num);
+  if (not this->graph_state->get_system_state())
+    this->graph_state->set_system_state(std::make_shared<Snapshot>(pair_num));
   this->heap_bytes_used     = Api::get().get_remote_heap_bytes();
   this->actors_count        = Api::get().get_actors().size();
   this->other_num           = -1;
@@ -71,8 +71,8 @@ std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc
       std::shared_ptr<simgrid::mc::VisitedPair> const& pair_test = *i;
       if (xbt_automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) != 0 ||
           *(pair_test->atomic_propositions) != *(new_pair->atomic_propositions) ||
-          not Api::get().snapshot_equal(pair_test->graph_state->system_state_.get(),
-                                        new_pair->graph_state->system_state_.get()))
+          not Api::get().snapshot_equal(pair_test->graph_state->get_system_state(),
+                                        new_pair->graph_state->get_system_state()))
         continue;
       XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
       exploration_stack_.pop_back();
@@ -102,8 +102,8 @@ void LivenessChecker::replay()
   /* Intermediate backtracking */
   if (_sg_mc_checkpoint > 0) {
     const Pair* pair = exploration_stack_.back().get();
-    if (pair->graph_state->system_state_) {
-      Api::get().restore_state(pair->graph_state->system_state_);
+    if (auto* system_state = pair->graph_state->get_system_state()) {
+      Api::get().restore_state(system_state);
       return;
     }
   }
@@ -148,8 +148,8 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
     const VisitedPair* pair_test = i->get();
     if (xbt_automaton_state_compare(pair_test->automaton_state, visited_pair->automaton_state) != 0 ||
         *(pair_test->atomic_propositions) != *(visited_pair->atomic_propositions) ||
-        not Api::get().snapshot_equal(pair_test->graph_state->system_state_.get(),
-                                      visited_pair->graph_state->system_state_.get()))
+        not Api::get().snapshot_equal(pair_test->graph_state->get_system_state(),
+                                      visited_pair->graph_state->get_system_state()))
       continue;
     if (pair_test->other_num == -1)
       visited_pair->other_num = pair_test->num;

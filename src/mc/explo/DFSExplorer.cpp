@@ -42,8 +42,8 @@ xbt::signal<void()> DFSExplorer::on_log_state_signal;
 void DFSExplorer::check_non_termination(const State* current_state)
 {
   for (auto state = stack_.rbegin(); state != stack_.rend(); ++state)
-    if (Api::get().snapshot_equal((*state)->system_state_.get(), current_state->system_state_.get())) {
-      XBT_INFO("Non-progressive cycle: state %ld -> state %ld", (*state)->num_, current_state->num_);
+    if (Api::get().snapshot_equal((*state)->get_system_state(), current_state->get_system_state())) {
+      XBT_INFO("Non-progressive cycle: state %ld -> state %ld", (*state)->get_num(), current_state->get_num());
       XBT_INFO("******************************************");
       XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
       XBT_INFO("******************************************");
@@ -96,7 +96,8 @@ void DFSExplorer::run()
     State* state = stack_.back().get();
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth=%zu (state:%ld; %zu interleaves)", stack_.size(), state->num_, state->count_todo());
+    XBT_DEBUG("Exploration depth=%zu (state:%ld; %zu interleaves)", stack_.size(), state->get_num(),
+              state->count_todo());
 
     Api::get().mc_inc_visited_states();
 
@@ -132,7 +133,7 @@ void DFSExplorer::run()
       if (mc_model_checker->get_remote_process().actors().empty()) {
         mc_model_checker->finalize_app();
         XBT_VERB("Execution came to an end at %s (state: %ld, depth: %zu)", get_record_trace().to_string().c_str(),
-                 state->num_, stack_.size());
+                 state->get_num(), stack_.size());
       }
       this->backtrack();
       continue;
@@ -145,7 +146,7 @@ void DFSExplorer::run()
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
     XBT_VERB("Execute %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", state->get_transition()->aid_,
-             state->get_transition()->to_string().c_str(), stack_.size(), state->num_, state->count_todo());
+             state->get_transition()->to_string().c_str(), stack_.size(), state->get_num(), state->count_todo());
 
     std::string req_str;
     if (dot_output != nullptr)
@@ -160,7 +161,7 @@ void DFSExplorer::run()
 
     /* Check whether we already explored next_state in the past (but only if interested in state-equality reduction) */
     if (_sg_mc_max_visited_states > 0)
-      visited_state_ = visited_states_.addVisitedState(next_state->num_, next_state.get(), true);
+      visited_state_ = visited_states_.addVisitedState(next_state->get_num(), next_state.get(), true);
 
     /* If this is a new state (or if we don't care about state-equality reduction) */
     if (visited_state_ == nullptr) {
@@ -176,10 +177,11 @@ void DFSExplorer::run()
       }
 
       if (dot_output != nullptr)
-        std::fprintf(dot_output, "\"%ld\" -> \"%ld\" [%s];\n", state->num_, next_state->num_, req_str.c_str());
+        std::fprintf(dot_output, "\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), next_state->get_num(),
+                     req_str.c_str());
 
     } else if (dot_output != nullptr)
-      std::fprintf(dot_output, "\"%ld\" -> \"%ld\" [%s];\n", state->num_,
+      std::fprintf(dot_output, "\"%ld\" -> \"%ld\" [%s];\n", state->get_num(),
                    visited_state_->original_num == -1 ? visited_state_->num : visited_state_->original_num,
                    req_str.c_str());
 
@@ -216,32 +218,32 @@ void DFSExplorer::backtrack()
           break;
         } else if (prev_state->get_transition()->depends(state->get_transition())) {
           XBT_VERB("Dependent Transitions:");
-          XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_string().c_str(), prev_state->num_);
-          XBT_VERB("  %s (state=%ld)", state->get_transition()->to_string().c_str(), state->num_);
+          XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_string().c_str(), prev_state->get_num());
+          XBT_VERB("  %s (state=%ld)", state->get_transition()->to_string().c_str(), state->get_num());
 
-          if (not prev_state->actor_states_[issuer_id].is_done())
+          if (not prev_state->is_done(issuer_id))
             prev_state->mark_todo(issuer_id);
           else
             XBT_DEBUG("Actor %ld is in done set", issuer_id);
           break;
         } else {
           XBT_VERB("INDEPENDENT Transitions:");
-          XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_string().c_str(), prev_state->num_);
-          XBT_VERB("  %s (state=%ld)", state->get_transition()->to_string().c_str(), state->num_);
+          XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_string().c_str(), prev_state->get_num());
+          XBT_VERB("  %s (state=%ld)", state->get_transition()->to_string().c_str(), state->get_num());
         }
       }
     }
 
     if (state->count_todo() && stack_.size() < (std::size_t)_sg_mc_max_depth) {
       /* We found a back-tracking point, let's loop */
-      XBT_DEBUG("Back-tracking to state %ld at depth %zu", state->num_, stack_.size() + 1);
+      XBT_DEBUG("Back-tracking to state %ld at depth %zu", state->get_num(), stack_.size() + 1);
       stack_.push_back(
           std::move(state)); // Put it back on the stack from which it was removed earlier in this while loop
       this->restore_state();
-      XBT_DEBUG("Back-tracking to state %ld at depth %zu done", stack_.back()->num_, stack_.size());
+      XBT_DEBUG("Back-tracking to state %ld at depth %zu done", stack_.back()->get_num(), stack_.size());
       break;
     } else {
-      XBT_DEBUG("Delete state %ld at depth %zu", state->num_, stack_.size() + 1);
+      XBT_DEBUG("Delete state %ld at depth %zu", state->get_num(), stack_.size() + 1);
     }
   }
 }
@@ -250,8 +252,8 @@ void DFSExplorer::restore_state()
 {
   /* If asked to rollback on a state that has a snapshot, restore it */
   State* last_state = stack_.back().get();
-  if (last_state->system_state_) {
-    Api::get().restore_state(last_state->system_state_);
+  if (auto* system_state = last_state->get_system_state()) {
+    Api::get().restore_state(system_state);
     on_restore_system_state_signal(last_state);
     return;
   }
