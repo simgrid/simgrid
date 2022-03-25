@@ -75,7 +75,7 @@ AppSide* AppSide::initialize(xbt_dynar_t actors_addr)
              strerror(errno));
 
   s_mc_message_initial_addresses_t message{MessageType::INITIAL_ADDRESSES, mmalloc_preinit(),
-                                           kernel::actor::ActorIDTrait::get_maxpid_addr(), actors_addr};
+                                           kernel::actor::ActorImpl::get_maxpid_addr(), actors_addr};
   xbt_assert(instance_->channel_.send(message) == 0, "Could not send the initial message with addresses.");
 
   instance_->handle_messages();
@@ -200,7 +200,7 @@ void AppSide::handle_messages() const
 
 void AppSide::main_loop() const
 {
-  simgrid::mc::processes_time.resize(simgrid::kernel::actor::ActorIDTrait::get_maxpid());
+  simgrid::mc::processes_time.resize(simgrid::kernel::actor::ActorImpl::get_maxpid());
   MC_ignore_heap(simgrid::mc::processes_time.data(),
                  simgrid::mc::processes_time.size() * sizeof(simgrid::mc::processes_time[0]));
 
