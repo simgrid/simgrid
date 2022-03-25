@@ -90,24 +90,22 @@ simgrid::xbt::Extension<simgrid::mc::Exploration, CommDetExtension> CommDetExten
 /********** State Extension ***********/
 
 class StateCommDet {
-  CommDetExtension* checker_;
-
 public:
   std::vector<std::vector<simgrid::mc::PatternCommunication>> incomplete_comm_pattern_;
   std::vector<unsigned> communication_indices_;
 
   static simgrid::xbt::Extension<simgrid::mc::State, StateCommDet> EXTENSION_ID;
-  explicit StateCommDet(CommDetExtension* checker) : checker_(checker)
+  explicit StateCommDet(CommDetExtension* checker)
   {
     const unsigned long maxpid = Api::get().get_maxpid();
     for (unsigned long i = 0; i < maxpid; i++) {
       std::vector<simgrid::mc::PatternCommunication> res;
-      for (auto const& comm : checker_->incomplete_communications_pattern[i])
+      for (auto const& comm : checker->incomplete_communications_pattern[i])
         res.push_back(comm->dup());
       incomplete_comm_pattern_.push_back(std::move(res));
     }
 
-    for (auto const& list_process_comm : checker_->initial_communications_pattern)
+    for (auto const& list_process_comm : checker->initial_communications_pattern)
       this->communication_indices_.push_back(list_process_comm.index_comm);
   }
 };
