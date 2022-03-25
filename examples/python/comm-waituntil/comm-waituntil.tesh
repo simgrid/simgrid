@@ -1,0 +1,14 @@
+#!/usr/bin/env tesh
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/comm-waituntil.py --platform ${platfdir}/small_platform_fatpipe.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+>[  0.000000] (1:sender@Tremblay) Send 'Message 0' to 'receiver'
+>[  0.000000] (2:receiver@Ruby) Wait for my first message
+>[  0.000000] (1:sender@Tremblay) Send 'Message 1' to 'receiver'
+>[  0.000000] (1:sender@Tremblay) Send 'Message 2' to 'receiver'
+>[  0.000000] (1:sender@Tremblay) Send 'finalize' to 'receiver'
+>[  0.000000] (1:sender@Tremblay) Done dispatching all messages
+>[  0.105458] (2:receiver@Ruby) I got a 'Message 0'.
+>[  0.210917] (2:receiver@Ruby) I got a 'Message 1'.
+>[  0.316375] (2:receiver@Ruby) I got a 'Message 2'.
+>[  0.318326] (2:receiver@Ruby) I got a 'finalize'.
+>[  0.318326] (1:sender@Tremblay) Goodbye now!

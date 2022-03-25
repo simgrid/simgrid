@@ -908,6 +908,7 @@ Retrieving hosts
    .. group-tab:: Python
 
       .. autoattribute:: simgrid.Engine.all_hosts
+      .. automethod:: simgrid::s4u::Engine::host_by_name
 
    .. group-tab:: C
 
@@ -1080,6 +1081,7 @@ Receiving data
 
        .. automethod:: simgrid.Mailbox.get
        .. automethod:: simgrid.Mailbox.get_async
+       .. autoattribute:: simgrid.Mailbox.ready
 
    .. group-tab:: C
 
@@ -2188,6 +2190,13 @@ Querying info
 
    .. group-tab:: Python
 
+      .. autoattribute:: simgrid.Comm.dst_data_size
+      .. autoattribute:: simgrid.Comm.mailbox
+      .. autoattribute:: simgrid.Comm.sender
+      .. autoattribute:: simgrid.Comm.state_str
+      .. automethod:: simgrid.Comm.detach
+      .. automethod:: simgrid.Comm.set_payload_size
+      .. automethod:: simgrid.Comm.set_rate
       .. automethod:: simgrid.Comm.detach
 
 Life cycle
@@ -2215,16 +2224,25 @@ also start direct communications as shown below.
       .. doxygenfunction:: simgrid::s4u::Comm::wait_any(const std::vector< CommPtr >& comms)
       .. doxygenfunction:: simgrid::s4u::Comm::wait_any_for(const std::vector< CommPtr >& comms, double timeout)
       .. doxygenfunction:: simgrid::s4u::Comm::wait_for
+      .. doxygenfunction:: simgrid::s4u::Comm::wait_until
 
    .. group-tab:: Python
 
+      .. automethod:: simgrid.Comm.sendto
+      .. automethod:: simgrid.Comm.sendto_init
+      .. automethod:: simgrid.Comm.sendto_async
+
+      .. automethod:: simgrid.Comm.cancel
+      .. automethod:: simgrid.Comm.start
       .. automethod:: simgrid.Comm.test
+      .. automethod:: simgrid.Comm.test_any
       .. automethod:: simgrid.Comm.wait
       .. automethod:: simgrid.Comm.wait_for
       .. automethod:: simgrid.Comm.wait_all
       .. automethod:: simgrid.Comm.wait_all_for
       .. automethod:: simgrid.Comm.wait_any
       .. automethod:: simgrid.Comm.wait_any_for
+      .. automethod:: simgrid.Comm.wait_until
 
    .. group-tab:: C
 

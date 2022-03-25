@@ -256,7 +256,7 @@ Link* Engine::link_by_name_or_null(const std::string& name) const
   return link == pimpl->links_.end() ? nullptr : link->second->get_iface();
 }
 
-/** @brief Find a mailox from its name or create one if it does not exist) */
+/** @brief Find a mailbox from its name or create one if it does not exist) */
 Mailbox* Engine::mailbox_by_name_or_create(const std::string& name) const
 {
   /* two actors may have pushed the same mbox_create simcall at the same time */

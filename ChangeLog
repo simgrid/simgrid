@@ -1,5 +1,22 @@
 SimGrid (3.31.1) NOT RELEASED YET (v3.32 expected June 21. 2022, 09:13 UTC)
 
+Python:
+  - Added the following bindings / examples:
+    - Comm (now 100% covers the C++ interface):
+      - Comm.dst_data_size, Comm.mailbox, Comm.sender, Comm.start_time, Comm.finish_time
+      - Comm.state_str [examples: examples/python/comm-failure/, examples/python/comm-host2host/]
+      - Comm.remaining [examples: examples/python/comm-host2host/, examples/python/comm-suspend/]
+      - Comm.set_payload_size [example: examples/python/comm-host2host/]
+      - Comm.set_rate [example: examples/python/comm-throttling/]
+      - Comm.sendto, Comm.sendto_init, Comm.sendto_async [example: examples/python/comm-host2host/]
+      - Comm.start, Comm.suspend, Comm.resume [example: examples/python/comm-host2host/]
+      - Comm.test_any [example: examples/python/comm-testany/]
+      - Comm.wait_until [example: examples/python/comm-waituntil/]
+    - Engine:
+      - Engine.host_by_name [example: examples/python/comm-host2host/]
+      - Engine.mailbox_by_name_or_create [example: examples/python/comm-pingpong/]
+    - Mailbox: Mailbox.ready [example: examples/python/comm-ready/]
+
 ----------------------------------------------------------------------------
 
 SimGrid (3.31) March 22. 2022.

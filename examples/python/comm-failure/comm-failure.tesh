@@ -1,0 +1,19 @@
+#!/usr/bin/env tesh
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/comm-failure.py "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+>[  0.000000] (4:LinkKiller@Host2) sleeping 10 seconds...
+>[  0.000000] (2:Receiver-1@Host2) Receiver posting a receive (mailbox2)...
+>[  0.000000] (3:Receiver-2@Host3) Receiver posting a receive (mailbox3)...
+>[  0.000000] (1:Sender@Host1) Initiating asynchronous send to mailbox2
+>[  0.000000] (1:Sender@Host1) Initiating asynchronous send to mailbox3
+>[  0.000000] (1:Sender@Host1) Calling wait_any..
+>[ 10.000000] (4:LinkKiller@Host2) turning off link link_to_2
+>[ 10.000000] (4:LinkKiller@Host2) link killed. exiting
+>[ 10.000000] (2:Receiver-1@Host2) Receiver has experience a network failure exception (mailbox2)
+>[ 10.000000] (1:Sender@Host1) Sender has experienced a network failure exception, so it knows that something went wrong
+>[ 10.000000] (1:Sender@Host1) Now it needs to figure out which of the two comms failed by looking at their state
+>[ 10.000000] (1:Sender@Host1) Comm to mailbox2 has state: FAILED
+>[ 10.000000] (1:Sender@Host1) Comm to mailbox3 has state: STARTED
+>[ 10.000000] (1:Sender@Host1) Waiting on a FAILED comm raises an exception
+>[ 10.000000] (1:Sender@Host1) Wait for remaining comm, just to be nice
+>[ 16.494845] (3:Receiver-2@Host3) Receiver has received successfully (mailbox3)!
