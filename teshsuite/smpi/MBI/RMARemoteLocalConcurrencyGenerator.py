@@ -130,7 +130,7 @@ for e in epoch:
             replace = patterns
             replace['shortdesc'] = 'Global Concurrency error.'
             replace['longdesc'] = 'Global Concurrency error. @{p2}@ conflicts with @{p1}@'
-            replace['outcome'] = 'ERROR: LocalConcurrency'
+            replace['outcome'] = 'ERROR: GlobalConcurrency'
             replace['errormsg'] = 'Global Concurrency error. @{p2}@ at @{filename}@:@{line:MBIERROR2}@ conflicts with @{p1}@ line @{line:MBIERROR1}@'
 
             # Replace Put first argument
