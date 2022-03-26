@@ -458,7 +458,8 @@ can't be done, so algorithms have to be changed to use smpi version of
 the calls instead (MPI_Send will become smpi_mpi_send). Some functions
 may have different signatures than their MPI counterpart, please check
 the other algorithms or contact us using the `>SimGrid
-developers mailing list <http://lists.gforge.inria.fr/mailman/listinfo/simgrid-devel>`_.
+user mailing list <https://sympa.inria.fr/sympa/info/simgrid-community>`_,
+or on `>Mattermost <https://framateam.org/simgrid/channels/town-square>`_.
 
 Example: adding a "pair" version of the Alltoall collective.
 
