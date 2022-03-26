@@ -25,13 +25,11 @@ set(generator_scripts
     RMAArgGenerator.py
     RMAInvalidArgGenerator.py
     RMALocalLocalConcurrencyGenerator.py
-  # RMAP2PGlobalConcurrencyGenerator.py
+    RMAP2PGlobalConcurrencyGenerator.py
     RMARemoteLocalConcurrencyGenerator.py
     RMARemoteRemoteConcurrencyGenerator.py
     RMAReqLifecycleGenerator.py
     RMAWinBufferGenerator.py)
-
-set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/RMAP2PGlobalConcurrencyGenerator.py)
 
 if (enable_smpi_MBI_testsuite)
   if (NOT enable_smpi)
