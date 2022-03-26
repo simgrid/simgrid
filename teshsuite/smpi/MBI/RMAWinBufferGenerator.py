@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 """
 
 
-for b in ['stack', 'missing', 'null',  'malloc', 'bufferSize']:
+for b in ['missing', 'null',  'malloc', 'bufferSize']:
     patterns = {}
     patterns = {'b': b}
     patterns['origin'] = "MPI-CorrBench"
@@ -100,11 +100,7 @@ for b in ['stack', 'missing', 'null',  'malloc', 'bufferSize']:
     ok = 'nok'
     replace['buffer'] = 'buffer'
 
-    if b == 'stack':
-        replace['bufferalloc'] = 'int buffer[N]; /* MBIERROR1 */'
-        replace['buffer'] = '&buffer'
-        replace['longdesc'] = 'Use a stack oriented buffer in window creation, buffer on temporary stack memory.'
-    elif b == 'missing':
+    if b == 'missing':
         replace['bufferalloc'] = '/* MBIERROR1 */'
         replace['longdesc'] = 'Uninitialized buffer in window creation.'
     elif b == 'null':
