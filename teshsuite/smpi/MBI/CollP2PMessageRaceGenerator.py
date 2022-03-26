@@ -59,7 +59,6 @@ int main(int argc, char **argv) {
   MPI_Op op = MPI_SUM;
 
 
-
   @{init1}@
   @{init2}@
   @{init3}@
@@ -82,6 +81,7 @@ int main(int argc, char **argv) {
     @{operation3}@ /* MBIERROR1 */
     @{operation1}@
     @{fini1}@
+    src = 0;
     @{operation4}@ /* MBIERROR2 */
     @{fini3}@
     @{fini4}@

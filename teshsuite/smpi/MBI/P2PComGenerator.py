@@ -122,7 +122,7 @@ for p1 in send + isend + psend:
         replace['change_com'] = 'MPI_Comm_free(&newcom);  /* MBIERROR */'
         make_file(template, f'InvalidParam_Com_{p1}_{p2}_nok.c', replace)
 
-      	#  Generate the code with an invalid communicator ==> TO CHECK
+        #  Generate the code with an invalid communicator ==> TO CHECK
         #replace = patterns
         #replace['shortdesc'] = 'Point to point @{p1}@ and @{p2}@ have an invalid communicator'
        # replace['longdesc'] = 'Point to point @{p1}@ and @{p2}@ have an invalid communicator.'

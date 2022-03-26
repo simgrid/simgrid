@@ -99,16 +99,16 @@ for e in epoch:
             replace['outcome'] = 'ERROR: LocalConcurrency'
             replace['errormsg'] = 'Local Concurrency error. @{p2}@ at @{filename}@:@{line:MBIERROR2}@ conflicts with @{p1}@ line @{line:MBIERROR1}@'
             make_file(template, f'LocalConcurrency_lloutwindow_{e}_{p1}_{p2}_nok.c', replace)
-          	# Generate a correct code by switching operation1 and  operation2
+            # Generate a correct code by switching operation1 and  operation2
             if p2 in store + load + loadstore:
-              	  replace = patterns
-             		  replace['shortdesc'] = 'Correct code using RMA operations'
-             		  replace['longdesc'] = 'Correct code using RMA operations'
-             		  replace['outcome'] = 'OK'
-             		  replace['errormsg'] = 'OK'
-             		  replace['operation1'] = operation[p2]("1")
-             		  replace['operation2'] = operation[p1]("1")
-              	  make_file(template, f'LocalConcurrency_lloutwindow_{e}_{p2}_{p1}_ok.c', replace)
+                  replace = patterns
+                  replace['shortdesc'] = 'Correct code using RMA operations'
+                  replace['longdesc'] = 'Correct code using RMA operations'
+                  replace['outcome'] = 'OK'
+                  replace['errormsg'] = 'OK'
+                  replace['operation1'] = operation[p2]("1")
+                  replace['operation2'] = operation[p1]("1")
+                  make_file(template, f'LocalConcurrency_lloutwindow_{e}_{p2}_{p1}_ok.c', replace)
         # Generate a correct code by removing operation2
         replace = patterns
         replace['shortdesc'] = 'Correct code using RMA operations'
@@ -143,7 +143,7 @@ for e in epoch:
             replace['outcome'] = 'ERROR: LocalConcurrency'
             replace['errormsg'] = 'Local Concurrency error. @{p2}@ at @{filename}@:@{line:MBIERROR2}@ conflicts with @{p1}@ line @{line:MBIERROR1}@'
             make_file(template, f'LocalConcurrency_lloutwindow_{e}_{p1}_{p2}_nok.c', replace)
-          	# Generate a correct code by switching operation1 and operation2
+            # Generate a correct code by switching operation1 and operation2
             replace = patterns
             replace['shortdesc'] = 'Correct code using RMA operations'
             replace['longdesc'] = 'Correct code using RMA operations'
@@ -153,7 +153,7 @@ for e in epoch:
             replace['operation2'] = operation[p1]("1")
             make_file(template, f'LocalConcurrency_lloutwindow_{e}_{p2}_{p1}_ok.c', replace)
 
-          	# Generate a correct code by removing operation2
+            # Generate a correct code by removing operation2
             replace = patterns
             replace['shortdesc'] = 'Correct code using RMA operations'
             replace['longdesc'] = 'Correct code using RMA operations'

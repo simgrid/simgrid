@@ -63,11 +63,11 @@ int main(int argc, char **argv) {
 
   @{change_size}@
   @{init}@
-  @{loop}@  
+  @{loop}@
   @{operation}@
-  @{cond}@  
+  @{cond}@
   @{fini}@
-  @{end}@  
+  @{end}@
 
   @{free}@
 
@@ -121,5 +121,5 @@ for call in tcoll:
     replace['loop'] = 'for (i = 0; i < ITERATIONS; i++) {\n    for (j = 0; j < PARAM_PER_ITERATION; j++) {'
     replace['cond'] = '      if (j < PARAM_PER_ITERATION - PARAM_LOST_PER_ITERATION) {'
     replace['fini'] = fini[call]("1") + ' /* MBIERROR */'
-    replace['end'] = '      }\n 		}\n 	}'
+    replace['end'] = '      }\n     }\n   }'
     make_file(template, f'ResLeak_multiple_{call}_nok.c', replace)

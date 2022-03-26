@@ -10,7 +10,7 @@ template = """// @{generatedby}@
 
   Description: @{shortdesc}@
     @{longdesc}@
-  
+
    Version of MPI: Conforms to MPI 1.1, does not require MPI 2 implementation
 
 BEGIN_MPI_FEATURES
@@ -106,7 +106,7 @@ for s in isend + psend:
         Reqfree = patterns['free1']
         patterns['free2'] = free[r]("2")
 
-      	# Generate the correct code
+        # Generate the correct code
         replace = patterns
         replace['shortdesc'] = 'Correct matching'
         replace['longdesc'] = f'No error'
@@ -114,7 +114,7 @@ for s in isend + psend:
         replace['errormsg'] = 'OK'
         make_file(template, f'ReqLifecycle_{s}_{r}_ok.c', replace)
 
-      	# Generate the code with a missing wait
+        # Generate the code with a missing wait
         replace = patterns
         replace['shortdesc'] = 'Missing wait'
         replace['longdesc'] = 'Missing Wait. @{s}@ at @{filename}@:@{line:MBIERROR}@ has no completion.'
@@ -122,9 +122,9 @@ for s in isend + psend:
         replace['errormsg'] = 'ERROR: MissingWait'
         replace['fini1'] =  ' /* MBIERROR MISSING: ' + wait + ' */'
         make_file(template, f'ReqLifecycle_MissingWait_{s}_{r}_nok.c', replace)
-    
+
         if s in psend:
-        		# Generate the code with a missing start - persistent only
+            # Generate the code with a missing start - persistent only
             replace = patterns
             replace['shortdesc'] = 'Missing start'
             replace['longdesc'] = 'Missing start. @{s}@ at @{filename}@:@{line:MBIERROR}@ has no start'
@@ -133,7 +133,7 @@ for s in isend + psend:
             replace['fini1'] = fini[s]("1")
             replace['start1'] = ' /* MBIERROR MISSING: ' + startPers + ' */'
             make_file(template, f'ReqLifecycle_MissingStart_{s}_{r}_nok.c', replace)
-        		# Generate the code with a missing free - persistent only
+            # Generate the code with a missing free - persistent only
             replace = patterns
             replace['shortdesc'] = 'Missing free'
             replace['longdesc'] = 'Missing free. @{s}@ at @{filename}@:@{line:MBIERROR}@ has no free'
@@ -178,7 +178,7 @@ for c in pcoll + icoll + ibarrier:
     replace['free1'] = ' /* MISSING: ' + replace['free1'] + ' (to not free the buffer before an internal wait */'
     make_file(template, f'ReqLifecycle_MissingWait_{c}_nok.c', replace)
 
-    if c in pcoll:    
+    if c in pcoll:
         # Generate the code with a missing start - persistent only
         replace = patterns
         replace['shortdesc'] = 'Missing start functio'

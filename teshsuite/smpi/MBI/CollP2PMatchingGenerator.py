@@ -131,3 +131,4 @@ for s in send + isend:
             #  replace['fini1'] = fini[r]("2")
             #  replace['fini2'] = fini[s]("1")
             #  make_file(template, f'CollP2PBuffering_{r}_{s}_{c}_nok.c', replace)
+
