@@ -51,7 +51,6 @@ int main(int argc, char **argv) {
   if (nprocs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
-  int recv_buffer=-1;
   int send_buffer=rank;
 
   MPI_Datatype type = MPI_INT;
@@ -66,7 +65,7 @@ int main(int argc, char **argv) {
       @{fini1}@
     }
   if (@{cond}@ != 3) {
-      printf("MBI_MSG_RACE: The last received message is not 3 but %d!\\n", recv_buffer);
+      printf("MBI_MSG_RACE: The last received message is not 3 but %d!\\n", buf1);
       fflush(stdout);
       abort();
     }
