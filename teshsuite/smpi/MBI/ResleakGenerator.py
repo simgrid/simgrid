@@ -50,7 +50,7 @@ static void myOp(int *invec, int *inoutvec, int *len, MPI_Datatype *dtype) {
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
-  int i=1, j=1, size=1;
+  int i=1, j=0, size=1;
   int color =0;
 
   MPI_Init(&argc, &argv);
