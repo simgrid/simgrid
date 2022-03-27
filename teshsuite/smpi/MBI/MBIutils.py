@@ -65,7 +65,7 @@ possible_details = {
 
     'GlobalConcurrency':'DGlobalConcurrency',
     # larger scope
-#    'BufferingHazard':'EBufferingHazard',
+    'BufferingHazard':'EBufferingHazard',
     'OK':'FOK'}
 
 error_scope = {
@@ -78,7 +78,7 @@ error_scope = {
     'DRace':'multi-processes',
     'DMatch':'multi-processes',
     'DGlobalConcurrency':'multi-processes',
-#    'EBufferingHazard':'system',
+    'EBufferingHazard':'system',
     'FOK':'correct executions'
 }
 

@@ -39,7 +39,7 @@ if (enable_smpi_MBI_testsuite)
     message(FATAL_ERROR "MBI test suite cannot be enabled without the Mc SimGrid model-checker. Please change either setting.")
   endif()
 
-  message(STATUS "Generating the MBI scripts")
+  message(STATUS "Generating the MBI test cases")
   file(REMOVE_RECURSE  ${CMAKE_BINARY_DIR}/MBI/tmp)
   file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/MBI/tmp)
   file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/generator_utils.py DESTINATION ${CMAKE_BINARY_DIR}/MBI/tmp)
