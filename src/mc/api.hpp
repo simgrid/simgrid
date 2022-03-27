@@ -69,7 +69,7 @@ public:
   XBT_ATTRIB_NORETURN void mc_exit(int status) const;
 
   // STATE APIs
-  void restore_state(Snapshot* system_state) const;
+  void restore_state(const Snapshot* system_state) const;
 
   // SNAPSHOT APIs
   bool snapshot_equal(const Snapshot* s1, const Snapshot* s2) const;
