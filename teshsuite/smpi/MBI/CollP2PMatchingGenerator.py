@@ -113,7 +113,7 @@ for s in send + isend:
             # Generate the incorrect matching because of the conditional
             replace = patterns
             replace['shortdesc'] = 'Point to point & collective mismatch'
-            replace['longdesc'] = 'Point to point @{r}@ is matched with @{c}@ which causes a deadlock.'
+            replace['longdesc'] = 'The @{s}@ corresponding to the @{r}@ is after @{c}@, while @{r}@ is before @{c}@. This is a deadlock.'
             replace['outcome'] = 'ERROR: CallMatching'
             replace['errormsg'] = 'P2P & Collective mistmatch. @{r}@ at @{filename}@:@{line:MBIERROR2}@ is matched with @{c}@ at @{filename}@:@{line:MBIERROR1}@ wich causes a deadlock.'
             make_file(template, f'CallOrdering_{r}_{s}_{c}_nok.c', replace)
