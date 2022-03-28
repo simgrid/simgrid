@@ -27,7 +27,7 @@ public class Test extends Process{
     vm.migrate(dst);
     double endTime = Msg.getClock();
     Msg.info("     - End of Migration from "+ src.getName() +" to " + dst.getName()+ " (duration:" +
-             (endTime-startTime)+")");
+             String.format("%.9f", (endTime-startTime))+")");
   }
 
   public void main(String[] strings) throws MsgException {
