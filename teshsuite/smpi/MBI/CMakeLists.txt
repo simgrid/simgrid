@@ -70,7 +70,7 @@ if (enable_smpi_MBI_testsuite)
     # Generate an executable for each of them
     add_executable(mbi_${basefile} EXCLUDE_FROM_ALL ${CMAKE_BINARY_DIR}/MBI/${cfile})
     target_link_libraries(mbi_${basefile} simgrid)
-    target_compile_options(mbi_${basefile} PRIVATE "-Wno-error")
+    target_compile_options(mbi_${basefile} PRIVATE "-Wno-unused-variable")
     set_target_properties(mbi_${basefile} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/MBI)
     add_dependencies(tests-mbi mbi_${basefile})
 

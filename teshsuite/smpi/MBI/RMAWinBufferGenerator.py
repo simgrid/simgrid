@@ -39,7 +39,7 @@ END_MBI_TESTS
 
 int * buffer;
 
-void get_win(MPI_Win *win) {
+static void get_win(MPI_Win *win) {
   @{bufferalloc}@
 
   MPI_Win_create(@{buffer}@, N * sizeof(int), 1, MPI_INFO_NULL, MPI_COMM_WORLD, win);
