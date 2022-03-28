@@ -126,11 +126,12 @@ namespace lmm {
  *  - concurrency_current which is the current concurrency
  *  - concurrency_maximum which is the observed maximum concurrency
  *
- * Variables also have one field related to concurrency: concurrency_share.
- * In effect, in some cases, one variable is involved multiple times (i.e. two elements) in a constraint.
- * For example, cross-traffic is modeled using 2 elements per constraint.
- * concurrency_share formally corresponds to the maximum number of elements that associate the variable and any given
- * constraint.
+ * Variables consumes the concurrency_limit of each constraint they are using.
+ * Each pair variable/constrainst is linked by a *single* Element object. Through this
+ * object and the respective methods (get_concurrency(), increase_concurrency() and decrease_concurrency()),
+ * the variable changes the constraint's concurrency.
+ * The amount of concurrency slack taken by each variable is determined by the Element::get_concurrency() method.
+ * At the current state, each variable counts as 1 if its consumption weight is greater than 1.
  */
 
 /** @{ @ingroup SURF_lmm */
@@ -150,7 +151,19 @@ public:
   Element(const Element&) = default;
   ~Element()              = default;
 
+  /**
+   * @brief Gets the "weight" of this element for concurrency checks.
+   *
+   * This is the amount taken by this variable of the constraint's concurrency slack
+   *
+   * @return 1 if consumption_weight greater than 1, 0 otherwise
+   */
   int get_concurrency() const;
+  /**
+   * @brief Decreases the constraint's concurrency
+   *
+   * Decreases the equivalent of get_concurrency() from the constraint related to this element
+   */
   void decrease_concurrency();
   /**
    *  @brief Increase constraint concurrency
@@ -236,6 +249,14 @@ public:
     return concurrency_maximum_;
   }
 
+  /**
+   * @brief Get constraint current concurrency slack
+   *
+   * This represents the "space" available for new variables in this contraint.
+   * A variable can be enabled and use this constraint if its get_concurrency() <= slack
+   *
+   * @return Constraint's slack
+   */
   int get_concurrency_slack() const
   {
     return concurrency_limit_ < 0 ? std::numeric_limits<int>::max() : concurrency_limit_ - concurrency_current_;
