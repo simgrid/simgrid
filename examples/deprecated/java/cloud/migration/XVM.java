@@ -49,7 +49,7 @@ public class XVM extends VM {
   public void migrate(Host host) throws HostFailureException {
     Msg.info("Start migration of VM " + this.getName() + " to " + host.getName());
     Msg.info("    currentLoad:" + this.currentLoad + "/ramSize:" + this.ramsize + "/dpIntensity:" + this.dpIntensity
-        + "/remaining:" + String.format(java.util.Locale.US, "%.2E",this.daemon.getRemaining()));
+        + "/remaining:" + String.format(java.util.Locale.ROOT, "%.2E",this.daemon.getRemaining()));
     try{
       super.migrate(host);
     } catch (Exception e){
