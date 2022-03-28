@@ -130,7 +130,6 @@ for s in send + isend + ssend + bsend:
         replace['longdesc'] = 'Point to point @{r}@ is never executed. Process 1 calls MPI_Finalize and causes a deadlock.'
         replace['outcome'] = 'ERROR: CallMatching'
         replace['errormsg'] = 'P2P mistmatch. @{r}@ at @{filename}@:@{line:MBIERROR2}@ is never called because of the conditional (@{change_cond}@).'
-        replace['operation1'] =  operation[s]("1")
+        replace['operation1'] = operation[s]("1")
         replace['operation2'] = operation[r]("2")
         make_file(template, f'CallOrdering_{r}_{s}_nok.c', replace)
-

@@ -83,7 +83,7 @@ int main(int argc, char *argv[]) {
 """
 
 
-for b in ['missing', 'null',  'malloc', 'bufferSize']:
+for b in ['missing', 'null', 'malloc', 'bufferSize']:
     patterns = {}
     patterns = {'b': b}
     patterns['origin'] = "MPI-CorrBench"

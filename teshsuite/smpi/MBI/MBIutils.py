@@ -24,7 +24,7 @@ class AbstractTool:
 
     def build(self, rootdir, cached=True):
         """Rebuilds the tool binaries. By default, we try to reuse the existing build."""
-        print ("Nothing to do to rebuild the tool binaries.")
+        print("Nothing to do to rebuild the tool binaries.")
 
     def setup(self, rootdir):
         """
@@ -95,7 +95,7 @@ displayed_name = {
     'EBufferingHazard':'Buffering hazard',
     'FOK':"Correct execution",
 
-    'aislinn':'Aislinn','civl':'CIVL','hermes':'Hermes', 'isp':'ISP','itac':'ITAC', 'simgrid':'Mc SimGrid', 'smpi':'SMPI','smpivg':'SMPI+VG', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
+    'aislinn':'Aislinn', 'civl':'CIVL', 'hermes':'Hermes', 'isp':'ISP', 'itac':'ITAC', 'simgrid':'Mc SimGrid', 'smpi':'SMPI', 'smpivg':'SMPI+VG', 'mpisv':'MPI-SV', 'must':'MUST', 'parcoach':'PARCOACH'
 }
 
 def parse_one_code(filename):
@@ -191,7 +191,7 @@ def categorize(tool, toolname, test_id, expected):
             diagnostic = f'failed to detect an error'
         else:
             res_category = 'TRUE_POS'
-            diagnostic =  f'correctly detected an error'
+            diagnostic = f'correctly detected an error'
     else:
         raise ValueError(f"Unexpected expectation: {expected} (must be OK or ERROR)")
 
@@ -214,7 +214,7 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
     """
     if os.path.exists(f'{cachefile}.txt') and os.path.exists(f'{cachefile}.elapsed') and os.path.exists(f'{cachefile}.md5sum'):
         hash_md5 = hashlib.md5()
-        with open(filename, 'rb') as sourcefile :
+        with open(filename, 'rb') as sourcefile:
             for chunk in iter(lambda: sourcefile.read(4096), b""):
                 hash_md5.update(chunk)
         newdigest = hash_md5.hexdigest()
@@ -314,7 +314,7 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
         outfile.write(output)
     with open(f'{cachefile}.md5sum', 'w') as outfile:
         hashed = hashlib.md5()
-        with open(filename, 'rb') as sourcefile :
+        with open(filename, 'rb') as sourcefile:
             for chunk in iter(lambda: sourcefile.read(4096), b""):
                 hashed.update(chunk)
         outfile.write(hashed.hexdigest())

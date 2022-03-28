@@ -120,7 +120,7 @@ for s in isend + psend:
         replace['longdesc'] = 'Missing Wait. @{s}@ at @{filename}@:@{line:MBIERROR}@ has no completion.'
         replace['outcome'] = 'ERROR: MissingWait'
         replace['errormsg'] = 'ERROR: MissingWait'
-        replace['fini1'] =  ' /* MBIERROR MISSING: ' + wait + ' */'
+        replace['fini1'] = ' /* MBIERROR MISSING: ' + wait + ' */'
         make_file(template, f'ReqLifecycle_MissingWait_{s}_{r}_nok.c', replace)
 
         if s in psend:

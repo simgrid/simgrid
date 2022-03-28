@@ -5,7 +5,7 @@
 # Only the python scripts are embeeded in the archive, and the C test files are generated at config time using these scripts.
 # These python scripts are copied over from the MBI repository with as little changes as possible.
 
-set(generator_scripts 
+set(generator_scripts
     CollArgGenerator.py
     CollComGenerator.py
     CollLocalConcurrencyGenerator.py
@@ -94,19 +94,19 @@ if (enable_smpi_MBI_testsuite)
 
   # The following tests are known to fail because simgrid does not intercept local modifications yet
   # An idea could be to use ASan on the verified application, along with https://github.com/google/sanitizers/wiki/AddressSanitizerManualPoisoning
-  # But currently, ASan is not usable at all, since the Checker dislikes this trick when it tries to read the memory of the app. 
+  # But currently, ASan is not usable at all, since the Checker dislikes this trick when it tries to read the memory of the app.
   # We should change the checker to not read the app when verifying safty properties
-  foreach(localmodif 
+  foreach(localmodif
           LocalConcurrency_Iallgather_nok      LocalConcurrency_Iallgatherv_nok     LocalConcurrency_Iallreduce_nok      LocalConcurrency_Ialltoall_nok
           LocalConcurrency_Ialltoallv_nok      LocalConcurrency_Ibcast_nok          LocalConcurrency_Iexscan_nok         LocalConcurrency_Igather_nok
           LocalConcurrency_Irecv_Isend_nok     LocalConcurrency_Irecv_Send_init_nok LocalConcurrency_Irecv_Send_nok      LocalConcurrency_Ireduce_nok
           LocalConcurrency_Iscan_nok           LocalConcurrency_Iscatter_nok        LocalConcurrency_Recv_Isend_nok      LocalConcurrency_Recv_Send_init_nok
           LocalConcurrency_Recv_init_Isend_nok LocalConcurrency_Recv_init_Send_nok  LocalConcurrency_Recv_init_Send_init_nok
 
-          GlobalConcurrency_Get_Isend_Irecv_nok GlobalConcurrency_Get_Isend_Recv_nok GlobalConcurrency_Get_Send_Irecv_nok GlobalConcurrency_Get_Send_Recv_nok 
-          GlobalConcurrency_Put_Isend_Irecv_nok GlobalConcurrency_Put_Isend_Recv_nok GlobalConcurrency_Put_Send_Irecv_nok GlobalConcurrency_Put_Send_Recv_nok 
+          GlobalConcurrency_Get_Isend_Irecv_nok GlobalConcurrency_Get_Isend_Recv_nok GlobalConcurrency_Get_Send_Irecv_nok GlobalConcurrency_Get_Send_Recv_nok
+          GlobalConcurrency_Put_Isend_Irecv_nok GlobalConcurrency_Put_Isend_Recv_nok GlobalConcurrency_Put_Send_Irecv_nok GlobalConcurrency_Put_Send_Recv_nok
 
-          GlobalConcurrency_rl_Win_fence_Get_rload_nok     GlobalConcurrency_rl_Win_fence_Get_rstore_nok 
+          GlobalConcurrency_rl_Win_fence_Get_rload_nok     GlobalConcurrency_rl_Win_fence_Get_rstore_nok
           GlobalConcurrency_rl_Win_fence_Put_rload_nok     GlobalConcurrency_rl_Win_fence_Put_rstore_nok
           GlobalConcurrency_rl_Win_lock_all_Get_rload_nok  GlobalConcurrency_rl_Win_lock_all_Get_rstore_nok
           GlobalConcurrency_rl_Win_lock_all_Put_rload_nok  GlobalConcurrency_rl_Win_lock_all_Put_rstore_nok
