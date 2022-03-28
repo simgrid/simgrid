@@ -351,7 +351,7 @@ public:
   /** @brief Check if a variable can be enabled
    * Make sure to set staged_penalty before, if your intent is only to check concurrency
    */
-  bool can_enable() const { return staged_penalty_ > 0 && get_min_concurrency_slack() > 0; }
+  bool can_enable() const { return staged_sharing_penalty_ > 0 && get_min_concurrency_slack() > 0; }
 
   /* hookup to system */
   boost::intrusive::list_member_hook<> variable_set_hook_;
@@ -365,8 +365,8 @@ public:
   //   on network, the actions with higher latency have a lesser sharing_penalty
   double sharing_penalty_;
 
-  double staged_penalty_; /* If non-zero, variable is staged for addition as soon as maxconcurrency constraints will be
-                            met */
+  double staged_sharing_penalty_; /* If non-zero, variable is staged for addition as soon as maxconcurrency constraints
+                            will be met */
   double bound_;
   double value_;
   resource::Action* id_;

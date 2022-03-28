@@ -102,7 +102,7 @@ void System::check_concurrency() const
 
     for (Element const& elem : cnst.disabled_element_set_) {
       // We should have staged variables only if concurrency is reached in some constraint
-      xbt_assert(cnst.get_concurrency_limit() < 0 || elem.variable->staged_penalty_ == 0 ||
+      xbt_assert(cnst.get_concurrency_limit() < 0 || elem.variable->staged_sharing_penalty_ == 0 ||
                      elem.variable->get_min_concurrency_slack() == 0,
                  "should not have staged variable!");
     }
@@ -297,7 +297,7 @@ void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
       disable_var(var);
       for (Element const& elem2 : var->cnsts_)
         on_disabled_var(elem2.constraint);
-      var->staged_penalty_ = penalty;
+      var->staged_sharing_penalty_ = penalty;
       xbt_assert(not var->sharing_penalty_);
     }
   }
@@ -504,7 +504,7 @@ void Variable::initialize(resource::Action* id_value, double sharing_penalty, do
   rank_   = next_rank_++;
   cnsts_.reserve(number_of_constraints);
   sharing_penalty_   = sharing_penalty;
-  staged_penalty_    = 0.0;
+  staged_sharing_penalty_ = 0.0;
   bound_             = bound_value;
   value_             = 0.0;
   visited_           = visited_value;
@@ -537,8 +537,8 @@ void System::enable_var(Variable* var)
 {
   xbt_assert(not XBT_LOG_ISENABLED(ker_lmm, xbt_log_priority_debug) || var->can_enable());
 
-  var->sharing_penalty_ = var->staged_penalty_;
-  var->staged_penalty_  = 0;
+  var->sharing_penalty_        = var->staged_sharing_penalty_;
+  var->staged_sharing_penalty_ = 0;
 
   // Enabling the variable, move var to list head. Subtlety is: here, we need to call update_modified_cnst_set AFTER
   // moving at least one element of var.
@@ -559,7 +559,7 @@ void System::enable_var(Variable* var)
 
 void System::disable_var(Variable* var)
 {
-  xbt_assert(not var->staged_penalty_, "Staged penalty should have been cleared");
+  xbt_assert(not var->staged_sharing_penalty_, "Staged penalty should have been cleared");
   // Disabling the variable, move to var to list tail. Subtlety is: here, we need to call update_modified_cnst_set
   // BEFORE moving the last element of var.
   simgrid::xbt::intrusive_erase(variable_set, *var);
@@ -574,7 +574,7 @@ void System::disable_var(Variable* var)
   }
 
   var->sharing_penalty_ = 0.0;
-  var->staged_penalty_  = 0.0;
+  var->staged_sharing_penalty_ = 0.0;
   var->value_          = 0.0;
   check_concurrency();
 }
@@ -607,7 +607,7 @@ void System::on_disabled_var(Constraint* cnstr)
       nextelem = nullptr;
     }
 
-    if (elem->variable->staged_penalty_ > 0 && elem->variable->can_enable()) {
+    if (elem->variable->staged_sharing_penalty_ > 0 && elem->variable->can_enable()) {
       // Found a staged variable
       // TODOLATER: Add random timing function to model reservation protocol fuzziness? Then how to make sure that
       // staged variables will eventually be called?
@@ -642,7 +642,7 @@ void System::update_variable_penalty(Variable* var, double penalty)
 
   // Are we enabling this variable?
   if (enabling_var) {
-    var->staged_penalty_ = penalty;
+    var->staged_sharing_penalty_ = penalty;
     int minslack       = var->get_min_concurrency_slack();
     if (minslack == 0) {
       XBT_DEBUG("Staging var (instead of enabling) because min concurrency slack is 0");
