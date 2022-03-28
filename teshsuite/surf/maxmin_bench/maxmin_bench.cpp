@@ -43,7 +43,6 @@ static double test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_li
     var = Sys.variable_new(nullptr, 1.0, -1.0, nb_elem);
     //Have a few variables with a concurrency share of two (e.g. cross-traffic in some cases)
     short concurrency_share = 1 + static_cast<short>(simgrid::xbt::random::uniform_int(0, max_share - 1));
-    var->set_concurrency_share(concurrency_share);
 
     std::vector<int> used(nb_cnst, 0);
     for (int j = 0; j < nb_elem; j++) {
@@ -52,7 +51,7 @@ static double test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_li
         k = simgrid::xbt::random::uniform_int(0, nb_cnst - 1);
       } while (used[k] >= concurrency_share);
       Sys.expand(constraints[k], var, simgrid::xbt::random::uniform_real(0.0, 1.5));
-      Sys.expand_add(constraints[k], var, simgrid::xbt::random::uniform_real(0.0, 1.5));
+      Sys.expand(constraints[k], var, simgrid::xbt::random::uniform_real(0.0, 1.5));
       used[k]++;
     }
   }

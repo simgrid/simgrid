@@ -1,0 +1,107 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/issue105  "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
+> [  6.542268] [2:cluster-node-sa01@host-sa01] Started Task: 0
+> [ 22.288878] [2:cluster-node-sa01@host-sa01] Started Task: 1
+> [ 38.035488] [2:cluster-node-sa01@host-sa01] Started Task: 2
+> [ 53.782098] [2:cluster-node-sa01@host-sa01] Started Task: 3
+> [ 69.528708] [2:cluster-node-sa01@host-sa01] Started Task: 4
+> [ 85.275317] [2:cluster-node-sa01@host-sa01] Started Task: 5
+> [100.000000] [1:load-generator@host-gl01] Sent shutdown
+> [100.973264] [2:cluster-node-sa01@host-sa01] Started Task: 6
+> [111.177632] [2:cluster-node-sa01@host-sa01] Started Task: 7
+> [121.382001] [2:cluster-node-sa01@host-sa01] Started Task: 8
+> [131.586369] [2:cluster-node-sa01@host-sa01] Started Task: 9
+> [141.790737] [2:cluster-node-sa01@host-sa01] Started Task: 10
+> [157.537347] [2:cluster-node-sa01@host-sa01] Started Task: 11
+> [173.283957] [2:cluster-node-sa01@host-sa01] Started Task: 12
+> [189.030567] [2:cluster-node-sa01@host-sa01] Started Task: 13
+> [204.777176] [2:cluster-node-sa01@host-sa01] Started Task: 14
+> [220.523786] [2:cluster-node-sa01@host-sa01] Started Task: 15
+> [236.270396] [2:cluster-node-sa01@host-sa01] Started Task: 16
+> [251.920958] [2:cluster-node-sa01@host-sa01] Started Task: 17
+> [262.125326] [2:cluster-node-sa01@host-sa01] Started Task: 18
+> [272.329695] [2:cluster-node-sa01@host-sa01] Started Task: 19
+> [282.534063] [2:cluster-node-sa01@host-sa01] Started Task: 20
+> [292.738431] [2:cluster-node-sa01@host-sa01] Started Task: 21
+> [308.485041] [2:cluster-node-sa01@host-sa01] Started Task: 22
+> [324.231651] [2:cluster-node-sa01@host-sa01] Started Task: 23
+> [339.978261] [2:cluster-node-sa01@host-sa01] Started Task: 24
+> [355.724871] [2:cluster-node-sa01@host-sa01] Started Task: 25
+> [371.471480] [2:cluster-node-sa01@host-sa01] Started Task: 26
+> [387.218090] [2:cluster-node-sa01@host-sa01] Started Task: 27
+> [402.823524] [2:cluster-node-sa01@host-sa01] Started Task: 28
+> [413.027892] [2:cluster-node-sa01@host-sa01] Started Task: 29
+> [423.232260] [2:cluster-node-sa01@host-sa01] Started Task: 30
+> [433.436629] [2:cluster-node-sa01@host-sa01] Started Task: 31
+> [443.640997] [2:cluster-node-sa01@host-sa01] Started Task: 32
+> [459.387607] [2:cluster-node-sa01@host-sa01] Started Task: 33
+> [475.134217] [2:cluster-node-sa01@host-sa01] Started Task: 34
+> [490.880827] [2:cluster-node-sa01@host-sa01] Started Task: 35
+> [506.627436] [2:cluster-node-sa01@host-sa01] Started Task: 36
+> [522.374046] [2:cluster-node-sa01@host-sa01] Started Task: 37
+> [538.120656] [2:cluster-node-sa01@host-sa01] Started Task: 38
+> [553.683110] [2:cluster-node-sa01@host-sa01] Started Task: 39
+> [563.887479] [2:cluster-node-sa01@host-sa01] Started Task: 40
+> [574.091847] [2:cluster-node-sa01@host-sa01] Started Task: 41
+> [584.296215] [2:cluster-node-sa01@host-sa01] Started Task: 42
+> [594.500583] [2:cluster-node-sa01@host-sa01] Started Task: 43
+> [610.247193] [2:cluster-node-sa01@host-sa01] Started Task: 44
+> [625.993803] [2:cluster-node-sa01@host-sa01] Started Task: 45
+> [641.740413] [2:cluster-node-sa01@host-sa01] Started Task: 46
+> [657.487023] [2:cluster-node-sa01@host-sa01] Started Task: 47
+> [673.233633] [2:cluster-node-sa01@host-sa01] Started Task: 48
+> [688.980243] [2:cluster-node-sa01@host-sa01] Started Task: 49
+> [704.501764] [2:cluster-node-sa01@host-sa01] Started Task: 50
+> [714.706133] [2:cluster-node-sa01@host-sa01] Started Task: 51
+> [724.910501] [2:cluster-node-sa01@host-sa01] Started Task: 52
+> [735.114869] [2:cluster-node-sa01@host-sa01] Started Task: 53
+> [745.319237] [2:cluster-node-sa01@host-sa01] Started Task: 54
+> [761.065847] [2:cluster-node-sa01@host-sa01] Started Task: 55
+> [776.812457] [2:cluster-node-sa01@host-sa01] Started Task: 56
+> [792.559067] [2:cluster-node-sa01@host-sa01] Started Task: 57
+> [808.305677] [2:cluster-node-sa01@host-sa01] Started Task: 58
+> [824.052287] [2:cluster-node-sa01@host-sa01] Started Task: 59
+> [839.798896] [2:cluster-node-sa01@host-sa01] Started Task: 60
+> [850.003265] [2:cluster-node-sa01@host-sa01] Started Task: 61
+> [860.207633] [2:cluster-node-sa01@host-sa01] Started Task: 62
+> [870.412001] [2:cluster-node-sa01@host-sa01] Started Task: 63
+> [880.616369] [2:cluster-node-sa01@host-sa01] Started Task: 64
+> [890.820738] [2:cluster-node-sa01@host-sa01] Started Task: 65
+> [906.567347] [2:cluster-node-sa01@host-sa01] Started Task: 66
+> [922.313957] [2:cluster-node-sa01@host-sa01] Started Task: 67
+> [938.060567] [2:cluster-node-sa01@host-sa01] Started Task: 68
+> [953.807177] [2:cluster-node-sa01@host-sa01] Started Task: 69
+> [969.553787] [2:cluster-node-sa01@host-sa01] Started Task: 70
+> [985.300397] [2:cluster-node-sa01@host-sa01] Started Task: 71
+> [1000.997149] [2:cluster-node-sa01@host-sa01] Started Task: 72
+> [1011.201517] [2:cluster-node-sa01@host-sa01] Started Task: 73
+> [1021.405886] [2:cluster-node-sa01@host-sa01] Started Task: 74
+> [1031.610254] [2:cluster-node-sa01@host-sa01] Started Task: 75
+> [1041.814622] [2:cluster-node-sa01@host-sa01] Started Task: 76
+> [1057.561232] [2:cluster-node-sa01@host-sa01] Started Task: 77
+> [1073.307842] [2:cluster-node-sa01@host-sa01] Started Task: 78
+> [1089.054452] [2:cluster-node-sa01@host-sa01] Started Task: 79
+> [1104.801062] [2:cluster-node-sa01@host-sa01] Started Task: 80
+> [1120.547671] [2:cluster-node-sa01@host-sa01] Started Task: 81
+> [1136.294281] [2:cluster-node-sa01@host-sa01] Started Task: 82
+> [1151.943706] [2:cluster-node-sa01@host-sa01] Started Task: 83
+> [1162.148074] [2:cluster-node-sa01@host-sa01] Started Task: 84
+> [1172.352442] [2:cluster-node-sa01@host-sa01] Started Task: 85
+> [1182.556811] [2:cluster-node-sa01@host-sa01] Started Task: 86
+> [1192.761179] [2:cluster-node-sa01@host-sa01] Started Task: 87
+> [1208.507789] [2:cluster-node-sa01@host-sa01] Started Task: 88
+> [1224.254399] [2:cluster-node-sa01@host-sa01] Started Task: 89
+> [1240.001008] [2:cluster-node-sa01@host-sa01] Started Task: 90
+> [1255.747618] [2:cluster-node-sa01@host-sa01] Started Task: 91
+> [1271.494228] [2:cluster-node-sa01@host-sa01] Started Task: 92
+> [1287.240838] [2:cluster-node-sa01@host-sa01] Started Task: 93
+> [1302.845189] [2:cluster-node-sa01@host-sa01] Started Task: 94
+> [1313.049557] [2:cluster-node-sa01@host-sa01] Started Task: 95
+> [1323.253925] [2:cluster-node-sa01@host-sa01] Started Task: 96
+> [1333.458293] [2:cluster-node-sa01@host-sa01] Started Task: 97
+> [1343.662661] [2:cluster-node-sa01@host-sa01] Started Task: 98
+> [1359.409271] [2:cluster-node-sa01@host-sa01] Started Task: 99
+> [1375.155881] [1:load-generator@host-gl01] Load generator finished
+> [1375.155881] [2:cluster-node-sa01@host-sa01] Receiver finished
+> [1375.155881] [0:maestro@] Total simulation time: 1375.156

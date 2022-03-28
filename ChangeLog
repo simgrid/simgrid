@@ -107,6 +107,7 @@ Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  - FG#101: LGPL 2.1 is deprecated license
  - FG#104: "make uninstall" not up-to-date
  - GH#151: Missing mutexes for DPOR.
+ - FG#105: "Variable penalty should not be negative!" with in-flight messages and bandwidth profiles
 
 ----------------------------------------------------------------------------
 

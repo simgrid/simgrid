@@ -152,7 +152,11 @@ public:
 
   int get_concurrency() const;
   void decrease_concurrency();
-  void increase_concurrency();
+  /**
+   *  @brief Increase constraint concurrency
+   *  @param check_limit Don't check constraint concurrency overflow right now
+   */
+  void increase_concurrency(bool check_limit = true);
 
   void make_active();
   void make_inactive();
@@ -316,12 +320,6 @@ public:
   double get_bound() const { return bound_; }
 
   /**
-   * @brief Set the concurrent share of the variable
-   * @param value The new concurrency share
-   */
-  void set_concurrency_share(short int value) { concurrency_share_ = value; }
-
-  /**
    * @brief Get the numth constraint associated to the variable
    * @param num The rank of constraint we want to get
    * @return The numth constraint
@@ -353,7 +351,7 @@ public:
   /** @brief Check if a variable can be enabled
    * Make sure to set staged_penalty before, if your intent is only to check concurrency
    */
-  bool can_enable() const { return staged_penalty_ > 0 && get_min_concurrency_slack() >= concurrency_share_; }
+  bool can_enable() const { return staged_penalty_ > 0 && get_min_concurrency_slack() > 0; }
 
   /* hookup to system */
   boost::intrusive::list_member_hook<> variable_set_hook_;
@@ -371,7 +369,6 @@ public:
                             met */
   double bound_;
   double value_;
-  short int concurrency_share_; /* The maximum number of elements that variable will add to a constraint */
   resource::Action* id_;
   int rank_;         // Only used in debug messages to identify the variable
   unsigned visited_; /* used by System::update_modified_cnst_set() */
@@ -452,14 +449,6 @@ public:
    */
   void expand(Constraint * cnst, Variable * var, double value);
 
-  /**
-   * @brief Add value to the coefficient between a constraint and a variable or create one
-   * @param cnst A constraint
-   * @param var A variable
-   * @param value The value to add to the coefficient associated to the variable in the constraint
-   */
-  void expand_add(Constraint * cnst, Variable * var, double value);
-
   /** @brief Update the bound of a variable */
   void update_variable_bound(Variable * var, double bound);
 
@@ -526,6 +515,25 @@ private:
   void disable_var(Variable * var);
   void on_disabled_var(Constraint * cnstr);
   void check_concurrency() const;
+
+  /**
+   * @brief Auxiliary method to create a new Element which links a variable to a constraint
+   *
+   * @param cnst Constraint (resource)
+   * @param var Variable (action)
+   * @param consumption_weight how much of the resource is used for each unit of the action
+   * @return A reference to the new element
+   */
+  Element& expand_create_elem(Constraint* cnst, Variable* var, double consumption_weight);
+  /**
+   * @brief Increments the element usage
+   *
+   * @param elem Element linking variable/action to resource
+   * @param cnst Constraint (resource)
+   * @param consumption_weight how much of the resource is used for each unit of the action
+   * @return elem itself
+   */
+  Element& expand_add_to_elem(Element& elem, const Constraint* cnst, double consumption_weight) const;
 
   /**
    * @brief Update the value of element linking the constraint and the variable

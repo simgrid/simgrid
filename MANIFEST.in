@@ -719,6 +719,8 @@ include teshsuite/models/cloud-sharing/cloud-sharing.tesh
 include teshsuite/models/cm02-set-lat-bw/cm02-set-lat-bw-bmf.tesh
 include teshsuite/models/cm02-set-lat-bw/cm02-set-lat-bw.cpp
 include teshsuite/models/cm02-set-lat-bw/cm02-set-lat-bw.tesh
+include teshsuite/models/issue105/issue105.cpp
+include teshsuite/models/issue105/issue105.tesh
 include teshsuite/models/ptask-subflows/ptask-subflows.cpp
 include teshsuite/models/ptask-subflows/ptask-subflows.tesh
 include teshsuite/models/ptask_L07_usage/ptask_L07_usage.cpp
