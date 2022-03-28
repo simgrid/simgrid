@@ -100,14 +100,14 @@ fini['MPI_Allreduce'] = lambda n: ""
 free['MPI_Allreduce'] = lambda n: ""
 write['MPI_Allreduce'] = lambda n: ""
 
-init['MPI_Scan'] = lambda n: f"int outbuf{n}[buff_size], inbuf{n}[buff_size];"
+init['MPI_Scan'] = lambda n: f"int outbuf{n}[buff_size] = {{0}}, inbuf{n}[buff_size];"
 start['MPI_Scan'] = lambda n: ""
 operation['MPI_Scan'] = lambda n: f"MPI_Scan(&outbuf{n}, inbuf{n}, buff_size, type, op, newcom);"
 fini['MPI_Scan'] = lambda n: ""
 free['MPI_Scan'] = lambda n: ""
 write['MPI_Scan'] = lambda n: ""
 
-init['MPI_Exscan'] = lambda n: f"int outbuf{n}[buff_size], inbuf{n}[buff_size];"
+init['MPI_Exscan'] = lambda n: f"int outbuf{n}[buff_size] = {{0}}, inbuf{n}[buff_size];"
 start['MPI_Exscan'] = lambda n: ""
 operation['MPI_Exscan'] = lambda n: f"MPI_Exscan(&outbuf{n}, inbuf{n}, buff_size, type, op, newcom);"
 fini['MPI_Exscan'] = lambda n: ""
@@ -190,21 +190,21 @@ write['MPI_Igather'] = lambda n: f'val{n}=3;'
 fini['MPI_Igather'] = lambda n: f'MPI_Wait(&req{n},&sta{n});'
 free['MPI_Igather'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 
-init['MPI_Iscatter'] = lambda n: f"MPI_Request req{n}=MPI_REQUEST_NULL;MPI_Status sta{n};int val{n}, buf{n}[buff_size];"
+init['MPI_Iscatter'] = lambda n: f"MPI_Request req{n} = MPI_REQUEST_NULL;\n  MPI_Status sta{n};\n  int val{n};\n  buf{n}[buff_size] = {{0}};"
 start['MPI_Iscatter'] = lambda n: ""
 operation['MPI_Iscatter'] = lambda n: f"MPI_Iscatter(&buf{n}, 1, type, &val{n}, 1, type, root, newcom,&req{n});"
 fini['MPI_Iscatter'] = lambda n: f"MPI_Wait(&req{n},&sta{n});"
 free['MPI_Iscatter'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 write['MPI_Iscatter'] = lambda n: f'buf{n}[0]++;'
 
-init['MPI_Iscan'] = lambda n: f"MPI_Request req{n}=MPI_REQUEST_NULL;MPI_Status sta{n}; int outbuf{n}[buff_size], inbuf{n}[buff_size];"
+init['MPI_Iscan'] = lambda n: f"MPI_Request req{n} = MPI_REQUEST_NULL;\n  MPI_Status sta{n};\n  int outbuf{n}[buff_size] = {{0}}, inbuf{n}[buff_size];"
 start['MPI_Iscan'] = lambda n: ""
 operation['MPI_Iscan'] = lambda n: f"MPI_Iscan(&outbuf{n}, inbuf{n}, buff_size, type, op, newcom,&req{n});"
 fini['MPI_Iscan'] = lambda n: f"MPI_Wait(&req{n},&sta{n});"
 free['MPI_Iscan'] = lambda n: f'if(req{n} != MPI_REQUEST_NULL) MPI_Request_free(&req{n});'
 write['MPI_Iscan'] = lambda n: f'outbuf{n}[0]++;'
 
-init['MPI_Iexscan'] = lambda n: f"MPI_Request req{n}=MPI_REQUEST_NULL;MPI_Status sta{n};int outbuf{n}[buff_size], inbuf{n}[buff_size];"
+init['MPI_Iexscan'] = lambda n: f"MPI_Request req{n}=MPI_REQUEST_NULL;MPI_Status sta{n};\n  int outbuf{n}[buff_size] = {{0}}, inbuf{n}[buff_size] = {{0}};"
 start['MPI_Iexscan'] = lambda n: ""
 operation['MPI_Iexscan'] = lambda n: f"MPI_Iexscan(&outbuf{n}, inbuf{n}, buff_size, type, op, newcom,&req{n});"
 fini['MPI_Iexscan'] = lambda n: f"MPI_Wait(&req{n},&sta{n});"
