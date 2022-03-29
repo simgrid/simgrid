@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 import os
 import sys
-from generator_utils import *
+import generator_utils as gen
 
 template = """// @{generatedby}@
 /* ///////////////////////// The MPI Bugs Initiative ////////////////////////
@@ -118,4 +118,4 @@ for b in ['missing', 'null', 'malloc', 'bufferSize']:
         replace['errormsg'] = ''
         ok = 'ok'
 
-    make_file(template, f'InvalidParam_WinBuffer_{b}_{ok}.c', replace)
+    gen.make_file(template, f'InvalidParam_WinBuffer_{b}_{ok}.c', replace)

@@ -1,7 +1,7 @@
 #! /usr/bin/python3
 import os
 import sys
-from generator_utils import *
+import generator_utils as gen
 
 template = """// @{generatedby}@
 /* ///////////////////////// The MPI Bugs Initiative ////////////////////////
@@ -73,8 +73,8 @@ int main(int argc, char **argv) {
 """
 
 
-for e in epoch:
-    for p in rma:
+for e in gen.epoch:
+    for p in gen.rma:
         patterns = {}
         patterns = {'e': e, 'p': p}
         patterns['origin'] = "MBI"
@@ -82,10 +82,10 @@ for e in epoch:
         patterns['rmafeature'] = 'Yes'
         patterns['p'] = p
         patterns['e'] = e
-        patterns['epoch'] = epoch[e]("1")
-        patterns['finEpoch'] = finEpoch[e]("1")
-        patterns['init'] = init[p]("1")
-        patterns['operation'] = operation[p]("1")
+        patterns['epoch'] = gen.epoch[e]("1")
+        patterns['finEpoch'] = gen.finEpoch[e]("1")
+        patterns['init'] = gen.init[p]("1")
+        patterns['operation'] = gen.operation[p]("1")
         patterns['change_arg'] = ""
         patterns['malloc'] = "malloc(N * sizeof(int));"
 
@@ -96,7 +96,7 @@ for e in epoch:
         replace['outcome'] = 'ERROR: InvalidDatatype'
         replace['change_arg'] = 'type = MPI_DATATYPE_NULL;'
         replace['errormsg'] = '@{p}@ at @{filename}@:@{line:MBIERROR}@ has MPI_DATATYPE_NULL as a type'
-        make_file(template, f'InvalidParam_DatatypeNull_{e}_{p}_nok.c', replace)
+        gen.make_file(template, f'InvalidParam_DatatypeNull_{e}_{p}_nok.c', replace)
 
         # Generate a code with a null buffer (move to RMAWinBufferGenerator)
         # replace = patterns
@@ -106,9 +106,9 @@ for e in epoch:
         # replace['outcome'] = 'ERROR: InvalidBuffer'
         # replace['init'] = 'int * localbuf1 = malloc(sizeof(int));'
         # replace['change_arg'] = 'localbuf1 = NULL;'
-        # replace['operation'] = operation[p]("1").replace('&localbuf1', 'localbuf1')
+        # replace['operation'] = gen.operation[p]("1").replace('&localbuf1', 'localbuf1')
         # replace['errormsg'] = '@{p}@ at @{filename}@:@{line:MBIERROR}@ has an invalid buffer'
-        # make_file(template, f'InvalidParam_BufferNull_{e}_{p}_nok.c', replace)
+        # gen.make_file(template, f'InvalidParam_BufferNull_{e}_{p}_nok.c', replace)
 
         # Generate a code with an invalid type
         replace = patterns
@@ -118,7 +118,7 @@ for e in epoch:
         replace['outcome'] = 'ERROR: InvalidDatatype'
         replace['change_arg'] = 'MPI_Type_contiguous (2, MPI_INT, &type); MPI_Type_commit(&type);MPI_Type_free(&type); /* MBIERROR2 */'
         replace['errormsg'] = 'Invalid Datatype in @{p}@ at @{filename}@:@{line:MBIERROR}@'
-        make_file(template, f'InvalidParam_Datatype_{e}_{p}_nok.c', replace)
+        gen.make_file(template, f'InvalidParam_Datatype_{e}_{p}_nok.c', replace)
 
         # Generate a code with invalid buffer
         replace = patterns
@@ -130,4 +130,4 @@ for e in epoch:
         patterns['operation'] = ""
         replace['change_arg'] = ""
         replace['errormsg'] = 'Invalid buffer in Win_create at @{filename}@:@{line:MBIERROR2}@'
-        make_file(template, f'InvalidParam_InvalidBufferWinCreate_{e}_{p}_nok.c', replace)
+        gen.make_file(template, f'InvalidParam_InvalidBufferWinCreate_{e}_{p}_nok.c', replace)
