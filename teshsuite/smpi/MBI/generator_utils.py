@@ -255,7 +255,7 @@ write['MPI_Ialltoallv'] = lambda n: f"rbuf{n}[0]++;"
 
 ### COLL:tools
 
-init['MPI_Comm_split'] = lambda n: f'MPI_Comm com[size]; color = rank % 2; int key = 1;'
+init['MPI_Comm_split'] = lambda n: f'MPI_Comm com[size]; int color = rank % 2; int key = 1;'
 start['MPI_Comm_split'] = lambda n: ""
 operation['MPI_Comm_split'] = lambda n: 'MPI_Comm_split(MPI_COMM_WORLD,color,key, &com[j]);'
 error['MPI_Comm_split'] = 'CommunicatorLeak'

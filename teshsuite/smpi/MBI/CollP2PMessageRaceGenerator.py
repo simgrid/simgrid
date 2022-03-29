@@ -40,7 +40,6 @@ int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
   int dest, src;
-  int i=0;
   int root = 0;
   int stag = 0, rtag = 0;
   int buff_size = 1;

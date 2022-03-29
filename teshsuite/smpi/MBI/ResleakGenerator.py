@@ -50,8 +50,8 @@ static void myOp(int *invec, int *inoutvec, int *len, MPI_Datatype *dtype) {
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
-  int i=1, j=0, size=1;
-  int color =0;
+  int size = 1;
+  int j = 0;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -118,7 +118,7 @@ for call in gen.tcoll:
     replace['outcome'] = f'ERROR: {gen.error[call]}'
     replace['errormsg'] = 'Resleak. @{call}@ at @{filename}@:@{line:MBIERROR}@ lacks several free.'
     replace['change_size'] = 'size=PARAM_PER_ITERATION;'
-    replace['loop'] = 'for (i = 0; i < ITERATIONS; i++) {\n    for (j = 0; j < PARAM_PER_ITERATION; j++) {'
+    replace['loop'] = 'for (int i = 0; i < ITERATIONS; i++) {\n    for (j = 0; j < PARAM_PER_ITERATION; j++) {'
     replace['cond'] = '      if (j < PARAM_PER_ITERATION - PARAM_LOST_PER_ITERATION) {'
     replace['fini'] = gen.fini[call]("1") + ' /* MBIERROR */'
     replace['end'] = '      }\n     }\n   }'
