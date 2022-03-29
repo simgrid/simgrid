@@ -9,6 +9,7 @@
 #include "private.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/instr/instr_smpi.hpp"
+#include "xbt/xbt_os_time.h"
 
 namespace simgrid {
 namespace smpi {

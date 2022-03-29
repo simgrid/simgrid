@@ -6,7 +6,8 @@
 #ifndef INSTR_H_
 #define INSTR_H_
 
-#include <simgrid/msg.h>
+#include <simgrid/engine.h>
+#include <xbt/dynar.h> // XBT_ATTRIB_DEPRECATED_v334
 
 #ifdef __cplusplus
 #include <set>

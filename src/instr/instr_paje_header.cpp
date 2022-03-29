@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/Exception.hpp"
+#include "simgrid/version.h"
 #include "src/instr/instr_private.hpp"
 #include "src/smpi/include/private.hpp"
 #include "xbt/virtu.h" /* xbt::cmdline */

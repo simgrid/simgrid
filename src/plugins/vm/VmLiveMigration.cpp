@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <simgrid/Exception.hpp>
+#include <simgrid/plugins/live_migration.h>
 
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"

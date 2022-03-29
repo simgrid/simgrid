@@ -5,10 +5,10 @@
 
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Engine.hpp>
-#include <simgrid/version.h>
 
 #include "src/instr/instr_private.hpp"
 #include "xbt/config.hpp"
+#include "xbt/xbt_os_time.h"
 
 #include <sys/stat.h>
 #ifdef WIN32

@@ -16,8 +16,7 @@
 
 #include "xbt/log.h"
 #include "xbt/str.h"
-
-#include <stdlib.h>
+#include "xbt/sysdep.h"
 
 /* Connection parameters */
 #define MAX_PENDING_COMMS 256

@@ -4,11 +4,12 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smpi_comm.hpp"
+#include "simgrid/host.h"
 #include "smpi_coll.hpp"
 #include "smpi_datatype.hpp"
+#include "smpi_info.hpp"
 #include "smpi_request.hpp"
 #include "smpi_win.hpp"
-#include "smpi_info.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "src/surf/HostImpl.hpp"
 

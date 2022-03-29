@@ -13,6 +13,7 @@
 #include "smpi_request.hpp"
 #include "src/smpi/include/private.hpp"
 #include "xbt/replay.hpp"
+#include "xbt/str.h"
 
 #include <cmath>
 #include <limits>

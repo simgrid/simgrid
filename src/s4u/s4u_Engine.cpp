@@ -16,6 +16,7 @@
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/mc/mc_replay.hpp"
+#include "xbt/config.hpp"
 
 #include <algorithm>
 #include <string>

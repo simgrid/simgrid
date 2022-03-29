@@ -5,13 +5,14 @@
 
 #include "private.hpp"
 #include <boost/algorithm/string.hpp>
-#include <simgrid/s4u/Actor.hpp>
 #include <cctype>
 #include <cstdarg>
 #include <cwchar>
 #include <deque>
-#include <simgrid/sg_config.hpp>
+#include <simgrid/host.h>
+#include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Host.hpp>
+#include <simgrid/sg_config.hpp>
 #include <string>
 #include <vector>
 
