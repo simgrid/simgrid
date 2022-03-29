@@ -38,7 +38,6 @@ for test in mbi.parse_one_code(filename):
     if os.path.exists(f'{filename}.txt'):
         os.remove(f'{filename}.txt')
     mbi.run_cmd(buildcmd="", execcmd=execcmd, cachefile=filename, filename=filename, binary=binary, timeout=300, batchinfo="", read_line_lambda=None)
-    outcome = simgrid.parse(filename)
 
     (res_category, elapsed, diagnostic, outcome) = mbi.categorize(simgrid, "simgrid", filename, test['expect'])
 
