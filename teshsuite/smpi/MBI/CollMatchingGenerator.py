@@ -168,7 +168,7 @@ for c1 in gen.coll + gen.icoll + gen.ibarrier:
     # Generate a correct ordering with a conditional not depending on ranks
     replace = patterns
     replace['shortdesc'] = 'Correct collective ordering'
-    replace['longdesc'] = f'All ranks call {c1} and then {c2} or inversely'
+    replace['longdesc'] = f'All ranks call {c1}'
     replace['outcome'] = 'OK'
     replace['errormsg'] = ''
     replace['change_cond'] = 'nprocs<256'
