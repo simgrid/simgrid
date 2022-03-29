@@ -102,7 +102,7 @@ void LivenessChecker::replay()
   /* Intermediate backtracking */
   if (_sg_mc_checkpoint > 0) {
     const Pair* pair = exploration_stack_.back().get();
-    if (auto* system_state = pair->graph_state->get_system_state()) {
+    if (const auto* system_state = pair->graph_state->get_system_state()) {
       Api::get().restore_state(system_state);
       return;
     }

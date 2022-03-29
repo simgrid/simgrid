@@ -252,7 +252,7 @@ void DFSExplorer::restore_state()
 {
   /* If asked to rollback on a state that has a snapshot, restore it */
   State* last_state = stack_.back().get();
-  if (auto* system_state = last_state->get_system_state()) {
+  if (const auto* system_state = last_state->get_system_state()) {
     Api::get().restore_state(system_state);
     on_restore_system_state_signal(last_state);
     return;
