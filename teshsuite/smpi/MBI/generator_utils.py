@@ -85,7 +85,7 @@ fini['MPI_Gather'] = lambda n: ""
 free['MPI_Gather'] = lambda n: ""
 write['MPI_Gather'] = lambda n: ""
 
-init['MPI_Scatter'] = lambda n: f"int val{n}, buf{n}[buff_size];"
+init['MPI_Scatter'] = lambda n: f"int val{n}, buf{n}[buff_size];\n  memset(buf{n}, 0, sizeof(int)*buff_size);"
 start['MPI_Scatter'] = lambda n: ""
 operation['MPI_Scatter'] = lambda n: f"MPI_Scatter(&buf{n}, 1, type, &val{n}, 1, type, root, newcom);"
 fini['MPI_Scatter'] = lambda n: ""
