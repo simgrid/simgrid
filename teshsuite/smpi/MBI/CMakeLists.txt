@@ -46,7 +46,11 @@ if (enable_smpi_MBI_testsuite)
   foreach (script ${generator_scripts})
     message(STATUS "  $ ${CMAKE_CURRENT_SOURCE_DIR}/${script}")
     execute_process(COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${script}
-                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/MBI/tmp)
+                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/MBI/tmp
+                    RESULT_VARIABLE status)
+    if (NOT status EQUAL 0)
+      message(FATAL_ERROR "Command failed with status: ${status}")
+    endif()
   endforeach()
 
   set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
