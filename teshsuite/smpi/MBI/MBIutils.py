@@ -235,7 +235,7 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
         output = f"Compiling {binary}.c (batchinfo:{batchinfo})\n\n"
         output += f"$ {buildcmd}\n"
 
-        compil = subprocess.run(buildcmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        compil = subprocess.run(buildcmd, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         if compil.stdout is not None:
             output += str(compil.stdout, errors='replace')
         if compil.returncode != 0:
