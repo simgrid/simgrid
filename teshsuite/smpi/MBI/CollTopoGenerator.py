@@ -122,4 +122,4 @@ for c in gen.tcoll4topo:
     replace['errormsg'] = 'Invalid Argument. MPI_Cart_create has invalid dimensions.'
     replace['change_com'] = ""
     replace['change_dims'] = 'dims[0] = -2; dims[1] = -1; /* MBIERROR1 */'
-    gen.make_file(template, f'InvalidParam_Dim_MPI_Cart_create_nok.c', replace)
+    gen.make_file(template, 'InvalidParam_Dim_MPI_Cart_create_nok.c', replace)

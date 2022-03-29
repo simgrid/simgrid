@@ -123,7 +123,7 @@ for c in gen.coll4root + gen.icoll4root:
     # Generate an incorrect root matching (root mismatch)
     replace = patterns
     replace['shortdesc'] = 'Collective @{c}@ with a root mismatch'
-    replace['longdesc'] = f'Odd ranks use 0 as a root while even ranks use 1 as a root'
+    replace['longdesc'] = 'Odd ranks use 0 as a root while even ranks use 1 as a root'
     replace['outcome'] = 'ERROR: RootMatching'
     replace['errormsg'] = 'Collective root mistmatch. @{c}@ at @{filename}@:@{line:MBIERROR2}@ has 0 or 1 as a root.'
     replace['change_arg'] = 'if (rank % 2)\n    root = 1; /* MBIERROR1 */'
@@ -171,7 +171,7 @@ for c in gen.coll + gen.icoll:
         # Generate the incorrect matching (datatype Mmismatch)
         replace = patterns
         replace['shortdesc'] = 'Collective @{c}@ with a datatype mismatch'
-        replace['longdesc'] = f'Odd ranks use MPI_INT as the datatype while even ranks use MPI_FLOAT'
+        replace['longdesc'] = 'Odd ranks use MPI_INT as the datatype while even ranks use MPI_FLOAT'
         replace['outcome'] = 'ERROR: DatatypeMatching'
         replace['errormsg'] = 'Collective datatype mistmatch. @{c}@ at @{filename}@:@{line:MBIERROR2}@ has MPI_INT or MPI_FLOAT as a datatype.'
         replace['change_arg'] = 'if (rank % 2)\n    type = MPI_FLOAT; /* MBIERROR1 */'
@@ -209,7 +209,7 @@ for c in gen.coll4op + gen.icoll4op:
     # Generate the incorrect matching (op mismatch)
     replace = patterns
     replace['shortdesc'] = 'Collective @{c}@ with an operator  mismatch'
-    replace['longdesc'] = f'Odd ranks use MPI_SUM as the operator while even ranks use MPI_MAX'
+    replace['longdesc'] = 'Odd ranks use MPI_SUM as the operator while even ranks use MPI_MAX'
     replace['outcome'] = 'ERROR: OperatorMatching'
     replace['errormsg'] = 'Collective operator mistmatch. @{c}@ at @{filename}@:@{line:MBIERROR2}@ has MPI_MAX or MPI_SUM as an operator.'
     replace['change_arg'] = 'if (rank % 2)\n    op = MPI_MAX; /* MBIERROR1 */'

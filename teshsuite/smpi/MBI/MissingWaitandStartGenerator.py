@@ -109,7 +109,7 @@ for s in gen.isend + gen.psend:
         # Generate the correct code
         replace = patterns
         replace['shortdesc'] = 'Correct matching'
-        replace['longdesc'] = f'No error'
+        replace['longdesc'] = 'No error'
         replace['outcome'] = 'OK'
         replace['errormsg'] = 'OK'
         gen.make_file(template, f'ReqLifecycle_{s}_{r}_ok.c', replace)

@@ -255,7 +255,7 @@ write['MPI_Ialltoallv'] = lambda n: f"rbuf{n}[0]++;"
 
 ### COLL:tools
 
-init['MPI_Comm_split'] = lambda n: f'MPI_Comm com[size]; int color = rank % 2; int key = 1;'
+init['MPI_Comm_split'] = lambda n: 'MPI_Comm com[size]; int color = rank % 2; int key = 1;'
 start['MPI_Comm_split'] = lambda n: ""
 operation['MPI_Comm_split'] = lambda n: 'MPI_Comm_split(MPI_COMM_WORLD,color,key, &com[j]);'
 error['MPI_Comm_split'] = 'CommunicatorLeak'
@@ -265,7 +265,7 @@ free['MPI_Comm_split'] = lambda n: ""
 
 init['MPI_Cart_get'] = lambda n: ""
 start['MPI_Cart_get'] = lambda n: ""
-operation['MPI_Cart_get'] = lambda n: f'MPI_Cart_get(newcom, 2, dims, periods, coords);'
+operation['MPI_Cart_get'] = lambda n: 'MPI_Cart_get(newcom, 2, dims, periods, coords);'
 write['MPI_Cart_get'] = lambda n: ""
 fini['MPI_Cart_get'] = lambda n: ""
 free['MPI_Cart_get'] = lambda n: ""
@@ -295,7 +295,7 @@ error['MPI_Comm_create'] = 'CommunicatorLeak'
 fini['MPI_Comm_create'] = lambda n: "MPI_Comm_free(&com[j]);"
 free['MPI_Comm_create'] = lambda n: ""
 
-init['MPI_Comm_dup'] = lambda n: f'MPI_Comm com[size];'
+init['MPI_Comm_dup'] = lambda n: 'MPI_Comm com[size];'
 operation['MPI_Comm_dup'] = lambda n: 'MPI_Comm_dup(MPI_COMM_WORLD, &com[j]);'
 error['MPI_Comm_dup'] = 'CommunicatorLeak'
 fini['MPI_Comm_dup'] = lambda n: "MPI_Comm_free(&com[j]);"
@@ -346,7 +346,7 @@ write['MPI_Recv'] = lambda n: ""
 
 init['MPI_Probe'] = lambda n: ""
 start['MPI_Probe'] = lambda n: ""
-operation['MPI_Probe'] = lambda n: f'MPI_Probe(src, 0, newcom, &sta);'
+operation['MPI_Probe'] = lambda n: 'MPI_Probe(src, 0, newcom, &sta);'
 fini['MPI_Probe'] = lambda n: ""
 free['MPI_Probe'] = lambda n: ""
 write['MPI_Probe'] = lambda n: ""
@@ -404,7 +404,7 @@ init['store'] = lambda n: f'int localbuf{n}[N] = {{0}};'
 operation['store'] = lambda n: f'localbuf{n}[0] = 8;'
 
 init['rstore'] = lambda n: ""
-operation['rstore'] = lambda n: f'winbuf[20] = 12346;'
+operation['rstore'] = lambda n: 'winbuf[20] = 12346;'
 
 init['load'] = lambda n: f'int localbuf{n}[N] = {{0}};'
 operation['load'] = lambda n: f'int load = localbuf{n}[0];'
@@ -433,23 +433,23 @@ def make_file(template, filename, replace):
     filename = filename.replace("_MPI_", "_")
     replace['filename'] = filename
     # Replace all variables that don't have a ':' in their name
-    while re.search("@\{[^@:]*\}@", output):
-        m = re.search("@\{([^@:]*)\}@", output)
+    while re.search(r'@\{[^@:]*\}@', output):
+        m = re.search(r'@\{([^@:]*)\}@', output)
         target = m.group(1)
         #print(f"Replace @{{{target}}}@")
         if target in replace.keys():
-            output = re.sub(f'@\{{{target}\}}@', replace[target], output)
+            output = re.sub(fr'@\{{{target}\}}@', replace[target], output)
             #print(f"Replace {target} -> {replace[target]}")
         else:
             raise ValueError(f"Variable {target} used in template, but not defined.")
     # Now replace all variables with a ':' in their name: line targets are like that, and we don't want to resolve them before the others change the lines
-    while re.search("@\{([^:@]*):([^@]*)\}@", output):
-        m = re.search("@\{([^:@]*):([^@]*)\}@", output)
+    while re.search(r'@\{([^:@]*):([^@]*)\}@', output):
+        m = re.search(r'@\{([^:@]*):([^@]*)\}@', output)
         (kind, target) = (m.group(1), m.group(2))
         if kind == 'line':
             replace = f'{find_line(output, target, filename)}'
             #print(f"Replace @{{line:{target}}}@ with '{replace}'")
-            output = re.sub(f'@\{{line:{target}\}}@', replace, output)
+            output = re.sub(fr'@\{{line:{target}\}}@', replace, output)
         else:
             raise ValueError(f"Unknown variable kind: {kind}:{target}")
 

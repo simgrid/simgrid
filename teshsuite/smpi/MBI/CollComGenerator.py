@@ -100,7 +100,7 @@ for c in gen.coll + gen.icoll + gen.ibarrier:
     # Generate the incorrect communicator matching
     replace = patterns
     replace['shortdesc'] = 'Collective @{c}@ with a communicator mismatch'
-    replace['longdesc'] = f'Odd ranks call the collective on newcom while even ranks call the collective on MPI_COMM_WORLD'
+    replace['longdesc'] = 'Odd ranks call the collective on newcom while even ranks call the collective on MPI_COMM_WORLD'
     replace['outcome'] = 'ERROR: CommunicatorMatching'
     replace['errormsg'] = 'Communicator mistmatch in collectives. @{c}@ at @{filename}@:@{line:MBIERROR}@ has newcom or MPI_COMM_WORLD as a communicator.'
     replace['change_com'] = 'if (rank % 2)\n    newcom = MPI_COMM_WORLD; /* MBIERROR */'

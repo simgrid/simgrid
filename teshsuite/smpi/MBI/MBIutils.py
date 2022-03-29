@@ -119,8 +119,8 @@ def parse_one_code(filename):
                     state = 2
                 else:
                     raise ValueError(f"Unexpected end of MBI_TESTS header at line {line_num}: \n{line}")
-            if state == 1 and re.match("\s+\$ ?.*", line):
-                m = re.match('\s+\$ ?(.*)', line)
+            if state == 1 and re.match(r'\s+\$ ?.*', line):
+                m = re.match(r'\s+\$ ?(.*)', line)
                 cmd = m.group(1)
                 nextline = next(input_file)
                 detail = 'OK'
@@ -166,32 +166,32 @@ def categorize(tool, toolname, test_id, expected):
     if outcome == 'timeout':
         res_category = 'timeout'
         if elapsed is None:
-            diagnostic = f'hard timeout'
+            diagnostic = 'hard timeout'
         else:
             diagnostic = f'timeout after {elapsed} sec'
     elif outcome == 'failure' or outcome == 'segfault':
         res_category = 'failure'
-        diagnostic = f'tool error, or test not run'
+        diagnostic = 'tool error, or test not run'
     elif outcome == 'UNIMPLEMENTED':
         res_category = 'unimplemented'
-        diagnostic = f'coverage issue'
+        diagnostic = 'coverage issue'
     elif outcome == 'other':
         res_category = 'other'
-        diagnostic = f'inconclusive run'
+        diagnostic = 'inconclusive run'
     elif expected == 'OK':
         if outcome == 'OK':
             res_category = 'TRUE_NEG'
-            diagnostic = f'correctly reported no error'
+            diagnostic = 'correctly reported no error'
         else:
             res_category = 'FALSE_POS'
-            diagnostic = f'reported an error in a correct code'
+            diagnostic = 'reported an error in a correct code'
     elif expected == 'ERROR':
         if outcome == 'OK':
             res_category = 'FALSE_NEG'
-            diagnostic = f'failed to detect an error'
+            diagnostic = 'failed to detect an error'
         else:
             res_category = 'TRUE_POS'
-            diagnostic = f'correctly detected an error'
+            diagnostic = 'correctly detected an error'
     else:
         raise ValueError(f"Unexpected expectation: {expected} (must be OK or ERROR)")
 

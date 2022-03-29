@@ -102,7 +102,7 @@ for s in gen.send + gen.isend:
         # Generate the incorrect matching
         replace = patterns
         replace['shortdesc'] = 'The message ordering is non-deterministic.'
-        replace['longdesc'] = f'The code assumes a fixed order in the reception of messages while the message ordering is non-deterministic.'
+        replace['longdesc'] = 'The code assumes a fixed order in the reception of messages while the message ordering is non-deterministic.'
         replace['outcome'] = 'ERROR: MessageRace'
         replace['errormsg'] = 'P2P message race which can cause a deadlock. @{r}@ at @{filename}@:@{line:MBIERROR}@ is called with ANY_SRC.'
         gen.make_file(template, f'MessageRace_{r}_{s}_nok.c', replace)
