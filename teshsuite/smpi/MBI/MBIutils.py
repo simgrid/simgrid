@@ -260,7 +260,6 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
 
     pid = process.pid
     pgid = os.getpgid(pid)  # We need that to forcefully kill subprocesses when leaving
-    outcome = None
     while True:
         if poll_obj.poll(5):  # Something to read? Do check the timeout status every 5 sec if not
             line = process.stdout.readline()
@@ -271,7 +270,6 @@ def run_cmd(buildcmd, execcmd, cachefile, filename, binary, timeout, batchinfo, 
             if read_line_lambda != None:
                 read_line_lambda(line, process)
         if time.time() - start_time > timeout:
-            outcome = 'timeout'
             with open(f'{cachefile}.timeout', 'w') as outfile:
                 outfile.write(f'{time.time() - start_time} seconds')
             break

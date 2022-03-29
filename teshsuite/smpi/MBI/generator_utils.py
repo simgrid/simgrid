@@ -33,7 +33,6 @@ precv = ['MPI_Recv_init']
 probe = ['MPI_Probe']
 
 # RMA
-epoch = ['MPI_Win_fence', 'MPI_Win_lock', 'MPI_Win_lock_all']
 rma = ['MPI_Get', 'MPI_Put']
 get = ['MPI_Get']
 put = ['MPI_Put']
