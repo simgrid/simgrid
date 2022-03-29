@@ -31,7 +31,7 @@ class Tool(mbi.AbstractTool):
         os.chdir(here)
 
 
-    def ensure_image(self):
+    def ensure_image(self, params=None, dockerparams=None):
         mbi.AbstractTool.ensure_image(self, "-x simgrid")
 
     def setup(self, rootdir):

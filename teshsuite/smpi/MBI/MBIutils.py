@@ -33,7 +33,7 @@ class AbstractTool:
         """
         # pass
 
-    def run(self, execcmd, filename, binary, num_id, timeout):
+    def run(self, execcmd, filename, binary, num_id, timeout, batchinfo):
         """Compile that test code and anaylse it with the Tool if needed (a cache system should be used)"""
         # pass
 
