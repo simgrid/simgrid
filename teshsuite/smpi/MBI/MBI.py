@@ -10,8 +10,8 @@
 import sys
 import os
 
-from MBIutils import *
-import simgrid
+import MBIutils as mbi
+import simgrid as sg
 
 if len(sys.argv) != 4:
     print(f"Usage: MBI.py binary source (received: {sys.argv})")
@@ -26,10 +26,10 @@ if not os.path.exists("cluster.xml"):
         outfile.write('</platform>\n')
 
 
-simgrid = simgrid.Tool()
+simgrid = sg.Tool()
 
 (name, path, binary, filename) = sys.argv
-for test in parse_one_code(filename):
+for test in mbi.parse_one_code(filename):
     execcmd = test['cmd'].replace("mpirun", f"{path}/smpi_script/bin/smpirun -wrapper '{path}/bin/simgrid-mc --log=mc_safety.t:info' -platform ./cluster.xml -analyze --cfg=smpi/finalization-barrier:on --cfg=smpi/list-leaks:10 --cfg=model-check/max-depth:10000")
     execcmd = execcmd.replace('${EXE}', binary)
     execcmd = execcmd.replace('$zero_buffer', "--cfg=smpi/buffering:zero")
@@ -37,10 +37,10 @@ for test in parse_one_code(filename):
 
     if os.path.exists(f'{filename}.txt'):
         os.remove(f'{filename}.txt')
-    run_cmd(buildcmd="", execcmd=execcmd, cachefile=filename, filename=filename, binary=binary, timeout=300, batchinfo="", read_line_lambda=None)
+    mbi.run_cmd(buildcmd="", execcmd=execcmd, cachefile=filename, filename=filename, binary=binary, timeout=300, batchinfo="", read_line_lambda=None)
     outcome = simgrid.parse(filename)
 
-    (res_category, elapsed, diagnostic, outcome) = categorize(simgrid, "simgrid", filename, test['expect'])
+    (res_category, elapsed, diagnostic, outcome) = mbi.categorize(simgrid, "simgrid", filename, test['expect'])
 
     if res_category != "TRUE_NEG" and res_category != "TRUE_POS":
         print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n")
