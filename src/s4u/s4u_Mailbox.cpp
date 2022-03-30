@@ -135,8 +135,9 @@ Mailbox::iprobe(int type, const std::function<bool(void*, void*, kernel::activit
       [this, type, &match_fun, data] { return pimpl_->iprobe(type, match_fun, data); });
 }
 
-void Mailbox::clear() {
-    kernel::actor::simcall_answered([this]() { this->pimpl_->clear(); });
+void Mailbox::clear()
+{
+  kernel::actor::simcall_answered([this]() { this->pimpl_->clear(); });
 }
 
 } // namespace s4u

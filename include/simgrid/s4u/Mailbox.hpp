@@ -126,7 +126,6 @@ public:
   template <typename T> std::unique_ptr<T> get_unique(double timeout) { return std::unique_ptr<T>(get<T>(timeout)); }
 
   void clear();
-  
 };
 
 template <typename T> CommPtr Mailbox::get_async(T** data)
