@@ -393,10 +393,10 @@ finEpoch['MPI_Win_lock'] = lambda n: 'MPI_Win_unlock(target, win);'
 epoch['MPI_Win_lock_all'] = lambda n: 'MPI_Win_lock_all(0,win);'
 finEpoch['MPI_Win_lock_all'] = lambda n: 'MPI_Win_unlock_all(win);'
 
-init['MPI_Put'] = lambda n: f'int localbuf{n}[N] = {{12345}};'
+init['MPI_Put'] = lambda n: f'int localbuf{n}[N] = {{0}};\n  localbuf{n}[0] = 12345;'
 operation['MPI_Put'] = lambda n: f'MPI_Put(&localbuf{n}, N, MPI_INT, target, 0, N, type, win);'
 
-init['MPI_Get'] = lambda n: f'int localbuf{n}[N] = {{54321}};'
+init['MPI_Get'] = lambda n: f'int localbuf{n}[N] = {{0}};\n  localbuf{n}[0] = 54321;'
 operation['MPI_Get'] = lambda n: f'MPI_Get(&localbuf{n}, N, MPI_INT, target, 0, N, type, win);'
 
 init['store'] = lambda n: f'int localbuf{n}[N] = {{0}};'

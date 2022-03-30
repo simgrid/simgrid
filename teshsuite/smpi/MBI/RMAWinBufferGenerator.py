@@ -65,7 +65,8 @@ int main(int argc, char *argv[]) {
   MPI_Win_fence(0, win);
 
   if (rank == 0) {
-    int localbuf[N] = {12345};
+    int localbuf[N] = {0};
+    localbuf[0] = 12345;
     MPI_Put(&localbuf, N, MPI_INT, 1, 0, N, MPI_INT, win);
   }
 

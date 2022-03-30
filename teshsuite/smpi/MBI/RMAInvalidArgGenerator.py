@@ -127,6 +127,7 @@ for e in gen.epoch:
         replace['longdesc'] = 'Use of an invalid buffer in MPI_Win_create.'
         replace['outcome'] = 'ERROR: InvalidBuffer'
         patterns['malloc'] = "NULL; /* MBIERROR2 */"
+        replace['init'] = ""
         patterns['operation'] = ""
         replace['change_arg'] = ""
         replace['errormsg'] = 'Invalid buffer in Win_create at @{filename}@:@{line:MBIERROR2}@'
