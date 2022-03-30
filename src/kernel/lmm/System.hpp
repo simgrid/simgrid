@@ -587,7 +587,7 @@ public:
       saturated_constraint_set;
 
 protected:
-  bool selective_update_active; /* flag to update partially the system only selecting changed portions */
+  const bool selective_update_active; /* flag to update partially the system only selecting changed portions */
   boost::intrusive::list<Constraint, boost::intrusive::member_hook<Constraint, boost::intrusive::list_member_hook<>,
                                                                    &Constraint::modified_constraint_set_hook_>>
       modified_constraint_set;
