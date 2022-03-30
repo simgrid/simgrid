@@ -91,7 +91,7 @@ for e in gen.epoch:
         patterns['change_arg'] = ""
 
         # Generate a code with a null type
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Invalid argument in one-sided operation.'
         replace['longdesc'] = 'A one-sided operation has MPI_DATATYPE_NULL as a type.'
         replace['outcome'] = 'ERROR: InvalidDatatype'
@@ -100,7 +100,7 @@ for e in gen.epoch:
         gen.make_file(template, f'InvalidParam_BufferNullCond_{e}_{p}_nok.c', replace)
 
         # Generate a code with an invalid type
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Invalid argument in one-sided operation.'
         replace['longdesc'] = 'Use of an invalid datatype in one-sided operation.'
         replace['outcome'] = 'ERROR: InvalidDatatype'

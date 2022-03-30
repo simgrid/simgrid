@@ -97,7 +97,7 @@ for e1 in gen.epoch:
         patterns['operation'] = gen.operation[p]("1")
 
         # Generate a code correct
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Correct code'
         replace['longdesc'] = 'Correct code'
         replace['outcome'] = 'OK'
@@ -105,7 +105,7 @@ for e1 in gen.epoch:
         gen.make_file(template, f'ReqLifecycle_RMA_{e1}_{p}_ok.c', replace)
 
         # Generate a code with missing open epoch
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = f"Request lifecycle, missing open {e1} epoch"
         replace['longdesc'] = f"Request lifecycle, missing open {e1} epoch"
         replace['outcome'] = 'ERROR: MissingStart'
@@ -114,7 +114,7 @@ for e1 in gen.epoch:
         gen.make_file(template, f'ReqLifecycle_RMA_MissingOpen_{e1}_{p}_nok.c', replace)
 
         # Generate a code with missing close epoch
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = f"Request lifecycle, missing close {e1} epoch"
         replace['longdesc'] = f"Request lifecycle, missing close {e1} epoch"
         replace['outcome'] = 'ERROR: MissingWait'
@@ -142,7 +142,7 @@ for e1 in gen.epoch:
             patterns['operation'] = gen.operation[p]("1")
 
             # Generate a code with epoch into an epoch
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = f"Request lifecycle, {e2} epoch into {e1} epoch"
             replace['longdesc'] = f"Request lifecycle, {e2} epoch into {e1} epoch"
             replace['outcome'] = 'ERROR: MissingWait' #FIXME: New type of error

@@ -90,7 +90,7 @@ for e in gen.epoch:
         patterns['malloc'] = "malloc(N * sizeof(int));"
 
         # Generate a code with a null type
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Invalid argument in one-sided operation.'
         replace['longdesc'] = 'A one-sided operation has MPI_DATATYPE_NULL as a type.'
         replace['outcome'] = 'ERROR: InvalidDatatype'
@@ -99,7 +99,7 @@ for e in gen.epoch:
         gen.make_file(template, f'InvalidParam_DatatypeNull_{e}_{p}_nok.c', replace)
 
         # Generate a code with a null buffer (move to RMAWinBufferGenerator)
-        # replace = patterns
+        # replace = patterns.copy()
         # replace['origin'] = 'MPI-Corrbench'
         # replace['shortdesc'] = 'nullptr is invalid in one-sided operation.'
         # replace['longdesc'] = 'A one-sided operation has an invalid buffer.'
@@ -111,7 +111,7 @@ for e in gen.epoch:
         # gen.make_file(template, f'InvalidParam_BufferNull_{e}_{p}_nok.c', replace)
 
         # Generate a code with an invalid type
-        replace = patterns
+        replace = patterns.copy()
         replace['origin'] = 'MBI'
         replace['shortdesc'] = 'Invalid argument in one-sided operation.'
         replace['longdesc'] = 'Use of an invalid datatype in one-sided operation.'
@@ -121,14 +121,14 @@ for e in gen.epoch:
         gen.make_file(template, f'InvalidParam_Datatype_{e}_{p}_nok.c', replace)
 
         # Generate a code with invalid buffer
-        replace = patterns
+        replace = patterns.copy()
         patterns['origin'] = "MPI-Corrbench"
         replace['shortdesc'] = 'Invalid invalid buffer (buffer must be allocated)'
         replace['longdesc'] = 'Use of an invalid buffer in MPI_Win_create.'
         replace['outcome'] = 'ERROR: InvalidBuffer'
-        patterns['malloc'] = "NULL; /* MBIERROR2 */"
+        replace['malloc'] = "NULL; /* MBIERROR2 */"
         replace['init'] = ""
-        patterns['operation'] = ""
+        replace['operation'] = ""
         replace['change_arg'] = ""
         replace['errormsg'] = 'Invalid buffer in Win_create at @{filename}@:@{line:MBIERROR2}@'
         gen.make_file(template, f'InvalidParam_InvalidBufferWinCreate_{e}_{p}_nok.c', replace)

@@ -90,7 +90,7 @@ for p in gen.send + gen.ssend + gen.bsend + gen.recv + gen.irecv + gen.isend:
     patterns['change_cond'] = 'rank == 1'
 
     # Generate the incorrect matching with one call
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = 'Point to point @{p}@ is not matched'
     replace['longdesc'] = 'Process 0 calls @{p}@ and is not matched'
     replace['outcome'] = 'ERROR: CallMatching'
@@ -98,7 +98,7 @@ for p in gen.send + gen.ssend + gen.bsend + gen.recv + gen.irecv + gen.isend:
     gen.make_file(template, f'CallOrdering_{p}_nok.c', replace)
 
     # Generate the incorrect matching with two calls
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = 'Both point to point @{p}@ are not matched'
     replace['longdesc'] = 'Processes 0 and 1 both call @{p}@ which are not matched'
     replace['outcome'] = 'ERROR: CallMatching'
@@ -125,7 +125,7 @@ for s in gen.send + gen.isend + gen.ssend + gen.bsend:
         patterns['change_cond'] = '(rank == 1) && (its_raining)'
 
         # Generate the incorrect matching because of the conditional
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Point to point @{r}@ is never called.'
         replace['longdesc'] = 'Point to point @{r}@ is never executed. Process 1 calls MPI_Finalize and causes a deadlock.'
         replace['outcome'] = 'ERROR: CallMatching'

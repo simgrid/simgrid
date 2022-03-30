@@ -95,7 +95,7 @@ for call in gen.tcoll:
     patterns['end'] = ''
 
     # Generate the correct code
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = '@{call}@ is correctly used'
     replace['longdesc'] = f'{call} correctly used'
     replace['outcome'] = 'OK'
@@ -103,7 +103,7 @@ for call in gen.tcoll:
     gen.make_file(template, f'ResLeak_{call}_ok.c', replace)
 
     # Generate the resleak
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = '@{call}@ has no free'
     replace['longdesc'] = '@{call}@ has no free'
     replace['outcome'] = f'ERROR: {gen.error[call]}'
@@ -112,7 +112,7 @@ for call in gen.tcoll:
     gen.make_file(template, f'ResLeak_{call}_nok.c', replace)
 
     # Generate multiple resleak
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = '@{call}@ lacks several free'
     replace['longdesc'] = '@{call}@ lacks several free'
     replace['outcome'] = f'ERROR: {gen.error[call]}'

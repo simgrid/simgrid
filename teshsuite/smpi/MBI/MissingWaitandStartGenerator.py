@@ -107,7 +107,7 @@ for s in gen.isend + gen.psend:
         patterns['free2'] = gen.free[r]("2")
 
         # Generate the correct code
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Correct matching'
         replace['longdesc'] = 'No error'
         replace['outcome'] = 'OK'
@@ -115,7 +115,7 @@ for s in gen.isend + gen.psend:
         gen.make_file(template, f'ReqLifecycle_{s}_{r}_ok.c', replace)
 
         # Generate the code with a missing wait
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Missing wait'
         replace['longdesc'] = 'Missing Wait. @{s}@ at @{filename}@:@{line:MBIERROR}@ has no completion.'
         replace['outcome'] = 'ERROR: MissingWait'
@@ -125,7 +125,7 @@ for s in gen.isend + gen.psend:
 
         if s in gen.psend:
             # Generate the code with a missing start - persistent only
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = 'Missing start'
             replace['longdesc'] = 'Missing start. @{s}@ at @{filename}@:@{line:MBIERROR}@ has no start'
             replace['outcome'] = 'ERROR: MissingStart'
@@ -134,7 +134,7 @@ for s in gen.isend + gen.psend:
             replace['start1'] = ' /* MBIERROR MISSING: ' + startPers + ' */'
             gen.make_file(template, f'ReqLifecycle_MissingStart_{s}_{r}_nok.c', replace)
             # Generate the code with a missing free - persistent only
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = 'Missing free'
             replace['longdesc'] = 'Missing free. @{s}@ at @{filename}@:@{line:MBIERROR}@ has no free'
             replace['outcome'] = 'ERROR: RequestLeak'
@@ -169,7 +169,7 @@ for c in gen.pcoll + gen.icoll + gen.ibarrier:
     patterns['free2'] = ""
 
     # Generate the code with a missing wait
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = 'Missing wait'
     replace['longdesc'] = 'Missing Wait. @{c}@ at @{filename}@:@{line:MBIERROR}@ has no completion'
     replace['outcome'] = 'ERROR: MissingWait'
@@ -180,7 +180,7 @@ for c in gen.pcoll + gen.icoll + gen.ibarrier:
 
     if c in gen.pcoll:
         # Generate the code with a missing start - persistent only
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Missing start functio'
         replace['longdesc'] = 'Missing Start. @{c}@ at @{filename}@:@{line:MBIERROR}@ has no start'
         replace['outcome'] = 'ERROR: MissingStart'
@@ -190,7 +190,7 @@ for c in gen.pcoll + gen.icoll + gen.ibarrier:
         gen.make_file(template, f'ReqLifecycle_MissingStart_{c}_nok.c', replace)
 
         # Generate the code with a resleak (no free) - persistent only
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Missing free'
         replace['longdesc'] = 'Missing free. @{c}@ at @{filename}@:@{line:MBIERROR}@ has no free'
         replace['outcome'] = 'ERROR: RequestLeak'

@@ -130,7 +130,7 @@ for p in gen.probe:
             patterns['operation2c'] = gen.operation[s]("4")
 
             # Generate the incorrect matching
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = 'MPI_Probe is called before MPI_Recv.'
             replace['longdesc'] = 'MPI_Probe is a blocking call that returns only after a matching message has been found. By calling MPI_Probe before MPI_Recv, a deadlock is created.'
             replace['outcome'] = 'ERROR: CallMatching'
@@ -138,7 +138,7 @@ for p in gen.probe:
             gen.make_file(template, f'CallOrdering_{p}_{r}_{s}_nok.c', replace)
 
             # Generate a correct matching
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = 'Correct use of MPI_Probe.'
             replace['longdesc'] = 'Correct use of MPI_Probe.'
             replace['outcome'] = 'OK'

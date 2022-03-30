@@ -102,7 +102,7 @@ for p1 in gen.allsend:
         patterns['free2'] = gen.free[p2]("2")
 
         # Generate the incorrect matching
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Point to point @{p1}@ and @{p2}@ have a datatype mismatch'
         replace['longdesc'] = 'Process 0 uses MPI_FLOAT as the datatype while process 1 uses MPI_INT.'
         replace['outcome'] = 'ERROR: DatatypeMatching'
@@ -111,7 +111,7 @@ for p1 in gen.allsend:
         gen.make_file(template, f'ParamMatching_Data_{p1}_{p2}_nok.c', replace)
 
         # Generate code with a null type
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Use of invalid datatype in point-to-point communication'
         replace['longdesc'] = 'Point to point @{p1}@ and @{p2}@ have MPI_DATATYPE_NULL as a type'
         replace['outcome'] = 'ERROR: InvalidDatatype'
@@ -120,7 +120,7 @@ for p1 in gen.allsend:
         gen.make_file(template, f'InvalidParam_DatatypeNull_{p1}_{p2}_nok.c', replace)
 
         # Generate code with an invalid datatype
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Use of invalid datatype in point-to-point communication'
         replace['longdesc'] = 'Point to point @{p1}@ and @{p2}@ have an invalid datatype'
         replace['outcome'] = 'ERROR: InvalidDatatype'
@@ -155,7 +155,7 @@ for p1 in gen.allsend:
         patterns['change_arg'] = ""
 
         # Generate the incorrect tag matching
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Point to point @{p1}@ and @{p2}@ have a tag mismatch'
         replace['longdesc'] = 'Point to point @{p1}@ and @{p2}@ have a tag mismatch.'
         replace['outcome'] = 'ERROR: TagMatching'
@@ -164,7 +164,7 @@ for p1 in gen.allsend:
         gen.make_file(template, f'ParamMatching_Tag_{p1}_{p2}_nok.c', replace)
 
         # Generate the code with an invalid tag
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Point to point @{p1}@ and @{p2}@ have an invalid tag'
         replace['longdesc'] = 'Point to point @{p1}@ and @{p2}@ have an invalid tag.'
         replace['outcome'] = 'ERROR: InvalidTag'
@@ -173,7 +173,7 @@ for p1 in gen.allsend:
         gen.make_file(template, f'InvalidParam_Tag_{p1}_{p2}_nok.c', replace)
 
         # Generate a correct code using MPI_ANY_TAG
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Correct code'
         replace['longdesc'] = 'Correct code'
         replace['outcome'] = 'OK'

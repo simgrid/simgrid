@@ -93,7 +93,7 @@ for e in gen.epoch:
             patterns['operation2'] = gen.operation[p2]("1")
 
             # Generate a data race (Get + Get/load/store/Put)
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = 'Local Concurrency error.'
             replace['longdesc'] = 'Local Concurrency error. @{p2}@ conflicts with @{p1}@'
             replace['outcome'] = 'ERROR: LocalConcurrency'
@@ -101,7 +101,7 @@ for e in gen.epoch:
             gen.make_file(template, f'LocalConcurrency_lloutwindow_{e}_{p1}_{p2}_nok.c', replace)
             # Generate a correct code by switching operation1 and  operation2
             if p2 in gen.store + gen.load + gen.loadstore:
-                replace = patterns
+                replace = patterns.copy()
                 replace['shortdesc'] = 'Correct code using RMA operations'
                 replace['longdesc'] = 'Correct code using RMA operations'
                 replace['outcome'] = 'OK'
@@ -110,7 +110,7 @@ for e in gen.epoch:
                 replace['operation2'] = gen.operation[p1]("1")
                 gen.make_file(template, f'LocalConcurrency_lloutwindow_{e}_{p2}_{p1}_ok.c', replace)
         # Generate a correct code by removing operation2
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Correct code using RMA operations'
         replace['longdesc'] = 'Correct code using RMA operations'
         replace['outcome'] = 'OK'
@@ -137,14 +137,14 @@ for e in gen.epoch:
             patterns['operation2'] = gen.operation[p2]("1")
 
             # Generate a data race (Put + store)
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = 'Local Concurrency error.'
             replace['longdesc'] = 'Local Concurrency error. @{p2}@ conflicts with @{p1}@'
             replace['outcome'] = 'ERROR: LocalConcurrency'
             replace['errormsg'] = 'Local Concurrency error. @{p2}@ at @{filename}@:@{line:MBIERROR2}@ conflicts with @{p1}@ line @{line:MBIERROR1}@'
             gen.make_file(template, f'LocalConcurrency_lloutwindow_{e}_{p1}_{p2}_nok.c', replace)
             # Generate a correct code by switching operation1 and operation2
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = 'Correct code using RMA operations'
             replace['longdesc'] = 'Correct code using RMA operations'
             replace['outcome'] = 'OK'
@@ -154,7 +154,7 @@ for e in gen.epoch:
             gen.make_file(template, f'LocalConcurrency_lloutwindow_{e}_{p2}_{p1}_ok.c', replace)
 
             # Generate a correct code by removing operation2
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = 'Correct code using RMA operations'
             replace['longdesc'] = 'Correct code using RMA operations'
             replace['outcome'] = 'OK'

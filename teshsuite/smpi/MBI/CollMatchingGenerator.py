@@ -108,14 +108,14 @@ for c1 in gen.coll + gen.icoll + gen.ibarrier:
 
         if c1 == c2:
             # Generate the correct code using the same collective twice
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = 'Correct collective ordering'
             replace['longdesc'] = f'All ranks call {c1} twice'
             replace['outcome'] = 'OK'
             replace['errormsg'] = ''
             gen.make_file(template, f'CallOrdering_{c1}_{c2}_ok.c', replace)
             # Generate the correct code using the collective once
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = 'Correct collective ordering'
             replace['longdesc'] = f'All ranks call {c1} once'
             replace['outcome'] = 'OK'
@@ -129,14 +129,14 @@ for c1 in gen.coll + gen.icoll + gen.ibarrier:
             gen.make_file(template, f'CallOrdering_{c1}_ok.c', replace)
         else:
             # Generate the correct ordering with two different collectives
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = 'Correct collective ordering'
             replace['longdesc'] = f'All ranks call {c1} and then {c2}'
             replace['outcome'] = 'OK'
             replace['errormsg'] = ''
             gen.make_file(template, f'CallOrdering_{c1}_{c2}_ok.c', replace)
             # Generate the incorrect ordering with two different collectives
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = 'Incorrect collective ordering'
             replace['longdesc'] = f'Odd ranks call {c1} and then {c2} while even ranks call these collectives in the other order'
             replace['outcome'] = 'ERROR: CallMatching'
@@ -153,7 +153,7 @@ for c1 in gen.coll + gen.icoll + gen.ibarrier:
             gen.make_file(template, f'CallOrdering_{c1}_{c2}_nok.c', replace)
 
     # Generate the incorrect ordering with one collective
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = 'Incorrect collective ordering'
     replace['longdesc'] = f'Odd ranks call {c1} while even ranks do not call any collective'
     replace['outcome'] = 'ERROR: CallMatching'
@@ -161,19 +161,27 @@ for c1 in gen.coll + gen.icoll + gen.ibarrier:
     replace['operation1b'] = ''  # Remove functions
     replace['operation2b'] = ''
     replace['operation2a'] = ''
+    replace['init2'] = ''
     replace['fini1b'] = ''
     replace['fini2a'] = ''
     replace['fini2b'] = ''
+    replace['free1'] = gen.free[c1]("1")
+    replace['free2'] = ''
     gen.make_file(template, f'CallOrdering_{c1}_none_nok.c', replace)
     # Generate a correct ordering with a conditional not depending on ranks
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = 'Correct collective ordering'
     replace['longdesc'] = f'All ranks call {c1}'
     replace['outcome'] = 'OK'
     replace['errormsg'] = ''
     replace['change_cond'] = 'nprocs<256'
-    replace['operation2b'] = '' # Remove functions
+    replace['operation1b'] = '' # Remove functions
+    replace['operation2b'] = ''
     replace['operation2a'] = ''
+    replace['init2'] = ''
+    replace['fini1b'] = ''
+    replace['fini2a'] = ''
     replace['fini2b'] = ''
-    replace['free2a'] = ''
+    replace['free1'] = gen.free[c1]("1")
+    replace['free2'] = ''
     gen.make_file(template, f'CallOrdering_{c1}_none_ok.c', replace)

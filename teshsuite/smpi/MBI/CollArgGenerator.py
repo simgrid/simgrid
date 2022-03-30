@@ -92,7 +92,7 @@ for c in gen.tcoll4color:
     patterns['change_arg'] = ''
 
     # Generate the code with invalid color
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = 'Invalid color in @{c}@'
     replace['longdesc'] = 'invalid color in @{c}@'
     replace['outcome'] = 'ERROR: InvalidOtherArg'
@@ -121,7 +121,7 @@ for c in gen.coll4root + gen.icoll4root:
     patterns['change_arg'] = ''
 
     # Generate an incorrect root matching (root mismatch)
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = 'Collective @{c}@ with a root mismatch'
     replace['longdesc'] = 'Odd ranks use 0 as a root while even ranks use 1 as a root'
     replace['outcome'] = 'ERROR: RootMatching'
@@ -130,7 +130,7 @@ for c in gen.coll4root + gen.icoll4root:
     gen.make_file(template, f'ParamMatching_Root_{c}_nok.c', replace)
 
     # Generate the call with root=-1 (invalid root)
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = f'Collective {c} with root = -1'
     replace['longdesc'] = f'Collective {c} with root = -1'
     replace['outcome'] = 'ERROR: InvalidRoot'
@@ -139,7 +139,7 @@ for c in gen.coll4root + gen.icoll4root:
     gen.make_file(template, f'InvalidParam_RootNeg_{c}_nok.c', replace)
 
     # Generate the call with root=2 (root not in communicator)
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = f'Collective {c} with root out of the communicator'
     replace['longdesc'] = f'Collective {c} with root = 2 (there is only 2 ranks)'
     replace['outcome'] = 'ERROR: InvalidRoot'
@@ -169,7 +169,7 @@ for c in gen.coll + gen.icoll:
         patterns['change_arg'] = ''
 
         # Generate the incorrect matching (datatype Mmismatch)
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Collective @{c}@ with a datatype mismatch'
         replace['longdesc'] = 'Odd ranks use MPI_INT as the datatype while even ranks use MPI_FLOAT'
         replace['outcome'] = 'ERROR: DatatypeMatching'
@@ -178,7 +178,7 @@ for c in gen.coll + gen.icoll:
         gen.make_file(template, f'ParamMatching_Data_{c}_nok.c', replace)
 
         # Generate the call with null type (invalid datatype)
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Collective @{c}@ with an invalid datatype '
         replace['longdesc'] = 'Collective @{c}@ with an invalid datatype '
         replace['outcome'] = 'ERROR: InvalidDatatype'
@@ -207,7 +207,7 @@ for c in gen.coll4op + gen.icoll4op:
     patterns['change_arg'] = ''
 
     # Generate the incorrect matching (op mismatch)
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = 'Collective @{c}@ with an operator  mismatch'
     replace['longdesc'] = 'Odd ranks use MPI_SUM as the operator while even ranks use MPI_MAX'
     replace['outcome'] = 'ERROR: OperatorMatching'
@@ -216,7 +216,7 @@ for c in gen.coll4op + gen.icoll4op:
     gen.make_file(template, f'ParamMatching_Op_{c}_nok.c', replace)
 
     # Generate the call with Op=MPI_OP_NULL (invalid op)
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = 'Collective @{c}@ with an invalid operator '
     replace['longdesc'] = 'Collective @{c}@ with an invalid operator '
     replace['outcome'] = 'ERROR: InvalidOperator'

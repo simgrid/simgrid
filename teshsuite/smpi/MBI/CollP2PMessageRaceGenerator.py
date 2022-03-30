@@ -131,7 +131,7 @@ for s in gen.send + gen.isend:
             patterns['operation4'] = gen.operation[r]("4")
 
             # Generate the incorrect matching because of the conditional
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = 'Message race'
             replace['longdesc'] = 'Message race in @{r}@ with @{c}@.'
             replace['outcome'] = 'ERROR: MessageRace'

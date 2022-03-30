@@ -113,7 +113,7 @@ for p in gen.put + gen.get:
             patterns['operation2'] = gen.operation[s]("2") #send
             patterns['operation3'] = gen.operation[r]("3") #recv
 
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = 'Global Concurrency error.'
             replace['longdesc'] = 'Global Concurrency error. Concurrent access of variable winbuf by @{p}@ and @{r}@'
             replace['outcome'] = 'ERROR: GlobalConcurrency'

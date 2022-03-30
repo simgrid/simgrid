@@ -88,7 +88,7 @@ for e in gen.epoch:
         patterns['operation1'] = gen.operation[p1]("1")
 
         # Generate a data race (Get + Get/load/store/Put)
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Global Concurrency error.'
         replace['longdesc'] = 'Global Concurrency error. Both processes 0 and 2 access the window in process 1 with @{p1}@'
         replace['outcome'] = 'ERROR: GlobalConcurrency'

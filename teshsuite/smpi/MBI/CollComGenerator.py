@@ -89,7 +89,7 @@ for c in gen.coll + gen.icoll + gen.ibarrier:
     patterns['operation'] = gen.operation[c]("1")
 
     # Generate the correct code => to remove?
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = 'Collective @{c}@ with correct arguments'
     replace['longdesc'] = f'All ranks in newcom call {c} with correct arguments'
     replace['outcome'] = 'OK'
@@ -98,7 +98,7 @@ for c in gen.coll + gen.icoll + gen.ibarrier:
     gen.make_file(template, f'ParamMatching_Com_{c}_ok.c', replace)
 
     # Generate the incorrect communicator matching
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = 'Collective @{c}@ with a communicator mismatch'
     replace['longdesc'] = 'Odd ranks call the collective on newcom while even ranks call the collective on MPI_COMM_WORLD'
     replace['outcome'] = 'ERROR: CommunicatorMatching'
@@ -107,7 +107,7 @@ for c in gen.coll + gen.icoll + gen.ibarrier:
     gen.make_file(template, f'ParamMatching_Com_{c}_nok.c', replace)
 
     # Generate the coll with newcom=MPI_COMM_NULL
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = f'Collective @{c}@ with newcom=MPI_COMM_NULL'
     replace['longdesc'] = f'Collective @{c}@ with newcom=MPI_COMM_NULL'
     replace['outcome'] = 'ERROR: InvalidCommunicator'

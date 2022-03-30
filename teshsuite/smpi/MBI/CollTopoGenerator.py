@@ -85,9 +85,10 @@ for c in gen.tcoll4topo:
     patterns['init'] = gen.init[c]("1")
     patterns['fini'] = gen.fini[c]("1")
     patterns['operation'] = gen.operation[c]("1")
+    patterns['change_dims'] = '/* No error injected here */'
 
     # Generate the correct code
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = 'Function @{c}@ with correct arguments'
     replace['longdesc'] = f'All ranks in comm call {c} with correct arguments'
     replace['outcome'] = 'OK'
@@ -97,7 +98,7 @@ for c in gen.tcoll4topo:
     gen.make_file(template, f'InvalidParam_{c}_ok.c', replace)
 
     # Generate the incorrect code
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = 'The code tries to get cartesian information of MPI_COMM_WORLD.'
     replace['longdesc'] = 'The code creates a cartesian communicator, and tries to get cartesian information of MPI_COMM_WORLD.'
     replace['outcome'] = 'ERROR: InvalidCommunicator'
@@ -106,7 +107,7 @@ for c in gen.tcoll4topo:
     gen.make_file(template, f'InvalidParam_Com_{c}_nok.c', replace)
 
     # Generate the code with newcom=MPI_COMM_NULL
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = 'Function @{c}@ called with comm=MPI_COMM_NULL'
     replace['longdesc'] = 'Function @{c}@ called with comm=MPI_COMM_NULL'
     replace['outcome'] = 'ERROR: InvalidCommunicator'
@@ -115,7 +116,7 @@ for c in gen.tcoll4topo:
     gen.make_file(template, f'InvalidParam_ComNull_{c}_nok.c', replace)
 
     # Generate the code with invalid dimension
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = 'Creates a cartesian communicator with a negative entry in the dims attribute'
     replace['longdesc'] = 'Creates a cartesian communicator with a negative entry in the dims attribute, which is a usage error'
     replace['outcome'] = 'ERROR: InvalidOtherArg'

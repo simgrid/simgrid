@@ -111,7 +111,7 @@ for s in gen.send + gen.isend:
             patterns['operation3'] = gen.operation[c]("3")
 
             # Generate the incorrect matching because of the conditional
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = 'Point to point & collective mismatch'
             replace['longdesc'] = 'The @{s}@ corresponding to the @{r}@ is after @{c}@, while @{r}@ is before @{c}@. This is a deadlock.'
             replace['outcome'] = 'ERROR: CallMatching'
@@ -119,7 +119,7 @@ for s in gen.send + gen.isend:
             gen.make_file(template, f'CallOrdering_{r}_{s}_{c}_nok.c', replace)
 
             # Generate the incorrect code depending on buffering
-            #  replace = patterns
+            #  replace = patterns.copy()
             #  replace['shortdesc'] = 'Point to point & collective mismatch'
             #  replace['longdesc'] = 'Point to point @{s}@ is matched with @{c}@ which causes a deadlock depending on the buffering mode.'
             #  replace['outcome'] = 'ERROR: BufferingHazard'

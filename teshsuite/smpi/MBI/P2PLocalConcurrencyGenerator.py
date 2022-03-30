@@ -104,21 +104,21 @@ for s in gen.send + gen.isend + gen.psend:
 
         # Generate a message race
         if s in gen.send and r in gen.irecv + gen.precv:
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = ' Local Concurrency with a P2P'
             replace['longdesc'] = f'The message buffer in {r} is modified before the call has been completed.'
             replace['outcome'] = 'ERROR: LocalConcurrency'
             replace['errormsg'] = 'Local Concurrency with a P2P. The receive buffer in @{r}@ is modified at @{filename}@:@{line:MBIERROR2}@ whereas there is no guarantee the message has been received.'
             gen.make_file(template, f'LocalConcurrency_{r}_{s}_nok.c', replace)
         if s in gen.isend + gen.psend and r in gen.recv:
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = ' Local Concurrency with a P2P'
             replace['longdesc'] = f'The message buffer in {s} is modified before the call has been completed.'
             replace['outcome'] = 'ERROR: LocalConcurrency'
             replace['errormsg'] = 'Local Concurrency with a P2P. The send buffer in @{s}@ is modified at @{filename}@:@{line:MBIERROR1}@ whereas there is no guarantee the message has been sent.'
             gen.make_file(template, f'LocalConcurrency_{r}_{s}_nok.c', replace)
         if s in gen.isend + gen.psend and r in gen.irecv + gen.precv:
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = ' Local Concurrency with a P2P'
             replace['longdesc'] = f'The message buffer in {s} and {r} are modified before the calls have completed.'
             replace['outcome'] = 'ERROR: LocalConcurrency'

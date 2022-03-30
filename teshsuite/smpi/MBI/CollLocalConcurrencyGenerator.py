@@ -82,7 +82,7 @@ for c in gen.icoll + gen.pcoll:
     patterns['write'] = gen.write[c]("1")
     patterns['free'] = gen.free[c]("1")
 
-    replace = patterns
+    replace = patterns.copy()
     replace['shortdesc'] = 'Local concurrency with a collective'
     replace['longdesc'] = f'The buffer in {c} is modified before the call has been completed.'
     replace['outcome'] = 'ERROR: LocalConcurrency'

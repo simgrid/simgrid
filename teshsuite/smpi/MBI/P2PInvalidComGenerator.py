@@ -101,7 +101,7 @@ for p1 in gen.send + gen.isend + gen.psend:
         patterns['change_com1'] = ""
         patterns['change_com2'] = ""
 
-        replace = patterns
+        replace = patterns.copy()
         replace['origin'] = "inspired from MPI-Corrbench"
         replace['shortdesc'] = 'Point to point @{p2}@ has an invalid communicator'
         replace['longdesc'] = 'MPI_COMM_NULL used in point to point @{p2}@'
@@ -110,7 +110,7 @@ for p1 in gen.send + gen.isend + gen.psend:
         replace['change_com2'] = 'newcom = MPI_COMM_NULL;'
         gen.make_file(template, f'InvalidParam_ComNull_{p2}_{p1}nok.c', replace)
 
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Point to point @{p2}@ has an invalid communicator'
         replace['longdesc'] = 'MPI_COMM_NULL used in point to point @{p2}@'
         replace['outcome'] = 'ERROR: InvalidCommunicator'

@@ -95,7 +95,7 @@ for e in gen.epoch:
             patterns['operation2'] = gen.operation[p2]("1")
 
             # Generate a data race (Get + Get/load/store/Put)
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = 'Global Concurrency error.'
             replace['longdesc'] = 'Global Concurrency error. @{p2}@ conflicts with @{p1}@'
             replace['outcome'] = 'ERROR: GlobalConcurrency'
@@ -127,7 +127,7 @@ for e in gen.epoch:
             patterns['operation2'] = gen.operation[p2]("1")
 
             # Generate a data race (Put + store)
-            replace = patterns
+            replace = patterns.copy()
             replace['shortdesc'] = 'Global Concurrency error.'
             replace['longdesc'] = 'Global Concurrency error. @{p2}@ conflicts with @{p1}@'
             replace['outcome'] = 'ERROR: GlobalConcurrency'

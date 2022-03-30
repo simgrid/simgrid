@@ -103,9 +103,10 @@ for p1 in gen.send + gen.isend + gen.psend:
         patterns['free1'] = gen.free[p1]("1")
         patterns['free2'] = gen.free[p2]("2")
         patterns['change_srcdest'] = ""
+        patterns['change_com'] = ""
 
         # Generate the incorrect matching
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Point to point @{p1}@ and @{p2}@ have a communicator mismatch'
         replace['longdesc'] = 'Process 1 uses newcom as the communicator while process 0 uses MPI_COMM_WORLD.'
         replace['outcome'] = 'ERROR: CommunicatorMatching'
@@ -114,7 +115,7 @@ for p1 in gen.send + gen.isend + gen.psend:
         gen.make_file(template, f'ParamMatching_Com_{p1}_{p2}_nok.c', replace)
 
         # Generate the code with an invalid communicator
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Point to point @{p1}@ and @{p2}@ have an invalid communicator'
         replace['longdesc'] = 'Point to point @{p1}@ and @{p2}@ have an invalid communicator.'
         replace['outcome'] = 'ERROR: InvalidCommunicator'
@@ -123,7 +124,7 @@ for p1 in gen.send + gen.isend + gen.psend:
         gen.make_file(template, f'InvalidParam_Com_{p1}_{p2}_nok.c', replace)
 
         #  Generate the code with an invalid communicator ==> TO CHECK
-        #replace = patterns
+        #replace = patterns.copy()
         #replace['shortdesc'] = 'Point to point @{p1}@ and @{p2}@ have an invalid communicator'
        # replace['longdesc'] = 'Point to point @{p1}@ and @{p2}@ have an invalid communicator.'
        # replace['outcome'] = 'ERROR: InvalidCommunicator'
@@ -133,7 +134,7 @@ for p1 in gen.send + gen.isend + gen.psend:
        # gen.make_file(template, f'InvalidParam_Com_{p1}_{p2}_nok.c', replace)
 
         # Generate the code with an invalid dest
-        replace = patterns
+        replace = patterns.copy()
         replace['origin'] = "MBI"
         replace['shortdesc'] = 'Point to point @{p1}@ has an invalid argument'
         replace['longdesc'] = 'Point to point @{p1}@ and @{p2}@ have an invalid communicator.'
@@ -144,7 +145,7 @@ for p1 in gen.send + gen.isend + gen.psend:
         gen.make_file(template, f'InvalidParam_Dest_{p1}_{p2}_nok.c', replace)
 
         # Generate the code with an invalid src
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'Point to point @{p2}@ has an invalid argument'
         replace['longdesc'] = 'Point to point @{p1}@ and @{p2}@ have an invalid communicator.'
         replace['outcome'] = 'ERROR: InvalidSrcDest'

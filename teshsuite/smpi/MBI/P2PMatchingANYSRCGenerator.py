@@ -100,7 +100,7 @@ for s in gen.send + gen.isend:
         patterns['operation1'] = gen.operation[r]("1")
 
         # Generate the incorrect matching
-        replace = patterns
+        replace = patterns.copy()
         replace['shortdesc'] = 'The message ordering is non-deterministic.'
         replace['longdesc'] = 'The code assumes a fixed order in the reception of messages while the message ordering is non-deterministic.'
         replace['outcome'] = 'ERROR: MessageRace'
