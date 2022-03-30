@@ -91,6 +91,7 @@ for e in gen.epoch:
             patterns['init1'] = gen.init[p1]("1")
             patterns['operation1'] = gen.operation[p1]("1")
             patterns['operation2'] = gen.operation[p2]("1")
+            shortdesc_rma = 'Correct code using RMA operations'
 
             # Generate a data race (Get + Get/load/store/Put)
             replace = patterns.copy()
@@ -102,8 +103,8 @@ for e in gen.epoch:
             # Generate a correct code by switching operation1 and  operation2
             if p2 in gen.store + gen.load + gen.loadstore:
                 replace = patterns.copy()
-                replace['shortdesc'] = 'Correct code using RMA operations'
-                replace['longdesc'] = 'Correct code using RMA operations'
+                replace['shortdesc'] = shortdesc_rma
+                replace['longdesc'] = shortdesc_rma
                 replace['outcome'] = 'OK'
                 replace['errormsg'] = 'OK'
                 replace['operation1'] = gen.operation[p2]("1")
@@ -111,8 +112,8 @@ for e in gen.epoch:
                 gen.make_file(template, f'LocalConcurrency_lloutwindow_{e}_{p2}_{p1}_ok.c', replace)
         # Generate a correct code by removing operation2
         replace = patterns.copy()
-        replace['shortdesc'] = 'Correct code using RMA operations'
-        replace['longdesc'] = 'Correct code using RMA operations'
+        replace['shortdesc'] = shortdesc_rma
+        replace['longdesc'] = shortdesc_rma
         replace['outcome'] = 'OK'
         replace['errormsg'] = 'OK'
         replace['operation1'] = gen.operation[p1]("1")
@@ -145,8 +146,8 @@ for e in gen.epoch:
             gen.make_file(template, f'LocalConcurrency_lloutwindow_{e}_{p1}_{p2}_nok.c', replace)
             # Generate a correct code by switching operation1 and operation2
             replace = patterns.copy()
-            replace['shortdesc'] = 'Correct code using RMA operations'
-            replace['longdesc'] = 'Correct code using RMA operations'
+            replace['shortdesc'] = shortdesc_rma
+            replace['longdesc'] = shortdesc_rma
             replace['outcome'] = 'OK'
             replace['errormsg'] = 'OK'
             replace['operation1'] = gen.operation[p2]("1")
@@ -155,8 +156,8 @@ for e in gen.epoch:
 
             # Generate a correct code by removing operation2
             replace = patterns.copy()
-            replace['shortdesc'] = 'Correct code using RMA operations'
-            replace['longdesc'] = 'Correct code using RMA operations'
+            replace['shortdesc'] = shortdesc_rma
+            replace['longdesc'] = shortdesc_rma
             replace['outcome'] = 'OK'
             replace['errormsg'] = 'OK'
             replace['operation1'] = gen.operation[p1]("1")
