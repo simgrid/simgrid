@@ -114,6 +114,11 @@ for c1 in gen.coll + gen.icoll + gen.ibarrier:
             replace['longdesc'] = f'All ranks call {c1} twice'
             replace['outcome'] = 'OK'
             replace['errormsg'] = ''
+            replace['change_cond'] = 'rank < nprocs'
+            replace['operation1b'] = ''
+            replace['operation2b'] = ''
+            replace['fini1b'] = ''
+            replace['fini2b'] = ''
             gen.make_file(template, f'CallOrdering_{c1}_{c2}_ok.c', replace)
             # Generate the correct code using the collective once
             replace = patterns.copy()
@@ -122,9 +127,12 @@ for c1 in gen.coll + gen.icoll + gen.ibarrier:
             replace['outcome'] = 'OK'
             replace['errormsg'] = ''
             replace['init2'] = ''
+            replace['change_cond'] = 'rank < nprocs'
             replace['operation2a'] = ''
+            replace['operation1b'] = ''
             replace['operation2b'] = ''
             replace['fini2a'] = ''
+            replace['fini1b'] = ''
             replace['fini2b'] = ''
             replace['free2'] = ''
             gen.make_file(template, f'CallOrdering_{c1}_ok.c', replace)
@@ -135,6 +143,11 @@ for c1 in gen.coll + gen.icoll + gen.ibarrier:
             replace['longdesc'] = f'All ranks call {c1} and then {c2}'
             replace['outcome'] = 'OK'
             replace['errormsg'] = ''
+            replace['change_cond'] = 'rank < nprocs'
+            replace['operation1b'] = ''
+            replace['operation2b'] = ''
+            replace['fini1b'] = ''
+            replace['fini2b'] = ''
             gen.make_file(template, f'CallOrdering_{c1}_{c2}_ok.c', replace)
             # Generate the incorrect ordering with two different collectives
             replace = patterns.copy()
@@ -175,7 +188,7 @@ for c1 in gen.coll + gen.icoll + gen.ibarrier:
     replace['longdesc'] = f'All ranks call {c1}'
     replace['outcome'] = 'OK'
     replace['errormsg'] = ''
-    replace['change_cond'] = 'nprocs<256'
+    replace['change_cond'] = 'rank < nprocs'
     replace['operation1b'] = '' # Remove functions
     replace['operation2b'] = ''
     replace['operation2a'] = ''
