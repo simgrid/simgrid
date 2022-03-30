@@ -1,0 +1,26 @@
+#!/usr/bin/env tesh
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/comm-serialize.py "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+>[  0.000000] (1:receiver@receiver) Wait for 10 messages asynchronously
+>[  0.000000] (2:sender@sender) Send 'Message 0' to 'receiver'
+>[  0.000000] (2:sender@sender) Send 'Message 1' to 'receiver'
+>[  0.000000] (2:sender@sender) Send 'Message 2' to 'receiver'
+>[  0.000000] (2:sender@sender) Send 'Message 3' to 'receiver'
+>[  0.000000] (2:sender@sender) Send 'Message 4' to 'receiver'
+>[  0.000000] (2:sender@sender) Send 'Message 5' to 'receiver'
+>[  0.000000] (2:sender@sender) Send 'Message 6' to 'receiver'
+>[  0.000000] (2:sender@sender) Send 'Message 7' to 'receiver'
+>[  0.000000] (2:sender@sender) Send 'Message 8' to 'receiver'
+>[  0.000000] (2:sender@sender) Send 'Message 9' to 'receiver'
+>[  0.000000] (2:sender@sender) Done dispatching all messages
+>[  0.000336] (1:receiver@receiver) I got 'Message 1'.
+>[  0.000336] (1:receiver@receiver) I got 'Message 0'.
+>[  0.000542] (1:receiver@receiver) I got 'Message 3'.
+>[  0.000542] (1:receiver@receiver) I got 'Message 2'.
+>[  0.000749] (1:receiver@receiver) I got 'Message 5'.
+>[  0.000749] (1:receiver@receiver) I got 'Message 4'.
+>[  0.000955] (1:receiver@receiver) I got 'Message 7'.
+>[  0.000955] (1:receiver@receiver) I got 'Message 6'.
+>[  0.001161] (1:receiver@receiver) I got 'Message 9'.
+>[  0.001161] (1:receiver@receiver) I got 'Message 8'.
+>[  0.001161] (2:sender@sender) Goodbye now!

@@ -49,6 +49,8 @@ using simgrid::s4u::Actor;
 using simgrid::s4u::ActorPtr;
 using simgrid::s4u::Barrier;
 using simgrid::s4u::BarrierPtr;
+using simgrid::s4u::Comm;
+using simgrid::s4u::CommPtr;
 using simgrid::s4u::Engine;
 using simgrid::s4u::Host;
 using simgrid::s4u::Link;
@@ -182,6 +184,8 @@ PYBIND11_MODULE(simgrid, m)
                           "get_all_hosts() is deprecated and  will be dropped after v3.33, use all_hosts instead.", 1);
              return self.attr("all_hosts");
            })
+      .def("host_by_name", &Engine::host_by_name_or_null, py::call_guard<py::gil_scoped_release>(),
+           "Retrieve a host by its name, or None if it does not exist in the platform.")
       .def_property_readonly("all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
       .def("get_all_links",
            [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
@@ -214,6 +218,10 @@ PYBIND11_MODULE(simgrid, m)
       .def("netzone_by_name", &Engine::netzone_by_name_or_null)
       .def("load_platform", &Engine::load_platform, "Load a platform file describing the environment")
       .def("load_deployment", &Engine::load_deployment, "Load a deployment file and launch the actors that it contains")
+      .def("mailbox_by_name_or_create", &Engine::mailbox_by_name_or_create,
+           py::call_guard<py::gil_scoped_release>(),
+           py::arg("name"),
+           "Find a mailbox from its name or create one if it does not exist")
       .def("run", &Engine::run, py::call_guard<py::gil_scoped_release>(), "Run the simulation until its end")
       .def("run_until", py::overload_cast<double>(&Engine::run_until, py::const_),
            py::call_guard<py::gil_scoped_release>(), "Run the simulation until the given date",
@@ -645,6 +653,8 @@ PYBIND11_MODULE(simgrid, m)
             return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
           },
           "The name of that mailbox (read-only property).")
+      .def_property_readonly("ready", &Mailbox::ready, py::call_guard<py::gil_scoped_release>(),
+                             "Check if there is a communication ready to be consumed from a mailbox.")
       .def(
           "put",
           [](Mailbox* self, py::object data, int size, double timeout) {
@@ -684,7 +694,7 @@ PYBIND11_MODULE(simgrid, m)
           py::call_guard<py::gil_scoped_release>(), "Blocking data reception")
       .def(
           "get_async",
-          [](Mailbox* self) -> std::tuple<simgrid::s4u::CommPtr, PyGetAsync> {
+          [](Mailbox* self) -> std::tuple<CommPtr, PyGetAsync> {
             PyGetAsync wrap;
             auto comm = self->get_async(wrap.get());
             return std::make_tuple(std::move(comm), std::move(wrap));
@@ -703,45 +713,93 @@ PYBIND11_MODULE(simgrid, m)
           "Get python object after async communication in receiver side");
 
   /* Class Comm */
-  py::class_<simgrid::s4u::Comm, simgrid::s4u::CommPtr>(m, "Comm",
-                                                        "Communication. See the C++ documentation for details.")
-      .def("test", &simgrid::s4u::Comm::test, py::call_guard<py::gil_scoped_release>(),
+  py::class_<Comm, CommPtr>(m, "Comm", "Communication. See the C++ documentation for details.")
+      .def_property_readonly("dst_data_size", &Comm::get_dst_data_size,
+                             py::call_guard<py::gil_scoped_release>(),
+                             "Retrieve the size of the received data.")
+      .def_property_readonly("mailbox", &Comm::get_mailbox,
+                             py::call_guard<py::gil_scoped_release>(),
+                             "Retrieve the mailbox on which this comm acts.")
+      .def_property_readonly("sender", &Comm::get_sender,
+                             py::call_guard<py::gil_scoped_release>())
+      .def_property_readonly("state_str", [](Comm* self){ return std::string(self->get_state_str()); },
+                             py::call_guard<py::gil_scoped_release>(),
+                             "Retrieve the Comm state as string")
+      .def_property_readonly("remaining",  &Comm::get_remaining,
+                             py::call_guard<py::gil_scoped_release>(),
+                             "Remaining amount of work that this Comm entails")
+      .def_property_readonly("start_time",  &Comm::get_start_time,
+                             py::call_guard<py::gil_scoped_release>(),
+                             "Time at which this Comm started")
+      .def_property_readonly("finish_time",  &Comm::get_finish_time,
+                             py::call_guard<py::gil_scoped_release>(),
+                             "Time at which this Comm finished")
+      .def("set_payload_size", &Comm::set_payload_size, py::call_guard<py::gil_scoped_release>(),
+           py::arg("bytes"),
+           "Specify the amount of bytes which exchange should be simulated.")
+      .def("set_rate", &Comm::set_rate, py::call_guard<py::gil_scoped_release>(),
+           py::arg("rate"),
+           "Sets the maximal communication rate (in byte/sec). Must be done before start")
+      .def("cancel", [](Comm* self){ return self->cancel(); },
+           py::call_guard<py::gil_scoped_release>(), py::return_value_policy::reference_internal,
+           "Cancel the activity.")
+      .def("start", [](Comm* self){ return self->start(); },
+           py::call_guard<py::gil_scoped_release>(), py::return_value_policy::reference_internal,
+           "Starts a previously created activity. This function is optional: you can call wait() even if you didn't "
+           "call start()")
+      .def("suspend", [](Comm* self){ return self->suspend(); },
+          py::call_guard<py::gil_scoped_release>(), py::return_value_policy::reference_internal,
+          "Suspend the activity.")
+      .def("resume", [](Comm* self){ return self->resume(); },
+          py::call_guard<py::gil_scoped_release>(), py::return_value_policy::reference_internal,
+          "Resume the activity.")
+      .def("test", &Comm::test, py::call_guard<py::gil_scoped_release>(),
            "Test whether the communication is terminated.")
-      .def("wait", &simgrid::s4u::Comm::wait, py::call_guard<py::gil_scoped_release>(),
+      .def("wait", &Comm::wait, py::call_guard<py::gil_scoped_release>(),
            "Block until the completion of that communication.")
-      .def("wait_for", &simgrid::s4u::Comm::wait_for,
+      .def("wait_for", &Comm::wait_for, py::call_guard<py::gil_scoped_release>(),
            py::arg("timeout"),
-           py::call_guard<py::gil_scoped_release>(),
            "Block until the completion of that communication, or raises TimeoutException after the specified timeout.")
-      .def("detach", [](simgrid::s4u::Comm* self) {
-              return self->detach();
-           },
+      .def("wait_until", &Comm::wait_until, py::call_guard<py::gil_scoped_release>(),
+           py::arg("time_limit"),
+           "Block until the completion of that communication, or raises TimeoutException after the specified time.")
+      .def("detach", [](Comm* self) { return self->detach(); },
            py::return_value_policy::reference_internal,
            py::call_guard<py::gil_scoped_release>(),
            "Start the comm, and ignore its result. It can be completely forgotten after that.")
-      .def_static(
-          "wait_all", &simgrid::s4u::Comm::wait_all,
-          py::arg("comms"),
-          py::call_guard<py::gil_scoped_release>(),
-          "Block until the completion of all communications in the list.")
-      .def_static("wait_all_for", &simgrid::s4u::Comm::wait_all_for,
-                  py::arg("comms"), py::arg("timeout"),
+      .def_static("sendto", &Comm::sendto, py::call_guard<py::gil_scoped_release>(),
+                  py::arg("from"), py::arg("to"), py::arg("simulated_size_in_bytes"),
+                  "Do a blocking communication between two arbitrary hosts.")
+      .def_static("sendto_init", py::overload_cast<Host*, Host*>(&Comm::sendto_init),
                   py::call_guard<py::gil_scoped_release>(),
+                  py::arg("from"), py::arg("to"),
+                  "Creates a communication between the two given hosts, bypassing the mailbox mechanism.")
+      .def_static("sendto_async", &Comm::sendto_async, py::call_guard<py::gil_scoped_release>(),
+                  py::arg("from"), py::arg("to"), py::arg("simulated_size_in_bytes"),
+                  "Do a blocking communication between two arbitrary hosts.\n\nThis initializes a communication that "
+                  "completely bypass the mailbox and actors mechanism. There is really no limit on the hosts involved. "
+                  "In particular, the actor does not have to be on one of the involved hosts.")
+      .def_static("test_any", &Comm::test_any,
+                  py::call_guard<py::gil_scoped_release>(),
+                  py::arg("comms"),
+                  "take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done)")
+      .def_static("wait_all", &Comm::wait_all, py::call_guard<py::gil_scoped_release>(),
+                  py::arg("comms"),
+                  "Block until the completion of all communications in the list.")
+      .def_static("wait_all_for", &Comm::wait_all_for, py::call_guard<py::gil_scoped_release>(),
+                  py::arg("comms"), py::arg("timeout"),
                   "Block until the completion of all communications in the list, or raises TimeoutException after "
                   "the specified timeout.")
-      .def_static(
-          "wait_any", &simgrid::s4u::Comm::wait_any,
-          py::arg("comms"),
-          py::call_guard<py::gil_scoped_release>(),
-          "Block until the completion of any communication in the list and return the index of the terminated one.")
-      .def_static(
-          "wait_any_for",
-          &simgrid::s4u::Comm::wait_any_for,
-          py::arg("comms"), py::arg("timeout"),
-          py::call_guard<py::gil_scoped_release>(),
-          "Block until the completion of any communication in the list and return the index of the terminated "
-          "one, or -1 if a timeout occurred."
-      );
+      .def_static("wait_any", &Comm::wait_any,
+                  py::call_guard<py::gil_scoped_release>(),
+                  py::arg("comms"),
+                  "Block until the completion of any communication in the list and return the index of the "
+                  "terminated one.")
+      .def_static("wait_any_for", &Comm::wait_any_for,
+                  py::call_guard<py::gil_scoped_release>(),
+                  py::arg("comms"), py::arg("timeout"),
+                  "Block until the completion of any communication in the list and return the index of the terminated "
+                  "one, or -1 if a timeout occurred.");
 
   /* Class Io */
   py::class_<simgrid::s4u::Io, simgrid::s4u::IoPtr>(m, "Io", "I/O activities. See the C++ documentation for details.")

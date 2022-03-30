@@ -1,0 +1,7 @@
+#!/usr/bin/env tesh
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/comm-throttling.py --platform ${platfdir}/cluster_backbone.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+>[  0.000000] (1:sender@node-0.simgrid.org) Send at full bandwidth
+>[  2.069662] (1:sender@node-0.simgrid.org) Throttle the bandwidth at the Comm level
+>[  2.069662] (2:receiver@node-1.simgrid.org) Payload received (full bandwidth) in 2.0696616701030925 seconds
+>[  6.077468] (2:receiver@node-1.simgrid.org) Payload received (throttled) in 4.007806 seconds

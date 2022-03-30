@@ -319,6 +319,8 @@ the simulators (as detailed in Section :ref:`options`).
 
    .. example-tab:: examples/cpp/comm-pingpong/s4u-comm-pingpong.cpp
 
+   .. example-tab:: examples/python/comm-pingpong/comm-pingpong.py
+
    .. example-tab:: examples/c/comm-pingpong/comm-pingpong.c
 
 
@@ -371,6 +373,11 @@ The ``suspend()`` and ``resume()`` functions block the progression of a given co
       :cpp:func:`simgrid::s4u::Activity::resume()` and
       :cpp:func:`simgrid::s4u::Activity::is_suspended()`.
 
+   .. example-tab:: examples/python/comm-suspend/comm-suspend.py
+
+      See also :py:func:`simgrid.Comm::suspend()` and
+      :py:func:`simgrid.Comm.resume()`.
+
 Waiting for all communications in a set
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -420,6 +427,9 @@ The ``test_any()`` returns whether at least one activity of the set has complete
 
       See also :cpp:func:`simgrid::s4u::Comm::test_any()`.
 
+   .. example-tab:: examples/python/comm-testany/comm-testany.py
+
+      See also :py:func:`simgrid.Comm.test_any()`.
 
 .. _s4u_ex_execution:
 

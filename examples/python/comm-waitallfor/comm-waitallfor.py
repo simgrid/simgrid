@@ -34,6 +34,7 @@ def create_parser() -> ArgumentParser:
     parser.add_argument(
         '--platform',
         type=str,
+        required=True,
         help='path to the platform description'
     )
     parser.add_argument(

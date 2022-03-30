@@ -1,0 +1,16 @@
+#!/usr/bin/env tesh
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/comm-testany.py --platform ${platfdir}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+>[  0.000000] (1:rank0@Tremblay) Post my asynchronous receives
+>[  0.000000] (1:rank0@Tremblay) Send some data to rank-1
+>[  0.025708] (2:rank1@Fafard) Received 0
+>[  0.025708] (2:rank1@Fafard) Send 'Message 0'
+>[  0.209813] (2:rank1@Fafard) Received 1
+>[  0.209813] (2:rank1@Fafard) Send 'Message 1'
+>[  0.393918] (1:rank0@Tremblay) Test for completed comms
+>[  0.393918] (2:rank1@Fafard) Received 2
+>[  0.393918] (2:rank1@Fafard) Send 'Message 2'
+>[  0.393918] (1:rank0@Tremblay) Remove a pending comm.
+>[  0.393918] (1:rank0@Tremblay) Remove a pending comm.
+>[  0.593918] (1:rank0@Tremblay) Remove a pending comm.
+>[  0.593918] (1:rank0@Tremblay) Last comm is complete
