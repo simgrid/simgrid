@@ -52,6 +52,7 @@ class XBT_PRIVATE HostImpl : public xbt::PropertyHolder {
   s4u::Host piface_;
   std::map<std::string, DiskImpl*, std::less<>> disks_;
   xbt::string name_{"noname"};
+  routing::NetZoneImpl* englobing_zone_ = nullptr;
   bool sealed_ = false;
 
 protected:
@@ -76,6 +77,10 @@ public:
   xbt::string const& get_name() const { return name_; }
   /** Retrieves the name of that host as a C string */
   const char* get_cname() const { return name_.c_str(); }
+
+  routing::NetZoneImpl* get_englobing_zone() const { return englobing_zone_; }
+  /** @brief Set the NetZone in which this Host is included */
+  HostImpl* set_englobing_zone(routing::NetZoneImpl* netzone_p);
 
   void turn_on() const;
   void turn_off(const actor::ActorImpl* issuer);

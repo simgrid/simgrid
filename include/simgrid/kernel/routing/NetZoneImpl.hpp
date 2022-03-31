@@ -151,7 +151,10 @@ public:
   kernel::routing::NetPoint* get_netpoint() const { return netpoint_; }
 
   std::vector<s4u::Host*> get_all_hosts() const;
-  int get_host_count() const;
+  size_t get_host_count() const;
+
+  std::vector<s4u::Link*> get_all_links() const;
+  size_t get_link_count() const;
 
   /** @brief Make a host within that NetZone */
   s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate);

@@ -68,6 +68,12 @@ void StandardLinkImpl::latency_check(double latency) const
   }
 }
 
+StandardLinkImpl* StandardLinkImpl::set_englobing_zone(routing::NetZoneImpl* englobing_zone)
+{
+  englobing_zone_ = englobing_zone;
+  return this;
+}
+
 void StandardLinkImpl::turn_on()
 {
   if (not is_on()) {

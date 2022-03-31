@@ -128,23 +128,23 @@ void NetZoneImpl::add_child(NetZoneImpl* new_zone)
  */
 std::vector<s4u::Host*> NetZoneImpl::get_all_hosts() const
 {
-  std::vector<s4u::Host*> res;
-  for (auto const& card : get_vertices()) {
-    s4u::Host* host = s4u::Host::by_name_or_null(card->get_name());
-    if (host != nullptr)
-      res.push_back(host);
-  }
-  return res;
+  return s4u::Engine::get_instance()->get_filtered_hosts(
+      [this](const s4u::Host* host) { return host->get_impl()->get_englobing_zone() == this; });
 }
-int NetZoneImpl::get_host_count() const
+size_t NetZoneImpl::get_host_count() const
 {
-  int count = 0;
-  for (auto const& card : get_vertices()) {
-    const s4u::Host* host = s4u::Host::by_name_or_null(card->get_name());
-    if (host != nullptr)
-      count++;
-  }
-  return count;
+  return get_all_hosts().size();
+}
+
+std::vector<s4u::Link*> NetZoneImpl::get_all_links() const
+{
+  return s4u::Engine::get_instance()->get_filtered_links(
+      [this](const s4u::Link* link) { return link->get_impl()->get_englobing_zone() == this; });
+}
+
+size_t NetZoneImpl::get_link_count() const
+{
+  return get_all_links().size();
 }
 
 s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
@@ -153,7 +153,7 @@ s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<d
              "Impossible to create host: %s. Invalid CPU model: nullptr. Have you set the parent of this NetZone: %s?",
              name.c_str(), get_cname());
   xbt_assert(not sealed_, "Impossible to create host: %s. NetZone %s already sealed", name.c_str(), get_cname());
-  auto* res = (new resource::HostImpl(name))->get_iface();
+  auto* res = (new resource::HostImpl(name))->set_englobing_zone(this)->get_iface();
   res->set_netpoint((new NetPoint(name, NetPoint::Type::Host))->set_englobing_zone(this));
 
   cpu_model_pm_->create_cpu(res, speed_per_pstate);
@@ -168,7 +168,7 @@ s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<d
       "Impossible to create link: %s. Invalid network model: nullptr. Have you set the parent of this NetZone: %s?",
       name.c_str(), get_cname());
   xbt_assert(not sealed_, "Impossible to create link: %s. NetZone %s already sealed", name.c_str(), get_cname());
-  return network_model_->create_link(name, bandwidths)->get_iface();
+  return network_model_->create_link(name, bandwidths)->set_englobing_zone(this)->get_iface();
 }
 
 s4u::SplitDuplexLink* NetZoneImpl::create_split_duplex_link(const std::string& name,
@@ -180,8 +180,8 @@ s4u::SplitDuplexLink* NetZoneImpl::create_split_duplex_link(const std::string& n
       name.c_str(), get_cname());
   xbt_assert(not sealed_, "Impossible to create link: %s. NetZone %s already sealed", name.c_str(), get_cname());
 
-  auto* link_up                  = network_model_->create_link(name + "_UP", bandwidths);
-  auto* link_down                = network_model_->create_link(name + "_DOWN", bandwidths);
+  auto* link_up                  = network_model_->create_link(name + "_UP", bandwidths)->set_englobing_zone(this);
+  auto* link_down                = network_model_->create_link(name + "_DOWN", bandwidths)->set_englobing_zone(this);
   auto link                      = std::make_unique<resource::SplitDuplexLinkImpl>(name, link_up, link_down);
   auto* link_iface               = link->get_iface();
   EngineImpl::get_instance()->add_split_duplex_link(name, std::move(link));

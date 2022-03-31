@@ -111,6 +111,12 @@ void HostImpl::turn_off(const actor::ActorImpl* issuer)
   actors_at_boot_.erase(elm, end(actors_at_boot_));
 }
 
+HostImpl* HostImpl::set_englobing_zone(routing::NetZoneImpl* englobing_zone)
+{
+  englobing_zone_ = englobing_zone;
+  return this;
+}
+
 std::vector<s4u::ActorPtr> HostImpl::get_all_actors()
 {
   std::vector<s4u::ActorPtr> res;
