@@ -221,7 +221,6 @@ public:
 
   /** @brief Get the usage of the constraint after the last lmm solve */
   double get_usage() const;
-  int get_variable_amount() const;
 
   /** @brief Sets the concurrency limit for this constraint */
   void set_concurrency_limit(int limit)

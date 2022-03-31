@@ -182,13 +182,10 @@ void NetworkCm02Model::update_actions_state_full(double /*now*/, double delta)
     auto& action = static_cast<NetworkCm02Action&>(*it);
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     XBT_DEBUG("Something happened to action %p", &action);
-    double deltap = delta;
     if (action.latency_ > 0) {
-      if (action.latency_ > deltap) {
-        double_update(&action.latency_, deltap, sg_surf_precision);
-        deltap = 0.0;
+      if (action.latency_ > delta) {
+        double_update(&action.latency_, delta, sg_surf_precision);
       } else {
-        double_update(&deltap, action.latency_, sg_surf_precision);
         action.latency_ = 0.0;
       }
       if (action.latency_ <= 0.0 && not action.is_suspended())

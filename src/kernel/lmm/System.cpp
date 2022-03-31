@@ -758,12 +758,6 @@ double Constraint::get_usage() const
   return result;
 }
 
-int Constraint::get_variable_amount() const
-{
-  return static_cast<int>(std::count_if(std::begin(enabled_element_set_), std::end(enabled_element_set_),
-                                        [](const Element& elem) { return elem.consumption_weight > 0; }));
-}
-
 void Constraint::set_sharing_policy(SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
 {
   xbt_assert(policy == SharingPolicy::NONLINEAR || not cb,

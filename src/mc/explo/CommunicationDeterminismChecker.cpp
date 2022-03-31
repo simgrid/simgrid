@@ -287,8 +287,6 @@ void CommDetExtension::handle_comm_pattern(const Transition* transition)
 
   switch (transition->type_) {
     case Transition::Type::COMM_SEND:
-      get_comm_pattern(transition);
-      break;
     case Transition::Type::COMM_RECV:
       get_comm_pattern(transition);
       break;
