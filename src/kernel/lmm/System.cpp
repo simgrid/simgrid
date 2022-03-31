@@ -277,10 +277,9 @@ void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
 
   auto elem_it =
       std::find_if(begin(var->cnsts_), end(var->cnsts_), [&cnst](Element const& x) { return x.constraint == cnst; });
-  if (elem_it != end(var->cnsts_)) {
+  if (elem_it != end(var->cnsts_) && var->sharing_penalty_ != 0.0) {
     /* before changing it, decreases concurrency on constraint, it'll be added back later */
-    if (var->sharing_penalty_ != 0.0)
-      elem_it->decrease_concurrency();
+    elem_it->decrease_concurrency();
   }
   Element& elem = elem_it != end(var->cnsts_) ? expand_add_to_elem(*elem_it, cnst, consumption_weight)
                                               : expand_create_elem(cnst, var, consumption_weight);

@@ -46,7 +46,7 @@ class Receiver(object):
         # List in which we store all incoming msgs
         pending_comms: List[Tuple[Comm, PyGetAsync]] = []
         this_actor.info(f"Wait for {self.messages_count} messages asynchronously")
-        for i in range(self.messages_count):
+        for _ in range(self.messages_count):
             pending_comms.append(self.mailbox.get_async())
         while pending_comms:
             index = Comm.wait_any([comm for (comm, _) in pending_comms])

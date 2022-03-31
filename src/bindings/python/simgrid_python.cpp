@@ -722,7 +722,7 @@ PYBIND11_MODULE(simgrid, m)
                              "Retrieve the mailbox on which this comm acts.")
       .def_property_readonly("sender", &Comm::get_sender,
                              py::call_guard<py::gil_scoped_release>())
-      .def_property_readonly("state_str", [](Comm* self){ return std::string(self->get_state_str()); },
+      .def_property_readonly("state_str", [](const Comm* self){ return std::string(self->get_state_str()); },
                              py::call_guard<py::gil_scoped_release>(),
                              "Retrieve the Comm state as string")
       .def_property_readonly("remaining",  &Comm::get_remaining,
