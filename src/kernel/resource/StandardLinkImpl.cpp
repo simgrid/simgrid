@@ -35,7 +35,6 @@ StandardLinkImpl::StandardLinkImpl(const std::string& name) : LinkImpl(name), pi
 void StandardLinkImpl::destroy()
 {
   s4u::Link::on_destruction(piface_);
-  s4u::Engine::get_instance()->link_unregister(get_name());
   delete this;
 }
 

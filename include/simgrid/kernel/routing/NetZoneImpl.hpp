@@ -77,6 +77,14 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
 
   // our content, as known to our graph routing algorithm (maps vertex_id -> vertex)
   std::vector<kernel::routing::NetPoint*> vertices_;
+  class LinkDeleter {
+  public:
+    void operator()(resource::StandardLinkImpl* link);
+  };
+  std::map<std::string, std::unique_ptr<resource::StandardLinkImpl, LinkDeleter>, std::less<>> links_;
+  /* save split-duplex links separately, keep links_ with only LinkImpl* seen by the user
+   * members of a split-duplex are saved in the links_ */
+  std::map<std::string, std::unique_ptr<resource::SplitDuplexLinkImpl>, std::less<>> split_duplex_links_;
 
   NetZoneImpl* parent_ = nullptr;
   std::vector<NetZoneImpl*> children_; // sub-netzones
@@ -154,14 +162,33 @@ public:
   size_t get_host_count() const;
 
   std::vector<s4u::Link*> get_all_links() const;
+  std::vector<s4u::Link*> get_filtered_links(const std::function<bool(s4u::Link*)>& filter) const;
   size_t get_link_count() const;
+
+  /**
+   * @brief Searches by the link by its name inside this netzone.
+   * Recursively searches in child netzones
+   *
+   * @param name Link name
+   * @return Link object or nullptr if not found
+   */
+  resource::StandardLinkImpl* get_link_by_name_or_null(const std::string& name) const;
+
+  /**
+   * @brief Searches for split-duplex links by its name inside this netzone.
+   * Recursively searches in child netzones
+   *
+   * @param name Split-duplex Link name
+   * @return Link object or nullptr if not found
+   */
+  resource::SplitDuplexLinkImpl* get_split_duplex_link_by_name_or_null(const std::string& name) const;
 
   /** @brief Make a host within that NetZone */
   s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate);
   /** @brief Create a disk with the disk model from this NetZone */
   s4u::Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
   /** @brief Make a link within that NetZone */
-  virtual s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths);
+  s4u::Link* create_link(const std::string& name, const std::vector<double>& bandwidths);
   s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, const std::vector<double>& bandwidths);
   /** @brief Make a router within that NetZone */
   NetPoint* create_router(const std::string& name);
@@ -220,6 +247,8 @@ private:
   virtual void do_seal()
   { /* obviously nothing to do by default */
   }
+  /** @brief Allows subclasses (wi-fi) to have their own create link method, but keep links_ updated */
+  virtual resource::StandardLinkImpl* do_create_link(const std::string& name, const std::vector<double>& bandwidths);
   void add_child(NetZoneImpl* new_zone);
 };
 } // namespace routing

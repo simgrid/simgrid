@@ -100,7 +100,7 @@ NetworkCm02Model::NetworkCm02Model(const std::string& name) : NetworkModel(name)
   loopback_ = create_link("__loopback__", {config::get_value<double>("network/loopback-bw")});
   loopback_->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE, {});
   loopback_->set_latency(config::get_value<double>("network/loopback-lat"));
-  loopback_->seal();
+  loopback_->get_iface()->seal();
 }
 
 void NetworkCm02Model::check_lat_factor_cb()

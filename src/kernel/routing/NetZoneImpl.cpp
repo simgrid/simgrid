@@ -13,9 +13,8 @@
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
-#include "src/surf/HostImpl.hpp"
-
 #include "src/kernel/resource/StandardLinkImpl.hpp"
+#include "src/surf/HostImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing, kernel, "Kernel routing-related information");
 
@@ -70,6 +69,11 @@ xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routi
                  kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                  std::vector<kernel::resource::StandardLinkImpl*> const& link_list)>
     NetZoneImpl::on_route_creation;
+
+void NetZoneImpl::LinkDeleter::operator()(resource::StandardLinkImpl* link)
+{
+  link->destroy();
+}
 
 NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
 {
@@ -136,15 +140,35 @@ size_t NetZoneImpl::get_host_count() const
   return get_all_hosts().size();
 }
 
+std::vector<s4u::Link*> NetZoneImpl::get_filtered_links(const std::function<bool(s4u::Link*)>& filter) const
+{
+  std::vector<s4u::Link*> filtered_list;
+  for (auto const& kv : links_) {
+    s4u::Link* l = kv.second->get_iface();
+    if (filter(l))
+      filtered_list.push_back(l);
+  }
+
+  for (const auto* child : children_) {
+    auto child_links = child->get_filtered_links(filter);
+    filtered_list.insert(filtered_list.end(), std::make_move_iterator(child_links.begin()),
+                         std::make_move_iterator(child_links.end()));
+  }
+  return filtered_list;
+}
+
 std::vector<s4u::Link*> NetZoneImpl::get_all_links() const
 {
-  return s4u::Engine::get_instance()->get_filtered_links(
-      [this](const s4u::Link* link) { return link->get_impl()->get_englobing_zone() == this; });
+  return get_filtered_links([](s4u::Link*) { return true; });
 }
 
 size_t NetZoneImpl::get_link_count() const
 {
-  return get_all_links().size();
+  size_t total = links_.size();
+  for (const auto* child : children_) {
+    total += child->get_link_count();
+  }
+  return total;
 }
 
 s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
@@ -161,6 +185,11 @@ s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<d
   return res;
 }
 
+resource::StandardLinkImpl* NetZoneImpl::do_create_link(const std::string& name, const std::vector<double>& bandwidths)
+{
+  return network_model_->create_link(name, bandwidths);
+}
+
 s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
   xbt_assert(
@@ -168,7 +197,8 @@ s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<d
       "Impossible to create link: %s. Invalid network model: nullptr. Have you set the parent of this NetZone: %s?",
       name.c_str(), get_cname());
   xbt_assert(not sealed_, "Impossible to create link: %s. NetZone %s already sealed", name.c_str(), get_cname());
-  return network_model_->create_link(name, bandwidths)->set_englobing_zone(this)->get_iface();
+  links_[name].reset(do_create_link(name, bandwidths)->set_englobing_zone(this));
+  return links_[name]->get_iface();
 }
 
 s4u::SplitDuplexLink* NetZoneImpl::create_split_duplex_link(const std::string& name,
@@ -180,12 +210,10 @@ s4u::SplitDuplexLink* NetZoneImpl::create_split_duplex_link(const std::string& n
       name.c_str(), get_cname());
   xbt_assert(not sealed_, "Impossible to create link: %s. NetZone %s already sealed", name.c_str(), get_cname());
 
-  auto* link_up                  = network_model_->create_link(name + "_UP", bandwidths)->set_englobing_zone(this);
-  auto* link_down                = network_model_->create_link(name + "_DOWN", bandwidths)->set_englobing_zone(this);
-  auto link                      = std::make_unique<resource::SplitDuplexLinkImpl>(name, link_up, link_down);
-  auto* link_iface               = link->get_iface();
-  EngineImpl::get_instance()->add_split_duplex_link(name, std::move(link));
-  return link_iface;
+  auto* link_up             = create_link(name + "_UP", bandwidths)->get_impl()->set_englobing_zone(this);
+  auto* link_down           = create_link(name + "_DOWN", bandwidths)->get_impl()->set_englobing_zone(this);
+  split_duplex_links_[name] = std::make_unique<resource::SplitDuplexLinkImpl>(name, link_up, link_down);
+  return split_duplex_links_[name]->get_iface();
 }
 
 s4u::Disk* NetZoneImpl::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
@@ -249,6 +277,36 @@ std::vector<resource::StandardLinkImpl*> NetZoneImpl::get_link_list_impl(const s
     links.push_back(link_impl);
   }
   return links;
+}
+
+resource::StandardLinkImpl* NetZoneImpl::get_link_by_name_or_null(const std::string& name) const
+{
+  auto link_it = links_.find(name);
+  if (link_it != links_.end())
+    return link_it->second.get();
+
+  for (const auto* child : children_) {
+    auto* link = child->get_link_by_name_or_null(name);
+    if (link)
+      return link;
+  }
+
+  return nullptr;
+}
+
+resource::SplitDuplexLinkImpl* NetZoneImpl::get_split_duplex_link_by_name_or_null(const std::string& name) const
+{
+  auto link_it = split_duplex_links_.find(name);
+  if (link_it != split_duplex_links_.end())
+    return link_it->second.get();
+
+  for (const auto* child : children_) {
+    auto* link = child->get_split_duplex_link_by_name_or_null(name);
+    if (link)
+      return link;
+  }
+
+  return nullptr;
 }
 
 void NetZoneImpl::add_route(NetPoint* /*src*/, NetPoint* /*dst*/, NetPoint* /*gw_src*/, NetPoint* /*gw_dst*/,
@@ -544,6 +602,11 @@ void NetZoneImpl::seal()
   for (auto* host : get_all_hosts()) {
     host->seal();
   }
+
+  /* sealing links */
+  for (auto const& kv : links_)
+    kv.second->get_iface()->seal();
+
   for (auto* sub_net : get_children()) {
     sub_net->seal();
   }

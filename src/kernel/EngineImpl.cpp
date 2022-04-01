@@ -176,9 +176,6 @@ EngineImpl::~EngineImpl()
   for (auto const& kv : netpoints_)
     delete kv.second;
 
-  while (not links_.empty())
-    links_.begin()->second->destroy();
-
   for (auto const& kv : mailboxes_)
     delete kv.second;
 
@@ -332,9 +329,6 @@ void EngineImpl::seal_platform() const
     return;
   sealed = true;
 
-  /* sealing resources before run: links */
-  for (auto const& kv : links_)
-    kv.second->get_iface()->seal();
   /* seal netzone root, recursively seal children netzones, hosts and disks */
   netzone_root_->seal();
 }
@@ -394,11 +388,6 @@ void EngineImpl::add_model(std::shared_ptr<resource::Model> model, const std::ve
   }
   models_.push_back(model.get());
   models_prio_[model_name] = std::move(model);
-}
-
-void EngineImpl::add_split_duplex_link(const std::string& name, std::unique_ptr<resource::SplitDuplexLinkImpl> link)
-{
-  split_duplex_links_[name] = std::move(link);
 }
 
 /** Wake up all actors waiting for a Surf action to finish */

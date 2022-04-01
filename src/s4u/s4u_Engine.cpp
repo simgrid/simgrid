@@ -15,6 +15,8 @@
 #include "mc/mc.h"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
+#include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "xbt/config.hpp"
 
@@ -236,25 +238,30 @@ Host* Engine::host_by_name_or_null(const std::string& name) const
  */
 Link* Engine::link_by_name(const std::string& name) const
 {
-  auto link = pimpl->links_.find(name);
-  if (link == pimpl->links_.end())
+  auto* link = link_by_name_or_null(name);
+  if (not link)
     throw std::invalid_argument(std::string("Link not found: ") + name);
-  return link->second->get_iface();
+  return link;
 }
 
 SplitDuplexLink* Engine::split_duplex_link_by_name(const std::string& name) const
 {
-  auto link = pimpl->split_duplex_links_.find(name);
-  if (link == pimpl->split_duplex_links_.end())
+  auto* link_impl = pimpl->netzone_root_ ? pimpl->netzone_root_->get_split_duplex_link_by_name_or_null(name) : nullptr;
+  if (not link_impl)
     throw std::invalid_argument(std::string("Link not found: ") + name);
-  return link->second->get_iface();
+  return link_impl->get_iface();
 }
 
 /** @brief Find a link from its name (or nullptr if that link does not exist) */
 Link* Engine::link_by_name_or_null(const std::string& name) const
 {
-  auto link = pimpl->links_.find(name);
-  return link == pimpl->links_.end() ? nullptr : link->second->get_iface();
+  Link* link = nullptr;
+  if (pimpl->netzone_root_) {
+    auto* link_impl = pimpl->netzone_root_->get_link_by_name_or_null(name);
+    if (link_impl)
+      link = link_impl->get_iface();
+  }
+  return link;
 }
 
 /** @brief Find a mailbox from its name or create one if it does not exist) */
@@ -274,38 +281,43 @@ Mailbox* Engine::mailbox_by_name_or_create(const std::string& name) const
 
 void Engine::link_register(const std::string& name, const Link* link)
 {
-  pimpl->links_[name] = link->get_impl();
+  //  pimpl->links_[name] = link->get_impl(); //FIXME
 }
 
 void Engine::link_unregister(const std::string& name)
 {
-  pimpl->links_.erase(name);
+  //  pimpl->links_.erase(name); FIXME
 }
 
 /** @brief Returns the amount of links in the platform */
 size_t Engine::get_link_count() const
 {
-  return pimpl->links_.size();
+  int count = 0;
+  if (pimpl->netzone_root_) {
+    count += pimpl->netzone_root_->get_link_count();
+    /* keep behavior where internal __loopback__ link from network model is given to user */
+    count += pimpl->netzone_root_->get_network_model()->loopback_ ? 1 : 0;
+  }
+  return count;
 }
 
 /** @brief Returns the list of all links found in the platform */
 std::vector<Link*> Engine::get_all_links() const
 {
-  std::vector<Link*> res;
-  for (auto const& kv : pimpl->links_)
-    res.push_back(kv.second->get_iface());
-  return res;
+  return get_filtered_links([](Link*) { return true; });
 }
 
 std::vector<Link*> Engine::get_filtered_links(const std::function<bool(Link*)>& filter) const
 {
-  std::vector<Link*> filtered_list;
-  for (auto const& kv : pimpl->links_) {
-    Link* l = kv.second->get_iface();
-    if (filter(l))
-      filtered_list.push_back(l);
+  std::vector<Link*> res;
+  if (pimpl->netzone_root_) {
+    res = pimpl->netzone_root_->get_filtered_links(filter);
+    /* keep behavior where internal __loopback__ link from network model is given to user */
+    if (pimpl->netzone_root_->get_network_model()->loopback_ &&
+        filter(pimpl->netzone_root_->get_network_model()->loopback_->get_iface()))
+      res.push_back(pimpl->netzone_root_->get_network_model()->loopback_->get_iface());
   }
-  return filtered_list;
+  return res;
 }
 
 size_t Engine::get_actor_count() const
