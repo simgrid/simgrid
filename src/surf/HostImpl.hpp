@@ -9,7 +9,6 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
-#include "src/kernel/resource/LinkImpl.hpp"
 #include <xbt/PropertyHolder.hpp>
 
 #include <vector>

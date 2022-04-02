@@ -15,7 +15,7 @@
 
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
-#include "src/kernel/resource/StandardLinkImpl.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 #include "src/surf/surf_interface.hpp"
 
 #include <fstream>

@@ -9,6 +9,7 @@
 
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 #include "src/surf/host_clm03.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_host);

@@ -6,8 +6,7 @@
 #include <simgrid/s4u/Engine.hpp>
 
 #include "simgrid/sg_config.hpp"
-#include "src/kernel/resource/LinkImpl.hpp"
-#include "src/kernel/resource/StandardLinkImpl.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/surf/surf_interface.hpp"
 

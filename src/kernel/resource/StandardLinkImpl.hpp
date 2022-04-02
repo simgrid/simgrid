@@ -34,6 +34,10 @@ protected:
 
 public:
   void destroy(); // Must be called instead of the destructor
+  class Deleter {
+  public:
+    void operator()(StandardLinkImpl* link);
+  };
 
   void latency_check(double latency) const;
 

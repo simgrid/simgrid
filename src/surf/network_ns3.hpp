@@ -8,6 +8,7 @@
 
 #include "xbt/base.h"
 
+#include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 
 namespace simgrid {

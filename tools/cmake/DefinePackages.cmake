@@ -14,6 +14,7 @@ set(EXTRA_DIST
   src/include/xxhash.hpp
   src/kernel/actor/Simcall.hpp
   src/kernel/resource/LinkImpl.hpp
+  src/kernel/resource/NetworkModel.hpp
   src/kernel/resource/SplitDuplexLinkImpl.hpp
   src/kernel/resource/StandardLinkImpl.hpp
   src/kernel/resource/WifiLinkImpl.hpp
@@ -305,8 +306,8 @@ set(SURF_SRC
   src/kernel/resource/DiskImpl.cpp
   src/kernel/resource/DiskImpl.hpp
   src/kernel/resource/Model.cpp
+  src/kernel/resource/NetworkModel.cpp
   src/kernel/resource/Resource.hpp
-  src/kernel/resource/LinkImpl.cpp
   src/kernel/resource/SplitDuplexLinkImpl.cpp
   src/kernel/resource/StandardLinkImpl.cpp
   src/kernel/resource/VirtualMachineImpl.hpp

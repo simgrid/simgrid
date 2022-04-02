@@ -15,6 +15,7 @@
 #include "mc/mc.h"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/mc/mc_replay.hpp"
@@ -277,16 +278,6 @@ Mailbox* Engine::mailbox_by_name_or_create(const std::string& name) const
     return m.first->second;
   });
   return mbox->get_iface();
-}
-
-void Engine::link_register(const std::string& name, const Link* link)
-{
-  //  pimpl->links_[name] = link->get_impl(); //FIXME
-}
-
-void Engine::link_unregister(const std::string& name)
-{
-  //  pimpl->links_.erase(name); FIXME
 }
 
 /** @brief Returns the amount of links in the platform */

@@ -13,7 +13,7 @@
 
 #include "src/internal_config.h" // HAVE_SMPI
 #include "src/kernel/activity/CommImpl.hpp"
-#include "src/kernel/resource/StandardLinkImpl.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 #if HAVE_SMPI
 #include "src/smpi/include/smpi_request.hpp"
 #include "src/smpi/plugins/ampi/ampi.hpp"

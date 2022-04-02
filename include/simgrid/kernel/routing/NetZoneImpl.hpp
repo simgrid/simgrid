@@ -77,6 +77,8 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
 
   // our content, as known to our graph routing algorithm (maps vertex_id -> vertex)
   std::vector<kernel::routing::NetPoint*> vertices_;
+  // would like to use the one defined in the StandardLinkImpl file, but for some reason
+  // this hpp is exported to the users and so cannot include the other internal hpp.
   class LinkDeleter {
   public:
     void operator()(resource::StandardLinkImpl* link);
@@ -161,8 +163,23 @@ public:
   std::vector<s4u::Host*> get_all_hosts() const;
   size_t get_host_count() const;
 
+  /**
+   * @brief Recursively gets all links declared in this netzone
+   *
+   * Include children netzones.
+   * @return List of links
+   */
   std::vector<s4u::Link*> get_all_links() const;
+  /**
+   * @brief Recursively gets all links declared in this netzone.
+   *
+   * Using a filter function
+   * Include children netzones.
+   * @param filter Select links based on this filter
+   * @return List of links
+   */
   std::vector<s4u::Link*> get_filtered_links(const std::function<bool(s4u::Link*)>& filter) const;
+  /** @brief Get total number of links declared in this netzone (and its children) */
   size_t get_link_count() const;
 
   /**

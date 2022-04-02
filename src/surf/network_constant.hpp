@@ -6,7 +6,7 @@
 #ifndef NETWORK_CONSTANT_HPP_
 #define NETWORK_CONSTANT_HPP_
 
-#include "src/kernel/resource/LinkImpl.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 
 namespace simgrid {
 namespace kernel {

@@ -24,8 +24,12 @@ StandardLinkImpl::StandardLinkImpl(const std::string& name) : LinkImpl(name), pi
   if (name != "__loopback__")
     xbt_assert(not s4u::Link::by_name_or_null(name), "Link '%s' declared several times in the platform.", name.c_str());
 
-  s4u::Engine::get_instance()->link_register(name, &piface_);
   XBT_DEBUG("Create link '%s'", name.c_str());
+}
+
+void StandardLinkImpl::Deleter::operator()(resource::StandardLinkImpl* link)
+{
+  link->destroy();
 }
 
 /** @brief Fire the required callbacks and destroy the object

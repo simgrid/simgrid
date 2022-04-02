@@ -2216,9 +2216,10 @@ include src/kernel/resource/CpuImpl.cpp
 include src/kernel/resource/CpuImpl.hpp
 include src/kernel/resource/DiskImpl.cpp
 include src/kernel/resource/DiskImpl.hpp
-include src/kernel/resource/LinkImpl.cpp
 include src/kernel/resource/LinkImpl.hpp
 include src/kernel/resource/Model.cpp
+include src/kernel/resource/NetworkModel.cpp
+include src/kernel/resource/NetworkModel.hpp
 include src/kernel/resource/NetworkModelIntf_test.cpp
 include src/kernel/resource/Resource.hpp
 include src/kernel/resource/SplitDuplexLinkImpl.cpp

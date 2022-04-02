@@ -6,7 +6,7 @@
 #include <simgrid/kernel/routing/FatTreeZone.hpp>
 #include <simgrid/kernel/routing/NetPoint.hpp>
 
-#include "src/kernel/resource/StandardLinkImpl.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 #include "src/surf/xml/platf.hpp" // surf_parse_error() and surf_parse_assert()
 
 #include <fstream>

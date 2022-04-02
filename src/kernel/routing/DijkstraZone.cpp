@@ -7,7 +7,7 @@
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <xbt/string.hpp>
 
-#include "src/kernel/resource/StandardLinkImpl.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 
 #include <climits>
 #include <queue>
@@ -53,7 +53,7 @@ void DijkstraZone::do_seal()
 
       if (not found) {
         auto* route = new Route();
-        route->link_list_.push_back(get_network_model()->loopback_);
+        route->link_list_.push_back(get_network_model()->loopback_.get());
         xbt_graph_new_edge(route_graph_.get(), node, node, route);
       }
     }

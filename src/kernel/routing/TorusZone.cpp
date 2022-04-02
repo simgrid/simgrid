@@ -6,7 +6,7 @@
 #include "simgrid/kernel/routing/TorusZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "src/kernel/resource/LinkImpl.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>

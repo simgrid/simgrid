@@ -12,6 +12,7 @@
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/surf/HostImpl.hpp"

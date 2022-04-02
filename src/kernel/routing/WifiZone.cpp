@@ -6,7 +6,7 @@
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <simgrid/kernel/routing/WifiZone.hpp>
 
-#include "src/kernel/resource/StandardLinkImpl.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_wifi, ker_routing, "Kernel Wifi Routing");
 

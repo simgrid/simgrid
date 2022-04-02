@@ -5,7 +5,7 @@
 
 #include "simgrid/kernel/routing/DragonflyZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
-#include "src/kernel/resource/StandardLinkImpl.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>

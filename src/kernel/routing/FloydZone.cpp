@@ -7,7 +7,7 @@
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <xbt/string.hpp>
 
-#include "src/kernel/resource/StandardLinkImpl.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 
 #include <climits>
 
@@ -135,7 +135,7 @@ void FloydZone::do_seal()
       auto& route = link_table_[i][i];
       if (not route) {
         route.reset(new Route());
-        route->link_list_.push_back(get_network_model()->loopback_);
+        route->link_list_.push_back(get_network_model()->loopback_.get());
         predecessor_table_[i][i] = i;
         cost_table_[i][i]        = 1;
       }

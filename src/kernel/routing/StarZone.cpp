@@ -6,7 +6,7 @@
 #include "simgrid/kernel/routing/StarZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/RoutedZone.hpp"
-#include "src/kernel/resource/StandardLinkImpl.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 #include "xbt/string.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_star, ker_routing, "Kernel Star Routing");

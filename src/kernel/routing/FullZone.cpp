@@ -6,7 +6,7 @@
 #include <simgrid/kernel/routing/FullZone.hpp>
 #include <simgrid/kernel/routing/NetPoint.hpp>
 
-#include "src/kernel/resource/StandardLinkImpl.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_full, ker_routing, "Kernel Full Routing");
 
@@ -35,7 +35,7 @@ void FullZone::do_seal()
       auto& route = routing_table_[i][i];
       if (not route) {
         route.reset(new Route());
-        route->link_list_.push_back(get_network_model()->loopback_);
+        route->link_list_.push_back(get_network_model()->loopback_.get());
       }
     }
   }

@@ -8,8 +8,7 @@
 
 #include <xbt/base.h>
 
-#include "simgrid/kernel/resource/NetworkModelIntf.hpp"
-#include "src/kernel/resource/LinkImpl.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "xbt/graph.h"
 #include "xbt/string.hpp"
