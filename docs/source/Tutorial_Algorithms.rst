@@ -408,7 +408,9 @@ recompile it when you first log in:
 
 .. code-block:: console
 
-   $ # first connect to the running container
+   $ # Make sure the simgrid-tutorial directory can be read and written by the non-root user
+   $ sudo chown $UID:$GID ~/simgrid-tutorial
+   $ # Connect to the running container if needed
    $ docker exec --user $UID:$GID -ti simgrid bash
    $container) cp -r /source/simgrid-template-s4u.git/* /source/tutorial
    $container) cd /source/tutorial
