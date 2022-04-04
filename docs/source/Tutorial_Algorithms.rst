@@ -408,10 +408,12 @@ recompile it when you first log in:
 
 .. code-block:: console
 
-   $ cp -r /source/simgrid-template-s4u.git/* /source/tutorial
-   $ cd /source/tutorial
-   $ cmake .
-   $ make
+   $ # first connect to the running container
+   $ docker exec --user $UID:$GID -ti simgrid bash
+   $container) cp -r /source/simgrid-template-s4u.git/* /source/tutorial
+   $container) cd /source/tutorial
+   $container) cmake .
+   $container) make
 
 Using your Computer Natively
 ............................
