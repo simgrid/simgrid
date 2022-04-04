@@ -400,7 +400,7 @@ If you need to run a command as root within the container, simply type the follo
    #    CONTAINER ID   IMAGE            COMMAND   CREATED         STATUS         PORTS     NAMES
    #    7e921b1b18a7   simgrid/stable   "bash"    7 minutes ago   Up 7 minutes             simgrid
 
-   $ docker exec --user 0:0 -it simgrid bash
+   $ docker exec --user root -it simgrid bash
 
 The code template is available under ``/source/simgrid-template-s4u.git``
 in the image. You should copy it to your working directory and
