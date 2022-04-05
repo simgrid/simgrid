@@ -63,8 +63,6 @@ allgather__rhv(const void *sbuf, int send_count,
     size /= 2;
   }
 
-  //  printf("node %d base_offset %d\n",rank,base_offset);
-
   //perform a remote copy
 
   dst = base_offset;
@@ -75,7 +73,6 @@ allgather__rhv(const void *sbuf, int send_count,
 
   mask >>= 1;
   i = 1;
-  int phase = 0;
   curr_count = recv_count;
   while (mask >= 1) {
     // destination pair for both send and recv
@@ -92,15 +89,12 @@ allgather__rhv(const void *sbuf, int send_count,
     send_offset = send_base_offset * recv_chunk;
     recv_offset = recv_base_offset * recv_chunk;
 
-    //  printf("node %d send to %d in phase %d s_offset = %d r_offset = %d count = %d\n",rank,dst,phase, send_base_offset, recv_base_offset, curr_count);
-
     Request::sendrecv((char*)rbuf + send_offset, curr_count, recv_type, dst, tag, (char*)rbuf + recv_offset, curr_count,
                       recv_type, dst, tag, comm, &status);
 
     curr_count *= 2;
     i *= 2;
     mask >>= 1;
-    phase++;
   }
 
   return MPI_SUCCESS;
