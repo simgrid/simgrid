@@ -51,8 +51,6 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
   intra_rank = rank % num_core;
   inter_rank = rank / num_core;
 
-  //printf("node %d intra_rank = %d, inter_rank = %d\n", rank, intra_rank, inter_rank);
-
   int inter_comm_size = (comm_size + num_core - 1) / num_core;
 
   Request::sendrecv(sbuf, count, dtype, rank, tag,
@@ -67,13 +65,11 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
       if (src < comm_size) {
         Request::recv(tmp_buf, count, dtype, src, tag, comm, &status);
         if(op!=MPI_OP_NULL) op->apply( tmp_buf, rbuf, &count, dtype);
-        //printf("Node %d recv from node %d when mask is %d\n", rank, src, mask);
       }
     } else {
 
       dst = (inter_rank * num_core) + (intra_rank & (~mask));
       Request::send(rbuf, count, dtype, dst, tag, comm);
-      //printf("Node %d send to node %d when mask is %d\n", rank, dst, mask);
       break;
     }
     mask <<= 1;
@@ -92,7 +88,6 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
 
     mask = 1;
     curr_count = count / 2;
-    int phase = 0;
     base_offset = 0;
 
     while (mask < (comm_size / num_core)) {
@@ -113,9 +108,6 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
       send_offset = send_base_offset * extent;
       recv_offset = recv_base_offset * extent;
 
-      //      if (rank==7)
-      //      printf("node %d send to %d in phase %d s_offset = %d r_offset = %d count = %d\n",rank,dst,phase, send_offset, recv_offset, curr_count);
-
       Request::sendrecv((char *)rbuf + send_offset, curr_count, dtype, (dst * num_core), tag,
                    tmp_buf, curr_count, dtype, (dst * num_core), tag,
                    comm, &status);
@@ -124,7 +116,6 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
 
       mask *= 2;
       curr_count /= 2;
-      phase++;
     }
 
 
@@ -144,7 +135,6 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
     curr_count *= 2;
     mask >>= 1;
     i = 1;
-    phase = 0;
     while (mask >= 1) {
       // destination pair for both send and recv
       dst = inter_rank ^ mask;
@@ -160,9 +150,6 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
       send_offset = send_base_offset * recv_chunk;
       recv_offset = recv_base_offset * recv_chunk;
 
-      //      if (rank==7)
-      //printf("node %d send to %d in phase %d s_offset = %d r_offset = %d count = %d\n",rank,dst,phase, send_offset, recv_offset, curr_count);
-
       Request::sendrecv((char *)rbuf + send_offset, curr_count, dtype, (dst * num_core), tag,
                    (char *)rbuf + recv_offset, curr_count, dtype, (dst * num_core), tag,
                    comm, &status);
@@ -171,7 +158,6 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
       curr_count *= 2;
       i *= 2;
       mask >>= 1;
-      phase++;
     }
 
 
@@ -183,12 +169,10 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
   if (inter_rank == (inter_comm_size - 1)) {
     num_core_in_current_smp = comm_size - (inter_rank * num_core);
   }
-  //  printf("Node %d num_core = %d\n",rank, num_core_in_current_smp);
   mask = 1;
   while (mask < num_core_in_current_smp) {
     if (intra_rank & mask) {
       src = (inter_rank * num_core) + (intra_rank - mask);
-      //printf("Node %d recv from node %d when mask is %d\n", rank, src, mask);
       Request::recv(rbuf, count, dtype, src, tag, comm, &status);
       break;
     }
@@ -196,12 +180,10 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
   }
 
   mask >>= 1;
-  //printf("My rank = %d my mask = %d\n", rank,mask);
 
   while (mask > 0) {
     dst = (inter_rank * num_core) + (intra_rank + mask);
     if (dst < comm_size) {
-      //printf("Node %d send to node %d when mask is %d\n", rank, dst, mask);
       Request::send(rbuf, count, dtype, dst, tag, comm);
     }
     mask >>= 1;

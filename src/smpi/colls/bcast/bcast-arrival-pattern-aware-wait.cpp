@@ -101,13 +101,10 @@ int bcast__arrival_pattern_aware_wait(void *buf, int count,
   /* root */
   if (rank == 0) {
     sent_count = 0;
-    int iteration = 0;
 
     for (i = 0; i < BCAST_ARRIVAL_PATTERN_AWARE_MAX_NODE; i++)
       will_send[i] = 0;
     while (sent_count < (size - 1)) {
-      iteration++;
-
       /* loop k times to let more processes arrive before start sending data */
       for (k = 0; k < 3; k++) {
         for (i = 1; i < size; i++) {
