@@ -258,6 +258,9 @@ Link* Engine::link_by_name_or_null(const std::string& name) const
 {
   Link* link = nullptr;
   if (pimpl->netzone_root_) {
+    /* keep behavior where internal __loopback__ link from network model is given to user */
+    if (name == "__loopback__")
+      return pimpl->netzone_root_->get_network_model()->loopback_->get_iface();
     auto* link_impl = pimpl->netzone_root_->get_link_by_name_or_null(name);
     if (link_impl)
       link = link_impl->get_iface();
