@@ -81,7 +81,7 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
   // this hpp is exported to the users and so cannot include the other internal hpp.
   class LinkDeleter {
   public:
-    void operator()(resource::StandardLinkImpl* link);
+    void operator()(resource::StandardLinkImpl* link) const;
   };
   std::map<std::string, std::unique_ptr<resource::StandardLinkImpl, LinkDeleter>, std::less<>> links_;
   /* save split-duplex links separately, keep links_ with only LinkImpl* seen by the user

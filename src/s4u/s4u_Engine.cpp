@@ -298,7 +298,7 @@ size_t Engine::get_link_count() const
 /** @brief Returns the list of all links found in the platform */
 std::vector<Link*> Engine::get_all_links() const
 {
-  return get_filtered_links([](Link*) { return true; });
+  return get_filtered_links([](const Link*) { return true; });
 }
 
 std::vector<Link*> Engine::get_filtered_links(const std::function<bool(Link*)>& filter) const

@@ -71,7 +71,7 @@ xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routi
                  std::vector<kernel::resource::StandardLinkImpl*> const& link_list)>
     NetZoneImpl::on_route_creation;
 
-void NetZoneImpl::LinkDeleter::operator()(resource::StandardLinkImpl* link)
+void NetZoneImpl::LinkDeleter::operator()(resource::StandardLinkImpl* link) const
 {
   link->destroy();
 }
@@ -160,7 +160,7 @@ std::vector<s4u::Link*> NetZoneImpl::get_filtered_links(const std::function<bool
 
 std::vector<s4u::Link*> NetZoneImpl::get_all_links() const
 {
-  return get_filtered_links([](s4u::Link*) { return true; });
+  return get_filtered_links([](const s4u::Link*) { return true; });
 }
 
 size_t NetZoneImpl::get_link_count() const

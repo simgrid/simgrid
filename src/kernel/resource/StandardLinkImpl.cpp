@@ -27,7 +27,7 @@ StandardLinkImpl::StandardLinkImpl(const std::string& name) : LinkImpl(name), pi
   XBT_DEBUG("Create link '%s'", name.c_str());
 }
 
-void StandardLinkImpl::Deleter::operator()(resource::StandardLinkImpl* link)
+void StandardLinkImpl::Deleter::operator()(resource::StandardLinkImpl* link) const
 {
   link->destroy();
 }
