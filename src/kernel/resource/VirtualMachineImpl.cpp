@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <simgrid/Exception.hpp>
+#include <simgrid/kernel/routing/NetPoint.hpp>
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <simgrid/s4u/Exec.hpp>
 
@@ -183,7 +184,7 @@ Action* VMModel::execute_thread(const s4u::Host* host, double flops_amount, int 
 
 VirtualMachineImpl::VirtualMachineImpl(const std::string& name, s4u::VirtualMachine* piface,
                                        simgrid::s4u::Host* host_PM, int core_amount, size_t ramsize)
-    : HostImpl(name, piface), piface_(piface), physical_host_(host_PM), core_amount_(core_amount), ramsize_(ramsize)
+    : HostImpl(name), piface_(piface), physical_host_(host_PM), core_amount_(core_amount), ramsize_(ramsize)
 {
   /* Register this VM to the list of all VMs */
   allVms_.push_back(piface);
@@ -196,7 +197,6 @@ VirtualMachineImpl::VirtualMachineImpl(const std::string& name, s4u::VirtualMach
 
   // It's empty for now, so it should not request resources in the PM
   update_action_weight();
-
   XBT_VERB("Create VM(%s)@PM(%s)", name.c_str(), physical_host_->get_cname());
 }
 
@@ -211,10 +211,49 @@ void VirtualMachineImpl::vm_destroy()
   /* Free the cpu_action of the VM. */
   XBT_ATTRIB_UNUSED bool ret = action_->unref();
   xbt_assert(ret, "Bug: some resource still remains");
+
+  // VM uses the host's netpoint, clean but don't destroy it
+  get_iface()->set_netpoint(nullptr);
+  // calls the HostImpl() destroy, it'll delete the impl object
+  destroy();
+
+  delete piface_;
+}
+
+void VirtualMachineImpl::start()
+{
+  s4u::VirtualMachine::on_start(*get_iface());
+  s4u::VmHostExt::ensureVmExtInstalled();
+
+  if (physical_host_->extension<s4u::VmHostExt>() == nullptr)
+    physical_host_->extension_set(new s4u::VmHostExt());
+
+  size_t pm_ramsize = physical_host_->extension<s4u::VmHostExt>()->ramsize;
+  if (pm_ramsize &&
+      not physical_host_->extension<s4u::VmHostExt>()->overcommit) { /* Need to verify that we don't overcommit */
+    /* Retrieve the memory occupied by the VMs on that host. Yep, we have to traverse all VMs of all hosts for that */
+    size_t total_ramsize_of_vms = 0;
+    for (auto* const& ws_vm : allVms_)
+      if (physical_host_ == ws_vm->get_pm())
+        total_ramsize_of_vms += ws_vm->get_ramsize();
+
+    if (total_ramsize_of_vms + get_ramsize() > pm_ramsize) {
+      XBT_WARN("cannot start %s@%s due to memory shortage: get_ramsize() %zu, free %zu, pm_ramsize %zu (bytes).",
+               get_cname(), physical_host_->get_cname(), get_ramsize(), pm_ramsize - total_ramsize_of_vms, pm_ramsize);
+      throw VmFailureException(XBT_THROW_POINT,
+                               xbt::string_printf("Memory shortage on host '%s', VM '%s' cannot be started",
+                                                  physical_host_->get_cname(), get_cname()));
+    }
+  }
+  vm_state_ = s4u::VirtualMachine::State::RUNNING;
+
+  s4u::VirtualMachine::on_started(*get_iface());
 }
 
 void VirtualMachineImpl::suspend(const actor::ActorImpl* issuer)
 {
+  s4u::VirtualMachine::on_suspend(*get_iface());
+
   if (vm_state_ != s4u::VirtualMachine::State::RUNNING)
     throw VmFailureException(XBT_THROW_POINT,
                              xbt::string_printf("Cannot suspend VM %s: it is not running.", piface_->get_cname()));
@@ -252,6 +291,7 @@ void VirtualMachineImpl::resume()
   });
 
   vm_state_ = s4u::VirtualMachine::State::RUNNING;
+  s4u::VirtualMachine::on_resume(*get_iface());
 }
 
 /** @brief Power off a VM.
@@ -277,6 +317,7 @@ void VirtualMachineImpl::shutdown(actor::ActorImpl* issuer)
 
   set_state(s4u::VirtualMachine::State::DESTROYED);
 
+  s4u::VirtualMachine::on_shutdown(*get_iface());
   /* FIXME: we may have to do something at the surf layer, e.g., vcpu action */
 }
 
@@ -292,6 +333,7 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
 
   /* update net_elm with that of the destination physical host */
   piface_->set_netpoint(destination->get_netpoint());
+  physical_host_->get_impl()->move_vm(this, destination->get_impl());
 
   /* Adapt the speed, pstate and other physical characteristics to the one of our new physical CPU */
   piface_->get_cpu()->reset_vcpu(destination->get_cpu());
@@ -340,6 +382,24 @@ void VirtualMachineImpl::update_action_weight()
     action_->set_sharing_penalty(0.);
 
   action_->set_bound(std::min(impact * physical_host_->get_speed(), user_bound_));
+}
+
+void VirtualMachineImpl::start_migration()
+{
+  is_migrating_ = true;
+  s4u::VirtualMachine::on_migration_start(*get_iface());
+}
+
+void VirtualMachineImpl::end_migration()
+{
+  is_migrating_ = false;
+  s4u::VirtualMachine::on_migration_end(*get_iface());
+}
+
+void VirtualMachineImpl::seal()
+{
+  HostImpl::seal();
+  s4u::VirtualMachine::on_creation(*get_iface());
 }
 
 } // namespace resource

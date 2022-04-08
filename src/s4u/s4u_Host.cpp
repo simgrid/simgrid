@@ -111,11 +111,6 @@ void Host::turn_off()
   if (is_on()) {
     const kernel::actor::ActorImpl* self = kernel::actor::ActorImpl::self();
     kernel::actor::simcall_answered([this, self] {
-      for (VirtualMachine* const& vm : kernel::resource::VirtualMachineImpl::allVms_)
-        if (vm->get_pm() == this) {
-          vm->shutdown();
-          vm->turn_off();
-        }
       this->pimpl_cpu_->turn_off();
       this->pimpl_->turn_off(self);
 
@@ -368,12 +363,14 @@ void Host::remove_disk(const std::string& disk_name)
 
 VirtualMachine* Host::create_vm(const std::string& name, int core_amount)
 {
-  return new VirtualMachine(name, this, core_amount);
+  return kernel::actor::simcall_answered(
+      [this, &name, core_amount] { return this->pimpl_->create_vm(name, core_amount); });
 }
 
 VirtualMachine* Host::create_vm(const std::string& name, int core_amount, size_t ramsize)
 {
-  return new VirtualMachine(name, this, core_amount, ramsize);
+  return kernel::actor::simcall_answered(
+      [this, &name, core_amount, ramsize] { return this->pimpl_->create_vm(name, core_amount, ramsize); });
 }
 
 ExecPtr Host::exec_init(double flops) const

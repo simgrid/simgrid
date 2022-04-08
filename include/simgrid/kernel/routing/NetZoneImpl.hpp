@@ -79,14 +79,15 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
   std::vector<kernel::routing::NetPoint*> vertices_;
   // would like to use the one defined in the StandardLinkImpl file, but for some reason
   // this hpp is exported to the users and so cannot include the other internal hpp.
-  class LinkDeleter {
+  class ResourceDeleter {
   public:
-    void operator()(resource::StandardLinkImpl* link) const;
+    template <typename Resource> void operator()(Resource* res) const;
   };
-  std::map<std::string, std::unique_ptr<resource::StandardLinkImpl, LinkDeleter>, std::less<>> links_;
+  std::map<std::string, std::unique_ptr<resource::StandardLinkImpl, ResourceDeleter>, std::less<>> links_;
   /* save split-duplex links separately, keep links_ with only LinkImpl* seen by the user
    * members of a split-duplex are saved in the links_ */
   std::map<std::string, std::unique_ptr<resource::SplitDuplexLinkImpl>, std::less<>> split_duplex_links_;
+  std::map<std::string, resource::HostImpl*, std::less<>> hosts_;
 
   NetZoneImpl* parent_ = nullptr;
   std::vector<NetZoneImpl*> children_; // sub-netzones
@@ -184,7 +185,7 @@ public:
 
   /**
    * @brief Searches by the link by its name inside this netzone.
-   * Recursively searches in child netzones
+   * Recursively searches in children netzones
    *
    * @param name Link name
    * @return Link object or nullptr if not found
@@ -199,6 +200,25 @@ public:
    * @return Link object or nullptr if not found
    */
   resource::SplitDuplexLinkImpl* get_split_duplex_link_by_name_or_null(const std::string& name) const;
+
+  /**
+   * @brief Searches for a host by its name (recursively)
+   * Including children netzones and VMs on physival hosts
+   *
+   * @param name Host (or VM) name
+   * @return HostImpl pointer
+   */
+  resource::HostImpl* get_host_by_name_or_null(const std::string& name) const;
+
+  /**
+   * @brief Gets list of hosts on this netzone recursively.
+   *
+   * Note: This includes hosts on children netzones and VMs on physical hosts.
+   *
+   * @param filter Filter function to select specific nodes
+   * @return List of hosts
+   */
+  std::vector<s4u::Host*> get_filtered_hosts(const std::function<bool(s4u::Host*)>& filter) const;
 
   /** @brief Make a host within that NetZone */
   s4u::Host* create_host(const std::string& name, const std::vector<double>& speed_per_pstate);

@@ -32,6 +32,7 @@ public:
   explicit VirtualMachineImpl(const std::string& name, s4u::VirtualMachine* piface, s4u::Host* host, int core_amount,
                               size_t ramsize);
 
+  void start();
   void suspend(const actor::ActorImpl* issuer);
   void resume();
   void shutdown(kernel::actor::ActorImpl* issuer);
@@ -42,8 +43,8 @@ public:
   /** @brief Get the physical host on which the given VM is running */
   s4u::Host* get_physical_host() const { return physical_host_; }
 
-  sg_size_t get_ramsize() const { return ramsize_; }
-  void set_ramsize(sg_size_t ramsize) { ramsize_ = ramsize; }
+  size_t get_ramsize() const { return ramsize_; }
+  void set_ramsize(size_t ramsize) { ramsize_ = ramsize; }
 
   s4u::VirtualMachine::State get_state() const { return vm_state_; }
   void set_state(s4u::VirtualMachine::State state) { vm_state_ = state; }
@@ -61,9 +62,10 @@ public:
   void add_active_exec() { active_execs_++; }
   void remove_active_exec() { active_execs_--; }
 
-  void start_migration() { is_migrating_ = true; }
-  void end_migration() { is_migrating_ = false; }
+  void start_migration();
+  void end_migration();
   bool is_migrating() const { return is_migrating_; }
+  void seal() override;
 
 private:
   s4u::VirtualMachine* piface_;

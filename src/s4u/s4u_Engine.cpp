@@ -19,6 +19,7 @@
 #include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/mc/mc_replay.hpp"
+#include "src/surf/HostImpl.hpp"
 #include "xbt/config.hpp"
 
 #include <algorithm>
@@ -182,36 +183,25 @@ void Engine::load_deployment(const std::string& deploy) const
 /** Returns the amount of hosts in the platform */
 size_t Engine::get_host_count() const
 {
-  return pimpl->hosts_.size();
+  return get_all_hosts().size();
 }
 
 std::vector<Host*> Engine::get_all_hosts() const
 {
-  std::vector<Host*> res;
-  for (auto const& kv : pimpl->hosts_)
-    res.push_back(kv.second);
-  return res;
+  return get_filtered_hosts([](const Host*) { return true; });
 }
 
 std::vector<Host*> Engine::get_filtered_hosts(const std::function<bool(Host*)>& filter) const
 {
   std::vector<Host*> hosts;
-  for (auto const& kv : pimpl->hosts_) {
-    if (filter(kv.second))
-      hosts.push_back(kv.second);
+  if (pimpl->netzone_root_) {
+    hosts = pimpl->netzone_root_->get_filtered_hosts(filter);
   }
+  /* Sort hosts in lexicographical order: keep same behavior when the hosts were saved on Engine
+   * Some tests do a get_all_hosts() and selects hosts in this order */
+  std::sort(hosts.begin(), hosts.end(), [](const auto* h1, const auto* h2) { return h1->get_name() < h2->get_name(); });
 
   return hosts;
-}
-
-void Engine::host_register(const std::string& name, Host* host)
-{
-  pimpl->hosts_[name] = host;
-}
-
-void Engine::host_unregister(const std::string& name)
-{
-  pimpl->hosts_.erase(name);
 }
 
 /** @brief Find a host from its name.
@@ -220,17 +210,22 @@ void Engine::host_unregister(const std::string& name)
  */
 Host* Engine::host_by_name(const std::string& name) const
 {
-  auto host = pimpl->hosts_.find(name);
-  if (host == pimpl->hosts_.end())
+  auto* host = host_by_name_or_null(name);
+  if (not host)
     throw std::invalid_argument(std::string("Host not found: '") + name + std::string("'"));
-  return host->second;
+  return host;
 }
 
 /** @brief Find a host from its name (or nullptr if that host does not exist) */
 Host* Engine::host_by_name_or_null(const std::string& name) const
 {
-  auto host = pimpl->hosts_.find(name);
-  return host == pimpl->hosts_.end() ? nullptr : host->second;
+  Host* host = nullptr;
+  if (pimpl->netzone_root_) {
+    auto* host_impl = pimpl->netzone_root_->get_host_by_name_or_null(name);
+    if (host_impl)
+      host = host_impl->get_iface();
+  }
+  return host;
 }
 
 /** @brief Find a link from its name.

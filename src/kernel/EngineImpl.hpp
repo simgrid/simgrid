@@ -33,7 +33,6 @@ namespace simgrid {
 namespace kernel {
 
 class EngineImpl {
-  std::map<std::string, s4u::Host*, std::less<>> hosts_;
   std::unordered_map<std::string, routing::NetPoint*> netpoints_;
   std::unordered_map<std::string, activity::MailboxImpl*> mailboxes_;
 

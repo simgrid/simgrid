@@ -7,6 +7,7 @@
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
+#include <simgrid/s4u/VirtualMachine.hpp>
 
 #include "src/include/simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
@@ -15,6 +16,7 @@
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
+#include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/surf/HostImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing, kernel, "Kernel routing-related information");
@@ -71,9 +73,9 @@ xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routi
                  std::vector<kernel::resource::StandardLinkImpl*> const& link_list)>
     NetZoneImpl::on_route_creation;
 
-void NetZoneImpl::LinkDeleter::operator()(resource::StandardLinkImpl* link) const
+template <typename Resource> void NetZoneImpl::ResourceDeleter::operator()(Resource* res) const
 {
-  link->destroy();
+  res->destroy();
 }
 
 NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
@@ -111,6 +113,14 @@ NetZoneImpl::~NetZoneImpl()
 {
   for (auto const& nz : children_)
     delete nz;
+
+  /* Since hosts_ is a std::map, the hosts are destroyed in the lexicographic order, which ensures that the output is
+   * reproducible.
+   */
+  for (auto& host : hosts_) {
+    host.second->destroy();
+  }
+  hosts_.clear();
 
   for (auto const& kv : bypass_routes_)
     delete kv.second;
@@ -178,12 +188,13 @@ s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<d
              "Impossible to create host: %s. Invalid CPU model: nullptr. Have you set the parent of this NetZone: %s?",
              name.c_str(), get_cname());
   xbt_assert(not sealed_, "Impossible to create host: %s. NetZone %s already sealed", name.c_str(), get_cname());
-  auto* res = (new resource::HostImpl(name))->set_englobing_zone(this)->get_iface();
-  res->set_netpoint((new NetPoint(name, NetPoint::Type::Host))->set_englobing_zone(this));
+  auto* host   = (new resource::HostImpl(name))->set_englobing_zone(this);
+  hosts_[name] = host;
+  host->get_iface()->set_netpoint((new NetPoint(name, NetPoint::Type::Host))->set_englobing_zone(this));
 
-  cpu_model_pm_->create_cpu(res, speed_per_pstate);
+  cpu_model_pm_->create_cpu(host->get_iface(), speed_per_pstate);
 
-  return res;
+  return host->get_iface();
 }
 
 resource::StandardLinkImpl* NetZoneImpl::do_create_link(const std::string& name, const std::vector<double>& bandwidths)
@@ -308,6 +319,50 @@ resource::SplitDuplexLinkImpl* NetZoneImpl::get_split_duplex_link_by_name_or_nul
   }
 
   return nullptr;
+}
+
+resource::HostImpl* NetZoneImpl::get_host_by_name_or_null(const std::string& name) const
+{
+  for (auto const& kv : hosts_) {
+    auto* host = kv.second;
+    if (host->get_name() == name)
+      return host;
+    /* keep old behavior where host and VMs were saved together on EngineImpl::hosts_
+     * get hosts returns VMs too */
+    auto* vm = host->get_vm_by_name_or_null(name);
+    if (vm)
+      return vm;
+  }
+
+  for (const auto* child : children_) {
+    auto* host = child->get_host_by_name_or_null(name);
+    if (host)
+      return host;
+  }
+
+  return nullptr;
+}
+
+std::vector<s4u::Host*> NetZoneImpl::get_filtered_hosts(const std::function<bool(s4u::Host*)>& filter) const
+{
+  std::vector<s4u::Host*> filtered_list;
+  for (auto const& kv : hosts_) {
+    s4u::Host* h = kv.second->get_iface();
+    if (filter(h))
+      filtered_list.push_back(h);
+    /* Engine::get_hosts returns the VMs too */
+    for (auto* vm : h->get_impl()->get_vms()) {
+      if (filter(vm))
+        filtered_list.push_back(vm);
+    }
+  }
+
+  for (const auto* child : children_) {
+    auto child_links = child->get_filtered_hosts(filter);
+    filtered_list.insert(filtered_list.end(), std::make_move_iterator(child_links.begin()),
+                         std::make_move_iterator(child_links.end()));
+  }
+  return filtered_list;
 }
 
 void NetZoneImpl::add_route(NetPoint* /*src*/, NetPoint* /*dst*/, NetPoint* /*gw_src*/, NetPoint* /*gw_dst*/,

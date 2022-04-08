@@ -45,8 +45,12 @@ class XBT_PUBLIC VirtualMachine : public s4u::Host {
   static xbt::signal<void(VirtualMachine const&)> on_migration_end;
   static xbt::signal<void(VirtualMachine const&)> on_destruction;
 
+#ifndef DOXYGEN
+  friend kernel::resource::VirtualMachineImpl; // calls signals from Impl
+#endif
+
 public:
-  explicit VirtualMachine(const std::string& name, Host* physical_host, int core_amount, size_t ramsize = 1024);
+  explicit VirtualMachine(const std::string& name, Host* physical_host, int core_amount, size_t ramsize);
 
 #ifndef DOXYGEN
   // No copy/move

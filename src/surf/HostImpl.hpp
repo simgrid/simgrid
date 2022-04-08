@@ -50,13 +50,13 @@ class XBT_PRIVATE HostImpl : public xbt::PropertyHolder {
   std::vector<actor::ProcessArg*> actors_at_boot_;
   s4u::Host piface_;
   std::map<std::string, DiskImpl*, std::less<>> disks_;
+  std::map<std::string, VirtualMachineImpl*, std::less<>> vms_;
   xbt::string name_{"noname"};
   routing::NetZoneImpl* englobing_zone_ = nullptr;
   bool sealed_ = false;
 
 protected:
   virtual ~HostImpl(); // Use destroy() instead of this destructor.
-  HostImpl(const std::string& name, s4u::Host* piface);
 
 public:
   friend VirtualMachineImpl;
@@ -66,8 +66,14 @@ public:
 
   std::vector<s4u::Disk*> get_disks() const;
   s4u::Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
+  s4u::VirtualMachine* create_vm(const std::string& name, int core_amount, size_t ramsize = 1024);
+  void destroy_vm(const std::string& name);
   void add_disk(const s4u::Disk* disk);
   void remove_disk(const std::string& name);
+  /** @brief Moves VM from this host to destination. Only sets the vm_ accordingly */
+  void move_vm(VirtualMachineImpl* vm, HostImpl* destination);
+  std::vector<s4u::VirtualMachine*> get_vms() const;
+  VirtualMachineImpl* get_vm_by_name_or_null(const std::string& name) const;
 
   virtual const s4u::Host* get_iface() const { return &piface_; }
   virtual s4u::Host* get_iface() { return &piface_; }
@@ -89,7 +95,7 @@ public:
   void remove_actor(actor::ActorImpl* actor) { xbt::intrusive_erase(actor_list_, *actor); }
   void add_actor_at_boot(actor::ProcessArg* arg) { actors_at_boot_.emplace_back(arg); }
 
-  void seal();
+  virtual void seal();
 
   template <class F> void foreach_actor(F function)
   {

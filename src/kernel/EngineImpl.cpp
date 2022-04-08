@@ -165,12 +165,6 @@ namespace kernel {
 
 EngineImpl::~EngineImpl()
 {
-  /* Since hosts_ is a std::map, the hosts are destroyed in the lexicographic order, which ensures that the output is
-   * reproducible.
-   */
-  while (not hosts_.empty())
-    hosts_.begin()->second->destroy();
-
   /* Also delete the other data */
   delete netzone_root_;
   for (auto const& kv : netpoints_)
