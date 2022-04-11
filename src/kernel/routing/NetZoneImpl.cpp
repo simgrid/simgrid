@@ -73,11 +73,6 @@ xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routi
                  std::vector<kernel::resource::StandardLinkImpl*> const& link_list)>
     NetZoneImpl::on_route_creation;
 
-template <typename Resource> void NetZoneImpl::ResourceDeleter::operator()(Resource* res) const
-{
-  res->destroy();
-}
-
 NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
 {
   auto* engine = s4u::Engine::get_instance();
@@ -114,13 +109,17 @@ NetZoneImpl::~NetZoneImpl()
   for (auto const& nz : children_)
     delete nz;
 
-  /* Since hosts_ is a std::map, the hosts are destroyed in the lexicographic order, which ensures that the output is
-   * reproducible.
+  /* Since hosts_ and links_ are a std::map, the hosts are destroyed in the lexicographic order, which ensures that the
+   * output is reproducible.
    */
   for (auto& host : hosts_) {
     host.second->destroy();
   }
   hosts_.clear();
+  for (auto& link : links_) {
+    link.second->destroy();
+  }
+  links_.clear();
 
   for (auto const& kv : bypass_routes_)
     delete kv.second;
@@ -209,7 +208,7 @@ s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<d
       "Impossible to create link: %s. Invalid network model: nullptr. Have you set the parent of this NetZone: %s?",
       name.c_str(), get_cname());
   xbt_assert(not sealed_, "Impossible to create link: %s. NetZone %s already sealed", name.c_str(), get_cname());
-  links_[name].reset(do_create_link(name, bandwidths)->set_englobing_zone(this));
+  links_[name] = do_create_link(name, bandwidths)->set_englobing_zone(this);
   return links_[name]->get_iface();
 }
 
@@ -295,7 +294,7 @@ resource::StandardLinkImpl* NetZoneImpl::get_link_by_name_or_null(const std::str
 {
   auto link_it = links_.find(name);
   if (link_it != links_.end())
-    return link_it->second.get();
+    return link_it->second;
 
   for (const auto* child : children_) {
     auto* link = child->get_link_by_name_or_null(name);

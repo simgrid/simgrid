@@ -77,13 +77,7 @@ class XBT_PUBLIC NetZoneImpl : public xbt::PropertyHolder {
 
   // our content, as known to our graph routing algorithm (maps vertex_id -> vertex)
   std::vector<kernel::routing::NetPoint*> vertices_;
-  // would like to use the one defined in the StandardLinkImpl file, but for some reason
-  // this hpp is exported to the users and so cannot include the other internal hpp.
-  class ResourceDeleter {
-  public:
-    template <typename Resource> void operator()(Resource* res) const;
-  };
-  std::map<std::string, std::unique_ptr<resource::StandardLinkImpl, ResourceDeleter>, std::less<>> links_;
+  std::map<std::string, resource::StandardLinkImpl*, std::less<>> links_;
   /* save split-duplex links separately, keep links_ with only LinkImpl* seen by the user
    * members of a split-duplex are saved in the links_ */
   std::map<std::string, std::unique_ptr<resource::SplitDuplexLinkImpl>, std::less<>> split_duplex_links_;
