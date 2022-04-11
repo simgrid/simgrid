@@ -214,10 +214,12 @@ void VirtualMachineImpl::vm_destroy()
 
   // VM uses the host's netpoint, clean but don't destroy it
   get_iface()->set_netpoint(nullptr);
+  // Take a temporary copy to delete iface safely after impl is destroy'ed
+  const auto* iface = get_iface();
   // calls the HostImpl() destroy, it'll delete the impl object
   destroy();
 
-  delete piface_;
+  delete iface;
 }
 
 void VirtualMachineImpl::start()
