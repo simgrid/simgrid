@@ -95,22 +95,20 @@ static sg_size_t get_updated_size(double computed, double dp_rate, sg_size_t dp_
 sg_size_t MigrationTx::sendMigrationData(sg_size_t size, int stage, int stage2_round, double mig_speed, double timeout)
 {
   sg_size_t sent   = size;
-  auto* msg        = new std::string("__mig_stage");
-  *msg             = *msg + std::to_string(stage) + ":" + vm_->get_cname() + "(" + src_pm_->get_cname() + "-" +
-         dst_pm_->get_cname() + ")";
-
+  auto msg = std::make_unique<std::string>(xbt::string_printf("__mig_stage%d:%s(%s-%s)", stage, vm_->get_cname(),
+                                                              src_pm_->get_cname(), dst_pm_->get_cname()));
   double clock_sta = s4u::Engine::get_clock();
 
-  s4u::CommPtr comm = mbox->put_init(msg, size);
+  s4u::CommPtr comm = mbox->put_init(msg.get(), size);
   if (mig_speed > 0)
     comm->set_rate(mig_speed);
   try {
     comm->wait_for(timeout);
+    msg.release();
   } catch (const Exception&) {
     auto remaining = static_cast<sg_size_t>(comm->get_remaining());
     XBT_VERB("timeout (%lf s) in sending_migration_data, remaining %llu bytes of %llu", timeout, remaining, size);
     sent -= remaining;
-    delete msg;
   }
 
   double clock_end    = s4u::Engine::get_clock();
