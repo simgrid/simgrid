@@ -317,8 +317,6 @@ Variable* Constraint::get_variable(const Element** elem) const
       *elem = &enabled_element_set_.front();
     else if (not disabled_element_set_.empty())
       *elem = &disabled_element_set_.front();
-    else
-      *elem = nullptr;
   } else {
     // elem is not null, so we carry on
     if ((*elem)->enabled_element_set_hook.is_linked()) {
@@ -351,8 +349,6 @@ Variable* Constraint::get_variable_safe(const Element** elem, const Element** ne
       *elem = &enabled_element_set_.front();
     else if (not disabled_element_set_.empty())
       *elem = &disabled_element_set_.front();
-    else
-      *elem = nullptr;
   } else {
     *elem = *nextelem;
     if (*numelem > 0) {
