@@ -52,7 +52,7 @@ static std::vector<sg4::Exec*> get_ready_tasks(const std::vector<sg4::ActivityPt
   std::map<sg4::Exec*, unsigned int> candidate_execs;
 
   for (auto& a : dax) {
-    // Only loot at activity that have their dependencies solved but are not assigned
+    // Only look at activity that have their dependencies solved but are not assigned
     if (a->dependencies_solved() && not a->is_assigned()) {
       // if it is an exec, it's ready
       auto* exec = dynamic_cast<sg4::Exec*>(a.get());
