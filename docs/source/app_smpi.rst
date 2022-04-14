@@ -749,11 +749,11 @@ them on top of SMPI.
 Troubleshooting with SMPI
 -------------------------
 
-.................................
-./configure refuses to use smpicc
-.................................
+.........................................
+./configure or cmake refuse to use smpicc
+.........................................
 
-If your ``./configure`` reports that the compiler is not
+If your configuration script (such as ``./configure`` or ``cmake``) reports that the compiler is not
 functional or that you are cross-compiling, try to define the
 ``SMPI_PRETEND_CC`` environment variable before running the
 configuration.
@@ -772,20 +772,20 @@ fail without ``smpirun``.
 
 .. warning::
 
-  Make sure that SMPI_PRETEND_CC is only set when calling ./configure,
+  Make sure that SMPI_PRETEND_CC is only set when calling the configuration script but
   not during the actual execution, or any program compiled with smpicc
   will stop before starting.
 
-..............................................
-./configure does not pick smpicc as a compiler
-..............................................
+.....................................................
+./configure or cmake do not pick smpicc as a compiler
+.....................................................
 
 In addition to the previous answers, some projects also need to be
 explicitly told what compiler to use, as follows:
 
 .. code-block:: console
 
-   $ SMPI_PRETEND_CC=1 ./configure CC=smpicc # here come the other configure parameters
+   $ SMPI_PRETEND_CC=1 cmake CC=smpicc # here come the other configure parameters
    $ make
 
 Maybe your configure is using another variable, such as ``cc`` (in
