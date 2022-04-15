@@ -398,10 +398,9 @@ If you need to run a command as root within the container, simply type the follo
    $ docker container ls
    # This lists all containers running on your machine. For example:
    #    CONTAINER ID   IMAGE            COMMAND   CREATED         STATUS         PORTS     NAMES
-   #    7e921b1b18a7   simgrid/stable   "bash"    7 minutes ago   Up 7 minutes             adoring_shamir
-   
-   $ docker exec --user 0:0 -it {container_name} bash
-   # In the previous example, container_name was "adoring_shamir"
+   #    7e921b1b18a7   simgrid/stable   "bash"    7 minutes ago   Up 7 minutes             simgrid
+
+   $ docker exec --user root -it simgrid bash
 
 The code template is available under ``/source/simgrid-template-s4u.git``
 in the image. You should copy it to your working directory and
@@ -409,10 +408,14 @@ recompile it when you first log in:
 
 .. code-block:: console
 
-   $ cp -r /source/simgrid-template-s4u.git/* /source/tutorial
-   $ cd /source/tutorial
-   $ cmake .
-   $ make
+   $ # Make sure the simgrid-tutorial directory can be read and written by the non-root user
+   $ sudo chown $UID:$GID ~/simgrid-tutorial
+   $ # Connect to the running container if needed
+   $ docker exec --user $UID:$GID -ti simgrid bash
+   $container) cp -r /source/simgrid-template-s4u.git/* /source/tutorial
+   $container) cd /source/tutorial
+   $container) cmake .
+   $container) make
 
 Using your Computer Natively
 ............................
