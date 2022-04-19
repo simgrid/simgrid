@@ -82,9 +82,9 @@ void HostImpl::turn_off(const actor::ActorImpl* issuer)
 {
   /* turn_off VMs running on host */
   for (const auto& kv : vms_) {
-    auto* actor = kernel::actor::ActorImpl::self();
-    kv.second->shutdown(actor);
-    kv.second->turn_off(actor);
+    // call s4u functions to generate the good on_state_change signal, maybe one day this wont be necessary
+    kv.second->get_iface()->shutdown();
+    kv.second->get_iface()->turn_off();
   }
   for (auto& actor : actor_list_) {
     XBT_DEBUG("Killing Actor %s@%s on behalf of %s which turned off that host.", actor.get_cname(),
