@@ -140,7 +140,14 @@ std::vector<s4u::Disk*> HostImpl::get_disks() const
 
 s4u::VirtualMachine* HostImpl::create_vm(const std::string& name, int core_amount, size_t ramsize)
 {
-  auto* vm   = new s4u::VirtualMachine(name, get_iface(), core_amount, ramsize);
+  auto* host_vm = new kernel::resource::VirtualMachineImpl(name, get_iface(), core_amount, ramsize);
+  auto* vm      = new s4u::VirtualMachine(host_vm);
+  host_vm->set_piface(vm);
+  return create_vm(name, vm);
+}
+
+s4u::VirtualMachine* HostImpl::create_vm(const std::string& name, s4u::VirtualMachine* vm)
+{
   vms_[name] = vm->get_vm_impl();
 
   // Create a VCPU for this VM
@@ -148,7 +155,8 @@ s4u::VirtualMachine* HostImpl::create_vm(const std::string& name, int core_amoun
   for (unsigned long i = 0; i < get_iface()->get_pstate_count(); i++)
     speeds.push_back(get_iface()->get_pstate_speed(i));
 
-  auto* cpu = englobing_zone_->get_cpu_vm_model()->create_cpu(vm, speeds)->set_core_count(core_amount);
+  auto* cpu =
+      englobing_zone_->get_cpu_vm_model()->create_cpu(vm, speeds)->set_core_count(vm->get_vm_impl()->get_core_amount());
 
   if (get_iface()->get_pstate() != 0)
     cpu->set_pstate(get_iface()->get_pstate());

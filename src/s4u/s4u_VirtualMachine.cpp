@@ -36,6 +36,12 @@ VirtualMachine::VirtualMachine(const std::string& name, s4u::Host* physical_host
     : Host(new kernel::resource::VirtualMachineImpl(name, this, physical_host, core_amount, ramsize))
     , pimpl_vm_(dynamic_cast<kernel::resource::VirtualMachineImpl*>(Host::get_impl()))
 {
+  physical_host->get_impl()->create_vm(name, this);
+}
+
+VirtualMachine::VirtualMachine(kernel::resource::VirtualMachineImpl* impl)
+    : Host(impl), pimpl_vm_(dynamic_cast<kernel::resource::VirtualMachineImpl*>(Host::get_impl()))
+{
 }
 
 void VirtualMachine::start()

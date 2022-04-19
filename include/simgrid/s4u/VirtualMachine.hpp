@@ -47,10 +47,15 @@ class XBT_PUBLIC VirtualMachine : public s4u::Host {
 
 #ifndef DOXYGEN
   friend kernel::resource::VirtualMachineImpl; // calls signals from Impl
+  friend kernel::resource::HostImpl;           // call private constructor
+  VirtualMachine(kernel::resource::VirtualMachineImpl* impl);
 #endif
 
 public:
-  explicit VirtualMachine(const std::string& name, Host* physical_host, int core_amount, size_t ramsize);
+  XBT_ATTRIB_DEPRECATED_v336("Please use s4u::Host::create_vm") explicit VirtualMachine(const std::string& name,
+                                                                                        Host* physical_host,
+                                                                                        int core_amount,
+                                                                                        size_t ramsize = 1024);
 
 #ifndef DOXYGEN
   // No copy/move

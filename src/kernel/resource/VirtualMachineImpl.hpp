@@ -31,6 +31,8 @@ public:
 
   explicit VirtualMachineImpl(const std::string& name, s4u::VirtualMachine* piface, s4u::Host* host, int core_amount,
                               size_t ramsize);
+  explicit VirtualMachineImpl(const std::string& name, simgrid::s4u::Host* host_PM, int core_amount, size_t ramsize);
+  void set_piface(s4u::VirtualMachine* piface);
 
   void start();
   void suspend(const actor::ActorImpl* issuer);
@@ -68,7 +70,7 @@ public:
   void seal() override;
 
 private:
-  s4u::VirtualMachine* piface_;
+  s4u::VirtualMachine* piface_ = nullptr;
   Action* action_            = nullptr;
   unsigned int active_execs_ = 0;
   s4u::Host* physical_host_;

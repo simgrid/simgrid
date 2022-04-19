@@ -67,6 +67,7 @@ public:
   std::vector<s4u::Disk*> get_disks() const;
   s4u::Disk* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth);
   s4u::VirtualMachine* create_vm(const std::string& name, int core_amount, size_t ramsize = 1024);
+  s4u::VirtualMachine* create_vm(const std::string& name, s4u::VirtualMachine* vm);
   void destroy_vm(const std::string& name);
   void add_disk(const s4u::Disk* disk);
   void remove_disk(const std::string& name);
