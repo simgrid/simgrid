@@ -48,7 +48,7 @@ class XBT_PUBLIC VirtualMachine : public s4u::Host {
 #ifndef DOXYGEN
   friend kernel::resource::VirtualMachineImpl; // calls signals from Impl
   friend kernel::resource::HostImpl;           // call private constructor
-  VirtualMachine(kernel::resource::VirtualMachineImpl* impl);
+  explicit VirtualMachine(kernel::resource::VirtualMachineImpl* impl);
 #endif
 
 public:
