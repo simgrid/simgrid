@@ -49,8 +49,7 @@ static void canceller(int argc, char* argv[])
   double computation_amount = sg_host_get_speed(sg_host_self());
 
   XBT_INFO("Execute %g flops, should take 1 second.", computation_amount);
-  sg_exec_t activity = sg_actor_exec_init(computation_amount);
-  sg_exec_start(activity);
+  sg_exec_t activity = sg_actor_exec_async(computation_amount);
   sg_actor_sleep_for(0.5);
   XBT_INFO("I changed my mind, cancel!");
   sg_exec_cancel(activity);

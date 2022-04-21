@@ -120,6 +120,8 @@ PYBIND11_MODULE(simgrid, m)
            py::arg("priority") = 1)
       .def("exec_init", py::overload_cast<double>(&simgrid::s4u::this_actor::exec_init),
            py::call_guard<py::gil_scoped_release>())
+      .def("exec_async", py::overload_cast<double>(&simgrid::s4u::this_actor::exec_async),
+           py::call_guard<py::gil_scoped_release>())
       .def("get_host", &simgrid::s4u::this_actor::get_host, "Retrieves host on which the current actor is located")
       .def("set_host", &simgrid::s4u::this_actor::set_host, py::call_guard<py::gil_scoped_release>(),
            "Moves the current actor to another host.", py::arg("dest"))

@@ -50,7 +50,7 @@ class Canceller:
     def __call__(self):
         computation_amount = this_actor.get_host().speed
         this_actor.info("Canceller executes {:.0f} flops, should take 1 second.".format(computation_amount))
-        activity = this_actor.exec_init(computation_amount).start()
+        activity = this_actor.exec_async(computation_amount)
 
         this_actor.sleep_for(0.5)
         this_actor.info("I changed my mind, cancel!")
