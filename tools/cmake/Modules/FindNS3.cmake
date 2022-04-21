@@ -19,10 +19,10 @@
 set(SIMGRID_HAVE_NS3 0)
 set(NS3_HINT ${ns3_path} CACHE PATH "Path to search for NS3 lib and include")
 
-set(NS3_KNOWN_VERSIONS "3.22" "3.23" "3.24" "3.25" "3.26" "3.27" "3.28" "3.29" "3.30" "3.31" "3.32" "3.33" "3.34" "3.35" "3.36" "3.37" "3.38" "3.39" "3.40")
+set(NS3_KNOWN_VERSIONS "3-dev" "3.22" "3.23" "3.24" "3.25" "3.26" "3.27" "3.28" "3.29" "3.30" "3.31" "3.32" "3.33" "3.34" "3.35" "3.36" "3.37" "3.38" "3.39" "3.40")
 
 foreach (_ns3_ver ${NS3_KNOWN_VERSIONS})
-  list(APPEND _ns3_LIB_SEARCH_DIRS "ns${_ns3_ver}-core" "ns${_ns3_ver}-core-optimized" "ns${_ns3_ver}-core-debug")
+  list(APPEND _ns3_LIB_SEARCH_DIRS "ns${_ns3_ver}-core" "ns${_ns3_ver}-core-optimized" "ns${_ns3_ver}-core-debug" "ns${_ns3_ver}-core-default")
   list(APPEND _ns3_INCLUDE_SEARCH_DIRS "include/ns${_ns3_ver}")
 endforeach()
 
@@ -64,12 +64,17 @@ if(NS3_INCLUDE_DIR)
       set (NS3_SUFFIX "-optimized")
     elseif(NS3_LIBRARIES MATCHES "-debug")
       set (NS3_SUFFIX "-debug")
+    elseif(NS3_LIBRARIES MATCHES "-default")
+      set (NS3_SUFFIX "-default")
     else()
       set (NS3_SUFFIX "")
     endif()
-
-    string(REGEX REPLACE ".*ns([.0-9]+)-core.*" "\\1" NS3_VERSION "${NS3_LIBRARIES}")
-    string(REGEX REPLACE "3.([.0-9]+)" "\\1" NS3_MINOR_VERSION "${NS3_VERSION}")
+    message(STATUS "ns-3 found ${NS3_LIBRARIES}")
+    string(REGEX REPLACE ".*libns(.*)-core.*" "\\1" NS3_VERSION "${NS3_LIBRARIES}")
+    string(REGEX REPLACE "3.([.0-9\-a-z]+)" "\\1" NS3_MINOR_VERSION "${NS3_VERSION}")
+    if(NS3_MINOR_VERSION MATCHES "dev")
+      set(NS3_MINOR_VERSION "99")
+    endif()
     get_filename_component(NS3_LIBRARY_PATH "${NS3_LIBRARIES}" PATH)
 
     # Compute NS3_PATH
