@@ -98,8 +98,11 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone)
 
 #if NS3_MINOR_VERSION < 32
   wifi.SetStandard(ns3::WIFI_PHY_STANDARD_80211n_5GHZ);
-#else
+#elif NS3_MINOR_VERSION < 36
   wifi.SetStandard(ns3::WIFI_STANDARD_80211n_5GHZ);
+#else
+  wifi.SetStandard(ns3::WIFI_STANDARD_80211n);
+  wifiPhy.Set ("ChannelSettings", StringValue ("{0, 0, WIFI_PHY_BAND_5GHZ, 0}"));
 #endif
 
   std::string ssid = wifizone->get_name();
