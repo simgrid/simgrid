@@ -60,15 +60,15 @@ s4u::Link::SharingPolicy WifiLinkImpl::get_sharing_policy() const
   return s4u::Link::SharingPolicy::WIFI;
 }
 
-int WifiLinkImpl::get_host_count() const
+size_t WifiLinkImpl::get_host_count() const
 {
-  return static_cast<int>(host_rates_.size());
+  return host_rates_.size();
 }
 
 void WifiLinkImpl::refresh_decay_bandwidths()
 {
   // Compute number of STAtion on the Access Point
-  int nSTA = get_host_count();
+  size_t nSTA = get_host_count();
 
   std::vector<Metric> new_bandwidths;
   for (auto const& bandwidth : bandwidths_) {

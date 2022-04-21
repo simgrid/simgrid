@@ -54,7 +54,7 @@ public:
   void set_latency(double) override;
   void refresh_decay_bandwidths();
   bool toggle_decay_model();
-  int get_host_count() const;
+  size_t get_host_count() const;
 };
 
 class WifiLinkAction : public NetworkCm02Action {

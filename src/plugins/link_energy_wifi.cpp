@@ -108,7 +108,7 @@ void LinkEnergyWifi::update_destroy()
   eDyn_ += duration * control_duration_ * wifi_link->get_host_count() * pRx_;
   eStat_ += (duration - (duration * control_duration_)) * pIdle_ * (wifi_link->get_host_count() + 1);
 
-  XBT_DEBUG("finish eStat_ += %f * %f * (%d+1) | eStat = %f", duration, pIdle_, wifi_link->get_host_count(), eStat_);
+  XBT_DEBUG("finish eStat_ += %f * %f * (%zu+1) | eStat = %f", duration, pIdle_, wifi_link->get_host_count(), eStat_);
 }
 
 void LinkEnergyWifi::update()
@@ -188,7 +188,7 @@ void LinkEnergyWifi::update()
   if (link_->get_usage() != 0.0) {
     eDyn_ += /*duration * */ durUsage * ((wifi_link->get_host_count() * pRx_) + pTx_);
     eStat_ += (duration - durUsage) * pIdle_ * (wifi_link->get_host_count() + 1);
-    XBT_DEBUG("eDyn +=  %f * ((%d * %f) + %f) | eDyn = %f (durusage =%f)", durUsage, wifi_link->get_host_count(), pRx_,
+    XBT_DEBUG("eDyn +=  %f * ((%zu * %f) + %f) | eDyn = %f (durusage =%f)", durUsage, wifi_link->get_host_count(), pRx_,
               pTx_, eDyn_, durUsage);
     dur_TxRx_ += duration;
   } else {
@@ -196,7 +196,7 @@ void LinkEnergyWifi::update()
     eStat_ += (duration - (duration * control_duration_)) * pIdle_ * (wifi_link->get_host_count() + 1);
   }
 
-  XBT_DEBUG("eStat_ += %f * %f * (%d+1) | eStat = %f", duration, pIdle_, wifi_link->get_host_count(), eStat_);
+  XBT_DEBUG("eStat_ += %f * %f * (%zu+1) | eStat = %f", duration, pIdle_, wifi_link->get_host_count(), eStat_);
 }
 
 void LinkEnergyWifi::init_watts_range_list()
