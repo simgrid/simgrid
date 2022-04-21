@@ -45,15 +45,15 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
 
 if (CMAKE_COMPILER_IS_GNUCC)
-  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.0")
+  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "7.0")
     message(FATAL_ERROR
-            "SimGrid needs at least g++ version 5.0 to compile but you have ${CMAKE_CXX_COMPILER_VERSION}."
-            "You need a sufficient support of c++14 to compile SimGrid.")
+            "SimGrid needs at least g++ version 7.0 to compile but you have ${CMAKE_CXX_COMPILER_VERSION}."
+            "You need a sufficient support of c++17 to compile SimGrid.")
   endif()
 endif()
 
 ## We need a decent support of the C++14 and C11 standards
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_C_STANDARD 11)
