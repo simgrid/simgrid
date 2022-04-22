@@ -151,10 +151,10 @@ if [ "$os" = "Debian" ] ; then
     have_NS3="yes"
   fi
 fi
-if [ "$os" = "Ubuntu" ] ; then
-  if dpkg --compare-versions "$(dpkg-query -f '${Version}' -W libns3-dev)" ge 3.36; then
-    have_NS3="yes"
-  fi
+MAY_HINT_AT_NS3=""
+if [ $NODE_NAME = "ubuntu-lts" ] ; then
+  MAY_HINT_AT_NS3="-DNS3_HINT=/builds/ns-3-dev/build/"
+  have_NS3="yes"
 fi
 if [ "$os" = "nixos" ] ; then
   have_NS3="yes"
@@ -227,7 +227,7 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_compile_warnings=$(onoff test "$GENERATOR" != "MSYS Makefiles") -Denable_smpi=ON \
   -Denable_ns3=$(onoff test "$have_NS3" = "yes" -a "$build_mode" = "Debug") \
   -DSIMGRID_PYTHON_LIBDIR=${SIMGRID_PYTHON_LIBDIR} \
-  ${MAY_DISABLE_SOURCE_CHANGE} ${MAY_DISABLE_LTO} \
+  ${MAY_DISABLE_SOURCE_CHANGE} ${MAY_DISABLE_LTO} ${MAY_HINT_AT_NS3} \
   -Denable_java=$(onoff test "$build_mode" = "ModelChecker") \
   -Denable_msg=$(onoff test "$build_mode" = "ModelChecker") \
   -DLTO_EXTRA_FLAG="auto" \
