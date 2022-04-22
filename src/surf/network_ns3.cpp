@@ -102,7 +102,7 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone)
   wifi.SetStandard(ns3::WIFI_STANDARD_80211n_5GHZ);
 #else
   wifi.SetStandard(ns3::WIFI_STANDARD_80211n);
-  wifiPhy.Set ("ChannelSettings", ns3::StringValue ("{0, 0, WIFI_PHY_BAND_5GHZ, 0}"));
+  wifiPhy.Set ("ChannelSettings", ns3::StringValue ("{0, 0, BAND_5GHZ, 0}"));
 #endif
 
   std::string ssid = wifizone->get_name();
