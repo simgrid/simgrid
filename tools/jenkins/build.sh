@@ -211,6 +211,11 @@ if [ "$os" = "CentOS" ]; then
     fi
 fi
 
+if [ $NODE_NAME = "armv8" ]; then
+    echo "disable LTO, believed to be too heavy for this particular system"
+    MAY_DISABLE_LTO=-Denable_lto=OFF
+fi
+
 cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
   -Denable_model-checking=$(onoff test "$build_mode" = "ModelChecker") \
