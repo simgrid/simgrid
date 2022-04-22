@@ -7,7 +7,16 @@
 #define SIMGRID_KERNEL_LMM_BMF_HPP
 
 #include "src/kernel/lmm/System.hpp"
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#endif
 #include <Eigen/Dense>
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
 #include <unordered_set>
 
 namespace simgrid {
