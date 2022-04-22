@@ -156,11 +156,11 @@ public:
    *      @verbatim embed:rst:inline :cpp:func:`get_pstate_speed() <simgrid::s4u::Host::get_pstate_speed>` @endverbatim
    *      to retrieve the computing speed you would get at another pstate)
    *    - If you declared an external load (with
-   *      @verbatim embed:rst:inline :cpp:func:`set_speed_profile() <simgrid::s4u::Host::set_speed_profile>`
-   * @endverbatim ), you must multiply the result of
+   *      @verbatim embed:rst:inline :cpp:func:`set_speed_profile() <simgrid::s4u::Host::set_speed_profile>` @endverbatim ),
+   *      you must multiply the result of
    *      @verbatim embed:rst:inline :cpp:func:`get_speed() <simgrid::s4u::Host::get_speed>` @endverbatim by
-   *      @verbatim embed:rst:inline :cpp:func:`get_available_speed() <simgrid::s4u::Host::get_available_speed>`
-   * @endverbatim to retrieve what a new computation would get.
+   *      @verbatim embed:rst:inline :cpp:func:`get_available_speed() <simgrid::s4u::Host::get_available_speed>` @endverbatim
+   *      to retrieve what a new computation would get.
    *
    *  The remaining speed is then shared between the executions located on this host.
    *  You can retrieve the amount of tasks currently running on this host with

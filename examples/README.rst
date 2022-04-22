@@ -481,12 +481,12 @@ You can start asynchronous executions, just like you would fire background threa
    .. example-tab:: examples/python/exec-async/exec-async.py
 
       See also :py:func:`simgrid.this_actor.exec_init()`,
-      :py:func:`simgrid.Activity.start()`,
-      :py:func:`simgrid.Activity.wait()`,
+      :py:func:`simgrid.Exec.start()`,
+      :py:func:`simgrid.Exec.wait()`,
       :py:attr:`simgrid.Exec.remaining`,
       :py:attr:`simgrid.Exec.remaining_ratio`,
       :py:func:`simgrid.this_actor.exec_async()` and
-      :py:func:`simgrid.Activity.cancel()`.
+      :py:func:`simgrid.Exec.cancel()`.
 
    .. example-tab:: examples/c/exec-async/exec-async.c
 
@@ -558,7 +558,7 @@ of a host can then be accessed and changed from the program.
 
    .. example-tab:: examples/python/exec-dvfs/exec-dvfs.py
 
-      See also :py:attr:`Host.pstate_speed` and :py:func:`Host.set_pstate()`.
+      See also :py:func:`simgrid.Host.pstate_speed()` and :py:attr:`simgrid.Host.pstate`.
 
    .. example-tab:: examples/platforms/energy_platform.xml
 

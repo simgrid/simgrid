@@ -67,7 +67,7 @@ Spread the word
 ^^^^^^^^^^^^^^^
 
 A simple way to help the SimGrid project is to **use SimGrid for your research, and say so**.
-`Cite the SimGrid framework<https://simgrid.org/publications.html>`_ in your papers and speak of it with your colleagues to spread the word.
+`Cite the SimGrid framework <https://simgrid.org/publications.html>`_ in your papers and speak of it with your colleagues to spread the word.
 The number of publications enabled by SimGrid is really important when asking for further fundings to sustain the project:
 The more you use the framework, the better for us.
 

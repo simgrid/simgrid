@@ -747,6 +747,7 @@ the execution, or start an asynchronous activity.
 
    .. group-tab:: Python
 
+      .. autofunction:: simgrid.this_actor.exec_async
       .. autofunction:: simgrid.this_actor.exec_init
       .. autofunction:: simgrid.this_actor.execute
 
@@ -908,7 +909,7 @@ Retrieving hosts
    .. group-tab:: Python
 
       .. autoattribute:: simgrid.Engine.all_hosts
-      .. automethod:: simgrid::s4u::Engine::host_by_name
+      .. automethod:: simgrid.Engine.host_by_name
 
    .. group-tab:: C
 
@@ -1174,7 +1175,7 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Disk::get_read_bandwidth() const
       .. doxygenfunction:: simgrid::s4u::Disk::get_write_bandwidth() const
       .. doxygenfunction:: simgrid::s4u::Disk::set_property(const std::string &, const std::string &value)
-      .. doxygenfunction:: simgrid::s4u::Disk::set_sharing_policy(Operation op, SharingPolicy policy, const s4u::NonLinearResourceCb& cb = {})
+      .. doxygenfunction:: simgrid::s4u::Disk::set_sharing_policy
 
    .. group-tab:: Python
 
@@ -1301,11 +1302,12 @@ Modifying characteristics
 
       .. doxygenfunction:: simgrid::s4u::Host::set_core_count(int core_count)
       .. doxygenfunction:: simgrid::s4u::Host::set_coordinates(const std::string& coords)
-      .. doxygenfunction:: simgrid::s4u::Host::set_sharing_policy(SharingPolicy policy, const s4u::NonLinearResourceCb& cb = {})
+      .. doxygenfunction:: simgrid::s4u::Host::set_sharing_policy
 
    .. group-tab:: Python
 
       .. autoattribute:: simgrid.Host.core_count
+         :noindex:
       .. automethod:: simgrid.Host.set_coordinates
       .. automethod:: simgrid.Host.set_sharing_policy
 
@@ -1328,7 +1330,6 @@ Querying info
       .. autoattribute:: simgrid.Host.name
       .. autoattribute:: simgrid.Host.core_count
       .. autoattribute:: simgrid.Host.load
-      .. autoattribute:: simgrid.Host.pstate
       .. autoattribute:: simgrid.Host.speed
       .. autoattribute:: simgrid.Host.available_speed
 
@@ -1411,6 +1412,7 @@ DVFS
 
    .. group-tab:: Python
 
+      .. autoattribute:: simgrid.Host.pstate
       .. autoattribute:: simgrid.Host.pstate_count
       .. automethod:: simgrid.Host.pstate_speed
 
@@ -1609,7 +1611,7 @@ Modifying characteristics
       .. doxygenfunction:: simgrid::s4u::Link::set_latency(double value)
       .. doxygenfunction:: simgrid::s4u::Link::set_latency(const std::string& value)
       .. doxygenfunction:: simgrid::s4u::Link::set_concurrency_limit(int limit)
-      .. doxygenfunction:: simgrid::s4u::Link::set_sharing_policy(SharingPolicy policy, const NonLinearResourceCb& cb = {})
+      .. doxygenfunction:: simgrid::s4u::Link::set_sharing_policy
 
    .. group-tab:: Python
 
@@ -1868,16 +1870,16 @@ Zones
 
   .. group-tab:: C++
 
-     .. doxygenfunction:: simgrid::s4u::create_full_zone(const std::string& name)
-     .. doxygenfunction:: simgrid::s4u::create_empty_zone(const std::string& name)
-     .. doxygenfunction:: simgrid::s4u::create_star_zone(const std::string& name)
-     .. doxygenfunction:: simgrid::s4u::create_dijkstra_zone(const std::string& name, bool cache)
-     .. doxygenfunction:: simgrid::s4u::create_floyd_zone(const std::string& name)
-     .. doxygenfunction:: simgrid::s4u::create_vivaldi_zone(const std::string& name)
-     .. doxygenfunction:: simgrid::s4u::create_wifi_zone(const std::string& name)
+     .. doxygenfunction:: simgrid::s4u::create_full_zone
+     .. doxygenfunction:: simgrid::s4u::create_empty_zone
+     .. doxygenfunction:: simgrid::s4u::create_star_zone
+     .. doxygenfunction:: simgrid::s4u::create_dijkstra_zone
+     .. doxygenfunction:: simgrid::s4u::create_floyd_zone
+     .. doxygenfunction:: simgrid::s4u::create_vivaldi_zone
+     .. doxygenfunction:: simgrid::s4u::create_wifi_zone
      .. doxygenfunction:: simgrid::s4u::create_torus_zone
-     .. doxygenfunction:: simgrid::s4u::create_fatTree_zone(const std::string& name, const NetZone* parent, const FatTreeParams& parameters, const ClusterCallbacks& set_callbacks, double bandwidth, double latency, Link::SharingPolicy sharing_policy)
-     .. doxygenfunction:: simgrid::s4u::create_dragonfly_zone(const std::string& name, const NetZone* parent, const DragonflyParams& parameters, const ClusterCallbacks& set_callbacks, double bandwidth, double latency, Link::SharingPolicy sharing_policy)
+     .. doxygenfunction:: simgrid::s4u::create_fatTree_zone
+     .. doxygenfunction:: simgrid::s4u::create_dragonfly_zone
 
   .. group-tab:: Python
 
@@ -2133,8 +2135,8 @@ Signals
    .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::Activity::on_completion_cb
-      .. doxygenfunction:: simgrid::s4u::Activity::on_suspend_cb
-      .. doxygenfunction:: simgrid::s4u::Activity::on_resume_cb
+      .. doxygenfunction:: simgrid::s4u::Activity::on_suspended_cb
+      .. doxygenfunction:: simgrid::s4u::Activity::on_resumed_cb
 
 .. _API_s4u_Comm:
 
@@ -2208,7 +2210,6 @@ Querying info
       .. automethod:: simgrid.Comm.detach
       .. automethod:: simgrid.Comm.set_payload_size
       .. automethod:: simgrid.Comm.set_rate
-      .. automethod:: simgrid.Comm.detach
 
 Life cycle
 ----------
