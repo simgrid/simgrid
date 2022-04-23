@@ -26,7 +26,7 @@ get_eigen3(){
 }
 
 get_ns3(){
-  grep -m 1 "ns-3 found (v3.[0-9]*; incl:" ./consoleText | sed "s/.*-- ns-3 found .v\(3.[0-9]*\); incl:.*/\1/g"
+  grep -m 1 "ns-3 found (v3.[0-9dev]*; incl:" ./consoleText | sed "s/.*-- ns-3 found .v\(3.[0-9dev]*\); incl:.*/\1/g"
 }
 
 get_python(){
