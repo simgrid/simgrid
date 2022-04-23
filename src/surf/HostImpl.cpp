@@ -37,12 +37,17 @@ HostImpl::~HostImpl()
 {
   /* All actors should be gone when the host is turned off (by the end of the simulation). */
   if (not actor_list_.empty()) {
-    std::string msg = "Shutting down host, but it's not empty:";
-    for (auto const& actor : actor_list_)
-      msg += "\n\t" + std::string(actor.get_name());
+    const char* msg = "Shutting down host, but it's not empty";
+    try {
+      std::string actors;
+      for (auto const& actor : actor_list_)
+        actors += "\n\t" + std::string(actor.get_name());
 
-    EngineImpl::get_instance()->display_all_actor_status();
-    xbt_die("%s", msg.c_str());
+      EngineImpl::get_instance()->display_all_actor_status();
+      xbt_die("%s:%s", msg, actors.c_str());
+    } catch (std::bad_alloc& ba) {
+      xbt_die("%s (cannot print actor list: %s)", msg, ba.what());
+    }
   }
   for (auto const& arg : actors_at_boot_)
     delete arg;

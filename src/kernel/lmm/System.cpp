@@ -176,9 +176,10 @@ System::System(bool selective_update) : selective_update_active(selective_update
 System::~System()
 {
   while (Variable* var = extract_variable()) {
-    std::string demangled = boost::core::demangle(var->id_ ? typeid(*var->id_).name() : "(unidentified)");
-    XBT_WARN("Probable bug: a %s variable (#%d) not removed before the LMM system destruction.", demangled.c_str(),
-             var->rank_);
+    const char* name = var->id_ ? typeid(*var->id_).name() : "(unidentified)";
+    boost::core::scoped_demangled_name demangled(name);
+    XBT_WARN("Probable bug: a %s variable (#%d) not removed before the LMM system destruction.",
+             demangled.get() ? demangled.get() : name, var->rank_);
     var_free(var);
   }
   while (Constraint* cnst = extract_constraint())
