@@ -45,7 +45,7 @@ HostImpl::~HostImpl()
 
       EngineImpl::get_instance()->display_all_actor_status();
       xbt_die("%s:%s", msg, actors.c_str());
-    } catch (std::bad_alloc& ba) {
+    } catch (const std::bad_alloc& ba) {
       xbt_die("%s (cannot print actor list: %s)", msg, ba.what());
     }
   }
