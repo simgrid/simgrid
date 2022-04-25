@@ -196,17 +196,17 @@ std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename)
   /* Create all the nodes */
   Agnode_t* node = nullptr;
   for (node = agfstnode(dag_dot); node; node = agnxtnode(dag_dot, node)) {
-    char* name    = agnameof(node);
+    const std::string name = agnameof(node);
     double amount = atof(agget(node, (char*)"size"));
 
     if (activities.find(name) == activities.end()) {
-      XBT_DEBUG("See <Exec id = %s amount = %.0f>", name, amount);
+      XBT_DEBUG("See <Exec id = %s amount = %.0f>", name.c_str(), amount);
       act = Exec::init()->set_name(name)->set_flops_amount(amount)->vetoable_start();
-      activities.insert({std::string(name), act});
-      if (strcmp(name, "root") && strcmp(name, "end"))
+      activities.insert({name, act});
+      if (name != "root" && name != "end")
         dag.push_back(act);
     } else {
-      XBT_WARN("Exec '%s' is defined more than once", name);
+      XBT_WARN("Exec '%s' is defined more than once", name.c_str());
     }
   }
   /*Check if 'root' and 'end' nodes have been explicitly declared.  If not, create them. */
