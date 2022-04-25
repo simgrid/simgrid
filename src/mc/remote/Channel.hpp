@@ -20,10 +20,7 @@ namespace mc {
  */
 class Channel {
   int socket_ = -1;
-  template <class M> static constexpr bool messageType()
-  {
-    return std::is_class<M>::value && std::is_trivial<M>::value;
-  }
+  template <class M> static constexpr bool messageType() { return std::is_class_v<M> && std::is_trivial_v<M>; }
 
 public:
   explicit Channel(int sock) : socket_(sock) {}
