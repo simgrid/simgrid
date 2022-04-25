@@ -63,7 +63,7 @@ public:
 
     ACT_DEBUG("Entering Open: %s (filename: %s)", NAME.c_str(), file_name.c_str());
     auto* file = sg4::File::open(file_name, nullptr);
-    opened_files.emplace(full_name, file);
+    opened_files.try_emplace(full_name, file);
 
     log_action(action, sg4::Engine::get_clock() - clock);
   }

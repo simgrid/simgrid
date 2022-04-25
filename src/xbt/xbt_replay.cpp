@@ -81,7 +81,7 @@ static ReplayAction* get_action(const char* name)
         otherqueue = act->second;
       } else { // Damn. Create the queue of that guy
         otherqueue = new std::queue<ReplayAction*>();
-        action_queues.insert({evtname, otherqueue});
+        action_queues.try_emplace(evtname, otherqueue);
       }
       otherqueue->push(action);
     }

@@ -71,7 +71,7 @@ Profile::Profile(const std::string& name, const std::function<ProfileBuilder::Up
     : name(name), cb(cb), repeat_delay(repeat_delay)
 {
   xbt_assert(trace_list.find(name) == trace_list.end(), "Refusing to define trace %s twice", name.c_str());
-  trace_list.insert({name,this});
+  trace_list.try_emplace(name, this);
   get_enough_events(0);
 }
 

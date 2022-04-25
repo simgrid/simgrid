@@ -545,8 +545,8 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
   XBT_DEBUG("Create socket %s for a flow of %.0f Bytes from %s to %s with Interface %s",
             transform_socket_ptr(sock).c_str(), totalBytes, src->get_cname(), dst->get_cname(), addr.c_str());
 
-  flow_from_sock.insert({transform_socket_ptr(sock), new SgFlow(static_cast<uint32_t>(totalBytes), this)});
-  sink_from_sock.insert({transform_socket_ptr(sock), apps});
+  flow_from_sock.try_emplace(transform_socket_ptr(sock), new SgFlow(static_cast<uint32_t>(totalBytes), this));
+  sink_from_sock.try_emplace(transform_socket_ptr(sock), apps);
 
   sock->Bind(ns3::InetSocketAddress(port_number));
   ns3::Simulator::ScheduleNow(&start_flow, sock, addr.c_str(), port_number);

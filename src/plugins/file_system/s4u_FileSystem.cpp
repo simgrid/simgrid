@@ -386,6 +386,11 @@ std::map<std::string, sg_size_t, std::less<>>* FileSystemDiskExt::parse_content(
   return parse_content;
 }
 
+void FileSystemDiskExt::add_remote_mount(Host* host, const std::string& mount_point)
+{
+  remote_mount_points_.try_emplace(host, mount_point);
+}
+
 void FileSystemDiskExt::decr_used_size(sg_size_t size)
 {
   simgrid::kernel::actor::simcall_answered([this, size] { used_size_ -= size; });

@@ -601,5 +601,5 @@ void sg_platf_new_trace(simgrid::kernel::routing::ProfileCreationArgs* args)
                args->id.c_str());
     profile = simgrid::kernel::profile::ProfileBuilder::from_string(args->id, args->pc_data, args->periodicity);
   }
-  traces_set_list.insert({args->id, profile});
+  traces_set_list.try_emplace(args->id, profile);
 }

@@ -202,7 +202,7 @@ std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename)
     if (activities.find(name) == activities.end()) {
       XBT_DEBUG("See <Exec id = %s amount = %.0f>", name.c_str(), amount);
       act = Exec::init()->set_name(name)->set_flops_amount(amount)->vetoable_start();
-      activities.insert({name, act});
+      activities.try_emplace(name, act);
       if (name != "root" && name != "end")
         dag.push_back(act);
     } else {
@@ -244,7 +244,7 @@ std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename)
           act = Comm::sendto_init()->set_name(name)->set_payload_size(size)->vetoable_start();
           src->add_successor(act);
           act->add_successor(dst);
-          activities.insert({name, act});
+          activities.try_emplace(name, act);
           dag.push_back(act);
         } else {
           XBT_WARN("Comm '%s' is defined more than once", name.c_str());
@@ -315,7 +315,7 @@ void STag_dax__job()
     runtime *= 4200000000.; /* Assume that timings were done on a 4.2GFlops machine. I mean, why not? */
     XBT_DEBUG("See <job id=%s runtime=%s %.0f>", A_dax__job_id, A_dax__job_runtime, runtime);
     simgrid::s4u::current_job = simgrid::s4u::Exec::init()->set_name(name)->set_flops_amount(runtime)->vetoable_start();
-    simgrid::s4u::jobs.insert({A_dax__job_id, simgrid::s4u::current_job});
+    simgrid::s4u::jobs.try_emplace(A_dax__job_id, simgrid::s4u::current_job);
     simgrid::s4u::result.push_back(simgrid::s4u::current_job);
   } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Parse error: ") + A_dax__job_runtime + " is not a double");

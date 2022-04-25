@@ -56,9 +56,7 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   if (code != nullptr) // When started with smpirun, we will not execute a function
     simgrid::s4u::Engine::get_instance()->register_function(name, code);
 
-  Instance instance(num_processes);
-
-  smpi_instances.insert(std::pair<std::string, Instance>(name, instance));
+  smpi_instances.try_emplace(name, Instance(num_processes));
 }
 
 void smpi_deployment_register_process(const std::string& instance_id, int rank, const simgrid::s4u::Actor* actor)

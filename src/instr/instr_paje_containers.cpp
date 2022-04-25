@@ -23,7 +23,7 @@ NetZoneContainer::NetZoneContainer(const std::string& name, unsigned int level, 
   if (parent_) {
     std::string type_name = std::string("L") + std::to_string(level);
     type_                 = parent_->type_->by_name_or_create<ContainerType>(type_name);
-    parent_->children_.insert({get_name(), this});
+    parent_->children_.try_emplace(get_name(), this);
     on_creation(*this);
   } else {
     type_         = new ContainerType("0");
@@ -57,13 +57,13 @@ Container::Container(const std::string& name, const std::string& type_name, Cont
 
     if (not type_name.empty()) {
       type_ = parent_->type_->by_name_or_create<ContainerType>(type_name);
-      parent_->children_.insert({name_, this});
+      parent_->children_.try_emplace(name_, this);
       on_creation(*this);
     }
   }
 
   //register all kinds by name
-  if (not all_containers_.emplace(name_, this).second)
+  if (not all_containers_.try_emplace(name_, this).second)
     throw TracingError(XBT_THROW_POINT,
                        xbt::string_printf("container %s already present in all_containers_", get_cname()));
 

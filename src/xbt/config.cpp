@@ -310,7 +310,7 @@ void Config::alias(const std::string& realname, const std::string& aliasname)
   xbt_assert(aliases.find(aliasname) == aliases.end(), "Alias '%s' already.", aliasname.c_str());
   ConfigurationElement* element = this->get_dict_element(realname);
   xbt_assert(element, "Cannot define an alias to the non-existing option '%s'.", realname.c_str());
-  this->aliases.insert({aliasname, element});
+  this->aliases.try_emplace(aliasname, element);
 }
 
 /** @brief Displays the declared aliases and their replacement */

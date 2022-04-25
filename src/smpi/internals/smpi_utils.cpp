@@ -121,7 +121,7 @@ void account_malloc_size(size_t size, const std::string& file, int line, void* p
     metadata.line = line;
     metadata.numcall = 1;
     metadata.file    = file;
-    allocs.emplace(ptr, metadata);
+    allocs.try_emplace(ptr, metadata);
 
     total_malloc_size += size;
     if(size > max_malloc.size){
@@ -184,7 +184,7 @@ static void print_leaked_handles()
       key += " at " + elem.second->call_location();
     else
       display_advice = true;
-    auto result      = count.emplace(key, 1);
+    auto result = count.try_emplace(key, 1);
     if (result.second == false)
       result.first->second++;
   }
@@ -232,7 +232,7 @@ static void print_leaked_buffers()
     std::string key = "leaked allocations";
     if (not xbt_log_no_loc)
       key = elem.second.file + ":" + std::to_string(elem.second.line) + ": " + key;
-    auto result = leaks_aggreg.emplace(key, buff_leak{1, elem.second.size, elem.second.size, elem.second.size});
+    auto result = leaks_aggreg.try_emplace(key, buff_leak{1, elem.second.size, elem.second.size, elem.second.size});
     if (result.second == false) {
       result.first->second.count++;
       result.first->second.total_size += elem.second.size;
@@ -354,7 +354,7 @@ int check_collectives_ordering(MPI_Comm comm, const std::string& call)
   comm->increment_collectives_count();
   auto vec = collective_calls.find(comm->id());
   if (vec == collective_calls.end()) {
-    collective_calls.emplace(comm->id(), std::vector<std::string>{call});
+    collective_calls.try_emplace(comm->id(), std::vector<std::string>{call});
   } else {
     // are we the first ? add the call
     if (vec->second.size() == count) {

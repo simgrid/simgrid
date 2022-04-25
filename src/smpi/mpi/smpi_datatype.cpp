@@ -128,7 +128,7 @@ Datatype::Datatype(int size, MPI_Aint lb, MPI_Aint ub, int flags) : size_(size),
 Datatype::Datatype(const char* name, int ident, int size, MPI_Aint lb, MPI_Aint ub, int flags)
     : name_(name), id(std::to_string(ident)), size_(size), lb_(lb), ub_(ub), flags_(flags), refcount_(0)
 {
-  id2type_lookup.insert({id, this});
+  id2type_lookup.try_emplace(id, this);
 #if SIMGRID_HAVE_MC
   if(MC_is_active())
     MC_ignore(&refcount_, sizeof refcount_);

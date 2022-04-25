@@ -225,7 +225,7 @@ void ETag_surfxml_platform(){
 
 void STag_surfxml_prop()
 {
-  property_sets.back().insert({A_surfxml_prop_id, A_surfxml_prop_value});
+  property_sets.back().try_emplace(A_surfxml_prop_id, A_surfxml_prop_value);
   XBT_DEBUG("add prop %s=%s into current property set %p", A_surfxml_prop_id, A_surfxml_prop_value,
             &(property_sets.back()));
 }

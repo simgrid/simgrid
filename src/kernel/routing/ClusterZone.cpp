@@ -43,7 +43,7 @@ void ClusterBase::set_link_characteristics(double bw, double lat, s4u::Link::Sha
 void ClusterBase::add_private_link_at(unsigned long position,
                                       std::pair<resource::StandardLinkImpl*, resource::StandardLinkImpl*> link)
 {
-  private_links_.insert({position, link});
+  private_links_.try_emplace(position, link);
 }
 
 void ClusterBase::set_gateway(unsigned long position, NetPoint* gateway)

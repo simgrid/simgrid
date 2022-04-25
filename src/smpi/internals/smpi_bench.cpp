@@ -312,16 +312,16 @@ void smpi_sample_1(int global, const char *file, const char *tag, int iters, dou
     smpi_process()->set_sampling(1);
   }
 
-  auto insert = samples.emplace(loc, LocalData{
-                                         threshold, // threshold
-                                         0.0,       // relstderr
-                                         0.0,       // mean
-                                         0.0,       // sum
-                                         0.0,       // sum_pow2
-                                         iters,     // iters
-                                         0,         // count
-                                         true       // benching (if we have no data, we need at least one)
-                                     });
+  auto insert = samples.try_emplace(loc, LocalData{
+                                             threshold, // threshold
+                                             0.0,       // relstderr
+                                             0.0,       // mean
+                                             0.0,       // sum
+                                             0.0,       // sum_pow2
+                                             iters,     // iters
+                                             0,         // count
+                                             true       // benching (if we have no data, we need at least one)
+                                         });
   if (insert.second) {
     XBT_DEBUG("XXXXX First time ever on benched nest %s.", loc.c_str());
     xbt_assert(threshold > 0 || iters > 0,

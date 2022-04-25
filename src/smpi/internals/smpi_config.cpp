@@ -104,7 +104,7 @@ simgrid::config::Flag<std::string> _smpi_cfg_comp_adjustment_file{
           auto end             = std::next(tok.begin());
           std::string location = *it;
           boost::trim(location);
-          location2speedup.insert(std::pair<std::string, double>(location, std::stod(*end)));
+          location2speedup.try_emplace(location, std::stod(*end));
         }
       }
     }};

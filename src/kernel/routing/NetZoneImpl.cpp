@@ -396,7 +396,7 @@ void NetZoneImpl::add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_sr
   newRoute->links.insert(newRoute->links.end(), begin(converted_list), end(converted_list));
 
   /* Store it */
-  bypass_routes_.insert({{src, dst}, newRoute});
+  bypass_routes_.try_emplace({src, dst}, newRoute);
 }
 
 /** @brief Get the common ancestor and its first children in each line leading to src and dst

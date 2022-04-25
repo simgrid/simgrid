@@ -341,7 +341,7 @@ void FatTreeZone::add_processing_node(int id, resource::StandardLinkImpl* limite
   position++;
   newNode->parents.resize(static_cast<size_t>(this->num_parents_per_node_[0]) * this->num_port_lower_level_[0]);
   newNode->label.resize(this->levels_);
-  this->compute_nodes_.insert(make_pair(id, newNode));
+  this->compute_nodes_.try_emplace(id, newNode);
   this->nodes_.emplace_back(newNode);
 }
 

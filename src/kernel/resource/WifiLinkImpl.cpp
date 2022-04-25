@@ -28,7 +28,7 @@ WifiLinkImpl::WifiLinkImpl(const std::string& name, const std::vector<double>& b
 
 void WifiLinkImpl::set_host_rate(const s4u::Host* host, int rate_level)
 {
-  auto insert_done = host_rates_.insert(std::make_pair(host->get_name(), rate_level));
+  auto insert_done = host_rates_.try_emplace(host->get_name(), rate_level);
   if (not insert_done.second)
     insert_done.first->second = rate_level;
 

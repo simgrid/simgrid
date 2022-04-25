@@ -137,7 +137,7 @@ void ValueType::add_entity_value(const std::string& name, const std::string& col
   auto it = values_.find(name);
   if (it == values_.end()) {
     XBT_DEBUG("new value %s, child of %s", name.c_str(), get_cname());
-    values_.emplace(name, EntityValue(name, color, this));
+    values_.try_emplace(name, EntityValue(name, color, this));
   }
 }
 

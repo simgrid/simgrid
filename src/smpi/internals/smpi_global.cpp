@@ -278,7 +278,7 @@ static void smpi_init_papi()
     std::string unit_name    = *(event_tokens.begin());
     papi_process_data config = {.counter_data = std::move(counters2values), .event_set = event_set};
 
-    units2papi_setup.insert(std::make_pair(unit_name, std::move(config)));
+    units2papi_setup.try_emplace(unit_name, std::move(config));
   }
 #endif
 }
