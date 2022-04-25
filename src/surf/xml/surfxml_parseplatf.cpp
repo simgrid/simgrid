@@ -31,19 +31,19 @@ void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* 
 
   switch (trace_connect->kind) {
     case simgrid::kernel::routing::TraceConnectKind::HOST_AVAIL:
-      trace_connect_list_host_avail.insert({trace_connect->trace, trace_connect->element});
+      trace_connect_list_host_avail.try_emplace(trace_connect->trace, trace_connect->element);
       break;
     case simgrid::kernel::routing::TraceConnectKind::SPEED:
-      trace_connect_list_host_speed.insert({trace_connect->trace, trace_connect->element});
+      trace_connect_list_host_speed.try_emplace(trace_connect->trace, trace_connect->element);
       break;
     case simgrid::kernel::routing::TraceConnectKind::LINK_AVAIL:
-      trace_connect_list_link_avail.insert({trace_connect->trace, trace_connect->element});
+      trace_connect_list_link_avail.try_emplace(trace_connect->trace, trace_connect->element);
       break;
     case simgrid::kernel::routing::TraceConnectKind::BANDWIDTH:
-      trace_connect_list_link_bw.insert({trace_connect->trace, trace_connect->element});
+      trace_connect_list_link_bw.try_emplace(trace_connect->trace, trace_connect->element);
       break;
     case simgrid::kernel::routing::TraceConnectKind::LATENCY:
-      trace_connect_list_link_lat.insert({trace_connect->trace, trace_connect->element});
+      trace_connect_list_link_lat.try_emplace(trace_connect->trace, trace_connect->element);
       break;
     default:
       surf_parse_error(std::string("Cannot connect trace ") + trace_connect->trace + " to " + trace_connect->element +
