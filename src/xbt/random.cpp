@@ -41,25 +41,25 @@ bool Random::write_state(const std::string& filename) const
 
 int StdRandom::uniform_int(int min, int max)
 {
-  std::uniform_int_distribution<> dist(min, max);
+  std::uniform_int_distribution dist(min, max);
   return dist(mt19937_gen);
 }
 
 double StdRandom::uniform_real(double min, double max)
 {
-  std::uniform_real_distribution<> dist(min, max);
+  std::uniform_real_distribution dist(min, max);
   return dist(mt19937_gen);
 }
 
 double StdRandom::exponential(double lambda)
 {
-  std::exponential_distribution<> dist(lambda);
+  std::exponential_distribution dist(lambda);
   return dist(mt19937_gen);
 }
 
 double StdRandom::normal(double mean, double sd)
 {
-  std::normal_distribution<> dist(mean, sd);
+  std::normal_distribution dist(mean, sd);
   return dist(mt19937_gen);
 }
 

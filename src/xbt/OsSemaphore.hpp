@@ -16,14 +16,14 @@ public:
 
   inline void acquire()
   {
-    std::unique_lock<std::mutex> lock(mutex_);
+    std::unique_lock lock(mutex_);
     condition_.wait(lock, [this]() { return capa_ > 0; });
     --capa_;
   }
 
   inline void release()
   {
-    std::unique_lock<std::mutex> lock(mutex_);
+    std::unique_lock lock(mutex_);
     ++capa_;
     condition_.notify_one();
   }

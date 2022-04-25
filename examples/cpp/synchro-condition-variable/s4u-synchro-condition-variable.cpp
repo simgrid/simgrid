@@ -14,7 +14,7 @@ bool done = false;
 
 static void worker_fun(sg4::ConditionVariablePtr cv, sg4::MutexPtr mutex)
 {
-  std::unique_lock<sg4::Mutex> lock(*mutex);
+  std::unique_lock lock(*mutex);
 
   XBT_INFO("Start processing data which is '%s'.", data.c_str());
   data += std::string(" after processing");

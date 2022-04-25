@@ -43,10 +43,10 @@ TEST_CASE("xbt::random: Random Number Generation")
     simgrid::xbt::random::set_implem_std();
     simgrid::xbt::random::set_mersenne_seed(12345);
 
-    std::exponential_distribution<> distA(25);
-    std::uniform_int_distribution<> distB(1, 6);
-    std::uniform_real_distribution<> distC(0, 1);
-    std::normal_distribution<> distD(0, 2);
+    std::exponential_distribution distA(25.0);
+    std::uniform_int_distribution distB(1, 6);
+    std::uniform_real_distribution distC(0.0, 1.0);
+    std::normal_distribution distD(0.0, 2.0);
 
     REQUIRE_THAT(simgrid::xbt::random::exponential(25), EpsilonApprox(distA(gen)));
     REQUIRE(simgrid::xbt::random::uniform_int(1, 6) == distB(gen));

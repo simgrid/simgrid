@@ -16,7 +16,7 @@ bool ready = false;
 static void competitor(int id)
 {
   XBT_INFO("Entering the race...");
-  std::unique_lock<sg4::Mutex> lck(*mtx);
+  std::unique_lock lck(*mtx);
   while (not ready) {
     auto now = sg4::Engine::get_clock();
     if (cv->wait_until(lck, now + (id+1)*0.25) == std::cv_status::timeout) {
@@ -33,7 +33,7 @@ static void go()
 {
   XBT_INFO("Are you ready? ...");
   sg4::this_actor::sleep_for(3);
-  std::unique_lock<sg4::Mutex> lck(*mtx);
+  std::unique_lock lck(*mtx);
   XBT_INFO("Go go go!");
   ready = true;
   cv->notify_all();

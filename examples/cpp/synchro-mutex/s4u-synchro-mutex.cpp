@@ -33,7 +33,7 @@ static void workerLockGuard(sg4::MutexPtr mutex, int& result)
 {
   // Simply use the std::lock_guard like this
   // It's like a lock() that would do the unlock() automatically when getting out of scope
-  std::lock_guard<sg4::Mutex> lock(*mutex);
+  std::lock_guard lock(*mutex);
 
   // then you are in a safe zone
   XBT_INFO("Hello s4u, I'm ready to compute after a lock_guard");
