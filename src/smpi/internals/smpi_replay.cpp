@@ -145,9 +145,6 @@ public:
   void add(MPI_Request req)
   {
     if (req != MPI_REQUEST_NULL){ // Can and does happen in the case of TestAction
-      auto it = store.find(req_key_t(req->src()-1, req->dst()-1, req->tag()));
-      if (it == store.end())
-        store.insert({req_key_t(req->src()-1, req->dst()-1, req->tag()), std::list<MPI_Request>()});
       store[req_key_t(req->src()-1, req->dst()-1, req->tag())].push_back(req);
     }
   }
@@ -157,9 +154,6 @@ public:
   {
     int src_pid = MPI_COMM_WORLD->group()->actor(src) - 1;
     int dest_pid = MPI_COMM_WORLD->group()->actor(dst) - 1;
-    auto it = store.find(req_key_t(src_pid, dest_pid, tag));
-    if (it == store.end())
-      store.insert({req_key_t(src_pid, dest_pid, tag), std::list<MPI_Request>()});
     store[req_key_t(src_pid, dest_pid, tag)].push_back(MPI_REQUEST_NULL);
   }
 };
