@@ -52,10 +52,10 @@ static simgrid::config::Flag<int>
     cfg_min_pstate("plugin/dvfs/min-pstate",
                    "Which pstate is the minimum (and hence fastest) pstate for this governor?", 0);
 
-static const int max_pstate_not_limited = -1;
+static constexpr int MAX_PSTATE_NOT_LIMITED = -1;
 static simgrid::config::Flag<int>
     cfg_max_pstate("plugin/dvfs/max-pstate",
-                   "Which pstate is the maximum (and hence slowest) pstate for this governor?", max_pstate_not_limited);
+                   "Which pstate is the maximum (and hence slowest) pstate for this governor?", MAX_PSTATE_NOT_LIMITED);
 
 /** @addtogroup SURF_plugin_load
 
@@ -98,7 +98,7 @@ public:
   explicit Governor(simgrid::s4u::Host* ptr)
       : host_(ptr)
   {
-    if (cfg_max_pstate == max_pstate_not_limited)
+    if (cfg_max_pstate == MAX_PSTATE_NOT_LIMITED)
       max_pstate = host_->get_pstate_count() - 1;
     init();
   }
