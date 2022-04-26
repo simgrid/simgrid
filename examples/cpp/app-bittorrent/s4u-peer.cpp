@@ -121,7 +121,7 @@ bool Peer::getPeersFromTracker()
     // Add the peers the tracker gave us to our peer list.
     for (auto const& peer_id : answer->getPeers())
       if (id != peer_id)
-        connected_peers.try_emplace(peer_id, Connection(peer_id));
+        connected_peers.try_emplace(peer_id, peer_id);
   } catch (const simgrid::TimeoutException&) {
     XBT_DEBUG("Timeout expired when requesting peers to tracker");
     return false;
@@ -317,7 +317,7 @@ void Peer::handleMessage()
       // Check if the peer is in our connection list.
       if (remote_peer == nullptr) {
         XBT_DEBUG("This peer %d was unknown, answer to its handshake", message->peer_id);
-        connected_peers.try_emplace(message->peer_id, Connection(message->peer_id));
+        connected_peers.try_emplace(message->peer_id, message->peer_id);
         sendMessage(message->return_mailbox, MessageType::HANDSHAKE, message_size(MessageType::HANDSHAKE));
       }
       // Send our bitfield to the peer

@@ -53,7 +53,7 @@ void NetworkIBModel::IB_create_host_callback(s4u::Host const& host)
 {
   static int id = 0;
   auto* ibModel = static_cast<NetworkIBModel*>(host.get_netpoint()->get_englobing_zone()->get_network_model().get());
-  ibModel->active_nodes.try_emplace(host.get_name(), IBNode(id));
+  ibModel->active_nodes.try_emplace(host.get_name(), id);
   id++;
 }
 

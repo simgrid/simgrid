@@ -126,7 +126,7 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 {
   void* mem;
   smpi_source_location loc(file, line);
-  auto res  = allocs.try_emplace(loc, shared_data_t());
+  auto res  = allocs.try_emplace(loc);
   auto data = res.first;
   if (res.second) {
     // The new element was inserted.
