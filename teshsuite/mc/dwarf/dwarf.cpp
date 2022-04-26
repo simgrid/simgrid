@@ -38,9 +38,9 @@ some_struct test_some_struct;
 static simgrid::mc::Frame* find_function_by_name(
     simgrid::mc::ObjectInformation* info, const char* name)
 {
-  for (auto& entry : info->subprograms)
-    if(entry.second.name == name)
-      return &entry.second;
+  for (auto& [_, entry] : info->subprograms)
+    if (entry.name == name)
+      return &entry;
   return nullptr;
 }
 

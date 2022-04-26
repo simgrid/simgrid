@@ -53,11 +53,11 @@ HostImpl::~HostImpl()
     delete arg;
   actors_at_boot_.clear();
 
-  for (auto const& d : disks_)
-    d.second->destroy();
+  for (auto const& [_, d] : disks_)
+    d->destroy();
 
-  for (auto const& vm : vms_)
-    vm.second->vm_destroy();
+  for (auto const& [_, vm] : vms_)
+    vm->vm_destroy();
 }
 
 /** @brief Fire the required callbacks and destroy the object
@@ -86,10 +86,10 @@ void HostImpl::turn_on() const
 void HostImpl::turn_off(const actor::ActorImpl* issuer)
 {
   /* turn_off VMs running on host */
-  for (const auto& kv : vms_) {
+  for (const auto& [_, vm] : vms_) {
     // call s4u functions to generate the good on_state_change signal, maybe one day this wont be necessary
-    kv.second->get_iface()->shutdown();
-    kv.second->get_iface()->turn_off();
+    vm->get_iface()->shutdown();
+    vm->get_iface()->turn_off();
   }
   for (auto& actor : actor_list_) {
     XBT_DEBUG("Killing Actor %s@%s on behalf of %s which turned off that host.", actor.get_cname(),
@@ -138,8 +138,8 @@ size_t HostImpl::get_actor_count() const
 std::vector<s4u::Disk*> HostImpl::get_disks() const
 {
   std::vector<s4u::Disk*> disks;
-  for (auto const& d : disks_)
-    disks.push_back(d.second->get_iface());
+  for (auto const& [_, d] : disks_)
+    disks.push_back(d->get_iface());
   return disks;
 }
 
@@ -202,8 +202,8 @@ VirtualMachineImpl* HostImpl::get_vm_by_name_or_null(const std::string& name) co
 std::vector<s4u::VirtualMachine*> HostImpl::get_vms() const
 {
   std::vector<s4u::VirtualMachine*> vms;
-  for (const auto& kv : vms_) {
-    vms.push_back(kv.second->get_iface());
+  for (const auto& [_, vm] : vms_) {
+    vms.push_back(vm->get_iface());
   }
   return vms;
 }
@@ -235,12 +235,12 @@ void HostImpl::seal()
   sealed_ = true;
 
   /* seal its disks */
-  for (auto const& disk : disks_)
-    disk.second->seal();
+  for (auto const& [_, disk] : disks_)
+    disk->seal();
 
   /* seal its VMs */
-  for (auto const& vm : vms_)
-    vm.second->seal();
+  for (auto const& [_, vm] : vms_)
+    vm->seal();
 }
 } // namespace resource
 } // namespace kernel

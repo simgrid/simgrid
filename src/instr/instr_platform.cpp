@@ -131,8 +131,7 @@ static void recursiveGraphExtraction(const simgrid::s4u::NetZone* netzone, const
   std::map<std::string, xbt_edge_t, std::less<>> edges;
 
   netzone->get_impl()->get_graph(graph, &nodes, &edges);
-  for (auto const& elm : edges) {
-    const xbt_edge* edge = elm.second;
+  for (auto const& [_, edge] : edges) {
     linkContainers(simgrid::instr::Container::by_name(static_cast<const char*>(edge->src->data)),
                    simgrid::instr::Container::by_name(static_cast<const char*>(edge->dst->data)), filter);
   }
@@ -151,8 +150,8 @@ static void recursiveNewVariableType(const std::string& new_typename, const std:
   if (root->get_name() == "LINK")
     root->by_name_or_create(std::string("b") + new_typename, color);
 
-  for (auto const& elm : root->get_children()) {
-    recursiveNewVariableType(new_typename, color, elm.second.get());
+  for (auto const& [_, child] : root->get_children()) {
+    recursiveNewVariableType(new_typename, color, child.get());
   }
 }
 
@@ -167,8 +166,8 @@ static void recursiveNewUserVariableType(const std::string& parent_type, const s
   if (root->get_name() == parent_type) {
     root->by_name_or_create(new_typename, color);
   }
-  for (auto const& elm : root->get_children())
-    recursiveNewUserVariableType(parent_type, new_typename, color, elm.second.get());
+  for (auto const& [_, child] : root->get_children())
+    recursiveNewUserVariableType(parent_type, new_typename, color, child.get());
 }
 
 void instr_new_user_variable_type(const std::string& parent_type, const std::string& new_typename,
@@ -183,8 +182,8 @@ static void recursiveNewUserStateType(const std::string& parent_type, const std:
   if (root->get_name() == parent_type)
     root->by_name_or_create<simgrid::instr::StateType>(new_typename);
 
-  for (auto const& elm : root->get_children())
-    recursiveNewUserStateType(parent_type, new_typename, elm.second.get());
+  for (auto const& [_, child] : root->get_children())
+    recursiveNewUserStateType(parent_type, new_typename, child.get());
 }
 
 void instr_new_user_state_type(const std::string& parent_type, const std::string& new_typename)
@@ -198,8 +197,8 @@ static void recursiveNewValueForUserStateType(const std::string& type_name, cons
   if (root->get_name() == type_name)
     static_cast<simgrid::instr::StateType*>(root)->add_entity_value(val, color);
 
-  for (auto const& elm : root->get_children())
-    recursiveNewValueForUserStateType(type_name, val, color, elm.second.get());
+  for (auto const& [_, child] : root->get_children())
+    recursiveNewValueForUserStateType(type_name, val, color, child.get());
 }
 
 void instr_new_value_for_user_state_type(const std::string& type_name, const char* value, const std::string& color)
@@ -236,12 +235,12 @@ void platform_graph_export_graphviz(const std::string& output_filename)
   fs << "  node [shape=box, style=filled]" << std::endl;
   fs << "  node [width=.3, height=.3, style=filled, color=skyblue]" << std::endl << std::endl;
 
-  for (auto const& elm : nodes)
-    fs << "  \"" << elm.first << "\";" << std::endl;
+  for (auto const& [node, _] : nodes)
+    fs << "  \"" << node << "\";" << std::endl;
 
-  for (auto const& elm : edges) {
-    const char* src_s = static_cast<char*>(elm.second->src->data);
-    const char* dst_s = static_cast<char*>(elm.second->dst->data);
+  for (auto const& [_, edge] : edges) {
+    const char* src_s = static_cast<char*>(edge->src->data);
+    const char* dst_s = static_cast<char*>(edge->dst->data);
     if (g->directed)
       fs << "  \"" << src_s << "\" -> \"" << dst_s << "\";" << std::endl;
     else

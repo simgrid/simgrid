@@ -276,28 +276,25 @@ Config::Config()
 
 inline ConfigurationElement* Config::get_dict_element(const std::string& name)
 {
-  auto opt = options.find(name);
-  if (opt != options.end()) {
+  if (auto opt = options.find(name); opt != options.end())
     return opt->second.get();
-  } else {
-    auto als = aliases.find(name);
-    if (als != aliases.end()) {
-      ConfigurationElement* res = als->second;
-      if (warn_for_aliases)
-        XBT_INFO("Option %s has been renamed to %s. Consider switching.", name.c_str(), res->get_key().c_str());
-      return res;
-    } else {
-      std::string msg   = "Bad config key: " + name + "\n";
-      std::string kebab = name;
-      std::replace(begin(kebab), end(kebab), '_', '-'); // convert from snake_case to kebab-case
-      if (options.count(kebab) > 0)
-        msg += "Did you mean '" + kebab + "'?\n";
-      msg += "Existing config keys:\n";
-      for (auto const& elm : options)
-        msg += "  " + elm.first + ": (" + elm.second->get_type_name() + ")" + elm.second->get_string_value() + "\n";
-      throw std::out_of_range(msg);
-    }
+
+  if (auto als = aliases.find(name); als != aliases.end()) {
+    ConfigurationElement* res = als->second;
+    if (warn_for_aliases)
+      XBT_INFO("Option %s has been renamed to %s. Consider switching.", name.c_str(), res->get_key().c_str());
+    return res;
   }
+
+  std::string msg   = "Bad config key: " + name + "\n";
+  std::string kebab = name;
+  std::replace(begin(kebab), end(kebab), '_', '-'); // convert from snake_case to kebab-case
+  if (options.count(kebab) > 0)
+    msg += "Did you mean '" + kebab + "'?\n";
+  msg += "Existing config keys:\n";
+  for (auto const& [opt_name, opt] : options)
+    msg += "  " + opt_name + ": (" + opt->get_type_name() + ")" + opt->get_string_value() + "\n";
+  throw std::out_of_range(msg);
 }
 
 inline ConfigurationElement& Config::operator[](const std::string& name)
@@ -316,17 +313,16 @@ void Config::alias(const std::string& realname, const std::string& aliasname)
 /** @brief Displays the declared aliases and their replacement */
 void Config::show_aliases() const
 {
-  for (auto const& elm : aliases)
-    XBT_HELP("   %-40s %s", elm.first.c_str(), elm.second->get_key().c_str());
+  for (auto const& [name, alias] : aliases)
+    XBT_HELP("   %-40s %s", name.c_str(), alias->get_key().c_str());
 }
 
 /** @brief Displays the declared options and their description */
 void Config::help() const
 {
-  for (auto const& elm : options) {
-    simgrid::config::ConfigurationElement* variable = elm.second.get();
-    XBT_HELP("   %s: %s", elm.first.c_str(), variable->get_description().c_str());
-    XBT_HELP("       Type: %s; Current value: %s", variable->get_type_name(), variable->get_string_value().c_str());
+  for (auto const& [name, opt] : options) {
+    XBT_HELP("   %s: %s", name.c_str(), opt->get_description().c_str());
+    XBT_HELP("       Type: %s; Current value: %s", opt->get_type_name(), opt->get_string_value().c_str());
   }
 }
 

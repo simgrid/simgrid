@@ -249,8 +249,8 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
     zone->set_parent(parent);
 
   /* set properties */
-  for (auto const& elm : cluster->properties)
-    zone->set_property(elm.first, elm.second);
+  for (auto const& [key, value] : cluster->properties)
+    zone->set_property(key, value);
 
   /* Make the backbone */
   const simgrid::s4u::Link* backbone = nullptr;

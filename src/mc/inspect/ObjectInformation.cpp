@@ -124,8 +124,8 @@ static void remove_local_variable(Frame& scope, const char* var_name, const char
 
 void ObjectInformation::remove_local_variable(const char* var_name, const char* subprogram_name)
 {
-  for (auto& entry : this->subprograms)
-    mc::remove_local_variable(entry.second, var_name, subprogram_name, entry.second);
+  for (auto& [_, entry] : this->subprograms)
+    mc::remove_local_variable(entry, var_name, subprogram_name, entry);
 }
 
 /** @brief Fills the position of the segments (executable, read-only, read/write) */

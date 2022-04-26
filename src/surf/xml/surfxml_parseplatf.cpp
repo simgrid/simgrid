@@ -66,53 +66,53 @@ void parse_platform_file(const std::string& file)
   const auto engine = simgrid::s4u::Engine::get_instance();
 
   /* connect all profiles relative to hosts */
-  for (auto const& elm : trace_connect_list_host_avail) {
-    surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(),
-                      std::string("<trace_connect kind=\"HOST_AVAIL\">: Trace ") + elm.first + " undefined.");
-    auto profile = traces_set_list.at(elm.first);
+  for (auto const& [trace, name] : trace_connect_list_host_avail) {
+    surf_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
+                      std::string("<trace_connect kind=\"HOST_AVAIL\">: Trace ") + trace + " undefined.");
+    auto profile = traces_set_list.at(trace);
 
-    auto host = engine->host_by_name_or_null(elm.second);
-    surf_parse_assert(host, std::string("<trace_connect kind=\"HOST_AVAIL\">: Host ") + elm.second + " undefined.");
+    auto host = engine->host_by_name_or_null(name);
+    surf_parse_assert(host, std::string("<trace_connect kind=\"HOST_AVAIL\">: Host ") + name + " undefined.");
     host->set_state_profile(profile);
   }
 
-  for (auto const& elm : trace_connect_list_host_speed) {
-    surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(),
-                      std::string("<trace_connect kind=\"SPEED\">: Trace ") + elm.first + " undefined.");
-    auto profile = traces_set_list.at(elm.first);
+  for (auto const& [trace, name] : trace_connect_list_host_speed) {
+    surf_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
+                      std::string("<trace_connect kind=\"SPEED\">: Trace ") + trace + " undefined.");
+    auto profile = traces_set_list.at(trace);
 
-    auto host = engine->host_by_name_or_null(elm.second);
-    surf_parse_assert(host, std::string("<trace_connect kind=\"SPEED\">: Host ") + elm.second + " undefined.");
+    auto host = engine->host_by_name_or_null(name);
+    surf_parse_assert(host, std::string("<trace_connect kind=\"SPEED\">: Host ") + name + " undefined.");
     host->set_speed_profile(profile);
   }
 
-  for (auto const& elm : trace_connect_list_link_avail) {
-    surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(),
-                      std::string("<trace_connect kind=\"LINK_AVAIL\">: Trace ") + elm.first + " undefined.");
-    auto profile = traces_set_list.at(elm.first);
+  for (auto const& [trace, name] : trace_connect_list_link_avail) {
+    surf_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
+                      std::string("<trace_connect kind=\"LINK_AVAIL\">: Trace ") + trace + " undefined.");
+    auto profile = traces_set_list.at(trace);
 
-    auto link = engine->link_by_name_or_null(elm.second);
-    surf_parse_assert(link, std::string("<trace_connect kind=\"LINK_AVAIL\">: Link ") + elm.second + " undefined.");
+    auto link = engine->link_by_name_or_null(name);
+    surf_parse_assert(link, std::string("<trace_connect kind=\"LINK_AVAIL\">: Link ") + name + " undefined.");
     link->set_state_profile(profile);
   }
 
-  for (auto const& elm : trace_connect_list_link_bw) {
-    surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(),
-                      std::string("<trace_connect kind=\"BANDWIDTH\">: Trace ") + elm.first + " undefined.");
-    auto profile = traces_set_list.at(elm.first);
+  for (auto const& [trace, name] : trace_connect_list_link_bw) {
+    surf_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
+                      std::string("<trace_connect kind=\"BANDWIDTH\">: Trace ") + trace + " undefined.");
+    auto profile = traces_set_list.at(trace);
 
-    auto link = engine->link_by_name_or_null(elm.second);
-    surf_parse_assert(link, std::string("<trace_connect kind=\"BANDWIDTH\">: Link ") + elm.second + " undefined.");
+    auto link = engine->link_by_name_or_null(name);
+    surf_parse_assert(link, std::string("<trace_connect kind=\"BANDWIDTH\">: Link ") + name + " undefined.");
     link->set_bandwidth_profile(profile);
   }
 
-  for (auto const& elm : trace_connect_list_link_lat) {
-    surf_parse_assert(traces_set_list.find(elm.first) != traces_set_list.end(),
-                      std::string("<trace_connect kind=\"LATENCY\">: Trace ") + elm.first + " undefined.");
-    auto profile = traces_set_list.at(elm.first);
+  for (auto const& [trace, name] : trace_connect_list_link_lat) {
+    surf_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
+                      std::string("<trace_connect kind=\"LATENCY\">: Trace ") + trace + " undefined.");
+    auto profile = traces_set_list.at(trace);
 
-    auto link = engine->link_by_name_or_null(elm.second);
-    surf_parse_assert(link, std::string("<trace_connect kind=\"LATENCY\">: Link ") + elm.second + " undefined.");
+    auto link = engine->link_by_name_or_null(name);
+    surf_parse_assert(link, std::string("<trace_connect kind=\"LATENCY\">: Link ") + name + " undefined.");
     link->set_latency_profile(profile);
   }
 

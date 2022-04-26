@@ -79,27 +79,27 @@ int Comm::dup(MPI_Comm* newcomm){
   auto* cp     = new Group(this->group());
   (*newcomm)   = new  Comm(cp, this->topo());
 
-  for (auto const& it : attributes()) {
-    auto elem_it = keyvals_.find(it.first);
-    xbt_assert(elem_it != keyvals_.end(), "Keyval not found for Comm: %d", it.first);
+  for (auto const& [key, value] : attributes()) {
+    auto elem_it = keyvals_.find(key);
+    xbt_assert(elem_it != keyvals_.end(), "Keyval not found for Comm: %d", key);
 
     smpi_key_elem& elem = elem_it->second;
     int ret             = MPI_SUCCESS;
     int flag            = 0;
     void* value_out     = nullptr;
     if (elem.copy_fn.comm_copy_fn == MPI_COMM_DUP_FN) {
-      value_out = it.second;
+      value_out = value;
       flag      = 1;
     } else if (elem.copy_fn.comm_copy_fn != MPI_NULL_COPY_FN) {
-      ret = elem.copy_fn.comm_copy_fn(this, it.first, elem.extra_state, it.second, &value_out, &flag);
+      ret = elem.copy_fn.comm_copy_fn(this, key, elem.extra_state, value, &value_out, &flag);
     }
     if (elem.copy_fn.comm_copy_fn_fort != MPI_NULL_COPY_FN) {
       value_out = xbt_new(int, 1);
       if (*(int*)*elem.copy_fn.comm_copy_fn_fort == 1) { // MPI_COMM_DUP_FN
-        memcpy(value_out, it.second, sizeof(int));
+        memcpy(value_out, value, sizeof(int));
         flag = 1;
       } else { // not null, nor dup
-        elem.copy_fn.comm_copy_fn_fort(this, it.first, elem.extra_state, it.second, value_out, &flag, &ret);
+        elem.copy_fn.comm_copy_fn_fort(this, key, elem.extra_state, value, value_out, &flag, &ret);
       }
       if (ret != MPI_SUCCESS)
         xbt_free(value_out);
@@ -111,7 +111,7 @@ int Comm::dup(MPI_Comm* newcomm){
     }
     if (flag) {
       elem.refcount++;
-      (*newcomm)->attributes().emplace(it.first, value_out);
+      (*newcomm)->attributes().try_emplace(key, value_out);
     }
   }
   //duplicate info if present
@@ -304,10 +304,10 @@ MPI_Comm Comm::split(int color, int key)
         }
         std::vector<MPI_Request> requests(rankmap.size());
         int reqs              = 0;
-        for (auto const& rank : rankmap) {
-          if (rank.second != 0) {
+        for (auto const& [_, rank] : rankmap) {
+          if (rank != 0) {
             group_snd[reqs]=new  Group(group_out);
-            requests[reqs] = Request::isend(&(group_snd[reqs]), 1, MPI_PTR, rank.second, system_tag, this);
+            requests[reqs] = Request::isend(&(group_snd[reqs]), 1, MPI_PTR, rank, system_tag, this);
             reqs++;
           }
         }

@@ -48,10 +48,10 @@ VisitedStates::addVisitedState(unsigned long state_number, simgrid::mc::State* g
   XBT_DEBUG("Snapshot %p of visited state %ld (exploration stack state %ld)", new_state->system_state.get(),
             new_state->num, graph_state->get_num());
 
-  auto range = boost::range::equal_range(states_, new_state.get(), Api::get().compare_pair());
+  auto [range_begin, range_end] = boost::range::equal_range(states_, new_state.get(), Api::get().compare_pair());
 
   if (compare_snapshots)
-    for (auto i = range.first; i != range.second; ++i) {
+    for (auto i = range_begin; i != range_end; ++i) {
       auto& visited_state = *i;
       if (Api::get().snapshot_equal(visited_state->system_state.get(), new_state->system_state.get())) {
         // The state has been visited:
@@ -81,7 +81,7 @@ VisitedStates::addVisitedState(unsigned long state_number, simgrid::mc::State* g
     }
 
   XBT_DEBUG("Insert new visited state %ld (total : %lu)", new_state->num, (unsigned long)states_.size());
-  states_.insert(range.first, std::move(new_state));
+  states_.insert(range_begin, std::move(new_state));
   this->prune();
   return nullptr;
 }

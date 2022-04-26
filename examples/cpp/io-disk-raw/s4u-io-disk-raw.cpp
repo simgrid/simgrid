@@ -61,8 +61,8 @@ int main(int argc, char** argv)
   /* - Display Host properties */
   for (auto h : e.get_all_hosts()) {
     XBT_INFO("*** %s properties ****", h->get_cname());
-    for (auto const& kv : *h->get_properties())
-      XBT_INFO("  %s -> %s", kv.first.c_str(), kv.second.c_str());
+    for (auto const& [key, value] : *h->get_properties())
+      XBT_INFO("  %s -> %s", key.c_str(), value.c_str());
   }
 
   sg4::Actor::create("", e.host_by_name("bob"), host);

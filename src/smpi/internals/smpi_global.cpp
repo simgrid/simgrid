@@ -134,14 +134,14 @@ void smpi_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, s
 
 static void memcpy_private(void* dest, const void* src, const std::vector<std::pair<size_t, size_t>>& private_blocks)
 {
-  for (auto const& block : private_blocks)
-    memcpy((uint8_t*)dest+block.first, (uint8_t*)src+block.first, block.second-block.first);
+  for (auto const& [block_begin, block_end] : private_blocks)
+    memcpy((uint8_t*)dest + block_begin, (uint8_t*)src + block_begin, block_end - block_begin);
 }
 
 static void check_blocks(const std::vector<std::pair<size_t, size_t>>& private_blocks, size_t buff_size)
 {
-  for (auto const& block : private_blocks)
-    xbt_assert(block.first <= block.second && block.second <= buff_size, "Oops, bug in shared malloc.");
+  for (auto const& [block_begin, block_end] : private_blocks)
+    xbt_assert(block_begin <= block_end && block_end <= buff_size, "Oops, bug in shared malloc.");
 }
 
 static void smpi_cleanup_comm_after_copy(simgrid::kernel::activity::CommImpl* comm, void* buff){

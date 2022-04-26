@@ -102,8 +102,8 @@ template <typename C> std::string BmfSolver::debug_vector(const C& container) co
 std::string BmfSolver::debug_alloc(const allocation_map_t& alloc) const
 {
   std::stringstream debug;
-  for (const auto& e : alloc) {
-    debug << "{" + std::to_string(e.first) + ": [" + debug_vector(e.second) + "]}, ";
+  for (const auto& [resource, players] : alloc) {
+    debug << "{" + std::to_string(resource) + ": [" + debug_vector(players) + "]}, ";
   }
   return debug.str();
 }
@@ -132,9 +132,9 @@ double BmfSolver::get_maxmin_share(int resource, const std::vector<int>& bounded
 std::vector<int> BmfSolver::alloc_map_to_vector(const allocation_map_t& alloc) const
 {
   std::vector<int> alloc_by_player(A_.cols(), -1);
-  for (const auto& it : alloc) {
-    for (auto p : it.second) {
-      alloc_by_player[p] = it.first;
+  for (const auto& [resource, players] : alloc) {
+    for (auto p : players) {
+      alloc_by_player[p] = resource;
     }
   }
   return alloc_by_player;
@@ -143,9 +143,9 @@ std::vector<int> BmfSolver::alloc_map_to_vector(const allocation_map_t& alloc) c
 std::vector<int> BmfSolver::get_bounded_players(const allocation_map_t& alloc) const
 {
   std::vector<int> bounded_players;
-  for (const auto& e : alloc) {
-    if (e.first == NO_RESOURCE) {
-      bounded_players.insert(bounded_players.end(), e.second.begin(), e.second.end());
+  for (const auto& [resource, players] : alloc) {
+    if (resource == NO_RESOURCE) {
+      bounded_players.insert(bounded_players.end(), players.begin(), players.end());
     }
   }
   return bounded_players;
@@ -159,38 +159,37 @@ Eigen::VectorXd BmfSolver::equilibrium(const allocation_map_t& alloc) const
 
   int row = 0;
   auto bounded_players = get_bounded_players(alloc);
-  for (const auto& e : alloc) {
+  for (const auto& [resource, players] : alloc) {
     // add one row for the resource with A[r,]
-    int cur_resource = e.first;
     /* bounded players, nothing to do */
-    if (cur_resource == NO_RESOURCE)
+    if (resource == NO_RESOURCE)
       continue;
     /* not shared resource, each player can receive the full capacity of the resource */
-    if (not C_shared_[cur_resource]) {
-      for (int i : e.second) {
-        C_p[row]    = get_resource_capacity(cur_resource, bounded_players);
-        A_p(row, i) = A_(cur_resource, i);
+    if (not C_shared_[resource]) {
+      for (int i : players) {
+        C_p[row]    = get_resource_capacity(resource, bounded_players);
+        A_p(row, i) = A_(resource, i);
         row++;
       }
       continue;
     }
 
     /* shared resource: fairly share it between players */
-    A_p.row(row) = A_.row(cur_resource);
-    C_p[row]     = get_resource_capacity(cur_resource, bounded_players);
+    A_p.row(row) = A_.row(resource);
+    C_p[row]     = get_resource_capacity(resource, bounded_players);
     row++;
-    if (e.second.size() > 1) {
+    if (players.size() > 1) {
       // if 2 players have chosen the same resource
       // they must have a fair sharing of this resource, adjust A_p and C_p accordingly
-      auto it = e.second.begin();
+      auto it = players.begin();
       int i   = *it; // first player
       /* for each other player sharing this resource */
-      for (++it; it != e.second.end(); ++it) {
+      for (++it; it != players.end(); ++it) {
         /* player i and k on this resource j: so maxA_ji*rho_i - maxA_jk*rho_k = 0 */
         int k       = *it;
         C_p[row]    = 0;
-        A_p(row, i) = maxA_(cur_resource, i);
-        A_p(row, k) = -maxA_(cur_resource, k);
+        A_p(row, i) = maxA_(resource, i);
+        A_p(row, k) = -maxA_(resource, k);
         row++;
       }
     }

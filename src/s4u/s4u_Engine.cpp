@@ -268,12 +268,12 @@ Mailbox* Engine::mailbox_by_name_or_create(const std::string& name) const
 {
   /* two actors may have pushed the same mbox_create simcall at the same time */
   kernel::activity::MailboxImpl* mbox = kernel::actor::simcall_answered([&name, this] {
-    auto m = pimpl->mailboxes_.try_emplace(name, nullptr);
-    if (m.second) {
-      m.first->second = new kernel::activity::MailboxImpl(name);
-      XBT_DEBUG("Creating a mailbox at %p with name %s", m.first->second, name.c_str());
+    auto [m, inserted] = pimpl->mailboxes_.try_emplace(name, nullptr);
+    if (inserted) {
+      m->second = new kernel::activity::MailboxImpl(name);
+      XBT_DEBUG("Creating a mailbox at %p with name %s", m->second, name.c_str());
     }
-    return m.first->second;
+    return m->second;
   });
   return mbox->get_iface();
 }
@@ -317,8 +317,8 @@ size_t Engine::get_actor_count() const
 std::vector<ActorPtr> Engine::get_all_actors() const
 {
   std::vector<ActorPtr> actor_list;
-  for (auto const& kv : pimpl->get_actor_list()) {
-    actor_list.push_back(kv.second->get_iface());
+  for (auto const& [_, actor] : pimpl->get_actor_list()) {
+    actor_list.push_back(actor->get_iface());
   }
   return actor_list;
 }
@@ -326,9 +326,9 @@ std::vector<ActorPtr> Engine::get_all_actors() const
 std::vector<ActorPtr> Engine::get_filtered_actors(const std::function<bool(ActorPtr)>& filter) const
 {
   std::vector<ActorPtr> actor_list;
-  for (auto const& kv : pimpl->get_actor_list()) {
-    if (filter(kv.second->get_iface()))
-      actor_list.push_back(kv.second->get_iface());
+  for (auto const& [_, actor] : pimpl->get_actor_list()) {
+    if (filter(actor->get_iface()))
+      actor_list.push_back(actor->get_iface());
   }
   return actor_list;
 }
@@ -409,8 +409,8 @@ kernel::routing::NetPoint* Engine::netpoint_by_name(const std::string& name) con
 std::vector<kernel::routing::NetPoint*> Engine::get_all_netpoints() const
 {
   std::vector<kernel::routing::NetPoint*> res;
-  for (auto const& kv : pimpl->netpoints_)
-    res.push_back(kv.second);
+  for (auto const& [_, netpoint] : pimpl->netpoints_)
+    res.push_back(netpoint);
   return res;
 }
 

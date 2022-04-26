@@ -153,8 +153,8 @@ void smpi_bench_end()
         simgrid::instr::Container::by_name(std::string("rank-") + std::to_string(simgrid::s4u::this_actor::get_pid()));
     const papi_counter_t& counter_data = smpi_process()->papi_counters();
 
-    for (auto const& pair : counter_data) {
-      container->get_variable(pair.first)->set_event(simgrid::s4u::Engine::get_clock(), pair.second);
+    for (auto const& [counter, value] : counter_data) {
+      container->get_variable(counter)->set_event(simgrid::s4u::Engine::get_clock(), value);
     }
   }
 #endif
@@ -312,22 +312,23 @@ void smpi_sample_1(int global, const char *file, const char *tag, int iters, dou
     smpi_process()->set_sampling(1);
   }
 
-  auto insert = samples.try_emplace(loc, LocalData{
-                                             threshold, // threshold
-                                             0.0,       // relstderr
-                                             0.0,       // mean
-                                             0.0,       // sum
-                                             0.0,       // sum_pow2
-                                             iters,     // iters
-                                             0,         // count
-                                             true       // benching (if we have no data, we need at least one)
-                                         });
-  if (insert.second) {
+  auto [sample, inserted] = samples.try_emplace(loc,
+                                                LocalData{
+                                                    threshold, // threshold
+                                                    0.0,       // relstderr
+                                                    0.0,       // mean
+                                                    0.0,       // sum
+                                                    0.0,       // sum_pow2
+                                                    iters,     // iters
+                                                    0,         // count
+                                                    true       // benching (if we have no data, we need at least one)
+                                                });
+  if (inserted) {
     XBT_DEBUG("XXXXX First time ever on benched nest %s.", loc.c_str());
     xbt_assert(threshold > 0 || iters > 0,
         "You should provide either a positive amount of iterations to bench, or a positive maximal stderr (or both)");
   } else {
-    LocalData& data = insert.first->second;
+    LocalData& data = sample->second;
     if (data.iters != iters || data.threshold != threshold) {
       XBT_ERROR("Asked to bench block %s with different settings %d, %f is not %d, %f. "
                 "How did you manage to give two numbers at the same line??",

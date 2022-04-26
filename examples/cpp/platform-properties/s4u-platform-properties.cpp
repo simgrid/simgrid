@@ -23,8 +23,8 @@ static void test_host(const std::string& hostname)
   XBT_INFO("== Print the properties of the host '%s'", hostname.c_str());
   // Sort the properties before displaying them, so that the tests are perfectly reproducible
   std::vector<std::string> keys;
-  for (auto const& kv : *hostprops)
-    keys.push_back(kv.first);
+  for (auto const& [key, _] : *hostprops)
+    keys.push_back(key);
   std::sort(keys.begin(), keys.end());
   for (const std::string& key : keys)
     XBT_INFO("  Host property: '%s' -> '%s'", key.c_str(), hostprops->at(key).c_str());
@@ -56,8 +56,8 @@ static void test_host(const std::string& hostname)
   XBT_INFO("== Print the properties of the zone '%s' that contains '%s'", thezone->get_cname(), hostname.c_str());
   const std::unordered_map<std::string, std::string>* zoneprops = thezone->get_properties();
   keys.clear();
-  for (auto const& kv : *zoneprops)
-    keys.push_back(kv.first);
+  for (auto const& [key, _] : *zoneprops)
+    keys.push_back(key);
   std::sort(keys.begin(), keys.end());
   for (const std::string& key : keys)
     XBT_INFO("  Zone property: '%s' -> '%s'", key.c_str(), zoneprops->at(key).c_str());
@@ -95,15 +95,14 @@ static void bob()
   /* Get the property list of current bob actor */
   const std::unordered_map<std::string, std::string>* props = sg4::Actor::self()->get_properties();
   const char* noexist = "UnknownProcessProp";
-  XBT_ATTRIB_UNUSED const char* value;
 
   XBT_INFO("== Print the properties of the actor");
-  for (const auto& kv : *props)
-    XBT_INFO("   Actor property: %s -> %s", kv.first.c_str(), kv.second.c_str());
+  for (const auto& [key, value] : *props)
+    XBT_INFO("   Actor property: %s -> %s", key.c_str(), value.c_str());
 
   XBT_INFO("== Try to get an actor property that does not exist");
 
-  value = sg4::Actor::self()->get_property(noexist);
+  const char* value = sg4::Actor::self()->get_property(noexist);
   xbt_assert(not value, "The property is defined (it should not)");
 }
 

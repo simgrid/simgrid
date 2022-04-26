@@ -112,17 +112,17 @@ NetZoneImpl::~NetZoneImpl()
   /* Since hosts_ and links_ are a std::map, the hosts are destroyed in the lexicographic order, which ensures that the
    * output is reproducible.
    */
-  for (auto& host : hosts_) {
-    host.second->destroy();
+  for (auto& [_, host] : hosts_) {
+    host->destroy();
   }
   hosts_.clear();
-  for (auto& link : links_) {
-    link.second->destroy();
+  for (auto& [_, link] : links_) {
+    link->destroy();
   }
   links_.clear();
 
-  for (auto const& kv : bypass_routes_)
-    delete kv.second;
+  for (auto const& [_, route] : bypass_routes_)
+    delete route;
 
   s4u::Engine::get_instance()->netpoint_unregister(netpoint_);
 }
@@ -153,8 +153,8 @@ size_t NetZoneImpl::get_host_count() const
 std::vector<s4u::Link*> NetZoneImpl::get_filtered_links(const std::function<bool(s4u::Link*)>& filter) const
 {
   std::vector<s4u::Link*> filtered_list;
-  for (auto const& kv : links_) {
-    s4u::Link* l = kv.second->get_iface();
+  for (auto const& [_, link] : links_) {
+    s4u::Link* l = link->get_iface();
     if (filter(l))
       filtered_list.push_back(l);
   }
@@ -322,8 +322,7 @@ resource::SplitDuplexLinkImpl* NetZoneImpl::get_split_duplex_link_by_name_or_nul
 
 resource::HostImpl* NetZoneImpl::get_host_by_name_or_null(const std::string& name) const
 {
-  for (auto const& kv : hosts_) {
-    auto* host = kv.second;
+  for (auto const& [_, host] : hosts_) {
     if (host->get_name() == name)
       return host;
     /* keep old behavior where host and VMs were saved together on EngineImpl::hosts_
@@ -345,8 +344,8 @@ resource::HostImpl* NetZoneImpl::get_host_by_name_or_null(const std::string& nam
 std::vector<s4u::Host*> NetZoneImpl::get_filtered_hosts(const std::function<bool(s4u::Host*)>& filter) const
 {
   std::vector<s4u::Host*> filtered_list;
-  for (auto const& kv : hosts_) {
-    s4u::Host* h = kv.second->get_iface();
+  for (auto const& [_, host] : hosts_) {
+    s4u::Host* h = host->get_iface();
     if (filter(h))
       filtered_list.push_back(h);
     /* Engine::get_hosts returns the VMs too */
@@ -659,8 +658,8 @@ void NetZoneImpl::seal()
   }
 
   /* sealing links */
-  for (auto const& kv : links_)
-    kv.second->get_iface()->seal();
+  for (auto const& [_, link] : links_)
+    link->get_iface()->seal();
 
   for (auto* sub_net : get_children()) {
     sub_net->seal();

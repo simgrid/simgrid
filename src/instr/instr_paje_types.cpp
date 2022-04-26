@@ -109,12 +109,12 @@ void LinkType::end_event(Container* endContainer, const std::string& value, cons
 Type* Type::by_name(const std::string& name)
 {
   Type* ret = nullptr;
-  for (auto const& elm : children_) {
-    if (elm.second->name_ == name) {
+  for (auto const& [_, child] : children_) {
+    if (child->name_ == name) {
       if (ret != nullptr) {
         throw TracingError(XBT_THROW_POINT, "there are two children types with the same name?");
       } else {
-        ret = elm.second.get();
+        ret = child.get();
       }
     }
   }

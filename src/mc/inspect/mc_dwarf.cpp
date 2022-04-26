@@ -1051,12 +1051,12 @@ static void MC_make_functions_index(simgrid::mc::ObjectInformation* info)
 {
   info->functions_index.clear();
 
-  for (auto& e : info->subprograms) {
-    if (e.second.range.begin() == 0)
+  for (auto& [_, e] : info->subprograms) {
+    if (e.range.begin() == 0)
       continue;
     simgrid::mc::FunctionIndexEntry entry;
-    entry.low_pc   = (void*)e.second.range.begin();
-    entry.function = &e.second;
+    entry.low_pc   = (void*)e.range.begin();
+    entry.function = &e;
     info->functions_index.push_back(entry);
   }
 
@@ -1126,9 +1126,9 @@ static simgrid::mc::Type* MC_resolve_type(simgrid::mc::ObjectInformation* info, 
 static void MC_post_process_types(simgrid::mc::ObjectInformation* info)
 {
   // Lookup "subtype" field:
-  for (auto& i : info->types) {
-    i.second.subtype = MC_resolve_type(info, i.second.type_id);
-    for (simgrid::mc::Member& member : i.second.members)
+  for (auto& [_, i] : info->types) {
+    i.subtype = MC_resolve_type(info, i.type_id);
+    for (simgrid::mc::Member& member : i.members)
       member.type = MC_resolve_type(info, member.type_id);
   }
 }
@@ -1145,8 +1145,8 @@ void ObjectInformation::ensure_dwarf_loaded()
   MC_load_dwarf(this);
   MC_post_process_variables(this);
   MC_post_process_types(this);
-  for (auto& entry : this->subprograms)
-    mc_post_process_scope(this, &entry.second);
+  for (auto& [_, entry] : this->subprograms)
+    mc_post_process_scope(this, &entry);
   MC_make_functions_index(this);
 }
 
@@ -1163,8 +1163,8 @@ std::shared_ptr<ObjectInformation> createObjectInformation(std::vector<xbt::VmMa
 
 void postProcessObjectInformation(const RemoteProcess* process, ObjectInformation* info)
 {
-  for (auto& t : info->types) {
-    Type* type    = &(t.second);
+  for (auto& [_, t] : info->types) {
+    Type* type    = &t;
     Type* subtype = type;
     while (subtype->type == DW_TAG_typedef || subtype->type == DW_TAG_volatile_type ||
            subtype->type == DW_TAG_const_type)

@@ -61,11 +61,11 @@ void NetworkIBModel::IB_action_state_changed_callback(NetworkAction& action, Act
 {
   if (action.get_state() != Action::State::FINISHED)
     return;
-  auto* ibModel                    = static_cast<NetworkIBModel*>(action.get_model());
-  std::pair<IBNode*, IBNode*> pair = ibModel->active_comms[&action];
+  auto* ibModel   = static_cast<NetworkIBModel*>(action.get_model());
+  auto [src, dst] = ibModel->active_comms[&action];
 
   XBT_DEBUG("IB callback - action %p finished", &action);
-  ibModel->update_IB_factors(&action, pair.first, pair.second, 1);
+  ibModel->update_IB_factors(&action, src, dst, 1);
   ibModel->active_comms.erase(&action);
 }
 
@@ -165,9 +165,9 @@ void NetworkIBModel::update_IB_factors_rec(IBNode* root, std::vector<bool>& upda
       if (not updatedlist[comm->destination->id_])
         update_IB_factors_rec(comm->destination, updatedlist);
     }
-    for (std::map<IBNode*, int>::value_type const& comm : root->active_comms_down_) {
-      if (not updatedlist[comm.first->id_])
-        update_IB_factors_rec(comm.first, updatedlist);
+    for (auto const& [comm, _] : root->active_comms_down_) {
+      if (not updatedlist[comm->id_])
+        update_IB_factors_rec(comm, updatedlist);
     }
   }
 }

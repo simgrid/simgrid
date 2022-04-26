@@ -74,8 +74,8 @@ Container::~Container()
 {
   XBT_DEBUG("destroy container %s", get_cname());
   // Begin with destroying my own children
-  for (auto child : children_)
-    delete child.second;
+  for (auto [_, child] : children_)
+    delete child;
 
   // remove me from the all_containers_ data structure
   all_containers_.erase(name_);

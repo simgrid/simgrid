@@ -412,10 +412,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
 {
   static std::vector<std::string> socket_to_destroy;
 
-  std::string ns3_socket;
-  for (const auto& elm : flow_from_sock) {
-    ns3_socket               = elm.first;
-    SgFlow* sgFlow           = elm.second;
+  for (const auto& [ns3_socket, sgFlow] : flow_from_sock) {
     NetworkNS3Action* action = sgFlow->action_;
     XBT_DEBUG("Processing flow %p (socket %s, action %p)", sgFlow, ns3_socket.c_str(), action);
     // Because NS3 stops as soon as a flow is finished, the other flows that ends at the same time may remains in an
@@ -451,7 +448,7 @@ void NetworkNS3Model::update_actions_state(double now, double delta)
   }
 
   while (not socket_to_destroy.empty()) {
-    ns3_socket = socket_to_destroy.back();
+    std::string ns3_socket = socket_to_destroy.back();
     socket_to_destroy.pop_back();
     SgFlow* flow = flow_from_sock.at(ns3_socket);
     if (XBT_LOG_ISENABLED(res_ns3, xbt_log_priority_debug)) {

@@ -113,10 +113,10 @@ void DijkstraZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rou
     insert_link_latency(route->link_list_, e_route->link_list_, lat);
   }
 
-  auto elm                             = route_cache_.try_emplace(src_id);
-  std::vector<unsigned long>& pred_arr = elm.first->second;
+  auto [elm, inserted]                 = route_cache_.try_emplace(src_id);
+  std::vector<unsigned long>& pred_arr = elm->second;
 
-  if (elm.second) { /* new element was inserted (not cached mode, or cache miss) */
+  if (inserted) { /* new element was inserted (not cached mode, or cache miss) */
     unsigned long nr_nodes = xbt_dynar_length(nodes);
     std::vector<unsigned long> cost_arr(nr_nodes); /* link cost from src to other hosts */
     pred_arr.resize(nr_nodes);              /* predecessors in path from src */

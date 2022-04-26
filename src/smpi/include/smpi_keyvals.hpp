@@ -139,14 +139,13 @@ template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
     return MPI_ERR_ARG;
 
   smpi_key_elem& elem = elem_it->second;
-  int flag=0;
-  auto p  = attributes().emplace(keyval, attr_value);
-  if (p.second) {
+  if (auto [attr, inserted] = attributes().try_emplace(keyval, attr_value); inserted) {
     elem.refcount++;
   } else {
-    int ret = call_deleter<T>((T*)this, elem, keyval,p.first->second,&flag);
+    int flag = 0;
+    int ret  = call_deleter<T>((T*)this, elem, keyval, attr->second, &flag);
     // overwrite previous value
-    p.first->second = attr_value;
+    attr->second = attr_value;
     if(ret!=MPI_SUCCESS)
       return ret;
   }
@@ -154,12 +153,12 @@ template <typename T> int Keyval::attr_put(int keyval, void* attr_value){
 }
 
 template <typename T> void Keyval::cleanup_attr(){
-  for (auto const& it : attributes()) {
-    auto elem_it = T::keyvals_.find(it.first);
+  for (auto const& [key, value] : attributes()) {
+    auto elem_it = T::keyvals_.find(key);
     xbt_assert(elem_it != T::keyvals_.end());
     smpi_key_elem& elem = elem_it->second;
     int flag            = 0;
-    call_deleter<T>((T*)this, elem, it.first, it.second, &flag);
+    call_deleter<T>((T*)this, elem, key, value, &flag);
     elem.refcount--;
     if (elem.deleted && elem.refcount == 0)
       T::keyvals_.erase(elem_it);

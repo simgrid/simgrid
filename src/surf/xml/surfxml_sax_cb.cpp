@@ -731,8 +731,8 @@ void ETag_surfxml_config()
   auto current_property_set = property_sets.back();
 
   std::vector<std::string> keys;
-  for (auto const& kv : current_property_set) {
-    keys.push_back(kv.first);
+  for (auto const& [key, _] : current_property_set) {
+    keys.push_back(key);
   }
   std::sort(keys.begin(), keys.end());
   for (const std::string& key : keys) {

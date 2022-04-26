@@ -81,8 +81,8 @@ Profile::Profile(const std::string& name, const std::function<ProfileBuilder::Up
 
 void tmgr_finalize()
 {
-  for (auto const& kv : trace_list)
-    delete kv.second;
+  for (auto const& [_, trace] : trace_list)
+    delete trace;
   trace_list.clear();
 }
 

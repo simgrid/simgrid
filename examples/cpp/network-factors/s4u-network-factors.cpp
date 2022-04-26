@@ -92,11 +92,11 @@ static void load_platform()
 static double get_factor_from_map(const std::map<double, double>& factors, double size)
 {
   double factor = 1.0;
-  for (auto const& fact : factors) {
-    if (size < fact.first) {
+  for (auto const& [factor_size, factor_value] : factors) {
+    if (size < factor_size) {
       break;
     } else {
-      factor = fact.second;
+      factor = factor_value;
     }
   }
   return factor;

@@ -64,10 +64,10 @@ std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc
   auto new_pair =
       std::make_shared<VisitedPair>(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
 
-  auto res = boost::range::equal_range(acceptance_pairs_, new_pair.get(), Api::get().compare_pair());
+  auto [res_begin, res_end] = boost::range::equal_range(acceptance_pairs_, new_pair.get(), Api::get().compare_pair());
 
   if (pair->search_cycle)
-    for (auto i = res.first; i != res.second; ++i) {
+    for (auto i = res_begin; i != res_end; ++i) {
       std::shared_ptr<simgrid::mc::VisitedPair> const& pair_test = *i;
       if (xbt_automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) != 0 ||
           *(pair_test->atomic_propositions) != *(new_pair->atomic_propositions) ||
@@ -82,7 +82,7 @@ std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc
       return nullptr;
     }
 
-  acceptance_pairs_.insert(res.first, new_pair);
+  acceptance_pairs_.insert(res_begin, new_pair);
   return new_pair;
 }
 
@@ -142,9 +142,10 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
     visited_pair =
         std::make_shared<VisitedPair>(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
 
-  auto range = boost::range::equal_range(visited_pairs_, visited_pair.get(), Api::get().compare_pair());
+  auto [range_begin, range_end] =
+      boost::range::equal_range(visited_pairs_, visited_pair.get(), Api::get().compare_pair());
 
-  for (auto i = range.first; i != range.second; ++i) {
+  for (auto i = range_begin; i != range_end; ++i) {
     const VisitedPair* pair_test = i->get();
     if (xbt_automaton_state_compare(pair_test->automaton_state, visited_pair->automaton_state) != 0 ||
         *(pair_test->atomic_propositions) != *(visited_pair->atomic_propositions) ||
@@ -164,7 +165,7 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
     return (*i)->other_num;
   }
 
-  visited_pairs_.insert(range.first, std::move(visited_pair));
+  visited_pairs_.insert(range_begin, std::move(visited_pair));
   this->purge_visited_pairs();
   return -1;
 }

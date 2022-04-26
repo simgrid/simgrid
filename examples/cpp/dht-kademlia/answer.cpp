@@ -15,8 +15,8 @@ void Answer::print() const
 {
   XBT_INFO("Searching %08x, size %zu", destination_id_, nodes_.size());
   unsigned int i = 0;
-  for (auto const& contact : nodes_)
-    XBT_INFO("Node %08x: %08x is at distance %u", i++, contact.first, contact.second);
+  for (auto const& [contact, distance] : nodes_)
+    XBT_INFO("Node %08x: %08x is at distance %u", i++, contact, distance);
 }
 
 /** @brief Merge two answers together, only keeping the best nodes

@@ -45,10 +45,8 @@ void Region::restore() const
 
 static XBT_ALWAYS_INLINE void* mc_translate_address_region(uintptr_t addr, const simgrid::mc::Region* region)
 {
-  auto split                = simgrid::mc::mmu::split(addr - region->start().address());
-  auto pageno               = split.first;
-  auto offset               = split.second;
-  void* snapshot_page       = region->get_chunks().page(pageno);
+  auto [pageno, offset] = simgrid::mc::mmu::split(addr - region->start().address());
+  void* snapshot_page   = region->get_chunks().page(pageno);
   return (char*)snapshot_page + offset;
 }
 

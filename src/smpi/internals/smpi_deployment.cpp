@@ -93,9 +93,8 @@ MPI_Comm* smpi_deployment_comm_world(const std::string& instance_id)
 }
 
 void smpi_deployment_cleanup_instances(){
-  for (auto const& item : smpi_instances) {
-    XBT_INFO("Stalling SMPI instance: %s. Do all your MPI ranks call MPI_Finalize()?", item.first.c_str());
-    Instance instance = item.second;
+  for (auto const& [name, instance] : smpi_instances) {
+    XBT_INFO("Stalling SMPI instance: %s. Do all your MPI ranks call MPI_Finalize()?", name.c_str());
     simgrid::smpi::Comm::destroy(instance.comm_world_);
   }
   smpi_instances.clear();

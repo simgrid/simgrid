@@ -101,8 +101,8 @@ static constexpr auto ignored_local_variables = {
 void ModelChecker::setup_ignore()
 {
   const RemoteProcess& process = this->get_remote_process();
-  for (auto const& var : ignored_local_variables)
-    process.ignore_local_variable(var.first, var.second);
+  for (auto const& [var, frame] : ignored_local_variables)
+    process.ignore_local_variable(var, frame);
 
   /* Static variable used for tracing */
   process.ignore_global_variable("counter");

@@ -239,9 +239,9 @@ void ActorImpl::kill(ActorImpl* actor) const
 
 void ActorImpl::kill_all() const
 {
-  for (auto const& kv : EngineImpl::get_instance()->get_actor_list())
-    if (kv.second != this)
-      this->kill(kv.second);
+  for (auto const& [_, actor] : EngineImpl::get_instance()->get_actor_list())
+    if (actor != this)
+      this->kill(actor);
 }
 
 void ActorImpl::set_kill_time(double kill_time)

@@ -5,9 +5,6 @@
 
 #include "private.hpp"
 #include <boost/algorithm/string.hpp>
-#include <cctype>
-#include <cstdarg>
-#include <cwchar>
 #include <deque>
 #include <simgrid/host.h>
 #include <simgrid/s4u/Actor.hpp>
@@ -89,9 +86,9 @@ static const char* instr_find_color(const char* c_state)
   if (smpi_colors.find(state) != smpi_colors.end()) { // Exact match in the map?
     return smpi_colors.find(state)->second.c_str();
   }
-  for (const auto& pair : smpi_colors) { // Is an entry of our map a substring of this state name?
-    if (std::strstr(state.c_str(), pair.first.c_str()) != nullptr)
-      return pair.second.c_str();
+  for (const auto& [smpi_state, color] : smpi_colors) { // Is an entry of our map a substring of this state name?
+    if (state.find(smpi_state) != std::string::npos)
+      return color.c_str();
   }
 
   return "0.5 0.5 0.5"; // Just in case we find nothing in the map ...
@@ -170,12 +167,12 @@ void TRACE_smpi_init(aid_t pid, const std::string& calling_func)
   const simgrid::instr::Container* container = smpi_container(pid);
   papi_counter_t counters = smpi_process()->papi_counters();
 
-  for (auto const& it : counters) {
+  for (auto const& [counter, _] : counters) {
     /**
      * Check whether this variable already exists or not. Otherwise, it will be created
      * multiple times but only the last one would be used...
      */
-    container->get_type()->by_name_or_create(it.first, "");
+    container->get_type()->by_name_or_create(counter, "");
   }
 #endif
 }

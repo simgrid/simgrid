@@ -49,17 +49,17 @@ simgrid::xbt::Extension<kernel::resource::VirtualMachineImpl, DirtyPageTrackingE
 void DirtyPageTrackingExt::start_tracking()
 {
   dp_tracking_ = true;
-  for (auto const& elm : dp_objs_)
-    dp_objs_[elm.first] = elm.first->get_remaining();
+  for (auto const& [exec, _] : dp_objs_)
+    dp_objs_[exec] = exec->get_remaining();
 }
 
 double DirtyPageTrackingExt::computed_flops_lookup()
 {
   double total = 0;
 
-  for (auto const& elm : dp_objs_) {
-    total += elm.second - elm.first->get_remaining();
-    dp_objs_[elm.first] = elm.first->get_remaining();
+  for (auto const& [exec, flops] : dp_objs_) {
+    total += flops - exec->get_remaining();
+    dp_objs_[exec] = exec->get_remaining();
   }
   total += dp_updated_by_deleted_tasks_;
 

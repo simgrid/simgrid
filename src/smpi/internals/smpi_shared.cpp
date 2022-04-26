@@ -126,9 +126,8 @@ static void *smpi_shared_malloc_local(size_t size, const char *file, int line)
 {
   void* mem;
   smpi_source_location loc(file, line);
-  auto res  = allocs.try_emplace(loc);
-  auto data = res.first;
-  if (res.second) {
+  auto [data, inserted] = allocs.try_emplace(loc);
+  if (inserted) {
     // The new element was inserted.
     int fd             = smpi_temp_shm_get();
     data->second.fd    = fd;
@@ -400,9 +399,9 @@ std::vector<std::pair<size_t, size_t>> shift_and_frame_private_blocks(const std:
                                                                       size_t offset, size_t buff_size)
 {
   std::vector<std::pair<size_t, size_t>> result;
-  for (auto const& block : vec) {
-    auto new_block = std::make_pair(std::min(std::max((size_t)0, block.first - offset), buff_size),
-                                    std::min(std::max((size_t)0, block.second - offset), buff_size));
+  for (auto const& [block_begin, block_end] : vec) {
+    auto new_block = std::make_pair(std::clamp(block_begin - offset, (size_t)0, buff_size),
+                                    std::clamp(block_end - offset, (size_t)0, buff_size));
     if (new_block.second > 0 && new_block.first < buff_size)
       result.push_back(new_block);
   }

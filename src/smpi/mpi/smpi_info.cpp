@@ -61,9 +61,9 @@ int Info::get_nkeys(int* nkeys) const
 int Info::get_nthkey(int n, char* key) const
 {
   int num=0;
-  for (auto const& elm : map_) {
+  for (auto const& [elm, _] : map_) {
     if (num == n) {
-      strncpy(key, elm.first.c_str(), elm.first.length() + 1);
+      strncpy(key, elm.c_str(), elm.length() + 1);
       return MPI_SUCCESS;
     }
     num++;

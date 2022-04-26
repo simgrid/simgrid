@@ -27,11 +27,7 @@ public:
 
 unit_scale::unit_scale(std::initializer_list<std::tuple<const std::string, double, int, bool>> generators)
 {
-  for (const auto& gen : generators) {
-    const std::string& unit = std::get<0>(gen);
-    double value            = std::get<1>(gen);
-    const int base          = std::get<2>(gen);
-    const bool abbrev       = std::get<3>(gen);
+  for (auto [unit, value, base, abbrev] : generators) {
     double mult;
     std::vector<std::string> prefixes;
     switch (base) {

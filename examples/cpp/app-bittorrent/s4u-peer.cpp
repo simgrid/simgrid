@@ -131,8 +131,7 @@ bool Peer::getPeersFromTracker()
 
 void Peer::sendHandshakeToAllPeers()
 {
-  for (auto const& kv : connected_peers) {
-    const Connection& remote_peer = kv.second;
+  for (auto const& [_, remote_peer] : connected_peers) {
     auto* handshake               = new Message(MessageType::HANDSHAKE, id, mailbox_);
     remote_peer.mailbox_->put_init(handshake, message_size(MessageType::HANDSHAKE))->detach();
     XBT_DEBUG("Sending a HANDSHAKE to %d", remote_peer.id);
@@ -165,8 +164,7 @@ void Peer::sendPiece(sg4::Mailbox* mailbox, unsigned int piece, int block_index,
 void Peer::sendHaveToAllPeers(unsigned int piece)
 {
   XBT_DEBUG("Sending HAVE message to all my peers");
-  for (auto const& kv : connected_peers) {
-    const Connection& remote_peer = kv.second;
+  for (auto const& [_, remote_peer] : connected_peers) {
     remote_peer.mailbox_->put_init(new Message(MessageType::HAVE, id, mailbox_, piece), message_size(MessageType::HAVE))
         ->detach();
   }
@@ -558,8 +556,7 @@ void Peer::updateChokedPeers()
   /**If we are currently seeding, we unchoke the peer which has been unchoked the last time.*/
   if (hasFinished()) {
     double unchoke_time = sg4::Engine::get_clock() + 1;
-    for (auto& kv : connected_peers) {
-      Connection& remote_peer = kv.second;
+    for (auto& [_, remote_peer] : connected_peers) {
       if (remote_peer.last_unchoke < unchoke_time && remote_peer.interested && remote_peer.choked_upload) {
         unchoke_time = remote_peer.last_unchoke;
         chosen_peer  = &remote_peer;
@@ -583,8 +580,7 @@ void Peer::updateChokedPeers()
     } else {
       // Use the "fastest download" policy.
       double fastest_speed = 0.0;
-      for (auto& kv : connected_peers) {
-        Connection& remote_peer = kv.second;
+      for (auto& [_, remote_peer] : connected_peers) {
         if (remote_peer.peer_speed > fastest_speed && remote_peer.choked_upload && remote_peer.interested) {
           fastest_speed = remote_peer.peer_speed;
           chosen_peer   = &remote_peer;
@@ -620,8 +616,7 @@ void Peer::updateChokedPeers()
 /** @brief Update "interested" state of peers: send "not interested" to peers that don't have any more pieces we want.*/
 void Peer::updateInterestedAfterReceive()
 {
-  for (auto& kv : connected_peers) {
-    Connection& remote_peer = kv.second;
+  for (auto& [_, remote_peer] : connected_peers) {
     if (remote_peer.am_interested) {
       bool interested = false;
       // Check if the peer still has a piece we want.

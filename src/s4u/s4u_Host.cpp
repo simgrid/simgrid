@@ -570,8 +570,8 @@ xbt_dict_t sg_host_get_properties(const_sg_host_t host)
 
   if (props == nullptr)
     return nullptr;
-  for (auto const& elm : *props) {
-    xbt_dict_set(as_dict, elm.first.c_str(), xbt_strdup(elm.second.c_str()));
+  for (auto const& [key, value] : *props) {
+    xbt_dict_set(as_dict, key.c_str(), xbt_strdup(value.c_str()));
   }
   return as_dict;
 }
@@ -655,8 +655,8 @@ void sg_host_dump(const_sg_host_t host) // XBT_ATTRIB_DEPRECATED_v335
 
   if (not props->empty()) {
     XBT_INFO("  - properties:");
-    for (auto const& elm : *props) {
-      XBT_INFO("    %s->%s", elm.first.c_str(), elm.second.c_str());
+    for (auto const& [key, value] : *props) {
+      XBT_INFO("    %s->%s", key.c_str(), value.c_str());
     }
   }
 }

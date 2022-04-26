@@ -170,10 +170,10 @@ void StarZone::do_seal()
 {
   /* add default empty links if nothing was configured by user */
   for (auto const& node : get_vertices()) {
-    auto route = routes_.try_emplace(node->id());
-    if (route.second) {
-      route.first->second.links_down_set = true;
-      route.first->second.links_up_set   = true;
+    auto [route, inserted] = routes_.try_emplace(node->id());
+    if (inserted) {
+      route->second.links_down_set = true;
+      route->second.links_up_set   = true;
     }
   }
 }

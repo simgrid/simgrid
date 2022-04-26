@@ -166,19 +166,19 @@ int Datatype::copy_attrs(Datatype* datatype){
   flags_ &= ~DT_FLAG_PREDEFINED;
 
   set_contents(MPI_COMBINER_DUP, 0, nullptr, 0, nullptr, 1, &datatype);
-  for (auto const& it : datatype->attributes()) {
-    auto elem_it = keyvals_.find(it.first);
-    xbt_assert(elem_it != keyvals_.end(), "Keyval not found for Datatype: %d", it.first);
+  for (auto const& [key, value] : datatype->attributes()) {
+    auto elem_it = keyvals_.find(key);
+    xbt_assert(elem_it != keyvals_.end(), "Keyval not found for Datatype: %d", key);
 
     smpi_key_elem& elem = elem_it->second;
     int ret             = MPI_SUCCESS;
     int flag            = 0;
     void* value_out     = nullptr;
     if (elem.copy_fn.type_copy_fn == MPI_TYPE_DUP_FN) {
-      value_out = it.second;
+      value_out = value;
       flag      = 1;
     } else if (elem.copy_fn.type_copy_fn != MPI_NULL_COPY_FN) {
-      ret = elem.copy_fn.type_copy_fn(datatype, it.first, elem.extra_state, it.second, &value_out, &flag);
+      ret = elem.copy_fn.type_copy_fn(datatype, key, elem.extra_state, value, &value_out, &flag);
     }
     if (ret != MPI_SUCCESS)
       return ret;
@@ -186,10 +186,10 @@ int Datatype::copy_attrs(Datatype* datatype){
     if (elem.copy_fn.type_copy_fn_fort != MPI_NULL_COPY_FN) {
       value_out = xbt_new(int, 1);
       if (*(int*)*elem.copy_fn.type_copy_fn_fort == 1) { // MPI_TYPE_DUP_FN
-        memcpy(value_out, it.second, sizeof(int));
+        memcpy(value_out, value, sizeof(int));
         flag = 1;
       } else { // not null, nor dup
-        elem.copy_fn.type_copy_fn_fort(datatype, it.first, elem.extra_state, it.second, value_out, &flag, &ret);
+        elem.copy_fn.type_copy_fn_fort(datatype, key, elem.extra_state, value, value_out, &flag, &ret);
       }
       if (ret != MPI_SUCCESS) {
         xbt_free(value_out);
@@ -198,7 +198,7 @@ int Datatype::copy_attrs(Datatype* datatype){
     }
     if (flag) {
       elem.refcount++;
-      attributes().emplace(it.first, value_out);
+      attributes().try_emplace(key, value_out);
     }
   }
   return MPI_SUCCESS;

@@ -58,8 +58,8 @@ static void dump_hosts()
     }
     // Sort the properties before displaying them, so that the tests are perfectly reproducible
     std::vector<std::string> keys;
-    for (auto const& kv : *props)
-      keys.push_back(kv.first);
+    for (auto const& [key, _] : *props)
+      keys.push_back(key);
     if (not keys.empty()) {
       std::printf(">\n");
       std::sort(keys.begin(), keys.end());

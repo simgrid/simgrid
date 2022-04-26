@@ -61,8 +61,8 @@ static inline std::string contexts_list()
 {
   std::string res;
   std::string sep = "";
-  for (auto const& factory : context_factories) {
-    res += sep + factory.first;
+  for (auto const& [factory_name, _] : context_factories) {
+    res += sep + factory_name;
     sep = ", ";
   }
   return res;
@@ -167,11 +167,11 @@ EngineImpl::~EngineImpl()
 {
   /* Also delete the other data */
   delete netzone_root_;
-  for (auto const& kv : netpoints_)
-    delete kv.second;
+  for (auto const& [_, netpoint] : netpoints_)
+    delete netpoint;
 
-  for (auto const& kv : mailboxes_)
-    delete kv.second;
+  for (auto const& [_, mailbox] : mailboxes_)
+    delete mailbox;
 
   /* Kill all actors (but maestro) */
   maestro_->kill_all();
@@ -251,9 +251,9 @@ void EngineImpl::context_mod_init() const
     return;
   }
   /* use the factory specified by --cfg=contexts/factory:value */
-  for (auto const& factory : context_factories)
-    if (context_factory_name == factory.first) {
-      instance_->set_context_factory(factory.second());
+  for (auto const& [factory_name, factory] : context_factories)
+    if (context_factory_name == factory_name) {
+      instance_->set_context_factory(factory());
       break;
     }
 
@@ -479,9 +479,7 @@ void EngineImpl::display_all_actor_status() const
   XBT_INFO("%zu actors are still running, waiting for something.", actor_list_.size());
   /*  List the actors and their state */
   XBT_INFO("Legend of the following listing: \"Actor <pid> (<name>@<host>): <status>\"");
-  for (auto const& kv : actor_list_) {
-    const actor::ActorImpl* actor = kv.second;
-
+  for (auto const& [_, actor] : actor_list_) {
     if (actor->waiting_synchro_) {
       const char* synchro_description = "unknown";
 
@@ -730,9 +728,9 @@ void EngineImpl::run(double max_date)
       }
       display_all_actor_status();
       simgrid::s4u::Engine::on_deadlock();
-      for (auto const& kv : actor_list_) {
-        XBT_DEBUG("Kill %s", kv.second->get_cname());
-        maestro_->kill(kv.second);
+      for (auto const& [_, actor] : actor_list_) {
+        XBT_DEBUG("Kill %s", actor->get_cname());
+        maestro_->kill(actor);
       }
     }
   } while ((vetoed_activities == nullptr || vetoed_activities->empty()) &&

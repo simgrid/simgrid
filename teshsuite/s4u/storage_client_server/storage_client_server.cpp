@@ -17,8 +17,8 @@ static void display_disk_properties(const simgrid::s4u::Disk* disk)
   if (not props->empty()) {
     XBT_INFO("  Properties of disk: %s", disk->get_cname());
 
-    for (auto const& elm : *props) {
-      XBT_INFO("    %s->%s", elm.first.c_str(), elm.second.c_str());
+    for (auto const& [key, value] : *props) {
+      XBT_INFO("    %s->%s", key.c_str(), value.c_str());
     }
   } else {
     XBT_INFO("  No property attached.");
@@ -65,8 +65,8 @@ static void display_disk_content(const simgrid::s4u::Disk* disk)
   XBT_INFO("Print the content of the disk: %s", disk->get_cname());
   const auto* content = disk->extension<simgrid::s4u::FileSystemDiskExt>()->get_content();
   if (not content->empty()) {
-    for (auto const& entry : *content)
-      XBT_INFO("  %s size: %llu bytes", entry.first.c_str(), entry.second);
+    for (auto const& [name, size] : *content)
+      XBT_INFO("  %s size: %llu bytes", name.c_str(), size);
   } else {
     XBT_INFO("  No content.");
   }

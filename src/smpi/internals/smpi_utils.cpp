@@ -178,25 +178,24 @@ static void print_leaked_handles()
   // freed at this point
   bool display_advice = false;
   std::map<std::string, int, std::less<>> count;
-  for (const auto& elem : handles) {
-    std::string key = elem.second->name();
-    if ((not xbt_log_no_loc) && (not elem.second->call_location().empty()))
-      key += " at " + elem.second->call_location();
+  for (const auto& [_, elem] : handles) {
+    std::string key = elem->name();
+    if ((not xbt_log_no_loc) && (not elem->call_location().empty()))
+      key += " at " + elem->call_location();
     else
       display_advice = true;
-    auto result = count.try_emplace(key, 1);
-    if (result.second == false)
-      result.first->second++;
+    auto& result = count.try_emplace(key, 0).first->second;
+    result++;
   }
   if (display_advice)
     XBT_WARN("To get more information (location of allocations), compile your code with -trace-call-location flag of "
              "smpicc/f90");
   unsigned int i = 0;
-  for (const auto& p : count) {
-    if (p.second == 1)
-      XBT_INFO("leaked handle of type %s", p.first.c_str());
+  for (const auto& [key, value] : count) {
+    if (value == 1)
+      XBT_INFO("leaked handle of type %s", key.c_str());
     else
-      XBT_INFO("%d leaked handles of type %s", p.second, p.first.c_str());
+      XBT_INFO("%d leaked handles of type %s", value, key.c_str());
     i++;
     if (i == max)
       break;
@@ -228,19 +227,17 @@ static void print_leaked_buffers()
     size_t max_size;
   };
   std::map<std::string, struct buff_leak, std::less<>> leaks_aggreg;
-  for (const auto& elem : allocs) {
+  for (const auto& [_, elem] : allocs) {
     std::string key = "leaked allocations";
     if (not xbt_log_no_loc)
-      key = elem.second.file + ":" + std::to_string(elem.second.line) + ": " + key;
-    auto result = leaks_aggreg.try_emplace(key, buff_leak{1, elem.second.size, elem.second.size, elem.second.size});
-    if (result.second == false) {
-      result.first->second.count++;
-      result.first->second.total_size += elem.second.size;
-      if (elem.second.size > result.first->second.max_size)
-        result.first->second.max_size = elem.second.size;
-      else if (elem.second.size < result.first->second.min_size)
-        result.first->second.min_size = elem.second.size;
-    }
+      key = elem.file + ":" + std::to_string(elem.line) + ": " + key;
+    auto& result = leaks_aggreg.try_emplace(key, buff_leak{0, 0, elem.size, elem.size}).first->second;
+    result.count++;
+    result.total_size += elem.size;
+    if (elem.size > result.max_size)
+      result.max_size = elem.size;
+    else if (elem.size < result.min_size)
+      result.min_size = elem.size;
   }
   // now we can order by total size.
   std::vector<std::pair<std::string, buff_leak>> leaks(leaks_aggreg.begin(), leaks_aggreg.end());
@@ -248,13 +245,13 @@ static void print_leaked_buffers()
             [](auto const& a, auto const& b) { return a.second.total_size > b.second.total_size; });
 
   unsigned int i = 0;
-  for (const auto& p : leaks) {
-    if (p.second.min_size == p.second.max_size)
-      XBT_INFO("%s of total size %zu, called %d times, each with size %zu", p.first.c_str(), p.second.total_size,
-               p.second.count, p.second.min_size);
+  for (const auto& [key, value] : leaks) {
+    if (value.min_size == value.max_size)
+      XBT_INFO("%s of total size %zu, called %d times, each with size %zu", key.c_str(), value.total_size, value.count,
+               value.min_size);
     else
-      XBT_INFO("%s of total size %zu, called %d times, with minimum size %zu and maximum size %zu", p.first.c_str(),
-               p.second.total_size, p.second.count, p.second.min_size, p.second.max_size);
+      XBT_INFO("%s of total size %zu, called %d times, with minimum size %zu and maximum size %zu", key.c_str(),
+               value.total_size, value.count, value.min_size, value.max_size);
     i++;
     if (i == max)
       break;

@@ -110,10 +110,8 @@ std::vector<ActivityPtr> create_DAG_from_DAX(const std::string& filename)
    * Files not produced in the system are said to be produced by root task (top of DAG).
    * Files not consumed in the system are said to be consumed by end task (bottom of DAG).
    */
-  CommPtr file;
-
-  for (auto const& elm : files) {
-    file = elm.second;
+  for (auto const& [_, elm] : files) {
+    CommPtr file = elm;
     CommPtr newfile;
     if (file->dependencies_solved()) {
       for (auto const& it : file->get_successors()) {

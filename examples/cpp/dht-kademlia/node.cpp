@@ -52,8 +52,8 @@ bool Node::join(unsigned int known_id)
       // retrieve the node list and ping them.
       const Answer* node_list = msg->answer_.get();
       if (node_list) {
-        for (auto const& contact : node_list->getNodes())
-          routingTableUpdate(contact.first);
+        for (auto const& [contact, _] : node_list->getNodes())
+          routingTableUpdate(contact);
       } else {
         handleFindNode(msg);
       }
@@ -105,11 +105,11 @@ unsigned int Node::sendFindNodeToBest(const Answer* node_list) const
   unsigned int i           = 0;
   unsigned int j           = 0;
   unsigned int destination = node_list->getDestinationId();
-  for (auto const& node_to_query : node_list->getNodes()) {
+  for (auto const& [node_to_query, _] : node_list->getNodes()) {
     /* We need to have at most "KADEMLIA_ALPHA" requests each time, according to the protocol */
     /* Gets the node we want to send the query to */
-    if (node_to_query.first != id_) { /* No need to query ourselves */
-      sendFindNode(node_to_query.first, destination);
+    if (node_to_query != id_) { /* No need to query ourselves */
+      sendFindNode(node_to_query, destination);
       j++;
     }
     i++;
@@ -213,8 +213,8 @@ bool Node::findNode(unsigned int id_to_find, bool count_in_stats)
         if (msg->answer_ && msg->answer_->getDestinationId() == id_to_find) {
           routingTableUpdate(msg->sender_id_);
           // Handle the answer
-          for (auto const& contact : node_list->getNodes())
-            routingTableUpdate(contact.first);
+          for (auto const& [contact, _] : node_list->getNodes())
+            routingTableUpdate(contact);
           answers++;
 
           nodes_added = node_list->merge(msg->answer_.get());

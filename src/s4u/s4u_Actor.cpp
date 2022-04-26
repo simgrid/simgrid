@@ -588,8 +588,8 @@ xbt_dict_t sg_actor_get_properties(const_sg_actor_t actor)
   const std::unordered_map<std::string, std::string>* props = actor->get_properties();
   if (props == nullptr)
     return nullptr;
-  for (auto const& kv : *props) {
-    xbt_dict_set(as_dict, kv.first.c_str(), xbt_strdup(kv.second.c_str()));
+  for (auto const& [key, value] : *props) {
+    xbt_dict_set(as_dict, key.c_str(), xbt_strdup(value.c_str()));
   }
   return as_dict;
 }
