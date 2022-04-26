@@ -276,9 +276,9 @@ bool BmfSolver::get_alloc(const Eigen::VectorXd& fair_sharing, const allocation_
     return true;
 
   std::vector<int> alloc_by_player      = alloc_map_to_vector(alloc);
-  auto ret = allocations_.insert(alloc_by_player);
+  bool inserted                         = allocations_.insert(alloc_by_player).second;
   /* oops, allocation already tried, let's pertube it a bit */
-  if (not ret.second) {
+  if (not inserted) {
     XBT_DEBUG("Allocation already tried: %s", debug_alloc(alloc).c_str());
     return disturb_allocation(alloc, alloc_by_player);
   }

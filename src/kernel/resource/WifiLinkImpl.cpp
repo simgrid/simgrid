@@ -28,9 +28,7 @@ WifiLinkImpl::WifiLinkImpl(const std::string& name, const std::vector<double>& b
 
 void WifiLinkImpl::set_host_rate(const s4u::Host* host, int rate_level)
 {
-  auto insert_done = host_rates_.try_emplace(host->get_name(), rate_level);
-  if (not insert_done.second)
-    insert_done.first->second = rate_level;
+  host_rates_[host->get_name()] = rate_level;
 
   // Each time we add a host, we refresh the decay model
   refresh_decay_bandwidths();
