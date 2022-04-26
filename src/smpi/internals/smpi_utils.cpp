@@ -113,7 +113,7 @@ void add_benched_time(double time){
   total_benched_time += time;
 }
 
-void account_malloc_size(size_t size, const std::string& file, int line, void* ptr)
+void account_malloc_size(size_t size, const std::string& file, int line, const void* ptr)
 {
   if (smpi_cfg_display_alloc()) {
     alloc_metadata_t metadata;

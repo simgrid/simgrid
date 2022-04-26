@@ -205,8 +205,7 @@ sg_platf_new_cabinet(const simgrid::kernel::routing::CabinetCreationArgs* cabine
 XBT_PUBLIC void sg_platf_new_route(simgrid::kernel::routing::RouteCreationArgs* route);             // Add a route
 XBT_PUBLIC void sg_platf_new_bypass_route(simgrid::kernel::routing::RouteCreationArgs* route); // Add a bypass route
 
-XBT_PUBLIC void sg_platf_new_trace(simgrid::kernel::routing::ProfileCreationArgs* trace);
-
+XBT_PUBLIC void sg_platf_new_trace(const simgrid::kernel::routing::ProfileCreationArgs* trace);
 
 XBT_PUBLIC void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor);
 XBT_PRIVATE void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* trace_connect);

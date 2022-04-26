@@ -591,7 +591,7 @@ void sg_platf_new_hostlink(const simgrid::kernel::routing::HostLinkCreationArgs*
   zone_cluster.host_links.emplace_back(*hostlink);
 }
 
-void sg_platf_new_trace(simgrid::kernel::routing::ProfileCreationArgs* args)
+void sg_platf_new_trace(const simgrid::kernel::routing::ProfileCreationArgs* args)
 {
   simgrid::kernel::profile::Profile* profile;
   if (not args->file.empty()) {
