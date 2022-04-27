@@ -42,6 +42,10 @@ if(enable_compile_warnings)
   if(CMAKE_COMPILER_IS_GNUCXX)
     set(warnCXXFLAGS "${warnCXXFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes -Wno-error=maybe-uninitialized")
   endif()
+  if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "8.0")
+    # workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81767
+    set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-error=unused-variable")
+  endif()
   if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     # don't care about class that become struct, avoid issue of empty C structs
     # size (coming from libunwind.h)
