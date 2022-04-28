@@ -9,6 +9,7 @@
 #include "src/kernel/lmm/System.hpp"
 
 #ifdef __clang__
+// Ignore deprecation warnings with Eigen < 4.0 (see https://gitlab.com/libeigen/eigen/-/issues/1850)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 #endif
