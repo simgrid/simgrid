@@ -112,11 +112,11 @@ NetZoneImpl::~NetZoneImpl()
   /* Since hosts_ and links_ are a std::map, the hosts are destroyed in the lexicographic order, which ensures that the
    * output is reproducible.
    */
-  for (auto& [_, host] : hosts_) {
+  for (auto const& [_, host] : hosts_) {
     host->destroy();
   }
   hosts_.clear();
-  for (auto& [_, link] : links_) {
+  for (auto const& [_, link] : links_) {
     link->destroy();
   }
   links_.clear();
