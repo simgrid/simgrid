@@ -66,7 +66,7 @@ size_t WifiLinkImpl::get_host_count() const
 void WifiLinkImpl::refresh_decay_bandwidths()
 {
   // Compute number of STAtion on the Access Point
-  size_t nSTA = get_host_count();
+  const auto nSTA_minus_1 = static_cast<double>(get_host_count() - 1);
 
   std::vector<Metric> new_bandwidths;
   for (auto const& bandwidth : bandwidths_) {
@@ -78,7 +78,7 @@ void WifiLinkImpl::refresh_decay_bandwidths()
     double N0     = max_bw - min_bw;
     double lambda = (-log(model_rate - min_bw) + log(N0)) / model_n_;
     // Since decay model start at 0 we should use (nSTA-1)
-    double new_peak = N0 * exp(-lambda * (nSTA - 1)) + min_bw;
+    double new_peak = N0 * exp(-lambda * nSTA_minus_1) + min_bw;
     new_bandwidths.push_back({new_peak, 1.0, nullptr});
   }
   decay_bandwidths_ = new_bandwidths;

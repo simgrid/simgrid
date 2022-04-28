@@ -154,7 +154,7 @@ void smpi_bench_end()
     const papi_counter_t& counter_data = smpi_process()->papi_counters();
 
     for (auto const& [counter, value] : counter_data) {
-      container->get_variable(counter)->set_event(simgrid::s4u::Engine::get_clock(), value);
+      container->get_variable(counter)->set_event(simgrid::s4u::Engine::get_clock(), static_cast<double>(value));
     }
   }
 #endif
