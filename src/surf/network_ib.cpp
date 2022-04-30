@@ -129,8 +129,7 @@ void NetworkIBModel::compute_IB_factors(IBNode* root) const
   for (ActiveComm* comm : root->active_comms_up_) {
     // compute inbound penalty
     double my_penalty_in = 1.0;
-    int nb_comms         = comm->destination->nb_active_comms_down_; // total number of incoming comms
-    if (nb_comms != 1)
+    if (comm->destination->nb_active_comms_down_ != 1)                      // total number of incoming comms
       my_penalty_in = (comm->destination->active_comms_down_)[root]         // number of comm sent to dest by root node
                       * Be_ * comm->destination->active_comms_down_.size(); // number of different nodes sending to dest
 

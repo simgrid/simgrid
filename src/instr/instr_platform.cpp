@@ -50,12 +50,9 @@ static simgrid::instr::Container* lowestCommonAncestor(const simgrid::instr::Con
   int j = static_cast<int>(ancestors_a2.size()) - 1;
   while (i >= 0 && j >= 0) {
     simgrid::instr::Container* a1p       = ancestors_a1.at(i);
-    const simgrid::instr::Container* a2p = ancestors_a2.at(j);
-    if (a1p == a2p) {
-      p = a1p;
-    } else {
+    if (a1p != ancestors_a2.at(j))
       break;
-    }
+    p = a1p;
     i--;
     j--;
   }

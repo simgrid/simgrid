@@ -33,8 +33,7 @@ void dump_buffer(bool force)
   } else {
     auto i = buffer.begin();
     for (auto const& event : buffer) {
-      double head_timestamp = event->timestamp_;
-      if (head_timestamp > last_timestamp_to_dump)
+      if (event->timestamp_ > last_timestamp_to_dump)
         break;
       event->print();
       delete event;

@@ -990,8 +990,7 @@ static void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
   xbt_assert(elf != nullptr && elf_kind(elf) == ELF_K_ELF, "%s is not an ELF file", info->file_name.c_str());
 
   // Remember if this is a `ET_EXEC` (fixed location) or `ET_DYN`:
-  Elf64_Half type = get_type(elf);
-  if (type == ET_EXEC)
+  if (get_type(elf) == ET_EXEC)
     info->flags |= simgrid::mc::ObjectInformation::Executable;
 
   // Read DWARF debug information in the file:

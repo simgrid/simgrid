@@ -194,9 +194,7 @@ void HostImpl::destroy_vm(const std::string& name)
 VirtualMachineImpl* HostImpl::get_vm_by_name_or_null(const std::string& name) const
 {
   auto vm_it = vms_.find(name);
-  if (vm_it != vms_.end())
-    return vm_it->second;
-  return nullptr;
+  return vm_it == vms_.end() ? nullptr : vm_it->second;
 }
 
 std::vector<s4u::VirtualMachine*> HostImpl::get_vms() const

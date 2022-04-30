@@ -123,8 +123,7 @@ void ModelChecker::shutdown()
 
 void ModelChecker::resume()
 {
-  int res = checker_side_.get_channel().send(MessageType::CONTINUE);
-  if (res)
+  if (checker_side_.get_channel().send(MessageType::CONTINUE) != 0)
     throw xbt::errno_error();
   remote_process_->clear_cache();
 }

@@ -55,12 +55,8 @@ void ClusterBase::set_gateway(unsigned long position, NetPoint* gateway)
 
 NetPoint* ClusterBase::get_gateway(unsigned long position)
 {
-  NetPoint* res = nullptr;
-  auto it       = gateways_.find(position);
-  if (it != gateways_.end()) {
-    res = it->second;
-  }
-  return res;
+  auto it = gateways_.find(position);
+  return it == gateways_.end() ? nullptr : it->second;
 }
 
 void ClusterBase::fill_leaf_from_cb(unsigned long position, const std::vector<unsigned long>& dimensions,

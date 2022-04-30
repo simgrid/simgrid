@@ -110,8 +110,7 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
       status->count = 0;
     return MPI_SUCCESS;
   }
-  MPI_Offset total = max - min;
-  if (total == tot && (datatype->flags() & DT_FLAG_CONTIGUOUS)) {
+  if (max - min == tot && (datatype->flags() & DT_FLAG_CONTIGUOUS)) {
     // contiguous. Just have each proc perform its read
     if (status != MPI_STATUS_IGNORE)
       status->count = count * datatype->size();

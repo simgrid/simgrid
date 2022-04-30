@@ -31,11 +31,7 @@ static double cpu_variability(const sg4::Host* host, double flops)
 {
   /* creates variability for tasks smaller than 1% of CPU power.
    * unrealistic, for learning purposes */
-  double factor = 1.0;
-  double speed  = host->get_speed();
-  if (flops < speed / 100) {
-    factor = 0.5;
-  }
+  double factor = (flops < host->get_speed() / 100) ? 0.5 : 1.0;
   XBT_INFO("Host %s, task with %lf flops, new factor %lf", host->get_cname(), flops, factor);
   return factor;
 }

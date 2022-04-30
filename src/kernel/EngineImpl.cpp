@@ -436,10 +436,7 @@ void EngineImpl::run_all_actors()
 actor::ActorImpl* EngineImpl::get_actor_by_pid(aid_t pid)
 {
   auto item = actor_list_.find(pid);
-  if (item != actor_list_.end())
-    return item->second;
-
-  return nullptr; // Not found
+  return item == actor_list_.end() ? nullptr : item->second;
 }
 
 void EngineImpl::remove_daemon(actor::ActorImpl* actor)

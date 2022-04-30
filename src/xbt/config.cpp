@@ -386,8 +386,7 @@ void set_parse(const std::string& opt)
     std::string val = name.substr(pos + 1);
     name.erase(pos);
 
-    const std::string path("path");
-    if (name.compare(0, path.length(), path) != 0)
+    if (name.rfind("path", 0) != 0)
       XBT_INFO("Configuration change: Set '%s' to '%s'", name.c_str(), val.c_str());
 
     set_as_string(name.c_str(), val);

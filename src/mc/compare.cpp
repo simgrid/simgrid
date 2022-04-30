@@ -976,11 +976,10 @@ static bool heap_area_differ(const RemoteProcess& process, StateComparator& stat
     return true;
 
   /* Start comparison */
-  bool differ = type ? heap_area_differ_with_type(process, state, area1, area2, snapshot1, snapshot2, previous, type,
-                                                  size, check_ignore, pointer_level)
-                     : heap_area_differ_without_type(process, state, area1, area2, snapshot1, snapshot2, previous, size,
-                                                     check_ignore);
-  if (differ)
+  if (type ? heap_area_differ_with_type(process, state, area1, area2, snapshot1, snapshot2, previous, type, size,
+                                        check_ignore, pointer_level)
+           : heap_area_differ_without_type(process, state, area1, area2, snapshot1, snapshot2, previous, size,
+                                           check_ignore))
     return true;
 
   if (match_pairs)

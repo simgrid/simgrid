@@ -142,8 +142,7 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
     const lmm::Constraint* cnst         = action.get_variable()->get_constraint(i);
     while (cnst != nullptr) {
       i++;
-      const Resource* constraint_id = cnst->get_id();
-      if (not constraint_id->is_on()) {
+      if (not cnst->get_id()->is_on()) {
         XBT_DEBUG("Action (%p) Failed!!", &action);
         action.finish(Action::State::FAILED);
         break;

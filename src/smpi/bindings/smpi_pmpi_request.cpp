@@ -297,8 +297,7 @@ int PMPI_Bsend(const void* buf, int count, MPI_Datatype datatype, int dst, int t
   int bsend_buf_size = 0;
   void* bsend_buf = nullptr;
   smpi_process()->bsend_buffer(&bsend_buf, &bsend_buf_size);
-  int size = datatype->get_extent() * count;
-  if (bsend_buf == nullptr || bsend_buf_size < size + MPI_BSEND_OVERHEAD)
+  if (bsend_buf == nullptr || bsend_buf_size < datatype->get_extent() * count + MPI_BSEND_OVERHEAD)
     return MPI_ERR_BUFFER;
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData("bsend", MPI_COMM_WORLD->group()->rank(dst_traced),
@@ -322,8 +321,7 @@ int PMPI_Ibsend(const void* buf, int count, MPI_Datatype datatype, int dst, int 
   int bsend_buf_size = 0;
   void* bsend_buf = nullptr;
   smpi_process()->bsend_buffer(&bsend_buf, &bsend_buf_size);
-  int size = datatype->get_extent() * count;
-  if (bsend_buf == nullptr || bsend_buf_size < size + MPI_BSEND_OVERHEAD)
+  if (bsend_buf == nullptr || bsend_buf_size < datatype->get_extent() * count + MPI_BSEND_OVERHEAD)
     return MPI_ERR_BUFFER;
   TRACE_smpi_comm_in(my_proc_id, __func__,
                      new simgrid::instr::Pt2PtTIData("ibsend", MPI_COMM_WORLD->group()->rank(trace_dst),

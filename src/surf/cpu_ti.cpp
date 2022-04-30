@@ -174,15 +174,12 @@ double CpuTiTmgr::solve(double a, double amount) const
   XBT_DEBUG("Quotient: %g reduced_amount: %f reduced_a: %f", quotient, reduced_amount, reduced_a);
 
   /* Now solve for new_amount which is <= trace_total */
-  double reduced_b;
   XBT_DEBUG("Solve integral: [%.2f, amount=%.2f]", reduced_a, reduced_amount);
-  double amount_till_end = integrate(reduced_a, last_time_);
 
-  if (amount_till_end > reduced_amount) {
-    reduced_b = profile_->solve_simple(reduced_a, reduced_amount);
-  } else {
-    reduced_b = last_time_ + profile_->solve_simple(0.0, reduced_amount - amount_till_end);
-  }
+  double amount_till_end = integrate(reduced_a, last_time_);
+  double reduced_b       = amount_till_end > reduced_amount
+                               ? profile_->solve_simple(reduced_a, reduced_amount)
+                               : last_time_ + profile_->solve_simple(0.0, reduced_amount - amount_till_end);
 
   /* Re-map to the original b and amount */
   return last_time_ * floor(a / last_time_) + (quotient * last_time_) + reduced_b;

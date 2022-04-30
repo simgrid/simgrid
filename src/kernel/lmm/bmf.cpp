@@ -270,8 +270,7 @@ bool BmfSolver::get_alloc(const Eigen::VectorXd& fair_sharing, const allocation_
     }
     alloc[selected_resource].insert(player_idx);
   }
-  bool is_stable = (alloc == last_alloc);
-  if (is_stable)
+  if (alloc == last_alloc) // considered stable
     return true;
 
   std::vector<int> alloc_by_player      = alloc_map_to_vector(alloc);

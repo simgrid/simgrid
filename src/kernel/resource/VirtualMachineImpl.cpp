@@ -27,8 +27,7 @@ void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model)
   engine->add_model(vm_model, {cpu_pm_model});
   std::shared_ptr<simgrid::kernel::resource::CpuModel> cpu_model_vm;
 
-  auto cpu_optim = simgrid::config::get_value<std::string>("cpu/optim");
-  if (cpu_optim == "TI") {
+  if (simgrid::config::get_value<std::string>("cpu/optim") == "TI") {
     cpu_model_vm = std::make_shared<simgrid::kernel::resource::CpuTiModel>("VmCpu_TI");
   } else {
     cpu_model_vm = std::make_shared<simgrid::kernel::resource::CpuCas01Model>("VmCpu_Cas01");

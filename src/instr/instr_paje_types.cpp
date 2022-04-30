@@ -68,14 +68,10 @@ void VariableType::instr_event(double now, double delta, const char* resource, d
   // to check if variables were previously set to 0, otherwise paje won't simulate them
   static std::set<std::string, std::less<>> platform_variables;
 
-  // create a key considering the resource and variable
-  std::string key = std::string(resource) + get_name();
-
-  // check if key exists: if it doesn't, set the variable to zero and mark this in the global map.
-  if (platform_variables.find(key) == platform_variables.end()) {
+  // create a key considering the resource and variable, and check if key exists in the global map:
+  // if it doesn't, set the variable to zero.
+  if (platform_variables.emplace(std::string(resource) + get_name()).second)
     set_event(now, 0);
-    platform_variables.insert(key);
-  }
 
   add_event(now, value);
   sub_event(now + delta, value);

@@ -593,8 +593,7 @@ void Request::start()
 
       mailbox = process->mailbox();
       XBT_DEBUG("Is there a corresponding recv already posted in the large mailbox %s?", mailbox->get_cname());
-      simgrid::kernel::activity::ActivityImplPtr action = mailbox->iprobe(1, &match_send, static_cast<void*>(this));
-      if (action == nullptr) {
+      if (not mailbox->iprobe(1, &match_send, static_cast<void*>(this))) {
         if ((flags_ & MPI_REQ_SSEND) == 0) {
           mailbox = process->mailbox_small();
           XBT_DEBUG("No, nothing in the large mailbox, message is to be sent on the small one %s",
@@ -603,8 +602,7 @@ void Request::start()
           mailbox = process->mailbox_small();
           XBT_DEBUG("SSEND : Is there a corresponding recv already posted in the small mailbox %s?",
                     mailbox->get_cname());
-          action = mailbox->iprobe(1, &match_send, static_cast<void*>(this));
-          if (action == nullptr) {
+          if (not mailbox->iprobe(1, &match_send, static_cast<void*>(this))) {
             XBT_DEBUG("No, we are first, send to large mailbox");
             mailbox = process->mailbox();
           }
@@ -730,8 +728,7 @@ int Request::testsome(int incount, MPI_Request requests[], int *count, int *indi
   *count = 0;
   for (int i = 0; i < incount; i++) {
     if (requests[i] != MPI_REQUEST_NULL && not (requests[i]->flags_ & MPI_REQ_FINISHED)) {
-      int ret = test(&requests[i], pstat, &flag);
-      if(ret!=MPI_SUCCESS)
+      if (test(&requests[i], pstat, &flag) != MPI_SUCCESS)
         error = 1;
       if(flag) {
         indices[*count] = i;

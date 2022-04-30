@@ -37,8 +37,7 @@ double FutureEvtSet::next_date() const
 /** @brief Retrieves the next occurring event, or nullptr if none happens before date */
 Event* FutureEvtSet::pop_leq(double date, double* value, resource::Resource** resource)
 {
-  double event_date = next_date();
-  if (event_date > date || heap_.empty())
+  if (next_date() > date || heap_.empty())
     return nullptr;
 
   Event* event       = heap_.top().second;
