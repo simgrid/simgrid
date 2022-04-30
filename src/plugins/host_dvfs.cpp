@@ -110,19 +110,16 @@ public:
 
   void init()
   {
-    const char* local_sampling_rate_config = host_->get_property(cfg_sampling_rate.get_name());
-    if (local_sampling_rate_config != nullptr) {
+    if (const char* local_sampling_rate_config = host_->get_property(cfg_sampling_rate.get_name())) {
       sampling_rate_ = std::stod(local_sampling_rate_config);
     } else {
       sampling_rate_ = cfg_sampling_rate;
     }
-    const char* local_min_pstate_config = host_->get_property(cfg_min_pstate.get_name());
-    if (local_min_pstate_config != nullptr) {
+    if (const char* local_min_pstate_config = host_->get_property(cfg_min_pstate.get_name())) {
       min_pstate = std::stoul(local_min_pstate_config);
     }
 
-    const char* local_max_pstate_config = host_->get_property(cfg_max_pstate.get_name());
-    if (local_max_pstate_config != nullptr) {
+    if (const char* local_max_pstate_config = host_->get_property(cfg_max_pstate.get_name())) {
       max_pstate = std::stoul(local_max_pstate_config);
     }
     xbt_assert(max_pstate <= host_->get_pstate_count() - 1, "Value for max_pstate too large!");
@@ -385,8 +382,7 @@ static void on_host_added(simgrid::s4u::Host& host)
     XBT_DEBUG("DVFS process on %s is a daemon: %d", daemon_proc->get_host()->get_cname(), daemon_proc->is_daemon());
 
     std::string dvfs_governor;
-    const char* host_conf = daemon_proc->get_host()->get_property("plugin/dvfs/governor");
-    if (host_conf != nullptr) {
+    if (const char* host_conf = daemon_proc->get_host()->get_property("plugin/dvfs/governor")) {
       dvfs_governor = std::string(host_conf);
       boost::algorithm::to_lower(dvfs_governor);
     } else {

@@ -61,8 +61,7 @@ Request::Request(const void* buf, int count, MPI_Datatype datatype, aid_t src, a
   detached_sender_ = nullptr;
   real_src_        = 0;
   // get src_host if it's available (src is valid)
-  auto src_process = simgrid::s4u::Actor::by_pid(src);
-  if (src_process)
+  if (auto src_process = simgrid::s4u::Actor::by_pid(src))
     src_host_ = src_process->get_host();
   truncated_       = false;
   unmatched_types_ = false;

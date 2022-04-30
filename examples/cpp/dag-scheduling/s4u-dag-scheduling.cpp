@@ -55,13 +55,11 @@ static std::vector<sg4::Exec*> get_ready_tasks(const std::vector<sg4::ActivityPt
     // Only look at activity that have their dependencies solved but are not assigned
     if (a->dependencies_solved() && not a->is_assigned()) {
       // if it is an exec, it's ready
-      auto* exec = dynamic_cast<sg4::Exec*>(a.get());
-      if (exec != nullptr)
+      if (auto* exec = dynamic_cast<sg4::Exec*>(a.get()))
         ready_tasks.push_back(exec);
       // if it a comm, we consider its successor as a candidate. If a candidate solves all its dependencies,
       // i.e., get all its input data, it's ready
-      const auto* comm = dynamic_cast<sg4::Comm*>(a.get());
-      if (comm != nullptr) {
+      if (const auto* comm = dynamic_cast<sg4::Comm*>(a.get())) {
         auto* next_exec = static_cast<sg4::Exec*>(comm->get_successors().front().get());
         candidate_execs[next_exec]++;
         if (next_exec->get_dependencies().size() == candidate_execs[next_exec])
@@ -86,8 +84,7 @@ static double finish_on_at(const sg4::ExecPtr task, const sg4::Host* host)
     last_data_available = -1.0;
     for (const auto& parent : parents) {
       /* normal case */
-      const auto* comm = dynamic_cast<sg4::Comm*>(parent.get());
-      if (comm != nullptr) {
+      if (const auto* comm = dynamic_cast<sg4::Comm*>(parent.get())) {
         auto source = comm->get_source();
         XBT_DEBUG("transfer from %s to %s", source->get_cname(), host->get_cname());
         /* Estimate the redistribution time from this parent */
@@ -103,9 +100,8 @@ static double finish_on_at(const sg4::ExecPtr task, const sg4::Host* host)
         data_available = *comm->get_data<double>() + redist_time;
       }
 
-      const auto* exec = dynamic_cast<sg4::Exec*>(parent.get());
       /* no transfer, control dependency */
-      if (exec != nullptr) {
+      if (const auto* exec = dynamic_cast<sg4::Exec*>(parent.get())) {
         data_available = exec->get_finish_time();
       }
 

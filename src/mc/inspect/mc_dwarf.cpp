@@ -842,11 +842,9 @@ static void MC_dwarf_handle_die(simgrid::mc::ObjectInformation* info, Dwarf_Die*
 
 static Elf64_Half get_type(Elf* elf)
 {
-  const Elf64_Ehdr* ehdr64 = elf64_getehdr(elf);
-  if (ehdr64)
+  if (const Elf64_Ehdr* ehdr64 = elf64_getehdr(elf))
     return ehdr64->e_type;
-  const Elf32_Ehdr* ehdr32 = elf32_getehdr(elf);
-  if (ehdr32)
+  if (const Elf32_Ehdr* ehdr32 = elf32_getehdr(elf))
     return ehdr32->e_type;
   xbt_die("Could not get ELF heeader");
 }
@@ -994,15 +992,13 @@ static void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
     info->flags |= simgrid::mc::ObjectInformation::Executable;
 
   // Read DWARF debug information in the file:
-  Dwarf* dwarf = dwarf_begin_elf(elf, DWARF_C_READ, nullptr);
-  if (dwarf != nullptr) {
+  if (Dwarf* dwarf = dwarf_begin_elf(elf, DWARF_C_READ, nullptr)) {
     read_dwarf_info(info, dwarf);
     dwarf_end(dwarf);
     elf_end(elf);
     close(fd);
     return;
   }
-  dwarf_end(dwarf);
 
   // If there was no DWARF in the file, try to find it in a separate file.
   // Different methods might be used to store the DWARF information:
@@ -1027,7 +1023,7 @@ static void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
 
     // Load the DWARF info from this file:
     XBT_DEBUG("Load DWARF for %s", info->file_name.c_str());
-    dwarf = dwarf_begin(fd, DWARF_C_READ);
+    Dwarf* dwarf = dwarf_begin(fd, DWARF_C_READ);
     xbt_assert(dwarf != nullptr, "No DWARF info for %s", info->file_name.c_str());
     read_dwarf_info(info, dwarf);
     dwarf_end(dwarf);
@@ -1116,8 +1112,7 @@ static simgrid::mc::Type* MC_resolve_type(simgrid::mc::ObjectInformation* info, 
 
   // Try to find a more complete description of the type:
   // We need to fix in order to support C++.
-  simgrid::mc::Type** subtype = simgrid::util::find_map_ptr(info->full_types_by_name, type->name);
-  if (subtype)
+  if (simgrid::mc::Type** subtype = simgrid::util::find_map_ptr(info->full_types_by_name, type->name))
     type = *subtype;
   return type;
 }

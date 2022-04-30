@@ -325,16 +325,14 @@ static int smpi_run_entry_point(const F& entry_point, const std::string& executa
 
 static smpi_entry_point_type smpi_resolve_function(void* handle)
 {
-  auto* entry_point_fortran = reinterpret_cast<smpi_fortran_entry_point_type>(dlsym(handle, "user_main_"));
-  if (entry_point_fortran != nullptr) {
+  if (auto* entry_point_fortran = reinterpret_cast<smpi_fortran_entry_point_type>(dlsym(handle, "user_main_"))) {
     return [entry_point_fortran](int, char**) {
       entry_point_fortran();
       return 0;
     };
   }
 
-  auto* entry_point = reinterpret_cast<smpi_c_entry_point_type>(dlsym(handle, "main"));
-  if (entry_point != nullptr) {
+  if (auto* entry_point = reinterpret_cast<smpi_c_entry_point_type>(dlsym(handle, "main"))) {
     return entry_point;
   }
 

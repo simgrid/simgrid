@@ -205,8 +205,7 @@ public:
   T* get()
   {
     T* data;
-    s4u::CommPtr comm = get_async(&data);
-    if (comm) {
+    if (s4u::CommPtr comm = get_async(&data)) {
       XBT_CDEBUG(producer_consumer, "Waiting for the data to arrive");
       comm->wait();
     }

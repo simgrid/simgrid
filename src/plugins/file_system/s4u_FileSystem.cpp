@@ -342,19 +342,17 @@ int File::remote_move(sg_host_t host, const std::string& fullpath)
 
 FileSystemDiskExt::FileSystemDiskExt(const Disk* ptr)
 {
-  const char* size_str    = ptr->get_property("size");
-  std::string dummyfile;
-  if (size_str)
+  if (const char* size_str = ptr->get_property("size")) {
+    std::string dummyfile;
     size_ = xbt_parse_get_size(dummyfile, -1, size_str, "disk size " + ptr->get_name());
+  }
 
-  const char* current_mount_str = ptr->get_property("mount");
-  if (current_mount_str)
+  if (const char* current_mount_str = ptr->get_property("mount"))
     mount_point_ = std::string(current_mount_str);
   else
     mount_point_ = std::string("/");
 
-  const char* content_str = ptr->get_property("content");
-  if (content_str)
+  if (const char* content_str = ptr->get_property("content"))
     content_.reset(parse_content(content_str));
 }
 

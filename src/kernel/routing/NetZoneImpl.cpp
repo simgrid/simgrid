@@ -297,8 +297,7 @@ resource::StandardLinkImpl* NetZoneImpl::get_link_by_name_or_null(const std::str
     return link_it->second;
 
   for (const auto* child : children_) {
-    auto* link = child->get_link_by_name_or_null(name);
-    if (link)
+    if (auto* link = child->get_link_by_name_or_null(name))
       return link;
   }
 
@@ -312,8 +311,7 @@ resource::SplitDuplexLinkImpl* NetZoneImpl::get_split_duplex_link_by_name_or_nul
     return link_it->second.get();
 
   for (const auto* child : children_) {
-    auto* link = child->get_split_duplex_link_by_name_or_null(name);
-    if (link)
+    if (auto* link = child->get_split_duplex_link_by_name_or_null(name))
       return link;
   }
 

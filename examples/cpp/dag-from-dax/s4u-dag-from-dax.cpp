@@ -51,8 +51,7 @@ int main(int argc, char** argv)
       exec->set_host(hosts[cursor % count]);
       cursor++;
     }
-    auto* comm = dynamic_cast<sg4::Comm*>(a.get());
-    if (comm != nullptr) {
+    if (auto* comm = dynamic_cast<sg4::Comm*>(a.get())) {
       auto pred = dynamic_cast<sg4::Exec*>((*comm->get_dependencies().begin()).get());
       auto succ = dynamic_cast<sg4::Exec*>(comm->get_successors().front().get());
       comm->set_source(pred->get_host())->set_destination(succ->get_host());
@@ -64,13 +63,11 @@ int main(int argc, char** argv)
 
   XBT_INFO("-------------- Summary of executed schedule ------------------");
   for (const auto& a : dag) {
-    const auto* exec = dynamic_cast<sg4::Exec*>(a.get());
-    if (exec != nullptr) {
+    if (const auto* exec = dynamic_cast<sg4::Exec*>(a.get())) {
       XBT_INFO("[%f->%f] '%s' executed on %s", exec->get_start_time(), exec->get_finish_time(), exec->get_cname(),
                exec->get_host()->get_cname());
     }
-    const auto* comm = dynamic_cast<sg4::Comm*>(a.get());
-    if (comm != nullptr) {
+    if (const auto* comm = dynamic_cast<sg4::Comm*>(a.get())) {
       XBT_INFO("[%f->%f] '%s' transferred from %s to %s", comm->get_start_time(), comm->get_finish_time(),
                comm->get_cname(), comm->get_source()->get_cname(), comm->get_destination()->get_cname());
     }

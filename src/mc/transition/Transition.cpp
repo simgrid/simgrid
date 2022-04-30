@@ -60,9 +60,7 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, std::stri
   xbt_assert(type >= 0 && type <= static_cast<short>(Transition::Type::UNKNOWN), "Invalid transition type %d received",
              type);
 
-  auto simcall = static_cast<Transition::Type>(type);
-
-  switch (simcall) {
+  switch (auto simcall = static_cast<Transition::Type>(type)) {
     case Transition::Type::BARRIER_LOCK:
     case Transition::Type::BARRIER_WAIT:
       return new BarrierTransition(issuer, times_considered, simcall, stream);

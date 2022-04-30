@@ -339,15 +339,11 @@ static void on_action_state_change(kernel::resource::Action const& action,
     double value = action.get_rate() * action.get_variable()->get_constraint_weight(i);
     /* Beware of composite actions: ptasks put links and cpus together. Extra pb: we cannot dynamic_cast from void* */
     kernel::resource::Resource* resource = action.get_variable()->get_constraint(i)->get_id();
-    const kernel::resource::CpuImpl* cpu = dynamic_cast<kernel::resource::CpuImpl*>(resource);
-
-    if (cpu != nullptr)
+    if (const auto* cpu = dynamic_cast<kernel::resource::CpuImpl*>(resource))
       resource_set_utilization("HOST", "speed_used", cpu->get_cname(), action.get_category(), value,
                                action.get_last_update(), simgrid_get_clock() - action.get_last_update());
 
-    const kernel::resource::StandardLinkImpl* link = dynamic_cast<kernel::resource::StandardLinkImpl*>(resource);
-
-    if (link != nullptr)
+    if (const auto* link = dynamic_cast<kernel::resource::StandardLinkImpl*>(resource))
       resource_set_utilization("LINK", "bandwidth_used", link->get_cname(), action.get_category(), value,
                                action.get_last_update(), simgrid_get_clock() - action.get_last_update());
   }

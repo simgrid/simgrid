@@ -211,8 +211,7 @@ void LinkEnergyWifi::init_watts_range_list()
   Set to 0 if you do not want to compute beacons,
   otherwise to the duration of beacons transmissions per second
   */
-  const char* beacons_factor = this->link_->get_property("control_duration");
-  if(beacons_factor != nullptr) {
+  if (const char* beacons_factor = this->link_->get_property("control_duration")) {
     try {
       control_duration_ = std::stod(beacons_factor);
     } catch (const std::invalid_argument&) {

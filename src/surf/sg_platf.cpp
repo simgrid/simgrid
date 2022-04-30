@@ -244,8 +244,7 @@ static void sg_platf_new_cluster_hierarchical(const simgrid::kernel::routing::Cl
 static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationArgs* cluster)
 {
   auto* zone                          = simgrid::s4u::create_star_zone(cluster->id);
-  simgrid::s4u::NetZone const* parent = current_routing ? current_routing->get_iface() : nullptr;
-  if (parent)
+  if (const auto* parent = current_routing ? current_routing->get_iface() : nullptr)
     zone->set_parent(parent);
 
   /* set properties */

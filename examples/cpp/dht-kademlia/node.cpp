@@ -50,8 +50,7 @@ bool Node::join(unsigned int known_id)
       XBT_DEBUG("Received an answer from the node I know.");
       got_answer = true;
       // retrieve the node list and ping them.
-      const Answer* node_list = msg->answer_.get();
-      if (node_list) {
+      if (const Answer* node_list = msg->answer_.get()) {
         for (auto const& [contact, _] : node_list->getNodes())
           routingTableUpdate(contact);
       } else {

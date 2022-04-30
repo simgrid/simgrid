@@ -151,9 +151,7 @@ void _xbt_log_event_log(xbt_log_event_t ev, const char *fmt, ...)
              "Priority %d is greater than the biggest allowed value", ev->priority);
 
   while (true) {
-    const s_xbt_log_appender_t* appender = cat->appender;
-
-    if (appender != nullptr) {
+    if (const s_xbt_log_appender_t* appender = cat->appender) {
       xbt_assert(cat->layout, "No valid layout for the appender of category %s", cat->name);
 
       /* First, try with a static buffer */

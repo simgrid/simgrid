@@ -137,24 +137,21 @@ Host::Host(s4u::Host* ptr) : host(ptr)
     smpi::Host::EXTENSION_ID = s4u::Host::extension_create<Host>();
 
   check_factor_configs("smpi/or");
-  const char* orecv_string = host->get_property("smpi/or");
-  if (orecv_string != nullptr) {
+  if (const char* orecv_string = host->get_property("smpi/or")) {
     orecv_parsed_values = simgrid::smpi::utils::parse_factor(orecv_string);
   } else {
     orecv_parsed_values = simgrid::smpi::utils::parse_factor(config::get_value<std::string>("smpi/or"));
   }
 
   check_factor_configs("smpi/os");
-  const char* osend_string = host->get_property("smpi/os");
-  if (osend_string != nullptr) {
+  if (const char* osend_string = host->get_property("smpi/os")) {
     osend_parsed_values = simgrid::smpi::utils::parse_factor(osend_string);
   } else {
     osend_parsed_values = simgrid::smpi::utils::parse_factor(config::get_value<std::string>("smpi/os"));
   }
 
   check_factor_configs("smpi/ois");
-  const char* oisend_string = host->get_property("smpi/ois");
-  if (oisend_string != nullptr) {
+  if (const char* oisend_string = host->get_property("smpi/ois")) {
     oisend_parsed_values = simgrid::smpi::utils::parse_factor(oisend_string);
   } else {
     oisend_parsed_values = simgrid::smpi::utils::parse_factor(config::get_value<std::string>("smpi/ois"));
