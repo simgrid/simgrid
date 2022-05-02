@@ -18,30 +18,28 @@ int main(int argc, char* argv[])
              "Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n"
              "\tExample: %s ../platforms/cluster_backbone.xml ./s4u-dht-chord_d.xml\n",
              argv[0], argv[0]);
-  char** options = &argv[1];
-  while (not strncmp(options[0], "-", 1)) {
-    unsigned int length = strlen("-nb_bits=");
-    if (not strncmp(options[0], "-nb_bits=", length) && strlen(options[0]) > length) {
-      nb_bits = static_cast<int>(xbt_str_parse_int(options[0] + length, "Invalid nb_bits parameter"));
+  std::string platform_file(argv[argc - 2]);
+  std::string deployment_file(argv[argc - 1]);
+  for (const auto& option : std::vector<std::string>(argv + 1, argv + argc - 2)) {
+    if (option.rfind("-nb_bits=", 0) == 0) {
+      nb_bits = std::stod(option.substr(option.find('=') + 1));
       XBT_DEBUG("Set nb_bits to %d", nb_bits);
-    } else {
-      length = strlen("-timeout=");
-      xbt_assert(strncmp(options[0], "-timeout=", length) == 0 && strlen(options[0]) > length,
-                 "Invalid chord option '%s'", options[0]);
-      timeout = static_cast<int>(xbt_str_parse_int(options[0] + length, "Invalid timeout parameter"));
+    } else if (option.rfind("-timeout=", 0) == 0) {
+      timeout = std::stod(option.substr(option.find('=') + 1));
       XBT_DEBUG("Set timeout to %d", timeout);
+    } else {
+      xbt_die("Invalid chord option '%s'", option.c_str());
     }
-    options++;
   }
 
-  e.load_platform(options[0]);
+  e.load_platform(platform_file);
 
   /* Global initialization of the Chord simulation. */
   nb_keys = 1U << nb_bits;
   XBT_DEBUG("Sets nb_keys to %d", nb_keys);
 
   e.register_actor<Node>("node");
-  e.load_deployment(options[1]);
+  e.load_deployment(deployment_file);
 
   e.run();
 

@@ -8,7 +8,6 @@
 #include "simgrid/s4u.hpp"
 #include <string>
 #include <xbt/random.hpp>
-#include <xbt/str.h>
 
 namespace sg4 = simgrid::s4u;
 
