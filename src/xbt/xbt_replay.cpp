@@ -53,7 +53,6 @@ bool ReplayReader::get(ReplayAction* action)
 
 static ReplayAction* get_action(const char* name)
 {
-
   if (auto queue_elt = action_queues.find(std::string(name)); queue_elt != action_queues.end()) {
     if (auto& my_queue = queue_elt->second; not my_queue.empty()) {
       // Get something from my queue and return it
