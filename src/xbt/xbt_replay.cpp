@@ -17,7 +17,7 @@ namespace xbt {
 static std::ifstream action_fs;
 
 std::unordered_map<std::string, action_fun> action_funs;
-static std::unordered_map<std::string, std::queue<ReplayAction*>*> action_queues;
+static std::unordered_map<std::string, std::queue<ReplayAction*>> action_queues;
 
 static void read_and_trim_line(std::ifstream& fs, std::string* line)
 {
@@ -53,45 +53,36 @@ bool ReplayReader::get(ReplayAction* action)
 
 static ReplayAction* get_action(const char* name)
 {
-  ReplayAction* action;
 
-  std::queue<ReplayAction*>* myqueue = nullptr;
-  if (action_queues.find(std::string(name)) != action_queues.end())
-    myqueue = action_queues.at(std::string(name));
-  if (myqueue == nullptr || myqueue->empty()) { // Nothing stored for me. Read the file further
-    // Read lines until I reach something for me (which breaks in loop body) or end of file reached
-    while (true) {
-      std::string action_line;
-      read_and_trim_line(action_fs, &action_line);
-      if (action_fs.eof())
-        break;
-      /* we cannot split in place here because we parse&store several lines for the colleagues... */
-      action = new ReplayAction();
-      boost::split(*action, action_line, boost::is_any_of(" \t"), boost::token_compress_on);
-
-      // if it's for me, I'm done
-      std::string evtname = action->front();
-      if (evtname.compare(name) == 0)
-        return action;
-
-      // Else, I have to store it for the relevant colleague
-      std::queue<ReplayAction*>* otherqueue = nullptr;
-      auto act                              = action_queues.find(evtname);
-      if (act != action_queues.end()) {
-        otherqueue = act->second;
-      } else { // Damn. Create the queue of that guy
-        otherqueue = new std::queue<ReplayAction*>();
-        action_queues.try_emplace(evtname, otherqueue);
-      }
-      otherqueue->push(action);
+  if (auto queue_elt = action_queues.find(std::string(name)); queue_elt != action_queues.end()) {
+    if (auto& my_queue = queue_elt->second; not my_queue.empty()) {
+      // Get something from my queue and return it
+      ReplayAction* action = my_queue.front();
+      my_queue.pop();
+      return action;
     }
-    // end of file reached while searching in vain for more work
-  } else {
-    // Get something from my queue and return it
-    action = myqueue->front();
-    myqueue->pop();
-    return action;
   }
+
+  // Nothing stored for me. Read the file further
+  // Read lines until I reach something for me (which breaks in loop body) or end of file reached
+  while (true) {
+    std::string action_line;
+    read_and_trim_line(action_fs, &action_line);
+    if (action_fs.eof())
+      break;
+    /* we cannot split in place here because we parse&store several lines for the colleagues... */
+    auto* action = new ReplayAction();
+    boost::split(*action, action_line, boost::is_any_of(" \t"), boost::token_compress_on);
+
+    // if it's for me, I'm done
+    std::string evtname = action->front();
+    if (evtname == name)
+      return action;
+
+    // else, I have to store it for the relevant colleague
+    action_queues[evtname].push(action);
+  }
+  // end of file reached while searching in vain for more work
 
   return nullptr;
 }
@@ -131,10 +122,7 @@ int replay_runner(const char* actor_name, const char* trace_filename)
       simgrid::xbt::handle_action(*evt);
       delete evt;
     }
-    if (action_queues.find(actor_name_string) != action_queues.end()) {
-      delete action_queues.at(actor_name_string);
-      action_queues.erase(actor_name_string);
-    }
+    action_queues.erase(actor_name_string);
   } else { // Should have got my trace file in argument
     xbt_assert(trace_filename != nullptr,
                "Trace replay cannot mix shared and unshared traces for now. Please don't set a shared tracefile with "
