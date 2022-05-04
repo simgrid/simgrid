@@ -202,10 +202,13 @@ int PMPI_Get_count(const MPI_Status * status, MPI_Datatype datatype, int *count)
   } else if (not datatype->is_valid()) {
     return MPI_ERR_TYPE;
   } else {
-    size_t size = datatype->size();
-    *count      = (size == 0)                   ? 0
-                  : (status->count % size != 0) ? MPI_UNDEFINED
-                                                : simgrid::smpi::Status::get_count(status, datatype);
+    if (datatype->size() == 0) {
+      *count = 0;
+    } else if (status->count % datatype->size() != 0) {
+      *count = MPI_UNDEFINED;
+    } else {
+      *count = simgrid::smpi::Status::get_count(status, datatype);
+    }
     return MPI_SUCCESS;
   }
 }
