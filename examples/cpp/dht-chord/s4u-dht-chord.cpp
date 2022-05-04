@@ -22,10 +22,10 @@ int main(int argc, char* argv[])
   std::string deployment_file(argv[argc - 1]);
   for (const auto& option : std::vector<std::string>(argv + 1, argv + argc - 2)) {
     if (option.rfind("-nb_bits=", 0) == 0) {
-      nb_bits = std::stod(option.substr(option.find('=') + 1));
+      nb_bits = std::stoi(option.substr(option.find('=') + 1));
       XBT_DEBUG("Set nb_bits to %d", nb_bits);
     } else if (option.rfind("-timeout=", 0) == 0) {
-      timeout = std::stod(option.substr(option.find('=') + 1));
+      timeout = std::stoi(option.substr(option.find('=') + 1));
       XBT_DEBUG("Set timeout to %d", timeout);
     } else {
       xbt_die("Invalid chord option '%s'", option.c_str());
