@@ -34,7 +34,7 @@ if(enable_compile_warnings)
 
   set(warnCXXFLAGS "${warnCFLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing")
   if(CMAKE_COMPILER_IS_GNUCXX)
-    set(warnCXXFLAGS "${warnCXXFLAGS} -Wclobbered -Wformat-signedness -Wno-error=clobbered -Wno-unused-local-typedefs -Wno-error=attributes -Wno-error=maybe-uninitialized")
+    set(warnCXXFLAGS "${warnCXXFLAGS} -Wclobbered -Wformat-signedness -Wno-error=clobbered -Wno-free-nonheap-object -Wno-unused-local-typedefs -Wno-error=attributes -Wno-error=maybe-uninitialized")
   endif()
   if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "8.0")
     # workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81767
