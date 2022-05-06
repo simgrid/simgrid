@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* simple test to schedule a DAX file with the Min-Min algorithm.           */
-#include <math.h>
+#include <algorithm>
 #include <simgrid/host.h>
 #include <simgrid/s4u.hpp>
 #include <string.h>
@@ -73,47 +73,36 @@ static std::vector<sg4::Exec*> get_ready_tasks(const std::vector<sg4::ActivityPt
 
 static double finish_on_at(const sg4::ExecPtr task, const sg4::Host* host)
 {
-  double result;
-
-  const auto& parents = task->get_dependencies();
-
-  if (not parents.empty()) {
-    double data_available = 0.;
-    double last_data_available;
-    /* compute last_data_available */
-    last_data_available = -1.0;
-    for (const auto& parent : parents) {
-      /* normal case */
-      if (const auto* comm = dynamic_cast<sg4::Comm*>(parent.get())) {
-        auto source = comm->get_source();
-        XBT_DEBUG("transfer from %s to %s", source->get_cname(), host->get_cname());
-        /* Estimate the redistribution time from this parent */
-        double redist_time;
-        if (comm->get_remaining() <= 1e-6) {
-          redist_time = 0;
-        } else {
-          redist_time = sg_host_get_route_latency(source, host) +
-                        comm->get_remaining() / sg_host_get_route_bandwidth(source, host);
-        }
-        // We use the user data field to store the finish time of the predecessor of the comm, i.e., its potential start
-        // time
-        data_available = *comm->get_data<double>() + redist_time;
+  double data_available      = 0.;
+  double last_data_available = -1.0;
+  /* compute last_data_available */
+  for (const auto& parent : task->get_dependencies()) {
+    /* normal case */
+    if (const auto* comm = dynamic_cast<sg4::Comm*>(parent.get())) {
+      auto source = comm->get_source();
+      XBT_DEBUG("transfer from %s to %s", source->get_cname(), host->get_cname());
+      /* Estimate the redistribution time from this parent */
+      double redist_time;
+      if (comm->get_remaining() <= 1e-6) {
+        redist_time = 0;
+      } else {
+        redist_time =
+            sg_host_get_route_latency(source, host) + comm->get_remaining() / sg_host_get_route_bandwidth(source, host);
       }
-
-      /* no transfer, control dependency */
-      if (const auto* exec = dynamic_cast<sg4::Exec*>(parent.get())) {
-        data_available = exec->get_finish_time();
-      }
-
-      if (last_data_available < data_available)
-        last_data_available = data_available;
+      // We use the user data field to store the finish time of the predecessor of the comm, i.e., its potential start
+      // time
+      data_available = *comm->get_data<double>() + redist_time;
     }
 
-    result = fmax(sg_host_get_available_at(host), last_data_available) + task->get_remaining() / host->get_speed();
-  } else
-    result = sg_host_get_available_at(host) + task->get_remaining() / host->get_speed();
+    /* no transfer, control dependency */
+    if (const auto* exec = dynamic_cast<sg4::Exec*>(parent.get()))
+      data_available = exec->get_finish_time();
 
-  return result;
+    if (last_data_available < data_available)
+      last_data_available = data_available;
+  }
+
+  return std::max(sg_host_get_available_at(host), last_data_available) + task->get_remaining() / host->get_speed();
 }
 
 static sg4::Host* get_best_host(const sg4::ExecPtr exec)
