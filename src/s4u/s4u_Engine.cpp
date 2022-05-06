@@ -339,8 +339,7 @@ void Engine::run() const
 }
 void Engine::run_until(double max_date) const
 {
-  static bool callback_called = false;
-  if (not callback_called) {
+  if (static bool callback_called = false; not callback_called) {
     on_simulation_start();
     callback_called = true;
   }

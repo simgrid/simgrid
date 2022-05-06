@@ -41,8 +41,7 @@ int RandomSimcall::get_max_consider()
 
 bool ConditionWaitSimcall::is_enabled()
 {
-  static bool warned = false;
-  if (not warned) {
+  if (static bool warned = false; not warned) {
     XBT_INFO("Using condition variables in model-checked code is still experimental. Use at your own risk");
     warned = true;
   }

@@ -81,8 +81,7 @@ static std::terminate_handler previous_terminate_handler = nullptr;
 XBT_ATTRIB_NORETURN static void handler()
 {
   // Avoid doing crazy things if we get an uncaught exception inside an uncaught exception
-  static std::atomic_flag lock = ATOMIC_FLAG_INIT;
-  if (lock.test_and_set()) {
+  if (static std::atomic_flag lock = ATOMIC_FLAG_INIT; lock.test_and_set()) {
     XBT_ERROR("Handling an exception raised an exception. Bailing out.");
     std::abort();
   }

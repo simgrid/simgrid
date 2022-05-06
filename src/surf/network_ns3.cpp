@@ -505,8 +505,7 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
   // ns-3 fails when src = dst, so avoid the problem by considering that communications are infinitely fast on the
   // loopback that does not exists
   if (src == dst) {
-    static bool warned = false;
-    if (not warned) {
+    if (static bool warned = false; not warned) {
       XBT_WARN("Sending from a host %s to itself is not supported by ns-3. Every such communication finishes "
                "immediately upon startup.",
                src->get_cname());

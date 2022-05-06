@@ -161,13 +161,13 @@ void execute(const Dwarf_Op* ops, std::size_t n, const ExpressionContext& contex
       default:
 
         // Registers:
-        static const std::unordered_set<uint8_t> registers = {
-            DW_OP_breg0,  DW_OP_breg1,  DW_OP_breg2,  DW_OP_breg3,  DW_OP_breg4,  DW_OP_breg5,  DW_OP_breg6,
-            DW_OP_breg7,  DW_OP_breg8,  DW_OP_breg9,  DW_OP_breg10, DW_OP_breg11, DW_OP_breg12, DW_OP_breg13,
-            DW_OP_breg14, DW_OP_breg15, DW_OP_breg16, DW_OP_breg17, DW_OP_breg18, DW_OP_breg19, DW_OP_breg20,
-            DW_OP_breg21, DW_OP_breg22, DW_OP_breg23, DW_OP_breg24, DW_OP_breg25, DW_OP_breg26, DW_OP_breg27,
-            DW_OP_breg28, DW_OP_breg29, DW_OP_breg30, DW_OP_breg31};
-        if (registers.count(atom) > 0) {
+        if (static const std::unordered_set<uint8_t> registers =
+                {DW_OP_breg0,  DW_OP_breg1,  DW_OP_breg2,  DW_OP_breg3,  DW_OP_breg4,  DW_OP_breg5,  DW_OP_breg6,
+                 DW_OP_breg7,  DW_OP_breg8,  DW_OP_breg9,  DW_OP_breg10, DW_OP_breg11, DW_OP_breg12, DW_OP_breg13,
+                 DW_OP_breg14, DW_OP_breg15, DW_OP_breg16, DW_OP_breg17, DW_OP_breg18, DW_OP_breg19, DW_OP_breg20,
+                 DW_OP_breg21, DW_OP_breg22, DW_OP_breg23, DW_OP_breg24, DW_OP_breg25, DW_OP_breg26, DW_OP_breg27,
+                 DW_OP_breg28, DW_OP_breg29, DW_OP_breg30, DW_OP_breg31};
+            registers.count(atom) > 0) {
           // Push register + constant:
           int register_id = simgrid::dwarf::dwarf_register_to_libunwind(op->atom - DW_OP_breg0);
           unw_word_t res;
@@ -181,22 +181,26 @@ void execute(const Dwarf_Op* ops, std::size_t n, const ExpressionContext& contex
         // ***** Constants:
 
         // Short constant literals:
-        static const std::unordered_set<uint8_t> literals = {
-            DW_OP_lit0,  DW_OP_lit1,  DW_OP_lit2,  DW_OP_lit3,  DW_OP_lit4,  DW_OP_lit5,  DW_OP_lit6,  DW_OP_lit7,
-            DW_OP_lit8,  DW_OP_lit9,  DW_OP_lit10, DW_OP_lit11, DW_OP_lit12, DW_OP_lit13, DW_OP_lit14, DW_OP_lit15,
-            DW_OP_lit16, DW_OP_lit17, DW_OP_lit18, DW_OP_lit19, DW_OP_lit20, DW_OP_lit21, DW_OP_lit22, DW_OP_lit23,
-            DW_OP_lit24, DW_OP_lit25, DW_OP_lit26, DW_OP_lit27, DW_OP_lit28, DW_OP_lit29, DW_OP_lit30, DW_OP_lit31};
-        if (literals.count(atom) > 0) {
+        if (static const std::unordered_set<uint8_t> literals = {DW_OP_lit0,  DW_OP_lit1,  DW_OP_lit2,  DW_OP_lit3,
+                                                                 DW_OP_lit4,  DW_OP_lit5,  DW_OP_lit6,  DW_OP_lit7,
+                                                                 DW_OP_lit8,  DW_OP_lit9,  DW_OP_lit10, DW_OP_lit11,
+                                                                 DW_OP_lit12, DW_OP_lit13, DW_OP_lit14, DW_OP_lit15,
+                                                                 DW_OP_lit16, DW_OP_lit17, DW_OP_lit18, DW_OP_lit19,
+                                                                 DW_OP_lit20, DW_OP_lit21, DW_OP_lit22, DW_OP_lit23,
+                                                                 DW_OP_lit24, DW_OP_lit25, DW_OP_lit26, DW_OP_lit27,
+                                                                 DW_OP_lit28, DW_OP_lit29, DW_OP_lit30, DW_OP_lit31};
+            literals.count(atom) > 0) {
           // Push a literal/constant on the stack:
           stack.push(atom - DW_OP_lit0);
           break;
         }
 
         // General constants:
-        static const std::unordered_set<uint8_t> constants = {
-            DW_OP_const1u, DW_OP_const2u, DW_OP_const4u, DW_OP_const8u, DW_OP_const1s,
-            DW_OP_const2s, DW_OP_const4s, DW_OP_const8s, DW_OP_constu,  DW_OP_consts};
-        if (constants.count(atom) > 0) {
+        if (static const std::unordered_set<uint8_t> constants = {DW_OP_const1u, DW_OP_const2u, DW_OP_const4u,
+                                                                  DW_OP_const8u, DW_OP_const1s, DW_OP_const2s,
+                                                                  DW_OP_const4s, DW_OP_const8s, DW_OP_constu,
+                                                                  DW_OP_consts};
+            constants.count(atom) > 0) {
           // Push the constant argument on the stack.
           stack.push(op->number);
           break;
