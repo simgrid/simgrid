@@ -387,11 +387,11 @@ static int visit_libs(struct dl_phdr_info* info, size_t, void* data)
 {
   auto* libname    = static_cast<std::string*>(data);
   std::string path = info->dlpi_name;
-  if (path.find(*libname) != std::string::npos) {
-    *libname = std::move(path);
-    return 1;
-  }
-  return 0;
+  if (path.find(*libname) == std::string::npos)
+    return 0;
+
+  *libname = std::move(path);
+  return 1;
 }
 #endif
 

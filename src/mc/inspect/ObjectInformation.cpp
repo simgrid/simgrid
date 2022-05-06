@@ -139,10 +139,7 @@ void find_object_address(std::vector<xbt::VmMap> const& maps, ObjectInformation*
 
   for (size_t i = 0; i < maps.size(); ++i) {
     simgrid::xbt::VmMap const& reg = maps[i];
-    if (maps[i].pathname.empty())
-      continue;
-    std::string map_basename = simgrid::xbt::Path(maps[i].pathname).get_base_name();
-    if (map_basename != name)
+    if (reg.pathname.empty() || name != simgrid::xbt::Path(reg.pathname).get_base_name())
       continue;
 
     // This is the non-GNU_RELRO-part of the data segment:
