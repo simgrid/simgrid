@@ -1155,9 +1155,9 @@ XBT_PUBLIC void smpi_bench_end();
 
 XBT_PUBLIC unsigned long long smpi_rastro_resolution();
 XBT_PUBLIC unsigned long long smpi_rastro_timestamp();
-XBT_PUBLIC void smpi_sample_1(int global, const char* file, const char* tag, int iters, double threshold);
-XBT_PUBLIC int smpi_sample_2(int global, const char* file, const char* tag, int iter_count);
-XBT_PUBLIC void smpi_sample_3(int global, const char* file, const char* tag);
+XBT_PUBLIC int smpi_sample_cond(int global, const char* file, const char* tag, int iters, double threshold,
+                                int iter_count);
+XBT_PUBLIC void smpi_sample_iter(int global, const char* file, const char* tag);
 XBT_PUBLIC int smpi_sample_exit(int global, const char* file, const char* tag, int iter_count);
 /**
  * Need a public setter for SMPI copy_callback function, so users can define
@@ -1182,8 +1182,8 @@ XBT_PUBLIC void smpi_trace_set_call_location__(const char* file, const int* line
 #define SMPI_CTAG_NAME(line) SMPI_CTAG_NAME1(line)
 
 #define SMPI_SAMPLE_LOOP(loop_init, loop_end, loop_iter, global, iters, thres, tag)                                    \
-  char SMPI_CTAG_NAME(__LINE__) [132];                                                                                 \
-  snprintf( SMPI_CTAG_NAME(__LINE__), 132, "%s%d", tag, __LINE__);                                                           \
+  char SMPI_CTAG_NAME(__LINE__)[132];                                                                                  \
+  snprintf(SMPI_CTAG_NAME(__LINE__), 132, "%s%d", tag, __LINE__);                                                      \
   int SMPI_ITER_NAME(__LINE__) = 0;                                                                                    \
   {                                                                                                                    \
     loop_init;                                                                                                         \
@@ -1192,11 +1192,11 @@ XBT_PUBLIC void smpi_trace_set_call_location__(const char* file, const int* line
       (loop_iter);                                                                                                     \
     }                                                                                                                  \
   }                                                                                                                    \
-  for ( loop_init;                                                                                                     \
-         (loop_end) ? (smpi_sample_1((global), __FILE__, SMPI_CTAG_NAME(__LINE__), (iters), (thres))                   \
-                        , (smpi_sample_2((global), __FILE__, SMPI_CTAG_NAME(__LINE__), SMPI_ITER_NAME(__LINE__))))     \
-                    : smpi_sample_exit((global), __FILE__, SMPI_CTAG_NAME(__LINE__), SMPI_ITER_NAME(__LINE__));        \
-         smpi_sample_3((global), __FILE__, SMPI_CTAG_NAME(__LINE__)), (loop_iter) )
+  for (loop_init;                                                                                                      \
+       (loop_end) ? smpi_sample_cond((global), __FILE__, SMPI_CTAG_NAME(__LINE__), (iters), (thres),                   \
+                                     SMPI_ITER_NAME(__LINE__))                                                         \
+                  : smpi_sample_exit((global), __FILE__, SMPI_CTAG_NAME(__LINE__), SMPI_ITER_NAME(__LINE__));          \
+       smpi_sample_iter((global), __FILE__, SMPI_CTAG_NAME(__LINE__)), (loop_iter))
 
 #define SMPI_SAMPLE_LOCAL(loop_init, loop_end, loop_iter, iters, thres)                                                \
   SMPI_SAMPLE_LOOP(loop_init, (loop_end), (loop_iter), 0, (iters), (thres), "")
