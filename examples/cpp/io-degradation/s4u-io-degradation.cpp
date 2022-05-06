@@ -88,11 +88,9 @@ static double ssd_dynamic_sharing(const sg4::Disk* /*disk*/, const std::string& 
                                                                             {15, 239.}}}};
 
   const auto& data = SSD_SPEED.at(op);
+  const auto value = data.find(n);
   /* no special bandwidth for this disk sharing N flows, just returns maximal capacity */
-  if (data.find(n) != data.end())
-    capacity = data.at(n);
-
-  return capacity;
+  return value == data.end() ? capacity : value->second;
 }
 
 /**
