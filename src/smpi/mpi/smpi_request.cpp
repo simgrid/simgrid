@@ -424,8 +424,7 @@ void Request::sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype
 
   std::array<MPI_Request, 2> requests;
   std::array<MPI_Status, 2> stats;
-  aid_t myid = simgrid::s4u::this_actor::get_pid();
-  if ((destination == myid) && (source == myid)) {
+  if (aid_t myid = simgrid::s4u::this_actor::get_pid(); (destination == myid) && (source == myid)) {
     Datatype::copy(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype);
     if (status != MPI_STATUS_IGNORE) {
       status->MPI_SOURCE = source;

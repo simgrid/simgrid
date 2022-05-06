@@ -100,8 +100,7 @@ static int workload_executor_process(const std::vector<std::unique_ptr<Job>>& wo
 {
   for (auto const& job : workload) {
     // Let's wait until the job's waiting time if needed
-    double curr_time = simgrid::s4u::Engine::get_clock();
-    if (job->starting_time > curr_time) {
+    if (double curr_time = simgrid::s4u::Engine::get_clock(); job->starting_time > curr_time) {
       double time_to_sleep = (double)job->starting_time - curr_time;
       XBT_INFO("Sleeping %g seconds (waiting for job %d, app '%s')", time_to_sleep, job->starting_time,
                job->smpi_app_name.c_str());

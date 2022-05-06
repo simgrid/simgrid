@@ -280,9 +280,9 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
   }
 
   /* Apply the control */
-  auto iset = std::find_if(begin(xbt_log_settings()), end(xbt_log_settings()),
-                           [category](const xbt_log_setting_t& s) { return s.catname == category->name; });
-  if (iset != xbt_log_settings().end()) {
+  if (auto iset = std::find_if(begin(xbt_log_settings()), end(xbt_log_settings()),
+                               [category](const xbt_log_setting_t& s) { return s.catname == category->name; });
+      iset != xbt_log_settings().end()) {
     _xbt_log_cat_apply_set(category, *iset);
     xbt_log_settings().erase(iset);
   } else {

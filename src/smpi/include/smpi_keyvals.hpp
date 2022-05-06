@@ -106,8 +106,7 @@ template <typename T> int Keyval::attr_delete(int keyval){
 
   smpi_key_elem& elem = elem_it->second;
   int flag            = 0;
-  int ret             = call_deleter<T>((T*)this, elem, keyval, attr->second, &flag);
-  if (ret != MPI_SUCCESS)
+  if (int ret = call_deleter<T>((T*)this, elem, keyval, attr->second, &flag); ret != MPI_SUCCESS)
     return ret;
 
   elem.refcount--;
@@ -119,12 +118,10 @@ template <typename T> int Keyval::attr_delete(int keyval){
 
 
 template <typename T> int Keyval::attr_get(int keyval, void* attr_value, int* flag){
-  auto elem_it = T::keyvals_.find(keyval);
-  if (elem_it == T::keyvals_.end() || elem_it->second.deleted)
+  if (auto elem_it = T::keyvals_.find(keyval); elem_it == T::keyvals_.end() || elem_it->second.deleted)
     return MPI_ERR_ARG;
 
-  auto attr = attributes().find(keyval);
-  if (attr != attributes().end()) {
+  if (auto attr = attributes().find(keyval); attr != attributes().end()) {
     *static_cast<void**>(attr_value) = attr->second;
     *flag=1;
   } else {

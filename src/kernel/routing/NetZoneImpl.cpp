@@ -292,8 +292,7 @@ std::vector<resource::StandardLinkImpl*> NetZoneImpl::get_link_list_impl(const s
 
 resource::StandardLinkImpl* NetZoneImpl::get_link_by_name_or_null(const std::string& name) const
 {
-  auto link_it = links_.find(name);
-  if (link_it != links_.end())
+  if (auto link_it = links_.find(name); link_it != links_.end())
     return link_it->second;
 
   for (const auto* child : children_) {
@@ -306,8 +305,7 @@ resource::StandardLinkImpl* NetZoneImpl::get_link_by_name_or_null(const std::str
 
 resource::SplitDuplexLinkImpl* NetZoneImpl::get_split_duplex_link_by_name_or_null(const std::string& name) const
 {
-  auto link_it = split_duplex_links_.find(name);
-  if (link_it != split_duplex_links_.end())
+  if (auto link_it = split_duplex_links_.find(name); link_it != split_duplex_links_.end())
     return link_it->second.get();
 
   for (const auto* child : children_) {

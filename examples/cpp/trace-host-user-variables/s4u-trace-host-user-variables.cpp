@@ -55,8 +55,7 @@ int main(int argc, char* argv[])
   e.run();
 
   // get user declared variables
-  const auto& host_variables = simgrid::instr::get_host_variables();
-  if (not host_variables.empty()) {
+  if (const auto& host_variables = simgrid::instr::get_host_variables(); not host_variables.empty()) {
     XBT_INFO("Declared host variables:");
     for (const auto& var : host_variables)
       XBT_INFO("%s", var.c_str());

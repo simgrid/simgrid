@@ -34,9 +34,8 @@ File::File(MPI_Comm comm, const char* filename, int amode, MPI_Info info) : comm
   xbt_assert(not simgrid::s4u::Host::current()->get_disks().empty(),
              "SMPI/IO : Trying to open file on a diskless host ! Add one to your platform file");
 
-  size_t found = fullname.find('/');
   // in case no fullpath is provided ... just pick the first mountpoint.
-  if (found == std::string::npos || fullname.rfind("./", 1) != std::string::npos) {
+  if (size_t found = fullname.find('/'); found == std::string::npos || fullname.rfind("./", 1) != std::string::npos) {
     auto disk = simgrid::s4u::Host::current()->get_disks().front();
     std::string mount;
     if (disk->get_host() != simgrid::s4u::Host::current())

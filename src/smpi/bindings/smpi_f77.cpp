@@ -568,8 +568,7 @@ void mpi_op_commutative_(int* op, int* commute, int* ierr)
 
 void mpi_group_free_(int* group, int* ierr)
 {
-  MPI_Group tmp = simgrid::smpi::Group::f2c(*group);
-  if(tmp != MPI_COMM_WORLD->group() && tmp != MPI_GROUP_EMPTY){
+  if (MPI_Group tmp = simgrid::smpi::Group::f2c(*group); tmp != MPI_COMM_WORLD->group() && tmp != MPI_GROUP_EMPTY) {
     simgrid::smpi::Group::unref(tmp);
   }
   *ierr = MPI_SUCCESS;

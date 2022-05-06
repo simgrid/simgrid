@@ -349,8 +349,7 @@ int check_collectives_ordering(MPI_Comm comm, const std::string& call)
 {
   unsigned int count = comm->get_collectives_count();
   comm->increment_collectives_count();
-  auto vec = collective_calls.find(comm->id());
-  if (vec == collective_calls.end()) {
+  if (auto vec = collective_calls.find(comm->id()); vec == collective_calls.end()) {
     collective_calls.try_emplace(comm->id(), std::vector<std::string>{call});
   } else {
     // are we the first ? add the call

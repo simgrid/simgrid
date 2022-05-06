@@ -61,9 +61,8 @@ simgrid::mc::RecordTrace::RecordTrace(const char* data)
   while (*current) {
     long aid;
     int times_considered;
-    int count = sscanf(current, "%ld/%d", &aid, &times_considered);
 
-    if(count != 2 && count != 1)
+    if (int count = sscanf(current, "%ld/%d", &aid, &times_considered); count != 2 && count != 1)
       throw std::invalid_argument("Could not parse record path");
     push_back(new simgrid::mc::Transition(simgrid::mc::Transition::Type::UNKNOWN, aid, times_considered));
 

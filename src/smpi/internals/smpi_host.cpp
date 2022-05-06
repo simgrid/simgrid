@@ -37,8 +37,7 @@ xbt::Extension<s4u::Host, smpi::Host> Host::EXTENSION_ID;
 double Host::orecv(size_t size, s4u::Host* src, s4u::Host* dst)
 {
   /* return user's callback if available */
-  auto it = cost_cbs.find(SmpiOperation::RECV);
-  if (it != cost_cbs.end())
+  if (auto it = cost_cbs.find(SmpiOperation::RECV); it != cost_cbs.end())
     return it->second(size, src, dst);
 
   /* fallback to smpi/or config */
@@ -66,8 +65,7 @@ double Host::orecv(size_t size, s4u::Host* src, s4u::Host* dst)
 double Host::osend(size_t size, s4u::Host* src, s4u::Host* dst)
 {
   /* return user's callback if available */
-  auto it = cost_cbs.find(SmpiOperation::SEND);
-  if (it != cost_cbs.end())
+  if (auto it = cost_cbs.find(SmpiOperation::SEND); it != cost_cbs.end())
     return it->second(size, src, dst);
 
   /* fallback to smpi/os config */
@@ -94,8 +92,7 @@ double Host::osend(size_t size, s4u::Host* src, s4u::Host* dst)
 double Host::oisend(size_t size, s4u::Host* src, s4u::Host* dst)
 {
   /* return user's callback if available */
-  auto it = cost_cbs.find(SmpiOperation::ISEND);
-  if (it != cost_cbs.end())
+  if (auto it = cost_cbs.find(SmpiOperation::ISEND); it != cost_cbs.end())
     return it->second(size, src, dst);
 
   /* fallback to smpi/ois config */

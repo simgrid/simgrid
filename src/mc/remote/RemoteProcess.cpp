@@ -41,8 +41,7 @@ static std::string get_lib_name(const std::string& pathname)
   std::string map_basename = simgrid::xbt::Path(pathname).get_base_name();
   std::string libname;
 
-  size_t pos = map_basename.rfind(".so");
-  if (pos != std::string::npos) {
+  if (size_t pos = map_basename.rfind(".so"); pos != std::string::npos) {
     // strip the extension (matching regex "\.so.*$")
     libname.assign(map_basename, 0, pos);
 

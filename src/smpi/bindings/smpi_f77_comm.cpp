@@ -38,8 +38,7 @@ void mpi_comm_create_(int* comm, int* group, int* newcomm, int* ierr) {
 }
 
 void mpi_comm_free_(int* comm, int* ierr) {
-  MPI_Comm tmp = simgrid::smpi::Comm::f2c(*comm);
-  if(tmp != MPI_COMM_WORLD && tmp != MPI_COMM_NULL) {
+  if (MPI_Comm tmp = simgrid::smpi::Comm::f2c(*comm); tmp != MPI_COMM_WORLD && tmp != MPI_COMM_NULL) {
     simgrid::smpi::Comm::destroy(tmp);
     simgrid::smpi::Comm::free_f(*comm);
   }

@@ -395,8 +395,7 @@ static void on_simulation_start()
     paje::dump_generator_version();
 
     /* output one line comment */
-    std::string comment = simgrid::config::get_value<std::string>("tracing/comment");
-    if (not comment.empty())
+    if (auto comment = simgrid::config::get_value<std::string>("tracing/comment"); not comment.empty())
       tracing_file << "# " << comment << std::endl;
 
     /* output comment file */

@@ -23,11 +23,11 @@ static int computation_fun(std::vector<std::string> argv)
   simgrid::s4u::this_actor::execute(size);
   double end = simgrid::s4u::Engine::get_clock();
 
-  if (0.1 - (end - begin) > 0.001) {
+  if (double duration = end - begin; 0.1 - duration > 0.001) {
     xbt_assert(not FAIL_ON_ERROR, "%s with %.4g load (%dflops) took %.4fs instead of 0.1s",
-               simgrid::s4u::this_actor::get_name().c_str(), ((double)size / flop_amount), size, (end - begin));
+               simgrid::s4u::this_actor::get_name().c_str(), ((double)size / flop_amount), size, duration);
     XBT_INFO("FAILED TEST: %s with %.4g load (%dflops) took %.4fs instead of 0.1s",
-             simgrid::s4u::this_actor::get_name().c_str(), ((double)size / flop_amount), size, (end - begin));
+             simgrid::s4u::this_actor::get_name().c_str(), ((double)size / flop_amount), size, duration);
     failed_test++;
   } else {
     XBT_INFO("Passed: %s with %.4g load (%dflops) took 0.1s as expected", simgrid::s4u::this_actor::get_name().c_str(),

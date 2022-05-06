@@ -254,16 +254,16 @@ bool BmfSolver::get_alloc(const Eigen::VectorXd& fair_sharing, const allocation_
 
       /* Note: the max_ may artificially increase the rate if priority < 0
        * The equilibrium sets a rho which respects the C_ though */
-      double rate = fair_sharing[cnst_idx] / maxA_(cnst_idx, player_idx);
-      if (min_rate == -1 || double_positive(min_rate - rate, cfg_bmf_precision)) {
+      if (double rate = fair_sharing[cnst_idx] / maxA_(cnst_idx, player_idx);
+          min_rate == -1 || double_positive(min_rate - rate, cfg_bmf_precision)) {
         selected_resource = cnst_idx;
         min_rate          = rate;
       }
-      double bound = initial ? -1 : phi_[player_idx];
       /* Given that the priority may artificially increase the rate,
        * we need to check that the bound given by user respects the resource capacity C_ */
-      if (bound > 0 && bound * A_(cnst_idx, player_idx) < C_[cnst_idx] &&
-          double_positive(min_rate - bound, cfg_bmf_precision)) {
+      if (double bound = initial ? -1 : phi_[player_idx];
+          (bound > 0 && bound * A_(cnst_idx, player_idx) < C_[cnst_idx] &&
+           double_positive(min_rate - bound, cfg_bmf_precision))) {
         selected_resource = NO_RESOURCE;
         min_rate          = bound;
       }
@@ -273,10 +273,8 @@ bool BmfSolver::get_alloc(const Eigen::VectorXd& fair_sharing, const allocation_
   if (alloc == last_alloc) // considered stable
     return true;
 
-  std::vector<int> alloc_by_player      = alloc_map_to_vector(alloc);
-  bool inserted                         = allocations_.insert(alloc_by_player).second;
-  /* oops, allocation already tried, let's pertube it a bit */
-  if (not inserted) {
+  if (auto alloc_by_player = alloc_map_to_vector(alloc); not allocations_.insert(alloc_by_player).second) {
+    /* oops, allocation already tried, let's pertube it a bit */
     XBT_DEBUG("Allocation already tried: %s", debug_alloc(alloc).c_str());
     return disturb_allocation(alloc, alloc_by_player);
   }
@@ -433,10 +431,9 @@ void BmfSystem::get_flows_data(Eigen::Index number_cnsts, Eigen::MatrixXd& A, Ei
     bool active = false;
     bool linked = false; // variable is linked to some constraint (specially for selective_update)
     for (const Element& elem : var.cnsts_) {
-      const boost::intrusive::list_member_hook<>& cnst_hook = selective_update_active
-                                                                  ? elem.constraint->modified_constraint_set_hook_
-                                                                  : elem.constraint->active_constraint_set_hook_;
-      if (not cnst_hook.is_linked())
+      if (const auto& cnst_hook = selective_update_active ? elem.constraint->modified_constraint_set_hook_
+                                                          : elem.constraint->active_constraint_set_hook_;
+          not cnst_hook.is_linked())
         continue;
       /* active and linked variable, lets check its consumption */
       linked             = true;

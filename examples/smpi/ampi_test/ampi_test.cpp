@@ -20,8 +20,8 @@ int main(int argc, char* argv[])
   free(pointer);
   pointer = calloc(100, sizeof(int));
   int rank;
-  int err = MPI_Comm_rank(MPI_COMM_WORLD, &rank);   /* Get id of this process */
-  if (err != MPI_SUCCESS) {
+  /* Get id of this process */
+  if (int err = MPI_Comm_rank(MPI_COMM_WORLD, &rank); err != MPI_SUCCESS) {
     fprintf(stderr, "MPI_Comm_rank failed: %d", err);
     MPI_Abort(MPI_COMM_WORLD, EXIT_FAILURE);
     exit(EXIT_FAILURE);

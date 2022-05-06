@@ -322,8 +322,7 @@ NetworkNS3Model::NetworkNS3Model(const std::string& name) : NetworkModel(name)
   ns3::Config::SetDefault("ns3::TcpSocket::DelAckCount", ns3::UintegerValue(1));
   ns3::Config::SetDefault("ns3::TcpSocketBase::Timestamp", ns3::BooleanValue(false));
 
-  auto const& TcpProtocol = ns3_tcp_model.get();
-  if (TcpProtocol == "default") {
+  if (auto const& TcpProtocol = ns3_tcp_model.get(); TcpProtocol == "default") {
     /* nothing to do */
 
   } else if (TcpProtocol == "Reno" || TcpProtocol == "NewReno" || TcpProtocol == "Tahoe") {

@@ -216,8 +216,7 @@ void VirtualMachineImpl::set_piface(s4u::VirtualMachine* piface)
 void VirtualMachineImpl::vm_destroy()
 {
   /* I was already removed from the allVms set if the VM was destroyed cleanly */
-  auto iter = find(allVms_.begin(), allVms_.end(), piface_);
-  if (iter != allVms_.end())
+  if (auto iter = find(allVms_.begin(), allVms_.end(), piface_); iter != allVms_.end())
     allVms_.erase(iter);
 
   /* Free the cpu_action of the VM. */
@@ -242,8 +241,8 @@ void VirtualMachineImpl::start()
   if (physical_host_->extension<s4u::VmHostExt>() == nullptr)
     physical_host_->extension_set(new s4u::VmHostExt());
 
-  size_t pm_ramsize = physical_host_->extension<s4u::VmHostExt>()->ramsize;
-  if (pm_ramsize &&
+  if (size_t pm_ramsize = physical_host_->extension<s4u::VmHostExt>()->ramsize;
+      pm_ramsize &&
       not physical_host_->extension<s4u::VmHostExt>()->overcommit) { /* Need to verify that we don't overcommit */
     /* Retrieve the memory occupied by the VMs on that host. Yep, we have to traverse all VMs of all hosts for that */
     size_t total_ramsize_of_vms = 0;
@@ -362,8 +361,7 @@ void VirtualMachineImpl::set_physical_host(s4u::Host* destination)
     XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->get_remains_no_update());
 
   /* keep the bound value of the cpu action of the VM. */
-  double old_bound = action_->get_bound();
-  if (old_bound > 0) {
+  if (double old_bound = action_->get_bound(); old_bound > 0) {
     XBT_DEBUG("migrate VM(%s): set bound (%f) at %s", vm_name.c_str(), old_bound, pm_name_dst.c_str());
     new_cpu_action->set_bound(old_bound);
   }

@@ -45,11 +45,9 @@ int State::next_transition() const
   std::vector<ActorInformation>& actors = mc_model_checker->get_remote_process().actors();
   XBT_DEBUG("Search for an actor to run. %zu actors to consider", actors.size());
   for (unsigned int i = 0; i < actors.size(); i++) {
-    aid_t aid                     = actors[i].copy.get_buffer()->get_pid();
-    const ActorState* actor_state = &actor_states_[aid];
-
     /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application*/
-    if (not actor_state->is_todo() || not Api::get().get_session().actor_is_enabled(aid))
+    if (aid_t aid = actors[i].copy.get_buffer()->get_pid();
+        not actor_states_[aid].is_todo() || not Api::get().get_session().actor_is_enabled(aid))
       continue;
 
     return i;

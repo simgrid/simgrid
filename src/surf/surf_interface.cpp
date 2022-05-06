@@ -165,9 +165,9 @@ void model_help(const char* category, const std::vector<surf_model_description_t
 const surf_model_description_t* find_model_description(const std::vector<surf_model_description_t>& table,
                                                        const std::string& name)
 {
-  auto pos = std::find_if(table.begin(), table.end(),
-                          [&name](const surf_model_description_t& item) { return item.name == name; });
-  if (pos != table.end())
+  if (auto pos = std::find_if(table.begin(), table.end(),
+                              [&name](const surf_model_description_t& item) { return item.name == name; });
+      pos != table.end())
     return &*pos;
 
   std::string sep;

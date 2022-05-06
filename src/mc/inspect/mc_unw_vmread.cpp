@@ -51,8 +51,7 @@ static int access_mem(const unw_addr_space_t as, const unw_word_t addr, unw_word
 
   struct iovec local  = {valp, size};
   struct iovec remote = {(void*)addr, size};
-  ssize_t s           = process_vm_readv(pid, &local, 1, &remote, 1, 0);
-  if (s >= 0) {
+  if (ssize_t s = process_vm_readv(pid, &local, 1, &remote, 1, 0); s >= 0) {
     if ((size_t)s != size)
       return -UNW_EINVAL;
     else

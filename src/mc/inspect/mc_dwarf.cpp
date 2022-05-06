@@ -857,8 +857,7 @@ static void read_dwarf_info(simgrid::mc::ObjectInformation* info, Dwarf* dwarf)
   size_t length;
 
   while (dwarf_nextcu(dwarf, offset, &next_offset, &length, nullptr, nullptr, nullptr) == 0) {
-    Dwarf_Die unit_die;
-    if (dwarf_offdie(dwarf, offset + length, &unit_die) != nullptr)
+    if (Dwarf_Die unit_die; dwarf_offdie(dwarf, offset + length, &unit_die) != nullptr)
       MC_dwarf_handle_children(info, &unit_die, &unit_die, nullptr, nullptr);
     offset = next_offset;
   }
@@ -961,8 +960,7 @@ static int find_by_build_id(std::vector<char> id)
     filename = std::string(debug_path) + ".build-id/" + to_hex(id.data(), 1) + '/' +
                to_hex(id.data() + 1, id.size() - 1) + ".debug";
     XBT_DEBUG("Checking debug file: %s", filename.c_str());
-    int fd = open(filename.c_str(), O_RDONLY);
-    if (fd != -1) {
+    if (int fd = open(filename.c_str(), O_RDONLY); fd != -1) {
       XBT_DEBUG("Found debug file: %s\n", hex.c_str());
       return fd;
     }
@@ -1009,8 +1007,7 @@ static void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
 
   // Try with NT_GNU_BUILD_ID: we find the build ID in the ELF file and then
   // use this ID to find the file in some known locations in the filesystem.
-  std::vector<char> build_id = get_build_id(elf);
-  if (not build_id.empty()) {
+  if (std::vector<char> build_id = get_build_id(elf); not build_id.empty()) {
     elf_end(elf);
     close(fd);
 

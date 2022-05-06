@@ -120,8 +120,7 @@ static std::string TRACE_smpi_get_key(aid_t src, aid_t dst, int tag, int send)
   std::string key;
   std::string aux = std::to_string(src) + "#" + std::to_string(dst) + "#" + std::to_string(tag) + "#" +
                     std::to_string(send == 1 ? 0 : 1);
-  auto it = keys.find(aux);
-  if (it == keys.end()) {
+  if (auto it = keys.find(aux); it == keys.end()) {
     // first posted
     key = TRACE_smpi_put_key(src, dst, tag, send);
   } else {

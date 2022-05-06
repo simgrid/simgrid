@@ -192,7 +192,6 @@ void* xbt_dynar_insert_at_ptr(xbt_dynar_t dynar, int idx)
   void *res;
   unsigned long old_used;
   unsigned long new_used;
-  long nb_shift;
 
   _sanity_check_dynar(dynar);
   _sanity_check_idx(idx);
@@ -202,9 +201,7 @@ void* xbt_dynar_insert_at_ptr(xbt_dynar_t dynar, int idx)
 
   _xbt_dynar_expand(dynar, new_used);
 
-  nb_shift = old_used - idx;
-
-  if (nb_shift>0) {
+  if (long nb_shift = old_used - idx; nb_shift > 0) {
     memmove(_xbt_dynar_elm(dynar, idx + 1), _xbt_dynar_elm(dynar, idx), nb_shift * dynar->elmsize);
   }
 

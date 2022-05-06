@@ -105,15 +105,13 @@ int main(int argc, char* argv[])
 
   XBT_DEBUG("Simulation is over");
 
-  const auto& categories = simgrid::instr::get_tracing_categories();
-  if (not categories.empty()) {
+  if (const auto& categories = simgrid::instr::get_tracing_categories(); not categories.empty()) {
     XBT_INFO("Declared tracing categories:");
     for (const auto& category : categories)
       XBT_INFO("%s", category.c_str());
   }
 
-  const auto& marks = simgrid::instr::get_marks();
-  if (not marks.empty()) {
+  if (const auto& marks = simgrid::instr::get_marks(); not marks.empty()) {
     XBT_INFO("Declared marks:");
     for (const auto& mark : marks)
       XBT_INFO("%s", mark.c_str());

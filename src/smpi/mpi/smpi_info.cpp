@@ -33,8 +33,7 @@ void Info::unref(Info* info){
 int Info::get(const char* key, int valuelen, char* value, int* flag) const
 {
   *flag=false;
-  auto val = map_.find(key);
-  if (val != map_.end()) {
+  if (auto val = map_.find(key); val != map_.end()) {
     std::string tmpvalue = val->second;
 
     memset(value, 0, valuelen);
@@ -74,8 +73,7 @@ int Info::get_nthkey(int n, char* key) const
 int Info::get_valuelen(const char* key, int* valuelen, int* flag) const
 {
   *flag=false;
-  auto val = map_.find(key);
-  if (val != map_.end()) {
+  if (auto val = map_.find(key); val != map_.end()) {
     *valuelen = val->second.length();
     *flag=true;
   }

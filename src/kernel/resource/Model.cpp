@@ -119,8 +119,7 @@ double Model::next_occurring_event_full(double /*now*/)
   double min = -1;
 
   for (Action& action : *get_started_action_set()) {
-    double value = action.get_rate();
-    if (value > 0) {
+    if (double value = action.get_rate(); value > 0) {
       if (action.get_remains() > 0)
         value = action.get_remains_no_update() / value;
       else

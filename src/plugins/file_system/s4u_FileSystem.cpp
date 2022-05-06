@@ -176,9 +176,7 @@ sg_size_t File::write(sg_size_t size, bool write_inside)
 
   sg_size_t write_size = 0;
   /* Find the host where the file is physically located (remote or local)*/
-  Host* host = local_disk_->get_host();
-
-  if (host && host->get_name() != Host::current()->get_name()) {
+  if (Host* host = local_disk_->get_host(); host && host->get_name() != Host::current()->get_name()) {
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", host->get_cname(), size);
     Comm::sendto(Host::current(), host, size);

@@ -402,8 +402,7 @@ static void smpi_init_privatization_dlopen(const std::string& executable)
   stat(executable.c_str(), &fdin_stat);
   off_t fdin_size         = fdin_stat.st_size;
 
-  std::string libnames = simgrid::config::get_value<std::string>("smpi/privatize-libs");
-  if (not libnames.empty()) {
+  if (std::string libnames = simgrid::config::get_value<std::string>("smpi/privatize-libs"); not libnames.empty()) {
     // split option
     std::vector<std::string> privatize_libs;
     boost::split(privatize_libs, libnames, boost::is_any_of(";"));

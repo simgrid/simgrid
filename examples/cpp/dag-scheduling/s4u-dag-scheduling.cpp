@@ -225,8 +225,8 @@ int main(int argc, char** argv)
      * new dependency
      */
 
-    auto last_scheduled_task = sg_host_get_last_scheduled_task(selected_host);
-    if (last_scheduled_task && (last_scheduled_task->get_state() != sg4::Activity::State::FINISHED) &&
+    if (auto last_scheduled_task = sg_host_get_last_scheduled_task(selected_host);
+        last_scheduled_task && (last_scheduled_task->get_state() != sg4::Activity::State::FINISHED) &&
         (last_scheduled_task->get_state() != sg4::Activity::State::FAILED) &&
         not dependency_exists(sg_host_get_last_scheduled_task(selected_host), selected_task))
       last_scheduled_task->add_successor(selected_task);
