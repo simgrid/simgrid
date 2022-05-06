@@ -878,9 +878,9 @@ void smpi_replay_main(int rank, const char* private_trace_filename)
     std::vector<MPI_Request> requests(count_requests);
     unsigned int i=0;
 
-    for (auto const& pair : storage[simgrid::s4u::this_actor::get_pid()].get_store()) {
-      for (auto& req: pair.second){
-        requests[i] = req;
+    for (auto const& [_, reqs] : storage[simgrid::s4u::this_actor::get_pid()].get_store()) {
+      for (auto& req : reqs) {
+        requests[i] = req; // FIXME: overwritten at each iteration?
       }
       i++;
     }
