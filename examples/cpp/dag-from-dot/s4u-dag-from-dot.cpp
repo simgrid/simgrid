@@ -44,8 +44,7 @@ int main(int argc, char** argv)
   static_cast<sg4::Exec*>(dag.back().get())->set_host(hosts[0]);
 
   for (const auto& a : dag) {
-    auto* exec = dynamic_cast<sg4::Exec*>(a.get());
-    if (exec != nullptr && exec->get_name() != "end") {
+    if (auto* exec = dynamic_cast<sg4::Exec*>(a.get()); exec != nullptr && exec->get_name() != "end") {
       exec->set_host(hosts[cursor % count]);
       cursor++;
     }
