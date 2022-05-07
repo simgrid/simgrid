@@ -71,9 +71,8 @@ static void smpi_get_executable_global_size()
       /* Here we are making the assumption that a suitable empty region
          following the rw- area is the end of the data segment. It would
          be better to check with the size of the data segment. */
-      auto j = i + 1;
-      if (j != map.end() && j->pathname.empty() && (j->prot & PROT_RWX) == PROT_RW &&
-          (char*)j->start_addr == smpi_data_exe_start + smpi_data_exe_size) {
+      if (auto j = i + 1; j != map.end() && j->pathname.empty() && (j->prot & PROT_RWX) == PROT_RW &&
+                          (char*)j->start_addr == smpi_data_exe_start + smpi_data_exe_size) {
         // Only count the portion of this region not present in the initial map.
         auto found    = std::find_if(initial_vm_map.begin(), initial_vm_map.end(), [&j](const simgrid::xbt::VmMap& m) {
           return j->start_addr <= m.start_addr && m.start_addr < j->end_addr;

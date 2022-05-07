@@ -1025,9 +1025,9 @@ void Request::finish_wait(MPI_Request* request, MPI_Status * status)
   if(req->detached_sender_ != nullptr){
     //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
     simgrid::s4u::Host* dst_host = simgrid::s4u::Actor::by_pid(req->dst_)->get_host();
-    double sleeptime             = simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::Host>()->orecv(
-        req->real_size(), req->src_host_, dst_host);
-    if (sleeptime > 0.0) {
+    if (double sleeptime = simgrid::s4u::Actor::self()->get_host()->extension<simgrid::smpi::Host>()->orecv(
+            req->real_size(), req->src_host_, dst_host);
+        sleeptime > 0.0) {
       simgrid::s4u::this_actor::sleep_for(sleeptime);
       XBT_DEBUG("receiving size of %zu : sleep %f ", req->real_size_, sleeptime);
     }

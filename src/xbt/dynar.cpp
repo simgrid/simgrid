@@ -240,9 +240,7 @@ void xbt_dynar_remove_at(xbt_dynar_t dynar, int idx, void* object)
     dynar->free_f(_xbt_dynar_elm(dynar, idx));
   }
 
-  unsigned long nb_shift = dynar->used - 1 - idx;
-
-  if (nb_shift) {
+  if (unsigned long nb_shift = dynar->used - 1 - idx; nb_shift > 0) {
     unsigned long offset = nb_shift * dynar->elmsize;
     memmove(_xbt_dynar_elm(dynar, idx), _xbt_dynar_elm(dynar, idx + 1), offset);
   }

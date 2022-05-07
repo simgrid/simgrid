@@ -293,10 +293,9 @@ static void create_dragonfly_cluster()
 int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
-  std::string platform = argv[1];
 
   /* create platform */
-  if (platform == "torus")
+  if (std::string platform(argv[1]); platform == "torus")
     create_torus_cluster();
   else if (platform == "fatTree")
     create_fatTree_cluster();
