@@ -261,9 +261,9 @@ bool BmfSolver::get_alloc(const Eigen::VectorXd& fair_sharing, const allocation_
       }
       /* Given that the priority may artificially increase the rate,
        * we need to check that the bound given by user respects the resource capacity C_ */
-      if (double bound = initial ? -1 : phi_[player_idx];
-          (bound > 0 && bound * A_(cnst_idx, player_idx) < C_[cnst_idx] &&
-           double_positive(min_rate - bound, cfg_bmf_precision))) {
+      if (double bound = initial ? -1 : phi_[player_idx]; bound > 0 &&
+                                                          bound * A_(cnst_idx, player_idx) < C_[cnst_idx] &&
+                                                          double_positive(min_rate - bound, cfg_bmf_precision)) {
         selected_resource = NO_RESOURCE;
         min_rate          = bound;
       }
