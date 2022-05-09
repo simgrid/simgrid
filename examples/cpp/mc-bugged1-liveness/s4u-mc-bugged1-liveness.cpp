@@ -101,8 +101,9 @@ static void client(int id)
     }
 
     auto grant = my_mailbox->get_unique<Message>();
+    xbt_assert(grant->kind == Message::Kind::GRANT);
 
-    if ((id == 1) && (grant->kind == Message::Kind::GRANT)) {
+    if (id == 1) {
       cs = 1;
       r  = 0;
       XBT_INFO("Propositions changed : r=0, cs=1");
