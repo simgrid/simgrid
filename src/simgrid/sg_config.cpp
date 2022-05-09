@@ -19,6 +19,8 @@
 #include "src/smpi/include/smpi_config.hpp"
 #include "src/surf/surf_interface.hpp"
 
+#include <string_view>
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf, "About the configuration of SimGrid");
 
 static simgrid::config::Flag<bool> cfg_continue_after_help
@@ -199,7 +201,7 @@ static void _sg_cfg_cb__network_model(const std::string& value)
   find_model_description(surf_network_model_description, value);
 }
 
-static void _sg_cfg_cb_contexts_parallel_mode(const std::string& mode_name)
+static void _sg_cfg_cb_contexts_parallel_mode(std::string_view mode_name)
 {
   if (mode_name == "posix") {
     simgrid::kernel::context::set_parallel_mode(XBT_PARMAP_POSIX);

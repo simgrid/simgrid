@@ -6,8 +6,9 @@
 #ifndef SIMGRID_KERNEL_ACTIVITY_ACTIVITYIMPL_HPP
 #define SIMGRID_KERNEL_ACTIVITY_ACTIVITYIMPL_HPP
 
-#include <string>
 #include <list>
+#include <string>
+#include <string_view>
 
 #include "simgrid/forward.h"
 #include <xbt/utility.hpp>
@@ -39,7 +40,7 @@ public:
   resource::Action* surf_action_ = nullptr;
 
 protected:
-  void inline set_name(const std::string& name)
+  void inline set_name(std::string_view name)
   {
     // This is to keep name_ private while allowing ActivityImpl_T<??> to set it and then return a Ptr to qualified
     // child type
@@ -100,13 +101,13 @@ template <class AnyActivityImpl> class ActivityImpl_T : public ActivityImpl {
   std::string tracing_category_ = "";
 
 public:
-  AnyActivityImpl& set_name(const std::string& name) /* Hides the function in the ancestor class */
+  AnyActivityImpl& set_name(std::string_view name) /* Hides the function in the ancestor class */
   {
     ActivityImpl::set_name(name);
     return static_cast<AnyActivityImpl&>(*this);
   }
 
-  AnyActivityImpl& set_tracing_category(const std::string& category)
+  AnyActivityImpl& set_tracing_category(std::string_view category)
   {
     tracing_category_ = category;
     return static_cast<AnyActivityImpl&>(*this);

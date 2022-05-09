@@ -21,6 +21,7 @@
 #include <memory>
 #include <mutex>
 #include <string>
+#include <string_view>
 
 using simgrid::mc::remote;
 
@@ -31,7 +32,7 @@ namespace mc {
 
 // ***** Helper stuff
 
-static bool is_filtered_lib(const std::string& libname)
+static bool is_filtered_lib(std::string_view libname)
 {
   return libname != "libsimgrid";
 }

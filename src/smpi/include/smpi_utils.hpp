@@ -12,6 +12,7 @@
 
 #include <cstddef>
 #include <string>
+#include <string_view>
 #include <vector>
 
 // Methods used to parse and store the values for timing injections in smpi
@@ -26,7 +27,7 @@ namespace utils {
 
 XBT_PUBLIC std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string);
 XBT_PUBLIC void add_benched_time(double time);
-XBT_PUBLIC void account_malloc_size(size_t size, const std::string& file, int line, const void* ptr);
+XBT_PUBLIC void account_malloc_size(size_t size, std::string_view file, int line, const void* ptr);
 XBT_PUBLIC void account_shared_size(size_t size);
 XBT_PUBLIC void print_time_analysis(double time);
 XBT_PUBLIC void print_buffer_info();

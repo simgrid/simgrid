@@ -20,6 +20,7 @@
 #endif
 
 #include <boost/algorithm/string.hpp>
+#include <string_view>
 
 SIMGRID_REGISTER_PLUGIN(host_dvfs, "Dvfs support", &sg_host_dvfs_plugin_init)
 
@@ -43,7 +44,7 @@ static simgrid::config::Flag<std::string> cfg_governor("plugin/dvfs/governor",
                                                              {"performance", "TODO: Doc"}, {"powersave", "TODO: Doc"},
                                                        }),
 
-                                                       [](const std::string& val) {
+                                                       [](std::string_view val) {
                                                          if (val != "performance")
                                                            sg_host_dvfs_plugin_init();
                                                        });

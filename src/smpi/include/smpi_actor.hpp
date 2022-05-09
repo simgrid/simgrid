@@ -10,6 +10,7 @@
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/instr/instr_smpi.hpp"
 #include "xbt/xbt_os_time.h"
+#include <string_view>
 
 namespace simgrid {
 namespace smpi {
@@ -63,7 +64,7 @@ public:
   void set_replaying(bool value);
   bool replaying() const;
   std::string get_instance_id() const { return instance_id_;}
-  void set_tracing_category(const std::string& category) { tracing_category_ = category; }
+  void set_tracing_category(std::string_view category) { tracing_category_ = category; }
   const std::string& get_tracing_category() const { return tracing_category_; }
   smpi_trace_call_location_t* call_location();
   void set_privatized_region(smpi_privatization_region_t region);

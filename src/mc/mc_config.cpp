@@ -6,11 +6,11 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
 #include <simgrid/sg_config.hpp>
+
 #if SIMGRID_HAVE_MC
 #include "src/mc/mc_safety.hpp"
+#include <string_view>
 #endif
-
-#include <climits>
 
 #if SIMGRID_HAVE_MC
 namespace simgrid {
@@ -34,7 +34,7 @@ static void _mc_cfg_cb_check(const char* spec, bool more_check = true)
 /* Replay (this part is enabled even if MC it disabled) */
 simgrid::config::Flag<std::string> _sg_mc_record_path{
     "model-check/replay", "Model-check path to replay (as reported by SimGrid when a violation is reported)", "",
-    [](const std::string& value) { MC_record_path() = value; }};
+    [](std::string_view value) { MC_record_path() = value; }};
 
 simgrid::config::Flag<bool> _sg_mc_timeout{
     "model-check/timeout", "Whether to enable timeouts for wait requests", false, [](bool) {
@@ -84,11 +84,11 @@ simgrid::config::Flag<std::string> _sg_mc_buffering{
     "infty",
     {{"zero", "No system buffering: MPI_Send is blocking"},
      {"infty", "Infinite system buffering: MPI_Send returns immediately"}},
-    [](const std::string&) { _mc_cfg_cb_check("buffering mode"); }};
+    [](std::string_view) { _mc_cfg_cb_check("buffering mode"); }};
 
 static simgrid::config::Flag<std::string> _sg_mc_reduce{
     "model-check/reduction", "Specify the kind of exploration reduction (either none or DPOR)", "dpor",
-    [](const std::string& value) {
+    [](std::string_view value) {
       _mc_cfg_cb_check("reduction strategy");
 
       if (value == "none")

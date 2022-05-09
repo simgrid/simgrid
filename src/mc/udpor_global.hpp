@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <queue>
+#include <string_view>
 
 namespace simgrid {
 namespace mc {
@@ -82,7 +83,7 @@ public:
   inline void set_state_id(int sid) { state_id = sid; }
 
   inline std::string get_transition_tag() const { return transition_tag; }
-  inline void set_transition_tag(std::string const& tr_tag) { transition_tag = tr_tag; }
+  inline void set_transition_tag(std::string_view tr_tag) { transition_tag = tr_tag; }
 
 private:
   EventSet causes; // used to store directed ancestors of event e

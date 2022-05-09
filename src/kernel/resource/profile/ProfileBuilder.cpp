@@ -14,7 +14,7 @@
 #include <cstddef>
 #include <fstream>
 #include <sstream>
-
+#include <string_view>
 
 namespace simgrid {
 namespace kernel {
@@ -72,19 +72,19 @@ class LegacyUpdateCb {
   bool loop;
   double loop_delay = 0.0;
 
-  static bool is_comment_or_empty_line(const std::string& val)
+  static bool is_comment_or_empty_line(std::string_view val)
   {
-    return (val[0] == '#' || val[0] == '\0' || val[0] == '%');
+    return (val.empty() || val.front() == '#' || val.front() == '%');
   }
 
-  static bool is_normal_distribution(const std::string& val)
+  static bool is_normal_distribution(std::string_view val)
   {
     return (val == "NORM" || val == "NORMAL" || val == "GAUSS" || val == "GAUSSIAN");
   }
 
-  static bool is_exponential_distribution(const std::string& val) { return (val == "EXP" || val == "EXPONENTIAL"); }
+  static bool is_exponential_distribution(std::string_view val) { return (val == "EXP" || val == "EXPONENTIAL"); }
 
-  static bool is_uniform_distribution(const std::string& val) { return (val == "UNIF" || val == "UNIFORM"); }
+  static bool is_uniform_distribution(std::string_view val) { return (val == "UNIF" || val == "UNIFORM"); }
 
 public:
   LegacyUpdateCb(const std::string& input, double periodicity) : loop(periodicity > 0)
