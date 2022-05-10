@@ -55,8 +55,7 @@ extern MV2_Gather_function_ptr MV2_Gather_intra_node_function;
 #define TEMP_BUF_HAS_NO_DATA (false)
 #define TEMP_BUF_HAS_DATA (true)
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 /* sendbuf           - (in) sender's buffer
  * sendcnt           - (in) sender's element count
@@ -394,6 +393,4 @@ int gather__mvapich2_two_level(const void *sendbuf,
 
     return (mpi_errno);
 }
-}
-}
-
+} // namespace simgrid::smpi

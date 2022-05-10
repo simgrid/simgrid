@@ -43,8 +43,7 @@
  * synchronous guarantee made by last ring of sends are synchronous
  *
  */
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 int barrier__ompi_doublering(MPI_Comm comm)
 {
     int rank, size;
@@ -301,5 +300,4 @@ int barrier__ompi_tree(MPI_Comm comm)
     return MPI_SUCCESS;
 }
 
-}
-}
+} // namespace simgrid::smpi

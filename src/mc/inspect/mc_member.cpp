@@ -7,8 +7,7 @@
 #include "src/mc/inspect/mc_dwarf.hpp"
 #include "src/mc/mc_private.hpp"
 
-namespace simgrid {
-namespace dwarf {
+namespace simgrid::dwarf {
 
 /** Resolve snapshot in the process address space
  *
@@ -30,5 +29,4 @@ void* resolve_member(const void* base, const simgrid::mc::Type* /*type*/, const 
   return (void*)stack.top();
 }
 
-} // namespace dwarf
-} // namespace simgrid
+} // namespace simgrid::dwarf

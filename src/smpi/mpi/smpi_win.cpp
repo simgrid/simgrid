@@ -35,8 +35,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_rma, smpi, "Logging specific to SMPI (RMA o
       return MPI_ERR_WIN;                                                                                              \
   }
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 std::unordered_map<int, smpi_key_elem> Win::keyvals_;
 int Win::keyval_id_=0;
 
@@ -684,5 +683,4 @@ void Win::set_errhandler(MPI_Errhandler errhandler)
   if (errhandler_ != MPI_ERRHANDLER_NULL)
     errhandler_->ref();
 }
-} // namespace smpi
-} // namespace simgrid
+} // namespace simgrid::smpi

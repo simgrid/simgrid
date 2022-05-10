@@ -17,9 +17,7 @@ extern JavaVM* __java_vm;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(java, "MSG for Java(TM)");
 
-namespace simgrid {
-namespace kernel {
-namespace context {
+namespace simgrid::kernel::context {
 
 JavaContextFactory::JavaContextFactory() : ContextFactory()
 {
@@ -77,4 +75,4 @@ void JavaContext::stop()
   simgrid::ForcefulKillException::do_throw(); // clean RAII variables with the dedicated exception
 }
 
-}}} // namespace simgrid::kernel::context
+} // namespace simgrid::kernel::context

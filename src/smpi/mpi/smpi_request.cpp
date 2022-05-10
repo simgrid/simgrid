@@ -36,8 +36,7 @@ std::vector<s_smpi_factor_t> smpi_ois_values;
 
 extern std::function<void(simgrid::kernel::activity::CommImpl*, void*, size_t)> smpi_comm_copy_data_callback;
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 Request::Request(const void* buf, int count, MPI_Datatype datatype, aid_t src, aid_t dst, int tag, MPI_Comm comm,
                  unsigned flags, MPI_Op op)
@@ -1355,5 +1354,4 @@ std::vector<MPI_Request> Request::get_nbc_requests() const
 {
   return nbc_requests_;
 }
-}
-}
+} // namespace simgrid::smpi

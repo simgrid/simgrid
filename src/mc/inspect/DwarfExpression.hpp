@@ -25,8 +25,7 @@
  *  Evaluation of DWARF location expressions.
  */
 
-namespace simgrid {
-namespace dwarf {
+namespace simgrid::dwarf {
 
 /** A DWARF expression
  *
@@ -143,7 +142,6 @@ inline void execute(simgrid::dwarf::DwarfExpression const& expression, Expressio
   execute(expression.data(), expression.size(), context, stack);
 }
 
-} // namespace dwarf
-} // namespace simgrid
+} // namespace simgrid::dwarf
 
 #endif

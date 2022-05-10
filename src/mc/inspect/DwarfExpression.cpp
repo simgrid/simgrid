@@ -15,8 +15,7 @@
 #include "src/mc/inspect/mc_dwarf.hpp"
 #include "src/mc/mc_private.hpp"
 
-namespace simgrid {
-namespace dwarf {
+namespace simgrid::dwarf {
 
 void execute(const Dwarf_Op* ops, std::size_t n, const ExpressionContext& context, ExpressionStack& stack)
 {
@@ -210,5 +209,4 @@ void execute(const Dwarf_Op* ops, std::size_t n, const ExpressionContext& contex
   }
 }
 
-} // namespace dwarf
-} // namespace simgrid
+} // namespace simgrid::dwarf

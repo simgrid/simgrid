@@ -65,8 +65,7 @@
   } else                                                                                                               \
     ((void)0)
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 /**
  * \todo This function contains many cases that do not allow for a
@@ -419,5 +418,4 @@ std::vector<VmMap> get_memory_map(pid_t pid)
   return ret;
 }
 
-}
-}
+} // namespace simgrid::xbt

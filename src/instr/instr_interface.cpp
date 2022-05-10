@@ -75,8 +75,7 @@ static void instr_user_srcdst_variable(double time, const std::string& src, cons
     instr_user_variable(time, link->get_cname(), variable, "LINK", value, what, "", &user_link_variables);
 }
 
-namespace simgrid {
-namespace instr {
+namespace simgrid::instr {
 /* for host variables */
 /** @brief Declare a new user variable associated to hosts.
  *
@@ -331,8 +330,7 @@ const std::set<std::string, std::less<>>& get_tracing_categories()
   return created_categories;
 }
 
-} // namespace instr
-} // namespace simgrid
+} // namespace simgrid::instr
 
 static xbt_dynar_t instr_set_to_dynar(const std::set<std::string, std::less<>>& filter) // XBT_ATTRIB_DEPRECATED_v334
 {

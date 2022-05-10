@@ -581,8 +581,7 @@ static void MPI_I_do_op(void* b1, void* b2, void* rslt, int cnt, MPIM_Datatype d
 }
 
 REDUCE_LIMITS
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 static int MPI_I_anyReduce(const void* Sendbuf, void* Recvbuf, int count, MPI_Datatype mpi_datatype, MPI_Op mpi_op,
                            int root, MPI_Comm comm, bool is_all)
 {
@@ -1024,5 +1023,4 @@ int allreduce__rab(const void* Sendbuf, void* Recvbuf, int count, MPI_Datatype d
 {
   return MPI_I_anyReduce(Sendbuf, Recvbuf, count, datatype, op, -1, comm, true);
 }
-}
-}
+} // namespace simgrid::smpi

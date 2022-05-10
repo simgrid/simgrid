@@ -34,8 +34,7 @@ It attaches an extension to each host to store some data, and places callbacks i
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(host_load, kernel, "Logging specific to the HostLoad plugin");
 
-namespace simgrid {
-namespace plugin {
+namespace simgrid::plugin {
 
 static const double activity_uninitialized_remaining_cost = -1;
 
@@ -190,8 +189,7 @@ void HostLoad::reset()
   current_flops_   = host_->get_load();
   current_speed_   = host_->get_speed();
 }
-} // namespace plugin
-} // namespace simgrid
+} // namespace simgrid::plugin
 
 using simgrid::plugin::HostLoad;
 

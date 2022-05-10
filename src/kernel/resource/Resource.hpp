@@ -17,9 +17,7 @@
 
 #include <string>
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 /** @ingroup SURF_interface
  * @brief SURF resource interface class
@@ -110,9 +108,7 @@ public:
   bool is_used() const override { return model_->get_maxmin_system()->constraint_used(constraint_); }
 };
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 
 namespace std {
 template <> class hash<simgrid::kernel::resource::Resource> {

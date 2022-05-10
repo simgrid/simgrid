@@ -13,9 +13,7 @@
 
 #include <string>
 
-namespace simgrid {
-namespace kernel {
-namespace actor {
+namespace simgrid::kernel::actor {
 
 /* All the observers of Mutex transitions are very similar, so implement them all together in this class */
 class MutexObserver final : public SimcallObserver {
@@ -78,8 +76,6 @@ public:
   double get_timeout() const { return timeout_; }
 };
 
-} // namespace actor
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::actor
 
 #endif

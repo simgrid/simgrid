@@ -97,10 +97,7 @@ static MPI_Datatype parse_datatype(const simgrid::xbt::ReplayAction& action, uns
   return i < action.size() ? simgrid::smpi::Datatype::decode(action[i]) : simgrid::smpi::replay::MPI_DEFAULT_TYPE;
 }
 
-namespace simgrid {
-namespace smpi {
-
-namespace replay {
+namespace simgrid::smpi::replay {
 MPI_Datatype MPI_DEFAULT_TYPE;
 
 class RequestStorage {
@@ -801,8 +798,7 @@ void AllToAllVAction::kernel(simgrid::xbt::ReplayAction&)
 
   TRACE_smpi_comm_out(get_pid());
 }
-} // Replay Namespace
-}} // namespace simgrid::smpi
+} // namespace simgrid::smpi::replay
 
 static std::unordered_map<aid_t, simgrid::smpi::replay::RequestStorage> storage;
 /** @brief Only initialize the replay, don't do it for real */

@@ -19,9 +19,7 @@
 #include "src/internal_config.h"
 #include "src/kernel/context/ContextSwapped.hpp"
 
-namespace simgrid {
-namespace kernel {
-namespace context {
+namespace simgrid::kernel::context {
 
 class UContext : public SwappedContext {
 public:
@@ -37,8 +35,6 @@ class UContextFactory : public SwappedContextFactory {
 public:
   UContext* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override;
 };
-} // namespace context
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::context
 
 #endif

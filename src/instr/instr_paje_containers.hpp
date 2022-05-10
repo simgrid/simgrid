@@ -9,8 +9,7 @@
 #include "src/instr/instr_private.hpp"
 #include <string>
 
-namespace simgrid {
-namespace instr {
+namespace simgrid::instr {
 class Type;
 class LinkType;
 class StateType;
@@ -75,6 +74,5 @@ class HostContainer : public Container {
 public:
   HostContainer(s4u::Host const& host, NetZoneContainer* parent);
 };
-} // namespace instr
-} // namespace simgrid
+} // namespace simgrid::instr
 #endif

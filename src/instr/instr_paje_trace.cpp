@@ -13,8 +13,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr, "tracing event system");
 
-namespace simgrid {
-namespace instr {
+namespace simgrid::instr {
 static std::vector<PajeEvent*> buffer;
 
 double last_timestamp_to_dump = 0;
@@ -65,5 +64,4 @@ void PajeEvent::insert_into_buffer()
   buffer.insert(i.base(), this);
 }
 
-} // namespace instr
-} // namespace simgrid
+} // namespace simgrid::instr

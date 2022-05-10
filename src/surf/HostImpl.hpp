@@ -13,9 +13,7 @@
 
 #include <vector>
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 /*********
  * Model *
  *********/
@@ -104,8 +102,6 @@ public:
       function(actor);
   }
 };
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 
 #endif /* HOST_INTERFACE_HPP */

@@ -10,9 +10,7 @@
 #ifndef DISK_S19_HPP_
 #define DISK_S19_HPP_
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 /***********
  * Classes *
@@ -59,7 +57,5 @@ public:
   void update_remains_lazy(double now) override;
 };
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 #endif /* DISK_S19_HPP_ */

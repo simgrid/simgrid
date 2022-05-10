@@ -10,8 +10,7 @@
 
 #include "src/mc/mc_forward.hpp"
 
-namespace simgrid {
-namespace dwarf {
+namespace simgrid::dwarf {
 
 XBT_PRIVATE const char* attrname(int attr);
 XBT_PRIVATE const char* tagname(int tag);
@@ -22,7 +21,6 @@ XBT_PRIVATE void* resolve_member(const void* base, const simgrid::mc::Type* type
 XBT_PRIVATE
 int dwarf_register_to_libunwind(int dwarf_register);
 
-} // namespace dwarf
-} // namespace simgrid
+} // namespace simgrid::dwarf
 
 #endif

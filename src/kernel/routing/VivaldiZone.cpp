@@ -15,8 +15,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_vivaldi, ker_routing, "Kernel Vivaldi Routing");
 
 namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace kernel::routing {
 
 namespace vivaldi {
 
@@ -96,8 +95,7 @@ void VivaldiZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rout
   }
 }
 
-} // namespace routing
-} // namespace kernel
+} // namespace kernel::routing
 
 namespace s4u {
 NetZone* create_vivaldi_zone(const std::string& name)

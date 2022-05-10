@@ -18,9 +18,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_context);
 
-namespace simgrid {
-namespace kernel {
-namespace context {
+namespace simgrid::kernel::context {
 
 // ThreadContextFactory
 
@@ -215,6 +213,4 @@ XBT_PRIVATE ContextFactory* thread_factory()
   XBT_VERB("Activating thread context factory");
   return new ThreadContextFactory();
 }
-} // namespace context
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::context

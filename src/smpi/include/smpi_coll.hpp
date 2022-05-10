@@ -46,8 +46,7 @@
 #define COLL_BARRIER_SIG barrier, int,                                                                                 \
     (MPI_Comm comm)
 
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 
 struct s_mpi_coll_description_t {
   std::string name;
@@ -337,6 +336,5 @@ int barrier__mvapich2 (MPI_Comm comm);
 int barrier__impi(MPI_Comm comm);
 int barrier__automatic(MPI_Comm comm);
 
-}
-}
+} // namespace simgrid::smpi
 #endif

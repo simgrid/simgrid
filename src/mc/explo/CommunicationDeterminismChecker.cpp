@@ -16,8 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_determinism, mc, "Logging specific to MC communication determinism detection");
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 enum class CallType { NONE, SEND, RECV, WAIT, WAITANY };
 enum class CommPatternDifference { NONE, TYPE, MBOX, TAG, SRC_PROC, DST_PROC, DATA_SIZE };
@@ -370,5 +369,4 @@ Exploration* create_communication_determinism_checker(Session* session)
   return new DFSExplorer(session);
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

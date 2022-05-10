@@ -11,9 +11,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_actor);
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 SleepImpl& SleepImpl::set_host(s4u::Host* host)
 {
@@ -71,6 +69,4 @@ void SleepImpl::finish()
     }
   }
 }
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity

@@ -10,9 +10,7 @@
 #include "simgrid/kernel/ProfileBuilder.hpp"
 #include <vector>
 
-namespace simgrid {
-namespace kernel {
-namespace profile {
+namespace simgrid::kernel::profile {
 
 enum class Distribution { EXP, NORM, UNIF, DET };
 
@@ -38,8 +36,6 @@ private:
   static double draw(Distribution law, std::vector<double> params);
 };
 
-} // namespace profile
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::profile
 
 #endif

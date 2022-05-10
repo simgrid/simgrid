@@ -29,8 +29,7 @@
 
 XBT_LOG_EXTERNAL_CATEGORY(xbt_parmap);
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 /** @addtogroup XBT_parmap
  * @ingroup XBT_misc
@@ -419,7 +418,6 @@ template <typename T> void Parmap<T>::BusyWaitSynchro::worker_wait(unsigned roun
 }
 
 /** @} */
-}
-}
+} // namespace simgrid::xbt
 
 #endif

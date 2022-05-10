@@ -13,9 +13,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_synchro, kernel,
                                 "Kernel synchronization activity (lock/acquire on a mutex, semaphore or condition)");
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 SynchroImpl& SynchroImpl::set_host(s4u::Host* host)
 {
@@ -87,6 +85,4 @@ void SynchroImpl::finish()
   simcall->issuer_->simcall_answer();
 }
 
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity

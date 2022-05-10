@@ -11,9 +11,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
  * Model *
  *********/
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 SplitDuplexLinkImpl::SplitDuplexLinkImpl(const std::string& name, StandardLinkImpl* link_up,
                                          StandardLinkImpl* link_down)
@@ -93,6 +91,4 @@ void SplitDuplexLinkImpl::set_concurrency_limit(int limit) const
   link_down_->set_concurrency_limit(limit);
 }
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource

@@ -22,9 +22,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_utils, smpi, "Logging specific to SMPI (uti
 extern std::string surf_parsed_filename;
 extern int surf_parse_lineno;
 
-namespace simgrid {
-namespace smpi {
-namespace utils {
+namespace simgrid::smpi::utils {
 
 double total_benched_time=0;
 unsigned long total_malloc_size=0;
@@ -367,6 +365,4 @@ int check_collectives_ordering(MPI_Comm comm, const std::string& call)
   }
   return MPI_SUCCESS;
 }
-}
-}
-} // namespace simgrid
+} // namespace simgrid::smpi::utils

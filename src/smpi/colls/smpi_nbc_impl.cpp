@@ -8,8 +8,7 @@
 #include "colls_private.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 int colls::ibarrier(MPI_Comm comm, MPI_Request* request, int external)
 {
@@ -550,5 +549,4 @@ int colls::ireduce_scatter(const void* sendbuf, void* recvbuf, const int* recvco
   return MPI_SUCCESS;
 }
 
-}
-}
+} // namespace simgrid::smpi

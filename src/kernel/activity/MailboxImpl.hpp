@@ -14,9 +14,7 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 /** @brief Implementation of the s4u::Mailbox */
 
@@ -68,8 +66,6 @@ public:
   bool has_some_done_comm() const { return not done_comm_queue_.empty(); }
   CommImplPtr done_front() const { return done_comm_queue_.front(); }
 };
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity
 
 #endif

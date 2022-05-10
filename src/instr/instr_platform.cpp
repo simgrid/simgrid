@@ -203,8 +203,7 @@ void instr_new_value_for_user_state_type(const std::string& type_name, const cha
   recursiveNewValueForUserStateType(type_name, value, color, simgrid::instr::Container::get_root()->get_type());
 }
 
-namespace simgrid {
-namespace instr {
+namespace simgrid::instr {
 
 /** @brief Creates a file with the topology of the platform file used for the simulator.
  *
@@ -505,5 +504,4 @@ void define_callbacks()
         [](s4u::Host const& host) { Container::by_name(host.get_name())->remove_from_parent(); });
   }
 }
-} // namespace instr
-} // namespace simgrid
+} // namespace simgrid::instr

@@ -11,8 +11,7 @@
 #include "src/kernel/actor/SynchroObserver.hpp"
 #include "src/mc/mc_replay.hpp"
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 /** @brief Blocks the calling actor until the mutex can be obtained */
 void Mutex::lock()
@@ -72,8 +71,7 @@ void intrusive_ptr_release(const Mutex* mutex)
   intrusive_ptr_release(mutex->pimpl_);
 }
 
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 /* **************************** Public C interface *************************** */
 sg_mutex_t sg_mutex_init()

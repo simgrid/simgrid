@@ -28,8 +28,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(Api, mc, "Logging specific to MC Facade APIs ");
 XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 simgrid::mc::Exploration* Api::initialize(char** argv, simgrid::mc::ExplorationAlgorithm algo)
 {
@@ -183,5 +182,4 @@ xbt_automaton_state_t Api::get_automaton_transition_dst(xbt_dynar_t const& dynar
   return transition->dst;
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

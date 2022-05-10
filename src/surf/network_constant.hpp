@@ -8,9 +8,7 @@
 
 #include "src/kernel/resource/NetworkModel.hpp"
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 class NetworkConstantModel : public NetworkModel {
 public:
@@ -29,8 +27,6 @@ public:
   void update_remains_lazy(double now) override;
 };
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 
 #endif /* NETWORK_CONSTANT_HPP_ */

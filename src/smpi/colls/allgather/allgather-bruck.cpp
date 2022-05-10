@@ -67,10 +67,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *          Ahmad Faraj.
  ****************************************************************************/
 
-namespace simgrid{
-namespace smpi{
-
-
+namespace simgrid::smpi {
 
 int allgather__bruck(const void *send_buff, int send_count,
                      MPI_Datatype send_type, void *recv_buff,
@@ -137,6 +134,4 @@ int allgather__bruck(const void *send_buff, int send_count,
   return MPI_SUCCESS;
 }
 
-
-}
-}
+} // namespace simgrid::smpi

@@ -9,9 +9,7 @@
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "xbt/base.h"
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 /***********
  * Classes *
@@ -68,8 +66,6 @@ public:
   int requested_core() const { return requested_core_; }
 };
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 
 #endif

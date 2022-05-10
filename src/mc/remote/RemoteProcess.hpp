@@ -18,8 +18,7 @@
 #include <libunwind.h>
 #include <vector>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 class ActorInformation {
 public:
@@ -253,7 +252,6 @@ public:
 
 /** Open a FD to a remote process memory (`/dev/$pid/mem`) */
 XBT_PRIVATE int open_vm(pid_t pid, int flags);
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

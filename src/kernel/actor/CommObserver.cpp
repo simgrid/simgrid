@@ -14,9 +14,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(obs_comm, mc_observer, "Logging specific to the Communication simcalls observation");
 
-namespace simgrid {
-namespace kernel {
-namespace actor {
+namespace simgrid::kernel::actor {
 
 ActivityTestanySimcall::ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities)
     : ResultingSimcall(actor, -1), activities_(activities)
@@ -160,6 +158,4 @@ void CommIrecvSimcall::serialize(std::stringstream& stream) const
   XBT_DEBUG("RecvObserver comm:%p mbox:%u buff:%p tag:%d", comm_, mbox_->get_id(), dst_buff_, tag_);
 }
 
-} // namespace actor
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::actor

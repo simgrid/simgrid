@@ -63,9 +63,7 @@ void smx_ctx_wrapper(simgrid::kernel::context::SwappedContext* context)
   THROW_IMPOSSIBLE;
 }
 
-namespace simgrid {
-namespace kernel {
-namespace context {
+namespace simgrid::kernel::context {
 
 /* thread-specific storage for the worker's context */
 thread_local SwappedContext* SwappedContext::worker_context_ = nullptr;
@@ -298,6 +296,4 @@ void SwappedContext::suspend()
   this->swap_into(next_context);
 }
 
-} // namespace context
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::context

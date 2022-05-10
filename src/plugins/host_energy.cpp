@@ -115,8 +115,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(host_energy, kernel, "Logging specific to the ho
 // Forwards declaration needed to make this function a friend (because friends have external linkage by default)
 static void on_simulation_end();
 
-namespace simgrid {
-namespace plugin {
+namespace simgrid::plugin {
 
 class PowerRange {
 public:
@@ -391,8 +390,7 @@ void HostEnergy::init_watts_range_list()
 
   has_pstate_power_values_ = true;
 }
-} // namespace plugin
-} // namespace simgrid
+} // namespace simgrid::plugin
 
 using simgrid::plugin::HostEnergy;
 

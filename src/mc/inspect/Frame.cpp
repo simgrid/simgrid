@@ -10,8 +10,7 @@
 
 #include "src/mc/inspect/Frame.hpp"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 void* Frame::frame_base(unw_cursor_t& unw_cursor) const
 {
@@ -32,5 +31,4 @@ void* Frame::frame_base(unw_cursor_t& unw_cursor) const
     xbt_die("Unexpected location type");
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

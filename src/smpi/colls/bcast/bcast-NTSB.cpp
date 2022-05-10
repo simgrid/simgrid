@@ -7,8 +7,7 @@
 #include "../colls_private.hpp"
 
 int bcast_NTSB_segment_size_in_byte = 8192;
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 int bcast__NTSB(void *buf, int count, MPI_Datatype datatype,
                 int root, MPI_Comm comm)
 {
@@ -172,5 +171,4 @@ int bcast__NTSB(void *buf, int count, MPI_Datatype datatype,
   return MPI_SUCCESS;
 }
 
-}
-}
+} // namespace simgrid::smpi

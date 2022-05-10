@@ -8,8 +8,7 @@
 
 #include "xbt/base.h"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 enum class ReductionMode {
   unset,
@@ -18,7 +17,6 @@ enum class ReductionMode {
 };
 
 extern XBT_PRIVATE simgrid::mc::ReductionMode reduction_mode;
-}
-}
+} // namespace simgrid::mc
 
 #endif

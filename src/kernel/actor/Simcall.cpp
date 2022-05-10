@@ -12,9 +12,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_simcall, kernel, "transmuting from user request into kernel handlers");
 
-namespace simgrid {
-namespace kernel {
-namespace actor {
+namespace simgrid::kernel::actor {
 
 /** @private
  * @brief (in kernel mode) unpack the simcall and activate the handler
@@ -51,6 +49,4 @@ const char* Simcall::get_cname() const
   }
 }
 
-} // namespace actor
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::actor

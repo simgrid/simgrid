@@ -12,8 +12,7 @@
 #include <string>
 #include <map>
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 class Info : public F2C{
   std::map<std::string, std::string, std::less<>> map_;
@@ -34,7 +33,6 @@ public:
   static Info* f2c(int id);
 };
 
-}
-}
+} // namespace simgrid::smpi
 
 #endif

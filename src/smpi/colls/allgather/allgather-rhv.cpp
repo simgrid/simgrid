@@ -6,9 +6,7 @@
 
 #include "../colls_private.hpp"
 
-namespace simgrid{
-namespace smpi{
-
+namespace simgrid::smpi {
 
 // now only work with power of two processes
 
@@ -100,6 +98,4 @@ allgather__rhv(const void *sbuf, int send_count,
   return MPI_SUCCESS;
 }
 
-
-}
-}
+} // namespace simgrid::smpi

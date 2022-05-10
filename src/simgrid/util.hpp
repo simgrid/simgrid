@@ -9,8 +9,7 @@
 
 #include <xbt/base.h>
 
-namespace simgrid {
-namespace util {
+namespace simgrid::util {
 
 /** Find a pointer to a value stores in a map (or nullptr) */
 template<typename C, typename K>
@@ -35,7 +34,6 @@ typename C::mapped_type const* find_map_ptr(C const& c, K const& k)
     return &i->second;
 }
 
-} // namespace util
-} // namespace simgrid
+} // namespace simgrid::util
 
 #endif

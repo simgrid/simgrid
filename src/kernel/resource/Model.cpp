@@ -8,9 +8,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_resource);
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 Model::Model(const std::string& name) : name_(name)
 {
@@ -181,6 +179,4 @@ void Model::update_actions_state_full(double /*now*/, double /*delta*/)
   THROW_UNIMPLEMENTED;
 }
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource

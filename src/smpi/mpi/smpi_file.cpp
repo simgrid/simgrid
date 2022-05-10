@@ -23,8 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_io, smpi, "Logging specific to SMPI (RMA op
 
 MPI_Errhandler SMPI_default_File_Errhandler =  _smpi_cfg_default_errhandler_is_error ? MPI_ERRORS_ARE_FATAL : MPI_ERRORS_RETURN;;
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 File::File(MPI_Comm comm, const char* filename, int amode, MPI_Info info) : comm_(comm), flags_(amode), info_(info)
 {
@@ -345,5 +344,4 @@ File* File::f2c(int id)
 {
   return static_cast<File*>(F2C::f2c(id));
 }
-} // namespace smpi
-} // namespace simgrid
+} // namespace simgrid::smpi

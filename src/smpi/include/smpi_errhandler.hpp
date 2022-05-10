@@ -9,9 +9,7 @@
 #include "smpi_f2c.hpp"
 #include <smpi/smpi.h>
 
-
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 class Errhandler: public F2C {
   private:
@@ -32,7 +30,6 @@ class Errhandler: public F2C {
   static void unref(Errhandler* errhandler);
   static Errhandler* f2c(int id);
 };
-}
-}
+} // namespace simgrid::smpi
 
 #endif

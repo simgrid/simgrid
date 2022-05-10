@@ -14,9 +14,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_observer, mc, "Logging specific to MC simcall observation");
 
-namespace simgrid {
-namespace kernel {
-namespace actor {
+namespace simgrid::kernel::actor {
 
 void SimcallObserver::serialize(std::stringstream& stream) const
 {
@@ -47,6 +45,4 @@ bool ConditionWaitSimcall::is_enabled()
   }
   return true;
 }
-} // namespace actor
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::actor

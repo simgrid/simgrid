@@ -35,9 +35,7 @@ XBT_PRIVATE unsigned char* smpi_get_tmp_recvbuffer(size_t size);
 
 XBT_PRIVATE void log_timed_action(const simgrid::xbt::ReplayAction& action, double clock);
 
-namespace simgrid {
-namespace smpi {
-namespace replay {
+namespace simgrid::smpi::replay {
 extern MPI_Datatype MPI_DEFAULT_TYPE;
 
 class RequestStorage; // Forward decl
@@ -356,8 +354,6 @@ public:
   void kernel(xbt::ReplayAction& action) override;
 };
 
-} // namespace replay
-} // namespace smpi
-} // namespace simgrid
+} // namespace simgrid::smpi::replay
 
 #endif

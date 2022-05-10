@@ -12,9 +12,7 @@
  * Classes *
  ***********/
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 /************
  * Resource *
  ************/
@@ -76,8 +74,6 @@ public:
   void set_concurrency_limit(int limit) const override;
 };
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 
 #endif /* SIMGRID_KERNEL_RESOURCE_STANDARDLINKIMPL_HPP */

@@ -19,8 +19,7 @@
 #include "src/mc/inspect/LocationList.hpp"
 #include "src/mc/mc_forward.hpp"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /** A member of a structure, union
  *
@@ -102,7 +101,6 @@ public:
   simgrid::mc::Type* full_type = nullptr; // The same (but more complete) type
 };
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

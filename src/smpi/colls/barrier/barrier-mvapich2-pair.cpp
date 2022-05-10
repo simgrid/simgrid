@@ -42,8 +42,7 @@
 #include "../coll_tuned_topo.hpp"
 #include "../colls_private.hpp"
 #include "smpi_actor.hpp"
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 int barrier__mvapich2_pair(MPI_Comm comm)
 {
 
@@ -96,5 +95,4 @@ int barrier__mvapich2_pair(MPI_Comm comm)
 
 }
 
-}
-}
+} // namespace simgrid::smpi

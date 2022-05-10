@@ -12,8 +12,7 @@
 #include "xbt/xbt_os_time.h"
 #include <string_view>
 
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 
 class ActorExt {
   double simulated_ = 0 /* Used to time with simulated_start/elapsed */;
@@ -95,7 +94,6 @@ public:
   int set_bsend_buffer(void* buf, int size);
 };
 
-} // namespace smpi
-} // namespace simgrid
+} // namespace simgrid::smpi
 
 #endif

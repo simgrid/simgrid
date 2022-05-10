@@ -11,8 +11,7 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 xbt::signal<void(Io const&)> Io::on_start;
 
 Io::Io(kernel::activity::IoImplPtr pimpl)
@@ -113,5 +112,4 @@ bool Io::is_assigned() const
   return boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->get_disk() != nullptr;
 }
 
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u

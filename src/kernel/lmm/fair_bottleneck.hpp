@@ -8,9 +8,7 @@
 
 #include "src/kernel/lmm/System.hpp"
 
-namespace simgrid {
-namespace kernel {
-namespace lmm {
+namespace simgrid::kernel::lmm {
 
 class XBT_PUBLIC FairBottleneck : public System {
 public:
@@ -20,8 +18,6 @@ private:
   void do_solve() final;
 };
 
-} // namespace lmm
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::lmm
 
 #endif

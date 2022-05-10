@@ -12,8 +12,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_vm, s4u, "S4U virtual machines");
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 xbt::signal<void(VirtualMachine&)> VirtualMachine::on_creation;
 xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_start;
 xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_started;
@@ -158,8 +157,7 @@ void VirtualMachine::end_migration() const
   pimpl_vm_->end_migration();
 }
 
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 /* **************************** Public C interface *************************** */
 

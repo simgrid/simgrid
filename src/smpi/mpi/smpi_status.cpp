@@ -7,8 +7,7 @@
 #include "private.hpp"
 #include "smpi_datatype.hpp"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 void Status::empty(MPI_Status * status)
 {
@@ -41,5 +40,4 @@ int Status::get_count(const MPI_Status* status, const Datatype* datatype)
   return status->count / datatype->size();
 }
 
-}
-}
+} // namespace simgrid::smpi

@@ -10,9 +10,7 @@
 
 #include "smpi_mvapich2_selector_stampede.hpp"
 
-namespace simgrid {
-namespace smpi {
-
+namespace simgrid::smpi {
 
 int alltoall__mvapich2( const void *sendbuf, int sendcount,
                         MPI_Datatype sendtype,
@@ -974,8 +972,7 @@ int scatter__mvapich2(const void *sendbuf,
   return (mpi_errno);
 }
 
-}
-}
+} // namespace simgrid::smpi
 
 void smpi_coll_cleanup_mvapich2()
 {

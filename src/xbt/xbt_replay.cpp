@@ -11,8 +11,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(replay,xbt,"Replay trace reader");
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 static std::ifstream action_fs;
 
@@ -140,8 +139,7 @@ int replay_runner(const char* actor_name, const char* trace_filename)
   }
   return 0;
 }
-}
-}
+} // namespace simgrid::xbt
 
 /**
  * @ingroup XBT_replay

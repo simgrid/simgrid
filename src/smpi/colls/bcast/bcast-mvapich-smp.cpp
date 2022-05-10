@@ -73,8 +73,7 @@ extern int mv2_intra_node_knomial_factor;
 #define mv2_bcast_large_msg            512*1024
 #define mv2_knomial_intra_node_threshold 131072
 #define mv2_scatter_rd_inter_leader_bcast 1
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 int bcast__mvapich2_inter_node(void *buffer,
                                int count,
                                MPI_Datatype datatype,
@@ -380,5 +379,4 @@ int bcast__mvapich2_intra_node(void *buffer,
 
 }
 
-}
-}
+} // namespace simgrid::smpi

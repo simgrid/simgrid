@@ -13,9 +13,7 @@
 
 #include <string>
 
-namespace simgrid {
-namespace kernel {
-namespace actor {
+namespace simgrid::kernel::actor {
 
 class ActivityTestSimcall final : public ResultingSimcall<bool> {
   activity::ActivityImpl* const activity_;
@@ -175,8 +173,6 @@ public:
   auto const& get_copy_data_fun() const { return copy_data_fun_; }
 };
 
-} // namespace actor
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::actor
 
 #endif

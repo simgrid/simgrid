@@ -6,8 +6,7 @@
 
 #include "../colls_private.hpp"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 // Allgather - gather/bcast algorithm
 int allgatherv__GB(const void *send_buff, int send_count,
@@ -28,5 +27,4 @@ int allgatherv__GB(const void *send_buff, int send_count,
   return MPI_SUCCESS;
 }
 
-}
-}
+} // namespace simgrid::smpi

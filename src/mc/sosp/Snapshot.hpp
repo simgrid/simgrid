@@ -54,8 +54,7 @@ struct XBT_PRIVATE s_mc_snapshot_stack_t {
 using mc_snapshot_stack_t       = s_mc_snapshot_stack_t*;
 using const_mc_snapshot_stack_t = const s_mc_snapshot_stack_t*;
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
@@ -91,7 +90,6 @@ private:
   void snapshot_regions(RemoteProcess* process);
   void snapshot_stacks(RemoteProcess* process);
 };
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

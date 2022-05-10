@@ -17,9 +17,7 @@
  * Classes *
  ***********/
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 class XBT_PRIVATE NetworkCm02Model;
 class XBT_PRIVATE NetworkCm02Action;
@@ -90,7 +88,5 @@ public:
   using NetworkAction::NetworkAction;
   void update_remains_lazy(double now) override;
 };
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 #endif /* SURF_NETWORK_CM02_HPP_ */

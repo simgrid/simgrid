@@ -13,8 +13,7 @@
 #include "src/instr/instr_private.hpp"
 #include "src/msg/msg_private.hpp"
 
-namespace simgrid {
-namespace msg {
+namespace simgrid::msg {
 
 bool Comm::test()
 {
@@ -60,8 +59,7 @@ msg_error_t Comm::wait_for(double timeout)
 
   return status_;
 }
-} // namespace msg
-} // namespace simgrid
+} // namespace simgrid::msg
 
 /**
  * @brief Checks whether a communication is done, and if yes, finalizes it.

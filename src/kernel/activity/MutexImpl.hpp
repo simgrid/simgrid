@@ -11,9 +11,7 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include <boost/intrusive/list.hpp>
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 /** Mutex Acquisition: the act / process of acquiring the mutex.
  *
@@ -98,7 +96,5 @@ public:
 
   s4u::Mutex& mutex() { return piface_; }
 };
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity
 #endif

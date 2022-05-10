@@ -10,8 +10,7 @@
 #include <cstdarg>
 #include <cstdio>
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 #if SIMGRID_HAVE_MC
 
@@ -52,5 +51,4 @@ std::string string_printf(const char *fmt, ...)
   return res;
 }
 
-}
-}
+} // namespace simgrid::xbt

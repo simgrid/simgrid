@@ -20,9 +20,7 @@ simgrid::config::Flag<int>
 simgrid::config::Flag<double> cfg_bmf_precision{"bmf/precision",
                                                 "Numerical precision used when computing resource sharing", 1E-12};
 
-namespace simgrid {
-namespace kernel {
-namespace lmm {
+namespace simgrid::kernel::lmm {
 
 AllocationGenerator::AllocationGenerator(Eigen::MatrixXd A) : A_(std::move(A)), alloc_(A_.cols(), 0)
 {
@@ -514,6 +512,4 @@ template <class CnstList> void BmfSystem::bmf_solve(const CnstList& cnst_list)
   }
 }
 
-} // namespace lmm
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::lmm

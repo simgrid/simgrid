@@ -12,8 +12,7 @@
 
 #include <functional>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /** A model-checking session
  *
@@ -55,7 +54,6 @@ public:
 
   bool actor_is_enabled(aid_t pid) const;
 };
-}
-}
+} // namespace simgrid::mc
 
 #endif

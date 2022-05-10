@@ -11,9 +11,7 @@
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid ::kernel::resource {
 
 class NetworkNS3Model : public NetworkModel {
 public:
@@ -61,8 +59,6 @@ public:
   double last_sent_ = 0;
 };
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 
 #endif /* NETWORK_NS3_HPP_ */

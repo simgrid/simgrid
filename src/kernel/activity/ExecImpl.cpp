@@ -17,9 +17,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_cpu, kernel, "Kernel cpu-related synchronization");
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 ExecImpl::ExecImpl()
 {
@@ -256,6 +254,4 @@ ActivityImpl* ExecImpl::migrate(s4u::Host* to)
  *************/
 xbt::signal<void(ExecImpl const&, s4u::Host*)> ExecImpl::on_migration;
 
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity

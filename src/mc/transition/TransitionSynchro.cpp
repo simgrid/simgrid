@@ -13,8 +13,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_synchro, mc_transition, "Logging specific to MC synchronization transitions");
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 std::string BarrierTransition::to_string(bool verbose) const
 {
@@ -148,5 +147,4 @@ bool SemaphoreTransition::depends(const Transition* o) const
   return false; // semaphores are INDEP with non-semaphore transitions
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

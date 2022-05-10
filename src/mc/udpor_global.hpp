@@ -10,8 +10,7 @@
 #include <queue>
 #include <string_view>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 class UnfoldingEvent;
 using EventSet = std::deque<UnfoldingEvent*>;
@@ -94,6 +93,5 @@ private:
   bool transition_is_ISend(const UnfoldingEvent* testedEvt, const UnfoldingEvent* SdRcEvt) const;
   bool check_tr_concern_same_comm(bool& chk1, bool& chk2, UnfoldingEvent* evt1, UnfoldingEvent* evt2) const;
 };
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 #endif

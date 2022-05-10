@@ -63,8 +63,7 @@
     return (min_coll != -1) ? MPI_SUCCESS : MPI_ERR_INTERN;                                                            \
   }
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 COLL_APPLY(AUTOMATIC_COLL_BENCH, COLL_ALLGATHERV_SIG, (send_buff, send_count, send_type, recv_buff, recv_count, recv_disps, recv_type, comm))
 COLL_APPLY(AUTOMATIC_COLL_BENCH, COLL_ALLREDUCE_SIG, (sbuf, rbuf, rcount, dtype, op, comm))
@@ -78,5 +77,4 @@ COLL_APPLY(AUTOMATIC_COLL_BENCH, COLL_REDUCE_SCATTER_SIG ,(sbuf,rbuf, rcounts,dt
 COLL_APPLY(AUTOMATIC_COLL_BENCH, COLL_SCATTER_SIG ,(sendbuf, sendcount, sendtype,recvbuf, recvcount, recvtype,root, comm))
 COLL_APPLY(AUTOMATIC_COLL_BENCH, COLL_BARRIER_SIG,(comm))
 
-}
-}
+} // namespace simgrid::smpi

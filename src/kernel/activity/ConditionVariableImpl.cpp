@@ -13,9 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_condition, ker_synchro, "Condition variables
 
 /********************************* Condition **********************************/
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 /**
  * @brief Signalizes a condition.
@@ -98,6 +96,4 @@ void intrusive_ptr_release(ConditionVariableImpl* cond)
     delete cond;
   }
 }
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity

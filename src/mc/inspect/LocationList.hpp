@@ -16,8 +16,7 @@
 #include <cstdint>
 #include <vector>
 
-namespace simgrid {
-namespace dwarf {
+namespace simgrid::dwarf {
 
 /** A DWARF expression with optional validity constraints */
 class LocationListEntry {
@@ -74,7 +73,6 @@ Location resolve(simgrid::dwarf::LocationList const& locations, simgrid::mc::Obj
 XBT_PRIVATE
 simgrid::dwarf::LocationList location_list(const simgrid::mc::ObjectInformation& info, Dwarf_Attribute& attr);
 
-} // namespace dwarf
-} // namespace simgrid
+} // namespace simgrid::dwarf
 
 #endif

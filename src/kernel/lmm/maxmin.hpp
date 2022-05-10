@@ -8,9 +8,7 @@
 
 #include "src/kernel/lmm/System.hpp"
 
-namespace simgrid {
-namespace kernel {
-namespace lmm {
+namespace simgrid::kernel::lmm {
 
 class XBT_PUBLIC MaxMin : public System {
 public:
@@ -26,8 +24,6 @@ private:
   dyn_light_t saturated_constraints;
 };
 
-} // namespace lmm
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::lmm
 
 #endif

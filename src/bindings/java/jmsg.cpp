@@ -294,9 +294,7 @@ static void java_main(int argc, char* argv[])
   run_jprocess(env, context->jprocess_);
 }
 
-namespace simgrid {
-namespace kernel {
-namespace context {
+namespace simgrid::kernel::context {
 
 /** Run the Java org.simgrid.msg.Process */
 void java_main_jprocess(jobject jprocess)
@@ -308,6 +306,4 @@ void java_main_jprocess(jobject jprocess)
 
   run_jprocess(env, context->jprocess_);
 }
-} // namespace context
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::context

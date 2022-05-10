@@ -18,8 +18,7 @@ This function performs all-reduce operation as follow.
 3) allgather - inter between root of each SMP node
 4) binomial_tree bcast inside each SMP node
 */
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
                             MPI_Datatype dtype, MPI_Op op,
                             MPI_Comm comm)
@@ -193,5 +192,4 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
   smpi_free_tmp_buffer(tmp_buf);
   return MPI_SUCCESS;
 }
-}
-}
+} // namespace simgrid::smpi

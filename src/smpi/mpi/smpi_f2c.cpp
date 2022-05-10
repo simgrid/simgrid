@@ -13,8 +13,7 @@ int mpi_bottom_;
 int mpi_status_ignore_;
 int mpi_statuses_ignore_;
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 std::unique_ptr<F2C::f2c_lookup_type> F2C::f2c_lookup_    = nullptr;
 int F2C::f2c_id_ = 0;
@@ -56,5 +55,4 @@ F2C* F2C::f2c(int id)
     return nullptr;
 }
 
-}
-}
+} // namespace simgrid::smpi

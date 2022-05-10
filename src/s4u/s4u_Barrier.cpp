@@ -13,8 +13,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_barrier, s4u, "S4U barrier");
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 /** @brief Create a new barrier
  *
@@ -67,8 +66,7 @@ void intrusive_ptr_release(Barrier* barrier)
 {
   intrusive_ptr_release(barrier->pimpl_);
 }
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 /* **************************** Public C interface *************************** */
 

@@ -12,9 +12,7 @@
 
 #include <list>
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 /*********
  * Model *
@@ -140,8 +138,6 @@ void add_link_latency(std::vector<StandardLinkImpl*>& result, const std::vector<
 void insert_link_latency(std::vector<StandardLinkImpl*>& result, const std::vector<StandardLinkImpl*>& links,
                          double* latency);
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 
 #endif /* SIMGRID_KERNEL_RESOURCE_NETWORKMODEL_HPP */

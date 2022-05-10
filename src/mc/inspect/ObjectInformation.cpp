@@ -14,8 +14,7 @@
 #include "src/mc/mc_private.hpp"
 #include "xbt/file.hpp"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /* For an executable object, addresses are virtual address (there is no offset) i.e.
  *  \f$\text{virtual address} = \{dwarf address}\f$
@@ -195,5 +194,4 @@ void find_object_address(std::vector<xbt::VmMap> const& maps, ObjectInformation*
   xbt_assert(result->start_exec || result->start_rw || result->start_ro);
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

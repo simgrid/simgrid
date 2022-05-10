@@ -35,8 +35,7 @@ int MC_random(int min, int max)
   return simgrid::kernel::actor::simcall_answered([&observer] { return observer.get_value(); }, &observer);
 }
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 void execute_actors()
 {
@@ -108,5 +107,4 @@ bool request_is_visible(const kernel::actor::Simcall* req)
     return false;
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

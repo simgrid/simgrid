@@ -14,9 +14,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_mailbox, kernel, "Mailbox implementation");
 /*                           Rendez-Vous Points                               */
 /******************************************************************************/
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 unsigned MailboxImpl::next_id_ = 0;
 
@@ -149,6 +147,4 @@ CommImplPtr MailboxImpl::find_matching_comm(CommImplType type,
     comm_queue.erase(iter);
   return comm_cpy;
 }
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity

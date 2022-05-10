@@ -31,8 +31,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
 XBT_EXPORT_NO_IMPORT xbt_cfg_t simgrid_config = nullptr;
 
-namespace simgrid {
-namespace config {
+namespace simgrid::config {
 
 namespace {
 
@@ -448,8 +447,7 @@ void help()
 {
   simgrid_config->help();
 }
-}
-}
+} // namespace simgrid::config
 
 /*----[ Setting ]---------------------------------------------------------*/
 

@@ -10,8 +10,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_resource, instr, "tracing (un)-categorized resource utilization");
 
-namespace simgrid {
-namespace instr {
+namespace simgrid::instr {
 void resource_set_utilization(const char* type, const char* name, const char* resource, const std::string& category,
                               double value, double now, double delta)
 {
@@ -33,5 +32,4 @@ void resource_set_utilization(const char* type, const char* name, const char* re
     container->get_variable(name)->instr_event(now, delta, resource, value);
   }
 }
-} // namespace instr
-} // namespace simgrid
+} // namespace simgrid::instr

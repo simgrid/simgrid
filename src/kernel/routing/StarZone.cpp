@@ -12,8 +12,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_star, ker_routing, "Kernel Star Routing");
 
 namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace kernel::routing {
 StarZone::StarZone(const std::string& name) : ClusterZone(name) {}
 
 void StarZone::add_links_to_route(const std::vector<resource::StandardLinkImpl*>& links, Route* route, double* latency,
@@ -178,8 +177,7 @@ void StarZone::do_seal()
   }
 }
 
-} // namespace routing
-} // namespace kernel
+} // namespace kernel::routing
 
 namespace s4u {
 NetZone* create_star_zone(const std::string& name)

@@ -13,8 +13,7 @@
 #include <functional>
 #include <memory>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 class CheckerSide {
   std::unique_ptr<event_base, decltype(&event_base_free)> base_{nullptr, &event_base_free};
@@ -39,7 +38,6 @@ public:
   void break_loop() const;
 };
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

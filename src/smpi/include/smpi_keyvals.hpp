@@ -38,8 +38,7 @@ struct smpi_key_elem {
   bool delete_attr; // if true, xbt_free(attr) on delete: used by Fortran bindings
 };
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 class Keyval{
   private:
@@ -163,7 +162,6 @@ template <typename T> void Keyval::cleanup_attr(){
   attributes().clear();
 }
 
-}
-}
+} // namespace simgrid::smpi
 
 #endif

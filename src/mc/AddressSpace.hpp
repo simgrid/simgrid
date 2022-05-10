@@ -9,8 +9,7 @@
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/remote/RemotePtr.hpp"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /** Options for read operations
  *
@@ -135,7 +134,6 @@ public:
   }
 };
 
-}
-}
+} // namespace simgrid::mc
 
 #endif

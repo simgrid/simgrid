@@ -8,8 +8,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor, mc, "Logging specific to MC safety verification ");
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 UdporChecker::UdporChecker(Session* session) : Exploration(session) {}
 
@@ -34,5 +33,4 @@ Exploration* create_udpor_checker(Session* session)
   return new UdporChecker(session);
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

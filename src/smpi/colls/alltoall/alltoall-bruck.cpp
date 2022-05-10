@@ -27,9 +27,7 @@
 
 #include "../colls_private.hpp"
 
-namespace simgrid{
-namespace smpi{
-
+namespace simgrid::smpi {
 
 int
 alltoall__bruck(const void *send_buff, int send_count,
@@ -118,5 +116,4 @@ alltoall__bruck(const void *send_buff, int send_count,
   return MPI_SUCCESS;
 }
 
-}
-}
+} // namespace simgrid::smpi

@@ -9,8 +9,7 @@
 
 #include "smpi_datatype.hpp"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 class Type_Contiguous: public Datatype {
   int block_count_;
@@ -93,7 +92,6 @@ public:
   void unserialize(const void* contiguous_vector, void* noncontiguous_vector, int count, MPI_Op op) override;
 };
 
-} // namespace smpi
-} // namespace simgrid
+} // namespace simgrid::smpi
 
 #endif

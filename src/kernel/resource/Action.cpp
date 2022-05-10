@@ -12,9 +12,7 @@
 XBT_LOG_NEW_CATEGORY(kernel, "SimGrid internals");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_resource, kernel, "Resources, modeling the platform performance");
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 Action::Action(Model* model, double cost, bool failed) : Action(model, cost, failed, nullptr) {}
 
@@ -247,6 +245,4 @@ Action* ActionHeap::pop()
   return action;
 }
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource

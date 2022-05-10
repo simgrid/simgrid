@@ -10,9 +10,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 /************
  * Resource *
@@ -94,6 +92,4 @@ void WifiLinkImpl::set_latency(double value)
 {
   xbt_assert(value == 0, "Latency cannot be set for WiFi Links.");
 }
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource

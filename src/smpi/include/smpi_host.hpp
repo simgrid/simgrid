@@ -13,8 +13,7 @@
 #include <vector>
 #include <xbt/Extendable.hpp>
 
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 
 class Host {
   std::vector<s_smpi_factor_t> orecv_parsed_values;
@@ -37,6 +36,5 @@ public:
   double oisend(size_t size, s4u::Host* src, s4u::Host* dst);
 };
 
-}
-}
+} // namespace simgrid::smpi
 #endif

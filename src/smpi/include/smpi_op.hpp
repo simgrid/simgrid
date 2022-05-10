@@ -9,8 +9,7 @@
 
 #include "smpi_info.hpp"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 class Op : public F2C{
   MPI_User_function* func_;
@@ -41,7 +40,6 @@ public:
   static void unref(MPI_Op* op);
 };
 
-}
-}
+} // namespace simgrid::smpi
 
 #endif

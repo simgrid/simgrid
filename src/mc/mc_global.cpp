@@ -31,12 +31,10 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc, "Logging specific to MC (global)");
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 std::vector<double> processes_time;
 
-}
 }
 
 #if SIMGRID_HAVE_MC
@@ -53,9 +51,7 @@ void MC_init_dot_output()
           "digraph graphname{\n fixedsize=true; rankdir=TB; ranksep=.25; edge [fontsize=12]; node [fontsize=10, shape=circle,width=.5 ]; graph [resolution=20, fontsize=10];\n");
 }
 
-
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /* Liveness */
 xbt_automaton_t property_automaton = nullptr;
@@ -88,8 +84,7 @@ void dumpStack(FILE* file, unw_cursor_t* cursor)
   } while (unw_step(cursor));
 }
 
-}
-}
+} // namespace simgrid::mc
 #endif
 
 double MC_process_clock_get(const simgrid::kernel::actor::ActorImpl* process)

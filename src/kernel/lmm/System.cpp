@@ -17,9 +17,7 @@ double sg_maxmin_precision = 1E-5; /* Change this with --cfg=maxmin/precision:VA
 double sg_surf_precision   = 1E-9; /* Change this with --cfg=surf/precision:VALUE */
 int sg_concurrency_limit   = -1;      /* Change this with --cfg=maxmin/concurrency-limit:VALUE */
 
-namespace simgrid {
-namespace kernel {
-namespace lmm {
+namespace simgrid::kernel::lmm {
 
 int Variable::next_rank_   = 1;
 int Constraint::next_rank_ = 1;
@@ -762,6 +760,4 @@ void Constraint::set_sharing_policy(SharingPolicy policy, const s4u::NonLinearRe
   dyn_constraint_cb_ = cb;
 }
 
-} // namespace lmm
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::lmm

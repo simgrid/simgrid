@@ -11,8 +11,7 @@
 #include "src/kernel/actor/SynchroObserver.hpp"
 #include "src/mc/mc_replay.hpp"
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 SemaphorePtr Semaphore::create(unsigned int initial_capacity)
 {
@@ -75,8 +74,7 @@ void intrusive_ptr_release(const Semaphore* sem)
   intrusive_ptr_release(sem->pimpl_);
 }
 
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 /* **************************** Public C interface *************************** */
 /** @brief creates a semaphore object of the given initial capacity */

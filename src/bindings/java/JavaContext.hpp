@@ -15,9 +15,7 @@
 
 #include "jmsg.hpp"
 
-namespace simgrid {
-namespace kernel {
-namespace context {
+namespace simgrid::kernel::context {
 
 class JavaContext;
 class JavacontextFactory;
@@ -47,8 +45,6 @@ public:
 XBT_PRIVATE ContextFactory* java_factory();
 XBT_PRIVATE void java_main_jprocess(jobject process);
 
-} // namespace context
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::context
 
 #endif /* SIMGRID_JAVA_JAVA_CONTEXT_HPP */

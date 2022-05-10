@@ -8,10 +8,7 @@
 
 /*Naive and simple basic alltoall implementation. */
 
-
-namespace simgrid{
-namespace smpi{
-
+namespace simgrid::smpi {
 
 int alltoall__basic_linear(const void *sendbuf, int sendcount, MPI_Datatype sendtype,
                            void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
@@ -63,5 +60,4 @@ int alltoall__basic_linear(const void *sendbuf, int sendcount, MPI_Datatype send
   return err;
 }
 
-}
-}
+} // namespace simgrid::smpi

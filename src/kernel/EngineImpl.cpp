@@ -32,8 +32,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(ker_engine, "Logging specific to Engine (kernel)");
 
-namespace simgrid {
-namespace kernel {
+namespace simgrid::kernel {
 double EngineImpl::now_           = 0.0;
 EngineImpl* EngineImpl::instance_ = nullptr; /* That singleton is awful too. */
 
@@ -72,8 +71,7 @@ static config::Flag<std::string> context_factory_name("contexts/factory",
                                                       (std::string("Possible values: ") + contexts_list()).c_str(),
                                                       context_factories.begin()->first);
 
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel
 
 XBT_ATTRIB_NORETURN static void inthandler(int)
 {
@@ -160,8 +158,7 @@ static void install_segvhandler()
 
 #endif /* _WIN32 */
 
-namespace simgrid {
-namespace kernel {
+namespace simgrid::kernel {
 
 EngineImpl::~EngineImpl()
 {
@@ -743,5 +740,4 @@ double EngineImpl::get_clock()
 {
   return now_;
 }
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel

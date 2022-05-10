@@ -11,9 +11,7 @@
 #include "xbt/virtu.h" /* xbt::cmdline */
 
 extern std::ofstream tracing_file;
-namespace simgrid {
-namespace instr {
-namespace paje {
+namespace simgrid::instr::paje {
 
 void dump_generator_version()
 {
@@ -196,6 +194,4 @@ void dump_header(bool basic, bool display_sizes)
   tracing_file << "%       Value string" << std::endl;
   tracing_file << "%EndEventDef" << std::endl;
 }
-} // namespace paje
-} // namespace instr
-} // namespace simgrid
+} // namespace simgrid::instr::paje

@@ -18,9 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_host, ker_resource, "Host resources agregate
  * Callbacks *t
  *************/
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 /*********
  * Model *
@@ -240,6 +238,4 @@ void HostImpl::seal()
   for (auto const& [_, vm] : vms_)
     vm->seal();
 }
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource

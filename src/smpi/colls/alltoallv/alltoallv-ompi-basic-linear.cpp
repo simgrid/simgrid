@@ -14,8 +14,7 @@
  * differently and so will not have to duplicate code.
  * GEF Oct05 after asking Jeff.
  */
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 int alltoallv__ompi_basic_linear(const void *sbuf, const int *scounts, const int *sdisps,
                                  MPI_Datatype sdtype,
                                  void *rbuf, const int *rcounts, const int *rdisps,
@@ -91,5 +90,4 @@ int alltoallv__ompi_basic_linear(const void *sbuf, const int *scounts, const int
 
   return MPI_SUCCESS;
 }
-}
-}
+} // namespace simgrid::smpi

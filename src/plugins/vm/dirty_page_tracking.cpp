@@ -10,9 +10,7 @@
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
 
-namespace simgrid {
-namespace plugin {
-namespace vm {
+namespace simgrid::plugin::vm {
 class DirtyPageTrackingExt {
   bool dp_tracking_ = false;
   std::map<kernel::activity::ExecImpl const*, double> dp_objs_;
@@ -67,9 +65,7 @@ double DirtyPageTrackingExt::computed_flops_lookup()
 
   return total;
 }
-} // namespace vm
-} // namespace plugin
-} // namespace simgrid
+} // namespace simgrid::plugin::vm
 
 using simgrid::plugin::vm::DirtyPageTrackingExt;
 

@@ -9,8 +9,7 @@
 #include "src/instr/instr_private.hpp"
 #include <string>
 
-namespace simgrid {
-namespace instr {
+namespace simgrid::instr {
 
 class EntityValue {
   long long int id_ = new_paje_id();
@@ -30,7 +29,6 @@ public:
   std::string get_color() const { return color_; }
   Type* get_parent() const { return parent_; }
 };
-} // namespace instr
-} // namespace simgrid
+} // namespace simgrid::instr
 
 #endif

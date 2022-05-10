@@ -19,9 +19,7 @@ static simgrid::config::Flag<std::string> cfg_disk_solver("disk/solver",
                                                           "Set linear equations solver used by disk model", "maxmin",
                                                           &simgrid::kernel::lmm::System::validate_solver);
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 xbt::signal<void(DiskAction const&, Action::State, Action::State)> DiskAction::on_state_change;
 
@@ -179,6 +177,4 @@ void DiskAction::set_state(Action::State new_state)
     on_state_change(*this, previous_state, new_state);
   }
 }
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource

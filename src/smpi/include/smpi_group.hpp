@@ -12,8 +12,7 @@
 #include <map>
 #include <vector>
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 class Group : public F2C{
   /* This is actually a map from int to aid_t. We could use std::map here, but looking up a value there costs
@@ -50,7 +49,6 @@ public:
 
   static Group* f2c(int id);
 };
-}
-}
+} // namespace simgrid::smpi
 
 #endif

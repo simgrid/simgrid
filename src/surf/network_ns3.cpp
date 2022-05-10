@@ -308,8 +308,7 @@ static simgrid::config::Flag<std::string> ns3_seed(
     });
 
 namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace kernel::resource {
 
 NetworkNS3Model::NetworkNS3Model(const std::string& name) : NetworkModel(name)
 {
@@ -570,8 +569,7 @@ void NetworkNS3Action::update_remains_lazy(double /*now*/)
   THROW_IMPOSSIBLE;
 }
 
-} // namespace resource
-} // namespace kernel
+} // namespace kernel::resource
 
 ns3::Ptr<ns3::Node> get_ns3node_from_sghost(const simgrid::s4u::Host* host)
 {

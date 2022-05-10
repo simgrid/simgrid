@@ -106,9 +106,7 @@ static bool is_2dmesh(int num, int* i, int* j)
  * Author: Ahmad Faraj
 ****************************************************************************/
 
-namespace simgrid{
-namespace smpi{
-
+namespace simgrid::smpi {
 
 int
 allgather__2dmesh(const void *send_buff, int send_count, MPI_Datatype
@@ -196,5 +194,4 @@ allgather__2dmesh(const void *send_buff, int send_count, MPI_Datatype
   return MPI_SUCCESS;
 }
 
-}
-}
+} // namespace simgrid::smpi

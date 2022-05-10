@@ -6,9 +6,7 @@
 
 #include "../colls_private.hpp"
 
-namespace simgrid{
-namespace smpi{
-
+namespace simgrid::smpi {
 
 int allgather__loosely_lr(const void *sbuf, int scount,
                           MPI_Datatype stype, void *rbuf,
@@ -137,6 +135,4 @@ if(comm->get_leaders_comm()==MPI_COMM_NULL){
   return MPI_SUCCESS;
 }
 
-
-}
-}
+} // namespace simgrid::smpi

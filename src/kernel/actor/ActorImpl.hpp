@@ -16,9 +16,7 @@
 #include <map>
 #include <memory>
 
-namespace simgrid {
-namespace kernel {
-namespace actor {
+namespace simgrid::kernel::actor {
 class ProcessArg;
 
 /*------------------------- [ ActorIDTrait ] -------------------------*/
@@ -235,8 +233,6 @@ using SynchroList =
 
 XBT_PUBLIC void create_maestro(const std::function<void()>& code);
 
-} // namespace actor
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::actor
 
 #endif

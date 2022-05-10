@@ -10,8 +10,7 @@
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_record.hpp"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 class XBT_PRIVATE UdporChecker : public Exploration {
 public:
@@ -22,7 +21,6 @@ public:
   void log_state() override;
 };
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

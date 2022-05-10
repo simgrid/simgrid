@@ -27,9 +27,7 @@ void surf_disk_model_init_default()
   engine->get_netzone_root()->set_disk_model(disk_model);
 }
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 DiskImpl* DiskS19Model::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
@@ -134,6 +132,4 @@ void DiskS19Action::update_remains_lazy(double /*now*/)
 {
   THROW_IMPOSSIBLE;
 }
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource

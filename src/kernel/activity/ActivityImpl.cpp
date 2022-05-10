@@ -20,9 +20,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_activity, kernel, "Kernel activity-related synchronization");
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 ActivityImpl::~ActivityImpl()
 {
@@ -237,6 +235,4 @@ void intrusive_ptr_release(ActivityImpl* activity)
     delete activity;
   }
 }
-}
-}
-} // namespace simgrid::kernel::activity::
+} // namespace simgrid::kernel::activity

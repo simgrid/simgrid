@@ -12,8 +12,7 @@
 
 #include <mutex>
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 ConditionVariablePtr ConditionVariable::create()
 {
@@ -95,8 +94,7 @@ void intrusive_ptr_release(const ConditionVariable* cond)
   intrusive_ptr_release(cond->pimpl_);
 }
 
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 /* **************************** Public C interface *************************** */
 sg_cond_t sg_cond_init()

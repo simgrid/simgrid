@@ -8,8 +8,7 @@
 
 #include "src/mc/transition/Transition.hpp"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 class RandomTransition : public Transition {
   int min_;
@@ -21,7 +20,6 @@ public:
   bool depends(const Transition* other) const override { return false; } // Independent with any other transition
 };
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

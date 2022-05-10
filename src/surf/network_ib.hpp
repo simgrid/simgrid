@@ -13,9 +13,7 @@
 #include <map>
 #include <vector>
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 class XBT_PRIVATE IBNode;
 
@@ -57,7 +55,5 @@ public:
   static void IB_action_state_changed_callback(NetworkAction& action, Action::State /*previous*/);
   static void IB_comm_start_callback(const activity::CommImpl& comm);
 };
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 #endif

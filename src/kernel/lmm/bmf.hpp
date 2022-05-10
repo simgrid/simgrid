@@ -20,9 +20,7 @@
 
 #include <unordered_set>
 
-namespace simgrid {
-namespace kernel {
-namespace lmm {
+namespace simgrid::kernel::lmm {
 
 /** @brief Generate all combinations of valid allocation */
 class XBT_PUBLIC AllocationGenerator {
@@ -279,8 +277,6 @@ private:
   std::unordered_map<const Constraint*, int> cnst2idx_; //!< Conversely map constraint to index
 };
 
-} // namespace lmm
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::lmm
 
 #endif

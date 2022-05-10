@@ -12,8 +12,7 @@
 #include <sstream>
 #include <string>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 class CommRecvTransition;
 class CommSendTransition;
@@ -133,7 +132,6 @@ public:
 /** Make a new transition from serialized description */
 Transition* deserialize_transition(aid_t issuer, int times_considered, std::stringstream& stream);
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

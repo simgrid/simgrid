@@ -8,9 +8,7 @@
 
 #include "simgrid/forward.h"
 
-namespace simgrid {
-namespace kernel {
-namespace profile {
+namespace simgrid::kernel::profile {
 
 class Event {
 public:
@@ -19,9 +17,7 @@ public:
   resource::Resource* resource;
   bool free_me;
 };
-} // namespace profile
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::profile
 /**
  * @brief Free a trace event structure
  *

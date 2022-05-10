@@ -15,8 +15,7 @@
 #define MAP_POPULATE MAP_PREFAULT_READ
 #endif
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 Region::Region(RegionType region_type, void* start_addr, size_t size)
     : region_type_(region_type), start_addr_(start_addr), size_(size)
@@ -89,8 +88,7 @@ void* Region::read(void* target, const void* addr, std::size_t size) const
   return target;
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 /** Compare memory between snapshots (with known regions)
  *

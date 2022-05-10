@@ -8,8 +8,7 @@
 
 #include "src/mc/transition/Transition.hpp"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 class BarrierTransition : public Transition {
   unsigned bar_;
@@ -40,7 +39,6 @@ public:
   bool depends(const Transition* other) const override;
 };
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

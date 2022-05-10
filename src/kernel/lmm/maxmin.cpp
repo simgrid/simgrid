@@ -7,9 +7,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_lmm);
 
-namespace simgrid {
-namespace kernel {
-namespace lmm {
+namespace simgrid::kernel::lmm {
 
 using dyn_light_t = std::vector<int>;
 
@@ -229,6 +227,4 @@ template <class CnstList> void MaxMin::maxmin_solve(CnstList& cnst_list)
   } while (cnst_light_num > 0);
 }
 
-} // namespace lmm
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::lmm

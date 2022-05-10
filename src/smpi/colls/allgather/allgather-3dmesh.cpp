@@ -92,9 +92,7 @@ static bool is_3dmesh(int num, int* i, int* j, int* k)
  * follows "simple"
  * Author: Ahmad Faraj
 ****************************************************************************/
-namespace simgrid{
-namespace smpi{
-
+namespace simgrid::smpi {
 
 int allgather__3dmesh(const void *send_buff, int send_count,
                       MPI_Datatype send_type, void *recv_buff,
@@ -208,6 +206,4 @@ int allgather__3dmesh(const void *send_buff, int send_count,
   return MPI_SUCCESS;
 }
 
-
-}
-}
+} // namespace simgrid::smpi

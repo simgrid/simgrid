@@ -16,8 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_any, mc_transition, "Logging specific to MC WaitAny / TestAny transitions");
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 TestAnyTransition::TestAnyTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::TESTANY, issuer, times_considered)
@@ -65,5 +64,4 @@ bool WaitAnyTransition::depends(const Transition* other) const
   return transitions_[times_considered_]->depends(other);
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

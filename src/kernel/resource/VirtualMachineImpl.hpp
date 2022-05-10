@@ -14,8 +14,7 @@ namespace simgrid {
 
 extern template class XBT_PUBLIC xbt::Extendable<kernel::resource::VirtualMachineImpl>;
 
-namespace kernel {
-namespace resource {
+namespace kernel::resource {
 
 /************
  * Resource *
@@ -101,8 +100,7 @@ public:
     return nullptr;
   };
 };
-} // namespace resource
-} // namespace kernel
+} // namespace kernel::resource
 } // namespace simgrid
 
 #endif /* VM_INTERFACE_HPP_ */

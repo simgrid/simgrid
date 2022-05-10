@@ -45,8 +45,7 @@ static int alltoall_check_is_3dmesh(int num, int *i, int *j, int *k)
   }
   return 0;
 }
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 int alltoall__3dmesh(const void *send_buff, int send_count,
                      MPI_Datatype send_type,
                      void *recv_buff, int recv_count,
@@ -181,5 +180,4 @@ int alltoall__3dmesh(const void *send_buff, int send_count,
   smpi_free_tmp_buffer(tmp_buff2);
   return MPI_SUCCESS;
 }
-}
-}
+} // namespace simgrid::smpi

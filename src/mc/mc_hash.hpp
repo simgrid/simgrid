@@ -9,14 +9,12 @@
 #include "xbt/base.h"
 #include "src/mc/mc_forward.hpp"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 using hash_type = std::uint64_t;
 
 XBT_PRIVATE hash_type hash(simgrid::mc::Snapshot const& snapshot);
 
-}
-}
+} // namespace simgrid::mc
 
 #endif

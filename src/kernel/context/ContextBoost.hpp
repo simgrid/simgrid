@@ -24,9 +24,7 @@
 #include "src/internal_config.h"
 #include "src/kernel/context/ContextSwapped.hpp"
 
-namespace simgrid {
-namespace kernel {
-namespace context {
+namespace simgrid::kernel::context {
 
 /** @brief Userspace context switching implementation based on Boost.Context */
 class BoostContext : public SwappedContext {
@@ -51,8 +49,6 @@ class BoostContextFactory : public SwappedContextFactory {
 public:
   BoostContext* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override;
 };
-} // namespace context
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::context
 
 #endif

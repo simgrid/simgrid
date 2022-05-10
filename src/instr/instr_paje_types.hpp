@@ -11,8 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace simgrid {
-namespace instr {
+namespace simgrid::instr {
 class ContainerType;
 class EventType;
 
@@ -131,6 +130,5 @@ public:
   void pop_event();
   void pop_event(TIData* extra);
 };
-} // namespace instr
-} // namespace simgrid
+} // namespace simgrid::instr
 #endif

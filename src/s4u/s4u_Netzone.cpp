@@ -14,8 +14,7 @@
 
 #include "src/kernel/resource/NetworkModel.hpp"
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 xbt::signal<void(NetZone const&)> NetZone::on_creation;
 xbt::signal<void(NetZone const&)> NetZone::on_seal;
@@ -200,8 +199,7 @@ kernel::resource::NetworkModelIntf* NetZone::get_network_model() const
   kernel::resource::NetworkModelIntf* model = pimpl_->get_network_model().get();
   return model;
 }
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 /* **************************** Public C interface *************************** */
 

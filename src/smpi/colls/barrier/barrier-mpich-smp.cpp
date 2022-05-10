@@ -15,8 +15,7 @@
 #include "../coll_tuned_topo.hpp"
 #include "../colls_private.hpp"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 int barrier__mpich_smp(MPI_Comm comm)
 {
     int mpi_errno = MPI_SUCCESS;
@@ -63,6 +62,4 @@ int barrier__mpich_smp(MPI_Comm comm)
     return mpi_errno;
 }
 
-}
-}
-
+} // namespace simgrid::smpi

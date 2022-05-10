@@ -16,8 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_hash, mc, "Logging specific to mc_hash");
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 namespace {
 
@@ -49,5 +48,4 @@ hash_type hash(Snapshot const& snapshot)
   return hash.value();
 }
 
-}
-}
+} // namespace simgrid::mc

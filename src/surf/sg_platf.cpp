@@ -31,13 +31,9 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace simgrid::kernel::routing {
 xbt::signal<void(ClusterCreationArgs const&)> on_cluster_creation;
-} // namespace routing
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::routing
 
 static simgrid::kernel::routing::ClusterZoneCreationArgs
     zone_cluster; /* temporary store data for irregular clusters, created with <zone routing="Cluster"> */

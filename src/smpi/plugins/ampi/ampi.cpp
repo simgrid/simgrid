@@ -80,16 +80,10 @@ extern "C" void* _sampi_realloc(void* ptr, size_t size)
   return result;
 }
 
-namespace simgrid {
-namespace smpi {
-namespace plugin {
-namespace ampi {
+namespace simgrid::smpi::plugin::ampi {
 xbt::signal<void(s4u::Actor const&)> on_iteration_in;
 xbt::signal<void(s4u::Actor const&)> on_iteration_out;
-} // namespace ampi
-} // namespace plugin
-} // namespace smpi
-} // namespace simgrid
+} // namespace simgrid::smpi::plugin::ampi
 
 /* FIXME The following contains several times "rank() + 1". This works for one
  * instance, but we need to find a way to deal with this for several instances and

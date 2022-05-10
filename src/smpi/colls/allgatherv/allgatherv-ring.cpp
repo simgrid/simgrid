@@ -64,8 +64,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Author: Ahmad Faraj
  ****************************************************************************/
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 int
 allgatherv__ring(const void *send_buff, int send_count,
@@ -103,5 +102,4 @@ allgatherv__ring(const void *send_buff, int send_count,
   return MPI_SUCCESS;
 }
 
-}
-}
+} // namespace simgrid::smpi

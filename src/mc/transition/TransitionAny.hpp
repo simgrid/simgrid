@@ -12,8 +12,7 @@
 #include <sstream>
 #include <string>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 class TestAnyTransition : public Transition {
   std::vector<Transition*> transitions_;
@@ -37,7 +36,6 @@ public:
   Transition* get_current_transition() const { return transitions_.at(times_considered_); }
 };
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

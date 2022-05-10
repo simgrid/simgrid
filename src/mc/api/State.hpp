@@ -10,8 +10,7 @@
 #include "src/mc/sosp/Snapshot.hpp"
 #include "src/mc/transition/Transition.hpp"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /* A node in the exploration graph (kind-of) */
 class XBT_PRIVATE State : public xbt::Extendable<State> {
@@ -51,7 +50,6 @@ public:
   /* Returns the total amount of states created so far (for statistics) */
   static long get_expanded_states() { return expended_states_; }
 };
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

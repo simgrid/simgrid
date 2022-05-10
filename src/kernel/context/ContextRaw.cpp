@@ -185,9 +185,7 @@ void raw_swapcontext(raw_stack_t* old, raw_stack_t new_context)
 
 // ***** Method definitions
 
-namespace simgrid {
-namespace kernel {
-namespace context {
+namespace simgrid::kernel::context {
 
 // RawContextFactory
 
@@ -221,6 +219,4 @@ ContextFactory* raw_factory()
   XBT_VERB("Using raw contexts. Because the glibc is just not good enough for us.");
   return new RawContextFactory();
 }
-} // namespace context
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::context

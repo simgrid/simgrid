@@ -10,9 +10,7 @@
 
 #include <functional>
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 /** Used to implement mutexes, semaphores and conditions */
 class XBT_PUBLIC SynchroImpl : public ActivityImpl_T<SynchroImpl> {
@@ -33,8 +31,6 @@ public:
   void set_exception(actor::ActorImpl* issuer) override;
   void finish() override;
 };
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity
 
 #endif

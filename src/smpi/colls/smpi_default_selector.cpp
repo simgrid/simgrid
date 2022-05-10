@@ -8,8 +8,7 @@
 #include "colls_private.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 int bcast__default(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm comm)
 {
@@ -131,6 +130,4 @@ int alltoallv__default(const void *sendbuf, const int *sendcounts, const int *se
   return Request::wait(&request, MPI_STATUS_IGNORE);
 }
 
-}
-}
-
+} // namespace simgrid::smpi

@@ -12,8 +12,7 @@
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_channel, s4u, "S4U Communication Mailboxes");
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 const xbt::string& Mailbox::get_name() const
 {
@@ -140,8 +139,7 @@ void Mailbox::clear()
   kernel::actor::simcall_answered([this]() { this->pimpl_->clear(); });
 }
 
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 /* **************************** Public C interface *************************** */
 sg_mailbox_t sg_mailbox_by_name(const char* alias)

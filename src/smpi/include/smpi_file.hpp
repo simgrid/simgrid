@@ -16,8 +16,7 @@
 
 XBT_LOG_EXTERNAL_CATEGORY(smpi_pmpi);
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 class File : public F2C{
   MPI_Comm comm_;
   int flags_;
@@ -194,7 +193,6 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
   smpi_free_tmp_buffer(sendbuf);
   return MPI_SUCCESS;
 }
-}
-}
+} // namespace simgrid::smpi
 
 #endif

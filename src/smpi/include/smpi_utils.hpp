@@ -21,9 +21,7 @@ struct s_smpi_factor_t {
   std::vector<double> values;
 };
 
-namespace simgrid {
-namespace smpi {
-namespace utils {
+namespace simgrid::smpi::utils {
 
 XBT_PUBLIC std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string);
 XBT_PUBLIC void add_benched_time(double time);
@@ -39,7 +37,5 @@ XBT_PUBLIC size_t get_buffer_size(const void* ptr);
 XBT_PUBLIC void account_free(const void* ptr);
 XBT_PUBLIC int check_collectives_ordering(MPI_Comm comm, const std::string& call);
 
-} // namespace utils
-} // namespace smpi
-} // namespace simgrid
+} // namespace simgrid::smpi::utils
 #endif

@@ -13,9 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_cluster, ker_routing, "Kernel Cluste
 /* This routing is specifically setup to represent clusters, aka homogeneous sets of machines
  * Note that a router is created, easing the interconnection with the rest of the world. */
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace simgrid::kernel::routing {
 
 void ClusterBase::set_loopback()
 {
@@ -116,6 +114,4 @@ void ClusterBase::fill_leaf_from_cb(unsigned long position, const std::vector<un
   *node_netpoint = netpoint;
 }
 
-} // namespace routing
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::routing

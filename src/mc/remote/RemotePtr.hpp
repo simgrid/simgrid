@@ -8,8 +8,7 @@
 
 #include "src/kernel/actor/ActorImpl.hpp"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /** HACK, A value from another process
  *
@@ -135,7 +134,6 @@ template <class T = void> inline RemotePtr<T> remote(uint64_t p)
 {
   return RemotePtr<T>(p);
 }
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

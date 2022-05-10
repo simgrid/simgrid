@@ -10,9 +10,7 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include <boost/intrusive/list.hpp>
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 class XBT_PUBLIC ConditionVariableImpl {
   MutexImpl* mutex_ = nullptr;
@@ -33,8 +31,6 @@ public:
   void signal();
   void wait(MutexImpl* mutex, double timeout, actor::ActorImpl* issuer);
 };
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity
 
 #endif

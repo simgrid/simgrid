@@ -15,9 +15,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_semaphore, ker_synchro, "Semaphore kernel-space implementation");
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 /* -------- Acquisition -------- */
 
@@ -119,6 +117,4 @@ void SemaphoreImpl::release()
   }
 }
 
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity

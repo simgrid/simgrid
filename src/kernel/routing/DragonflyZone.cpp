@@ -15,8 +15,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_dragonfly, ker_routing, "Kernel Dragonfly Routing");
 
 namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace kernel::routing {
 
 DragonflyZone::DragonflyZone(const std::string& name) : ClusterBase(name) {}
 
@@ -366,8 +365,7 @@ void DragonflyZone::get_local_route(const NetPoint* src, const NetPoint* dst, Ro
   route->gw_src_ = get_gateway(src->id());
   route->gw_dst_ = get_gateway(dst->id());
 }
-} // namespace routing
-} // namespace kernel
+} // namespace kernel::routing
 
 namespace s4u {
 DragonflyParams::DragonflyParams(const std::pair<unsigned int, unsigned int>& groups,

@@ -13,9 +13,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(smpi);
 
-namespace simgrid {
-namespace smpi {
-namespace app {
+namespace simgrid::smpi::app {
 
 static int universe_size = 0;
 
@@ -33,9 +31,7 @@ public:
   unsigned int finalized_ranks_ = 0;
   MPI_Comm comm_world_;
 };
-}
-}
-}
+} // namespace simgrid::smpi::app
 
 using simgrid::smpi::app::Instance;
 

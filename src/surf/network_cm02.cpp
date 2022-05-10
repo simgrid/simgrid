@@ -79,9 +79,7 @@ void surf_network_model_init_CM02()
   engine->get_netzone_root()->set_network_model(net_model);
 }
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 NetworkCm02Model::NetworkCm02Model(const std::string& name) : NetworkModel(name)
 {
@@ -580,6 +578,4 @@ void NetworkCm02Action::update_remains_lazy(double now)
   set_last_value(get_rate());
 }
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource

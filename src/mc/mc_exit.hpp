@@ -18,15 +18,13 @@ constexpr int SIMGRID_MC_EXIT_PROGRAM_CRASH   = 6;
 
 constexpr int SIMGRID_MC_EXIT_ERROR           = 63;
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 class XBT_PUBLIC DeadlockError : public std::exception {
 };
 class XBT_PUBLIC TerminationError : public std::exception {
 };
 class XBT_PUBLIC LivenessError : public std::exception {
 };
-}
-}
+} // namespace simgrid::mc
 
 #endif

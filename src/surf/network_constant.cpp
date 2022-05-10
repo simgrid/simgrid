@@ -23,9 +23,7 @@ void surf_network_model_init_Constant()
   engine->get_netzone_root()->set_network_model(net_model);
 }
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 StandardLinkImpl* NetworkConstantModel::create_link(const std::string& name, const std::vector<double>& /*bandwidth*/)
 {
@@ -94,6 +92,4 @@ void NetworkConstantAction::update_remains_lazy(double /*now*/)
   THROW_IMPOSSIBLE;
 }
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource

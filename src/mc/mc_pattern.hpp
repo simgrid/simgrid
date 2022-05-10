@@ -9,8 +9,7 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/remote/RemotePtr.hpp"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /* On every state, each actor has an entry of the following type.
  * This represents both the actor and its transition because
@@ -51,7 +50,6 @@ public:
   void set_done() { this->state_ = InterleavingType::done; }
 };
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

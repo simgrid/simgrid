@@ -10,8 +10,7 @@
 #include <cstddef> /* std::size_t */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_snapshot, mc, "Taking and restoring snapshots");
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 /************************************* Take Snapshot ************************************/
 /****************************************************************************************/
 
@@ -289,5 +288,4 @@ void Snapshot::restore(RemoteProcess* process) const
   process->clear_cache();
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

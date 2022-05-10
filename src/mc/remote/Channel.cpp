@@ -15,8 +15,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Channel, mc, "MC interprocess communication");
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 Channel::~Channel()
 {
@@ -46,5 +45,4 @@ ssize_t Channel::receive(void* message, size_t size, bool block) const
     XBT_ERROR("Channel::receive failure: %s", strerror(errno));
   return res;
 }
-}
-}
+} // namespace simgrid::mc

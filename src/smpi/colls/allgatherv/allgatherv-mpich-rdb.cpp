@@ -10,8 +10,7 @@
 #include "smpi_status.hpp"
 #include <algorithm>
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 int allgatherv__mpich_rdb(
   const void *sendbuf,
@@ -202,5 +201,4 @@ int allgatherv__mpich_rdb(
   return MPI_SUCCESS;
 }
 
-}
-}
+} // namespace simgrid::smpi

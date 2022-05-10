@@ -7,9 +7,7 @@
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 
-namespace simgrid {
-namespace kernel {
-namespace profile {
+namespace simgrid::kernel::profile {
 
 simgrid::kernel::profile::FutureEvtSet future_evt_set; // FIXME: singleton antipattern
 
@@ -51,6 +49,4 @@ Event* FutureEvtSet::pop_leq(double date, double* value, resource::Resource** re
 
   return event;
 }
-} // namespace profile
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::profile

@@ -10,8 +10,7 @@
 
 #include <type_traits>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /** A channel for exchanging messages between model-checker and model-checked app
  *
@@ -52,7 +51,6 @@ public:
 
   int get_socket() const { return socket_; }
 };
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

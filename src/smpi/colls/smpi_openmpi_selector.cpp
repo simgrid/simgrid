@@ -11,8 +11,7 @@
 
 #include <memory>
 
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 
 int allreduce__ompi(const void *sbuf, void *rbuf, int count,
                     MPI_Datatype dtype, MPI_Op op, MPI_Comm comm)
@@ -1336,5 +1335,4 @@ int scatter__ompi(const void *sbuf, int scount,
     return funcs[alg-1](sbuf, scount, sdtype, rbuf, rcount, rdtype, root, comm);
 }
 
-}
-}
+} // namespace simgrid::smpi

@@ -17,8 +17,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi, "Logging specific to SMPI collectives.");
 
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 
 std::map<std::string, std::vector<s_mpi_coll_description_t>, std::less<>> smpi_coll_descriptions(
     {{std::string("gather"),
@@ -482,5 +481,4 @@ int colls::alltoallw(const void* sendbuf, const int* sendcounts, const int* send
   return Request::wait(&request, MPI_STATUS_IGNORE);
 }
 
-}
-}
+} // namespace simgrid::smpi

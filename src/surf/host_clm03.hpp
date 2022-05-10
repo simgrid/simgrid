@@ -12,9 +12,7 @@
  * Classes *
  ***********/
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 class XBT_PRIVATE HostCLM03Model : public HostModel {
 public:
@@ -25,8 +23,6 @@ public:
   Action* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                            const double* bytes_amount, double rate) override;
 };
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 
 #endif /* HOST_CLM03_HPP_ */

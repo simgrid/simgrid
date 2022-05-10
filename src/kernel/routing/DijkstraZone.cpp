@@ -16,8 +16,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_dijkstra, ker_routing, "Kernel Dijkstra Routing");
 
 namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace kernel::routing {
 
 class GraphNodeData {
 public:
@@ -245,8 +244,7 @@ void DijkstraZone::new_edge(unsigned long src_id, unsigned long dst_id, Route* r
   // Finally add it
   xbt_graph_new_edge(route_graph_.get(), src, dst, route);
 }
-} // namespace routing
-} // namespace kernel
+} // namespace kernel::routing
 
 namespace s4u {
 NetZone* create_dijkstra_zone(const std::string& name, bool cache)

@@ -29,8 +29,7 @@ void smpi_cleanup_op_cost_callback()
   cost_cbs.clear();
 }
 
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 
 xbt::Extension<s4u::Host, smpi::Host> Host::EXTENSION_ID;
 
@@ -155,5 +154,4 @@ Host::Host(s4u::Host* ptr) : host(ptr)
   }
 }
 
-} // namespace smpi
-} // namespace simgrid
+} // namespace simgrid::smpi

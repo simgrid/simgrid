@@ -14,8 +14,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_floyd, ker_routing, "Kernel Floyd Routing");
 
 namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace kernel::routing {
 
 void FloydZone::init_tables(unsigned int table_size)
 {
@@ -154,8 +153,7 @@ void FloydZone::do_seal()
     }
   }
 }
-} // namespace routing
-} // namespace kernel
+} // namespace kernel::routing
 
 namespace s4u {
 NetZone* create_floyd_zone(const std::string& name)

@@ -103,8 +103,7 @@ static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, D
  */
 static std::uint64_t MC_dwarf_at_type(Dwarf_Die* die);
 
-namespace simgrid {
-namespace dwarf {
+namespace simgrid::dwarf {
 
 enum class TagClass { Unknown, Type, Subprogram, Variable, Scope, Namespace };
 
@@ -204,8 +203,7 @@ inline XBT_PRIVATE const char* tagname(Dwarf_Die* die)
   return tagname(dwarf_tag(die));
 }
 
-} // namespace dwarf
-} // namespace simgrid
+} // namespace simgrid::dwarf
 
 // ***** Attributes
 
@@ -1124,8 +1122,7 @@ static void MC_post_process_types(simgrid::mc::ObjectInformation* info)
   }
 }
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 void ObjectInformation::ensure_dwarf_loaded()
 {
@@ -1178,11 +1175,9 @@ void postProcessObjectInformation(const RemoteProcess* process, ObjectInformatio
   }
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
-namespace simgrid {
-namespace dwarf {
+namespace simgrid::dwarf {
 
 /** Convert a DWARF register into a libunwind register
  *
@@ -1211,5 +1206,4 @@ int dwarf_register_to_libunwind(int dwarf_register)
 #endif
 }
 
-} // namespace dwarf
-} // namespace simgrid
+} // namespace simgrid::dwarf

@@ -11,9 +11,7 @@
 #include <boost/intrusive/list.hpp>
 #include <memory>
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 /***********
  * Classes *
@@ -152,8 +150,6 @@ public:
   CpuTiList modified_cpus_;
 };
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 
 #endif /* SURF_MODEL_CPUTI_HPP_ */

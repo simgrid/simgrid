@@ -6,8 +6,7 @@
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/sosp/ChunkedData.hpp"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /** Take a per-page snapshot of a region
  *
@@ -39,5 +38,4 @@ ChunkedData::ChunkedData(PageStore& store, const AddressSpace& as, RemotePtr<voi
   }
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

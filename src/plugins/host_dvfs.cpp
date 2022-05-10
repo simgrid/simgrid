@@ -66,10 +66,7 @@ static simgrid::config::Flag<int>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(host_dvfs, kernel, "Logging specific to the HostDvfs plugin");
 
-namespace simgrid {
-namespace plugin {
-
-namespace dvfs {
+namespace simgrid::plugin::dvfs {
 
 /**
  *  Add this to your host tag:
@@ -361,9 +358,7 @@ public:
   void update() override {}
 };
 #endif
-} // namespace dvfs
-} // namespace plugin
-} // namespace simgrid
+} // namespace simgrid::plugin::dvfs
 
 /* **************************** events  callback *************************** */
 static void on_host_added(simgrid::s4u::Host& host)

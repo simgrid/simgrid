@@ -22,8 +22,7 @@ SIMGRID_REGISTER_PLUGIN(link_energy_wifi, "Energy wifi test", &sg_wifi_energy_pl
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(link_energy_wifi, kernel, "Logging specific to the link energy wifi plugin");
 
-namespace simgrid {
-namespace plugin {
+namespace simgrid::plugin {
 
 class XBT_PRIVATE LinkEnergyWifi {
   // associative array keeping size of data already sent for a given flow (required for interleaved actions)
@@ -261,8 +260,7 @@ void LinkEnergyWifi::init_watts_range_list()
   }
 }
 
-} // namespace plugin
-} // namespace simgrid
+} // namespace simgrid::plugin
 
 using simgrid::plugin::LinkEnergyWifi;
 /* **************************** events  callback *************************** */

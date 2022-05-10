@@ -8,9 +8,7 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 class XBT_PUBLIC SleepImpl : public ActivityImpl_T<SleepImpl> {
   sg_host_t host_  = nullptr;
@@ -24,8 +22,6 @@ public:
   void finish() override;
   SleepImpl* start();
 };
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity
 
 #endif

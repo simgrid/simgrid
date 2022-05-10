@@ -33,9 +33,7 @@ void surf_host_model_init_compound()
   engine->get_netzone_root()->set_host_model(host_model);
 }
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 double HostCLM03Model::next_occurring_event(double /*now*/)
 {
@@ -102,6 +100,4 @@ Action* HostCLM03Model::execute_thread(const s4u::Host* host, double flops_amoun
   return cpu->execution_start(thread_count * flops_amount, thread_count, -1);
 }
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource

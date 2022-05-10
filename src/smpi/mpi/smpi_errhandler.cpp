@@ -11,8 +11,7 @@
 simgrid::smpi::Errhandler smpi_MPI_ERRORS_RETURN;
 simgrid::smpi::Errhandler smpi_MPI_ERRORS_ARE_FATAL;
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 MPI_Errhandler Errhandler::f2c(int id) {
   if (F2C::lookup() != nullptr && id >= 0) {
@@ -52,6 +51,4 @@ void Errhandler::unref(Errhandler* errhandler){
   }
 }
 
-}
-
-}
+} // namespace simgrid::smpi

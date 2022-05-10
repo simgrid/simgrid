@@ -19,9 +19,7 @@ constexpr double EPSILON = 0.000000001;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cpu_ti, res_cpu, "CPU resource, Trace Integration model");
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 /*********
  * Trace *
@@ -619,6 +617,4 @@ double CpuTiAction::get_remains()
   return get_remains_no_update();
 }
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource

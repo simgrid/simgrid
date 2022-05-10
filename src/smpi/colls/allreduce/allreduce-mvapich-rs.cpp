@@ -24,8 +24,7 @@
 #include "../colls_private.hpp"
 #include <algorithm>
 
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 int allreduce__mvapich2_rs(const void *sendbuf,
                            void *recvbuf,
                            int count,
@@ -284,5 +283,4 @@ int allreduce__mvapich2_rs(const void *sendbuf,
 
 }
 
-}
-}
+} // namespace simgrid::smpi

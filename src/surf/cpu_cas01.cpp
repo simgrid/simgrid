@@ -53,9 +53,7 @@ void surf_cpu_model_init_Cas01()
   engine->get_netzone_root()->set_cpu_pm_model(cpu_model_pm);
 }
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 CpuCas01Model::CpuCas01Model(const std::string& name) : CpuModel(name)
 {
@@ -205,6 +203,4 @@ CpuCas01Action::CpuCas01Action(Model* model, double cost, bool failed, double sp
   model->get_maxmin_system()->expand(constraint, get_variable(), 1.0);
 }
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource

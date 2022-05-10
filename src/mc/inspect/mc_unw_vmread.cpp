@@ -90,8 +90,7 @@ static int access_mem(const unw_addr_space_t as, const unw_word_t addr, unw_word
   return 0;
 }
 
-namespace simgrid {
-namespace unw {
+namespace simgrid::unw {
 
 unw_addr_space_t create_addr_space()
 {
@@ -119,5 +118,4 @@ void* create_context(unw_addr_space_t /*as*/, pid_t pid)
   return _UPT_create(pid);
 }
 
-} // namespace unw
-} // namespace simgrid
+} // namespace simgrid::unw

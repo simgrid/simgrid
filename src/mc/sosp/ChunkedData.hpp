@@ -12,8 +12,7 @@
 #include "src/mc/remote/RemotePtr.hpp"
 #include "src/mc/sosp/PageStore.hpp"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /** A byte-string represented as a sequence of chunks from a PageStore
  *
@@ -89,7 +88,6 @@ public:
   ChunkedData(PageStore& store, const AddressSpace& as, RemotePtr<void> addr, std::size_t page_count);
 };
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

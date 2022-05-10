@@ -34,8 +34,7 @@ SIMGRID_REGISTER_PLUGIN(link_load, "Link cumulated load.", &sg_link_load_plugin_
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(link_load, kernel, "Logging specific to the LinkLoad plugin");
 
-namespace simgrid {
-namespace plugin {
+namespace simgrid::plugin {
 
 class LinkLoad {
   s4u::Link* link_{};      /*< The link onto which this data is attached*/
@@ -156,8 +155,7 @@ double LinkLoad::get_average_bytes()
     return 0;
 }
 
-} // namespace plugin
-} // namespace simgrid
+} // namespace simgrid::plugin
 
 using simgrid::plugin::LinkLoad;
 

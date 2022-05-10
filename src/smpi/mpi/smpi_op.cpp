@@ -260,8 +260,7 @@ CREATE_MPI_OP(MINLOC, minloc_func, DT_FLAG_REDUCTION)
 CREATE_MPI_OP(REPLACE, replace_func, 0)
 CREATE_MPI_OP(NO_OP, no_func, 0)
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 void Op::apply(const void* invec, void* inoutvec, const int* len, MPI_Datatype datatype) const
 {
@@ -299,5 +298,4 @@ void Op::unref(MPI_Op* op){
   }
 }
 
-}
-}
+} // namespace simgrid::smpi

@@ -15,8 +15,7 @@
 #include "smpi_topo.hpp"
 #include "smpi_config.hpp"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 class Comm : public F2C, public Keyval{
   friend Topo;
@@ -103,7 +102,6 @@ public:
   void increment_collectives_count();
 };
 
-} // namespace smpi
-} // namespace simgrid
+} // namespace simgrid::smpi
 
 #endif

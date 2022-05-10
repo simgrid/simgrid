@@ -104,9 +104,7 @@ CREATE_MPI_DATATYPE(PTR, 58, void*, DT_FLAG_PREDEFINED)
 CREATE_MPI_DATATYPE(COUNT, 59, long long, DT_FLAG_MULTILANG)
 MPI_Datatype MPI_PTR = &smpi_MPI_PTR;
 
-
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 std::unordered_map<int, smpi_key_elem> Datatype::keyvals_; // required by the Keyval class implementation
 int Datatype::keyval_id_=0; // required by the Keyval class implementation
@@ -654,5 +652,4 @@ Datatype* Datatype::f2c(int id)
   return static_cast<Datatype*>(F2C::f2c(id));
 }
 
-} // namespace smpi
-} // namespace simgrid
+} // namespace simgrid::smpi

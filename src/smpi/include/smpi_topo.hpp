@@ -12,8 +12,7 @@
 
 using MPI_Topology = std::shared_ptr<SMPI_Topology>;
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 class Topo {
   MPI_Comm comm_ = MPI_COMM_NULL;
@@ -56,8 +55,6 @@ class Topo_Dist_Graph: public Topo {
   std::vector<int> out_weights_;
 };
 
-}
-}
-
+} // namespace simgrid::smpi
 
 #endif

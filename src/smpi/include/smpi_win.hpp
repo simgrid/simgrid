@@ -16,8 +16,7 @@
 #include <vector>
 #include <list>
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 class Win : public F2C, public Keyval {
   void* base_;
@@ -102,8 +101,6 @@ public:
   void set_errhandler( MPI_Errhandler errhandler);
 };
 
-
-}
-}
+} // namespace simgrid::smpi
 
 #endif

@@ -18,10 +18,8 @@ extern "C" int xbt_pagesize;
 /** Number of bits of addresses inside a given page, log2(xbt_pagesize). */
 extern "C" int xbt_pagebits;
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc::mmu {
 // TODO, do not depend on xbt_pagesize/xbt_pagebits but our own chunk size
-namespace mmu {
 
 /** @brief How many memory pages are necessary to store size bytes?
  *
@@ -57,8 +55,6 @@ static XBT_ALWAYS_INLINE bool same_chunk(std::uintptr_t a, std::uintptr_t b)
 {
   return (a >> xbt_pagebits) == (b >> xbt_pagebits);
 }
-}
-}
-}
+} // namespace simgrid::mc::mmu
 
 #endif

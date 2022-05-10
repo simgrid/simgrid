@@ -14,9 +14,7 @@
 
 #include <thread>
 
-namespace simgrid {
-namespace kernel {
-namespace context {
+namespace simgrid::kernel::context {
 
 class XBT_PUBLIC ThreadContext : public AttachContext {
 public:
@@ -101,8 +99,6 @@ public:
 private:
   ThreadContext* create_context(std::function<void()>&& code, actor::ActorImpl* actor, bool maestro);
 };
-} // namespace context
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::context
 
 #endif

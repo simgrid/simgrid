@@ -49,9 +49,7 @@ xbt_edge_t new_xbt_graph_edge(const s_xbt_graph_t* graph, xbt_node_t s, xbt_node
     return elm->second;
 }
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace simgrid::kernel::routing {
 
 RoutedZone::RoutedZone(const std::string& name) : NetZoneImpl(name) {}
 
@@ -198,6 +196,4 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
     NetZoneImpl::on_route_creation(symmetrical, gw_src, gw_dst, gw_src, gw_dst, get_link_list_impl(link_list, false));
   }
 }
-} // namespace routing
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::routing

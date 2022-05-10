@@ -18,8 +18,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(mc_dwarf);
 
-namespace simgrid {
-namespace dwarf {
+namespace simgrid::dwarf {
 
 /** Resolve a location expression */
 Location resolve(simgrid::dwarf::DwarfExpression const& expression, simgrid::mc::ObjectInformation* object_info,
@@ -95,5 +94,4 @@ LocationList location_list(const simgrid::mc::ObjectInformation& info, Dwarf_Att
 
   return locations;
 }
-} // namespace dwarf
-} // namespace simgrid
+} // namespace simgrid::dwarf

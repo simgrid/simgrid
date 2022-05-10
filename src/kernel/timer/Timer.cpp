@@ -6,9 +6,7 @@
 #include <simgrid/kernel/Timer.hpp>
 #include <simgrid/s4u/Engine.hpp>
 
-namespace simgrid {
-namespace kernel {
-namespace timer {
+namespace simgrid::kernel::timer {
 
 Timer* Timer::set(double date, xbt::Task<void()>&& callback)
 {
@@ -38,6 +36,4 @@ bool Timer::execute_all()
   return result;
 }
 
-} // namespace timer
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::timer

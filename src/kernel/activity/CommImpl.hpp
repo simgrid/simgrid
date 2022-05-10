@@ -10,9 +10,7 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/CommObserver.hpp"
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 enum class CommImplType { SEND, RECEIVE };
 
@@ -98,8 +96,6 @@ expectations of the other side, too. See  */
   static xbt::signal<void(CommImpl const&)> on_start;
   static xbt::signal<void(CommImpl const&)> on_completion;
 };
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity
 
 #endif

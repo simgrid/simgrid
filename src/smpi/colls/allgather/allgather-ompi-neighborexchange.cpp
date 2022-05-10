@@ -64,8 +64,7 @@
 
 #include "../colls_private.hpp"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 int
 allgather__ompi_neighborexchange(const void *sbuf, int scount,
@@ -183,6 +182,4 @@ allgather__ompi_neighborexchange(const void *sbuf, int scount,
    return err;
 }
 
-
-}
-}
+} // namespace simgrid::smpi

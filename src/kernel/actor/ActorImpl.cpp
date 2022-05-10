@@ -34,9 +34,7 @@ simgrid::kernel::actor::ActorImpl* SIMIX_process_self() // XBT_ATTRIB_DEPRECATED
   return simgrid::kernel::actor::ActorImpl::self();
 }
 
-namespace simgrid {
-namespace kernel {
-namespace actor {
+namespace simgrid::kernel::actor {
 
 /*------------------------- [ ActorIDTrait ] -------------------------*/
 unsigned long ActorIDTrait::maxpid_ = 0;
@@ -522,9 +520,7 @@ void create_maestro(const std::function<void()>& code)
   engine->set_maestro(maestro);
 }
 
-} // namespace actor
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::actor
 
 /* needs to be public and without simcall because it is called by exceptions and logging events */
 const char* SIMIX_process_self_get_name() // XBT_ATTRIB_DEPRECATED_v333

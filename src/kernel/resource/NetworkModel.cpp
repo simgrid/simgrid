@@ -21,9 +21,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_network, ker_resource, "Network resources, t
  * Model *
  *********/
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 /** @brief Command-line option 'network/TCP-gamma' -- see @ref options_model_network_gamma */
 config::Flag<double> NetworkModel::cfg_tcp_gamma(
@@ -110,8 +108,6 @@ void insert_link_latency(std::vector<StandardLinkImpl*>& result, const std::vect
   add_latency(links, latency);
 }
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 
 #endif /* NETWORK_INTERFACE_CPP_ */

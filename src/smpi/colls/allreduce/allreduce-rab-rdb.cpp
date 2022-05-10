@@ -5,8 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "../colls_private.hpp"
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 int allreduce__rab_rdb(const void *sbuff, void *rbuff, int count,
                        MPI_Datatype dtype, MPI_Op op,
                        MPI_Comm comm)
@@ -191,5 +190,4 @@ int allreduce__rab_rdb(const void *sbuff, void *rbuff, int count,
   smpi_free_tmp_buffer(tmp_buf);
   return MPI_SUCCESS;
 }
-}
-}
+} // namespace simgrid::smpi

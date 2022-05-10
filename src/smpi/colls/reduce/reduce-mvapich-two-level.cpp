@@ -73,8 +73,7 @@ static int (*reduce_fn)(const void *sendbuf,
                              int count,
                              MPI_Datatype datatype,
                              MPI_Op op, int root, MPI_Comm  comm);
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 int reduce__mvapich2_two_level( const void *sendbuf,
                                 void *recvbuf,
                                 int count,
@@ -295,5 +294,4 @@ int reduce__mvapich2_two_level( const void *sendbuf,
   fn_exit:
     return mpi_errno;
 }
-}
-}
+} // namespace simgrid::smpi

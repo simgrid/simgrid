@@ -12,8 +12,7 @@
 #include <memory>
 #include <vector>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 enum class RegionType { Heap = 1, Data = 2 };
 
@@ -71,8 +70,7 @@ public:
   void* read(void* target, const void* addr, std::size_t size) const;
 };
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 int MC_snapshot_region_memcmp(const void* addr1, const simgrid::mc::Region* region1, const void* addr2,
                               const simgrid::mc::Region* region2, std::size_t size);

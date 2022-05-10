@@ -30,8 +30,7 @@ void xbt_backtrace_display_current()
   simgrid::xbt::Backtrace().display();
 }
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 class BacktraceImpl {
 #if HAVE_BOOST_STACKTRACE_BACKTRACE || HAVE_BOOST_STACKTRACE_ADDR2LINE
@@ -83,5 +82,4 @@ void Backtrace::display() const
                backtrace.empty() ? "(backtrace not set -- did you install Boost.Stacktrace?)" : backtrace.c_str());
 }
 
-} // namespace xbt
-} // namespace simgrid
+} // namespace simgrid::xbt

@@ -11,8 +11,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_rand, mc_transition, "Logging specific to MC Random transitions");
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 std::string RandomTransition::to_string(bool verbose) const
 {
   return xbt::string_printf("Random([%d;%d] ~> %d)", min_, max_, times_considered_);
@@ -24,5 +23,4 @@ RandomTransition::RandomTransition(aid_t issuer, int times_considered, std::stri
   xbt_assert(stream >> min_ >> max_);
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

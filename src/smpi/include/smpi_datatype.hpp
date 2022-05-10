@@ -82,8 +82,7 @@ struct integer128_t {
   int64_t index;
 };
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 class Datatype_contents {
   public:
   int combiner_;
@@ -179,7 +178,6 @@ public:
   static Datatype* f2c(int id);
 };
 
-}
-}
+} // namespace simgrid::smpi
 
 #endif

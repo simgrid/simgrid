@@ -35,8 +35,7 @@
  *      See COPYRIGHT in top-level directory.
  */
 #include "../colls_private.hpp"
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 int allgather__mvapich2_smp(const void *sendbuf,int sendcnt, MPI_Datatype sendtype,
                             void *recvbuf, int recvcnt,MPI_Datatype recvtype,
@@ -142,5 +141,4 @@ int allgather__mvapich2_smp(const void *sendbuf,int sendcnt, MPI_Datatype sendty
     return mpi_errno;
 }
 
-}
-}
+} // namespace simgrid::smpi

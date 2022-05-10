@@ -41,8 +41,7 @@ SIMGRID_REGISTER_PLUGIN(link_energy, "Link energy consumption.", &sg_link_energy
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(link_energy, kernel, "Logging specific to the LinkEnergy plugin");
 
-namespace simgrid {
-namespace plugin {
+namespace simgrid::plugin {
 
 class LinkEnergy {
   s4u::Link* link_{};
@@ -141,8 +140,7 @@ double LinkEnergy::get_consumed_energy()
     kernel::actor::simcall_answered(std::bind(&LinkEnergy::update, this));
   return this->total_energy_;
 }
-} // namespace plugin
-} // namespace simgrid
+} // namespace simgrid::plugin
 
 using simgrid::plugin::LinkEnergy;
 

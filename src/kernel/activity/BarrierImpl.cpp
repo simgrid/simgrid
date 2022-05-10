@@ -8,9 +8,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_barrier, ker_synchro, "Barrier kernel-space implementation");
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 /* -------- Acquisition -------- */
 bool BarrierAcquisitionImpl::test(actor::ActorImpl*)
@@ -66,6 +64,4 @@ BarrierAcquisitionImplPtr BarrierImpl::acquire_async(actor::ActorImpl* issuer)
   return res;
 }
 
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity

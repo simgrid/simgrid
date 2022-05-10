@@ -16,9 +16,7 @@
 #include <sstream>
 #include <string_view>
 
-namespace simgrid {
-namespace kernel {
-namespace profile {
+namespace simgrid::kernel::profile {
 
 bool DatedValue::operator==(DatedValue const& e2) const
 {
@@ -245,7 +243,4 @@ Profile* ProfileBuilder::from_callback(const std::string& name, const std::funct
   return new Profile(name, cb, repeat_delay);
 }
 
-
-} // namespace profile
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::profile

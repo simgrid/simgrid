@@ -14,9 +14,7 @@
 #include <csignal>
 #include <functional>
 
-namespace simgrid {
-namespace kernel {
-namespace context {
+namespace simgrid::kernel::context {
 extern unsigned stack_size;
 extern unsigned guard_size;
 
@@ -110,8 +108,6 @@ XBT_PUBLIC int get_nthreads();
 XBT_PUBLIC void set_nthreads(int nb_threads);
 XBT_PUBLIC void set_parallel_mode(e_xbt_parmap_mode_t mode);
 XBT_PUBLIC e_xbt_parmap_mode_t get_parallel_mode();
-} // namespace context
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::context
 
 #endif

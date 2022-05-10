@@ -9,8 +9,7 @@
 
 #include "smpi/smpi.h"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 //Status has to stay in C, as its fields are public.
 //So status class only defines static methods to handle the C struct.
@@ -23,7 +22,5 @@ static void set_elements(MPI_Status* status, const Datatype*, int count);
 static int get_count(const MPI_Status* status, const Datatype* datatype);
 };
 
-
-}
-}
+} // namespace simgrid::smpi
 #endif

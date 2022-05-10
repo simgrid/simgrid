@@ -13,8 +13,7 @@
 #include <unordered_map>
 #include <string>
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 class F2C {
 private:
@@ -59,7 +58,6 @@ public:
   const std::string& call_location() const { return call_location_; }
 };
 
-}
-}
+} // namespace simgrid::smpi
 
 #endif

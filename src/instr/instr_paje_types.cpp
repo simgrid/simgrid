@@ -9,8 +9,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_types, instr, "Paje tracing event system (types)");
 
-namespace simgrid {
-namespace instr {
+namespace simgrid::instr {
 
 long long int new_paje_id()
 {
@@ -163,5 +162,4 @@ LinkType* Type::by_name_or_create(const std::string& name, const Type* source, c
   } else
     return static_cast<LinkType*>(it->second.get());
 }
-} // namespace instr
-} // namespace simgrid
+} // namespace simgrid::instr

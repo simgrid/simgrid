@@ -15,9 +15,7 @@
 #include <vector>
 #include <string>
 
-namespace simgrid {
-namespace kernel {
-namespace profile {
+namespace simgrid::kernel::profile {
 
 /** @brief A profile is a set of timed values, encoding the value that a variable takes at what time
  *
@@ -63,9 +61,7 @@ private:
   }
 };
 
-} // namespace profile
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::profile
 
 /** Module finalizer: frees all profiles */
 XBT_PUBLIC void tmgr_finalize();

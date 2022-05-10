@@ -11,8 +11,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc, "Logging specific to MC states");
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 long State::expended_states_ = 0;
 
@@ -73,5 +72,4 @@ void State::execute_next(int next)
   transition_.reset(mc_model_checker->handle_simcall(aid, times_considered, true));
   mc_model_checker->wait_for_requests();
 }
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

@@ -15,8 +15,7 @@
 #include <string>
 #include <vector>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 class XBT_PRIVATE DFSExplorer : public Exploration {
   ReductionMode reductionMode_ = ReductionMode::unset;
@@ -79,7 +78,6 @@ private:
   std::unique_ptr<VisitedState> visited_state_;
 };
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

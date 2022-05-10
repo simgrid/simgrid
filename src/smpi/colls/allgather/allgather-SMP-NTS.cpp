@@ -6,9 +6,7 @@
 
 #include "../colls_private.hpp"
 
-namespace simgrid{
-namespace smpi{
-
+namespace simgrid::smpi {
 
 int allgather__SMP_NTS(const void *sbuf, int scount,
                        MPI_Datatype stype, void *rbuf,
@@ -163,6 +161,4 @@ int allgather__SMP_NTS(const void *sbuf, int scount,
   return MPI_SUCCESS;
 }
 
-
-}
-}
+} // namespace simgrid::smpi

@@ -11,8 +11,7 @@
 #include <string>
 #include <vector>
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 /** An virtual memory map entry from /proc/$pid/maps */
 struct VmMap {
@@ -28,7 +27,6 @@ struct VmMap {
 };
 
 std::vector<VmMap> get_memory_map(pid_t pid);
-}
-}
+} // namespace simgrid::xbt
 
 #endif

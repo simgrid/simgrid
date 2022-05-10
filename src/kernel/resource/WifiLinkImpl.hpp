@@ -15,9 +15,7 @@
  * Classes *
  ***********/
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 class XBT_PRIVATE WifiLinkAction;
 
@@ -73,7 +71,5 @@ public:
   WifiLinkImpl* get_dst_link() const { return dst_wifi_link_; }
 };
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 #endif

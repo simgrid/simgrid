@@ -7,8 +7,7 @@
 #include "smpi_keyvals.hpp"
 #include "xbt/sysdep.h"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 template <> int Keyval::call_deleter<Comm>(Comm* obj, const smpi_key_elem& elem, int keyval, void* value, int* /*flag*/)
 {
@@ -47,5 +46,4 @@ int Keyval::call_deleter<Datatype>(Datatype* obj, const smpi_key_elem& elem, int
   return ret;
 }
 
-}
-}
+} // namespace simgrid::smpi

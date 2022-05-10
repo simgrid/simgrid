@@ -17,8 +17,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_trans_comm, mc_transition,
                                 "Logging specific to MC transitions about communications");
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 CommWaitTransition::CommWaitTransition(aid_t issuer, int times_considered, std::stringstream& stream)
     : Transition(Type::COMM_WAIT, issuer, times_considered)
@@ -210,5 +209,4 @@ bool CommSendTransition::depends(const Transition* other) const
   return false; // Comm transitions are INDEP with non-comm transitions
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

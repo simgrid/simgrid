@@ -7,8 +7,7 @@
 #include <csignal>
 #include <sys/wait.h>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 void CheckerSide::start(void (*handler)(int, short, void*), ModelChecker* mc)
 {
@@ -34,5 +33,4 @@ void CheckerSide::break_loop() const
   event_base_loopbreak(base_.get());
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

@@ -15,8 +15,7 @@
 #include <memory>
 #include <set>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /** State of the model-checker (global variables for the model checker)
  */
@@ -73,7 +72,6 @@ private:
   void handle_waitpid();
 };
 
-}
-}
+} // namespace simgrid::mc
 
 #endif

@@ -7,8 +7,7 @@
 #include "../colls_private.hpp"
 //#include <star-reduction.c>
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 // this requires that count >= NP
 int allreduce__rab2(const void *sbuff, void *rbuff,
                     int count, MPI_Datatype dtype,
@@ -83,5 +82,4 @@ int allreduce__rab2(const void *sbuff, void *rbuff,
 
   return MPI_SUCCESS;
 }
-}
-}
+} // namespace simgrid::smpi

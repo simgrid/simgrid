@@ -25,8 +25,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc, "MC process information");
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 // ***** Helper stuff
 
@@ -445,5 +444,4 @@ void RemoteProcess::dump_stack() const
   _UPT_destroy(context);
   unw_destroy_addr_space(as);
 }
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

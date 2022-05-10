@@ -8,8 +8,7 @@
 #include <condition_variable>
 #include <mutex>
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 class XBT_PUBLIC OsSemaphore {
 public:
   explicit inline OsSemaphore(unsigned int capa) : capa_(capa) {}
@@ -33,5 +32,4 @@ private:
   std::mutex mutex_;
   std::condition_variable condition_;
 };
-} // namespace xbt
-} // namespace simgrid
+} // namespace simgrid::xbt

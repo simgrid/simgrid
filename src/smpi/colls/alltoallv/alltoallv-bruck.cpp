@@ -13,8 +13,7 @@
  * FIXME: uh, check smpi_pmpi again, but this routine is called for > 12, not
  * less...
  **/
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 int alltoallv__bruck(const void *sendbuf, const int *sendcounts, const int *senddisps,
                      MPI_Datatype sendtype, void *recvbuf,
                      const int *recvcounts,const int *recvdisps, MPI_Datatype recvtype,
@@ -86,5 +85,4 @@ int alltoallv__bruck(const void *sendbuf, const int *sendcounts, const int *send
   }
   return MPI_SUCCESS;
 }
-}
-}
+} // namespace simgrid::smpi

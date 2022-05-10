@@ -22,9 +22,7 @@
 
 static std::unordered_map<std::string, simgrid::kernel::profile::Profile*> trace_list;
 
-namespace simgrid {
-namespace kernel {
-namespace profile {
+namespace simgrid::kernel::profile {
 
 /** @brief Register this profile for that resource onto that FES,
  * and get an iterator over the integrated trace  */
@@ -75,9 +73,7 @@ Profile::Profile(const std::string& name, const std::function<ProfileBuilder::Up
   get_enough_events(0);
 }
 
-} // namespace profile
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::profile
 
 void tmgr_finalize()
 {

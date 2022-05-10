@@ -15,9 +15,7 @@
 XBT_LOG_EXTERNAL_CATEGORY(xbt);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_random, xbt, "Random");
 
-namespace simgrid {
-namespace xbt {
-namespace random {
+namespace simgrid::xbt::random {
 
 bool Random::read_state(const std::string& filename)
 {
@@ -157,6 +155,4 @@ double normal(double mean, double sd)
   return default_random->normal(mean, sd);
 }
 
-} // namespace random
-} // namespace xbt
-} // namespace simgrid
+} // namespace simgrid::xbt::random

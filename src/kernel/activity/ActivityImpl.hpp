@@ -17,9 +17,7 @@
 #include <simgrid/kernel/resource/Action.hpp>
 #include <simgrid/simix.hpp>
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 XBT_DECLARE_ENUM_CLASS(State, WAITING, READY, RUNNING, DONE, CANCELED, FAILED, SRC_HOST_FAILURE, DST_HOST_FAILURE,
                        TIMEOUT, SRC_TIMEOUT, DST_TIMEOUT, LINK_FAILURE);
@@ -115,8 +113,6 @@ public:
   const std::string& get_tracing_category() const { return tracing_category_; }
 };
 
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity
 
 #endif /* SIMGRID_KERNEL_ACTIVITY_ACTIVITYIMPL_HPP */

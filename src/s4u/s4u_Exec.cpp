@@ -14,8 +14,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_exec, s4u_activity, "S4U asynchronous executions");
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 xbt::signal<void(Exec const&)> Exec::on_start;
 
 Exec::Exec(kernel::activity::ExecImplPtr pimpl)
@@ -245,8 +244,7 @@ bool Exec::is_assigned() const
 {
   return not boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->get_hosts().empty();
 }
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 /* **************************** Public C interface *************************** */
 void sg_exec_set_bound(sg_exec_t exec, double bound)

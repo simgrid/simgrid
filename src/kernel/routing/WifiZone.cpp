@@ -11,8 +11,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_wifi, ker_routing, "Kernel Wifi Routing");
 
 namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace kernel::routing {
 
 void WifiZone::do_seal()
 {
@@ -54,8 +53,7 @@ resource::StandardLinkImpl* WifiZone::do_create_link(const std::string& name, co
   wifi_link_->set_sharing_policy(s4u::Link::SharingPolicy::WIFI, {});
   return wifi_link_;
 }
-} // namespace routing
-} // namespace kernel
+} // namespace kernel::routing
 
 namespace s4u {
 NetZone* create_wifi_zone(const std::string& name)

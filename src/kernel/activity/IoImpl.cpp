@@ -18,9 +18,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_io, kernel, "Kernel io-related synchronization");
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 IoImpl::IoImpl()
 {
@@ -156,6 +154,4 @@ void IoImpl::finish()
   }
 }
 
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity

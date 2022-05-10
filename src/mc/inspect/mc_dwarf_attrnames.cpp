@@ -154,8 +154,7 @@ const std::unordered_map<int, const char*> attrname_map = {
 };
 }
 
-namespace simgrid {
-namespace dwarf {
+namespace simgrid::dwarf {
 
 /** @brief Get the name of an attribute (DW_AT_*) from its code
  *
@@ -169,5 +168,4 @@ const char* attrname(int attr)
   return name == attrname_map.end() ? "DW_AT_unknown" : name->second;
 }
 
-} // namespace dwarf
-} // namespace simgrid
+} // namespace simgrid::dwarf

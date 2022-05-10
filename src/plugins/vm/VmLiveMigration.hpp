@@ -10,9 +10,7 @@
 #ifndef VM_LIVE_MIGRATION_HPP_
 #define VM_LIVE_MIGRATION_HPP_
 
-namespace simgrid {
-namespace plugin {
-namespace vm {
+namespace simgrid::plugin::vm {
 class VmMigrationExt {
 public:
   s4u::ActorPtr issuer_ = nullptr;
@@ -65,7 +63,5 @@ public:
   void operator()();
   sg_size_t sendMigrationData(sg_size_t size, int stage, int stage2_round, double mig_speed, double timeout);
 };
-} // namespace vm
-} // namespace plugin
-} // namespace simgrid
+} // namespace simgrid::plugin::vm
 #endif

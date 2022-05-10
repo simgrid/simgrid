@@ -11,9 +11,7 @@
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/context/Context.hpp"
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
   std::unique_ptr<resource::Action, std::function<void(resource::Action*)>> timeout_detector_{
@@ -61,7 +59,5 @@ public:
 
   static xbt::signal<void(ExecImpl const&, s4u::Host*)> on_migration;
 };
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity
 #endif

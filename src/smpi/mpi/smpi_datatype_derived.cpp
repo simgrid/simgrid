@@ -11,8 +11,7 @@
 #include <array>
 #include <cstring>
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 Datatype_contents::Datatype_contents(int combiner, int number_of_integers, const int* integers, int number_of_addresses,
                                      const MPI_Aint* addresses, int number_of_datatypes, const MPI_Datatype* datatypes)
@@ -335,5 +334,4 @@ void Type_Struct::unserialize(const void* contiguous_buf, void *noncontiguous_bu
   }
 }
 
-}
-}
+} // namespace simgrid::smpi

@@ -206,8 +206,7 @@ void TRACE_help()
              "  within the same Autonomous System (AS).");
 }
 
-namespace simgrid {
-namespace instr {
+namespace simgrid::instr {
 static bool trace_active = false;
 TraceFormat trace_format = TraceFormat::Paje;
 int trace_precision;
@@ -468,5 +467,4 @@ void init()
   s4u::Engine::on_deadlock_cb(on_simulation_end);
   s4u::Engine::on_simulation_end_cb(on_simulation_end);
 }
-} // namespace instr
-} // namespace simgrid
+} // namespace simgrid::instr

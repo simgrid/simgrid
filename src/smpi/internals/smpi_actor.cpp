@@ -18,8 +18,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (kernel)");
 
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 simgrid::xbt::Extension<simgrid::s4u::Actor, ActorExt> ActorExt::EXTENSION_ID;
 
 ActorExt::ActorExt(s4u::Actor* actor) : actor_(actor)
@@ -273,5 +272,4 @@ int ActorExt::set_bsend_buffer(void* buf, int size)
   return MPI_SUCCESS;
 }
 
-} // namespace smpi
-} // namespace simgrid
+} // namespace simgrid::smpi

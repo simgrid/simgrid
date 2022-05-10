@@ -15,8 +15,7 @@ namespace simgrid {
 
 template class xbt::Extendable<kernel::routing::NetPoint>;
 
-namespace kernel {
-namespace routing {
+namespace kernel::routing {
 
 simgrid::xbt::signal<void(NetPoint&)> NetPoint::on_creation;
 
@@ -40,8 +39,7 @@ NetPoint* NetPoint::set_coordinates(const std::string& coords)
     new vivaldi::Coords(this, coords);
   return this;
 }
-} // namespace routing
-} // namespace kernel
+} // namespace kernel::routing
 } // namespace simgrid
 
 /** @brief Retrieve a netpoint from its name

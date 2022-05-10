@@ -11,9 +11,7 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SynchroObserver.hpp"
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 /** Barrier Acquisition: the act / process of acquiring the barrier.
  *
  * This is the asynchronous activity associated to Barriers. See the doc of MutexImpl for more details on the rationnal.
@@ -80,7 +78,5 @@ public:
     return xbt::string_printf("Barrier %u: %zu of %u", id_, ongoing_acquisitions_.size(), expected_actors_);
   }
 };
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity
 #endif

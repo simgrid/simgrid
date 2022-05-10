@@ -14,8 +14,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_VisitedState, mc, "Logging specific to state equality detection mechanisms");
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /** @brief Save the current state */
 VisitedState::VisitedState(unsigned long state_number) : num(state_number)
@@ -86,5 +85,4 @@ VisitedStates::addVisitedState(unsigned long state_number, simgrid::mc::State* g
   return nullptr;
 }
 
-}
-}
+} // namespace simgrid::mc

@@ -9,8 +9,7 @@
 
 #include "src/mc/api.hpp"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /** A model-checking exploration algorithm
  *
@@ -64,7 +63,6 @@ XBT_PUBLIC Exploration* create_dfs_exploration(Session* session);
 XBT_PUBLIC Exploration* create_communication_determinism_checker(Session* session);
 XBT_PUBLIC Exploration* create_udpor_checker(Session* session);
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

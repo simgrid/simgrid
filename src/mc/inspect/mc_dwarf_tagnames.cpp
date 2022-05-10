@@ -90,8 +90,7 @@ const std::unordered_map<int, const char*> tagname_map = {
 };
 }
 
-namespace simgrid {
-namespace dwarf {
+namespace simgrid::dwarf {
 
 /** @brief Get the name of a dwarf tag (DW_TAG_*) from its code
  *
@@ -105,5 +104,4 @@ const char* tagname(int tag)
   return name == tagname_map.end() ? "DW_TAG_unknown" : name->second;
 }
 
-} // namespace dwarf
-} // namespace simgrid
+} // namespace simgrid::dwarf

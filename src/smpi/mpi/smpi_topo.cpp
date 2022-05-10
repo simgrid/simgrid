@@ -16,8 +16,7 @@
 static int assignnodes(int ndim, const std::vector<int>& factors, std::vector<int>& dims);
 static int getfactors(int num, std::vector<int>& factors);
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 void Topo::setComm(MPI_Comm comm)
 {
@@ -320,8 +319,7 @@ int Topo_Cart::Dims_create(int nnodes, int ndims, int dims[])
   return MPI_SUCCESS;
 }
 
-}
-}
+} // namespace simgrid::smpi
 
 /*
  *  assignnodes

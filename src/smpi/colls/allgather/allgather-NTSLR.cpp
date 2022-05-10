@@ -6,8 +6,7 @@
 
 #include "../colls_private.hpp"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 // Allgather-Non-Topology-Specific-Logical-Ring algorithm
 int
@@ -57,6 +56,4 @@ allgather__NTSLR(const void *sbuf, int scount, MPI_Datatype stype,
   return MPI_SUCCESS;
 }
 
-
-}
-}
+} // namespace simgrid::smpi

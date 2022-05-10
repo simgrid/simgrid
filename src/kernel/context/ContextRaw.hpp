@@ -15,9 +15,7 @@
 
 #include "src/kernel/context/ContextSwapped.hpp"
 
-namespace simgrid {
-namespace kernel {
-namespace context {
+namespace simgrid::kernel::context {
 
 /** @brief Fast context switching inspired from SystemV ucontexts.
   *
@@ -39,8 +37,6 @@ class RawContextFactory : public SwappedContextFactory {
 public:
   RawContext* create_context(std::function<void()>&& code, actor::ActorImpl* actor) override;
 };
-} // namespace context
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::context
 
 #endif

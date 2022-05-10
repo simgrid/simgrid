@@ -77,8 +77,7 @@
  *         [6]    [6]    [6]    [6]    [6]    [6]    [6]
  */
 
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 
 int allgatherv__ompi_bruck(const void *sbuf, int scount,
                            MPI_Datatype sdtype,
@@ -174,6 +173,4 @@ int allgatherv__ompi_bruck(const void *sbuf, int scount,
 
 }
 
-
-}
-}
+} // namespace simgrid::smpi

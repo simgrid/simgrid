@@ -18,8 +18,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm, s4u_activity, "S4U asynchronous communications");
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 xbt::signal<void(Comm const&)> Comm::on_send;
 xbt::signal<void(Comm const&)> Comm::on_recv;
 
@@ -472,8 +471,7 @@ size_t Comm::wait_all_for(const std::vector<CommPtr>& comms, double timeout)
   }
   return comms.size();
 }
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 /* **************************** Public C interface *************************** */
 void sg_comm_detach(sg_comm_t comm, void (*clean_function)(void*))
 {

@@ -15,9 +15,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_context, kernel, "Context switching mechanism");
 
-namespace simgrid {
-namespace kernel {
-namespace context {
+namespace simgrid::kernel::context {
 
 std::function<ContextFactory*(void)> ContextFactory::initializer;
 
@@ -145,6 +143,4 @@ void Context::stop()
 }
 AttachContext::~AttachContext() = default;
 
-} // namespace context
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::context

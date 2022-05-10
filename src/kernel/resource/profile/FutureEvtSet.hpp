@@ -9,9 +9,7 @@
 #include "simgrid/forward.h"
 #include <queue>
 
-namespace simgrid {
-namespace kernel {
-namespace profile {
+namespace simgrid::kernel::profile {
 
 /** @brief Future Event Set (collection of iterators over the traces)
  * That's useful to quickly know which is the next occurring event in a set of traces. */
@@ -33,8 +31,6 @@ private:
 // FIXME: kill that singleton
 extern XBT_PRIVATE simgrid::kernel::profile::FutureEvtSet future_evt_set;
 
-} // namespace profile
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::profile
 
 #endif

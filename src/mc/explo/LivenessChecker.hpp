@@ -15,8 +15,7 @@
 #include <memory>
 #include <vector>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 class XBT_PRIVATE Pair {
 public:
@@ -79,7 +78,6 @@ private:
   std::string previous_request_;
 };
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

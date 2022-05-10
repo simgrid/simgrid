@@ -22,8 +22,7 @@
 #include "../coll_tuned_topo.hpp"
 #include "../colls_private.hpp"
 
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 
 int gather__ompi_binomial(const void* sbuf, int scount, MPI_Datatype sdtype, void* rbuf, int rcount,
                           MPI_Datatype rdtype, int root, MPI_Comm comm)
@@ -409,5 +408,4 @@ int gather__ompi_basic_linear(const void* sbuf, int scount, MPI_Datatype sdtype,
     return MPI_SUCCESS;
 }
 
-}
-}
+} // namespace simgrid::smpi

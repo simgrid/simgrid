@@ -41,8 +41,7 @@
  *  Returns:    - MPI_SUCCESS or error code
  *  Limitation: - Works only for commutative operations.
  */
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 int reduce_scatter__ompi_basic_recursivehalving(const void *sbuf,
                                                 void *rbuf,
                                                 const int *rcounts,
@@ -803,5 +802,4 @@ cleanup_and_return:
         free(tmpbuf[1]);
     return err;
 }
-}
-}
+} // namespace simgrid::smpi

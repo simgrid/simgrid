@@ -10,8 +10,7 @@
 
 simgrid::smpi::Group smpi_MPI_GROUP_EMPTY;
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 Group::Group(const Group* origin)
 {
@@ -214,5 +213,4 @@ MPI_Group Group::f2c(int id) {
   }
 }
 
-}
-}
+} // namespace simgrid::smpi

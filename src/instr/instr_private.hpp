@@ -24,8 +24,7 @@
 #include <sstream>
 #include <string>
 
-namespace simgrid {
-namespace instr {
+namespace simgrid::instr {
 namespace paje {
 
 void dump_generator_version();
@@ -230,8 +229,7 @@ public:
   }
   std::string display_size() override { return "NA"; }
 };
-} // namespace instr
-} // namespace simgrid
+} // namespace simgrid::instr
 
 XBT_PRIVATE std::string instr_pid(simgrid::s4u::Actor const& proc);
 

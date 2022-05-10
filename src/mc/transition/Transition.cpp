@@ -20,8 +20,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_transition, mc, "Logging specific to MC transitions");
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 unsigned long Transition::executed_transitions_ = 0;
 unsigned long Transition::replayed_transitions_ = 0;
 
@@ -103,5 +102,4 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, std::stri
 #endif
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

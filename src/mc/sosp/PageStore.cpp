@@ -19,8 +19,7 @@
 #include <cstring> // memcpy, memcmp
 #include <unistd.h>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /** @brief Compute a hash for the given memory page
  *
@@ -156,5 +155,4 @@ std::size_t PageStore::store_page(const void* page)
   return pageno;
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

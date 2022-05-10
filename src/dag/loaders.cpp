@@ -72,8 +72,7 @@ static bool check_for_cycle(const std::vector<simgrid::s4u::ActivityPtr>& dag)
 
 static YY_BUFFER_STATE input_buffer;
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 
 static std::vector<ActivityPtr> result;
 static std::map<std::string, ExecPtr, std::less<>> jobs;
@@ -291,8 +290,7 @@ std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename)
           "Please install graphviz, graphviz-dev, and libgraphviz-dev (and erase CMakeCache.txt) before recompiling.");
 }
 #endif
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 void STag_dax__adag()
 {

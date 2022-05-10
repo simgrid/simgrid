@@ -10,9 +10,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_cpu, ker_resource, "CPU resource, fueling execution activites");
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 /*********
  * Model *
@@ -217,6 +215,4 @@ std::list<CpuImpl*> CpuAction::cpus() const
 
   return retlist;
 }
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource

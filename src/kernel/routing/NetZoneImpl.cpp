@@ -21,9 +21,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing, kernel, "Kernel routing-related information");
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace simgrid::kernel::routing {
 
 /* Pick the right models for CPU, net and host, and call their model_init_preparse */
 static void surf_config_models_setup()
@@ -737,6 +735,4 @@ bool NetZoneImpl::is_component_recursive(const NetPoint* netpoint) const
   return std::any_of(begin(children_), end(children_),
                      [netpoint](const auto* child) { return child->is_component_recursive(netpoint); });
 }
-} // namespace routing
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::routing

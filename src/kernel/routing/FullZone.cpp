@@ -11,8 +11,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_full, ker_routing, "Kernel Full Routing");
 
 namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace kernel::routing {
 
 void FullZone::check_routing_table()
 {
@@ -95,8 +94,7 @@ void FullZone::add_route(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoin
         new_extended_route(get_hierarchy(), gw_src, gw_dst, get_link_list_impl(link_list, true), false));
   }
 }
-} // namespace routing
-} // namespace kernel
+} // namespace kernel::routing
 
 namespace s4u {
 NetZone* create_full_zone(const std::string& name)

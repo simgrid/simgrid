@@ -30,8 +30,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_engine, s4u, "Logging specific to S4U (engin
 
 static simgrid::kernel::actor::ActorCode maestro_code;
 
-namespace simgrid {
-namespace s4u {
+namespace simgrid::s4u {
 xbt::signal<void()> Engine::on_platform_creation;
 xbt::signal<void()> Engine::on_platform_created;
 xbt::signal<void()> Engine::on_simulation_start;
@@ -460,8 +459,7 @@ Engine* Engine::set_default_comm_data_copy_callback(
   return this;
 }
 
-} // namespace s4u
-} // namespace simgrid
+} // namespace simgrid::s4u
 
 /* **************************** Public C interface *************************** */
 void simgrid_init(int* argc, char** argv)

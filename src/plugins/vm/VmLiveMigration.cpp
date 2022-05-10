@@ -12,9 +12,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(vm_live_migration, s4u, "S4U virtual machines live migration");
 
-namespace simgrid {
-namespace plugin {
-namespace vm {
+namespace simgrid::plugin::vm {
 xbt::Extension<s4u::Host, VmMigrationExt> VmMigrationExt::EXTENSION_ID;
 
 void VmMigrationExt::ensureVmMigrationExtInstalled()
@@ -269,9 +267,7 @@ void MigrationTx::operator()()
   // effectively the VM on the DST node.
   XBT_DEBUG("mig: tx_done");
 }
-} // namespace vm
-} // namespace plugin
-} // namespace simgrid
+} // namespace simgrid::plugin::vm
 
 using simgrid::plugin::vm::VmMigrationExt;
 

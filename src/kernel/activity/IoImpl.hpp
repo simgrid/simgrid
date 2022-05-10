@@ -9,9 +9,7 @@
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include <simgrid/s4u/Io.hpp>
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 class XBT_PUBLIC IoImpl : public ActivityImpl_T<IoImpl> {
   resource::DiskImpl* disk_           = nullptr;
@@ -40,8 +38,6 @@ public:
   void set_exception(actor::ActorImpl* issuer) override;
   void finish() override;
 };
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity
 
 #endif

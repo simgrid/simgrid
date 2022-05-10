@@ -12,8 +12,7 @@
 #include <cstddef>
 #include <memory>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 class XBT_PRIVATE VisitedState {
 public:
@@ -37,7 +36,6 @@ private:
   void prune();
 };
 
-}
-}
+} // namespace simgrid::mc
 
 #endif

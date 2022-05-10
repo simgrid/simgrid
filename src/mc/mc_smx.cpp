@@ -53,8 +53,7 @@ static void MC_process_refresh_simix_actor_dynar(const simgrid::mc::RemoteProces
   }
   ::operator delete(data);
 }
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 void RemoteProcess::refresh_simix()
 {
@@ -66,5 +65,4 @@ void RemoteProcess::refresh_simix()
   this->cache_flags_ |= RemoteProcess::cache_simix_processes;
 }
 
-}
-}
+} // namespace simgrid::mc

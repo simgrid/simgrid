@@ -11,8 +11,7 @@
 
 #include <memory>
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 struct smpi_mpi_generalized_request_funcs_t {
   MPI_Grequest_query_function *query_fn;
@@ -129,8 +128,6 @@ public:
   static Request* f2c(int);
 };
 
-
-}
-}
+} // namespace simgrid::smpi
 
 #endif

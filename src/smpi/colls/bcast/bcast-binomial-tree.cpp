@@ -67,8 +67,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Author: MPIH / modified by Ahmad Faraj
 
  ****************************************************************************/
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 int bcast__binomial_tree(void *buff, int count,
                          MPI_Datatype data_type, int root,
                          MPI_Comm comm)
@@ -107,5 +106,4 @@ int bcast__binomial_tree(void *buff, int count,
   return MPI_SUCCESS;
 }
 
-}
-}
+} // namespace simgrid::smpi

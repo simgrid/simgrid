@@ -39,8 +39,7 @@ void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model)
 namespace simgrid {
 template class xbt::Extendable<kernel::resource::VirtualMachineImpl>;
 
-namespace kernel {
-namespace resource {
+namespace kernel::resource {
 
 /*********
  * Model *
@@ -414,6 +413,5 @@ void VirtualMachineImpl::seal()
   s4u::VirtualMachine::on_creation(*get_iface());
 }
 
-} // namespace resource
-} // namespace kernel
+} // namespace kernel::resource
 } // namespace simgrid

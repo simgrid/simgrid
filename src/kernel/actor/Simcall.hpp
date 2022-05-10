@@ -11,9 +11,7 @@
 #include "xbt/utility.hpp"
 
 /********************************* Simcalls *********************************/
-namespace simgrid {
-namespace kernel {
-namespace actor {
+namespace simgrid::kernel::actor {
 
 /**
  * @brief Represents a simcall to the kernel.
@@ -34,8 +32,6 @@ public:
   const char* get_cname() const;
 };
 
-} // namespace actor
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::actor
 
 #endif

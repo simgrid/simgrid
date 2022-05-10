@@ -20,9 +20,7 @@
  * Model *
  *********/
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 /***********
  * Classes *
  ***********/
@@ -127,7 +125,5 @@ public:
   void set_state(simgrid::kernel::resource::Action::State state) override;
 };
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 #endif /* DISK_IMPL_HPP_ */

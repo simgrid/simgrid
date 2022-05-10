@@ -11,8 +11,7 @@
 #ifndef SIMGRID_MC_FORWARD_HPP
 #define SIMGRID_MC_FORWARD_HPP
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 class PageStore;
 class ChunkedData;
@@ -30,8 +29,7 @@ class ActorInformation;
 
 class Session;
 class Exploration;
-}
-}
+} // namespace simgrid::mc
 
 // TODO, try to get rid of the global ModelChecker variable
 extern simgrid::mc::ModelChecker* mc_model_checker;

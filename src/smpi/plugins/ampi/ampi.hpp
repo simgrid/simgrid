@@ -8,15 +8,9 @@
 
 #include <simgrid/s4u.hpp>
 
-namespace simgrid {
-namespace smpi {
-namespace plugin {
-namespace ampi {
+namespace simgrid::smpi::plugin::ampi {
 extern xbt::signal<void(s4u::Actor const&)> on_iteration_out;
 extern xbt::signal<void(s4u::Actor const&)> on_iteration_in;
-} // namespace ampi
-} // namespace plugin
-} // namespace smpi
-} // namespace simgrid
+} // namespace simgrid::smpi::plugin::ampi
 
 #endif

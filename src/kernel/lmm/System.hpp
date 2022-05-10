@@ -20,9 +20,7 @@
 #include <memory>
 #include <vector>
 
-namespace simgrid {
-namespace kernel {
-namespace lmm {
+namespace simgrid::kernel::lmm {
 
 /** @addtogroup SURF_lmm
  * @details
@@ -605,8 +603,6 @@ private:
 };
 
 /** @} */
-} // namespace lmm
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::lmm
 
 #endif

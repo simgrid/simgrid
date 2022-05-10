@@ -12,8 +12,7 @@
 #include <sstream>
 #include <string>
 
-namespace simgrid {
-namespace instr {
+namespace simgrid::instr {
 class EntityValue;
 class TIData;
 
@@ -125,6 +124,5 @@ public:
   }
   void print() override;
 };
-} // namespace instr
-} // namespace simgrid
+} // namespace simgrid::instr
 #endif

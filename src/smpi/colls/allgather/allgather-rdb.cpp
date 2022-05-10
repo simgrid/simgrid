@@ -6,8 +6,7 @@
 #include "../colls_private.hpp"
 #include "smpi_status.hpp"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 int
 allgather__rdb(const void *sbuf, int send_count,
@@ -131,6 +130,4 @@ allgather__rdb(const void *sbuf, int send_count,
   return success;
 }
 
-
-}
-}
+} // namespace simgrid::smpi

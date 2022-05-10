@@ -13,9 +13,7 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SynchroObserver.hpp"
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 /** Semaphore Acquisition: the act / process of acquiring the semaphore.
  *
@@ -85,8 +83,6 @@ public:
   unsigned get_id() const { return id_; }
   s4u::Semaphore& sem() { return piface_; }
 };
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity
 
 #endif /* SIMGRID_KERNEL_ACTIVITY_SEMAPHOREIMPL_HPP */

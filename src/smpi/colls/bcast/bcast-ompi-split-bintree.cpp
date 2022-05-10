@@ -58,8 +58,7 @@
 #include "../coll_tuned_topo.hpp"
 #include "../colls_private.hpp"
 #define MAXTREEFANOUT 32
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 
 int bcast__ompi_split_bintree( void* buffer,
                                int count,
@@ -292,6 +291,4 @@ int bcast__ompi_split_bintree( void* buffer,
 
 }
 
-}
-}
-
+} // namespace simgrid::smpi

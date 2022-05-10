@@ -12,8 +12,7 @@
 
 #include <memory>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /** Model-checked-side of the communication protocol
  *
@@ -53,7 +52,6 @@ public:
   static AppSide* initialize(xbt_dynar_t actors_addr);
   static AppSide* get() { return instance_.get(); }
 };
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

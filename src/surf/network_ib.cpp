@@ -45,9 +45,7 @@ void surf_network_model_init_IB()
   simgrid::config::set_default<double>("network/weight-S", 8775);
 }
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 void NetworkIBModel::IB_create_host_callback(s4u::Host const& host)
 {
@@ -205,6 +203,4 @@ void NetworkIBModel::update_IB_factors(NetworkAction* action, IBNode* from, IBNo
   update_IB_factors_rec(from, updated);
   XBT_DEBUG("IB - Finished updating %d", from->id_);
 }
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource

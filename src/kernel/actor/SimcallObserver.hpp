@@ -12,9 +12,7 @@
 
 #include <string>
 
-namespace simgrid {
-namespace kernel {
-namespace actor {
+namespace simgrid::kernel::actor {
 
 class SimcallObserver {
   ActorImpl* const issuer_;
@@ -109,8 +107,6 @@ public:
   double get_timeout() const { return timeout_; }
 };
 
-} // namespace actor
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::actor
 
 #endif

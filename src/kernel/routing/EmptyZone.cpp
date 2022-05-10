@@ -12,16 +12,14 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_none, ker_routing, "Kernel No Routing");
 
 namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace kernel::routing {
 
 void EmptyZone::get_graph(const s_xbt_graph_t* /*graph*/, std::map<std::string, xbt_node_t, std::less<>>* /*nodes*/,
                           std::map<std::string, xbt_edge_t, std::less<>>* /*edges*/)
 {
   xbt_die("No routing no graph");
 }
-} // namespace routing
-} // namespace kernel
+} // namespace kernel::routing
 
 namespace s4u {
 NetZone* create_empty_zone(const std::string& name)

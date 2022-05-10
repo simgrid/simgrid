@@ -10,8 +10,7 @@
   reduce
   Author: MPICH
  */
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 int reduce__scatter_gather(const void *sendbuf, void *recvbuf,
                            int count, MPI_Datatype datatype,
                            MPI_Op op, int root, MPI_Comm comm)
@@ -395,5 +394,4 @@ int reduce__scatter_gather(const void *sendbuf, void *recvbuf,
 
   return 0;
 }
-}
-}
+} // namespace simgrid::smpi

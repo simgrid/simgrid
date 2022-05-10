@@ -8,9 +8,7 @@
 #include "xbt/random.hpp"
 #include <math.h>
 
-namespace simgrid {
-namespace kernel {
-namespace profile {
+namespace simgrid::kernel::profile {
 
 double StochasticDatedValue::draw(Distribution law, std::vector<double> params)
 {
@@ -52,6 +50,4 @@ bool StochasticDatedValue::operator==(StochasticDatedValue const& e2) const
          (e2.date_params == date_params);
 }
 
-} // namespace profile
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::profile

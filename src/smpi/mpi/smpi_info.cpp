@@ -7,8 +7,7 @@
 #include "smpi_comm.hpp"
 #include "simgrid/Exception.hpp"
 
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 
 Info::Info(const Info* orig)
 {
@@ -84,5 +83,4 @@ Info* Info::f2c(int id){
   return static_cast<Info*>(F2C::f2c(id));
 }
 
-}
-}
+} // namespace simgrid::smpi

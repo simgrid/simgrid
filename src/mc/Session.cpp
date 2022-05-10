@@ -30,8 +30,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
 XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 template <class Code> void run_child_process(int socket, Code code)
 {
@@ -176,5 +175,4 @@ void Session::check_deadlock() const
     throw DeadlockError();
   }
 }
-}
-}
+} // namespace simgrid::mc

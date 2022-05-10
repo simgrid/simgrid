@@ -15,9 +15,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
  * Model *
  *********/
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 StandardLinkImpl::StandardLinkImpl(const std::string& name) : LinkImpl(name), piface_(this)
 {
@@ -141,6 +139,4 @@ void StandardLinkImpl::set_concurrency_limit(int limit) const
   get_constraint()->set_concurrency_limit(limit);
 }
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource

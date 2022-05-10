@@ -25,8 +25,7 @@
  *   comm: communication
  ****************************************************************************/
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 int allgatherv__mpich_ring(const void *sendbuf, int sendcount,
                            MPI_Datatype send_type, void *recvbuf,
@@ -126,5 +125,4 @@ int allgatherv__mpich_ring(const void *sendbuf, int sendcount,
   return MPI_SUCCESS;
 }
 
-}
-}
+} // namespace simgrid::smpi

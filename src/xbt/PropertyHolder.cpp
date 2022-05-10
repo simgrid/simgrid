@@ -8,8 +8,7 @@
 #include <map>
 #include <memory>
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 /** @brief Return the property associated to the provided key (or nullptr if not existing) */
 const char* PropertyHolder::get_property(const std::string& key) const
@@ -53,5 +52,4 @@ template <class Assoc> void PropertyHolder::set_properties(const Assoc& properti
 template void PropertyHolder::set_properties(const std::map<std::string, std::string, std::less<>>& properties);
 template void PropertyHolder::set_properties(const std::unordered_map<std::string, std::string>& properties);
 
-} // namespace xbt
-} // namespace simgrid
+} // namespace simgrid::xbt

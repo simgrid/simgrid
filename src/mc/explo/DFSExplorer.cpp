@@ -24,8 +24,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dfs, mc, "DFS exploration algorithm of the model-checker");
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 xbt::signal<void()> DFSExplorer::on_exploration_start_signal;
 xbt::signal<void()> DFSExplorer::on_backtracking_signal;
@@ -319,5 +318,4 @@ Exploration* create_dfs_exploration(Session* session)
   return new DFSExplorer(session);
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

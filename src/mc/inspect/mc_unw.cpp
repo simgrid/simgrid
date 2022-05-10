@@ -25,8 +25,7 @@ typedef register_t greg_t;
 
 #include <libunwind.h>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 // ***** Implementation
 
@@ -250,5 +249,4 @@ unw_cursor_t UnwindContext::cursor()
   return cursor;
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

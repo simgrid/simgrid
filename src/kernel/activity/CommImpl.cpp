@@ -42,9 +42,7 @@ void SIMIX_comm_copy_pointer_callback(simgrid::kernel::activity::CommImpl* comm,
   simgrid::s4u::Comm::copy_pointer_callback(comm, buff, buff_size);
 }
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 xbt::signal<void(CommImpl const&)> CommImpl::on_start;
 xbt::signal<void(CommImpl const&)> CommImpl::on_completion;
 
@@ -573,6 +571,4 @@ void CommImpl::finish()
   }
 }
 
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity

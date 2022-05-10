@@ -24,8 +24,7 @@ void _xbt_throw(char* message, const char* file, int line, const char* func)
   throw e;
 }
 
-namespace simgrid {
-namespace xbt {
+namespace simgrid::xbt {
 
 ImpossibleError::~ImpossibleError()         = default;
 InitializationError::~InitializationError() = default;
@@ -129,8 +128,7 @@ void install_exception_handler()
   });
 }
 
-} // namespace xbt
-} // namespace simgrid
+} // namespace simgrid::xbt
 
 void xbt_throw_impossible(const char* file, int line, const char* func)
 {

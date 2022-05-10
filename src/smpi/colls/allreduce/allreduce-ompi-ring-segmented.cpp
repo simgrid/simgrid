@@ -155,8 +155,7 @@
 
 #include "../colls_private.hpp"
 
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 int allreduce__ompi_ring_segmented(const void *sbuf, void *rbuf, int count,
                                    MPI_Datatype dtype,
                                    MPI_Op op,
@@ -396,5 +395,4 @@ int allreduce__ompi_ring_segmented(const void *sbuf, void *rbuf, int count,
    smpi_free_tmp_buffer(inbuf[1]);
    return ret;
 }
-}
-}
+} // namespace simgrid::smpi

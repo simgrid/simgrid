@@ -6,8 +6,7 @@
 #include "../colls_private.hpp"
 #include "smpi_status.hpp"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 static int scatter_for_bcast(
     int root,
@@ -328,5 +327,4 @@ fn_exit:
   return mpi_errno;
 }
 
-}
-}
+} // namespace simgrid::smpi

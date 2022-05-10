@@ -17,8 +17,7 @@
 #define XBT_ALWAYS_INLINE inline __attribute__((always_inline))
 #endif
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /** @brief Storage for snapshot memory pages
  *
@@ -189,7 +188,6 @@ XBT_ALWAYS_INLINE std::size_t PageStore::capacity() const
   return this->capacity_;
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

@@ -33,8 +33,7 @@ MPI_Comm MPI_COMM_WORLD = MPI_COMM_UNINITIALIZED;
 /* Support for cartesian topology was added, but there are 2 other types of topology, graph et dist graph. In order to
  * support them, we have to add a field SMPI_Topo_type, and replace the MPI_Topology field by an union. */
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 std::unordered_map<int, smpi_key_elem> Comm::keyvals_;
 int Comm::keyval_id_=0;
@@ -676,5 +675,4 @@ void Comm::increment_collectives_count()
   }
 }
 
-} // namespace smpi
-} // namespace simgrid
+} // namespace simgrid::smpi

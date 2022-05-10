@@ -43,9 +43,7 @@ void surf_host_model_init_ptask_L07()
   engine->get_netzone_root()->set_host_model(host_model);
 }
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 HostL07Model::HostL07Model(const std::string& name, lmm::System* sys) : HostModel(name)
 {
@@ -446,6 +444,4 @@ void L07Action::updateBound()
   }
 }
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource

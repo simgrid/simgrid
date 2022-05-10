@@ -17,8 +17,7 @@
 #include "src/mc/inspect/Variable.hpp"
 #include "src/mc/mc_forward.hpp"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /** Debug information about a given function or scope within a function */
 class Frame {
@@ -56,7 +55,6 @@ public:
   void* frame_base(unw_cursor_t& unw_cursor) const;
   void remove_variable(char* name);
 };
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

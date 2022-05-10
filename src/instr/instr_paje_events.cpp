@@ -11,8 +11,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_events, instr, "Paje tracing event system (events)");
 
-namespace simgrid {
-namespace instr {
+namespace simgrid::instr {
 
 PajeEvent::PajeEvent(Container* container, Type* type, double timestamp, PajeEventType eventType)
     : container_(container), type_(type), timestamp_(timestamp), eventType_(eventType)
@@ -84,5 +83,4 @@ void StateEvent::print()
     THROW_IMPOSSIBLE;
   }
 }
-} // namespace instr
-} // namespace simgrid
+} // namespace simgrid::instr

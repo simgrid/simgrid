@@ -13,9 +13,7 @@
 
 #include <list>
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 /***********
  * Classes *
@@ -190,8 +188,6 @@ public:
   void suspend() override;
   void resume() override;
 };
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 
 #endif /* CPU_IMPL_HPP_ */

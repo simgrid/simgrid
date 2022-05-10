@@ -20,8 +20,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_fat_tree, ker_routing, "Kernel Fat-Tree Routing");
 
 namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace kernel::routing {
 
 bool FatTreeZone::is_in_sub_tree(const FatTreeNode* root, const FatTreeNode* node) const
 {
@@ -488,8 +487,7 @@ void FatTreeZone::generate_dot_file(const std::string& filename) const
   file << "}";
   file.close();
 }
-} // namespace routing
-} // namespace kernel
+} // namespace kernel::routing
 
 namespace s4u {
 FatTreeParams::FatTreeParams(unsigned int n_levels, const std::vector<unsigned int>& down_links,

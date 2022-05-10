@@ -32,9 +32,7 @@ XBT_ATTRIB_NORETURN static void sysv_ctx_wrapper(int i1, int i2)
 }
 }
 
-namespace simgrid {
-namespace kernel {
-namespace context {
+namespace simgrid::kernel::context {
 
 // UContextFactory
 UContext* UContextFactory::create_context(std::function<void()>&& code, actor::ActorImpl* actor)
@@ -83,6 +81,4 @@ XBT_PRIVATE ContextFactory* sysv_factory()
   XBT_VERB("Activating SYSV context factory");
   return new UContextFactory();
 }
-} // namespace context
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::context

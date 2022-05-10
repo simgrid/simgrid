@@ -18,8 +18,7 @@
 
 #include "src/smpi/include/private.hpp"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /** An entry in the functions index
  *
@@ -166,7 +165,6 @@ XBT_PRIVATE std::shared_ptr<ObjectInformation> createObjectInformation(std::vect
 /** Augment the current module with information about the other ones */
 XBT_PRIVATE void postProcessObjectInformation(const simgrid::mc::RemoteProcess* process,
                                               simgrid::mc::ObjectInformation* info);
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

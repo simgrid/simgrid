@@ -30,8 +30,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 std::unique_ptr<AppSide> AppSide::instance_;
 
@@ -284,5 +283,4 @@ void AppSide::declare_stack(void* stack, size_t size, ucontext_t* context) const
   message.stack_region = region;
   xbt_assert(channel_.send(message) == 0, "Could not send STACK_REGION to model-checker");
 }
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

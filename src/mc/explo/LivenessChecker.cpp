@@ -16,8 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc, "Logging specific to algorithms
 
 /********* Static functions *********/
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
                          std::shared_ptr<const std::vector<int>> atomic_propositions,
@@ -376,5 +375,4 @@ Exploration* create_liveness_checker(Session* session)
   return new LivenessChecker(session);
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

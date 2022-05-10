@@ -11,20 +11,14 @@
 
 #include <memory>
 
-namespace simgrid {
-namespace kernel {
-namespace context {
+namespace simgrid::kernel::context {
 class SwappedContext;
-} // namespace context
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::context
 
 /* Use extern "C" to make sure that this symbol is easy to recognize by name, even on exotic platforms */
 extern "C" XBT_ATTRIB_NORETURN void smx_ctx_wrapper(simgrid::kernel::context::SwappedContext* context);
 
-namespace simgrid {
-namespace kernel {
-namespace context {
+namespace simgrid::kernel::context {
 
 class SwappedContextFactory : public ContextFactory {
   friend SwappedContext; // Reads whether we are in parallel mode
@@ -94,7 +88,5 @@ inline void SwappedContext::verify_previous_context(XBT_ATTRIB_UNUSED const Swap
 #endif
 }
 
-} // namespace context
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::context
 #endif

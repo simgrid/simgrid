@@ -14,8 +14,7 @@
 #include "src/mc/inspect/LocationList.hpp"
 #include "src/mc/mc_forward.hpp"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /** A variable (global or local) in the model-checked program */
 class Variable {
@@ -43,7 +42,6 @@ public:
   simgrid::mc::ObjectInformation* object_info = nullptr;
 };
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

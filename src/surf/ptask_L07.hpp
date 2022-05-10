@@ -12,9 +12,7 @@
 #ifndef HOST_L07_HPP_
 #define HOST_L07_HPP_
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 /***********
  * Classes *
@@ -163,8 +161,6 @@ public:
   void update_latency(double delta, double precision) { double_update(&latency_, delta, precision); }
 };
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 
 #endif /* HOST_L07_HPP_ */

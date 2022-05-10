@@ -22,8 +22,7 @@
 #include "../coll_tuned_topo.hpp"
 #include "../colls_private.hpp"
 
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 
 int smpi_coll_tuned_ompi_reduce_generic(const void* sendbuf, void* recvbuf, int original_count,
                                     MPI_Datatype datatype, MPI_Op  op,
@@ -680,6 +679,4 @@ int reduce__ompi_basic_linear(const void *sbuf, void *rbuf, int count,
 
 /* copied function (with appropriate renaming) ends here */
 
-
-}
-}
+} // namespace simgrid::smpi

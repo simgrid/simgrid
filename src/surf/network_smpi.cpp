@@ -39,9 +39,7 @@ void surf_network_model_init_SMPI()
   simgrid::config::set_default<double>("network/weight-S", 8775);
 }
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 void NetworkSmpiModel::check_lat_factor_cb()
 {
@@ -96,6 +94,4 @@ double NetworkSmpiModel::get_latency_factor(double size)
 
   return current;
 }
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource

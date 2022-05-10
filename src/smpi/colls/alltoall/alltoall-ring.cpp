@@ -25,8 +25,7 @@
  * Author: Ahmad Faraj
 
  ****************************************************************************/
-namespace simgrid {
-namespace smpi {
+namespace simgrid::smpi {
 int alltoall__ring(const void *send_buff, int send_count,
                    MPI_Datatype send_type, void *recv_buff,
                    int recv_count, MPI_Datatype recv_type,
@@ -58,5 +57,4 @@ int alltoall__ring(const void *send_buff, int send_count,
   }
   return MPI_SUCCESS;
 }
-}
-}
+} // namespace simgrid::smpi

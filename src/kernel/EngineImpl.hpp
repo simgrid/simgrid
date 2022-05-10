@@ -29,8 +29,7 @@
 #include <unordered_map>
 #include <vector>
 
-namespace simgrid {
-namespace kernel {
+namespace simgrid::kernel {
 
 class EngineImpl {
   std::unordered_map<std::string, routing::NetPoint*> netpoints_;
@@ -178,7 +177,6 @@ public:
   static double get_clock();
 };
 
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel
 
 #endif

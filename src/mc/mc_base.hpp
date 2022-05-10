@@ -9,8 +9,7 @@
 #include "simgrid/forward.h"
 #include <vector>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /** Execute everything which is invisible
  *
@@ -38,7 +37,6 @@ XBT_PRIVATE bool actor_is_enabled(kernel::actor::ActorImpl* process);
 
 /** Check if the given simcall is visible */
 XBT_PRIVATE bool request_is_visible(const kernel::actor::Simcall* req);
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

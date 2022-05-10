@@ -17,8 +17,7 @@
 #include "xbt/automaton.hpp"
 #include "xbt/base.h"
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 XBT_DECLARE_ENUM_CLASS(ExplorationAlgorithm, Safety, UDPOR, Liveness, CommDeterminism);
 
@@ -93,7 +92,6 @@ public:
   xbt_automaton_state_t get_automaton_transition_dst(xbt_dynar_t const& dynar, int index) const;
 };
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 #endif

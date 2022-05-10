@@ -22,8 +22,7 @@
 #include <string>
 #include <vector>
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 class RecordTrace {
   std::vector<Transition*> transitions_;
@@ -45,7 +44,6 @@ public:
   static void replay(const std::string& trace);
 };
 
-}
-}
+} // namespace simgrid::mc
 
 #endif

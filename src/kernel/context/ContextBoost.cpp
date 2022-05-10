@@ -9,9 +9,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_context);
 
-namespace simgrid {
-namespace kernel {
-namespace context {
+namespace simgrid::kernel::context {
 
 // BoostContextFactory
 BoostContext* BoostContextFactory::create_context(std::function<void()>&& code, actor::ActorImpl* actor)
@@ -66,6 +64,4 @@ XBT_PRIVATE ContextFactory* boost_factory()
   XBT_VERB("Using Boost contexts. Welcome to the 21th century.");
   return new BoostContextFactory();
 }
-} // namespace context
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::context

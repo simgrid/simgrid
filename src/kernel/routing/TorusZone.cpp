@@ -17,8 +17,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_torus, ker_routing, "Kernel Torus Routing");
 
 namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace kernel ::routing {
 
 void TorusZone::create_torus_links(unsigned long id, int rank, unsigned long position)
 {
@@ -180,8 +179,7 @@ void TorusZone::get_local_route(const NetPoint* src, const NetPoint* dst, Route*
   route->gw_dst_ = get_gateway(dst->id());
 }
 
-} // namespace routing
-} // namespace kernel
+} // namespace kernel::routing
 
 namespace s4u {
 

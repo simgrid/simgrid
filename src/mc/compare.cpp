@@ -13,8 +13,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, mc, "Logging specific to mc_compare in mc");
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 /*********************************** Heap comparison ***********************************/
 /***************************************************************************************/
@@ -125,8 +124,7 @@ public:
   void match_equals(const HeapLocationPairs* list);
 };
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 /************************************************************************************/
 
@@ -153,8 +151,7 @@ static bool is_block_stack(const simgrid::mc::RemoteProcess& process, int block)
                      [block](auto const& stack) { return stack.block == block; });
 }
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 void StateComparator::match_equals(const HeapLocationPairs* list)
 {
@@ -984,8 +981,7 @@ static bool heap_area_differ(const RemoteProcess& process, StateComparator& stat
     state.match_equals(previous);
   return false;
 }
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 /************************** Snapshot comparison *******************************/
 /******************************************************************************/
@@ -1176,8 +1172,7 @@ static bool local_variables_differ(const simgrid::mc::RemoteProcess& process, si
   return false;
 }
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 bool snapshot_equal(const Snapshot* s1, const Snapshot* s2)
 {
@@ -1265,5 +1260,4 @@ bool snapshot_equal(const Snapshot* s1, const Snapshot* s2)
 
   return true;
 }
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

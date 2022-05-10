@@ -11,9 +11,7 @@
 
 #include "network_cm02.hpp"
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 class XBT_PRIVATE NetworkSmpiModel : public NetworkCm02Model {
 public:
@@ -26,8 +24,6 @@ protected:
   void check_lat_factor_cb() override;
   void check_bw_factor_cb() override;
 };
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 
 #endif

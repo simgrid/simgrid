@@ -8,9 +8,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_mutex, ker_synchro, "Mutex kernel-space implementation");
 
-namespace simgrid {
-namespace kernel {
-namespace activity {
+namespace simgrid::kernel::activity {
 
 /* -------- Acquisition -------- */
 
@@ -106,6 +104,4 @@ void MutexImpl::unlock(actor::ActorImpl* issuer)
   XBT_OUT();
 }
 
-} // namespace activity
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::activity

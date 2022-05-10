@@ -42,8 +42,7 @@
 #define MV2_ALLTOALL_THROTTLE_FACTOR         4
 
 #include "../colls_private.hpp"
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 int alltoall__mvapich2_scatter_dest(const void *sendbuf,
                                     int sendcount,
                                     MPI_Datatype sendtype,
@@ -133,5 +132,4 @@ int alltoall__mvapich2_scatter_dest(const void *sendbuf,
     return (mpi_errno);
 
 }
-}
-}
+} // namespace simgrid::smpi

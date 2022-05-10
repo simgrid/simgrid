@@ -17,9 +17,7 @@
 #include <string>
 #include <vector>
 
-namespace simgrid {
-namespace kernel {
-namespace routing {
+namespace simgrid::kernel::routing {
 /* ***************************************** */
 /*
  * Platform creation functions. Instead of passing 123 arguments to the creation functions
@@ -170,9 +168,7 @@ public:
 
 extern XBT_PRIVATE xbt::signal<void(ClusterCreationArgs const&)> on_cluster_creation;
 
-} // namespace routing
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::routing
 
 /********** Routing **********/
 void routing_cluster_add_backbone(std::unique_ptr<simgrid::kernel::routing::LinkCreationArgs> link);

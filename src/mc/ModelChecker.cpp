@@ -28,8 +28,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");
 # define WAITPID_CHECKED_FLAGS 0
 #endif
 
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 ModelChecker::ModelChecker(std::unique_ptr<RemoteProcess> remote_simulation, int sockfd)
     : checker_side_(sockfd), remote_process_(std::move(remote_simulation))
@@ -353,5 +352,4 @@ void ModelChecker::finalize_app(bool terminate_asap)
   xbt_assert(checker_side_.get_channel().receive(answer) != -1, "Could not receive answer to FINALIZE");
 }
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc

@@ -13,12 +13,10 @@
 #endif
 
 #if SIMGRID_HAVE_MC
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 /* Configuration support */
 simgrid::mc::ReductionMode reduction_mode = simgrid::mc::ReductionMode::unset;
-}
-}
+} // namespace simgrid::mc
 #else
 #define _sg_do_model_check 0
 #endif

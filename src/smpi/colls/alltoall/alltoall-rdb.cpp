@@ -28,8 +28,7 @@
  * Author: MPICH / slightly modified by Ahmad Faraj.
 
  ****************************************************************************/
-namespace simgrid{
-namespace smpi{
+namespace simgrid::smpi {
 int alltoall__rdb(const void *send_buff, int send_count,
                   MPI_Datatype send_type,
                   void *recv_buff, int recv_count,
@@ -154,5 +153,4 @@ int alltoall__rdb(const void *send_buff, int send_count,
   smpi_free_tmp_buffer(tmp_buff);
   return MPI_SUCCESS;
 }
-}
-}
+} // namespace simgrid::smpi

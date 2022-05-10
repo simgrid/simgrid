@@ -27,15 +27,13 @@
 #include <xbt/utility.hpp>
 
 // ***** Messages
-namespace simgrid {
-namespace mc {
+namespace simgrid::mc {
 
 XBT_DECLARE_ENUM_CLASS(MessageType, NONE, INITIAL_ADDRESSES, CONTINUE, IGNORE_HEAP, UNIGNORE_HEAP, IGNORE_MEMORY,
                        STACK_REGION, REGISTER_SYMBOL, DEADLOCK_CHECK, DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_EXECUTE,
                        SIMCALL_EXECUTE_ANSWER, ASSERTION_FAILED, ACTOR_ENABLED, ACTOR_ENABLED_REPLY, FINALIZE);
 
-} // namespace mc
-} // namespace simgrid
+} // namespace simgrid::mc
 
 constexpr unsigned MC_MESSAGE_LENGTH = 512;
 constexpr unsigned SIMCALL_SERIALIZATION_BUFFER_SIZE = 2048;
