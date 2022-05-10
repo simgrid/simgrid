@@ -76,7 +76,7 @@ void StateEvent::print()
     }
 #if HAVE_SMPI
     if (smpi_cfg_trace_call_location())
-      stream_ << container_name << " location " << filename << " " << linenumber << std::endl ;
+      stream_ << container_name << " location " << filename << " " << linenumber << '\n';
 #endif
     stream_ << container_name << " " << extra_->print();
   } else {

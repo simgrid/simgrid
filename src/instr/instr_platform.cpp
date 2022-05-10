@@ -222,27 +222,27 @@ void platform_graph_export_graphviz(const std::string& output_filename)
   xbt_assert(not fs.fail(), "Failed to open %s", output_filename.c_str());
 
   if (g->directed)
-    fs << "digraph test {" << std::endl;
+    fs << "digraph test {\n";
   else
-    fs << "graph test {" << std::endl;
+    fs << "graph test {\n";
 
-  fs << "  graph [overlap=scale]" << std::endl;
+  fs << "  graph [overlap=scale]\n";
 
-  fs << "  node [shape=box, style=filled]" << std::endl;
-  fs << "  node [width=.3, height=.3, style=filled, color=skyblue]" << std::endl << std::endl;
+  fs << "  node [shape=box, style=filled]\n";
+  fs << "  node [width=.3, height=.3, style=filled, color=skyblue]\n\n";
 
   for (auto const& [node, _] : nodes)
-    fs << "  \"" << node << "\";" << std::endl;
+    fs << "  \"" << node << "\";\n";
 
   for (auto const& [_, edge] : edges) {
     const char* src_s = static_cast<char*>(edge->src->data);
     const char* dst_s = static_cast<char*>(edge->dst->data);
     if (g->directed)
-      fs << "  \"" << src_s << "\" -> \"" << dst_s << "\";" << std::endl;
+      fs << "  \"" << src_s << "\" -> \"" << dst_s << "\";\n";
     else
-      fs << "  \"" << src_s << "\" -- \"" << dst_s << "\";" << std::endl;
+      fs << "  \"" << src_s << "\" -- \"" << dst_s << "\";\n";
   }
-  fs << "}" << std::endl;
+  fs << "}\n";
   fs.close();
 
   xbt_graph_free_graph(g, xbt_free_f, xbt_free_f, nullptr);

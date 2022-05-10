@@ -240,7 +240,7 @@ static void on_container_creation_paje(const Container& c)
     stream << "rank-" << stoi(c.get_name().substr(5)) - 1 << "\"";
 
   XBT_DEBUG("Dump %s", stream.str().c_str());
-  tracing_file << stream.str() << std::endl;
+  tracing_file << stream.str() << '\n';
 }
 
 static void on_container_destruction_paje(const Container& c)
@@ -256,7 +256,7 @@ static void on_container_destruction_paje(const Container& c)
     stream << std::fixed << std::setprecision(trace_precision) << PajeEventType::DestroyContainer << " ";
     stream << timestamp << " " << c.get_type()->get_id() << " " << c.get_id();
     XBT_DEBUG("Dump %s", stream.str().c_str());
-    tracing_file << stream.str() << std::endl;
+    tracing_file << stream.str() << '\n';
   }
 }
 
@@ -283,7 +283,7 @@ static void on_container_creation_ti(const Container& c)
 #endif
     ti_unique_file = new std::ofstream(filename.c_str(), std::ofstream::out);
     xbt_assert(not ti_unique_file->fail(), "Tracefile %s could not be opened for writing", filename.c_str());
-    tracing_file << filename << std::endl;
+    tracing_file << filename << '\n';
   }
   tracing_files.insert({&c, ti_unique_file});
 }
@@ -308,7 +308,7 @@ static void on_entity_value_creation(const EntityValue& value)
   if (not value.get_color().empty())
     stream << " \"" << value.get_color() << "\"";
   XBT_DEBUG("Dump %s", stream.str().c_str());
-  tracing_file << stream.str() << std::endl;
+  tracing_file << stream.str() << '\n';
 }
 
 static void on_event_creation(PajeEvent& event)
@@ -323,13 +323,13 @@ static void on_event_creation(PajeEvent& event)
 static void on_event_destruction(const PajeEvent& event)
 {
   XBT_DEBUG("Dump %s", event.stream_.str().c_str());
-  tracing_file << event.stream_.str() << std::endl;
+  tracing_file << event.stream_.str() << '\n';
 }
 
 static void on_state_event_destruction(const StateEvent& event)
 {
   if (event.has_extra())
-    *tracing_files.at(event.get_container()) << event.stream_.str() << std::endl;
+    *tracing_files.at(event.get_container()) << event.stream_.str() << '\n';
 }
 
 static void on_type_creation(const Type& type, PajeEventType event_type)
@@ -344,7 +344,7 @@ static void on_type_creation(const Type& type, PajeEventType event_type)
   if (type.is_colored())
     stream << " \"" << type.get_color() << "\"";
   XBT_DEBUG("Dump %s", stream.str().c_str());
-  tracing_file << stream.str() << std::endl;
+  tracing_file << stream.str() << '\n';
 }
 
 static void on_link_type_creation(const Type& type, const Type& source, const Type& dest)
@@ -355,7 +355,7 @@ static void on_link_type_creation(const Type& type, const Type& source, const Ty
   stream << PajeEventType::DefineLinkType << " " << type.get_id() << " " << type.get_parent()->get_id();
   stream << " " << source.get_id() << " " << dest.get_id() << " " << type.get_name();
   XBT_DEBUG("Dump %s", stream.str().c_str());
-  tracing_file << stream.str() << std::endl;
+  tracing_file << stream.str() << '\n';
 }
 
 static void on_simulation_start()
@@ -395,7 +395,7 @@ static void on_simulation_start()
 
     /* output one line comment */
     if (auto comment = simgrid::config::get_value<std::string>("tracing/comment"); not comment.empty())
-      tracing_file << "# " << comment << std::endl;
+      tracing_file << "# " << comment << '\n';
 
     /* output comment file */
     paje::dump_comment_file(config::get_value<std::string>(OPT_TRACING_COMMENT_FILE));
