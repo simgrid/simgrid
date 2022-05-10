@@ -20,58 +20,6 @@ namespace simgrid::kernel::routing {
 
 RoutedZone::RoutedZone(const std::string& name) : NetZoneImpl(name) {}
 
-void RoutedZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
-                           std::map<std::string, xbt_edge_t, std::less<>>* edges)
-{
-  std::vector<NetPoint*> vertices = get_vertices();
-
-  for (auto const& my_src : vertices) {
-    for (auto const& my_dst : vertices) {
-      if (my_src == my_dst)
-        continue;
-
-      Route route;
-
-      get_local_route(my_src, my_dst, &route, nullptr);
-
-      XBT_DEBUG("get_route_and_latency %s -> %s", my_src->get_cname(), my_dst->get_cname());
-
-      xbt_node_t current;
-      xbt_node_t previous;
-      const char* previous_name;
-      const char* current_name;
-
-      if (route.gw_src_) {
-        previous      = new_xbt_graph_node(graph, route.gw_src_->get_cname(), nodes);
-        previous_name = route.gw_src_->get_cname();
-      } else {
-        previous      = new_xbt_graph_node(graph, my_src->get_cname(), nodes);
-        previous_name = my_src->get_cname();
-      }
-
-      for (auto const& link : route.link_list_) {
-        const char* link_name = link->get_cname();
-        current               = new_xbt_graph_node(graph, link_name, nodes);
-        current_name          = link_name;
-        new_xbt_graph_edge(graph, previous, current, edges);
-        XBT_DEBUG("  %s -> %s", previous_name, current_name);
-        previous      = current;
-        previous_name = current_name;
-      }
-
-      if (route.gw_dst_) {
-        current      = new_xbt_graph_node(graph, route.gw_dst_->get_cname(), nodes);
-        current_name = route.gw_dst_->get_cname();
-      } else {
-        current      = new_xbt_graph_node(graph, my_dst->get_cname(), nodes);
-        current_name = my_dst->get_cname();
-      }
-      new_xbt_graph_edge(graph, previous, current, edges);
-      XBT_DEBUG("  %s -> %s", previous_name, current_name);
-    }
-  }
-}
-
 /* ************************************************************************** */
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
 /* change a route containing link names into a route containing link entities */

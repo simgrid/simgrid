@@ -264,7 +264,7 @@ public:
                                              std::unordered_set<NetZoneImpl*>& netzones);
 
   virtual void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
-                         std::map<std::string, xbt_edge_t, std::less<>>* edges) = 0;
+                         std::map<std::string, xbt_edge_t, std::less<>>* edges);
 
   /*** Called on each newly created regular route (not on bypass routes) */
   static xbt::signal<void(bool symmetrical, NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,

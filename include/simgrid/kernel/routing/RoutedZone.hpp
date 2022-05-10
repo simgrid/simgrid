@@ -52,9 +52,6 @@ class XBT_PRIVATE RoutedZone : public NetZoneImpl {
 public:
   explicit RoutedZone(const std::string& name);
 
-  void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
-                 std::map<std::string, xbt_edge_t, std::less<>>* edges) override;
-
 protected:
   Route* new_extended_route(RoutingMode hierarchy, NetPoint* gw_src, NetPoint* gw_dst,
                             const std::vector<resource::StandardLinkImpl*>& link_list, bool preserve_order);

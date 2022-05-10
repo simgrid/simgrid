@@ -135,9 +135,6 @@ protected:
     return private_links_.find(position) != private_links_.end();
   }
 
-  void get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_node_t, std::less<>>* nodes,
-                 std::map<std::string, xbt_edge_t, std::less<>>* edges) override;
-
   unsigned long node_pos(unsigned long id) const { return id * num_links_per_node_; }
   unsigned long node_pos_with_loopback(unsigned long id) const { return node_pos(id) + (has_loopback_ ? 1 : 0); }
 
