@@ -10,9 +10,22 @@
 int main(int argc, char** argv)
 {
   simgrid::s4u::Engine e(&argc, argv);
-  xbt_assert(argc == 3, "Usage: %s <platform_file.xml> <graphviz_file.dot>", argv[0]);
+  xbt_assert(argc == 3, "Usage: %s <platform_file.xml> <graphviz_file.dot|graphviz_file.csv>", argv[0]);
 
   e.load_platform(argv[1]);
-  simgrid::instr::platform_graph_export_graphviz(argv[2]);
+
+  const std::string outputfile(argv[2]);
+  const std::string extension = outputfile.substr(outputfile.find_last_of(".") + 1);
+  if(extension == "csv") {
+    printf("Dumping to CSV file\n");
+    simgrid::instr::platform_graph_export_csv(outputfile);
+  }
+  else if(extension == "dot") {
+    printf("Dumping to DOT file\n");
+    simgrid::instr::platform_graph_export_graphviz(outputfile);
+  }
+  else {
+    xbt_assert(false, "Unknown output file format, please use '.dot' or .csv' extension\n");
+  }
   return 0;
 }
