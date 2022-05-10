@@ -16,39 +16,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_generic, ker_routing, "Kernel Generi
 /* ***************************************************************** */
 /* *********************** GENERIC METHODS ************************* */
 
-xbt_node_t new_xbt_graph_node(const s_xbt_graph_t* graph, const char* name,
-                              std::map<std::string, xbt_node_t, std::less<>>* nodes)
-{
-  auto elm = nodes->find(name);
-  if (elm == nodes->end()) {
-    xbt_node_t ret = xbt_graph_new_node(graph, xbt_strdup(name));
-    nodes->insert({name, ret});
-    return ret;
-  } else
-    return elm->second;
-}
-
-xbt_edge_t new_xbt_graph_edge(const s_xbt_graph_t* graph, xbt_node_t s, xbt_node_t d,
-                              std::map<std::string, xbt_edge_t, std::less<>>* edges)
-{
-  const auto* sn   = static_cast<const char*>(xbt_graph_node_get_data(s));
-  const auto* dn   = static_cast<const char*>(xbt_graph_node_get_data(d));
-  std::string name = std::string(sn) + dn;
-
-  auto elm = edges->find(name);
-  if (elm == edges->end()) {
-    name = std::string(dn) + sn;
-    elm  = edges->find(name);
-  }
-
-  if (elm == edges->end()) {
-    xbt_edge_t ret = xbt_graph_new_edge(graph, s, d, nullptr);
-    edges->insert({name, ret});
-    return ret;
-  } else
-    return elm->second;
-}
-
 namespace simgrid::kernel::routing {
 
 RoutedZone::RoutedZone(const std::string& name) : NetZoneImpl(name) {}

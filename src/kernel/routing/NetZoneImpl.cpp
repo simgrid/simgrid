@@ -125,6 +125,32 @@ NetZoneImpl::~NetZoneImpl()
   s4u::Engine::get_instance()->netpoint_unregister(netpoint_);
 }
 
+xbt_node_t NetZoneImpl::new_xbt_graph_node(const s_xbt_graph_t* graph, const char* name,
+                                           std::map<std::string, xbt_node_t, std::less<>>* nodes)
+{
+  auto [elm, inserted] = nodes->try_emplace(name);
+  if (inserted)
+    elm->second = xbt_graph_new_node(graph, xbt_strdup(name));
+  return elm->second;
+}
+
+xbt_edge_t NetZoneImpl::new_xbt_graph_edge(const s_xbt_graph_t* graph, xbt_node_t src, xbt_node_t dst,
+                                           std::map<std::string, xbt_edge_t, std::less<>>* edges)
+{
+  const auto* src_name = static_cast<const char*>(xbt_graph_node_get_data(src));
+  const auto* dst_name = static_cast<const char*>(xbt_graph_node_get_data(dst));
+
+  auto elm = edges->find(std::string(src_name) + dst_name);
+  if (elm == edges->end()) {
+    bool inserted;
+    std::tie(elm, inserted) = edges->try_emplace(std::string(dst_name) + src_name);
+    if (inserted)
+      elm->second = xbt_graph_new_edge(graph, src, dst, nullptr);
+  }
+
+  return elm->second;
+}
+
 void NetZoneImpl::add_child(NetZoneImpl* new_zone)
 {
   xbt_assert(not sealed_, "Cannot add a new child to the sealed zone %s", get_cname());

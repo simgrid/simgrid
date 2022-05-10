@@ -119,6 +119,11 @@ protected:
   std::vector<resource::StandardLinkImpl*> get_link_list_impl(const std::vector<s4u::LinkInRoute>& link_list,
                                                               bool backroute) const;
 
+  static xbt_node_t new_xbt_graph_node(const s_xbt_graph_t* graph, const char* name,
+                                       std::map<std::string, xbt_node_t, std::less<>>* nodes);
+  static xbt_edge_t new_xbt_graph_edge(const s_xbt_graph_t* graph, xbt_node_t src, xbt_node_t dst,
+                                       std::map<std::string, xbt_edge_t, std::less<>>* edges);
+
 public:
   enum class RoutingMode {
     base,     /**< Base case: use simple link lists for routing     */

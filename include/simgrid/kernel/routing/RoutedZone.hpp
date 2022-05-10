@@ -66,9 +66,4 @@ protected:
 } // namespace kernel
 } // namespace simgrid
 
-XBT_PRIVATE xbt_node_t new_xbt_graph_node(const s_xbt_graph_t* graph, const char* name,
-                                          std::map<std::string, xbt_node_t, std::less<>>* nodes);
-XBT_PRIVATE xbt_edge_t new_xbt_graph_edge(const s_xbt_graph_t* graph, xbt_node_t s, xbt_node_t d,
-                                          std::map<std::string, xbt_edge_t, std::less<>>* edges);
-
 #endif /* SIMGRID_ROUTING_GENERIC_HPP_ */

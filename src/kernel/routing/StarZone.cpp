@@ -5,7 +5,6 @@
 
 #include "simgrid/kernel/routing/StarZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
-#include "simgrid/kernel/routing/RoutedZone.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "xbt/string.hpp"
 
