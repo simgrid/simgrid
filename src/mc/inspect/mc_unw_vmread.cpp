@@ -57,7 +57,7 @@ static int access_mem(const unw_addr_space_t as, const unw_word_t addr, unw_word
   // On older kernels, it is necessary to ptrace the target process.
   size_t count = size;
   auto off     = static_cast<off_t>(addr);
-  auto* buf    = reinterpret_cast<char*>(valp);
+  auto* buf    = reinterpret_cast<std::byte*>(valp);
   int fd       = simgrid::mc::open_vm(pid, O_RDONLY);
   if (fd < 0)
     return -UNW_EINVAL;

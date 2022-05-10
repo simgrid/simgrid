@@ -869,7 +869,7 @@ static void read_dwarf_info(simgrid::mc::ObjectInformation* info, Dwarf* dwarf)
  *  @param  elf libelf handle for an ELF file
  *  @return build-id for this ELF file (or an empty vector if none is found)
  */
-static std::vector<char> get_build_id(Elf* elf)
+static std::vector<std::byte> get_build_id(Elf* elf)
 {
 #ifdef __linux
   // Summary: the GNU build ID is stored in a ("GNU, NT_GNU_BUILD_ID) note
@@ -898,30 +898,28 @@ static std::vector<char> get_build_id(Elf* elf)
       // A build ID note is identified by the pair ("GNU", NT_GNU_BUILD_ID)
       // (a namespace and a type within this namespace):
       if (nhdr.n_type == NT_GNU_BUILD_ID && nhdr.n_namesz == sizeof("GNU") &&
-          memcmp((char*)data->d_buf + name_pos, "GNU", sizeof("GNU")) == 0) {
+          memcmp(static_cast<std::byte*>(data->d_buf) + name_pos, "GNU", sizeof("GNU")) == 0) {
         XBT_DEBUG("Found GNU/NT_GNU_BUILD_ID note");
-        char* start = (char*)data->d_buf + desc_pos;
-        char* end   = start + nhdr.n_descsz;
-        return std::vector<char>(start, end);
+        std::byte* start = static_cast<std::byte*>(data->d_buf) + desc_pos;
+        std::byte* end   = start + nhdr.n_descsz;
+        return std::vector<std::byte>(start, end);
       }
     }
   }
 #endif
-  return std::vector<char>();
+  return std::vector<std::byte>();
 }
 
 /** Binary data to hexadecimal */
-static inline std::array<char, 2> to_hex(std::uint8_t byte)
+static inline std::array<char, 2> to_hex(std::byte byte)
 {
   constexpr std::array<char, 16> hexdigits{
       {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'}};
-  // Horrid double braces!
-  // Apparently, this is needed in C++11 (not in C++14).
-  return {{hexdigits[byte >> 4], hexdigits[byte & 0xF]}};
+  return {hexdigits[std::to_integer<unsigned>(byte >> 4)], hexdigits[std::to_integer<unsigned>(byte & std::byte{0xF})]};
 }
 
 /** Binary data to hexadecimal */
-static std::string to_hex(const char* data, std::size_t count)
+static std::string to_hex(const std::byte* data, std::size_t count)
 {
   std::string res;
   res.resize(2 * count);
@@ -931,7 +929,7 @@ static std::string to_hex(const char* data, std::size_t count)
 }
 
 /** Binary data to hexadecimal */
-static std::string to_hex(std::vector<char> const& data)
+static std::string to_hex(std::vector<std::byte> const& data)
 {
   return to_hex(data.data(), data.size());
 }
@@ -949,7 +947,7 @@ static constexpr auto debug_paths = {
  */
 // Example:
 // /usr/lib/debug/.build-id/0b/dc77f1c29aea2b14ff5acd9a19ab3175ffdeae.debug
-static int find_by_build_id(std::vector<char> id)
+static int find_by_build_id(std::vector<std::byte> id)
 {
   std::string filename;
   std::string hex = to_hex(id);
@@ -1005,7 +1003,7 @@ static void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
 
   // Try with NT_GNU_BUILD_ID: we find the build ID in the ELF file and then
   // use this ID to find the file in some known locations in the filesystem.
-  if (std::vector<char> build_id = get_build_id(elf); not build_id.empty()) {
+  if (std::vector<std::byte> build_id = get_build_id(elf); not build_id.empty()) {
     elf_end(elf);
     close(fd);
 
