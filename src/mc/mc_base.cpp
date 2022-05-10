@@ -18,8 +18,6 @@
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/Session.hpp"
 #include "src/mc/remote/RemoteProcess.hpp"
-
-using simgrid::mc::remote;
 #endif
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(mc, "All MC categories");

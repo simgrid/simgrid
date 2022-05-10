@@ -13,8 +13,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, mc, "Logging specific to mc_compare in mc");
 
-using simgrid::mc::remote;
-
 namespace simgrid {
 namespace mc {
 

@@ -15,8 +15,6 @@
 #include "src/mc/inspect/mc_dwarf.hpp"
 #include "src/mc/mc_private.hpp"
 
-using simgrid::mc::remote;
-
 namespace simgrid {
 namespace dwarf {
 
@@ -155,7 +153,7 @@ void execute(const Dwarf_Op* ops, std::size_t n, const ExpressionContext& contex
         // Computed address:
         if (not context.address_space)
           throw evaluation_error("Missing address space");
-        context.address_space->read_bytes(&stack.top(), sizeof(uintptr_t), remote(stack.top()));
+        context.address_space->read_bytes(&stack.top(), sizeof(uintptr_t), mc::remote(stack.top()));
         break;
 
       default:
@@ -169,7 +167,7 @@ void execute(const Dwarf_Op* ops, std::size_t n, const ExpressionContext& contex
                  DW_OP_breg28, DW_OP_breg29, DW_OP_breg30, DW_OP_breg31};
             registers.count(atom) > 0) {
           // Push register + constant:
-          int register_id = simgrid::dwarf::dwarf_register_to_libunwind(op->atom - DW_OP_breg0);
+          int register_id = dwarf_register_to_libunwind(op->atom - DW_OP_breg0);
           unw_word_t res;
           if (not context.cursor)
             throw evaluation_error("Missing stack context");

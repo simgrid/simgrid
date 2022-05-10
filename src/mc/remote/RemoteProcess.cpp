@@ -23,8 +23,6 @@
 #include <string>
 #include <string_view>
 
-using simgrid::mc::remote;
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc, "MC process information");
 
 namespace simgrid {

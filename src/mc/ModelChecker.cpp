@@ -22,8 +22,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");
 
 ::simgrid::mc::ModelChecker* mc_model_checker = nullptr;
 
-using simgrid::mc::remote;
-
 #ifdef __linux__
 # define WAITPID_CHECKED_FLAGS __WALL
 #else

@@ -25,8 +25,6 @@ typedef register_t greg_t;
 
 #include <libunwind.h>
 
-using simgrid::mc::remote;
-
 namespace simgrid {
 namespace mc {
 

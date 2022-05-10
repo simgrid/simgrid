@@ -8,7 +8,6 @@
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/remote/RemoteProcess.hpp"
 
-using simgrid::mc::remote;
 /** @file
  *  @brief (Cross-process, MCer/MCed) Access to SMX structures
  *
@@ -49,7 +48,7 @@ static void MC_process_refresh_simix_actor_dynar(const simgrid::mc::RemoteProces
     simgrid::mc::ActorInformation info;
 
     info.address  = simgrid::mc::RemotePtr<simgrid::kernel::actor::ActorImpl>(data[i]);
-    process->read_bytes(&info.copy, sizeof(info.copy), remote(data[i]));
+    process->read_bytes(&info.copy, sizeof(info.copy), simgrid::mc::remote(data[i]));
     target.push_back(std::move(info));
   }
   ::operator delete(data);

@@ -11,8 +11,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc, "Logging specific to MC states");
 
-using simgrid::mc::remote;
-
 namespace simgrid {
 namespace mc {
 
