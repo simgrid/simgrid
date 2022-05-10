@@ -248,7 +248,8 @@ void platform_graph_export_graphviz(const std::string& output_filename)
   xbt_graph_free_graph(g, xbt_free_f, xbt_free_f, nullptr);
 }
 
-void platform_graph_export_csv(const std::string& output_filename) {
+void platform_graph_export_csv(const std::string& output_filename)
+{
   auto* g         = xbt_graph_new_graph(0, nullptr);
   std::map<std::string, xbt_node_t, std::less<>> nodes;
   std::map<std::string, xbt_edge_t, std::less<>> edges;
@@ -259,10 +260,10 @@ void platform_graph_export_csv(const std::string& output_filename) {
   xbt_assert(not fs.fail(), "Failed to open %s", output_filename.c_str());
 
   fs << "src,dst" << std::endl;
-  for (auto const& elm : edges) {
-    const char* src_s = static_cast<char*>(elm.second->src->data);
-    const char* dst_s = static_cast<char*>(elm.second->dst->data);
-    fs << src_s << "," << dst_s << std::endl;
+  for (auto const& [_, edge] : edges) {
+    const char* src_s = static_cast<char*>(edge->src->data);
+    const char* dst_s = static_cast<char*>(edge->dst->data);
+    fs << src_s << "," << dst_s << "\n";
   }
   fs.close();
   xbt_graph_free_graph(g, xbt_free_f, xbt_free_f, nullptr);
