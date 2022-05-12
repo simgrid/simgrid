@@ -9,7 +9,7 @@
 #include "app-bittorrent.h"
 #include <xbt/dynar.h>
 
-void tracker(int argc, char* argv[]);
+void tracker_run(int argc, char* argv[]);
 /** Tasks exchanged between a tracker and peers. */
 typedef struct s_tracker_query {
   int peer_id;                 // peer id

@@ -20,8 +20,8 @@ int main(int argc, char* argv[])
 
   simgrid_load_platform(argv[1]);
 
-  simgrid_register_function("tracker", tracker);
-  simgrid_register_function("peer", peer);
+  simgrid_register_function("tracker", tracker_run);
+  simgrid_register_function("peer", peer_run);
 
   simgrid_load_deployment(argv[2]);
 

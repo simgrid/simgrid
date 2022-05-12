@@ -111,13 +111,13 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
     /* we need a sleep action (even when the timeout is infinite) to be notified of host failures */
     /* Comms handle that a bit differently of the other activities */
     if (auto* comm = dynamic_cast<CommImpl*>(this)) {
-      resource::Action* sleep = issuer->get_host()->get_cpu()->sleep(timeout);
-      sleep->set_activity(comm);
+      resource::Action* sleep_action = issuer->get_host()->get_cpu()->sleep(timeout);
+      sleep_action->set_activity(comm);
 
       if (issuer == comm->src_actor_)
-        comm->src_timeout_ = sleep;
+        comm->src_timeout_ = sleep_action;
       else
-        comm->dst_timeout_ = sleep;
+        comm->dst_timeout_ = sleep_action;
     } else {
       SynchroImplPtr synchro(new SynchroImpl([this, issuer]() {
         this->unregister_simcall(&issuer->simcall_);

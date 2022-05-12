@@ -367,17 +367,17 @@ void ActorImpl::resume()
 
 activity::ActivityImplPtr ActorImpl::join(const ActorImpl* actor, double timeout)
 {
-  activity::ActivityImplPtr sleep = this->sleep(timeout);
+  activity::ActivityImplPtr sleep_activity = this->sleep(timeout);
   if (actor->wannadie() || actor->to_be_freed()) {
-    if (sleep->surf_action_)
-      sleep->surf_action_->finish(resource::Action::State::FINISHED);
+    if (sleep_activity->surf_action_)
+      sleep_activity->surf_action_->finish(resource::Action::State::FINISHED);
   } else {
-    actor->on_exit->emplace_back([sleep](bool) {
-      if (sleep->surf_action_)
-        sleep->surf_action_->finish(resource::Action::State::FINISHED);
+    actor->on_exit->emplace_back([sleep_activity](bool) {
+      if (sleep_activity->surf_action_)
+        sleep_activity->surf_action_->finish(resource::Action::State::FINISHED);
     });
   }
-  return sleep;
+  return sleep_activity;
 }
 
 activity::ActivityImplPtr ActorImpl::sleep(double duration)
@@ -386,9 +386,9 @@ activity::ActivityImplPtr ActorImpl::sleep(double duration)
     throw_exception(std::make_exception_ptr(HostFailureException(
         XBT_THROW_POINT, std::string("Host ") + host_->get_cname() + " failed, you cannot sleep there.")));
 
-  auto sleep = new activity::SleepImpl();
-  sleep->set_name("sleep").set_host(host_).set_duration(duration).start();
-  return activity::SleepImplPtr(sleep);
+  auto sleep_activity = new activity::SleepImpl();
+  sleep_activity->set_name("sleep").set_host(host_).set_duration(duration).start();
+  return activity::SleepImplPtr(sleep_activity);
 }
 
 void ActorImpl::throw_exception(std::exception_ptr e)

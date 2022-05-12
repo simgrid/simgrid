@@ -25,7 +25,7 @@ static int is_in_list(const_xbt_dynar_t peers, int id)
   return xbt_dynar_member(peers, &id);
 }
 
-void tracker(int argc, char* argv[])
+void tracker_run(int argc, char* argv[])
 {
   // Checking arguments
   xbt_assert(argc == 2, "Wrong number of arguments for the tracker.");

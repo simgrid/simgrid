@@ -54,8 +54,8 @@ void* Region::read(void* target, const void* addr, std::size_t size) const
   xbt_assert(contain(simgrid::mc::remote(addr)), "Trying to read out of the region boundary.");
 
   // Last byte of the region:
-  const void* end = (const char*)addr + size - 1;
-  if (simgrid::mc::mmu::same_chunk((std::uintptr_t)addr, (std::uintptr_t)end)) {
+  const void* end_addr = (const char*)addr + size - 1;
+  if (simgrid::mc::mmu::same_chunk((std::uintptr_t)addr, (std::uintptr_t)end_addr)) {
     // The memory is contained in a single page:
     return mc_translate_address_region((uintptr_t)addr, this);
   }
@@ -66,7 +66,7 @@ void* Region::read(void* target, const void* addr, std::size_t size) const
   // We should remove this assumption.
 
   // Page of the last byte of the memory area:
-  size_t page_end = simgrid::mc::mmu::split((std::uintptr_t)end).first;
+  size_t page_end = simgrid::mc::mmu::split((std::uintptr_t)end_addr).first;
 
   void* dest = target; // iterator in the buffer to where we should copy next
 

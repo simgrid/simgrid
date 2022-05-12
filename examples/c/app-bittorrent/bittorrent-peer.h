@@ -57,7 +57,7 @@ typedef s_peer_t* peer_t;
 typedef const s_peer_t* const_peer_t;
 
 /** Peer main function */
-void peer(int argc, char* argv[]);
+void peer_run(int argc, char* argv[]);
 
 int get_peers_from_tracker(const_peer_t peer);
 void send_handshake_to_all_peers(const_peer_t peer);

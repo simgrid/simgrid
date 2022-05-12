@@ -77,7 +77,7 @@ static void peer_free(peer_t peer)
 }
 
 /** Peer main function */
-void peer(int argc, char* argv[])
+void peer_run(int argc, char* argv[])
 {
   // Check arguments
   xbt_assert(argc == 3 || argc == 4, "Wrong number of arguments");
