@@ -464,7 +464,7 @@ ompi_coll_tuned_topo_build_chain( int fanout,
 {
     int rank, size;
     int srank; /* shifted rank */
-    int i,maxchainlen;
+    int maxchainlen;
     int mark;
     ompi_coll_tree_t *chain;
 
@@ -494,7 +494,8 @@ ompi_coll_tuned_topo_build_chain( int fanout,
       fflush(stdout);
       return nullptr;
     }
-    for(i=0;i<fanout;i++) chain->tree_next[i] = -1;
+    for (int i = 0; i < fanout; i++)
+      chain->tree_next[i] = -1;
 
     /*
      * Set root & numchain

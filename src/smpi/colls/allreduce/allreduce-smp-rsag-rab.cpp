@@ -25,7 +25,7 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
 {
   int comm_size, rank;
   int tag = COLL_TAG_ALLREDUCE;
-  int mask, src, dst;
+  int mask;
   MPI_Status status;
   if(comm->get_leaders_comm()==MPI_COMM_NULL){
     comm->init_smp();
@@ -59,7 +59,7 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
   mask = 1;
   while (mask < num_core) {
     if ((mask & intra_rank) == 0) {
-      src = (inter_rank * num_core) + (intra_rank | mask);
+      int src = (inter_rank * num_core) + (intra_rank | mask);
       //      if (src < ((inter_rank + 1) * num_core)) {
       if (src < comm_size) {
         Request::recv(tmp_buf, count, dtype, src, tag, comm, &status);
@@ -67,7 +67,7 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
       }
     } else {
 
-      dst = (inter_rank * num_core) + (intra_rank & (~mask));
+      int dst = (inter_rank * num_core) + (intra_rank & (~mask));
       Request::send(rbuf, count, dtype, dst, tag, comm);
       break;
     }
@@ -78,7 +78,7 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
   // INTER: reduce-scatter
   if (intra_rank == 0) {
 
-    int dst, base_offset, send_base_offset, recv_base_offset, recv_chunk;
+    int base_offset, send_base_offset, recv_base_offset, recv_chunk;
     int curr_count, i, recv_offset, send_offset;
 
     // reduce-scatter
@@ -90,7 +90,7 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
     base_offset = 0;
 
     while (mask < (comm_size / num_core)) {
-      dst = inter_rank ^ mask;
+      int dst = inter_rank ^ mask;
 
       // compute offsets
       // right-handside
@@ -136,7 +136,7 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
     i = 1;
     while (mask >= 1) {
       // destination pair for both send and recv
-      dst = inter_rank ^ mask;
+      int dst = inter_rank ^ mask;
 
       // compute offsets
       send_base_offset = base_offset;
@@ -171,7 +171,7 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
   mask = 1;
   while (mask < num_core_in_current_smp) {
     if (intra_rank & mask) {
-      src = (inter_rank * num_core) + (intra_rank - mask);
+      int src = (inter_rank * num_core) + (intra_rank - mask);
       Request::recv(rbuf, count, dtype, src, tag, comm, &status);
       break;
     }
@@ -181,7 +181,7 @@ int allreduce__smp_rsag_rab(const void *sbuf, void *rbuf, int count,
   mask >>= 1;
 
   while (mask > 0) {
-    dst = (inter_rank * num_core) + (intra_rank + mask);
+    int dst = (inter_rank * num_core) + (intra_rank + mask);
     if (dst < comm_size) {
       Request::send(rbuf, count, dtype, dst, tag, comm);
     }
