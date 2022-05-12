@@ -35,7 +35,7 @@ class XBT_PUBLIC VirtualMachine : public s4u::Host {
   kernel::resource::VirtualMachineImpl* const pimpl_vm_;
 
   /* Signals about the life cycle of the VM */
-  static xbt::signal<void(VirtualMachine&)> on_creation;
+  static xbt::signal<void(VirtualMachine&)> on_vm_creation;
   static xbt::signal<void(VirtualMachine const&)> on_start;
   static xbt::signal<void(VirtualMachine const&)> on_started;
   static xbt::signal<void(VirtualMachine const&)> on_shutdown;
@@ -43,7 +43,7 @@ class XBT_PUBLIC VirtualMachine : public s4u::Host {
   static xbt::signal<void(VirtualMachine const&)> on_resume;
   static xbt::signal<void(VirtualMachine const&)> on_migration_start;
   static xbt::signal<void(VirtualMachine const&)> on_migration_end;
-  static xbt::signal<void(VirtualMachine const&)> on_destruction;
+  static xbt::signal<void(VirtualMachine const&)> on_vm_destruction;
 
 #ifndef DOXYGEN
   friend kernel::resource::VirtualMachineImpl; // calls signals from Impl
@@ -89,13 +89,13 @@ public:
   State get_state() const;
 
   /* Callbacks on signals */
-  static void on_creation_cb(const std::function<void(VirtualMachine&)>& cb) { on_creation.connect(cb); }
+  static void on_creation_cb(const std::function<void(VirtualMachine&)>& cb) { on_vm_creation.connect(cb); }
   static void on_start_cb(const std::function<void(VirtualMachine const&)>& cb) { on_start.connect(cb); }
   static void on_started_cb(const std::function<void(VirtualMachine const&)>& cb) { on_started.connect(cb); }
   static void on_shutdown_cb(const std::function<void(VirtualMachine const&)>& cb) { on_shutdown.connect(cb); }
   static void on_suspend_cb(const std::function<void(VirtualMachine const&)>& cb) { on_suspend.connect(cb); }
   static void on_resume_cb(const std::function<void(VirtualMachine const&)>& cb) { on_resume.connect(cb); }
-  static void on_destruction_cb(const std::function<void(VirtualMachine const&)>& cb) { on_destruction.connect(cb); }
+  static void on_destruction_cb(const std::function<void(VirtualMachine const&)>& cb) { on_vm_destruction.connect(cb); }
   static void on_migration_start_cb(const std::function<void(VirtualMachine const&)>& cb)
   {
     on_migration_start.connect(cb);

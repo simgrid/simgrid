@@ -410,7 +410,7 @@ void VirtualMachineImpl::end_migration()
 void VirtualMachineImpl::seal()
 {
   HostImpl::seal();
-  s4u::VirtualMachine::on_creation(*get_iface());
+  s4u::VirtualMachine::on_vm_creation(*get_iface());
 }
 
 } // namespace kernel::resource

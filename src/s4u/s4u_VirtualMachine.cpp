@@ -13,7 +13,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_vm, s4u, "S4U virtual machines");
 
 namespace simgrid::s4u {
-xbt::signal<void(VirtualMachine&)> VirtualMachine::on_creation;
+xbt::signal<void(VirtualMachine&)> VirtualMachine::on_vm_creation;
 xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_start;
 xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_started;
 xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_shutdown;
@@ -21,7 +21,7 @@ xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_suspend;
 xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_resume;
 xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_migration_start;
 xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_migration_end;
-xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_destruction;
+xbt::signal<void(VirtualMachine const&)> VirtualMachine::on_vm_destruction;
 
 xbt::Extension<Host, VmHostExt> VmHostExt::EXTENSION_ID;
 
@@ -72,7 +72,7 @@ void VirtualMachine::destroy()
     shutdown();
 
     XBT_DEBUG("destroy %s", get_cname());
-    on_destruction(*this);
+    on_vm_destruction(*this);
     /* Then, destroy the VM object */
     kernel::actor::simcall_answered(
         [this]() { get_vm_impl()->get_physical_host()->get_impl()->destroy_vm(get_name()); });
