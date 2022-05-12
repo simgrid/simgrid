@@ -181,7 +181,8 @@ static void on_communication(const simgrid::kernel::activity::CommImpl& comm)
  */
 void sg_link_load_plugin_init()
 {
-  xbt_assert(simgrid::s4u::Engine::get_instance()->get_host_count() == 0,
+  xbt_assert(simgrid::s4u::Engine::get_instance()->get_host_count() == 0 &&
+                 simgrid::s4u::Engine::get_instance()->get_link_count() == 0,
              "Please call sg_link_load_plugin_init() BEFORE initializing the platform.");
   xbt_assert(not LinkLoad::EXTENSION_ID.valid(), "Double call to sg_link_load_plugin_init. Aborting.");
   LinkLoad::EXTENSION_ID = simgrid::s4u::Link::extension_create<LinkLoad>();
