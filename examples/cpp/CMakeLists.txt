@@ -44,24 +44,25 @@ if(SIMGRID_HAVE_MC)
     set(_mc-bugged1-liveness_factories "ucontext")
     add_dependencies(tests-mc s4u-mc-bugged1-liveness)
     set(_mc-bugged2-liveness_factories "ucontext")
+
+    # This example never ends, disable it for now
+    set(_mc-bugged2-liveness_disable 1)
+
+    ADD_TESH(s4u-mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness
+                                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                                      --cd ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness
+                                                       ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh)
+    IF(HAVE_C_STACK_CLEANER)
+      add_dependencies(tests-mc s4u-mc-bugged1-liveness-stack-cleaner)
+      # This test checks if the stack cleaner is making a difference:
+      ADD_TEST(s4u-mc-bugged1-liveness-stack-cleaner ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/s4u-mc-bugged1-liveness-stack-cleaner
+                                                     ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/
+                                                     ${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness/)
+    ENDIF()
   else()
     set(_mc-bugged1-liveness_disable 1)
+    set(_mc-bugged2-liveness_disable 1)
   endif()
-
-  # This example never ends, disable it for now
-  set(_mc-bugged2-liveness_disable 1)
-
-  ADD_TESH(s4u-mc-bugged1-liveness-visited-ucontext --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness
-                                                    --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                                    --cd ${CMAKE_CURRENT_SOURCE_DIR}/mc-bugged1-liveness
-                                                     ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/s4u-mc-bugged1-liveness-visited.tesh)
-  IF(HAVE_C_STACK_CLEANER)
-    add_dependencies(tests-mc s4u-mc-bugged1-liveness-stack-cleaner)
-    # This test checks if the stack cleaner is making a difference:
-    ADD_TEST(s4u-mc-bugged1-liveness-stack-cleaner ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/s4u-mc-bugged1-liveness-stack-cleaner
-                                                   ${CMAKE_HOME_DIRECTORY}/examples/cpp/mc-bugged1-liveness/
-                                                   ${CMAKE_CURRENT_BINARY_DIR}/mc-bugged1-liveness/)
-  ENDIF()
 
   if(enable_coverage)
     foreach (example mc-bugged1 mc-bugged2 mc-electric-fence mc-failing-assert)
