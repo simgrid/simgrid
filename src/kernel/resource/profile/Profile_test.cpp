@@ -151,7 +151,7 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
     using simgrid::kernel::profile::Distribution;
     std::vector<simgrid::kernel::profile::StochasticDatedValue> got = trace2selist("STOCHASTIC\n"
                                                                                    "DET 0 UNIF 10 20");
-    
+
     std::vector<simgrid::kernel::profile::StochasticDatedValue> want;
     want.emplace_back(Distribution::DET, std::vector<double>{0}, Distribution::UNIF, std::vector<double>{10, 20});
 
@@ -166,7 +166,7 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
                                                                                    "NORMAL 25 10 DET 3\n"
                                                                                    "UNIF 10 20 NORMAL 25 10\n"
                                                                                    "DET 5 UNIF 5 25");
-    
+
     std::vector<simgrid::kernel::profile::StochasticDatedValue> want;
     want.emplace_back(Distribution::DET, std::vector<double>{0}, Distribution::DET, std::vector<double>{4});
     want.emplace_back(Distribution::NORM, std::vector<double>{25, 10}, Distribution::DET, std::vector<double>{3});
