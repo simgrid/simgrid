@@ -158,6 +158,8 @@ public:
     return detach();
   }
 
+  Comm* abort_me();
+
   Comm* wait_for(double timeout) override;
 
   /*! take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done). */

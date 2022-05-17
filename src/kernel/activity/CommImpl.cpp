@@ -11,6 +11,7 @@
 #define SIMIX_H_NO_DEPRECATED_WARNING // avoid deprecation warning on include (remove with XBT_ATTRIB_DEPRECATED_v333)
 #include <simgrid/simix.h>
 
+#include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
@@ -61,13 +62,17 @@ CommImpl& CommImpl::set_type(CommImplType type)
 
 CommImpl& CommImpl::set_source(s4u::Host* from)
 {
+  xbt_assert( from_ == nullptr );
   from_ = from;
+  hosts_.push_back(from);
   return *this;
 }
 
 CommImpl& CommImpl::set_destination(s4u::Host* to)
 {
+  xbt_assert( to_ == nullptr );
   to_ = to;
+  hosts_.push_back(to_);
   return *this;
 }
 

@@ -18,7 +18,6 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
       nullptr, [](resource::Action* a) { a->unref(); }};
   double sharing_penalty_             = 1.0;
   double bound_                       = 0.0;
-  std::vector<s4u::Host*> hosts_;
   std::vector<double> flops_amounts_;
   std::vector<double> bytes_amounts_;
   int thread_count_ = 1;

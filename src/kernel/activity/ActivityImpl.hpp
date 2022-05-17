@@ -38,6 +38,10 @@ public:
   resource::Action* surf_action_ = nullptr;
 
 protected:
+
+  std::vector<s4u::Host*> hosts_;
+
+
   void inline set_name(std::string_view name)
   {
     // This is to keep name_ private while allowing ActivityImpl_T<??> to set it and then return a Ptr to qualified
@@ -80,6 +84,8 @@ public:
   virtual void set_exception(actor::ActorImpl* issuer) = 0; // Raising exceptions and stuff
   virtual void finish() = 0; // Unlock all simcalls blocked on that activity, either because it was marked as done by
                              // the model or because it terminated without waiting for the model
+
+  virtual const std::vector<s4u::Host*>& get_hosts() const { return hosts_;} ;
 
   void register_simcall(actor::Simcall* simcall);
   void unregister_simcall(actor::Simcall* simcall);
