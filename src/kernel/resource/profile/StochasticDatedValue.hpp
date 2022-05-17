@@ -36,8 +36,6 @@ private:
   static double draw(Distribution law, std::vector<double> params);
 };
 
-
-
 } // namespace simgrid::kernel::profile
 
 std::vector<simgrid::kernel::profile::StochasticDatedValue> trace2selist( const char* c_str );
