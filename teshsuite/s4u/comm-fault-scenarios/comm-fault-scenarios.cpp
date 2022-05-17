@@ -266,7 +266,7 @@ class SendAgent {
     if (outcome != expected) {
       XBT_ERROR("Expected %s but got %s in %s", to_string(expected), to_string(outcome), scenario_string.c_str());
     } else {
-      XBT_INFO("OK: %s", scenario_string.c_str());
+      XBT_DEBUG("OK: %s", scenario_string.c_str());
     }
     sg4::this_actor::sleep_until(end_time);
 
@@ -400,7 +400,7 @@ class ReceiveAgent {
     if (outcome != expected) {
       XBT_ERROR("Expected %s but got %s in %s", to_string(expected), to_string(outcome), scenario_string.c_str());
     } else {
-      XBT_INFO("OK: %s", scenario_string.c_str());
+      XBT_DEBUG("OK: %s", scenario_string.c_str());
     }
     sg4::this_actor::sleep_until(end_time);
 
