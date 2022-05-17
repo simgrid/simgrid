@@ -300,18 +300,19 @@ ActivityImplPtr CommImpl::irecv(actor::CommIrecvSimcall* observer)
     // find a match in the list of already received comms
     other_comm = mbox->find_matching_comm(CommImplType::SEND, observer->get_match_fun(), observer->get_payload(),
                                           this_synchro, /*done*/ true, /*remove_matching*/ true);
-    // if not found, assume the receiver came first, register it to the mailbox in the classical way
-    if (not other_comm) {
-      XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request "
-                "into list");
-      other_comm = std::move(this_synchro);
-      mbox->push(other_comm);
+    if (other_comm  && other_comm->surf_action_ && other_comm->get_remaining() < 1e-12) {
+      XBT_DEBUG("comm %p has been already sent, and is finished, destroy it", other_comm.get());
+      other_comm->set_state(State::DONE);
+      other_comm->set_mailbox(nullptr);
     } else {
-      if (other_comm->surf_action_ && other_comm->get_remaining() < 1e-12) {
-        XBT_DEBUG("comm %p has been already sent, and is finished, destroy it", other_comm.get());
-        other_comm->set_state(State::DONE);
-        other_comm->set_mailbox(nullptr);
+      // if not found, assume the receiver came first, register it to the mailbox in the classical way
+      if (not other_comm) {
+        XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request "
+                  "into list");
+        other_comm = std::move(this_synchro);
+        mbox->push(other_comm);
       }
+      observer->get_issuer()->activities_.emplace_back(other_comm);
     }
   } else {
     /* Prepare a comm describing us, so that it gets passed to the user-provided filter of other side */
