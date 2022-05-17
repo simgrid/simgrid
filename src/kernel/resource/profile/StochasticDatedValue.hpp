@@ -38,4 +38,6 @@ private:
 
 } // namespace simgrid::kernel::profile
 
+std::vector<simgrid::kernel::profile::StochasticDatedValue> trace2selist( const char* c_str );
+
 #endif
