@@ -145,7 +145,7 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
 
     REQUIRE(want == got);
   }
-/*
+
   SECTION("One stochastic event (parsing)")
   {
     using simgrid::kernel::profile::Distribution;
@@ -153,7 +153,7 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
                                                                                    "DET 0 UNIF 10 20");
 
     std::vector<simgrid::kernel::profile::StochasticDatedValue> want;
-    want.emplace_back(0, -1); // The initial fake event
+ //want.emplace_back(0, -1); // The initial fake event
     want.emplace_back(Distribution::DET, std::vector<double>{0}, Distribution::UNIF, std::vector<double>{10, 20});
 
     REQUIRE(want == got);
@@ -169,7 +169,7 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
                                                                                    "DET 5 UNIF 5 25");
 
     std::vector<simgrid::kernel::profile::StochasticDatedValue> want;
-    want.emplace_back(0, -1);
+   // want.emplace_back(0, -1);
     want.emplace_back(Distribution::DET, std::vector<double>{0}, Distribution::DET, std::vector<double>{4});
     want.emplace_back(Distribution::NORM, std::vector<double>{25, 10}, Distribution::DET, std::vector<double>{3});
     want.emplace_back(Distribution::UNIF, std::vector<double>{10, 20}, Distribution::NORM, std::vector<double>{25, 10});
@@ -177,7 +177,7 @@ TEST_CASE("kernel::profile: Resource profiles, defining the external load", "ker
 
     REQUIRE(want == got);
   }
-*/
+
   SECTION("Two stochastic events (drawing each distribution)")
   {
     simgrid::xbt::random::set_implem_xbt();

@@ -212,6 +212,8 @@ public:
         event_list.at(initial_size).date_ += loop_delay;
     }
   }
+
+  std::vector<StochasticDatedValue> get_pattern() { return pattern; } 
 };
 
 Profile* ProfileBuilder::from_string(const std::string& name, const std::string& input, double periodicity)
@@ -244,3 +246,11 @@ Profile* ProfileBuilder::from_callback(const std::string& name, const std::funct
 }
 
 } // namespace simgrid::kernel::profile
+
+std::vector<simgrid::kernel::profile::StochasticDatedValue> trace2selist( const char*  c_str) {
+  std::string str(c_str);
+  simgrid::kernel::profile::LegacyUpdateCb cb(str,0);
+  return cb.get_pattern();
+}
+
+
