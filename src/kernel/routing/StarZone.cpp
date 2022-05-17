@@ -62,8 +62,9 @@ void StarZone::get_graph(const s_xbt_graph_t* graph, std::map<std::string, xbt_n
   xbt_node_t star_node = new_xbt_graph_node(graph, get_cname(), nodes);
 
   for (auto const& src : get_vertices()) {
+    const char* src_name = routes_[src->id()].gateway ? routes_[src->id()].gateway->get_cname() : src->get_cname();
+    xbt_node_t src_node  = new_xbt_graph_node(graph, src_name, nodes);
     /* going up */
-    xbt_node_t src_node = new_xbt_graph_node(graph, src->get_cname(), nodes);
     xbt_node_t previous = src_node;
     for (auto const* link : routes_[src->id()].links_up) {
       xbt_node_t current = new_xbt_graph_node(graph, link->get_cname(), nodes);
