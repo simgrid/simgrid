@@ -199,6 +199,8 @@ class SendAgent {
 
   void send_message(const Scenario& s)
   {
+    std::string scenario_string = to_string(s);
+     XBT_DEBUG("Will try: %s", scenario_string.c_str());
     double send_value;
     sg4::CommPtr comm = nullptr;
     // CommType type=s.type;
@@ -256,7 +258,6 @@ class SendAgent {
     }
 
     Action outcome              = Action::END;
-    std::string scenario_string = to_string(s);
     if (step_index < s.steps.size()) {
       const Step& step = s.steps[step_index];
       assert(step.entity == Step::SND && step.type == Step::ACTION);
