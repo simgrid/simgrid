@@ -1,0 +1,98 @@
+/* Copyright (c) 2006-2022. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#include <simgrid/s4u.hpp>
+namespace sg4 = simgrid::s4u;
+
+const double BW_CPU  = 1e12;
+const double LAT_CPU = 0;
+
+const double BW_NODE  = 1e11;
+const double LAT_NODE = 1e-8;
+
+const double BW_NETWORK = 1.25e10;
+const double LAT_NETWORK = 1e-7;
+
+static std::string int_string(int n) {
+    char result[10];
+    std::snprintf(result, 10, "%02d", n);
+    return result;
+}
+
+/**
+ *
+ * This function creates one node made of N CPUs.
+ */
+static sg4::NetZone *create_node(const sg4::NetZone* root, const std::string& node_name,
+                                                     const int nb_cpu) {
+    auto* node = sg4::create_star_zone(node_name);
+    node->set_parent(root);
+
+    /* create all hosts and connect them to outside world */
+    for (int i=0; i<nb_cpu; i++) {
+        const auto& cpuname = node_name + "_cpu-" + int_string(i);
+        const auto& linkname = "link_" + cpuname;
+
+        const sg4::Host* host = node->create_host(cpuname, 1e9);
+        const sg4::Link* l = node->create_split_duplex_link(linkname, BW_CPU)->set_latency(LAT_CPU)->seal();
+
+        node->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {{l, sg4::LinkInRoute::Direction::UP}}, true);
+    }
+
+    return node;
+}
+
+/**
+ *
+ * This function creates one super-node made of M nodes with N CPU.
+ */
+static sg4::NetZone *create_supernode(const sg4::NetZone* root, const std::string& supernode_name,
+                                                     const int nb_nodes, const int nb_cpu) {
+    auto* supernode = sg4::create_star_zone(supernode_name);
+    supernode->set_parent(root);
+
+    /* create all nodes and connect them to outside world */
+    for (int i=0; i<nb_nodes; i++) {
+        const auto& node_name = supernode_name + "_node-" + int_string(i);
+        const auto& linkname = "link_" + node_name;
+
+        sg4::NetZone *node = create_node(supernode, node_name, nb_cpu);
+        const auto router = node->create_router("router_" + node_name);
+        node->seal();
+
+        const sg4::Link* l = supernode->create_split_duplex_link(linkname, BW_NODE)->set_latency(LAT_NODE)->seal();
+        supernode->add_route(node->get_netpoint(), nullptr, router, nullptr, {{l, sg4::LinkInRoute::Direction::UP}}, true);
+    }
+    return supernode;
+}
+
+/**
+ *
+ * This function creates one cluster of L super-node made of M nodes with N CPU.
+ */
+static sg4::NetZone *create_cluster(const std::string& cluster_name, const int nb_supernodes,
+                                                     const int nb_nodes, const int nb_cpu) {
+    auto* cluster = sg4::create_star_zone(cluster_name);
+
+    /* create all supernodes and connect them to outside world */
+    for (int i=0; i<nb_supernodes; i++) {
+        const auto& supernode_name = cluster_name + "_supernode-" + int_string(i);
+        const auto& linkname = "link_" + supernode_name;
+
+        sg4::NetZone *supernode = create_supernode(cluster, supernode_name, nb_nodes, nb_cpu);
+        const auto router = supernode->create_router("router_" + supernode_name);
+        supernode->seal();
+
+        const sg4::Link* l = cluster->create_split_duplex_link(linkname, BW_NETWORK)->set_latency(LAT_NETWORK)->seal();
+        cluster->add_route(supernode->get_netpoint(), nullptr, router, nullptr, {{l, sg4::LinkInRoute::Direction::UP}}, true);
+    }
+    return cluster;
+}
+
+extern "C" void load_platform(const sg4::Engine& e);
+void load_platform(const sg4::Engine& e)
+{
+    create_cluster("cluster", 4, 6, 2)->seal();
+}
