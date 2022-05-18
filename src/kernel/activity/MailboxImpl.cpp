@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/MailboxImpl.hpp"
+#include "simgrid/msg.h"
 #include "src/kernel/activity/CommImpl.hpp"
 
 #include <unordered_map>
@@ -69,21 +70,24 @@ void MailboxImpl::remove(const CommImplPtr& comm)
  */
 void MailboxImpl::clear()
 {
+  // CommImpl::cancel() will remove the comm from the mailbox..
   for (auto comm : done_comm_queue_) {
     comm->cancel();
-    comm->set_state(State::DST_HOST_FAILURE);
+    comm->set_state(State::FAILED);
+    comm->post();
   }
   done_comm_queue_.clear();
 
-  // CommImpl::cancel() will remove the comm from the mailbox..
   while (not comm_queue_.empty()) {
     auto comm = comm_queue_.back();
     if (comm->get_state() == State::WAITING && not comm->is_detached()) {
       comm->cancel();
-      comm->set_state(State::DST_HOST_FAILURE);
+      comm->set_state(State::FAILED);
+      comm->post();
     } else
       comm_queue_.pop_back();
   }
+  xbt_assert(comm_queue_.empty() && done_comm_queue_.empty());
 }
 
 CommImplPtr MailboxImpl::iprobe(int type, const std::function<bool(void*, void*, CommImpl*)>& match_fun, void* data)
