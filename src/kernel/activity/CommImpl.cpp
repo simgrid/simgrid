@@ -112,6 +112,7 @@ CommImpl& CommImpl::set_dst_buff(unsigned char* buff, size_t* size)
 CommImpl& CommImpl::detach()
 {
   detached_ = true;
+  EngineImpl::get_instance()->get_maestro()->activities_.emplace_back(this);
   return *this;
 }
 
@@ -266,7 +267,6 @@ ActivityImplPtr CommImpl::isend(actor::CommIsendSimcall* observer)
   if (observer->is_detached()) {
     other_comm->detach();
     other_comm->clean_fun = observer->get_clean_fun();
-    EngineImpl::get_instance()->get_maestro()->activities_.emplace_back(other_comm);
   } else {
     other_comm->clean_fun = nullptr;
     observer->get_issuer()->activities_.emplace_back(other_comm);
