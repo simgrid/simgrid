@@ -69,7 +69,6 @@ set(EXTRA_DIST
   src/xbt/mmalloc/mrealloc.c
   src/xbt/mmalloc/swag.c
   src/xbt/mmalloc/swag.h
-  examples/smpi/mc/only_send_deterministic.tesh
   )
 
 set(SMPI_SRC
@@ -1191,6 +1190,9 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/small_platform_one_link_routes.xml
   examples/platforms/small_platform_profile.xml
   examples/platforms/small_platform_with_routers.xml
+  examples/platforms/supernode.cpp
+  examples/platforms/supernode.py
+  examples/platforms/supernode.svg
   examples/platforms/syscoord/generate_peer_platform.pl
   examples/platforms/syscoord/median_harvard.syscoord
   examples/platforms/syscoord/median_meridian.syscoord

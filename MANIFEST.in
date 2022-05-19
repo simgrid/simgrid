@@ -607,6 +607,7 @@ include examples/smpi/mc/non_termination2.c
 include examples/smpi/mc/non_termination3.c
 include examples/smpi/mc/non_termination4.c
 include examples/smpi/mc/only_send_deterministic.c
+include examples/smpi/mc/only_send_deterministic.tesh
 include examples/smpi/mc/promela_bugged1_liveness
 include examples/smpi/mc/sendsend.c
 include examples/smpi/mc/sendsend.tesh
@@ -1942,6 +1943,9 @@ include examples/platforms/small_platform_routing_none.xml
 include examples/platforms/small_platform_with_routers.xml
 include examples/platforms/storage/content/small_content.txt
 include examples/platforms/storage/content/storage_content.txt
+include examples/platforms/supernode.cpp
+include examples/platforms/supernode.py
+include examples/platforms/supernode.svg
 include examples/platforms/syscoord/generate_peer_platform.pl
 include examples/platforms/syscoord/median_harvard.syscoord
 include examples/platforms/syscoord/median_meridian.syscoord
@@ -1964,7 +1968,6 @@ include examples/python/platform-failures/platform-failures_d.xml
 include examples/smpi/CMakeLists.txt
 include examples/smpi/NAS/CMakeLists.txt
 include examples/smpi/comm_dynamic_costs/CMakeLists.txt
-include examples/smpi/mc/only_send_deterministic.tesh
 include examples/smpi/replay_multiple/CMakeLists.txt
 include examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
 include examples/smpi/smpi_s4u_masterworker/CMakeLists.txt
