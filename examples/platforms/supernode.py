@@ -6,8 +6,8 @@
 # under the terms of the license (GNU LGPL) which comes with this package.
 
 
-# This script takes as input a C++ platform file, compiles it, then dump the
-# routing graph as a CSV and generate an SVG image.
+# This script takes as input a C++ platform file, compiles it, then dumps the
+# routing graph as a CSV and generates an SVG image.
 # The layout should be alright for any platform file, but the colors are very
 # ad-hoc for file supernode.cpp : do not hesitate to adapt this script to your needs.
 

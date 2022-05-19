@@ -6,24 +6,22 @@
 #include <simgrid/s4u.hpp>
 namespace sg4 = simgrid::s4u;
 
-const double BW_CPU  = 1e12;
-const double LAT_CPU = 0;
+constexpr double BW_CPU  = 1e12;
+constexpr double LAT_CPU = 0;
 
-const double BW_NODE  = 1e11;
-const double LAT_NODE = 1e-8;
+constexpr double BW_NODE  = 1e11;
+constexpr double LAT_NODE = 1e-8;
 
-const double BW_NETWORK = 1.25e10;
-const double LAT_NETWORK = 1e-7;
+constexpr double BW_NETWORK = 1.25e10;
+constexpr double LAT_NETWORK = 1e-7;
 
 static std::string int_string(int n) {
-    char result[10];
-    std::snprintf(result, 10, "%02d", n);
-    return result;
+    return simgrid::xbt::string_printf("%02d", n);
 }
 
 /**
  *
- * This function creates one node made of N CPUs.
+ * This function creates one node made of nb_cpu CPUs.
  */
 static sg4::NetZone *create_node(const sg4::NetZone* root, const std::string& node_name,
                                                      const int nb_cpu) {
@@ -46,7 +44,7 @@ static sg4::NetZone *create_node(const sg4::NetZone* root, const std::string& no
 
 /**
  *
- * This function creates one super-node made of M nodes with N CPU.
+ * This function creates one super-node made of nb_nodes nodes with nb_cpu CPUs.
  */
 static sg4::NetZone *create_supernode(const sg4::NetZone* root, const std::string& supernode_name,
                                                      const int nb_nodes, const int nb_cpu) {
@@ -70,7 +68,7 @@ static sg4::NetZone *create_supernode(const sg4::NetZone* root, const std::strin
 
 /**
  *
- * This function creates one cluster of L super-node made of M nodes with N CPU.
+ * This function creates one cluster of nb_supernodes super-nodes made of nb_nodes nodes with nb_cpu CPUs.
  */
 static sg4::NetZone *create_cluster(const std::string& cluster_name, const int nb_supernodes,
                                                      const int nb_nodes, const int nb_cpu) {
