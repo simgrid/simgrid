@@ -213,7 +213,7 @@ public:
     }
   }
 
-  std::vector<StochasticDatedValue> get_pattern() { return pattern; } 
+  std::vector<StochasticDatedValue> get_pattern() const { return pattern; }
 };
 
 Profile* ProfileBuilder::from_string(const std::string& name, const std::string& input, double periodicity)
