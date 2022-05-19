@@ -31,20 +31,20 @@ ExecImpl::ExecImpl()
 
 ExecImpl& ExecImpl::set_host(s4u::Host* host)
 {
-  hosts_.assign(1, host);
+  ActivityImpl::set_hosts({host});
   return *this;
 }
 
 ExecImpl& ExecImpl::set_hosts(const std::vector<s4u::Host*>& hosts)
 {
-  hosts_ = hosts;
+  ActivityImpl::set_hosts(hosts);
   return *this;
 }
 
 ExecImpl& ExecImpl::set_timeout(double timeout)
 {
   if (timeout >= 0 && not MC_is_active() && not MC_record_replay_is_active()) {
-    timeout_detector_.reset(hosts_.front()->get_cpu()->sleep(timeout));
+    timeout_detector_.reset(get_host()->get_cpu()->sleep(timeout));
     timeout_detector_->set_activity(this);
   }
   return *this;
@@ -79,19 +79,19 @@ ExecImpl* ExecImpl::start()
 {
   set_state(State::RUNNING);
   if (not MC_is_active() && not MC_record_replay_is_active()) {
-    if (hosts_.size() == 1) {
+    if (get_hosts().size() == 1) {
       if (thread_count_ == 1) {
-        surf_action_ = hosts_.front()->get_cpu()->execution_start(flops_amounts_.front(), bound_);
+        surf_action_ = get_host()->get_cpu()->execution_start(flops_amounts_.front(), bound_);
         surf_action_->set_sharing_penalty(sharing_penalty_);
       } else {
-        auto host_model = hosts_.front()->get_netpoint()->get_englobing_zone()->get_host_model();
-        surf_action_    = host_model->execute_thread(hosts_.front(), flops_amounts_.front(), thread_count_);
+        auto host_model = get_host()->get_netpoint()->get_englobing_zone()->get_host_model();
+        surf_action_    = host_model->execute_thread(get_host(), flops_amounts_.front(), thread_count_);
       }
       surf_action_->set_category(get_tracing_category());
     } else {
       // get the model from first host since we have only 1 by now
-      auto host_model = hosts_.front()->get_netpoint()->get_englobing_zone()->get_host_model();
-      surf_action_    = host_model->execute_parallel(hosts_, flops_amounts_.data(), bytes_amounts_.data(), -1);
+      auto host_model = get_host()->get_netpoint()->get_englobing_zone()->get_host_model();
+      surf_action_    = host_model->execute_parallel(get_hosts(), flops_amounts_.data(), bytes_amounts_.data(), -1);
     }
     surf_action_->set_activity(this);
     set_start_time(surf_action_->get_start_time());
@@ -145,7 +145,8 @@ ExecImpl& ExecImpl::update_sharing_penalty(double sharing_penalty)
 void ExecImpl::post()
 {
   xbt_assert(surf_action_ != nullptr);
-  if (std::any_of(hosts_.begin(), hosts_.end(), [](const s4u::Host* host) { return not host->is_on(); })) {
+  auto const& hosts = get_hosts();
+  if (std::any_of(hosts.begin(), hosts.end(), [](const s4u::Host* host) { return not host->is_on(); })) {
     /* If one of the hosts running the synchro failed, notice it. This way, the asking
      * process can be killed if it runs on that host itself */
     set_state(State::FAILED);
@@ -223,7 +224,7 @@ void ExecImpl::finish()
 
 void ExecImpl::reset()
 {
-  hosts_.clear();
+  clear_hosts();
   bytes_amounts_.clear();
   flops_amounts_.clear();
   set_start_time(-1.0);
