@@ -54,7 +54,7 @@ public:
   void push(CommImplPtr comm);
   void push_done(CommImplPtr done_comm) { done_comm_queue_.push_back(done_comm); }
   void remove(const CommImplPtr& comm);
-  void clear();
+  void clear(bool do_post );
   CommImplPtr iprobe(int type, const std::function<bool(void*, void*, CommImpl*)>& match_fun, void* data);
   CommImplPtr find_matching_comm(CommImplType type, const std::function<bool(void*, void*, CommImpl*)>& match_fun,
                                  void* this_user_data, const CommImplPtr& my_synchro, bool done, bool remove_matching);
