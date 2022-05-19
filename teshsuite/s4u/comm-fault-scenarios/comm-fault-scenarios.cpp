@@ -6,15 +6,16 @@
 /* This example validates the behaviour in presence of node and link fault.
  * Each test scenario consists in one host/actor (named sender) sending one message to another host/actor.
  * The space to cover is quite large, since we consider:
- * * communication types (eager, rendez-vous, one-sided=detached) 
+ * * communication types (eager, rendez-vous, one-sided=detached)
  * * use type (synchronous, asynchronous, init)
  * * fault type (sender node, link, receiver node)
  * * any legal permutation of the scenario steps
  *
- * This program also presents a way to simulate applications that are resilient to links and node faults. 
- * Essentially, it catches exceptions related to communications and it clears the mailboxes when one of the nodes gets turned off. 
- * However, this model would suppose that there would be 2 mailboxes for each pair of nodes, which is probably unacceptable.
- * 
+ * This program also presents a way to simulate applications that are resilient to links and node faults.
+ * Essentially, it catches exceptions related to communications and it clears the mailboxes when one of the nodes gets
+ * turned off. However, this model would suppose that there would be 2 mailboxes for each pair of nodes, which is
+ * probably unacceptable.
+ *
  */
 
 #include <algorithm>
@@ -42,40 +43,12 @@ constexpr uint64_t MsgSize = LinkBandwidth / 2;
 
 /*************************************************************************************************/
 
-enum class CommType {
-  EAGER_SYNC,
-  EAGER_ASYNC,
-  EAGER_INIT,
-  RDV_SYNC,
-  RDV_ASYNC,
-  RDV_INIT,
-  ONESIDE_SYNC,
-  ONESIDE_ASYNC
-  //ONESIDE_INIT is equivalent to ONESIDE_ASYNC
-};
+XBT_DECLARE_ENUM_CLASS(CommType, EAGER_SYNC, EAGER_ASYNC, EAGER_INIT, RDV_SYNC, RDV_ASYNC, RDV_INIT, ONESIDE_SYNC,
+                       ONESIDE_ASYNC
+                       // ONESIDE_INIT is equivalent to ONESIDE_ASYNC
+);
 
-enum class Action { SLEEP, PUT, GET, START, WAIT, DIE, END };
-
-static const char* to_string(const Action x)
-{
-  switch (x) {
-    case Action::END:
-      return "Success";
-    case Action::SLEEP:
-      return "Sleep";
-    case Action::PUT:
-      return "Put";
-    case Action::GET:
-      return "Get";
-    case Action::START:
-      return "Start";
-    case Action::WAIT:
-      return "Wait";
-    case Action::DIE:
-      return "Die!";
-  };
-  return "";
-}
+XBT_DECLARE_ENUM_CLASS(Action, SLEEP, PUT, GET, START, WAIT, DIE, END);
 
 struct Step {
   double rel_time; // Time relative to Scenario startTime
@@ -98,35 +71,8 @@ struct Scenario {
 static std::string to_string(const Scenario& s)
 {
   std::stringstream ss;
-  ss <<"#"<< s.index << "[" << s.start_time << "s," << s.start_time + s.duration << "s[: (";
-  switch (s.type) {
-    case CommType::EAGER_SYNC:
-      ss << "EAGER_SYNC";
-      break;
-    case CommType::EAGER_ASYNC:
-      ss << "EAGER_ASYNC";
-      break;
-    case CommType::EAGER_INIT:
-      ss << "EAGER_INIT";
-      break;
-    case CommType::RDV_SYNC:
-      ss << "RDV_SYNC";
-      break;
-    case CommType::RDV_ASYNC:
-      ss << "RDV_ASYNC";
-      break;
-    case CommType::RDV_INIT:
-      ss << "RDV_INIT";
-      break;
-    case CommType::ONESIDE_SYNC:
-      ss << "ONESIDE_SYNC";
-      break;
-    case CommType::ONESIDE_ASYNC:
-      ss << "ONESIDE_ASYNC";
-      break;
-  }
-
-  ss << ") Expected: S:" << to_string(s.snd_expected) << " R:" << to_string(s.rcv_expected) << " Steps: ";
+  ss << "#" << s.index << "[" << s.start_time << "s," << s.start_time + s.duration << "s[: (" << to_c_str(s.type);
+  ss << ") Expected: S:" << to_c_str(s.snd_expected) << " R:" << to_c_str(s.rcv_expected) << " Steps: ";
   for (const Step& step : s.steps) {
     ss << "+" << step.rel_time << "s:";
     switch (step.entity) {
@@ -148,7 +94,7 @@ static std::string to_string(const Scenario& s)
       else
         ss << "OFF";
     } else {
-      ss << "." << to_string(step.action_type);
+      ss << "." << to_c_str(step.action_type);
     }
     ss << " ";
   }
@@ -206,17 +152,17 @@ class SendAgent {
   void send_message(const Scenario& s)
   {
     std::string scenario_string = to_string(s);
-     XBT_DEBUG("Will try: %s", scenario_string.c_str());
+    XBT_DEBUG("Will try: %s", scenario_string.c_str());
     double send_value;
     sg4::CommPtr comm = nullptr;
-    Action expected = s.snd_expected;
-    double end_time = s.start_time + s.duration;
+    Action expected   = s.snd_expected;
+    double end_time   = s.start_time + s.duration;
     send_value        = end_time;
     size_t step_index = 0;
     sg4::this_actor::sleep_until(s.start_time);
-    //Make sure we have a clean slate
-    xbt_assert(not mbox_eager->listen(),"Eager mailbox should be empty when starting a test");
-    xbt_assert(not mbox_rdv->listen(),"RDV mailbox should be empty when starting a test");
+    // Make sure we have a clean slate
+    xbt_assert(not mbox_eager->listen(), "Eager mailbox should be empty when starting a test");
+    xbt_assert(not mbox_rdv->listen(), "RDV mailbox should be empty when starting a test");
     for (; step_index < s.steps.size(); step_index++) {
       const Step& step = s.steps[step_index];
       if (step.entity != Step::SND || step.type != Step::ACTION)
@@ -234,7 +180,7 @@ class SendAgent {
       try {
         switch (step.action_type) {
           case Action::PUT:
-            comm=do_put(s.type, send_value);
+            comm = do_put(s.type, send_value);
             break;
           case Action::START:
             comm->start();
@@ -246,7 +192,7 @@ class SendAgent {
             xbt_die("Not a valid action for SND");
         }
       } catch (std::exception& e) {
-        XBT_DEBUG("During %s, failed to send message because of a %s exception (%s)", to_string(step.action_type),
+        XBT_DEBUG("During %s, failed to send message because of a %s exception (%s)", to_c_str(step.action_type),
                   typeid(e).name(), e.what());
         break;
       }
@@ -263,7 +209,7 @@ class SendAgent {
       outcome = step.action_type;
     }
     if (outcome != expected) {
-      XBT_ERROR("Expected %s but got %s in %s", to_string(expected), to_string(outcome), scenario_string.c_str());
+      XBT_ERROR("Expected %s but got %s in %s", to_c_str(expected), to_c_str(outcome), scenario_string.c_str());
     } else {
       XBT_DEBUG("OK: %s", scenario_string.c_str());
     }
@@ -273,7 +219,10 @@ class SendAgent {
   }
 
 public:
-  explicit SendAgent(int id, sg4::Host* other_host, const ScenarioContext& ctx) : id_(id), other_host_(other_host),ctx_(ctx) {}
+  explicit SendAgent(int id, sg4::Host* other_host, const ScenarioContext& ctx)
+      : id_(id), other_host_(other_host), ctx_(ctx)
+  {
+  }
 
   void operator()()
   {
@@ -326,16 +275,16 @@ class ReceiveAgent {
 
   void receive_message(const Scenario& s)
   {
-    sg4::CommPtr comm = nullptr;
-    CommType type     = s.type;
-    Action expected   = s.rcv_expected;
-    double end_time   = s.start_time + s.duration;
+    sg4::CommPtr comm   = nullptr;
+    CommType type       = s.type;
+    Action expected     = s.rcv_expected;
+    double end_time     = s.start_time + s.duration;
     double* receive_ptr = nullptr;
     size_t step_index   = 0;
     sg4::this_actor::sleep_until(s.start_time);
-    //Make sure we have a clean slate
-    xbt_assert(not mbox_eager->listen(),"Eager mailbox should be empty when starting a test");
-    xbt_assert(not mbox_rdv->listen(),"RDV mailbox should be empty when starting a test");
+    // Make sure we have a clean slate
+    xbt_assert(not mbox_eager->listen(), "Eager mailbox should be empty when starting a test");
+    xbt_assert(not mbox_rdv->listen(), "RDV mailbox should be empty when starting a test");
     for (; step_index < s.steps.size(); step_index++) {
       const Step& step = s.steps[step_index];
       if (step.entity != Step::RCV || step.type != Step::ACTION)
@@ -365,7 +314,7 @@ class ReceiveAgent {
             xbt_die("Not a valid action for RCV");
         }
       } catch (std::exception& e) {
-        XBT_DEBUG("During %s, failed to receive message because of a %s exception (%s)", to_string(step.action_type),
+        XBT_DEBUG("During %s, failed to receive message because of a %s exception (%s)", to_c_str(step.action_type),
                   typeid(e).name(), e.what());
         break;
       }
@@ -381,19 +330,17 @@ class ReceiveAgent {
       const Step& step = s.steps[step_index];
       assert(step.entity == Step::RCV && step.type == Step::ACTION);
       outcome = step.action_type;
-    } else if (s.type!=CommType::ONESIDE_SYNC && 
-          s.type!=CommType::ONESIDE_ASYNC
-          ) {
-            //One sided / detached operations do not actually transfer anything
-            if(receive_ptr == nullptr ) {
-              XBT_ERROR("Received address is NULL in %s", scenario_string.c_str());
-            } else if (*receive_ptr != end_time) {
-              XBT_ERROR("Received value invalid: expected %f but got %f in %s", end_time, *receive_ptr,
-                scenario_string.c_str());
-          }
+    } else if (s.type != CommType::ONESIDE_SYNC && s.type != CommType::ONESIDE_ASYNC) {
+      // One sided / detached operations do not actually transfer anything
+      if (receive_ptr == nullptr) {
+        XBT_ERROR("Received address is NULL in %s", scenario_string.c_str());
+      } else if (*receive_ptr != end_time) {
+        XBT_ERROR("Received value invalid: expected %f but got %f in %s", end_time, *receive_ptr,
+                  scenario_string.c_str());
+      }
     }
     if (outcome != expected) {
-      XBT_ERROR("Expected %s but got %s in %s", to_string(expected), to_string(outcome), scenario_string.c_str());
+      XBT_ERROR("Expected %s but got %s in %s", to_c_str(expected), to_c_str(outcome), scenario_string.c_str());
     } else {
       XBT_DEBUG("OK: %s", scenario_string.c_str());
     }
@@ -403,7 +350,10 @@ class ReceiveAgent {
   }
 
 public:
-  explicit ReceiveAgent(int id, sg4::Host* other_host, const ScenarioContext& ctx) : id_(id), other_host_(other_host), ctx_(ctx) {}
+  explicit ReceiveAgent(int id, sg4::Host* other_host, const ScenarioContext& ctx)
+      : id_(id), other_host_(other_host), ctx_(ctx)
+  {
+  }
   void operator()()
   {
     run_++;
@@ -423,7 +373,7 @@ size_t ReceiveAgent::scenario_ = 0;
 static void on_host_state_change(sg4::Host const& host)
 {
   XBT_DEBUG("Host %s is now %s", host.get_cname(), host.is_on() ? "ON " : "OFF");
-  if(not host.is_on()) {
+  if (not host.is_on()) {
     mbox_eager->clear();
     mbox_rdv->clear();
   }
@@ -440,37 +390,38 @@ int main(int argc, char* argv[])
 {
   sg4::Engine e(&argc, argv);
   ScenarioContext ctx;
-  int previous_index=-1;
-  bool is_range_last=false;
-  for(int i=1; i<argc; i++) {
-    if(not strcmp(argv[i],"-"))
-      is_range_last=true;
+  int previous_index = -1;
+  bool is_range_last = false;
+  for (int i = 1; i < argc; i++) {
+    if (not strcmp(argv[i], "-"))
+      is_range_last = true;
     else {
-      int index=atoi(argv[i]);
-      xbt_assert(index>previous_index);
-      if(is_range_last) 
-        for(int j=previous_index+1;j<=index;j++)
+      int index = atoi(argv[i]);
+      xbt_assert(index > previous_index);
+      if (is_range_last)
+        for (int j = previous_index + 1; j <= index; j++)
           ctx.active_indices.push_back(j);
       else
-         ctx.active_indices.push_back(index);
-       is_range_last=false;
-       previous_index=index;
+        ctx.active_indices.push_back(index);
+      is_range_last  = false;
+      previous_index = index;
     }
   }
   double end_time = build_scenarios(ctx);
   XBT_INFO("Will run for %f seconds", end_time);
-  mbox_eager = e.mailbox_by_name_or_create("eager");
-  mbox_rdv   = e.mailbox_by_name_or_create("rdv");
-  sg4::NetZone* zone = sg4::create_full_zone("Top");
+  mbox_eager                  = e.mailbox_by_name_or_create("eager");
+  mbox_rdv                    = e.mailbox_by_name_or_create("rdv");
+  sg4::NetZone* zone          = sg4::create_full_zone("Top");
   pr::Profile* profile_sender = pr::ProfileBuilder::from_string("sender_profile", ctx.sender_profile.str(), 0);
   sg4::Host* sender_host = zone->create_host("senderHost", HostComputePower)->set_state_profile(profile_sender)->seal();
   pr::Profile* profile_receiver = pr::ProfileBuilder::from_string("receiver_profile", ctx.receiver_profile.str(), 0);
-  sg4::Host* receiver_host = zone->create_host("receiverHost", HostComputePower)->set_state_profile(profile_receiver)->seal();
-  sg4::ActorPtr sender = sg4::Actor::create("sender", sender_host, SendAgent(0, receiver_host,ctx));
+  sg4::Host* receiver_host =
+      zone->create_host("receiverHost", HostComputePower)->set_state_profile(profile_receiver)->seal();
+  sg4::ActorPtr sender = sg4::Actor::create("sender", sender_host, SendAgent(0, receiver_host, ctx));
   sender->set_auto_restart(true);
-  sg4::ActorPtr receiver = sg4::Actor::create("receiver", receiver_host, ReceiveAgent(1, sender_host,ctx));
+  sg4::ActorPtr receiver = sg4::Actor::create("receiver", receiver_host, ReceiveAgent(1, sender_host, ctx));
   receiver->set_auto_restart(true);
-  pr::Profile* profile_link = pr::ProfileBuilder::from_string("link_profile",ctx.link_profile.str(), 0);
+  pr::Profile* profile_link = pr::ProfileBuilder::from_string("link_profile", ctx.link_profile.str(), 0);
   sg4::Link* link =
       zone->create_link("link", LinkBandwidth)->set_latency(LinkLatency)->set_state_profile(profile_link)->seal();
   zone->add_route(sender_host->get_netpoint(), receiver_host->get_netpoint(), nullptr, nullptr,
@@ -480,9 +431,9 @@ int main(int argc, char* argv[])
   sg4::Link::on_state_change_cb(on_link_state_change);
   e.run_until(end_time);
 
-  //Make sure we have a clean slate
-  xbt_assert(not mbox_eager->listen(),"Eager mailbox should be empty in the end");
-  xbt_assert(not mbox_rdv->listen(),"RDV mailbox should be empty in the end");
+  // Make sure we have a clean slate
+  xbt_assert(not mbox_eager->listen(), "Eager mailbox should be empty in the end");
+  xbt_assert(not mbox_rdv->listen(), "RDV mailbox should be empty in the end");
   XBT_INFO("Done.");
   return 0;
 }
@@ -495,11 +446,10 @@ static void addStateEvent(std::ostream& out, double date, bool isOn)
     out << date << " 0\n";
 }
 
-static void prepareScenario(ScenarioContext& ctx, CommType type, double duration, 
-                          Action sender_expected, Action receiver_expected, 
-                          std::vector<Step> steps)
+static void prepareScenario(ScenarioContext& ctx, CommType type, double duration, Action sender_expected,
+                            Action receiver_expected, std::vector<Step> steps)
 {
-  if(std::find(ctx.active_indices.begin(),ctx.active_indices.end(),ctx.index)!=ctx.active_indices.end()) {
+  if (std::find(ctx.active_indices.begin(), ctx.active_indices.end(), ctx.index) != ctx.active_indices.end()) {
     // Update fault profiles
     for (Step& step : steps) {
       assert(step.rel_time < duration);
@@ -518,7 +468,7 @@ static void prepareScenario(ScenarioContext& ctx, CommType type, double duration
           break;
       }
     }
-    ctx.scenarios.push_back( {type, ctx.start_time, duration, sender_expected, receiver_expected, steps, ctx.index} ); 
+    ctx.scenarios.push_back({type, ctx.start_time, duration, sender_expected, receiver_expected, steps, ctx.index});
     ctx.active++;
   }
   ctx.index++;
@@ -528,28 +478,58 @@ static void prepareScenario(ScenarioContext& ctx, CommType type, double duration
 /*************************************************************************************************/
 
 // A bunch of dirty macros to help readability (supposedly)
-#define MAKE_SCENARIO(type, duration, snd_expected, rcv_expected, steps...)                                                      \
-  prepareScenario(ctx,CommType::type, duration, Action::snd_expected, Action::rcv_expected, {steps} )
+#define MAKE_SCENARIO(type, duration, snd_expected, rcv_expected, steps...)                                            \
+  prepareScenario(ctx, CommType::type, duration, Action::snd_expected, Action::rcv_expected, {steps})
 
 // Link
-static Step loff(double rel_time) { return { rel_time, Step::STATE, Step::LNK, Action::END, false }; }
-static Step lon(double rel_time)  { return {rel_time , Step::STATE, Step::LNK, Action::END, true  }; }
+static Step loff(double rel_time)
+{
+  return {rel_time, Step::STATE, Step::LNK, Action::END, false};
+}
+static Step lon(double rel_time)
+{
+  return {rel_time, Step::STATE, Step::LNK, Action::END, true};
+}
 // Sender
-static Step soff(double rel_time) { return {rel_time , Step::STATE,  Step::SND, Action::END,  false }; }
-static Step son(double rel_time)  { return {rel_time , Step::STATE,  Step::SND, Action::END,  true  }; }
-static Step sput(double rel_time) { return {rel_time , Step::ACTION, Step::SND, Action::PUT,  false }; }
-static Step swait(double rel_time) { return {rel_time , Step::ACTION, Step::SND, Action::WAIT, false }; }
+static Step soff(double rel_time)
+{
+  return {rel_time, Step::STATE, Step::SND, Action::END, false};
+}
+static Step son(double rel_time)
+{
+  return {rel_time, Step::STATE, Step::SND, Action::END, true};
+}
+static Step sput(double rel_time)
+{
+  return {rel_time, Step::ACTION, Step::SND, Action::PUT, false};
+}
+static Step swait(double rel_time)
+{
+  return {rel_time, Step::ACTION, Step::SND, Action::WAIT, false};
+}
 // Receiver
-static Step roff(double rel_time) { return {rel_time , Step::STATE,  Step::RCV, Action::END,  false}; }
-static Step ron(double rel_time)  { return {rel_time , Step::STATE,  Step::RCV, Action::END,  true }; }
-static Step rget(double rel_time) { return {rel_time , Step::ACTION, Step::RCV, Action::GET,  false}; }
-static Step rwait(double rel_time) { return {rel_time , Step::ACTION, Step::RCV, Action::WAIT, false}; }
+static Step roff(double rel_time)
+{
+  return {rel_time, Step::STATE, Step::RCV, Action::END, false};
+}
+static Step ron(double rel_time)
+{
+  return {rel_time, Step::STATE, Step::RCV, Action::END, true};
+}
+static Step rget(double rel_time)
+{
+  return {rel_time, Step::ACTION, Step::RCV, Action::GET, false};
+}
+static Step rwait(double rel_time)
+{
+  return {rel_time, Step::ACTION, Step::RCV, Action::WAIT, false};
+}
 
-double build_scenarios(ScenarioContext& ctx )
+double build_scenarios(ScenarioContext& ctx)
 {
   ctx.start_time = 0;
-  ctx.index=0;
-  ctx.active=0;
+  ctx.index      = 0;
+  ctx.active     = 0;
 
   // EAGER SYNC use cases
   // All good
@@ -586,7 +566,7 @@ double build_scenarios(ScenarioContext& ctx )
   MAKE_SCENARIO(EAGER_ASYNC, 2, WAIT, DIE, sput(.2), swait(.4), roff(.5), ron(1));
   MAKE_SCENARIO(EAGER_ASYNC, 2, WAIT, DIE, sput(.2), rget(.4), roff(.5), swait(.6), ron(1));
   MAKE_SCENARIO(EAGER_ASYNC, 2, WAIT, DIE, rget(.2), sput(.4), roff(.5), swait(.6), ron(1));
-  MAKE_SCENARIO(EAGER_ASYNC, 2, PUT , DIE, rget(.2), rwait(.4), roff(.5), sput(.6), swait(.8), ron(1));
+  MAKE_SCENARIO(EAGER_ASYNC, 2, PUT, DIE, rget(.2), rwait(.4), roff(.5), sput(.6), swait(.8), ron(1));
   MAKE_SCENARIO(EAGER_ASYNC, 2, WAIT, DIE, sput(.2), swait(.4), rget(.6), roff(.7), ron(1));
   MAKE_SCENARIO(EAGER_ASYNC, 2, WAIT, DIE, sput(.2), rget(.4), swait(.6), roff(.7), ron(1));
   MAKE_SCENARIO(EAGER_ASYNC, 2, WAIT, DIE, sput(.2), rget(.4), rwait(.6), roff(.7), swait(.8), ron(1));
@@ -636,7 +616,8 @@ double build_scenarios(ScenarioContext& ctx )
   MAKE_SCENARIO(RDV_SYNC, 1, END, END, rget(.2), sput(.4));
   // Receiver off
   MAKE_SCENARIO(RDV_SYNC, 2, PUT, DIE, roff(.1), sput(.2), ron(1));
-  MAKE_SCENARIO(RDV_SYNC, 2, PUT, DIE, sput(.2), roff(.3), ron(1)); //Fails because put comm cancellation does not trigger sender exception
+  MAKE_SCENARIO(RDV_SYNC, 2, PUT, DIE, sput(.2), roff(.3),
+                ron(1)); // Fails because put comm cancellation does not trigger sender exception
   MAKE_SCENARIO(RDV_SYNC, 2, PUT, DIE, sput(.2), rget(.4), roff(.5), ron(1));
   MAKE_SCENARIO(RDV_SYNC, 2, PUT, DIE, rget(.2), sput(.4), roff(.5), ron(1));
   // Sender off
@@ -661,10 +642,11 @@ double build_scenarios(ScenarioContext& ctx )
   MAKE_SCENARIO(RDV_ASYNC, 2, PUT, DIE, roff(.1), sput(.2), swait(.4), ron(1));
   MAKE_SCENARIO(RDV_ASYNC, 2, WAIT, DIE, sput(.2), roff(.3), swait(.4), ron(1));
   MAKE_SCENARIO(RDV_ASYNC, 2, PUT, DIE, rget(.2), roff(.3), sput(.4), swait(.6), ron(1));
-  MAKE_SCENARIO(RDV_ASYNC, 2, WAIT, DIE, sput(.2), swait(.4), roff(.5), ron(1)); //Fails because put comm cancellation does not trigger sender exception
+  MAKE_SCENARIO(RDV_ASYNC, 2, WAIT, DIE, sput(.2), swait(.4), roff(.5),
+                ron(1)); // Fails because put comm cancellation does not trigger sender exception
   MAKE_SCENARIO(RDV_ASYNC, 2, WAIT, DIE, sput(.2), rget(.4), roff(.5), swait(.6), ron(1));
   MAKE_SCENARIO(RDV_ASYNC, 2, WAIT, DIE, rget(.2), sput(.4), roff(.5), swait(.6), ron(1));
-  MAKE_SCENARIO(RDV_ASYNC, 2, PUT , DIE, rget(.2), rwait(.4), roff(.5), sput(.6), swait(.8), ron(1));
+  MAKE_SCENARIO(RDV_ASYNC, 2, PUT, DIE, rget(.2), rwait(.4), roff(.5), sput(.6), swait(.8), ron(1));
   MAKE_SCENARIO(RDV_ASYNC, 2, WAIT, DIE, sput(.2), swait(.4), rget(.6), roff(.7), ron(1));
   MAKE_SCENARIO(RDV_ASYNC, 2, WAIT, DIE, sput(.2), rget(.4), swait(.6), roff(.7), ron(1));
   MAKE_SCENARIO(RDV_ASYNC, 2, WAIT, DIE, sput(.2), rget(.4), rwait(.6), roff(.7), swait(.8), ron(1));
@@ -734,6 +716,6 @@ double build_scenarios(ScenarioContext& ctx )
   MAKE_SCENARIO(ONESIDE_ASYNC, 2, WAIT, END, sput(.2), loff(.3), swait(.4), lon(1));
   MAKE_SCENARIO(ONESIDE_ASYNC, 2, WAIT, END, sput(.2), swait(.4), loff(.5), lon(1));
 
-  XBT_INFO("Will execute %i active scenarios out of %i.",ctx.active,ctx.index);
+  XBT_INFO("Will execute %i active scenarios out of %i.", ctx.active, ctx.index);
   return ctx.start_time + 1;
 }
