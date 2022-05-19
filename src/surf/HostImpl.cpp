@@ -95,7 +95,7 @@ void HostImpl::turn_off(const actor::ActorImpl* issuer)
     issuer->kill(&actor);
   }
   for (const auto& activity : EngineImpl::get_instance()->get_maestro()->activities_) {
-    auto hosts = activity->get_hosts();
+    auto const& hosts = activity->get_hosts();
     if (std::find(hosts.begin(), hosts.end(), &piface_) != hosts.end()) {
       activity->cancel();
       activity->set_state(activity::State::FAILED);

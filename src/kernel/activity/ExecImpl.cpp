@@ -31,8 +31,7 @@ ExecImpl::ExecImpl()
 
 ExecImpl& ExecImpl::set_host(s4u::Host* host)
 {
-  clear_hosts();
-  add_host(host);
+  ActivityImpl::set_hosts({host});
   return *this;
 }
 
@@ -146,7 +145,7 @@ ExecImpl& ExecImpl::update_sharing_penalty(double sharing_penalty)
 void ExecImpl::post()
 {
   xbt_assert(surf_action_ != nullptr);
-  auto hosts=get_hosts();
+  auto const& hosts = get_hosts();
   if (std::any_of(hosts.begin(), hosts.end(), [](const s4u::Host* host) { return not host->is_on(); })) {
     /* If one of the hosts running the synchro failed, notice it. This way, the asking
      * process can be killed if it runs on that host itself */
