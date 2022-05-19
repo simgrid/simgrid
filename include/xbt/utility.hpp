@@ -10,6 +10,7 @@
 #include <array>
 #include <functional>
 #include <tuple>
+#include <type_traits>
 #include <xbt/base.h>
 
 /** @brief Helper macro to declare enum class
@@ -28,6 +29,18 @@
 
 namespace simgrid {
 namespace xbt {
+
+/** @brief Replacement for C++20's std::type_identity_t
+ */
+#if __cplusplus >= 201806L // __cpp_lib_type_identity
+template <class T> using type_identity_t = typename std::type_identity_t<T>;
+#else
+template <class T> struct type_identity {
+  using type = T;
+};
+
+template <class T> using type_identity_t = typename type_identity<T>::type;
+#endif
 
 /** @brief A hash which works with more stuff
  *
