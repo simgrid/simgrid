@@ -35,15 +35,13 @@ public:
 
   ExecImpl& set_flops_amount(double flop_amount);
   ExecImpl& set_host(s4u::Host* host);
-  s4u::Host* get_host() const { return hosts_.front(); }
-  const std::vector<s4u::Host*>& get_hosts() const { return hosts_; }
 
   ExecImpl& set_flops_amounts(const std::vector<double>& flops_amounts);
   ExecImpl& set_bytes_amounts(const std::vector<double>& bytes_amounts);
   ExecImpl& set_thread_count(int thread_count);
   ExecImpl& set_hosts(const std::vector<s4u::Host*>& hosts);
 
-  unsigned int get_host_number() const { return static_cast<unsigned>(hosts_.size()); }
+  unsigned int get_host_number() const { return static_cast<unsigned>(get_hosts().size()); }
   double get_seq_remaining_ratio();
   double get_par_remaining_ratio();
   double get_remaining() const override;

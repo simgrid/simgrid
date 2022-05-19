@@ -64,7 +64,7 @@ CommImpl& CommImpl::set_source(s4u::Host* from)
 {
   xbt_assert( from_ == nullptr );
   from_ = from;
-  hosts_.push_back(from);
+  add_host(from);
   return *this;
 }
 
@@ -72,7 +72,7 @@ CommImpl& CommImpl::set_destination(s4u::Host* to)
 {
   xbt_assert( to_ == nullptr );
   to_ = to;
-  hosts_.push_back(to_);
+  add_host(to_);
   return *this;
 }
 

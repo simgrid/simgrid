@@ -29,6 +29,7 @@ class XBT_PUBLIC ActivityImpl {
   State state_             = State::WAITING; /* State of the activity */
   double start_time_       = -1.0;
   double finish_time_      = -1.0;
+  std::vector<s4u::Host*> hosts_;
 
 public:
   virtual ~ActivityImpl();
@@ -38,10 +39,6 @@ public:
   resource::Action* surf_action_ = nullptr;
 
 protected:
-
-  std::vector<s4u::Host*> hosts_;
-
-
   void inline set_name(std::string_view name)
   {
     // This is to keep name_ private while allowing ActivityImpl_T<??> to set it and then return a Ptr to qualified
@@ -49,8 +46,12 @@ protected:
     name_ = name;
   }
   void set_start_time(double start_time) { start_time_ = start_time; }
-
+  void clear_hosts() { hosts_.clear(); }
+  void add_host(s4u::Host* host) { hosts_.push_back(host); }
+  void set_hosts(const std::vector<s4u::Host*>& hosts) { hosts_=hosts; }
+  
 public:
+
   const std::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
 
@@ -85,7 +86,8 @@ public:
   virtual void finish() = 0; // Unlock all simcalls blocked on that activity, either because it was marked as done by
                              // the model or because it terminated without waiting for the model
 
-  virtual const std::vector<s4u::Host*>& get_hosts() const { return hosts_;} ;
+  s4u::Host* get_host() const { return hosts_.front(); }
+  const std::vector<s4u::Host*>& get_hosts() const { return hosts_;} ;
 
   void register_simcall(actor::Simcall* simcall);
   void unregister_simcall(actor::Simcall* simcall);

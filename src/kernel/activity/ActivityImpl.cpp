@@ -59,7 +59,7 @@ const char* ActivityImpl::get_state_str() const
 {
   return to_c_str(state_);
 }
-
+  
 bool ActivityImpl::test(actor::ActorImpl* issuer)
 {
   if (state_ != State::WAITING && state_ != State::RUNNING) {
