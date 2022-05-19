@@ -16,7 +16,7 @@ namespace simgrid::xbt {
 static std::ifstream action_fs;
 
 std::unordered_map<std::string, action_fun> action_funs;
-static std::unordered_map<std::string, std::queue<ReplayAction*>> action_queues;
+static std::unordered_map<std::string, std::queue<std::unique_ptr<ReplayAction>>> action_queues;
 
 static void read_and_trim_line(std::ifstream& fs, std::string* line)
 {
@@ -50,12 +50,12 @@ bool ReplayReader::get(ReplayAction* action)
   return not fs.eof();
 }
 
-static ReplayAction* get_action(const char* name)
+static std::unique_ptr<ReplayAction> get_action(const char* name)
 {
   if (auto queue_elt = action_queues.find(std::string(name)); queue_elt != action_queues.end()) {
     if (auto& my_queue = queue_elt->second; not my_queue.empty()) {
       // Get something from my queue and return it
-      ReplayAction* action = my_queue.front();
+      auto action = std::move(my_queue.front());
       my_queue.pop();
       return action;
     }
@@ -69,7 +69,7 @@ static ReplayAction* get_action(const char* name)
     if (action_fs.eof())
       break;
     /* we cannot split in place here because we parse&store several lines for the colleagues... */
-    auto* action = new ReplayAction();
+    auto action = std::make_unique<ReplayAction>();
     boost::split(*action, action_line, boost::is_any_of(" \t"), boost::token_compress_on);
 
     // if it's for me, I'm done
@@ -78,7 +78,7 @@ static ReplayAction* get_action(const char* name)
       return action;
 
     // else, I have to store it for the relevant colleague
-    action_queues[evtname].push(action);
+    action_queues[evtname].emplace(std::move(action));
   }
   // end of file reached while searching in vain for more work
 
@@ -114,11 +114,10 @@ int replay_runner(const char* actor_name, const char* trace_filename)
                "Passing nullptr to replay_runner() means that you want to use a shared trace, but you did not provide "
                "any. Please use xbt_replay_set_tracefile().");
     while (true) {
-      simgrid::xbt::ReplayAction* evt = simgrid::xbt::get_action(actor_name);
+      auto evt = simgrid::xbt::get_action(actor_name);
       if (not evt)
         break;
       simgrid::xbt::handle_action(*evt);
-      delete evt;
     }
     action_queues.erase(actor_name_string);
   } else { // Should have got my trace file in argument
