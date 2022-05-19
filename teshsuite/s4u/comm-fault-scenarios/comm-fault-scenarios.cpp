@@ -52,8 +52,8 @@ XBT_DECLARE_ENUM_CLASS(Action, SLEEP, PUT, GET, START, WAIT, DIE, END);
 
 struct Step {
   double rel_time; // Time relative to Scenario startTime
-  enum { STATE, ACTION } type;
-  enum { LNK, SND, RCV } entity;
+  XBT_DECLARE_ENUM_CLASS(Type, STATE, ACTION) type;
+  XBT_DECLARE_ENUM_CLASS(Entity, LNK, SND, RCV) entity;
   Action action_type;
   bool new_state;
 };
@@ -74,20 +74,9 @@ static std::string to_string(const Scenario& s)
   ss << "#" << s.index << "[" << s.start_time << "s," << s.start_time + s.duration << "s[: (" << to_c_str(s.type);
   ss << ") Expected: S:" << to_c_str(s.snd_expected) << " R:" << to_c_str(s.rcv_expected) << " Steps: ";
   for (const Step& step : s.steps) {
-    ss << "+" << step.rel_time << "s:";
-    switch (step.entity) {
-      case Step::LNK:
-        ss << "LNK";
-        break;
-      case Step::SND:
-        ss << "SND";
-        break;
-      case Step::RCV:
-        ss << "RCV";
-        break;
-    }
+    ss << "+" << step.rel_time << "s:" << Step::to_c_str(step.entity);
 
-    if (step.type == Step::STATE) {
+    if (step.type == Step::Type::STATE) {
       ss << "->";
       if (step.new_state)
         ss << "ON";
@@ -165,7 +154,7 @@ class SendAgent {
     xbt_assert(not mbox_rdv->listen(), "RDV mailbox should be empty when starting a test");
     for (; step_index < s.steps.size(); step_index++) {
       const Step& step = s.steps[step_index];
-      if (step.entity != Step::SND || step.type != Step::ACTION)
+      if (step.entity != Step::Entity::SND || step.type != Step::Type::ACTION)
         continue;
       try {
         sg4::this_actor::sleep_until(s.start_time + step.rel_time);
@@ -205,7 +194,7 @@ class SendAgent {
     Action outcome = Action::END;
     if (step_index < s.steps.size()) {
       const Step& step = s.steps[step_index];
-      assert(step.entity == Step::SND && step.type == Step::ACTION);
+      assert(step.entity == Step::Entity::SND && step.type == Step::Type::ACTION);
       outcome = step.action_type;
     }
     if (outcome != expected) {
@@ -287,7 +276,7 @@ class ReceiveAgent {
     xbt_assert(not mbox_rdv->listen(), "RDV mailbox should be empty when starting a test");
     for (; step_index < s.steps.size(); step_index++) {
       const Step& step = s.steps[step_index];
-      if (step.entity != Step::RCV || step.type != Step::ACTION)
+      if (step.entity != Step::Entity::RCV || step.type != Step::Type::ACTION)
         continue;
       try {
         sg4::this_actor::sleep_until(s.start_time + step.rel_time);
@@ -328,7 +317,7 @@ class ReceiveAgent {
     std::string scenario_string = to_string(s);
     if (step_index < s.steps.size()) {
       const Step& step = s.steps[step_index];
-      assert(step.entity == Step::RCV && step.type == Step::ACTION);
+      assert(step.entity == Step::Entity::RCV && step.type == Step::Type::ACTION);
       outcome = step.action_type;
     } else if (s.type != CommType::ONESIDE_SYNC && s.type != CommType::ONESIDE_ASYNC) {
       // One sided / detached operations do not actually transfer anything
@@ -453,17 +442,17 @@ static void prepareScenario(ScenarioContext& ctx, CommType type, double duration
     // Update fault profiles
     for (Step& step : steps) {
       assert(step.rel_time < duration);
-      if (step.type != Step::STATE)
+      if (step.type != Step::Type::STATE)
         continue;
       int val = step.new_state ? 1 : 0;
       switch (step.entity) {
-        case Step::SND:
+        case Step::Entity::SND:
           ctx.sender_profile << ctx.start_time + step.rel_time << " " << val << std::endl;
           break;
-        case Step::RCV:
+        case Step::Entity::RCV:
           ctx.receiver_profile << ctx.start_time + step.rel_time << " " << val << std::endl;
           break;
-        case Step::LNK:
+        case Step::Entity::LNK:
           ctx.link_profile << ctx.start_time + step.rel_time << " " << val << std::endl;
           break;
       }
@@ -484,45 +473,45 @@ static void prepareScenario(ScenarioContext& ctx, CommType type, double duration
 // Link
 static Step loff(double rel_time)
 {
-  return {rel_time, Step::STATE, Step::LNK, Action::END, false};
+  return {rel_time, Step::Type::STATE, Step::Entity::LNK, Action::END, false};
 }
 static Step lon(double rel_time)
 {
-  return {rel_time, Step::STATE, Step::LNK, Action::END, true};
+  return {rel_time, Step::Type::STATE, Step::Entity::LNK, Action::END, true};
 }
 // Sender
 static Step soff(double rel_time)
 {
-  return {rel_time, Step::STATE, Step::SND, Action::END, false};
+  return {rel_time, Step::Type::STATE, Step::Entity::SND, Action::END, false};
 }
 static Step son(double rel_time)
 {
-  return {rel_time, Step::STATE, Step::SND, Action::END, true};
+  return {rel_time, Step::Type::STATE, Step::Entity::SND, Action::END, true};
 }
 static Step sput(double rel_time)
 {
-  return {rel_time, Step::ACTION, Step::SND, Action::PUT, false};
+  return {rel_time, Step::Type::ACTION, Step::Entity::SND, Action::PUT, false};
 }
 static Step swait(double rel_time)
 {
-  return {rel_time, Step::ACTION, Step::SND, Action::WAIT, false};
+  return {rel_time, Step::Type::ACTION, Step::Entity::SND, Action::WAIT, false};
 }
 // Receiver
 static Step roff(double rel_time)
 {
-  return {rel_time, Step::STATE, Step::RCV, Action::END, false};
+  return {rel_time, Step::Type::STATE, Step::Entity::RCV, Action::END, false};
 }
 static Step ron(double rel_time)
 {
-  return {rel_time, Step::STATE, Step::RCV, Action::END, true};
+  return {rel_time, Step::Type::STATE, Step::Entity::RCV, Action::END, true};
 }
 static Step rget(double rel_time)
 {
-  return {rel_time, Step::ACTION, Step::RCV, Action::GET, false};
+  return {rel_time, Step::Type::ACTION, Step::Entity::RCV, Action::GET, false};
 }
 static Step rwait(double rel_time)
 {
-  return {rel_time, Step::ACTION, Step::RCV, Action::WAIT, false};
+  return {rel_time, Step::Type::ACTION, Step::Entity::RCV, Action::WAIT, false};
 }
 
 double build_scenarios(ScenarioContext& ctx)
