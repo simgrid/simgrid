@@ -20,6 +20,7 @@
 
 #include <xbt/base.h>
 #include <xbt/sysdep.h>
+#include <xbt/utility.hpp>
 
 namespace simgrid {
 namespace config {
@@ -221,13 +222,13 @@ public:
    *  @param desc  Flag description
    *  @param value Flag initial/default value
    */
-  Flag(const char* name, const char* desc, T value) : value_(value), name_(name)
+  Flag(const char* name, const char* desc, xbt::type_identity_t<T> value) : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, desc);
   }
 
   /** Constructor taking also an array of aliases for name */
-  Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value)
+  Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, xbt::type_identity_t<T> value)
       : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, aliases, desc);
@@ -236,13 +237,15 @@ public:
   /* A constructor accepting a callback that will be passed the parameter.
    * It can either return a boolean (informing whether the parameter is valid), or returning void.
    */
-  template <class F> Flag(const char* name, const char* desc, T value, F callback) : value_(value), name_(name)
+  template <class F>
+  Flag(const char* name, const char* desc, xbt::type_identity_t<T> value, F callback) : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, desc, std::move(callback));
   }
 
   template <class F>
-  Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value, F callback)
+  Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, xbt::type_identity_t<T> value,
+       F callback)
       : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, aliases, desc, std::move(callback));
@@ -252,8 +255,8 @@ public:
    * and producing an informative error message when an invalid value is passed, or when help is passed as a value.
    */
   template <class F>
-  Flag(const char* name, const char* desc, T value, const std::map<std::string, std::string, std::less<>>& valid_values,
-       F callback)
+  Flag(const char* name, const char* desc, xbt::type_identity_t<T> value,
+       const std::map<std::string, std::string, std::less<>>& valid_values, F callback)
       : value_(value), name_(name)
   {
     simgrid::config::bind_flag(value_, name, desc, valid_values, std::move(callback));
@@ -261,7 +264,7 @@ public:
 
   /* A constructor with everything */
   template <class F>
-  Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, T value,
+  Flag(const char* name, std::initializer_list<const char*> aliases, const char* desc, xbt::type_identity_t<T> value,
        const std::map<std::string, std::string, std::less<>>& valid_values, F callback)
       : value_(value), name_(name)
   {
