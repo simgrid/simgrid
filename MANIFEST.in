@@ -816,6 +816,8 @@ include teshsuite/s4u/cloud-interrupt-migration/cloud-interrupt-migration.tesh
 include teshsuite/s4u/cloud-two-execs/cloud-two-execs-bmf.tesh
 include teshsuite/s4u/cloud-two-execs/cloud-two-execs.cpp
 include teshsuite/s4u/cloud-two-execs/cloud-two-execs.tesh
+include teshsuite/s4u/comm-fault-scenarios/comm-fault-scenarios.cpp
+include teshsuite/s4u/comm-fault-scenarios/comm-fault-scenarios.tesh
 include teshsuite/s4u/comm-get-sender/comm-get-sender.cpp
 include teshsuite/s4u/comm-get-sender/comm-get-sender.tesh
 include teshsuite/s4u/comm-pt2pt/comm-pt2pt.cpp

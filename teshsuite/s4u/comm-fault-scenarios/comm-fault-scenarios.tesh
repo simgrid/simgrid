@@ -1,0 +1,4 @@
+$ ./comm-fault-scenarios 0 - 69
+> [0.000000] [comm_fault_scenarios/INFO] Will execute 70 active scenarios out of 147.
+> [0.000000] [comm_fault_scenarios/INFO] Will run for 290.000000 seconds
+> [290.000000] [comm_fault_scenarios/INFO] Done.

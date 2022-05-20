@@ -6,7 +6,7 @@ endforeach()
 
 foreach(x actor actor-autorestart actor-suspend
         activity-lifecycle
-        comm-get-sender comm-pt2pt wait-all-for wait-any-for
+        comm-get-sender comm-pt2pt comm-fault-scenarios wait-all-for wait-any-for
         cloud-interrupt-migration cloud-two-execs
       	monkey-masterworkers monkey-semaphore
         concurrent_rw
@@ -45,7 +45,7 @@ foreach(x actor actor-autorestart actor-suspend activity-lifecycle comm-get-send
   ADD_TESH_FACTORIES(tesh-s4u-${x} "*" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x} --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/teshsuite/s4u/${x} ${CMAKE_HOME_DIRECTORY}/teshsuite/s4u/${x}/${x}.tesh)
 endforeach()
 
-foreach(x basic-link-test basic-parsing-test host-on-off host-on-off-actors host-on-off-recv host-multicore-speed-file is-router listen_async
+foreach(x basic-link-test basic-parsing-test host-on-off host-on-off-actors host-on-off-recv comm-fault-scenarios host-multicore-speed-file is-router listen_async
         monkey-masterworkers monkey-semaphore
         pid storage_client_server trace-integration seal-platform issue71)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)

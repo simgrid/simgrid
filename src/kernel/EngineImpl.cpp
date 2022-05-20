@@ -585,6 +585,8 @@ double EngineImpl::solve(double max_date) const
     XBT_DEBUG("Updating models (min = %g, NOW = %g, next_event_date = %g)", time_delta, now_, next_event_date);
 
     while (auto* event = profile::future_evt_set.pop_leq(next_event_date, &value, &resource)) {
+      if(value<0)
+	      continue;
       if (resource->is_used() || (watched_hosts().find(resource->get_cname()) != watched_hosts().end())) {
         time_delta = next_event_date - now_;
         XBT_DEBUG("This event invalidates the next_occurring_event() computation of models. Next event set to %f",
