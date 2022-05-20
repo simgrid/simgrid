@@ -216,7 +216,7 @@ public:
   void operator()()
   {
     run_++;
-    XBT_DEBUG("Host %i starts run %i and scenario %lu.", id_, run_, scenario_);
+    XBT_DEBUG("Host %i starts run %i and scenario %zu.", id_, run_, scenario_);
     while (scenario_ < ctx_.scenarios.size()) {
       const Scenario& s = ctx_.scenarios[scenario_];
       scenario_++;
@@ -346,7 +346,7 @@ public:
   void operator()()
   {
     run_++;
-    XBT_DEBUG("Host %i starts run %i and scenario %lu.", id_, run_, scenario_);
+    XBT_DEBUG("Host %i starts run %i and scenario %zu.", id_, run_, scenario_);
     mbox_eager->set_receiver(sg4::Actor::self());
     while (scenario_ < ctx_.scenarios.size()) {
       const Scenario& s = ctx_.scenarios[scenario_];
