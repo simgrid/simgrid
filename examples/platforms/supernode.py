@@ -52,35 +52,35 @@ def load_graph(platform_csv):
     return G
 
 
-def plot_graph(G, label=False, groups=[]):
+def plot_graph(graph, label=False, groups=[]):
     # First, we compute the graph layout, i.e. the position of the nodes.
     # The neato algorithm from graphviz is nicer, but this is an extra-dependency.
     # The spring_layout is also not too bad.
     try:
-        pos = nx.nx_agraph.graphviz_layout(G, 'neato')
+        pos = nx.nx_agraph.graphviz_layout(graph, 'neato')
     except ImportError:
         print('Warning: could not import pygraphviz, will use another layout algorithm.')
-        pos = nx.spring_layout(G, k=0.5, iterations=1000, seed=42)
+        pos = nx.spring_layout(graph, k=0.5, iterations=1000, seed=42)
     plt.figure(figsize=(20, 15))
     plt.axis('off')
-    all_nodes = set(G)
+    all_nodes = set(graph)
     # We then iterate on all the specified groups, to plot each of them in the right color.
     # Note that the order of the groups is important here, as we are looking at substrings in the node names.
     for i, grp in enumerate(groups):
         nodes = {u for u in all_nodes if grp in u}
         all_nodes -= nodes
-        nx.draw_networkx_nodes(G, pos, nodelist=nodes, node_size=50, node_color=colors[i], label=grp.replace('_', ''))
-    nx.draw_networkx_nodes(G, pos, nodelist=all_nodes, node_size=50, node_color=colors[-1], label='unknown')
+        nx.draw_networkx_nodes(graph, pos, nodelist=nodes, node_size=50, node_color=colors[i], label=grp.replace('_', ''))
+    nx.draw_networkx_nodes(graph, pos, nodelist=all_nodes, node_size=50, node_color=colors[-1], label='unknown')
     # Finally we draw the edges, the (optional) labels, and the legend.
-    nx.draw_networkx_edges(G, pos, alpha=0.3)
+    nx.draw_networkx_edges(graph, pos, alpha=0.3)
     if label:
-        nx.draw_networkx_labels(G, pos)
+        nx.draw_networkx_labels(graph, pos)
     plt.legend(scatterpoints = 1)
 
 
 def generate_svg(platform_csv):
-    G = load_graph(platform_csv)
-    plot_graph(G, label=False, groups=['router', 'link', 'cpu', '_node', 'supernode', 'cluster'])
+    graph = load_graph(platform_csv)
+    plot_graph(graph, label=False, groups=['router', 'link', 'cpu', '_node', 'supernode', 'cluster'])
     img = platform_csv.replace('.csv', '.svg')
     plt.savefig(img)
     print(f'Generated file {img}')

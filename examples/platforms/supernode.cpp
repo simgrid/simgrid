@@ -94,7 +94,7 @@ static sg4::NetZone* create_cluster(const std::string& cluster_name, const int n
 }
 
 extern "C" void load_platform(const sg4::Engine& e);
-void load_platform(const sg4::Engine& e)
+void load_platform(const sg4::Engine&)
 {
   create_cluster("cluster", 4, 6, 2)->seal();
 }

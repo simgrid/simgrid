@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2021. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2010-2022. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -105,7 +105,6 @@ sg4::Mailbox* mbox_eager = nullptr;
 sg4::Mailbox* mbox_rdv   = nullptr;
 
 class SendAgent {
-
   static int run_;
   static size_t scenario_;
   int id_;
@@ -231,7 +230,6 @@ size_t SendAgent::scenario_ = 0;
 /*************************************************************************************************/
 
 class ReceiveAgent {
-
   static int run_;
   static size_t scenario_;
   int id_;
