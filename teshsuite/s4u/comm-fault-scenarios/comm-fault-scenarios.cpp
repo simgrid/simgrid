@@ -87,7 +87,7 @@ static std::string to_string(const Scenario& s)
     }
     ss << " ";
   }
-  return ss.str().c_str();
+  return ss.str();
 }
 
 struct ScenarioContext {
