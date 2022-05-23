@@ -35,8 +35,13 @@ class ActorState {
   unsigned int times_considered_ = 0;
 
 public:
+  unsigned int do_consider(unsigned int max_consider)
+  {
+    if (max_consider <= times_considered_ + 1)
+      set_done();
+    return times_considered_++;
+  }
   unsigned int get_times_considered() const { return times_considered_; }
-  unsigned int get_times_considered_and_inc() { return times_considered_++; }
 
   bool is_disabled() const { return this->state_ == InterleavingType::disabled; }
   bool is_done() const { return this->state_ == InterleavingType::done; }
