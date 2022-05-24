@@ -56,8 +56,6 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, std::stri
 #if SIMGRID_HAVE_MC
   short type;
   xbt_assert(stream >> type);
-  xbt_assert(type >= 0 && type <= static_cast<short>(Transition::Type::UNKNOWN), "Invalid transition type %d received",
-             type);
 
   switch (auto simcall = static_cast<Transition::Type>(type)) {
     case Transition::Type::BARRIER_LOCK:
@@ -95,8 +93,11 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, std::stri
 
     case Transition::Type::UNKNOWN:
       return new Transition(Transition::Type::UNKNOWN, issuer, times_considered);
+
+    default:
+      break;
   }
-  THROW_IMPOSSIBLE; // Some compilers don't detect that each branch of the above switch has a return
+  xbt_die("Invalid transition type %d received", type);
 #else
   xbt_die("Deserializing transitions is only interesting in MC mode.");
 #endif

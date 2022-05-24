@@ -39,7 +39,7 @@ constexpr double LinkBandwidth    = 1e9;  // Bytes/second
 constexpr double LinkLatency      = 1e-6; // Seconds
 
 // Constants for application behaviour
-constexpr uint64_t MsgSize = LinkBandwidth / 2;
+constexpr auto MsgSize = static_cast<uint64_t>(LinkBandwidth / 2);
 
 /*************************************************************************************************/
 
@@ -51,9 +51,12 @@ XBT_DECLARE_ENUM_CLASS(CommType, EAGER_SYNC, EAGER_ASYNC, EAGER_INIT, RDV_SYNC, 
 XBT_DECLARE_ENUM_CLASS(Action, SLEEP, PUT, GET, START, WAIT, DIE, END);
 
 struct Step {
+  XBT_DECLARE_ENUM_CLASS(Type, STATE, ACTION);
+  XBT_DECLARE_ENUM_CLASS(Entity, LNK, SND, RCV);
+
   double rel_time; // Time relative to Scenario startTime
-  XBT_DECLARE_ENUM_CLASS(Type, STATE, ACTION) type;
-  XBT_DECLARE_ENUM_CLASS(Entity, LNK, SND, RCV) entity;
+  Type type;
+  Entity entity;
   Action action_type;
   bool new_state;
 };
@@ -90,6 +93,11 @@ static std::string to_string(const Scenario& s)
   return ss.str();
 }
 
+struct MBoxes {
+  sg4::Mailbox* eager;
+  sg4::Mailbox* rdv;
+};
+
 struct ScenarioContext {
   int index;
   int active;
@@ -101,40 +109,40 @@ struct ScenarioContext {
   std::vector<Scenario> scenarios;
 };
 
-sg4::Mailbox* mbox_eager = nullptr;
-sg4::Mailbox* mbox_rdv   = nullptr;
-
 class SendAgent {
   static int run_;
   static size_t scenario_;
   int id_;
   sg4::Host* other_host_;
+  const MBoxes& mbox_;
   const ScenarioContext& ctx_;
 
   sg4::CommPtr do_put(CommType type, double& send_value)
   {
     switch (type) {
       case CommType::EAGER_SYNC:
-        mbox_eager->put(&send_value, MsgSize);
+        mbox_.eager->put(&send_value, MsgSize);
         return nullptr;
       case CommType::EAGER_ASYNC:
-        return mbox_eager->put_async(&send_value, MsgSize);
+        return mbox_.eager->put_async(&send_value, MsgSize);
       case CommType::EAGER_INIT:
-        return mbox_eager->put_init(&send_value, MsgSize);
+        return mbox_.eager->put_init(&send_value, MsgSize);
       case CommType::RDV_SYNC:
-        mbox_rdv->put(&send_value, MsgSize);
+        mbox_.rdv->put(&send_value, MsgSize);
         return nullptr;
       case CommType::RDV_ASYNC:
-        return mbox_rdv->put_async(&send_value, MsgSize);
+        return mbox_.rdv->put_async(&send_value, MsgSize);
       case CommType::RDV_INIT:
-        return mbox_rdv->put_init(&send_value, MsgSize);
+        return mbox_.rdv->put_init(&send_value, MsgSize);
       case CommType::ONESIDE_SYNC:
         sg4::Comm::sendto(sg4::this_actor::get_host(), other_host_, MsgSize);
         return nullptr;
       case CommType::ONESIDE_ASYNC:
         return sg4::Comm::sendto_async(sg4::this_actor::get_host(), other_host_, MsgSize);
+      default:
+        break;
     }
-    return nullptr;
+    DIE_IMPOSSIBLE;
   }
 
   void send_message(const Scenario& s)
@@ -149,15 +157,15 @@ class SendAgent {
     size_t step_index = 0;
     sg4::this_actor::sleep_until(s.start_time);
     // Make sure we have a clean slate
-    xbt_assert(not mbox_eager->listen(), "Eager mailbox should be empty when starting a test");
-    xbt_assert(not mbox_rdv->listen(), "RDV mailbox should be empty when starting a test");
+    xbt_assert(not mbox_.eager->listen(), "Eager mailbox should be empty when starting a test");
+    xbt_assert(not mbox_.rdv->listen(), "RDV mailbox should be empty when starting a test");
     for (; step_index < s.steps.size(); step_index++) {
       const Step& step = s.steps[step_index];
       if (step.entity != Step::Entity::SND || step.type != Step::Type::ACTION)
         continue;
       try {
         sg4::this_actor::sleep_until(s.start_time + step.rel_time);
-      } catch (std::exception& e) {
+      } catch (const simgrid::Exception& e) {
         XBT_DEBUG("During Sleep, failed to send message because of a %s exception (%s)", typeid(e).name(), e.what());
         break;
       }
@@ -179,7 +187,7 @@ class SendAgent {
           default:
             xbt_die("Not a valid action for SND");
         }
-      } catch (std::exception& e) {
+      } catch (const simgrid::Exception& e) {
         XBT_DEBUG("During %s, failed to send message because of a %s exception (%s)", to_c_str(step.action_type),
                   typeid(e).name(), e.what());
         break;
@@ -187,7 +195,7 @@ class SendAgent {
     }
     try {
       sg4::this_actor::sleep_until(end_time);
-    } catch (std::exception& e) {
+    } catch (const simgrid::Exception& e) {
       XBT_DEBUG("During Sleep, failed to send message because of a %s exception (%s)", typeid(e).name(), e.what());
     }
     Action outcome = Action::END;
@@ -202,13 +210,13 @@ class SendAgent {
       XBT_DEBUG("OK: %s", scenario_string.c_str());
     }
     sg4::this_actor::sleep_until(end_time);
-    xbt_assert(not mbox_eager->listen(), "Mailbox should not have ongoing communication!");
-    xbt_assert(not mbox_rdv->listen(), "Mailbox should not have ongoing communication!");
+    xbt_assert(not mbox_.eager->listen(), "Mailbox should not have ongoing communication!");
+    xbt_assert(not mbox_.rdv->listen(), "Mailbox should not have ongoing communication!");
   }
 
 public:
-  explicit SendAgent(int id, sg4::Host* other_host, const ScenarioContext& ctx)
-      : id_(id), other_host_(other_host), ctx_(ctx)
+  explicit SendAgent(int id, sg4::Host* other_host, const MBoxes& mbox, const ScenarioContext& ctx)
+      : id_(id), other_host_(other_host), mbox_(mbox), ctx_(ctx)
   {
   }
 
@@ -234,30 +242,33 @@ class ReceiveAgent {
   static size_t scenario_;
   int id_;
   sg4::Host* other_host_;
+  const MBoxes& mbox_;
   const ScenarioContext& ctx_;
 
-  sg4::CommPtr do_get(CommType type, double*& receive_ptr)
+  sg4::CommPtr do_get(CommType type, double*& receive_ptr) const
   {
     switch (type) {
       case CommType::EAGER_SYNC:
-        receive_ptr = mbox_eager->get<double>();
+        receive_ptr = mbox_.eager->get<double>();
         return nullptr;
       case CommType::EAGER_ASYNC:
-        return mbox_eager->get_async(&receive_ptr);
+        return mbox_.eager->get_async(&receive_ptr);
       case CommType::EAGER_INIT:
-        return mbox_eager->get_init()->set_dst_data((void**)(&receive_ptr));
+        return mbox_.eager->get_init()->set_dst_data((void**)(&receive_ptr));
       case CommType::RDV_SYNC:
-        receive_ptr = mbox_rdv->get<double>();
+        receive_ptr = mbox_.rdv->get<double>();
         return nullptr;
       case CommType::RDV_ASYNC:
-        return mbox_rdv->get_async(&receive_ptr);
+        return mbox_.rdv->get_async(&receive_ptr);
       case CommType::RDV_INIT:
-        return mbox_rdv->get_init()->set_dst_data((void**)(&receive_ptr));
+        return mbox_.rdv->get_init()->set_dst_data((void**)(&receive_ptr));
       case CommType::ONESIDE_SYNC:
       case CommType::ONESIDE_ASYNC:
         xbt_die("No get in One Sided comunications!");
+      default:
+        break;
     }
-    return nullptr;
+    DIE_IMPOSSIBLE;
   }
 
   void receive_message(const Scenario& s)
@@ -270,15 +281,15 @@ class ReceiveAgent {
     size_t step_index   = 0;
     sg4::this_actor::sleep_until(s.start_time);
     // Make sure we have a clean slate
-    xbt_assert(not mbox_eager->listen(), "Eager mailbox should be empty when starting a test");
-    xbt_assert(not mbox_rdv->listen(), "RDV mailbox should be empty when starting a test");
+    xbt_assert(not mbox_.eager->listen(), "Eager mailbox should be empty when starting a test");
+    xbt_assert(not mbox_.rdv->listen(), "RDV mailbox should be empty when starting a test");
     for (; step_index < s.steps.size(); step_index++) {
       const Step& step = s.steps[step_index];
       if (step.entity != Step::Entity::RCV || step.type != Step::Type::ACTION)
         continue;
       try {
         sg4::this_actor::sleep_until(s.start_time + step.rel_time);
-      } catch (std::exception& e) {
+      } catch (const simgrid::Exception& e) {
         XBT_DEBUG("During Sleep, failed to receive message because of a %s exception (%s)", typeid(e).name(), e.what());
         break;
       }
@@ -300,7 +311,7 @@ class ReceiveAgent {
           default:
             xbt_die("Not a valid action for RCV");
         }
-      } catch (std::exception& e) {
+      } catch (const simgrid::Exception& e) {
         XBT_DEBUG("During %s, failed to receive message because of a %s exception (%s)", to_c_str(step.action_type),
                   typeid(e).name(), e.what());
         break;
@@ -308,7 +319,7 @@ class ReceiveAgent {
     }
     try {
       sg4::this_actor::sleep_until(end_time - .1);
-    } catch (std::exception& e) {
+    } catch (const simgrid::Exception& e) {
       XBT_DEBUG("During Sleep, failed to send message because of a %s exception (%s)", typeid(e).name(), e.what());
     }
     Action outcome              = Action::END;
@@ -332,20 +343,20 @@ class ReceiveAgent {
       XBT_DEBUG("OK: %s", scenario_string.c_str());
     }
     sg4::this_actor::sleep_until(end_time);
-    xbt_assert(not mbox_eager->listen(), "Mailbox should not have ongoing communication!");
-    xbt_assert(not mbox_rdv->listen(), "Mailbox should not have ongoing communication!");
+    xbt_assert(not mbox_.eager->listen(), "Mailbox should not have ongoing communication!");
+    xbt_assert(not mbox_.rdv->listen(), "Mailbox should not have ongoing communication!");
   }
 
 public:
-  explicit ReceiveAgent(int id, sg4::Host* other_host, const ScenarioContext& ctx)
-      : id_(id), other_host_(other_host), ctx_(ctx)
+  explicit ReceiveAgent(int id, sg4::Host* other_host, const MBoxes& mbox, const ScenarioContext& ctx)
+      : id_(id), other_host_(other_host), mbox_(mbox), ctx_(ctx)
   {
   }
   void operator()()
   {
     run_++;
     XBT_DEBUG("Host %i starts run %i and scenario %zu.", id_, run_, scenario_);
-    mbox_eager->set_receiver(sg4::Actor::self());
+    mbox_.eager->set_receiver(sg4::Actor::self());
     while (scenario_ < ctx_.scenarios.size()) {
       const Scenario& s = ctx_.scenarios[scenario_];
       scenario_++;
@@ -357,21 +368,7 @@ public:
 int ReceiveAgent::run_         = 0;
 size_t ReceiveAgent::scenario_ = 0;
 
-static void on_host_state_change(sg4::Host const& host)
-{
-  XBT_DEBUG("Host %s is now %s", host.get_cname(), host.is_on() ? "ON " : "OFF");
-  if (not host.is_on()) {
-    mbox_eager->clear();
-    mbox_rdv->clear();
-  }
-}
-
-static void on_link_state_change(sg4::Link const& link)
-{
-  XBT_DEBUG("Link %s is now %s", link.get_cname(), link.is_on() ? "ON " : "OFF");
-}
-
-double build_scenarios(ScenarioContext& ctx);
+static double build_scenarios(ScenarioContext& ctx);
 
 int main(int argc, char* argv[])
 {
@@ -380,65 +377,68 @@ int main(int argc, char* argv[])
   int previous_index = -1;
   bool is_range_last = false;
   for (int i = 1; i < argc; i++) {
-    if (not strcmp(argv[i], "-"))
+    if (not strcmp(argv[i], "-")) {
       is_range_last = true;
-    else {
-      int index = atoi(argv[i]);
-      xbt_assert(index > previous_index);
-      if (is_range_last)
-        for (int j = previous_index + 1; j <= index; j++)
-          ctx.active_indices.push_back(j);
-      else
-        ctx.active_indices.push_back(index);
-      is_range_last  = false;
-      previous_index = index;
+      continue;
     }
+    int index = atoi(argv[i]);
+    xbt_assert(index > previous_index);
+    if (is_range_last)
+      for (int j = previous_index + 1; j <= index; j++)
+        ctx.active_indices.push_back(j);
+    else
+      ctx.active_indices.push_back(index);
+    is_range_last  = false;
+    previous_index = index;
   }
   double end_time = build_scenarios(ctx);
   XBT_INFO("Will run for %f seconds", end_time);
-  mbox_eager                  = e.mailbox_by_name_or_create("eager");
-  mbox_rdv                    = e.mailbox_by_name_or_create("rdv");
+  MBoxes mbox;
+  mbox.eager                  = e.mailbox_by_name_or_create("eager");
+  mbox.rdv                    = e.mailbox_by_name_or_create("rdv");
   sg4::NetZone* zone          = sg4::create_full_zone("Top");
   pr::Profile* profile_sender = pr::ProfileBuilder::from_string("sender_profile", ctx.sender_profile.str(), 0);
   sg4::Host* sender_host = zone->create_host("senderHost", HostComputePower)->set_state_profile(profile_sender)->seal();
   pr::Profile* profile_receiver = pr::ProfileBuilder::from_string("receiver_profile", ctx.receiver_profile.str(), 0);
   sg4::Host* receiver_host =
       zone->create_host("receiverHost", HostComputePower)->set_state_profile(profile_receiver)->seal();
-  sg4::ActorPtr sender = sg4::Actor::create("sender", sender_host, SendAgent(0, receiver_host, ctx));
+  sg4::ActorPtr sender = sg4::Actor::create("sender", sender_host, SendAgent(0, receiver_host, mbox, ctx));
   sender->set_auto_restart(true);
-  sg4::ActorPtr receiver = sg4::Actor::create("receiver", receiver_host, ReceiveAgent(1, sender_host, ctx));
+  sg4::ActorPtr receiver = sg4::Actor::create("receiver", receiver_host, ReceiveAgent(1, sender_host, mbox, ctx));
   receiver->set_auto_restart(true);
   pr::Profile* profile_link = pr::ProfileBuilder::from_string("link_profile", ctx.link_profile.str(), 0);
-  sg4::Link* link =
+  sg4::Link const* link =
       zone->create_link("link", LinkBandwidth)->set_latency(LinkLatency)->set_state_profile(profile_link)->seal();
   zone->add_route(sender_host->get_netpoint(), receiver_host->get_netpoint(), nullptr, nullptr,
                   {sg4::LinkInRoute{link}}, false);
   zone->seal();
-  sg4::Host::on_state_change.connect(on_host_state_change);
-  sg4::Link::on_state_change_cb(on_link_state_change);
+
+  sg4::Host::on_state_change_cb([mbox](sg4::Host const& host) {
+    XBT_DEBUG("Host %s is now %s", host.get_cname(), host.is_on() ? "ON " : "OFF");
+    if (not host.is_on()) {
+      mbox.eager->clear();
+      mbox.rdv->clear();
+    }
+  });
+
+  sg4::Link::on_state_change_cb(
+      [](sg4::Link const& link) { XBT_DEBUG("Link %s is now %s", link.get_cname(), link.is_on() ? "ON " : "OFF"); });
+
   e.run_until(end_time);
 
   // Make sure we have a clean slate
-  xbt_assert(not mbox_eager->listen(), "Eager mailbox should be empty in the end");
-  xbt_assert(not mbox_rdv->listen(), "RDV mailbox should be empty in the end");
+  xbt_assert(not mbox.eager->listen(), "Eager mailbox should be empty in the end");
+  xbt_assert(not mbox.rdv->listen(), "RDV mailbox should be empty in the end");
   XBT_INFO("Done.");
   return 0;
 }
 
-static void addStateEvent(std::ostream& out, double date, bool isOn)
-{
-  if (isOn)
-    out << date << " 1\n";
-  else
-    out << date << " 0\n";
-}
-
 static void prepareScenario(ScenarioContext& ctx, CommType type, double duration, Action sender_expected,
-                            Action receiver_expected, std::vector<Step> steps)
+                            Action receiver_expected, const std::vector<Step>& steps)
 {
   if (std::find(ctx.active_indices.begin(), ctx.active_indices.end(), ctx.index) != ctx.active_indices.end()) {
     // Update fault profiles
-    for (Step& step : steps) {
+    for (const Step& step : steps) {
       assert(step.rel_time < duration);
       if (step.type != Step::Type::STATE)
         continue;
@@ -453,6 +453,8 @@ static void prepareScenario(ScenarioContext& ctx, CommType type, double duration
         case Step::Entity::LNK:
           ctx.link_profile << ctx.start_time + step.rel_time << " " << val << std::endl;
           break;
+        default:
+          DIE_IMPOSSIBLE;
       }
     }
     ctx.scenarios.push_back({type, ctx.start_time, duration, sender_expected, receiver_expected, steps, ctx.index});
@@ -512,7 +514,7 @@ static Step rwait(double rel_time)
   return {rel_time, Step::Type::ACTION, Step::Entity::RCV, Action::WAIT, false};
 }
 
-double build_scenarios(ScenarioContext& ctx)
+static double build_scenarios(ScenarioContext& ctx)
 {
   ctx.start_time = 0;
   ctx.index      = 0;
