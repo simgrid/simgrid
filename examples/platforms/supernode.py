@@ -7,9 +7,11 @@
 
 
 # This script takes as input a C++ platform file, compiles it, then dumps the
-# routing graph as a CSV and generates an SVG image.
+# routing graph as a CSV and generates an image.
 # The layout should be alright for any platform file, but the colors are very
 # ad-hoc for file supernode.cpp : do not hesitate to adapt this script to your needs.
+# An option is provided to "simplify" the graph by removing the link vertices. It assumes that these vertices have
+# "link" in their name.
 
 import sys
 import subprocess
@@ -17,6 +19,10 @@ import pandas
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import networkx as nx
+import argparse
+import tempfile
+import os
+
 try:
     from palettable.colorbrewer.qualitative import Set1_9
     colors = Set1_9.hex_colors
@@ -27,29 +33,64 @@ except ImportError:
 
 def run_command(cmd):
     print(cmd)
-    subprocess.run(cmd.split(), capture_output=True, check=True)
+    proc = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    stdout, stderr = proc.communicate()
+    if proc.returncode != 0:
+        sys.exit(f'Command failed:\n{stderr.decode()}')
 
 
-def compile_platform(platform_cpp):
-    platform_so = platform_cpp.replace('.cpp', '.so')
+def compile_platform(platform_cpp, platform_so):
     cmd = f'g++ -g -fPIC -shared -o {platform_so} {platform_cpp} -lsimgrid'
     run_command(cmd)
-    return platform_so
 
 
-def dump_csv(platform_so):
-    platform_csv = platform_so.replace('.so', '.csv')
+def dump_csv(platform_so, platform_csv):
     cmd = f'graphicator {platform_so} {platform_csv}'
     run_command(cmd)
-    return platform_csv
 
 
-def load_graph(platform_csv):
+def merge_updown(graph):
+    '''
+    Merge all the UP and DOWN links.
+    '''
+    H = graph.copy()
+    downlinks = [v for v in graph if 'DOWN' in v]
+    mapping = {}
+    for down in downlinks:
+        up = down.replace('DOWN', 'UP')
+        H = nx.contracted_nodes(H, down, up)
+        mapping[down] = down.replace('_DOWN', '')
+    return nx.relabel_nodes(H, mapping)
+
+
+def contract_links(graph):
+    '''
+    Remove all the 'link' vertices from the graph to directly connect the nodes.
+    Note: it assumes that link vertices have the "link" string in their name.
+    '''
+    H = graph.copy()
+    links = [v for v in graph if 'link' in v]
+    new_edges = []
+    for v in links:
+        neigh = [u for u in graph.neighbors(v) if 'link' not in u]  # with Floyd zones, we have links connected to links
+        assert len(neigh) == 2
+        new_edges.append(neigh)
+    # Adding edges from graph that have no links
+    for u, v in graph.edges:
+        if 'link' not in u and 'link' not in v:
+            new_edges.append((u, v))
+    return nx.from_edgelist(new_edges)
+
+
+def load_graph(platform_csv, simplify_graph):
     edges = pandas.read_csv(platform_csv)
-    G = nx.Graph()
-    G.add_edges_from([e for _, e in edges.drop_duplicates().iterrows()])
-    print(f'Loaded a graph with {len(G)} vertices with {len(G.edges)} edges')
-    return G
+    graph = nx.Graph()
+    graph.add_edges_from([e for _, e in edges.drop_duplicates().iterrows()])
+    print(f'Loaded a graph with {len(graph)} vertices with {len(graph.edges)} edges')
+    if simplify_graph:
+        graph = contract_links(merge_updown(graph))
+        print(f'Simplified the graph, it now has {len(graph)} vertices with {len(graph.edges)} edges')
+    return graph
 
 
 def plot_graph(graph, label=False, groups=[]):
@@ -78,18 +119,30 @@ def plot_graph(graph, label=False, groups=[]):
     plt.legend(scatterpoints = 1)
 
 
-def generate_svg(platform_csv):
-    graph = load_graph(platform_csv)
+def generate_svg(platform_csv, output_file, simplify_graph):
+    graph = load_graph(platform_csv, simplify_graph)
     plot_graph(graph, label=False, groups=['router', 'link', 'cpu', '_node', 'supernode', 'cluster'])
-    img = platform_csv.replace('.csv', '.svg')
-    plt.savefig(img)
-    print(f'Generated file {img}')
+    plt.savefig(output_file)
+    print(f'Generated file {output_file}')
 
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        sys.exit(f'Syntax: {sys.argv[0]} platform.cpp')
-    platform_cpp = sys.argv[1]
-    platform_so = compile_platform(platform_cpp)
-    platform_csv = dump_csv(platform_so)
-    generate_svg(platform_csv)
+    parser = argparse.ArgumentParser(description='Visualization of topologies for SimGrid C++ platforms')
+    parser.add_argument('input', type=str, help='SimGrid C++ platform file name (input)')
+    parser.add_argument('output', type=str, help='File name of the output image')
+    parser.add_argument('--simplify', action='store_true', help='Simplify the topology (removing link vertices)')
+    args = parser.parse_args()
+    if not args.input.endswith('.cpp'):
+        parser.error(f'SimGrid platform must be a C++ file (with .cpp extension), got {args.input}')
+    if not os.path.isfile(args.input):
+        parser.error(f'File {args.input} not found')
+    output_dir = os.path.dirname(args.output)
+    if output_dir != '' and not os.path.isdir(output_dir):
+        parser.error(f'Not a directory: {output_dir}')
+    with tempfile.TemporaryDirectory() as tmpdirname:
+        platform_cpp = args.input
+        platform_csv = os.path.join(tmpdirname, 'platform.csv')
+        platform_so = os.path.join(tmpdirname, 'platform.so')
+        compile_platform(platform_cpp, platform_so)
+        dump_csv(platform_so, platform_csv)
+        generate_svg(platform_csv, args.output, args.simplify)
