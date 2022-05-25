@@ -46,8 +46,8 @@ Route* RoutedZone::new_extended_route(RoutingMode hierarchy, NetPoint* gw_src, N
 
 void RoutedZone::get_route_check_params(const NetPoint* src, const NetPoint* dst) const
 {
-  xbt_assert(src, "Cannot find a route from nullptr to %s", dst->get_cname());
-  xbt_assert(dst, "Cannot find a route from %s to nullptr", src->get_cname());
+  xbt_assert(src, "Cannot have a route with (nullptr) source");
+  xbt_assert(dst, "Cannot have a route with (nullptr) destination");
 
   const NetZoneImpl* src_as = src->get_englobing_zone();
   const NetZoneImpl* dst_as = dst->get_englobing_zone();
@@ -61,6 +61,7 @@ void RoutedZone::get_route_check_params(const NetPoint* src, const NetPoint* dst
              "%s@%s). Please report that bug.",
              src->get_cname(), dst->get_cname(), src_as->get_cname(), dst_as->get_cname(), get_cname());
 }
+
 void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                                         const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical) const
 {
