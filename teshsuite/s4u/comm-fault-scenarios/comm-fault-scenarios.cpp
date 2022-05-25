@@ -271,7 +271,7 @@ class ReceiveAgent {
     DIE_IMPOSSIBLE;
   }
 
-  void receive_message(const Scenario& s)
+  void receive_message(const Scenario& s) const
   {
     sg4::CommPtr comm   = nullptr;
     CommType type       = s.type;
@@ -422,7 +422,7 @@ int main(int argc, char* argv[])
   });
 
   sg4::Link::on_state_change_cb(
-      [](sg4::Link const& link) { XBT_DEBUG("Link %s is now %s", link.get_cname(), link.is_on() ? "ON " : "OFF"); });
+      [](sg4::Link const& lnk) { XBT_DEBUG("Link %s is now %s", lnk.get_cname(), lnk.is_on() ? "ON " : "OFF"); });
 
   e.run_until(end_time);
 
