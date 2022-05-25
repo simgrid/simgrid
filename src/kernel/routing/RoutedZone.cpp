@@ -64,13 +64,12 @@ void RoutedZone::get_route_check_params(const NetPoint* src, const NetPoint* dst
 void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                                         const std::vector<s4u::LinkInRoute>& link_list, bool symmetrical) const
 {
+  get_route_check_params(src, dst);
   const char* srcName = src->get_cname();
   const char* dstName = dst->get_cname();
 
   if (not gw_dst || not gw_src) {
     XBT_DEBUG("Load Route from \"%s\" to \"%s\"", srcName, dstName);
-    xbt_assert(src, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, srcName);
-    xbt_assert(dst, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, dstName);
     xbt_assert(not link_list.empty(), "Empty route (between %s and %s) forbidden.", srcName, dstName);
     xbt_assert(not src->is_netzone(),
                "When defining a route, src cannot be a netzone such as '%s'. Did you meant to have a NetzoneRoute?",
