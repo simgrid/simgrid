@@ -13,6 +13,7 @@ int main(int argc, char** argv)
   xbt_assert(argc == 3, "Usage: %s <platform_file.xml> <graphviz_file.dot|graphviz_file.csv>", argv[0]);
 
   e.load_platform(argv[1]);
+  e.seal_platform();
 
   const std::string outputfile(argv[2]);
   const std::string extension = outputfile.substr(outputfile.find_last_of(".") + 1);
