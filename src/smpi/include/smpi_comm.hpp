@@ -19,7 +19,7 @@ namespace simgrid::smpi {
 
 class Comm : public F2C, public Keyval{
   friend Topo;
-  MPI_Group group_;
+  MPI_Group group_         = MPI_GROUP_NULL;
   SMPI_Topo_type topoType_ = MPI_INVALID_TOPO;
   std::shared_ptr<Topo> topo_; // to be replaced by an union
   int refcount_          = 1;
@@ -35,7 +35,7 @@ class Comm : public F2C, public Keyval{
   std::list<MPI_Win> rma_wins_; // attached windows for synchronization.
   std::string name_;
   MPI_Info info_ = MPI_INFO_NULL;
-  int id_;
+  int id_                      = MPI_UNDEFINED;
   MPI_Errhandler errhandler_ =  _smpi_cfg_default_errhandler_is_error ? MPI_ERRORS_ARE_FATAL : MPI_ERRORS_RETURN;;
   MPI_Errhandler* errhandlers_ = nullptr; //for MPI_COMM_WORLD only
 
