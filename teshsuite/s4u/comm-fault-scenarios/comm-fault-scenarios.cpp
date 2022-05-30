@@ -117,7 +117,7 @@ class SendAgent {
   const MBoxes& mbox_;
   const ScenarioContext& ctx_;
 
-  sg4::CommPtr do_put(CommType type, double& send_value)
+  sg4::CommPtr do_put(CommType type, double& send_value) const
   {
     switch (type) {
       case CommType::EAGER_SYNC:
@@ -145,7 +145,7 @@ class SendAgent {
     DIE_IMPOSSIBLE;
   }
 
-  void send_message(const Scenario& s)
+  void send_message(const Scenario& s) const
   {
     std::string scenario_string = to_string(s);
     XBT_DEBUG("Will try: %s", scenario_string.c_str());
@@ -220,7 +220,7 @@ public:
   {
   }
 
-  void operator()()
+  void operator()() const
   {
     run_++;
     XBT_DEBUG("Host %i starts run %i and scenario %zu.", id_, run_, scenario_);
@@ -352,7 +352,7 @@ public:
       : id_(id), other_host_(other_host), mbox_(mbox), ctx_(ctx)
   {
   }
-  void operator()()
+  void operator()() const
   {
     run_++;
     XBT_DEBUG("Host %i starts run %i and scenario %zu.", id_, run_, scenario_);

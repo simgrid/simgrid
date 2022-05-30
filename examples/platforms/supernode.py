@@ -33,7 +33,7 @@ except ImportError:
 def run_command(cmd):
     print(cmd)
     proc = subprocess.Popen(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = proc.communicate()
+    _stdout, stderr = proc.communicate()
     if proc.returncode != 0:
         sys.exit(f'Command failed:\n{stderr.decode()}')
 
@@ -52,14 +52,14 @@ def merge_updown(graph):
     '''
     Merge all the UP and DOWN links.
     '''
-    H = graph.copy()
+    graph2 = graph.copy()
     downlinks = [v for v in graph if 'DOWN' in v]
     mapping = {}
     for down in downlinks:
         up = down.replace('DOWN', 'UP')
-        H = nx.contracted_nodes(H, down, up)
+        graph2 = nx.contracted_nodes(graph2, down, up)
         mapping[down] = down.replace('_DOWN', '')
-    return nx.relabel_nodes(H, mapping)
+    return nx.relabel_nodes(graph2, mapping)
 
 
 def contract_links(graph):
@@ -67,7 +67,6 @@ def contract_links(graph):
     Remove all the 'link' vertices from the graph to directly connect the nodes.
     Note: it assumes that link vertices have the "link" string in their name.
     '''
-    H = graph.copy()
     links = [v for v in graph if 'link' in v]
     new_edges = []
     for v in links:
@@ -92,7 +91,9 @@ def load_graph(platform_csv, simplify_graph):
     return graph
 
 
-def plot_graph(graph, label=False, groups=[]):
+def plot_graph(graph, label=False, groups=None):
+    if groups is None:
+        groups = []
     # First, we compute the graph layout, i.e. the position of the nodes.
     # The neato algorithm from graphviz is nicer, but this is an extra-dependency.
     # The spring_layout is also not too bad.
@@ -115,7 +116,7 @@ def plot_graph(graph, label=False, groups=[]):
     nx.draw_networkx_edges(graph, pos, alpha=0.3)
     if label:
         nx.draw_networkx_labels(graph, pos)
-    plt.legend(scatterpoints = 1)
+    plt.legend(scatterpoints=1)
 
 
 def generate_svg(platform_csv, output_file, simplify_graph):
@@ -125,7 +126,7 @@ def generate_svg(platform_csv, output_file, simplify_graph):
     print(f'Generated file {output_file}')
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description='Visualization of topologies for SimGrid C++ platforms')
     parser.add_argument('input', type=str, help='SimGrid C++ platform file name (input)')
     parser.add_argument('output', type=str, help='File name of the output image')
@@ -145,3 +146,7 @@ if __name__ == '__main__':
         compile_platform(platform_cpp, platform_so)
         dump_csv(platform_so, platform_csv)
         generate_svg(platform_csv, args.output, args.simplify)
+
+
+if __name__ == '__main__':
+    main()
