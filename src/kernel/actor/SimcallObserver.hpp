@@ -67,7 +67,6 @@ protected:
   ~ResultingSimcall() = default;
 
 public:
-  ResultingSimcall() = default;
   ResultingSimcall(ActorImpl* actor, T default_result) : SimcallObserver(actor), result_(default_result) {}
   void set_result(T res) { result_ = res; }
   T get_result() const { return result_; }
