@@ -84,6 +84,12 @@ if(enable_compile_optimizations)
 else()
   set(optCFLAGS "-O0 ")
 endif()
+
+#ARM platforms have signed char by default, switch to unsigned for consistancy
+if(${CMAKE_SYSTEM_PROCESSOR} MATCHES "aarch64")
+  set(optCFLAGS "${optCFLAGS} -fsigned-char")
+endif()
+
 if(enable_compile_optimizations AND CMAKE_COMPILER_IS_GNUCC
     AND (NOT enable_model-checking))
   # This is redundant (already in -03):
