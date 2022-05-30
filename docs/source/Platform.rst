@@ -32,7 +32,7 @@ to efficiently express the routing of your platform.
 Finally, you may also describe an **experimental scenario**, with qualitative (e.g., bandwidth variations representing
 an external load) and qualitative (e.g., representing how some elements fail and restart over time) changes.
 
-Here is a minimalistic platform example, describing a zone which routing is fully described, containing two hosts and a
+Here is a minimalistic platform example, describing a zone in which routing is fully described, containing two hosts and a
 link. You need to explicitly add a :ref:`pf_tag_route` between ``host0`` and ``host1`` for this link to get used during
 communications.
 
@@ -45,8 +45,8 @@ communications.
     <route src="host0" dst="host1"><link_ctn id="link0"/></route>
   </zone>
 
-SimGrid only perform minimalistic verifications about the described platforms, to make things flexible and interesting.
-It enables weird topologies, such as a single link used for all communications in a large platform, or a single used by
+SimGrid only performs minimalistic verifications about the described platforms, to make things flexible and interesting.
+It enables weird topologies, such as a single link used for all communications in a large platform, or a link used by
 hosts from different zones, or even worse. It is also OK to not describe some routing paths. SimGrid won't complain
 unless your application tries to actually use inexistant paths. In short, it is your responsibility to write proper
 platform files, and SimGrid will not try to be smarter than you!
