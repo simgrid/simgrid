@@ -17,6 +17,19 @@ Python:
       - Engine.mailbox_by_name_or_create [example: examples/python/comm-pingpong/]
     - Mailbox: Mailbox.ready [example: examples/python/comm-ready/]
 
+Platform description & visualization:
+  - More robust sanity checks for platforms, to reject unallowed topologies with
+    a proper error message.
+  - One new C++ platform example, supernode.cpp. A Python script (supernode.py)
+    demonstrates how we can generate a nice graphical representation of the
+	platform.
+
+Tools:
+  - Enhancements to the graphicator tool:
+	- Allow to dump the platform topology as a CSV file representing the edges
+	  of the graph (in addition to the DOT format).
+	- Fix graphicator for "cluster" topologies (e.g. fat-tree, dragonfly).
+
 ----------------------------------------------------------------------------
 
 S4U:
