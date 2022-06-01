@@ -54,10 +54,10 @@ int PMPI_Init(int*, char***)
 
   simgrid::smpi::ActorExt::init();
   TRACE_smpi_init(simgrid::s4u::this_actor::get_pid(), __func__);
+  smpi_mpi_init();
   smpi_bench_begin();
   smpi_process()->mark_as_initialized();
 
-  smpi_mpi_init();
   CHECK_COLLECTIVE(smpi_process()->comm_world(), "MPI_Init")
 
   return MPI_SUCCESS;
