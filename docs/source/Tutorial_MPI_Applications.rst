@@ -544,7 +544,7 @@ The computing part of this example is the matrix multiplication routine
 .. code-block:: console
 
   $ smpicxx -O3 gemm_mpi.cpp -o gemm
-  $ time smpirun -np 16 -platform cluster_crossbar.xml -hostfile cluster_hostfile --cfg=smpi/display-timing:yes --cfg=smpi/running-power:1000000000 ./gemm
+  $ time smpirun -np 16 -platform cluster_crossbar.xml -hostfile cluster_hostfile --cfg=smpi/display-timing:yes --cfg=smpi/host-speed:1000000000 ./gemm
 
 This should end quite quickly, as the size of each matrix is only 1000x1000.
 But what happens if we want to simulate larger runs?

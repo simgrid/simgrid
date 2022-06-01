@@ -41,7 +41,7 @@ simgrid::config::Flag<std::string> _smpi_cfg_host_speed_string{
     [](const std::string& str) {
       _smpi_cfg_host_speed = xbt_parse_get_speed("smpi/host-speed", 1, str, "option smpi/host-speed");
       xbt_assert(_smpi_cfg_host_speed > 0.0, "Invalid value (%s) for 'smpi/host-speed': it must be positive.",
-                 _smpi_cfg_host_speed_string.get().c_str());
+                 str.c_str());
     }};
 
 simgrid::config::Flag<bool> _smpi_cfg_simulate_computation{
