@@ -50,7 +50,7 @@ static void dump_hosts()
   std::sort(hosts.begin(), hosts.end(),
             [](const sg4::Host* a, const sg4::Host* b) { return a->get_name() < b->get_name(); });
 
-  for (auto h : hosts) {
+  for (auto const* h : hosts) {
     std::printf("  <host id=\"%s\" speed=\"%.0f\"", h->get_cname(), h->get_speed());
     const std::unordered_map<std::string, std::string>* props = h->get_properties();
     if (h->get_core_count() > 1) {
@@ -79,7 +79,7 @@ static void dump_links()
   std::sort(links.begin(), links.end(),
             [](const sg4::Link* a, const sg4::Link* b) { return a->get_name() < b->get_name(); });
 
-  for (auto link : links) {
+  for (auto const* link : links) {
     std::printf("  <link id=\"");
 
     std::printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"", link->get_cname(), link->get_bandwidth(),
@@ -116,9 +116,9 @@ static void dump_routes()
               return a->get_name() < b->get_name();
             });
 
-  for (auto src_host : hosts) { // Routes from host
+  for (auto const* src_host : hosts) { // Routes from host
     const simgrid::kernel::routing::NetPoint* src = src_host->get_netpoint();
-    for (auto dst_host : hosts) { // Routes to host
+    for (auto const* dst_host : hosts) { // Routes to host
       std::vector<simgrid::kernel::resource::StandardLinkImpl*> route;
       const simgrid::kernel::routing::NetPoint* dst = dst_host->get_netpoint();
       simgrid::kernel::routing::NetZoneImpl::get_global_route(src, dst, route, nullptr);
@@ -157,7 +157,7 @@ static void dump_routes()
         std::printf("<link_ctn id=\"%s\"/>", link->get_cname());
       std::printf("\n  </route>\n");
     }
-    for (auto dst_host : hosts) { // Routes to host
+    for (auto const* dst_host : hosts) { // Routes to host
       std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", value1->get_cname(), dst_host->get_cname());
       std::vector<simgrid::kernel::resource::StandardLinkImpl*> route;
       const simgrid::kernel::routing::NetPoint* netcardDst = dst_host->get_netpoint();

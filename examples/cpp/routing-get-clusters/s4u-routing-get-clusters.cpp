@@ -18,17 +18,17 @@ int main(int argc, char* argv[])
   std::vector<simgrid::kernel::routing::ClusterZone*> clusters =
       e.get_filtered_netzones<simgrid::kernel::routing::ClusterZone>();
 
-  for (auto c : clusters) {
+  for (auto const* c : clusters) {
     XBT_INFO("%s", c->get_cname());
     std::vector<sg4::Host*> hosts = c->get_all_hosts();
-    for (auto h : hosts)
+    for (auto const* h : hosts)
       XBT_INFO("   %s", h->get_cname());
   }
 
   std::vector<simgrid::kernel::routing::DragonflyZone*> dragonfly_clusters =
       e.get_filtered_netzones<simgrid::kernel::routing::DragonflyZone>();
 
-  for (auto d : dragonfly_clusters) {
+  for (auto const* d : dragonfly_clusters) {
     XBT_INFO("%s' dragonfly topology:", d->get_cname());
     for (size_t i = 0; i < d->get_host_count(); i++) {
       const simgrid::kernel::routing::DragonflyZone::Coords coords = d->rankId_to_coords(i);

@@ -35,7 +35,7 @@ File::File(MPI_Comm comm, const char* filename, int amode, MPI_Info info) : comm
 
   // in case no fullpath is provided ... just pick the first mountpoint.
   if (size_t found = fullname.find('/'); found == std::string::npos || fullname.rfind("./", 1) != std::string::npos) {
-    auto disk = simgrid::s4u::Host::current()->get_disks().front();
+    const auto* disk = simgrid::s4u::Host::current()->get_disks().front();
     std::string mount;
     if (disk->get_host() != simgrid::s4u::Host::current())
       mount = disk->extension<simgrid::s4u::FileSystemDiskExt>()->get_mount_point(disk->get_host());

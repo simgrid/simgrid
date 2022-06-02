@@ -23,7 +23,7 @@ static void test_one_link(const std::vector<sg4::Host*>& hosts)
   h1->route_to(h2, route, &latency);
   XBT_INFO("Route size %zu", route.size());
 
-  for (auto link: route) {
+  for (auto const* link : route) {
     double bandwidth = link->get_bandwidth();
     XBT_INFO("  Link %s: latency = %f, bandwidth = %f", link->get_cname(), link->get_latency(), bandwidth);
     if (bandwidth < min_bandwidth || min_bandwidth < 0.0)
@@ -46,7 +46,7 @@ static void test_full_link(const std::vector<sg4::Host*>& hosts)
       h1->route_to(h2, route, &latency);
       XBT_INFO("  Route size %zu", route.size());
 
-      for (auto link: route) {
+      for (auto const* link : route) {
         double bandwidth = link->get_bandwidth();
         XBT_INFO("  Link %s: latency = %f, bandwidth = %f", link->get_cname(), link->get_latency(), bandwidth);
         if (bandwidth < min_bandwidth || min_bandwidth < 0.0)

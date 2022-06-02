@@ -373,7 +373,7 @@ void EngineImpl::add_model(std::shared_ptr<resource::Model> model, const std::ve
   xbt_assert(models_prio_.find(model_name) == models_prio_.end(),
              "Model %s already exists, use model.set_name() to change its name", model_name.c_str());
 
-  for (const auto dep : dependencies) {
+  for (const auto* dep : dependencies) {
     xbt_assert(models_prio_.find(dep->get_name()) != models_prio_.end(),
                "Model %s doesn't exists. Impossible to use it as dependency.", dep->get_name().c_str());
   }

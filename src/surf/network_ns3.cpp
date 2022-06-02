@@ -145,7 +145,7 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone)
   double angle    = 0;
   auto nb_stations = static_cast<double>(wifizone->get_all_hosts().size() - 1);
   double step     = 2 * M_PI / nb_stations;
-  for (auto station_host : wifizone->get_all_hosts()) {
+  for (const auto* station_host : wifizone->get_all_hosts()) {
     station_netpoint_ns3 = station_host->get_netpoint()->extension<NetPointNs3>();
     if (station_netpoint_ns3 == access_point_netpoint_ns3)
       continue;

@@ -359,8 +359,9 @@ void LivenessChecker::run()
     // For each enabled transition in the property automaton, push a
     // (application_state, automaton_state) pair to the exploration stack:
     for (int i = xbt_dynar_length(current_pair->automaton_state->out) - 1; i >= 0; i--) {
-      auto transition_succ_label = Api::get().get_automaton_transition_label(current_pair->automaton_state->out, i);
-      auto transition_succ_dst   = Api::get().get_automaton_transition_dst(current_pair->automaton_state->out, i);
+      const auto* transition_succ_label =
+          Api::get().get_automaton_transition_label(current_pair->automaton_state->out, i);
+      auto* transition_succ_dst = Api::get().get_automaton_transition_dst(current_pair->automaton_state->out, i);
       if (evaluate_label(transition_succ_label, *prop_values))
         exploration_stack_.push_back(this->create_pair(current_pair.get(), transition_succ_dst, prop_values));
     }

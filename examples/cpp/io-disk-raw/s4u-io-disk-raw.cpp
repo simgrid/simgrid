@@ -59,7 +59,7 @@ int main(int argc, char** argv)
   e.load_platform(argv[1]);
 
   /* - Display Host properties */
-  for (auto h : e.get_all_hosts()) {
+  for (auto const* h : e.get_all_hosts()) {
     XBT_INFO("*** %s properties ****", h->get_cname());
     for (auto const& [key, value] : *h->get_properties())
       XBT_INFO("  %s -> %s", key.c_str(), value.c_str());
