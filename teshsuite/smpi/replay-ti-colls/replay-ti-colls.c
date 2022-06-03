@@ -1,4 +1,5 @@
 #include "mpi.h"
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -8,6 +9,7 @@
 static void setup_recvbuf(int nprocs, int** recvbuf, int** displs, int** counts, int** rcounts)
 {
   *recvbuf = malloc(BUFSIZE * nprocs * sizeof(int));
+  assert(*recvbuf != NULL);
   for (int i = 0; i < BUFSIZE * nprocs; i++)
     (*recvbuf)[i] = i;
 
