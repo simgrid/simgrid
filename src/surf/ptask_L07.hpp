@@ -116,13 +116,13 @@ public:
  * Action *
  **********/
 class L07Action : public CpuAction {
-  std::vector<s4u::Host*> hostList_;
-  bool free_arrays_ = false; // By default, computationAmount_ and friends are freed by caller. But not for sequential
+  const std::vector<s4u::Host*> host_list_;
+  bool free_arrays_ = false; // By default, computation_amount_ and friends are freed by caller. But not for sequential
                              // exec and regular comms
-  const double* computationAmount_;   /* pointer to the data that lives in s4u action -- do not free unless if
-                                       * free_arrays */
-  const double* communicationAmount_; /* pointer to the data that lives in s4u action -- do not free unless if
-                                       * free_arrays */
+  const double* computation_amount_;   /* pointer to the data that lives in s4u action -- do not free unless if
+                                        * free_arrays */
+  const double* communication_amount_; /* pointer to the data that lives in s4u action -- do not free unless if
+                                        * free_arrays */
   double latency_;
   double rate_;
 
@@ -137,7 +137,7 @@ class L07Action : public CpuAction {
    * The task is bounded by the slowest CPU running the ptask, considering the current pstate of each CPU.
    * Return MAX_DOUBLE if ptask has no computation.
    */
-  double calculateCpuBound();
+  double calculate_cpu_bound();
 
   /**
    * @brief Calculate the network bound for the parallel task
@@ -145,7 +145,7 @@ class L07Action : public CpuAction {
    * The network bound depends on the largest latency between the communication in the ptask.
    * Return MAX_DOUBLE if latency is 0 (or ptask doesn't have any communication)
    */
-  double calculateNetworkBound();
+  double calculate_network_bound();
 
 public:
   L07Action() = delete;
@@ -155,7 +155,7 @@ public:
   L07Action& operator=(const L07Action&) = delete;
   ~L07Action() override;
 
-  void updateBound();
+  void update_bound();
   double get_latency() const { return latency_; }
   void set_latency(double latency) { latency_ = latency; }
   void update_latency(double delta, double precision) { double_update(&latency_, delta, precision); }

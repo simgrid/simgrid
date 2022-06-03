@@ -112,7 +112,7 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
         action.set_latency(0.0);
       }
       if ((action.get_latency() <= 0.0) && (action.is_suspended() == 0)) {
-        action.updateBound();
+        action.update_bound();
         get_maxmin_system()->update_variable_penalty(action.get_variable(), 1.0);
         action.set_last_update();
       }
@@ -158,29 +158,32 @@ CpuAction* HostL07Model::execute_parallel(const std::vector<s4u::Host*>& host_li
 
 L07Action::L07Action(Model* model, const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                      const double* bytes_amount, double rate)
-    : CpuAction(model, 1.0, false), computationAmount_(flops_amount), communicationAmount_(bytes_amount), rate_(rate)
+    : CpuAction(model, 1.0, false)
+    , host_list_(host_list)
+    , computation_amount_(flops_amount)
+    , communication_amount_(bytes_amount)
+    , rate_(rate)
 {
-  size_t link_nb      = 0;
-  size_t used_host_nb = 0; /* Only the hosts with something to compute (>0 flops) are counted) */
-  double latency      = 0.0;
+  size_t link_nb       = 0;
+  const size_t host_nb = host_list_.size();
+  size_t used_host_nb  = 0; /* Only the hosts with something to compute (>0 flops) are counted) */
+  double latency       = 0.0;
   this->set_last_update();
 
-  hostList_.insert(hostList_.end(), host_list.begin(), host_list.end());
-
   if (flops_amount != nullptr)
-    used_host_nb += std::count_if(flops_amount, flops_amount + host_list.size(), [](double x) { return x > 0.0; });
+    used_host_nb += std::count_if(flops_amount, flops_amount + host_nb, [](double x) { return x > 0.0; });
 
   /* Compute the number of affected resources... */
   if (bytes_amount != nullptr) {
     std::unordered_set<const char*> affected_links;
 
-    for (size_t k = 0; k < host_list.size() * host_list.size(); k++) {
+    for (size_t k = 0; k < host_nb * host_nb; k++) {
       if (bytes_amount[k] <= 0)
         continue;
 
       double lat = 0.0;
       std::vector<StandardLinkImpl*> route;
-      hostList_[k / host_list.size()]->route_to(hostList_[k % host_list.size()], route, &lat);
+      host_list_[k / host_nb]->route_to(host_list_[k % host_nb], route, &lat);
       latency = std::max(latency, lat);
 
       for (auto const& link : route)
@@ -190,28 +193,27 @@ L07Action::L07Action(Model* model, const std::vector<s4u::Host*>& host_list, con
     link_nb = affected_links.size();
   }
 
-  XBT_DEBUG("Creating a parallel task (%p) with %zu hosts and %zu unique links.", this, host_list.size(), link_nb);
+  XBT_DEBUG("Creating a parallel task (%p) with %zu hosts and %zu unique links.", this, host_nb, link_nb);
   latency_ = latency;
 
-  set_variable(
-      model->get_maxmin_system()->variable_new(this, 1.0, (rate > 0 ? rate : -1.0), host_list.size() + link_nb));
+  set_variable(model->get_maxmin_system()->variable_new(this, 1.0, (rate > 0 ? rate : -1.0), host_nb + link_nb));
 
   if (latency_ > 0)
     model->get_maxmin_system()->update_variable_penalty(get_variable(), 0.0);
 
   /* Expand it for the CPUs even if there is nothing to compute, to make sure that it gets expended even if there is no
    * communication either */
-  for (size_t i = 0; i < host_list.size(); i++) {
+  for (size_t i = 0; i < host_nb; i++) {
     model->get_maxmin_system()->expand(host_list[i]->get_cpu()->get_constraint(), get_variable(),
                                        (flops_amount == nullptr ? 0.0 : flops_amount[i]));
   }
 
   if (bytes_amount != nullptr) {
-    for (size_t k = 0; k < host_list.size() * host_list.size(); k++) {
+    for (size_t k = 0; k < host_nb * host_nb; k++) {
       if (bytes_amount[k] <= 0.0)
         continue;
       std::vector<StandardLinkImpl*> route;
-      hostList_[k / host_list.size()]->route_to(hostList_[k % host_list.size()], route, nullptr);
+      host_list_[k / host_nb]->route_to(host_list_[k % host_nb], route, nullptr);
 
       for (auto const& link : route)
         model->get_maxmin_system()->expand(link->get_constraint(), this->get_variable(), bytes_amount[k]);
@@ -223,7 +225,7 @@ L07Action::L07Action(Model* model, const std::vector<s4u::Host*>& host_list, con
     this->set_remains(0.0);
   }
   /* finally calculate the initial bound value */
-  updateBound();
+  update_bound();
 }
 
 Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
@@ -294,7 +296,7 @@ void CpuL07::on_speed_change()
 
   while (const auto* var = get_constraint()->get_variable(&elem)) {
     auto* action = static_cast<L07Action*>(var->get_id());
-    action->updateBound();
+    action->update_bound();
   }
 
   CpuImpl::on_speed_change();
@@ -367,7 +369,7 @@ void LinkL07::set_latency(double value)
   latency_.peak = value;
   while (const auto* var = get_constraint()->get_variable(&elem)) {
     auto* action = static_cast<L07Action*>(var->get_id());
-    action->updateBound();
+    action->update_bound();
   }
 }
 LinkL07::~LinkL07() = default;
@@ -379,30 +381,30 @@ LinkL07::~LinkL07() = default;
 L07Action::~L07Action()
 {
   if (free_arrays_) {
-    delete[] computationAmount_;
-    delete[] communicationAmount_;
+    delete[] computation_amount_;
+    delete[] communication_amount_;
   }
 }
 
-double L07Action::calculateNetworkBound()
+double L07Action::calculate_network_bound()
 {
   double lat_current = 0.0;
   double lat_bound   = std::numeric_limits<double>::max();
 
-  size_t host_count = hostList_.size();
+  size_t host_count = host_list_.size();
 
-  if (communicationAmount_ == nullptr) {
+  if (communication_amount_ == nullptr) {
     return lat_bound;
   }
 
   for (size_t i = 0; i < host_count; i++) {
     for (size_t j = 0; j < host_count; j++) {
-      if (communicationAmount_[i * host_count + j] > 0) {
+      if (communication_amount_[i * host_count + j] > 0) {
         double lat = 0.0;
         std::vector<StandardLinkImpl*> route;
-        hostList_.at(i)->route_to(hostList_.at(j), route, &lat);
+        host_list_.at(i)->route_to(host_list_.at(j), route, &lat);
 
-        lat_current = std::max(lat_current, lat * communicationAmount_[i * host_count + j]);
+        lat_current = std::max(lat_current, lat * communication_amount_[i * host_count + j]);
       }
     }
   }
@@ -412,26 +414,26 @@ double L07Action::calculateNetworkBound()
   return lat_bound;
 }
 
-double L07Action::calculateCpuBound()
+double L07Action::calculate_cpu_bound()
 {
   double cpu_bound = std::numeric_limits<double>::max();
 
-  if (computationAmount_ == nullptr) {
+  if (computation_amount_ == nullptr) {
     return cpu_bound;
   }
 
-  for (size_t i = 0; i < hostList_.size(); i++) {
-    if (computationAmount_[i] > 0) {
-      cpu_bound = std::min(cpu_bound, hostList_[i]->get_cpu()->get_speed(1.0) *
-                                          hostList_[i]->get_cpu()->get_speed_ratio() / computationAmount_[i]);
+  for (size_t i = 0; i < host_list_.size(); i++) {
+    if (computation_amount_[i] > 0) {
+      cpu_bound = std::min(cpu_bound, host_list_[i]->get_cpu()->get_speed(1.0) *
+                                          host_list_[i]->get_cpu()->get_speed_ratio() / computation_amount_[i]);
     }
   }
   return cpu_bound;
 }
 
-void L07Action::updateBound()
+void L07Action::update_bound()
 {
-  double bound = std::min(calculateNetworkBound(), calculateCpuBound());
+  double bound = std::min(calculate_network_bound(), calculate_cpu_bound());
 
   XBT_DEBUG("action (%p) : bound = %g", this, bound);
 
