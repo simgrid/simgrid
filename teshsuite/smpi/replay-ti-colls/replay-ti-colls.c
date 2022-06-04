@@ -1,5 +1,4 @@
 #include "mpi.h"
-#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -8,14 +7,13 @@
 
 static void setup_recvbuf(int nprocs, int** recvbuf, int** displs, int** counts, int** rcounts)
 {
-  *recvbuf = malloc(BUFSIZE * nprocs * sizeof(int));
-  assert(*recvbuf != NULL);
+  *recvbuf = xbt_malloc(BUFSIZE * nprocs * sizeof(int));
   for (int i = 0; i < BUFSIZE * nprocs; i++)
     (*recvbuf)[i] = i;
 
-  *displs  = malloc(nprocs * sizeof(int));
-  *counts  = malloc(nprocs * sizeof(int));
-  *rcounts = malloc(nprocs * sizeof(int));
+  *displs  = xbt_malloc(nprocs * sizeof(int));
+  *counts  = xbt_malloc(nprocs * sizeof(int));
+  *rcounts = xbt_malloc(nprocs * sizeof(int));
   for (int i = 0; i < nprocs; i++) {
     (*displs)[i]  = i * BUFSIZE;
     (*counts)[i]  = BOUNDED(i);
@@ -33,15 +31,15 @@ int main(int argc, char** argv)
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  int* sendbuf = malloc(BUFSIZE * nprocs * sizeof(int));
+  int* sendbuf = xbt_malloc(BUFSIZE * nprocs * sizeof(int));
   for (int i = 0; i < BUFSIZE * nprocs; i++)
     sendbuf[i] = rank;
 
-  int* alltoallvcounts = malloc(nprocs * sizeof(int));
+  int* alltoallvcounts = xbt_malloc(nprocs * sizeof(int));
   for (int i = 0; i < nprocs; i++)
     alltoallvcounts[i] = BOUNDED(i + rank);
 
-  int* dummy_buffer = malloc(sizeof(int));
+  int* dummy_buffer = xbt_malloc(sizeof(int));
   // initialize buffers with an invalid value (we want to trigger a valgrind error if they are used)
   int* recvbuf      = dummy_buffer + 1;
   int* displs       = dummy_buffer + 1;
@@ -59,7 +57,7 @@ int main(int argc, char** argv)
   MPI_Scatterv(recvbuf, counts, displs, MPI_INT, sendbuf, BOUNDED(rank), MPI_INT, 0, MPI_COMM_WORLD);
   MPI_Reduce(sendbuf, recvbuf, BUFSIZE, MPI_INT, MPI_MAX, 0, MPI_COMM_WORLD);
 
-  free(dummy_buffer);
+  xbt_free(dummy_buffer);
   if (rank != 0)
     setup_recvbuf(nprocs, &recvbuf, &displs, &counts, &rcounts);
 
@@ -80,12 +78,12 @@ int main(int argc, char** argv)
   MPI_Exscan(sendbuf, recvbuf, BUFSIZE, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
   MPI_Barrier(MPI_COMM_WORLD);
 
-  free(alltoallvcounts);
-  free(sendbuf);
-  free(recvbuf);
-  free(displs);
-  free(counts);
-  free(rcounts);
+  xbt_free(alltoallvcounts);
+  xbt_free(sendbuf);
+  xbt_free(recvbuf);
+  xbt_free(displs);
+  xbt_free(counts);
+  xbt_free(rcounts);
 
   MPI_Finalize();
   return 0;
