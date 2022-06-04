@@ -295,7 +295,7 @@ void CpuL07::on_speed_change()
   get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), get_core_count() * speed_.peak * speed_.scale);
 
   while (const auto* var = get_constraint()->get_variable(&elem)) {
-    auto* action = static_cast<L07Action*>(var->get_id());
+    const auto* action = static_cast<L07Action*>(var->get_id());
     action->update_bound();
   }
 
@@ -368,7 +368,7 @@ void LinkL07::set_latency(double value)
 
   latency_.peak = value;
   while (const auto* var = get_constraint()->get_variable(&elem)) {
-    auto* action = static_cast<L07Action*>(var->get_id());
+    const auto* action = static_cast<L07Action*>(var->get_id());
     action->update_bound();
   }
 }
@@ -386,7 +386,7 @@ L07Action::~L07Action()
   }
 }
 
-double L07Action::calculate_network_bound()
+double L07Action::calculate_network_bound() const
 {
   double lat_current = 0.0;
   double lat_bound   = std::numeric_limits<double>::max();
@@ -414,7 +414,7 @@ double L07Action::calculate_network_bound()
   return lat_bound;
 }
 
-double L07Action::calculate_cpu_bound()
+double L07Action::calculate_cpu_bound() const
 {
   double cpu_bound = std::numeric_limits<double>::max();
 
@@ -431,7 +431,7 @@ double L07Action::calculate_cpu_bound()
   return cpu_bound;
 }
 
-void L07Action::update_bound()
+void L07Action::update_bound() const
 {
   double bound = std::min(calculate_network_bound(), calculate_cpu_bound());
 

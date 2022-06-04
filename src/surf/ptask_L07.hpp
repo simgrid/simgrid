@@ -137,7 +137,7 @@ class L07Action : public CpuAction {
    * The task is bounded by the slowest CPU running the ptask, considering the current pstate of each CPU.
    * Return MAX_DOUBLE if ptask has no computation.
    */
-  double calculate_cpu_bound();
+  double calculate_cpu_bound() const;
 
   /**
    * @brief Calculate the network bound for the parallel task
@@ -145,7 +145,7 @@ class L07Action : public CpuAction {
    * The network bound depends on the largest latency between the communication in the ptask.
    * Return MAX_DOUBLE if latency is 0 (or ptask doesn't have any communication)
    */
-  double calculate_network_bound();
+  double calculate_network_bound() const;
 
 public:
   L07Action() = delete;
@@ -155,7 +155,7 @@ public:
   L07Action& operator=(const L07Action&) = delete;
   ~L07Action() override;
 
-  void update_bound();
+  void update_bound() const;
   double get_latency() const { return latency_; }
   void set_latency(double latency) { latency_ = latency; }
   void update_latency(double delta, double precision) { double_update(&latency_, delta, precision); }
