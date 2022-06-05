@@ -64,7 +64,7 @@ class Tool(mbi.AbstractTool):
             batchinfo=batchinfo)
 
     def teardown(self):
-        subprocess.run("find -type f -a -executable | xargs rm -f", shell=True, check=True) # Remove generated cruft (binary files)
+        subprocess.run("find -type f -a -executable -exec rm -f {} +", shell=True, check=True) # Remove generated cruft (binary files)
         subprocess.run("rm -f smpitmp-* core", shell=True, check=True)
 
     def parse(self, cachefile):
