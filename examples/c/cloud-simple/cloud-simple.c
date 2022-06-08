@@ -64,7 +64,7 @@ static void communication_rx_fun(int argc, char* argv[])
   XBT_INFO("%s:%s to %s:%s => %g sec", sg_host_get_name(priv->tx_host), sg_actor_get_name(priv->tx_proc), host_name,
            pr_name, clock_end - priv->clock_sta);
 
-  free(priv);
+  xbt_free(priv);
 }
 
 static void launch_communication_worker(sg_host_t tx_host, sg_host_t rx_host)

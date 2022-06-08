@@ -65,9 +65,9 @@ static broadcaster_t broadcaster_init(sg_mailbox_t* mailboxes, unsigned int host
 
 static void broadcaster_destroy(broadcaster_t bc)
 {
-  free(bc->pending_sends);
-  free(bc->mailboxes);
-  free(bc);
+  xbt_free(bc->pending_sends);
+  xbt_free(bc->mailboxes);
+  xbt_free(bc);
 }
 
 /** Emitter function  */

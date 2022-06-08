@@ -53,13 +53,13 @@ static void worker_fun(int argc, char* argv[])
     XBT_INFO("%s received from mailbox(%s)", pr_name, mbox_name);
 
     if (*payload == FINALIZE) {
-      free(payload);
+      xbt_free(payload);
       break;
     }
 
     sg_actor_execute(*payload);
     XBT_INFO("%s executed", pr_name);
-    free(payload);
+    xbt_free(payload);
   }
 }
 
@@ -163,7 +163,7 @@ static void master_fun(int argc, char* argv[])
   }
 
   XBT_INFO("# Goodbye now!");
-  free(vms);
+  xbt_free(vms);
 }
 
 int main(int argc, char* argv[])
@@ -189,7 +189,7 @@ int main(int argc, char* argv[])
   for (int i = 0; i < 2; i++)
     worker_pms[i] = pms[i + 1];
 
-  free(pms);
+  xbt_free(pms);
 
   sg_actor_t actor = sg_actor_init("master", master_pm);
   sg_actor_set_data(actor, worker_pms);
@@ -198,7 +198,7 @@ int main(int argc, char* argv[])
   simgrid_run();
   XBT_INFO("Bye (simulation time %g)", simgrid_get_clock());
 
-  free(worker_pms);
+  xbt_free(worker_pms);
 
   return 0;
 }

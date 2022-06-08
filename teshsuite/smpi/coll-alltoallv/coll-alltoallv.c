@@ -143,12 +143,12 @@ int main(int argc, char **argv)
     printf("Alltoallv TEST COMPLETE.\n");
     fflush(stdout);
   }
-  free(sdispls);
-  free(rdispls);
-  free(recvcounts);
-  free(sendcounts);
-  free(rbuf);
-  free(sbuf);
+  xbt_free(sdispls);
+  xbt_free(rdispls);
+  xbt_free(recvcounts);
+  xbt_free(sendcounts);
+  xbt_free(rbuf);
+  xbt_free(sbuf);
 
   MPI_Finalize();
   return 0;

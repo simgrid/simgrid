@@ -17,7 +17,7 @@ void tracker_answer_free(void* data)
 {
   tracker_answer_t a = (tracker_answer_t)data;
   xbt_dynar_free(&a->peers);
-  free(a);
+  xbt_free(a);
 }
 
 static int is_in_list(const_xbt_dynar_t peers, int id)

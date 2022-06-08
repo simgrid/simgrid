@@ -74,8 +74,8 @@ static void sender(int argc, char* argv[])
                changed_pos);
   }
 
-  free(pending_comms);
-  free(mboxes);
+  xbt_free(pending_comms);
+  xbt_free(mboxes);
 
   XBT_INFO("Goodbye now!");
 }

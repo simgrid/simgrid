@@ -90,8 +90,8 @@ int main(int argc, char *argv[])
       fflush(stdout);
     }
   }
-  free(sb);
-  free(rb);
+  xbt_free(sb);
+  xbt_free(rb);
   MPI_Finalize();
   return EXIT_SUCCESS;
 }

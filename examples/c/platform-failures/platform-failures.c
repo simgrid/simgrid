@@ -46,11 +46,11 @@ static void master(int argc, char* argv[])
         break;
       case SG_ERROR_NETWORK:
         XBT_INFO("Mmh. The communication with '%s' failed. Nevermind. Let's keep going!", mailbox_name);
-        free(payload);
+        xbt_free(payload);
         break;
       case SG_ERROR_TIMEOUT:
         XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox_name);
-        free(payload);
+        xbt_free(payload);
         break;
       default:
         xbt_die("Unexpected behavior");
@@ -69,11 +69,11 @@ static void master(int argc, char* argv[])
     switch (sg_comm_wait_for(comm, 1.0)) {
       case SG_ERROR_NETWORK:
         XBT_INFO("Mmh. Can't reach '%s'! Nevermind. Let's keep going!", mailbox_name);
-        free(payload);
+        xbt_free(payload);
         break;
       case SG_ERROR_TIMEOUT:
         XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox_name);
-        free(payload);
+        xbt_free(payload);
         break;
       case SG_OK:
         /* nothing */
@@ -102,11 +102,11 @@ static void worker(int argc, char* argv[])
     sg_error_t retcode = sg_comm_wait(comm);
     if (retcode == SG_OK) {
       if (*payload == FINALIZE) {
-        free(payload);
+        xbt_free(payload);
         break;
       } else {
         double comp_size = *payload;
-        free(payload);
+        xbt_free(payload);
         XBT_INFO("Start execution...");
         sg_actor_execute(comp_size);
         XBT_INFO("Execution complete.");

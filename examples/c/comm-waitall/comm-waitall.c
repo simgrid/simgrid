@@ -61,8 +61,8 @@ static void sender(int argc, char* argv[])
   /* Now that all message exchanges were initiated, wait for their completion in one single call */
   sg_comm_wait_all(pending_comms, pending_comms_count);
 
-  free(pending_comms);
-  free(mboxes);
+  xbt_free(pending_comms);
+  xbt_free(mboxes);
 
   XBT_INFO("Goodbye now!");
 }

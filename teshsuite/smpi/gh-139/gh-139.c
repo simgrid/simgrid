@@ -35,7 +35,7 @@ static void thread_create_wrapper(XBT_ATTRIB_UNUSED int argc, XBT_ATTRIB_UNUSED 
            the_global_rank);
   SMPI_thread_create();
   t->f(t->param);
-  free(t);
+  xbt_free(t);
 }
 
 static void mpi_thread_create(const char* name, void* (*f)(void*), void* param)
@@ -73,7 +73,7 @@ void* req_wait(void* bar)
   MPI_Error_string(ret, err_string, &length);
   XBT_INFO("%d request done, return %s", rank, err_string);
   XBT_INFO("%d still has MPI rank %d and global variable %d", param->rank, rank, global_rank);
-  free(param);
+  xbt_free(param);
   return NULL;
 }
 

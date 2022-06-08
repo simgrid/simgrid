@@ -58,7 +58,7 @@ static void worker(int argc, char* argv[])
     XBT_INFO("%d activities remain pending", pending_execs_count);
   }
 
-  free(pending_execs);
+  xbt_free(pending_execs);
 }
 
 int main(int argc, char* argv[])

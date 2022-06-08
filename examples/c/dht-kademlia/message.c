@@ -26,5 +26,5 @@ void free_message(void* message)
   const kademlia_message_t msg = (kademlia_message_t)message;
   if (msg)
     answer_free(msg->answer);
-  free(msg);
+  xbt_free(msg);
 }

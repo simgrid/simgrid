@@ -16,7 +16,7 @@ static void peer_join_chain(peer_t p)
   p->total_pieces     = msg->num_pieces;
   XBT_DEBUG("Peer %s got a 'BUILD_CHAIN' message (prev: %s / next: %s)", sg_mailbox_get_name(p->me),
             p->prev ? sg_mailbox_get_name(p->prev) : NULL, p->next ? sg_mailbox_get_name(p->next) : NULL);
-  free(msg);
+  xbt_free(msg);
 }
 
 static void peer_forward_file(peer_t p)
@@ -73,10 +73,10 @@ static peer_t peer_init(int argc, char* argv[])
 
 static void peer_delete(peer_t p)
 {
-  free(p->pending_recvs);
-  free(p->pending_sends);
+  xbt_free(p->pending_recvs);
+  xbt_free(p->pending_sends);
 
-  free(p);
+  xbt_free(p);
 }
 
 void peer(int argc, char* argv[])

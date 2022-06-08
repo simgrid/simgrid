@@ -71,11 +71,11 @@ static void worker(int argc, char* argv[])
     double* payload = (double*)sg_mailbox_get(mailbox);
 
     if (*payload == FINALIZE) {
-      free(payload); /* - Exit if 'finalize' is received */
+      xbt_free(payload); /* - Exit if 'finalize' is received */
       break;
     }
     sg_actor_execute(*payload); /*  - Otherwise, process the received number of flops*/
-    free(payload);
+    xbt_free(payload);
   }
   XBT_INFO("I'm done. See you!");
 }
