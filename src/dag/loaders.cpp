@@ -182,7 +182,7 @@ std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename)
   FILE* in_file = fopen(filename.c_str(), "r");
   xbt_assert(in_file != nullptr, "Failed to open file: %s", filename.c_str());
 
-  Agraph_t* dag_dot = agread(in_file, NULL);
+  Agraph_t* dag_dot = agread(in_file, nullptr);
 
   std::unordered_map<std::string, ActivityPtr> activities;
   std::vector<ActivityPtr> dag;
