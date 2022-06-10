@@ -37,13 +37,13 @@ $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/platform-failures.
 > [  4.072165] (1:master@Tremblay) Send to worker-0 completed
 > [  4.072165] (1:master@Tremblay) Send a message to worker-1
 > [  5.000000] (0:maestro@) Restart actors on host Lilibeth
-> [  5.030928] (10:sleeper@Lilibeth) Start sleeping...
+> [  5.000000] (10:sleeper@Lilibeth) Start sleeping...
 > [  5.030928] (5:worker@Ginette) Execution complete.
 > [  5.030928] (5:worker@Ginette) Waiting a message on worker-3
 > [  5.103093] (9:worker@Jupiter) Start execution...
 > [  5.103093] (1:master@Tremblay) Send to worker-1 completed
 > [  5.103093] (1:master@Tremblay) Send a message to worker-2
-> [  6.030928] (10:sleeper@Lilibeth) done sleeping.
+> [  6.000000] (10:sleeper@Lilibeth) done sleeping.
 > [  6.061856] (6:worker@Bourassa) Execution complete.
 > [  6.061856] (6:worker@Bourassa) Waiting a message on worker-4
 > [  6.072165] (2:worker@Tremblay) Execution complete.
@@ -51,14 +51,14 @@ $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/platform-failures.
 > [  7.103093] (9:worker@Jupiter) Execution complete.
 > [  7.103093] (9:worker@Jupiter) Waiting a message on worker-1
 > [ 15.000000] (0:maestro@) Restart actors on host Lilibeth
-> [ 15.103093] (11:sleeper@Lilibeth) Start sleeping...
+> [ 15.000000] (11:sleeper@Lilibeth) Start sleeping...
 > [ 15.103093] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'worker-2'. Nevermind. Let's keep going!
 > [ 15.103093] (1:master@Tremblay) Send a message to worker-3
 > [ 15.103093] (5:worker@Ginette) Mmh. Something went wrong. Nevermind. Let's keep going!
 > [ 15.103093] (5:worker@Ginette) Waiting a message on worker-3
 > [ 15.103093] (1:master@Tremblay) Mmh. The communication with 'worker-3' failed. Nevermind. Let's keep going!
 > [ 15.103093] (1:master@Tremblay) Send a message to worker-4
-> [ 16.103093] (11:sleeper@Lilibeth) done sleeping.
+> [ 16.000000] (11:sleeper@Lilibeth) done sleeping.
 > [ 16.134021] (6:worker@Bourassa) Start execution...
 > [ 16.134021] (1:master@Tremblay) Send to worker-4 completed
 > [ 16.134021] (1:master@Tremblay) Send a message to worker-0
@@ -75,10 +75,10 @@ $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/platform-failures.
 > [ 19.175258] (9:worker@Jupiter) Execution complete.
 > [ 19.175258] (9:worker@Jupiter) Waiting a message on worker-1
 > [ 25.000000] (0:maestro@) Restart actors on host Lilibeth
-> [ 27.175258] (12:sleeper@Lilibeth) Start sleeping...
+> [ 25.000000] (12:sleeper@Lilibeth) Start sleeping...
+> [ 26.000000] (12:sleeper@Lilibeth) done sleeping.
 > [ 27.175258] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'worker-2'. Nevermind. Let's keep going!
 > [ 27.175258] (1:master@Tremblay) Send a message to worker-3
-> [ 28.175258] (12:sleeper@Lilibeth) done sleeping.
 > [ 28.206186] (5:worker@Ginette) Start execution...
 > [ 28.206186] (1:master@Tremblay) Send to worker-3 completed
 > [ 28.206186] (1:master@Tremblay) Send a message to worker-4
@@ -99,10 +99,10 @@ $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/platform-failures.
 > [ 31.247423] (9:worker@Jupiter) Execution complete.
 > [ 31.247423] (9:worker@Jupiter) Waiting a message on worker-1
 > [ 35.000000] (0:maestro@) Restart actors on host Lilibeth
-> [ 39.247423] (13:sleeper@Lilibeth) Start sleeping...
+> [ 35.000000] (13:sleeper@Lilibeth) Start sleeping...
+> [ 36.000000] (13:sleeper@Lilibeth) done sleeping.
 > [ 39.247423] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'worker-2'. Nevermind. Let's keep going!
 > [ 39.247423] (1:master@Tremblay) Send a message to worker-3
-> [ 40.247423] (13:sleeper@Lilibeth) done sleeping.
 > [ 40.278351] (5:worker@Ginette) Start execution...
 > [ 40.278351] (1:master@Tremblay) Send to worker-3 completed
 > [ 40.278351] (1:master@Tremblay) Send a message to worker-4
@@ -118,3 +118,4 @@ $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/platform-failures.
 > [ 43.309278] (6:worker@Bourassa) I'm done. See you!
 > [ 43.309278] (1:master@Tremblay) Goodbye now!
 > [ 43.309278] (0:maestro@) Simulation time 43.3093
+
