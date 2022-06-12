@@ -146,7 +146,7 @@ Grab the last **stable release** from `FramaGit
 
    $ tar xf simgrid-3-XX.tar.gz
    $ cd simgrid-*
-   $ cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid .
+   $ cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid -GNinja.
    $ make
    $ make install
 
