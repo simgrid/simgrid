@@ -324,4 +324,6 @@ typedef enum {
   SG_ERROR_VM
 } sg_error_t;
 
+XBT_PUBLIC int SMPI_is_inited();
+
 #endif /* SIMGRID_TYPES_H */

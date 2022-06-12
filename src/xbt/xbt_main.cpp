@@ -157,3 +157,10 @@ void xbt_abort()
 #endif
   abort();
 }
+
+#ifndef HAVE_SMPI
+int SMPI_is_inited()
+{
+  return false;
+}
+#endif
