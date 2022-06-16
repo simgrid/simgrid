@@ -659,28 +659,28 @@ PYBIND11_MODULE(simgrid, m)
                              "Check if there is a communication ready to be consumed from a mailbox.")
       .def(
           "put",
-          [](Mailbox* self, py::object data, int size, double timeout) {
+          [](Mailbox* self, py::object data, uint64_t size, double timeout) {
             data.inc_ref();
             self->put(data.ptr(), size, timeout);
           },
           py::call_guard<py::gil_scoped_release>(), "Blocking data transmission with a timeout")
       .def(
           "put",
-          [](Mailbox* self, py::object data, int size) {
+          [](Mailbox* self, py::object data, uint64_t size) {
             data.inc_ref();
             self->put(data.ptr(), size);
           },
           py::call_guard<py::gil_scoped_release>(), "Blocking data transmission")
       .def(
           "put_async",
-          [](Mailbox* self, py::object data, int size) {
+          [](Mailbox* self, py::object data, uint64_t size) {
             data.inc_ref();
             return self->put_async(data.ptr(), size);
           },
           py::call_guard<py::gil_scoped_release>(), "Non-blocking data transmission")
       .def(
           "put_init",
-          [](Mailbox* self, py::object data, int size) {
+          [](Mailbox* self, py::object data, uint64_t size) {
             data.inc_ref();
             return self->put_init(data.ptr(), size);
           },
