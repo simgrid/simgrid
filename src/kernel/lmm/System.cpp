@@ -29,6 +29,11 @@ Element::Element(Constraint* constraint, Variable* variable, double cweight)
 
 int Element::get_concurrency() const
 {
+  // just to try having the computation of the concurrency
+  if(constraint->get_sharing_policy() == Constraint::SharingPolicy::WIFI) {
+    return 1;
+  }
+
   // Ignore element with weight less than one (e.g. cross-traffic)
   return (consumption_weight >= 1) ? 1 : 0;
   // There are other alternatives, but they will change the behavior of the model..
@@ -754,7 +759,7 @@ double Constraint::get_usage() const
 
 void Constraint::set_sharing_policy(SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
 {
-  xbt_assert(policy == SharingPolicy::NONLINEAR || not cb,
+  xbt_assert(policy == SharingPolicy::NONLINEAR || policy == SharingPolicy::WIFI || not cb,
              "Invalid sharing policy for constraint. Callback should be used with NONLINEAR sharing policy");
   sharing_policy_    = policy;
   dyn_constraint_cb_ = cb;

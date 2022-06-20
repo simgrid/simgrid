@@ -7,6 +7,8 @@
 
 #include "src/kernel/resource/WifiLinkImpl.hpp"
 #include "src/surf/surf_interface.hpp"
+#include "src/kernel/activity/CommImpl.hpp"
+
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 
@@ -22,14 +24,18 @@ WifiLinkImpl::WifiLinkImpl(const std::string& name, const std::vector<double>& b
   this->set_constraint(system->constraint_new(this, 1));
   for (auto bandwidth : bandwidths)
     bandwidths_.push_back({bandwidth, 1.0, nullptr});
+
+  kernel::activity::CommImpl::on_start.connect(&update_bw_comm_start);
+  s4u::Link::on_communication_state_change_cb(&update_bw_comm_end);
+
+
 }
 
 void WifiLinkImpl::set_host_rate(const s4u::Host* host, int rate_level)
 {
-  host_rates_[host->get_name()] = rate_level;
-
-  // Each time we add a host, we refresh the decay model
-  refresh_decay_bandwidths();
+  auto insert_done = host_rates_.insert(std::make_pair(host->get_name(), rate_level));
+  if (not insert_done.second)
+    insert_done.first->second = rate_level;
 }
 
 double WifiLinkImpl::get_host_rate(const s4u::Host* host) const
@@ -47,7 +53,7 @@ double WifiLinkImpl::get_host_rate(const s4u::Host* host) const
              "Link '%s' only has %zu wifi rate levels, so the provided level %d is invalid for host '%s'.",
              this->get_cname(), bandwidths_.size(), rate_id, host->get_cname());
 
-  Metric rate = use_decay_model_ ? decay_bandwidths_[rate_id] : bandwidths_[rate_id];
+  Metric rate = bandwidths_[rate_id];
   return rate.peak * rate.scale;
 }
 
@@ -61,31 +67,85 @@ size_t WifiLinkImpl::get_host_count() const
   return host_rates_.size();
 }
 
-void WifiLinkImpl::refresh_decay_bandwidths()
+double WifiLinkImpl::wifi_link_dynamic_sharing(WifiLinkImpl* link, double capacity, int n)
 {
-  // Compute number of STAtion on the Access Point
-  const auto nSTA_minus_1 = static_cast<double>(get_host_count() - 1);
-
-  std::vector<Metric> new_bandwidths;
-  for (auto const& bandwidth : bandwidths_) {
-    // Instantiate decay model relatively to the actual bandwidth
-    double max_bw     = bandwidth.peak;
-    double min_bw     = bandwidth.peak - (wifi_max_rate_ - wifi_min_rate_);
-    double model_rate = bandwidth.peak - (wifi_max_rate_ - model_rate_);
-
-    double N0     = max_bw - min_bw;
-    double lambda = (-log(model_rate - min_bw) + log(N0)) / model_n_;
-    // Since decay model start at 0 we should use (nSTA-1)
-    double new_peak = N0 * exp(-lambda * nSTA_minus_1) + min_bw;
-    new_bandwidths.push_back({new_peak, 1.0, nullptr});
-  }
-  decay_bandwidths_ = new_bandwidths;
+  double ratio = link->get_max_ratio(n);
+  XBT_DEBUG("New ratio value concurrency %d: %lf of link capacity on link %s", n, ratio, link->get_name().c_str());
+  return ratio;
 }
 
-bool WifiLinkImpl::toggle_decay_model()
+void WifiLinkImpl::inc_active_flux() {
+  xbt_assert(nb_active_flux_>=0, "Negative nb_active_flux should not exist");
+  nb_active_flux_++;
+}
+
+void WifiLinkImpl::dec_active_flux() {
+  xbt_assert(nb_active_flux_>0, "Negative nb_active_flux should not exist");
+  nb_active_flux_--;
+}
+
+void WifiLinkImpl::update_bw_comm_start(const kernel::activity::CommImpl& comm)
 {
-  use_decay_model_ = not use_decay_model_;
-  return use_decay_model_;
+  auto* action = static_cast<kernel::resource::NetworkAction*>(comm.surf_action_);
+
+  auto const* actionWifi = dynamic_cast<const simgrid::kernel::resource::WifiLinkAction*>(action);
+  if (actionWifi == nullptr)
+    return;
+
+  auto* link_src = actionWifi->get_src_link();
+  auto* link_dst = actionWifi->get_dst_link();
+  if(link_src != nullptr) {
+    link_src->inc_active_flux();
+  }
+  if(link_dst != nullptr) {
+    link_dst->inc_active_flux();
+  }
+}
+
+void WifiLinkImpl::update_bw_comm_end(simgrid::kernel::resource::NetworkAction& action, simgrid::kernel::resource::Action::State state)
+{
+  if(action.get_state() != kernel::resource::Action::State::FINISHED)
+    return;
+
+  auto const* actionWifi = dynamic_cast<const simgrid::kernel::resource::WifiLinkAction*>(&action);
+  if (actionWifi == nullptr)
+    return;
+
+  auto* link_src = actionWifi->get_src_link();
+  auto* link_dst = actionWifi->get_dst_link();
+  if(link_src != nullptr) {
+    link_src->dec_active_flux();
+  }
+  if(link_dst != nullptr) {
+    link_dst->dec_active_flux();
+  }
+}
+
+double WifiLinkImpl::get_max_ratio(int nb_active_flux)
+{
+  double new_peak = -1;
+  if(nb_active_flux_ > conc_lim_){
+    new_peak = (nb_active_flux_-conc_lim_) * co_acc_ + x0_;
+    XBT_DEBUG("Wi-Fi link peak=(%d-%d)*%lf+%lf=%lf",nb_active_flux_,conc_lim_,co_acc_,x0_,new_peak);
+  }else{
+    new_peak = x0_;
+    XBT_DEBUG("Wi-Fi link peak=%lf",x0_);
+  }
+  // should be the new maximum bandwidth ratio (comparison between max throughput without concurrency and with it)
+  double propCap = new_peak/x0_;
+
+  return propCap;
+}
+
+bool WifiLinkImpl::toggle_callback()
+{
+  if(! use_callback_) {
+      XBT_DEBUG("Activate throughput reduction mechanism");
+    use_callback_ = true;
+    this->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::WIFI,
+      std::bind(&wifi_link_dynamic_sharing, this, std::placeholders::_1, std::placeholders::_2));
+  }
+  return use_callback_;
 }
 
 void WifiLinkImpl::set_latency(double value)
