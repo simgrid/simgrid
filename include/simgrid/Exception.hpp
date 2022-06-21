@@ -153,6 +153,16 @@ DECLARE_SIMGRID_EXCEPTION(TracingError);
 DECLARE_SIMGRID_EXCEPTION(ParseError, PARSE_ERROR_CONSTRUCTOR);
 #undef PARSE_ERROR_CONSTRUCTOR
 
+/** Exception raised by s4u_enforce, when an assertion is not satisfied */
+#define ASSERTION_ERROR_CONSTRUCTOR                                                                                    \
+  template<typename... Args> AssertionError(const char * f, Args... args)                                              \
+      : Exception(XBT_THROW_POINT, xbt::string_printf(f, args...))    \
+  {                                                                                                                    \
+  }
+
+DECLARE_SIMGRID_EXCEPTION(AssertionError, ASSERTION_ERROR_CONSTRUCTOR);
+#undef ASSERTION_ERROR_CONSTRUCTOR
+
 #undef DECLARE_SIMGRID_EXCEPTION
 
 class XBT_PUBLIC ForcefulKillException {

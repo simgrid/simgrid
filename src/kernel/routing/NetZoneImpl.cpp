@@ -9,6 +9,7 @@
 #include <simgrid/s4u/Host.hpp>
 #include <simgrid/s4u/VirtualMachine.hpp>
 
+#include "xbt/asserts.hpp"
 #include "src/include/simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
@@ -40,8 +41,8 @@ static void surf_config_models_setup()
 
   XBT_DEBUG("host model: %s", host_model_name.c_str());
   if (host_model_name == "compound") {
-    xbt_assert(not cpu_model_name.empty(), "Set a cpu model to use with the 'compound' host model");
-    xbt_assert(not network_model_name.empty(), "Set a network model to use with the 'compound' host model");
+    s4u_enforce(not cpu_model_name.empty(), "Set a cpu model to use with the 'compound' host model");
+    s4u_enforce(not network_model_name.empty(), "Set a network model to use with the 'compound' host model");
 
     const auto* cpu_model = find_model_description(surf_cpu_model_description, cpu_model_name);
     cpu_model->model_init_preparse();
@@ -93,7 +94,7 @@ NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
     surf_config_models_setup();
   }
 
-  xbt_assert(nullptr == engine->netpoint_by_name_or_null(get_name()),
+  s4u_enforce(nullptr == engine->netpoint_by_name_or_null(get_name()),
              "Refusing to create a second NetZone called '%s'.", get_cname());
   netpoint_ = new NetPoint(name_, NetPoint::Type::NetZone);
   XBT_DEBUG("NetZone '%s' created with the id '%lu'", get_cname(), netpoint_->id());
@@ -153,7 +154,7 @@ xbt_edge_t NetZoneImpl::new_xbt_graph_edge(const s_xbt_graph_t* graph, xbt_node_
 
 void NetZoneImpl::add_child(NetZoneImpl* new_zone)
 {
-  xbt_assert(not sealed_, "Cannot add a new child to the sealed zone %s", get_cname());
+  s4u_enforce(not sealed_, "Cannot add a new child to the sealed zone %s", get_cname());
   /* set the parent behavior */
   hierarchy_ = RoutingMode::recursive;
   children_.push_back(new_zone);
@@ -207,10 +208,10 @@ size_t NetZoneImpl::get_link_count() const
 
 s4u::Host* NetZoneImpl::create_host(const std::string& name, const std::vector<double>& speed_per_pstate)
 {
-  xbt_assert(cpu_model_pm_,
+  s4u_enforce(cpu_model_pm_,
              "Impossible to create host: %s. Invalid CPU model: nullptr. Have you set the parent of this NetZone: %s?",
              name.c_str(), get_cname());
-  xbt_assert(not sealed_, "Impossible to create host: %s. NetZone %s already sealed", name.c_str(), get_cname());
+  s4u_enforce(not sealed_, "Impossible to create host: %s. NetZone %s already sealed", name.c_str(), get_cname());
   auto* host   = (new resource::HostImpl(name))->set_englobing_zone(this);
   hosts_[name] = host;
   host->get_iface()->set_netpoint((new NetPoint(name, NetPoint::Type::Host))->set_englobing_zone(this));
@@ -227,11 +228,11 @@ resource::StandardLinkImpl* NetZoneImpl::do_create_link(const std::string& name,
 
 s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<double>& bandwidths)
 {
-  xbt_assert(
+  s4u_enforce(
       network_model_,
       "Impossible to create link: %s. Invalid network model: nullptr. Have you set the parent of this NetZone: %s?",
       name.c_str(), get_cname());
-  xbt_assert(not sealed_, "Impossible to create link: %s. NetZone %s already sealed", name.c_str(), get_cname());
+  s4u_enforce(not sealed_, "Impossible to create link: %s. NetZone %s already sealed", name.c_str(), get_cname());
   links_[name] = do_create_link(name, bandwidths)->set_englobing_zone(this);
   return links_[name]->get_iface();
 }
@@ -239,11 +240,11 @@ s4u::Link* NetZoneImpl::create_link(const std::string& name, const std::vector<d
 s4u::SplitDuplexLink* NetZoneImpl::create_split_duplex_link(const std::string& name,
                                                             const std::vector<double>& bandwidths)
 {
-  xbt_assert(
+  s4u_enforce(
       network_model_,
       "Impossible to create link: %s. Invalid network model: nullptr. Have you set the parent of this NetZone: %s?",
       name.c_str(), get_cname());
-  xbt_assert(not sealed_, "Impossible to create link: %s. NetZone %s already sealed", name.c_str(), get_cname());
+  s4u_enforce(not sealed_, "Impossible to create link: %s. NetZone %s already sealed", name.c_str(), get_cname());
 
   auto* link_up             = create_link(name + "_UP", bandwidths)->get_impl()->set_englobing_zone(this);
   auto* link_down           = create_link(name + "_DOWN", bandwidths)->get_impl()->set_englobing_zone(this);
@@ -253,10 +254,10 @@ s4u::SplitDuplexLink* NetZoneImpl::create_split_duplex_link(const std::string& n
 
 s4u::Disk* NetZoneImpl::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {
-  xbt_assert(disk_model_,
+  s4u_enforce(disk_model_,
              "Impossible to create disk: %s. Invalid disk model: nullptr. Have you set the parent of this NetZone: %s?",
              name.c_str(), get_cname());
-  xbt_assert(not sealed_, "Impossible to create disk: %s. NetZone %s already sealed", name.c_str(), get_cname());
+  s4u_enforce(not sealed_, "Impossible to create disk: %s. NetZone %s already sealed", name.c_str(), get_cname());
   auto* l = disk_model_->create_disk(name, read_bandwidth, write_bandwidth);
 
   return l->get_iface();
@@ -264,9 +265,9 @@ s4u::Disk* NetZoneImpl::create_disk(const std::string& name, double read_bandwid
 
 NetPoint* NetZoneImpl::create_router(const std::string& name)
 {
-  xbt_assert(nullptr == s4u::Engine::get_instance()->netpoint_by_name_or_null(name),
+  s4u_enforce(nullptr == s4u::Engine::get_instance()->netpoint_by_name_or_null(name),
              "Refusing to create a router named '%s': this name already describes a node.", name.c_str());
-  xbt_assert(not sealed_, "Impossible to create router: %s. NetZone %s already sealed", name.c_str(), get_cname());
+  s4u_enforce(not sealed_, "Impossible to create router: %s. NetZone %s already sealed", name.c_str(), get_cname());
 
   return (new NetPoint(name, NetPoint::Type::Router))->set_englobing_zone(this);
 }
@@ -289,7 +290,7 @@ std::vector<resource::StandardLinkImpl*> NetZoneImpl::get_link_list_impl(const s
     }
     // split-duplex links
     const auto* sd_link = dynamic_cast<const s4u::SplitDuplexLink*>(link.get_link());
-    xbt_assert(sd_link,
+    s4u_enforce(sd_link,
                "Add_route: cast to SpliDuplexLink impossible. This should not happen, please contact SimGrid team");
     resource::StandardLinkImpl* link_impl;
     switch (link.get_direction()) {
@@ -396,16 +397,16 @@ void NetZoneImpl::add_bypass_route(NetPoint* src, NetPoint* dst, NetPoint* gw_sr
   if (gw_dst) {
     XBT_DEBUG("Load bypassNetzoneRoute from %s@%s to %s@%s", src->get_cname(), gw_src->get_cname(), dst->get_cname(),
               gw_dst->get_cname());
-    xbt_assert(not link_list.empty(), "Bypass route between %s@%s and %s@%s cannot be empty.", src->get_cname(),
+    s4u_enforce(not link_list.empty(), "Bypass route between %s@%s and %s@%s cannot be empty.", src->get_cname(),
                gw_src->get_cname(), dst->get_cname(), gw_dst->get_cname());
-    xbt_assert(bypass_routes_.find({src, dst}) == bypass_routes_.end(),
+    s4u_enforce(bypass_routes_.find({src, dst}) == bypass_routes_.end(),
                "The bypass route between %s@%s and %s@%s already exists.", src->get_cname(), gw_src->get_cname(),
                dst->get_cname(), gw_dst->get_cname());
   } else {
     XBT_DEBUG("Load bypassRoute from %s to %s", src->get_cname(), dst->get_cname());
-    xbt_assert(not link_list.empty(), "Bypass route between %s and %s cannot be empty.", src->get_cname(),
+    s4u_enforce(not link_list.empty(), "Bypass route between %s and %s cannot be empty.", src->get_cname(),
                dst->get_cname());
-    xbt_assert(bypass_routes_.find({src, dst}) == bypass_routes_.end(),
+    s4u_enforce(bypass_routes_.find({src, dst}) == bypass_routes_.end(),
                "The bypass route between %s and %s already exists.", src->get_cname(), dst->get_cname());
   }
 
@@ -486,8 +487,8 @@ static void find_common_ancestors(const NetPoint* src, const NetPoint* dst,
   const NetZoneImpl* src_as = src->get_englobing_zone();
   const NetZoneImpl* dst_as = dst->get_englobing_zone();
 
-  xbt_assert(src_as, "Host %s must be in a netzone", src->get_cname());
-  xbt_assert(dst_as, "Host %s must be in a netzone", dst->get_cname());
+  s4u_enforce(src_as, "Host %s must be in a netzone", src->get_cname());
+  s4u_enforce(dst_as, "Host %s must be in a netzone", dst->get_cname());
 
   /* (2) find the path to the root routing component */
   std::vector<NetZoneImpl*> path_src;
@@ -522,7 +523,7 @@ static void find_common_ancestors(const NetPoint* src, const NetPoint* dst,
   if (*src_ancestor == *dst_ancestor) {             // src is the ancestor of dst, or the contrary
     *common_ancestor = *src_ancestor;
   } else {
-    xbt_assert(parent != nullptr);
+    s4u_enforce(parent != nullptr);
     *common_ancestor = parent;
   }
 }
@@ -652,7 +653,7 @@ void NetZoneImpl::get_global_route_with_netzones(const NetPoint* src, const NetP
 
   /* Not in the same netzone, no bypass. We'll have to find our path between the netzones recursively */
   common_ancestor->get_local_route(src_ancestor->netpoint_, dst_ancestor->netpoint_, &route, latency);
-  xbt_assert((route.gw_src_ != nullptr) && (route.gw_dst_ != nullptr), "Bad gateways for route from '%s' to '%s'.",
+  s4u_enforce((route.gw_src_ != nullptr) && (route.gw_dst_ != nullptr), "Bad gateways for route from '%s' to '%s'.",
              src->get_cname(), dst->get_cname());
 
   /* If source gateway is not our source, we have to recursively find our way up to this point */
@@ -742,7 +743,7 @@ void NetZoneImpl::seal()
 
 void NetZoneImpl::set_parent(NetZoneImpl* parent)
 {
-  xbt_assert(not sealed_, "Impossible to set parent to an already sealed NetZone(%s)", this->get_cname());
+  s4u_enforce(not sealed_, "Impossible to set parent to an already sealed NetZone(%s)", this->get_cname());
   parent_ = parent;
   netpoint_->set_englobing_zone(parent_);
   if (parent) {
@@ -759,37 +760,37 @@ void NetZoneImpl::set_parent(NetZoneImpl* parent)
 
 void NetZoneImpl::set_network_model(std::shared_ptr<resource::NetworkModel> netmodel)
 {
-  xbt_assert(not sealed_, "Impossible to set network model to an already sealed NetZone(%s)", this->get_cname());
+  s4u_enforce(not sealed_, "Impossible to set network model to an already sealed NetZone(%s)", this->get_cname());
   network_model_ = std::move(netmodel);
 }
 
 void NetZoneImpl::set_cpu_vm_model(std::shared_ptr<resource::CpuModel> cpu_model)
 {
-  xbt_assert(not sealed_, "Impossible to set CPU model to an already sealed NetZone(%s)", this->get_cname());
+  s4u_enforce(not sealed_, "Impossible to set CPU model to an already sealed NetZone(%s)", this->get_cname());
   cpu_model_vm_ = std::move(cpu_model);
 }
 
 void NetZoneImpl::set_cpu_pm_model(std::shared_ptr<resource::CpuModel> cpu_model)
 {
-  xbt_assert(not sealed_, "Impossible to set CPU model to an already sealed NetZone(%s)", this->get_cname());
+  s4u_enforce(not sealed_, "Impossible to set CPU model to an already sealed NetZone(%s)", this->get_cname());
   cpu_model_pm_ = std::move(cpu_model);
 }
 
 void NetZoneImpl::set_disk_model(std::shared_ptr<resource::DiskModel> disk_model)
 {
-  xbt_assert(not sealed_, "Impossible to set disk model to an already sealed NetZone(%s)", this->get_cname());
+  s4u_enforce(not sealed_, "Impossible to set disk model to an already sealed NetZone(%s)", this->get_cname());
   disk_model_ = std::move(disk_model);
 }
 
 void NetZoneImpl::set_host_model(std::shared_ptr<resource::HostModel> host_model)
 {
-  xbt_assert(not sealed_, "Impossible to set host model to an already sealed NetZone(%s)", this->get_cname());
+  s4u_enforce(not sealed_, "Impossible to set host model to an already sealed NetZone(%s)", this->get_cname());
   host_model_ = std::move(host_model);
 }
 
 const NetZoneImpl* NetZoneImpl::get_netzone_recursive(const NetPoint* netpoint) const
 {
-  xbt_assert(netpoint && netpoint->is_netzone(), "Netpoint %s must be of the type NetZone",
+  s4u_enforce(netpoint && netpoint->is_netzone(), "Netpoint %s must be of the type NetZone",
              netpoint ? netpoint->get_cname() : "nullptr");
 
   if (netpoint == netpoint_)

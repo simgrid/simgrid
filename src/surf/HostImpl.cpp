@@ -7,6 +7,7 @@
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Host.hpp>
 
+#include "xbt/asserts.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
 
@@ -28,7 +29,7 @@ namespace simgrid::kernel::resource {
  ************/
 HostImpl::HostImpl(const std::string& name) : piface_(this), name_(name)
 {
-  xbt_assert(s4u::Host::by_name_or_null(name_) == nullptr, "Refusing to create a second host named '%s'.", get_cname());
+  s4u_enforce(s4u::Host::by_name_or_null(name_) == nullptr, "Refusing to create a second host named '%s'.", get_cname());
 }
 
 HostImpl::~HostImpl()
