@@ -5,6 +5,7 @@
 
 #include <simgrid/s4u.hpp>
 #include <vector>
+#include <iostream>
 
 static void runner()
 {
@@ -30,10 +31,15 @@ int main(int argc, char* argv[])
              argv[0], argv[0]);
 
   const char* platform_file = argv[1];
-  e.load_platform(platform_file);
 
-  simgrid::s4u::Actor::create("actor", e.host_by_name("c1_0"), runner);
+  try {
+    e.load_platform(platform_file);
+    simgrid::s4u::Actor::create("actor", e.host_by_name("c1_0"), runner);
+    e.run();
+  }
+  catch (simgrid::AssertionError& e) {
+    std::cout << e.what() << "\n";
+  }
 
-  e.run();
   return 0;
 }
