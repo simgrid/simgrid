@@ -21,16 +21,16 @@ namespace xbt {
  * If the statement evaluates to false, then a simgrid::AsertionError is thrown.
  * This is identical to the xbt_assert macro, except that an exception is thrown instead of calling abort().
  *
- * Unlike the standard assert, s4u_enforce is never disabled, even if the macro NDEBUG is defined at compile time.
+ * Unlike the standard assert, xbt_enforce is never disabled, even if the macro NDEBUG is defined at compile time.
  * Note however that this macro should *not* be used with a condition that has side effects, since the exception can be
  * caught and ignored.
  */
 /** @brief The condition which failed will be displayed.
     @hideinitializer  */
-#define s4u_enforce(...) \
-  _XBT_IF_ONE_ARG(_s4u_enforce_ARG1, _s4u_enforce_ARGN, __VA_ARGS__)(__VA_ARGS__)
-#define _s4u_enforce_ARG1(cond) _s4u_enforce_ARGN((cond), "Assertion %s failed", #cond)
-#define _s4u_enforce_ARGN(cond, ...)                                                                                   \
+#define xbt_enforce(...) \
+  _XBT_IF_ONE_ARG(_xbt_enforce_ARG1, _xbt_enforce_ARGN, __VA_ARGS__)(__VA_ARGS__)
+#define _xbt_enforce_ARG1(cond) _xbt_enforce_ARGN((cond), "Assertion %s failed", #cond)
+#define _xbt_enforce_ARGN(cond, ...)                                                                                   \
   do {                                                                                                                 \
     if (!(cond)) {                                                                                                     \
       throw simgrid::AssertionError(__VA_ARGS__);                                                                 \

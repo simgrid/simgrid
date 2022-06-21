@@ -30,7 +30,7 @@ Route* RoutedZone::new_extended_route(RoutingMode hierarchy, NetPoint* gw_src, N
   auto* result = new Route();
 
   if (hierarchy == RoutingMode::recursive) {
-    s4u_enforce(gw_src && gw_dst, "nullptr is obviously a deficient gateway");
+    xbt_enforce(gw_src && gw_dst, "nullptr is obviously a deficient gateway");
 
     result->gw_src_ = gw_src;
     result->gw_dst_ = gw_dst;
@@ -47,17 +47,17 @@ Route* RoutedZone::new_extended_route(RoutingMode hierarchy, NetPoint* gw_src, N
 
 void RoutedZone::get_route_check_params(const NetPoint* src, const NetPoint* dst) const
 {
-  s4u_enforce(src, "Cannot have a route with (nullptr) source");
-  s4u_enforce(dst, "Cannot have a route with (nullptr) destination");
+  xbt_enforce(src, "Cannot have a route with (nullptr) source");
+  xbt_enforce(dst, "Cannot have a route with (nullptr) destination");
 
   const NetZoneImpl* src_as = src->get_englobing_zone();
   const NetZoneImpl* dst_as = dst->get_englobing_zone();
 
-  s4u_enforce(src_as == dst_as,
+  xbt_enforce(src_as == dst_as,
              "Internal error: %s@%s and %s@%s are not in the same netzone as expected. Please report that bug.",
              src->get_cname(), src_as->get_cname(), dst->get_cname(), dst_as->get_cname());
 
-  s4u_enforce(this == dst_as,
+  xbt_enforce(this == dst_as,
              "Internal error: route destination %s@%s is not in netzone %s as expected (route source: "
              "%s@%s). Please report that bug.",
              src->get_cname(), dst->get_cname(), src_as->get_cname(), dst_as->get_cname(), get_cname());
@@ -72,40 +72,40 @@ void RoutedZone::add_route_check_params(NetPoint* src, NetPoint* dst, NetPoint* 
 
   if (not gw_dst || not gw_src) {
     XBT_DEBUG("Load Route from \"%s\" to \"%s\"", srcName, dstName);
-    s4u_enforce(not link_list.empty(), "Empty route (between %s and %s) forbidden.", srcName, dstName);
-    s4u_enforce(not src->is_netzone(),
+    xbt_enforce(not link_list.empty(), "Empty route (between %s and %s) forbidden.", srcName, dstName);
+    xbt_enforce(not src->is_netzone(),
                "When defining a route, src cannot be a netzone such as '%s'. Did you meant to have a NetzoneRoute?",
                srcName);
-    s4u_enforce(not dst->is_netzone(),
+    xbt_enforce(not dst->is_netzone(),
                "When defining a route, dst cannot be a netzone such as '%s'. Did you meant to have a NetzoneRoute?",
                dstName);
     NetZoneImpl::on_route_creation(symmetrical, src, dst, gw_src, gw_dst, get_link_list_impl(link_list, false));
   } else {
     XBT_DEBUG("Load NetzoneRoute from %s@%s to %s@%s", srcName, gw_src->get_cname(), dstName, gw_dst->get_cname());
-    s4u_enforce(src->is_netzone(), "When defining a NetzoneRoute, src must be a netzone but '%s' is not", srcName);
-    s4u_enforce(dst->is_netzone(), "When defining a NetzoneRoute, dst must be a netzone but '%s' is not", dstName);
+    xbt_enforce(src->is_netzone(), "When defining a NetzoneRoute, src must be a netzone but '%s' is not", srcName);
+    xbt_enforce(dst->is_netzone(), "When defining a NetzoneRoute, dst must be a netzone but '%s' is not", dstName);
 
-    s4u_enforce(gw_src->is_host() || gw_src->is_router(),
+    xbt_enforce(gw_src->is_host() || gw_src->is_router(),
                "When defining a NetzoneRoute, gw_src must be a host or a router but '%s' is not.", srcName);
-    s4u_enforce(gw_dst->is_host() || gw_dst->is_router(),
+    xbt_enforce(gw_dst->is_host() || gw_dst->is_router(),
                "When defining a NetzoneRoute, gw_dst must be a host or a router but '%s' is not.", dstName);
 
-    s4u_enforce(gw_src != gw_dst, "Cannot define a NetzoneRoute from '%s' to itself", gw_src->get_cname());
+    xbt_enforce(gw_src != gw_dst, "Cannot define a NetzoneRoute from '%s' to itself", gw_src->get_cname());
 
-    s4u_enforce(src, "Cannot add a route from %s@%s to %s@%s: %s does not exist.", srcName, gw_src->get_cname(), dstName,
+    xbt_enforce(src, "Cannot add a route from %s@%s to %s@%s: %s does not exist.", srcName, gw_src->get_cname(), dstName,
                gw_dst->get_cname(), srcName);
-    s4u_enforce(dst, "Cannot add a route from %s@%s to %s@%s: %s does not exist.", srcName, gw_src->get_cname(), dstName,
+    xbt_enforce(dst, "Cannot add a route from %s@%s to %s@%s: %s does not exist.", srcName, gw_src->get_cname(), dstName,
                gw_dst->get_cname(), dstName);
-    s4u_enforce(not link_list.empty(), "Empty route (between %s@%s and %s@%s) forbidden.", srcName, gw_src->get_cname(),
+    xbt_enforce(not link_list.empty(), "Empty route (between %s@%s and %s@%s) forbidden.", srcName, gw_src->get_cname(),
                dstName, gw_dst->get_cname());
     const auto* netzone_src = get_netzone_recursive(src);
-    s4u_enforce(netzone_src->is_component_recursive(gw_src),
+    xbt_enforce(netzone_src->is_component_recursive(gw_src),
                "Invalid NetzoneRoute from %s@%s to %s@%s: gw_src %s belongs to %s, not to %s.", srcName,
                gw_src->get_cname(), dstName, gw_dst->get_cname(), gw_src->get_cname(),
                gw_src->get_englobing_zone()->get_cname(), srcName);
 
     const auto* netzone_dst = get_netzone_recursive(dst);
-    s4u_enforce(netzone_dst->is_component_recursive(gw_dst),
+    xbt_enforce(netzone_dst->is_component_recursive(gw_dst),
                "Invalid NetzoneRoute from %s@%s to %s@%s: gw_dst %s belongs to %s, not to %s.", srcName,
                gw_src->get_cname(), dstName, gw_dst->get_cname(), gw_dst->get_cname(),
                gw_dst->get_englobing_zone()->get_cname(), dst->get_cname());

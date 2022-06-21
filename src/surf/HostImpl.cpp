@@ -29,7 +29,7 @@ namespace simgrid::kernel::resource {
  ************/
 HostImpl::HostImpl(const std::string& name) : piface_(this), name_(name)
 {
-  s4u_enforce(s4u::Host::by_name_or_null(name_) == nullptr, "Refusing to create a second host named '%s'.", get_cname());
+  xbt_enforce(s4u::Host::by_name_or_null(name_) == nullptr, "Refusing to create a second host named '%s'.", get_cname());
 }
 
 HostImpl::~HostImpl()
