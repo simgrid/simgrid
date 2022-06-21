@@ -77,7 +77,7 @@ public:
   CpuImpl* set_core_count(int core_count);
   virtual int get_core_count() const { return core_count_; }
 
-  bool is_used() const { return true; }
+  bool is_used() const override { return true; }
 
   void seal() override;
 
