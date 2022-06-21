@@ -6,12 +6,7 @@
 #ifndef SIMGRID_XBT_ASSERTS_HPP
 #define SIMGRID_XBT_ASSERTS_HPP
 
-#include <exception>
 #include <simgrid/Exception.hpp>
-#include <xbt/log.h>
-
-namespace simgrid {
-namespace xbt {
 
 /**
  * @brief Those are the SimGrid version of the good ol' assert macro.
@@ -36,9 +31,5 @@ namespace xbt {
       throw simgrid::AssertionError(__VA_ARGS__);                                                                 \
     }                                                                                                                  \
   } while (0)
-
-
-} // namespace xbt
-} // namespace simgrid
 
 #endif
