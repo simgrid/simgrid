@@ -8,6 +8,8 @@
 
 #include "src/mc/transition/Transition.hpp"
 
+#include <cstdint>
+
 namespace simgrid::mc {
 
 class BarrierTransition : public Transition {
