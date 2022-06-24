@@ -47,7 +47,9 @@ if(enable_model-checking)
   install(TARGETS simgrid-mc # install that binary without breaking the rpath on Mac
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/)
   add_dependencies(tests-mc simgrid-mc)
-  add_dependencies(tests-mc sthread)
+  if("${CMAKE_SYSTEM}" MATCHES "Linux")
+    add_dependencies(tests-mc sthread)
+  endif()
 endif()
 
 # Compute the dependencies of SimGrid
