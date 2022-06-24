@@ -30,8 +30,6 @@ if("${CMAKE_SYSTEM}" MATCHES "Linux")
   add_library(sthread SHARED ${STHREAD_SRC})
   set_property(TARGET sthread
                 APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
-  install(TARGETS sthread # install that binary without breaking the rpath on Mac
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/)
   target_link_libraries(sthread simgrid)
 else()
   set(EXTRA_DIST ${EXTRA_DIST} ${STHREAD_SRC})
