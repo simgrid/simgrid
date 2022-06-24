@@ -5,6 +5,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/sthread/sthread.h" // sthread_inside_simgrid
 #include "src/xbt/log_private.hpp"
 #include "xbt/string.hpp"
 #include "xbt/sysdep.h"
@@ -246,6 +247,8 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
   if (category->initialized)
     return priority >= category->threshold;
 
+  int old_inside_simgrid = sthread_inside_simgrid;
+  sthread_inside_simgrid = 1;
   if (log_cat_init_mutex != nullptr)
     log_cat_init_mutex->lock();
 
@@ -293,6 +296,7 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
   category->initialized = 1;
   if (log_cat_init_mutex != nullptr)
     log_cat_init_mutex->unlock();
+  sthread_inside_simgrid = old_inside_simgrid;
   return priority >= category->threshold;
 }
 

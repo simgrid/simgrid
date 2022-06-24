@@ -710,6 +710,8 @@ include examples/smpi/trace_call_location/trace_call_location.c
 include examples/smpi/trace_call_location/trace_call_location.tesh
 include examples/smpi/trace_simple/trace_simple.c
 include examples/smpi/trace_simple/trace_simple.tesh
+include examples/sthread/pthread-mutex-simple.c
+include examples/sthread/sthread-mutex-simple.c
 include src/include/catch_simgrid.hpp
 include teshsuite/java/semaphoregc/SemaphoreGC.java
 include teshsuite/java/semaphoregc/semaphoregc.tesh
@@ -1973,6 +1975,7 @@ include examples/smpi/comm_dynamic_costs/CMakeLists.txt
 include examples/smpi/replay_multiple/CMakeLists.txt
 include examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
 include examples/smpi/smpi_s4u_masterworker/CMakeLists.txt
+include examples/sthread/CMakeLists.txt
 include include/simgrid/Exception.hpp
 include include/simgrid/actor.h
 include include/simgrid/barrier.h
@@ -2584,6 +2587,9 @@ include src/smpi/smpif90.in
 include src/smpi/smpiff.in
 include src/smpi/smpirun.in
 include src/smpi/smpitools.sh
+include src/sthread/sthread.c
+include src/sthread/sthread.h
+include src/sthread/sthread_impl.cpp
 include src/surf/HostImpl.cpp
 include src/surf/HostImpl.hpp
 include src/surf/cpu_cas01.cpp

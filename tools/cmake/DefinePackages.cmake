@@ -248,6 +248,11 @@ set(SMPI_SRC
   src/surf/network_ib.cpp
   src/surf/network_smpi.cpp
   )
+set(STHREAD_SRC
+  src/sthread/sthread_impl.cpp
+  src/sthread/sthread.c
+  src/sthread/sthread.h
+)
 
 set(XBT_SRC
   src/xbt/OsSemaphore.hpp
@@ -1030,6 +1035,7 @@ set(CMAKEFILES_TXT
   examples/smpi/replay_multiple/CMakeLists.txt
   examples/smpi/replay_multiple_manual_deploy/CMakeLists.txt
   examples/smpi/smpi_s4u_masterworker/CMakeLists.txt
+  examples/sthread/CMakeLists.txt
 
   teshsuite/java/CMakeLists.txt
   teshsuite/kernel/CMakeLists.txt

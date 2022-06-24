@@ -26,6 +26,17 @@ set_property(TARGET simgrid
 
 add_dependencies(simgrid maintainer_files)
 
+if("${CMAKE_SYSTEM}" MATCHES "Linux")
+  add_library(sthread SHARED ${STHREAD_SRC})
+  set_property(TARGET sthread
+                APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
+  install(TARGETS sthread # install that binary without breaking the rpath on Mac
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/)
+  target_link_libraries(sthread simgrid)
+else()
+  set(EXTRA_DIST ${EXTRA_DIST} ${STHREAD_SRC})
+endif()
+
 if(enable_model-checking)
   add_executable(simgrid-mc ${MC_SIMGRID_MC_SRC})
   target_link_libraries(simgrid-mc simgrid)
@@ -36,8 +47,8 @@ if(enable_model-checking)
   install(TARGETS simgrid-mc # install that binary without breaking the rpath on Mac
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}/)
   add_dependencies(tests-mc simgrid-mc)
+  add_dependencies(tests-mc sthread)
 endif()
-
 
 # Compute the dependencies of SimGrid
 #####################################

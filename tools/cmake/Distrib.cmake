@@ -111,6 +111,7 @@ set(source_to_pack
   ${TRACING_SRC}
   ${XBT_RL_SRC}
   ${XBT_SRC}
+  ${STHREAD_SRC}
   ${EXTRA_DIST}
   ${CMAKE_SOURCE_FILES}
   ${CMAKEFILES_TXT}
