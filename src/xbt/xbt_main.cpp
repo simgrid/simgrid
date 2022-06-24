@@ -41,8 +41,6 @@ std::string binary_name;          /* Name of the system process containing us (m
 std::vector<std::string> cmdline; /* all we got in argv */
 } // namespace simgrid::xbt
 
-int sthread_inside_simgrid = 0; // whether sthread should leave pthread operations or intercept them.
-
 int xbt_initialized = 0;
 simgrid::config::Flag<bool> cfg_dbg_clean_atexit{
     "debug/clean-atexit",
@@ -82,7 +80,6 @@ static BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserv
 
 static void xbt_preinit()
 {
-  sthread_inside_simgrid = 1;
 #ifdef _WIN32
   SYSTEM_INFO si;
   GetSystemInfo(&si);
@@ -102,7 +99,6 @@ static void xbt_preinit()
   xbt_log_preinit();
   xbt_dict_preinit();
   atexit(xbt_postexit);
-  sthread_inside_simgrid = 0;
 }
 
 static void xbt_postexit()

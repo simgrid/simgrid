@@ -247,8 +247,6 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
   if (category->initialized)
     return priority >= category->threshold;
 
-  int old_inside_simgrid = sthread_inside_simgrid;
-  sthread_inside_simgrid = 1;
   if (log_cat_init_mutex != nullptr)
     log_cat_init_mutex->lock();
 
@@ -296,7 +294,6 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
   category->initialized = 1;
   if (log_cat_init_mutex != nullptr)
     log_cat_init_mutex->unlock();
-  sthread_inside_simgrid = old_inside_simgrid;
   return priority >= category->threshold;
 }
 

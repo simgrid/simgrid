@@ -1,11 +1,5 @@
 /* SimGrid's pthread interposer. Actual implementation of the symbols (see the comment in sthread.h) */
 
-#include <dlfcn.h>
-#include <pthread.h>
-#include <semaphore.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "smpi/smpi.h"
 #include <simgrid/actor.h>
 #include <simgrid/s4u/Actor.hpp>
@@ -18,6 +12,14 @@
 #include "src/internal_config.h"
 #include "src/sthread/sthread.h"
 
+#include <dlfcn.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <sstream>
+#include <stdio.h>
+#include <stdlib.h>
+#include <thread>
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(sthread, "pthread intercepter");
 namespace sg4 = simgrid::s4u;
 
@@ -25,16 +27,18 @@ static sg4::Host* lilibeth = NULL;
 
 int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**, char**))
 {
-  XBT_INFO("sthread main() is starting");
-  sthread_inside_simgrid = 1;
+  std::ostringstream id;
+  id << std::this_thread::get_id();
+
+  XBT_INFO("sthread main() is starting in thread %s", id.str().c_str());
 
   sg4::Engine e(&argc, argv);
   auto* zone = sg4::create_full_zone("world");
   lilibeth   = zone->create_host("Lilibeth", 1e15);
   zone->seal();
-  sthread_inside_simgrid = 0;
 
   /* Launch the user's main() on an actor */
+  sthread_inside_simgrid   = 0;
   sg4::ActorPtr main_actor = sg4::Actor::create("tid 0", lilibeth, raw_main, argc, argv, envp);
 
   XBT_INFO("sthread main() is launching the simulation");
@@ -62,8 +66,6 @@ int sthread_create(unsigned long int* thread, const /*pthread_attr_t*/ void* att
 {
   static int TID = 1;
 
-  if (TID == 0) {
-  }
   TID++;
   int rank = 0;
 #if HAVE_SMPI

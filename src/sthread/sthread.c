@@ -5,6 +5,9 @@
 #include <dlfcn.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <stdio.h>
+
+int sthread_inside_simgrid = 1; // whether sthread should leave pthread operations, or intercept them.
 
 /* We don't want to intercept pthread within simgrid. Instead we should provide the real implem to simgrid */
 static int (*raw_pthread_create)(pthread_t*, const pthread_attr_t*, void* (*)(void*), void*);
@@ -187,7 +190,7 @@ int __libc_start_main(int (*main)(int, char**, char**), int argc, char** argv, i
 
   /* Find the real __libc_start_main()... */
   typeof(&__libc_start_main) orig = dlsym(RTLD_NEXT, "__libc_start_main");
-
+  fprintf(stderr, "__libc_start_main\n");
   /* ... and call it with our custom main function */
   return orig(main_hook, argc, argv, init, fini, rtld_fini, stack_end);
 }
