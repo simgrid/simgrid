@@ -9,6 +9,7 @@
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/transition/Transition.hpp"
 
+#include <cstdint>
 #include <sstream>
 #include <string>
 
