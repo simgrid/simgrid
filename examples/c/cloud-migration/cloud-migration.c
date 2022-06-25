@@ -33,7 +33,8 @@ static void migration_worker_main(int argc, char* argv[])
   const char* vm_name     = argv[1];
   const char* dst_pm_name = argv[2];
 
-  sg_vm_t vm       = (sg_vm_t)sg_host_by_name(vm_name);
+  sg_host_t src_pm = sg_host_self();
+  sg_vm_t vm       = (sg_vm_t)sg_vm_by_name(src_pm,vm_name);
   sg_host_t dst_pm = sg_host_by_name(dst_pm_name);
 
   vm_migrate(vm, dst_pm);

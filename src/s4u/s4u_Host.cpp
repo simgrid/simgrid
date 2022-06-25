@@ -373,6 +373,11 @@ VirtualMachine* Host::create_vm(const std::string& name, int core_amount, size_t
       [this, &name, core_amount, ramsize] { return this->pimpl_->create_vm(name, core_amount, ramsize); });
 }
 
+VirtualMachine* Host::vm_by_name_or_null(const std::string& name) {
+    simgrid::kernel::resource::VirtualMachineImpl* vm=this->pimpl_->get_vm_by_name_or_null(name);
+  return vm ? vm->get_iface() : nullptr;
+}
+
 ExecPtr Host::exec_init(double flops) const
 {
   return this_actor::exec_init(flops);
@@ -440,6 +445,11 @@ size_t sg_host_extension_create(void (*deleter)(void*))
 sg_host_t sg_host_by_name(const char* name)
 {
   return simgrid::s4u::Host::by_name_or_null(name);
+}
+
+sg_vm_t sg_vm_by_name(sg_host_t host, const char* name)
+{
+  return host->vm_by_name_or_null(name);
 }
 
 // ========= Layering madness ==============*
