@@ -5,7 +5,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/sthread/sthread.h" // sthread_inside_simgrid
 #include "src/xbt/log_private.hpp"
 #include "xbt/string.hpp"
 #include "xbt/sysdep.h"

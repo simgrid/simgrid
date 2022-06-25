@@ -81,6 +81,14 @@ int sthread_create(unsigned long int* thread, const /*pthread_attr_t*/ void* att
   *thread = reinterpret_cast<unsigned long>(actor.get());
   return 0;
 }
+int sthread_join(sthread_t thread, void** retval)
+{
+  sg4::ActorPtr actor(reinterpret_cast<sg4::Actor*>(thread));
+  actor->join();
+  intrusive_ptr_release(actor.get());
+
+  return 0;
+}
 
 int sthread_mutex_init(sthread_mutex_t* mutex, const /*pthread_mutexattr_t*/ void* attr)
 {

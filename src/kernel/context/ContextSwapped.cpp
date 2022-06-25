@@ -8,6 +8,7 @@
 #include "src/internal_config.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "src/sthread/sthread.h" // sthread_inside_simgrid
 #include "xbt/parmap.hpp"
 
 #include "src/kernel/context/ContextSwapped.hpp"
@@ -48,11 +49,15 @@ void smx_ctx_wrapper(simgrid::kernel::context::SwappedContext* context)
   __sanitizer_finish_switch_fiber(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
 #endif
   try {
+    sthread_inside_simgrid = 0;
     (*context)();
+    sthread_inside_simgrid = 1;
     context->stop();
   } catch (simgrid::ForcefulKillException const&) {
+    sthread_inside_simgrid = 1;
     XBT_DEBUG("Caught a ForcefulKillException");
   } catch (simgrid::Exception const& e) {
+    sthread_inside_simgrid = 1;
     XBT_INFO("Actor killed by an uncaught exception %s", boost::core::demangle(typeid(e).name()).c_str());
     throw;
   }

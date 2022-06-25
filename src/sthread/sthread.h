@@ -17,6 +17,7 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
 
 typedef unsigned long int sthread_t;
 int sthread_create(sthread_t* thread, const /*pthread_attr_t*/ void* attr, void* (*start_routine)(void*), void* arg);
+int sthread_join(sthread_t thread, void** retval);
 
 typedef struct {
   void* mutex;

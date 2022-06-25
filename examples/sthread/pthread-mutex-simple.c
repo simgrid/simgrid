@@ -30,8 +30,9 @@ int main(int argc, char* argv[])
   pthread_create(&thread1, NULL, thread1_fun, NULL);
   fprintf(stderr, "here\n");
   pthread_create(&thread2, NULL, thread2_fun, NULL);
-  // pthread_join(thread1, NULL);
-  // pthread_join(thread2, NULL);
+  fprintf(stderr, "there\n");
+  pthread_join(thread1, NULL);
+  pthread_join(thread2, NULL);
 
   fprintf(stderr, "User main is done\n");
   return 0;

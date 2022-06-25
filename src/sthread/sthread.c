@@ -7,10 +7,9 @@
 #include <semaphore.h>
 #include <stdio.h>
 
-int sthread_inside_simgrid = 1; // whether sthread should leave pthread operations, or intercept them.
-
 /* We don't want to intercept pthread within simgrid. Instead we should provide the real implem to simgrid */
 static int (*raw_pthread_create)(pthread_t*, const pthread_attr_t*, void* (*)(void*), void*);
+static int (*raw_pthread_join)(pthread_t, void**);
 static int (*raw_mutex_init)(pthread_mutex_t*, const pthread_mutexattr_t*) = NULL;
 static int (*raw_mutex_lock)(pthread_mutex_t*)                             = NULL;
 static int (*raw_mutex_trylock)(pthread_mutex_t*)                          = NULL;
@@ -22,8 +21,8 @@ static int (*raw_sem_wait)(sem_t*)                                         = NUL
 static int (*raw_sem_post)(sem_t*)                                         = NULL;
 static void intercepter_init()
 {
-  raw_pthread_create =
-      (int (*)(pthread_t*, const pthread_attr_t*, void* (*)(void*), void*))dlsym(RTLD_NEXT, "pthread_create");
+  raw_pthread_create = (typeof(raw_pthread_create))dlsym(RTLD_NEXT, "pthread_create");
+  raw_pthread_join   = (typeof(raw_pthread_join))dlsym(RTLD_NEXT, "pthread_join");
   raw_mutex_init    = (int (*)(pthread_mutex_t*, const pthread_mutexattr_t*))dlsym(RTLD_NEXT, "pthread_mutex_init");
   raw_mutex_lock    = (int (*)(pthread_mutex_t*))dlsym(RTLD_NEXT, "pthread_mutex_lock");
   raw_mutex_trylock = (int (*)(pthread_mutex_t*))dlsym(RTLD_NEXT, "pthread_mutex_trylock");
@@ -46,6 +45,19 @@ int pthread_create(pthread_t* thread, const pthread_attr_t* attr, void* (*start_
 
   sthread_inside_simgrid = 1;
   int res                = sthread_create(thread, attr, start_routine, arg);
+  sthread_inside_simgrid = 0;
+  return res;
+}
+int pthread_join(pthread_t thread, void** retval)
+{
+  if (raw_pthread_join == NULL)
+    intercepter_init();
+
+  if (sthread_inside_simgrid)
+    return raw_pthread_join(thread, retval);
+
+  sthread_inside_simgrid = 1;
+  int res                = sthread_join(thread, retval);
   sthread_inside_simgrid = 0;
   return res;
 }
