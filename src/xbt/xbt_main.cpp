@@ -41,7 +41,7 @@ std::string binary_name;          /* Name of the system process containing us (m
 std::vector<std::string> cmdline; /* all we got in argv */
 } // namespace simgrid::xbt
 
-int sthread_inside_simgrid = 1; // whether sthread should leave pthread operations or intercept them.
+volatile int sthread_inside_simgrid = 1; // Only intercept pthread calls in user code.
 
 int xbt_initialized = 0;
 simgrid::config::Flag<bool> cfg_dbg_clean_atexit{

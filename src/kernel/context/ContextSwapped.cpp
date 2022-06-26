@@ -249,6 +249,7 @@ void SwappedContext::resume()
     // Save my current soul (either maestro, or one of the minions) in a thread-specific area
     worker_context_ = old;
   }
+  sthread_inside_simgrid = 0;
   // Switch my soul and the actor's one
   Context::set_current(this);
   old->swap_into(this);
@@ -290,10 +291,12 @@ void SwappedContext::suspend()
     if (i < engine->get_actor_to_run_count()) {
       /* Actually swap into the next actor directly without transiting to maestro */
       XBT_DEBUG("Run next actor");
+      sthread_inside_simgrid = 0;
       next_context = static_cast<SwappedContext*>(engine->get_actor_to_run_at(i)->context_.get());
     } else {
       /* all processes were run, actually return to maestro */
       XBT_DEBUG("No more actors to run");
+      sthread_inside_simgrid = 1;
       next_context = factory_.maestro_context_;
     }
   }

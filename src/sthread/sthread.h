@@ -10,8 +10,7 @@
 #if defined(__cplusplus)
 extern "C" {
 #endif
-extern int
-    sthread_inside_simgrid; // allows logs and library constructors to disable the interception on pthread operations
+extern volatile int sthread_inside_simgrid; // Only intercept pthread calls in user code
 
 int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**, char**));
 
