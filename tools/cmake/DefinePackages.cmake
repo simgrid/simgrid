@@ -737,6 +737,7 @@ set(headers_to_install
   include/smpi/forward.hpp
   include/xbt.h
   include/xbt/asserts.h
+  include/xbt/asserts.hpp
   include/xbt/automaton.h
   include/xbt/automaton.hpp
   include/xbt/backtrace.hpp
