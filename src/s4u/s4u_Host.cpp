@@ -447,6 +447,7 @@ sg_host_t sg_host_by_name(const char* name)
   return simgrid::s4u::Host::by_name_or_null(name);
 }
 
+/** @brief Retrieve a VM running on a given host from its name, or return NULL if no VM matches*/
 sg_vm_t sg_vm_by_name(sg_host_t host, const char* name)
 {
   return host->vm_by_name_or_null(name);

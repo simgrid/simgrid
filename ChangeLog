@@ -24,6 +24,12 @@ Platform description & visualization:
     demonstrates how we can generate a nice graphical representation of the
 	platform.
 
+General: 
+  - Modified the host_by_name functions:
+    - Now, they return only hosts, not VMs, and in a much more efficient way.
+	- If one wants to find a VM by name, he now needs to know the host on
+	which it runs and call vm_by_name (or manually iterate over the list of hosts)
+
 Tools:
   - Enhancements to the graphicator tool:
 	- Allow to dump the platform topology as a CSV file representing the edges
