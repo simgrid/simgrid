@@ -1,5 +1,9 @@
 SimGrid (3.31.1) NOT RELEASED YET (v3.32 expected June 21. 2022, 09:13 UTC)
 
+S4U:
+  - Added the xbt_enforce macro. This has the same syntax as xbt_assert. The only difference is that an AssertionError
+    exception is thrown if the condition is not satisfied, instead of calling abort().
+
 Python:
   - Added the following bindings / examples:
     - Comm (now 100% covers the C++ interface):
@@ -16,6 +20,8 @@ Python:
       - Engine.host_by_name [example: examples/python/comm-host2host/]
       - Engine.mailbox_by_name_or_create [example: examples/python/comm-pingpong/]
     - Mailbox: Mailbox.ready [example: examples/python/comm-ready/]
+  - Added an AssertionError exception that may be thrown in case of error. For instance, creating tow hosts with the
+    same name will now throw this exception instead of killing the interpreter.
 
 Platform description & visualization:
   - More robust sanity checks for platforms, to reject unallowed topologies with

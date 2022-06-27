@@ -153,6 +153,9 @@ DECLARE_SIMGRID_EXCEPTION(TracingError);
 DECLARE_SIMGRID_EXCEPTION(ParseError, PARSE_ERROR_CONSTRUCTOR);
 #undef PARSE_ERROR_CONSTRUCTOR
 
+/** Exception raised by xbt_enforce, when an assertion is not satisfied */
+DECLARE_SIMGRID_EXCEPTION(AssertionError);
+
 #undef DECLARE_SIMGRID_EXCEPTION
 
 class XBT_PUBLIC ForcefulKillException {

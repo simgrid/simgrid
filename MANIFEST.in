@@ -2057,6 +2057,7 @@ include include/xbt.h
 include include/xbt/Extendable.hpp
 include include/xbt/PropertyHolder.hpp
 include include/xbt/asserts.h
+include include/xbt/asserts.hpp
 include include/xbt/automaton.h
 include include/xbt/automaton.hpp
 include include/xbt/backtrace.hpp

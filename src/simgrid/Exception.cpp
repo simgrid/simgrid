@@ -22,6 +22,7 @@ VmFailureException::~VmFailureException()           = default;
 CancelException::~CancelException()                 = default;
 TracingError::~TracingError()                       = default;
 ParseError::~ParseError()                           = default;
+AssertionError::~AssertionError()                   = default;
 ForcefulKillException::~ForcefulKillException()     = default;
 
 void ForcefulKillException::do_throw()
