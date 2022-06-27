@@ -9,7 +9,7 @@
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/context/Context.hpp"
-#include "src/sthread/sthread.h" // sthread_inside_simgrid
+#include "src/sthread/sthread.h"
 #include "src/surf/surf_interface.hpp"
 
 #include <vector>
@@ -140,7 +140,7 @@ Context::~Context()
 void Context::stop()
 {
   this->actor_->cleanup_from_self();
-  sthread_inside_simgrid = 1;
+  sthread_disable();
   throw ForcefulKillException(); // clean RAII variables with the dedicated exception
 }
 AttachContext::~AttachContext() = default;

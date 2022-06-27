@@ -38,7 +38,7 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
   zone->seal();
 
   /* Launch the user's main() on an actor */
-  sthread_inside_simgrid   = 0;
+  sthread_enable();
   sg4::ActorPtr main_actor = sg4::Actor::create("tid 0", lilibeth, raw_main, argc, argv, envp);
 
   XBT_INFO("sthread main() is launching the simulation");
@@ -46,6 +46,7 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
 
   return 0;
 }
+
 struct sthread_mutex {
   s4u_Mutex* mutex;
 };
@@ -56,17 +57,17 @@ static void thread_create_wrapper(void* (*user_function)(void*), void* param)
   if (SMPI_is_inited())
     SMPI_thread_create();
 #endif
-  sthread_inside_simgrid = 0;
+  sthread_enable();
   user_function(param);
-  sthread_inside_simgrid = 1;
+  sthread_disable();
 }
 
 int sthread_create(unsigned long int* thread, const /*pthread_attr_t*/ void* attr, void* (*start_routine)(void*),
                    void* arg)
 {
-  static int TID = 1;
-
+  static int TID = 0;
   TID++;
+  XBT_INFO("Create thread %d", TID);
   int rank = 0;
 #if HAVE_SMPI
   if (SMPI_is_inited())

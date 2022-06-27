@@ -22,7 +22,6 @@ static void* thread2_fun(void* ignore)
 
 int main(int argc, char* argv[])
 {
-  sthread_inside_simgrid = 1;
   sthread_mutex_init(&mutex, NULL);
 
   sthread_t thread1, thread2;

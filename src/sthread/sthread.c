@@ -35,6 +35,15 @@ static void intercepter_init()
   raw_sem_post = (int (*)(sem_t*))dlsym(RTLD_NEXT, "sem_post");
 }
 
+static int sthread_inside_simgrid = 1;
+void sthread_enable(void)
+{ // Start intercepting all pthread calls
+  sthread_inside_simgrid = 0;
+}
+void sthread_disable(void)
+{ // Stop intercepting all pthread calls
+  sthread_inside_simgrid = 1;
+}
 int pthread_create(pthread_t* thread, const pthread_attr_t* attr, void* (*start_routine)(void*), void* arg)
 {
   if (raw_pthread_create == NULL)

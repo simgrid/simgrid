@@ -8,7 +8,7 @@
 #include "src/internal_config.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "src/sthread/sthread.h" // sthread_inside_simgrid
+#include "src/sthread/sthread.h"
 #include "xbt/parmap.hpp"
 
 #include "src/kernel/context/ContextSwapped.hpp"
@@ -49,15 +49,15 @@ void smx_ctx_wrapper(simgrid::kernel::context::SwappedContext* context)
   __sanitizer_finish_switch_fiber(nullptr, &context->asan_ctx_->asan_stack_, &context->asan_ctx_->asan_stack_size_);
 #endif
   try {
-    sthread_inside_simgrid = 0;
+    sthread_enable();
     (*context)();
-    sthread_inside_simgrid = 1;
+    sthread_disable();
     context->stop();
   } catch (simgrid::ForcefulKillException const&) {
-    sthread_inside_simgrid = 1;
+    sthread_disable();
     XBT_DEBUG("Caught a ForcefulKillException");
   } catch (simgrid::Exception const& e) {
-    sthread_inside_simgrid = 1;
+    sthread_disable();
     XBT_INFO("Actor killed by an uncaught exception %s", boost::core::demangle(typeid(e).name()).c_str());
     throw;
   }
@@ -249,7 +249,7 @@ void SwappedContext::resume()
     // Save my current soul (either maestro, or one of the minions) in a thread-specific area
     worker_context_ = old;
   }
-  sthread_inside_simgrid = 0;
+  sthread_enable();
   // Switch my soul and the actor's one
   Context::set_current(this);
   old->swap_into(this);
@@ -291,12 +291,12 @@ void SwappedContext::suspend()
     if (i < engine->get_actor_to_run_count()) {
       /* Actually swap into the next actor directly without transiting to maestro */
       XBT_DEBUG("Run next actor");
-      sthread_inside_simgrid = 0;
+      sthread_enable();
       next_context = static_cast<SwappedContext*>(engine->get_actor_to_run_at(i)->context_.get());
     } else {
       /* all processes were run, actually return to maestro */
       XBT_DEBUG("No more actors to run");
-      sthread_inside_simgrid = 1;
+      sthread_disable();
       next_context = factory_.maestro_context_;
     }
   }
