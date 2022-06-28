@@ -27,11 +27,10 @@ RoutedZone::RoutedZone(const std::string& name) : NetZoneImpl(name) {}
 Route* RoutedZone::new_extended_route(RoutingMode hierarchy, NetPoint* gw_src, NetPoint* gw_dst,
                                       const std::vector<resource::StandardLinkImpl*>& link_list, bool preserve_order)
 {
+  xbt_enforce(hierarchy != RoutingMode::recursive || (gw_src && gw_dst), "nullptr is obviously a deficient gateway");
+
   auto* result = new Route();
-
   if (hierarchy == RoutingMode::recursive) {
-    xbt_enforce(gw_src && gw_dst, "nullptr is obviously a deficient gateway");
-
     result->gw_src_ = gw_src;
     result->gw_dst_ = gw_dst;
   }
