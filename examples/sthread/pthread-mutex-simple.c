@@ -5,14 +5,7 @@
 
 pthread_mutex_t mutex;
 
-static void* thread1_fun(void* ignore)
-{
-  pthread_mutex_lock(&mutex);
-  pthread_mutex_unlock(&mutex);
-
-  return NULL;
-}
-static void* thread2_fun(void* ignore)
+static void* thread_fun(void* ignore)
 {
   pthread_mutex_lock(&mutex);
   pthread_mutex_unlock(&mutex);
@@ -28,9 +21,9 @@ int main(int argc, char* argv[])
 
   pthread_t thread1;
   pthread_t thread2;
-  pthread_create(&thread1, NULL, thread1_fun, NULL);
+  pthread_create(&thread1, NULL, thread_fun, NULL);
   fprintf(stderr, "here\n");
-  pthread_create(&thread2, NULL, thread2_fun, NULL);
+  pthread_create(&thread2, NULL, thread_fun, NULL);
   fprintf(stderr, "there\n");
   pthread_join(thread1, NULL);
   pthread_join(thread2, NULL);
