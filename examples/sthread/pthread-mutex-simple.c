@@ -26,7 +26,8 @@ int main(int argc, char* argv[])
 
   pthread_mutex_init(&mutex, NULL);
 
-  pthread_t thread1, thread2;
+  pthread_t thread1;
+  pthread_t thread2;
   pthread_create(&thread1, NULL, thread1_fun, NULL);
   fprintf(stderr, "here\n");
   pthread_create(&thread2, NULL, thread2_fun, NULL);

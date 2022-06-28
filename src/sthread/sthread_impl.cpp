@@ -23,7 +23,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(sthread, "pthread intercepter");
 namespace sg4 = simgrid::s4u;
 
-static sg4::Host* lilibeth = NULL;
+static sg4::Host* lilibeth = nullptr;
 
 int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**, char**))
 {
@@ -62,7 +62,7 @@ static void thread_create_wrapper(void* (*user_function)(void*), void* param)
   sthread_disable();
 }
 
-int sthread_create(unsigned long int* thread, const /*pthread_attr_t*/ void* attr, void* (*start_routine)(void*),
+int sthread_create(unsigned long int* thread, const void* /*pthread_attr_t* attr*/, void* (*start_routine)(void*),
                    void* arg)
 {
   static int TID = 0;
@@ -81,7 +81,7 @@ int sthread_create(unsigned long int* thread, const /*pthread_attr_t*/ void* att
   *thread = reinterpret_cast<unsigned long>(actor.get());
   return 0;
 }
-int sthread_join(sthread_t thread, void** retval)
+int sthread_join(sthread_t thread, void** /*retval*/)
 {
   sg4::ActorPtr actor(reinterpret_cast<sg4::Actor*>(thread));
   actor->join();
@@ -90,7 +90,7 @@ int sthread_join(sthread_t thread, void** retval)
   return 0;
 }
 
-int sthread_mutex_init(sthread_mutex_t* mutex, const /*pthread_mutexattr_t*/ void* attr)
+int sthread_mutex_init(sthread_mutex_t* mutex, const void* /*pthread_mutexattr_t* attr*/)
 {
   auto m = sg4::Mutex::create();
   intrusive_ptr_add_ref(m.get());
