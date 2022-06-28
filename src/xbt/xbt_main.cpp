@@ -56,8 +56,12 @@ int xbt_pagebits = 0;
  */
 static void xbt_preinit() XBT_ATTRIB_CONSTRUCTOR(200);
 static void xbt_postexit();
-void sthread_enable() {}  // These symbols are used from ContextSwapped in any case, but they are only useful
-void sthread_disable() {} //  when libsthread is LD_PRELOADED. In this case, sthread's implem gets used instead.
+void sthread_enable()
+{ // These symbols are used from ContextSwapped in any case, but they are only useful
+}
+void sthread_disable()
+{ //  when libsthread is LD_PRELOADED. In this case, sthread's implem gets used instead.
+}
 
 #ifdef _WIN32
 #include <windows.h>

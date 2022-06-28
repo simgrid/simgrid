@@ -213,10 +213,6 @@ void smpi_comm_null_copy_buffer_callback(simgrid::kernel::activity::CommImpl*, v
   /* nothing done in this version */
 }
 
-int smpi_enabled() {
-  return MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED;
-}
-
 static void smpi_init_papi()
 {
 #if HAVE_PAPI
@@ -583,11 +579,11 @@ int smpi_main(const char* executable, int argc, char* argv[])
   return smpi_exit_status;
 }
 
-static bool smpi_inited = false;
 int SMPI_is_inited()
 {
-  return smpi_inited;
+  return MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED;
 }
+
 // Called either directly from the user code, or from the code called by smpirun
 void SMPI_init(){
   smpi_init_options_internal(false);
@@ -606,7 +602,6 @@ void SMPI_init(){
   }
   smpi_init_papi();
   smpi_check_options();
-  smpi_inited = true;
 }
 
 void SMPI_finalize()

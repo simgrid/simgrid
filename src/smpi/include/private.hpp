@@ -95,7 +95,6 @@ XBT_PRIVATE void smpi_cleanup_op_cost_callback();
 XBT_PRIVATE void smpi_comm_null_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff,
                                                      size_t buff_size);
 
-XBT_PRIVATE int smpi_enabled();
 XBT_PRIVATE double smpi_mpi_wtime();
 XBT_PRIVATE void smpi_mpi_init();
 

@@ -137,8 +137,8 @@ void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
     if (XBT_LOG_ISENABLED(mc_client, xbt_log_priority_debug))
       kernel::EngineImpl::get_instance()->display_all_actor_status();
 #if HAVE_SMPI
-    XBT_DEBUG("Smpi_enabled: %d", (int)smpi_enabled());
-    if (smpi_enabled())
+    XBT_DEBUG("Smpi_enabled: %d", SMPI_is_inited());
+    if (SMPI_is_inited())
       SMPI_finalize();
 #endif
   }
