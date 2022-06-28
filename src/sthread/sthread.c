@@ -211,7 +211,6 @@ int __libc_start_main(int (*main)(int, char**, char**), int argc, char** argv, i
 
   /* Find the real __libc_start_main()... */
   typeof(&__libc_start_main) orig = dlsym(RTLD_NEXT, "__libc_start_main");
-  fprintf(stderr, "__libc_start_main\n");
   /* ... and call it with our custom main function */
   return orig(main_hook, argc, argv, init, fini, rtld_fini, stack_end);
 }

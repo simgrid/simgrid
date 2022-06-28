@@ -30,7 +30,7 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
   std::ostringstream id;
   id << std::this_thread::get_id();
 
-  XBT_INFO("sthread main() is starting in thread %s", id.str().c_str());
+  XBT_DEBUG("sthread main() is starting in thread %s", id.str().c_str());
 
   sg4::Engine e(&argc, argv);
   auto* zone = sg4::create_full_zone("world");
@@ -41,8 +41,9 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
   sthread_enable();
   sg4::ActorPtr main_actor = sg4::Actor::create("tid 0", lilibeth, raw_main, argc, argv, envp);
 
-  XBT_INFO("sthread main() is launching the simulation");
+  XBT_INFO("Starting the simulation.");
   sg4::Engine::get_instance()->run();
+  XBT_INFO("All threads exited. Terminating the simulation.");
 
   return 0;
 }
@@ -67,7 +68,7 @@ int sthread_create(unsigned long int* thread, const /*pthread_attr_t*/ void* att
 {
   static int TID = 0;
   TID++;
-  XBT_INFO("Create thread %d", TID);
+  XBT_VERB("Create thread %d", TID);
   int rank = 0;
 #if HAVE_SMPI
   if (SMPI_is_inited())

@@ -13,10 +13,12 @@ foreach(x
     target_link_libraries(pthread-${x} PRIVATE Threads::Threads)
 
     add_dependencies(tests pthread-${x})
+    ADD_TESH_FACTORIES(pthread-${x} "^thread" --setenv LD_PRELOAD=${CMAKE_BINARY_DIR}/lib/libsthread.so --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.tesh)
   endif()
 
-#  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.tesh)
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.tesh)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.c)
+
 endforeach()
 
 # Regular sthread examples: test the internal interface for debugging purpose
