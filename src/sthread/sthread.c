@@ -77,7 +77,7 @@ int pthread_mutex_init(pthread_mutex_t* mutex, const pthread_mutexattr_t* attr)
     intercepter_init();
 
   if (sthread_inside_simgrid)
-    raw_mutex_init(mutex, attr);
+    return raw_mutex_init(mutex, attr);
 
   sthread_inside_simgrid = 1;
   int res                = sthread_mutex_init((sthread_mutex_t*)mutex, attr);
