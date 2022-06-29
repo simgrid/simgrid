@@ -43,6 +43,7 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
 
   XBT_INFO("Starting the simulation.");
   sg4::Engine::get_instance()->run();
+  sthread_disable();
   XBT_INFO("All threads exited. Terminating the simulation.");
 
   return 0;
