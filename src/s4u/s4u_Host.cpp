@@ -373,8 +373,9 @@ VirtualMachine* Host::create_vm(const std::string& name, int core_amount, size_t
       [this, &name, core_amount, ramsize] { return this->pimpl_->create_vm(name, core_amount, ramsize); });
 }
 
-VirtualMachine* Host::vm_by_name_or_null(const std::string& name) {
-    simgrid::kernel::resource::VirtualMachineImpl* vm=this->pimpl_->get_vm_by_name_or_null(name);
+VirtualMachine* Host::vm_by_name_or_null(const std::string& name)
+{
+  simgrid::kernel::resource::VirtualMachineImpl* vm = this->pimpl_->get_vm_by_name_or_null(name);
   return vm ? vm->get_iface() : nullptr;
 }
 

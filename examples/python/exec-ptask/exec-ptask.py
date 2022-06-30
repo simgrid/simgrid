@@ -76,11 +76,11 @@ def runner():
     this_actor.info("    What was already done is removed, and the load of the removed host is shared between remaining ones.")
     for i in range(2):
         # remove what we've done so far, for both comm and compute load
-        computation_amounts[i]   *= remaining_ratio
+        computation_amounts[i] *= remaining_ratio
         communication_amounts[i] *= remaining_ratio
         # The work from 1 must be shared between 2 remaining ones. 1/2=50% of extra work for each
-        computation_amounts[i]   *= 1.5;
-        communication_amounts[i] *= 1.5;
+        computation_amounts[i] *= 1.5
+        communication_amounts[i] *= 1.5
     hosts = hosts[:2]
     computation_amounts = computation_amounts[:2]
     remaining_comm = communication_amounts[1]
