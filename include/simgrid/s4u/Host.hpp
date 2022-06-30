@@ -227,6 +227,8 @@ public:
 
   VirtualMachine* create_vm(const std::string& name, int core_amount);
   VirtualMachine* create_vm(const std::string& name, int core_amount, size_t ramsize);
+  /** Retrieve a VM running on this host from its name, or return nullptr */
+  VirtualMachine* vm_by_name_or_null(const std::string& name);
 
   void route_to(const Host* dest, std::vector<Link*>& links, double* latency) const;
   void route_to(const Host* dest, std::vector<kernel::resource::StandardLinkImpl*>& links, double* latency) const;
