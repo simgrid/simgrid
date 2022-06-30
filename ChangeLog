@@ -19,7 +19,13 @@ Python:
     - Engine:
       - Engine.host_by_name [example: examples/python/comm-host2host/]
       - Engine.mailbox_by_name_or_create [example: examples/python/comm-pingpong/]
+	  - Engine.set_config
     - Mailbox: Mailbox.ready [example: examples/python/comm-ready/]
+	- Ptask [example: examples/python/exec-ptask/]:
+	  - this_actor.exec_init
+	  - this_actor.parallel_execute
+	  - Exec.suspend
+	  - Exec.wait_for
   - Added an AssertionError exception that may be thrown in case of error. For instance, creating tow hosts with the
     same name will now throw this exception instead of killing the interpreter.
 

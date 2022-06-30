@@ -1,0 +1,26 @@
+#!/usr/bin/env tesh
+
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir}/exec-ptask.py ${platfdir}/energy_platform.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'host/model' to 'ptask_L07'
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
+> [MyHost1:foo:(1) 0.000000] [python/INFO] First, build a classical parallel activity, with 1 Gflop to execute on each node, and 10MB to exchange between each pair
+> [MyHost1:foo:(1) 300.000000] [python/INFO] We can do the same with a timeout of 10 seconds enabled.
+> [MyHost1:foo:(1) 310.000000] [python/INFO] Caught the expected timeout exception.
+> [MyHost1:foo:(1) 310.000000] [python/INFO] Then, build a parallel activity involving only computations (of different amounts) and no communication
+> [MyHost1:foo:(1) 320.000000] [python/INFO] Then, build a parallel activity with no computation nor communication (synchro only)
+> [MyHost1:foo:(1) 320.000000] [python/INFO] Then, Monitor the execution of a parallel activity
+> [MyHost1:foo:(1) 320.000000] [python/INFO] Remaining flop ratio: 100%
+> [MyHost1:foo:(1) 325.000000] [python/INFO] Remaining flop ratio: 83%
+> [MyHost1:foo:(1) 330.000000] [python/INFO] Remaining flop ratio: 67%
+> [MyHost1:foo:(1) 335.000000] [python/INFO] Remaining flop ratio: 50%
+> [MyHost1:foo:(1) 340.000000] [python/INFO] Remaining flop ratio: 33%
+> [MyHost1:foo:(1) 345.000000] [python/INFO] Remaining flop ratio: 17%
+> [MyHost1:foo:(1) 350.000000] [python/INFO] Finally, simulate a malleable task (a parallel execution that gets reconfigured after its start).
+> [MyHost1:foo:(1) 350.000000] [python/INFO]   - Start a regular parallel execution, with both comm and computation
+> [MyHost1:foo:(1) 360.000000] [python/INFO]   - After 10 seconds, 50.00% remains to be done. Change it from 3 hosts to 2 hosts only.
+> [MyHost1:foo:(1) 360.000000] [python/INFO]     Let's first suspend the task.
+> [MyHost1:foo:(1) 360.000000] [python/INFO]   - Now, simulate the reconfiguration (modeled as a comm from the removed host to the remaining ones).
+> [MyHost1:foo:(1) 360.500000] [python/INFO]   - Now, let's cancel the old task and create a new task with modified comm and computation vectors:
+> [MyHost1:foo:(1) 360.500000] [python/INFO]     What was already done is removed, and the load of the removed host is shared between remaining ones.
+> [MyHost1:foo:(1) 360.500000] [python/INFO]   - Done, let's wait for the task completion
+> [MyHost1:foo:(1) 375.500000] [python/INFO] Goodbye now!

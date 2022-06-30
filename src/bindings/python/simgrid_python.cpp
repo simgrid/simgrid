@@ -123,6 +123,14 @@ PYBIND11_MODULE(simgrid, m)
            py::call_guard<py::gil_scoped_release>())
       .def("exec_async", py::overload_cast<double>(&simgrid::s4u::this_actor::exec_async),
            py::call_guard<py::gil_scoped_release>())
+      .def("parallel_execute", &simgrid::s4u::this_actor::parallel_execute,
+           py::call_guard<py::gil_scoped_release>(),
+           "Run a parallel task (requires the 'ptask_L07' model)")
+      .def("exec_init",
+           py::overload_cast<const std::vector<simgrid::s4u::Host*>&, const std::vector<double>&,
+           const std::vector<double>&>  (&simgrid::s4u::this_actor::exec_init),
+           py::call_guard<py::gil_scoped_release>(),
+           "Initiate a parallel task (requires the 'ptask_L07' model)")
       .def("get_host", &simgrid::s4u::this_actor::get_host, "Retrieves host on which the current actor is located")
       .def("set_host", &simgrid::s4u::this_actor::set_host, py::call_guard<py::gil_scoped_release>(),
            "Moves the current actor to another host.", py::arg("dest"))
@@ -219,6 +227,8 @@ PYBIND11_MODULE(simgrid, m)
                              "Retrieve the root netzone, containing all others.")
       .def("netpoint_by_name", &Engine::netpoint_by_name_or_null)
       .def("netzone_by_name", &Engine::netzone_by_name_or_null)
+      .def("set_config", py::overload_cast<const std::string&>(&Engine::set_config),
+           "Change one of SimGrid's configurations")
       .def("load_platform", &Engine::load_platform, "Load a platform file describing the environment")
       .def("load_deployment", &Engine::load_deployment, "Load a deployment file and launch the actors that it contains")
       .def("mailbox_by_name_or_create", &Engine::mailbox_by_name_or_create,
@@ -840,8 +850,12 @@ PYBIND11_MODULE(simgrid, m)
            "Test whether the execution is terminated.")
       .def("cancel", &simgrid::s4u::Exec::cancel, py::call_guard<py::gil_scoped_release>(), "Cancel that execution.")
       .def("start", &simgrid::s4u::Exec::start, py::call_guard<py::gil_scoped_release>(), "Start that execution.")
+      .def("suspend", &simgrid::s4u::Exec::suspend, py::call_guard<py::gil_scoped_release>(), "Suspend that execution.")
       .def("wait", &simgrid::s4u::Exec::wait, py::call_guard<py::gil_scoped_release>(),
-           "Block until the completion of that execution.");
+           "Block until the completion of that execution.")
+      .def("wait_for", &simgrid::s4u::Exec::wait_for, py::call_guard<py::gil_scoped_release>(),
+           py::arg("timeout"),
+           "Block until the completion of that activity, or raises TimeoutException after the specified timeout.");
 
   /* Class Semaphore */
   py::class_<Semaphore, SemaphorePtr>(m, "Semaphore",
