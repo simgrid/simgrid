@@ -13,7 +13,7 @@ foreach(x
     target_link_libraries(pthread-${x} PRIVATE Threads::Threads)
 
     add_dependencies(tests pthread-${x})
-    ADD_TESH_FACTORIES(pthread-${x} "^thread" --setenv LD_PRELOAD=${CMAKE_BINARY_DIR}/lib/libsthread.so --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.tesh)
+    ADD_TESH_FACTORIES(pthread-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.tesh)
   endif()
 
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.tesh)
