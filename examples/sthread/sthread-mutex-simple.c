@@ -23,7 +23,9 @@ int main(int argc, char* argv[])
   sthread_create(&thread2, NULL, thread_fun, NULL);
   sthread_join(thread1, NULL);
   sthread_join(thread2, NULL);
-  fprintf(stderr, "done\n");
 
+  sthread_mutex_destroy(&mutex);
+
+  fprintf(stderr, "done\n");
   return 0;
 }

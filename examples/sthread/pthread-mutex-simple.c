@@ -27,6 +27,8 @@ int main(int argc, char* argv[])
   pthread_join(thread1, NULL);
   pthread_join(thread2, NULL);
 
+  pthread_mutex_destroy(&mutex);
+
   fprintf(stderr, "User's main is terminating.\n");
   return 0;
 }
