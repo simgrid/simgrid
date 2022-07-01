@@ -343,13 +343,11 @@ resource::SplitDuplexLinkImpl* NetZoneImpl::get_split_duplex_link_by_name_or_nul
 
 resource::HostImpl* NetZoneImpl::get_host_by_name_or_null(const std::string& name) const
 {
-  auto host_it = hosts_.find(name);
-  if (host_it != hosts_.end())
+  if (auto host_it = hosts_.find(name); host_it != hosts_.end())
     return host_it->second;
 
   for (const auto* child : children_) {
-    auto* host = child->get_host_by_name_or_null(name);
-    if (host)
+    if (auto* host = child->get_host_by_name_or_null(name))
       return host;
   }
 
