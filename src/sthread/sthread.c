@@ -1,11 +1,17 @@
 /* SimGrid's pthread interposer. Redefinition of the pthread symbols (see the comment in sthread.h) */
 
 #define _GNU_SOURCE
+#include "src/internal_config.h"
 #include "src/sthread/sthread.h"
 #include <dlfcn.h>
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdio.h>
+
+#if HAVE_VALGRIND_H
+#include <stdlib.h>
+#include <valgrind/valgrind.h>
+#endif
 
 /* We don't want to intercept pthread within simgrid. Instead we should provide the real implem to simgrid */
 static int (*raw_pthread_create)(pthread_t*, const pthread_attr_t*, void* (*)(void*), void*);
@@ -212,5 +218,10 @@ int __libc_start_main(int (*main)(int, char**, char**), int argc, char** argv, i
   /* Find the real __libc_start_main()... */
   typeof(&__libc_start_main) orig = dlsym(RTLD_NEXT, "__libc_start_main");
   /* ... and call it with our custom main function */
+#if HAVE_VALGRIND_H
+  /* ... unless valgrind is used, and this instance is not the target program (but the valgrind launcher) */
+  if (getenv("VALGRIND_LIB") && !RUNNING_ON_VALGRIND)
+    return orig(raw_main, argc, argv, init, fini, rtld_fini, stack_end);
+#endif
   return orig(main_hook, argc, argv, init, fini, rtld_fini, stack_end);
 }
