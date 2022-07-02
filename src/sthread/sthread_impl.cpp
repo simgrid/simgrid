@@ -27,6 +27,12 @@ static sg4::Host* lilibeth = nullptr;
 
 int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**, char**))
 {
+  /* Do not intercept the main when run from SMPI: it will initialize the simulation properly */
+  for (int i = 0; envp[i] != nullptr; i++)
+    if (strncmp(envp[i], "SMPI_GLOBAL_SIZE", strlen("SMPI_GLOBAL_SIZE")) == 0)
+      return raw_main(argc, argv, envp);
+
+  /* If not in SMPI, the old main becomes an actor in a newly created simulation */
   std::ostringstream id;
   id << std::this_thread::get_id();
 
