@@ -119,6 +119,11 @@ else()
     endif()
   endif()
   mark_as_advanced(NS3_LIBRARY_PATH)
+
+  set(NS3_LIBRARIES "")
+  foreach(lib core csma point-to-point internet network applications wifi)
+    set(NS3_LIBRARIES "${NS3_LIBRARIES} -lns${NS3_VERSION}-${lib}${NS3_SUFFIX}")
+  endforeach()
 endif()
 
 if(SIMGRID_HAVE_NS3)
