@@ -516,7 +516,7 @@ static simgrid::mc::Type MC_dwarf_die_to_type(simgrid::mc::ObjectInformation* in
   // Global Offset
   type.id = dwarf_dieoffset(die);
 
-  const char* prefix = "";
+  const char* prefix;
   switch (type.type) {
     case DW_TAG_structure_type:
       prefix = "struct ";

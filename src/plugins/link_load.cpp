@@ -66,7 +66,7 @@ public:
 
 xbt::Extension<s4u::Link, LinkLoad> LinkLoad::EXTENSION_ID;
 
-LinkLoad::LinkLoad(s4u::Link* ptr) : link_(ptr), is_tracked_(false)
+LinkLoad::LinkLoad(s4u::Link* ptr) : link_(ptr)
 {
   XBT_DEBUG("Instantiating a LinkLoad for link '%s'", link_->get_cname());
 }
