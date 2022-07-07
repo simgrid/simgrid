@@ -464,8 +464,11 @@ public:
    * @param cnst A constraint
    * @param var A variable
    * @param value The coefficient associated to the variable in the constraint
+   * @param force_creation Force the creation of new element linking the variable to the constraint. Should be used only
+   * by the model ptask_L07 to cope with ptasks composed of flows running on the same resource (see
+   * https://framagit.org/simgrid/simgrid/-/issues/111)
    */
-  void expand(Constraint * cnst, Variable * var, double value);
+  void expand(Constraint* cnst, Variable* var, double value, bool force_creation = false);
 
   /** @brief Update the bound of a variable */
   void update_variable_bound(Variable * var, double bound);

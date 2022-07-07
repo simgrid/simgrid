@@ -270,18 +270,20 @@ Element& System::expand_add_to_elem(Element& elem, const Constraint* cnst, doubl
   return elem;
 }
 
-void System::expand(Constraint* cnst, Variable* var, double consumption_weight)
+void System::expand(Constraint* cnst, Variable* var, double consumption_weight, bool force_creation)
 {
   modified_ = true;
 
   auto elem_it =
       std::find_if(begin(var->cnsts_), end(var->cnsts_), [&cnst](Element const& x) { return x.constraint == cnst; });
-  if (elem_it != end(var->cnsts_) && var->sharing_penalty_ != 0.0) {
+
+  bool reuse_elem = elem_it != end(var->cnsts_) && not force_creation;
+  if (reuse_elem && var->sharing_penalty_ != 0.0) {
     /* before changing it, decreases concurrency on constraint, it'll be added back later */
     elem_it->decrease_concurrency();
   }
-  Element& elem = elem_it != end(var->cnsts_) ? expand_add_to_elem(*elem_it, cnst, consumption_weight)
-                                              : expand_create_elem(cnst, var, consumption_weight);
+  Element& elem = reuse_elem ? expand_add_to_elem(*elem_it, cnst, consumption_weight)
+                             : expand_create_elem(cnst, var, consumption_weight);
 
   // Check if we need to disable the variable
   if (var->sharing_penalty_ != 0) {
