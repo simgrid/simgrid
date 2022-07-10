@@ -11,7 +11,7 @@ foreach(x
     add_executable       (pthread-${x} EXCLUDE_FROM_ALL pthread-${x}.c)
     set_target_properties(pthread-${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(pthread-${x} PRIVATE Threads::Threads)
-    target_link_options(pthread-${x} PUBLIC "-Wl,-znorelro -Wl,-znoseparate-code")
+    target_link_libraries(pthread-${x} PUBLIC "-Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once cmake is >3.13
 
     add_dependencies(tests pthread-${x})
     ADD_TESH_FACTORIES(pthread-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.tesh)
