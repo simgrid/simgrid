@@ -12,6 +12,7 @@
 #include "src/internal_config.h"
 #include "src/sthread/sthread.h"
 
+#include <cmath>
 #include <dlfcn.h>
 #include <pthread.h>
 #include <semaphore.h>
@@ -127,6 +128,23 @@ int sthread_mutex_destroy(sthread_mutex_t* mutex)
 {
   intrusive_ptr_release(static_cast<sg4::Mutex*>(mutex->mutex));
   return 0;
+}
+
+int sthread_gettimeofday(struct timeval* tv, struct timezone* tz)
+{
+  if (tv) {
+    double now   = simgrid::s4u::Engine::get_clock();
+    double secs  = trunc(now);
+    double usecs = (now - secs) * 1e6;
+    tv->tv_sec   = static_cast<time_t>(secs);
+    tv->tv_usec  = static_cast<decltype(tv->tv_usec)>(usecs); // suseconds_t (or useconds_t on WIN32)
+  }
+  return 0;
+}
+
+void sthread_sleep(double seconds)
+{
+  simgrid::s4u::this_actor::sleep_for(seconds);
 }
 
 #if 0

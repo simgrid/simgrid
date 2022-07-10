@@ -1,12 +1,13 @@
 /* SimGrid's pthread interposer. Redefinition of the pthread symbols (see the comment in sthread.h) */
 
 #define _GNU_SOURCE
-#include "src/internal_config.h"
 #include "src/sthread/sthread.h"
+#include "src/internal_config.h"
 #include <dlfcn.h>
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdio.h>
+#include <unistd.h>
 
 #if HAVE_VALGRIND_H
 #include <stdlib.h>
@@ -144,6 +145,23 @@ int pthread_mutex_destroy(pthread_mutex_t* mutex)
   int res                = sthread_mutex_destroy((sthread_mutex_t*)mutex);
   sthread_inside_simgrid = 0;
   return res;
+}
+
+int gettimeofday(struct timeval* tv, void* tz)
+{
+  return sthread_gettimeofday(tv, tz);
+}
+
+unsigned int sleep(unsigned int seconds)
+{
+  sthread_sleep(seconds);
+  return 0;
+}
+
+int usleep(useconds_t usec)
+{
+  sthread_sleep(((double)usec) / 1000000.);
+  return 0;
 }
 
 #if 0

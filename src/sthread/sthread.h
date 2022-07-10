@@ -10,6 +10,8 @@
 #ifndef SIMGRID_STHREAD_H
 #define SIMGRID_STHREAD_H
 
+#include <sys/time.h>
+
 #if defined(__ELF__)
 #define XBT_PUBLIC __attribute__((visibility("default")))
 #else
@@ -37,6 +39,9 @@ int sthread_mutex_lock(sthread_mutex_t* mutex);
 int sthread_mutex_trylock(sthread_mutex_t* mutex);
 int sthread_mutex_unlock(sthread_mutex_t* mutex);
 int sthread_mutex_destroy(sthread_mutex_t* mutex);
+
+int sthread_gettimeofday(struct timeval* tv, struct timezone* tz);
+void sthread_sleep(double seconds);
 
 #if defined(__cplusplus)
 }
