@@ -53,7 +53,8 @@ public:
     return api;
   }
 
-  simgrid::mc::Exploration* initialize(char** argv, simgrid::mc::ExplorationAlgorithm algo);
+  simgrid::mc::Exploration* initialize(char** argv, const std::unordered_map<std::string, std::string>& env,
+                                       simgrid::mc::ExplorationAlgorithm algo);
 
   // ACTOR APIs
   std::vector<simgrid::mc::ActorInformation>& get_actors() const;

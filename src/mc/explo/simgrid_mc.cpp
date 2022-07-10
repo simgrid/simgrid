@@ -13,9 +13,17 @@
 #include "smpi/smpi.h"
 #endif
 
+#include <boost/tokenizer.hpp>
 #include <cstring>
 #include <memory>
 #include <unistd.h>
+
+static simgrid::config::Flag<std::string> _sg_mc_setenv{
+    "model-check/setenv", "Extra environment variables to pass to the child process (ex: 'AZE=aze;QWE=qwe').", "",
+    [](std::string_view value) {
+      xbt_assert(value.empty() || value.find('=', 0) != std::string_view::npos,
+                 "The 'model-check/setenv' parameter must be like 'AZE=aze', but it does not contain an equal sign.");
+    }};
 
 int main(int argc, char** argv)
 {
@@ -44,8 +52,25 @@ int main(int argc, char** argv)
   else
     algo = simgrid::mc::ExplorationAlgorithm::Liveness;
 
+  std::unordered_map<std::string, std::string> environment;
+  /** Setup the tokenizer that parses the string **/
+  using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
+  boost::char_separator<char> semicol_sep(";");
+  boost::char_separator<char> equal_sep("=");
+  Tokenizer token_vars(_sg_mc_setenv.get(), semicol_sep); /* Iterate over all FOO=foo parts */
+  for (const auto& token : token_vars) {
+    std::vector<std::string> kv;
+    Tokenizer token_kv(token, equal_sep);
+    for (const auto& t : token_kv) /* Iterate over 'FOO' and then 'foo' in that 'FOO=foo' */
+      kv.push_back(t);
+    xbt_assert(kv.size() == 2, "Parse error on 'model-check/setenv' value %s. Does it contain an equal sign?",
+               token.c_str());
+    environment[kv[0]] = kv[1];
+  }
+
   int res      = SIMGRID_MC_EXIT_SUCCESS;
-  std::unique_ptr<simgrid::mc::Exploration> checker{simgrid::mc::Api::get().initialize(argv_copy.data(), algo)};
+  std::unique_ptr<simgrid::mc::Exploration> checker{
+      simgrid::mc::Api::get().initialize(argv_copy.data(), environment, algo)};
   try {
     checker->run();
   } catch (const simgrid::mc::DeadlockError&) {

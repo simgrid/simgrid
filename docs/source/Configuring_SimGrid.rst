@@ -119,6 +119,7 @@ Existing Configuration Items
 - **model-check/reduction:** :ref:`cfg=model-check/reduction`
 - **model-check/replay:** :ref:`cfg=model-check/replay`
 - **model-check/send-determinism:** :ref:`cfg=model-check/send-determinism`
+- **model-check/setenv:** :ref:`cfg=model-check/setenv`
 - **model-check/termination:** :ref:`cfg=model-check/termination`
 - **model-check/timeout:** :ref:`cfg=model-check/timeout`
 - **model-check/visited:** :ref:`cfg=model-check/visited`
@@ -768,6 +769,15 @@ The ``model-check/communications-determinism`` and
 ``model-check/send-determinism`` items can be used to select the
 communication determinism mode of the model checker, which checks
 determinism properties of the communications of an application.
+
+.. _cfg=model-check/setenv:
+
+Passing environment variables
+.............................
+
+You can specify extra environment variables to be set in the verified application
+with ``model-check/setenv``. For example, you can preload a library as follows:
+``-cfg=model-check/setenv:LD_PRELOAD=toto;LD_LIBRARY_PATH=/tmp``.
 
 .. _options_mc_perf:
 

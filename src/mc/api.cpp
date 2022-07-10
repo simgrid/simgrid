@@ -30,12 +30,19 @@ XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
 namespace simgrid::mc {
 
-simgrid::mc::Exploration* Api::initialize(char** argv, simgrid::mc::ExplorationAlgorithm algo)
+simgrid::mc::Exploration* Api::initialize(char** argv, const std::unordered_map<std::string, std::string>& env,
+                                          simgrid::mc::ExplorationAlgorithm algo)
 {
-  session_ = std::make_unique<simgrid::mc::Session>([argv] {
+  session_ = std::make_unique<simgrid::mc::Session>([argv, &env] {
     int i = 1;
     while (argv[i] != nullptr && argv[i][0] == '-')
       i++;
+    for (auto const& kv : env) {
+      const char* key = kv.first.c_str();
+      const char* val = kv.second.c_str();
+      XBT_INFO("setenv '%s'='%s'", key, val);
+      setenv(key, val, 1);
+    }
     xbt_assert(argv[i] != nullptr,
                "Unable to find a binary to exec on the command line. Did you only pass config flags?");
     execvp(argv[i], argv + i);
