@@ -40,7 +40,7 @@ int sthread_mutex_trylock(sthread_mutex_t* mutex);
 int sthread_mutex_unlock(sthread_mutex_t* mutex);
 int sthread_mutex_destroy(sthread_mutex_t* mutex);
 
-int sthread_gettimeofday(struct timeval* tv, struct timezone* tz);
+int sthread_gettimeofday(struct timeval* tv);
 void sthread_sleep(double seconds);
 
 #if defined(__cplusplus)

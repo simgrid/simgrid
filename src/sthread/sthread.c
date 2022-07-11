@@ -147,9 +147,13 @@ int pthread_mutex_destroy(pthread_mutex_t* mutex)
   return res;
 }
 
-int gettimeofday(struct timeval* tv, void* tz)
+#if !defined(__GLIBC__) || __GLIBC_PREREQ(2, 31)
+int gettimeofday(struct timeval* tv, XBT_ATTRIB_UNUSED void* tz)
+#else
+int gettimeofday(struct timeval* tv, XBT_ATTRIB_UNUSED struct timezone* tz)
+#endif
 {
-  return sthread_gettimeofday(tv, tz);
+  return sthread_gettimeofday(tv);
 }
 
 unsigned int sleep(unsigned int seconds)

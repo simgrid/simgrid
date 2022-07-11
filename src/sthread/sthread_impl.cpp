@@ -130,7 +130,7 @@ int sthread_mutex_destroy(sthread_mutex_t* mutex)
   return 0;
 }
 
-int sthread_gettimeofday(struct timeval* tv, struct timezone* tz)
+int sthread_gettimeofday(struct timeval* tv)
 {
   if (tv) {
     double now   = simgrid::s4u::Engine::get_clock();
