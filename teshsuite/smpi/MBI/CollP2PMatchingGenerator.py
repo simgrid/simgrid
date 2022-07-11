@@ -124,10 +124,10 @@ for s in gen.send + gen.isend:
             #  replace['longdesc'] = 'Point to point @{s}@ is matched with @{c}@ which causes a deadlock depending on the buffering mode.'
             #  replace['outcome'] = 'ERROR: BufferingHazard'
             #  replace['errormsg'] = 'P2P & Collective mistmatch. @{s}@ at @{filename}@:@{line:MBIERROR2}@ is matched with @{c}@ at @{filename}@:@{line:MBIERROR1}@ wich causes a deadlock.'
-            #  replace['init1'] = init[s]("1")
-            #  replace['init2'] = init[r]("2")
-            #  replace['operation1'] = operation[r]("2")
-            #  replace['operation2'] = operation[s]("1")
-            #  replace['fini1'] = fini[r]("2")
-            #  replace['fini2'] = fini[s]("1")
+            #  replace['init1'] = gen.init[s]("1")
+            #  replace['init2'] = gen.init[r]("2")
+            #  replace['operation1'] = gen.operation[r]("2")
+            #  replace['operation2'] = gen.operation[s]("1")
+            #  replace['fini1'] = gen.fini[r]("2")
+            #  replace['fini2'] = gen.fini[s]("1")
             #  gen.make_file(template, f'CollP2PBuffering_{r}_{s}_{c}_nok.c', replace)

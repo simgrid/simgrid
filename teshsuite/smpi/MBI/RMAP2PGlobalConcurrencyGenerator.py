@@ -41,7 +41,7 @@ int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
   MPI_Win win;
-  int * winbuf = malloc(N * sizeof(int)); // Window buffer
+  int * winbuf = (int *)malloc(N * sizeof(int)); // Window buffer
   int buff_size = 1;
 
   MPI_Init(&argc, &argv);

@@ -40,7 +40,7 @@ END_MBI_TESTS
 int main(int argc, char **argv) {
   int nprocs = -1 , rank = -1;
   MPI_Win win;
-  int *winbuf = @{malloc}@ // Window buffer
+  int *winbuf = (int *)@{malloc}@ // Window buffer
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
@@ -104,7 +104,7 @@ for e in gen.epoch:
         # replace['shortdesc'] = 'nullptr is invalid in one-sided operation.'
         # replace['longdesc'] = 'A one-sided operation has an invalid buffer.'
         # replace['outcome'] = 'ERROR: InvalidBuffer'
-        # replace['init'] = 'int * localbuf1 = malloc(sizeof(int));'
+        # replace['init'] = 'int * localbuf1 = (int *)malloc(sizeof(int));'
         # replace['change_arg'] = 'localbuf1 = NULL;'
         # replace['operation'] = gen.operation[p]("1").replace('&localbuf1', 'localbuf1')
         # replace['errormsg'] = '@{p}@ at @{filename}@:@{line:MBIERROR}@ has an invalid buffer'

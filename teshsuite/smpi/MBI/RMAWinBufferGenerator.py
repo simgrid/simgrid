@@ -65,8 +65,7 @@ int main(int argc, char *argv[]) {
   MPI_Win_fence(0, win);
 
   if (rank == 0) {
-    int localbuf[N] = {0};
-    localbuf[0] = 12345;
+    int localbuf[N] = {12345};
     MPI_Put(&localbuf, N, MPI_INT, 1, 0, N, MPI_INT, win);
   }
 
@@ -84,7 +83,7 @@ int main(int argc, char *argv[]) {
 """
 
 
-for b in ['missing', 'null', 'malloc', 'bufferSize']:
+for b in ['missing', 'null',  'malloc', 'bufferSize']:
     patterns = {}
     patterns = {'b': b}
     patterns['origin'] = "MPI-CorrBench"
@@ -108,11 +107,11 @@ for b in ['missing', 'null', 'malloc', 'bufferSize']:
         replace['bufferalloc'] = 'buffer = NULL; /* MBIERROR1 */'
         replace['longdesc'] = 'Use NULL buffer in window creation.'
     elif b == 'bufferSize':
-        replace['bufferalloc'] = 'buffer = malloc((N/2) * sizeof(int)); /* MBIERROR1 */'
+        replace['bufferalloc'] = 'buffer = (int *)malloc((N/2) * sizeof(int)); /* MBIERROR1 */'
         replace['bufferfree'] = 'free(buffer);'
         replace['longdesc'] = 'Unmatched size of buffer in window creation.'
     else:
-        replace['bufferalloc'] = 'buffer = malloc(N * sizeof(int));'
+        replace['bufferalloc'] = 'buffer = (int *)malloc(N * sizeof(int));'
         replace['bufferfree'] = 'free(buffer);'
         replace['longdesc'] = 'Correct initialized buffer in window creation.'
         replace['outcome'] = 'OK'

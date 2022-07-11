@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
   MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 
-  int *winbuf = malloc(N * sizeof(int));
+  int *winbuf = (int *)malloc(N * sizeof(int));
 
   MPI_Win win;
   MPI_Win_create(&winbuf, N * sizeof(int), 1, MPI_INFO_NULL, MPI_COMM_WORLD, &win);

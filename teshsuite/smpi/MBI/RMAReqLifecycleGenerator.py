@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
   if (numProcs < 2)
     printf("MBI ERROR: This test needs at least 2 processes to produce a bug!\\n");
 
-  int *winbuf = malloc(N * sizeof(int));
+  int *winbuf = (int *)malloc(N * sizeof(int));
 
   MPI_Win win;
   MPI_Win_create(winbuf, N * sizeof(int), 1, MPI_INFO_NULL, MPI_COMM_WORLD, &win);
@@ -102,26 +102,26 @@ for e1 in gen.epoch:
         replace['longdesc'] = 'Correct code'
         replace['outcome'] = 'OK'
         replace['errormsg'] = 'OK'
-        gen.make_file(template, f'ReqLifecycle_RMA_{e1}_{p}_ok.c', replace)
+        gen.make_file(template, f'EpochLifecycle_RMA_{e1}_{p}_ok.c', replace)
 
         # Generate a code with missing open epoch
         replace = patterns.copy()
         replace['shortdesc'] = f"Request lifecycle, missing open {e1} epoch"
         replace['longdesc'] = f"Request lifecycle, missing open {e1} epoch"
-        replace['outcome'] = 'ERROR: MissingStart'
+        replace['outcome'] = 'ERROR: MissingEpoch'
         replace['errormsg'] = '@{e1}@ at @{filename}@:@{line:MBIERROR}@ has missing'
         replace['epoch'] = f"/* MBIERROR MISSING: {gen.epoch[e1]('1')} */"
-        gen.make_file(template, f'ReqLifecycle_RMA_MissingOpen_{e1}_{p}_nok.c', replace)
+        gen.make_file(template, f'EpochLifecycle_RMA_MissingOpen_{e1}_{p}_nok.c', replace)
 
         # Generate a code with missing close epoch
         replace = patterns.copy()
         replace['shortdesc'] = f"Request lifecycle, missing close {e1} epoch"
         replace['longdesc'] = f"Request lifecycle, missing close {e1} epoch"
-        replace['outcome'] = 'ERROR: MissingWait'
+        replace['outcome'] = 'ERROR: MissingEpoch'
         replace['errormsg'] = '@{e1}@ at @{filename}@:@{line:MBIERROR}@ has missing'
         replace['epoch'] = gen.epoch[e1]("1")
         replace['finEpoch'] = f"/* MBIERROR MISSING: {gen.finEpoch[e1]('1')} */"
-        gen.make_file(template, f'ReqLifecycle_RMA_MissingClose_{e1}_{p}_nok.c', replace)
+        gen.make_file(template, f'EpochLifecycle_RMA_MissingClose_{e1}_{p}_nok.c', replace)
 
 for e1 in gen.epoch:
     for e2 in gen.epoch:
@@ -145,6 +145,6 @@ for e1 in gen.epoch:
             replace = patterns.copy()
             replace['shortdesc'] = f"Request lifecycle, {e2} epoch into {e1} epoch"
             replace['longdesc'] = f"Request lifecycle, {e2} epoch into {e1} epoch"
-            replace['outcome'] = 'ERROR: MissingWait' #FIXME: New type of error
+            replace['outcome'] = 'ERROR: DoubleEpoch'
             replace['errormsg'] = '@{e2}@ at @{filename}@:@{line:MBIERROR}@ has in an other epoch'
-            gen.make_file(template, f'ReqLifecycle_RMA_TwoEpoch_{e1}_{e2}_{p}_nok.c', replace)
+            gen.make_file(template, f'EpochLifecycle_RMA_doubleEpoch_{e1}_{e2}_{p}_nok.c', replace)

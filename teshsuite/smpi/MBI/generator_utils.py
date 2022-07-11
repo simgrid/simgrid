@@ -9,10 +9,11 @@ import re
 # Collectives
 coll = ['MPI_Barrier', 'MPI_Bcast', 'MPI_Reduce', 'MPI_Gather', 'MPI_Scatter', 'MPI_Scan', 'MPI_Exscan', 'MPI_Allgather', 'MPI_Allreduce', 'MPI_Allgatherv', 'MPI_Alltoall', 'MPI_Alltoallv']
 icoll = ['MPI_Ibcast', 'MPI_Ireduce', 'MPI_Igather', 'MPI_Iscatter', 'MPI_Iscan', 'MPI_Iexscan', 'MPI_Iallgather', 'MPI_Iallreduce', 'MPI_Iallgatherv', 'MPI_Ialltoall', 'MPI_Ialltoallv']
+barrier = ['MPI_Barrier']
 ibarrier = ['MPI_Ibarrier']
 coll4op = ['MPI_Reduce', 'MPI_Allreduce']
 icoll4op = ['MPI_Ireduce', 'MPI_Iallreduce']
-coll4root = ['MPI_Reduce', 'MPI_Bcast', 'MPI_Gather', 'MPI_Scatter']
+coll4root =  ['MPI_Reduce', 'MPI_Bcast', 'MPI_Gather', 'MPI_Scatter']
 icoll4root = ['MPI_Ireduce', 'MPI_Ibcast', 'MPI_Igather', 'MPI_Iscatter']
 pcoll = []
 tcoll = ['MPI_Comm_split', 'MPI_Op_create', 'MPI_Comm_dup', 'MPI_Type_contiguous', 'MPI_Comm_create', 'MPI_Group_excl'] # MPI_Comm_dup removed
@@ -31,8 +32,10 @@ recv = ['MPI_Recv']
 irecv = ['MPI_Irecv']
 precv = ['MPI_Recv_init']
 probe = ['MPI_Probe']
+sendrecv = ['MPI_Sendrecv']
 
 # RMA
+epoch = ['MPI_Win_fence', 'MPI_Win_lock', 'MPI_Win_lock_all']
 rma = ['MPI_Get', 'MPI_Put']
 get = ['MPI_Get']
 put = ['MPI_Put']
@@ -350,6 +353,12 @@ fini['MPI_Probe'] = lambda n: ""
 free['MPI_Probe'] = lambda n: ""
 write['MPI_Probe'] = lambda n: ""
 
+init['MPI_Sendrecv'] = lambda n: f'int sbuf{n}[N+2]={{rank}}; int rbuf{n}[N]={{rank}}; int * psbuf{n} = &sbuf{n}[0]; int * prbuf{n} = &rbuf{n}[0]; MPI_Status sta{n};'
+start['MPI_Sendrecv'] = lambda n: ""
+operation['MPI_Sendrecv'] = lambda n: f'MPI_Sendrecv(psbuf{n}, buff_size, type, dest, stag, prbuf{n}, buff_size, type, src, rtag, newcom, &sta{n});'
+fini['MPI_Sendrecv'] = lambda n: ""
+free['MPI_Sendrecv'] = lambda n: ""
+write['MPI_Sendrecv'] = lambda n: f"prbuf{n} = &sbuf{n}[2];"
 
 
 ### P2P:nonblocking
@@ -393,23 +402,23 @@ finEpoch['MPI_Win_lock'] = lambda n: 'MPI_Win_unlock(target, win);'
 epoch['MPI_Win_lock_all'] = lambda n: 'MPI_Win_lock_all(0,win);'
 finEpoch['MPI_Win_lock_all'] = lambda n: 'MPI_Win_unlock_all(win);'
 
-init['MPI_Put'] = lambda n: f'int localbuf{n}[N] = {{0}};\n  localbuf{n}[0] = 12345;'
+init['MPI_Put'] = lambda n: f'int localbuf{n}[N] = {{12345}};'
 operation['MPI_Put'] = lambda n: f'MPI_Put(&localbuf{n}, N, MPI_INT, target, 0, N, type, win);'
 
-init['MPI_Get'] = lambda n: f'int localbuf{n}[N] = {{0}};\n  localbuf{n}[0] = 54321;'
+init['MPI_Get'] = lambda n: f'int localbuf{n}[N] = {{54321}};'
 operation['MPI_Get'] = lambda n: f'MPI_Get(&localbuf{n}, N, MPI_INT, target, 0, N, type, win);'
 
 init['store'] = lambda n: f'int localbuf{n}[N] = {{0}};'
 operation['store'] = lambda n: f'localbuf{n}[0] = 8;'
 
 init['rstore'] = lambda n: ""
-operation['rstore'] = lambda n: 'winbuf[20] = 12346;'
+operation['rstore'] = lambda n: f'winbuf[5] = 12346;'
 
 init['load'] = lambda n: f'int localbuf{n}[N] = {{0}};'
 operation['load'] = lambda n: f'int load = localbuf{n}[0];'
 
 init['rload'] = lambda n: ""
-operation['rload'] = lambda n: "int load = winbuf[20];"
+operation['rload'] = lambda n: "int load = winbuf[5];"
 
 init['loadstore'] = lambda n: f'int localbuf{n}[N] = {{0}};'
 operation['loadstore'] = lambda n: f'if (localbuf{n}[0] % 2 == 0)  localbuf{n}[0]++; '

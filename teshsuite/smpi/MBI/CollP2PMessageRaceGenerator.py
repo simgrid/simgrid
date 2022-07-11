@@ -40,6 +40,7 @@ int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
   int dest, src;
+  int i=0;
   int root = 0;
   int stag = 0, rtag = 0;
   int buff_size = 1;
@@ -80,7 +81,7 @@ int main(int argc, char **argv) {
     @{operation3}@ /* MBIERROR1 */
     @{operation1}@
     @{fini1}@
-    src = 0;
+    @{changesrc}@
     @{operation4}@ /* MBIERROR2 */
     @{fini3}@
     @{fini4}@
@@ -129,6 +130,16 @@ for s in gen.send + gen.isend:
             patterns['operation2'] = gen.operation[s]("2")
             patterns['operation3'] = gen.operation[r]("3")
             patterns['operation4'] = gen.operation[r]("4")
+            patterns['changesrc'] = ''
+
+            # Generate the correct matching because of the conditional
+            replace = patterns.copy()
+            replace['shortdesc'] = 'Message race'
+            replace['longdesc'] = 'Message race without problem in @{r}@ with @{c}@.'
+            replace['outcome'] = 'OK'
+            replace['errormsg'] = 'OK'
+            replace['changesrc'] = ''
+            gen.make_file(template, f'MessageRace_{c}_{s}_{r}_ok.c', replace)
 
             # Generate the incorrect matching because of the conditional
             replace = patterns.copy()
@@ -136,4 +147,5 @@ for s in gen.send + gen.isend:
             replace['longdesc'] = 'Message race in @{r}@ with @{c}@.'
             replace['outcome'] = 'ERROR: MessageRace'
             replace['errormsg'] = 'Message race. The use of wildcard receive calls (@{r}@ at @{filename}@:@{line:MBIERROR1}@ and @{r}@ at @{filename}@:@{line:MBIERROR2}@) leads to nondeterministic matching.'
+            replace['changesrc'] = 'src = 0;'
             gen.make_file(template, f'MessageRace_{c}_{s}_{r}_nok.c', replace)

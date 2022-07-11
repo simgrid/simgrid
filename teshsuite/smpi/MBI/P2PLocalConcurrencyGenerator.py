@@ -103,7 +103,7 @@ for s in gen.send + gen.isend + gen.psend:
         patterns['free2'] = gen.free[r]("2")
         shortdesc = ' Local Concurrency with a P2P'
 
-        # Gtenerate a message race
+        # Generate a message race
         if s in gen.send and r in gen.irecv + gen.precv:
             replace = patterns.copy()
             replace['shortdesc'] = shortdesc
