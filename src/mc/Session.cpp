@@ -51,10 +51,6 @@ template <class Code> void run_child_process(int socket, Code code)
   xbt_assert(fdflags != -1 && fcntl(socket, F_SETFD, fdflags & ~FD_CLOEXEC) != -1,
              "Could not remove CLOEXEC for socket");
 
-  // Disable lazy relocation in the model-checked process to prevent the application from
-  // modifying its .got.plt during snapshot.
-  setenv("LC_BIND_NOW", "1", 1);
-
   setenv(MC_ENV_SOCKET_FD, std::to_string(socket).c_str(), 1);
 
   code();
