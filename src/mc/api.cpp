@@ -37,11 +37,9 @@ simgrid::mc::Exploration* Api::initialize(char** argv, const std::unordered_map<
     int i = 1;
     while (argv[i] != nullptr && argv[i][0] == '-')
       i++;
-    for (auto const& kv : env) {
-      const char* key = kv.first.c_str();
-      const char* val = kv.second.c_str();
-      XBT_INFO("setenv '%s'='%s'", key, val);
-      setenv(key, val, 1);
+    for (auto const& [key, val] : env) {
+      XBT_INFO("setenv '%s'='%s'", key.c_str(), val.c_str());
+      setenv(key.c_str(), val.c_str(), 1);
     }
     xbt_assert(argv[i] != nullptr,
                "Unable to find a binary to exec on the command line. Did you only pass config flags?");
