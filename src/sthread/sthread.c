@@ -147,11 +147,18 @@ int pthread_mutex_destroy(pthread_mutex_t* mutex)
   return res;
 }
 
-#if !defined(__GLIBC__) || __GLIBC_PREREQ(2, 31)
-int gettimeofday(struct timeval* tv, XBT_ATTRIB_UNUSED void* tz)
-#else
-int gettimeofday(struct timeval* tv, XBT_ATTRIB_UNUSED struct timezone* tz)
+/* Glibc < 2.31 uses type "struct timezone *" for the second parameter of gettimeofday.
+   Other implementations use "void *" instead. */
+#ifdef __GLIBC__
+#if !__GLIBC_PREREQ(2, 31)
+#define TIMEZONE_TYPE struct timezone
 #endif
+#endif
+#ifndef TIMEZONE_TYPE
+#define TIMEZONE_TYPE void
+#endif
+
+int gettimeofday(struct timeval* tv, XBT_ATTRIB_UNUSED TIMEZONE_TYPE* tz)
 {
   return sthread_gettimeofday(tv);
 }
