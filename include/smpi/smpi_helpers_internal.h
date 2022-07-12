@@ -16,6 +16,12 @@
 #include <time.h>
 #endif
 
+#if !defined(SMPI_NO_OVERRIDE_MALLOC) && !defined(__GLIBC__)
+/* For musl libc, <sched.h> must be included before #defining calloc(). Testing if !defined(__GLIBC__) is a bit crude
+ * but I don't know a better way. */
+#include <sched.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
