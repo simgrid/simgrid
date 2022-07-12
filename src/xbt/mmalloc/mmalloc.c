@@ -18,13 +18,13 @@
 
 static void initialize(xbt_mheap_t mdp);
 static void *register_morecore(xbt_mheap_t mdp, size_t size);
-static void *align(xbt_mheap_t mdp, size_t size);
+static void* mmalloc_aligned(xbt_mheap_t mdp, size_t size);
 
 /* Allocation aligned on block boundary.
  *
  * It never returns NULL, but dies verbosely on error.
  */
-static void *align(struct mdesc *mdp, size_t size)
+static void* mmalloc_aligned(struct mdesc* mdp, size_t size)
 {
   void *result;
   unsigned long int adj;
@@ -47,9 +47,7 @@ static void *align(struct mdesc *mdp, size_t size)
   return result;
 }
 
-/** Initialize heapinfo about the heapinfo pages :)
- *
- */
+/** Initialize heapinfo about the heapinfo pages :) */
 static void initialize_heapinfo_heapinfo(const s_xbt_mheap_t* mdp)
 {
   // Update heapinfo about the heapinfo pages (!):
@@ -67,13 +65,12 @@ static void initialize_heapinfo_heapinfo(const s_xbt_mheap_t* mdp)
 }
 
 /* Finish the initialization of the mheap. If we want to inline it
- * properly, we need to make the align function publicly visible, too  */
+ * properly, we need to make the mmalloc_aligned function publicly visible, too  */
 static void initialize(xbt_mheap_t mdp)
 {
   // Update mdp meta-data:
   mdp->heapsize = HEAP / BLOCKSIZE;
-  mdp->heapinfo = (malloc_info *)
-    align(mdp, mdp->heapsize * sizeof(malloc_info));
+  mdp->heapinfo = (malloc_info*)mmalloc_aligned(mdp, mdp->heapsize * sizeof(malloc_info));
   mdp->heapbase = (void *) mdp->heapinfo;
   mdp->flags |= MMALLOC_INITIALIZED;
 
@@ -102,7 +99,7 @@ static inline void update_hook(void **a, size_t offset)
  * into the heap info table as necessary. */
 static void *register_morecore(struct mdesc *mdp, size_t size)
 {
-  void* result = align(mdp, size); // Never returns NULL
+  void* result = mmalloc_aligned(mdp, size); // Never returns NULL
 
   /* Check if we need to grow the info table (in a multiplicative manner)  */
   if ((size_t) BLOCK((char *) result + size) > mdp->heapsize) {
@@ -112,7 +109,7 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
 
     /* Copy old info into new location */
     malloc_info* oldinfo = mdp->heapinfo;
-    malloc_info* newinfo = (malloc_info*)align(mdp, newsize * sizeof(malloc_info));
+    malloc_info* newinfo = (malloc_info*)mmalloc_aligned(mdp, newsize * sizeof(malloc_info));
     memcpy(newinfo, oldinfo, mdp->heapsize * sizeof(malloc_info));
 
     /* Initialize the new blockinfo : */
