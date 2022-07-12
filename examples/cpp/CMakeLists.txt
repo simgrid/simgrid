@@ -78,11 +78,11 @@ else()
   endforeach()
 endif()
 
-# Hijack some regular tests to run them on top of the MC
-foreach (example synchro-barrier synchro-mutex synchro-semaphore)
-  set(tesh_files ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-mc-${example}.tesh)
+if (SIMGRID_HAVE_MC)
+  # Hijack some regular tests to run them on top of the MC
+  foreach (example synchro-barrier synchro-mutex synchro-semaphore)
+    set(tesh_files ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u-mc-${example}.tesh)
 
-  if (SIMGRID_HAVE_MC)
     ADD_TESH(s4u-mc-${example}
              --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
              --setenv libdir=${CMAKE_BINARY_DIR}/lib
@@ -90,8 +90,15 @@ foreach (example synchro-barrier synchro-mutex synchro-semaphore)
              --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
              --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
              ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-mc-${example}.tesh)
-  endif()
-endforeach()
+
+    add_dependencies(tests-mc s4u-${example})
+  endforeach()
+
+  # Dependency on the regular tests
+  foreach(example mc-centralized-mutex)
+    add_dependencies(tests-mc s4u-${example})
+  endforeach()
+endif()
 
 
 if(NOT HAVE_GRAPHVIZ)
