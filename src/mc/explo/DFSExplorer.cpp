@@ -165,7 +165,7 @@ void DFSExplorer::run()
     /* If this is a new state (or if we don't care about state-equality reduction) */
     if (visited_state_ == nullptr) {
       /* Get an enabled process and insert it in the interleave set of the next state */
-      auto actors = Api::get().get_actors();
+      auto actors = mc_model_checker->get_remote_process().actors();
       for (auto& remoteActor : actors) {
         auto actor = remoteActor.copy.get_buffer();
         if (get_session().actor_is_enabled(actor->get_pid())) {
@@ -296,7 +296,7 @@ DFSExplorer::DFSExplorer(Session* session) : Exploration(session)
   XBT_DEBUG("**************************************************");
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
-  auto actors = Api::get().get_actors();
+  auto actors = mc_model_checker->get_remote_process().actors();
   XBT_DEBUG("Initial state. %zu actors to consider", actors.size());
   for (auto& actor : actors) {
     aid_t aid = actor.copy.get_buffer()->get_pid();

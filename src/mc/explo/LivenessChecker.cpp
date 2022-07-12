@@ -27,7 +27,7 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
   if (not this->graph_state->get_system_state())
     this->graph_state->set_system_state(std::make_shared<Snapshot>(pair_num));
   this->heap_bytes_used     = Api::get().get_remote_heap_bytes();
-  this->actors_count        = Api::get().get_actors().size();
+  this->actors_count        = mc_model_checker->get_remote_process().actors().size();
   this->other_num           = -1;
   this->atomic_propositions = std::move(atomic_propositions);
 }
@@ -231,7 +231,7 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(const Pair* current_pair, xbt
   else
     next_pair->depth = 1;
   /* Add all enabled actors to the interleave set of the initial state */
-  for (auto& act : Api::get().get_actors()) {
+  for (auto& act : mc_model_checker->get_remote_process().actors()) {
     auto actor = act.copy.get_buffer();
     if (get_session().actor_is_enabled(actor->get_pid()))
       next_pair->graph_state->mark_todo(actor->get_pid());

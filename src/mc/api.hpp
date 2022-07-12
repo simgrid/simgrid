@@ -57,7 +57,6 @@ public:
                                        simgrid::mc::ExplorationAlgorithm algo);
 
   // ACTOR APIs
-  std::vector<simgrid::mc::ActorInformation>& get_actors() const;
   unsigned long get_maxpid() const;
 
   // REMOTE APIs

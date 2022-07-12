@@ -73,11 +73,6 @@ simgrid::mc::Exploration* Api::initialize(char** argv, const std::unordered_map<
   return explo;
 }
 
-std::vector<simgrid::mc::ActorInformation>& Api::get_actors() const
-{
-  return mc_model_checker->get_remote_process().actors();
-}
-
 unsigned long Api::get_maxpid() const
 {
   return mc_model_checker->get_remote_process().get_maxpid();
