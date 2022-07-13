@@ -22,10 +22,16 @@ static int (*raw_mutex_lock)(pthread_mutex_t*)                             = NUL
 static int (*raw_mutex_trylock)(pthread_mutex_t*)                          = NULL;
 static int (*raw_mutex_unlock)(pthread_mutex_t*)                           = NULL;
 static int (*raw_mutex_destroy)(pthread_mutex_t*)                          = NULL;
+
+static unsigned int (*raw_sleep)(unsigned int)         = NULL;
+static int (*raw_usleep)(useconds_t)                   = NULL;
+static int (*raw_gettimeofday)(struct timeval*, void*) = NULL;
+
 static sem_t* (*raw_sem_open)(const char*, int)                            = NULL;
 static int (*raw_sem_init)(sem_t*, int, unsigned int)                      = NULL;
 static int (*raw_sem_wait)(sem_t*)                                         = NULL;
 static int (*raw_sem_post)(sem_t*)                                         = NULL;
+
 static void intercepter_init()
 {
   raw_pthread_create = (typeof(raw_pthread_create))dlsym(RTLD_NEXT, "pthread_create");
@@ -35,6 +41,10 @@ static void intercepter_init()
   raw_mutex_trylock = (int (*)(pthread_mutex_t*))dlsym(RTLD_NEXT, "pthread_mutex_trylock");
   raw_mutex_unlock  = (int (*)(pthread_mutex_t*))dlsym(RTLD_NEXT, "pthread_mutex_unlock");
   raw_mutex_destroy = (int (*)(pthread_mutex_t*))dlsym(RTLD_NEXT, "pthread_mutex_destroy");
+
+  raw_sleep        = (unsigned int (*)(unsigned int))dlsym(RTLD_NEXT, "sleep");
+  raw_usleep       = (int (*)(useconds_t usec))dlsym(RTLD_NEXT, "usleep");
+  raw_gettimeofday = (int (*)(struct timeval*, void*))dlsym(RTLD_NEXT, "gettimeofday");
 
   raw_sem_open = (sem_t * (*)(const char*, int)) dlsym(RTLD_NEXT, "sem_open");
   raw_sem_init = (int (*)(sem_t*, int, unsigned int))dlsym(RTLD_NEXT, "sem_init");
@@ -160,18 +170,43 @@ int pthread_mutex_destroy(pthread_mutex_t* mutex)
 
 int gettimeofday(struct timeval* tv, XBT_ATTRIB_UNUSED TIMEZONE_TYPE* tz)
 {
-  return sthread_gettimeofday(tv);
+  if (raw_gettimeofday == NULL)
+    intercepter_init();
+
+  if (sthread_inside_simgrid)
+    return raw_gettimeofday(tv, (void*)tz);
+
+  sthread_inside_simgrid = 1;
+  int res                = sthread_gettimeofday(tv);
+  sthread_inside_simgrid = 0;
+  return res;
 }
 
 unsigned int sleep(unsigned int seconds)
 {
+  if (raw_sleep == NULL)
+    intercepter_init();
+
+  if (sthread_inside_simgrid)
+    return raw_sleep(seconds);
+
+  sthread_inside_simgrid = 1;
   sthread_sleep(seconds);
+  sthread_inside_simgrid = 0;
   return 0;
 }
 
 int usleep(useconds_t usec)
 {
+  if (raw_usleep == NULL)
+    intercepter_init();
+
+  if (sthread_inside_simgrid)
+    return raw_usleep(usec);
+
+  sthread_inside_simgrid = 1;
   sthread_sleep(((double)usec) / 1000000.);
+  sthread_inside_simgrid = 0;
   return 0;
 }
 
