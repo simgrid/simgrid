@@ -71,7 +71,8 @@ static void add_active_exec(s4u::Exec const& task)
   const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(task.get_host());
   if (vm != nullptr) {
     VirtualMachineImpl* vm_impl = vm->get_vm_impl();
-    vm_impl->add_active_exec();
+    for (int i = 1; i <= task.get_thread_count(); i++)
+      vm_impl->add_active_exec();
     vm_impl->update_action_weight();
   }
 }
@@ -86,7 +87,8 @@ static void remove_active_exec(s4u::Activity const& task)
   const s4u::VirtualMachine* vm = dynamic_cast<s4u::VirtualMachine*>(exec->get_host());
   if (vm != nullptr) {
     VirtualMachineImpl* vm_impl = vm->get_vm_impl();
-    vm_impl->remove_active_exec();
+    for (int i = 1; i <= exec->get_thread_count(); i++)
+      vm_impl->remove_active_exec();
     vm_impl->update_action_weight();
   }
 }
