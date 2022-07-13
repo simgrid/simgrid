@@ -172,30 +172,33 @@ void ETag_surfxml_include()
 
 /* Stag and Etag parse functions */
 void STag_surfxml_platform() {
-  double version = surf_parse_get_double(A_surfxml_platform_version);
+  /* Use fixed point arithmetic to avoid rounding errors ("4.1" for example cannot be represented exactly as a floating
+   * point number) */
+  const long int version           = lround(100.0 * surf_parse_get_double(A_surfxml_platform_version));
+  const std::string version_string = std::to_string(version / 100) + "." + std::to_string(version % 100);
 
-  surf_parse_assert((version >= 1.0), "******* BIG FAT WARNING *********\n "
-      "You're using an ancient XML file.\n"
-      "Since SimGrid 3.1, units are Bytes, Flops, and seconds "
-      "instead of MBytes, MFlops and seconds.\n"
+  surf_parse_assert(version >= 100L, "******* BIG FAT WARNING *********\n "
+                                     "You're using an ancient XML file.\n"
+                                     "Since SimGrid 3.1, units are Bytes, Flops, and seconds "
+                                     "instead of MBytes, MFlops and seconds.\n"
 
-      "Use simgrid_update_xml to update your file automatically. "
-      "This program is installed automatically with SimGrid, or "
-      "available in the tools/ directory of the source archive.\n"
+                                     "Use simgrid_update_xml to update your file automatically. "
+                                     "This program is installed automatically with SimGrid, or "
+                                     "available in the tools/ directory of the source archive.\n"
 
-      "Please check also out the SURF section of the ChangeLog for "
-      "the 3.1 version for more information. \n"
+                                     "Please check also out the SURF section of the ChangeLog for "
+                                     "the 3.1 version for more information. \n"
 
-      "Last, do not forget to also update your values for "
-      "the calls to MSG_task_create (if any).");
-  surf_parse_assert((version >= 3.0), "******* BIG FAT WARNING *********\n "
-      "You're using an old XML file.\n"
-      "Use simgrid_update_xml to update your file automatically. "
-      "This program is installed automatically with SimGrid, or "
-      "available in the tools/ directory of the source archive.");
+                                     "Last, do not forget to also update your values for "
+                                     "the calls to MSG_task_create (if any).");
+  surf_parse_assert(version >= 300L, "******* BIG FAT WARNING *********\n "
+                                     "You're using an old XML file.\n"
+                                     "Use simgrid_update_xml to update your file automatically. "
+                                     "This program is installed automatically with SimGrid, or "
+                                     "available in the tools/ directory of the source archive.");
   surf_parse_assert(
-      (version >= 4.0),
-      std::string("******* THIS FILE IS TOO OLD (v:") + std::to_string(version) +
+      version >= 400L,
+      std::string("******* THIS FILE IS TOO OLD (v:") + version_string +
           ") *********\n "
           "Changes introduced in SimGrid 3.13:\n"
           "  - 'power' attribute of hosts (and others) got renamed to 'speed'.\n"
@@ -206,18 +209,18 @@ void STag_surfxml_platform() {
           "Use simgrid_update_xml to update your file automatically. "
           "This program is installed automatically with SimGrid, or "
           "available in the tools/ directory of the source archive.");
-  if (version < 4.1) {
-    XBT_INFO("You're using a v%.1f XML file (%s) while the current standard is v4.1 "
+  if (version < 410L) {
+    XBT_INFO("You're using a v%s XML file (%s) while the current standard is v4.1 "
              "That's fine, the new version is backward compatible. \n\n"
              "Use simgrid_update_xml to update your file automatically to get rid of this warning. "
              "This program is installed automatically with SimGrid, or "
              "available in the tools/ directory of the source archive.",
-             version, surf_parsed_filename.c_str());
+             version_string.c_str(), surf_parsed_filename.c_str());
   }
-  surf_parse_assert(version <= 4.1,
-             std::string("******* THIS FILE COMES FROM THE FUTURE (v:")+std::to_string(version)+") *********\n "
-             "The most recent formalism that this version of SimGrid understands is v4.1.\n"
-             "Please update your code, or use another, more adapted, file.");
+  surf_parse_assert(version <= 410L, std::string("******* THIS FILE COMES FROM THE FUTURE (v:") + version_string +
+                                         ") *********\n "
+                                         "The most recent formalism that this version of SimGrid understands is v4.1.\n"
+                                         "Please update your code, or use another, more adapted, file.");
 }
 void ETag_surfxml_platform(){
   simgrid::s4u::Engine::on_platform_created();
