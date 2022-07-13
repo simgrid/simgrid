@@ -158,6 +158,11 @@ unsigned int Exec::get_host_number() const
   return static_cast<kernel::activity::ExecImpl*>(pimpl_.get())->get_host_number();
 }
 
+int Exec::get_thread_count() const
+{
+  return static_cast<kernel::activity::ExecImpl*>(pimpl_.get())->get_thread_count();
+}
+
 /** @brief Change the host on which this activity takes place.
  *
  * The activity cannot be terminated already (but it may be started). */

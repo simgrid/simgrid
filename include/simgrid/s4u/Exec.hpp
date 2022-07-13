@@ -82,6 +82,7 @@ public:
 
   Host* get_host() const;
   unsigned int get_host_number() const;
+  int get_thread_count() const;
   double get_cost() const;
   bool is_parallel() const { return parallel_; }
   bool is_assigned() const override;
