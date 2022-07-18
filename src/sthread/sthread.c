@@ -174,7 +174,7 @@ int gettimeofday(struct timeval* tv, XBT_ATTRIB_UNUSED TIMEZONE_TYPE* tz)
     intercepter_init();
 
   if (sthread_inside_simgrid)
-    return raw_gettimeofday(tv, (void*)tz);
+    return raw_gettimeofday(tv, tz);
 
   sthread_inside_simgrid = 1;
   int res                = sthread_gettimeofday(tv);
