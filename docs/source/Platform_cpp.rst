@@ -155,7 +155,7 @@ Note that the leaves and loopback links are defined through callbacks, as follow
 
     /* create each leaf in the Fat-Tree, return a pair composed of: <object (host, zone), gateway> */
     static std::pair<simgrid::kernel::routing::NetPoint*, simgrid::kernel::routing::NetPoint*>
-    create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned int>& /*coord*/, int id)
+    create_hostzone(const sg4::NetZone* zone, const std::vector<unsigned long>& /*coord*/, unsigned long id)
     {
       /* creating zone */
       std::string hostname = "host" + std::to_string(id);
