@@ -229,11 +229,6 @@ int sem_post(sem_t *sem) {
 	return raw_sem_post(sem);
 }
 
-int pthread_join(pthread_t thread, void **retval) {
-	sg_actor_join(thread, -1);
-    return 0;
-}
-
 int pthread_cond_init(pthread_cond_t *cond, pthread_condattr_t *cond_attr) {
     *cond = sg_cond_init();
     return 0;
