@@ -47,8 +47,6 @@ static void create_environment(xbt_os_timer_t parse_time, const std::string& pla
 static void dump_hosts()
 {
   std::vector<sg4::Host*> hosts = sg4::Engine::get_instance()->get_all_hosts();
-  std::sort(hosts.begin(), hosts.end(),
-            [](const sg4::Host* a, const sg4::Host* b) { return a->get_name() < b->get_name(); });
 
   for (auto const* h : hosts) {
     std::printf("  <host id=\"%s\" speed=\"%.0f\"", h->get_cname(), h->get_speed());
@@ -108,8 +106,6 @@ static void dump_routers()
 static void dump_routes()
 {
   std::vector<sg4::Host*> hosts = sg4::Engine::get_instance()->get_all_hosts();
-  std::sort(hosts.begin(), hosts.end(),
-            [](const sg4::Host* a, const sg4::Host* b) { return a->get_name() < b->get_name(); });
   std::vector<simgrid::kernel::routing::NetPoint*> netpoints = sg4::Engine::get_instance()->get_all_netpoints();
   std::sort(netpoints.begin(), netpoints.end(),
             [](const simgrid::kernel::routing::NetPoint* a, const simgrid::kernel::routing::NetPoint* b) {
