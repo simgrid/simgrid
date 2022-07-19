@@ -70,7 +70,7 @@ int pthread_create(pthread_t* thread, const pthread_attr_t* attr, void* (*start_
     return raw_pthread_create(thread, attr, start_routine, arg);
 
   sthread_inside_simgrid = 1;
-  int res                = sthread_create(thread, attr, start_routine, arg);
+  int res                = sthread_create((sthread_t*)thread, attr, start_routine, arg);
   sthread_inside_simgrid = 0;
   return res;
 }
@@ -83,7 +83,7 @@ int pthread_join(pthread_t thread, void** retval)
     return raw_pthread_join(thread, retval);
 
   sthread_inside_simgrid = 1;
-  int res                = sthread_join(thread, retval);
+  int res                = sthread_join((sthread_t)thread, retval);
   sthread_inside_simgrid = 0;
   return res;
 }
