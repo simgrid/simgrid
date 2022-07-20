@@ -58,7 +58,7 @@ public:
   void parse(xbt::ReplayAction& action, const std::string& name) override;
 };
 
-class SendRecvParser : public ActionArgParser {
+class SendOrRecvParser : public ActionArgParser {
 public:
   /* communication partner; if we send, this is the receiver and vice versa */
   int partner;
@@ -101,6 +101,18 @@ public:
   int root;
   MPI_Datatype datatype1;
   MPI_Datatype datatype2;
+};
+
+class SendRecvParser : public ActionArgParser {
+public:
+  int dst;
+  int src;
+  int sendcount;
+  int recvcount;
+  MPI_Datatype datatype1;
+  MPI_Datatype datatype2;
+
+  void parse(xbt::ReplayAction& action, const std::string& name) override;
 };
 
 class BcastArgParser : public CollCommParser {
@@ -219,7 +231,7 @@ public:
   void kernel(xbt::ReplayAction& action) override;
 };
 
-class SendAction : public ReplayAction<SendRecvParser> {
+class SendAction : public ReplayAction<SendOrRecvParser> {
   RequestStorage& req_storage;
 
 public:
@@ -227,7 +239,7 @@ public:
   void kernel(xbt::ReplayAction& action) override;
 };
 
-class RecvAction : public ReplayAction<SendRecvParser> {
+class RecvAction : public ReplayAction<SendOrRecvParser> {
   RequestStorage& req_storage;
 
 public:
@@ -279,6 +291,12 @@ class WaitAllAction : public ReplayAction<ActionArgParser> {
 
 public:
   explicit WaitAllAction(RequestStorage& storage) : ReplayAction("waitall"), req_storage(storage) {}
+  void kernel(xbt::ReplayAction& action) override;
+};
+
+class SendRecvAction : public ReplayAction<SendRecvParser> {
+public:
+  explicit SendRecvAction() : ReplayAction("sendrecv") {}
   void kernel(xbt::ReplayAction& action) override;
 };
 
