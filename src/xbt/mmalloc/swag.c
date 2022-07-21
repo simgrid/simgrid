@@ -1,5 +1,4 @@
-/* Copyright (c) 2004-2022. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2022. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -11,7 +10,7 @@
 /* This type should be added to a type that is to be used in such a swag */
 
 #include "swag.h"
-#include "xbt/asserts.h"
+#include "mmprivate.h" // mmalloc_assert
 
 typedef s_xbt_swag_hookup_t *xbt_swag_hookup_t;
 typedef struct xbt_swag* xbt_swag_t;
@@ -63,11 +62,12 @@ static inline void xbt_swag_init(xbt_swag_t swag, size_t offset)
  */
 static inline void xbt_swag_insert(void *obj, xbt_swag_t swag)
 {
-  xbt_assert(!xbt_swag_belongs(obj, swag) || swag->tail,
-             "This object belongs to an empty swag! Did you correctly initialize the object's hookup?");
+
+  mmalloc_assert(!xbt_swag_belongs(obj, swag) || swag->tail,
+                 "This object belongs to an empty swag! Did you correctly initialize the object's hookup?");
 
   if (!swag->head) {
-    xbt_assert(!(swag->tail), "Inconsistent swag.");
+    mmalloc_assert(!(swag->tail), "Inconsistent swag.");
     swag->head = obj;
     swag->tail = obj;
     swag->count++;

@@ -23,8 +23,7 @@
 #define MAP_ANONYMOUS MAP_ANON
 #endif
 
-#define PAGE_ALIGN(addr) (void*) (((long)(addr) + xbt_pagesize - 1) &   \
-                                  ~((long)xbt_pagesize - 1))
+#define PAGE_ALIGN(addr) (void*)(((long)(addr) + mmalloc_pagesize - 1) & ~((long)mmalloc_pagesize - 1))
 
 /** @brief Add memory to this heap
  *
@@ -47,6 +46,10 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
   if (size == 0) {
     /* Just return the current "break" value. */
     return mdp->breakval;
+  }
+
+  if (mmalloc_pagesize == 0) { // Not initialized yet
+    mmalloc_pagesize = (int)sysconf(_SC_PAGESIZE);
   }
 
   if (size < 0) {
@@ -76,7 +79,8 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
 
     if (mapto == MAP_FAILED) {
       char buff[1024];
-      fprintf(stderr, "Internal error: mmap returned MAP_FAILED! error: %s\n", strerror(errno));
+      fprintf(stderr, "Internal error: mmap returned MAP_FAILED! pagesize:%d error: %s\n", mmalloc_pagesize,
+              strerror(errno));
       snprintf(buff, 1024, "cat /proc/%d/maps", getpid());
       int status = system(buff);
       if (status == -1 || !(WIFEXITED(status) && WEXITSTATUS(status) == 0))

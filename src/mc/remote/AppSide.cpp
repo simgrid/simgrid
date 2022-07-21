@@ -73,7 +73,7 @@ AppSide* AppSide::initialize(xbt_dynar_t actors_addr)
   xbt_assert(errno == 0 && raise(SIGSTOP) == 0, "Could not wait for the model-checker (errno = %d: %s)", errno,
              strerror(errno));
 
-  s_mc_message_initial_addresses_t message{MessageType::INITIAL_ADDRESSES, mmalloc_preinit(),
+  s_mc_message_initial_addresses_t message{MessageType::INITIAL_ADDRESSES, mmalloc_get_current_heap(),
                                            kernel::actor::ActorImpl::get_maxpid_addr(), actors_addr};
   xbt_assert(instance_->channel_.send(message) == 0, "Could not send the initial message with addresses.");
 

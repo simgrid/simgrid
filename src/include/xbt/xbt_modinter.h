@@ -20,9 +20,6 @@ void xbt_log_postexit(void);
 void xbt_dict_preinit(void);
 void xbt_dict_postexit(void);
 
-xbt_mheap_t mmalloc_preinit(void);
-void mmalloc_postexit(void);
-
 extern int xbt_initialized;
 
 SG_END_DECL

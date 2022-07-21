@@ -11,11 +11,16 @@
 
 #include "src/internal_config.h"
 
+/** Environment variable name used to pass the communication socket.
+ *
+ * It is set by `simgrid-mc` to enable MC support in the children processes.
+ *
+ * It is placed in this file so that it's visible from mmalloc and MC without sharing anythin of xbt in mmalloc
+ */
+#define MC_ENV_SOCKET_FD "SIMGRID_MC_SOCKET_FD"
+
 #include <stdio.h>     /* for NULL */
 #include <sys/types.h> /* for size_t */
-
-#include "xbt/dict.h"
-#include "xbt/dynar.h"
 
 SG_BEGIN_DECL
 

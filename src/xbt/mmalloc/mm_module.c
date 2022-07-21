@@ -33,8 +33,6 @@
 #include <sys/stat.h>
 #include <string.h>
 #include "mmprivate.h"
-#include "xbt/ex.h"
-#include "xbt/xbt_modinter.h" /* declarations of mmalloc_preinit and friends that live here */
 
 /* Initialize access to a mmalloc managed region.
 
@@ -49,7 +47,7 @@
    so that users of the package don't have to worry about the actual
    implementation details.
 
-   On failure returns NULL. */
+   On failure, returns NULL. */
 
 xbt_mheap_t xbt_mheap_new(void* baseaddr, int options)
 {
@@ -189,30 +187,26 @@ static void mmalloc_fork_child(void)
   }
 }
 
-/* Initialize the default malloc descriptor. */
+/* Initialize the default malloc descriptor.
+ *
+ * There is no malloc_postexit() destroying the default mdp, because it would break ldl trying to free its memory
+ */
 xbt_mheap_t mmalloc_preinit(void)
 {
   if (__mmalloc_default_mdp == NULL) {
-    if(!xbt_pagesize)
-      xbt_pagesize = getpagesize();
-    unsigned long mask = ~((unsigned long)xbt_pagesize - 1);
+    if (!mmalloc_pagesize)
+      mmalloc_pagesize = getpagesize();
+    unsigned long mask    = ~((unsigned long)mmalloc_pagesize - 1);
     void *addr = (void*)(((unsigned long)sbrk(0) + HEAP_OFFSET) & mask);
     __mmalloc_default_mdp = xbt_mheap_new(addr, XBT_MHEAP_OPTION_MEMSET);
 
     // atfork mandated at least on FreeBSD, or simgrid-mc will fail to fork the verified app
     int res = pthread_atfork(mmalloc_fork_prepare, mmalloc_fork_parent, mmalloc_fork_child);
-    xbt_assert(res == 0, "pthread_atfork() failed: return value %d", res);
+    mmalloc_assert(res == 0, "pthread_atfork() failed: return value %d", res);
   }
-  xbt_assert(__mmalloc_default_mdp != NULL);
+  mmalloc_assert(__mmalloc_default_mdp != NULL, "__mmalloc_default_mdp cannot be NULL");
 
   return __mmalloc_default_mdp;
-}
-
-void mmalloc_postexit(void)
-{
-  /* Do not destroy the default mdp or ldl won't be able to free the memory it
-   * allocated since we're in memory */
-  // xbt_mheap_destroy_no_free(__mmalloc_default_mdp)
 }
 
 // This is the underlying implementation of mmalloc_get_bytes_used_remote.

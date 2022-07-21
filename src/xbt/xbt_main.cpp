@@ -115,9 +115,6 @@ static void xbt_postexit()
   xbt_initialized--;
   xbt_dict_postexit();
   xbt_log_postexit();
-#if SIMGRID_HAVE_MC
-  mmalloc_postexit();
-#endif
 }
 
 /** @brief Initialize the xbt mechanisms. */

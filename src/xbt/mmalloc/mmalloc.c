@@ -51,7 +51,7 @@ static void* mmalloc_aligned(struct mdesc* mdp, size_t size)
 static void initialize_heapinfo_heapinfo(const s_xbt_mheap_t* mdp)
 {
   // Update heapinfo about the heapinfo pages (!):
-  xbt_assert((uintptr_t) mdp->heapinfo % BLOCKSIZE == 0);
+  mmalloc_assert((uintptr_t)mdp->heapinfo % BLOCKSIZE == 0, "Failed assert in initialize_heapinfo_heapinfo()");
   size_t block   = BLOCK(mdp->heapinfo);
   size_t nblocks = mdp->heapsize * sizeof(malloc_info) / BLOCKSIZE;
   // Mark them as free:
@@ -214,8 +214,9 @@ void *mmalloc_no_memset(xbt_mheap_t mdp, size_t size)
       for (candidate_frag=0;candidate_frag<(size_t) (BLOCKSIZE >> log);candidate_frag++)
         if (candidate_info->busy_frag.frag_size[candidate_frag] == -1)
           break;
-      xbt_assert(candidate_frag < (size_t) (BLOCKSIZE >> log),
-          "Block %zu was registered as containing free fragments of type %zu, but I can't find any",candidate_block,log);
+      mmalloc_assert(candidate_frag < (size_t)(BLOCKSIZE >> log),
+                     "Block %zu was registered as containing free fragments of type %zu, but I can't find any",
+                     candidate_block, log);
 
       result = (void*) (((char*)ADDRESS(candidate_block)) + (candidate_frag << log));
 

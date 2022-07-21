@@ -13,19 +13,27 @@
 #ifndef XBT_MMPRIVATE_H
 #define XBT_MMPRIVATE_H 1
 
-#include <xbt/base.h>
-#include <xbt/misc.h>
-
 #include "swag.h"
 #include "src/internal_config.h"
 #include "xbt/mmalloc.h"
-#include "xbt/ex.h"
-#include "xbt/dynar.h"
-
-#include <pthread.h>
-#include <stdint.h>
 
 #include <limits.h>
+#include <pthread.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+// This macro is veery similar to xbt_assert, but with no dependency on XBT
+#define mmalloc_assert(cond, ...)                                                                                      \
+  do {                                                                                                                 \
+    if (!(cond)) {                                                                                                     \
+      fprintf(stderr, __VA_ARGS__);                                                                                    \
+      abort();                                                                                                         \
+    }                                                                                                                  \
+  } while (0)
+
+XBT_PUBLIC_DATA int mmalloc_pagesize;
+XBT_PRIVATE xbt_mheap_t mmalloc_preinit(void);
 
 #define MMALLOC_MAGIC    "mmalloc"       /* Mapped file magic number */
 #define MMALLOC_MAGIC_SIZE  8       /* Size of magic number buf */

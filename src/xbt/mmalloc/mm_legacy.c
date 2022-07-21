@@ -1,5 +1,4 @@
-/* Copyright (c) 2010-2022. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2022. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,19 +6,16 @@
 /* Redefine the classical malloc/free/realloc functions so that they fit well in the mmalloc framework */
 #define _GNU_SOURCE
 
-#include <stdlib.h>
+#include "mmprivate.h"
 
 #include <dlfcn.h>
-
-#include "mmprivate.h"
-#include "src/internal_config.h"
-#include "src/mc/remote/mc_protocol.h"
-#include "xbt/xbt_modinter.h"
 #include <math.h>
+#include <stdlib.h>
 
 /* ***** Whether to use `mmalloc` of the underlying malloc ***** */
 
 static int __malloc_use_mmalloc;
+int mmalloc_pagesize = 0;
 
 int malloc_use_mmalloc(void)
 {
@@ -43,8 +39,6 @@ xbt_mheap_t mmalloc_get_current_heap(void)
 }
 
 /* Override the malloc-like functions if MC is activated at compile time */
-#if SIMGRID_HAVE_MC
-
 /* ***** Temporary allocator
  *
  * This is used before we have found the real malloc implementation with dlsym.
@@ -132,6 +126,8 @@ XBT_ATTRIB_CONSTRUCTOR(101) static void mm_legacy_constructor()
     mm_real_calloc   = dlsym(RTLD_NEXT, "calloc");
 #endif
   }
+  mmalloc_pagesize = getpagesize();
+
   mm_initializing = 0;
   mm_initialized = 1;
 }
@@ -238,4 +234,3 @@ void free(void *p)
   mfree(mdp, p);
   UNLOCK(mdp);
 }
-#endif /* SIMGRID_HAVE_MC */

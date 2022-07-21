@@ -9,8 +9,6 @@
 #ifndef XBT_SWAG_H
 #define XBT_SWAG_H
 
-#include "xbt/sysdep.h" /* size_t */
-
 /*
  * XBT_swag: a O(1) set based on linked lists
  *

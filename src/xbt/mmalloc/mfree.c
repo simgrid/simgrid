@@ -11,7 +11,6 @@
    Heavily modified Mar 1992 by Fred Fish.  (fnf@cygnus.com) */
 
 #include "mmprivate.h"
-#include "xbt/ex.h"
 #include "mc/mc.h"
 
 /* Return memory to the heap.
@@ -39,12 +38,14 @@ void mfree(struct mdesc *mdp, void *ptr)
   switch (type) {
   case MMALLOC_TYPE_HEAPINFO:
     UNLOCK(mdp);
-    THROW("Asked to free a fragment in a heapinfo block. I'm confused.\n");
+    fprintf(stderr, "Asked to free a fragment in a heapinfo block. I'm confused.\n");
+    abort();
     break;
 
   case MMALLOC_TYPE_FREE: /* Already free */
     UNLOCK(mdp);
-    THROW("Asked to free a fragment in a block that is already free. I'm puzzled.\n");
+    fprintf(stderr, "Asked to free a fragment in a block that is already free. I'm puzzled.\n");
+    abort();
     break;
 
   case MMALLOC_TYPE_UNFRAGMENTED:
@@ -167,7 +168,8 @@ void mfree(struct mdesc *mdp, void *ptr)
 
     if( mdp->heapinfo[block].busy_frag.frag_size[frag_nb] == -1){
       UNLOCK(mdp);
-      THROW("Asked to free a fragment that is already free. I'm puzzled\n");
+      fprintf(stderr, "Asked to free a fragment that is already free. I'm puzzled\n");
+      abort();
     }
 
     if (MC_is_active() && mdp->heapinfo[block].busy_frag.ignore[frag_nb] > 0)

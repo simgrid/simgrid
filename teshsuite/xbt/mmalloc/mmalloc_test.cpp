@@ -70,28 +70,9 @@ int main(int argc, char**argv)
     pointers[i] = mmalloc(heapA, size);
   }
 
-  XBT_INFO("free all blocks (each one twice, to check that double free are correctly caught)");
-  for (i = 0; i < TESTSIZE; i++) {
-    bool gotit = false;
+  XBT_INFO("free all blocks");
+  for (i = 0; i < TESTSIZE; i++)
     mfree(heapA, pointers[i]);
-    try {
-      mfree(heapA, pointers[i]);
-    } catch (const simgrid::Exception&) {
-      gotit = true;
-    }
-    xbt_assert(gotit, "FAIL: A double-free went undetected (for size:%d)", size_of_block(i));
-  }
-
-  XBT_INFO("free again all blocks (to really check that double free are correctly caught)");
-  for (i = 0; i < TESTSIZE; i++) {
-    bool gotit = false;
-    try {
-      mfree(heapA, pointers[i]);
-    } catch (const simgrid::Exception&) {
-      gotit = true;
-    }
-    xbt_assert(gotit, "FAIL: A double-free went undetected (for size:%d)", size_of_block(i));
-  }
 
   XBT_INFO("Let's try different codepaths for mrealloc");
   for (i = 0; i < TESTSIZE; i++) {
