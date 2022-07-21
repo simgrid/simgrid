@@ -159,10 +159,11 @@ s4u::VirtualMachine* HostImpl::create_vm(const std::string& name, s4u::VirtualMa
   auto* cpu =
       englobing_zone_->get_cpu_vm_model()->create_cpu(vm, speeds)->set_core_count(vm->get_vm_impl()->get_core_amount());
 
-  if (get_iface()->get_pstate() != 0)
-    cpu->set_pstate(get_iface()->get_pstate());
-
   cpu->seal();
+
+  if (get_iface()->get_pstate() != 0) {
+    cpu->set_pstate(get_iface()->get_pstate());
+  }
 
   /* Currently, a VM uses the network resource of its physical host */
   vm->set_netpoint(get_iface()->get_netpoint());

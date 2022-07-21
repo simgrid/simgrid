@@ -48,6 +48,12 @@ public final class NativeLib {
 		NativeLib.nativeInit("simgrid");
 		NativeLib.nativeInit("simgrid-java");
 		isNativeInited = true;
+
+                /* Don't leak the files on disk */
+                if (tempDir != null) {
+                  FileCleaner fclean = new FileCleaner(tempDir.toFile());
+                  fclean.run();
+                }
 	}
 
 	/** Helper function trying to load one requested library */
@@ -108,8 +114,6 @@ public final class NativeLib {
 			}
 
 			tempDir = Files.createTempDirectory(tempPrefix);
-			// don't leak the files on disk, but remove it on JVM shutdown
-			Runtime.getRuntime().addShutdownHook(new Thread(new FileCleaner(tempDir.toFile())));
 		}
 
 		/* For each possible filename of the given library on all possible OSes, try it */
