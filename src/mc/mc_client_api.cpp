@@ -31,15 +31,6 @@ void MC_assert(int prop)
   }
 }
 
-void MC_cut()
-{
-  xbt_assert(mc_model_checker == nullptr);
-  if (not MC_is_active())
-    return;
-  // FIXME, We want to do this in the model-checker:
-  xbt_die("MC_cut() not implemented");
-}
-
 void MC_ignore(void* addr, size_t size)
 {
   xbt_assert(mc_model_checker == nullptr);

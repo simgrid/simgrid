@@ -44,7 +44,6 @@ XBT_PUBLIC void MC_assert(int);
 XBT_PUBLIC void MC_automaton_new_propositional_symbol(const char* id, int (*fct)(void));
 XBT_PUBLIC void MC_automaton_new_propositional_symbol_pointer(const char* id, int* value);
 
-XBT_PUBLIC void MC_cut(void);
 XBT_PUBLIC void MC_ignore(void* addr, size_t size);
 
 XBT_PUBLIC void MC_ignore_heap(void* address, size_t size);
@@ -59,7 +58,6 @@ XBT_PUBLIC void MC_ignore_global_variable(const char* var_name);
 #define MC_assert(a)                    xbt_assert(a)
 #define MC_automaton_new_propositional_symbol(a, b) ((void)0)
 #define MC_automaton_new_propositional_symbol_pointer(a, b) ((void)0)
-#define MC_cut()                        ((void)0)
 #define MC_ignore(a, b)                 ((void)0)
 
 #define MC_ignore_heap(a,s)             ((void)0)
