@@ -21,7 +21,7 @@ endforeach()
 
 if(HAVE_MMALLOC)
   add_executable       (mmalloc_test EXCLUDE_FROM_ALL ${CMAKE_CURRENT_SOURCE_DIR}/mmalloc/mmalloc_test.cpp)
-  target_link_libraries(mmalloc_test simgrid)
+  target_link_libraries(mmalloc_test simgrid sgmalloc)
   set_target_properties(mmalloc_test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mmalloc)
   set_property(TARGET mmalloc_test APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
   add_dependencies(tests mmalloc_test)

@@ -288,7 +288,7 @@ set(XBT_SRC
   )
 
 if(HAVE_MMALLOC)
-  set(XBT_SRC ${XBT_SRC}  src/xbt/mmalloc/mm.c )
+  set(SGMALLOC_SRC src/xbt/mmalloc/mm.c)
 else()
   set(EXTRA_DIST ${EXTRA_DIST} src/xbt/mmalloc/mm.c)
 endif()
@@ -655,6 +655,8 @@ set(MC_SRC
   src/mc/mc_smx.cpp
   src/mc/udpor_global.cpp
   src/mc/udpor_global.hpp
+
+  src/xbt/mmalloc/mm_interface.c
   )
 
 set(MC_SIMGRID_MC_SRC  src/mc/explo/simgrid_mc.cpp)
