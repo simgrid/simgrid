@@ -10,7 +10,6 @@
 
    Contributed by Fred Fish at Cygnus Support.   fnf@cygnus.com */
 
-#include "src/internal_config.h"
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/mman.h>

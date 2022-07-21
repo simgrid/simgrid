@@ -56,11 +56,13 @@ XBT_PRIVATE xbt_mheap_t mmalloc_preinit(void);
  * information are kept in fixed length arrays. Here is the computation of
  * that size.
  *
- * Never make SMALLEST_POSSIBLE_MALLOC smaller than sizeof(list) because we
- * need to enlist the free fragments.
+ * Never make SMALLEST_POSSIBLE_MALLOC too small because we need to enlist
+ * the free fragments.
+ *
+ * FIXME: what's the correct size, actually? The used one is a guess.
  */
 
-#define SMALLEST_POSSIBLE_MALLOC (16*sizeof(struct list))
+#define SMALLEST_POSSIBLE_MALLOC (32 * sizeof(void*))
 #define MAX_FRAGMENT_PER_BLOCK (BLOCKSIZE / SMALLEST_POSSIBLE_MALLOC)
 
 /* The difference between two pointers is a signed int.  On machines where
@@ -97,12 +99,6 @@ XBT_PRIVATE xbt_mheap_t mmalloc_preinit(void);
 #define ADDRESS(B) ((void*) (((ADDR2UINT(B)) - 1) * BLOCKSIZE + (char*) mdp -> heapbase))
 
 SG_BEGIN_DECL
-
-/* Doubly linked lists of free fragments.  */
-struct list {
-  struct list *next;
-  struct list *prev;
-};
 
 /* Statistics available to the user. */
 struct mstats
