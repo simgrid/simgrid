@@ -62,7 +62,7 @@ class SendOrRecvParser : public ActionArgParser {
 public:
   /* communication partner; if we send, this is the receiver and vice versa */
   int partner;
-  size_t size;
+  ssize_t size;
   int tag;
   MPI_Datatype datatype1;
 
