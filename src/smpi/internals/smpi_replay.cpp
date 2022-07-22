@@ -162,7 +162,7 @@ void WaitTestParser::parse(simgrid::xbt::ReplayAction& action, const std::string
   tag = std::stoi(action[4]);
 }
 
-void SendRecvParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
+void SendOrRecvParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 {
   CHECK_ACTION_PARAMS(action, 3, 1)
   partner = std::stoi(action[2]);
@@ -188,6 +188,17 @@ void LocationParser::parse(simgrid::xbt::ReplayAction& action, const std::string
   CHECK_ACTION_PARAMS(action, 2, 0)
   filename = std::string(action[2]);
   line = std::stoi(action[3]);
+}
+
+void SendRecvParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
+{
+  CHECK_ACTION_PARAMS(action, 6, 0)
+  sendcount = parse_integer<int>(action[2]);
+  dst = std::stoi(action[3]);
+  recvcount = parse_integer<int>(action[4]);
+  src = std::stoi(action[5]);
+  datatype1 = parse_datatype(action, 6);
+  datatype2 = parse_datatype(action, 7);
 }
 
 void BcastArgParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
@@ -445,7 +456,7 @@ void WaitAction::kernel(simgrid::xbt::ReplayAction& action)
 
 void SendAction::kernel(simgrid::xbt::ReplayAction&)
 {
-  const SendRecvParser& args = get_args();
+  const SendOrRecvParser& args = get_args();
   aid_t dst_traced           = MPI_COMM_WORLD->group()->actor(args.partner);
 
   TRACE_smpi_comm_in(
@@ -468,7 +479,7 @@ void SendAction::kernel(simgrid::xbt::ReplayAction&)
 
 void RecvAction::kernel(simgrid::xbt::ReplayAction&)
 {
-  const SendRecvParser& args = get_args();
+  const SendOrRecvParser& args = get_args();
   TRACE_smpi_comm_in(
       get_pid(), __func__,
       new simgrid::instr::Pt2PtTIData(get_name(), args.partner, args.size, args.tag, Datatype::encode(args.datatype1)));
@@ -497,6 +508,40 @@ void RecvAction::kernel(simgrid::xbt::ReplayAction&)
     aid_t src_traced = MPI_COMM_WORLD->group()->actor(status.MPI_SOURCE);
     TRACE_smpi_recv(src_traced, get_pid(), args.tag);
   }
+}
+
+void SendRecvAction::kernel(simgrid::xbt::ReplayAction&)
+{
+  XBT_DEBUG("Enters SendRecv");
+  const SendRecvParser& args = get_args();
+  aid_t my_proc_id = simgrid::s4u::this_actor::get_pid();
+  aid_t src_traced = MPI_COMM_WORLD->group()->actor(args.src);
+  aid_t dst_traced = MPI_COMM_WORLD->group()->actor(args.dst);
+
+  MPI_Status status;
+  int sendtag=0;
+  int recvtag=0;
+
+  // FIXME: Hack the way to trace this one
+  auto dst_hack = std::make_shared<std::vector<int>>();
+  auto src_hack = std::make_shared<std::vector<int>>();
+  dst_hack->push_back(dst_traced);
+  src_hack->push_back(src_traced);
+  TRACE_smpi_comm_in(my_proc_id, __func__,
+                       new simgrid::instr::VarCollTIData(
+                           "sendRecv", -1, args.sendcount,
+              		 dst_hack, args.recvcount, src_hack,
+                           simgrid::smpi::Datatype::encode(args.datatype1), simgrid::smpi::Datatype::encode(args.datatype2)));
+
+  TRACE_smpi_send(my_proc_id, my_proc_id, dst_traced, sendtag, args.sendcount * args.datatype1->size());
+
+  simgrid::smpi::Request::sendrecv(nullptr, args.sendcount, args.datatype1, args.dst, sendtag, nullptr, args.recvcount, args.datatype2, args.src,
+                                     recvtag, MPI_COMM_WORLD, &status);
+
+  TRACE_smpi_recv(src_traced, my_proc_id, recvtag);
+  TRACE_smpi_comm_out(my_proc_id);
+  XBT_DEBUG("Exits SendRecv");
+
 }
 
 void ComputeAction::kernel(simgrid::xbt::ReplayAction&)
@@ -824,6 +869,7 @@ void smpi_replay_init(const char* instance_id, int rank, double start_delay_flop
   xbt_replay_action_register("recv",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::RecvAction("recv", storage[simgrid::s4u::this_actor::get_pid()]).execute(action); });
   xbt_replay_action_register("irecv", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::RecvAction("irecv", storage[simgrid::s4u::this_actor::get_pid()]).execute(action); });
   xbt_replay_action_register("test",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::TestAction(storage[simgrid::s4u::this_actor::get_pid()]).execute(action); });
+  xbt_replay_action_register("sendRecv", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::SendRecvAction().execute(action); });
   xbt_replay_action_register("wait",  [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::WaitAction(storage[simgrid::s4u::this_actor::get_pid()]).execute(action); });
   xbt_replay_action_register("waitall", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::WaitAllAction(storage[simgrid::s4u::this_actor::get_pid()]).execute(action); });
   xbt_replay_action_register("barrier", [](simgrid::xbt::ReplayAction& action) { simgrid::smpi::replay::BarrierAction().execute(action); });
