@@ -167,7 +167,7 @@ void SendOrRecvParser::parse(simgrid::xbt::ReplayAction& action, const std::stri
   CHECK_ACTION_PARAMS(action, 3, 1)
   partner = std::stoi(action[2]);
   tag     = std::stoi(action[3]);
-  size      = parse_integer<size_t>(action[4]);
+  size      = parse_integer<ssize_t>(action[4]);
   datatype1 = parse_datatype(action, 5);
 }
 
@@ -486,8 +486,8 @@ void RecvAction::kernel(simgrid::xbt::ReplayAction&)
 
   MPI_Status status;
   // unknown size from the receiver point of view
-  size_t arg_size = args.size;
-  if (arg_size == 0) {
+  ssize_t arg_size = args.size;
+  if (arg_size < 0) {
     Request::probe(args.partner, args.tag, MPI_COMM_WORLD, &status);
     arg_size = status.count;
   }
