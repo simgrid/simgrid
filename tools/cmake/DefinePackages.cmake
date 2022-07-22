@@ -289,6 +289,7 @@ set(XBT_SRC
 
 if(HAVE_MMALLOC)
   set(SGMALLOC_SRC src/xbt/mmalloc/mm.c)
+  set(XBT_SRC      ${XBT_SRC} src/xbt/mmalloc/mm.c)
 else()
   set(EXTRA_DIST ${EXTRA_DIST} src/xbt/mmalloc/mm.c)
 endif()

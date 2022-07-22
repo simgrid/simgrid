@@ -51,9 +51,3 @@ size_t mmalloc_get_bytes_used_remote(size_t heaplimit, const malloc_info* heapin
   }
   return bytes;
 }
-
-__attribute__((weak)) xbt_mheap_t mmalloc_get_current_heap(void)
-{
-  fprintf(stderr, "Fake mmalloc_get_current_heap()\n");
-  return NULL;
-}

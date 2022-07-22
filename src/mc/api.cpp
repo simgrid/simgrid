@@ -37,18 +37,10 @@ simgrid::mc::Exploration* Api::initialize(char** argv, const std::unordered_map<
     int i = 1;
     while (argv[i] != nullptr && argv[i][0] == '-')
       i++;
-    if (env.find("LD_PRELOAD") == env.end())
-      setenv("LD_PRELOAD", "libsgmalloc.so", 1);
 
     for (auto const& [key, val] : env) {
-      if (key == "LD_PRELOAD") {
-        auto v2 = std::string("libsgmalloc.so:") + val;
-        XBT_INFO("setenv '%s'='%s'", key.c_str(), v2.c_str());
-        setenv(key.c_str(), v2.c_str(), 1);
-      } else {
-        XBT_INFO("setenv '%s'='%s'", key.c_str(), val.c_str());
-        setenv(key.c_str(), val.c_str(), 1);
-      }
+      XBT_INFO("setenv '%s'='%s'", key.c_str(), val.c_str());
+      setenv(key.c_str(), val.c_str(), 1);
     }
     xbt_assert(argv[i] != nullptr,
                "Unable to find a binary to exec on the command line. Did you only pass config flags?");

@@ -193,15 +193,23 @@ static void mmalloc_fork_child(void)
 xbt_mheap_t mmalloc_preinit(void)
 {
   if (__mmalloc_default_mdp == NULL) {
-    if (!mmalloc_pagesize)
-      mmalloc_pagesize = getpagesize();
-    unsigned long mask    = ~((unsigned long)mmalloc_pagesize - 1);
-    void *addr = (void*)(((unsigned long)sbrk(0) + HEAP_OFFSET) & mask);
-    __mmalloc_default_mdp = xbt_mheap_new(addr, XBT_MHEAP_OPTION_MEMSET);
+    xbt_mheap_t (*other)(void) = dlsym(RTLD_NEXT, "mmalloc_preinit");
+    if (other != NULL) { // This is the second time that this module is loaded, let's use the other one
+      __mmalloc_default_mdp = other();
+      //      fprintf(stderr, "Reuse the other mmalloc_init\n");
+    } else {
+      //      fprintf(stderr, "New mmalloc_init\n");
 
-    // atfork mandated at least on FreeBSD, or simgrid-mc will fail to fork the verified app
-    int res = pthread_atfork(mmalloc_fork_prepare, mmalloc_fork_parent, mmalloc_fork_child);
-    mmalloc_assert(res == 0, "pthread_atfork() failed: return value %d", res);
+      if (!mmalloc_pagesize)
+        mmalloc_pagesize = getpagesize();
+      unsigned long mask    = ~((unsigned long)mmalloc_pagesize - 1);
+      void* addr            = (void*)(((unsigned long)sbrk(0) + HEAP_OFFSET) & mask);
+      __mmalloc_default_mdp = xbt_mheap_new(addr, XBT_MHEAP_OPTION_MEMSET);
+
+      // atfork mandated at least on FreeBSD, or simgrid-mc will fail to fork the verified app
+      int res = pthread_atfork(mmalloc_fork_prepare, mmalloc_fork_parent, mmalloc_fork_child);
+      mmalloc_assert(res == 0, "pthread_atfork() failed: return value %d", res);
+    }
   }
   mmalloc_assert(__mmalloc_default_mdp != NULL, "__mmalloc_default_mdp cannot be NULL");
 
