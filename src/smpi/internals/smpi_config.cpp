@@ -3,16 +3,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifdef _GNU_SOURCE
+#if defined(_GNU_SOURCE)
   #define DEFINED_GNUSOURCE 1
 #else
   #define _GNU_SOURCE
 #endif
 
-#include <features.h>
+#if defined(__linux__)
+  #include <features.h>
 //inspired by https://stackoverflow.com/a/70211227
-#if defined(__linux__) and not defined(__USE_GNU)
-  #define __MUSL__
+  #if not defined(__USE_GNU)
+    #define __MUSL__
+  #endif
 #endif
 
 #ifndef DEFINED_GNUSOURCE
