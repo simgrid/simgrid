@@ -274,6 +274,16 @@ XBT_PRIVATE int malloc_use_mmalloc(void);
 
 XBT_PRIVATE size_t mmalloc_get_bytes_used_remote(size_t heaplimit, const malloc_info* heapinfo);
 
+/* We call dlsym during mmalloc initialization, but dlsym uses malloc.
+ * So during mmalloc initialization, any call to malloc is diverted to a private static buffer.
+ */
+extern uint64_t* mmalloc_preinit_buffer;
+#ifdef __FreeBSD__ /* FreeBSD require more memory, other might */
+#define mmalloc_preinit_buffer_size 256
+#else /* Valid on: Linux */
+#define mmalloc_preinit_buffer_size 32
+#endif
+
 SG_END_DECL
 
 #endif

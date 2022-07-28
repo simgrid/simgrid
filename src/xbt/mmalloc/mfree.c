@@ -29,6 +29,11 @@ void mfree(struct mdesc *mdp, void *ptr)
   size_t block = BLOCK(ptr);
 
   if ((char *) ptr < (char *) mdp->heapbase || block > mdp->heapsize) {
+    if ((char*)ptr <= (char*)mmalloc_preinit_buffer + mmalloc_preinit_buffer_size &&
+        (char*)ptr >= (char*)mmalloc_preinit_buffer)
+      /* This points to the static buffer for fake mallocs done by dlsym before mmalloc initialization, ignore it */
+      return;
+
     fprintf(stderr,"Ouch, this pointer is not mine, I refuse to free it. Give me valid pointers, or give me death!!\n");
     abort();
   }

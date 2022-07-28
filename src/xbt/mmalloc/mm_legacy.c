@@ -44,13 +44,9 @@ xbt_mheap_t mmalloc_get_current_heap(void)
  * This is used before we have found the real malloc implementation with dlsym.
  */
 
-#ifdef __FreeBSD__ /* FreeBSD require more memory, other might */
-# define BUFFER_SIZE 256
-#else /* Valid on: Linux */
-# define BUFFER_SIZE 32
-#endif
 static size_t fake_alloc_index;
-static uint64_t buffer[BUFFER_SIZE];
+static uint64_t buffer[mmalloc_preinit_buffer_size];
+uint64_t* mmalloc_preinit_buffer = buffer;
 
 /* Fake implementations, they are used to fool dlsym:
  * dlsym used calloc and falls back to some other mechanism
@@ -58,13 +54,18 @@ static uint64_t buffer[BUFFER_SIZE];
  */
 static void* mm_fake_malloc(size_t n)
 {
+  mmalloc_preinit_buffer = buffer;
+
   // How many uint64_t do w need?
   size_t count = n / sizeof(uint64_t);
   if (n % sizeof(uint64_t))
     count++;
   // Check that we have enough available memory:
-  if (fake_alloc_index + count >= BUFFER_SIZE)
+  if (fake_alloc_index + count >= mmalloc_preinit_buffer_size) {
+    puts("mmalloc is not initialized yet, but the static buffer used as malloc replacement is already exhausted. "
+         "Please increase `mmalloc_preinit_buffer_size` in mm_legacy.c\n");
     exit(127);
+  }
   // Allocate it:
   uint64_t* res = buffer + fake_alloc_index;
   fake_alloc_index += count;
