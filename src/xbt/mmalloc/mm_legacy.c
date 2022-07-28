@@ -160,10 +160,7 @@ void *malloc(size_t n)
   if (!mdp)
     return NULL;
 
-  LOCK(mdp);
-  void *ret = mmalloc(mdp, n);
-  UNLOCK(mdp);
-  return ret;
+  return mmalloc(mdp, n);
 }
 
 void *calloc(size_t nmemb, size_t size)
@@ -182,9 +179,7 @@ void *calloc(size_t nmemb, size_t size)
   if (!mdp)
     return NULL;
 
-  LOCK(mdp);
   void *ret = mmalloc(mdp, nmemb*size);
-  UNLOCK(mdp);
   // This was already done in the callee:
   if(!(mdp->options & XBT_MHEAP_OPTION_MEMSET)) {
     memset(ret, 0, nmemb * size);
@@ -208,10 +203,7 @@ void *realloc(void *p, size_t s)
   if (!mdp)
     return NULL;
 
-  LOCK(mdp);
-  void* ret = mrealloc(mdp, p, s);
-  UNLOCK(mdp);
-  return ret;
+  return mrealloc(mdp, p, s);
 }
 
 void free(void *p)
@@ -231,7 +223,5 @@ void free(void *p)
     return;
 
   xbt_mheap_t mdp = GET_HEAP();
-  LOCK(mdp);
   mfree(mdp, p);
-  UNLOCK(mdp);
 }

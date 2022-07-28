@@ -174,9 +174,6 @@ typedef struct {
  * if such a file exists.
  * */
 struct mdesc {
-  /** @brief Mutex locking the access to the heap */
-  pthread_mutex_t mutex;
-
   /** @brief Chained lists of mdescs */
   struct mdesc *next_mdesc;
 
@@ -260,17 +257,6 @@ struct mdesc {
 XBT_PUBLIC_DATA struct mdesc* __mmalloc_default_mdp;
 
 XBT_PUBLIC void* mmorecore(struct mdesc* mdp, ssize_t size);
-
-/** Thread-safety (if the mutex is already created)
- *
- * This is mandatory in the case where the user runs a parallel simulation
- * in a model-checking enabled tree. Without this protection, our malloc
- * implementation will not like multi-threading AT ALL.
- */
-#define LOCK(mdp) pthread_mutex_lock(&(mdp)->mutex)
-#define UNLOCK(mdp) pthread_mutex_unlock(&(mdp)->mutex)
-
-XBT_PRIVATE int malloc_use_mmalloc(void);
 
 XBT_PRIVATE size_t mmalloc_get_bytes_used_remote(size_t heaplimit, const malloc_info* heapinfo);
 

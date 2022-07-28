@@ -68,7 +68,6 @@ xbt_mheap_t xbt_mheap_new(void* baseaddr, int options)
   mdp->next_mdesc = NULL;
   mdp->options = options;
 
-  pthread_mutex_init(&mdp->mutex, NULL);
   /* If we have not been passed a valid open file descriptor for the file
      to map to, then open /dev/zero and use that to map to. */
 
@@ -89,26 +88,10 @@ xbt_mheap_t xbt_mheap_new(void* baseaddr, int options)
     while(mdp->next_mdesc)
       mdp = mdp->next_mdesc;
 
-    LOCK(mdp);
     mdp->next_mdesc = (struct mdesc *)mbase;
-    UNLOCK(mdp);
   }
 
   return mbase;
-}
-
-
-
-/** Terminate access to a mmalloc managed region, but do not free its content.
- *
- * This is for example useful for the base region where ldl stores its data
- *   because it leaves the place after us.
- */
-void xbt_mheap_destroy_no_free(xbt_mheap_t md)
-{
-  struct mdesc *mdp = md;
-
-  pthread_mutex_destroy(&mdp->mutex);
 }
 
 /** Terminate access to a mmalloc managed region by unmapping all memory pages associated with the region, and closing
@@ -132,7 +115,6 @@ void *xbt_mheap_destroy(xbt_mheap_t mdp)
 
     mdptemp->next_mdesc = mdp->next_mdesc;
 
-    xbt_mheap_destroy_no_free(mdp);
     struct mdesc mtemp = *mdp;
 
     /* Now unmap all the pages associated with this region by asking for a
@@ -158,7 +140,6 @@ static void mmalloc_fork_prepare(void)
   xbt_mheap_t mdp = NULL;
   if ((mdp =__mmalloc_default_mdp)){
     while(mdp){
-      LOCK(mdp);
       mdp = mdp->next_mdesc;
     }
   }
@@ -169,7 +150,6 @@ static void mmalloc_fork_parent(void)
   xbt_mheap_t mdp = NULL;
   if ((mdp =__mmalloc_default_mdp)){
     while(mdp){
-      UNLOCK(mdp);
       mdp = mdp->next_mdesc;
     }
   }
@@ -180,7 +160,6 @@ static void mmalloc_fork_child(void)
   struct mdesc* mdp = NULL;
   if ((mdp =__mmalloc_default_mdp)){
     while(mdp){
-      UNLOCK(mdp);
       mdp = mdp->next_mdesc;
     }
   }

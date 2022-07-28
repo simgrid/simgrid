@@ -50,12 +50,13 @@ XBT_PUBLIC void mfree(xbt_mheap_t md, void* ptr);
 
 XBT_PUBLIC xbt_mheap_t xbt_mheap_new(void* baseaddr, int options);
 
-XBT_PUBLIC void xbt_mheap_destroy_no_free(xbt_mheap_t md);
-
 XBT_PUBLIC void* xbt_mheap_destroy(xbt_mheap_t md);
 
 /* To get the heap used when using the legacy version malloc/free/realloc and such */
 xbt_mheap_t mmalloc_get_current_heap(void);
+
+/* Returns true if we are using the internal mmalloc, and false if we are using the libc's malloc */
+XBT_PUBLIC int malloc_use_mmalloc(void);
 
 #endif
 SG_END_DECL

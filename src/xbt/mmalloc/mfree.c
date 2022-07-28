@@ -42,13 +42,11 @@ void mfree(struct mdesc *mdp, void *ptr)
 
   switch (type) {
   case MMALLOC_TYPE_HEAPINFO:
-    UNLOCK(mdp);
     fprintf(stderr, "Asked to free a fragment in a heapinfo block. I'm confused.\n");
     abort();
     break;
 
   case MMALLOC_TYPE_FREE: /* Already free */
-    UNLOCK(mdp);
     fprintf(stderr, "Asked to free a fragment in a block that is already free. I'm puzzled.\n");
     abort();
     break;
@@ -172,7 +170,6 @@ void mfree(struct mdesc *mdp, void *ptr)
     frag_nb = RESIDUAL(ptr, BLOCKSIZE) >> type;
 
     if( mdp->heapinfo[block].busy_frag.frag_size[frag_nb] == -1){
-      UNLOCK(mdp);
       fprintf(stderr, "Asked to free a fragment that is already free. I'm puzzled\n");
       abort();
     }
