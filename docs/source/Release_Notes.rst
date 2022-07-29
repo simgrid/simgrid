@@ -495,8 +495,8 @@ old, non-free ISP test suite by the one from the `MPI Bug Initiative <https://ha
 This will eventually help improving the robustness of Mc SimGrid.
 
 These changes unlock the future of Mc SimGrid. For the next releases, we plan to implement another exploration algorithm based on event unfoldings (using 
-`The Anh Pham's thesis <https://tel.archives-ouvertes.fr/tel-02462074/document>`_), the exploration of scenarios where the actors get killed and/or where
-communications timeout, and the addition of a `wrapper to pthreads <https://hal.inria.fr/hal-02449080>`, opening the path to the verification classical
+`The Anh Pham's thesis <https://tel.archives-ouvertes.fr/tel-02462074>`_), the exploration of scenarios where the actors get killed and/or where
+communications timeout, and the addition of a `wrapper to pthreads <https://hal.inria.fr/hal-02449080>`_, opening the path to the verification classical
 multithreaded applications.
 
 
