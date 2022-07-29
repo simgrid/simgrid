@@ -1,7 +1,6 @@
 /* Initialization for access to a mmap'd malloc managed region. */
 
-/* Copyright (c) 2012-2022. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2022. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -135,36 +134,6 @@ void *xbt_mheap_destroy(xbt_mheap_t mdp)
  * Try to increase this first if you experience strange errors under valgrind. */
 #define HEAP_OFFSET   (128UL<<20)
 
-static void mmalloc_fork_prepare(void)
-{
-  xbt_mheap_t mdp = NULL;
-  if ((mdp =__mmalloc_default_mdp)){
-    while(mdp){
-      mdp = mdp->next_mdesc;
-    }
-  }
-}
-
-static void mmalloc_fork_parent(void)
-{
-  xbt_mheap_t mdp = NULL;
-  if ((mdp =__mmalloc_default_mdp)){
-    while(mdp){
-      mdp = mdp->next_mdesc;
-    }
-  }
-}
-
-static void mmalloc_fork_child(void)
-{
-  struct mdesc* mdp = NULL;
-  if ((mdp =__mmalloc_default_mdp)){
-    while(mdp){
-      mdp = mdp->next_mdesc;
-    }
-  }
-}
-
 /* Initialize the default malloc descriptor.
  *
  * There is no malloc_postexit() destroying the default mdp, because it would break ldl trying to free its memory
@@ -177,10 +146,6 @@ xbt_mheap_t mmalloc_preinit(void)
     unsigned long mask    = ~((unsigned long)mmalloc_pagesize - 1);
     void* addr            = (void*)(((unsigned long)sbrk(0) + HEAP_OFFSET) & mask);
     __mmalloc_default_mdp = xbt_mheap_new(addr, XBT_MHEAP_OPTION_MEMSET);
-
-    // atfork mandated at least on FreeBSD, or simgrid-mc will fail to fork the verified app
-    int res = pthread_atfork(mmalloc_fork_prepare, mmalloc_fork_parent, mmalloc_fork_child);
-    mmalloc_assert(res == 0, "pthread_atfork() failed: return value %d", res);
   }
   mmalloc_assert(__mmalloc_default_mdp != NULL, "__mmalloc_default_mdp cannot be NULL");
 
