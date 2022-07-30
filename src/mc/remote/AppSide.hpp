@@ -49,7 +49,7 @@ public:
 
   // Singleton :/
   // TODO, remove the singleton antipattern.
-  static AppSide* initialize(xbt_dynar_t actors_addr);
+  static AppSide* initialize();
   static AppSide* get() { return instance_.get(); }
 };
 } // namespace simgrid::mc

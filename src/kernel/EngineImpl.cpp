@@ -178,10 +178,6 @@ EngineImpl::~EngineImpl()
   delete maestro_;
   delete context_factory_;
 
-  /* Free the remaining data structures */
-#if SIMGRID_HAVE_MC
-  xbt_dynar_free(&actors_vector_);
-#endif
   /* clear models before freeing handle, network models can use external callback defined in the handle */
   models_prio_.clear();
 }
@@ -195,7 +191,7 @@ void EngineImpl::initialize(int* argc, char** argv)
   // The communication initialization is done ASAP, as we need to get some init parameters from the MC for different
   // layers. But instance_ needs to be created, as we send the address of some of its fields to the MC that wants to
   // read them directly.
-  simgrid::mc::AppSide::initialize(actors_vector_);
+  simgrid::mc::AppSide::initialize();
 #endif
 
   if (xbt_initialized == 0) {

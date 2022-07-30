@@ -51,15 +51,6 @@ void execute_actors()
         actor->simcall_handle(0);
     }
   }
-#if SIMGRID_HAVE_MC
-  engine->reset_actor_dynar();
-  for (auto const& [_, actor] : engine->get_actor_list()) {
-    // Only visible requests remain at this point, and they all have an observer
-    actor->simcall_.mc_max_consider_ = actor->simcall_.observer_->get_max_consider();
-
-    engine->add_actor_to_dynar(actor);
-  }
-#endif
 }
 
 /** @brief returns if there this transition can proceed in a finite amount of time

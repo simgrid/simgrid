@@ -48,16 +48,6 @@ class EngineImpl {
                          boost::intrusive::member_hook<actor::ActorImpl, boost::intrusive::list_member_hook<>,
                                                        &actor::ActorImpl::kernel_destroy_list_hook>>
       actors_to_destroy_;
-#if SIMGRID_HAVE_MC
-  /* MCer cannot read members actor_list_ above in the remote process, so we copy the info it needs in a dynar.
-   * FIXME: This is supposed to be a temporary hack.
-   * A better solution would be to change the split between MCer and MCed, where the responsibility
-   *   to compute the list of the enabled transitions goes to the MCed.
-   * That way, the MCer would not need to have the list of actors on its side.
-   * These info could be published by the MCed to the MCer in a way inspired of vd.so
-   */
-  xbt_dynar_t actors_vector_      = xbt_dynar_new(sizeof(actor::ActorImpl*), nullptr);
-#endif
 
   static double now_;
   static EngineImpl* instance_;
@@ -135,11 +125,6 @@ public:
   actor::ActorImpl* get_actor_by_pid(aid_t pid);
   void add_actor(aid_t pid, actor::ActorImpl* actor) { actor_list_[pid] = actor; }
   void remove_actor(aid_t pid) { actor_list_.erase(pid); }
-
-#if SIMGRID_HAVE_MC
-  void reset_actor_dynar() { xbt_dynar_reset(actors_vector_); }
-  void add_actor_to_dynar(actor::ActorImpl* actor) { xbt_dynar_push_as(actors_vector_, actor::ActorImpl*, actor); }
-#endif
 
   const std::map<aid_t, actor::ActorImpl*>& get_actor_list() const { return actor_list_; }
   const std::vector<actor::ActorImpl*>& get_actors_to_run() const { return actors_to_run_; }

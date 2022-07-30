@@ -50,16 +50,12 @@ struct IgnoredHeapRegion {
   std::size_t size;
 };
 
-/** The Application's process memory, seen from the MCer perspective
- *
- *  This class is mixing a lot of different responsibilities and is tied
- *  to SIMIX. It should probably be split into different classes.
+/** The Application's process memory, seen from the Checker perspective
  *
  *  Responsibilities:
  *
  *  - reading from the process memory (`AddressSpace`);
  *  - accessing the system state of the process (heap, …);
- *  - storing the SIMIX state of the process;
  *  - privatization;
  *  - stack unwinding;
  *  - etc.
@@ -75,7 +71,7 @@ private:
 public:
   explicit RemoteProcess(pid_t pid);
   ~RemoteProcess() override;
-  void init(xbt_mheap_t mmalloc_default_mdp, unsigned long* maxpid, xbt_dynar_t actors);
+  void init(xbt_mheap_t mmalloc_default_mdp, unsigned long* maxpid);
 
   RemoteProcess(RemoteProcess const&) = delete;
   RemoteProcess(RemoteProcess&&)      = delete;
@@ -167,7 +163,6 @@ public:
 private:
   // Cache the address of the variables we read directly in the memory of remote
   RemotePtr<unsigned long> maxpid_addr_;
-  RemotePtr<s_xbt_dynar_t> actors_addr_;
 
 public:
   unsigned long get_maxpid() const { return this->read(maxpid_addr_); }
