@@ -22,12 +22,6 @@ echo "XXXX Let's go"
 
 set -e
 
-# Help older cmakes
-if [ -e /usr/lib/jvm/java-7-openjdk-amd64 ] ;
-then
-  export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
-fi
-
 # usage: die status message...
 die () {
   status=${1:-1}
@@ -231,6 +225,7 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_java=$(onoff test "$build_mode" = "ModelChecker") \
   -Denable_msg=$(onoff test "$build_mode" = "ModelChecker") \
   -DLTO_EXTRA_FLAG="auto" \
+  -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
   "$SRCFOLDER"
 set +x
 
