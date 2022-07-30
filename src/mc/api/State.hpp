@@ -22,8 +22,8 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   /** Sequential state ID (used for debugging) */
   long num_ = 0;
 
-  /** State's exploration status by process */
-  std::map<aid_t, ActorState> actor_states_;
+  /** State's exploration status by actor. Not all the actors are there, only the ones that are ready-to-run in this state */
+  std::map<aid_t, ActorState> actors_to_run_;
 
   /** Snapshot of system state (if needed) */
   std::shared_ptr<Snapshot> system_state_;
@@ -39,14 +39,14 @@ public:
 
   long get_num() const { return num_; }
   std::size_t count_todo() const;
-  void mark_todo(aid_t actor) { actor_states_.at(actor).mark_todo(); }
-  bool is_done(aid_t actor) const { return actor_states_.at(actor).is_done(); }
+  void mark_todo(aid_t actor) { actors_to_run_.at(actor).mark_todo(); }
+  bool is_done(aid_t actor) const { return actors_to_run_.at(actor).is_done(); }
   Transition* get_transition() const;
   void set_transition(Transition* t) { transition_.reset(t); }
-  std::map<aid_t, ActorState> const& get_actors_list() { return actor_states_; }
+  std::map<aid_t, ActorState> const& get_actors_list() { return actors_to_run_; }
 
-  int get_actor_count() { return actor_states_.size(); }
-  bool is_actor_enabled(int actor) { return actor_states_.at(actor).is_enabled(); }
+  int get_actor_count() { return actors_to_run_.size(); }
+  bool is_actor_enabled(int actor) { return actors_to_run_.at(actor).is_enabled(); }
 
   Snapshot* get_system_state() const { return system_state_.get(); }
   void set_system_state(std::shared_ptr<Snapshot> state) { system_state_ = std::move(state); }

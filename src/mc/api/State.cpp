@@ -23,7 +23,7 @@ State::State(Session& session) : num_(++expended_states_)
     auto remote_actor = actors[i].copy.get_buffer();
     aid_t aid         = remote_actor->get_pid();
 
-    actor_states_.insert(
+    actors_to_run_.insert(
         std::make_pair(aid, ActorState(aid, session.actor_is_enabled(aid), remote_actor->simcall_.mc_max_consider_)));
   }
 
@@ -37,7 +37,7 @@ State::State(Session& session) : num_(++expended_states_)
 
 std::size_t State::count_todo() const
 {
-  return boost::range::count_if(this->actor_states_, [](auto& pair) { return pair.second.is_todo(); });
+  return boost::range::count_if(this->actors_to_run_, [](auto& pair) { return pair.second.is_todo(); });
 }
 
 Transition* State::get_transition() const
@@ -47,8 +47,8 @@ Transition* State::get_transition() const
 
 aid_t State::next_transition() const
 {
-  XBT_DEBUG("Search for an actor to run. %zu actors to consider", actor_states_.size());
-  for (auto const& [aid, actor] : actor_states_) {
+  XBT_DEBUG("Search for an actor to run. %zu actors to consider", actors_to_run_.size());
+  for (auto const& [aid, actor] : actors_to_run_) {
     /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
     if (not actor.is_todo() || not actor.is_enabled())
       continue;
@@ -60,7 +60,7 @@ aid_t State::next_transition() const
 void State::execute_next(aid_t next)
 {
   /* This actor is ready to be executed. Prepare its execution when simcall_handle will be called on it */
-  const unsigned times_considered = actor_states_.at(next).do_consider();
+  const unsigned times_considered = actors_to_run_.at(next).do_consider();
 
   XBT_DEBUG("Let's run actor %ld (times_considered = %u)", next, times_considered);
 
