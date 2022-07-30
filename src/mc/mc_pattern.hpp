@@ -32,6 +32,7 @@ class ActorState {
   /** Exploration control information */
   InterleavingType state_ = InterleavingType::disabled;
 
+  XBT_ATTRIB_UNUSED aid_t aid_;
   /** Number of times that the actor was considered to be executed in previous explorations of the state space */
   unsigned int times_considered_ = 0;
   /** Maximal amount of times that the actor can be considered for execution in this state.
