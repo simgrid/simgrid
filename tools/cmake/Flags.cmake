@@ -43,8 +43,11 @@ if(enable_compile_warnings)
   if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     # don't care about class that become struct, avoid issue of empty C structs
     # size (coming from libunwind.h)
+    set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-mismatched-tags -Wno-extern-c-compat")
     # also ignore deprecated builtins (seen with clang 15 + boost 1.79)
-    set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-mismatched-tags -Wno-extern-c-compat -Wno-deprecated-builtins")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "15.0")
+      set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-deprecated-builtins")
+    endif()
   endif()
 
   # the one specific to C but refused by C++
