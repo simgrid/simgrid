@@ -32,7 +32,9 @@ class ActorState {
   /** Exploration control information */
   InterleavingType state_ = InterleavingType::disabled;
 
-  XBT_ATTRIB_UNUSED aid_t aid_;
+  /** The ID of that actor */
+  const aid_t aid_;
+
   /** Number of times that the actor was considered to be executed in previous explorations of the state space */
   unsigned int times_considered_ = 0;
   /** Maximal amount of times that the actor can be considered for execution in this state.
@@ -55,6 +57,7 @@ public:
     return times_considered_++;
   }
   unsigned int get_times_considered() const { return times_considered_; }
+  aid_t get_aid() const { return aid_; }
 
   /* returns whether the actor is marked as enabled in the application side */
   bool is_enabled() const { return enabled_; }
