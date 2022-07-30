@@ -134,17 +134,29 @@ void Session::close()
   }
 }
 
-bool Session::actor_is_enabled(aid_t pid) const
+void Session::get_actors_status(std::map<aid_t, ActorState>& whereto)
 {
-  s_mc_message_actor_enabled_t msg;
+  s_mc_message_t msg;
   memset(&msg, 0, sizeof msg);
-  msg.type = simgrid::mc::MessageType::ACTOR_ENABLED;
-  msg.aid  = pid;
+  msg.type = simgrid::mc::MessageType::ACTORS_STATUS;
   model_checker_->channel().send(msg);
-  std::array<char, MC_MESSAGE_LENGTH> buff;
-  ssize_t received = model_checker_->channel().receive(buff.data(), buff.size(), true);
-  xbt_assert(received == sizeof(s_mc_message_int_t), "Unexpected size in answer to ACTOR_ENABLED");
-  return ((s_mc_message_int_t*)buff.data())->value;
+
+  s_mc_message_actors_status_answer_t answer;
+  ssize_t received = model_checker_->channel().receive(answer);
+  xbt_assert(received != -1, "Could not receive message");
+  xbt_assert(received == sizeof(answer) && answer.type == MessageType::ACTORS_STATUS_REPLY,
+             "Received unexpected message %s (%i, size=%i) "
+             "expected MessageType::ACTORS_STATUS_REPLY (%i, size=%i)",
+             to_c_str(answer.type), (int)answer.type, (int)received, (int)MessageType::ACTORS_STATUS_REPLY,
+             (int)sizeof(answer));
+
+  s_mc_message_actors_status_one_t status[answer.count];
+  received = model_checker_->channel().receive(&status, sizeof(status));
+  xbt_assert(static_cast<size_t>(received) == sizeof(status));
+
+  whereto.clear();
+  for (auto const& actor : status)
+    whereto.insert(std::make_pair(actor.aid, ActorState(actor.aid, actor.enabled, actor.max_considered)));
 }
 
 void Session::check_deadlock() const

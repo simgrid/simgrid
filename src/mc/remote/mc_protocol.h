@@ -25,8 +25,7 @@ namespace simgrid::mc {
 
 XBT_DECLARE_ENUM_CLASS(MessageType, NONE, INITIAL_ADDRESSES, CONTINUE, IGNORE_HEAP, UNIGNORE_HEAP, IGNORE_MEMORY,
                        STACK_REGION, REGISTER_SYMBOL, DEADLOCK_CHECK, DEADLOCK_CHECK_REPLY, WAITING, SIMCALL_EXECUTE,
-                       SIMCALL_EXECUTE_ANSWER, ASSERTION_FAILED, ACTOR_ENABLED, ACTOR_ENABLED_REPLY, FINALIZE);
-
+                       SIMCALL_EXECUTE_ANSWER, ASSERTION_FAILED, ACTORS_STATUS, ACTORS_STATUS_REPLY, FINALIZE);
 } // namespace simgrid::mc
 
 constexpr unsigned MC_MESSAGE_LENGTH = 512;
@@ -102,9 +101,15 @@ struct s_mc_message_restore_t {
   int index;
 };
 
-struct s_mc_message_actor_enabled_t {
+struct s_mc_message_actors_status_answer_t {
   simgrid::mc::MessageType type;
-  aid_t aid; // actor ID
+  int count;
+};
+struct s_mc_message_actors_status_one_t { // an array of `s_mc_message_actors_status_one_t[count]` is sent right after
+                                          // after a s_mc_message_actors_status_answer_t
+  aid_t aid;
+  bool enabled;
+  int max_considered;
 };
 
 #endif // __cplusplus

@@ -6,6 +6,7 @@
 #ifndef SIMGRID_MC_SESSION_HPP
 #define SIMGRID_MC_SESSION_HPP
 
+#include "mc_pattern.hpp"
 #include "simgrid/forward.h"
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/remote/RemotePtr.hpp"
@@ -52,7 +53,7 @@ public:
 
   void log_state() const;
 
-  bool actor_is_enabled(aid_t pid) const;
+  void get_actors_status(std::map<aid_t, ActorState>& whereto);
 };
 } // namespace simgrid::mc
 

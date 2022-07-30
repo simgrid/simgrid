@@ -71,7 +71,6 @@ private:
   static constexpr int cache_none            = 0;
   static constexpr int cache_heap            = 1;
   static constexpr int cache_malloc          = 2;
-  static constexpr int cache_simix_processes = 4;
 
 public:
   explicit RemoteProcess(pid_t pid);
@@ -171,8 +170,6 @@ private:
   RemotePtr<s_xbt_dynar_t> actors_addr_;
 
 public:
-  std::vector<ActorInformation>& actors();
-
   unsigned long get_maxpid() const { return this->read(maxpid_addr_); }
 
   void dump_stack() const;

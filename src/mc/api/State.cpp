@@ -17,15 +17,7 @@ long State::expended_states_ = 0;
 
 State::State(Session& session) : num_(++expended_states_)
 {
-  auto actors = mc_model_checker->get_remote_process().actors();
-
-  for (unsigned int i = 0; i < actors.size(); i++) {
-    auto remote_actor = actors[i].copy.get_buffer();
-    aid_t aid         = remote_actor->get_pid();
-
-    actors_to_run_.insert(
-        std::make_pair(aid, ActorState(aid, session.actor_is_enabled(aid), remote_actor->simcall_.mc_max_consider_)));
-  }
+  session.get_actors_status(actors_to_run_);
 
   transition_.reset(new Transition());
   /* Stateful model checking */

@@ -410,40 +410,6 @@ void RemoteProcess::ignore_local_variable(const char* var_name, const char* fram
     info->remove_local_variable(var_name, frame_name);
 }
 
-/** Load the remote list of actors into the Checker process
- *
- * FIXME: This shall die alltogether and be reimplemented with a networked communication to not suppose anything about
- * the memory layout of the checked App if avoidable.
- *
- * Liveness checking will always require to explore the memory of the App, but safety checking doesn't.
- */
-
-std::vector<simgrid::mc::ActorInformation>& RemoteProcess::actors()
-{
-  if (not(this->cache_flags_ & RemoteProcess::cache_simix_processes)) {
-    smx_actors_infos.clear();
-
-    s_xbt_dynar_t dynar;
-    read_bytes(&dynar, sizeof(dynar), actors_addr_);
-
-    auto* data = static_cast<simgrid::kernel::actor::ActorImpl**>(::operator new(dynar.elmsize* dynar.used));
-    read_bytes(data, dynar.elmsize * dynar.used, simgrid::mc::RemotePtr<void>(dynar.data));
-
-    // Load each element of the vector from the MCed process:
-    for (unsigned int i = 0; i < dynar.used; ++i) {
-      simgrid::mc::ActorInformation info;
-
-      info.address = simgrid::mc::RemotePtr<simgrid::kernel::actor::ActorImpl>(data[i]);
-      read_bytes(&info.copy, sizeof(info.copy), simgrid::mc::remote(data[i]));
-      smx_actors_infos.push_back(std::move(info));
-    }
-    ::operator delete(data);
-
-    this->cache_flags_ |= RemoteProcess::cache_simix_processes;
-  }
-  return smx_actors_infos;
-}
-
 void RemoteProcess::dump_stack() const
 {
   unw_addr_space_t as = unw_create_addr_space(&_UPT_accessors, BYTE_ORDER);

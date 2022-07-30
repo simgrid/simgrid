@@ -122,13 +122,6 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
   xbt_assert(channel_.send(answer) == 0, "Could not send response");
 }
 
-void AppSide::handle_actor_enabled(const s_mc_message_actor_enabled_t* msg) const
-{
-  bool res = mc::actor_is_enabled(kernel::EngineImpl::get_instance()->get_actor_by_pid(msg->aid));
-  s_mc_message_int_t answer{MessageType::ACTOR_ENABLED_REPLY, res};
-  xbt_assert(channel_.send(answer) == 0, "Could not send ACTOR_ENABLED_REPLY");
-}
-
 void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
 {
   bool terminate_asap = msg->value;
@@ -143,11 +136,31 @@ void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
 #endif
   }
   coverage_checkpoint();
-  xbt_assert(channel_.send(MessageType::DEADLOCK_CHECK_REPLY) == 0, // DEADLOCK_CHECK_REPLY, really?
+  xbt_assert(channel_.send(MessageType::DEADLOCK_CHECK_REPLY) ==
+                 0, // DEADLOCK_CHECK_REPLY because I'm too lazy to create another message type with no content (FIXME)
              "Could not answer to FINALIZE");
   std::fflush(stdout);
   if (terminate_asap)
     ::_Exit(0);
+}
+void AppSide::handle_actors_status() const
+{
+  auto const& actor_list = kernel::EngineImpl::get_instance()->get_actor_list();
+  int count              = actor_list.size();
+
+  struct s_mc_message_actors_status_answer_t answer {
+    MessageType::ACTORS_STATUS_REPLY, count
+  };
+  s_mc_message_actors_status_one_t status[count];
+  int i = 0;
+  for (auto const& [aid, actor] : actor_list) {
+    status[i].aid            = aid;
+    status[i].enabled        = mc::actor_is_enabled(actor);
+    status[i].max_considered = actor->simcall_.observer_->get_max_consider();
+    i++;
+  }
+  xbt_assert(channel_.send(answer) == 0, "Could not send ACTORS_STATUS_REPLY msg");
+  xbt_assert(channel_.send(status, sizeof(status)) == 0, "Could not send ACTORS_STATUS_REPLY data");
 }
 
 #define assert_msg_size(_name_, _type_)                                                                                \
@@ -180,14 +193,14 @@ void AppSide::handle_messages() const
         handle_simcall_execute((s_mc_message_simcall_execute_t*)message_buffer.data());
         break;
 
-      case MessageType::ACTOR_ENABLED:
-        assert_msg_size("ACTOR_ENABLED", s_mc_message_actor_enabled_t);
-        handle_actor_enabled((s_mc_message_actor_enabled_t*)message_buffer.data());
-        break;
-
       case MessageType::FINALIZE:
         assert_msg_size("FINALIZE", s_mc_message_int_t);
         handle_finalize((s_mc_message_int_t*)message_buffer.data());
+        break;
+
+      case MessageType::ACTORS_STATUS:
+        assert_msg_size("ACTORS_STATUS", s_mc_message_t);
+        handle_actors_status();
         break;
 
       default:
