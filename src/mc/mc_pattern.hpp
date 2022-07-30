@@ -16,6 +16,7 @@ namespace simgrid::mc {
  *   an actor cannot have more than one enabled transition at a given time.
  */
 class ActorState {
+
   /* Possible exploration status of an actor transition in a state.
    * Either the checker did not consider the transition, or it was considered and still to do, or considered and done.
    */
@@ -31,18 +32,33 @@ class ActorState {
   /** Exploration control information */
   InterleavingType state_ = InterleavingType::disabled;
 
-  /** Number of times that the process was considered to be executed */
+  aid_t aid_;
+  /** Number of times that the actor was considered to be executed in previous explorations of the state space */
   unsigned int times_considered_ = 0;
+  /** Maximal amount of times that the actor can be considered for execution in this state.
+   * If times_considered==max_consider, we fully explored that part of the state space */
+  unsigned int max_consider_ = 0;
+
+  /** Whether that actor is initially enabled in this state */
+  bool enabled_;
 
 public:
-  unsigned int do_consider(unsigned int max_consider)
+  ActorState(aid_t aid, bool enabled, unsigned int max_consider)
+      : aid_(aid), max_consider_(max_consider), enabled_(enabled)
   {
-    if (max_consider <= times_considered_ + 1)
+  }
+
+  unsigned int do_consider()
+  {
+    if (max_consider_ <= times_considered_ + 1)
       set_done();
     return times_considered_++;
   }
   unsigned int get_times_considered() const { return times_considered_; }
 
+  /* returns whether the actor is marked as enabled in the application side */
+  bool is_enabled() const { return enabled_; }
+  /* returns whether the actor is marked as disabled by the exploration algorithm */
   bool is_disabled() const { return this->state_ == InterleavingType::disabled; }
   bool is_done() const { return this->state_ == InterleavingType::done; }
   bool is_todo() const { return this->state_ == InterleavingType::todo; }

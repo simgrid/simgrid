@@ -19,30 +19,34 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   /* Outgoing transition: what was the last transition that we took to leave this state? */
   std::unique_ptr<Transition> transition_;
 
-  /** Sequential state number (used for debugging) */
+  /** Sequential state ID (used for debugging) */
   long num_ = 0;
 
   /** State's exploration status by process */
-  std::vector<ActorState> actor_states_;
+  std::map<aid_t, ActorState> actor_states_;
 
   /** Snapshot of system state (if needed) */
   std::shared_ptr<Snapshot> system_state_;
 
 public:
-  explicit State();
+  explicit State(Session& session);
 
   /* Returns a positive number if there is another transition to pick, or -1 if not */
-  int next_transition() const;
+  aid_t next_transition() const;
 
   /* Explore a new path; the parameter must be the result of a previous call to next_transition() */
-  void execute_next(int next);
+  void execute_next(aid_t next);
 
   long get_num() const { return num_; }
   std::size_t count_todo() const;
-  void mark_todo(aid_t actor) { this->actor_states_[actor].mark_todo(); }
-  bool is_done(aid_t actor) const { return this->actor_states_[actor].is_done(); }
+  void mark_todo(aid_t actor) { actor_states_.at(actor).mark_todo(); }
+  bool is_done(aid_t actor) const { return actor_states_.at(actor).is_done(); }
   Transition* get_transition() const;
   void set_transition(Transition* t) { transition_.reset(t); }
+  std::map<aid_t, ActorState> const& get_actors_list() { return actor_states_; }
+
+  int get_actor_count() { return actor_states_.size(); }
+  bool is_actor_enabled(int actor) { return actor_states_.at(actor).is_enabled(); }
 
   Snapshot* get_system_state() const { return system_state_.get(); }
   void set_system_state(std::shared_ptr<Snapshot> state) { system_state_ = std::move(state); }

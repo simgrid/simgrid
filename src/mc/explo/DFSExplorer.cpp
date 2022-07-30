@@ -152,7 +152,7 @@ void DFSExplorer::run()
       req_str = state->get_transition()->dot_string();
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    auto next_state = std::make_unique<State>();
+    auto next_state = std::make_unique<State>(get_session());
     on_state_creation_signal(next_state.get());
 
     if (_sg_mc_termination)
@@ -165,11 +165,9 @@ void DFSExplorer::run()
     /* If this is a new state (or if we don't care about state-equality reduction) */
     if (visited_state_ == nullptr) {
       /* Get an enabled process and insert it in the interleave set of the next state */
-      auto actors = mc_model_checker->get_remote_process().actors();
-      for (auto& remoteActor : actors) {
-        auto actor = remoteActor.copy.get_buffer();
-        if (get_session().actor_is_enabled(actor->get_pid())) {
-          next_state->mark_todo(actor->get_pid());
+      for (auto const& [aid, _] : next_state->get_actors_list()) {
+        if (next_state->is_actor_enabled(aid)) {
+          next_state->mark_todo(aid);
           if (reductionMode_ == ReductionMode::dpor)
             break; // With DPOR, we take the first enabled transition
         }
@@ -291,16 +289,14 @@ DFSExplorer::DFSExplorer(Session* session) : Exploration(session)
 
   XBT_DEBUG("Starting the DFS exploration");
 
-  auto initial_state = std::make_unique<State>();
+  auto initial_state = std::make_unique<State>(get_session());
 
   XBT_DEBUG("**************************************************");
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
-  auto actors = mc_model_checker->get_remote_process().actors();
-  XBT_DEBUG("Initial state. %zu actors to consider", actors.size());
-  for (auto& actor : actors) {
-    aid_t aid = actor.copy.get_buffer()->get_pid();
-    if (get_session().actor_is_enabled(aid)) {
+  XBT_DEBUG("Initial state. %d actors to consider", initial_state->get_actor_count());
+  for (auto const& [aid, _] : initial_state->get_actors_list()) {
+    if (initial_state->is_actor_enabled(aid)) {
       initial_state->mark_todo(aid);
       if (reductionMode_ == ReductionMode::dpor) {
         XBT_DEBUG("Actor %ld is TODO, DPOR is ON so let's go for this one.", aid);

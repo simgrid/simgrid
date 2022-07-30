@@ -15,10 +15,18 @@ namespace simgrid::mc {
 
 long State::expended_states_ = 0;
 
-State::State() : num_(++expended_states_)
+State::State(Session& session) : num_(++expended_states_)
 {
-  const unsigned long maxpid = Api::get().get_maxpid();
-  actor_states_.resize(maxpid);
+  auto actors = mc_model_checker->get_remote_process().actors();
+
+  for (unsigned int i = 0; i < actors.size(); i++) {
+    auto remote_actor = actors[i].copy.get_buffer();
+    aid_t aid         = remote_actor->get_pid();
+
+    actor_states_.insert(
+        std::make_pair(aid, ActorState(aid, session.actor_is_enabled(aid), remote_actor->simcall_.mc_max_consider_)));
+  }
+
   transition_.reset(new Transition());
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
@@ -29,7 +37,7 @@ State::State() : num_(++expended_states_)
 
 std::size_t State::count_todo() const
 {
-  return boost::range::count_if(this->actor_states_, [](simgrid::mc::ActorState const& a) { return a.is_todo(); });
+  return boost::range::count_if(this->actor_states_, [](auto& pair) { return pair.second.is_todo(); });
 }
 
 Transition* State::get_transition() const
@@ -37,34 +45,28 @@ Transition* State::get_transition() const
   return transition_.get();
 }
 
-int State::next_transition() const
+aid_t State::next_transition() const
 {
-  std::vector<ActorInformation>& actors = mc_model_checker->get_remote_process().actors();
-  XBT_DEBUG("Search for an actor to run. %zu actors to consider", actors.size());
-  for (unsigned int i = 0; i < actors.size(); i++) {
-    /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application*/
-    if (aid_t aid = actors[i].copy.get_buffer()->get_pid();
-        not actor_states_[aid].is_todo() || not Api::get().get_session().actor_is_enabled(aid))
+  XBT_DEBUG("Search for an actor to run. %zu actors to consider", actor_states_.size());
+  for (auto const& [aid, actor] : actor_states_) {
+    /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
+    if (not actor.is_todo() || not actor.is_enabled())
       continue;
 
-    return i;
+    return aid;
   }
   return -1;
 }
-void State::execute_next(int next)
+void State::execute_next(aid_t next)
 {
-  std::vector<ActorInformation>& actors = mc_model_checker->get_remote_process().actors();
-  const kernel::actor::ActorImpl* actor = actors[next].copy.get_buffer();
-  const aid_t aid                       = actor->get_pid();
-
   /* This actor is ready to be executed. Prepare its execution when simcall_handle will be called on it */
-  const unsigned times_considered = actor_states_[aid].do_consider(actor->simcall_.mc_max_consider_);
+  const unsigned times_considered = actor_states_.at(next).do_consider();
 
-  XBT_DEBUG("Let's run actor %ld (times_considered = %u)", aid, times_considered);
+  XBT_DEBUG("Let's run actor %ld (times_considered = %u)", next, times_considered);
 
   Transition::executed_transitions_++;
 
-  transition_.reset(mc_model_checker->handle_simcall(aid, times_considered, true));
+  transition_.reset(mc_model_checker->handle_simcall(next, times_considered, true));
   mc_model_checker->wait_for_requests();
 }
 } // namespace simgrid::mc

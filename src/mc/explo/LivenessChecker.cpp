@@ -224,18 +224,16 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(const Pair* current_pair, xbt
   ++expanded_pairs_count_;
   auto next_pair                 = std::make_shared<Pair>(expanded_pairs_count_);
   next_pair->automaton_state     = state;
-  next_pair->graph_state         = std::make_shared<State>();
+  next_pair->graph_state         = std::make_shared<State>(get_session());
   next_pair->atomic_propositions = std::move(propositions);
   if (current_pair)
     next_pair->depth = current_pair->depth + 1;
   else
     next_pair->depth = 1;
   /* Add all enabled actors to the interleave set of the initial state */
-  for (auto& act : mc_model_checker->get_remote_process().actors()) {
-    auto actor = act.copy.get_buffer();
-    if (get_session().actor_is_enabled(actor->get_pid()))
-      next_pair->graph_state->mark_todo(actor->get_pid());
-  }
+  for (auto const& [aid, _] : next_pair->graph_state->get_actors_list())
+    if (next_pair->graph_state->is_actor_enabled(aid))
+      next_pair->graph_state->mark_todo(aid);
 
   next_pair->requests = next_pair->graph_state->count_todo();
   /* FIXME : get search_cycle value for each accepting state */
