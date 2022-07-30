@@ -653,7 +653,6 @@ set(MC_SRC
   src/mc/mc_private.hpp
   src/mc/mc_record.cpp
   src/mc/mc_safety.hpp
-  src/mc/mc_smx.cpp
   src/mc/udpor_global.cpp
   src/mc/udpor_global.hpp
 

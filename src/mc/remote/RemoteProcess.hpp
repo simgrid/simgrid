@@ -181,7 +181,6 @@ private:
   void init_memory_map_info();
   void refresh_heap();
   void refresh_malloc_info();
-  void refresh_simix();
 
   pid_t pid_    = -1;
   bool running_ = false;

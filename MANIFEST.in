@@ -2332,7 +2332,6 @@ include src/mc/mc_record.cpp
 include src/mc/mc_record.hpp
 include src/mc/mc_replay.hpp
 include src/mc/mc_safety.hpp
-include src/mc/mc_smx.cpp
 include src/mc/remote/AppSide.cpp
 include src/mc/remote/AppSide.hpp
 include src/mc/remote/Channel.cpp
