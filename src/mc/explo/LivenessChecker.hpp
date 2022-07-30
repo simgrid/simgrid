@@ -42,7 +42,7 @@ public:
   xbt_automaton_state_t automaton_state;
   std::shared_ptr<const std::vector<int>> atomic_propositions;
   std::size_t heap_bytes_used = 0;
-  int actors_count            = 0;
+  int actor_count_;
 
   VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
               std::shared_ptr<const std::vector<int>> atomic_propositions, std::shared_ptr<State> graph_state);

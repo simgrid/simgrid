@@ -18,11 +18,11 @@ class XBT_PRIVATE VisitedState {
 public:
   std::shared_ptr<simgrid::mc::Snapshot> system_state = nullptr;
   std::size_t heap_bytes_used = 0;
-  int actors_count            = 0;
-  long num                                            = 0; // unique id of that state in the storage of all stored IDs
+  int actor_count_;
+  long num;               // unique id of that state in the storage of all stored IDs
   long original_num = -1; // num field of the VisitedState to which I was declared equal to (used for dot_output)
 
-  explicit VisitedState(unsigned long state_number);
+  explicit VisitedState(unsigned long state_number, unsigned int actor_count);
 };
 
 class XBT_PRIVATE VisitedStates {

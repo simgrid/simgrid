@@ -126,10 +126,10 @@ void DFSExplorer::run()
     int next = state->next_transition();
 
     if (next < 0) { // If there is no more transition in the current state, backtrack.
-      XBT_DEBUG("There remains %zu actors, but none to interleave (depth %zu).",
-                mc_model_checker->get_remote_process().actors().size(), stack_.size() + 1);
+      XBT_DEBUG("There remains %d actors, but none to interleave (depth %zu).", state->get_actor_count(),
+                stack_.size() + 1);
 
-      if (mc_model_checker->get_remote_process().actors().empty()) {
+      if (state->get_actor_count() == 0) {
         mc_model_checker->finalize_app();
         XBT_VERB("Execution came to an end at %s (state: %ld, depth: %zu)", get_record_trace().to_string().c_str(),
                  state->get_num(), stack_.size());

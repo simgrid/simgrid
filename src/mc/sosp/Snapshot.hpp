@@ -78,7 +78,6 @@ public:
   long num_state_;
   std::size_t heap_bytes_used_ = 0;
   std::vector<std::unique_ptr<Region>> snapshot_regions_;
-  std::set<pid_t> enabled_processes_;
   std::vector<std::size_t> stack_sizes_;
   std::vector<s_mc_snapshot_stack_t> stacks_;
   std::vector<simgrid::mc::IgnoredHeapRegion> to_ignore_;

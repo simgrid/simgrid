@@ -1188,11 +1188,7 @@ bool snapshot_equal(const Snapshot* s1, const Snapshot* s2)
   }
   XBT_VERB("(%ld - %ld) Same hash: 0x%" PRIx64, s1->num_state_, s2->num_state_, s1->hash_);
 
-  /* Compare enabled processes */
-  if (s1->enabled_processes_ != s2->enabled_processes_) {
-    XBT_VERB("(%ld - %ld) Different amount of enabled processes", s1->num_state_, s2->num_state_);
-    return false;
-  }
+  /* TODO: re-enable the quick filter of counting enabled processes in each snapshots */
 
   /* Compare size of stacks */
   for (unsigned long i = 0; i < s1->stacks_.size(); i++) {

@@ -203,9 +203,6 @@ Snapshot::Snapshot(long num_state, RemoteProcess* process) : AddressSpace(proces
 {
   XBT_DEBUG("Taking snapshot %ld", num_state);
 
-  for (auto const& p : process->actors())
-    enabled_processes_.insert(p.copy.get_buffer()->get_pid());
-
   snapshot_handle_ignore(this);
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
