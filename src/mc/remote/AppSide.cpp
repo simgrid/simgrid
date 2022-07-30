@@ -232,6 +232,9 @@ void AppSide::report_assertion_failure() const
 
 void AppSide::ignore_memory(void* addr, std::size_t size) const
 {
+  if (not MC_is_active())
+    return;
+
   s_mc_message_ignore_memory_t message;
   message.type = MessageType::IGNORE_MEMORY;
   message.addr = (std::uintptr_t)addr;
@@ -241,6 +244,9 @@ void AppSide::ignore_memory(void* addr, std::size_t size) const
 
 void AppSide::ignore_heap(void* address, std::size_t size) const
 {
+  if (not MC_is_active())
+    return;
+
   const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
 
   s_mc_message_ignore_heap_t message;
@@ -261,6 +267,9 @@ void AppSide::ignore_heap(void* address, std::size_t size) const
 
 void AppSide::unignore_heap(void* address, std::size_t size) const
 {
+  if (not MC_is_active())
+    return;
+
   s_mc_message_ignore_memory_t message;
   message.type = MessageType::UNIGNORE_HEAP;
   message.addr = (std::uintptr_t)address;
@@ -280,8 +289,17 @@ void AppSide::declare_symbol(const char* name, int* value) const
   xbt_assert(channel_.send(message) == 0, "Could send REGISTER_SYMBOL message to model-checker");
 }
 
+/** Register a stack in the model checker
+ *
+ *  The stacks are allocated in the heap. The MC handle them specifically
+ *  when we analyze/compare the content of the heap so it must be told where
+ *  they are with this function.
+ */
 void AppSide::declare_stack(void* stack, size_t size, ucontext_t* context) const
 {
+  if (not MC_is_active())
+    return;
+
   const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
 
   s_stack_region_t region;

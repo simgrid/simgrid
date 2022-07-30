@@ -8,7 +8,7 @@
 #include "mc/mc.h"
 #include "simgrid/Exception.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "src/mc/mc_ignore.hpp"
+#include "src/mc/remote/AppSide.hpp"
 
 #include "ContextUnix.hpp"
 
@@ -62,9 +62,8 @@ UContext::UContext(std::function<void()>&& code, actor::ActorImpl* actor, Swappe
     makecontext(&this->uc_, (void (*)())sysv_ctx_wrapper, 2, ctx_addr[0], ctx_addr[1]);
 
 #if SIMGRID_HAVE_MC
-    if (MC_is_active()) {
-      MC_register_stack_area(get_stack(), &(this->uc_), stack_size);
-    }
+    if (MC_is_active())
+      simgrid::mc::AppSide::get()->declare_stack(get_stack(), stack_size, &uc_);
 #endif
   }
 }

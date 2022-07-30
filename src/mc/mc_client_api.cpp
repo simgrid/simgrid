@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/mc_ignore.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
@@ -31,14 +30,6 @@ void MC_assert(int prop)
   }
 }
 
-void MC_ignore(void* addr, size_t size)
-{
-  xbt_assert(mc_model_checker == nullptr);
-  if (not MC_is_active())
-    return;
-  simgrid::mc::AppSide::get()->ignore_memory(addr, size);
-}
-
 void MC_automaton_new_propositional_symbol(const char* /*id*/, int (*/*fct*/)())
 {
   xbt_assert(mc_model_checker == nullptr);
@@ -56,46 +47,14 @@ void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
   simgrid::mc::AppSide::get()->declare_symbol(name, value);
 }
 
-/** @brief Register a stack in the model checker
- *
- *  The stacks are allocated in the heap. The MC handle them specifically
- *  when we analyze/compare the content of the heap so it must be told where
- *  they are with this function.
- *
- *  @param stack Where the stack is
- *  @param actor Actor owning the stack
- *  @param context The context associated to that stack
- *  @param size    Size of the stack
- */
-void MC_register_stack_area(void* stack, ucontext_t* context, size_t size)
-{
-  xbt_assert(mc_model_checker == nullptr);
-  if (not MC_is_active())
-    return;
-  simgrid::mc::AppSide::get()->declare_stack(stack, size, context);
-}
-
-void MC_ignore_global_variable(const char* /*name*/)
-{
-  xbt_assert(mc_model_checker == nullptr);
-  if (not MC_is_active())
-    return;
-  // TODO, send a message to the model_checker
-  xbt_die("Unimplemented");
-}
-
 void MC_ignore_heap(void *address, size_t size)
 {
   xbt_assert(mc_model_checker == nullptr);
-  if (not MC_is_active())
-    return;
   simgrid::mc::AppSide::get()->ignore_heap(address, size);
 }
 
 void MC_unignore_heap(void* address, size_t size)
 {
   xbt_assert(mc_model_checker == nullptr);
-  if (not MC_is_active())
-    return;
   simgrid::mc::AppSide::get()->unignore_heap(address, size);
 }

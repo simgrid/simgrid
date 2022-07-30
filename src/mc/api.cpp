@@ -12,7 +12,6 @@
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_base.hpp"
 #include "src/mc/mc_exit.hpp"
-#include "src/mc/mc_pattern.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/remote/RemoteProcess.hpp"
 #include "src/surf/HostImpl.hpp"

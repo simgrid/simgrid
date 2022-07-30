@@ -6,9 +6,9 @@
 #ifndef SIMGRID_MC_SESSION_HPP
 #define SIMGRID_MC_SESSION_HPP
 
-#include "mc_pattern.hpp"
 #include "simgrid/forward.h"
 #include "src/mc/ModelChecker.hpp"
+#include "src/mc/api/ActorState.hpp"
 #include "src/mc/remote/RemotePtr.hpp"
 
 #include <functional>

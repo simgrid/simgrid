@@ -6,7 +6,7 @@
 #ifndef SIMGRID_MC_STATE_HPP
 #define SIMGRID_MC_STATE_HPP
 
-#include "src/mc/mc_pattern.hpp"
+#include "src/mc/api/ActorState.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
 #include "src/mc/transition/Transition.hpp"
 

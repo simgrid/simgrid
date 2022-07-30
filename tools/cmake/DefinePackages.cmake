@@ -649,7 +649,6 @@ set(MC_SRC
   src/mc/mc_forward.hpp
   src/mc/mc_hash.cpp
   src/mc/mc_hash.hpp
-  src/mc/mc_ignore.hpp
   src/mc/mc_private.hpp
   src/mc/mc_record.cpp
   src/mc/mc_safety.hpp
