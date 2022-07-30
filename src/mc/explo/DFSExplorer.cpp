@@ -147,10 +147,6 @@ void DFSExplorer::run()
     XBT_VERB("Execute %ld: %.60s (stack depth: %zu, state: %ld, %zu interleaves)", state->get_transition()->aid_,
              state->get_transition()->to_string().c_str(), stack_.size(), state->get_num(), state->count_todo());
 
-    std::string req_str;
-    if (dot_output != nullptr)
-      req_str = state->get_transition()->dot_string();
-
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     auto next_state = std::make_unique<State>(get_session());
     on_state_creation_signal(next_state.get());
@@ -175,12 +171,12 @@ void DFSExplorer::run()
 
       if (dot_output != nullptr)
         std::fprintf(dot_output, "\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), next_state->get_num(),
-                     req_str.c_str());
+                     state->get_transition()->dot_string().c_str());
 
     } else if (dot_output != nullptr)
       std::fprintf(dot_output, "\"%ld\" -> \"%ld\" [%s];\n", state->get_num(),
                    visited_state_->original_num == -1 ? visited_state_->num : visited_state_->original_num,
-                   req_str.c_str());
+                   state->get_transition()->dot_string().c_str());
 
     stack_.push_back(std::move(next_state));
   }
