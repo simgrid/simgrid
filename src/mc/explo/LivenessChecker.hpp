@@ -19,10 +19,10 @@ namespace simgrid::mc {
 
 class XBT_PRIVATE Pair {
 public:
-  int num                               = 0;
-  bool search_cycle                     = false;
-  std::shared_ptr<State> graph_state    = nullptr; /* System state included */
-  xbt_automaton_state_t automaton_state = nullptr;
+  int num                           = 0;
+  bool search_cycle                 = false;
+  std::shared_ptr<State> app_state_ = nullptr; /* State of the application (including system state) */
+  xbt_automaton_state_t prop_state_ = nullptr; /* State of the property automaton */
   std::shared_ptr<const std::vector<int>> atomic_propositions;
   int requests             = 0;
   int depth                = 0;
@@ -38,14 +38,14 @@ class XBT_PRIVATE VisitedPair {
 public:
   int num;
   int other_num                      = 0;       /* Dot output for */
-  std::shared_ptr<State> graph_state = nullptr; /* System state included */
-  xbt_automaton_state_t automaton_state;
+  std::shared_ptr<State> app_state_  = nullptr; /* State of the application (including system state) */
+  xbt_automaton_state_t prop_state_;            /* State of the property automaton */
   std::shared_ptr<const std::vector<int>> atomic_propositions;
   std::size_t heap_bytes_used = 0;
   int actor_count_;
 
-  VisitedPair(int pair_num, xbt_automaton_state_t automaton_state,
-              std::shared_ptr<const std::vector<int>> atomic_propositions, std::shared_ptr<State> graph_state);
+  VisitedPair(int pair_num, xbt_automaton_state_t prop_state,
+              std::shared_ptr<const std::vector<int>> atomic_propositions, std::shared_ptr<State> app_state);
 };
 
 class XBT_PRIVATE LivenessChecker : public Exploration {
