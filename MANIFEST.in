@@ -2284,6 +2284,7 @@ include src/mc/VisitedState.cpp
 include src/mc/VisitedState.hpp
 include src/mc/api.cpp
 include src/mc/api.hpp
+include src/mc/api/ActorState.hpp
 include src/mc/api/State.cpp
 include src/mc/api/State.hpp
 include src/mc/compare.cpp
@@ -2326,7 +2327,6 @@ include src/mc/mc_hash.cpp
 include src/mc/mc_hash.hpp
 include src/mc/mc_ignore.hpp
 include src/mc/mc_mmu.hpp
-include src/mc/mc_pattern.hpp
 include src/mc/mc_private.hpp
 include src/mc/mc_record.cpp
 include src/mc/mc_record.hpp
@@ -2656,6 +2656,7 @@ include src/xbt/memory_map.cpp
 include src/xbt/memory_map.hpp
 include src/xbt/mmalloc/mfree.c
 include src/xbt/mmalloc/mm.c
+include src/xbt/mmalloc/mm_interface.c
 include src/xbt/mmalloc/mm_legacy.c
 include src/xbt/mmalloc/mm_module.c
 include src/xbt/mmalloc/mmalloc.c

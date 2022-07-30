@@ -642,6 +642,7 @@ set(MC_SRC
   src/mc/api.hpp
   src/mc/api/State.cpp
   src/mc/api/State.hpp
+  src/mc/api/ActorState.hpp
   src/mc/compare.cpp
   src/mc/mc_client_api.cpp
   src/mc/mc_exit.hpp
@@ -649,7 +650,6 @@ set(MC_SRC
   src/mc/mc_hash.cpp
   src/mc/mc_hash.hpp
   src/mc/mc_ignore.hpp
-  src/mc/mc_pattern.hpp
   src/mc/mc_private.hpp
   src/mc/mc_record.cpp
   src/mc/mc_safety.hpp
