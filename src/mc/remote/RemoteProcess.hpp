@@ -184,13 +184,6 @@ private:
   std::vector<s_stack_region_t> stack_areas_;
   std::vector<IgnoredHeapRegion> ignored_heap_;
 
-  // Copies of MCed SMX data structures
-  /** Copy of `EngineImpl::actor_list_`
-   *
-   *  See mc_smx.cpp.
-   */
-  std::vector<ActorInformation> smx_actors_infos;
-
   /** State of the cache (which variables are up to date) */
   int cache_flags_ = RemoteProcess::cache_none;
 

@@ -117,7 +117,6 @@ void RemoteProcess::init(xbt_mheap_t mmalloc_default_mdp, unsigned long* maxpid)
   xbt_assert(fd >= 0, "Could not open file for process virtual address space");
   this->memory_file = fd;
 
-  this->smx_actors_infos.clear();
   this->unw_addr_space            = simgrid::mc::UnwindContext::createUnwindAddressSpace();
   this->unw_underlying_addr_space = simgrid::unw::create_addr_space();
   this->unw_underlying_context    = simgrid::unw::create_context(this->unw_underlying_addr_space, this->pid_);
