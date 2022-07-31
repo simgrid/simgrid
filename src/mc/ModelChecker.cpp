@@ -349,7 +349,11 @@ void ModelChecker::finalize_app(bool terminate_asap)
   xbt_assert(checker_side_.get_channel().send(m) == 0, "Could not ask the app to finalize on need");
 
   s_mc_message_t answer;
-  xbt_assert(checker_side_.get_channel().receive(answer) != -1, "Could not receive answer to FINALIZE");
+  ssize_t s = checker_side_.get_channel().receive(answer);
+  xbt_assert(s != -1, "Could not receive answer to FINALIZE");
+  xbt_assert(s == sizeof(answer) && answer.type == MessageType::FINALIZE_REPLY,
+             "Received unexpected message %s (%i, size=%i) expected MessageType::FINALIZE_REPLY (%i, size=%i)",
+             to_c_str(answer.type), (int)answer.type, (int)s, (int)MessageType::FINALIZE_REPLY, (int)sizeof(answer));
 }
 
 } // namespace simgrid::mc

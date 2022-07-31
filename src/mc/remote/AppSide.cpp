@@ -136,9 +136,7 @@ void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
 #endif
   }
   coverage_checkpoint();
-  xbt_assert(channel_.send(MessageType::DEADLOCK_CHECK_REPLY) ==
-                 0, // DEADLOCK_CHECK_REPLY because I'm too lazy to create another message type with no content (FIXME)
-             "Could not answer to FINALIZE");
+  xbt_assert(channel_.send(MessageType::FINALIZE_REPLY) == 0, "Could not answer to FINALIZE");
   std::fflush(stdout);
   if (terminate_asap)
     ::_Exit(0);
