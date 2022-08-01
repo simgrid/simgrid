@@ -32,7 +32,7 @@ void RandomSimcall::prepare(int times_considered)
   XBT_DEBUG("MC_RANDOM(%d, %d) will return %d after %d times", min_, max_, next_value_, times_considered);
 }
 
-int RandomSimcall::get_max_consider()
+int RandomSimcall::get_max_consider() const
 {
   return max_ - min_ + 1;
 }

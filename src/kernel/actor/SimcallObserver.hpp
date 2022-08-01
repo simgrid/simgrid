@@ -37,7 +37,7 @@ public:
    * If it's more than one (as with mc_random or waitany), we need to consider this transition several times to start
    * differing branches
    */
-  virtual int get_max_consider() { return 1; }
+  virtual int get_max_consider() const { return 1; }
 
   /** Prepares the simcall to be used.
    *
@@ -83,7 +83,7 @@ public:
     xbt_assert(min < max);
   }
   void serialize(std::stringstream& stream) const override;
-  int get_max_consider() override;
+  int get_max_consider() const override;
   void prepare(int times_considered) override;
   int get_value() const { return next_value_; }
 };

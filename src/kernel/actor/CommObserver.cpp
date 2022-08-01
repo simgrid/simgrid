@@ -19,15 +19,15 @@ namespace simgrid::kernel::actor {
 ActivityTestanySimcall::ActivityTestanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities)
     : ResultingSimcall(actor, -1), activities_(activities)
 {
-}
-
-int ActivityTestanySimcall::get_max_consider()
-{
   indexes_.clear();
   // list all the activities that are ready
   for (unsigned i = 0; i < activities_.size(); i++)
     if (activities_[i]->test(get_issuer()))
       indexes_.push_back(i);
+}
+
+int ActivityTestanySimcall::get_max_consider() const
+{
   return indexes_.size() + 1;
 }
 
@@ -94,6 +94,11 @@ ActivityWaitanySimcall::ActivityWaitanySimcall(ActorImpl* actor, const std::vect
                                                double timeout)
     : ResultingSimcall(actor, -1), activities_(activities), timeout_(timeout)
 {
+  // list all the activities that are ready
+  indexes_.clear();
+  for (unsigned i = 0; i < activities_.size(); i++)
+    if (activities_[i]->test(get_issuer()))
+      indexes_.push_back(i);
 }
 
 bool ActivityWaitSimcall::is_enabled()
@@ -119,14 +124,8 @@ bool ActivityWaitanySimcall::is_enabled()
   return not indexes_.empty();
 }
 
-int ActivityWaitanySimcall::get_max_consider()
+int ActivityWaitanySimcall::get_max_consider() const
 {
-  // list all the activities that are ready
-  indexes_.clear();
-  for (unsigned i = 0; i < activities_.size(); i++)
-    if (activities_[i]->test(get_issuer()))
-      indexes_.push_back(i);
-
   int res = indexes_.size();
   //  if (_sg_mc_timeout && timeout_)
   //    res++;

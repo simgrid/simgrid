@@ -40,9 +40,7 @@ namespace simgrid::mc {
 void execute_actors()
 {
   auto* engine = kernel::EngineImpl::get_instance();
-#if SIMGRID_HAVE_MC
-  xbt_assert(mc_model_checker == nullptr, "This must be called from the client");
-#endif
+
   while (engine->has_actors_to_run()) {
     engine->run_all_actors();
     for (auto const& actor : engine->get_actors_that_ran()) {

@@ -38,7 +38,7 @@ public:
   bool is_visible() const override { return true; }
   bool is_enabled() override { return true; /* can return -1 if no activity is ready */ }
   void serialize(std::stringstream& stream) const override;
-  int get_max_consider() override;
+  int get_max_consider() const override;
   void prepare(int times_considered) override;
   const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }
   int get_value() const { return next_value_; }
@@ -73,7 +73,7 @@ public:
   void serialize(std::stringstream& stream) const override;
   bool is_visible() const override { return true; }
   void prepare(int times_considered) override;
-  int get_max_consider() override;
+  int get_max_consider() const override;
   const std::vector<activity::ActivityImpl*>& get_activities() const { return activities_; }
   double get_timeout() const { return timeout_; }
   int get_value() const { return next_value_; }
