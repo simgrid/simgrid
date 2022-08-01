@@ -91,7 +91,9 @@ cmake -Denable_documentation=OFF -Denable_java=${buildjava} -Denable_msg=${build
       -Denable_mallocators=ON -Denable_debug=${builddebug} \
       -Denable_smpi=${buildsmpi} -Denable_smpi_MPICH3_testsuite=${buildsmpi} -Denable_model-checking=${buildmc} \
       -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_MBI_testsuite=OFF \
-      -Denable_ns3=$(onoff test "$buildmc" != "ON") -DNS3_HINT=/builds/ns-3-dev/build/ -Denable_coverage=OFF -DLTO_EXTRA_FLAG="auto" "$WORKSPACE"
+      -Denable_ns3=$(onoff test "$buildmc" != "ON") -DNS3_HINT=/builds/ns-3-dev/build/ \
+      -Denable_coverage=OFF -DLTO_EXTRA_FLAG="auto" -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+      "$WORKSPACE"
 
 make -j$NUMPROC tests
 cd ..
