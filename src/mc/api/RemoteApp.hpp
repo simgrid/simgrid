@@ -52,6 +52,10 @@ public:
 
   void log_state() const;
 
+  /** Retrieve the max PID of the running actors */
+  unsigned long get_maxpid() const;
+
+  /* Get the list of actors that are ready to run at that step. Usually shorter than maxpid */
   void get_actors_status(std::map<aid_t, ActorState>& whereto);
 };
 } // namespace simgrid::mc

@@ -130,6 +130,11 @@ void RemoteApp::close()
   }
 }
 
+unsigned long RemoteApp::get_maxpid() const
+{
+  return model_checker_->get_remote_process().get_maxpid();
+}
+
 void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto)
 {
   s_mc_message_t msg;

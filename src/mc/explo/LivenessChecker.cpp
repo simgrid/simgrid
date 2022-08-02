@@ -178,7 +178,7 @@ void LivenessChecker::purge_visited_pairs()
   }
 }
 
-LivenessChecker::LivenessChecker(RemoteApp* remote_app) : Exploration(remote_app) {}
+LivenessChecker::LivenessChecker(RemoteApp& remote_app) : Exploration(remote_app) {}
 
 RecordTrace LivenessChecker::get_record_trace() // override
 {
@@ -366,7 +366,7 @@ void LivenessChecker::run()
   log_state();
 }
 
-Exploration* create_liveness_checker(RemoteApp* remote_app)
+Exploration* create_liveness_checker(RemoteApp& remote_app)
 {
   return new LivenessChecker(remote_app);
 }

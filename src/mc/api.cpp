@@ -50,19 +50,19 @@ simgrid::mc::Exploration* Api::initialize(char** argv, const std::unordered_map<
   simgrid::mc::Exploration* explo;
   switch (algo) {
     case ExplorationAlgorithm::CommDeterminism:
-      explo = simgrid::mc::create_communication_determinism_checker(remote_app_.get());
+      explo = simgrid::mc::create_communication_determinism_checker(*(remote_app_.get()));
       break;
 
     case ExplorationAlgorithm::UDPOR:
-      explo = simgrid::mc::create_udpor_checker(remote_app_.get());
+      explo = simgrid::mc::create_udpor_checker(*(remote_app_.get()));
       break;
 
     case ExplorationAlgorithm::Safety:
-      explo = simgrid::mc::create_dfs_exploration(remote_app_.get());
+      explo = simgrid::mc::create_dfs_exploration(*(remote_app_.get()));
       break;
 
     case ExplorationAlgorithm::Liveness:
-      explo = simgrid::mc::create_liveness_checker(remote_app_.get());
+      explo = simgrid::mc::create_liveness_checker(*(remote_app_.get()));
       break;
 
     default:
@@ -73,10 +73,6 @@ simgrid::mc::Exploration* Api::initialize(char** argv, const std::unordered_map<
   return explo;
 }
 
-unsigned long Api::get_maxpid() const
-{
-  return mc_model_checker->get_remote_process().get_maxpid();
-}
 
 std::size_t Api::get_remote_heap_bytes() const
 {

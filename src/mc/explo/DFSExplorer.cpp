@@ -266,7 +266,7 @@ void DFSExplorer::restore_state()
   }
 }
 
-DFSExplorer::DFSExplorer(RemoteApp* remote_app) : Exploration(remote_app)
+DFSExplorer::DFSExplorer(RemoteApp& remote_app) : Exploration(remote_app)
 {
   reductionMode_ = reduction_mode;
   if (_sg_mc_termination)
@@ -303,7 +303,7 @@ DFSExplorer::DFSExplorer(RemoteApp* remote_app) : Exploration(remote_app)
   stack_.push_back(std::move(initial_state));
 }
 
-Exploration* create_dfs_exploration(RemoteApp* remote_app)
+Exploration* create_dfs_exploration(RemoteApp& remote_app)
 {
   return new DFSExplorer(remote_app);
 }

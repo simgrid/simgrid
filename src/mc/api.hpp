@@ -56,9 +56,6 @@ public:
   simgrid::mc::Exploration* initialize(char** argv, const std::unordered_map<std::string, std::string>& env,
                                        simgrid::mc::ExplorationAlgorithm algo);
 
-  // ACTOR APIs
-  unsigned long get_maxpid() const;
-
   // REMOTE APIs
   std::size_t get_remote_heap_bytes() const;
 

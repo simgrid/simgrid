@@ -34,7 +34,7 @@ class XBT_PRIVATE DFSExplorer : public Exploration {
   static xbt::signal<void()> on_log_state_signal;
 
 public:
-  explicit DFSExplorer(RemoteApp* remote_app);
+  explicit DFSExplorer(RemoteApp& remote_app);
   void run() override;
   RecordTrace get_record_trace() override;
   std::vector<std::string> get_textual_trace() override;

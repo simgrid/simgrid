@@ -14,7 +14,7 @@ namespace simgrid::mc {
 
 class XBT_PRIVATE UdporChecker : public Exploration {
 public:
-  explicit UdporChecker(RemoteApp* remote_app);
+  explicit UdporChecker(RemoteApp& remote_app);
   void run() override;
   RecordTrace get_record_trace() override;
   std::vector<std::string> get_textual_trace() override;

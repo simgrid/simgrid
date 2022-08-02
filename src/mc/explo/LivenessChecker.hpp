@@ -50,7 +50,7 @@ public:
 
 class XBT_PRIVATE LivenessChecker : public Exploration {
 public:
-  explicit LivenessChecker(RemoteApp* remote_app);
+  explicit LivenessChecker(RemoteApp& remote_app);
   void run() override;
   RecordTrace get_record_trace() override;
   std::vector<std::string> get_textual_trace() override;
