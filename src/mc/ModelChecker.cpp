@@ -141,7 +141,7 @@ static void MC_report_crash(Exploration* explorer, int status)
     for (auto const& s : explorer->get_textual_trace())
       XBT_INFO("  %s", s.c_str());
     XBT_INFO("Path = %s", explorer->get_record_trace().to_string().c_str());
-    explorer->get_remote_app().log_state();
+    explorer->log_state();
     if (xbt_log_no_loc) {
       XBT_INFO("Stack trace not displayed because you passed --log=no_loc");
     } else {
@@ -233,7 +233,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       for (auto const& s : get_exploration()->get_textual_trace())
         XBT_INFO("  %s", s.c_str());
       XBT_INFO("Path = %s", get_exploration()->get_record_trace().to_string().c_str());
-      exploration_->get_remote_app().log_state();
+      exploration_->log_state();
 
       this->exit(SIMGRID_MC_EXIT_SAFETY);
 

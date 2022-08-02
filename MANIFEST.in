@@ -2291,6 +2291,7 @@ include src/mc/compare.cpp
 include src/mc/explo/CommunicationDeterminismChecker.cpp
 include src/mc/explo/DFSExplorer.cpp
 include src/mc/explo/DFSExplorer.hpp
+include src/mc/explo/Exploration.cpp
 include src/mc/explo/Exploration.hpp
 include src/mc/explo/LivenessChecker.cpp
 include src/mc/explo/LivenessChecker.hpp

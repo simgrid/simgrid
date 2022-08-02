@@ -26,7 +26,10 @@ std::vector<std::string> UdporChecker::get_textual_trace()
   return trace;
 }
 
-void UdporChecker::log_state() {}
+void UdporChecker::log_state()
+{
+  Exploration::log_state();
+}
 
 Exploration* create_udpor_checker(RemoteApp& remote_app)
 {

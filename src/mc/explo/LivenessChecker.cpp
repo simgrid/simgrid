@@ -193,6 +193,7 @@ void LivenessChecker::log_state() // override
   XBT_INFO("Expanded pairs = %lu", expanded_pairs_count_);
   XBT_INFO("Visited pairs = %lu", visited_pairs_count_);
   XBT_INFO("Executed transitions = %lu", Transition::get_executed_transitions());
+  Exploration::log_state();
 }
 
 void LivenessChecker::show_acceptance_cycle(std::size_t depth)

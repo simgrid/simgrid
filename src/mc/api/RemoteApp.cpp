@@ -110,21 +110,6 @@ void RemoteApp::restore_initial_state() const
   this->initial_snapshot_->restore(&model_checker_->get_remote_process());
 }
 
-void RemoteApp::log_state() const
-{
-  model_checker_->get_exploration()->log_state();
-
-  if (not _sg_mc_dot_output_file.get().empty()) {
-    fprintf(dot_output, "}\n");
-    fclose(dot_output);
-  }
-  if (getenv("SIMGRID_MC_SYSTEM_STATISTICS")) {
-    int ret = system("free");
-    if (ret != 0)
-      XBT_WARN("Call to system(free) did not return 0, but %d", ret);
-  }
-}
-
 unsigned long RemoteApp::get_maxpid() const
 {
   return model_checker_->get_remote_process().get_maxpid();
@@ -175,7 +160,7 @@ void RemoteApp::check_deadlock() const
     for (auto const& frame : model_checker_->get_exploration()->get_textual_trace())
       XBT_CINFO(mc_global, "  %s", frame.c_str());
     XBT_CINFO(mc_global, "Path = %s", model_checker_->get_exploration()->get_record_trace().to_string().c_str());
-    log_state();
+    model_checker_->get_exploration()->log_state();
     throw DeadlockError();
   }
 }

@@ -50,7 +50,7 @@ public:
   virtual std::vector<std::string> get_textual_trace() = 0;
 
   /** Log additional information about the state of the model-checker */
-  virtual void log_state() = 0;
+  virtual void log_state();
 
   RemoteApp& get_remote_app() { return remote_app_; }
 };

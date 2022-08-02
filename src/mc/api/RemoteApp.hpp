@@ -49,8 +49,6 @@ public:
   /** Ask to the application to check for a deadlock. If so, do an error message and throw a DeadlockError. */
   void check_deadlock() const;
 
-  void log_state() const;
-
   /** Retrieve the max PID of the running actors */
   unsigned long get_maxpid() const;
 
