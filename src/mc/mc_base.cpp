@@ -16,7 +16,7 @@
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/ModelChecker.hpp"
-#include "src/mc/Session.hpp"
+#include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/remote/RemoteProcess.hpp"
 #endif
 

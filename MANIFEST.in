@@ -2278,13 +2278,13 @@ include src/kernel/timer/Timer.cpp
 include src/mc/AddressSpace.hpp
 include src/mc/ModelChecker.cpp
 include src/mc/ModelChecker.hpp
-include src/mc/Session.cpp
-include src/mc/Session.hpp
 include src/mc/VisitedState.cpp
 include src/mc/VisitedState.hpp
 include src/mc/api.cpp
 include src/mc/api.hpp
 include src/mc/api/ActorState.hpp
+include src/mc/api/RemoteApp.cpp
+include src/mc/api/RemoteApp.hpp
 include src/mc/api/State.cpp
 include src/mc/api/State.hpp
 include src/mc/compare.cpp

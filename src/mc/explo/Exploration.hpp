@@ -1,5 +1,4 @@
-/* Copyright (c) 2016-2022. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2016-2022. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,15 +19,14 @@ namespace simgrid::mc {
  *  you might be able to write your model-checking algorithm as plain
  *  imperative code instead.
  *
- *  It is expected to interact with the model-checking core through the
- * `Session` interface (but currently the `Session` interface does not
- *  have all the necessary features). */
+ *  It is expected to interact with the model-checked application through the
+ * `RemoteApp` interface (that is currently not perfectly sufficient to that extend). */
 // abstract
 class Exploration : public xbt::Extendable<Exploration> {
-  Session* session_;
+  RemoteApp* remote_app_;
 
 public:
-  explicit Exploration(Session* session) : session_(session) {}
+  explicit Exploration(RemoteApp* remote_app) : remote_app_(remote_app) {}
 
   // No copy:
   Exploration(Exploration const&) = delete;
@@ -54,14 +52,14 @@ public:
   /** Log additional information about the state of the model-checker */
   virtual void log_state() = 0;
 
-  Session& get_session() { return *session_; }
+  RemoteApp& get_remote_app() { return *remote_app_; }
 };
 
 // External constructors so that the types (and the types of their content) remain hidden
-XBT_PUBLIC Exploration* create_liveness_checker(Session* session);
-XBT_PUBLIC Exploration* create_dfs_exploration(Session* session);
-XBT_PUBLIC Exploration* create_communication_determinism_checker(Session* session);
-XBT_PUBLIC Exploration* create_udpor_checker(Session* session);
+XBT_PUBLIC Exploration* create_liveness_checker(RemoteApp* remote_app);
+XBT_PUBLIC Exploration* create_dfs_exploration(RemoteApp* remote_app);
+XBT_PUBLIC Exploration* create_communication_determinism_checker(RemoteApp* remote_app);
+XBT_PUBLIC Exploration* create_udpor_checker(RemoteApp* remote_app);
 
 } // namespace simgrid::mc
 

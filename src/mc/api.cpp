@@ -8,7 +8,7 @@
 #include "src/kernel/activity/MailboxImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
-#include "src/mc/Session.hpp"
+#include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_base.hpp"
 #include "src/mc/mc_exit.hpp"
@@ -32,7 +32,7 @@ namespace simgrid::mc {
 simgrid::mc::Exploration* Api::initialize(char** argv, const std::unordered_map<std::string, std::string>& env,
                                           simgrid::mc::ExplorationAlgorithm algo)
 {
-  session_ = std::make_unique<simgrid::mc::Session>([argv, &env] {
+  remote_app_ = std::make_unique<simgrid::mc::RemoteApp>([argv, &env] {
     int i = 1;
     while (argv[i] != nullptr && argv[i][0] == '-')
       i++;
@@ -50,19 +50,19 @@ simgrid::mc::Exploration* Api::initialize(char** argv, const std::unordered_map<
   simgrid::mc::Exploration* explo;
   switch (algo) {
     case ExplorationAlgorithm::CommDeterminism:
-      explo = simgrid::mc::create_communication_determinism_checker(session_.get());
+      explo = simgrid::mc::create_communication_determinism_checker(remote_app_.get());
       break;
 
     case ExplorationAlgorithm::UDPOR:
-      explo = simgrid::mc::create_udpor_checker(session_.get());
+      explo = simgrid::mc::create_udpor_checker(remote_app_.get());
       break;
 
     case ExplorationAlgorithm::Safety:
-      explo = simgrid::mc::create_dfs_exploration(session_.get());
+      explo = simgrid::mc::create_dfs_exploration(remote_app_.get());
       break;
 
     case ExplorationAlgorithm::Liveness:
-      explo = simgrid::mc::create_liveness_checker(session_.get());
+      explo = simgrid::mc::create_liveness_checker(remote_app_.get());
       break;
 
     default:
@@ -118,7 +118,7 @@ simgrid::mc::Snapshot* Api::take_snapshot(long num_state) const
 
 void Api::s_close()
 {
-  session_.reset();
+  remote_app_.reset();
   if (simgrid::mc::property_automaton != nullptr) {
     xbt_automaton_free(simgrid::mc::property_automaton);
     simgrid::mc::property_automaton = nullptr;

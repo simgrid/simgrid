@@ -148,7 +148,7 @@ void DFSExplorer::run()
              state->get_transition()->to_string().c_str(), stack_.size(), state->get_num(), state->count_todo());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    auto next_state = std::make_unique<State>(get_session());
+    auto next_state = std::make_unique<State>(get_remote_app());
     on_state_creation_signal(next_state.get());
 
     if (_sg_mc_termination)
@@ -191,7 +191,7 @@ void DFSExplorer::backtrack()
   on_backtracking_signal();
   stack_.pop_back();
 
-  get_session().check_deadlock();
+  get_remote_app().check_deadlock();
 
   /* Traverse the stack backwards until a state with a non empty interleave set is found, deleting all the states that
    *  have it empty in the way. For each deleted state, check if the request that has generated it (from its
@@ -252,7 +252,7 @@ void DFSExplorer::restore_state()
   }
 
   /* if no snapshot, we need to restore the initial state and replay the transitions */
-  get_session().restore_initial_state();
+  get_remote_app().restore_initial_state();
   on_restore_initial_state_signal();
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
@@ -266,7 +266,7 @@ void DFSExplorer::restore_state()
   }
 }
 
-DFSExplorer::DFSExplorer(Session* session) : Exploration(session)
+DFSExplorer::DFSExplorer(RemoteApp* remote_app) : Exploration(remote_app)
 {
   reductionMode_ = reduction_mode;
   if (_sg_mc_termination)
@@ -281,11 +281,11 @@ DFSExplorer::DFSExplorer(Session* session) : Exploration(session)
              (reductionMode_ == ReductionMode::none ? "none"
                                                     : (reductionMode_ == ReductionMode::dpor ? "dpor" : "unknown")));
 
-  get_session().take_initial_snapshot();
+  get_remote_app().take_initial_snapshot();
 
   XBT_DEBUG("Starting the DFS exploration");
 
-  auto initial_state = std::make_unique<State>(get_session());
+  auto initial_state = std::make_unique<State>(get_remote_app());
 
   XBT_DEBUG("**************************************************");
 
@@ -305,9 +305,9 @@ DFSExplorer::DFSExplorer(Session* session) : Exploration(session)
   stack_.push_back(std::move(initial_state));
 }
 
-Exploration* create_dfs_exploration(Session* session)
+Exploration* create_dfs_exploration(RemoteApp* remote_app)
 {
-  return new DFSExplorer(session);
+  return new DFSExplorer(remote_app);
 }
 
 } // namespace simgrid::mc

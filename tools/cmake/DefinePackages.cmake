@@ -634,15 +634,15 @@ set(MC_SRC
   src/mc/AddressSpace.hpp
   src/mc/ModelChecker.cpp
   src/mc/ModelChecker.hpp
-  src/mc/Session.cpp
-  src/mc/Session.hpp
   src/mc/VisitedState.cpp
   src/mc/VisitedState.hpp
   src/mc/api.cpp
   src/mc/api.hpp
+  src/mc/api/ActorState.hpp
   src/mc/api/State.cpp
   src/mc/api/State.hpp
-  src/mc/api/ActorState.hpp
+  src/mc/api/RemoteApp.cpp
+  src/mc/api/RemoteApp.hpp
   src/mc/compare.cpp
   src/mc/mc_client_api.cpp
   src/mc/mc_exit.hpp

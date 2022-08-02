@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "simgrid/forward.h"
-#include "src/mc/Session.hpp"
+#include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/api/State.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_record.hpp"
@@ -40,7 +40,7 @@ private:
     }
   };
 
-  std::unique_ptr<simgrid::mc::Session> session_;
+  std::unique_ptr<simgrid::mc::RemoteApp> remote_app_;
 
 public:
   // No copy:
@@ -75,7 +75,7 @@ public:
   simgrid::mc::Snapshot* take_snapshot(long num_state) const;
 
   // SESSION APIs
-  simgrid::mc::Session const& get_session() const { return *session_; }
+  simgrid::mc::RemoteApp const& get_remote_app() const { return *remote_app_; }
   void s_close();
 
   // AUTOMATION APIs

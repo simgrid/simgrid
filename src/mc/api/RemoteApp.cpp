@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/mc/Session.hpp"
+#include "src/mc/api/RemoteApp.hpp"
 #include "src/internal_config.h" // HAVE_SMPI
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
@@ -41,7 +41,7 @@ template <class Code> void run_child_process(int socket, Code code)
 #ifdef __linux__
   // Make sure we do not outlive our parent
   sigset_t mask;
-  sigemptyset (&mask);
+  sigemptyset(&mask);
   xbt_assert(sigprocmask(SIG_SETMASK, &mask, nullptr) >= 0, "Could not unblock signals");
   xbt_assert(prctl(PR_SET_PDEATHSIG, SIGHUP) == 0, "Could not PR_SET_PDEATHSIG");
 #endif
@@ -56,10 +56,10 @@ template <class Code> void run_child_process(int socket, Code code)
   code();
 }
 
-Session::Session(const std::function<void()>& code)
+RemoteApp::RemoteApp(const std::function<void()>& code)
 {
 #if HAVE_SMPI
-  smpi_init_options();//only performed once
+  smpi_init_options(); // only performed once
   xbt_assert(smpi_cfg_privatization() != SmpiPrivStrategies::MMAP,
              "Please use the dlopen privatization schema when model-checking SMPI code");
 #endif
@@ -91,25 +91,25 @@ Session::Session(const std::function<void()>& code)
   model_checker_->start();
 }
 
-Session::~Session()
+RemoteApp::~RemoteApp()
 {
   this->close();
 }
 
 /** The application must be stopped. */
-void Session::take_initial_snapshot()
+void RemoteApp::take_initial_snapshot()
 {
   xbt_assert(initial_snapshot_ == nullptr);
   model_checker_->wait_for_requests();
   initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0);
 }
 
-void Session::restore_initial_state() const
+void RemoteApp::restore_initial_state() const
 {
   this->initial_snapshot_->restore(&model_checker_->get_remote_process());
 }
 
-void Session::log_state() const
+void RemoteApp::log_state() const
 {
   model_checker_->get_exploration()->log_state();
 
@@ -117,14 +117,14 @@ void Session::log_state() const
     fprintf(dot_output, "}\n");
     fclose(dot_output);
   }
-  if (getenv("SIMGRID_MC_SYSTEM_STATISTICS")){
-    int ret=system("free");
+  if (getenv("SIMGRID_MC_SYSTEM_STATISTICS")) {
+    int ret = system("free");
     if (ret != 0)
       XBT_WARN("Call to system(free) did not return 0, but %d", ret);
   }
 }
 
-void Session::close()
+void RemoteApp::close()
 {
   initial_snapshot_ = nullptr;
   if (model_checker_) {
@@ -134,7 +134,7 @@ void Session::close()
   }
 }
 
-void Session::get_actors_status(std::map<aid_t, ActorState>& whereto)
+void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto)
 {
   s_mc_message_t msg;
   memset(&msg, 0, sizeof msg);
@@ -159,7 +159,7 @@ void Session::get_actors_status(std::map<aid_t, ActorState>& whereto)
     whereto.insert(std::make_pair(actor.aid, ActorState(actor.aid, actor.enabled, actor.max_considered)));
 }
 
-void Session::check_deadlock() const
+void RemoteApp::check_deadlock() const
 {
   xbt_assert(model_checker_->channel().send(MessageType::DEADLOCK_CHECK) == 0, "Could not check deadlock state");
   s_mc_message_int_t message;

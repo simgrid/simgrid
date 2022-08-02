@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/LivenessChecker.hpp"
-#include "src/mc/Session.hpp"
+#include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
@@ -106,7 +106,7 @@ void LivenessChecker::replay()
     }
   }
 
-  get_session().restore_initial_state();
+  get_remote_app().restore_initial_state();
 
   /* Traverse the stack from the initial state and re-execute the transitions */
   int depth = 1;
@@ -178,7 +178,7 @@ void LivenessChecker::purge_visited_pairs()
   }
 }
 
-LivenessChecker::LivenessChecker(Session* session) : Exploration(session) {}
+LivenessChecker::LivenessChecker(RemoteApp* remote_app) : Exploration(remote_app) {}
 
 RecordTrace LivenessChecker::get_record_trace() // override
 {
@@ -223,7 +223,7 @@ std::shared_ptr<Pair> LivenessChecker::create_pair(const Pair* current_pair, xbt
   ++expanded_pairs_count_;
   auto next_pair                 = std::make_shared<Pair>(expanded_pairs_count_);
   next_pair->prop_state_         = state;
-  next_pair->app_state_          = std::make_shared<State>(get_session());
+  next_pair->app_state_          = std::make_shared<State>(get_remote_app());
   next_pair->atomic_propositions = std::move(propositions);
   if (current_pair)
     next_pair->depth = current_pair->depth + 1;
@@ -271,7 +271,7 @@ void LivenessChecker::run()
   Api::get().automaton_load(_sg_mc_property_file.get().c_str());
 
   XBT_DEBUG("Starting the liveness algorithm");
-  get_session().take_initial_snapshot();
+  get_remote_app().take_initial_snapshot();
 
   /* Initialize */
   this->previous_pair_ = 0;
@@ -367,9 +367,9 @@ void LivenessChecker::run()
   log_state();
 }
 
-Exploration* create_liveness_checker(Session* session)
+Exploration* create_liveness_checker(RemoteApp* remote_app)
 {
-  return new LivenessChecker(session);
+  return new LivenessChecker(remote_app);
 }
 
 } // namespace simgrid::mc

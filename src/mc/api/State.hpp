@@ -7,6 +7,7 @@
 #define SIMGRID_MC_STATE_HPP
 
 #include "src/mc/api/ActorState.hpp"
+#include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
 #include "src/mc/transition/Transition.hpp"
 
@@ -29,7 +30,7 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   std::shared_ptr<Snapshot> system_state_;
 
 public:
-  explicit State(Session& session);
+  explicit State(RemoteApp& remote_app);
 
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   aid_t next_transition() const;

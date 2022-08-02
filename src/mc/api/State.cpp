@@ -15,9 +15,9 @@ namespace simgrid::mc {
 
 long State::expended_states_ = 0;
 
-State::State(Session& session) : num_(++expended_states_)
+State::State(RemoteApp& remote_app) : num_(++expended_states_)
 {
-  session.get_actors_status(actors_to_run_);
+  remote_app.get_actors_status(actors_to_run_);
 
   transition_.reset(new Transition());
   /* Stateful model checking */

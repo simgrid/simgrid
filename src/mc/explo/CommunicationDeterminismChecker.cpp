@@ -202,7 +202,7 @@ void CommDetExtension::enforce_deterministic_pattern(aid_t actor, const PatternC
       XBT_INFO("***** Non-send-deterministic communications pattern *****");
       XBT_INFO("*********************************************************");
       XBT_INFO("%s", send_diff.c_str());
-      Api::get().get_session().log_state();
+      Api::get().get_remote_app().log_state();
       Api::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
     } else if (_sg_mc_comms_determinism && (not send_deterministic && not recv_deterministic)) {
       XBT_INFO("****************************************************");
@@ -212,7 +212,7 @@ void CommDetExtension::enforce_deterministic_pattern(aid_t actor, const PatternC
         XBT_INFO("%s", send_diff.c_str());
       if (not recv_diff.empty())
         XBT_INFO("%s", recv_diff.c_str());
-      Api::get().get_session().log_state();
+      Api::get().get_remote_app().log_state();
       Api::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
     }
   }
@@ -314,7 +314,7 @@ void CommDetExtension::handle_comm_pattern(const Transition* transition)
       }
  */
 
-Exploration* create_communication_determinism_checker(Session* session)
+Exploration* create_communication_determinism_checker(RemoteApp* remote_app)
 {
   CommDetExtension::EXTENSION_ID = simgrid::mc::Exploration::extension_create<CommDetExtension>();
   StateCommDet::EXTENSION_ID     = simgrid::mc::State::extension_create<StateCommDet>();
@@ -366,7 +366,7 @@ Exploration* create_communication_determinism_checker(Session* session)
     delete extension;
   });
 
-  return new DFSExplorer(session);
+  return new DFSExplorer(remote_app);
 }
 
 } // namespace simgrid::mc

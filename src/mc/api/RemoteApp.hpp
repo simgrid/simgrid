@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_MC_SESSION_HPP
-#define SIMGRID_MC_SESSION_HPP
+#ifndef SIMGRID_MC_REMOTE_APP_HPP
+#define SIMGRID_MC_REMOTE_APP_HPP
 
 #include "simgrid/forward.h"
 #include "src/mc/ModelChecker.hpp"
@@ -15,7 +15,7 @@
 
 namespace simgrid::mc {
 
-/** A model-checking session
+/** High-level view of the verified application, from the model-checker POV
  *
  *  This is expected to become the interface used by model-checking
  *  algorithms to control the execution of the model-checked process
@@ -23,14 +23,14 @@ namespace simgrid::mc {
  *  algorithms should be able to be written in high-level languages
  *  (e.g. Python) using bindings on this interface.
  */
-class XBT_PUBLIC Session {
+class XBT_PUBLIC RemoteApp {
 private:
   std::unique_ptr<ModelChecker> model_checker_;
   std::shared_ptr<simgrid::mc::Snapshot> initial_snapshot_;
 
   // No copy:
-  Session(Session const&) = delete;
-  Session& operator=(Session const&) = delete;
+  RemoteApp(RemoteApp const&) = delete;
+  RemoteApp& operator=(RemoteApp const&) = delete;
 
 public:
   /** Create a new session by executing the provided code in a fork()
@@ -40,9 +40,9 @@ public:
    *
    *  The code is expected to `exec` the model-checked application.
    */
-  explicit Session(const std::function<void()>& code);
+  explicit RemoteApp(const std::function<void()>& code);
 
-  ~Session();
+  ~RemoteApp();
   void close();
 
   void take_initial_snapshot();
