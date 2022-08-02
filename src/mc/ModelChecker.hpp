@@ -30,9 +30,6 @@ class ModelChecker {
 
   unsigned long visited_states_ = 0;
 
-  // Expect MessageType::SIMCALL_TO_STRING or MessageType::SIMCALL_DOT_LABEL
-  std::string simcall_to_string(MessageType type, aid_t aid, int times_considered);
-
 public:
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;
