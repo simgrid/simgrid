@@ -60,8 +60,13 @@ struct PatternCommunicationList {
 
 /********** Checker extension **********/
 
-struct CommDetExtension {
+class CommDetExtension {
+  Exploration& exploration_;
+
+public:
   static simgrid::xbt::Extension<simgrid::mc::Exploration, CommDetExtension> EXTENSION_ID;
+
+  explicit CommDetExtension(Exploration& explo) : exploration_(explo) {}
 
   std::vector<simgrid::mc::PatternCommunicationList> initial_communications_pattern;
   std::vector<std::vector<simgrid::mc::PatternCommunication*>> incomplete_communications_pattern;
@@ -72,9 +77,9 @@ struct CommDetExtension {
   std::string send_diff;
   std::string recv_diff;
 
-  void exploration_start(RemoteApp& remote_app)
+  void exploration_start()
   {
-    const unsigned long maxpid = remote_app.get_maxpid();
+    const unsigned long maxpid = exploration_.get_remote_app().get_maxpid();
 
     initial_communications_pattern.resize(maxpid);
     incomplete_communications_pattern.resize(maxpid);
@@ -202,7 +207,7 @@ void CommDetExtension::enforce_deterministic_pattern(aid_t actor, const PatternC
       XBT_INFO("***** Non-send-deterministic communications pattern *****");
       XBT_INFO("*********************************************************");
       XBT_INFO("%s", send_diff.c_str());
-      Api::get().get_remote_app().log_state();
+      exploration_.get_remote_app().log_state();
       mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
     } else if (_sg_mc_comms_determinism && (not send_deterministic && not recv_deterministic)) {
       XBT_INFO("****************************************************");
@@ -212,7 +217,7 @@ void CommDetExtension::enforce_deterministic_pattern(aid_t actor, const PatternC
         XBT_INFO("%s", send_diff.c_str());
       if (not recv_diff.empty())
         XBT_INFO("%s", recv_diff.c_str());
-      Api::get().get_remote_app().log_state();
+      exploration_.get_remote_app().log_state();
       mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
     }
   }
@@ -321,11 +326,12 @@ Exploration* create_communication_determinism_checker(RemoteApp& remote_app)
 
   XBT_DEBUG("********* Start communication determinism verification *********");
 
-  auto extension = new CommDetExtension();
+  auto base      = new DFSExplorer(remote_app);
+  auto extension = new CommDetExtension(*base);
 
-  DFSExplorer::on_exploration_start([extension, &remote_app]() {
+  DFSExplorer::on_exploration_start([extension]() {
     XBT_INFO("Check communication determinism");
-    extension->exploration_start(remote_app);
+    extension->exploration_start();
   });
   DFSExplorer::on_backtracking([extension]() { extension->initial_communications_pattern_done = true; });
   DFSExplorer::on_state_creation(
@@ -368,7 +374,7 @@ Exploration* create_communication_determinism_checker(RemoteApp& remote_app)
     delete extension;
   });
 
-  return new DFSExplorer(remote_app);
+  return base;
 }
 
 } // namespace simgrid::mc

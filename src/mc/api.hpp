@@ -71,7 +71,6 @@ public:
   simgrid::mc::Snapshot* take_snapshot(long num_state) const;
 
   // SESSION APIs
-  simgrid::mc::RemoteApp const& get_remote_app() const { return *remote_app_; }
   void s_close();
 
   // AUTOMATION APIs
