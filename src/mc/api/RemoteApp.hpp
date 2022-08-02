@@ -45,7 +45,6 @@ public:
   ~RemoteApp();
   void close();
 
-  void take_initial_snapshot();
   void restore_initial_state() const;
 
   /** Ask to the application to check for a deadlock. If so, do an error message and throw a DeadlockError. */

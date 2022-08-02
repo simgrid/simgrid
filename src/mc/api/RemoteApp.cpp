@@ -89,19 +89,15 @@ RemoteApp::RemoteApp(const std::function<void()>& code)
 
   mc_model_checker = model_checker_.get();
   model_checker_->start();
+
+  /* Take the initial snapshot */
+  model_checker_->wait_for_requests();
+  initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0);
 }
 
 RemoteApp::~RemoteApp()
 {
   this->close();
-}
-
-/** The application must be stopped. */
-void RemoteApp::take_initial_snapshot()
-{
-  xbt_assert(initial_snapshot_ == nullptr);
-  model_checker_->wait_for_requests();
-  initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0);
 }
 
 void RemoteApp::restore_initial_state() const

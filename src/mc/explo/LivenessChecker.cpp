@@ -271,7 +271,6 @@ void LivenessChecker::run()
   Api::get().automaton_load(_sg_mc_property_file.get().c_str());
 
   XBT_DEBUG("Starting the liveness algorithm");
-  get_remote_app().take_initial_snapshot();
 
   /* Initialize */
   this->previous_pair_ = 0;

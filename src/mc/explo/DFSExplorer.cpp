@@ -281,8 +281,6 @@ DFSExplorer::DFSExplorer(RemoteApp* remote_app) : Exploration(remote_app)
              (reductionMode_ == ReductionMode::none ? "none"
                                                     : (reductionMode_ == ReductionMode::dpor ? "dpor" : "unknown")));
 
-  get_remote_app().take_initial_snapshot();
-
   XBT_DEBUG("Starting the DFS exploration");
 
   auto initial_state = std::make_unique<State>(get_remote_app());
