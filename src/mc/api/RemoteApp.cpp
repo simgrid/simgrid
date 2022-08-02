@@ -97,7 +97,12 @@ RemoteApp::RemoteApp(const std::function<void()>& code)
 
 RemoteApp::~RemoteApp()
 {
-  this->close();
+  initial_snapshot_ = nullptr;
+  if (model_checker_) {
+    model_checker_->shutdown();
+    model_checker_   = nullptr;
+    mc_model_checker = nullptr;
+  }
 }
 
 void RemoteApp::restore_initial_state() const
@@ -117,16 +122,6 @@ void RemoteApp::log_state() const
     int ret = system("free");
     if (ret != 0)
       XBT_WARN("Call to system(free) did not return 0, but %d", ret);
-  }
-}
-
-void RemoteApp::close()
-{
-  initial_snapshot_ = nullptr;
-  if (model_checker_) {
-    model_checker_->shutdown();
-    model_checker_   = nullptr;
-    mc_model_checker = nullptr;
   }
 }
 

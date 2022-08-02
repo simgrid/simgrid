@@ -109,7 +109,6 @@ simgrid::mc::Snapshot* Api::take_snapshot(long num_state) const
 
 void Api::s_close()
 {
-  remote_app_.reset();
   if (simgrid::mc::property_automaton != nullptr) {
     xbt_automaton_free(simgrid::mc::property_automaton);
     simgrid::mc::property_automaton = nullptr;

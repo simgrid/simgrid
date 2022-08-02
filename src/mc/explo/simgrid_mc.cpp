@@ -81,6 +81,5 @@ int main(int argc, char** argv)
     res = SIMGRID_MC_EXIT_LIVENESS;
   }
   simgrid::mc::Api::get().s_close();
-  checker.release(); // FIXME: this line should not exist, but it segfaults in liveness
   return res;
 }

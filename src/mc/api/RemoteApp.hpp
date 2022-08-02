@@ -43,7 +43,6 @@ public:
   explicit RemoteApp(const std::function<void()>& code);
 
   ~RemoteApp();
-  void close();
 
   void restore_initial_state() const;
 
