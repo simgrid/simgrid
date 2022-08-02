@@ -91,11 +91,6 @@ unsigned long Api::mc_get_visited_states() const
   return mc_model_checker->get_visited_states();
 }
 
-void Api::mc_exit(int status) const
-{
-  mc_model_checker->exit(status);
-}
-
 void Api::restore_state(const simgrid::mc::Snapshot* system_state) const
 {
   system_state->restore(&mc_model_checker->get_remote_process());

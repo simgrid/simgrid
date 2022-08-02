@@ -62,7 +62,6 @@ public:
   // MODEL CHECKER APIs
   void mc_inc_visited_states() const;
   unsigned long mc_get_visited_states() const;
-  XBT_ATTRIB_NORETURN void mc_exit(int status) const;
 
   // STATE APIs
   void restore_state(const Snapshot* system_state) const;

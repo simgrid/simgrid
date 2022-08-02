@@ -203,7 +203,7 @@ void CommDetExtension::enforce_deterministic_pattern(aid_t actor, const PatternC
       XBT_INFO("*********************************************************");
       XBT_INFO("%s", send_diff.c_str());
       Api::get().get_remote_app().log_state();
-      Api::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
+      mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
     } else if (_sg_mc_comms_determinism && (not send_deterministic && not recv_deterministic)) {
       XBT_INFO("****************************************************");
       XBT_INFO("***** Non-deterministic communications pattern *****");
@@ -213,7 +213,7 @@ void CommDetExtension::enforce_deterministic_pattern(aid_t actor, const PatternC
       if (not recv_diff.empty())
         XBT_INFO("%s", recv_diff.c_str());
       Api::get().get_remote_app().log_state();
-      Api::get().mc_exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
+      mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
     }
   }
 }
