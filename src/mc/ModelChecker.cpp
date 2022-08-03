@@ -5,6 +5,7 @@
 
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/explo/LivenessChecker.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
@@ -211,14 +212,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       xbt_assert(not message.callback, "Support for client-side function proposition is not implemented.");
       XBT_DEBUG("Received symbol: %s", message.name.data());
 
-      if (property_automaton == nullptr)
-        property_automaton = xbt_automaton_new();
-
-      const RemoteProcess* process    = &this->get_remote_process();
-      RemotePtr<int> address          = remote((int*)message.data);
-      xbt::add_proposition(property_automaton, message.name.data(),
-                           [process, address]() { return process->read(address); });
-
+      LivenessChecker::automaton_register_symbol(get_remote_process(), message.name.data(), remote((int*)message.data));
       break;
     }
 

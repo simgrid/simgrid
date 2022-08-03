@@ -71,6 +71,7 @@ int main(int argc, char** argv)
   int res      = SIMGRID_MC_EXIT_SUCCESS;
   std::unique_ptr<simgrid::mc::Exploration> checker{
       simgrid::mc::Api::get().initialize(argv_copy.data(), environment, algo)};
+
   try {
     checker->run();
   } catch (const simgrid::mc::DeadlockError&) {
@@ -80,6 +81,5 @@ int main(int argc, char** argv)
   } catch (const simgrid::mc::LivenessError&) {
     res = SIMGRID_MC_EXIT_LIVENESS;
   }
-  simgrid::mc::Api::get().s_close();
   return res;
 }

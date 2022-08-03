@@ -31,7 +31,7 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t prop_state,
   this->atomic_propositions = std::move(atomic_propositions);
 }
 
-static bool evaluate_label(const xbt_automaton_exp_label* l, std::vector<int> const& values)
+bool LivenessChecker::evaluate_label(const xbt_automaton_exp_label* l, std::vector<int> const& values)
 {
   switch (l->type) {
     case xbt_automaton_exp_label::AUT_OR:
@@ -41,7 +41,7 @@ static bool evaluate_label(const xbt_automaton_exp_label* l, std::vector<int> co
     case xbt_automaton_exp_label::AUT_NOT:
       return not evaluate_label(l->u.exp_not, values);
     case xbt_automaton_exp_label::AUT_PREDICAT:
-      return values.at(Api::get().compare_automaton_exp_label(l)) != 0;
+      return values.at(compare_automaton_exp_label(l)) != 0;
     case xbt_automaton_exp_label::AUT_ONE:
       return true;
     default:
@@ -53,7 +53,7 @@ Pair::Pair(unsigned long expanded_pairs) : num(expanded_pairs) {}
 
 std::shared_ptr<const std::vector<int>> LivenessChecker::get_proposition_values() const
 {
-  auto values = Api::get().automaton_propositional_symbol_evaluate();
+  auto values = automaton_propositional_symbol_evaluate();
   return std::make_shared<const std::vector<int>>(std::move(values));
 }
 
@@ -179,6 +179,78 @@ void LivenessChecker::purge_visited_pairs()
 }
 
 LivenessChecker::LivenessChecker(RemoteApp& remote_app) : Exploration(remote_app) {}
+LivenessChecker::~LivenessChecker()
+{
+  if (property_automaton_ != nullptr)
+    xbt_automaton_free(property_automaton_);
+}
+
+xbt_automaton_t LivenessChecker::property_automaton_ = nullptr;
+
+void LivenessChecker::automaton_load(const char* file)
+{
+  if (property_automaton_ == nullptr)
+    property_automaton_ = xbt_automaton_new();
+
+  xbt_automaton_load(property_automaton_, file);
+}
+
+std::vector<int> LivenessChecker::automaton_propositional_symbol_evaluate() const
+{
+  unsigned int cursor = 0;
+  std::vector<int> values;
+  xbt_automaton_propositional_symbol_t ps = nullptr;
+  xbt_dynar_foreach (property_automaton_->propositional_symbols, cursor, ps)
+    values.push_back(xbt_automaton_propositional_symbol_evaluate(ps));
+  return values;
+}
+
+std::vector<xbt_automaton_state_t> LivenessChecker::get_automaton_state() const
+{
+  std::vector<xbt_automaton_state_t> automaton_stack;
+  unsigned int cursor = 0;
+  xbt_automaton_state_t automaton_state;
+  xbt_dynar_foreach (property_automaton_->states, cursor, automaton_state)
+    if (automaton_state->type == -1)
+      automaton_stack.push_back(automaton_state);
+  return automaton_stack;
+}
+
+int LivenessChecker::compare_automaton_exp_label(const xbt_automaton_exp_label* l) const
+{
+  unsigned int cursor                    = 0;
+  xbt_automaton_propositional_symbol_t p = nullptr;
+  xbt_dynar_foreach (property_automaton_->propositional_symbols, cursor, p) {
+    if (std::strcmp(xbt_automaton_propositional_symbol_get_name(p), l->u.predicat) == 0)
+      return cursor;
+  }
+  return -1;
+}
+
+void LivenessChecker::set_property_automaton(xbt_automaton_state_t const& automaton_state) const
+{
+  property_automaton_->current_state = automaton_state;
+}
+
+xbt_automaton_exp_label_t LivenessChecker::get_automaton_transition_label(xbt_dynar_t const& dynar, int index) const
+{
+  const xbt_automaton_transition* transition = xbt_dynar_get_as(dynar, index, xbt_automaton_transition_t);
+  return transition->label;
+}
+
+xbt_automaton_state_t LivenessChecker::get_automaton_transition_dst(xbt_dynar_t const& dynar, int index) const
+{
+  const xbt_automaton_transition* transition = xbt_dynar_get_as(dynar, index, xbt_automaton_transition_t);
+  return transition->dst;
+}
+void LivenessChecker::automaton_register_symbol(RemoteProcess& remote_process, const char* name, RemotePtr<int> address)
+{
+  if (property_automaton_ == nullptr)
+    property_automaton_ = xbt_automaton_new();
+
+  xbt::add_proposition(property_automaton_, name,
+                       [&remote_process, address]() { return remote_process.read(address); });
+}
 
 RecordTrace LivenessChecker::get_record_trace() // override
 {
@@ -269,7 +341,7 @@ void LivenessChecker::backtrack()
 void LivenessChecker::run()
 {
   XBT_INFO("Check the liveness property %s", _sg_mc_property_file.get().c_str());
-  Api::get().automaton_load(_sg_mc_property_file.get().c_str());
+  automaton_load(_sg_mc_property_file.get().c_str());
 
   XBT_DEBUG("Starting the liveness algorithm");
 
@@ -280,7 +352,7 @@ void LivenessChecker::run()
 
   // For each initial state of the property automaton, push a
   // (application_state, automaton_state) pair to the exploration stack:
-  auto automaton_stack = Api::get().get_automaton_state();
+  auto automaton_stack = get_automaton_state();
   for (auto* automaton_state : automaton_stack) {
     if (automaton_state->type == -1)
       exploration_stack_.push_back(this->create_pair(nullptr, automaton_state, propos));
@@ -291,7 +363,7 @@ void LivenessChecker::run()
     std::shared_ptr<Pair> current_pair = exploration_stack_.back();
 
     /* Update current state in buchi automaton */
-    Api::get().set_property_automaton(current_pair->prop_state_);
+    set_property_automaton(current_pair->prop_state_);
 
     XBT_DEBUG(
         "********************* ( Depth = %d, search_cycle = %d, interleave size = %zu, pair_num = %d, requests = %d)",
@@ -356,8 +428,8 @@ void LivenessChecker::run()
     // For each enabled transition in the property automaton, push a
     // (application_state, automaton_state) pair to the exploration stack:
     for (int i = xbt_dynar_length(current_pair->prop_state_->out) - 1; i >= 0; i--) {
-      const auto* transition_succ_label = Api::get().get_automaton_transition_label(current_pair->prop_state_->out, i);
-      auto* transition_succ_dst         = Api::get().get_automaton_transition_dst(current_pair->prop_state_->out, i);
+      const auto* transition_succ_label = get_automaton_transition_label(current_pair->prop_state_->out, i);
+      auto* transition_succ_dst         = get_automaton_transition_dst(current_pair->prop_state_->out, i);
       if (evaluate_label(transition_succ_label, *prop_values))
         exploration_stack_.push_back(this->create_pair(current_pair.get(), transition_succ_dst, prop_values));
     }

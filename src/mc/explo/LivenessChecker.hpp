@@ -51,6 +51,8 @@ public:
 class XBT_PRIVATE LivenessChecker : public Exploration {
 public:
   explicit LivenessChecker(RemoteApp& remote_app);
+  virtual ~LivenessChecker();
+
   void run() override;
   RecordTrace get_record_trace() override;
   std::vector<std::string> get_textual_trace() override;
@@ -76,6 +78,29 @@ private:
   unsigned long expanded_pairs_count_ = 0;
   int previous_pair_                  = 0;
   std::string previous_request_;
+
+  /* The property automaton must be a static because it's sometimes used before the explorer is even created.
+   *
+   * This can happen if some symbols are created during the application's initialization process, before the first
+   * decision point for the model-checker. Since the first snapshot is taken at the first decision point and since the
+   * explorer is created after the first snapshot, this may result in some symbols being registered even before the
+   * model-checker notices that this is a LivenessChecker to create.
+   *
+   * This situation is unfortunate, but I guess that it's the best I can achieve given the state of our initialization
+   * code.
+   */
+  static xbt_automaton_t property_automaton_;
+  bool evaluate_label(const xbt_automaton_exp_label* l, std::vector<int> const& values);
+
+public:
+  void automaton_load(const char* file);
+  std::vector<int> automaton_propositional_symbol_evaluate() const;
+  std::vector<xbt_automaton_state_t> get_automaton_state() const;
+  int compare_automaton_exp_label(const xbt_automaton_exp_label* l) const;
+  void set_property_automaton(xbt_automaton_state_t const& automaton_state) const;
+  xbt_automaton_exp_label_t get_automaton_transition_label(xbt_dynar_t const& dynar, int index) const;
+  xbt_automaton_state_t get_automaton_transition_dst(xbt_dynar_t const& dynar, int index) const;
+  static void automaton_register_symbol(RemoteProcess& remote_process, const char* name, RemotePtr<int> addr);
 };
 
 } // namespace simgrid::mc
