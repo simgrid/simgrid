@@ -59,10 +59,6 @@ public:
   // REMOTE APIs
   std::size_t get_remote_heap_bytes() const;
 
-  // MODEL CHECKER APIs
-  void mc_inc_visited_states() const;
-  unsigned long mc_get_visited_states() const;
-
   // STATE APIs
   void restore_state(const Snapshot* system_state) const;
 

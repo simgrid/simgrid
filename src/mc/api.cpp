@@ -81,16 +81,6 @@ std::size_t Api::get_remote_heap_bytes() const
   return heap_bytes_used;
 }
 
-void Api::mc_inc_visited_states() const
-{
-  mc_model_checker->inc_visited_states();
-}
-
-unsigned long Api::mc_get_visited_states() const
-{
-  return mc_model_checker->get_visited_states();
-}
-
 void Api::restore_state(const simgrid::mc::Snapshot* system_state) const
 {
   system_state->restore(&mc_model_checker->get_remote_process());

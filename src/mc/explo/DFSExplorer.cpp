@@ -79,7 +79,7 @@ void DFSExplorer::log_state() // override
   on_log_state_signal();
   XBT_INFO("DFS exploration ended. %ld unique states visited; %ld backtracks (%lu transition replays, %lu states "
            "visited overall)",
-           State::get_expanded_states(), backtrack_count_, Api::get().mc_get_visited_states(),
+           State::get_expanded_states(), backtrack_count_, mc_model_checker->get_visited_states(),
            Transition::get_replayed_transitions());
 }
 
@@ -98,7 +98,7 @@ void DFSExplorer::run()
     XBT_DEBUG("Exploration depth=%zu (state:%ld; %zu interleaves)", stack_.size(), state->get_num(),
               state->count_todo());
 
-    Api::get().mc_inc_visited_states();
+    mc_model_checker->inc_visited_states();
 
     // Backtrack if we reached the maximum depth
     if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
@@ -262,7 +262,7 @@ void DFSExplorer::restore_state()
     state->get_transition()->replay();
     on_transition_replay_signal(state->get_transition());
     /* Update statistics */
-    Api::get().mc_inc_visited_states();
+    mc_model_checker->inc_visited_states();
   }
 }
 
