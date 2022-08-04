@@ -29,51 +29,6 @@ XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
 namespace simgrid::mc {
 
-simgrid::mc::Exploration* Api::initialize(char** argv, const std::unordered_map<std::string, std::string>& env,
-                                          simgrid::mc::ExplorationAlgorithm algo)
-{
-  remote_app_ = std::make_unique<simgrid::mc::RemoteApp>([argv, &env] {
-    int i = 1;
-    while (argv[i] != nullptr && argv[i][0] == '-')
-      i++;
-
-    for (auto const& [key, val] : env) {
-      XBT_INFO("setenv '%s'='%s'", key.c_str(), val.c_str());
-      setenv(key.c_str(), val.c_str(), 1);
-    }
-    xbt_assert(argv[i] != nullptr,
-               "Unable to find a binary to exec on the command line. Did you only pass config flags?");
-    execvp(argv[i], argv + i);
-    xbt_die("The model-checked process failed to exec(%s): %s", argv[i], strerror(errno));
-  });
-
-  simgrid::mc::Exploration* explo;
-  switch (algo) {
-    case ExplorationAlgorithm::CommDeterminism:
-      explo = simgrid::mc::create_communication_determinism_checker(*(remote_app_.get()));
-      break;
-
-    case ExplorationAlgorithm::UDPOR:
-      explo = simgrid::mc::create_udpor_checker(*(remote_app_.get()));
-      break;
-
-    case ExplorationAlgorithm::Safety:
-      explo = simgrid::mc::create_dfs_exploration(*(remote_app_.get()));
-      break;
-
-    case ExplorationAlgorithm::Liveness:
-      explo = simgrid::mc::create_liveness_checker(*(remote_app_.get()));
-      break;
-
-    default:
-      THROW_IMPOSSIBLE;
-  }
-
-  mc_model_checker->set_exploration(explo);
-  return explo;
-}
-
-
 std::size_t Api::get_remote_heap_bytes() const
 {
   RemoteProcess& process    = mc_model_checker->get_remote_process();

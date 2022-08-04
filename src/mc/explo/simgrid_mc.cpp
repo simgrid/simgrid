@@ -18,6 +18,8 @@
 #include <memory>
 #include <unistd.h>
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(mc);
+
 static simgrid::config::Flag<std::string> _sg_mc_setenv{
     "model-check/setenv", "Extra environment variables to pass to the child process (ex: 'AZE=aze;QWE=qwe').", "",
     [](std::string_view value) {
@@ -67,19 +69,53 @@ int main(int argc, char** argv)
                token.c_str());
     environment[kv[0]] = kv[1];
   }
+  auto remote_app = std::make_unique<simgrid::mc::RemoteApp>([argv_copy, &environment] {
+    int i = 1;
+    while (argv_copy[i] != nullptr && argv_copy[i][0] == '-')
+      i++;
 
-  int res      = SIMGRID_MC_EXIT_SUCCESS;
-  std::unique_ptr<simgrid::mc::Exploration> checker{
-      simgrid::mc::Api::get().initialize(argv_copy.data(), environment, algo)};
+    for (auto const& [key, val] : environment) {
+      XBT_INFO("setenv '%s'='%s'", key.c_str(), val.c_str());
+      setenv(key.c_str(), val.c_str(), 1);
+    }
+    xbt_assert(argv_copy[i] != nullptr,
+               "Unable to find a binary to exec on the command line. Did you only pass config flags?");
+    execvp(argv_copy[i], argv_copy.data() + i);
+    xbt_die("The model-checked process failed to exec(%s): %s", argv_copy[i], strerror(errno));
+  });
+
+  simgrid::mc::Exploration* explo;
+  switch (algo) {
+    case simgrid::mc::ExplorationAlgorithm::CommDeterminism:
+      explo = simgrid::mc::create_communication_determinism_checker(*remote_app.get());
+      break;
+
+    case simgrid::mc::ExplorationAlgorithm::UDPOR:
+      explo = simgrid::mc::create_udpor_checker(*remote_app.get());
+      break;
+
+    case simgrid::mc::ExplorationAlgorithm::Safety:
+      explo = simgrid::mc::create_dfs_exploration(*remote_app.get());
+      break;
+
+    case simgrid::mc::ExplorationAlgorithm::Liveness:
+      explo = simgrid::mc::create_liveness_checker(*remote_app.get());
+      break;
+
+    default:
+      THROW_IMPOSSIBLE;
+  }
+  mc_model_checker->set_exploration(explo);
+  std::unique_ptr<simgrid::mc::Exploration> checker{explo};
 
   try {
     checker->run();
   } catch (const simgrid::mc::DeadlockError&) {
-    res = SIMGRID_MC_EXIT_DEADLOCK;
+    return SIMGRID_MC_EXIT_DEADLOCK;
   } catch (const simgrid::mc::TerminationError&) {
-    res = SIMGRID_MC_EXIT_NON_TERMINATION;
+    return SIMGRID_MC_EXIT_NON_TERMINATION;
   } catch (const simgrid::mc::LivenessError&) {
-    res = SIMGRID_MC_EXIT_LIVENESS;
+    return SIMGRID_MC_EXIT_LIVENESS;
   }
-  return res;
+  return SIMGRID_MC_EXIT_SUCCESS;
 }

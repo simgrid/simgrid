@@ -40,8 +40,6 @@ private:
     }
   };
 
-  std::unique_ptr<simgrid::mc::RemoteApp> remote_app_;
-
 public:
   // No copy:
   Api(Api const&) = delete;
@@ -52,9 +50,6 @@ public:
     static Api api;
     return api;
   }
-
-  simgrid::mc::Exploration* initialize(char** argv, const std::unordered_map<std::string, std::string>& env,
-                                       simgrid::mc::ExplorationAlgorithm algo);
 
   // REMOTE APIs
   std::size_t get_remote_heap_bytes() const;
