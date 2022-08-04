@@ -81,11 +81,6 @@ std::size_t Api::get_remote_heap_bytes() const
   return heap_bytes_used;
 }
 
-void Api::restore_state(const simgrid::mc::Snapshot* system_state) const
-{
-  system_state->restore(&mc_model_checker->get_remote_process());
-}
-
 bool Api::snapshot_equal(const Snapshot* s1, const Snapshot* s2) const
 {
   return simgrid::mc::snapshot_equal(s1, s2);

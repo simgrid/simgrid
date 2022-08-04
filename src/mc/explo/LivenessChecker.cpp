@@ -101,7 +101,7 @@ void LivenessChecker::replay()
   if (_sg_mc_checkpoint > 0) {
     const Pair* pair = exploration_stack_.back().get();
     if (const auto* system_state = pair->app_state_->get_system_state()) {
-      Api::get().restore_state(system_state);
+      system_state->restore(&get_remote_app().get_remote_process());
       return;
     }
   }
