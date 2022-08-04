@@ -329,18 +329,20 @@ Exploration* create_communication_determinism_checker(RemoteApp& remote_app)
   auto base      = new DFSExplorer(remote_app);
   auto extension = new CommDetExtension(*base);
 
-  DFSExplorer::on_exploration_start([extension]() {
+  DFSExplorer::on_exploration_start([extension](RemoteApp&) {
     XBT_INFO("Check communication determinism");
     extension->exploration_start();
   });
-  DFSExplorer::on_backtracking([extension]() { extension->initial_communications_pattern_done = true; });
-  DFSExplorer::on_state_creation(
-      [extension, &remote_app](State* state) { state->extension_set(new StateCommDet(*extension, remote_app)); });
+  DFSExplorer::on_backtracking([extension](RemoteApp&) { extension->initial_communications_pattern_done = true; });
+  DFSExplorer::on_state_creation([extension](State* state, RemoteApp& remote_app) {
+    state->extension_set(new StateCommDet(*extension, remote_app));
+  });
 
-  DFSExplorer::on_restore_system_state(
-      [extension, &remote_app](State* state) { extension->restore_communications_pattern(state, remote_app); });
+  DFSExplorer::on_restore_system_state([extension](State* state, RemoteApp& remote_app) {
+    extension->restore_communications_pattern(state, remote_app);
+  });
 
-  DFSExplorer::on_restore_initial_state([extension, &remote_app]() {
+  DFSExplorer::on_restore_initial_state([extension](RemoteApp& remote_app) {
     const unsigned long maxpid = remote_app.get_maxpid();
     assert(maxpid == extension->incomplete_communications_pattern.size());
     assert(maxpid == extension->initial_communications_pattern.size());
@@ -350,10 +352,10 @@ Exploration* create_communication_determinism_checker(RemoteApp& remote_app)
     }
   });
 
-  DFSExplorer::on_transition_replay([extension](Transition* t) { extension->handle_comm_pattern(t); });
-  DFSExplorer::on_transition_execute([extension](Transition* t) { extension->handle_comm_pattern(t); });
+  DFSExplorer::on_transition_replay([extension](Transition* t, RemoteApp&) { extension->handle_comm_pattern(t); });
+  DFSExplorer::on_transition_execute([extension](Transition* t, RemoteApp&) { extension->handle_comm_pattern(t); });
 
-  DFSExplorer::on_log_state([extension]() {
+  DFSExplorer::on_log_state([extension](RemoteApp&) {
     if (_sg_mc_comms_determinism) {
       if (extension->send_deterministic && not extension->recv_deterministic) {
         XBT_INFO("*******************************************************");

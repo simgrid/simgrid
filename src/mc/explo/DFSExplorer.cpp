@@ -26,17 +26,17 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dfs, mc, "DFS exploration algorithm of the mo
 
 namespace simgrid::mc {
 
-xbt::signal<void()> DFSExplorer::on_exploration_start_signal;
-xbt::signal<void()> DFSExplorer::on_backtracking_signal;
+xbt::signal<void(RemoteApp&)> DFSExplorer::on_exploration_start_signal;
+xbt::signal<void(RemoteApp&)> DFSExplorer::on_backtracking_signal;
 
-xbt::signal<void(State*)> DFSExplorer::on_state_creation_signal;
+xbt::signal<void(State*, RemoteApp&)> DFSExplorer::on_state_creation_signal;
 
-xbt::signal<void(State*)> DFSExplorer::on_restore_system_state_signal;
-xbt::signal<void()> DFSExplorer::on_restore_initial_state_signal;
-xbt::signal<void(Transition*)> DFSExplorer::on_transition_replay_signal;
-xbt::signal<void(Transition*)> DFSExplorer::on_transition_execute_signal;
+xbt::signal<void(State*, RemoteApp&)> DFSExplorer::on_restore_system_state_signal;
+xbt::signal<void(RemoteApp&)> DFSExplorer::on_restore_initial_state_signal;
+xbt::signal<void(Transition*, RemoteApp&)> DFSExplorer::on_transition_replay_signal;
+xbt::signal<void(Transition*, RemoteApp&)> DFSExplorer::on_transition_execute_signal;
 
-xbt::signal<void()> DFSExplorer::on_log_state_signal;
+xbt::signal<void(RemoteApp&)> DFSExplorer::on_log_state_signal;
 
 void DFSExplorer::check_non_termination(const State* current_state)
 {
@@ -76,7 +76,7 @@ std::vector<std::string> DFSExplorer::get_textual_trace() // override
 
 void DFSExplorer::log_state() // override
 {
-  on_log_state_signal();
+  on_log_state_signal(get_remote_app());
   XBT_INFO("DFS exploration ended. %ld unique states visited; %ld backtracks (%lu transition replays, %lu states "
            "visited overall)",
            State::get_expanded_states(), backtrack_count_, mc_model_checker->get_visited_states(),
@@ -85,7 +85,7 @@ void DFSExplorer::log_state() // override
 
 void DFSExplorer::run()
 {
-  on_exploration_start_signal();
+  on_exploration_start_signal(get_remote_app());
   /* This function runs the DFS algorithm the state space.
    * We do so iteratively instead of recursively, dealing with the call stack manually.
    * This allows one to explore the call stack at will. */
@@ -140,7 +140,7 @@ void DFSExplorer::run()
 
     /* Actually answer the request: let's execute the selected request (MCed does one step) */
     state->execute_next(next);
-    on_transition_execute_signal(state->get_transition());
+    on_transition_execute_signal(state->get_transition(), get_remote_app());
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
@@ -149,7 +149,7 @@ void DFSExplorer::run()
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     auto next_state = std::make_unique<State>(get_remote_app());
-    on_state_creation_signal(next_state.get());
+    on_state_creation_signal(next_state.get(), get_remote_app());
 
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
@@ -188,7 +188,7 @@ void DFSExplorer::backtrack()
 {
   backtrack_count_++;
   XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
-  on_backtracking_signal();
+  on_backtracking_signal(get_remote_app());
   stack_.pop_back();
 
   get_remote_app().check_deadlock();
@@ -247,20 +247,20 @@ void DFSExplorer::restore_state()
   State* last_state = stack_.back().get();
   if (const auto* system_state = last_state->get_system_state()) {
     Api::get().restore_state(system_state);
-    on_restore_system_state_signal(last_state);
+    on_restore_system_state_signal(last_state, get_remote_app());
     return;
   }
 
   /* if no snapshot, we need to restore the initial state and replay the transitions */
   get_remote_app().restore_initial_state();
-  on_restore_initial_state_signal();
+  on_restore_initial_state_signal(get_remote_app());
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
   for (std::unique_ptr<State> const& state : stack_) {
     if (state == stack_.back()) /* If we are arrived on the target state, don't replay the outgoing transition */
       break;
     state->get_transition()->replay();
-    on_transition_replay_signal(state->get_transition());
+    on_transition_replay_signal(state->get_transition(), get_remote_app());
     /* Update statistics */
     mc_model_checker->inc_visited_states();
   }
