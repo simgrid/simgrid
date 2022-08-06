@@ -74,6 +74,9 @@ public:
   Region* get_region(const void* addr, Region* hinted_region) const;
   void restore(RemoteProcess* process) const;
 
+  bool operator==(const Snapshot& other);
+  bool operator!=(const Snapshot& other) { return not(*this == other); }
+
   // To be private
   long num_state_;
   std::size_t heap_bytes_used_ = 0;

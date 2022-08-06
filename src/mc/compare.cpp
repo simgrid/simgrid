@@ -1174,61 +1174,62 @@ static bool local_variables_differ(const simgrid::mc::RemoteProcess& process, si
 
 namespace simgrid::mc {
 
-bool snapshot_equal(const Snapshot* s1, const Snapshot* s2)
+bool Snapshot::operator==(const Snapshot& other)
 {
   // TODO, make this a field of ModelChecker or something similar
   static StateComparator state_comparator;
 
   const RemoteProcess& process = mc_model_checker->get_remote_process();
 
-  if (s1->hash_ != s2->hash_) {
-    XBT_VERB("(%ld - %ld) Different hash: 0x%" PRIx64 "--0x%" PRIx64, s1->num_state_, s2->num_state_, s1->hash_,
-             s2->hash_);
+  if (hash_ != other.hash_) {
+    XBT_VERB("(%ld - %ld) Different hash: 0x%" PRIx64 "--0x%" PRIx64, this->num_state_, other.num_state_, this->hash_,
+             other.hash_);
     return false;
   }
-  XBT_VERB("(%ld - %ld) Same hash: 0x%" PRIx64, s1->num_state_, s2->num_state_, s1->hash_);
+  XBT_VERB("(%ld - %ld) Same hash: 0x%" PRIx64, this->num_state_, other.num_state_, this->hash_);
 
   /* TODO: re-enable the quick filter of counting enabled processes in each snapshots */
 
   /* Compare size of stacks */
-  for (unsigned long i = 0; i < s1->stacks_.size(); i++) {
-    size_t size_used1 = s1->stack_sizes_[i];
-    size_t size_used2 = s2->stack_sizes_[i];
+  for (unsigned long i = 0; i < this->stacks_.size(); i++) {
+    size_t size_used1 = this->stack_sizes_[i];
+    size_t size_used2 = other.stack_sizes_[i];
     if (size_used1 != size_used2) {
-      XBT_VERB("(%ld - %ld) Different size used in stacks: %zu - %zu", s1->num_state_, s2->num_state_, size_used1,
+      XBT_VERB("(%ld - %ld) Different size used in stacks: %zu - %zu", num_state_, other.num_state_, size_used1,
                size_used2);
       return false;
     }
   }
 
   /* Init heap information used in heap comparison algorithm */
-  const s_xbt_mheap_t* heap1 = static_cast<xbt_mheap_t>(
-      s1->read_bytes(alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t), process.heap_address, ReadOptions::lazy()));
-  const s_xbt_mheap_t* heap2 = static_cast<xbt_mheap_t>(
-      s2->read_bytes(alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t), process.heap_address, ReadOptions::lazy()));
-  if (state_comparator.initHeapInformation(heap1, heap2, s1->to_ignore_, s2->to_ignore_) == -1) {
-    XBT_VERB("(%ld - %ld) Different heap information", s1->num_state_, s2->num_state_);
+  const s_xbt_mheap_t* heap1 = static_cast<xbt_mheap_t>(this->read_bytes(
+      alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t), process.heap_address, ReadOptions::lazy()));
+  const s_xbt_mheap_t* heap2 = static_cast<xbt_mheap_t>(other.read_bytes(
+      alloca(sizeof(s_xbt_mheap_t)), sizeof(s_xbt_mheap_t), process.heap_address, ReadOptions::lazy()));
+  if (state_comparator.initHeapInformation(heap1, heap2, this->to_ignore_, other.to_ignore_) == -1) {
+    XBT_VERB("(%ld - %ld) Different heap information", this->num_state_, other.num_state_);
     return false;
   }
 
   /* Stacks comparison */
-  for (unsigned int cursor = 0; cursor < s1->stacks_.size(); cursor++) {
-    const_mc_snapshot_stack_t stack1 = &s1->stacks_[cursor];
-    const_mc_snapshot_stack_t stack2 = &s2->stacks_[cursor];
+  for (unsigned int cursor = 0; cursor < this->stacks_.size(); cursor++) {
+    const_mc_snapshot_stack_t stack1 = &this->stacks_[cursor];
+    const_mc_snapshot_stack_t stack2 = &other.stacks_[cursor];
 
-    if (local_variables_differ(process, state_comparator, *s1, *s2, stack1, stack2)) {
-      XBT_VERB("(%ld - %ld) Different local variables between stacks %u", s1->num_state_, s2->num_state_, cursor + 1);
+    if (local_variables_differ(process, state_comparator, *this, other, stack1, stack2)) {
+      XBT_VERB("(%ld - %ld) Different local variables between stacks %u", this->num_state_, other.num_state_,
+               cursor + 1);
       return false;
     }
   }
 
-  size_t regions_count = s1->snapshot_regions_.size();
-  if (regions_count != s2->snapshot_regions_.size())
+  size_t regions_count = this->snapshot_regions_.size();
+  if (regions_count != other.snapshot_regions_.size())
     return false;
 
   for (size_t k = 0; k != regions_count; ++k) {
-    Region* region1 = s1->snapshot_regions_[k].get();
-    Region* region2 = s2->snapshot_regions_[k].get();
+    Region* region1 = this->snapshot_regions_[k].get();
+    Region* region2 = other.snapshot_regions_[k].get();
 
     // Preconditions:
     if (region1->region_type() != RegionType::Data)
@@ -1239,20 +1240,20 @@ bool snapshot_equal(const Snapshot* s1, const Snapshot* s2)
     xbt_assert(region1->object_info());
 
     /* Compare global variables */
-    if (global_variables_differ(process, state_comparator, region1->object_info(), region1, region2, *s1, *s2)) {
+    if (global_variables_differ(process, state_comparator, region1->object_info(), region1, region2, *this, other)) {
       std::string const& name = region1->object_info()->file_name;
-      XBT_VERB("(%ld - %ld) Different global variables in %s", s1->num_state_, s2->num_state_, name.c_str());
+      XBT_VERB("(%ld - %ld) Different global variables in %s", this->num_state_, other.num_state_, name.c_str());
       return false;
     }
   }
 
   /* Compare heap */
-  if (mmalloc_heap_differ(process, state_comparator, *s1, *s2)) {
-    XBT_VERB("(%ld - %ld) Different heap (mmalloc_compare)", s1->num_state_, s2->num_state_);
+  if (mmalloc_heap_differ(process, state_comparator, *this, other)) {
+    XBT_VERB("(%ld - %ld) Different heap (mmalloc_compare)", this->num_state_, other.num_state_);
     return false;
   }
 
-  XBT_VERB("(%ld - %ld) No difference found", s1->num_state_, s2->num_state_);
+  XBT_VERB("(%ld - %ld) No difference found", this->num_state_, other.num_state_);
 
   return true;
 }

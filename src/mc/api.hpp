@@ -54,10 +54,6 @@ public:
   // REMOTE APIs
   std::size_t get_remote_heap_bytes() const;
 
-  // SNAPSHOT APIs
-  bool snapshot_equal(const Snapshot* s1, const Snapshot* s2) const;
-  simgrid::mc::Snapshot* take_snapshot(long num_state) const;
-
   // AUTOMATION APIs
   inline DerefAndCompareByActorsCountAndUsedHeap compare_pair() const
   {

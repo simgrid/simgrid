@@ -22,8 +22,7 @@ State::State(RemoteApp& remote_app) : num_(++expended_states_)
   transition_.reset(new Transition());
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
-    auto snapshot_ptr = Api::get().take_snapshot(num_);
-    system_state_     = std::shared_ptr<simgrid::mc::Snapshot>(snapshot_ptr);
+    system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_);
   }
 }
 

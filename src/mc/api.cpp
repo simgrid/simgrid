@@ -35,16 +35,4 @@ std::size_t Api::get_remote_heap_bytes() const
   auto heap_bytes_used      = mmalloc_get_bytes_used_remote(process.get_heap()->heaplimit, process.get_malloc_info());
   return heap_bytes_used;
 }
-
-bool Api::snapshot_equal(const Snapshot* s1, const Snapshot* s2) const
-{
-  return simgrid::mc::snapshot_equal(s1, s2);
-}
-
-simgrid::mc::Snapshot* Api::take_snapshot(long num_state) const
-{
-  auto snapshot = new simgrid::mc::Snapshot(num_state);
-  return snapshot;
-}
-
 } // namespace simgrid::mc

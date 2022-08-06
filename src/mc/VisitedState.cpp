@@ -52,7 +52,7 @@ VisitedStates::addVisitedState(unsigned long state_number, simgrid::mc::State* g
   if (compare_snapshots)
     for (auto i = range_begin; i != range_end; ++i) {
       auto& visited_state = *i;
-      if (Api::get().snapshot_equal(visited_state->system_state.get(), new_state->system_state.get())) {
+      if (*visited_state->system_state.get() == *new_state->system_state.get()) {
         // The state has been visited:
 
         std::unique_ptr<simgrid::mc::VisitedState> old_state =
