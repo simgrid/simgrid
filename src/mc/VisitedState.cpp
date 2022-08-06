@@ -63,11 +63,8 @@ VisitedStates::addVisitedState(unsigned long state_number, simgrid::mc::State* g
         else // I'm the copy of a copy
           new_state->original_num = old_state->original_num;
 
-        if (dot_output == nullptr)
-          XBT_DEBUG("State %ld already visited ! (equal to state %ld)", new_state->num, old_state->num);
-        else
-          XBT_DEBUG("State %ld already visited ! (equal to state %ld (state %ld in dot_output))", new_state->num,
-                    old_state->num, new_state->original_num);
+        XBT_DEBUG("State %ld already visited ! (equal to state %ld (state %ld in dot_output))", new_state->num,
+                  old_state->num, new_state->original_num);
 
         /* Replace the old state with the new one (with a bigger num)
            (when the max number of visited states is reached,  the oldest

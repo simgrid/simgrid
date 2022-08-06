@@ -67,8 +67,13 @@ void ModelChecker::start()
   xbt_assert(waitpid(pid, &status, WAITPID_CHECKED_FLAGS) == pid && WIFSTOPPED(status) && WSTOPSIG(status) == SIGSTOP,
              "Could not wait model-checked process");
 
-  if (not _sg_mc_dot_output_file.get().empty())
-    MC_init_dot_output();
+  if (not _sg_mc_dot_output_file.get().empty()) {
+    dot_output_ = fopen(_sg_mc_dot_output_file.get().c_str(), "w");
+    xbt_assert(dot_output_ != nullptr, "Error open dot output file: %s", strerror(errno));
+
+    fprintf(dot_output_, "digraph graphname{\n fixedsize=true; rankdir=TB; ranksep=.25; edge [fontsize=12]; node "
+                         "[fontsize=10, shape=circle,width=.5 ]; graph [resolution=20, fontsize=10];\n");
+  }
 
   setup_ignore();
 
@@ -86,6 +91,16 @@ void ModelChecker::start()
              "If you run from within a docker, adding `--cap-add SYS_PTRACE` to the docker line may help. "
              "If it does not help, please report this bug.",
              errno);
+}
+
+void ModelChecker::dot_output(const char* fmt, ...)
+{
+  if (dot_output_ != nullptr) {
+    va_list ap;
+    va_start(ap, fmt);
+    vfprintf(dot_output_, fmt, ap);
+    va_end(ap);
+  }
 }
 
 static constexpr auto ignored_local_variables = {

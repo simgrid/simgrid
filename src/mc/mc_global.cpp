@@ -39,22 +39,7 @@ std::vector<double> processes_time;
 
 #if SIMGRID_HAVE_MC
 
-/* Dot output */
-FILE *dot_output = nullptr;
-
-void MC_init_dot_output()
-{
-  dot_output = fopen(_sg_mc_dot_output_file.get().c_str(), "w");
-  xbt_assert(dot_output != nullptr, "Error open dot output file: %s", strerror(errno));
-
-  fprintf(dot_output,
-          "digraph graphname{\n fixedsize=true; rankdir=TB; ranksep=.25; edge [fontsize=12]; node [fontsize=10, shape=circle,width=.5 ]; graph [resolution=20, fontsize=10];\n");
-}
-
 namespace simgrid::mc {
-
-/* Liveness */
-xbt_automaton_t property_automaton = nullptr;
 
 /*******************************  Core of MC *******************************/
 /**************************************************************************/

@@ -28,6 +28,8 @@ class ModelChecker {
   std::unique_ptr<RemoteProcess> remote_process_;
   Exploration* exploration_ = nullptr;
 
+  FILE* dot_output_ = nullptr;
+
   unsigned long visited_states_ = 0;
 
 public:
@@ -62,6 +64,18 @@ public:
 
   unsigned long get_visited_states() const { return visited_states_; }
   void inc_visited_states() { visited_states_++; }
+
+  void dot_output(const char* fmt, ...);
+  void dot_output_flush()
+  {
+    if (dot_output_ != nullptr)
+      fflush(dot_output_);
+  }
+  void dot_output_close()
+  {
+    if (dot_output_ != nullptr)
+      fclose(dot_output_);
+  }
 
 private:
   void setup_ignore();

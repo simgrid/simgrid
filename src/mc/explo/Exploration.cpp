@@ -19,8 +19,8 @@ Exploration::Exploration(const std::vector<char*>& args) : remote_app_(std::make
 void Exploration::log_state()
 {
   if (not _sg_mc_dot_output_file.get().empty()) {
-    fprintf(dot_output, "}\n");
-    fclose(dot_output);
+    mc_model_checker->dot_output("}\n");
+    mc_model_checker->dot_output_close();
   }
   if (getenv("SIMGRID_MC_SYSTEM_STATISTICS")) {
     int ret = system("free");

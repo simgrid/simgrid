@@ -12,12 +12,6 @@
 #include "src/mc/mc_forward.hpp"
 #include "src/xbt/memory_map.hpp"
 
-/********************************* MC Global **********************************/
-
-XBT_PRIVATE void MC_init_dot_output();
-
-XBT_PRIVATE extern FILE* dot_output;
-
 /********************************** Miscellaneous **********************************/
 namespace simgrid::mc {
 
