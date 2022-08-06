@@ -186,22 +186,13 @@ sg_size_t File::write(sg_size_t size, bool write_inside)
   // If the disk is full before even starting to write
   if (sg_disk_get_size_used(local_disk_) >= sg_disk_get_size(local_disk_))
     return 0;
-  if (not write_inside) {
+  if (not write_inside)
     /* Subtract the part of the file that might disappear from the used sized on the storage element */
     local_disk_->extension<FileSystemDiskExt>()->decr_used_size(size_ - current_position_);
-    write_size = local_disk_->write(size);
-    local_disk_->extension<FileSystemDiskExt>()->incr_used_size(write_size);
-    current_position_ += write_size;
-    size_ = current_position_;
-  } else {
-    write_size = local_disk_->write(size);
-    current_position_ += write_size;
-    if (current_position_ > size_)
-      size_ = current_position_;
-  }
+  write_size = local_disk_->write(size);
+  update_position(current_position_ + write_size);
   kernel::actor::simcall_answered([this] {
     std::map<std::string, sg_size_t, std::less<>>* content = local_disk_->extension<FileSystemDiskExt>()->get_content();
-
     content->erase(path_);
     content->insert({path_, size_});
   });
@@ -223,16 +214,26 @@ void File::seek(sg_offset_t offset, int origin)
 {
   switch (origin) {
     case SEEK_SET:
-      current_position_ = offset;
-      break;
+      update_position(offset);
+     break;
     case SEEK_CUR:
-      current_position_ += offset;
+      update_position(current_position_ + offset);
       break;
     case SEEK_END:
-      current_position_ = size_ + offset;
+      update_position(size_ + offset);
       break;
     default:
       break;
+  }
+}
+
+void File::update_position(sg_offset_t position)
+{
+  xbt_assert(position >= 0, "Error in seek, cannot seek before file %s", get_path());
+  current_position_ = position;
+  if(current_position_>size_){
+    local_disk_->extension<FileSystemDiskExt>()->incr_used_size(current_position_-size_);
+    size_ = current_position_;
   }
 }
 

@@ -126,6 +126,7 @@ public:
   void seek(sg_offset_t pos);             /** Sets the file head to the given position. */
   void seek(sg_offset_t pos, int origin); /** Sets the file head to the given position from a given origin. */
   sg_size_t tell() const;                 /** Retrieves the current file position */
+  void update_position(sg_offset_t);      /** set new position in file, grow it if necessary, and increased usage */
 
   /** Rename a file. WARNING: It is forbidden to move the file to another mount point */
   void move(const std::string& fullpath) const;
