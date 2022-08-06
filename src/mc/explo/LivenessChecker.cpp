@@ -178,7 +178,7 @@ void LivenessChecker::purge_visited_pairs()
   }
 }
 
-LivenessChecker::LivenessChecker(RemoteApp& remote_app) : Exploration(remote_app) {}
+LivenessChecker::LivenessChecker(const std::vector<char*>& args) : Exploration(args) {}
 LivenessChecker::~LivenessChecker()
 {
   if (property_automaton_ != nullptr)
@@ -439,9 +439,9 @@ void LivenessChecker::run()
   log_state();
 }
 
-Exploration* create_liveness_checker(RemoteApp& remote_app)
+Exploration* create_liveness_checker(const std::vector<char*>& args)
 {
-  return new LivenessChecker(remote_app);
+  return new LivenessChecker(args);
 }
 
 } // namespace simgrid::mc

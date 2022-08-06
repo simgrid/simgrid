@@ -10,7 +10,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor, mc, "Logging specific to MC safety ver
 
 namespace simgrid::mc {
 
-UdporChecker::UdporChecker(RemoteApp& remote_app) : Exploration(remote_app) {}
+UdporChecker::UdporChecker(const std::vector<char*>& args) : Exploration(args) {}
 
 void UdporChecker::run() {}
 
@@ -31,9 +31,9 @@ void UdporChecker::log_state()
   Exploration::log_state();
 }
 
-Exploration* create_udpor_checker(RemoteApp& remote_app)
+Exploration* create_udpor_checker(const std::vector<char*>& args)
 {
-  return new UdporChecker(remote_app);
+  return new UdporChecker(args);
 }
 
 } // namespace simgrid::mc

@@ -8,6 +8,8 @@
 
 #include "src/mc/api.hpp"
 
+#include <memory>
+
 namespace simgrid::mc {
 
 /** A model-checking exploration algorithm
@@ -23,10 +25,10 @@ namespace simgrid::mc {
  * `RemoteApp` interface (that is currently not perfectly sufficient to that extend). */
 // abstract
 class Exploration : public xbt::Extendable<Exploration> {
-  RemoteApp& remote_app_;
+  std::unique_ptr<RemoteApp> remote_app_;
 
 public:
-  explicit Exploration(RemoteApp& remote_app) : remote_app_(remote_app) {}
+  explicit Exploration(const std::vector<char*>& args);
 
   // No copy:
   Exploration(Exploration const&) = delete;
@@ -52,14 +54,14 @@ public:
   /** Log additional information about the state of the model-checker */
   virtual void log_state();
 
-  RemoteApp& get_remote_app() { return remote_app_; }
+  RemoteApp& get_remote_app() { return *remote_app_.get(); }
 };
 
 // External constructors so that the types (and the types of their content) remain hidden
-XBT_PUBLIC Exploration* create_liveness_checker(RemoteApp& remote_app);
-XBT_PUBLIC Exploration* create_dfs_exploration(RemoteApp& remote_app);
-XBT_PUBLIC Exploration* create_communication_determinism_checker(RemoteApp& remote_app);
-XBT_PUBLIC Exploration* create_udpor_checker(RemoteApp& remote_app);
+XBT_PUBLIC Exploration* create_liveness_checker(const std::vector<char*>& args);
+XBT_PUBLIC Exploration* create_dfs_exploration(const std::vector<char*>& args);
+XBT_PUBLIC Exploration* create_communication_determinism_checker(const std::vector<char*>& args);
+XBT_PUBLIC Exploration* create_udpor_checker(const std::vector<char*>& args);
 
 } // namespace simgrid::mc
 

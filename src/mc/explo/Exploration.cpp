@@ -11,6 +11,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_explo, mc, "Generic exploration algorithm of 
 
 namespace simgrid::mc {
 
+Exploration::Exploration(const std::vector<char*>& args) : remote_app_(std::make_unique<RemoteApp>(args))
+{
+  mc_model_checker->set_exploration(this);
+}
+
 void Exploration::log_state()
 {
   if (not _sg_mc_dot_output_file.get().empty()) {

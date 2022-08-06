@@ -319,14 +319,14 @@ void CommDetExtension::handle_comm_pattern(const Transition* transition)
       }
  */
 
-Exploration* create_communication_determinism_checker(RemoteApp& remote_app)
+Exploration* create_communication_determinism_checker(const std::vector<char*>& args)
 {
   CommDetExtension::EXTENSION_ID = simgrid::mc::Exploration::extension_create<CommDetExtension>();
   StateCommDet::EXTENSION_ID     = simgrid::mc::State::extension_create<StateCommDet>();
 
   XBT_DEBUG("********* Start communication determinism verification *********");
 
-  auto base      = new DFSExplorer(remote_app);
+  auto base      = new DFSExplorer(args);
   auto extension = new CommDetExtension(*base);
 
   DFSExplorer::on_exploration_start([extension](RemoteApp&) {

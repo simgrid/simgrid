@@ -11,14 +11,16 @@
 #include "smpi/smpi.h"
 #include "src/smpi/include/private.hpp"
 #endif
+#include "signal.h"
 #include "src/mc/api/State.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
 
-#include "signal.h"
 #include <array>
+#include <boost/tokenizer.hpp>
 #include <memory>
 #include <string>
 
@@ -30,9 +32,16 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
 XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
+static simgrid::config::Flag<std::string> _sg_mc_setenv{
+    "model-check/setenv", "Extra environment variables to pass to the child process (ex: 'AZE=aze;QWE=qwe').", "",
+    [](std::string_view value) {
+      xbt_assert(value.empty() || value.find('=', 0) != std::string_view::npos,
+                 "The 'model-check/setenv' parameter must be like 'AZE=aze', but it does not contain an equal sign.");
+    }};
+
 namespace simgrid::mc {
 
-template <class Code> void run_child_process(int socket, Code code)
+static void run_child_process(int socket, const std::vector<char*>& args)
 {
   /* On startup, simix_global_init() calls simgrid::mc::Client::initialize(), which checks whether the MC_ENV_SOCKET_FD
    * env variable is set. If so, MC mode is assumed, and the client is setup from its side
@@ -53,10 +62,35 @@ template <class Code> void run_child_process(int socket, Code code)
 
   setenv(MC_ENV_SOCKET_FD, std::to_string(socket).c_str(), 1);
 
-  code();
+  /* Setup the tokenizer that parses the cfg:model-check/setenv parameter */
+  using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
+  boost::char_separator<char> semicol_sep(";");
+  boost::char_separator<char> equal_sep("=");
+  Tokenizer token_vars(_sg_mc_setenv.get(), semicol_sep); /* Iterate over all FOO=foo parts */
+  for (const auto& token : token_vars) {
+    std::vector<std::string> kv;
+    Tokenizer token_kv(token, equal_sep);
+    for (const auto& t : token_kv) /* Iterate over 'FOO' and then 'foo' in that 'FOO=foo' */
+      kv.push_back(t);
+    xbt_assert(kv.size() == 2, "Parse error on 'model-check/setenv' value %s. Does it contain an equal sign?",
+               token.c_str());
+    XBT_INFO("setenv '%s'='%s'", kv[0].c_str(), kv[1].c_str());
+    setenv(kv[0].c_str(), kv[1].c_str(), 1);
+  }
+
+  /* And now, exec the child process */
+  int i = 1;
+  while (args[i] != nullptr && args[i][0] == '-')
+    i++;
+
+  xbt_assert(args[i] != nullptr,
+             "Unable to find a binary to exec on the command line. Did you only pass config flags?");
+
+  execvp(args[i], args.data() + i);
+  xbt_die("The model-checked process failed to exec(%s): %s", args[i], strerror(errno));
 }
 
-RemoteApp::RemoteApp(const std::function<void()>& code)
+RemoteApp::RemoteApp(const std::vector<char*>& args)
 {
 #if HAVE_SMPI
   smpi_init_options(); // only performed once
@@ -75,7 +109,7 @@ RemoteApp::RemoteApp(const std::function<void()>& code)
 
   if (pid == 0) { // Child
     ::close(sockets[1]);
-    run_child_process(sockets[0], code);
+    run_child_process(sockets[0], args);
     DIE_IMPOSSIBLE;
   }
 

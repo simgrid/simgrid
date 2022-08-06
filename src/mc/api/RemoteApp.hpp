@@ -40,7 +40,7 @@ public:
    *
    *  The code is expected to `exec` the model-checked application.
    */
-  explicit RemoteApp(const std::function<void()>& code);
+  explicit RemoteApp(const std::vector<char*>& args);
 
   ~RemoteApp();
 
