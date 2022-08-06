@@ -62,7 +62,8 @@ std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc
   auto new_pair =
       std::make_shared<VisitedPair>(pair->num, pair->prop_state_, pair->atomic_propositions, pair->app_state_);
 
-  auto [res_begin, res_end] = boost::range::equal_range(acceptance_pairs_, new_pair.get(), Api::get().compare_pair());
+  auto [res_begin, res_end] =
+      boost::range::equal_range(acceptance_pairs_, new_pair.get(), compare_pair_by_actor_count_and_used_heap());
 
   if (pair->search_cycle)
     for (auto i = res_begin; i != res_end; ++i) {
@@ -139,7 +140,7 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
         std::make_shared<VisitedPair>(pair->num, pair->prop_state_, pair->atomic_propositions, pair->app_state_);
 
   auto [range_begin, range_end] =
-      boost::range::equal_range(visited_pairs_, visited_pair.get(), Api::get().compare_pair());
+      boost::range::equal_range(visited_pairs_, visited_pair.get(), compare_pair_by_actor_count_and_used_heap());
 
   for (auto i = range_begin; i != range_end; ++i) {
     const VisitedPair* pair_test = i->get();

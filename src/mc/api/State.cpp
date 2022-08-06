@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/api/State.hpp"
-#include "src/mc/api.hpp"
 #include "src/mc/mc_config.hpp"
 
 #include <boost/range/algorithm.hpp>

@@ -4,13 +4,13 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/VisitedState.hpp"
+#include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_private.hpp"
 
 #include <unistd.h>
 #include <sys/wait.h>
 #include <memory>
 #include <boost/range/algorithm.hpp>
-#include "src/mc/api.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_VisitedState, mc, "Logging specific to state equality detection mechanisms");
 
@@ -47,7 +47,8 @@ VisitedStates::addVisitedState(unsigned long state_number, simgrid::mc::State* g
   XBT_DEBUG("Snapshot %p of visited state %ld (exploration stack state %ld)", new_state->system_state.get(),
             new_state->num, graph_state->get_num());
 
-  auto [range_begin, range_end] = boost::range::equal_range(states_, new_state.get(), Api::get().compare_pair());
+  auto [range_begin, range_end] =
+      boost::range::equal_range(states_, new_state.get(), compare_pair_by_actor_count_and_used_heap());
 
   if (compare_snapshots)
     for (auto i = range_begin; i != range_end; ++i) {

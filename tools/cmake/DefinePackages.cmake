@@ -637,7 +637,6 @@ set(MC_SRC
   src/mc/ModelChecker.hpp
   src/mc/VisitedState.cpp
   src/mc/VisitedState.hpp
-  src/mc/api.hpp
   src/mc/api/ActorState.hpp
   src/mc/api/State.cpp
   src/mc/api/State.hpp

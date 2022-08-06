@@ -6,7 +6,10 @@
 #ifndef SIMGRID_MC_CHECKER_HPP
 #define SIMGRID_MC_CHECKER_HPP
 
-#include "src/mc/api.hpp"
+#include "simgrid/forward.h"
+#include "src/mc/api/RemoteApp.hpp"
+#include "src/mc/mc_record.hpp"
+#include <xbt/Extendable.hpp>
 
 #include <memory>
 
@@ -62,6 +65,18 @@ XBT_PUBLIC Exploration* create_liveness_checker(const std::vector<char*>& args);
 XBT_PUBLIC Exploration* create_dfs_exploration(const std::vector<char*>& args);
 XBT_PUBLIC Exploration* create_communication_determinism_checker(const std::vector<char*>& args);
 XBT_PUBLIC Exploration* create_udpor_checker(const std::vector<char*>& args);
+
+// FIXME: kill this template and use lambdas in boost::range_equal
+struct DerefAndCompareByActorsCountAndUsedHeap {
+  template <class X, class Y> bool operator()(X const& a, Y const& b) const
+  {
+    return std::make_pair(a->actor_count_, a->heap_bytes_used) < std::make_pair(b->actor_count_, b->heap_bytes_used);
+  }
+};
+static inline DerefAndCompareByActorsCountAndUsedHeap compare_pair_by_actor_count_and_used_heap()
+{
+  return DerefAndCompareByActorsCountAndUsedHeap();
+}
 
 } // namespace simgrid::mc
 
