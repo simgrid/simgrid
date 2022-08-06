@@ -19,8 +19,6 @@
 
 namespace simgrid::mc {
 
-XBT_DECLARE_ENUM_CLASS(ExplorationAlgorithm, Safety, UDPOR, Liveness, CommDeterminism);
-
 /*
 ** This class aimes to implement FACADE APIs for simgrid. The FACADE layer sits between the CheckerSide
 ** (Unfolding_Checker, DPOR, ...) layer and the
@@ -41,18 +39,11 @@ private:
   };
 
 public:
-  // No copy:
-  Api(Api const&) = delete;
-  void operator=(Api const&) = delete;
-
   static Api& get()
   {
     static Api api;
     return api;
   }
-
-  // REMOTE APIs
-  std::size_t get_remote_heap_bytes() const;
 
   // AUTOMATION APIs
   inline DerefAndCompareByActorsCountAndUsedHeap compare_pair() const

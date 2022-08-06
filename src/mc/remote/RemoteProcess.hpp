@@ -125,6 +125,8 @@ public:
       this->refresh_malloc_info();
     return this->heap_info.data();
   }
+  /* Get the amount of memory mallocated in the remote process (requires mmalloc) */
+  std::size_t get_remote_heap_bytes();
 
   void clear_cache() { this->cache_flags_ = RemoteProcess::cache_none; }
 

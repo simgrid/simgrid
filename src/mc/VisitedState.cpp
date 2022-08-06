@@ -20,7 +20,7 @@ namespace simgrid::mc {
 VisitedState::VisitedState(unsigned long state_number, unsigned int actor_count)
     : actor_count_(actor_count), num(state_number)
 {
-  this->heap_bytes_used = Api::get().get_remote_heap_bytes();
+  this->heap_bytes_used = mc_model_checker->get_remote_process().get_remote_heap_bytes();
   this->system_state = std::make_shared<simgrid::mc::Snapshot>(state_number);
 }
 

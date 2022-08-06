@@ -167,6 +167,10 @@ void RemoteProcess::refresh_malloc_info()
   this->read_bytes(this->heap_info.data(), count * sizeof(malloc_info), remote(this->heap->heapinfo));
   this->cache_flags_ |= RemoteProcess::cache_malloc;
 }
+std::size_t RemoteProcess::get_remote_heap_bytes()
+{
+  return mmalloc_get_bytes_used_remote(get_heap()->heaplimit, get_malloc_info());
+}
 
 /** @brief Finds the range of the different memory segments and binary paths */
 void RemoteProcess::init_memory_map_info()
