@@ -197,8 +197,8 @@ void DFSExplorer::backtrack()
    *  have it empty in the way. For each deleted state, check if the request that has generated it (from its
    *  predecessor state), depends on any other previous request executed before it. If it does then add it to the
    *  interleave set of the state that executed that previous request. */
-
-  while (not stack_.empty()) {
+  bool found_backtracking_point = false;
+  while (not stack_.empty() && not found_backtracking_point) {
     std::unique_ptr<State> state = std::move(stack_.back());
     stack_.pop_back();
     if (reduction_mode_ == ReductionMode::dpor) {
@@ -227,43 +227,39 @@ void DFSExplorer::backtrack()
       }
     }
 
-    if (state->count_todo() && stack_.size() < (std::size_t)_sg_mc_max_depth) {
-      /* We found a back-tracking point, let's loop */
-      XBT_DEBUG("Back-tracking to state %ld at depth %zu", state->get_num(), stack_.size() + 1);
-      stack_.push_back(
-          std::move(state)); // Put it back on the stack from which it was removed earlier in this while loop
-      this->restore_state();
-      XBT_DEBUG("Back-tracking to state %ld at depth %zu done", stack_.back()->get_num(), stack_.size());
-      break;
-    } else {
+    if (state->count_todo() == 0) { // Empty interleaving set
       XBT_DEBUG("Delete state %ld at depth %zu", state->get_num(), stack_.size() + 1);
+
+    } else {
+      XBT_DEBUG("Back-tracking to state %ld at depth %zu", state->get_num(), stack_.size() + 1);
+      stack_.push_back(std::move(state)); // Put it back on the stack
+      found_backtracking_point = true;
     }
   }
-}
 
-void DFSExplorer::restore_state()
-{
-  /* If asked to rollback on a state that has a snapshot, restore it */
-  State* last_state = stack_.back().get();
-  if (const auto* system_state = last_state->get_system_state()) {
-    system_state->restore(&get_remote_app().get_remote_process());
-    on_restore_system_state_signal(last_state, get_remote_app());
-    return;
-  }
+  if (found_backtracking_point) {
+    /* If asked to rollback on a state that has a snapshot, restore it */
+    State* last_state = stack_.back().get();
+    if (const auto* system_state = last_state->get_system_state()) {
+      system_state->restore(&get_remote_app().get_remote_process());
+      on_restore_system_state_signal(last_state, get_remote_app());
+      return;
+    }
 
-  /* if no snapshot, we need to restore the initial state and replay the transitions */
-  get_remote_app().restore_initial_state();
-  on_restore_initial_state_signal(get_remote_app());
+    /* if no snapshot, we need to restore the initial state and replay the transitions */
+    get_remote_app().restore_initial_state();
+    on_restore_initial_state_signal(get_remote_app());
 
-  /* Traverse the stack from the state at position start and re-execute the transitions */
-  for (std::unique_ptr<State> const& state : stack_) {
-    if (state == stack_.back()) /* If we are arrived on the target state, don't replay the outgoing transition */
-      break;
-    state->get_transition()->replay();
-    on_transition_replay_signal(state->get_transition(), get_remote_app());
-    /* Update statistics */
-    mc_model_checker->inc_visited_states();
-  }
+    /* Traverse the stack from the state at position start and re-execute the transitions */
+    for (std::unique_ptr<State> const& state : stack_) {
+      if (state == stack_.back()) /* If we are arrived on the target state, don't replay the outgoing transition */
+        break;
+      state->get_transition()->replay();
+      on_transition_replay_signal(state->get_transition(), get_remote_app());
+      /* Update statistics */
+      mc_model_checker->inc_visited_states();
+    }
+  } // If no backtracing point, then the stack is empty and the exploration is over
 }
 
 DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Exploration(args)
