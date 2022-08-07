@@ -145,8 +145,6 @@ RemoteProcess::~RemoteProcess()
 void RemoteProcess::refresh_heap()
 {
   // Read/dereference/refresh the std_heap pointer:
-  if (not this->heap)
-    this->heap = std::make_unique<s_xbt_mheap_t>();
   this->read(this->heap.get(), this->heap_address);
   this->cache_flags_ |= RemoteProcess::cache_heap;
 }

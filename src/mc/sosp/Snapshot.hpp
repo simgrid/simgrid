@@ -91,6 +91,8 @@ private:
   void add_region(RegionType type, ObjectInformation* object_info, void* start_addr, std::size_t size);
   void snapshot_regions(RemoteProcess* process);
   void snapshot_stacks(RemoteProcess* process);
+  void handle_ignore();
+  void ignore_restore() const;
 };
 } // namespace simgrid::mc
 

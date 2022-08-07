@@ -173,37 +173,36 @@ void Snapshot::snapshot_stacks(RemoteProcess* process)
   }
 }
 
-static void snapshot_handle_ignore(Snapshot* snapshot)
+void Snapshot::handle_ignore()
 {
-  xbt_assert(snapshot->get_remote_process());
+  xbt_assert(get_remote_process());
 
   // Copy the memory:
-  for (auto const& region : snapshot->get_remote_process()->ignored_regions()) {
+  for (auto const& region : get_remote_process()->ignored_regions()) {
     s_mc_snapshot_ignored_data_t ignored_data;
     ignored_data.start = (void*)region.addr;
     ignored_data.data.resize(region.size);
     // TODO, we should do this once per privatization segment:
-    snapshot->get_remote_process()->read_bytes(ignored_data.data.data(), region.size, remote(region.addr));
-    snapshot->ignored_data_.push_back(std::move(ignored_data));
+    get_remote_process()->read_bytes(ignored_data.data.data(), region.size, remote(region.addr));
+    ignored_data_.push_back(std::move(ignored_data));
   }
 
   // Zero the memory:
-  for (auto const& region : snapshot->get_remote_process()->ignored_regions())
-    snapshot->get_remote_process()->clear_bytes(remote(region.addr), region.size);
+  for (auto const& region : get_remote_process()->ignored_regions())
+    get_remote_process()->clear_bytes(remote(region.addr), region.size);
 }
 
-static void snapshot_ignore_restore(const simgrid::mc::Snapshot* snapshot)
+void Snapshot::ignore_restore() const
 {
-  for (auto const& ignored_data : snapshot->ignored_data_)
-    snapshot->get_remote_process()->write_bytes(ignored_data.data.data(), ignored_data.data.size(),
-                                                remote(ignored_data.start));
+  for (auto const& ignored_data : ignored_data_)
+    get_remote_process()->write_bytes(ignored_data.data.data(), ignored_data.data.size(), remote(ignored_data.start));
 }
 
 Snapshot::Snapshot(long num_state, RemoteProcess* process) : AddressSpace(process), num_state_(num_state)
 {
   XBT_DEBUG("Taking snapshot %ld", num_state);
 
-  snapshot_handle_ignore(this);
+  handle_ignore();
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
   snapshot_regions(process);
@@ -215,7 +214,7 @@ Snapshot::Snapshot(long num_state, RemoteProcess* process) : AddressSpace(proces
     hash_ = simgrid::mc::hash(*this);
   }
 
-  snapshot_ignore_restore(this);
+  ignore_restore();
 }
 
 void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void* start_addr, std::size_t size)
@@ -281,7 +280,7 @@ void Snapshot::restore(RemoteProcess* process) const
       region.get()->restore();
   }
 
-  snapshot_ignore_restore(this);
+  ignore_restore();
   process->clear_cache();
 }
 

@@ -204,7 +204,7 @@ public:
    *  This is not used if the process is the current one:
    *  use `get_heap_info()` in order to use it.
    */
-  std::unique_ptr<s_xbt_mheap_t> heap;
+  std::unique_ptr<s_xbt_mheap_t> heap = std::make_unique<s_xbt_mheap_t>();
 
   /** Copy of the allocation info structure
    *
