@@ -15,9 +15,8 @@
 
 /** Ignored data
  *
- *  Some parts of the snapshot are ignored by zeroing them out: the real
- *  values is stored here.
- * */
+ *  Some parts of the snapshot are ignored by zeroing them out: the real values is stored here.
+ */
 struct s_mc_snapshot_ignored_data_t {
   void* start;
   std::vector<char> data;
@@ -56,6 +55,8 @@ using const_mc_snapshot_stack_t = const s_mc_snapshot_stack_t*;
 
 namespace simgrid::mc {
 
+using hash_type = std::uint64_t;
+
 class XBT_PRIVATE Snapshot final : public AddressSpace {
 public:
   /* Initialization */
@@ -93,6 +94,7 @@ private:
   void snapshot_stacks(RemoteProcess* process);
   void handle_ignore();
   void ignore_restore() const;
+  hash_type do_hash() const;
 };
 } // namespace simgrid::mc
 

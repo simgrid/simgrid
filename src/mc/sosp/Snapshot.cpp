@@ -5,7 +5,6 @@
 
 #include "src/mc/sosp/Snapshot.hpp"
 #include "src/mc/mc_config.hpp"
-#include "src/mc/mc_hash.hpp"
 
 #include <cstddef> /* std::size_t */
 
@@ -211,7 +210,7 @@ Snapshot::Snapshot(long num_state, RemoteProcess* process) : AddressSpace(proces
 
   if (_sg_mc_max_visited_states > 0 || not _sg_mc_property_file.get().empty()) {
     snapshot_stacks(process);
-    hash_ = simgrid::mc::hash(*this);
+    hash_ = this->do_hash();
   }
 
   ignore_restore();
@@ -282,6 +281,28 @@ void Snapshot::restore(RemoteProcess* process) const
 
   ignore_restore();
   process->clear_cache();
+}
+
+/* ----------- Hashing logic -------------- */
+class djb_hash {
+  hash_type state_ = 5381LL;
+
+public:
+  template <class T> void update(T& x) { state_ = (state_ << 5) + state_ + x; }
+  hash_type value() const { return state_; }
+};
+hash_type Snapshot::do_hash() const
+{
+  XBT_DEBUG("START hash %ld", num_state_);
+  djb_hash hash;
+  // TODO:
+  // * nb_processes
+  // * heap_bytes_used
+  // * root variables
+  // * basic stack frame information
+  // * stack frame local variables
+  XBT_DEBUG("END hash %ld", num_state_);
+  return hash.value();
 }
 
 } // namespace simgrid::mc
