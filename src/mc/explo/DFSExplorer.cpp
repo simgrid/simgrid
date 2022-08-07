@@ -156,7 +156,7 @@ void DFSExplorer::run()
 
     /* Check whether we already explored next_state in the past (but only if interested in state-equality reduction) */
     if (_sg_mc_max_visited_states > 0)
-      visited_state_ = visited_states_.addVisitedState(next_state->get_num(), next_state.get(), true);
+      visited_state_ = visited_states_.addVisitedState(next_state->get_num(), next_state.get());
 
     /* If this is a new state (or if we don't care about state-equality reduction) */
     if (visited_state_ == nullptr) {
