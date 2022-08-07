@@ -8,15 +8,8 @@
 #include <simgrid/sg_config.hpp>
 
 #if SIMGRID_HAVE_MC
-#include "src/mc/mc_safety.hpp"
 #include <string_view>
-#endif
 
-#if SIMGRID_HAVE_MC
-namespace simgrid::mc {
-/* Configuration support */
-simgrid::mc::ReductionMode reduction_mode = simgrid::mc::ReductionMode::unset;
-} // namespace simgrid::mc
 #else
 #define _sg_do_model_check 0
 #endif
@@ -24,9 +17,7 @@ simgrid::mc::ReductionMode reduction_mode = simgrid::mc::ReductionMode::unset;
 static void _mc_cfg_cb_check(const char* spec, bool more_check = true)
 {
   xbt_assert(_sg_cfg_init_status == 0 || _sg_do_model_check || not more_check,
-             "You are specifying a %s after the initialization (through MSG_config?), but the program was not run "
-             "under the model-checker (with simgrid-mc)). This won't work, sorry.",
-             spec);
+             "Specifying a %s is only allowed within the model-checker. Please use simgrid-mc.", spec);
 }
 
 /* Replay (this part is enabled even if MC it disabled) */
@@ -42,6 +33,18 @@ simgrid::config::Flag<bool> _sg_mc_timeout{
 #if SIMGRID_HAVE_MC
 int _sg_do_model_check = 0;
 int _sg_mc_max_visited_states = 0;
+
+static simgrid::config::Flag<std::string> cfg_mc_reduction{
+    "model-check/reduction", "Specify the kind of exploration reduction (either none or DPOR)", "dpor",
+    [](std::string_view value) {
+      if (value != "none" && value != "dpor")
+        xbt_die("configuration option 'model-check/reduction' can only take 'none' or 'dpor' as a value");
+    }};
+
+bool simgrid::mc::cfg_use_DPOR()
+{
+  return cfg_mc_reduction.get() == "dpor";
+}
 
 simgrid::config::Flag<int> _sg_mc_checkpoint{
     "model-check/checkpoint", "Specify the amount of steps between checkpoints during stateful model-checking "
@@ -83,19 +86,6 @@ simgrid::config::Flag<std::string> _sg_mc_buffering{
     {{"zero", "No system buffering: MPI_Send is blocking"},
      {"infty", "Infinite system buffering: MPI_Send returns immediately"}},
     [](std::string_view) { _mc_cfg_cb_check("buffering mode"); }};
-
-static simgrid::config::Flag<std::string> _sg_mc_reduce{
-    "model-check/reduction", "Specify the kind of exploration reduction (either none or DPOR)", "dpor",
-    [](std::string_view value) {
-      _mc_cfg_cb_check("reduction strategy");
-
-      if (value == "none")
-        simgrid::mc::reduction_mode = simgrid::mc::ReductionMode::none;
-      else if (value == "dpor")
-        simgrid::mc::reduction_mode = simgrid::mc::ReductionMode::dpor;
-      else
-        xbt_die("configuration option model-check/reduction can only take 'none' or 'dpor' as a value");
-    }};
 
 simgrid::config::Flag<int> _sg_mc_max_depth{"model-check/max-depth",
                                             "Maximal exploration depth (default: 1000)",

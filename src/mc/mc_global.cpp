@@ -12,7 +12,6 @@
 #include "src/mc/inspect/mc_unw.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/mc_safety.hpp"
 #include "src/mc/remote/AppSide.hpp"
 #include "src/mc/sosp/Snapshot.hpp"
 

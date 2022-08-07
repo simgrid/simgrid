@@ -8,7 +8,6 @@
 
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/explo/Exploration.hpp"
-#include "src/mc/mc_safety.hpp"
 
 #include <list>
 #include <memory>
@@ -18,7 +17,9 @@
 namespace simgrid::mc {
 
 class XBT_PRIVATE DFSExplorer : public Exploration {
-  ReductionMode reductionMode_ = ReductionMode::unset;
+  XBT_DECLARE_ENUM_CLASS(ReductionMode, none, dpor);
+
+  ReductionMode reduction_mode_;
   long backtrack_count_        = 0;
 
   static xbt::signal<void(RemoteApp&)> on_exploration_start_signal;
@@ -34,7 +35,7 @@ class XBT_PRIVATE DFSExplorer : public Exploration {
   static xbt::signal<void(RemoteApp&)> on_log_state_signal;
 
 public:
-  explicit DFSExplorer(const std::vector<char*>& args);
+  explicit DFSExplorer(const std::vector<char*>& args, bool with_dpor);
   void run() override;
   RecordTrace get_record_trace() override;
   std::vector<std::string> get_textual_trace() override;

@@ -62,8 +62,8 @@ public:
 
 // External constructors so that the types (and the types of their content) remain hidden
 XBT_PUBLIC Exploration* create_liveness_checker(const std::vector<char*>& args);
-XBT_PUBLIC Exploration* create_dfs_exploration(const std::vector<char*>& args);
-XBT_PUBLIC Exploration* create_communication_determinism_checker(const std::vector<char*>& args);
+XBT_PUBLIC Exploration* create_dfs_exploration(const std::vector<char*>& args, bool with_dpor);
+XBT_PUBLIC Exploration* create_communication_determinism_checker(const std::vector<char*>& args, bool with_dpor);
 XBT_PUBLIC Exploration* create_udpor_checker(const std::vector<char*>& args);
 
 // FIXME: kill this template and use lambdas in boost::range_equal

@@ -102,7 +102,7 @@ void DFSExplorer::run()
 
     // Backtrack if we reached the maximum depth
     if (stack_.size() > (std::size_t)_sg_mc_max_depth) {
-      if (reductionMode_ == ReductionMode::dpor) {
+      if (reduction_mode_ == ReductionMode::dpor) {
         XBT_ERROR("/!\\ Max depth of %d reached! THIS WILL PROBABLY BREAK the dpor reduction /!\\",
                   _sg_mc_max_depth.get());
         XBT_ERROR("/!\\ If bad things happen, disable dpor with --cfg=model-check/reduction:none /!\\");
@@ -164,7 +164,7 @@ void DFSExplorer::run()
       for (auto const& [aid, _] : next_state->get_actors_list()) {
         if (next_state->is_actor_enabled(aid)) {
           next_state->mark_todo(aid);
-          if (reductionMode_ == ReductionMode::dpor)
+          if (reduction_mode_ == ReductionMode::dpor)
             break; // With DPOR, we take the first enabled transition
         }
       }
@@ -201,7 +201,7 @@ void DFSExplorer::backtrack()
   while (not stack_.empty()) {
     std::unique_ptr<State> state = std::move(stack_.back());
     stack_.pop_back();
-    if (reductionMode_ == ReductionMode::dpor) {
+    if (reduction_mode_ == ReductionMode::dpor) {
       aid_t issuer_id = state->get_transition()->aid_;
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         State* prev_state = i->get();
@@ -266,22 +266,22 @@ void DFSExplorer::restore_state()
   }
 }
 
-DFSExplorer::DFSExplorer(const std::vector<char*>& args) : Exploration(args)
+DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Exploration(args)
 {
-  reductionMode_ = reduction_mode;
-  if (_sg_mc_termination)
-    reductionMode_ = ReductionMode::none;
-  else if (reductionMode_ == ReductionMode::unset)
-    reductionMode_ = ReductionMode::dpor;
-
-  if (_sg_mc_termination)
-    XBT_INFO("Check non progressive cycles");
+  if (with_dpor)
+    reduction_mode_ = ReductionMode::dpor;
   else
-    XBT_INFO("Start a DFS exploration. Reduction is: %s.",
-             (reductionMode_ == ReductionMode::none ? "none"
-                                                    : (reductionMode_ == ReductionMode::dpor ? "dpor" : "unknown")));
+    reduction_mode_ = ReductionMode::none;
 
-  XBT_DEBUG("Starting the DFS exploration");
+  if (_sg_mc_termination) {
+    if (with_dpor) {
+      XBT_INFO("Check non progressive cycles (turning DPOR off)");
+      reduction_mode_ = ReductionMode::none;
+    } else {
+      XBT_INFO("Check non progressive cycles");
+    }
+  } else
+    XBT_INFO("Start a DFS exploration. Reduction is: %s.", to_c_str(reduction_mode_));
 
   auto initial_state = std::make_unique<State>(get_remote_app());
 
@@ -292,7 +292,7 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args) : Exploration(args)
   for (auto const& [aid, _] : initial_state->get_actors_list()) {
     if (initial_state->is_actor_enabled(aid)) {
       initial_state->mark_todo(aid);
-      if (reductionMode_ == ReductionMode::dpor) {
+      if (reduction_mode_ == ReductionMode::dpor) {
         XBT_DEBUG("Actor %ld is TODO, DPOR is ON so let's go for this one.", aid);
         break;
       }
@@ -303,9 +303,9 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args) : Exploration(args)
   stack_.push_back(std::move(initial_state));
 }
 
-Exploration* create_dfs_exploration(const std::vector<char*>& args)
+Exploration* create_dfs_exploration(const std::vector<char*>& args, bool with_dpor)
 {
-  return new DFSExplorer(args);
+  return new DFSExplorer(args, with_dpor);
 }
 
 } // namespace simgrid::mc

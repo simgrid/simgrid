@@ -14,6 +14,8 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(mc);
 
+using namespace simgrid::mc;
+
 int main(int argc, char** argv)
 {
   xbt_assert(argc >= 2, "Missing arguments");
@@ -31,25 +33,24 @@ int main(int argc, char** argv)
 #endif
   sg_config_init(&argc, argv);
 
-  simgrid::mc::Exploration* explo;
-  if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
-    explo = simgrid::mc::create_communication_determinism_checker(argv_copy);
-  else if (_sg_mc_unfolding_checker)
-    explo = simgrid::mc::create_udpor_checker(argv_copy);
-  else if (_sg_mc_property_file.get().empty())
-    explo = simgrid::mc::create_dfs_exploration(argv_copy);
-  else
-    explo = simgrid::mc::create_liveness_checker(argv_copy);
+  std::unique_ptr<Exploration> explo;
 
-  std::unique_ptr<simgrid::mc::Exploration> checker{explo};
+  if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
+    explo = std::unique_ptr<Exploration>(create_communication_determinism_checker(argv_copy, cfg_use_DPOR()));
+  else if (_sg_mc_unfolding_checker)
+    explo = std::unique_ptr<Exploration>(create_udpor_checker(argv_copy));
+  else if (_sg_mc_property_file.get().empty())
+    explo = std::unique_ptr<Exploration>(create_dfs_exploration(argv_copy, cfg_use_DPOR()));
+  else
+    explo = std::unique_ptr<Exploration>(create_liveness_checker(argv_copy));
 
   try {
-    checker->run();
-  } catch (const simgrid::mc::DeadlockError&) {
+    explo->run();
+  } catch (const DeadlockError&) {
     return SIMGRID_MC_EXIT_DEADLOCK;
-  } catch (const simgrid::mc::TerminationError&) {
+  } catch (const TerminationError&) {
     return SIMGRID_MC_EXIT_NON_TERMINATION;
-  } catch (const simgrid::mc::LivenessError&) {
+  } catch (const LivenessError&) {
     return SIMGRID_MC_EXIT_LIVENESS;
   }
   return SIMGRID_MC_EXIT_SUCCESS;
