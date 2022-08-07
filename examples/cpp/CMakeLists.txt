@@ -213,6 +213,27 @@ foreach(example app-bittorrent app-masterworkers
                                              ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}.tesh)
 endforeach()
 
+# Test non-DPOR reductions on a given MC test
+if(SIMGRID_HAVE_MC)
+  foreach(example mc-failing-assert)
+    ADD_TESH(s4u-${example}-statequality  --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+                                      --setenv libdir=${CMAKE_BINARY_DIR}/lib
+                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                      --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
+                                      --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
+                                      ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-statequality.tesh)
+    set(tesh_files    ${tesh_files}   ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-statequality.tesh)
+
+    ADD_TESH(s4u-${example}-nodpor    --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+                                      --setenv libdir=${CMAKE_BINARY_DIR}/lib
+                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+                                      --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
+                                      --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
+                                      ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-nodpor.tesh)
+    set(tesh_files    ${tesh_files}   ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-nodpor.tesh)
+  endforeach()
+endif()
+
 # Examples not accepting factories
 ##################################
 

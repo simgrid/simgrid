@@ -316,6 +316,8 @@ include examples/cpp/mc-centralized-mutex/s4u-mc-centralized-mutex.cpp
 include examples/cpp/mc-centralized-mutex/s4u-mc-centralized-mutex.tesh
 include examples/cpp/mc-electric-fence/s4u-mc-electric-fence.cpp
 include examples/cpp/mc-electric-fence/s4u-mc-electric-fence.tesh
+include examples/cpp/mc-failing-assert/s4u-mc-failing-assert-nodpor.tesh
+include examples/cpp/mc-failing-assert/s4u-mc-failing-assert-statequality.tesh
 include examples/cpp/mc-failing-assert/s4u-mc-failing-assert.cpp
 include examples/cpp/mc-failing-assert/s4u-mc-failing-assert.tesh
 include examples/cpp/network-factors/s4u-network-factors.cpp
@@ -2280,8 +2282,6 @@ include src/mc/ModelChecker.cpp
 include src/mc/ModelChecker.hpp
 include src/mc/VisitedState.cpp
 include src/mc/VisitedState.hpp
-include src/mc/api.cpp
-include src/mc/api.hpp
 include src/mc/api/ActorState.hpp
 include src/mc/api/RemoteApp.cpp
 include src/mc/api/RemoteApp.hpp
@@ -2324,14 +2324,11 @@ include src/mc/mc_config.hpp
 include src/mc/mc_exit.hpp
 include src/mc/mc_forward.hpp
 include src/mc/mc_global.cpp
-include src/mc/mc_hash.cpp
-include src/mc/mc_hash.hpp
 include src/mc/mc_mmu.hpp
 include src/mc/mc_private.hpp
 include src/mc/mc_record.cpp
 include src/mc/mc_record.hpp
 include src/mc/mc_replay.hpp
-include src/mc/mc_safety.hpp
 include src/mc/remote/AppSide.cpp
 include src/mc/remote/AppSide.hpp
 include src/mc/remote/Channel.cpp

@@ -1,0 +1,19 @@
+#!/usr/bin/env tesh
+
+! expect return 1
+! timeout 300
+$ ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/visited:20 -- ${bindir:=.}/s4u-mc-failing-assert ${platfdir}/small_platform.xml --log=root.thresh:critical
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/visited' to '20'
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+> [0.000000] [mc_ModelChecker/INFO] **************************
+> [0.000000] [mc_ModelChecker/INFO] *** PROPERTY NOT VALID ***
+> [0.000000] [mc_ModelChecker/INFO] **************************
+> [0.000000] [mc_ModelChecker/INFO] Counter-example execution trace:
+> [0.000000] [mc_ModelChecker/INFO]   1: iRecv(mbox=0)
+> [0.000000] [mc_ModelChecker/INFO]   3: iSend(mbox=0)
+> [0.000000] [mc_ModelChecker/INFO]   1: WaitComm(from 3 to 1, mbox=0, no timeout)
+> [0.000000] [mc_ModelChecker/INFO]   1: iRecv(mbox=0)
+> [0.000000] [mc_ModelChecker/INFO]   2: iSend(mbox=0)
+> [0.000000] [mc_ModelChecker/INFO]   1: WaitComm(from 2 to 1, mbox=0, no timeout)
+> [0.000000] [mc_ModelChecker/INFO] Path = 1;3;1;1;2;1
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 18 unique states visited; 4 backtracks (22 transition replays, 0 states visited overall)
