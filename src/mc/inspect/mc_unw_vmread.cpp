@@ -1,3 +1,5 @@
+/** \file  Libunwind namespace implementation using process_vm_readv.       */
+
 /* Copyright (c) 2015-2022. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -13,9 +15,6 @@
 #include <libunwind-ptrace.h>
 #include <libunwind.h>
 
-/** \file
- *  Libunwind namespace implementation using process_vm_readv.
- */
 
 /** Partial structure of libunwind-ptrace context in order to get the PID
  *
@@ -28,21 +27,13 @@ struct _UPT_info {
   // Other things...
 };
 
-/** Get the PID of a `libunwind-ptrace` context
- */
-static inline pid_t _UPT_getpid(void* arg)
-{
-  const _UPT_info* info = static_cast<_UPT_info*>(arg);
-  return info->pid;
-}
-
 /** Read from the memory, avoid using `ptrace` (libunwind method) */
 static int access_mem(const unw_addr_space_t as, const unw_word_t addr, unw_word_t* const valp, const int write,
                       void* const arg)
 {
   if (write)
     return -UNW_EINVAL;
-  pid_t pid   = _UPT_getpid(arg);
+  pid_t pid   = static_cast<_UPT_info*>(arg)->pid;
   size_t size = sizeof(unw_word_t);
 
 #if HAVE_PROCESS_VM_READV /* linux but not freebsd */
