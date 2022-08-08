@@ -7,6 +7,8 @@
 #include "src/mc/mc_replay.hpp"
 #include <simgrid/sg_config.hpp>
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_cfg);
+
 #if SIMGRID_HAVE_MC
 #include <string_view>
 
@@ -40,11 +42,6 @@ static simgrid::config::Flag<std::string> cfg_mc_reduction{
       if (value != "none" && value != "dpor")
         xbt_die("configuration option 'model-check/reduction' can only take 'none' or 'dpor' as a value");
     }};
-
-bool simgrid::mc::cfg_use_DPOR()
-{
-  return cfg_mc_reduction.get() == "dpor";
-}
 
 simgrid::config::Flag<int> _sg_mc_checkpoint{
     "model-check/checkpoint", "Specify the amount of steps between checkpoints during stateful model-checking "
@@ -93,8 +90,11 @@ simgrid::config::Flag<int> _sg_mc_max_depth{"model-check/max-depth",
                                             [](int) { _mc_cfg_cb_check("max depth value"); }};
 
 static simgrid::config::Flag<int> _sg_mc_max_visited_states__{
-    "model-check/visited", "Specify the number of visited state stored for state comparison reduction. If value=5, the "
-                           "last 5 visited states are stored. If value=0 (the default), all states are stored.",
+    "model-check/visited",
+    "Specify the number of visited state stored for state comparison reduction: any branch leading to a state that is "
+    "already stored is cut.\n"
+    "If value=5, the last 5 visited states are stored. If value=0 (the default), no state is stored and this reduction "
+    "technique is disabled.",
     0, [](int value) {
       _mc_cfg_cb_check("number of stored visited states");
       _sg_mc_max_visited_states = value;
@@ -109,5 +109,14 @@ simgrid::config::Flag<std::string> _sg_mc_dot_output_file{
 simgrid::config::Flag<bool> _sg_mc_termination{
     "model-check/termination", "Whether to enable non progressive cycle detection", false,
     [](bool) { _mc_cfg_cb_check("value to enable/disable the detection of non progressive cycles"); }};
+
+bool simgrid::mc::cfg_use_DPOR()
+{
+  if (cfg_mc_reduction.get() == "dpor" && _sg_mc_max_visited_states__ > 0) {
+    XBT_INFO("Disabling DPOR since state-equality reduction is activated with 'model-check/visited'");
+    return false;
+  }
+  return cfg_mc_reduction.get() == "dpor";
+}
 
 #endif
