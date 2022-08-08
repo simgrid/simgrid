@@ -201,6 +201,37 @@ static bool heap_area_differ(const RemoteProcess& process, StateComparator& stat
                              const Snapshot& snapshot1, const Snapshot& snapshot2, HeapLocationPairs* previous,
                              Type* type, int pointer_level);
 
+/* Compares the content of each heap fragment between the two states, at the bit level.
+ *
+ * This operation is costly (about 5 seconds per snapshots' pair to compare on a small program),
+ * but hard to optimize because our algorithm is too hackish.
+ *
+ * Going at bit level can trigger syntaxtic differences on states that are semantically equivalent.
+ *
+ * Padding bytes constitute the first source of such syntaxtic difference: Any malloced memory contains spaces that
+ * are not used to enforce the memory alignment constraints of the CPU. So, cruft of irrelevant changes could get
+ * added on these bits. But this case is handled properly, as any memory block is zeroed by mmalloc before being handled
+ * back, not only for calloc but also for malloc. So the memory interstices due to padding bytes are properly zeroed.
+ *
+ * Another source of such change comes from the order of mallocs, that may well change from one execution path to
+ * another. This will change the malloc fragment in which the data is stored and the pointer values (syntaxtic
+ * difference) while the semantic of the state remains the same.
+ *
+ * To fix this, this code relies on a hugly hack. When we see a difference during the bit-level comparison,
+ * we first check if it could be explained by a pointer-to-block difference. Ie, if when interpreting the memory
+ * area containing that difference as a pointer, I get the pointer to a valid fragment in the heap (in both snapshots).
+ *
+ * This is why we cannot pre-compute a bit-level hash of the heap content: we discover the pointers to other memory
+ * fragment when a difference is found during the bit-level exploration. Fixing this would require to save typing
+ * information about the memory fragments, which is something that could be done with https://github.com/tudasc/TypeART
+ * This would give us all pointers in the mallocated memory, allowing the graph traversal needed to precompute the hash.
+ *
+ * Using a hash without paying attention to malloc fragment reordering would lead to false negatives:
+ * semantically equivalent states would be detected as [syntaxically] different. It's of no importance for the
+ * state-equality reduction (we would re-explore semantically equivalent states), but it would endanger the soundness
+ * of the liveness model-checker, as state-equality is used to detect the loops that constitute the accepting states of
+ * the verified property. So we could miss counter-examples to the verified property. Not good. Not good at all.
+ */
 static bool mmalloc_heap_differ(const RemoteProcess& process, StateComparator& state, const Snapshot& snapshot1,
                                 const Snapshot& snapshot2)
 {
@@ -1247,9 +1278,10 @@ bool Snapshot::operator==(const Snapshot& other)
     }
   }
 
+  XBT_VERB("   Compare heap...");
   /* Compare heap */
   if (mmalloc_heap_differ(process, state_comparator, *this, other)) {
-    XBT_VERB("(%ld - %ld) Different heap (mmalloc_compare)", this->num_state_, other.num_state_);
+    XBT_VERB("(%ld - %ld) Different heap (mmalloc_heap_differ)", this->num_state_, other.num_state_);
     return false;
   }
 

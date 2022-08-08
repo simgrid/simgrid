@@ -216,12 +216,16 @@ endforeach()
 # Test non-DPOR reductions on a given MC test
 foreach(example mc-failing-assert)
   if(SIMGRID_HAVE_MC)
-    ADD_TESH(s4u-${example}-statequality  --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
-                                      --setenv libdir=${CMAKE_BINARY_DIR}/lib
-                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
-                                      --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
-                                      --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
-                                      ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-statequality.tesh)
+# State equality is not tested because it would take about 15 hours to run that test on my machine.
+# We should first optimize mmalloc_heap_differ() which takes ~4sec for each pair to compare (maybe {175 x 174/ 2} pairs here)
+# See the comment on mmalloc_heap_differ() in compare.cpp for more info on why it's hard to optimize.
+#
+#    ADD_TESH(s4u-${example}-statequality  --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
+#                                      --setenv libdir=${CMAKE_BINARY_DIR}/lib
+#                                      --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
+#                                      --setenv srcdir=${CMAKE_CURRENT_SOURCE_DIR}/${example}
+#                                      --cd ${CMAKE_CURRENT_SOURCE_DIR}/${example}
+#                                      ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}-statequality.tesh)
 
     ADD_TESH(s4u-${example}-nodpor    --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/${example}
                                       --setenv libdir=${CMAKE_BINARY_DIR}/lib
