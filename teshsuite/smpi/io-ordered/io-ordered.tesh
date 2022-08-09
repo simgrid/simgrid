@@ -9,14 +9,18 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_io -p
 > (2@bob) Seeking in MPI_File /scratch/testfile, setting offset 80
 > (1@carl) Seeking in MPI_File /scratch/testfile, setting offset 40
 > (3@carl) Seeking in MPI_File /scratch/testfile, setting offset 120
-> (3@carl) Write in MPI_File /scratch/testfile, 40 bytes written, readsize 40 bytes, movesize 40
-> (3@carl) Position after write in MPI_File /scratch/testfile : 160
-> (1@carl) Write in MPI_File /scratch/testfile, 40 bytes written, readsize 40 bytes, movesize 40
-> (1@carl) Position after write in MPI_File /scratch/testfile : 80
-> (2@bob) Write in MPI_File /scratch/testfile, 40 bytes written, readsize 40 bytes, movesize 40
-> (2@bob) Position after write in MPI_File /scratch/testfile : 120
-> (0@bob) Write in MPI_File /scratch/testfile, 40 bytes written, readsize 40 bytes, movesize 40
+> (0@bob) Write in MPI_File /scratch/testfile, 40 bytes written, count 10, writesize 40 bytes, movesize 40
 > (0@bob) Position after write in MPI_File /scratch/testfile : 40
+> (2@bob) Write in MPI_File /scratch/testfile, 40 bytes written, count 10, writesize 40 bytes, movesize 40
+> (2@bob) Position after write in MPI_File /scratch/testfile : 120
+> (1@carl) Write in MPI_File /scratch/testfile, 40 bytes written, count 10, writesize 40 bytes, movesize 40
+> (1@carl) Position after write in MPI_File /scratch/testfile : 80
+> (3@carl) Write in MPI_File /scratch/testfile, 40 bytes written, count 10, writesize 40 bytes, movesize 40
+> (3@carl) Position after write in MPI_File /scratch/testfile : 160
+> (3@carl) Seeking in MPI_File /scratch/testfile, setting offset 0
+> (1@carl) Seeking in MPI_File /scratch/testfile, setting offset 0
+> (0@bob) Seeking in MPI_File /scratch/testfile, setting offset 0
+> (2@bob) Seeking in MPI_File /scratch/testfile, setting offset 0
 > (0@bob) Seeking in MPI_File /scratch/testfile, setting offset 0
 > (0@bob) Seeking in MPI_File /scratch/testfile, setting offset 0
 > (2@bob) Seeking in MPI_File /scratch/testfile, setting offset 0
@@ -25,14 +29,18 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_io -p
 > (2@bob) Seeking in MPI_File /scratch/testfile, setting offset 80
 > (1@carl) Seeking in MPI_File /scratch/testfile, setting offset 40
 > (3@carl) Seeking in MPI_File /scratch/testfile, setting offset 120
-> (3@carl) Read in MPI_File /scratch/testfile, 40 bytes read, readsize 40 bytes, movesize 40
-> (3@carl) Position after read in MPI_File /scratch/testfile : 160
-> (1@carl) Read in MPI_File /scratch/testfile, 40 bytes read, readsize 40 bytes, movesize 40
-> (1@carl) Position after read in MPI_File /scratch/testfile : 80
-> (2@bob) Read in MPI_File /scratch/testfile, 40 bytes read, readsize 40 bytes, movesize 40
-> (2@bob) Position after read in MPI_File /scratch/testfile : 120
-> (0@bob) Read in MPI_File /scratch/testfile, 40 bytes read, readsize 40 bytes, movesize 40
+> (0@bob) Read in MPI_File /scratch/testfile, 40 bytes read, count 10, readsize 40 bytes, movesize 40
 > (0@bob) Position after read in MPI_File /scratch/testfile : 40
+> (2@bob) Read in MPI_File /scratch/testfile, 40 bytes read, count 10, readsize 40 bytes, movesize 40
+> (2@bob) Position after read in MPI_File /scratch/testfile : 120
+> (1@carl) Read in MPI_File /scratch/testfile, 40 bytes read, count 10, readsize 40 bytes, movesize 40
+> (1@carl) Position after read in MPI_File /scratch/testfile : 80
+> (3@carl) Read in MPI_File /scratch/testfile, 40 bytes read, count 10, readsize 40 bytes, movesize 40
+> (3@carl) Position after read in MPI_File /scratch/testfile : 160
+> (3@carl) Seeking in MPI_File /scratch/testfile, setting offset 0
+> (1@carl) Seeking in MPI_File /scratch/testfile, setting offset 0
+> (0@bob) Seeking in MPI_File /scratch/testfile, setting offset 0
+> (2@bob) Seeking in MPI_File /scratch/testfile, setting offset 0
 > (0@bob) Seeking in MPI_File /scratch/testfile, setting offset 0
 > (2@bob) Seeking in MPI_File /scratch/testfile, setting offset 0
 > (3@carl) Seeking in MPI_File /scratch/testfile, setting offset 0
