@@ -111,14 +111,14 @@ int File::del(const char* filename, const Info*)
 
 int File::get_position(MPI_Offset* offset) const
 {
-  *offset = file_->tell();
+  *offset = file_->tell()/etype_->get_extent();
   return MPI_SUCCESS;
 }
 
 int File::get_position_shared(MPI_Offset* offset) const
 {
   shared_mutex_->lock();
-  *offset = *shared_file_pointer_;
+  *offset = *shared_file_pointer_/etype_->get_extent();
   shared_mutex_->unlock();
   return MPI_SUCCESS;
 }

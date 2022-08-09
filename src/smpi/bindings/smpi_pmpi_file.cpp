@@ -65,7 +65,7 @@ int PMPI_File_close(MPI_File *fh){
 int PMPI_File_seek(MPI_File fh, MPI_Offset offset, int whence){
   CHECK_FILE(1, fh)
   const SmpiBenchGuard suspend_bench;
-  int ret = fh->seek(offset,whence);
+  int ret = fh->seek(offset*fh->etype()->get_extent(),whence);
   return ret;
 }
 
@@ -73,7 +73,7 @@ int PMPI_File_seek_shared(MPI_File fh, MPI_Offset offset, int whence){
   CHECK_FILE(1, fh)
   CHECK_COLLECTIVE(fh->comm(), __func__)
   const SmpiBenchGuard suspend_bench;
-  int ret = fh->seek_shared(offset,whence);
+  int ret = fh->seek_shared(offset*fh->etype()->get_extent(),whence);
   return ret;
 }
 
