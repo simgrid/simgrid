@@ -280,17 +280,25 @@ int File::write_ordered(MPI_File fh, const void* buf, int count, const Datatype*
   return ret;
 }
 
-int File::set_view(MPI_Offset /*disp*/, MPI_Datatype etype, MPI_Datatype filetype, const char* datarep, const Info*)
+int File::set_view(MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype, const char* datarep, const Info*)
 {
   etype_    = etype;
   filetype_ = filetype;
   datarep_  = std::string(datarep);
-  seek_shared(0, MPI_SEEK_SET);
+  disp_     = disp;
+  if (comm_->rank() == 0){
+    if(disp != MPI_DISPLACEMENT_CURRENT)
+      seek_shared(disp, MPI_SEEK_SET);
+    else
+      seek_shared(0, MPI_SEEK_CUR);
+  }
+  sync();
   return MPI_SUCCESS;
 }
 
-int File::get_view(MPI_Offset* /*disp*/, MPI_Datatype* etype, MPI_Datatype* filetype, char* datarep) const
+int File::get_view(MPI_Offset* disp, MPI_Datatype* etype, MPI_Datatype* filetype, char* datarep) const
 {
+  *disp     = disp_;
   *etype    = etype_;
   *filetype = filetype_;
   snprintf(datarep, MPI_MAX_NAME_STRING + 1, "%s", datarep_.c_str());
