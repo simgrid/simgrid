@@ -51,7 +51,7 @@ public:
 class XBT_PRIVATE LivenessChecker : public Exploration {
 public:
   explicit LivenessChecker(const std::vector<char*>& args);
-  virtual ~LivenessChecker();
+  ~LivenessChecker() override;
 
   void run() override;
   RecordTrace get_record_trace() override;
@@ -100,7 +100,7 @@ public:
   void set_property_automaton(xbt_automaton_state_t const& automaton_state) const;
   xbt_automaton_exp_label_t get_automaton_transition_label(xbt_dynar_t const& dynar, int index) const;
   xbt_automaton_state_t get_automaton_transition_dst(xbt_dynar_t const& dynar, int index) const;
-  static void automaton_register_symbol(RemoteProcess& remote_process, const char* name, RemotePtr<int> addr);
+  static void automaton_register_symbol(RemoteProcess const& remote_process, const char* name, RemotePtr<int> addr);
 };
 
 } // namespace simgrid::mc

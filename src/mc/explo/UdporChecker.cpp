@@ -26,11 +26,6 @@ std::vector<std::string> UdporChecker::get_textual_trace()
   return trace;
 }
 
-void UdporChecker::log_state()
-{
-  Exploration::log_state();
-}
-
 Exploration* create_udpor_checker(const std::vector<char*>& args)
 {
   return new UdporChecker(args);

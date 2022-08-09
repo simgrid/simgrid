@@ -126,7 +126,7 @@ void DFSExplorer::run()
     int next = state->next_transition();
 
     if (next < 0) { // If there is no more transition in the current state, backtrack.
-      XBT_DEBUG("There remains %d actors, but none to interleave (depth %zu).", state->get_actor_count(),
+      XBT_DEBUG("There remains %lu actors, but none to interleave (depth %zu).", state->get_actor_count(),
                 stack_.size() + 1);
 
       if (state->get_actor_count() == 0) {
@@ -284,7 +284,7 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Explo
   XBT_DEBUG("**************************************************");
 
   /* Get an enabled actor and insert it in the interleave set of the initial state */
-  XBT_DEBUG("Initial state. %d actors to consider", initial_state->get_actor_count());
+  XBT_DEBUG("Initial state. %lu actors to consider", initial_state->get_actor_count());
   for (auto const& [aid, _] : initial_state->get_actors_list()) {
     if (initial_state->is_actor_enabled(aid)) {
       initial_state->mark_todo(aid);

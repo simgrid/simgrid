@@ -242,7 +242,8 @@ xbt_automaton_state_t LivenessChecker::get_automaton_transition_dst(xbt_dynar_t 
   const xbt_automaton_transition* transition = xbt_dynar_get_as(dynar, index, xbt_automaton_transition_t);
   return transition->dst;
 }
-void LivenessChecker::automaton_register_symbol(RemoteProcess& remote_process, const char* name, RemotePtr<int> address)
+void LivenessChecker::automaton_register_symbol(RemoteProcess const& remote_process, const char* name,
+                                                RemotePtr<int> address)
 {
   if (property_automaton_ == nullptr)
     property_automaton_ = xbt_automaton_new();

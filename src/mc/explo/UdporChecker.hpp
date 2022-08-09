@@ -18,7 +18,6 @@ public:
   void run() override;
   RecordTrace get_record_trace() override;
   std::vector<std::string> get_textual_trace() override;
-  void log_state() override;
 };
 
 } // namespace simgrid::mc

@@ -149,7 +149,7 @@ unsigned long RemoteApp::get_maxpid() const
   return model_checker_->get_remote_process().get_maxpid();
 }
 
-void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto)
+void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
 {
   s_mc_message_t msg;
   memset(&msg, 0, sizeof msg);
@@ -171,7 +171,7 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto)
 
   whereto.clear();
   for (auto const& actor : status)
-    whereto.insert(std::make_pair(actor.aid, ActorState(actor.aid, actor.enabled, actor.max_considered)));
+    whereto.try_emplace(actor.aid, ActorState(actor.aid, actor.enabled, actor.max_considered));
 }
 
 void RemoteApp::check_deadlock() const

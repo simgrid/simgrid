@@ -84,7 +84,7 @@ public:
     initial_communications_pattern.resize(maxpid);
     incomplete_communications_pattern.resize(maxpid);
   }
-  void restore_communications_pattern(const simgrid::mc::State* state, RemoteApp& remote_app);
+  void restore_communications_pattern(const simgrid::mc::State* state, RemoteApp const& remote_app);
   void enforce_deterministic_pattern(aid_t process, const PatternCommunication* comm);
   void get_comm_pattern(const Transition* transition);
   void complete_comm_pattern(const CommWaitTransition* transition);
@@ -99,7 +99,7 @@ public:
   std::vector<unsigned> communication_indices_;
 
   static simgrid::xbt::Extension<simgrid::mc::State, StateCommDet> EXTENSION_ID;
-  explicit StateCommDet(CommDetExtension& checker, RemoteApp& remote_app)
+  explicit StateCommDet(CommDetExtension& checker, RemoteApp const& remote_app)
   {
     const unsigned long maxpid = remote_app.get_maxpid();
     for (unsigned long i = 0; i < maxpid; i++) {
@@ -134,7 +134,7 @@ static simgrid::mc::CommPatternDifference compare_comm_pattern(const simgrid::mc
   return CommPatternDifference::NONE;
 }
 
-void CommDetExtension::restore_communications_pattern(const simgrid::mc::State* state, RemoteApp& remote_app)
+void CommDetExtension::restore_communications_pattern(const simgrid::mc::State* state, RemoteApp const& remote_app)
 {
   for (size_t i = 0; i < initial_communications_pattern.size(); i++)
     initial_communications_pattern[i].index_comm =
@@ -329,20 +329,21 @@ Exploration* create_communication_determinism_checker(const std::vector<char*>& 
   auto base      = new DFSExplorer(args, with_dpor);
   auto extension = new CommDetExtension(*base);
 
-  DFSExplorer::on_exploration_start([extension](RemoteApp&) {
+  DFSExplorer::on_exploration_start([extension](RemoteApp const&) {
     XBT_INFO("Check communication determinism");
     extension->exploration_start();
   });
-  DFSExplorer::on_backtracking([extension](RemoteApp&) { extension->initial_communications_pattern_done = true; });
-  DFSExplorer::on_state_creation([extension](State* state, RemoteApp& remote_app) {
+  DFSExplorer::on_backtracking(
+      [extension](RemoteApp const&) { extension->initial_communications_pattern_done = true; });
+  DFSExplorer::on_state_creation([extension](State* state, RemoteApp const& remote_app) {
     state->extension_set(new StateCommDet(*extension, remote_app));
   });
 
-  DFSExplorer::on_restore_system_state([extension](State* state, RemoteApp& remote_app) {
+  DFSExplorer::on_restore_system_state([extension](State* state, RemoteApp const& remote_app) {
     extension->restore_communications_pattern(state, remote_app);
   });
 
-  DFSExplorer::on_restore_initial_state([extension](RemoteApp& remote_app) {
+  DFSExplorer::on_restore_initial_state([extension](RemoteApp const& remote_app) {
     const unsigned long maxpid = remote_app.get_maxpid();
     assert(maxpid == extension->incomplete_communications_pattern.size());
     assert(maxpid == extension->initial_communications_pattern.size());
@@ -352,10 +353,12 @@ Exploration* create_communication_determinism_checker(const std::vector<char*>& 
     }
   });
 
-  DFSExplorer::on_transition_replay([extension](Transition* t, RemoteApp&) { extension->handle_comm_pattern(t); });
-  DFSExplorer::on_transition_execute([extension](Transition* t, RemoteApp&) { extension->handle_comm_pattern(t); });
+  DFSExplorer::on_transition_replay(
+      [extension](Transition* t, RemoteApp const&) { extension->handle_comm_pattern(t); });
+  DFSExplorer::on_transition_execute(
+      [extension](Transition* t, RemoteApp const&) { extension->handle_comm_pattern(t); });
 
-  DFSExplorer::on_log_state([extension](RemoteApp&) {
+  DFSExplorer::on_log_state([extension](RemoteApp const&) {
     if (_sg_mc_comms_determinism) {
       if (extension->send_deterministic && not extension->recv_deterministic) {
         XBT_INFO("*******************************************************");
