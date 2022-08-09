@@ -114,7 +114,7 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
       status->count = 0;
     return MPI_SUCCESS;
   }
-  XBT_CDEBUG(smpi_io, "min:max : %lld:%lld, tot %lld contig %d", min, max, tot, (datatype->flags() & DT_FLAG_CONTIGUOUS));
+  XBT_CDEBUG(smpi_io, "min:max : %lld:%lld, tot %lld contig %u", min, max, tot, (datatype->flags() & DT_FLAG_CONTIGUOUS));
   if ( size==1 || (max - min == tot && (datatype->flags() & DT_FLAG_CONTIGUOUS))) {
     // contiguous. Just have each proc perform its read
     if (status != MPI_STATUS_IGNORE)

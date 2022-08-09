@@ -227,7 +227,7 @@ void File::update_position(sg_offset_t position)
   xbt_assert(position >= 0, "Error in seek, cannot seek before file %s", get_path());
   current_position_ = position;
   if(current_position_>size_){
-    XBT_DEBUG("Updating size of file %s from %llu to %llu", path_.c_str(), size_, position);
+    XBT_DEBUG("Updating size of file %s from %llu to %lld", path_.c_str(), size_, position);
     local_disk_->extension<FileSystemDiskExt>()->incr_used_size(current_position_-size_);
     size_ = current_position_;
 

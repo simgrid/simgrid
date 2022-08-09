@@ -29,27 +29,19 @@ $ ${bindir:=.}/../../../smpi_script/bin/smpirun -map -hostfile ../hostfile_io -p
 > (2@bob) Seeking in MPI_File /scratch/testfile, setting offset 0
 > (3@carl) Seeking in MPI_File /scratch/testfile, setting offset 0
 > (1@carl) Seeking in MPI_File /scratch/testfile, setting offset 0
-> (0@bob) before read shared, shared pointer is 0, pointer is 0
 > (0@bob) Seeking in MPI_File /scratch/testfile, setting offset 0
 > (0@bob) Read in MPI_File /scratch/testfile, 4 bytes read, count 1, readsize 4 bytes, movesize 4
 > (0@bob) Position after read in MPI_File /scratch/testfile : 4
-> (0@bob) after read shared, shared pointer is 4, pointer is 4
-> (2@bob) before read shared, shared pointer is 4, pointer is 0
 > (2@bob) Seeking in MPI_File /scratch/testfile, setting offset 4
 > (0@bob) Seeking in MPI_File /scratch/testfile, setting offset 4
 > (2@bob) Read in MPI_File /scratch/testfile, 4 bytes read, count 1, readsize 4 bytes, movesize 4
 > (2@bob) Position after read in MPI_File /scratch/testfile : 8
-> (2@bob) after read shared, shared pointer is 8, pointer is 8
 > (2@bob) Seeking in MPI_File /scratch/testfile, setting offset 8
-> (3@carl) before read shared, shared pointer is 8, pointer is 0
 > (3@carl) Seeking in MPI_File /scratch/testfile, setting offset 8
 > (3@carl) Read in MPI_File /scratch/testfile, 4 bytes read, count 1, readsize 4 bytes, movesize 4
 > (3@carl) Position after read in MPI_File /scratch/testfile : 12
-> (3@carl) after read shared, shared pointer is 12, pointer is 12
-> (1@carl) before read shared, shared pointer is 12, pointer is 0
 > (1@carl) Seeking in MPI_File /scratch/testfile, setting offset 12
 > (3@carl) Seeking in MPI_File /scratch/testfile, setting offset 12
 > (1@carl) Read in MPI_File /scratch/testfile, 4 bytes read, count 1, readsize 4 bytes, movesize 4
 > (1@carl) Position after read in MPI_File /scratch/testfile : 16
-> (1@carl) after read shared, shared pointer is 16, pointer is 16
 > (1@carl) Seeking in MPI_File /scratch/testfile, setting offset 16

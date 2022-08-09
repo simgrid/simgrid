@@ -185,11 +185,9 @@ int File::read(MPI_File fh, void* /*buf*/, int count, const Datatype* datatype, 
 int File::read_shared(MPI_File fh, void* buf, int count, const Datatype* datatype, MPI_Status* status)
 {
   fh->shared_mutex_->lock();
-  XBT_VERB("before read shared, shared pointer is %llu, pointer is %llu",*(fh->shared_file_pointer_) , fh->file_->tell());
   fh->seek(*(fh->shared_file_pointer_), MPI_SEEK_SET);
   read(fh, buf, count, datatype, status);
   *(fh->shared_file_pointer_) = fh->file_->tell();
-  XBT_VERB("after read shared, shared pointer is %llu, pointer is %llu",*(fh->shared_file_pointer_) , fh->file_->tell());
   fh->shared_mutex_->unlock();
   fh->seek(*(fh->shared_file_pointer_), MPI_SEEK_SET);
   return MPI_SUCCESS;
