@@ -62,8 +62,10 @@ std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc
   auto new_pair =
       std::make_shared<VisitedPair>(pair->num, pair->prop_state_, pair->atomic_propositions, pair->app_state_);
 
-  auto [res_begin, res_end] =
-      boost::range::equal_range(acceptance_pairs_, new_pair.get(), compare_pair_by_actor_count_and_used_heap());
+  auto [res_begin,
+        res_end] = boost::range::equal_range(acceptance_pairs_, new_pair.get(), [](auto const& a, auto const& b) {
+    return std::make_pair(a->actor_count_, a->heap_bytes_used) < std::make_pair(b->actor_count_, b->heap_bytes_used);
+  });
 
   if (pair->search_cycle)
     for (auto i = res_begin; i != res_end; ++i) {
@@ -139,8 +141,10 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
     visited_pair =
         std::make_shared<VisitedPair>(pair->num, pair->prop_state_, pair->atomic_propositions, pair->app_state_);
 
-  auto [range_begin, range_end] =
-      boost::range::equal_range(visited_pairs_, visited_pair.get(), compare_pair_by_actor_count_and_used_heap());
+  auto [range_begin,
+        range_end] = boost::range::equal_range(visited_pairs_, visited_pair.get(), [](auto const& a, auto const& b) {
+    return std::make_pair(a->actor_count_, a->heap_bytes_used) < std::make_pair(b->actor_count_, b->heap_bytes_used);
+  });
 
   for (auto i = range_begin; i != range_end; ++i) {
     const VisitedPair* pair_test = i->get();
