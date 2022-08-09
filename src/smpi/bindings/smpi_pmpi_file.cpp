@@ -200,9 +200,12 @@ int PMPI_File_read_at(MPI_File fh, MPI_Offset offset, void *buf, int count,MPI_D
   const SmpiBenchGuard suspend_bench;
   aid_t rank_traced = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::CpuTIData("IO - read", count * datatype->size()));
+  MPI_Offset prev;
+  fh->get_position(&prev);
   int ret = fh->seek(offset,MPI_SEEK_SET);
   if (ret == MPI_SUCCESS)
     ret = simgrid::smpi::File::read(fh, buf, count, datatype, status);
+  fh->seek(prev,MPI_SEEK_SET);
   TRACE_smpi_comm_out(rank_traced);
   return ret;
 }
@@ -215,9 +218,12 @@ int PMPI_File_read_at_all(MPI_File fh, MPI_Offset offset, void *buf, int count,M
   aid_t rank_traced = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(rank_traced, __func__,
                      new simgrid::instr::CpuTIData("IO - read_at_all", count * datatype->size()));
+  MPI_Offset prev;
+  fh->get_position(&prev);
   int ret = fh->seek(offset,MPI_SEEK_SET);
   if (ret == MPI_SUCCESS)
     ret = fh->op_all<simgrid::smpi::File::read>(buf, count, datatype, status);
+  fh->seek(prev,MPI_SEEK_SET);
   TRACE_smpi_comm_out(rank_traced);
   return ret;
 }
@@ -229,9 +235,12 @@ int PMPI_File_write_at(MPI_File fh, MPI_Offset offset, const void *buf, int coun
   const SmpiBenchGuard suspend_bench;
   aid_t rank_traced = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::CpuTIData("IO - write", count * datatype->size()));
+  MPI_Offset prev;
+  fh->get_position(&prev);
   int ret = fh->seek(offset,MPI_SEEK_SET);
   if (ret == MPI_SUCCESS)
     ret = simgrid::smpi::File::write(fh, const_cast<void*>(buf), count, datatype, status);
+  fh->seek(prev,MPI_SEEK_SET);
   TRACE_smpi_comm_out(rank_traced);
   return ret;
 }
@@ -244,9 +253,12 @@ int PMPI_File_write_at_all(MPI_File fh, MPI_Offset offset, const void *buf, int 
   aid_t rank_traced = simgrid::s4u::this_actor::get_pid();
   TRACE_smpi_comm_in(rank_traced, __func__,
                      new simgrid::instr::CpuTIData("IO - write_at_all", count * datatype->size()));
+  MPI_Offset prev;
+  fh->get_position(&prev);
   int ret = fh->seek(offset,MPI_SEEK_SET);
   if (ret == MPI_SUCCESS)
     ret = fh->op_all<simgrid::smpi::File::write>(const_cast<void*>(buf), count, datatype, status);
+  fh->seek(prev,MPI_SEEK_SET);
   TRACE_smpi_comm_out(rank_traced);
   return ret;
 }

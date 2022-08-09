@@ -204,6 +204,8 @@ int File::read_ordered(MPI_File fh, void* buf, int count, const Datatype* dataty
 
   MPI_Offset result;
   simgrid::smpi::colls::scan(&val, &result, 1, MPI_OFFSET, MPI_SUM, fh->comm_);
+  MPI_Offset prev;
+  fh->get_position(&prev);
   fh->seek(result, MPI_SEEK_SET);
   int ret = fh->op_all<simgrid::smpi::File::read>(buf, count, datatype, status);
   if (fh->comm_->rank() == fh->comm_->size() - 1) {
@@ -213,6 +215,7 @@ int File::read_ordered(MPI_File fh, void* buf, int count, const Datatype* dataty
   }
   char c;
   simgrid::smpi::colls::bcast(&c, 1, MPI_BYTE, fh->comm_->size() - 1, fh->comm_);
+  fh->seek(prev, MPI_SEEK_SET);
   return ret;
 }
 
@@ -239,11 +242,14 @@ int File::write_shared(MPI_File fh, const void* buf, int count, const Datatype* 
 {
   fh->shared_mutex_->lock();
   XBT_DEBUG("Write shared on %s - Shared ptr before : %lld", fh->file_->get_path(), *(fh->shared_file_pointer_));
+  MPI_Offset prev;
+  fh->get_position(&prev);
   fh->seek(*(fh->shared_file_pointer_), MPI_SEEK_SET);
   write(fh, const_cast<void*>(buf), count, datatype, status);
   *(fh->shared_file_pointer_) = fh->file_->tell();
   XBT_DEBUG("Write shared on %s - Shared ptr after : %lld", fh->file_->get_path(), *(fh->shared_file_pointer_));
   fh->shared_mutex_->unlock();
+  fh->seek(prev, MPI_SEEK_SET);
   return MPI_SUCCESS;
 }
 
@@ -258,6 +264,8 @@ int File::write_ordered(MPI_File fh, const void* buf, int count, const Datatype*
   }
   MPI_Offset result;
   simgrid::smpi::colls::scan(&val, &result, 1, MPI_OFFSET, MPI_SUM, fh->comm_);
+  MPI_Offset prev;
+  fh->get_position(&prev);
   fh->seek(result, MPI_SEEK_SET);
   int ret = fh->op_all<simgrid::smpi::File::write>(const_cast<void*>(buf), count, datatype, status);
   if (fh->comm_->rank() == fh->comm_->size() - 1) {
@@ -267,6 +275,7 @@ int File::write_ordered(MPI_File fh, const void* buf, int count, const Datatype*
   }
   char c;
   simgrid::smpi::colls::bcast(&c, 1, MPI_BYTE, fh->comm_->size() - 1, fh->comm_);
+  fh->seek(prev, MPI_SEEK_SET);
   return ret;
 }
 
