@@ -14,7 +14,7 @@
 #include "smpi_info.hpp"
 #include  <algorithm>
 
-XBT_LOG_EXTERNAL_CATEGORY(smpi_pmpi);
+XBT_LOG_EXTERNAL_CATEGORY(smpi_io);
 
 namespace simgrid::smpi {
 class File : public F2C{
@@ -30,6 +30,8 @@ class File : public F2C{
   MPI_Datatype etype_;
   MPI_Datatype filetype_;
   std::string datarep_;
+  MPI_Offset disp_;
+  bool atomicity_;
 
   public:
   File(MPI_Comm comm, const char *filename, int amode, MPI_Info info);
@@ -40,6 +42,7 @@ class File : public F2C{
   int get_position(MPI_Offset* offset) const;
   int get_position_shared(MPI_Offset* offset) const;
   int flags() const;
+  MPI_Datatype etype() const;
   MPI_Comm comm() const;
   std::string name() const override {return file_ ? std::string("MPI_File: ")+ std::string(file_->get_path()): std::string("MPI_File");}
 
@@ -63,6 +66,8 @@ class File : public F2C{
   static int del(const char* filename, const Info* info);
   MPI_Errhandler errhandler();
   void set_errhandler( MPI_Errhandler errhandler);
+  void set_atomicity(bool a);
+  bool get_atomicity();
   static File* f2c(int id);
 };
 
@@ -102,24 +107,27 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
       max = max_offsets[i];
   }
 
-  XBT_CDEBUG(smpi_pmpi, "my offsets to read : %lld:%lld, global min and max %lld:%lld", min_offset, max_offset, min,
+  XBT_CDEBUG(smpi_io, "my offsets to read : %lld:%lld, global min and max %lld:%lld", min_offset, max_offset, min,
              max);
   if (empty == 1) {
     if (status != MPI_STATUS_IGNORE)
       status->count = 0;
     return MPI_SUCCESS;
   }
-  if (max - min == tot && (datatype->flags() & DT_FLAG_CONTIGUOUS)) {
+  XBT_CDEBUG(smpi_io, "min:max : %lld:%lld, tot %lld contig %d", min, max, tot, (datatype->flags() & DT_FLAG_CONTIGUOUS));
+  if ( size==1 || (max - min == tot && (datatype->flags() & DT_FLAG_CONTIGUOUS))) {
     // contiguous. Just have each proc perform its read
     if (status != MPI_STATUS_IGNORE)
       status->count = count * datatype->size();
-    return T(this, buf, count, datatype, status);
+    int ret = T(this, buf, count, datatype, status);
+    seek(max_offset, MPI_SEEK_SET);
+    return ret;
   }
 
   // Interleaved case : How much do I need to read, and whom to send it ?
-  MPI_Offset my_chunk_start = (max - min + 1) / size * rank;
-  MPI_Offset my_chunk_end   = ((max - min + 1) / size * (rank + 1));
-  XBT_CDEBUG(smpi_pmpi, "my chunks to read : %lld:%lld", my_chunk_start, my_chunk_end);
+  MPI_Offset my_chunk_start = min + (max - min + 1) / size * rank;
+  MPI_Offset my_chunk_end   = min + ((max - min + 1) / size * (rank + 1)) +1;
+  XBT_CDEBUG(smpi_io, "my chunks to read : %lld:%lld", my_chunk_start, my_chunk_end);
   std::vector<int> send_sizes(size);
   std::vector<int> recv_sizes(size);
   std::vector<int> send_disps(size);
@@ -130,11 +138,14 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
     send_disps[i] = 0; // cheat to avoid issues when send>recv as we use recv buffer
     if ((my_chunk_start >= min_offsets[i] && my_chunk_start < max_offsets[i]) ||
         ((my_chunk_end <= max_offsets[i]) && my_chunk_end > min_offsets[i])) {
-      send_sizes[i] = (std::min(max_offsets[i] - 1, my_chunk_end - 1) - std::max(min_offsets[i], my_chunk_start));
+      send_sizes[i] = (std::min(max_offsets[i], my_chunk_end) - std::max(min_offsets[i], my_chunk_start));
+      //we want to send only useful data, so let's pretend we pack it
+      send_sizes[i]=send_sizes[i]/datatype->get_extent()*datatype->size();
       // store min and max offset to actually read
+  
       min_offset = std::min(min_offset, min_offsets[i]);
       total_sent += send_sizes[i];
-      XBT_CDEBUG(smpi_pmpi, "will have to send %d bytes to %d", send_sizes[i], i);
+      XBT_CDEBUG(smpi_io, "will have to send %d bytes to %d", send_sizes[i], i);
     }
   }
   min_offset = std::max(min_offset, my_chunk_start);
@@ -169,15 +180,16 @@ int File::op_all(void* buf, int count, const Datatype* datatype, MPI_Status* sta
     else if (chunk_start > my_chunk_end)
       continue;
     else
-      totreads += (std::min(chunk_end, my_chunk_end - 1) - std::max(chunk_start, my_chunk_start));
+      totreads += (std::min(chunk_end, my_chunk_end) - std::max(chunk_start, my_chunk_start));
   }
-  XBT_CDEBUG(smpi_pmpi, "will have to access %lld from my chunk", totreads);
+  XBT_CDEBUG(smpi_io, "will have to access %lld from my chunk", totreads);
 
   unsigned char* sendbuf = smpi_get_tmp_sendbuffer(total_sent);
 
   if (totreads > 0) {
     seek(min_offset, MPI_SEEK_SET);
-    T(this, sendbuf, totreads / datatype->size(), datatype, status);
+    T(this, sendbuf, totreads / datatype->get_extent(), datatype, status);
+    seek(max_offset, MPI_SEEK_SET);
   }
   simgrid::smpi::colls::alltoall(send_sizes.data(), 1, MPI_INT, recv_sizes.data(), 1, MPI_INT, comm_);
   int total_recv = 0;
