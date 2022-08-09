@@ -367,3 +367,31 @@ int PMPI_File_call_errhandler(MPI_File file,int errorcode){
   simgrid::smpi::Errhandler::unref(err);
   return MPI_SUCCESS;
 }
+
+int PMPI_File_get_type_extent(MPI_File fh, MPI_Datatype
+    datatype, MPI_Aint *extent){
+  CHECK_FILE(1, fh)
+  CHECK_TYPE(2, datatype)
+  CHECK_NULL(3, MPI_ERR_OTHER, extent)
+  *extent = datatype->get_extent();
+  return MPI_SUCCESS;
+}
+
+int PMPI_File_set_atomicity(MPI_File fh, int a){
+  CHECK_FILE(1, fh)
+  fh->set_atomicity(a != 0);
+  return MPI_SUCCESS;
+}
+
+int PMPI_File_get_atomicity(MPI_File fh, int* a){
+  CHECK_FILE(1, fh)
+  *a = fh->get_atomicity();
+  return MPI_SUCCESS;
+}
+
+int PMPI_File_get_byte_offset(MPI_File fh, MPI_Offset offset, MPI_Offset *disp){
+  CHECK_FILE(1, fh)
+  CHECK_NULL(3, MPI_ERR_OTHER, disp)
+  *disp = offset * fh->etype()->get_extent();
+  return MPI_SUCCESS;
+}

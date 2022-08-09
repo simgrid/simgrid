@@ -395,6 +395,10 @@ WRAPPED_PMPI_CALL_ERRHANDLER_FILE(int, MPI_File_set_errhandler,( MPI_File fh, MP
 WRAPPED_PMPI_CALL_ERRHANDLER_FILE(int, MPI_File_get_errhandler,( MPI_File fh, MPI_Errhandler *errhandler), (fh, errhandler))
 WRAPPED_PMPI_CALL_ERRHANDLER_FILE(int, MPI_File_set_view,(MPI_File fh, MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype, const char *datarep, MPI_Info info), (fh, disp, etype, filetype, datarep, info))
 WRAPPED_PMPI_CALL_ERRHANDLER_FILE(int, MPI_File_get_view,(MPI_File fh, MPI_Offset *disp, MPI_Datatype *etype, MPI_Datatype *filetype, char *datarep), (fh, disp, etype, filetype, datarep))
+WRAPPED_PMPI_CALL_ERRHANDLER_FILE(int, MPI_File_get_type_extent,(MPI_File fh, MPI_Datatype datatype, MPI_Aint *extent), (fh, datatype, extent))
+WRAPPED_PMPI_CALL_ERRHANDLER_FILE(int, MPI_File_set_atomicity,(MPI_File fh, int flag), (fh, flag))
+WRAPPED_PMPI_CALL_ERRHANDLER_FILE(int, MPI_File_get_atomicity,(MPI_File fh, int *flag), (fh, flag))
+WRAPPED_PMPI_CALL_ERRHANDLER_FILE(int, MPI_File_get_byte_offset,(MPI_File fh, MPI_Offset offset, MPI_Offset *disp), (fh, offset, disp))
 /*
   Unimplemented Calls - both PMPI and MPI calls are generated.
   When implementing, please move ahead, swap UNIMPLEMENTED_WRAPPED_PMPI_CALL for WRAPPED_PMPI_CALL,
@@ -433,7 +437,6 @@ UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iread,(MPI_File fh, void *buf, int
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iwrite,(MPI_File fh, const void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, buf, count, datatype, request))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iread_all,(MPI_File fh, void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, buf, count, datatype, request))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iwrite_all,(MPI_File fh, const void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, buf, count, datatype, request))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_byte_offset,(MPI_File fh, MPI_Offset offset, MPI_Offset *disp), (fh, offset, disp))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iread_shared,(MPI_File fh, void *buf, int count,MPI_Datatype datatype, MPI_Request *request), (fh, buf, count, datatype, request))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_iwrite_shared,(MPI_File fh, const void *buf, int count, MPI_Datatype datatype, MPI_Request *request), (fh, buf, count, datatype, request))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_at_all_begin,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype), (fh, offset, buf, count, datatype))
@@ -448,9 +451,6 @@ UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_ordered_begin,(MPI_File fh, v
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_read_ordered_end,(MPI_File fh, void *buf, MPI_Status *status), (fh, buf, status))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_ordered_begin,(MPI_File fh, const void *buf, int count, MPI_Datatype datatype), (fh, buf, count, datatype))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_write_ordered_end,(MPI_File fh, const void *buf, MPI_Status *status), (fh, buf, status))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_type_extent,(MPI_File fh, MPI_Datatype datatype, MPI_Aint *extent), (fh, datatype, extent))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_set_atomicity,(MPI_File fh, int flag), (fh, flag))
-UNIMPLEMENTED_WRAPPED_PMPI_CALL(int, MPI_File_get_atomicity,(MPI_File fh, int *flag), (fh, flag))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Get_elements,(MPI_Status* status, MPI_Datatype datatype, int* elements) ,(status, datatype, elements))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Get_elements_x,(MPI_Status* status, MPI_Datatype datatype, MPI_Count* elements) ,(status, datatype, elements))
 UNIMPLEMENTED_WRAPPED_PMPI_CALL(int,MPI_Graph_create,(MPI_Comm comm_old, int nnodes, const int* index, const int* edges, int reorder, MPI_Comm* comm_graph) ,(comm_old, nnodes, index, edges, reorder, comm_graph))

@@ -49,9 +49,12 @@ File::File(MPI_Comm comm, const char* filename, int amode, MPI_Info info) : comm
       fullname.insert(0, mount);
     }
   }
-
+  XBT_DEBUG("Opening %s", fullname.c_str());
   file_ = simgrid::s4u::File::open(fullname, nullptr);
   list_ = nullptr;
+  disp_ = 0;
+  etype_ = MPI_BYTE;
+  atomicity_ = true;
   if (comm_->rank() == 0) {
     int size    = comm_->size() + FP_SIZE;
     list_       = new char[size];
@@ -299,6 +302,11 @@ int File::flags() const
   return flags_;
 }
 
+MPI_Datatype File::etype() const
+{
+  return etype_;
+}
+
 int File::sync()
 {
   // no idea
@@ -344,4 +352,13 @@ File* File::f2c(int id)
 {
   return static_cast<File*>(F2C::f2c(id));
 }
+
+void File::set_atomicity(bool a){
+  atomicity_ = a;
+}
+
+bool File::get_atomicity(){
+  return atomicity_;
+}
+
 } // namespace simgrid::smpi
