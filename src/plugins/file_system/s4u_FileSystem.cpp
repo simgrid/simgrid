@@ -86,7 +86,6 @@ File::File(const std::string& fullpath, const_sg_host_t host, void* userdata) : 
     desc_id = ext->file_descriptor_table->back();
     ext->file_descriptor_table->pop_back();
 
-    XBT_DEBUG("\tOpen file '%s'", path_.c_str());
     std::map<std::string, sg_size_t, std::less<>>* content = nullptr;
     content = local_disk_->extension<FileSystemDiskExt>()->get_content();
 
@@ -95,6 +94,7 @@ File::File(const std::string& fullpath, const_sg_host_t host, void* userdata) : 
       auto sz = content->find(path_);
       if (sz != content->end()) {
         size_ = sz->second;
+	XBT_DEBUG("\tOpen file '%s', size %llu", path_.c_str(), size_);
       } else {
         size_ = 0;
         content->insert({path_, size_});
@@ -191,11 +191,6 @@ sg_size_t File::write(sg_size_t size, bool write_inside)
     local_disk_->extension<FileSystemDiskExt>()->decr_used_size(size_ - current_position_);
   write_size = local_disk_->write(size);
   update_position(current_position_ + write_size);
-  kernel::actor::simcall_answered([this] {
-    std::map<std::string, sg_size_t, std::less<>>* content = local_disk_->extension<FileSystemDiskExt>()->get_content();
-    content->erase(path_);
-    content->insert({path_, size_});
-  });
 
   return write_size;
 }
@@ -232,8 +227,15 @@ void File::update_position(sg_offset_t position)
   xbt_assert(position >= 0, "Error in seek, cannot seek before file %s", get_path());
   current_position_ = position;
   if(current_position_>size_){
+    XBT_DEBUG("Updating size of file %s from %llu to %llu", path_.c_str(), size_, position);
     local_disk_->extension<FileSystemDiskExt>()->incr_used_size(current_position_-size_);
     size_ = current_position_;
+
+    kernel::actor::simcall_answered([this] {
+    std::map<std::string, sg_size_t, std::less<>>* content = local_disk_->extension<FileSystemDiskExt>()->get_content();
+    content->erase(path_);
+    content->insert({path_, size_});
+  });
   }
 }
 
@@ -275,10 +277,9 @@ int File::unlink() const
     XBT_WARN("File %s is not on disk %s. Impossible to unlink", path_.c_str(), name);
     return -1;
   } else {
-    XBT_DEBUG("UNLINK %s on disk '%s'", path_.c_str(), name);
+    XBT_DEBUG("UNLINK %s of size %llu on disk '%s'", path_.c_str(), size_, name);
 
     local_disk_->extension<FileSystemDiskExt>()->decr_used_size(size_);
-
     // Remove the file from storage
     content->erase(path_);
 
