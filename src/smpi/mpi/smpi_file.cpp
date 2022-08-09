@@ -159,9 +159,9 @@ int File::read(MPI_File fh, void* /*buf*/, int count, const Datatype* datatype, 
   MPI_Offset position = fh->file_->tell();
   MPI_Offset movesize = datatype->get_extent() * count;
   MPI_Offset readsize = datatype->size() * count;
-  XBT_DEBUG("Position before read in MPI_File %s : %llu", fh->file_->get_path(), fh->file_->tell());
+  XBT_DEBUG("Position before read in MPI_File %s : %llu, size %llu", fh->file_->get_path(), fh->file_->tell(), fh->file_->size());
   MPI_Offset read = fh->file_->read(readsize);
-  XBT_VERB("Read in MPI_File %s, %lld bytes read, readsize %lld bytes, movesize %lld", fh->file_->get_path(), read,
+  XBT_VERB("Read in MPI_File %s, %lld bytes read, count %d, readsize %lld bytes, movesize %lld", fh->file_->get_path(), read, count,
            readsize, movesize);
   if (readsize != movesize) {
     fh->file_->seek(position + movesize, SEEK_SET);
@@ -185,10 +185,13 @@ int File::read(MPI_File fh, void* /*buf*/, int count, const Datatype* datatype, 
 int File::read_shared(MPI_File fh, void* buf, int count, const Datatype* datatype, MPI_Status* status)
 {
   fh->shared_mutex_->lock();
+  XBT_VERB("before read shared, shared pointer is %llu, pointer is %llu",*(fh->shared_file_pointer_) , fh->file_->tell());
   fh->seek(*(fh->shared_file_pointer_), MPI_SEEK_SET);
   read(fh, buf, count, datatype, status);
   *(fh->shared_file_pointer_) = fh->file_->tell();
+  XBT_VERB("after read shared, shared pointer is %llu, pointer is %llu",*(fh->shared_file_pointer_) , fh->file_->tell());
   fh->shared_mutex_->unlock();
+  fh->seek(*(fh->shared_file_pointer_), MPI_SEEK_SET);
   return MPI_SUCCESS;
 }
 
@@ -225,10 +228,10 @@ int File::write(MPI_File fh, void* /*buf*/, int count, const Datatype* datatype,
   MPI_Offset position  = fh->file_->tell();
   MPI_Offset movesize  = datatype->get_extent() * count;
   MPI_Offset writesize = datatype->size() * count;
-  XBT_DEBUG("Position before write in MPI_File %s : %llu", fh->file_->get_path(), fh->file_->tell());
+  XBT_DEBUG("Position before write in MPI_File %s : %llu, size %llu", fh->file_->get_path(), fh->file_->tell(), fh->file_->size());
   MPI_Offset write = fh->file_->write(writesize, true);
-  XBT_VERB("Write in MPI_File %s, %lld bytes written, readsize %lld bytes, movesize %lld", fh->file_->get_path(), write,
-           writesize, movesize);
+  XBT_VERB("Write in MPI_File %s, %lld bytes written, count %d, writesize %lld bytes, movesize %lld", fh->file_->get_path(), write,
+           count, writesize, movesize);
   if (writesize != movesize) {
     fh->file_->seek(position + movesize, SEEK_SET);
   }
@@ -242,14 +245,12 @@ int File::write_shared(MPI_File fh, const void* buf, int count, const Datatype* 
 {
   fh->shared_mutex_->lock();
   XBT_DEBUG("Write shared on %s - Shared ptr before : %lld", fh->file_->get_path(), *(fh->shared_file_pointer_));
-  MPI_Offset prev;
-  fh->get_position(&prev);
   fh->seek(*(fh->shared_file_pointer_), MPI_SEEK_SET);
   write(fh, const_cast<void*>(buf), count, datatype, status);
   *(fh->shared_file_pointer_) = fh->file_->tell();
   XBT_DEBUG("Write shared on %s - Shared ptr after : %lld", fh->file_->get_path(), *(fh->shared_file_pointer_));
+  fh->seek(*(fh->shared_file_pointer_), MPI_SEEK_SET);
   fh->shared_mutex_->unlock();
-  fh->seek(prev, MPI_SEEK_SET);
   return MPI_SUCCESS;
 }
 
