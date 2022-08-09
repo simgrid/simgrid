@@ -483,3 +483,7 @@ int smpi_getopt (int argc,  char *const *argv,  const char *options)
     smpi_process()->set_optind(optind);
   return ret;
 }
+
+pid_t smpi_getpid(){
+  return static_cast<pid_t>(simgrid::s4u::this_actor::get_pid());
+}

@@ -12,6 +12,7 @@
 #include <unistd.h>
 
 #include <sys/time.h>
+#include <sys/types.h>
 #if _POSIX_TIMERS
 #include <time.h>
 #endif
@@ -44,6 +45,8 @@ void* smpi_shared_malloc_intercept(size_t size, const char* file, int line);
 void* smpi_shared_calloc_intercept(size_t num_elm, size_t elem_size, const char* file, int line);
 void* smpi_shared_realloc_intercept(void* data, size_t size, const char* file, int line);
 void smpi_shared_free(void* data);
+
+pid_t smpi_getpid();
 #ifdef __cplusplus
 [[noreturn]] // c++11
 #else

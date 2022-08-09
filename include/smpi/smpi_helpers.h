@@ -41,4 +41,5 @@
 
 #define exit(x) smpi_exit(x)
 
+#define getpid smpi_getpid
 #endif
