@@ -108,9 +108,10 @@ if [ -f Testing/TAG ] ; then
   /usr/bin/python3-coverage combine
   /usr/bin/python3-coverage xml -i -o ./python_coverage.xml
 
-  cd "$WORKSPACE"
   #convert all gcov reports to xml cobertura reports
-  gcovr -r . --xml-pretty -e teshsuite -e build/MBI -e examples/smpi/NAS -e examples/smpi/mc -u -o "$BUILDFOLDER"/xml_coverage.xml
+  gcovr -r . --xml-pretty -e "$WORKSPACE"/teshsuite -e MBI -e "$WORKSPACE"/examples/smpi/NAS -e "$WORKSPACE"/examples/smpi/mc -u -o xml_coverage.xml
+
+  cd "$WORKSPACE"
   xsltproc "$WORKSPACE"/tools/jenkins/ctest2junit.xsl build/Testing/"$( head -n 1 < build/Testing/TAG )"/Test.xml > CTestResults_memcheck.xml
 
   #generate sloccount report
