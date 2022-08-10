@@ -16,7 +16,6 @@ namespace simgrid::mc {
  *   an actor cannot have more than one enabled transition at a given time.
  */
 class ActorState {
-
   /* Possible exploration status of an actor transition in a state.
    * Either the checker did not consider the transition, or it was considered and still to do, or considered and done.
    */

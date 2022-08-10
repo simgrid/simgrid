@@ -541,7 +541,6 @@ void SendRecvAction::kernel(simgrid::xbt::ReplayAction&)
   TRACE_smpi_recv(src_traced, my_proc_id, recvtag);
   TRACE_smpi_comm_out(my_proc_id);
   XBT_DEBUG("Exits SendRecv");
-
 }
 
 void ComputeAction::kernel(simgrid::xbt::ReplayAction&)
