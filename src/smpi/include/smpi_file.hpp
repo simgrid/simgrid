@@ -67,7 +67,7 @@ class File : public F2C{
   MPI_Errhandler errhandler();
   void set_errhandler( MPI_Errhandler errhandler);
   void set_atomicity(bool a);
-  bool get_atomicity();
+  bool get_atomicity() const;
   static File* f2c(int id);
 };
 

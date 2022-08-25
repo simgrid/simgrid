@@ -93,7 +93,7 @@ private:
   bool evaluate_label(const xbt_automaton_exp_label* l, std::vector<int> const& values);
 
 public:
-  void automaton_load(const char* file);
+  void automaton_load(const char* file) const;
   std::vector<int> automaton_propositional_symbol_evaluate() const;
   std::vector<xbt_automaton_state_t> get_automaton_state() const;
   int compare_automaton_exp_label(const xbt_automaton_exp_label* l) const;

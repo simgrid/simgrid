@@ -180,13 +180,12 @@ void LivenessChecker::purge_visited_pairs()
 LivenessChecker::LivenessChecker(const std::vector<char*>& args) : Exploration(args) {}
 LivenessChecker::~LivenessChecker()
 {
-  if (property_automaton_ != nullptr)
-    xbt_automaton_free(property_automaton_);
+  xbt_automaton_free(property_automaton_);
 }
 
 xbt_automaton_t LivenessChecker::property_automaton_ = nullptr;
 
-void LivenessChecker::automaton_load(const char* file)
+void LivenessChecker::automaton_load(const char* file) const
 {
   if (property_automaton_ == nullptr)
     property_automaton_ = xbt_automaton_new();

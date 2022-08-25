@@ -373,7 +373,8 @@ void File::set_atomicity(bool a){
   atomicity_ = a;
 }
 
-bool File::get_atomicity(){
+bool File::get_atomicity() const
+{
   return atomicity_;
 }
 
