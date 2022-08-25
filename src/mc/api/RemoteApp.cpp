@@ -171,7 +171,7 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
 
   whereto.clear();
   for (auto const& actor : status)
-    whereto.try_emplace(actor.aid, ActorState(actor.aid, actor.enabled, actor.max_considered));
+    whereto.try_emplace(actor.aid, actor.aid, actor.enabled, actor.max_considered);
 }
 
 void RemoteApp::check_deadlock() const
