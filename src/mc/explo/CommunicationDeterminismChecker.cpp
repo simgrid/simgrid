@@ -339,7 +339,7 @@ Exploration* create_communication_determinism_checker(const std::vector<char*>& 
     state->extension_set(new StateCommDet(*extension, remote_app));
   });
 
-  DFSExplorer::on_restore_system_state([extension](State* state, RemoteApp const& remote_app) {
+  DFSExplorer::on_restore_system_state([extension](State const* state, RemoteApp const& remote_app) {
     extension->restore_communications_pattern(state, remote_app);
   });
 
@@ -354,9 +354,9 @@ Exploration* create_communication_determinism_checker(const std::vector<char*>& 
   });
 
   DFSExplorer::on_transition_replay(
-      [extension](Transition* t, RemoteApp const&) { extension->handle_comm_pattern(t); });
+      [extension](Transition const* t, RemoteApp const&) { extension->handle_comm_pattern(t); });
   DFSExplorer::on_transition_execute(
-      [extension](Transition* t, RemoteApp const&) { extension->handle_comm_pattern(t); });
+      [extension](Transition const* t, RemoteApp const&) { extension->handle_comm_pattern(t); });
 
   DFSExplorer::on_log_state([extension](RemoteApp const&) {
     if (_sg_mc_comms_determinism) {

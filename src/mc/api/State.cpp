@@ -14,7 +14,7 @@ namespace simgrid::mc {
 
 long State::expended_states_ = 0;
 
-State::State(RemoteApp& remote_app) : num_(++expended_states_)
+State::State(const RemoteApp& remote_app) : num_(++expended_states_)
 {
   remote_app.get_actors_status(actors_to_run_);
 

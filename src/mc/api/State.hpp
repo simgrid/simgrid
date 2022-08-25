@@ -30,7 +30,7 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   std::shared_ptr<Snapshot> system_state_;
 
 public:
-  explicit State(RemoteApp& remote_app);
+  explicit State(const RemoteApp& remote_app);
 
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   aid_t next_transition() const;
