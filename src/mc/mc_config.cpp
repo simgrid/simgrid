@@ -7,14 +7,14 @@
 #include "src/mc/mc_replay.hpp"
 #include <simgrid/sg_config.hpp>
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_cfg);
-
 #if SIMGRID_HAVE_MC
 #include <string_view>
 
 #else
 #define _sg_do_model_check 0
 #endif
+
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_cfg);
 
 static void _mc_cfg_cb_check(const char* spec, bool more_check = true)
 {
