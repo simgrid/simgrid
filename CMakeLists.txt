@@ -53,7 +53,7 @@ if (CMAKE_COMPILER_IS_GNUCC)
   endif()
 endif()
 
-## We need a decent support of the C++14 and C11 standards
+## We need a decent support of the C++17 and C11 standards
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 

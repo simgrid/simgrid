@@ -111,8 +111,8 @@ Getting the Dependencies
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 C++ compiler (either g++, clang, or icc).
-  We use the C++14 standard, and older compilers tend to fail on
-  us. It seems that g++ 5.0 or higher is required nowadays (because of
+  We use the C++17 standard, and older compilers tend to fail on
+  us. It seems that g++ 7.0 or higher is required nowadays (because of
   boost).  SimGrid compiles well with `clang` or `icc` too.
 Python 3.
   SimGrid should build without Python. That is only needed by our regression test suite.
