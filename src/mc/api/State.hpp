@@ -47,7 +47,7 @@ public:
   std::map<aid_t, ActorState> const& get_actors_list() const { return actors_to_run_; }
 
   unsigned long get_actor_count() const { return actors_to_run_.size(); }
-  bool is_actor_enabled(int actor) { return actors_to_run_.at(actor).is_enabled(); }
+  bool is_actor_enabled(aid_t actor) { return actors_to_run_.at(actor).is_enabled(); }
 
   Snapshot* get_system_state() const { return system_state_.get(); }
   void set_system_state(std::shared_ptr<Snapshot> state) { system_state_ = std::move(state); }

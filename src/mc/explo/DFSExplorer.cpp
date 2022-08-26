@@ -123,7 +123,7 @@ void DFSExplorer::run()
     }
 
     // Search for the next transition
-    int next = state->next_transition();
+    aid_t next = state->next_transition();
 
     if (next < 0) { // If there is no more transition in the current state, backtrack.
       XBT_DEBUG("There remains %lu actors, but none to interleave (depth %zu).", state->get_actor_count(),
