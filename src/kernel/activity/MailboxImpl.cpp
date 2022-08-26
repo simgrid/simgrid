@@ -21,7 +21,11 @@ unsigned MailboxImpl::next_id_ = 0;
 
 MailboxImpl::~MailboxImpl()
 {
-  clear(false);
+  try {
+    clear(false);
+  } catch (const std::bad_alloc& ba) {
+    XBT_ERROR("MailboxImpl::clear() failure: %s", ba.what());
+  }
   set_receiver(nullptr);
 }
 
