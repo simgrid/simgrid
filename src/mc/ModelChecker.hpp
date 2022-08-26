@@ -65,7 +65,7 @@ public:
   unsigned long get_visited_states() const { return visited_states_; }
   void inc_visited_states() { visited_states_++; }
 
-  void dot_output(const char* fmt, ...);
+  void dot_output(const char* fmt, ...) XBT_ATTRIB_PRINTF(2, 3);
   void dot_output_flush()
   {
     if (dot_output_ != nullptr)
