@@ -166,8 +166,10 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
              (int)sizeof(answer));
 
   s_mc_message_actors_status_one_t status[answer.count];
-  received = model_checker_->channel().receive(&status, sizeof(status));
-  xbt_assert(static_cast<size_t>(received) == sizeof(status));
+  if (answer.count > 0) {
+    received = model_checker_->channel().receive(&status, sizeof(status));
+    xbt_assert(static_cast<size_t>(received) == sizeof(status));
+  }
 
   whereto.clear();
   for (auto const& actor : status)

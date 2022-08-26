@@ -158,7 +158,8 @@ void AppSide::handle_actors_status() const
     i++;
   }
   xbt_assert(channel_.send(answer) == 0, "Could not send ACTORS_STATUS_REPLY msg");
-  xbt_assert(channel_.send(status, sizeof(status)) == 0, "Could not send ACTORS_STATUS_REPLY data");
+  if (answer.count > 0)
+    xbt_assert(channel_.send(status, sizeof(status)) == 0, "Could not send ACTORS_STATUS_REPLY data");
 }
 
 #define assert_msg_size(_name_, _type_)                                                                                \
