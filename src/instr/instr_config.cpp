@@ -279,7 +279,7 @@ static void on_container_creation_ti(const Container& c)
 #ifdef WIN32
     _mkdir(folder_name.c_str());
 #else
-    mkdir(folder_name.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
+    mkdir(folder_name.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
 #endif
     ti_unique_file = new std::ofstream(filename.c_str(), std::ofstream::out);
     xbt_assert(not ti_unique_file->fail(), "Tracefile %s could not be opened for writing", filename.c_str());
