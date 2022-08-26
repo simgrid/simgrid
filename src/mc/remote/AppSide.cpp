@@ -149,7 +149,7 @@ void AppSide::handle_actors_status() const
   struct s_mc_message_actors_status_answer_t answer {
     MessageType::ACTORS_STATUS_REPLY, count
   };
-  s_mc_message_actors_status_one_t status[count];
+  std::vector<s_mc_message_actors_status_one_t> status(count);
   int i = 0;
   for (auto const& [aid, actor] : actor_list) {
     status[i].aid            = aid;
@@ -158,8 +158,10 @@ void AppSide::handle_actors_status() const
     i++;
   }
   xbt_assert(channel_.send(answer) == 0, "Could not send ACTORS_STATUS_REPLY msg");
-  if (answer.count > 0)
-    xbt_assert(channel_.send(status, sizeof(status)) == 0, "Could not send ACTORS_STATUS_REPLY data");
+  if (answer.count > 0) {
+    size_t size = status.size() * sizeof(s_mc_message_actors_status_one_t);
+    xbt_assert(channel_.send(status.data(), size) == 0, "Could not send ACTORS_STATUS_REPLY data");
+  }
 }
 
 #define assert_msg_size(_name_, _type_)                                                                                \
