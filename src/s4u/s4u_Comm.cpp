@@ -81,8 +81,8 @@ void Comm::send(kernel::actor::ActorImpl* sender, const Mailbox* mbox, double ta
     comm = simgrid::kernel::actor::simcall_answered(
         [&send_observer] { return simgrid::kernel::activity::CommImpl::isend(&send_observer); }, &send_observer);
 
-    simgrid::kernel::actor::ActivityWaitSimcall wait_observer{sender, comm.get(), timeout};
-    if (simgrid::kernel::actor::simcall_blocking(
+    if (simgrid::kernel::actor::ActivityWaitSimcall wait_observer{sender, comm.get(), timeout};
+        simgrid::kernel::actor::simcall_blocking(
             [&wait_observer] {
               wait_observer.get_activity()->wait_for(wait_observer.get_issuer(), wait_observer.get_timeout());
             },
@@ -124,8 +124,8 @@ void Comm::recv(kernel::actor::ActorImpl* receiver, const Mailbox* mbox, void* d
     comm = simgrid::kernel::actor::simcall_answered(
         [&observer] { return simgrid::kernel::activity::CommImpl::irecv(&observer); }, &observer);
 
-    simgrid::kernel::actor::ActivityWaitSimcall wait_observer{receiver, comm.get(), timeout};
-    if (simgrid::kernel::actor::simcall_blocking(
+    if (simgrid::kernel::actor::ActivityWaitSimcall wait_observer{receiver, comm.get(), timeout};
+        simgrid::kernel::actor::simcall_blocking(
             [&wait_observer] {
               wait_observer.get_activity()->wait_for(wait_observer.get_issuer(), wait_observer.get_timeout());
             },

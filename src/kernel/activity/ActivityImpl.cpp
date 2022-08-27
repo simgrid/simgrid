@@ -140,8 +140,7 @@ void ActivityImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<Acti
     auto* observer = dynamic_cast<kernel::actor::ActivityWaitanySimcall*>(issuer->simcall_.observer_);
     xbt_assert(observer != nullptr);
     xbt_assert(timeout <= 0.0, "Timeout not implemented for waitany in the model-checker");
-    int idx   = observer->get_value();
-    if (idx != -1) {
+    if (int idx = observer->get_value(); idx != -1) {
       auto* act = activities.at(idx);
       act->simcalls_.push_back(&issuer->simcall_);
       observer->set_result(idx);
