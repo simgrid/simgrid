@@ -141,11 +141,13 @@ void ActivityImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<Acti
     xbt_assert(observer != nullptr);
     xbt_assert(timeout <= 0.0, "Timeout not implemented for waitany in the model-checker");
     int idx   = observer->get_value();
-    auto* act = activities[idx];
-    act->simcalls_.push_back(&issuer->simcall_);
-    observer->set_result(idx);
-    act->set_state(State::DONE);
-    act->finish();
+    if (idx != -1) {
+      auto* act = activities.at(idx);
+      act->simcalls_.push_back(&issuer->simcall_);
+      observer->set_result(idx);
+      act->set_state(State::DONE);
+      act->finish();
+    }
     return;
   }
 
