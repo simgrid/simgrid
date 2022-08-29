@@ -109,7 +109,7 @@ if [ -f Testing/TAG ] ; then
   /usr/bin/python3-coverage xml -i -o ./python_coverage.xml
 
   #convert all gcov reports to xml cobertura reports
-  gcovr -r "$WORKSPACE" --xml-pretty -e "$WORKSPACE"/teshsuite -e MBI -e "$WORKSPACE"/examples/smpi/NAS -e "$WORKSPACE"/examples/smpi/mc -u -o xml_coverage.xml
+  gcovr -r "$WORKSPACE" --xml-pretty -e "$WORKSPACE"/teshsuite -e "$WORKSPACE"/MBI -e "$WORKSPACE"/examples/smpi/NAS -e "$WORKSPACE"/examples/smpi/mc -u -o xml_coverage.xml --gcov-ignore-parse-errors
 
   cd "$WORKSPACE"
   xsltproc "$WORKSPACE"/tools/jenkins/ctest2junit.xsl build/Testing/"$( head -n 1 < build/Testing/TAG )"/Test.xml > CTestResults_memcheck.xml
