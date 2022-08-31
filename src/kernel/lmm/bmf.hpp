@@ -7,6 +7,7 @@
 #define SIMGRID_KERNEL_LMM_BMF_HPP
 
 #include "src/kernel/lmm/System.hpp"
+#include "xbt/config.hpp"
 
 #ifdef __clang__
 // Ignore deprecation warnings with Eigen < 4.0 (see https://gitlab.com/libeigen/eigen/-/issues/1850)
@@ -73,6 +74,12 @@ private:
  * @endrst
  */
 class XBT_PUBLIC BmfSolver {
+  inline static simgrid::config::Flag<int> cfg_bmf_max_iteration{
+      "bmf/max-iterations", "Maximum number of steps to be performed while searching for a BMF allocation", 1000};
+
+  inline static simgrid::config::Flag<double> cfg_bmf_precision{
+      "bmf/precision", "Numerical precision used when computing resource sharing", 1E-12};
+
 public:
   /**
    * @brief Instantiate the BMF solver
@@ -195,7 +202,7 @@ private:
   std::set<std::vector<int>> allocations_; //!< set of already tested allocations, since last identified loop
   AllocationGenerator gen_;
   static constexpr int NO_RESOURCE = -1;                    //!< flag to indicate player has selected no resource
-  int max_iteration_;                                       //!< number maximum of iterations of BMF algorithm
+  int max_iteration_               = cfg_bmf_max_iteration; //!< number maximum of iterations of BMF algorithm
 };
 
 /**

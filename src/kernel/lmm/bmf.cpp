@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/lmm/bmf.hpp"
-#include "xbt/config.hpp"
 
 #include <Eigen/LU>
 #include <iostream>
@@ -12,13 +11,6 @@
 #include <sstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_bmf, kernel, "Kernel BMF solver");
-
-simgrid::config::Flag<int>
-    cfg_bmf_max_iteration("bmf/max-iterations",
-                          "Maximum number of steps to be performed while searching for a BMF allocation", 1000);
-
-simgrid::config::Flag<double> cfg_bmf_precision{"bmf/precision",
-                                                "Numerical precision used when computing resource sharing", 1E-12};
 
 namespace simgrid::kernel::lmm {
 
@@ -71,7 +63,6 @@ BmfSolver::BmfSolver(Eigen::MatrixXd A, Eigen::MatrixXd maxA, Eigen::VectorXd C,
     , C_shared_(std::move(shared))
     , phi_(std::move(phi))
     , gen_(A_)
-    , max_iteration_(cfg_bmf_max_iteration)
 
 {
   xbt_assert(max_iteration_ > 0,
