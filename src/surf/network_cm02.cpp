@@ -93,7 +93,7 @@ NetworkCm02Model::NetworkCm02Model(const std::string& name) : NetworkModel(name)
     select = true;
   }
 
-  set_maxmin_system(lmm::System::build(cfg_network_solver, select));
+  set_maxmin_system(lmm::System::build(cfg_network_solver.get(), select));
 
   loopback_.reset(create_link("__loopback__", {config::get_value<double>("network/loopback-bw")}));
   loopback_->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE, {});

@@ -18,6 +18,7 @@
 #include <cmath>
 #include <limits>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 namespace simgrid::kernel::lmm {
@@ -418,7 +419,7 @@ public:
    * @param selective_update Enables lazy updates
    * @return pointer to System instance
    */
-  static System* build(const std::string& solver_name, bool selective_update);
+  static System* build(std::string_view solver_name, bool selective_update);
   /** @brief Validates solver configuration */
   static void validate_solver(const std::string& solver_name);
 

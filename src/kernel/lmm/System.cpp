@@ -57,7 +57,7 @@ void Element::increase_concurrency(bool check_limit)
              "Concurrency limit overflow!");
 }
 
-System* System::build(const std::string& solver_name, bool selective_update)
+System* System::build(std::string_view solver_name, bool selective_update)
 {
   System* system = nullptr;
   if (solver_name == "bmf") {

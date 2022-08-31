@@ -68,7 +68,7 @@ CpuCas01Model::CpuCas01Model(const std::string& name) : CpuModel(name)
     select = true;
   }
 
-  set_maxmin_system(lmm::System::build(cfg_cpu_solver, select));
+  set_maxmin_system(lmm::System::build(cfg_cpu_solver.get(), select));
 }
 
 CpuImpl* CpuCas01Model::create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate)
