@@ -101,7 +101,7 @@ if(enable_compile_optimizations AND CMAKE_COMPILER_IS_GNUCC
 endif()
 
 # Do not leak the current directory into the binaries
-if(CMAKE_COMPILER_IS_GNUCC)
+if(CMAKE_COMPILER_IS_GNUCC AND NOT enable_coverage)
   execute_process(COMMAND realpath --relative-to=${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}
     RESULT_VARIABLE RESULT OUTPUT_VARIABLE RELATIVE_SOURCE_DIR ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
   if(RESULT EQUAL 0)
