@@ -20,3 +20,8 @@ odr_violation:^__tag$
 
 # size=16 'stored_vtable' /usr/include/boost/function/function_template.hpp:933:32
 odr_violation:^stored_vtable$
+
+# size=40 'cfg_bmf_max_iteration' ../src/kernel/lmm/bmf.hpp:77:44
+odr_violation:^cfg_bmf_max_iteration$
+# size=40 'cfg_bmf_precision' ../src/kernel/lmm/bmf.hpp:80:47
+odr_violation:^cfg_bmf_precision$
