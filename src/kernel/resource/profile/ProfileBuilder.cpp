@@ -237,8 +237,8 @@ Profile* ProfileBuilder::from_file(const std::string& path)
 
 
 Profile* ProfileBuilder::from_void() {
-  static Profile void_profile("__void__", nullptr, -1.0);
-  return &void_profile;
+  static Profile* void_profile = new Profile("__void__", nullptr, -1.0);
+  return void_profile;
 }
 
 Profile* ProfileBuilder::from_callback(const std::string& name, const std::function<UpdateCb>& cb, double repeat_delay) {
