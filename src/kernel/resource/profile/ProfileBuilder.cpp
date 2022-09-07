@@ -237,7 +237,7 @@ Profile* ProfileBuilder::from_file(const std::string& path)
 
 
 Profile* ProfileBuilder::from_void() {
-  static Profile* void_profile = new Profile("__void__", nullptr, -1.0);
+  static auto* void_profile = new Profile("__void__", nullptr, -1.0);
   return void_profile;
 }
 
