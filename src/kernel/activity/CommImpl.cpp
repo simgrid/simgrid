@@ -542,6 +542,9 @@ void CommImpl::finish()
   if (get_state() == State::DONE)
     copy_data();
 
+  if (detached_)
+    EngineImpl::get_instance()->get_maestro()->activities_.remove(this);
+
   while (not simcalls_.empty()) {
     actor::Simcall* simcall = simcalls_.front();
     simcalls_.pop_front();
