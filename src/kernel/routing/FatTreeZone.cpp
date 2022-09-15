@@ -75,10 +75,10 @@ void FatTreeZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rout
     int d = destination->position; // as in d-mod-k
 
     for (unsigned int i = 0; i < currentNode->level; i++)
-      d /= this->num_parents_per_node_[i];
+      d /= (this->num_parents_per_node_[i] * this->num_port_lower_level_[i]);
 
-    int k = this->num_parents_per_node_[currentNode->level];
-    d     = d % k;
+    int k = this->num_parents_per_node_[currentNode->level] * this->num_port_lower_level_[currentNode->level];
+    d = d % k;
 
     if (currentNode->limiter_link_)
       into->link_list_.push_back(currentNode->limiter_link_);
@@ -93,7 +93,9 @@ void FatTreeZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rout
 
   // Down part
   while (currentNode != destination) {
-    for (unsigned int i = 0; i < currentNode->children.size(); i++) {
+    //pick cable when multiple parallels
+    int d = source->position % this->num_port_lower_level_[currentNode->level - 1];
+    for (unsigned int i = d * this->num_children_per_node_[currentNode->level - 1]; i < currentNode->children.size(); i++) {
       if (i % this->num_children_per_node_[currentNode->level - 1] == destination->label[currentNode->level - 1]) {
         add_link_latency(into->link_list_, currentNode->children[i]->down_link_, latency);
 
