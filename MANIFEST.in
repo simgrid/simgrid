@@ -940,7 +940,6 @@ include teshsuite/smpi/coll-allreduce/coll-allreduce.tesh
 include teshsuite/smpi/coll-alltoall/clusters.tesh
 include teshsuite/smpi/coll-alltoall/coll-alltoall.c
 include teshsuite/smpi/coll-alltoall/coll-alltoall.tesh
-include teshsuite/smpi/coll-alltoall/griffon.tesh
 include teshsuite/smpi/coll-alltoallv/coll-alltoallv.c
 include teshsuite/smpi/coll-alltoallv/coll-alltoallv.tesh
 include teshsuite/smpi/coll-barrier/coll-barrier.c
