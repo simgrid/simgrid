@@ -264,8 +264,7 @@ int PMPI_File_write_at_all(MPI_File fh, MPI_Offset offset, const void *buf, int 
 }
 
 int PMPI_File_delete(const char *filename, MPI_Info info){
-  if (filename == nullptr)
-    return MPI_ERR_FILE;
+  CHECK_NULL(1, MPI_ERR_FILE, filename)
   const SmpiBenchGuard suspend_bench;
   int ret = simgrid::smpi::File::del(filename, info);
   return ret;
@@ -371,9 +370,7 @@ int PMPI_File_set_errhandler(MPI_File file, MPI_Errhandler errhandler){
 }
 
 int PMPI_File_call_errhandler(MPI_File file,int errorcode){
-  if (file == nullptr) {
-    return MPI_ERR_WIN;
-  }
+  CHECK_FILE(1, file)
   MPI_Errhandler err = file->errhandler();
   err->call(file, errorcode);
   simgrid::smpi::Errhandler::unref(err);
