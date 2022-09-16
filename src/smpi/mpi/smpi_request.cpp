@@ -1291,8 +1291,6 @@ void Request::free_f(int id)
 
 int Request::get_status(const Request* req, int* flag, MPI_Status* status)
 {
-  *flag=0;
-
   if(req != MPI_REQUEST_NULL && req->action_ != nullptr) {
     req->iprobe(req->comm_->group()->rank(req->src_), req->tag_, req->comm_, flag, status);
     if(*flag)
