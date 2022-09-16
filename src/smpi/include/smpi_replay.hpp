@@ -197,7 +197,7 @@ public:
 template <class T> class ReplayAction {
   const std::string name_;
   const aid_t my_proc_id_ = s4u::this_actor::get_pid();
-  T args_;
+  T args_{};
 
 protected:
   const std::string& get_name() const { return name_; }
