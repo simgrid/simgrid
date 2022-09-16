@@ -134,7 +134,9 @@ int main(int argc, char **argv)
   print_buffer_int(sdispls, size, "sdisp:", rank);
   print_buffer_int(rdispls, size, "rdisp:", rank);
 
-  MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_INT, rbuf, recvcounts, rdispls, MPI_INT, comm);
+  status = MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_INT, rbuf, recvcounts, rdispls, MPI_INT, comm);
+  if (status != MPI_SUCCESS)
+    printf("MPI_Alltoallv did not return MPI_SUCCESS\n");
 
   print_buffer_int(rbuf, size2, "rbuf:", rank);
 
