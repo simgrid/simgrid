@@ -34,11 +34,9 @@ void dump_comment_file(const std::string& filename)
     throw TracingError(XBT_THROW_POINT,
                        xbt::string_printf("Comment file %s could not be opened for reading.", filename.c_str()));
 
-  while (not fs.eof()) {
-    std::string line;
-    std::getline(fs, line);
+  std::string line;
+  while (std::getline(fs, line))
     tracing_file << "# " << line;
-  }
   fs.close();
 }
 
