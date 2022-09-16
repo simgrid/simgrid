@@ -75,7 +75,7 @@ void FatTreeZone::get_local_route(const NetPoint* src, const NetPoint* dst, Rout
     int d = destination->position; // as in d-mod-k
 
     for (unsigned int i = 0; i < currentNode->level; i++)
-      d /= (this->num_parents_per_node_[i] * this->num_port_lower_level_[i]);
+      d /= this->num_parents_per_node_[i];
 
     int k = this->num_parents_per_node_[currentNode->level] * this->num_port_lower_level_[currentNode->level];
     d = d % k;
