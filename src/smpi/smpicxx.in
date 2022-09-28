@@ -90,6 +90,10 @@ while [ $# -gt 0 ]; do
   esac
 done
 
+if [ "x@WIN32@" != "x1" ]; then
+    list_add CMDARGS "-fPIC"
+fi
+
 list_set CMDLINE "${CXX}"
 list_add_not_empty CMDLINE "${CXXFLAGS}"
 list_add_not_empty CMDLINE "${INCLUDEARGS}"
