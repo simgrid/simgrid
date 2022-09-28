@@ -29,7 +29,6 @@ if [ "x@WIN32@" = "x1" ]; then
     list_add CXXFLAGS "-include" "@includedir@/smpi/smpi_main.h"
     list_add LINKARGS "@libdir@\libsimgrid.dll"
 elif [ "x@APPLE@" = "x1" ]; then
-    list_add CXXFLAGS "-fPIC"
     if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
        list_add CXXFLAGS "-include" "@includedir@/smpi/smpi_helpers.h"
        list_add LINKARGS "-shared"
@@ -40,7 +39,6 @@ elif [ "x@APPLE@" = "x1" ]; then
       list_add LINKARGS "-lsimgrid" "-lm" ${LINKER_UNDEFINED_ERROR:+"-Wl,-undefined,error"}
     fi
 else
-    list_add CXXFLAGS "-fPIC"
     if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
        list_add CXXFLAGS "-include" "@includedir@/smpi/smpi_helpers.h"
        list_add LINKARGS "-shared"
