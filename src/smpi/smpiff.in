@@ -128,7 +128,7 @@ while [ $# -gt 0 ]; do
             TRACE_CALL_LOCATION=1
             # This should be list_add FFLAGS but it's not possible
             # anymore: FFLAGS was already moved into CMDLINE above.
-            list_add_not_empty CMDLINE "-ffixed-line-length-none" "-cpp"
+            list_add CMDLINE "-ffixed-line-length-none" "-cpp"
             ;;
         -o)
             list_add CMDLINE "-o$1"
