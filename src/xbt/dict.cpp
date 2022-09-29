@@ -15,6 +15,7 @@
 #include "xbt/string.hpp"
 #include "xbt/xbt_modinter.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 
@@ -90,7 +91,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
   unsigned newsize = oldsize * 2;
 
   auto* newtable = static_cast<xbt_dictelm_t*>(xbt_realloc(dict->table, newsize * sizeof(xbt_dictelm_t)));
-  memset(&newtable[oldsize], 0, oldsize * sizeof(xbt_dictelm_t)); /* zero second half */
+  std::fill(newtable + oldsize, newtable + newsize, nullptr); /* zero second half */
   newsize--;
   dict->table_size = newsize;
   dict->table      = newtable;
