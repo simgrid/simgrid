@@ -93,21 +93,6 @@ static void search_not_found(const_xbt_dict_t head, const char* data)
   REQUIRE(xbt_dict_get_or_null(head, data) == nullptr);
 }
 
-static void count(const_xbt_dict_t dict, int length)
-{
-  INFO("Count elements (expecting " << length << ")");
-  REQUIRE(xbt_dict_length(dict) == length); // Announced length differs
-
-  xbt_dict_cursor_t cursor;
-  char* key;
-  void* data;
-  int effective = 0;
-  xbt_dict_foreach (dict, cursor, key, data)
-    effective++;
-
-  REQUIRE(effective == length); // Effective length differs
-}
-
 static int countelems(const_xbt_dict_t head)
 {
   xbt_dict_cursor_t cursor;
@@ -119,6 +104,13 @@ static int countelems(const_xbt_dict_t head)
     res++;
   }
   return res;
+}
+
+static void count(const_xbt_dict_t dict, int length)
+{
+  INFO("Count elements (expecting " << length << ")");
+  REQUIRE(xbt_dict_length(dict) == length); // Announced length differs
+  REQUIRE(countelems(dict) == length);      // Effective length differs
 }
 
 TEST_CASE("xbt::dict: dict data container", "dict")
