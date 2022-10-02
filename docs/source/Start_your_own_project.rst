@@ -24,8 +24,9 @@ to the template itself.
 Building your project with CMake
 --------------------------------
 
-Here is a `CMakeLists.txt` that you can use as a starting point for
-your project. It builds two simulators from a given set of source files.
+Here is a `CMakeLists.txt` that you can use as a starting point for your S4U
+project (see below for MPI projects). It builds two simulators from a given set
+of source files.
 
 .. code-block:: cmake
 
@@ -59,11 +60,13 @@ also refer to the file header for more information.
 
 MPI projects should include ``find_package (MPI)`` in CMakeLists.txt. Then, the
 variables ``MPI_C_COMPILER``, ``MPI_CXX_COMPILER``, and ``MPI_Fortran_COMPILER`` should
-point to the full path of smpicc, smpicxx, and smpiff respectively. Example:
+point to the full path of smpicc, smpicxx, and smpiff respectively.
+It is however not advised to set these variables from the CMakeLists.txt file directly.
+In addition, you may need to set ``SMPI_PRETEND_CC=1`` to please cmake when it tests the compiler.
 
 .. code-block:: console
 
-   $ cmake -DMPI_C_COMPILER=/opt/simgrid/bin/smpicc -DMPI_CXX_COMPILER=/opt/simgrid/bin/smpicxx -DMPI_Fortran_COMPILER=/opt/simgrid/bin/smpiff .
+   $ SMPI_PRETEND_CC=1 cmake -DMPI_C_COMPILER=/opt/simgrid/bin/smpicc -DMPI_CXX_COMPILER=/opt/simgrid/bin/smpicxx -DMPI_Fortran_COMPILER=/opt/simgrid/bin/smpiff .
 
 
 Building your project with Makefile
