@@ -1,9 +1,5 @@
 SimGrid (3.31.1) NOT RELEASED YET (v3.32 expected June 21. 2022, 09:13 UTC)
 
-S4U:
-  - Added the xbt_enforce macro. This has the same syntax as xbt_assert. The only difference is that an AssertionError
-    exception is thrown if the condition is not satisfied, instead of calling abort().
-
 Python:
   - Added the following bindings / examples:
     - Comm (now 100% covers the C++ interface):
@@ -26,42 +22,75 @@ Python:
 	  - this_actor.parallel_execute
 	  - Exec.suspend
 	  - Exec.wait_for
-  - Added an AssertionError exception that may be thrown in case of error. For instance, creating tow hosts with the
-    same name will now throw this exception instead of killing the interpreter.
+  - Added an AssertionError exception that may be thrown in case of error.
+    For instance, creating two hosts with the same name will now throw this exception
+    instead of killing the interpreter.
 
 Platform description & visualization:
-  - More robust sanity checks for platforms, to reject unallowed topologies with
+  - More robust sanity checks for platforms, to reject forbidden topologies with
     a proper error message.
-  - One new C++ platform example, supernode.cpp. A Python script (supernode.py)
-    demonstrates how we can generate a nice graphical representation of the
-	platform.
+  - New platform example: supernode.cpp and supernode.py.
+    The Python version generates a nice graphical representation of the platform.
+  - platform_graph_export_csv() dumps a platform topology to a CSV file.
+  - Bug fixes around fat-tree topologies.
 
 General:
-  - SimGrid now requires a compiler with C++17 support.
-  - Modified the host_by_name functions:
-    - Now, they return only hosts, not VMs, and in a much more efficient way.
-	- If one wants to find a VM by name, he now needs to know the host on
-	which it runs and call vm_by_name (or manually iterate over the list of hosts)
+  - SimGrid now requires a compiler with C++17 support to compile the lib.
+    Our public headers still allow the user code to be compiled in C++14.
+  - Support graphviz v3 and ns-3 v3.36 (older versions are still supported).
 
-Tools:
-  - Enhancements to the graphicator tool:
-	- Allow to dump the platform topology as a CSV file representing the edges
-	  of the graph (in addition to the DOT format).
-	- Fix graphicator for "cluster" topologies (e.g. fat-tree, dragonfly).
+S4U:
+ - kill signal Comm::on_completion that was not working anyway.
+ - Expose signals Activity::on_suspend and Activity::on_resume
+ - Added the xbt_enforce macro. This has the same syntax as xbt_assert, but
+   an AssertionError exception is thrown if the condition is not satisfied
+   instead of calling abort().
+ - Various cleanups around virtual machines:
+   - host_by_name() and friends now only return hosts. VMs are now excluded.
+   - It is now impossible to search a VM by name globally.
+     You can only search VM by name on a given PM, so either you know
+     the PM on which your VM runs and you can search by name, or you need
+     to manually iterate over all PMs to search this VM.
+   - The s4u::VirtualMachine constructor is now deprecated.
+     Please use s4u::Host::create_vm() instead.
+   - Rename s4u::VirtualMachine::on_creation() to on_vm_creation() to
+     avoid confusion with s4u:Host::on_creation() that is inherited.
+     Also s4u::VirtualMachine::on_destruction -> on_vm_destruction().
+ - One-sided communications (Comm::sendto) can now be detached,
+   and should now be more resilient to network and host faults.
+ - New: s4u::Exec::get_thread_count()
+
+SMPI:
+ - Implement MPI_File_get_type_extent(), MPI_File_s/get_atomicity() and
+   MPI_File_get_byte_offset()
+ - Intercept getpid() calls to return the simulated ones.
+ - Fix various bugs in MPI IO.
+
+Models:
+ - Fix a bug when using ptasks and multicores (FG!111).
+
+Graphicator tool:
+ - Allow to dump the platform topology as a CSV file representing the edges
+   of the graph (in addition to the DOT format).
+ - Fix graphicator for "cluster" topologies (e.g. fat-tree, dragonfly).
+
+Model-Checker:
+ - New: sthread intercepts at runtime on pthread operations, and
+   verify it formally. This code is still a PoC but may even work for you.
+ - Sync MBI generators with upstream changes.
+ - Various cosmetics, small bug fixes and inner refactorings
 
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GH: issues on GitHub)
+ - FG!98: Re-enable the tests for legacy stochastic profiles
  - FG#105: "Variable penalty should not be negative!" with in-flight messages and bandwidth profiles
  - FG#109: Application time reported by --cfg=smpi/display-timing:yes is wrong
  - FG!109: Trigger new engine solve upon host events such as host on/off
  - FG#110: Wait_any does not trigger new model solve when host events occur
  - FG#111: Wrong execution time in rare cases when using multicore
+ - FG!116: SMPI/replay: Fix issue with recv of size =0
 
 ----------------------------------------------------------------------------
-
-S4U:
- - kill signal Comm::on_completion that was not working anyway.
- - Expose signals Activity::on_suspend and Activity::on_resume
 
 SimGrid (3.31) March 22. 2022.
 
