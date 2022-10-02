@@ -290,6 +290,8 @@ If you want to run such analysis on your own code, out of the provided docker, t
 - You should pass some specific flags to the linker when compiling your application: ``-Wl,-znorelro -Wl,-znoseparate-code`` In the
   docker, the provided CMakeLists.txt provides them for you when compiling the provided code. ``smpicc`` and friends also add this
   parameter automatically.
+- If you get error messages complaining about the Dwarf version used, try adding ``-gdwarf-4`` to you CFLAGS and CXXFLAGS.
+  If you find a situation where this flag is needed in ``smpicc``, please report this issue.
 - Also install ``libboost-stacktrace-dev`` to display nice backtraces from the application side (the one from the model-checking side is
   available in any case, but it contains less details).
 - Mc SimGrid uses the ``ptrace`` system call to spy on the verified application. Some versions of Docker forbid the use of this call by
