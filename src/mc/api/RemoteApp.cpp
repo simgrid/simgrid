@@ -7,6 +7,7 @@
 #include "src/internal_config.h" // HAVE_SMPI
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
+#include "xbt/asserts.h"
 #if HAVE_SMPI
 #include "smpi/smpi.h"
 #include "src/smpi/include/private.hpp"
@@ -87,7 +88,13 @@ static void run_child_process(int socket, const std::vector<char*>& args)
              "Unable to find a binary to exec on the command line. Did you only pass config flags?");
 
   execvp(args[i], args.data() + i);
-  xbt_die("The model-checked process failed to exec(%s): %s", args[i], strerror(errno));
+  XBT_CRITICAL("The model-checked process failed to exec(%s): %s.\n"
+               "        Make sure that your binary exists on disk and is executable.",
+               args[i], strerror(errno));
+  if (strchr(args[i], '=') != nullptr)
+    XBT_CRITICAL("If you want to pass command-line parameters, please use --cfg=model-check/setenv:%s", args[i]);
+
+  xbt_die("Aborting now.");
 }
 
 RemoteApp::RemoteApp(const std::vector<char*>& args)
