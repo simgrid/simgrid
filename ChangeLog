@@ -1,50 +1,18 @@
 SimGrid (3.31.1) NOT RELEASED YET (v3.32 expected June 21. 2022, 09:13 UTC)
 
-Python:
-  - Added the following bindings / examples:
-    - Comm (now 100% covers the C++ interface):
-      - Comm.dst_data_size, Comm.mailbox, Comm.sender, Comm.start_time, Comm.finish_time
-      - Comm.state_str [examples: examples/python/comm-failure/, examples/python/comm-host2host/]
-      - Comm.remaining [examples: examples/python/comm-host2host/, examples/python/comm-suspend/]
-      - Comm.set_payload_size [example: examples/python/comm-host2host/]
-      - Comm.set_rate [example: examples/python/comm-throttling/]
-      - Comm.sendto, Comm.sendto_init, Comm.sendto_async [example: examples/python/comm-host2host/]
-      - Comm.start, Comm.suspend, Comm.resume [example: examples/python/comm-host2host/]
-      - Comm.test_any [example: examples/python/comm-testany/]
-      - Comm.wait_until [example: examples/python/comm-waituntil/]
-    - Engine:
-      - Engine.host_by_name [example: examples/python/comm-host2host/]
-      - Engine.mailbox_by_name_or_create [example: examples/python/comm-pingpong/]
-	  - Engine.set_config
-    - Mailbox: Mailbox.ready [example: examples/python/comm-ready/]
-	- Ptask [example: examples/python/exec-ptask/]:
-	  - this_actor.exec_init
-	  - this_actor.parallel_execute
-	  - Exec.suspend
-	  - Exec.wait_for
-  - Added an AssertionError exception that may be thrown in case of error.
-    For instance, creating two hosts with the same name will now throw this exception
-    instead of killing the interpreter.
-
-Platform description & visualization:
-  - More robust sanity checks for platforms, to reject forbidden topologies with
-    a proper error message.
-  - New platform example: supernode.cpp and supernode.py.
-    The Python version generates a nice graphical representation of the platform.
-  - platform_graph_export_csv() dumps a platform topology to a CSV file.
-  - Bug fixes around fat-tree topologies.
-
 General:
-  - SimGrid now requires a compiler with C++17 support to compile the lib.
-    Our public headers still allow the user code to be compiled in C++14.
-  - Support graphviz v3 and ns-3 v3.36 (older versions are still supported).
+ - SimGrid now requires a compiler with C++17 support to compile the lib.
+   Our public headers still allow the user code to be compiled in C++14.
+ - Support graphviz v3 and ns-3 v3.36 (older versions are still supported).
+ - Tested with clang (v11, v13, v14 and v16), gcc (v7 to v13) and IntelCC v2022.2
 
 S4U:
- - kill signal Comm::on_completion that was not working anyway.
- - Expose signals Activity::on_suspend and Activity::on_resume
- - Added the xbt_enforce macro. This has the same syntax as xbt_assert, but
-   an AssertionError exception is thrown if the condition is not satisfied
-   instead of calling abort().
+ - API evolutions: 
+   - kill signal Comm::on_completion that was not working anyway.
+   - Expose signals Activity::on_suspend and Activity::on_resume
+   - New macro xbt_enforce(): similar to xbt_assert(), but throws an AssertionError 
+     instead of calling abort().
+   - New: s4u::Exec::get_thread_count()
  - Various cleanups around virtual machines:
    - host_by_name() and friends now only return hosts. VMs are now excluded.
    - It is now impossible to search a VM by name globally.
@@ -56,9 +24,35 @@ S4U:
    - Rename s4u::VirtualMachine::on_creation() to on_vm_creation() to
      avoid confusion with s4u:Host::on_creation() that is inherited.
      Also s4u::VirtualMachine::on_destruction -> on_vm_destruction().
- - One-sided communications (Comm::sendto) can now be detached,
-   and should now be more resilient to network and host faults.
- - New: s4u::Exec::get_thread_count()
+ - Bug fixes:
+   - One-sided communications (Comm::sendto) can now be detached,
+     and should now be more resilient to network and host faults.
+
+Python:
+ - Added the following bindings / examples:
+   - Comm (now 100% covers the C++ interface):
+     - Comm.dst_data_size, Comm.mailbox, Comm.sender, Comm.start_time, Comm.finish_time
+     - Comm.state_str [examples: examples/python/comm-failure/, examples/python/comm-host2host/]
+     - Comm.remaining [examples: examples/python/comm-host2host/, examples/python/comm-suspend/]
+     - Comm.set_payload_size [example: examples/python/comm-host2host/]
+     - Comm.set_rate [example: examples/python/comm-throttling/]
+     - Comm.sendto, Comm.sendto_init, Comm.sendto_async [example: examples/python/comm-host2host/]
+     - Comm.start, Comm.suspend, Comm.resume [example: examples/python/comm-host2host/]
+     - Comm.test_any [example: examples/python/comm-testany/]
+     - Comm.wait_until [example: examples/python/comm-waituntil/]
+   - Engine:
+     - Engine.host_by_name [example: examples/python/comm-host2host/]
+     - Engine.mailbox_by_name_or_create [example: examples/python/comm-pingpong/]
+     - Engine.set_config
+   - Mailbox: Mailbox.ready [example: examples/python/comm-ready/]
+   - Ptask [example: examples/python/exec-ptask/]:
+     - this_actor.exec_init
+     - this_actor.parallel_execute
+     - Exec.suspend
+     - Exec.wait_for
+ - Added an AssertionError exception that may be thrown in case of error.
+   For instance, creating two hosts with the same name will now throw this exception
+   instead of killing the interpreter.
 
 SMPI:
  - Implement MPI_File_get_type_extent(), MPI_File_s/get_atomicity() and
@@ -66,17 +60,22 @@ SMPI:
  - Intercept getpid() calls to return the simulated ones.
  - Fix various bugs in MPI IO.
 
-Models:
- - Fix a bug when using ptasks and multicores (FG!111).
-
-Graphicator tool:
- - Allow to dump the platform topology as a CSV file representing the edges
-   of the graph (in addition to the DOT format).
+Platform description & visualization:
+ - More robust sanity checks for platforms, to reject forbidden topologies with
+   a proper error message.
+ - New platform example: supernode.cpp and supernode.py.
+   The Python version generates a nice graphical representation of the platform.
+ - Bug fixes around fat-tree topologies.
+ - Allow to dump the platform topology as a CSV file representing the graph edges
+   with platform_graph_export_csv() (similar to the DOT export).
  - Fix graphicator for "cluster" topologies (e.g. fat-tree, dragonfly).
 
+Models:
+ - Fix a bug when using ptasks with multicores (FG!111).
+
 Model-Checker:
- - New: sthread intercepts at runtime on pthread operations, and
-   verify it formally. This code is still a PoC but may even work for you.
+ - First bits of sthread, that intercepts pthread operations at runtime.
+   The intend is to use it together with simgrid-mc, but it is TBD.
  - Sync MBI generators with upstream changes.
  - Various cosmetics, small bug fixes and inner refactorings
 
