@@ -3,7 +3,9 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ /___ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \ __) |
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) / __/
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____/_____|
-               (unreleased)
+               October 3. 2022
+
+The Wiedervereinigung release. Germany was reunited 32 years ago.
 
   * Various cleanups around the virtual machines API
   * Improved Python platform generation (more robust, easier to use)

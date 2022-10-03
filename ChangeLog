@@ -1,4 +1,6 @@
-SimGrid (3.31.1) NOT RELEASED YET (v3.32 expected June 21. 2022, 09:13 UTC)
+SimGrid (3.32) October 3. 2022.
+
+The Wiedervereinigung release. Germany was reunited 32 years ago.
 
 General:
  - SimGrid now requires a compiler with C++17 support to compile the lib.

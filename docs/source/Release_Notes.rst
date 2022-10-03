@@ -528,8 +528,10 @@ since it does not mix bytes and flops and has a homogeneous consumption over a s
 
 This release also introduces steadily progress **on the bindings front**, introducing in particular the Mutex, Barrier and Semaphore to your python scripts.
 
-Version 3.32 (not released yet)
--------------------------------
+Version 3.32 (October 3. 2022)
+------------------------------
+
+The Wiedervereinigung release. Germany was reunited 32 years ago.
 
 This release introduces tons of bugs fixes overall, and many small usability improvements contributed by the community.
 
