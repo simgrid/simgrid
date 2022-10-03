@@ -92,7 +92,8 @@ static void run_child_process(int socket, const std::vector<char*>& args)
                "        Make sure that your binary exists on disk and is executable.",
                args[i], strerror(errno));
   if (strchr(args[i], '=') != nullptr)
-    XBT_CRITICAL("If you want to pass command-line parameters, please use --cfg=model-check/setenv:%s", args[i]);
+    XBT_CRITICAL("If you want to pass environment variables to the application, please use --cfg=model-check/setenv:%s",
+                 args[i]);
 
   xbt_die("Aborting now.");
 }
