@@ -533,7 +533,7 @@ Version 3.32 (not released yet)
 
 This release introduces tons of bugs fixes overall, and many small usability improvements contributed by the community.
 
-**On the bindings front**, we further completed the Python bindings: the whole C++ API of Comms is now accessible (and examplified) in Python, while a
+**On the bindings front**, we further completed the Python bindings: the whole C++ API of Comms is now accessible (and exemplified) in Python, while a
 few missing functions have been added to Engine and Mailboxes. It is also possible to manipulate ptasks from Python.
 
 The Python platform generation has also been improved. In particular, user's errors should now raise an exception instead of killing the interpreter.

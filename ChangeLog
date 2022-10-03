@@ -7,10 +7,10 @@ General:
  - Tested with clang (v11, v13, v14 and v16), gcc (v7 to v13) and IntelCC v2022.2
 
 S4U:
- - API evolutions: 
+ - API evolutions:
    - kill signal Comm::on_completion that was not working anyway.
    - Expose signals Activity::on_suspend and Activity::on_resume
-   - New macro xbt_enforce(): similar to xbt_assert(), but throws an AssertionError 
+   - New macro xbt_enforce(): similar to xbt_assert(), but throws an AssertionError
      instead of calling abort().
    - New: s4u::Exec::get_thread_count()
  - Various cleanups around virtual machines:
@@ -81,12 +81,12 @@ Model-Checker:
 
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GH: issues on GitHub)
- - FG!98: Re-enable the tests for legacy stochastic profiles
  - FG#105: "Variable penalty should not be negative!" with in-flight messages and bandwidth profiles
  - FG#109: Application time reported by --cfg=smpi/display-timing:yes is wrong
- - FG!109: Trigger new engine solve upon host events such as host on/off
  - FG#110: Wait_any does not trigger new model solve when host events occur
  - FG#111: Wrong execution time in rare cases when using multicore
+ - FG!98: Re-enable the tests for legacy stochastic profiles
+ - FG!109: Trigger new engine solve upon host events such as host on/off
  - FG!116: SMPI/replay: Fix issue with recv of size =0
 
 ----------------------------------------------------------------------------

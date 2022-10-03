@@ -9,6 +9,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ /___ \
   * Improved Python platform generation (more robust, easier to use)
   * Further complete Python bindings (Comm, Engine, ptasks)
   * (+ internal refactoring, MANY bug fixes and documentation improvement)
+
                     _               _____  _____ _
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ // |
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \| |
@@ -22,6 +23,7 @@ The ненасильство release. We stand against war.
   * Introducing BMF sharing, enabling ptasks in regular models (experimental)
   * Further complete Python bindings (Mutex, Semaphore and Barrier)
   * (+ internal refactoring, many bug fixes and documentation improvement)
+
                     _               _____  _____  ___
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ / / _ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \| | | |
