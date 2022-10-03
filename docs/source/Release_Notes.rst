@@ -568,6 +568,9 @@ Hopefully in the next release.
 Finally, this release mostly entails maintenance work **on the model front**: a bug was fixed when using ptasks on multicore hosts, and the legacy
 stochastic generator of external load has been reintroduced.
 
+Version 3.33 (not released yet)
+-------------------------------
+
 .. |br| raw:: html
 
    <br />
