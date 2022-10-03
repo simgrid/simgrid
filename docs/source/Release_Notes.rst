@@ -531,40 +531,40 @@ This release also introduces steadily progress **on the bindings front**, introd
 Version 3.32 (not released yet)
 -------------------------------
 
-This release introduces tons of bugs fixes overall, and many small usability improvement contributed by the community.
+This release introduces tons of bugs fixes overall, and many small usability improvements contributed by the community.
 
 **On the bindings front**, we further completed the Python bindings: the whole C++ API of Comms is now accessible (and examplified) in Python, while a
-few missing functions where added to Engine and Mailboxes. It is also possible to manipulate ptasks from Python.
+few missing functions have been added to Engine and Mailboxes. It is also possible to manipulate ptasks from Python.
 
-The Python platform generation was also improved. In particular, user's errors should now raise an exception instead of killing the interpreter.
-Various small improvements were done to the graphicator tool so that you can now use jupyter to generate your platforms semi-interactively.
+The Python platform generation has also been improved. In particular, user's errors should now raise an exception instead of killing the interpreter.
+Various small improvements have been done to the graphicator tool so that you can now use jupyter to generate your platforms semi-interactively.
 
-**On the model checking front**, we did many refactoring behind the scene (the deprecated ``mc::api`` namespace was for example emptied and removed),
-but there is almost no user-level changes. The internal work follows two lines.
+**On the model checking front**, we did many refactoring operations behind the scene (the deprecated ``mc::api`` namespace was for example emptied and removed),
+but there are almost no user-level changes. The internal work is twofold.
 
 First, we'd like to make optional all the complexity that liveness properties require to explore the application state (dwarf, libunwind, mmalloc,
-etc) and rely instead on fork to explore all executions when liveness is not used. This would allow to run the verified application under valgrind to
-ease its debugging. Some progress were made toward that goal, but we are still rather far from this goal.
+etc) and instead only rely on fork to explore all the executions when liveness is not used. This would allow us to run the verified application under valgrind to
+ease its debugging. Some progress was made towards that goal, but we are still rather far from this goal.
 
 Second, we'd like to simplify the protocol between the model-checker and the application, to make it more robust and hopefully simplify the
 model-checker code. After release v3.31, the model-checker can properly observe the simcall of a given actor through the protocol instead of reading
-the application directly, but retrieving the list of actors still requires to read the remote memory, which in turn requires the tricks of state
-introspection that we try to remove in the previous paragraph. This goal is much harder to achieve than it may sound in the current code base, but we
+the application memory directly, but retrieving the list of actors still requires to read the remote memory, which in turn requires the aforementioned tricks on state
+introspection that we are trying to remove. This goal is much harder to achieve than it may sound in the current code base, but we
 note steady improvements in that direction.
 
-In addition to these refactorings, this version introduces ``sthread``, a tool to intercept pthread operations at run time. The goal is to use it
+In addition to these refactoring, this version introduces ``sthread``, a tool to intercept pthread operations at run time. The goal is to use it
 together with the model-checker, but it's not working yet: we get a segfault during the initialization phase, and we failed to debug it so far. If
 only we could use valgrind on the verified application, this would probably be much easier.
 
 But we feel that it's probably better to not delay this release any further, as this tangled web will probably take time to get solved. So ``sthread``
 is included in the source even if it's not usable in MC mode yet.
 
-**On the interface front**, small API fixes and improvements were done in S4U (in particular concerning virtual machines), while the support for MPI
-IO was improved in SMPI. We also hope that ``sthread`` will help simulating OpenMP applications at some point, but it's not usable for that either.
+**On the interface front**, small API fixes and improvements have been done in S4U (in particular about virtual machines), while the support for MPI
+IO has been improved in SMPI. We also hope that ``sthread`` will help simulating OpenMP applications at some point, but it's not usable for that either.
 Hopefully in the next release.
 
 Finally, this release mostly entails maintenance work **on the model front**: a bug was fixed when using ptasks on multicore hosts, and the legacy
-stochastic generator of external load was reintroduced.
+stochastic generator of external load has been reintroduced.
 
 .. |br| raw:: html
 
