@@ -437,7 +437,10 @@ int PMPI_Sendrecv_replace(void* buf, int count, MPI_Datatype datatype, int dst, 
   CHECK_BUFFER(1, buf, count, datatype)
 
   int size = datatype->get_extent() * count;
-  xbt_assert(size > 0);
+  if (size == 0)
+    return MPI_SUCCESS;
+  else if (size <0)
+    return MPI_ERR_ARG;
   std::vector<char> recvbuf(size);
   retval =
       MPI_Sendrecv(buf, count, datatype, dst, sendtag, recvbuf.data(), count, datatype, src, recvtag, comm, status);
