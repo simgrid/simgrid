@@ -88,7 +88,7 @@ static SegmentedRegression read_json_file(const std::string& jsonFile, std::mt19
     double max    = it.second.get_child("max_x").get_value<double>();
     coefs[max]    = it.second.get_child("coefficient").get_value<double>();
     auto& mixture = mixtures[max];
-    if (!mixture)
+    if (not mixture)
       mixture = std::make_shared<NormalMixture>(gen);
     mixture->append(it.second.get_child("mean").get_value<double>(), it.second.get_child("sd").get_value<double>(),
                     it.second.get_child("prob").get_value<double>());

@@ -112,7 +112,7 @@ CpuImpl* CpuImpl::set_core_count(int core_count)
 
 void CpuImpl::apply_sharing_policy_cfg() const
 {
-  if (!get_constraint())
+  if (not get_constraint())
     return;
 
   kernel::lmm::Constraint::SharingPolicy lmm_policy = kernel::lmm::Constraint::SharingPolicy::SHARED;

@@ -90,7 +90,7 @@ int Win::del(Win* win){
 
   colls::barrier(win->comm_);
   Comm::unref(win->comm_);
-  if (!win->lockers_.empty() || win->opened_ < 0){
+  if (not win->lockers_.empty() || win->opened_ < 0) {
     XBT_WARN("Freeing a locked or opened window");
     return MPI_ERR_WIN;
   }

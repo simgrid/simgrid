@@ -118,7 +118,7 @@ bool Request::match_types(MPI_Datatype stype, MPI_Datatype rtype){
      (stype->duplicated_datatype()!=MPI_DATATYPE_NULL && match_types(stype->duplicated_datatype(), rtype)) ||
      (rtype->duplicated_datatype()!=MPI_DATATYPE_NULL && match_types(stype, rtype->duplicated_datatype())))
     match = true;
-  if (!match)
+  if (not match)
     XBT_WARN("Mismatched datatypes : sending %s and receiving %s", stype->name().c_str(), rtype->name().c_str());
   return match;
 }
@@ -150,8 +150,7 @@ bool Request::match_common(MPI_Request req, MPI_Request sender, MPI_Request rece
       receiver->truncated_ = true;
     }
     //0-sized datatypes/counts should not interfere and match
-    if ( sender->real_size_ != 0 && receiver->real_size_ != 0 &&
-         !match_types(sender->type_, receiver->type_))
+    if (sender->real_size_ != 0 && receiver->real_size_ != 0 && not match_types(sender->type_, receiver->type_))
       receiver->unmatched_types_ = true;
     if (sender->detached_)
       receiver->detached_sender_ = sender; // tie the sender to the receiver, as it is detached and has to be freed in
@@ -506,7 +505,7 @@ void Request::start()
         XBT_DEBUG("yes there was something for us in the small mailbox");
       }
     }
-    if(!is_probe)
+    if (not is_probe)
       flags_ &= ~MPI_REQ_PROBE;
     kernel::actor::CommIrecvSimcall observer{process->get_actor()->get_impl(),
                                              mailbox->get_impl(),
@@ -607,7 +606,7 @@ void Request::start()
       } else {
         XBT_DEBUG("Yes there was something for us in the large mailbox");
       }
-      if(!is_probe)
+      if (not is_probe)
         flags_ &= ~MPI_REQ_PROBE;
     } else {
       mailbox = process->mailbox();

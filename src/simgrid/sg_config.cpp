@@ -333,7 +333,7 @@ void sg_config_init(int *argc, char **argv)
       "contexts/nthreads", "Number of parallel threads used to execute user contexts", 1, [](int nthreads) {
 #if HAVE_MMALLOC
         xbt_assert(
-            nthreads == 1 || !malloc_use_mmalloc(),
+            nthreads == 1 || not malloc_use_mmalloc(),
             "Parallel simulation is forbidden in the verified program, as there is no protection against race "
             "conditions in mmalloc itself. Please don't be so greedy and show some mercy for our implementation.");
 #endif

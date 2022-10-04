@@ -27,7 +27,7 @@
 #define _xbt_enforce_ARG1(cond) _xbt_enforce_ARGN((cond), "Assertion %s failed", #cond)
 #define _xbt_enforce_ARGN(cond, ...)                                                                                   \
   do {                                                                                                                 \
-    if (!(cond)) {                                                                                                     \
+    if (not(cond)) {                                                                                                   \
       throw simgrid::AssertionError(XBT_THROW_POINT, xbt::string_printf(__VA_ARGS__));                                 \
     }                                                                                                                  \
   } while (0)
