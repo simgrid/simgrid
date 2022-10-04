@@ -13,19 +13,24 @@ set(generator_scripts
     CollP2PMatchingGenerator.py
     CollP2PMessageRaceGenerator.py
     CollTopoGenerator.py
+    InputHazardGenerator.py
     MissingWaitandStartGenerator.py
     P2PArgGenerator.py
+    P2PBufferingGenerator.py
     P2PComGenerator.py
     P2PInvalidComGenerator.py
     P2PLocalConcurrencyGenerator.py
     P2PMatchingANYSRCGenerator.py
     P2PMatchingGenerator.py
+    P2PMessageRaceGenerator.py
+    P2PMessageRaceTagsGenerator.py
     P2PProbeGenerator.py
     ResleakGenerator.py
     RMAArgGenerator.py
     RMAInvalidArgGenerator.py
     RMALocalLocalConcurrencyGenerator.py
     RMAP2PGlobalConcurrencyGenerator.py
+    RMAP2PLocalConcurrencyGenerator.py
     RMARemoteLocalConcurrencyGenerator.py
     RMARemoteRemoteConcurrencyGenerator.py
     RMAReqLifecycleGenerator.py
@@ -106,10 +111,10 @@ if (enable_smpi_MBI_testsuite)
           GlobalConcurrency_Get_Isend_Irecv_nok GlobalConcurrency_Get_Isend_Recv_nok GlobalConcurrency_Get_Send_Irecv_nok GlobalConcurrency_Get_Send_Recv_nok
           GlobalConcurrency_Put_Isend_Irecv_nok GlobalConcurrency_Put_Isend_Recv_nok GlobalConcurrency_Put_Send_Irecv_nok GlobalConcurrency_Put_Send_Recv_nok
 
-          GlobalConcurrency_rl_Win_fence_Get_rload_nok     GlobalConcurrency_rl_Win_fence_Get_rstore_nok
-          GlobalConcurrency_rl_Win_fence_Put_rload_nok     GlobalConcurrency_rl_Win_fence_Put_rstore_nok
-          GlobalConcurrency_rl_Win_lock_all_Get_rload_nok  GlobalConcurrency_rl_Win_lock_all_Get_rstore_nok
-          GlobalConcurrency_rl_Win_lock_all_Put_rload_nok  GlobalConcurrency_rl_Win_lock_all_Put_rstore_nok
+#          GlobalConcurrency_rl_Win_fence_Get_rload_nok     GlobalConcurrency_rl_Win_fence_Get_rstore_nok
+#          GlobalConcurrency_rl_Win_fence_Put_rload_nok     GlobalConcurrency_rl_Win_fence_Put_rstore_nok
+#          GlobalConcurrency_rl_Win_lock_all_Get_rload_nok  GlobalConcurrency_rl_Win_lock_all_Get_rstore_nok
+#          GlobalConcurrency_rl_Win_lock_all_Put_rload_nok  GlobalConcurrency_rl_Win_lock_all_Put_rstore_nok
        )
     set_tests_properties(mbi-${localmodif} PROPERTIES WILL_FAIL true)
   endforeach(localmodif )

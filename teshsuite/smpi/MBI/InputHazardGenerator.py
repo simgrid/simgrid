@@ -44,10 +44,10 @@ int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
   MPI_Status sta;
-  int src,dest;
   int i=0;
   int root = 0;
-  int stag=0, rtag=0;
+  int stag=0;
+  int rtag=0;
   int buff_size = N;
 
   MPI_Init(&argc, &argv);
@@ -73,7 +73,6 @@ int main(int argc, char **argv) {
   @{init2}@
 
   if (rank == 0) {
-    dest=1, src=1;
     if ((n % 2) == 0) { @{errorcond}@
       @{operation1b}@
       @{fini1b}@
@@ -82,7 +81,6 @@ int main(int argc, char **argv) {
       @{fini1a}@
     }
   } else @{addcond}@ {
-    dest=0, src=0;
     @{operation2}@
     @{fini2}@
   }
@@ -111,14 +109,14 @@ for s in gen.send + gen.isend:
         patterns['r'] = r
 
         patterns['init1'] = gen.init[s]("1")
-        patterns['operation1a'] = gen.operation[s]("1").replace("buf1", "buffer")
-        patterns['operation1b'] = gen.operation[s]("1").replace("buf1", "buffer")
+        patterns['operation1a'] = gen.operation[s]("1").replace("buf1", "buffer").replace("dest", "1")
+        patterns['operation1b'] = gen.operation[s]("1").replace("buf1", "buffer").replace("dest", "1")
         patterns['fini1a'] = gen.fini[s]("1")
         patterns['fini1b'] = gen.fini[s]("1")
         patterns['free1'] = gen.free[s]("1")
 
         patterns['init2'] = gen.init[r]("2")
-        patterns['operation2'] = gen.operation[r]("2").replace("buf2", "buffer")
+        patterns['operation2'] = gen.operation[r]("2").replace("buf2", "buffer").replace("src", "0")
         patterns['fini2'] = gen.fini[r]("2")
         patterns['free2'] = gen.free[r]("2")
 

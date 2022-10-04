@@ -50,8 +50,9 @@ static void myOp(int *invec, int *inoutvec, int *len, MPI_Datatype *dtype) {
 int main(int argc, char **argv) {
   int nprocs = -1;
   int rank = -1;
-  int i=1, j=0, size=1;
-  int color =0;
+  int i=1;
+  int j=0;
+  int size=1;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
