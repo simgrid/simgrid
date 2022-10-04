@@ -269,7 +269,7 @@ public:
   /*** Called on each newly created regular route (not on bypass routes) */
   static xbt::signal<void(bool symmetrical, NetPoint* src, NetPoint* dst, NetPoint* gw_src, NetPoint* gw_dst,
                           std::vector<resource::StandardLinkImpl*> const& link_list)>
-      on_route_creation; // XBT_ATTRIB_DEPRECATED_v332 : should be an internal signal used by NS3.. if necessary,
+      on_route_creation; // FIXME: XBT_ATTRIB_DEPRECATED_v332: should be an internal signal used by NS3.. if necessary,
                          // callback shouldn't use LinkImpl*
 
 private:

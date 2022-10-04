@@ -433,7 +433,6 @@ set(SIMIX_SRC
   src/kernel/context/ContextThread.cpp
   src/kernel/context/ContextThread.hpp
   src/simix/libsmx.cpp
-  src/simix/smx_context.cpp
   )
 
 # Boost context may not be available

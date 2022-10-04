@@ -7,9 +7,6 @@
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Host.hpp>
 
-#define SIMIX_H_NO_DEPRECATED_WARNING // avoid deprecation warning on include (remove with XBT_ATTRIB_DEPRECATED_v333)
-#include <simgrid/simix.h>
-
 #include "src/kernel/EngineImpl.hpp"
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
@@ -21,18 +18,6 @@
 #include <utility>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_actor, kernel, "Logging specific to Actor's kernel side");
-
-/**
- * @brief Returns the current agent.
- *
- * This functions returns the currently running SIMIX process.
- *
- * @return The SIMIX process
- */
-simgrid::kernel::actor::ActorImpl* SIMIX_process_self() // XBT_ATTRIB_DEPRECATED_v333
-{
-  return simgrid::kernel::actor::ActorImpl::self();
-}
 
 namespace simgrid::kernel::actor {
 
@@ -521,15 +506,3 @@ void create_maestro(const std::function<void()>& code)
 }
 
 } // namespace simgrid::kernel::actor
-
-/* needs to be public and without simcall because it is called by exceptions and logging events */
-const char* SIMIX_process_self_get_name() // XBT_ATTRIB_DEPRECATED_v333
-{
-  return simgrid::s4u::Actor::is_maestro() ? "maestro" : simgrid::kernel::actor::ActorImpl::self()->get_cname();
-}
-
-int SIMIX_is_maestro() // XBT_ATTRIB_DEPRECATED_v333
-{
-  const auto* self = simgrid::kernel::actor::ActorImpl::self();
-  return self != nullptr && self->is_maestro();
-}

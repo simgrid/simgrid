@@ -7,57 +7,13 @@
 #define SIMGRID_SIMIX_H
 
 #include <simgrid/forward.h>
-#include <xbt/parmap.h>
 
+// avoid deprecation warning on include (remove entire file with XBT_ATTRIB_DEPRECATED_v335)
 #ifndef SIMIX_H_NO_DEPRECATED_WARNING
 #warning simgrid/simix.h is deprecated and will be removed in v3.35.
 #endif
 
-/******************************* Networking ***********************************/
-SG_BEGIN_DECL
-
-/* parallelism */
-XBT_ATTRIB_DEPRECATED_v333("Please use kernel::context::is_parallel()") XBT_PUBLIC int SIMIX_context_is_parallel();
-XBT_ATTRIB_DEPRECATED_v333("Please use kernel::context::get_nthreads()") XBT_PUBLIC int SIMIX_context_get_nthreads();
-XBT_ATTRIB_DEPRECATED_v333("Please use kernel::context::set_nthreads()") XBT_PUBLIC
-    void SIMIX_context_set_nthreads(int nb_threads);
-XBT_ATTRIB_DEPRECATED_v333("Please use kernel::context::get_parallel_mode()") XBT_PUBLIC e_xbt_parmap_mode_t
-    SIMIX_context_get_parallel_mode();
-XBT_ATTRIB_DEPRECATED_v333("Please use kernel::context::set_parallel_mode()") XBT_PUBLIC
-    void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode);
-XBT_ATTRIB_DEPRECATED_v333("Please use Actor::is_maestro()") XBT_PUBLIC int SIMIX_is_maestro();
-
-/********************************** Global ************************************/
-/* Set some code to execute in the maestro (must be used before the engine creation)
- *
- * If no maestro code is registered (the default), the main thread
- * is assumed to be the maestro. */
-XBT_ATTRIB_DEPRECATED_v333("Please use simgrid_set_maestro()") XBT_PUBLIC
-    void SIMIX_set_maestro(void (*code)(void*), void* data);
-
-SG_END_DECL
-
-/********************************* Process ************************************/
-SG_BEGIN_DECL
-XBT_ATTRIB_DEPRECATED_v333("Please use kernel::actor::ActorImpl::self()") XBT_PUBLIC
 #ifdef __cplusplus
-    simgrid::kernel::actor::ActorImpl*
-#else
-    smx_actor_t
-#endif
-    SIMIX_process_self();
-XBT_ATTRIB_DEPRECATED_v333("Please use xbt_procname()") XBT_PUBLIC const char* SIMIX_process_self_get_name();
-SG_END_DECL
-
-/****************************** Communication *********************************/
-#ifdef __cplusplus
-XBT_ATTRIB_DEPRECATED_v333("Please use Engine::set_default_comm_data_copy_callback()") XBT_PUBLIC
-    void SIMIX_comm_set_copy_data_callback(void (*callback)(simgrid::kernel::activity::CommImpl*, void*, size_t));
-
-XBT_ATTRIB_DEPRECATED_v333("Please use Comm::copy_buffer_callback()") XBT_PUBLIC
-    void SIMIX_comm_copy_pointer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size);
-XBT_ATTRIB_DEPRECATED_v333("Please use Comm::copy_pointer_callback()") XBT_PUBLIC
-    void SIMIX_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size);
 
 /******************************************************************************/
 /*                            SIMIX simcalls                                  */

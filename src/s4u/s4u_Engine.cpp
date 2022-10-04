@@ -9,9 +9,6 @@
 #include <simgrid/modelchecker.h>
 #include <simgrid/s4u/Engine.hpp>
 
-#define SIMIX_H_NO_DEPRECATED_WARNING // avoid deprecation warning on include (remove with XBT_ATTRIB_DEPRECATED_v333)
-#include <simgrid/simix.h>
-
 #include "mc/mc.h"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
@@ -503,8 +500,4 @@ void simgrid_set_maestro(void (*code)(void*), void* data)
            "you need that feature");
 #endif
   maestro_code = std::bind(code, data);
-}
-void SIMIX_set_maestro(void (*code)(void*), void* data) // XBT_ATTRIB_DEPRECATED_v333
-{
-  simgrid_set_maestro(code, data);
 }

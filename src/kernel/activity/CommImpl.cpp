@@ -8,9 +8,6 @@
 #include <simgrid/modelchecker.h>
 #include <simgrid/s4u/Host.hpp>
 
-#define SIMIX_H_NO_DEPRECATED_WARNING // avoid deprecation warning on include (remove with XBT_ATTRIB_DEPRECATED_v333)
-#include <simgrid/simix.h>
-
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
@@ -21,27 +18,6 @@
 #include "src/mc/mc_replay.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_network, kernel, "Kernel network-related synchronization");
-
-/******************************************************************************/
-/*                    SIMIX_comm_copy_data callbacks                       */
-/******************************************************************************/
-// XBT_ATTRIB_DEPRECATED_v333
-void SIMIX_comm_set_copy_data_callback(void (*callback)(simgrid::kernel::activity::CommImpl*, void*, size_t))
-{
-  simgrid::kernel::activity::CommImpl::set_copy_data_callback(callback);
-}
-
-// XBT_ATTRIB_DEPRECATED_v333
-void SIMIX_comm_copy_buffer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
-{
-  simgrid::s4u::Comm::copy_buffer_callback(comm, buff, buff_size);
-}
-
-// XBT_ATTRIB_DEPRECATED_v333
-void SIMIX_comm_copy_pointer_callback(simgrid::kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
-{
-  simgrid::s4u::Comm::copy_pointer_callback(comm, buff, buff_size);
-}
 
 namespace simgrid::kernel::activity {
 xbt::signal<void(CommImpl const&)> CommImpl::on_start;
