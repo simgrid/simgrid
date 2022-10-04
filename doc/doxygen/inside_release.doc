@@ -90,6 +90,9 @@ Please apply the following checklist before releasing.
 - Update the simgrid/package.py for spack: https://gitlab.inria.fr/solverstack/spack-repo
 - Push the stable branch to github to rebuild and push the stable Docker images
   - It downloads the latest tag on framagit
+  - If it was done automatically at some point, make sure that it's really the latest stable, 
+    as things get sometimes out of synch to the point that the github action re-build the previous release. 
+    If this happens, just rerun the docker-stable action. Nothing should have been broken.
   - Doing the same manually: cd tools/docker && make stable && make tuto-s4u tuto-smpi
     (tuto-mc is not based on simgrid/stable but rebuilds from the git)
   - Once the new images are built, trigger a rebuild of the simgrid-template-{s4u,smpi} repositories on framagit
