@@ -152,6 +152,9 @@ simgrid::config::Flag<int> _smpi_cfg_list_leaks("smpi/list-leaks",
                                                 "Whether we should display the n first MPI handle leaks (addresses and type only) after simulation",
                                                 -1);
 
+simgrid::config::Flag<bool> _smpi_cfg_colls_inject_barrier{
+  "smpi/colls-inject-barrier", "Inject a barrier in each colllective operation, to detect some deadlocks in incorrect MPI codes, which may not be triggered in all cases", false };
+
 double smpi_cfg_host_speed(){
   return _smpi_cfg_host_speed;
 }
