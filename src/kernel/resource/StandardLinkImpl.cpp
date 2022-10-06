@@ -43,6 +43,8 @@ void StandardLinkImpl::destroy()
 constexpr kernel::lmm::Constraint::SharingPolicy to_maxmin_policy(s4u::Link::SharingPolicy policy)
 {
   switch (policy) {
+    case s4u::Link::SharingPolicy::WIFI:
+      return kernel::lmm::Constraint::SharingPolicy::WIFI;
     case s4u::Link::SharingPolicy::NONLINEAR:
       return kernel::lmm::Constraint::SharingPolicy::NONLINEAR;
     case s4u::Link::SharingPolicy::FATPIPE:

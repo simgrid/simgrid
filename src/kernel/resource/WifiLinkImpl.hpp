@@ -26,17 +26,20 @@ class WifiLinkImpl : public StandardLinkImpl {
   /** @brief A link can have several bandwidths attached to it (mostly use by wifi model) */
   std::vector<Metric> bandwidths_;
 
-  /** @brief Should we use the decay model ? */
-  bool use_decay_model_ = false;
-  /** @brief Wifi maximal bit rate according to the ns-3 802.11n standard */
-  const double wifi_max_rate_ = 54 * 1e6 / 8;
-  /** @brief minimum bit rate observed with ns3 during our calibration experiments */
-  const double wifi_min_rate_ = 41.70837 * 1e6 / 8;
-  /** @brief Amount of stations used in the reference point to rescale SimGrid predictions to fit ns-3 ones */
-  const int model_n_ = 5;
-  /** @brief Bit rate observed on ns3 at the reference point used for rescaling */
-  const double model_rate_ = 42.61438 * 1e6 / 8;
-  /** @brief The bandwidth to use for each SNR level, corrected with the decay rescale mechanism */
+  bool use_callback_ = false;
+  /*
+   * Values used for the throughput degradation:
+   * ratio = x0_ + co_acc_ * nb_active_flux_ / x0_
+  **/
+  /** @brief base maximum throughput to compare to when computing the ratio */
+  const double x0_ = 5678270;
+  /** @brief linear regression factor */
+  const double co_acc_ = -5424;
+  /** @brief minimum number of concurrent flows before using the linear regression */
+  const int conc_lim_ = 20;
+  /** @brief current concurrency on the link */
+  int nb_active_flux_ = 0;
+
   std::vector<Metric> decay_bandwidths_;
 
 public:
@@ -50,8 +53,14 @@ public:
   void apply_event(kernel::profile::Event*, double) override { THROW_UNIMPLEMENTED; }
   void set_bandwidth(double) override { THROW_UNIMPLEMENTED; }
   void set_latency(double) override;
-  void refresh_decay_bandwidths();
-  bool toggle_decay_model();
+  bool toggle_callback();
+
+  static void update_bw_comm_start(const kernel::activity::CommImpl&);
+  static void update_bw_comm_end(simgrid::kernel::resource::NetworkAction& action, simgrid::kernel::resource::Action::State state);
+  void inc_active_flux();
+  void dec_active_flux();
+  static double wifi_link_dynamic_sharing(WifiLinkImpl* link, double capacity, int n);
+  double get_max_ratio(int) const;
   size_t get_host_count() const;
 };
 

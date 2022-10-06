@@ -206,7 +206,7 @@ public:
  */
 class XBT_PUBLIC Constraint {
 public:
-  enum class SharingPolicy { NONLINEAR = 2, SHARED = 1, FATPIPE = 0 };
+  enum class SharingPolicy { WIFI = 3, NONLINEAR = 2, SHARED = 1, FATPIPE = 0 };
 
   Constraint(resource::Resource* id_value, double bound_value);
 

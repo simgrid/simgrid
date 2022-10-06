@@ -67,7 +67,7 @@ template <class CnstList> void MaxMin::maxmin_solve(CnstList& cnst_list)
     /* INIT: Collect constraints that actually need to be saturated (i.e remaining  and usage are strictly positive)
      * into cnst_light_tab. */
     cnst.dynamic_bound_ = cnst.bound_;
-    if (cnst.get_sharing_policy() == Constraint::SharingPolicy::NONLINEAR && cnst.dyn_constraint_cb_) {
+    if ((cnst.get_sharing_policy() == Constraint::SharingPolicy::NONLINEAR || cnst.get_sharing_policy() == Constraint::SharingPolicy::WIFI) && cnst.dyn_constraint_cb_) {
       cnst.dynamic_bound_ = cnst.dyn_constraint_cb_(cnst.bound_, cnst.concurrency_current_);
     }
     cnst.remaining_ = cnst.dynamic_bound_;

@@ -1211,6 +1211,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/vivaldi.xml
   examples/platforms/wifi.xml
   examples/platforms/wifi_energy.xml
+  examples/platforms/wifi_large_cell.xml
   examples/platforms/wifi_ns3.xml
   )
 
