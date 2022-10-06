@@ -4,6 +4,14 @@ S4U:
  - Activity::set_remaining() is not public anymore. Use for example
    Comm::set_payload_size() to change the size of the simulated data.
 
+Models:
+ - WiFi: the total capacity of a link depends on the amout of flows on that link.
+   - Use the nonlinear callback feature of LMM to reflect this.
+   - Calibration values can be changed to match different MCS configurations
+   - See the example teshsuite/models/wifi_usage_decay/wifi_usage_decay.cpp
+   - See also "A Flow-Level Wi-Fi Model for Large Scale Network Simulation"
+     https://hal.archives-ouvertes.fr/hal-03777726
+
 ----------------------------------------------------------------------------
 
 SimGrid (3.32) October 3. 2022.
