@@ -75,7 +75,7 @@ IoPtr Io::set_size(sg_size_t size)
   xbt_assert(state_ == State::INITED || state_ == State::STARTING, "Cannot set size once the Io is started");
   kernel::actor::simcall_answered(
       [this, size] { boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_size(size); });
-  Activity::set_remaining(size);
+  set_remaining(size);
   return this;
 }
 

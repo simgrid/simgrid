@@ -110,7 +110,7 @@ ExecPtr Exec::set_flops_amount(double flops_amount)
   kernel::actor::simcall_answered([this, flops_amount] {
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_flops_amount(flops_amount);
   });
-  Activity::set_remaining(flops_amount);
+  set_remaining(flops_amount);
   return this;
 }
 

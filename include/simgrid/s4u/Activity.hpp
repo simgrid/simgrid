@@ -96,6 +96,11 @@ protected:
 
   static std::set<Activity*>* vetoed_activities_;
 
+  /** Set the [remaining] amount of work that this Activity will entail
+   *
+   * It is forbidden to change the amount of work once the Activity is started */
+  Activity* set_remaining(double remains);
+
 private:
   static xbt::signal<void(Activity&)> on_veto;
   static xbt::signal<void(Activity const&)> on_completion;
@@ -186,10 +191,6 @@ public:
 
   /** Get the remaining amount of work that this Activity entails. When it's 0, it's done. */
   virtual double get_remaining() const;
-  /** Set the [remaining] amount of work that this Activity will entail
-   *
-   * It is forbidden to change the amount of work once the Activity is started */
-  Activity* set_remaining(double remains);
 
   double get_start_time() const;
   double get_finish_time() const;

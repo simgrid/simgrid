@@ -272,7 +272,7 @@ CommPtr Comm::set_dst_data(void** buff, size_t size)
 
 CommPtr Comm::set_payload_size(uint64_t bytes)
 {
-  Activity::set_remaining(bytes);
+  set_remaining(bytes);
   if (pimpl_) {
     boost::static_pointer_cast<kernel::activity::CommImpl>(pimpl_)->set_size(bytes);
   }
