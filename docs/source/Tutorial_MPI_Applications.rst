@@ -653,7 +653,7 @@ and use specific memory for the important parts.
 It can be freed afterward with SMPI_SHARED_FREE.
 
 If allocations are performed with malloc or calloc, SMPI (from version 3.25) provides the option
-``--cfg=smpi/auto-shared-malloc-shared:n`` which will replace all allocations above size n bytes by
+``--cfg=smpi/auto-shared-malloc-thresh:n`` which will replace all allocations above size n bytes by
 shared allocations. The value has to be carefully selected to avoid smaller control arrays,
 containing data necessary for the completion of the run.
 Try to run the (non modified) DT example again, with values going from 10 to 100,000 to show that
