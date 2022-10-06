@@ -128,7 +128,7 @@ public:
   CommPtr set_dst_data(void** buff, size_t size);
   /** Retrieve where the data will be copied on the receiver side */
   void* get_dst_data() const { return dst_buff_; }
-  /** Retrieve the size of the received data. Not to be mixed with @ref Activity::set_remaining()  */
+  /** Retrieve the size of the received data. Not to be mixed with @ref Activity::get_remaining()  */
   size_t get_dst_data_size() const { return dst_buff_size_; }
 
   /* Common functions */
