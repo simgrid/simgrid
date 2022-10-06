@@ -30,7 +30,7 @@ Element::Element(Constraint* constraint, Variable* variable, double cweight)
 int Element::get_concurrency() const
 {
   // just to try having the computation of the concurrency
-  if(constraint->get_sharing_policy() == Constraint::SharingPolicy::WIFI) {
+  if (constraint->get_sharing_policy() == Constraint::SharingPolicy::WIFI) {
     return 1;
   }
 

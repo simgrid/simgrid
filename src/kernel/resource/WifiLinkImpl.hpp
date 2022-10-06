@@ -53,7 +53,6 @@ public:
   void apply_event(kernel::profile::Event*, double) override { THROW_UNIMPLEMENTED; }
   void set_bandwidth(double) override { THROW_UNIMPLEMENTED; }
   void set_latency(double) override;
-  double get_max_ratio();
   bool toggle_callback();
 
   static void update_bw_comm_start(const kernel::activity::CommImpl&);
@@ -61,7 +60,7 @@ public:
   void inc_active_flux();
   void dec_active_flux();
   static double wifi_link_dynamic_sharing(WifiLinkImpl* link, double capacity, int n);
-  double get_max_ratio(int);
+  double get_max_ratio(int) const;
   size_t get_host_count() const;
 };
 

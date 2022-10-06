@@ -9,7 +9,6 @@
 #include "src/surf/surf_interface.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 
-
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 
 namespace simgrid::kernel::resource {
@@ -24,18 +23,13 @@ WifiLinkImpl::WifiLinkImpl(const std::string& name, const std::vector<double>& b
   this->set_constraint(system->constraint_new(this, 1));
   for (auto bandwidth : bandwidths)
     bandwidths_.push_back({bandwidth, 1.0, nullptr});
-
   kernel::activity::CommImpl::on_start.connect(&update_bw_comm_start);
   s4u::Link::on_communication_state_change_cb(&update_bw_comm_end);
-
-
 }
 
 void WifiLinkImpl::set_host_rate(const s4u::Host* host, int rate_level)
 {
-  auto insert_done = host_rates_.insert(std::make_pair(host->get_name(), rate_level));
-  if (not insert_done.second)
-    insert_done.first->second = rate_level;
+  host_rates_[host->get_name()] = rate_level;
 }
 
 double WifiLinkImpl::get_host_rate(const s4u::Host* host) const
@@ -74,13 +68,15 @@ double WifiLinkImpl::wifi_link_dynamic_sharing(WifiLinkImpl* link, double capaci
   return ratio;
 }
 
-void WifiLinkImpl::inc_active_flux() {
-  xbt_assert(nb_active_flux_>=0, "Negative nb_active_flux should not exist");
+void WifiLinkImpl::inc_active_flux()
+{
+  xbt_assert(nb_active_flux_ >= 0, "Negative nb_active_flux should not exist");
   nb_active_flux_++;
 }
 
-void WifiLinkImpl::dec_active_flux() {
-  xbt_assert(nb_active_flux_>0, "Negative nb_active_flux should not exist");
+void WifiLinkImpl::dec_active_flux()
+{
+  xbt_assert(nb_active_flux_ > 0, "Negative nb_active_flux should not exist");
   nb_active_flux_--;
 }
 
@@ -94,52 +90,50 @@ void WifiLinkImpl::update_bw_comm_start(const kernel::activity::CommImpl& comm)
 
   auto* link_src = actionWifi->get_src_link();
   auto* link_dst = actionWifi->get_dst_link();
-  if(link_src != nullptr) {
+  if (link_src != nullptr) {
     link_src->inc_active_flux();
   }
-  if(link_dst != nullptr) {
+  if (link_dst != nullptr) {
     link_dst->inc_active_flux();
   }
 }
 
 void WifiLinkImpl::update_bw_comm_end(simgrid::kernel::resource::NetworkAction& action, simgrid::kernel::resource::Action::State state)
 {
-  if(action.get_state() != kernel::resource::Action::State::FINISHED)
+  if (action.get_state() != kernel::resource::Action::State::FINISHED)
     return;
 
   auto const* actionWifi = dynamic_cast<const simgrid::kernel::resource::WifiLinkAction*>(&action);
   if (actionWifi == nullptr)
     return;
 
-  auto* link_src = actionWifi->get_src_link();
-  auto* link_dst = actionWifi->get_dst_link();
-  if(link_src != nullptr) {
+  if (auto* link_src = actionWifi->get_src_link()) {
     link_src->dec_active_flux();
   }
-  if(link_dst != nullptr) {
+  if (auto* link_dst = actionWifi->get_dst_link()) {
     link_dst->dec_active_flux();
   }
 }
 
-double WifiLinkImpl::get_max_ratio(int nb_active_flux)
+double WifiLinkImpl::get_max_ratio(int nb_active_flux) const
 {
   double new_peak = -1;
-  if(nb_active_flux_ > conc_lim_){
+  if (nb_active_flux_ > conc_lim_) {
     new_peak = (nb_active_flux_-conc_lim_) * co_acc_ + x0_;
-    XBT_DEBUG("Wi-Fi link peak=(%d-%d)*%lf+%lf=%lf",nb_active_flux_,conc_lim_,co_acc_,x0_,new_peak);
-  }else{
+    XBT_DEBUG("Wi-Fi link peak=(%d-%d)*%lf+%lf=%lf", nb_active_flux_, conc_lim_, co_acc_, x0_, new_peak);
+  } else {
     new_peak = x0_;
-    XBT_DEBUG("Wi-Fi link peak=%lf",x0_);
+    XBT_DEBUG("Wi-Fi link peak=%lf", x0_);
   }
   // should be the new maximum bandwidth ratio (comparison between max throughput without concurrency and with it)
-  double propCap = new_peak/x0_;
+  double propCap = new_peak / x0_;
 
   return propCap;
 }
 
 bool WifiLinkImpl::toggle_callback()
 {
-  if(! use_callback_) {
+  if (not use_callback_) {
       XBT_DEBUG("Activate throughput reduction mechanism");
     use_callback_ = true;
     this->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::WIFI,

@@ -11,7 +11,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(simulator, "[usage] wifi_usage <platform-file>");
 
-void run_ping_test(std::vector<std::pair<std::string,std::string>> mboxes, int data_size);
+void run_ping_test(const std::vector<std::pair<std::string,std::string>>& mboxes, int data_size);
 
 /* We need a separate actor so that it can sleep after each test */
 static void main_dispatcher()
@@ -62,7 +62,7 @@ int main(int argc, char** argv)
   return 0;
 }
 
-void run_ping_test(std::vector<std::pair<std::string,std::string>> mboxes, int data_size)
+void run_ping_test(const std::vector<std::pair<std::string,std::string>>& mboxes, int data_size)
 {
   auto* mailbox = simgrid::s4u::Mailbox::by_name("Test");
   for(auto pair : mboxes) {
