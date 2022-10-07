@@ -114,7 +114,7 @@ void WifiLinkImpl::update_bw_comm_end(const simgrid::kernel::resource::NetworkAc
 
 double WifiLinkImpl::get_max_ratio() const
 {
-  double new_peak = -1;
+  double new_peak;
   if (nb_active_flux_ > conc_lim_) {
     new_peak = (nb_active_flux_-conc_lim_) * co_acc_ + x0_;
     XBT_DEBUG("Wi-Fi link peak=(%d-%d)*%lf+%lf=%lf", nb_active_flux_, conc_lim_, co_acc_, x0_, new_peak);
