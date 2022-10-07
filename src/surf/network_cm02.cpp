@@ -240,7 +240,6 @@ void NetworkCm02Model::comm_action_expand_constraints(const s4u::Host* src, cons
     else {
       get_maxmin_system()->update_variable_penalty(action->get_variable(), 0);
     }
-
   }
 
   for (auto const* link : route) {

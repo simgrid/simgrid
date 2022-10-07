@@ -61,10 +61,10 @@ size_t WifiLinkImpl::get_host_count() const
   return host_rates_.size();
 }
 
-double WifiLinkImpl::wifi_link_dynamic_sharing(WifiLinkImpl* link, double capacity, int n)
+double WifiLinkImpl::wifi_link_dynamic_sharing(const WifiLinkImpl& link, double /*capacity*/, int n)
 {
-  double ratio = link->get_max_ratio(n);
-  XBT_DEBUG("New ratio value concurrency %d: %lf of link capacity on link %s", n, ratio, link->get_name().c_str());
+  double ratio = link.get_max_ratio(n);
+  XBT_DEBUG("New ratio value concurrency %d: %lf of link capacity on link %s", n, ratio, link.get_name().c_str());
   return ratio;
 }
 
@@ -82,23 +82,20 @@ void WifiLinkImpl::dec_active_flux()
 
 void WifiLinkImpl::update_bw_comm_start(const kernel::activity::CommImpl& comm)
 {
-  auto* action = static_cast<kernel::resource::NetworkAction*>(comm.surf_action_);
-
-  auto const* actionWifi = dynamic_cast<const simgrid::kernel::resource::WifiLinkAction*>(action);
+  auto const* actionWifi = dynamic_cast<const simgrid::kernel::resource::WifiLinkAction*>(comm.surf_action_);
   if (actionWifi == nullptr)
     return;
 
-  auto* link_src = actionWifi->get_src_link();
-  auto* link_dst = actionWifi->get_dst_link();
-  if (link_src != nullptr) {
+  if (auto* link_src = actionWifi->get_src_link()) {
     link_src->inc_active_flux();
   }
-  if (link_dst != nullptr) {
+  if (auto* link_dst = actionWifi->get_dst_link()) {
     link_dst->inc_active_flux();
   }
 }
 
-void WifiLinkImpl::update_bw_comm_end(simgrid::kernel::resource::NetworkAction& action, simgrid::kernel::resource::Action::State state)
+void WifiLinkImpl::update_bw_comm_end(const simgrid::kernel::resource::NetworkAction& action,
+                                      simgrid::kernel::resource::Action::State /*state*/)
 {
   if (action.get_state() != kernel::resource::Action::State::FINISHED)
     return;
@@ -136,8 +133,9 @@ bool WifiLinkImpl::toggle_callback()
   if (not use_callback_) {
       XBT_DEBUG("Activate throughput reduction mechanism");
     use_callback_ = true;
-    this->set_sharing_policy(simgrid::s4u::Link::SharingPolicy::WIFI,
-      std::bind(&wifi_link_dynamic_sharing, this, std::placeholders::_1, std::placeholders::_2));
+    this->set_sharing_policy(
+        simgrid::s4u::Link::SharingPolicy::WIFI,
+        std::bind(&wifi_link_dynamic_sharing, std::cref(*this), std::placeholders::_1, std::placeholders::_2));
   }
   return use_callback_;
 }

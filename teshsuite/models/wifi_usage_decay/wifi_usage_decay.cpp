@@ -16,7 +16,6 @@ void run_ping_test(const std::vector<std::pair<std::string,std::string>>& mboxes
 /* We need a separate actor so that it can sleep after each test */
 static void main_dispatcher()
 {
-
   const std::vector<std::pair<std::string, std::string>> flows = {
     {"Station 1", "Station 2"},
     {"Station 3", "Station 4"},
@@ -50,8 +49,8 @@ static void main_dispatcher()
   auto* l = (simgrid::kernel::resource::WifiLinkImpl*)simgrid::s4u::Link::by_name("AP1")->get_impl();
   l->toggle_callback();
   run_ping_test(flows, 100000);
-
 }
+
 int main(int argc, char** argv)
 {
   simgrid::s4u::Engine engine(&argc, argv);
@@ -65,7 +64,7 @@ int main(int argc, char** argv)
 void run_ping_test(const std::vector<std::pair<std::string,std::string>>& mboxes, int data_size)
 {
   auto* mailbox = simgrid::s4u::Mailbox::by_name("Test");
-  for(auto pair : mboxes) {
+  for (auto const& pair : mboxes) {
     simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name(pair.first.c_str()), [mailbox, pair, data_size]() {
       double start_time          = simgrid::s4u::Engine::get_clock();
       static std::string message = "message";
@@ -80,7 +79,7 @@ void run_ping_test(const std::vector<std::pair<std::string,std::string>>& mboxes
     for(auto i=1; i<=22; i++) {
       l->set_host_rate(simgrid::s4u::Host::by_name("Station "+std::to_string(i)), 0);
     }
-    }
+  }
   simgrid::s4u::this_actor::sleep_for(10);
   XBT_INFO("\n");
 }

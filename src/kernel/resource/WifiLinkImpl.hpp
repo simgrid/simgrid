@@ -56,10 +56,11 @@ public:
   bool toggle_callback();
 
   static void update_bw_comm_start(const kernel::activity::CommImpl&);
-  static void update_bw_comm_end(simgrid::kernel::resource::NetworkAction& action, simgrid::kernel::resource::Action::State state);
+  static void update_bw_comm_end(const simgrid::kernel::resource::NetworkAction& action,
+                                 simgrid::kernel::resource::Action::State state);
   void inc_active_flux();
   void dec_active_flux();
-  static double wifi_link_dynamic_sharing(WifiLinkImpl* link, double capacity, int n);
+  static double wifi_link_dynamic_sharing(const WifiLinkImpl& link, double capacity, int n);
   double get_max_ratio(int) const;
   size_t get_host_count() const;
 };
