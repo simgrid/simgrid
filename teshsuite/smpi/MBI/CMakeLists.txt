@@ -65,6 +65,7 @@ if (enable_smpi_MBI_testsuite)
   # Connect the MBI tests to the other tests
   add_custom_target(tests-mbi COMMENT "Recompiling the MBI tests and tools.")
   add_dependencies(tests tests-mbi)
+  add_dependencies(tests-mbi simgrid-mc smpimain)
 
   file(GLOB cfiles RELATIVE ${CMAKE_BINARY_DIR}/MBI/tmp ${CMAKE_BINARY_DIR}/MBI/tmp/*.c )
   foreach(cfile ${cfiles})
@@ -111,10 +112,30 @@ if (enable_smpi_MBI_testsuite)
           GlobalConcurrency_Get_Isend_Irecv_nok GlobalConcurrency_Get_Isend_Recv_nok GlobalConcurrency_Get_Send_Irecv_nok GlobalConcurrency_Get_Send_Recv_nok
           GlobalConcurrency_Put_Isend_Irecv_nok GlobalConcurrency_Put_Isend_Recv_nok GlobalConcurrency_Put_Send_Irecv_nok GlobalConcurrency_Put_Send_Recv_nok
 
-#          GlobalConcurrency_rl_Win_fence_Get_rload_nok     GlobalConcurrency_rl_Win_fence_Get_rstore_nok
-#          GlobalConcurrency_rl_Win_fence_Put_rload_nok     GlobalConcurrency_rl_Win_fence_Put_rstore_nok
-#          GlobalConcurrency_rl_Win_lock_all_Get_rload_nok  GlobalConcurrency_rl_Win_lock_all_Get_rstore_nok
-#          GlobalConcurrency_rl_Win_lock_all_Put_rload_nok  GlobalConcurrency_rl_Win_lock_all_Put_rstore_nok
+          GlobalConcurrency_rl_Win_fence_Get_rstore_nok   GlobalConcurrency_rl_Win_lock_all_Get_rstore_nok
+	  GlobalConcurrency_rl_Win_fence_Put_rstore_nok   GlobalConcurrency_rl_Win_lock_all_Put_rstore_nok
+
+          GlobalConcurrency_rl_Win_fence_Get_Get_nok
+	  GlobalConcurrency_rl_Win_fence_Put_Get_nok
+	  GlobalConcurrency_rl_Win_fence_Put_Put_nok
+	  GlobalConcurrency_rl_Win_fence_Put_rload_nok
+
+          GlobalConcurrency_rl_Win_lock_Get_Get_nok
+	  GlobalConcurrency_rl_Win_lock_Get_rstore_nok
+	  GlobalConcurrency_rl_Win_lock_Put_Get_nok
+	  GlobalConcurrency_rl_Win_lock_Put_Put_nok
+	  GlobalConcurrency_rl_Win_lock_Put_rload_nok
+	  GlobalConcurrency_rl_Win_lock_Put_rstore_nok
+	  GlobalConcurrency_rl_Win_lock_all_Get_Get_nok
+	  GlobalConcurrency_rl_Win_lock_all_Put_Get_nok
+	  GlobalConcurrency_rl_Win_lock_all_Put_Put_nok
+	  GlobalConcurrency_rl_Win_lock_all_Put_rload_nok
+	  GlobalConcurrency_rr_Win_fence_Get_Put_nok
+	  GlobalConcurrency_rr_Win_fence_Put_Put_nok
+	  GlobalConcurrency_rr_Win_lock_Get_Put_nok
+	  GlobalConcurrency_rr_Win_lock_Put_Put_nok
+	  GlobalConcurrency_rr_Win_lock_all_Get_Put_nok
+	  GlobalConcurrency_rr_Win_lock_all_Put_Put_nok
        )
     set_tests_properties(mbi-${localmodif} PROPERTIES WILL_FAIL true)
   endforeach(localmodif )
