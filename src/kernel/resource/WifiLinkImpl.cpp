@@ -61,10 +61,10 @@ size_t WifiLinkImpl::get_host_count() const
   return host_rates_.size();
 }
 
-double WifiLinkImpl::wifi_link_dynamic_sharing(const WifiLinkImpl& link, double /*capacity*/, int n)
+double WifiLinkImpl::wifi_link_dynamic_sharing(const WifiLinkImpl& link, double /*capacity*/, int /*n*/)
 {
-  double ratio = link.get_max_ratio(n);
-  XBT_DEBUG("New ratio value concurrency %d: %lf of link capacity on link %s", n, ratio, link.get_name().c_str());
+  double ratio = link.get_max_ratio();
+  XBT_DEBUG("New ratio value concurrency %d: %lf of link capacity on link %s", link.nb_active_flux_, ratio, link.get_name().c_str());
   return ratio;
 }
 
@@ -112,7 +112,7 @@ void WifiLinkImpl::update_bw_comm_end(const simgrid::kernel::resource::NetworkAc
   }
 }
 
-double WifiLinkImpl::get_max_ratio(int nb_active_flux) const
+double WifiLinkImpl::get_max_ratio() const
 {
   double new_peak = -1;
   if (nb_active_flux_ > conc_lim_) {
