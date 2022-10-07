@@ -61,7 +61,7 @@ public:
   void inc_active_flux();
   void dec_active_flux();
   static double wifi_link_dynamic_sharing(const WifiLinkImpl& link, double capacity, int n);
-  double get_max_ratio(int) const;
+  double get_max_ratio() const;
   size_t get_host_count() const;
 };
 
