@@ -5,8 +5,8 @@ S4U:
    Comm::set_payload_size() to change the size of the simulated data.
 
 MPI:
- - New option smpi/barrier-collectives to add a barrier in all
-   collectives to detect dangerous code that /may/ work on some implems.
+ - New option smpi/barrier-collectives to add a barrier to some collectives
+   to detect dangerous code that /may/ work on some MPI implems.
 
 Models:
  - WiFi: the total capacity of a link depends on the amout of flows on that link.

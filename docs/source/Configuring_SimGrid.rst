@@ -1376,13 +1376,13 @@ Add a barrier in all collectives
 
 **Option** ``smpi/barrier-collectives`` **default:** off
 
-This option adds a simple barrier in all collectives operation to catch dangerous
-code that may or may not work depending on the MPI implementation. It is disabled
-by default, and activated by the `-analyze` flag of smpirun.
+This option adds a simple barrier in some collective operations to catch dangerous
+code that may or may not work depending on the MPI implementation: Bcast, Exscan,
+Gather, Gatherv, Scan, Scatter, Scatterv and Reduce.
 
 For example, the following code works with OpenMPI while it deadlocks in MPICH and
-Intel MPI. It seems to mean that OpenMPI has a "fire and forget" implementation for
-Broadcast.
+Intel MPI. Broadcast seem to be "fire and forget" in OpenMPI while other
+implementations expect to receive a message.
 
 .. code-block:: C
 
@@ -1393,6 +1393,9 @@ Broadcast.
     MPI_Recv(&buf2, buff_size, MPI_CHAR, 0, tag, newcom, MPI_STATUS_IGNORE);
     MPI_Bcast(buf1, buff_size, MPI_CHAR, 0, newcom);
   }
+
+The barrier is only simulated and does not involve any additional message (it is a S4U barrier).
+This option is disabled by default, and activated by the `-analyze` flag of smpirun.
 
 .. _cfg=smpi/barrier-finalization:
 

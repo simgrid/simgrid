@@ -76,7 +76,8 @@ int PMPI_Ibcast(void* buf, int count, MPI_Datatype datatype, int root, MPI_Comm 
                      new simgrid::instr::CollTIData(request == MPI_REQUEST_IGNORED ? "bcast" : "ibcast", root, -1.0,
                                                     count, 0,
                                                     simgrid::smpi::Datatype::encode(datatype), ""));
-  if (simgrid::config::get_value<bool>("smpi/barrier-collectives"))
+  if (simgrid::config::get_value<bool>("smpi/barrier-collectives") &&
+      request == MPI_REQUEST_IGNORED) // No barrier in Ibcast
     smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
 
   if (comm->size() > 1) {
@@ -138,7 +139,8 @@ int PMPI_Igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void
 
   const SmpiBenchGuard suspend_bench;
 
-  if (simgrid::config::get_value<bool>("smpi/barrier-collectives"))
+  if (simgrid::config::get_value<bool>("smpi/barrier-collectives") &&
+      request == MPI_REQUEST_IGNORED) // no barrier in Igather
     smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
 
   aid_t pid = simgrid::s4u::this_actor::get_pid();
@@ -197,7 +199,8 @@ int PMPI_Igatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
 
   const SmpiBenchGuard suspend_bench;
 
-  if (simgrid::config::get_value<bool>("smpi/barrier-collectives"))
+  if (simgrid::config::get_value<bool>("smpi/barrier-collectives") &&
+      request == MPI_REQUEST_IGNORED) // no barrier in Igatherv
     smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
 
   const void* real_sendbuf   = sendbuf;
@@ -270,9 +273,6 @@ int PMPI_Iallgather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, v
 
   const SmpiBenchGuard suspend_bench;
 
-  if (simgrid::config::get_value<bool>("smpi/barrier-collectives"))
-    smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
-
   aid_t pid = simgrid::s4u::this_actor::get_pid();
 
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Allgather" : "PMPI_Iallggather",
@@ -319,9 +319,6 @@ int PMPI_Iallgatherv(const void* sendbuf, int sendcount, MPI_Datatype sendtype, 
   CHECK_COLLECTIVE(comm, MPI_REQUEST_IGNORED ? "PMPI_Allgatherv" : "PMPI_Iallgatherv")
 
   const SmpiBenchGuard suspend_bench;
-
-  if (simgrid::config::get_value<bool>("smpi/barrier-collectives"))
-    smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
 
   if (sendbuf == MPI_IN_PLACE) {
     sendbuf   = static_cast<char*>(recvbuf) + recvtype->get_extent() * displs[comm->rank()];
@@ -391,7 +388,8 @@ int PMPI_Iscatter(const void* sendbuf, int sendcount, MPI_Datatype sendtype, voi
 
   const SmpiBenchGuard suspend_bench;
 
-  if (simgrid::config::get_value<bool>("smpi/barrier-collectives"))
+  if (simgrid::config::get_value<bool>("smpi/barrier-collectives") &&
+      request == MPI_REQUEST_IGNORED) // no barrier in Iscatter
     smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
 
   aid_t pid = simgrid::s4u::this_actor::get_pid();
@@ -450,7 +448,8 @@ int PMPI_Iscatterv(const void* sendbuf, const int* sendcounts, const int* displs
 
   const SmpiBenchGuard suspend_bench;
 
-  if (simgrid::config::get_value<bool>("smpi/barrier-collectives"))
+  if (simgrid::config::get_value<bool>("smpi/barrier-collectives") &&
+      request == MPI_REQUEST_IGNORED) // no barrier in Iscatterv
     smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
 
   aid_t pid        = simgrid::s4u::this_actor::get_pid();
@@ -504,7 +503,8 @@ int PMPI_Ireduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
 
   const SmpiBenchGuard suspend_bench;
 
-  if (simgrid::config::get_value<bool>("smpi/barrier-collectives"))
+  if (simgrid::config::get_value<bool>("smpi/barrier-collectives") &&
+      request == MPI_REQUEST_IGNORED) // no barrier in Ireduce
     smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
 
   aid_t pid = simgrid::s4u::this_actor::get_pid();
@@ -560,9 +560,6 @@ int PMPI_Iallreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype 
 
   const SmpiBenchGuard suspend_bench;
 
-  if (simgrid::config::get_value<bool>("smpi/barrier-collectives"))
-    smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
-
   std::vector<unsigned char> tmp_sendbuf;
   const void* real_sendbuf = smpi_get_in_place_buf(sendbuf, recvbuf, tmp_sendbuf, count, datatype);
 
@@ -603,7 +600,8 @@ int PMPI_Iscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
 
   const SmpiBenchGuard suspend_bench;
 
-  if (simgrid::config::get_value<bool>("smpi/barrier-collectives"))
+  if (simgrid::config::get_value<bool>("smpi/barrier-collectives") &&
+      request == MPI_REQUEST_IGNORED) // no barrier in Iscan
     smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
 
   aid_t pid = simgrid::s4u::this_actor::get_pid();
@@ -644,7 +642,8 @@ int PMPI_Iexscan(const void *sendbuf, void *recvbuf, int count, MPI_Datatype dat
 
   const SmpiBenchGuard suspend_bench;
 
-  if (simgrid::config::get_value<bool>("smpi/barrier-collectives"))
+  if (simgrid::config::get_value<bool>("smpi/barrier-collectives") &&
+      request == MPI_REQUEST_IGNORED) // no barrier in Iexscan
     smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
 
   aid_t pid = simgrid::s4u::this_actor::get_pid();
@@ -690,9 +689,6 @@ int PMPI_Ireduce_scatter(const void *sendbuf, void *recvbuf, const int *recvcoun
                              " with op " + op->name())
 
   const SmpiBenchGuard suspend_bench;
-
-  if (simgrid::config::get_value<bool>("smpi/barrier-collectives"))
-    smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
 
   aid_t pid                          = simgrid::s4u::this_actor::get_pid();
   auto trace_recvcounts              = std::make_shared<std::vector<int>>();
@@ -743,9 +739,6 @@ int PMPI_Ireduce_scatter_block(const void* sendbuf, void* recvbuf, int recvcount
                 " with op " + op->name())
 
   const SmpiBenchGuard suspend_bench;
-
-  if (simgrid::config::get_value<bool>("smpi/barrier-collectives"))
-    smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
 
   int count = comm->size();
 
@@ -814,9 +807,6 @@ int PMPI_Ialltoall(const void* sendbuf, int sendcount, MPI_Datatype sendtype, vo
 
   const SmpiBenchGuard suspend_bench;
 
-  if (simgrid::config::get_value<bool>("smpi/barrier-collectives"))
-    smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
-
   TRACE_smpi_comm_in(pid, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoall" : "PMPI_Ialltoall",
                      new simgrid::instr::CollTIData(
                          request == MPI_REQUEST_IGNORED ? "alltoall" : "ialltoall", -1, -1.0,
@@ -869,9 +859,6 @@ int PMPI_Ialltoallv(const void* sendbuf, const int* sendcounts, const int* sendd
   }
 
   const SmpiBenchGuard suspend_bench;
-
-  if (simgrid::config::get_value<bool>("smpi/barrier-collectives"))
-    smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
 
   int send_size                      = 0;
   int recv_size                      = 0;
@@ -967,9 +954,6 @@ int PMPI_Ialltoallw(const void* sendbuf, const int* sendcounts, const int* sendd
   CHECK_COLLECTIVE(comm, request == MPI_REQUEST_IGNORED ? "PMPI_Alltoallw" : "PMPI_Ialltoallw")
 
   const SmpiBenchGuard suspend_bench;
-
-  if (simgrid::config::get_value<bool>("smpi/barrier-collectives"))
-    smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
 
   int send_size                      = 0;
   int recv_size                      = 0;
