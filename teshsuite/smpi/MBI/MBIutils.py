@@ -57,6 +57,7 @@ possible_details = {
 #    'OutOfInitFini':'BInitFini',
     'CommunicatorLeak':'BResLeak', 'DatatypeLeak':'BResLeak', 'GroupLeak':'BResLeak', 'OperatorLeak':'BResLeak', 'TypeLeak':'BResLeak', 'RequestLeak':'BResLeak',
     'MissingStart':'BReqLifecycle', 'MissingWait':'BReqLifecycle',
+    'MissingEpoch':'BEpochLifecycle','DoubleEpoch':'BEpochLifecycle',
     'LocalConcurrency':'BLocalConcurrency',
     # scope: communicator
     'CallMatching':'DMatch',
@@ -73,6 +74,7 @@ error_scope = {
     'BResLeak':'single process',
 #    'BInitFini':'single process',
     'BReqLifecycle':'single process',
+    'BEpochLifecycle':'single process',
     'BLocalConcurrency':'single process',
     'CMatch':'multi-processes',
     'DRace':'multi-processes',
