@@ -152,9 +152,6 @@ simgrid::config::Flag<int> _smpi_cfg_list_leaks("smpi/list-leaks",
                                                 "Whether we should display the n first MPI handle leaks (addresses and type only) after simulation",
                                                 -1);
 
-simgrid::config::Flag<bool> _smpi_cfg_colls_inject_barrier{
-  "smpi/colls-inject-barrier", "Inject a barrier in each colllective operation, to detect some deadlocks in incorrect MPI codes, which may not be triggered in all cases", false };
-
 double smpi_cfg_host_speed(){
   return _smpi_cfg_host_speed;
 }
@@ -295,7 +292,12 @@ void smpi_init_options_internal(bool called_by_smpi_main)
   simgrid::config::declare_flag<std::string>(
       "smpi/or", "Small messages timings (MPI_Recv minimum time for small messages)", "0:0:0:0:0");
 
-  simgrid::config::declare_flag<bool>("smpi/finalization-barrier", "Do we add a barrier in MPI_Finalize or not", false);
+  simgrid::config::declare_flag<bool>("smpi/barrier-finalization", {"smpi/finalization-barrier"},
+                                      "Do we add a barrier in MPI_Finalize or not", false);
+  simgrid::config::declare_flag<bool>("smpi/barrier-collectives",
+                                      "Inject a barrier in each colllective operation, to detect some deadlocks in "
+                                      "incorrect MPI codes, which may not be triggered in all cases",
+                                      false);
 
   smpi_options_initialized = true;
 }

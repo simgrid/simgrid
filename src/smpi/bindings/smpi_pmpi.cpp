@@ -71,7 +71,7 @@ int PMPI_Finalize()
   smpi_process()->mark_as_finalizing();
   TRACE_smpi_comm_in(rank_traced, __func__, new simgrid::instr::NoOpTIData("finalize"));
 
-  if(simgrid::config::get_value<bool>("smpi/finalization-barrier"))
+  if (simgrid::config::get_value<bool>("smpi/barrier-finalization"))
     simgrid::smpi::colls::barrier(MPI_COMM_WORLD);
 
   smpi_process()->finalize();

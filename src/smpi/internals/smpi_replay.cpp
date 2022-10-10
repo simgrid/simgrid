@@ -928,7 +928,7 @@ void smpi_replay_main(int rank, const char* private_trace_filename)
     simgrid::smpi::Request::waitall(count_requests, requests.data(), MPI_STATUSES_IGNORE);
   }
 
-  if(simgrid::config::get_value<bool>("smpi/finalization-barrier"))
+  if (simgrid::config::get_value<bool>("smpi/barrier-finalization"))
     simgrid::smpi::colls::barrier(MPI_COMM_WORLD);
 
   active_processes--;

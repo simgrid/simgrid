@@ -147,6 +147,8 @@ Existing Configuration Items
 - **For collective operations of SMPI,** please refer to Section :ref:`cfg=smpi/coll-selector`
 - **smpi/auto-shared-malloc-thresh:** :ref:`cfg=smpi/auto-shared-malloc-thresh`
 - **smpi/async-small-thresh:** :ref:`cfg=smpi/async-small-thresh`
+- **smpi/barrier-finalization:** :ref:`cfg=smpi/barrier-finalization`
+- **smpi/barrier-collectives:** :ref:`cfg=smpi/barrier-collectives`
 - **smpi/buffering:** :ref:`cfg=smpi/buffering`
 - **smpi/bw-factor:** :ref:`cfg=smpi/bw-factor`
 - **smpi/coll-selector:** :ref:`cfg=smpi/coll-selector`
@@ -155,7 +157,6 @@ Existing Configuration Items
 - **smpi/display-allocs:** :ref:`cfg=smpi/display-allocs`
 - **smpi/display-timing:** :ref:`cfg=smpi/display-timing`
 - **smpi/errors-are-fatal:** :ref:`cfg=smpi/errors-are-fatal`
-- **smpi/finalization-barrier:** :ref:`cfg=smpi/finalization-barrier`
 - **smpi/grow-injected-times:** :ref:`cfg=smpi/grow-injected-times`
 - **smpi/host-speed:** :ref:`cfg=smpi/host-speed`
 - **smpi/IB-penalty-factors:** :ref:`cfg=smpi/IB-penalty-factors`
@@ -1368,7 +1369,32 @@ Each collective operation can be manually selected with a
 .. TODO:: All available collective algorithms will be made available
           via the ``smpirun --help-coll`` command.
 
-.. _cfg=smpi/finalization-barrier:
+.. _cfg=smpi/barrier-collectives:
+
+Add a barrier in all collectives
+................................
+
+**Option** ``smpi/barrier-collectives`` **default:** off
+
+This option adds a simple barrier in all collectives operation to catch dangerous
+code that may or may not work depending on the MPI implementation. It is disabled
+by default, and activated by the `-analyze` flag of smpirun.
+
+For example, the following code works with OpenMPI while it deadlocks in MPICH and
+Intel MPI. It seems to mean that OpenMPI has a "fire and forget" implementation for
+Broadcast.
+
+.. code-block:: C
+
+  if (rank == 0) {
+    MPI_Bcast(buf1, buff_size, MPI_CHAR, 0, newcom);
+    MPI_Send(&buf2, buff_size, MPI_CHAR, 1, tag, newcom);
+  } else if (rank==1) {
+    MPI_Recv(&buf2, buff_size, MPI_CHAR, 0, tag, newcom, MPI_STATUS_IGNORE);
+    MPI_Bcast(buf1, buff_size, MPI_CHAR, 0, newcom);
+  }
+
+.. _cfg=smpi/barrier-finalization:
 
 Add a barrier in MPI_Finalize
 .............................
