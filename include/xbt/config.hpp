@@ -94,9 +94,8 @@ template <class T>
 XBT_PUBLIC void declare_flag(const std::string& name, const std::string& description, T value,
                              std::function<void(const T&)> callback = std::function<void(const T&)>());
 template <class T>
-XBT_PUBLIC void declare_flag(const std::string& name, std::initializer_list<const char*> aliases,
-                             const std::string& description, T value,
-                             std::function<void(const T&)> callback = std::function<void(const T&)>())
+void declare_flag(const std::string& name, std::initializer_list<const char*> aliases, const std::string& description,
+                  T value, std::function<void(const T&)> callback = std::function<void(const T&)>())
 {
   declare_flag(name, description, std::move(value), std::move(callback));
   alias(name.c_str(), aliases);
