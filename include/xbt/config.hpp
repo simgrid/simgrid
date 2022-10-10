@@ -77,6 +77,10 @@ extern template XBT_PUBLIC double const& get_value<double>(const std::string& na
 extern template XBT_PUBLIC bool const& get_value<bool>(const std::string& name);
 extern template XBT_PUBLIC std::string const& get_value<std::string>(const std::string& name);
 
+// ***** alias *****
+
+XBT_PUBLIC void alias(const char* realname, std::initializer_list<const char*> aliases);
+
 // Register:
 
 /** Register a configuration flag
@@ -89,6 +93,14 @@ extern template XBT_PUBLIC std::string const& get_value<std::string>(const std::
 template <class T>
 XBT_PUBLIC void declare_flag(const std::string& name, const std::string& description, T value,
                              std::function<void(const T&)> callback = std::function<void(const T&)>());
+template <class T>
+XBT_PUBLIC void declare_flag(const std::string& name, std::initializer_list<const char*> aliases,
+                             const std::string& description, T value,
+                             std::function<void(const T&)> callback = std::function<void(const T&)>())
+{
+  declare_flag(name, description, std::move(value), std::move(callback));
+  alias(name.c_str(), aliases);
+}
 
 extern template XBT_PUBLIC void declare_flag(const std::string& name, const std::string& description, int value,
                                              std::function<void(int const&)> callback);
@@ -98,10 +110,6 @@ extern template XBT_PUBLIC void declare_flag(const std::string& name, const std:
                                              std::function<void(bool const&)> callback);
 extern template XBT_PUBLIC void declare_flag(const std::string& name, const std::string& description, std::string value,
                                              std::function<void(std::string const&)> callback);
-
-// ***** alias *****
-
-XBT_PUBLIC void alias(const char* realname, std::initializer_list<const char*> aliases);
 
 /** Bind a variable to configuration flag
  *
