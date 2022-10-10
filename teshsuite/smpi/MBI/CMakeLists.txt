@@ -5,37 +5,6 @@
 # Only the python scripts are embeeded in the archive, and the C test files are generated at config time using these scripts.
 # These python scripts are copied over from the MBI repository with as little changes as possible.
 
-set(generator_scripts
-    CollArgGenerator.py
-    CollComGenerator.py
-    CollLocalConcurrencyGenerator.py
-    CollMatchingGenerator.py
-    CollP2PMatchingGenerator.py
-    CollP2PMessageRaceGenerator.py
-    CollTopoGenerator.py
-    InputHazardGenerator.py
-    MissingWaitandStartGenerator.py
-    P2PArgGenerator.py
-    P2PBufferingGenerator.py
-    P2PComGenerator.py
-    P2PInvalidComGenerator.py
-    P2PLocalConcurrencyGenerator.py
-    P2PMatchingANYSRCGenerator.py
-    P2PMatchingGenerator.py
-    P2PMessageRaceGenerator.py
-    P2PMessageRaceTagsGenerator.py
-    P2PProbeGenerator.py
-    ResleakGenerator.py
-    RMAArgGenerator.py
-    RMAInvalidArgGenerator.py
-    RMALocalLocalConcurrencyGenerator.py
-    RMAP2PGlobalConcurrencyGenerator.py
-    RMAP2PLocalConcurrencyGenerator.py
-    RMARemoteLocalConcurrencyGenerator.py
-    RMARemoteRemoteConcurrencyGenerator.py
-    RMAReqLifecycleGenerator.py
-    RMAWinBufferGenerator.py)
-
 if (enable_smpi_MBI_testsuite)
   if (NOT enable_smpi)
     message(FATAL_ERROR "MBI test suite cannot be enabled without SMPI. Please change either setting.")
@@ -48,9 +17,10 @@ if (enable_smpi_MBI_testsuite)
   file(REMOVE_RECURSE  ${CMAKE_BINARY_DIR}/MBI/tmp)
   file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/MBI/tmp)
   file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/generator_utils.py DESTINATION ${CMAKE_BINARY_DIR}/MBI/tmp)
+  file(GLOB generator_scripts *Generator.py)
   foreach (script ${generator_scripts})
     message(STATUS "  $ ${CMAKE_CURRENT_SOURCE_DIR}/${script}")
-    execute_process(COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${script}
+    execute_process(COMMAND ${PYTHON_EXECUTABLE} ${script}
                     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/MBI/tmp
                     RESULT_VARIABLE status)
     if (NOT status EQUAL 0)
