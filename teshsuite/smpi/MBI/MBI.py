@@ -43,5 +43,5 @@ for test in mbi.parse_one_code(filename):
 
     if res_category != "TRUE_NEG" and res_category != "TRUE_POS":
         print("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\n")
-        print(f"SimGrid gave the wrong result ({outcome} instead of {test['expect']}).")
+        print(f"SimGrid gave the wrong result on {binary} ({outcome} instead of {test['expect']}).")
         sys.exit(1)
