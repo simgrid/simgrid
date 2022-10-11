@@ -83,8 +83,7 @@ int sthread_create(unsigned long int* thread, const void* /*pthread_attr_t* attr
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 #endif
   std::string name    = simgrid::xbt::string_printf("%d:%d", rank, TID);
-  sg4::ActorPtr actor = sg4::Actor::init(name.c_str(), lilibeth);
-  actor->start(thread_create_wrapper, start_routine, arg);
+  sg4::ActorPtr actor = sg4::Actor::create(name, lilibeth, thread_create_wrapper, start_routine, arg);
 
   intrusive_ptr_add_ref(actor.get());
   *thread = reinterpret_cast<unsigned long>(actor.get());
