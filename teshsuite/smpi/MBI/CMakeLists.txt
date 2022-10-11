@@ -5,6 +5,8 @@
 # Only the python scripts are embeeded in the archive, and the C test files are generated at config time using these scripts.
 # These python scripts are copied over from the MBI repository with as little changes as possible.
 
+file(GLOB generator_scripts *Generator.py)
+
 if (enable_smpi_MBI_testsuite)
   if (NOT enable_smpi)
     message(FATAL_ERROR "MBI test suite cannot be enabled without SMPI. Please change either setting.")
@@ -17,7 +19,6 @@ if (enable_smpi_MBI_testsuite)
   file(REMOVE_RECURSE  ${CMAKE_BINARY_DIR}/MBI/tmp)
   file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/MBI/tmp)
   file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/generator_utils.py DESTINATION ${CMAKE_BINARY_DIR}/MBI/tmp)
-  file(GLOB generator_scripts *Generator.py)
   foreach (script ${generator_scripts})
     message(STATUS "  $ ${CMAKE_CURRENT_SOURCE_DIR}/${script}")
     execute_process(COMMAND ${PYTHON_EXECUTABLE} ${script}
@@ -27,7 +28,6 @@ if (enable_smpi_MBI_testsuite)
       message(FATAL_ERROR "Command failed with status: ${status}")
     endif()
   endforeach()
-  unset(generator_scripts)
 
   set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   set(CMAKE_CXX_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicxx")
@@ -84,7 +84,7 @@ endif()
 
 # Add the needed files to the distribution
 foreach(script ${generator_scripts})
-  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${script})
+  set(teshsuite_src ${teshsuite_src} ${script})
 endforeach()
 
 set(teshsuite_src ${teshsuite_src}
