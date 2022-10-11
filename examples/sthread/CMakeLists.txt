@@ -32,10 +32,12 @@ foreach(x
     set_target_properties(sthread-${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(sthread-${x} sthread)
     set_property(TARGET sthread-${x} APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
+
     add_dependencies(tests sthread-${x})
+    ADD_TESH_FACTORIES(sthread-${x} "^thread" --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/sthread-${x}.tesh)
   endif()
 
-#  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/sthread-${x}.tesh)
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/sthread-${x}.tesh)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/sthread-${x}.c)
 endforeach()
 

@@ -1,0 +1,7 @@
+$ ./sthread-mutex-simple
+> [0.000000] [sthread/INFO] Starting the simulation.
+> All threads are started.
+> The thread 0 is terminating.
+> The thread 1 is terminating.
+> User's main is terminating.
+> [0.000000] [sthread/INFO] All threads exited. Terminating the simulation.

@@ -717,6 +717,7 @@ include examples/smpi/trace_simple/trace_simple.tesh
 include examples/sthread/pthread-mutex-simple.c
 include examples/sthread/pthread-mutex-simple.tesh
 include examples/sthread/sthread-mutex-simple.c
+include examples/sthread/sthread-mutex-simple.tesh
 include src/include/catch_simgrid.hpp
 include teshsuite/java/semaphoregc/SemaphoreGC.java
 include teshsuite/java/semaphoregc/semaphoregc.tesh
