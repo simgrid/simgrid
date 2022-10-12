@@ -32,8 +32,7 @@ ActorExt::ActorExt(s4u::Actor* actor) : actor_(actor)
   timer_           = xbt_os_timer_new();
   state_           = SmpiProcessState::UNINITIALIZED;
   info_env_        = MPI_INFO_NULL;
-  if (MC_is_active())
-    MC_ignore_heap(timer_, xbt_os_timer_size());
+  MC_ignore_heap(timer_, xbt_os_timer_size());
 
 #if HAVE_PAPI
   if (not smpi_cfg_papi_events_file().empty()) {

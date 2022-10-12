@@ -104,11 +104,8 @@ void Context::set_current(Context* self)
 
 void Context::declare_context(std::size_t size)
 {
-#if SIMGRID_HAVE_MC
   /* Store the address of the stack in heap to compare it apart of heap comparison */
-  if(MC_is_active())
-    MC_ignore_heap(this, size);
-#endif
+  MC_ignore_heap(this, size);
 }
 
 Context* ContextFactory::attach(actor::ActorImpl*)

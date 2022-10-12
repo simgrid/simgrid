@@ -27,8 +27,7 @@ Task::Task(const std::string& name, double flops_amount, double bytes_amount, vo
   static std::atomic_ullong counter{0};
   id_ = counter++;
   set_data(data);
-  if (MC_is_active())
-    MC_ignore_heap(&id_, sizeof id_);
+  MC_ignore_heap(&id_, sizeof id_);
 }
 
 Task::Task(const std::string& name, std::vector<s4u::Host*>&& hosts, std::vector<double>&& flops_amount,
