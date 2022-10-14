@@ -73,11 +73,10 @@ void dumpStack(FILE* file, unw_cursor_t* cursor)
 
 double MC_process_clock_get(const simgrid::kernel::actor::ActorImpl* process)
 {
-  if (simgrid::mc::processes_time.empty())
-    return 0;
   if (process == nullptr)
     return -1;
-  return simgrid::mc::processes_time.at(process->get_pid());
+  auto pid = static_cast<size_t>(process->get_pid());
+  return pid < simgrid::mc::processes_time.size() ? simgrid::mc::processes_time[pid] : 0.0;
 }
 
 void MC_process_clock_add(const simgrid::kernel::actor::ActorImpl* process, double amount)
