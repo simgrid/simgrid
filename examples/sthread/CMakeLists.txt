@@ -28,6 +28,28 @@ foreach(x
 
 endforeach()
 
+# Regular pthread examples that may deadlock: test sthread + MC in that case
+############################################################################
+
+foreach(x
+        mutex-simpledeadlock)
+
+  if(SIMGRID_HAVE_MC AND ("${CMAKE_SYSTEM}" MATCHES "Linux")) # sthread is linux-only
+
+    add_executable       (pthread-${x} EXCLUDE_FROM_ALL pthread-${x}.c)
+    set_target_properties(pthread-${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(pthread-${x} PRIVATE Threads::Threads)
+    target_link_libraries(pthread-${x} PUBLIC "-Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once cmake is >3.13
+
+    add_dependencies(tests-mc pthread-${x})
+    ADD_TESH_FACTORIES(pthread-mc-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-mc-${x}.tesh)
+  endif()
+
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/pthread-mc-${x}.tesh)
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.c)
+
+endforeach()
+
 # Regular sthread examples: test the internal interface for debugging purpose
 #############################################################################
 
