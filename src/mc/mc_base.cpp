@@ -9,31 +9,16 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
-#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
-
-#include "xbt/random.hpp"
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/api/RemoteApp.hpp"
+#include "src/mc/remote/AppSide.hpp"
 #include "src/mc/remote/RemoteProcess.hpp"
 #endif
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(mc, "All MC categories");
-
-int MC_random(int min, int max)
-{
-#if SIMGRID_HAVE_MC
-  xbt_assert(mc_model_checker == nullptr);
-#endif
-  if (not MC_is_active() && not MC_record_replay_is_active()) { // no need to do a simcall in this case
-    static simgrid::xbt::random::XbtRandom prng;
-    return prng.uniform_int(min, max);
-  }
-  simgrid::kernel::actor::RandomSimcall observer{simgrid::kernel::actor::ActorImpl::self(), min, max};
-  return simgrid::kernel::actor::simcall_answered([&observer] { return observer.get_value(); }, &observer);
-}
 
 namespace simgrid::mc {
 

@@ -11,9 +11,9 @@
 /********************************** Configuration of MC **************************************/
 namespace simgrid::mc {
 bool cfg_use_DPOR(); // "model-check/reduction" == "DPOR"
+extern XBT_PUBLIC bool cfg_do_model_check;
 };
 
-extern "C" XBT_PUBLIC int _sg_do_model_check;
 extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_buffering;
 extern XBT_PRIVATE simgrid::config::Flag<int> _sg_mc_checkpoint;
 extern XBT_PUBLIC simgrid::config::Flag<std::string> _sg_mc_property_file;

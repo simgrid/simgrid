@@ -5,6 +5,7 @@
 
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/mc_private.hpp"
 
 #include <unistd.h>

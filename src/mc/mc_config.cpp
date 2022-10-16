@@ -5,21 +5,25 @@
 
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
+#include <simgrid/modelchecker.h>
 #include <simgrid/sg_config.hpp>
 
 #if SIMGRID_HAVE_MC
 #include <string_view>
-
-#else
-#define _sg_do_model_check 0
 #endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_cfg);
 
+bool simgrid::mc::cfg_do_model_check = 0;
+
 static void _mc_cfg_cb_check(const char* spec, bool more_check = true)
 {
-  xbt_assert(_sg_cfg_init_status == 0 || _sg_do_model_check || not more_check,
+#if SIMGRID_HAVE_MC
+  xbt_assert(_sg_cfg_init_status == 0 || MC_is_active() || not more_check,
              "Specifying a %s is only allowed within the model-checker. Please use simgrid-mc.", spec);
+#else
+  xbt_die("Specifying a %s is only allowed within the model-checker. Please enable it before the compilation.", spec);
+#endif
 }
 
 /* Replay (this part is enabled even if MC it disabled) */
@@ -27,13 +31,12 @@ simgrid::config::Flag<std::string> _sg_mc_record_path{
     "model-check/replay", "Model-check path to replay (as reported by SimGrid when a violation is reported)", "",
     [](std::string_view value) { MC_record_path() = value; }};
 
+#if SIMGRID_HAVE_MC
 simgrid::config::Flag<bool> _sg_mc_timeout{
     "model-check/timeout", "Whether to enable timeouts for wait requests", false, [](bool) {
       _mc_cfg_cb_check("value to enable/disable timeout for wait requests", not MC_record_replay_is_active());
     }};
 
-#if SIMGRID_HAVE_MC
-int _sg_do_model_check = 0;
 int _sg_mc_max_visited_states = 0;
 
 static simgrid::config::Flag<std::string> cfg_mc_reduction{

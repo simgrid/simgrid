@@ -562,6 +562,7 @@ set(TRACING_SRC
 set(MC_SRC_BASE
   src/mc/mc_base.cpp
   src/mc/mc_base.hpp
+  src/mc/mc_client_api.cpp
   src/mc/mc_config.cpp
   src/mc/mc_config.hpp
   src/mc/mc_global.cpp
@@ -644,7 +645,6 @@ set(MC_SRC
   src/mc/api/RemoteApp.cpp
   src/mc/api/RemoteApp.hpp
   src/mc/compare.cpp
-  src/mc/mc_client_api.cpp
   src/mc/mc_exit.hpp
   src/mc/mc_forward.hpp
   src/mc/mc_private.hpp

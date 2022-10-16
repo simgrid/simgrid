@@ -10,6 +10,7 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_base.hpp"
+#include "src/mc/mc_config.hpp"
 #include "src/mc/remote/RemoteProcess.hpp"
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
@@ -43,7 +44,7 @@ AppSide* AppSide::initialize()
   if (instance_)
     return instance_.get();
 
-  _sg_do_model_check = 1;
+  simgrid::mc::cfg_do_model_check = 1;
 
   setvbuf(stdout, nullptr, _IOLBF, 0);
 
