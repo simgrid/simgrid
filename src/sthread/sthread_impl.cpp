@@ -109,22 +109,38 @@ int sthread_mutex_init(sthread_mutex_t* mutex, const void* /*pthread_mutexattr_t
 
 int sthread_mutex_lock(sthread_mutex_t* mutex)
 {
+  /* At least in glibc, PTHREAD_STATIC_INITIALIZER sets every fields to 0 */
+  if (mutex->mutex == nullptr)
+    sthread_mutex_init(mutex, nullptr);
+
   static_cast<sg4::Mutex*>(mutex->mutex)->lock();
   return 0;
 }
 
 int sthread_mutex_trylock(sthread_mutex_t* mutex)
 {
+  /* At least in glibc, PTHREAD_STATIC_INITIALIZER sets every fields to 0 */
+  if (mutex->mutex == nullptr)
+    sthread_mutex_init(mutex, nullptr);
+
   return static_cast<sg4::Mutex*>(mutex->mutex)->try_lock();
 }
 
 int sthread_mutex_unlock(sthread_mutex_t* mutex)
 {
+  /* At least in glibc, PTHREAD_STATIC_INITIALIZER sets every fields to 0 */
+  if (mutex->mutex == nullptr)
+    sthread_mutex_init(mutex, nullptr);
+
   static_cast<sg4::Mutex*>(mutex->mutex)->unlock();
   return 0;
 }
 int sthread_mutex_destroy(sthread_mutex_t* mutex)
 {
+  /* At least in glibc, PTHREAD_STATIC_INITIALIZER sets every fields to 0 */
+  if (mutex->mutex == nullptr)
+    sthread_mutex_init(mutex, nullptr);
+
   intrusive_ptr_release(static_cast<sg4::Mutex*>(mutex->mutex));
   return 0;
 }
