@@ -233,7 +233,7 @@ void CommDetExtension::get_comm_pattern(const Transition* transition)
   auto pattern   = std::make_unique<PatternCommunication>();
   pattern->index = initial_pattern.index_comm + incomplete_pattern.size();
 
-  if (transition->type_ == Transition::Type::COMM_SEND) {
+  if (transition->type_ == Transition::Type::COMM_ASYNC_SEND) {
     auto* send = static_cast<const CommSendTransition*>(transition);
 
     pattern->type      = PatternCommunicationType::send;
@@ -242,7 +242,7 @@ void CommDetExtension::get_comm_pattern(const Transition* transition)
 
     // FIXME: Detached sends should be enforced when the receive is waited
 
-  } else if (transition->type_ == Transition::Type::COMM_RECV) {
+  } else if (transition->type_ == Transition::Type::COMM_ASYNC_RECV) {
     auto* recv = static_cast<const CommRecvTransition*>(transition);
 
     pattern->type      = PatternCommunicationType::receive;
@@ -290,8 +290,8 @@ void CommDetExtension::handle_comm_pattern(const Transition* transition)
     return;
 
   switch (transition->type_) {
-    case Transition::Type::COMM_SEND:
-    case Transition::Type::COMM_RECV:
+    case Transition::Type::COMM_ASYNC_SEND:
+    case Transition::Type::COMM_ASYNC_RECV:
       get_comm_pattern(transition);
       break;
     case Transition::Type::COMM_WAIT:

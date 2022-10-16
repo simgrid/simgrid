@@ -34,7 +34,7 @@ bool BarrierTransition::depends(const Transition* o) const
       return false;
 
     // LOCK indep LOCK: requests are not ordered in a barrier
-    if (type_ == Type::BARRIER_LOCK && other->type_ == Type::BARRIER_LOCK)
+    if (type_ == Type::BARRIER_ASYNC_LOCK && other->type_ == Type::BARRIER_ASYNC_LOCK)
       return false;
 
     // WAIT indep WAIT: requests are not ordered
@@ -72,12 +72,12 @@ bool MutexTransition::depends(const Transition* o) const
 
     // Theorem 4.4.11: LOCK indep TEST/WAIT.
     //  If both enabled, the result does not depend on their order. If WAIT is not enabled, LOCK won't enable it.
-    if (type_ == Type::MUTEX_LOCK && (other->type_ == Type::MUTEX_TEST || other->type_ == Type::MUTEX_WAIT))
+    if (type_ == Type::MUTEX_ASYNC_LOCK && (other->type_ == Type::MUTEX_TEST || other->type_ == Type::MUTEX_WAIT))
       return false;
 
     // Theorem 4.4.8: LOCK indep UNLOCK.
     //  pop_front and push_back are independent.
-    if (type_ == Type::MUTEX_LOCK && other->type_ == Type::MUTEX_UNLOCK)
+    if (type_ == Type::MUTEX_ASYNC_LOCK && other->type_ == Type::MUTEX_UNLOCK)
       return false;
 
     // TEST is a pure function; TEST/WAIT won't change the owner; TRYLOCK will always fail if TEST is enabled (because a
@@ -100,7 +100,7 @@ bool MutexTransition::depends(const Transition* o) const
 
 std::string SemaphoreTransition::to_string(bool verbose) const
 {
-  if (type_ == Type::SEM_LOCK || type_ == Type::SEM_UNLOCK)
+  if (type_ == Type::SEM_ASYNC_LOCK || type_ == Type::SEM_UNLOCK)
     return xbt::string_printf("%s(semaphore: %" PRIxPTR ")", Transition::to_c_str(type_), sem_);
   if (type_ == Type::SEM_WAIT)
     return xbt::string_printf("%s(semaphore: %" PRIxPTR ", granted: %s)", Transition::to_c_str(type_), sem_,
@@ -122,12 +122,12 @@ bool SemaphoreTransition::depends(const Transition* o) const
       return false;
 
     // LOCK indep UNLOCK: pop_front and push_back are independent.
-    if (type_ == Type::SEM_LOCK && other->type_ == Type::SEM_UNLOCK)
+    if (type_ == Type::SEM_ASYNC_LOCK && other->type_ == Type::SEM_UNLOCK)
       return false;
 
     // LOCK indep WAIT: If both enabled, ordering has no impact on the result. If WAIT is not enabled, LOCK won't enable
     // it.
-    if (type_ == Type::SEM_LOCK && other->type_ == Type::SEM_WAIT)
+    if (type_ == Type::SEM_ASYNC_LOCK && other->type_ == Type::SEM_WAIT)
       return false;
 
     // UNLOCK indep UNLOCK: ordering of two pop_front has no impact

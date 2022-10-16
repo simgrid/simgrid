@@ -36,7 +36,7 @@ int Barrier::wait()
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
 
   if (MC_is_active() || MC_record_replay_is_active()) { // Split in 2 simcalls for transition persistency
-    kernel::actor::BarrierObserver lock_observer{issuer, mc::Transition::Type::BARRIER_LOCK, pimpl_};
+    kernel::actor::BarrierObserver lock_observer{issuer, mc::Transition::Type::BARRIER_ASYNC_LOCK, pimpl_};
     auto acquisition =
         kernel::actor::simcall_answered([issuer, this] { return pimpl_->acquire_async(issuer); }, &lock_observer);
 

@@ -29,7 +29,7 @@ bool Semaphore::acquire_timeout(double timeout)
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
 
   if (MC_is_active() || MC_record_replay_is_active()) { // Split in 2 simcalls for transition persistency
-    kernel::actor::SemaphoreObserver lock_observer{issuer, mc::Transition::Type::SEM_LOCK, pimpl_};
+    kernel::actor::SemaphoreObserver lock_observer{issuer, mc::Transition::Type::SEM_ASYNC_LOCK, pimpl_};
     auto acquisition =
         kernel::actor::simcall_answered([issuer, this] { return pimpl_->acquire_async(issuer); }, &lock_observer);
 

@@ -102,7 +102,7 @@ bool CommTestTransition::depends(const Transition* other) const
 }
 
 CommRecvTransition::CommRecvTransition(aid_t issuer, int times_considered, std::stringstream& stream)
-    : Transition(Type::COMM_RECV, issuer, times_considered)
+    : Transition(Type::COMM_ASYNC_RECV, issuer, times_considered)
 {
   xbt_assert(stream >> comm_ >> mbox_ >> rbuff_ >> tag_);
 }
@@ -155,7 +155,7 @@ bool CommRecvTransition::depends(const Transition* other) const
 }
 
 CommSendTransition::CommSendTransition(aid_t issuer, int times_considered, std::stringstream& stream)
-    : Transition(Type::COMM_SEND, issuer, times_considered)
+    : Transition(Type::COMM_ASYNC_SEND, issuer, times_considered)
 {
   xbt_assert(stream >> comm_ >> mbox_ >> sbuff_ >> size_ >> tag_);
   XBT_DEBUG("SendTransition comm:%" PRIxPTR " mbox:%u sbuff:%" PRIxPTR " size:%zu", comm_, mbox_, sbuff_, size_);

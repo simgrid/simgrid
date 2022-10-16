@@ -59,13 +59,13 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, std::stri
   xbt_assert(stream >> type);
 
   switch (auto simcall = static_cast<Transition::Type>(type)) {
-    case Transition::Type::BARRIER_LOCK:
+    case Transition::Type::BARRIER_ASYNC_LOCK:
     case Transition::Type::BARRIER_WAIT:
       return new BarrierTransition(issuer, times_considered, simcall, stream);
 
-    case Transition::Type::COMM_RECV:
+    case Transition::Type::COMM_ASYNC_RECV:
       return new CommRecvTransition(issuer, times_considered, stream);
-    case Transition::Type::COMM_SEND:
+    case Transition::Type::COMM_ASYNC_SEND:
       return new CommSendTransition(issuer, times_considered, stream);
     case Transition::Type::COMM_TEST:
       return new CommTestTransition(issuer, times_considered, stream);
@@ -81,13 +81,13 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, std::stri
       return new RandomTransition(issuer, times_considered, stream);
 
     case Transition::Type::MUTEX_TRYLOCK:
-    case Transition::Type::MUTEX_LOCK:
+    case Transition::Type::MUTEX_ASYNC_LOCK:
     case Transition::Type::MUTEX_TEST:
     case Transition::Type::MUTEX_WAIT:
     case Transition::Type::MUTEX_UNLOCK:
       return new MutexTransition(issuer, times_considered, simcall, stream);
 
-    case Transition::Type::SEM_LOCK:
+    case Transition::Type::SEM_ASYNC_LOCK:
     case Transition::Type::SEM_UNLOCK:
     case Transition::Type::SEM_WAIT:
       return new SemaphoreTransition(issuer, times_considered, simcall, stream);

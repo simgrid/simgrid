@@ -63,7 +63,7 @@ void SemaphoreAcquisitionObserver::serialize(std::stringstream& stream) const
 BarrierObserver::BarrierObserver(ActorImpl* actor, mc::Transition::Type type, activity::BarrierImpl* bar)
     : ResultingSimcall(actor, false), type_(type), barrier_(bar), timeout_(-1)
 {
-  xbt_assert(type_ == mc::Transition::Type::BARRIER_LOCK);
+  xbt_assert(type_ == mc::Transition::Type::BARRIER_ASYNC_LOCK);
 }
 BarrierObserver::BarrierObserver(ActorImpl* actor, mc::Transition::Type type, activity::BarrierAcquisitionImpl* acqui,
                                  double timeout)
@@ -78,7 +78,7 @@ void BarrierObserver::serialize(std::stringstream& stream) const
 }
 bool BarrierObserver::is_enabled()
 {
-  return type_ == mc::Transition::Type::BARRIER_LOCK ||
+  return type_ == mc::Transition::Type::BARRIER_ASYNC_LOCK ||
          (type_ == mc::Transition::Type::BARRIER_WAIT && acquisition_ != nullptr && acquisition_->granted_);
 }
 
