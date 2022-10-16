@@ -15,9 +15,15 @@ foreach(x
 
     add_dependencies(tests pthread-${x})
     ADD_TESH_FACTORIES(pthread-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.tesh)
+
+    if(SIMGRID_HAVE_MC)
+      add_dependencies(tests-mc pthread-${x})
+      ADD_TESH_FACTORIES(pthread-mc-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-mc-${x}.tesh)
+    endif()
   endif()
 
-  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.tesh)
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.tesh
+                                     ${CMAKE_CURRENT_SOURCE_DIR}/pthread-mc-${x}.tesh)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.c)
 
 endforeach()
