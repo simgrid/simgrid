@@ -78,7 +78,6 @@ int pthread_join(pthread_t thread, void** retval)
 {
   if (raw_pthread_join == NULL)
     intercepter_init();
-
   if (sthread_inside_simgrid)
     return raw_pthread_join(thread, retval);
 

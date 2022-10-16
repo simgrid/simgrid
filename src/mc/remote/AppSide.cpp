@@ -145,6 +145,7 @@ void AppSide::handle_actors_status() const
 {
   auto const& actor_list = kernel::EngineImpl::get_instance()->get_actor_list();
   int count              = actor_list.size();
+  XBT_DEBUG("Serialize the actors to answer ACTORS_STATUS from the checker. %d actors to go.", count);
 
   struct s_mc_message_actors_status_answer_t answer {
     MessageType::ACTORS_STATUS_REPLY, count

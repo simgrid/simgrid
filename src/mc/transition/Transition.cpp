@@ -10,6 +10,7 @@
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/ModelChecker.hpp"
+#include "src/mc/transition/TransitionActorJoin.hpp"
 #include "src/mc/transition/TransitionAny.hpp"
 #include "src/mc/transition/TransitionComm.hpp"
 #include "src/mc/transition/TransitionRandom.hpp"
@@ -91,13 +92,18 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, std::stri
     case Transition::Type::SEM_WAIT:
       return new SemaphoreTransition(issuer, times_considered, simcall, stream);
 
+    case Transition::Type::ACTOR_JOIN:
+      return new ActorJoinTransition(issuer, times_considered, stream);
+
     case Transition::Type::UNKNOWN:
       return new Transition(Transition::Type::UNKNOWN, issuer, times_considered);
 
     default:
       break;
   }
-  xbt_die("Invalid transition type %d received", type);
+  xbt_die("Invalid transition type %d received. Did you implement a new observer in the app without implementing the "
+          "corresponding transition in the checker?",
+          type);
 #else
   xbt_die("Deserializing transitions is only interesting in MC mode.");
 #endif

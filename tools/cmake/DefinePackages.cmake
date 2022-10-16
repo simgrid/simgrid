@@ -622,6 +622,8 @@ set(MC_SRC
   src/mc/sosp/Snapshot.hpp
 
   src/mc/transition/Transition.hpp
+  src/mc/transition/TransitionActorJoin.cpp
+  src/mc/transition/TransitionActorJoin.hpp
   src/mc/transition/TransitionAny.cpp
   src/mc/transition/TransitionAny.hpp
   src/mc/transition/TransitionComm.cpp

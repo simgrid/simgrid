@@ -108,20 +108,21 @@ void Actor::join() const
 
 void Actor::join(double timeout) const
 {
-  xbt_assert(not(MC_is_active() || MC_record_replay_is_active()),
-             "Actor::join() is not usable in MC yet. Please report this bug.");
-
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   const kernel::actor::ActorImpl* target = pimpl_;
-  kernel::actor::simcall_blocking([issuer, target, timeout] {
-    if (target->wannadie()) {
-      // The joined actor is already finished, just wake up the issuer right away
-      issuer->simcall_answer();
-    } else {
-      kernel::activity::ActivityImplPtr sync = issuer->join(target, timeout);
-      sync->register_simcall(&issuer->simcall_);
-    }
-  });
+  kernel::actor::ActorJoinSimcall observer{issuer, get_impl(), timeout};
+
+  kernel::actor::simcall_blocking(
+      [issuer, target, timeout] {
+        if (target->wannadie()) {
+          // The joined actor is already finished, just wake up the issuer right away
+          issuer->simcall_answer();
+        } else {
+          kernel::activity::ActivityImplPtr sync = issuer->join(target, timeout);
+          sync->register_simcall(&issuer->simcall_);
+        }
+      },
+      &observer);
 }
 
 Actor* Actor::set_auto_restart(bool autorestart)

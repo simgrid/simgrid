@@ -46,7 +46,7 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
 
   /* Launch the user's main() on an actor */
   sthread_enable();
-  sg4::ActorPtr main_actor = sg4::Actor::create("tid 0", lilibeth, raw_main, argc, argv, envp);
+  sg4::ActorPtr main_actor = sg4::Actor::create("main thread", lilibeth, raw_main, argc, argv, envp);
 
   XBT_INFO("Starting the simulation.");
   sg4::Engine::get_instance()->run();

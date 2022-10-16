@@ -53,10 +53,11 @@ public:
   }
 
   /** Serialize to the given string buffer */
-  virtual void serialize(std::stringstream& stream) const;
+  virtual void serialize(std::stringstream& stream) const = 0;
 
-  /** Some simcalls may only be observable under some conditions.
-   * Most simcalls are not visible from the MC because they don't have an observer at all. */
+  /** Whether the MC should see this simcall.
+   * Simcall that don't have an observer (ie, most of them) are not visible from the MC, but if there is an observer,
+   * they are observable by default. */
   virtual bool is_visible() const { return true; }
 };
 
@@ -99,13 +100,25 @@ public:
       : ResultingSimcall(actor, false), cond_(cond), mutex_(mutex), timeout_(timeout)
   {
   }
+  void serialize(std::stringstream& stream) const override;
   bool is_enabled() override;
-  bool is_visible() const override { return false; }
   activity::ConditionVariableImpl* get_cond() const { return cond_; }
   activity::MutexImpl* get_mutex() const { return mutex_; }
   double get_timeout() const { return timeout_; }
 };
 
+class ActorJoinSimcall final : public SimcallObserver {
+  s4u::ActorPtr const other_; // We need a Ptr to ensure access to the actor after its end, but Ptr requires s4u
+  const double timeout_;
+
+public:
+  ActorJoinSimcall(ActorImpl* actor, ActorImpl* other, double timeout = -1.0);
+  void serialize(std::stringstream& stream) const override;
+  bool is_enabled() override;
+
+  s4u::ActorPtr get_other_actor() const { return other_; }
+  double get_timeout() const { return timeout_; }
+};
 } // namespace simgrid::kernel::actor
 
 #endif

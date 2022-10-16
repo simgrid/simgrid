@@ -16,6 +16,9 @@ Models:
    - See also "A Flow-Level Wi-Fi Model for Large Scale Network Simulation"
      https://hal.archives-ouvertes.fr/hal-03777726
 
+sthread:
+ - Implement pthread_join in MC mode.
+
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GH: issues on GitHub)
  - FG!118: Wi-Fi callback mechanism

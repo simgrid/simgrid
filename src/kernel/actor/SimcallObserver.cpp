@@ -16,10 +16,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_observer, mc, "Logging specific to MC simcall
 
 namespace simgrid::kernel::actor {
 
-void SimcallObserver::serialize(std::stringstream& stream) const
-{
-  stream << (short)mc::Transition::Type::UNKNOWN;
-}
 void RandomSimcall::serialize(std::stringstream& stream) const
 {
   stream << (short)mc::Transition::Type::RANDOM << ' ';
@@ -44,5 +40,23 @@ bool ConditionWaitSimcall::is_enabled()
     warned = true;
   }
   return true;
+}
+void ConditionWaitSimcall::serialize(std::stringstream& stream) const
+{
+  THROW_UNIMPLEMENTED;
+}
+
+ActorJoinSimcall::ActorJoinSimcall(ActorImpl* actor, ActorImpl* other, double timeout)
+    : SimcallObserver(actor), other_(s4u::ActorPtr(other->get_iface())), timeout_(timeout)
+{
+}
+bool ActorJoinSimcall::is_enabled()
+{
+  return other_->get_impl()->wannadie();
+}
+void ActorJoinSimcall::serialize(std::stringstream& stream) const
+{
+  stream << (short)mc::Transition::Type::ACTOR_JOIN << ' ';
+  stream << other_->get_pid() << ' ' << static_cast<bool>(timeout_ > 0);
 }
 } // namespace simgrid::kernel::actor
