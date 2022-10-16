@@ -282,6 +282,9 @@ void AppSide::unignore_heap(void* address, std::size_t size) const
 
 void AppSide::declare_symbol(const char* name, int* value) const
 {
+  if (not MC_is_active())
+    return;
+
   s_mc_message_register_symbol_t message;
   memset(&message, 0, sizeof(message));
   message.type = MessageType::REGISTER_SYMBOL;

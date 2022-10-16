@@ -51,8 +51,6 @@ void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
 {
 #if SIMGRID_HAVE_MC
   xbt_assert(mc_model_checker == nullptr);
-  if (not MC_is_active())
-    return;
   simgrid::mc::AppSide::get()->declare_symbol(name, value);
 #endif
 }
@@ -61,8 +59,6 @@ void MC_ignore(void* addr, size_t size)
 {
 #if SIMGRID_HAVE_MC
   xbt_assert(mc_model_checker == nullptr);
-  if (not MC_is_active())
-    return;
   simgrid::mc::AppSide::get()->ignore_memory(addr, size);
 #endif
 }
