@@ -8,6 +8,7 @@
 #ifndef XBT_ASSERTS_H
 #define XBT_ASSERTS_H
 
+#include "simgrid/modelchecker.h"
 #include <stdlib.h>
 #include <xbt/base.h>
 #include <xbt/log.h>
@@ -60,7 +61,10 @@ XBT_ATTRIB_NORETURN XBT_PUBLIC void xbt_abort(void);
       XBT_CCRITICAL(root, __VA_ARGS__);                                                                                \
       if (!xbt_log_no_loc)                                                                                             \
         xbt_backtrace_display_current();                                                                               \
-      abort();                                                                                                         \
+      if (MC_is_active())                                                                                              \
+        MC_assert(0);                                                                                                  \
+      else                                                                                                             \
+        abort();                                                                                                       \
     }                                                                                                                  \
   } while (0)
 
