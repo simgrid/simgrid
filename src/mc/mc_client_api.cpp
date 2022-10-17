@@ -3,9 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* Implementation of the user API from the App to the Checker (see modelchecker.h)  */
-
-#include "src/mc/ModelChecker.hpp"
+#include "simgrid/simix.hpp"
+#include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_private.hpp"
 #include "src/mc/mc_record.hpp"
@@ -13,6 +12,8 @@
 #include "src/mc/remote/AppSide.hpp"
 #include "xbt/asserts.h"
 #include "xbt/random.hpp"
+
+/* Implementation of the user API from the App to the Checker (see modelchecker.h)  */
 
 int MC_random(int min, int max)
 {
