@@ -70,6 +70,10 @@ const std::vector<surf_model_description_t> surf_cpu_model_description = {
     {"Cas01", "Simplistic CPU model (time=size/speed).", &surf_cpu_model_init_Cas01},
 };
 
+const std::vector<surf_model_description_t> surf_disk_model_description = {
+    {"S19", "Simplistic disk model.", &surf_disk_model_init_S19},
+};
+
 const std::vector<surf_model_description_t> surf_host_model_description = {
     {"default", "Default host model. Currently, CPU:Cas01 and network:LV08 (with cross traffic enabled)",
      &surf_host_model_init_current_default},
@@ -86,10 +90,6 @@ const std::vector<surf_model_description_t> surf_optimization_mode_description =
      "model for now).",
      nullptr},
     {"Full", "Full update of remaining and variables. Slow but may be useful when debugging.", nullptr},
-};
-
-const std::vector<surf_model_description_t> surf_disk_model_description = {
-    {"default", "Simplistic disk model.", &surf_disk_model_init_default},
 };
 
 /* returns whether #file_path is an absolute file path. Surprising, isn't it ? */
