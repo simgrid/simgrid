@@ -75,11 +75,11 @@ const std::vector<surf_model_description_t> surf_disk_model_description = {
 };
 
 const std::vector<surf_model_description_t> surf_host_model_description = {
-    {"default", "Default host model. Currently, CPU:Cas01 and network:LV08 (with cross traffic enabled)",
+    {"default", "Default host model. Currently, CPU:Cas01, network:LV08 (with cross traffic enabled), and disk:S19",
      &surf_host_model_init_current_default},
-    {"compound", "Host model that is automatically chosen if you change the network and CPU models",
+    {"compound", "Host model that is automatically chosen if you change the CPU, network, and disk models",
      &surf_host_model_init_compound},
-    {"ptask_L07", "Host model somehow similar to Cas01+CM02 but allowing parallel tasks",
+    {"ptask_L07", "Host model somehow similar to Cas01+CM02+S19 but allowing parallel tasks",
      &surf_host_model_init_ptask_L07},
 };
 
