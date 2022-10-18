@@ -33,8 +33,8 @@ static void surf_config_models_setup()
   std::string disk_model_name    = simgrid::config::get_value<std::string>("disk/model");
 
   /* The compound host model is needed when using non-default net/cpu models */
-  if ((not simgrid::config::is_default("network/model") || not simgrid::config::is_default("cpu/model")) &&
-      simgrid::config::is_default("host/model")) {
+  if ((not simgrid::config::is_default("network/model") || not simgrid::config::is_default("cpu/model") ||
+       not simgrid::config::is_default("disk/model")) && simgrid::config::is_default("host/model")) {
     host_model_name = "compound";
     simgrid::config::set_value("host/model", host_model_name);
   }
@@ -42,10 +42,14 @@ static void surf_config_models_setup()
   XBT_DEBUG("host model: %s", host_model_name.c_str());
   if (host_model_name == "compound") {
     xbt_enforce(not cpu_model_name.empty(), "Set a cpu model to use with the 'compound' host model");
+    xbt_enforce(not disk_model_name.empty(), "Set a disk model to use with the 'compound' host model");
     xbt_enforce(not network_model_name.empty(), "Set a network model to use with the 'compound' host model");
 
     const auto* cpu_model = find_model_description(surf_cpu_model_description, cpu_model_name);
     cpu_model->model_init_preparse();
+
+    const auto* disk_model = find_model_description(surf_disk_model_description, disk_model_name);
+    disk_model->model_init_preparse();
 
     const auto* network_model = find_model_description(surf_network_model_description, network_model_name);
     network_model->model_init_preparse();
@@ -61,10 +65,6 @@ static void surf_config_models_setup()
    * To be reviewed in the future */
   surf_vm_model_init_HL13(
       simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->get_cpu_pm_model().get());
-
-  XBT_DEBUG("Call disk_model_init");
-  const auto* disk_model = find_model_description(surf_disk_model_description, disk_model_name);
-  disk_model->model_init_preparse();
 }
 
 xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
