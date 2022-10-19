@@ -72,8 +72,7 @@ IoImpl& IoImpl::set_disk(resource::DiskImpl* disk)
 IoImpl* IoImpl::start()
 {
   set_state(State::RUNNING);
-  surf_action_ =
-      disk_->get_host()->get_netpoint()->get_englobing_zone()->get_disk_model()->io_start(disk_, size_, type_);
+  surf_action_ = disk_->io_start(size_, type_);
   surf_action_->set_sharing_penalty(sharing_penalty_);
   surf_action_->set_activity(this);
   set_start_time(surf_action_->get_start_time());

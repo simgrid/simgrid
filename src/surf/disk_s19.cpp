@@ -49,21 +49,21 @@ void DiskS19Model::update_actions_state(double /*now*/, double delta)
   }
 }
 
-DiskAction* DiskS19Model::io_start(const DiskImpl* disk, sg_size_t size, s4u::Io::OpType type)
+DiskAction* DiskS19::io_start(sg_size_t size, s4u::Io::OpType type)
 {
-  auto* action = new DiskS19Action(this, static_cast<double>(size), not disk->is_on());
-  get_maxmin_system()->expand(disk->get_constraint(), action->get_variable(), 1.0);
+  auto* action = new DiskS19Action(get_model(), static_cast<double>(size), not is_on());
+  get_model()->get_maxmin_system()->expand(get_constraint(), action->get_variable(), 1.0);
   switch (type) {
     case s4u::Io::OpType::READ:
-      get_maxmin_system()->expand(disk->get_read_constraint(), action->get_variable(), 1.0);
+      get_model()->get_maxmin_system()->expand(get_read_constraint(), action->get_variable(), 1.0);
       break;
     case s4u::Io::OpType::WRITE:
-      get_maxmin_system()->expand(disk->get_write_constraint(), action->get_variable(), 1.0);
+      get_model()->get_maxmin_system()->expand(get_write_constraint(), action->get_variable(), 1.0);
       break;
     default:
       THROW_UNIMPLEMENTED;
   }
-  if (const auto& factor_cb = disk->get_factor_cb()) { // handling disk variability
+  if (const auto& factor_cb = get_factor_cb()) { // handling disk variability
     action->set_rate_factor(factor_cb(size, type));
   }
   return action;
