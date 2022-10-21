@@ -123,6 +123,7 @@ public:
 
   using Action::Action;
   void set_state(simgrid::kernel::resource::Action::State state) override;
+  void update_remains_lazy(double now) override;
 };
 
 } // namespace simgrid::kernel::resource

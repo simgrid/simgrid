@@ -177,4 +177,9 @@ void DiskAction::set_state(Action::State new_state)
     on_state_change(*this, previous_state, new_state);
   }
 }
+
+void DiskAction::update_remains_lazy(double /*now*/)
+{
+  THROW_IMPOSSIBLE;
+}
 } // namespace simgrid::kernel::resource

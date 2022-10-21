@@ -53,7 +53,6 @@ public:
 class DiskS19Action : public DiskAction {
 public:
   DiskS19Action(Model* model, double cost, bool failed);
-  void update_remains_lazy(double now) override;
 };
 
 } // namespace simgrid::kernel::resource

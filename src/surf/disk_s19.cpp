@@ -128,8 +128,4 @@ DiskS19Action::DiskS19Action(Model* model, double cost, bool failed)
 {
 }
 
-void DiskS19Action::update_remains_lazy(double /*now*/)
-{
-  THROW_IMPOSSIBLE;
-}
 } // namespace simgrid::kernel::resource
