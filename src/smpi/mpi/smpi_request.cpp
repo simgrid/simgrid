@@ -32,8 +32,6 @@ static simgrid::config::Flag<double> smpi_iprobe_sleep(
 static simgrid::config::Flag<double> smpi_test_sleep(
   "smpi/test", "Minimum time to inject inside a call to MPI_Test", 1e-4);
 
-std::vector<s_smpi_factor_t> smpi_ois_values;
-
 extern std::function<void(simgrid::kernel::activity::CommImpl*, void*, size_t)> smpi_comm_copy_data_callback;
 
 namespace simgrid::smpi {
