@@ -965,7 +965,7 @@ Shows how to implement a classical communication pattern, where a token is excha
 Master Workers
 ^^^^^^^^^^^^^^
 
-Another good old example, where one Master acto$ has a bunch of tasks to dispatch to a set of several Worker actors. 
+Another good old example, where one Master actor has a bunch of tasks to dispatch to a set of several Worker actors.
 This example is used in the :ref:`SimGrid tutorial <usecase_simalgo>`.
 
 .. tabs::
@@ -988,6 +988,8 @@ This example is used in the :ref:`SimGrid tutorial <usecase_simalgo>`.
 
       .. showfile:: examples/c/app-masterworker/app-masterworker.c
          :language: cpp
+
+   .. example-tab:: examples/python/app-masterworkers/app-masterworkers.py
 
 Data diffusion
 --------------
