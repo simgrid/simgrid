@@ -289,7 +289,7 @@ void AppSide::declare_symbol(const char* name, int* value) const
   memset(&message, 0, sizeof(message));
   message.type = MessageType::REGISTER_SYMBOL;
   xbt_assert(strlen(name) + 1 <= message.name.size(), "Symbol is too long");
-  strncpy(message.name.data(), name, message.name.size());
+  strncpy(message.name.data(), name, message.name.size() - 1);
   message.callback = nullptr;
   message.data     = value;
   xbt_assert(channel_.send(message) == 0, "Could send REGISTER_SYMBOL message to model-checker");
