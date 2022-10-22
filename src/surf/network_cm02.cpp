@@ -26,8 +26,6 @@ static simgrid::config::Flag<std::string> cfg_network_solver("network/solver",
                                                              "Set linear equations solver used by network model",
                                                              "maxmin", &simgrid::kernel::lmm::System::validate_solver);
 
-double sg_weight_S_parameter = 0.0; /* default value; can be set by model or from command line */
-
 /************************************************************************/
 /* New model based on optimizations discussed during Pedro Velho's thesis*/
 /************************************************************************/
@@ -431,10 +429,10 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   action->sharing_penalty_  = latency;
   action->latency_          = latency;
 
-  if (sg_weight_S_parameter > 0) {
+  if (cfg_weight_S_parameter > 0) {
     action->sharing_penalty_ = std::accumulate(route.begin(), route.end(), action->sharing_penalty_,
                                                [](double total, StandardLinkImpl* const& link) {
-                                                 return total + sg_weight_S_parameter / link->get_bandwidth();
+                                                 return total + cfg_weight_S_parameter / link->get_bandwidth();
                                                });
   }
 
@@ -496,9 +494,9 @@ void NetworkCm02Link::set_bandwidth(double value)
 
   StandardLinkImpl::on_bandwidth_change();
 
-  if (sg_weight_S_parameter > 0) {
-    double delta = sg_weight_S_parameter / (bandwidth_.peak * bandwidth_.scale) -
-                   sg_weight_S_parameter / (old_peak * bandwidth_.scale);
+  if (NetworkModel::cfg_weight_S_parameter > 0) {
+    double delta = NetworkModel::cfg_weight_S_parameter / (bandwidth_.peak * bandwidth_.scale) -
+                   NetworkModel::cfg_weight_S_parameter / (old_peak * bandwidth_.scale);
 
     const kernel::lmm::Element* elem     = nullptr;
     const kernel::lmm::Element* nextelem = nullptr;

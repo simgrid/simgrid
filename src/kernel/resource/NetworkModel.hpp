@@ -28,6 +28,7 @@ public:
   static config::Flag<bool> cfg_crosstraffic;
   static double cfg_latency_factor;
   static double cfg_bandwidth_factor;
+  static config::Flag<double> cfg_weight_S_parameter;
 
   using Model::Model;
   NetworkModel(const NetworkModel&) = delete;

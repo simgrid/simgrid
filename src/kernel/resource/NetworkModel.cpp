@@ -37,6 +37,10 @@ config::Flag<bool> NetworkModel::cfg_crosstraffic(
     "network/crosstraffic",
     "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)", "yes");
 
+config::Flag<double> NetworkModel::cfg_weight_S_parameter(
+    "network/weight-S",
+    "Correction factor to apply to the weight of competing streams (default value set by network model)", 0.0);
+
 NetworkModel::~NetworkModel() = default;
 
 double NetworkModel::next_occurring_event_full(double now)

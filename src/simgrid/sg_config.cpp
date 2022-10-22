@@ -279,11 +279,6 @@ void sg_config_init(int *argc, char **argv)
       simgrid::kernel::resource::NetworkModel::cfg_bandwidth_factor, "network/bandwidth-factor",
       "Correction factor to apply to the provided bandwidth (default value set by network model)");
 
-  sg_weight_S_parameter = 20537; // comes from the default LV08 network model
-  simgrid::config::bind_flag(
-      sg_weight_S_parameter, "network/weight-S",
-      "Correction factor to apply to the weight of competing streams (default value set by network model)");
-
   static simgrid::config::Flag<double> _sg_network_loopback_latency{
       "network/loopback-lat",
       "For network models with an implicit loopback link (L07, CM02, LV08), "
