@@ -49,6 +49,48 @@ std::unordered_map<const void*, alloc_metadata_t> allocs;
 
 std::unordered_map<int, std::vector<std::string>> collective_calls;
 
+void FactorSet::parse(const std::string& values)
+{
+  factors_     = parse_factor(values);
+  initialized_ = true;
+}
+
+FactorSet::FactorSet(const std::string& name, double default_value,
+                     std::function<double(s_smpi_factor_t const&)> const& lambda)
+    : name_(name), default_value_(default_value), lambda_(lambda)
+{
+}
+
+double FactorSet::operator()()
+{
+  return lambda_(factors_.front());
+}
+
+double FactorSet::operator()(double size)
+{
+  if (factors_.empty())
+    return default_value_;
+
+  for (long unsigned i = 0; i < factors_.size(); i++) {
+    auto const& fact = factors_[i];
+
+    if (size <= fact.factor) { // Too large already, use the previous value
+
+      if (i == 0) { // Before the first boundary: use the default value
+        XBT_DEBUG("%s: %f <= %zu return default %f", name_.c_str(), size, fact.factor, default_value_);
+        return default_value_;
+      }
+      double val = lambda_(factors_[i - 1]);
+      XBT_DEBUG("%s: %f <= %zu return %f", name_.c_str(), size, fact.factor, val);
+      return val;
+    }
+  }
+  double val = lambda_(factors_.back());
+
+  XBT_DEBUG("%s: %f > %zu return %f", name_.c_str(), size, factors_.back().factor, val);
+  return val;
+}
+
 std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string)
 {
   std::vector<s_smpi_factor_t> smpi_factor;

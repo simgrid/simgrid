@@ -23,6 +23,27 @@ struct s_smpi_factor_t {
 
 namespace simgrid::smpi::utils {
 
+class FactorSet {
+  const std::string& name_;
+  std::vector<s_smpi_factor_t> factors_;
+  double default_value_;
+  const std::function<double(s_smpi_factor_t const&)> lambda_;
+  bool initialized_ = false;
+
+public:
+  // Parse the factor from a string
+  FactorSet(
+      const std::string& name, double default_value = 1,
+      std::function<double(s_smpi_factor_t const&)> const& lambda = [](s_smpi_factor_t const& factor) {
+        return factor.values.front();
+      });
+  void parse(const std::string& values);
+  bool is_initialized() const { return initialized_; }
+  // Get the default factor, the one that is not a function of the size
+  double operator()();
+  // Get the factor to use for the provided size
+  double operator()(double size);
+};
 XBT_PUBLIC std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string);
 XBT_PUBLIC void add_benched_time(double time);
 XBT_PUBLIC void account_malloc_size(size_t size, std::string_view file, int line, const void* ptr);

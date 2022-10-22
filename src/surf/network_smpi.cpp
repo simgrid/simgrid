@@ -59,39 +59,19 @@ void NetworkSmpiModel::check_bw_factor_cb()
 
 double NetworkSmpiModel::get_bandwidth_factor(double size)
 {
-  static std::vector<s_smpi_factor_t> smpi_bw_factor;
-  if (smpi_bw_factor.empty())
-    smpi_bw_factor = smpi::utils::parse_factor(config::get_value<std::string>("smpi/bw-factor"));
+  static smpi::utils::FactorSet smpi_bw_factor("smpi/bw-factor");
+  if (not smpi_bw_factor.is_initialized())
+    smpi_bw_factor.parse(config::get_value<std::string>("smpi/bw-factor"));
 
-  double current = 1.0;
-  for (auto const& fact : smpi_bw_factor) {
-    if (size <= fact.factor) {
-      XBT_DEBUG("%f <= %zu return %f", size, fact.factor, current);
-      return current;
-    } else
-      current = fact.values.front();
-  }
-  XBT_DEBUG("%f > %zu return %f", size, smpi_bw_factor.back().factor, current);
-
-  return current;
+  return smpi_bw_factor(size);
 }
 
 double NetworkSmpiModel::get_latency_factor(double size)
 {
-  static std::vector<s_smpi_factor_t> smpi_lat_factor;
-  if (smpi_lat_factor.empty())
-    smpi_lat_factor = smpi::utils::parse_factor(config::get_value<std::string>("smpi/lat-factor"));
+  static smpi::utils::FactorSet smpi_lat_factor("smpi/lat-factor");
+  if (not smpi_lat_factor.is_initialized())
+    smpi_lat_factor.parse(config::get_value<std::string>("smpi/lat-factor"));
 
-  double current = 1.0;
-  for (auto const& fact : smpi_lat_factor) {
-    if (size <= fact.factor) {
-      XBT_DEBUG("%f <= %zu return %f", size, fact.factor, current);
-      return current;
-    } else
-      current = fact.values.front();
-  }
-  XBT_DEBUG("%f > %zu return %f", size, smpi_lat_factor.back().factor, current);
-
-  return current;
+  return smpi_lat_factor(size);
 }
 } // namespace simgrid::kernel::resource
