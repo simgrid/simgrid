@@ -27,14 +27,14 @@ class FactorSet {
   const std::string& name_;
   std::vector<s_smpi_factor_t> factors_;
   double default_value_;
-  const std::function<double(s_smpi_factor_t const&)> lambda_;
+  const std::function<double(s_smpi_factor_t const&, double)> lambda_;
   bool initialized_ = false;
 
 public:
   // Parse the factor from a string
   FactorSet(
       const std::string& name, double default_value = 1,
-      std::function<double(s_smpi_factor_t const&)> const& lambda = [](s_smpi_factor_t const& factor) {
+      std::function<double(s_smpi_factor_t const&, double)> const& lambda = [](s_smpi_factor_t const& factor, double) {
         return factor.values.front();
       });
   void parse(const std::string& values);

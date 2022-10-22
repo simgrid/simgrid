@@ -14,11 +14,14 @@
 #include <xbt/Extendable.hpp>
 
 namespace simgrid::smpi {
-
+static auto factor_lambda(s_smpi_factor_t const& fact, double size)
+{
+  return fact.values[0] + fact.values[1] * static_cast<size_t>(size);
+}
 class Host {
-  std::vector<s_smpi_factor_t> orecv_parsed_values;
-  std::vector<s_smpi_factor_t> osend_parsed_values;
-  std::vector<s_smpi_factor_t> oisend_parsed_values;
+  utils::FactorSet orecv_{"smpi/or", 0.0, factor_lambda};
+  utils::FactorSet osend_{"smpi/os", 0.0, factor_lambda};
+  utils::FactorSet oisend_{"smpi/ois", 0.0, factor_lambda};
   s4u::Host* host = nullptr;
   /**
    * @brief Generates warning message if user's config is conflicting (callback vs command line/xml)
