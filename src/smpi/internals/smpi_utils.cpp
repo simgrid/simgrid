@@ -56,14 +56,14 @@ void FactorSet::parse(const std::string& values)
 }
 
 FactorSet::FactorSet(const std::string& name, double default_value,
-                     std::function<double(s_smpi_factor_t const&, double)> const& lambda)
+                     std::function<double(std::vector<double> const&, double)> const& lambda)
     : name_(name), default_value_(default_value), lambda_(lambda)
 {
 }
 
 double FactorSet::operator()()
 {
-  return lambda_(factors_.front(), 0);
+  return default_value_;
 }
 
 double FactorSet::operator()(double size)
@@ -80,12 +80,12 @@ double FactorSet::operator()(double size)
         XBT_DEBUG("%s: %f <= %zu return default %f", name_.c_str(), size, fact.factor, default_value_);
         return default_value_;
       }
-      double val = lambda_(factors_[i - 1], size);
+      double val = lambda_(factors_[i - 1].values, size);
       XBT_DEBUG("%s: %f <= %zu return %f", name_.c_str(), size, fact.factor, val);
       return val;
     }
   }
-  double val = lambda_(factors_.back(), size);
+  double val = lambda_(factors_.back().values, size);
 
   XBT_DEBUG("%s: %f > %zu return %f", name_.c_str(), size, factors_.back().factor, val);
   return val;

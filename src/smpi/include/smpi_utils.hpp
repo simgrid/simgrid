@@ -27,19 +27,18 @@ class FactorSet {
   const std::string& name_;
   std::vector<s_smpi_factor_t> factors_;
   double default_value_;
-  const std::function<double(s_smpi_factor_t const&, double)> lambda_;
+  const std::function<double(std::vector<double> const&, double)> lambda_;
   bool initialized_ = false;
 
 public:
   // Parse the factor from a string
   FactorSet(
       const std::string& name, double default_value = 1,
-      std::function<double(s_smpi_factor_t const&, double)> const& lambda = [](s_smpi_factor_t const& factor, double) {
-        return factor.values.front();
-      });
+      std::function<double(std::vector<double> const&, double)> const& lambda = [](std::vector<double> const& values,
+                                                                                   double) { return values.front(); });
   void parse(const std::string& values);
   bool is_initialized() const { return initialized_; }
-  // Get the default factor, the one that is not a function of the size
+  // Get the default value
   double operator()();
   // Get the factor to use for the provided size
   double operator()(double size);

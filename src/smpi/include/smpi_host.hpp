@@ -14,9 +14,9 @@
 #include <xbt/Extendable.hpp>
 
 namespace simgrid::smpi {
-static auto factor_lambda(s_smpi_factor_t const& fact, double size)
+static auto factor_lambda(std::vector<double> const& values, double size)
 {
-  return fact.values[0] + fact.values[1] * static_cast<size_t>(size);
+  return values[0] + values[1] * static_cast<size_t>(size);
 }
 class Host {
   utils::FactorSet orecv_{"smpi/or", 0.0, factor_lambda};
