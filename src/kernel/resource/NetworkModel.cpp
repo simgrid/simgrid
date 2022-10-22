@@ -8,6 +8,7 @@
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
+#include "src/smpi/include/smpi_utils.hpp"
 #include "src/surf/surf_interface.hpp"
 
 #include <numeric>
@@ -22,23 +23,30 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_network, ker_resource, "Network resources, t
  *********/
 
 namespace simgrid::kernel::resource {
-double NetworkModel::cfg_latency_factor   = 1.0; // default value
-double NetworkModel::cfg_bandwidth_factor = 1.0; // default value
+static smpi::utils::FactorSet cfg_latency_factor("network/latency-factor");
+static smpi::utils::FactorSet cfg_bandwidth_factor("network/bandwidth-factor");
 
-static config::Flag<std::string> cfg_latency_factor_str(
+config::Flag<std::string> cfg_latency_factor_str(
     "network/latency-factor",
-    "Correction factor to apply to the provided latency (default value overridden by network model)", "1.0",
-    [](std::string str) {
-      NetworkModel::cfg_latency_factor =
-          xbt_str_parse_double(str.c_str(), "The value of 'network/latency-factor' is not a double");
-    });
+    "Correction factor to apply to the provided latency (default value overridden by network model)", "1.0");
 static config::Flag<std::string> cfg_bandwidth_factor_str(
     "network/bandwidth-factor",
-    "Correction factor to apply to the provided bandwidth (default value overridden by network model)", "1.0",
-    [](std::string str) {
-      NetworkModel::cfg_bandwidth_factor =
-          xbt_str_parse_double(str.c_str(), "The value of 'network/bandwidth-factor' is not a double");
-    });
+    "Correction factor to apply to the provided bandwidth (default value overridden by network model)", "1.0");
+
+double NetworkModel::get_latency_factor(double size)
+{
+  if (not cfg_latency_factor.is_initialized()) // lazy initiaization to avoid initialization fiasco
+    cfg_latency_factor.parse(cfg_latency_factor_str.get());
+
+  return cfg_latency_factor(size);
+}
+double NetworkModel::get_bandwidth_factor(double size)
+{
+  if (not cfg_bandwidth_factor.is_initialized())
+    cfg_bandwidth_factor.parse(cfg_bandwidth_factor_str.get());
+
+  return cfg_bandwidth_factor(size);
+}
 
 /** @brief Command-line option 'network/TCP-gamma' -- see @ref options_model_network_gamma */
 config::Flag<double> NetworkModel::cfg_tcp_gamma(

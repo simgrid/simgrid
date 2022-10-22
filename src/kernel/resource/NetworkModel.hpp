@@ -26,8 +26,6 @@ class NetworkModel : public Model, public NetworkModelIntf {
 public:
   static config::Flag<double> cfg_tcp_gamma;
   static config::Flag<bool> cfg_crosstraffic;
-  static double cfg_latency_factor;
-  static double cfg_bandwidth_factor;
   static config::Flag<double> cfg_weight_S_parameter;
 
   using Model::Model;
@@ -66,7 +64,7 @@ public:
    * @param size The size of the message.
    * @return The latency factor.
    */
-  virtual double get_latency_factor(double /* size */) { return cfg_latency_factor; }
+  virtual double get_latency_factor(double size = 0);
 
   /**
    * @brief Get the right multiplicative factor for the bandwidth.
@@ -77,7 +75,7 @@ public:
    * @param size The size of the message.
    * @return The bandwidth factor.
    */
-  virtual double get_bandwidth_factor(double /* size*/) { return cfg_bandwidth_factor; }
+  virtual double get_bandwidth_factor(double size = 0);
 
   double next_occurring_event_full(double now) override;
 

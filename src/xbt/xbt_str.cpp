@@ -41,7 +41,7 @@ double xbt_str_parse_double(const char* str, const char* error_msg)
 
   double res = strtod(str, &endptr);
   if (endptr[0] != '\0')
-    throw std::invalid_argument(simgrid::xbt::string_printf("%s: %s", error_msg, str));
+    throw std::invalid_argument(simgrid::xbt::string_printf("%s: %s (parse error at '%s')", error_msg, str, endptr));
 
   return res;
 }

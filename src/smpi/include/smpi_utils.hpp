@@ -36,7 +36,7 @@ public:
       const std::string& name, double default_value = 1,
       std::function<double(std::vector<double> const&, double)> const& lambda = [](std::vector<double> const& values,
                                                                                    double) { return values.front(); });
-  void parse(const std::string& values);
+  void parse(const std::string& string_values);
   bool is_initialized() const { return initialized_; }
   // Get the default value
   double operator()();

@@ -61,7 +61,7 @@ void NetworkConstantModel::update_actions_state(double /*now*/, double delta)
         action.latency_ = 0.0;
       }
     }
-    action.update_remains(action.get_cost() * delta / cfg_latency_factor);
+    action.update_remains(action.get_cost() * delta / get_latency_factor());
     action.update_max_duration(delta);
 
     if ((action.get_remains_no_update() <= 0) ||
@@ -82,7 +82,7 @@ Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double
 NetworkConstantAction::NetworkConstantAction(NetworkConstantModel* model_, s4u::Host& src, s4u::Host& dst, double size)
     : NetworkAction(model_, src, dst, size, false)
 {
-  latency_ = NetworkModel::cfg_latency_factor;
+  latency_ = model_->get_latency_factor();
   if (latency_ <= 0.0)
     set_state(Action::State::FINISHED);
 }

@@ -1,5 +1,4 @@
-/* Copyright (c) 2016-2022. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2016-2022. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,10 +8,11 @@
 #include "private.hpp"
 #include "smpi_config.hpp"
 #include "src/surf/xml/platf.hpp"
+#include "xbt/ex.h"
 #include "xbt/file.hpp"
 #include "xbt/log.h"
-#include "xbt/ex.h"
 #include "xbt/parse_units.hpp"
+#include "xbt/str.h"
 #include "xbt/sysdep.h"
 #include <algorithm>
 #include <boost/tokenizer.hpp>
@@ -51,6 +51,14 @@ std::unordered_map<int, std::vector<std::string>> collective_calls;
 
 void FactorSet::parse(const std::string& values)
 {
+  const char* str = values.c_str();
+  initialized_    = true;
+
+  if (strchr(str, ':') == nullptr && strchr(str, ';') == nullptr) { // Single value
+    default_value_ = xbt_str_parse_double(str, name_.c_str());
+    return;
+  }
+
   /** Setup the tokenizer that parses the string **/
   using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
   boost::char_separator<char> sep(";");
@@ -68,7 +76,8 @@ void FactorSet::parse(const std::string& values)
     XBT_DEBUG("token: %s", token_iter->c_str());
     Tokenizer factor_values(*token_iter, factor_separator);
     s_smpi_factor_t fact;
-    xbt_assert(factor_values.begin() != factor_values.end(), "Malformed radical for smpi factor: '%s'", values.c_str());
+    xbt_assert(factor_values.begin() != factor_values.end(), "Malformed radical for %s: '%s'", name_.c_str(),
+               values.c_str());
     unsigned int iteration = 0;
     for (auto factor_iter = factor_values.begin(); factor_iter != factor_values.end(); ++factor_iter) {
       iteration++;
@@ -78,14 +87,14 @@ void FactorSet::parse(const std::string& values)
           fact.factor = std::stoi(*factor_iter);
         } catch (const std::invalid_argument&) {
           throw std::invalid_argument(std::string("Invalid factor in chunk ") + std::to_string(factors_.size() + 1) +
-                                      ": " + *factor_iter);
+                                      ": " + *factor_iter + " for " + name_);
         }
       } else {
         try {
           fact.values.push_back(xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, *factor_iter, ""));
         } catch (const std::invalid_argument&) {
           throw std::invalid_argument(std::string("Invalid factor value ") + std::to_string(iteration) + " in chunk " +
-                                      std::to_string(factors_.size() + 1) + ": " + *factor_iter);
+                                      std::to_string(factors_.size() + 1) + ": " + *factor_iter + " for " + name_);
         }
       }
     }
@@ -99,8 +108,6 @@ void FactorSet::parse(const std::string& values)
     XBT_DEBUG("smpi_factor:\t%zu: %zu values, first: %f", fact.factor, factors_.size(), fact.values[0]);
   }
   factors_.shrink_to_fit();
-
-  initialized_ = true;
 }
 
 FactorSet::FactorSet(const std::string& name, double default_value,
