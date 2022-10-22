@@ -271,14 +271,6 @@ void sg_config_init(int *argc, char **argv)
                              "processes on each host, at higher level. (default: -1 means no such limitation)");
 
   /* The parameters of network models */
-
-  simgrid::config::bind_flag(simgrid::kernel::resource::NetworkModel::cfg_latency_factor, "network/latency-factor",
-                             "Correction factor to apply to the provided latency (default value set by network model)");
-
-  simgrid::config::bind_flag(
-      simgrid::kernel::resource::NetworkModel::cfg_bandwidth_factor, "network/bandwidth-factor",
-      "Correction factor to apply to the provided bandwidth (default value set by network model)");
-
   static simgrid::config::Flag<double> _sg_network_loopback_latency{
       "network/loopback-lat",
       "For network models with an implicit loopback link (L07, CM02, LV08), "

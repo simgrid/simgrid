@@ -25,6 +25,21 @@ namespace simgrid::kernel::resource {
 double NetworkModel::cfg_latency_factor   = 1.0; // default value
 double NetworkModel::cfg_bandwidth_factor = 1.0; // default value
 
+static config::Flag<std::string> cfg_latency_factor_str(
+    "network/latency-factor",
+    "Correction factor to apply to the provided latency (default value overridden by network model)", "1.0",
+    [](std::string str) {
+      NetworkModel::cfg_latency_factor =
+          xbt_str_parse_double(str.c_str(), "The value of 'network/latency-factor' is not a double");
+    });
+static config::Flag<std::string> cfg_bandwidth_factor_str(
+    "network/bandwidth-factor",
+    "Correction factor to apply to the provided bandwidth (default value overridden by network model)", "1.0",
+    [](std::string str) {
+      NetworkModel::cfg_bandwidth_factor =
+          xbt_str_parse_double(str.c_str(), "The value of 'network/bandwidth-factor' is not a double");
+    });
+
 /** @brief Command-line option 'network/TCP-gamma' -- see @ref options_model_network_gamma */
 config::Flag<double> NetworkModel::cfg_tcp_gamma(
     "network/TCP-gamma",
