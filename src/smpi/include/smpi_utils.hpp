@@ -43,7 +43,6 @@ public:
   // Get the factor to use for the provided size
   double operator()(double size);
 };
-XBT_PUBLIC std::vector<s_smpi_factor_t> parse_factor(const std::string& smpi_coef_string);
 XBT_PUBLIC void add_benched_time(double time);
 XBT_PUBLIC void account_malloc_size(size_t size, std::string_view file, int line, const void* ptr);
 XBT_PUBLIC void account_shared_size(size_t size);
