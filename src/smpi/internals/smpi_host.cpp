@@ -33,22 +33,17 @@ namespace simgrid::smpi {
 
 xbt::Extension<s4u::Host, smpi::Host> Host::EXTENSION_ID;
 
-double Host::orecv(size_t size, s4u::Host* src, s4u::Host* dst)
+static double factor_use(std::vector<s_smpi_factor_t>& factors, const char* name, size_t size)
 {
-  /* return user's callback if available */
-  if (auto it = cost_cbs.find(SmpiOperation::RECV); it != cost_cbs.end())
-    return it->second(size, src, dst);
-
   /* fallback to smpi/or config */
-  double current = orecv_parsed_values.empty() ? 0.0 : orecv_parsed_values.front().values[0] +
-                                                           orecv_parsed_values.front().values[1] * size;
+  double current = factors.empty() ? 0.0 : factors.front().values[0] + factors.front().values[1] * size;
 
   // Iterate over all the sections that were specified and find the right value. (fact.factor represents the interval
   // sizes; we want to find the section that has fact.factor <= size and no other such fact.factor <= size)
   // Note: parse_factor() (used before) already sorts the vector we iterate over!
-  for (auto const& fact : orecv_parsed_values) {
+  for (auto const& fact : factors) {
     if (size <= fact.factor) { // Values already too large, use the previously computed value of current!
-      XBT_DEBUG("or : %zu <= %zu return %.10f", size, fact.factor, current);
+      XBT_DEBUG("%s: %zu <= %zu return %.10f", name, size, fact.factor, current);
       return current;
     } else {
       // If the next section is too large, the current section must be used.
@@ -56,9 +51,18 @@ double Host::orecv(size_t size, s4u::Host* src, s4u::Host* dst)
       current=fact.values[0]+fact.values[1]*size;
     }
   }
-  XBT_DEBUG("smpi_or: %zu is larger than largest boundary, return %.10f", size, current);
+  XBT_DEBUG("%s: %zu is larger than largest boundary, return %.10f", name, size, current);
 
   return current;
+}
+
+double Host::orecv(size_t size, s4u::Host* src, s4u::Host* dst)
+{
+  /* return user's callback if available */
+  if (auto it = cost_cbs.find(SmpiOperation::RECV); it != cost_cbs.end())
+    return it->second(size, src, dst);
+
+  return factor_use(orecv_parsed_values, "smpi/or", size);
 }
 
 double Host::osend(size_t size, s4u::Host* src, s4u::Host* dst)
@@ -67,25 +71,7 @@ double Host::osend(size_t size, s4u::Host* src, s4u::Host* dst)
   if (auto it = cost_cbs.find(SmpiOperation::SEND); it != cost_cbs.end())
     return it->second(size, src, dst);
 
-  /* fallback to smpi/os config */
-  double current =
-      osend_parsed_values.empty() ? 0.0 : osend_parsed_values[0].values[0] + osend_parsed_values[0].values[1] * size;
-  // Iterate over all the sections that were specified and find the right value. (fact.factor represents the interval
-  // sizes; we want to find the section that has fact.factor <= size and no other such fact.factor <= size)
-  // Note: parse_factor() (used before) already sorts the vector we iterate over!
-  for (auto const& fact : osend_parsed_values) {
-    if (size <= fact.factor) { // Values already too large, use the previously computed value of current!
-      XBT_DEBUG("os : %zu <= %zu return %.10f", size, fact.factor, current);
-      return current;
-    } else {
-      // If the next section is too large, the current section must be used.
-      // Hence, save the cost, as we might have to use it.
-      current = fact.values[0] + fact.values[1] * size;
-    }
-  }
-  XBT_DEBUG("Searching for smpi/os: %zu is larger than the largest boundary, return %.10f", size, current);
-
-  return current;
+  return factor_use(osend_parsed_values, "smpi/os", size);
 }
 
 double Host::oisend(size_t size, s4u::Host* src, s4u::Host* dst)
@@ -94,26 +80,7 @@ double Host::oisend(size_t size, s4u::Host* src, s4u::Host* dst)
   if (auto it = cost_cbs.find(SmpiOperation::ISEND); it != cost_cbs.end())
     return it->second(size, src, dst);
 
-  /* fallback to smpi/ois config */
-  double current =
-      oisend_parsed_values.empty() ? 0.0 : oisend_parsed_values[0].values[0] + oisend_parsed_values[0].values[1] * size;
-
-  // Iterate over all the sections that were specified and find the right value. (fact.factor represents the interval
-  // sizes; we want to find the section that has fact.factor <= size and no other such fact.factor <= size)
-  // Note: parse_factor() (used before) already sorts the vector we iterate over!
-  for (auto const& fact : oisend_parsed_values) {
-    if (size <= fact.factor) { // Values already too large, use the previously  computed value of current!
-      XBT_DEBUG("ois : %zu <= %zu return %.10f", size, fact.factor, current);
-      return current;
-    } else {
-      // If the next section is too large, the current section must be used.
-      // Hence, save the cost, as we might have to use it.
-      current = fact.values[0] + fact.values[1] * size;
-    }
-  }
-  XBT_DEBUG("Searching for smpi/ois: %zu is larger than the largest boundary, return %.10f", size, current);
-
-  return current;
+  return factor_use(oisend_parsed_values, "smpi/ois", size);
 }
 
 void Host::check_factor_configs(const std::string& op) const
