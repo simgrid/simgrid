@@ -15,6 +15,7 @@
 #include "src/internal_config.h"
 #include "src/kernel/context/Context.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
+#include "src/kernel/resource/NetworkModel.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_config.hpp"
@@ -271,13 +272,11 @@ void sg_config_init(int *argc, char **argv)
 
   /* The parameters of network models */
 
-  sg_latency_factor = 13.01; // comes from the default LV08 network model
-  simgrid::config::bind_flag(sg_latency_factor, "network/latency-factor",
+  simgrid::config::bind_flag(simgrid::kernel::resource::NetworkModel::cfg_latency_factor, "network/latency-factor",
                              "Correction factor to apply to the provided latency (default value set by network model)");
 
-  sg_bandwidth_factor = 0.97; // comes from the default LV08 network model
   simgrid::config::bind_flag(
-      sg_bandwidth_factor, "network/bandwidth-factor",
+      simgrid::kernel::resource::NetworkModel::cfg_bandwidth_factor, "network/bandwidth-factor",
       "Correction factor to apply to the provided bandwidth (default value set by network model)");
 
   sg_weight_S_parameter = 20537; // comes from the default LV08 network model

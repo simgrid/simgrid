@@ -22,6 +22,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_network, ker_resource, "Network resources, t
  *********/
 
 namespace simgrid::kernel::resource {
+double NetworkModel::cfg_latency_factor   = 1.0; // default value
+double NetworkModel::cfg_bandwidth_factor = 1.0; // default value
 
 /** @brief Command-line option 'network/TCP-gamma' -- see @ref options_model_network_gamma */
 config::Flag<double> NetworkModel::cfg_tcp_gamma(

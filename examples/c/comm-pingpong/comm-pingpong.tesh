@@ -47,9 +47,9 @@ $ ${bindir:=.}/c-comm-pingpong ${platfdir}/small_platform_routing_none.xml comm-
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'Constant'
 > [  0.000000] (1:pinger@Tremblay) Ping from mailbox Mailbox 1 to mailbox Mailbox 2
 > [  0.000000] (2:ponger@Jupiter) Pong from mailbox Mailbox 2 to mailbox Mailbox 1
-> [ 13.010000] (2:ponger@Jupiter) Task received : small communication (latency bound)
-> [ 13.010000] (2:ponger@Jupiter)  Ping time (latency bound) 13.010000
-> [ 13.010000] (2:ponger@Jupiter) task_bw->data = 13.010
-> [ 26.020000] (1:pinger@Tremblay) Task received : large communication (bandwidth bound)
-> [ 26.020000] (1:pinger@Tremblay) Pong time (bandwidth bound): 13.010
-> [ 26.020000] (0:maestro@) Total simulation time: 26.020
+> [  1.000000] (2:ponger@Jupiter) Task received : small communication (latency bound)
+> [  1.000000] (2:ponger@Jupiter)  Ping time (latency bound) 1.000000
+> [  1.000000] (2:ponger@Jupiter) task_bw->data = 1.000
+> [  2.000000] (1:pinger@Tremblay) Task received : large communication (bandwidth bound)
+> [  2.000000] (1:pinger@Tremblay) Pong time (bandwidth bound): 1.000
+> [  2.000000] (0:maestro@) Total simulation time: 2.000

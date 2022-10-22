@@ -26,8 +26,6 @@ static simgrid::config::Flag<std::string> cfg_network_solver("network/solver",
                                                              "Set linear equations solver used by network model",
                                                              "maxmin", &simgrid::kernel::lmm::System::validate_solver);
 
-double sg_latency_factor     = 1.0; /* default value; can be set by model or from command line */
-double sg_bandwidth_factor   = 1.0; /* default value; can be set by model or from command line */
 double sg_weight_S_parameter = 0.0; /* default value; can be set by model or from command line */
 
 /************************************************************************/

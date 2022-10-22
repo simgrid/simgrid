@@ -450,7 +450,7 @@ void define_callbacks()
     s4u::Link::on_bandwidth_change_cb([](s4u::Link const& link) {
       Container::by_name(link.get_name())
           ->get_variable("bandwidth")
-          ->set_event(simgrid_get_clock(), sg_bandwidth_factor * link.get_bandwidth());
+          ->set_event(simgrid_get_clock(), kernel::resource::NetworkModel::cfg_bandwidth_factor * link.get_bandwidth());
     });
     s4u::NetZone::on_seal_cb([](s4u::NetZone const& /*netzone*/) { currentContainer.pop_back(); });
     kernel::routing::NetPoint::on_creation.connect([](kernel::routing::NetPoint const& netpoint) {
