@@ -18,6 +18,7 @@ set(EXTRA_DIST
   src/kernel/actor/Simcall.hpp
   src/kernel/resource/LinkImpl.hpp
   src/kernel/resource/NetworkModel.hpp
+  src/kernel/resource/NetworkModelFactors.hpp
   src/kernel/resource/SplitDuplexLinkImpl.hpp
   src/kernel/resource/StandardLinkImpl.hpp
   src/kernel/resource/WifiLinkImpl.hpp
@@ -708,7 +709,6 @@ set(headers_to_install
   include/simgrid/s4u.hpp
 
   include/simgrid/kernel/resource/Action.hpp
-  include/simgrid/kernel/resource/NetworkModelIntf.hpp
   include/simgrid/kernel/resource/Model.hpp
 
   include/simgrid/kernel/routing/ClusterZone.hpp

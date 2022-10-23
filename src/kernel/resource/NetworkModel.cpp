@@ -13,9 +13,6 @@
 
 #include <numeric>
 
-#ifndef NETWORK_INTERFACE_CPP_
-#define NETWORK_INTERFACE_CPP_
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_network, ker_resource, "Network resources, that fuel communications");
 
 /*********
@@ -138,5 +135,3 @@ void insert_link_latency(std::vector<StandardLinkImpl*>& result, const std::vect
 }
 
 } // namespace simgrid::kernel::resource
-
-#endif /* NETWORK_INTERFACE_CPP_ */

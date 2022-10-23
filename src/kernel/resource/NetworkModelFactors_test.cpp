@@ -5,10 +5,10 @@
 
 #include "catch.hpp"
 
-#include "simgrid/kernel/resource/NetworkModelIntf.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/sg_config.hpp"
 #include "src/internal_config.h" // HAVE_SMPI
+#include "src/kernel/resource/NetworkModelFactors.hpp"
 
 static double factor_cb(double, const simgrid::s4u::Host*, const simgrid::s4u::Host*,
                         const std::vector<simgrid::s4u::Link*>&, const std::unordered_set<simgrid::s4u::NetZone*>&)

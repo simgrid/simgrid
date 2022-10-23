@@ -7,7 +7,7 @@
 #define SIMGRID_KERNEL_RESOURCE_NETWORKMODEL_HPP
 
 #include "simgrid/kernel/resource/Model.hpp"
-#include "simgrid/kernel/resource/NetworkModelIntf.hpp"
+#include "src/kernel/resource/NetworkModelFactors.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 
 #include <list>

@@ -2008,7 +2008,6 @@ include include/simgrid/kernel/ProfileBuilder.hpp
 include include/simgrid/kernel/Timer.hpp
 include include/simgrid/kernel/resource/Action.hpp
 include include/simgrid/kernel/resource/Model.hpp
-include include/simgrid/kernel/resource/NetworkModelIntf.hpp
 include include/simgrid/kernel/routing/ClusterZone.hpp
 include include/simgrid/kernel/routing/DijkstraZone.hpp
 include include/simgrid/kernel/routing/DragonflyZone.hpp
@@ -2246,7 +2245,8 @@ include src/kernel/resource/LinkImpl.hpp
 include src/kernel/resource/Model.cpp
 include src/kernel/resource/NetworkModel.cpp
 include src/kernel/resource/NetworkModel.hpp
-include src/kernel/resource/NetworkModelIntf_test.cpp
+include src/kernel/resource/NetworkModelFactors.hpp
+include src/kernel/resource/NetworkModelFactors_test.cpp
 include src/kernel/resource/Resource.hpp
 include src/kernel/resource/SplitDuplexLinkImpl.cpp
 include src/kernel/resource/SplitDuplexLinkImpl.hpp
