@@ -6,8 +6,7 @@ the performance of MPI operations in a Grid’5000 cluster. However, the same
 approach can be performed to calibrate any other environment.
 
 This tutorial is the result of the effort from many people along the years.
-Specially, it is based on Tom Cornebize’s Phd thesis
-(https://tel.archives-ouvertes.fr/tel-03328956).
+Specially, it is based on Tom Cornebize’s Phd thesis (https://tel.archives-ouvertes.fr/tel-03328956).
 
 You can execute the notebook `network_calibration_tutorial.ipynb <https://framagit.org/simgrid/simgrid/tree/master/docs/source/tuto_network_calibration/network_calibration_tutorial.ipynb>`_) by yourself using the docker image
 available at: `Dockerfile <https://framagit.org/simgrid/simgrid/tree/master/docs/source/tuto_network_calibration/Dockerfile>`_. For that, run the
@@ -17,6 +16,9 @@ following commands in the tutorial folder inside simgrid's code source (``docs/s
 
     docker build -t tuto_network .
     docker run -p 8888:8888 tuto_network
+
+Please also refer to https://framagit.org/simgrid/platform-calibration/ for more complete information.
+
 
 0. Introduction
 ===============
