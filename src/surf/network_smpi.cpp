@@ -37,13 +37,19 @@ void surf_network_model_init_SMPI()
   engine->get_netzone_root()->set_network_model(net_model);
 
   simgrid::config::set_default<double>("network/weight-S", 8775);
+  simgrid::config::set_default<std::string>("network/bandwidth-factor",
+                                            "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;"
+                                            "1426:0.608902;732:0.341987;257:0.338112;0:0.812084");
+  simgrid::config::set_default<std::string>("network/latency-factor",
+                                            "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;"
+                                            "1426:1.61075;732:1.9503;257:1.95341;0:2.01467");
 }
 
 namespace simgrid::kernel::resource {
 
 void NetworkSmpiModel::check_lat_factor_cb()
 {
-  if (not simgrid::config::is_default("smpi/lat-factor")) {
+  if (not simgrid::config::is_default("network/latency-factor")) {
     throw std::invalid_argument(
         "NetworkModelIntf: Cannot mix network/latency-factor and callback configuration. Choose only one of them.");
   }
@@ -51,27 +57,10 @@ void NetworkSmpiModel::check_lat_factor_cb()
 
 void NetworkSmpiModel::check_bw_factor_cb()
 {
-  if (not simgrid::config::is_default("smpi/bw-factor")) {
+  if (not simgrid::config::is_default("network/bandwidth-factor")) {
     throw std::invalid_argument(
         "NetworkModelIntf: Cannot mix network/bandwidth-factor and callback configuration. Choose only one of them.");
   }
 }
 
-double NetworkSmpiModel::get_bandwidth_factor(double size)
-{
-  static smpi::utils::FactorSet smpi_bw_factor("smpi/bw-factor");
-  if (not smpi_bw_factor.is_initialized())
-    smpi_bw_factor.parse(config::get_value<std::string>("smpi/bw-factor"));
-
-  return smpi_bw_factor(size);
-}
-
-double NetworkSmpiModel::get_latency_factor(double size)
-{
-  static smpi::utils::FactorSet smpi_lat_factor("smpi/lat-factor");
-  if (not smpi_lat_factor.is_initialized())
-    smpi_lat_factor.parse(config::get_value<std::string>("smpi/lat-factor"));
-
-  return smpi_lat_factor(size);
-}
 } // namespace simgrid::kernel::resource

@@ -17,9 +17,6 @@ class XBT_PRIVATE NetworkSmpiModel : public NetworkCm02Model {
 public:
   using NetworkCm02Model::NetworkCm02Model;
 
-  double get_latency_factor(double size) override;
-  double get_bandwidth_factor(double size) override;
-
 protected:
   void check_lat_factor_cb() override;
   void check_bw_factor_cb() override;

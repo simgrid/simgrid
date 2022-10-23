@@ -27,10 +27,10 @@ static smpi::utils::FactorSet cfg_latency_factor("network/latency-factor");
 static smpi::utils::FactorSet cfg_bandwidth_factor("network/bandwidth-factor");
 
 config::Flag<std::string> cfg_latency_factor_str(
-    "network/latency-factor",
+    "network/latency-factor", {{"smpi/lat-factor"}},
     "Correction factor to apply to the provided latency (default value overridden by network model)", "1.0");
 static config::Flag<std::string> cfg_bandwidth_factor_str(
-    "network/bandwidth-factor",
+    "network/bandwidth-factor", {{"smpi/bw-factor"}},
     "Correction factor to apply to the provided bandwidth (default value overridden by network model)", "1.0");
 
 double NetworkModel::get_latency_factor(double size)

@@ -338,18 +338,7 @@ void sg_config_init(int *argc, char **argv)
                                                                 default_synchro_mode,
                                                                 &_sg_cfg_cb_contexts_parallel_mode};
 
-  // For smpi/bw-factor and smpi/lat-factor
   // SMPI model can be used without enable_smpi, so keep this out of the ifdef.
-  simgrid::config::declare_flag<std::string>("smpi/bw-factor",
-                                             "Bandwidth factors for smpi. Format: "
-                                             "'threshold0:value0;threshold1:value1;...;thresholdN:valueN', "
-                                             "meaning if(size >=thresholdN ) return valueN.",
-                                             "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;"
-                                             "1426:0.608902;732:0.341987;257:0.338112;0:0.812084");
-
-  simgrid::config::declare_flag<std::string>("smpi/lat-factor", "Latency factors for smpi.",
-                                             "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;"
-                                             "1426:1.61075;732:1.9503;257:1.95341;0:2.01467");
   static simgrid::config::Flag<std::string> cfg_smpi_IB_penalty_factors{
       "smpi/IB-penalty-factors",
       "Correction factor to communications using Infiniband model with "

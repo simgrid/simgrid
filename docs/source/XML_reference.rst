@@ -134,7 +134,7 @@ name of the flag and ``value`` is what it has to be set to.
        <prop id = "maxmin/precision" value = "0.000010" />
        <prop id = "cpu/optim" value = "TI" />
        <prop id = "network/model" value = "SMPI" />
-       <prop id = "smpi/bw-factor" value = "65472:0.940694;15424:0.697866;9376:0.58729" />
+       <prop id = "network/bandwidth-factor" value = "65472:0.940694;15424:0.697866;9376:0.58729" />
      </config>
 
      <!-- The rest of your platform -->
