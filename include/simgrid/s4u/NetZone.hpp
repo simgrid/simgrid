@@ -143,7 +143,7 @@ public:
   s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, const std::string& bandwidth);
   s4u::SplitDuplexLink* create_split_duplex_link(const std::string& name, double bandwidth);
 
-  kernel::resource::NetworkModelIntf* get_network_model() const;
+  kernel::resource::NetworkModel* get_network_model() const;
 
   /**
    * @brief Make a router within that NetZone

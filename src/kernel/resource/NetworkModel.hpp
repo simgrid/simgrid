@@ -22,7 +22,7 @@ namespace simgrid::kernel::resource {
  * @brief SURF network model interface class
  * @details A model is an object which handles the interactions between its Resources and its Actions
  */
-class NetworkModel : public Model, public NetworkModelIntf {
+class NetworkModel : public Model, public NetworkModelFactors {
 public:
   static config::Flag<double> cfg_tcp_gamma;
   static config::Flag<bool> cfg_crosstraffic;

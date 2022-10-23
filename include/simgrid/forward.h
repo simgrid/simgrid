@@ -183,7 +183,6 @@ class CpuModel;
 class HostImpl;
 class HostModel;
 class NetworkModel;
-class NetworkModelIntf;
 class LinkImpl;
 class StandardLinkImpl;
 class SplitDuplexLinkImpl;

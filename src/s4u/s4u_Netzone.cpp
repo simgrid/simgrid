@@ -208,10 +208,9 @@ kernel::routing::NetPoint* NetZone::get_netpoint()
   return pimpl_->get_netpoint();
 }
 
-kernel::resource::NetworkModelIntf* NetZone::get_network_model() const
+kernel::resource::NetworkModel* NetZone::get_network_model() const
 {
-  kernel::resource::NetworkModelIntf* model = pimpl_->get_network_model().get();
-  return model;
+  return pimpl_->get_network_model().get();
 }
 } // namespace simgrid::s4u
 

@@ -8,7 +8,6 @@
 #include <boost/property_tree/ptree.hpp>
 #include <map>
 #include <random>
-#include <simgrid/kernel/resource/NetworkModelIntf.hpp>
 #include <simgrid/s4u.hpp>
 #include <smpi/smpi.h>
 namespace sg4 = simgrid::s4u;
@@ -125,13 +124,13 @@ void load_platform(const sg4::Engine& e)
   static std::mt19937 gen(42); // remove it from stack, since we need it after this this load_platform function is over
 
   /* setting network factors callbacks */
-  simgrid::kernel::resource::NetworkModelIntf* model = e.get_netzone_root()->get_network_model();
-  SegmentedRegression seg                            = read_json_file("pingpong_dhist.json", gen, false);
-  model->set_lat_factor_cb(std::bind(&latency_factor_cb, lat_base, seg, std::placeholders::_1, std::placeholders::_2,
-                                     std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
-
-  model->set_bw_factor_cb(std::bind(&bw_factor_cb, bw_base, seg, std::placeholders::_1, std::placeholders::_2,
+  auto* zone              = e.get_netzone_root();
+  SegmentedRegression seg = read_json_file("pingpong_dhist.json", gen, false);
+  zone->set_lat_factor_cb(std::bind(&latency_factor_cb, lat_base, seg, std::placeholders::_1, std::placeholders::_2,
                                     std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
+
+  zone->set_bw_factor_cb(std::bind(&bw_factor_cb, bw_base, seg, std::placeholders::_1, std::placeholders::_2,
+                                   std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
 
   seg = read_json_file("send_dhist.json", gen);
   smpi_register_op_cost_callback(SmpiOperation::SEND, std::bind(&smpi_cost_cb, seg, std::placeholders::_1,

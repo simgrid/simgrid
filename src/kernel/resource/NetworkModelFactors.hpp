@@ -18,7 +18,7 @@ namespace simgrid::kernel::resource {
 /** @ingroup SURF_interface
  * @brief Network Model interface class
  */
-class XBT_PUBLIC NetworkModelIntf {
+class XBT_PUBLIC NetworkModelFactors {
   using NetworkFactorCb = double(double size, const s4u::Host* src, const s4u::Host* dst,
                                  const std::vector<s4u::Link*>& links,
                                  const std::unordered_set<s4u::NetZone*>& netzones);

@@ -73,7 +73,7 @@ double NetworkModelFactors::get_bandwidth_factor(double size, const s4u::Host* s
 }
 #endif
 
-void NetworkModelIntf::set_lat_factor_cb(const std::function<NetworkFactorCb>& cb)
+void NetworkModelFactors::set_lat_factor_cb(const std::function<NetworkFactorCb>& cb)
 {
   if (not cb)
     throw std::invalid_argument("NetworkModelFactors: Invalid callback");
@@ -83,7 +83,7 @@ void NetworkModelIntf::set_lat_factor_cb(const std::function<NetworkFactorCb>& c
   lat_factor_cb_ = cb;
 }
 
-void NetworkModelIntf::set_bw_factor_cb(const std::function<NetworkFactorCb>& cb)
+void NetworkModelFactors::set_bw_factor_cb(const std::function<NetworkFactorCb>& cb)
 {
   if (not cb)
     throw std::invalid_argument("NetworkModelFactors: Invalid callback");

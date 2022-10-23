@@ -16,7 +16,7 @@ static double factor_cb(double, const simgrid::s4u::Host*, const simgrid::s4u::H
   return 1.0;
 }
 
-TEST_CASE("kernel::resource::NetworkModelIntf: Factors invalid callbacks: exception", "")
+TEST_CASE("kernel::resource::NetworkModelFactors: Factors invalid callbacks: exception", "")
 {
   std::vector<std::string> models{"LV08", "CM02"};
 #if HAVE_SMPI
@@ -32,16 +32,16 @@ TEST_CASE("kernel::resource::NetworkModelIntf: Factors invalid callbacks: except
 
     SECTION("Model: " + model)
     {
-      simgrid::kernel::resource::NetworkModelIntf* m = e.get_netzone_root()->get_network_model();
-      REQUIRE_THROWS_AS(m->set_lat_factor_cb({}), std::invalid_argument);
-      REQUIRE_THROWS_AS(m->set_lat_factor_cb(nullptr), std::invalid_argument);
-      REQUIRE_THROWS_AS(m->set_bw_factor_cb({}), std::invalid_argument);
-      REQUIRE_THROWS_AS(m->set_bw_factor_cb(nullptr), std::invalid_argument);
+      auto zone = e.get_netzone_root();
+      REQUIRE_THROWS_AS(zone->set_latency_factor_cb({}), std::invalid_argument);
+      REQUIRE_THROWS_AS(zone->set_latency_factor_cb(nullptr), std::invalid_argument);
+      REQUIRE_THROWS_AS(zone->set_bandwidth_factor_cb({}), std::invalid_argument);
+      REQUIRE_THROWS_AS(zone->set_bandwidth_factor_cb(nullptr), std::invalid_argument);
     }
   }
 }
 
-TEST_CASE("kernel::resource::NetworkModelIntf: Invalid network/latency-factor and network/bandwidth-factor", "")
+TEST_CASE("kernel::resource::NetworkModelFactors: Invalid network/latency-factor and network/bandwidth-factor", "")
 {
   std::vector<std::string> models{"LV08", "CM02"};
 #if HAVE_SMPI
@@ -59,9 +59,9 @@ TEST_CASE("kernel::resource::NetworkModelIntf: Invalid network/latency-factor an
 
     SECTION("Model: " + model)
     {
-      simgrid::kernel::resource::NetworkModelIntf* m = e.get_netzone_root()->get_network_model();
-      REQUIRE_THROWS_AS(m->set_lat_factor_cb(factor_cb), std::invalid_argument);
-      REQUIRE_THROWS_AS(m->set_bw_factor_cb(factor_cb), std::invalid_argument);
+      auto zone = e.get_netzone_root();
+      REQUIRE_THROWS_AS(zone->set_latency_factor_cb(factor_cb), std::invalid_argument);
+      REQUIRE_THROWS_AS(zone->set_bandwidth_factor_cb(factor_cb), std::invalid_argument);
     }
   }
 }
