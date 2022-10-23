@@ -15,9 +15,8 @@
 
 namespace simgrid::kernel::resource {
 
-/** @ingroup SURF_interface
- * @brief Network Model interface class
- */
+/** This Trait of NetworkModel is in charge of handling the network factors (bw and lat) */
+
 class XBT_PUBLIC NetworkModelFactors {
   using NetworkFactorCb = double(double size, const s4u::Host* src, const s4u::Host* dst,
                                  const std::vector<s4u::Link*>& links,
@@ -28,6 +27,28 @@ protected:
   std::function<NetworkFactorCb> bw_factor_cb_;
 
 public:
+  /**
+   * @brief Get the right multiplicative factor for the latency.
+   * @details Depending on the model, the effective latency when sending a message might be different from the
+   * theoretical latency of the link, in function of the message size. In order to account for this, this function gets
+   * this factor.
+   *
+   * @param size The size of the message.
+   * @return The latency factor.
+   */
+  double get_latency_factor(double size = 0);
+
+  /**
+   * @brief Get the right multiplicative factor for the bandwidth.
+   * @details Depending on the model, the effective bandwidth when sending a message might be different from the
+   * theoretical bandwidth of the link, in function of the message size. In order to account for this, this function
+   * gets this factor.
+   *
+   * @param size The size of the message.
+   * @return The bandwidth factor.
+   */
+  double get_bandwidth_factor(double size = 0);
+
   /**
    * @brief Callback to set the bandwidth and latency factors used in a communication
    *
@@ -51,4 +72,4 @@ public:
 
 } // namespace simgrid::kernel::resource
 
-#endif /* SIMGRID_KERNEL_RESOURCE_NETWORKMODELINTF_HPP */
+#endif /* SIMGRID_KERNEL_RESOURCE_NETWORKMODELFACTORS_HPP */

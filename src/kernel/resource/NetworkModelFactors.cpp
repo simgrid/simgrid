@@ -14,7 +14,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
  *********/
 
 namespace simgrid::kernel::resource {
-#if 0
 static FactorSet cfg_latency_factor("network/latency-factor");
 static FactorSet cfg_bandwidth_factor("network/bandwidth-factor");
 
@@ -25,6 +24,7 @@ static config::Flag<std::string> cfg_bandwidth_factor_str(
     "network/bandwidth-factor", std::initializer_list<const char*>{"smpi/bw-factor"},
     "Correction factor to apply to the provided bandwidth (default value overridden by network model)", "1.0");
 
+#if 0
 double NetworkModelFactors::get_latency_factor()
 {
   xbt_assert(not lat_factor_cb_,
@@ -72,6 +72,21 @@ double NetworkModelFactors::get_bandwidth_factor(double size, const s4u::Host* s
   return cfg_bandwidth_factor(size);
 }
 #endif
+
+double NetworkModelFactors::get_latency_factor(double size)
+{
+  if (not cfg_latency_factor.is_initialized()) // lazy initiaization to avoid initialization fiasco
+    cfg_latency_factor.parse(cfg_latency_factor_str.get());
+
+  return cfg_latency_factor(size);
+}
+double NetworkModelFactors::get_bandwidth_factor(double size)
+{
+  if (not cfg_bandwidth_factor.is_initialized())
+    cfg_bandwidth_factor.parse(cfg_bandwidth_factor_str.get());
+
+  return cfg_bandwidth_factor(size);
+}
 
 void NetworkModelFactors::set_lat_factor_cb(const std::function<NetworkFactorCb>& cb)
 {

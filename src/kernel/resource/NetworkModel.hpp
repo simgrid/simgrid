@@ -55,28 +55,6 @@ public:
    */
   virtual Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) = 0;
 
-  /**
-   * @brief Get the right multiplicative factor for the latency.
-   * @details Depending on the model, the effective latency when sending a message might be different from the
-   * theoretical latency of the link, in function of the message size. In order to account for this, this function gets
-   * this factor.
-   *
-   * @param size The size of the message.
-   * @return The latency factor.
-   */
-  virtual double get_latency_factor(double size = 0);
-
-  /**
-   * @brief Get the right multiplicative factor for the bandwidth.
-   * @details Depending on the model, the effective bandwidth when sending a message might be different from the
-   * theoretical bandwidth of the link, in function of the message size. In order to account for this, this function
-   * gets this factor.
-   *
-   * @param size The size of the message.
-   * @return The bandwidth factor.
-   */
-  virtual double get_bandwidth_factor(double size = 0);
-
   double next_occurring_event_full(double now) override;
 
   std::unique_ptr<StandardLinkImpl, StandardLinkImpl::Deleter> loopback_;
