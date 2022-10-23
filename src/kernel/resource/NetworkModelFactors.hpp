@@ -22,7 +22,6 @@ class XBT_PUBLIC NetworkModelFactors {
                                  const std::vector<s4u::Link*>& links,
                                  const std::unordered_set<s4u::NetZone*>& netzones);
 
-protected:
   std::function<NetworkFactorCb> lat_factor_cb_;
   std::function<NetworkFactorCb> bw_factor_cb_;
 
@@ -32,22 +31,25 @@ public:
    * @details Depending on the model, the effective latency when sending a message might be different from the
    * theoretical latency of the link, in function of the message size. In order to account for this, this function gets
    * this factor.
-   *
-   * @param size The size of the message.
-   * @return The latency factor.
    */
-  double get_latency_factor(double size = 0);
+  double get_latency_factor(double size, const s4u::Host* src, const s4u::Host* dst,
+                            const std::vector<s4u::Link*>& links, const std::unordered_set<s4u::NetZone*>& netzones);
+
+  /** Get the right multiplicative factor for the bandwidth (only if no callback was defined) */
+  double get_latency_factor();
 
   /**
    * @brief Get the right multiplicative factor for the bandwidth.
+   *
    * @details Depending on the model, the effective bandwidth when sending a message might be different from the
    * theoretical bandwidth of the link, in function of the message size. In order to account for this, this function
    * gets this factor.
-   *
-   * @param size The size of the message.
-   * @return The bandwidth factor.
    */
-  double get_bandwidth_factor(double size = 0);
+  double get_bandwidth_factor(double size, const s4u::Host* src, const s4u::Host* dst,
+                              const std::vector<s4u::Link*>& links, const std::unordered_set<s4u::NetZone*>& netzones);
+
+  /** Get the right multiplicative factor for the bandwidth (only if no callback was defined) */
+  double get_bandwidth_factor();
 
   /**
    * @brief Callback to set the bandwidth and latency factors used in a communication
@@ -68,6 +70,9 @@ public:
 
   /** @brief Configure the bandwidth factor callback */
   void set_bw_factor_cb(const std::function<NetworkFactorCb>& cb);
+
+  /** Returns whether a callback was set for latency-factor OR bandwidth-factor */
+  bool has_network_factor_cb() { return lat_factor_cb_ || bw_factor_cb_; }
 };
 
 } // namespace simgrid::kernel::resource

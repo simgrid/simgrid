@@ -334,18 +334,14 @@ void NetworkCm02Model::comm_action_set_bounds(const s4u::Host* src, const s4u::H
   std::unordered_set<s4u::NetZone*> s4u_netzones;
 
   /* transform data to user structures if necessary */
-  if (lat_factor_cb_ || bw_factor_cb_) {
+  if (has_network_factor_cb()) {
     std::for_each(route.begin(), route.end(),
                   [&s4u_route](StandardLinkImpl* l) { s4u_route.push_back(l->get_iface()); });
     std::for_each(netzones.begin(), netzones.end(),
                   [&s4u_netzones](kernel::routing::NetZoneImpl* n) { s4u_netzones.insert(n->get_iface()); });
   }
-  double bw_factor;
-  if (bw_factor_cb_) {
-    bw_factor = bw_factor_cb_(size, src, dst, s4u_route, s4u_netzones);
-  } else {
-    bw_factor = get_bandwidth_factor(size);
-  }
+
+  double bw_factor = get_bandwidth_factor(size, src, dst, s4u_route, s4u_netzones);
   xbt_assert(bw_factor != 0, "Invalid param for comm %s -> %s. Bandwidth factor cannot be 0", src->get_cname(),
              dst->get_cname());
   action->set_rate_factor(bw_factor);
@@ -369,11 +365,7 @@ void NetworkCm02Model::comm_action_set_bounds(const s4u::Host* src, const s4u::H
   action->set_user_bound(bandwidth_bound);
 
   action->lat_current_ = action->latency_;
-  if (lat_factor_cb_) {
-    action->latency_ *= lat_factor_cb_(size, src, dst, s4u_route, s4u_netzones);
-  } else {
-    action->latency_ *= get_latency_factor(size);
-  }
+  action->latency_ *= get_latency_factor(size, src, dst, s4u_route, s4u_netzones);
 }
 
 void NetworkCm02Model::comm_action_set_variable(NetworkCm02Action* action, const std::vector<StandardLinkImpl*>& route,
