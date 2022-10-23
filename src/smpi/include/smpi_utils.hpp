@@ -16,33 +16,9 @@
 #include <vector>
 
 // Methods used to parse and store the values for timing injections in smpi
-struct s_smpi_factor_t {
-  size_t factor = 0;
-  std::vector<double> values;
-};
 
 namespace simgrid::smpi::utils {
 
-class FactorSet {
-  const std::string& name_;
-  std::vector<s_smpi_factor_t> factors_;
-  double default_value_;
-  const std::function<double(std::vector<double> const&, double)> lambda_;
-  bool initialized_ = false;
-
-public:
-  // Parse the factor from a string
-  FactorSet(
-      const std::string& name, double default_value = 1,
-      std::function<double(std::vector<double> const&, double)> const& lambda = [](std::vector<double> const& values,
-                                                                                   double) { return values.front(); });
-  void parse(const std::string& string_values);
-  bool is_initialized() const { return initialized_; }
-  // Get the default value
-  double operator()();
-  // Get the factor to use for the provided size
-  double operator()(double size);
-};
 XBT_PUBLIC void add_benched_time(double time);
 XBT_PUBLIC void account_malloc_size(size_t size, std::string_view file, int line, const void* ptr);
 XBT_PUBLIC void account_shared_size(size_t size);

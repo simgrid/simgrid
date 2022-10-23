@@ -315,6 +315,8 @@ set(SURF_SRC
   src/kernel/resource/CpuImpl.hpp
   src/kernel/resource/DiskImpl.cpp
   src/kernel/resource/DiskImpl.hpp
+  src/kernel/resource/FactorSet.cpp
+  src/kernel/resource/FactorSet.hpp
   src/kernel/resource/Model.cpp
   src/kernel/resource/NetworkModel.cpp
   src/kernel/resource/Resource.hpp

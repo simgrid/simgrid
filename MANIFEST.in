@@ -2240,6 +2240,8 @@ include src/kernel/resource/CpuImpl.cpp
 include src/kernel/resource/CpuImpl.hpp
 include src/kernel/resource/DiskImpl.cpp
 include src/kernel/resource/DiskImpl.hpp
+include src/kernel/resource/FactorSet.cpp
+include src/kernel/resource/FactorSet.hpp
 include src/kernel/resource/LinkImpl.hpp
 include src/kernel/resource/Model.cpp
 include src/kernel/resource/NetworkModel.cpp

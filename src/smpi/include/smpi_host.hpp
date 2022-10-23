@@ -9,6 +9,7 @@
 #include "smpi_utils.hpp"
 
 #include "simgrid/s4u/Host.hpp"
+#include "src/kernel/resource/FactorSet.hpp"
 #include <string>
 #include <vector>
 #include <xbt/Extendable.hpp>
@@ -19,9 +20,9 @@ static auto factor_lambda(std::vector<double> const& values, double size)
   return values[0] + values[1] * static_cast<size_t>(size);
 }
 class Host {
-  utils::FactorSet orecv_{"smpi/or", 0.0, factor_lambda};
-  utils::FactorSet osend_{"smpi/os", 0.0, factor_lambda};
-  utils::FactorSet oisend_{"smpi/ois", 0.0, factor_lambda};
+  kernel::resource::FactorSet orecv_{"smpi/or", 0.0, factor_lambda};
+  kernel::resource::FactorSet osend_{"smpi/os", 0.0, factor_lambda};
+  kernel::resource::FactorSet oisend_{"smpi/ois", 0.0, factor_lambda};
   s4u::Host* host = nullptr;
   /**
    * @brief Generates warning message if user's config is conflicting (callback vs command line/xml)

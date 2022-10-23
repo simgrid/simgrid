@@ -6,9 +6,9 @@
 #include <simgrid/s4u/Engine.hpp>
 
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/resource/FactorSet.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
-#include "src/smpi/include/smpi_utils.hpp"
 #include "src/surf/surf_interface.hpp"
 
 #include <numeric>
@@ -23,14 +23,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_network, ker_resource, "Network resources, t
  *********/
 
 namespace simgrid::kernel::resource {
-static smpi::utils::FactorSet cfg_latency_factor("network/latency-factor");
-static smpi::utils::FactorSet cfg_bandwidth_factor("network/bandwidth-factor");
+static FactorSet cfg_latency_factor("network/latency-factor");
+static FactorSet cfg_bandwidth_factor("network/bandwidth-factor");
 
 config::Flag<std::string> cfg_latency_factor_str(
-    "network/latency-factor", {{"smpi/lat-factor"}},
+    "network/latency-factor", std::initializer_list<const char*>{"smpi/lat-factor"},
     "Correction factor to apply to the provided latency (default value overridden by network model)", "1.0");
 static config::Flag<std::string> cfg_bandwidth_factor_str(
-    "network/bandwidth-factor", {{"smpi/bw-factor"}},
+    "network/bandwidth-factor", std::initializer_list<const char*>{"smpi/bw-factor"},
     "Correction factor to apply to the provided bandwidth (default value overridden by network model)", "1.0");
 
 double NetworkModel::get_latency_factor(double size)
