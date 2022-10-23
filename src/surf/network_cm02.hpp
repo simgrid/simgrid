@@ -54,10 +54,6 @@ public:
   void update_actions_state_lazy(double now, double delta) override;
   void update_actions_state_full(double now, double delta) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
-
-protected:
-  virtual void check_lat_factor_cb();
-  virtual void check_bw_factor_cb();
 };
 
 /************

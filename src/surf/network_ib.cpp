@@ -78,7 +78,7 @@ void NetworkIBModel::IB_comm_start_callback(const activity::CommImpl& comm)
   ibModel->update_IB_factors(action, act_src, act_dst, 0);
 }
 
-NetworkIBModel::NetworkIBModel(const std::string& name) : NetworkSmpiModel(name)
+NetworkIBModel::NetworkIBModel(const std::string& name) : NetworkCm02Model(name)
 {
   std::string IB_factors_string = config::get_value<std::string>("smpi/IB-penalty-factors");
   std::vector<std::string> radical_elements;

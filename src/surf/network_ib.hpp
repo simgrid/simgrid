@@ -7,7 +7,7 @@
 #ifndef SURF_NETWORK_IB_HPP_
 #define SURF_NETWORK_IB_HPP_
 
-#include "src/surf/network_smpi.hpp"
+#include "src/surf/network_cm02.hpp"
 #include "xbt/base.h"
 
 #include <map>
@@ -35,7 +35,7 @@ public:
   explicit IBNode(int id) : id_(id){};
 };
 
-class XBT_PRIVATE NetworkIBModel : public NetworkSmpiModel {
+class XBT_PRIVATE NetworkIBModel : public NetworkCm02Model {
   std::unordered_map<std::string, IBNode> active_nodes;
   std::unordered_map<NetworkAction*, std::pair<IBNode*, IBNode*>> active_comms;
 

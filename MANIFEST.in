@@ -2622,8 +2622,6 @@ include src/surf/network_ib.cpp
 include src/surf/network_ib.hpp
 include src/surf/network_ns3.cpp
 include src/surf/network_ns3.hpp
-include src/surf/network_smpi.cpp
-include src/surf/network_smpi.hpp
 include src/surf/ns3/ns3_simulator.cpp
 include src/surf/ns3/ns3_simulator.hpp
 include src/surf/ptask_L07.cpp

@@ -41,7 +41,6 @@ set(EXTRA_DIST
   src/surf/network_constant.hpp
   src/surf/network_ib.hpp
   src/surf/network_ns3.hpp
-  src/surf/network_smpi.hpp
   src/surf/ns3/ns3_simulator.hpp
   src/surf/ptask_L07.hpp
   src/surf/surf_interface.hpp
@@ -247,7 +246,6 @@ set(SMPI_SRC
   src/smpi/plugins/ampi/instr_ampi.cpp
   src/smpi/plugins/ampi/instr_ampi.hpp
   src/surf/network_ib.cpp
-  src/surf/network_smpi.cpp
   )
 set(STHREAD_SRC
   src/sthread/sthread_impl.cpp
