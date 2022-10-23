@@ -14,6 +14,7 @@
 #include <map>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -153,6 +154,13 @@ public:
 
   /** @brief Seal this netzone configuration */
   NetZone* seal();
+
+  void set_latency_factor_cb(std::function<double(double size, const s4u::Host* src, const s4u::Host* dst,
+                                                  const std::vector<s4u::Link*>& /*links*/,
+                                                  const std::unordered_set<s4u::NetZone*>& /*netzones*/)> const& cb);
+  void set_bandwidth_factor_cb(std::function<double(double size, const s4u::Host* src, const s4u::Host* dst,
+                                                    const std::vector<s4u::Link*>& /*links*/,
+                                                    const std::unordered_set<s4u::NetZone*>& /*netzones*/)> const& cb);
 };
 
 // External constructors so that the types (and the types of their content) remain hidden

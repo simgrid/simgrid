@@ -113,6 +113,20 @@ NetZone* NetZone::seal()
   kernel::actor::simcall_answered([this] { pimpl_->seal(); });
   return this;
 }
+void NetZone::set_latency_factor_cb(
+    std::function<double(double size, const s4u::Host* src, const s4u::Host* dst,
+                         const std::vector<s4u::Link*>& /*links*/,
+                         const std::unordered_set<s4u::NetZone*>& /*netzones*/)> const& cb)
+{
+  kernel::actor::simcall_answered([this, &cb]() { pimpl_->get_network_model()->set_lat_factor_cb(cb); });
+}
+void NetZone::set_bandwidth_factor_cb(
+    std::function<double(double size, const s4u::Host* src, const s4u::Host* dst,
+                         const std::vector<s4u::Link*>& /*links*/,
+                         const std::unordered_set<s4u::NetZone*>& /*netzones*/)> const& cb)
+{
+  kernel::actor::simcall_answered([this, &cb]() { pimpl_->get_network_model()->set_bw_factor_cb(cb); });
+}
 
 s4u::Host* NetZone::create_host(const std::string& name, double speed)
 {

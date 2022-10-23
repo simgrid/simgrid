@@ -3,20 +3,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This example shows how to build set customized communication factors
+/* This example shows how to build set custom communication factors
  *
- * It uses the interface provided by NetworkModelIntf to register 2 callbacks that
- * are called everytime a communication occurs.
+ * It uses the netzone interface to register 2 callbacks that are called for every communications.
  *
  * These factors are used to change the communication time depending on the message size
  * and destination.
  *
  * This example uses factors obtained by some experiments on dahu cluster in Grid'5000.
- * You must change the values according to the calibration of your enviroment.
+ * You should change the values according to the calibration of your enviroment.
  */
 
 #include <map>
-#include <simgrid/kernel/resource/NetworkModelIntf.hpp>
 #include <simgrid/s4u.hpp>
 namespace sg4 = simgrid::s4u;
 
@@ -232,9 +230,8 @@ int main(int argc, char* argv[])
   /* create platform */
   load_platform();
   /* setting network factors callbacks */
-  simgrid::kernel::resource::NetworkModelIntf* model = e.get_netzone_root()->get_network_model();
-  model->set_lat_factor_cb(latency_factor_cb);
-  model->set_bw_factor_cb(bandwidth_factor_cb);
+  e.get_netzone_root()->set_latency_factor_cb(latency_factor_cb);
+  e.get_netzone_root()->set_bandwidth_factor_cb(bandwidth_factor_cb);
 
   sg4::Host* host        = e.host_by_name("dahu-1.grid5000.fr");
   sg4::Host* host_remote = e.host_by_name("dahu-10.grid5000.fr");
