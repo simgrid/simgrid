@@ -6,21 +6,26 @@
 #ifndef SIMGRID_KERNEL_RESOURCE_NETWORKMODELFACTORS_HPP
 #define SIMGRID_KERNEL_RESOURCE_NETWORKMODELFACTORS_HPP
 
+#include "simgrid/sg_config.hpp"
+#include "xbt/asserts.h"
 #include <simgrid/forward.h>
 
 #include <unordered_set>
 #include <vector>
 
-namespace simgrid {
-namespace kernel {
-namespace resource {
+namespace simgrid::kernel::resource {
 
 /** @ingroup SURF_interface
  * @brief Network Model interface class
  */
 class XBT_PUBLIC NetworkModelIntf {
+  using NetworkFactorCb = double(double size, const s4u::Host* src, const s4u::Host* dst,
+                                 const std::vector<s4u::Link*>& links,
+                                 const std::unordered_set<s4u::NetZone*>& netzones);
+
 protected:
-  ~NetworkModelIntf() = default;
+  std::function<NetworkFactorCb> lat_factor_cb_;
+  std::function<NetworkFactorCb> bw_factor_cb_;
 
 public:
   /**
@@ -37,17 +42,13 @@ public:
    * @param netzones Set with NetZones involved in the comm
    * @return Multiply factor
    */
-  using NetworkFactorCb = double(double size, const s4u::Host* src, const s4u::Host* dst,
-                                 const std::vector<s4u::Link*>& links,
-                                 const std::unordered_set<s4u::NetZone*>& netzones);
   /** @brief Configure the latency factor callback */
-  virtual void set_lat_factor_cb(const std::function<NetworkFactorCb>& cb) = 0;
+  void set_lat_factor_cb(const std::function<NetworkFactorCb>& cb);
+
   /** @brief Configure the bandwidth factor callback */
-  virtual void set_bw_factor_cb(const std::function<NetworkFactorCb>& cb) = 0;
+  void set_bw_factor_cb(const std::function<NetworkFactorCb>& cb);
 };
 
-} // namespace resource
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::resource
 
 #endif /* SIMGRID_KERNEL_RESOURCE_NETWORKMODELINTF_HPP */

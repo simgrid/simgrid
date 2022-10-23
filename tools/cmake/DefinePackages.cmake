@@ -320,6 +320,7 @@ set(SURF_SRC
   src/kernel/resource/FactorSet.hpp
   src/kernel/resource/Model.cpp
   src/kernel/resource/NetworkModel.cpp
+  src/kernel/resource/NetworkModelFactors.cpp
   src/kernel/resource/Resource.hpp
   src/kernel/resource/SplitDuplexLinkImpl.cpp
   src/kernel/resource/StandardLinkImpl.cpp

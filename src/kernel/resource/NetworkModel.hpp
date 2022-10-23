@@ -79,9 +79,6 @@ public:
 
   double next_occurring_event_full(double now) override;
 
-  void set_lat_factor_cb(const std::function<NetworkFactorCb>& cb) override { THROW_UNIMPLEMENTED; }
-  void set_bw_factor_cb(const std::function<NetworkFactorCb>& cb) override { THROW_UNIMPLEMENTED; }
-
   std::unique_ptr<StandardLinkImpl, StandardLinkImpl::Deleter> loopback_;
 };
 
