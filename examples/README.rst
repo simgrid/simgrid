@@ -355,9 +355,9 @@ This example is very similar to the previous one, simply adding how to declare t
 
       See also :cpp:func:`simgrid::s4u::Activity::wait_until()` and :cpp:func:`simgrid::s4u::Comm::wait_for()`.
 
-   .. example-tab:: examples/python/comm-waitfor/comm-waitfor.py
+   .. example-tab:: examples/python/comm-waituntil/comm-waituntil.py
 
-      See also :py:func:`simgrid.Comm.wait_for()` and :py:func:`simgrid.Comm.wait_any_for()`
+      See also :py:func:`simgrid.Comm.wait_until()`
 
 Suspending communications
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -540,6 +540,10 @@ This allows simulating malleable tasks.
 
       See also :cpp:func:`simgrid::s4u::this_actor::parallel_execute()`.
 
+   .. example-tab:: examples/python/exec-ptask/exec-ptask.py
+
+      See also :ref:`simgrid.this_actor.parallel_execute()`
+
 DVFS and pstates
 ^^^^^^^^^^^^^^^^
 
@@ -666,6 +670,8 @@ Shows how to use :cpp:type:`simgrid::s4u::Semaphore` synchronization objects.
 
    .. example-tab:: examples/cpp/synchro-semaphore/s4u-synchro-semaphore.cpp
 
+   .. example-tab:: examples/python/synchro-semaphore/synchro-semaphore.py
+
    .. example-tab:: examples/c/synchro-semaphore/synchro-semaphore.c
 
 =============================
@@ -736,6 +742,8 @@ failures in your code. See also :ref:`howto_churn`.
    .. example-tab:: examples/cpp/platform-failures/s4u-platform-failures.cpp
 
    .. example-tab:: examples/c/platform-failures/platform-failures.c
+
+   .. example-tab:: examples/python/platform-failures/platform-failures.py
 
    .. group-tab:: XML
 
