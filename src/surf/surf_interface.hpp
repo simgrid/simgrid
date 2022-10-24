@@ -84,9 +84,6 @@ XBT_PUBLIC void surf_cpu_model_init_Cas01();
  *
  *  @see surf_host_model_init_SMPI()
  */
-#if !HAVE_SMPI
-XBT_ATTRIB_NORETURN
-#endif
 XBT_PUBLIC void surf_network_model_init_SMPI();
 
 /** @ingroup SURF_models

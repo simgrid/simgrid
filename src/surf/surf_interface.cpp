@@ -54,10 +54,6 @@ const std::vector<surf_model_description_t> surf_network_model_description = {
 };
 
 #if !HAVE_SMPI
-void surf_network_model_init_SMPI()
-{
-  xbt_die("Please activate SMPI support in cmake to use the SMPI network model.");
-}
 void surf_network_model_init_IB()
 {
   xbt_die("Please activate SMPI support in cmake to use the IB network model.");
