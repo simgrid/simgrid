@@ -248,6 +248,8 @@ It is possbile to use :ref:`pf_tag_bypassZoneRoute` to provide a path between tw
 If such routes exist, SimGrid will try to match each of the ancestor zones of the source with each of the ancestor zone of
 the destination, looking for such a bypass to use intead of the common ancestor.
 
+.. _pf_loopback:
+
 Loopback links
 **************
 
