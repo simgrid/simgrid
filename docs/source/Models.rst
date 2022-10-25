@@ -84,13 +84,13 @@ actions in the simulation kernel, accounting the initial amount of work of the c
 activities or bytes for networking and disk activities), and the remaining amount of work. At each simulation step, the
 instantaneous computing and communicating speed of each action is computed according to the model. A set of constraints is used
 to express for example that the instantaneous speed of actions on a given resource must remain smaller than the instantaneous
-speed of that resource. In the example below, it is stated that the speed :math:`x_1` of activity 1 plus the speed :math:`x_n`
+speed of that resource. In the example below, it is stated that the speed :math:`\varrho_1` of activity 1 plus the speed :math:`\varrho_n`
 of activity :math:`n` must remain smaller than the capacity :math:`C_A` of the corresponding host A.
 
 .. image:: img/lmm-overview.svg
 
-There is obviously many valuation of :math:`x_1 \ldots{} x_n` that respect such as set of constraints. SimGrid usually computes
-the instantaneous speeds according to a Max-Mix objective function, that maximizing the minimum over all :math:`x_i`. The
+There is obviously many valuation of :math:`\varrho_1 \ldots{} \varrho_n` that respect such as set of constraints. SimGrid usually computes
+the instantaneous speeds according to a Max-Mix objective function, that maximizing the minimum over all :math:`\varrho_i`. The
 coefficients associated to each variable in the inequalities are used to model some performance effects, such as the fact that
 TCP tend to favor communications with small RTTs. These coefficients computed from both hardcoded values and from the
 :ref:`latency and bandwidth factors<cfg=network/latency-factor>`.
