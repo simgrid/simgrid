@@ -63,8 +63,9 @@ distributed applications during the last two decades. The CPU energy consumption
 plugin<plugin_host_energy>`.
 
 The **disk models** of SimGrid are more recent than for the network and computing resources, but they should still be correct
-for most users. Studies have shown that they are sensible under some conditions, and a :ref:`calibration process<howto_disk>` is
-provided. As usual, you probably want to double-check their predictions through an appropriate validation campaign.
+for most users. `Studies have shown <https://hal.inria.fr/hal-01197128>`_ that they are sensible under some conditions, and a
+:ref:`calibration process<howto_disk>` is provided. As usual, you probably want to double-check their predictions through an
+appropriate validation campaign.
 
 SimGrid main models
 *******************
