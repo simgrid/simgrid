@@ -49,6 +49,8 @@ XBT_ATTRIB_NORETURN XBT_PUBLIC void xbt_abort(void);
  *
  * Unlike the standard assert, xbt_assert is never disabled, even if the macro NDEBUG is defined at compile time.  So
  * it's safe to have a condition with side effects.
+ *
+ * In model-checking mode, a failed xbt_assert() is reported as a failed MC_assert().
  */
 /** @brief The condition which failed will be displayed.
     @hideinitializer  */
@@ -63,8 +65,7 @@ XBT_ATTRIB_NORETURN XBT_PUBLIC void xbt_abort(void);
         xbt_backtrace_display_current();                                                                               \
       if (MC_is_active())                                                                                              \
         MC_assert(0);                                                                                                  \
-      else                                                                                                             \
-        abort();                                                                                                       \
+      abort();                                                                                                         \
     }                                                                                                                  \
   } while (0)
 
