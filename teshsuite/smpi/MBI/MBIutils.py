@@ -138,7 +138,14 @@ def parse_one_code(filename):
                     if detail not in possible_details:
                         raise ValueError(
                             f"\n{filename}:{line_num}: MBI parse error: Detailled outcome {detail} is not one of the allowed ones.")
-                test = {'filename': filename, 'id': test_num, 'cmd': cmd, 'expect': expect, 'detail': detail}
+
+                nextline = next(input_file)
+                m = re.match('[ |]*(.*)', nextline)
+                if not m:
+                    raise ValueError(f"\n{filename}:{line_num}: MBI parse error: Expected diagnostic of the test not found.\n")
+                diagnostic = m.group(1)
+
+                test = {'filename': filename, 'id': test_num, 'cmd': cmd, 'expect': expect, 'detail': detail, 'diagnostic': diagnostic}
                 res.append(test.copy())
                 test_num += 1
                 line_num += 1
