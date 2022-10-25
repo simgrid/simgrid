@@ -422,8 +422,8 @@ factors separated by semicolons, each of the form ``boundary:factor``. For examp
 5000 and beyond. If your first interval does include size=0, then the default value of 1 is used before. Changing the factor
 callback is not possible from the command line and must be done from your code, as shown in `this example
 <https://framagit.org/simgrid/simgrid/tree/master/examples/cpp/network-factors/s4u-network-factors.cpp>`_. Note that the chosen
-model only provide some default settings. You can pick a ``LV08`` to get some of the settings, and override the latency with an
-interval-based value.
+model only provides some default settings. You may pick a ``LV08`` model to get some of the settings, and override the latency
+with interval-based values.
 
 SMPI default value: 65472:11.6436; 15424:3.48845; 9376:2.59299; 5776:2.18796; 3484:1.88101; 1426:1.61075; 732:1.9503;
 257:1.95341;0:2.01467 (interval boundaries are sorted automatically). These values were computed by data fitting on the Stampede
