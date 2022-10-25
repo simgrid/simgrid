@@ -15,91 +15,99 @@
 The SimGrid Models
 ##################
 
-As for any simulator, the models are very important components in SimGrid. This page first introduces the several kind of models
-used in SimGrid before focusing on the **performance models** that compute the duration of :ref:`every activities
-<S4U_main_concepts>` in the simulator depending on the platform characteristics and on the other activities that are sharing the
-resources.
+As for any simulator, models are very important components of the SimGrid toolkit. This page first introduces the
+different kind of models used in SimGrid before focusing on the **performance models** that compute the duration of
+:ref:`every activities <S4U_main_concepts>` in the simulator depending on the platform characteristics and on the
+other activities that are currently sharing the resources.
 
 The **routing models** constitute advanced elements of the platform description. This description naturally entails
-:ref:`components<platform>` that are very related to the performance models, because determining for example the execution time
-of a task obviously depends on the characteristics of the machine executing it. Furthermore, networking zones can be
-interconnected to form larger platforms `in a scalable way <http://hal.inria.fr/hal-00650233/>`_. Each of these zone can be given
-a specific :ref:`routing model<platform_routing>` that efficiently computes the list of links entailing a network path between
-two given hosts.
+:ref:`components<platform>` that are very related to the performance models. For instance, determining the execution
+time of a task obviously depends on the characteristics of the machine that executes this task. Furthermore, networking
+zones can be interconnected to compose larger platforms `in a scalable way <http://hal.inria.fr/hal-00650233/>`_. Each
+of these zones can be given a specific :ref:`routing model<platform_routing>` that efficiently computes the list of
+links forming a network path between two given hosts.
 
-The model checker uses an abstraction of the performance simulations. Mc SimGrid explores every causally possible executions of
-the application, completely abstracting the performance away. The simulated time not even computed in this mode! The abstraction
-involved in this process also models the mutual impacts between actions, to not re-explore histories that only differ by the
-order of independent and unrelated actions. As with the rest of the model checker, these models are unfortunately still to be
-documented properly.
+The model checker uses an abstraction of the performance simulations. Mc SimGrid explores every causally possible
+execution paths of the application, completely abstracting the performance away. The simulated time is not even
+computed in this mode! The abstraction involved in this process also models the mutual impacts among actions, to not
+re-explore histories that only differ by the order of independent and unrelated actions. As with the rest of the model
+checker, these models are unfortunately still to be documented properly.
 
-Finally, the `SimGrid-FMI external plugin <https://framagit.org/simgrid/simgrid-FMI>`_ can be used to integrate any FMI-based
-models into SimGrid. This was used to accurately study a *Smart grid* through co-simulation: `PandaPower
-<http://www.pandapower.org/>`_ was used to simulate the power grid, `ns-3 <https://nsnam.org/>`_ co-simulate was used the
+Finally, the `SimGrid-FMI external plugin <https://framagit.org/simgrid/simgrid-FMI>`_ can be used to integrate any
+FMI-based model into SimGrid. This was used to accurately study a *Smart grid* through co-simulation: `PandaPower
+<http://www.pandapower.org/>`_ was used to simulate the power grid, `ns-3 <https://nsnam.org/>`_ was used the
 communication network while SimGrid was simulating the IT infrastructure. Please refer to the `relevant publication
 <https://hal.archives-ouvertes.fr/hal-01762540/>`_ for more details.
 
 Modeled resources
 *****************
 
-The main objective of SimGrid is to provide timing information for three kind of resources: network, CPU and disk.
+The main objective of SimGrid is to provide timing information for three following kind of resources: network, CPU,
+and disk.
 
-The **network models** are improved and assessed since almost 20 years. It should be possible to get accurate predictions once
-you properly :ref:`calibrate the models for your settings<models_calibration>`. As detailed in the next section, SimGrid
-provides several network models. Two plugins can be used to compute the network energy consumption: One for the :ref:`wired
-networks<plugin_link_energy>`, and another one for the :ref:`Wi-Fi networks<plugin_link_energy>`. Some users find :ref:`TCP
-simulated performance counter-intuitive<understanding_lv08>` at first in SimGrid, sometimes because of a misunderstanding of the
-TCP behavior in real networks.
+The **network models** have been improved and regularly assessed for almost 20 years. It should be possible to get
+accurate predictions once you properly :ref:`calibrate the models for your settings<models_calibration>`. As detailed
+in the next sections, SimGrid provides several network models. Two plugins can also be used to compute the network
+energy consumption: One for the :ref:`wired networks<plugin_link_energy>`, and another one for the :ref:`Wi-Fi networks
+<plugin_link_energy>`. Some users find :ref:`TCP simulated performance counter-intuitive<understanding_lv08>` at first
+in SimGrid, sometimes because of a misunderstanding of the TCP behavior in real networks.
 
-The **computing models** are less developed in SimGrid. With the S4U interface, the user specifies the amount of flops that each
-computation "consumes", and the model simply divides this amount by the host's flops rate to compute the duration of this
-execution. In SMPI, the user code is automatically timed, and the :ref:`computing speed<cfg=smpi/host-speed>` of the host
-machine is used to evaluate the corresponding amount of flops. This model should be sufficient for most users, even if assuming
-a constant flops rate for each machine is a simplification. In reality, the flops rate varies because of I/O, memory and cache
-effects. It is somehow possible to :ref:`overcome this simplification<cfg=smpi/comp-adjustment-file>`, but the required
-calibration process is rather intricate and not documented yet (feel free to :ref:`contact the community<community>` on need).
+The **computing models** are less developed in SimGrid. Through the S4U interface, the user specifies the amount of
+computational work (expressed in FLOPs, for floating point operations) that each computation "consumes", and the model
+simply divides this amount by the host's FLOP rate to compute the duration of this execution. In SMPI, the user code
+is automatically timed, and the :ref:`computing speed<cfg=smpi/host-speed>` of the host machine is used to evaluate
+the corresponding amount of FLOPs. This model should be sufficient for most users, even though assuming a constant FLOP
+rate for each machine remains a crude simplification. In reality, the flops rate varies because of I/O, memory, and
+cache effects. It is somehow possible to :ref:`overcome this simplification<cfg=smpi/comp-adjustment-file>`, but the
+required calibration process is rather intricate and not documented yet (feel free to
+:ref:`contact the community<community>` on need).
 In the future, more advanced models may be added but the existing model proved good enough for all experiments done on
-distributed applications during the last two decades. The CPU energy consumption can be computed with the :ref:`relevant
-plugin<plugin_host_energy>`.
+distributed applications during the last two decades. The CPU energy consumption can be computed with the
+:ref:`relevant plugin<plugin_host_energy>`.
 
-The **disk models** of SimGrid are more recent than for the network and computing resources, but they should still be correct
-for most users. `Studies have shown <https://hal.inria.fr/hal-01197128>`_ that they are sensible under some conditions, and a
-:ref:`calibration process<howto_disk>` is provided. As usual, you probably want to double-check their predictions through an
-appropriate validation campaign.
+The **disk models** of SimGrid are more recent than those for the network and computing resources, but they should
+still be correct for most users. `Studies have shown <https://hal.inria.fr/hal-01197128>`_ that they are sensitive
+under some conditions, and a :ref:`calibration process<howto_disk>` is provided. As usual, you probably want to
+double-check their predictions through an appropriate validation campaign.
 
 SimGrid main models
 *******************
 
-SimGrid aims at the sweet spot between accuracy and simulation speed. Concerning the accuracy, our goal is to report correct
-performance trends when comparing competing designs with minimal burden on the user, while allowing power users to fine tune the
-simulation models for predictions that are within 5% or below of the results on real machines. For example, we determined the
-`speedup achieved by the Tibidabo ARM-based cluster <http://hal.inria.fr/hal-00919507>`_ before its construction. On the other
-side, the tool must be fast and scalable enough to study modern IT systems at scale. SimGrid was for example used to `simulate a
-Chord ring involving millions of actors <https://hal.inria.fr/inria-00602216>`_ (even if that not really more instructive for
-this protocol than smaller simulations), or `a qualification run at full-scale of the Stampede supercomputer
+SimGrid aims at the sweet spot between accuracy and simulation speed. About accuracy, our goal is to report correct
+performance trends when comparing competing designs with a minimal burden on the user, while allowing power users to
+fine tune the simulation models for predictions that are within 5% or less of the results on real machines. For
+example, we determined the `speedup achieved by the Tibidabo ARM-based cluster <http://hal.inria.fr/hal-00919507>`_
+before it was even built. About simulation speed, the tool must be fast and scalable enough to study modern IT systems
+at scale. SimGrid was for example used to simulate `a Chord ring involving millions of actors
+<https://hal.inria.fr/inria-00602216>`_ (even though that has not really been more instructive than smaller scale
+simulations for this protocol), or `a qualification run at full-scale of the Stampede supercomputer
 <https://hal.inria.fr/hal-02096571>`_.
 
-Most of our models are based on a linear max-min solver (LMM), as depicted below. The actors' activities are represented by
-actions in the simulation kernel, accounting the initial amount of work of the corresponding activity (in flops for computing
-activities or bytes for networking and disk activities), and the remaining amount of work. At each simulation step, the
-instantaneous computing and communicating speed of each action is computed according to the model. A set of constraints is used
-to express for example that the instantaneous speed of actions on a given resource must remain smaller than the instantaneous
-speed of that resource. In the example below, it is stated that the speed :math:`\varrho_1` of activity 1 plus the speed :math:`\varrho_n`
+Most of our models are based on a linear max-min solver (LMM), as depicted below. The actors' activities are
+represented by actions in the simulation kernel, accounting for both the initial amount of work of the corresponding
+activity (in FLOPs for computing activities or bytes for networking and disk activities), and the currently remaining
+amount of work to process.
+
+At each simulation step, the instantaneous computing and communicating capacity of each action is computed according
+to the model. A set of constraints is used to express for example that the cumulated instantaneous consumption of a
+given resource by a set actions must remain smaller than the nominal capacity speed of that resource. In the example
+below, it is stated that the speed :math:`\varrho_1` of activity 1 plus the speed :math:`\varrho_n`
 of activity :math:`n` must remain smaller than the capacity :math:`C_A` of the corresponding host A.
 
 .. image:: img/lmm-overview.svg
 
-There is obviously many valuation of :math:`\varrho_1 \ldots{} \varrho_n` that respect such as set of constraints. SimGrid usually computes
-the instantaneous speeds according to a Max-Mix objective function, that maximizing the minimum over all :math:`\varrho_i`. The
-coefficients associated to each variable in the inequalities are used to model some performance effects, such as the fact that
-TCP tend to favor communications with small RTTs. These coefficients computed from both hardcoded values and from the
-:ref:`latency and bandwidth factors<cfg=network/latency-factor>`.
+There are obviously many valuations of :math:`\varrho_1, \ldots{}, \varrho_n` that respect such as set of constraints.
+SimGrid usually computes the instantaneous speeds according to a Max-Min objective function, that is maximizing the
+minimum over all :math:`\varrho_i`. The coefficients associated to each variable in the inequalities are used to model
+some performance effects, such as the fact that TCP tends to favor communications with small RTTs. These coefficients
+are computed from both hardcoded values and :ref:`latency and bandwidth factors<cfg=network/latency-factor>`.
 
-Once the instantaneous speeds are computed, the simulation kernel computes the earliest terminating action from their speeds and
-remaining work. The simulated time is then updated along with the values in the LMM. The corresponding activities terminate,
-unblocking the corresponding actors that can further execute.
+Once the instantaneous speeds are computed, the simulation kernel determines what is the earliest terminating action
+from their respective speeds and remaining amounts of work. The simulated time is then updated along with the values
+in the LMM. As some actions have nothing left to do, the corresponding activities thus terminate, which in turn
+unblocks the corresponding actors that can further execute.
 
-Most of the SimGrid models build upon the LMM solver, that they adapt and configure for a given usage. **CM02** is the simplest
+Most of the SimGrid models build upon the LMM solver, that they adapt and configure for their respective usage. **CM02** is the simplest
 LMM model as it does not introduce any correction factors. This model should be used if you prefer understandable results over
 realistic ones. **LV08** (the default model) uses constant factors that are intended to capture common effects such as
 slow-start, or the fact that TCP headers reduce the *effective* bandwidth. **SMPI** use more advanced factors that also capture
