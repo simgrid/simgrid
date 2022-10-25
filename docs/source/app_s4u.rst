@@ -30,6 +30,8 @@ the old symbols.
 If you want an API that will never ever evolve in the future, you
 should use the :ref:`deprecated MSG API <MSG_doc>` instead.
 
+.. _S4U_main_concepts:
+
 Main Concepts
 *************
 

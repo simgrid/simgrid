@@ -393,27 +393,28 @@ Manual calibration factors
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 SimGrid can take network irregularities such as a slow startup or changing behavior depending on the message size into account.
-The values provided by default were computed a long time ago through data fitting one the timings of either packet-level simulators or direct
-experiments on real platforms. These default values should be OK for most users, but if simulation realism is really important to
-you, you probably want to recalibrate the models (i.e., devise sensible values for your specific settings). This section only
-describes how to pass new values to the models while the calibration process involved in the computation of these values is
-described :ref:`in the relevant chapter <models_calibration>`.
+The values provided by default were computed a long time ago through data fitting one the timings of either packet-level
+simulators or direct experiments on real platforms. These default values should be OK for most users, but if simulation realism
+is really important to you, you probably want to recalibrate the models (i.e., devise sensible values for your specific
+settings). This section only describes how to pass new values to the models while the calibration process involved in the
+computation of these values is described :ref:`in the relevant chapter <models_calibration>`.
 
-We found out that many networking effects can be realistically accounted for with the three following correction factors. They were shown
-to be enough to capture slow-start effects, the different transmission modes of MPI systems (eager vs. rendez-vous mode), or the
-non linear effects of wifi sharing.
+We found out that many networking effects can be realistically accounted for with the three following correction factors. They
+were shown to be enough to capture slow-start effects, the different transmission modes of MPI systems (eager vs. rendez-vous
+mode), or the non linear effects of wifi sharing.
 
 **Option** ``network/latency-factor`` **Default:** 1.0, but overridden by most models
 
-This option specifies a multiplier to apply to the *physical* latency (i.e., the one described in the platform) of the set of links involved in a communication. The factor can either be a constant to apply to any
-communication, or it may depend on the message size. The ``CM02`` model does not use any correction factor, so the
-latency-factor remains to 1. The ``LV08`` model sets it to 13.01 to model slow-start, while the ``SMPI`` model has several
-possible values depending on the interval in which the message size falls. The default SMPI setting given below specifies for example that a message smaller than
-257 bytes will get a latency multiplier of 2.01467 while a message whose size is in [15424, 65472] will get a latency multiplier
-of 3.48845. The ``wifi`` model goes further and uses a callback in the program to compute the factor that must be non-linear in
-this case.
+This option specifies a multiplier to apply to the *physical* latency (i.e., the one described in the platform) of the set of
+links involved in a communication. The factor can either be a constant to apply to any communication, or it may depend on the
+message size. The ``CM02`` model does not use any correction factor, so the latency-factor remains to 1. The ``LV08`` model sets
+it to 13.01 to model slow-start, while the ``SMPI`` model has several possible values depending on the interval in which the
+message size falls. The default SMPI setting given below specifies for example that a message smaller than 257 bytes will get a
+latency multiplier of 2.01467 while a message whose size is in [15424, 65472] will get a latency multiplier of 3.48845. The
+``wifi`` model goes further and uses a callback in the program to compute the factor that must be non-linear in this case.
 
-This multiplier is applied to the latency computed from the platform, that is the sum of all link *physical* latencies over the :ref:`network path <platform_routing>` used by the considered communication, to derive the *effective* end-to-end latency.
+This multiplier is applied to the latency computed from the platform, that is the sum of all link *physical* latencies over the
+:ref:`network path <platform_routing>` used by the considered communication, to derive the *effective* end-to-end latency.
 
 Constant factors are easy to express, but the interval-based syntax used in SMPI is somewhat complex. It expects a set of
 factors separated by semicolons, each of the form ``boundary:factor``. For example if your specification is
@@ -421,8 +422,8 @@ factors separated by semicolons, each of the form ``boundary:factor``. For examp
 5000 and beyond. If your first interval does include size=0, then the default value of 1 is used before. Changing the factor
 callback is not possible from the command line and must be done from your code, as shown in `this example
 <https://framagit.org/simgrid/simgrid/tree/master/examples/cpp/network-factors/s4u-network-factors.cpp>`_. Note that the chosen
-model only provide some default settings, not more. You can pick a ``LV08`` to get some of the settings, and override the latency
-with an interval-based value.
+model only provide some default settings. You can pick a ``LV08`` to get some of the settings, and override the latency with an
+interval-based value.
 
 SMPI default value: 65472:11.6436; 15424:3.48845; 9376:2.59299; 5776:2.18796; 3484:1.88101; 1426:1.61075; 732:1.9503;
 257:1.95341;0:2.01467 (interval boundaries are sorted automatically). These values were computed by data fitting on the Stampede
@@ -431,17 +432,19 @@ Supercomputer at TACC, with optimal deployment of processes on nodes. To accurat
 
 **Option** ``network/bandwidth-factor`` **Default:** 1.0, but overridden by most models
 
-Setting this option automatically adjusts the *effective* bandwidth (i.e., the one perceived by the application) used by any given communication. As with latency-factor above, the value
-can be a constant (``CM02`` uses 1 -- no correction -- while ``LV08`` uses 0.97 to discount TCP headers while computing the
-payload bandwidth), interval-based (as the default provided by the ``SMPI``), or using in-program callbacks (as with ``wifi``).
+Setting this option automatically adjusts the *effective* bandwidth (i.e., the one perceived by the application) used by any
+given communication. As with latency-factor above, the value can be a constant (``CM02`` uses 1 -- no correction -- while
+``LV08`` uses 0.97 to discount TCP headers while computing the payload bandwidth), interval-based (as the default provided by
+the ``SMPI``), or using in-program callbacks (as with ``wifi``).
 
-SMPI default value: 65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;1426:0.608902;732:0.341987;257:0.338112;0:0.812084 
+SMPI default value: 65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;1426:0.608902;732:0.341987;257:0.338112;0:0.812084
 This was also computed on the Stampede Supercomputer.
 
 **Option** ``network/weight-S`` **Default:** depends on the model
 
-Value used to account for RTT-unfairness when sharing a bottleneck (network connections with a large RTT are generally penalized against those with a small one). Described in `Accuracy Study and Improvement of Network
-Simulation in the SimGrid Framework <http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf>`_
+Value used to account for RTT-unfairness when sharing a bottleneck (network connections with a large RTT are generally penalized
+against those with a small one). Described in `Accuracy Study and Improvement of Network Simulation in the SimGrid Framework
+<http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf>`_
 
 Default values for ``CM02`` is 0. ``LV08`` sets it to 20537 while both ``SMPI`` and ``IB`` set it to 8775.
 

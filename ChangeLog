@@ -9,6 +9,7 @@ MPI:
    to detect dangerous code that /may/ work on some MPI implems.
 
 Models:
+ - Write the section of the manual about models, at least.
  - WiFi: the total capacity of a link depends on the amout of flows on that link.
    - Use the nonlinear callback feature of LMM to reflect this.
    - Calibration values can be changed to match different MCS configurations

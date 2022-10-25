@@ -1820,6 +1820,7 @@ include docs/source/img/eclipseScreenShot.png
 include docs/source/img/extlink.png
 include docs/source/img/extlink.svg
 include docs/source/img/graphical-toc.svg
+include docs/source/img/lmm-overview.svg
 include docs/source/img/smpi_simgrid_alltoall_pair_16.png
 include docs/source/img/smpi_simgrid_alltoall_ring_16.png
 include docs/source/img/starzone.drawio
