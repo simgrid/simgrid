@@ -107,17 +107,18 @@ from their respective speeds and remaining amounts of work. The simulated time i
 in the LMM. As some actions have nothing left to do, the corresponding activities thus terminate, which in turn
 unblocks the corresponding actors that can further execute.
 
-Most of the SimGrid models build upon the LMM solver, that they adapt and configure for their respective usage. **CM02** is the simplest
-LMM model as it does not introduce any correction factors. This model should be used if you prefer understandable results over
-realistic ones. **LV08** (the default model) uses constant factors that are intended to capture common effects such as
-slow-start, or the fact that TCP headers reduce the *effective* bandwidth. **SMPI** use more advanced factors that also capture
-the MPI-specific effects such as the eager vs. rendez-vous communication mode. You can :ref:`pick another
-model<options_model_select>` on the command line, and these models can be :ref:`further configured<options_model>`.
+Most of the SimGrid models build upon the LMM solver, that they adapt and configure for their respective usage. For
+network activities, **CM02** is the simplest LMM-based model as it does not introduce any correction factors. This model
+should be used if you prefer understandable results over realistic ones. **LV08** (the default model) uses constant
+factors that are intended to capture common effects such as slow-start, the fact that TCP headers reduce the *effective*
+bandwidth, or TCP's ACK messages. **SMPI** uses more advanced factors that also capture the MPI-specific effects such as
+the switch between the eager vs. rendez-vous communication modes. You can :ref:`select another
+model<options_model_select>` on command line, and these models can be :ref:`further configured<options_model>`. For CPU
+and disk activities, the LMM-based models are respectively named **Cas01** and **S19**.
 
-**L07** is rather distinct because it uses another objective function called *bottleneck*. This is because this model is
-intended to be used for parallel tasks that are actions mixing flops and bytes while the Max-Min objective function requires
-that all variables are expressed using the same unit. This is also why in reality, we have one LMM system per resource kind in
-the simulation, but the idea remains similar.
+
+..
+  **L07** is rather distinct because it uses another objective function called *bottleneck*. This is because this model is intended to be used for parallel tasks that are actions mixing flops and bytes while the Max-Min objective function requires that all variables are expressed using the same unit. This is also why in reality, we have one LMM system per resource kind in the simulation, but the idea remains similar.
 
 .. _understanding_lv08:
 
@@ -138,30 +139,32 @@ following platform:
      <link_ctn id="link1" />
    </route>
 
-If host `A` sends `100kB` (a hundred kilobytes) to host `B`, one could expect that this communication would take `0.81` seconds
-to complete according to a simple latency-plus-size-divided-by-bandwidth model (0.01 + 8e5/1e6 = 0.81). However, the default TCP
-model of SimGrid is a bit more complex than that. It accounts for three phenomena that directly impact the simulation time even
-on such a simple example:
+If host `A` sends `100kB` (a hundred kilobytes) to host `B`, one can expect that this communication would take `0.81`
+seconds to complete according to a simple latency-plus-size-divided-by-bandwidth model (0.01 + 8e5/1e6 = 0.81).
+However, the default TCP model of SimGrid is a bit more complex than that. It accounts for three phenomena that
+directly impact the simulation time even on such a simple example:
 
-  - The size of a message at the application level (i.e., 100kB in this example) is not the size that will actually be
-    transferred over the network. To mimic the fact that TCP and IP headers are added to each packet of the original payload,
-    the TCP model of SimGrid empirically considers that `only 97% of the nominal bandwidth` are available. In other words, the
-    size of your message is increased by a few percents, whatever this size be.
+  - The size of a message at the application level (i.e., 100kB in this example) is not the size that is actually
+    transferred over the network. To mimic the fact that TCP and IP headers are added to each packet of the original
+    payload, the TCP model of SimGrid empirically considers that `only 97% of the nominal bandwidth` are available. In
+    other words, the size of your message is increased by a few percents, whatever this size be.
 
-  - In the real world, the TCP protocol is not able to fully exploit the bandwidth of a link from the emission of the first
-    packet. To reflect this `slow start` phenomenon, the latency declared in the platform file is multiplied by `a factor of
-    13.01`. Here again, this is an empirically determined value that may not correspond to every TCP implementations on every
-    networks. It can be tuned when more realistic simulated times for short messages are needed though.
+  - In the real world, the TCP protocol is not able to fully exploit the bandwidth of a link from the emission of the
+    first packet. To reflect this `slow start` phenomenon, the latency declared in the platform file is multiplied by
+    `a factor of 13.01`. Here again, this is an empirically determined value that may not correspond to every TCP
+    implementations on every networks. It can be tuned when more realistic simulated times for the transfer of short
+    messages are needed though.
 
-  - When data is transferred from A to B, some TCP ACK messages travel in the opposite direction. To reflect the impact of this
-    `cross-traffic`, SimGrid simulates a flow from B to A that represents an additional bandwidth consumption of `0.05`. The
-    route from B to A is implicitly declared in the platform file and uses the same link `link1` as if the two hosts were
-    connected through a communication bus. The bandwidth share allocated to the flow from A to B is then the available bandwidth
-    of `link1` (i.e., 97% of the nominal bandwidth of 1Mb/s) divided by 1.05 (i.e., the total consumption). This feature,
-    activated by default, can be disabled by adding the `--cfg=network/crosstraffic:0` flag to command line.
+  - When data is transferred from A to B, some TCP ACK messages travel in the opposite direction. To reflect the impact
+    of this `cross-traffic`, SimGrid simulates a flow from B to A that represents an additional bandwidth consumption
+    of `0.05%`. The route from B to A is implicitly declared in the platform file and uses the same link `link1` as if
+    the two hosts were connected through a communication bus. The bandwidth share allocated to a data transfer from A
+    to B is then the available bandwidth of `link1` (i.e., 97% of the nominal bandwidth of 1Mb/s) divided by 1.05
+    (i.e., the total consumption). This feature, activated by default, can be disabled by adding the
+    `--cfg=network/crosstraffic:0` flag to the command line.
 
-As a consequence, the time to transfer 100kB from A to B as simulated by the default TCP model of SimGrid is not 0.81 seconds
-but
+As a consequence, the time to transfer 100kB from A to B as simulated by the default TCP model of SimGrid is not 0.81
+seconds but
 
 .. code-block:: python
 
@@ -171,18 +174,19 @@ but
 WiFi zones
 ==========
 
-In SimGrid, WiFi networks are modeled with WiFi zones, where a zone contains the access point of the WiFi network and the hosts
-connected to it (called station in the WiFi world). Links inside WiFi zones are modeled as regular links with a specific
-attribute, and these links are then added to routes between hosts. The main difference of WiFi networks is that their
-performance is not given by the link bandwidth and latency but by both the access point WiFi characteristics and the distance
-between the access point and the hosts.
+In SimGrid, WiFi networks are modeled with WiFi zones, where a zone contains the access point of the WiFi network and
+the hosts connected to it (called `stations` in the WiFi world). The network inside a WiFi zone is modeled by declaring
+a single regular link with a specific attribute. This link is then added to the routes to and from the stations within
+this WiFi zone. The main difference of WiFi networks is that their performance is not determined by some link bandwidth
+and latency but by both the access point WiFi characteristics and the distance between that access point and a given
+station.
 
-Such WiFi zones can be used in both the LMM-based model or with ns-3, and are supposed to behave similarly in both cases.
+Such WiFi zones can be used with the LMM-based model or ns-3, and are supposed to behave similarly in both cases.
 
 Declaring a WiFi zone
 ---------------------
 
-To declare a new WiFi network, simply declare a network zone with the ``WIFI`` routing.
+To declare a new WiFi network, simply declare a network zone with the ``WIFI`` routing attribute.
 
 .. code-block:: xml
 
@@ -194,8 +198,8 @@ Inside this zone you must declare which host or router will be the access point 
 
 	<prop id="access_point" value="alice"/>
 
-Afterward simply declare the hosts and routers inside the WiFi network. Remember that one must have the same name as declared in
-the property "access point".
+Then simply declare the stations (hosts) and routers inside the WiFi network. Remember that one must have the same name
+as the "access point" property.
 
 .. code-block:: xml
 
@@ -223,25 +227,21 @@ zones is always wired.
 WiFi network performance
 ------------------------
 
-The performance of a wifi network is controlled by 3 property that can be added to hosts connected to the wifi zone:
+The performance of a wifi network is controlled by the three following properties:
 
  * ``mcs`` (`Modulation and Coding Scheme <https://en.wikipedia.org/wiki/Link_adaptation>`_)
-   Roughly speaking, it defines the speed at which the access point is
-   exchanging data with all stations. It depends on its model and configuration,
-   and the possible values are listed for example on Wikipedia.
+   is a property of the WiFi zone. Roughly speaking, it defines the speed at which the access point is exchanging data
+   with all the stations. It depends on the access point's model and configuration. Possible values for the MCS can be
+   found on Wikipedia for example.
    |br| By default, ``mcs=3``.
-   It is a property of the WiFi zone.
- * ``nss`` (Number of Spatial Streams, or `number of antennas <https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Number_of_antennas>`_)
-   defines the amount of simultaneous data streams that the AP can sustain.
-   Not all value of MCS and NSS are valid nor compatible (cf. `802.11n standard <https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Data_rates>`_).
+ * ``nss`` (Number of Spatial Streams, or `number of antennas <https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Number_of_antennas>`_) is another property of the WiFi zone. It defines the amount of simultaneous data streams that the access
+   point can sustain. Not all values of MCS and NSS are valid nor compatible (cf. `802.11n standard <https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Data_rates>`_).
    |br| By default, ``nss=1``.
-   It is a property of the WiFi zone.
- * ``wifi_distance`` is the distance from the station to the access point. Each
-   station can have a specific value.
+ * ``wifi_distance`` is the distance from a station to the access point. Each station can have its own specific value.
+   It is thus a property of the stations declared inside the WiFi zone.
    |br| By default, ``wifi_distance=10``.
-   It is a property of stations of the WiFi network.
 
-Here is an example of a zone changing ``mcs`` and ``nss`` values.
+Here is an example of a zone with non-default ``mcs`` and ``nss`` values.
 
 .. code-block:: xml
 
@@ -252,7 +252,7 @@ Here is an example of a zone changing ``mcs`` and ``nss`` values.
 	...
 	</zone>
 
-Here is an example of a host changing ``wifi_distance`` value.
+Here is an example of setting the ``wifi_distance`` of a given station.
 
 .. code-block:: xml
 
@@ -263,28 +263,31 @@ Here is an example of a host changing ``wifi_distance`` value.
 Other models
 ************
 
-SimGrid provides two other models in addition to the LMM-based ones.
+SimGrid provides two other network models in addition to the LMM-based ones.
 
-First, the **constant-time model** is a simplistic network model where all communication take a constant time (one second). It
-provides the lowest realism, but is marginally faster and much simpler to understand. This model may reveal interesting if you
-plan to study abstract distributed algorithms such as leader election or causal broadcast.
+First, the **constant-time model** is a simplistic network model where all communication take a constant time (one
+second). It provides the lowest level of realism, but is marginally faster and much simpler to understand. This model
+may reveal interesting if you plan to study abstract distributed algorithms such as leader election or causal broadcast.
 
-On the contrary, the **ns-3 based model** is the most accurate network model that you can get in SimGrid. It relies on the
-well-known `ns-3 packet-level network simulator <http://www.nsnam.org>`_ to compute every timing information of your simulation.
-For example, this may be used to investigate the validity of a simulation. Note that this model is much slower than the
-LMM-based models, because ns-3 simulates every network packet involved in as communication while SimGrid only recompute the
-instantaneous speeds when one of the communications starts or stops. Both simulators are linear in the size of their input, but
-ns-3 has a much larger input in case of large steady communications.
+On the contrary, the **ns-3 based model** is the most accurate network model that you can get in SimGrid. It relies on
+the well-known `ns-3 packet-level network simulator <http://www.nsnam.org>`_ to compute every timing information related
+to the network transfers of your simulation.
+For instance, this may be used to investigate the validity of a simulation. Note that this model is much slower than the
+LMM-based models, because ns-3 simulates the movement of every network packet involved in every communication while
+SimGrid only recomputes the respective instantaneous speeds of the currently ongoing communications when one
+communication starts or stops.
+
+.. 
+  Both simulators are linear in the size of their input, but ns-3 has a much larger input in case of large steady communications.
 
 ns-3 as a SimGrid model
 =======================
 
 You need to install ns-3 and recompile SimGrid accordingly to use this model.
 
-The SimGrid/ns-3 binding only contains features that are common to both systems.
-Not all ns-3 models are available from SimGrid (only the TCP and WiFi ones are),
-while not all SimGrid platform files can be used in conjunction ns-3 (routes
-must be of length 1). Also, the platform built in ns-3 from the SimGrid
+The SimGrid/ns-3 binding only contains features that are common to both systems. Not all ns-3 models are available from
+SimGrid (only the TCP and WiFi ones are), while not all SimGrid platform files can be used in conjunction with ns-3
+(routes must be of length 1). Also, the platform built in ns-3 from the SimGrid
 description is very basic. Finally, communicating from a host to
 itself is forbidden in ns-3, so every such communication completes
 immediately upon startup.
@@ -298,7 +301,7 @@ Installing ns-3
 
 SimGrid requires ns-3 version 3.26 or higher, and you probably want the most
 recent version of both SimGrid and ns-3. While the Debian package of SimGrid
-don't have the ns-3 bindings activated, you can still use the packaged version
+does not have the ns-3 bindings activated, you can still use the packaged version
 of ns-3 by grabbing the ``libns3-dev ns3`` packages. Alternatively, you can
 install ns-3 from scratch (see the `ns-3 documentation <http://www.nsnam.org>`_).
 
@@ -319,7 +322,7 @@ If your local copy defines the variable ``SIMGRID_HAVE_NS3`` to 1, then ns-3
 was correctly detected. Otherwise, explore ``CMakeFiles/CMakeOutput.log`` and
 ``CMakeFiles/CMakeError.log`` to diagnose the problem.
 
-Test that ns-3 was successfully integrated with the following (from your SimGrid
+Test that ns-3 was successfully integrated with the following command (executed from your SimGrid
 build directory). It will run all SimGrid tests that are related to the ns-3
 integration. If no test is run at all, you probably forgot to enable ns-3 in cmake.
 
@@ -335,8 +338,8 @@ If you use a version of ns-3 that is not known to SimGrid yet, edit
 comments on top of this file. Conversely, if something goes wrong with an old
 version of either SimGrid or ns-3, try upgrading everything.
 
-Note that there is a known bug with version 3.31 of ns3, when it's built with
-MPI support, like it is with the package libns3-dev in Debian 11 « Bullseye ».
+Note that there is a known bug with the version 3.31 of ns3 when it is built with
+MPI support, like it is with the libns3-dev package in Debian 11 « Bullseye ».
 A simple workaround is to edit the file
 ``/usr/include/ns3.31/ns3/point-to-point-helper.h`` to remove the ``#ifdef NS3_MPI``
 include guard.  This can be achieved with the following command (as root):
@@ -442,7 +445,7 @@ It is possible to define a fixed or random seed to the ns3 random number generat
 	</platform>
 
 The first property defines that this platform will be used with the ns3 model.
-The second property defines the seed that will be used. Defined to ``time``
+The second property defines the seed that will be used. Defined to ``time``,
 it will use a random seed, defined to a number it will use this number as
 the seed.
 
@@ -470,7 +473,7 @@ If your simulation hangs in a communication, this is probably because one host
 is sending data that is not routable in your platform. Make sure that you only
 use routes of length 1, and that any host is connected to the platform.
 Arguably, SimGrid could detect this situation and report it, but unfortunately,
-this is still to be done.
+this still has to be done.
 
 
 .. |br| raw:: html
