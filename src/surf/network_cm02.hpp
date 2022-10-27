@@ -42,7 +42,7 @@ class NetworkCm02Model : public NetworkModel {
   /** @brief Set communication bounds for latency and bandwidth */
   void comm_action_set_bounds(const s4u::Host* src, const s4u::Host* dst, double size, NetworkCm02Action* action,
                               const std::vector<StandardLinkImpl*>& route,
-                              const std::unordered_set<kernel::routing::NetZoneImpl*>& netzones, double rate);
+                              const std::unordered_set<kernel::routing::NetZoneImpl*>& netzones, double rate) const;
   /** @brief Create maxmin variable in communication action */
   void comm_action_set_variable(NetworkCm02Action* action, const std::vector<StandardLinkImpl*>& route,
                                 const std::vector<StandardLinkImpl*>& back_route);

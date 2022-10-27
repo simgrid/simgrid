@@ -87,12 +87,12 @@ FactorSet::FactorSet(const std::string& name, double default_value,
 {
 }
 
-double FactorSet::operator()()
+double FactorSet::operator()() const
 {
   return default_value_;
 }
 
-double FactorSet::operator()(double size)
+double FactorSet::operator()(double size) const
 {
   if (factors_.empty())
     return default_value_;

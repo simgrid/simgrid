@@ -155,12 +155,14 @@ public:
   /** @brief Seal this netzone configuration */
   NetZone* seal();
 
-  void set_latency_factor_cb(std::function<double(double size, const s4u::Host* src, const s4u::Host* dst,
-                                                  const std::vector<s4u::Link*>& /*links*/,
-                                                  const std::unordered_set<s4u::NetZone*>& /*netzones*/)> const& cb);
-  void set_bandwidth_factor_cb(std::function<double(double size, const s4u::Host* src, const s4u::Host* dst,
-                                                    const std::vector<s4u::Link*>& /*links*/,
-                                                    const std::unordered_set<s4u::NetZone*>& /*netzones*/)> const& cb);
+  void
+  set_latency_factor_cb(std::function<double(double size, const s4u::Host* src, const s4u::Host* dst,
+                                             const std::vector<s4u::Link*>& /*links*/,
+                                             const std::unordered_set<s4u::NetZone*>& /*netzones*/)> const& cb) const;
+  void
+  set_bandwidth_factor_cb(std::function<double(double size, const s4u::Host* src, const s4u::Host* dst,
+                                               const std::vector<s4u::Link*>& /*links*/,
+                                               const std::unordered_set<s4u::NetZone*>& /*netzones*/)> const& cb) const;
 };
 
 // External constructors so that the types (and the types of their content) remain hidden

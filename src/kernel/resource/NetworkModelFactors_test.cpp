@@ -32,7 +32,7 @@ TEST_CASE("kernel::resource::NetworkModelFactors: Factors invalid callbacks: exc
 
     SECTION("Model: " + model)
     {
-      auto zone = e.get_netzone_root();
+      const auto* zone = e.get_netzone_root();
       REQUIRE_THROWS_AS(zone->set_latency_factor_cb({}), std::invalid_argument);
       REQUIRE_THROWS_AS(zone->set_latency_factor_cb(nullptr), std::invalid_argument);
       REQUIRE_THROWS_AS(zone->set_bandwidth_factor_cb({}), std::invalid_argument);
@@ -59,7 +59,7 @@ TEST_CASE("kernel::resource::NetworkModelFactors: Invalid network/latency-factor
 
     SECTION("Model: " + model)
     {
-      auto zone = e.get_netzone_root();
+      const auto* zone = e.get_netzone_root();
       REQUIRE_THROWS_AS(zone->set_latency_factor_cb(factor_cb), std::invalid_argument);
       REQUIRE_THROWS_AS(zone->set_bandwidth_factor_cb(factor_cb), std::invalid_argument);
     }

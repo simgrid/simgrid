@@ -33,10 +33,11 @@ public:
    * this factor.
    */
   double get_latency_factor(double size, const s4u::Host* src, const s4u::Host* dst,
-                            const std::vector<s4u::Link*>& links, const std::unordered_set<s4u::NetZone*>& netzones);
+                            const std::vector<s4u::Link*>& links,
+                            const std::unordered_set<s4u::NetZone*>& netzones) const;
 
   /** Get the right multiplicative factor for the bandwidth (only if no callback was defined) */
-  double get_latency_factor();
+  double get_latency_factor() const;
 
   /**
    * @brief Get the right multiplicative factor for the bandwidth.
@@ -46,10 +47,11 @@ public:
    * gets this factor.
    */
   double get_bandwidth_factor(double size, const s4u::Host* src, const s4u::Host* dst,
-                              const std::vector<s4u::Link*>& links, const std::unordered_set<s4u::NetZone*>& netzones);
+                              const std::vector<s4u::Link*>& links,
+                              const std::unordered_set<s4u::NetZone*>& netzones) const;
 
   /** Get the right multiplicative factor for the bandwidth (only if no callback was defined) */
-  double get_bandwidth_factor();
+  double get_bandwidth_factor() const;
 
   /**
    * @brief Callback to set the bandwidth and latency factors used in a communication
@@ -72,7 +74,7 @@ public:
   void set_bw_factor_cb(const std::function<NetworkFactorCb>& cb);
 
   /** Returns whether a callback was set for latency-factor OR bandwidth-factor */
-  bool has_network_factor_cb() { return lat_factor_cb_ || bw_factor_cb_; }
+  bool has_network_factor_cb() const { return lat_factor_cb_ || bw_factor_cb_; }
 };
 
 } // namespace simgrid::kernel::resource

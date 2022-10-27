@@ -37,9 +37,9 @@ public:
   void parse(const std::string& string_values);
   bool is_initialized() const { return initialized_; }
   // Get the default value
-  double operator()();
+  double operator()() const;
   // Get the factor to use for the provided size
-  double operator()(double size);
+  double operator()(double size) const;
 };
 
 } // namespace simgrid::kernel::resource

@@ -328,7 +328,7 @@ bool NetworkCm02Model::comm_get_route_info(const s4u::Host* src, const s4u::Host
 void NetworkCm02Model::comm_action_set_bounds(const s4u::Host* src, const s4u::Host* dst, double size,
                                               NetworkCm02Action* action, const std::vector<StandardLinkImpl*>& route,
                                               const std::unordered_set<kernel::routing::NetZoneImpl*>& netzones,
-                                              double rate)
+                                              double rate) const
 {
   std::vector<s4u::Link*> s4u_route;
   std::unordered_set<s4u::NetZone*> s4u_netzones;

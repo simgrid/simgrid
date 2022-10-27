@@ -24,7 +24,7 @@ static config::Flag<std::string> cfg_bandwidth_factor_str(
     "network/bandwidth-factor", std::initializer_list<const char*>{"smpi/bw-factor"},
     "Correction factor to apply to the provided bandwidth (default value overridden by network model)", "1.0");
 
-double NetworkModelFactors::get_bandwidth_factor()
+double NetworkModelFactors::get_bandwidth_factor() const
 {
   xbt_assert(not bw_factor_cb_,
              "Cannot access the global bandwidth factor since a callback is used. Please go for the advanced API.");
@@ -35,7 +35,7 @@ double NetworkModelFactors::get_bandwidth_factor()
   return cfg_bandwidth_factor(0);
 }
 
-double NetworkModelFactors::get_latency_factor()
+double NetworkModelFactors::get_latency_factor() const
 {
   xbt_assert(not lat_factor_cb_,
              "Cannot access the global latency factor since a callback is used. Please go for the advanced API.");
@@ -48,7 +48,7 @@ double NetworkModelFactors::get_latency_factor()
 
 double NetworkModelFactors::get_latency_factor(double size, const s4u::Host* src, const s4u::Host* dst,
                                                const std::vector<s4u::Link*>& links,
-                                               const std::unordered_set<s4u::NetZone*>& netzones)
+                                               const std::unordered_set<s4u::NetZone*>& netzones) const
 {
   if (lat_factor_cb_)
     return lat_factor_cb_(size, src, dst, links, netzones);
@@ -61,7 +61,7 @@ double NetworkModelFactors::get_latency_factor(double size, const s4u::Host* src
 
 double NetworkModelFactors::get_bandwidth_factor(double size, const s4u::Host* src, const s4u::Host* dst,
                                                  const std::vector<s4u::Link*>& links,
-                                                 const std::unordered_set<s4u::NetZone*>& netzones)
+                                                 const std::unordered_set<s4u::NetZone*>& netzones) const
 {
   if (bw_factor_cb_)
     return bw_factor_cb_(size, src, dst, links, netzones);
