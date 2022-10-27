@@ -152,7 +152,7 @@ void HostS22Model::update_actions_state(double /*now*/, double delta)
   }
 }
 
-S22Action::S22Action(Model* model, s4u::Host* src_host, s4u::Disk* src_disk, s4u::Host* dst_host, s4u::Disk* dst_disk, double size)
+S22Action::S22Action(Model* model, s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk, double size)
     : DiskAction(model, 1.0, false)
     , src_host_(src_host)
     , src_disk_(src_disk)
@@ -194,9 +194,9 @@ S22Action::S22Action(Model* model, s4u::Host* src_host, s4u::Disk* src_disk, s4u
   /* Expand it for the disks even if there is nothing to read/write, to make sure that it gets expended even if there is no
    * communication either */
   if (src_disk_ != nullptr)
-    model->get_maxmin_system()->expand(src_disk_->get_impl()->get_constraint(), get_variable(), size, true);
+    model->get_maxmin_system()->expand(src_disk_->get_constraint(), get_variable(), size, true);
   if (dst_disk_ != nullptr)
-    model->get_maxmin_system()->expand(dst_disk_->get_impl()->get_constraint(), get_variable(), size, true);
+    model->get_maxmin_system()->expand(dst_disk_->get_constraint(), get_variable(), size, true);
 
   if (src_host_ != dst_host_) {
     std::vector<StandardLinkImpl*> route;
@@ -214,7 +214,7 @@ S22Action::S22Action(Model* model, s4u::Host* src_host, s4u::Disk* src_disk, s4u
   update_bound();
 }
 
-S22Action* HostS22Model::io_stream(s4u::Host* src_host, s4u::Disk* src_disk, s4u::Host* dst_host, s4u::Disk* dst_disk,
+S22Action* HostS22Model::io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk,
                                    double size)
 {
   return new S22Action(this, src_host, src_disk, dst_host, dst_disk, size);

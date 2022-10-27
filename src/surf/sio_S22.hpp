@@ -40,7 +40,7 @@ public:
   Action* execute_thread(const s4u::Host* host, double flops_amount, int thread_count) override { return nullptr; }
   CpuAction* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                               const double* bytes_amount, double rate) override { return nullptr; }
-  S22Action* io_stream(s4u::Host* src_host, s4u::Disk* src_disk, s4u::Host* dst_host, s4u::Disk* dst_disk, double size);
+  S22Action* io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk, double size);
 };
 
 class DiskS22Model : public DiskModel {
@@ -109,9 +109,9 @@ public:
  **********/
 class S22Action : public DiskAction {
   const s4u::Host* src_host_;
-  const s4u::Disk* src_disk_;
+  const DiskImpl* src_disk_;
   const s4u::Host* dst_host_;
-  const s4u::Disk* dst_disk_;
+  const DiskImpl* dst_disk_;
 
   const double size_;
 
@@ -134,7 +134,7 @@ class S22Action : public DiskAction {
 
 public:
   S22Action() = delete;
-  S22Action(Model* model, s4u::Host* src_host, s4u::Disk* src_disk, s4u::Host* dst_host, s4u::Disk* dst_disk, double size);
+  S22Action(Model* model, s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk, double size);
   S22Action(const S22Action&) = delete;
   S22Action& operator=(const S22Action&) = delete;
   ~S22Action() = default;
