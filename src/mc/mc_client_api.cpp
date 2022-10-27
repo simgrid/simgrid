@@ -30,8 +30,10 @@ int MC_random(int min, int max)
 
 void MC_assert(int prop)
 {
+  // Cannot used xbt_assert here, or it would be an infinite recursion.
 #if SIMGRID_HAVE_MC
-  xbt_assert(mc_model_checker == nullptr);
+  if (mc_model_checker != nullptr)
+    xbt_die("This should be called from the client side");
   if (not prop) {
     if (MC_is_active())
       simgrid::mc::AppSide::get()->report_assertion_failure();
@@ -39,7 +41,8 @@ void MC_assert(int prop)
       xbt_die("MC assertion failed");
   }
 #else
-  xbt_assert(prop, "Safety property violation detected without the model-checker");
+  if (not prop)
+    xbt_die("Safety property violation detected without the model-checker");
 #endif
 }
 
