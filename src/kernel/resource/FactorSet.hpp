@@ -22,7 +22,7 @@ struct s_smpi_factor_t {
 namespace simgrid::kernel::resource {
 
 class FactorSet {
-  const std::string& name_;
+  const std::string name_;
   std::vector<s_smpi_factor_t> factors_;
   double default_value_;
   const std::function<double(std::vector<double> const&, double)> lambda_;
