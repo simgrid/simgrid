@@ -46,7 +46,6 @@ double NetworkModelFactors::get_latency_factor()
   return cfg_latency_factor(0);
 }
 
-#if 0
 double NetworkModelFactors::get_latency_factor(double size, const s4u::Host* src, const s4u::Host* dst,
                                                const std::vector<s4u::Link*>& links,
                                                const std::unordered_set<s4u::NetZone*>& netzones)
@@ -60,32 +59,6 @@ double NetworkModelFactors::get_latency_factor(double size, const s4u::Host* src
   return cfg_latency_factor(size);
 }
 
-double NetworkModelFactors::get_bandwidth_factor(double size, const s4u::Host* src, const s4u::Host* dst,
-                                                 const std::vector<s4u::Link*>& links,
-                                                 const std::unordered_set<s4u::NetZone*>& netzones)
-{
-  if (bw_factor_cb_)
-    return bw_factor_cb_(size, src, dst, links, netzones);
-
-  if (not cfg_bandwidth_factor.is_initialized())
-    cfg_bandwidth_factor.parse(cfg_bandwidth_factor_str.get());
-
-  return cfg_bandwidth_factor(size);
-}
-#endif
-
-double NetworkModelFactors::get_latency_factor(double size, const s4u::Host* src, const s4u::Host* dst,
-                                               const std::vector<s4u::Link*>& links,
-                                               const std::unordered_set<s4u::NetZone*>& netzones)
-{
-  if (lat_factor_cb_)
-    return lat_factor_cb_(size, src, dst, links, netzones);
-
-  if (not cfg_latency_factor.is_initialized()) // lazy initiaization to avoid initialization fiasco
-    cfg_latency_factor.parse(cfg_latency_factor_str.get());
-
-  return cfg_latency_factor(size);
-}
 double NetworkModelFactors::get_bandwidth_factor(double size, const s4u::Host* src, const s4u::Host* dst,
                                                  const std::vector<s4u::Link*>& links,
                                                  const std::unordered_set<s4u::NetZone*>& netzones)

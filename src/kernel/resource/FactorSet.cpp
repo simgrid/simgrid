@@ -12,7 +12,6 @@
 #include "xbt/sysdep.h"
 
 #include <algorithm>
-//#include <function>
 #include <boost/tokenizer.hpp>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_resource);
@@ -24,11 +23,10 @@ namespace simgrid::kernel::resource {
 
 void FactorSet::parse(const std::string& values)
 {
-  const char* str = values.c_str();
   initialized_    = true;
 
-  if (strchr(str, ':') == nullptr && strchr(str, ';') == nullptr) { // Single value
-    default_value_ = xbt_str_parse_double(str, name_.c_str());
+  if (values.find_first_of(":;") == std::string::npos) { // Single value
+    default_value_ = xbt_str_parse_double(values.c_str(), name_.c_str());
     return;
   }
 
@@ -103,7 +101,6 @@ double FactorSet::operator()(double size)
     auto const& fact = factors_[i];
 
     if (size <= fact.factor) { // Too large already, use the previous value
-
       if (i == 0) { // Before the first boundary: use the default value
         XBT_DEBUG("%s: %f <= %zu return default %f", name_.c_str(), size, fact.factor, default_value_);
         return default_value_;
