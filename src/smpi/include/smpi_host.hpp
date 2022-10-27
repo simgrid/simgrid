@@ -17,7 +17,7 @@
 namespace simgrid::smpi {
 static auto factor_lambda(std::vector<double> const& values, double size)
 {
-  return values[0] + values[1] * static_cast<size_t>(size);
+  return values[0] + values[1] * size;
 }
 class Host {
   kernel::resource::FactorSet orecv_{"smpi/or", 0.0, factor_lambda};

@@ -57,6 +57,6 @@ bool ActorJoinSimcall::is_enabled()
 void ActorJoinSimcall::serialize(std::stringstream& stream) const
 {
   stream << (short)mc::Transition::Type::ACTOR_JOIN << ' ';
-  stream << other_->get_pid() << ' ' << static_cast<bool>(timeout_ > 0);
+  stream << other_->get_pid() << ' ' << (timeout_ > 0);
 }
 } // namespace simgrid::kernel::actor
