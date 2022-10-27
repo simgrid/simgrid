@@ -29,6 +29,7 @@ public:
 
   virtual Action* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                                    const double* bytes_amount, double rate) = 0;
+  virtual Action* io_stream(s4u::Host* src_host, s4u::Disk* src_disk, s4u::Host* dst_host, s4u::Disk* dst_disk, double size) = 0;
 };
 
 /************
