@@ -14,7 +14,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_cfg);
 
-bool simgrid::mc::cfg_do_model_check = 0;
+bool simgrid::mc::cfg_do_model_check = false;
 
 static void _mc_cfg_cb_check(const char* spec, bool more_check = true)
 {

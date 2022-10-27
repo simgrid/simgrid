@@ -21,7 +21,7 @@ int main(int argc, char** argv)
   xbt_assert(argc >= 2, "Missing arguments");
 
   // Currently, we need this before sg_config_init:
-  simgrid::mc::cfg_do_model_check = 1;
+  simgrid::mc::cfg_do_model_check = true;
 
   // The initialization function can touch argv.
   // We make a copy of argv before modifying it in order to pass the original value to the model-checked application:
