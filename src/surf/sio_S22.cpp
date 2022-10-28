@@ -153,7 +153,7 @@ void HostS22Model::update_actions_state(double /*now*/, double delta)
 }
 
 S22Action::S22Action(Model* model, s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk, double size)
-    : DiskAction(model, 1.0, false)
+    : DiskAction(model, 1, false)
     , src_host_(src_host)
     , src_disk_(src_disk)
     , dst_host_(dst_host)
@@ -183,7 +183,7 @@ S22Action::S22Action(Model* model, s4u::Host* src_host, DiskImpl* src_disk, s4u:
     link_nb = affected_links.size();
   }
 
-  XBT_DEBUG("Creating a stream io (%p) with %zu hosts and %zu unique links.", this, disk_nb, link_nb);
+  XBT_DEBUG("Creating a stream io (%p) with %zu disk(s) and %zu unique link(s).", this, disk_nb, link_nb);
   latency_ = latency;
 
   set_variable(model->get_maxmin_system()->variable_new(this, 1.0, -1.0, disk_nb + link_nb));
@@ -214,7 +214,7 @@ S22Action::S22Action(Model* model, s4u::Host* src_host, DiskImpl* src_disk, s4u:
   update_bound();
 }
 
-S22Action* HostS22Model::io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk,
+DiskAction* HostS22Model::io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk,
                                    double size)
 {
   return new S22Action(this, src_host, src_disk, dst_host, dst_disk, size);
@@ -248,7 +248,19 @@ StandardLinkImpl* NetworkS22Model::create_wifi_link(const std::string& name, con
  ************/
 DiskAction* DiskS22::io_start(sg_size_t size, s4u::Io::OpType type)
 {
-  return static_cast<S22Action*>(io_start(size, type));
+  DiskAction* res;
+  switch (type) {
+    case s4u::Io::OpType::READ:
+      res = static_cast<DiskS22Model*>(get_model())->hostModel_->io_stream(get_host(), this, get_host(), nullptr, size);
+    break;
+    case s4u::Io::OpType::WRITE:
+      res = static_cast<DiskS22Model*>(get_model())->hostModel_->io_stream(get_host(), nullptr, get_host(), this, size);
+    break;
+    default:
+      THROW_UNIMPLEMENTED;
+  }
+
+   return res;
 }
 
 void DiskS22::apply_event(kernel::profile::Event* triggered, double value)
@@ -322,6 +334,7 @@ void LinkS22::set_latency(double value)
 /**********
  * Action *
  **********/
+
 double S22Action::calculate_io_read_bound() const
 {
   double io_read_bound = std::numeric_limits<double>::max();
@@ -375,12 +388,8 @@ void S22Action::update_bound() const
   XBT_DEBUG("action (%p) : bound = %g", this, bound);
 
   /* latency has been paid (or no latency), we can set the appropriate bound for network limit */
-  if ((bound < std::numeric_limits<double>::max()) && (latency_ <= 0.0)) {
-    if (rate_ < 0)
-      get_model()->get_maxmin_system()->update_variable_bound(get_variable(), bound);
-    else
-      get_model()->get_maxmin_system()->update_variable_bound(get_variable(), std::min(rate_, bound));
-  }
-}
+  if ((bound < std::numeric_limits<double>::max()) && (latency_ <= 0.0))
+    get_model()->get_maxmin_system()->update_variable_bound(get_variable(), bound);
+ }
 
 } // namespace simgrid::kernel::resource
