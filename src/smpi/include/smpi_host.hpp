@@ -35,9 +35,9 @@ public:
 
   explicit Host(s4u::Host* ptr);
 
-  double orecv(size_t size, s4u::Host* src, s4u::Host* dst);
-  double osend(size_t size, s4u::Host* src, s4u::Host* dst);
-  double oisend(size_t size, s4u::Host* src, s4u::Host* dst);
+  double orecv(size_t size, s4u::Host* src, s4u::Host* dst) const;
+  double osend(size_t size, s4u::Host* src, s4u::Host* dst) const;
+  double oisend(size_t size, s4u::Host* src, s4u::Host* dst) const;
 };
 
 } // namespace simgrid::smpi

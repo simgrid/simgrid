@@ -33,7 +33,7 @@ namespace simgrid::smpi {
 
 xbt::Extension<s4u::Host, smpi::Host> Host::EXTENSION_ID;
 
-double Host::orecv(size_t size, s4u::Host* src, s4u::Host* dst)
+double Host::orecv(size_t size, s4u::Host* src, s4u::Host* dst) const
 {
   /* return user's callback if available */
   if (auto it = cost_cbs.find(SmpiOperation::RECV); it != cost_cbs.end())
@@ -42,7 +42,7 @@ double Host::orecv(size_t size, s4u::Host* src, s4u::Host* dst)
   return orecv_(size);
 }
 
-double Host::osend(size_t size, s4u::Host* src, s4u::Host* dst)
+double Host::osend(size_t size, s4u::Host* src, s4u::Host* dst) const
 {
   /* return user's callback if available */
   if (auto it = cost_cbs.find(SmpiOperation::SEND); it != cost_cbs.end())
@@ -51,7 +51,7 @@ double Host::osend(size_t size, s4u::Host* src, s4u::Host* dst)
   return osend_(size);
 }
 
-double Host::oisend(size_t size, s4u::Host* src, s4u::Host* dst)
+double Host::oisend(size_t size, s4u::Host* src, s4u::Host* dst) const
 {
   /* return user's callback if available */
   if (auto it = cost_cbs.find(SmpiOperation::ISEND); it != cost_cbs.end())
