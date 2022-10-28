@@ -51,7 +51,8 @@ IoPtr Io::set_source(Host* from, Disk* from_disk)
   kernel::actor::simcall_answered(
       [this, from, from_disk] {
         boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_host(from);
-        boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_disk(from_disk->get_impl());
+        if (from_disk != nullptr)
+          boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_disk(from_disk->get_impl());
       });
   // Setting 'source' may allow to start the activity, let's try
   if (state_ == State::STARTING && remains_ <= 0)
@@ -69,7 +70,8 @@ IoPtr Io::set_destination(Host* to, Disk* to_disk)
   kernel::actor::simcall_answered(
       [this, to, to_disk] {
         boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_dst_host(to);
-        boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_dst_disk(to_disk->get_impl());
+        if (to_disk != nullptr)
+          boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_dst_disk(to_disk->get_impl());
       });
   // Setting 'destination' may allow to start the activity, let's try
   if (state_ == State::STARTING && remains_ <= 0)
