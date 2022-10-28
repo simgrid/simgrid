@@ -15,6 +15,7 @@
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/mc/mc_replay.hpp"
+#include "src/surf/HostImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_io, kernel, "Kernel io-related synchronization");
 
@@ -69,13 +70,40 @@ IoImpl& IoImpl::set_disk(resource::DiskImpl* disk)
   return *this;
 }
 
+IoImpl& IoImpl::set_host(s4u::Host* host)
+{
+  host_ = host;
+  return *this;
+}
+
+IoImpl& IoImpl::set_dst_disk(resource::DiskImpl* disk)
+{
+  dst_disk_ = disk;
+  return *this;
+}
+
+IoImpl& IoImpl::set_dst_host(s4u::Host* host)
+{
+  dst_host_ = host;
+  return *this;
+}
+
 IoImpl* IoImpl::start()
 {
   set_state(State::RUNNING);
-  surf_action_ = disk_->io_start(size_, type_);
-  surf_action_->set_sharing_penalty(sharing_penalty_);
+  if (dst_host_ == nullptr) {
+    XBT_DEBUG("Starting regular I/O");
+    surf_action_ = disk_->io_start(size_, type_);
+    surf_action_->set_sharing_penalty(sharing_penalty_);
+  } else {
+    XBT_DEBUG("Starting streaming I/O");
+    auto host_model = dst_host_->get_netpoint()->get_englobing_zone()->get_host_model();
+    surf_action_    = host_model->io_stream(host_, disk_, dst_host_, dst_disk_, size_);
+  }
+
   surf_action_->set_activity(this);
   set_start_time(surf_action_->get_start_time());
+#include "src/surf/HostImpl.hpp"
 
   XBT_DEBUG("Create IO synchro %p %s", this, get_cname());
 
