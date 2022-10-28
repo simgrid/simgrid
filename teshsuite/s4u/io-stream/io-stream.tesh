@@ -3,3 +3,14 @@
 $ ${bindir:=.}/io-stream  --cfg=host/model:sio_S22 "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Configuration change: Set 'host/model' to 'sio_S22'
 > [  0.000000] [0:maestro@] Switching to the S22 model to handle streaming I/Os.
+> [  0.000000] [1:streamer@bob] [Bob -> Alice] Store and Forward (1 block)
+> [  4.000000] [1:streamer@bob]     Read  : 4.000000 seconds
+> [  6.000050] [1:streamer@bob]     Send  : 2.000050 seconds
+> [  7.000050] [1:streamer@bob]     Write : 1.000000 seconds
+> [  7.000050] [1:streamer@bob]     Total : 7.000050 seconds
+> [  7.000050] [1:streamer@bob] [Bob -> Alice] Store and Forward (100 blocks)
+> [ 11.000050] [1:streamer@bob]     Total : 4.000000 seconds
+> [ 11.000050] [1:streamer@bob] [Bob -> Alice] Streaming (Read bottleneck)
+> [ 15.000100] [1:streamer@bob]     Total : 4.000050 seconds
+> [ 15.000100] [1:streamer@bob] [Bob -> Alice] Streaming (Write bottleneck)
+> [ 23.000150] [1:streamer@bob]     Total : 8.000050 seconds
