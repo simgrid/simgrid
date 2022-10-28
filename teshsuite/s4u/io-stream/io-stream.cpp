@@ -59,6 +59,16 @@ static void streamer(size_t size)
   clock = sg4::Engine::get_clock();
   sg4::Io::streamto(alice, alice_disk, bob, bob_disk, size);
   XBT_INFO("    Total : %.6f seconds", sg4::Engine::get_clock() - clock);
+
+  XBT_INFO("Start two 10-second background traffic between Bob and Alice");
+  sg4::CommPtr bt1 = sg4::Comm::sendto_async(bob, alice, 2e7);
+  sg4::CommPtr bt2 = sg4::Comm::sendto_async(bob, alice, 2e7);
+  XBT_INFO("[Bob -> Alice] Streaming (Transfer bottleneck)");
+  clock = sg4::Engine::get_clock();
+  sg4::Io::streamto(bob, bob_disk, alice, alice_disk, size);
+  XBT_INFO("    Total : %.6f seconds", sg4::Engine::get_clock() - clock);
+  bt1->wait();
+  bt2->wait();
 }
 
 int main(int argc, char** argv)
