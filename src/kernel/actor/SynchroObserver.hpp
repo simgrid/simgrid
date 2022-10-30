@@ -58,7 +58,7 @@ public:
   double get_timeout() const { return timeout_; }
 };
 
-/* This observer is ued for BARRIER_LOCK and BARRIER_WAIT. WAIT is returning and needs the acquisition */
+/* This observer is used for BARRIER_LOCK and BARRIER_WAIT. WAIT is returning and needs the acquisition */
 class BarrierObserver final : public ResultingSimcall<bool> {
   mc::Transition::Type type_;
   activity::BarrierImpl* const barrier_                = nullptr;

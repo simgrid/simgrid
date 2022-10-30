@@ -31,8 +31,10 @@ void RecordTrace::replay() const
     kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(transition->aid_);
     xbt_assert(actor != nullptr, "Unexpected actor (id:%ld).", transition->aid_);
     const kernel::actor::Simcall* simcall = &(actor->simcall_);
-    xbt_assert(simcall->call_ != kernel::actor::Simcall::Type::NONE, "No simcall for process %ld.", transition->aid_);
-    xbt_assert(simgrid::mc::request_is_visible(simcall) && simgrid::mc::actor_is_enabled(actor), "Unexpected simcall.");
+    xbt_assert(simgrid::mc::request_is_visible(simcall), "Simcall %s of actor %s is not visible.", simcall->get_cname(),
+               actor->get_cname());
+    xbt_assert(simgrid::mc::actor_is_enabled(actor), "Actor %s (simcall %s) is not enabled.", actor->get_cname(),
+               simcall->get_cname());
 
     // Execute the request:
     simcall->issuer_->simcall_handle(transition->times_considered_);
@@ -59,7 +61,7 @@ simgrid::mc::RecordTrace::RecordTrace(const char* data)
   const char* current = data;
   while (*current) {
     long aid;
-    int times_considered;
+    int times_considered = 0;
 
     if (int count = sscanf(current, "%ld/%d", &aid, &times_considered); count != 2 && count != 1)
       throw std::invalid_argument("Could not parse record path");

@@ -75,10 +75,9 @@ bool request_is_visible(const kernel::actor::Simcall* req)
 #if SIMGRID_HAVE_MC
   xbt_assert(mc_model_checker == nullptr, "This should be called from the client side");
 #endif
-  if (req->observer_ != nullptr)
-    return req->observer_->is_visible();
-  else
+  if (req->observer_ == nullptr)
     return false;
+  return req->observer_->is_visible();
 }
 
 } // namespace simgrid::mc
