@@ -26,6 +26,8 @@ void execute_actors()
 {
   auto* engine = kernel::EngineImpl::get_instance();
 
+  XBT_DEBUG("execute_actors: %lu of %zu to run (%s)", engine->get_actor_to_run_count(), engine->get_actor_count(),
+            (MC_record_replay_is_active() ? "replay active" : "no replay"));
   while (engine->has_actors_to_run()) {
     engine->run_all_actors();
     for (auto const& actor : engine->get_actors_that_ran()) {
@@ -47,7 +49,6 @@ void execute_actors()
  * transition for ever.
  * This is controlled in the is_enabled() method of the corresponding observers.
  */
-// Called from both MCer and MCed:
 bool actor_is_enabled(kernel::actor::ActorImpl* actor)
 {
 #if SIMGRID_HAVE_MC

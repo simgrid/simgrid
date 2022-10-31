@@ -95,7 +95,7 @@ void DFSExplorer::run()
     State* state = stack_.back().get();
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth=%zu (state:%ld; %zu interleaves)", stack_.size(), state->get_num(),
+    XBT_DEBUG("Exploration depth=%zu (state:#%ld; %zu interleaves todo)", stack_.size(), state->get_num(),
               state->count_todo());
 
     mc_model_checker->inc_visited_states();

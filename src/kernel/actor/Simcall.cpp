@@ -20,7 +20,8 @@ namespace simgrid::kernel::actor {
  */
 void ActorImpl::simcall_handle(int times_considered)
 {
-  XBT_DEBUG("Handling simcall %p: %s", &simcall_, simcall_.get_cname());
+  XBT_DEBUG("Handling simcall %p: %s(%ld) %s", &simcall_, simcall_.issuer_->get_cname(), simcall_.issuer_->get_pid(),
+            (simcall_.observer_ != nullptr ? simcall_.observer_->to_string().c_str() : simcall_.get_cname()));
   if (simcall_.observer_ != nullptr)
     simcall_.observer_->prepare(times_considered);
   if (wannadie())

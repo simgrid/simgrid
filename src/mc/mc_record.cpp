@@ -25,14 +25,14 @@ void RecordTrace::replay() const
   simgrid::mc::execute_actors();
 
   for (const simgrid::mc::Transition* transition : transitions_) {
-    XBT_DEBUG("Executing %ld$%i", transition->aid_, transition->times_considered_);
-
-    // Choose a request:
     kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(transition->aid_);
     xbt_assert(actor != nullptr, "Unexpected actor (id:%ld).", transition->aid_);
     const kernel::actor::Simcall* simcall = &(actor->simcall_);
     xbt_assert(simgrid::mc::request_is_visible(simcall), "Simcall %s of actor %s is not visible.", simcall->get_cname(),
                actor->get_cname());
+
+    XBT_DEBUG("Executing %ld$%i: %s", transition->aid_, transition->times_considered_,
+              simcall->observer_->to_string().c_str());
     if (not mc::actor_is_enabled(actor))
       simgrid::kernel::EngineImpl::get_instance()->display_all_actor_status();
 

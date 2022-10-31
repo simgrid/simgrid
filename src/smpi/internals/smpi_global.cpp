@@ -13,6 +13,7 @@
 #include "smpi_host.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
+#include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "xbt/config.hpp"
 #include "xbt/file.hpp"
@@ -630,7 +631,7 @@ void smpi_mpi_init() {
   smpi_init_fortran_types();
   if(_smpi_init_sleep > 0)
     simgrid::s4u::this_actor::sleep_for(_smpi_init_sleep);
-  if (not MC_is_active()) {
+  if (not MC_is_active() && not MC_record_replay_is_active()) {
     smpi_deployment_startup_barrier(smpi_process()->get_instance_id());
   }
 }
