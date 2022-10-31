@@ -52,8 +52,11 @@ public:
   { /* Nothing to do by default */
   }
 
-  /** Serialize to the given string buffer */
+  /** Serialize to the given string buffer, to send over the network */
   virtual void serialize(std::stringstream& stream) const = 0;
+
+  /** Used to debug (to display the simcall on which each actor is blocked when displaying it */
+  virtual std::string to_string() const = 0;
 
   /** Whether the MC should see this simcall.
    * Simcall that don't have an observer (ie, most of them) are not visible from the MC, but if there is an observer,
@@ -84,6 +87,7 @@ public:
     xbt_assert(min < max);
   }
   void serialize(std::stringstream& stream) const override;
+  std::string to_string() const override;
   int get_max_consider() const override;
   void prepare(int times_considered) override;
   int get_value() const { return next_value_; }
@@ -101,6 +105,7 @@ public:
   {
   }
   void serialize(std::stringstream& stream) const override;
+  std::string to_string() const override;
   bool is_enabled() override;
   activity::ConditionVariableImpl* get_cond() const { return cond_; }
   activity::MutexImpl* get_mutex() const { return mutex_; }
@@ -114,6 +119,7 @@ class ActorJoinSimcall final : public SimcallObserver {
 public:
   ActorJoinSimcall(ActorImpl* actor, ActorImpl* other, double timeout = -1.0);
   void serialize(std::stringstream& stream) const override;
+  std::string to_string() const override;
   bool is_enabled() override;
 
   s4u::ActorPtr get_other_actor() const { return other_; }

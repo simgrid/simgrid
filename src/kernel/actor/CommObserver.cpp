@@ -51,6 +51,25 @@ static void serialize_activity_test(const activity::ActivityImpl* act, std::stri
     stream << (short)mc::Transition::Type::UNKNOWN;
   }
 }
+template <typename A> static std::string ptr_to_id(A* ptr)
+{
+  static std::unordered_map<A*, std::string> map;
+  if (map.find(ptr) == map.end())
+    map.insert(std::make_pair(ptr, std::to_string(map.size() + 1)));
+  return map[ptr];
+}
+static std::string to_string_activity_test(const activity::ActivityImpl* act)
+{
+  if (auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
+    return std::string("CommTest(comm_id:") + ptr_to_id<activity::CommImpl const>(comm) +
+           " src:" + std::to_string(comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1) +
+           " dst:" + std::to_string(comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1) +
+           " mbox:" + std::to_string(comm->get_mailbox_id()) + " srcbuf:" + ptr_to_id<unsigned char>(comm->src_buff_) +
+           " dstbuf:" + ptr_to_id<unsigned char>(comm->dst_buff_) + " bufsize:" + std::to_string(comm->src_buff_size_);
+  } else {
+    return "TestUnknownType()";
+  }
+}
 void ActivityTestanySimcall::serialize(std::stringstream& stream) const
 {
   stream << (short)mc::Transition::Type::TESTANY << ' ' << activities_.size() << ' ';
@@ -59,9 +78,22 @@ void ActivityTestanySimcall::serialize(std::stringstream& stream) const
     stream << ' ';
   }
 }
+std::string ActivityTestanySimcall::to_string() const
+{
+  std::stringstream buffer("TestAny(");
+  for (auto const& act : activities_) {
+    buffer << to_string_activity_test(act);
+  }
+  return buffer.str();
+}
+
 void ActivityTestSimcall::serialize(std::stringstream& stream) const
 {
   serialize_activity_test(activity_, stream);
+}
+std::string ActivityTestSimcall::to_string() const
+{
+  return to_string_activity_test(activity_);
 }
 static void serialize_activity_wait(const activity::ActivityImpl* act, bool timeout, std::stringstream& stream)
 {
@@ -77,6 +109,19 @@ static void serialize_activity_wait(const activity::ActivityImpl* act, bool time
     stream << (short)mc::Transition::Type::UNKNOWN;
   }
 }
+static std::string to_string_activity_wait(const activity::ActivityImpl* act)
+{
+  if (auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
+    return std::string("CommWait(comm_id:") + ptr_to_id<activity::CommImpl const>(comm) +
+           " src:" + std::to_string(comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1) +
+           " dst:" + std::to_string(comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1) +
+           " mbox:" + std::to_string(comm->get_mailbox_id()) + " srcbuf:" + ptr_to_id<unsigned char>(comm->src_buff_) +
+           " dstbuf:" + ptr_to_id<unsigned char>(comm->dst_buff_) + " bufsize:" + std::to_string(comm->src_buff_size_) +
+           ")";
+  } else {
+    return "WaitUnknownType()";
+  }
+}
 
 void ActivityWaitSimcall::serialize(std::stringstream& stream) const
 {
@@ -89,6 +134,18 @@ void ActivityWaitanySimcall::serialize(std::stringstream& stream) const
     serialize_activity_wait(act, timeout_ > 0, stream);
     stream << ' ';
   }
+}
+std::string ActivityWaitSimcall::to_string() const
+{
+  return to_string_activity_wait(activity_);
+}
+std::string ActivityWaitanySimcall::to_string() const
+{
+  std::stringstream buffer("WaitAny(");
+  for (auto const& act : activities_) {
+    buffer << to_string_activity_wait(act);
+  }
+  return buffer.str();
 }
 ActivityWaitanySimcall::ActivityWaitanySimcall(ActorImpl* actor, const std::vector<activity::ActivityImpl*>& activities,
                                                double timeout)
@@ -149,12 +206,24 @@ void CommIsendSimcall::serialize(std::stringstream& stream) const
   XBT_DEBUG("SendObserver comm:%p mbox:%u buff:%p size:%zu tag:%d", comm_, mbox_->get_id(), src_buff_, src_buff_size_,
             tag_);
 }
+std::string CommIsendSimcall::to_string() const
+{
+  return std::string("CommAsyncSend(comm_id: ") + std::to_string((uintptr_t)comm_) +
+         " mbox:" + std::to_string(mbox_->get_id()) + " srcbuf:" + ptr_to_id<unsigned char>(src_buff_) +
+         " bufsize:" + std::to_string(src_buff_size_) + " tag: " + std::to_string(tag_) + ")";
+}
 
 void CommIrecvSimcall::serialize(std::stringstream& stream) const
 {
   stream << (short)mc::Transition::Type::COMM_ASYNC_RECV << ' ';
   stream << (uintptr_t)comm_ << ' ' << mbox_->get_id() << ' ' << (uintptr_t)dst_buff_ << ' ' << tag_;
   XBT_DEBUG("RecvObserver comm:%p mbox:%u buff:%p tag:%d", comm_, mbox_->get_id(), dst_buff_, tag_);
+}
+std::string CommIrecvSimcall::to_string() const
+{
+  return std::string("CommAsyncRecv(comm_id: ") + ptr_to_id<activity::CommImpl const>(comm_) +
+         " mbox:" + std::to_string(mbox_->get_id()) + " dstbuf:" + ptr_to_id<unsigned char>(dst_buff_) +
+         " tag: " + std::to_string(tag_) + ")";
 }
 
 } // namespace simgrid::kernel::actor

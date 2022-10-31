@@ -21,6 +21,10 @@ void RandomSimcall::serialize(std::stringstream& stream) const
   stream << (short)mc::Transition::Type::RANDOM << ' ';
   stream << min_ << ' ' << max_;
 }
+std::string RandomSimcall::to_string() const
+{
+  return std::string("Random(min:") + std::to_string(min_) + " max:" + std::to_string(max_) + ")";
+}
 
 void RandomSimcall::prepare(int times_considered)
 {
@@ -45,6 +49,10 @@ void ConditionWaitSimcall::serialize(std::stringstream& stream) const
 {
   THROW_UNIMPLEMENTED;
 }
+std::string ConditionWaitSimcall::to_string() const
+{
+  THROW_UNIMPLEMENTED;
+}
 
 ActorJoinSimcall::ActorJoinSimcall(ActorImpl* actor, ActorImpl* other, double timeout)
     : SimcallObserver(actor), other_(s4u::ActorPtr(other->get_iface())), timeout_(timeout)
@@ -58,5 +66,9 @@ void ActorJoinSimcall::serialize(std::stringstream& stream) const
 {
   stream << (short)mc::Transition::Type::ACTOR_JOIN << ' ';
   stream << other_->get_pid() << ' ' << (timeout_ > 0);
+}
+std::string ActorJoinSimcall::to_string() const
+{
+  return std::string("ActorJoin(pid:") + std::to_string(other_->get_pid()) + ")";
 }
 } // namespace simgrid::kernel::actor

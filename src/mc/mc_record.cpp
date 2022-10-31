@@ -33,6 +33,9 @@ void RecordTrace::replay() const
     const kernel::actor::Simcall* simcall = &(actor->simcall_);
     xbt_assert(simgrid::mc::request_is_visible(simcall), "Simcall %s of actor %s is not visible.", simcall->get_cname(),
                actor->get_cname());
+    if (not mc::actor_is_enabled(actor))
+      simgrid::kernel::EngineImpl::get_instance()->display_all_actor_status();
+
     xbt_assert(simgrid::mc::actor_is_enabled(actor), "Actor %s (simcall %s) is not enabled.", actor->get_cname(),
                simcall->get_cname());
 

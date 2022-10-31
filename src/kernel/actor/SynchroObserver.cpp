@@ -28,6 +28,11 @@ void MutexObserver::serialize(std::stringstream& stream) const
   const auto* owner = get_mutex()->get_owner();
   stream << (short)type_ << ' ' << get_mutex()->get_id() << ' ' << (owner != nullptr ? owner->get_pid() : -1);
 }
+std::string MutexObserver::to_string() const
+{
+  return std::string(mc::Transition::to_c_str(type_)) + "(mutex_id: " + std::to_string(get_mutex()->get_id()) +
+         "owner:" + std::to_string(get_mutex()->get_owner()->get_pid()) + ")";
+}
 
 bool MutexObserver::is_enabled()
 {
@@ -45,6 +50,10 @@ void SemaphoreObserver::serialize(std::stringstream& stream) const
 {
   stream << (short)type_ << ' ' << get_sem()->get_id() << ' ' << false /* Granted is ignored for LOCK/UNLOCK */;
 }
+std::string SemaphoreObserver::to_string() const
+{
+  return std::string(mc::Transition::to_c_str(type_)) + "(sem_id: " + std::to_string(get_sem()->get_id()) + ")";
+}
 
 SemaphoreAcquisitionObserver::SemaphoreAcquisitionObserver(ActorImpl* actor, mc::Transition::Type type,
                                                            activity::SemAcquisitionImpl* acqui, double timeout)
@@ -58,6 +67,12 @@ bool SemaphoreAcquisitionObserver::is_enabled()
 void SemaphoreAcquisitionObserver::serialize(std::stringstream& stream) const
 {
   stream << (short)type_ << ' ' << acquisition_->semaphore_->get_id() << ' ' << acquisition_->granted_;
+}
+std::string SemaphoreAcquisitionObserver::to_string() const
+{
+  return std::string(mc::Transition::to_c_str(type_)) +
+         "(sem_id: " + std::to_string(acquisition_->semaphore_->get_id()) + ' ' +
+         (acquisition_->granted_ ? "granted)" : "not granted)");
 }
 
 BarrierObserver::BarrierObserver(ActorImpl* actor, mc::Transition::Type type, activity::BarrierImpl* bar)
@@ -75,6 +90,12 @@ void BarrierObserver::serialize(std::stringstream& stream) const
 {
   xbt_assert(barrier_ != nullptr || (acquisition_ != nullptr && acquisition_->barrier_ != nullptr));
   stream << (short)type_ << ' ' << (barrier_ != nullptr ? barrier_->get_id() : acquisition_->barrier_->get_id());
+}
+std::string BarrierObserver::to_string() const
+{
+  return std::string(mc::Transition::to_c_str(type_)) +
+         "(barrier_id: " + std::to_string(barrier_ != nullptr ? barrier_->get_id() : acquisition_->barrier_->get_id()) +
+         ")";
 }
 bool BarrierObserver::is_enabled()
 {

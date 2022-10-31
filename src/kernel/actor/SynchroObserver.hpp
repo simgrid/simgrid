@@ -24,6 +24,7 @@ public:
   MutexObserver(ActorImpl* actor, mc::Transition::Type type, activity::MutexImpl* mutex);
 
   void serialize(std::stringstream& stream) const override;
+  std::string to_string() const override;
   bool is_enabled() override;
 
   activity::MutexImpl* get_mutex() const { return mutex_; }
@@ -38,6 +39,7 @@ public:
   SemaphoreObserver(ActorImpl* actor, mc::Transition::Type type, activity::SemaphoreImpl* sem);
 
   void serialize(std::stringstream& stream) const override;
+  std::string to_string() const override;
 
   activity::SemaphoreImpl* get_sem() const { return sem_; }
 };
@@ -53,6 +55,7 @@ public:
                                double timeout = -1.0);
 
   void serialize(std::stringstream& stream) const override;
+  std::string to_string() const override;
   bool is_enabled() override;
 
   double get_timeout() const { return timeout_; }
@@ -71,6 +74,7 @@ public:
                   double timeout = -1.0);
 
   void serialize(std::stringstream& stream) const override;
+  std::string to_string() const override;
   bool is_enabled() override;
 
   double get_timeout() const { return timeout_; }
