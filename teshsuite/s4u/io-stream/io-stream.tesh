@@ -14,3 +14,12 @@ $ ${bindir:=.}/io-stream  --cfg=host/model:sio_S22 "--log=root.fmt:[%10.6r]%e[%i
 > [ 15.000100] [1:streamer@bob]     Total : 4.000050 seconds
 > [ 15.000100] [1:streamer@bob] [Bob -> Alice] Streaming (Write bottleneck)
 > [ 23.000150] [1:streamer@bob]     Total : 8.000050 seconds
+> [ 23.000150] [1:streamer@bob] Start two 10-second background traffic between Bob and Alice
+> [ 23.000150] [1:streamer@bob] [Bob -> Alice] Streaming (Transfer bottleneck)
+> [ 29.000200] [1:streamer@bob]     Total : 6.000050 seconds
+> [ 45.000200] [1:streamer@bob] [Bob -> Alice] Streaming "from disk to memory" (no write)
+> [ 49.000250] [1:streamer@bob]     Total : 4.000050 seconds
+> [ 49.000250] [1:streamer@bob] [Bob -> Alice] Streaming "from memory to disk" (no read)
+> [ 51.000300] [1:streamer@bob]     Total : 2.000050 seconds
+> [ 51.000300] [1:streamer@bob] [Bob -> Bob] Disk to disk (no transfer)
+> [ 59.000300] [1:streamer@bob]     Total : 8.000000 seconds

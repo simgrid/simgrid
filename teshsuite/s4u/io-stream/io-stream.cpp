@@ -49,7 +49,6 @@ static void streamer(size_t size)
   write->wait();
   XBT_INFO("    Total : %.6f seconds", sg4::Engine::get_clock() - clock);
 
-
   XBT_INFO("[Bob -> Alice] Streaming (Read bottleneck)");
   clock = sg4::Engine::get_clock();
   sg4::Io::streamto(bob, bob_disk, alice, alice_disk, size);
@@ -69,6 +68,22 @@ static void streamer(size_t size)
   XBT_INFO("    Total : %.6f seconds", sg4::Engine::get_clock() - clock);
   bt1->wait();
   bt2->wait();
+
+  XBT_INFO("[Bob -> Alice] Streaming \"from disk to memory\" (no write)");
+  clock = sg4::Engine::get_clock();
+  sg4::Io::streamto(bob, bob_disk, alice, nullptr, size);
+  XBT_INFO("    Total : %.6f seconds", sg4::Engine::get_clock() - clock);
+
+  XBT_INFO("[Bob -> Alice] Streaming \"from memory to disk\" (no read)");
+  clock = sg4::Engine::get_clock();
+  sg4::Io::streamto(bob, nullptr, alice, alice_disk, size);
+  XBT_INFO("    Total : %.6f seconds", sg4::Engine::get_clock() - clock);
+
+  XBT_INFO("[Bob -> Bob] Disk to disk (no transfer)");
+  clock = sg4::Engine::get_clock();
+  sg4::Io::streamto(bob, bob_disk, bob, bob_disk, size);
+  XBT_INFO("    Total : %.6f seconds", sg4::Engine::get_clock() - clock);
+
 }
 
 int main(int argc, char** argv)
