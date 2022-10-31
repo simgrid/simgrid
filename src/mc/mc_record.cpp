@@ -23,9 +23,10 @@ namespace simgrid::mc {
 void RecordTrace::replay() const
 {
   simgrid::mc::execute_actors();
+  auto* engine = kernel::EngineImpl::get_instance();
 
   for (const simgrid::mc::Transition* transition : transitions_) {
-    kernel::actor::ActorImpl* actor = kernel::EngineImpl::get_instance()->get_actor_by_pid(transition->aid_);
+    kernel::actor::ActorImpl* actor = engine->get_actor_by_pid(transition->aid_);
     xbt_assert(actor != nullptr, "Unexpected actor (id:%ld).", transition->aid_);
     const kernel::actor::Simcall* simcall = &(actor->simcall_);
     xbt_assert(simgrid::mc::request_is_visible(simcall), "Simcall %s of actor %s is not visible.", simcall->get_cname(),
@@ -42,6 +43,17 @@ void RecordTrace::replay() const
     // Execute the request:
     simcall->issuer_->simcall_handle(transition->times_considered_);
     simgrid::mc::execute_actors();
+  }
+
+  const auto& actor_list = engine->get_actor_list();
+  if (actor_list.empty()) {
+    XBT_INFO("The replay of the trace is complete. The application is terminating.");
+  } else if (std::none_of(begin(actor_list), end(actor_list),
+                          [](const auto& kv) { return mc::actor_is_enabled(kv.second); })) {
+    XBT_INFO("The replay of the trace is complete. DEADLOCK detected.");
+    engine->display_all_actor_status();
+  } else {
+    XBT_INFO("The replay of the trace is complete. The application could run further.");
   }
 }
 
