@@ -107,6 +107,7 @@ public:
 /**********
  * Action *
  **********/
+
 class S22Action : public DiskAction {
   const s4u::Host* src_host_;
   const DiskImpl* src_disk_;

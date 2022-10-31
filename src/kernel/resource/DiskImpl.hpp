@@ -32,9 +32,7 @@ class DiskAction;
  *********/
 class DiskModel : public Model {
 public:
-  explicit DiskModel(const std::string& name);
-  DiskModel(const DiskModel&) = delete;
-  DiskModel& operator=(const DiskModel&) = delete;
+  using Model::Model;
 
   virtual DiskImpl* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth) = 0;
 };
