@@ -26,10 +26,10 @@ class XBT_PRIVATE DiskS19Action;
 
 class DiskS19Model : public DiskModel {
 public:
-  using DiskModel::DiskModel;
+  explicit DiskS19Model(const std::string& name);
+  DiskS19Model(const DiskS19Model&) = delete;
+  DiskS19Model& operator=(const DiskS19Model&) = delete;
   DiskImpl* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth) override;
-
-  DiskAction* io_start(const DiskImpl* disk, sg_size_t size, s4u::Io::OpType type) override;
 
   void update_actions_state(double now, double delta) override;
 };
@@ -45,6 +45,7 @@ public:
   void set_write_bandwidth(double value) override;
   void set_readwrite_bandwidth(double value) override;
   void apply_event(kernel::profile::Event* triggered, double value) override;
+  DiskAction* io_start(sg_size_t size, s4u::Io::OpType type) override;
 };
 
 /**********
@@ -54,7 +55,6 @@ public:
 class DiskS19Action : public DiskAction {
 public:
   DiskS19Action(Model* model, double cost, bool failed);
-  void update_remains_lazy(double now) override;
 };
 
 } // namespace simgrid::kernel::resource

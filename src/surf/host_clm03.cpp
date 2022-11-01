@@ -22,6 +22,7 @@ void surf_host_model_init_current_default()
   engine->add_model(host_model);
   engine->get_netzone_root()->set_host_model(host_model);
   surf_cpu_model_init_Cas01();
+  surf_disk_model_init_S19();
   surf_network_model_init_LegrandVelho();
 }
 

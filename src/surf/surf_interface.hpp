@@ -75,6 +75,9 @@ static inline int double_equals(double value1, double value2, double precision)
  */
 XBT_PUBLIC void surf_cpu_model_init_Cas01();
 
+XBT_ATTRIB_DEPRECATED_v337 ("Please use surf_disk_model_init_S19()") XBT_PUBLIC void surf_disk_model_init_default();
+XBT_PUBLIC void surf_disk_model_init_S19();
+
 /** @ingroup SURF_models
  *  @brief Same as network model 'LagrangeVelho', only with different correction factors.
  *
@@ -175,8 +178,7 @@ XBT_PUBLIC void surf_host_model_init_current_default();
  *  equal share of the model to each action.
  */
 XBT_PUBLIC void surf_host_model_init_ptask_L07();
-
-XBT_PUBLIC void surf_disk_model_init_default();
+XBT_PUBLIC void surf_host_model_init_sio_S22();
 
 /* --------------------
  *  Model Descriptions

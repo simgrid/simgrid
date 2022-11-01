@@ -12,7 +12,10 @@
 namespace simgrid::kernel::activity {
 
 class XBT_PUBLIC IoImpl : public ActivityImpl_T<IoImpl> {
+  s4u::Host* host_                    = nullptr;
   resource::DiskImpl* disk_           = nullptr;
+  s4u::Host* dst_host_                = nullptr;
+  resource::DiskImpl* dst_disk_       = nullptr;
   double sharing_penalty_             = 1.0;
   sg_size_t size_                     = 0;
   s4u::Io::OpType type_               = s4u::Io::OpType::READ;
@@ -27,6 +30,11 @@ public:
   IoImpl& set_size(sg_size_t size);
   IoImpl& set_type(s4u::Io::OpType type);
   IoImpl& set_disk(resource::DiskImpl* disk);
+  IoImpl& set_host(s4u::Host* host);
+  s4u::Host* get_host() const { return host_; }
+  IoImpl& set_dst_disk(resource::DiskImpl* disk);
+  IoImpl& set_dst_host(s4u::Host* host);
+  s4u::Host* get_dst_host() const { return dst_host_; }
 
   IoImpl& update_sharing_penalty(double sharing_penalty);
 
