@@ -204,7 +204,9 @@ void RemoteApp::check_deadlock() const
     XBT_CINFO(mc_global, "Counter-example execution trace:");
     for (auto const& frame : model_checker_->get_exploration()->get_textual_trace())
       XBT_CINFO(mc_global, "  %s", frame.c_str());
-    XBT_CINFO(mc_global, "Path = %s", model_checker_->get_exploration()->get_record_trace().to_string().c_str());
+    XBT_INFO("You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with "
+             "--cfg=model-check/replay:'%s'",
+             model_checker_->get_exploration()->get_record_trace().to_string().c_str());
     model_checker_->get_exploration()->log_state();
     throw DeadlockError();
   }
