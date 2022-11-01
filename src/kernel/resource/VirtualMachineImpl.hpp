@@ -99,6 +99,7 @@ public:
   {
     return nullptr;
   };
+  Action* io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk, double size) override { return nullptr; }
 };
 } // namespace kernel::resource
 } // namespace simgrid

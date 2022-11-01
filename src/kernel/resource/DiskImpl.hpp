@@ -32,13 +32,9 @@ class DiskAction;
  *********/
 class DiskModel : public Model {
 public:
-  explicit DiskModel(const std::string& name);
-  DiskModel(const DiskModel&) = delete;
-  DiskModel& operator=(const DiskModel&) = delete;
+  using Model::Model;
 
   virtual DiskImpl* create_disk(const std::string& name, double read_bandwidth, double write_bandwidth) = 0;
-
-  virtual DiskAction* io_start(const DiskImpl* disk, sg_size_t size, s4u::Io::OpType type) = 0;
 };
 
 /************
@@ -111,6 +107,8 @@ public:
 
   void seal() override;
   void destroy(); // Must be called instead of the destructor
+
+  virtual DiskAction* io_start(sg_size_t size, s4u::Io::OpType type) = 0;
 };
 
 /**********
@@ -123,6 +121,7 @@ public:
 
   using Action::Action;
   void set_state(simgrid::kernel::resource::Action::State state) override;
+  void update_remains_lazy(double now) override;
 };
 
 } // namespace simgrid::kernel::resource

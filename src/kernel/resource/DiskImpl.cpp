@@ -6,31 +6,14 @@
 #include "DiskImpl.hpp"
 
 #include "simgrid/s4u/Engine.hpp"
-#include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_disk, ker_resource, "Disk resources, that fuel I/O activities");
-/***********
- * Options *
- ***********/
-static simgrid::config::Flag<std::string> cfg_disk_solver("disk/solver",
-                                                          "Set linear equations solver used by disk model", "maxmin",
-                                                          &simgrid::kernel::lmm::System::validate_solver);
-
 namespace simgrid::kernel::resource {
 
 xbt::signal<void(DiskAction const&, Action::State, Action::State)> DiskAction::on_state_change;
-
-/*********
- * Model *
- *********/
-
-DiskModel::DiskModel(const std::string& name) : Model(name)
-{
-  set_maxmin_system(lmm::System::build(cfg_disk_solver.get(), true /* selective update */));
-}
 
 /************
  * Resource *
@@ -176,5 +159,10 @@ void DiskAction::set_state(Action::State new_state)
     Action::set_state(new_state);
     on_state_change(*this, previous_state, new_state);
   }
+}
+
+void DiskAction::update_remains_lazy(double /*now*/)
+{
+  THROW_IMPOSSIBLE;
 }
 } // namespace simgrid::kernel::resource

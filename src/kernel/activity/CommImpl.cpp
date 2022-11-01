@@ -144,7 +144,7 @@ CommImpl* CommImpl::start()
     } else if ((src_actor_ != nullptr && src_actor_->is_suspended()) ||
                (dst_actor_ != nullptr && dst_actor_->is_suspended())) {
       /* If any of the actor is suspended, create the synchro but stop its execution,
-         it will be restarted when the sender actor resume */
+         it will be restarted when the sender actor resumes */
       if (src_actor_->is_suspended())
         XBT_DEBUG("The communication is suspended on startup because src (%s@%s) was suspended since it initiated the "
                   "communication",

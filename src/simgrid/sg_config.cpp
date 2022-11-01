@@ -248,7 +248,7 @@ void sg_config_init(int *argc, char **argv)
   declare_model_flag("cpu/model", "Cas01", &_sg_cfg_cb__cpu_model, surf_cpu_model_description, "model",
                      "The model to use for the CPU");
 
-  declare_model_flag("disk/model", "default", &_sg_cfg_cb__disk_model, surf_disk_model_description, "model",
+  declare_model_flag("disk/model", "S19", &_sg_cfg_cb__disk_model, surf_disk_model_description, "model",
                      "The model to use for the disk");
 
   declare_model_flag("network/model", "LV08", &_sg_cfg_cb__network_model, surf_network_model_description, "model",

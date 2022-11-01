@@ -851,6 +851,8 @@ include teshsuite/s4u/host-on-off/host-on-off.cpp
 include teshsuite/s4u/host-on-off/host-on-off.tesh
 include teshsuite/s4u/io-set-bw/io-set-bw.cpp
 include teshsuite/s4u/io-set-bw/io-set-bw.tesh
+include teshsuite/s4u/io-stream/io-stream.cpp
+include teshsuite/s4u/io-stream/io-stream.tesh
 include teshsuite/s4u/is-router/is-router.cpp
 include teshsuite/s4u/is-router/is-router.tesh
 include teshsuite/s4u/issue71/issue71.cpp
@@ -2628,6 +2630,8 @@ include src/surf/ns3/ns3_simulator.hpp
 include src/surf/ptask_L07.cpp
 include src/surf/ptask_L07.hpp
 include src/surf/sg_platf.cpp
+include src/surf/sio_S22.cpp
+include src/surf/sio_S22.hpp
 include src/surf/surf_interface.cpp
 include src/surf/surf_interface.hpp
 include src/surf/xml/platf.hpp
