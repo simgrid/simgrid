@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/mc/mc_replay.hpp"
 #include <simgrid/Exception.hpp>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Host.hpp>
@@ -279,6 +280,8 @@ void ActorImpl::yield()
   if (not wannadie())
     smpi_switch_data_segment(get_iface());
 #endif
+  if (simgrid_mc_replay_show_backtraces)
+    xbt_backtrace_display_current();
 }
 
 /** This actor will be terminated automatically when the last non-daemon actor finishes */

@@ -25,6 +25,12 @@ void RecordTrace::replay() const
   simgrid::mc::execute_actors();
   auto* engine = kernel::EngineImpl::get_instance();
 
+  int frame_count = 1;
+  if (xbt_log_no_loc)
+    XBT_INFO("The backtrace of each transition will not be shown because of --log=no_loc");
+  else
+    simgrid_mc_replay_show_backtraces = 1;
+
   for (const simgrid::mc::Transition* transition : transitions_) {
     kernel::actor::ActorImpl* actor = engine->get_actor_by_pid(transition->aid_);
     xbt_assert(actor != nullptr, "Unexpected actor (id:%ld).", transition->aid_);
@@ -32,8 +38,11 @@ void RecordTrace::replay() const
     xbt_assert(simgrid::mc::request_is_visible(simcall), "Simcall %s of actor %s is not visible.", simcall->get_cname(),
                actor->get_cname());
 
-    XBT_DEBUG("Executing %ld$%i: %s", transition->aid_, transition->times_considered_,
-              simcall->observer_->to_string().c_str());
+    XBT_INFO("***********************************************************************************");
+    XBT_INFO("* Path chunk #%d '%ld/%i' Actor %s(pid:%ld): %s", frame_count++, transition->aid_,
+             transition->times_considered_, simcall->issuer_->get_cname(), simcall->issuer_->get_pid(),
+             simcall->observer_->to_string().c_str());
+    XBT_INFO("***********************************************************************************");
     if (not mc::actor_is_enabled(actor))
       simgrid::kernel::EngineImpl::get_instance()->display_all_actor_status();
 

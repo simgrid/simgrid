@@ -50,7 +50,21 @@ public:
         if (frame_name.rfind("simgrid::xbt::MainFunction", 0) == 0 ||
             frame_name.rfind("simgrid::kernel::context::Context::operator()()", 0) == 0)
           break;
-        ss << "  ->  " << frame_count++ << "# " << frame << "\n";
+        if (xbt_log_no_loc) { // Don't display file source and line if so
+          if (frame.name().empty())
+            ss << "  ->  #" << frame_count++ << " (debug info not found and log:no_loc activated)\n";
+          else
+            ss << "  ->  #" << frame_count++ << " " << frame.name() << "\n";
+        } else
+          ss << "  ->  #" << frame_count++ << " " << frame << "\n";
+        // If we are displaying the user side of a simcall, remove the crude details of context switching
+        if (frame_name.find("simgrid::kernel::actor::simcall_answered") != std::string::npos ||
+            frame_name.find("simgrid::kernel::actor::simcall_blocking") != std::string::npos ||
+            frame_name.find("simcall_run_answered") != std::string::npos ||
+            frame_name.find("simcall_run_blocking") != std::string::npos) {
+          frame_count = 0;
+          ss.str(std::string()); // This is how you clear a stringstream in C++. clear() is something else :'(
+        }
         if (frame_name == "main")
           break;
       } else {
@@ -78,7 +92,8 @@ std::string Backtrace::resolve() const
 void Backtrace::display() const
 {
   std::string backtrace = resolve();
-  std::fprintf(stderr, "Backtrace (displayed in actor %s):\n%s\n", xbt_procname(),
+  std::fprintf(stderr, "Backtrace (displayed in actor %s%s):\n%s\n", xbt_procname(),
+               (xbt_log_no_loc ? " -- short trace because of --log=no_loc" : ""),
                backtrace.empty() ? "(backtrace not set -- did you install Boost.Stacktrace?)" : backtrace.c_str());
 }
 

@@ -15,6 +15,7 @@ foreach(x dwarf dwarf-expression random-bug mutex-handling)
     target_link_libraries(${x}  simgrid)
     set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
     set_property(TARGET ${x} APPEND PROPERTY INCLUDE_DIRECTORIES "${INTERNAL_INCLUDES}")
+    target_compile_options(${x} PRIVATE ${CMAKE_C_DEBUG_FLAGS})
     add_dependencies(tests-mc ${x})
   endif()
 

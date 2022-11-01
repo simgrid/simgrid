@@ -19,6 +19,7 @@
 #endif
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(mc, "All MC categories");
+bool simgrid_mc_replay_show_backtraces = false;
 
 namespace simgrid::mc {
 

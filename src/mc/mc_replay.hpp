@@ -25,4 +25,7 @@ static inline int MC_record_replay_is_active()
   return not MC_record_path().empty();
 }
 
+/** Whether we should display extra information during this MC replay */
+extern bool simgrid_mc_replay_show_backtraces;
+
 #endif
