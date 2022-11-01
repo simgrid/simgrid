@@ -30,6 +30,7 @@
 #include <sys/types.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
+XBT_LOG_EXTERNAL_CATEGORY(mc_global);
 
 namespace simgrid::mc {
 
@@ -84,11 +85,18 @@ AppSide* AppSide::initialize()
 
 void AppSide::handle_deadlock_check(const s_mc_message_t*) const
 {
-  const auto& actor_list = kernel::EngineImpl::get_instance()->get_actor_list();
+  auto* engine           = kernel::EngineImpl::get_instance();
+  const auto& actor_list = engine->get_actor_list();
   bool deadlock = not actor_list.empty() && std::none_of(begin(actor_list), end(actor_list), [](const auto& kv) {
     return mc::actor_is_enabled(kv.second);
   });
 
+  if (deadlock) {
+    XBT_CINFO(mc_global, "**************************");
+    XBT_CINFO(mc_global, "*** DEADLOCK DETECTED ***");
+    XBT_CINFO(mc_global, "**************************");
+    engine->display_all_actor_status();
+  }
   // Send result:
   s_mc_message_int_t answer{MessageType::DEADLOCK_CHECK_REPLY, deadlock};
   xbt_assert(channel_.send(answer) == 0, "Could not send response");

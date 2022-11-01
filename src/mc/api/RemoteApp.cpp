@@ -198,9 +198,6 @@ void RemoteApp::check_deadlock() const
              (int)sizeof(message));
 
   if (message.value != 0) {
-    XBT_CINFO(mc_global, "**************************");
-    XBT_CINFO(mc_global, "*** DEADLOCK DETECTED ***");
-    XBT_CINFO(mc_global, "**************************");
     XBT_CINFO(mc_global, "Counter-example execution trace:");
     for (auto const& frame : model_checker_->get_exploration()->get_textual_trace())
       XBT_CINFO(mc_global, "  %s", frame.c_str());
