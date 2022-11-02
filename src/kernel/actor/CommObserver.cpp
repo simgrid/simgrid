@@ -61,11 +61,13 @@ template <typename A> static std::string ptr_to_id(A* ptr)
 static std::string to_string_activity_test(const activity::ActivityImpl* act)
 {
   if (auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
+    const std::string src_buff_id = ptr_to_id<unsigned char>(comm->src_buff_);
+    const std::string dst_buff_id = ptr_to_id<unsigned char>(comm->dst_buff_);
     return std::string("CommTest(comm_id:") + ptr_to_id<activity::CommImpl const>(comm) +
            " src:" + std::to_string(comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1) +
            " dst:" + std::to_string(comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1) +
-           " mbox:" + std::to_string(comm->get_mailbox_id()) + " srcbuf:" + ptr_to_id<unsigned char>(comm->src_buff_) +
-           " dstbuf:" + ptr_to_id<unsigned char>(comm->dst_buff_) + " bufsize:" + std::to_string(comm->src_buff_size_);
+           " mbox:" + std::to_string(comm->get_mailbox_id()) + " srcbuf:" + src_buff_id + " dstbuf:" + dst_buff_id +
+           " bufsize:" + std::to_string(comm->src_buff_size_);
   } else {
     return "TestUnknownType()";
   }
@@ -112,13 +114,14 @@ static void serialize_activity_wait(const activity::ActivityImpl* act, bool time
 static std::string to_string_activity_wait(const activity::ActivityImpl* act)
 {
   if (auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
+    const std::string src_buff_id = ptr_to_id<unsigned char>(comm->src_buff_);
+    const std::string dst_buff_id = ptr_to_id<unsigned char>(comm->dst_buff_);
     return std::string("CommWait(comm_id:") + ptr_to_id<activity::CommImpl const>(comm) +
            " src:" + std::to_string(comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1) +
            " dst:" + std::to_string(comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1) +
            " mbox:" + std::string(comm->get_mailbox() == nullptr ? xbt::string("-") : comm->get_mailbox()->get_name()) +
-           "(id:" + std::to_string(comm->get_mailbox_id()) + ") srcbuf:" + ptr_to_id<unsigned char>(comm->src_buff_) +
-           " dstbuf:" + ptr_to_id<unsigned char>(comm->dst_buff_) + " bufsize:" + std::to_string(comm->src_buff_size_) +
-           ")";
+           "(id:" + std::to_string(comm->get_mailbox_id()) + ") srcbuf:" + src_buff_id + " dstbuf:" + dst_buff_id +
+           " bufsize:" + std::to_string(comm->src_buff_size_) + ")";
   } else {
     return "WaitUnknownType()";
   }
