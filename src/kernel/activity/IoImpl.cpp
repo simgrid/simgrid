@@ -103,7 +103,6 @@ IoImpl* IoImpl::start()
 
   surf_action_->set_activity(this);
   set_start_time(surf_action_->get_start_time());
-#include "src/surf/HostImpl.hpp"
 
   XBT_DEBUG("Create IO synchro %p %s", this, get_cname());
 
