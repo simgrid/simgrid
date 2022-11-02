@@ -26,8 +26,6 @@
 #include <dlfcn.h>
 #endif /* _WIN32 */
 
-extern int xbt_log_no_loc;
-
 #if SIMGRID_HAVE_MC
 #include "src/mc/remote/AppSide.hpp"
 #endif
