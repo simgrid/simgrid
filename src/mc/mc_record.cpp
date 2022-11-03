@@ -29,7 +29,7 @@ void RecordTrace::replay() const
   if (xbt_log_no_loc)
     XBT_INFO("The backtrace of each transition will not be shown because of --log=no_loc");
   else
-    simgrid_mc_replay_show_backtraces = 1;
+    simgrid_mc_replay_show_backtraces = true;
 
   for (const simgrid::mc::Transition* transition : transitions_) {
     kernel::actor::ActorImpl* actor = engine->get_actor_by_pid(transition->aid_);
