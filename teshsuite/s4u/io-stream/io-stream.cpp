@@ -81,7 +81,6 @@ static void streamer(size_t size)
   clock = sg4::Engine::get_clock();
   sg4::Io::streamto(bob, bob_disk, bob, bob_disk, size);
   XBT_INFO("    Total : %.6f seconds", sg4::Engine::get_clock() - clock);
-
 }
 
 static void background_send() {

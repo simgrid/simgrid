@@ -205,7 +205,6 @@ void simcall_run_object_access(std::function<void()> const& code, simgrid::kerne
       || MC_is_active() || MC_record_replay_is_active()
 #endif
   ) {
-
     simgrid::kernel::actor::ObjectAccessSimcallObserver observer{self, item};
     simcall(simgrid::kernel::actor::Simcall::Type::RUN_ANSWERED, code, &observer);
     item->take_ownership();
