@@ -29,19 +29,19 @@ static void streamer(size_t size)
   XBT_INFO("    Total : %.6f seconds", sg4::Engine::get_clock());
 
   XBT_INFO("[Bob -> Alice] Store and Forward (100 blocks)");
-  sg4::IoPtr read = bob_disk->read_async(size/100.0);
-  sg4::CommPtr transfer = sg4::Comm::sendto_async(bob, alice, size/100.0);
-  sg4::IoPtr write = alice_disk->write_async(size/100.);
+  sg4::IoPtr read       = bob_disk->read_async(size / 100);
+  sg4::CommPtr transfer = sg4::Comm::sendto_async(bob, alice, size / 100);
+  sg4::IoPtr write      = alice_disk->write_async(size / 100);
 
   clock = sg4::Engine::get_clock();
 
   for (int i = 0; i < 99; i++){
     read->wait();
-    read = bob_disk->read_async(size/100.0);
+    read = bob_disk->read_async(size / 100);
     transfer->wait();
-    transfer = sg4::Comm::sendto_async(bob, alice, size/100.0);
+    transfer = sg4::Comm::sendto_async(bob, alice, size / 100);
     write->wait();
-    write = alice_disk->write_async(size/100.);
+    write = alice_disk->write_async(size / 100);
   }
 
   read->wait();
