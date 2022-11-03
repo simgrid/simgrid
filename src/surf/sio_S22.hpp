@@ -69,7 +69,7 @@ public:
   S22Action(Model* model, s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk, double size);
   S22Action(const S22Action&) = delete;
   S22Action& operator=(const S22Action&) = delete;
-  ~S22Action() = default;
+  ~S22Action() override                  = default;
 
   void update_bound() const;
   double get_latency() const { return latency_; }
