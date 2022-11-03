@@ -50,13 +50,11 @@ public:
         if (frame_name.rfind("simgrid::xbt::MainFunction", 0) == 0 ||
             frame_name.rfind("simgrid::kernel::context::Context::operator()()", 0) == 0)
           break;
-        if (xbt_log_no_loc) { // Don't display file source and line if so
-          if (frame.name().empty())
-            ss << "  ->  #" << frame_count++ << " (debug info not found and log:no_loc activated)\n";
-          else
-            ss << "  ->  #" << frame_count++ << " " << frame.name() << "\n";
-        } else
-          ss << "  ->  #" << frame_count++ << " " << frame << "\n";
+        ss << "  ->  #" << frame_count++ << " ";
+        if (xbt_log_no_loc) // Don't display file source and line if so
+          ss << (frame_name.empty() ? "(debug info not found and log:no_loc activated)" : frame_name) << "\n";
+        else
+          ss << frame << "\n";
         // If we are displaying the user side of a simcall, remove the crude details of context switching
         if (frame_name.find("simgrid::kernel::actor::simcall_answered") != std::string::npos ||
             frame_name.find("simgrid::kernel::actor::simcall_blocking") != std::string::npos ||
