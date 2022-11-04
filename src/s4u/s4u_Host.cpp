@@ -84,7 +84,7 @@ Host* Host::current()
   return self->get_host();
 }
 
-xbt::string const& Host::get_name() const
+std::string const& Host::get_name() const
 {
   return this->pimpl_->get_name();
 }

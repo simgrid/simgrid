@@ -129,7 +129,6 @@ nitpick_ignore = [
   ('cpp:identifier', 'simgrid::s4u::Activity_T<Io>'),
   ('cpp:identifier', 'simgrid::s4u::this_actor'),
   ('cpp:identifier', 'simgrid::xbt'),
-  ('cpp:identifier', 'simgrid::xbt::string'),
   ('cpp:identifier', 'size_t'),
   ('cpp:identifier', 'ssize_t'),
   ('cpp:identifier', 'this_actor'),
@@ -161,7 +160,6 @@ nitpick_ignore = [
   ('cpp:identifier', 'xbt::signal<void(kernel::resource::NetworkAction&)>'),
   ('cpp:identifier', 'xbt::signal<void(kernel::resource::NetworkAction&, kernel::resource::Action::State)>'),
   ('cpp:identifier', 'xbt::signal<void(void)>'),
-  ('cpp:identifier', 'xbt::string'),
 ]
 
 # For cross-ref generation

@@ -50,7 +50,7 @@ class XBT_PRIVATE HostImpl : public xbt::PropertyHolder {
   s4u::Host piface_;
   std::map<std::string, DiskImpl*, std::less<>> disks_;
   std::map<std::string, VirtualMachineImpl*, std::less<>> vms_;
-  xbt::string name_{"noname"};
+  std::string name_{"noname"};
   routing::NetZoneImpl* englobing_zone_ = nullptr;
   bool sealed_ = false;
 
@@ -79,7 +79,7 @@ public:
   virtual s4u::Host* get_iface() { return &piface_; }
 
   /** Retrieves the name of that host as a C++ string */
-  xbt::string const& get_name() const { return name_; }
+  std::string const& get_name() const { return name_; }
   /** Retrieves the name of that host as a C string */
   const char* get_cname() const { return name_.c_str(); }
 

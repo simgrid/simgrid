@@ -21,15 +21,15 @@ class ProcessArg;
 
 /*------------------------- [ ActorIDTrait ] -------------------------*/
 class XBT_PUBLIC ActorIDTrait {
-  xbt::string name_;
-  aid_t pid_         = 0;
-  aid_t ppid_        = -1;
+  std::string name_;
+  aid_t pid_  = 0;
+  aid_t ppid_ = -1;
 
   static unsigned long maxpid_;
 
 public:
   explicit ActorIDTrait(const std::string& name, aid_t ppid);
-  const xbt::string& get_name() const { return name_; }
+  const std::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
   aid_t get_pid() const { return pid_; }
   aid_t get_ppid() const { return ppid_; }
@@ -64,7 +64,7 @@ class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder, public ActorIDTrait, pu
   friend activity::MailboxImpl;
 
 public:
-  ActorImpl(xbt::string name, s4u::Host* host, aid_t ppid);
+  ActorImpl(std::string name, s4u::Host* host, aid_t ppid);
   ActorImpl(const ActorImpl&) = delete;
   ActorImpl& operator=(const ActorImpl&) = delete;
   ~ActorImpl();

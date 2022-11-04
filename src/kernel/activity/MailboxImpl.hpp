@@ -7,7 +7,6 @@
 #define SIMGRID_KERNEL_ACTIVITY_MAILBOX_HPP
 
 #include <boost/circular_buffer.hpp>
-#include <xbt/string.hpp>
 
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
@@ -22,7 +21,7 @@ class MailboxImpl {
   static constexpr size_t MAX_MAILBOX_SIZE = 10000000;
 
   s4u::Mailbox piface_;
-  xbt::string name_;
+  std::string name_;
   actor::ActorImplPtr permanent_receiver_; // actor to which the mailbox is attached
   boost::circular_buffer_space_optimized<CommImplPtr> comm_queue_{MAX_MAILBOX_SIZE};
   // messages already received in the permanent receive mode
@@ -48,7 +47,7 @@ public:
   const s4u::Mailbox* get_iface() const { return &piface_; }
   s4u::Mailbox* get_iface() { return &piface_; }
 
-  const xbt::string& get_name() const { return name_; }
+  const std::string& get_name() const { return name_; }
   const char* get_cname() const { return name_.c_str(); }
   void set_receiver(s4u::ActorPtr actor);
   void push(CommImplPtr comm);

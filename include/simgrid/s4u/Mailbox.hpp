@@ -10,7 +10,6 @@
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Comm.hpp>
 #include <smpi/forward.hpp>
-#include <xbt/string.hpp>
 
 #include <memory>
 #include <string>
@@ -36,7 +35,7 @@ protected:
 
 public:
   /** @brief Retrieves the name of that mailbox as a C++ string */
-  const xbt::string& get_name() const;
+  const std::string& get_name() const;
   /** @brief Retrieves the name of that mailbox as a C string */
   const char* get_cname() const;
 

@@ -3,20 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <simgrid/config.h>
 #include <xbt/string.hpp>
 #include <xbt/sysdep.h>
 
-#include <cstdarg>
-#include <cstdio>
-
 namespace simgrid::xbt {
-
-#if SIMGRID_HAVE_MC
-
-char string::NUL = '\0';
-
-#endif
 
 std::string string_vprintf(const char *fmt, va_list ap)
 {

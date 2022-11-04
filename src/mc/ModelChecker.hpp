@@ -10,7 +10,6 @@
 #include "src/mc/remote/RemotePtr.hpp"
 #include "src/mc/sosp/PageStore.hpp"
 #include "xbt/base.h"
-#include "xbt/string.hpp"
 
 #include <memory>
 #include <set>
@@ -22,7 +21,7 @@ namespace simgrid::mc {
 class ModelChecker {
   CheckerSide checker_side_;
   /** String pool for host names */
-  std::set<xbt::string, std::less<>> hostnames_;
+  std::set<std::string, std::less<>> hostnames_;
   // This is the parent snapshot of the current state:
   PageStore page_store_{500};
   std::unique_ptr<RemoteProcess> remote_process_;
@@ -41,9 +40,9 @@ public:
   Channel& channel() { return checker_side_.get_channel(); }
   PageStore& page_store() { return page_store_; }
 
-  xbt::string const& get_host_name(const char* hostname)
+  std::string const& get_host_name(const char* hostname)
   {
-    return *this->hostnames_.insert(xbt::string(hostname)).first;
+    return *this->hostnames_.insert(std::string(hostname)).first;
   }
 
   void start();

@@ -322,7 +322,7 @@ public:
   static bool is_maestro();
 
   /** Retrieves the name of that actor as a C++ string */
-  const simgrid::xbt::string& get_name() const;
+  const std::string& get_name() const;
   /** Retrieves the name of that actor as a C string */
   const char* get_cname() const;
   /** Retrieves the host on which that actor is running */

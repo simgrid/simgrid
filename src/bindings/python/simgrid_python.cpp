@@ -454,13 +454,9 @@ PYBIND11_MODULE(simgrid, m)
           },
           "The current pstate (read/write property).")
       .def_static("current", &Host::current, py::call_guard<py::gil_scoped_release>(),
-           "Retrieves the host on which the running actor is located.")
+                  "Retrieves the host on which the running actor is located.")
       .def_property_readonly(
-          "name",
-          [](const Host* self) {
-            return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
-          },
-          "The name of this host (read-only property).")
+          "name", [](const Host* self) { return self->get_name(); }, "The name of this host (read-only property).")
       .def_property_readonly("load", &Host::get_load,
                              "Returns the current computation load (in flops per second), NOT taking the external load "
                              "into account. This is the currently achieved speed (read-only property).")
@@ -603,11 +599,7 @@ PYBIND11_MODULE(simgrid, m)
       .def_static("by_name", &Link::by_name, "Retrieves a Link from its name, or dies")
       .def("seal", &Link::seal, py::call_guard<py::gil_scoped_release>(), "Seal this link")
       .def_property_readonly(
-          "name",
-          [](const Link* self) {
-            return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
-          },
-          "The name of this link")
+          "name", [](const Link* self) { return self->get_name(); }, "The name of this link")
       .def_property_readonly("bandwidth", &Link::get_bandwidth,
                              "The bandwidth (in bytes per second) (read-only property).")
       .def_property_readonly("latency", &Link::get_latency, "The latency (in seconds) (read-only property).");
@@ -656,15 +648,10 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "__str__", [](const Mailbox* self) { return std::string("Mailbox(") + self->get_cname() + ")"; },
           "Textual representation of the Mailbox`")
-      .def_static("by_name", &Mailbox::by_name,
-                  py::call_guard<py::gil_scoped_release>(),
-                  py::arg("name"),
+      .def_static("by_name", &Mailbox::by_name, py::call_guard<py::gil_scoped_release>(), py::arg("name"),
                   "Retrieve a Mailbox from its name")
       .def_property_readonly(
-          "name",
-          [](const Mailbox* self) {
-            return std::string(self->get_name().c_str()); // Convert from xbt::string because of MC
-          },
+          "name", [](const Mailbox* self) { return self->get_name(); },
           "The name of that mailbox (read-only property).")
       .def_property_readonly("ready", &Mailbox::ready, py::call_guard<py::gil_scoped_release>(),
                              "Check if there is a communication ready to be consumed from a mailbox.")
@@ -695,8 +682,7 @@ PYBIND11_MODULE(simgrid, m)
             data.inc_ref();
             return self->put_init(data.ptr(), size);
           },
-          py::call_guard<py::gil_scoped_release>(),
-          "Creates (but don’t start) a data transmission to that mailbox.")
+          py::call_guard<py::gil_scoped_release>(), "Creates (but don’t start) a data transmission to that mailbox.")
       .def(
           "get",
           [](Mailbox* self) {

@@ -188,7 +188,7 @@ bool Actor::is_maestro()
   return self == nullptr || kernel::EngineImpl::get_instance()->is_maestro(self);
 }
 
-const simgrid::xbt::string& Actor::get_name() const
+const std::string& Actor::get_name() const
 {
   return this->pimpl_->get_name();
 }

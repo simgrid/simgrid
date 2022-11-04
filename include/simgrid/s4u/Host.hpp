@@ -87,7 +87,7 @@ public:
   static Host* current();
 
   /** Retrieves the name of that host as a C++ string */
-  xbt::string const& get_name() const;
+  std::string const& get_name() const;
   /** Retrieves the name of that host as a C string */
   const char* get_cname() const;
 

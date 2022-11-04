@@ -21,7 +21,7 @@ class XBT_PRIVATE WifiLinkAction;
 
 class WifiLinkImpl : public StandardLinkImpl {
   /** @brief Hold every rates association between host and links (host name, rates id) */
-  std::map<xbt::string, int> host_rates_;
+  std::map<std::string, int> host_rates_;
 
   /** @brief A link can have several bandwidths attached to it (mostly use by wifi model) */
   std::vector<Metric> bandwidths_;

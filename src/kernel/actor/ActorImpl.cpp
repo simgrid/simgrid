@@ -34,7 +34,7 @@ ActorImpl* ActorImpl::self()
   return (self_context != nullptr) ? self_context->get_actor() : nullptr;
 }
 
-ActorImpl::ActorImpl(xbt::string name, s4u::Host* host, aid_t ppid)
+ActorImpl::ActorImpl(std::string name, s4u::Host* host, aid_t ppid)
     : ActorIDTrait(std::move(name), ppid), host_(host), piface_(this)
 {
   simcall_.issuer_ = this;
@@ -66,7 +66,7 @@ ActorImplPtr ActorImpl::attach(const std::string& name, void* data, s4u::Host* h
     throw HostFailureException(XBT_THROW_POINT, "Cannot attach actor on failed host.");
   }
 
-  auto* actor = new ActorImpl(xbt::string(name), host, /*ppid*/ -1);
+  auto* actor = new ActorImpl(std::string(name), host, /*ppid*/ -1);
   /* Actor data */
   actor->piface_.set_data(data);
   actor->code_ = nullptr;
@@ -418,7 +418,7 @@ void ActorImpl::set_host(s4u::Host* dest)
 
 ActorImplPtr ActorImpl::init(const std::string& name, s4u::Host* host) const
 {
-  auto* actor = new ActorImpl(xbt::string(name), host, get_pid());
+  auto* actor = new ActorImpl(name, host, get_pid());
 
   intrusive_ptr_add_ref(actor);
   /* The on_creation() signal must be delayed until there, where the pid and everything is set */
@@ -461,9 +461,9 @@ ActorImplPtr ActorImpl::create(const std::string& name, const ActorCode& code, v
 
   ActorImplPtr actor;
   if (parent_actor != nullptr)
-    actor = parent_actor->init(xbt::string(name), host);
+    actor = parent_actor->init(name, host);
   else
-    actor = self()->init(xbt::string(name), host);
+    actor = self()->init(name, host);
 
   actor->piface_.set_data(data); /* actor data */
 
@@ -496,7 +496,7 @@ void create_maestro(const std::function<void()>& code)
 {
   auto* engine = EngineImpl::get_instance();
   /* Create maestro actor and initialize it */
-  auto* maestro = new ActorImpl(xbt::string(""), /*host*/ nullptr, /*ppid*/ -1);
+  auto* maestro = new ActorImpl(/*name*/ "", /*host*/ nullptr, /*ppid*/ -1);
 
   if (not code) {
     maestro->context_.reset(engine->get_context_factory()->create_context(ActorCode(), maestro));

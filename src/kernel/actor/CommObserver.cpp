@@ -119,7 +119,7 @@ static std::string to_string_activity_wait(const activity::ActivityImpl* act)
     return std::string("CommWait(comm_id:") + ptr_to_id<activity::CommImpl const>(comm) +
            " src:" + std::to_string(comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1) +
            " dst:" + std::to_string(comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1) +
-           " mbox:" + std::string(comm->get_mailbox() == nullptr ? xbt::string("-") : comm->get_mailbox()->get_name()) +
+           " mbox:" + std::string(comm->get_mailbox() == nullptr ? std::string("-") : comm->get_mailbox()->get_name()) +
            "(id:" + std::to_string(comm->get_mailbox_id()) + ") srcbuf:" + src_buff_id + " dstbuf:" + dst_buff_id +
            " bufsize:" + std::to_string(comm->src_buff_size_) + ")";
   } else {
