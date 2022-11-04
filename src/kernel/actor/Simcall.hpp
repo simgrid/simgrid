@@ -25,8 +25,6 @@ public:
   simgrid::kernel::actor::ActorImpl* issuer_         = nullptr;
   simgrid::kernel::timer::Timer* timeout_cb_         = nullptr; // Callback to timeouts
   simgrid::kernel::actor::SimcallObserver* observer_ = nullptr; // makes that simcall observable by the MC
-  unsigned int mc_max_consider_ =
-      0; // How many times this simcall should be used. If >1, this will be a fork in the state space.
   std::function<void()> const* code_ = nullptr;
 
   const char* get_cname() const;
