@@ -170,7 +170,7 @@ S22Action::S22Action(Model* model, s4u::Host* src_host, DiskImpl* src_disk, s4u:
   if (dst_disk_ != nullptr)
     disk_nb++;
 
-  if (src_host_ != dst_host_ && size_ > 0) {
+  if (size_ > 0) {
     std::unordered_set<const char*> affected_links;
     double lat = 0.0;
     std::vector<StandardLinkImpl*> route;
@@ -198,7 +198,7 @@ S22Action::S22Action(Model* model, s4u::Host* src_host, DiskImpl* src_disk, s4u:
   if (dst_disk_ != nullptr)
     model->get_maxmin_system()->expand(dst_disk_->get_constraint(), get_variable(), size, true);
 
-  if (src_host_ != dst_host_) {
+  if (link_nb > 0) {
     std::vector<StandardLinkImpl*> route;
     src_host_->route_to(dst_host_, route, nullptr);
     for (auto const& link : route)
