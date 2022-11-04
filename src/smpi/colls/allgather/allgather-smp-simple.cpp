@@ -1,10 +1,10 @@
-/* Copyright (c) 2013-2022. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2022. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "../colls_private.hpp"
+#include "xbt/string.hpp"
 
 namespace simgrid::smpi {
 

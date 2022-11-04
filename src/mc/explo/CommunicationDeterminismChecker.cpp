@@ -11,6 +11,7 @@
 #include "src/mc/mc_private.hpp"
 #include "src/mc/transition/TransitionAny.hpp"
 #include "src/mc/transition/TransitionComm.hpp"
+#include "xbt/string.hpp"
 
 #include <cstdint>
 

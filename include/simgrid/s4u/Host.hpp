@@ -9,7 +9,6 @@
 #include <simgrid/forward.h>
 #include <xbt/Extendable.hpp>
 #include <xbt/signal.hpp>
-#include <xbt/string.hpp>
 
 #include <map>
 #include <unordered_map>

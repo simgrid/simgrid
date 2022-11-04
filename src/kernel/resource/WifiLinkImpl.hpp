@@ -6,10 +6,8 @@
 #ifndef SURF_NETWORK_WIFI_HPP_
 #define SURF_NETWORK_WIFI_HPP_
 
-#include <xbt/base.h>
-
 #include "src/surf/network_cm02.hpp"
-#include "xbt/string.hpp"
+#include "xbt/base.h"
 
 /***********
  * Classes *

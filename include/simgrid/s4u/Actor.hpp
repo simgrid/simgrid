@@ -11,7 +11,6 @@
 #include <simgrid/chrono.hpp>
 #include <xbt/Extendable.hpp>
 #include <xbt/signal.hpp>
-#include <xbt/string.hpp>
 
 #include <functional>
 #include <unordered_map>

@@ -10,6 +10,7 @@
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SynchroObserver.hpp"
+#include "xbt/string.hpp"
 
 namespace simgrid::kernel::activity {
 /** Barrier Acquisition: the act / process of acquiring the barrier.

@@ -6,12 +6,9 @@
 #ifndef SURF_NETWORK_CM02_HPP_
 #define SURF_NETWORK_CM02_HPP_
 
-#include <xbt/base.h>
-
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
-#include "xbt/graph.h"
-#include "xbt/string.hpp"
+#include "xbt/base.h"
 
 /***********
  * Classes *

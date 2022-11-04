@@ -13,6 +13,7 @@
 
 #include "src/xbt/mmalloc/mmprivate.h"
 #include "xbt/log.h"
+#include "xbt/string.hpp"
 #include "xbt/sysdep.h"
 
 #include <cassert>
