@@ -170,18 +170,12 @@ S22Action::S22Action(Model* model, s4u::Host* src_host, DiskImpl* src_disk, s4u:
   if (dst_disk_ != nullptr)
     disk_nb++;
 
-  if (size_ > 0) {
-    std::unordered_set<const char*> affected_links;
-    double lat = 0.0;
-    std::vector<StandardLinkImpl*> route;
-    src_host_->route_to(dst_host_, route, &lat);
-    latency = std::max(latency, lat);
-
-    for (auto const& link : route)
-      affected_links.insert(link->get_cname());
-
-    link_nb = affected_links.size();
-  }
+  /* there should always be a route between src_host and dst_host (loopback_ for self communication at least) */
+  double lat = 0.0;
+  std::vector<StandardLinkImpl*> route;
+  src_host_->route_to(dst_host_, route, &lat);
+  latency = std::max(latency, lat);
+  link_nb = route.size();
 
   XBT_DEBUG("Creating a stream io (%p) with %zu disk(s) and %zu unique link(s).", this, disk_nb, link_nb);
   latency_ = latency;
