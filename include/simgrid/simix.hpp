@@ -85,7 +85,7 @@ template <class F> typename std::result_of_t<F()> simcall_object_access(ObjectAc
 
 /** Execute some code (that does not return immediately) in kernel context
  *
- * This is very similar to simcall() right above, but the calling actor will not get rescheduled until
+ * This is very similar to simcall_answered() above, but the calling actor will not get rescheduled until
  * actor->simcall_answer() is called explicitly.
  *
  * This is meant for blocking actions. For example, locking a mutex is a blocking simcall.
