@@ -57,11 +57,11 @@ Shortest path
 =============
 
 SimGrid can compute automatically the paths between all pair of hosts in a zone. You just need to provide the one-hop routes to connect all hosts.
-Several algorithms are provided: 
+Several algorithms are provided:
 
   - ``routing=Floyd``: use the number of hops to build shortest path. It is calculated only once at the beginning of the
     simulation.
-  - ``routing=Dijksta``: shortest-path calculated considering the path's latency. As the latency of links can change
+  - ``routing=Dijkstra``: shortest-path calculated considering the path's latency. As the latency of links can change
     during simulation, it is recomputed each time a route is necessary.
   - ``routing=DijkstraCache``: Just like the regular Dijkstra, but with a cache of previously computed paths for performance.
 
@@ -134,7 +134,7 @@ coordinate-based platforms from the OptorSim project into SimGrid platform files
 Such Network Coordinate systems were shown to provide rather good latency estimations in a compact way. Other systems,
 such as `Phoenix network coordinates <https://en.wikipedia.org/wiki/Phoenix_network_coordinates>`_ were shown
 superior to the Vivaldi system and could be also implemented in SimGrid.
-    
+
 Here is a small platform example:
 
 .. code-block:: XML
@@ -174,7 +174,7 @@ Defining a route between two separate zones with :ref:`pf_tag_zoneroute` takes m
 ``gw_src`` (source gateway) and ``gw_dst`` (destination gateway) along with the list of links. Afterward, the path from
 ``src_host`` in zone ``src`` to ``dst_host`` in zone ``dst`` is composed of 3 segments. First, move within zone ``src`` from
 ``src_host`` to the specified gateway ``gw_src``. Then, traverse all links specified by the zoneRoute (purportedly within
-the common ancestor) and finally, move within zone ``dst`` from ``gw_dst`` to ``dst_host``. 
+the common ancestor) and finally, move within zone ``dst`` from ``gw_dst`` to ``dst_host``.
 
 SimGrid enforces that each gateway is within its zone, either directly or in a sub-zone to ensure that the algorithm
 described in the next section actually works.
@@ -225,7 +225,7 @@ only gives an overview of the algorithm used. You should refer to the source cod
    Here, we need the route from *gw1* and *host2*. The common ancestor is *AS5*, and the relative ancestors are *AS5-4* and *AS5-3*. This route is defined as follows (routes are symmetrical by default).
 
    .. code-block:: XML
-      
+
       <zoneRoute src="AS5-4" dst="AS5-3" gw_src="gw2" gw_dst"="gw1">
          <link_ctn id="Link3"/>
       </zoneRoute>
@@ -242,7 +242,7 @@ only gives an overview of the algorithm used. You should refer to the source cod
             <link_ctn id="Link2">
           </route>
 
-In the end, our communication from *Host1@AS2* to *Host2@AS5-4* follows this path: ``{Link1, Link3, Link2}`` 
+In the end, our communication from *Host1@AS2* to *Host2@AS5-4* follows this path: ``{Link1, Link3, Link2}``
 
 It is possbile to use :ref:`pf_tag_bypassZoneRoute` to provide a path between two zones that are not necessarily sibilings.
 If such routes exist, SimGrid will try to match each of the ancestor zones of the source with each of the ancestor zone of
@@ -269,7 +269,7 @@ will then use the provided link(s) as a loopback for this host instead of the gl
     </route>
 
 Some zones such as :ref:`pf_tag_cluster` provide ways to describe the characteristics of
-the loopback nodes inside the zone. 
+the loopback nodes inside the zone.
 
 .. |br| raw:: html
 
