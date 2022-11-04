@@ -10,7 +10,6 @@
 #include "src/kernel/activity/ActivityImpl.hpp"
 #include "xbt/utility.hpp"
 
-/********************************* Simcalls *********************************/
 namespace simgrid::kernel::actor {
 
 /**
