@@ -19,8 +19,10 @@ bool simgrid::mc::cfg_do_model_check = false;
 static void _mc_cfg_cb_check(const char* spec, bool more_check = true)
 {
 #if SIMGRID_HAVE_MC
-  xbt_assert(_sg_cfg_init_status == 0 || MC_is_active() || not more_check,
-             "Specifying a %s is only allowed within the model-checker. Please use simgrid-mc.", spec);
+  xbt_assert(_sg_cfg_init_status == 0 || MC_is_active() || MC_record_replay_is_active() || not more_check,
+             "Specifying a %s is only allowed within the model-checker. Please use simgrid-mc, or specify this option "
+             "after the replay path.",
+             spec);
 #else
   xbt_die("Specifying a %s is only allowed within the model-checker. Please enable it before the compilation.", spec);
 #endif
