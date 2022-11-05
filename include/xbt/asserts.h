@@ -8,7 +8,6 @@
 #ifndef XBT_ASSERTS_H
 #define XBT_ASSERTS_H
 
-#include "simgrid/modelchecker.h"
 #include <stdlib.h>
 #include <xbt/base.h>
 #include <xbt/log.h>
@@ -49,8 +48,6 @@ XBT_ATTRIB_NORETURN XBT_PUBLIC void xbt_abort(void);
  *
  * Unlike the standard assert, xbt_assert is never disabled, even if the macro NDEBUG is defined at compile time.  So
  * it's safe to have a condition with side effects.
- *
- * In model-checking mode, a failed xbt_assert() is reported as a failed MC_assert().
  */
 /** @brief The condition which failed will be displayed.
     @hideinitializer  */
@@ -63,8 +60,6 @@ XBT_ATTRIB_NORETURN XBT_PUBLIC void xbt_abort(void);
       XBT_CCRITICAL(root, __VA_ARGS__);                                                                                \
       if (!xbt_log_no_loc)                                                                                             \
         xbt_backtrace_display_current();                                                                               \
-      if (MC_is_active())                                                                                              \
-        MC_assert(0);                                                                                                  \
       abort();                                                                                                         \
     }                                                                                                                  \
   } while (0)
