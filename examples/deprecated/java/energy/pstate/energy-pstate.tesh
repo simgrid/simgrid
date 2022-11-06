@@ -8,9 +8,9 @@ $ ${javacmd:=java} -classpath ${classpath:=.} energy/pstate/Main ${srcdir:=.}/..
 > [MyHost2:dvfs_test:(3) 0.000000] [java/INFO] Current power peak=1.0E8
 > [MyHost1:dvfs_test:(2) 1.000000] [java/INFO] Task1 simulation time: 1.0
 > [MyHost1:dvfs_test:(2) 1.000000] [java/INFO] Changing power peak value to 2.0E7 (at index 2)
+> [MyHost1:dvfs_test:(2) 1.000000] [java/INFO] Current power peak=2.0E7
 > [MyHost2:dvfs_test:(3) 1.000000] [java/INFO] Task1 simulation time: 1.0
 > [MyHost2:dvfs_test:(3) 1.000000] [java/INFO] Changing power peak value to 2.0E7 (at index 2)
-> [MyHost1:dvfs_test:(2) 1.000000] [java/INFO] Current power peak=2.0E7
 > [MyHost2:dvfs_test:(3) 1.000000] [java/INFO] Current power peak=2.0E7
 > [MyHost1:dvfs_test:(2) 6.000000] [java/INFO] Task2 simulation time: 5.0
 > [MyHost1:dvfs_test:(2) 6.000000] [java/INFO] Count of Processor states=3
