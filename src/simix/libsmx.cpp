@@ -10,9 +10,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/config.h"
+#include "simgrid/modelchecker.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
+#include "src/mc/mc_replay.hpp"
 #include <simgrid/s4u/Activity.hpp>
 
 #define SIMIX_H_NO_DEPRECATED_WARNING // avoid deprecation warning on include (remove with XBT_ATTRIB_DEPRECATED_v335)
@@ -188,4 +191,29 @@ void simcall_run_blocking(std::function<void()> const& code, simgrid::kernel::ac
   // The function `code` is called in kernel mode (either because we are already in maestor or after a context switch)
   // BUT simcall_answer IS NOT CALLED
   simcall(simgrid::kernel::actor::Simcall::Type::RUN_BLOCKING, code, observer);
+}
+
+void simcall_run_object_access(std::function<void()> const& code, simgrid::kernel::actor::ObjectAccessSimcallItem* item)
+{
+  auto self = simgrid::kernel::actor::ActorImpl::self();
+
+  // We only need a simcall if the order of the setters is important (parallel run or MC execution).
+  // Otherwise, just call the function with no simcall
+
+  if (simgrid::kernel::context::is_parallel()
+#if SIMGRID_HAVE_MC
+      || MC_is_active() || MC_record_replay_is_active()
+#endif
+  ) {
+
+    simgrid::kernel::actor::ObjectAccessSimcallObserver observer{self, item};
+    simcall(simgrid::kernel::actor::Simcall::Type::RUN_ANSWERED, code, &observer);
+    item->take_ownership();
+  } else {
+    // don't return from the context-switch we don't do
+    self->simcall_.call_     = simgrid::kernel::actor::Simcall::Type::RUN_BLOCKING;
+    self->simcall_.code_     = &code;
+    self->simcall_.observer_ = nullptr;
+    self->simcall_handle(0);
+  }
 }

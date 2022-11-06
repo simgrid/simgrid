@@ -9,7 +9,10 @@
 #include "Simcall.hpp"
 #include "simgrid/kernel/Timer.hpp"
 #include "simgrid/s4u/Actor.hpp"
+#include "src/kernel/actor/Simcall.hpp"
 #include "xbt/PropertyHolder.hpp"
+
+#include <atomic>
 #include <boost/intrusive/list.hpp>
 #include <functional>
 #include <list>

@@ -6,23 +6,23 @@
 #ifndef SIMGRID_KERNEL_ACTIVITY_ACTIVITYIMPL_HPP
 #define SIMGRID_KERNEL_ACTIVITY_ACTIVITYIMPL_HPP
 
+#include "simgrid/forward.h"
+#include "simgrid/kernel/resource/Action.hpp"
+#include "simgrid/simix.hpp"
+#include "src/kernel/actor/Simcall.hpp"
+#include "xbt/utility.hpp"
+
+#include <atomic>
 #include <list>
 #include <string>
 #include <string_view>
-
-#include "simgrid/forward.h"
-#include <xbt/utility.hpp>
-
-#include <atomic>
-#include <simgrid/kernel/resource/Action.hpp>
-#include <simgrid/simix.hpp>
 
 namespace simgrid::kernel::activity {
 
 XBT_DECLARE_ENUM_CLASS(State, WAITING, READY, RUNNING, DONE, CANCELED, FAILED, SRC_HOST_FAILURE, DST_HOST_FAILURE,
                        TIMEOUT, SRC_TIMEOUT, DST_TIMEOUT, LINK_FAILURE);
 
-class XBT_PUBLIC ActivityImpl {
+class XBT_PUBLIC ActivityImpl : public kernel::actor::ObjectAccessSimcallItem {
   std::atomic_int_fast32_t refcount_{0};
   std::string name_        = "";
   actor::ActorImpl* actor_ = nullptr;

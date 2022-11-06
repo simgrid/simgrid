@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/simix.hpp"
 #include <simgrid/Exception.hpp>
 #include <simgrid/exec.h>
 #include <simgrid/s4u/Exec.hpp>
@@ -74,8 +75,9 @@ ExecPtr Exec::set_bound(double bound)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
              "Cannot change the bound of an exec after its start");
-  kernel::actor::simcall_answered(
-      [this, bound] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_bound(bound); });
+  kernel::actor::simcall_object_access(pimpl_.get(), [this, bound] {
+    boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_bound(bound);
+  });
   return this;
 }
 
@@ -89,7 +91,7 @@ ExecPtr Exec::set_priority(double priority)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
              "Cannot change the priority of an exec after its start");
-  kernel::actor::simcall_answered([this, priority] {
+  kernel::actor::simcall_object_access(pimpl_.get(), [this, priority] {
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_sharing_penalty(1. / priority);
   });
   return this;
@@ -107,7 +109,7 @@ ExecPtr Exec::set_flops_amount(double flops_amount)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
       "Cannot change the flop_amount of an exec after its start");
-  kernel::actor::simcall_answered([this, flops_amount] {
+  kernel::actor::simcall_object_access(pimpl_.get(), [this, flops_amount] {
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_flops_amount(flops_amount);
   });
   set_remaining(flops_amount);
@@ -118,7 +120,7 @@ ExecPtr Exec::set_flops_amounts(const std::vector<double>& flops_amounts)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
       "Cannot change the flops_amounts of an exec after its start");
-  kernel::actor::simcall_answered([this, flops_amounts] {
+  kernel::actor::simcall_object_access(pimpl_.get(), [this, flops_amounts] {
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_flops_amounts(flops_amounts);
   });
   parallel_      = true;
@@ -129,7 +131,7 @@ ExecPtr Exec::set_bytes_amounts(const std::vector<double>& bytes_amounts)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
       "Cannot change the bytes_amounts of an exec after its start");
-  kernel::actor::simcall_answered([this, bytes_amounts] {
+  kernel::actor::simcall_object_access(pimpl_.get(), [this, bytes_amounts] {
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_bytes_amounts(bytes_amounts);
   });
   parallel_      = true;
@@ -140,7 +142,7 @@ ExecPtr Exec::set_thread_count(int thread_count)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
              "Cannot change the bytes_amounts of an exec after its start");
-  kernel::actor::simcall_answered([this, thread_count] {
+  kernel::actor::simcall_object_access(pimpl_.get(), [this, thread_count] {
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_thread_count(thread_count);
   });
   return this;
@@ -174,8 +176,8 @@ ExecPtr Exec::set_host(Host* host)
   if (state_ == State::STARTED)
     boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->migrate(host);
 
-  kernel::actor::simcall_answered(
-      [this, host] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_host(host); });
+  kernel::actor::simcall_object_access(
+      pimpl_.get(), [this, host] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_host(host); });
 
   if (state_ == State::STARTING)
   // Setting the host may allow to start the activity, let's try
@@ -189,8 +191,9 @@ ExecPtr Exec::set_hosts(const std::vector<Host*>& hosts)
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
              "Cannot change the hosts of an exec once it's done (state: %s)", to_c_str(state_));
 
-  kernel::actor::simcall_answered(
-      [this, hosts] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_hosts(hosts); });
+  kernel::actor::simcall_object_access(pimpl_.get(), [this, hosts] {
+    boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_hosts(hosts);
+  });
   parallel_ = true;
 
   // Setting the host may allow to start the activity, let's try

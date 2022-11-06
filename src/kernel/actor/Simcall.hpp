@@ -3,18 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMCALL_HPP
-#define SIMCALL_HPP
+#ifndef SIMGRID_SIMCALL_HPP
+#define SIMGRID_SIMCALL_HPP
 
 #include "simgrid/forward.h"
-#include "src/kernel/activity/ActivityImpl.hpp"
 #include "xbt/utility.hpp"
 
 namespace simgrid::kernel::actor {
 
-/**
- * @brief Represents a simcall to the kernel.
- */
+/** Contains what's needed to run some code in kernel mode on behalf of an actor */
 class Simcall {
 public:
   /** All possible simcalls. */
@@ -27,6 +24,14 @@ public:
   std::function<void()> const* code_ = nullptr;
 
   const char* get_cname() const;
+};
+
+/** A thing that can be used for an ObjectAccess simcall (getter or setter). */
+class ObjectAccessSimcallItem {
+public:
+  ObjectAccessSimcallItem();
+  void take_ownership();
+  ActorImpl* simcall_owner_;
 };
 
 } // namespace simgrid::kernel::actor

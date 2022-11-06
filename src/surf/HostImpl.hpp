@@ -39,7 +39,7 @@ public:
  * @brief SURF Host interface class
  * @details A host represents a machine with an aggregation of a Cpu, a RoutingEdge and Disk(s)
  */
-class XBT_PRIVATE HostImpl : public xbt::PropertyHolder {
+class XBT_PRIVATE HostImpl : public xbt::PropertyHolder, public actor::ObjectAccessSimcallItem {
   using ActorList =
       boost::intrusive::list<actor::ActorImpl,
                              boost::intrusive::member_hook<actor::ActorImpl, boost::intrusive::list_member_hook<>,

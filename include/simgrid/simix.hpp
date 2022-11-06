@@ -18,15 +18,15 @@ XBT_PUBLIC void simcall_run_answered(std::function<void()> const& code,
                                      simgrid::kernel::actor::SimcallObserver* observer);
 XBT_PUBLIC void simcall_run_blocking(std::function<void()> const& code,
                                      simgrid::kernel::actor::SimcallObserver* observer);
+XBT_PUBLIC void simcall_run_object_access(std::function<void()> const& code,
+                                          simgrid::kernel::actor::ObjectAccessSimcallItem* item);
 
-namespace simgrid {
-namespace kernel {
-namespace actor {
+namespace simgrid::kernel::actor {
 
 /** Execute some code in kernel context on behalf of the user code.
  *
  * Every modification of the environment must be protected this way: every setter, constructor and similar.
- * Getters don't have to be protected this way.
+ * Getters don't have to be protected this way, and setters may use the simcall_object_access() variant (see below).
  *
  * This allows deterministic parallel simulation without any locking, even if almost nobody uses parallel simulation in
  * SimGrid. More interestingly it makes every modification of the simulated world observable by the model-checker,
@@ -55,6 +55,29 @@ template <class F> typename std::result_of_t<F()> simcall_answered(F&& code, Sim
   using R = typename std::result_of_t<F()>;
   simgrid::xbt::Result<R> result;
   simcall_run_answered([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); }, observer);
+  return result.get();
+}
+
+/** Use a setter on the `item` object. That's a simcall only if running in parallel or with MC activated.
+ *
+ * Simulation without MC and without parallelism (contexts/nthreads=1) will not pay the price of a simcall for an
+ * harmless setter. When running in parallel, you want your write access to be done in a mutual exclusion way, while the
+ * getters can still occure out of order.
+ *
+ * When running in MC, you want to make this access visible to the checker. Actually in this case, it's not visible from
+ * the checker (and thus still use a fast track) if the setter is called from the actor that created the object.
+ */
+template <class F> typename std::result_of_t<F()> simcall_object_access(ObjectAccessSimcallItem* item, F&& code)
+{
+  // If we are in the maestro, we take the fast path and execute the code directly
+  if (simgrid::s4u::Actor::is_maestro())
+    return std::forward<F>(code)();
+
+  // If called from another thread, do a real simcall. It will be short-cut on need
+  using R = typename std::result_of_t<F()>;
+  simgrid::xbt::Result<R> result;
+  simcall_run_object_access([&result, &code] { simgrid::xbt::fulfill_promise(result, std::forward<F>(code)); }, item);
+
   return result.get();
 }
 
@@ -91,8 +114,6 @@ auto simcall_blocking(F&& code, Observer* observer) -> decltype(observer->get_re
   simcall_blocking(std::forward<F>(code), static_cast<SimcallObserver*>(observer));
   return observer->get_result();
 }
-} // namespace actor
-} // namespace kernel
-} // namespace simgrid
+} // namespace simgrid::kernel::actor
 
 #endif

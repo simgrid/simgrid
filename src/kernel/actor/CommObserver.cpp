@@ -51,13 +51,6 @@ static void serialize_activity_test(const activity::ActivityImpl* act, std::stri
     stream << (short)mc::Transition::Type::UNKNOWN;
   }
 }
-template <typename A> static std::string ptr_to_id(A* ptr)
-{
-  static std::unordered_map<A*, std::string> map;
-  if (map.find(ptr) == map.end())
-    map.insert(std::make_pair(ptr, std::to_string(map.size() + 1)));
-  return map[ptr];
-}
 static std::string to_string_activity_test(const activity::ActivityImpl* act)
 {
   if (auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {

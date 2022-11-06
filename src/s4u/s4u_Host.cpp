@@ -13,6 +13,7 @@
 #include <simgrid/s4u/VirtualMachine.hpp>
 #include <xbt/parse_units.hpp>
 
+#include "simgrid/simix.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/surf/HostImpl.hpp"
@@ -196,13 +197,13 @@ const char* Host::get_property(const std::string& key) const
 
 Host* Host::set_property(const std::string& key, const std::string& value)
 {
-  kernel::actor::simcall_answered([this, &key, &value] { this->pimpl_->set_property(key, value); });
+  kernel::actor::simcall_object_access(pimpl_, [this, &key, &value] { this->pimpl_->set_property(key, value); });
   return this;
 }
 
 Host* Host::set_properties(const std::unordered_map<std::string, std::string>& properties)
 {
-  kernel::actor::simcall_answered([this, &properties] { this->pimpl_->set_properties(properties); });
+  kernel::actor::simcall_object_access(pimpl_, [this, &properties] { this->pimpl_->set_properties(properties); });
   return this;
 }
 
@@ -210,7 +211,7 @@ Host* Host::set_properties(const std::unordered_map<std::string, std::string>& p
  * The profile must contain boolean values. */
 Host* Host::set_state_profile(kernel::profile::Profile* p)
 {
-  kernel::actor::simcall_answered([this, p] { pimpl_cpu_->set_state_profile(p); });
+  kernel::actor::simcall_object_access(pimpl_, [this, p] { pimpl_cpu_->set_state_profile(p); });
   return this;
 }
 /** Specify a profile modeling the external load according to an exhaustive list or a stochastic law.
@@ -221,7 +222,7 @@ Host* Host::set_state_profile(kernel::profile::Profile* p)
  */
 Host* Host::set_speed_profile(kernel::profile::Profile* p)
 {
-  kernel::actor::simcall_answered([this, p] { pimpl_cpu_->set_speed_profile(p); });
+  kernel::actor::simcall_object_access(pimpl_, [this, p] { pimpl_cpu_->set_speed_profile(p); });
   return this;
 }
 
@@ -246,7 +247,7 @@ double Host::get_available_speed() const
 
 Host* Host::set_sharing_policy(SharingPolicy policy, const s4u::NonLinearResourceCb& cb)
 {
-  kernel::actor::simcall_answered([this, policy, &cb] { pimpl_cpu_->set_sharing_policy(policy, cb); });
+  kernel::actor::simcall_object_access(pimpl_, [this, policy, &cb] { pimpl_cpu_->set_sharing_policy(policy, cb); });
   return this;
 }
 
@@ -262,13 +263,14 @@ int Host::get_core_count() const
 
 Host* Host::set_core_count(int core_count)
 {
-  kernel::actor::simcall_answered([this, core_count] { this->pimpl_cpu_->set_core_count(core_count); });
+  kernel::actor::simcall_object_access(pimpl_, [this, core_count] { this->pimpl_cpu_->set_core_count(core_count); });
   return this;
 }
 
 Host* Host::set_pstate_speed(const std::vector<double>& speed_per_state)
 {
-  kernel::actor::simcall_answered([this, &speed_per_state] { pimpl_cpu_->set_pstate_speed(speed_per_state); });
+  kernel::actor::simcall_object_access(pimpl_,
+                                       [this, &speed_per_state] { pimpl_cpu_->set_pstate_speed(speed_per_state); });
   return this;
 }
 
@@ -296,7 +298,7 @@ Host* Host::set_pstate_speed(const std::vector<std::string>& speed_per_state)
 /** @brief Set the pstate at which the host should run */
 Host* Host::set_pstate(unsigned long pstate_index)
 {
-  kernel::actor::simcall_answered([this, pstate_index] { this->pimpl_cpu_->set_pstate(pstate_index); });
+  kernel::actor::simcall_object_access(pimpl_, [this, pstate_index] { this->pimpl_cpu_->set_pstate(pstate_index); });
   return this;
 }
 
@@ -308,14 +310,14 @@ unsigned long Host::get_pstate() const
 
 Host* Host::set_factor_cb(const std::function<CpuFactorCb>& cb)
 {
-  kernel::actor::simcall_answered([this, &cb] { pimpl_cpu_->set_factor_cb(cb); });
+  kernel::actor::simcall_object_access(pimpl_, [this, &cb] { pimpl_cpu_->set_factor_cb(cb); });
   return this;
 }
 
 Host* Host::set_coordinates(const std::string& coords)
 {
   if (not coords.empty())
-    kernel::actor::simcall_answered([this, coords] { this->pimpl_netpoint_->set_coordinates(coords); });
+    kernel::actor::simcall_object_access(pimpl_, [this, coords] { this->pimpl_netpoint_->set_coordinates(coords); });
   return this;
 }
 std::vector<Disk*> Host::get_disks() const

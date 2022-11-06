@@ -31,7 +31,8 @@ class Transition {
 
 public:
   /* Ordering is important here. depends() implementations only consider subsequent types in this ordering */
-  XBT_DECLARE_ENUM_CLASS(Type, RANDOM, ACTOR_JOIN, /* First because indep with anybody */
+  XBT_DECLARE_ENUM_CLASS(Type, RANDOM, ACTOR_JOIN, /* First because indep with anybody including themselves */
+                         OBJECT_ACCESS,            /* high priority because indep with almost everybody */
                          TESTANY, WAITANY,         /* high priority because they can rewrite themselves to *_WAIT */
                          BARRIER_ASYNC_LOCK, BARRIER_WAIT, /* BARRIER transitions sorted alphabetically */
                          COMM_ASYNC_RECV, COMM_ASYNC_SEND, COMM_TEST, COMM_WAIT, /* Alphabetical ordering of COMM_* */

@@ -7,6 +7,7 @@
 #include <simgrid/s4u/ConditionVariable.hpp>
 #include <xbt/log.h>
 
+#include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/activity/ConditionVariableImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 

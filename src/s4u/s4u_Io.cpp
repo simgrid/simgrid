@@ -48,12 +48,11 @@ IoPtr Io::set_source(Host* from, Disk* from_disk)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
              "Cannot change the source of an IO stream once it's started (state: %s)", to_c_str(state_));
-  kernel::actor::simcall_answered(
-      [this, from, from_disk] {
-        boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_host(from);
-        if (from_disk != nullptr)
-          boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_disk(from_disk->get_impl());
-      });
+  kernel::actor::simcall_object_access(pimpl_.get(), [this, from, from_disk] {
+    boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_host(from);
+    if (from_disk != nullptr)
+      boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_disk(from_disk->get_impl());
+  });
   // Setting 'source' may allow to start the activity, let's try
   if (state_ == State::STARTING && remains_ <= 0)
     XBT_DEBUG("This IO has a size of 0 byte. It cannot start yet");
@@ -67,12 +66,11 @@ IoPtr Io::set_destination(Host* to, Disk* to_disk)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
              "Cannot change the source of an IO stream once it's started (state: %s)", to_c_str(state_));
-  kernel::actor::simcall_answered(
-      [this, to, to_disk] {
-        boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_dst_host(to);
-        if (to_disk != nullptr)
-          boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_dst_disk(to_disk->get_impl());
-      });
+  kernel::actor::simcall_object_access(pimpl_.get(), [this, to, to_disk] {
+    boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_dst_host(to);
+    if (to_disk != nullptr)
+      boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_dst_disk(to_disk->get_impl());
+  });
   // Setting 'destination' may allow to start the activity, let's try
   if (state_ == State::STARTING && remains_ <= 0)
     XBT_DEBUG("This IO has a size of 0 byte. It cannot start yet");
@@ -121,7 +119,7 @@ IoPtr Io::set_priority(double priority)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
              "Cannot change the priority of an io after its start");
-  kernel::actor::simcall_answered([this, priority] {
+  kernel::actor::simcall_object_access(pimpl_.get(), [this, priority] {
     boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_sharing_penalty(1. / priority);
   });
   return this;
@@ -130,8 +128,8 @@ IoPtr Io::set_priority(double priority)
 IoPtr Io::set_size(sg_size_t size)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING, "Cannot set size once the Io is started");
-  kernel::actor::simcall_answered(
-      [this, size] { boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_size(size); });
+  kernel::actor::simcall_object_access(
+      pimpl_.get(), [this, size] { boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_size(size); });
   set_remaining(size);
   return this;
 }
@@ -139,8 +137,8 @@ IoPtr Io::set_size(sg_size_t size)
 IoPtr Io::set_op_type(OpType type)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING, "Cannot set size once the Io is started");
-  kernel::actor::simcall_answered(
-      [this, type] { boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_type(type); });
+  kernel::actor::simcall_object_access(
+      pimpl_.get(), [this, type] { boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->set_type(type); });
   return this;
 }
 
@@ -155,8 +153,8 @@ IoPtr Io::update_priority(double priority)
 /** @brief Returns the amount of flops that remain to be done */
 double Io::get_remaining() const
 {
-  return kernel::actor::simcall_answered(
-      [this]() { return boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->get_remaining(); });
+  return kernel::actor::simcall_object_access(
+      pimpl_.get(), [this]() { return boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)->get_remaining(); });
 }
 
 sg_size_t Io::get_performed_ioops() const

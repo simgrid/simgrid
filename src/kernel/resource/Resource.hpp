@@ -7,6 +7,7 @@
 #define SIMGRID_KERNEL_RESOURCE_RESOURCE_HPP
 
 #include "simgrid/forward.h"
+#include "src/kernel/actor/Simcall.hpp"
 #include "src/kernel/lmm/maxmin.hpp" // Constraint
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
@@ -23,7 +24,7 @@ namespace simgrid::kernel::resource {
  * @brief SURF resource interface class
  * @details This is the ancestor class of every resources in SimGrid, such as links, CPU or disk
  */
-class XBT_PUBLIC Resource {
+class XBT_PUBLIC Resource : public actor::ObjectAccessSimcallItem {
   std::string name_            = "unnamed";
   bool is_on_                  = true;
   bool sealed_                 = false;

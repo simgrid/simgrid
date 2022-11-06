@@ -71,4 +71,24 @@ std::string ActorJoinSimcall::to_string() const
 {
   return std::string("ActorJoin(pid:") + std::to_string(other_->get_pid()) + ")";
 }
+
+void ObjectAccessSimcallObserver::serialize(std::stringstream& stream) const
+{
+  stream << (short)mc::Transition::Type::OBJECT_ACCESS << ' ';
+  stream << object_ << ' ' << get_owner()->get_pid();
+}
+std::string ObjectAccessSimcallObserver::to_string() const
+{
+  return std::string("ObjectAccess(obj:") + ptr_to_id<ObjectAccessSimcallItem const>(object_) +
+         " owner:" + std::to_string(get_owner()->get_pid()) + ")";
+}
+bool ObjectAccessSimcallObserver::is_visible() const
+{
+  return get_owner() != get_issuer();
+}
+ActorImpl* ObjectAccessSimcallObserver::get_owner() const
+{
+  return object_->simcall_owner_;
+}
+
 } // namespace simgrid::kernel::actor

@@ -125,6 +125,32 @@ public:
   s4u::ActorPtr get_other_actor() const { return other_; }
   double get_timeout() const { return timeout_; }
 };
+
+class ObjectAccessSimcallObserver final : public SimcallObserver {
+  ObjectAccessSimcallItem* const object_;
+
+public:
+  ObjectAccessSimcallObserver(ActorImpl* actor, ObjectAccessSimcallItem* object)
+      : SimcallObserver(actor), object_(object)
+  {
+  }
+  void serialize(std::stringstream& stream) const override;
+  std::string to_string() const override;
+  bool is_visible() const override;
+  bool is_enabled() override { return true; }
+
+  ActorImpl* get_owner() const;
+};
+
+/* Semi private template used by the to_string methods of various observer classes */
+template <typename A> static std::string ptr_to_id(A* ptr)
+{
+  static std::unordered_map<A*, std::string> map;
+  if (map.find(ptr) == map.end())
+    map.insert(std::make_pair(ptr, std::to_string(map.size() + 1)));
+  return map[ptr];
+}
+
 } // namespace simgrid::kernel::actor
 
 #endif
