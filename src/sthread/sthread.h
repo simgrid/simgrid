@@ -10,13 +10,8 @@
 #ifndef SIMGRID_STHREAD_H
 #define SIMGRID_STHREAD_H
 
+#include "xbt/base.h"
 #include <sys/time.h>
-
-#if defined(__ELF__)
-#define XBT_PUBLIC __attribute__((visibility("default")))
-#else
-#define XBT_PUBLIC
-#endif
 
 #if defined(__cplusplus)
 extern "C" {
