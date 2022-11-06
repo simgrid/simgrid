@@ -11,6 +11,7 @@
 #include "xbt/asserts.h"
 
 #include <string>
+#include <unordered_map>
 
 namespace simgrid::kernel::actor {
 
