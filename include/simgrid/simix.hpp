@@ -21,7 +21,9 @@ XBT_PUBLIC void simcall_run_blocking(std::function<void()> const& code,
 XBT_PUBLIC void simcall_run_object_access(std::function<void()> const& code,
                                           simgrid::kernel::actor::ObjectAccessSimcallItem* item);
 
-namespace simgrid::kernel::actor {
+namespace simgrid {
+namespace kernel {
+namespace actor {
 
 /** Execute some code in kernel context on behalf of the user code.
  *
@@ -114,6 +116,8 @@ auto simcall_blocking(F&& code, Observer* observer) -> decltype(observer->get_re
   simcall_blocking(std::forward<F>(code), static_cast<SimcallObserver*>(observer));
   return observer->get_result();
 }
-} // namespace simgrid::kernel::actor
-
+// compact namespaces are C++17 and this is a public header file so let's stick to C++14
+} // namespace actor
+} // namespace kernel
+} // namespace simgrid
 #endif
