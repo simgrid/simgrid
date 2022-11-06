@@ -3,11 +3,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifdef _WIN32
-#warning Try to work around https://bugs.python.org/issue11566
-#define _hypot hypot
-#endif
-
 #if defined(__GNUG__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-value"
