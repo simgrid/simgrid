@@ -109,7 +109,7 @@ int main(int argc, char** argv)
   sg4::LinkInRoute link(zone->create_link("link", "2MBps")->set_latency("50us")->seal());
   zone->add_route(bob->get_netpoint(), alice->get_netpoint(), nullptr, nullptr, {link}, true);
 
-  bob->create_disk("bob_disk", 1e6, 5e5);
+  bob->create_disk("bob_disk", "1MBps", "500kBps");
   alice->create_disk("alice_disk", 4e6, 4e6);
 
   zone->seal();

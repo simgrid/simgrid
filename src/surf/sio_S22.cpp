@@ -25,7 +25,7 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
  ***********/
  static simgrid::config::Flag<std::string> cfg_sio_solver("host/sio_solver",
                                                            "Set linear equations solver used by sio model",
-                                                           "fairbottleneck",
+                                                           "maxmin",
                                                            &simgrid::kernel::lmm::System::validate_solver);
 
 /**************************************/
@@ -34,8 +34,7 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
 void surf_host_model_init_sio_S22()
 {
   XBT_CINFO(xbt_cfg, "Switching to the S22 model to handle streaming I/Os.");
-  xbt_assert(cfg_sio_solver != "maxmin", "Invalid configuration. Cannot use maxmin solver with streaming I/Os.");
-
+  simgrid::config::set_default<bool>("network/crosstraffic", true);
   auto* system    = simgrid::kernel::lmm::System::build(cfg_sio_solver.get(), true /* selective update */);
   auto host_model = std::make_shared<simgrid::kernel::resource::HostS22Model>("Host_Sio", system);
   auto* engine    = simgrid::kernel::EngineImpl::get_instance();
@@ -48,43 +47,9 @@ namespace simgrid::kernel::resource {
 HostS22Model::HostS22Model(const std::string& name, lmm::System* sys) : HostModel(name)
 {
   set_maxmin_system(sys);
-
-  auto net_model = std::make_shared<NetworkS22Model>("Network_Sio", this, sys);
-  auto engine    = EngineImpl::get_instance();
-  engine->add_model(net_model);
-  engine->get_netzone_root()->set_network_model(net_model);
-
-  auto disk_model = std::make_shared<DiskS22Model>("Disk_Sio", this, sys);
-  engine->add_model(disk_model);
-  engine->get_netzone_root()->set_disk_model(disk_model);
-
+  surf_network_model_init_LegrandVelho();
   surf_cpu_model_init_Cas01();
-}
-
-DiskS22Model::DiskS22Model(const std::string& name, HostS22Model* hmodel, lmm::System* sys)
-    : DiskModel(name), hostModel_(hmodel)
-{
-  set_maxmin_system(sys);
-}
-
-DiskS22Model::~DiskS22Model()
-{
-  set_maxmin_system(nullptr);
-}
-
-NetworkS22Model::NetworkS22Model(const std::string& name, HostS22Model* hmodel, lmm::System* sys)
-    : NetworkModel(name), hostModel_(hmodel)
-{
-  set_maxmin_system(sys);
-  loopback_.reset(create_link("__loopback__", {simgrid::config::get_value<double>("network/loopback-bw")}));
-  loopback_->set_sharing_policy(s4u::Link::SharingPolicy::FATPIPE, {});
-  loopback_->set_latency(simgrid::config::get_value<double>("network/loopback-lat"));
-  loopback_->get_iface()->seal();
-}
-
-NetworkS22Model::~NetworkS22Model()
-{
-  set_maxmin_system(nullptr);
+  surf_disk_model_init_S19();
 }
 
 double HostS22Model::next_occurring_event(double now)
@@ -152,61 +117,6 @@ void HostS22Model::update_actions_state(double /*now*/, double delta)
   }
 }
 
-S22Action::S22Action(Model* model, s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk, double size)
-    : DiskAction(model, 1, false)
-    , src_host_(src_host)
-    , src_disk_(src_disk)
-    , dst_host_(dst_host)
-    , dst_disk_(dst_disk)
-    , size_(size)
-{
-  size_t disk_nb       = 0;
-  size_t link_nb       = 0;
-  double latency       = 0.0;
-  this->set_last_update();
-
-  if (src_disk_ != nullptr)
-    disk_nb++;
-  if (dst_disk_ != nullptr)
-    disk_nb++;
-
-  /* there should always be a route between src_host and dst_host (loopback_ for self communication at least) */
-  double lat = 0.0;
-  std::vector<StandardLinkImpl*> route;
-  src_host_->route_to(dst_host_, route, &lat);
-  latency = std::max(latency, lat);
-  link_nb = route.size();
-
-  XBT_DEBUG("Creating a stream io (%p) with %zu disk(s) and %zu unique link(s).", this, disk_nb, link_nb);
-  latency_ = latency;
-
-  set_variable(model->get_maxmin_system()->variable_new(this, 1.0, -1.0, disk_nb + link_nb));
-
-  if (latency_ > 0)
-    model->get_maxmin_system()->update_variable_penalty(get_variable(), 0.0);
-
-  /* Expand it for the disks even if there is nothing to read/write, to make sure that it gets expended even if there is no
-   * communication either */
-  if (src_disk_ != nullptr)
-    model->get_maxmin_system()->expand(src_disk_->get_constraint(), get_variable(), size, true);
-  if (dst_disk_ != nullptr)
-    model->get_maxmin_system()->expand(dst_disk_->get_constraint(), get_variable(), size, true);
-
-  if (link_nb > 0) {
-    std::vector<StandardLinkImpl*> route;
-    src_host_->route_to(dst_host_, route, nullptr);
-    for (auto const& link : route)
-      model->get_maxmin_system()->expand(link->get_constraint(), this->get_variable(), size_);
-  }
-
-  if (link_nb + disk_nb == 0) {
-    this->set_cost(1.0);
-    this->set_remains(0.0);
-  }
-
-  /* finally calculate the initial bound value */
-  update_bound();
-}
 
 DiskAction* HostS22Model::io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk,
                                    double size)
@@ -214,170 +124,29 @@ DiskAction* HostS22Model::io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u
   return new S22Action(this, src_host, src_disk, dst_host, dst_disk, size);
 }
 
-Action* NetworkS22Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double /*rate*/)
+Action* HostS22Model::execute_thread(const s4u::Host* host, double flops_amount, int thread_count)
 {
-  return hostModel_->io_stream(src, nullptr, dst, nullptr, size);
-}
-
-DiskImpl* DiskS22Model::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
-{
-  return (new DiskS22(name, read_bandwidth, write_bandwidth))->set_model(this);
-}
-
-StandardLinkImpl* NetworkS22Model::create_link(const std::string& name, const std::vector<double>& bandwidths)
-{
-  xbt_assert(bandwidths.size() == 1, "Non WIFI link must have only 1 bandwidth.");
-  auto link = new LinkS22(name, bandwidths[0], get_maxmin_system());
-  link->set_model(this);
-  return link;
-}
-
-StandardLinkImpl* NetworkS22Model::create_wifi_link(const std::string& name, const std::vector<double>& bandwidths)
-{
-  THROW_UNIMPLEMENTED;
-}
-
-/************
- * Resource *
- ************/
-DiskAction* DiskS22::io_start(sg_size_t size, s4u::Io::OpType type)
-{
-  DiskAction* res;
-  switch (type) {
-    case s4u::Io::OpType::READ:
-      res = static_cast<DiskS22Model*>(get_model())->hostModel_->io_stream(get_host(), this, get_host(), nullptr, size);
-    break;
-    case s4u::Io::OpType::WRITE:
-      res = static_cast<DiskS22Model*>(get_model())->hostModel_->io_stream(get_host(), nullptr, get_host(), this, size);
-    break;
-    default:
-      THROW_UNIMPLEMENTED;
-  }
-
-   return res;
-}
-
-void DiskS22::apply_event(kernel::profile::Event* triggered, double value)
-{
-  /* Find out which of my iterators was triggered, and react accordingly */
-  if (triggered == get_read_event()) {
-    set_read_bandwidth(value);
-    unref_read_event();
-  } else if (triggered == get_write_event()) {
-    set_write_bandwidth(value);
-    unref_write_event();
-  } else if (triggered == get_state_event()) {
-    if (value > 0)
-      turn_on();
-    else
-      turn_off();
-    unref_state_event();
-  } else {
-    xbt_die("Unknown event!\n");
-  }
-}
-
-LinkS22::LinkS22(const std::string& name, double bandwidth, lmm::System* system) : StandardLinkImpl(name)
-{
-  this->set_constraint(system->constraint_new(this, bandwidth));
-  bandwidth_.peak = bandwidth;
-}
-
-void LinkS22::apply_event(profile::Event* triggered, double value)
-{
-  XBT_DEBUG("Updating link %s (%p) with value=%f", get_cname(), this, value);
-  if (triggered == bandwidth_.event) {
-    set_bandwidth(value);
-    tmgr_trace_event_unref(&bandwidth_.event);
-
-  } else if (triggered == latency_.event) {
-    set_latency(value);
-    tmgr_trace_event_unref(&latency_.event);
-
-  } else if (triggered == get_state_event()) {
-    if (value > 0)
-      turn_on();
-    else
-      turn_off();
-    unref_state_event();
-  } else {
-    xbt_die("Unknown event ! \n");
-  }
-}
-
-void LinkS22::set_bandwidth(double value)
-{
-  bandwidth_.peak = value;
-  StandardLinkImpl::on_bandwidth_change();
-
-  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), bandwidth_.peak * bandwidth_.scale);
-}
-
-void LinkS22::set_latency(double value)
-{
-  latency_check(value);
-  const lmm::Element* elem = nullptr;
-
-  latency_.peak = value;
-  while (const auto* var = get_constraint()->get_variable(&elem)) {
-    const auto* action = static_cast<S22Action*>(var->get_id());
-    action->update_bound();
-  }
+  /* Create a single action whose cost is thread_count * flops_amount and that requests thread_count cores. */
+  return host->get_cpu()->execution_start(thread_count * flops_amount, thread_count, -1);
 }
 
 /**********
  * Action *
  **********/
-
-double S22Action::calculate_io_read_bound() const
-{
-  double io_read_bound = std::numeric_limits<double>::max();
-
-  if (src_disk_ == nullptr)
-    return io_read_bound;
-
-  if (size_ > 0)
-    io_read_bound = std::min(io_read_bound, src_disk_->get_read_bandwidth() / size_);
-
-  return io_read_bound;
-}
-
-double S22Action::calculate_io_write_bound() const
-{
-  double io_write_bound = std::numeric_limits<double>::max();
-
-  if (dst_disk_ == nullptr)
-    return io_write_bound;
-
-  if (size_ > 0)
-    io_write_bound = std::min(io_write_bound, dst_disk_->get_write_bandwidth() / size_);
-
-  return io_write_bound;
-}
-
-double S22Action::calculate_network_bound() const
-{
-  double lat = 0.0;
-  double lat_bound   = std::numeric_limits<double>::max();
-
-  if (src_host_ == dst_host_)
-    return lat_bound;
-
-  if (size_ <= 0){
-    std::vector<StandardLinkImpl*> route;
-    src_host_->route_to(dst_host_, route, &lat);
-  }
-
-  if (lat > 0)
-    lat_bound = NetworkModel::cfg_tcp_gamma / (2.0 * lat);
-
-  return lat_bound;
-}
-
 void S22Action::update_bound() const
 {
-  double bound = std::min(std::min(calculate_io_read_bound(), calculate_io_write_bound()),
-                          calculate_network_bound());
+  double bound = std::numeric_limits<double>::max();
+  if (src_disk_)
+    bound = std::min(bound, src_disk_->get_read_bandwidth());
+  if (dst_disk_)
+    bound = std::min(bound, dst_disk_->get_write_bandwidth());
+  if (src_host_ != dst_host_) {
+    double lat       = 0.0;
+    std::vector<StandardLinkImpl*> route;
+    src_host_->route_to(dst_host_, route, &lat);
+    if (lat > 0)
+      bound = std::min(bound,NetworkModel::cfg_tcp_gamma / (2.0 * lat));
+  }
 
   XBT_DEBUG("action (%p) : bound = %g", this, bound);
 
@@ -386,4 +155,54 @@ void S22Action::update_bound() const
     get_model()->get_maxmin_system()->update_variable_bound(get_variable(), bound);
  }
 
+S22Action::S22Action(Model* model, s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk, double size)
+    : DiskAction(model, size, false)
+    , src_host_(src_host)
+    , src_disk_(src_disk)
+    , dst_host_(dst_host)
+    , dst_disk_(dst_disk)
+    , size_(size)
+{
+  this->set_last_update();
+
+  size_t disk_nb       = 0;
+  if (src_disk_ != nullptr)
+    disk_nb++;
+  if (dst_disk_ != nullptr)
+    disk_nb++;
+
+  /* there should always be a route between src_host and dst_host (loopback_ for self communication at least) */
+  std::vector<StandardLinkImpl*> route;
+  src_host_->route_to(dst_host_, route, &latency_);
+  size_t link_nb = route.size();
+
+  XBT_DEBUG("Creating a stream io (%p) with %zu disk(s) and %zu unique link(s).", this, disk_nb, link_nb);
+
+  set_variable(model->get_maxmin_system()->variable_new(this, 1.0, -1.0, 3 * disk_nb + link_nb));
+
+  if (latency_ > 0)
+    model->get_maxmin_system()->update_variable_penalty(get_variable(), 0.0);
+
+  /* Expand it for the disks even if there is nothing to read/write, to make sure that it gets expended even if there is no
+   * communication either */
+  if (src_disk_ != nullptr){
+    model->get_maxmin_system()->expand(src_disk_->get_constraint(), get_variable(), 1);
+    model->get_maxmin_system()->expand(src_disk->get_read_constraint(), get_variable(), 1);
+  }
+  if (dst_disk_ != nullptr){
+    model->get_maxmin_system()->expand(dst_disk_->get_constraint(), get_variable(), 1);
+    model->get_maxmin_system()->expand(dst_disk_->get_write_constraint(), get_variable(), 1);
+  }
+
+  for (auto const& link : route)
+    model->get_maxmin_system()->expand(link->get_constraint(), get_variable(), 1);
+
+  if (size <= 0) {
+    this->set_cost(1.0);
+    this->set_remains(0.0);
+  }
+
+  /* finally calculate the initial bound value */
+  update_bound();
+}
 } // namespace simgrid::kernel::resource
