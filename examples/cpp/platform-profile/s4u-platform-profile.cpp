@@ -26,7 +26,7 @@ static void watcher()
 
   std::string path;
   for (const auto* l : links)
-    path += (path.empty() ? "" : ", ") + std::string("link '") + l->get_name() + std::string("'");
+    path += std::string(path.empty() ? "" : ", ") + "link '" + l->get_name() + "'";
   XBT_INFO("Path from Jupiter to Fafard: %s (latency: %fs).", path.c_str(), lat);
 
   for (int i = 0; i < 10; i++) {

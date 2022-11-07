@@ -17,7 +17,7 @@ namespace simgrid {
 namespace instr {
 /* User-variables related functions*/
 /* for host variables */
-XBT_PUBLIC void declare_host_variable(const std::string& variable, const std::string& color = std::string(""));
+XBT_PUBLIC void declare_host_variable(const std::string& variable, const std::string& color = "");
 XBT_PUBLIC void set_host_variable(const std::string& host, const std::string& variable, double value,
                                   double time = simgrid_get_clock());
 XBT_PUBLIC void add_host_variable(const std::string& host, const std::string& variable, double value,
@@ -27,7 +27,7 @@ XBT_PUBLIC void sub_host_variable(const std::string& host, const std::string& va
 XBT_PUBLIC const std::set<std::string, std::less<>>& get_host_variables();
 
 /* for link variables */
-XBT_PUBLIC void declare_link_variable(const std::string& variable, const std::string& color = std::string(""));
+XBT_PUBLIC void declare_link_variable(const std::string& variable, const std::string& color = "");
 XBT_PUBLIC void set_link_variable(const std::string& link, const std::string& variable, double value,
                                   double time = simgrid_get_clock());
 XBT_PUBLIC void add_link_variable(const std::string& link, const std::string& variable, double value,
@@ -44,7 +44,7 @@ XBT_PUBLIC void sub_link_variable(const std::string& src, const std::string& dst
 XBT_PUBLIC const std::set<std::string, std::less<>>& get_link_variables();
 
 /* for VM variables */
-XBT_PUBLIC void declare_vm_variable(const std::string& variable, const std::string& color = std::string(""));
+XBT_PUBLIC void declare_vm_variable(const std::string& variable, const std::string& color = "");
 XBT_PUBLIC void set_vm_variable(const std::string& vm, const std::string& variable, double value,
                                 double time = simgrid_get_clock());
 XBT_PUBLIC void add_vm_variable(const std::string& vm, const std::string& variable, double value,
@@ -56,7 +56,7 @@ XBT_PUBLIC const std::set<std::string, std::less<>>& get_vm_variables();
 /*  Functions to manage tracing marks (used for trace comparison experiments) */
 XBT_PUBLIC void declare_mark(const std::string& mark_type);
 XBT_PUBLIC void declare_mark_value(const std::string& mark_type, const std::string& mark_value,
-                                   const std::string& mark_color = std::string("1 1 1"));
+                                   const std::string& mark_color = "1 1 1");
 XBT_PUBLIC void mark(const std::string& mark_type, const std::string& mark_value);
 XBT_PUBLIC const std::set<std::string, std::less<>>& get_marks();
 

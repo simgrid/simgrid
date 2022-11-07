@@ -68,7 +68,7 @@ static inline std::string contexts_list()
 }
 
 static config::Flag<std::string> context_factory_name("contexts/factory",
-                                                      (std::string("Possible values: ") + contexts_list()).c_str(),
+                                                      ("Possible values: " + contexts_list()).c_str(),
                                                       context_factories.begin()->first);
 
 } // namespace simgrid::kernel

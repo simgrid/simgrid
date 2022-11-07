@@ -366,7 +366,7 @@ static void on_host_added(simgrid::s4u::Host& host)
   if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
 
-  std::string name              = std::string("dvfs-daemon-") + host.get_cname();
+  std::string name              = "dvfs-daemon-" + host.get_name();
   simgrid::s4u::ActorPtr daemon = simgrid::s4u::Actor::create(name.c_str(), &host, []() {
     /**
      * This lambda function is the function the actor (daemon) will execute
@@ -379,7 +379,7 @@ static void on_host_added(simgrid::s4u::Host& host)
 
     std::string dvfs_governor;
     if (const char* host_conf = daemon_proc->get_host()->get_property("plugin/dvfs/governor")) {
-      dvfs_governor = std::string(host_conf);
+      dvfs_governor = host_conf;
       boost::algorithm::to_lower(dvfs_governor);
     } else {
       dvfs_governor = cfg_governor;

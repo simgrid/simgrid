@@ -24,7 +24,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_routing, instr, "Tracing platform hierarch
 
 std::string instr_pid(simgrid::s4u::Actor const& proc)
 {
-  return std::string(proc.get_name()) + "-" + std::to_string(proc.get_pid());
+  return proc.get_name() + "-" + std::to_string(proc.get_pid());
 }
 
 static simgrid::instr::Container* lowestCommonAncestor(const simgrid::instr::Container* a1,
@@ -142,10 +142,10 @@ static void recursiveNewVariableType(const std::string& new_typename, const std:
                                      simgrid::instr::Type* root)
 {
   if (root->get_name() == "HOST" || root->get_name() == "VM")
-    root->by_name_or_create(std::string("p") + new_typename, color);
+    root->by_name_or_create("p" + new_typename, color);
 
   if (root->get_name() == "LINK")
-    root->by_name_or_create(std::string("b") + new_typename, color);
+    root->by_name_or_create("b" + new_typename, color);
 
   for (auto const& [_, child] : root->get_children()) {
     recursiveNewVariableType(new_typename, color, child.get());
@@ -501,14 +501,12 @@ void define_callbacks()
 
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_computing()) {
     s4u::Exec::on_start_cb([](s4u::Exec const& exec) {
-      Container::by_name(std::string("rank-") + std::to_string(s4u::Actor::self()->get_pid()))
+      Container::by_name("rank-" + std::to_string(s4u::Actor::self()->get_pid()))
           ->get_state("MPI_STATE")
           ->push_event("computing", new CpuTIData("compute", exec.get_cost()));
     });
     s4u::Activity::on_completion_cb([](const s4u::Activity&) {
-      Container::by_name(std::string("rank-") + std::to_string(s4u::Actor::self()->get_pid()))
-          ->get_state("MPI_STATE")
-          ->pop_event();
+      Container::by_name("rank-" + std::to_string(s4u::Actor::self()->get_pid()))->get_state("MPI_STATE")->pop_event();
     });
   }
 

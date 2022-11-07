@@ -130,7 +130,7 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_
       stack_frame.frame_base = (unw_word_t)frame->frame_base(c);
     } else {
       stack_frame.frame_base = 0;
-      stack_frame.frame_name = std::string();
+      stack_frame.frame_name = "";
     }
 
     result.push_back(std::move(stack_frame));

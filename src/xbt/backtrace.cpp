@@ -61,7 +61,7 @@ public:
             frame_name.find("simcall_run_answered") != std::string::npos ||
             frame_name.find("simcall_run_blocking") != std::string::npos) {
           frame_count = 0;
-          ss.str(std::string()); // This is how you clear a stringstream in C++. clear() is something else :'(
+          ss.str(""); // This is how you clear a stringstream in C++. clear() is something else :'(
         }
         if (frame_name == "main")
           break;

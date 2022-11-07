@@ -28,7 +28,7 @@
             simgrid::instr::Container::get_root()->get_type()->by_name_or_create<simgrid::instr::EventType>(           \
                 _XBT_STRINGIFY(cat));                                                                                  \
                                                                                                                        \
-        std::string cont_name = std::string("rank-" + std::to_string(simgrid::s4u::this_actor::get_pid()));            \
+        std::string cont_name = "rank-" + std::to_string(simgrid::s4u::this_actor::get_pid());                         \
         type->add_entity_value(desc->name, "1.0 1.0 1.0");                                                             \
         new simgrid::instr::NewEvent(simgrid::s4u::Engine::get_clock(), simgrid::instr::Container::by_name(cont_name), \
                                      type, type->get_entity_value(desc->name));                                        \

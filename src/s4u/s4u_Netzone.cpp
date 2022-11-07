@@ -170,8 +170,8 @@ s4u::SplitDuplexLink* NetZone::create_split_duplex_link(const std::string& name,
   try {
     speed = xbt_parse_get_bandwidth("", 0, bandwidth, "");
   } catch (const simgrid::ParseError&) {
-    throw std::invalid_argument(std::string("Impossible to create split-duplex link: ") + name +
-                                std::string(". Invalid bandwidth: ") + bandwidth);
+    throw std::invalid_argument("Impossible to create split-duplex link: " + name +
+                                ". Invalid bandwidth: " + bandwidth);
   }
   return create_split_duplex_link(name, speed);
 }
@@ -191,8 +191,7 @@ s4u::Link* NetZone::create_link(const std::string& name, const std::vector<std::
       double speed = xbt_parse_get_bandwidth("", 0, speed_str, "");
       bw.push_back(speed);
     } catch (const simgrid::ParseError&) {
-      throw std::invalid_argument(std::string("Impossible to create link: ") + name +
-                                  std::string(". Invalid bandwidth: ") + speed_str);
+      throw std::invalid_argument("Impossible to create link: " + name + ". Invalid bandwidth: " + speed_str);
     }
   }
   return create_link(name, bw);

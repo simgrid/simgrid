@@ -33,12 +33,12 @@ static void sender(unsigned int messages_count, unsigned int receivers_count, lo
   /* Make a vector of the mailboxes to use */
   std::vector<sg4::Mailbox*> mboxes;
   for (unsigned int i = 0; i < receivers_count; i++)
-    mboxes.push_back(sg4::Mailbox::by_name(std::string("receiver-") + std::to_string(i)));
+    mboxes.push_back(sg4::Mailbox::by_name("receiver-" + std::to_string(i)));
   // sphinx-doc: init-end
 
   /* Start dispatching all messages to receivers, in a round robin fashion */
   for (unsigned int i = 0; i < messages_count; i++) {
-    std::string msg_content = std::string("Message ") + std::to_string(i);
+    std::string msg_content = "Message " + std::to_string(i);
     // Copy the data we send: the 'msg_content' variable is not a stable storage location.
     // It will be destroyed when this actor leaves the loop, ie before the receiver gets it
     auto* payload = new std::string(msg_content);
@@ -68,7 +68,7 @@ static void sender(unsigned int messages_count, unsigned int receivers_count, lo
 /* Receiver actor expects 1 argument: its ID */
 static void receiver(int id)
 {
-  sg4::Mailbox* mbox = sg4::Mailbox::by_name(std::string("receiver-") + std::to_string(id));
+  sg4::Mailbox* mbox = sg4::Mailbox::by_name("receiver-" + std::to_string(id));
   XBT_INFO("Wait for my first message");
   for (bool cont = true; cont;) {
     auto received = mbox->get_unique<std::string>();

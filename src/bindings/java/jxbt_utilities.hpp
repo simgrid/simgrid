@@ -84,7 +84,7 @@ public:
       env_->ReleaseStringUTFChars(jstr_, value);
   }
   operator const char*() const { return value; }
-  operator const std::string() const { return std::string(value); }
+  operator const std::string() const { return value; }
 };
 
 #endif

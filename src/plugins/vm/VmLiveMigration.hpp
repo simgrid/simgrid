@@ -38,10 +38,10 @@ public:
   {
     src_pm_ = vm_->get_pm();
 
-    mbox_ctl = s4u::Mailbox::by_name(std::string("__mbox_mig_ctl:") + vm_->get_cname() + "(" + src_pm_->get_cname() +
-                                     "-" + dst_pm_->get_cname() + ")");
-    mbox = s4u::Mailbox::by_name(std::string("__mbox_mig_src_dst:") + vm_->get_cname() + "(" + src_pm_->get_cname() +
-                                 "-" + dst_pm_->get_cname() + ")");
+    mbox_ctl = s4u::Mailbox::by_name("__mbox_mig_ctl:" + vm_->get_name() + "(" + src_pm_->get_name() + "-" +
+                                     dst_pm_->get_name() + ")");
+    mbox     = s4u::Mailbox::by_name("__mbox_mig_src_dst:" + vm_->get_name() + "(" + src_pm_->get_name() + "-" +
+                                 dst_pm_->get_name() + ")");
   }
   void operator()();
 };
@@ -57,8 +57,8 @@ public:
   explicit MigrationTx(s4u::VirtualMachine* vm, s4u::Host* dst_pm) : vm_(vm), dst_pm_(dst_pm)
   {
     src_pm_ = vm_->get_pm();
-    mbox    = s4u::Mailbox::by_name(std::string("__mbox_mig_src_dst:") + vm_->get_cname() + "(" + src_pm_->get_cname() +
-                                 "-" + dst_pm_->get_cname() + ")");
+    mbox    = s4u::Mailbox::by_name("__mbox_mig_src_dst:" + vm_->get_name() + "(" + src_pm_->get_name() + "-" +
+                                 dst_pm_->get_name() + ")");
   }
   void operator()();
   sg_size_t sendMigrationData(sg_size_t size, int stage, int stage2_round, double mig_speed, double timeout);

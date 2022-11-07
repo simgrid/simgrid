@@ -38,7 +38,7 @@ static void master(std::vector<std::string> args)
   XBT_INFO("Got %ld workers and %ld tasks to process", workers_count, number_of_tasks);
 
   for (int i = 0; i < number_of_tasks; i++) {
-    mailbox         = sg4::Mailbox::by_name(std::string("worker-") + std::to_string(i % workers_count));
+    mailbox         = sg4::Mailbox::by_name("worker-" + std::to_string(i % workers_count));
     auto* payload   = new double(comp_size);
     try {
       XBT_INFO("Send a message to %s", mailbox->get_cname());
@@ -56,7 +56,7 @@ static void master(std::vector<std::string> args)
   XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (int i = 0; i < workers_count; i++) {
     /* - Eventually tell all the workers to stop by sending a "finalize" task */
-    mailbox         = sg4::Mailbox::by_name(std::string("worker-") + std::to_string(i));
+    mailbox         = sg4::Mailbox::by_name("worker-" + std::to_string(i));
     auto* payload   = new double(-1.0);
     try {
       mailbox->put(payload, 0, 1.0);
@@ -76,7 +76,7 @@ static void worker(std::vector<std::string> args)
 {
   xbt_assert(args.size() == 2, "Expecting one parameter");
   long id               = std::stol(args[1]);
-  sg4::Mailbox* mailbox = sg4::Mailbox::by_name(std::string("worker-") + std::to_string(id));
+  sg4::Mailbox* mailbox = sg4::Mailbox::by_name("worker-" + std::to_string(id));
   while (true) {
     try {
       XBT_INFO("Waiting a message on %s", mailbox->get_cname());

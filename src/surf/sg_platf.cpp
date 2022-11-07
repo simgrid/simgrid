@@ -149,7 +149,7 @@ sg_platf_cluster_create_host(const simgrid::kernel::routing::ClusterCreationArgs
              "(total = %zu). Check the 'radical' parameter in XML",
              cluster->id.c_str(), id, cluster->radicals.size());
 
-  std::string host_id = std::string(cluster->prefix) + std::to_string(cluster->radicals[id]) + cluster->suffix;
+  std::string host_id = cluster->prefix + std::to_string(cluster->radicals[id]) + cluster->suffix;
   XBT_DEBUG("Cluster: creating host=%s speed=%f", host_id.c_str(), cluster->speeds.front());
   const simgrid::s4u::Host* host = zone->create_host(host_id, cluster->speeds)
                                        ->set_core_count(cluster->core_amount)
@@ -170,7 +170,7 @@ sg_platf_cluster_create_loopback(const simgrid::kernel::routing::ClusterCreation
              "(total = %zu). Check the 'radical' parameter in XML",
              cluster->id.c_str(), id, cluster->radicals.size());
 
-  std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(cluster->radicals[id]) + "_loopback";
+  std::string link_id = cluster->id + "_link_" + std::to_string(cluster->radicals[id]) + "_loopback";
   XBT_DEBUG("Cluster: creating loopback link=%s bw=%f", link_id.c_str(), cluster->loopback_bw);
 
   simgrid::s4u::Link* loopback = zone->create_link(link_id, cluster->loopback_bw)
@@ -186,7 +186,7 @@ static simgrid::s4u::Link* sg_platf_cluster_create_limiter(const simgrid::kernel
                                                            const std::vector<unsigned long>& /*coord*/,
                                                            unsigned long id)
 {
-  std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(id) + "_limiter";
+  std::string link_id = cluster->id + "_link_" + std::to_string(id) + "_limiter";
   XBT_DEBUG("Cluster: creating limiter link=%s bw=%f", link_id.c_str(), cluster->limiter_link);
 
   simgrid::s4u::Link* limiter = zone->create_link(link_id, cluster->limiter_link)->seal();
@@ -250,7 +250,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
   /* Make the backbone */
   const simgrid::s4u::Link* backbone = nullptr;
   if ((cluster->bb_bw > 0) || (cluster->bb_lat > 0)) {
-    std::string bb_name = std::string(cluster->id) + "_backbone";
+    std::string bb_name = cluster->id + "_backbone";
     XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/> <!--backbone -->", bb_name.c_str(), cluster->bb_bw,
               cluster->bb_lat);
 
@@ -261,7 +261,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
   }
 
   for (int const& i : cluster->radicals) {
-    std::string host_id = std::string(cluster->prefix) + std::to_string(i) + cluster->suffix;
+    std::string host_id = cluster->prefix + std::to_string(i) + cluster->suffix;
 
     XBT_DEBUG("<host\tid=\"%s\"\tspeed=\"%f\">", host_id.c_str(), cluster->speeds.front());
     const auto* host = zone->create_host(host_id, cluster->speeds)
@@ -271,7 +271,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
 
     XBT_DEBUG("</host>");
 
-    std::string link_id = std::string(cluster->id) + "_link_" + std::to_string(i);
+    std::string link_id = cluster->id + "_link_" + std::to_string(i);
     XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id.c_str(), cluster->bw, cluster->lat);
 
     // add a loopback link
@@ -291,7 +291,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
     // add a limiter link (shared link to account for maximal bandwidth of the node)
     const simgrid::s4u::Link* limiter = nullptr;
     if (cluster->limiter_link > 0) {
-      std::string limiter_name = std::string(link_id) + "_limiter";
+      std::string limiter_name = link_id + "_limiter";
       XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", limiter_name.c_str(), cluster->limiter_link);
 
       limiter = zone->create_link(limiter_name, cluster->limiter_link)->seal();
@@ -320,7 +320,7 @@ static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationA
   XBT_DEBUG(" ");
   XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id.c_str());
   if (cluster->router_id.empty())
-    cluster->router_id = std::string(cluster->prefix) + cluster->id + "_router" + cluster->suffix;
+    cluster->router_id = cluster->prefix + cluster->id + "_router" + cluster->suffix;
   auto* router = zone->create_router(cluster->router_id);
   zone->add_route(router, nullptr, nullptr, nullptr, {});
 

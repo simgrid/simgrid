@@ -96,7 +96,7 @@ static const char* instr_find_color(const char* c_state)
 
 XBT_PRIVATE simgrid::instr::Container* smpi_container(aid_t pid)
 {
-  return simgrid::instr::Container::by_name(std::string("rank-") + std::to_string(pid));
+  return simgrid::instr::Container::by_name("rank-" + std::to_string(pid));
 }
 
 static std::string TRACE_smpi_put_key(aid_t src, aid_t dst, int tag, int send)
@@ -139,7 +139,7 @@ void TRACE_smpi_setup_container(aid_t pid, const_sg_host_t host)
     parent = simgrid::instr::Container::by_name_or_null(host->get_name());
     xbt_assert(parent != nullptr, "Could not find a parent for mpi rank 'rank-%ld' at function %s", pid, __func__);
   }
-  parent->create_child(std::string("rank-") + std::to_string(pid), "MPI"); // This container is of type MPI
+  parent->create_child("rank-" + std::to_string(pid), "MPI"); // This container is of type MPI
 }
 
 void TRACE_smpi_init(aid_t pid, const std::string& calling_func)

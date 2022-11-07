@@ -58,11 +58,11 @@ int main(int argc, char* argv[])
   // Platform creation
   auto* cluster = sg4::create_star_zone("cluster");
   for (int i = 0; i < 8; i++) {
-    std::string hostname = std::string("node-") + std::to_string(i) + ".simgrid.org";
+    std::string hostname = "node-" + std::to_string(i) + ".simgrid.org";
 
     const auto* host = cluster->create_host(hostname, "1Gf");
 
-    std::string linkname = std::string("cluster") + "_link_" + std::to_string(i);
+    std::string linkname = "cluster_link_" + std::to_string(i);
     const auto* link     = cluster->create_split_duplex_link(linkname, "1Gbps");
 
     cluster->add_route(host->get_netpoint(), nullptr, nullptr, nullptr, {{link, sg4::LinkInRoute::Direction::UP}},
@@ -78,10 +78,10 @@ int main(int argc, char* argv[])
   XBT_INFO("Transfers are done in %s mode", pc->get_transfer_mode().c_str());
 
   for (int i = 0; i < 3; i++) {
-    std::string hostname = std::string("node-") + std::to_string(i) + ".simgrid.org";
+    std::string hostname = "node-" + std::to_string(i) + ".simgrid.org";
     sg4::Actor::create("ingester-" + std::to_string(i), e.host_by_name(hostname), &ingester, i, pc);
 
-    hostname = std::string("node-") + std::to_string(i + 3) + ".simgrid.org";
+    hostname = "node-" + std::to_string(i + 3) + ".simgrid.org";
     sg4::Actor::create("retriever-" + std::to_string(i), e.host_by_name(hostname), &retriever, pc);
   }
 

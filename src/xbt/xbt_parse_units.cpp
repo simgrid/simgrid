@@ -62,9 +62,9 @@ static double xbt_parse_get_value_with_unit(const std::string& filename, int lin
   double res      = strtod(string.c_str(), &endptr);
   const char* ptr = endptr; // for const-correctness
   if (errno == ERANGE)
-    throw simgrid::ParseError(filename, lineno, std::string("value out of range: ") + string);
+    throw simgrid::ParseError(filename, lineno, "value out of range: " + string);
   if (ptr == string)
-    throw simgrid::ParseError(filename, lineno, std::string("cannot parse number:") + string);
+    throw simgrid::ParseError(filename, lineno, "cannot parse number:" + string);
   if (ptr[0] == '\0') {
     // Ok, 0 can be unit-less
     if (res != 0 && not entity_kind.empty())

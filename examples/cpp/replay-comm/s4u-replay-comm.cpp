@@ -71,7 +71,7 @@ public:
   static void recv(simgrid::xbt::ReplayAction& action)
   {
     double clock       = sg4::Engine::get_clock();
-    sg4::Mailbox* from = sg4::Mailbox::by_name(std::string(action[2]) + "_" + sg4::this_actor::get_name());
+    sg4::Mailbox* from = sg4::Mailbox::by_name(action[2] + "_" + sg4::this_actor::get_name());
 
     ACT_DEBUG("Receiving: %s -- Actor %s on mailbox %s", NAME.c_str(), sg4::this_actor::get_cname(), from->get_cname());
     from->get_unique<std::string>();

@@ -58,7 +58,7 @@ const Disk* File::find_local_disk_on(const Host* host)
                host->get_cname());
     /* Mount point found, split fullpath_ into mount_name and path+filename*/
     mount_point_ = fullpath_.substr(0, longest_prefix_length);
-    if (mount_point_ == std::string("/"))
+    if (mount_point_ == "/")
       path_ = fullpath_;
     else
       path_ = fullpath_.substr(longest_prefix_length, fullpath_.length());
@@ -307,7 +307,7 @@ int File::remote_copy(sg_host_t host, const std::string& fullpath)
 
   for (auto const& disk : host->get_disks()) {
     std::string current_mount = disk->extension<FileSystemDiskExt>()->get_mount_point();
-    std::string mount_point   = std::string(fullpath).substr(0, current_mount.length());
+    std::string mount_point   = fullpath.substr(0, current_mount.length());
     if (mount_point == current_mount && current_mount.length() > longest_prefix_length) {
       /* The current mount name is found in the full path and is bigger than the previous*/
       longest_prefix_length = current_mount.length();
@@ -348,9 +348,9 @@ FileSystemDiskExt::FileSystemDiskExt(const Disk* ptr)
   }
 
   if (const char* current_mount_str = ptr->get_property("mount"))
-    mount_point_ = std::string(current_mount_str);
+    mount_point_ = current_mount_str;
   else
-    mount_point_ = std::string("/");
+    mount_point_ = "/";
 
   if (const char* content_str = ptr->get_property("content"))
     content_.reset(parse_content(content_str));

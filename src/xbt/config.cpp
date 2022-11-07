@@ -101,10 +101,7 @@ public:
 template <> class ConfigType<std::string> {
 public:
   static constexpr const char* type_name = "string";
-  static inline std::string parse(const char* value)
-  {
-    return std::string(value);
-  }
+  static inline std::string parse(const char* value) { return value; }
 };
 template <> class ConfigType<bool> {
 public:

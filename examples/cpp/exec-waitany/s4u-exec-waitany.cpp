@@ -17,7 +17,7 @@ static void worker(bool with_timeout)
   std::vector<sg4::ExecPtr> pending_executions;
 
   for (int i = 0; i < 3; i++) {
-    std::string name = std::string("Exec-") + std::to_string(i);
+    std::string name = "Exec-" + std::to_string(i);
     double amount    = (6 * (i % 2) + i + 1) * sg4::this_actor::get_host()->get_speed();
 
     sg4::ExecPtr exec = sg4::this_actor::exec_init(amount)->set_name(name);

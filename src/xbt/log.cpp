@@ -411,7 +411,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
       throw std::invalid_argument(simgrid::xbt::string_printf("Unknown appender log type: '%s'", value));
     }
   } else if (strncmp(option, "fmt", option_len) == 0) {
-    set.fmt = std::string(value);
+    set.fmt = value;
   } else {
     xbt_die("Unknown setting of the log category: '%.*s'", static_cast<int>(option_len), option);
   }

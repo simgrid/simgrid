@@ -21,8 +21,7 @@ public:
     /* Make a vector of the mailboxes to use */
     std::vector<sg4::Mailbox*> mboxes;
 
-    std::string msg_content =
-        std::string("Hello, I'm alive and running on ") + std::string(sg4::this_actor::get_host()->get_name());
+    std::string msg_content = "Hello, I'm alive and running on " + sg4::this_actor::get_host()->get_name();
     for (const auto* host : hosts_) {
       auto* payload = new std::string(msg_content);
       /* Create a communication representing the ongoing communication, and store it in pending_comms */
@@ -93,7 +92,7 @@ int main(int argc, char* argv[])
   sg4::Actor::create("sender", host_list[0], Sender(host_list));
   /* create receiver in every host */
   for (auto* host : host_list) {
-    sg4::Actor::create(std::string("receiver-") + std::string(host->get_name()), host, Receiver());
+    sg4::Actor::create("receiver-" + host->get_name(), host, Receiver());
   }
 
   /* runs the simulation */

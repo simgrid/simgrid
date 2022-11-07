@@ -188,7 +188,7 @@ MPI_Aint PMPI_Aint_diff(MPI_Aint address, MPI_Aint disp)
 int PMPI_Get_processor_name(char *name, int *resultlen)
 {
   int len = std::min(static_cast<int>(sg_host_self()->get_name().size()), MPI_MAX_PROCESSOR_NAME - 1);
-  std::string(sg_host_self()->get_name()).copy(name, len);
+  sg_host_self()->get_name().copy(name, len);
   name[len]  = '\0';
   *resultlen = len;
 

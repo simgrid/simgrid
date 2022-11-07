@@ -18,8 +18,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_masterworker, "Messages specific for this e
 
 static void worker()
 {
-  const std::string mailbox_name   = std::string("worker-") + std::to_string(simgrid::s4u::this_actor::get_pid());
-  simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(mailbox_name);
+  const std::string mailbox_name = "worker-" + std::to_string(simgrid::s4u::this_actor::get_pid());
+  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
 
   while (true) { // Master forcefully kills the workers by the end of the simulation
     double* msg         = mailbox->get<double>();
@@ -45,16 +45,16 @@ static void master(std::vector<std::string> args)
   XBT_INFO("Asked to run for %.1f seconds", simulation_duration);
 
   for (auto* host : e->get_all_hosts()) {
-    simgrid::s4u::ActorPtr act = simgrid::s4u::Actor::create(std::string("Worker-") + host->get_name(), host, worker);
+    simgrid::s4u::ActorPtr act = simgrid::s4u::Actor::create("Worker-" + host->get_name(), host, worker);
     actors.push_back(act);
   }
 
   int task_id = 0;
   while (simgrid::s4u::Engine::get_clock() < simulation_duration) { /* For each task: */
     /* - Select a worker in a round-robin way */
-    aid_t worker_pid                 = actors.at(task_id % actors.size())->get_pid();
-    std::string mailbox_name         = std::string("worker-") + std::to_string(worker_pid);
-    simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(mailbox_name);
+    aid_t worker_pid               = actors.at(task_id % actors.size())->get_pid();
+    std::string mailbox_name       = "worker-" + std::to_string(worker_pid);
+    simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
 
     /* - Send the computation cost to that worker */
     if (task_id % 100 == 0)

@@ -636,8 +636,8 @@ information is only written once. It thus follows the `DRY
       .. code-block:: cpp
 
          for (int i = 0; i < tasks_count; i++) {
-            std::string worker_rank          = std::to_string(i % workers_count);
-            std::string mailbox_name         = std::string("worker-") + worker_rank;
+            std::string worker_rank        = std::to_string(i % workers_count);
+            std::string mailbox_name       = "worker-" + worker_rank;
             simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
 
             mailbox->put(...);

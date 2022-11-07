@@ -17,7 +17,7 @@ static void worker_fun(sg4::ConditionVariablePtr cv, sg4::MutexPtr mutex)
   std::unique_lock lock(*mutex);
 
   XBT_INFO("Start processing data which is '%s'.", data.c_str());
-  data += std::string(" after processing");
+  data += " after processing";
 
   // Send data back to main()
   XBT_INFO("Signal to master that the data processing is completed, and exit.");
@@ -30,7 +30,7 @@ static void master_fun()
 {
   auto mutex  = sg4::Mutex::create();
   auto cv     = sg4::ConditionVariable::create();
-  data        = std::string("Example data");
+  data        = "Example data";
   auto worker = sg4::Actor::create("worker", sg4::Host::by_name("Jupiter"), worker_fun, cv, mutex);
 
   // wait for the worker

@@ -40,7 +40,7 @@ HostImpl::~HostImpl()
     try {
       std::string actors;
       for (auto const& actor : actor_list_)
-        actors += "\n\t" + std::string(actor.get_name());
+        actors += "\n\t" + actor.get_name();
 
       EngineImpl::get_instance()->display_all_actor_status();
       xbt_die("%s:%s", msg, actors.c_str());

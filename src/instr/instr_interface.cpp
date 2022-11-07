@@ -312,7 +312,7 @@ void declare_tracing_category(const std::string& name, const std::string& color)
     double blue  = simgrid::xbt::random::uniform_real(0.0, std::nextafter(1.0, 2.0));
     final_color  = std::to_string(red) + " " + std::to_string(green) + " " + std::to_string(blue);
   } else {
-    final_color = std::string(color);
+    final_color = color;
   }
 
   XBT_DEBUG("CAT,declare %s, \"%s\" \"%s\"", name.c_str(), color.c_str(), final_color.c_str());

@@ -22,7 +22,7 @@ static void sender(std::vector<std::string> args)
   long comm_size  = std::stol(args.at(1));
   XBT_INFO("Send %ld bytes, in %d flows", comm_size, flow_amount);
 
-  sg4::Mailbox* mailbox = sg4::Mailbox::by_name(std::string("message"));
+  sg4::Mailbox* mailbox = sg4::Mailbox::by_name("message");
 
   /* Sleep a while before starting the example */
   sg4::this_actor::sleep_for(10);
@@ -47,7 +47,7 @@ static void receiver(std::vector<std::string> args)
 
   XBT_INFO("Receiving %d flows ...", flow_amount);
 
-  sg4::Mailbox* mailbox = sg4::Mailbox::by_name(std::string("message"));
+  sg4::Mailbox* mailbox = sg4::Mailbox::by_name("message");
 
   if (flow_amount == 1) {
     char* res = mailbox->get<char>();

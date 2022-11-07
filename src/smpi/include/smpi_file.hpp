@@ -44,7 +44,7 @@ class File : public F2C{
   int flags() const;
   MPI_Datatype etype() const;
   MPI_Comm comm() const;
-  std::string name() const override {return file_ ? std::string("MPI_File: ")+ std::string(file_->get_path()): std::string("MPI_File");}
+  std::string name() const override { return file_ ? "MPI_File: " + std::string(file_->get_path()) : "MPI_File"; }
 
   int sync();
   int seek(MPI_Offset offset, int whence);

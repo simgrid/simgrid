@@ -28,22 +28,20 @@ simgrid::xbt::Path::Path()
   std::array<char, 2048> buffer;
   const char* cwd = getcwd(buffer.data(), 2048);
   xbt_assert(cwd != nullptr, "Error during getcwd: %s", strerror(errno));
-  path_ = std::string(cwd);
+  path_ = cwd;
 #else
-  path_ = std::string(".");
+  path_ = ".";
 #endif
 }
 
 std::string simgrid::xbt::Path::get_dir_name() const
 {
   std::string p(path_);
-  const char* res = dirname(&p[0]);
-  return std::string(res, strlen(res));
+  return dirname(&p[0]);
 }
 
 std::string simgrid::xbt::Path::get_base_name() const
 {
   std::string p(path_);
-  const char* res = basename(&p[0]);
-  return std::string(res, strlen(res));
+  return basename(&p[0]);
 }

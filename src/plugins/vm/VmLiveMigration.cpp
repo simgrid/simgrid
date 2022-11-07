@@ -27,7 +27,7 @@ void MigrationRx::operator()()
   bool received_finalize = false;
 
   std::string finalize_task_name =
-      std::string("__mig_stage3:") + vm_->get_cname() + "(" + src_pm_->get_cname() + "-" + dst_pm_->get_cname() + ")";
+      "__mig_stage3:" + vm_->get_name() + "(" + src_pm_->get_name() + "-" + dst_pm_->get_name() + ")";
 
   while (not received_finalize) {
     auto payload = mbox->get_unique<std::string>();
@@ -72,7 +72,7 @@ void MigrationRx::operator()()
   }
   // Inform the SRC that the migration has been correctly performed
   auto* payload = new std::string("__mig_stage4:");
-  *payload      = *payload + vm_->get_cname() + "(" + src_pm_->get_cname() + "-" + dst_pm_->get_cname() + ")";
+  *payload      = *payload + vm_->get_name() + "(" + src_pm_->get_name() + "-" + dst_pm_->get_name() + ")";
 
   mbox_ctl->put(payload, 0);
 
@@ -333,10 +333,8 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
 
   vm->start_migration();
 
-  std::string rx_name =
-      std::string("__pr_mig_rx:") + vm->get_cname() + "(" + src_pm->get_cname() + "-" + dst_pm->get_cname() + ")";
-  std::string tx_name =
-      std::string("__pr_mig_tx:") + vm->get_cname() + "(" + src_pm->get_cname() + "-" + dst_pm->get_cname() + ")";
+  std::string rx_name = "__pr_mig_rx:" + vm->get_name() + "(" + src_pm->get_name() + "-" + dst_pm->get_name() + ")";
+  std::string tx_name = "__pr_mig_tx:" + vm->get_name() + "(" + src_pm->get_name() + "-" + dst_pm->get_name() + ")";
 
   simgrid::s4u::ActorPtr rx =
       simgrid::s4u::Actor::create(rx_name.c_str(), dst_pm, simgrid::plugin::vm::MigrationRx(vm, dst_pm));
@@ -347,8 +345,8 @@ void sg_vm_migrate(simgrid::s4u::VirtualMachine* vm, simgrid::s4u::Host* dst_pm)
 
   /* wait until the migration have finished or on error has occurred */
   XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");
-  simgrid::s4u::Mailbox* mbox_ctl = simgrid::s4u::Mailbox::by_name(
-      std::string("__mbox_mig_ctl:") + vm->get_cname() + "(" + src_pm->get_cname() + "-" + dst_pm->get_cname() + ")");
+  simgrid::s4u::Mailbox* mbox_ctl = simgrid::s4u::Mailbox::by_name("__mbox_mig_ctl:" + vm->get_name() + "(" +
+                                                                   src_pm->get_name() + "-" + dst_pm->get_name() + ")");
   mbox_ctl->get_unique<std::string>();
   tx->join();
   rx->join();

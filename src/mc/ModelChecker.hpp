@@ -40,10 +40,7 @@ public:
   Channel& channel() { return checker_side_.get_channel(); }
   PageStore& page_store() { return page_store_; }
 
-  std::string const& get_host_name(const char* hostname)
-  {
-    return *this->hostnames_.insert(std::string(hostname)).first;
-  }
+  std::string const& get_host_name(const char* hostname) { return *this->hostnames_.insert(hostname).first; }
 
   void start();
   void shutdown();

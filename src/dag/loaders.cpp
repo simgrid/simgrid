@@ -295,7 +295,7 @@ std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename)
 void STag_dax__adag()
 {
   try {
-    double version = std::stod(std::string(A_dax__adag_version));
+    double version = std::stod(A_dax__adag_version);
     xbt_assert(version == 2.1, "Expected version 2.1 in <adag> tag, got %f. Fix the parser or your file", version);
   } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Parse error: ") + A_dax__adag_version + " is not a double");
@@ -305,7 +305,7 @@ void STag_dax__adag()
 void STag_dax__job()
 {
   try {
-    double runtime = std::stod(std::string(A_dax__job_runtime));
+    double runtime = std::stod(A_dax__job_runtime);
 
     std::string name = std::string(A_dax__job_id) + "@" + A_dax__job_name;
     runtime *= 4200000000.; /* Assume that timings were done on a 4.2GFlops machine. I mean, why not? */
@@ -322,7 +322,7 @@ void STag_dax__uses()
 {
   double size;
   try {
-    size = std::stod(std::string(A_dax__uses_size));
+    size = std::stod(A_dax__uses_size);
   } catch (const std::invalid_argument&) {
     throw std::invalid_argument(std::string("Parse error: ") + A_dax__uses_size + " is not a double");
   }
@@ -357,7 +357,7 @@ void STag_dax__child()
   if (job != simgrid::s4u::jobs.end()) {
     current_child = job->second;
   } else {
-    throw std::out_of_range(std::string("Parse error on line ") + std::to_string(dax_lineno) +
+    throw std::out_of_range("Parse error on line " + std::to_string(dax_lineno) +
                             ": Asked to add dependencies to the non-existent " + A_dax__child_ref + "task");
   }
 }
@@ -375,9 +375,9 @@ void STag_dax__parent()
     parent->add_successor(current_child);
     XBT_DEBUG("Control-flow dependency from %s to %s", current_child->get_cname(), parent->get_cname());
   } else {
-    throw std::out_of_range(std::string("Parse error on line ") + std::to_string(dax_lineno) +
-                            ": Asked to add a dependency from " + current_child->get_name() + " to " +
-                            A_dax__parent_ref + ", but " + A_dax__parent_ref + " does not exist");
+    throw std::out_of_range("Parse error on line " + std::to_string(dax_lineno) + ": Asked to add a dependency from " +
+                            current_child->get_name() + " to " + A_dax__parent_ref + ", but " + A_dax__parent_ref +
+                            " does not exist");
   }
 }
 

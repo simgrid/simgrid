@@ -20,7 +20,7 @@ NetZoneContainer::NetZoneContainer(const std::string& name, unsigned int level, 
 {
   xbt_assert(s4u::Engine::get_instance()->netpoint_by_name_or_null(get_name()), "Element '%s' not found", get_cname());
   if (parent_) {
-    std::string type_name = std::string("L") + std::to_string(level);
+    std::string type_name = "L" + std::to_string(level);
     type_                 = parent_->type_->by_name_or_create<ContainerType>(type_name);
     parent_->children_.try_emplace(get_name(), this);
     on_creation(*this);

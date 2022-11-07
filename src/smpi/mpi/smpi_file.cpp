@@ -282,7 +282,7 @@ int File::set_view(MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype, c
 {
   etype_    = etype;
   filetype_ = filetype;
-  datarep_  = std::string(datarep);
+  datarep_  = datarep;
   disp_     = disp;
   if (comm_->rank() == 0){
     if(disp != MPI_DISPLACEMENT_CURRENT)

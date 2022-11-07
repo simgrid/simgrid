@@ -183,9 +183,7 @@ class XBT_PUBLIC ForcefulKillException {
    */
 public:
   ForcefulKillException() = default;
-  explicit ForcefulKillException(const std::string& msg) : msg_(std::string("Actor killed (") + msg + std::string(")."))
-  {
-  }
+  explicit ForcefulKillException(const std::string& msg) : msg_("Actor killed (" + msg + ").") {}
   ~ForcefulKillException();
   const char* what() const noexcept { return msg_.c_str(); }
 
@@ -193,7 +191,7 @@ public:
   static bool try_n_catch(const std::function<void()>& try_block);
 
 private:
-  std::string msg_ = std::string("Actor killed.");
+  std::string msg_ = "Actor killed.";
 };
 
 } // namespace simgrid

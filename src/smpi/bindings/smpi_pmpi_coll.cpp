@@ -121,7 +121,7 @@ int PMPI_Igather(const void* sendbuf, int sendcount, MPI_Datatype sendtype, void
   }
   CHECK_ROOT(7)
   CHECK_REQUEST(9)
-  CHECK_COLLECTIVE(comm, std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Gather" : "PMPI_Igather") + +" with root " +
+  CHECK_COLLECTIVE(comm, std::string(request == MPI_REQUEST_IGNORED ? "PMPI_Gather" : "PMPI_Igather") + " with root " +
                              std::to_string(root))
 
   const void* real_sendbuf   = sendbuf;

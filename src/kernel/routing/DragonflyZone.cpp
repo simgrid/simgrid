@@ -73,14 +73,14 @@ s4u::DragonflyParams DragonflyZone::parse_topo_parameters(const std::string& top
   try {
     n_groups = std::stoi(tmp[0]);
   } catch (const std::invalid_argument&) {
-    throw std::invalid_argument(std::string("Invalid number of groups:") + tmp[0]);
+    throw std::invalid_argument("Invalid number of groups:" + tmp[0]);
   }
 
   unsigned int n_blue;
   try {
     n_blue = std::stoi(tmp[1]);
   } catch (const std::invalid_argument&) {
-    throw std::invalid_argument(std::string("Invalid number of links for the blue level:") + tmp[1]);
+    throw std::invalid_argument("Invalid number of links for the blue level:" + tmp[1]);
   }
 
   // Black network : number of chassis/group, number of links between each router on the black network
@@ -92,14 +92,14 @@ s4u::DragonflyParams DragonflyZone::parse_topo_parameters(const std::string& top
   try {
     n_chassis = std::stoi(tmp[0]);
   } catch (const std::invalid_argument&) {
-    throw std::invalid_argument(std::string("Invalid number of chassis:") + tmp[0]);
+    throw std::invalid_argument("Invalid number of chassis:" + tmp[0]);
   }
 
   unsigned int n_black;
   try {
     n_black = std::stoi(tmp[1]);
   } catch (const std::invalid_argument&) {
-    throw std::invalid_argument(std::string("Invalid number of links for the black level:") + tmp[1]);
+    throw std::invalid_argument("Invalid number of links for the black level:" + tmp[1]);
   }
 
   // Green network : number of blades/chassis, number of links between each router on the green network
@@ -111,14 +111,14 @@ s4u::DragonflyParams DragonflyZone::parse_topo_parameters(const std::string& top
   try {
     n_routers = std::stoi(tmp[0]);
   } catch (const std::invalid_argument&) {
-    throw std::invalid_argument(std::string("Invalid number of routers:") + tmp[0]);
+    throw std::invalid_argument("Invalid number of routers:" + tmp[0]);
   }
 
   unsigned int n_green;
   try {
     n_green = std::stoi(tmp[1]);
   } catch (const std::invalid_argument&) {
-    throw std::invalid_argument(std::string("Invalid number of links for the green level:") + tmp[1]);
+    throw std::invalid_argument("Invalid number of links for the green level:" + tmp[1]);
   }
 
   // The last part of topo_parameters should be the number of nodes per blade
@@ -126,7 +126,7 @@ s4u::DragonflyParams DragonflyZone::parse_topo_parameters(const std::string& top
   try {
     n_nodes = std::stoi(parameters[3]);
   } catch (const std::invalid_argument&) {
-    throw std::invalid_argument(std::string("Last parameter is not the amount of nodes per blade:") + parameters[3]);
+    throw std::invalid_argument("Last parameter is not the amount of nodes per blade:" + parameters[3]);
   }
   return s4u::DragonflyParams({n_groups, n_blue}, {n_chassis, n_black}, {n_routers, n_green}, n_nodes);
 }

@@ -68,7 +68,7 @@ void VariableType::instr_event(double now, double delta, const char* resource, d
   // create a key considering the resource and variable, and check if key exists in the global map:
   // if it doesn't, set the variable to zero.
   if (static std::set<std::string, std::less<>> platform_variables;
-      platform_variables.emplace(std::string(resource) + get_name()).second)
+      platform_variables.emplace(resource + get_name()).second)
     set_event(now, 0);
 
   add_event(now, value);

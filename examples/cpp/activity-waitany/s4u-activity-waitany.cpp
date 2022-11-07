@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_activity_waittany, "Messages specific for this 
 
 static void bob()
 {
-  sg4::Mailbox* mbox    = sg4::Mailbox::by_name(std::string("mbox"));
+  sg4::Mailbox* mbox    = sg4::Mailbox::by_name("mbox");
   const sg4::Disk* disk = sg4::Host::current()->get_disks().front();
   std::string* payload;
 
@@ -48,7 +48,7 @@ static void alice()
 {
   auto* payload = new std::string("Message");
   XBT_INFO("Send '%s'", payload->c_str());
-  sg4::Mailbox::by_name(std::string("mbox"))->put(payload, 6e8);
+  sg4::Mailbox::by_name("mbox")->put(payload, 6e8);
 }
 
 int main(int argc, char* argv[])

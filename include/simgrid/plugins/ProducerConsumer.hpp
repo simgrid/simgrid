@@ -75,7 +75,7 @@ private:
   {
     xbt_assert(max_queue_size > 0, "Max queue size of 0 is not allowed");
 
-    id = std::string("ProducerConsumer") + std::to_string(pc_id);
+    id = "ProducerConsumer" + std::to_string(pc_id);
     pc_id++;
 
     mutex_   = s4u::Mutex::create();

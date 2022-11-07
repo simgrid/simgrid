@@ -186,7 +186,7 @@ void SleepParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 void LocationParser::parse(simgrid::xbt::ReplayAction& action, const std::string&)
 {
   CHECK_ACTION_PARAMS(action, 2, 0)
-  filename = std::string(action[2]);
+  filename = action[2];
   line = std::stoi(action[3]);
 }
 

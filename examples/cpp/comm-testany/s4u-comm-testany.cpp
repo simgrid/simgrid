@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_comm_testany, "Messages specific for this s4u e
 
 static void rank0()
 {
-  sg4::Mailbox* mbox = sg4::Mailbox::by_name(std::string("rank0"));
+  sg4::Mailbox* mbox = sg4::Mailbox::by_name("rank0");
   std::string* msg1;
   std::string* msg2;
   std::string* msg3;
@@ -26,7 +26,7 @@ static void rank0()
 
   XBT_INFO("Send some data to rank-1");
   for (int i = 0; i < 3; i++)
-    sg4::Mailbox::by_name(std::string("rank1"))->put(new int(i), 1);
+    sg4::Mailbox::by_name("rank1")->put(new int(i), 1);
 
   XBT_INFO("Test for completed comms");
   while (not pending_comms.empty()) {
@@ -45,13 +45,13 @@ static void rank0()
 
 static void rank1()
 {
-  sg4::Mailbox* rank0_mbox = sg4::Mailbox::by_name(std::string("rank0"));
-  sg4::Mailbox* rank1_mbox = sg4::Mailbox::by_name(std::string("rank1"));
+  sg4::Mailbox* rank0_mbox = sg4::Mailbox::by_name("rank0");
+  sg4::Mailbox* rank1_mbox = sg4::Mailbox::by_name("rank1");
 
   for (int i = 0; i < 3; i++) {
     auto res = rank1_mbox->get_unique<int>();
     XBT_INFO("Received %d", *res);
-    std::string msg_content = std::string("Message ") + std::to_string(i);
+    std::string msg_content = "Message " + std::to_string(i);
     auto* payload           = new std::string(msg_content);
     XBT_INFO("Send '%s'", msg_content.c_str());
     rank0_mbox->put(payload, 1e6);

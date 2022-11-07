@@ -56,7 +56,7 @@ static std::string to_string_activity_test(const activity::ActivityImpl* act)
   if (auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
     const std::string src_buff_id = ptr_to_id<unsigned char>(comm->src_buff_);
     const std::string dst_buff_id = ptr_to_id<unsigned char>(comm->dst_buff_);
-    return std::string("CommTest(comm_id:") + ptr_to_id<activity::CommImpl const>(comm) +
+    return "CommTest(comm_id:" + ptr_to_id<activity::CommImpl const>(comm) +
            " src:" + std::to_string(comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1) +
            " dst:" + std::to_string(comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1) +
            " mbox:" + std::to_string(comm->get_mailbox_id()) + " srcbuf:" + src_buff_id + " dstbuf:" + dst_buff_id +
@@ -109,10 +109,10 @@ static std::string to_string_activity_wait(const activity::ActivityImpl* act)
   if (auto* comm = dynamic_cast<activity::CommImpl const*>(act)) {
     const std::string src_buff_id = ptr_to_id<unsigned char>(comm->src_buff_);
     const std::string dst_buff_id = ptr_to_id<unsigned char>(comm->dst_buff_);
-    return std::string("CommWait(comm_id:") + ptr_to_id<activity::CommImpl const>(comm) +
+    return "CommWait(comm_id:" + ptr_to_id<activity::CommImpl const>(comm) +
            " src:" + std::to_string(comm->src_actor_ != nullptr ? comm->src_actor_->get_pid() : -1) +
            " dst:" + std::to_string(comm->dst_actor_ != nullptr ? comm->dst_actor_->get_pid() : -1) +
-           " mbox:" + std::string(comm->get_mailbox() == nullptr ? std::string("-") : comm->get_mailbox()->get_name()) +
+           " mbox:" + (comm->get_mailbox() == nullptr ? "-" : comm->get_mailbox()->get_name()) +
            "(id:" + std::to_string(comm->get_mailbox_id()) + ") srcbuf:" + src_buff_id + " dstbuf:" + dst_buff_id +
            " bufsize:" + std::to_string(comm->src_buff_size_) + ")";
   } else {
@@ -205,9 +205,9 @@ void CommIsendSimcall::serialize(std::stringstream& stream) const
 }
 std::string CommIsendSimcall::to_string() const
 {
-  return std::string("CommAsyncSend(comm_id: ") + std::to_string((uintptr_t)comm_) +
-         " mbox:" + std::to_string(mbox_->get_id()) + " srcbuf:" + ptr_to_id<unsigned char>(src_buff_) +
-         " bufsize:" + std::to_string(src_buff_size_) + " tag: " + std::to_string(tag_) + ")";
+  return "CommAsyncSend(comm_id: " + std::to_string((uintptr_t)comm_) + " mbox:" + std::to_string(mbox_->get_id()) +
+         " srcbuf:" + ptr_to_id<unsigned char>(src_buff_) + " bufsize:" + std::to_string(src_buff_size_) +
+         " tag: " + std::to_string(tag_) + ")";
 }
 
 void CommIrecvSimcall::serialize(std::stringstream& stream) const
@@ -218,7 +218,7 @@ void CommIrecvSimcall::serialize(std::stringstream& stream) const
 }
 std::string CommIrecvSimcall::to_string() const
 {
-  return std::string("CommAsyncRecv(comm_id: ") + ptr_to_id<activity::CommImpl const>(comm_) +
+  return "CommAsyncRecv(comm_id: " + ptr_to_id<activity::CommImpl const>(comm_) +
          " mbox:" + std::to_string(mbox_->get_id()) + " dstbuf:" + ptr_to_id<unsigned char>(dst_buff_) +
          " tag: " + std::to_string(tag_) + ")";
 }

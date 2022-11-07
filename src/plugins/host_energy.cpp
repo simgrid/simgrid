@@ -216,10 +216,10 @@ HostEnergy::HostEnergy(simgrid::s4u::Host* ptr) : host_(ptr)
   const char* off_power_str = host_->get_property("wattage_off");
   if (off_power_str != nullptr) {
     try {
-      this->watts_off_ = std::stod(std::string(off_power_str));
+      this->watts_off_ = std::stod(off_power_str);
     } catch (const std::invalid_argument&) {
-      throw std::invalid_argument(std::string("Invalid value for property wattage_off of host ") + host_->get_cname() +
-                                  ": " + off_power_str);
+      throw std::invalid_argument("Invalid value for property wattage_off of host " + host_->get_name() + ": " +
+                                  off_power_str);
     }
   }
   /* watts_off is 0 by default */

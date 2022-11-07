@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
                                  "the only worker gets killed.");
   sg4::Host* master_host = rootzone->create_host("lilibeth 0", 1e9); // Host where the master will stay
   for (int i = 1; i < cfg_host_count; i++) {
-    auto hostname = std::string("lilibeth ") + std::to_string(i);
+    auto hostname = "lilibeth " + std::to_string(i);
     auto* host    = rootzone->create_host(hostname, 1e9);
     sg4::LinkInRoute link(rootzone->create_link(hostname, "1MBps")->set_latency("24us")->seal());
     rootzone->add_route(master_host->get_netpoint(), host->get_netpoint(), nullptr, nullptr, {link}, true);

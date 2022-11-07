@@ -510,7 +510,7 @@ static simgrid::mc::Type MC_dwarf_die_to_type(simgrid::mc::ObjectInformation* in
 {
   simgrid::mc::Type type;
   type.type          = dwarf_tag(die);
-  type.name          = std::string();
+  type.name          = "";
   type.element_count = -1;
 
   // Global Offset
@@ -677,7 +677,7 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(simgrid::mc::Ob
   }
 
   if (ns && variable->global)
-    variable->name = std::string(ns) + "::" + variable->name;
+    variable->name.insert(0, std::string(ns) + "::");
 
   // The current code needs a variable name,
   // generate a fake one:

@@ -202,7 +202,7 @@ std::vector<VmMap> get_memory_map(pid_t pid)
 #elif defined __linux__
   /* Open the actual process's proc maps file and create the memory_map_t */
   /* to be returned. */
-  std::string path = std::string("/proc/") + std::to_string(pid) + "/maps";
+  std::string path = "/proc/" + std::to_string(pid) + "/maps";
   std::ifstream fp;
   fp.rdbuf()->pubsetbuf(nullptr, 0);
   fp.open(path);

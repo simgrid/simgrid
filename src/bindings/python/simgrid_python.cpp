@@ -641,7 +641,7 @@ PYBIND11_MODULE(simgrid, m)
   py::class_<simgrid::s4u::Mailbox, std::unique_ptr<Mailbox, py::nodelete>>(
       m, "Mailbox", "Mailbox. See the C++ documentation for details.")
       .def(
-          "__str__", [](const Mailbox* self) { return std::string("Mailbox(") + self->get_cname() + ")"; },
+          "__str__", [](const Mailbox* self) { return "Mailbox(" + self->get_name() + ")"; },
           "Textual representation of the Mailbox`")
       .def_static("by_name", &Mailbox::by_name, py::call_guard<py::gil_scoped_release>(), py::arg("name"),
                   "Retrieve a Mailbox from its name")
@@ -716,7 +716,7 @@ PYBIND11_MODULE(simgrid, m)
                              "Retrieve the mailbox on which this comm acts.")
       .def_property_readonly("sender", &Comm::get_sender,
                              py::call_guard<py::gil_scoped_release>())
-      .def_property_readonly("state_str", [](const Comm* self){ return std::string(self->get_state_str()); },
+      .def_property_readonly("state_str", &Comm::get_state_str,
                              py::call_guard<py::gil_scoped_release>(),
                              "Retrieve the Comm state as string")
       .def_property_readonly("remaining",  &Comm::get_remaining,

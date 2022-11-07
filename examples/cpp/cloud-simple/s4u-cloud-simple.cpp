@@ -57,7 +57,7 @@ static void communication_rx_fun(std::vector<std::string> args)
 
 static void launch_communication_worker(s4u_Host* tx_host, s4u_Host* rx_host)
 {
-  std::string mbox_name = std::string("MBOX:") + tx_host->get_cname() + "-" + rx_host->get_cname();
+  std::string mbox_name = "MBOX:" + tx_host->get_name() + "-" + rx_host->get_name();
   std::vector<std::string> args;
   args.push_back(mbox_name);
 

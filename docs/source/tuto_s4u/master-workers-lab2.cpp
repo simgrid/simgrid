@@ -18,8 +18,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_app_masterworker, "Messages specific for this e
 
 static void worker()
 {
-  const std::string mailbox_name   = std::string("worker-") + std::to_string(simgrid::s4u::this_actor::get_pid());
-  simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(mailbox_name);
+  const std::string mailbox_name = "worker-" + std::to_string(simgrid::s4u::this_actor::get_pid());
+  simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
 
   double compute_cost;
   do {
@@ -45,7 +45,7 @@ static void master(std::vector<std::string> args)
   std::vector<simgrid::s4u::ActorPtr> actors;
 
   for (auto* host : simgrid::s4u::Engine::get_instance()->get_all_hosts()) {
-    simgrid::s4u::ActorPtr act = simgrid::s4u::Actor::create(std::string("Worker-") + host->get_name(), host, worker);
+    simgrid::s4u::ActorPtr act = simgrid::s4u::Actor::create("Worker-" + host->get_name(), host, worker);
     actors.push_back(act);
   }
 
@@ -53,9 +53,9 @@ static void master(std::vector<std::string> args)
 
   for (int i = 0; i < tasks_count; i++) { /* For each task to be executed: */
     /* - Select a worker in a round-robin way */
-    aid_t worker_pid                 = actors.at(i % actors.size())->get_pid();
-    std::string mailbox_name         = std::string("worker-") + std::to_string(worker_pid);
-    simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(mailbox_name);
+    aid_t worker_pid               = actors.at(i % actors.size())->get_pid();
+    std::string mailbox_name       = "worker-" + std::to_string(worker_pid);
+    simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
 
     /* - Send the computation cost to that worker */
     XBT_INFO("Sending task %d of %ld to mailbox '%s'", i, tasks_count, mailbox->get_cname());
@@ -65,8 +65,8 @@ static void master(std::vector<std::string> args)
   XBT_INFO("All tasks have been dispatched. Request all workers to stop.");
   for (unsigned long i = 0; i < actors.size(); i++) {
     /* The workers stop when receiving a negative compute_cost */
-    std::string mailbox_name         = std::string("worker-") + std::to_string(actors.at(i)->get_pid());
-    simgrid::s4u::Mailbox* mailbox   = simgrid::s4u::Mailbox::by_name(mailbox_name);
+    std::string mailbox_name       = "worker-" + std::to_string(actors.at(i)->get_pid());
+    simgrid::s4u::Mailbox* mailbox = simgrid::s4u::Mailbox::by_name(mailbox_name);
 
     mailbox->put(new double(-1.0), 0);
   }

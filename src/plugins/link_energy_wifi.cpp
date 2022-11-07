@@ -214,7 +214,7 @@ void LinkEnergyWifi::init_watts_range_list()
     try {
       control_duration_ = std::stod(beacons_factor);
     } catch (const std::invalid_argument&) {
-      throw std::invalid_argument(std::string("Invalid beacons factor value for link ") + this->link_->get_cname());
+      throw std::invalid_argument("Invalid beacons factor value for link " + this->link_->get_name());
     }
   }
 
@@ -237,22 +237,22 @@ void LinkEnergyWifi::init_watts_range_list()
       try {
         pSleep_ = std::stod(current_power_values.at(3));
       } catch (const std::invalid_argument&) {
-        throw std::invalid_argument(std::string("Invalid idle power value for link ") + this->link_->get_cname());
+        throw std::invalid_argument("Invalid idle power value for link " + this->link_->get_name());
       }
       try {
         pRx_ = std::stod(current_power_values.at(2));
       } catch (const std::invalid_argument&) {
-        throw std::invalid_argument(std::string("Invalid idle power value for link ") + this->link_->get_cname());
+        throw std::invalid_argument("Invalid idle power value for link " + this->link_->get_name());
       }
       try {
         pTx_ = std::stod(current_power_values.at(1));
       } catch (const std::invalid_argument&) {
-        throw std::invalid_argument(std::string("Invalid idle power value for link ") + this->link_->get_cname());
+        throw std::invalid_argument("Invalid idle power value for link " + this->link_->get_name());
       }
       try {
         pIdle_ = std::stod(current_power_values.at(0));
       } catch (const std::invalid_argument&) {
-        throw std::invalid_argument(std::string("Invalid busy power value for link ") + this->link_->get_cname());
+        throw std::invalid_argument("Invalid busy power value for link " + this->link_->get_name());
       }
 
       XBT_DEBUG("Values aa initialized with: pSleep=%f pIdle=%f pTx=%f pRx=%f", pSleep_, pIdle_, pTx_, pRx_);

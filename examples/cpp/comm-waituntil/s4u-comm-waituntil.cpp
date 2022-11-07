@@ -25,7 +25,7 @@ static void sender(int messages_count, size_t payload_size)
 
   /* Start dispatching all messages to the receiver */
   for (int i = 0; i < messages_count; i++) {
-    std::string message = std::string("Message ") + std::to_string(i);
+    std::string message = "Message " + std::to_string(i);
     auto* payload       = new std::string(message); // copy the data we send:
 
     // 'msgName' is not a stable storage location

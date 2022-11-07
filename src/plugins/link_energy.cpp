@@ -110,13 +110,13 @@ void LinkEnergy::init_watts_range_list()
     try {
       idle_ = std::stod(current_power_values.front());
     } catch (const std::invalid_argument&) {
-      throw std::invalid_argument(std::string("Invalid idle power value for link ") + this->link_->get_cname());
+      throw std::invalid_argument("Invalid idle power value for link " + this->link_->get_name());
     }
 
     try {
       busy_ = std::stod(current_power_values.back());
     } catch (const std::invalid_argument&) {
-      throw std::invalid_argument(std::string("Invalid busy power value for link ") + this->link_->get_cname());
+      throw std::invalid_argument("Invalid busy power value for link " + this->link_->get_name());
     }
   }
 }

@@ -208,7 +208,7 @@ Host* Engine::host_by_name(const std::string& name) const
 {
   auto* host = host_by_name_or_null(name);
   if (not host)
-    throw std::invalid_argument(std::string("Host not found: '") + name + std::string("'"));
+    throw std::invalid_argument("Host not found: '" + name + "'");
   return host;
 }
 
@@ -232,7 +232,7 @@ Link* Engine::link_by_name(const std::string& name) const
 {
   auto* link = link_by_name_or_null(name);
   if (not link)
-    throw std::invalid_argument(std::string("Link not found: ") + name);
+    throw std::invalid_argument("Link not found: " + name);
   return link;
 }
 
@@ -240,7 +240,7 @@ SplitDuplexLink* Engine::split_duplex_link_by_name(const std::string& name) cons
 {
   auto* link_impl = pimpl->netzone_root_ ? pimpl->netzone_root_->get_split_duplex_link_by_name_or_null(name) : nullptr;
   if (not link_impl)
-    throw std::invalid_argument(std::string("Link not found: ") + name);
+    throw std::invalid_argument("Link not found: " + name);
   return link_impl->get_iface();
 }
 
@@ -396,7 +396,7 @@ kernel::routing::NetPoint* Engine::netpoint_by_name(const std::string& name) con
 {
   auto netp = netpoint_by_name_or_null(name);
   if (netp == nullptr) {
-    throw std::invalid_argument(std::string("Netpoint not found: %s") + name);
+    throw std::invalid_argument("Netpoint not found: " + name);
   }
   return netp;
 }

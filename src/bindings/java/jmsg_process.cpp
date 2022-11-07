@@ -114,7 +114,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID(JNIEnv * env, jcl
   auto const* actor = sg_actor_by_pid(pid);
 
   if (not actor) {
-    jxbt_throw_process_not_found(env, std::string("PID = ") + std::to_string(static_cast<int>(pid)));
+    jxbt_throw_process_not_found(env, "PID = " + std::to_string(static_cast<int>(pid)));
     return nullptr;
   }
 

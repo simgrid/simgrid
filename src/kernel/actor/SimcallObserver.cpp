@@ -23,7 +23,7 @@ void RandomSimcall::serialize(std::stringstream& stream) const
 }
 std::string RandomSimcall::to_string() const
 {
-  return std::string("Random(min:") + std::to_string(min_) + " max:" + std::to_string(max_) + ")";
+  return "Random(min:" + std::to_string(min_) + " max:" + std::to_string(max_) + ")";
 }
 
 void RandomSimcall::prepare(int times_considered)
@@ -69,7 +69,7 @@ void ActorJoinSimcall::serialize(std::stringstream& stream) const
 }
 std::string ActorJoinSimcall::to_string() const
 {
-  return std::string("ActorJoin(pid:") + std::to_string(other_->get_pid()) + ")";
+  return "ActorJoin(pid:" + std::to_string(other_->get_pid()) + ")";
 }
 
 void ObjectAccessSimcallObserver::serialize(std::stringstream& stream) const
@@ -79,7 +79,7 @@ void ObjectAccessSimcallObserver::serialize(std::stringstream& stream) const
 }
 std::string ObjectAccessSimcallObserver::to_string() const
 {
-  return std::string("ObjectAccess(obj:") + ptr_to_id<ObjectAccessSimcallItem const>(object_) +
+  return "ObjectAccess(obj:" + ptr_to_id<ObjectAccessSimcallItem const>(object_) +
          " owner:" + std::to_string(get_owner()->get_pid()) + ")";
 }
 bool ObjectAccessSimcallObserver::is_visible() const

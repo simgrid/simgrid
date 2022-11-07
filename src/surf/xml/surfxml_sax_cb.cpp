@@ -112,7 +112,7 @@ static void explodesRadical(const std::string& radicals, std::vector<int>* explo
         end = surf_parse_get_int(radical_ends.back());
         break;
       default:
-        surf_parse_error(std::string("Malformed radical: ") + group);
+        surf_parse_error("Malformed radical: " + group);
     }
     for (int i = start; i <= end; i++)
       exploded->push_back(i);
@@ -198,7 +198,7 @@ void STag_surfxml_platform() {
                                      "available in the tools/ directory of the source archive.");
   surf_parse_assert(
       version >= 400L,
-      std::string("******* THIS FILE IS TOO OLD (v:") + version_string +
+      "******* THIS FILE IS TOO OLD (v:" + version_string +
           ") *********\n "
           "Changes introduced in SimGrid 3.13:\n"
           "  - 'power' attribute of hosts (and others) got renamed to 'speed'.\n"
@@ -217,7 +217,7 @@ void STag_surfxml_platform() {
              "available in the tools/ directory of the source archive.",
              version_string.c_str(), surf_parsed_filename.c_str());
   }
-  surf_parse_assert(version <= 410L, std::string("******* THIS FILE COMES FROM THE FUTURE (v:") + version_string +
+  surf_parse_assert(version <= 410L, "******* THIS FILE COMES FROM THE FUTURE (v:" + version_string +
                                          ") *********\n "
                                          "The most recent formalism that this version of SimGrid understands is v4.1.\n"
                                          "Please update your code, or use another, more adapted, file.");
@@ -348,7 +348,7 @@ void ETag_surfxml_cluster(){
     cluster.topology = simgrid::kernel::routing::ClusterTopology::DRAGONFLY;
     break;
   default:
-    surf_parse_error(std::string("Invalid cluster topology for cluster ") + cluster.id);
+    surf_parse_error("Invalid cluster topology for cluster " + cluster.id);
   }
   cluster.topo_parameters = A_surfxml_cluster_topo___parameters;
   cluster.router_id = A_surfxml_cluster_router___id;
@@ -368,7 +368,7 @@ void ETag_surfxml_cluster(){
     cluster.sharing_policy = simgrid::s4u::Link::SharingPolicy::FATPIPE;
     break;
   default:
-    surf_parse_error(std::string("Invalid cluster sharing policy for cluster ") + cluster.id);
+    surf_parse_error("Invalid cluster sharing policy for cluster " + cluster.id);
   }
   switch (AX_surfxml_cluster_bb___sharing___policy) {
   case A_surfxml_cluster_bb___sharing___policy_FATPIPE:
@@ -378,7 +378,7 @@ void ETag_surfxml_cluster(){
     cluster.bb_sharing_policy = simgrid::s4u::Link::SharingPolicy::SHARED;
     break;
   default:
-    surf_parse_error(std::string("Invalid bb sharing policy in cluster ") + cluster.id);
+    surf_parse_error("Invalid bb sharing policy in cluster " + cluster.id);
   }
 
   sg_platf_new_tag_cluster(&cluster);
@@ -407,7 +407,7 @@ void STag_surfxml_cabinet(){
 void STag_surfxml_peer(){
   simgrid::kernel::routing::PeerCreationArgs peer;
 
-  peer.id          = std::string(A_surfxml_peer_id);
+  peer.id = A_surfxml_peer_id;
   peer.speed =
       xbt_parse_get_speed(surf_parsed_filename, surf_parse_lineno, A_surfxml_peer_speed, "speed of peer " + peer.id);
   peer.bw_in = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_surfxml_peer_bw___in,
@@ -443,7 +443,7 @@ void ETag_surfxml_link(){
   link.properties = property_sets.back();
   property_sets.pop_back();
 
-  link.id                  = std::string(A_surfxml_link_id);
+  link.id                  = A_surfxml_link_id;
   link.bandwidths          = xbt_parse_get_bandwidths(surf_parsed_filename, surf_parse_lineno, A_surfxml_link_bandwidth,
                                              "bandwidth of link " + link.id);
   link.bandwidth_trace     = A_surfxml_link_bandwidth___file[0]
@@ -476,7 +476,7 @@ void ETag_surfxml_link(){
     link.policy = simgrid::s4u::Link::SharingPolicy::WIFI;
     break;
   default:
-    surf_parse_error(std::string("Invalid sharing policy in link ") + link.id);
+    surf_parse_error("Invalid sharing policy in link " + link.id);
   }
 
   sg_platf_new_link(&link);
@@ -490,14 +490,14 @@ void STag_surfxml_link___ctn()
   switch (A_surfxml_link___ctn_direction) {
   case AU_surfxml_link___ctn_direction:
   case A_surfxml_link___ctn_direction_NONE:
-    link = engine->link_by_name(std::string(A_surfxml_link___ctn_id));
+    link = engine->link_by_name(A_surfxml_link___ctn_id);
     break;
   case A_surfxml_link___ctn_direction_UP:
-    link      = engine->split_duplex_link_by_name(std::string(A_surfxml_link___ctn_id));
+    link      = engine->split_duplex_link_by_name(A_surfxml_link___ctn_id);
     direction = simgrid::s4u::LinkInRoute::Direction::UP;
     break;
   case A_surfxml_link___ctn_direction_DOWN:
-    link      = engine->split_duplex_link_by_name(std::string(A_surfxml_link___ctn_id));
+    link      = engine->split_duplex_link_by_name(A_surfxml_link___ctn_id);
     direction = simgrid::s4u::LinkInRoute::Direction::DOWN;
     break;
   default:
@@ -523,7 +523,7 @@ void ETag_surfxml_backbone()
 {
   auto link = std::make_unique<simgrid::kernel::routing::LinkCreationArgs>();
 
-  link->id = std::string(A_surfxml_backbone_id);
+  link->id = A_surfxml_backbone_id;
   link->bandwidths.push_back(xbt_parse_get_bandwidth(
       surf_parsed_filename, surf_parse_lineno, A_surfxml_backbone_bandwidth, "bandwidth of backbone " + link->id));
   link->latency = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_surfxml_backbone_latency,
@@ -839,7 +839,7 @@ void surf_parse_open(const std::string& file)
 
   surf_file_to_parse = surf_fopen(file, "r");
   if (surf_file_to_parse == nullptr)
-    throw std::invalid_argument(std::string("Unable to open '") + file + "' from '" + simgrid::xbt::Path().get_name() +
+    throw std::invalid_argument("Unable to open '" + file + "' from '" + simgrid::xbt::Path().get_name() +
                                 "'. Does this file exist?");
   surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
   surf_parse__switch_to_buffer(surf_input_buffer);

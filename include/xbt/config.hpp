@@ -174,7 +174,7 @@ bind_flag(std::string& value, const char* name, const char* description,
                  if (val == "help")
                    mesg += std::string("Possible values for option ") + name + ":\n";
                  else
-                   mesg += std::string("Invalid value '") + val + "' for option " + name + ". Possible values:\n";
+                   mesg += "Invalid value '" + val + "' for option " + name + ". Possible values:\n";
                  for (auto const& kv : valid_values)
                    mesg += "  - '" + kv.first + "': " + kv.second + (kv.first == value ? "  <=== DEFAULT" : "") + "\n";
                  xbt_die("%s", mesg.c_str());

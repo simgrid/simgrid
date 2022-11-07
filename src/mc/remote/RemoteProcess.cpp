@@ -317,7 +317,7 @@ std::string RemoteProcess::read_string(RemotePtr<char> address) const
     xbt_assert(c > 0, "Could not read string from remote process");
 
     if (memchr(res.data() + off, '\0', c))
-      return std::string(res.data());
+      return res.data();
 
     off += c;
     if (off == (off_t)res.size())

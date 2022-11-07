@@ -128,7 +128,7 @@ static msg_comm_t* jarray_to_commArray(JNIEnv *env, jobjectArray jcomms, /* OUT 
 
      comms[i] = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
      if (not comms[i]) {
-       jxbt_throw_null(env, std::string("comm at rank ") + std::to_string(i) + " is null");
+       jxbt_throw_null(env, "comm at rank " + std::to_string(i) + " is null");
        return nullptr;
      }
 

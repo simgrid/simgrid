@@ -82,8 +82,7 @@ Link* Link::set_latency(const std::string& value)
   try {
     d_value = xbt_parse_get_time("", 0, value, "");
   } catch (const simgrid::ParseError&) {
-    throw std::invalid_argument(std::string("Impossible to set latency for link: ") + get_name() +
-                                std::string(". Invalid value: ") + value);
+    throw std::invalid_argument("Impossible to set latency for link: " + get_name() + ". Invalid value: " + value);
   }
   return set_latency(d_value);
 }
@@ -102,8 +101,8 @@ Link* Link::set_bandwidth(double value)
 Link* Link::set_sharing_policy(Link::SharingPolicy policy, const NonLinearResourceCb& cb)
 {
   if (policy == SharingPolicy::SPLITDUPLEX || policy == SharingPolicy::WIFI)
-    throw std::invalid_argument(std::string("Impossible to set wifi or split-duplex for the link: ") + get_name() +
-                                std::string(". Use appropriate create function in NetZone."));
+    throw std::invalid_argument("Impossible to set wifi or split-duplex for the link: " + get_name() +
+                                ". Use appropriate create function in NetZone.");
 
   kernel::actor::simcall_object_access(pimpl_, [this, policy, &cb] { pimpl_->set_sharing_policy(policy, cb); });
   return this;

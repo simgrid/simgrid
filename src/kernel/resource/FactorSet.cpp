@@ -57,14 +57,14 @@ void FactorSet::parse(const std::string& values)
         try {
           fact.factor = std::stoi(*factor_iter);
         } catch (const std::invalid_argument&) {
-          throw std::invalid_argument(std::string("Invalid factor in chunk ") + std::to_string(factors_.size() + 1) +
-                                      ": " + *factor_iter + " for " + name_);
+          throw std::invalid_argument("Invalid factor in chunk " + std::to_string(factors_.size() + 1) + ": " +
+                                      *factor_iter + " for " + name_);
         }
       } else {
         try {
           fact.values.push_back(xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, *factor_iter, ""));
         } catch (const std::invalid_argument&) {
-          throw std::invalid_argument(std::string("Invalid factor value ") + std::to_string(iteration) + " in chunk " +
+          throw std::invalid_argument("Invalid factor value " + std::to_string(iteration) + " in chunk " +
                                       std::to_string(factors_.size() + 1) + ": " + *factor_iter + " for " + name_);
         }
       }

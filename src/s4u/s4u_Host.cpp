@@ -283,7 +283,7 @@ std::vector<double> Host::convert_pstate_speed_vector(const std::vector<std::str
       double speed = xbt_parse_get_speed("", 0, speed_str, "");
       speed_list.push_back(speed);
     } catch (const simgrid::ParseError&) {
-      throw std::invalid_argument(std::string("Invalid speed value: ") + speed_str);
+      throw std::invalid_argument("Invalid speed value: " + speed_str);
     }
   }
   return speed_list;
@@ -340,15 +340,13 @@ Disk* Host::create_disk(const std::string& name, const std::string& read_bandwid
   try {
     d_read = xbt_parse_get_bandwidth("", 0, read_bandwidth, "");
   } catch (const simgrid::ParseError&) {
-    throw std::invalid_argument(std::string("Impossible to create disk: ") + name +
-                                std::string(". Invalid read bandwidth: ") + read_bandwidth);
+    throw std::invalid_argument("Impossible to create disk: " + name + ". Invalid read bandwidth: " + read_bandwidth);
   }
   double d_write;
   try {
     d_write = xbt_parse_get_bandwidth("", 0, write_bandwidth, "");
   } catch (const simgrid::ParseError&) {
-    throw std::invalid_argument(std::string("Impossible to create disk: ") + name +
-                                std::string(". Invalid write bandwidth: ") + write_bandwidth);
+    throw std::invalid_argument("Impossible to create disk: " + name + ". Invalid write bandwidth: " + write_bandwidth);
   }
   return create_disk(name, d_read, d_write);
 }

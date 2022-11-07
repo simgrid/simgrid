@@ -123,7 +123,7 @@ public:
   Broadcaster(int hostcount, unsigned int piece_count) : piece_count(piece_count)
   {
     for (int i = 1; i <= hostcount; i++) {
-      std::string name = std::string("node-") + std::to_string(i) + ".simgrid.org";
+      std::string name = "node-" + std::to_string(i) + ".simgrid.org";
       XBT_DEBUG("%s", name.c_str());
       mailboxes.push_back(sg4::Mailbox::by_name(name));
     }

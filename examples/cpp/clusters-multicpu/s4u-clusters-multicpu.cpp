@@ -30,8 +30,7 @@ public:
     std::vector<sg4::Mailbox*> mboxes;
 
     /* Start dispatching 1 message to all receivers */
-    std::string msg_content =
-        std::string("Hello, I'm alive and running on ") + std::string(sg4::this_actor::get_host()->get_name());
+    std::string msg_content = "Hello, I'm alive and running on " + sg4::this_actor::get_host()->get_name();
     for (const auto* host : hosts_) {
       /* Copy the data we send: the 'msg_content' variable is not a stable storage location.
        * It will be destroyed when this actor leaves the loop, ie before the receiver gets it */
@@ -307,7 +306,7 @@ int main(int argc, char* argv[])
   sg4::Actor::create("sender", host_list[0], Sender(host_list));
   /* create receiver in every host */
   for (auto* host : host_list) {
-    sg4::Actor::create(std::string("receiver-") + std::string(host->get_name()), host, Receiver());
+    sg4::Actor::create("receiver-" + host->get_name(), host, Receiver());
   }
 
   /* runs the simulation */

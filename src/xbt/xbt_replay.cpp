@@ -52,7 +52,7 @@ bool ReplayReader::get(ReplayAction* action)
 
 static std::unique_ptr<ReplayAction> get_action(const char* name)
 {
-  if (auto queue_elt = action_queues.find(std::string(name)); queue_elt != action_queues.end()) {
+  if (auto queue_elt = action_queues.find(name); queue_elt != action_queues.end()) {
     if (auto& my_queue = queue_elt->second; not my_queue.empty()) {
       // Get something from my queue and return it
       auto action = std::move(my_queue.front());
@@ -154,7 +154,7 @@ int replay_runner(const char* actor_name, const char* trace_filename)
  */
 void xbt_replay_action_register(const char* action_name, const action_fun& function)
 {
-  simgrid::xbt::action_funs[std::string(action_name)] = function;
+  simgrid::xbt::action_funs[action_name] = function;
 }
 
 /**
@@ -165,7 +165,7 @@ void xbt_replay_action_register(const char* action_name, const action_fun& funct
  */
 action_fun xbt_replay_action_get(const char* action_name)
 {
-  return simgrid::xbt::action_funs.at(std::string(action_name));
+  return simgrid::xbt::action_funs.at(action_name);
 }
 
 void xbt_replay_set_tracefile(const std::string& filename)
