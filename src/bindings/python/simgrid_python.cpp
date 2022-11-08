@@ -319,9 +319,8 @@ PYBIND11_MODULE(simgrid, m)
       .def_property_readonly("netpoint", &simgrid::s4u::NetZone::get_netpoint,
                              "Retrieve the netpoint associated to this zone")
       .def("seal", &simgrid::s4u::NetZone::seal, "Seal this NetZone")
-      .def_property_readonly(
-          "name", [](const simgrid::s4u::NetZone* self) { return self->get_name(); },
-          "The name of this network zone (read-only property).");
+      .def_property_readonly("name", &simgrid::s4u::NetZone::get_name,
+                             "The name of this network zone (read-only property).");
 
   /* Class ClusterCallbacks */
   py::class_<simgrid::s4u::ClusterCallbacks>(m, "ClusterCallbacks", "Callbacks used to create cluster zones")
@@ -424,13 +423,9 @@ PYBIND11_MODULE(simgrid, m)
                           1);
              self.attr("core_count")(count);
            })
-      .def_property(
-          "core_count", &Host::get_core_count,
-          [](Host* h, int count) {
-            py::gil_scoped_release gil_guard;
-            return h->set_core_count(count);
-          },
-          "Manage the number of cores in the CPU")
+      .def_property("core_count", &Host::get_core_count,
+                    py::cpp_function(&Host::set_core_count, py::call_guard<py::gil_scoped_release>()),
+                    "Manage the number of cores in the CPU")
       .def("set_coordinates", &Host::set_coordinates, py::call_guard<py::gil_scoped_release>(),
            "Set the coordinates of this host")
       .def("set_sharing_policy", &simgrid::s4u::Host::set_sharing_policy, py::call_guard<py::gil_scoped_release>(),
@@ -441,17 +436,12 @@ PYBIND11_MODULE(simgrid, m)
            py::overload_cast<const std::string&, const std::string&, const std::string&>(&Host::create_disk),
            py::call_guard<py::gil_scoped_release>(), "Create a disk")
       .def("seal", &Host::seal, py::call_guard<py::gil_scoped_release>(), "Seal this host")
-      .def_property(
-          "pstate", &Host::get_pstate,
-          [](Host* h, int i) {
-            py::gil_scoped_release gil_guard;
-            h->set_pstate(i);
-          },
-          "The current pstate (read/write property).")
+      .def_property("pstate", &Host::get_pstate,
+                    py::cpp_function(&Host::set_pstate, py::call_guard<py::gil_scoped_release>()),
+                    "The current pstate (read/write property).")
       .def_static("current", &Host::current, py::call_guard<py::gil_scoped_release>(),
                   "Retrieves the host on which the running actor is located.")
-      .def_property_readonly(
-          "name", [](const Host* self) { return self->get_name(); }, "The name of this host (read-only property).")
+      .def_property_readonly("name", &Host::get_name, "The name of this host (read-only property).")
       .def_property_readonly("load", &Host::get_load,
                              "Returns the current computation load (in flops per second), NOT taking the external load "
                              "into account. This is the currently achieved speed (read-only property).")
@@ -498,9 +488,7 @@ PYBIND11_MODULE(simgrid, m)
            "Set sharing policy for this disk", py::arg("op"), py::arg("policy"),
            py::arg("cb") = simgrid::s4u::NonLinearResourceCb())
       .def("seal", &simgrid::s4u::Disk::seal, py::call_guard<py::gil_scoped_release>(), "Seal this disk")
-      .def_property_readonly(
-          "name", [](const simgrid::s4u::Disk* self) { return self->get_name(); },
-          "The name of this disk (read-only property).");
+      .def_property_readonly("name", &simgrid::s4u::Disk::get_name, "The name of this disk (read-only property).");
   py::enum_<simgrid::s4u::Disk::SharingPolicy>(disk, "SharingPolicy")
       .value("NONLINEAR", simgrid::s4u::Disk::SharingPolicy::NONLINEAR)
       .value("LINEAR", simgrid::s4u::Disk::SharingPolicy::LINEAR)
@@ -593,8 +581,7 @@ PYBIND11_MODULE(simgrid, m)
            "Set level of communication speed of given host on this Wi-Fi link")
       .def_static("by_name", &Link::by_name, "Retrieves a Link from its name, or dies")
       .def("seal", &Link::seal, py::call_guard<py::gil_scoped_release>(), "Seal this link")
-      .def_property_readonly(
-          "name", [](const Link* self) { return self->get_name(); }, "The name of this link")
+      .def_property_readonly("name", &Link::get_name, "The name of this link")
       .def_property_readonly("bandwidth", &Link::get_bandwidth,
                              "The bandwidth (in bytes per second) (read-only property).")
       .def_property_readonly("latency", &Link::get_latency, "The latency (in seconds) (read-only property).");
@@ -645,9 +632,7 @@ PYBIND11_MODULE(simgrid, m)
           "Textual representation of the Mailbox`")
       .def_static("by_name", &Mailbox::by_name, py::call_guard<py::gil_scoped_release>(), py::arg("name"),
                   "Retrieve a Mailbox from its name")
-      .def_property_readonly(
-          "name", [](const Mailbox* self) { return self->get_name(); },
-          "The name of that mailbox (read-only property).")
+      .def_property_readonly("name", &Mailbox::get_name, "The name of that mailbox (read-only property).")
       .def_property_readonly("ready", &Mailbox::ready, py::call_guard<py::gil_scoped_release>(),
                              "Check if there is a communication ready to be consumed from a mailbox.")
       .def(
@@ -695,9 +680,8 @@ PYBIND11_MODULE(simgrid, m)
           },
           py::call_guard<py::gil_scoped_release>(),
           "Non-blocking data reception. Use data.get() to get the python object after the communication has finished")
-      .def(
-          "set_receiver", [](Mailbox* self, ActorPtr actor) { self->set_receiver(actor); },
-          py::call_guard<py::gil_scoped_release>(), "Sets the actor as permanent receiver");
+      .def("set_receiver", &Mailbox::set_receiver, py::call_guard<py::gil_scoped_release>(),
+           "Sets the actor as permanent receiver");
 
   /* Class PyGetAsync */
   py::class_<PyGetAsync>(m, "PyGetAsync", "Wrapper for async get communications")
@@ -734,19 +718,15 @@ PYBIND11_MODULE(simgrid, m)
       .def("set_rate", &Comm::set_rate, py::call_guard<py::gil_scoped_release>(),
            py::arg("rate"),
            "Sets the maximal communication rate (in byte/sec). Must be done before start")
-      .def("cancel", [](Comm* self){ return self->cancel(); },
-           py::call_guard<py::gil_scoped_release>(), py::return_value_policy::reference_internal,
-           "Cancel the activity.")
-      .def("start", [](Comm* self){ return self->start(); },
-           py::call_guard<py::gil_scoped_release>(), py::return_value_policy::reference_internal,
+      .def("cancel", &Comm::cancel, py::call_guard<py::gil_scoped_release>(),
+           py::return_value_policy::reference_internal, "Cancel the activity.")
+      .def("start", &Comm::start, py::call_guard<py::gil_scoped_release>(), py::return_value_policy::reference_internal,
            "Starts a previously created activity. This function is optional: you can call wait() even if you didn't "
            "call start()")
-      .def("suspend", [](Comm* self){ return self->suspend(); },
-          py::call_guard<py::gil_scoped_release>(), py::return_value_policy::reference_internal,
-          "Suspend the activity.")
-      .def("resume", [](Comm* self){ return self->resume(); },
-          py::call_guard<py::gil_scoped_release>(), py::return_value_policy::reference_internal,
-          "Resume the activity.")
+      .def("suspend", &Comm::suspend, py::call_guard<py::gil_scoped_release>(),
+           py::return_value_policy::reference_internal, "Suspend the activity.")
+      .def("resume", &Comm::resume, py::call_guard<py::gil_scoped_release>(),
+           py::return_value_policy::reference_internal, "Resume the activity.")
       .def("test", &Comm::test, py::call_guard<py::gil_scoped_release>(),
            "Test whether the communication is terminated.")
       .def("wait", &Comm::wait, py::call_guard<py::gil_scoped_release>(),
@@ -757,8 +737,7 @@ PYBIND11_MODULE(simgrid, m)
       .def("wait_until", &Comm::wait_until, py::call_guard<py::gil_scoped_release>(),
            py::arg("time_limit"),
            "Block until the completion of that communication, or raises TimeoutException after the specified time.")
-      .def("detach", [](Comm* self) { return self->detach(); },
-           py::return_value_policy::reference_internal,
+      .def("detach", py::overload_cast<>(&Comm::detach), py::return_value_policy::reference_internal,
            py::call_guard<py::gil_scoped_release>(),
            "Start the comm, and ignore its result. It can be completely forgotten after that.")
       .def_static("sendto", &Comm::sendto, py::call_guard<py::gil_scoped_release>(),
@@ -809,21 +788,12 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Exec */
   py::class_<simgrid::s4u::Exec, simgrid::s4u::ExecPtr>(m, "Exec", "Execution. See the C++ documentation for details.")
-      .def_property_readonly(
-          "remaining",
-          [](simgrid::s4u::ExecPtr self) {
-            py::gil_scoped_release gil_guard;
-            return self->get_remaining();
-          },
-          "Amount of flops that remain to be computed until completion (read-only property).")
-      .def_property_readonly(
-          "remaining_ratio",
-          [](simgrid::s4u::ExecPtr self) {
-            py::gil_scoped_release gil_guard;
-            return self->get_remaining_ratio();
-          },
-          "Amount of work remaining until completion from 0 (completely done) to 1 (nothing done "
-          "yet) (read-only property).")
+      .def_property_readonly("remaining", &simgrid::s4u::Exec::get_remaining, py::call_guard<py::gil_scoped_release>(),
+                             "Amount of flops that remain to be computed until completion (read-only property).")
+      .def_property_readonly("remaining_ratio", &simgrid::s4u::Exec::get_remaining_ratio,
+                             py::call_guard<py::gil_scoped_release>(),
+                             "Amount of work remaining until completion from 0 (completely done) to 1 (nothing done "
+                             "yet) (read-only property).")
       .def_property("host", &simgrid::s4u::Exec::get_host, &simgrid::s4u::Exec::set_host,
                     "Host on which this execution runs. Only the first host is returned for parallel executions. "
                     "Changing this value migrates the execution.")
@@ -857,8 +827,9 @@ PYBIND11_MODULE(simgrid, m)
                              "Check whether trying to acquire the semaphore would block (in other word, checks whether "
                              "this semaphore has capacity).")
       // Allow semaphores to be automatically acquired/released with a context manager: `with semaphore: ...`
-      .def("__enter__", [](Semaphore* self){ self->acquire(); }, py::call_guard<py::gil_scoped_release>())
-      .def("__exit__", [](Semaphore* self){ self->release(); }, py::call_guard<py::gil_scoped_release>());
+      .def("__enter__", &Semaphore::acquire, py::call_guard<py::gil_scoped_release>())
+      .def("__exit__",
+           [](Semaphore* self, const py::object&, const py::object&, const py::object&) { self->release(); });
 
   /* Class Mutex */
   py::class_<Mutex, MutexPtr>(m, "Mutex",
@@ -870,9 +841,9 @@ PYBIND11_MODULE(simgrid, m)
            "Try to acquire the mutex. Return true if the mutex was acquired, false otherwise.")
       .def("unlock", &Mutex::unlock, py::call_guard<py::gil_scoped_release>(), "Release the mutex.")
       // Allow mutexes to be automatically acquired/released with a context manager: `with mutex: ...`
-      .def("__enter__", [](Mutex* self){ self->lock(); }, py::call_guard<py::gil_scoped_release>())
+      .def("__enter__", &Mutex::lock, py::call_guard<py::gil_scoped_release>())
       .def("__exit__", [](Mutex* self, const py::object&, const py::object&, const py::object&) { self->unlock(); },
-          py::call_guard<py::gil_scoped_release>());
+           py::call_guard<py::gil_scoped_release>());
 
   /* Class Barrier */
   py::class_<Barrier, BarrierPtr>(m, "Barrier",
@@ -908,11 +879,7 @@ PYBIND11_MODULE(simgrid, m)
           py::call_guard<py::gil_scoped_release>(),
           "Create an actor from a function or an object. See the :ref:`example <s4u_ex_actors_create>`.")
       .def_property(
-          "host", &Actor::get_host,
-          [](Actor* a, Host* h) {
-            py::gil_scoped_release gil_guard;
-            a->set_host(h);
-          },
+          "host", &Actor::get_host, py::cpp_function(&Actor::set_host, py::call_guard<py::gil_scoped_release>()),
           "The host on which this actor is located. Changing this value migrates the actor.\n\n"
           "If the actor is currently blocked on an execution activity, the activity is also migrated to the new host. "
           "If it’s blocked on another kind of activity, an error is raised as the mandated code is not written yet. "
