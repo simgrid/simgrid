@@ -9,10 +9,6 @@
 
 #include "simgrid/config.h"
 #include "src/kernel/EngineImpl.hpp"
-#if SIMGRID_HAVE_EIGEN3
-#include "src/kernel/lmm/bmf.hpp"
-#endif
-#include "src/kernel/resource/profile/Event.hpp"
 #include "src/surf/sio_S22.hpp"
 
 #include <unordered_set>
@@ -35,8 +31,11 @@ void surf_host_model_init_sio_S22()
 {
   XBT_CINFO(xbt_cfg, "Switching to the S22 model to handle streaming I/Os.");
   simgrid::config::set_default<bool>("network/crosstraffic", true);
-  auto* system    = simgrid::kernel::lmm::System::build(cfg_sio_solver.get(), true /* selective update */);
-  auto host_model = std::make_shared<simgrid::kernel::resource::HostS22Model>("Host_Sio", system);
+  auto host_model = std::make_shared<simgrid::kernel::resource::HostS22Model>("Host_Sio");
+  surf_network_model_init_LegrandVelho();
+  surf_cpu_model_init_Cas01();
+  surf_disk_model_init_S19();
+
   auto* engine    = simgrid::kernel::EngineImpl::get_instance();
   engine->add_model(host_model);
   engine->get_netzone_root()->set_host_model(host_model);
@@ -44,12 +43,9 @@ void surf_host_model_init_sio_S22()
 
 namespace simgrid::kernel::resource {
 
-HostS22Model::HostS22Model(const std::string& name, lmm::System* sys) : HostModel(name)
+HostS22Model::HostS22Model(const std::string& name) : HostModel(name)
 {
-  set_maxmin_system(sys);
-  surf_network_model_init_LegrandVelho();
-  surf_cpu_model_init_Cas01();
-  surf_disk_model_init_S19();
+  set_maxmin_system(lmm::System::build(cfg_sio_solver.get(), true /* selective update */));
 }
 
 double HostS22Model::next_occurring_event(double now)
@@ -90,33 +86,13 @@ void HostS22Model::update_actions_state(double /*now*/, double delta)
 
     XBT_DEBUG("Action (%p) : remains (%g).", &action, action.get_remains());
 
-    /* In the next if cascade, the action can be finished either because:
-     *  - The amount of remaining work reached 0
-     *  - The max duration was reached
-     * If it's not done, it may have failed.
-     */
-
     if (((action.get_remains() <= 0) && (action.get_variable()->get_penalty() > 0)) ||
         ((action.get_max_duration() != NO_MAX_DURATION) && (action.get_max_duration() <= 0))) {
       action.finish(Action::State::FINISHED);
       continue;
     }
-
-    /* Need to check that none of the model has failed */
-    int i                               = 0;
-    const lmm::Constraint* cnst         = action.get_variable()->get_constraint(i);
-    while (cnst != nullptr) {
-      i++;
-      if (not cnst->get_id()->is_on()) {
-        XBT_DEBUG("Action (%p) Failed!!", &action);
-        action.finish(Action::State::FAILED);
-        break;
-      }
-      cnst = action.get_variable()->get_constraint(i);
-    }
   }
 }
-
 
 DiskAction* HostS22Model::io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk,
                                    double size)
@@ -178,7 +154,7 @@ S22Action::S22Action(Model* model, s4u::Host* src_host, DiskImpl* src_disk, s4u:
 
   XBT_DEBUG("Creating a stream io (%p) with %zu disk(s) and %zu unique link(s).", this, disk_nb, link_nb);
 
-  set_variable(model->get_maxmin_system()->variable_new(this, 1.0, -1.0, 3 * disk_nb + link_nb));
+  set_variable(model->get_maxmin_system()->variable_new(this, 1.0, -1.0, 2 * disk_nb + link_nb));
 
   if (latency_ > 0)
     model->get_maxmin_system()->update_variable_penalty(get_variable(), 0.0);

@@ -18,10 +18,6 @@ namespace simgrid::kernel::resource {
  ***********/
 
 class XBT_PRIVATE HostS22Model;
-
-class XBT_PRIVATE DiskS22;
-class XBT_PRIVATE LinkS22;
-
 class XBT_PRIVATE S22Action;
 
 /*********
@@ -29,7 +25,7 @@ class XBT_PRIVATE S22Action;
  *********/
 class HostS22Model : public HostModel {
 public:
-  HostS22Model(const std::string& name, lmm::System* sys);
+  HostS22Model(const std::string& name);
   HostS22Model(const HostS22Model&) = delete;
   HostS22Model& operator=(const HostS22Model&) = delete;
 
@@ -53,16 +49,7 @@ class S22Action : public DiskAction {
   const DiskImpl* dst_disk_;
 
   const double size_;
-
   double latency_ = 0;
-
-  /**
-   * @brief Calculate the network bound for the parallel task
-   *
-   * The network bound depends on the largest latency between the communication in the ptask.
-   * Return MAX_DOUBLE if latency is 0 (or ptask doesn't have any communication)
-   */
-  double calculate_network_bound() const;
 
 public:
   S22Action() = delete;
