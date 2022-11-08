@@ -72,13 +72,13 @@ public:
   DiskImpl* set_host(s4u::Host* host);
   s4u::Host* get_host() const { return host_; }
 
-  virtual void set_read_bandwidth(double value) { read_bw_.peak = value; }
+  void set_read_bandwidth(double value);
   double get_read_bandwidth() const { return read_bw_.peak * read_bw_.scale; }
 
-  virtual void set_write_bandwidth(double value) { write_bw_.peak = value; }
+  void set_write_bandwidth(double value);
   double get_write_bandwidth() const { return write_bw_.peak * write_bw_.scale; }
 
-  virtual void set_readwrite_bandwidth(double value) { readwrite_bw_ = value; }
+  void set_readwrite_bandwidth(double value);
   double get_readwrite_bandwidth() const { return readwrite_bw_; }
 
   DiskImpl* set_read_constraint(lmm::Constraint* constraint_read);

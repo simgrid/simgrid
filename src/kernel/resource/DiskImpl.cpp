@@ -117,6 +117,29 @@ constexpr kernel::lmm::Constraint::SharingPolicy to_maxmin_policy(s4u::Disk::Sha
   return lmm_policy;
 }
 
+void DiskImpl::set_read_bandwidth(double value)
+{
+  read_bw_.peak = value;
+  if (constraint_read_)
+    get_model()->get_maxmin_system()->update_constraint_bound(constraint_read_, read_bw_.peak * read_bw_.scale);
+}
+
+void DiskImpl::set_write_bandwidth(double value)
+{
+  write_bw_.peak = value;
+  if (constraint_write_) {
+    get_model()->get_maxmin_system()->update_constraint_bound(constraint_write_, write_bw_.peak* write_bw_.scale);
+  }
+}
+
+void DiskImpl::set_readwrite_bandwidth(double value)
+{
+   readwrite_bw_ = value;
+   if (get_constraint()) {
+    get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), readwrite_bw_);
+  }
+}
+
 void DiskImpl::set_sharing_policy(s4u::Disk::Operation op, s4u::Disk::SharingPolicy policy,
                                   const s4u::NonLinearResourceCb& cb)
 {

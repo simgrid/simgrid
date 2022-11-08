@@ -65,52 +65,9 @@ void DiskS19Model::update_actions_state(double /*now*/, double delta)
   }
 }
 
-DiskAction* DiskS19::io_start(sg_size_t size, s4u::Io::OpType type)
-{
-  auto* action = new DiskS19Action(get_model(), static_cast<double>(size), not is_on());
-  get_model()->get_maxmin_system()->expand(get_constraint(), action->get_variable(), 1.0);
-  switch (type) {
-    case s4u::Io::OpType::READ:
-      get_model()->get_maxmin_system()->expand(get_read_constraint(), action->get_variable(), 1.0);
-      break;
-    case s4u::Io::OpType::WRITE:
-      get_model()->get_maxmin_system()->expand(get_write_constraint(), action->get_variable(), 1.0);
-      break;
-    default:
-      THROW_UNIMPLEMENTED;
-  }
-  if (const auto& factor_cb = get_factor_cb()) { // handling disk variability
-    action->set_rate_factor(factor_cb(size, type));
-  }
-  return action;
-}
-
 /************
  * Resource *
  ************/
-void DiskS19::set_read_bandwidth(double value)
-{
-  DiskImpl::set_read_bandwidth(value);
-  if (get_read_constraint()) {
-    get_model()->get_maxmin_system()->update_constraint_bound(get_read_constraint(), get_read_bandwidth());
-  }
-}
-
-void DiskS19::set_write_bandwidth(double value)
-{
-  DiskImpl::set_write_bandwidth(value);
-  if (get_write_constraint()) {
-    get_model()->get_maxmin_system()->update_constraint_bound(get_write_constraint(), get_write_bandwidth());
-  }
-}
-
-void DiskS19::set_readwrite_bandwidth(double value)
-{
-  DiskImpl::set_readwrite_bandwidth(value);
-  if (get_constraint()) {
-    get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), get_readwrite_bandwidth());
-  }
-}
 
 void DiskS19::apply_event(kernel::profile::Event* triggered, double value)
 {
@@ -142,6 +99,26 @@ void DiskS19::apply_event(kernel::profile::Event* triggered, double value)
 DiskS19Action::DiskS19Action(Model* model, double cost, bool failed)
     : DiskAction(model, cost, failed, model->get_maxmin_system()->variable_new(this, 1.0, -1.0, 3))
 {
+}
+
+DiskAction* DiskS19::io_start(sg_size_t size, s4u::Io::OpType type)
+{
+  auto* action = new DiskS19Action(get_model(), static_cast<double>(size), not is_on());
+  get_model()->get_maxmin_system()->expand(get_constraint(), action->get_variable(), 1.0);
+  switch (type) {
+    case s4u::Io::OpType::READ:
+      get_model()->get_maxmin_system()->expand(get_read_constraint(), action->get_variable(), 1.0);
+      break;
+    case s4u::Io::OpType::WRITE:
+      get_model()->get_maxmin_system()->expand(get_write_constraint(), action->get_variable(), 1.0);
+      break;
+    default:
+      THROW_UNIMPLEMENTED;
+  }
+  if (const auto& factor_cb = get_factor_cb()) { // handling disk variability
+    action->set_rate_factor(factor_cb(size, type));
+  }
+  return action;
 }
 
 } // namespace simgrid::kernel::resource

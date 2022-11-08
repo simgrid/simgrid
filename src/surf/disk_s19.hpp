@@ -41,9 +41,6 @@ public:
 class DiskS19 : public DiskImpl {
 public:
   using DiskImpl::DiskImpl;
-  void set_read_bandwidth(double value) override;
-  void set_write_bandwidth(double value) override;
-  void set_readwrite_bandwidth(double value) override;
   void apply_event(kernel::profile::Event* triggered, double value) override;
   DiskAction* io_start(sg_size_t size, s4u::Io::OpType type) override;
 };
