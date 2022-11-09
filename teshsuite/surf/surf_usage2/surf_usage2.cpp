@@ -40,7 +40,7 @@ int main(int argc, char** argv)
 
   const_sg_netzone_t as_zone = e.netzone_by_name_or_null("AS0");
   auto net_model             = as_zone->get_impl()->get_network_model();
-  net_model->communicate(hostA, hostB, 150.0, -1.0);
+  net_model->communicate(hostA, hostB, 150.0, -1.0, false);
 
   e.get_impl()->solve(-1.0); /* Takes traces into account. Returns 0.0 */
   do {

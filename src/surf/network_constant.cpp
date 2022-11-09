@@ -71,7 +71,8 @@ void NetworkConstantModel::update_actions_state(double /*now*/, double delta)
   }
 }
 
-Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double size, double /*rate*/)
+Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double size, double /*rate*/,
+                                          bool /*streamed*/)
 {
   return (new NetworkConstantAction(this, *src, *dst, size));
 }

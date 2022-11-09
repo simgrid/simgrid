@@ -13,7 +13,7 @@ namespace simgrid::kernel::resource {
 class NetworkConstantModel : public NetworkModel {
 public:
   using NetworkModel::NetworkModel;
-  Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
+  Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate, bool streamed) override;
   double next_occurring_event(double now) override;
   void update_actions_state(double now, double delta) override;
 

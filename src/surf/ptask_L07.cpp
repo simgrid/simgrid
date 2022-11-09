@@ -230,7 +230,7 @@ L07Action::L07Action(Model* model, const std::vector<s4u::Host*>& host_list, con
   update_bound();
 }
 
-Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
+Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate, bool /* streamed */)
 {
   std::vector<s4u::Host*> host_list = {src, dst};
   const auto* flops_amount          = new double[2]();

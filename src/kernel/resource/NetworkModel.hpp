@@ -53,7 +53,7 @@ public:
    * @param rate Allows to limit the transfer rate. Negative value means unlimited.
    * @return The action representing the communication
    */
-  virtual Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) = 0;
+  virtual Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate, bool streamed) = 0;
 
   double next_occurring_event_full(double now) override;
 

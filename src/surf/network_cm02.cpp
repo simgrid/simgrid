@@ -369,10 +369,16 @@ void NetworkCm02Model::comm_action_set_bounds(const s4u::Host* src, const s4u::H
 }
 
 void NetworkCm02Model::comm_action_set_variable(NetworkCm02Action* action, const std::vector<StandardLinkImpl*>& route,
-                                                const std::vector<StandardLinkImpl*>& back_route)
+                                                const std::vector<StandardLinkImpl*>& back_route, bool streamed)
 {
   size_t constraints_per_variable = route.size();
   constraints_per_variable += back_route.size();
+  if (streamed) {
+    // setting the number of variable for a communication action involved in a I/O streaming operation
+    // requires to reserve some extra space for the constraints related to the source disk (global and read
+    // bandwidth) and destination disk (global and write bandwidth). We thus add 4 constraints.
+    constraints_per_variable += 4;
+  }
 
   if (action->latency_ > 0) {
     action->set_variable(get_maxmin_system()->variable_new(action, 0.0, -1.0, constraints_per_variable));
@@ -400,7 +406,7 @@ void NetworkCm02Model::comm_action_set_variable(NetworkCm02Action* action, const
   }
 }
 
-Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
+Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate, bool streamed)
 {
   double latency = 0.0;
   std::vector<StandardLinkImpl*> back_route;
@@ -426,7 +432,7 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   comm_action_set_bounds(src, dst, size, action, route, netzones, rate);
 
   /* creating the maxmin variable associated to this action */
-  comm_action_set_variable(action, route, back_route);
+  comm_action_set_variable(action, route, back_route, streamed);
 
   /* expand maxmin system to consider this communication in bw constraint for each link in route and back_route */
   comm_action_expand_constraints(src, dst, action, route, back_route);

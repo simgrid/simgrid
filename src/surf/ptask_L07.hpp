@@ -69,7 +69,7 @@ public:
   StandardLinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) final;
   StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidths) override;
 
-  Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
+  Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate, bool streamed) override;
   void update_actions_state(double /*now*/, double /*delta*/) override{
       /* this action is done by HostL07Model which shares the LMM system with the CPU model
        * Overriding to an empty function here allows us to handle the Cpu07Model as a regular
@@ -131,7 +131,7 @@ class L07Action : public CpuAction {
   friend CpuAction* CpuL07::sleep(double duration);
   friend CpuAction* HostL07Model::execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                                                    const double* bytes_amount, double rate);
-  friend Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate);
+  friend Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate, bool streamed);
   /**
    * @brief Calculate the CPU bound for the parallel task
    *

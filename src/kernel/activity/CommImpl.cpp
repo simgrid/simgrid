@@ -124,7 +124,7 @@ CommImpl* CommImpl::start()
      * routes and later create the respective surf actions */
     auto net_model = from_->get_netpoint()->get_englobing_zone()->get_network_model();
 
-    surf_action_ = net_model->communicate(from_, to_, size_, rate_);
+    surf_action_ = net_model->communicate(from_, to_, size_, rate_, false);
     surf_action_->set_activity(this);
     surf_action_->set_category(get_tracing_category());
     set_start_time(surf_action_->get_start_time());

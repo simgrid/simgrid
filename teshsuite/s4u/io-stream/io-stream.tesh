@@ -1,25 +1,47 @@
 #!/usr/bin/env tesh
 
-$ ${bindir:=.}/io-stream  --cfg=host/model:sio_S22 "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
-> [  0.000000] [0:maestro@] Configuration change: Set 'host/model' to 'sio_S22'
-> [  0.000000] [0:maestro@] Switching to the S22 model to handle streaming I/Os.
-> [  0.000000] [1:streamer@bob] [Bob -> Alice] Store and Forward (1 block)
-> [  4.000000] [1:streamer@bob]     Read  : 4.000000 seconds
-> [  6.165599] [1:streamer@bob]     Send  : 2.165599 seconds
-> [  7.165599] [1:streamer@bob]     Write : 1.000000 seconds
-> [  7.165599] [1:streamer@bob]     Total : 7.165599 seconds
-> [  7.165599] [1:streamer@bob] [Bob -> Alice] Store and Forward (100 blocks)
-> [ 11.165518] [1:streamer@bob]     Total : 3.999919 seconds
-> [ 11.165518] [1:streamer@bob] [Bob -> Alice] Streaming (Read bottleneck)
-> [ 15.165568] [1:streamer@bob]     Total : 4.000050 seconds
-> [ 15.165568] [1:streamer@bob] [Bob -> Alice] Streaming (Write bottleneck)
-> [ 27.234930] [1:streamer@bob]     Total : 12.069362 seconds
-> [ 27.234930] [1:streamer@bob] Start two 10-second background traffic between Bob and Alice
-> [ 27.234930] [1:streamer@bob] [Bob -> Alice] Streaming (Transfer bottleneck)
-> [ 45.285733] [1:streamer@bob]     Total : 18.050803 seconds
-> [ 45.285733] [1:streamer@bob] [Bob -> Alice] Streaming "from disk to memory" (no write)
-> [ 49.285783] [1:streamer@bob]     Total : 4.000050 seconds
-> [ 49.285783] [1:streamer@bob] [Bob -> Alice] Streaming "from memory to disk" (no read)
-> [ 51.285833] [1:streamer@bob]     Total : 2.000050 seconds
-> [ 51.285833] [1:streamer@bob] [Bob -> Bob] Disk to disk (no transfer)
-> [ 59.285833] [1:streamer@bob]     Total : 8.000000 seconds
+$ ${bindir:=.}/io-stream --cfg=network/model:CM02 --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e%m%n"
+> [  0.000000] Configuration change: Set 'network/model' to 'CM02'
+> [  0.000000] Configuration change: Set 'network/crosstraffic' to '0'
+> [  0.000000] [Bob -> Alice] Store and Forward (1 block)
+> [  4.000000]     Read  : 4.000000 seconds
+> [  6.000050]     Send  : 2.000050 seconds
+> [  7.000050]     Write : 1.000000 seconds
+> [  7.000050]     Total : 7.000050 seconds
+> [  7.000050] [Bob -> Alice] Store and Forward (100 blocks)
+> [ 11.000050]     Total : 4.000000 seconds
+> [ 11.000050] [Bob -> Alice] Streaming (Read bottleneck)
+> [ 15.000100]     Total : 4.000050 seconds
+> [ 15.000100] [Alice -> Bob] Streaming (Write bottleneck)
+> [ 23.000150]     Total : 8.000050 seconds
+> [ 23.000150] Start two 10-second background traffic between Bob and Alice
+> [ 23.000150] [Bob -> Alice] Streaming (Transfer bottleneck)
+> [ 29.000200]     Total : 6.000050 seconds
+> [ 45.000200] [Bob -> Alice] Streaming "from disk to memory" (no write)
+> [ 49.000250]     Total : 4.000050 seconds
+> [ 49.000250] [Bob -> Alice] Streaming "from memory to disk" (no read)
+> [ 51.000300]     Total : 2.000050 seconds
+> [ 51.000300] [Bob -> Bob] Disk to disk (no transfer)
+> [ 59.000300]     Total : 8.000000 seconds
+
+$ ${bindir:=.}/io-stream  "--log=root.fmt:[%10.6r]%e%m%n"
+> [  0.000000] [Bob -> Alice] Store and Forward (1 block)
+> [  4.000000]     Read  : 4.000000 seconds
+> [  6.165599]     Send  : 2.165599 seconds
+> [  7.165599]     Write : 1.000000 seconds
+> [  7.165599]     Total : 7.165599 seconds
+> [  7.165599] [Bob -> Alice] Store and Forward (100 blocks)
+> [ 11.165518]     Total : 3.999919 seconds
+> [ 11.165518] [Bob -> Alice] Streaming (Read bottleneck)
+> [ 15.166169]     Total : 4.000651 seconds
+> [ 15.166169] [Alice -> Bob] Streaming (Write bottleneck)
+> [ 23.166819]     Total : 8.000651 seconds
+> [ 23.166819] Start two 10-second background traffic between Bob and Alice
+> [ 23.166819] [Bob -> Alice] Streaming (Transfer bottleneck)
+> [ 29.662315]     Total : 6.495496 seconds
+> [ 46.860161] [Bob -> Alice] Streaming "from disk to memory" (no write)
+> [ 50.860812]     Total : 4.000650 seconds
+> [ 50.860812] [Bob -> Alice] Streaming "from memory to disk" (no read)
+> [ 53.026411]     Total : 2.165599 seconds
+> [ 53.026411] [Bob -> Bob] Disk to disk (no transfer)
+> [ 61.026411]     Total : 8.000000 seconds

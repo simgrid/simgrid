@@ -29,19 +29,20 @@ static void streamer(size_t size)
   XBT_INFO("    Total : %.6f seconds", sg4::Engine::get_clock());
 
   XBT_INFO("[Bob -> Alice] Store and Forward (100 blocks)");
-  sg4::IoPtr read       = bob_disk->read_async(size / 100);
-  sg4::CommPtr transfer = sg4::Comm::sendto_async(bob, alice, size / 100);
-  sg4::IoPtr write      = alice_disk->write_async(size / 100);
+  size_t block_size = size / 100;
+  sg4::IoPtr read       = bob_disk->read_async(block_size);
+  sg4::CommPtr transfer = sg4::Comm::sendto_async(bob, alice, block_size);
+  sg4::IoPtr write      = alice_disk->write_async(block_size);
 
   clock = sg4::Engine::get_clock();
 
   for (int i = 0; i < 99; i++){
     read->wait();
-    read = bob_disk->read_async(size / 100);
+    read = bob_disk->read_async(block_size);
     transfer->wait();
-    transfer = sg4::Comm::sendto_async(bob, alice, size / 100);
+    transfer = sg4::Comm::sendto_async(bob, alice, block_size);
     write->wait();
-    write = alice_disk->write_async(size / 100);
+    write = alice_disk->write_async(block_size);
   }
 
   read->wait();
@@ -54,7 +55,7 @@ static void streamer(size_t size)
   sg4::Io::streamto(bob, bob_disk, alice, alice_disk, size);
   XBT_INFO("    Total : %.6f seconds", sg4::Engine::get_clock() - clock);
 
-  XBT_INFO("[Bob -> Alice] Streaming (Write bottleneck)");
+  XBT_INFO("[Alice -> Bob] Streaming (Write bottleneck)");
   clock = sg4::Engine::get_clock();
   sg4::Io::streamto(alice, alice_disk, bob, bob_disk, size);
   XBT_INFO("    Total : %.6f seconds", sg4::Engine::get_clock() - clock);
@@ -109,7 +110,7 @@ int main(int argc, char** argv)
   zone->add_route(bob->get_netpoint(), alice->get_netpoint(), nullptr, nullptr, {link}, true);
 
   bob->create_disk("bob_disk", "1MBps", "500kBps");
-  alice->create_disk("alice_disk", 4e6, 4e6);
+  alice->create_disk("alice_disk", "4MBps", "4MBps");
 
   zone->seal();
 

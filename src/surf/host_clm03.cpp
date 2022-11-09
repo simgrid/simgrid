@@ -56,6 +56,34 @@ static inline double has_cost(const double* array, size_t pos)
   return -1.0;
 }
 
+Action* HostCLM03Model::io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk,
+                                  double size)
+{
+  auto net_model = src_host->get_englobing_zone()->get_network_model();
+  auto system = net_model->get_maxmin_system();
+  auto* action = net_model->communicate(src_host, dst_host, size, -1, true);
+
+  size_t nb_disks       = 0;
+  if (src_disk != nullptr)
+    nb_disks++;
+  if (dst_disk != nullptr)
+    nb_disks++;
+
+  // We don't want to apply the network model bandwidth factor to the I/O constraints
+  double bw_factor = net_model->get_bandwidth_factor();
+  if (src_disk != nullptr){
+    //FIXME: if the stream starts from a disk, we might not want to pay the network latency
+    system->expand(src_disk->get_constraint(), action->get_variable(), bw_factor);
+    system->expand(src_disk->get_read_constraint(), action->get_variable(), bw_factor);
+  }
+  if (dst_disk != nullptr){
+    system->expand(dst_disk->get_constraint(), action->get_variable(), bw_factor);
+    system->expand(dst_disk->get_write_constraint(), action->get_variable(), bw_factor);
+  }
+
+  return action;
+}
+
 Action* HostCLM03Model::execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                                          const double* bytes_amount, double rate)
 {
@@ -64,7 +92,7 @@ Action* HostCLM03Model::execute_parallel(const std::vector<s4u::Host*>& host_lis
   if ((host_list.size() == 1) && (has_cost(bytes_amount, 0) <= 0) && (has_cost(flops_amount, 0) > 0)) {
     action = host_list[0]->get_cpu()->execution_start(flops_amount[0], rate);
   } else if ((host_list.size() == 1) && (has_cost(flops_amount, 0) <= 0)) {
-    action = net_model->communicate(host_list[0], host_list[0], bytes_amount[0], rate);
+    action = net_model->communicate(host_list[0], host_list[0], bytes_amount[0], rate, false);
   } else if ((host_list.size() == 2) && (has_cost(flops_amount, 0) <= 0) && (has_cost(flops_amount, 1) <= 0)) {
     int nb       = 0;
     double value = 0.0;
@@ -76,7 +104,7 @@ Action* HostCLM03Model::execute_parallel(const std::vector<s4u::Host*>& host_lis
       }
     }
     if (nb == 1) {
-      action = net_model->communicate(host_list[0], host_list[1], value, rate);
+      action = net_model->communicate(host_list[0], host_list[1], value, rate, false);
     } else if (nb == 0) {
       xbt_die("Cannot have a communication with no flop to exchange in this model. You should consider using the "
               "ptask model");

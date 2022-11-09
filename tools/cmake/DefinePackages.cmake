@@ -43,7 +43,6 @@ set(EXTRA_DIST
   src/surf/network_ns3.hpp
   src/surf/ns3/ns3_simulator.hpp
   src/surf/ptask_L07.hpp
-  src/surf/sio_S22.hpp
   src/surf/surf_interface.hpp
   src/surf/xml/simgrid.dtd
   src/surf/xml/simgrid_dtd.c
@@ -361,7 +360,6 @@ set(SURF_SRC
   src/surf/network_cm02.cpp
   src/surf/network_constant.cpp
   src/surf/ptask_L07.cpp
-  src/surf/sio_S22.cpp
   src/surf/sg_platf.cpp
   src/surf/surf_interface.cpp
   src/surf/xml/platf.hpp

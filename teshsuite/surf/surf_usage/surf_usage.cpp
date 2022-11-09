@@ -67,7 +67,7 @@ int main(int argc, char** argv)
   XBT_INFO("actionC state: %s", string_action(stateActionC));
 
   /* Let's do something on it */
-  net_model->communicate(hostA, hostB, 150.0, -1.0);
+  net_model->communicate(hostA, hostB, 150.0, -1.0, false);
 
   e.get_impl()->solve(-1.0);
   do {

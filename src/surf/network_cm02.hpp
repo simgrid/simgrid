@@ -42,7 +42,7 @@ class NetworkCm02Model : public NetworkModel {
                               const std::unordered_set<kernel::routing::NetZoneImpl*>& netzones, double rate) const;
   /** @brief Create maxmin variable in communication action */
   void comm_action_set_variable(NetworkCm02Action* action, const std::vector<StandardLinkImpl*>& route,
-                                const std::vector<StandardLinkImpl*>& back_route);
+                                const std::vector<StandardLinkImpl*>& back_route, bool streamed);
 
 public:
   explicit NetworkCm02Model(const std::string& name);
@@ -50,7 +50,7 @@ public:
   StandardLinkImpl* create_wifi_link(const std::string& name, const std::vector<double>& bandwidths) override;
   void update_actions_state_lazy(double now, double delta) override;
   void update_actions_state_full(double now, double delta) override;
-  Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
+  Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate, bool streamed) override;
 };
 
 /************
@@ -69,7 +69,8 @@ public:
  * Action *
  **********/
 class NetworkCm02Action : public NetworkAction {
-  friend Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate);
+  friend Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate,
+                                               bool streamed);
 
 public:
   using NetworkAction::NetworkAction;

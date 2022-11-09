@@ -368,7 +368,7 @@ StandardLinkImpl* NetworkNS3Model::create_wifi_link(const std::string& name, con
   return link;
 }
 
-Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
+Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate, bool /*streamed*/)
 {
   xbt_assert(rate == -1,
              "Communication over ns-3 links cannot specify a specific rate. Please use -1 as a value instead of %f.",

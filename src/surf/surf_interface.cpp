@@ -81,8 +81,6 @@ const std::vector<surf_model_description_t> surf_host_model_description = {
      &surf_host_model_init_compound},
     {"ptask_L07", "Host model somehow similar to Cas01+CM02+S19 but allowing parallel tasks",
      &surf_host_model_init_ptask_L07},
-    {"sio_S22", "Host model somehow similar to Cas01+CM02+S19 but allowing streaming I/Os",
-     &surf_host_model_init_sio_S22},
 };
 
 const std::vector<surf_model_description_t> surf_optimization_mode_description = {

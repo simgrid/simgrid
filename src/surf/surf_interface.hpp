@@ -178,7 +178,6 @@ XBT_PUBLIC void surf_host_model_init_current_default();
  *  equal share of the model to each action.
  */
 XBT_PUBLIC void surf_host_model_init_ptask_L07();
-XBT_PUBLIC void surf_host_model_init_sio_S22();
 
 /* --------------------
  *  Model Descriptions
