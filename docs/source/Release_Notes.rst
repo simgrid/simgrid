@@ -19,7 +19,7 @@ The Half Release, a.k.a. the Zealous Easter Trim:
 
   * Introducing v4 of the XML platform format (many long-due cleanups)
   * MSG examples fully reorganized (in C and Java)
-  * The S4U interface is rising, toward SimGrid 4:|br| All host manipulations now done in S4U, 
+  * The S4U interface is rising, toward SimGrid 4:|br| All host manipulations now done in S4U,
     SimDag was mostly rewritten on top of S4U but MSG & SimDag interfaces mostly unchanged.
 
 Version 3.14 (Dec 25. 2016)
@@ -183,7 +183,7 @@ interfaces and converting them to snake_case() is one release goal of v3.20. But
 Once the S4U interface stabilizes, we will provide C bindings on top of it, along with Java and Python ones. Maybe in 3.21 or 3.22.
 
 All this is not contradictory with the fact that MSG as a whole is deprecated, because this deprecation only means that new projects
-should go for S4U instead of MSG to benefit of the future. Despite this deprecation, old MSG projects should still be usable with no 
+should go for S4U instead of MSG to benefit of the future. Despite this deprecation, old MSG projects should still be usable with no
 change, if we manage to. This is a matter of scientific reproducibility to us.
 
 Version 3.20 (June 25 2018)
@@ -314,7 +314,7 @@ This is the "Palindrome Day" release (today is 02 02 2020).
      The plan is to completely remove MSG by 2020Q4 or 2021Q1.
 
    * SimDAG++: Automatic dependencies on S4U activities (experimental). |br|
-     This implements some features of SimDAG within S4U, but not all of them: you cannot block an activity until it's scheduled on a resource 
+     This implements some features of SimDAG within S4U, but not all of them: you cannot block an activity until it's scheduled on a resource
      and there is no heterogeneous wait_any() that would mix Exec/Comm/Io activities. See ``examples/s4u/{io,exec,comm}-dependent`` for what's already there.
 
 Since last fall, we continued to push toward the future SimGrid4 release. This requires to remove MSG and SimDAG once all users have
@@ -461,8 +461,8 @@ new feature are:
    of years.
  * The removal of SimDag led us to also remove the export to Jedule files that was tightly coupled to SimDag. The instrumentation of DAG simulation
    is still possible through the regular instrumentation API based on the Paje format.
- 
-On the bindings front, we dropped the Lua bindings to create new platforms, as the C++ and Python interfaces are much better to that extend. 
+
+On the bindings front, we dropped the Lua bindings to create new platforms, as the C++ and Python interfaces are much better to that extend.
 Also, the algorithm tutorial can now be taken in Python, for those of you allergic to C++.
 
 Finally, on the SMPI front, we introduced a :ref:`new documentation section <models_calibration>` on calibrating the SMPI models from your
@@ -573,4 +573,22 @@ Version 3.33 (not released yet)
 
 .. |br| raw:: html
 
+**On the model front,** we realized an idea that has been on the back of our minds for quite some time. The question
+was: could we use something in the line of the ptask model, that mixes computations and network transfers in a single
+fluid activity, to simulate a *fluid I/O stream activity* that would consume both disk and network resources? This
+remained an open question for years, mainly because the implementation of the ptask doesn't rely on the LMM solver as
+the other models do. The *fair bottleneck* solver is convenient, but with less solid theoretical bases and the
+development of its replacement (the *bmf solver*) is still ongoing. However, this combination of I/Os and
+communications seemed easier as these activities share the same unit (bytes).
+
+After a few tentatives, we opted for a simple, slightly unperfect, yet convenient way to implement such I/O streams
+at the kernel level. It doesn't require a new model, just that the default HostModels implements a new function which
+creates a classical NetworkAction, but add some I/O-related constraints to it. A couple little hacks here and there,
+and done! A single activity mixing I/Os and communications can be created whose progress is limited by the resource
+(Disk or Link) of least bandwidth value.
+
+**On the interface front**, the new ``Io::streamto()`` function has been inspired by the existing ``Comm::sendto()``
+function (which also derives from the ptask model). The user can specify a ``src_disk`` on a ``src_host`` and a
+``dst_disk`` on a ``dst_host`` to stream data of a given ``size``. Note that disks are optional, allowing users to
+simulate some kind of "disk-to-memory" or "memory-to-disk" I/O streams.
    <br />
