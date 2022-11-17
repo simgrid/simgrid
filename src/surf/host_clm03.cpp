@@ -63,12 +63,6 @@ Action* HostCLM03Model::io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::
   auto system = net_model->get_maxmin_system();
   auto* action = net_model->communicate(src_host, dst_host, size, -1, true);
 
-  size_t nb_disks       = 0;
-  if (src_disk != nullptr)
-    nb_disks++;
-  if (dst_disk != nullptr)
-    nb_disks++;
-
   // We don't want to apply the network model bandwidth factor to the I/O constraints
   double bw_factor = net_model->get_bandwidth_factor();
   if (src_disk != nullptr){
