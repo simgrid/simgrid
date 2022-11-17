@@ -43,14 +43,14 @@ constexpr unsigned message_size(MessageType type)
                                             /* REQUEST       */ 17,
                                             /* PIECE         */ 13,
                                             /* CANCEL        */ 17}};
-  return sizes[static_cast<int>(type)];
+  return sizes.at(static_cast<int>(type));
 }
 
 constexpr const char* message_name(MessageType type)
 {
   constexpr std::array<const char*, 10> names{{"HANDSHAKE", "CHOKE", "UNCHOKE", "INTERESTED", "NOTINTERESTED", "HAVE",
                                                "BITFIELD", "REQUEST", "PIECE", "CANCEL"}};
-  return names[static_cast<int>(type)];
+  return names.at(static_cast<int>(type));
 }
 
 Peer::Peer(std::vector<std::string> args)
