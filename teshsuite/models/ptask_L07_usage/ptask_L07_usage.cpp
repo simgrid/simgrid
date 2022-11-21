@@ -79,7 +79,7 @@ static void main_dispatcher()
   XBT_INFO("TEST: Latency test between hosts connected by a shared link.");
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 1B from one host to another at 1Bps with a latency of 500ms.");
-  XBT_INFO("Should be done in 1.5 seconds (500ms latency + 1s transfert).");
+  XBT_INFO("Should be done in 1.5 seconds (500ms latency + 1s transfer).");
   start_time = sg4::Engine::get_clock();
   sg4::Comm::sendto_async(hosts[0], hosts[4], 1.0)->wait();
   end_time = sg4::Engine::get_clock();
@@ -91,7 +91,7 @@ static void main_dispatcher()
   XBT_INFO("TEST: Latency test between hosts connected by a fatpipe link.");
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 1B from one host to another at 1Bps with a latency of 500ms.");
-  XBT_INFO("Should be done in 1.5 seconds (500ms latency + 1s transfert).");
+  XBT_INFO("Should be done in 1.5 seconds (500ms latency + 1s transfer).");
   start_time = sg4::Engine::get_clock();
   sg4::Comm::sendto_async(hosts[0], hosts[5], 1.0)->wait();
   end_time = sg4::Engine::get_clock();
@@ -104,7 +104,7 @@ static void main_dispatcher()
   XBT_INFO("TEST: Latency test between hosts connected by a 3-link route.");
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 1B from one host to another at 1Bps with a latency of 2 x 500ms + 1s.");
-  XBT_INFO("Should be done in 3 seconds (2 x 500ms + 1s latency + 1s transfert).");
+  XBT_INFO("Should be done in 3 seconds (2 x 500ms + 1s latency + 1s transfer).");
   start_time = sg4::Engine::get_clock();
   sg4::Comm::sendto_async(hosts[0], hosts[1], 1.0)->wait();
   end_time = sg4::Engine::get_clock();
@@ -118,7 +118,7 @@ static void main_dispatcher()
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 1B from one host to another on a link at 2Bps with a latency of 2 x 1024^2s.");
   XBT_INFO("This latency is half the default TCP window size (4MiB). This limits the bandwidth to 1B");
-  XBT_INFO("Should be done in 2 x 1024^2s + 1 seconds (large latency + 1s transfert).");
+  XBT_INFO("Should be done in 2 x 1024^2s + 1 seconds (large latency + 1s transfer).");
   start_time = sg4::Engine::get_clock();
   sg4::Comm::sendto_async(hosts[0], hosts[6], 1.0)->wait();
   end_time = sg4::Engine::get_clock();
@@ -130,7 +130,7 @@ static void main_dispatcher()
   XBT_INFO("TEST: Latency test between hosts connected by a shared link with 2 comms in same direction.");
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 2 x 1B from one host to another at 1Bps with a latency of 500ms.");
-  XBT_INFO("Should be done in 2.5 seconds (500ms latency + 2s transfert).");
+  XBT_INFO("Should be done in 2.5 seconds (500ms latency + 2s transfer).");
   start_time      = sg4::Engine::get_clock();
   sg4::CommPtr c1 = sg4::Comm::sendto_async(hosts[0], hosts[4], 1.0);
   sg4::CommPtr c2 = sg4::Comm::sendto_async(hosts[0], hosts[4], 1.0);
@@ -146,7 +146,7 @@ static void main_dispatcher()
   XBT_INFO("TEST: Latency test between hosts connected by a fatpipe link with 2 comms in same direction.");
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 2 x 1B from one host to another at 1Bps with a latency of 500ms.");
-  XBT_INFO("Should be done in 1.5 seconds (500ms latency + 1s transfert).");
+  XBT_INFO("Should be done in 1.5 seconds (500ms latency + 1s transfer).");
   start_time = sg4::Engine::get_clock();
   c1         = sg4::Comm::sendto_async(hosts[0], hosts[5], 1.0);
   c2         = sg4::Comm::sendto_async(hosts[0], hosts[5], 1.0);
@@ -162,7 +162,7 @@ static void main_dispatcher()
   XBT_INFO("TEST: Latency test between hosts connected by a 3-link route with 2 comms in same direction.");
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 2 x 1B from one host to another at 1Bps with a latency of 2 x 500ms + 1s.");
-  XBT_INFO("Should be done in 4 seconds (2 x 500ms + 1s latency + 2s transfert).");
+  XBT_INFO("Should be done in 4 seconds (2 x 500ms + 1s latency + 2s transfer).");
   start_time = sg4::Engine::get_clock();
   c1         = sg4::Comm::sendto_async(hosts[0], hosts[1], 1.0);
   c2         = sg4::Comm::sendto_async(hosts[0], hosts[1], 1.0);
@@ -178,7 +178,7 @@ static void main_dispatcher()
   XBT_INFO("TEST: Latency test between hosts connected by a shared link with 2 comms in opposite direction.");
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 1B between two hosts in each direction at 1Bps with a latency of 500ms.");
-  XBT_INFO("Should be done in 2.5 seconds (500ms latency + 2s transfert).");
+  XBT_INFO("Should be done in 2.5 seconds (500ms latency + 2s transfer).");
   start_time = sg4::Engine::get_clock();
   c1         = sg4::Comm::sendto_async(hosts[0], hosts[4], 1.0);
   c2         = sg4::Comm::sendto_async(hosts[4], hosts[0], 1.0);
@@ -194,7 +194,7 @@ static void main_dispatcher()
   XBT_INFO("TEST: Latency test between hosts connected by a fatpipe link with 2 comms in opposite direction.");
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 1B between two hosts in each direction at 1Bps with a latency of 500ms.");
-  XBT_INFO("Should be done in 1.5 seconds (500ms latency + 1s transfert).");
+  XBT_INFO("Should be done in 1.5 seconds (500ms latency + 1s transfer).");
   start_time = sg4::Engine::get_clock();
   c1         = sg4::Comm::sendto_async(hosts[0], hosts[5], 1.0);
   c2         = sg4::Comm::sendto_async(hosts[5], hosts[0], 1.0);
@@ -210,7 +210,7 @@ static void main_dispatcher()
   XBT_INFO("TEST: Latency test between hosts connected by a 3-link route with 2 comms in opposite direction.");
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("Have to send 1B between two hosts in each direction at 1Bps with a latency of 2 x 500ms + 1s.");
-  XBT_INFO("Should be done in 4 seconds (2 x 500ms + 1s latency + 2s transfert).");
+  XBT_INFO("Should be done in 4 seconds (2 x 500ms + 1s latency + 2s transfer).");
   start_time = sg4::Engine::get_clock();
   c1         = sg4::Comm::sendto_async(hosts[0], hosts[1], 1.0);
   c2         = sg4::Comm::sendto_async(hosts[1], hosts[0], 1.0);
@@ -226,7 +226,7 @@ static void main_dispatcher()
   XBT_INFO("TEST: 4-host parallel communication with independent transfers.");
   XBT_INFO("------------------------------------------------------------");
   XBT_INFO("'cpu0' sends 1B to 'cpu1' and 'cpu2' sends 1B to 'cpu3'. The only shared link is the fatpipe switch.");
-  XBT_INFO("Should be done in 3 seconds (2 x 500ms + 1s latency + 1s transfert).");
+  XBT_INFO("Should be done in 3 seconds (2 x 500ms + 1s latency + 1s transfer).");
   start_time = sg4::Engine::get_clock();
   sg4::Exec::init()
       ->set_bytes_amounts(std::vector<double>({0.0, 1.0, 0.0, 0.0,

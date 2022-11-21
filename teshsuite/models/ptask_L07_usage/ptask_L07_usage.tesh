@@ -34,21 +34,21 @@ $ ${bindir:=.}/ptask_L07_usage --cfg=host/model:ptask_L07 ${platfdir}/ptask_L07.
 > TEST: Latency test between hosts connected by a shared link.
 > ------------------------------------------------------------
 > Have to send 1B from one host to another at 1Bps with a latency of 500ms.
-> Should be done in 1.5 seconds (500ms latency + 1s transfert).
+> Should be done in 1.5 seconds (500ms latency + 1s transfer).
 > Actual result: sending 1 byte on a shared link at 1Bps + 500ms takes 1.50 seconds.
 >
 >
 > TEST: Latency test between hosts connected by a fatpipe link.
 > ------------------------------------------------------------
 > Have to send 1B from one host to another at 1Bps with a latency of 500ms.
-> Should be done in 1.5 seconds (500ms latency + 1s transfert).
+> Should be done in 1.5 seconds (500ms latency + 1s transfer).
 > Actual result: sending 1 byte on a fatpipe link at 1Bps + 500ms takes 1.50 seconds.
 >
 >
 > TEST: Latency test between hosts connected by a 3-link route.
 > ------------------------------------------------------------
 > Have to send 1B from one host to another at 1Bps with a latency of 2 x 500ms + 1s.
-> Should be done in 3 seconds (2 x 500ms + 1s latency + 1s transfert).
+> Should be done in 3 seconds (2 x 500ms + 1s latency + 1s transfer).
 > Actual result: sending 1 byte on a 3-link route at 1Bps + 2,500ms takes 3.00 seconds.
 >
 >
@@ -56,56 +56,56 @@ $ ${bindir:=.}/ptask_L07_usage --cfg=host/model:ptask_L07 ${platfdir}/ptask_L07.
 > ------------------------------------------------------------
 > Have to send 1B from one host to another on a link at 2Bps with a latency of 2 x 1024^2s.
 > This latency is half the default TCP window size (4MiB). This limits the bandwidth to 1B
-> Should be done in 2 x 1024^2s + 1 seconds (large latency + 1s transfert).
+> Should be done in 2 x 1024^2s + 1 seconds (large latency + 1s transfer).
 > Actual result: sending 1 byte on a large latency link takes 2097153.00 seconds.
 >
 >
 > TEST: Latency test between hosts connected by a shared link with 2 comms in same direction.
 > ------------------------------------------------------------
 > Have to send 2 x 1B from one host to another at 1Bps with a latency of 500ms.
-> Should be done in 2.5 seconds (500ms latency + 2s transfert).
+> Should be done in 2.5 seconds (500ms latency + 2s transfer).
 > Actual result: sending 2x1 bytes on a shared link at 1Bps + 500ms takes 2.50 seconds.
 >
 >
 > TEST: Latency test between hosts connected by a fatpipe link with 2 comms in same direction.
 > ------------------------------------------------------------
 > Have to send 2 x 1B from one host to another at 1Bps with a latency of 500ms.
-> Should be done in 1.5 seconds (500ms latency + 1s transfert).
+> Should be done in 1.5 seconds (500ms latency + 1s transfer).
 > Actual result: sending 2x1 bytes on a fatpipe link at 1Bps + 500ms takes 1.50 seconds.
 >
 >
 > TEST: Latency test between hosts connected by a 3-link route with 2 comms in same direction.
 > ------------------------------------------------------------
 > Have to send 2 x 1B from one host to another at 1Bps with a latency of 2 x 500ms + 1s.
-> Should be done in 4 seconds (2 x 500ms + 1s latency + 2s transfert).
+> Should be done in 4 seconds (2 x 500ms + 1s latency + 2s transfer).
 > Actual result: sending 2x1 bytes on a 3-link route at 1Bps + 2,500ms takes 4.00 seconds.
 >
 >
 > TEST: Latency test between hosts connected by a shared link with 2 comms in opposite direction.
 > ------------------------------------------------------------
 > Have to send 1B between two hosts in each direction at 1Bps with a latency of 500ms.
-> Should be done in 2.5 seconds (500ms latency + 2s transfert).
+> Should be done in 2.5 seconds (500ms latency + 2s transfer).
 > Actual result: sending 1 byte in both directions on a shared link at 1Bps + 500ms takes 2.50 seconds.
 >
 >
 > TEST: Latency test between hosts connected by a fatpipe link with 2 comms in opposite direction.
 > ------------------------------------------------------------
 > Have to send 1B between two hosts in each direction at 1Bps with a latency of 500ms.
-> Should be done in 1.5 seconds (500ms latency + 1s transfert).
+> Should be done in 1.5 seconds (500ms latency + 1s transfer).
 > Actual result: sending 1 byte in both directions on a fatpipe link at 1Bps + 500ms takes 1.50 seconds.
 >
 >
 > TEST: Latency test between hosts connected by a 3-link route with 2 comms in opposite direction.
 > ------------------------------------------------------------
 > Have to send 1B between two hosts in each direction at 1Bps with a latency of 2 x 500ms + 1s.
-> Should be done in 4 seconds (2 x 500ms + 1s latency + 2s transfert).
+> Should be done in 4 seconds (2 x 500ms + 1s latency + 2s transfer).
 > Actual result: sending 1 byte in both directions on a 3-link route at 1Bps + 2,500ms takes 4.00 seconds.
 >
 >
 > TEST: 4-host parallel communication with independent transfers.
 > ------------------------------------------------------------
 > 'cpu0' sends 1B to 'cpu1' and 'cpu2' sends 1B to 'cpu3'. The only shared link is the fatpipe switch.
-> Should be done in 3 seconds (2 x 500ms + 1s latency + 1s transfert).
+> Should be done in 3 seconds (2 x 500ms + 1s latency + 1s transfer).
 > Actual result: sending 2 x 1 byte in a parallel communication without interference takes 3.00 seconds.
 >
 >

@@ -33,24 +33,24 @@ int main(int argc, char* argv[])
       XBT_INFO("Activity '%s' is complete", comm->get_cname());
   });
 
-  // Create a small DAG: parent->transfert->child
-  sg4::ExecPtr parent    = sg4::Exec::init();
-  sg4::CommPtr transfert = sg4::Comm::sendto_init();
-  sg4::ExecPtr child     = sg4::Exec::init();
-  parent->add_successor(transfert);
-  transfert->add_successor(child);
+  // Create a small DAG: parent->transfer->child
+  sg4::ExecPtr parent   = sg4::Exec::init();
+  sg4::CommPtr transfer = sg4::Comm::sendto_init();
+  sg4::ExecPtr child    = sg4::Exec::init();
+  parent->add_successor(transfer);
+  transfer->add_successor(child);
 
   // Set the parameters (the name is for logging purposes only)
   // + parent and child end after 1 second
   parent->set_name("parent")->set_flops_amount(tremblay->get_speed())->vetoable_start();
-  transfert->set_name("transfert")->set_payload_size(125e6)->vetoable_start();
+  transfer->set_name("transfer")->set_payload_size(125e6)->vetoable_start();
   child->set_name("child")->set_flops_amount(jupiter->get_speed())->vetoable_start();
 
   // Schedule the different activities
   parent->set_host(tremblay);
-  transfert->set_source(tremblay);
+  transfer->set_source(tremblay);
   child->set_host(jupiter);
-  transfert->set_destination(jupiter);
+  transfer->set_destination(jupiter);
 
   e.run();
 
