@@ -113,7 +113,12 @@ void IoImpl::post()
 {
   performed_ioops_ = surf_action_->get_cost();
   if (surf_action_->get_state() == resource::Action::State::FAILED) {
-    if (disk_ && not disk_->is_on())
+    if (host_ && dst_host_) { // this is an I/O stream
+      if (not host_->is_on())
+       set_state(State::SRC_HOST_FAILURE);
+      else if (not dst_host_->is_on())
+       set_state(State::DST_HOST_FAILURE);
+    } else if ((disk_ && not disk_->is_on()) || (dst_disk_ && not dst_disk_->is_on()))
       set_state(State::FAILED);
     else
       set_state(State::CANCELED);
@@ -148,6 +153,12 @@ void IoImpl::set_exception(actor::ActorImpl* issuer)
     case State::CANCELED:
       issuer->exception_ = std::make_exception_ptr(CancelException(XBT_THROW_POINT, "I/O Canceled"));
       break;
+    case State::SRC_HOST_FAILURE:
+    case State::DST_HOST_FAILURE:
+       issuer->set_wannadie();
+       static_cast<s4u::Io*>(get_iface())->complete(s4u::Activity::State::FAILED);
+       issuer->exception_ = std::make_exception_ptr(StorageFailureException(XBT_THROW_POINT, "Host failed"));
+      break;
     case State::TIMEOUT:
       issuer->exception_ = std::make_exception_ptr(TimeoutException(XBT_THROW_POINT, "Timeouted"));
       break;
@@ -173,10 +184,16 @@ void IoImpl::finish()
 
     handle_activity_waitany(simcall);
 
-    set_exception(simcall->issuer_);
-
-    simcall->issuer_->waiting_synchro_ = nullptr;
-    simcall->issuer_->simcall_answer();
+    if (not simcall->issuer_->get_host()->is_on()) {
+      simcall->issuer_->set_wannadie();
+    } else {
+      // Do not answer to dying actors
+      if (not simcall->issuer_->wannadie()) {
+        set_exception(simcall->issuer_);
+        simcall->issuer_->waiting_synchro_ = nullptr;
+        simcall->issuer_->simcall_answer();
+      }
+    }
   }
 }
 
