@@ -85,7 +85,7 @@ AppSide* AppSide::initialize()
 
 void AppSide::handle_deadlock_check(const s_mc_message_t*) const
 {
-  auto* engine           = kernel::EngineImpl::get_instance();
+  const auto* engine     = kernel::EngineImpl::get_instance();
   const auto& actor_list = engine->get_actor_list();
   bool deadlock = not actor_list.empty() && std::none_of(begin(actor_list), end(actor_list), [](const auto& kv) {
     return mc::actor_is_enabled(kv.second);

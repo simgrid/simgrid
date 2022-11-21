@@ -12,7 +12,6 @@
 #include "xbt/base.h"
 
 #include <memory>
-#include <set>
 
 namespace simgrid::mc {
 
@@ -20,8 +19,6 @@ namespace simgrid::mc {
  */
 class ModelChecker {
   CheckerSide checker_side_;
-  /** String pool for host names */
-  std::set<std::string, std::less<>> hostnames_;
   // This is the parent snapshot of the current state:
   PageStore page_store_{500};
   std::unique_ptr<RemoteProcess> remote_process_;
@@ -39,8 +36,6 @@ public:
   RemoteProcess& get_remote_process() { return *remote_process_; }
   Channel& channel() { return checker_side_.get_channel(); }
   PageStore& page_store() { return page_store_; }
-
-  std::string const& get_host_name(const char* hostname) { return *this->hostnames_.insert(hostname).first; }
 
   void start();
   void shutdown();

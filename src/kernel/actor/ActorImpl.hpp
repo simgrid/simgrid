@@ -67,7 +67,7 @@ class XBT_PUBLIC ActorImpl : public xbt::PropertyHolder, public ActorIDTrait, pu
   friend activity::MailboxImpl;
 
 public:
-  ActorImpl(std::string name, s4u::Host* host, aid_t ppid);
+  ActorImpl(const std::string& name, s4u::Host* host, aid_t ppid);
   ActorImpl(const ActorImpl&) = delete;
   ActorImpl& operator=(const ActorImpl&) = delete;
   ~ActorImpl();

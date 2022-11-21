@@ -34,8 +34,8 @@ ActorImpl* ActorImpl::self()
   return (self_context != nullptr) ? self_context->get_actor() : nullptr;
 }
 
-ActorImpl::ActorImpl(std::string name, s4u::Host* host, aid_t ppid)
-    : ActorIDTrait(std::move(name), ppid), host_(host), piface_(this)
+ActorImpl::ActorImpl(const std::string& name, s4u::Host* host, aid_t ppid)
+    : ActorIDTrait(name, ppid), host_(host), piface_(this)
 {
   simcall_.issuer_ = this;
   stacksize_       = context::stack_size;
