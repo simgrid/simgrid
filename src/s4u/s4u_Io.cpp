@@ -27,24 +27,25 @@ IoPtr Io::init()
   return IoPtr(static_cast<Io*>(pimpl->get_iface()));
 }
 
-IoPtr Io::streamto_init(Host* from, Disk* from_disk, Host* to, Disk* to_disk)
+IoPtr Io::streamto_init(Host* from, const Disk* from_disk, Host* to, const Disk* to_disk)
 {
   auto res = Io::init()->set_source(from, from_disk)->set_destination(to, to_disk);
   res->set_state(State::STARTING);
   return res;
 }
 
-IoPtr Io::streamto_async(Host* from, Disk* from_disk, Host* to, Disk* to_disk, uint64_t simulated_size_in_bytes)
+IoPtr Io::streamto_async(Host* from, const Disk* from_disk, Host* to, const Disk* to_disk,
+                         uint64_t simulated_size_in_bytes)
 {
   return Io::init()->set_size(simulated_size_in_bytes)->set_source(from, from_disk)->set_destination(to, to_disk);
 }
 
-void Io::streamto(Host* from, Disk* from_disk, Host* to, Disk* to_disk, uint64_t simulated_size_in_bytes)
+void Io::streamto(Host* from, const Disk* from_disk, Host* to, const Disk* to_disk, uint64_t simulated_size_in_bytes)
 {
   streamto_async(from, from_disk, to, to_disk, simulated_size_in_bytes)->wait();
 }
 
-IoPtr Io::set_source(Host* from, Disk* from_disk)
+IoPtr Io::set_source(Host* from, const Disk* from_disk)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
              "Cannot change the source of an IO stream once it's started (state: %s)", to_c_str(state_));
@@ -62,7 +63,7 @@ IoPtr Io::set_source(Host* from, Disk* from_disk)
   return this;
 }
 
-IoPtr Io::set_destination(Host* to, Disk* to_disk)
+IoPtr Io::set_destination(Host* to, const Disk* to_disk)
 {
   xbt_assert(state_ == State::INITED || state_ == State::STARTING,
              "Cannot change the source of an IO stream once it's started (state: %s)", to_c_str(state_));

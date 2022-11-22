@@ -50,12 +50,14 @@ public:
   IoPtr set_size(sg_size_t size);
   IoPtr set_op_type(OpType type);
 
-  static IoPtr streamto_init(Host* from, Disk* from_disk, Host* to, Disk* to_disk);
-  static IoPtr streamto_async(Host* from, Disk* from_disk, Host* to, Disk* to_disk, uint64_t simulated_size_in_bytes);
-  static void streamto(Host* from, Disk* from_disk, Host* to, Disk* to_disk, uint64_t simulated_size_in_bytes);
+  static IoPtr streamto_init(Host* from, const Disk* from_disk, Host* to, const Disk* to_disk);
+  static IoPtr streamto_async(Host* from, const Disk* from_disk, Host* to, const Disk* to_disk,
+                              uint64_t simulated_size_in_bytes);
+  static void streamto(Host* from, const Disk* from_disk, Host* to, const Disk* to_disk,
+                       uint64_t simulated_size_in_bytes);
 
-  IoPtr set_source(Host* from, Disk* from_disk);
-  IoPtr set_destination(Host* to, Disk* to_disk);
+  IoPtr set_source(Host* from, const Disk* from_disk);
+  IoPtr set_destination(Host* to, const Disk* to_disk);
 
   IoPtr update_priority(double priority);
 
