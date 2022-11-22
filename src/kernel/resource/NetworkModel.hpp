@@ -75,8 +75,8 @@ public:
   /** @brief Constructor
    *
    * @param model The NetworkModel associated to this NetworkAction
-   * @param cost The cost of this  NetworkAction in [TODO]
-   * @param failed [description]
+   * @param cost The cost of this  NetworkAction in bytes
+   * @param failed Actions can be created in a failed state
    */
   NetworkAction(Model* model, s4u::Host& src, s4u::Host& dst, double cost, bool failed)
       : Action(model, cost, failed), src_(src), dst_(dst)
