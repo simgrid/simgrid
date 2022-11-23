@@ -61,17 +61,6 @@ struct sthread_mutex {
   s4u_Mutex* mutex;
 };
 
-static void thread_create_wrapper(void* (*user_function)(void*), void* param)
-{
-#if HAVE_SMPI
-  if (SMPI_is_inited())
-    SMPI_thread_create();
-#endif
-  sthread_enable();
-  user_function(param);
-  sthread_disable();
-}
-
 int sthread_create(unsigned long int* thread, const void* /*pthread_attr_t* attr*/, void* (*start_routine)(void*),
                    void* arg)
 {
@@ -84,7 +73,18 @@ int sthread_create(unsigned long int* thread, const void* /*pthread_attr_t* attr
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
 #endif
   std::string name    = simgrid::xbt::string_printf("%d:%d", rank, TID);
-  sg4::ActorPtr actor = sg4::Actor::create(name, lilibeth, thread_create_wrapper, start_routine, arg);
+  sg4::ActorPtr actor = sg4::Actor::create(
+      name, lilibeth,
+      [](auto* user_function, auto* param) {
+#if HAVE_SMPI
+        if (SMPI_is_inited())
+          SMPI_thread_create();
+#endif
+        sthread_enable();
+        user_function(param);
+        sthread_disable();
+      },
+      start_routine, arg);
 
   intrusive_ptr_add_ref(actor.get());
   *thread = reinterpret_cast<unsigned long>(actor.get());
