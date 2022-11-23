@@ -17,39 +17,39 @@
 /* We don't want to intercept pthread within simgrid. Instead we should provide the real implem to simgrid */
 static int (*raw_pthread_create)(pthread_t*, const pthread_attr_t*, void* (*)(void*), void*);
 static int (*raw_pthread_join)(pthread_t, void**);
-static int (*raw_mutex_init)(pthread_mutex_t*, const pthread_mutexattr_t*) = NULL;
-static int (*raw_mutex_lock)(pthread_mutex_t*)                             = NULL;
-static int (*raw_mutex_trylock)(pthread_mutex_t*)                          = NULL;
-static int (*raw_mutex_unlock)(pthread_mutex_t*)                           = NULL;
-static int (*raw_mutex_destroy)(pthread_mutex_t*)                          = NULL;
+static int (*raw_mutex_init)(pthread_mutex_t*, const pthread_mutexattr_t*);
+static int (*raw_mutex_lock)(pthread_mutex_t*);
+static int (*raw_mutex_trylock)(pthread_mutex_t*);
+static int (*raw_mutex_unlock)(pthread_mutex_t*);
+static int (*raw_mutex_destroy)(pthread_mutex_t*);
 
-static unsigned int (*raw_sleep)(unsigned int)         = NULL;
-static int (*raw_usleep)(useconds_t)                   = NULL;
-static int (*raw_gettimeofday)(struct timeval*, void*) = NULL;
+static unsigned int (*raw_sleep)(unsigned int);
+static int (*raw_usleep)(useconds_t);
+static int (*raw_gettimeofday)(struct timeval*, void*);
 
-static sem_t* (*raw_sem_open)(const char*, int)                            = NULL;
-static int (*raw_sem_init)(sem_t*, int, unsigned int)                      = NULL;
-static int (*raw_sem_wait)(sem_t*)                                         = NULL;
-static int (*raw_sem_post)(sem_t*)                                         = NULL;
+static sem_t* (*raw_sem_open)(const char*, int);
+static int (*raw_sem_init)(sem_t*, int, unsigned int);
+static int (*raw_sem_wait)(sem_t*);
+static int (*raw_sem_post)(sem_t*);
 
 static void intercepter_init()
 {
-  raw_pthread_create = (typeof(raw_pthread_create))dlsym(RTLD_NEXT, "pthread_create");
-  raw_pthread_join   = (typeof(raw_pthread_join))dlsym(RTLD_NEXT, "pthread_join");
-  raw_mutex_init    = (int (*)(pthread_mutex_t*, const pthread_mutexattr_t*))dlsym(RTLD_NEXT, "pthread_mutex_init");
-  raw_mutex_lock    = (int (*)(pthread_mutex_t*))dlsym(RTLD_NEXT, "pthread_mutex_lock");
-  raw_mutex_trylock = (int (*)(pthread_mutex_t*))dlsym(RTLD_NEXT, "pthread_mutex_trylock");
-  raw_mutex_unlock  = (int (*)(pthread_mutex_t*))dlsym(RTLD_NEXT, "pthread_mutex_unlock");
-  raw_mutex_destroy = (int (*)(pthread_mutex_t*))dlsym(RTLD_NEXT, "pthread_mutex_destroy");
+  raw_pthread_create = dlsym(RTLD_NEXT, "pthread_create");
+  raw_pthread_join   = dlsym(RTLD_NEXT, "pthread_join");
+  raw_mutex_init     = dlsym(RTLD_NEXT, "pthread_mutex_init");
+  raw_mutex_lock     = dlsym(RTLD_NEXT, "pthread_mutex_lock");
+  raw_mutex_trylock  = dlsym(RTLD_NEXT, "pthread_mutex_trylock");
+  raw_mutex_unlock   = dlsym(RTLD_NEXT, "pthread_mutex_unlock");
+  raw_mutex_destroy  = dlsym(RTLD_NEXT, "pthread_mutex_destroy");
 
-  raw_sleep        = (unsigned int (*)(unsigned int))dlsym(RTLD_NEXT, "sleep");
-  raw_usleep       = (int (*)(useconds_t usec))dlsym(RTLD_NEXT, "usleep");
-  raw_gettimeofday = (int (*)(struct timeval*, void*))dlsym(RTLD_NEXT, "gettimeofday");
+  raw_sleep        = dlsym(RTLD_NEXT, "sleep");
+  raw_usleep       = dlsym(RTLD_NEXT, "usleep");
+  raw_gettimeofday = dlsym(RTLD_NEXT, "gettimeofday");
 
-  raw_sem_open = (sem_t * (*)(const char*, int)) dlsym(RTLD_NEXT, "sem_open");
-  raw_sem_init = (int (*)(sem_t*, int, unsigned int))dlsym(RTLD_NEXT, "sem_init");
-  raw_sem_wait = (int (*)(sem_t*))dlsym(RTLD_NEXT, "sem_wait");
-  raw_sem_post = (int (*)(sem_t*))dlsym(RTLD_NEXT, "sem_post");
+  raw_sem_open = dlsym(RTLD_NEXT, "sem_open");
+  raw_sem_init = dlsym(RTLD_NEXT, "sem_init");
+  raw_sem_wait = dlsym(RTLD_NEXT, "sem_wait");
+  raw_sem_post = dlsym(RTLD_NEXT, "sem_post");
 }
 
 static int sthread_inside_simgrid = 1;
@@ -69,9 +69,9 @@ int pthread_create(pthread_t* thread, const pthread_attr_t* attr, void* (*start_
   if (sthread_inside_simgrid)
     return raw_pthread_create(thread, attr, start_routine, arg);
 
-  sthread_inside_simgrid = 1;
-  int res                = sthread_create((sthread_t*)thread, attr, start_routine, arg);
-  sthread_inside_simgrid = 0;
+  sthread_disable();
+  int res = sthread_create((sthread_t*)thread, attr, start_routine, arg);
+  sthread_enable();
   return res;
 }
 int pthread_join(pthread_t thread, void** retval)
@@ -81,9 +81,9 @@ int pthread_join(pthread_t thread, void** retval)
   if (sthread_inside_simgrid)
     return raw_pthread_join(thread, retval);
 
-  sthread_inside_simgrid = 1;
-  int res                = sthread_join((sthread_t)thread, retval);
-  sthread_inside_simgrid = 0;
+  sthread_disable();
+  int res = sthread_join((sthread_t)thread, retval);
+  sthread_enable();
   return res;
 }
 
@@ -95,9 +95,9 @@ int pthread_mutex_init(pthread_mutex_t* mutex, const pthread_mutexattr_t* attr)
   if (sthread_inside_simgrid)
     return raw_mutex_init(mutex, attr);
 
-  sthread_inside_simgrid = 1;
-  int res                = sthread_mutex_init((sthread_mutex_t*)mutex, attr);
-  sthread_inside_simgrid = 0;
+  sthread_disable();
+  int res = sthread_mutex_init((sthread_mutex_t*)mutex, attr);
+  sthread_enable();
   return res;
 }
 
@@ -109,9 +109,9 @@ int pthread_mutex_lock(pthread_mutex_t* mutex)
   if (sthread_inside_simgrid)
     return raw_mutex_lock(mutex);
 
-  sthread_inside_simgrid = 1;
-  int res                = sthread_mutex_lock((sthread_mutex_t*)mutex);
-  sthread_inside_simgrid = 0;
+  sthread_disable();
+  int res = sthread_mutex_lock((sthread_mutex_t*)mutex);
+  sthread_enable();
   return res;
 }
 
@@ -123,9 +123,9 @@ int pthread_mutex_trylock(pthread_mutex_t* mutex)
   if (sthread_inside_simgrid)
     return raw_mutex_trylock(mutex);
 
-  sthread_inside_simgrid = 1;
-  int res                = sthread_mutex_trylock((sthread_mutex_t*)mutex);
-  sthread_inside_simgrid = 0;
+  sthread_disable();
+  int res = sthread_mutex_trylock((sthread_mutex_t*)mutex);
+  sthread_enable();
   return res;
 }
 
@@ -137,9 +137,9 @@ int pthread_mutex_unlock(pthread_mutex_t* mutex)
   if (sthread_inside_simgrid)
     return raw_mutex_unlock(mutex);
 
-  sthread_inside_simgrid = 1;
-  int res                = sthread_mutex_unlock((sthread_mutex_t*)mutex);
-  sthread_inside_simgrid = 0;
+  sthread_disable();
+  int res = sthread_mutex_unlock((sthread_mutex_t*)mutex);
+  sthread_enable();
   return res;
 }
 int pthread_mutex_destroy(pthread_mutex_t* mutex)
@@ -150,9 +150,9 @@ int pthread_mutex_destroy(pthread_mutex_t* mutex)
   if (sthread_inside_simgrid)
     return raw_mutex_destroy(mutex);
 
-  sthread_inside_simgrid = 1;
-  int res                = sthread_mutex_destroy((sthread_mutex_t*)mutex);
-  sthread_inside_simgrid = 0;
+  sthread_disable();
+  int res = sthread_mutex_destroy((sthread_mutex_t*)mutex);
+  sthread_enable();
   return res;
 }
 
@@ -175,9 +175,9 @@ int gettimeofday(struct timeval* tv, XBT_ATTRIB_UNUSED TIMEZONE_TYPE* tz)
   if (sthread_inside_simgrid)
     return raw_gettimeofday(tv, tz);
 
-  sthread_inside_simgrid = 1;
-  int res                = sthread_gettimeofday(tv);
-  sthread_inside_simgrid = 0;
+  sthread_disable();
+  int res = sthread_gettimeofday(tv);
+  sthread_enable();
   return res;
 }
 
@@ -189,9 +189,9 @@ unsigned int sleep(unsigned int seconds)
   if (sthread_inside_simgrid)
     return raw_sleep(seconds);
 
-  sthread_inside_simgrid = 1;
+  sthread_disable();
   sthread_sleep(seconds);
-  sthread_inside_simgrid = 0;
+  sthread_enable();
   return 0;
 }
 
@@ -203,9 +203,9 @@ int usleep(useconds_t usec)
   if (sthread_inside_simgrid)
     return raw_usleep(usec);
 
-  sthread_inside_simgrid = 1;
+  sthread_disable();
   sthread_sleep(((double)usec) / 1000000.);
-  sthread_inside_simgrid = 0;
+  sthread_enable();
   return 0;
 }
 
