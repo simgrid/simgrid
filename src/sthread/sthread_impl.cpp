@@ -20,6 +20,7 @@
 #include <sstream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string_view>
 #include <thread>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(sthread, "pthread intercepter");
@@ -31,7 +32,7 @@ int sthread_main(int argc, char** argv, char** envp, int (*raw_main)(int, char**
 {
   /* Do not intercept the main when run from SMPI: it will initialize the simulation properly */
   for (int i = 0; envp[i] != nullptr; i++)
-    if (strncmp(envp[i], "SMPI_GLOBAL_SIZE", strlen("SMPI_GLOBAL_SIZE")) == 0)
+    if (std::string_view(envp[i]).rfind("SMPI_GLOBAL_SIZE", 0) == 0)
       return raw_main(argc, argv, envp);
 
   /* If not in SMPI, the old main becomes an actor in a newly created simulation */
