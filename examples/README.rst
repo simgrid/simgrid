@@ -1198,6 +1198,8 @@ the first level is used.
       .. showfile:: examples/platforms/wifi.xml
          :language: xml
 
+
+
 ===============
 Plugin Examples
 ===============

@@ -371,8 +371,7 @@ else()
 endif()
 
 if(enable_model-checking AND NOT "${CMAKE_SYSTEM}" MATCHES "Linux|FreeBSD")
-  message(WARNING "Support for model-checking has not been enabled on ${CMAKE_SYSTEM}: disabling it")
-  set(enable_model-checking FALSE)
+  message(FATAL_ERROR "Support for model-checking has not been enabled on ${CMAKE_SYSTEM}. Please use a Linux docker to use the model checker.")
 endif()
 
 if(enable_model-checking AND minimal-bindings)
