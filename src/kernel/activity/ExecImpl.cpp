@@ -25,7 +25,7 @@ ExecImpl::ExecImpl()
   actor::ActorImpl* self = actor::ActorImpl::self();
   if (self) {
     set_actor(self);
-    self->activities_.emplace_back(this);
+    self->activities_.insert(this);
   }
 }
 
@@ -167,7 +167,7 @@ void ExecImpl::post()
   clean_action();
   timeout_detector_.reset();
   if (get_actor() != nullptr) {
-    get_actor()->activities_.remove(this);
+    get_actor()->activities_.erase(this);
   }
   if (get_state() != State::FAILED && cb_id_ >= 0)
     s4u::Host::on_state_change.disconnect(cb_id_);

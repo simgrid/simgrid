@@ -27,7 +27,7 @@ IoImpl::IoImpl()
   actor::ActorImpl* self = actor::ActorImpl::self();
   if (self) {
     set_actor(self);
-    self->activities_.emplace_back(this);
+    self->activities_.insert(this);
   }
 }
 
