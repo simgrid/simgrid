@@ -190,7 +190,7 @@ void ActorImpl::exit()
     activity->set_state(activity::State::FAILED);
     activity->post();
 
-    activities_.remove(waiting_synchro_);
+    activities_.erase(waiting_synchro_);
     waiting_synchro_ = nullptr;
   }
   for (auto const& activity : activities_)
@@ -389,7 +389,7 @@ void ActorImpl::throw_exception(std::exception_ptr e)
   /* cancel the blocking synchro if any */
   if (waiting_synchro_) {
     waiting_synchro_->cancel();
-    activities_.remove(waiting_synchro_);
+    activities_.erase(waiting_synchro_);
     waiting_synchro_ = nullptr;
   }
 }

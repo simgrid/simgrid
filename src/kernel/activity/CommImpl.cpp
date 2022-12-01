@@ -88,7 +88,7 @@ CommImpl& CommImpl::set_dst_buff(unsigned char* buff, size_t* size)
 CommImpl& CommImpl::detach()
 {
   detached_ = true;
-  EngineImpl::get_instance()->get_maestro()->activities_.emplace_back(this);
+  EngineImpl::get_instance()->get_maestro()->activities_.insert(this);
   return *this;
 }
 
@@ -245,7 +245,7 @@ ActivityImplPtr CommImpl::isend(actor::CommIsendSimcall* observer)
     other_comm->clean_fun = observer->get_clean_fun();
   } else {
     other_comm->clean_fun = nullptr;
-    observer->get_issuer()->activities_.emplace_back(other_comm);
+    observer->get_issuer()->activities_.insert(other_comm);
   }
 
   /* Setup the communication synchro */
@@ -294,7 +294,7 @@ ActivityImplPtr CommImpl::irecv(actor::CommIrecvSimcall* observer)
         other_comm = std::move(this_synchro);
         mbox->push(other_comm);
       }
-      observer->get_issuer()->activities_.emplace_back(other_comm);
+      observer->get_issuer()->activities_.insert(other_comm);
     }
   } else {
     /* Prepare a comm describing us, so that it gets passed to the user-provided filter of other side */
@@ -315,7 +315,7 @@ ActivityImplPtr CommImpl::irecv(actor::CommIrecvSimcall* observer)
 
       other_comm->set_state(simgrid::kernel::activity::State::READY);
     }
-    observer->get_issuer()->activities_.emplace_back(other_comm);
+    observer->get_issuer()->activities_.insert(other_comm);
   }
   observer->set_comm(other_comm.get());
 
@@ -519,7 +519,7 @@ void CommImpl::finish()
     copy_data();
 
   if (detached_)
-    EngineImpl::get_instance()->get_maestro()->activities_.remove(this);
+    EngineImpl::get_instance()->get_maestro()->activities_.erase(this);
 
   while (not simcalls_.empty()) {
     actor::Simcall* simcall = simcalls_.front();
@@ -547,12 +547,12 @@ void CommImpl::finish()
     }
 
     simcall->issuer_->waiting_synchro_ = nullptr;
-    simcall->issuer_->activities_.remove(this);
+    simcall->issuer_->activities_.erase(this);
     if (detached_) {
       if (simcall->issuer_ != dst_actor_ && dst_actor_ != nullptr)
-        dst_actor_->activities_.remove(this);
+        dst_actor_->activities_.erase(this);
       if (simcall->issuer_ != src_actor_ && src_actor_ != nullptr)
-        src_actor_->activities_.remove(this);
+        src_actor_->activities_.erase(this);
     }
   }
 }

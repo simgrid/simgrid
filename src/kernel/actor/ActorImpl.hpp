@@ -17,6 +17,8 @@
 #include <functional>
 #include <list>
 #include <map>
+#include <set>
+#include <unordered_set>
 #include <memory>
 
 namespace simgrid::kernel::actor {
@@ -105,7 +107,7 @@ public:
   bool suspended_ = false;
 
   activity::ActivityImplPtr waiting_synchro_ = nullptr; /* the current blocking synchro if any */
-  std::list<activity::ActivityImplPtr> activities_;     /* the current non-blocking synchros */
+  std::set<activity::ActivityImplPtr> activities_;     /* the current non-blocking synchros */
   Simcall simcall_;
   /* list of functions executed when the actor dies */
   std::shared_ptr<std::vector<std::function<void(bool)>>> on_exit =
