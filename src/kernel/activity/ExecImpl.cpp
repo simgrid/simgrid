@@ -153,13 +153,10 @@ void ExecImpl::post()
   } else if (surf_action_->get_state() == resource::Action::State::FAILED) {
     /* If all the hosts are running the synchro didn't fail, then the synchro was canceled */
     set_state(State::CANCELED);
-  } else if (timeout_detector_ && timeout_detector_->get_state() == resource::Action::State::FINISHED) {
-    if (surf_action_->get_remains() > 0.0) {
-      surf_action_->set_state(resource::Action::State::FAILED);
-      set_state(State::TIMEOUT);
-    } else {
-      set_state(State::DONE);
-    }
+  } else if (timeout_detector_ && timeout_detector_->get_state() == resource::Action::State::FINISHED &&
+             surf_action_->get_remains() > 0.0) {
+    surf_action_->set_state(resource::Action::State::FAILED);
+    set_state(State::TIMEOUT);
   } else {
     set_state(State::DONE);
   }
