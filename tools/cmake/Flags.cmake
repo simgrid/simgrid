@@ -15,9 +15,7 @@ set(warnCXXFLAGS "")
 
 if(enable_compile_warnings)
   set(warnCFLAGS "-fno-common -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing")
-  if(CMAKE_COMPILER_IS_GNUCC)
-    set(warnCFLAGS "${warnCFLAGS} -Wclobbered -Wformat-signedness -Wno-error=clobbered -Wno-unused-local-typedefs -Wno-error=attributes -Wno-error=maybe-uninitialized")
-  endif()
+
   if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
     # ignore remarks:
     # 191: type qualifier is meaningless on cast type
@@ -31,15 +29,20 @@ if(enable_compile_warnings)
     # 11003: no IR in object file xxxx; was the source file compiled with xxxx
     set(warnCFLAGS "${warnCFLAGS} -diag-disable=191,1418,2196,2651,3179 -diag-warning=597,2330,11003")
   endif()
+  set(warnCXXFLAGS "${warnCFLAGS}")
 
-  set(warnCXXFLAGS "${warnCFLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing")
+  if(CMAKE_COMPILER_IS_GNUCC)
+    set(warnCFLAGS "${warnCFLAGS} -Wclobbered -Wformat-signedness -Wno-error=clobbered -Wno-unused-local-typedefs -Wno-error=attributes -Wno-error=maybe-uninitialized")
+  endif()
+
   if(CMAKE_COMPILER_IS_GNUCXX)
     set(warnCXXFLAGS "${warnCXXFLAGS} -Wclobbered -Wformat-signedness -Wno-error=clobbered -Wno-free-nonheap-object -Wno-unused-local-typedefs -Wno-error=attributes -Wno-error=maybe-uninitialized")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "8.0")
+      # workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81767
+      set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-error=unused-variable")
+    endif()
   endif()
-  if(CMAKE_COMPILER_IS_GNUCXX AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "8.0")
-    # workaround for https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81767
-    set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-error=unused-variable")
-  endif()
+
   if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     # don't care about class that become struct, avoid issue of empty C structs
     # size (coming from libunwind.h)
