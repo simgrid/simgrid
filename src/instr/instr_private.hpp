@@ -68,20 +68,20 @@ public:
 
 // NoOpTI: init, finalize, test, wait, barrier
 class NoOpTIData : public TIData {
-  explicit NoOpTIData(const std::string&, double); // disallow this constructor inherited from TIData
-
 public:
   using TIData::TIData;
+  explicit NoOpTIData(const std::string&, double) = delete; // disallow this constructor inherited from TIData
+
   std::string print() override { return get_name(); }
   std::string display_size() override { return "NA"; }
 };
 
 // CPuTI: compute, sleep (+ waitAny and waitall out of laziness)
 class CpuTIData : public TIData {
-  explicit CpuTIData(const std::string&); // disallow this constructor inherited from TIData
-
 public:
   using TIData::TIData;
+  explicit CpuTIData(const std::string&) = delete; // disallow this constructor inherited from TIData
+
   std::string print() override
   {
     std::stringstream stream;

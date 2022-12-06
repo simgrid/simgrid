@@ -154,9 +154,6 @@ public:
   virtual int clone(MPI_Datatype* type);
   virtual void serialize(const void* noncontiguous, void* contiguous, int count);
   virtual void unserialize(const void* contiguous, void* noncontiguous, int count, MPI_Op op);
-  static int keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval,
-                           void* extra_state);
-  static int keyval_free(int* keyval);
   int pack(const void* inbuf, int incount, void* outbuf, int outcount, int* position, const Comm* comm);
   int unpack(const void* inbuf, int insize, int* position, void* outbuf, int outcount, const Comm* comm);
   int get_contents(int max_integers, int max_addresses, int max_datatypes, int* array_of_integers,

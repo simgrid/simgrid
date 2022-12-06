@@ -42,7 +42,6 @@ public:
   void run_all(std::vector<actor::ActorImpl*> const& actors) override;
 };
 
-XBT_PRIVATE ContextFactory* java_factory();
 XBT_PRIVATE void java_main_jprocess(jobject process);
 
 } // namespace simgrid::kernel::context

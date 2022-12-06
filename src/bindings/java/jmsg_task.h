@@ -57,7 +57,6 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_dsend(JNIEnv* env, jobject jtas
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_dsendBounded(JNIEnv* env, jobject jtask, jstring jalias,
                                                               jdouble maxrate);
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Task_listen(JNIEnv* env, jclass cls, jstring jalias);
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_Task_listenFromHost(JNIEnv* env, jclass cls, jstring jalias, jobject jhost);
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Task_listenFrom(JNIEnv* env, jclass cls, jstring jalias);
 
 SG_END_DECL

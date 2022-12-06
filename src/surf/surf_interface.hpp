@@ -75,7 +75,6 @@ static inline int double_equals(double value1, double value2, double precision)
  */
 XBT_PUBLIC void surf_cpu_model_init_Cas01();
 
-XBT_ATTRIB_DEPRECATED_v337 ("Please use surf_disk_model_init_S19()") XBT_PUBLIC void surf_disk_model_init_default();
 XBT_PUBLIC void surf_disk_model_init_S19();
 
 /** @ingroup SURF_models

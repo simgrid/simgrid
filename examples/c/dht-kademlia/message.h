@@ -23,8 +23,6 @@ typedef s_kademlia_message_t* kademlia_message_t;
 typedef const s_kademlia_message_t* const_kademlia_message_t;
 
 // Task handling functions
-kademlia_message_t task_new_find_node(unsigned int sender_id, unsigned int destination_id, sg_mailbox_t mailbox,
-                                      const char* hostname);
 kademlia_message_t new_message(unsigned int sender_id, unsigned int destination_id, answer_t answer,
                                sg_mailbox_t mailbox, const char* hostname);
 void free_message(void* message);

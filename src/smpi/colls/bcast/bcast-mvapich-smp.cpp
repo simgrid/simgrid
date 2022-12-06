@@ -48,7 +48,6 @@ extern int mv2_pipelined_zcpy_knomial_factor;
 extern int bcast_segment_size;
 extern int mv2_inter_node_knomial_factor;
 extern int mv2_intra_node_knomial_factor;
-extern int mv2_bcast_two_level_system_size;
 #define INTRA_NODE_ROOT 0
 
 #define MPIR_Pipelined_Bcast_Zcpy_MV2 bcast__mpich

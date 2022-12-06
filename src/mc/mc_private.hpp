@@ -18,9 +18,6 @@ namespace simgrid::mc {
 XBT_PRIVATE void find_object_address(std::vector<simgrid::xbt::VmMap> const& maps,
                                      simgrid::mc::ObjectInformation* result);
 
-XBT_PRIVATE
-bool snapshot_equal(const Snapshot* s1, const Snapshot* s2);
-
 } // namespace simgrid::mc
 
 #endif

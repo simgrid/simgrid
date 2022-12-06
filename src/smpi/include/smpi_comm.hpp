@@ -88,7 +88,6 @@ public:
   static int keyval_create(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval,
                            void* extra_state);
   static int keyval_free(int* keyval);
-  static void keyval_cleanup();
 
   void add_rma_win(MPI_Win win);
   void remove_rma_win(MPI_Win win);

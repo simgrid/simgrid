@@ -10,6 +10,8 @@
 #include <queue>
 #include <string_view>
 
+/* TODO: many method declared in this module are not implemented */
+
 namespace simgrid::mc {
 
 class UnfoldingEvent;
@@ -74,7 +76,6 @@ public:
   bool isImmediateConflict1(UnfoldingEvent* evt, UnfoldingEvent* otherEvt) const;
 
   bool conflictWithConfig(UnfoldingEvent* event, Configuration const& config) const;
-  /* TODO: implement */
   bool operator==(const UnfoldingEvent&) const { return false; };
   void print() const;
 

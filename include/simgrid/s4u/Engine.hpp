@@ -105,8 +105,6 @@ protected:
   friend kernel::routing::NetZoneImpl;
   friend kernel::resource::HostImpl;
   friend kernel::resource::StandardLinkImpl;
-  void host_register(const std::string& name, Host* host);
-  void host_unregister(const std::string& name);
   void netpoint_register(simgrid::kernel::routing::NetPoint* card);
   void netpoint_unregister(simgrid::kernel::routing::NetPoint* card);
   void set_netzone_root(const NetZone* netzone);

@@ -1138,7 +1138,6 @@ MPI_CALL(XBT_PUBLIC int, MPI_Status_c2f, (MPI_Status *c_status, MPI_Fint *f_stat
 //FIXME: End of all the not yet implemented stuff
 
 // smpi functions
-XBT_PUBLIC int smpi_global_size();
 XBT_PUBLIC MPI_Comm smpi_process_comm_self();
 XBT_PUBLIC MPI_Info smpi_process_info_env();
 XBT_PUBLIC void* smpi_process_get_user_data();
