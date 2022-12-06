@@ -1379,7 +1379,6 @@ include teshsuite/smpi/mpich3-test/include/mpicolltest.h
 include teshsuite/smpi/mpich3-test/include/mpitest.h
 include teshsuite/smpi/mpich3-test/include/mpitestconf.h
 include teshsuite/smpi/mpich3-test/include/mpitestcxx.h
-include teshsuite/smpi/mpich3-test/include/mpithreadtest.h
 include teshsuite/smpi/mpich3-test/include/mtest_datatype.h
 include teshsuite/smpi/mpich3-test/info/infodel.c
 include teshsuite/smpi/mpich3-test/info/infodup.c

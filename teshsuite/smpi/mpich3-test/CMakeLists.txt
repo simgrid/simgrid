@@ -28,7 +28,6 @@ set(txt_files  ${txt_files}  ${CMAKE_CURRENT_SOURCE_DIR}/README
                              ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitestconf.h
                              ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitestcxx.h
                              ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitest.h
-                             ${CMAKE_CURRENT_SOURCE_DIR}/include/mpithreadtest.h
                              ${CMAKE_CURRENT_SOURCE_DIR}/include/mtest_datatype.h
                              ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitest.h                            PARENT_SCOPE)
 
