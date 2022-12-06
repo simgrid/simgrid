@@ -265,7 +265,7 @@ static void handle_message(node_t node, pastry_message_t message)
       }
       node->namespace_set[NAMESPACE_SIZE / 2 + j] = message->sender_id;
       node->ready += message->steps + 1;
-      /* no break */
+      /* fallthrough */
     case JOIN_REPLY:
       XBT_DEBUG("Joining Reply");
 
@@ -520,7 +520,7 @@ int main(int argc, char* argv[])
 
   char** options = &argv[1];
   while (!strncmp(options[0], "-", 1)) {
-    int length = strlen("-nb_bits=");
+    size_t length = strlen("-nb_bits=");
     if (!strncmp(options[0], "-nb_bits=", length) && strlen(options[0]) > length) {
       nb_bits = (int)xbt_str_parse_int(options[0] + length, "Invalid nb_bits parameter");
       XBT_DEBUG("Set nb_bits to %d", nb_bits);

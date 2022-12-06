@@ -54,7 +54,8 @@ DGraph* newDGraph(char* nm){
 }
 
 int AttachNode(DGraph* dg, DGNode* nd) {
-  int i=0,j,len=0;
+  int i = 0, j;
+  unsigned len = 0;
   DGNode **nds =NULL, *tmpnd=NULL;
   DGArc **ar=NULL;
 

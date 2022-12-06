@@ -14,7 +14,7 @@ set(optCFLAGS "")
 set(warnCXXFLAGS "")
 
 if(enable_compile_warnings)
-  set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-declarations -Wpointer-arith -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing")
+  set(warnCFLAGS "-fno-common -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing")
   if(CMAKE_COMPILER_IS_GNUCC)
     set(warnCFLAGS "${warnCFLAGS} -Wclobbered -Wformat-signedness -Wno-error=clobbered -Wno-unused-local-typedefs -Wno-error=attributes -Wno-error=maybe-uninitialized")
   endif()

@@ -53,7 +53,7 @@ int main(int argc, char** argv)
   size_t host_count = sg_host_count();
   sg_host_t* hosts  = sg_host_list();
 
-  for (long i = 0; i < host_count; i++) {
+  for (size_t i = 0; i < host_count; i++) {
     unsigned int disk_count;
     sg_disk_t* disks;
     sg_host_get_disks(hosts[i], &disk_count, &disks);
@@ -66,7 +66,7 @@ int main(int argc, char** argv)
 
   simgrid_run();
 
-  for (long i = 0; i < host_count; i++) {
+  for (size_t i = 0; i < host_count; i++) {
     unsigned int disk_count;
     sg_disk_t* disks;
     sg_host_get_disks(hosts[i], &disk_count, &disks);

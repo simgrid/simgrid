@@ -73,7 +73,7 @@ int is_interested(const_peer_t peer, const_connection_t remote_peer);
 int is_interested_and_free(const_peer_t peer, const_connection_t remote_peer);
 void update_pieces_count_from_bitfield(const_peer_t peer, unsigned int bitfield);
 
-int count_pieces(unsigned int bitfield);
+unsigned int count_pieces(unsigned int bitfield);
 int nb_interested_peers(const_peer_t peer);
 
 void leech(peer_t peer);

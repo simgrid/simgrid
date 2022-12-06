@@ -23,29 +23,29 @@ static void relay_runner(int argc, char* argv[])
   xbt_assert(argc == 0, "The relay_runner function does not accept any parameter from the XML deployment file");
 
   const char* name = sg_actor_self_get_name();
-  int rank         = (int)xbt_str_parse_int(name, "Any actor of this example must have a numerical name");
+  unsigned rank    = (unsigned)xbt_str_parse_int(name, "Any actor of this example must have a numerical name");
 
   sg_mailbox_t my_mailbox = sg_mailbox_by_name(name);
 
   /* The last actor sends the token back to rank 0, the others send to their right neighbor (rank+1) */
   char neighbor_mailbox_name[256];
-  snprintf(neighbor_mailbox_name, 255, "%d", rank + 1 == sg_host_count() ? 0 : rank + 1);
+  snprintf(neighbor_mailbox_name, 255, "%u", rank + 1 == sg_host_count() ? 0 : rank + 1);
 
   sg_mailbox_t neighbor_mailbox = sg_mailbox_by_name(neighbor_mailbox_name);
 
   char* res;
   if (rank == 0) {
     /* The root actor (rank 0) first sends the token then waits to receive it back */
-    XBT_INFO("Host \"%d\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox_name);
+    XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox_name);
     sg_mailbox_put(neighbor_mailbox, xbt_strdup("Token"), 1000000);
 
     res = (char*)sg_mailbox_get(my_mailbox);
-    XBT_INFO("Host \"%d\" received \"%s\"", rank, res);
+    XBT_INFO("Host \"%u\" received \"%s\"", rank, res);
   } else {
     /* The others actors receive from their left neighbor (rank-1) and send to their right neighbor (rank+1) */
     res = (char*)sg_mailbox_get(my_mailbox);
-    XBT_INFO("Host \"%d\" received \"%s\"", rank, res);
-    XBT_INFO("Host \"%d\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox_name);
+    XBT_INFO("Host \"%u\" received \"%s\"", rank, res);
+    XBT_INFO("Host \"%u\" send 'Token' to Host \"%s\"", rank, neighbor_mailbox_name);
     sg_mailbox_put(neighbor_mailbox, xbt_strdup("Token"), 1000000);
   }
   free(res);

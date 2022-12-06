@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
             errs++;
             printf("Incorrect value for key %s\n", keys[i]);
         }
-        if (strlen(value) != vallen) {
+        if ((int)strlen(value) != vallen) {
             errs++;
             printf("value_len returned %d but actual len is %d\n", vallen, (int) strlen(value));
         }

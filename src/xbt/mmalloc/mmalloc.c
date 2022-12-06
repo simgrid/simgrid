@@ -119,7 +119,7 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
     /* Update the swag of busy blocks containing free fragments by applying the offset to all swag_hooks. Yeah. My hand is right in the fan and I still type */
     size_t offset=((char*)newinfo)-((char*)oldinfo);
 
-    for (int i = 1 /*first element of heapinfo describes the mdesc area*/; i < mdp->heaplimit; i++) {
+    for (size_t i = 1 /*first element of heapinfo describes the mdesc area*/; i < mdp->heaplimit; i++) {
       update_hook(&newinfo[i].freehook.next, offset);
       update_hook(&newinfo[i].freehook.prev, offset);
     }
@@ -132,7 +132,7 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
 
     /* mark the space previously occupied by the block info as free by first marking it
      * as occupied in the regular way, and then freing it */
-    for (int it = 0; it < BLOCKIFY(mdp->heapsize * sizeof(malloc_info)); it++) {
+    for (size_t it = 0; it < BLOCKIFY(mdp->heapsize * sizeof(malloc_info)); it++) {
       newinfo[BLOCK(oldinfo)+it].type = MMALLOC_TYPE_UNFRAGMENTED;
       newinfo[BLOCK(oldinfo)+it].busy_block.ignore = 0;
     }
@@ -160,7 +160,7 @@ void *mmalloc(xbt_mheap_t mdp, size_t size) {
 
 static void mmalloc_mark_used(xbt_mheap_t mdp, size_t block, size_t nblocks, size_t requested_size)
 {
-  for (int it = 0; it < nblocks; it++) {
+  for (size_t it = 0; it < nblocks; it++) {
     mdp->heapinfo[block + it].type                 = MMALLOC_TYPE_UNFRAGMENTED;
     mdp->heapinfo[block + it].busy_block.busy_size = 0;
     mdp->heapinfo[block + it].busy_block.ignore    = 0;

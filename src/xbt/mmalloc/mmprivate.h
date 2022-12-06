@@ -93,7 +93,7 @@ XBT_PRIVATE xbt_mheap_t mmalloc_preinit(void);
 
 /* Address to block number and vice versa.  */
 
-#define BLOCK(A) (((char*) (A) - (char*) mdp -> heapbase) / BLOCKSIZE + 1)
+#define BLOCK(A) ((size_t)(((char*)(A) - (char*)mdp->heapbase) / BLOCKSIZE + 1))
 
 #define ADDRESS(B) ((void*) (((ADDR2UINT(B)) - 1) * BLOCKSIZE + (char*) mdp -> heapbase))
 

@@ -254,7 +254,7 @@ int is_interested(const_peer_t peer, const_connection_t remote_peer)
 /** Indicates if the remote peer has a piece not stored by the local peer nor requested by the local peer */
 int is_interested_and_free(const_peer_t peer, const_connection_t remote_peer)
 {
-  for (int i = 0; i < FILE_PIECES; i++)
+  for (unsigned int i = 0; i < FILE_PIECES; i++)
     if (peer_has_not_piece(peer, i) && connection_has_piece(remote_peer, i) && peer_is_not_downloading_piece(peer, i))
       return 1;
   return 0;
@@ -263,14 +263,14 @@ int is_interested_and_free(const_peer_t peer, const_connection_t remote_peer)
 /** @brief Updates the list of who has a piece from a bitfield */
 void update_pieces_count_from_bitfield(const_peer_t peer, unsigned int bitfield)
 {
-  for (int i = 0; i < FILE_PIECES; i++)
+  for (unsigned int i = 0; i < FILE_PIECES; i++)
     if (bitfield & (1U << i))
       peer->pieces_count[i]++;
 }
 
-int count_pieces(unsigned int bitfield)
+unsigned int count_pieces(unsigned int bitfield)
 {
-  int count      = 0;
+  unsigned int count      = 0;
   unsigned int n = bitfield;
   while (n) {
     count += n & 1U;
@@ -424,7 +424,7 @@ void handle_message(peer_t peer, message_t message)
       break;
     case MESSAGE_HAVE:
       XBT_DEBUG("\t for piece %d", message->piece);
-      xbt_assert((message->piece >= 0 && message->piece < FILE_PIECES), "Wrong HAVE message received");
+      xbt_assert((message->piece >= 0 && (unsigned)message->piece < FILE_PIECES), "Wrong HAVE message received");
       remote_peer->bitfield = remote_peer->bitfield | (1U << message->piece);
       peer->pieces_count[message->piece]++;
       // If the piece is in our pieces, we tell the peer that we are interested.
@@ -437,7 +437,7 @@ void handle_message(peer_t peer, message_t message)
       break;
     case MESSAGE_REQUEST:
       xbt_assert(remote_peer->interested);
-      xbt_assert((message->piece >= 0 && message->piece < FILE_PIECES), "Wrong request received");
+      xbt_assert((message->piece >= 0 && (unsigned)message->piece < FILE_PIECES), "Wrong request received");
       if (remote_peer->choked_upload == 0) {
         XBT_DEBUG("\t for piece %d (%d,%d)", message->piece, message->block_index,
                   message->block_index + message->block_length);
@@ -453,7 +453,7 @@ void handle_message(peer_t peer, message_t message)
                 message->block_index + message->block_length);
       xbt_assert(!remote_peer->choked_download);
       xbt_assert(remote_peer->choked_download != 1, "Can't received a piece if I'm choked !");
-      xbt_assert((message->piece >= 0 && message->piece < FILE_PIECES), "Wrong piece received");
+      xbt_assert((message->piece >= 0 && (unsigned)message->piece < FILE_PIECES), "Wrong piece received");
       // TODO: Execute a computation.
       if (peer_has_not_piece(peer, message->piece)) {
         update_bitfield_blocks(peer, message->piece, message->block_index, message->block_length);
@@ -529,7 +529,7 @@ int select_piece_to_download(const_peer_t peer, const_connection_t remote_peer)
       (is_interested(peer, remote_peer) != 0)) {
     int nb_interesting_pieces = 0;
     // compute the number of interesting pieces
-    for (int i = 0; i < FILE_PIECES; i++) {
+    for (unsigned int i = 0; i < FILE_PIECES; i++) {
       if (peer_has_not_piece(peer, i) && connection_has_piece(remote_peer, i)) {
         nb_interesting_pieces++;
       }
@@ -538,7 +538,7 @@ int select_piece_to_download(const_peer_t peer, const_connection_t remote_peer)
     // get a random interesting piece
     int random_piece_index = rand() % nb_interesting_pieces;
     int current_index      = 0;
-    for (int i = 0; i < FILE_PIECES; i++) {
+    for (unsigned int i = 0; i < FILE_PIECES; i++) {
       if (peer_has_not_piece(peer, i) && connection_has_piece(remote_peer, i)) {
         if (random_piece_index == current_index) {
           piece = i;
@@ -554,7 +554,7 @@ int select_piece_to_download(const_peer_t peer, const_connection_t remote_peer)
   if (count_pieces(peer->bitfield) < 4 && (is_interested_and_free(peer, remote_peer) != 0)) {
     int nb_interesting_pieces = 0;
     // compute the number of interesting pieces
-    for (int i = 0; i < FILE_PIECES; i++) {
+    for (unsigned int i = 0; i < FILE_PIECES; i++) {
       if (peer_has_not_piece(peer, i) && connection_has_piece(remote_peer, i) &&
           peer_is_not_downloading_piece(peer, i)) {
         nb_interesting_pieces++;
@@ -564,7 +564,7 @@ int select_piece_to_download(const_peer_t peer, const_connection_t remote_peer)
     // get a random interesting piece
     int random_piece_index = rand() % nb_interesting_pieces;
     int current_index      = 0;
-    for (int i = 0; i < FILE_PIECES; i++) {
+    for (unsigned int i = 0; i < FILE_PIECES; i++) {
       if (peer_has_not_piece(peer, i) && connection_has_piece(remote_peer, i) &&
           peer_is_not_downloading_piece(peer, i)) {
         if (random_piece_index == current_index) {
@@ -581,14 +581,14 @@ int select_piece_to_download(const_peer_t peer, const_connection_t remote_peer)
     int nb_min_pieces = 0;
     int current_index = 0;
     // compute the smallest number of copies of available pieces
-    for (int i = 0; i < FILE_PIECES; i++) {
+    for (unsigned int i = 0; i < FILE_PIECES; i++) {
       if (peer->pieces_count[i] < min && peer_has_not_piece(peer, i) && connection_has_piece(remote_peer, i) &&
           peer_is_not_downloading_piece(peer, i))
         min = peer->pieces_count[i];
     }
     xbt_assert(min != SHRT_MAX || (is_interested_and_free(peer, remote_peer) == 0));
     // compute the number of rarest pieces
-    for (int i = 0; i < FILE_PIECES; i++) {
+    for (unsigned int i = 0; i < FILE_PIECES; i++) {
       if (peer->pieces_count[i] == min && peer_has_not_piece(peer, i) && connection_has_piece(remote_peer, i) &&
           peer_is_not_downloading_piece(peer, i))
         nb_min_pieces++;
@@ -599,7 +599,7 @@ int select_piece_to_download(const_peer_t peer, const_connection_t remote_peer)
     if (nb_min_pieces > 0) {
       random_rarest_index = rand() % nb_min_pieces;
     }
-    for (int i = 0; i < FILE_PIECES; i++) {
+    for (unsigned int i = 0; i < FILE_PIECES; i++) {
       if (peer->pieces_count[i] == min && peer_has_not_piece(peer, i) && connection_has_piece(remote_peer, i) &&
           peer_is_not_downloading_piece(peer, i)) {
         if (random_rarest_index == current_index) {
@@ -723,7 +723,7 @@ void update_interested_after_receive(const_peer_t peer)
     if (connection->am_interested != 0) {
       int interested = 0;
       // Check if the peer still has a piece we want.
-      for (int i = 0; i < FILE_PIECES; i++) {
+      for (unsigned int i = 0; i < FILE_PIECES; i++) {
         if (peer_has_not_piece(peer, i) && connection_has_piece(connection, i)) {
           interested = 1;
           break;
@@ -739,8 +739,8 @@ void update_interested_after_receive(const_peer_t peer)
 
 void update_bitfield_blocks(peer_t peer, int index, int block_index, int block_length)
 {
-  xbt_assert((index >= 0 && index <= FILE_PIECES), "Wrong piece.");
-  xbt_assert((block_index >= 0 && block_index <= PIECES_BLOCKS), "Wrong block : %d.", block_index);
+  xbt_assert((index >= 0 && (unsigned)index <= FILE_PIECES), "Wrong piece.");
+  xbt_assert((block_index >= 0 && (unsigned)block_index <= PIECES_BLOCKS), "Wrong block : %d.", block_index);
   for (int i = block_index; i < (block_index + block_length); i++) {
     peer->bitfield_blocks |= (1ULL << (unsigned int)(index * PIECES_BLOCKS + i));
   }
@@ -749,7 +749,7 @@ void update_bitfield_blocks(peer_t peer, int index, int block_index, int block_l
 /** Returns if a peer has completed the download of a piece */
 int piece_complete(const_peer_t peer, int index)
 {
-  for (int i = 0; i < PIECES_BLOCKS; i++) {
+  for (unsigned int i = 0; i < PIECES_BLOCKS; i++) {
     if (!(peer->bitfield_blocks & 1ULL << (index * PIECES_BLOCKS + i))) {
       return 0;
     }
@@ -760,7 +760,7 @@ int piece_complete(const_peer_t peer, int index)
 /** Returns the first block that a peer doesn't have in a piece. If the peer has all blocks of the piece, returns -1. */
 int get_first_missing_block_from(const_peer_t peer, int piece)
 {
-  for (int i = 0; i < PIECES_BLOCKS; i++) {
+  for (unsigned int i = 0; i < PIECES_BLOCKS; i++) {
     if (!(peer->bitfield_blocks & 1ULL << (piece * PIECES_BLOCKS + i))) {
       return i;
     }
@@ -771,7 +771,7 @@ int get_first_missing_block_from(const_peer_t peer, int piece)
 /** Returns a piece that is partially downloaded and stored by the remote peer if any -1 otherwise. */
 int partially_downloaded_piece(const_peer_t peer, const_connection_t remote_peer)
 {
-  for (int i = 0; i < FILE_PIECES; i++) {
+  for (unsigned int i = 0; i < FILE_PIECES; i++) {
     if (peer_has_not_piece(peer, i) && connection_has_piece(remote_peer, i) && peer_is_not_downloading_piece(peer, i) &&
         get_first_missing_block_from(peer, i) > 0)
       return i;

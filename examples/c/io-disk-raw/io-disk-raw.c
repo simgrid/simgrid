@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
   size_t host_count = sg_host_count();
   sg_host_t* hosts  = sg_host_list();
 
-  for (long i = 0; i < host_count; i++) {
+  for (size_t i = 0; i < host_count; i++) {
     XBT_INFO("*** %s properties ****", sg_host_get_name(hosts[i]));
     xbt_dict_t props         = sg_host_get_properties(hosts[i]);
     xbt_dict_cursor_t cursor = NULL;

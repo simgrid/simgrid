@@ -37,7 +37,7 @@ static int check_all(const uint8_t* buf, size_t start, size_t stop, uint8_t valu
 // Return true iff "enough" elements are equal to (i+value)%256 between buf[start] and buf[stop-1].
 static int check_enough(const uint8_t* buf, size_t start, size_t stop, uint8_t value)
 {
-  int page_size = 0x1000;
+  const unsigned int page_size = 0x1000;
   size_t size = stop-start;
   if(size <= 2*page_size) // we are not sure to have a whole page that is shared
     return 1;

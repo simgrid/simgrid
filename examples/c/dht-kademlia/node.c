@@ -156,7 +156,7 @@ void routing_table_update(const_node_t node, unsigned int id)
   // check if the id is already in the bucket.
   unsigned int id_pos = bucket_find_id(bucket, id);
 
-  if (id_pos == -1) {
+  if (id_pos == (unsigned int)-1) {
     /* We check if the bucket is full or not. If it is, we evict an old element */
     if (xbt_dynar_length(bucket->nodes) >= BUCKET_SIZE)
       xbt_dynar_pop(bucket->nodes, NULL);

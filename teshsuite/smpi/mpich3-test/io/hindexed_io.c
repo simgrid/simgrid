@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 
     data = malloc(data_size);
     verify = malloc(data_size * BLK_COUNT + HEADER + PAD);
-    for (i = 0; i < data_size / sizeof(int); i++)
+    for (i = 0; i < (int)(data_size / sizeof(int)); i++)
         data[i] = i;
 
     MPI_Type_create_hindexed_block(BLK_COUNT, data_size, disp, MPI_BYTE, &file_type);

@@ -21,7 +21,7 @@ void mfree(struct mdesc *mdp, void *ptr)
 {
   size_t frag_nb;
   size_t i;
-  int it;
+  size_t it;
 
   if (ptr == NULL)
     return;
@@ -87,7 +87,7 @@ void mfree(struct mdesc *mdp, void *ptr)
       for (it=0; it<mdp->heapinfo[block].busy_block.size; it++) {
         if (mdp->heapinfo[block+it].type < 0) {
           fprintf(stderr,
-                  "Internal Error: Asked to free a block already marked as free (block=%zu it=%d type=%d). "
+                  "Internal Error: Asked to free a block already marked as free (block=%zu it=%zu type=%d). "
                   "Please report this bug.\n",
                   block, it, mdp->heapinfo[block].type);
           abort();
@@ -108,7 +108,7 @@ void mfree(struct mdesc *mdp, void *ptr)
       for (it=0; it<mdp->heapinfo[block].free_block.size; it++) {
         if (mdp->heapinfo[block+it].type <0) {
           fprintf(stderr,
-                  "Internal error: Asked to free a block already marked as free (block=%zu it=%d/%zu type=%d). "
+                  "Internal error: Asked to free a block already marked as free (block=%zu it=%zu/%zu type=%d). "
                   "Please report this bug.\n",
                   block, it, mdp->heapinfo[block].free_block.size, mdp->heapinfo[block].type);
           abort();
