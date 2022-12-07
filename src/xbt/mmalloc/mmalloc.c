@@ -102,9 +102,9 @@ static void *register_morecore(struct mdesc *mdp, size_t size)
   void* result = mmalloc_aligned(mdp, size); // Never returns NULL
 
   /* Check if we need to grow the info table (in a multiplicative manner)  */
-  if ((size_t) BLOCK((char *) result + size) > mdp->heapsize) {
+  if (BLOCK((char*)result + size) > mdp->heapsize) {
     size_t newsize = mdp->heapsize;
-    while ((size_t) BLOCK((char *) result + size) > newsize)
+    while (BLOCK((char*)result + size) > newsize)
       newsize *= 2;
 
     /* Copy old info into new location */
