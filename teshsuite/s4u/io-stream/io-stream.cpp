@@ -12,9 +12,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(io_stream, "Messages specific for this simulation")
 static void streamer(size_t size)
 {
   auto* bob        = sg4::Host::by_name("bob");
-  auto* bob_disk   = bob->get_disks().front();
   auto* alice      = sg4::Host::by_name("alice");
-  auto* alice_disk = alice->get_disks().front();
+  const auto* bob_disk   = bob->get_disks().front();
+  const auto* alice_disk = alice->get_disks().front();
   double clock = sg4::Engine::get_clock();
 
   XBT_INFO("[Bob -> Alice] Store and Forward (1 block)");
