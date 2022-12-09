@@ -18,8 +18,6 @@
 + \.classpath
 + \.editorconfig
 + \.gitlab-ci\.yml
-+ \.lgtm\.yml
-+ \.project
 + \.readthedocs.yml
 + sonar-project\.properties
 
