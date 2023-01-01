@@ -1,4 +1,4 @@
-# Copyright 2021-2022. The SimGrid Team. All rights reserved.
+# Copyright 2021-2023. The SimGrid Team. All rights reserved.
 
 # Integrates the MBI tests into the SimGrid build chain when asked to
 
