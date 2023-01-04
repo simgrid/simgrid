@@ -855,7 +855,7 @@ PYBIND11_MODULE(simgrid, m)
                                             "application. See the C++ documentation for details.")
       .def(
           "create",
-          [](py::str name, Host* h, py::object fun, py::args args) {
+          [](const std::string& name, Host* h, py::object fun, py::args args) {
             fun.inc_ref();  // FIXME: why is this needed for tests like exec-async, exec-dvfs and exec-remote?
             args.inc_ref(); // FIXME: why is this needed for tests like actor-migrate?
             return simgrid::s4u::Actor::create(name, h, [fun, args]() {
