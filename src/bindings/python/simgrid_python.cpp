@@ -188,7 +188,7 @@ PYBIND11_MODULE(simgrid, m)
                           "get_all_hosts() is deprecated and  will be dropped after v3.33, use all_hosts instead.", 1);
              return self.attr("all_hosts");
            })
-      .def("host_by_name", &Engine::host_by_name_or_null, py::call_guard<py::gil_scoped_release>(),
+      .def("host_by_name", &Engine::host_by_name_or_null,
            "Retrieve a host by its name, or None if it does not exist in the platform.")
       .def_property_readonly("all_hosts", &Engine::get_all_hosts, "Returns the list of all hosts found in the platform")
       .def("get_all_links",
@@ -400,8 +400,7 @@ PYBIND11_MODULE(simgrid, m)
                  "get_pstate_speed() is deprecated and  will be dropped after v3.33, use pstate_speed instead.", 1);
              return self.attr("pstate_speed")(state);
            })
-      .def("pstate_speed", &Host::get_pstate_speed, py::call_guard<py::gil_scoped_release>(),
-           "Retrieve the maximal speed at the given pstate")
+      .def("pstate_speed", &Host::get_pstate_speed, "Retrieve the maximal speed at the given pstate")
       .def("get_netpoint",
            [](py::object self) // XBT_ATTRIB_DEPRECATED_v334
            {
@@ -629,7 +628,7 @@ PYBIND11_MODULE(simgrid, m)
       .def_static("by_name", &Mailbox::by_name, py::call_guard<py::gil_scoped_release>(), py::arg("name"),
                   "Retrieve a Mailbox from its name")
       .def_property_readonly("name", &Mailbox::get_name, "The name of that mailbox (read-only property).")
-      .def_property_readonly("ready", &Mailbox::ready, py::call_guard<py::gil_scoped_release>(),
+      .def_property_readonly("ready", &Mailbox::ready,
                              "Check if there is a communication ready to be consumed from a mailbox.")
       .def(
           "put",
