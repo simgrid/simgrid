@@ -139,13 +139,13 @@ PYBIND11_MODULE(simgrid, m)
       .def("exit", &simgrid::s4u::this_actor::exit, py::call_guard<py::gil_scoped_release>(), "kill the current actor")
       .def(
           "on_exit",
-          [](py::object cb) {
-            py::function fun = py::reinterpret_borrow<py::function>(cb);
-            fun.inc_ref(); // FIXME: why is this needed for tests like actor-kill and actor-lifetime?
+          [](py::object fun) {
+            fun.inc_ref(); // keep alive after return
             const py::gil_scoped_release gil_release;
-            simgrid::s4u::this_actor::on_exit([fun](bool failed) {
+            simgrid::s4u::this_actor::on_exit([fun_p = fun.ptr()](bool failed) {
               const py::gil_scoped_acquire py_context; // need a new context for callback
               try {
+                const auto fun = py::reinterpret_borrow<py::function>(fun_p);
                 fun(failed);
               } catch (const py::error_already_set& e) {
                 xbt_die("Error while executing the on_exit lambda: %s", e.what());
@@ -233,7 +233,9 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "register_actor",
           [](Engine* e, const std::string& name, py::object fun_or_class) {
-            e->register_actor(name, [fun_or_class](std::vector<std::string> args) {
+            fun_or_class.inc_ref(); // keep alive after return
+            const py::gil_scoped_release gil_release;
+            e->register_actor(name, [fun_or_class_p = fun_or_class.ptr()](std::vector<std::string> args) {
               const py::gil_scoped_acquire py_context;
               try {
                 /* Convert the std::vector into a py::tuple */
@@ -241,6 +243,7 @@ PYBIND11_MODULE(simgrid, m)
                 for (size_t i = 1; i < args.size(); i++)
                   params[i - 1] = py::cast(args[i]);
 
+                const auto fun_or_class = py::reinterpret_borrow<py::object>(fun_or_class_p);
                 py::object res = fun_or_class(*params);
                 /* If I was passed a class, I just built an instance, so I need to call it now */
                 if (py::isinstance<py::function>(res))
@@ -451,17 +454,19 @@ PYBIND11_MODULE(simgrid, m)
       .def_static(
           "on_creation_cb",
           [](py::object cb) {
-            Host::on_creation_cb([cb](Host& h) {
-              py::function fun = py::reinterpret_borrow<py::function>(cb);
+            cb.inc_ref(); // keep alive after return
+            const py::gil_scoped_release gil_release;
+            Host::on_creation_cb([cb_p = cb.ptr()](Host& h) {
               const py::gil_scoped_acquire py_context; // need a new context for callback
               try {
+                py::function fun = py::reinterpret_borrow<py::function>(cb_p);
                 fun(&h);
               } catch (const py::error_already_set& e) {
                 xbt_die("Error while executing the on_creation lambda : %s", e.what());
               }
             });
           },
-          py::call_guard<py::gil_scoped_release>(), "");
+          "");
 
   py::enum_<simgrid::s4u::Host::SharingPolicy>(host, "SharingPolicy")
       .value("NONLINEAR", simgrid::s4u::Host::SharingPolicy::NONLINEAR)
@@ -855,12 +860,14 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "create",
           [](const std::string& name, Host* h, py::object fun, py::args args) {
-            fun.inc_ref();  // FIXME: why is this needed for tests like exec-async, exec-dvfs and exec-remote?
-            args.inc_ref(); // FIXME: why is this needed for tests like actor-migrate?
+            fun.inc_ref();  // keep alive after return
+            args.inc_ref(); // keep alive after return
             const py::gil_scoped_release gil_release;
-            return simgrid::s4u::Actor::create(name, h, [fun, args]() {
+            return simgrid::s4u::Actor::create(name, h, [fun_p = fun.ptr(), args_p = args.ptr()]() {
               const py::gil_scoped_acquire py_context;
               try {
+                const auto fun  = py::reinterpret_borrow<py::object>(fun_p);
+                const auto args = py::reinterpret_borrow<py::args>(args_p);
                 fun(*args);
               } catch (const py::error_already_set& ex) {
                 if (ex.matches(pyForcefulKillEx)) {
