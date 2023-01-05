@@ -142,8 +142,9 @@ PYBIND11_MODULE(simgrid, m)
           [](py::object cb) {
             py::function fun = py::reinterpret_borrow<py::function>(cb);
             fun.inc_ref(); // FIXME: why is this needed for tests like actor-kill and actor-lifetime?
+            const py::gil_scoped_release gil_release;
             simgrid::s4u::this_actor::on_exit([fun](bool failed) {
-              py::gil_scoped_acquire py_context; // need a new context for callback
+              const py::gil_scoped_acquire py_context; // need a new context for callback
               try {
                 fun(failed);
               } catch (const py::error_already_set& e) {
@@ -151,7 +152,6 @@ PYBIND11_MODULE(simgrid, m)
               }
             });
           },
-          py::call_guard<py::gil_scoped_release>(),
           "Define a lambda to be called when the actor ends. It takes a bool parameter indicating whether the actor "
           "was killed. If False, the actor finished peacefully.")
       .def("get_pid", &simgrid::s4u::this_actor::get_pid, "Retrieves PID of the current actor")
@@ -234,7 +234,7 @@ PYBIND11_MODULE(simgrid, m)
           "register_actor",
           [](Engine* e, const std::string& name, py::object fun_or_class) {
             e->register_actor(name, [fun_or_class](std::vector<std::string> args) {
-              py::gil_scoped_acquire py_context;
+              const py::gil_scoped_acquire py_context;
               try {
                 /* Convert the std::vector into a py::tuple */
                 py::tuple params(args.size() - 1);
@@ -453,7 +453,7 @@ PYBIND11_MODULE(simgrid, m)
           [](py::object cb) {
             Host::on_creation_cb([cb](Host& h) {
               py::function fun = py::reinterpret_borrow<py::function>(cb);
-              py::gil_scoped_acquire py_context; // need a new context for callback
+              const py::gil_scoped_acquire py_context; // need a new context for callback
               try {
                 fun(&h);
               } catch (const py::error_already_set& e) {
@@ -633,38 +633,37 @@ PYBIND11_MODULE(simgrid, m)
       .def(
           "put",
           [](Mailbox* self, py::object data, uint64_t size, double timeout) {
-            data.inc_ref();
-            self->put(data.ptr(), size, timeout);
+            auto* data_ptr = data.inc_ref().ptr();
+            const py::gil_scoped_release gil_release;
+            self->put(data_ptr, size, timeout);
           },
-          py::call_guard<py::gil_scoped_release>(), "Blocking data transmission with a timeout")
+          "Blocking data transmission with a timeout")
       .def(
           "put",
           [](Mailbox* self, py::object data, uint64_t size) {
-            data.inc_ref();
-            self->put(data.ptr(), size);
+            auto* data_ptr = data.inc_ref().ptr();
+            const py::gil_scoped_release gil_release;
+            self->put(data_ptr, size);
           },
-          py::call_guard<py::gil_scoped_release>(), "Blocking data transmission")
+          "Blocking data transmission")
       .def(
           "put_async",
           [](Mailbox* self, py::object data, uint64_t size) {
-            data.inc_ref();
-            return self->put_async(data.ptr(), size);
+            auto* data_ptr = data.inc_ref().ptr();
+            const py::gil_scoped_release gil_release;
+            return self->put_async(data_ptr, size);
           },
-          py::call_guard<py::gil_scoped_release>(), "Non-blocking data transmission")
+          "Non-blocking data transmission")
       .def(
           "put_init",
           [](Mailbox* self, py::object data, uint64_t size) {
-            data.inc_ref();
-            return self->put_init(data.ptr(), size);
+            auto* data_ptr = data.inc_ref().ptr();
+            const py::gil_scoped_release gil_release;
+            return self->put_init(data_ptr, size);
           },
-          py::call_guard<py::gil_scoped_release>(), "Creates (but don’t start) a data transmission to that mailbox.")
+          "Creates (but don’t start) a data transmission to that mailbox.")
       .def(
-          "get",
-          [](Mailbox* self) {
-            py::object data = py::reinterpret_steal<py::object>(self->get<PyObject>());
-            // data.dec_ref(); // FIXME: why does it break python-actor-create?
-            return data;
-          },
+          "get", [](Mailbox* self) { return py::reinterpret_steal<py::object>(self->get<PyObject>()); },
           py::call_guard<py::gil_scoped_release>(), "Blocking data reception")
       .def(
           "get_async",
@@ -858,8 +857,9 @@ PYBIND11_MODULE(simgrid, m)
           [](const std::string& name, Host* h, py::object fun, py::args args) {
             fun.inc_ref();  // FIXME: why is this needed for tests like exec-async, exec-dvfs and exec-remote?
             args.inc_ref(); // FIXME: why is this needed for tests like actor-migrate?
+            const py::gil_scoped_release gil_release;
             return simgrid::s4u::Actor::create(name, h, [fun, args]() {
-              py::gil_scoped_acquire py_context;
+              const py::gil_scoped_acquire py_context;
               try {
                 fun(*args);
               } catch (const py::error_already_set& ex) {
@@ -871,7 +871,6 @@ PYBIND11_MODULE(simgrid, m)
               }
             });
           },
-          py::call_guard<py::gil_scoped_release>(),
           "Create an actor from a function or an object. See the :ref:`example <s4u_ex_actors_create>`.")
       .def_property(
           "host", &Actor::get_host, py::cpp_function(&Actor::set_host, py::call_guard<py::gil_scoped_release>()),
