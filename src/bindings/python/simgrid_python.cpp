@@ -118,14 +118,12 @@ PYBIND11_MODULE(simgrid, m)
            py::call_guard<py::gil_scoped_release>())
       .def("exec_async", py::overload_cast<double>(&simgrid::s4u::this_actor::exec_async),
            py::call_guard<py::gil_scoped_release>())
-      .def("parallel_execute", &simgrid::s4u::this_actor::parallel_execute,
-           py::call_guard<py::gil_scoped_release>(),
+      .def("parallel_execute", &simgrid::s4u::this_actor::parallel_execute, py::call_guard<py::gil_scoped_release>(),
            "Run a parallel task (requires the 'ptask_L07' model)")
       .def("exec_init",
            py::overload_cast<const std::vector<simgrid::s4u::Host*>&, const std::vector<double>&,
-           const std::vector<double>&>  (&simgrid::s4u::this_actor::exec_init),
-           py::call_guard<py::gil_scoped_release>(),
-           "Initiate a parallel task (requires the 'ptask_L07' model)")
+                             const std::vector<double>&>(&simgrid::s4u::this_actor::exec_init),
+           py::call_guard<py::gil_scoped_release>(), "Initiate a parallel task (requires the 'ptask_L07' model)")
       .def("get_host", &simgrid::s4u::this_actor::get_host, "Retrieves host on which the current actor is located")
       .def("set_host", &simgrid::s4u::this_actor::set_host, py::call_guard<py::gil_scoped_release>(),
            "Moves the current actor to another host.", py::arg("dest"))
@@ -226,10 +224,8 @@ PYBIND11_MODULE(simgrid, m)
            "Change one of SimGrid's configurations")
       .def("load_platform", &Engine::load_platform, "Load a platform file describing the environment")
       .def("load_deployment", &Engine::load_deployment, "Load a deployment file and launch the actors that it contains")
-      .def("mailbox_by_name_or_create", &Engine::mailbox_by_name_or_create,
-           py::call_guard<py::gil_scoped_release>(),
-           py::arg("name"),
-           "Find a mailbox from its name or create one if it does not exist")
+      .def("mailbox_by_name_or_create", &Engine::mailbox_by_name_or_create, py::call_guard<py::gil_scoped_release>(),
+           py::arg("name"), "Find a mailbox from its name or create one if it does not exist")
       .def("run", &Engine::run, py::call_guard<py::gil_scoped_release>(), "Run the simulation until its end")
       .def("run_until", py::overload_cast<double>(&Engine::run_until, py::const_),
            py::call_guard<py::gil_scoped_release>(), "Run the simulation until the given date",
@@ -908,5 +904,6 @@ PYBIND11_MODULE(simgrid, m)
            "Suspend that actor, that is blocked until resume()ed by another actor.")
       .def("resume", &Actor::resume, py::call_guard<py::gil_scoped_release>(),
            "Resume that actor, that was previously suspend()ed.")
-      .def_static("kill_all", &Actor::kill_all, py::call_guard<py::gil_scoped_release>(), "Kill all actors but the caller.");
+      .def_static("kill_all", &Actor::kill_all, py::call_guard<py::gil_scoped_release>(),
+                  "Kill all actors but the caller.");
 }
