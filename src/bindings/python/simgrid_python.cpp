@@ -459,7 +459,7 @@ PYBIND11_MODULE(simgrid, m)
             Host::on_creation_cb([cb_p = cb.ptr()](Host& h) {
               const py::gil_scoped_acquire py_context; // need a new context for callback
               try {
-                py::function fun = py::reinterpret_borrow<py::function>(cb_p);
+                const auto fun = py::reinterpret_borrow<py::function>(cb_p);
                 fun(&h);
               } catch (const py::error_already_set& e) {
                 xbt_die("Error while executing the on_creation lambda : %s", e.what());
