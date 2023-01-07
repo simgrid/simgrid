@@ -25,10 +25,7 @@ fi
 
 list_set CFLAGS @SMPI_C_FLAGS@
 list_add LINKARGS
-if [ "x@WIN32@" = "x1" ]; then
-    list_add CFLAGS "-include" "@includedir@/smpi/smpi_main.h"
-    list_add LINKARGS "@libdir@\libsimgrid.dll"
-elif [ "x@APPLE@" = "x1" ]; then
+if [ "x@APPLE@" = "x1" ]; then
     if [ "x${SMPI_PRETEND_CC}" = "x" ]; then
        list_add CFLAGS "-include" "@includedir@/smpi/smpi_helpers.h"
        list_add LINKARGS "-shared"
@@ -91,9 +88,7 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-if [ "x@WIN32@" != "x1" ]; then
-    list_add CMDARGS "-fPIC"
-fi
+list_add CMDARGS "-fPIC"
 
 list_set CMDLINE "${CC}"
 list_add_not_empty CMDLINE "${CFLAGS}"

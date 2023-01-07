@@ -11,9 +11,6 @@
 #include "xbt/xbt_os_time.h"
 
 #include <sys/stat.h>
-#ifdef WIN32
-#include <direct.h> // _mkdir
-#endif
 
 #include <fstream>
 #include <string>
@@ -276,11 +273,7 @@ static void on_container_creation_ti(const Container& c)
   if (not simgrid::config::get_value<bool>("tracing/smpi/format/ti-one-file") || ti_unique_file == nullptr) {
     std::string folder_name = simgrid::config::get_value<std::string>("tracing/filename") + "_files";
     std::string filename    = folder_name + "/" + std::to_string(prefix) + "_" + c.get_name() + ".txt";
-#ifdef WIN32
-    _mkdir(folder_name.c_str());
-#else
     mkdir(folder_name.c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-#endif
     ti_unique_file = new std::ofstream(filename.c_str(), std::ofstream::out);
     xbt_assert(not ti_unique_file->fail(), "Tracefile %s could not be opened for writing", filename.c_str());
     tracing_file << filename << '\n';

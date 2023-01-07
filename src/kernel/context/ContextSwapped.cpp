@@ -15,19 +15,8 @@
 
 #include <boost/core/demangle.hpp>
 #include <memory>
-#include <typeinfo>
-
-#ifdef _WIN32
-#include <malloc.h>
-#include <windows.h>
-#else
 #include <sys/mman.h>
-#endif
-
-#ifdef __MINGW32__
-#define _aligned_malloc __mingw_aligned_malloc
-#define _aligned_free __mingw_aligned_free
-#endif /*MINGW*/
+#include <typeinfo>
 
 #if HAVE_VALGRIND_H
 #include <valgrind/valgrind.h>
@@ -99,15 +88,12 @@ SwappedContext::SwappedContext(std::function<void()>&& code, actor::ActorImpl* a
       auto* alloc          = static_cast<unsigned char*>(xbt_malloc0(size + xbt_pagesize));
       stack_               = alloc - (reinterpret_cast<uintptr_t>(alloc) & (xbt_pagesize - 1)) + xbt_pagesize;
       reinterpret_cast<unsigned char**>(stack_)[-1] = alloc;
-#elif !defined(_WIN32)
+#else
       void* alloc;
       xbt_assert(posix_memalign(&alloc, xbt_pagesize, size) == 0, "Failed to allocate stack.");
       this->stack_ = static_cast<unsigned char*>(alloc);
-#else
-      this->stack_ = static_cast<unsigned char*>(_aligned_malloc(size, xbt_pagesize));
 #endif
 
-#ifndef _WIN32
       /* This is fatal. We are going to fail at some point when we try reusing this. */
       xbt_assert(
           mprotect(this->stack_, guard_size, PROT_NONE) != -1,
@@ -117,7 +103,7 @@ SwappedContext::SwappedContext(std::function<void()>&& code, actor::ActorImpl* a
           "Please see https://simgrid.org/doc/latest/Configuring_SimGrid.html#configuring-the-user-code-virtualization "
           "for more information.",
           strerror(errno));
-#endif
+
       this->stack_ = this->stack_ + guard_size;
     } else {
       this->stack_ = static_cast<unsigned char*>(xbt_malloc0(actor->get_stacksize()));
@@ -154,7 +140,6 @@ SwappedContext::~SwappedContext()
     VALGRIND_STACK_DEREGISTER(valgrind_stack_id_);
 #endif
 
-#ifndef _WIN32
   if (guard_size > 0 && not MC_is_active()) {
     stack_ = stack_ - guard_size;
     if (mprotect(stack_, guard_size, PROT_READ | PROT_WRITE) == -1) {
@@ -166,7 +151,6 @@ SwappedContext::~SwappedContext()
     stack_ = reinterpret_cast<unsigned char**>(stack_)[-1];
 #endif
   }
-#endif /* not windows */
 
   xbt_free(stack_);
 }

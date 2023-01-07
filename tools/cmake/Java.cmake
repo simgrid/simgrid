@@ -14,14 +14,6 @@ find_package(JNI REQUIRED)
 message(STATUS "[Java] JNI found: ${JNI_FOUND}")
 message(STATUS "[Java] JNI include dirs: ${JNI_INCLUDE_DIRS}")
 
-if(WIN32)
-  execute_process(COMMAND         java -d64 -version
-                  OUTPUT_VARIABLE JVM_IS_64_BITS)
-  if("${JVM_IS_64_BITS}" MATCHES "Error")
-    message(fatal_error "SimGrid can only use Java 64 bits")
-  endif()
-endif()
-
 # Rules to build libsimgrid-java
 ################################
 
@@ -121,21 +113,6 @@ if(enable_lib_in_jar)
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}/${LIBSIMGRID_SO}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO}
   )
-
-if(WIN32)
-  add_custom_command(
-    TARGET simgrid-java_jar POST_BUILD
-    COMMENT "Add the windows-specific native libs into simgrid.jar..."
-    DEPENDS simgrid simgrid-java ${JAVALIBS}
-
-    # There is no way to disable the dependency of mingw-64 on that lib, unfortunately nor to script cmake -E properly
-    # So let's be brutal and copy it in any case (even on non-windows builds) from the location where appveyor provides it.
-    # The copy is only expected to work on the appveyor builder, but that's all we need right now
-    # since our users are directed to download that file as nightly build.
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different C:/mingw-w64/x86_64-8.1.0-posix-seh-rt_v6-rev0/mingw64/bin/libwinpthread-1.dll ${JAVA_NATIVE_PATH}/libwinpthread-1.dll || true
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different C:/ProgramData/chocolatey/lib/mingw/tools/install/mingw64/bin/libwinpthread-1.dll  ${JAVA_NATIVE_PATH}/libwinpthread-1.dll || true
-  )
-endif()
 
 if(APPLE)
   add_custom_command(

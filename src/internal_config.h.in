@@ -85,8 +85,6 @@
 #cmakedefine01 HAVE_MMAP
 /* Function mremap */
 #cmakedefine01 HAVE_MREMAP
-/* Function sysconf */
-#cmakedefine01 HAVE_SYSCONF
 /* Function vasprintf */
 #cmakedefine01 HAVE_VASPRINTF
 

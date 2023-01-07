@@ -495,9 +495,5 @@ double simgrid_get_clock()
 
 void simgrid_set_maestro(void (*code)(void*), void* data)
 {
-#ifdef _WIN32
-  XBT_WARN("simgrid_set_maestro is believed to not work on windows. Please help us investigating this issue if "
-           "you need that feature");
-#endif
   maestro_code = std::bind(code, data);
 }

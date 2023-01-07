@@ -306,7 +306,7 @@ void sg_config_init(int *argc, char **argv)
       [](int value) { simgrid::kernel::context::stack_size = value * 1024; }};
 
   /* guard size for contexts stacks in memory pages */
-#if defined(_WIN32) || (PTH_STACKGROWTH != -1)
+#if (PTH_STACKGROWTH != -1)
   int default_guard_size = 0;
 #else
   int default_guard_size = 1;

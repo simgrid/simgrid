@@ -1,10 +1,6 @@
 if(enable_smpi AND enable_smpi_MPICH3_testsuite)
-  if(WIN32)
-    set(CMAKE_C_FLAGS "-include ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_main.h")
-  else()
-    set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
-    set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff")
-  endif()
+  set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
+  set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff")
   # There are too many warnings with these programs
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-sign-compare")
 

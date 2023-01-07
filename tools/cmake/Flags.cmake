@@ -288,27 +288,3 @@ if(NOT $ENV{LDFLAGS} STREQUAL "")
   message(STATUS "Add LDFLAGS: \"$ENV{LDFLAGS}\" to CMAKE_C_LINK_FLAGS")
   set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} $ENV{LDFLAGS}")
 endif()
-
-if(MINGW)
-  # http://stackoverflow.com/questions/10452262/create-64-bit-jni-under-windows
-  # We don't want to ship libgcc_s_seh-1.dll nor libstdc++-6.dll
-  set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -static-libgcc")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -static-libgcc -static-libstdc++")
-  set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS   "${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS} -static-libgcc")
-  set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS} -static-libgcc -static-libstdc++")
-
-  # JNI searches for stdcalls
-  set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -Wl,--add-stdcall-alias")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,--add-stdcall-alias")
-  set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS} -Wl,--add-stdcall-alias")
-  set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS} -Wl,--add-stdcall-alias")
-
-  # Specify the data model that we are using (yeah it may help Java)
-  if(CMAKE_SIZEOF_VOID_P EQUAL 4) # 32 bits
-    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -m32")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
-  else()
-    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -m64")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64")
-  endif()
-endif()

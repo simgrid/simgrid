@@ -154,7 +154,7 @@ int sthread_gettimeofday(struct timeval* tv)
     double secs  = trunc(now);
     double usecs = (now - secs) * 1e6;
     tv->tv_sec   = static_cast<time_t>(secs);
-    tv->tv_usec  = static_cast<decltype(tv->tv_usec)>(usecs); // suseconds_t (or useconds_t on WIN32)
+    tv->tv_usec  = static_cast<decltype(tv->tv_usec)>(usecs); // suseconds_t
   }
   return 0;
 }

@@ -1,5 +1,9 @@
 SimGrid (3.32.1) not released yet (target december 22)
 
+General:
+ - On Windows, you now need to install WSL2 as the native builds are now disabled.
+   It was not really working anyway.
+
 S4U:
  - Activity::set_remaining() is not public anymore. Use for example
    Comm::set_payload_size() to change the size of the simulated data.

@@ -12,9 +12,6 @@ endforeach()
 set(tesh_files    ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/stack-overflow/stack-overflow.tesh)
 if (NOT enable_memcheck AND NOT enable_address_sanitizer AND NOT enable_thread_sanitizer)
   ADD_TESH_FACTORIES(stack-overflow   "^thread" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/kernel/stack-overflow --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/kernel/stack-overflow stack-overflow.tesh)
-  if (WIN32)
-    SET_TESH_PROPERTIES(stack-overflow "^thread" WILL_FAIL true)
-  endif()
 endif()
 
 ## Add the tests for context-default

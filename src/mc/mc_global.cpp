@@ -22,11 +22,9 @@
 #include <libunwind.h>
 #endif
 
-#ifndef _WIN32
 #include <sys/time.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc, "Logging specific to MC (global)");
 

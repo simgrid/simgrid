@@ -39,14 +39,8 @@ if(enable-model-checking)
   SET(enable_model-checking ON CACHE BOOL "Whether to compile the model-checker" FORCE)
 endif()
 
-if(WIN32)
-  option(enable_smpi "Whether SMPI is included in the library." off)
-else()
-  option(enable_smpi "Whether SMPI is included in the library." on)
-  # PAPI does not support windows (they did in 3.7, but not anymore in 5.x)
-  # See http://icl.cs.utk.edu/papi/custom/index.html?lid=62&slid=96
-  option(enable_smpi_papi    "Whether SMPI supports PAPI bindings." off)
-endif()
+option(enable_smpi "Whether SMPI is included in the library." on)
+option(enable_smpi_papi    "Whether SMPI supports PAPI bindings." off)
 option(enable_smpi_MPICH3_testsuite "Whether the test suite form MPICH 3 should be built" off)
 option(enable_smpi_MBI_testsuite "Whether the test suite from MBI should be built." off)
 

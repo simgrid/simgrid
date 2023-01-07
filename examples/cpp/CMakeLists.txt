@@ -13,11 +13,8 @@ set(_dht-kademlia_sources dht-kademlia/s4u-dht-kademlia.cpp dht-kademlia/s4u-dht
 
 set(_actor-stacksize_factories "^thread") # Threads ignore modifications of the stack size
 
-# The maestro-set example only works for threads and when not using windows.
+# The maestro-set example only works for threads
 set(_maestro-set_factories "thread")
-if(WIN32)
-  set(_maestro-set_disable 1)
-endif()
 
 if(SIMGRID_HAVE_MC)
   # These tests timeout with threads, maybe because of dwarf parsing? not sure
@@ -258,7 +255,7 @@ foreach (example exec-ptask trace-categories trace-masterworkers trace-platform 
                           ${CMAKE_HOME_DIRECTORY}/examples/cpp/${example}/s4u-${example}.tesh)
 endforeach()
 
-if (NOT enable_memcheck AND NOT WIN32)
+if (NOT enable_memcheck)
   ADD_TESH(debug-breakpoint --setenv bindir=${CMAKE_CURRENT_BINARY_DIR}/comm-pingpong
                             --setenv platfdir=${CMAKE_HOME_DIRECTORY}/examples/platforms
                             ${CMAKE_CURRENT_SOURCE_DIR}/comm-pingpong/debug-breakpoint.tesh)

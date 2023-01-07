@@ -13,19 +13,8 @@
 #  define _GNU_SOURCE
 #endif
 
-/* On MinGW, stdio.h defines __MINGW_PRINTF_FORMAT and __MINGW_SCANF_FORMAT
-   which are the suitable format style (either gnu_printf or ms_printf)
-   depending on which version is available (__USE_MINGW_ANSI_STDIO): */
-#ifdef __MINGW32__
-#  include <stdio.h>
-
-#define XBT_ATTRIB_PRINTF(format_idx, arg_idx)                                                                         \
-  __attribute__((__format__(__MINGW_PRINTF_FORMAT, (format_idx), (arg_idx))))
-#define XBT_ATTRIB_SCANF(format_idx, arg_idx) __attribute__((__MINGW_SCANF_FORMAT(__scanf__, (format_idx), (arg_idx))))
-#else
 #define XBT_ATTRIB_PRINTF(format_idx, arg_idx) __attribute__((__format__(__printf__, (format_idx), (arg_idx))))
 #define XBT_ATTRIB_SCANF(format_idx, arg_idx) __attribute__((__format__(__scanf__, (format_idx), (arg_idx))))
-#endif
 
 #if defined(__cplusplus)
 #if __cplusplus >= 201103L
@@ -162,50 +151,15 @@
  *
  *   * If you link your application against the DLL or if you do a UNIX build, don't do anything special. This file
  *     will do the right thing for you by default.
- *
- * Rationale of XBT_EXPORT_NO_IMPORT: (windows-only)
- *   * Symbols which must be exported in the DLL, but not imported from it.
- *
- *   * This is obviously useful for initialized globals (which cannot be  extern or similar).
- *   * This is also used in the log mechanism where a macro creates the variable automatically. When the macro is
- *     called from within SimGrid, the symbol must be exported, but when called  from within the client code, it must
- *     not try to retrieve the symbol from the DLL since it's not in there.
- *
- * Rationale of XBT_IMPORT_NO_EXPORT: (windows-only)
- *   * Symbols which must be imported from the DLL, but not explicitly  exported from it.
- *
- *   * The root log category is already exported, but not imported explicitly when creating a subcategory since we
- *     cannot import the parent category to deal with the fact that the parent may be in application space, not DLL
- *     space.
  */
 
-/* Build the DLL */
-#if defined(DLL_EXPORT)
-#  define XBT_PUBLIC            __declspec(dllexport)
-#  define XBT_EXPORT_NO_IMPORT  __declspec(dllexport)
-#  define XBT_IMPORT_NO_EXPORT
-#  define XBT_PUBLIC_DATA       extern __declspec(dllexport)
-#  define XBT_PRIVATE
-
-/* Link against the DLL */
-#elif (defined(_WIN32) && !defined(DLL_EXPORT))
-#  define XBT_PUBLIC            __declspec(dllimport)
-#  define XBT_EXPORT_NO_IMPORT
-#  define XBT_IMPORT_NO_EXPORT  __declspec(dllimport)
-#  define XBT_PUBLIC_DATA       extern __declspec(dllimport)
-#  define XBT_PRIVATE
-
-#elif defined(__ELF__)
-#  define XBT_PUBLIC            __attribute__((visibility("default")))
-#  define XBT_EXPORT_NO_IMPORT  __attribute__((visibility("default")))
-#  define XBT_IMPORT_NO_EXPORT  __attribute__((visibility("default")))
+#if defined(__ELF__)
+#define XBT_PUBLIC __attribute__((visibility("default")))
 #  define XBT_PUBLIC_DATA       extern __attribute__((visibility("default")))
 #  define XBT_PRIVATE           __attribute__((visibility("hidden")))
 
 #else
-#  define XBT_PUBLIC            /* public */
-#  define XBT_EXPORT_NO_IMPORT
-#  define XBT_IMPORT_NO_EXPORT
+#define XBT_PUBLIC /* public */
 #  define XBT_PUBLIC_DATA       extern
 #  define XBT_PRIVATE           /** @private */
 

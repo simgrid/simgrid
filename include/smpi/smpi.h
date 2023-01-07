@@ -21,15 +21,10 @@
 #include <vector>
 #endif
 
-#ifdef _WIN32
-#define MPI_CALL(type, name, args)                                                                                     \
-  type name args;                                                                                                      \
-  type _XBT_CONCAT(P, name) args
-#else
 #define MPI_CALL(type, name, args)                                                                                     \
   type name args __attribute__((weak));                                                                                \
-  type _XBT_CONCAT(P, name) args
-#endif
+  type _XBT_CONCAT(P, name)                                                                                            \
+  args
 
 SG_BEGIN_DECL
 #define MPI_THREAD_SINGLE     0

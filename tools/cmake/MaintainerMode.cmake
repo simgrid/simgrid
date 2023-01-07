@@ -10,7 +10,7 @@ set(FLEX_MIN_PATCH 39)
 
 # Let's generate header files required by SMPI when the call location tracing
 # has been activated.
-if(enable_maintainer_mode AND NOT WIN32)
+if(enable_maintainer_mode)
   add_custom_command(OUTPUT ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces.h
                             ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces_fortran.h
     DEPENDS
@@ -35,7 +35,7 @@ if(enable_maintainer_mode AND NOT WIN32)
   )
 endif()
 
-if(enable_maintainer_mode AND NOT WIN32)
+if(enable_maintainer_mode)
   find_program(FLEX_EXE NAMES flex)
   find_program(FLEXML_EXE NAMES flexml)
   find_program(SED_EXE NAMES sed)

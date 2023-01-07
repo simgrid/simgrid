@@ -22,9 +22,7 @@
 #include "xbt/xbt_modinter.h" /* whether initialization was already done */
 
 #include <boost/algorithm/string/predicate.hpp>
-#ifndef _WIN32
 #include <dlfcn.h>
-#endif /* _WIN32 */
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/remote/AppSide.hpp"
@@ -85,7 +83,6 @@ XBT_ATTRIB_NORETURN static void inthandler(int)
   exit(1);
 }
 
-#ifndef _WIN32
 static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
 {
   if ((siginfo->si_signo == SIGSEGV && siginfo->si_code == SEGV_ACCERR) || siginfo->si_signo == SIGBUS) {
@@ -156,8 +153,6 @@ static void install_segvhandler()
   }
 }
 
-#endif /* _WIN32 */
-
 namespace simgrid::kernel {
 
 EngineImpl::~EngineImpl()
@@ -204,10 +199,7 @@ void EngineImpl::initialize(int* argc, char** argv)
 
   /* Prepare to display some more info when dying on Ctrl-C pressing */
   std::signal(SIGINT, inthandler);
-
-#ifndef _WIN32
   install_segvhandler();
-#endif
 
   /* register a function to be called by SURF after the environment creation */
   sg_platf_init();
@@ -324,9 +316,6 @@ void EngineImpl::load_platform(const std::string& platf)
 {
   double start = xbt_os_time();
   if (boost::algorithm::ends_with(platf, ".so") || boost::algorithm::ends_with(platf, ".dylib")) {
-#ifdef _WIN32
-    xbt_die("loading platform through shared library isn't supported on windows");
-#else
     void* handle = dlopen(platf.c_str(), RTLD_LAZY);
     xbt_assert(handle, "Impossible to open platform file: %s", platf.c_str());
     platf_handle_           = std::unique_ptr<void, std::function<int(void*)>>(handle, dlclose);
@@ -335,7 +324,6 @@ void EngineImpl::load_platform(const std::string& platf)
     const char* dlsym_error = dlerror();
     xbt_assert(not dlsym_error, "Error: %s", dlsym_error);
     callable(*simgrid::s4u::Engine::get_instance());
-#endif /* _WIN32 */
   } else {
     parse_platform_file(platf);
   }

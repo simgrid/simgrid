@@ -47,10 +47,4 @@ if(enable_debug)
   # these tests need assertions
   ADD_TESH(tesh-parser-bogus-symmetric         --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/platforms ${CMAKE_HOME_DIRECTORY}/teshsuite/platforms/bogus_two_hosts_asymetric.tesh)
   ADD_TESH(tesh-parser-bogus-missing-gw        --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/platforms --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/platforms ${CMAKE_HOME_DIRECTORY}/teshsuite/platforms/bogus_missing_gateway.tesh)
-
-   #These tests fail on Windows as the signal returned is not the same as Unix would send.
-  if(WIN32)
-    set_property(TEST tesh-parser-bogus-symmetric PROPERTY WILL_FAIL TRUE)
-    set_property(TEST tesh-parser-bogus-missing-gw PROPERTY WILL_FAIL TRUE)
-  endif()
 endif()

@@ -3,6 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "private.hpp"
+#include "src/internal_config.h"
+#include "src/smpi/include/smpi_actor.hpp"
+#include "src/xbt/memory_map.hpp"
+#include "xbt/virtu.h"
+
 #include <algorithm>
 #include <cerrno>
 #include <climits>
@@ -12,19 +18,11 @@
 #include <cstring>
 #include <deque>
 #include <fcntl.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <vector>
-
-#ifndef WIN32
-#include <sys/mman.h>
 #include <unistd.h>
-
-#include "private.hpp"
-#include "src/internal_config.h"
-#include "src/smpi/include/smpi_actor.hpp"
-#include "src/xbt/memory_map.hpp"
-#include "xbt/virtu.h"
+#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi, "Memory layout support for SMPI");
 
@@ -85,7 +83,6 @@ static void smpi_get_executable_global_size()
   }
   xbt_die("Did not find my data segment.");
 }
-#endif
 
 #if HAVE_SANITIZER_ADDRESS
 #include <sanitizer/asan_interface.h>

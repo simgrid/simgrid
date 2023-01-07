@@ -9,10 +9,6 @@
 #include "xbt/asserts.h"
 #include "xbt/file.hpp" /* this module */
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
 #if HAVE_UNISTD_H
 #include <array>
 #include <cerrno>

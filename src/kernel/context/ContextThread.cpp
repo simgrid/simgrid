@@ -84,9 +84,7 @@ void ThreadContext::wrapper(ThreadContext* context)
 {
   Context::set_current(context);
 
-#ifndef WIN32
   install_sigsegv_stack(nullptr, true);
-#endif
   // Tell the caller (normally the maestro) we are starting, and wait for its green light
   context->end_.release();
   context->start();
@@ -105,9 +103,7 @@ void ThreadContext::wrapper(ThreadContext* context)
   // Signal to the caller (normally the maestro) that we have finished:
   context->yield();
 
-#ifndef WIN32
   install_sigsegv_stack(nullptr, false);
-#endif
   XBT_DEBUG("Terminating");
   Context::set_current(nullptr);
 }

@@ -7,8 +7,7 @@ Installing SimGrid
 
 
 SimGrid should work out of the box on Linux, macOS, FreeBSD, and
-Windows (under Windows, you need to install the Windows Subsystem
-Linux to get more than the Java bindings).
+Windows (with WSL).
 
 Pre-compiled Packages
 ---------------------
@@ -435,18 +434,8 @@ Windows-specific instructions
 
 The best solution to get SimGrid working on windows is to install the
 Ubuntu subsystem of Windows 10. All of SimGrid (but the model checker)
-works in this setting.
-
-Native builds not very well supported. Have a look to our `appveypor
-configuration file
-<https://framagit.org/simgrid/simgrid/blob/master/.appveyor.yml>`_ to
-see how we manage to use mingw-64 to build the DLL that the Java file
-needs.
-
-The drawback of MinGW-64 is that the produced DLL are not compatible
-with MS Visual C. Some clang-based tools seem promising to fix this,
-but this is of rather low priority for us. It it's important for you
-and if you get it working, please @ref community_contact "tell us".
+works in this setting. Native builds never really worked, and they are
+disabled starting with SimGrid v3.33.
 
 Python-specific instructions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^

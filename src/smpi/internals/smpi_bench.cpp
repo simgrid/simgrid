@@ -18,13 +18,11 @@
 #include "xbt/file.hpp"
 
 #include "src/smpi/include/smpi_actor.hpp"
-#include <unordered_map>
 
-#ifndef WIN32
-#include <sys/mman.h>
-#endif
 #include <cerrno>
 #include <cmath>
+#include <sys/mman.h>
+#include <unordered_map>
 
 #if HAVE_PAPI
 #include <papi.h>
@@ -211,7 +209,7 @@ int smpi_gettimeofday(struct timeval* tv, struct timezone* tz)
     double secs  = trunc(now);
     double usecs = (now - secs) * 1e6;
     tv->tv_sec   = static_cast<time_t>(secs);
-    tv->tv_usec  = static_cast<decltype(tv->tv_usec)>(usecs); // suseconds_t (or useconds_t on WIN32)
+    tv->tv_usec  = static_cast<decltype(tv->tv_usec)>(usecs); // suseconds_t
   }
   if (smpi_wtime_sleep > 0)
     simgrid::s4u::this_actor::sleep_for(smpi_wtime_sleep);

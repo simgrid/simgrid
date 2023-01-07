@@ -16,10 +16,6 @@
 #include <fstream>
 #include <string>
 
-#ifdef _WIN32
-#include <windows.h>
-#endif
-
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (kernel)");
 
@@ -95,18 +91,7 @@ const std::vector<surf_model_description_t> surf_optimization_mode_description =
 /* returns whether #file_path is an absolute file path. Surprising, isn't it ? */
 static bool is_absolute_file_path(const std::string& file_path)
 {
-#ifdef _WIN32
-  WIN32_FIND_DATA wfd = {0};
-  HANDLE hFile        = FindFirstFile(file_path.c_str(), &wfd);
-
-  if (INVALID_HANDLE_VALUE == hFile)
-    return false;
-
-  FindClose(hFile);
-  return true;
-#else
   return (file_path.c_str()[0] == '/');
-#endif
 }
 
 std::ifstream* surf_ifsopen(const std::string& name)

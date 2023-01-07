@@ -23,144 +23,132 @@ extern "C" void raw_swapcontext(raw_stack_t* old, raw_stack_t new_context);
 #if HAVE_RAW_CONTEXTS
 
 #if SIMGRID_PROCESSOR_x86_64
-__asm__ (
+__asm__(
 #if defined(__APPLE__)
-   ".text\n"
-   ".globl _raw_makecontext\n"
-   "_raw_makecontext:\n"
-#elif defined(_WIN32)
-   ".text\n"
-   ".globl raw_makecontext\n"
-   "raw_makecontext:\n"
+    ".text\n"
+    ".globl _raw_makecontext\n"
+    "_raw_makecontext:\n"
 #else
-   ".text\n"
-   ".globl raw_makecontext\n"
-   ".type raw_makecontext,@function\n"
-   "raw_makecontext:\n"/* Calling convention sets the arguments in rdi, rsi, rdx and rcx, respectively */
+    ".text\n"
+    ".globl raw_makecontext\n"
+    ".type raw_makecontext,@function\n"
+    "raw_makecontext:\n" /* Calling convention sets the arguments in rdi, rsi, rdx and rcx, respectively */
 #endif
-   "   mov %rdi,%rax\n"      /* stack */
-   "   add %rsi,%rax\n"      /* size  */
-   "   andq $-16, %rax\n"    /* align stack */
-   "   movq $0,   -8(%rax)\n" /* @return for func */
-   "   mov %rdx,-16(%rax)\n" /* func */
-   "   mov %rcx,-24(%rax)\n" /* arg/rdi */
-   "   movq $0,  -32(%rax)\n" /* rsi */
-   "   movq $0,  -40(%rax)\n" /* rdx */
-   "   movq $0,  -48(%rax)\n" /* rcx */
-   "   movq $0,  -56(%rax)\n" /* r8  */
-   "   movq $0,  -64(%rax)\n" /* r9  */
-   "   movq $0,  -72(%rax)\n" /* rbp */
-   "   movq $0,  -80(%rax)\n" /* rbx */
-   "   movq $0,  -88(%rax)\n" /* r12 */
-   "   movq $0,  -96(%rax)\n" /* r13 */
-   "   movq $0, -104(%rax)\n" /* r14 */
-   "   movq $0, -112(%rax)\n" /* r15 */
-   "   sub $112,%rax\n"
-   "   ret\n"
-);
+    "   mov %rdi,%rax\n"       /* stack */
+    "   add %rsi,%rax\n"       /* size  */
+    "   andq $-16, %rax\n"     /* align stack */
+    "   movq $0,   -8(%rax)\n" /* @return for func */
+    "   mov %rdx,-16(%rax)\n"  /* func */
+    "   mov %rcx,-24(%rax)\n"  /* arg/rdi */
+    "   movq $0,  -32(%rax)\n" /* rsi */
+    "   movq $0,  -40(%rax)\n" /* rdx */
+    "   movq $0,  -48(%rax)\n" /* rcx */
+    "   movq $0,  -56(%rax)\n" /* r8  */
+    "   movq $0,  -64(%rax)\n" /* r9  */
+    "   movq $0,  -72(%rax)\n" /* rbp */
+    "   movq $0,  -80(%rax)\n" /* rbx */
+    "   movq $0,  -88(%rax)\n" /* r12 */
+    "   movq $0,  -96(%rax)\n" /* r13 */
+    "   movq $0, -104(%rax)\n" /* r14 */
+    "   movq $0, -112(%rax)\n" /* r15 */
+    "   sub $112,%rax\n"
+    "   ret\n");
 
-__asm__ (
+__asm__(
 #if defined(__APPLE__)
-   ".text\n"
-   ".globl _raw_swapcontext\n"
-   "_raw_swapcontext:\n"
-#elif defined(_WIN32)
-   ".text\n"
-   ".globl raw_swapcontext\n"
-   "raw_swapcontext:\n"
+    ".text\n"
+    ".globl _raw_swapcontext\n"
+    "_raw_swapcontext:\n"
 #else
-   ".text\n"
-   ".globl raw_swapcontext\n"
-   ".type raw_swapcontext,@function\n"
-   "raw_swapcontext:\n" /* Calling convention sets the arguments in rdi and rsi, respectively */
+    ".text\n"
+    ".globl raw_swapcontext\n"
+    ".type raw_swapcontext,@function\n"
+    "raw_swapcontext:\n" /* Calling convention sets the arguments in rdi and rsi, respectively */
 #endif
-   "   push %rdi\n"
-   "   push %rsi\n"
-   "   push %rdx\n"
-   "   push %rcx\n"
-   "   push %r8\n"
-   "   push %r9\n"
-   "   push %rbp\n"
-   "   push %rbx\n"
-   "   push %r12\n"
-   "   push %r13\n"
-   "   push %r14\n"
-   "   push %r15\n"
-   "   mov %rsp,(%rdi)\n" /* old */
-   "   mov %rsi,%rsp\n" /* new */
-   "   pop %r15\n"
-   "   pop %r14\n"
-   "   pop %r13\n"
-   "   pop %r12\n"
-   "   pop %rbx\n"
-   "   pop %rbp\n"
-   "   pop %r9\n"
-   "   pop %r8\n"
-   "   pop %rcx\n"
-   "   pop %rdx\n"
-   "   pop %rsi\n"
-   "   pop %rdi\n"
-   "   ret\n"
-);
+    "   push %rdi\n"
+    "   push %rsi\n"
+    "   push %rdx\n"
+    "   push %rcx\n"
+    "   push %r8\n"
+    "   push %r9\n"
+    "   push %rbp\n"
+    "   push %rbx\n"
+    "   push %r12\n"
+    "   push %r13\n"
+    "   push %r14\n"
+    "   push %r15\n"
+    "   mov %rsp,(%rdi)\n" /* old */
+    "   mov %rsi,%rsp\n"   /* new */
+    "   pop %r15\n"
+    "   pop %r14\n"
+    "   pop %r13\n"
+    "   pop %r12\n"
+    "   pop %rbx\n"
+    "   pop %rbp\n"
+    "   pop %r9\n"
+    "   pop %r8\n"
+    "   pop %rcx\n"
+    "   pop %rdx\n"
+    "   pop %rsi\n"
+    "   pop %rdi\n"
+    "   ret\n");
 #elif SIMGRID_PROCESSOR_i686
-__asm__ (
-#if defined(__APPLE__) || defined(_WIN32)
-   ".text\n"
-   ".globl _raw_makecontext\n"
-   "_raw_makecontext:\n"
+__asm__(
+#if defined(__APPLE__)
+    ".text\n"
+    ".globl _raw_makecontext\n"
+    "_raw_makecontext:\n"
 #else
-   ".text\n"
-   ".globl raw_makecontext\n"
-   ".type raw_makecontext,@function\n"
-   "raw_makecontext:\n"
+    ".text\n"
+    ".globl raw_makecontext\n"
+    ".type raw_makecontext,@function\n"
+    "raw_makecontext:\n"
 #endif
-   "   movl 4(%esp),%eax\n"   /* stack */
-   "   addl 8(%esp),%eax\n"   /* size  */
-   "   andl $-16, %eax\n"     /* align stack */
-   "   movl 12(%esp),%ecx\n"  /* func  */
-   "   movl 16(%esp),%edx\n"  /* arg   */
-   "   movl %edx, -4(%eax)\n"
-   "   movl $0,   -8(%eax)\n" /* @return for func */
-   "   movl %ecx,-12(%eax)\n"
-   "   movl $0,  -16(%eax)\n" /* ebp */
-   "   movl $0,  -20(%eax)\n" /* ebx */
-   "   movl $0,  -24(%eax)\n" /* esi */
-   "   movl $0,  -28(%eax)\n" /* edi */
-   "   subl $28,%eax\n"
-   "   retl\n"
-);
+    "   movl 4(%esp),%eax\n"  /* stack */
+    "   addl 8(%esp),%eax\n"  /* size  */
+    "   andl $-16, %eax\n"    /* align stack */
+    "   movl 12(%esp),%ecx\n" /* func  */
+    "   movl 16(%esp),%edx\n" /* arg   */
+    "   movl %edx, -4(%eax)\n"
+    "   movl $0,   -8(%eax)\n" /* @return for func */
+    "   movl %ecx,-12(%eax)\n"
+    "   movl $0,  -16(%eax)\n" /* ebp */
+    "   movl $0,  -20(%eax)\n" /* ebx */
+    "   movl $0,  -24(%eax)\n" /* esi */
+    "   movl $0,  -28(%eax)\n" /* edi */
+    "   subl $28,%eax\n"
+    "   retl\n");
 
-__asm__ (
-#if defined(__APPLE__) || defined(_WIN32)
-   ".text\n"
-   ".globl _raw_swapcontext\n"
-   "_raw_swapcontext:\n"
+__asm__(
+#if defined(__APPLE__)
+    ".text\n"
+    ".globl _raw_swapcontext\n"
+    "_raw_swapcontext:\n"
 #else
-   ".text\n"
-   ".globl raw_swapcontext\n"
-   ".type raw_swapcontext,@function\n"
-   "raw_swapcontext:\n"
+    ".text\n"
+    ".globl raw_swapcontext\n"
+    ".type raw_swapcontext,@function\n"
+    "raw_swapcontext:\n"
 #endif
-   // Fetch the parameters:
-   "   movl 4(%esp),%eax\n" /* old (raw_stack_t*) */
-   "   movl 8(%esp),%edx\n" /* new (raw_stack_t)  */
-   // Save registers of the current context on the stack:
-   "   pushl %ebp\n"
-   "   pushl %ebx\n"
-   "   pushl %esi\n"
-   "   pushl %edi\n"
-   // Save the current context (stack pointer) in *old:
-   "   movl %esp,(%eax)\n"
-   // Switch to the stack of the new context:
-   "   movl %edx,%esp\n"
-   // Pop the values of the new context:
-   "   popl %edi\n"
-   "   popl %esi\n"
-   "   popl %ebx\n"
-   "   popl %ebp\n"
-   // Return using the return address of the new context:
-   "   retl\n"
-);
+    // Fetch the parameters:
+    "   movl 4(%esp),%eax\n" /* old (raw_stack_t*) */
+    "   movl 8(%esp),%edx\n" /* new (raw_stack_t)  */
+    // Save registers of the current context on the stack:
+    "   pushl %ebp\n"
+    "   pushl %ebx\n"
+    "   pushl %esi\n"
+    "   pushl %edi\n"
+    // Save the current context (stack pointer) in *old:
+    "   movl %esp,(%eax)\n"
+    // Switch to the stack of the new context:
+    "   movl %edx,%esp\n"
+    // Pop the values of the new context:
+    "   popl %edi\n"
+    "   popl %esi\n"
+    "   popl %ebx\n"
+    "   popl %ebp\n"
+    // Return using the return address of the new context:
+    "   retl\n");
 #else
 #error HAVE_RAW_CONTEXTS defined, but neither SIMGRID_PROCESSOR_x86_64 nor SIMGRID_PROCESSOR_i686. Please update the code.
 #endif

@@ -29,7 +29,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
-XBT_EXPORT_NO_IMPORT xbt_cfg_t simgrid_config = nullptr;
+xbt_cfg_t simgrid_config = nullptr;
 
 namespace simgrid::config {
 

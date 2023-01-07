@@ -43,14 +43,11 @@
 
 #include <cerrno>
 
-#include <sys/types.h>
-#ifndef WIN32
-#include <sys/mman.h>
-#endif
+#include "smpi_utils.hpp"
 #include <stdlib.h>
+#include <sys/mman.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "smpi_utils.hpp"
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
 #endif
@@ -94,11 +91,9 @@ struct shared_metadata_t {
 std::map<const void*, shared_metadata_t> allocs_metadata;
 std::map<std::string, void*, std::less<>> calls;
 
-#ifndef WIN32
 int smpi_shared_malloc_bogusfile           = -1;
 int smpi_shared_malloc_bogusfile_huge_page = -1;
 unsigned long smpi_shared_malloc_blocksize = 1UL << 20;
-#endif
 }
 
 void smpi_shared_destroy()
@@ -108,7 +103,6 @@ void smpi_shared_destroy()
   calls.clear();
 }
 
-#ifndef WIN32
 static void* shm_map(int fd, size_t size, shared_data_key_type* data)
 {
   void* mem = smpi_temp_shm_mmap(fd, size);
@@ -478,7 +472,6 @@ void smpi_shared_free(void *ptr)
     xbt_free(ptr);
   }
 }
-#endif
 
 int smpi_shared_known_call(const char* func, const char* input)
 {

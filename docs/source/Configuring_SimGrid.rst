@@ -897,9 +897,8 @@ should be the most effcient one (please report bugs if the
 auto-detection fails for you). They are approximately sorted here from
 the slowest to the most efficient:
 
- - **thread:** very slow factory using full featured threads (either
-   pthreads or windows native threads). They are slow but very
-   standard. Some debuggers or profilers only work with this factory.
+ - **thread:** very slow factory using full featured threads (pthreads). 
+   They are slow but very standard. Some debuggers or profilers only work with this factory.
  - **java:** Java applications are virtualized onto java threads (that
    are regular pthreads registered to the JVM)
  - **ucontext:** fast factory using System V contexts (Linux and FreeBSD only)
@@ -960,7 +959,7 @@ model checker (see :ref:`options_mc_perf`).
 Disabling Stack Guard Pages
 ...........................
 
-**Option** ``contexts/guard-size`` **Default** 1 page in most case (0 pages on Windows or with MC)
+**Option** ``contexts/guard-size`` **Default** 1 page in most case (0 pages with MC)
 
 Unless you use the threads context factory (see
 :ref:`cfg=contexts/factory`), a stack guard page is usually used

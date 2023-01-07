@@ -80,7 +80,6 @@ ContextFactory::~ContextFactory() = default;
 
 thread_local Context* Context::current_context_ = nullptr;
 
-#ifndef WIN32
 /* Install or disable alternate signal stack, for SIGSEGV handler. */
 int Context::install_sigsegv_stack(stack_t* old_stack, bool enable)
 {
@@ -91,7 +90,6 @@ int Context::install_sigsegv_stack(stack_t* old_stack, bool enable)
   stack.ss_flags = enable ? 0 : SS_DISABLE;
   return sigaltstack(&stack, old_stack);
 }
-#endif
 
 Context* Context::self()
 {

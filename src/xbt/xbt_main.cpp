@@ -23,9 +23,6 @@
 
 #include <cmath>
 #include <cstdio>
-#ifdef _WIN32
-# include <csignal> /* To silence MSVC on abort() */
-#endif
 #if HAVE_UNISTD_H
 # include <unistd.h>
 #endif
@@ -63,46 +60,11 @@ void sthread_disable()
 { //  when libsthread is LD_PRELOADED. In this case, sthread's implem gets used instead.
 }
 
-#ifdef _WIN32
-#include <windows.h>
-
-#ifndef __GNUC__
-/* Should not be necessary but for some reason, DllMain is called twice at attachment and at detachment.*/
-/* see also http://msdn.microsoft.com/en-us/library/ms682583%28VS.85%29.aspx */
-/* and http://www.microsoft.com/whdc/driver/kernel/DLL_bestprac.mspx */
-static BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved)
-{
-  static bool xbt_dll_process_is_attached = false;
-  if (fdwReason == DLL_PROCESS_ATTACH && not xbt_dll_process_is_attached) {
-    xbt_dll_process_is_attached = true;
-    xbt_preinit();
-  } else if (fdwReason == DLL_PROCESS_DETACH && xbt_dll_process_is_attached) {
-    xbt_dll_process_is_attached = false;
-  }
-  return 1;
-}
-#endif
-
-#endif
-
 static void xbt_preinit()
 {
-#ifdef _WIN32
-  SYSTEM_INFO si;
-  GetSystemInfo(&si);
-  xbt_pagesize = si.dwPageSize;
-#elif HAVE_SYSCONF
   xbt_pagesize = static_cast<int>(sysconf(_SC_PAGESIZE));
-#else
-# error Cannot get page size.
-#endif
-
   xbt_pagebits = static_cast<int>(log2(xbt_pagesize));
 
-#ifdef _TWO_DIGIT_EXPONENT
-  /* Even printf behaves differently on Windows... */
-  _set_output_format(_TWO_DIGIT_EXPONENT);
-#endif
   xbt_log_preinit();
   xbt_dict_preinit();
   atexit(xbt_postexit);
@@ -154,12 +116,6 @@ void xbt_abort()
 {
   /* Call __gcov_flush on abort when compiling with coverage options. */
   coverage_checkpoint();
-#ifdef _WIN32
-  /* We said *in silence*. We don't want to see the error message printed by Microsoft's implementation of abort(). */
-  raise(SIGABRT);
-  signal(SIGABRT, SIG_DFL);
-  raise(SIGABRT);
-#endif
   abort();
 }
 
