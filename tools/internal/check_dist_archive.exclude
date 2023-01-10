@@ -12,7 +12,6 @@
 + BuildSimGrid\.sh
 + COPYRIGHT\.template
 + README\.coding
-+ \.appveyor\.yml
 + \.circleci/.*
 + \.clang-format
 + \.classpath
@@ -28,7 +27,6 @@
 + docs/default.nix
 + docs/source/tuto_network_calibration/network_calibration_tutorial.ipynb
 
-+ tools/appveyor-irc-notify\.py
 + tools/docker/.*
 + tools/git-hooks/.*
 + tools/internal/.*

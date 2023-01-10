@@ -1,6 +1,5 @@
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 [![Build Status](https://ci.inria.fr/simgrid/buildStatus/icon?job=SimGrid)](https://ci.inria.fr/simgrid/job/SimGrid/)
-[![AppVeyor Status](https://ci.appveyor.com/api/projects/status/gvcssh340fwtoc35?svg=true)](https://ci.appveyor.com/project/mquinson/simgrid)
 [![SonarCloud Status](https://sonarcloud.io/api/project_badges/measure?project=simgrid_simgrid&metric=alert_status)](https://sonarcloud.io/dashboard/?id=simgrid_simgrid)
 [![Doc](https://readthedocs.org/projects/pip/badge/?version=stable)](https://simgrid.org/doc/latest/)
 [![License: LGPL v2.1][license-badge]](COPYING)

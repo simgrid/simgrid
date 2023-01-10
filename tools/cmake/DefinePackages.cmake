@@ -1104,7 +1104,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Java.cmake
   tools/cmake/MaintainerMode.cmake
   tools/cmake/MakeLib.cmake
-  tools/cmake/MakeLibWin.cmake
   tools/cmake/Modules/FindGraphviz.cmake
   tools/cmake/Modules/FindLibdw.cmake
   tools/cmake/Modules/FindLibelf.cmake
