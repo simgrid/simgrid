@@ -3,19 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#if defined(__GNUG__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-value"
-#endif
-
 #include <pybind11/pybind11.h> // Must come before our own stuff
 
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
-
-#if defined(__GNUG__)
-#pragma GCC diagnostic pop
-#endif
 
 #include "simgrid/kernel/ProfileBuilder.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"
