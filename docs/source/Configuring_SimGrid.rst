@@ -897,10 +897,10 @@ should be the most effcient one (please report bugs if the
 auto-detection fails for you). They are approximately sorted here from
 the slowest to the most efficient:
 
- - **thread:** very slow factory using full featured threads (pthreads). 
+ - **thread:** very slow factory using full featured, standard threads.
    They are slow but very standard. Some debuggers or profilers only work with this factory.
  - **java:** Java applications are virtualized onto java threads (that
-   are regular pthreads registered to the JVM)
+   are regular system threads registered to the JVM)
  - **ucontext:** fast factory using System V contexts (Linux and FreeBSD only)
  - **boost:** This uses the `context
    implementation <http://www.boost.org/doc/libs/1_59_0/libs/context/doc/html/index.html>`_

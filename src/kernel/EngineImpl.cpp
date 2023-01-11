@@ -260,7 +260,7 @@ void EngineImpl::context_mod_init() const
     XBT_ERROR("  (boost was disabled at compilation time on this machine -- check configure logs for details. Did you "
               "install the libboost-context-dev package?)");
 #endif
-    XBT_ERROR("  thread: slow portability layer using pthreads as provided by gcc");
+    XBT_ERROR("  thread: slow portability layer using standard threads as provided by libstdc");
     xbt_die("Please use a valid factory.");
   }
 }
