@@ -138,8 +138,6 @@ We use <a href="https://ci.inria.fr/simgrid/">Jenkins on Inria
 servers</a> as a workhorse: it runs all of our tests for many
 configurations. It takes a long time to answer, and it often reports
 issues but when it's green, then you know that SimGrid is very fit!
-We use <a href="https://ci.appveyor.com/project/mquinson/simgrid">AppVeyor</a>
-to build and somehow test SimGrid on windows.
 
 @subsection inside_tests_jenkins Jenkins on the Inria CI servers
 
@@ -202,18 +200,6 @@ pkg install boost-libs cmake openjdk8 automake libxslt libxml2 libunwind git hto
 #osx
 brew install cmake boost libunwind-headers libxslt git python3
 @endverbatim
-
-@subsection inside_tests_appveyor AppVeyor
-
-Our configuration is in the file appveyor.yml as it should
-be, and the result is here: https://ci.appveyor.com/project/mquinson/simgrid
-
-We use @c Choco as a package manager on AppVeyor, and it is sufficient
-for us. In the future, we will probably move to the ubuntu subsystem
-of Windows 10: SimGrid performs very well under these settings, as
-tested on Inria's CI servers. For the time being having a native
-library is still useful for the Java users that don't want to install
-anything beyond Java on their windows.
 
 @subsection inside_tests_debian Debian builders
 

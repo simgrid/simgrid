@@ -41,7 +41,7 @@ find_path(PATH_LIBUNWIND_H "libunwind.h"
   HINTS
     $ENV{LIBUNWIND_HINT}
     $ENV{LD_LIBRARY_PATH}
-  PATH_SUFFIXES include/ GnuWin32/include
+  PATH_SUFFIXES include/
   PATHS /opt /opt/local /opt/csw /sw /usr)
 if(PATH_LIBUNWIND_H)
   string(REGEX REPLACE "/libunwind.h"               "" PATH_LIBUNWIND_H   "${PATH_LIBUNWIND_H}")
@@ -63,7 +63,7 @@ foreach(component ${LIBUNWIND_COMPONENTS})
     HINTS
       $ENV{LIBUNWIND_HINT}
       $ENV{LD_LIBRARY_PATH}
-    PATH_SUFFIXES lib/ GnuWin32/lib lib/system
+    PATH_SUFFIXES lib/ lib/system
     PATHS /opt /opt/local /opt/csw /sw /usr /usr/lib/)
   if(PATH_LIBUNWIND_LIB_${component})
     # message("     ${component}  ${PATH_LIBUNWIND_LIB_${component}}")

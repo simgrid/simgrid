@@ -234,14 +234,10 @@ typedef SMPI_Info* MPI_Info;
 #define MPI_STATUSES_IGNORE ((MPI_Status*)NULL)
 #define MPI_STATUS_SIZE 5
 
-#if !defined(DLL_EXPORT)
 #if defined(c_plusplus) || defined(__cplusplus)
 #define SMPI_PREDEFINED_POINTER(type, internal) (static_cast<type> (static_cast<void*> (&(internal))))
 #else
 #define SMPI_PREDEFINED_POINTER(type, internal) ((type) ((void *) &(internal)))
-#endif
-#else
-#define SMPI_PREDEFINED_POINTER(type, internal) ((type) &(internal))
 #endif
 
 extern SMPI_Datatype smpi_MPI_DATATYPE_NULL;

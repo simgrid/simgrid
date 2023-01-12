@@ -728,7 +728,6 @@ set(headers_to_install
   include/smpi/mpi.h
   include/smpi/sampi.h
   include/smpi/smpi.h
-  include/smpi/smpi_main.h
   include/smpi/smpi_helpers.h
   include/smpi/smpi_helpers_internal.h
   include/smpi/smpi_extended_traces.h
@@ -1115,7 +1114,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/pybind11Config.cmake
   tools/cmake/Option.cmake
   tools/cmake/Tests.cmake
-  tools/cmake/cross-mingw.cmake
   tools/cmake/scripts/fixup_simgrid_dtd_l.pl
   tools/cmake/scripts/my_valgrind.pl
   tools/cmake/scripts/update_tesh.pl

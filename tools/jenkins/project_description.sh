@@ -210,40 +210,4 @@ EOF
     rm consoleText
 done
 
-
-#Appveyor - get ID of the last job with the API
-BUILD_ID=$(curl -s "https://ci.appveyor.com/api/projects/mquinson/simgrid" | grep -o '\[{"jobId":"[a-zA-Z0-9]*",' | sed "s/\[{\"jobId\":\"//" | sed "s/\",//")
-wget --quiet https://ci.appveyor.com/api/buildjobs/"$BUILD_ID"/log -O ./consoleText >/dev/null 2>&1
-sed -i -e "s/\r//g" ./consoleText
-node="<a href=\"https://ci.appveyor.com/project/mquinson/simgrid\">appveyor</a>"
-os="Windows Server 2012 - VS2015 + mingw64 5.3.0"
-boost=$(get_boost)
-compiler=$(get_compiler)
-java=$(get_java)
-cmake=$(get_cmake)
-eigen3=$(get_eigen3)
-ns3=$(get_ns3)
-py=$(get_python)
-success=$(grep -m 1 "Build success" ./consoleText)
-ball="${icons[failure]}"
-if [ -n "$success" ]; then
-  ball="${icons[success]}"
-fi
-cat <<EOF
-  <tr>
-    <td class="matrix-leftcolumn">$node</td>
-    <td class="matrix-cell" style="text-align:left">$os</td>
-    <td class="matrix-cell" style="text-align:center"><${ball}></td>
-    <td class="matrix-cell" style="text-align:center"><${icons[disabled]}></td>
-    <td class="matrix-cell" style="text-align:left">$compiler</td>
-    <td class="matrix-cell" style="text-align:left">$boost</td>
-    <td class="matrix-cell" style="text-align:left">$java</td>
-    <td class="matrix-cell" style="text-align:left">$cmake</td>
-    <td class="matrix-cell" style="text-align:center">$eigen3</td>
-    <td class="matrix-cell" style="text-align:left">$ns3</td>
-    <td class="matrix-cell" style="text-align:left">$py</td>
-  </tr>
-EOF
-rm consoleText
-
 echo "</table>"

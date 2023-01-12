@@ -139,18 +139,11 @@
 #define _XBT_STRINGIFY_A_24_(a, ...) #a, _XBT_IF_ONE_ARG(_XBT_STRINGIFY, _XBT_STRINGIFY_A_25_, __VA_ARGS__)(__VA_ARGS__)
 #define _XBT_STRINGIFY_A_25_(...) error_maximum_size_of_XBT_STRINGIFY_ARGS_reached
 
-/* Handle import/export stuff
- *
- * Rationale of XBT_PUBLIC:
+/* Rationale of XBT_PUBLIC:
  *   * This is for library symbols visible from the application-land.
  *     Basically, any symbols defined in the include/directory must be like this (plus some other globals).
  *
- *     UNIX coders should just think of it as a special way to say "extern".
- *
- *   * If you build the DLL, define the DLL_EXPORT symbol so that all symbols actually get exported by this file.
- *
- *   * If you link your application against the DLL or if you do a UNIX build, don't do anything special. This file
- *     will do the right thing for you by default.
+ *     Just think of it as a special way to say "extern".
  */
 
 #if defined(__ELF__)

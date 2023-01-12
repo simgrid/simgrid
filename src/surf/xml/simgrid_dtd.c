@@ -6163,14 +6163,7 @@ const char* *surfxml_statenames=NULL;
  * down here because we want the user's section 1 to have been scanned first.
  * The user has a chance to override it with an option.
  */
-#if defined(_WIN32)
-#  ifndef __STRICT_ANSI__
-#    include <io.h>
-#    include <process.h>
-#  endif
-#else
-#  include <unistd.h>
-#endif
+#include <unistd.h>
 #endif
 
 #ifndef YY_EXTRA_TYPE

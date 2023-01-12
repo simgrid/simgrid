@@ -26,7 +26,7 @@ Please apply the following checklist before releasing.
   - The date of the release is marked in the title
 - Tests
   - The "make distcheck" target works (tested by jenkins)
-  - All tests pass on everything on ci + AppVeyor
+  - All tests pass on everything on ci
   - Tutorials and derivative projects build correctly
     https://framagit.org/simgrid/simgrid-template-s4u/pipelines
     https://framagit.org/simgrid/external-projects-ci/pipelines
@@ -41,7 +41,7 @@ Please apply the following checklist before releasing.
   - docs/source/conf.py
   - setup.py
 - Commit and push to both framagit and github
-- Wait for both appveyor and jenkins/osX to complete the build
+- Wait for jenkins/osX to complete the build
 - If it's not successful, fix it and push again
 - Once it's successful everywhere: merge 'master' into 'stable' and push it to framagit
   - You can interrupt the build on jenkins, as it was tested just before

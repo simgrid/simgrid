@@ -2068,7 +2068,6 @@ include include/smpi/smpi_extended_traces.h
 include include/smpi/smpi_extended_traces_fortran.h
 include include/smpi/smpi_helpers.h
 include include/smpi/smpi_helpers_internal.h
-include include/smpi/smpi_main.h
 include include/xbt.h
 include include/xbt/Extendable.hpp
 include include/xbt/PropertyHolder.hpp
@@ -2760,7 +2759,6 @@ include tools/cmake/Modules/FindValgrind.cmake
 include tools/cmake/Modules/pybind11Config.cmake
 include tools/cmake/Option.cmake
 include tools/cmake/Tests.cmake
-include tools/cmake/cross-mingw.cmake
 include tools/cmake/scripts/fixup_simgrid_dtd_l.pl
 include tools/cmake/scripts/my_valgrind.pl
 include tools/cmake/scripts/update_tesh.pl

@@ -3,7 +3,7 @@ find_path(LIBELF_INCLUDE_DIR "libelf.h"
   $ENV{SIMGRID_LIBELF_LIBRARY_PATH}
   $ENV{LD_LIBRARY_PATH}
   $ENV{LIBELF_LIBRARY_PATH}
-  PATH_SUFFIXES include/ GnuWin32/include
+  PATH_SUFFIXES include/
   PATHS
   /opt
   /opt/local
@@ -16,7 +16,7 @@ find_library(LIBELF_LIBRARY
   $ENV{SIMGRID_LIBELF_LIBRARY_PATH}
   $ENV{LD_LIBRARY_PATH}
   $ENV{LIBELF_LIBRARY_PATH}
-  PATH_SUFFIXES lib/ GnuWin32/lib
+  PATH_SUFFIXES lib/
   PATHS
   /opt
   /opt/local

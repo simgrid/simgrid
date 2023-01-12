@@ -132,7 +132,6 @@ if(enable_maintainer_mode)
     set(string3  "'s/XBT_PUBLIC void STag_surfxml_include/XBT_ATTRIB_NORETURN &/'") # remove with v5 of the dtd
     set(string4  "'s/XBT_PUBLIC void STag_surfxml_\\(mount\\|storage\\)/XBT_ATTRIB_NORETURN &/'") # remove with v5 of the dtd
     set(string5  "'s/SET(DOCTYPE)/SET(ROOT_dax__adag)/'")
-    set(string9  "'s/#include <unistd.h>/#if defined(_WIN32)\\n#  ifndef __STRICT_ANSI__\\n#    include <io.h>\\n#    include <process.h>\\n#  endif\\n#else\\n#  include <unistd.h>\\n#endif/g'")
     set(string14 "'\\!^ \\* Generated [0-9/]\\{10\\} [0-9:]\\{8\\}\\.$$!d'")
 
     ADD_CUSTOM_COMMAND(
@@ -178,14 +177,12 @@ if(enable_maintainer_mode)
       #surf/xml/simgrid_dtd.c: surf/xml/simgrid_dtd.l
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.c
       COMMAND ${FLEX_EXE} -o src/surf/xml/simgrid_dtd.c -Psurf_parse_ --noline src/surf/xml/simgrid_dtd.l
-      COMMAND ${SED_EXE} -i ${string9} src/surf/xml/simgrid_dtd.c
       COMMAND ${CMAKE_COMMAND} -E echo "       Generated surf/xml/simgrid_dtd.c"
 
       #dag/dax_dtd.c: dag/dax_dtd.l
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.c
       COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/src/dag
       COMMAND ${FLEX_EXE} -o src/dag/dax_dtd.c -Pdax_ --noline src/dag/dax_dtd.l
-      COMMAND ${SED_EXE} -i ${string9}                         src/dag/dax_dtd.c
       COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/dag/dax_dtd.c"
 
       WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}

@@ -11,7 +11,6 @@ jobs:
     strategy:
         matrix:
           config:
-          - { name: "Windows MingW", os: windows, cc: "gcc", cxx: "g++", generator: "MinGW Makefiles", cmake_extra_options: '-Denable_lto=OFF -DCMAKE_PREFIX_PATH="C:/Program Files/Eigen3/"' }
           - { name: "Ubuntu gcc", os: ubuntu, cc: "gcc", cxx: "g++", generator: "Unix Makefiles", cmake_extra_options: "-DLTO_EXTRA_FLAG=auto" }
           - { name: "MacOS clang", os: macos, cc: "clang", cxx: "clang++", generator: "Unix Makefiles", cmake_extra_options: "-DLTO_EXTRA_FLAG=auto" }
     steps:
@@ -27,32 +26,6 @@ jobs:
     - name: Install boost and eigen on macos
       if: matrix.config.os == 'macos'
       run: brew install boost eigen
-    - name: Install boost, eigen, and gcc on windows
-      if: matrix.config.os == 'windows'
-      run: |
-        iwr -useb get.scoop.sh -outfile 'install.ps1'
-        .\install.ps1 -RunAsAdmin
-        scoop install gcc --global
-        If ((Test-Path "C:\hostedtoolcache\windows\Boost") -eq $False){
-          # Use the boost-1.72.0-win32-msvc14.1-x86_64.tar.gz for Windows 2016
-          $url = "https://github.com/actions/boost-versions/releases/download/1.72.0-20200608.4/boost-1.72.0-win32-msvc14.2-x86_64.tar.gz"
-          (New-Object System.Net.WebClient).DownloadFile($url, "$env:TEMP\boost.tar.gz")
-          7z.exe x "$env:TEMP\boost.tar.gz" -o"$env:TEMP\boostArchive" -y | Out-Null
-          7z.exe x "$env:TEMP\boostArchive" -o"$env:TEMP\boost" -y | Out-Null
-          Push-Location -Path "$env:TEMP\boost"
-          Invoke-Expression .\setup.ps1
-        }
-        echo "BOOST_ROOT=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-        echo "BOOST_INCLUDEDIR=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64\boost\include" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-        echo "BOOST_LIBRARYDIR=C:\hostedtoolcache\windows\Boost\1.72.0\x86_64\lib" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
-        $url = "https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz"
-        (New-Object System.Net.WebClient).DownloadFile($url, "$env:TEMP\eigen.tar.gz")
-        Push-Location -Path "$env:TEMP"
-        cmake -E tar zxf "$env:TEMP\eigen.tar.gz"
-        mkdir "$env:TEMP\eigen-3.4.0\build"
-        cd "$env:TEMP\eigen-3.4.0\build"
-        cmake -G "MinGW Makefiles" -DCMAKE_INSTALL_PREFIX="C:\Program Files\Eigen3" ..
-        cmake --build . --target install
     - name: Build and test jar with Cmake
       run: |
           mkdir build
@@ -93,7 +66,7 @@ jobs:
            fi
            mkdir content
            cd content
-           for j in  ubuntu macos windows ; do unzip -n ../jar-$j/simgrid.jar ; done
+           for j in  ubuntu macos ; do unzip -n ../jar-$j/simgrid.jar ; done
            strip NATIVE/*/*/*.so
            x86_64-linux-gnu-strip NATIVE/*/*/lib*dll
            zip -r ../simgrid-${version}.jar *
@@ -107,7 +80,6 @@ jobs:
         with:
           name: |
             jar-ubuntu
-            jar-windows
             jar-macos
       - name: Create the failure Message
         if: ${{ failure() }}

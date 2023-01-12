@@ -3,7 +3,7 @@ find_path(LIBDW_INCLUDE_DIR "elfutils/libdw.h"
   $ENV{SIMGRID_LIBDW_LIBRARY_PATH}
   $ENV{LD_LIBRARY_PATH}
   $ENV{LIBDW_LIBRARY_PATH}
-  PATH_SUFFIXES include/ GnuWin32/include
+  PATH_SUFFIXES include/
   PATHS
   /opt
   /opt/local
@@ -16,7 +16,7 @@ find_library(LIBDW_LIBRARY
   $ENV{SIMGRID_LIBDW_LIBRARY_PATH}
   $ENV{LD_LIBRARY_PATH}
   $ENV{LIBDW_LIBRARY_PATH}
-  PATH_SUFFIXES lib/ GnuWin32/lib
+  PATH_SUFFIXES lib/
   PATHS
   /opt
   /opt/local

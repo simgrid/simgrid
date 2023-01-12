@@ -131,7 +131,7 @@ Eigen3 (optional)
 Java (optional):
   - Debian / Ubuntu: ``apt install default-jdk libgcj18-dev`` (or
     any version of libgcj)
-  - macOS or Windows: Grab a `full JDK <http://www.oracle.com/technetwork/java/javase/downloads>`_
+  - macOS: Grab a `full JDK <http://www.oracle.com/technetwork/java/javase/downloads>`_
 
 For platform-specific details, please see below.
 

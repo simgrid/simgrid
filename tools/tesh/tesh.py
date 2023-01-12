@@ -46,10 +46,6 @@ else:
 #
 #
 
-def is_windows():
-    """ Check if running on Windows """
-    return sys.platform.startswith('win')
-
 # Singleton metaclass that works in Python 2 & 3
 # http://stackoverflow.com/questions/6760685/creating-a-singleton-in-python
 
@@ -120,7 +116,7 @@ def process_is_dead(pid):
 def kill_process_group(pid):
     """ This function send TERM signal + KILL signal after 0.2s to the group of the specified process """
     if pid is None:
-        # Nobody to kill. We don't know who to kill on windows, or we don't have anyone to kill on signal handler
+        # Nobody to kill. We don't have anyone to kill on signal handler
         return
 
     try:
@@ -356,9 +352,7 @@ class Cmd:
         local_pid = None
 
         try:
-            preexec_function = None
-            if not is_windows():
-                preexec_function = lambda: os.setpgid(0, 0)
+            preexec_function = lambda: os.setpgid(0, 0)
             proc = subprocess.Popen( # pylint: disable=subprocess-popen-preexec-fn
                 args,
                 bufsize=1,
@@ -367,9 +361,8 @@ class Cmd:
                 stderr=subprocess.STDOUT,
                 universal_newlines=True,
                 preexec_fn=preexec_function)
-            if not is_windows():
-                local_pid = proc.pid
-                TeshState().running_pids.append(local_pid)
+            local_pid = proc.pid
+            TeshState().running_pids.append(local_pid)
         except PermissionError:
             logs.append("[{file}:{number}] Cannot start '{cmd}': The binary is not executable.".format(
                 file=FileReader().filename, number=self.linenumber, cmd=args[0]))

@@ -22,7 +22,7 @@ print "This is the list of all categories existing in the SimGrid implementation
 my %ancestor;
 my %desc;
 # $ancestor{"toto"} is the ancestor of the toto channel as declared by XBT_LOG_NEW_SUBCATEGORY and
-# XBT_LOG_NEW_DEFAULT_SUBCATEGORY ie, when the channel toto is initialized (does not work under windows)
+# XBT_LOG_NEW_DEFAULT_SUBCATEGORY ie, when the channel toto is initialized
 
 # $desc{"toto"} is its description
 

@@ -1,10 +1,8 @@
 ###
-### Generate all parts of the documentation on non-Windows systems
+### Generate all parts of the documentation
 ###
 ###   - Javadoc (reference)
 ###   - manpages (reference of tools)
-###
-###  This file is not loaded on windows
 
 #### Generate the html documentation
 find_path(FIG2DEV_PATH  NAMES fig2dev  PATHS NO_DEFAULT_PATHS)
