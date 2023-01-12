@@ -32,24 +32,10 @@ release:
   script:
   - apt-get --allow-releaseinfo-change update
   - apt install -y binutils wget unzip zip
-  # Build the linux version of the jarfile without the boost dependency
-  - cmake -Denable_documentation=OFF -Denable_java=ON -Denable_msg=ON -Denable_lib_in_jar=ON -Dminimal-bindings=ON -Denable_compile_optimizations=ON -Denable_smpi=OFF -DLTO_EXTRA_FLAG="auto" .
-  - make VERBOSE=1 -j$(nproc) dist simgrid simgrid-java_jar
-# This cannot work anymore because Java is now built by the modelchecker jenkins configuration, that is not on macosx
-# Please use the github action instead
-#  - make VERBOSE=1 -j$(nproc) dist simgrid simgrid-java_jar
-#  # Get the foreign architectures
-#  - export SGVER=`grep SimGrid ChangeLog|head -n1|sed -e 's/SimGrid (//' -e 's/).*//'`
-#  - wget https://ci.inria.fr/simgrid/job/SimGrid/build_mode=Debug,node=macos/lastSuccessfulBuild/artifact/build/simgrid-${SGVER}/build/simgrid.jar -O simgrid-mac.jar
-#  # Open all jar files, and strip them
-#  - mkdir content ; cd content
-#  - for j in  ../simgrid.jar ../simgrid-mac.jar ; do unzip -n $j ; done
-#  - strip NATIVE/*/*/*.so
-#  - x86_64-linux-gnu-strip NATIVE/*/*/lib*dll
-#  - zip -r ../simgrid-${SGVER}.jar *
+  - cmake -Denable_documentation=OFF -Denable_msg=ON -Dminimal-bindings=ON -Denable_compile_optimizations=ON -Denable_smpi=OFF -DLTO_EXTRA_FLAG="auto" .
+  - make VERBOSE=1 -j$(nproc) dist
   artifacts:
     paths:
-#    - simgrid-*.jar
     - simgrid-*.tar.gz
 
 pip:
@@ -72,17 +58,13 @@ pages:
   stage: deploy
   script:
   - pip3 install --requirement docs/requirements.txt
-  - cd docs/source/_ext/javasphinx; python3 setup.py build; python3 setup.py install
-  - cd ../../..
   - LC_ALL=C.UTF-8 ./Build.sh
   - mv build/html ../public
   # - The CSS contains a reference to a font or something, not something we gonna fix on our side
-  # - The javasphinx output does not exist in the git, so the "edit on FramaGit" link is broken.
-  #   I'd like to report this as a bug, but javasphinx seems abandonned upstream.
-#not installed   - linkchecker --ignore-url='.*\.css$' --ignore-url=public/java/org ../public
+#not installed   - linkchecker --ignore-url='.*\.css$' ../public
   # From time to time, we should check external links with the
   # following, but it has a lot of false positive
-  # - linkchecker --ignore-url='.*\.css$' --ignore-url=public/java/org --check-extern ../public
+  # - linkchecker --ignore-url='.*\.css$' --check-extern ../public
   artifacts:
     paths:
     - public

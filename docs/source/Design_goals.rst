@@ -57,8 +57,8 @@ actors can proceed and which ones must wait).
 In practice, a SimGrid simulation is a suite of so-called **scheduling
 rounds**, during which all actors that are not currently blocked on a
 simcall get executed. For that, maestro passes the control flow to the
-code of each actor, that are written in either C++, C, Fortran, Python,
-or Java. The control flow then returns to the maestro when the actor
+code of each actor, that are written in either C++, C, Fortran or Python.
+The control flow then returns to the maestro when the actor
 blocks on its next blocking simcall. Note that the time it takes to
 execute the actor code has to be reported to the simulator using
 execution activities. SMPI programs are automatically benchmarked
@@ -85,8 +85,8 @@ Context switching between the actors and maestro is highly optimized
 for the sake of simulation performance. SimGrid provides several
 implementations of this mechanism, called **context factories**. These
 implementations fall into two categories: Preemptive contexts are
-based on full-fledged system threads such as pthread on Linux or Java
-threads in the JVM. They are usually better supported by external
+based on standard system threads from the libstdc library.
+They are usually better supported by external
 debuggers and profiling tools, but less efficient. The most efficient
 factories use non-preemptive mechanisms, such as SysV's ucontexts,
 boost's context, or our own hand-tuned implementation, that is written

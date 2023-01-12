@@ -38,7 +38,6 @@ src/dag/dax_dtd.l
 src/surf/xml/simgrid_dtd.l
 ### Libraries links
 [Ss]im[Gg]rid-*.tar.gz
-simgrid.jar
 ### Generated files
 _*.c
 include/simgrid/config.h
@@ -63,7 +62,6 @@ manpages/
 build_*/
 build/
 ### Documentation
-docs/source/java
 docs/source/_ext/__pycache__/
 doc/allclasses-frame.html
 doc/allclasses-noframe.html
@@ -94,12 +92,10 @@ doc/html
 doc/index.php
 doc/simgrid.tag
 doc/doxygen/logcategories.doc
-doc/javadoc
 doc/example_lists/
 ### Specific of project
 .settings/
 .csettings/
-examples/deprecated/java/.classpath
 .anjuta
 .anjuta_sym_db.db
 simgrid.anjuta
@@ -287,8 +283,6 @@ examples/smpi/trace/smpi_trace
 teshsuite/kernel/context-defaults/context-defaults
 teshsuite/kernel/simcall-generic/simcall-generic
 teshsuite/kernel/stack-overflow/stack-overflow
-teshsuite/java/semaphoregc/java-semaphoregc_compiled
-teshsuite/java/sleephostoff/java-sleephostoff_compiled
 teshsuite/mc/dwarf/dwarf
 teshsuite/mc/dwarf-expression/dwarf-expression
 teshsuite/mc/mutex-handling/mutex-handling
@@ -863,14 +857,7 @@ teshsuite/xbt/parmap_bench/parmap_bench
 teshsuite/xbt/parmap_test/parmap_test
 teshsuite/xbt/signals/signals
 unit-tests
-#########################################
-## files touched to track the dependencies of java examples
-examples/deprecated/java/*/*/*_compiled
-examples/deprecated/java/*/*_compiled
 /CMakeCache.txt
-simgrid.jar_finalized
-simgrid_full.jar
-src/bindings/java/MANIFEST.MF
 NATIVE/
 VERSION
 include/smpi/mpif.h

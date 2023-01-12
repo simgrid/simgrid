@@ -20,7 +20,6 @@ let
         pythonPackages.sphinx
         pythonPackages.sphinx_rtd_theme
         pythonPackages.breathe
-        javasphinx
         sphinx-tabs
       ];
       phases = [ "unpackPhase" "buildPhase" "installPhase" ];
@@ -33,37 +32,6 @@ let
         mkdir -p $out
         mv build/* $out/
       '';
-    };
-
-    # sphinx extensions (and their dependencies) shenanigans
-    javalang = buildPythonPackage rec {
-      pname = "javalang";
-      version = "0.13.0";
-      src = pythonPackages.fetchPypi {
-        inherit pname version;
-        sha256 = "0k22ldm4xn0sb26qclp5zz0fc9dy589zvvby5ba1d0d5h2jab08n";
-      };
-      buildInputs = with pythonPackages; [ six ];
-      doCheck = false;
-    };
-
-    javasphinx = buildPythonPackage rec {
-      pname = "javasphinx";
-      version = "0.9.15+simgrid";
-      src = pkgs.fetchFromGitHub {
-        owner = "simgrid";
-        repo = pname;
-        rev = "659209069603a5f221596dd039e724cb89b31b82";
-        sha256 = "1nbz822zd2ikzzmpyqsrrpqvlpng72qvl86wcqfn89szbp85c20a";
-      };
-      propagatedBuildInputs = with pythonPackages; [
-        beautifulsoup4
-        docutils
-        javalang
-        future
-        lxml
-        sphinx
-      ];
     };
 
     sphinx-tabs = pythonPackages.buildPythonPackage rec {

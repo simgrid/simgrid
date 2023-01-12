@@ -26,9 +26,7 @@ read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
 if read_the_docs_build:
     subprocess.call('pwd', shell=True) # should be in docs/source
     subprocess.call('doxygen', shell=True)
-    subprocess.call('javasphinx-apidoc --force -o java/ ../../src/bindings/java/org/simgrid/msg', shell=True)
-    subprocess.call('rm java/packages.rst', shell=True)
-
+ 
 # -- Project information -----------------------------------------------------
 
 project = u'SimGrid'
@@ -55,7 +53,6 @@ extensions = [
     'sphinx.ext.autosummary',
     'sphinx_tabs.tabs',
     'sphinx_copybutton',
-    'javasphinx',
     'showfile',
 ]
 

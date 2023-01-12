@@ -18,7 +18,7 @@ onoff() {
   fi
 }
 
-[ $# -eq 5 ] || die "Needs 5 arguments : JAVA MC SMPI DEBUG MSG"
+[ $# -eq 4 ] || die "Needs 4 arguments : MC SMPI DEBUG MSG"
 
 ### Cleanup previous runs
 
@@ -44,49 +44,36 @@ cd "$WORKSPACE"/build
 
 #we can't just receive ON or OFF as values as display is bad in the resulting jenkins matrix
 
-if [ "$1" = "JAVA" ]
-then
-  buildjava="ON"
-else
-  buildjava="OFF"
-fi
-
-if [ "$2" = "MC" ]
+if [ "$1" = "MC" ]
 then
   buildmc="ON"
 else
   buildmc="OFF"
 fi
 
-if [ "$3" = "SMPI" ]
+if [ "$2" = "SMPI" ]
 then
   buildsmpi="ON"
 else
   buildsmpi="OFF"
 fi
 
-if [ "$4" = "DEBUG" ]
+if [ "$3" = "DEBUG" ]
 then
   builddebug="ON"
 else
   builddebug="OFF"
 fi
 
-if [ "$5" = "MSG" ]
+if [ "$4" = "MSG" ]
 then
   buildmsg="ON"
 else
   buildmsg="OFF"
 fi
 
-if [ $buildmsg = "OFF" ] && [ $buildjava = "ON" ]
-then
-  echo "Don't even try to build Java without MSG"
-  exit 0
-fi
-
-echo "Step ${STEP}/${NSTEPS} - Building with java=${buildjava}, debug=${builddebug}, SMPI=${buildsmpi}, MC=${buildmc}, MSG=${buildmsg}"
-cmake -Denable_documentation=OFF -Denable_java=${buildjava} -Denable_msg=${buildmsg} \
+echo "Step ${STEP}/${NSTEPS} - Building with debug=${builddebug}, SMPI=${buildsmpi}, MC=${buildmc}, MSG=${buildmsg}"
+cmake -Denable_documentation=OFF -Denable_msg=${buildmsg} \
       -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
       -Denable_mallocators=ON -Denable_debug=${builddebug} \
       -Denable_smpi=${buildsmpi} -Denable_smpi_MPICH3_testsuite=${buildsmpi} -Denable_model-checking=${buildmc} \

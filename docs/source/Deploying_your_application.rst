@@ -80,10 +80,6 @@ This tag starts a new actor executing the given function on a given host.
    :cpp:func:`MSG_process_create_with_arguments` or
    :cpp:func:`MSG_process_create_with_environment`.
 
-   There is nothing to do in Java, as SimGrid uses introspection abilities to
-   retrieve the classes from their names. You must then use the full class name
-   (including the package name) in your XML file.
-
 :``start_time``: Useful to delay the start of your actor.
 
 	 -1 starts the actor immediately.

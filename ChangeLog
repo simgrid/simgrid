@@ -3,6 +3,7 @@ SimGrid (3.32.1) not released yet (target december 22)
 General:
  - On Windows, you now need to install WSL2 as the native builds are now disabled.
    It was not really working anyway.
+ - Remove the Java bindings: they were completely outdated, limited to the MSG interface.
 
 S4U:
  - Activity::set_remaining() is not public anymore. Use for example

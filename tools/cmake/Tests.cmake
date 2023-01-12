@@ -109,11 +109,6 @@ MACRO(SET_TESH_PROPERTIES NAME FACTORIES)
   ENDFOREACH()
 ENDMACRO()
 
-IF(enable_java)
-  SET(TESH_CLASSPATH_SEPARATOR ":")
-  SET(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/deprecated/java/${TESH_CLASSPATH_SEPARATOR}${CMAKE_BINARY_DIR}/teshsuite/java/${TESH_CLASSPATH_SEPARATOR}${SIMGRID_JAR}")
-ENDIF()
-
 # New tests should use the Catch Framework
 set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
                 src/kernel/resource/NetworkModelFactors_test.cpp

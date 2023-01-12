@@ -39,7 +39,7 @@ private:
 
   void start();                // match a call to release()
   void yield();                // match a call to yield()
-  virtual void start_hook() { /* empty placeholder, called after start(). Used in parallel mode and Java */}
+  virtual void start_hook() { /* empty placeholder, called after start(). Used in parallel mode */}
   virtual void yield_hook() { /* empty placeholder, called before yield(). Used in parallel mode */}
 
   static void wrapper(ThreadContext* context);

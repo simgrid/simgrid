@@ -1,28 +1,11 @@
 ###
-### Generate all parts of the documentation
+### Generate the manpages documentation. The sphinx content is not handled in cmake but with the Build.sh script
 ###
-###   - Javadoc (reference)
-###   - manpages (reference of tools)
 
 #### Generate the html documentation
 find_path(FIG2DEV_PATH  NAMES fig2dev  PATHS NO_DEFAULT_PATHS)
 
 if(enable_documentation)
-  if (Java_FOUND)
-    find_path(JAVADOC_PATH  NAMES javadoc   PATHS NO_DEFAULT_PATHS)
-    mark_as_advanced(JAVADOC_PATH)
-
-   ADD_CUSTOM_TARGET(documentation
-      COMMENT "Generating the SimGrid documentation..."
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/doc/html
-    )
-   ADD_CUSTOM_COMMAND(TARGET documentation
-      COMMAND ${CMAKE_COMMAND} -E echo "XX Javadoc pass"
-      COMMAND ${JAVADOC_PATH}/javadoc -quiet -d ${CMAKE_BINARY_DIR}/doc/html/javadoc/ ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*.java ${CMAKE_HOME_DIRECTORY}/src/bindings/java/org/simgrid/*/*.java
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/doc
-    )
-  endif()
-
   #### Generate the manpages
   if( NOT MANPAGE_DIR)
     set( MANPAGE_DIR ${CMAKE_BINARY_DIR}/manpages )

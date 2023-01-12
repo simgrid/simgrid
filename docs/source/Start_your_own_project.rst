@@ -130,27 +130,6 @@ in the CDT GCC Built-in compiler settings.
 .. image:: /img/eclipseScreenShot.png
    :align: center
 
-
-Building the Java examples in Eclipse
--------------------------------------
-
-If you want to build our Java examples in Eclipse, get the whole
-source code and open the archive on your disk. In Eclipse, select
-the menu "File / Import", and then in the wizard "General / Existing
-Project into Workspace". On the next page, select the directory
-"examples/deprecated/java" that you can find in the SimGrid source tree as a root
-directory and finish the creation.
-
-The file ``simgrid.jar`` must be in the root directory of the SimGrid
-tree. That's where it is built by default, but if you don't want to
-compile it yourself, just grab that file from the SimGrid website and
-copy it in here.
-
-Please note that once you better understand SimGrid, you should not
-modify the examples directly but instead create your own project in
-eclipse. This will make it easier to upgrade to another version of
-SimGrid.
-
 .. _install_yours_troubleshooting:
 
 Troubleshooting your Project Setup

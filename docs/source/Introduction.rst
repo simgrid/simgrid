@@ -84,7 +84,7 @@ To ease such questioning, you really should logically separate these
 parts in your experimental setup. It is seen as a very bad practice to
 merge the application, the platform, and the deployment altogether.
 SimGrid is versatile and your mileage may vary, but you should start
-with your Application specified as a C++ or Java program, using one of
+with your Application specified as a C++ or Python program, using one of
 the provided XML platform files, and with your deployment in a separate
 XML file.
 

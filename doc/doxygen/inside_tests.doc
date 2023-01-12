@@ -191,7 +191,7 @@ dnf install libboost-devel openjdk-8-jdk openjdk-8-jre libxslt-devel libxml2-dev
 pkg_add cmake gcc7 boost boost-headers automake openjdk8 libxslt libxml2 libunwind git htop python36
 
 #opensuse
-zypper install cmake automake clang boost-devel java-1_8_0-openjdk-devel libxslt-devel libxml2-devel xsltproc git python3 libdw-devel libevent-devel libunwind-devel htop binutils ggc7-fortran
+zypper install cmake automake clang boost-devel libxslt-devel libxml2-devel xsltproc git python3 libdw-devel libevent-devel libunwind-devel htop binutils ggc7-fortran
 
 #freebsd
 pkg install boost-libs cmake openjdk8 automake libxslt libxml2 libunwind git htop python3  automake gcc6 flang elfutils libevent

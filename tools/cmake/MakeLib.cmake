@@ -2,6 +2,7 @@
 
 # On macOS, specify that rpath is useful to look for the dependencies
 # See https://gitlab.kitware.com/cmake/community/wikis/doc/cmake/RPATH-handling and Java.cmake
+# TODO: is it still useful now that Java is gone? For Python maybe?
 set(CMAKE_MACOSX_RPATH TRUE)
 if(APPLE)
   SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE) # When installed, use system path

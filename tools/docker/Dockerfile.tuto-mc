@@ -16,7 +16,7 @@ RUN apt update && apt -y upgrade
 RUN apt install -y g++ gcc git valgrind gfortran libboost-dev libeigen3-dev libboost-stacktrace-dev cmake dpkg-dev libunwind-dev libdw-dev libelf-dev libevent-dev python3-dev && \
     mkdir /source/ && cd /source && git clone --depth=1 https://framagit.org/simgrid/simgrid.git simgrid.git && \
     cd simgrid.git && \
-    cmake -DCMAKE_INSTALL_PREFIX=/usr/ -Denable_model-checking=ON -Denable_documentation=OFF -Denable_java=OFF -Denable_smpi=ON -Denable_compile_optimizations=ON . && \
+    cmake -DCMAKE_INSTALL_PREFIX=/usr/ -Denable_model-checking=ON -Denable_documentation=OFF -Denable_smpi=ON -Denable_compile_optimizations=ON . && \
     make -j6 install && \
     git clone --depth=1 https://framagit.org/simgrid/tutorial-model-checking /source/tuto-mc.git && \
     printf "ndet-receive-s4u:\n\t@echo \"Please run the following command before make:\";echo \"    cmake .\"; exit 1" > /source/tuto-mc.git/Makefile &&\

@@ -103,8 +103,7 @@ XBT_ATTRIB_NORETURN static void handler()
   }
 
   catch (const simgrid::ForcefulKillException&) {
-    XBT_ERROR("Received a ForcefulKillException at the top-level exception handler. Maybe a Java->C++ call that is not "
-              "protected in a try/catch?");
+    XBT_ERROR("Received a ForcefulKillException at the top-level exception handler. Please help fix this bug.");
   }
 
   // We don't know how to manage other exceptions

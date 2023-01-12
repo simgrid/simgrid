@@ -12,8 +12,6 @@ echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
 rm -f /tmp/cc*
 rm -f /tmp/*.so
 rm -f /tmp/*.so.*
-rm -rf /tmp/simgrid-java*
-rm -rf /var/tmp/simgrid-java*
 rm -rf /tmp/jvm-*
 find "$WORKSPACE" -name "hs_err_pid*.log" -exec rm -f {} +
 ls /tmp
@@ -59,7 +57,6 @@ NUMPROC="$(nproc)" || NUMPROC=1
 
 
 cd "$BUILDFOLDER"
-rm -rf java_cov*
 rm -rf jacoco_cov*
 rm -rf python_cov*
 rm -rf xml_coverage.xml

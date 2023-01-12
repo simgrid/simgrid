@@ -18,8 +18,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_context, kernel, "Context switching mechanis
 
 namespace simgrid::kernel::context {
 
-std::function<ContextFactory*(void)> ContextFactory::initializer;
-
 static e_xbt_parmap_mode_t parallel_synchronization_mode = XBT_PARMAP_DEFAULT;
 static int parallel_contexts                             = 1;
 unsigned stack_size;

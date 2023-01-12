@@ -1,5 +1,5 @@
 ### ARGs use -D[var]=[ON/OFF] or [1/0] or [true/false](see below)
-### ex: cmake -Denable_java=ON -Denable_ns3=ON ./
+### ex: cmake -Denable_ns3=ON ./
 
 set(BIBTEX2HTML ${BIBTEX2HTML} CACHE PATH "Path to bibtex2html")
 
@@ -23,14 +23,15 @@ option(enable_debug                 "Turn this off to remove all debug messages 
 option(enable_documentation "Whether to produce documentation" off)
 
 option(enable_ns3            "Whether ns-3 model is activated." off)
-option(enable_java           "Whether the Java bindings are activated." off)
 option(enable_msg            "Whether the MSG module is activated." off)
-option(enable_lib_in_jar     "Whether the native libraries are bundled in a Java jar file" on)
-option(minimal-bindings      "Whether to compile the bindings libraries (Java/Python) with the minimal dependency set" off)
-mark_as_advanced(minimal-bindings)
-if(minimal-bindings)
-  set(enable_lib_in_jar on)
+option(enable_java            "Java was removed from SimGrid v3.33. Please do not enable it here." off)
+mark_as_advanced(enable_java)
+if (enable_java)
+  message(FATAL "Java was removed from SimGrid v3.33. Please stick to v3.32 or earlier if you need Java.")
 endif()
+
+option(minimal-bindings      "Whether to compile the Python bindings libraries with the minimal dependency set" off)
+mark_as_advanced(minimal-bindings)
 
 option(enable_model-checking "Turn this on to experiment with our prototype of model-checker (hinders the simulation's performance even if turned off at runtime)" off)
 option(enable-model-checking "Please set 'enable_model-checking' instead" off)

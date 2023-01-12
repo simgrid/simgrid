@@ -1002,12 +1002,6 @@ After this Tutorial
 This tutorial is now terminated. You could keep reading the online documentation and
 tutorials, or you could head up to the :ref:`example section <s4u_examples>` to read some code.
 
-.. todo::
-
-   Things to improve in the future:
-
-   - Propose equivalent exercises and skeleton in Java once we fix the Java binding.
-
 .. |br| raw:: html
 
    <br />

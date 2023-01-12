@@ -12,6 +12,7 @@ namespace simgrid {
 // DO NOT define destructors for exceptions in Exception.hpp.
 // Defining it here ensures that the exceptions are defined only in libsimgrid, but not in libsimgrid-java.
 // Doing otherwise naturally breaks things (at least on freebsd with clang).
+// TODO: is it still useful now that Java is gone?
 
 Exception::~Exception()                             = default;
 TimeoutException::~TimeoutException()               = default;

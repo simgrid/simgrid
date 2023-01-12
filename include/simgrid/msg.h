@@ -47,7 +47,6 @@ extern "C" {
 #endif
 
 /** @brief Return code of most MSG functions */
-/* Keep these code as binary values: java bindings manipulate | of these values */
 typedef enum {
   MSG_OK               = 0, /**< @brief Everything is right. Keep on going this way ! */
   MSG_TIMEOUT          = 1, /**< @brief nothing good happened before the timer you provided elapsed */

@@ -1,7 +1,6 @@
 ### define source packages
 
 set(EXTRA_DIST
-  src/bindings/java/MANIFEST.in
   src/bindings/python/simgrid_python.cpp
   src/dag/dax.dtd
   src/dag/dax_dtd.c
@@ -488,61 +487,6 @@ set(DAG_SRC
   src/dag/loaders.cpp
   )
 
-set(JMSG_C_SRC
-  src/bindings/java/JavaContext.cpp
-  src/bindings/java/JavaContext.hpp
-  src/bindings/java/jmsg.cpp
-  src/bindings/java/jmsg.hpp
-  src/bindings/java/jmsg_as.cpp
-  src/bindings/java/jmsg_as.hpp
-  src/bindings/java/jmsg_comm.cpp
-  src/bindings/java/jmsg_comm.h
-  src/bindings/java/jmsg_host.cpp
-  src/bindings/java/jmsg_host.h
-  src/bindings/java/jmsg_process.cpp
-  src/bindings/java/jmsg_process.h
-  src/bindings/java/jmsg_synchro.cpp
-  src/bindings/java/jmsg_synchro.h
-  src/bindings/java/jmsg_task.cpp
-  src/bindings/java/jmsg_task.h
-  src/bindings/java/jmsg_vm.cpp
-  src/bindings/java/jmsg_vm.h
-  src/bindings/java/jxbt_utilities.cpp
-  src/bindings/java/jxbt_utilities.hpp
-  )
-
-set(JMSG_JAVA_SRC
-  src/bindings/java/org/simgrid/NativeLib.java
-  src/bindings/java/org/simgrid/msg/As.java
-  src/bindings/java/org/simgrid/msg/Comm.java
-  src/bindings/java/org/simgrid/msg/Host.java
-  src/bindings/java/org/simgrid/msg/HostFailureException.java
-  src/bindings/java/org/simgrid/msg/HostNotFoundException.java
-  src/bindings/java/org/simgrid/msg/JniException.java
-  src/bindings/java/org/simgrid/msg/Msg.java
-  src/bindings/java/org/simgrid/msg/MsgException.java
-  src/bindings/java/org/simgrid/msg/Mutex.java
-  src/bindings/java/org/simgrid/msg/Process.java
-  src/bindings/java/org/simgrid/msg/ProcessKilledError.java
-  src/bindings/java/org/simgrid/msg/ProcessNotFoundException.java
-  src/bindings/java/org/simgrid/msg/Semaphore.java
-  src/bindings/java/org/simgrid/msg/Task.java
-  src/bindings/java/org/simgrid/msg/TaskCancelledException.java
-  src/bindings/java/org/simgrid/msg/TimeoutException.java
-  src/bindings/java/org/simgrid/msg/TransferFailureException.java
-  src/bindings/java/org/simgrid/msg/VM.java
-  )
-
-set(JTRACE_C_SRC
-  src/bindings/java/jtrace.cpp
-  src/bindings/java/jtrace.h
-  )
-
-set(JTRACE_JAVA_SRC src/bindings/java/org/simgrid/trace/Trace.java)
-
-list(APPEND JMSG_C_SRC ${JTRACE_C_SRC})
-list(APPEND JMSG_JAVA_SRC ${JTRACE_JAVA_SRC})
-
 set(TRACING_SRC
   src/instr/instr_config.cpp
   src/instr/instr_interface.cpp
@@ -857,20 +801,6 @@ set(DOC_SOURCES
   docs/source/_ext/showfile.css
   docs/source/_ext/showfile.js
   docs/source/_ext/showfile.py
-  docs/source/_ext/javasphinx/LICENSE
-  docs/source/_ext/javasphinx/MANIFEST.in
-  docs/source/_ext/javasphinx/README.md
-  docs/source/_ext/javasphinx/doc/conf.py
-  docs/source/_ext/javasphinx/doc/index.rst
-  docs/source/_ext/javasphinx/javasphinx/__init__.py
-  docs/source/_ext/javasphinx/javasphinx/apidoc.py
-  docs/source/_ext/javasphinx/javasphinx/compiler.py
-  docs/source/_ext/javasphinx/javasphinx/domain.py
-  docs/source/_ext/javasphinx/javasphinx/extdoc.py
-  docs/source/_ext/javasphinx/javasphinx/formatter.py
-  docs/source/_ext/javasphinx/javasphinx/htmlrst.py
-  docs/source/_ext/javasphinx/javasphinx/util.py
-  docs/source/_ext/javasphinx/setup.py
   docs/source/_static/css/custom.css
   docs/source/_templates/breadcrumbs.html
 
@@ -1026,7 +956,6 @@ set(txt_files
 set(CMAKEFILES_TXT
   examples/c/CMakeLists.txt
   examples/cpp/CMakeLists.txt
-  examples/deprecated/java/CMakeLists.txt
   examples/platforms/CMakeLists.txt
   examples/python/CMakeLists.txt
   examples/smpi/CMakeLists.txt
@@ -1037,7 +966,6 @@ set(CMAKEFILES_TXT
   examples/smpi/smpi_s4u_masterworker/CMakeLists.txt
   examples/sthread/CMakeLists.txt
 
-  teshsuite/java/CMakeLists.txt
   teshsuite/kernel/CMakeLists.txt
   teshsuite/mc/CMakeLists.txt
   teshsuite/models/CMakeLists.txt
@@ -1100,7 +1028,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Distrib.cmake
   tools/cmake/Documentation.cmake
   tools/cmake/Flags.cmake
-  tools/cmake/Java.cmake
   tools/cmake/MaintainerMode.cmake
   tools/cmake/MakeLib.cmake
   tools/cmake/Modules/FindGraphviz.cmake

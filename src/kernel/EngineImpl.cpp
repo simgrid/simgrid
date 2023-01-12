@@ -116,8 +116,8 @@ static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
 }
 
 /**
- * Install signal handler for SIGSEGV.  Check that nobody has already installed
- * its own handler.  For example, the Java VM does this.
+ * Install signal handler for SIGSEGV.  Check that nobody has already installed its own handler.
+ * Historically, the Java VM did that but this could maybe removed now that Java is gone (TODO)
  */
 static void install_segvhandler()
 {
@@ -230,11 +230,6 @@ void EngineImpl::context_mod_init() const
   }
 #endif
 
-  /* select the context factory to use to create the contexts */
-  if (context::ContextFactory::initializer) { // Give Java a chance to hijack the factory mechanism
-    instance_->set_context_factory(context::ContextFactory::initializer());
-    return;
-  }
   /* use the factory specified by --cfg=contexts/factory:value */
   for (auto const& [factory_name, factory] : context_factories)
     if (context_factory_name == factory_name) {

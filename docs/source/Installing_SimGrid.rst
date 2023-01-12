@@ -21,7 +21,6 @@ following lines, or several lines if you need several languages.
 .. code-block:: console
 
    $ apt install libsimgrid-dev  # if you want to develop in C or C++
-   $ apt install simgrid-java    # if you want to develop in Java
    $ apt install python3-simgrid # if you want to develop in Python
 
 If you use the Nix_ package manager, the latest SimGrid release is packaged as ``simgrid`` in Nixpkgs_.
@@ -43,36 +42,6 @@ email.
 .. _NUR-Kapack's documentation: https://github.com/oar-team/nur-kapack
 .. _simgrid AUR package: https://aur.archlinux.org/packages/simgrid/
 .. _AUR official documentation: https://wiki.archlinux.org/title/Arch_User_Repository
-
-.. _install_java_precompiled:
-
-Stable Java Package
-^^^^^^^^^^^^^^^^^^^
-
-The jar file can be retrieved from the `Release page
-<https://framagit.org/simgrid/simgrid/-/releases>`_. This file is
-self-contained, including the native components for Linux, macOS and
-Windows. Copy it to your project's classpath and you're set.
-
-Nightly built Java Package
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Head to the corresponding `GitHub Action <https://github.com/simgrid/simgrid/actions/workflows/jarfile.yml>`_
-and pick the last green build. At the bottom of the build page, click on the ``jar-final`` artefact.
-Open this zip file to find the jar you need. This jar can be used under Linux, Mac OSX or Windows, as you wish.
-
-Binary Java Troubleshooting
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Here are some error messages that you may get when trying to use the
-binary Java package.
-
-Your architecture is not supported by this jarfile
-   If your system is not supported, you should compile your
-   own jarfile :ref:`by compiling SimGrid <install_src>` from the source.
-Library not found: boost-context
-   You should obviously install the ``boost-context`` library on your
-   machine, for example with ``apt``.
 
 .. _deprecation_policy:
 
@@ -128,10 +97,6 @@ Eigen3 (optional)
   - On CentOS / Fedora: ``dnf install eigen3-devel``
   - On macOS with homebrew: ``brew install eigen``
   - Use EIGEN3_HINT to specify where it's installed if cmake doesn't find it automatically.
-Java (optional):
-  - Debian / Ubuntu: ``apt install default-jdk libgcj18-dev`` (or
-    any version of libgcj)
-  - macOS: Grab a `full JDK <http://www.oracle.com/technetwork/java/javase/downloads>`_
 
 For platform-specific details, please see below.
 
@@ -252,13 +217,6 @@ enable_documentation (on/OFF)
   as easy as it used to be, and you should probably use the online
   version for now.
 
-enable_java (on/OFF)
-  Generates the java bindings of SimGrid. You must also enable MSG for
-  this to work.
-
-enable_lib_in_jar (ON/off)
-  Embeds the native java bindings into the produced jar file.
-
 enable_lto (ON/off)
   Enables the *Link Time Optimization* in the C++ compiler.
   This feature really speeds up the code produced, but it is fragile
@@ -293,7 +251,7 @@ enable_smpi_MPICH3_testsuite (on/OFF)
 
 minimal-bindings (on/OFF)
   Take as few optional dependencies as possible, to get minimal
-  library bindings in Java and Python.
+  library bindings in Python.
 
 NS3_HINT (empty by default)
   Alternative path into which ns-3 should be searched for.
@@ -359,7 +317,6 @@ if some do not work for you.
 - **make tests**: Build the tests and examples.
 - **make simgrid**: Build only the SimGrid library. Not any example nor the helper tools.
 - **make s4u-comm-pingpong**: Build only this example (works for any example)
-- **make java-all**: Build all Java examples and their dependencies
 - **make python-bindings**: Build the Python bindings
 - **make clean**: Clean the results of a previous compilation
 - **make install**: Install the project (doc/ bin/ lib/ include/)
@@ -456,45 +413,6 @@ simgrid without downloading the source with pip:
 .. code-block:: console
 
   $ pip install simgrid
-
-Java-specific instructions
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Once you have the `full JDK <http://www.oracle.com/technetwork/java/javase/downloads>`_ installed,
-things should be as simple as:
-
-.. code-block:: console
-
-   $ cmake -Denable_java=ON -Dminimal-bindings=ON .
-   $ make  simgrid-java_jar # Only build the jarfile
-
-After the compilation, the file ```simgrid.jar``` is produced in the
-root directory.
-
-**Troubleshooting Java Builds**
-
-Sometimes, the build system fails to find the JNI headers. First locate them as follows:
-
-.. code-block:: console
-
-  $ locate jni.h
-  /usr/lib/jvm/java-8-openjdk-amd64/include/jni.h
-  /usr/lib/jvm/java-9-openjdk-amd64/include/jni.h
-  /usr/lib/jvm/java-10-openjdk-amd64/include/jni.h
-
-
-Then, set the JAVA_INCLUDE_PATH environment variable to the right
-path, and relaunch cmake. If you have several versions of JNI installed
-(as above), pick the one corresponding to the report of
-``javac -version``
-
-.. code-block:: console
-
-  $ export JAVA_INCLUDE_PATH=/usr/lib/jvm/java-8-openjdk-amd64/include/
-  $ cmake -Denable_java=ON .
-  $ make
-
-Note that the filename ```jni.h``` was removed from the path.
 
 Linux Multi-Arch specific instructions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

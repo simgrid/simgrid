@@ -42,7 +42,7 @@ Getting Mc SimGrid
 ------------------
 
 It is included in the SimGrid source code, but it is not compiled in by default as it induces a small performance overhead to the
-simulations. It is also not activated in the Debian package, nor in the Java or Python binary distributions. If you just plan to
+simulations. It is also not activated in the Debian package, nor in the Python binary distributions. If you just plan to
 experiment with Mc SimGrid, the easiest is to get the corresponding docker image. On the long term, you probably want to install it on
 your machine: it works out of the box on Linux, Windows (with WSL2) and FreeBSD. Simply request it from cmake (``cmake
 -Denable_model-checking .``) and then compile SimGrid :ref:`as usual <install_src>`. Unfortunately, Mc SimGrid does not work natively

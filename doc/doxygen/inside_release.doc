@@ -31,7 +31,6 @@ Please apply the following checklist before releasing.
     https://framagit.org/simgrid/simgrid-template-s4u/pipelines
     https://framagit.org/simgrid/external-projects-ci/pipelines
   - The python module builds (see below).
-  - The java jarfile builds from the github action
 
 @subsection inside_release_c_releasing Actually releasing SimGrid
 
@@ -49,14 +48,13 @@ Please apply the following checklist before releasing.
 
 - Download the simgrid-doc-3.X.Y (artefact of pipeline 'pages' on framagit)
   Download the tgz file (artefact of the pipeline 'stable' on framagit)
-  Build the jar file using the github action
 - Tag the git repository v3.XX.X and push it to framagit and ghub
 - Document the tag on framagit and ghub
-  - Upload the files simgrid-3.XX.tar.gz, simgrid-3_XX.jar and simgrid-doc-3_XX.zip
+  - Upload the files simgrid-3.XX.tar.gz and simgrid-doc-3_XX.zip
   - Add a link to the version of the ChangeLog that comes with this tag.
     https://framagit.org/simgrid/simgrid/-/blob/v3.29/ChangeLog
 - Update the website
-  - emacs org/org-templates/level-0.org to change the release version, the tgz link and the jar link.
+  - emacs org/org-templates/level-0.org to change the release version and the tgz link.
   - jed .gitlab-ci.yml
     - Change the link to the simgrid-doc-3_XX.zip file
     - Only keep 2 old versions so that people don't find older ones in google
@@ -117,11 +115,11 @@ Release numbering semantic:
     - We have 4 named releases per year (for each equinox and solstice)
     - The ChangeLog and NEWS are complete and informative
     - All tests pass on all ci systems (or the workarounds are documented)
-    - We provide and store a source .tar.gz and a full jarfile on framagit
+    - We provide and store a source .tar.gz on framagit
     - Deprecated symbols remain usable for at least 3 named releases (~1 year)
     - These releases are announced to the users
   - 3.X.Y where Y is even: dot release of 3.X, prerelease of 3.(X+1)
-    - We provide and store a source .tar.gz and a full jarfile on framagit
+    - We provide and store a source .tar.gz on framagit
     - These releases are NOT announced publicly, nor really documented.
       The idea is to have something close to a rolling release.
     - External projects can depend on dot releases to loosen their

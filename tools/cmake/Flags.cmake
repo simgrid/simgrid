@@ -65,7 +65,6 @@ if(enable_compile_warnings)
   elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
     set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -warn all")
   endif()
-  set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
 endif()
 
 # NDEBUG gives a lot of "initialized but unused variables" errors. Don't die anyway.

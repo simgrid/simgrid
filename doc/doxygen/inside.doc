@@ -107,7 +107,7 @@ create a set of out of tree builds (as explained in @ref
 install_cmake_outsrc) in addition to your main build tree.
 To not mess with git, you want to put your build tree under the build/
 directory, which is ignored by git. For example, I have the following
-directories: build/clang build/java build/full
+directories: build/clang build/full
 (but YMMV).
 
 Then, the problem is that when you traverse these directories, you

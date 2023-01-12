@@ -12,8 +12,6 @@ echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
 rm -f /tmp/cc*
 rm -f /tmp/*.so
 rm -f /tmp/*.so.*
-rm -rf /tmp/simgrid-java*
-rm -rf /var/tmp/simgrid-java*
 rm -rf /tmp/jvm-*
 find $WORKSPACE -name "hs_err_pid*.log" -exec rm -f {} +
 ls /tmp
@@ -222,7 +220,6 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_ns3=$(onoff test "$have_NS3" = "yes" -a "$build_mode" = "Debug") \
   -DSIMGRID_PYTHON_LIBDIR=${SIMGRID_PYTHON_LIBDIR} \
   ${MAY_DISABLE_SOURCE_CHANGE} ${MAY_DISABLE_LTO} ${MAY_HINT_AT_NS3} \
-  -Denable_java=$(onoff test "$build_mode" = "ModelChecker") \
   -Denable_msg=$(onoff test "$build_mode" = "ModelChecker") \
   -DLTO_EXTRA_FLAG="auto" \
   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \

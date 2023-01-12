@@ -78,7 +78,7 @@ this in the real realm.
 If you really need to synchronize your processes (because it's what
 you are studying or to create an atomic section that spans over
 several simcalls), you obviously cannot use regular synchronization
-mechanisms (pthread_mutexes in C or the synchronized keyword in Java).
+mechanisms (pthread_mutexes in C).
 This is because the SimGrid kernel locks all processes and unlock them
 one after the other when they are supposed to run, until they give the
 control back in their simcall. If one of them gets locked by the OS
@@ -88,7 +88,7 @@ deadlock.
 Instead, you should use the synchronization mechanism provided by the
 simulation kernel. This could with a SimGrid mutex, a SimGrid
 condition variables or a SimGrid semaphore, as described in @ref
-msg_synchro (in Java, only semaphores are available). But actually,
+msg_synchro. But actually,
 many synchronization patterns can be encoded with communication on
 mailboxes. Typically, if you need one process to notify another one,
 you could use a condition variable or a semaphore, but sending a

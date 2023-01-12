@@ -32,8 +32,7 @@ to mix several interfaces in the same simulation.
    that you want to replay, for example to study how a P2P DHT overlay
    reacts to a given workload.
  - Simulating algorithms with the legacy interface: :ref:`MSG for distributed
-   algorithms <MSG_doc>` (in :ref:`C <MSG_doc>` or :ref:`Java
-   <Java_doc>`). SimGrid was founded in 1998, and many interfaces were proposed
+   algorithms <MSG_doc>` (in :ref:`C <MSG_doc>`). SimGrid was founded in 1998, and many interfaces were proposed
    along the way. MSG (introduced around 2002) is still present in SimGrid. It
    does not evolve anymore, but given its popularity, it will not be removed
    until at least 2020. That being said, our goal is to make S4U so useful that

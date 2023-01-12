@@ -52,14 +52,6 @@ add_custom_target(simgrid_convert_TI_traces ALL
 # libraries
 install(TARGETS simgrid DESTINATION ${CMAKE_INSTALL_LIBDIR}/)
 
-if(enable_java)
-  set(SIMGRID_JAR_TO_INSTALL "${SIMGRID_JAR}")
-  install(TARGETS simgrid-java DESTINATION ${CMAKE_INSTALL_LIBDIR}/)
-  install(FILES ${SIMGRID_JAR_TO_INSTALL}
-      DESTINATION java/
-      RENAME simgrid.jar)
-endif()
-
 # pkg-config files
 configure_file("${CMAKE_HOME_DIRECTORY}/tools/pkg-config/simgrid.pc.in"
   "${PROJECT_BINARY_DIR}/simgrid.pc" @ONLY)
@@ -95,7 +87,6 @@ set(source_to_pack
   ${headers_to_install}
   ${source_of_generated_headers}
   ${JMSG_C_SRC}
-  ${JMSG_JAVA_SRC}
   ${MC_SRC_BASE}
   ${MC_SRC}
   ${MC_SIMGRID_MC_SRC}
