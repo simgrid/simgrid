@@ -554,8 +554,6 @@ def main():
             re.compile(r"profiling:"),
             re.compile(r"Unable to clean temporary file C:"),
             re.compile(r".*Configuration change: Set 'contexts/"),
-            re.compile(r"Picked up JAVA_TOOL_OPTIONS: "),
-            re.compile(r"Picked up _JAVA_OPTIONS: "),
             re.compile(r"==[0-9]+== ?WARNING: ASan doesn't fully support"),
             re.compile(r"==[0-9]+== ?WARNING: ASan is ignoring requested __asan_handle_no_return: stack "),
             re.compile(r"False positive error reports may follow"),

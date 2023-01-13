@@ -55,7 +55,6 @@ NUMPROC="$(nproc)" || NUMPROC=1
 
 
 cd "$BUILDFOLDER"
-rm -rf jacoco_cov*
 rm -rf python_cov*
 rm -rf xml_coverage.xml
 
@@ -72,30 +71,13 @@ cmake -Denable_documentation=OFF \
 
 #build with sonarqube scanner wrapper
 /home/ci/build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-outputs make -j$NUMPROC tests
-JACOCO_PATH="/usr/local/share/jacoco"
-export JAVA_TOOL_OPTIONS="-javaagent:${JACOCO_PATH}/lib/jacocoagent.jar"
 
 export PYTHON_TOOL_OPTIONS="/usr/bin/python3-coverage run --parallel-mode --branch"
 
 ctest --no-compress-output -D ExperimentalTest -j$NUMPROC || true
 ctest -D ExperimentalCoverage || true
 
-unset JAVA_TOOL_OPTIONS
 if [ -f Testing/TAG ] ; then
-
-  files=$( find . -size +1c -name "jacoco.exec" )
-  i=0
-  for file in $files
-  do
-    sourcepath=$( dirname "$file" )
-    #convert jacoco reports in xml ones
-    ant -f "$WORKSPACE"/tools/jenkins/jacoco.xml -Dexamplesrcdir="$WORKSPACE" -Dbuilddir="$BUILDFOLDER"/"${sourcepath}" -Djarfile="$BUILDFOLDER"/simgrid.jar -Djacocodir=${JACOCO_PATH}/lib
-    #convert jacoco xml reports in cobertura xml reports
-    cover2cover.py "$BUILDFOLDER"/"${sourcepath}"/report.xml .. ../src/bindings/java src/bindings/java > "$BUILDFOLDER"/java_coverage_${i}.xml
-    #save jacoco xml report as sonar only allows it
-    mv "$BUILDFOLDER"/"${sourcepath}"/report.xml "$BUILDFOLDER"/jacoco_cov_${i}.xml
-    i=$((i + 1))
-  done
 
   #convert python coverage reports in xml ones
   cd "$BUILDFOLDER"
