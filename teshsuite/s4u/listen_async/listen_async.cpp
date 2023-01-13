@@ -6,7 +6,7 @@
 /* Bug report: https://github.com/simgrid/simgrid/issues/40
  *
  * Task.listen used to be on async mailboxes as it always returned false.
- * This occured in Java and C, but only C remains.
+ * This occurred in Java and C, but only C remains.
  */
 
 #include "simgrid/s4u.hpp"

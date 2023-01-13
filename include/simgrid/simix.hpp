@@ -64,7 +64,7 @@ template <class F> typename std::result_of_t<F()> simcall_answered(F&& code, Sim
  *
  * Simulation without MC and without parallelism (contexts/nthreads=1) will not pay the price of a simcall for an
  * harmless setter. When running in parallel, you want your write access to be done in a mutual exclusion way, while the
- * getters can still occure out of order.
+ * getters can still occur out of order.
  *
  * When running in MC, you want to make this access visible to the checker. Actually in this case, it's not visible from
  * the checker (and thus still use a fast track) if the setter is called from the actor that created the object.

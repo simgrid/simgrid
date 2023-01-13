@@ -1,7 +1,7 @@
 /* Simple test code that may deadlock:
 
    Thread 1 locks mutex1 then mutex2 while thread 2 locks in reverse order.
-   Deadlock occures when each thread get one mutex and then ask for the other one.
+   Deadlock occurs when each thread get one mutex and then ask for the other one.
  */
 
 #include <pthread.h>
