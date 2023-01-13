@@ -858,7 +858,6 @@ teshsuite/xbt/parmap_test/parmap_test
 teshsuite/xbt/signals/signals
 unit-tests
 /CMakeCache.txt
-NATIVE/
 VERSION
 include/smpi/mpif.h
 include/smpi/mpi.mod

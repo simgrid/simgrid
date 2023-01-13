@@ -26,7 +26,7 @@ read_the_docs_build = os.environ.get('READTHEDOCS', None) == 'True'
 if read_the_docs_build:
     subprocess.call('pwd', shell=True) # should be in docs/source
     subprocess.call('doxygen', shell=True)
- 
+
 # -- Project information -----------------------------------------------------
 
 project = u'SimGrid'

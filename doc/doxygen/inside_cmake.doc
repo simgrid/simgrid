@@ -28,7 +28,7 @@ The examples/ directory is organized as  follows:
  - examples/cpp/ for examples using the S4U API
  - examples/smpi/ or examples using the SMPI API
  - examples/platforms/ only contains platforms descriptions in the XML format (see @ref platform for details)
- 
+
 In each of these directories, there is a CMakeLists.txt file that has
 to be edited to include the new examples.
 

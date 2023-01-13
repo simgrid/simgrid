@@ -86,7 +86,6 @@ endforeach(file ${examples_to_install})
 set(source_to_pack
   ${headers_to_install}
   ${source_of_generated_headers}
-  ${JMSG_C_SRC}
   ${MC_SRC_BASE}
   ${MC_SRC}
   ${MC_SIMGRID_MC_SRC}
