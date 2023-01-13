@@ -116,40 +116,24 @@ static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
 }
 
 /**
- * Install signal handler for SIGSEGV.  Check that nobody has already installed its own handler.
- * Historically, the Java VM did that but this could maybe removed now that Java is gone (TODO)
+ * Install signal handler for SIGSEGV.
  */
 static void install_segvhandler()
 {
-  stack_t old_stack;
-
-  if (simgrid::kernel::context::Context::install_sigsegv_stack(&old_stack, true) == -1) {
+  if (simgrid::kernel::context::Context::install_sigsegv_stack(nullptr, true) == -1) {
     XBT_WARN("Failed to register alternate signal stack: %s", strerror(errno));
     return;
   }
-  if (not(old_stack.ss_flags & SS_DISABLE)) {
-    XBT_DEBUG("An alternate stack was already installed (sp=%p, size=%zu, flags=%x). Restore it.", old_stack.ss_sp,
-              old_stack.ss_size, (unsigned)old_stack.ss_flags);
-    sigaltstack(&old_stack, nullptr);
-  }
 
   struct sigaction action;
-  struct sigaction old_action;
   action.sa_sigaction = &segvhandler;
   action.sa_flags     = SA_ONSTACK | SA_RESETHAND | SA_SIGINFO;
   sigemptyset(&action.sa_mask);
 
   /* Linux tend to raise only SIGSEGV where other systems also raise SIGBUS on severe error */
   for (int sig : {SIGSEGV, SIGBUS}) {
-    if (sigaction(sig, &action, &old_action) == -1) {
+    if (sigaction(sig, &action, nullptr) == -1)
       XBT_WARN("Failed to register signal handler for signal %d: %s", sig, strerror(errno));
-      continue;
-    }
-    if ((old_action.sa_flags & SA_SIGINFO) || old_action.sa_handler != SIG_DFL) {
-      XBT_DEBUG("A signal handler was already installed for signal %d (%p). Restore it.", sig,
-                (old_action.sa_flags & SA_SIGINFO) ? (void*)old_action.sa_sigaction : (void*)old_action.sa_handler);
-      sigaction(sig, &old_action, nullptr);
-    }
   }
 }
 
