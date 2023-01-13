@@ -561,11 +561,14 @@ int smpi_main(const char* executable, int argc, char* argv[])
   SMPI_app_instance_register(smpi_default_instance_name.c_str(), nullptr, rank_counts);
   MPI_COMM_WORLD = *smpi_deployment_comm_world(smpi_default_instance_name);
 
-  /* Clean IO before the run */
+  /* Flush output streams before and after the run */
   fflush(stdout);
   fflush(stderr);
 
   engine.get_impl()->run(-1);
+
+  fflush(stderr);
+  fflush(stdout);
 
   xbt_os_walltimer_stop(global_timer);
   simgrid::smpi::utils::print_time_analysis(xbt_os_timer_elapsed(global_timer));
