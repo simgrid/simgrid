@@ -8,7 +8,7 @@ RUN apt-get --allow-releaseinfo-change update && \
     apt install -y \
        bibclean emacs-nox org-mode elpa-ess elpa-htmlize wget unzip r-cran-ggplot2 r-cran-tidyr r-cran-dplyr libtext-bibtex-perl && \
     apt install -y \
-       g++ gcc gfortran default-jdk pybind11-dev \
+       g++ gcc gfortran pybind11-dev \
        git \
        valgrind \
        libboost-dev libboost-all-dev \

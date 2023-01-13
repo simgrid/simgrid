@@ -12,6 +12,6 @@ RUN apt-get --allow-releaseinfo-change update && apt -y upgrade && \
     make -j4 install && \
     mkdir debian/ && touch debian/control && dpkg-shlibdeps --ignore-missing-info lib/*.so -llib/ -O/tmp/deps && \
     git reset --hard master && git clean -dfx && \
-    apt remove -y  g++ gcc git valgrind default-jdk gfortran libboost-dev libboost-all-dev libeigen3-dev cmake dpkg-dev python3-dev pybind11-dev && \
+    apt remove -y  g++ gcc git valgrind gfortran libboost-dev libboost-all-dev libeigen3-dev cmake dpkg-dev python3-dev pybind11-dev && \
     apt install `sed -e 's/shlibs:Depends=//' -e 's/([^)]*)//g' -e 's/,//g' /tmp/deps` && \
     apt autoremove -y && apt autoclean && apt clean

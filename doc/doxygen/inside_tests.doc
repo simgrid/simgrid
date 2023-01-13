@@ -180,21 +180,21 @@ Just for the record, the slaves were created from the available
 template with the following commands:
 @verbatim
 #debian/ubuntu
-apt-get install gcc g++ gfortran automake cmake libboost-dev openjdk-8-jdk openjdk-8-jre libxslt-dev libxml2-dev libevent-dev libunwind-dev libdw-dev htop git python3 xsltproc libboost-context-dev
+apt-get install gcc g++ gfortran automake cmake libboost-dev libxslt-dev libxml2-dev libevent-dev libunwind-dev libdw-dev htop git python3 xsltproc libboost-context-dev
 #for dynamicanalysis:
-apt-get install jacoco libjacoco-java libns3-dev pcregrep gcovr ant sloccount
+apt-get install libns3-dev pcregrep gcovr sloccount
 
 #fedora
-dnf install libboost-devel openjdk-8-jdk openjdk-8-jre libxslt-devel libxml2-devel xsltproc git python3 libdw-devel libevent-devel libunwind-devel htop
+dnf install libboost-devel libxslt-devel libxml2-devel xsltproc git python3 libdw-devel libevent-devel libunwind-devel htop
 
 #netbsd
-pkg_add cmake gcc7 boost boost-headers automake openjdk8 libxslt libxml2 libunwind git htop python36
+pkg_add cmake gcc7 boost boost-headers automake libxslt libxml2 libunwind git htop python36
 
 #opensuse
 zypper install cmake automake clang boost-devel libxslt-devel libxml2-devel xsltproc git python3 libdw-devel libevent-devel libunwind-devel htop binutils ggc7-fortran
 
 #freebsd
-pkg install boost-libs cmake openjdk8 automake libxslt libxml2 libunwind git htop python3  automake gcc6 flang elfutils libevent
+pkg install boost-libs cmake automake libxslt libxml2 libunwind git htop python3  automake gcc6 flang elfutils libevent
 #+ clang-devel from ports
 
 #osx
