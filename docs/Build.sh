@@ -32,6 +32,8 @@ else
   set +x
 fi
 
+PYTHONPATH=../lib sphinx-build -M html source build ${SPHINXOPTS} 2>&1
+
 set +x
 
 perl -pe 's/(xlink:href="(?:http|.*\.html))/target="_top" $1/' \
