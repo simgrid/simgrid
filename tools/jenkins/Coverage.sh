@@ -12,8 +12,6 @@ echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
 rm -f /tmp/cc*
 rm -f /tmp/*.so
 rm -f /tmp/*.so.*
-rm -rf /tmp/jvm-*
-find "$WORKSPACE" -name "hs_err_pid*.log" -exec rm -f {} +
 ls /tmp
 df -h
 echo "XXXX Let's go"

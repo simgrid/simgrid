@@ -13,10 +13,6 @@ get_compiler(){
     grep -m 1 "The C compiler identification" ./consoleText | sed  "s/.*-- The C compiler identification is \([a-zA-Z0-9\.]*\)/\1/g"
 }
 
-get_java(){
-    grep -m 1 "Found Java:" ./consoleText | sed "s/.*-- Found Java.*found suitable version \"\([a-zA-Z0-9\.]*\)\",.*/\1/g"
-}
-
 get_cmake(){
     grep -m 1 "Cmake version" ./consoleText| sed "s/.*-- Cmake version \([a-zA-Z0-9\.]*\)/\1/g"
 }
@@ -135,7 +131,6 @@ function sortTable(n, type) {
     <td class=matrix-header style=min-width:50px onclick='sortTable($((++col,0)));'>MC</td>
     <td class=matrix-header style=min-width:75px onclick='sortTable($((++col)));'>Compiler</td>
     <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Boost</td>
-    <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Java</td>
     <td class=matrix-header style=min-width:75px onclick="sortTable($((++col)),'version');">Cmake</td>
     <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">Eigen3</td>
     <td class=matrix-header style=min-width:50px onclick="sortTable($((++col)),'version');">ns-3</td>
@@ -162,7 +157,6 @@ do
     fi
     boost=$(get_boost)
     compiler=$(get_compiler)
-    java=$(get_java)
     cmake=$(get_cmake)
     eigen3=$(get_eigen3)
     ns3=$(get_ns3)
@@ -200,7 +194,6 @@ do
     <td class="matrix-cell" style="text-align:center">${statusmc}</td>
     <td class="matrix-cell" style="text-align:left">$compiler</td>
     <td class="matrix-cell" style="text-align:left">$boost</td>
-    <td class="matrix-cell" style="text-align:left">$java</td>
     <td class="matrix-cell" style="text-align:left">$cmake</td>
     <td class="matrix-cell" style="text-align:center">$eigen3</td>
     <td class="matrix-cell" style="text-align:left">$ns3</td>

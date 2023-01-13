@@ -12,8 +12,6 @@ echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
 rm -f /tmp/cc*
 rm -f /tmp/*.so
 rm -f /tmp/*.so.*
-rm -rf /tmp/jvm-*
-find $WORKSPACE -name "hs_err_pid*.log" -exec rm -f {} +
 ls /tmp
 df -h
 echo "XXXX Let's go"
@@ -186,14 +184,6 @@ echo "XX   pwd: $(pwd)"
 echo "XX"
 set -x
 
-if cmake --version | grep -q 3\.11 ; then
-  # -DCMAKE_DISABLE_SOURCE_CHANGES=ON is broken with java on CMake 3.11
-  # https://gitlab.kitware.com/cmake/cmake/issues/17933
-  MAY_DISABLE_SOURCE_CHANGE=""
-else
-  MAY_DISABLE_SOURCE_CHANGE="-DCMAKE_DISABLE_SOURCE_CHANGES=ON"
-fi
-
 if [ "$os" = "CentOS" ]; then
     if [ "$(ld -v | cut -d\  -f4 | cut -c1-4)" = "2.30" ]; then
         echo "Temporary disable LTO, believed to be broken on this system."
@@ -219,7 +209,7 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_compile_warnings=$(onoff test "$GENERATOR" != "MSYS Makefiles") -Denable_smpi=ON \
   -Denable_ns3=$(onoff test "$have_NS3" = "yes" -a "$build_mode" = "Debug") \
   -DSIMGRID_PYTHON_LIBDIR=${SIMGRID_PYTHON_LIBDIR} \
-  ${MAY_DISABLE_SOURCE_CHANGE} ${MAY_DISABLE_LTO} ${MAY_HINT_AT_NS3} \
+  -DCMAKE_DISABLE_SOURCE_CHANGES=ON ${MAY_DISABLE_LTO} ${MAY_HINT_AT_NS3} \
   -Denable_msg=$(onoff test "$build_mode" = "ModelChecker") \
   -DLTO_EXTRA_FLAG="auto" \
   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
