@@ -210,7 +210,6 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_ns3=$(onoff test "$have_NS3" = "yes" -a "$build_mode" = "Debug") \
   -DSIMGRID_PYTHON_LIBDIR=${SIMGRID_PYTHON_LIBDIR} \
   -DCMAKE_DISABLE_SOURCE_CHANGES=ON ${MAY_DISABLE_LTO} ${MAY_HINT_AT_NS3} \
-  -Denable_msg=$(onoff test "$build_mode" = "ModelChecker") \
   -DLTO_EXTRA_FLAG="auto" \
   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
   "$SRCFOLDER"
