@@ -11,7 +11,7 @@ else()
 endif()
 
 if(WIN32 OR MINGW)
-  message(FATAL "SimGrid does not build on native windows, nor with MinGW. Please use WSL2 instead.")
+  message(FATAL_ERROR "SimGrid does not build on native windows, nor with MinGW. Please use WSL2 instead.")
 endif()
 
 message(STATUS "Configuring SimGrid v${release_version}")
