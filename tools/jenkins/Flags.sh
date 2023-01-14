@@ -18,7 +18,7 @@ onoff() {
   fi
 }
 
-[ $# -eq 3 ] || die "Needs 4 arguments : MC SMPI DEBUG"
+[ $# -eq 3 ] || die "Needs 3 arguments : MC SMPI DEBUG"
 
 ### Cleanup previous runs
 
