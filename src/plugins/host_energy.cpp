@@ -94,8 +94,8 @@ This encodes the following values:
    </table>
 
 To change the pstate of a given CPU, use the following functions:
-:cpp:func:`MSG_host_get_nb_pstates()`, :cpp:func:`simgrid::s4u::Host::set_pstate()`,
-:cpp:func:`MSG_host_get_power_peak_at()`.
+:cpp:func:`sg_host_get_nb_pstates()`, :cpp:func:`simgrid::s4u::Host::set_pstate()`,
+:cpp:func:`sg_host_get_pstate_speed()`.
 
 .. raw:: html
 

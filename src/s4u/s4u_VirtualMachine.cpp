@@ -119,7 +119,7 @@ VirtualMachine* VirtualMachine::set_ramsize(size_t ramsize)
 /** @brief Set a CPU bound for a given VM.
  *  @ingroup msg_VMs
  *
- * 1. Note that in some cases MSG_task_set_bound() may not intuitively work for VMs.
+ * 1. Note that in some cases sg_exec_set_bound() may not intuitively work for VMs.
  *
  * For example,
  *  On PM0, there are Task1 and VM0.
@@ -137,7 +137,7 @@ VirtualMachine* VirtualMachine::set_ramsize(size_t ramsize)
  * It should be the sum of all tasks on the VM. But, this solution might be costly, because we have to scan all tasks
  * on the VM in share_resource() or we have to trap both the start and end of task execution.
  *
- * The current solution is to use setBound(), which allows us to directly set the bound of the dummy CPU action.
+ * The current solution is to use set_bound(), which allows us to directly set the bound of the dummy CPU action.
  *
  * 2. Note that bound == 0 means no bound (i.e., unlimited). But, if a host has multiple CPU cores, the CPU share of a
  *    computation task (or a VM) never exceeds the capacity of a CPU core.

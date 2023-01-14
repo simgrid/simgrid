@@ -187,10 +187,7 @@ void STag_surfxml_platform() {
                                      "available in the tools/ directory of the source archive.\n"
 
                                      "Please check also out the SURF section of the ChangeLog for "
-                                     "the 3.1 version for more information. \n"
-
-                                     "Last, do not forget to also update your values for "
-                                     "the calls to MSG_task_create (if any).");
+                                     "the 3.1 version for more information.");
   surf_parse_assert(version >= 300L, "******* BIG FAT WARNING *********\n "
                                      "You're using an old XML file.\n"
                                      "Use simgrid_update_xml to update your file automatically. "

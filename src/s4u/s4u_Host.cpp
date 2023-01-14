@@ -552,7 +552,7 @@ void sg_host_turn_on(sg_host_t host)
  *
  * @brief Stop the host if it is on
  *
- * See also #MSG_host_is_on() to test the current state of the host and @ref plugin_host_energy
+ * See also #sg_host_is_on() to test the current state of the host and @ref plugin_host_energy
  * for more info on DVFS.
  */
 void sg_host_turn_off(sg_host_t host)

@@ -544,7 +544,7 @@ the correspondent receive. This threshold can be configured through
 the ``smpi/async-small-thresh`` item. The default value is 0. This
 behavior can also be manually set for mailboxes, by setting the
 receiving mode of the mailbox with a call to
-:cpp:func:`MSG_mailbox_set_async`. After this, all messages sent to
+:cpp:func:`sg_mailbox_set_receiver`. After this, all messages sent to
 this mailbox will have this behavior regardless of the message size.
 
 This value needs to be smaller than or equals to the threshold set at

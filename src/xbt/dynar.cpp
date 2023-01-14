@@ -353,15 +353,6 @@ void xbt_dynar_map(const_xbt_dynar_t dynar, void_f_pvoid_t op)
    }
    @endverbatim
  *
- * And now, a function to sort a dynar of MSG hosts depending on their speed:
- * @verbatim
-   int cmpfunc(const MSG_host_t a, const MSG_host_t b) {
-     MSG_host_t hostA = *(MSG_host_t*)a;
-     MSG_host_t hostB = *(MSG_host_t*)b;
-     return MSG_host_get_speed(hostA) - MSG_host_get_speed(hostB);
-   }
-   @endverbatim
- *
  * @param dynar the dynar to sort
  * @param compar_fn comparison function of type (int (compar_fn*) (const void*) (const void*)).
  */
