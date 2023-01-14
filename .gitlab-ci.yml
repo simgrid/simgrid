@@ -32,7 +32,7 @@ release:
   script:
   - apt-get --allow-releaseinfo-change update
   - apt install -y binutils wget unzip zip
-  - cmake -Denable_documentation=OFF -Denable_msg=ON -Dminimal-bindings=ON -Denable_compile_optimizations=ON -Denable_smpi=OFF -DLTO_EXTRA_FLAG="auto" .
+  - cmake -Denable_documentation=OFF -Dminimal-bindings=ON -Denable_compile_optimizations=ON -Denable_smpi=OFF -DLTO_EXTRA_FLAG="auto" .
   - make VERBOSE=1 -j$(nproc) dist
   artifacts:
     paths:

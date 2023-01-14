@@ -25,14 +25,6 @@ endif()
 
 install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh DESTINATION ${CMAKE_INSTALL_BINDIR}/)
 
-install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/tools/MSG_visualization/colorize.pl
-  DESTINATION ${CMAKE_INSTALL_BINDIR}/
-  RENAME simgrid-colorizer)
-
-add_custom_target(simgrid-colorizer ALL
-  COMMENT "Install ${CMAKE_BINARY_DIR}/bin/colorize"
-  COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/tools/MSG_visualization/colorize.pl ${CMAKE_BINARY_DIR}/bin/colorize)
-
 install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl
   DESTINATION ${CMAKE_INSTALL_BINDIR}/
   RENAME simgrid_update_xml)
@@ -89,7 +81,6 @@ set(source_to_pack
   ${MC_SRC_BASE}
   ${MC_SRC}
   ${MC_SIMGRID_MC_SRC}
-  ${MSG_SRC}
   ${S4U_SRC}
   ${NS3_SRC}
   ${PLUGINS_SRC}

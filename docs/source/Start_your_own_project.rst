@@ -160,7 +160,6 @@ Many undefined references
 .. code-block:: console
 
   masterworker.c:209: undefined reference to `sg_version_check'
-  masterworker.c:209: undefined reference to `MSG_init_nocheck'
   (and many other undefined references)
 
 This happens when the linker tries to use the wrong library. Use

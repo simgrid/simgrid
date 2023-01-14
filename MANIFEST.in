@@ -1,8 +1,6 @@
 # This file lists the content of the python source package
 # Prepared in tools/cmake/Distrib.cmake
 
-include doc/webcruft/Paje_MSG_screenshot.jpg
-include doc/webcruft/Paje_MSG_screenshot_thn.jpg
 include doc/webcruft/eclipseScreenShot.png
 include doc/webcruft/output.goal.pdf
 include examples/c/actor-create/actor-create.c
@@ -642,8 +640,6 @@ include teshsuite/models/wifi_usage/wifi_usage.cpp
 include teshsuite/models/wifi_usage/wifi_usage.tesh
 include teshsuite/models/wifi_usage_decay/wifi_usage_decay.cpp
 include teshsuite/models/wifi_usage_decay/wifi_usage_decay.tesh
-include teshsuite/msg/task_destroy_cancel/task_destroy_cancel.c
-include teshsuite/msg/task_destroy_cancel/task_destroy_cancel.tesh
 include teshsuite/platforms/Dijkstra.xml
 include teshsuite/platforms/bob.trace
 include teshsuite/platforms/bogus_missing_dst_gateway.xml
@@ -1579,8 +1575,6 @@ include teshsuite/xbt/parmap_test/parmap_test.cpp
 include teshsuite/xbt/parmap_test/parmap_test.tesh
 include teshsuite/xbt/signals/signals.cpp
 include teshsuite/xbt/signals/signals.tesh
-include tools/MSG_visualization/colorize.pl
-include tools/MSG_visualization/trace2fig.pl
 include tools/address_sanitizer.supp
 include tools/fix-paje-trace.sh
 include tools/generate-dwarf-functions
@@ -1680,7 +1674,6 @@ include docs/source/_ext/showfile.js
 include docs/source/_ext/showfile.py
 include docs/source/_static/css/custom.css
 include docs/source/_templates/breadcrumbs.html
-include docs/source/app_msg.rst
 include docs/source/app_s4u.rst
 include docs/source/app_smpi.rst
 include docs/source/application.rst
@@ -1895,7 +1888,6 @@ include include/simgrid/kernel/routing/WifiZone.hpp
 include include/simgrid/link.h
 include include/simgrid/mailbox.h
 include include/simgrid/modelchecker.h
-include include/simgrid/msg.h
 include include/simgrid/mutex.h
 include include/simgrid/plugins/ProducerConsumer.hpp
 include include/simgrid/plugins/dvfs.h
@@ -2202,12 +2194,6 @@ include src/mc/transition/TransitionSynchro.cpp
 include src/mc/transition/TransitionSynchro.hpp
 include src/mc/udpor_global.cpp
 include src/mc/udpor_global.hpp
-include src/msg/msg_comm.cpp
-include src/msg/msg_global.cpp
-include src/msg/msg_legacy.cpp
-include src/msg/msg_private.hpp
-include src/msg/msg_process.cpp
-include src/msg/msg_task.cpp
 include src/plugins/ProducerConsumer.cpp
 include src/plugins/chaos_monkey.cpp
 include src/plugins/file_system/s4u_FileSystem.cpp
@@ -2522,7 +2508,6 @@ include src/xbt/xbt_virtu.cpp
 include teshsuite/kernel/CMakeLists.txt
 include teshsuite/mc/CMakeLists.txt
 include teshsuite/models/CMakeLists.txt
-include teshsuite/msg/CMakeLists.txt
 include teshsuite/platforms/CMakeLists.txt
 include teshsuite/python/CMakeLists.txt
 include teshsuite/s4u/CMakeLists.txt

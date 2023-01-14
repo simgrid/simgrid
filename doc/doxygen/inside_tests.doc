@@ -30,13 +30,13 @@ cmake. These tests are run for every commit and the result is publicly
 
 @verbatim
 ctest                     # Launch all tests
-ctest -R msg              # Launch only the tests which name match the string "msg"
+ctest -R mc-              # Launch only the tests which name match the string "mc-"
 ctest -j4                 # Launch all tests in parallel, at most 4 at the same time
 ctest --verbose           # Display all details on what's going on
 ctest --output-on-failure # Only get verbose for the tests that fail
 
-ctest -R msg- -j5 --output-on-failure # You changed MSG and want to check that you didn't break anything, huh?
-                                      # That's fine, I do so all the time myself.
+ctest -R mc- -j5 --output-on-failure # You changed the model checker and want to check that you didn't break anything, huh?
+                                     # That's fine, I do so all the time myself.
 @endverbatim
 
 @section inside_tests_rununit Running the unit tests
@@ -102,13 +102,13 @@ To add a new integration test, you thus have 3 things to do:
  - <b>Add your test in the cmake infrastructure</b>. For that, modify
    the following file:
    @verbatim
-   <project/directory>/teshsuite/<interface eg msg>/CMakeLists.txt
+   <project/directory>/teshsuite/<interface eg s4u>/CMakeLists.txt
    @endverbatim
    Make sure to pick a wise name for your test. It is often useful to
    check a category of tests together. The only way to do so in ctest
    is to use the -R argument that specifies a regular expression that
-   the test names must match. For example, you can run all MSG test
-   with "ctest -R msg". That explains the importance of the test
+   the test names must match. For example, you can run all MC test
+   with "ctest -R mc-". That explains the importance of the test
    names.
 
 Once the name is chosen, create a new test by adding a line similar to

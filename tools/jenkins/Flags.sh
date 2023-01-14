@@ -18,7 +18,7 @@ onoff() {
   fi
 }
 
-[ $# -eq 4 ] || die "Needs 4 arguments : MC SMPI DEBUG MSG"
+[ $# -eq 4 ] || die "Needs 4 arguments : MC SMPI DEBUG"
 
 ### Cleanup previous runs
 
@@ -65,15 +65,8 @@ else
   builddebug="OFF"
 fi
 
-if [ "$4" = "MSG" ]
-then
-  buildmsg="ON"
-else
-  buildmsg="OFF"
-fi
-
-echo "Step ${STEP}/${NSTEPS} - Building with debug=${builddebug}, SMPI=${buildsmpi}, MC=${buildmc}, MSG=${buildmsg}"
-cmake -Denable_documentation=OFF -Denable_msg=${buildmsg} \
+echo "Step ${STEP}/${NSTEPS} - Building with debug=${builddebug}, SMPI=${buildsmpi}, MC=${buildmc}"
+cmake -Denable_documentation=OFF \
       -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
       -Denable_mallocators=ON -Denable_debug=${builddebug} \
       -Denable_smpi=${buildsmpi} -Denable_smpi_MPICH3_testsuite=${buildsmpi} -Denable_model-checking=${buildmc} \

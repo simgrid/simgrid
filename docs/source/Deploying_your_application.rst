@@ -76,10 +76,6 @@ This tag starts a new actor executing the given function on a given host.
    with :cpp:func:`simgrid::s4u::Engine::register_actor` or
    with :cpp:func:`simgrid::s4u::Engine::register_function`.
 
-   If you are stuck with MSG, use :cpp:func:`MSG_process_create`,
-   :cpp:func:`MSG_process_create_with_arguments` or
-   :cpp:func:`MSG_process_create_with_environment`.
-
 :``start_time``: Useful to delay the start of your actor.
 
 	 -1 starts the actor immediately.

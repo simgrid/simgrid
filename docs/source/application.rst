@@ -31,13 +31,7 @@ to mix several interfaces in the same simulation.
    MPI profilers). You can reuse this mechanism for any kind of trace
    that you want to replay, for example to study how a P2P DHT overlay
    reacts to a given workload.
- - Simulating algorithms with the legacy interface in C: :ref:`MSG for distributed
-   algorithms <MSG_doc>`. SimGrid was founded in 1998, and many interfaces were proposed
-   along the way. MSG (introduced around 2002) is still present in SimGrid. It
-   does not evolve anymore, but given its popularity, it will not be removed
-   until at least 2020. That being said, our goal is to make S4U so useful that
-   this legacy API becomes useless and obsolete.
- - We are currently working on the ability to modify any existing
+ - A prototypal tool is intended to allow the modification of any existing
    application so that it can run on top of SimGrid. This project,
    called `Remote-SimGrid
    <https://framagit.org/simgrid/remote-simgrid>`_, is somewhat
@@ -55,6 +49,3 @@ applications, but our long term goal would be to allow for the execution
 of any legacy application, with absolutely no modification. We call it
 SimOS, even if it will not become usable before several years of
 additional work.
-
-.. The old documentation of the obsolete MSG replay module was removed in
-..  https://github.com/simgrid/simgrid/commit/e05361c201fb95d2b7605e59001cd0a49a489739

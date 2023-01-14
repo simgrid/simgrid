@@ -20,15 +20,10 @@ with the full power of C++. This is the preferred interface to describe
 abstract algorithms in the domains of Cloud, P2P, HPC, IoT, and similar
 settings.
 
-Since v3.20 (June 2018), S4U is the way to go for long-term
-projects. It is feature complete, but may still evolve slightly in
-future releases. It can already be used to do everything that can be
-done in SimGrid, but you may have to adapt your code in future
-releases. When this happens, compiling your code will produce
-deprecation warnings for 4 releases (one year) before the removal of
-the old symbols.
-If you want an API that will never ever evolve in the future, you
-should use the :ref:`deprecated MSG API <MSG_doc>` instead.
+Since v3.33 (Spring 2023), S4U is the main interface of SimGrid for algorithms.
+It is feature complete, but may still evolve slightly in future releases.
+When this happens, compiling your code will produce deprecation warnings for 4
+releases (one year) before the removal of the old symbols.
 
 .. _S4U_main_concepts:
 

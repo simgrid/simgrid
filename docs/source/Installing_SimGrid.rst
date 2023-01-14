@@ -234,9 +234,6 @@ enable_model-checking (on/OFF)
   simulation speed** even when the model checker is not activated at
   run time.
 
-enable_msg (on/OFF)
-  Activates the :ref:`MSG <MSG_doc>` legacy interface.
-
 enable_ns3 (on/OFF)
   Activates the ns-3 bindings. See section :ref:`model_ns3`.
 

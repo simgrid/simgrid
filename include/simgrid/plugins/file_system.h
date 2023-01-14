@@ -46,30 +46,6 @@ XBT_PUBLIC sg_size_t sg_disk_get_size_used(const_sg_disk_t d);
 XBT_PUBLIC sg_size_t sg_disk_get_size(const_sg_disk_t d);
 XBT_PUBLIC const char* sg_disk_get_mount_point(const_sg_disk_t d);
 
-#if SIMGRID_HAVE_MSG
-
-typedef sg_file_t msg_file_t; // MSG backwards compatibility
-
-#define MSG_file_open(fullpath, data) sg_file_open((fullpath), (data))
-#define MSG_file_read(fd, size) sg_file_read((fd), (size))
-#define MSG_file_write(fd, size) sg_file_write((fd), (size))
-#define MSG_file_close(fd) sg_file_close(fd)
-#define MSG_file_get_name(fd) sg_file_get_name(fd)
-#define MSG_file_get_size(fd) sg_file_get_size(fd)
-#define MSG_file_dump(fd) sg_file_dump(fd)
-#define MSG_file_get_data(fd) sg_file_get_data(fd)
-#define MSG_file_set_data(fd, data) sg_file_set_data((fd), (data))
-#define MSG_file_seek(fd, offset, origin) sg_file_seek((fd), (offset), (origin))
-#define MSG_file_tell(fd) sg_file_tell(fd)
-#define MSG_file_move(fd, fullpath) sg_file_get_size((fd), (fullpath))
-#define MSG_file_unlink(fd) sg_file_unlink(fd)
-#define MSG_file_rcopy(file, host, fullpath) sg_file_rcopy((file), (host), (fullpath))
-#define MSG_file_rmove(file, host, fullpath) sg_file_rmove((file), (host), (fullpath))
-
-#define MSG_storage_file_system_init() sg_storage_file_system_init()
-
-#endif // SIMGRID_HAVE_MSG
-
 SG_END_DECL
 
 // C++ interface

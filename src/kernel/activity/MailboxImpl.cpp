@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/activity/MailboxImpl.hpp"
-#include "simgrid/msg.h"
 #include "src/kernel/activity/CommImpl.hpp"
 
 #include <unordered_map>

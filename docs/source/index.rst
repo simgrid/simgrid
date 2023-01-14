@@ -73,7 +73,6 @@ of every page. Bugs in the code should be reported
       Describing your application <application.rst>
          The S4U interface <app_s4u.rst>
          The SMPI interface <app_smpi.rst>
-         The MSG interface <app_msg.rst>
          The XBT toolbox <The_XBT_toolbox.rst>
       Describing the simulated platform <Platform.rst>
          Network topology examples <Platform_examples.rst>

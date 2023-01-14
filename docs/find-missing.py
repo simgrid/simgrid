@@ -48,7 +48,6 @@ xml_files = [
     'build/xml/host_8h.xml',
     'build/xml/link_8h.xml',
     'build/xml/mailbox_8h.xml',
-    'build/xml/msg_8h.xml',
     'build/xml/mutex_8h.xml',
     'build/xml/semaphore_8h.xml',
     'build/xml/vm_8h.xml',

@@ -456,12 +456,12 @@ the plugins.
 From your code, you can interact with these properties using the
 following functions:
 
-- Actor: :cpp:func:`simgrid::s4u::Actor::get_property` or :cpp:func:`MSG_process_get_property_value`
+- Actor: :cpp:func:`simgrid::s4u::Actor::get_property`
 - Cluster: this is a zone, see below.
 - Disk: :cpp:func:`simgrid::s4u::Disk::get_property`
-- Host: :cpp:func:`simgrid::s4u::Host::get_property` or :cpp:func:`MSG_host_get_property_value`
+- Host: :cpp:func:`simgrid::s4u::Host::get_property`
 - Link: :cpp:func:`simgrid::s4u::Link::get_property`
-- Zone: :cpp:func:`simgrid::s4u::NetZone::get_property` of :cpp:func:`MSG_zone_get_property_value`
+- Zone: :cpp:func:`simgrid::s4u::NetZone::get_property`
 
 **Parent tags:** :ref:`pf_tag_actor`, :ref:`pf_tag_config`, :ref:`pf_tag_cluster`, :ref:`pf_tag_host`,
 :ref:`pf_tag_link`, :ref:`pf_tag_disk`,:ref:`pf_tag_zone` |br|

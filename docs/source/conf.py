@@ -117,8 +117,6 @@ nitpick_ignore = [
   ('cpp:identifier', 's4u_Semaphore'),
   ('cpp:identifier', 's4u_VM'),
   ('cpp:identifier', 's4u_VirtualMachine'),
-  ('cpp:identifier', 'sg_msg_Comm'),
-  ('cpp:identifier', 'sg_msg_Task'),
   ('cpp:identifier', 'simgrid'),
   ('cpp:identifier', 'simgrid::s4u'),
   ('cpp:identifier', 'simgrid::s4u::Activity_T<Comm>'),

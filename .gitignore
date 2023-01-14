@@ -292,7 +292,6 @@ teshsuite/models/cloud-sharing/cloud-sharing
 teshsuite/models/ptask_L07_usage/ptask_L07_usage
 teshsuite/models/wifi_usage/wifi_usage
 teshsuite/models/wifi_usage_decay/wifi_usage_decay
-teshsuite/msg/task_destroy_cancel/task_destroy_cancel
 teshsuite/platforms/flatifier
 teshsuite/s4u/activity-lifecycle/activity-lifecycle
 teshsuite/s4u/actor/actor

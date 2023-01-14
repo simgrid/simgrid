@@ -58,7 +58,7 @@ file:
   </config>
 
 A last solution is to pass your configuration directly in your program
-with :cpp:func:`simgrid::s4u::Engine::set_config` or :cpp:func:`MSG_config`.
+with :cpp:func:`simgrid::s4u::Engine::set_config`.
 
 .. code-block:: cpp
 
@@ -107,8 +107,6 @@ Existing Configuration Items
 
 - **maxmin/precision:** :ref:`cfg=maxmin/precision`
 - **maxmin/concurrency-limit:** :ref:`cfg=maxmin/concurrency-limit`
-
-- **msg/debug-multiple-use:** :ref:`cfg=msg/debug-multiple-use`
 
 - **model-check:** :ref:`options_modelchecking`
 - **model-check/checkpoint:** :ref:`cfg=model-check/checkpoint`
@@ -980,7 +978,7 @@ Running User Code in Parallel
 .............................
 
 Parallel execution of the user code is only considered stable in
-SimGrid v3.7 and higher, and mostly for MSG simulations. SMPI
+SimGrid v3.7 and higher, and mostly for S4U simulations. SMPI
 simulations may well fail in parallel mode. It is described in
 `INRIA RR-7653 <http://hal.inria.fr/inria-00602216/>`_.
 
@@ -1020,7 +1018,7 @@ We detail here a simple way to get the traces working for you, even if
 you never used the tracing API.
 
 
-- Any SimGrid-based simulator (MSG, SMPI, ...) and raw traces:
+- Any SimGrid-based simulator (S4U, SMPI, ...) and raw traces:
 
   .. code-block:: none
 
@@ -1030,7 +1028,7 @@ you never used the tracing API.
   tells it to trace host and link utilization (without any
   categorization).
 
-- MSG-based simulator and categorized traces (you need to
+- S4U-based simulator and categorized traces (you need to
   declare categories and classify your tasks according to them)
 
   .. code-block:: none
@@ -1069,21 +1067,6 @@ reproduce an experiment. You have two ways to do that:
 Please, use these two parameters (for comments) to make reproducible
 simulations. For additional details about this and all tracing
 options, check See the :ref:`tracing_tracing_options`.
-
-Configuring MSG
----------------
-
-.. _cfg=msg/debug-multiple-use:
-
-Debugging MSG Code
-..................
-
-**Option** ``msg/debug-multiple-use`` **Default:** off
-
-Sometimes your application may try to send a task that is still being
-executed somewhere else, making it impossible to send this task. However,
-for debugging purposes, one may want to know what the other host is/was
-doing. This option shows a backtrace of the other process.
 
 Configuring SMPI
 ----------------

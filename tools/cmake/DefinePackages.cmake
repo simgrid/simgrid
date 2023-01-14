@@ -23,7 +23,6 @@ set(EXTRA_DIST
   src/kernel/resource/WifiLinkImpl.hpp
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
-  src/msg/msg_private.hpp
   src/smpi/colls/coll_tuned_topo.hpp
   src/smpi/colls/colls_private.hpp
   src/smpi/colls/smpi_mvapich2_selector_stampede.hpp
@@ -475,14 +474,6 @@ set(SIMGRID_SRC
   src/simgrid/util.hpp
   )
 
-set(MSG_SRC
-  src/msg/msg_comm.cpp
-  src/msg/msg_global.cpp
-  src/msg/msg_legacy.cpp
-  src/msg/msg_process.cpp
-  src/msg/msg_task.cpp
-  )
-
 set(DAG_SRC
   src/dag/loaders.cpp
   )
@@ -743,14 +734,6 @@ set(simgrid_sources
   ${DAG_SRC}
   )
 
-if(${enable_msg})
-  set(headers_to_install ${headers_to_install}  include/simgrid/msg.h)
-  set(simgrid_sources    ${simgrid_sources}     ${MSG_SRC})
-else()
-  set(EXTRA_DIST         ${EXTRA_DIST}          include/simgrid/msg.h
-                                                ${MSG_SRC})
-endif()
-
 if(enable_smpi)
   set(simgrid_sources  ${simgrid_sources}  ${SMPI_SRC})
 endif()
@@ -821,7 +804,6 @@ set(DOC_SOURCES
   docs/source/img/zoom_comm.svg
 
   docs/source/application.rst
-  docs/source/app_msg.rst
   docs/source/app_s4u.rst
   docs/source/app_smpi.rst
   docs/source/The_XBT_toolbox.rst
@@ -925,8 +907,6 @@ set(DOC_TOOLS
 
 # these files get copied automatically to the html documentation
 set(DOC_IMG
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/eclipseScreenShot.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/output.goal.pdf
   )
@@ -969,7 +949,6 @@ set(CMAKEFILES_TXT
   teshsuite/kernel/CMakeLists.txt
   teshsuite/mc/CMakeLists.txt
   teshsuite/models/CMakeLists.txt
-  teshsuite/msg/CMakeLists.txt
   teshsuite/platforms/CMakeLists.txt
   teshsuite/python/CMakeLists.txt
   teshsuite/s4u/CMakeLists.txt

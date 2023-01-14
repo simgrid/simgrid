@@ -62,7 +62,6 @@ ModelChecker
 modelchecker
 MPI
 MPICH
-msg
 mutex
 NetZone
 nullptr

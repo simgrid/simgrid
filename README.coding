@@ -14,7 +14,7 @@
                should leverage our tesh(1) utility.
 
 **
-** NEW type naming standard in SimGrid4
+** Type naming standard in SimGrid4
 **
 *****************************************************
 
@@ -42,60 +42,6 @@ SimGrid4 will follow the these rules:
     char* sg_host_get_name(sg_host_t* host);
 
 
-This is different from the old convention (described below), that
-should not be used in S4U and its bindings, nor in the kernel.
-
-**
-** Commenting the source: doxygen
-**
-****************************************************
-
-The global structure of the documentation is in doc/modules.doc
-
-The structure of each module (xbt, msg, etc) is in doc/module-<module>.doc
-
-The structure of a module is in its public header. This way, you're sure to
-see all the public interface (and only it). The different parts of the
-interface are grouped using the @name construct, even if it's buggy. Since
-parts often get reordered, it's better to add numbers to the parts (so that
-users can see the intended order).
-
-The documentation of each type and macro are also in the public header since
-this is were they live.
-
-The documentation of each function must be in the C++ file were it lives.
-
-Any public element (function, type and macro) must have a @brief part.
-
-We use @ as a command marker, not \ (so, use @brief not \brief)
-
-**
-** OLD Type naming standard in SimGrid3
-**
-*****************************************************
-
-SimGrid3 legacy interface (ie, MSG) is following these rules:
-
-  - ???_t is a valid type (built with typedef)
-  - s_toto_t is a structure (access to fields with .)
-  - s_toto   is a structure needing 'struct' keyword to be used
-  - e_toto_t is an enum
-  - u_toto_t is an union
-  - u_toto   is an union needing 'union' keyword to be used
-  -   toto_t is an 'object' (struct*)
-
-Please to not call toto_t something else than an 'object' (ie, something you
-have to call _new and _free on it).
-
-Example:
-  typedef struct s_toto {} s_toto_t, *toto_t;
-  typedef enum {} e_toto_t;
-
-Moreover, only toto_t (and e_toto_t) are public. The rest (mainly s_toto_t)
-is private.
-
-
-*
 * SimGrid Hacker Survival Guide (FIXME: should be betterly placed)
 ********************************
 * When you add/remove files, and/or make changes in the lists of files to build,

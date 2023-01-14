@@ -30,8 +30,8 @@
 - You must run similar experiments on your hardware to get realistic
   data for your context.
 - SimGrid has been in active development since the paper release in
-  2015, thus the MSG and XML description used in the paper may have
-  evolved and may not be available anymore.
+  2015, thus the XML description used in the paper may have evolved 
+  while MSG was superseeded by S4U since then.
 
 *** Running this tutorial
 
