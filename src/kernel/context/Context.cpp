@@ -79,14 +79,14 @@ ContextFactory::~ContextFactory() = default;
 thread_local Context* Context::current_context_ = nullptr;
 
 /* Install or disable alternate signal stack, for SIGSEGV handler. */
-int Context::install_sigsegv_stack(stack_t* old_stack, bool enable)
+int Context::install_sigsegv_stack(bool enable)
 {
   static std::vector<unsigned char> sigsegv_stack(SIGSTKSZ);
   stack_t stack;
   stack.ss_sp    = sigsegv_stack.data();
   stack.ss_size  = sigsegv_stack.size();
   stack.ss_flags = enable ? 0 : SS_DISABLE;
-  return sigaltstack(&stack, old_stack);
+  return sigaltstack(&stack, nullptr);
 }
 
 Context* Context::self()

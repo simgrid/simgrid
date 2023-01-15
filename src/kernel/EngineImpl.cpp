@@ -120,7 +120,7 @@ static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
  */
 static void install_segvhandler()
 {
-  if (simgrid::kernel::context::Context::install_sigsegv_stack(nullptr, true) == -1) {
+  if (simgrid::kernel::context::Context::install_sigsegv_stack(true) == -1) {
     XBT_WARN("Failed to register alternate signal stack: %s", strerror(errno));
     return;
   }

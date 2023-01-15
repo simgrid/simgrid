@@ -53,7 +53,7 @@ class XBT_PUBLIC Context {
   void declare_context(std::size_t size);
 
 public:
-  static int install_sigsegv_stack(stack_t* old_stack, bool enable);
+  static int install_sigsegv_stack(bool enable);
 
   Context(std::function<void()>&& code, actor::ActorImpl* actor, bool maestro);
   Context(const Context&) = delete;
