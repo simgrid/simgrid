@@ -580,7 +580,6 @@ set(generated_files_to_clean
   ${CMAKE_BINARY_DIR}/bin/smpiff
   ${CMAKE_BINARY_DIR}/bin/smpif90
   ${CMAKE_BINARY_DIR}/bin/smpirun
-  ${CMAKE_BINARY_DIR}/bin/colorize
   ${CMAKE_BINARY_DIR}/bin/simgrid_update_xml
   ${CMAKE_BINARY_DIR}/examples/smpi/tracing/smpi_traced.trace
   )

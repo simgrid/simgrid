@@ -532,21 +532,6 @@ Discovering the Provided Code
       If you get an error stating that the simgrid module does not exist, you need to get a newer version of SimGrid. 
       You may want to take the tutorial from the docker to get the newest version.
 
-For a more "fancy" output, you can use simgrid-colorizer.
-
-.. code-block:: console
-
-   # Run C++ code
-   $ ./master-workers small_platform.xml master-workers_d.xml 2>&1 | simgrid-colorizer
-
-   # Run Python code
-   $ python master-workers.py small_platform.xml master-workers_d.xml 2>&1 | simgrid-colorizer
-
-If you installed SimGrid to a non-standard path, you may have to
-specify the full path to simgrid-colorizer on the above line, such as
-``/opt/simgrid/bin/simgrid-colorizer``. If you did not install it at all,
-you can find it in <simgrid_root_directory>/bin/colorize.
-
 For a classical Gantt-Chart visualization, you can use `Vite
 <http://vite.gforge.inria.fr/>`_ if you have it installed, as
 follows. But do not spend too much time installing Vite, because there
