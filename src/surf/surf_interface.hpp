@@ -22,8 +22,6 @@
 /*********
  * Utils *
  *********/
-XBT_PRIVATE FILE* surf_fopen(const std::string& name, const char* mode);
-XBT_PRIVATE std::ifstream* surf_ifsopen(const std::string& name);
 
 /* user-visible parameters */
 XBT_PUBLIC_DATA double sg_maxmin_precision;

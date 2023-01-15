@@ -16,7 +16,44 @@
 #endif
 
 #include <cstring>
+#include <fstream>
 #include <libgen.h> /* POSIX dirname */
+
+FILE* simgrid::xbt::fopen_path(const std::string& name, const char* mode, const std::vector<std::string>& path)
+{
+  if (name.c_str()[0] == '/') // don't mess with absolute file names
+    return fopen(name.c_str(), mode);
+
+  /* search relative files in the path */
+  for (auto const& path_elm : path) {
+    std::string buff = path_elm + "/" + name;
+    FILE* file       = fopen(buff.c_str(), mode);
+
+    if (file)
+      return file;
+  }
+  return nullptr;
+}
+
+std::ifstream* simgrid::xbt::ifsopen_path(const std::string& name, const std::vector<std::string>& path)
+{
+  xbt_assert(not name.empty());
+
+  auto* fs = new std::ifstream();
+  if (name.c_str()[0] == '/') // don't mess with absolute file names
+    fs->open(name.c_str(), std::ifstream::in);
+
+  /* search relative files in the path */
+  for (auto const& path_elm : path) {
+    std::string buff = path_elm + "/" + name;
+    fs->open(buff.c_str(), std::ifstream::in);
+
+    if (not fs->fail())
+      return fs;
+  }
+
+  return fs;
+}
 
 simgrid::xbt::Path::Path()
 {

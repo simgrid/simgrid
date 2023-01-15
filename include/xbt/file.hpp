@@ -7,10 +7,14 @@
 #define XBT_FILE_HPP
 
 #include <string>
+#include <vector>
 #include <xbt/base.h>
 
 namespace simgrid {
 namespace xbt {
+
+FILE* fopen_path(const std::string& name, const char* mode, const std::vector<std::string>& path);
+std::ifstream* ifsopen_path(const std::string& name, const std::vector<std::string>& path);
 
 class Path {
 public:

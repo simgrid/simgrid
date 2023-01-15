@@ -88,53 +88,6 @@ const std::vector<surf_model_description_t> surf_optimization_mode_description =
     {"Full", "Full update of remaining and variables. Slow but may be useful when debugging.", nullptr},
 };
 
-/* returns whether #file_path is an absolute file path. Surprising, isn't it ? */
-static bool is_absolute_file_path(const std::string& file_path)
-{
-  return (file_path.c_str()[0] == '/');
-}
-
-std::ifstream* surf_ifsopen(const std::string& name)
-{
-  xbt_assert(not name.empty());
-
-  auto* fs = new std::ifstream();
-  if (is_absolute_file_path(name)) { /* don't mess with absolute file names */
-    fs->open(name.c_str(), std::ifstream::in);
-  }
-
-  /* search relative files in the path */
-  for (auto const& path_elm : surf_path) {
-    std::string buff = path_elm + "/" + name;
-    fs->open(buff.c_str(), std::ifstream::in);
-
-    if (not fs->fail()) {
-      XBT_DEBUG("Found file at %s", buff.c_str());
-      return fs;
-    }
-  }
-
-  return fs;
-}
-
-FILE* surf_fopen(const std::string& name, const char* mode)
-{
-  FILE* file = nullptr;
-
-  if (is_absolute_file_path(name)) /* don't mess with absolute file names */
-    return fopen(name.c_str(), mode);
-
-  /* search relative files in the path */
-  for (auto const& path_elm : surf_path) {
-    std::string buff = path_elm + "/" + name;
-    file             = fopen(buff.c_str(), mode);
-
-    if (file)
-      return file;
-  }
-  return nullptr;
-}
-
 /** Displays the long description of all registered models, and quit */
 void model_help(const char* category, const std::vector<surf_model_description_t>& table)
 {

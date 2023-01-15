@@ -834,7 +834,7 @@ void surf_parse_open(const std::string& file)
   std::string dir      = simgrid::xbt::Path(file).get_dir_name();
   surf_path.push_back(dir);
 
-  surf_file_to_parse = surf_fopen(file, "r");
+  surf_file_to_parse = simgrid::xbt::fopen_path(file, "r", surf_path);
   if (surf_file_to_parse == nullptr)
     throw std::invalid_argument("Unable to open '" + file + "' from '" + simgrid::xbt::Path().get_name() +
                                 "'. Does this file exist?");

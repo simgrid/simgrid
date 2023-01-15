@@ -11,6 +11,7 @@
 #include <simgrid/simix.hpp>
 #include <xbt/asserts.h>
 #include <xbt/config.hpp>
+#include <xbt/file.hpp>
 #include <xbt/log.h>
 #include <xbt/parse_units.hpp>
 
@@ -363,7 +364,7 @@ std::map<std::string, sg_size_t, std::less<>>* FileSystemDiskExt::parse_content(
 
   auto* parse_content = new std::map<std::string, sg_size_t, std::less<>>();
 
-  auto fs = std::unique_ptr<std::ifstream>(surf_ifsopen(filename));
+  auto fs = std::unique_ptr<std::ifstream>(simgrid::xbt::ifsopen_path(filename, surf_path));
   xbt_assert(not fs->fail(), "Cannot open file '%s' (path=%s)", filename.c_str(),
              (boost::join(surf_path, ":")).c_str());
 

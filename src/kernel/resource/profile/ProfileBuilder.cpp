@@ -8,6 +8,7 @@
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/kernel/resource/profile/StochasticDatedValue.hpp"
 #include "src/surf/surf_interface.hpp"
+#include "xbt/file.hpp"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/intrusive/options.hpp>
@@ -222,17 +223,17 @@ Profile* ProfileBuilder::from_string(const std::string& name, const std::string&
   return new Profile(name,cb,cb.get_repeat_delay());
 }
 
-Profile* ProfileBuilder::from_file(const std::string& path)
+Profile* ProfileBuilder::from_file(const std::string& filename)
 {
-  xbt_assert(not path.empty(), "Cannot parse a trace from an empty filename");
-  auto f = std::unique_ptr<std::ifstream>(surf_ifsopen(path));
-  xbt_assert(not f->fail(), "Cannot open file '%s' (path=%s)", path.c_str(), (boost::join(surf_path, ":")).c_str());
+  xbt_assert(not filename.empty(), "Cannot parse a trace from an empty filename");
+  auto f = std::unique_ptr<std::ifstream>(simgrid::xbt::ifsopen_path(filename, surf_path));
+  xbt_assert(not f->fail(), "Cannot open file '%s' (path=%s)", filename.c_str(), (boost::join(surf_path, ":")).c_str());
 
   std::stringstream buffer;
   buffer << f->rdbuf();
 
   LegacyUpdateCb cb(buffer.str(), -1);
-  return new Profile(path,cb,cb.get_repeat_delay());
+  return new Profile(filename, cb, cb.get_repeat_delay());
 }
 
 
