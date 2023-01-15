@@ -23,9 +23,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_simcall, kernel, "transmuting from user request into kernel handlers");
 
-/**
- * @ingroup simix_comm_management
- */
 void simcall_comm_send(simgrid::kernel::actor::ActorImpl* sender, simgrid::kernel::activity::MailboxImpl* mbox,
                        double task_size, double rate, void* src_buff, size_t src_buff_size,
                        bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
@@ -37,9 +34,6 @@ void simcall_comm_send(simgrid::kernel::actor::ActorImpl* sender, simgrid::kerne
                            copy_data_fun, data, timeout);
 }
 
-/**
- * @ingroup simix_comm_management
- */
 simgrid::kernel::activity::ActivityImplPtr
 simcall_comm_isend(simgrid::kernel::actor::ActorImpl* sender, simgrid::kernel::activity::MailboxImpl* mbox,
                    double task_size, double rate, void* src_buff, size_t src_buff_size,
@@ -60,9 +54,6 @@ simcall_comm_isend(simgrid::kernel::actor::ActorImpl* sender, simgrid::kernel::a
       [&observer] { return simgrid::kernel::activity::CommImpl::isend(&observer); });
 }
 
-/**
- * @ingroup simix_comm_management
- */
 void simcall_comm_recv(simgrid::kernel::actor::ActorImpl* receiver, simgrid::kernel::activity::MailboxImpl* mbox,
                        void* dst_buff, size_t* dst_buff_size,
                        bool (*match_fun)(void*, void*, simgrid::kernel::activity::CommImpl*),
@@ -74,9 +65,6 @@ void simcall_comm_recv(simgrid::kernel::actor::ActorImpl* receiver, simgrid::ker
                            timeout, rate);
 }
 
-/**
- * @ingroup simix_comm_management
- */
 simgrid::kernel::activity::ActivityImplPtr
 simcall_comm_irecv(simgrid::kernel::actor::ActorImpl* receiver, simgrid::kernel::activity::MailboxImpl* mbox,
                    void* dst_buff, size_t* dst_buff_size,
@@ -92,9 +80,6 @@ simcall_comm_irecv(simgrid::kernel::actor::ActorImpl* receiver, simgrid::kernel:
       [&observer] { return simgrid::kernel::activity::CommImpl::irecv(&observer); });
 }
 
-/**
- * @ingroup simix_comm_management
- */
 ssize_t simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_t count,
                              double timeout) // XBT_ATTRIB_DEPRECATED_v335
 {
@@ -114,9 +99,6 @@ ssize_t simcall_comm_waitany(simgrid::kernel::activity::CommImpl* comms[], size_
   return changed_pos;
 }
 
-/**
- * @ingroup simix_comm_management
- */
 ssize_t simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_t count) // XBT_ATTRIB_DEPRECATED_v335
 {
   if (count == 0)
@@ -137,9 +119,6 @@ ssize_t simcall_comm_testany(simgrid::kernel::activity::CommImpl* comms[], size_
   return changed_pos;
 }
 
-/**
- * @ingroup simix_comm_management
- */
 void simcall_comm_wait(simgrid::kernel::activity::ActivityImpl* comm, double timeout) // XBT_ATTRIB_DEPRECATED_v335
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
@@ -147,10 +126,6 @@ void simcall_comm_wait(simgrid::kernel::activity::ActivityImpl* comm, double tim
   simgrid::kernel::actor::simcall_blocking([issuer, comm, timeout] { comm->wait_for(issuer, timeout); });
 }
 
-/**
- * @ingroup simix_comm_management
- *
- */
 bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm) // XBT_ATTRIB_DEPRECATED_v335
 {
   simgrid::kernel::actor::ActorImpl* issuer = simgrid::kernel::actor::ActorImpl::self();

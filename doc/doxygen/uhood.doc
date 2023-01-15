@@ -86,48 +86,6 @@ using ActorPtr = Actor::Ptr;
 
 It uses the `simgrid::simix::Process` as an opaque pimple:
 
-~~~
-class Process {
-private:
-  std::atomic_int_fast32_t refcount_ { 1 };
-  // The lifetime of the s4u::Actor is bound to the lifetime of the Process:
-  simgrid::s4u::Actor actor_;
-public:
-  Process() : actor_(this) {}
-
-  // Reference count:
-  friend void intrusive_ptr_add_ref(Process* process)
-  {
-    // Atomic operation! Do not split in two instructions!
-    auto previous = (process->refcount_)++;
-    xbt_assert(previous != 0);
-    (void) previous;
-  }
-  friend void intrusive_ptr_release(Process* process)
-  {
-    // Atomic operation! Do not split in two instructions!
-    auto count = --(process->refcount_);
-    if (count == 0)
-      delete process;
-  }
-
-  // [...]
-};
-
-smx_process_t SIMIX_process_ref(smx_process_t process)
-{
-  if (process != nullptr)
-    intrusive_ptr_add_ref(process);
-  return process;
-}
-
-/** Decrease the refcount for this process */
-void SIMIX_process_unref(smx_process_t process)
-{
-  if (process != nullptr)
-    intrusive_ptr_release(process);
-}
-~~~
 
 @section simgrid_uhood_mc Model Checker
 
