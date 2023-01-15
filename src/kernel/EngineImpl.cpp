@@ -185,7 +185,6 @@ void EngineImpl::initialize(int* argc, char** argv)
   install_signal_handlers();
 
   /* register a function to be called by SURF after the environment creation */
-  sg_platf_init();
   s4u::Engine::on_platform_created_cb([this]() { this->presolve(); });
 
   if (config::get_value<bool>("debug/clean-atexit"))
@@ -272,7 +271,7 @@ void EngineImpl::shutdown()
   }
 
   tmgr_finalize();
-  sg_platf_exit();
+  sg_platf_parser_finalize();
 
   delete instance_;
   instance_ = nullptr;
@@ -312,8 +311,7 @@ void EngineImpl::load_platform(const std::string& platf)
 
 void EngineImpl::load_deployment(const std::string& file) const
 {
-  sg_platf_exit();
-  sg_platf_init();
+  sg_platf_parser_finalize();
 
   surf_parse_open(file);
   surf_parse();

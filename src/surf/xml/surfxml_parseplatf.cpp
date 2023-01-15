@@ -54,8 +54,6 @@ void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* 
 /* This function acts as a main in the parsing area. */
 void parse_platform_file(const std::string& file)
 {
-  sg_platf_init();
-
   /* init the flex parser */
   surf_parse_open(file);
 

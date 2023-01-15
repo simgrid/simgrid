@@ -11,8 +11,7 @@
 #include <vector>
 
 /* Module management functions */
-XBT_PUBLIC void sg_platf_init();
-XBT_PUBLIC void sg_platf_exit();
+XBT_PUBLIC void sg_platf_parser_finalize();
 
 XBT_PUBLIC void surf_parse_open(const std::string& file);
 XBT_PUBLIC void surf_parse_close();

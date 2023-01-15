@@ -42,14 +42,8 @@ static simgrid::kernel::routing::ClusterZoneCreationArgs
 static simgrid::kernel::routing::NetZoneImpl* current_routing = nullptr;
 static simgrid::s4u::Host* current_host = nullptr;
 
-/** Module management function: creates all internal data structures */
-void sg_platf_init()
-{
-  // Do nothing: just for symmetry of user code
-}
-
 /** Module management function: frees all internal data structures */
-void sg_platf_exit()
+void sg_platf_parser_finalize()
 {
   simgrid::kernel::routing::on_cluster_creation.disconnect_slots();
 
