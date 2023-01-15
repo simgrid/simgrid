@@ -115,11 +115,12 @@ static void segvhandler(int signum, siginfo_t* siginfo, void* /*context*/)
   std::raise(signum);
 }
 
-/**
- * Install signal handler for SIGSEGV.
- */
-static void install_segvhandler()
+static void install_signal_handlers()
 {
+  /* Install signal handler for SIGINT */
+  std::signal(SIGINT, inthandler);
+
+  /* Install signal handler for SIGSEGV */
   if (simgrid::kernel::context::Context::install_sigsegv_stack(true) == -1) {
     XBT_WARN("Failed to register alternate signal stack: %s", strerror(errno));
     return;
@@ -181,9 +182,7 @@ void EngineImpl::initialize(int* argc, char** argv)
 
   instance_->context_mod_init();
 
-  /* Prepare to display some more info when dying on Ctrl-C pressing */
-  std::signal(SIGINT, inthandler);
-  install_segvhandler();
+  install_signal_handlers();
 
   /* register a function to be called by SURF after the environment creation */
   sg_platf_init();
