@@ -3,64 +3,7 @@
 
 @tableofcontents
 
-@section simgrid_dev_guide_simcall How to add a new simcall?
-
-First of all you might want to avoid defining a new simcall if possible:
-@ref simgrid_dev_guide_generic_simcall.
-
-A simcall is used to go from user mode to kernel mode. There is some
-sort of popping dance involved, as we want to isolate the user
-contextes from their environment (so that they can run in parallel and
-so that we can model-check them).
-
-In short, just add a line to src/simix/simcalls.in and run the
-src/simix/simcalls.py script. It will guide you about how to implement
-your simcall. Please keep reading this section (only) if you want to
-understand how it goes.
-
-
-The workflow of a simcall is the following:
-
-- `<ret> simcall_<name>(<args>)`
- - `simcall_BODY_<name>(<args>)`
-  - Initializes the simcall (store the arguments in position)
-  - If maestro, executes the simcall directly (and return)
-  - If not, call `ActorImpl::yield` to give back the control to maestro
-  - ========== KERNEL MODE ==========
-  - `ActorImpl::simcall_handle` large switch (on simcall) doing for each:
-   - `simcall_HANDLER_<name>(simcall, <args>)` (the manual code handling the simcall)
-   - If the simcall is not marked as "blocking" in its definition,
-     call `ActorImpl::simcall_answer()` that adds back the issuer
-     process to the list of processes to run in the next scheduling round.
-     It is thus the responsibility of the blocking simcalls to call
-     `ActorImpl::simcall_answer()` themselves in their handler.
-
-Note that empty HANDLERs can be omitted. These functions usually do
-some parameter checking, or retrieve some information about the
-simcall issuer, but when there no need for such things, the handler
-can be omitted. In that case, we directly call the function
-`simcall_<name>(<args>)`.
-
-To simplify the simcall creation, a python script generates most of
-the code and give helpers for the remaining stuff. That script reads
-the simcall definitions from src/simix/simcalls.in, checks that both
-`simcall_<name>()` and `simcall_HANDLER()` are defined somewhere, and
-generates the following files:
-
-- popping_accessors.hpp:
-  Helper functions to get and set simcall arguments and results
-- popping_bodies.cpp:
-  The BODY function of each simcall
-- popping_enum.hpp:
-  Definition of type `enum class Simcall` (one value per existing simcall)
-- popping_generated.cpp:
-  Definitions of `simcall_names[]` (debug name of each simcall), and
-  ActorImpl::simcall_handle() that deals with the simcall from within the kernel
-
-The simcall.in file list all the simcalls in sections. A line starting by "##"
-define a new section which will be replace by a "ifdef" in the generated code.
-
-@section simgrid_dev_guide_generic_simcall How to avoid adding a new simcall?
+@section simgrid_dev_guide_generic_simcall The modern SimCall interface
 
 We now have some generic simcalls which can be used to interface with the
 Maestro without creating new simcalls. You might want to use them instead of
@@ -138,10 +81,5 @@ catch (std::runtime_error& e) {
 ~~~
 
 <b>Note:</b> `kernel_sync(f)` could be implemented as `kernel_async(f).get()`.
-
-@section simgrid_dev_guide_tag What is How to add a new tag for xml files?
-
-You should not do something like that. Please work instead to make XML
-avoidable, ie to make the C++ interface nice and usable.
 
 */

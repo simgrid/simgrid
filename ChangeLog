@@ -33,6 +33,10 @@ Models:
 sthread:
  - Implement pthread_join in MC mode.
 
+Documentation:
+ - New section in the user guide on the provided performance models.
+ - New section presenting some technical good practices for (potential) contributors.
+
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GH: issues on GitHub)
  - FG#18: Java bindings should be redone or removed

@@ -7,92 +7,17 @@ automatic tests are run, and so on. These information are split on
 several pages, as follows:
 
  - @ref uhood_tech_inside
- - @subpage inside_tests
  - @subpage inside_doxygen
  - @subpage inside_extending
- - @subpage inside_cmake
  - @subpage inside_release
 
 @section uhood_tech_inside Insiders Considerations
 
-@subsection uhood_tech_inside_config Extra configuration
-
-The default build configuration of SimGrid fits the user needs, but
-they are not adapted to the ones actually working on SimGrid. See @ref
-install_src_config for more information. Note that this is very
-different from runtime configuration.
-
-In particular, the build is configured by default to produce highly
-optimized binaries, at the price of high compilation time. The
-rationale is that users will compile SimGrid only once, and use it many
-times. This is exactly the contrary for the insiders, so you want to
-turn off \b enable_compile_optimizations.
-
-Symmetrically, \b enable_compile_warnings is off for the users because
-we don't want to bother them with compiler warnings (that abort the
-build in SimGrid), but any insider must turn this option on, or your
-code will be refused from the main repository.
-
-@verbatim
-    cmake -Denable_compile_optimizations=OFF \
-          -Denable_compile_warnings=ON .
-@endverbatim
-
-@subsection uhood_tech_inside_commit Interacting with git
-
-During the Gran Refactoring to SimGrid4, things are evolving rather
-quickly, and some changes impact a large amount of files. You should
-thus not have long-standing branches, because they will rot very
-quickly and you will suffer to merge them back. Instead, you should
-work as much as possible with incremental changes that do not break
-things, and get them directly in master.
-
-Your commit message should follow the git habits, explained in this
-<a href="http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html">blog
-post</a>, or in the
-<a href="https://github.com/atom/atom/blob/master/CONTRIBUTING.md#git-commit-messages">
-git styleguide of Atom</a>.
-
-
-@subsection uhood_tech_inside_codstand Automatically Enforcing our Coding Standards
-
-If you plan to commit code to the SimGrid project, you definitely need
-to install the relevant tool to ensure that your changes follow our
-coding standards:
-
-@verbatim
-# install clang-format
-sudo apt-get install clang-format-3.9 # debian
-
-# tell git to call the script on each commit
-ln -s $(realpath tools/git-hooks/clang-format.pre-commit) .git/hooks/pre-commit
-@endverbatim
-
-This will add an extra verification before integrating any commit that
-you could prepare. If your code does not respects our formatting code,
-git will say so, and provide a ready to use patch that you can apply
-to improve your commit. Just carefully read the error message you get
-to find the exact command with git-apply to fix your formatting.
-
-If you find that for a specific commit, the formatter does a very bad
-job, then add --no-verify to your git commit command line.
 
 @subsection uhood_tech_tricks Random Tricks
 
 Over the years, we accumulated a few tricks that make it easier to
 work with SimGrid. Here is a somewhat unsorted list of such tricks.
-
-### Easy testing
-
-Launching all tests can be very time consuming, so you want to build
-and run the tests in parallel. Also, you want to save the build output
-to disk, for further reference. This is exactly what the
-BuildSimGrid.sh script does. It is upper-cased so that the shell
-completion works and allows one to run it in 4 key press: `./B<tab>`
-
-Note that if you build out of tree (as you should, see below), the
-script builds the build/default directory. I usually copy the file in
-each build/ subdir to test each of them separately.
 
 ### Easy out of tree builds
 
@@ -107,8 +32,7 @@ create a set of out of tree builds (as explained in @ref
 install_cmake_outsrc) in addition to your main build tree.
 To not mess with git, you want to put your build tree under the build/
 directory, which is ignored by git. For example, I have the following
-directories: build/clang build/full
-(but YMMV).
+directories: build/clang build/full build/mc (but YMMV).
 
 Then, the problem is that when you traverse these directories, you
 cannot edit the sources (that are in the srcdir, while you're in
@@ -124,25 +48,5 @@ after all).
 
 Note that the links sometimes broken by git or others. Relaunching
 `make hardlinks` may help if you're getting incoherent build results.
-
-### Unsorted hints
-
-* If you want to debug memory allocation problems, here are a few hints:
-  - disable compiler optimizations, to have better backtraces;
-  - disable the mallocators, or it will be hard to match malloc's with free's;
-  - disable model checking, unless your problem lies in the model
-    checker part of SimGrid (MC brings its own malloc implementation,
-    which valgrind does not really love).
-    All this is configured with:
-
-    cmake -Denable_model-checking=OFF
-          -Denable_mallocators=OFF
-          -Denable_compile_optimizations=OFF .
-
-* If you break the logs, you want to define XBT_LOG_MAYDAY at the
-  beginning of log.h. It deactivates the whole logging mechanism,
-  switching to printfs instead. SimGrid becomes incredibly verbose
-  when doing so, but it you let you fixing things.
-
 
 */

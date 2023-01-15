@@ -25,7 +25,7 @@ parameters that are used to instantiate particular simulated activities (e.g., a
 typically defines volumes of computation, communication, and time to pass to methods such as :cpp:func:`execute()
 <simgrid::s4u::this_actor::execute>`, :cpp:func:`put() <simgrid::s4u::Mailbox::put>`, or :cpp:func:`sleep_for()
 <simgrid::s4u::this_actor::sleep_for>`). Regardless of the potential accuracy of the simulation models, if they are
-instantiated with unrealistic parameter values, then the simulation will be inaccurate. 
+instantiated with unrealistic parameter values, then the simulation will be inaccurate.
 
 Given the above, an integral and crucial part of simulation-driven research is **simulation calibration**: the process by
 which one picks simulation parameter values based on observed real-world executions so that simulated executions have high

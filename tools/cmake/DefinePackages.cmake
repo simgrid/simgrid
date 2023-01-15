@@ -753,14 +753,9 @@ endif()
 set(DOC_SOURCES
   doc/doxygen/FAQ.doc
   doc/doxygen/inside.doc
-  doc/doxygen/inside_tests.doc
-  doc/doxygen/inside_cmake.doc
   doc/doxygen/inside_extending.doc
   doc/doxygen/inside_release.doc
-  doc/doxygen/module-surf.doc
-  doc/doxygen/module-index.doc
   doc/doxygen/outcomes_vizu.doc
-  doc/doxygen/platform.doc
   doc/doxygen/uhood.doc
   doc/doxygen/uhood_switch.doc
 
@@ -811,6 +806,7 @@ set(DOC_SOURCES
   docs/source/community.rst
   docs/source/Configuring_SimGrid.rst
   docs/source/Deploying_your_application.rst
+  docs/source/Developers_Documentation.rst
   docs/source/Experimental_setup.rst
   docs/source/index.rst
   docs/source/intl.rst
