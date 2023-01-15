@@ -147,8 +147,7 @@ cmake itself.
    files in the tree, you may need to wipe out your complete tree and
    start with a fresh one when you install new dependencies.
 
-   Another (better) solution is to :ref:`build out of the source tree
-   <install_cmake_outsrc>`.
+   A better solution is to :ref:`build out of the source tree <install_cmake_outsrc>`.
 
 Generic build-time options
 """"""""""""""""""""""""""
@@ -235,7 +234,7 @@ enable_model-checking (on/OFF)
   run time.
 
 enable_ns3 (on/OFF)
-  Activates the ns-3 bindings. See section :ref:`model_ns3`.
+  Activates the ns-3 bindings. See section :ref:`models_ns3`.
 
 enable_smpi (ON/off)
   Allows one to run MPI code on top of SimGrid.

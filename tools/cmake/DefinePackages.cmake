@@ -752,7 +752,6 @@ endif()
 
 set(DOC_SOURCES
   doc/doxygen/FAQ.doc
-  doc/doxygen/inside.doc
   doc/doxygen/inside_extending.doc
   doc/doxygen/inside_release.doc
   doc/doxygen/outcomes_vizu.doc

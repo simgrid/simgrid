@@ -1621,7 +1621,6 @@ include MANIFEST.in.in
 include NEWS
 include README.md
 include doc/doxygen/FAQ.doc
-include doc/doxygen/inside.doc
 include doc/doxygen/inside_extending.doc
 include doc/doxygen/inside_release.doc
 include doc/doxygen/outcomes_vizu.doc

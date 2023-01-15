@@ -25,8 +25,11 @@ and provide a ready to use patch that you can apply to improve your commit. Just
 
 If you prefer not to apply the fix on a specific commit (because the formatter fails on this case), then add ``--no-verify`` to your git commit command line.
 
-Setting up the development environment
---------------------------------------
+Interacting with cmake
+----------------------
+
+Configuring
+^^^^^^^^^^^
 
 The :ref:`default build configuration <install_src_config>` is intended for users, but contributors should change these settings for their comfort, and to
 produce better code. In particular, the default is to build highly optimized binaries, at the price of high compilation time and somewhat harder debug sessions.
@@ -35,15 +38,30 @@ the users, but the contributors should really enable it, as your code will not b
 
 .. code-block:: console
 
-   cmake -Denable_compile_optimizations=OFF \
-         -Denable_compile_warnings=ON \
+   cmake -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
          -GNinja .
 
 As you can see, we advise to use Ninja instead of the good old Makefiles. In our experience, Ninja is a bit faster because it does not fork as many external
 commands as make for basic operations.
 
+Adding a new file
+^^^^^^^^^^^^^^^^^
+
+The content of the archive is mostly built from the lists given in ``tools/cmake/DefinePackages.cmake``. The only exceptions are the files related to the
+examples, that are listed in the relevant ``CMakeLists.txt`` file, e.g. ``examples/cpp/CMakeLists.txt``. This information is duplicated in ``MANIFEST.in`` for
+the python building process, that does not use cmake to build the archive.
+
+When you add a new file, you should use the relevant build target to check that every files followed by git are included in the archive or properly excluded (by
+being listed in ``tools/internal/check_dist_archive.exclude``), and that all settings are consistent.
+
 Interacting with the tests
 --------------------------
+
+Breaking tests once in a while is completely OK in SimGrid. We accept temporarily breakages because we want things to evolve, but if you break something, it is
+your duty to fix it within 24 hours to not hinder the work of others.
+
+Understanding the existing tests
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 We use unit tests based on `Catch2 <https://github.com/catchorg/Catch2/>`_, but most of our testing is done through integration tests that launch a specific
 simulation example and enforce that the output remains unchanged. Since SimGrid displays the timestamp of every logged event, such integration tests ensure that
@@ -56,12 +74,15 @@ breaking something without noticing. Tests must be fast (because we run them ver
 clear to read (understanding and debugging failures should be easy).
 
 In fact, our integration tests fall in two categories. The ones located in ``examples/`` are part of the documentation, so readability is utterly important
-here. The goal is that novice users could grab some of the provided examples and assemble them to constitute a first version of their simulator. We tend to
-avoid advanced C++ constructs that would hinder the readability of these files. On the other hand, the integration tests located in ``teshsuite/`` are usually
-torture tests trying to exhaustively cover all cases. They may be less readable and some even rely on a small DSL to describe all test cases and the expected
-result (check for example ``teshsuite/models/cloud-sharing``), but they should still be rather easy to debug on need. For this reason, we tend to avoid random
-testing that is difficult to reproduce. For example, the tests under ``teshsuite/models/`` try to be very verbose to make the model intend clear, and the code
-easier to debug on need. The WiFi tests seem to be a good example of that trend.
+here. The goal is that novice users could grab some of the provided examples and assemble them to constitute a first version of their simulator. These files can
+only load public header files, and we tend to avoid advanced C++ constructs that would hinder the readability of these files. On the other hand, the integration
+tests located in ``teshsuite/`` are usually torture tests trying to exhaustively cover all cases. They may be less readable and some even rely on a small DSL to
+describe all test cases and the expected result (check for example ``teshsuite/models/cloud-sharing``), but they should still be rather easy to debug on need.
+For this reason, we tend to avoid random testing that is difficult to reproduce. For example, the tests under ``teshsuite/models/`` try to be very verbose to
+make the model intend clear, and the code easier to debug on need. The WiFi tests seem to be a good example of that trend.
+
+Adding a test
+^^^^^^^^^^^^^
 
 We often say that a feature that is not tested is a feature that could soon disappear. So you want to write tests for the features you add. To add new unit
 tests, please refer to the end of ``tools/cmake/Tests.cmake``) for some examples. Catch2 comes with a good documentation and many examples online. If you add a
@@ -71,6 +92,9 @@ following the syntax described in this man page: ``man -l manpages/tesh.1`` Fina
 by modifying for example the ``examples/cpp/CMakeLists.txt`` file. The test name shall allow the filtering of tests with ``ctest -R``. Do not forget to run
 ``make distcheck`` once you're done to check that you did not forget to add your new files to the distribution.
 
+Continuous integrations
+^^^^^^^^^^^^^^^^^^^^^^^
+
 We have many online build bots that launch the tests on various configurations and operating systems. The results are centralized on two Jenkins jobs: `the main
 one <https://ci.inria.fr/simgrid/job/SimGrid/>`_ runs all tests on a variety of systems for each commit, while `Nightly
 <https://ci.inria.fr/simgrid/job/SimGrid-Nightly/>`_ runs some additional code analysis every night. Several sister projects built on top of SimGrid regularly
@@ -78,9 +102,6 @@ test our git too. The FramaGit project gathers some additional `build badges <ht
 channel <https://framateam.org/simgrid/channels/bot-office>`_ on Mattermost. Our code quality is tested every night using `SonarQube
 <https://sonarcloud.io/dashboard?id=simgrid_simgrid>`_ , and the `Debian build daemon <https://buildd.debian.org/status/package.php?p=simgrid>`_ test each
 release on several CPU architectures. We maintain some scripts to interact with these tools under ``tools/cmake``.
-
-Breaking tests once in a while is completely OK in SimGrid. We accept temporarily breakages because we want things to evolve, but if you break something, it is
-your duty to fix it within 24 hours to not hinder the work of others.
 
 Interacting with git
 --------------------
@@ -94,8 +115,33 @@ It is nice if your commit message could follow the git habits, explained in this
 <http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html>`_, or in the `style guide of Atom
 <https://github.com/atom/atom/blob/master/CONTRIBUTING.md#git-commit-messages>`_.
 
+Type naming standard
+--------------------
+
+* Filenames shall be unique in the whole project (because of a bug in Sonar coverage computation).
+
+In C++:
+
+* Fields, methods and variables are in snake_case();
+* Classes and Enum names are in UpperCamelCase;
+* Enum values are in UPPER_SNAKE_CASE, just as constants.
+
+* Files of public modules are usually named ``api_Class.cpp`` and ``api/Class.hpp`` (e.g. ``src/s4u/s4u_ConditionVariable.cpp`` and
+  ``include/simgrid/s4u/ConditionVariable.hpp``).
+* Files of internal modules are usually named ``Class.cpp`` and ``Class.hpp`` (e.g. ``src/kernel/activity/Activity.cpp`` and
+  ``src/kernel/activity/Activity.hpp``) unless it raises name conflicts.
+
+In C:
+
+* Getters and setters are named ``sg_object_get_field()`` and ``sg_object_field()`` (e.g. ``sg_link_get_name()`` and ``sg_link_set_data()``);
+* Variables and functions are snake_case();
+* Typedefs do not hide the pointers, i.e. the * must be explicit. ``char* sg_host_get_name(sg_host_t* host)``.
+
 Unsorted hints
 --------------
+
+* To test thoroughly test your changes before pushing your commits, use several cmake configurations under sub-trees of ``build/`` (that is ignored by git) as
+  explained in :ref:`install_cmake_outsrc`. For example, I have the following directories: build/clang build/full build/mc (but YMMV).
 
 * If you break the logs, you want to define XBT_LOG_MAYDAY at the beginning of log.h. It deactivates the whole logging mechanism, switching to printfs instead.
   SimGrid then becomes incredibly verbose, but it you let you fixing things.

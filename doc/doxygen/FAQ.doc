@@ -1,14 +1,6 @@
 /*! @page FAQ Frequently Asked Questions
 
-@tableofcontents
-
-Some entries are a bit aging and it should be refreshed at some point.
-
-@section faq_howto Feature related questions
-
-@subsection faq_MIA_SimDag SimDag related questions
-
-@subsubsection faq_SG_comm Implementing communication delays between tasks.
+@subsubsection Implementing communication delays between SimDAG tasks.
 
 A classic question of SimDag newcomers is about how to express a
 communication delay between tasks. The thing is that in SimDag, both
