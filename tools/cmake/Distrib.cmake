@@ -96,7 +96,6 @@ set(source_to_pack
   ${EXTRA_DIST}
   ${CMAKE_SOURCE_FILES}
   ${CMAKEFILES_TXT}
-  ${DOC_IMG}
   ${DOC_SOURCES}
   ${DOC_TOOLS}
   ${PLATFORMS_EXAMPLES}

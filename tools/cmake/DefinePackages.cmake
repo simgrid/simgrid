@@ -906,10 +906,6 @@ set(DOC_TOOLS
   )
 
 # these files get copied automatically to the html documentation
-set(DOC_IMG
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/eclipseScreenShot.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/output.goal.pdf
-  )
 
 set(bin_files
   ${bin_files}

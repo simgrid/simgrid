@@ -1,8 +1,6 @@
 # This file lists the content of the python source package
 # Prepared in tools/cmake/Distrib.cmake
 
-include doc/webcruft/eclipseScreenShot.png
-include doc/webcruft/output.goal.pdf
 include examples/c/actor-create/actor-create.c
 include examples/c/actor-create/actor-create.tesh
 include examples/c/actor-create/actor-create_d.xml
