@@ -153,14 +153,13 @@ Here is a small platform example:
 Wi-Fi
 =====
 
-TODO
+Please see :ref:`models_wifi`.
 
 ns-3
 ====
 
-When using :ref:`model_ns3`, SimGrid does not uses its own platform or routing models. Your platform must be limited to one
-zone only, and any routing model will be ignored. Since ns-3 uses a shortest path algorithm on its side, all routes must be
-of length 1.
+When using :ref:`models_ns3`, SimGrid configures the ns-3 simulator according to the configured platform. 
+Since ns-3 uses a shortest path algorithm on its side, all routes must be of length 1.
 
 .. _pf_routes:
 
@@ -208,7 +207,7 @@ only gives an overview of the algorithm used. You should refer to the source cod
 
    .. code-block:: XML
 
-      <zoneRoute src="AS2" dst="AS5" gw_src="Host1" gw_dst"="gw1">
+      <zoneRoute src="AS2" dst="AS5" gw_src="Host1" gw_dst="gw1">
          <link_ctn id="Link1"/>
       </zoneRoute>
 
@@ -226,7 +225,7 @@ only gives an overview of the algorithm used. You should refer to the source cod
 
    .. code-block:: XML
 
-      <zoneRoute src="AS5-4" dst="AS5-3" gw_src="gw2" gw_dst"="gw1">
+      <zoneRoute src="AS5-4" dst="AS5-3" gw_src="gw2" gw_dst="gw1">
          <link_ctn id="Link3"/>
       </zoneRoute>
 

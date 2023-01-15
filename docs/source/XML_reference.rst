@@ -26,6 +26,7 @@ Here is the complete list of all existing tags in the DTD:
 :ref:`pf_tag_bypassRoute`: tweeking the routing (advanced tag). |br|
 :ref:`pf_tag_bypassZoneRoute`: tweeking the routing (expert-only tag). |br|
 :ref:`pf_tag_cabinet`: building clusters manually from the XML (deprecated, please use the C++ API). |br|
+:ref:`pf_tag_cluster`: building a cluster (aka, a full zone in one tag only). |br|
 :ref:`pf_tag_config`: pass simulation parameters from the XML file. |br|
 :ref:`pf_tag_disk`: storage resource. |br|
 :ref:`pf_tag_host`: computing resource. |br|

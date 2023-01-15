@@ -79,10 +79,10 @@ of every page. Bugs in the code should be reported
          Advanced routing <Platform_routing.rst>
          XML reference <XML_reference.rst>
          C++ platforms <Platform_cpp.rst>
-      The SimGrid models <Models.rst>      
-         SimGrid plugins <Plugins.rst>
+      The SimGrid models <Models.rst>
          Modeling hints <Modeling_howtos.rst>
-         Calibrating the models <Calibrating_the_models.rst>   
+         Calibrating the models <Calibrating_the_models.rst>
+         SimGrid plugins <Plugins.rst>
       Running an experiment <Experimental_setup.rst>
          Configuring SimGrid <Configuring_SimGrid.rst>
          Deploying your application <Deploying_your_application.rst>

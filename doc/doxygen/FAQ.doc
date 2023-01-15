@@ -33,47 +33,4 @@ comprising the workstations on which t1 and t2 are scheduled (w1 and w2
 for example) and build a communication matrix that should look like
 [0;amount ; 0; 0].
 
-@section faq_troubleshooting Troubleshooting
-
-@subsection faq_surf_network_latency I get weird timings when I play with the latencies.
-
-OK, first of all, remember that units should be Bytes, Flops and
-Seconds. If you don't use such units, some SimGrid constants (e.g. the
-SG_TCP_CTE_GAMMA constant used in most network models) won't have the
-right unit and you'll end up with weird results.
-
-Here is what happens with a single transfer of size L on a link
-(bw,lat) when nothing else happens.
-
-@verbatim
-0-----lat--------------------------------------------------t
-|-----|**** real_bw =min(bw,SG_TCP_CTE_GAMMA/(2*lat)) *****|
-@endverbatim
-
-In more complex situations, this min is the solution of a complex
-max-min linear system.  Have a look
-<a href="http://lists.gforge.inria.fr/pipermail/simgrid-devel/2006-April/thread.html">here</a>
-and read the two threads "Bug in SURF?" and "Surf bug not
-fixed?". You'll have a few other examples of such computations. You
-can also read "A Network Model for Simulation of Grid Application" by
-Henri Casanova and Loris Marchal to have all the details. The fact
-that the real_bw is smaller than bw is easy to understand. The fact
-that real_bw is smaller than SG_TCP_CTE_GAMMA/(2*lat) is due to the
-window-based congestion mechanism of TCP. With TCP, you can't exploit
-your huge network capacity if you don't have a good round-trip-time
-because of the acks...
-
-Anyway, what you get is t=lat + L/min(bw,SG_TCP_CTE_GAMMA/(2*lat)).
-
-  * if I you set (bw,lat)=(100 000 000, 0.00001), you get t =  1.00001 (you fully
-use your link)
-  * if I you set (bw,lat)=(100 000 000, 0.0001),  you get t =  1.0001 (you're on the
-limit)
-  * if I you set (bw,lat)=(100 000 000, 0.001),   you get t = 10.001  (ouch!)
-
-This bound on the effective bandwidth of a flow is not the only thing
-that may make your result be unexpected. For example, two flows
-competing on a saturated link receive an amount of bandwidth inversely
-proportional to their round trip time.
-
 */
