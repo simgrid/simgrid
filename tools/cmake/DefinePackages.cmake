@@ -863,8 +863,6 @@ set(DOC_SOURCES
   docs/source/tuto_disk/fig/simgrid_results.png
   docs/source/tuto_disk/init.el
   docs/source/tuto_disk/tuto_disk.cpp
-  docs/source/tuto_network_calibration/clustering_ckmeans.ipynb
-  docs/source/tuto_network_calibration/clustering_dhist.ipynb
   docs/source/tuto_network_calibration/CMakeLists.txt
   docs/source/tuto_network_calibration/dahu_platform_ckmeans.cpp
   docs/source/tuto_network_calibration/dahu_platform_dhist.cpp

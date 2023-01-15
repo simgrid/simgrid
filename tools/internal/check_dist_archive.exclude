@@ -25,6 +25,8 @@
 
 + docs/default.nix
 + docs/source/tuto_network_calibration/network_calibration_tutorial.ipynb
++ docs/source/tuto_network_calibration/clustering_ckmeans.ipynb
++ docs/source/tuto_network_calibration/clustering_dhist.ipynb
 
 + tools/docker/.*
 + tools/git-hooks/.*

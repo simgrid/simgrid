@@ -1706,8 +1706,6 @@ include docs/source/tuto_network_calibration/CMakeLists.txt
 include docs/source/tuto_network_calibration/Dockerfile
 include docs/source/tuto_network_calibration/Utils.cpp
 include docs/source/tuto_network_calibration/Utils.hpp
-include docs/source/tuto_network_calibration/clustering_ckmeans.ipynb
-include docs/source/tuto_network_calibration/clustering_dhist.ipynb
 include docs/source/tuto_network_calibration/dahu_platform_ckmeans.cpp
 include docs/source/tuto_network_calibration/dahu_platform_dhist.cpp
 include docs/source/tuto_network_calibration/fig/pingpong_real.drawio
