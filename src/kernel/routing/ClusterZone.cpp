@@ -69,10 +69,7 @@ void ClusterBase::fill_leaf_from_cb(unsigned long position, const std::vector<un
   // auxiliary function to get dims from index
   auto index_to_dims = [&dimensions](unsigned long index) {
     std::vector<unsigned long> dims_array(dimensions.size());
-    for (auto i = static_cast<int>(dimensions.size() - 1); i >= 0; --i) {
-      if (index <= 0) {
-        break;
-      }
+    for (auto i = static_cast<int>(dimensions.size() - 1); i >= 0 && index > 0; --i) {
       unsigned long value = index % dimensions[i];
       dims_array[i]      = value;
       index              = (index / dimensions[i]);

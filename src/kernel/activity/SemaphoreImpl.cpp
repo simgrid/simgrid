@@ -87,12 +87,12 @@ SemAcquisitionImplPtr SemaphoreImpl::acquire_async(actor::ActorImpl* issuer)
 {
   auto res = SemAcquisitionImplPtr(new kernel::activity::SemAcquisitionImpl(issuer, this), true);
 
-  if (value_ <= 0) {
-    /* No free token in the semaphore; register the acquisition */
-    ongoing_acquisitions_.push_back(res);
-  } else {
+  if (value_ > 0) {
     value_--;
     res->granted_ = true;
+  } else {
+    /* No free token in the semaphore; register the acquisition */
+    ongoing_acquisitions_.push_back(res);
   }
   return res;
 }
