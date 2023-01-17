@@ -40,9 +40,9 @@ static bool check_for_cycle(const std::vector<simgrid::s4u::ActivityPtr>& dag)
 {
   std::vector<simgrid::s4u::ActivityPtr> current;
 
-  for (const auto& a : dag)
-    if (dynamic_cast<simgrid::s4u::Exec*>(a.get()) != nullptr && a->has_no_successor())
-      current.push_back(a);
+  std::copy_if(begin(dag), end(dag), back_inserter(current), [](const auto& a) {
+    return dynamic_cast<simgrid::s4u::Exec*>(a.get()) != nullptr && a->has_no_successor();
+  });
 
   while (not current.empty()) {
     std::vector<simgrid::s4u::ActivityPtr> next;
