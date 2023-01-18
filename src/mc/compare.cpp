@@ -791,9 +791,9 @@ static bool heap_area_differ(const RemoteProcess& process, StateComparator& stat
 
   // If either block is not in the expected area of memory:
   if (((const char*)area1 < (const char*)state.std_heap_copy.heapbase) ||
-      (block1 > (ssize_t)state.processStates[0].heapsize) || (block1 < 1) ||
+      (block1 > (ssize_t)state.processStates[0].heapsize) ||
       ((const char*)area2 < (const char*)state.std_heap_copy.heapbase) ||
-      (block2 > (ssize_t)state.processStates[1].heapsize) || (block2 < 1)) {
+      (block2 > (ssize_t)state.processStates[1].heapsize)) {
     return true;
   }
 
