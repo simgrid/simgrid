@@ -44,8 +44,6 @@ static void run_ping_test()
 /* We need a separate actor so that it can sleep after each test */
 static void main_dispatcher()
 {
-  bool crosstraffic = simgrid::kernel::resource::NetworkModel::cfg_crosstraffic;
-
   XBT_INFO("TEST: When the latency is 0, the communication takes 1 sec");
   XBT_INFO("  ");
   run_ping_test();
