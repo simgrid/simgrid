@@ -397,10 +397,11 @@ void NetworkCm02Model::comm_action_set_variable(NetworkCm02Action* action, const
   /* after setting the variable, update the bounds depending on user configuration */
   if (action->get_user_bound() < 0) {
     get_maxmin_system()->update_variable_bound(
-        action->get_variable(), (action->lat_current_ > 0) ? cfg_tcp_gamma / (2.0 * action->lat_current_) : -1.0);
+        action->get_variable(),
+        (action->lat_current_ > 0 && cfg_tcp_gamma > 0) ? cfg_tcp_gamma / (2.0 * action->lat_current_) : -1.0);
   } else {
     get_maxmin_system()->update_variable_bound(
-        action->get_variable(), (action->lat_current_ > 0)
+        action->get_variable(), (action->lat_current_ > 0 && cfg_tcp_gamma > 0)
                                     ? std::min(action->get_user_bound(), cfg_tcp_gamma / (2.0 * action->lat_current_))
                                     : action->get_user_bound());
   }
@@ -518,20 +519,21 @@ void NetworkCm02Link::set_latency(double value)
     auto* action = static_cast<NetworkCm02Action*>(var->get_id());
     action->lat_current_ += delta;
     action->sharing_penalty_ += delta;
-    if (action->get_user_bound() < 0)
+    if (action->get_user_bound() < 0 && NetworkModel::cfg_tcp_gamma > 0)
       get_model()->get_maxmin_system()->update_variable_bound(action->get_variable(), NetworkModel::cfg_tcp_gamma /
                                                                                           (2.0 * action->lat_current_));
-    else {
+    else if (NetworkModel::cfg_tcp_gamma > 0) {
       get_model()->get_maxmin_system()->update_variable_bound(
           action->get_variable(),
           std::min(action->get_user_bound(), NetworkModel::cfg_tcp_gamma / (2.0 * action->lat_current_)));
-
-      if (action->get_user_bound() < NetworkModel::cfg_tcp_gamma / (2.0 * action->lat_current_)) {
-        XBT_DEBUG("Flow is limited BYBANDWIDTH");
-      } else {
-        XBT_DEBUG("Flow is limited BYLATENCY, latency of flow is %f", action->lat_current_);
-      }
     }
+    if (NetworkModel::cfg_tcp_gamma == 0 ||
+        action->get_user_bound() < NetworkModel::cfg_tcp_gamma / (2.0 * action->lat_current_)) {
+      XBT_DEBUG("Flow is limited BYBANDWIDTH");
+    } else {
+      XBT_DEBUG("Flow is limited BYLATENCY, latency of flow is %f", action->lat_current_);
+    }
+
     if (not action->is_suspended())
       get_model()->get_maxmin_system()->update_variable_penalty(action->get_variable(), action->sharing_penalty_);
   }

@@ -373,15 +373,16 @@ Maximal TCP Window Size
 
 **Option** ``network/TCP-gamma`` **Default:** 4194304
 
-The analytical models need to know the maximal TCP window size to take
-the TCP congestion mechanism into account.  On Linux, this value can
-be retrieved using the following commands. Both give a set of values,
-and you should use the last one, which is the maximal size.
+The analytical models need to know the maximal TCP window size to take the TCP congestion mechanism into account (see
+:ref:`this page <understanding_cm02>` for details). On Linux, this value can be retrieved using the following commands.
+Both give a set of values, and you should use the last one, which is the maximal size.
 
 .. code-block:: console
 
    $ cat /proc/sys/net/ipv4/tcp_rmem # gives the sender window
    $ cat /proc/sys/net/ipv4/tcp_wmem # gives the receiver window
+
+If you want to disable the TCP windowing mechanism, set this parameter to 0.
 
 .. _cfg=network/bandwidth-factor:
 .. _cfg=network/latency-factor:

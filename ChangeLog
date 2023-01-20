@@ -29,6 +29,7 @@ Models:
  - Merge parameters network/bandwidth-factor and smpi/bw-factor that serve the same purpose.
    - Same for the latency
    - Rewrite the corresponding documentation.
+ - Allow to disable the TCP windowing modeling by setting network/TCP-gamma to 0.
 
 sthread:
  - Implement pthread_join in MC mode.

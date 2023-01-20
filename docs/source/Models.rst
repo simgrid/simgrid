@@ -118,6 +118,8 @@ the speed, both simulators are linear in the size of their input, but ns-3 has a
 steady communications. On the other hand, the SimGrid models must be carefully :ref:`calibrated <models_calibration>` if
 accuracy is really important to your study, while ns-3 models are less demanding with that regard.
 
+.. _understanding_cm02:
+
 CM02
 ====
 
@@ -125,20 +127,21 @@ This is a simple model of TCP performance, where the sender stops sending packet
 acknowledgment packets are returned in time to the sender, the TCP window has no impact on the performance that then is
 only limited by the link bandwidth. Otherwise, late acknowledgments will reduce the bandwidth.
 
-SimGrid models this mechanism as follows: :math:`realBW = min(physicalBW, \frac{TCP_GAMMA}{2\times latency})` The used
+SimGrid models this mechanism as follows: :math:`real\_BW = min(physical\_BW, \frac{TCP\_GAMMA}{2\times latency})` The used
 bandwidth is either the physical bandwidth that is configured in the platform, or a value representing the bandwidth
 limit due to late acknowledgments. This value is the maximal TCP window size (noted TCP Gamma in SimGrid) over the
 round-trip time (i.e. twice the one-way latency). The default value of TCP Gamma is 4194304. This can be changed with
 the :ref:`network/TCP-gamma <cfg=network/TCP-gamma>` configuration item.
 
-Let's compute the time it takes to send 10 Gb of data over a 10 Gb/s link that is otherwise unused. This is always given
-by :math:`latency + size / bandwidth`, but the bandwidth to use may be the physical one (10Gb/s) or the one induced by
-the TCP window, depending on the latency.
+If you want to disable this mechanism altogether (to model e.g. UDP or memory movements), you should set TCP-gamma
+to 0. Otherwise, the time it takes to send 10 Gb of data over a 10 Gb/s link that is otherwise unused is computed as
+follows. This is always given by :math:`latency + \frac{size}{bandwidth}`, but the bandwidth to use may be the physical
+one (10Gb/s) or the one induced by the TCP window, depending on the latency.
 
- - If the link latency is 0, it obviously takes one second.
- - If the link latency is 0.00001s, :math:`gamma/2\times lat=209,715,200,000 \approx 209Gb/s` which is larger than the
+ - If the link latency is 0, the communication obviously takes one second.
+ - If the link latency is 0.00001s, :math:`\frac{gamma}{2\times lat}=209,715,200,000 \approx 209Gb/s` which is larger than the
    physical bandwidth. So the physical bandwidth is used (you fully use the link) and the communication takes 1.00001s
- - If the link latency is 0.001s, :math:`gamma/2\times lat=2,097,152,000 \approx 2Gb/s`, which is smalled than the
+ - If the link latency is 0.001s, :math:`\frac{gamma}{2\times lat}=2,097,152,000 \approx 2Gb/s`, which is smalled than the
    physical bandwidth. The communication thus fails to fully use the link, and takes 5.12s.
  - With a link latency of 0.1s, :math:`gamma/2\times lat \approx 21Mb/s`, so the communication takes 512 seconds!
 
