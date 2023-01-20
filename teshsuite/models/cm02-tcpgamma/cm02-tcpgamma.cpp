@@ -23,7 +23,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(cm02_tcpgamma, "Messages specific for this simulati
 
 static sg4::Link* testlink = nullptr;
 
-void run_ping_test()
+static void run_ping_test()
 {
   auto* mailbox = simgrid::s4u::Mailbox::by_name("Test");
 
