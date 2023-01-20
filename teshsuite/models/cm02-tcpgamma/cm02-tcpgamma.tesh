@@ -1,0 +1,34 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/cm02-tcpgamma --log=root.fmt=%m%n --cfg=network/model:CM02
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/crosstraffic' to '0'
+> Configuration change: Set 'network/model' to 'CM02'
+> TEST: When the latency is 0, the communication takes 1 sec
+>   
+>   Actual result: Sending 10Gb with bw=1e+10b, lat=0e+00s takes 1.000000 seconds (TCP_Gamma=4194304).
+> -----------------------------------------------------------
+> TEST with latency = 0.00001 sec
+>   Gamma/2lat is about 209 Gb/s, which is larger than the physical bandwidth.
+>   So communication is limited by the physical bandwidth and takes 1.00001 sec.
+> 
+>   Actual result: Sending 10Gb with bw=1e+10b, lat=1e-05s takes 1.000010 seconds (TCP_Gamma=4194304).
+> -----------------------------------------------------------
+> TEST with latency = 0.001 sec
+>   Gamma/2lat is about 2 Gb/s, which is smaller than the physical bandwidth.
+>   So the communication is limited by the latency and takes 4.768372 + 0.001 sec.
+> 
+>   Actual result: Sending 10Gb with bw=1e+10b, lat=1e-03s takes 4.769372 seconds (TCP_Gamma=4194304).
+> -----------------------------------------------------------
+> TEST with latency = 0.1 sec
+>   Gamma/2lat is about 2 Gb/s, which is smaller than the physical bandwidth.
+>   So the communication is limited by the latency and takes 476.837158 + 0.1 sec.
+> 
+>   Actual result: Sending 10Gb with bw=1e+10b, lat=1e-01s takes 476.937158 seconds (TCP_Gamma=4194304).
+> -----------------------------------------------------------
+> TEST with latency = 0.001 sec and TCP_Gamma = 0
+> Configuration change: Set 'network/TCP-gamma' to '0'
+>   The latency=0.001s should make the communication to be limited by the latency, but since gamma=0, the physical bandwidth is still used.
+>   So the communication takes 1.001 sec.
+> 
+>   Actual result: Sending 10Gb with bw=1e+10b, lat=1e-03s takes 1.001000 seconds (TCP_Gamma=0).
+> -----------------------------------------------------------

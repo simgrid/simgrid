@@ -134,16 +134,16 @@ round-trip time (i.e. twice the one-way latency). The default value of TCP Gamma
 the :ref:`network/TCP-gamma <cfg=network/TCP-gamma>` configuration item.
 
 If you want to disable this mechanism altogether (to model e.g. UDP or memory movements), you should set TCP-gamma
-to 0. Otherwise, the time it takes to send 10 Gb of data over a 10 Gb/s link that is otherwise unused is computed as
+to 0. Otherwise, the time it takes to send 10 Gib of data over a 10 Gib/s link that is otherwise unused is computed as
 follows. This is always given by :math:`latency + \frac{size}{bandwidth}`, but the bandwidth to use may be the physical
 one (10Gb/s) or the one induced by the TCP window, depending on the latency.
 
  - If the link latency is 0, the communication obviously takes one second.
- - If the link latency is 0.00001s, :math:`\frac{gamma}{2\times lat}=209,715,200,000 \approx 209Gb/s` which is larger than the
+ - If the link latency is 0.00001s, :math:`\frac{gamma}{2\times lat}=209,715,200,000 \approx 209Gib/s` which is larger than the
    physical bandwidth. So the physical bandwidth is used (you fully use the link) and the communication takes 1.00001s
- - If the link latency is 0.001s, :math:`\frac{gamma}{2\times lat}=2,097,152,000 \approx 2Gb/s`, which is smalled than the
-   physical bandwidth. The communication thus fails to fully use the link, and takes 5.12s.
- - With a link latency of 0.1s, :math:`gamma/2\times lat \approx 21Mb/s`, so the communication takes 512 seconds!
+ - If the link latency is 0.001s, :math:`\frac{gamma}{2\times lat}=2,097,152,000 \approx 2Gib/s`, which is smalled than the
+   physical bandwidth. The communication thus fails to fully use the link, and takes about 4.77s.
+ - With a link latency of 0.1s, :math:`gamma/2\times lat \approx 21Mb/s`, so the communication takes about 476.84 + 0.1 seconds!
 
 For more details, please refer to "A Network Model for Simulation of Grid Application" by Henri Casanova and Loris
 Marchal (published in 2002, thus the model name).
