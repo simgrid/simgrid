@@ -8,6 +8,7 @@
 #include <simgrid/instr.h>
 #include <simgrid/version.h>
 #include <xbt/config.hpp>
+#include <xbt/file.hpp>
 
 #include "simgrid/sg_config.hpp"
 #include "src/include/xbt/mmalloc.h"
@@ -285,9 +286,9 @@ void sg_config_init(int *argc, char **argv)
 
   /* Inclusion path */
   static simgrid::config::Flag<std::string> cfg_path{
-      "path", "Lookup path for inclusions in platform and deployment XML files", "", [](std::string const& path) {
+      "path", "Lookup path for inclusions in platform and deployment XML files", "./", [](std::string const& path) {
         if (not path.empty())
-          surf_path.push_back(path);
+          simgrid::xbt::path_push(path);
       }};
 
   static simgrid::config::Flag<bool> cfg_cpu_maxmin_selective_update{
@@ -348,9 +349,6 @@ void sg_config_init(int *argc, char **argv)
 
   static simgrid::config::Flag<bool> cfg_execution_cutpath{
       "exception/cutpath", "Whether to cut all path information from call traces, used e.g. in exceptions.", false};
-
-  if (surf_path.empty())
-    simgrid::config::set_default<std::string>("path", "./");
 
   _sg_cfg_init_status = 1;
 

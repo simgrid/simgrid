@@ -226,8 +226,9 @@ Profile* ProfileBuilder::from_string(const std::string& name, const std::string&
 Profile* ProfileBuilder::from_file(const std::string& filename)
 {
   xbt_assert(not filename.empty(), "Cannot parse a trace from an empty filename");
-  auto f = std::unique_ptr<std::ifstream>(simgrid::xbt::ifsopen_path(filename, surf_path));
-  xbt_assert(not f->fail(), "Cannot open file '%s' (path=%s)", filename.c_str(), (boost::join(surf_path, ":")).c_str());
+  auto f = std::unique_ptr<std::ifstream>(simgrid::xbt::path_ifsopen(filename));
+  xbt_assert(not f->fail(), "Cannot open file '%s' (path=%s)", filename.c_str(),
+             simgrid::xbt::path_to_string().c_str());
 
   std::stringstream buffer;
   buffer << f->rdbuf();

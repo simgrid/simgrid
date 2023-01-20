@@ -832,9 +832,9 @@ void surf_parse_open(const std::string& file)
 {
   surf_parsed_filename = file;
   std::string dir      = simgrid::xbt::Path(file).get_dir_name();
-  surf_path.push_back(dir);
+  simgrid::xbt::path_push(dir);
 
-  surf_file_to_parse = simgrid::xbt::fopen_path(file, "r", surf_path);
+  surf_file_to_parse = simgrid::xbt::path_fopen(file, "r");
   if (surf_file_to_parse == nullptr)
     throw std::invalid_argument("Unable to open '" + file + "' from '" + simgrid::xbt::Path().get_name() +
                                 "'. Does this file exist?");
@@ -845,7 +845,7 @@ void surf_parse_open(const std::string& file)
 
 void surf_parse_close()
 {
-  surf_path.pop_back(); // remove the dirname of the opened file, that was added in surf_parse_open()
+  simgrid::xbt::path_pop(); // remove the dirname of the opened file, that was added in surf_parse_open()
 
   if (surf_file_to_parse) {
     surf_parse__delete_buffer(surf_input_buffer);

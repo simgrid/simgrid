@@ -13,8 +13,11 @@
 namespace simgrid {
 namespace xbt {
 
-FILE* fopen_path(const std::string& name, const char* mode, const std::vector<std::string>& path);
-std::ifstream* ifsopen_path(const std::string& name, const std::vector<std::string>& path);
+void path_push(std::string const& str);
+void path_pop();
+FILE* path_fopen(const std::string& name, const char* mode);
+std::ifstream* path_ifsopen(const std::string& name);
+std::string path_to_string();
 
 class Path {
 public:

@@ -364,9 +364,9 @@ std::map<std::string, sg_size_t, std::less<>>* FileSystemDiskExt::parse_content(
 
   auto* parse_content = new std::map<std::string, sg_size_t, std::less<>>();
 
-  auto fs = std::unique_ptr<std::ifstream>(simgrid::xbt::ifsopen_path(filename, surf_path));
+  auto fs = std::unique_ptr<std::ifstream>(simgrid::xbt::path_ifsopen(filename));
   xbt_assert(not fs->fail(), "Cannot open file '%s' (path=%s)", filename.c_str(),
-             (boost::join(surf_path, ":")).c_str());
+             simgrid::xbt::path_to_string().c_str());
 
   std::string line;
   std::vector<std::string> tokens;
