@@ -37,7 +37,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(cm02_set_lat_bw, "Messages specific for this simula
 static void sender(const std::string& recv_name, sg4::Link* l4)
 {
   sg4::Mailbox* mbox = sg4::Mailbox::by_name(recv_name);
-  XBT_INFO("Comm to %s, same weight/penalty (w_a == w_b, ~20) for everybody, each comm should take 1s and finish at "
+  XBT_INFO("Send to %s, same weight/penalty (w_a == w_b, ~20) for everybody, each comm should take 1s and finish at "
            "the same time",
            recv_name.c_str());
   auto* payload = new double(sg4::Engine::get_clock());
@@ -46,10 +46,10 @@ static void sender(const std::string& recv_name, sg4::Link* l4)
   sg4::this_actor::sleep_until(10); // synchronize senders
 
   if (recv_name == "C2") {
-    XBT_INFO("Comm Flow B to C2: after 1s, change latency of L4 to increase penalty for flow B (w_b = 2* w_a)");
+    XBT_INFO("Send Flow B to C2: after 1s, change latency of L4 to increase penalty for flow B (w_b = 2* w_a)");
     XBT_INFO("rho_a = 2*rho_b, flow A receives twice the bandwidth than flow B");
   } else {
-    XBT_INFO("Comm Flow A to C1");
+    XBT_INFO("Send Flow A to C1");
   }
   payload = new double(sg4::Engine::get_clock());
   comm    = mbox->put_async(payload, 1e3);
@@ -62,10 +62,10 @@ static void sender(const std::string& recv_name, sg4::Link* l4)
     l4->set_latency(1e-9);
 
   if (recv_name == "C2") {
-    XBT_INFO("Comm Flow B to C2: after 1s, change bandwidth of L4 to increase penalty for flow B (w_b = 2* w_a)");
+    XBT_INFO("Send Flow B to C2: after 1s, change bandwidth of L4 to increase penalty for flow B (w_b = 2* w_a)");
     XBT_INFO("rho_a = 2*rho_b, flow A receives twice the bandwidth than flow B");
   } else {
-    XBT_INFO("Comm Flow A to C1");
+    XBT_INFO("Send Flow A to C1");
   }
   payload = new double(sg4::Engine::get_clock());
   comm    = mbox->put_async(payload, 1e3);
