@@ -32,7 +32,7 @@ static void run_ping_test()
     static auto message = std::string("message");
     mailbox->put(&message, 1e10);
     double end_time = simgrid::s4u::Engine::get_clock();
-    XBT_INFO("  Actual result: Sending 10Gb with bw=%.0eb, lat=%.0es takes %f seconds (TCP_Gamma=%.0f).",
+    XBT_INFO("  Actual result: Sending 10Gb with bw=%.0eb, lat=%.0es lasts %f seconds (TCP_Gamma=%.0f).",
              testlink->get_bandwidth(), testlink->get_latency(), end_time - start_time,
              simgrid::config::get_value<double>("network/TCP-gamma"));
   });
@@ -44,34 +44,37 @@ static void run_ping_test()
 /* We need a separate actor so that it can sleep after each test */
 static void main_dispatcher()
 {
-  XBT_INFO("TEST: When the latency is 0, the communication takes 1 sec");
-  XBT_INFO("  ");
+  XBT_INFO("-----------------------------------------------------------");
+  XBT_INFO("This test set enforces the impact of the latency and TCP-gamma parameter on the bandwidth."); 
+  XBT_INFO("See the documentation about the CM02 TCP performance model.");
+  XBT_INFO("-----------------------------------------------------------");
+  XBT_INFO("TEST with latency = 0 sec (and the default value of Gamma):");
+  XBT_INFO("  Expectation: Gamma/2lat is not defined, so the physical bandwidth is used; The communication lasts 1 sec.");
   run_ping_test();
   XBT_INFO("-----------------------------------------------------------");
   testlink->set_latency(0.00001);
   XBT_INFO("TEST with latency = 0.00001 sec");
-  XBT_INFO("  Gamma/2lat is about 209 Gb/s, which is larger than the physical bandwidth.");
-  XBT_INFO("  So communication is limited by the physical bandwidth and takes 1.00001 sec.\n");
+  XBT_INFO("  Expectation: Gamma/2lat is about 209 Gb/s, which is larger than the physical bandwidth.");
+  XBT_INFO("    So communication is limited by the physical bandwidth and lasts 1.00001 sec.");
   run_ping_test();
   XBT_INFO("-----------------------------------------------------------");
   testlink->set_latency(0.001);
   XBT_INFO("TEST with latency = 0.001 sec");
-  XBT_INFO("  Gamma/2lat is about 2 Gb/s, which is smaller than the physical bandwidth.");
-  XBT_INFO("  So the communication is limited by the latency and takes 4.768372 + 0.001 sec.\n");
+  XBT_INFO("  Expectation: Gamma/2lat is about 2 Gb/s, which is smaller than the physical bandwidth.");
+  XBT_INFO("    So the communication is limited by the latency and lasts 4.768372 + 0.001 sec.");
   run_ping_test();
   XBT_INFO("-----------------------------------------------------------");
   testlink->set_latency(0.1);
   XBT_INFO("TEST with latency = 0.1 sec");
-  XBT_INFO("  Gamma/2lat is about 2 Gb/s, which is smaller than the physical bandwidth.");
-  XBT_INFO("  So the communication is limited by the latency and takes 476.837158 + 0.1 sec.\n");
+  XBT_INFO("  Expectation: Gamma/2lat is about 2 Gb/s, which is smaller than the physical bandwidth.");
+  XBT_INFO("    So the communication is limited by the latency and lasts 476.837158 + 0.1 sec.");
   run_ping_test();
   XBT_INFO("-----------------------------------------------------------");
   XBT_INFO("TEST with latency = 0.001 sec and TCP_Gamma = 0");
   sg4::Engine::set_config("network/TCP-gamma:0");
   testlink->set_latency(0.001);
-  XBT_INFO("  The latency=0.001s should make the communication to be limited by the latency, but since gamma=0, the "
-           "physical bandwidth is still used.");
-  XBT_INFO("  So the communication takes 1.001 sec.\n");
+  XBT_INFO("  Expectation: The latency=0.001s should make the communication to be limited by the latency.");
+  XBT_INFO("    But since gamma=0, the physical bandwidth is still used. So the communication lasts 1.001 sec.");
   run_ping_test();
   XBT_INFO("-----------------------------------------------------------");
 }
