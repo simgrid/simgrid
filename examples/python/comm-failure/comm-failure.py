@@ -25,15 +25,15 @@ def sender(mailbox1_name: str, mailbox2_name: str) -> None:
         this_actor.info(f"Wait any returned index {index} (comm to {pending_comms[index].mailbox.name})")
     except NetworkFailureException:
         this_actor.info(f"Sender has experienced a network failure exception, so it knows that something went wrong")
-        this_actor.info(f"Now it needs to figure out which of the two comms failed by looking at their state")
+        this_actor.info(f"Now it needs to figure out which of the two comms failed by looking at their state:")
 
-    this_actor.info(f"Comm to {comm1.mailbox.name} has state: {comm1.state_str}")
-    this_actor.info(f"Comm to {comm2.mailbox.name} has state: {comm2.state_str}")
+    this_actor.info(f"  Comm to {comm1.mailbox.name} has state: {comm1.state_str}")
+    this_actor.info(f"  Comm to {comm2.mailbox.name} has state: {comm2.state_str}")
 
     try:
         comm1.wait()
-    except NetworkFailureException:
-        this_actor.info(f"Waiting on a FAILED comm raises an exception")
+    except NetworkFailureException as err:
+        this_actor.info(f"Waiting on a FAILED comm raises an exception: '{err}'")
 
     this_actor.info("Wait for remaining comm, just to be nice")
     pending_comms.pop(0)
@@ -55,12 +55,9 @@ def receiver(mailbox_name: str) -> None:
 
 def link_killer(link_name: str) -> None:
     link_to_kill = Link.by_name(link_name)
-    this_actor.info("sleeping 10 seconds...")
     this_actor.sleep_for(10.0)
-    this_actor.info(f"turning off link {link_to_kill.name}")
+    this_actor.info(f"Turning off link '{link_to_kill.name}'")
     link_to_kill.turn_off()
-    this_actor.info("link killed. exiting")
-
 
 def main():
     e = Engine(sys.argv)

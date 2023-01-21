@@ -430,6 +430,21 @@ The ``test_any()`` returns whether at least one activity of the set has complete
 
       See also :py:func:`simgrid.Comm.test_any()`.
 
+.. _s4u_ex_comm_failure:
+
+Dealing with network failures
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This examples shows how to survive to network exceptions that occur when a link is turned off. In this case, any blocking operation
+such as ``put``, ``get`` or ``wait`` will raise an exception that you can catch and react to. See also :ref:`howto_churn` and
+:ref:`this example <s4u_ex_platform_state_profile>` on how to attach a state profile to hosts and react to execution failures.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/comm-failure/s4u-comm-failure.cpp
+
+   .. example-tab:: examples/python/comm-failure/comm-failure.py
+
 .. _s4u_ex_comm_host2host:
 
 Direct host-to-host communication
@@ -754,11 +769,14 @@ Shows how to filter the actors that match given criteria.
 Profiles
 --------
 
+.. _s4u_ex_platform_state_profile:
+
 Specifying state profiles
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Shows how to specify when the resources must be turned off and on again, and how to react to such
-failures in your code. See also :ref:`howto_churn`.
+failures in your code. See also :ref:`howto_churn` and :ref:`this example <s4u_ex_comm_failure>`
+on how to react to communication failures.
 
 .. tabs::
 

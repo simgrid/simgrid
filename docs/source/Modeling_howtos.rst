@@ -93,6 +93,10 @@ Another possibility is to use the
 functions take a profile, that can be a fixed profile exhaustively
 listing the events, or something else if you wish.
 
+For further reading, you could turn to :ref:`this example <s4u_ex_comm_failure>`
+on how to react to communication failures, or  :ref:`this one <s4u_ex_platform_state_profile>`
+on how to attach a state profile to hosts and react to execution failures.
+
 .. _howto_multicore:
 
 Modeling multicore machines

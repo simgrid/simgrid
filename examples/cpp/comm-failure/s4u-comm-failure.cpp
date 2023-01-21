@@ -3,16 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This example shows how to serialize a set of communications going through a link
+/* This example shows how to react to a failed communication, which occures when a link is turned off.
  *
- * As for the other asynchronous examples, the sender initiates all the messages it wants to send and
- * pack the resulting simgrid::s4u::CommPtr objects in a vector.
- * At the same time, the receiver starts receiving all messages asynchronously. Without serialization,
- * all messages would be received at the same timestamp in the receiver.
- *
- * However, as they will be serialized in a link of the platform, the messages arrive 2 by 2.
- *
- * The sender then blocks until all ongoing communication terminate, using simgrid::s4u::Comm::wait_all()
  */
 
 #include <simgrid/s4u.hpp>
@@ -49,11 +41,10 @@ public:
       XBT_INFO("Wait any returned index %ld (comm to %s)", index, pending_comms.at(index)->get_mailbox()->get_cname());
     } catch (const simgrid::NetworkFailureException&) {
       XBT_INFO("Sender has experienced a network failure exception, so it knows that something went wrong");
-      XBT_INFO("Now it needs to figure out which of the two comms failed by looking at their state");
+      XBT_INFO("Now it needs to figure out which of the two comms failed by looking at their state:");
+      XBT_INFO("  Comm to %s has state: %s", comm1->get_mailbox()->get_cname(), comm1->get_state_str());
+      XBT_INFO("  Comm to %s has state: %s", comm2->get_mailbox()->get_cname(), comm2->get_state_str());
     }
-
-    XBT_INFO("Comm to %s has state: %s", comm1->get_mailbox()->get_cname(), comm1->get_state_str());
-    XBT_INFO("Comm to %s has state: %s", comm2->get_mailbox()->get_cname(), comm2->get_state_str());
 
     try {
       comm1->wait();
@@ -67,14 +58,13 @@ public:
 };
 
 class Receiver {
-  std::string mailbox_name;
+  sg4::Mailbox* mailbox;
 
 public:
-  explicit Receiver(const std::string& mailbox_name) : mailbox_name(mailbox_name) {}
+  explicit Receiver(const std::string& mailbox_name) : mailbox(sg4::Mailbox::by_name(mailbox_name)) {}
 
   void operator()() const
   {
-    auto mailbox = sg4::Mailbox::by_name(mailbox_name);
     XBT_INFO("Receiver posting a receive...");
     try {
       mailbox->get<void*>();
@@ -82,23 +72,6 @@ public:
     } catch (const simgrid::NetworkFailureException&) {
       XBT_INFO("Receiver has experience a network failure exception");
     }
-  }
-};
-
-class LinkKiller {
-  std::string link_name;
-
-public:
-  explicit LinkKiller(const std::string& link_name) : link_name(link_name) {}
-
-  void operator()() const
-  {
-    auto link_to_kill = sg4::Link::by_name(link_name);
-    XBT_INFO("LinkKiller  sleeping 10 seconds...");
-    sg4::this_actor::sleep_for(10.0);
-    XBT_INFO("LinkKiller turning off link %s", link_to_kill->get_cname());
-    link_to_kill->turn_off();
-    XBT_INFO("LinkKiller killed. exiting");
   }
 };
 
@@ -118,9 +91,14 @@ int main(int argc, char** argv)
   zone->seal();
 
   sg4::Actor::create("Sender", host1, Sender("mailbox2", "mailbox3"));
-  sg4::Actor::create("Receiver", host2, Receiver("mailbox2"))->daemonize();
-  sg4::Actor::create("Receiver", host3, Receiver("mailbox3"))->daemonize();
-  sg4::Actor::create("LinkKiller", host1, LinkKiller("linkto2"))->daemonize();
+  sg4::Actor::create("Receiver", host2, Receiver("mailbox2"));
+  sg4::Actor::create("Receiver", host3, Receiver("mailbox3"));
+  
+  sg4::Actor::create("LinkKiller", host1, [](){
+    sg4::this_actor::sleep_for(10.0);
+    XBT_INFO("Turning off link 'linkto2'");
+    sg4::Link::by_name("linkto2")->turn_off();
+  });
 
   engine.run();
 
