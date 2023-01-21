@@ -2765,6 +2765,55 @@ Locking
          .. doxygenfunction:: sg_sem_release(sg_sem_t sem)
          .. doxygenfunction:: sg_sem_would_block(const_sg_sem_t sem)
 
+===============
+Error reporting
+===============
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenclass:: simgrid::Exception
+
+      The following exceptions denote a problem in the simulated platform, and it is often useful to catch them.
+
+      .. doxygenclass:: simgrid::CancelException
+      .. doxygenclass:: simgrid::HostFailureException
+      .. doxygenclass:: simgrid::NetworkFailureException
+      .. doxygenclass:: simgrid::StorageFailureException
+      .. doxygenclass:: simgrid::TimeoutException
+      .. doxygenclass:: simgrid::VmFailureException
+
+      The following errors denote a problem in the SimGrid tool itself. Most of the time, you should let these
+      exception go, so that the simulation stops. But you may want to catch them, for example when you launch
+      simgrid from a python notebook and want to handle the problem accordingly.
+
+      .. doxygenclass:: simgrid::AssertionError
+      .. doxygenclass:: simgrid::ParseError
+      .. doxygenclass:: simgrid::TracingError
+
+   .. group-tab:: Python
+
+      The following exceptions denote a problem in the simulated platform, and it is often useful to catch them.
+
+      .. autoclass:: simgrid.CancelException
+      .. autoclass:: simgrid.HostFailureException
+      .. autoclass:: simgrid.NetworkFailureException
+      .. autoclass:: simgrid.StorageFailureException
+      .. autoclass:: simgrid.TimeoutException
+      .. autoclass:: simgrid.VmFailureException
+
+      The following errors denote a problem in the SimGrid tool itself. Most of the time, you should let these
+      exception go, so that the simulation stops. But you may want to catch them, for example when you launch
+      simgrid from a python notebook and want to handle the problem accordingly.
+
+      .. autoclass:: simgrid.AssertionError
+
+   .. group-tab:: C
+
+      .. doxygenenum:: sg_error_t
+
+
 .. |hr| raw:: html
 
    <hr />

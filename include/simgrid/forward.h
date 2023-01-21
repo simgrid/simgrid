@@ -316,13 +316,13 @@ typedef long long sg_offset_t;
 typedef long aid_t;
 
 typedef enum {
-  SG_OK,
-  SG_ERROR_CANCELED,
-  SG_ERROR_TIMEOUT,
-  SG_ERROR_HOST,
-  SG_ERROR_NETWORK,
-  SG_ERROR_STORAGE,
-  SG_ERROR_VM
+  SG_OK /** Code returned when no problem occured */,
+  SG_ERROR_CANCELED /** Code returned when something got canceled before completion */,
+  SG_ERROR_TIMEOUT /** Code returned when timeout elapsed */,
+  SG_ERROR_HOST /** Code returned when a host fails */,
+  SG_ERROR_NETWORK /** Code returned when a communication fails because of the network or because of the remote host */,
+  SG_ERROR_STORAGE /** Code returned when a storage fails */,
+  SG_ERROR_VM /** Code returned when a VM fails */
 } sg_error_t;
 
 XBT_PUBLIC int SMPI_is_inited();

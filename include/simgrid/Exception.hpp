@@ -3,13 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/* This file defines all possible exception that could occur in a SimGrid library. */
+
 #ifndef SIMGRID_EXCEPTIONS_HPP
 #define SIMGRID_EXCEPTIONS_HPP
-
-/** @file exception.hpp SimGrid-specific Exceptions
- *
- *  Defines all possible exception that could occur in a SimGrid library.
- */
 
 #include <xbt/backtrace.hpp>
 #include <xbt/ex.h>
@@ -28,9 +25,7 @@ namespace xbt {
  *  Constitute the contextual information of where an exception was thrown
  *
  *  These tuples (__FILE__, __LINE__, __func__, backtrace, procname, pid)
- *  are best created with @ref XBT_THROW_POINT.
- *
- *  @ingroup XBT_ex
+ *  are best created with the macro XBT_THROW_POINT.
  */
 class ThrowPoint {
 public:

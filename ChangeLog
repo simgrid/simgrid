@@ -37,6 +37,7 @@ sthread:
 Documentation:
  - New section in the user guide on the provided performance models.
  - New section presenting some technical good practices for (potential) contributors.
+ - Add a section on errors and exceptions to the API documentation.
 
 Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GH: issues on GitHub)
