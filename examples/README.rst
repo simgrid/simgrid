@@ -534,6 +534,7 @@ Remote execution
 ^^^^^^^^^^^^^^^^
 
 You can start executions on remote hosts, or even change the host on which they occur during their execution.
+This is naturally not very realistic, but it's something handy to have.
 
 .. tabs::
 
@@ -575,6 +576,16 @@ This allows simulating malleable tasks.
    .. example-tab:: examples/python/exec-ptask/exec-ptask.py
 
       See also :ref:`simgrid.this_actor.parallel_execute()`
+
+Ptasks play well with the host energy plugin, as shown in this example.
+There is not much new compared to the above ptask example or the
+:ref:`examples about energy <s4u_ex_energy>`. It just works.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/energy-exec-ptask/s4u-energy-exec-ptask.cpp
+
+   .. example-tab:: examples/c/energy-exec-ptask/energy-exec-ptask.c
 
 .. _s4u_ex_dvfs:
 
@@ -838,6 +849,8 @@ messages can travel through the link at the same time.
    .. example-tab:: examples/python/platform-comm-serialize/platform-comm-serialize.py
 
       See also :py:func:`simgrid.Link.set_concurrency_limit()`.
+
+.. _s4u_ex_energy:
 
 =================
 Energy Simulation
