@@ -228,7 +228,7 @@ models for all existing resources.
     <https://hal.inria.fr/inria-00071989/document>`_.
   - **ns-3** (only available if you compiled SimGrid accordingly):
     Use the packet-level network
-    simulators as network models (see :ref:`model_ns3`).
+    simulators as network models (see :ref:`models_ns3`).
     This model can be :ref:`further configured <options_pls>`.
 
 - ``cpu/model``: specify the used CPU model.  We have only one model

@@ -1,10 +1,10 @@
-.. _dev_doc:
+.. _contrib_doc:
 
-Developer's Documentation
-=========================
+Contributor's Documentation
+===========================
 
-This page describes the software infrastructure for SimGrid potential contributors. This page is particularly interesting if you plan to contribute to the
-project.
+This page describes the software infrastructure for SimGrid potential contributors. It is particularly interesting if you plan to send some patches for
+inclusion in the project code.
 
 Enforcing the coding standards
 ------------------------------

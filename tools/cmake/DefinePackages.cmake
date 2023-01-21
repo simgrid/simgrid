@@ -805,7 +805,7 @@ set(DOC_SOURCES
   docs/source/community.rst
   docs/source/Configuring_SimGrid.rst
   docs/source/Deploying_your_application.rst
-  docs/source/Developers_Documentation.rst
+  docs/source/Contributors_Documentation.rst
   docs/source/Experimental_setup.rst
   docs/source/index.rst
   docs/source/intl.rst
@@ -849,6 +849,9 @@ set(DOC_SOURCES
   docs/source/tuto_smpi/img/lu.S.4.png
   docs/source/tuto_smpi/gemm_mpi.cpp
   docs/source/tuto_smpi/roundtrip.c
+
+  docs/source/tuto_mc/ndet-receive-mpi.c
+  docs/source/tuto_mc/ndet-receive-s4u.cpp
 
   docs/source/tuto_disk/analysis.org
   docs/source/tuto_disk/analysis.irst

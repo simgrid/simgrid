@@ -144,6 +144,7 @@ one (10Gb/s) or the one induced by the TCP window, depending on the latency.
  - If the link latency is 0.001s, :math:`\frac{gamma}{2\times lat}=2,097,152,000 \approx 2Gib/s`, which is smalled than the
    physical bandwidth. The communication thus fails to fully use the link, and takes about 4.77s.
  - With a link latency of 0.1s, :math:`gamma/2\times lat \approx 21Mb/s`, so the communication takes about 476.84 + 0.1 seconds!
+ - More cases are tested and enforced by the test ``teshsuite/models/cm02-tcpgamma/cm02-tcpgamma.tesh``
 
 For more details, please refer to "A Network Model for Simulation of Grid Application" by Henri Casanova and Loris
 Marchal (published in 2002, thus the model name).

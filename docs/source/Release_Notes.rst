@@ -571,8 +571,6 @@ stochastic generator of external load has been reintroduced.
 Version 3.33 (not released yet)
 -------------------------------
 
-.. |br| raw:: html
-
 **On the maintainance front,** we removed the ancient MSG interface which end-of-life was scheduled for 2020, the Java
 bindings that was MSG-only and support for native builds on Windows (WSL is now required). Keeping SimGrid alive while
 adding new features require to remove old, unused stuff. The very rare users impacted by these removals are urged to 
@@ -596,4 +594,7 @@ and done! A single activity mixing I/Os and communications can be created whose 
 function (which also derives from the ptask model). The user can specify a ``src_disk`` on a ``src_host`` and a
 ``dst_disk`` on a ``dst_host`` to stream data of a given ``size``. Note that disks are optional, allowing users to
 simulate some kind of "disk-to-memory" or "memory-to-disk" I/O streams.
+
+.. |br| raw:: html
+
    <br />

@@ -106,7 +106,7 @@ tracing during the simulation. You can get the full list by running
 
 Finally, you can pass :ref:`any valid SimGrid parameter <options>` to your
 program. In particular, you can pass ``--cfg=network/model:ns-3`` to
-switch to use :ref:`model_ns3`. These parameters should be placed after
+switch to use :ref:`models_ns3`. These parameters should be placed after
 the name of your binary on the command line.
 
 ...............................

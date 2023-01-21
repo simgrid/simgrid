@@ -193,13 +193,13 @@ We provide an example model of file system as a plugin, (sparsely) documented in
 A host is the computing resource on which an actor can run. See :cpp:class:`simgrid::s4u::Host`.
 
 **Parent tags:** :ref:`pf_tag_zone` (only leaf zones, i.e., zones containing neither inner zones nor clusters) |br|
-**Children tags:** :ref:`pf_tag_mount`, :ref:`pf_tag_prop`, :ref:`pf_tag_disk` |br|
+**Children tags:** :ref:`pf_tag_prop`, :ref:`pf_tag_disk` |br|
 **Attributes:**
 
 :``id``: Host name.
    Must be unique over the whole platform.
 :``speed``: Computational power (per core, in flop/s).
-   If you use DVFS, provide a comma-separated list of values for each pstate (see :ref:`howto_dvfs`).
+   If you use DVFS, provide a comma-separated list of values for each pstate (see :ref:`API_s4u_Host_dvfs`).
 :``core``: Amount of cores (default: 1).
    See :ref:`howto_multicore`.
 :``availability_file``:
@@ -247,7 +247,7 @@ A host is the computing resource on which an actor can run. See :cpp:class:`simg
 :``coordinates``: Vivaldi coordinates (meaningful for Vivaldi zones only).
    See :ref:`pf_tag_peer`.
 :``pstate``: Initial pstate (default: 0, the first one).
-   See :ref:`howto_dvfs`.
+   See :ref:`API_s4u_Host_dvfs`.
 
 -------------------------------------------------------------------------------
 
@@ -400,7 +400,7 @@ and a download link.
 :``id``: Name of the host. Must be unique on the whole platform.
 :``speed``: Computational power (in flop/s).
 
-   If you use DVFS, provide a comma-separated list of values for each pstate (see :ref:`howto_dvfs`).
+   If you use DVFS, provide a comma-separated list of values for each pstate (see :ref:`API_s4u_Host_dvfs`).
 :``bw_in``: Bandwidth of the private downstream link, along with its
 	    unit. See :ref:`pf_tag_link`.
 :``bw_out``: Bandwidth of the private upstream link, along with its

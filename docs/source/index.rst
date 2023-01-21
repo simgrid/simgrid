@@ -94,7 +94,7 @@ of every page. Bugs in the code should be reported
    :caption: SimGrid's Internals:
 
       Design goals <Design_goals.rst>
-      Developer's documentation <Developers_Documentation.rst>
+      Contributor's documentation <Contributors_Documentation.rst>
 
 .. Cheat Sheet on the sublevels
 ..

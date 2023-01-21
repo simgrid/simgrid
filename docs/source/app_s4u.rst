@@ -1395,8 +1395,12 @@ On/Off
       .. doxygenfunction:: sg_host_turn_off(sg_host_t host)
       .. doxygenfunction:: sg_host_turn_on(sg_host_t host)
 
+.. _API_s4u_Host_dvfs:
+
 DVFS
 ----
+
+See also the :ref:`relevant examples <s4u_ex_dvfs>`.
 
 .. tabs::
 
@@ -2208,11 +2212,12 @@ Querying info
       .. automethod:: simgrid.Comm.set_payload_size
       .. automethod:: simgrid.Comm.set_rate
 
-Life cycle
-----------
+Direct host-to-host communication
+---------------------------------
 
 Most communications are created using :ref:`s4u_mailbox`, but you can
-also start direct communications as shown below.
+also start direct communications as shown below. See also the
+:ref:`relevant examples <s4u_ex_comm_host2host>`.
 
 .. tabs::
 
@@ -2222,6 +2227,19 @@ also start direct communications as shown below.
       .. doxygenfunction:: simgrid::s4u::Comm::sendto_init()
       .. doxygenfunction:: simgrid::s4u::Comm::sendto_init(Host *from, Host *to)
       .. doxygenfunction:: simgrid::s4u::Comm::sendto_async
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Comm.sendto
+      .. automethod:: simgrid.Comm.sendto_init
+      .. automethod:: simgrid.Comm.sendto_async
+
+Life cycle
+----------
+
+.. tabs::
+
+   .. group-tab:: C++
 
       .. doxygenfunction:: simgrid::s4u::Comm::cancel
       .. doxygenfunction:: simgrid::s4u::Comm::start
@@ -2236,10 +2254,6 @@ also start direct communications as shown below.
       .. doxygenfunction:: simgrid::s4u::Comm::wait_until
 
    .. group-tab:: Python
-
-      .. automethod:: simgrid.Comm.sendto
-      .. automethod:: simgrid.Comm.sendto_init
-      .. automethod:: simgrid.Comm.sendto_async
 
       .. automethod:: simgrid.Comm.cancel
       .. automethod:: simgrid.Comm.start
