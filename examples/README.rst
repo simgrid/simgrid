@@ -358,6 +358,25 @@ This example is very similar to the previous one, simply adding how to declare t
 
       See also :py:func:`simgrid.Comm.wait_until()`
 
+.. _s4u_ex_mailbox_ready:
+
+Checking for incoming communications
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This example uses ``Mailbox.ready()`` to check for completed communications. When this function returns true, then at least a message
+is arrived, so you know that ``Mailbox.get()`` will complete imediately. This is thus another way toward asynchronous communications.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/comm-ready/s4u-comm-ready.cpp
+
+      See also :cpp:func:`simgrid::s4u::Mailbox::ready()`.
+
+   .. example-tab:: examples/python/comm-ready/comm-ready.py
+
+      See also :py:func:`simgrid.Mailbox.ready()`
+
+
 Suspending communications
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 

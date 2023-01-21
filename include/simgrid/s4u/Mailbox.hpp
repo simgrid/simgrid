@@ -54,7 +54,11 @@ public:
   /** Look if there is a communication going on in a mailbox and return the PID of the sender actor */
   aid_t listen_from() const;
 
-  /** Check if there is a communication ready to be consumed from a mailbox. */
+  /** Check if there is a communication ready to be consumed from a mailbox.
+   * \beginrst
+   *  See :ref:`this example <s4u_ex_mailbox_ready>`.
+   * \endrst
+   */
   bool ready() const;
 
   /** Gets the first element in the queue (without dequeuing it), or nullptr if none is there */
