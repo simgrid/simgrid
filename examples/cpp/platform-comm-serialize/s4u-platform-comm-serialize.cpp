@@ -3,16 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This example shows how to serialize a set of communications going through a link
+/* This example shows how to serialize a set of communications going through a link using Link::set_concurrency_limit()
  *
- * As for the other asynchronous examples, the sender initiates all the messages it wants to send and
- * pack the resulting simgrid::s4u::CommPtr objects in a vector.
- * At the same time, the receiver starts receiving all messages asynchronously. Without serialization,
- * all messages would be received at the same timestamp in the receiver.
- *
- * However, as they will be serialized in a link of the platform, the messages arrive 2 by 2.
- *
- * The sender then blocks until all ongoing communication terminate, using simgrid::s4u::Comm::wait_all()
+ * This example is very similar to the other asynchronous communication examples, but messages get serialized by the platform.
+ * Without this call to Link::set_concurrency_limit(2) in main, all messages would be received at the exact same timestamp since
+ * they are initiated at the same instant and are of the same size. But with this extra configuration to the link, at most 2 
+ * messages can travel through the link at the same time.
  */
 
 #include "simgrid/s4u.hpp"

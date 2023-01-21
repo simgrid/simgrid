@@ -116,7 +116,7 @@ foreach (example activity-testany activity-waitany
                  actor-create actor-daemon actor-exiting actor-join actor-kill
                  actor-lifetime actor-migrate actor-suspend actor-yield actor-stacksize
                  app-bittorrent app-chainsend app-token-ring
-                 comm-pingpong comm-ready comm-serialize comm-suspend comm-testany comm-wait comm-waitany comm-waitall comm-waituntil
+                 comm-pingpong comm-ready comm-suspend comm-testany comm-wait comm-waitany comm-waitall comm-waituntil
                  comm-dependent comm-host2host comm-failure comm-throttling
                  cloud-capping cloud-migration cloud-simple
                  dag-comm dag-from-dax dag-from-dot dag-failure dag-io dag-scheduling dag-simple
@@ -129,7 +129,7 @@ foreach (example activity-testany activity-waitany
                  mc-bugged1 mc-bugged1-liveness mc-bugged2 mc-bugged2-liveness mc-centralized-mutex mc-electric-fence mc-failing-assert
                  network-ns3 network-ns3-wifi network-wifi
                  io-async io-priority io-degradation io-file-system io-file-remote io-disk-raw io-dependent
-                 platform-failures platform-profile platform-properties
+                 platform-comm-serialize platform-failures platform-profile platform-properties
                  plugin-host-load plugin-link-load plugin-prodcons
                  replay-comm replay-io
                  routing-get-clusters

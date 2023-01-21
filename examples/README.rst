@@ -323,7 +323,6 @@ the simulators (as detailed in Section :ref:`options`).
 
    .. example-tab:: examples/c/comm-pingpong/comm-pingpong.c
 
-
 Basic asynchronous communications
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -430,6 +429,24 @@ The ``test_any()`` returns whether at least one activity of the set has complete
    .. example-tab:: examples/python/comm-testany/comm-testany.py
 
       See also :py:func:`simgrid.Comm.test_any()`.
+
+.. _s4u_ex_comm_host2host:
+
+Direct host-to-host communication
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This example demonstrates the direct communication mechanism, that allows to send data from one host to another without
+relying on the mailbox mechanism.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/comm-host2host/s4u-comm-host2host.cpp
+
+      See also :cpp:func:`simgrid::s4u::Comm::sendto_init()` and  :cpp:func:`simgrid::s4u::Comm::sendto_async()`.
+
+   .. example-tab:: examples/python/comm-host2host/comm-host2host.py
+
+      See also :py:func:`simgrid.Comm.sendto_init()` and  :py:func:`simgrid.Comm.sendto_async()`.
 
 .. _s4u_ex_execution:
 
@@ -544,6 +561,8 @@ This allows simulating malleable tasks.
 
       See also :ref:`simgrid.this_actor.parallel_execute()`
 
+.. _s4u_ex_dvfs:
+
 DVFS and pstates
 ^^^^^^^^^^^^^^^^
 
@@ -565,6 +584,10 @@ of a host can then be accessed and changed from the program.
       See also :py:func:`simgrid.Host.pstate_speed()` and :py:attr:`simgrid.Host.pstate`.
 
    .. example-tab:: examples/platforms/energy_platform.xml
+
+      The important parts are in the :ref:`pf_tag_host` tag. The ``pstate`` attribute is the initial pstate while the ``speed`` attribute must
+      be a comma-separated list of values: the speed at each pstate. This platform file also describes the ``wattage_per_state`` and
+      ``wattage_off`` properties, that are used by the :ref:`plugin_host_energy` plugin.
 
 .. _s4u_ex_disk_io:
 
@@ -775,6 +798,28 @@ Shows how to specify an external load to resources, variating their peak speed o
          .. showfile:: examples/platforms/profiles/link1_bandwidth.profile
 
          .. showfile:: examples/platforms/profiles/link1_latency.profile
+
+Modifying the platform
+----------------------
+
+Serializing communications 
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This example shows how to limit the amount of communications going through a given link.
+It is very similar to the other asynchronous communication examples, but messages get serialized by the platform.
+Without this call to ``Link::set_concurrency_limit(2)``, all messages would be received at the exact same timestamp since
+they are initiated at the same instant and are of the same size. But with this extra configuration to the link, at most 2 
+messages can travel through the link at the same time.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/platform-comm-serialize/s4u-platform-comm-serialize.cpp
+
+      See also :cpp:func:`simgrid::s4u::Link::set_concurrency_limit()`.
+
+   .. example-tab:: examples/python/platform-comm-serialize/platform-comm-serialize.py
+
+      See also :py:func:`simgrid.Link.set_concurrency_limit()`.
 
 =================
 Energy Simulation

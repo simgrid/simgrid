@@ -1,6 +1,6 @@
 #!/usr/bin/env tesh
 
-$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/comm-serialize.py "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+$ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${bindir:=.}/platform-comm-serialize.py "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 >[  0.000000] (1:receiver@receiver) Wait for 10 messages asynchronously
 >[  0.000000] (2:sender@sender) Send 'Message 0' to 'receiver'
 >[  0.000000] (2:sender@sender) Send 'Message 1' to 'receiver'

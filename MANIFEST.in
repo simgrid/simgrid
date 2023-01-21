@@ -181,8 +181,6 @@ include examples/cpp/comm-pingpong/s4u-comm-pingpong.cpp
 include examples/cpp/comm-pingpong/s4u-comm-pingpong.tesh
 include examples/cpp/comm-ready/s4u-comm-ready.cpp
 include examples/cpp/comm-ready/s4u-comm-ready.tesh
-include examples/cpp/comm-serialize/s4u-comm-serialize.cpp
-include examples/cpp/comm-serialize/s4u-comm-serialize.tesh
 include examples/cpp/comm-suspend/s4u-comm-suspend.cpp
 include examples/cpp/comm-suspend/s4u-comm-suspend.tesh
 include examples/cpp/comm-testany/s4u-comm-testany.cpp
@@ -333,6 +331,8 @@ include examples/cpp/network-ns3/s4u-network-ns3.cpp
 include examples/cpp/network-ns3/s4u-network-ns3.tesh
 include examples/cpp/network-wifi/s4u-network-wifi.cpp
 include examples/cpp/network-wifi/s4u-network-wifi.tesh
+include examples/cpp/platform-comm-serialize/s4u-platform-comm-serialize.cpp
+include examples/cpp/platform-comm-serialize/s4u-platform-comm-serialize.tesh
 include examples/cpp/platform-failures/s4u-platform-failures.cpp
 include examples/cpp/platform-failures/s4u-platform-failures.tesh
 include examples/cpp/platform-failures/s4u-platform-failures_d.xml
@@ -414,8 +414,6 @@ include examples/python/comm-pingpong/comm-pingpong.py
 include examples/python/comm-pingpong/comm-pingpong.tesh
 include examples/python/comm-ready/comm-ready.py
 include examples/python/comm-ready/comm-ready.tesh
-include examples/python/comm-serialize/comm-serialize.py
-include examples/python/comm-serialize/comm-serialize.tesh
 include examples/python/comm-suspend/comm-suspend.py
 include examples/python/comm-suspend/comm-suspend.tesh
 include examples/python/comm-testany/comm-testany.py
@@ -450,6 +448,8 @@ include examples/python/io-degradation/io-degradation.py
 include examples/python/io-degradation/io-degradation.tesh
 include examples/python/network-nonlinear/network-nonlinear.py
 include examples/python/network-nonlinear/network-nonlinear.tesh
+include examples/python/platform-comm-serialize/platform-comm-serialize.py
+include examples/python/platform-comm-serialize/platform-comm-serialize.tesh
 include examples/python/platform-failures/platform-failures.py
 include examples/python/platform-failures/platform-failures.tesh
 include examples/python/platform-profile/platform-profile.py
