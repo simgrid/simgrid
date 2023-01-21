@@ -1,5 +1,5 @@
 # Base image
-FROM debian:testing
+FROM debian:11
 
 # Install the dependencies:
 #  - of the website
@@ -18,6 +18,7 @@ RUN apt-get --allow-releaseinfo-change update && \
        doxygen fig2dev \
        chrpath \
        libdw-dev libevent-dev libunwind8-dev \
-       python3-sphinx python3-breathe python3-sphinx-rtd-theme
+       python3-sphinx python3-breathe python3-sphinx-rtd-theme && \
+    apt clean && apt autoclean
 
 #        linkchecker \
