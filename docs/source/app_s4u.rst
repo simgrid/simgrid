@@ -396,7 +396,7 @@ Simulation objects
 
 
    .. group-tab:: Python
-   
+
       .. autoclass:: simgrid.Actor
 
 Basic management
@@ -790,7 +790,7 @@ Exiting
       .. doxygenclass:: simgrid::s4u::Engine
 
    .. group-tab:: Python
-   
+
       .. autoclass:: simgrid.Engine
 
 Engin initialization
@@ -976,7 +976,7 @@ Signals
       .. doxygenclass:: simgrid::s4u::Mailbox
 
    .. group-tab:: Python
-   
+
       .. autoclass:: simgrid.Mailbox
 
 Please also refer to the :ref:`full doc on s4u::Mailbox <s4u_mailbox>`.
@@ -1123,7 +1123,7 @@ Resources
       .. doxygenclass:: simgrid::s4u::Disk
 
    .. group-tab:: Python
-   
+
       .. autoclass:: simgrid.Disk
 
    .. group-tab:: C
@@ -1224,7 +1224,7 @@ Signals
       .. doxygenclass:: simgrid::s4u::Host
 
    .. group-tab:: Python
-   
+
       .. autoclass:: simgrid.Host
 
 Basic management
@@ -1472,7 +1472,7 @@ using :cpp:func:`Comm::sendto() <simgrid::s4u::Comm::sendto()>`.
 
       .. autoattribute:: simgrid.Host.netpoint
       .. automethod:: simgrid.Host.create_disk
-         
+
       .. automethod:: simgrid.Host.route_to
 
    .. group-tab:: C
@@ -1510,7 +1510,7 @@ Signals
 
 
    .. group-tab:: Python
-   
+
       .. autoclass:: simgrid.Link
 
 Basic management
@@ -1720,7 +1720,7 @@ Signals
       .. doxygenclass:: simgrid::s4u::NetZone
 
    .. group-tab:: Python
-   
+
       .. autoclass:: simgrid.NetZone
 
 Basic management
@@ -2152,7 +2152,7 @@ Signals
       .. doxygenclass:: simgrid::s4u::Comm
 
    .. group-tab:: Python
-   
+
       .. autoclass:: simgrid.Comm
 
 Basic management
@@ -2299,7 +2299,7 @@ Signals
       .. doxygenclass:: simgrid::s4u::Exec
 
    .. group-tab:: Python
-   
+
       .. autoclass:: simgrid.Exec
 
 Basic management
@@ -2418,7 +2418,7 @@ Signals
       .. doxygenclass:: simgrid::s4u::Io
 
    .. group-tab:: Python
-   
+
       .. autoclass:: simgrid.Io
 
 Basic management

@@ -62,7 +62,7 @@ fully-functioning example of SimGrid simulation: the Master/Workers
 application. We will detail each part of the code and the necessary
 configuration to make it work.  After this tour, several exercises
 are proposed to let you discover some of the SimGrid features, hands
-on the keyboard. This practical session will be given in C++ or Python, 
+on the keyboard. This practical session will be given in C++ or Python,
 which you are supposed to know beforehand.
 
 
@@ -77,7 +77,7 @@ is in charge of distributing some computational tasks to a set of
 .. image:: /tuto_s4u/img/intro.svg
    :align: center
 
-The provided code dispatches these tasks in `round-robin scheduling <https://en.wikipedia.org/wiki/Round-robin_scheduling>`_, 
+The provided code dispatches these tasks in `round-robin scheduling <https://en.wikipedia.org/wiki/Round-robin_scheduling>`_,
 i.e. in circular order: tasks are dispatched to each worker one after the other, until all tasks are dispatched.
 You will improve this scheme later in this tutorial.
 
@@ -184,7 +184,7 @@ And this is it. In only a few lines, we defined the algorithm of our master/work
 
    .. group-tab:: Python
 
-      That being said, an algorithm alone is not enough to define a simulation: 
+      That being said, an algorithm alone is not enough to define a simulation:
       you need a main block to setup the simulation and its components as follows.
       This code creates a SimGrid simulation engine (on line 4), registers the actor
       functions to the engine (on lines 7 and 8), loads the simulated platform
@@ -364,7 +364,7 @@ was obtained with the Triva software.
 Using Docker
 ............
 
-The easiest way to take the tutorial is to use the dedicated Docker image. 
+The easiest way to take the tutorial is to use the dedicated Docker image.
 Once you `installed Docker itself <https://docs.docker.com/install/>`_, simply do the following:
 
 .. code-block:: console
@@ -459,7 +459,7 @@ Using your Computer Natively
    .. group-tab:: Python
 
       To take the tutorial on your machine, you first need to :ref:`install
-      a recent version of SimGrid <install>` and ``pajeng`` to visualize the 
+      a recent version of SimGrid <install>` and ``pajeng`` to visualize the
       traces. You may want to install `Vite <http://vite.gforge.inria.fr/>`_ to get a first glance at the traces.
       On Debian and Ubuntu for example, you can get them as follows:
 
@@ -467,7 +467,7 @@ Using your Computer Natively
 
          $ sudo apt install simgrid pajeng vite
 
-      An initial version of the source code is provided on framagit. 
+      An initial version of the source code is provided on framagit.
       If SimGrid is correctly installed, you should be able to clone the `repository
       <https://framagit.org/simgrid/simgrid-template-s4u>`_ and execute it as follows:
 
@@ -483,7 +483,7 @@ Using your Computer Natively
 
 .. warning::
 
-   If you use the stable version of Debian 11, Ubuntu 21.04 or Ubuntu 21.10, then you need the right version of this tutorial 
+   If you use the stable version of Debian 11, Ubuntu 21.04 or Ubuntu 21.10, then you need the right version of this tutorial
    (add ``--branch simgrid-v3.25`` as below). These distributions only contain SimGrid v3.25 while the latest version of this
    tutorial needs at least SimGrid v3.27.
 
@@ -518,7 +518,7 @@ Discovering the Provided Code
          $ make master-workers
          $ ./master-workers small_platform.xml master-workers_d.xml
 
-      If you get an error message complaining that ``simgrid::s4u::Mailbox::get()`` does not exist, 
+      If you get an error message complaining that ``simgrid::s4u::Mailbox::get()`` does not exist,
       then your version of SimGrid is too old for the version of the tutorial that you got. Check again previous section.
 
    .. group-tab:: Python
@@ -529,7 +529,7 @@ Discovering the Provided Code
 
          $ python master-workers.py small_platform.xml master-workers_d.xml
 
-      If you get an error stating that the simgrid module does not exist, you need to get a newer version of SimGrid. 
+      If you get an error stating that the simgrid module does not exist, you need to get a newer version of SimGrid.
       You may want to take the tutorial from the docker to get the newest version.
 
 For a classical Gantt-Chart visualization, you can use `Vite
@@ -576,7 +576,7 @@ Lab 1: Simpler deployments
 
 .. rst-class:: compact-list
 
-   **Learning goals:** 
+   **Learning goals:**
 
    * Get your hands on the code and change the communication pattern
    * Discover the Mailbox mechanism
@@ -635,7 +635,7 @@ information is only written once. It thus follows the `DRY
 
       .. code-block:: cpp
 
-           for i in range(tasks_count): 
+           for i in range(tasks_count):
               mailbox = Mailbox.by_name(str(i % worker_count))
               mailbox.put(...)
 
@@ -651,7 +651,7 @@ timing. ``put()`` and ``get()`` are matched regardless of their
 initiators' location and then the real communication occurs between
 the involved parties.
 
-Please refer to the full `Mailboxes' documentation <app_s4u.html#s4u-mailbox>`_ 
+Please refer to the full `Mailboxes' documentation <app_s4u.html#s4u-mailbox>`_
 for more details.
 
 
@@ -660,7 +660,7 @@ Lab 2: Using the Whole Platform
 
 .. rst-class:: compact-list
 
-   **Learning goals:** 
+   **Learning goals:**
 
    * Interact with the platform (get the list of all hosts)
    * Create actors directly from your program instead of the deployment file
@@ -708,7 +708,7 @@ Creating the workers from the master
    .. group-tab:: Python
 
       For that, the master needs to retrieve the list of hosts declared in
-      the platform with :py:func:`simgrid.Engine.get_all_hosts`. Since this method is not static, 
+      the platform with :py:func:`simgrid.Engine.get_all_hosts`. Since this method is not static,
       you may want to call it on the Engine instance, as in ``Engine.instance().get_all_hosts()``.
       Then, the master should start the worker actors with :py:func:`simgrid.Actor.create`.
 
@@ -778,7 +778,7 @@ Lab 3: Fixed Experiment Duration
 
 .. rst-class:: compact-list
 
-   **Learning goals:** 
+   **Learning goals:**
 
    * Forcefully kill actors, and stop the simulation at a given point of time
    * Control the logging verbosity
@@ -792,7 +792,7 @@ instead of beforehand.
 Of course, usual time functions like ``gettimeofday`` will give you the
 time on your real machine, which is pretty useless in the
 simulation. Instead, retrieve the time in the simulated world with
-:cpp:func:`simgrid::s4u::Engine::get_clock` (C++) or 
+:cpp:func:`simgrid::s4u::Engine::get_clock` (C++) or
 :py:func:`simgrid.Engine.get_clock()`) (Python).
 
 You can still stop your workers with a specific task as previously,
@@ -809,7 +809,7 @@ Controlling the message verbosity
 .................................
 
 Not all messages are equally informative, so you probably want to
-change some of the *info* messages (C: :c:macro:`XBT_INFO`; Python: :py:func:`simgrid.this_actor.info`) 
+change some of the *info* messages (C: :c:macro:`XBT_INFO`; Python: :py:func:`simgrid.this_actor.info`)
 into *debug* messages`(C: :c:macro:`XBT_DEBUG`; Python: :py:func:`simgrid.this_actor.debug`) so that they are
 hidden by default. For example, you may want to use an *info* message once
 every 100 tasks and *debug* when sending all the other tasks. Or
@@ -825,7 +825,7 @@ Lab 4: What-if analysis
 
 .. rst-class:: compact-list
 
-   **Learning goals:** 
+   **Learning goals:**
 
    * Change the platform characteristics during the simulation.
    * Explore other communication patterns.
@@ -834,10 +834,10 @@ Computational speed
 ...................
 
 Attach a profile to your hosts, so that their computational speed automatically vary over time, modeling an external load on these machines.
-This can be done with :cpp:func:`simgrid::s4u::Host::set_speed_profile` (C++) or :py:func:`simgrid.Host.set_speed_profile` (Python). 
+This can be done with :cpp:func:`simgrid::s4u::Host::set_speed_profile` (C++) or :py:func:`simgrid.Host.set_speed_profile` (Python).
 
 Make it so that one of the hosts get really really slow, and observe how your whole application performance decreases.
-This is because one slow host slows down the whole process. Instead of a round-robin dispatch push, 
+This is because one slow host slows down the whole process. Instead of a round-robin dispatch push,
 you should completely reorganize your application in a First-Come First-Served manner (FCFS).
 Actors should pull a task whenever they are ready, so that fast actors can overpass slow ones in the queue.
 
@@ -846,7 +846,7 @@ or the master directly pushes the tasks to a centralized mailbox from which the 
 to what would happen with communications based on BSD sockets while the second is closer to message queues. You could also decide to
 model your socket application in the second manner if you want to neglect these details and keep your simulator simple. It's your decision.
 
-Changing the communication schema can be a bit hairy, but once it works, you will see that such as simple FCFS schema allows one to greatly 
+Changing the communication schema can be a bit hairy, but once it works, you will see that such as simple FCFS schema allows one to greatly
 increase the amount of tasks handled over time here. Things may be different with another platform file.
 
 Communication speed
@@ -864,22 +864,22 @@ Modify the bandwidth of a given link with :cpp:func:`simgrid::s4u::Link::set_ban
 You can even have the bandwidth automatically vary over time with :cpp:func:`simgrid::s4u::Link::set_bandwidth_profile` (C++) or :py:func:`simgrid.Link.set_bandwidth_profile` (python).
 
 Once implemented, you will notice that slow communications may still result in situations
-where one worker only works at a given point of time. To overcome that, your master needs 
-to send data to several workers in parallel, using 
+where one worker only works at a given point of time. To overcome that, your master needs
+to send data to several workers in parallel, using
 :cpp:func:`simgrid::s4u::Mailbox::put_async` (C++) or :py:func:`simgrid.Mailbox.put_async` (Python)
 to start several communications in parallel, and
-:cpp:func:`simgrid::s4u::Comm::wait_any` (C++) or and :py:func:`simgrid.Comm.wait_any` (Python) 
-to react to the completion of one of these communications. Actually, since this code somewhat tricky 
-to write, it's provided as :ref:`an example <s4u_ex_communication>` in the distribution (search for 
-``wait_any`` in that page). 
+:cpp:func:`simgrid::s4u::Comm::wait_any` (C++) or and :py:func:`simgrid.Comm.wait_any` (Python)
+to react to the completion of one of these communications. Actually, since this code somewhat tricky
+to write, it's provided as :ref:`an example <s4u_ex_communication>` in the distribution (search for
+``wait_any`` in that page).
 
 Dealing with failures
 .....................
 
-Turn a given link off with :cpp:func:`simgrid::s4u::Link::turn_off` (C++) or :py:func:`simgrid.Link.turn_off` (python). 
-You can even implement churn where a link automatically turn off and on again over time with :cpp:func:`simgrid::s4u::Link::set_state_profile` (C++) or :py:func:`simgrid.Link.set_state_profile` (python). 
+Turn a given link off with :cpp:func:`simgrid::s4u::Link::turn_off` (C++) or :py:func:`simgrid.Link.turn_off` (python).
+You can even implement churn where a link automatically turn off and on again over time with :cpp:func:`simgrid::s4u::Link::set_state_profile` (C++) or :py:func:`simgrid.Link.set_state_profile` (python).
 
-If a link fails while you try to use it, ``wait()`` will raise a ``NetworkFailureException`` that you need to catch. 
+If a link fails while you try to use it, ``wait()`` will raise a ``NetworkFailureException`` that you need to catch.
 Again, there is a nice example demoing this feature, :ref:`under platform-failures <s4u_ex_communication>`.
 
 Lab 5: Competing Applications
@@ -887,7 +887,7 @@ Lab 5: Competing Applications
 
 .. rst-class:: compact-list
 
-   **Learning goals:** 
+   **Learning goals:**
 
    * Advanced vizualization through tracing categories
 
@@ -905,7 +905,7 @@ will categorize the tasks.
 
 Instead of starting the execution in one function call only with
 ``this_actor::execute(cost)``, you need to
-create the execution activity, set its tracing category, start it 
+create the execution activity, set its tracing category, start it
 and wait for its completion, as follows.
 
 .. tabs::

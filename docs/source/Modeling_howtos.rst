@@ -156,9 +156,9 @@ programs actually die and restart during a reboot. Since there are many
 ways to model it, SimGrid does not do any modeling choice for you but
 the most obvious ones.
 
-Any actor running on a host that is shut down will be killed and all 
-its activities will be automatically canceled. If the actor killed was 
-marked as auto-restartable (with :cpp:func:`simgrid::s4u::Actor::set_auto_restart`), 
+Any actor running on a host that is shut down will be killed and all
+its activities will be automatically canceled. If the actor killed was
+marked as auto-restartable (with :cpp:func:`simgrid::s4u::Actor::set_auto_restart`),
 it will start anew with the same parameters when the host boots back up.
 
 By default, shutdowns and boots are instantaneous. If you want to

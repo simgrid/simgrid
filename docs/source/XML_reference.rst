@@ -555,7 +555,7 @@ More detail can be found in the following sections :ref:`pf_routes` and :ref:`pf
 :``gw_src``: Netpoint (within src zone) from which this route starts. Must be an existing host/router.
 :``gw_dst``: Netpoint (within dst zone) to which this route leads. Must be an existing host/router.
 :``symmetrical``: Whether this route is symmetrical, ie, whether we are defining the route ``dst -> src`` at the same
-		  time. Valid values: ``yes``, ``no``, ``YES``, ``NO``. 
+		  time. Valid values: ``yes``, ``no``, ``YES``, ``NO``.
 
 -------------------------------------------------------------------------------
 
@@ -606,7 +606,7 @@ to experts.
 :``gw_src``: Netpoint (within src zone) from which this route starts. Must be an existing host/router.
 :``gw_dst``: Netpoint (within dst zone) to which this route leads. Must be an existing host/router.
 :``symmetrical``: Whether this route is symmetrical, ie, whether we are defining the route ``dst -> src`` at the same
-		  time. Valid values: ``yes``, ``no``, ``YES``, ``NO``. 
+		  time. Valid values: ``yes``, ``no``, ``YES``, ``NO``.
 
 -------------------------------------------------------------------------------
 
@@ -681,5 +681,5 @@ Specify the up and down private links of a given host, which must be in a Cluste
 
 
 .. |br| raw:: html
-     
+
    <br />

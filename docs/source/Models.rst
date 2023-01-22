@@ -516,12 +516,12 @@ this still has to be done.
 FMI-based models
 ****************
 
-`FMI <https://fmi-standard.org/>`_ is a standard to exchange models between simulators. If you want to plug such a model 
-into SimGrid, you need the `SimGrid-FMI external plugin <https://framagit.org/simgrid/simgrid-FMI>`_. 
+`FMI <https://fmi-standard.org/>`_ is a standard to exchange models between simulators. If you want to plug such a model
+into SimGrid, you need the `SimGrid-FMI external plugin <https://framagit.org/simgrid/simgrid-FMI>`_.
 There is a specific `documentation <https://simgrid.frama.io/simgrid-FMI/index.html>`_ available for the plugin.
-This was used to accurately study a *Smart grid* through co-simulation: `PandaPower <http://www.pandapower.org/>`_ was 
-used to simulate the power grid, `ns-3 <https://nsnam.org/>`_ was used to simulate the communication network while SimGrid was 
-used to simulate the IT infrastructure. Please also refer to the `relevant publication <https://hal.science/hal-03217562>`_ 
+This was used to accurately study a *Smart grid* through co-simulation: `PandaPower <http://www.pandapower.org/>`_ was
+used to simulate the power grid, `ns-3 <https://nsnam.org/>`_ was used to simulate the communication network while SimGrid was
+used to simulate the IT infrastructure. Please also refer to the `relevant publication <https://hal.science/hal-03217562>`_
 for more details.
 
 .. _models_other:

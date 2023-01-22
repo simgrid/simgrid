@@ -158,7 +158,7 @@ Please see :ref:`models_wifi`.
 ns-3
 ====
 
-When using :ref:`models_ns3`, SimGrid configures the ns-3 simulator according to the configured platform. 
+When using :ref:`models_ns3`, SimGrid configures the ns-3 simulator according to the configured platform.
 Since ns-3 uses a shortest path algorithm on its side, all routes must be of length 1.
 
 .. _pf_routes:

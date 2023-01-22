@@ -86,7 +86,7 @@ if you prefer (see below for details on using the MPI version).
 
 .. toggle-header::
    :header: Code of ``ndet-receive-s4u.cpp``: click here to open
-   
+
    You can also `view it online <https://framagit.org/simgrid/tutorial-model-checking/-/blob/main/ndet-receive-s4u.cpp>`_
 
    .. literalinclude:: tuto_mc/ndet-receive-s4u.cpp

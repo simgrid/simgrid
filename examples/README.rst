@@ -326,7 +326,7 @@ the simulators (as detailed in Section :ref:`options`).
 Basic asynchronous communications
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Illustrates how to have non-blocking communications, that are communications running in the background leaving the process 
+Illustrates how to have non-blocking communications, that are communications running in the background leaving the process
 free to do something else during their completion.
 
 .. tabs::
@@ -454,10 +454,10 @@ The ``test_any()`` returns whether at least one activity of the set has complete
 Dealing with network failures
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This examples shows how to survive to network exceptions that occur when a link is turned off, or when the actor with whom 
+This examples shows how to survive to network exceptions that occur when a link is turned off, or when the actor with whom
 you communicate fails because its host is turned off. In this case, any blocking operation such as ``put``, ``get`` or
 ``wait`` will raise an exception that you can catch and react to. See also :ref:`howto_churn`,
-:ref:`this example <s4u_ex_platform_state_profile>` on how to attach a state profile to hosts and 
+:ref:`this example <s4u_ex_platform_state_profile>` on how to attach a state profile to hosts and
 :ref:`that example <s4u_ex_exec_failure>` on how to react to host failures.
 
 .. tabs::
@@ -613,9 +613,9 @@ There is not much new compared to the above ptask example or the
 Dealing with host failures
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This examples shows how to survive to host failure exceptions that occur when an host is turned off. The actor do not get notified when the host 
+This examples shows how to survive to host failure exceptions that occur when an host is turned off. The actor do not get notified when the host
 on which they run is turned off: they are just terminated in this case, and their ``on_exit()`` callback gets executed. For remote executions on
-failing hosts however, any blocking operation such as ``exec`` or ``wait`` will raise an exception that you can catch and react to. See also 
+failing hosts however, any blocking operation such as ``exec`` or ``wait`` will raise an exception that you can catch and react to. See also
 :ref:`howto_churn`,
 :ref:`this example <s4u_ex_platform_state_profile>` on how to attach a state profile to hosts, and
 :ref:`that example <s4u_ex_comm_failure>` on how to react to networ failures.
@@ -823,8 +823,8 @@ Specifying state profiles
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Shows how to specify when the resources must be turned off and on again, and how to react to such
-failures in your code. See also :ref:`howto_churn`, 
-:ref:`this example <s4u_ex_comm_failure>` on how to react to communication failures, and 
+failures in your code. See also :ref:`howto_churn`,
+:ref:`this example <s4u_ex_comm_failure>` on how to react to communication failures, and
 :ref:`that example <s4u_ex_exec_failure>` on how to react to host failures.
 
 .. tabs::
@@ -869,13 +869,13 @@ Shows how to specify an external load to resources, variating their peak speed o
 Modifying the platform
 ----------------------
 
-Serializing communications 
+Serializing communications
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This example shows how to limit the amount of communications going through a given link.
 It is very similar to the other asynchronous communication examples, but messages get serialized by the platform.
 Without this call to ``Link::set_concurrency_limit(2)``, all messages would be received at the exact same timestamp since
-they are initiated at the same instant and are of the same size. But with this extra configuration to the link, at most 2 
+they are initiated at the same instant and are of the same size. But with this extra configuration to the link, at most 2
 messages can travel through the link at the same time.
 
 .. tabs::

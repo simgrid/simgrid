@@ -268,7 +268,7 @@ Solver
 The different models rely on a linear inequalities solver to share
 the underlying resources. SimGrid allows you to change the solver, but
 be cautious, **don't change it unless you are 100% sure**.
- 
+
   - items ``cpu/solver``, ``network/solver``, ``disk/solver`` and  ``host/solver``
     allow you to change the solver for each model:
 
@@ -1072,7 +1072,7 @@ options, check See the :ref:`tracing_tracing_options`.
 Configuring SMPI
 ----------------
 
-The SMPI interface provides several specific configuration items. 
+The SMPI interface provides several specific configuration items.
 These are not easy to see with ``--help-cfg``, since SMPI binaries are usually launched through the ``smiprun`` script.
 
 .. _cfg=smpi/host-speed:

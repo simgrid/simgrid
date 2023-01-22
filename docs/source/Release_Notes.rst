@@ -573,7 +573,7 @@ Version 3.33 (not released yet)
 
 **On the maintainance front,** we removed the ancient MSG interface which end-of-life was scheduled for 2020, the Java
 bindings that was MSG-only and support for native builds on Windows (WSL is now required). Keeping SimGrid alive while
-adding new features require to remove old, unused stuff. The very rare users impacted by these removals are urged to 
+adding new features require to remove old, unused stuff. The very rare users impacted by these removals are urged to
 move to the new API and systems.
 
 **On the model front,** we realized an idea that has been on the back of our minds for quite some time. The question

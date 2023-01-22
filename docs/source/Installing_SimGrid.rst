@@ -256,8 +256,8 @@ EIGEN3_HINT (empty by default)
   Alternative path into which Eigen3 should be searched for.
 
 SIMGRID_PYTHON_LIBDIR (auto-detected)
-  Where to install the Python module library. By default, it is set to the cmake Python3_SITEARCH variable if installing to /usr, 
-  and a modified version of that variable if installing to another path. Just force another value if the auto-detected default 
+  Where to install the Python module library. By default, it is set to the cmake Python3_SITEARCH variable if installing to /usr,
+  and a modified version of that variable if installing to another path. Just force another value if the auto-detected default
   does not fit your setup.
 
 SMPI_C_FLAGS, SMPI_CXX_FLAGS, SMPI_Fortran_FLAGS (string)
