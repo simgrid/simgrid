@@ -454,9 +454,11 @@ The ``test_any()`` returns whether at least one activity of the set has complete
 Dealing with network failures
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This examples shows how to survive to network exceptions that occur when a link is turned off. In this case, any blocking operation
-such as ``put``, ``get`` or ``wait`` will raise an exception that you can catch and react to. See also :ref:`howto_churn` and
-:ref:`this example <s4u_ex_platform_state_profile>` on how to attach a state profile to hosts and react to execution failures.
+This examples shows how to survive to network exceptions that occur when a link is turned off, or when the actor with whom 
+you communicate fails because its host is turned off. In this case, any blocking operation such as ``put``, ``get`` or
+``wait`` will raise an exception that you can catch and react to. See also :ref:`howto_churn`,
+:ref:`this example <s4u_ex_platform_state_profile>` on how to attach a state profile to hosts and 
+:ref:`that example <s4u_ex_exec_failure>` on how to react to host failures.
 
 .. tabs::
 
@@ -605,6 +607,22 @@ There is not much new compared to the above ptask example or the
    .. example-tab:: examples/cpp/energy-exec-ptask/s4u-energy-exec-ptask.cpp
 
    .. example-tab:: examples/c/energy-exec-ptask/energy-exec-ptask.c
+
+.. _s4u_ex_exec_failure:
+
+Dealing with host failures
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This examples shows how to survive to host failure exceptions that occur when an host is turned off. The actor do not get notified when the host 
+on which they run is turned off: they are just terminated in this case, and their ``on_exit()`` callback gets executed. For remote executions on
+failing hosts however, any blocking operation such as ``exec`` or ``wait`` will raise an exception that you can catch and react to. See also 
+:ref:`howto_churn`,
+:ref:`this example <s4u_ex_platform_state_profile>` on how to attach a state profile to hosts, and
+:ref:`that example <s4u_ex_comm_failure>` on how to react to networ failures.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/exec-failure/s4u-exec-failure.cpp
 
 .. _s4u_ex_dvfs:
 
@@ -805,8 +823,9 @@ Specifying state profiles
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Shows how to specify when the resources must be turned off and on again, and how to react to such
-failures in your code. See also :ref:`howto_churn` and :ref:`this example <s4u_ex_comm_failure>`
-on how to react to communication failures.
+failures in your code. See also :ref:`howto_churn`, 
+:ref:`this example <s4u_ex_comm_failure>` on how to react to communication failures, and 
+:ref:`that example <s4u_ex_exec_failure>` on how to react to host failures.
 
 .. tabs::
 
