@@ -678,6 +678,15 @@ This example illustrates how to simply read and write data on a simulated disk r
 
       This shows how to declare disks in XML.
 
+Asynchronous raw accesses
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+As most other activities, raw IO accesses can be used asynchronously, as illustrated in this example.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/io-async/s4u-io-async.cpp
+
 Filesystem plugin
 ^^^^^^^^^^^^^^^^^
 

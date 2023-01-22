@@ -202,6 +202,8 @@ seconds but
 For more details, please refer to "Accuracy study and improvement of network simulation in the SimGrid framework" by
 Arnaud Legrand and Pedro Velho.
 
+.. _models_l07:
+
 Parallel tasks (L07)
 ********************
 
@@ -209,6 +211,8 @@ This model is rather distinct from the other LMM models because it uses another 
 This is because this model is intended to be used for parallel tasks that are actions mixing flops and bytes while the
 Max-Min objective function requires that all variables are expressed using the same unit. This is also why in reality,
 we have one LMM system per resource kind in the simulation, but the idea remains similar.
+
+Use the :ref:`relevant configuration <options_model_select>` to select this model in your simulation.
 
 .. _models_wifi:
 

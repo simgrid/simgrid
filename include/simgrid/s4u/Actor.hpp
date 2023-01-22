@@ -101,16 +101,16 @@ XBT_PUBLIC void execute(double flop, double priority);
  *
  * These objects are somewhat surprising from a modeling point of view. For example, the unit of their speed is
  * somewhere between flop/sec and byte/sec. Arbitrary parallel executions will simply not work with the usual platform
- * models, and you must :ref:`use the ptask_L07 host model <options_model_select>` for that. Note that you can mix
+ * models, and you must :ref:`use the ptask_L07 host model <models_l07>` for that. Note that you can mix
  * regular executions and communications with parallel executions, provided that the host model is ptask_L07.
  *
  * @endrst
  */
-/** Block the current actor until the built parallel execution completes */
+/** Block the current actor until the built parallel execution completes. */
 XBT_PUBLIC void parallel_execute(const std::vector<s4u::Host*>& hosts, const std::vector<double>& flops_amounts,
                                  const std::vector<double>& bytes_amounts);
 
-/** Block the current actor until the built multi-thread execution completes */
+/** Block the current actor until the built multi-thread execution completes. */
 XBT_PUBLIC void thread_execute(s4u::Host* host, double flop_amounts, int thread_count);
 
 /** Initialize a sequential execution that must then be started manually */
