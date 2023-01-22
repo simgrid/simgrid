@@ -16,65 +16,93 @@
  */
 
 #include <simgrid/s4u.hpp>
+#include "simgrid/kernel/ProfileBuilder.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_exec_failure, "Messages specific for this s4u example");
 namespace sg4 = simgrid::s4u;
 
-static void dispatcher(sg4::Host* host1, sg4::Host* host2)
+static void dispatcher(std::vector<sg4::Host*> const& hosts)
 {
   std::vector<sg4::ExecPtr> pending_execs;
-  XBT_INFO("Initiating asynchronous exec on %s", host1->get_cname());
-  auto exec1 = sg4::this_actor::exec_init(20)->set_host(host1);
-  pending_execs.push_back(exec1);
-  exec1->start();
-  XBT_INFO("Initiating asynchronous exec on %s", host2->get_cname());
-  auto exec2 = sg4::this_actor::exec_init(20)->set_host(host2);
-  pending_execs.push_back(exec2);
-  exec2->start();
-
-  XBT_INFO("Calling wait_any..");
-  try {
-    long index = sg4::Exec::wait_any(pending_execs);
-    XBT_INFO("Wait any returned index %ld (exec on %s)", index, pending_execs.at(index)->get_host()->get_cname());
-  } catch (const simgrid::HostFailureException&) {
-    XBT_INFO("Dispatcher has experienced a host failure exception, so it knows that something went wrong");
-    XBT_INFO("Now it needs to figure out which of the two execs failed by looking at their state");
+  for (auto* host: hosts) {
+    XBT_INFO("Initiating asynchronous exec on %s", host->get_cname());
+    // Computing 20 flops on an host which speed is 1f takes 20 seconds (when it does not fail)
+    auto exec = sg4::this_actor::exec_init(20)->set_host(host);
+    pending_execs.push_back(exec);
+    exec->start();
   }
 
-  XBT_INFO("Exec on %s has state: %s", pending_execs[0]->get_host()->get_cname(), pending_execs[0]->get_state_str());
-  XBT_INFO("Exec on %s has state: %s", pending_execs[1]->get_host()->get_cname(), pending_execs[1]->get_state_str());
+  XBT_INFO("---------------------------------");
+  XBT_INFO("Wait on the first exec, which host is turned off at t=10 by the another actor.");
+  try {
+    pending_execs[0]->wait();
+    xbt_assert("This wait was not supposed to succeed.");
+  } catch (const simgrid::HostFailureException&) {
+    XBT_INFO("Dispatcher has experienced a host failure exception, so it knows that something went wrong.");
+  }
 
+  XBT_INFO("State of each exec:");
+  for (auto const& exec : pending_execs) 
+    XBT_INFO("  Exec on %s has state: %s", exec->get_host()->get_cname(), exec->get_state_str());
+
+  XBT_INFO("---------------------------------");
+  XBT_INFO("Wait on the second exec, which host is turned off at t=12 by the state profile.");
   try {
     pending_execs[1]->wait();
-  } catch (const simgrid::HostFailureException& e) {
-    XBT_INFO("Waiting on a FAILED exec raises an exception: '%s'", e.what());
+    xbt_assert("This wait was not supposed to succeed.");
+  } catch (const simgrid::HostFailureException&) {
+    XBT_INFO("Dispatcher has experienced a host failure exception, so it knows that something went wrong.");
   }
-  pending_execs.pop_back();
-  XBT_INFO("Wait for remaining exec, just to be nice");
-  sg4::Exec::wait_any(pending_execs);
-  XBT_INFO("Dispatcher ends");
+  XBT_INFO("State of each exec:");
+  for (auto const& exec : pending_execs) 
+    XBT_INFO("  Exec on %s has state: %s", exec->get_host()->get_cname(), exec->get_state_str());
+
+  XBT_INFO("---------------------------------");
+  XBT_INFO("Wait on the third exec, which should succeed.");
+  try {
+    pending_execs[2]->wait();
+    XBT_INFO("No exception occured.");
+  } catch (const simgrid::HostFailureException&) {
+    xbt_assert("This wait was not supposed to fail.");
+  }
+  XBT_INFO("State of each exec:");
+  for (auto const& exec : pending_execs) 
+    XBT_INFO("  Exec on %s has state: %s", exec->get_host()->get_cname(), exec->get_state_str());
 }
 
 static void host_killer(sg4::Host* to_kill)
 {
-  XBT_INFO("HostKiller  sleeping 10 seconds...");
   sg4::this_actor::sleep_for(10.0);
-  XBT_INFO("HostKiller turning off host %s", to_kill->get_cname());
+  XBT_INFO("HostKiller turns off the host '%s'.", to_kill->get_cname());
   to_kill->turn_off();
-  XBT_INFO("HostKiller ends");
 }
 
 int main(int argc, char** argv)
 {
   sg4::Engine engine(&argc, argv);
 
-  auto* zone  = sg4::create_full_zone("AS0");
-  auto* host1 = zone->create_host("Host1", "1f");
-  auto* host2 = zone->create_host("Host2", "1f");
+  auto* zone  = sg4::create_full_zone("world");
+  std::vector<sg4::Host*> hosts;
+  for (auto name : {"Host1", "Host2", "Host3"}) {
+    auto* host = zone->create_host(name, "1f");
+    hosts.push_back(host);
+  }
+  /* Attaching a state profile (ie a list of events changing the on/off state of the resource) to host3.
+   * The syntax of the profile (second parameter) is a list of: "date state\n"
+   *   The R"(   )" thing is the C++ way of writing multiline strings, including literals \n.
+   *     You'd have the same behavior by using "12 0\n20 1\n" instead.
+   *   So here, the link is turned off at t=12 and back on at t=20.
+   * The last parameter is the period of that profile, meaning that it loops after 30 seconds.
+   */
+  hosts[1]->set_state_profile(simgrid::kernel::profile::ProfileBuilder::from_string("profile name", R"(
+12 0
+20 1
+)",                                                                               30));
+
   zone->seal();
 
-  sg4::Actor::create("Dispatcher", host1, dispatcher, host1, host2);
-  sg4::Actor::create("HostKiller", host1, host_killer, host2)->daemonize();
+  sg4::Actor::create("Dispatcher", hosts[2], dispatcher, hosts);
+  sg4::Actor::create("HostKiller", hosts[2], host_killer, hosts[0]);
 
   engine.run();
 
