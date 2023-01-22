@@ -1,6 +1,6 @@
 foreach(example actor-create actor-daemon actor-join actor-kill actor-migrate actor-suspend actor-yield actor-lifetime
         app-masterworkers
-        comm-wait comm-waitall comm-waitallfor comm-waitany comm-waitfor comm-failure comm-host2host comm-pingpong
+        comm-wait comm-waitall comm-waitallfor comm-waitany comm-failure comm-host2host comm-pingpong
         comm-ready comm-suspend comm-testany comm-throttling comm-waitallfor comm-waituntil
         exec-async exec-basic exec-dvfs exec-remote exec-ptask
         platform-comm-serialize platform-profile platform-failures

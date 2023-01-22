@@ -346,6 +346,8 @@ free to do something else during their completion.
 Waiting for communications with timeouts
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+There is two ways of declaring timeouts in SimGrid. ``waituntil`` let you specify the deadline until when you want to wait, while
+``waitfor`` expects the maximal wait duration.
 This example is very similar to the previous one, simply adding how to declare timeouts when waiting on asynchronous communication.
 
 .. tabs::

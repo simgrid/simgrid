@@ -3,7 +3,7 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-""" This example shows how to suspend and resume an asynchronous communication.
+""" This example demonstrates Comm.wait_for() and Comm.wait_until to set timeouts on waits.
 """
 
 from argparse import ArgumentParser
@@ -47,7 +47,7 @@ def sender(receiver_mailbox: Mailbox, messages_count: int, payload_size: int):
     # Now that all message exchanges were initiated, wait for their completion, in order of creation
     while pending_comms:
         comm = pending_comms[-1]
-        comm.wait_until(Engine.clock + 1)
+        comm.wait_until(Engine.clock + 1)  # same as: current_comm.wait_for(1.0)
         pending_comms.pop()  # remove it from the list
     this_actor.info("Goodbye now!")
 
