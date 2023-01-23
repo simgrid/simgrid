@@ -457,7 +457,8 @@ static void prepareScenario(ScenarioContext& ctx, CommType type, double duration
           DIE_IMPOSSIBLE;
       }
     }
-    ctx.scenarios.push_back({type, ctx.start_time, duration, sender_expected, receiver_expected, steps, ctx.index});
+    Scenario scen{type, ctx.start_time, duration, sender_expected, receiver_expected, steps, ctx.index};
+    ctx.scenarios.push_back(scen);
     ctx.active++;
   }
   ctx.index++;
