@@ -3,16 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This example shows how to serialize a set of communications going through a link
+/* This examples shows how to survive to host failure exceptions that occur when an host is turned off.
  *
- * As for the other asynchronous examples, the sender initiates all the messages it wants to send and
- * pack the resulting simgrid::s4u::CommPtr objects in a vector.
- * At the same time, the receiver starts receiving all messages asynchronously. Without serialization,
- * all messages would be received at the same timestamp in the receiver.
+ * The actors do not get notified when the host on which they run is turned off: they are just terminated
+ * in this case, and their ``on_exit()`` callback gets executed.
  *
- * However, as they will be serialized in a link of the platform, the messages arrive 2 by 2.
- *
- * The sender then blocks until all ongoing communication terminate, using simgrid::s4u::Comm::wait_all()
+ * For remote executions on failing hosts however, any blocking operation such as ``exec`` or ``wait`` will
+ * raise an exception that you can catch and react to, as illustrated in this example.
  */
 
 #include <simgrid/s4u.hpp>

@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This example shows how to react to a failed communication, which occures when a link is turned off.
- *
+/* This example shows how to react to a failed communication, which occurs when a link is turned off,
+ * or when the actor with whom you communicate fails because its host is turned off.
  */
 
 #include <simgrid/s4u.hpp>
