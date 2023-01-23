@@ -442,8 +442,8 @@ This was also computed on the Stampede Supercomputer.
 **Option** ``network/weight-S`` **Default:** depends on the model
 
 Value used to account for RTT-unfairness when sharing a bottleneck (network connections with a large RTT are generally penalized
-against those with a small one). Described in `Accuracy Study and Improvement of Network Simulation in the SimGrid Framework
-<http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf>`_
+against those with a small one). See :ref:`models_TCP` and also this scientific paper: `Accuracy Study and Improvement of Network
+Simulation in the SimGrid Framework <http://mescal.imag.fr/membres/arnaud.legrand/articles/simutools09.pdf>`_
 
 Default values for ``CM02`` is 0. ``LV08`` sets it to 20537 while both ``SMPI`` and ``IB`` set it to 8775.
 

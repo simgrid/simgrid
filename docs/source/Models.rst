@@ -93,6 +93,8 @@ Most of the SimGrid models build upon the LMM solver, that they adapt and config
 and disk activities, the LMM-based models are respectively named **Cas01** and **S19**. The existing network models are
 described in the next section.
 
+.. _models_TCP:
+
 The TCP models
 **************
 
@@ -102,11 +104,15 @@ model should be used if you prefer understandable results over realistic ones. *
 constant factors that are intended to capture common effects such as slow-start, the fact that TCP headers reduce the
 *effective* bandwidth, or TCP's ACK messages. **SMPI** uses more advanced factors that also capture the MPI-specific
 effects such as the switch between the eager vs. rendez-vous communication modes. You can :ref:`choose the
-model<options_model_select>` on command line, and these models can be :ref:`further configured<options_model>`.
+model <options_model_select>` on command line, and these models can be :ref:`further configured <options_model>`.
 
 The LMM solver is then used as described above to compute the effect of contention on the communication time that is
 computed by the TCP model. For sake of realism, the sharing on saturated links is not necessarily a fair sharing.
-Instead, flows receive an amount of bandwidth inversely proportional to their round trip time.
+Instead, flows receive an amount of bandwidth somehow inversely proportional to their round trip time. This is modeled
+in the LMM as a penalty paid by the flow; that penalty depends on the :ref:`weight-S <cfg=network/weight-S>` factor.
+The penalty is computed as follows: :math:`\sum_l (Lat_l  + \over{weightS}{Bandwidth_l})`. So it's the sum of the
+latencies of all links traversed by the communication, plus the sum of weight-S over the bandwidth of all links.
+The bandwidth is here to account for the protocol reactivity. If ``weight-S=0``, then this mechanism is disabled.
 
 Regardless of the used TCP model, the latency is paid beforehand. It is as if the communication only starts after a
 little delay corresponding to the latency. During that time, the communication has no impact on the links (the other
