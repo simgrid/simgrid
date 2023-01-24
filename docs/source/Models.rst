@@ -109,10 +109,11 @@ model <options_model_select>` on command line, and these models can be :ref:`fur
 The LMM solver is then used as described above to compute the effect of contention on the communication time that is
 computed by the TCP model. For sake of realism, the sharing on saturated links is not necessarily a fair sharing.
 Instead, flows receive an amount of bandwidth somehow inversely proportional to their round trip time. This is modeled
-in the LMM as a penalty paid by the flow; that penalty depends on the :ref:`weight-S <cfg=network/weight-S>` factor.
-The penalty is computed as follows: :math:`\sum_l (Lat_l  + \over{weightS}{Bandwidth_l})`. So it's the sum of the
-latencies of all links traversed by the communication, plus the sum of weight-S over the bandwidth of all links.
-The bandwidth is here to account for the protocol reactivity. If ``weight-S=0``, then this mechanism is disabled.
+in the LMM as a priority which depends on the :ref:`weight-S <cfg=network/weight-S>` parameter. More precisely, this
+priority is computed for each flow as :math:`\sum_l (Lat_l  + \over{weightS}{Bandwidth_l})`, i.e., as the sum of the
+latencies of all links traversed by the communication, plus the sum of `weight-S` over the bandwidth of each link on
+the path. This dependency on the bandwidth of the links somehow accounts for the protocol reactivity. If ``weight-S=0``,
+then this mechanism is disabled.
 
 Regardless of the used TCP model, the latency is paid beforehand. It is as if the communication only starts after a
 little delay corresponding to the latency. During that time, the communication has no impact on the links (the other
