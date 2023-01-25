@@ -81,7 +81,6 @@ static void main_dispatcher()
 
 int main(int argc, char** argv)
 {
-  // sg4::Engine::set_config("network/model:CM02");
   sg4::Engine::set_config("network/crosstraffic:0");
 
   simgrid::s4u::Engine engine(&argc, argv);
