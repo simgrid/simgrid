@@ -86,8 +86,8 @@ int main(int argc, char** argv)
 
   simgrid::s4u::Engine engine(&argc, argv);
   auto* zone  = sg4::create_full_zone("world");
-  auto* host1 = zone->create_host("host1", 1e6)->seal();
-  auto* host2 = zone->create_host("host2", 1e6)->seal();
+  auto const* host1 = zone->create_host("host1", 1e6)->seal();
+  auto const* host2 = zone->create_host("host2", 1e6)->seal();
   testlink    = zone->create_link("L1", 1e10)->seal();
   zone->add_route(host1->get_netpoint(), host2->get_netpoint(), nullptr, nullptr, {sg4::LinkInRoute(testlink)});
 
