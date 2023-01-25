@@ -8,9 +8,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this s4u example");
 
-int tasks_done = 0;
-
-XBT_ATTRIB_NORETURN static void actor_daemon()
+XBT_ATTRIB_NORETURN static void actor_daemon(int& tasks_done)
 {
   const simgrid::s4u::Host* host = simgrid::s4u::Host::current();
   XBT_INFO("  Start daemon on %s (%f)", host->get_cname(), host->get_speed());
@@ -57,13 +55,14 @@ static void test_launcher(int test_number)
   simgrid::s4u::Host* jupiter = simgrid::s4u::Host::by_name("Jupiter");
   simgrid::s4u::ActorPtr daemon;
   simgrid::s4u::VirtualMachine* vm0 = nullptr;
+  int tasks_done                    = 0;
 
   switch (test_number) {
     case 1:
       // Create a process running a simple task on a host and turn the host off during the execution of the actor.
       XBT_INFO("Test 1:");
       XBT_INFO("  Create an actor on Jupiter");
-      simgrid::s4u::Actor::create("actor_daemon", jupiter, actor_daemon);
+      simgrid::s4u::Actor::create("actor_daemon", jupiter, actor_daemon, std::ref(tasks_done));
       simgrid::s4u::this_actor::sleep_for(3);
       XBT_INFO("  Turn off Jupiter");
       jupiter->turn_off();
@@ -79,7 +78,7 @@ static void test_launcher(int test_number)
       // adsein: This can be one additional test, to check that you cannot shutdown twice a host
       jupiter->turn_off();
       try {
-        simgrid::s4u::Actor::create("actor_daemon", jupiter, actor_daemon);
+        simgrid::s4u::Actor::create("actor_daemon", jupiter, actor_daemon, std::ref(tasks_done));
         simgrid::s4u::this_actor::sleep_for(10);
         XBT_INFO("  Test 2 does crash as it should. This message will not be displayed.");
       } catch (const simgrid::HostFailureException&) {
@@ -128,8 +127,8 @@ static void test_launcher(int test_number)
       vm0 = jupiter->create_vm("vm0", 1);
       vm0->start();
 
-      daemon = simgrid::s4u::Actor::create("actor_daemon", vm0, actor_daemon);
-      simgrid::s4u::Actor::create("actor_daemonJUPI", jupiter, actor_daemon);
+      daemon = simgrid::s4u::Actor::create("actor_daemon", vm0, actor_daemon, std::ref(tasks_done));
+      simgrid::s4u::Actor::create("actor_daemonJUPI", jupiter, actor_daemon, std::ref(tasks_done));
 
       daemon->suspend();
       vm0->set_bound(90);

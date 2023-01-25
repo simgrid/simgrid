@@ -14,8 +14,6 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(mwe, "Minimum Working Example");
 
-simgrid::s4u::ActorPtr receiver;
-
 class Receiver {
 public:
   void operator()() const
@@ -28,7 +26,11 @@ public:
 };
 
 class Suspender {
+  const simgrid::s4u::ActorPtr& receiver;
+
 public:
+  Suspender(simgrid::s4u::ActorPtr& receiver) : receiver(receiver) {}
+
   void operator()() const
   {
     XBT_INFO("Suspend the receiver...");
@@ -55,7 +57,8 @@ int main(int argc, char** argv)
   engine.load_platform(argv[1]);
   simgrid::s4u::Host* host = engine.host_by_name("Tremblay");
 
-  simgrid::s4u::Actor::create("Suspender", host, Suspender());
+  simgrid::s4u::ActorPtr receiver;
+  simgrid::s4u::Actor::create("Suspender", host, Suspender(receiver));
   receiver = simgrid::s4u::Actor::create("Receiver", host, Receiver());
 
   engine.run();

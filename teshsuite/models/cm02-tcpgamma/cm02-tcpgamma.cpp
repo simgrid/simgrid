@@ -21,13 +21,11 @@ namespace sg4 = simgrid::s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(cm02_tcpgamma, "Messages specific for this simulation");
 
-static sg4::Link* testlink = nullptr;
-
-static void run_ping_test()
+static void run_ping_test(sg4::Link const* testlink)
 {
   auto* mailbox = simgrid::s4u::Mailbox::by_name("Test");
 
-  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("host1"), [mailbox]() {
+  simgrid::s4u::Actor::create("sender", simgrid::s4u::Host::by_name("host1"), [mailbox, testlink]() {
     double start_time   = simgrid::s4u::Engine::get_clock();
     static auto message = std::string("message");
     mailbox->put(&message, 1e10);
@@ -42,7 +40,7 @@ static void run_ping_test()
 }
 
 /* We need a separate actor so that it can sleep after each test */
-static void main_dispatcher()
+static void main_dispatcher(sg4::Link* testlink)
 {
   XBT_INFO("-----------------------------------------------------------");
   XBT_INFO("This test set enforces the impact of the latency and TCP-gamma parameter on the bandwidth."); 
@@ -50,32 +48,32 @@ static void main_dispatcher()
   XBT_INFO("-----------------------------------------------------------");
   XBT_INFO("TEST with latency = 0 sec (and the default value of Gamma):");
   XBT_INFO("  Expectation: Gamma/2lat is not defined, so the physical bandwidth is used; The communication lasts 1 sec.");
-  run_ping_test();
+  run_ping_test(testlink);
   XBT_INFO("-----------------------------------------------------------");
   testlink->set_latency(0.00001);
   XBT_INFO("TEST with latency = 0.00001 sec");
   XBT_INFO("  Expectation: Gamma/2lat is about 209 Gb/s, which is larger than the physical bandwidth.");
   XBT_INFO("    So communication is limited by the physical bandwidth and lasts 1.00001 sec.");
-  run_ping_test();
+  run_ping_test(testlink);
   XBT_INFO("-----------------------------------------------------------");
   testlink->set_latency(0.001);
   XBT_INFO("TEST with latency = 0.001 sec");
   XBT_INFO("  Expectation: Gamma/2lat is about 2 Gb/s, which is smaller than the physical bandwidth.");
   XBT_INFO("    So the communication is limited by the latency and lasts 4.768372 + 0.001 sec.");
-  run_ping_test();
+  run_ping_test(testlink);
   XBT_INFO("-----------------------------------------------------------");
   testlink->set_latency(0.1);
   XBT_INFO("TEST with latency = 0.1 sec");
   XBT_INFO("  Expectation: Gamma/2lat is about 2 Gb/s, which is smaller than the physical bandwidth.");
   XBT_INFO("    So the communication is limited by the latency and lasts 476.837158 + 0.1 sec.");
-  run_ping_test();
+  run_ping_test(testlink);
   XBT_INFO("-----------------------------------------------------------");
   XBT_INFO("TEST with latency = 0.001 sec and TCP_Gamma = 0");
   sg4::Engine::set_config("network/TCP-gamma:0");
   testlink->set_latency(0.001);
   XBT_INFO("  Expectation: The latency=0.001s should make the communication to be limited by the latency.");
   XBT_INFO("    But since gamma=0, the physical bandwidth is still used. So the communication lasts 1.001 sec.");
-  run_ping_test();
+  run_ping_test(testlink);
   XBT_INFO("-----------------------------------------------------------");
 }
 
@@ -87,10 +85,10 @@ int main(int argc, char** argv)
   auto* zone  = sg4::create_full_zone("world");
   auto const* host1 = zone->create_host("host1", 1e6)->seal();
   auto const* host2 = zone->create_host("host2", 1e6)->seal();
-  testlink    = zone->create_link("L1", 1e10)->seal();
+  auto* testlink    = zone->create_link("L1", 1e10)->seal();
   zone->add_route(host1->get_netpoint(), host2->get_netpoint(), nullptr, nullptr, {sg4::LinkInRoute(testlink)});
 
-  simgrid::s4u::Actor::create("dispatcher", engine.host_by_name("host1"), main_dispatcher);
+  simgrid::s4u::Actor::create("dispatcher", engine.host_by_name("host1"), main_dispatcher, testlink);
   engine.run();
 
   return 0;

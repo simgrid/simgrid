@@ -33,10 +33,7 @@ static simgrid::config::Flag<double> cfg_deadline{"deadline", "When to fail the 
                                                   120};
 static simgrid::config::Flag<int> cfg_task_count{"task-count", "Amount of tasks that must be executed to succeed", 1};
 
-int todo; // remaining amount of tasks to execute, a global variable
-sg4::Mailbox* mailbox; // as a global to reduce the amount of simcalls during actor reboot
-
-XBT_ATTRIB_NORETURN static void master()
+XBT_ATTRIB_NORETURN static void master(sg4::Mailbox* mailbox)
 {
   double comp_size = 1e6;
   long comm_size   = 1e6;
@@ -66,7 +63,7 @@ XBT_ATTRIB_NORETURN static void master()
   THROW_IMPOSSIBLE;
 }
 
-static void worker(int id)
+static void worker(int id, sg4::Mailbox* mailbox, int& todo)
 {
   bool rebooting = sg4::Actor::self()->get_restart_count() > 0;
 
@@ -104,8 +101,15 @@ int main(int argc, char* argv[])
   auto* rootzone = sg4::create_full_zone("root");
   std::vector<sg4::Host*> worker_hosts;
 
+  int todo = cfg_task_count; // remaining amount of tasks to execute, a shared variable
+  xbt_assert(todo > 0, "Please give more than %d tasks to run", todo);
+
   xbt_assert(cfg_host_count > 2, "You need at least 2 workers (i.e., 3 hosts) or the master will be auto-killed when "
                                  "the only worker gets killed.");
+
+  // get it once for all, to reduce the amount of simcalls during actor reboot
+  sg4::Mailbox* mailbox = sg4::Mailbox::by_name("mailbox");
+
   sg4::Host* master_host = rootzone->create_host("lilibeth 0", 1e9); // Host where the master will stay
   for (int i = 1; i < cfg_host_count; i++) {
     auto hostname = "lilibeth " + std::to_string(i);
@@ -116,16 +120,12 @@ int main(int argc, char* argv[])
   }
   rootzone->seal();
 
-  sg4::Actor::create("master", master_host, master)->daemonize()->set_auto_restart(true);
+  sg4::Actor::create("master", master_host, master, mailbox)->daemonize()->set_auto_restart(true);
   int id = 0;
   for (auto* h : worker_hosts) {
-    sg4::Actor::create("worker", h, worker, id)->set_auto_restart(true);
+    sg4::Actor::create("worker", h, worker, id, mailbox, std::ref(todo))->set_auto_restart(true);
     id++;
   }
-
-  todo = cfg_task_count;
-  xbt_assert(todo > 0, "Please give more than %d tasks to run", todo);
-  mailbox = sg4::Mailbox::by_name("mailbox");
 
   e.run();
 

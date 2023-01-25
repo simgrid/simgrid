@@ -7,9 +7,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "Messages specific for this example");
 
-simgrid::s4u::ExecPtr exec;
-
-static void computation_fun()
+static void computation_fun(simgrid::s4u::ExecPtr& exec)
 {
   const char* pr_name   = simgrid::s4u::this_actor::get_cname();
   const char* host_name = simgrid::s4u::Host::current()->get_cname();
@@ -37,7 +35,8 @@ static void master_main()
   auto* vm0 = pm0->create_vm("VM0", 1);
   vm0->start();
 
-  simgrid::s4u::Actor::create("compute", vm0, computation_fun);
+  simgrid::s4u::ExecPtr exec;
+  simgrid::s4u::Actor::create("compute", vm0, computation_fun, std::ref(exec));
 
   while (simgrid::s4u::Engine::get_clock() < 100) {
     if (exec)
