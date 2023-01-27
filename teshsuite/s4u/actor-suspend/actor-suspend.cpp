@@ -29,7 +29,7 @@ class Suspender {
   const simgrid::s4u::ActorPtr& receiver;
 
 public:
-  Suspender(simgrid::s4u::ActorPtr& receiver) : receiver(receiver) {}
+  explicit Suspender(const simgrid::s4u::ActorPtr& receiver) : receiver(receiver) {}
 
   void operator()() const
   {
