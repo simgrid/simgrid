@@ -2270,6 +2270,23 @@ Life cycle
       .. doxygenfunction:: sg_comm_wait_all
       .. doxygenfunction:: sg_comm_wait_any
 
+Suspending and resuming a communication
+---------------------------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Comm::suspend
+      .. doxygenfunction:: simgrid::s4u::Comm::resume
+      .. doxygenfunction:: simgrid::s4u::Comm::is_suspended
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Comm.suspend
+      .. automethod:: simgrid.Comm.resume
+      .. autoattribute:: simgrid.Comm.is_suspended
+
 Signals
 -------
 
@@ -2390,6 +2407,23 @@ Life cycle
        .. doxygenfunction:: sg_exec_wait_for(sg_exec_t exec, double timeout);
        .. doxygenfunction:: sg_exec_wait_any_for(sg_exec_t* execs, size_t count, double timeout);
        .. doxygenfunction:: sg_exec_wait_any(sg_exec_t* execs, size_t count);
+
+Suspending and resuming an execution
+------------------------------------
+
+.. tabs::
+
+   .. group-tab:: C++
+
+      .. doxygenfunction:: simgrid::s4u::Exec::suspend
+      .. doxygenfunction:: simgrid::s4u::Exec::resume
+      .. doxygenfunction:: simgrid::s4u::Exec::is_suspended
+
+   .. group-tab:: Python
+
+      .. automethod:: simgrid.Exec.suspend
+      .. automethod:: simgrid.Exec.resume
+      .. autoattribute:: simgrid.Exec.is_suspended
 
 Signals
 -------

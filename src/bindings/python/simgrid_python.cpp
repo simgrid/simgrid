@@ -682,31 +682,24 @@ PYBIND11_MODULE(simgrid, m)
 
   /* Class Comm */
   py::class_<Comm, CommPtr>(m, "Comm", "Communication. See the C++ documentation for details.")
-      .def_property_readonly("dst_data_size", &Comm::get_dst_data_size,
-                             py::call_guard<py::gil_scoped_release>(),
+      .def_property_readonly("dst_data_size", &Comm::get_dst_data_size, py::call_guard<py::gil_scoped_release>(),
                              "Retrieve the size of the received data.")
-      .def_property_readonly("mailbox", &Comm::get_mailbox,
-                             py::call_guard<py::gil_scoped_release>(),
+      .def_property_readonly("mailbox", &Comm::get_mailbox, py::call_guard<py::gil_scoped_release>(),
                              "Retrieve the mailbox on which this comm acts.")
-      .def_property_readonly("sender", &Comm::get_sender,
-                             py::call_guard<py::gil_scoped_release>())
-      .def_property_readonly("state_str", &Comm::get_state_str,
-                             py::call_guard<py::gil_scoped_release>(),
+      .def_property_readonly("sender", &Comm::get_sender, py::call_guard<py::gil_scoped_release>())
+      .def_property_readonly("state_str", &Comm::get_state_str, py::call_guard<py::gil_scoped_release>(),
                              "Retrieve the Comm state as string")
-      .def_property_readonly("remaining",  &Comm::get_remaining,
-                             py::call_guard<py::gil_scoped_release>(),
+      .def_property_readonly("remaining", &Comm::get_remaining, py::call_guard<py::gil_scoped_release>(),
                              "Remaining amount of work that this Comm entails")
-      .def_property_readonly("start_time",  &Comm::get_start_time,
-                             py::call_guard<py::gil_scoped_release>(),
+      .def_property_readonly("start_time", &Comm::get_start_time, py::call_guard<py::gil_scoped_release>(),
                              "Time at which this Comm started")
-      .def_property_readonly("finish_time",  &Comm::get_finish_time,
-                             py::call_guard<py::gil_scoped_release>(),
+      .def_property_readonly("finish_time", &Comm::get_finish_time, py::call_guard<py::gil_scoped_release>(),
                              "Time at which this Comm finished")
-      .def("set_payload_size", &Comm::set_payload_size, py::call_guard<py::gil_scoped_release>(),
-           py::arg("bytes"),
+      .def_property_readonly("is_suspended", &Comm::is_suspended, py::call_guard<py::gil_scoped_release>(),
+                             "Whether this Comm is suspended")
+      .def("set_payload_size", &Comm::set_payload_size, py::call_guard<py::gil_scoped_release>(), py::arg("bytes"),
            "Specify the amount of bytes which exchange should be simulated.")
-      .def("set_rate", &Comm::set_rate, py::call_guard<py::gil_scoped_release>(),
-           py::arg("rate"),
+      .def("set_rate", &Comm::set_rate, py::call_guard<py::gil_scoped_release>(), py::arg("rate"),
            "Sets the maximal communication rate (in byte/sec). Must be done before start")
       .def("cancel", &Comm::cancel, py::call_guard<py::gil_scoped_release>(),
            py::return_value_policy::reference_internal, "Cancel the activity.")
@@ -721,46 +714,36 @@ PYBIND11_MODULE(simgrid, m)
            "Test whether the communication is terminated.")
       .def("wait", &Comm::wait, py::call_guard<py::gil_scoped_release>(),
            "Block until the completion of that communication.")
-      .def("wait_for", &Comm::wait_for, py::call_guard<py::gil_scoped_release>(),
-           py::arg("timeout"),
+      .def("wait_for", &Comm::wait_for, py::call_guard<py::gil_scoped_release>(), py::arg("timeout"),
            "Block until the completion of that communication, or raises TimeoutException after the specified timeout.")
-      .def("wait_until", &Comm::wait_until, py::call_guard<py::gil_scoped_release>(),
-           py::arg("time_limit"),
+      .def("wait_until", &Comm::wait_until, py::call_guard<py::gil_scoped_release>(), py::arg("time_limit"),
            "Block until the completion of that communication, or raises TimeoutException after the specified time.")
       .def("detach", py::overload_cast<>(&Comm::detach), py::return_value_policy::reference_internal,
            py::call_guard<py::gil_scoped_release>(),
            "Start the comm, and ignore its result. It can be completely forgotten after that.")
-      .def_static("sendto", &Comm::sendto, py::call_guard<py::gil_scoped_release>(),
-                  py::arg("from"), py::arg("to"), py::arg("simulated_size_in_bytes"),
-                  "Do a blocking communication between two arbitrary hosts.")
+      .def_static("sendto", &Comm::sendto, py::call_guard<py::gil_scoped_release>(), py::arg("from"), py::arg("to"),
+                  py::arg("simulated_size_in_bytes"), "Do a blocking communication between two arbitrary hosts.")
       .def_static("sendto_init", py::overload_cast<Host*, Host*>(&Comm::sendto_init),
-                  py::call_guard<py::gil_scoped_release>(),
-                  py::arg("from"), py::arg("to"),
+                  py::call_guard<py::gil_scoped_release>(), py::arg("from"), py::arg("to"),
                   "Creates a communication between the two given hosts, bypassing the mailbox mechanism.")
-      .def_static("sendto_async", &Comm::sendto_async, py::call_guard<py::gil_scoped_release>(),
-                  py::arg("from"), py::arg("to"), py::arg("simulated_size_in_bytes"),
+      .def_static("sendto_async", &Comm::sendto_async, py::call_guard<py::gil_scoped_release>(), py::arg("from"),
+                  py::arg("to"), py::arg("simulated_size_in_bytes"),
                   "Do a blocking communication between two arbitrary hosts.\n\nThis initializes a communication that "
                   "completely bypass the mailbox and actors mechanism. There is really no limit on the hosts involved. "
                   "In particular, the actor does not have to be on one of the involved hosts.")
-      .def_static("test_any", &Comm::test_any,
-                  py::call_guard<py::gil_scoped_release>(),
-                  py::arg("comms"),
+      .def_static("test_any", &Comm::test_any, py::call_guard<py::gil_scoped_release>(), py::arg("comms"),
                   "take a vector s4u::CommPtr and return the rank of the first finished one (or -1 if none is done)")
-      .def_static("wait_all", &Comm::wait_all, py::call_guard<py::gil_scoped_release>(),
-                  py::arg("comms"),
+      .def_static("wait_all", &Comm::wait_all, py::call_guard<py::gil_scoped_release>(), py::arg("comms"),
                   "Block until the completion of all communications in the list.")
-      .def_static("wait_all_for", &Comm::wait_all_for, py::call_guard<py::gil_scoped_release>(),
-                  py::arg("comms"), py::arg("timeout"),
+      .def_static("wait_all_for", &Comm::wait_all_for, py::call_guard<py::gil_scoped_release>(), py::arg("comms"),
+                  py::arg("timeout"),
                   "Block until the completion of all communications in the list, or raises TimeoutException after "
                   "the specified timeout.")
-      .def_static("wait_any", &Comm::wait_any,
-                  py::call_guard<py::gil_scoped_release>(),
-                  py::arg("comms"),
+      .def_static("wait_any", &Comm::wait_any, py::call_guard<py::gil_scoped_release>(), py::arg("comms"),
                   "Block until the completion of any communication in the list and return the index of the "
                   "terminated one.")
-      .def_static("wait_any_for", &Comm::wait_any_for,
-                  py::call_guard<py::gil_scoped_release>(),
-                  py::arg("comms"), py::arg("timeout"),
+      .def_static("wait_any_for", &Comm::wait_any_for, py::call_guard<py::gil_scoped_release>(), py::arg("comms"),
+                  py::arg("timeout"),
                   "Block until the completion of any communication in the list and return the index of the terminated "
                   "one, or -1 if a timeout occurred.");
 
@@ -787,15 +770,17 @@ PYBIND11_MODULE(simgrid, m)
       .def_property("host", &simgrid::s4u::Exec::get_host, &simgrid::s4u::Exec::set_host,
                     "Host on which this execution runs. Only the first host is returned for parallel executions. "
                     "Changing this value migrates the execution.")
+      .def_property_readonly("is_suspended", &simgrid::s4u::Exec::is_suspended,
+                             py::call_guard<py::gil_scoped_release>(), "Whether this Exec is suspended")
       .def("test", &simgrid::s4u::Exec::test, py::call_guard<py::gil_scoped_release>(),
            "Test whether the execution is terminated.")
       .def("cancel", &simgrid::s4u::Exec::cancel, py::call_guard<py::gil_scoped_release>(), "Cancel that execution.")
       .def("start", &simgrid::s4u::Exec::start, py::call_guard<py::gil_scoped_release>(), "Start that execution.")
       .def("suspend", &simgrid::s4u::Exec::suspend, py::call_guard<py::gil_scoped_release>(), "Suspend that execution.")
+      .def("resume", &simgrid::s4u::Exec::resume, py::call_guard<py::gil_scoped_release>(), "Resume that execution.")
       .def("wait", &simgrid::s4u::Exec::wait, py::call_guard<py::gil_scoped_release>(),
            "Block until the completion of that execution.")
-      .def("wait_for", &simgrid::s4u::Exec::wait_for, py::call_guard<py::gil_scoped_release>(),
-           py::arg("timeout"),
+      .def("wait_for", &simgrid::s4u::Exec::wait_for, py::call_guard<py::gil_scoped_release>(), py::arg("timeout"),
            "Block until the completion of that activity, or raises TimeoutException after the specified timeout.");
 
   /* Class Semaphore */

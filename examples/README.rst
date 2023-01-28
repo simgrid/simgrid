@@ -395,7 +395,7 @@ The ``suspend()`` and ``resume()`` functions block the progression of a given co
 
    .. example-tab:: examples/python/comm-suspend/comm-suspend.py
 
-      See also :py:func:`simgrid.Comm::suspend()` and
+      See also :py:func:`simgrid.Comm.suspend()` and
       :py:func:`simgrid.Comm.resume()`.
 
 Waiting for all communications in a set
