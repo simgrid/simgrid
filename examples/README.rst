@@ -703,6 +703,8 @@ result in short reads and short writes, as in reality.
 
        .. example-tab:: examples/cpp/io-file-system/s4u-io-file-system.cpp
 
+       .. example-tab:: examples/c/io-file-system/io-file-system.c
+
   - **Remote I/O:**
     I/O operations on files can also be done remotely,
     i.e. when the accessed disk is not mounted on the caller's host.
@@ -712,6 +714,118 @@ result in short reads and short writes, as in reality.
        .. example-tab:: examples/cpp/io-file-remote/s4u-io-file-remote.cpp
 
        .. example-tab:: examples/c/io-file-remote/io-file-remote.c
+
+.. _s4u_ex_dag:
+
+DAG of activities
+-----------------
+
+SimGrid makes it easy to express dependencies between activities, where a given activity cannot start until the completion of all its predecessors.
+You can even have simulation not involving any actors, where the main thread (called maestro) creates and schedules activities itself. 
+
+Simple DAG of activities
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+This example shows how to create activities organized as a DAG (direct acyclic graph), and start them.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/dag-simple/s4u-dag-simple.cpp
+
+DAG with communication
+^^^^^^^^^^^^^^^^^^^^^^
+
+This is a little example showing how add communication activities to your DAG, representing inter-task data exchanges.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/dag-comm/s4u-dag-comm.cpp
+
+DAG with I/O 
+^^^^^^^^^^^^
+
+This is a little example showing how add I/O activities to your DAG, representing disk buffers.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/dag-io/s4u-dag-io.cpp
+
+Assigning activities
+^^^^^^^^^^^^^^^^^^^^
+
+To actually start, an activity needs to be assigned to a given resource. This examples illustrates how an execution that is not assigned will not actually start until being assigned.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/exec-unassigned/s4u-exec-unassigned.cpp
+
+Scheduling activities
+^^^^^^^^^^^^^^^^^^^^^
+
+This example illustrates a simple scheduling algorithm, where the activities are placed on the "most adapted" host. Of course, there is many way 
+to determine which host is the better fit for a given activity, and this example just uses a simple algorithm.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/dag-scheduling/s4u-dag-scheduling.cpp
+
+Loading DAGs from file
+^^^^^^^^^^^^^^^^^^^^^^
+
+There is currently two file formats that you can load directly in SimGrid, but writting another loader for your beloved format should not be difficult.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/dag-from-dax/s4u-dag-from-dax.cpp
+
+   .. group-tab:: input
+
+      .. showfile:: examples/cpp/dag-from-dax/smalldax.xml
+         :language: xml
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/dag-from-dot/s4u-dag-from-dot.cpp
+
+   .. group-tab:: input
+
+      .. showfile:: examples/cpp/dag-from-dot/dag.dot
+         :language: xml
+
+Simulating a time slice
+^^^^^^^^^^^^^^^^^^^^^^^
+
+When you declare activities, :cpp:func:`simgrid::s4u::Engine::run()` runs up to the point of time where an activity completes.
+Sometimes, you want to give a maximal duration to simulate up to a given date at most, for example to inject a new activity at that time.
+This example shows how to do it.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/engine-run-partial/s4u-engine-run-partial.cpp
+
+DAG and failures
+^^^^^^^^^^^^^^^^
+
+This example shows how to deal with host or network failures while scheduling DAGs of activities.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/dag-failure/s4u-dag-failure.cpp
+
+DAGs and actors
+^^^^^^^^^^^^^^^
+
+You can also declare dependencies to regular activities that are executed by actors, as shown in the following examples. 
+The first one declare dependencies between executions while the second one declare dependencies between communications. 
+You could declare such dependencies between arbitrary activities.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/exec-dependent/s4u-exec-dependent.cpp
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/comm-dependent/s4u-comm-dependent.cpp
 
 .. _s4u_ex_IPC:
 
@@ -1323,6 +1437,18 @@ the first level is used.
       .. showfile:: examples/platforms/wifi.xml
          :language: xml
 
+You can also use the **ns-3 models on your wifi networks** as follows:
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/network-ns3-wifi/s4u-network-ns3-wifi.cpp
+
+   .. group-tab:: XML
+
+      **Platform files:**
+
+      .. showfile:: examples/platforms/wifi_ns3.xml
+         :language: xml
 
 
 ===============
