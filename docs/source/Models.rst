@@ -107,13 +107,13 @@ effects such as the switch between the eager vs. rendez-vous communication modes
 model <options_model_select>` on command line, and these models can be :ref:`further configured <options_model>`.
 
 The LMM solver is then used as described above to compute the effect of contention on the communication time that is
-computed by the TCP model. For sake of realism, the sharing on saturated links is not necessarily a fair sharing.
+computed by the TCP model. For sake of realism, the sharing on saturated links is not necessarily a fair sharing
+(unless when ``weight-S=0``, in which case the following mechanism is disabled).
 Instead, flows receive an amount of bandwidth somehow inversely proportional to their round trip time. This is modeled
 in the LMM as a priority which depends on the :ref:`weight-S <cfg=network/weight-S>` parameter. More precisely, this
-priority is computed for each flow as :math:`\sum_l (Lat_l  + \over{weightS}{Bandwidth_l})`, i.e., as the sum of the
+priority is computed for each flow as :math:`\displaystyle\sum_{l\in links}\left(Lat(l)+\frac{weightS}{Bandwidth(l)}\right)`, i.e., as the sum of the
 latencies of all links traversed by the communication, plus the sum of `weight-S` over the bandwidth of each link on
-the path. This dependency on the bandwidth of the links somehow accounts for the protocol reactivity. If ``weight-S=0``,
-then this mechanism is disabled.
+the path. Intuitively, this dependency on the bandwidth of the links somehow accounts for the protocol reactivity.
 
 Regardless of the used TCP model, the latency is paid beforehand. It is as if the communication only starts after a
 little delay corresponding to the latency. During that time, the communication has no impact on the links (the other
@@ -161,8 +161,8 @@ Marchal (published in 2002, thus the model name).
 LV08 (default)
 ==============
 
-This model builds upon CM02 to model TCP windowing. It also introduces corrections factors for further realism. Lets
-consider the following platform:
+This model builds upon CM02 to model TCP windowing (see above). It also introduces corrections factors for further realism:
+latency-factor is 13.01, bandwidth-factor is 0.97 while weight-S is 20537. Lets consider the following platform:
 
 .. code-block:: xml
 
