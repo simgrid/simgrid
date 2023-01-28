@@ -717,16 +717,44 @@ result in short reads and short writes, as in reality.
 
 .. _s4u_ex_dag:
 
-DAG of activities
-=================
+Dependencies between activities
+===============================
 
-SimGrid makes it easy to express dependencies between activities, where a given activity cannot start until the completion of all its predecessors.
-You can even have simulation not involving any actors, where the main thread (called maestro) creates and schedules activities itself. 
+SimGrid makes it easy to express dependencies between activities, where a given activity cannot start until the completion of
+all its predecessors. You can even have simulation not involving any actors, where the main thread (called maestro) creates and
+schedules activities itself.
+
+Simple dependencies
+-------------------
+
+When you declare dependencies between two activities, the depedent will not actually start until all its dependencies complete,
+as shown in the following examples. The first one declare dependencies between executions while the second one declare
+dependencies between communications. You could declare such dependencies between arbitrary activities.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/exec-dependent/s4u-exec-dependent.cpp
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/comm-dependent/s4u-comm-dependent.cpp
+
+Assigning activities
+--------------------
+
+To actually start, an activity needs to be assigned to a given resource. This examples illustrates how an execution that is not
+assigned will not actually start until being assigned. In some sense, activities' assignment can be seen as a specific
+dependency that can withdraw their execution.
+
+.. tabs::
+
+   .. example-tab:: examples/cpp/exec-unassigned/s4u-exec-unassigned.cpp
 
 Simple DAG of activities
 ------------------------
 
-This example shows how to create activities organized as a DAG (direct acyclic graph), and start them.
+This example shows how to create activities from the maestro directly without relying on an actor, organize the dependencies of
+activities as a DAG (direct acyclic graph), and start them. Each activity will start as soon as its dependencies are fullfiled.
 
 .. tabs::
 
@@ -749,15 +777,6 @@ This is a little example showing how add I/O activities to your DAG, representin
 .. tabs::
 
    .. example-tab:: examples/cpp/dag-io/s4u-dag-io.cpp
-
-Assigning activities
---------------------
-
-To actually start, an activity needs to be assigned to a given resource. This examples illustrates how an execution that is not assigned will not actually start until being assigned.
-
-.. tabs::
-
-   .. example-tab:: examples/cpp/exec-unassigned/s4u-exec-unassigned.cpp
 
 Scheduling activities
 ---------------------
@@ -811,21 +830,6 @@ This example shows how to deal with host or network failures while scheduling DA
 .. tabs::
 
    .. example-tab:: examples/cpp/dag-failure/s4u-dag-failure.cpp
-
-DAGs and actors
----------------
-
-You can also declare dependencies to regular activities that are executed by actors, as shown in the following examples. 
-The first one declare dependencies between executions while the second one declare dependencies between communications. 
-You could declare such dependencies between arbitrary activities.
-
-.. tabs::
-
-   .. example-tab:: examples/cpp/exec-dependent/s4u-exec-dependent.cpp
-
-.. tabs::
-
-   .. example-tab:: examples/cpp/comm-dependent/s4u-comm-dependent.cpp
 
 .. _s4u_ex_IPC:
 
