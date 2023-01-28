@@ -72,6 +72,7 @@ of every page. Bugs in the code should be reported
          Release Notes <Release_Notes.rst>
       Describing your application <application.rst>
          The S4U interface <app_s4u.rst>
+         S4U examples <Examples.rst>
          The SMPI interface <app_smpi.rst>
          The XBT toolbox <The_XBT_toolbox.rst>
       Describing the simulated platform <Platform.rst>

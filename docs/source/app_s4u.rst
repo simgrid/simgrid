@@ -367,10 +367,6 @@ pointers (yet?). This means that it is currently impossible to destroy a
 mailbox or a link. You can still destroy a host (but probably
 shouldn't), using :cpp:func:`simgrid::s4u::Host::destroy`.
 
-.. THE EXAMPLES
-
-.. include:: ../../examples/README.rst
-
 API Reference
 *************
 

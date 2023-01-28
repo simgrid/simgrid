@@ -5,8 +5,8 @@
 
 .. _s4u_examples:
 
-Examples
-********
+S4U Examples
+############
 
 SimGrid comes with an extensive set of examples, documented on this
 page. Most of them only demonstrate one single feature, with some
@@ -25,17 +25,17 @@ to simulate.
 
 .. _s4u_ex_actors:
 
-===========================
+***************************
 Actors: the Active Entities
-===========================
+***************************
 
 Starting and Stopping Actors
-----------------------------
+============================
 
 .. _s4u_ex_actors_create:
 
 Creating actors
-^^^^^^^^^^^^^^^
+---------------
 
 Most actors are started from the deployment XML file because this
 is a :ref:`better scientific habit <howto_science>`, but you can
@@ -71,7 +71,7 @@ also create them directly from your code.
       The following file is used in both C++ and Python.
 
 Reacting to actors' end
-^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------
 
 You can attach callbacks to the end of actors. There are several ways of doing so, depending on whether you want to
 attach your callback to a given actor and on how you define the end of a
@@ -95,7 +95,7 @@ actors.
       :cpp:func:`sg_actor_on_exit()`.
 
 Killing actors
-^^^^^^^^^^^^^^
+--------------
 
 Actors can forcefully stop other actors.
 
@@ -116,7 +116,7 @@ Actors can forcefully stop other actors.
       See also :cpp:func:`sg_actor_kill`, :cpp:func:`sg_actor_kill_all`, :cpp:func:`sg_actor_exit`, :cpp:func:`sg_actor_on_exit`.
 
 Actors' life cycle from XML_reference
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------------
 
 You can specify a start time and a kill time in the deployment file.
 
@@ -139,7 +139,7 @@ You can specify a start time and a kill time in the deployment file.
       This file is not really interesting: the important matter is in the XML file.
 
 Daemon actors
-^^^^^^^^^^^^^
+-------------
 
 Some actors may be intended to simulate daemons that run in the background.
 This example shows how to transform a regular
@@ -160,7 +160,7 @@ actor into a daemon that will be automatically killed once the simulation is ove
       See also :cpp:func:`sg_actor_daemonize` and :cpp:func:`sg_actor_is_daemon`.
 
 Specifying the stack size
-^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 
 The stack size can be specified by default on the command line,
 globally by changing the configuration with :cpp:func:`simgrid::s4u::Engine::set_config`,
@@ -173,14 +173,14 @@ or for a specific actor using :cpp:func:`simgrid::s4u::Actor::set_stacksize` bef
    .. example-tab:: examples/c/actor-stacksize/actor-stacksize.c
 
 Inter-Actors Interactions
--------------------------
+=========================
 
 See also the examples on :ref:`inter-actors communications
 <s4u_ex_communication>` and the ones on :ref:`classical
 synchronization objects <s4u_ex_IPC>`.
 
 Suspending/resuming Actors
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------
 
 Actors can be suspended and resumed during their executions.
 
@@ -204,7 +204,7 @@ Actors can be suspended and resumed during their executions.
       :cpp:func:`sg_actor_is_suspended()`.
 
 Migrating Actors
-^^^^^^^^^^^^^^^^
+----------------
 
 Actors can move or be moved from a host to another very easily. It amounts to setting them on a new host.
 
@@ -223,7 +223,7 @@ Actors can move or be moved from a host to another very easily. It amounts to se
       See also :cpp:func:`sg_actor_set_host()`.
 
 Waiting for the termination of an actor (joining on it)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------------------------------
 
 You can block the current actor until the end of another actor.
 
@@ -242,7 +242,7 @@ You can block the current actor until the end of another actor.
       See also :cpp:func:`sg_actor_join`.
 
 Yielding to other actors
-^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------
 
 The ```yield()``` function interrupts the execution of the current
 actor, leaving a chance to the other actors that are ready to run
@@ -263,7 +263,7 @@ at this timestamp.
       See also :cpp:func:`sg_actor_yield()`.
 
 Traces Replay as a Workload
----------------------------
+===========================
 
 This section details how to run trace-driven simulations. It is very
 handy when you want to test an algorithm or protocol that only reacts
@@ -282,7 +282,7 @@ with, but the second is more efficient on very large traces. Check
 also the tesh files in the example directories for details.
 
 Communication replay
-^^^^^^^^^^^^^^^^^^^^
+--------------------
 
 Presents a set of event handlers reproducing classical communication primitives (asynchronous send/receive at the moment).
 
@@ -291,7 +291,7 @@ Presents a set of event handlers reproducing classical communication primitives 
    .. example-tab:: examples/cpp/replay-comm/s4u-replay-comm.cpp
 
 I/O replay
-^^^^^^^^^^
+----------
 
 Presents a set of event handlers reproducing classical I/O primitives (open, read, close).
 
@@ -299,17 +299,17 @@ Presents a set of event handlers reproducing classical I/O primitives (open, rea
 
    .. example-tab:: examples/cpp/replay-io/s4u-replay-io.cpp
 
-==========================
+**************************
 Activities: what Actors do
-==========================
+**************************
 
 .. _s4u_ex_communication:
 
 Communications on the Network
------------------------------
+=============================
 
 Basic communications
-^^^^^^^^^^^^^^^^^^^^
+--------------------
 
 This simple example just sends one message back and forth.
 The tesh file laying in the directory shows how to start the simulator binary, highlighting how to pass options to
@@ -324,7 +324,7 @@ the simulators (as detailed in Section :ref:`options`).
    .. example-tab:: examples/c/comm-pingpong/comm-pingpong.c
 
 Basic asynchronous communications
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------
 
 Illustrates how to have non-blocking communications, that are communications running in the background leaving the process
 free to do something else during their completion.
@@ -344,7 +344,7 @@ free to do something else during their completion.
       See also :cpp:func:`sg_mailbox_put_async()` and :cpp:func:`sg_comm_wait()`.
 
 Waiting for communications with timeouts
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------------
 
 There is two ways of declaring timeouts in SimGrid. ``waituntil`` let you specify the deadline until when you want to wait, while
 ``waitfor`` expects the maximal wait duration.
@@ -363,7 +363,7 @@ This example is very similar to the previous one, simply adding how to declare t
 .. _s4u_ex_mailbox_ready:
 
 Checking for incoming communications
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------------
 
 This example uses ``Mailbox.ready()`` to check for completed communications. When this function returns true, then at least a message
 is arrived, so you know that ``Mailbox.get()`` will complete imediately. This is thus another way toward asynchronous communications.
@@ -380,7 +380,7 @@ is arrived, so you know that ``Mailbox.get()`` will complete imediately. This is
 
 
 Suspending communications
-^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 
 The ``suspend()`` and ``resume()`` functions block the progression of a given communication for a while and then unblock it.
 ``is_suspended()`` returns whether that activity is currently blocked or not.
@@ -399,7 +399,7 @@ The ``suspend()`` and ``resume()`` functions block the progression of a given co
       :py:func:`simgrid.Comm.resume()`.
 
 Waiting for all communications in a set
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------
 
 The ``wait_all()`` function is useful when you want to block until all activities in a given set have been completed.
 
@@ -418,7 +418,7 @@ The ``wait_all()`` function is useful when you want to block until all activitie
       See also :cpp:func:`sg_comm_wait_all()`.
 
 Waiting for the first completed communication in a set
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------------------------------------
 
 The ``wait_any()`` blocks until one activity of the set completes, no matter which terminates first.
 
@@ -437,7 +437,7 @@ The ``wait_any()`` blocks until one activity of the set completes, no matter whi
       See also :cpp:func:`sg_comm_wait_any`.
 
 Testing whether at least one communication completed
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------------------------
 
 The ``test_any()`` returns whether at least one activity of the set has completed, or -1.
 
@@ -454,7 +454,7 @@ The ``test_any()`` returns whether at least one activity of the set has complete
 .. _s4u_ex_comm_failure:
 
 Dealing with network failures
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------
 
 This examples shows how to survive to network exceptions that occurs when a link is turned off, or when the actor with whom
 you communicate fails because its host is turned off. In this case, any blocking operation such as ``put``, ``get`` or
@@ -471,7 +471,7 @@ you communicate fails because its host is turned off. In this case, any blocking
 .. _s4u_ex_comm_host2host:
 
 Direct host-to-host communication
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------
 
 This example demonstrates the direct communication mechanism, that allows to send data from one host to another without
 relying on the mailbox mechanism.
@@ -489,10 +489,10 @@ relying on the mailbox mechanism.
 .. _s4u_ex_execution:
 
 Executions on the CPU
----------------------
+=====================
 
 Basic execution
-^^^^^^^^^^^^^^^
+---------------
 
 The computations done in your program are not reported to the
 simulated world unless you explicitly request the simulator to pause
@@ -517,7 +517,7 @@ get more resources.
       and :cpp:func:`void sg_actor_execute_with_priority(double, double)`.
 
 Asynchronous execution
-^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 
 You can start asynchronous executions, just like you would fire background threads.
 
@@ -554,7 +554,7 @@ You can start asynchronous executions, just like you would fire background threa
       :cpp:func:`sg_exec_cancel()`,
 
 Remote execution
-^^^^^^^^^^^^^^^^
+----------------
 
 You can start executions on remote hosts, or even change the host on which they occur during their execution.
 This is naturally not very realistic, but it's something handy to have.
@@ -576,7 +576,7 @@ This is naturally not very realistic, but it's something handy to have.
 .. _s4u_ex_ptasks:
 
 Parallel executions
-^^^^^^^^^^^^^^^^^^^
+-------------------
 
 These objects are convenient abstractions of parallel
 computational kernels that span over several machines, such as a
@@ -613,7 +613,7 @@ There is not much new compared to the above ptask example or the
 .. _s4u_ex_exec_failure:
 
 Dealing with host failures
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------
 
 This examples shows how to survive to host failure exceptions that occur when an host is turned off. The actors do not get notified when the host
 on which they run is turned off: they are just terminated in this case, and their ``on_exit()`` callback gets executed. For remote executions on
@@ -629,7 +629,7 @@ failing hosts however, any blocking operation such as ``exec`` or ``wait`` will 
 .. _s4u_ex_dvfs:
 
 DVFS and pstates
-^^^^^^^^^^^^^^^^
+----------------
 
 This example shows how to define a set of pstates in the XML. The current pstate
 of a host can then be accessed and changed from the program.
@@ -657,14 +657,14 @@ of a host can then be accessed and changed from the program.
 .. _s4u_ex_disk_io:
 
 I/O on Disks and Files
-----------------------
+======================
 
 SimGrid provides two levels of abstraction to interact with the
 simulated disks. At the simplest level, you simply create read and
 write actions on the disk resources.
 
 Access to raw disk devices
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------
 
 This example illustrates how to simply read and write data on a simulated disk resource.
 
@@ -679,7 +679,7 @@ This example illustrates how to simply read and write data on a simulated disk r
       This shows how to declare disks in XML.
 
 Asynchronous raw accesses
-^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 
 As most other activities, raw IO accesses can be used asynchronously, as illustrated in this example.
 
@@ -688,7 +688,7 @@ As most other activities, raw IO accesses can be used asynchronously, as illustr
    .. example-tab:: examples/cpp/io-async/s4u-io-async.cpp
 
 Filesystem plugin
-^^^^^^^^^^^^^^^^^
+-----------------
 
 The FileSystem plugin provides a more detailed view, with the
 classical operations over files: open, move, unlink, and of course,
@@ -718,13 +718,13 @@ result in short reads and short writes, as in reality.
 .. _s4u_ex_dag:
 
 DAG of activities
------------------
+=================
 
 SimGrid makes it easy to express dependencies between activities, where a given activity cannot start until the completion of all its predecessors.
 You can even have simulation not involving any actors, where the main thread (called maestro) creates and schedules activities itself. 
 
 Simple DAG of activities
-^^^^^^^^^^^^^^^^^^^^^^^^
+------------------------
 
 This example shows how to create activities organized as a DAG (direct acyclic graph), and start them.
 
@@ -733,7 +733,7 @@ This example shows how to create activities organized as a DAG (direct acyclic g
    .. example-tab:: examples/cpp/dag-simple/s4u-dag-simple.cpp
 
 DAG with communication
-^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 
 This is a little example showing how add communication activities to your DAG, representing inter-task data exchanges.
 
@@ -742,7 +742,7 @@ This is a little example showing how add communication activities to your DAG, r
    .. example-tab:: examples/cpp/dag-comm/s4u-dag-comm.cpp
 
 DAG with I/O 
-^^^^^^^^^^^^
+------------
 
 This is a little example showing how add I/O activities to your DAG, representing disk buffers.
 
@@ -751,7 +751,7 @@ This is a little example showing how add I/O activities to your DAG, representin
    .. example-tab:: examples/cpp/dag-io/s4u-dag-io.cpp
 
 Assigning activities
-^^^^^^^^^^^^^^^^^^^^
+--------------------
 
 To actually start, an activity needs to be assigned to a given resource. This examples illustrates how an execution that is not assigned will not actually start until being assigned.
 
@@ -760,7 +760,7 @@ To actually start, an activity needs to be assigned to a given resource. This ex
    .. example-tab:: examples/cpp/exec-unassigned/s4u-exec-unassigned.cpp
 
 Scheduling activities
-^^^^^^^^^^^^^^^^^^^^^
+---------------------
 
 This example illustrates a simple scheduling algorithm, where the activities are placed on the "most adapted" host. Of course, there is many way 
 to determine which host is the better fit for a given activity, and this example just uses a simple algorithm.
@@ -770,7 +770,7 @@ to determine which host is the better fit for a given activity, and this example
    .. example-tab:: examples/cpp/dag-scheduling/s4u-dag-scheduling.cpp
 
 Loading DAGs from file
-^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 
 There is currently two file formats that you can load directly in SimGrid, but writting another loader for your beloved format should not be difficult.
 
@@ -793,7 +793,7 @@ There is currently two file formats that you can load directly in SimGrid, but w
          :language: xml
 
 Simulating a time slice
-^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------
 
 When you declare activities, :cpp:func:`simgrid::s4u::Engine::run()` runs up to the point of time where an activity completes.
 Sometimes, you want to give a maximal duration to simulate up to a given date at most, for example to inject a new activity at that time.
@@ -804,7 +804,7 @@ This example shows how to do it.
    .. example-tab:: examples/cpp/engine-run-partial/s4u-engine-run-partial.cpp
 
 DAG and failures
-^^^^^^^^^^^^^^^^
+----------------
 
 This example shows how to deal with host or network failures while scheduling DAGs of activities.
 
@@ -813,7 +813,7 @@ This example shows how to deal with host or network failures while scheduling DA
    .. example-tab:: examples/cpp/dag-failure/s4u-dag-failure.cpp
 
 DAGs and actors
-^^^^^^^^^^^^^^^
+---------------
 
 You can also declare dependencies to regular activities that are executed by actors, as shown in the following examples. 
 The first one declare dependencies between executions while the second one declare dependencies between communications. 
@@ -830,10 +830,10 @@ You could declare such dependencies between arbitrary activities.
 .. _s4u_ex_IPC:
 
 Classical synchronization objects
----------------------------------
+=================================
 
 Barrier
-^^^^^^^
+-------
 
 Shows how to use :cpp:type:`simgrid::s4u::Barrier` synchronization objects.
 
@@ -844,7 +844,7 @@ Shows how to use :cpp:type:`simgrid::s4u::Barrier` synchronization objects.
    .. example-tab:: examples/python/synchro-barrier/synchro-barrier.py
 
 Condition variable: basic usage
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------
 
 Shows how to use :cpp:type:`simgrid::s4u::ConditionVariable` synchronization objects.
 
@@ -853,7 +853,7 @@ Shows how to use :cpp:type:`simgrid::s4u::ConditionVariable` synchronization obj
    .. example-tab:: examples/cpp/synchro-condition-variable/s4u-synchro-condition-variable.cpp
 
 Condition variable: timeouts
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------
 
 Shows how to specify timeouts when blocking on condition variables.
 
@@ -862,7 +862,7 @@ Shows how to specify timeouts when blocking on condition variables.
    .. example-tab:: examples/cpp/synchro-condition-variable-waituntil/s4u-synchro-condition-variable-waituntil.cpp
 
 Mutex
-^^^^^
+-----
 
 Shows how to use :cpp:type:`simgrid::s4u::Mutex` synchronization objects.
 
@@ -873,7 +873,7 @@ Shows how to use :cpp:type:`simgrid::s4u::Mutex` synchronization objects.
    .. example-tab:: examples/python/synchro-mutex/synchro-mutex.py
 
 Semaphore
-^^^^^^^^^
+---------
 
 Shows how to use :cpp:type:`simgrid::s4u::Semaphore` synchronization objects.
 
@@ -885,12 +885,12 @@ Shows how to use :cpp:type:`simgrid::s4u::Semaphore` synchronization objects.
 
    .. example-tab:: examples/c/synchro-semaphore/synchro-semaphore.c
 
-=============================
+*****************************
 Interacting with the Platform
-=============================
+*****************************
 
 User-defined properties
------------------------
+=======================
 
 You can attach arbitrary information to most platform elements from the XML file, and then interact with these values from your
 program. Note that the changes are not written permanently on disk, in the XML file nor anywhere else. They only last until the end of
@@ -919,10 +919,10 @@ your simulation.
          :language: xml
 
 Element filtering
------------------
+=================
 
 Retrieving the netzones matching given criteria
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------------------------
 
 Shows how to filter the cluster netzones.
 
@@ -931,7 +931,7 @@ Shows how to filter the cluster netzones.
    .. example-tab:: examples/cpp/routing-get-clusters/s4u-routing-get-clusters.cpp
 
 Retrieving the list of hosts matching given criteria
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------------------------
 
 Shows how to filter the actors that match given criteria.
 
@@ -940,12 +940,12 @@ Shows how to filter the actors that match given criteria.
    .. example-tab:: examples/cpp/engine-filtering/s4u-engine-filtering.cpp
 
 Profiles
---------
+========
 
 .. _s4u_ex_platform_state_profile:
 
 Specifying state profiles
-^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 
 Shows how to specify when the resources must be turned off and on again, and how to react to such
 failures in your code. See also :ref:`howto_churn`,
@@ -970,7 +970,7 @@ failures in your code. See also :ref:`howto_churn`,
       .. showfile:: examples/platforms/profiles/fafard_state.profile
 
 Specifying speed profiles
-^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 
 Shows how to specify an external load to resources, variating their peak speed over time.
 
@@ -992,10 +992,10 @@ Shows how to specify an external load to resources, variating their peak speed o
          .. showfile:: examples/platforms/profiles/link1_latency.profile
 
 Modifying the platform
-----------------------
+======================
 
 Serializing communications
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------
 
 This example shows how to limit the amount of communications going through a given link.
 It is very similar to the other asynchronous communication examples, but messages get serialized by the platform.
@@ -1015,15 +1015,15 @@ messages can travel through the link at the same time.
 
 .. _s4u_ex_energy:
 
-=================
+*****************
 Energy Simulation
-=================
+*****************
 
 Setup
------
+=====
 
 Describing the energy profiles in the platform
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------------------------
 
 The first platform file contains the energy profile of each link and host for a wired network, which is necessary to get energy consumption
 predictions. The second platform file is the equivalent for a wireless network. As usual, you should not trust our example, and you should
@@ -1040,10 +1040,10 @@ strive to double-check that your instantiation matches your target platform.
    :language: xml
 
 Usage
------
+=====
 
 CPU energy consumption
-^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 
 This example shows how to retrieve the amount of energy consumed by the CPU during computations, and the impact of the pstate.
 
@@ -1054,7 +1054,7 @@ This example shows how to retrieve the amount of energy consumed by the CPU duri
    .. example-tab:: examples/c/energy-exec/energy-exec.c
 
 Virtual machines consumption
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------
 
 This example is very similar to the previous one, adding VMs to the picture.
 
@@ -1065,7 +1065,7 @@ This example is very similar to the previous one, adding VMs to the picture.
    .. example-tab:: examples/c/energy-vm/energy-vm.c
 
 Wired network energy consumption
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------------
 
 This example shows how to retrieve and display the energy consumed by the wired network during communications.
 
@@ -1074,7 +1074,7 @@ This example shows how to retrieve and display the energy consumed by the wired 
    .. example-tab:: examples/cpp/energy-link/s4u-energy-link.cpp
 
 WiFi network energy consumption
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------
 
 This example shows how to retrieve and display the energy consumed by the wireless network during communications.
 
@@ -1083,7 +1083,7 @@ This example shows how to retrieve and display the energy consumed by the wirele
    .. example-tab:: examples/cpp/energy-wifi/s4u-energy-wifi.cpp
 
 Modeling the shutdown and boot of hosts
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------------------
 
 Simple example of a model for the energy consumption during the host boot and shutdown periods.
 
@@ -1093,9 +1093,9 @@ Simple example of a model for the energy consumption during the host boot and sh
 
    .. example-tab:: examples/cpp/energy-boot/s4u-energy-boot.cpp
 
-=======================
+***********************
 Tracing and Visualizing
-=======================
+***********************
 
 Tracing can be activated by various configuration options which are illustrated in these examples. See also the
 :ref:`full list of options related to tracing <tracing_tracing_options>`.
@@ -1106,10 +1106,10 @@ The following introduces  some option sets of interest that you may want to pass
    A full command line to see the result in the right tool (vite/FrameSoc) should be given along with some screenshots.
 
 Platform Tracing
-----------------
+================
 
 Basic example
-^^^^^^^^^^^^^
+-------------
 
 This program is a toy example just loading the platform so that you can play with the platform visualization. Recommended options:
 ``--cfg=tracing:yes --cfg=tracing/categorized:yes``
@@ -1119,7 +1119,7 @@ This program is a toy example just loading the platform so that you can play wit
    .. example-tab:: examples/cpp/trace-platform/s4u-trace-platform.cpp
 
 Setting Categories
-^^^^^^^^^^^^^^^^^^
+------------------
 
 This example declares several tracing categories that are used to
 classify its tasks. When the program is executed, the tracing mechanism
@@ -1132,7 +1132,7 @@ categories. Recommended options:
    .. example-tab:: examples/cpp/trace-categories/s4u-trace-categories.cpp
 
 Master Workers tracing
-^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 
 This is an augmented version of our basic master/worker example using
 several tracing features. It traces resource usage, sorted out in several
@@ -1146,7 +1146,7 @@ options: ``--cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes``
    .. example-tab:: examples/python/app-masterworkers/app-masterworkers.py
 
 Process migration tracing
-^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------
 
 This version is enhanced so that the process migrations can be displayed
 as arrows in a Gantt-chart visualization. Recommended options to that
@@ -1157,21 +1157,21 @@ extend: ``--cfg=tracing:yes --cfg=tracing/actor:yes``
    .. example-tab:: examples/cpp/trace-process-migration/s4u-trace-process-migration.cpp
 
 Tracing user variables
-----------------------
+======================
 
 You can also attach your own variables to any resource described in the platform
 file. The following examples illustrate this feature.  They have to be run with
 the following options: ``--cfg=tracing:yes --cfg=tracing/platform:yes``
 
 Attaching variables to Hosts
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------
 
 .. tabs::
 
    .. example-tab:: examples/cpp/trace-host-user-variables/s4u-trace-host-user-variables.cpp
 
 Attaching variables to Links
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------------
 
 The tricky part is that you have to know the name of the link you want to enhance with a variable.
 
@@ -1180,7 +1180,7 @@ The tricky part is that you have to know the name of the link you want to enhanc
    .. example-tab:: examples/cpp/trace-link-user-variables/s4u-trace-link-user-variables.cpp
 
 Attaching variables to network routes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-------------------------------------
 
 It is often easier to update a given variable for all links of a given network path (identified by its source and destination hosts) instead of
 knowing the name of each specific link.
@@ -1189,17 +1189,17 @@ knowing the name of each specific link.
 
    .. example-tab::  examples/cpp/trace-route-user-variables/s4u-trace-route-user-variables.cpp
 
-========================
+************************
 Larger SimGrid Exemplars
-========================
+************************
 
 This section contains application examples that are somewhat larger than the previous examples.
 
 Classical examples
-------------------
+==================
 
 Token ring
-^^^^^^^^^^
+----------
 
 Shows how to implement a classical communication pattern, where a token is exchanged along a ring to reach every participant.
 
@@ -1210,7 +1210,7 @@ Shows how to implement a classical communication pattern, where a token is excha
    .. example-tab:: examples/c/app-token-ring/app-token-ring.c
 
 Master Workers
-^^^^^^^^^^^^^^
+--------------
 
 Another good old example, where one Master actor has a bunch of tasks to dispatch to a set of several Worker actors.
 This example is used in the :ref:`SimGrid tutorial <usecase_simalgo>`.
@@ -1239,10 +1239,10 @@ This example is used in the :ref:`SimGrid tutorial <usecase_simalgo>`.
    .. example-tab:: examples/python/app-masterworkers/app-masterworkers.py
 
 Data diffusion
---------------
+==============
 
 Bit Torrent
-^^^^^^^^^^^
+-----------
 
 Classical protocol for Peer-to-Peer data diffusion.
 
@@ -1271,7 +1271,7 @@ Classical protocol for Peer-to-Peer data diffusion.
          :language: cpp
 
 Chained Send
-^^^^^^^^^^^^
+------------
 
 Data broadcast over a ring of processes.
 
@@ -1291,10 +1291,10 @@ Data broadcast over a ring of processes.
          :language: c
 
 Distributed Hash Tables (DHT)
------------------------------
+=============================
 
 Chord Protocol
-^^^^^^^^^^^^^^
+--------------
 
 One of the most famous DHT protocol.
 
@@ -1309,7 +1309,7 @@ One of the most famous DHT protocol.
          :language: cpp
 
 Kademlia
-^^^^^^^^
+--------
 
 Another well-known DHT protocol.
 
@@ -1347,7 +1347,7 @@ Another well-known DHT protocol.
          :language: cpp
 
 Pastry
-^^^^^^
+------
 
 Yet another well-known DHT protocol.
 
@@ -1358,10 +1358,10 @@ Yet another well-known DHT protocol.
 .. _s4u_ex_clouds:
 
 Simulating Clouds
------------------
+=================
 
 Cloud basics
-^^^^^^^^^^^^
+------------
 
 This example starts some computations both on PMs and VMs and migrates some VMs around.
 
@@ -1372,7 +1372,7 @@ This example starts some computations both on PMs and VMs and migrates some VMs 
    .. example-tab:: examples/c/cloud-simple/cloud-simple.c
 
 Migrating VMs
-^^^^^^^^^^^^^
+-------------
 
 This example shows how to migrate VMs between PMs.
 
@@ -1382,12 +1382,12 @@ This example shows how to migrate VMs between PMs.
 
    .. example-tab:: examples/c/cloud-migration/cloud-migration.c
 
-=======================
+***********************
 Model-Related Examples
-=======================
+***********************
 
 ns-3 as a model
----------------
+===============
 
 This simple ping-pong example demonstrates how to use the bindings to the Network
 Simulator. The most interesting is probably not the C++ files since
@@ -1408,7 +1408,7 @@ start a simulation in these settings.
          :language: xml
 
 WiFi links
-----------
+==========
 
 This demonstrates how to declare a wifi zone in your platform and
 how to use it in your simulation. For that, you should have a link
@@ -1451,9 +1451,9 @@ You can also use the **ns-3 models on your wifi networks** as follows:
          :language: xml
 
 
-===============
+***************
 Plugin Examples
-===============
+***************
 
 It is possible to extend SimGrid without modifying its internals by
 attaching code to the existing signals and by adding extra data to the
@@ -1466,7 +1466,7 @@ that you are very welcome to modify the plugins to fit your needs. It
 should be much easier than modifying the SimGrid kernel.
 
 Monitoring the host load
-------------------------
+========================
 
 .. tabs::
 
@@ -1475,21 +1475,21 @@ Monitoring the host load
    .. example-tab:: examples/c/plugin-host-load/plugin-host-load.c
 
 Monitoring the link load
-------------------------
+========================
 
 .. tabs::
 
    .. example-tab:: examples/cpp/plugin-link-load/s4u-plugin-link-load.cpp
 
-=======================
+***********************
 Model-Checking Examples
-=======================
+***********************
 
 The model-checker can be used to exhaustively search for issues in the tested application. It must be activated at compile-time, but this
 mode is rather experimental in SimGrid (as of v3.25). We are working on it :)
 
 Failing assert
---------------
+==============
 
 In this example, two actors send some data to a central server, which asserts that the messages are always received in the same order.
 This is wrong, and the model-checker correctly finds a counter-example to that assertion.

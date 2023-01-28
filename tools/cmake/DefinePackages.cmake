@@ -806,6 +806,7 @@ set(DOC_SOURCES
   docs/source/Configuring_SimGrid.rst
   docs/source/Deploying_your_application.rst
   docs/source/Contributors_Documentation.rst
+  docs/source/Examples.rst
   docs/source/Experimental_setup.rst
   docs/source/index.rst
   docs/source/intl.rst
