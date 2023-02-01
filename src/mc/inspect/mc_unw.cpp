@@ -225,7 +225,7 @@ void UnwindContext::initialize(simgrid::mc::RemoteProcess* process, unw_context_
 
   // Take a copy of the context for our own purpose:
   this->unwind_context_ = *c;
-#if SIMGRID_PROCESSOR_x86_64 || SIMGRID_PROCESSOR_i686 || defined(__aarch64__)
+#if SIMGRID_PROCESSOR_x86_64 || SIMGRID_PROCESSOR_i686
 #ifdef __linux__
   // On x86_64, ucontext_t contains a pointer to itself for FP registers.
   // We don't really need support for FR registers as they are caller saved
@@ -233,6 +233,12 @@ void UnwindContext::initialize(simgrid::mc::RemoteProcess* process, unw_context_
   // FP registers from the unw_context_t
   // Let's ignore this and see what happens:
   this->unwind_context_.uc_mcontext.fpregs = nullptr;
+#endif
+#elif SIMGRID_PROCESSOR_arm64
+#ifdef __linux__
+  // On ARM64, ucontext_t doesn't contain `fpregs` and the FP registers
+  // are instead held in the `__reserved` field of the struct. It doesn't
+  // appear anything needs to be done here, although this should be verified
 #endif
 #else
   // Do we need to do any fixup like this?
