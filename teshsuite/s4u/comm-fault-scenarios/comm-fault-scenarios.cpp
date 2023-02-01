@@ -159,21 +159,23 @@ class SendAgent {
     // Make sure we have a clean slate
     xbt_assert(not mbox_.eager->listen(), "Eager mailbox should be empty when starting a test");
     xbt_assert(not mbox_.rdv->listen(), "RDV mailbox should be empty when starting a test");
-    for (; step_index < s.steps.size(); step_index++) {
-      const Step& step = s.steps[step_index];
-      if (step.entity != Step::Entity::SND || step.type != Step::Type::ACTION)
-        continue;
-      try {
+
+    Action current_action;
+    try {
+      for (; step_index < s.steps.size(); step_index++) {
+        const Step& step = s.steps[step_index];
+        if (step.entity != Step::Entity::SND || step.type != Step::Type::ACTION)
+          continue;
+
+        current_action = Action::SLEEP;
         sg4::this_actor::sleep_until(s.start_time + step.rel_time);
-      } catch (const simgrid::Exception& e) {
-        XBT_DEBUG("During Sleep, failed to send message because of a %s exception (%s)", typeid(e).name(), e.what());
-        break;
-      }
-      // Check if the other host is still OK.
-      if (not other_host_->is_on())
-        break;
-      // Perform the action
-      try {
+
+        // Check if the other host is still OK.
+        if (not other_host_->is_on())
+          break;
+
+        // Perform the action
+        current_action = step.action_type;
         switch (step.action_type) {
           case Action::PUT:
             comm = do_put(s.type, send_value);
@@ -187,11 +189,10 @@ class SendAgent {
           default:
             xbt_die("Not a valid action for SND");
         }
-      } catch (const simgrid::Exception& e) {
-        XBT_DEBUG("During %s, failed to send message because of a %s exception (%s)", to_c_str(step.action_type),
-                  typeid(e).name(), e.what());
-        break;
       }
+    } catch (const simgrid::Exception& e) {
+      XBT_DEBUG("During %s, failed to send message because of a %s exception (%s)", to_c_str(current_action),
+                typeid(e).name(), e.what());
     }
     try {
       sg4::this_actor::sleep_until(end_time);
@@ -283,21 +284,21 @@ class ReceiveAgent {
     // Make sure we have a clean slate
     xbt_assert(not mbox_.eager->listen(), "Eager mailbox should be empty when starting a test");
     xbt_assert(not mbox_.rdv->listen(), "RDV mailbox should be empty when starting a test");
-    for (; step_index < s.steps.size(); step_index++) {
-      const Step& step = s.steps[step_index];
-      if (step.entity != Step::Entity::RCV || step.type != Step::Type::ACTION)
-        continue;
-      try {
+
+    Action current_action;
+    try {
+      for (; step_index < s.steps.size(); step_index++) {
+        const Step& step = s.steps[step_index];
+        if (step.entity != Step::Entity::RCV || step.type != Step::Type::ACTION)
+          continue;
+
+        current_action = Action::SLEEP;
         sg4::this_actor::sleep_until(s.start_time + step.rel_time);
-      } catch (const simgrid::Exception& e) {
-        XBT_DEBUG("During Sleep, failed to receive message because of a %s exception (%s)", typeid(e).name(), e.what());
-        break;
-      }
-      // Check if the other host is still OK.
-      if (not other_host_->is_on())
-        break;
-      // Perform the action
-      try {
+
+        // Check if the other host is still OK.
+        if (not other_host_->is_on())
+          break;
+        // Perform the action
         switch (step.action_type) {
           case Action::GET:
             comm = do_get(type, receive_ptr);
@@ -311,11 +312,10 @@ class ReceiveAgent {
           default:
             xbt_die("Not a valid action for RCV");
         }
-      } catch (const simgrid::Exception& e) {
-        XBT_DEBUG("During %s, failed to receive message because of a %s exception (%s)", to_c_str(step.action_type),
-                  typeid(e).name(), e.what());
-        break;
       }
+    } catch (const simgrid::Exception& e) {
+      XBT_DEBUG("During %s, failed to receive message because of a %s exception (%s)", to_c_str(current_action),
+                typeid(e).name(), e.what());
     }
     try {
       sg4::this_actor::sleep_until(end_time - .1);
