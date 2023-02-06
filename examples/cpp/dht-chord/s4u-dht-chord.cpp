@@ -7,10 +7,6 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_chord, "Messages specific for this s4u example");
 
-int nb_bits  = 24;
-int nb_keys  = 0;
-int timeout  = 50;
-
 int main(int argc, char* argv[])
 {
   simgrid::s4u::Engine e(&argc, argv);
@@ -20,6 +16,8 @@ int main(int argc, char* argv[])
              argv[0], argv[0]);
   std::string platform_file(argv[argc - 2]);
   std::string deployment_file(argv[argc - 1]);
+  int nb_bits = 24;
+  int timeout = 50;
   for (const auto& option : std::vector<std::string>(argv + 1, argv + argc - 2)) {
     if (option.rfind("-nb_bits=", 0) == 0) {
       nb_bits = std::stoi(option.substr(option.find('=') + 1));
@@ -31,12 +29,13 @@ int main(int argc, char* argv[])
       xbt_die("Invalid chord option '%s'", option.c_str());
     }
   }
+  int nb_keys = 1U << nb_bits;
+  XBT_DEBUG("Sets nb_keys to %d", nb_keys);
 
   e.load_platform(platform_file);
 
   /* Global initialization of the Chord simulation. */
-  nb_keys = 1U << nb_bits;
-  XBT_DEBUG("Sets nb_keys to %d", nb_keys);
+  Node::set_parameters(nb_bits, nb_keys, timeout);
 
   e.register_actor<Node>("node");
   e.load_deployment(deployment_file);

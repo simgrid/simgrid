@@ -23,7 +23,7 @@ namespace sg4 = simgrid::s4u;
  * @param end upper bound
  * @return true if id in in [start, end]
  */
-static bool is_in_interval(int id, int start, int end)
+bool Node::is_in_interval(int id, int start, int end)
 {
   int i = id % nb_keys;
   int s = start % nb_keys;
@@ -39,6 +39,13 @@ static bool is_in_interval(int id, int start, int end)
   }
 
   return i <= e;
+}
+
+void Node::set_parameters(int nb_bits, int nb_keys, int timeout)
+{
+  Node::nb_bits = nb_bits;
+  Node::nb_keys = nb_keys;
+  Node::timeout = timeout;
 }
 
 void ChordMessage::destroy(void* message)
