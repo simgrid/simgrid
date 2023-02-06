@@ -45,8 +45,8 @@ simgrid::config::Flag<bool> cfg_dbg_clean_atexit{
     "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.",
     true};
 
-int xbt_pagesize;
-int xbt_pagebits = 0;
+const int xbt_pagesize = static_cast<int>(sysconf(_SC_PAGESIZE));
+const int xbt_pagebits = static_cast<int>(log2(xbt_pagesize));
 
 /* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
  * This is crude and rather compiler-specific, unfortunately.
@@ -62,9 +62,6 @@ void sthread_disable()
 
 static void xbt_preinit()
 {
-  xbt_pagesize = static_cast<int>(sysconf(_SC_PAGESIZE));
-  xbt_pagebits = static_cast<int>(log2(xbt_pagesize));
-
   xbt_log_preinit();
   xbt_dict_preinit();
   atexit(xbt_postexit);
