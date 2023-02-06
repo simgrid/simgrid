@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <queue>
+#include <set>
 #include <string_view>
 
 /* TODO: many method declared in this module are not implemented */
@@ -15,20 +16,38 @@
 namespace simgrid::mc {
 
 class UnfoldingEvent;
-using EventSet = std::deque<UnfoldingEvent*>;
+class Configuration;
 
-class EvtSetTools {
+class EventSet {
+private:
+  std::set<UnfoldingEvent*> events_;
+
 public:
-  static bool contains(const EventSet& events, const UnfoldingEvent* e);
-  static UnfoldingEvent* find(const EventSet& events, const UnfoldingEvent* e);
-  static void subtract(EventSet& events, EventSet const& otherSet);
-  static bool depends(const EventSet& events, const EventSet& otherSet);
-  static bool isEmptyIntersection(EventSet evtS1, EventSet evtS2);
-  static EventSet makeUnion(const EventSet& s1, const EventSet& s2);
-  static void pushBack(EventSet& events, UnfoldingEvent* e);
-  static void remove(EventSet& events, UnfoldingEvent* e);
-  static EventSet minus(EventSet events, UnfoldingEvent* e);
-  static EventSet plus(EventSet events, UnfoldingEvent* e);
+  EventSet()                           = default;
+  EventSet(const EventSet&)            = default;
+  EventSet& operator=(EventSet const&) = default;
+  EventSet(EventSet&&)                 = default;
+
+  void remove(UnfoldingEvent* e);
+  void subtract(const EventSet& other);
+  EventSet subtracting(const EventSet& e);
+  EventSet subtracting(const UnfoldingEvent* e);
+
+  void insert(UnfoldingEvent* e);
+  void form_union(const EventSet&);
+  EventSet make_union(const EventSet&) const;
+  EventSet make_union(const UnfoldingEvent* e) const;
+
+  bool contains(const UnfoldingEvent* e) const;
+
+  // TODO: What is this used for?
+  UnfoldingEvent* find(const UnfoldingEvent* e) const;
+
+  // TODO: What is this used for
+  bool depends(const EventSet& other) const;
+
+  // TODO: What is this used for
+  bool is_empty_intersection(EventSet evtS) const;
 };
 
 struct s_evset_in_t {
@@ -39,29 +58,31 @@ struct s_evset_in_t {
 
 class Configuration {
 public:
+  Configuration()                                = default;
+  Configuration(const Configuration&)            = default;
+  Configuration& operator=(Configuration const&) = default;
+  Configuration(Configuration&&)                 = default;
+
   EventSet events_;
   EventSet maxEvent;         // Events recently added to events_
   EventSet actorMaxEvent;    // maximal events of the actors in current configuration
   UnfoldingEvent* lastEvent; // The last added event
 
   Configuration plus_config(UnfoldingEvent*) const;
+
   void createEvts(Configuration C, EventSet& result, const std::string& trans_tag, s_evset_in_t ev_sets, bool chk,
                   UnfoldingEvent* immPreEvt);
+
   void updateMaxEvent(UnfoldingEvent*);         // update maximal events of the configuration and actors
   UnfoldingEvent* findActorMaxEvt(int actorId); // find maximal event of a Actor whose id = actorId
 
   UnfoldingEvent* findTestedComm(const UnfoldingEvent* testEvt); // find comm tested by action testTrans
-
-  Configuration()                     = default;
-  Configuration(const Configuration&) = default;
-  Configuration& operator=(Configuration const&) = default;
-  Configuration(Configuration&&)                 = default;
 };
 
 class UnfoldingEvent {
 public:
   UnfoldingEvent(unsigned int nb_events, std::string const& trans_tag, EventSet const& causes, int sid = -1);
-  UnfoldingEvent(const UnfoldingEvent&) = default;
+  UnfoldingEvent(const UnfoldingEvent&)            = default;
   UnfoldingEvent& operator=(UnfoldingEvent const&) = default;
   UnfoldingEvent(UnfoldingEvent&&)                 = default;
 

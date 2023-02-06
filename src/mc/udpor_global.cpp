@@ -11,23 +11,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor_global, mc, "udpor_global");
 
 namespace simgrid::mc {
 
-EventSet EvtSetTools::makeUnion(const EventSet& s1, const EventSet& s2)
-{
-  EventSet res = s1;
-  for (auto evt : s2)
-    EvtSetTools::pushBack(res, evt);
-  return res;
-}
-
-void EvtSetTools::pushBack(EventSet& events, UnfoldingEvent* e)
-{
-  if (not EvtSetTools::contains(events, e))
-    events.push_back(e);
-}
-
-bool EvtSetTools::contains(const EventSet& events, const UnfoldingEvent* e)
-{
-  return std::any_of(events.begin(), events.end(), [e](const UnfoldingEvent* evt) { return *evt == *e; });
-}
+// TODO: Implement methods on EventSet as appropriate
 
 } // namespace simgrid::mc
