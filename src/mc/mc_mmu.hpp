@@ -6,17 +6,9 @@
 #ifndef SIMGRID_MC_MMU_HPP
 #define SIMGRID_MC_MMU_HPP
 
+#include "xbt/misc.h"
 #include <cstdint>
 #include <utility>
-
-#ifndef XBT_ALWAYS_INLINE
-#define XBT_ALWAYS_INLINE inline __attribute__((always_inline))
-#endif
-
-/** Size of a memory page for the current system. */
-extern "C" int xbt_pagesize;
-/** Number of bits of addresses inside a given page, log2(xbt_pagesize). */
-extern "C" int xbt_pagebits;
 
 namespace simgrid::mc::mmu {
 // TODO, do not depend on xbt_pagesize/xbt_pagebits but our own chunk size
