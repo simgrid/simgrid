@@ -13,7 +13,7 @@
 
 #include <optional>
 
-namespace simgrid::mc {
+namespace simgrid::mc::udpor {
 
 /**
  * @brief Performs exploration of a concurrent system via the
@@ -128,6 +128,6 @@ private:
    */
   void clean_up_explore(const UnfoldingEvent* e, const EventSet& C, const EventSet& D);
 };
-} // namespace simgrid::mc
+} // namespace simgrid::mc::udpor
 
 #endif

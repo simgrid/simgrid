@@ -9,8 +9,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor_global, mc, "udpor_global");
 
-namespace simgrid::mc {
+namespace simgrid::mc::udpor {
 
 // TODO: Implement methods on EventSet as appropriate
 
-} // namespace simgrid::mc
+} // namespace simgrid::mc::udpor

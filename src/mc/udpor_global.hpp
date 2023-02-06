@@ -15,7 +15,7 @@
 
 /* TODO: many method declared in this module are not implemented */
 
-namespace simgrid::mc {
+namespace simgrid::mc::udpor {
 
 class UnfoldingEvent;
 class Configuration;
@@ -135,5 +135,5 @@ public:
   Handle record_state(const std::unique_ptr<State>&&);
 };
 
-} // namespace simgrid::mc
+} // namespace simgrid::mc::udpor
 #endif

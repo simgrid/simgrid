@@ -8,7 +8,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor, mc, "Logging specific to MC safety verification ");
 
-namespace simgrid::mc {
+namespace simgrid::mc::udpor {
 
 UdporChecker::UdporChecker(const std::vector<char*>& args) : Exploration(args)
 {
@@ -166,9 +166,13 @@ std::vector<std::string> UdporChecker::get_textual_trace()
   return trace;
 }
 
+} // namespace simgrid::mc::udpor
+
+namespace simgrid::mc {
+
 Exploration* create_udpor_checker(const std::vector<char*>& args)
 {
-  return new UdporChecker(args);
+  return new simgrid::mc::udpor::UdporChecker(args);
 }
 
 } // namespace simgrid::mc
