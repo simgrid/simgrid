@@ -6,6 +6,8 @@
 #ifndef SIMGRID_MC_UDPOR_GLOBAL_HPP
 #define SIMGRID_MC_UDPOR_GLOBAL_HPP
 
+#include "src/mc/api/State.hpp"
+
 #include <iostream>
 #include <queue>
 #include <set>
@@ -25,20 +27,27 @@ private:
 public:
   EventSet()                           = default;
   EventSet(const EventSet&)            = default;
-  EventSet& operator=(EventSet const&) = default;
+  EventSet& operator=(const EventSet&) = default;
   EventSet(EventSet&&)                 = default;
+  EventSet(const Configuration&);
 
   void remove(UnfoldingEvent* e);
   void subtract(const EventSet& other);
-  EventSet subtracting(const EventSet& e);
-  EventSet subtracting(const UnfoldingEvent* e);
+  void subtract(const Configuration& other);
+  EventSet subtracting(const EventSet& e) const;
+  EventSet subtracting(const UnfoldingEvent* e) const;
+  EventSet subtracting(const Configuration* e) const;
 
   void insert(UnfoldingEvent* e);
   void form_union(const EventSet&);
-  EventSet make_union(const EventSet&) const;
+  void form_union(const Configuration&);
   EventSet make_union(const UnfoldingEvent* e) const;
+  EventSet make_union(const EventSet&) const;
+  EventSet make_union(const Configuration& e) const;
 
+  bool empty() const;
   bool contains(const UnfoldingEvent* e) const;
+  bool is_subset_of(const EventSet& other) const;
 
   // TODO: What is this used for?
   UnfoldingEvent* find(const UnfoldingEvent* e) const;
@@ -86,7 +95,7 @@ public:
   UnfoldingEvent& operator=(UnfoldingEvent const&) = default;
   UnfoldingEvent(UnfoldingEvent&&)                 = default;
 
-  EventSet getHistory() const;
+  EventSet get_history() const;
 
   bool isConflict(UnfoldingEvent* event, UnfoldingEvent* otherEvent) const;
   bool concernSameComm(const UnfoldingEvent* event, const UnfoldingEvent* otherEvent) const;
@@ -115,5 +124,15 @@ private:
   bool transition_is_ISend(const UnfoldingEvent* testedEvt, const UnfoldingEvent* SdRcEvt) const;
   bool check_tr_concern_same_comm(bool& chk1, bool& chk2, UnfoldingEvent* evt1, UnfoldingEvent* evt2) const;
 };
+
+class StateManager {
+private:
+  using Handle = uint64_t;
+  std::map<Handle, std::unique_ptr<State>> state_map_;
+
+public:
+  Handle record_state(std::unique_ptr<State>&&);
+};
+
 } // namespace simgrid::mc
 #endif
