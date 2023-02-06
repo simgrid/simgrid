@@ -31,7 +31,7 @@ public:
   EventSet(EventSet&&)                 = default;
   EventSet(const Configuration&);
 
-  void remove(UnfoldingEvent* e);
+  void remove(const UnfoldingEvent* e);
   void subtract(const EventSet& other);
   void subtract(const Configuration& other);
   EventSet subtracting(const EventSet& e) const;
@@ -45,6 +45,7 @@ public:
   EventSet make_union(const EventSet&) const;
   EventSet make_union(const Configuration& e) const;
 
+  size_t size() const;
   bool empty() const;
   bool contains(const UnfoldingEvent* e) const;
   bool is_subset_of(const EventSet& other) const;
@@ -131,7 +132,7 @@ private:
   std::map<Handle, std::unique_ptr<State>> state_map_;
 
 public:
-  Handle record_state(std::unique_ptr<State>&&);
+  Handle record_state(const std::unique_ptr<State>&&);
 };
 
 } // namespace simgrid::mc
