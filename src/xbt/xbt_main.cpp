@@ -53,11 +53,13 @@ const int xbt_pagebits = static_cast<int>(log2(xbt_pagesize));
  */
 static void xbt_preinit() XBT_ATTRIB_CONSTRUCTOR(200);
 static void xbt_postexit();
-void sthread_enable()
+XBT_ATTRIB_NOINLINE void sthread_enable()
 { // These symbols are used from ContextSwapped in any case, but they are only useful
+  asm("");
 }
-void sthread_disable()
+XBT_ATTRIB_NOINLINE void sthread_disable()
 { //  when libsthread is LD_PRELOADED. In this case, sthread's implem gets used instead.
+  asm("");
 }
 
 static void xbt_preinit()

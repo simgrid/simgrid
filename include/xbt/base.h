@@ -64,6 +64,8 @@
 #  define XBT_ATTRIB_DESTRUCTOR(prio) __attribute__((__destructor__))
 #endif
 
+#define XBT_ATTRIB_NOINLINE __attribute__((noinline))
+
 #if defined(__GNUC__)
 #define XBT_ALWAYS_INLINE inline __attribute__((always_inline))
 #else
