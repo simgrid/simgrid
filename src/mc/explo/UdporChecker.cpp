@@ -28,23 +28,17 @@ void UdporChecker::run()
   Configuration C;
   EventSet prev_exC;
 
-  /**
-   * Maintains the mapping between handles referenced by events in
-   * the current state of the unfolding
-   */
-  StateManager state_manager_;
-
-  const auto initial_state    = std::make_unique<State>(get_remote_app());
+  const auto initial_state    = get_current_state();
   const auto initial_state_id = state_manager_.record_state(std::move(initial_state));
   const auto root_event       = std::make_unique<UnfoldingEvent>(-1, "", EventSet(), initial_state_id);
-  explore(std::move(C), {EventSet()}, std::move(D), std::move(A), root_event.get(), std::move(prev_exC));
+  explore(std::move(C), std::move(A), std::move(D), {EventSet()}, root_event.get(), std::move(prev_exC));
 }
 
-void UdporChecker::explore(Configuration C, std::list<EventSet> max_evt_history, EventSet D, EventSet A,
+void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::list<EventSet> max_evt_history,
                            UnfoldingEvent* cur_evt, EventSet prev_exC)
 {
   // Perform the incremental computation of exC
-  auto [exC, enC] = this->extend(C, max_evt_history, *cur_evt, prev_exC);
+  auto [exC, enC] = compute_extension(C, max_evt_history, *cur_evt, prev_exC);
 
   // If enC is a subset of D, intuitively
   // there aren't any enabled transitions
@@ -53,8 +47,7 @@ void UdporChecker::explore(Configuration C, std::list<EventSet> max_evt_history,
   // "sleep-set blocked" trace.
   if (enC.is_subset_of(D)) {
 
-    // Log traces
-    if (C.events_.size() > 0) {
+    if (C.get_events().size() > 0) {
 
       // g_var::nb_traces++;
 
@@ -66,9 +59,9 @@ void UdporChecker::explore(Configuration C, std::list<EventSet> max_evt_history,
 
     // When `en(C)` is empty, intuitively this means that there
     // are no enabled transitions that can be executed from the
-    // state reached by `C` (denoted `state(C)`) (i.e. by some
+    // state reached by `C` (denoted `state(C)`), i.e. by some
     // execution of the transitions in C obeying the causality
-    // relation). Hence, it is at this point we should check for a deadlock
+    // relation. Here, then, we would be in a deadlock.
     if (enC.empty()) {
       get_remote_app().check_deadlock();
     }
@@ -76,58 +69,56 @@ void UdporChecker::explore(Configuration C, std::list<EventSet> max_evt_history,
     return;
   }
 
-  UnfoldingEvent* e = this->select_next_unfolding_event(A, enC);
-  if (e == nullptr) {
-    XBT_ERROR("\n\n****** CRITICAL ERROR ****** \n"
-              "UDPOR guarantees that an event will be chosen here, yet no events were actually chosen...\n"
-              "******************");
-    DIE_IMPOSSIBLE;
-  }
-
   // TODO: Add verbose logging about which event is being explored
 
-  // TODO: Execute the transition associated with the event
-  // and map the new state
+  observe_unfolding_event(*cur_evt);
+  const auto next_state_id = record_newly_visited_state();
 
-  // const auto cur_state_id = cur_evt->get_state_id();
-  // auto curEv_StateId = currentEvt->get_state_id();
-  // auto nextState_id  = App::app_side_->execute_transition(curEv_StateId, e->get_transition_tag());
-  // e->set_state_id(nextState_id);
+  UnfoldingEvent* e = select_next_unfolding_event(A, enC);
+  xbt_assert(e != nullptr, "UDPOR guarantees that an event will be chosen at each point in"
+                           "the search, yet no events were actually chosen");
+  e->set_state_id(next_state_id);
+
+  // TODO: Clean up configuration code before moving into the actual
+  // implementations of everything
 
   // Configuration is the same + event e
-  // C1 = C + {e}
-  Configuration C1 = C;
-  C1.events_.insert(e);
-  C1.updateMaxEvent(e);
+  // Ce = C + {e}
+  Configuration Ce = C;
+  Ce.add_event(e);
 
-  max_evt_history.push_back(C1.maxEvent);
-
-  // A <-- A \ {e}, ex(C) <-- ex(C) \ {e}
+  max_evt_history.push_back(Ce.get_maxmimal_events());
   A.remove(e);
   exC.remove(e);
 
   // Explore(C + {e}, D, A \ {e})
-  this->explore(C1, max_evt_history, D, A, e, exC);
+  explore(Ce, D, std::move(A), max_evt_history, e, std::move(exC));
 
   // D <-- D + {e}
   D.insert(e);
 
   // TODO: Determine a value of K to use or don't use it at all
   constexpr unsigned K = 10;
-  auto J               = this->compute_partial_alternative(D, C, K);
+  auto J               = compute_partial_alternative(D, C, K);
   if (!J.empty()) {
-    J.subtract(C.events_);
+    J.subtract(C.get_events());
     max_evt_history.pop_back();
-    explore(C, max_evt_history, D, J, cur_evt, prev_exC);
+
+    // Explore(C, D + {e}, J \ C)
+    explore(C, D, std::move(J), std::move(max_evt_history), cur_evt, std::move(prev_exC));
   }
 
   // D <-- D - {e}
   D.remove(e);
-  this->clean_up_explore(e, C, D);
+
+  // Remove(e, C, D)
+  clean_up_explore(e, C, D);
 }
 
-std::tuple<EventSet, EventSet> UdporChecker::extend(const Configuration& C, const std::list<EventSet>& max_evt_history,
-                                                    const UnfoldingEvent& cur_event, const EventSet& prev_exC) const
+std::tuple<EventSet, EventSet> UdporChecker::compute_extension(const Configuration& C,
+                                                               const std::list<EventSet>& max_evt_history,
+                                                               const UnfoldingEvent& cur_event,
+                                                               const EventSet& prev_exC) const
 {
   // exC.remove(cur_event);
 
@@ -137,19 +128,53 @@ std::tuple<EventSet, EventSet> UdporChecker::extend(const Configuration& C, cons
   return std::tuple<EventSet, EventSet>();
 }
 
+State& UdporChecker::get_state_referenced_by(const UnfoldingEvent& event)
+{
+  const auto state_id      = event.get_state_id();
+  const auto wrapped_state = this->state_manager_.get_state(state_id);
+  xbt_assert(wrapped_state != std::nullopt,
+             "\n\n****** FATAL ERROR ******\n"
+             "To each UDPOR event corresponds a state,"
+             "but state %lu does not exist\n"
+             "******************\n\n",
+             state_id);
+  return wrapped_state.value().get();
+}
+
+void UdporChecker::observe_unfolding_event(const UnfoldingEvent& event)
+{
+  auto& state            = this->get_state_referenced_by(event);
+  const aid_t next_actor = state.next_transition();
+  xbt_assert(next_actor >= 0, "\n\n****** FATAL ERROR ******\n"
+                              "In reaching this execution path, UDPOR ensures that at least one\n"
+                              "one transition of the state of an visited event is enabled, yet no\n"
+                              "state was actually enabled");
+  state.execute_next(next_actor);
+}
+
+StateHandle UdporChecker::record_newly_visited_state()
+{
+  const auto next_state    = this->get_current_state();
+  const auto next_state_id = this->state_manager_.record_state(std::move(next_state));
+
+  // In UDPOR, we care about all enabled transitions in a given state
+  next_state->mark_all_enabled_todo();
+  return next_state_id;
+}
+
 UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& A, const EventSet& enC)
 {
   // TODO: Actually select an event here
   return nullptr;
 }
 
-EventSet UdporChecker::compute_partial_alternative(const EventSet& D, const EventSet& C, const unsigned k) const
+EventSet UdporChecker::compute_partial_alternative(const EventSet& D, const Configuration& C, const unsigned k) const
 {
   // TODO: Compute k-partial alternatives using [2]
   return EventSet();
 }
 
-void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const EventSet& C, const EventSet& D)
+void UdporChecker::clean_up_explore(const UnfoldingEvent* e, const Configuration& C, const EventSet& D)
 {
   // TODO: Perform clean up here
 }

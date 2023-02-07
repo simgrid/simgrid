@@ -35,6 +35,8 @@ public:
   RecordTrace get_record_trace() override;
   std::vector<std::string> get_textual_trace() override;
 
+  inline std::unique_ptr<State> get_current_state() { return std::make_unique<State>(get_remote_app()); }
+
 private:
   /**
    * The total number of events created whilst exploring the unfolding
@@ -68,15 +70,21 @@ private:
    */
   EventSet G;
 
+  /**
+   * Maintains the mapping between handles referenced by events in
+   * the current state of the unfolding
+   */
+  StateManager state_manager_;
+
 private:
   /**
    * @brief Explores the unfolding of the concurrent system
-   * represented by the model checker instance
-   * "model_checker"
+   * represented by the ModelChecker instance "mcmodel_checker"
    *
-   * TODO: Explain what this means here
+   * This function performs the actual search following the
+   * UDPOR algorithm according to [1].
    */
-  void explore(Configuration C, std::list<EventSet> max_evt_history, EventSet D, EventSet A, UnfoldingEvent* cur_event,
+  void explore(Configuration C, EventSet D, EventSet A, std::list<EventSet> max_evt_history, UnfoldingEvent* cur_event,
                EventSet prev_exC);
 
   /**
@@ -104,8 +112,15 @@ private:
    * the configuration `C' := C - {cur_event}`
    * @returns a tuple containing the pair of sets `ex(C)` and `en(C)` respectively
    */
-  std::tuple<EventSet, EventSet> extend(const Configuration& C, const std::list<EventSet>& max_evt_history,
-                                        const UnfoldingEvent& cur_event, const EventSet& prev_exC) const;
+  std::tuple<EventSet, EventSet> compute_extension(const Configuration& C, const std::list<EventSet>& max_evt_history,
+                                                   const UnfoldingEvent& cur_event, const EventSet& prev_exC) const;
+
+  /**
+   *
+   */
+  void observe_unfolding_event(const UnfoldingEvent& event);
+  State& get_state_referenced_by(const UnfoldingEvent& event);
+  StateHandle record_newly_visited_state();
 
   /**
    * @brief Identifies the next event from the unfolding of the concurrent system
@@ -121,12 +136,15 @@ private:
    */
   UnfoldingEvent* select_next_unfolding_event(const EventSet& A, const EventSet& enC);
 
-  EventSet compute_partial_alternative(const EventSet& D, const EventSet& C, const unsigned k) const;
+  /**
+   *
+   */
+  EventSet compute_partial_alternative(const EventSet& D, const Configuration& C, const unsigned k) const;
 
   /**
    *
    */
-  void clean_up_explore(const UnfoldingEvent* e, const EventSet& C, const EventSet& D);
+  void clean_up_explore(const UnfoldingEvent* e, const Configuration& C, const EventSet& D);
 };
 } // namespace simgrid::mc::udpor
 
