@@ -104,14 +104,12 @@ endif()
 
 # Do not leak the current directory into the binaries
 if(CMAKE_COMPILER_IS_GNUCC AND NOT enable_coverage)
-  execute_process(COMMAND realpath --relative-to=${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR}
-    RESULT_VARIABLE RESULT OUTPUT_VARIABLE RELATIVE_SOURCE_DIR ERROR_QUIET OUTPUT_STRIP_TRAILING_WHITESPACE)
-  if(RESULT EQUAL 0)
-    message(STATUS "Relative source directory is \"${RELATIVE_SOURCE_DIR}\".")
-  else()
-    message(WARNING "Failed to find relative source directory. Using \".\".")
-    set(RELATIVE_SOURCE_DIR ".")
+  if (CMAKE_VERSION VERSION_LESS "3.20")
+    file(RELATIVE_PATH RELATIVE_SOURCE_DIR ${CMAKE_BINARY_DIR} ${CMAKE_SOURCE_DIR})
+  else() # cmake >= 3.20
+    cmake_path(RELATIVE_PATH CMAKE_SOURCE_DIR BASE_DIRECTORY ${CMAKE_BINARY_DIR} OUTPUT_VARIABLE RELATIVE_SOURCE_DIR)
   endif()
+  message(STATUS "Relative source directory is \"${RELATIVE_SOURCE_DIR}\".")
   if (CMAKE_C_COMPILER_VERSION VERSION_LESS "8.0")
     set(optCFLAGS "${optCFLAGS} -fdebug-prefix-map=\"${CMAKE_SOURCE_DIR}=${RELATIVE_SOURCE_DIR}\"")
   else()
