@@ -28,10 +28,12 @@ void UdporChecker::run()
   Configuration C;
   EventSet prev_exC;
 
-  const auto initial_state    = get_current_state();
+  auto initial_state          = get_current_state();
   const auto initial_state_id = state_manager_.record_state(std::move(initial_state));
   const auto root_event       = std::make_unique<UnfoldingEvent>(-1, "", EventSet(), initial_state_id);
   explore(std::move(C), std::move(A), std::move(D), {EventSet()}, root_event.get(), std::move(prev_exC));
+
+  XBT_INFO("UDPOR exploration terminated -- model checking completed");
 }
 
 void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::list<EventSet> max_evt_history,
@@ -154,7 +156,7 @@ void UdporChecker::observe_unfolding_event(const UnfoldingEvent& event)
 
 StateHandle UdporChecker::record_newly_visited_state()
 {
-  const auto next_state    = this->get_current_state();
+  auto next_state          = this->get_current_state();
   const auto next_state_id = this->state_manager_.record_state(std::move(next_state));
 
   // In UDPOR, we care about all enabled transitions in a given state
@@ -164,7 +166,15 @@ StateHandle UdporChecker::record_newly_visited_state()
 
 UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& A, const EventSet& enC)
 {
-  // TODO: Actually select an event here
+  if (!enC.empty()) {
+    return *(enC.begin());
+  }
+
+  for (const auto& event : A) {
+    if (enC.contains(event)) {
+      return event;
+    }
+  }
   return nullptr;
 }
 

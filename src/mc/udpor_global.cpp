@@ -97,7 +97,7 @@ void Configuration::add_event(UnfoldingEvent* e)
 {
   this->events_.insert(e);
 
-  // Re-compute the maxmimal events
+  // TODO: Re-compute the maxmimal events
 }
 
 UnfoldingEvent::UnfoldingEvent(unsigned int nb_events, std::string const& trans_tag, EventSet const& causes,
@@ -106,31 +106,28 @@ UnfoldingEvent::UnfoldingEvent(unsigned int nb_events, std::string const& trans_
   // TODO: Implement this
 }
 
-StateManager::Handle StateManager::record_state(const std::unique_ptr<State>&& state)
+StateManager::Handle StateManager::record_state(std::unique_ptr<State> state)
 {
-  // // TODO: Throw an error perhaps if the state is nullptr?
+  if (state.get() == nullptr) {
+    throw std::invalid_argument("Expected a newly-allocated State but got NULL instead");
+  }
 
-  // // std::map<int, std::unique_ptr<int>> a;
-  // // auto test = std::make_unique<int>(10);
-  // // std::move(state);
-  // // // const auto&& ab = std::move(test);
-  // // a.insert({1, test});
+  const auto integer_handle = this->current_handle_;
+  this->state_map_.insert({integer_handle, std::move(state)});
 
-  // const auto&& state2 = std::move(state);
-
-  // const auto integer_handle = this->current_handle_;
-  // this->state_map_.insert(std::make_pair(std::move(integer_handle), state2));
-
-  // // Increment the current handle
-  // // TODO: Check for state handle overflow!
-  // this->current_handle_++;
-  return 0;
+  // TODO: Check for state handle overflow!
+  this->current_handle_++;
+  return integer_handle;
 }
 
 std::optional<std::reference_wrapper<State>> StateManager::get_state(StateManager::Handle handle)
 {
-  // TODO: Return the actual state based on the handle provided
-  return std::nullopt;
+  auto state = this->state_map_.find(handle);
+  if (state == this->state_map_.end()) {
+    return std::nullopt;
+  }
+  auto& state_ref = *state->second.get();
+  return std::optional<std::reference_wrapper<State>>{state_ref};
 }
 
 } // namespace simgrid::mc::udpor

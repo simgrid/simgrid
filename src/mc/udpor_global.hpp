@@ -33,8 +33,9 @@ public:
   EventSet& operator=(const EventSet&) = default;
   EventSet& operator=(EventSet&&)      = default;
   EventSet(EventSet&&)                 = default;
-  // EventSet(const Configuration&);
-  // EventSet(Configuration&&);
+
+  inline auto begin() const { return this->events_.begin(); }
+  inline auto end() const { return this->events_.end(); }
 
   void remove(UnfoldingEvent* e);
   void subtract(const EventSet& other);
@@ -155,10 +156,10 @@ private:
   using Handle = StateHandle;
 
   Handle current_handle_ = 0ul;
-  std::map<Handle, std::unique_ptr<State>> state_map_;
+  std::unordered_map<Handle, std::unique_ptr<State>> state_map_;
 
 public:
-  Handle record_state(const std::unique_ptr<State>&&);
+  Handle record_state(std::unique_ptr<State>);
   std::optional<std::reference_wrapper<State>> get_state(Handle);
 };
 
