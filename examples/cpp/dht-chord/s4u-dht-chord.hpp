@@ -46,20 +46,20 @@ public:
 };
 
 class Node {
-  inline static int nb_bits;
-  inline static int nb_keys;
-  inline static int timeout;
+  inline static int nb_bits_;
+  inline static int nb_keys_;
+  inline static int timeout_;
 
   int known_id_      = -1;
   double start_time_ = -1;
   double deadline_   = -1;
-  bool joined        = false;
+  bool joined_       = false;
   int id_;                           // my id
   int pred_id_ = -1;                 // predecessor id
-  simgrid::xbt::random::XbtRandom random; // random number generator for this node
-  sg4::Mailbox* mailbox_;                 // my mailbox
+  simgrid::xbt::random::XbtRandom random_; // random number generator for this node
+  sg4::Mailbox* mailbox_;                  // my mailbox
   std::vector<int> fingers_;         // finger table,(fingers[0] is my successor)
-  int next_finger_to_fix;            // index of the next finger to fix in fix_fingers()
+  int next_finger_to_fix_;           // index of the next finger to fix in fix_fingers()
 
   static bool is_in_interval(int id, int start, int end);
 
