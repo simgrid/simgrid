@@ -15,7 +15,7 @@ static void sender(sg4::Mailbox* mailbox)
   sg4::CommPtr comm        = mailbox->put_init(computation_amount, 7e6);
 
   exec->set_name("exec on sender")->add_successor(comm)->start();
-  comm->set_name("comm to receiver")->vetoable_start();
+  comm->set_name("comm to receiver")->start();
   exec->wait();
   comm->wait();
 }
@@ -28,7 +28,7 @@ static void receiver(sg4::Mailbox* mailbox)
   sg4::CommPtr comm          = mailbox->get_init()->set_dst_data((void**)&received, sizeof(double));
 
   comm->set_name("comm from sender")->add_successor(exec)->start();
-  exec->set_name("exec on receiver")->vetoable_start();
+  exec->set_name("exec on receiver")->start();
 
   comm->wait();
   exec->wait();

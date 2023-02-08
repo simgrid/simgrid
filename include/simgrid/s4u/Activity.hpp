@@ -63,7 +63,7 @@ protected:
       XBT_CVERB(s4u_activity, "Remove a dependency from '%s' on '%s'", get_cname(), b->get_cname());
       b->dependencies_.erase(this);
       if (b->dependencies_solved()) {
-        b->vetoable_start();
+        b->start();
       }
       successors_.pop_back();
     }
@@ -118,12 +118,16 @@ public:
   /*! Add a callback fired when the activity is resumed after being suspended */
   static void on_resumed_cb(const std::function<void(Activity const&)>& cb) { on_resumed.connect(cb); }
 
-  void vetoable_start()
+  XBT_ATTRIB_DEPRECATED_v334("All start() are vetoable now. Please use start() ") void vetoable_start()
+  {
+    start();
+  }
+  void start()
   {
     state_ = State::STARTING;
     if (dependencies_solved() && is_assigned()) {
       XBT_CVERB(s4u_activity, "'%s' is assigned to a resource and all dependencies are solved. Let's start", get_cname());
-      start();
+      do_start();
     } else {
       if (vetoed_activities_ != nullptr)
         vetoed_activities_->insert(this);
@@ -151,7 +155,7 @@ public:
    *
    * This function is optional: you can call wait() even if you didn't call start()
    */
-  virtual Activity* start() = 0;
+  virtual Activity* do_start() = 0;
   /** Tests whether the given activity is terminated yet. */
   virtual bool test();
   /*! take a vector s4u::ActivityPtr and return the rank of the first finished one (or -1 if none is done). */
@@ -269,10 +273,13 @@ public:
   {
     return get_data<void>();
   }
-
-  AnyActivity* vetoable_start()
+  XBT_ATTRIB_DEPRECATED_v334("All start() are vetoable now. Please use start() ") AnyActivity* vetoable_start()
   {
-    Activity::vetoable_start();
+    return start();
+  }
+  AnyActivity* start()
+  {
+    Activity::start();
     return static_cast<AnyActivity*>(this);
   }
 

@@ -42,7 +42,7 @@ ExecPtr Exec::init()
   return ExecPtr(static_cast<Exec*>(pimpl->get_iface()));
 }
 
-Exec* Exec::start()
+Exec* Exec::do_start()
 {
   kernel::actor::simcall_answered([this] {
     (*boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_))
@@ -180,8 +180,8 @@ ExecPtr Exec::set_host(Host* host)
       pimpl_.get(), [this, host] { boost::static_pointer_cast<kernel::activity::ExecImpl>(pimpl_)->set_host(host); });
 
   if (state_ == State::STARTING)
-  // Setting the host may allow to start the activity, let's try
-    vetoable_start();
+    // Setting the host may allow to start the activity, let's try
+    start();
 
   return this;
 }
@@ -198,7 +198,7 @@ ExecPtr Exec::set_hosts(const std::vector<Host*>& hosts)
 
   // Setting the host may allow to start the activity, let's try
   if (state_ == State::STARTING)
-     vetoable_start();
+     start();
 
   return this;
 }
@@ -213,7 +213,7 @@ ExecPtr Exec::unset_host()
 
     if (state_ == State::STARTED)
       cancel();
-    vetoable_start();
+    start();
 
     return this;
   }
@@ -287,7 +287,7 @@ double sg_exec_get_remaining_ratio(const_sg_exec_t exec)
 
 void sg_exec_start(sg_exec_t exec)
 {
-  exec->vetoable_start();
+  exec->start();
 }
 
 void sg_exec_cancel(sg_exec_t exec)

@@ -42,9 +42,9 @@ int main(int argc, char* argv[])
 
   // Set the parameters (the name is for logging purposes only)
   // + parent and child end after 1 second
-  parent->set_name("parent")->set_flops_amount(tremblay->get_speed())->vetoable_start();
-  transfer->set_name("transfer")->set_payload_size(125e6)->vetoable_start();
-  child->set_name("child")->set_flops_amount(jupiter->get_speed())->vetoable_start();
+  parent->set_name("parent")->set_flops_amount(tremblay->get_speed())->start();
+  transfer->set_name("transfer")->set_payload_size(125e6)->start();
+  child->set_name("child")->set_flops_amount(jupiter->get_speed())->start();
 
   // Schedule the different activities
   parent->set_host(tremblay);

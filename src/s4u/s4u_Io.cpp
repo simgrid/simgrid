@@ -58,7 +58,7 @@ IoPtr Io::set_source(Host* from, const Disk* from_disk)
   if (state_ == State::STARTING && remains_ <= 0)
     XBT_DEBUG("This IO has a size of 0 byte. It cannot start yet");
   else
-    vetoable_start();
+    start();
 
   return this;
 }
@@ -76,12 +76,12 @@ IoPtr Io::set_destination(Host* to, const Disk* to_disk)
   if (state_ == State::STARTING && remains_ <= 0)
     XBT_DEBUG("This IO has a size of 0 byte. It cannot start yet");
   else
-    vetoable_start();
+    start();
 
   return this;
 }
 
-Io* Io::start()
+Io* Io::do_start()
 {
   kernel::actor::simcall_answered(
       [this] { (*boost::static_pointer_cast<kernel::activity::IoImpl>(pimpl_)).set_name(get_name()).start(); });
@@ -111,7 +111,7 @@ IoPtr Io::set_disk(const_sg_disk_t disk)
 
   // Setting the disk may allow to start the activity, let's try
   if (state_ == State::STARTING)
-    vetoable_start();
+    start();
 
  return this;
 }

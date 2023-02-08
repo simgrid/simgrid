@@ -39,9 +39,9 @@ static void test()
 
   // Start the activities.
   bob_compute->start();
-  bob_write->vetoable_start();
-  carl_read->vetoable_start();
-  carl_compute->vetoable_start();
+  bob_write->start();
+  carl_read->start();
+  carl_compute->start();
 
   // wait for the completion of all activities
   while (not pending_activities.empty()) {

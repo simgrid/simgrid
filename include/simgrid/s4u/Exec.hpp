@@ -39,6 +39,7 @@ class XBT_PUBLIC Exec : public Activity_T<Exec> {
 
 protected:
   explicit Exec(kernel::activity::ExecImplPtr pimpl);
+  Exec* do_start() override;
 
   void reset() const;
 
@@ -53,7 +54,6 @@ public:
   static void on_start_cb(const std::function<void(Exec const&)>& cb) { on_start.connect(cb); }
 
   static ExecPtr init();
-  Exec* start() override;
 
   /*! take a vector of s4u::ExecPtr and return when one of them is finished.
    * The return value is the rank of the first finished ExecPtr. */

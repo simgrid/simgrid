@@ -25,11 +25,11 @@ int main(int argc, char** argv)
 
   auto host = e.host_by_name("cpu0");
   /* creation of the tasks and their dependencies */
-  simgrid::s4u::ExecPtr Init = simgrid::s4u::Exec::init()->set_name("Init")->set_flops_amount(0)->vetoable_start();
-  simgrid::s4u::CommPtr A = simgrid::s4u::Comm::sendto_init()->set_name("A")->set_payload_size(1e9)->vetoable_start();
-  simgrid::s4u::CommPtr B = simgrid::s4u::Comm::sendto_init()->set_name("B")->vetoable_start();
-  simgrid::s4u::ExecPtr C = simgrid::s4u::Exec::init()->set_name("C")->vetoable_start();
-  simgrid::s4u::CommPtr D = simgrid::s4u::Comm::sendto_init()->set_name("D")->set_payload_size(1e9)->vetoable_start();
+  simgrid::s4u::ExecPtr Init = simgrid::s4u::Exec::init()->set_name("Init")->set_flops_amount(0)->start();
+  simgrid::s4u::CommPtr A = simgrid::s4u::Comm::sendto_init()->set_name("A")->set_payload_size(1e9)->start();
+  simgrid::s4u::CommPtr B = simgrid::s4u::Comm::sendto_init()->set_name("B")->start();
+  simgrid::s4u::ExecPtr C = simgrid::s4u::Exec::init()->set_name("C")->start();
+  simgrid::s4u::CommPtr D = simgrid::s4u::Comm::sendto_init()->set_name("D")->set_payload_size(1e9)->start();
   std::vector<simgrid::s4u::ActivityPtr> activities = {Init, A, B, C, D};
 
   Init->add_successor(A);

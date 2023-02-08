@@ -52,7 +52,7 @@ void Activity::wait_until(double time_limit)
 Activity* Activity::wait_for(double timeout)
 {
   if (state_ == State::INITED)
-    vetoable_start();
+    start();
 
   if (state_ == State::FAILED) {
     if (dynamic_cast<Comm*>(this))
@@ -82,7 +82,7 @@ bool Activity::test()
     return true;
 
   if (state_ == State::INITED || state_ == State::STARTING)
-    this->vetoable_start();
+    this->start();
 
   kernel::actor::ActorImpl* issuer = kernel::actor::ActorImpl::self();
   kernel::actor::ActivityTestSimcall observer{issuer, pimpl_.get()};

@@ -2,6 +2,7 @@
 
 ! output sort
 $ ${bindir:=.}/s4u-io-dependent ${platfdir}/hosts_with_disks.xml --log=s4u_activity.t:verbose "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (1:bob@bob) 'bob compute' is assigned to a resource and all dependencies are solved. Let's start
 > [  1.000000] (1:bob@bob) 'bob write' is assigned to a resource and all dependencies are solved. Let's start
 > [  1.000000] (1:bob@bob) Remove a dependency from 'bob compute' on 'bob write'
 > [  1.000000] (1:bob@bob) Activity 'bob compute' is complete

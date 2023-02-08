@@ -134,7 +134,7 @@ public:
 template <typename T> CommPtr Mailbox::get_async(T** data)
 {
   CommPtr res = get_init()->set_dst_data(reinterpret_cast<void**>(data), sizeof(void*));
-  res->vetoable_start();
+  res->start();
   return res;
 }
 

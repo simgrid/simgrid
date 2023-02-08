@@ -29,6 +29,7 @@ class XBT_PUBLIC Io : public Activity_T<Io> {
 
 protected:
   explicit Io(kernel::activity::IoImplPtr pimpl);
+  Io* do_start() override;
 
 public:
   enum class OpType { READ, WRITE };
@@ -36,7 +37,6 @@ public:
   static void on_start_cb(const std::function<void(Io const&)>& cb) { on_start.connect(cb); }
 
   static IoPtr init();
-  Io* start() override;
   /*! take a vector of s4u::IoPtr and return when one of them is finished.
    * The return value is the rank of the first finished IoPtr. */
   static ssize_t wait_any(const std::vector<IoPtr>& ios) { return wait_any_for(ios, -1); }

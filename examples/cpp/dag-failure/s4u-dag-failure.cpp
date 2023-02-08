@@ -36,7 +36,7 @@ int main(int argc, char** argv)
 
   /* creation of a single Exec that will poorly fail when the workstation will stop */
   XBT_INFO("First test: sequential Exec activity");
-  sg4::ExecPtr exec = sg4::Exec::init()->set_name("Poor task")->set_flops_amount(2e10)->vetoable_start();
+  sg4::ExecPtr exec = sg4::Exec::init()->set_name("Poor task")->set_flops_amount(2e10)->start();
 
   XBT_INFO("Schedule Activity '%s' on 'Faulty Host'", exec->get_cname());
   exec->set_host(faulty);
@@ -44,7 +44,7 @@ int main(int argc, char** argv)
   /* Add a child Exec that depends on the Poor task' */
   sg4::ExecPtr child = sg4::Exec::init()->set_name("Child")->set_flops_amount(2e10)->set_host(safe);
   exec->add_successor(child);
-  child->vetoable_start();
+  child->start();
 
   XBT_INFO("Run the simulation");
   e.run();
@@ -57,7 +57,7 @@ int main(int argc, char** argv)
   e.run();
 
   XBT_INFO("Second test: parallel Exec activity");
-  exec = sg4::Exec::init()->set_name("Poor parallel task")->set_flops_amounts({2e10, 2e10})->vetoable_start();
+  exec = sg4::Exec::init()->set_name("Poor parallel task")->set_flops_amounts({2e10, 2e10})->start();
 
   XBT_INFO("Schedule Activity '%s' on 'Safe Host' and 'Faulty Host'", exec->get_cname());
   exec->set_hosts({safe, faulty});
@@ -65,7 +65,7 @@ int main(int argc, char** argv)
   /* Add a child Exec that depends on the Poor parallel task' */
   child = sg4::Exec::init()->set_name("Child")->set_flops_amount(2e10)->set_host(safe);
   exec->add_successor(child);
-  child->vetoable_start();
+  child->start();
 
   XBT_INFO("Run the simulation");
   e.run();

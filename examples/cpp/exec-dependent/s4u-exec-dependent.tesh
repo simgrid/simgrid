@@ -1,6 +1,8 @@
 #!/usr/bin/env tesh
 
 $ ${bindir:=.}/s4u-exec-dependent ${platfdir}/small_platform.xml --log=s4u_activity.t:verbose "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
+> [  0.000000] (1:worker@Fafard) 'parent 1' is assigned to a resource and all dependencies are solved. Let's start
+> [  0.000000] (1:worker@Fafard) 'parent 2' is assigned to a resource and all dependencies are solved. Let's start
 > [  0.000000] (1:worker@Fafard) Activity 'child' vetoed. Dependencies: NOT solved; Ressources: NOT assigned
 > [  2.000000] (1:worker@Fafard) Remove a dependency from 'parent 1' on 'child'
 > [  2.000000] (1:worker@Fafard) Exec 'parent 1' is complete
