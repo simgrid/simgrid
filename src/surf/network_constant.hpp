@@ -24,7 +24,7 @@ public:
 class NetworkConstantAction final : public NetworkAction {
 public:
   NetworkConstantAction(NetworkConstantModel* model_, s4u::Host& src, s4u::Host& dst, double size);
-  void update_remains_lazy(double now) override;
+  XBT_ATTRIB_NORETURN void update_remains_lazy(double now) override;
 };
 
 } // namespace simgrid::kernel::resource
