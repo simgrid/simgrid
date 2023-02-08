@@ -30,8 +30,8 @@ void MutexObserver::serialize(std::stringstream& stream) const
 }
 std::string MutexObserver::to_string() const
 {
-  return std::string(mc::Transition::to_c_str(type_)) + "(mutex_id: " + std::to_string(get_mutex()->get_id()) +
-         "owner:" + std::to_string(get_mutex()->get_owner()->get_pid()) + ")";
+  return std::string(mc::Transition::to_c_str(type_)) + "(mutex_id:" + std::to_string(get_mutex()->get_id()) +
+         " owner:" + std::to_string(get_mutex()->get_owner()->get_pid()) + ")";
 }
 
 bool MutexObserver::is_enabled()
@@ -52,7 +52,7 @@ void SemaphoreObserver::serialize(std::stringstream& stream) const
 }
 std::string SemaphoreObserver::to_string() const
 {
-  return std::string(mc::Transition::to_c_str(type_)) + "(sem_id: " + std::to_string(get_sem()->get_id()) + ")";
+  return std::string(mc::Transition::to_c_str(type_)) + "(sem_id:" + std::to_string(get_sem()->get_id()) + ")";
 }
 
 SemaphoreAcquisitionObserver::SemaphoreAcquisitionObserver(ActorImpl* actor, mc::Transition::Type type,
@@ -71,7 +71,7 @@ void SemaphoreAcquisitionObserver::serialize(std::stringstream& stream) const
 std::string SemaphoreAcquisitionObserver::to_string() const
 {
   return std::string(mc::Transition::to_c_str(type_)) +
-         "(sem_id: " + std::to_string(acquisition_->semaphore_->get_id()) + ' ' +
+         "(sem_id:" + std::to_string(acquisition_->semaphore_->get_id()) + ' ' +
          (acquisition_->granted_ ? "granted)" : "not granted)");
 }
 
@@ -94,7 +94,7 @@ void BarrierObserver::serialize(std::stringstream& stream) const
 std::string BarrierObserver::to_string() const
 {
   return std::string(mc::Transition::to_c_str(type_)) +
-         "(barrier_id: " + std::to_string(barrier_ != nullptr ? barrier_->get_id() : acquisition_->barrier_->get_id()) +
+         "(barrier_id:" + std::to_string(barrier_ != nullptr ? barrier_->get_id() : acquisition_->barrier_->get_id()) +
          ")";
 }
 bool BarrierObserver::is_enabled()
