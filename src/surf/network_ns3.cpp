@@ -262,16 +262,13 @@ static void routeCreation_cb(bool symmetrical, const simgrid::kernel::routing::N
     XBT_DEBUG("\tLink (%s) bw:%fbps lat:%fs", link->get_cname(), link->get_bandwidth(), link->get_latency());
 
     ns3_add_direct_route(src, dst, link->get_bandwidth(), link->get_latency(), link->get_sharing_policy());
-  } else {
-    static bool warned_about_long_routes = false;
-
-    if (not warned_about_long_routes)
-      XBT_WARN("Ignoring a route between %s and %s of length %zu: Only routes of length 1 are considered with ns-3.\n"
-               "WARNING: You can ignore this warning if your hosts can still communicate when only considering routes "
-               "of length 1.\n"
-               "WARNING: Remove long routes to avoid this harmless message; subsequent long routes will be silently "
-               "ignored.",
-               src->get_cname(), dst->get_cname(), link_list.size());
+  } else if (static bool warned_about_long_routes = false; not warned_about_long_routes) {
+    XBT_WARN("Ignoring a route between %s and %s of length %zu: Only routes of length 1 are considered with ns-3.\n"
+             "WARNING: You can ignore this warning if your hosts can still communicate when only considering routes "
+             "of length 1.\n"
+             "WARNING: Remove long routes to avoid this harmless message; subsequent long routes will be silently "
+             "ignored.",
+             src->get_cname(), dst->get_cname(), link_list.size());
     warned_about_long_routes = true;
   }
 }
