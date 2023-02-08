@@ -7,6 +7,7 @@
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MailboxImpl.hpp"
+#include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/mc/mc_config.hpp"
 
@@ -51,7 +52,8 @@ void ConditionWaitSimcall::serialize(std::stringstream& stream) const
 }
 std::string ConditionWaitSimcall::to_string() const
 {
-  THROW_UNIMPLEMENTED;
+  return "ConditionWait(cond_id:" + ptr_to_id<activity::ConditionVariableImpl const>(get_cond()) +
+         " mutex_id:" + std::to_string(get_mutex()->get_id()) + ")";
 }
 
 ActorJoinSimcall::ActorJoinSimcall(ActorImpl* actor, ActorImpl* other, double timeout)
