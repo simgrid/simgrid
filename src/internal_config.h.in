@@ -48,6 +48,7 @@
 /* Variables for the raw contexts (to select the right assembly code) */
 #cmakedefine01 SIMGRID_PROCESSOR_i686
 #cmakedefine01 SIMGRID_PROCESSOR_x86_64
+#cmakedefine01 SIMGRID_PROCESSOR_arm64
 
 /* Variables for the SysV contexts */
 @sg_makecontext_stack_addr@
