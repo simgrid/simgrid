@@ -9,10 +9,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 namespace sg4 = simgrid::s4u;
 
-std::string data;
-bool done = false;
-
-static void worker_fun(sg4::ConditionVariablePtr cv, sg4::MutexPtr mutex)
+static void worker_fun(sg4::ConditionVariablePtr cv, sg4::MutexPtr mutex, std::string& data, bool& done)
 {
   std::unique_lock lock(*mutex);
 
@@ -30,11 +27,14 @@ static void master_fun()
 {
   auto mutex  = sg4::Mutex::create();
   auto cv     = sg4::ConditionVariable::create();
-  data        = "Example data";
-  auto worker = sg4::Actor::create("worker", sg4::Host::by_name("Jupiter"), worker_fun, cv, mutex);
+  std::string data = "Example data";
+  bool done        = false;
+
+  auto worker = sg4::Actor::create("worker", sg4::Host::by_name("Jupiter"), worker_fun, cv, mutex, std::ref(data),
+                                   std::ref(done));
 
   // wait for the worker
-  cv->wait(std::unique_lock<sg4::Mutex>(*mutex), []() { return done; });
+  cv->wait(std::unique_lock<sg4::Mutex>(*mutex), [&done]() { return done; });
   XBT_INFO("data is now '%s'.", data.c_str());
 
   worker->join();
