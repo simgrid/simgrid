@@ -15,7 +15,6 @@
 /* ***** Whether to use `mmalloc` of the underlying malloc ***** */
 
 static int __malloc_use_mmalloc;
-int mmalloc_pagesize = 0;
 
 int malloc_use_mmalloc(void)
 {
@@ -127,7 +126,6 @@ XBT_ATTRIB_CONSTRUCTOR(101) static void mm_legacy_constructor()
     mm_real_calloc   = dlsym(RTLD_NEXT, "calloc");
 #endif
   }
-  mmalloc_pagesize = getpagesize();
 
   mm_initializing = 0;
   mm_initialized = 1;

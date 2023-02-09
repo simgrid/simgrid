@@ -31,7 +31,6 @@
     }                                                                                                                  \
   } while (0)
 
-XBT_PUBLIC_DATA int mmalloc_pagesize;
 XBT_PRIVATE xbt_mheap_t mmalloc_preinit(void);
 
 #define MMALLOC_MAGIC    "mmalloc"       /* Mapped file magic number */

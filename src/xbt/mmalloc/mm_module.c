@@ -141,9 +141,8 @@ void *xbt_mheap_destroy(xbt_mheap_t mdp)
 xbt_mheap_t mmalloc_preinit(void)
 {
   if (__mmalloc_default_mdp == NULL) {
-    if (!mmalloc_pagesize)
-      mmalloc_pagesize = getpagesize();
-    unsigned long mask    = ~((unsigned long)mmalloc_pagesize - 1);
+    unsigned long mmalloc_pagesize = (unsigned long)sysconf(_SC_PAGESIZE);
+    unsigned long mask             = ~(mmalloc_pagesize - 1);
     void* addr            = (void*)(((unsigned long)sbrk(0) + HEAP_OFFSET) & mask);
     __mmalloc_default_mdp = xbt_mheap_new(addr, XBT_MHEAP_OPTION_MEMSET);
   }

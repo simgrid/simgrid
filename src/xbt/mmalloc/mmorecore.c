@@ -22,7 +22,7 @@
 #define MAP_ANONYMOUS MAP_ANON
 #endif
 
-#define PAGE_ALIGN(addr) (void*)(((long)(addr) + mmalloc_pagesize - 1) & ~((long)mmalloc_pagesize - 1))
+#define PAGE_ALIGN(addr) (void*)(((unsigned long)(addr) + mmalloc_pagesize - 1) & ~(mmalloc_pagesize - 1))
 
 /** @brief Add memory to this heap
  *
@@ -47,9 +47,9 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
     return mdp->breakval;
   }
 
-  if (mmalloc_pagesize == 0) { // Not initialized yet
-    mmalloc_pagesize = (int)sysconf(_SC_PAGESIZE);
-  }
+  static unsigned long mmalloc_pagesize = 0;
+  if (!mmalloc_pagesize)
+    mmalloc_pagesize = (unsigned long)sysconf(_SC_PAGESIZE);
 
   if (size < 0) {
     /* We are deallocating memory.  If the amount requested would cause us to try to deallocate back past the base of
@@ -78,7 +78,7 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
 
     if (mapto == MAP_FAILED) {
       char buff[1024];
-      fprintf(stderr, "Internal error: mmap returned MAP_FAILED! pagesize:%d error: %s\n", mmalloc_pagesize,
+      fprintf(stderr, "Internal error: mmap returned MAP_FAILED! pagesize:%lu error: %s\n", mmalloc_pagesize,
               strerror(errno));
       snprintf(buff, 1024, "cat /proc/%d/maps", getpid());
       int status = system(buff);
