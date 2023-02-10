@@ -29,7 +29,7 @@ XBT_DECLARE_ENUM_CLASS(MessageType, NONE, INITIAL_ADDRESSES, CONTINUE, IGNORE_HE
                        FINALIZE_REPLY);
 } // namespace simgrid::mc
 
-constexpr unsigned MC_MESSAGE_LENGTH = 512;
+constexpr unsigned MC_MESSAGE_LENGTH                 = 512;
 constexpr unsigned SIMCALL_SERIALIZATION_BUFFER_SIZE = 2048;
 
 /** Basic structure for a MC message
@@ -104,12 +104,23 @@ struct s_mc_message_restore_t {
 struct s_mc_message_actors_status_answer_t {
   simgrid::mc::MessageType type;
   int count;
+  int transition_count; // The total number of transitions sent as a payload to the checker
 };
 struct s_mc_message_actors_status_one_t { // an array of `s_mc_message_actors_status_one_t[count]` is sent right after
-                                          // after a s_mc_message_actors_status_answer_t
+                                          // after a `s_mc_message_actors_status_answer_t`
   aid_t aid;
   bool enabled;
   int max_considered;
+
+  // The total number of transitions that are serialized and associated with this actor.
+  // Enforced to be either `0` or the same as `max_considered`
+  int n_transitions;
+};
+
+// Answer from an actor to the question "what are you about to run?"
+struct s_mc_message_simcall_probe_one_t { // an array of `s_mc_message_simcall_probe_one_t[n_transitions]
+                                          // is sent right after a `s_mc_message_actors_status_one_t`
+  std::array<char, SIMCALL_SERIALIZATION_BUFFER_SIZE> buffer;
 };
 
 #endif // __cplusplus

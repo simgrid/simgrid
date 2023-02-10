@@ -26,6 +26,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <memory>
+#include <numeric>
 #include <sys/ptrace.h>
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -154,24 +155,70 @@ void AppSide::handle_finalize(const s_mc_message_int_t* msg) const
 void AppSide::handle_actors_status() const
 {
   auto const& actor_list = kernel::EngineImpl::get_instance()->get_actor_list();
-  int count              = actor_list.size();
-  XBT_DEBUG("Serialize the actors to answer ACTORS_STATUS from the checker. %d actors to go.", count);
+  const int num_actors   = actor_list.size();
+  XBT_DEBUG("Serialize the actors to answer ACTORS_STATUS from the checker. %d actors to go.", num_actors);
 
-  struct s_mc_message_actors_status_answer_t answer {
-    MessageType::ACTORS_STATUS_REPLY, count
-  };
-  std::vector<s_mc_message_actors_status_one_t> status(count);
-  int i = 0;
+  std::vector<s_mc_message_actors_status_one_t> status(num_actors);
+  int i                 = 0;
+  int total_transitions = 0;
+
   for (auto const& [aid, actor] : actor_list) {
     status[i].aid            = aid;
     status[i].enabled        = mc::actor_is_enabled(actor);
     status[i].max_considered = actor->simcall_.observer_->get_max_consider();
+    status[i].n_transitions  = mc::actor_is_enabled(actor) ? status[i].max_considered : 0;
+    total_transitions += status[i].n_transitions;
     i++;
   }
+
+  struct s_mc_message_actors_status_answer_t answer {
+    MessageType::ACTORS_STATUS_REPLY, num_actors, total_transitions
+  };
+
   xbt_assert(channel_.send(answer) == 0, "Could not send ACTORS_STATUS_REPLY msg");
   if (answer.count > 0) {
     size_t size = status.size() * sizeof(s_mc_message_actors_status_one_t);
     xbt_assert(channel_.send(status.data(), size) == 0, "Could not send ACTORS_STATUS_REPLY data");
+  }
+
+  // Serialize each transition to describe what each actor is doing
+  if (total_transitions > 0) {
+    std::vector<s_mc_message_simcall_probe_one_t> probes(total_transitions);
+    auto probes_iter = probes.begin();
+
+    for (const auto& actor_status : status) {
+      if (not actor_status.enabled)
+        continue;
+
+      const auto& actor        = actor_list.at(actor_status.aid);
+      const int max_considered = actor_status.max_considered;
+
+      for (int times_considered = 0; times_considered < max_considered; times_considered++, probes_iter++) {
+        std::stringstream stream;
+        s_mc_message_simcall_probe_one_t& probe = *probes_iter;
+
+        if (actor->simcall_.observer_ != nullptr) {
+          actor->simcall_.observer_->prepare(times_considered);
+          actor->simcall_.observer_->serialize(stream);
+        } else {
+          stream << (short)mc::Transition::Type::UNKNOWN;
+        }
+
+        std::string str = stream.str();
+        xbt_assert(str.size() + 1 <= probe.buffer.size(),
+                   "The serialized transition is too large for the buffer. Please fix the code.");
+        strncpy(probe.buffer.data(), str.c_str(), probe.buffer.size() - 1);
+        probe.buffer.back() = '\0';
+
+        // TODO: Do we need to reset `times_considered` for each actor's
+        // simcall observer here to the "original" value? We may need to
+        // add a method to handle this
+      }
+    }
+
+    size_t size = probes.size() * sizeof(s_mc_message_simcall_probe_one_t);
+    XBT_DEBUG("Deliver ACTOR_TRANSITION_PROBE payload");
+    xbt_assert(channel_.send(probes.data(), size) == 0, "Could not send ACTOR_TRANSITION_PROBE payload");
   }
 }
 

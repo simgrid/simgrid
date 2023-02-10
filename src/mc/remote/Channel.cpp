@@ -40,7 +40,7 @@ ssize_t Channel::receive(void* message, size_t size, bool block) const
 {
   ssize_t res = recv(this->socket_, message, size, block ? 0 : MSG_DONTWAIT);
   if (res != -1)
-    XBT_DEBUG("Receive %s", to_c_str(*(MessageType*)message));
+    XBT_DEBUG("Receive %s (requested %lu bytes to be sent; received %lu)", to_c_str(*(MessageType*)message), size, res);
   else
     XBT_ERROR("Channel::receive failure: %s", strerror(errno));
   return res;

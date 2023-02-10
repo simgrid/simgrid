@@ -20,9 +20,11 @@
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
 
+#include <algorithm>
 #include <array>
 #include <boost/tokenizer.hpp>
 #include <memory>
+#include <numeric>
 #include <string>
 
 #include <fcntl.h>
@@ -159,6 +161,13 @@ unsigned long RemoteApp::get_maxpid() const
 
 void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
 {
+  // The messaging happens as follows:
+  //
+  // CheckerSide                  AppSide
+  // send ACTORS_STATUS ---->
+  //                    <----- send ACTORS_STATUS_REPLY
+  //                    <----- send `N` `s_mc_message_actors_status_one_t` structs
+  //                    <----- send `M` `s_mc_message_simcall_probe_one_t` structs
   s_mc_message_t msg;
   memset(&msg, 0, sizeof msg);
   msg.type = simgrid::mc::MessageType::ACTORS_STATUS;
@@ -180,9 +189,42 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
     xbt_assert(static_cast<size_t>(received) == size);
   }
 
+  std::vector<s_mc_message_simcall_probe_one_t> action_pool(answer.transition_count);
+  if (answer.transition_count > 0) {
+    size_t size = action_pool.size() * sizeof(s_mc_message_simcall_probe_one_t);
+    received    = model_checker_->channel().receive(action_pool.data(), size);
+    xbt_assert(static_cast<size_t>(received) == size);
+  }
+
+  // Ensures that each actor sends precisely `actor.max_considered` transitions. While technically
+  // this doesn't catch the edge case where actor A sends 3 instead of 2 and actor B sends 2 instead
+  // of 3 transitions, that is ignored here since that invariant needs to be enforced on the AppSide
+  const auto expected_transitions = std::accumulate(
+      status.begin(), status.end(), 0, [](int total, const auto& actor) { return total + actor.n_transitions; });
+  xbt_assert(expected_transitions == action_pool.size(),
+             "Expected to receive %d transition(s) but was only notified of %lu by the app side", expected_transitions,
+             action_pool.size());
+
   whereto.clear();
-  for (auto const& actor : status)
-    whereto.try_emplace(actor.aid, actor.aid, actor.enabled, actor.max_considered);
+  auto action_pool_iter = std::move_iterator(action_pool.begin());
+
+  for (const auto& actor : status) {
+    xbt_assert(actor.n_transitions == 0 || actor.n_transitions == actor.max_considered,
+               "If any transitions are serialized for an actor, it must match the "
+               "total number of transitions that can be considered for the actor "
+               "(currently %d), but only %d transition(s) was/were said to be encoded",
+               actor.max_considered, actor.n_transitions);
+
+    std::stringstream stream((*action_pool_iter).buffer.data());
+    auto actor_transitions = std::vector<std::unique_ptr<Transition>>(actor.max_considered);
+
+    for (int times_considered = 0; times_considered < actor.max_considered; times_considered++, action_pool_iter++) {
+      auto transition = std::unique_ptr<Transition>(deserialize_transition(actor.aid, times_considered, stream));
+      actor_transitions.push_back(std::move(transition));
+    }
+
+    whereto.try_emplace(actor.aid, actor.aid, actor.enabled, actor.max_considered, std::move(actor_transitions));
+  }
 }
 
 void RemoteApp::check_deadlock() const
