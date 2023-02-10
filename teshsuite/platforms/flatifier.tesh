@@ -658,7 +658,7 @@ $ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/cluster_torus.xml "--lo
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
-> <AS id="AS0" routing="Full">
+> <AS id="world" routing="Full">
 >   <host id="node-0.simgrid.org" speed="1000000000"/>
 >   <host id="node-1.simgrid.org" speed="1000000000"/>
 >   <host id="node-10.simgrid.org" speed="1000000000"/>
@@ -1195,7 +1195,7 @@ $ ${bindir:=.}/flatifier ./cluster_dragonfly_noncontiguous_rad.xml "--log=root.f
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
-> <AS id="AS0" routing="Full">
+> <AS id="world" routing="Full">
 >   <host id="node-0.simgrid.org" speed="1000000000"/>
 >   <host id="node-1002.simgrid.org" speed="1000000000"/>
 >   <host id="node-1003.simgrid.org" speed="1000000000"/>
@@ -1284,7 +1284,7 @@ $ ${bindir:=.}/flatifier ./cluster_fat_tree_noncontiguous_rad.xml "--log=root.fm
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
-> <AS id="AS0" routing="Full">
+> <AS id="world" routing="Full">
 >   <host id="node-100.simgrid.org" speed="1000000000"/>
 >   <host id="node-101.simgrid.org" speed="1000000000"/>
 >   <host id="node-119.simgrid.org" speed="1000000000"/>
@@ -1381,7 +1381,7 @@ $ ${bindir:=.}/flatifier ./cluster_torus_noncontiguous_rad.xml "--log=root.fmt:[
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 > <platform version="4">
-> <AS id="AS0" routing="Full">
+> <AS id="world" routing="Full">
 >   <host id="node-0.simgrid.org" speed="1000000000"/>
 >   <host id="node-1.simgrid.org" speed="1000000000"/>
 >   <host id="node-102.simgrid.org" speed="1000000000"/>

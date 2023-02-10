@@ -18,13 +18,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(flatifier, "Logging specific to this platform parsi
 
 namespace sg4 = simgrid::s4u;
 
-static bool parse_cmdline(int* timings, char** platformFile, int argc, char** argv)
+static bool parse_cmdline(bool* timings, char** platformFile, int argc, char** argv)
 {
   bool parse_ok = true;
   for (int i = 1; i < argc; i++) {
     if (std::strlen(argv[i]) > 1 && argv[i][0] == '-' && argv[i][1] == '-') {
       if (not std::strcmp(argv[i], "--timings")) {
-        *timings = 1;
+        *timings = true;
       } else {
         parse_ok = false;
         break;
@@ -33,20 +33,12 @@ static bool parse_cmdline(int* timings, char** platformFile, int argc, char** ar
       *platformFile = argv[i];
     }
   }
-  return parse_ok;
+  return parse_ok && platformFile != nullptr;
 }
 
-static void create_environment(xbt_os_timer_t parse_time, const std::string& platformFile)
+static void dump_hosts(sg4::Engine& engine)
 {
-  xbt_os_cputimer_start(parse_time);
-  sg4::Engine::get_instance()->load_platform(platformFile);
-  sg4::Engine::get_instance()->seal_platform();
-  xbt_os_cputimer_stop(parse_time);
-}
-
-static void dump_hosts()
-{
-  std::vector<sg4::Host*> hosts = sg4::Engine::get_instance()->get_all_hosts();
+  std::vector<sg4::Host*> hosts = engine.get_all_hosts();
 
   for (auto const* h : hosts) {
     std::printf("  <host id=\"%s\" speed=\"%.0f\"", h->get_cname(), h->get_speed());
@@ -70,9 +62,9 @@ static void dump_hosts()
   }
 }
 
-static void dump_links()
+static void dump_links(sg4::Engine& engine)
 {
-  std::vector<sg4::Link*> links = sg4::Engine::get_instance()->get_all_links();
+  std::vector<sg4::Link*> links = engine.get_all_links();
 
   std::sort(links.begin(), links.end(),
             [](const sg4::Link* a, const sg4::Link* b) { return a->get_name() < b->get_name(); });
@@ -90,9 +82,9 @@ static void dump_links()
   }
 }
 
-static void dump_routers()
+static void dump_routers(sg4::Engine& engine)
 {
-  std::vector<simgrid::kernel::routing::NetPoint*> netpoints = sg4::Engine::get_instance()->get_all_netpoints();
+  std::vector<simgrid::kernel::routing::NetPoint*> netpoints = engine.get_all_netpoints();
   std::sort(netpoints.begin(), netpoints.end(),
             [](const simgrid::kernel::routing::NetPoint* a, const simgrid::kernel::routing::NetPoint* b) {
               return a->get_name() < b->get_name();
@@ -103,10 +95,10 @@ static void dump_routers()
       std::printf("  <router id=\"%s\"/>\n", src->get_cname());
 }
 
-static void dump_routes()
+static void dump_routes(sg4::Engine& engine)
 {
-  std::vector<sg4::Host*> hosts = sg4::Engine::get_instance()->get_all_hosts();
-  std::vector<simgrid::kernel::routing::NetPoint*> netpoints = sg4::Engine::get_instance()->get_all_netpoints();
+  auto hosts     = engine.get_all_hosts();
+  auto netpoints = engine.get_all_netpoints();
   std::sort(netpoints.begin(), netpoints.end(),
             [](const simgrid::kernel::routing::NetPoint* a, const simgrid::kernel::routing::NetPoint* b) {
               return a->get_name() < b->get_name();
@@ -165,26 +157,19 @@ static void dump_routes()
   }
 }
 
-static void dump_platform()
+static void dump_platform(sg4::Engine& engine)
 {
   int version = 4;
 
   std::printf("<?xml version='1.0'?>\n");
   std::printf("<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n");
   std::printf("<platform version=\"%d\">\n", version);
-  std::printf("<AS id=\"AS0\" routing=\"Full\">\n");
+  std::printf("<AS id=\"%s\" routing=\"Full\">\n", engine.get_netzone_root()->get_cname());
 
-  // Hosts
-  dump_hosts();
-
-  // Routers
-  dump_routers();
-
-  // Links
-  dump_links();
-
-  // Routes
-  dump_routes();
+  dump_hosts(engine);
+  dump_routers(engine);
+  dump_links(engine);
+  dump_routes(engine);
 
   std::printf("</AS>\n");
   std::printf("</platform>\n");
@@ -193,24 +178,25 @@ static void dump_platform()
 int main(int argc, char** argv)
 {
   char* platformFile = nullptr;
-  int timings        = 0;
+  bool timings       = false;
 
   xbt_os_timer_t parse_time = xbt_os_timer_new();
 
   sg4::Engine e(&argc, argv);
 
-  xbt_assert(parse_cmdline(&timings, &platformFile, argc, argv) && platformFile,
+  xbt_assert(parse_cmdline(&timings, &platformFile, argc, argv),
              "Invalid command line arguments: expected [--timings] platformFile");
 
-  XBT_DEBUG("%d,%s", timings, platformFile);
-
-  create_environment(parse_time, platformFile);
+  xbt_os_cputimer_start(parse_time);
+  e.load_platform(platformFile);
+  e.seal_platform();
+  xbt_os_cputimer_stop(parse_time);
 
   if (timings) {
     XBT_INFO("Parsing time: %fs (%zu hosts, %zu links)", xbt_os_timer_elapsed(parse_time), e.get_host_count(),
              e.get_link_count());
   } else {
-    dump_platform();
+    dump_platform(e);
   }
 
   xbt_os_timer_free(parse_time);
