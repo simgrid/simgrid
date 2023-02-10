@@ -30,6 +30,16 @@ std::size_t State::count_todo() const
   return boost::range::count_if(this->actors_to_run_, [](auto& pair) { return pair.second.is_todo(); });
 }
 
+    void State::mark_all_todo() 
+{
+    for (auto & [aid, actor] : actors_to_run_) {
+
+	if (actor.is_enabled() and not actor.is_done() and not actor.is_todo())
+	    actor.mark_todo();
+	
+    }
+}
+    
 Transition* State::get_transition() const
 {
   return transition_.get();
@@ -40,8 +50,18 @@ aid_t State::next_transition() const
   XBT_DEBUG("Search for an actor to run. %zu actors to consider", actors_to_run_.size());
   for (auto const& [aid, actor] : actors_to_run_) {
     /* Only consider actors (1) marked as interleaving by the checker and (2) currently enabled in the application */
-    if (not actor.is_todo() || not actor.is_enabled())
-      continue;
+      if (not actor.is_todo() || not actor.is_enabled()) {
+
+	  if (not actor.is_todo())
+	      XBT_DEBUG("Can't run actor %ld because it is not todo", aid); 
+
+	  if (not actor.is_enabled())
+	      XBT_DEBUG("Can't run actor %ld because it is not enabled", aid);
+
+	  continue;
+
+
+      }
 
     return aid;
   }

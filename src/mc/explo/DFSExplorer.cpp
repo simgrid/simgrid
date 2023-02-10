@@ -131,12 +131,15 @@ void DFSExplorer::run()
     if (next < 0) { // If there is no more transition in the current state, backtrack.
       XBT_DEBUG("There remains %lu actors, but none to interleave (depth %zu).", state->get_actor_count(),
                 stack_.size() + 1);
-
+      
       if (state->get_actor_count() == 0) {
         mc_model_checker->finalize_app();
         XBT_VERB("Execution came to an end at %s (state: %ld, depth: %zu)", get_record_trace().to_string().c_str(),
                  state->get_num(), stack_.size());
+	stack_.pop_back();
+
       }
+      
       this->backtrack();
       continue;
     }
@@ -191,7 +194,6 @@ void DFSExplorer::backtrack()
   backtrack_count_++;
   XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
   on_backtracking_signal(get_remote_app());
-  stack_.pop_back();
 
   get_remote_app().check_deadlock();
 
@@ -203,6 +205,7 @@ void DFSExplorer::backtrack()
   while (not stack_.empty() && not found_backtracking_point) {
     std::unique_ptr<State> state = std::move(stack_.back());
     stack_.pop_back();
+    state->set_done(state->get_transition()->aid_);
     if (reduction_mode_ == ReductionMode::dpor) {
       aid_t issuer_id = state->get_transition()->aid_;
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
@@ -210,16 +213,21 @@ void DFSExplorer::backtrack()
         if (state->get_transition()->aid_ == prev_state->get_transition()->aid_) {
           XBT_DEBUG("Simcall >>%s<< and >>%s<< with same issuer %ld", state->get_transition()->to_string().c_str(),
                     prev_state->get_transition()->to_string().c_str(), issuer_id);
-          break;
+          continue;
         } else if (prev_state->get_transition()->depends(state->get_transition())) {
           XBT_VERB("Dependent Transitions:");
           XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_string().c_str(), prev_state->get_num());
           XBT_VERB("  %s (state=%ld)", state->get_transition()->to_string().c_str(), state->get_num());
 
-          if (not prev_state->is_done(issuer_id))
-            prev_state->mark_todo(issuer_id);
-          else
-            XBT_DEBUG("Actor %ld is in done set", issuer_id);
+	  if (prev_state->is_actor_enabled(issuer_id)){
+	      if (not prev_state->is_done(issuer_id))
+		  prev_state->mark_todo(issuer_id);
+	      else
+		  XBT_DEBUG("Actor %ld is already in done set: no need to explore it again", issuer_id);
+	  } else {
+	      XBT_DEBUG("Actor %ld is not enabled: DPOR may be failing, to stay sound, we are marking every enabled transition todo", issuer_id);
+	      prev_state->mark_all_todo();
+	  }
           break;
         } else {
           XBT_VERB("INDEPENDENT Transitions:");
@@ -233,7 +241,7 @@ void DFSExplorer::backtrack()
       XBT_DEBUG("Delete state %ld at depth %zu", state->get_num(), stack_.size() + 1);
 
     } else {
-      XBT_DEBUG("Back-tracking to state %ld at depth %zu", state->get_num(), stack_.size() + 1);
+	XBT_DEBUG("Back-tracking to state %ld at depth %zu: %ld transitions left to be explored", state->get_num(), stack_.size() + 1, state->count_todo());
       stack_.push_back(std::move(state)); // Put it back on the stack
       found_backtracking_point = true;
     }
