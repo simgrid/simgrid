@@ -247,7 +247,7 @@ sg_size_t File::tell() const
 void File::move(const std::string& fullpath) const
 {
   /* Check if the new full path is on the same mount point */
-  if (fullpath.compare(0, mount_point_.length(), mount_point_) == 0) {
+  if (fullpath.rfind(mount_point_, 0) == 0) {
     std::map<std::string, sg_size_t, std::less<>>* content = nullptr;
     content = local_disk_->extension<FileSystemDiskExt>()->get_content();
     if (content) {
