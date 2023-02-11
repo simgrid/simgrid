@@ -8,10 +8,10 @@
 #include "src/smpi/include/smpi_actor.hpp"
 #include "src/instr/instr_smpi.hpp"
 
-int mpi_in_place_;
-int mpi_bottom_;
-int mpi_status_ignore_;
-int mpi_statuses_ignore_;
+const int mpi_in_place_        = -222;
+const int mpi_bottom_          = -111;
+const int mpi_status_ignore_   = 0;
+const int mpi_statuses_ignore_ = 0;
 
 namespace simgrid::smpi {
 

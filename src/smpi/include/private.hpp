@@ -54,14 +54,12 @@ constexpr int SMPI_RMA_TAG            = -6666;
 #define MPI_REQUEST_IGNORED ((MPI_Request*)-100)
 
 /* Bindings for MPI special values */
-extern XBT_PUBLIC int mpi_in_place_;
-extern XBT_PUBLIC int mpi_bottom_;
-extern XBT_PUBLIC int mpi_status_ignore_;
-extern XBT_PUBLIC int mpi_statuses_ignore_;
+extern XBT_PUBLIC const int mpi_in_place_;
+extern XBT_PUBLIC const int mpi_bottom_;
+extern XBT_PUBLIC const int mpi_status_ignore_;
+extern XBT_PUBLIC const int mpi_statuses_ignore_;
 /* Convert between Fortran and C */
-#define FORT_ADDR(addr, val, val2)                                         \
-  (((void *)(addr) == (void*) &(val2))                  \
-   ? (val) : (void *)(addr))
+#define FORT_ADDR(addr, val, val2) (((const void*)(addr) == (const void*)&(val2)) ? (val) : (void*)(addr))
 #define FORT_BOTTOM(addr) FORT_ADDR((addr), MPI_BOTTOM, mpi_bottom_)
 #define FORT_IN_PLACE(addr) FORT_ADDR((addr), MPI_IN_PLACE, mpi_in_place_)
 #define FORT_STATUS_IGNORE(addr) static_cast<MPI_Status*>(FORT_ADDR((addr), MPI_STATUS_IGNORE, mpi_status_ignore_))
