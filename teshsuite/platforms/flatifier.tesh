@@ -2,26 +2,26 @@
 $ ${bindir:=.}/flatifier ./one_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-> <platform version="4">
+> <platform version="4.1">
 > <AS id="AS0" routing="Full">
->   <host id="bob0.hamburger.edu" speed="1000000000"/>
->   <host id="bob2.hamburger.edu" speed="1000000000"/>
->   <host id="bob3.hamburger.edu" speed="1000000000"/>
->   <host id="bob4.hamburger.edu" speed="1000000000"/>
->   <host id="bob6.hamburger.edu" speed="1000000000"/>
+>   <host id="bob0.hamburger.edu" speed="1e+09"/>
+>   <host id="bob2.hamburger.edu" speed="1e+09"/>
+>   <host id="bob3.hamburger.edu" speed="1e+09"/>
+>   <host id="bob4.hamburger.edu" speed="1e+09"/>
+>   <host id="bob6.hamburger.edu" speed="1e+09"/>
 >   <router id="bobbob_cluster_router.hamburger.edu"/>
->   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_backbone" bandwidth="2250000000" latency="0.000500000"/>
->   <link id="bob_cluster_link_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_0_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_2_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_2_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_3_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_3_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_4_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_4_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_6_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_6_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_backbone" bandwidth="2.25e+09" latency="0.0005"/>
+>   <link id="bob_cluster_link_0_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_0_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_2_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_2_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_3_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_3_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_4_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_4_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_6_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_6_UP" bandwidth="1.25e+08" latency="5e-05"/>
 >   <route src="bob0.hamburger.edu" dst="bob0.hamburger.edu">
 >   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_backbone"/><link_ctn id="bob_cluster_link_0_DOWN"/>
 >   </route>
@@ -133,25 +133,25 @@ $ ${bindir:=.}/flatifier ./one_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%
 $ ${bindir:=.}/flatifier ./one_cluster_multicore.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-> <platform version="4">
+> <platform version="4.1">
 > <AS id="AS0" routing="Full">
->   <host id="bob0.hamburger.edu" speed="1000000000" core="6"/>
->   <host id="bob2.hamburger.edu" speed="1000000000" core="6"/>
->   <host id="bob3.hamburger.edu" speed="1000000000" core="6"/>
->   <host id="bob4.hamburger.edu" speed="1000000000" core="6"/>
->   <host id="bob6.hamburger.edu" speed="1000000000" core="6"/>
+>   <host id="bob0.hamburger.edu" speed="1e+09" core="6"/>
+>   <host id="bob2.hamburger.edu" speed="1e+09" core="6"/>
+>   <host id="bob3.hamburger.edu" speed="1e+09" core="6"/>
+>   <host id="bob4.hamburger.edu" speed="1e+09" core="6"/>
+>   <host id="bob6.hamburger.edu" speed="1e+09" core="6"/>
 >   <router id="bobbob_cluster_router.hamburger.edu"/>
->   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_0_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_2_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_2_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_3_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_3_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_4_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_4_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_6_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_6_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_0_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_0_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_2_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_2_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_3_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_3_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_4_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_4_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_6_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_6_UP" bandwidth="1.25e+08" latency="5e-05"/>
 >   <route src="bob0.hamburger.edu" dst="bob0.hamburger.edu">
 >   <link_ctn id="bob_cluster_link_0_UP"/><link_ctn id="bob_cluster_link_0_DOWN"/>
 >   </route>
@@ -263,18 +263,18 @@ $ ${bindir:=.}/flatifier ./one_cluster_multicore.xml "--log=root.fmt:[%10.6r]%e[
 $ ${bindir:=.}/flatifier ./host_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-> <platform version="4">
+> <platform version="4.1">
 > <AS id="AS0" routing="Full">
->   <host id="alice" speed="1000000000"/>
->   <host id="bob" speed="1000000000"/>
->   <host id="carol" speed="500000000"/>
->   <host id="dave" speed="1000000000">
+>   <host id="alice" speed="1e+09"/>
+>   <host id="bob" speed="1e+09"/>
+>   <host id="carol" speed="5e+08"/>
+>   <host id="dave" speed="1e+09">
 >     <prop id="OS" value="Linux 2.6.22-14"/>
 >     <prop id="disk" value="80E9"/>
 >     <prop id="memory" value="1000000000"/>
 >   </host>
->   <host id="erin" speed="500000000"/>
->   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
+>   <host id="erin" speed="5e+08"/>
+>   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>
 >   <route src="alice" dst="alice">
 >   <link_ctn id="__loopback__"/>
 >   </route>
@@ -296,14 +296,14 @@ $ ${bindir:=.}/flatifier ./host_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%a@
 $ ${bindir:=.}/flatifier ./link_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-> <platform version="4">
+> <platform version="4.1">
 > <AS id="AS0" routing="Full">
->   <host id="bob" speed="500000000"/>
->   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="link1" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link2" bandwidth="125000000" latency="0.000050000" sharing_policy="FATPIPE"/>
->   <link id="link3" bandwidth="80000000" latency="0.000100000"/>
->   <link id="link4" bandwidth="80000000" latency="0.000100000"/>
+>   <host id="bob" speed="5e+08"/>
+>   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="link1" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link2" bandwidth="1.25e+08" latency="5e-05" sharing_policy="FATPIPE"/>
+>   <link id="link3" bandwidth="8e+07" latency="0.0001"/>
+>   <link id="link4" bandwidth="8e+07" latency="0.0001"/>
 >   <route src="bob" dst="bob">
 >   <link_ctn id="__loopback__"/>
 >   </route>
@@ -313,15 +313,15 @@ $ ${bindir:=.}/flatifier ./link_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%a@
 $ ${bindir:=.}/flatifier ./three_hosts_non_symmetric_route.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-> <platform version="4">
+> <platform version="4.1">
 > <AS id="AS0" routing="Full">
->   <host id="alice" speed="500000000"/>
->   <host id="bob" speed="1000000000"/>
->   <host id="trudy" speed="250000000"/>
->   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="link1" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link2" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link3" bandwidth="125000000" latency="0.000050000"/>
+>   <host id="alice" speed="5e+08"/>
+>   <host id="bob" speed="1e+09"/>
+>   <host id="trudy" speed="2.5e+08"/>
+>   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="link1" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link2" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link3" bandwidth="1.25e+08" latency="5e-05"/>
 >   <route src="alice" dst="alice">
 >   <link_ctn id="__loopback__"/>
 >   </route>
@@ -355,26 +355,26 @@ $ ${bindir:=.}/flatifier ./three_hosts_non_symmetric_route.xml "--log=root.fmt:[
 $ ${bindir:=.}/flatifier ./two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-> <platform version="4">
+> <platform version="4.1">
 > <AS id="AS0" routing="Full">
->   <host id="alice0.crepe.fr" speed="1000000000"/>
->   <host id="alice1.crepe.fr" speed="1000000000"/>
->   <host id="bob0.hamburger.edu" speed="1000000000"/>
->   <host id="bob1.hamburger.edu" speed="1000000000"/>
+>   <host id="alice0.crepe.fr" speed="1e+09"/>
+>   <host id="alice1.crepe.fr" speed="1e+09"/>
+>   <host id="bob0.hamburger.edu" speed="1e+09"/>
+>   <host id="bob1.hamburger.edu" speed="1e+09"/>
 >   <router id="alicealice_cluster_router.crepe.fr"/>
 >   <router id="bobbob_cluster_router.hamburger.edu"/>
->   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="alice_cluster_backbone" bandwidth="2250000000" latency="0.000500000"/>
->   <link id="alice_cluster_link_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="alice_cluster_link_0_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="alice_cluster_link_1_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="alice_cluster_link_1_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="backbone" bandwidth="1250000000" latency="0.000500000"/>
->   <link id="bob_cluster_backbone" bandwidth="2250000000" latency="0.000500000"/>
->   <link id="bob_cluster_link_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_0_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_1_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_1_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="alice_cluster_backbone" bandwidth="2.25e+09" latency="0.0005"/>
+>   <link id="alice_cluster_link_0_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="alice_cluster_link_0_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="alice_cluster_link_1_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="alice_cluster_link_1_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="backbone" bandwidth="1.25e+09" latency="0.0005"/>
+>   <link id="bob_cluster_backbone" bandwidth="2.25e+09" latency="0.0005"/>
+>   <link id="bob_cluster_link_0_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_0_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_1_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_1_UP" bandwidth="1.25e+08" latency="5e-05"/>
 >   <route src="alice0.crepe.fr" dst="alice0.crepe.fr">
 >   <link_ctn id="alice_cluster_link_0_UP"/><link_ctn id="alice_cluster_backbone"/><link_ctn id="alice_cluster_link_0_DOWN"/>
 >   </route>
@@ -483,14 +483,14 @@ $ ${bindir:=.}/flatifier ./two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]
 $ ${bindir:=.}/flatifier ./two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-> <platform version="4">
+> <platform version="4.1">
 > <AS id="AS0" routing="Full">
->   <host id="alice" speed="500000000"/>
->   <host id="bob" speed="1000000000"/>
->   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="link_alice" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_bob" bandwidth="125000000" latency="0.000050000"/>
->   <link id="switch" bandwidth="125000000" latency="0.000050000" sharing_policy="FATPIPE"/>
+>   <host id="alice" speed="5e+08"/>
+>   <host id="bob" speed="1e+09"/>
+>   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="link_alice" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_bob" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="switch" bandwidth="1.25e+08" latency="5e-05" sharing_policy="FATPIPE"/>
 >   <route src="alice" dst="alice">
 >   <link_ctn id="__loopback__"/>
 >   </route>
@@ -509,12 +509,12 @@ $ ${bindir:=.}/flatifier ./two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e[%i
 $ ${bindir:=.}/flatifier ./two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-> <platform version="4">
+> <platform version="4.1">
 > <AS id="AS0" routing="Full">
->   <host id="alice" speed="500000000"/>
->   <host id="bob" speed="1000000000"/>
->   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="link1" bandwidth="125000000" latency="0.000050000"/>
+>   <host id="alice" speed="5e+08"/>
+>   <host id="bob" speed="1e+09"/>
+>   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="link1" bandwidth="1.25e+08" latency="5e-05"/>
 >   <route src="alice" dst="alice">
 >   <link_ctn id="__loopback__"/>
 >   </route>
@@ -533,25 +533,25 @@ $ ${bindir:=.}/flatifier ./two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%e[%i:
 $ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/bypassZoneRoute.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-> <platform version="4">
+> <platform version="4.1">
 > <AS id="AS0" routing="Full">
->   <host id="1" speed="1000000000"/>
->   <host id="2" speed="1000000000"/>
->   <host id="3" speed="1000000000"/>
+>   <host id="1" speed="1e+09"/>
+>   <host id="2" speed="1e+09"/>
+>   <host id="3" speed="1e+09"/>
 >   <router id="my_cluster_1_router"/>
 >   <router id="my_cluster_2_router"/>
 >   <router id="my_cluster_3_router"/>
->   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="link1" bandwidth="1250000000" latency="0.000500000"/>
->   <link id="link2" bandwidth="1250000000" latency="0.000500000"/>
->   <link id="link3" bandwidth="1250000000" latency="0.000500000"/>
->   <link id="link_tmp" bandwidth="1250000000" latency="0.000500000"/>
->   <link id="my_cluster_1_link_1_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="my_cluster_1_link_1_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="my_cluster_2_link_2_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="my_cluster_2_link_2_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="my_cluster_3_link_3_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="my_cluster_3_link_3_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="link1" bandwidth="1.25e+09" latency="0.0005"/>
+>   <link id="link2" bandwidth="1.25e+09" latency="0.0005"/>
+>   <link id="link3" bandwidth="1.25e+09" latency="0.0005"/>
+>   <link id="link_tmp" bandwidth="1.25e+09" latency="0.0005"/>
+>   <link id="my_cluster_1_link_1_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="my_cluster_1_link_1_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="my_cluster_2_link_2_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="my_cluster_2_link_2_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="my_cluster_3_link_3_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="my_cluster_3_link_3_UP" bandwidth="1.25e+08" latency="5e-05"/>
 >   <route src="1" dst="1">
 >   <link_ctn id="my_cluster_1_link_1_UP"/><link_ctn id="my_cluster_1_link_1_DOWN"/>
 >   </route>
@@ -657,105 +657,105 @@ $ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/bypassZoneRoute.xml "--
 $ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/cluster_torus.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-> <platform version="4">
+> <platform version="4.1">
 > <AS id="world" routing="Full">
->   <host id="node-0.simgrid.org" speed="1000000000"/>
->   <host id="node-1.simgrid.org" speed="1000000000"/>
->   <host id="node-10.simgrid.org" speed="1000000000"/>
->   <host id="node-11.simgrid.org" speed="1000000000"/>
->   <host id="node-2.simgrid.org" speed="1000000000"/>
->   <host id="node-3.simgrid.org" speed="1000000000"/>
->   <host id="node-4.simgrid.org" speed="1000000000"/>
->   <host id="node-5.simgrid.org" speed="1000000000"/>
->   <host id="node-6.simgrid.org" speed="1000000000"/>
->   <host id="node-7.simgrid.org" speed="1000000000"/>
->   <host id="node-8.simgrid.org" speed="1000000000"/>
->   <host id="node-9.simgrid.org" speed="1000000000"/>
->   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_0_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_10_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_11_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_1_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_2_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_3_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_4_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_5_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_6_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_7_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_8_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_9_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_from_0_to_1_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_0_to_1_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_0_to_3_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_0_to_3_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_0_to_6_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_0_to_6_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_10_to_11_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_10_to_11_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_10_to_4_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_10_to_4_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_10_to_7_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_10_to_7_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_11_to_5_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_11_to_5_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_11_to_8_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_11_to_8_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_11_to_9_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_11_to_9_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_1_to_2_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_1_to_2_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_1_to_4_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_1_to_4_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_1_to_7_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_1_to_7_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_2_to_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_2_to_0_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_2_to_5_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_2_to_5_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_2_to_8_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_2_to_8_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_3_to_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_3_to_0_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_3_to_4_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_3_to_4_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_3_to_9_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_3_to_9_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_4_to_10_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_4_to_10_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_4_to_1_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_4_to_1_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_4_to_5_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_4_to_5_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_5_to_11_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_5_to_11_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_5_to_2_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_5_to_2_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_5_to_3_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_5_to_3_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_6_to_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_6_to_0_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_6_to_7_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_6_to_7_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_6_to_9_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_6_to_9_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_7_to_10_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_7_to_10_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_7_to_1_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_7_to_1_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_7_to_8_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_7_to_8_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_8_to_11_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_8_to_11_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_8_to_2_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_8_to_2_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_8_to_6_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_8_to_6_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_9_to_10_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_9_to_10_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_9_to_3_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_9_to_3_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_9_to_6_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_9_to_6_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <host id="node-0.simgrid.org" speed="1e+09"/>
+>   <host id="node-1.simgrid.org" speed="1e+09"/>
+>   <host id="node-10.simgrid.org" speed="1e+09"/>
+>   <host id="node-11.simgrid.org" speed="1e+09"/>
+>   <host id="node-2.simgrid.org" speed="1e+09"/>
+>   <host id="node-3.simgrid.org" speed="1e+09"/>
+>   <host id="node-4.simgrid.org" speed="1e+09"/>
+>   <host id="node-5.simgrid.org" speed="1e+09"/>
+>   <host id="node-6.simgrid.org" speed="1e+09"/>
+>   <host id="node-7.simgrid.org" speed="1e+09"/>
+>   <host id="node-8.simgrid.org" speed="1e+09"/>
+>   <host id="node-9.simgrid.org" speed="1e+09"/>
+>   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_0_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_10_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_11_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_1_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_2_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_3_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_4_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_5_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_6_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_7_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_8_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_9_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_from_0_to_1_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_0_to_1_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_0_to_3_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_0_to_3_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_0_to_6_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_0_to_6_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_10_to_11_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_10_to_11_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_10_to_4_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_10_to_4_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_10_to_7_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_10_to_7_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_11_to_5_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_11_to_5_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_11_to_8_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_11_to_8_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_11_to_9_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_11_to_9_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_1_to_2_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_1_to_2_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_1_to_4_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_1_to_4_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_1_to_7_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_1_to_7_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_2_to_0_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_2_to_0_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_2_to_5_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_2_to_5_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_2_to_8_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_2_to_8_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_3_to_0_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_3_to_0_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_3_to_4_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_3_to_4_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_3_to_9_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_3_to_9_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_4_to_10_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_4_to_10_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_4_to_1_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_4_to_1_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_4_to_5_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_4_to_5_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_5_to_11_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_5_to_11_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_5_to_2_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_5_to_2_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_5_to_3_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_5_to_3_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_6_to_0_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_6_to_0_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_6_to_7_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_6_to_7_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_6_to_9_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_6_to_9_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_7_to_10_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_7_to_10_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_7_to_1_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_7_to_1_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_7_to_8_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_7_to_8_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_8_to_11_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_8_to_11_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_8_to_2_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_8_to_2_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_8_to_6_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_8_to_6_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_9_to_10_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_9_to_10_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_9_to_3_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_9_to_3_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_9_to_6_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_9_to_6_UP" bandwidth="1.25e+08" latency="5e-05"/>
 >   <route src="node-0.simgrid.org" dst="node-0.simgrid.org">
 >   <link_ctn id="bob_cluster_link_0_loopback"/>
 >   </route>
@@ -1194,41 +1194,41 @@ $ ${bindir:=.}/flatifier ${srcdir:=.}/examples/platforms/cluster_torus.xml "--lo
 $ ${bindir:=.}/flatifier ./cluster_dragonfly_noncontiguous_rad.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-> <platform version="4">
+> <platform version="4.1">
 > <AS id="world" routing="Full">
->   <host id="node-0.simgrid.org" speed="1000000000"/>
->   <host id="node-1002.simgrid.org" speed="1000000000"/>
->   <host id="node-1003.simgrid.org" speed="1000000000"/>
->   <host id="node-1004.simgrid.org" speed="1000000000"/>
->   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="black_link_in_group_0_between_chassis_0_and_1_blade_0_6_DOWN" bandwidth="375000000" latency="0.000050000"/>
->   <link id="black_link_in_group_0_between_chassis_0_and_1_blade_0_6_UP" bandwidth="375000000" latency="0.000050000"/>
->   <link id="black_link_in_group_0_between_chassis_0_and_1_blade_1_7_DOWN" bandwidth="375000000" latency="0.000050000"/>
->   <link id="black_link_in_group_0_between_chassis_0_and_1_blade_1_7_UP" bandwidth="375000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_0_limiter" bandwidth="150000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_0_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_1002_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_1003_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_1004_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_1_limiter" bandwidth="150000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_2_limiter" bandwidth="150000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_3_limiter" bandwidth="150000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_4_limiter" bandwidth="150000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_5_limiter" bandwidth="150000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_6_limiter" bandwidth="150000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_7_limiter" bandwidth="150000000" latency="0.000000000"/>
->   <link id="green_link_in_chassis_0_between_routers_0_and_1_4_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="green_link_in_chassis_0_between_routers_0_and_1_4_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="green_link_in_chassis_1_between_routers_0_and_1_5_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="green_link_in_chassis_1_between_routers_0_and_1_5_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="local_link_from_router_0_to_node_0_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="local_link_from_router_0_to_node_0_0_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="local_link_from_router_1_to_node_0_1_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="local_link_from_router_1_to_node_0_1_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="local_link_from_router_2_to_node_0_2_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="local_link_from_router_2_to_node_0_2_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="local_link_from_router_3_to_node_0_3_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="local_link_from_router_3_to_node_0_3_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <host id="node-0.simgrid.org" speed="1e+09"/>
+>   <host id="node-1002.simgrid.org" speed="1e+09"/>
+>   <host id="node-1003.simgrid.org" speed="1e+09"/>
+>   <host id="node-1004.simgrid.org" speed="1e+09"/>
+>   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="black_link_in_group_0_between_chassis_0_and_1_blade_0_6_DOWN" bandwidth="3.75e+08" latency="5e-05"/>
+>   <link id="black_link_in_group_0_between_chassis_0_and_1_blade_0_6_UP" bandwidth="3.75e+08" latency="5e-05"/>
+>   <link id="black_link_in_group_0_between_chassis_0_and_1_blade_1_7_DOWN" bandwidth="3.75e+08" latency="5e-05"/>
+>   <link id="black_link_in_group_0_between_chassis_0_and_1_blade_1_7_UP" bandwidth="3.75e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_0_limiter" bandwidth="1.5e+08" latency="0"/>
+>   <link id="bob_cluster_link_0_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_1002_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_1003_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_1004_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_1_limiter" bandwidth="1.5e+08" latency="0"/>
+>   <link id="bob_cluster_link_2_limiter" bandwidth="1.5e+08" latency="0"/>
+>   <link id="bob_cluster_link_3_limiter" bandwidth="1.5e+08" latency="0"/>
+>   <link id="bob_cluster_link_4_limiter" bandwidth="1.5e+08" latency="0"/>
+>   <link id="bob_cluster_link_5_limiter" bandwidth="1.5e+08" latency="0"/>
+>   <link id="bob_cluster_link_6_limiter" bandwidth="1.5e+08" latency="0"/>
+>   <link id="bob_cluster_link_7_limiter" bandwidth="1.5e+08" latency="0"/>
+>   <link id="green_link_in_chassis_0_between_routers_0_and_1_4_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="green_link_in_chassis_0_between_routers_0_and_1_4_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="green_link_in_chassis_1_between_routers_0_and_1_5_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="green_link_in_chassis_1_between_routers_0_and_1_5_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="local_link_from_router_0_to_node_0_0_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="local_link_from_router_0_to_node_0_0_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="local_link_from_router_1_to_node_0_1_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="local_link_from_router_1_to_node_0_1_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="local_link_from_router_2_to_node_0_2_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="local_link_from_router_2_to_node_0_2_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="local_link_from_router_3_to_node_0_3_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="local_link_from_router_3_to_node_0_3_UP" bandwidth="1.25e+08" latency="5e-05"/>
 >   <route src="node-0.simgrid.org" dst="node-0.simgrid.org">
 >   <link_ctn id="bob_cluster_link_0_loopback"/>
 >   </route>
@@ -1283,49 +1283,49 @@ $ ${bindir:=.}/flatifier ./cluster_dragonfly_noncontiguous_rad.xml "--log=root.f
 $ ${bindir:=.}/flatifier ./cluster_fat_tree_noncontiguous_rad.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-> <platform version="4">
+> <platform version="4.1">
 > <AS id="world" routing="Full">
->   <host id="node-100.simgrid.org" speed="1000000000"/>
->   <host id="node-101.simgrid.org" speed="1000000000"/>
->   <host id="node-119.simgrid.org" speed="1000000000"/>
->   <host id="node-120.simgrid.org" speed="1000000000"/>
->   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_0_limiter" bandwidth="50000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_100_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_101_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_119_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_120_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_1_limiter" bandwidth="50000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_2_limiter" bandwidth="50000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_3_limiter" bandwidth="50000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_4_limiter" bandwidth="50000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_5_limiter" bandwidth="50000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_6_limiter" bandwidth="50000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_7_limiter" bandwidth="50000000" latency="0.000000000"/>
->   <link id="link_from_0_7_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_0_7_0_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_1_7_1_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_1_7_1_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_2_6_2_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_2_6_2_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_3_6_3_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_3_6_3_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_6_4_10_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_6_4_10_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_6_4_11_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_6_4_11_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_6_5_8_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_6_5_8_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_6_5_9_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_6_5_9_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_7_4_6_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_7_4_6_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_7_4_7_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_7_4_7_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_7_5_4_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_7_5_4_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_7_5_5_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link_from_7_5_5_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <host id="node-100.simgrid.org" speed="1e+09"/>
+>   <host id="node-101.simgrid.org" speed="1e+09"/>
+>   <host id="node-119.simgrid.org" speed="1e+09"/>
+>   <host id="node-120.simgrid.org" speed="1e+09"/>
+>   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_0_limiter" bandwidth="5e+07" latency="0"/>
+>   <link id="bob_cluster_link_100_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_101_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_119_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_120_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_1_limiter" bandwidth="5e+07" latency="0"/>
+>   <link id="bob_cluster_link_2_limiter" bandwidth="5e+07" latency="0"/>
+>   <link id="bob_cluster_link_3_limiter" bandwidth="5e+07" latency="0"/>
+>   <link id="bob_cluster_link_4_limiter" bandwidth="5e+07" latency="0"/>
+>   <link id="bob_cluster_link_5_limiter" bandwidth="5e+07" latency="0"/>
+>   <link id="bob_cluster_link_6_limiter" bandwidth="5e+07" latency="0"/>
+>   <link id="bob_cluster_link_7_limiter" bandwidth="5e+07" latency="0"/>
+>   <link id="link_from_0_7_0_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_0_7_0_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_1_7_1_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_1_7_1_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_2_6_2_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_2_6_2_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_3_6_3_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_3_6_3_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_6_4_10_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_6_4_10_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_6_4_11_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_6_4_11_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_6_5_8_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_6_5_8_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_6_5_9_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_6_5_9_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_7_4_6_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_7_4_6_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_7_4_7_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_7_4_7_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_7_5_4_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_7_5_4_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_7_5_5_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link_from_7_5_5_UP" bandwidth="1.25e+08" latency="5e-05"/>
 >   <route src="node-100.simgrid.org" dst="node-100.simgrid.org">
 >   <link_ctn id="bob_cluster_link_100_loopback"/>
 >   </route>
@@ -1380,45 +1380,45 @@ $ ${bindir:=.}/flatifier ./cluster_fat_tree_noncontiguous_rad.xml "--log=root.fm
 $ ${bindir:=.}/flatifier ./cluster_torus_noncontiguous_rad.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-> <platform version="4">
+> <platform version="4.1">
 > <AS id="world" routing="Full">
->   <host id="node-0.simgrid.org" speed="1000000000"/>
->   <host id="node-1.simgrid.org" speed="1000000000"/>
->   <host id="node-102.simgrid.org" speed="1000000000"/>
->   <host id="node-103.simgrid.org" speed="1000000000"/>
->   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_0_limiter" bandwidth="50000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_0_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_102_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_103_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_1_limiter" bandwidth="50000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_1_loopback" bandwidth="100000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="bob_cluster_link_2_limiter" bandwidth="50000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_3_limiter" bandwidth="50000000" latency="0.000000000"/>
->   <link id="bob_cluster_link_from_0_to_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_0_to_0_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_0_to_1_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_0_to_1_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_0_to_2_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_0_to_2_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_1_to_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_1_to_0_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_1_to_1_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_1_to_1_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_1_to_3_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_1_to_3_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_2_to_0_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_2_to_0_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_2_to_2_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_2_to_2_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_2_to_3_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_2_to_3_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_3_to_1_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_3_to_1_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_3_to_2_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_3_to_2_UP" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_3_to_3_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="bob_cluster_link_from_3_to_3_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <host id="node-0.simgrid.org" speed="1e+09"/>
+>   <host id="node-1.simgrid.org" speed="1e+09"/>
+>   <host id="node-102.simgrid.org" speed="1e+09"/>
+>   <host id="node-103.simgrid.org" speed="1e+09"/>
+>   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_0_limiter" bandwidth="5e+07" latency="0"/>
+>   <link id="bob_cluster_link_0_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_102_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_103_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_1_limiter" bandwidth="5e+07" latency="0"/>
+>   <link id="bob_cluster_link_1_loopback" bandwidth="1e+08" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="bob_cluster_link_2_limiter" bandwidth="5e+07" latency="0"/>
+>   <link id="bob_cluster_link_3_limiter" bandwidth="5e+07" latency="0"/>
+>   <link id="bob_cluster_link_from_0_to_0_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_0_to_0_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_0_to_1_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_0_to_1_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_0_to_2_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_0_to_2_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_1_to_0_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_1_to_0_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_1_to_1_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_1_to_1_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_1_to_3_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_1_to_3_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_2_to_0_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_2_to_0_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_2_to_2_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_2_to_2_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_2_to_3_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_2_to_3_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_3_to_1_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_3_to_1_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_3_to_2_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_3_to_2_UP" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_3_to_3_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="bob_cluster_link_from_3_to_3_UP" bandwidth="1.25e+08" latency="5e-05"/>
 >   <route src="node-0.simgrid.org" dst="node-0.simgrid.org">
 >   <link_ctn id="bob_cluster_link_0_loopback"/>
 >   </route>
@@ -1473,13 +1473,13 @@ $ ${bindir:=.}/flatifier ./cluster_torus_noncontiguous_rad.xml "--log=root.fmt:[
 $ ${bindir:=.}/flatifier ./two_hosts_one_link_splitduplex.xml "--log=root.fmt:[%10.6r]%e[%i:%a@%h]%e%m%n"
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
-> <platform version="4">
+> <platform version="4.1">
 > <AS id="AS0" routing="Full">
->   <host id="alice" speed="500000000"/>
->   <host id="bob" speed="1000000000"/>
->   <link id="__loopback__" bandwidth="10000000000" latency="0.000000000" sharing_policy="FATPIPE"/>
->   <link id="link1_DOWN" bandwidth="125000000" latency="0.000050000"/>
->   <link id="link1_UP" bandwidth="125000000" latency="0.000050000"/>
+>   <host id="alice" speed="5e+08"/>
+>   <host id="bob" speed="1e+09"/>
+>   <link id="__loopback__" bandwidth="1e+10" latency="0" sharing_policy="FATPIPE"/>
+>   <link id="link1_DOWN" bandwidth="1.25e+08" latency="5e-05"/>
+>   <link id="link1_UP" bandwidth="1.25e+08" latency="5e-05"/>
 >   <route src="alice" dst="alice">
 >   <link_ctn id="__loopback__"/>
 >   </route>
