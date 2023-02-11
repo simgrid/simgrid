@@ -207,11 +207,11 @@ static void _sg_cfg_cb__network_model(const std::string& value)
 static void _sg_cfg_cb_contexts_parallel_mode(std::string_view mode_name)
 {
   if (mode_name == "posix") {
-    simgrid::kernel::context::set_parallel_mode(XBT_PARMAP_POSIX);
+    simgrid::kernel::context::Context::parallel_mode = XBT_PARMAP_POSIX;
   } else if (mode_name == "futex") {
-    simgrid::kernel::context::set_parallel_mode(XBT_PARMAP_FUTEX);
+    simgrid::kernel::context::Context::parallel_mode = XBT_PARMAP_FUTEX;
   } else if (mode_name == "busy_wait") {
-    simgrid::kernel::context::set_parallel_mode(XBT_PARMAP_BUSY_WAIT);
+    simgrid::kernel::context::Context::parallel_mode = XBT_PARMAP_BUSY_WAIT;
   } else {
     xbt_die("Command line setting of the parallel synchronization mode should "
             "be one of \"posix\", \"futex\" or \"busy_wait\"");
@@ -304,7 +304,7 @@ void sg_config_init(int *argc, char **argv)
 
   static simgrid::config::Flag<int> cfg_context_stack_size{
       "contexts/stack-size", "Stack size of contexts in KiB (not with threads)", 8 * 1024,
-      [](int value) { simgrid::kernel::context::stack_size = value * 1024; }};
+      [](int value) { simgrid::kernel::context::Context::stack_size = value * 1024; }};
 
   /* guard size for contexts stacks in memory pages */
 #if (PTH_STACKGROWTH != -1)
@@ -314,7 +314,7 @@ void sg_config_init(int *argc, char **argv)
 #endif
   static simgrid::config::Flag<int> cfg_context_guard_size{
       "contexts/guard-size", "Guard size for contexts stacks in memory pages", default_guard_size,
-      [](int value) { simgrid::kernel::context::guard_size = value * xbt_pagesize; }};
+      [](int value) { simgrid::kernel::context::Context::guard_size = value * xbt_pagesize; }};
 
   static simgrid::config::Flag<int> cfg_context_nthreads{
       "contexts/nthreads", "Number of parallel threads used to execute user contexts", 1, [](int nthreads) {
@@ -324,7 +324,7 @@ void sg_config_init(int *argc, char **argv)
             "Parallel simulation is forbidden in the verified program, as there is no protection against race "
             "conditions in mmalloc itself. Please don't be so greedy and show some mercy for our implementation.");
 #endif
-        simgrid::kernel::context::set_nthreads(nthreads);
+        simgrid::kernel::context::Context::set_nthreads(nthreads);
       }};
 
   /* synchronization mode for parallel user contexts */
@@ -354,7 +354,7 @@ void sg_config_init(int *argc, char **argv)
 
   sg_config_cmd_line(argc, argv);
 
-  xbt_mallocator_initialization_is_done(simgrid::kernel::context::is_parallel());
+  xbt_mallocator_initialization_is_done(simgrid::kernel::context::Context::is_parallel());
 }
 
 void sg_config_finalize()

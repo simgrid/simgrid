@@ -38,7 +38,7 @@ ActorImpl::ActorImpl(const std::string& name, s4u::Host* host, aid_t ppid)
     : ActorIDTrait(name, ppid), host_(host), piface_(this)
 {
   simcall_.issuer_ = this;
-  stacksize_       = context::stack_size;
+  stacksize_       = context::Context::stack_size;
 }
 
 ActorImpl::~ActorImpl()

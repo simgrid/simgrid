@@ -175,7 +175,7 @@ void simcall_run_object_access(std::function<void()> const& code, simgrid::kerne
   // We only need a simcall if the order of the setters is important (parallel run or MC execution).
   // Otherwise, just call the function with no simcall
 
-  if (simgrid::kernel::context::is_parallel()
+  if (simgrid::kernel::context::Context::is_parallel()
 #if SIMGRID_HAVE_MC
       || MC_is_active() || MC_record_replay_is_active()
 #endif

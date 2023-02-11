@@ -15,8 +15,6 @@
 #include <functional>
 
 namespace simgrid::kernel::context {
-extern unsigned stack_size;
-extern unsigned guard_size;
 
 class XBT_PUBLIC ContextFactory {
 public:
@@ -45,6 +43,7 @@ protected:
 class XBT_PUBLIC Context {
   friend ContextFactory;
 
+  static int parallel_contexts;
   static thread_local Context* current_context_;
 
   std::function<void()> code_;
@@ -53,6 +52,10 @@ class XBT_PUBLIC Context {
   void declare_context(std::size_t size);
 
 public:
+  static e_xbt_parmap_mode_t parallel_mode;
+  static unsigned stack_size;
+  static unsigned guard_size;
+
   static int install_sigsegv_stack(bool enable);
 
   Context(std::function<void()>&& code, actor::ActorImpl* actor, bool maestro);
@@ -64,6 +67,22 @@ public:
   void operator()() const { code_(); }
   bool has_code() const { return static_cast<bool>(code_); }
   actor::ActorImpl* get_actor() const { return this->actor_; }
+
+  /** @brief Returns whether some parallel threads are used for the user contexts. */
+  static bool is_parallel() { return parallel_contexts > 1; }
+  /** @brief Returns the number of parallel threads used for the user contexts (1 means no parallelism). */
+  static int get_nthreads() { return parallel_contexts; }
+  /**
+   * @brief Sets the number of parallel threads to use  for the user contexts.
+   *
+   * This function should be called before initializing SIMIX.
+   * A value of 1 means no parallelism (1 thread only).
+   * If the value is greater than 1, the thread support must be enabled.
+   * If the value is less than 1, the optimal number of threads is chosen automatically.
+   *
+   * @param nb_threads the number of threads to use
+   */
+  static void set_nthreads(int nb_threads);
 
   // Scheduling methods
   virtual void stop();
@@ -98,11 +117,6 @@ XBT_PRIVATE ContextFactory* sysv_factory();
 XBT_PRIVATE ContextFactory* raw_factory();
 XBT_PRIVATE ContextFactory* boost_factory();
 
-XBT_PUBLIC bool is_parallel();
-XBT_PUBLIC int get_nthreads();
-XBT_PUBLIC void set_nthreads(int nb_threads);
-XBT_PUBLIC void set_parallel_mode(e_xbt_parmap_mode_t mode);
-XBT_PUBLIC e_xbt_parmap_mode_t get_parallel_mode();
 } // namespace simgrid::kernel::context
 
 #endif

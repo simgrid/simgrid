@@ -24,21 +24,21 @@ namespace simgrid::kernel::context {
 
 ThreadContextFactory::ThreadContextFactory() : ContextFactory()
 {
-  if (stack_size != 8 * 1024 * 1024)
+  if (Context::stack_size != 8 * 1024 * 1024)
     XBT_INFO("Stack size modifications are ignored by thread factory.");
-  if (is_parallel())
+  if (Context::is_parallel())
     ParallelThreadContext::initialize();
 }
 
 ThreadContextFactory::~ThreadContextFactory()
 {
-  if (is_parallel())
+  if (Context::is_parallel())
     ParallelThreadContext::finalize();
 }
 
 ThreadContext* ThreadContextFactory::create_context(std::function<void()>&& code, actor::ActorImpl* actor, bool maestro)
 {
-  if (is_parallel())
+  if (Context::is_parallel())
     return this->new_context<ParallelThreadContext>(std::move(code), actor, maestro);
   else
     return this->new_context<SerialThreadContext>(std::move(code), actor, maestro);
@@ -46,7 +46,7 @@ ThreadContext* ThreadContextFactory::create_context(std::function<void()>&& code
 
 void ThreadContextFactory::run_all(std::vector<actor::ActorImpl*> const& actors_list)
 {
-  if (is_parallel())
+  if (Context::is_parallel())
     ParallelThreadContext::run_all(actors_list);
 
   else
