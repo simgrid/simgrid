@@ -57,8 +57,31 @@ public:
   static s4u::Engine* get_instance(int* argc, char** argv);
   static bool has_instance() { return instance_ != nullptr; }
 
+  /**
+   * Creates a new platform, including hosts, links, and the routing table.
+   *
+   * @beginrst
+   * See also: :ref:`platform`.
+   * @endrst
+   */
   void load_platform(const std::string& platf) const;
+  /**
+   * @brief Seals the platform, finishing the creation of its resources.
+   *
+   * This method is optional. The seal() is done automatically when you call Engine::run.
+   */
   void seal_platform() const;
+  /** @brief Get a debug output of the platform.
+   *
+   * It looks like a XML platform file, but it may be very different from the input platform file: All netzones are
+   * flatified into a unique zone. This representation is mostly useful to debug your platform configuration and ensure
+   * that your assumptions over your configuration hold. This enables you to verify the exact list of links traversed
+   * between any two hosts, and the characteristics of every host and link. But you should not use the resulting file as
+   * an input platform file: it is very verbose, and thus much less efficient (in parsing time and runtime performance)
+   * than a regular platform file with the sufficient amount of intermediary netzones. Even if you use one zone only,
+   * specialized zones (such as clusters) are more efficient than the one with fully explicit routing used here.
+   */
+  std::string flatify_platform() const;
 
   /** @verbatim embed:rst:inline Bind an actor name that could be found in :ref:`pf_tag_actor` tag to a function taking classical argc/argv parameters. See the :ref:`example <s4u_ex_actors_create>`. @endverbatim */
   void register_function(const std::string& name, const std::function<void(int, char**)>& code);

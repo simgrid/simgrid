@@ -9,6 +9,8 @@ General:
 S4U:
  - Activity::set_remaining() is not public anymore. Use for example
    Comm::set_payload_size() to change the size of the simulated data.
+ - New function: Engine::flatify_platform(), to get a fully detailed vision of the
+   configured platform.
 
 Kernel:
  - optimize an internal datastructure, leading to a potentially big

@@ -825,6 +825,7 @@ Simulation setup
 
       .. doxygenfunction:: simgrid::s4u::Engine::load_deployment
       .. doxygenfunction:: simgrid::s4u::Engine::load_platform
+      .. doxygenfunction:: simgrid::s4u::Engine::flatify_platform
       .. doxygenfunction:: simgrid::s4u::Engine::register_actor(const std::string &name)
       .. doxygenfunction:: simgrid::s4u::Engine::register_actor(const std::string &name, F code)
       .. doxygenfunction:: simgrid::s4u::Engine::register_default(const std::function< void(int, char **)> &code)
