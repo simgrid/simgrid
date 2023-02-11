@@ -85,6 +85,11 @@ void SplitDuplexLinkImpl::set_latency_profile(profile::Profile* profile)
   link_down_->set_latency_profile(profile);
 }
 
+int SplitDuplexLinkImpl::get_concurrency_limit() const
+{
+  return link_up_->get_concurrency_limit();
+}
+
 void SplitDuplexLinkImpl::set_concurrency_limit(int limit) const
 {
   link_up_->set_concurrency_limit(limit);

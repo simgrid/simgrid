@@ -111,6 +111,7 @@ public:
    * @param limit  Number of concurrent flows
    */
   Link* set_concurrency_limit(int limit);
+  int get_concurrency_limit() const;
 
   /** @brief Set the level of communication speed of the given host on this wifi link.
    *

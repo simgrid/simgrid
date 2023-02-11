@@ -1582,6 +1582,7 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Link::get_latency() const
       .. doxygenfunction:: simgrid::s4u::Link::get_name() const
       .. doxygenfunction:: simgrid::s4u::Link::get_sharing_policy() const
+      .. doxygenfunction:: simgrid::s4u::Link::get_concurrency_limit() const
       .. doxygenfunction:: simgrid::s4u::Link::get_usage() const
       .. doxygenfunction:: simgrid::s4u::Link::is_used() const
 

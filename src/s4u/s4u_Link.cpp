@@ -119,6 +119,11 @@ void Link::set_host_wifi_rate(const s4u::Host* host, int level) const
   wlink->set_host_rate(host, level);
 }
 
+int Link::get_concurrency_limit() const
+{
+  return pimpl_->get_concurrency_limit();
+}
+
 Link* Link::set_concurrency_limit(int limit)
 {
   kernel::actor::simcall_object_access(pimpl_, [this, limit] { pimpl_->set_concurrency_limit(limit); });

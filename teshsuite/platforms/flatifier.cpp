@@ -71,9 +71,11 @@ static void dump_links(sg4::Engine& engine, std::stringstream& ss)
             [](const sg4::Link* a, const sg4::Link* b) { return a->get_name() < b->get_name(); });
 
   for (auto const* link : links) {
-    ss << "  <link id=\"" << link->get_name() << "\" ";
-    ss << "bandwidth=\"" << link->get_bandwidth() << "\" ";
-    ss << "latency=\"" << link->get_latency() << "\"";
+    ss << "  <link id=\"" << link->get_name() << "\"";
+    ss << " bandwidth=\"" << link->get_bandwidth() << "\"";
+    ss << " latency=\"" << link->get_latency() << "\"";
+    if (link->get_concurrency_limit() != -1)
+      ss << " concurrency=\"" << link->get_concurrency_limit() << "\"";
     if (link->is_shared()) {
       ss << "/>\n";
     } else {
