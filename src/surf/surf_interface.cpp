@@ -16,14 +16,10 @@
 #include <fstream>
 #include <string>
 
-XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (kernel)");
-
 /*********
  * Utils *
  *********/
 
-simgrid::kernel::profile::FutureEvtSet future_evt_set;
 std::vector<std::string> surf_path;
 
 const std::vector<surf_model_description_t> surf_network_model_description = {

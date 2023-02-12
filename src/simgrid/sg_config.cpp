@@ -24,7 +24,7 @@
 
 #include <string_view>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf, "About the configuration of SimGrid");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(config, kernel, "About the configuration of SimGrid");
 
 static simgrid::config::Flag<bool> cfg_continue_after_help
   {"help-nostop", "Do not stop the execution when --help is found", false};

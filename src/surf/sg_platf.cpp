@@ -29,7 +29,7 @@
 #include <algorithm>
 #include <string>
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(platf_parse);
 
 namespace simgrid::kernel::routing {
 xbt::signal<void(ClusterCreationArgs const&)> on_cluster_creation;

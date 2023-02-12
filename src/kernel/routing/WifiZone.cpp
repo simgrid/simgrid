@@ -8,7 +8,7 @@
 
 #include "src/kernel/resource/NetworkModel.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_wifi, ker_routing, "Kernel Wifi Routing");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_wifi, ker_platform, "Kernel Wifi Routing");
 
 namespace simgrid {
 namespace kernel::routing {

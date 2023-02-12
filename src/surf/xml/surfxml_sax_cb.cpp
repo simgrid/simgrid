@@ -26,7 +26,7 @@
 
 #include "simgrid_dtd.c"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF parsing module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(platf_parse, ker_platform, "Logging specific to the parsing of platform files");
 
 std::string surf_parsed_filename; // Currently parsed file (for the error messages)
 static std::vector<simgrid::s4u::LinkInRoute> parsed_link_list; /* temporary store of current link list of a route */

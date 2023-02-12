@@ -20,7 +20,7 @@
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/surf/HostImpl.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing, kernel, "Kernel routing-related information");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_platform, kernel, "Kernel platform-related information");
 
 namespace simgrid::kernel::routing {
 

@@ -17,7 +17,7 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_fat_tree, ker_routing, "Kernel Fat-Tree Routing");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_fat_tree, ker_platform, "Kernel Fat-Tree Routing");
 
 namespace simgrid {
 namespace kernel::routing {

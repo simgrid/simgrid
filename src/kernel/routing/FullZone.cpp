@@ -8,7 +8,7 @@
 
 #include "src/kernel/resource/NetworkModel.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_full, ker_routing, "Kernel Full Routing");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_full, ker_platform, "Kernel Full Routing");
 
 namespace simgrid {
 namespace kernel::routing {

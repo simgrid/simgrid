@@ -12,7 +12,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/asserts.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_generic, ker_routing, "Kernel Generic Routing");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_generic, ker_platform, "Kernel Generic Routing");
 
 /* ***************************************************************** */
 /* *********************** GENERIC METHODS ************************* */
