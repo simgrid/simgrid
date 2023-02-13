@@ -52,7 +52,7 @@ public:
   unsigned int do_consider()
   {
     if (max_consider_ <= times_considered_ + 1)
-      set_done();
+      mark_done();
     return times_considered_++;
   }
   unsigned int get_times_considered() const { return times_considered_; }
@@ -70,7 +70,7 @@ public:
     this->state_            = InterleavingType::todo;
     this->times_considered_ = 0;
   }
-  void set_done() { this->state_ = InterleavingType::done; }
+  void mark_done() { this->state_ = InterleavingType::done; }
 };
 
 } // namespace simgrid::mc

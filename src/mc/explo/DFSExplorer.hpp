@@ -83,6 +83,7 @@ public:
 private:
   void check_non_termination(const State* current_state);
   void backtrack();
+  bool sleep_set_reduction_ = true; 
 
   /** Stack representing the position in the exploration graph */
   std::list<std::unique_ptr<State>> stack_;

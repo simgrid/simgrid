@@ -136,12 +136,18 @@ void DFSExplorer::run()
         mc_model_checker->finalize_app();
         XBT_VERB("Execution came to an end at %s (state: %ld, depth: %zu)", get_record_trace().to_string().c_str(),
                  state->get_num(), stack_.size());
-	stack_.pop_back();
 
       }
       
       this->backtrack();
       continue;
+    }
+
+    XBT_VERB("Sleep set actually containing:");
+    for (auto & [aid, transition] : state->get_sleep_set()) {
+      
+	XBT_VERB("###<%ld,%s>", aid, transition.to_string().c_str());
+      
     }
 
     /* Actually answer the request: let's execute the selected request (MCed does one step) */
@@ -154,9 +160,23 @@ void DFSExplorer::run()
              state->get_transition()->to_string().c_str(), stack_.size(), state->get_num(), state->count_todo());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    auto next_state = std::make_unique<State>(get_remote_app());
+    std::__detail::__unique_ptr_t<simgrid::mc::State> next_state;
+
+    /* If we want sleep set reduction, we pass it to old one to the new state */
+    if (sleep_set_reduction_)
+	next_state = std::make_unique<State>(get_remote_app(), state); 
+    else
+	next_state = std::make_unique<State>(get_remote_app());
+
     on_state_creation_signal(next_state.get(), get_remote_app());
 
+    XBT_VERB("New sleep set containing:");
+    for (auto & [aid, transition] : next_state->get_sleep_set()) {
+      
+	XBT_VERB("###<%ld,%s>", aid, transition.to_string().c_str());
+      
+    }
+		
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
 
@@ -168,7 +188,7 @@ void DFSExplorer::run()
     if (visited_state_ == nullptr) {
       /* Get an enabled process and insert it in the interleave set of the next state */
       for (auto const& [aid, _] : next_state->get_actors_list()) {
-        if (next_state->is_actor_enabled(aid)) {
+        if (next_state->is_actor_enabled(aid) and not next_state->is_done(aid)) {
           next_state->mark_todo(aid);
           if (reduction_mode_ == ReductionMode::dpor)
             break; // With DPOR, we take the first enabled transition
@@ -197,6 +217,9 @@ void DFSExplorer::backtrack()
 
   get_remote_app().check_deadlock();
 
+  if (stack_.back()->get_transition()->aid_ == 0)
+      stack_.pop_back();
+  
   /* Traverse the stack backwards until a state with a non empty interleave set is found, deleting all the states that
    *  have it empty in the way. For each deleted state, check if the request that has generated it (from its
    *  predecessor state), depends on any other previous request executed before it. If it does then add it to the
@@ -204,8 +227,13 @@ void DFSExplorer::backtrack()
   bool found_backtracking_point = false;
   while (not stack_.empty() && not found_backtracking_point) {
     std::unique_ptr<State> state = std::move(stack_.back());
+    
     stack_.pop_back();
-    state->set_done(state->get_transition()->aid_);
+    
+    XBT_DEBUG("Maarking Transition >>%s<< of process %ld done and addint it to the sleep set", state->get_transition()->to_string().c_str(), state->get_transition()->aid_);
+    state->mark_done(state->get_transition()->aid_);
+    state->set_sleep_set(state->get_transition());
+
     if (reduction_mode_ == ReductionMode::dpor) {
       aid_t issuer_id = state->get_transition()->aid_;
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
