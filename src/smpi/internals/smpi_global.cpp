@@ -72,7 +72,7 @@ std::map</* computation unit name */ std::string, papi_process_data, std::less<>
 std::unordered_map<std::string, double> location2speedup;
 
 static int smpi_exit_status = 0;
-xbt_os_timer_t global_timer;
+static xbt_os_timer_t global_timer;
 static std::vector<std::string> privatize_libs_paths;
 
 // No instance gets manually created; check also the smpirun.in script as

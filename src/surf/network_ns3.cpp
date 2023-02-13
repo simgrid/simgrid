@@ -51,8 +51,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_ns3, res_network, "Network model based on ns
 extern std::map<std::string, SgFlow*, std::less<>> flow_from_sock;
 extern std::map<std::string, ns3::ApplicationContainer, std::less<>> sink_from_sock;
 
-static ns3::InternetStackHelper stack;
-
 static int number_of_links    = 1;
 static int number_of_networks = 1;
 
@@ -67,6 +65,7 @@ static std::string transformIpv4Address(ns3::Ipv4Address from)
 
 NetPointNs3::NetPointNs3()
 {
+  static ns3::InternetStackHelper stack;
   stack.Install(ns3_node_);
 }
 

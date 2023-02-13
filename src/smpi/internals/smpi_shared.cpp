@@ -58,7 +58,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_shared, smpi, "Logging specific to SMPI (shared memory macros)");
 
-namespace{
+namespace {
 /** Some location in the source code
  *
  *  This information is used by SMPI_SHARED_MALLOC to allocate  some shared memory for all simulated processes.
@@ -94,7 +94,7 @@ std::map<std::string, void*, std::less<>> calls;
 int smpi_shared_malloc_bogusfile           = -1;
 int smpi_shared_malloc_bogusfile_huge_page = -1;
 unsigned long smpi_shared_malloc_blocksize = 1UL << 20;
-}
+} // namespace
 
 void smpi_shared_destroy()
 {

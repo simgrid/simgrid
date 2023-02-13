@@ -26,9 +26,9 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi, "Memory layout support for SMPI");
 
-char* smpi_data_exe_start = nullptr;
-size_t smpi_data_exe_size = 0;
-SmpiPrivStrategies smpi_privatize_global_variables;
+static char* smpi_data_exe_start = nullptr; // start of the data+bss segment of the executable
+static size_t smpi_data_exe_size = 0;       // size of the data+bss segment of the executable
+static SmpiPrivStrategies smpi_privatize_global_variables;
 static void* smpi_data_exe_copy;
 
 // Initialized by smpi_prepare_global_memory_segment().

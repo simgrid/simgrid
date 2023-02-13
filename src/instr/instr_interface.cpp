@@ -17,11 +17,11 @@ enum class InstrUserVariable { DECLARE, SET, ADD, SUB };
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
 
-std::set<std::string, std::less<>> created_categories;
-std::set<std::string, std::less<>> declared_marks;
-std::set<std::string, std::less<>> user_host_variables;
-std::set<std::string, std::less<>> user_vm_variables;
-std::set<std::string, std::less<>> user_link_variables;
+static std::set<std::string, std::less<>> created_categories;
+static std::set<std::string, std::less<>> declared_marks;
+static std::set<std::string, std::less<>> user_host_variables;
+static std::set<std::string, std::less<>> user_vm_variables;
+static std::set<std::string, std::less<>> user_link_variables;
 
 static void instr_user_variable(double time, const std::string& resource, const std::string& variable_name,
                                 const std::string& parent_type, double value, InstrUserVariable what,

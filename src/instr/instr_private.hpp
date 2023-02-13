@@ -40,7 +40,6 @@ void dump_header(bool basic, bool display_sizes);
  */
 enum class TraceFormat { Paje, /*TimeIndependent*/ Ti };
 extern TraceFormat trace_format;
-extern int trace_precision;
 extern double last_timestamp_to_dump;
 
 void init();
@@ -232,12 +231,6 @@ public:
 } // namespace simgrid::instr
 
 XBT_PRIVATE std::string instr_pid(simgrid::s4u::Actor const& proc);
-
-extern XBT_PRIVATE std::set<std::string, std::less<>> created_categories;
-extern XBT_PRIVATE std::set<std::string, std::less<>> declared_marks;
-extern XBT_PRIVATE std::set<std::string, std::less<>> user_host_variables;
-extern XBT_PRIVATE std::set<std::string, std::less<>> user_vm_variables;
-extern XBT_PRIVATE std::set<std::string, std::less<>> user_link_variables;
 
 /* from instr_config.c */
 XBT_PRIVATE bool TRACE_needs_platform();

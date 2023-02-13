@@ -29,7 +29,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF parsing module");
 
 std::string surf_parsed_filename; // Currently parsed file (for the error messages)
-std::vector<simgrid::s4u::LinkInRoute> parsed_link_list; /* temporary store of current link list of a route */
+static std::vector<simgrid::s4u::LinkInRoute> parsed_link_list; /* temporary store of current link list of a route */
 
 /* Helping functions */
 void surf_parse_assert(bool cond, const std::string& msg)
@@ -127,9 +127,9 @@ static void explodesRadical(const std::string& radicals, std::vector<int>* explo
 
 /* make sure these symbols are defined as strong ones in this file so that the linker can resolve them */
 
-std::vector<std::unordered_map<std::string, std::string>> property_sets;
+static std::vector<std::unordered_map<std::string, std::string>> property_sets;
 
-FILE *surf_file_to_parse = nullptr;
+static FILE* surf_file_to_parse = nullptr;
 
 /* Stuff relative to storage */
 void STag_surfxml_storage()
@@ -826,7 +826,7 @@ void ETag_surfxml_argument(){/* Nothing to do */}
 void ETag_surfxml_model___prop(){/* Nothing to do */}
 
 /* Open and Close parse file */
-YY_BUFFER_STATE surf_input_buffer;
+static YY_BUFFER_STATE surf_input_buffer;
 
 void surf_parse_open(const std::string& file)
 {
