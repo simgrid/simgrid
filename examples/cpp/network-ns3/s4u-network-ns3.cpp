@@ -32,7 +32,7 @@ static void master(MasterWorkerNamesMap& names, const std::vector<std::string>& 
   int id          = std::stoi(args[3]); // unique id to control statistics
 
   /* master and worker names */
-  names.emplace(id, MasterWorkerNames{sg4::Host::current()->get_name(), args[2]});
+  names.try_emplace(id, MasterWorkerNames{sg4::Host::current()->get_name(), args[2]});
 
   sg4::Mailbox* mbox = sg4::Mailbox::by_name(args[3]);
 
