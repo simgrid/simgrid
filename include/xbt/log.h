@@ -308,8 +308,6 @@ XBT_PUBLIC void _xbt_log_event_log(xbt_log_event_t ev, const char* fmt, ...) XBT
 XBT_PUBLIC int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority);
 
 extern s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT);
-extern xbt_log_appender_t xbt_log_default_appender;
-extern xbt_log_layout_t xbt_log_default_layout;
 
 /* ********************** */
 /* Public functions again */

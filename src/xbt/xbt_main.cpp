@@ -64,7 +64,6 @@ XBT_ATTRIB_NOINLINE void sthread_disable()
 
 static void xbt_preinit()
 {
-  xbt_log_preinit();
   xbt_dict_preinit();
   atexit(xbt_postexit);
 }
