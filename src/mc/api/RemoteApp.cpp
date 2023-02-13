@@ -215,14 +215,14 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
                "(currently %d), but only %d transition(s) was/were said to be encoded",
                actor.max_considered, actor.n_transitions);
 
-    std::stringstream stream((*action_pool_iter).buffer.data());
-    auto actor_transitions = std::vector<std::unique_ptr<Transition>>(actor.max_considered);
-
-    for (int times_considered = 0; times_considered < actor.max_considered; times_considered++, action_pool_iter++) {
+    auto actor_transitions = std::vector<std::unique_ptr<Transition>>(actor.n_transitions);
+    for (int times_considered = 0; times_considered < actor.n_transitions; times_considered++, action_pool_iter++) {
+      std::stringstream stream((*action_pool_iter).buffer.data());
       auto transition = std::unique_ptr<Transition>(deserialize_transition(actor.aid, times_considered, stream));
-      actor_transitions.push_back(std::move(transition));
+      actor_transitions[times_considered] = std::move(transition);
     }
 
+    XBT_DEBUG("Received %d transitions for actor %ld", actor.n_transitions, actor.aid);
     whereto.try_emplace(actor.aid, actor.aid, actor.enabled, actor.max_considered, std::move(actor_transitions));
   }
 }
