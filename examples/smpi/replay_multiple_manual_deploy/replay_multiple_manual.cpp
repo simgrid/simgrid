@@ -44,10 +44,6 @@ struct Job {
   int unique_job_number;                     //!< The job unique number in [0, n[.
 };
 
-// ugly globals to avoid creating structures for giving args to processes
-static std::vector<simgrid::s4u::Host*> hosts;
-static int noise_between_jobs;
-
 static void smpi_replay_process(Job* job, simgrid::s4u::BarrierPtr barrier, int rank)
 {
   XBT_INFO("Replaying rank %d of job %d (smpi_app '%s')", rank, job->unique_job_number, job->smpi_app_name.c_str());
@@ -75,7 +71,7 @@ static void pop_some_processes(int nb_processes, simgrid::s4u::Host* host)
   }
 }
 
-static int job_executor_process(Job* job)
+static int job_executor_process(const std::vector<simgrid::s4u::Host*>& hosts, Job* job)
 {
   XBT_INFO("Executing job %d (smpi_app '%s')", job->unique_job_number, job->smpi_app_name.c_str());
 
@@ -96,7 +92,8 @@ static int job_executor_process(Job* job)
 }
 
 // Executes a workload of SMPI processes
-static int workload_executor_process(const std::vector<std::unique_ptr<Job>>& workload)
+static int workload_executor_process(const std::vector<simgrid::s4u::Host*>& hosts,
+                                     const std::vector<std::unique_ptr<Job>>& workload, int noise_between_jobs)
 {
   for (auto const& job : workload) {
     // Let's wait until the job's waiting time if needed
@@ -117,7 +114,8 @@ static int workload_executor_process(const std::vector<std::unique_ptr<Job>>& wo
     // Let's finally run the job executor
     char* str_pname = bprintf("job_%04d", job->unique_job_number);
     XBT_INFO("Launching the job executor of job %d (app '%s')", job->unique_job_number, job->smpi_app_name.c_str());
-    simgrid::s4u::Actor::create(str_pname, hosts[job->allocation[0]], job_executor_process, job.get());
+    simgrid::s4u::Actor::create(str_pname, hosts[job->allocation[0]], job_executor_process, std::cref(hosts),
+                                job.get());
     xbt_free(str_pname);
   }
 
@@ -210,7 +208,7 @@ int main(int argc, char* argv[])
   //  Simulation setting
   simgrid::s4u::Engine e(&argc, argv);
   e.load_platform(argv[1]);
-  hosts = e.get_all_hosts();
+  const auto hosts = e.get_all_hosts();
   xbt_assert(hosts.size() >= 4, "The given platform should contain at least 4 hosts (found %zu).", hosts.size());
 
   // Let's retrieve all SMPI jobs
@@ -226,7 +224,7 @@ int main(int argc, char* argv[])
   int initial_noise = std::stoi(argv[3]);
   xbt_assert(initial_noise >= 0, "Invalid initial_noise argument");
 
-  noise_between_jobs = std::stoi(argv[4]);
+  int noise_between_jobs = std::stoi(argv[4]);
   xbt_assert(noise_between_jobs >= 0, "Invalid noise_between_jobs argument");
 
   if (initial_noise > 0) {
@@ -235,7 +233,8 @@ int main(int argc, char* argv[])
   }
 
   // Let's execute the workload
-  simgrid::s4u::Actor::create("workload", hosts[0], workload_executor_process, std::cref(jobs));
+  simgrid::s4u::Actor::create("workload", hosts[0], workload_executor_process, std::cref(hosts), std::cref(jobs),
+                              noise_between_jobs);
 
   e.run();
   XBT_INFO("Simulation finished! Final time: %g", simgrid::s4u::Engine::get_clock());

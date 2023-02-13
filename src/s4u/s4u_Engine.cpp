@@ -107,26 +107,152 @@ const std::vector<simgrid::kernel::resource::Model*>& Engine::get_all_models() c
   return pimpl->get_all_models();
 }
 
-/**
- * Creates a new platform, including hosts, links, and the routing table.
- *
- * @beginrst
- * See also: :ref:`platform`.
- * @endrst
- */
 void Engine::load_platform(const std::string& platf) const
 {
   pimpl->load_platform(platf);
 }
 
-/**
- * @brief Seals the platform, finishing the creation of its resources.
- *
- * This method is optional. The seal() is done automatically when you call Engine::run.
- */
 void Engine::seal_platform() const
 {
   pimpl->seal_platform();
+}
+
+static void flatify_hosts(Engine const& engine, std::stringstream& ss)
+{
+  // Regular hosts
+  std::vector<Host*> hosts = engine.get_all_hosts();
+
+  for (auto const* h : hosts) {
+    ss << "  <host id=\"" << h->get_name() << "\" speed=\"" << h->get_speed() << "\"";
+    const std::unordered_map<std::string, std::string>* props = h->get_properties();
+    if (h->get_core_count() > 1)
+      ss << " core=\"" << h->get_core_count() << "\"";
+
+    // Sort the properties before displaying them, so that the tests are perfectly reproducible
+    std::vector<std::string> keys;
+    for (auto const& [key, _] : *props)
+      keys.push_back(key);
+    if (not keys.empty()) {
+      ss << ">\n";
+      std::sort(keys.begin(), keys.end());
+      for (const std::string& key : keys)
+        ss << "    <prop id=\"" << key << "\" value=\"" << props->at(key) << "\"/>\n";
+      ss << "  </host>\n";
+    } else {
+      ss << "/>\n";
+    }
+  }
+
+  // Routers
+  std::vector<simgrid::kernel::routing::NetPoint*> netpoints = engine.get_all_netpoints();
+  std::sort(netpoints.begin(), netpoints.end(),
+            [](const simgrid::kernel::routing::NetPoint* a, const simgrid::kernel::routing::NetPoint* b) {
+              return a->get_name() < b->get_name();
+            });
+
+  for (auto const& src : netpoints)
+    if (src->is_router())
+      ss << "  <router id=\"" << src->get_name() << "\"/>\n";
+}
+
+static void flatify_links(Engine const& engine, std::stringstream& ss)
+{
+  std::vector<Link*> links = engine.get_all_links();
+
+  std::sort(links.begin(), links.end(), [](const Link* a, const Link* b) { return a->get_name() < b->get_name(); });
+
+  for (auto const* link : links) {
+    ss << "  <link id=\"" << link->get_name() << "\"";
+    ss << " bandwidth=\"" << link->get_bandwidth() << "\"";
+    ss << " latency=\"" << link->get_latency() << "\"";
+    if (link->get_concurrency_limit() != -1)
+      ss << " concurrency=\"" << link->get_concurrency_limit() << "\"";
+    if (link->is_shared()) {
+      ss << "/>\n";
+    } else {
+      ss << " sharing_policy=\"FATPIPE\"/>\n";
+    }
+  }
+}
+
+static void flatify_routes(Engine const& engine, std::stringstream& ss)
+{
+  auto hosts     = engine.get_all_hosts();
+  auto netpoints = engine.get_all_netpoints();
+  std::sort(netpoints.begin(), netpoints.end(),
+            [](const simgrid::kernel::routing::NetPoint* a, const simgrid::kernel::routing::NetPoint* b) {
+              return a->get_name() < b->get_name();
+            });
+
+  for (auto const* src_host : hosts) { // Routes from host
+    const simgrid::kernel::routing::NetPoint* src = src_host->get_netpoint();
+    for (auto const* dst_host : hosts) { // Routes to host
+      std::vector<simgrid::kernel::resource::StandardLinkImpl*> route;
+      const simgrid::kernel::routing::NetPoint* dst = dst_host->get_netpoint();
+      simgrid::kernel::routing::NetZoneImpl::get_global_route(src, dst, route, nullptr);
+      if (route.empty())
+        continue;
+      ss << "  <route src=\"" << src_host->get_name() << "\" dst=\"" << dst_host->get_name() << "\">\n  ";
+      for (auto const& link : route)
+        ss << "<link_ctn id=\"" << link->get_name() << "\"/>";
+      ss << "\n  </route>\n";
+    }
+
+    for (auto const& dst : netpoints) { // to router
+      if (not dst->is_router())
+        continue;
+      ss << "  <route src=\"" << src_host->get_name() << "\" dst=\"" << dst->get_name() << "\">\n  ";
+      std::vector<simgrid::kernel::resource::StandardLinkImpl*> route;
+      simgrid::kernel::routing::NetZoneImpl::get_global_route(src, dst, route, nullptr);
+      for (auto const& link : route)
+        ss << "<link_ctn id=\"" << link->get_name() << "\"/>";
+      ss << "\n  </route>\n";
+    }
+  }
+
+  for (auto const& value1 : netpoints) { // Routes from router
+    if (not value1->is_router())
+      continue;
+    for (auto const& value2 : netpoints) { // to router
+      if (not value2->is_router())
+        continue;
+      std::vector<simgrid::kernel::resource::StandardLinkImpl*> route;
+      simgrid::kernel::routing::NetZoneImpl::get_global_route(value1, value2, route, nullptr);
+      if (route.empty())
+        continue;
+      ss << "  <route src=\"" << value1->get_name() << "\" dst=\"" << value2->get_name() << "\">\n  ";
+      for (auto const& link : route)
+        ss << "<link_ctn id=\"" << link->get_name() << "\"/>";
+      ss << "\n  </route>\n";
+    }
+    for (auto const* dst_host : hosts) { // Routes to host
+      ss << "  <route src=\"" << value1->get_name() << "\" dst=\"" << dst_host->get_name() << "\">\n  ";
+      std::vector<simgrid::kernel::resource::StandardLinkImpl*> route;
+      const simgrid::kernel::routing::NetPoint* netcardDst = dst_host->get_netpoint();
+      simgrid::kernel::routing::NetZoneImpl::get_global_route(value1, netcardDst, route, nullptr);
+      for (auto const& link : route)
+        ss << "<link_ctn id=\"" << link->get_name() << "\"/>";
+      ss << "\n  </route>\n";
+    }
+  }
+}
+std::string Engine::flatify_platform() const
+{
+  std::string version = "4.1";
+  std::stringstream ss;
+
+  ss << "<?xml version='1.0'?>\n";
+  ss << "<!DOCTYPE platform SYSTEM \"https://simgrid.org/simgrid.dtd\">\n";
+  ss << "<platform version=\"" << version << "\">\n";
+  ss << "<AS id=\"" << get_netzone_root()->get_name() << "\" routing=\"Full\">\n";
+
+  flatify_hosts(*this, ss);
+  flatify_links(*this, ss);
+  flatify_routes(*this, ss);
+
+  ss << "</AS>\n";
+  ss << "</platform>\n";
+  return ss.str();
 }
 
 /** Registers the main function of an actor that will be launched from the deployment file */

@@ -128,7 +128,7 @@ int replay_runner(const char* actor_name, const char* trace_filename)
     simgrid::xbt::ReplayAction evt;
     simgrid::xbt::ReplayReader reader(trace_filename);
     while (reader.get(&evt)) {
-      if (evt.front().compare(actor_name) == 0) {
+      if (evt.front() == actor_name) {
         simgrid::xbt::handle_action(evt);
       } else {
         XBT_WARN("Ignore trace element not for me (target='%s', I am '%s')", evt.front().c_str(), actor_name);
@@ -150,7 +150,7 @@ int replay_runner(const char* actor_name, const char* trace_filename)
  * The argument of the function is the line describing the action, fields separated by spaces.
  *
  * @param action_name the reference name of the action.
- * @param function prototype given by the type: void...(const char** action)
+ * @param function prototype given by the type: void...(simgrid::xbt::ReplayAction& action)
  */
 void xbt_replay_action_register(const char* action_name, const action_fun& function)
 {

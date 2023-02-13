@@ -8,9 +8,14 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(s4u_chord);
 namespace sg4 = simgrid::s4u;
 
+void ChordMessage::destroy(void* message)
+{
+  delete static_cast<ChordMessage*>(message);
+}
+
 /* Returns whether an id belongs to the interval [start, end].
  *
- * The parameters are normalized to make sure they are between 0 and nb_keys - 1).
+ * The parameters are normalized to make sure they are between 0 and nb_keys_ - 1).
  * 1 belongs to [62, 3]
  * 1 does not belong to [3, 62]
  * 63 belongs to [62, 3]
@@ -23,27 +28,29 @@ namespace sg4 = simgrid::s4u;
  * @param end upper bound
  * @return true if id in in [start, end]
  */
-static bool is_in_interval(int id, int start, int end)
+bool Node::is_in_interval(int id, int start, int end)
 {
-  int i = id % nb_keys;
-  int s = start % nb_keys;
-  int e = end % nb_keys;
+  int i = id % nb_keys_;
+  int s = start % nb_keys_;
+  int e = end % nb_keys_;
 
   // make sure end >= start and id >= start
   if (e < s) {
-    e += nb_keys;
+    e += nb_keys_;
   }
 
   if (i < s) {
-    i += nb_keys;
+    i += nb_keys_;
   }
 
   return i <= e;
 }
 
-void ChordMessage::destroy(void* message)
+void Node::set_parameters(int nb_bits, int nb_keys, int timeout)
 {
-  delete static_cast<ChordMessage*>(message);
+  nb_bits_ = nb_bits;
+  nb_keys_ = nb_keys;
+  timeout_ = timeout;
 }
 
 /* Initializes the current node as the first one of the system */
@@ -54,10 +61,10 @@ Node::Node(std::vector<std::string> args)
   // initialize my node
   id_                = std::stoi(args[1]);
   XBT_DEBUG("Initialize node with id: %d", id_);
-  random.set_seed(id_);
+  random_.set_seed(id_);
   mailbox_           = sg4::Mailbox::by_name(std::to_string(id_));
-  next_finger_to_fix = 0;
-  fingers_.resize(nb_bits, id_);
+  next_finger_to_fix_ = 0;
+  fingers_.resize(nb_bits_, id_);
 
   if (args.size() == 3) { // first ring
     deadline_   = std::stod(args[2]);
@@ -89,7 +96,7 @@ void Node::join(int known_id)
   } else {
     setFinger(0, successor_id);
     printFingerTable();
-    joined = true;
+    joined_ = true;
   }
 }
 
@@ -98,7 +105,7 @@ void Node::leave()
 {
   XBT_INFO("Well Guys! I Think it's time for me to leave ;)");
   notifyAndQuit();
-  joined = false;
+  joined_ = false;
 }
 
 /* Notifies the successor and the predecessor of the current node before leaving */
@@ -111,7 +118,7 @@ void Node::notifyAndQuit()
 
   XBT_DEBUG("Sending a 'PREDECESSOR_LEAVING' to my successor %d", fingers_[0]);
   try {
-    sg4::Mailbox::by_name(std::to_string(fingers_[0]))->put(pred_msg, 10, timeout);
+    sg4::Mailbox::by_name(std::to_string(fingers_[0]))->put(pred_msg, 10, timeout_);
   } catch (const simgrid::TimeoutException&) {
     XBT_DEBUG("Timeout expired when sending a 'PREDECESSOR_LEAVING' to my successor %d", fingers_[0]);
     delete pred_msg;
@@ -125,7 +132,7 @@ void Node::notifyAndQuit()
     XBT_DEBUG("Sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
 
     try {
-      sg4::Mailbox::by_name(std::to_string(pred_id_))->put(succ_msg, 10, timeout);
+      sg4::Mailbox::by_name(std::to_string(pred_id_))->put(succ_msg, 10, timeout_);
     } catch (const simgrid::TimeoutException&) {
       XBT_DEBUG("Timeout expired when sending a 'SUCCESSOR_LEAVING' to my predecessor %d", pred_id_);
       delete succ_msg;
@@ -137,7 +144,7 @@ void Node::notifyAndQuit()
 void Node::randomLookup()
 {
   int res          = id_;
-  int random_index = random.uniform_int(0, nb_bits - 1);
+  int random_index = random_.uniform_int(0, nb_bits_ - 1);
   int random_id    = fingers_[random_index];
   XBT_DEBUG("Making a lookup request for id %d", random_id);
   if (random_id != id_)
@@ -148,7 +155,7 @@ void Node::randomLookup()
 /* Sets a finger of the current node.
  *
  * @param node the current node
- * @param finger_index index of the finger to set (0 to nb_bits - 1)
+ * @param finger_index index of the finger to set (0 to nb_bits_ - 1)
  * @param id the id to set for this finger
  */
 void Node::setFinger(int finger_index, int id)
@@ -174,13 +181,13 @@ void Node::setPredecessor(int predecessor_id)
 void Node::fixFingers()
 {
   XBT_DEBUG("Fixing fingers");
-  int id = findSuccessor(id_ + (1U << next_finger_to_fix));
+  int id = findSuccessor(id_ + (1U << next_finger_to_fix_));
   if (id != -1) {
-    if (id != fingers_[next_finger_to_fix]) {
-      setFinger(next_finger_to_fix, id);
+    if (id != fingers_[next_finger_to_fix_]) {
+      setFinger(next_finger_to_fix_, id);
       printFingerTable();
     }
-    next_finger_to_fix = (next_finger_to_fix + 1) % nb_bits;
+    next_finger_to_fix_ = (next_finger_to_fix_ + 1) % nb_bits_;
   }
 }
 
@@ -190,8 +197,8 @@ void Node::printFingerTable()
   if (XBT_LOG_ISENABLED(s4u_chord, xbt_log_priority_verbose)) {
     XBT_VERB("My finger table:");
     XBT_VERB("Start | Succ");
-    for (int i = 0; i < nb_bits; i++) {
-      XBT_VERB(" %3u  | %3d", (id_ + (1U << i)) % nb_keys, fingers_[i]);
+    for (int i = 0; i < nb_bits_; i++) {
+      XBT_VERB(" %3u  | %3d", (id_ + (1U << i)) % nb_keys_, fingers_[i]);
     }
 
     XBT_VERB("Predecessor: %d", pred_id_);
@@ -214,7 +221,7 @@ void Node::checkPredecessor()
 
   XBT_DEBUG("Sending a 'Predecessor Alive' request to my predecessor %d", pred_id_);
   try {
-    mailbox->put(message, 10, timeout);
+    mailbox->put(message, 10, timeout_);
   } catch (const simgrid::TimeoutException&) {
     XBT_DEBUG("Failed to send the 'Predecessor Alive' request to %d", pred_id_);
     delete message;
@@ -228,7 +235,7 @@ void Node::checkPredecessor()
   sg4::CommPtr comm          = return_mailbox->get_async<ChordMessage>(&answer);
 
   try {
-    comm->wait_for(timeout);
+    comm->wait_for(timeout_);
     XBT_DEBUG("Received the answer to my 'Predecessor Alive': my predecessor %d is alive", pred_id_);
     delete answer;
   } catch (const simgrid::TimeoutException&) {
@@ -255,7 +262,7 @@ int Node::remoteGetPredecessor(int ask_to)
   // send a "Get Predecessor" request to ask_to_id
   XBT_DEBUG("Sending a 'Get Predecessor' request to %d", ask_to);
   try {
-    mailbox->put(message, 10, timeout);
+    mailbox->put(message, 10, timeout_);
   } catch (const simgrid::TimeoutException&) {
     XBT_DEBUG("Failed to send the 'Get Predecessor' request to %d", ask_to);
     delete message;
@@ -269,7 +276,7 @@ int Node::remoteGetPredecessor(int ask_to)
   sg4::CommPtr comm          = return_mailbox->get_async<ChordMessage>(&answer);
 
   try {
-    comm->wait_for(timeout);
+    comm->wait_for(timeout_);
     XBT_DEBUG("Received the answer to my 'Get Predecessor' request: the predecessor of node %d is %d", ask_to,
               answer->answer_id);
     predecessor_id = answer->answer_id;
@@ -289,7 +296,7 @@ int Node::remoteGetPredecessor(int ask_to)
  */
 int Node::closestPrecedingFinger(int id)
 {
-  for (int i = nb_bits - 1; i >= 0; i--) {
+  for (int i = nb_bits_ - 1; i >= 0; i--) {
     if (is_in_interval(fingers_[i], id_ + 1, id - 1)) {
       return fingers_[i];
     }
@@ -326,7 +333,7 @@ int Node::remoteFindSuccessor(int ask_to, int id)
   // send a "Find Successor" request to ask_to_id
   XBT_DEBUG("Sending a 'Find Successor' request to %d for id %d", ask_to, id);
   try {
-    mailbox->put(message, 10, timeout);
+    mailbox->put(message, 10, timeout_);
   } catch (const simgrid::TimeoutException&) {
     XBT_DEBUG("Failed to send the 'Find Successor' request to %d for id %d", ask_to, id_);
     delete message;
@@ -338,7 +345,7 @@ int Node::remoteFindSuccessor(int ask_to, int id)
   sg4::CommPtr comm          = return_mailbox->get_async<ChordMessage>(&answer);
 
   try {
-    comm->wait_for(timeout);
+    comm->wait_for(timeout_);
     XBT_DEBUG("Received the answer to my 'Find Successor' request for id %d: the successor of key %d is %d",
               answer->request_id, id_, answer->answer_id);
     successor = answer->answer_id;
@@ -483,12 +490,12 @@ void Node::operator()()
   if (known_id_ == -1) {
     setPredecessor(-1); // -1 means that I have no predecessor
     printFingerTable();
-    joined = true;
+    joined_ = true;
   } else {
     join(known_id_);
   }
 
-  if (not joined)
+  if (not joined_)
     return;
   ChordMessage* message              = nullptr;
   double now                         = sg4::Engine::get_clock();

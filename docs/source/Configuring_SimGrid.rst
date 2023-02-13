@@ -466,7 +466,7 @@ Infiniband model
 
 InfiniBand network behavior can be modeled through 3 parameters
 ``smpi/IB-penalty-factors:"βe;βs;γs"``, as explained in `the PhD
-thesis of Jean-Marc Vincent
+thesis of Jérôme Vienne
 <http://mescal.imag.fr/membres/jean-marc.vincent/index.html/PhD/Vienne.pdf>`_ (in French)
 or more concisely in `this paper <https://hal.inria.fr/hal-00953618/document>`_,
 even if that paper does only describe models for myrinet and ethernet.

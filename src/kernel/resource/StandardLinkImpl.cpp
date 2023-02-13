@@ -140,5 +140,9 @@ void StandardLinkImpl::set_concurrency_limit(int limit) const
   }
   get_constraint()->set_concurrency_limit(limit);
 }
+int StandardLinkImpl::get_concurrency_limit() const
+{
+  return get_constraint()->get_concurrency_limit();
+}
 
 } // namespace simgrid::kernel::resource

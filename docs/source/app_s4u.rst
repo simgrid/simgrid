@@ -825,6 +825,7 @@ Simulation setup
 
       .. doxygenfunction:: simgrid::s4u::Engine::load_deployment
       .. doxygenfunction:: simgrid::s4u::Engine::load_platform
+      .. doxygenfunction:: simgrid::s4u::Engine::flatify_platform
       .. doxygenfunction:: simgrid::s4u::Engine::register_actor(const std::string &name)
       .. doxygenfunction:: simgrid::s4u::Engine::register_actor(const std::string &name, F code)
       .. doxygenfunction:: simgrid::s4u::Engine::register_default(const std::function< void(int, char **)> &code)
@@ -1582,6 +1583,7 @@ Querying info
       .. doxygenfunction:: simgrid::s4u::Link::get_latency() const
       .. doxygenfunction:: simgrid::s4u::Link::get_name() const
       .. doxygenfunction:: simgrid::s4u::Link::get_sharing_policy() const
+      .. doxygenfunction:: simgrid::s4u::Link::get_concurrency_limit() const
       .. doxygenfunction:: simgrid::s4u::Link::get_usage() const
       .. doxygenfunction:: simgrid::s4u::Link::is_used() const
 

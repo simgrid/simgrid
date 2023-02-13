@@ -56,9 +56,9 @@ int main(int argc, char* argv[])
   second_parent->set_host(fafard);
 
   // Start all activities that can actually start.
-  first_parent->vetoable_start();
-  second_parent->vetoable_start();
-  child->vetoable_start();
+  first_parent->start();
+  second_parent->start();
+  child->start();
 
   while (child->get_state() != sg4::Activity::State::FINISHED) {
     e.run();

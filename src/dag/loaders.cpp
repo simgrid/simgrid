@@ -33,7 +33,7 @@ static void uniq_transfer_task_name(simgrid::s4u::Comm* comm)
 
   std::string new_name = parent->get_name() + "_" + comm->get_name() + "_" + child->get_name();
 
-  comm->set_name(new_name)->vetoable_start();
+  comm->set_name(new_name)->start();
 }
 
 static bool check_for_cycle(const std::vector<simgrid::s4u::ActivityPtr>& dag)
@@ -92,12 +92,12 @@ std::vector<ActivityPtr> create_DAG_from_DAX(const std::string& filename)
   dax_lineno = 1;
 
   auto root_task = Exec::init()->set_name("root")->set_flops_amount(0);
-  root_task->vetoable_start();
+  root_task->start();
 
   result.push_back(root_task);
 
   auto end_task = Exec::init()->set_name("end")->set_flops_amount(0);
-  end_task->vetoable_start();
+  end_task->start();
 
   xbt_assert(dax_lex() == 0, "Parse error in %s: %s", filename.c_str(), dax__parse_err_msg());
   dax__delete_buffer(input_buffer);
@@ -198,7 +198,7 @@ std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename)
 
     if (activities.find(name) == activities.end()) {
       XBT_DEBUG("See <Exec id = %s amount = %.0f>", name.c_str(), amount);
-      act = Exec::init()->set_name(name)->set_flops_amount(amount)->vetoable_start();
+      act = Exec::init()->set_name(name)->set_flops_amount(amount)->start();
       activities.try_emplace(name, act);
       if (name != "root" && name != "end")
         dag.push_back(act);
@@ -208,12 +208,12 @@ std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename)
   }
   /*Check if 'root' and 'end' nodes have been explicitly declared.  If not, create them. */
   if (activities.find("root") == activities.end())
-    root = Exec::init()->set_name("root")->set_flops_amount(0)->vetoable_start();
+    root = Exec::init()->set_name("root")->set_flops_amount(0)->start();
   else
     root = activities.at("root");
 
   if (activities.find("end") == activities.end())
-    end = Exec::init()->set_name("end")->set_flops_amount(0)->vetoable_start();
+    end = Exec::init()->set_name("end")->set_flops_amount(0)->start();
   else
     end = activities.at("end");
 
@@ -238,7 +238,7 @@ std::vector<ActivityPtr> create_DAG_from_dot(const std::string& filename)
         std::string name = std::string(src_name) + "->" + dst_name;
         XBT_DEBUG("See <Comm id=%s amount = %.0f>", name.c_str(), size);
         if (activities.find(name) == activities.end()) {
-          act = Comm::sendto_init()->set_name(name)->set_payload_size(size)->vetoable_start();
+          act = Comm::sendto_init()->set_name(name)->set_payload_size(size)->start();
           src->add_successor(act);
           act->add_successor(dst);
           activities.try_emplace(name, act);
@@ -310,7 +310,7 @@ void STag_dax__job()
     std::string name = std::string(A_dax__job_id) + "@" + A_dax__job_name;
     runtime *= 4200000000.; /* Assume that timings were done on a 4.2GFlops machine. I mean, why not? */
     XBT_DEBUG("See <job id=%s runtime=%s %.0f>", A_dax__job_id, A_dax__job_runtime, runtime);
-    simgrid::s4u::current_job = simgrid::s4u::Exec::init()->set_name(name)->set_flops_amount(runtime)->vetoable_start();
+    simgrid::s4u::current_job = simgrid::s4u::Exec::init()->set_name(name)->set_flops_amount(runtime)->start();
     simgrid::s4u::jobs.try_emplace(A_dax__job_id, simgrid::s4u::current_job);
     simgrid::s4u::result.push_back(simgrid::s4u::current_job);
   } catch (const std::invalid_argument&) {

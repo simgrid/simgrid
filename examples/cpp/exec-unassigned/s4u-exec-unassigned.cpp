@@ -15,7 +15,7 @@ static void worker()
   double computation_amount = sg4::this_actor::get_host()->get_speed();
 
   // Create an unassigned activity and start it. It will not actually start, because it's not assigned to any host yet
-  sg4::ExecPtr exec = sg4::Exec::init()->set_flops_amount(computation_amount)->set_name("exec")->vetoable_start();
+  sg4::ExecPtr exec = sg4::Exec::init()->set_flops_amount(computation_amount)->set_name("exec")->start();
 
   // Wait for a while
   sg4::this_actor::sleep_for(10);

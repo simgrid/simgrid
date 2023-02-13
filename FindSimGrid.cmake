@@ -23,19 +23,11 @@
 #     Either by copying it in your tree, or (recommended) by using the
 #     version automatically installed by SimGrid.
 #
-#  2. Afterward, if you have CMake >= 2.8.12, this will define a
-#     target called 'SimGrid::Simgrid'. Use it as:
+#  2. This will define a target called 'SimGrid::Simgrid'. Use it as:
 #       target_link_libraries(your-simulator SimGrid::SimGrid)
 #
-#    With older CMake (< 2.8.12), it simply defines several variables:
-#       SimGrid_INCLUDE_DIR - the SimGrid include directories
-#       SimGrid_LIBRARY - link your simulator against it to use SimGrid
-#    Use as:
-#      include_directories("${SimGrid_INCLUDE_DIR}" SYSTEM)
-#      target_link_libraries(your-simulator ${SimGrid_LIBRARY})
-#
-#  In both cases, it also define a SimGrid_VERSION macro, that you
-#    can use to deal with API evolutions as follows:
+#  It also defines a SimGrid_VERSION macro, that you can use to deal with API
+#    evolutions as follows:
 #
 #    #if SimGrid_VERSION < 31800
 #      (code to use if the installed version is lower than v3.18)
@@ -110,7 +102,7 @@ find_package_handle_standard_args(SimGrid
   VERSION_VAR SimGrid_VERSION
 )
 
-if (SimGrid_FOUND AND NOT CMAKE_VERSION VERSION_LESS 2.8.12)
+if (SimGrid_FOUND)
   add_library(SimGrid::SimGrid SHARED IMPORTED)
   set_target_properties(SimGrid::SimGrid PROPERTIES
     INTERFACE_SYSTEM_INCLUDE_DIRECTORIES ${SimGrid_INCLUDE_DIR}

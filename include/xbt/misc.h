@@ -15,10 +15,10 @@
 SG_BEGIN_DECL
 
 /** Cache the size of a memory page for the current system. */
-XBT_PUBLIC_DATA int xbt_pagesize;
+XBT_PUBLIC_DATA const int xbt_pagesize;
 
 /** Cache the number of bits of addresses inside a given page, log2(xbt_pagesize). */
-XBT_PUBLIC_DATA int xbt_pagebits;
+XBT_PUBLIC_DATA const int xbt_pagebits;
 
 /** Helps ensuring that header version (SIMGRID_VERSION_MAJOR and friends) and dynamic library version do match. */
 XBT_PUBLIC void sg_version_check(int lib_version_major, int lib_version_minor, int lib_version_patch);

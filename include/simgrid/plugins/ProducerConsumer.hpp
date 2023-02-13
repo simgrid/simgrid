@@ -28,9 +28,16 @@ namespace plugin {
 template <typename T> class ProducerConsumer;
 template <typename T> using ProducerConsumerPtr = boost::intrusive_ptr<ProducerConsumer<T>>;
 
-XBT_PUBLIC_DATA unsigned long pc_id;
+class ProducerConsumerId {
+private:
+  static unsigned long pc_id;
 
-template <typename T> class ProducerConsumer {
+protected:
+  const std::string id = "ProducerConsumer" + std::to_string(pc_id);
+  ProducerConsumerId() { ++pc_id; }
+};
+
+template <typename T> class ProducerConsumer : public ProducerConsumerId {
 public:
   /** This ProducerConsumer plugin can use two different transfer modes:
    *   - TransferMode::MAILBOX: this mode induces a s4u::Comm between the actors doing the calls to put() and get().
@@ -45,8 +52,6 @@ public:
   enum class TransferMode { MAILBOX = 0, QUEUE };
 
 private:
-  std::string id;
-
   /* Implementation of a Monitor to handle the data exchanges */
   s4u::MutexPtr mutex_;
   s4u::ConditionVariablePtr can_put_;
@@ -74,9 +79,6 @@ private:
   explicit ProducerConsumer(unsigned int max_queue_size) : max_queue_size_(max_queue_size)
   {
     xbt_assert(max_queue_size > 0, "Max queue size of 0 is not allowed");
-
-    id = "ProducerConsumer" + std::to_string(pc_id);
-    pc_id++;
 
     mutex_   = s4u::Mutex::create();
     can_put_ = s4u::ConditionVariable::create();

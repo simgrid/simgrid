@@ -22,10 +22,10 @@ int main(int argc, char** argv)
   });
 
   /* creation of the activities and their dependencies */
-  simgrid::s4u::ExecPtr A = simgrid::s4u::Exec::init()->set_name("A")->vetoable_start();
-  simgrid::s4u::ExecPtr B = simgrid::s4u::Exec::init()->set_name("B")->vetoable_start();
-  simgrid::s4u::ExecPtr C = simgrid::s4u::Exec::init()->set_name("C")->vetoable_start();
-  simgrid::s4u::ExecPtr D = simgrid::s4u::Exec::init()->set_name("D")->vetoable_start();
+  simgrid::s4u::ExecPtr A = simgrid::s4u::Exec::init()->set_name("A")->start();
+  simgrid::s4u::ExecPtr B = simgrid::s4u::Exec::init()->set_name("B")->start();
+  simgrid::s4u::ExecPtr C = simgrid::s4u::Exec::init()->set_name("C")->start();
+  simgrid::s4u::ExecPtr D = simgrid::s4u::Exec::init()->set_name("D")->start();
 
   B->add_successor(A);
   C->add_successor(A);

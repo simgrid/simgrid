@@ -18,10 +18,6 @@ constexpr double PERIODIC_CHECK_PREDECESSOR_DELAY = 120;
 constexpr double PERIODIC_LOOKUP_DELAY            = 10;
 constexpr double SLEEP_DELAY                      = 4.9999;
 
-extern int nb_bits;
-extern int nb_keys;
-extern int timeout;
-
 /* Types of tasks exchanged between nodes. */
 enum class MessageType {
   FIND_SUCCESSOR,
@@ -50,18 +46,26 @@ public:
 };
 
 class Node {
+  inline static int nb_bits_;
+  inline static int nb_keys_;
+  inline static int timeout_;
+
   int known_id_      = -1;
   double start_time_ = -1;
   double deadline_   = -1;
-  bool joined        = false;
+  bool joined_       = false;
   int id_;                           // my id
   int pred_id_ = -1;                 // predecessor id
-  simgrid::xbt::random::XbtRandom random; // random number generator for this node
-  sg4::Mailbox* mailbox_;                 // my mailbox
+  simgrid::xbt::random::XbtRandom random_; // random number generator for this node
+  sg4::Mailbox* mailbox_;                  // my mailbox
   std::vector<int> fingers_;         // finger table,(fingers[0] is my successor)
-  int next_finger_to_fix;            // index of the next finger to fix in fix_fingers()
+  int next_finger_to_fix_;           // index of the next finger to fix in fix_fingers()
+
+  static bool is_in_interval(int id, int start, int end);
 
 public:
+  static void set_parameters(int nb_bits, int nb_keys, int timeout);
+
   explicit Node(std::vector<std::string> args);
   Node(const Node&) = delete;
   Node& operator=(const Node&) = delete;

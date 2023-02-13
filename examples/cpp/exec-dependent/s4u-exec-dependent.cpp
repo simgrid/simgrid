@@ -37,8 +37,7 @@ static void worker()
   // Start the activities.
   first_parent->start();
   second_parent->start();
-  // child uses a vetoable start to force it to wait for the completion of its predecessors
-  child->vetoable_start();
+  child->start();
 
   // wait for the completion of all activities
   while (not pending_execs.empty()) {

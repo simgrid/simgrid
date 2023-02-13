@@ -50,10 +50,10 @@ int main(int argc, char* argv[])
   child->set_name("child")->set_flops_amount(carl->get_speed());
 
   // Schedule and try to start the different activities
-  parent->set_host(bob)->vetoable_start();
-  write_output->set_disk(bob->get_disks().front())->vetoable_start();
-  read_input->set_disk(carl->get_disks().front())->vetoable_start();
-  child->set_host(carl)->vetoable_start();
+  parent->set_host(bob)->start();
+  write_output->set_disk(bob->get_disks().front())->start();
+  read_input->set_disk(carl->get_disks().front())->start();
+  child->set_host(carl)->start();
 
   e.run();
 

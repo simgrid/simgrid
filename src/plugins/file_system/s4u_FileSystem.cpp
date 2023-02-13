@@ -23,7 +23,6 @@
 #include <numeric>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_file, s4u, "S4U files");
-int sg_storage_max_file_descriptors = 1024;
 
 /** @defgroup plugin_filesystem Plugin FileSystem
  *
@@ -38,6 +37,7 @@ template class xbt::Extendable<s4u::File>;
 namespace s4u {
 simgrid::xbt::Extension<Disk, FileSystemDiskExt> FileSystemDiskExt::EXTENSION_ID;
 simgrid::xbt::Extension<Host, FileDescriptorHostExt> FileDescriptorHostExt::EXTENSION_ID;
+int FileDescriptorHostExt::max_file_descriptors;
 
 const Disk* File::find_local_disk_on(const Host* host)
 {
@@ -78,9 +78,9 @@ File::File(const std::string& fullpath, const_sg_host_t host, void* userdata) : 
     local_disk_ = find_local_disk_on(host);
 
     // assign a file descriptor id to the newly opened File
-    auto* ext = host->extension<simgrid::s4u::FileDescriptorHostExt>();
+    auto* ext = host->extension<FileDescriptorHostExt>();
     if (ext->file_descriptor_table == nullptr) {
-      ext->file_descriptor_table = std::make_unique<std::vector<int>>(sg_storage_max_file_descriptors);
+      ext->file_descriptor_table = std::make_unique<std::vector<int>>(FileDescriptorHostExt::max_file_descriptors);
       std::iota(ext->file_descriptor_table->rbegin(), ext->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
     }
     xbt_assert(not ext->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
@@ -119,8 +119,7 @@ File* File::open(const std::string& fullpath, const_sg_host_t host, void* userda
 
 void File::close()
 {
-  std::vector<int>* desc_table =
-      Host::current()->extension<simgrid::s4u::FileDescriptorHostExt>()->file_descriptor_table.get();
+  std::vector<int>* desc_table = Host::current()->extension<FileDescriptorHostExt>()->file_descriptor_table.get();
   kernel::actor::simcall_answered([this, desc_table] { desc_table->push_back(this->desc_id); });
   delete this;
 }
@@ -248,7 +247,7 @@ sg_size_t File::tell() const
 void File::move(const std::string& fullpath) const
 {
   /* Check if the new full path is on the same mount point */
-  if (fullpath.compare(0, mount_point_.length(), mount_point_) == 0) {
+  if (fullpath.rfind(mount_point_, 0) == 0) {
     std::map<std::string, sg_size_t, std::less<>>* content = nullptr;
     content = local_disk_->extension<FileSystemDiskExt>()->get_content();
     if (content) {
@@ -470,8 +469,8 @@ static void on_simulation_end()
  */
 void sg_storage_file_system_init()
 {
-  sg_storage_max_file_descriptors = 1024;
-  simgrid::config::bind_flag(sg_storage_max_file_descriptors, "storage/max_file_descriptors",
+  FileDescriptorHostExt::max_file_descriptors = 1024;
+  simgrid::config::bind_flag(FileDescriptorHostExt::max_file_descriptors, "storage/max_file_descriptors",
                              "Maximum number of concurrently opened files per host. Default is 1024");
 
   if (not FileSystemDiskExt::EXTENSION_ID.valid()) {

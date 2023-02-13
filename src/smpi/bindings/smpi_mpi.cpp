@@ -26,13 +26,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)
 
 #define NOT_YET_IMPLEMENTED_NOFAIL                                                                                     \
   {                                                                                                                    \
-    static bool warning_todo = true;                                                                                   \
-    if (warning_todo)                                                                                                  \
+    if (static bool warned_todo = false; not warned_todo) {                                                            \
       XBT_WARN("Not yet implemented: %s. "                                                                             \
                "Please contact the SimGrid team if support is needed. "                                                \
                "Run with --log=smpi_mpi.thresh:error to hide",                                                         \
                __func__);                                                                                              \
-    warning_todo = false;                                                                                              \
+      warned_todo = true;                                                                                              \
+    }                                                                                                                  \
     return MPI_SUCCESS;                                                                                                \
   }
 

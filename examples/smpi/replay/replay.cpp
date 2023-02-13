@@ -20,12 +20,6 @@ static void action_blah(const simgrid::xbt::ReplayAction& /*args*/)
      args is a strings array containing the blank-separated parameters found in the trace for this event instance. */
 }
 
-action_fun previous_send;
-static void overriding_send(simgrid::xbt::ReplayAction& args)
-{
-  previous_send(args); // Just call the overridden symbol. That's a toy example.
-}
-
 int main(int argc, char* argv[])
 {
   auto properties = simgrid::s4u::Actor::self()->get_properties();
@@ -47,14 +41,17 @@ int main(int argc, char* argv[])
   /* Connect your callback function to the "blah" event in the trace files */
   xbt_replay_action_register("blah", action_blah);
 
-  /* The send action is an override, so we have to first save its previous value in a global */
+  /* The send action is an override, so we could have saved its previous value in a global, or use a lambda capture like
+   * in the following */
   int new_rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &new_rank);
   if (new_rank != rank)
     XBT_WARN("Rank inconsistency. Got %d, expected %d", new_rank, rank);
   if (rank == 0) {
-    previous_send = xbt_replay_action_get("send");
-    xbt_replay_action_register("send", overriding_send);
+    auto previous_send = xbt_replay_action_get("send");
+    xbt_replay_action_register("send", [previous_send](simgrid::xbt::ReplayAction& args) {
+      previous_send(args); // Just call the overridden symbol. That's a toy example.
+    });
   }
   /* The regular run of the replayer */
   if (shared_trace != nullptr)

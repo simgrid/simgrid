@@ -139,6 +139,7 @@ public:
 class XBT_PUBLIC FileDescriptorHostExt {
 public:
   static simgrid::xbt::Extension<Host, FileDescriptorHostExt> EXTENSION_ID;
+  static int max_file_descriptors;
   FileDescriptorHostExt() = default;
   FileDescriptorHostExt(const FileDescriptorHostExt&) = delete;
   FileDescriptorHostExt& operator=(const FileDescriptorHostExt&) = delete;

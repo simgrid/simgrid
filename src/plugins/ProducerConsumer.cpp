@@ -8,5 +8,5 @@
 XBT_LOG_NEW_CATEGORY(producer_consumer, "Producer-Consumer plugin logging category");
 
 namespace simgrid::plugin {
-unsigned long pc_id = 0;
+unsigned long ProducerConsumerId::pc_id = 0;
 }

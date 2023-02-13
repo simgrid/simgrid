@@ -37,6 +37,7 @@ class XBT_PUBLIC Comm : public Activity_T<Comm> {
   std::function<void(kernel::activity::CommImpl*, void*, size_t)> copy_data_function_;
 
   Comm() = default;
+  Comm* do_start() override;
 
 public:
   /* signals and related callbacks */
@@ -148,7 +149,6 @@ public:
   Actor* get_sender() const;
 
   /* Comm life cycle */
-  Comm* start() override;
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */
   Comm* detach();
   /** Start the comm, and ignore its result. It can be completely forgotten after that. */

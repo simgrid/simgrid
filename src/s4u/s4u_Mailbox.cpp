@@ -101,7 +101,7 @@ CommPtr Mailbox::put_async(void* payload, uint64_t simulated_size_in_bytes)
   xbt_assert(payload != nullptr, "You cannot send nullptr");
 
   CommPtr res = put_init(payload, simulated_size_in_bytes);
-  res->vetoable_start();
+  res->start();
   return res;
 }
 
@@ -109,7 +109,7 @@ void Mailbox::put(void* payload, uint64_t simulated_size_in_bytes)
 {
   xbt_assert(payload != nullptr, "You cannot send nullptr");
 
-  put_init()->set_payload_size(simulated_size_in_bytes)->set_src_data(payload)->vetoable_start()->wait();
+  put_init()->set_payload_size(simulated_size_in_bytes)->set_src_data(payload)->start()->wait();
 }
 
 /** Blocking send with timeout */
@@ -117,7 +117,7 @@ void Mailbox::put(void* payload, uint64_t simulated_size_in_bytes, double timeou
 {
   xbt_assert(payload != nullptr, "You cannot send nullptr");
 
-  put_init()->set_payload_size(simulated_size_in_bytes)->set_src_data(payload)->vetoable_start()->wait_for(timeout);
+  put_init()->set_payload_size(simulated_size_in_bytes)->set_src_data(payload)->start()->wait_for(timeout);
 }
 
 CommPtr Mailbox::get_init()

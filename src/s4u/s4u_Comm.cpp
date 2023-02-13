@@ -178,7 +178,7 @@ CommPtr Comm::set_source(Host* from)
   if (state_ == State::STARTING && remains_ <= 0)
     XBT_DEBUG("This communication has a payload size of 0 byte. It cannot start yet");
   else
-    vetoable_start();
+    start();
 
   return this;
 }
@@ -196,7 +196,7 @@ CommPtr Comm::set_destination(Host* to)
   if (state_ == State::STARTING && remains_ <= 0)
     XBT_DEBUG("This communication has a payload size of 0 byte. It cannot start yet");
   else
-    vetoable_start();
+    start();
 
   return this;
 }
@@ -293,7 +293,7 @@ bool Comm::is_assigned() const
          mailbox_ != nullptr;
 }
 
-Comm* Comm::start()
+Comm* Comm::do_start()
 {
   xbt_assert(get_state() == State::INITED || get_state() == State::STARTING,
              "You cannot use %s() once your communication started (not implemented)", __FUNCTION__);
@@ -356,7 +356,7 @@ Comm* Comm::detach()
              "You cannot use %s() once your communication is %s (not implemented)", __FUNCTION__, get_state_str());
   xbt_assert(dst_buff_ == nullptr && dst_buff_size_ == 0, "You can only detach sends, not recvs");
   detached_ = true;
-  vetoable_start();
+  start();
   return this;
 }
 
@@ -386,7 +386,7 @@ Comm* Comm::wait_for(double timeout)
     case State::INITED:
     case State::STARTING: // It's not started yet. Do it in one simcall if it's a regular communication
       if (get_source() != nullptr || get_destination() != nullptr) {
-        return vetoable_start()->wait_for(timeout); // In the case of host2host comm, do it in two simcalls
+        return start()->wait_for(timeout); // In the case of host2host comm, do it in two simcalls
       } else if (src_buff_ != nullptr) {
         on_send(*this);
         send(sender_, mailbox_, remains_, rate_, src_buff_, src_buff_size_, match_fun_, copy_data_function_,

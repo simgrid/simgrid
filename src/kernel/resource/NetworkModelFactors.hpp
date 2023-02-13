@@ -7,6 +7,7 @@
 #define SIMGRID_KERNEL_RESOURCE_NETWORKMODELFACTORS_HPP
 
 #include "simgrid/sg_config.hpp"
+#include "src/kernel/resource/FactorSet.hpp"
 #include "xbt/asserts.h"
 #include <simgrid/forward.h>
 
@@ -18,6 +19,9 @@ namespace simgrid::kernel::resource {
 /** This Trait of NetworkModel is in charge of handling the network factors (bw and lat) */
 
 class XBT_PUBLIC NetworkModelFactors {
+  static FactorSet cfg_latency_factor;
+  static FactorSet cfg_bandwidth_factor;
+
   using NetworkFactorCb = double(double size, const s4u::Host* src, const s4u::Host* dst,
                                  const std::vector<s4u::Link*>& links,
                                  const std::unordered_set<s4u::NetZone*>& netzones);

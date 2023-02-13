@@ -14,22 +14,19 @@ namespace sg4 = simgrid::s4u;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(sem_test, "Simple test of the semaphore");
 
-const char* buffer;                                      /* Where the data is exchanged */
-sg4::SemaphorePtr sem_empty = sg4::Semaphore::create(1); /* indicates whether the buffer is empty */
-sg4::SemaphorePtr sem_full  = sg4::Semaphore::create(0); /* indicates whether the buffer is full */
-
-static void producer(const std::vector<std::string>& args)
+static void producer(std::string& buffer, sg4::SemaphorePtr sem_empty, sg4::SemaphorePtr sem_full,
+                     const std::vector<std::string>& args)
 {
   for (auto const& str : args) {
     sem_empty->acquire();
     XBT_INFO("Pushing '%s'", str.c_str());
-    buffer = str.c_str();
+    buffer = str;
     sem_full->release();
   }
 
   XBT_INFO("Bye!");
 }
-static void consumer()
+static void consumer(const std::string& buffer, sg4::SemaphorePtr sem_empty, sg4::SemaphorePtr sem_full)
 {
   std::string str;
   do {
@@ -47,8 +44,14 @@ int main(int argc, char **argv)
   std::vector<std::string> args({"one", "two", "three", ""});
   sg4::Engine e(&argc, argv);
   e.load_platform(argc > 1 ? argv[1] : "../../platforms/two_hosts.xml");
-  sg4::Actor::create("producer", e.host_by_name("Tremblay"), producer, std::cref(args));
-  sg4::Actor::create("consumer", e.host_by_name("Jupiter"), consumer);
+
+  std::string buffer;                         /* Where the data is exchanged */
+  auto sem_empty = sg4::Semaphore::create(1); /* indicates whether the buffer is empty */
+  auto sem_full  = sg4::Semaphore::create(0); /* indicates whether the buffer is full */
+
+  sg4::Actor::create("producer", e.host_by_name("Tremblay"), producer, std::ref(buffer), sem_empty, sem_full,
+                     std::cref(args));
+  sg4::Actor::create("consumer", e.host_by_name("Jupiter"), consumer, std::cref(buffer), sem_empty, sem_full);
   e.run();
 
   return 0;
