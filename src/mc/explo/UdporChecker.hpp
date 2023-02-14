@@ -113,14 +113,28 @@ private:
    * @returns a tuple containing the pair of sets `ex(C)` and `en(C)` respectively
    */
   std::tuple<EventSet, EventSet> compute_extension(const Configuration& C, const std::list<EventSet>& max_evt_history,
-                                                   const UnfoldingEvent& cur_event, const EventSet& prev_exC) const;
+                                                   UnfoldingEvent* cur_event, const EventSet& prev_exC) const;
 
   /**
    *
    */
-  void observe_unfolding_event(const UnfoldingEvent& event);
+  StateHandle observe_unfolding_event(const UnfoldingEvent& event);
+
+  /**
+   * @brief Resolves the state handle maintained by an event
+   * into a concrete reference to a state
+   */
   State& get_state_referenced_by(const UnfoldingEvent& event);
-  StateHandle record_newly_visited_state();
+
+  /**
+   * @brief Creates a new snapshot of the state of the progam undergoing
+   * model checking
+   *
+   * @returns the handle used to uniquely identify this state later in the
+   * exploration of the unfolding. You provide this handle to an event in the
+   * unfolding to regenerate past states
+   */
+  StateHandle record_current_state();
 
   /**
    * @brief Identifies the next event from the unfolding of the concurrent system

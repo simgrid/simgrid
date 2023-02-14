@@ -83,6 +83,8 @@ public:
   // EventSet actorMaxEvent;    // maximal events of the actors in current configuration
   // UnfoldingEvent* lastEvent; // The last added event
 
+  inline auto begin() const { return this->events_.begin(); }
+  inline auto end() const { return this->events_.end(); }
   inline const EventSet& get_events() const { return this->events_; }
   inline const EventSet& get_maxmimal_events() const { return this->max_events_; }
 
