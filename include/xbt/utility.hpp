@@ -27,7 +27,7 @@
   }                                                                                                                    \
   static constexpr bool is_valid_##EnumType(int raw_value)                                                             \
   {                                                                                                                    \
-    return raw_value < _XBT_COUNT_ARGS(__VA_ARGS__);                                                                   \
+    return raw_value >= 0 && raw_value < _XBT_COUNT_ARGS(__VA_ARGS__);                                                 \
   }                                                                                                                    \
   enum class EnumType { __VA_ARGS__ } /* defined here to handle trailing semicolon */
 
