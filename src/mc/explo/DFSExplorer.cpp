@@ -307,6 +307,8 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Explo
   else
     reduction_mode_ = ReductionMode::none;
 
+  sleep_set_reduction_ = _sg_mc_sleep_set;
+  
   if (_sg_mc_termination) {
     if (with_dpor) {
       XBT_INFO("Check non progressive cycles (turning DPOR off)");

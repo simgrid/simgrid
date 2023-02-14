@@ -48,6 +48,14 @@ static simgrid::config::Flag<std::string> cfg_mc_reduction{
         xbt_die("configuration option 'model-check/reduction' can only take 'none' or 'dpor' as a value");
     }};
 
+simgrid::config::Flag<bool> _sg_mc_sleep_set{
+    "model-check/sleep-set",
+    "Whether to enable the use of sleep-set in the reduction algorithm",
+    true,
+    [](bool) {
+      _mc_cfg_cb_check("value to enable/disable the use of sleep-set in the reduction algorithm");
+    }};
+
 simgrid::config::Flag<int> _sg_mc_checkpoint{
     "model-check/checkpoint", "Specify the amount of steps between checkpoints during stateful model-checking "
                               "(default: 0 => stateless verification). If value=1, one checkpoint is saved for each "
