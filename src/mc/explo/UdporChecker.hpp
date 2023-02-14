@@ -83,8 +83,26 @@ private:
    *
    * This function performs the actual search following the
    * UDPOR algorithm according to [1].
+   *
+   * @param C the current configuration from which UDPOR will be used
+   * to explore expansions of the concurrent system being modeled
+   * @param D the set of events that should not be considered by UDPOR
+   * while performing its searches, in order to avoid sleep-set blocked
+   * executions. See [1] for more details
+   * @param A the set of events to "guide" UDPOR in the correct direction
+   * when it returns back to a node in the unfolding and must decide among
+   * events to select from `ex(C)`. See [1] for more details
+   * @param max_evt_history
+   *
+   * @param e the event where UDPOR currently "rests", viz. the event UDPOR
+   * is now currently considering. This event is contained in the set `C`
+   * and is the last event that was added to C
+   *
+   *
+   * TODO: Add the optimization where we can check if e == e_prior
+   * to prevent repeated work when computing ex(C)
    */
-  void explore(Configuration C, EventSet D, EventSet A, std::list<EventSet> max_evt_history, UnfoldingEvent* cur_event,
+  void explore(Configuration C, EventSet D, EventSet A, std::list<EventSet> max_evt_history, UnfoldingEvent* e_cur,
                EventSet prev_exC);
 
   /**
@@ -106,14 +124,14 @@ private:
    *
    * @param C the configuration based on which the two sets `ex(C)` and `en(C)` are
    * computed
-   * @param cur_event the event where UDPOR currently "rests", viz. the event UDPOR
+   * @param e the event where UDPOR currently "rests", viz. the event UDPOR
    * is now currently considering
    * @param prev_exC the previous value of `ex(C)`, viz. that which was computed for
-   * the configuration `C' := C - {cur_event}`
+   * the configuration `C' := C - {e}`
    * @returns a tuple containing the pair of sets `ex(C)` and `en(C)` respectively
    */
   std::tuple<EventSet, EventSet> compute_extension(const Configuration& C, const std::list<EventSet>& max_evt_history,
-                                                   UnfoldingEvent* cur_event, const EventSet& prev_exC) const;
+                                                   UnfoldingEvent* e, const EventSet& prev_exC) const;
 
   /**
    *

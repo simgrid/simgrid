@@ -37,10 +37,10 @@ void UdporChecker::run()
 }
 
 void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::list<EventSet> max_evt_history,
-                           UnfoldingEvent* cur_evt, EventSet prev_exC)
+                           UnfoldingEvent* e_cur, EventSet prev_exC)
 {
   // Perform the incremental computation of exC
-  auto [exC, enC] = compute_extension(C, max_evt_history, cur_evt, prev_exC);
+  auto [exC, enC] = compute_extension(C, max_evt_history, e_cur, prev_exC);
 
   // If enC is a subset of D, intuitively
   // there aren't any enabled transitions
@@ -73,7 +73,7 @@ void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::list<Ev
 
   // TODO: Add verbose logging about which event is being explored
 
-  const auto next_state_id = observe_unfolding_event(*cur_evt);
+  const auto next_state_id = observe_unfolding_event(*e_cur);
 
   UnfoldingEvent* e = select_next_unfolding_event(A, enC);
   xbt_assert(e != nullptr, "\n\n****** INVARIANT VIOLATION ******\n"
@@ -82,11 +82,11 @@ void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::list<Ev
                            "*********************************\n\n");
   e->set_state_id(next_state_id);
 
-  // Ce = C + {e}
+  // Ce := C + {e}
   Configuration Ce = C;
   Ce.add_event(e);
 
-  max_evt_history.push_back(Ce.get_maxmimal_events());
+  max_evt_history.push_back(Ce.get_maximal_events());
   A.remove(e);
   exC.remove(e);
 
@@ -104,7 +104,7 @@ void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::list<Ev
     max_evt_history.pop_back();
 
     // Explore(C, D + {e}, J \ C)
-    explore(C, D, std::move(J), std::move(max_evt_history), cur_evt, std::move(prev_exC));
+    explore(C, D, std::move(J), std::move(max_evt_history), e_cur, std::move(prev_exC));
   }
 
   // D <-- D - {e}
@@ -116,12 +116,12 @@ void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::list<Ev
 
 std::tuple<EventSet, EventSet> UdporChecker::compute_extension(const Configuration& C,
                                                                const std::list<EventSet>& max_evt_history,
-                                                               UnfoldingEvent* cur_event,
-                                                               const EventSet& prev_exC) const
+                                                               UnfoldingEvent* e_cur, const EventSet& prev_exC) const
 {
+  // See eqs. 5.7 of section 5.2 of [3]
+  // ex(C + {e_cur}) = ex(C) / {e_cur} + U{<a, > : H }
   EventSet exC = prev_exC;
-
-  exC.remove(cur_event);
+  exC.remove(e_cur);
 
   EventSet enC;
   return std::tuple<EventSet, EventSet>(exC, enC);

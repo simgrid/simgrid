@@ -96,11 +96,18 @@ bool EventSet::is_subset_of(const EventSet& other) const
 void Configuration::add_event(UnfoldingEvent* e)
 {
   this->events_.insert(e);
+  this->newest_event = e;
 
   // TODO: Re-compute the maxmimal events
 }
 
-UnfoldingEvent::UnfoldingEvent(unsigned int nb_events, std::string const& trans_tag, EventSet const& causes,
+UnfoldingEvent::UnfoldingEvent(unsigned int nb_events, std::string const& trans_tag, EventSet const& immediate_causes)
+    : UnfoldingEvent(nb_events, trans_tag, immediate_causes, 0)
+{
+  // TODO: Implement this correctly
+}
+
+UnfoldingEvent::UnfoldingEvent(unsigned int nb_events, std::string const& trans_tag, EventSet const& immediate_causes,
                                StateHandle sid)
 {
   // TODO: Implement this
