@@ -133,7 +133,7 @@ State& UdporChecker::get_state_referenced_by(const UnfoldingEvent& event)
   const auto wrapped_state = this->state_manager_.get_state(state_id);
   xbt_assert(wrapped_state != std::nullopt,
              "\n\n****** INVARIANT VIOLATION ******\n"
-             "To each UDPOR event corresponds a state, but state %lu does not exist. "
+             "To each UDPOR event corresponds a state, but state %llu does not exist. "
              "Please report this as a bug.\n"
              "*********************************\n\n",
              state_id);

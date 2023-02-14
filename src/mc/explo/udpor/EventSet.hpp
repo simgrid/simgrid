@@ -9,14 +9,14 @@
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 
 #include <cstddef>
-#include <set>
+#include <unordered_set>
 
 namespace simgrid::mc::udpor {
 
 class EventSet {
 private:
-  std::set<UnfoldingEvent*> events_;
-  explicit EventSet(std::set<UnfoldingEvent*>&& raw_events) : events_(raw_events) {}
+  std::unordered_set<UnfoldingEvent*> events_;
+  explicit EventSet(std::unordered_set<UnfoldingEvent*>&& raw_events) : events_(raw_events) {}
 
 public:
   EventSet()                           = default;

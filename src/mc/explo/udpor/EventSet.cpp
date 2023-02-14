@@ -5,7 +5,6 @@
 
 #include "src/mc/explo/udpor/EventSet.hpp"
 
-#include <algorithm>
 #include <iterator>
 
 namespace simgrid::mc::udpor {
@@ -22,9 +21,11 @@ void EventSet::subtract(const EventSet& other)
 
 EventSet EventSet::subtracting(const EventSet& other) const
 {
-  std::set<UnfoldingEvent*> result;
-  std::set_difference(this->events_.begin(), this->events_.end(), other.events_.begin(), other.events_.end(),
-                      std::inserter(result, result.end()));
+  std::unordered_set<UnfoldingEvent*> result = this->events_;
+
+  for (UnfoldingEvent* e : other.events_)
+    result.erase(e);
+
   return EventSet(std::move(result));
 }
 
@@ -55,9 +56,11 @@ EventSet EventSet::make_union(UnfoldingEvent* e) const
 
 EventSet EventSet::make_union(const EventSet& other) const
 {
-  std::set<UnfoldingEvent*> result;
-  std::set_union(this->events_.begin(), this->events_.end(), other.events_.begin(), other.events_.end(),
-                 std::inserter(result, result.end()));
+  std::unordered_set<UnfoldingEvent*> result = this->events_;
+
+  for (UnfoldingEvent* e : other.events_)
+    result.insert(e);
+
   return EventSet(std::move(result));
 }
 
