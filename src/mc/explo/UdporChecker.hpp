@@ -8,8 +8,11 @@
 #define SIMGRID_MC_UDPOR_CHECKER_HPP
 
 #include "src/mc/explo/Exploration.hpp"
+#include "src/mc/explo/udpor/Configuration.hpp"
+#include "src/mc/explo/udpor/EventSet.hpp"
+#include "src/mc/explo/udpor/StateManager.hpp"
+#include "src/mc/explo/udpor/UnfoldingEvent.hpp"
 #include "src/mc/mc_record.hpp"
-#include "src/mc/udpor_global.hpp"
 
 #include <optional>
 

@@ -9,6 +9,8 @@
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 
+#include <string>
+
 namespace simgrid::mc::udpor {
 
 class UnfoldingEvent {

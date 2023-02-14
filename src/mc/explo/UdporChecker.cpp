@@ -7,7 +7,7 @@
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor, mc, "Logging specific to MC safety verification ");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_udpor, mc, "Logging specific to verification using UDPOR");
 
 namespace simgrid::mc::udpor {
 

@@ -17,6 +17,7 @@ class EventSet;
 class UnfoldingEvent;
 class Configuration;
 class StateManager;
+using StateHandle = unsigned long long;
 
 } // namespace simgrid::mc::udpor
 

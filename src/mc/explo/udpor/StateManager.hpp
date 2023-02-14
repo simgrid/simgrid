@@ -9,6 +9,8 @@
 #include "src/mc/api/State.hpp"
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 
+#include <optional>
+
 namespace simgrid::mc::udpor {
 
 class StateManager {

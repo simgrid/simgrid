@@ -7,7 +7,6 @@
 
 #include <algorithm>
 #include <iterator>
-#include <set>
 
 namespace simgrid::mc::udpor {
 

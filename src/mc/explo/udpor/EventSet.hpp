@@ -6,8 +6,10 @@
 #ifndef SIMGRID_MC_UDPOR_EVENT_SET_HPP
 #define SIMGRID_MC_UDPOR_EVENT_SET_HPP
 
-#include "src/mc/explo/udpor/UnfoldingEvent.hpp"
 #include "src/mc/explo/udpor/udpor_forward.hpp"
+
+#include <cstddef>
+#include <set>
 
 namespace simgrid::mc::udpor {
 
