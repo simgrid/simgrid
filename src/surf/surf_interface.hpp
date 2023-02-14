@@ -6,10 +6,12 @@
 #ifndef SURF_MODEL_H_
 #define SURF_MODEL_H_
 
+#include "src/simgrid/module.hpp"
 #include <xbt/asserts.h>
 #include <xbt/function_types.h>
 
 #include "src/internal_config.h"
+#include "src/kernel/resource/profile/Profile.hpp"
 
 #include <cfloat>
 #include <cmath>
@@ -146,7 +148,6 @@ XBT_PUBLIC void surf_network_model_init_NS3();
  *  A VM model depends on the physical CPU model to share the resources inside the VM
  *  It will also creates the CPU model for actions running inside the VM
  *
- *  Such model is subject to modification with warning in the ChangeLog so monitor it!
  */
 XBT_PUBLIC void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model);
 
@@ -178,39 +179,19 @@ XBT_PUBLIC void surf_host_model_init_ptask_L07();
 /* --------------------
  *  Model Descriptions
  * -------------------- */
-/** @brief Resource model description */
-struct surf_model_description_t {
-  const char* name;
-  const char* description;
-  std::function<void()> model_init_preparse;
-};
 
-XBT_PUBLIC const surf_model_description_t* find_model_description(const std::vector<surf_model_description_t>& table,
-                                                                  const std::string& name);
-XBT_PUBLIC void model_help(const char* category, const std::vector<surf_model_description_t>& table);
-
-#define SIMGRID_REGISTER_PLUGIN(id, desc, init)                                                                        \
-  static void XBT_ATTRIB_CONSTRUCTOR(800) _XBT_CONCAT3(simgrid_, id, _plugin_register)()                               \
-  {                                                                                                                    \
-    surf_plugin_description().emplace_back(surf_model_description_t{_XBT_STRINGIFY(id), (desc), (init)});              \
-  }
-
-/** @brief The list of all available plugins */
-inline auto& surf_plugin_description() // Function to avoid static initialization order fiasco
-{
-  static std::vector<surf_model_description_t> plugin_description_table;
-  return plugin_description_table;
-}
 /** @brief The list of all available optimization modes (both for cpu and networks).
  *  These optimization modes can be set using --cfg=cpu/optim:... and --cfg=network/optim:... */
-XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_optimization_mode_description;
+XBT_PUBLIC_DATA simgrid::ModuleGroup surf_optimization_mode_description;
 /** @brief The list of all cpu models (pick one with --cfg=cpu/model) */
-XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_cpu_model_description;
+XBT_PUBLIC_DATA simgrid::ModuleGroup surf_cpu_model_description;
 /** @brief The list of all network models (pick one with --cfg=network/model) */
-XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_network_model_description;
+XBT_PUBLIC_DATA simgrid::ModuleGroup surf_network_model_description;
 /** @brief The list of all disk models (pick one with --cfg=disk/model) */
-XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_disk_model_description;
+XBT_PUBLIC_DATA simgrid::ModuleGroup surf_disk_model_description;
 /** @brief The list of all host models (pick one with --cfg=host/model:) */
-XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_host_model_description;
+XBT_PUBLIC_DATA simgrid::ModuleGroup surf_host_model_description;
+
+void simgrid_create_models();
 
 #endif /* SURF_MODEL_H_ */

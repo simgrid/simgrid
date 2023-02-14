@@ -10,7 +10,7 @@
 #include <simgrid/s4u/VirtualMachine.hpp>
 
 #include "src/kernel/activity/ExecImpl.hpp"
-#include "src/surf/surf_interface.hpp"
+#include "src/simgrid/module.hpp" // SIMGRID_REGISTER_PLUGIN
 
 // Makes sure that this plugin can be activated from the command line with ``--cfg=plugin:host_load``
 SIMGRID_REGISTER_PLUGIN(host_load, "Cpu load", &sg_host_load_plugin_init)
@@ -32,7 +32,7 @@ It attaches an extension to each host to store some data, and places callbacks i
   @endrst
 */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(host_load, kernel, "Logging specific to the HostLoad plugin");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(host_load, plugin, "Logging specific to the HostLoad plugin");
 
 namespace simgrid::plugin {
 

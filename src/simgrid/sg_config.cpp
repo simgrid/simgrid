@@ -19,6 +19,7 @@
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
+#include "src/simgrid/module.hpp"
 #include "src/smpi/include/smpi_config.hpp"
 #include "src/surf/surf_interface.hpp"
 
@@ -94,14 +95,13 @@ static void sg_config_cmd_line(int *argc, char **argv)
       XBT_HELP("Please consider using the recent names");
       shall_exit = true;
     } else if (parse_args && not strcmp(argv[i], "--help-models")) {
-      model_help("host", surf_host_model_description);
+      surf_host_model_description.help();
       XBT_HELP("%s", "");
-      model_help("CPU", surf_cpu_model_description);
+      surf_cpu_model_description.help();
       XBT_HELP("%s", "");
-      model_help("network", surf_network_model_description);
+      surf_network_model_description.help();
       XBT_HELP("\nLong description of all optimization levels accepted by the models of this simulator:");
-      for (auto const& item : surf_optimization_mode_description)
-        XBT_HELP("  %s: %s", item.name, item.description);
+      surf_optimization_mode_description.help();
       XBT_HELP("Both network and CPU models have 'Lazy' as default optimization level\n");
       shall_exit = true;
     } else if (parse_args && not strcmp(argv[i], "--help-tracing")) {
@@ -128,12 +128,11 @@ static void _sg_cfg_cb__plugin(const std::string& value)
     return;
 
   if (value == "help") {
-    model_help("plugin", surf_plugin_description());
+    simgrid_plugins().help();
     exit(0);
   }
 
-  const auto* plugin = find_model_description(surf_plugin_description(), value);
-  plugin->model_init_preparse();
+  simgrid_plugins().by_name(value).init();
 }
 
 /* callback of the host/model variable */
@@ -142,12 +141,12 @@ static void _sg_cfg_cb__host_model(const std::string& value)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   if (value == "help") {
-    model_help("host", surf_host_model_description);
+    surf_host_model_description.help();
     exit(0);
   }
 
   /* Make sure that the model exists */
-  find_model_description(surf_host_model_description, value);
+  surf_host_model_description.by_name(value);
 }
 
 /* callback of the cpu/model variable */
@@ -156,12 +155,12 @@ static void _sg_cfg_cb__cpu_model(const std::string& value)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   if (value == "help") {
-    model_help("CPU", surf_cpu_model_description);
+    surf_cpu_model_description.help();
     exit(0);
   }
 
-  /* New Module missing */
-  find_model_description(surf_cpu_model_description, value);
+  /* Make sure that the model exists */
+  surf_cpu_model_description.by_name(value);
 }
 
 /* callback of the cpu/model variable */
@@ -170,12 +169,12 @@ static void _sg_cfg_cb__optimization_mode(const std::string& value)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   if (value == "help") {
-    model_help("optimization", surf_optimization_mode_description);
+    surf_optimization_mode_description.help();
     exit(0);
   }
 
-  /* New Module missing */
-  find_model_description(surf_optimization_mode_description, value);
+  /* Make sure that the model exists */
+  surf_optimization_mode_description.by_name(value);
 }
 
 static void _sg_cfg_cb__disk_model(const std::string& value)
@@ -183,11 +182,11 @@ static void _sg_cfg_cb__disk_model(const std::string& value)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   if (value == "help") {
-    model_help("disk", surf_disk_model_description);
+    surf_disk_model_description.help();
     exit(0);
   }
 
-  find_model_description(surf_disk_model_description, value);
+  surf_disk_model_description.by_name(value);
 }
 
 /* callback of the network_model variable */
@@ -196,12 +195,11 @@ static void _sg_cfg_cb__network_model(const std::string& value)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   if (value == "help") {
-    model_help("network", surf_network_model_description);
+    surf_network_model_description.help();
     exit(0);
   }
 
-  /* New Module missing */
-  find_model_description(surf_network_model_description, value);
+  surf_network_model_description.by_name(value);
 }
 
 static void _sg_cfg_cb_contexts_parallel_mode(std::string_view mode_name)
@@ -221,15 +219,10 @@ static void _sg_cfg_cb_contexts_parallel_mode(std::string_view mode_name)
 /* build description line with possible values */
 static void declare_model_flag(const std::string& name, const std::string& value,
                                const std::function<void(std::string const&)>& callback,
-                               const std::vector<surf_model_description_t>& model_description, const std::string& type,
+                               const simgrid::ModuleGroup& model_description, const std::string& type,
                                const std::string& descr)
 {
-  std::string description = descr + ". Possible values: ";
-  std::string sep         = "";
-  for (auto const& item : model_description) {
-    description += sep + item.name;
-    sep = ", ";
-  }
+  std::string description = descr + ". Possible values: " + model_description.existing_values();
   description += ".\n       (use 'help' as a value to see the long description of each " + type + ")";
   simgrid::config::declare_flag<std::string>(name, description, value, callback);
 }
@@ -242,9 +235,9 @@ void sg_config_init(int *argc, char **argv)
     XBT_WARN("Call to sg_config_init() after initialization ignored");
     return;
   }
-
+  simgrid_create_models();
   /* Plugins configuration */
-  declare_model_flag("plugin", "", &_sg_cfg_cb__plugin, surf_plugin_description(), "plugin", "The plugins");
+  declare_model_flag("plugin", "", &_sg_cfg_cb__plugin, simgrid_plugins(), "plugin", "The plugins");
 
   declare_model_flag("cpu/model", "Cas01", &_sg_cfg_cb__cpu_model, surf_cpu_model_description, "model",
                      "The model to use for the CPU");
