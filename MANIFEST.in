@@ -2217,6 +2217,8 @@ include src/s4u/s4u_Netzone.cpp
 include src/s4u/s4u_Semaphore.cpp
 include src/s4u/s4u_VirtualMachine.cpp
 include src/simgrid/Exception.cpp
+include src/simgrid/module.cpp
+include src/simgrid/module.hpp
 include src/simgrid/sg_config.cpp
 include src/simgrid/sg_version.cpp
 include src/simgrid/util.hpp
