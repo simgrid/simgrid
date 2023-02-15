@@ -63,17 +63,6 @@ static inline int double_equals(double value1, double value2, double precision)
   return (fabs(value1 - value2) < precision);
 }
 
-/** @ingroup SURF_models
- *  @brief Initializes the CPU model with the model Cas01
- *
- *  By default, this model uses the lazy optimization mechanism that relies on partial invalidation in LMM and a heap
- *  for lazy action update.
- *  You can change this behavior by setting the cpu/optim configuration variable to a different value.
- *
- *  You shouldn't have to call it by yourself.
- */
-XBT_PUBLIC void surf_cpu_model_init_Cas01();
-
 XBT_PUBLIC void surf_disk_model_init_S19();
 
 /** @ingroup SURF_models
@@ -117,8 +106,6 @@ XBT_PUBLIC void surf_host_model_init_ptask_L07();
 /** @brief The list of all available optimization modes (both for cpu and networks).
  *  These optimization modes can be set using --cfg=cpu/optim:... and --cfg=network/optim:... */
 XBT_PUBLIC_DATA simgrid::ModuleGroup surf_optimization_mode_description;
-/** @brief The list of all cpu models (pick one with --cfg=cpu/model) */
-XBT_PUBLIC_DATA simgrid::ModuleGroup surf_cpu_model_description;
 /** @brief The list of all disk models (pick one with --cfg=disk/model) */
 XBT_PUBLIC_DATA simgrid::ModuleGroup surf_disk_model_description;
 /** @brief The list of all host models (pick one with --cfg=host/model:) */

@@ -60,8 +60,19 @@ inline auto& simgrid_plugins() // Function to avoid static initialization order 
 /** @brief The list of all available network model (pick one with --cfg=network/model) */
 inline auto& simgrid_network_models() // Function to avoid static initialization order fiasco
 {
-  static simgrid::ModuleGroup plugins("network model");
-  return plugins;
+  static simgrid::ModuleGroup models("network model");
+  return models;
 }
 
+#define SIMGRID_REGISTER_CPU_MODEL(id, desc, init)                                                                     \
+  static void XBT_ATTRIB_CONSTRUCTOR(800) _XBT_CONCAT3(simgrid_, id, _cpu_model_register)()                            \
+  {                                                                                                                    \
+    simgrid_cpu_models().add(_XBT_STRINGIFY(id), (desc), (init));                                                      \
+  }
+/** @brief The list of all available CPU model (pick one with --cfg=cpu/model) */
+inline auto& simgrid_cpu_models() // Function to avoid static initialization order fiasco
+{
+  static simgrid::ModuleGroup models("CPU model");
+  return models;
+}
 #endif

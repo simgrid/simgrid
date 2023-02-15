@@ -97,7 +97,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
     } else if (parse_args && not strcmp(argv[i], "--help-models")) {
       surf_host_model_description.help();
       XBT_HELP("%s", "");
-      surf_cpu_model_description.help();
+      simgrid_cpu_models().help();
       XBT_HELP("%s", "");
       simgrid_network_models().help();
       XBT_HELP("\nLong description of all optimization levels accepted by the models of this simulator:");
@@ -155,12 +155,12 @@ static void _sg_cfg_cb__cpu_model(const std::string& value)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   if (value == "help") {
-    surf_cpu_model_description.help();
+    simgrid_cpu_models().help();
     exit(0);
   }
 
   /* Make sure that the model exists */
-  surf_cpu_model_description.by_name(value);
+  simgrid_cpu_models().by_name(value);
 }
 
 /* callback of the cpu/model variable */
@@ -240,7 +240,7 @@ void sg_config_init(int *argc, char **argv)
   /* Plugins configuration */
   declare_model_flag("plugin", "", &_sg_cfg_cb__plugin, simgrid_plugins(), "plugin", "The plugins");
 
-  declare_model_flag("cpu/model", "Cas01", &_sg_cfg_cb__cpu_model, surf_cpu_model_description, "model",
+  declare_model_flag("cpu/model", "Cas01", &_sg_cfg_cb__cpu_model, simgrid_cpu_models(), "model",
                      "The model to use for the CPU");
 
   declare_model_flag("disk/model", "S19", &_sg_cfg_cb__disk_model, surf_disk_model_description, "model",

@@ -45,7 +45,7 @@ static void surf_config_models_setup()
     xbt_enforce(not disk_model_name.empty(), "Set a disk model to use with the 'compound' host model");
     xbt_enforce(not network_model_name.empty(), "Set a network model to use with the 'compound' host model");
 
-    surf_cpu_model_description.by_name(cpu_model_name).init();
+    simgrid_cpu_models().by_name(cpu_model_name).init();
     surf_disk_model_description.by_name(disk_model_name).init();
     simgrid_network_models().by_name(network_model_name).init();
   }

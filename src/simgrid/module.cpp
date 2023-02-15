@@ -50,13 +50,11 @@ std::string ModuleGroup::existing_values() const
 
 /* -------------------------------------------------------------------------------------------------------------- */
 simgrid::ModuleGroup surf_optimization_mode_description("optimization mode");
-simgrid::ModuleGroup surf_cpu_model_description("CPU model");
 simgrid::ModuleGroup surf_disk_model_description("disk model");
 simgrid::ModuleGroup surf_host_model_description("host model");
 
 void simgrid_create_models()
 {
-  surf_cpu_model_description.add("Cas01", "Simplistic CPU model (time=size/speed).", &surf_cpu_model_init_Cas01);
   surf_disk_model_description.add("S19", "Simplistic disk model.", &surf_disk_model_init_S19);
 
   surf_host_model_description

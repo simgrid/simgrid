@@ -21,7 +21,7 @@ void surf_host_model_init_current_default()
   auto* engine    = simgrid::kernel::EngineImpl::get_instance();
   engine->add_model(host_model);
   engine->get_netzone_root()->set_host_model(host_model);
-  surf_cpu_model_init_Cas01();
+  simgrid_cpu_models().by_name("Cas01").init();
   surf_disk_model_init_S19();
   simgrid_network_models().by_name("LV08").init();
 }
