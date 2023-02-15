@@ -359,7 +359,6 @@ set(SURF_SRC
   src/surf/network_constant.cpp
   src/surf/ptask_L07.cpp
   src/surf/sg_platf.cpp
-  src/surf/surf_interface.cpp
   src/surf/xml/platf.hpp
   src/surf/xml/platf_private.hpp
   src/surf/xml/surfxml_parseplatf.cpp
