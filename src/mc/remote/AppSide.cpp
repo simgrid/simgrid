@@ -209,11 +209,12 @@ void AppSide::handle_actors_status() const
                    "The serialized transition is too large for the buffer. Please fix the code.");
         strncpy(probe.buffer.data(), str.c_str(), probe.buffer.size() - 1);
         probe.buffer.back() = '\0';
-
-        // TODO: Do we need to reset `times_considered` for each actor's
-        // simcall observer here to the "original" value? We may need to
-        // add a method to handle this
       }
+      // NOTE: We do NOT need to reset `times_considered` for each actor's
+      // simcall observer here to the "original" value (i.e. the value BEFORE
+      // multiple prepare() calls were made for serialization purposes) since
+      // each SIMCALL_EXECUTE provides a `times_considered` to be used to prepare
+      // the transition before execution.
     }
 
     size_t size = probes.size() * sizeof(s_mc_message_simcall_probe_one_t);
