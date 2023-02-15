@@ -50,11 +50,11 @@ static void surf_config_models_setup()
     simgrid_network_models().by_name(network_model_name).init();
   }
 
-  surf_host_model_description.by_name(host_model_name).init();
+  simgrid_host_models().by_name(host_model_name).init();
 
   XBT_DEBUG("Call vm_model_init");
   /* TODO: ideally we should get back the pointer to CpuModel from init(), but this
-   * requires changing the declaration of surf_cpu_model_description. */
+   * requires changing the declaration of the ModuleGroup returned by simgrid_cpu_models() */
   surf_vm_model_init_HL13(
       simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->get_cpu_pm_model().get());
 }

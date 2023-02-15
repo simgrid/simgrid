@@ -78,20 +78,10 @@ std::string ModuleGroup::existing_values() const
 /* -------------------------------------------------------------------------------------------------------------- */
 simgrid::ModuleGroup surf_optimization_mode_description("optimization mode");
 simgrid::ModuleGroup surf_disk_model_description("disk model");
-simgrid::ModuleGroup surf_host_model_description("host model");
 
 void simgrid_create_models()
 {
   surf_disk_model_description.add("S19", "Simplistic disk model.", &surf_disk_model_init_S19);
-
-  surf_host_model_description
-      .add("default",
-           "Default host model. Currently, CPU:Cas01, network:LV08 (with cross traffic enabled), and disk:S19",
-           &surf_host_model_init_current_default)
-      .add("compound", "Host model that is automatically chosen if you change the CPU, network, and disk models",
-           &surf_host_model_init_compound)
-      .add("ptask_L07", "Host model somehow similar to Cas01+CM02+S19 but allowing parallel tasks",
-           &surf_host_model_init_ptask_L07);
 
   surf_optimization_mode_description
       .add("Lazy", "Lazy action management (partial invalidation in lmm + heap in action remaining).", nullptr)

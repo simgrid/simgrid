@@ -95,7 +95,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
       XBT_HELP("Please consider using the recent names");
       shall_exit = true;
     } else if (parse_args && not strcmp(argv[i], "--help-models")) {
-      surf_host_model_description.help();
+      simgrid_host_models().help();
       XBT_HELP("%s", "");
       simgrid_cpu_models().help();
       XBT_HELP("%s", "");
@@ -117,20 +117,6 @@ static void sg_config_cmd_line(int *argc, char **argv)
   }
   if (shall_exit)
     exit(0);
-}
-
-/* callback of the host/model variable */
-static void _sg_cfg_cb__host_model(const std::string& value)
-{
-  xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
-
-  if (value == "help") {
-    surf_host_model_description.help();
-    exit(0);
-  }
-
-  /* Make sure that the model exists */
-  surf_host_model_description.by_name(value);
 }
 
 /* callback of the cpu/model variable */
@@ -197,6 +183,7 @@ void sg_config_init(int *argc, char **argv)
   simgrid_plugins().create_flag("plugin", "The plugins", "", true);
   simgrid_cpu_models().create_flag("cpu/model", "The model to use for the CPU", "Cas01", false);
   simgrid_network_models().create_flag("network/model", "The model to use for the network", "LV08", false);
+  simgrid_host_models().create_flag("host/model", "The model to use for the host", "default", false);
   simgrid_create_models(); // KILL ME
 
   declare_model_flag("disk/model", "S19", &_sg_cfg_cb__disk_model, surf_disk_model_description,
@@ -204,9 +191,6 @@ void sg_config_init(int *argc, char **argv)
 
   declare_model_flag("network/optim", "Lazy", &_sg_cfg_cb__optimization_mode, surf_optimization_mode_description,
                      "The optimization modes to use for the network");
-
-  declare_model_flag("host/model", "default", &_sg_cfg_cb__host_model, surf_host_model_description,
-                     "The model to use for the host");
 
   simgrid::config::bind_flag(sg_surf_precision, "surf/precision",
                              "Numerical precision used when updating simulation times (in seconds)");

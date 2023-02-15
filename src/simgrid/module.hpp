@@ -46,7 +46,6 @@ public:
   {                                                                                                                    \
     simgrid_plugins().add(_XBT_STRINGIFY(id), (desc), (init));                                                         \
   }
-
 /** @brief The list of all available plugins */
 inline auto& simgrid_plugins() // Function to avoid static initialization order fiasco
 {
@@ -59,7 +58,7 @@ inline auto& simgrid_plugins() // Function to avoid static initialization order 
   {                                                                                                                    \
     simgrid_network_models().add(_XBT_STRINGIFY(id), (desc), (init));                                                  \
   }
-/** @brief The list of all available network model (pick one with --cfg=network/model) */
+/** @brief The list of all available network models (pick one with --cfg=network/model) */
 inline auto& simgrid_network_models() // Function to avoid static initialization order fiasco
 {
   static simgrid::ModuleGroup models("network model");
@@ -71,10 +70,23 @@ inline auto& simgrid_network_models() // Function to avoid static initialization
   {                                                                                                                    \
     simgrid_cpu_models().add(_XBT_STRINGIFY(id), (desc), (init));                                                      \
   }
-/** @brief The list of all available CPU model (pick one with --cfg=cpu/model) */
+/** @brief The list of all available CPU models (pick one with --cfg=cpu/model) */
 inline auto& simgrid_cpu_models() // Function to avoid static initialization order fiasco
 {
   static simgrid::ModuleGroup models("CPU model");
   return models;
 }
+
+#define SIMGRID_REGISTER_HOST_MODEL(id, desc, init)                                                                    \
+  static void XBT_ATTRIB_CONSTRUCTOR(800) _XBT_CONCAT3(simgrid_, id, _host_model_register)()                           \
+  {                                                                                                                    \
+    simgrid_host_models().add(_XBT_STRINGIFY(id), (desc), (init));                                                     \
+  }
+/** @brief The list of all available host models (pick one with --cfg=host/model) */
+inline auto& simgrid_host_models() // Function to avoid static initialization order fiasco
+{
+  static simgrid::ModuleGroup models("host model");
+  return models;
+}
+
 #endif

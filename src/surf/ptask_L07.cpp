@@ -31,17 +31,17 @@ static simgrid::config::Flag<std::string> cfg_ptask_solver("host/solver",
 /**************************************/
 /*** Resource Creation & Destruction **/
 /**************************************/
-void surf_host_model_init_ptask_L07()
-{
-  XBT_CINFO(xbt_cfg, "Switching to the L07 model to handle parallel tasks.");
-  xbt_assert(cfg_ptask_solver != "maxmin", "Invalid configuration. Cannot use maxmin solver with parallel tasks.");
+SIMGRID_REGISTER_HOST_MODEL(
+    ptask_L07, "Host model somehow similar to Cas01+CM02+S19 but allowing parallel tasks", []() {
+      XBT_CINFO(xbt_cfg, "Switching to the L07 model to handle parallel tasks.");
+      xbt_assert(cfg_ptask_solver != "maxmin", "Invalid configuration. Cannot use maxmin solver with parallel tasks.");
 
-  auto* system    = simgrid::kernel::lmm::System::build(cfg_ptask_solver.get(), true /* selective update */);
-  auto host_model = std::make_shared<simgrid::kernel::resource::HostL07Model>("Host_Ptask", system);
-  auto* engine    = simgrid::kernel::EngineImpl::get_instance();
-  engine->add_model(host_model);
-  engine->get_netzone_root()->set_host_model(host_model);
-}
+      auto* system    = simgrid::kernel::lmm::System::build(cfg_ptask_solver.get(), true /* selective update */);
+      auto host_model = std::make_shared<simgrid::kernel::resource::HostL07Model>("Host_Ptask", system);
+      auto* engine    = simgrid::kernel::EngineImpl::get_instance();
+      engine->add_model(host_model);
+      engine->get_netzone_root()->set_host_model(host_model);
+    });
 
 namespace simgrid::kernel::resource {
 

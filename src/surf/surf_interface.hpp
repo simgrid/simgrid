@@ -74,31 +74,6 @@ XBT_PUBLIC void surf_disk_model_init_S19();
  */
 XBT_PUBLIC void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model);
 
-/** @ingroup SURF_models
- *  @brief Initializes the platform with a compound host model
- *
- *  This function should be called after a cpu_model and a network_model have been set up.
- */
-XBT_PUBLIC void surf_host_model_init_compound();
-
-/** @ingroup SURF_models
- *  @brief Initializes the platform with the current best network and cpu models at hand
- *
- *  This platform model separates the host model and the network model.
- *  The host model will be initialized with the model compound, the network model with the model LV08 (with cross
- *  traffic support) and the CPU model with the model Cas01.
- *  Such model is subject to modification with warning in the ChangeLog so monitor it!
- */
-XBT_PUBLIC void surf_host_model_init_current_default();
-
-/** @ingroup SURF_models
- *  @brief Initializes the platform with the model L07
- *
- *  With this model, only parallel tasks can be used. Resource sharing is done by identifying bottlenecks and giving an
- *  equal share of the model to each action.
- */
-XBT_PUBLIC void surf_host_model_init_ptask_L07();
-
 /* --------------------
  *  Model Descriptions
  * -------------------- */
@@ -108,8 +83,6 @@ XBT_PUBLIC void surf_host_model_init_ptask_L07();
 XBT_PUBLIC_DATA simgrid::ModuleGroup surf_optimization_mode_description;
 /** @brief The list of all disk models (pick one with --cfg=disk/model) */
 XBT_PUBLIC_DATA simgrid::ModuleGroup surf_disk_model_description;
-/** @brief The list of all host models (pick one with --cfg=host/model:) */
-XBT_PUBLIC_DATA simgrid::ModuleGroup surf_host_model_description;
 
 void simgrid_create_models();
 

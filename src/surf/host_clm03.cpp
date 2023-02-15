@@ -14,25 +14,27 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_host);
 
-void surf_host_model_init_current_default()
-{
-  simgrid::config::set_default<bool>("network/crosstraffic", true);
-  auto host_model = std::make_shared<simgrid::kernel::resource::HostCLM03Model>("Host_CLM03");
-  auto* engine    = simgrid::kernel::EngineImpl::get_instance();
-  engine->add_model(host_model);
-  engine->get_netzone_root()->set_host_model(host_model);
-  simgrid_cpu_models().by_name("Cas01").init();
-  surf_disk_model_init_S19();
-  simgrid_network_models().by_name("LV08").init();
-}
+SIMGRID_REGISTER_HOST_MODEL(
+    default, "Default host model. Currently, CPU:Cas01, network:LV08 (with cross traffic enabled), and disk:S19", []() {
+      simgrid::config::set_default<bool>("network/crosstraffic", true);
+      auto host_model = std::make_shared<simgrid::kernel::resource::HostCLM03Model>("Host_CLM03");
+      auto* engine    = simgrid::kernel::EngineImpl::get_instance();
+      engine->add_model(host_model);
+      engine->get_netzone_root()->set_host_model(host_model);
+      simgrid_cpu_models().by_name("Cas01").init();
+      surf_disk_model_init_S19();
+      simgrid_network_models().by_name("LV08").init();
+    });
 
-void surf_host_model_init_compound()
-{
-  auto host_model = std::make_shared<simgrid::kernel::resource::HostCLM03Model>("Host_CLM03");
-  auto* engine    = simgrid::kernel::EngineImpl::get_instance();
-  engine->add_model(host_model);
-  engine->get_netzone_root()->set_host_model(host_model);
-}
+SIMGRID_REGISTER_HOST_MODEL(compound,
+                            "Host model that is automatically chosen if you change the CPU, network, and disk models",
+                            []() {
+                              auto host_model =
+                                  std::make_shared<simgrid::kernel::resource::HostCLM03Model>("Host_CLM03");
+                              auto* engine = simgrid::kernel::EngineImpl::get_instance();
+                              engine->add_model(host_model);
+                              engine->get_netzone_root()->set_host_model(host_model);
+                            });
 
 namespace simgrid::kernel::resource {
 
