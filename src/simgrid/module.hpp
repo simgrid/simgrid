@@ -28,13 +28,15 @@ class ModuleGroup {
   std::vector<Module> table_;
   const std::string kind_; // either 'plugin' or 'CPU model' or whatever. Used in error messages only
 public:
-  ModuleGroup(std::string kind) : kind_(kind) {}
+  ModuleGroup(const std::string& kind) : kind_(kind) {}
 
   ModuleGroup& add(const char* id, const char* desc, std::function<void()> init);
   Module const& by_name(const std::string& name) const;
   void help() const;
   const std::string get_kind() const { return kind_; }
   std::string existing_values() const;
+  void create_flag(const std::string& opt_name, const std::string& descr, const std::string& default_value,
+                   bool init_now);
 };
 
 }; // namespace simgrid

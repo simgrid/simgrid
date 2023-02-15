@@ -119,22 +119,6 @@ static void sg_config_cmd_line(int *argc, char **argv)
     exit(0);
 }
 
-/* callback of the plugin variable */
-static void _sg_cfg_cb__plugin(const std::string& value)
-{
-  xbt_assert(_sg_cfg_init_status < 2, "Cannot load a plugin after the initialization");
-
-  if (value.empty())
-    return;
-
-  if (value == "help") {
-    simgrid_plugins().help();
-    exit(0);
-  }
-
-  simgrid_plugins().by_name(value).init();
-}
-
 /* callback of the host/model variable */
 static void _sg_cfg_cb__host_model(const std::string& value)
 {
@@ -147,20 +131,6 @@ static void _sg_cfg_cb__host_model(const std::string& value)
 
   /* Make sure that the model exists */
   surf_host_model_description.by_name(value);
-}
-
-/* callback of the cpu/model variable */
-static void _sg_cfg_cb__cpu_model(const std::string& value)
-{
-  xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
-
-  if (value == "help") {
-    simgrid_cpu_models().help();
-    exit(0);
-  }
-
-  /* Make sure that the model exists */
-  simgrid_cpu_models().by_name(value);
 }
 
 /* callback of the cpu/model variable */
@@ -189,19 +159,6 @@ static void _sg_cfg_cb__disk_model(const std::string& value)
   surf_disk_model_description.by_name(value);
 }
 
-/* callback of the network_model variable */
-static void _sg_cfg_cb__network_model(const std::string& value)
-{
-  xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
-
-  if (value == "help") {
-    simgrid_network_models().help();
-    exit(0);
-  }
-
-  simgrid_network_models().by_name(value); // Simply ensure that it exists
-}
-
 static void _sg_cfg_cb_contexts_parallel_mode(std::string_view mode_name)
 {
   if (mode_name == "posix") {
@@ -219,12 +176,11 @@ static void _sg_cfg_cb_contexts_parallel_mode(std::string_view mode_name)
 /* build description line with possible values */
 static void declare_model_flag(const std::string& name, const std::string& value,
                                const std::function<void(std::string const&)>& callback,
-                               const simgrid::ModuleGroup& model_description, const std::string& type,
-                               const std::string& descr)
+                               const simgrid::ModuleGroup& model_description, const std::string& descr)
 {
   std::string description = descr + ". Possible values (other compilation flags may activate more " +
-                            model_description.get_kind() + "): " + model_description.existing_values();
-  description += ".\n       (use 'help' as a value to see the long description of each " + type + ")";
+                            model_description.get_kind() + "s): " + model_description.existing_values();
+  description += ".\n       (use 'help' as a value to see the long description of each one)";
   simgrid::config::declare_flag<std::string>(name, description, value, callback);
 }
 
@@ -236,23 +192,20 @@ void sg_config_init(int *argc, char **argv)
     XBT_WARN("Call to sg_config_init() after initialization ignored");
     return;
   }
-  simgrid_create_models();
+
   /* Plugins configuration */
-  declare_model_flag("plugin", "", &_sg_cfg_cb__plugin, simgrid_plugins(), "plugin", "The plugins");
+  simgrid_plugins().create_flag("plugin", "The plugins", "", true);
+  simgrid_cpu_models().create_flag("cpu/model", "The model to use for the CPU", "Cas01", false);
+  simgrid_network_models().create_flag("network/model", "The model to use for the network", "LV08", false);
+  simgrid_create_models(); // KILL ME
 
-  declare_model_flag("cpu/model", "Cas01", &_sg_cfg_cb__cpu_model, simgrid_cpu_models(), "model",
-                     "The model to use for the CPU");
-
-  declare_model_flag("disk/model", "S19", &_sg_cfg_cb__disk_model, surf_disk_model_description, "model",
+  declare_model_flag("disk/model", "S19", &_sg_cfg_cb__disk_model, surf_disk_model_description,
                      "The model to use for the disk");
 
-  declare_model_flag("network/model", "LV08", &_sg_cfg_cb__network_model, simgrid_network_models(), "model",
-                     "The model to use for the network");
-
   declare_model_flag("network/optim", "Lazy", &_sg_cfg_cb__optimization_mode, surf_optimization_mode_description,
-                     "optimization mode", "The optimization modes to use for the network");
+                     "The optimization modes to use for the network");
 
-  declare_model_flag("host/model", "default", &_sg_cfg_cb__host_model, surf_host_model_description, "model",
+  declare_model_flag("host/model", "default", &_sg_cfg_cb__host_model, surf_host_model_description,
                      "The model to use for the host");
 
   simgrid::config::bind_flag(sg_surf_precision, "surf/precision",
