@@ -162,7 +162,8 @@ void DFSExplorer::run()
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
     std::__detail::__unique_ptr_t<simgrid::mc::State> next_state;
 
-    /* If we want sleep set reduction, we pass it to old one to the new state */
+    /* If we want sleep set reduction, pass the old state to the new state so it can
+     * both copy the sleep set and eventually removes things from it locally */
     if (sleep_set_reduction_)
 	next_state = std::make_unique<State>(get_remote_app(), state); 
     else
@@ -170,12 +171,6 @@ void DFSExplorer::run()
 
     on_state_creation_signal(next_state.get(), get_remote_app());
 
-    XBT_VERB("New sleep set containing:");
-    for (auto & [aid, transition] : next_state->get_sleep_set()) {
-      
-	XBT_VERB("###<%ld,%s>", aid, transition.to_string().c_str());
-      
-    }
 		
     if (_sg_mc_termination)
       this->check_non_termination(next_state.get());
@@ -217,20 +212,23 @@ void DFSExplorer::backtrack()
 
   get_remote_app().check_deadlock();
 
+  /* We may backtrack from somewhere either because it's leaf, or because every enabled process are in done/sleep set.
+   * In the first case, we need to remove the last transition corresponding to the Finalize */
   if (stack_.back()->get_transition()->aid_ == 0)
       stack_.pop_back();
   
   /* Traverse the stack backwards until a state with a non empty interleave set is found, deleting all the states that
    *  have it empty in the way. For each deleted state, check if the request that has generated it (from its
-   *  predecessor state), depends on any other previous request executed before it. If it does then add it to the
-   *  interleave set of the state that executed that previous request. */
+   *  predecessor state) depends on any other previous request executed before it on another process. If there exists one,
+   *  find the more recent, and add its process to the interleave set. If the process is not enabled at this point,
+   *  then add every enabled process to the interleave */
   bool found_backtracking_point = false;
   while (not stack_.empty() && not found_backtracking_point) {
     std::unique_ptr<State> state = std::move(stack_.back());
     
     stack_.pop_back();
     
-    XBT_DEBUG("Maarking Transition >>%s<< of process %ld done and addint it to the sleep set", state->get_transition()->to_string().c_str(), state->get_transition()->aid_);
+    XBT_DEBUG("Maarking Transition >>%s<< of process %ld done and adding it to the sleep set", state->get_transition()->to_string().c_str(), state->get_transition()->aid_);
     state->mark_done(state->get_transition()->aid_);
     state->set_sleep_set(state->get_transition());
 
@@ -253,7 +251,7 @@ void DFSExplorer::backtrack()
 	      else
 		  XBT_DEBUG("Actor %ld is already in done set: no need to explore it again", issuer_id);
 	  } else {
-	      XBT_DEBUG("Actor %ld is not enabled: DPOR may be failing, to stay sound, we are marking every enabled transition todo", issuer_id);
+	      XBT_DEBUG("Actor %ld is not enabled: DPOR may be failing, to stay sound, we are marking every enabled transition as todo", issuer_id);
 	      prev_state->mark_all_todo();
 	  }
           break;
@@ -265,12 +263,12 @@ void DFSExplorer::backtrack()
       }
     }
 
-    if (state->count_todo() == 0) { // Empty interleaving set
+    if (state->count_todo() == 0) { // Empty interleaving set: exploration at this level is over
       XBT_DEBUG("Delete state %ld at depth %zu", state->get_num(), stack_.size() + 1);
 
     } else {
 	XBT_DEBUG("Back-tracking to state %ld at depth %zu: %ld transitions left to be explored", state->get_num(), stack_.size() + 1, state->count_todo());
-      stack_.push_back(std::move(state)); // Put it back on the stack
+      stack_.push_back(std::move(state)); // Put it back on the stack so we can explore the next transition of the interleave
       found_backtracking_point = true;
     }
   }

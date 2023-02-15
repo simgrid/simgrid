@@ -35,10 +35,12 @@ State::State(const RemoteApp& remote_app, const State* previous_state) : num_(++
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
     system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_);
   }
-  
+
+  /* For each actor in the previous sleep set, keep it if it is not dependent with current transition.
+   * And if we kept it and the actor is enabled in this state, mark the actor as already done, so that
+   * it is not explored*/
   for (auto & [aid, transition] : previous_state->get_sleep_set()) {
       
-      XBT_DEBUG("Transition >>%s<< will be explored ?", transition.to_string().c_str());
       if (not previous_state->get_transition()->depends(&transition)) {
 	      
 	  sleep_set_.emplace(aid, transition);
