@@ -20,6 +20,7 @@ using namespace simgrid;
 void ModuleGroup::create_flag(const std::string& opt_name, const std::string& descr, const std::string& default_value,
                               bool init_now)
 {
+  opt_name_               = opt_name;
   std::string description = descr + ". Possible values (other compilation flags may activate more " + get_kind() +
                             "s): " + existing_values() +
                             ".\n       (use 'help' as a value to see the long description of each one)";
@@ -41,6 +42,10 @@ void ModuleGroup::create_flag(const std::string& opt_name, const std::string& de
         else
           by_name(value); // Simply ensure that this value exists, it will be picked up later
       });
+}
+void ModuleGroup::init_from_flag_value()
+{
+  by_name(simgrid::config::get_value<std::string>(opt_name_)).init();
 }
 
 ModuleGroup& ModuleGroup::add(const char* id, const char* desc, std::function<void()> init)

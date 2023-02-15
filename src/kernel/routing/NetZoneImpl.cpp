@@ -27,9 +27,7 @@ namespace simgrid::kernel::routing {
 /* Pick the right models for CPU, net and host, and call their model_init_preparse */
 static void surf_config_models_setup()
 {
-  std::string host_model_name = simgrid::config::get_value<std::string>("host/model");
-
-  simgrid_host_models().by_name(host_model_name).init();
+  simgrid_host_models().init_from_flag_value();
 
   XBT_DEBUG("Call vm_model_init");
   /* TODO: ideally we should get back the pointer to CpuModel from init(), but this

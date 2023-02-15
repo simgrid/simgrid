@@ -27,6 +27,8 @@ struct Module {
 class ModuleGroup {
   std::vector<Module> table_;
   const std::string kind_; // either 'plugin' or 'CPU model' or whatever. Used in error messages only
+  std::string opt_name_;
+
 public:
   ModuleGroup(const std::string& kind) : kind_(kind) {}
 
@@ -37,6 +39,7 @@ public:
   std::string existing_values() const;
   void create_flag(const std::string& opt_name, const std::string& descr, const std::string& default_value,
                    bool init_now);
+  void init_from_flag_value();
 };
 
 }; // namespace simgrid
