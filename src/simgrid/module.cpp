@@ -79,17 +79,3 @@ std::string ModuleGroup::existing_values() const
   }
   return ss.str();
 }
-
-/* -------------------------------------------------------------------------------------------------------------- */
-simgrid::ModuleGroup surf_optimization_mode_description("optimization mode");
-
-void simgrid_create_models()
-{
-  surf_optimization_mode_description
-      .add("Lazy", "Lazy action management (partial invalidation in lmm + heap in action remaining).", nullptr)
-      .add("TI",
-           "Trace integration. Highly optimized mode when using availability traces (only available for the Cas01 CPU "
-           "model for now).",
-           nullptr)
-      .add("Full", "Full update of remaining and variables. Slow but may be useful when debugging.", nullptr);
-}

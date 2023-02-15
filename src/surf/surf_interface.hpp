@@ -65,14 +65,4 @@ static inline int double_equals(double value1, double value2, double precision)
 
 XBT_PUBLIC void surf_vm_model_init_HL13();
 
-/* --------------------
- *  Model Descriptions
- * -------------------- */
-
-/** @brief The list of all available optimization modes (both for cpu and networks).
- *  These optimization modes can be set using --cfg=cpu/optim:... and --cfg=network/optim:... */
-XBT_PUBLIC_DATA simgrid::ModuleGroup surf_optimization_mode_description;
-
-void simgrid_create_models();
-
 #endif /* SURF_MODEL_H_ */

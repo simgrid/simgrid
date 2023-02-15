@@ -100,9 +100,6 @@ static void sg_config_cmd_line(int *argc, char **argv)
       simgrid_cpu_models().help();
       XBT_HELP("%s", "");
       simgrid_network_models().help();
-      XBT_HELP("\nLong description of all optimization levels accepted by the models of this simulator:");
-      surf_optimization_mode_description.help();
-      XBT_HELP("Both network and CPU models have 'Lazy' as default optimization level\n");
       shall_exit = true;
     } else if (parse_args && not strcmp(argv[i], "--help-tracing")) {
       TRACE_help();
@@ -119,20 +116,6 @@ static void sg_config_cmd_line(int *argc, char **argv)
     exit(0);
 }
 
-/* callback of the cpu/model variable */
-static void _sg_cfg_cb__optimization_mode(const std::string& value)
-{
-  xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
-
-  if (value == "help") {
-    surf_optimization_mode_description.help();
-    exit(0);
-  }
-
-  /* Make sure that the model exists */
-  surf_optimization_mode_description.by_name(value);
-}
-
 static void _sg_cfg_cb_contexts_parallel_mode(std::string_view mode_name)
 {
   if (mode_name == "posix") {
@@ -145,17 +128,6 @@ static void _sg_cfg_cb_contexts_parallel_mode(std::string_view mode_name)
     xbt_die("Command line setting of the parallel synchronization mode should "
             "be one of \"posix\", \"futex\" or \"busy_wait\"");
   }
-}
-
-/* build description line with possible values */
-static void declare_model_flag(const std::string& name, const std::string& value,
-                               const std::function<void(std::string const&)>& callback,
-                               const simgrid::ModuleGroup& model_description, const std::string& descr)
-{
-  std::string description = descr + ". Possible values (other compilation flags may activate more " +
-                            model_description.get_kind() + "s): " + model_description.existing_values();
-  description += ".\n       (use 'help' as a value to see the long description of each one)";
-  simgrid::config::declare_flag<std::string>(name, description, value, callback);
 }
 
 /* create the config set, register what should be and parse the command line*/
@@ -173,10 +145,6 @@ void sg_config_init(int *argc, char **argv)
   simgrid_network_models().create_flag("network/model", "The model to use for the network", "LV08", false);
   simgrid_host_models().create_flag("host/model", "The model to use for the host", "default", false);
   simgrid_disk_models().create_flag("disk/model", "The model to use for the disk", "S19", false);
-  simgrid_create_models(); // KILL ME
-
-  declare_model_flag("network/optim", "Lazy", &_sg_cfg_cb__optimization_mode, surf_optimization_mode_description,
-                     "The optimization modes to use for the network");
 
   simgrid::config::bind_flag(sg_surf_precision, "surf/precision",
                              "Numerical precision used when updating simulation times (in seconds)");

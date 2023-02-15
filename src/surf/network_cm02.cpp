@@ -113,13 +113,24 @@ SIMGRID_REGISTER_NETWORK_MODEL(
     });
 
 namespace simgrid::kernel::resource {
+static simgrid::config::Flag<std::string>
+    network_optim_opt("network/optim", "Optimization algorithm to use for network resources. ", "Lazy",
+
+                      std::map<std::string, std::string, std::less<>>({
+                          {"Lazy", "Lazy action management (partial invalidation in lmm + heap in action remaining)."},
+                          {"Full", "Full update of remaining and variables. Slow but may be useful when debugging."},
+                      }),
+
+                      [](std::string const&) {
+                        xbt_assert(_sg_cfg_init_status < 2,
+                                   "Cannot change the optimization algorithm after the initialization");
+                      });
 
 NetworkCm02Model::NetworkCm02Model(const std::string& name) : NetworkModel(name)
 {
-  std::string optim = config::get_value<std::string>("network/optim");
-  bool select       = config::get_value<bool>("network/maxmin-selective-update");
+  bool select = config::get_value<bool>("network/maxmin-selective-update");
 
-  if (optim == "Lazy") {
+  if (network_optim_opt == "Lazy") {
     set_update_algorithm(Model::UpdateAlgo::LAZY);
     xbt_assert(select || config::is_default("network/maxmin-selective-update"),
                "You cannot disable network selective update when using the lazy update mechanism");
