@@ -63,14 +63,7 @@ static inline int double_equals(double value1, double value2, double precision)
   return (fabs(value1 - value2) < precision);
 }
 
-/** @ingroup SURF_models
- *  @brief Initializes the VM model used in the platform
- *
- *  A VM model depends on the physical CPU model to share the resources inside the VM
- *  It will also creates the CPU model for actions running inside the VM
- *
- */
-XBT_PUBLIC void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model);
+XBT_PUBLIC void surf_vm_model_init_HL13();
 
 /* --------------------
  *  Model Descriptions

@@ -24,18 +24,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_platform, kernel, "Kernel platform-related i
 
 namespace simgrid::kernel::routing {
 
-/* Pick the right models for CPU, net and host, and call their model_init_preparse */
-static void surf_config_models_setup()
-{
-  simgrid_host_models().init_from_flag_value();
-
-  XBT_DEBUG("Call vm_model_init");
-  /* TODO: ideally we should get back the pointer to CpuModel from init(), but this
-   * requires changing the declaration of the ModuleGroup returned by simgrid_cpu_models() */
-  surf_vm_model_init_HL13(
-      simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->get_cpu_pm_model().get());
-}
-
 xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                  kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                  std::vector<kernel::resource::StandardLinkImpl*> const& link_list)>
@@ -60,7 +48,8 @@ NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
      * (FIXME: check it out by creating a file beginning with one of these tags)
      * but cluster and peer come down to zone creations, so putting this verification here is correct.
      */
-    surf_config_models_setup();
+    simgrid_host_models().init_from_flag_value();
+    surf_vm_model_init_HL13();
   }
 
   xbt_enforce(nullptr == engine->netpoint_by_name_or_null(get_name()),

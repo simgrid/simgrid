@@ -19,8 +19,9 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_vm, ker_resource, "Virtual Machines, containing actors and mobile across hosts");
 
-void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model)
+void surf_vm_model_init_HL13()
 {
+  auto* cpu_pm_model = simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->get_cpu_pm_model().get();
   auto vm_model = std::make_shared<simgrid::kernel::resource::VMModel>("VM_HL13");
   auto* engine  = simgrid::kernel::EngineImpl::get_instance();
 
