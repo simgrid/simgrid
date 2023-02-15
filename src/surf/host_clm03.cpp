@@ -21,20 +21,14 @@ SIMGRID_REGISTER_HOST_MODEL(
       auto* engine    = simgrid::kernel::EngineImpl::get_instance();
       engine->add_model(host_model);
       engine->get_netzone_root()->set_host_model(host_model);
-      simgrid_cpu_models().by_name("Cas01").init();
-      simgrid_disk_models().by_name("S19").init();
-      simgrid_network_models().by_name("LV08").init();
-    });
 
-SIMGRID_REGISTER_HOST_MODEL(compound,
-                            "Host model that is automatically chosen if you change the CPU, network, and disk models",
-                            []() {
-                              auto host_model =
-                                  std::make_shared<simgrid::kernel::resource::HostCLM03Model>("Host_CLM03");
-                              auto* engine = simgrid::kernel::EngineImpl::get_instance();
-                              engine->add_model(host_model);
-                              engine->get_netzone_root()->set_host_model(host_model);
-                            });
+      std::string network_model_name = simgrid::config::get_value<std::string>("network/model");
+      std::string cpu_model_name     = simgrid::config::get_value<std::string>("cpu/model");
+      std::string disk_model_name    = simgrid::config::get_value<std::string>("disk/model");
+      simgrid_cpu_models().by_name(cpu_model_name).init();
+      simgrid_disk_models().by_name(disk_model_name).init();
+      simgrid_network_models().by_name(network_model_name).init();
+    });
 
 namespace simgrid::kernel::resource {
 

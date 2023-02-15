@@ -27,24 +27,7 @@ namespace simgrid::kernel::routing {
 /* Pick the right models for CPU, net and host, and call their model_init_preparse */
 static void surf_config_models_setup()
 {
-  std::string host_model_name    = simgrid::config::get_value<std::string>("host/model");
-  std::string network_model_name = simgrid::config::get_value<std::string>("network/model");
-  std::string cpu_model_name     = simgrid::config::get_value<std::string>("cpu/model");
-  std::string disk_model_name    = simgrid::config::get_value<std::string>("disk/model");
-
-  /* The compound host model is needed when using non-default net/cpu models */
-  if ((not simgrid::config::is_default("network/model") || not simgrid::config::is_default("cpu/model") ||
-       not simgrid::config::is_default("disk/model")) && simgrid::config::is_default("host/model")) {
-    host_model_name = "compound";
-    simgrid::config::set_value("host/model", host_model_name);
-  }
-
-  XBT_DEBUG("host model: %s", host_model_name.c_str());
-  if (host_model_name == "compound") {
-    simgrid_cpu_models().by_name(cpu_model_name).init();
-    simgrid_disk_models().by_name(disk_model_name).init();
-    simgrid_network_models().by_name(network_model_name).init();
-  }
+  std::string host_model_name = simgrid::config::get_value<std::string>("host/model");
 
   simgrid_host_models().by_name(host_model_name).init();
 

@@ -4,8 +4,7 @@ p c=cycle s=step p=priority h=host
 p Testing trace integration using trace_B.txt and test-hbp1-c0s0-c0s1.xml, test_trace:start == trace_cycle_0_step_0, test_trace:end < trace_cycle_0_step_1
 
 ! output sort
-$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1-c0s0-c0s1.xml --cfg=host/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
+$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1-c0s0-c0s1.xml --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [  0.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
@@ -16,8 +15,7 @@ $ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1
 p Testing trace integration using trace_B.txt and test-hbp1-c0s1-c0s2.xml, test_trace:start == trace_cycle_0_step_1, test_trace:end < trace_cycle_0_step_2
 
 ! output sort
-$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1-c0s1-c0s2.xml --cfg=host/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
+$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1-c0s1-c0s2.xml --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [ 10.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
@@ -28,8 +26,7 @@ $ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1
 p Testing trace integration using trace_B.txt and test-hbp1-c0s2-c1s0.xml, test_trace:start == trace_cycle_0_step_2, test_trace:end < trace_cycle_1_step_0
 
 ! output sort
-$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1-c0s2-c1s0.xml --cfg=host/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
+$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1-c0s2-c1s0.xml --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [ 20.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
@@ -40,8 +37,7 @@ $ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1
 p Testing trace integration using trace_B.txt and test-hbp1-c0s0-c1s0.xml, test_trace:start == trace_cycle_0_step_0, test_trace:end < trace_cycle_1_step_0
 
 ! output sort
-$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1-c0s0-c1s0.xml --cfg=host/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
+$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1-c0s0-c1s0.xml --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [  0.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
@@ -52,8 +48,7 @@ $ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1
 p Testing trace integration using trace_B.txt and test-hbp1-c0s2-c1s1.xml, test_trace:start == trace_cycle_0_step_2, test_trace:end < trace_cycle_1_step_1
 
 ! output sort
-$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1-c0s2-c1s1.xml --cfg=host/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
+$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1-c0s2-c1s1.xml --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [ 20.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
@@ -64,8 +59,7 @@ $ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1
 p Testing trace integration using trace_B.txt and test-hbp1-c0s1-c2s2.xml, test_trace:start == trace_cycle_0_step_1, test_trace:end < trace_cycle_2_step_2
 
 ! output sort
-$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1-c0s1-c2s2.xml --cfg=host/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
+$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1-c0s1-c2s2.xml --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [ 10.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
@@ -76,8 +70,7 @@ $ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1
 p Testing trace integration using trace_B.txt and test-hbp1-c1s1-c1s2.xml, test_trace:start == trace_cycle_1_step_1, test_trace:end < trace_cycle_1_step_2
 
 ! output sort
-$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1-c1s1-c1s2.xml --cfg=host/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
+$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1-c1s1-c1s2.xml --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [ 40.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
@@ -88,8 +81,7 @@ $ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1
 p Testing trace integration using trace_B.txt and test-hbp1-c1s1-c3s2.xml, test_trace:start == trace_cycle_1_step_1, test_trace:end < trace_cycle_3_step_2
 
 ! output sort
-$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1-c1s1-c3s2.xml --cfg=host/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
+$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1-c1s1-c3s2.xml --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [ 40.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
@@ -100,8 +92,7 @@ $ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1
 p Testing trace integration using trace_B.txt and test-hbp1.5-hbp1.5.xml, two process with same priority
 
 ! output sort
-$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1.5-hbp1.5.xml --cfg=host/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
+$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1.5-hbp1.5.xml --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [ 10.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
@@ -116,8 +107,7 @@ $ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1
 p Testing trace integration using trace_B.txt and test-hbp2.5-hbp1.5.xml, two process with different priority
 
 ! output sort
-$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp2.5-hbp1.5.xml --cfg=host/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
+$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp2.5-hbp1.5.xml --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [ 10.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
@@ -132,8 +122,7 @@ $ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp2
 p Testing trace integration using trace_B.txt and test-hbp2.5-hbp1.5.xml, two process with different priority (included)
 
 ! output sort
-$ ./trace-integration ${platfdir}/two_hosts_platform_with_availability_included.xml  ${srcdir:=.}/test-hbp2.5-hbp1.5.xml --cfg=host/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
+$ ./trace-integration ${platfdir}/two_hosts_platform_with_availability_included.xml  ${srcdir:=.}/test-hbp2.5-hbp1.5.xml --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [ 10.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
@@ -148,8 +137,7 @@ $ ./trace-integration ${platfdir}/two_hosts_platform_with_availability_included.
 p Testing trace integration using trace_B.txt and test-hbp1.0-hbp1.0-hbp1.0.xml, three process with same priority
 
 ! output sort
-$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1.0-hbp1.0-hbp1.0.xml --cfg=host/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
+$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1.0-hbp1.0-hbp1.0.xml --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [  0.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
@@ -168,8 +156,7 @@ $ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1
 p Testing trace integration using trace_B.txt and test-hbp1.0-hbp3.0-hbp4.0.xml, three process with different priority
 
 ! output sort
-$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1.0-hbp3.0-hbp4.0.xml --cfg=host/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
+$ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1.0-hbp3.0-hbp4.0.xml --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [ 10.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI
@@ -188,8 +175,7 @@ $ ./trace-integration ${platfdir}/two_hosts_profiles.xml  ${srcdir:=.}/test-hbp1
 p Testing trace integration using trace_B.txt and test-hbp1.0-hbp3.0-hbp4.0.xml, three process with different priority (included)
 
 ! output sort
-$ ./trace-integration ${platfdir}/two_hosts_platform_with_availability_included.xml  ${srcdir:=.}/test-hbp1.0-hbp3.0-hbp4.0.xml --cfg=host/model:compound --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
+$ ./trace-integration ${platfdir}/two_hosts_platform_with_availability_included.xml  ${srcdir:=.}/test-hbp1.0-hbp3.0-hbp4.0.xml --cfg=network/model:CM02 --cfg=cpu/optim:TI  "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [ 10.000000] (1:test_trace@Cpu B) Testing the trace integration cpu model: CpuTI

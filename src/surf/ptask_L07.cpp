@@ -5,6 +5,7 @@
 
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <simgrid/s4u/Engine.hpp>
+#include <xbt/asserts.hpp>
 #include <xbt/config.hpp>
 
 #include "simgrid/config.h"
@@ -35,6 +36,9 @@ SIMGRID_REGISTER_HOST_MODEL(
     ptask_L07, "Host model somehow similar to Cas01+CM02+S19 but allowing parallel tasks", []() {
       XBT_CINFO(xbt_cfg, "Switching to the L07 model to handle parallel tasks.");
       xbt_assert(cfg_ptask_solver != "maxmin", "Invalid configuration. Cannot use maxmin solver with parallel tasks.");
+
+      xbt_assert(simgrid::config::is_default("network/model") && simgrid::config::is_default("cpu/model"),
+                 "Changing the network or CPU model is not allowed when using the ptasks host model.");
 
       auto* system    = simgrid::kernel::lmm::System::build(cfg_ptask_solver.get(), true /* selective update */);
       auto host_model = std::make_shared<simgrid::kernel::resource::HostL07Model>("Host_Ptask", system);

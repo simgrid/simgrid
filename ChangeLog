@@ -34,6 +34,8 @@ Models:
    - Same for the latency
    - Rewrite the corresponding documentation.
  - Allow to disable the TCP windowing modeling by setting network/TCP-gamma to 0.
+ - Finally kill the 'compound' host model. You can change the CPU or network model
+   with the default host model, as it should.
 
 sthread:
  - Implement pthread_join in MC mode.

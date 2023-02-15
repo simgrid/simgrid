@@ -231,27 +231,17 @@ models for all existing resources.
     simulators as network models (see :ref:`models_ns3`).
     This model can be :ref:`further configured <options_pls>`.
 
-- ``cpu/model``: specify the used CPU model.  We have only one model
-  for now:
+- ``cpu/model``: specify the used CPU model.  We have only one model for now:
 
   - **Cas01:** Simplistic CPU model (time=size/speed)
 
-- ``host/model``: The host concept is the aggregation of a CPU with a
-  network card. Three models exists, but actually, only 2 of them are
-  interesting. The "compound" one is simply due to the way our
-  internal code is organized, and can easily be ignored. So at the
-  end, you have two host models: The default one allows aggregation of
-  an existing CPU model with an existing network model, but does not
-  allow parallel tasks because these beasts need some collaboration
-  between the network and CPU model.
+- ``host/model``: we have two such models for now. 
 
-  - **default:** Default host model. Currently, CPU:Cas01 and
-    network:LV08 (with cross traffic enabled)
-  - **compound:** Host model that is automatically chosen if
-    you change the network and CPU models
-  - **ptask_L07:** Host model somehow similar to Cas01+CM02 but
-    allowing "parallel tasks", that are intended to model the moldable
-    tasks of the grid scheduling literature.
+  - **default:** Default host model. It simply uses the otherwise configured models for cpu, disk and network (i.e. CPU:Cas01,
+    disk:S19 and network:LV08 by default)
+  - **ptask_L07:** This model is mandatory if you plan to use parallel tasks (and useless otherwise). ptasks are intended to
+    model the moldable tasks of the grid scheduling literature. A specific host model is necessary because each such activity
+    has a both compute and communicate components, so the CPU and network models must be mixed together.
 
 - ``storage/model``: specify the used storage model. Only one model is
   provided so far.
