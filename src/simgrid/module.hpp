@@ -77,6 +77,18 @@ inline auto& simgrid_cpu_models() // Function to avoid static initialization ord
   return models;
 }
 
+#define SIMGRID_REGISTER_DISK_MODEL(id, desc, init)                                                                    \
+  static void XBT_ATTRIB_CONSTRUCTOR(800) _XBT_CONCAT3(simgrid_, id, _disk_model_register)()                           \
+  {                                                                                                                    \
+    simgrid_disk_models().add(_XBT_STRINGIFY(id), (desc), (init));                                                     \
+  }
+/** @brief The list of all available disk models (pick one with --cfg=disk/model) */
+inline auto& simgrid_disk_models() // Function to avoid static initialization order fiasco
+{
+  static simgrid::ModuleGroup models("disk model");
+  return models;
+}
+
 #define SIMGRID_REGISTER_HOST_MODEL(id, desc, init)                                                                    \
   static void XBT_ATTRIB_CONSTRUCTOR(800) _XBT_CONCAT3(simgrid_, id, _host_model_register)()                           \
   {                                                                                                                    \

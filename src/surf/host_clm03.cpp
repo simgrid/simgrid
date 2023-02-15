@@ -22,7 +22,7 @@ SIMGRID_REGISTER_HOST_MODEL(
       engine->add_model(host_model);
       engine->get_netzone_root()->set_host_model(host_model);
       simgrid_cpu_models().by_name("Cas01").init();
-      surf_disk_model_init_S19();
+      simgrid_disk_models().by_name("S19").init();
       simgrid_network_models().by_name("LV08").init();
     });
 

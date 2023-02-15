@@ -63,8 +63,6 @@ static inline int double_equals(double value1, double value2, double precision)
   return (fabs(value1 - value2) < precision);
 }
 
-XBT_PUBLIC void surf_disk_model_init_S19();
-
 /** @ingroup SURF_models
  *  @brief Initializes the VM model used in the platform
  *
@@ -81,8 +79,6 @@ XBT_PUBLIC void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu
 /** @brief The list of all available optimization modes (both for cpu and networks).
  *  These optimization modes can be set using --cfg=cpu/optim:... and --cfg=network/optim:... */
 XBT_PUBLIC_DATA simgrid::ModuleGroup surf_optimization_mode_description;
-/** @brief The list of all disk models (pick one with --cfg=disk/model) */
-XBT_PUBLIC_DATA simgrid::ModuleGroup surf_disk_model_description;
 
 void simgrid_create_models();
 

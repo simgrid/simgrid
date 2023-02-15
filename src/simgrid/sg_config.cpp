@@ -133,18 +133,6 @@ static void _sg_cfg_cb__optimization_mode(const std::string& value)
   surf_optimization_mode_description.by_name(value);
 }
 
-static void _sg_cfg_cb__disk_model(const std::string& value)
-{
-  xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
-
-  if (value == "help") {
-    surf_disk_model_description.help();
-    exit(0);
-  }
-
-  surf_disk_model_description.by_name(value);
-}
-
 static void _sg_cfg_cb_contexts_parallel_mode(std::string_view mode_name)
 {
   if (mode_name == "posix") {
@@ -184,10 +172,8 @@ void sg_config_init(int *argc, char **argv)
   simgrid_cpu_models().create_flag("cpu/model", "The model to use for the CPU", "Cas01", false);
   simgrid_network_models().create_flag("network/model", "The model to use for the network", "LV08", false);
   simgrid_host_models().create_flag("host/model", "The model to use for the host", "default", false);
+  simgrid_disk_models().create_flag("disk/model", "The model to use for the disk", "S19", false);
   simgrid_create_models(); // KILL ME
-
-  declare_model_flag("disk/model", "S19", &_sg_cfg_cb__disk_model, surf_disk_model_description,
-                     "The model to use for the disk");
 
   declare_model_flag("network/optim", "Lazy", &_sg_cfg_cb__optimization_mode, surf_optimization_mode_description,
                      "The optimization modes to use for the network");

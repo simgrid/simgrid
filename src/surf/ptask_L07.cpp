@@ -58,7 +58,7 @@ HostL07Model::HostL07Model(const std::string& name, lmm::System* sys) : HostMode
   engine->add_model(cpu_model);
   engine->get_netzone_root()->set_cpu_pm_model(cpu_model);
 
-  surf_disk_model_init_S19();
+  simgrid_disk_models().by_name("S19").init();
 }
 
 CpuL07Model::CpuL07Model(const std::string& name, HostL07Model* hmodel, lmm::System* sys)
