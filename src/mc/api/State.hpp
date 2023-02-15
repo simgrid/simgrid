@@ -17,13 +17,20 @@ namespace simgrid::mc {
 class XBT_PRIVATE State : public xbt::Extendable<State> {
   static long expended_states_; /* Count total amount of states, for stats */
 
-  /* Outgoing transition: what was the last transition that we took to leave this state? */
-  std::unique_ptr<Transition> transition_;
+  /**
+   * @brief The outgoing transition: what was the last transition that
+   * we took to leave this state?
+   *
+   * The owner of the transition is the `ActorState` instance which exists in this state,
+   * or nullptr if the state represents the root
+   */
+  Transition* transition_ = nullptr;
 
   /** Sequential state ID (used for debugging) */
   long num_ = 0;
 
-  /** State's exploration status by actor. Not all the actors are there, only the ones that are ready-to-run in this state */
+  /** State's exploration status by actor. Not all the actors are there, only the ones that are ready-to-run in this
+   * state */
   std::map<aid_t, ActorState> actors_to_run_;
 
   /** Snapshot of system state (if needed) */
@@ -43,7 +50,7 @@ public:
   void mark_todo(aid_t actor) { actors_to_run_.at(actor).mark_todo(); }
   bool is_done(aid_t actor) const { return actors_to_run_.at(actor).is_done(); }
   Transition* get_transition() const;
-  void set_transition(Transition* t) { transition_.reset(t); }
+  void set_transition(Transition* t) { transition_ = t; }
   std::map<aid_t, ActorState> const& get_actors_list() const { return actors_to_run_; }
 
   unsigned long get_actor_count() const { return actors_to_run_.size(); }
