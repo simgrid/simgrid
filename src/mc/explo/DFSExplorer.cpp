@@ -146,7 +146,7 @@ void DFSExplorer::run()
     XBT_VERB("Sleep set actually containing:");
     for (auto & [aid, transition] : state->get_sleep_set()) {
       
-	XBT_VERB("###<%ld,%s>", aid, transition.to_string().c_str());
+	XBT_VERB("  <%ld,%s>", aid, transition.to_string().c_str());
       
     }
 
@@ -228,9 +228,9 @@ void DFSExplorer::backtrack()
     
     stack_.pop_back();
     
-    XBT_DEBUG("Maarking Transition >>%s<< of process %ld done and adding it to the sleep set", state->get_transition()->to_string().c_str(), state->get_transition()->aid_);
+    XBT_DEBUG("Marking Transition >>%s<< of process %ld done and adding it to the sleep set", state->get_transition()->to_string().c_str(), state->get_transition()->aid_);
     state->mark_done(state->get_transition()->aid_);
-    state->set_sleep_set(state->get_transition());
+    state->add_sleep_set(state->get_transition());
 
     if (reduction_mode_ == ReductionMode::dpor) {
       aid_t issuer_id = state->get_transition()->aid_;
@@ -251,7 +251,7 @@ void DFSExplorer::backtrack()
 	      else
 		  XBT_DEBUG("Actor %ld is already in done set: no need to explore it again", issuer_id);
 	  } else {
-	      XBT_DEBUG("Actor %ld is not enabled: DPOR may be failing, to stay sound, we are marking every enabled transition as todo", issuer_id);
+	      XBT_DEBUG("Actor %ld is not enabled: DPOR may be failing. To stay sound, we are marking every enabled transition as todo", issuer_id);
 	      prev_state->mark_all_todo();
 	  }
           break;

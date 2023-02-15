@@ -62,7 +62,7 @@ std::size_t State::count_todo() const
   return boost::range::count_if(this->actors_to_run_, [](auto& pair) { return pair.second.is_todo(); });
 }
 
-    void State::mark_all_todo() 
+void State::mark_all_todo() 
 {
     for (auto & [aid, actor] : actors_to_run_) {
 
