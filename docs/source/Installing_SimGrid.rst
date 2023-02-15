@@ -394,7 +394,7 @@ Python-specific instructions
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Once you have the Python development headers installed as well as a
-recent version of the `pybind11 <https://pybind11.readthedocs.io/en/stable/>`
+recent version of the `pybind11 <https://pybind11.readthedocs.io/en/stable/>`_
 module (version at least 2.4), recompiling the Python bindings from
 the source should be as easy as:
 
