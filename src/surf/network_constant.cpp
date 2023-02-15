@@ -15,13 +15,17 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 /*********
  * Model *
  *********/
-void surf_network_model_init_Constant()
-{
-  auto net_model = std::make_shared<simgrid::kernel::resource::NetworkConstantModel>("Network_Constant");
-  auto* engine   = simgrid::kernel::EngineImpl::get_instance();
-  engine->add_model(net_model);
-  engine->get_netzone_root()->set_network_model(net_model);
-}
+SIMGRID_REGISTER_NETWORK_MODEL(
+    Constant,
+    "Simplistic network model where all communication take a constant time (one second). This model "
+    "provides the lowest realism, but is (marginally) faster. It is mostly useful when studying theoretical "
+    "distributed algorithms where the network is usually abstracted away.",
+    []() {
+      auto net_model = std::make_shared<simgrid::kernel::resource::NetworkConstantModel>("Network_Constant");
+      auto* engine   = simgrid::kernel::EngineImpl::get_instance();
+      engine->add_model(net_model);
+      engine->get_netzone_root()->set_network_model(net_model);
+    });
 
 namespace simgrid::kernel::resource {
 

@@ -275,12 +275,16 @@ static void routeCreation_cb(bool symmetrical, const simgrid::kernel::routing::N
 /*********
  * Model *
  *********/
-void surf_network_model_init_NS3()
+// We can't use SIMGRID_REGISTER_NETWORK_MODEL here because ns-3 has a dash in its name
+static void XBT_ATTRIB_CONSTRUCTOR(800) simgrid_ns3_network_model_register()
 {
-  auto net_model = std::make_shared<simgrid::kernel::resource::NetworkNS3Model>("NS3 network model");
-  auto* engine   = simgrid::kernel::EngineImpl::get_instance();
-  engine->add_model(net_model);
-  engine->get_netzone_root()->set_network_model(net_model);
+  simgrid_network_models().add(
+      "ns-3", "Network pseudo-model using the real ns-3 simulator instead of an analytic model", []() {
+        auto net_model = std::make_shared<simgrid::kernel::resource::NetworkNS3Model>("NS3 network model");
+        auto* engine   = simgrid::kernel::EngineImpl::get_instance();
+        engine->add_model(net_model);
+        engine->get_netzone_root()->set_network_model(net_model);
+      });
 }
 
 static simgrid::config::Flag<std::string>

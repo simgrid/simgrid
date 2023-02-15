@@ -30,20 +30,23 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 /*  month=june, */
 /*  year={2010} */
 /*  } */
-void surf_network_model_init_IB()
-{
-  using simgrid::kernel::resource::NetworkIBModel;
+SIMGRID_REGISTER_NETWORK_MODEL(
+    IB,
+    "Realistic network model specifically tailored for HPC settings, with Infiniband contention model as described in "
+    "http://mescal.imag.fr/membres/jean-marc.vincent/index.html/PhD/Vienne.pdf",
+    []() {
+      using simgrid::kernel::resource::NetworkIBModel;
 
-  auto net_model = std::make_shared<NetworkIBModel>("Network_IB");
-  auto* engine   = simgrid::kernel::EngineImpl::get_instance();
-  engine->add_model(net_model);
-  engine->get_netzone_root()->set_network_model(net_model);
+      auto net_model = std::make_shared<NetworkIBModel>("Network_IB");
+      auto* engine   = simgrid::kernel::EngineImpl::get_instance();
+      engine->add_model(net_model);
+      engine->get_netzone_root()->set_network_model(net_model);
 
-  simgrid::s4u::Link::on_communication_state_change_cb(NetworkIBModel::IB_action_state_changed_callback);
-  simgrid::kernel::activity::CommImpl::on_start.connect(NetworkIBModel::IB_comm_start_callback);
-  simgrid::s4u::Host::on_creation_cb(NetworkIBModel::IB_create_host_callback);
-  simgrid::config::set_default<double>("network/weight-S", 8775);
-}
+      simgrid::s4u::Link::on_communication_state_change_cb(NetworkIBModel::IB_action_state_changed_callback);
+      simgrid::kernel::activity::CommImpl::on_start.connect(NetworkIBModel::IB_comm_start_callback);
+      simgrid::s4u::Host::on_creation_cb(NetworkIBModel::IB_create_host_callback);
+      simgrid::config::set_default<double>("network/weight-S", 8775);
+    });
 
 namespace simgrid::kernel::resource {
 

@@ -77,72 +77,6 @@ XBT_PUBLIC void surf_cpu_model_init_Cas01();
 XBT_PUBLIC void surf_disk_model_init_S19();
 
 /** @ingroup SURF_models
- *  @brief Same as network model 'LagrangeVelho', only with different correction factors.
- *
- * This model is proposed by Pierre-Nicolas Clauss and Martin Quinson and Stéphane Génaud based on the model 'LV08' and
- * different correction factors depending on the communication size (< 1KiB, < 64KiB, >= 64KiB).
- * See comments in the code for more information.
- *
- *  @see surf_host_model_init_SMPI()
- */
-XBT_PUBLIC void surf_network_model_init_SMPI();
-
-/** @ingroup SURF_models
- *  @brief Same as network model 'LagrangeVelho', only with different correction factors.
- *
- * This model implements a variant of the contention model on Infiniband networks based on
- * the works of Jérôme Vienne : http://mescal.imag.fr/membres/jean-marc.vincent/index.html/PhD/Vienne.pdf
- *
- *  @see surf_host_model_init_IB()
- */
-#if !HAVE_SMPI
-XBT_ATTRIB_NORETURN
-#endif
-XBT_PUBLIC void surf_network_model_init_IB();
-
-/** @ingroup SURF_models
- *  @brief Initializes the platform with the network model 'LegrandVelho'
- *
- * This model is proposed by Arnaud Legrand and Pedro Velho based on the results obtained with the GTNets simulator for
- * onelink and dogbone sharing scenarios. See comments in the code for more information.
- *
- *  @see surf_host_model_init_LegrandVelho()
- */
-XBT_PUBLIC void surf_network_model_init_LegrandVelho();
-
-/** @ingroup SURF_models
- *  @brief Initializes the platform with the network model 'Constant'
- *
- *  In this model, the communication time between two network cards is constant, hence no need for a routing table.
- *  This is particularly useful when simulating huge distributed algorithms where scalability is really an issue. This
- *  function is called in conjunction with surf_host_model_init_compound.
- *
- *  @see surf_host_model_init_compound()
- */
-XBT_PUBLIC void surf_network_model_init_Constant();
-
-/** @ingroup SURF_models
- *  @brief Initializes the platform with the network model CM02
- *
- *  You should call this function by yourself only if you plan using surf_host_model_init_compound.
- *  See comments in the code for more information.
- */
-XBT_PUBLIC void surf_network_model_init_CM02();
-
-/** @ingroup SURF_models
- *  @brief Initializes the platform with the network model NS3
- *
- *  This function is called by surf_host_model_init_NS3 or by yourself only if you plan using
- *  surf_host_model_init_compound
- *
- *  @see surf_host_model_init_NS3()
- */
-#if !SIMGRID_HAVE_NS3
-XBT_ATTRIB_NORETURN
-#endif
-XBT_PUBLIC void surf_network_model_init_NS3();
-
-/** @ingroup SURF_models
  *  @brief Initializes the VM model used in the platform
  *
  *  A VM model depends on the physical CPU model to share the resources inside the VM
@@ -185,8 +119,6 @@ XBT_PUBLIC void surf_host_model_init_ptask_L07();
 XBT_PUBLIC_DATA simgrid::ModuleGroup surf_optimization_mode_description;
 /** @brief The list of all cpu models (pick one with --cfg=cpu/model) */
 XBT_PUBLIC_DATA simgrid::ModuleGroup surf_cpu_model_description;
-/** @brief The list of all network models (pick one with --cfg=network/model) */
-XBT_PUBLIC_DATA simgrid::ModuleGroup surf_network_model_description;
 /** @brief The list of all disk models (pick one with --cfg=disk/model) */
 XBT_PUBLIC_DATA simgrid::ModuleGroup surf_disk_model_description;
 /** @brief The list of all host models (pick one with --cfg=host/model:) */

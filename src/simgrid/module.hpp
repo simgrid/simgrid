@@ -26,13 +26,14 @@ struct Module {
 
 class ModuleGroup {
   std::vector<Module> table_;
-  std::string kind_; // either 'plugin' or 'CPU model' or whatever. Used in error messages only
+  const std::string kind_; // either 'plugin' or 'CPU model' or whatever. Used in error messages only
 public:
   ModuleGroup(std::string kind) : kind_(kind) {}
 
   ModuleGroup& add(const char* id, const char* desc, std::function<void()> init);
   Module const& by_name(const std::string& name) const;
   void help() const;
+  const std::string get_kind() const { return kind_; }
   std::string existing_values() const;
 };
 
@@ -48,6 +49,18 @@ public:
 inline auto& simgrid_plugins() // Function to avoid static initialization order fiasco
 {
   static simgrid::ModuleGroup plugins("plugin");
+  return plugins;
+}
+
+#define SIMGRID_REGISTER_NETWORK_MODEL(id, desc, init)                                                                 \
+  static void XBT_ATTRIB_CONSTRUCTOR(800) _XBT_CONCAT3(simgrid_, id, _network_model_register)()                        \
+  {                                                                                                                    \
+    simgrid_network_models().add(_XBT_STRINGIFY(id), (desc), (init));                                                  \
+  }
+/** @brief The list of all available network model (pick one with --cfg=network/model) */
+inline auto& simgrid_network_models() // Function to avoid static initialization order fiasco
+{
+  static simgrid::ModuleGroup plugins("network model");
   return plugins;
 }
 

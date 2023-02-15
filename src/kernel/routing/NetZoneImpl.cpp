@@ -47,7 +47,7 @@ static void surf_config_models_setup()
 
     surf_cpu_model_description.by_name(cpu_model_name).init();
     surf_disk_model_description.by_name(disk_model_name).init();
-    surf_network_model_description.by_name(network_model_name).init();
+    simgrid_network_models().by_name(network_model_name).init();
   }
 
   surf_host_model_description.by_name(host_model_name).init();

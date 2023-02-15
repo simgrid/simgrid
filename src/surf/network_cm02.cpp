@@ -26,9 +26,9 @@ static simgrid::config::Flag<std::string> cfg_network_solver("network/solver",
                                                              "Set linear equations solver used by network model",
                                                              "maxmin", &simgrid::kernel::lmm::System::validate_solver);
 
-/************************************************************************/
-/* New model based on optimizations discussed during Pedro Velho's thesis*/
-/************************************************************************/
+/******************************************************************************/
+/* Network model based on optimizations discussed during Pedro Velho's thesis */
+/******************************************************************************/
 /* @techreport{VELHO:2011:HAL-00646896:1, */
 /*      url = {http://hal.inria.fr/hal-00646896/en/}, */
 /*      title = {{Flow-level network models: have we reached the limits?}}, */
@@ -40,21 +40,24 @@ static simgrid::config::Flag<std::string> cfg_network_solver("network/solver",
 /*      month = Nov, */
 /*      pdf = {http://hal.inria.fr/hal-00646896/PDF/rr-validity.pdf}, */
 /*  } */
-void surf_network_model_init_LegrandVelho()
-{
-  auto net_model = std::make_shared<simgrid::kernel::resource::NetworkCm02Model>("Network_LegrandVelho");
-  auto* engine   = simgrid::kernel::EngineImpl::get_instance();
-  engine->add_model(net_model);
-  engine->get_netzone_root()->set_network_model(net_model);
+SIMGRID_REGISTER_NETWORK_MODEL(
+    LV08,
+    "Realistic network analytic model (slow-start modeled by multiplying latency by 13.01, bandwidth by .97; "
+    "bottleneck sharing uses a payload of S=20537 for evaluating RTT). ",
+    []() {
+      auto net_model = std::make_shared<simgrid::kernel::resource::NetworkCm02Model>("Network_LegrandVelho");
+      auto* engine   = simgrid::kernel::EngineImpl::get_instance();
+      engine->add_model(net_model);
+      engine->get_netzone_root()->set_network_model(net_model);
 
-  simgrid::config::set_default<std::string>("network/latency-factor", "13.01");
-  simgrid::config::set_default<std::string>("network/bandwidth-factor", "0.97");
-  simgrid::config::set_default<double>("network/weight-S", 20537);
-}
+      simgrid::config::set_default<std::string>("network/latency-factor", "13.01");
+      simgrid::config::set_default<std::string>("network/bandwidth-factor", "0.97");
+      simgrid::config::set_default<double>("network/weight-S", 20537);
+    });
 
-/***************************************************************************/
-/* The nice TCP sharing model designed by Loris Marchal and Henri Casanova */
-/***************************************************************************/
+/****************************************************************************/
+/* The older TCP sharing model designed by Loris Marchal and Henri Casanova */
+/****************************************************************************/
 /* @TechReport{      rr-lip2002-40, */
 /*   author        = {Henri Casanova and Loris Marchal}, */
 /*   institution   = {LIP}, */
@@ -63,17 +66,20 @@ void surf_network_model_init_LegrandVelho()
 /*   month         = {oct}, */
 /*   year          = {2002} */
 /* } */
-void surf_network_model_init_CM02()
-{
-  simgrid::config::set_default<std::string>("network/latency-factor", "1.0");
-  simgrid::config::set_default<std::string>("network/bandwidth-factor", "1.0");
-  simgrid::config::set_default<double>("network/weight-S", 0.0);
+SIMGRID_REGISTER_NETWORK_MODEL(
+    CM02,
+    "Legacy network analytic model (Very similar to LV08, but without corrective factors. The timings of "
+    "small messages are thus poorly modeled).",
+    []() {
+      simgrid::config::set_default<std::string>("network/latency-factor", "1.0");
+      simgrid::config::set_default<std::string>("network/bandwidth-factor", "1.0");
+      simgrid::config::set_default<double>("network/weight-S", 0.0);
 
-  auto net_model = std::make_shared<simgrid::kernel::resource::NetworkCm02Model>("Network_CM02");
-  auto* engine   = simgrid::kernel::EngineImpl::get_instance();
-  engine->add_model(net_model);
-  engine->get_netzone_root()->set_network_model(net_model);
-}
+      auto net_model = std::make_shared<simgrid::kernel::resource::NetworkCm02Model>("Network_CM02");
+      auto* engine   = simgrid::kernel::EngineImpl::get_instance();
+      engine->add_model(net_model);
+      engine->get_netzone_root()->set_network_model(net_model);
+    });
 
 /********************************************************************/
 /* Model based on LV08 and experimental results of MPI ping-pongs   */
@@ -87,21 +93,24 @@ void surf_network_model_init_CM02()
 /*  month=may, */
 /*  year={2011} */
 /*  } */
-void surf_network_model_init_SMPI()
-{
-  auto net_model = std::make_shared<simgrid::kernel::resource::NetworkCm02Model>("Network_SMPI");
-  auto* engine   = simgrid::kernel::EngineImpl::get_instance();
-  engine->add_model(net_model);
-  engine->get_netzone_root()->set_network_model(net_model);
+SIMGRID_REGISTER_NETWORK_MODEL(
+    SMPI,
+    "Realistic network model specifically tailored for HPC settings (accurate modeling of slow start with "
+    "correction factors on three intervals: < 1KiB, < 64 KiB, >= 64 KiB)",
+    []() {
+      auto net_model = std::make_shared<simgrid::kernel::resource::NetworkCm02Model>("Network_SMPI");
+      auto* engine   = simgrid::kernel::EngineImpl::get_instance();
+      engine->add_model(net_model);
+      engine->get_netzone_root()->set_network_model(net_model);
 
-  simgrid::config::set_default<double>("network/weight-S", 8775);
-  simgrid::config::set_default<std::string>("network/bandwidth-factor",
-                                            "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;"
-                                            "1426:0.608902;732:0.341987;257:0.338112;0:0.812084");
-  simgrid::config::set_default<std::string>("network/latency-factor",
-                                            "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;"
-                                            "1426:1.61075;732:1.9503;257:1.95341;0:2.01467");
-}
+      simgrid::config::set_default<double>("network/weight-S", 8775);
+      simgrid::config::set_default<std::string>("network/bandwidth-factor",
+                                                "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;"
+                                                "1426:0.608902;732:0.341987;257:0.338112;0:0.812084");
+      simgrid::config::set_default<std::string>("network/latency-factor",
+                                                "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;"
+                                                "1426:1.61075;732:1.9503;257:1.95341;0:2.01467");
+    });
 
 namespace simgrid::kernel::resource {
 

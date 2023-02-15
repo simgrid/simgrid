@@ -99,7 +99,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
       XBT_HELP("%s", "");
       surf_cpu_model_description.help();
       XBT_HELP("%s", "");
-      surf_network_model_description.help();
+      simgrid_network_models().help();
       XBT_HELP("\nLong description of all optimization levels accepted by the models of this simulator:");
       surf_optimization_mode_description.help();
       XBT_HELP("Both network and CPU models have 'Lazy' as default optimization level\n");
@@ -195,11 +195,11 @@ static void _sg_cfg_cb__network_model(const std::string& value)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
   if (value == "help") {
-    surf_network_model_description.help();
+    simgrid_network_models().help();
     exit(0);
   }
 
-  surf_network_model_description.by_name(value);
+  simgrid_network_models().by_name(value); // Simply ensure that it exists
 }
 
 static void _sg_cfg_cb_contexts_parallel_mode(std::string_view mode_name)
@@ -222,7 +222,8 @@ static void declare_model_flag(const std::string& name, const std::string& value
                                const simgrid::ModuleGroup& model_description, const std::string& type,
                                const std::string& descr)
 {
-  std::string description = descr + ". Possible values: " + model_description.existing_values();
+  std::string description = descr + ". Possible values (other compilation flags may activate more " +
+                            model_description.get_kind() + "): " + model_description.existing_values();
   description += ".\n       (use 'help' as a value to see the long description of each " + type + ")";
   simgrid::config::declare_flag<std::string>(name, description, value, callback);
 }
@@ -245,7 +246,7 @@ void sg_config_init(int *argc, char **argv)
   declare_model_flag("disk/model", "S19", &_sg_cfg_cb__disk_model, surf_disk_model_description, "model",
                      "The model to use for the disk");
 
-  declare_model_flag("network/model", "LV08", &_sg_cfg_cb__network_model, surf_network_model_description, "model",
+  declare_model_flag("network/model", "LV08", &_sg_cfg_cb__network_model, simgrid_network_models(), "model",
                      "The model to use for the network");
 
   declare_model_flag("network/optim", "Lazy", &_sg_cfg_cb__optimization_mode, surf_optimization_mode_description,

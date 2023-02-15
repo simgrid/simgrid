@@ -13,8 +13,6 @@
 
 #include <vector>
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
-
 /* Trace related stuff */
 XBT_PRIVATE std::unordered_map<std::string, simgrid::kernel::profile::Profile*> traces_set_list;
 static std::unordered_map<std::string, std::string> trace_connect_list_host_avail;
