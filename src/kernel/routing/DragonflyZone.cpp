@@ -12,7 +12,7 @@
 #include <numeric>
 #include <string>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_dragonfly, ker_routing, "Kernel Dragonfly Routing");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_dragonfly, ker_platform, "Kernel Dragonfly Routing");
 
 namespace simgrid {
 namespace kernel::routing {

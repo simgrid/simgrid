@@ -10,7 +10,7 @@
 #include <simgrid/s4u/Host.hpp>
 #include <xbt/config.hpp>
 
-#include "src/surf/surf_interface.hpp" // SIMGRID_REGISTER_PLUGIN
+#include "src/simgrid/module.hpp" // SIMGRID_REGISTER_PLUGIN
 
 namespace sg4 = simgrid::s4u;
 static simgrid::config::Flag<bool> cfg_tell{"cmonkey/tell", "Request the Chaos Monkey to display all timestamps",

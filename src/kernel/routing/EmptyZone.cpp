@@ -9,7 +9,7 @@
 
 #include "simgrid/kernel/routing/EmptyZone.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_none, ker_routing, "Kernel No Routing");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_none, ker_platform, "Kernel No Routing");
 
 namespace simgrid {
 namespace kernel::routing {

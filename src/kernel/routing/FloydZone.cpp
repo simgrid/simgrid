@@ -11,7 +11,7 @@
 
 #include <climits>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_floyd, ker_routing, "Kernel Floyd Routing");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_floyd, ker_platform, "Kernel Floyd Routing");
 
 namespace simgrid {
 namespace kernel::routing {

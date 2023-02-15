@@ -8,7 +8,7 @@
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "xbt/string.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_star, ker_routing, "Kernel Star Routing");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_star, ker_platform, "Kernel Star Routing");
 
 namespace simgrid {
 namespace kernel::routing {

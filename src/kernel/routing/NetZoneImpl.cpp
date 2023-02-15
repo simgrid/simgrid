@@ -20,7 +20,7 @@
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/surf/HostImpl.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing, kernel, "Kernel routing-related information");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_platform, kernel, "Kernel platform-related information");
 
 namespace simgrid::kernel::routing {
 
@@ -45,24 +45,16 @@ static void surf_config_models_setup()
     xbt_enforce(not disk_model_name.empty(), "Set a disk model to use with the 'compound' host model");
     xbt_enforce(not network_model_name.empty(), "Set a network model to use with the 'compound' host model");
 
-    const auto* cpu_model = find_model_description(surf_cpu_model_description, cpu_model_name);
-    cpu_model->model_init_preparse();
-
-    const auto* disk_model = find_model_description(surf_disk_model_description, disk_model_name);
-    disk_model->model_init_preparse();
-
-    const auto* network_model = find_model_description(surf_network_model_description, network_model_name);
-    network_model->model_init_preparse();
+    surf_cpu_model_description.by_name(cpu_model_name).init();
+    surf_disk_model_description.by_name(disk_model_name).init();
+    simgrid_network_models().by_name(network_model_name).init();
   }
 
-  XBT_DEBUG("Call host_model_init");
-  const auto* host_model = find_model_description(surf_host_model_description, host_model_name);
-  host_model->model_init_preparse();
+  surf_host_model_description.by_name(host_model_name).init();
 
   XBT_DEBUG("Call vm_model_init");
-  /* ideally we should get back the pointer to CpuModel from model_init_preparse(), but this
-   * requires changing the declaration of surf_cpu_model_description.
-   * To be reviewed in the future */
+  /* TODO: ideally we should get back the pointer to CpuModel from init(), but this
+   * requires changing the declaration of surf_cpu_model_description. */
   surf_vm_model_init_HL13(
       simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->get_cpu_pm_model().get());
 }

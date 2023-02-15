@@ -6,10 +6,12 @@
 #ifndef SURF_MODEL_H_
 #define SURF_MODEL_H_
 
+#include "src/simgrid/module.hpp"
 #include <xbt/asserts.h>
 #include <xbt/function_types.h>
 
 #include "src/internal_config.h"
+#include "src/kernel/resource/profile/Profile.hpp"
 
 #include <cfloat>
 #include <cmath>
@@ -75,78 +77,11 @@ XBT_PUBLIC void surf_cpu_model_init_Cas01();
 XBT_PUBLIC void surf_disk_model_init_S19();
 
 /** @ingroup SURF_models
- *  @brief Same as network model 'LagrangeVelho', only with different correction factors.
- *
- * This model is proposed by Pierre-Nicolas Clauss and Martin Quinson and Stéphane Génaud based on the model 'LV08' and
- * different correction factors depending on the communication size (< 1KiB, < 64KiB, >= 64KiB).
- * See comments in the code for more information.
- *
- *  @see surf_host_model_init_SMPI()
- */
-XBT_PUBLIC void surf_network_model_init_SMPI();
-
-/** @ingroup SURF_models
- *  @brief Same as network model 'LagrangeVelho', only with different correction factors.
- *
- * This model implements a variant of the contention model on Infiniband networks based on
- * the works of Jérôme Vienne : http://mescal.imag.fr/membres/jean-marc.vincent/index.html/PhD/Vienne.pdf
- *
- *  @see surf_host_model_init_IB()
- */
-#if !HAVE_SMPI
-XBT_ATTRIB_NORETURN
-#endif
-XBT_PUBLIC void surf_network_model_init_IB();
-
-/** @ingroup SURF_models
- *  @brief Initializes the platform with the network model 'LegrandVelho'
- *
- * This model is proposed by Arnaud Legrand and Pedro Velho based on the results obtained with the GTNets simulator for
- * onelink and dogbone sharing scenarios. See comments in the code for more information.
- *
- *  @see surf_host_model_init_LegrandVelho()
- */
-XBT_PUBLIC void surf_network_model_init_LegrandVelho();
-
-/** @ingroup SURF_models
- *  @brief Initializes the platform with the network model 'Constant'
- *
- *  In this model, the communication time between two network cards is constant, hence no need for a routing table.
- *  This is particularly useful when simulating huge distributed algorithms where scalability is really an issue. This
- *  function is called in conjunction with surf_host_model_init_compound.
- *
- *  @see surf_host_model_init_compound()
- */
-XBT_PUBLIC void surf_network_model_init_Constant();
-
-/** @ingroup SURF_models
- *  @brief Initializes the platform with the network model CM02
- *
- *  You should call this function by yourself only if you plan using surf_host_model_init_compound.
- *  See comments in the code for more information.
- */
-XBT_PUBLIC void surf_network_model_init_CM02();
-
-/** @ingroup SURF_models
- *  @brief Initializes the platform with the network model NS3
- *
- *  This function is called by surf_host_model_init_NS3 or by yourself only if you plan using
- *  surf_host_model_init_compound
- *
- *  @see surf_host_model_init_NS3()
- */
-#if !SIMGRID_HAVE_NS3
-XBT_ATTRIB_NORETURN
-#endif
-XBT_PUBLIC void surf_network_model_init_NS3();
-
-/** @ingroup SURF_models
  *  @brief Initializes the VM model used in the platform
  *
  *  A VM model depends on the physical CPU model to share the resources inside the VM
  *  It will also creates the CPU model for actions running inside the VM
  *
- *  Such model is subject to modification with warning in the ChangeLog so monitor it!
  */
 XBT_PUBLIC void surf_vm_model_init_HL13(simgrid::kernel::resource::CpuModel* cpu_pm_model);
 
@@ -178,39 +113,17 @@ XBT_PUBLIC void surf_host_model_init_ptask_L07();
 /* --------------------
  *  Model Descriptions
  * -------------------- */
-/** @brief Resource model description */
-struct surf_model_description_t {
-  const char* name;
-  const char* description;
-  std::function<void()> model_init_preparse;
-};
 
-XBT_PUBLIC const surf_model_description_t* find_model_description(const std::vector<surf_model_description_t>& table,
-                                                                  const std::string& name);
-XBT_PUBLIC void model_help(const char* category, const std::vector<surf_model_description_t>& table);
-
-#define SIMGRID_REGISTER_PLUGIN(id, desc, init)                                                                        \
-  static void XBT_ATTRIB_CONSTRUCTOR(800) _XBT_CONCAT3(simgrid_, id, _plugin_register)()                               \
-  {                                                                                                                    \
-    surf_plugin_description().emplace_back(surf_model_description_t{_XBT_STRINGIFY(id), (desc), (init)});              \
-  }
-
-/** @brief The list of all available plugins */
-inline auto& surf_plugin_description() // Function to avoid static initialization order fiasco
-{
-  static std::vector<surf_model_description_t> plugin_description_table;
-  return plugin_description_table;
-}
 /** @brief The list of all available optimization modes (both for cpu and networks).
  *  These optimization modes can be set using --cfg=cpu/optim:... and --cfg=network/optim:... */
-XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_optimization_mode_description;
+XBT_PUBLIC_DATA simgrid::ModuleGroup surf_optimization_mode_description;
 /** @brief The list of all cpu models (pick one with --cfg=cpu/model) */
-XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_cpu_model_description;
-/** @brief The list of all network models (pick one with --cfg=network/model) */
-XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_network_model_description;
+XBT_PUBLIC_DATA simgrid::ModuleGroup surf_cpu_model_description;
 /** @brief The list of all disk models (pick one with --cfg=disk/model) */
-XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_disk_model_description;
+XBT_PUBLIC_DATA simgrid::ModuleGroup surf_disk_model_description;
 /** @brief The list of all host models (pick one with --cfg=host/model:) */
-XBT_PUBLIC_DATA const std::vector<surf_model_description_t> surf_host_model_description;
+XBT_PUBLIC_DATA simgrid::ModuleGroup surf_host_model_description;
+
+void simgrid_create_models();
 
 #endif /* SURF_MODEL_H_ */

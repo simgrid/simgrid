@@ -7,7 +7,7 @@
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_cluster, ker_routing, "Kernel Cluster Routing");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_cluster, ker_platform, "Kernel Cluster Routing");
 
 /* This routing is specifically setup to represent clusters, aka homogeneous sets of machines
  * Note that a router is created, easing the interconnection with the rest of the world. */

@@ -469,6 +469,8 @@ set(S4U_SRC
 
 set(SIMGRID_SRC
   src/simgrid/Exception.cpp
+  src/simgrid/module.cpp
+  src/simgrid/module.hpp
   src/simgrid/sg_config.cpp
   src/simgrid/sg_version.cpp
   src/simgrid/util.hpp

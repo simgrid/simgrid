@@ -409,30 +409,3 @@ simgrid without downloading the source with pip:
 .. code-block:: console
 
   $ pip install simgrid
-
-Linux Multi-Arch specific instructions
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-On a multiarch x86_64 Linux, it should be possible to compile a 32-bit
-version of SimGrid with something like:
-
-.. code-block:: console
-
-  $ CFLAGS=-m32                                                      \
-    CXXFLAGS=-m32                                                    \
-    FFLAGS=-m32                                                      \
-    PKG_CONFIG_LIBDIR=/usr/lib/i386-linux-gnu/pkgconfig/             \
-    cmake .                                                          \
-      -DCMAKE_SYSTEM_PROCESSOR=i386                                  \
-      -DCMAKE_Fortran_COMPILER=/some/path/to/i686-linux-gnu-gfortran \
-      -DGFORTRAN_EXE=/some/path/to/i686-linux-gnu-gfortran           \
-      -DSMPI_C_FLAGS=-m32                                            \
-      -DSMPI_CXX_FLAGS=-m32                                          \
-      -DSMPI_Fortran_FLAGS=-m32
-
-If needed, implement ``i686-linux-gnu-gfortran`` as a script:
-
-.. code-block:: shell
-
-  #!/usr/bin/env sh
-  exec gfortran -m32 "$@"

@@ -191,10 +191,11 @@ void SwappedContextFactory::run_all(std::vector<actor::ActorImpl*> const& actors
    * stuff It is much easier to understand what happens if you see the working threads as bodies that swap their soul
    * for the ones of the simulated processes that must run.
    */
-  if (is_parallel()) {
+  if (Context::is_parallel()) {
     // We lazily create the parmap so that all options are actually processed when doing so.
     if (parmap_ == nullptr)
-      parmap_ = std::make_unique<simgrid::xbt::Parmap<actor::ActorImpl*>>(get_nthreads(), get_parallel_mode());
+      parmap_ =
+          std::make_unique<simgrid::xbt::Parmap<actor::ActorImpl*>>(Context::get_nthreads(), Context::parallel_mode);
 
     // Usually, Parmap::apply() executes the provided function on all elements of the array.
     // Here, the executed function does not return the control to the parmap before all the array is processed:

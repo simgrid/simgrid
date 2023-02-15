@@ -19,10 +19,6 @@
 #include <vector>
 
 int xbt_log_no_loc = 0; /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
-static std::recursive_mutex* log_cat_init_mutex = nullptr;
-
-xbt_log_appender_t xbt_log_default_appender = nullptr; /* set in log_init */
-xbt_log_layout_t xbt_log_default_layout     = nullptr; /* set in log_init */
 
 struct xbt_log_setting_t {
   std::string catname;
@@ -57,17 +53,6 @@ s_xbt_log_category_t _XBT_LOGV(XBT_LOG_ROOT_CAT) = {
 };
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log, xbt, "Loggings from the logging mechanism itself");
-
-/* create the default appender and install it in the root category,
-   which were already created (damnit. Too slow little beetle) */
-void xbt_log_preinit(void)
-{
-  xbt_log_default_appender             = xbt_log_appender_stream(stderr);
-  xbt_log_default_layout               = xbt_log_layout_simple_new(nullptr);
-  _XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
-  _XBT_LOGV(XBT_LOG_ROOT_CAT).layout = xbt_log_default_layout;
-  log_cat_init_mutex                   = new std::recursive_mutex();
-}
 
 static void xbt_log_help();
 static void xbt_log_help_categories();
@@ -132,7 +117,6 @@ static void log_cat_exit(const s_xbt_log_category_t* cat)
 void xbt_log_postexit(void)
 {
   XBT_VERB("Exiting log");
-  delete log_cat_init_mutex;
   log_cat_exit(&_XBT_LOGV(XBT_LOG_ROOT_CAT));
 }
 
@@ -246,8 +230,8 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
   if (category->initialized)
     return priority >= category->threshold;
 
-  if (log_cat_init_mutex != nullptr)
-    log_cat_init_mutex->lock();
+  static std::recursive_mutex log_cat_init_mutex;
+  log_cat_init_mutex.lock();
 
   XBT_DEBUG("Initializing category '%s' (firstChild=%s, nextSibling=%s)", category->name,
          (category->firstChild ? category->firstChild->name : "none"),
@@ -255,8 +239,8 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
 
   if (category == &_XBT_LOGV(XBT_LOG_ROOT_CAT)) {
     category->threshold = xbt_log_priority_info;
-    category->appender = xbt_log_default_appender;
-    category->layout = xbt_log_default_layout;
+    category->appender  = xbt_log_appender_stream(stderr);
+    category->layout    = xbt_log_layout_simple_new(nullptr);
   } else {
     if (not category->parent)
       category->parent = &_XBT_LOGV(XBT_LOG_ROOT_CAT);
@@ -291,8 +275,7 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
   }
 
   category->initialized = 1;
-  if (log_cat_init_mutex != nullptr)
-    log_cat_init_mutex->unlock();
+  log_cat_init_mutex.unlock();
   return priority >= category->threshold;
 }
 

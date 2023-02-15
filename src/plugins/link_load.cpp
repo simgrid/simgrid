@@ -8,6 +8,7 @@
 
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
+#include "src/simgrid/module.hpp" // SIMGRID_REGISTER_PLUGIN
 
 #include <limits>
 

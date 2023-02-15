@@ -20,7 +20,7 @@ XBT_LOG_NEW_CATEGORY(instr, "Logging the behavior of the tracing system (used fo
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 
 std::ofstream tracing_file;
-std::map<const simgrid::instr::Container*, std::ofstream*> tracing_files; // TI specific
+static std::map<const simgrid::instr::Container*, std::ofstream*> tracing_files; // TI specific
 
 constexpr char OPT_TRACING_BASIC[]             = "tracing/basic";
 constexpr char OPT_TRACING_COMMENT_FILE[]      = "tracing/comment-file";
@@ -206,7 +206,7 @@ void TRACE_help()
 namespace simgrid::instr {
 static bool trace_active = false;
 TraceFormat trace_format = TraceFormat::Paje;
-int trace_precision;
+static int trace_precision;
 
 /*************
  * Callbacks *

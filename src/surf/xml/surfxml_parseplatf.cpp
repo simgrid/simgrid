@@ -13,15 +13,13 @@
 
 #include <vector>
 
-XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
-
 /* Trace related stuff */
 XBT_PRIVATE std::unordered_map<std::string, simgrid::kernel::profile::Profile*> traces_set_list;
-XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_host_avail;
-XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_host_speed;
-XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link_avail;
-XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link_bw;
-XBT_PRIVATE std::unordered_map<std::string, std::string> trace_connect_list_link_lat;
+static std::unordered_map<std::string, std::string> trace_connect_list_host_avail;
+static std::unordered_map<std::string, std::string> trace_connect_list_host_speed;
+static std::unordered_map<std::string, std::string> trace_connect_list_link_avail;
+static std::unordered_map<std::string, std::string> trace_connect_list_link_bw;
+static std::unordered_map<std::string, std::string> trace_connect_list_link_lat;
 
 void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* trace_connect)
 {

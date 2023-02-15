@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_torus, ker_routing, "Kernel Torus Routing");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_routing_torus, ker_platform, "Kernel Torus Routing");
 
 namespace simgrid {
 namespace kernel ::routing {

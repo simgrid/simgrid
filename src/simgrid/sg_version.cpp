@@ -9,8 +9,6 @@
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_version, surf, "About the versioning of SimGrid");
-
 void sg_version_check(int lib_version_major, int lib_version_minor, int lib_version_patch)
 {
   if ((lib_version_major != SIMGRID_VERSION_MAJOR) || (lib_version_minor != SIMGRID_VERSION_MINOR)) {

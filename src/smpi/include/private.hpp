@@ -54,14 +54,12 @@ constexpr int SMPI_RMA_TAG            = -6666;
 #define MPI_REQUEST_IGNORED ((MPI_Request*)-100)
 
 /* Bindings for MPI special values */
-extern XBT_PUBLIC int mpi_in_place_;
-extern XBT_PUBLIC int mpi_bottom_;
-extern XBT_PUBLIC int mpi_status_ignore_;
-extern XBT_PUBLIC int mpi_statuses_ignore_;
+extern XBT_PUBLIC const int mpi_in_place_;
+extern XBT_PUBLIC const int mpi_bottom_;
+extern XBT_PUBLIC const int mpi_status_ignore_;
+extern XBT_PUBLIC const int mpi_statuses_ignore_;
 /* Convert between Fortran and C */
-#define FORT_ADDR(addr, val, val2)                                         \
-  (((void *)(addr) == (void*) &(val2))                  \
-   ? (val) : (void *)(addr))
+#define FORT_ADDR(addr, val, val2) (((const void*)(addr) == (const void*)&(val2)) ? (val) : (void*)(addr))
 #define FORT_BOTTOM(addr) FORT_ADDR((addr), MPI_BOTTOM, mpi_bottom_)
 #define FORT_IN_PLACE(addr) FORT_ADDR((addr), MPI_IN_PLACE, mpi_in_place_)
 #define FORT_STATUS_IGNORE(addr) static_cast<MPI_Status*>(FORT_ADDR((addr), MPI_STATUS_IGNORE, mpi_status_ignore_))
@@ -119,9 +117,6 @@ XBT_PRIVATE bool smpi_cfg_display_alloc();
 
 // utilities
 XBT_PRIVATE void smpi_init_options_internal(bool called_by_smpi_main);
-
-extern XBT_PRIVATE char* smpi_data_exe_start; // start of the data+bss segment of the executable
-extern XBT_PRIVATE size_t smpi_data_exe_size; // size of the data+bss segment of the executable
 
 XBT_PRIVATE bool smpi_switch_data_segment(simgrid::s4u::ActorPtr actor, const void* addr = nullptr);
 

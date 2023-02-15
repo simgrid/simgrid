@@ -19,10 +19,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_utils, smpi, "Logging specific to SMPI (utils)");
 
-extern std::string surf_parsed_filename;
-extern int surf_parse_lineno;
-
-namespace simgrid::smpi::utils {
+namespace {
 
 double total_benched_time=0;
 unsigned long total_malloc_size=0;
@@ -41,13 +38,17 @@ struct current_buffer_metadata_t {
 };
 
 alloc_metadata_t max_malloc;
-F2C* current_handle = nullptr;
+simgrid::smpi::F2C* current_handle = nullptr;
 current_buffer_metadata_t current_buffer1;
 current_buffer_metadata_t current_buffer2;
 
 std::unordered_map<const void*, alloc_metadata_t> allocs;
 
 std::unordered_map<int, std::vector<std::string>> collective_calls;
+
+} // namespace
+
+namespace simgrid::smpi::utils {
 
 void add_benched_time(double time){
   total_benched_time += time;
