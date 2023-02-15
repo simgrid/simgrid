@@ -18,9 +18,11 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   static long expended_states_; /* Count total amount of states, for stats */
 
   /**
-   * Outgoing transition: what was the last transition that we took to leave this state?
-   * The owner of the transition is the ActorState instance which exists in the State
-   * object from which this state is derived, or nullptr if the state represents the root
+   * @brief The outgoing transition: what was the last transition that
+   * we took to leave this state?
+   *
+   * The owner of the transition is the `ActorState` instance which exists in this state,
+   * or nullptr if the state represents the root
    */
   Transition* transition_ = nullptr;
 

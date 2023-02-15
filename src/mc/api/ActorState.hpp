@@ -29,7 +29,23 @@ class ActorState {
 
   /**
    * @brief The transitions that the actor is allowed to execute from this
-   * state.
+   * state, viz. those that are enabled for this actor
+   *
+   * Most actors can take only a single action from any given state.
+   * However, when an actor executes a transition with multiple
+   * possible variations (e.g. an MC_Random() [see class: RandomTransition]
+   * for more details]), multiple enabled actions are defined
+   *
+   * @invariant The transitions are arranged such that an actor
+   * with multiple possible paths of execution will contain all
+   * such transitions such that `pending_transitions_[i]` represents
+   * the variation of the transition with `times_considered = i`.
+   *
+   * TODO: If only a subset of transitions of an actor that can
+   * take multiple transitions in some state are truly enabled,
+   * we would instead need to map `times_considered` to a transition,
+   * as the map is currently implicit in the ordering of the transitions
+   * in the vector
    *
    * TODO: If a single transition is taken at a time in a concurrent system,
    * then nearly all of the transitions from in a state `s'` after taking
@@ -99,13 +115,22 @@ public:
   }
   void set_done() { this->state_ = InterleavingType::done; }
 
-  Transition* get_transition(unsigned times_considered)
+  inline Transition* get_transition(unsigned times_considered)
   {
-    xbt_assert(times_considered <= this->pending_transitions_.size(),
+    xbt_assert(times_considered < this->pending_transitions_.size(),
                "Actor %lu does not have a state available transition with `times_considered = %d`,\n"
                "yet one was asked for",
                aid_, times_considered);
     return this->pending_transitions_[times_considered].get();
+  }
+
+  inline void set_transition(std::unique_ptr<Transition> t, unsigned times_considered)
+  {
+    xbt_assert(times_considered < this->pending_transitions_.size(),
+               "Actor %lu does not have a state available transition with `times_considered = %d`, "
+               "yet one was attempted to be set",
+               aid_, times_considered);
+    this->pending_transitions_[times_considered] = std::move(t);
   }
 };
 
