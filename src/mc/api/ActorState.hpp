@@ -118,7 +118,7 @@ public:
   inline Transition* get_transition(unsigned times_considered)
   {
     xbt_assert(times_considered < this->pending_transitions_.size(),
-               "Actor %lu does not have a state available transition with `times_considered = %d`,\n"
+               "Actor %ld does not have a state available transition with `times_considered = %u`,\n"
                "yet one was asked for",
                aid_, times_considered);
     return this->pending_transitions_[times_considered].get();
@@ -127,7 +127,7 @@ public:
   inline void set_transition(std::unique_ptr<Transition> t, unsigned times_considered)
   {
     xbt_assert(times_considered < this->pending_transitions_.size(),
-               "Actor %lu does not have a state available transition with `times_considered = %d`, "
+               "Actor %ld does not have a state available transition with `times_considered = %u`, "
                "yet one was attempted to be set",
                aid_, times_considered);
     this->pending_transitions_[times_considered] = std::move(t);
