@@ -140,7 +140,7 @@ Existing Configuration Items
 
 - **storage/max_file_descriptors:** :ref:`cfg=storage/max_file_descriptors`
 
-- **surf/precision:** :ref:`cfg=surf/precision`
+- **precision/timing:** :ref:`cfg=precision/timing`
 
 - **For collective operations of SMPI,** please refer to Section :ref:`cfg=smpi/coll-selector`
 - **smpi/auto-shared-malloc-thresh:** :ref:`cfg=smpi/auto-shared-malloc-thresh`
@@ -304,13 +304,13 @@ configurations.
 
 .. _cfg=bmf/precision:
 .. _cfg=maxmin/precision:
-.. _cfg=surf/precision:
+.. _cfg=precision/timing:
 
 Numerical Precision
 ...................
 
 **Option** ``maxmin/precision`` **Default:** 1e-5 (in flops or bytes) |br|
-**Option** ``surf/precision`` **Default:** 1e-9 (in seconds) |br|
+**Option** ``precision/timing`` **Default:** 1e-9 (in seconds) |br|
 **Option** ``bmf/precision`` **Default:** 1e-12 (no unit)
 
 The analytical models handle a lot of floating point values. It is

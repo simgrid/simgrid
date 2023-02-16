@@ -146,7 +146,7 @@ void sg_config_init(int *argc, char **argv)
   simgrid_host_models().create_flag("host/model", "The model to use for the host", "default", false);
   simgrid_disk_models().create_flag("disk/model", "The model to use for the disk", "S19", false);
 
-  simgrid::config::bind_flag(sg_precision_timing, "surf/precision",
+  simgrid::config::bind_flag(sg_precision_timing, "precision/timing", {"surf/precision"},
                              "Numerical precision used when updating simulation times (in seconds)");
 
   simgrid::config::bind_flag(sg_maxmin_precision, "maxmin/precision",
