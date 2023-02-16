@@ -113,7 +113,7 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     if (action.get_latency() > 0) {
       if (action.get_latency() > delta) {
-        action.update_latency(delta, sg_surf_precision);
+        action.update_latency(delta, sg_precision_timing);
       } else {
         action.set_latency(0.0);
       }

@@ -120,7 +120,7 @@ double CpuTiProfile::integrate_simple_point(double a) const
 
   XBT_DEBUG("a %f ind %ld integral %f ind + 1 %f ind %f time +1 %f time %f", a, ind, integral, integral_[ind + 1],
             integral_[ind], time_points_[ind + 1], time_points_[ind]);
-  double_update(&a_aux, time_points_[ind], sg_maxmin_precision * sg_surf_precision);
+  double_update(&a_aux, time_points_[ind], sg_maxmin_precision * sg_precision_timing);
   if (a_aux > 0)
     integral +=
         ((integral_[ind + 1] - integral_[ind]) / (time_points_[ind + 1] - time_points_[ind])) * (a - time_points_[ind]);
@@ -311,7 +311,7 @@ double CpuTiModel::next_occurring_event(double now)
 
 void CpuTiModel::update_actions_state(double now, double /*delta*/)
 {
-  while (not get_action_heap().empty() && double_equals(get_action_heap().top_date(), now, sg_surf_precision)) {
+  while (not get_action_heap().empty() && double_equals(get_action_heap().top_date(), now, sg_precision_timing)) {
     auto* action = static_cast<CpuTiAction*>(get_action_heap().pop());
     XBT_DEBUG("Action %p: finish", action);
     action->finish(Action::State::FINISHED);
@@ -520,7 +520,7 @@ CpuAction* CpuTi::execution_start(double size, double user_bound)
 CpuAction* CpuTi::sleep(double duration)
 {
   if (duration > 0)
-    duration = std::max(duration, sg_surf_precision);
+    duration = std::max(duration, sg_precision_timing);
 
   XBT_IN("(%s,%g)", get_cname(), duration);
   auto* action = new CpuTiAction(this, 1.0);

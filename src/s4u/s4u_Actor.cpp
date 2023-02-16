@@ -313,13 +313,13 @@ void sleep_for(double duration)
   if (duration <= 0) /* that's a no-op */
     return;
 
-  if (duration < sg_surf_precision) {
+  if (duration < sg_precision_timing) {
     static unsigned int warned = 0; // At most 20 such warnings
     warned++;
     if (warned <= 20)
       XBT_INFO("The parameter to sleep_for() is smaller than the SimGrid numerical accuracy (%g < %g). "
                "Please refer to https://simgrid.org/doc/latest/Configuring_SimGrid.html#numerical-precision",
-               duration, sg_surf_precision);
+               duration, sg_precision_timing);
     if (warned == 20)
       XBT_VERB("(further warnings about the numerical accuracy of sleep_for() will be omitted).");
   }

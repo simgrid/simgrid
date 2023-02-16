@@ -62,11 +62,11 @@ void StandardLinkImpl::set_sharing_policy(s4u::Link::SharingPolicy policy, const
 
 void StandardLinkImpl::latency_check(double latency) const
 {
-  static double last_warned_latency = sg_surf_precision;
+  static double last_warned_latency = sg_precision_timing;
   if (latency != 0.0 && latency < last_warned_latency) {
     XBT_WARN("Latency for link %s is smaller than surf/precision (%g < %g)."
              " For more accuracy, consider setting \"--cfg=surf/precision:%g\".",
-             get_cname(), latency, sg_surf_precision, latency);
+             get_cname(), latency, sg_precision_timing, latency);
     last_warned_latency = latency;
   }
 }

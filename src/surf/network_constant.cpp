@@ -60,7 +60,7 @@ void NetworkConstantModel::update_actions_state(double /*now*/, double delta)
     ++it; // increment iterator here since the following calls to action.finish() may invalidate it
     if (action.latency_ > 0) {
       if (action.latency_ > delta) {
-        double_update(&action.latency_, delta, sg_surf_precision);
+        double_update(&action.latency_, delta, sg_precision_timing);
       } else {
         action.latency_ = 0.0;
       }

@@ -14,7 +14,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_lmm, kernel, "Kernel Linear Max-Min solver");
 
 double sg_maxmin_precision = 1E-5; /* Change this with --cfg=maxmin/precision:VALUE */
-double sg_surf_precision   = 1E-9; /* Change this with --cfg=surf/precision:VALUE */
+double sg_precision_timing = 1E-9; /* Change this with --cfg=surf/precision:VALUE */
 int sg_concurrency_limit   = -1;      /* Change this with --cfg=maxmin/concurrency-limit:VALUE */
 
 namespace simgrid::kernel::lmm {

@@ -143,7 +143,7 @@ void NetworkIBModel::compute_IB_factors(IBNode* root) const
 
     double penalized_bw = num_comm_out ? comm->init_rate / penalty : comm->init_rate;
 
-    if (not double_equals(penalized_bw, rate_before_update, sg_surf_precision)) {
+    if (not double_equals(penalized_bw, rate_before_update, sg_precision_timing)) {
       XBT_DEBUG("%d->%d action %p penalty updated : bw now %f, before %f , initial rate %f", root->id_,
                 comm->destination->id_, comm->action, penalized_bw, comm->action->get_bound(), comm->init_rate);
       get_maxmin_system()->update_variable_bound(comm->action->get_variable(), penalized_bw);

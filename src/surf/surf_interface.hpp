@@ -27,7 +27,7 @@
 
 /* user-visible parameters */
 XBT_PUBLIC_DATA double sg_maxmin_precision;
-XBT_PUBLIC_DATA double sg_surf_precision;
+XBT_PUBLIC_DATA double sg_precision_timing;
 XBT_PUBLIC_DATA int sg_concurrency_limit;
 
 extern XBT_PRIVATE std::unordered_map<std::string, simgrid::kernel::profile::Profile*> traces_set_list;

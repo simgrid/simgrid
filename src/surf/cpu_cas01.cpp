@@ -159,7 +159,7 @@ CpuAction* CpuCas01::execution_start(double size, int requested_cores, double us
 CpuAction* CpuCas01::sleep(double duration)
 {
   if (duration > 0)
-    duration = std::max(duration, sg_surf_precision);
+    duration = std::max(duration, sg_precision_timing);
 
   XBT_IN("(%s, %g)", get_cname(), duration);
   auto* action = new CpuCas01Action(get_model(), 1.0, not is_on(), speed_.scale * speed_.peak, get_constraint(), 1);

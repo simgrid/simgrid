@@ -395,7 +395,7 @@ double NetworkNS3Model::next_occurring_event(double now)
   // NS-3 stops as soon as a flow ends,
   // but it does not process the other flows that may finish at the same (simulated) time.
   // If another flow ends at the same time, time_to_next_flow_completion = 0
-  if (double_equals(time_to_next_flow_completion, 0, sg_surf_precision))
+  if (double_equals(time_to_next_flow_completion, 0, sg_precision_timing))
     time_to_next_flow_completion = 0.0;
 
   XBT_DEBUG("min       : %f", now);
@@ -515,7 +515,7 @@ NetworkNS3Action::NetworkNS3Action(Model* model, double totalBytes, s4u::Host* s
 
   // If there is no other started actions, we need to move NS-3 forward to be sync with SimGrid
   if (model->get_started_action_set()->size() == 1) {
-    while (double_positive(EngineImpl::get_clock() - ns3::Simulator::Now().GetSeconds(), sg_surf_precision)) {
+    while (double_positive(EngineImpl::get_clock() - ns3::Simulator::Now().GetSeconds(), sg_precision_timing)) {
       XBT_DEBUG("Synchronizing NS-3 (time %f) with SimGrid (time %f)", ns3::Simulator::Now().GetSeconds(),
                 EngineImpl::get_clock());
       ns3_simulator(EngineImpl::get_clock() - ns3::Simulator::Now().GetSeconds());
