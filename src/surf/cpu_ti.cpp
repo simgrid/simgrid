@@ -120,7 +120,7 @@ double CpuTiProfile::integrate_simple_point(double a) const
 
   XBT_DEBUG("a %f ind %ld integral %f ind + 1 %f ind %f time +1 %f time %f", a, ind, integral, integral_[ind + 1],
             integral_[ind], time_points_[ind + 1], time_points_[ind]);
-  double_update(&a_aux, time_points_[ind], sg_maxmin_precision * sg_precision_timing);
+  double_update(&a_aux, time_points_[ind], sg_precision_workamount * sg_precision_timing);
   if (a_aux > 0)
     integral +=
         ((integral_[ind + 1] - integral_[ind]) / (time_points_[ind + 1] - time_points_[ind])) * (a - time_points_[ind]);

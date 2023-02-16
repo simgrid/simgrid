@@ -37,6 +37,7 @@ Models:
  - Finally kill the 'compound' host model. You can change the CPU or network model
    with the default host model, as it should.
  - Rename option "surf/precision" to "precision/timing" for clarity.
+ - Rename option "maxmin/precision" to "precision/work-amount" for clarity.
 
 sthread:
  - Implement pthread_join in MC mode.
