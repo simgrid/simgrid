@@ -59,14 +59,25 @@ This is enough to compute the wattage as a function of the amount of loaded core
 
    <table border="1">
    <tr><th>#Cores loaded</th><th>Wattage</th><th>Explanation</th></tr>
-   <tr><td>0 (idle)</td><td> 100 Watts&nbsp;</td><td> Idle value</td></tr>
-   <tr><td>0 (not idle)</td><td> 120 Watts</td><td> Epsilon value</td></tr>
+   <tr><td>0 (idle)</td><td> 100 Watts&nbsp;</td><td>Idle value</td></tr>
    <tr><td>1</td><td> 140 Watts</td><td> Linear extrapolation between Epsilon and AllCores</td></tr>
    <tr><td>2</td><td> 160 Watts</td><td> Linear extrapolation between Epsilon and AllCores</td></tr>
    <tr><td>3</td><td> 180 Watts</td><td> Linear extrapolation between Epsilon and AllCores</td></tr>
    <tr><td>4</td><td> 200 Watts</td><td> AllCores value</td></tr>
    </table>
 
+Here is how it looks graphically:
+
+.. image:: img/plugin-energy.svg
+   :scale: 80%
+   :align: center
+
+As you can see, the ``Epsilon`` parameter allows to freely specify the slope you want, while using the 2 parameters
+version of the model (with only ``Idle`` and ``AllCores``) requires that the ``Idle`` value is on the extension of the
+line crossing the consumption you mesure for each core amount. Please note that specifying the consumption for each core
+amount separately was not a solution because parallel tasks can use an amount of cores that is not an integer. The good
+news is that it was not necessary, as our experiments (detailed in the paper) show that the proposed linear model is
+sufficient to capture reality.
 
 .. raw:: html
 

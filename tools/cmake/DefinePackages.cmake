@@ -787,6 +787,7 @@ set(DOC_SOURCES
   docs/source/img/extlink.svg
   docs/source/img/graphical-toc.svg
   docs/source/img/lmm-overview.svg
+  docs/source/img/plugin-energy.svg
   docs/source/img/smpi_simgrid_alltoall_pair_16.png
   docs/source/img/smpi_simgrid_alltoall_ring_16.png
   docs/source/img/starzone.drawio
