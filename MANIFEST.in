@@ -2220,6 +2220,8 @@ include src/mc/explo/udpor/StateManager.cpp
 include src/mc/explo/udpor/StateManager.hpp
 include src/mc/explo/udpor/UnfoldingEvent.cpp
 include src/mc/explo/udpor/UnfoldingEvent.hpp
+include src/mc/explo/udpor/Unfolding.cpp
+include src/mc/explo/udpor/Unfolding.hpp
 include src/plugins/ProducerConsumer.cpp
 include src/plugins/chaos_monkey.cpp
 include src/plugins/file_system/s4u_FileSystem.cpp

@@ -533,6 +533,8 @@ set(MC_SRC
   src/mc/explo/udpor/StateManager.hpp
   src/mc/explo/udpor/UnfoldingEvent.cpp
   src/mc/explo/udpor/UnfoldingEvent.hpp
+  src/mc/explo/udpor/Unfolding.cpp
+  src/mc/explo/udpor/Unfolding.hpp
   
   src/mc/inspect/DwarfExpression.cpp
   src/mc/inspect/DwarfExpression.hpp
