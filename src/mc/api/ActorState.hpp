@@ -9,15 +9,56 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/mc/remote/RemotePtr.hpp"
 
+#include <exception>
+#include <vector>
+
 namespace simgrid::mc {
 
 /* On every state, each actor has an entry of the following type.
- * This represents both the actor and its transition because
- *   an actor cannot have more than one enabled transition at a given time.
+ * This usually represents both the actor and its transition because
+ * most of the time an actor cannot have more than one enabled transition
+ * at a given time. However, certain transitions have multiple "paths"
+ * that can be followed, which means that a given actor may be able
+ * to do more than one thing at a time.
+ *
+ * Formally, at this state multiple transitions would exist all of
+ * which happened to be executed by the same actor. This distinction
+ * is important in cases
  */
 class ActorState {
+
+  /**
+   * @brief The transitions that the actor is allowed to execute from this
+   * state, viz. those that are enabled for this actor
+   *
+   * Most actors can take only a single action from any given state.
+   * However, when an actor executes a transition with multiple
+   * possible variations (e.g. an MC_Random() [see class: RandomTransition]
+   * for more details]), multiple enabled actions are defined
+   *
+   * @invariant The transitions are arranged such that an actor
+   * with multiple possible paths of execution will contain all
+   * such transitions such that `pending_transitions_[i]` represents
+   * the variation of the transition with `times_considered = i`.
+   *
+   * TODO: If only a subset of transitions of an actor that can
+   * take multiple transitions in some state are truly enabled,
+   * we would instead need to map `times_considered` to a transition,
+   * as the map is currently implicit in the ordering of the transitions
+   * in the vector
+   *
+   * TODO: If a single transition is taken at a time in a concurrent system,
+   * then nearly all of the transitions from in a state `s'` after taking
+   * an action `t` from state `s`  (i.e. s -- t --> s') are the same
+   * sans for the new transition of the actor which just executed t.
+   * This means there may be a way to store the list once and apply differences
+   * rather than repeating elements frequently.
+   */
+  std::vector<std::unique_ptr<Transition>> pending_transitions_;
+
   /* Possible exploration status of an actor transition in a state.
-   * Either the checker did not consider the transition, or it was considered and still to do, or considered and done.
+   * Either the checker did not consider the transition, or it was considered and still to do, or considered and
+   * done.
    */
   enum class InterleavingType {
     /** This actor transition is not considered by the checker (yet?) */
@@ -44,8 +85,10 @@ class ActorState {
   bool enabled_;
 
 public:
-  ActorState(aid_t aid, bool enabled, unsigned int max_consider)
-      : aid_(aid), max_consider_(max_consider), enabled_(enabled)
+  ActorState(aid_t aid, bool enabled, unsigned int max_consider) : ActorState(aid, enabled, max_consider, {}) {}
+
+  ActorState(aid_t aid, bool enabled, unsigned int max_consider, std::vector<std::unique_ptr<Transition>> transitions)
+      : pending_transitions_(std::move(transitions)), aid_(aid), max_consider_(max_consider), enabled_(enabled)
   {
   }
 
@@ -71,6 +114,24 @@ public:
     this->times_considered_ = 0;
   }
   void mark_done() { this->state_ = InterleavingType::done; }
+
+  inline Transition* get_transition(unsigned times_considered)
+  {
+    xbt_assert(times_considered < this->pending_transitions_.size(),
+               "Actor %lu does not have a state available transition with `times_considered = %d`,\n"
+               "yet one was asked for",
+               aid_, times_considered);
+    return this->pending_transitions_[times_considered].get();
+  }
+
+  inline void set_transition(std::unique_ptr<Transition> t, unsigned times_considered)
+  {
+    xbt_assert(times_considered < this->pending_transitions_.size(),
+               "Actor %lu does not have a state available transition with `times_considered = %d`, "
+               "yet one was attempted to be set",
+               aid_, times_considered);
+    this->pending_transitions_[times_considered] = std::move(t);
+  }
 };
 
 } // namespace simgrid::mc

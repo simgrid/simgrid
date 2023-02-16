@@ -4,7 +4,6 @@
   <config id="General">
     <prop id="maxmin/precision" value="0.000010"/>
     <prop id="cpu/optim" value="TI"/>
-    <prop id="host/model" value="compound"/>
     <prop id="path" value="~/"/>
   </config>
   <zone  id="AS0"  routing="Full">

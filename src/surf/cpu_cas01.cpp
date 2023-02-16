@@ -40,8 +40,7 @@ static simgrid::config::Flag<std::string> cfg_cpu_solver("cpu/solver", "Set line
 /*********
  * Model *
  *********/
-void surf_cpu_model_init_Cas01()
-{
+SIMGRID_REGISTER_CPU_MODEL(Cas01, "Simplistic CPU model (time=size/speed)", []() {
   if (cpu_optim_opt == "TI") {
     simgrid::kernel::resource::CpuTiModel::create_pm_models();
     return;
@@ -51,7 +50,7 @@ void surf_cpu_model_init_Cas01()
   auto* engine      = simgrid::kernel::EngineImpl::get_instance();
   engine->add_model(cpu_model_pm);
   engine->get_netzone_root()->set_cpu_pm_model(cpu_model_pm);
-}
+});
 
 namespace simgrid::kernel::resource {
 

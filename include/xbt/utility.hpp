@@ -25,6 +25,10 @@
     constexpr std::array<const char*, _XBT_COUNT_ARGS(__VA_ARGS__)> names{{_XBT_STRINGIFY_ARGS(__VA_ARGS__)}};         \
     return names.at(static_cast<int>(value));                                                                          \
   }                                                                                                                    \
+  static constexpr bool is_valid_##EnumType(int raw_value)                                                             \
+  {                                                                                                                    \
+    return raw_value >= 0 && raw_value < _XBT_COUNT_ARGS(__VA_ARGS__);                                                 \
+  }                                                                                                                    \
   enum class EnumType { __VA_ARGS__ } /* defined here to handle trailing semicolon */
 
 namespace simgrid {
@@ -76,6 +80,6 @@ template <class List, class Elem> inline void intrusive_erase(List& list, Elem& 
   list.erase(list.iterator_to(elem));
 }
 
-}
-}
+} // namespace xbt
+} // namespace simgrid
 #endif

@@ -26,23 +26,34 @@ Channel::~Channel()
 /** @brief Send a message; returns 0 on success or errno on failure */
 int Channel::send(const void* message, size_t size) const
 {
-  XBT_DEBUG("Send %s", to_c_str(*(MessageType*)message));
   while (::send(this->socket_, message, size, 0) == -1) {
     if (errno != EINTR) {
       XBT_ERROR("Channel::send failure: %s", strerror(errno));
       return errno;
     }
   }
+
+  if (is_valid_MessageType(*(int*)message)) {
+    XBT_DEBUG("Sending %s (%lu bytes sent)", to_c_str(*(MessageType*)message), size);
+  } else {
+    XBT_DEBUG("Sending bytes directly (from address %p) (%lu bytes sent)", message, size);
+  }
+
   return 0;
 }
 
 ssize_t Channel::receive(void* message, size_t size, bool block) const
 {
   ssize_t res = recv(this->socket_, message, size, block ? 0 : MSG_DONTWAIT);
-  if (res != -1)
-    XBT_DEBUG("Receive %s", to_c_str(*(MessageType*)message));
-  else
+  if (res != -1) {
+    if (is_valid_MessageType(*(int*)message)) {
+      XBT_DEBUG("Receive %s (requested %lu; received %lu)", to_c_str(*(MessageType*)message), size, res);
+    } else {
+      XBT_DEBUG("Receive %lu bytes", res);
+    }
+  } else {
     XBT_ERROR("Channel::receive failure: %s", strerror(errno));
+  }
   return res;
 }
 } // namespace simgrid::mc

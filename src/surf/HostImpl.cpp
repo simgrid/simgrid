@@ -207,6 +207,8 @@ s4u::Disk* HostImpl::create_disk(const std::string& name, double read_bandwidth,
 {
   auto disk = piface_.get_netpoint()->get_englobing_zone()->get_disk_model()->create_disk(name, read_bandwidth,
                                                                                           write_bandwidth);
+  if (sealed_)
+    disk->seal();
   return disk->set_host(&piface_)->get_iface();
 }
 

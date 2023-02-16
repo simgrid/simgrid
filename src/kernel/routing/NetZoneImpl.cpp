@@ -24,41 +24,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_platform, kernel, "Kernel platform-related i
 
 namespace simgrid::kernel::routing {
 
-/* Pick the right models for CPU, net and host, and call their model_init_preparse */
-static void surf_config_models_setup()
-{
-  std::string host_model_name    = simgrid::config::get_value<std::string>("host/model");
-  std::string network_model_name = simgrid::config::get_value<std::string>("network/model");
-  std::string cpu_model_name     = simgrid::config::get_value<std::string>("cpu/model");
-  std::string disk_model_name    = simgrid::config::get_value<std::string>("disk/model");
-
-  /* The compound host model is needed when using non-default net/cpu models */
-  if ((not simgrid::config::is_default("network/model") || not simgrid::config::is_default("cpu/model") ||
-       not simgrid::config::is_default("disk/model")) && simgrid::config::is_default("host/model")) {
-    host_model_name = "compound";
-    simgrid::config::set_value("host/model", host_model_name);
-  }
-
-  XBT_DEBUG("host model: %s", host_model_name.c_str());
-  if (host_model_name == "compound") {
-    xbt_enforce(not cpu_model_name.empty(), "Set a cpu model to use with the 'compound' host model");
-    xbt_enforce(not disk_model_name.empty(), "Set a disk model to use with the 'compound' host model");
-    xbt_enforce(not network_model_name.empty(), "Set a network model to use with the 'compound' host model");
-
-    surf_cpu_model_description.by_name(cpu_model_name).init();
-    surf_disk_model_description.by_name(disk_model_name).init();
-    simgrid_network_models().by_name(network_model_name).init();
-  }
-
-  surf_host_model_description.by_name(host_model_name).init();
-
-  XBT_DEBUG("Call vm_model_init");
-  /* TODO: ideally we should get back the pointer to CpuModel from init(), but this
-   * requires changing the declaration of surf_cpu_model_description. */
-  surf_vm_model_init_HL13(
-      simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->get_cpu_pm_model().get());
-}
-
 xbt::signal<void(bool symmetrical, kernel::routing::NetPoint* src, kernel::routing::NetPoint* dst,
                  kernel::routing::NetPoint* gw_src, kernel::routing::NetPoint* gw_dst,
                  std::vector<kernel::resource::StandardLinkImpl*> const& link_list)>
@@ -83,7 +48,8 @@ NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
      * (FIXME: check it out by creating a file beginning with one of these tags)
      * but cluster and peer come down to zone creations, so putting this verification here is correct.
      */
-    surf_config_models_setup();
+    simgrid_host_models().init_from_flag_value();
+    surf_vm_model_init_HL13();
   }
 
   xbt_enforce(nullptr == engine->netpoint_by_name_or_null(get_name()),

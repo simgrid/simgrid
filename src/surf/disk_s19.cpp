@@ -26,13 +26,12 @@ static simgrid::config::Flag<std::string> cfg_disk_solver("disk/solver",
  * Model *
  *********/
 
-void surf_disk_model_init_S19()
-{
+SIMGRID_REGISTER_DISK_MODEL(S19, "Simplistic disk model.", []() {
   auto disk_model = std::make_shared<simgrid::kernel::resource::DiskS19Model>("Disk");
   auto* engine    = simgrid::kernel::EngineImpl::get_instance();
   engine->add_model(disk_model);
   engine->get_netzone_root()->set_disk_model(disk_model);
-}
+});
 
 namespace simgrid::kernel::resource {
 /*********

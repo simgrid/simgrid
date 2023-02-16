@@ -34,6 +34,8 @@ Models:
    - Same for the latency
    - Rewrite the corresponding documentation.
  - Allow to disable the TCP windowing modeling by setting network/TCP-gamma to 0.
+ - Finally kill the 'compound' host model. You can change the CPU or network model
+   with the default host model, as it should.
 
 sthread:
  - Implement pthread_join in MC mode.
@@ -48,7 +50,8 @@ Fixed bugs (FG#.. -> FramaGit bugs; FG!.. -> FG merge requests)
  (FG: issues on Framagit; GH: issues on GitHub)
  - FG#18: Java bindings should be redone or removed
  - FG!118: Wi-Fi callback mechanism
- - FG!119: SMPI: add option to inject a barrier before every collective call, to allow...
+ - FG!119: SMPI: add option to inject a barrier before every collective call
+ - GH#383: Segfault when adding a disk after load_platform(xml)
 
 ----------------------------------------------------------------------------
 
