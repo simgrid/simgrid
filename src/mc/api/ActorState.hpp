@@ -88,7 +88,7 @@ public:
   ActorState(aid_t aid, bool enabled, unsigned int max_consider) : ActorState(aid, enabled, max_consider, {}) {}
 
   ActorState(aid_t aid, bool enabled, unsigned int max_consider, std::vector<std::unique_ptr<Transition>> transitions)
-      : aid_(aid), max_consider_(max_consider), enabled_(enabled), pending_transitions_(std::move(transitions))
+      : pending_transitions_(std::move(transitions)), aid_(aid), max_consider_(max_consider), enabled_(enabled)
   {
   }
 

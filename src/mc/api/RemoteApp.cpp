@@ -201,7 +201,7 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   // of 3 transitions, that is ignored here since that invariant needs to be enforced on the AppSide
   const auto expected_transitions = std::accumulate(
       status.begin(), status.end(), 0, [](int total, const auto& actor) { return total + actor.n_transitions; });
-  xbt_assert(expected_transitions == action_pool.size(),
+  xbt_assert(expected_transitions == static_cast<int>(action_pool.size()),
              "Expected to receive %d transition(s) but was only notified of %lu by the app side", expected_transitions,
              action_pool.size());
 
