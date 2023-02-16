@@ -152,10 +152,10 @@ double PMPI_Wtime()
   return smpi_mpi_wtime();
 }
 
-extern double sg_maxmin_precision;
+extern double sg_surf_precision;
 double PMPI_Wtick()
 {
-  return sg_maxmin_precision;
+  return sg_surf_precision;
 }
 
 int PMPI_Address(const void* location, MPI_Aint* address)
