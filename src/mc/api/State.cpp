@@ -113,7 +113,7 @@ void State::execute_next(aid_t next)
   const unsigned times_considered          = actor_state.do_consider();
   const auto* expected_executed_transition = actor_state.get_transition(times_considered);
   xbt_assert(expected_executed_transition != nullptr,
-             "Expected a transition with %d times considered to be noted in actor %lu", times_considered, next);
+             "Expected a transition with %u times considered to be noted in actor %ld", times_considered, next);
 
   XBT_DEBUG("Let's run actor %ld (times_considered = %u)", next, times_considered);
 
@@ -121,7 +121,7 @@ void State::execute_next(aid_t next)
   Transition::executed_transitions_++;
   auto* just_executed = mc_model_checker->handle_simcall(next, times_considered, true);
   xbt_assert(just_executed->type_ == expected_executed_transition->type_,
-             "The transition that was just executed by actor %lu, viz:\n"
+             "The transition that was just executed by actor %ld, viz:\n"
              "%s\n"
              "is not what was purportedly scheduled to execute, which was:\n"
              "%s\n",
