@@ -22,9 +22,15 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
    * we took to leave this state?
    *
    * The owner of the transition is the `ActorState` instance which exists in this state,
-   * or nullptr if the state represents the root
+   * or a reference to the internal default transition `Transition()` if no transition has been
+   * set
    */
-  Transition* transition_ = nullptr;
+  Transition* transition_;
+
+  /**
+   * @brief An empty transition that leads to this state by default
+   */
+  const std::unique_ptr<Transition> default_transition;
 
   /** Sequential state ID (used for debugging) */
   long num_ = 0;

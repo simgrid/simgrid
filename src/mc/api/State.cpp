@@ -14,7 +14,7 @@ namespace simgrid::mc {
 
 long State::expended_states_ = 0;
 
-State::State(const RemoteApp& remote_app) : num_(++expended_states_)
+State::State(const RemoteApp& remote_app) : default_transition(std::make_unique<Transition>()), num_(++expended_states_)
 {
   remote_app.get_actors_status(actors_to_run_);
 
@@ -31,6 +31,9 @@ std::size_t State::count_todo() const
 
 Transition* State::get_transition() const
 {
+  if (transition_ == nullptr) {
+    return default_transition.get();
+  }
   return transition_;
 }
 
