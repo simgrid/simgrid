@@ -33,7 +33,7 @@ public:
   void subtract(const Configuration& other);
   EventSet subtracting(UnfoldingEvent* e) const;
   EventSet subtracting(const EventSet& e) const;
-  EventSet subtracting(const Configuration* e) const;
+  EventSet subtracting(const Configuration& e) const;
 
   void insert(UnfoldingEvent* e);
   void form_union(const EventSet&);

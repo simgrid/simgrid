@@ -32,11 +32,7 @@ public:
   inline StateHandle get_state_id() const { return state_id; }
   inline void set_state_id(StateHandle sid) { state_id = sid; }
 
-  bool operator==(const UnfoldingEvent&) const
-  {
-    // TODO: Implement semantic equality
-    return false;
-  };
+  bool operator==(const UnfoldingEvent&) const;
 
 private:
   int id = -1;

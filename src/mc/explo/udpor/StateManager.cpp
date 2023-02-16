@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/udpor/StateManager.hpp"
+#include "xbt/asserts.h"
 
 namespace simgrid::mc::udpor {
 
@@ -16,8 +17,11 @@ StateManager::Handle StateManager::record_state(std::unique_ptr<State> state)
   const auto integer_handle = this->current_handle_;
   this->state_map_.insert({integer_handle, std::move(state)});
 
-  // TODO: Check for state handle overflow!
   this->current_handle_++;
+  xbt_assert(integer_handle <= this->current_handle_, "Too many states were vended out during exploration via UDPOR.\n"
+                                                      "It's suprising you didn't run out of memory elsewhere first...\n"
+                                                      "Please report this as a bug along with the very large program");
+
   return integer_handle;
 }
 

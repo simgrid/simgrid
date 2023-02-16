@@ -18,19 +18,23 @@ public:
   Configuration& operator=(Configuration const&) = default;
   Configuration(Configuration&&)                 = default;
 
-  inline auto begin() const { return this->events_.begin(); }
-  inline auto end() const { return this->events_.end(); }
-  inline const EventSet& get_events() const { return this->events_; }
-  inline const EventSet& get_maximal_events() const { return this->max_events_; }
+  auto begin() const { return this->events_.begin(); }
+  auto end() const { return this->events_.end(); }
+  const EventSet& get_events() const { return this->events_; }
+  const EventSet& get_maximal_events() const { return this->max_events_; }
+  UnfoldingEvent* get_latest_event() const { return this->newest_event; }
 
   void add_event(UnfoldingEvent*);
-  UnfoldingEvent* get_latest_event() const;
 
 private:
   /**
    * @brief The most recent event added to the configuration
    */
   UnfoldingEvent* newest_event = nullptr;
+
+  /**
+   * @brief The events which make up this configuration
+   */
   EventSet events_;
 
   /**

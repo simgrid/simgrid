@@ -19,4 +19,10 @@ UnfoldingEvent::UnfoldingEvent(unsigned int nb_events, std::string const& trans_
   // TODO: Implement this
 }
 
+bool UnfoldingEvent::operator==(const UnfoldingEvent&) const
+{
+  // TODO: Implement semantic equality
+  return false;
+}
+
 } // namespace simgrid::mc::udpor
