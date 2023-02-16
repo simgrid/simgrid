@@ -18,6 +18,8 @@ State::State(const RemoteApp& remote_app) : default_transition(std::make_unique<
 {
   remote_app.get_actors_status(actors_to_run_);
 
+  transition_ = default_transition.get();
+
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
     system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_);

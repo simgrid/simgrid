@@ -25,7 +25,7 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
    * or a reference to the internal default transition `Transition()` if no transition has been
    * set
    */
-  Transition* transition_;
+  Transition* transition_ = nullptr;
 
   /**
    * @brief An empty transition that leads to this state by default
