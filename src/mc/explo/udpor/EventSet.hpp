@@ -28,24 +28,24 @@ public:
   inline auto begin() const { return this->events_.begin(); }
   inline auto end() const { return this->events_.end(); }
 
-  void remove(UnfoldingEvent* e);
-  void subtract(const EventSet& other);
-  void subtract(const Configuration& other);
-  EventSet subtracting(UnfoldingEvent* e) const;
-  EventSet subtracting(const EventSet& e) const;
-  EventSet subtracting(const Configuration& e) const;
+  void remove(UnfoldingEvent*);
+  void subtract(const EventSet&);
+  void subtract(const Configuration&);
+  EventSet subtracting(UnfoldingEvent*) const;
+  EventSet subtracting(const EventSet&) const;
+  EventSet subtracting(const Configuration&) const;
 
-  void insert(UnfoldingEvent* e);
+  void insert(UnfoldingEvent*);
   void form_union(const EventSet&);
   void form_union(const Configuration&);
-  EventSet make_union(UnfoldingEvent* e) const;
+  EventSet make_union(UnfoldingEvent*) const;
   EventSet make_union(const EventSet&) const;
-  EventSet make_union(const Configuration& e) const;
+  EventSet make_union(const Configuration&) const;
 
   size_t size() const;
   bool empty() const;
-  bool contains(UnfoldingEvent* e) const;
-  bool is_subset_of(const EventSet& other) const;
+  bool contains(UnfoldingEvent*) const;
+  bool is_subset_of(const EventSet&) const;
 };
 
 } // namespace simgrid::mc::udpor

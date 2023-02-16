@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/udpor/EventSet.hpp"
+#include "src/mc/explo/udpor/Configuration.hpp"
 
 #include <iterator>
 
@@ -19,6 +20,11 @@ void EventSet::subtract(const EventSet& other)
   this->events_ = std::move(subtracting(other).events_);
 }
 
+void EventSet::subtract(const Configuration& config)
+{
+  subtract(config.get_events());
+}
+
 EventSet EventSet::subtracting(const EventSet& other) const
 {
   std::unordered_set<UnfoldingEvent*> result = this->events_;
@@ -27,6 +33,11 @@ EventSet EventSet::subtracting(const EventSet& other) const
     result.erase(e);
 
   return EventSet(std::move(result));
+}
+
+EventSet EventSet::subtracting(const Configuration& config) const
+{
+  return subtracting(config.get_events());
 }
 
 EventSet EventSet::subtracting(UnfoldingEvent* e) const
@@ -38,13 +49,17 @@ EventSet EventSet::subtracting(UnfoldingEvent* e) const
 
 void EventSet::insert(UnfoldingEvent* e)
 {
-  // TODO: Potentially react if the event is already inserted
   this->events_.insert(e);
 }
 
 void EventSet::form_union(const EventSet& other)
 {
   this->events_ = std::move(make_union(other).events_);
+}
+
+void EventSet::form_union(const Configuration& config)
+{
+  form_union(config.get_events());
 }
 
 EventSet EventSet::make_union(UnfoldingEvent* e) const
@@ -62,6 +77,11 @@ EventSet EventSet::make_union(const EventSet& other) const
     result.insert(e);
 
   return EventSet(std::move(result));
+}
+
+EventSet EventSet::make_union(const Configuration& config) const
+{
+  return make_union(config.get_events());
 }
 
 size_t EventSet::size() const
