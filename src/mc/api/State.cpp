@@ -14,9 +14,11 @@ namespace simgrid::mc {
 
 long State::expended_states_ = 0;
 
-State::State(const RemoteApp& remote_app) : num_(++expended_states_)
+State::State(const RemoteApp& remote_app) : default_transition(std::make_unique<Transition>()), num_(++expended_states_)
 {
   remote_app.get_actors_status(actors_to_run_);
+
+  transition_ = default_transition.get();
 
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
@@ -72,6 +74,9 @@ void State::mark_all_todo()
     
 Transition* State::get_transition() const
 {
+    if (transition_ == nullptr) {
+        return default_transition.get();
+    }
     return transition_;
 }
 
