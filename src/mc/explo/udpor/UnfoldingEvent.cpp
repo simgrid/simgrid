@@ -7,16 +7,10 @@
 
 namespace simgrid::mc::udpor {
 
-UnfoldingEvent::UnfoldingEvent(unsigned int nb_events, std::string const& trans_tag, EventSet const& immediate_causes)
-    : UnfoldingEvent(nb_events, trans_tag, immediate_causes, 0)
+UnfoldingEvent::UnfoldingEvent(std::shared_ptr<Transition> transition, EventSet immediate_causes,
+                               unsigned long event_id)
+    : associated_transition(std::move(transition)), immediate_causes(std::move(immediate_causes)), event_id(event_id)
 {
-  // TODO: Implement this correctly
-}
-
-UnfoldingEvent::UnfoldingEvent(unsigned int nb_events, std::string const& trans_tag, EventSet const& immediate_causes,
-                               StateHandle sid)
-{
-  // TODO: Implement this
 }
 
 bool UnfoldingEvent::operator==(const UnfoldingEvent&) const

@@ -24,23 +24,29 @@ void UdporChecker::run()
   // NOTE: `A`, `D`, and `C` are derived from the
   // original UDPOR paper [1], while `prev_exC` arises
   // from the incremental computation of ex(C) from [3]
-  EventSet A, D;
-  Configuration C;
-  EventSet prev_exC;
+  Configuration C_root;
 
-  auto initial_state          = get_current_state();
-  const auto initial_state_id = state_manager_.record_state(std::move(initial_state));
-  const auto root_event       = std::make_unique<UnfoldingEvent>(-1, "", EventSet(), initial_state_id);
-  explore(std::move(C), std::move(A), std::move(D), {}, root_event.get(), std::move(prev_exC));
+  // TODO: Move computing the root configuration into a method on the Unfolding
+  auto initial_state      = get_current_state();
+  auto root_event         = std::make_unique<UnfoldingEvent>(std::make_shared<Transition>(), EventSet());
+  auto* root_event_handle = root_event.get();
+  unfolding.insert(std::move(root_event));
+  C_root.add_event(root_event_handle);
+
+  explore(std::move(C_root), EventSet(), EventSet(), std::move(initial_state), EventSet());
 
   XBT_INFO("UDPOR exploration terminated -- model checking completed");
 }
 
-void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::list<EventSet> max_evt_history,
-                           UnfoldingEvent* e_cur, EventSet prev_exC)
+void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::unique_ptr<State> stateC, EventSet prev_exC)
 {
   // Perform the incremental computation of exC
-  auto [exC, enC] = compute_extension(C, max_evt_history, e_cur, prev_exC);
+  //
+  // TODO: This method will have side effects on
+  // the unfolding, but the naming of the method
+  // suggests it is doesn't have side effects. We should
+  // reconcile this in the future
+  auto [exC, enC] = compute_extension(C, prev_exC);
 
   // If enC is a subset of D, intuitively
   // there aren't any enabled transitions
@@ -73,25 +79,25 @@ void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::list<Ev
 
   // TODO: Add verbose logging about which event is being explored
 
-  const auto next_state_id = observe_unfolding_event(*e_cur);
-
   UnfoldingEvent* e = select_next_unfolding_event(A, enC);
   xbt_assert(e != nullptr, "\n\n****** INVARIANT VIOLATION ******\n"
                            "UDPOR guarantees that an event will be chosen at each point in\n"
                            "the search, yet no events were actually chosen\n"
                            "*********************************\n\n");
-  e->set_state_id(next_state_id);
+
+  // Move the application into stateCe and actually make note of that state
+  move_to_stateCe(*stateC, *e);
+  auto stateCe = record_current_state();
 
   // Ce := C + {e}
   Configuration Ce = C;
   Ce.add_event(e);
 
-  max_evt_history.push_back(Ce.get_maximal_events());
   A.remove(e);
   exC.remove(e);
 
   // Explore(C + {e}, D, A \ {e})
-  explore(Ce, D, std::move(A), max_evt_history, e, std::move(exC));
+  explore(Ce, D, std::move(A), std::move(stateCe), std::move(exC));
 
   // D <-- D + {e}
   D.insert(e);
@@ -101,10 +107,15 @@ void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::list<Ev
   auto J               = compute_partial_alternative(D, C, K);
   if (!J.empty()) {
     J.subtract(C.get_events());
-    max_evt_history.pop_back();
+
+    // Before searching the "right half", we need to make
+    // sure the program actually reflects the fact
+    // that we are searching again from `stateC` (the recursive
+    // search moved the program into `stateCe`)
+    restore_program_state_to(*stateC);
 
     // Explore(C, D + {e}, J \ C)
-    explore(C, D, std::move(J), std::move(max_evt_history), e_cur, std::move(prev_exC));
+    explore(C, D, std::move(J), std::move(stateC), std::move(prev_exC));
   }
 
   // D <-- D - {e}
@@ -114,36 +125,27 @@ void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::list<Ev
   clean_up_explore(e, C, D);
 }
 
-std::tuple<EventSet, EventSet> UdporChecker::compute_extension(const Configuration& C,
-                                                               const std::list<EventSet>& max_evt_history,
-                                                               UnfoldingEvent* e_cur, const EventSet& prev_exC) const
+std::tuple<EventSet, EventSet> UdporChecker::compute_extension(const Configuration& C, const EventSet& prev_exC) const
 {
   // See eqs. 5.7 of section 5.2 of [3]
-  // ex(C + {e_cur}) = ex(C) / {e_cur} + U{<a, > : H }
-  EventSet exC = prev_exC;
+  // C = C' + {e_cur}, i.e. C' = C - {e_cur}
+  //
+  // Then
+  //
+  // ex(C) = ex(C' + {e_cur}) = ex(C') / {e_cur} + U{<a, > : H }
+  UnfoldingEvent* e_cur = C.get_latest_event();
+  EventSet exC          = prev_exC;
   exC.remove(e_cur);
+
+  // ... fancy computations
 
   EventSet enC;
   return std::tuple<EventSet, EventSet>(exC, enC);
 }
 
-State& UdporChecker::get_state_referenced_by(const UnfoldingEvent& event)
+void UdporChecker::move_to_stateCe(State& state, const UnfoldingEvent& e)
 {
-  const auto state_id      = event.get_state_id();
-  const auto wrapped_state = this->state_manager_.get_state(state_id);
-  xbt_assert(wrapped_state != std::nullopt,
-             "\n\n****** INVARIANT VIOLATION ******\n"
-             "To each UDPOR event corresponds a state, but state %llu does not exist. "
-             "Please report this as a bug.\n"
-             "*********************************\n\n",
-             state_id);
-  return wrapped_state.value().get();
-}
-
-StateHandle UdporChecker::observe_unfolding_event(const UnfoldingEvent& event)
-{
-  auto& state            = this->get_state_referenced_by(event);
-  const aid_t next_actor = state.next_transition();
+  const aid_t next_actor = e.get_transition()->aid_;
 
   // TODO: Add the trace if possible for reporting a bug
   xbt_assert(next_actor >= 0, "\n\n****** INVARIANT VIOLATION ******\n"
@@ -152,17 +154,22 @@ StateHandle UdporChecker::observe_unfolding_event(const UnfoldingEvent& event)
                               "state was actually enabled. Please report this as a bug.\n"
                               "*********************************\n\n");
   state.execute_next(next_actor);
-  return this->record_current_state();
 }
 
-StateHandle UdporChecker::record_current_state()
+void UdporChecker::restore_program_state_to(const State& stateC)
 {
-  auto next_state          = this->get_current_state();
-  const auto next_state_id = this->state_manager_.record_state(std::move(next_state));
+  // TODO: Perform state regeneration in the same manner as is done
+  // in the DFSChecker.cpp
+}
+
+std::unique_ptr<State> UdporChecker::record_current_state()
+{
+  auto next_state = this->get_current_state();
 
   // In UDPOR, we care about all enabled transitions in a given state
   next_state->mark_all_enabled_todo();
-  return next_state_id;
+
+  return next_state;
 }
 
 UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& A, const EventSet& enC)
@@ -198,6 +205,8 @@ RecordTrace UdporChecker::get_record_trace()
 
 std::vector<std::string> UdporChecker::get_textual_trace()
 {
+  // TODO: Topologically sort the events of the latest configuration
+  // and iterate through that topological sorting
   std::vector<std::string> trace;
   return trace;
 }

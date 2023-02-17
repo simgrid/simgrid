@@ -11,6 +11,7 @@
 #include "src/mc/explo/udpor/Configuration.hpp"
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/StateManager.hpp"
+#include "src/mc/explo/udpor/Unfolding.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
 #include "src/mc/mc_record.hpp"
 
@@ -79,6 +80,11 @@ private:
    */
   StateManager state_manager_;
 
+  /**
+   * @brief UDPOR's current "view" of the program it is exploring
+   */
+  Unfolding unfolding = Unfolding();
+
 private:
   /**
    * @brief Explores the unfolding of the concurrent system
@@ -95,18 +101,27 @@ private:
    * @param A the set of events to "guide" UDPOR in the correct direction
    * when it returns back to a node in the unfolding and must decide among
    * events to select from `ex(C)`. See [1] for more details
-   * @param max_evt_history
-   *
-   * @param e the event where UDPOR currently "rests", viz. the event UDPOR
-   * is now currently considering. This event is contained in the set `C`
-   * and is the last event that was added to C
-   *
+   * @param stateC the state of the program after having executed `C`,
+   * viz. `state(C)`  using the notation of [1]
    *
    * TODO: Add the optimization where we can check if e == e_prior
    * to prevent repeated work when computing ex(C)
    */
-  void explore(Configuration C, EventSet D, EventSet A, std::list<EventSet> max_evt_history, UnfoldingEvent* e_cur,
-               EventSet prev_exC);
+  void explore(Configuration C, EventSet D, EventSet A, std::unique_ptr<State> stateC, EventSet prev_exC);
+
+  /**
+   * @brief Identifies the next event from the unfolding of the concurrent system
+   * that should next be explored as an extension of a configuration with
+   * enabled events `enC`
+   *
+   * @param A The set of events `A` maintained by the UDPOR algorithm to help
+   * determine how events should be selected. See the original paper [1] for more details
+   *
+   * @param enC The set `enC` of enabled events from the extension set `exC` used
+   * by the UDPOR algorithm to select new events to search. See the original
+   * paper [1] for more details
+   */
+  UnfoldingEvent* select_next_unfolding_event(const EventSet& A, const EventSet& enC);
 
   /**
    * @brief Computes the sets `ex(C)` and `en(C)` of the given configuration
@@ -127,25 +142,21 @@ private:
    *
    * @param C the configuration based on which the two sets `ex(C)` and `en(C)` are
    * computed
-   * @param e the event where UDPOR currently "rests", viz. the event UDPOR
-   * is now currently considering
    * @param prev_exC the previous value of `ex(C)`, viz. that which was computed for
    * the configuration `C' := C - {e}`
    * @returns a tuple containing the pair of sets `ex(C)` and `en(C)` respectively
    */
-  std::tuple<EventSet, EventSet> compute_extension(const Configuration& C, const std::list<EventSet>& max_evt_history,
-                                                   UnfoldingEvent* e, const EventSet& prev_exC) const;
+  std::tuple<EventSet, EventSet> compute_extension(const Configuration& C, const EventSet& prev_exC) const;
 
   /**
    *
    */
-  StateHandle observe_unfolding_event(const UnfoldingEvent& event);
+  EventSet compute_partial_alternative(const EventSet& D, const Configuration& C, const unsigned k) const;
 
   /**
-   * @brief Resolves the state handle maintained by an event
-   * into a concrete reference to a state
+   *
    */
-  State& get_state_referenced_by(const UnfoldingEvent& event);
+  void move_to_stateCe(State& stateC, const UnfoldingEvent& e);
 
   /**
    * @brief Creates a new snapshot of the state of the progam undergoing
@@ -155,26 +166,12 @@ private:
    * exploration of the unfolding. You provide this handle to an event in the
    * unfolding to regenerate past states
    */
-  StateHandle record_current_state();
-
-  /**
-   * @brief Identifies the next event from the unfolding of the concurrent system
-   * that should next be explored as an extension of a configuration with
-   * enabled events `enC`
-   *
-   * @param A The set of events `A` maintained by the UDPOR algorithm to help
-   * determine how events should be selected. See the original paper [1] for more details
-   *
-   * @param enC The set `enC` of enabled events from the extension set `exC` used
-   * by the UDPOR algorithm to select new events to search. See the original
-   * paper [1] for more details
-   */
-  UnfoldingEvent* select_next_unfolding_event(const EventSet& A, const EventSet& enC);
+  std::unique_ptr<State> record_current_state();
 
   /**
    *
    */
-  EventSet compute_partial_alternative(const EventSet& D, const Configuration& C, const unsigned k) const;
+  void restore_program_state_to(const State& stateC);
 
   /**
    *

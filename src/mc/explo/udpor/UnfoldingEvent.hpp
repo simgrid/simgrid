@@ -8,16 +8,17 @@
 
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/udpor_forward.hpp"
+#include "src/mc/transition/Transition.hpp"
 
+#include <memory>
 #include <string>
 
 namespace simgrid::mc::udpor {
 
 class UnfoldingEvent {
 public:
-  UnfoldingEvent(unsigned int nb_events, std::string const& trans_tag, EventSet const& immediate_causes,
-                 StateHandle sid);
-  UnfoldingEvent(unsigned int nb_events, std::string const& trans_tag, EventSet const& immediate_causes);
+  UnfoldingEvent(std::shared_ptr<Transition> transition, EventSet immediate_causes, unsigned long event_id = 0);
+
   UnfoldingEvent(const UnfoldingEvent&)            = default;
   UnfoldingEvent& operator=(UnfoldingEvent const&) = default;
   UnfoldingEvent(UnfoldingEvent&&)                 = default;
@@ -29,13 +30,23 @@ public:
   bool conflicts_with(const Configuration& config) const;
   bool immediately_conflicts_with(const UnfoldingEvent* otherEvt) const;
 
-  inline StateHandle get_state_id() const { return state_id; }
-  inline void set_state_id(StateHandle sid) { state_id = sid; }
+  Transition* get_transition() const { return this->associated_transition.get(); }
 
   bool operator==(const UnfoldingEvent&) const;
 
 private:
-  int id = -1;
+  /**
+   * @brief The transition that UDPOR "attaches" to this
+   * specific event for later use while computing e.g. extension
+   * sets
+   *
+   * The transition points to that of a particular actor
+   * in the state reached by the configuration C (recall
+   * this is denoted `state(C)`) that excludes this event.
+   * In other words, this transition was the "next" event
+   * of the actor that executes it in `state(C)`.
+   */
+  std::shared_ptr<Transition> associated_transition;
 
   /**
    * @brief The "immediate" causes of this event.
@@ -54,7 +65,8 @@ private:
    * so on.
    */
   EventSet immediate_causes;
-  StateHandle state_id = 0ul;
+
+  unsigned long event_id = 0;
 };
 
 } // namespace simgrid::mc::udpor
