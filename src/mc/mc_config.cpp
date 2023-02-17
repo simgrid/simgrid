@@ -49,12 +49,8 @@ static simgrid::config::Flag<std::string> cfg_mc_reduction{
     }};
 
 simgrid::config::Flag<bool> _sg_mc_sleep_set{
-    "model-check/sleep-set",
-    "Whether to enable the use of sleep-set in the reduction algorithm",
-    true,
-    [](bool) {
-      _mc_cfg_cb_check("value to enable/disable the use of sleep-set in the reduction algorithm");
-    }};
+    "model-check/sleep-set", "Whether to enable the use of sleep-set in the reduction algorithm", false,
+    [](bool) { _mc_cfg_cb_check("value to enable/disable the use of sleep-set in the reduction algorithm"); }};
 
 simgrid::config::Flag<int> _sg_mc_checkpoint{
     "model-check/checkpoint", "Specify the amount of steps between checkpoints during stateful model-checking "

@@ -160,7 +160,7 @@ void DFSExplorer::run()
              state->get_transition()->to_string().c_str(), stack_.size(), state->get_num(), state->count_todo());
 
     /* Create the new expanded state (copy the state of MCed into our MCer data) */
-    std::__detail::__unique_ptr_t<simgrid::mc::State> next_state;
+    std::unique_ptr<State> next_state;
 
     /* If we want sleep set reduction, pass the old state to the new state so it can
      * both copy the sleep set and eventually removes things from it locally */
