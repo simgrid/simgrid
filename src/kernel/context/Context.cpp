@@ -10,7 +10,6 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/sthread/sthread.h"
-#include "src/surf/surf_interface.hpp"
 
 #include <vector>
 

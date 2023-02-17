@@ -7,13 +7,14 @@
 #include "simgrid/forward.h"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/kernel/resource/profile/StochasticDatedValue.hpp"
-#include "src/surf/surf_interface.hpp"
+#include "xbt/asserts.h"
 #include "xbt/file.hpp"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/intrusive/options.hpp>
 #include <cstddef>
 #include <fstream>
+#include <math.h>
 #include <sstream>
 #include <string_view>
 

@@ -1,5 +1,4 @@
-/* Copyright (c) 2014-2023. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2023. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,8 +6,7 @@
 #ifndef SURF_NETWORK_IB_HPP_
 #define SURF_NETWORK_IB_HPP_
 
-#include "src/surf/network_cm02.hpp"
-#include "xbt/base.h"
+#include "src/kernel/resource/models/network_cm02.hpp"
 
 #include <map>
 #include <vector>
@@ -47,7 +45,7 @@ class XBT_PRIVATE NetworkIBModel : public NetworkCm02Model {
 
 public:
   explicit NetworkIBModel(const std::string& name);
-  NetworkIBModel(const NetworkIBModel&) = delete;
+  NetworkIBModel(const NetworkIBModel&)            = delete;
   NetworkIBModel& operator=(const NetworkIBModel&) = delete;
   void update_IB_factors(NetworkAction* action, IBNode* from, IBNode* to, int remove) const;
 

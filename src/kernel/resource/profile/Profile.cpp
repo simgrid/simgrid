@@ -4,11 +4,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/resource/profile/Profile.hpp"
-#include "xbt/asserts.h"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
 #include "src/kernel/resource/profile/StochasticDatedValue.hpp"
-#include "src/surf/surf_interface.hpp"
+#include "xbt/asserts.h"
 
 #include <boost/algorithm/string.hpp>
 #include <fstream>

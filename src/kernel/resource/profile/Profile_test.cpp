@@ -5,11 +5,10 @@
 
 #include "catch.hpp"
 
+#include "simgrid/kernel/ProfileBuilder.hpp"
 #include "src/kernel/resource/Resource.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
-#include "simgrid/kernel/ProfileBuilder.hpp"
 #include "src/kernel/resource/profile/StochasticDatedValue.hpp"
-#include "src/surf/surf_interface.hpp"
 
 #include "xbt/log.h"
 #include "xbt/misc.h"

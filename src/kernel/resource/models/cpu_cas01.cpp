@@ -8,10 +8,9 @@
 
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/kernel/resource/models/cpu_cas01.hpp"
+#include "src/kernel/resource/models/cpu_ti.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
-#include "src/surf/cpu_cas01.hpp"
-#include "src/surf/cpu_ti.hpp"
-#include "src/surf/surf_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cpu_cas, res_cpu, "CPU resource, CAS01 model (used by default)");
 

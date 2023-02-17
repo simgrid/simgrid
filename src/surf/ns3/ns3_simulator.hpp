@@ -7,7 +7,7 @@
 #define NS3_SIMULATOR_HPP
 
 #include "simgrid/s4u/Host.hpp"
-#include "src/surf/network_ns3.hpp"
+#include "src/kernel/resource/models/network_ns3.hpp"
 
 #include "ns3/wifi-module.h"
 #include <ns3/node.h>

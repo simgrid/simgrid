@@ -10,7 +10,7 @@
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
-#include "src/surf/host_clm03.hpp"
+#include "src/kernel/resource/models/host_clm03.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_host);
 
@@ -53,17 +53,17 @@ Action* HostCLM03Model::io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::
                                   double size)
 {
   auto net_model = src_host->get_englobing_zone()->get_network_model();
-  auto system = net_model->get_maxmin_system();
-  auto* action = net_model->communicate(src_host, dst_host, size, -1, true);
+  auto system    = net_model->get_maxmin_system();
+  auto* action   = net_model->communicate(src_host, dst_host, size, -1, true);
 
   // We don't want to apply the network model bandwidth factor to the I/O constraints
   double bw_factor = net_model->get_bandwidth_factor();
-  if (src_disk != nullptr){
-    //FIXME: if the stream starts from a disk, we might not want to pay the network latency
+  if (src_disk != nullptr) {
+    // FIXME: if the stream starts from a disk, we might not want to pay the network latency
     system->expand(src_disk->get_constraint(), action->get_variable(), bw_factor);
     system->expand(src_disk->get_read_constraint(), action->get_variable(), bw_factor);
   }
-  if (dst_disk != nullptr){
+  if (dst_disk != nullptr) {
     system->expand(dst_disk->get_constraint(), action->get_variable(), bw_factor);
     system->expand(dst_disk->get_write_constraint(), action->get_variable(), bw_factor);
   }

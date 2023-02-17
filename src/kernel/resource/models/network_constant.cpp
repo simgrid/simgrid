@@ -7,8 +7,7 @@
 #include <simgrid/s4u/Engine.hpp>
 
 #include "src/kernel/EngineImpl.hpp"
-#include "src/surf/network_constant.hpp"
-#include "src/surf/surf_interface.hpp"
+#include "src/kernel/resource/models/network_constant.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 

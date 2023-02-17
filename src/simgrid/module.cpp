@@ -8,7 +8,6 @@
 
 #include "simgrid/sg_config.hpp"
 #include "src/simgrid/module.hpp"
-#include "src/surf/surf_interface.hpp"
 
 #include <sstream>
 

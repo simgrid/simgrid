@@ -12,8 +12,8 @@
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
-#include "src/surf/cpu_cas01.hpp"
-#include "src/surf/cpu_ti.hpp"
+#include "src/kernel/resource/models/cpu_cas01.hpp"
+#include "src/kernel/resource/models/cpu_ti.hpp"
 
 #include <numeric>
 

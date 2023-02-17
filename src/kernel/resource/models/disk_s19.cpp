@@ -11,8 +11,8 @@
 
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
+#include "src/kernel/resource/models/disk_s19.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
-#include "src/surf/disk_s19.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_disk);
 /***********
@@ -42,7 +42,6 @@ DiskS19Model::DiskS19Model(const std::string& name) : DiskModel(name)
 {
   set_maxmin_system(lmm::System::build(cfg_disk_solver.get(), true /* selective update */));
 }
-
 
 DiskImpl* DiskS19Model::create_disk(const std::string& name, double read_bandwidth, double write_bandwidth)
 {

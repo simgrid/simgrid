@@ -33,7 +33,7 @@ class XBT_PRIVATE L07Action;
 class HostL07Model : public HostModel {
 public:
   HostL07Model(const std::string& name, lmm::System* sys);
-  HostL07Model(const HostL07Model&) = delete;
+  HostL07Model(const HostL07Model&)            = delete;
   HostL07Model& operator=(const HostL07Model&) = delete;
 
   double next_occurring_event(double now) override;
@@ -41,13 +41,17 @@ public:
   Action* execute_thread(const s4u::Host* host, double flops_amount, int thread_count) override { return nullptr; }
   CpuAction* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                               const double* bytes_amount, double rate) override;
-  Action* io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk, double size) override { return nullptr; }
+  Action* io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk,
+                    double size) override
+  {
+    return nullptr;
+  }
 };
 
 class CpuL07Model : public CpuModel {
 public:
   CpuL07Model(const std::string& name, HostL07Model* hmodel, lmm::System* sys);
-  CpuL07Model(const CpuL07Model&) = delete;
+  CpuL07Model(const CpuL07Model&)            = delete;
   CpuL07Model& operator=(const CpuL07Model&) = delete;
   ~CpuL07Model() override;
   void update_actions_state(double /*now*/, double /*delta*/) override{
@@ -63,7 +67,7 @@ public:
 class NetworkL07Model : public NetworkModel {
 public:
   NetworkL07Model(const std::string& name, HostL07Model* hmodel, lmm::System* sys);
-  NetworkL07Model(const NetworkL07Model&) = delete;
+  NetworkL07Model(const NetworkL07Model&)            = delete;
   NetworkL07Model& operator=(const NetworkL07Model&) = delete;
   ~NetworkL07Model() override;
   StandardLinkImpl* create_link(const std::string& name, const std::vector<double>& bandwidths) final;
@@ -86,7 +90,7 @@ public:
 class CpuL07 : public CpuImpl {
 public:
   using CpuImpl::CpuImpl;
-  CpuL07(const CpuL07&) = delete;
+  CpuL07(const CpuL07&)            = delete;
   CpuL07& operator=(const CpuL07&) = delete;
 
   void apply_event(profile::Event* event, double value) override;
@@ -105,7 +109,7 @@ protected:
 class LinkL07 : public StandardLinkImpl {
 public:
   LinkL07(const std::string& name, double bandwidth, lmm::System* system);
-  LinkL07(const LinkL07&) = delete;
+  LinkL07(const LinkL07&)            = delete;
   LinkL07& operator=(const LinkL07&) = delete;
   ~LinkL07() override;
   void apply_event(profile::Event* event, double value) override;
@@ -152,7 +156,7 @@ public:
   L07Action() = delete;
   L07Action(Model* model, const std::vector<s4u::Host*>& host_list, const double* flops_amount,
             const double* bytes_amount, double rate);
-  L07Action(const L07Action&) = delete;
+  L07Action(const L07Action&)            = delete;
   L07Action& operator=(const L07Action&) = delete;
   ~L07Action() override;
 

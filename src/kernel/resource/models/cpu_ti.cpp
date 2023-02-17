@@ -6,11 +6,10 @@
 #include "cpu_ti.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "simgrid/s4u/Engine.hpp"
-#include "xbt/asserts.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
-#include "src/surf/surf_interface.hpp"
+#include "xbt/asserts.h"
 
 #include <algorithm>
 #include <memory>
@@ -27,15 +26,15 @@ namespace simgrid::kernel::resource {
 
 CpuTiProfile::CpuTiProfile(const profile::Profile* profile)
 {
-  double integral    = 0;
-  double time        = 0;
-  double prev_value  = 1;
-  const std::vector<profile::DatedValue>& events=profile->get_event_list();
+  double integral                                = 0;
+  double time                                    = 0;
+  double prev_value                              = 1;
+  const std::vector<profile::DatedValue>& events = profile->get_event_list();
   xbt_assert(not events.empty());
   unsigned long nb_points = events.size() + 1;
   time_points_.reserve(nb_points);
   integral_.reserve(nb_points);
-  for (auto const& val :  events) {
+  for (auto const& val : events) {
     time += val.date_;
     integral += val.date_ * prev_value;
     time_points_.push_back(time);
@@ -43,11 +42,11 @@ CpuTiProfile::CpuTiProfile(const profile::Profile* profile)
     prev_value = val.value_;
   }
 
-  double delay=profile->get_repeat_delay()+ events.at(0).date_;
+  double delay = profile->get_repeat_delay() + events.at(0).date_;
 
-  xbt_assert( events.back().value_==prev_value,"Profiles need to end as they start");
+  xbt_assert(events.back().value_ == prev_value, "Profiles need to end as they start");
   time += delay;
-  integral += delay*prev_value;
+  integral += delay * prev_value;
 
   time_points_.push_back(time);
   integral_.push_back(integral);

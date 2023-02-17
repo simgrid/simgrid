@@ -69,8 +69,7 @@ public:
  * Action *
  **********/
 class NetworkCm02Action : public NetworkAction {
-  friend Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate,
-                                               bool streamed);
+  friend Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate, bool streamed);
 
 public:
   using NetworkAction::NetworkAction;

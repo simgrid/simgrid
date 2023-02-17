@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/surf/network_cm02.hpp"
+#include "src/kernel/resource/models/network_cm02.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
@@ -12,7 +12,6 @@
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/kernel/resource/WifiLinkImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
-#include "src/surf/surf_interface.hpp"
 
 #include <algorithm>
 #include <numeric>

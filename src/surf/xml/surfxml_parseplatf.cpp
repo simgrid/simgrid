@@ -7,7 +7,6 @@
 
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/LinkImpl.hpp"
-#include "src/surf/surf_interface.hpp"
 #include "src/surf/xml/platf.hpp"
 #include "src/surf/xml/platf_private.hpp"
 

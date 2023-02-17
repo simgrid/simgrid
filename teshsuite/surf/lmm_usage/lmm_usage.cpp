@@ -7,7 +7,6 @@
 
 #include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
-#include "src/surf/surf_interface.hpp"
 #include "xbt/log.h"
 #include "xbt/module.h"
 #include "xbt/sysdep.h"

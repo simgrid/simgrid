@@ -29,7 +29,7 @@
 #include "ns3/wifi-module.h"
 
 #include "network_ns3.hpp"
-#include "ns3/ns3_simulator.hpp"
+#include "src/surf/ns3/ns3_simulator.hpp"
 
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
@@ -39,7 +39,6 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 #include "src/kernel/EngineImpl.hpp"
-#include "src/surf/surf_interface.hpp"
 #include "src/surf/xml/platf_private.hpp" // ClusterCreationArgs
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_ns3, res_network, "Network model based on ns-3");
@@ -101,7 +100,7 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone)
   wifi.SetStandard(ns3::WIFI_STANDARD_80211n_5GHZ);
 #else
   wifi.SetStandard(ns3::WIFI_STANDARD_80211n);
-  wifiPhy.Set ("ChannelSettings", ns3::StringValue ("{0, 0, BAND_5GHZ, 0}"));
+  wifiPhy.Set("ChannelSettings", ns3::StringValue("{0, 0, BAND_5GHZ, 0}"));
 #endif
 
   std::string ssid = wifizone->get_name();
@@ -141,9 +140,9 @@ static void zoneCreation_cb(simgrid::s4u::NetZone const& zone)
   NetPointNs3* station_netpoint_ns3    = nullptr;
   ns3::Ptr<ns3::Node> station_ns3_node = nullptr;
   double distance;
-  double angle    = 0;
+  double angle     = 0;
   auto nb_stations = static_cast<double>(wifizone->get_all_hosts().size() - 1);
-  double step     = 2 * M_PI / nb_stations;
+  double step      = 2 * M_PI / nb_stations;
   for (const auto* station_host : wifizone->get_all_hosts()) {
     station_netpoint_ns3 = station_host->get_netpoint()->extension<NetPointNs3>();
     if (station_netpoint_ns3 == access_point_netpoint_ns3)

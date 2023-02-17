@@ -12,7 +12,6 @@
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
-#include "src/surf/surf_interface.hpp"
 #include "xbt/config.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");

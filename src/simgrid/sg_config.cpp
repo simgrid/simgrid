@@ -21,7 +21,6 @@
 #include "src/mc/mc_replay.hpp"
 #include "src/simgrid/module.hpp"
 #include "src/smpi/include/smpi_config.hpp"
-#include "src/surf/surf_interface.hpp"
 
 #include <string_view>
 

@@ -21,6 +21,17 @@ set(EXTRA_DIST
   src/kernel/resource/SplitDuplexLinkImpl.hpp
   src/kernel/resource/StandardLinkImpl.hpp
   src/kernel/resource/WifiLinkImpl.hpp
+  src/kernel/resource/models/cpu_cas01.hpp
+  src/kernel/resource/models/cpu_ti.hpp
+  src/kernel/resource/models/disk_s19.hpp
+  src/kernel/resource/models/host_clm03.hpp
+  src/kernel/resource/models/network_cm02.hpp
+  src/kernel/resource/models/network_constant.hpp
+  src/kernel/resource/models/network_ib.hpp
+  src/kernel/resource/models/network_ns3.hpp
+  src/surf/ns3/ns3_simulator.hpp
+  src/kernel/resource/models/ptask_L07.hpp
+  
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
   src/smpi/colls/coll_tuned_topo.hpp
@@ -31,16 +42,6 @@ set(EXTRA_DIST
   src/smpi/smpi_main.c
   src/smpi/smpi_replay_main.cpp
   src/surf/HostImpl.hpp
-  src/surf/cpu_cas01.hpp
-  src/surf/cpu_ti.hpp
-  src/surf/disk_s19.hpp
-  src/surf/host_clm03.hpp
-  src/surf/network_cm02.hpp
-  src/surf/network_constant.hpp
-  src/surf/network_ib.hpp
-  src/surf/network_ns3.hpp
-  src/surf/ns3/ns3_simulator.hpp
-  src/surf/ptask_L07.hpp
   src/surf/surf_interface.hpp
   src/surf/xml/simgrid.dtd
   src/surf/xml/simgrid_dtd.c
@@ -243,7 +244,7 @@ set(SMPI_SRC
   src/smpi/plugins/ampi/ampi.hpp
   src/smpi/plugins/ampi/instr_ampi.cpp
   src/smpi/plugins/ampi/instr_ampi.hpp
-  src/surf/network_ib.cpp
+  src/kernel/resource/models/network_ib.cpp
   )
 set(STHREAD_SRC
   src/sthread/sthread_impl.cpp
@@ -292,7 +293,7 @@ else()
 endif()
 
 set(NS3_SRC
-  src/surf/network_ns3.cpp
+  src/kernel/resource/models/network_ns3.cpp
   src/surf/ns3/ns3_simulator.cpp
   )
 
@@ -324,6 +325,14 @@ set(SURF_SRC
   src/kernel/resource/VirtualMachineImpl.hpp
   src/kernel/resource/WifiLinkImpl.cpp
 
+  src/kernel/resource/models/cpu_cas01.cpp
+  src/kernel/resource/models/cpu_ti.cpp
+  src/kernel/resource/models/disk_s19.cpp
+  src/kernel/resource/models/host_clm03.cpp
+  src/kernel/resource/models/network_cm02.cpp
+  src/kernel/resource/models/network_constant.cpp
+  src/kernel/resource/models/ptask_L07.cpp
+
   src/kernel/resource/profile/Event.hpp
   src/kernel/resource/profile/FutureEvtSet.cpp
   src/kernel/resource/profile/FutureEvtSet.hpp
@@ -351,13 +360,6 @@ set(SURF_SRC
   src/kernel/timer/Timer.cpp
 
   src/surf/HostImpl.cpp
-  src/surf/cpu_cas01.cpp
-  src/surf/cpu_ti.cpp
-  src/surf/disk_s19.cpp
-  src/surf/host_clm03.cpp
-  src/surf/network_cm02.cpp
-  src/surf/network_constant.cpp
-  src/surf/ptask_L07.cpp
   src/surf/sg_platf.cpp
   src/surf/xml/platf.hpp
   src/surf/xml/platf_private.hpp

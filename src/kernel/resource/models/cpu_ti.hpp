@@ -44,7 +44,7 @@ class CpuTiTmgr {
     FIXED,  /*< Trace fixed, no availability file */
     DYNAMIC /*< Dynamic, have an availability file */
   };
-  Type type_ = Type::FIXED;
+  Type type_    = Type::FIXED;
   double value_ = 0.0; /*< Percentage of cpu speed available. Value fixed between 0 and 1 */
 
   /* Dynamic */
@@ -57,7 +57,7 @@ class CpuTiTmgr {
 public:
   explicit CpuTiTmgr(double value) : value_(value){};
   CpuTiTmgr(profile::Profile* speed_profile, double value);
-  CpuTiTmgr(const CpuTiTmgr&) = delete;
+  CpuTiTmgr(const CpuTiTmgr&)            = delete;
   CpuTiTmgr& operator=(const CpuTiTmgr&) = delete;
 
   double integrate(double a, double b) const;
@@ -71,9 +71,10 @@ public:
 
 class XBT_PRIVATE CpuTiAction : public CpuAction {
   friend class CpuTi;
+
 public:
   CpuTiAction(CpuTi* cpu, double cost);
-  CpuTiAction(const CpuTiAction&) = delete;
+  CpuTiAction(const CpuTiAction&)            = delete;
   CpuTiAction& operator=(const CpuTiAction&) = delete;
   ~CpuTiAction() override;
 
@@ -84,7 +85,7 @@ public:
   void set_sharing_penalty(double sharing_penalty) override;
   double get_remains() override;
 
-  CpuTi *cpu_;
+  CpuTi* cpu_;
 
   boost::intrusive::list_member_hook<> action_ti_hook;
 };
@@ -123,8 +124,8 @@ public:
 
   CpuTiTmgr* speed_integrated_trace_ = nullptr; /*< Structure with data needed to integrate trace file */
   ActionTiList action_set_;                     /*< set with all actions running on cpu */
-  double sum_priority_ = 0;                  /*< the sum of actions' priority that are running on cpu */
-  double last_update_  = 0;                  /*< last update of actions' remaining amount done */
+  double sum_priority_ = 0;                     /*< the sum of actions' priority that are running on cpu */
+  double last_update_  = 0;                     /*< last update of actions' remaining amount done */
 
   boost::intrusive::list_member_hook<> cpu_ti_hook;
 };
@@ -141,7 +142,7 @@ public:
   static void create_pm_models(); // Make CPU PM model
 
   using CpuModel::CpuModel;
-  CpuTiModel(const CpuTiModel&) = delete;
+  CpuTiModel(const CpuTiModel&)            = delete;
   CpuTiModel& operator=(const CpuTiModel&) = delete;
   CpuImpl* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) override;
   double next_occurring_event(double now) override;

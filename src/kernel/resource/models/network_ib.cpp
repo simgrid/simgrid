@@ -8,8 +8,8 @@
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
+#include "src/kernel/resource/models/network_ib.hpp"
 #include "src/surf/HostImpl.hpp"
-#include "src/surf/network_ib.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>

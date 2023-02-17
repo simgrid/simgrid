@@ -26,7 +26,7 @@ class XBT_PRIVATE CpuCas01Action;
 class CpuCas01Model : public CpuModel {
 public:
   explicit CpuCas01Model(const std::string& name);
-  CpuCas01Model(const CpuCas01Model&) = delete;
+  CpuCas01Model(const CpuCas01Model&)            = delete;
   CpuCas01Model& operator=(const CpuCas01Model&) = delete;
 
   CpuImpl* create_cpu(s4u::Host* host, const std::vector<double>& speed_per_pstate) override;
@@ -41,7 +41,7 @@ class CpuCas01 : public CpuImpl {
 
 public:
   using CpuImpl::CpuImpl;
-  CpuCas01(const CpuCas01&) = delete;
+  CpuCas01(const CpuCas01&)            = delete;
   CpuCas01& operator=(const CpuCas01&) = delete;
   void apply_event(profile::Event* event, double value) override;
   CpuAction* execution_start(double size, double user_bound) override;
@@ -61,7 +61,7 @@ class CpuCas01Action : public CpuAction {
 
 public:
   CpuCas01Action(Model* model, double cost, bool failed, double speed, lmm::Constraint* constraint, int requested_core);
-  CpuCas01Action(const CpuCas01Action&) = delete;
+  CpuCas01Action(const CpuCas01Action&)            = delete;
   CpuCas01Action& operator=(const CpuCas01Action&) = delete;
   int requested_core() const { return requested_core_; }
 };

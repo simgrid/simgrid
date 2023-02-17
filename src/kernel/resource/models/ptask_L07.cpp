@@ -13,8 +13,8 @@
 #if SIMGRID_HAVE_EIGEN3
 #include "src/kernel/lmm/bmf.hpp"
 #endif
+#include "src/kernel/resource/models/ptask_L07.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
-#include "src/surf/ptask_L07.hpp"
 
 #include <unordered_set>
 
@@ -142,8 +142,8 @@ void HostL07Model::update_actions_state(double /*now*/, double delta)
     }
 
     /* Need to check that none of the model has failed */
-    int i                               = 0;
-    const lmm::Constraint* cnst         = action.get_variable()->get_constraint(i);
+    int i                       = 0;
+    const lmm::Constraint* cnst = action.get_variable()->get_constraint(i);
     while (cnst != nullptr) {
       i++;
       if (not cnst->get_id()->is_on()) {
@@ -298,7 +298,8 @@ void CpuL07::on_speed_change()
 {
   const lmm::Element* elem = nullptr;
 
-  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(), get_core_count() * speed_.peak * speed_.scale);
+  get_model()->get_maxmin_system()->update_constraint_bound(get_constraint(),
+                                                            get_core_count() * speed_.peak * speed_.scale);
 
   while (const auto* var = get_constraint()->get_variable(&elem)) {
     const auto* action = static_cast<L07Action*>(var->get_id());

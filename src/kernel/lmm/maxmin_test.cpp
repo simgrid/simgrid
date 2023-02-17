@@ -5,7 +5,6 @@
 
 #include "src/include/catch.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
-#include "src/surf/surf_interface.hpp"
 #include "xbt/log.h"
 
 namespace lmm = simgrid::kernel::lmm;

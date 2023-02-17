@@ -5,9 +5,8 @@
 
 #include <simgrid/s4u/Host.hpp>
 
-#include "src/kernel/resource/WifiLinkImpl.hpp"
-#include "src/surf/surf_interface.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
+#include "src/kernel/resource/WifiLinkImpl.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 
