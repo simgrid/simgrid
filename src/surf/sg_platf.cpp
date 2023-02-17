@@ -21,8 +21,8 @@
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
+#include "src/kernel/resource/HostImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
-#include "src/surf/HostImpl.hpp"
 #include "src/surf/xml/platf.hpp"
 #include "src/surf/xml/platf_private.hpp"
 

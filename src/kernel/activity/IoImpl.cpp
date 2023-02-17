@@ -14,8 +14,8 @@
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
+#include "src/kernel/resource/HostImpl.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/surf/HostImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_io, kernel, "Kernel io-related synchronization");
 

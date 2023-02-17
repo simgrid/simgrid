@@ -15,6 +15,7 @@ set(EXTRA_DIST
   src/include/xbt/xbt_modinter.h
   src/include/xxhash.hpp
   src/kernel/actor/Simcall.hpp
+  src/kernel/resource/HostImpl.hpp
   src/kernel/resource/LinkImpl.hpp
   src/kernel/resource/NetworkModel.hpp
   src/kernel/resource/NetworkModelFactors.hpp
@@ -41,7 +42,6 @@ set(EXTRA_DIST
   src/smpi/include/smpi_utils.hpp
   src/smpi/smpi_main.c
   src/smpi/smpi_replay_main.cpp
-  src/surf/HostImpl.hpp
   src/surf/surf_interface.hpp
   src/surf/xml/simgrid.dtd
   src/surf/xml/simgrid_dtd.c
@@ -315,6 +315,7 @@ set(SURF_SRC
   src/kernel/resource/DiskImpl.hpp
   src/kernel/resource/FactorSet.cpp
   src/kernel/resource/FactorSet.hpp
+  src/kernel/resource/HostImpl.cpp
   src/kernel/resource/Model.cpp
   src/kernel/resource/NetworkModel.cpp
   src/kernel/resource/NetworkModelFactors.cpp
@@ -359,7 +360,6 @@ set(SURF_SRC
 
   src/kernel/timer/Timer.cpp
 
-  src/surf/HostImpl.cpp
   src/surf/sg_platf.cpp
   src/surf/xml/platf.hpp
   src/surf/xml/platf_private.hpp

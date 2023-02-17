@@ -29,7 +29,8 @@ public:
 
   virtual Action* execute_parallel(const std::vector<s4u::Host*>& host_list, const double* flops_amount,
                                    const double* bytes_amount, double rate) = 0;
-  virtual Action* io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk, double size) = 0;
+  virtual Action* io_stream(s4u::Host* src_host, DiskImpl* src_disk, s4u::Host* dst_host, DiskImpl* dst_disk,
+                            double size)                                    = 0;
 };
 
 /************
@@ -52,7 +53,7 @@ class XBT_PRIVATE HostImpl : public xbt::PropertyHolder, public actor::ObjectAcc
   std::map<std::string, VirtualMachineImpl*, std::less<>> vms_;
   std::string name_{"noname"};
   routing::NetZoneImpl* englobing_zone_ = nullptr;
-  bool sealed_ = false;
+  bool sealed_                          = false;
 
 protected:
   virtual ~HostImpl(); // Use destroy() instead of this destructor.

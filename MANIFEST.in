@@ -2054,6 +2054,8 @@ include src/kernel/resource/DiskImpl.cpp
 include src/kernel/resource/DiskImpl.hpp
 include src/kernel/resource/FactorSet.cpp
 include src/kernel/resource/FactorSet.hpp
+include src/kernel/resource/HostImpl.cpp
+include src/kernel/resource/HostImpl.hpp
 include src/kernel/resource/LinkImpl.hpp
 include src/kernel/resource/Model.cpp
 include src/kernel/resource/NetworkModel.cpp
@@ -2431,8 +2433,6 @@ include src/smpi/smpitools.sh
 include src/sthread/sthread.c
 include src/sthread/sthread.h
 include src/sthread/sthread_impl.cpp
-include src/surf/HostImpl.cpp
-include src/surf/HostImpl.hpp
 include src/surf/ns3/ns3_simulator.cpp
 include src/surf/ns3/ns3_simulator.hpp
 include src/surf/sg_platf.cpp

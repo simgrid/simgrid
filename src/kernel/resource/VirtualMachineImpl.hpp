@@ -5,7 +5,7 @@
 
 #include <simgrid/s4u/VirtualMachine.hpp>
 
-#include "src/surf/HostImpl.hpp"
+#include "src/kernel/resource/HostImpl.hpp"
 
 #ifndef VM_INTERFACE_HPP_
 #define VM_INTERFACE_HPP_

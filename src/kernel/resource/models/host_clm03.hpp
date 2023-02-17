@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/surf/HostImpl.hpp"
+#include "src/kernel/resource/HostImpl.hpp"
 
 #ifndef HOST_CLM03_HPP_
 #define HOST_CLM03_HPP_
