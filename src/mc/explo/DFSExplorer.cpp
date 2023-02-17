@@ -209,7 +209,6 @@ void DFSExplorer::backtrack()
   backtrack_count_++;
   XBT_VERB("Backtracking from %s", get_record_trace().to_string().c_str());
   on_backtracking_signal(get_remote_app());
-
   get_remote_app().check_deadlock();
 
   /* We may backtrack from somewhere either because it's leaf, or because every enabled process are in done/sleep set.
@@ -267,7 +266,8 @@ void DFSExplorer::backtrack()
       XBT_DEBUG("Delete state %ld at depth %zu", state->get_num(), stack_.size() + 1);
 
     } else {
-	XBT_DEBUG("Back-tracking to state %ld at depth %zu: %ld transitions left to be explored", state->get_num(), stack_.size() + 1, state->count_todo());
+      XBT_DEBUG("Back-tracking to state %ld at depth %zu: %lu transitions left to be explored", state->get_num(),
+                stack_.size() + 1, state->count_todo());
       stack_.push_back(std::move(state)); // Put it back on the stack so we can explore the next transition of the interleave
       found_backtracking_point = true;
     }

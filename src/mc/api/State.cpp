@@ -29,7 +29,6 @@ State::State(const RemoteApp& remote_app, const State* previous_state) : num_(++
 
   remote_app.get_actors_status(actors_to_run_);
 
-  transition_.reset(new Transition());
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
     system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_);
