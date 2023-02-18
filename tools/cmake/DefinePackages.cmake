@@ -43,10 +43,10 @@ set(EXTRA_DIST
   src/smpi/smpi_main.c
   src/smpi/smpi_replay_main.cpp
   src/surf/surf_interface.hpp
-  src/surf/xml/simgrid.dtd
-  src/surf/xml/simgrid_dtd.c
-  src/surf/xml/simgrid_dtd.h
-  src/surf/xml/surfxml_sax_cb.cpp
+  src/kernel/xml/simgrid.dtd
+  src/kernel/xml/simgrid_dtd.c
+  src/kernel/xml/simgrid_dtd.h
+  src/kernel/xml/surfxml_sax_cb.cpp
 
   src/xbt/automaton/automaton_lexer.yy.c
   src/xbt/automaton/parserPromela.lex
@@ -360,11 +360,11 @@ set(SURF_SRC
 
   src/kernel/timer/Timer.cpp
 
-  src/surf/sg_platf.cpp
-  src/surf/xml/platf.hpp
-  src/surf/xml/platf_private.hpp
-  src/surf/xml/surfxml_parseplatf.cpp
-  src/surf/xml/surfxml_sax_cb.cpp
+  src/kernel/xml/platf.hpp
+  src/kernel/xml/platf_private.hpp
+  src/kernel/xml/sg_platf.cpp
+  src/kernel/xml/surfxml_parseplatf.cpp
+  src/kernel/xml/surfxml_sax_cb.cpp
   )
 if (Eigen3_FOUND)
   set(SURF_SRC

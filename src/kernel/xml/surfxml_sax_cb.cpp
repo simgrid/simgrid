@@ -13,8 +13,8 @@
 #include "src/kernel/resource/LinkImpl.hpp"
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
-#include "src/surf/xml/platf.hpp"
-#include "src/surf/xml/platf_private.hpp"
+#include "src/kernel/xml/platf.hpp"
+#include "src/kernel/xml/platf_private.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>

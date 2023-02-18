@@ -23,8 +23,8 @@
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/kernel/resource/HostImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
-#include "src/surf/xml/platf.hpp"
-#include "src/surf/xml/platf_private.hpp"
+#include "src/kernel/xml/platf.hpp"
+#include "src/kernel/xml/platf_private.hpp"
 
 #include <algorithm>
 #include <string>
@@ -40,7 +40,7 @@ static simgrid::kernel::routing::ClusterZoneCreationArgs
 
 /** The current NetZone in the parsing */
 static simgrid::kernel::routing::NetZoneImpl* current_routing = nullptr;
-static simgrid::s4u::Host* current_host = nullptr;
+static simgrid::s4u::Host* current_host                       = nullptr;
 
 /** Module management function: frees all internal data structures */
 void sg_platf_parser_finalize()
@@ -233,7 +233,7 @@ static void sg_platf_new_cluster_hierarchical(const simgrid::kernel::routing::Cl
 /** @brief Create regular Cluster */
 static void sg_platf_new_cluster_flat(simgrid::kernel::routing::ClusterCreationArgs* cluster)
 {
-  auto* zone                          = simgrid::s4u::create_star_zone(cluster->id);
+  auto* zone = simgrid::s4u::create_star_zone(cluster->id);
   if (const auto* parent = current_routing ? current_routing->get_iface() : nullptr)
     zone->set_parent(parent);
 
@@ -436,7 +436,7 @@ void sg_platf_new_bypass_route(simgrid::kernel::routing::RouteCreationArgs* rout
 void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor)
 {
   const auto* engine = simgrid::s4u::Engine::get_instance();
-  sg_host_t host = sg_host_by_name(actor->host);
+  sg_host_t host     = sg_host_by_name(actor->host);
   if (not host) {
     // The requested host does not exist. Do a nice message to the user
     std::string msg = std::string("Cannot create actor '") + actor->function + "': host '" + actor->host +

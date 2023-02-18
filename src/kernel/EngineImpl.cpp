@@ -17,7 +17,7 @@
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
-#include "src/surf/xml/platf.hpp"
+#include "src/kernel/xml/platf.hpp"
 #include "xbt/module.h"
 #include "xbt/xbt_modinter.h" /* whether initialization was already done */
 

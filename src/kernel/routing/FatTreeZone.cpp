@@ -7,7 +7,7 @@
 #include <simgrid/kernel/routing/NetPoint.hpp>
 
 #include "src/kernel/resource/NetworkModel.hpp"
-#include "src/surf/xml/platf.hpp" // simgrid_parse_error() and simgrid_parse_assert()
+#include "src/kernel/xml/platf.hpp" // simgrid_parse_error() and simgrid_parse_assert()
 
 #include <fstream>
 #include <numeric>

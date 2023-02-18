@@ -55,7 +55,7 @@ CpuTiProfile::CpuTiProfile(const profile::Profile* profile)
 /**
  * @brief Integrate trace
  *
- * Wrapper around surf_cpu_integrate_trace_simple() to get
+ * Wrapper around profile_->integrate_simple() to get
  * the cyclic effect.
  *
  * @param a      Begin of interval

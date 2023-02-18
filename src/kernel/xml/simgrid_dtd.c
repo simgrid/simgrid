@@ -599,7 +599,7 @@ void yyfree ( void *  );
 
 /* Begin user sect3 */
 
-#define simgrid_parse_wrap() (/*CONSTCOND*/ 1)
+#define simgrid_parse_wrap() (/*CONSTCOND*/1)
 #define YY_SKIP_YYWRAP
 typedef flex_uint8_t YY_CHAR;
 
@@ -5367,7 +5367,7 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-/* Validating XML processor for src/surf/xml/simgrid.dtd.
+/* Validating XML processor for src/kernel/xml/simgrid.dtd.
  *
  * This program was generated with the FleXML XML processor generator.
  * FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
@@ -7280,28 +7280,10 @@ YY_RULE_SETUP
   if (!AX_simgrid_parse_backbone_latency) FAIL("Required attribute `latency' not set for `backbone' element.");
   LEAVE; STag_simgrid_parse_backbone(); simgrid_parse_pcdata_ix = 0; ETag_simgrid_parse_backbone(); popbuffer(); /* attribute */
   switch (YY_START) {
-    case S_simgrid_parse_AS:
-    case S_simgrid_parse_AS_13:
-    case S_simgrid_parse_AS_14:
-    case S_simgrid_parse_AS_3:
-      SET(S_simgrid_parse_AS_14);
-      break;
-    case S_simgrid_parse_AS_1:
-    case S_simgrid_parse_AS_5:
-    case S_simgrid_parse_AS_6:
-      SET(S_simgrid_parse_AS_6);
-      break;
-    case S_simgrid_parse_zone:
-    case S_simgrid_parse_zone_13:
-    case S_simgrid_parse_zone_14:
-    case S_simgrid_parse_zone_1:
-    case S_simgrid_parse_zone_3:
-      SET(S_simgrid_parse_zone_14);
-      break;
-    case S_simgrid_parse_zone_5:
-    case S_simgrid_parse_zone_6:
-      SET(S_simgrid_parse_zone_6);
-      break;
+   case S_simgrid_parse_AS_13: case S_simgrid_parse_AS_14: case S_simgrid_parse_AS_1: SET(S_simgrid_parse_AS_14); break;
+   case S_simgrid_parse_AS: case S_simgrid_parse_AS_3: case S_simgrid_parse_AS_5: case S_simgrid_parse_AS_6: SET(S_simgrid_parse_AS_6); break;
+   case S_simgrid_parse_zone: case S_simgrid_parse_zone_13: case S_simgrid_parse_zone_14: case S_simgrid_parse_zone_3: SET(S_simgrid_parse_zone_14); break;
+   case S_simgrid_parse_zone_1: case S_simgrid_parse_zone_5: case S_simgrid_parse_zone_6: SET(S_simgrid_parse_zone_6); break;
   }
  }
 	YY_BREAK
@@ -7325,28 +7307,10 @@ YY_RULE_SETUP
   ETag_simgrid_parse_backbone();
   popbuffer(); /* attribute */
   switch (YY_START) {
-    case S_simgrid_parse_AS:
-    case S_simgrid_parse_AS_13:
-    case S_simgrid_parse_AS_14:
-    case S_simgrid_parse_AS_3:
-      SET(S_simgrid_parse_AS_14);
-      break;
-    case S_simgrid_parse_AS_1:
-    case S_simgrid_parse_AS_5:
-    case S_simgrid_parse_AS_6:
-      SET(S_simgrid_parse_AS_6);
-      break;
-    case S_simgrid_parse_zone:
-    case S_simgrid_parse_zone_13:
-    case S_simgrid_parse_zone_14:
-    case S_simgrid_parse_zone_1:
-    case S_simgrid_parse_zone_3:
-      SET(S_simgrid_parse_zone_14);
-      break;
-    case S_simgrid_parse_zone_5:
-    case S_simgrid_parse_zone_6:
-      SET(S_simgrid_parse_zone_6);
-      break;
+   case S_simgrid_parse_AS_13: case S_simgrid_parse_AS_14: case S_simgrid_parse_AS_1: SET(S_simgrid_parse_AS_14); break;
+   case S_simgrid_parse_AS: case S_simgrid_parse_AS_3: case S_simgrid_parse_AS_5: case S_simgrid_parse_AS_6: SET(S_simgrid_parse_AS_6); break;
+   case S_simgrid_parse_zone: case S_simgrid_parse_zone_13: case S_simgrid_parse_zone_14: case S_simgrid_parse_zone_3: SET(S_simgrid_parse_zone_14); break;
+   case S_simgrid_parse_zone_1: case S_simgrid_parse_zone_5: case S_simgrid_parse_zone_6: SET(S_simgrid_parse_zone_6); break;
   }
  }
 	YY_BREAK
@@ -7832,36 +7796,11 @@ YY_RULE_SETUP
   if (!AX_simgrid_parse_cabinet_suffix) FAIL("Required attribute `suffix' not set for `cabinet' element.");
   LEAVE; STag_simgrid_parse_cabinet(); simgrid_parse_pcdata_ix = 0; ETag_simgrid_parse_cabinet(); popbuffer(); /* attribute */
   switch (YY_START) {
-    case S_simgrid_parse_AS:
-    case S_simgrid_parse_AS_13:
-    case S_simgrid_parse_AS_14:
-    case S_simgrid_parse_AS_3:
-      SET(S_simgrid_parse_AS_14);
-      break;
-    case S_simgrid_parse_AS_1:
-    case S_simgrid_parse_AS_5:
-    case S_simgrid_parse_AS_6:
-      SET(S_simgrid_parse_AS_6);
-      break;
-    case S_simgrid_parse_include:
-    case S_simgrid_parse_include_1:
-    case S_simgrid_parse_include_2:
-      SET(S_simgrid_parse_include_2);
-      break;
-    case S_simgrid_parse_platform:
-    case S_simgrid_parse_platform_1:
-    case S_simgrid_parse_platform_3:
-    case S_simgrid_parse_platform_5:
-    case S_simgrid_parse_platform_6:
-      SET(S_simgrid_parse_platform_6);
-      break;
-    case S_simgrid_parse_zone:
-    case S_simgrid_parse_zone_13:
-    case S_simgrid_parse_zone_14:
-    case S_simgrid_parse_zone_1:
-    case S_simgrid_parse_zone_3:
-      SET(S_simgrid_parse_zone_14);
-      break;
+   case S_simgrid_parse_AS_13: case S_simgrid_parse_AS_14: case S_simgrid_parse_AS_1: SET(S_simgrid_parse_AS_14); break;
+   case S_simgrid_parse_AS: case S_simgrid_parse_AS_3: case S_simgrid_parse_AS_5: case S_simgrid_parse_AS_6: SET(S_simgrid_parse_AS_6); break;
+   case S_simgrid_parse_include: case S_simgrid_parse_include_1: case S_simgrid_parse_include_2: SET(S_simgrid_parse_include_2); break;
+   case S_simgrid_parse_platform: case S_simgrid_parse_platform_1: case S_simgrid_parse_platform_3: case S_simgrid_parse_platform_5: case S_simgrid_parse_platform_6: SET(S_simgrid_parse_platform_6); break;
+   case S_simgrid_parse_zone: case S_simgrid_parse_zone_13: case S_simgrid_parse_zone_14: case S_simgrid_parse_zone_1: case S_simgrid_parse_zone_3: SET(S_simgrid_parse_zone_14); break;
   }
  }
 	YY_BREAK
@@ -7885,36 +7824,11 @@ YY_RULE_SETUP
   ETag_simgrid_parse_cabinet();
   popbuffer(); /* attribute */
   switch (YY_START) {
-    case S_simgrid_parse_AS:
-    case S_simgrid_parse_AS_13:
-    case S_simgrid_parse_AS_14:
-    case S_simgrid_parse_AS_3:
-      SET(S_simgrid_parse_AS_14);
-      break;
-    case S_simgrid_parse_AS_1:
-    case S_simgrid_parse_AS_5:
-    case S_simgrid_parse_AS_6:
-      SET(S_simgrid_parse_AS_6);
-      break;
-    case S_simgrid_parse_include:
-    case S_simgrid_parse_include_1:
-    case S_simgrid_parse_include_2:
-      SET(S_simgrid_parse_include_2);
-      break;
-    case S_simgrid_parse_platform:
-    case S_simgrid_parse_platform_1:
-    case S_simgrid_parse_platform_3:
-    case S_simgrid_parse_platform_5:
-    case S_simgrid_parse_platform_6:
-      SET(S_simgrid_parse_platform_6);
-      break;
-    case S_simgrid_parse_zone:
-    case S_simgrid_parse_zone_13:
-    case S_simgrid_parse_zone_14:
-    case S_simgrid_parse_zone_1:
-    case S_simgrid_parse_zone_3:
-      SET(S_simgrid_parse_zone_14);
-      break;
+   case S_simgrid_parse_AS_13: case S_simgrid_parse_AS_14: case S_simgrid_parse_AS_1: SET(S_simgrid_parse_AS_14); break;
+   case S_simgrid_parse_AS: case S_simgrid_parse_AS_3: case S_simgrid_parse_AS_5: case S_simgrid_parse_AS_6: SET(S_simgrid_parse_AS_6); break;
+   case S_simgrid_parse_include: case S_simgrid_parse_include_1: case S_simgrid_parse_include_2: SET(S_simgrid_parse_include_2); break;
+   case S_simgrid_parse_platform: case S_simgrid_parse_platform_1: case S_simgrid_parse_platform_3: case S_simgrid_parse_platform_5: case S_simgrid_parse_platform_6: SET(S_simgrid_parse_platform_6); break;
+   case S_simgrid_parse_zone: case S_simgrid_parse_zone_13: case S_simgrid_parse_zone_14: case S_simgrid_parse_zone_1: case S_simgrid_parse_zone_3: SET(S_simgrid_parse_zone_14); break;
   }
  }
 	YY_BREAK
@@ -8779,40 +8693,12 @@ YY_RULE_SETUP
   if (!AX_simgrid_parse_include_file) FAIL("Required attribute `file' not set for `include' element.");
   LEAVE; STag_simgrid_parse_include(); simgrid_parse_pcdata_ix = 0; ETag_simgrid_parse_include(); popbuffer(); /* attribute */
   switch (YY_START) {
-    case S_simgrid_parse_AS:
-    case S_simgrid_parse_AS_13:
-    case S_simgrid_parse_AS_14:
-    case S_simgrid_parse_AS_3:
-      SET(S_simgrid_parse_AS_14);
-      break;
-    case S_simgrid_parse_AS_1:
-    case S_simgrid_parse_AS_5:
-    case S_simgrid_parse_AS_6:
-      SET(S_simgrid_parse_AS_6);
-      break;
-    case S_simgrid_parse_include:
-    case S_simgrid_parse_include_1:
-    case S_simgrid_parse_include_2:
-      SET(S_simgrid_parse_include_2);
-      break;
-    case S_simgrid_parse_platform:
-    case S_simgrid_parse_platform_1:
-    case S_simgrid_parse_platform_3:
-    case S_simgrid_parse_platform_5:
-    case S_simgrid_parse_platform_6:
-      SET(S_simgrid_parse_platform_6);
-      break;
-    case S_simgrid_parse_zone:
-    case S_simgrid_parse_zone_13:
-    case S_simgrid_parse_zone_14:
-    case S_simgrid_parse_zone_1:
-    case S_simgrid_parse_zone_3:
-      SET(S_simgrid_parse_zone_14);
-      break;
-    case S_simgrid_parse_zone_5:
-    case S_simgrid_parse_zone_6:
-      SET(S_simgrid_parse_zone_6);
-      break;
+   case S_simgrid_parse_AS_13: case S_simgrid_parse_AS_14: case S_simgrid_parse_AS_1: SET(S_simgrid_parse_AS_14); break;
+   case S_simgrid_parse_AS: case S_simgrid_parse_AS_3: case S_simgrid_parse_AS_5: case S_simgrid_parse_AS_6: SET(S_simgrid_parse_AS_6); break;
+   case S_simgrid_parse_include: case S_simgrid_parse_include_1: case S_simgrid_parse_include_2: SET(S_simgrid_parse_include_2); break;
+   case S_simgrid_parse_platform: case S_simgrid_parse_platform_1: case S_simgrid_parse_platform_3: case S_simgrid_parse_platform_5: case S_simgrid_parse_platform_6: SET(S_simgrid_parse_platform_6); break;
+   case S_simgrid_parse_zone: case S_simgrid_parse_zone_13: case S_simgrid_parse_zone_14: case S_simgrid_parse_zone_3: SET(S_simgrid_parse_zone_14); break;
+   case S_simgrid_parse_zone_1: case S_simgrid_parse_zone_5: case S_simgrid_parse_zone_6: SET(S_simgrid_parse_zone_6); break;
   }
  }
 	YY_BREAK
@@ -8836,40 +8722,12 @@ YY_RULE_SETUP
   ETag_simgrid_parse_include();
   popbuffer(); /* attribute */
   switch (YY_START) {
-    case S_simgrid_parse_AS:
-    case S_simgrid_parse_AS_13:
-    case S_simgrid_parse_AS_14:
-    case S_simgrid_parse_AS_3:
-      SET(S_simgrid_parse_AS_14);
-      break;
-    case S_simgrid_parse_AS_1:
-    case S_simgrid_parse_AS_5:
-    case S_simgrid_parse_AS_6:
-      SET(S_simgrid_parse_AS_6);
-      break;
-    case S_simgrid_parse_include:
-    case S_simgrid_parse_include_1:
-    case S_simgrid_parse_include_2:
-      SET(S_simgrid_parse_include_2);
-      break;
-    case S_simgrid_parse_platform:
-    case S_simgrid_parse_platform_1:
-    case S_simgrid_parse_platform_3:
-    case S_simgrid_parse_platform_5:
-    case S_simgrid_parse_platform_6:
-      SET(S_simgrid_parse_platform_6);
-      break;
-    case S_simgrid_parse_zone:
-    case S_simgrid_parse_zone_13:
-    case S_simgrid_parse_zone_14:
-    case S_simgrid_parse_zone_1:
-    case S_simgrid_parse_zone_3:
-      SET(S_simgrid_parse_zone_14);
-      break;
-    case S_simgrid_parse_zone_5:
-    case S_simgrid_parse_zone_6:
-      SET(S_simgrid_parse_zone_6);
-      break;
+   case S_simgrid_parse_AS_13: case S_simgrid_parse_AS_14: case S_simgrid_parse_AS_1: SET(S_simgrid_parse_AS_14); break;
+   case S_simgrid_parse_AS: case S_simgrid_parse_AS_3: case S_simgrid_parse_AS_5: case S_simgrid_parse_AS_6: SET(S_simgrid_parse_AS_6); break;
+   case S_simgrid_parse_include: case S_simgrid_parse_include_1: case S_simgrid_parse_include_2: SET(S_simgrid_parse_include_2); break;
+   case S_simgrid_parse_platform: case S_simgrid_parse_platform_1: case S_simgrid_parse_platform_3: case S_simgrid_parse_platform_5: case S_simgrid_parse_platform_6: SET(S_simgrid_parse_platform_6); break;
+   case S_simgrid_parse_zone: case S_simgrid_parse_zone_13: case S_simgrid_parse_zone_14: case S_simgrid_parse_zone_3: SET(S_simgrid_parse_zone_14); break;
+   case S_simgrid_parse_zone_1: case S_simgrid_parse_zone_5: case S_simgrid_parse_zone_6: SET(S_simgrid_parse_zone_6); break;
   }
  }
 	YY_BREAK
@@ -9025,28 +8883,10 @@ YY_RULE_SETUP
   if (!AX_simgrid_parse_link_id) FAIL("Required attribute `id' not set for `link' element.");
   LEAVE; STag_simgrid_parse_link(); simgrid_parse_pcdata_ix = 0; ETag_simgrid_parse_link(); popbuffer(); /* attribute */
   switch (YY_START) {
-    case S_simgrid_parse_AS:
-    case S_simgrid_parse_AS_13:
-    case S_simgrid_parse_AS_14:
-    case S_simgrid_parse_AS_3:
-      SET(S_simgrid_parse_AS_14);
-      break;
-    case S_simgrid_parse_AS_1:
-    case S_simgrid_parse_AS_5:
-    case S_simgrid_parse_AS_6:
-      SET(S_simgrid_parse_AS_6);
-      break;
-    case S_simgrid_parse_zone:
-    case S_simgrid_parse_zone_13:
-    case S_simgrid_parse_zone_14:
-    case S_simgrid_parse_zone_1:
-    case S_simgrid_parse_zone_3:
-      SET(S_simgrid_parse_zone_14);
-      break;
-    case S_simgrid_parse_zone_5:
-    case S_simgrid_parse_zone_6:
-      SET(S_simgrid_parse_zone_6);
-      break;
+   case S_simgrid_parse_AS_13: case S_simgrid_parse_AS_14: case S_simgrid_parse_AS_1: SET(S_simgrid_parse_AS_14); break;
+   case S_simgrid_parse_AS: case S_simgrid_parse_AS_3: case S_simgrid_parse_AS_5: case S_simgrid_parse_AS_6: SET(S_simgrid_parse_AS_6); break;
+   case S_simgrid_parse_zone: case S_simgrid_parse_zone_13: case S_simgrid_parse_zone_14: case S_simgrid_parse_zone_3: SET(S_simgrid_parse_zone_14); break;
+   case S_simgrid_parse_zone_1: case S_simgrid_parse_zone_5: case S_simgrid_parse_zone_6: SET(S_simgrid_parse_zone_6); break;
   }
  }
 	YY_BREAK
@@ -9070,28 +8910,10 @@ YY_RULE_SETUP
   ETag_simgrid_parse_link();
   popbuffer(); /* attribute */
   switch (YY_START) {
-    case S_simgrid_parse_AS:
-    case S_simgrid_parse_AS_13:
-    case S_simgrid_parse_AS_14:
-    case S_simgrid_parse_AS_3:
-      SET(S_simgrid_parse_AS_14);
-      break;
-    case S_simgrid_parse_AS_1:
-    case S_simgrid_parse_AS_5:
-    case S_simgrid_parse_AS_6:
-      SET(S_simgrid_parse_AS_6);
-      break;
-    case S_simgrid_parse_zone:
-    case S_simgrid_parse_zone_13:
-    case S_simgrid_parse_zone_14:
-    case S_simgrid_parse_zone_1:
-    case S_simgrid_parse_zone_3:
-      SET(S_simgrid_parse_zone_14);
-      break;
-    case S_simgrid_parse_zone_5:
-    case S_simgrid_parse_zone_6:
-      SET(S_simgrid_parse_zone_6);
-      break;
+   case S_simgrid_parse_AS_13: case S_simgrid_parse_AS_14: case S_simgrid_parse_AS_1: SET(S_simgrid_parse_AS_14); break;
+   case S_simgrid_parse_AS: case S_simgrid_parse_AS_3: case S_simgrid_parse_AS_5: case S_simgrid_parse_AS_6: SET(S_simgrid_parse_AS_6); break;
+   case S_simgrid_parse_zone: case S_simgrid_parse_zone_13: case S_simgrid_parse_zone_14: case S_simgrid_parse_zone_3: SET(S_simgrid_parse_zone_14); break;
+   case S_simgrid_parse_zone_1: case S_simgrid_parse_zone_5: case S_simgrid_parse_zone_6: SET(S_simgrid_parse_zone_6); break;
   }
  }
 	YY_BREAK
@@ -10712,70 +10534,18 @@ YY_RULE_SETUP
   if (!AX_simgrid_parse_trace_periodicity) FAIL("Required attribute `periodicity' not set for `trace' element.");
   LEAVE; STag_simgrid_parse_trace(); simgrid_parse_pcdata_ix = 0; ETag_simgrid_parse_trace(); popbuffer(); /* attribute */
   switch (YY_START) {
-    case S_simgrid_parse_AS_10:
-    case S_simgrid_parse_AS_11:
-    case S_simgrid_parse_AS_7:
-      SET(S_simgrid_parse_AS_11);
-      break;
-    case S_simgrid_parse_AS_13:
-    case S_simgrid_parse_AS_3:
-      SET(S_simgrid_parse_AS_14);
-      break;
-    case S_simgrid_parse_AS:
-    case S_simgrid_parse_AS_12:
-    case S_simgrid_parse_AS_14:
-    case S_simgrid_parse_AS_15:
-    case S_simgrid_parse_AS_16:
-      SET(S_simgrid_parse_AS_16);
-      break;
-    case S_simgrid_parse_AS_1:
-    case S_simgrid_parse_AS_5:
-      SET(S_simgrid_parse_AS_6);
-      break;
-    case S_simgrid_parse_AS_4:
-    case S_simgrid_parse_AS_6:
-    case S_simgrid_parse_AS_8:
-    case S_simgrid_parse_AS_9:
-      SET(S_simgrid_parse_AS_9);
-      break;
-    case S_simgrid_parse_include:
-    case S_simgrid_parse_include_1:
-    case S_simgrid_parse_include_2:
-      SET(S_simgrid_parse_include_2);
-      break;
-    case S_simgrid_parse_platform:
-    case S_simgrid_parse_platform_1:
-    case S_simgrid_parse_platform_3:
-    case S_simgrid_parse_platform_5:
-    case S_simgrid_parse_platform_6:
-      SET(S_simgrid_parse_platform_6);
-      break;
-    case S_simgrid_parse_zone:
-    case S_simgrid_parse_zone_10:
-    case S_simgrid_parse_zone_11:
-    case S_simgrid_parse_zone_1:
-    case S_simgrid_parse_zone_4:
-    case S_simgrid_parse_zone_7:
-      SET(S_simgrid_parse_zone_11);
-      break;
-    case S_simgrid_parse_zone_13:
-    case S_simgrid_parse_zone_14:
-    case S_simgrid_parse_zone_3:
-      SET(S_simgrid_parse_zone_14);
-      break;
-    case S_simgrid_parse_zone_12:
-    case S_simgrid_parse_zone_15:
-    case S_simgrid_parse_zone_16:
-      SET(S_simgrid_parse_zone_16);
-      break;
-    case S_simgrid_parse_zone_5:
-    case S_simgrid_parse_zone_6:
-      SET(S_simgrid_parse_zone_6);
-      break;
-    case S_simgrid_parse_zone_8:
-    case S_simgrid_parse_zone_9:
-      SET(S_simgrid_parse_zone_9);
-      break;
+   case S_simgrid_parse_AS_10: case S_simgrid_parse_AS_11: case S_simgrid_parse_AS_6: case S_simgrid_parse_AS_7: case S_simgrid_parse_AS_9: SET(S_simgrid_parse_AS_11); break;
+   case S_simgrid_parse_AS_13: case S_simgrid_parse_AS_14: case S_simgrid_parse_AS_1: SET(S_simgrid_parse_AS_14); break;
+   case S_simgrid_parse_AS_12: case S_simgrid_parse_AS_15: case S_simgrid_parse_AS_16: SET(S_simgrid_parse_AS_16); break;
+   case S_simgrid_parse_AS: case S_simgrid_parse_AS_3: case S_simgrid_parse_AS_5: SET(S_simgrid_parse_AS_6); break;
+   case S_simgrid_parse_AS_4: case S_simgrid_parse_AS_8: SET(S_simgrid_parse_AS_9); break;
+   case S_simgrid_parse_include: case S_simgrid_parse_include_1: case S_simgrid_parse_include_2: SET(S_simgrid_parse_include_2); break;
+   case S_simgrid_parse_platform: case S_simgrid_parse_platform_1: case S_simgrid_parse_platform_3: case S_simgrid_parse_platform_5: case S_simgrid_parse_platform_6: SET(S_simgrid_parse_platform_6); break;
+   case S_simgrid_parse_zone_10: case S_simgrid_parse_zone_11: case S_simgrid_parse_zone_6: case S_simgrid_parse_zone_7: case S_simgrid_parse_zone_9: SET(S_simgrid_parse_zone_11); break;
+   case S_simgrid_parse_zone_13: case S_simgrid_parse_zone_14: SET(S_simgrid_parse_zone_14); break;
+   case S_simgrid_parse_zone: case S_simgrid_parse_zone_12: case S_simgrid_parse_zone_15: case S_simgrid_parse_zone_16: SET(S_simgrid_parse_zone_16); break;
+   case S_simgrid_parse_zone_1: case S_simgrid_parse_zone_5: SET(S_simgrid_parse_zone_6); break;
+   case S_simgrid_parse_zone_3: case S_simgrid_parse_zone_4: case S_simgrid_parse_zone_8: SET(S_simgrid_parse_zone_9); break;
   }
  }
 	YY_BREAK
@@ -10801,70 +10571,18 @@ YY_RULE_SETUP
   simgrid_parse_pcdata_ix = popbuffer();
   popbuffer(); /* attribute */
   switch (YY_START) {
-    case S_simgrid_parse_AS_10:
-    case S_simgrid_parse_AS_11:
-    case S_simgrid_parse_AS_7:
-      SET(S_simgrid_parse_AS_11);
-      break;
-    case S_simgrid_parse_AS_13:
-    case S_simgrid_parse_AS_3:
-      SET(S_simgrid_parse_AS_14);
-      break;
-    case S_simgrid_parse_AS:
-    case S_simgrid_parse_AS_12:
-    case S_simgrid_parse_AS_14:
-    case S_simgrid_parse_AS_15:
-    case S_simgrid_parse_AS_16:
-      SET(S_simgrid_parse_AS_16);
-      break;
-    case S_simgrid_parse_AS_1:
-    case S_simgrid_parse_AS_5:
-      SET(S_simgrid_parse_AS_6);
-      break;
-    case S_simgrid_parse_AS_4:
-    case S_simgrid_parse_AS_6:
-    case S_simgrid_parse_AS_8:
-    case S_simgrid_parse_AS_9:
-      SET(S_simgrid_parse_AS_9);
-      break;
-    case S_simgrid_parse_include:
-    case S_simgrid_parse_include_1:
-    case S_simgrid_parse_include_2:
-      SET(S_simgrid_parse_include_2);
-      break;
-    case S_simgrid_parse_platform:
-    case S_simgrid_parse_platform_1:
-    case S_simgrid_parse_platform_3:
-    case S_simgrid_parse_platform_5:
-    case S_simgrid_parse_platform_6:
-      SET(S_simgrid_parse_platform_6);
-      break;
-    case S_simgrid_parse_zone:
-    case S_simgrid_parse_zone_10:
-    case S_simgrid_parse_zone_11:
-    case S_simgrid_parse_zone_1:
-    case S_simgrid_parse_zone_4:
-    case S_simgrid_parse_zone_7:
-      SET(S_simgrid_parse_zone_11);
-      break;
-    case S_simgrid_parse_zone_13:
-    case S_simgrid_parse_zone_14:
-    case S_simgrid_parse_zone_3:
-      SET(S_simgrid_parse_zone_14);
-      break;
-    case S_simgrid_parse_zone_12:
-    case S_simgrid_parse_zone_15:
-    case S_simgrid_parse_zone_16:
-      SET(S_simgrid_parse_zone_16);
-      break;
-    case S_simgrid_parse_zone_5:
-    case S_simgrid_parse_zone_6:
-      SET(S_simgrid_parse_zone_6);
-      break;
-    case S_simgrid_parse_zone_8:
-    case S_simgrid_parse_zone_9:
-      SET(S_simgrid_parse_zone_9);
-      break;
+   case S_simgrid_parse_AS_10: case S_simgrid_parse_AS_11: case S_simgrid_parse_AS_6: case S_simgrid_parse_AS_7: case S_simgrid_parse_AS_9: SET(S_simgrid_parse_AS_11); break;
+   case S_simgrid_parse_AS_13: case S_simgrid_parse_AS_14: case S_simgrid_parse_AS_1: SET(S_simgrid_parse_AS_14); break;
+   case S_simgrid_parse_AS_12: case S_simgrid_parse_AS_15: case S_simgrid_parse_AS_16: SET(S_simgrid_parse_AS_16); break;
+   case S_simgrid_parse_AS: case S_simgrid_parse_AS_3: case S_simgrid_parse_AS_5: SET(S_simgrid_parse_AS_6); break;
+   case S_simgrid_parse_AS_4: case S_simgrid_parse_AS_8: SET(S_simgrid_parse_AS_9); break;
+   case S_simgrid_parse_include: case S_simgrid_parse_include_1: case S_simgrid_parse_include_2: SET(S_simgrid_parse_include_2); break;
+   case S_simgrid_parse_platform: case S_simgrid_parse_platform_1: case S_simgrid_parse_platform_3: case S_simgrid_parse_platform_5: case S_simgrid_parse_platform_6: SET(S_simgrid_parse_platform_6); break;
+   case S_simgrid_parse_zone_10: case S_simgrid_parse_zone_11: case S_simgrid_parse_zone_6: case S_simgrid_parse_zone_7: case S_simgrid_parse_zone_9: SET(S_simgrid_parse_zone_11); break;
+   case S_simgrid_parse_zone_13: case S_simgrid_parse_zone_14: SET(S_simgrid_parse_zone_14); break;
+   case S_simgrid_parse_zone: case S_simgrid_parse_zone_12: case S_simgrid_parse_zone_15: case S_simgrid_parse_zone_16: SET(S_simgrid_parse_zone_16); break;
+   case S_simgrid_parse_zone_1: case S_simgrid_parse_zone_5: SET(S_simgrid_parse_zone_6); break;
+   case S_simgrid_parse_zone_3: case S_simgrid_parse_zone_4: case S_simgrid_parse_zone_8: SET(S_simgrid_parse_zone_9); break;
   }
  }
 	YY_BREAK
@@ -10966,70 +10684,18 @@ YY_RULE_SETUP
   if (!AX_simgrid_parse_trace___connect_trace) FAIL("Required attribute `trace' not set for `trace_connect' element.");
   LEAVE; STag_simgrid_parse_trace___connect(); simgrid_parse_pcdata_ix = 0; ETag_simgrid_parse_trace___connect(); popbuffer(); /* attribute */
   switch (YY_START) {
-    case S_simgrid_parse_AS_10:
-    case S_simgrid_parse_AS_11:
-    case S_simgrid_parse_AS_7:
-      SET(S_simgrid_parse_AS_11);
-      break;
-    case S_simgrid_parse_AS_13:
-    case S_simgrid_parse_AS_3:
-      SET(S_simgrid_parse_AS_14);
-      break;
-    case S_simgrid_parse_AS:
-    case S_simgrid_parse_AS_12:
-    case S_simgrid_parse_AS_14:
-    case S_simgrid_parse_AS_15:
-    case S_simgrid_parse_AS_16:
-      SET(S_simgrid_parse_AS_16);
-      break;
-    case S_simgrid_parse_AS_1:
-    case S_simgrid_parse_AS_5:
-      SET(S_simgrid_parse_AS_6);
-      break;
-    case S_simgrid_parse_AS_4:
-    case S_simgrid_parse_AS_6:
-    case S_simgrid_parse_AS_8:
-    case S_simgrid_parse_AS_9:
-      SET(S_simgrid_parse_AS_9);
-      break;
-    case S_simgrid_parse_include:
-    case S_simgrid_parse_include_1:
-    case S_simgrid_parse_include_2:
-      SET(S_simgrid_parse_include_2);
-      break;
-    case S_simgrid_parse_platform:
-    case S_simgrid_parse_platform_1:
-    case S_simgrid_parse_platform_3:
-    case S_simgrid_parse_platform_5:
-    case S_simgrid_parse_platform_6:
-      SET(S_simgrid_parse_platform_6);
-      break;
-    case S_simgrid_parse_zone:
-    case S_simgrid_parse_zone_10:
-    case S_simgrid_parse_zone_11:
-    case S_simgrid_parse_zone_1:
-    case S_simgrid_parse_zone_4:
-    case S_simgrid_parse_zone_7:
-      SET(S_simgrid_parse_zone_11);
-      break;
-    case S_simgrid_parse_zone_13:
-    case S_simgrid_parse_zone_14:
-    case S_simgrid_parse_zone_3:
-      SET(S_simgrid_parse_zone_14);
-      break;
-    case S_simgrid_parse_zone_12:
-    case S_simgrid_parse_zone_15:
-    case S_simgrid_parse_zone_16:
-      SET(S_simgrid_parse_zone_16);
-      break;
-    case S_simgrid_parse_zone_5:
-    case S_simgrid_parse_zone_6:
-      SET(S_simgrid_parse_zone_6);
-      break;
-    case S_simgrid_parse_zone_8:
-    case S_simgrid_parse_zone_9:
-      SET(S_simgrid_parse_zone_9);
-      break;
+   case S_simgrid_parse_AS_10: case S_simgrid_parse_AS_11: case S_simgrid_parse_AS_6: case S_simgrid_parse_AS_7: case S_simgrid_parse_AS_9: SET(S_simgrid_parse_AS_11); break;
+   case S_simgrid_parse_AS_13: case S_simgrid_parse_AS_14: case S_simgrid_parse_AS_1: SET(S_simgrid_parse_AS_14); break;
+   case S_simgrid_parse_AS_12: case S_simgrid_parse_AS_15: case S_simgrid_parse_AS_16: SET(S_simgrid_parse_AS_16); break;
+   case S_simgrid_parse_AS: case S_simgrid_parse_AS_3: case S_simgrid_parse_AS_5: SET(S_simgrid_parse_AS_6); break;
+   case S_simgrid_parse_AS_4: case S_simgrid_parse_AS_8: SET(S_simgrid_parse_AS_9); break;
+   case S_simgrid_parse_include: case S_simgrid_parse_include_1: case S_simgrid_parse_include_2: SET(S_simgrid_parse_include_2); break;
+   case S_simgrid_parse_platform: case S_simgrid_parse_platform_1: case S_simgrid_parse_platform_3: case S_simgrid_parse_platform_5: case S_simgrid_parse_platform_6: SET(S_simgrid_parse_platform_6); break;
+   case S_simgrid_parse_zone_10: case S_simgrid_parse_zone_11: case S_simgrid_parse_zone_6: case S_simgrid_parse_zone_7: case S_simgrid_parse_zone_9: SET(S_simgrid_parse_zone_11); break;
+   case S_simgrid_parse_zone_13: case S_simgrid_parse_zone_14: SET(S_simgrid_parse_zone_14); break;
+   case S_simgrid_parse_zone: case S_simgrid_parse_zone_12: case S_simgrid_parse_zone_15: case S_simgrid_parse_zone_16: SET(S_simgrid_parse_zone_16); break;
+   case S_simgrid_parse_zone_1: case S_simgrid_parse_zone_5: SET(S_simgrid_parse_zone_6); break;
+   case S_simgrid_parse_zone_3: case S_simgrid_parse_zone_4: case S_simgrid_parse_zone_8: SET(S_simgrid_parse_zone_9); break;
   }
  }
 	YY_BREAK
@@ -11053,70 +10719,18 @@ YY_RULE_SETUP
   ETag_simgrid_parse_trace___connect();
   popbuffer(); /* attribute */
   switch (YY_START) {
-    case S_simgrid_parse_AS_10:
-    case S_simgrid_parse_AS_11:
-    case S_simgrid_parse_AS_7:
-      SET(S_simgrid_parse_AS_11);
-      break;
-    case S_simgrid_parse_AS_13:
-    case S_simgrid_parse_AS_3:
-      SET(S_simgrid_parse_AS_14);
-      break;
-    case S_simgrid_parse_AS:
-    case S_simgrid_parse_AS_12:
-    case S_simgrid_parse_AS_14:
-    case S_simgrid_parse_AS_15:
-    case S_simgrid_parse_AS_16:
-      SET(S_simgrid_parse_AS_16);
-      break;
-    case S_simgrid_parse_AS_1:
-    case S_simgrid_parse_AS_5:
-      SET(S_simgrid_parse_AS_6);
-      break;
-    case S_simgrid_parse_AS_4:
-    case S_simgrid_parse_AS_6:
-    case S_simgrid_parse_AS_8:
-    case S_simgrid_parse_AS_9:
-      SET(S_simgrid_parse_AS_9);
-      break;
-    case S_simgrid_parse_include:
-    case S_simgrid_parse_include_1:
-    case S_simgrid_parse_include_2:
-      SET(S_simgrid_parse_include_2);
-      break;
-    case S_simgrid_parse_platform:
-    case S_simgrid_parse_platform_1:
-    case S_simgrid_parse_platform_3:
-    case S_simgrid_parse_platform_5:
-    case S_simgrid_parse_platform_6:
-      SET(S_simgrid_parse_platform_6);
-      break;
-    case S_simgrid_parse_zone:
-    case S_simgrid_parse_zone_10:
-    case S_simgrid_parse_zone_11:
-    case S_simgrid_parse_zone_1:
-    case S_simgrid_parse_zone_4:
-    case S_simgrid_parse_zone_7:
-      SET(S_simgrid_parse_zone_11);
-      break;
-    case S_simgrid_parse_zone_13:
-    case S_simgrid_parse_zone_14:
-    case S_simgrid_parse_zone_3:
-      SET(S_simgrid_parse_zone_14);
-      break;
-    case S_simgrid_parse_zone_12:
-    case S_simgrid_parse_zone_15:
-    case S_simgrid_parse_zone_16:
-      SET(S_simgrid_parse_zone_16);
-      break;
-    case S_simgrid_parse_zone_5:
-    case S_simgrid_parse_zone_6:
-      SET(S_simgrid_parse_zone_6);
-      break;
-    case S_simgrid_parse_zone_8:
-    case S_simgrid_parse_zone_9:
-      SET(S_simgrid_parse_zone_9);
-      break;
+   case S_simgrid_parse_AS_10: case S_simgrid_parse_AS_11: case S_simgrid_parse_AS_6: case S_simgrid_parse_AS_7: case S_simgrid_parse_AS_9: SET(S_simgrid_parse_AS_11); break;
+   case S_simgrid_parse_AS_13: case S_simgrid_parse_AS_14: case S_simgrid_parse_AS_1: SET(S_simgrid_parse_AS_14); break;
+   case S_simgrid_parse_AS_12: case S_simgrid_parse_AS_15: case S_simgrid_parse_AS_16: SET(S_simgrid_parse_AS_16); break;
+   case S_simgrid_parse_AS: case S_simgrid_parse_AS_3: case S_simgrid_parse_AS_5: SET(S_simgrid_parse_AS_6); break;
+   case S_simgrid_parse_AS_4: case S_simgrid_parse_AS_8: SET(S_simgrid_parse_AS_9); break;
+   case S_simgrid_parse_include: case S_simgrid_parse_include_1: case S_simgrid_parse_include_2: SET(S_simgrid_parse_include_2); break;
+   case S_simgrid_parse_platform: case S_simgrid_parse_platform_1: case S_simgrid_parse_platform_3: case S_simgrid_parse_platform_5: case S_simgrid_parse_platform_6: SET(S_simgrid_parse_platform_6); break;
+   case S_simgrid_parse_zone_10: case S_simgrid_parse_zone_11: case S_simgrid_parse_zone_6: case S_simgrid_parse_zone_7: case S_simgrid_parse_zone_9: SET(S_simgrid_parse_zone_11); break;
+   case S_simgrid_parse_zone_13: case S_simgrid_parse_zone_14: SET(S_simgrid_parse_zone_14); break;
+   case S_simgrid_parse_zone: case S_simgrid_parse_zone_12: case S_simgrid_parse_zone_15: case S_simgrid_parse_zone_16: SET(S_simgrid_parse_zone_16); break;
+   case S_simgrid_parse_zone_1: case S_simgrid_parse_zone_5: SET(S_simgrid_parse_zone_6); break;
+   case S_simgrid_parse_zone_3: case S_simgrid_parse_zone_4: case S_simgrid_parse_zone_8: SET(S_simgrid_parse_zone_9); break;
   }
  }
 	YY_BREAK

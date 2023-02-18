@@ -39,7 +39,7 @@
 #include "simgrid/s4u/NetZone.hpp"
 #include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the signals
 #include "src/kernel/EngineImpl.hpp"
-#include "src/surf/xml/platf_private.hpp" // ClusterCreationArgs
+#include "src/kernel/xml/platf_private.hpp" // ClusterCreationArgs
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_ns3, res_network, "Network model based on ns-3");
 

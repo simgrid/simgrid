@@ -67,8 +67,8 @@ License: other
 Files:
  src/dag/dax_dtd.c
  src/dag/dax_dtd.h
- src/surf/xml/simgrid_dtd.c
- src/surf/xml/simgrid_dtd.h
+ src/kernel/xml/simgrid_dtd.c
+ src/kernel/xml/simgrid_dtd.h
 Copyright:
  FleXML is Copyright (C) 1999-2005 Kristoffer Rose.  All rights reserved.
  FleXML is Copyright (C) 2003-2013 Martin Quinson.  All rights reserved.

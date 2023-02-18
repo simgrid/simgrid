@@ -35,7 +35,7 @@ CTestResults.xml
 
 ### Maintainer mode
 src/dag/dax_dtd.l
-src/surf/xml/simgrid_dtd.l
+src/kernel/xml/simgrid_dtd.l
 ### Libraries links
 [Ss]im[Gg]rid-*.tar.gz
 ### Generated files
