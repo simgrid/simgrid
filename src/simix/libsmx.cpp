@@ -1,9 +1,4 @@
-/* libsmx.c - public interface to simix                                       */
-/* --------                                                                   */
-/* These functions are the only ones that are visible from the higher levels  */
-/* (most of them simply add some documentation to the generated simcall body) */
-/*                                                                            */
-/* This is somehow the "libc" of SimGrid                                      */
+/* This file only contains deprecated code, and will die with v3.25           */
 
 /* Copyright (c) 2010-2023. The SimGrid Team. All rights reserved.          */
 
@@ -20,8 +15,6 @@
 
 #define SIMIX_H_NO_DEPRECATED_WARNING // avoid deprecation warning on include (remove with XBT_ATTRIB_DEPRECATED_v335)
 #include <simgrid/simix.h>
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_simcall, kernel, "transmuting from user request into kernel handlers");
 
 void simcall_comm_send(simgrid::kernel::actor::ActorImpl* sender, simgrid::kernel::activity::MailboxImpl* mbox,
                        double task_size, double rate, void* src_buff, size_t src_buff_size,
@@ -136,58 +129,4 @@ bool simcall_comm_test(simgrid::kernel::activity::ActivityImpl* comm) // XBT_ATT
     return true;
   }
   return false;
-}
-
-static void simcall(simgrid::kernel::actor::Simcall::Type call, std::function<void()> const& code,
-                    simgrid::kernel::actor::SimcallObserver* observer)
-{
-  auto self = simgrid::kernel::actor::ActorImpl::self();
-  self->simcall_.call_ = call;
-  self->simcall_.code_ = &code;
-  self->simcall_.observer_ = observer;
-  if (simgrid::kernel::EngineImpl::get_instance()->is_maestro(self)) {
-    self->simcall_handle(0);
-  } else {
-    XBT_DEBUG("Yield process '%s' on simcall %s", self->get_cname(), self->simcall_.get_cname());
-    self->yield();
-  }
-  self->simcall_.observer_ = nullptr;
-}
-
-void simcall_run_answered(std::function<void()> const& code, simgrid::kernel::actor::SimcallObserver* observer)
-{
-  // The function `code` is called in kernel mode (either because we are already in maestor or after a context switch)
-  // and simcall_answer() is called
-  simcall(simgrid::kernel::actor::Simcall::Type::RUN_ANSWERED, code, observer);
-}
-
-void simcall_run_blocking(std::function<void()> const& code, simgrid::kernel::actor::SimcallObserver* observer)
-{
-  // The function `code` is called in kernel mode (either because we are already in maestor or after a context switch)
-  // BUT simcall_answer IS NOT CALLED
-  simcall(simgrid::kernel::actor::Simcall::Type::RUN_BLOCKING, code, observer);
-}
-
-void simcall_run_object_access(std::function<void()> const& code, simgrid::kernel::actor::ObjectAccessSimcallItem* item)
-{
-  auto self = simgrid::kernel::actor::ActorImpl::self();
-
-  // We only need a simcall if the order of the setters is important (parallel run or MC execution).
-  // Otherwise, just call the function with no simcall
-
-  if (simgrid::kernel::context::Context::is_parallel()
-#if SIMGRID_HAVE_MC
-      || MC_is_active() || MC_record_replay_is_active()
-#endif
-  ) {
-    simgrid::kernel::actor::ObjectAccessSimcallObserver observer{self, item};
-    simcall(simgrid::kernel::actor::Simcall::Type::RUN_ANSWERED, code, &observer);
-    item->take_ownership();
-  } else {
-    // don't return from the context-switch we don't do
-    self->simcall_.call_     = simgrid::kernel::actor::Simcall::Type::RUN_BLOCKING;
-    self->simcall_.code_     = &code;
-    self->simcall_.observer_ = nullptr;
-    self->simcall_handle(0);
-  }
 }
