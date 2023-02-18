@@ -172,7 +172,7 @@ TEST_CASE("Activity lifecycle: comm activities")
     simgrid::s4u::this_actor::sleep_for(2);
     receiver_basic(recv_done, true, 1);
 
-    // Sleep long enough to let the test ends by itself. 1 + surf_precision should be enough.
+    // Sleep long enough to let the test ends by itself. 1 + precision_timing should be enough.
     simgrid::s4u::this_actor::sleep_for(4);
     INFO("Sender or receiver killed somehow. It shouldn't");
     REQUIRE(dsend_done);
@@ -191,7 +191,7 @@ TEST_CASE("Activity lifecycle: comm activities")
     simgrid::s4u::this_actor::sleep_for(2);
     sender_dtach(dsend_done, true, 0);
 
-    // Sleep long enough to let the test ends by itself. 3 + surf_precision should be enough.
+    // Sleep long enough to let the test ends by itself. 3 + precision_timing should be enough.
     simgrid::s4u::this_actor::sleep_for(4);
     INFO("Sender or receiver killed somehow. It shouldn't");
     REQUIRE(dsend_done);
@@ -219,7 +219,7 @@ TEST_CASE("Activity lifecycle: comm activities")
 
     simgrid::s4u::this_actor::sleep_for(2);
     sender->kill();
-    // let the test ends by itself. waiting for surf_precision should be enough.
+    // let the test ends by itself. waiting for precision_timing should be enough.
     simgrid::s4u::this_actor::sleep_for(0.00001);
 
     INFO("Sender was not killed properly or receiver killed somehow. It shouldn't");

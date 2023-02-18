@@ -556,8 +556,7 @@ double EngineImpl::solve(double max_date) const
         XBT_DEBUG("This event invalidates the next_occurring_event() computation of models. Next event set to %f",
                   time_delta);
       }
-      // FIXME: I'm too lame to update now_ live, so I change it and restore it so that the real update with surf_min
-      // will work
+      // FIXME: I'm too lame to update now_ live, so I change it and restore it so that the real update works
       double round_start = now_;
       now_               = next_event_date;
       /* update state of the corresponding resource to the new value. Does not touch lmm.

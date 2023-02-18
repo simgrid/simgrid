@@ -333,7 +333,6 @@ void VirtualMachineImpl::shutdown(actor::ActorImpl* issuer)
   set_state(s4u::VirtualMachine::State::DESTROYED);
 
   s4u::VirtualMachine::on_shutdown(*get_iface());
-  /* FIXME: we may have to do something at the surf layer, e.g., vcpu action */
 }
 
 /** @brief Change the physical host on which the given VM is running

@@ -37,7 +37,7 @@
 #include "simgrid/plugins/energy.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/NetZone.hpp"
-#include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
+#include "src/instr/instr_private.hpp" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the signals
 #include "src/kernel/EngineImpl.hpp"
 #include "src/surf/xml/platf_private.hpp" // ClusterCreationArgs
 
@@ -397,9 +397,9 @@ double NetworkNS3Model::next_occurring_event(double now)
   if (double_equals(time_to_next_flow_completion, 0, sg_precision_timing))
     time_to_next_flow_completion = 0.0;
 
-  XBT_DEBUG("min       : %f", now);
-  XBT_DEBUG("ns3  time : %f", ns3::Simulator::Now().GetSeconds());
-  XBT_DEBUG("surf time : %f", EngineImpl::get_clock());
+  XBT_DEBUG("min         : %f", now);
+  XBT_DEBUG("ns-3 time   : %f", ns3::Simulator::Now().GetSeconds());
+  XBT_DEBUG("simgrid time: %f", EngineImpl::get_clock());
   XBT_DEBUG("Next completion %f :", time_to_next_flow_completion);
 
   return time_to_next_flow_completion;

@@ -214,7 +214,7 @@ p NOT testing the mixture of failures and CpuTI:
 p This test leads to a deadlock because of a bug somewhere in EngineImpl::solve.
 p We should debug this instead of ignoring the issue, but it's utterly
 p   complex with such an integration test. One day, we will setup a set of
-p   unit tests for the surf solver, and such issues will be addressable again.
+p   unit tests for the model's solver, and such issues will be addressable again.
 p For the time being, I just give up, sorry.
 
 p $ ${bindir:=.}/c-platform-failures --log=xbt_cfg.thres:critical --log=no_loc ${platfdir}/small_platform_failures.xml ${srcdir:=.}/../../cpp/platform-failures/s4u-platform-failures_d.xml --cfg=path:${srcdir} --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n" --log=res_cpu.t:verbose

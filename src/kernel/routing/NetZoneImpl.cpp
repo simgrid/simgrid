@@ -33,9 +33,9 @@ NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
 {
   auto* engine = s4u::Engine::get_instance();
   /* workaroud: first netzoneImpl will be the root netzone.
-   * Without globals and with current surf_*_model_description init functions, we need
+   * Without globals and with current model description init functions (see module.hpp), we need
    * the root netzone to exist when creating the models.
-   * This was usually done at sg_platf.cpp, during XML parsing */
+   * This is usually done at sg_platf.cpp, during XML parsing */
   if (not engine->get_netzone_root()) {
     engine->set_netzone_root(&piface_);
     /* root netzone set, initialize models */

@@ -128,7 +128,7 @@ static void explodesRadical(const std::string& radicals, std::vector<int>* explo
 
 static std::vector<std::unordered_map<std::string, std::string>> property_sets;
 
-static FILE* surf_file_to_parse = nullptr;
+static FILE* file_to_parse = nullptr;
 
 /* Stuff relative to storage */
 void STag_simgrid_parse_storage()
@@ -833,7 +833,7 @@ void ETag_simgrid_parse_argument(){/* Nothing to do */}
 void ETag_simgrid_parse_model___prop(){/* Nothing to do */}
 
 /* Open and Close parse file */
-static YY_BUFFER_STATE surf_input_buffer;
+static YY_BUFFER_STATE input_buffer;
 
 void simgrid_parse_open(const std::string& file)
 {
@@ -841,12 +841,12 @@ void simgrid_parse_open(const std::string& file)
   std::string dir      = simgrid::xbt::Path(file).get_dir_name();
   simgrid::xbt::path_push(dir);
 
-  surf_file_to_parse = simgrid::xbt::path_fopen(file, "r");
-  if (surf_file_to_parse == nullptr)
+  file_to_parse = simgrid::xbt::path_fopen(file, "r");
+  if (file_to_parse == nullptr)
     throw std::invalid_argument("Unable to open '" + file + "' from '" + simgrid::xbt::Path().get_name() +
                                 "'. Does this file exist?");
-  surf_input_buffer = simgrid_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
-  simgrid_parse__switch_to_buffer(surf_input_buffer);
+  input_buffer = simgrid_parse__create_buffer(file_to_parse, YY_BUF_SIZE);
+  simgrid_parse__switch_to_buffer(input_buffer);
   simgrid_parse_lineno = 1;
 }
 
@@ -854,10 +854,10 @@ void simgrid_parse_close()
 {
   simgrid::xbt::path_pop(); // remove the dirname of the opened file, that was added in simgrid_parse_open()
 
-  if (surf_file_to_parse) {
-    simgrid_parse__delete_buffer(surf_input_buffer);
-    fclose(surf_file_to_parse);
-    surf_file_to_parse = nullptr; //Must be reset for Bypass
+  if (file_to_parse) {
+    simgrid_parse__delete_buffer(input_buffer);
+    fclose(file_to_parse);
+    file_to_parse = nullptr; // Must be reset for Bypass
   }
 }
 
