@@ -64,8 +64,8 @@ void StandardLinkImpl::latency_check(double latency) const
 {
   static double last_warned_latency = sg_precision_timing;
   if (latency != 0.0 && latency < last_warned_latency) {
-    XBT_WARN("Latency for link %s is smaller than surf/precision (%g < %g)."
-             " For more accuracy, consider setting \"--cfg=surf/precision:%g\".",
+    XBT_WARN("Latency for link %s is smaller than precision/timing (%g < %g)."
+             " For more accuracy, consider setting \"--cfg=precision/timing:%g\".",
              get_cname(), latency, sg_precision_timing, latency);
     last_warned_latency = latency;
   }
