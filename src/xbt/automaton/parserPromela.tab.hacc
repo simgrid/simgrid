@@ -1,4 +1,4 @@
-/* A Bison parser, made by GNU Bison 3.7.6.  */
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
 /* Bison interface for Yacc-like parsers in C
 
@@ -100,6 +100,8 @@ typedef union YYSTYPE YYSTYPE;
 
 extern YYSTYPE xbt_automaton_parser_lval;
 
+
 int xbt_automaton_parser_parse (void);
+
 
 #endif /* !YY_XBT_AUTOMATON_PARSER_PARSERPROMELA_TAB_HACC_INCLUDED  */

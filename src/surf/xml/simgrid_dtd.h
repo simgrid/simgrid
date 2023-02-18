@@ -48,727 +48,727 @@
 #define _FLEXML_simgrid_H
 
 /* XML application entry points. */
-XBT_PUBLIC void STag_surfxml_AS(void);
-XBT_PUBLIC void ETag_surfxml_AS(void);
-XBT_PUBLIC void STag_surfxml_ASroute(void);
-XBT_PUBLIC void ETag_surfxml_ASroute(void);
-XBT_PUBLIC void STag_surfxml_actor(void);
-XBT_PUBLIC void ETag_surfxml_actor(void);
-XBT_PUBLIC void STag_surfxml_argument(void);
-XBT_PUBLIC void ETag_surfxml_argument(void);
-XBT_PUBLIC void STag_surfxml_backbone(void);
-XBT_PUBLIC void ETag_surfxml_backbone(void);
-XBT_PUBLIC void STag_surfxml_bypassASroute(void);
-XBT_PUBLIC void ETag_surfxml_bypassASroute(void);
-XBT_PUBLIC void STag_surfxml_bypassRoute(void);
-XBT_PUBLIC void ETag_surfxml_bypassRoute(void);
-XBT_PUBLIC void STag_surfxml_bypassZoneRoute(void);
-XBT_PUBLIC void ETag_surfxml_bypassZoneRoute(void);
-XBT_PUBLIC void STag_surfxml_cabinet(void);
-XBT_PUBLIC void ETag_surfxml_cabinet(void);
-XBT_PUBLIC void STag_surfxml_cluster(void);
-XBT_PUBLIC void ETag_surfxml_cluster(void);
-XBT_PUBLIC void STag_surfxml_config(void);
-XBT_PUBLIC void ETag_surfxml_config(void);
-XBT_PUBLIC void STag_surfxml_disk(void);
-XBT_PUBLIC void ETag_surfxml_disk(void);
-XBT_PUBLIC void STag_surfxml_host(void);
-XBT_PUBLIC void ETag_surfxml_host(void);
-XBT_PUBLIC void STag_surfxml_host___link(void);
-XBT_PUBLIC void ETag_surfxml_host___link(void);
-XBT_ATTRIB_NORETURN XBT_PUBLIC void STag_surfxml_include(void);
-XBT_PUBLIC void ETag_surfxml_include(void);
-XBT_PUBLIC void STag_surfxml_link(void);
-XBT_PUBLIC void ETag_surfxml_link(void);
-XBT_PUBLIC void STag_surfxml_link___ctn(void);
-XBT_PUBLIC void ETag_surfxml_link___ctn(void);
-XBT_PUBLIC void STag_surfxml_model___prop(void);
-XBT_PUBLIC void ETag_surfxml_model___prop(void);
-XBT_ATTRIB_NORETURN XBT_PUBLIC void STag_surfxml_mount(void);
-XBT_PUBLIC void ETag_surfxml_mount(void);
-XBT_PUBLIC void STag_surfxml_peer(void);
-XBT_PUBLIC void ETag_surfxml_peer(void);
-XBT_PUBLIC void STag_surfxml_platform(void);
-XBT_PUBLIC void ETag_surfxml_platform(void);
-XBT_PUBLIC void STag_surfxml_process(void);
-XBT_PUBLIC void ETag_surfxml_process(void);
-XBT_PUBLIC void STag_surfxml_prop(void);
-XBT_PUBLIC void ETag_surfxml_prop(void);
-XBT_PUBLIC void STag_surfxml_random(void);
-XBT_PUBLIC void ETag_surfxml_random(void);
-XBT_PUBLIC void STag_surfxml_route(void);
-XBT_PUBLIC void ETag_surfxml_route(void);
-XBT_PUBLIC void STag_surfxml_router(void);
-XBT_PUBLIC void ETag_surfxml_router(void);
-XBT_ATTRIB_NORETURN XBT_PUBLIC void STag_surfxml_storage(void);
-XBT_PUBLIC void ETag_surfxml_storage(void);
-XBT_ATTRIB_NORETURN XBT_PUBLIC void STag_surfxml_storage___type(void);
-XBT_PUBLIC void ETag_surfxml_storage___type(void);
-XBT_PUBLIC void STag_surfxml_trace(void);
-XBT_PUBLIC void ETag_surfxml_trace(void);
-XBT_PUBLIC void STag_surfxml_trace___connect(void);
-XBT_PUBLIC void ETag_surfxml_trace___connect(void);
-XBT_PUBLIC void STag_surfxml_zone(void);
-XBT_PUBLIC void ETag_surfxml_zone(void);
-XBT_PUBLIC void STag_surfxml_zoneRoute(void);
-XBT_PUBLIC void ETag_surfxml_zoneRoute(void);
+XBT_PUBLIC void STag_simgrid_parse_AS(void);
+XBT_PUBLIC void ETag_simgrid_parse_AS(void);
+XBT_PUBLIC void STag_simgrid_parse_ASroute(void);
+XBT_PUBLIC void ETag_simgrid_parse_ASroute(void);
+XBT_PUBLIC void STag_simgrid_parse_actor(void);
+XBT_PUBLIC void ETag_simgrid_parse_actor(void);
+XBT_PUBLIC void STag_simgrid_parse_argument(void);
+XBT_PUBLIC void ETag_simgrid_parse_argument(void);
+XBT_PUBLIC void STag_simgrid_parse_backbone(void);
+XBT_PUBLIC void ETag_simgrid_parse_backbone(void);
+XBT_PUBLIC void STag_simgrid_parse_bypassASroute(void);
+XBT_PUBLIC void ETag_simgrid_parse_bypassASroute(void);
+XBT_PUBLIC void STag_simgrid_parse_bypassRoute(void);
+XBT_PUBLIC void ETag_simgrid_parse_bypassRoute(void);
+XBT_PUBLIC void STag_simgrid_parse_bypassZoneRoute(void);
+XBT_PUBLIC void ETag_simgrid_parse_bypassZoneRoute(void);
+XBT_PUBLIC void STag_simgrid_parse_cabinet(void);
+XBT_PUBLIC void ETag_simgrid_parse_cabinet(void);
+XBT_PUBLIC void STag_simgrid_parse_cluster(void);
+XBT_PUBLIC void ETag_simgrid_parse_cluster(void);
+XBT_PUBLIC void STag_simgrid_parse_config(void);
+XBT_PUBLIC void ETag_simgrid_parse_config(void);
+XBT_PUBLIC void STag_simgrid_parse_disk(void);
+XBT_PUBLIC void ETag_simgrid_parse_disk(void);
+XBT_PUBLIC void STag_simgrid_parse_host(void);
+XBT_PUBLIC void ETag_simgrid_parse_host(void);
+XBT_PUBLIC void STag_simgrid_parse_host___link(void);
+XBT_PUBLIC void ETag_simgrid_parse_host___link(void);
+XBT_ATTRIB_NORETURN XBT_PUBLIC void STag_simgrid_parse_include(void);
+XBT_PUBLIC void ETag_simgrid_parse_include(void);
+XBT_PUBLIC void STag_simgrid_parse_link(void);
+XBT_PUBLIC void ETag_simgrid_parse_link(void);
+XBT_PUBLIC void STag_simgrid_parse_link___ctn(void);
+XBT_PUBLIC void ETag_simgrid_parse_link___ctn(void);
+XBT_PUBLIC void STag_simgrid_parse_model___prop(void);
+XBT_PUBLIC void ETag_simgrid_parse_model___prop(void);
+XBT_ATTRIB_NORETURN XBT_PUBLIC void STag_simgrid_parse_mount(void);
+XBT_PUBLIC void ETag_simgrid_parse_mount(void);
+XBT_PUBLIC void STag_simgrid_parse_peer(void);
+XBT_PUBLIC void ETag_simgrid_parse_peer(void);
+XBT_PUBLIC void STag_simgrid_parse_platform(void);
+XBT_PUBLIC void ETag_simgrid_parse_platform(void);
+XBT_PUBLIC void STag_simgrid_parse_process(void);
+XBT_PUBLIC void ETag_simgrid_parse_process(void);
+XBT_PUBLIC void STag_simgrid_parse_prop(void);
+XBT_PUBLIC void ETag_simgrid_parse_prop(void);
+XBT_PUBLIC void STag_simgrid_parse_random(void);
+XBT_PUBLIC void ETag_simgrid_parse_random(void);
+XBT_PUBLIC void STag_simgrid_parse_route(void);
+XBT_PUBLIC void ETag_simgrid_parse_route(void);
+XBT_PUBLIC void STag_simgrid_parse_router(void);
+XBT_PUBLIC void ETag_simgrid_parse_router(void);
+XBT_ATTRIB_NORETURN XBT_PUBLIC void STag_simgrid_parse_storage(void);
+XBT_PUBLIC void ETag_simgrid_parse_storage(void);
+XBT_ATTRIB_NORETURN XBT_PUBLIC void STag_simgrid_parse_storage___type(void);
+XBT_PUBLIC void ETag_simgrid_parse_storage___type(void);
+XBT_PUBLIC void STag_simgrid_parse_trace(void);
+XBT_PUBLIC void ETag_simgrid_parse_trace(void);
+XBT_PUBLIC void STag_simgrid_parse_trace___connect(void);
+XBT_PUBLIC void ETag_simgrid_parse_trace___connect(void);
+XBT_PUBLIC void STag_simgrid_parse_zone(void);
+XBT_PUBLIC void ETag_simgrid_parse_zone(void);
+XBT_PUBLIC void STag_simgrid_parse_zoneRoute(void);
+XBT_PUBLIC void ETag_simgrid_parse_zoneRoute(void);
 
 /* XML application data. */
-typedef int AT_surfxml_AS_id;
-#define AU_surfxml_AS_id NULL
-typedef int AT_surfxml_AS_routing;
-#define AU_surfxml_AS_routing NULL
-typedef int AT_surfxml_ASroute_dst;
-#define AU_surfxml_ASroute_dst NULL
-typedef int AT_surfxml_ASroute_gw___dst;
-#define AU_surfxml_ASroute_gw___dst NULL
-typedef int AT_surfxml_ASroute_gw___src;
-#define AU_surfxml_ASroute_gw___src NULL
-typedef int AT_surfxml_ASroute_src;
-#define AU_surfxml_ASroute_src NULL
-typedef enum { AU_surfxml_ASroute_symmetrical, A_surfxml_ASroute_symmetrical_YES,A_surfxml_ASroute_symmetrical_NO,A_surfxml_ASroute_symmetrical_yes,A_surfxml_ASroute_symmetrical_no } AT_surfxml_ASroute_symmetrical;
-typedef int AT_surfxml_actor_function;
-#define AU_surfxml_actor_function NULL
-typedef int AT_surfxml_actor_host;
-#define AU_surfxml_actor_host NULL
-typedef int AT_surfxml_actor_kill___time;
-#define AU_surfxml_actor_kill___time NULL
-typedef enum { AU_surfxml_actor_on___failure, A_surfxml_actor_on___failure_DIE,A_surfxml_actor_on___failure_RESTART } AT_surfxml_actor_on___failure;
-typedef int AT_surfxml_actor_start___time;
-#define AU_surfxml_actor_start___time NULL
-typedef int AT_surfxml_argument_value;
-#define AU_surfxml_argument_value NULL
-typedef int AT_surfxml_backbone_bandwidth;
-#define AU_surfxml_backbone_bandwidth NULL
-typedef int AT_surfxml_backbone_id;
-#define AU_surfxml_backbone_id NULL
-typedef int AT_surfxml_backbone_latency;
-#define AU_surfxml_backbone_latency NULL
-typedef int AT_surfxml_bypassASroute_dst;
-#define AU_surfxml_bypassASroute_dst NULL
-typedef int AT_surfxml_bypassASroute_gw___dst;
-#define AU_surfxml_bypassASroute_gw___dst NULL
-typedef int AT_surfxml_bypassASroute_gw___src;
-#define AU_surfxml_bypassASroute_gw___src NULL
-typedef int AT_surfxml_bypassASroute_src;
-#define AU_surfxml_bypassASroute_src NULL
-typedef int AT_surfxml_bypassRoute_dst;
-#define AU_surfxml_bypassRoute_dst NULL
-typedef int AT_surfxml_bypassRoute_src;
-#define AU_surfxml_bypassRoute_src NULL
-typedef int AT_surfxml_bypassZoneRoute_dst;
-#define AU_surfxml_bypassZoneRoute_dst NULL
-typedef int AT_surfxml_bypassZoneRoute_gw___dst;
-#define AU_surfxml_bypassZoneRoute_gw___dst NULL
-typedef int AT_surfxml_bypassZoneRoute_gw___src;
-#define AU_surfxml_bypassZoneRoute_gw___src NULL
-typedef int AT_surfxml_bypassZoneRoute_src;
-#define AU_surfxml_bypassZoneRoute_src NULL
-typedef int AT_surfxml_cabinet_bw;
-#define AU_surfxml_cabinet_bw NULL
-typedef int AT_surfxml_cabinet_id;
-#define AU_surfxml_cabinet_id NULL
-typedef int AT_surfxml_cabinet_lat;
-#define AU_surfxml_cabinet_lat NULL
-typedef int AT_surfxml_cabinet_prefix;
-#define AU_surfxml_cabinet_prefix NULL
-typedef int AT_surfxml_cabinet_radical;
-#define AU_surfxml_cabinet_radical NULL
-typedef int AT_surfxml_cabinet_speed;
-#define AU_surfxml_cabinet_speed NULL
-typedef int AT_surfxml_cabinet_suffix;
-#define AU_surfxml_cabinet_suffix NULL
-typedef int AT_surfxml_cluster_bb___bw;
-#define AU_surfxml_cluster_bb___bw NULL
-typedef int AT_surfxml_cluster_bb___lat;
-#define AU_surfxml_cluster_bb___lat NULL
-typedef enum { AU_surfxml_cluster_bb___sharing___policy, A_surfxml_cluster_bb___sharing___policy_SHARED,A_surfxml_cluster_bb___sharing___policy_FATPIPE } AT_surfxml_cluster_bb___sharing___policy;
-typedef int AT_surfxml_cluster_bw;
-#define AU_surfxml_cluster_bw NULL
-typedef int AT_surfxml_cluster_core;
-#define AU_surfxml_cluster_core NULL
-typedef int AT_surfxml_cluster_id;
-#define AU_surfxml_cluster_id NULL
-typedef int AT_surfxml_cluster_lat;
-#define AU_surfxml_cluster_lat NULL
-typedef int AT_surfxml_cluster_limiter___link;
-#define AU_surfxml_cluster_limiter___link NULL
-typedef int AT_surfxml_cluster_loopback___bw;
-#define AU_surfxml_cluster_loopback___bw NULL
-typedef int AT_surfxml_cluster_loopback___lat;
-#define AU_surfxml_cluster_loopback___lat NULL
-typedef int AT_surfxml_cluster_prefix;
-#define AU_surfxml_cluster_prefix NULL
-typedef int AT_surfxml_cluster_radical;
-#define AU_surfxml_cluster_radical NULL
-typedef int AT_surfxml_cluster_router___id;
-#define AU_surfxml_cluster_router___id NULL
-typedef enum { AU_surfxml_cluster_sharing___policy, A_surfxml_cluster_sharing___policy_SHARED,A_surfxml_cluster_sharing___policy_SPLITDUPLEX,A_surfxml_cluster_sharing___policy_FULLDUPLEX,A_surfxml_cluster_sharing___policy_FATPIPE } AT_surfxml_cluster_sharing___policy;
-typedef int AT_surfxml_cluster_speed;
-#define AU_surfxml_cluster_speed NULL
-typedef int AT_surfxml_cluster_suffix;
-#define AU_surfxml_cluster_suffix NULL
-typedef int AT_surfxml_cluster_topo___parameters;
-#define AU_surfxml_cluster_topo___parameters NULL
-typedef enum { AU_surfxml_cluster_topology, A_surfxml_cluster_topology_FLAT,A_surfxml_cluster_topology_TORUS,A_surfxml_cluster_topology_FAT___TREE,A_surfxml_cluster_topology_DRAGONFLY } AT_surfxml_cluster_topology;
-typedef int AT_surfxml_config_id;
-#define AU_surfxml_config_id NULL
-typedef int AT_surfxml_disk_id;
-#define AU_surfxml_disk_id NULL
-typedef int AT_surfxml_disk_read___bw;
-#define AU_surfxml_disk_read___bw NULL
-typedef int AT_surfxml_disk_write___bw;
-#define AU_surfxml_disk_write___bw NULL
-typedef int AT_surfxml_host_availability___file;
-#define AU_surfxml_host_availability___file NULL
-typedef int AT_surfxml_host_coordinates;
-#define AU_surfxml_host_coordinates NULL
-typedef int AT_surfxml_host_core;
-#define AU_surfxml_host_core NULL
-typedef int AT_surfxml_host_id;
-#define AU_surfxml_host_id NULL
-typedef int AT_surfxml_host_pstate;
-#define AU_surfxml_host_pstate NULL
-typedef int AT_surfxml_host_speed;
-#define AU_surfxml_host_speed NULL
-typedef int AT_surfxml_host_speed___file;
-#define AU_surfxml_host_speed___file NULL
-typedef int AT_surfxml_host_state___file;
-#define AU_surfxml_host_state___file NULL
-typedef int AT_surfxml_host___link_down;
-#define AU_surfxml_host___link_down NULL
-typedef int AT_surfxml_host___link_id;
-#define AU_surfxml_host___link_id NULL
-typedef int AT_surfxml_host___link_up;
-#define AU_surfxml_host___link_up NULL
-typedef int AT_surfxml_include_file;
-#define AU_surfxml_include_file NULL
-typedef int AT_surfxml_link_bandwidth;
-#define AU_surfxml_link_bandwidth NULL
-typedef int AT_surfxml_link_bandwidth___file;
-#define AU_surfxml_link_bandwidth___file NULL
-typedef int AT_surfxml_link_id;
-#define AU_surfxml_link_id NULL
-typedef int AT_surfxml_link_latency;
-#define AU_surfxml_link_latency NULL
-typedef int AT_surfxml_link_latency___file;
-#define AU_surfxml_link_latency___file NULL
-typedef enum { AU_surfxml_link_sharing___policy, A_surfxml_link_sharing___policy_SHARED,A_surfxml_link_sharing___policy_SPLITDUPLEX,A_surfxml_link_sharing___policy_FULLDUPLEX,A_surfxml_link_sharing___policy_FATPIPE,A_surfxml_link_sharing___policy_WIFI } AT_surfxml_link_sharing___policy;
-typedef int AT_surfxml_link_state___file;
-#define AU_surfxml_link_state___file NULL
-typedef enum { AU_surfxml_link___ctn_direction, A_surfxml_link___ctn_direction_UP,A_surfxml_link___ctn_direction_DOWN,A_surfxml_link___ctn_direction_NONE } AT_surfxml_link___ctn_direction;
-typedef int AT_surfxml_link___ctn_id;
-#define AU_surfxml_link___ctn_id NULL
-typedef int AT_surfxml_model___prop_id;
-#define AU_surfxml_model___prop_id NULL
-typedef int AT_surfxml_model___prop_value;
-#define AU_surfxml_model___prop_value NULL
-typedef int AT_surfxml_mount_name;
-#define AU_surfxml_mount_name NULL
-typedef int AT_surfxml_mount_storageId;
-#define AU_surfxml_mount_storageId NULL
-typedef int AT_surfxml_peer_availability___file;
-#define AU_surfxml_peer_availability___file NULL
-typedef int AT_surfxml_peer_bw___in;
-#define AU_surfxml_peer_bw___in NULL
-typedef int AT_surfxml_peer_bw___out;
-#define AU_surfxml_peer_bw___out NULL
-typedef int AT_surfxml_peer_coordinates;
-#define AU_surfxml_peer_coordinates NULL
-typedef int AT_surfxml_peer_id;
-#define AU_surfxml_peer_id NULL
-typedef int AT_surfxml_peer_lat;
-#define AU_surfxml_peer_lat NULL
-typedef int AT_surfxml_peer_speed;
-#define AU_surfxml_peer_speed NULL
-typedef int AT_surfxml_peer_speed___file;
-#define AU_surfxml_peer_speed___file NULL
-typedef int AT_surfxml_peer_state___file;
-#define AU_surfxml_peer_state___file NULL
-typedef int AT_surfxml_platform_version;
-#define AU_surfxml_platform_version NULL
-typedef int AT_surfxml_process_function;
-#define AU_surfxml_process_function NULL
-typedef int AT_surfxml_process_host;
-#define AU_surfxml_process_host NULL
-typedef int AT_surfxml_process_kill___time;
-#define AU_surfxml_process_kill___time NULL
-typedef enum { AU_surfxml_process_on___failure, A_surfxml_process_on___failure_DIE,A_surfxml_process_on___failure_RESTART } AT_surfxml_process_on___failure;
-typedef int AT_surfxml_process_start___time;
-#define AU_surfxml_process_start___time NULL
-typedef int AT_surfxml_prop_id;
-#define AU_surfxml_prop_id NULL
-typedef int AT_surfxml_prop_value;
-#define AU_surfxml_prop_value NULL
-typedef enum { AU_surfxml_random_generator, A_surfxml_random_generator_DRAND48,A_surfxml_random_generator_RAND,A_surfxml_random_generator_RNGSTREAM,A_surfxml_random_generator_NONE } AT_surfxml_random_generator;
-typedef int AT_surfxml_random_id;
-#define AU_surfxml_random_id NULL
-typedef int AT_surfxml_random_max;
-#define AU_surfxml_random_max NULL
-typedef int AT_surfxml_random_mean;
-#define AU_surfxml_random_mean NULL
-typedef int AT_surfxml_random_min;
-#define AU_surfxml_random_min NULL
-typedef int AT_surfxml_random_radical;
-#define AU_surfxml_random_radical NULL
-typedef int AT_surfxml_random_seed;
-#define AU_surfxml_random_seed NULL
-typedef int AT_surfxml_random_std___deviation;
-#define AU_surfxml_random_std___deviation NULL
-typedef int AT_surfxml_route_dst;
-#define AU_surfxml_route_dst NULL
-typedef int AT_surfxml_route_src;
-#define AU_surfxml_route_src NULL
-typedef enum { AU_surfxml_route_symmetrical, A_surfxml_route_symmetrical_YES,A_surfxml_route_symmetrical_NO,A_surfxml_route_symmetrical_yes,A_surfxml_route_symmetrical_no } AT_surfxml_route_symmetrical;
-typedef int AT_surfxml_router_coordinates;
-#define AU_surfxml_router_coordinates NULL
-typedef int AT_surfxml_router_id;
-#define AU_surfxml_router_id NULL
-typedef int AT_surfxml_storage_attach;
-#define AU_surfxml_storage_attach NULL
-typedef int AT_surfxml_storage_content;
-#define AU_surfxml_storage_content NULL
-typedef int AT_surfxml_storage_id;
-#define AU_surfxml_storage_id NULL
-typedef int AT_surfxml_storage_typeId;
-#define AU_surfxml_storage_typeId NULL
-typedef int AT_surfxml_storage___type_content;
-#define AU_surfxml_storage___type_content NULL
-typedef int AT_surfxml_storage___type_id;
-#define AU_surfxml_storage___type_id NULL
-typedef int AT_surfxml_storage___type_model;
-#define AU_surfxml_storage___type_model NULL
-typedef int AT_surfxml_storage___type_size;
-#define AU_surfxml_storage___type_size NULL
-typedef int AT_surfxml_trace_file;
-#define AU_surfxml_trace_file NULL
-typedef int AT_surfxml_trace_id;
-#define AU_surfxml_trace_id NULL
-typedef int AT_surfxml_trace_periodicity;
-#define AU_surfxml_trace_periodicity NULL
-typedef int AT_surfxml_trace___connect_element;
-#define AU_surfxml_trace___connect_element NULL
-typedef enum { AU_surfxml_trace___connect_kind, A_surfxml_trace___connect_kind_HOST___AVAIL,A_surfxml_trace___connect_kind_SPEED,A_surfxml_trace___connect_kind_LINK___AVAIL,A_surfxml_trace___connect_kind_BANDWIDTH,A_surfxml_trace___connect_kind_LATENCY } AT_surfxml_trace___connect_kind;
-typedef int AT_surfxml_trace___connect_trace;
-#define AU_surfxml_trace___connect_trace NULL
-typedef int AT_surfxml_zone_id;
-#define AU_surfxml_zone_id NULL
-typedef int AT_surfxml_zone_routing;
-#define AU_surfxml_zone_routing NULL
-typedef int AT_surfxml_zoneRoute_dst;
-#define AU_surfxml_zoneRoute_dst NULL
-typedef int AT_surfxml_zoneRoute_gw___dst;
-#define AU_surfxml_zoneRoute_gw___dst NULL
-typedef int AT_surfxml_zoneRoute_gw___src;
-#define AU_surfxml_zoneRoute_gw___src NULL
-typedef int AT_surfxml_zoneRoute_src;
-#define AU_surfxml_zoneRoute_src NULL
-typedef enum { AU_surfxml_zoneRoute_symmetrical, A_surfxml_zoneRoute_symmetrical_YES,A_surfxml_zoneRoute_symmetrical_NO,A_surfxml_zoneRoute_symmetrical_yes,A_surfxml_zoneRoute_symmetrical_no } AT_surfxml_zoneRoute_symmetrical;
+typedef int AT_simgrid_parse_AS_id;
+#define AU_simgrid_parse_AS_id NULL
+typedef int AT_simgrid_parse_AS_routing;
+#define AU_simgrid_parse_AS_routing NULL
+typedef int AT_simgrid_parse_ASroute_dst;
+#define AU_simgrid_parse_ASroute_dst NULL
+typedef int AT_simgrid_parse_ASroute_gw___dst;
+#define AU_simgrid_parse_ASroute_gw___dst NULL
+typedef int AT_simgrid_parse_ASroute_gw___src;
+#define AU_simgrid_parse_ASroute_gw___src NULL
+typedef int AT_simgrid_parse_ASroute_src;
+#define AU_simgrid_parse_ASroute_src NULL
+typedef enum { AU_simgrid_parse_ASroute_symmetrical, A_simgrid_parse_ASroute_symmetrical_YES,A_simgrid_parse_ASroute_symmetrical_NO,A_simgrid_parse_ASroute_symmetrical_yes,A_simgrid_parse_ASroute_symmetrical_no } AT_simgrid_parse_ASroute_symmetrical;
+typedef int AT_simgrid_parse_actor_function;
+#define AU_simgrid_parse_actor_function NULL
+typedef int AT_simgrid_parse_actor_host;
+#define AU_simgrid_parse_actor_host NULL
+typedef int AT_simgrid_parse_actor_kill___time;
+#define AU_simgrid_parse_actor_kill___time NULL
+typedef enum { AU_simgrid_parse_actor_on___failure, A_simgrid_parse_actor_on___failure_DIE,A_simgrid_parse_actor_on___failure_RESTART } AT_simgrid_parse_actor_on___failure;
+typedef int AT_simgrid_parse_actor_start___time;
+#define AU_simgrid_parse_actor_start___time NULL
+typedef int AT_simgrid_parse_argument_value;
+#define AU_simgrid_parse_argument_value NULL
+typedef int AT_simgrid_parse_backbone_bandwidth;
+#define AU_simgrid_parse_backbone_bandwidth NULL
+typedef int AT_simgrid_parse_backbone_id;
+#define AU_simgrid_parse_backbone_id NULL
+typedef int AT_simgrid_parse_backbone_latency;
+#define AU_simgrid_parse_backbone_latency NULL
+typedef int AT_simgrid_parse_bypassASroute_dst;
+#define AU_simgrid_parse_bypassASroute_dst NULL
+typedef int AT_simgrid_parse_bypassASroute_gw___dst;
+#define AU_simgrid_parse_bypassASroute_gw___dst NULL
+typedef int AT_simgrid_parse_bypassASroute_gw___src;
+#define AU_simgrid_parse_bypassASroute_gw___src NULL
+typedef int AT_simgrid_parse_bypassASroute_src;
+#define AU_simgrid_parse_bypassASroute_src NULL
+typedef int AT_simgrid_parse_bypassRoute_dst;
+#define AU_simgrid_parse_bypassRoute_dst NULL
+typedef int AT_simgrid_parse_bypassRoute_src;
+#define AU_simgrid_parse_bypassRoute_src NULL
+typedef int AT_simgrid_parse_bypassZoneRoute_dst;
+#define AU_simgrid_parse_bypassZoneRoute_dst NULL
+typedef int AT_simgrid_parse_bypassZoneRoute_gw___dst;
+#define AU_simgrid_parse_bypassZoneRoute_gw___dst NULL
+typedef int AT_simgrid_parse_bypassZoneRoute_gw___src;
+#define AU_simgrid_parse_bypassZoneRoute_gw___src NULL
+typedef int AT_simgrid_parse_bypassZoneRoute_src;
+#define AU_simgrid_parse_bypassZoneRoute_src NULL
+typedef int AT_simgrid_parse_cabinet_bw;
+#define AU_simgrid_parse_cabinet_bw NULL
+typedef int AT_simgrid_parse_cabinet_id;
+#define AU_simgrid_parse_cabinet_id NULL
+typedef int AT_simgrid_parse_cabinet_lat;
+#define AU_simgrid_parse_cabinet_lat NULL
+typedef int AT_simgrid_parse_cabinet_prefix;
+#define AU_simgrid_parse_cabinet_prefix NULL
+typedef int AT_simgrid_parse_cabinet_radical;
+#define AU_simgrid_parse_cabinet_radical NULL
+typedef int AT_simgrid_parse_cabinet_speed;
+#define AU_simgrid_parse_cabinet_speed NULL
+typedef int AT_simgrid_parse_cabinet_suffix;
+#define AU_simgrid_parse_cabinet_suffix NULL
+typedef int AT_simgrid_parse_cluster_bb___bw;
+#define AU_simgrid_parse_cluster_bb___bw NULL
+typedef int AT_simgrid_parse_cluster_bb___lat;
+#define AU_simgrid_parse_cluster_bb___lat NULL
+typedef enum { AU_simgrid_parse_cluster_bb___sharing___policy, A_simgrid_parse_cluster_bb___sharing___policy_SHARED,A_simgrid_parse_cluster_bb___sharing___policy_FATPIPE } AT_simgrid_parse_cluster_bb___sharing___policy;
+typedef int AT_simgrid_parse_cluster_bw;
+#define AU_simgrid_parse_cluster_bw NULL
+typedef int AT_simgrid_parse_cluster_core;
+#define AU_simgrid_parse_cluster_core NULL
+typedef int AT_simgrid_parse_cluster_id;
+#define AU_simgrid_parse_cluster_id NULL
+typedef int AT_simgrid_parse_cluster_lat;
+#define AU_simgrid_parse_cluster_lat NULL
+typedef int AT_simgrid_parse_cluster_limiter___link;
+#define AU_simgrid_parse_cluster_limiter___link NULL
+typedef int AT_simgrid_parse_cluster_loopback___bw;
+#define AU_simgrid_parse_cluster_loopback___bw NULL
+typedef int AT_simgrid_parse_cluster_loopback___lat;
+#define AU_simgrid_parse_cluster_loopback___lat NULL
+typedef int AT_simgrid_parse_cluster_prefix;
+#define AU_simgrid_parse_cluster_prefix NULL
+typedef int AT_simgrid_parse_cluster_radical;
+#define AU_simgrid_parse_cluster_radical NULL
+typedef int AT_simgrid_parse_cluster_router___id;
+#define AU_simgrid_parse_cluster_router___id NULL
+typedef enum { AU_simgrid_parse_cluster_sharing___policy, A_simgrid_parse_cluster_sharing___policy_SHARED,A_simgrid_parse_cluster_sharing___policy_SPLITDUPLEX,A_simgrid_parse_cluster_sharing___policy_FULLDUPLEX,A_simgrid_parse_cluster_sharing___policy_FATPIPE } AT_simgrid_parse_cluster_sharing___policy;
+typedef int AT_simgrid_parse_cluster_speed;
+#define AU_simgrid_parse_cluster_speed NULL
+typedef int AT_simgrid_parse_cluster_suffix;
+#define AU_simgrid_parse_cluster_suffix NULL
+typedef int AT_simgrid_parse_cluster_topo___parameters;
+#define AU_simgrid_parse_cluster_topo___parameters NULL
+typedef enum { AU_simgrid_parse_cluster_topology, A_simgrid_parse_cluster_topology_FLAT,A_simgrid_parse_cluster_topology_TORUS,A_simgrid_parse_cluster_topology_FAT___TREE,A_simgrid_parse_cluster_topology_DRAGONFLY } AT_simgrid_parse_cluster_topology;
+typedef int AT_simgrid_parse_config_id;
+#define AU_simgrid_parse_config_id NULL
+typedef int AT_simgrid_parse_disk_id;
+#define AU_simgrid_parse_disk_id NULL
+typedef int AT_simgrid_parse_disk_read___bw;
+#define AU_simgrid_parse_disk_read___bw NULL
+typedef int AT_simgrid_parse_disk_write___bw;
+#define AU_simgrid_parse_disk_write___bw NULL
+typedef int AT_simgrid_parse_host_availability___file;
+#define AU_simgrid_parse_host_availability___file NULL
+typedef int AT_simgrid_parse_host_coordinates;
+#define AU_simgrid_parse_host_coordinates NULL
+typedef int AT_simgrid_parse_host_core;
+#define AU_simgrid_parse_host_core NULL
+typedef int AT_simgrid_parse_host_id;
+#define AU_simgrid_parse_host_id NULL
+typedef int AT_simgrid_parse_host_pstate;
+#define AU_simgrid_parse_host_pstate NULL
+typedef int AT_simgrid_parse_host_speed;
+#define AU_simgrid_parse_host_speed NULL
+typedef int AT_simgrid_parse_host_speed___file;
+#define AU_simgrid_parse_host_speed___file NULL
+typedef int AT_simgrid_parse_host_state___file;
+#define AU_simgrid_parse_host_state___file NULL
+typedef int AT_simgrid_parse_host___link_down;
+#define AU_simgrid_parse_host___link_down NULL
+typedef int AT_simgrid_parse_host___link_id;
+#define AU_simgrid_parse_host___link_id NULL
+typedef int AT_simgrid_parse_host___link_up;
+#define AU_simgrid_parse_host___link_up NULL
+typedef int AT_simgrid_parse_include_file;
+#define AU_simgrid_parse_include_file NULL
+typedef int AT_simgrid_parse_link_bandwidth;
+#define AU_simgrid_parse_link_bandwidth NULL
+typedef int AT_simgrid_parse_link_bandwidth___file;
+#define AU_simgrid_parse_link_bandwidth___file NULL
+typedef int AT_simgrid_parse_link_id;
+#define AU_simgrid_parse_link_id NULL
+typedef int AT_simgrid_parse_link_latency;
+#define AU_simgrid_parse_link_latency NULL
+typedef int AT_simgrid_parse_link_latency___file;
+#define AU_simgrid_parse_link_latency___file NULL
+typedef enum { AU_simgrid_parse_link_sharing___policy, A_simgrid_parse_link_sharing___policy_SHARED,A_simgrid_parse_link_sharing___policy_SPLITDUPLEX,A_simgrid_parse_link_sharing___policy_FULLDUPLEX,A_simgrid_parse_link_sharing___policy_FATPIPE,A_simgrid_parse_link_sharing___policy_WIFI } AT_simgrid_parse_link_sharing___policy;
+typedef int AT_simgrid_parse_link_state___file;
+#define AU_simgrid_parse_link_state___file NULL
+typedef enum { AU_simgrid_parse_link___ctn_direction, A_simgrid_parse_link___ctn_direction_UP,A_simgrid_parse_link___ctn_direction_DOWN,A_simgrid_parse_link___ctn_direction_NONE } AT_simgrid_parse_link___ctn_direction;
+typedef int AT_simgrid_parse_link___ctn_id;
+#define AU_simgrid_parse_link___ctn_id NULL
+typedef int AT_simgrid_parse_model___prop_id;
+#define AU_simgrid_parse_model___prop_id NULL
+typedef int AT_simgrid_parse_model___prop_value;
+#define AU_simgrid_parse_model___prop_value NULL
+typedef int AT_simgrid_parse_mount_name;
+#define AU_simgrid_parse_mount_name NULL
+typedef int AT_simgrid_parse_mount_storageId;
+#define AU_simgrid_parse_mount_storageId NULL
+typedef int AT_simgrid_parse_peer_availability___file;
+#define AU_simgrid_parse_peer_availability___file NULL
+typedef int AT_simgrid_parse_peer_bw___in;
+#define AU_simgrid_parse_peer_bw___in NULL
+typedef int AT_simgrid_parse_peer_bw___out;
+#define AU_simgrid_parse_peer_bw___out NULL
+typedef int AT_simgrid_parse_peer_coordinates;
+#define AU_simgrid_parse_peer_coordinates NULL
+typedef int AT_simgrid_parse_peer_id;
+#define AU_simgrid_parse_peer_id NULL
+typedef int AT_simgrid_parse_peer_lat;
+#define AU_simgrid_parse_peer_lat NULL
+typedef int AT_simgrid_parse_peer_speed;
+#define AU_simgrid_parse_peer_speed NULL
+typedef int AT_simgrid_parse_peer_speed___file;
+#define AU_simgrid_parse_peer_speed___file NULL
+typedef int AT_simgrid_parse_peer_state___file;
+#define AU_simgrid_parse_peer_state___file NULL
+typedef int AT_simgrid_parse_platform_version;
+#define AU_simgrid_parse_platform_version NULL
+typedef int AT_simgrid_parse_process_function;
+#define AU_simgrid_parse_process_function NULL
+typedef int AT_simgrid_parse_process_host;
+#define AU_simgrid_parse_process_host NULL
+typedef int AT_simgrid_parse_process_kill___time;
+#define AU_simgrid_parse_process_kill___time NULL
+typedef enum { AU_simgrid_parse_process_on___failure, A_simgrid_parse_process_on___failure_DIE,A_simgrid_parse_process_on___failure_RESTART } AT_simgrid_parse_process_on___failure;
+typedef int AT_simgrid_parse_process_start___time;
+#define AU_simgrid_parse_process_start___time NULL
+typedef int AT_simgrid_parse_prop_id;
+#define AU_simgrid_parse_prop_id NULL
+typedef int AT_simgrid_parse_prop_value;
+#define AU_simgrid_parse_prop_value NULL
+typedef enum { AU_simgrid_parse_random_generator, A_simgrid_parse_random_generator_DRAND48,A_simgrid_parse_random_generator_RAND,A_simgrid_parse_random_generator_RNGSTREAM,A_simgrid_parse_random_generator_NONE } AT_simgrid_parse_random_generator;
+typedef int AT_simgrid_parse_random_id;
+#define AU_simgrid_parse_random_id NULL
+typedef int AT_simgrid_parse_random_max;
+#define AU_simgrid_parse_random_max NULL
+typedef int AT_simgrid_parse_random_mean;
+#define AU_simgrid_parse_random_mean NULL
+typedef int AT_simgrid_parse_random_min;
+#define AU_simgrid_parse_random_min NULL
+typedef int AT_simgrid_parse_random_radical;
+#define AU_simgrid_parse_random_radical NULL
+typedef int AT_simgrid_parse_random_seed;
+#define AU_simgrid_parse_random_seed NULL
+typedef int AT_simgrid_parse_random_std___deviation;
+#define AU_simgrid_parse_random_std___deviation NULL
+typedef int AT_simgrid_parse_route_dst;
+#define AU_simgrid_parse_route_dst NULL
+typedef int AT_simgrid_parse_route_src;
+#define AU_simgrid_parse_route_src NULL
+typedef enum { AU_simgrid_parse_route_symmetrical, A_simgrid_parse_route_symmetrical_YES,A_simgrid_parse_route_symmetrical_NO,A_simgrid_parse_route_symmetrical_yes,A_simgrid_parse_route_symmetrical_no } AT_simgrid_parse_route_symmetrical;
+typedef int AT_simgrid_parse_router_coordinates;
+#define AU_simgrid_parse_router_coordinates NULL
+typedef int AT_simgrid_parse_router_id;
+#define AU_simgrid_parse_router_id NULL
+typedef int AT_simgrid_parse_storage_attach;
+#define AU_simgrid_parse_storage_attach NULL
+typedef int AT_simgrid_parse_storage_content;
+#define AU_simgrid_parse_storage_content NULL
+typedef int AT_simgrid_parse_storage_id;
+#define AU_simgrid_parse_storage_id NULL
+typedef int AT_simgrid_parse_storage_typeId;
+#define AU_simgrid_parse_storage_typeId NULL
+typedef int AT_simgrid_parse_storage___type_content;
+#define AU_simgrid_parse_storage___type_content NULL
+typedef int AT_simgrid_parse_storage___type_id;
+#define AU_simgrid_parse_storage___type_id NULL
+typedef int AT_simgrid_parse_storage___type_model;
+#define AU_simgrid_parse_storage___type_model NULL
+typedef int AT_simgrid_parse_storage___type_size;
+#define AU_simgrid_parse_storage___type_size NULL
+typedef int AT_simgrid_parse_trace_file;
+#define AU_simgrid_parse_trace_file NULL
+typedef int AT_simgrid_parse_trace_id;
+#define AU_simgrid_parse_trace_id NULL
+typedef int AT_simgrid_parse_trace_periodicity;
+#define AU_simgrid_parse_trace_periodicity NULL
+typedef int AT_simgrid_parse_trace___connect_element;
+#define AU_simgrid_parse_trace___connect_element NULL
+typedef enum { AU_simgrid_parse_trace___connect_kind, A_simgrid_parse_trace___connect_kind_HOST___AVAIL,A_simgrid_parse_trace___connect_kind_SPEED,A_simgrid_parse_trace___connect_kind_LINK___AVAIL,A_simgrid_parse_trace___connect_kind_BANDWIDTH,A_simgrid_parse_trace___connect_kind_LATENCY } AT_simgrid_parse_trace___connect_kind;
+typedef int AT_simgrid_parse_trace___connect_trace;
+#define AU_simgrid_parse_trace___connect_trace NULL
+typedef int AT_simgrid_parse_zone_id;
+#define AU_simgrid_parse_zone_id NULL
+typedef int AT_simgrid_parse_zone_routing;
+#define AU_simgrid_parse_zone_routing NULL
+typedef int AT_simgrid_parse_zoneRoute_dst;
+#define AU_simgrid_parse_zoneRoute_dst NULL
+typedef int AT_simgrid_parse_zoneRoute_gw___dst;
+#define AU_simgrid_parse_zoneRoute_gw___dst NULL
+typedef int AT_simgrid_parse_zoneRoute_gw___src;
+#define AU_simgrid_parse_zoneRoute_gw___src NULL
+typedef int AT_simgrid_parse_zoneRoute_src;
+#define AU_simgrid_parse_zoneRoute_src NULL
+typedef enum { AU_simgrid_parse_zoneRoute_symmetrical, A_simgrid_parse_zoneRoute_symmetrical_YES,A_simgrid_parse_zoneRoute_symmetrical_NO,A_simgrid_parse_zoneRoute_symmetrical_yes,A_simgrid_parse_zoneRoute_symmetrical_no } AT_simgrid_parse_zoneRoute_symmetrical;
 
 /* FleXML-provided data. */
-XBT_PUBLIC_DATA int surfxml_pcdata_ix;
-XBT_PUBLIC_DATA char *surfxml_bufferstack;
-#define surfxml_pcdata (surfxml_bufferstack + surfxml_pcdata_ix)
-XBT_PUBLIC_DATA AT_surfxml_AS_id AX_surfxml_AS_id;
-#define A_surfxml_AS_id (surfxml_bufferstack + AX_surfxml_AS_id)
-XBT_PUBLIC_DATA short int surfxml_AS_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_AS_routing AX_surfxml_AS_routing;
-#define A_surfxml_AS_routing (surfxml_bufferstack + AX_surfxml_AS_routing)
-XBT_PUBLIC_DATA short int surfxml_AS_routing_isset;
-XBT_PUBLIC_DATA AT_surfxml_ASroute_dst AX_surfxml_ASroute_dst;
-#define A_surfxml_ASroute_dst (surfxml_bufferstack + AX_surfxml_ASroute_dst)
-XBT_PUBLIC_DATA short int surfxml_ASroute_dst_isset;
-XBT_PUBLIC_DATA AT_surfxml_ASroute_gw___dst AX_surfxml_ASroute_gw___dst;
-#define A_surfxml_ASroute_gw___dst (surfxml_bufferstack + AX_surfxml_ASroute_gw___dst)
-XBT_PUBLIC_DATA short int surfxml_ASroute_gw___dst_isset;
-XBT_PUBLIC_DATA AT_surfxml_ASroute_gw___src AX_surfxml_ASroute_gw___src;
-#define A_surfxml_ASroute_gw___src (surfxml_bufferstack + AX_surfxml_ASroute_gw___src)
-XBT_PUBLIC_DATA short int surfxml_ASroute_gw___src_isset;
-XBT_PUBLIC_DATA AT_surfxml_ASroute_src AX_surfxml_ASroute_src;
-#define A_surfxml_ASroute_src (surfxml_bufferstack + AX_surfxml_ASroute_src)
-XBT_PUBLIC_DATA short int surfxml_ASroute_src_isset;
-XBT_PUBLIC_DATA AT_surfxml_ASroute_symmetrical AX_surfxml_ASroute_symmetrical;
-#define A_surfxml_ASroute_symmetrical AX_surfxml_ASroute_symmetrical
-XBT_PUBLIC_DATA short int surfxml_ASroute_symmetrical_isset;
-XBT_PUBLIC_DATA AT_surfxml_actor_function AX_surfxml_actor_function;
-#define A_surfxml_actor_function (surfxml_bufferstack + AX_surfxml_actor_function)
-XBT_PUBLIC_DATA short int surfxml_actor_function_isset;
-XBT_PUBLIC_DATA AT_surfxml_actor_host AX_surfxml_actor_host;
-#define A_surfxml_actor_host (surfxml_bufferstack + AX_surfxml_actor_host)
-XBT_PUBLIC_DATA short int surfxml_actor_host_isset;
-XBT_PUBLIC_DATA AT_surfxml_actor_kill___time AX_surfxml_actor_kill___time;
-#define A_surfxml_actor_kill___time (surfxml_bufferstack + AX_surfxml_actor_kill___time)
-XBT_PUBLIC_DATA short int surfxml_actor_kill___time_isset;
-XBT_PUBLIC_DATA AT_surfxml_actor_on___failure AX_surfxml_actor_on___failure;
-#define A_surfxml_actor_on___failure AX_surfxml_actor_on___failure
-XBT_PUBLIC_DATA short int surfxml_actor_on___failure_isset;
-XBT_PUBLIC_DATA AT_surfxml_actor_start___time AX_surfxml_actor_start___time;
-#define A_surfxml_actor_start___time (surfxml_bufferstack + AX_surfxml_actor_start___time)
-XBT_PUBLIC_DATA short int surfxml_actor_start___time_isset;
-XBT_PUBLIC_DATA AT_surfxml_argument_value AX_surfxml_argument_value;
-#define A_surfxml_argument_value (surfxml_bufferstack + AX_surfxml_argument_value)
-XBT_PUBLIC_DATA short int surfxml_argument_value_isset;
-XBT_PUBLIC_DATA AT_surfxml_backbone_bandwidth AX_surfxml_backbone_bandwidth;
-#define A_surfxml_backbone_bandwidth (surfxml_bufferstack + AX_surfxml_backbone_bandwidth)
-XBT_PUBLIC_DATA short int surfxml_backbone_bandwidth_isset;
-XBT_PUBLIC_DATA AT_surfxml_backbone_id AX_surfxml_backbone_id;
-#define A_surfxml_backbone_id (surfxml_bufferstack + AX_surfxml_backbone_id)
-XBT_PUBLIC_DATA short int surfxml_backbone_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_backbone_latency AX_surfxml_backbone_latency;
-#define A_surfxml_backbone_latency (surfxml_bufferstack + AX_surfxml_backbone_latency)
-XBT_PUBLIC_DATA short int surfxml_backbone_latency_isset;
-XBT_PUBLIC_DATA AT_surfxml_bypassASroute_dst AX_surfxml_bypassASroute_dst;
-#define A_surfxml_bypassASroute_dst (surfxml_bufferstack + AX_surfxml_bypassASroute_dst)
-XBT_PUBLIC_DATA short int surfxml_bypassASroute_dst_isset;
-XBT_PUBLIC_DATA AT_surfxml_bypassASroute_gw___dst AX_surfxml_bypassASroute_gw___dst;
-#define A_surfxml_bypassASroute_gw___dst (surfxml_bufferstack + AX_surfxml_bypassASroute_gw___dst)
-XBT_PUBLIC_DATA short int surfxml_bypassASroute_gw___dst_isset;
-XBT_PUBLIC_DATA AT_surfxml_bypassASroute_gw___src AX_surfxml_bypassASroute_gw___src;
-#define A_surfxml_bypassASroute_gw___src (surfxml_bufferstack + AX_surfxml_bypassASroute_gw___src)
-XBT_PUBLIC_DATA short int surfxml_bypassASroute_gw___src_isset;
-XBT_PUBLIC_DATA AT_surfxml_bypassASroute_src AX_surfxml_bypassASroute_src;
-#define A_surfxml_bypassASroute_src (surfxml_bufferstack + AX_surfxml_bypassASroute_src)
-XBT_PUBLIC_DATA short int surfxml_bypassASroute_src_isset;
-XBT_PUBLIC_DATA AT_surfxml_bypassRoute_dst AX_surfxml_bypassRoute_dst;
-#define A_surfxml_bypassRoute_dst (surfxml_bufferstack + AX_surfxml_bypassRoute_dst)
-XBT_PUBLIC_DATA short int surfxml_bypassRoute_dst_isset;
-XBT_PUBLIC_DATA AT_surfxml_bypassRoute_src AX_surfxml_bypassRoute_src;
-#define A_surfxml_bypassRoute_src (surfxml_bufferstack + AX_surfxml_bypassRoute_src)
-XBT_PUBLIC_DATA short int surfxml_bypassRoute_src_isset;
-XBT_PUBLIC_DATA AT_surfxml_bypassZoneRoute_dst AX_surfxml_bypassZoneRoute_dst;
-#define A_surfxml_bypassZoneRoute_dst (surfxml_bufferstack + AX_surfxml_bypassZoneRoute_dst)
-XBT_PUBLIC_DATA short int surfxml_bypassZoneRoute_dst_isset;
-XBT_PUBLIC_DATA AT_surfxml_bypassZoneRoute_gw___dst AX_surfxml_bypassZoneRoute_gw___dst;
-#define A_surfxml_bypassZoneRoute_gw___dst (surfxml_bufferstack + AX_surfxml_bypassZoneRoute_gw___dst)
-XBT_PUBLIC_DATA short int surfxml_bypassZoneRoute_gw___dst_isset;
-XBT_PUBLIC_DATA AT_surfxml_bypassZoneRoute_gw___src AX_surfxml_bypassZoneRoute_gw___src;
-#define A_surfxml_bypassZoneRoute_gw___src (surfxml_bufferstack + AX_surfxml_bypassZoneRoute_gw___src)
-XBT_PUBLIC_DATA short int surfxml_bypassZoneRoute_gw___src_isset;
-XBT_PUBLIC_DATA AT_surfxml_bypassZoneRoute_src AX_surfxml_bypassZoneRoute_src;
-#define A_surfxml_bypassZoneRoute_src (surfxml_bufferstack + AX_surfxml_bypassZoneRoute_src)
-XBT_PUBLIC_DATA short int surfxml_bypassZoneRoute_src_isset;
-XBT_PUBLIC_DATA AT_surfxml_cabinet_bw AX_surfxml_cabinet_bw;
-#define A_surfxml_cabinet_bw (surfxml_bufferstack + AX_surfxml_cabinet_bw)
-XBT_PUBLIC_DATA short int surfxml_cabinet_bw_isset;
-XBT_PUBLIC_DATA AT_surfxml_cabinet_id AX_surfxml_cabinet_id;
-#define A_surfxml_cabinet_id (surfxml_bufferstack + AX_surfxml_cabinet_id)
-XBT_PUBLIC_DATA short int surfxml_cabinet_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_cabinet_lat AX_surfxml_cabinet_lat;
-#define A_surfxml_cabinet_lat (surfxml_bufferstack + AX_surfxml_cabinet_lat)
-XBT_PUBLIC_DATA short int surfxml_cabinet_lat_isset;
-XBT_PUBLIC_DATA AT_surfxml_cabinet_prefix AX_surfxml_cabinet_prefix;
-#define A_surfxml_cabinet_prefix (surfxml_bufferstack + AX_surfxml_cabinet_prefix)
-XBT_PUBLIC_DATA short int surfxml_cabinet_prefix_isset;
-XBT_PUBLIC_DATA AT_surfxml_cabinet_radical AX_surfxml_cabinet_radical;
-#define A_surfxml_cabinet_radical (surfxml_bufferstack + AX_surfxml_cabinet_radical)
-XBT_PUBLIC_DATA short int surfxml_cabinet_radical_isset;
-XBT_PUBLIC_DATA AT_surfxml_cabinet_speed AX_surfxml_cabinet_speed;
-#define A_surfxml_cabinet_speed (surfxml_bufferstack + AX_surfxml_cabinet_speed)
-XBT_PUBLIC_DATA short int surfxml_cabinet_speed_isset;
-XBT_PUBLIC_DATA AT_surfxml_cabinet_suffix AX_surfxml_cabinet_suffix;
-#define A_surfxml_cabinet_suffix (surfxml_bufferstack + AX_surfxml_cabinet_suffix)
-XBT_PUBLIC_DATA short int surfxml_cabinet_suffix_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_bb___bw AX_surfxml_cluster_bb___bw;
-#define A_surfxml_cluster_bb___bw (surfxml_bufferstack + AX_surfxml_cluster_bb___bw)
-XBT_PUBLIC_DATA short int surfxml_cluster_bb___bw_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_bb___lat AX_surfxml_cluster_bb___lat;
-#define A_surfxml_cluster_bb___lat (surfxml_bufferstack + AX_surfxml_cluster_bb___lat)
-XBT_PUBLIC_DATA short int surfxml_cluster_bb___lat_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_bb___sharing___policy AX_surfxml_cluster_bb___sharing___policy;
-#define A_surfxml_cluster_bb___sharing___policy AX_surfxml_cluster_bb___sharing___policy
-XBT_PUBLIC_DATA short int surfxml_cluster_bb___sharing___policy_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_bw AX_surfxml_cluster_bw;
-#define A_surfxml_cluster_bw (surfxml_bufferstack + AX_surfxml_cluster_bw)
-XBT_PUBLIC_DATA short int surfxml_cluster_bw_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_core AX_surfxml_cluster_core;
-#define A_surfxml_cluster_core (surfxml_bufferstack + AX_surfxml_cluster_core)
-XBT_PUBLIC_DATA short int surfxml_cluster_core_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_id AX_surfxml_cluster_id;
-#define A_surfxml_cluster_id (surfxml_bufferstack + AX_surfxml_cluster_id)
-XBT_PUBLIC_DATA short int surfxml_cluster_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_lat AX_surfxml_cluster_lat;
-#define A_surfxml_cluster_lat (surfxml_bufferstack + AX_surfxml_cluster_lat)
-XBT_PUBLIC_DATA short int surfxml_cluster_lat_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_limiter___link AX_surfxml_cluster_limiter___link;
-#define A_surfxml_cluster_limiter___link (surfxml_bufferstack + AX_surfxml_cluster_limiter___link)
-XBT_PUBLIC_DATA short int surfxml_cluster_limiter___link_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_loopback___bw AX_surfxml_cluster_loopback___bw;
-#define A_surfxml_cluster_loopback___bw (surfxml_bufferstack + AX_surfxml_cluster_loopback___bw)
-XBT_PUBLIC_DATA short int surfxml_cluster_loopback___bw_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_loopback___lat AX_surfxml_cluster_loopback___lat;
-#define A_surfxml_cluster_loopback___lat (surfxml_bufferstack + AX_surfxml_cluster_loopback___lat)
-XBT_PUBLIC_DATA short int surfxml_cluster_loopback___lat_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_prefix AX_surfxml_cluster_prefix;
-#define A_surfxml_cluster_prefix (surfxml_bufferstack + AX_surfxml_cluster_prefix)
-XBT_PUBLIC_DATA short int surfxml_cluster_prefix_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_radical AX_surfxml_cluster_radical;
-#define A_surfxml_cluster_radical (surfxml_bufferstack + AX_surfxml_cluster_radical)
-XBT_PUBLIC_DATA short int surfxml_cluster_radical_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_router___id AX_surfxml_cluster_router___id;
-#define A_surfxml_cluster_router___id (surfxml_bufferstack + AX_surfxml_cluster_router___id)
-XBT_PUBLIC_DATA short int surfxml_cluster_router___id_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_sharing___policy AX_surfxml_cluster_sharing___policy;
-#define A_surfxml_cluster_sharing___policy AX_surfxml_cluster_sharing___policy
-XBT_PUBLIC_DATA short int surfxml_cluster_sharing___policy_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_speed AX_surfxml_cluster_speed;
-#define A_surfxml_cluster_speed (surfxml_bufferstack + AX_surfxml_cluster_speed)
-XBT_PUBLIC_DATA short int surfxml_cluster_speed_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_suffix AX_surfxml_cluster_suffix;
-#define A_surfxml_cluster_suffix (surfxml_bufferstack + AX_surfxml_cluster_suffix)
-XBT_PUBLIC_DATA short int surfxml_cluster_suffix_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_topo___parameters AX_surfxml_cluster_topo___parameters;
-#define A_surfxml_cluster_topo___parameters (surfxml_bufferstack + AX_surfxml_cluster_topo___parameters)
-XBT_PUBLIC_DATA short int surfxml_cluster_topo___parameters_isset;
-XBT_PUBLIC_DATA AT_surfxml_cluster_topology AX_surfxml_cluster_topology;
-#define A_surfxml_cluster_topology AX_surfxml_cluster_topology
-XBT_PUBLIC_DATA short int surfxml_cluster_topology_isset;
-XBT_PUBLIC_DATA AT_surfxml_config_id AX_surfxml_config_id;
-#define A_surfxml_config_id (surfxml_bufferstack + AX_surfxml_config_id)
-XBT_PUBLIC_DATA short int surfxml_config_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_disk_id AX_surfxml_disk_id;
-#define A_surfxml_disk_id (surfxml_bufferstack + AX_surfxml_disk_id)
-XBT_PUBLIC_DATA short int surfxml_disk_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_disk_read___bw AX_surfxml_disk_read___bw;
-#define A_surfxml_disk_read___bw (surfxml_bufferstack + AX_surfxml_disk_read___bw)
-XBT_PUBLIC_DATA short int surfxml_disk_read___bw_isset;
-XBT_PUBLIC_DATA AT_surfxml_disk_write___bw AX_surfxml_disk_write___bw;
-#define A_surfxml_disk_write___bw (surfxml_bufferstack + AX_surfxml_disk_write___bw)
-XBT_PUBLIC_DATA short int surfxml_disk_write___bw_isset;
-XBT_PUBLIC_DATA AT_surfxml_host_availability___file AX_surfxml_host_availability___file;
-#define A_surfxml_host_availability___file (surfxml_bufferstack + AX_surfxml_host_availability___file)
-XBT_PUBLIC_DATA short int surfxml_host_availability___file_isset;
-XBT_PUBLIC_DATA AT_surfxml_host_coordinates AX_surfxml_host_coordinates;
-#define A_surfxml_host_coordinates (surfxml_bufferstack + AX_surfxml_host_coordinates)
-XBT_PUBLIC_DATA short int surfxml_host_coordinates_isset;
-XBT_PUBLIC_DATA AT_surfxml_host_core AX_surfxml_host_core;
-#define A_surfxml_host_core (surfxml_bufferstack + AX_surfxml_host_core)
-XBT_PUBLIC_DATA short int surfxml_host_core_isset;
-XBT_PUBLIC_DATA AT_surfxml_host_id AX_surfxml_host_id;
-#define A_surfxml_host_id (surfxml_bufferstack + AX_surfxml_host_id)
-XBT_PUBLIC_DATA short int surfxml_host_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_host_pstate AX_surfxml_host_pstate;
-#define A_surfxml_host_pstate (surfxml_bufferstack + AX_surfxml_host_pstate)
-XBT_PUBLIC_DATA short int surfxml_host_pstate_isset;
-XBT_PUBLIC_DATA AT_surfxml_host_speed AX_surfxml_host_speed;
-#define A_surfxml_host_speed (surfxml_bufferstack + AX_surfxml_host_speed)
-XBT_PUBLIC_DATA short int surfxml_host_speed_isset;
-XBT_PUBLIC_DATA AT_surfxml_host_speed___file AX_surfxml_host_speed___file;
-#define A_surfxml_host_speed___file (surfxml_bufferstack + AX_surfxml_host_speed___file)
-XBT_PUBLIC_DATA short int surfxml_host_speed___file_isset;
-XBT_PUBLIC_DATA AT_surfxml_host_state___file AX_surfxml_host_state___file;
-#define A_surfxml_host_state___file (surfxml_bufferstack + AX_surfxml_host_state___file)
-XBT_PUBLIC_DATA short int surfxml_host_state___file_isset;
-XBT_PUBLIC_DATA AT_surfxml_host___link_down AX_surfxml_host___link_down;
-#define A_surfxml_host___link_down (surfxml_bufferstack + AX_surfxml_host___link_down)
-XBT_PUBLIC_DATA short int surfxml_host___link_down_isset;
-XBT_PUBLIC_DATA AT_surfxml_host___link_id AX_surfxml_host___link_id;
-#define A_surfxml_host___link_id (surfxml_bufferstack + AX_surfxml_host___link_id)
-XBT_PUBLIC_DATA short int surfxml_host___link_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_host___link_up AX_surfxml_host___link_up;
-#define A_surfxml_host___link_up (surfxml_bufferstack + AX_surfxml_host___link_up)
-XBT_PUBLIC_DATA short int surfxml_host___link_up_isset;
-XBT_PUBLIC_DATA AT_surfxml_include_file AX_surfxml_include_file;
-#define A_surfxml_include_file (surfxml_bufferstack + AX_surfxml_include_file)
-XBT_PUBLIC_DATA short int surfxml_include_file_isset;
-XBT_PUBLIC_DATA AT_surfxml_link_bandwidth AX_surfxml_link_bandwidth;
-#define A_surfxml_link_bandwidth (surfxml_bufferstack + AX_surfxml_link_bandwidth)
-XBT_PUBLIC_DATA short int surfxml_link_bandwidth_isset;
-XBT_PUBLIC_DATA AT_surfxml_link_bandwidth___file AX_surfxml_link_bandwidth___file;
-#define A_surfxml_link_bandwidth___file (surfxml_bufferstack + AX_surfxml_link_bandwidth___file)
-XBT_PUBLIC_DATA short int surfxml_link_bandwidth___file_isset;
-XBT_PUBLIC_DATA AT_surfxml_link_id AX_surfxml_link_id;
-#define A_surfxml_link_id (surfxml_bufferstack + AX_surfxml_link_id)
-XBT_PUBLIC_DATA short int surfxml_link_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_link_latency AX_surfxml_link_latency;
-#define A_surfxml_link_latency (surfxml_bufferstack + AX_surfxml_link_latency)
-XBT_PUBLIC_DATA short int surfxml_link_latency_isset;
-XBT_PUBLIC_DATA AT_surfxml_link_latency___file AX_surfxml_link_latency___file;
-#define A_surfxml_link_latency___file (surfxml_bufferstack + AX_surfxml_link_latency___file)
-XBT_PUBLIC_DATA short int surfxml_link_latency___file_isset;
-XBT_PUBLIC_DATA AT_surfxml_link_sharing___policy AX_surfxml_link_sharing___policy;
-#define A_surfxml_link_sharing___policy AX_surfxml_link_sharing___policy
-XBT_PUBLIC_DATA short int surfxml_link_sharing___policy_isset;
-XBT_PUBLIC_DATA AT_surfxml_link_state___file AX_surfxml_link_state___file;
-#define A_surfxml_link_state___file (surfxml_bufferstack + AX_surfxml_link_state___file)
-XBT_PUBLIC_DATA short int surfxml_link_state___file_isset;
-XBT_PUBLIC_DATA AT_surfxml_link___ctn_direction AX_surfxml_link___ctn_direction;
-#define A_surfxml_link___ctn_direction AX_surfxml_link___ctn_direction
-XBT_PUBLIC_DATA short int surfxml_link___ctn_direction_isset;
-XBT_PUBLIC_DATA AT_surfxml_link___ctn_id AX_surfxml_link___ctn_id;
-#define A_surfxml_link___ctn_id (surfxml_bufferstack + AX_surfxml_link___ctn_id)
-XBT_PUBLIC_DATA short int surfxml_link___ctn_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_model___prop_id AX_surfxml_model___prop_id;
-#define A_surfxml_model___prop_id (surfxml_bufferstack + AX_surfxml_model___prop_id)
-XBT_PUBLIC_DATA short int surfxml_model___prop_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_model___prop_value AX_surfxml_model___prop_value;
-#define A_surfxml_model___prop_value (surfxml_bufferstack + AX_surfxml_model___prop_value)
-XBT_PUBLIC_DATA short int surfxml_model___prop_value_isset;
-XBT_PUBLIC_DATA AT_surfxml_mount_name AX_surfxml_mount_name;
-#define A_surfxml_mount_name (surfxml_bufferstack + AX_surfxml_mount_name)
-XBT_PUBLIC_DATA short int surfxml_mount_name_isset;
-XBT_PUBLIC_DATA AT_surfxml_mount_storageId AX_surfxml_mount_storageId;
-#define A_surfxml_mount_storageId (surfxml_bufferstack + AX_surfxml_mount_storageId)
-XBT_PUBLIC_DATA short int surfxml_mount_storageId_isset;
-XBT_PUBLIC_DATA AT_surfxml_peer_availability___file AX_surfxml_peer_availability___file;
-#define A_surfxml_peer_availability___file (surfxml_bufferstack + AX_surfxml_peer_availability___file)
-XBT_PUBLIC_DATA short int surfxml_peer_availability___file_isset;
-XBT_PUBLIC_DATA AT_surfxml_peer_bw___in AX_surfxml_peer_bw___in;
-#define A_surfxml_peer_bw___in (surfxml_bufferstack + AX_surfxml_peer_bw___in)
-XBT_PUBLIC_DATA short int surfxml_peer_bw___in_isset;
-XBT_PUBLIC_DATA AT_surfxml_peer_bw___out AX_surfxml_peer_bw___out;
-#define A_surfxml_peer_bw___out (surfxml_bufferstack + AX_surfxml_peer_bw___out)
-XBT_PUBLIC_DATA short int surfxml_peer_bw___out_isset;
-XBT_PUBLIC_DATA AT_surfxml_peer_coordinates AX_surfxml_peer_coordinates;
-#define A_surfxml_peer_coordinates (surfxml_bufferstack + AX_surfxml_peer_coordinates)
-XBT_PUBLIC_DATA short int surfxml_peer_coordinates_isset;
-XBT_PUBLIC_DATA AT_surfxml_peer_id AX_surfxml_peer_id;
-#define A_surfxml_peer_id (surfxml_bufferstack + AX_surfxml_peer_id)
-XBT_PUBLIC_DATA short int surfxml_peer_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_peer_lat AX_surfxml_peer_lat;
-#define A_surfxml_peer_lat (surfxml_bufferstack + AX_surfxml_peer_lat)
-XBT_PUBLIC_DATA short int surfxml_peer_lat_isset;
-XBT_PUBLIC_DATA AT_surfxml_peer_speed AX_surfxml_peer_speed;
-#define A_surfxml_peer_speed (surfxml_bufferstack + AX_surfxml_peer_speed)
-XBT_PUBLIC_DATA short int surfxml_peer_speed_isset;
-XBT_PUBLIC_DATA AT_surfxml_peer_speed___file AX_surfxml_peer_speed___file;
-#define A_surfxml_peer_speed___file (surfxml_bufferstack + AX_surfxml_peer_speed___file)
-XBT_PUBLIC_DATA short int surfxml_peer_speed___file_isset;
-XBT_PUBLIC_DATA AT_surfxml_peer_state___file AX_surfxml_peer_state___file;
-#define A_surfxml_peer_state___file (surfxml_bufferstack + AX_surfxml_peer_state___file)
-XBT_PUBLIC_DATA short int surfxml_peer_state___file_isset;
-XBT_PUBLIC_DATA AT_surfxml_platform_version AX_surfxml_platform_version;
-#define A_surfxml_platform_version (surfxml_bufferstack + AX_surfxml_platform_version)
-XBT_PUBLIC_DATA short int surfxml_platform_version_isset;
-XBT_PUBLIC_DATA AT_surfxml_process_function AX_surfxml_process_function;
-#define A_surfxml_process_function (surfxml_bufferstack + AX_surfxml_process_function)
-XBT_PUBLIC_DATA short int surfxml_process_function_isset;
-XBT_PUBLIC_DATA AT_surfxml_process_host AX_surfxml_process_host;
-#define A_surfxml_process_host (surfxml_bufferstack + AX_surfxml_process_host)
-XBT_PUBLIC_DATA short int surfxml_process_host_isset;
-XBT_PUBLIC_DATA AT_surfxml_process_kill___time AX_surfxml_process_kill___time;
-#define A_surfxml_process_kill___time (surfxml_bufferstack + AX_surfxml_process_kill___time)
-XBT_PUBLIC_DATA short int surfxml_process_kill___time_isset;
-XBT_PUBLIC_DATA AT_surfxml_process_on___failure AX_surfxml_process_on___failure;
-#define A_surfxml_process_on___failure AX_surfxml_process_on___failure
-XBT_PUBLIC_DATA short int surfxml_process_on___failure_isset;
-XBT_PUBLIC_DATA AT_surfxml_process_start___time AX_surfxml_process_start___time;
-#define A_surfxml_process_start___time (surfxml_bufferstack + AX_surfxml_process_start___time)
-XBT_PUBLIC_DATA short int surfxml_process_start___time_isset;
-XBT_PUBLIC_DATA AT_surfxml_prop_id AX_surfxml_prop_id;
-#define A_surfxml_prop_id (surfxml_bufferstack + AX_surfxml_prop_id)
-XBT_PUBLIC_DATA short int surfxml_prop_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_prop_value AX_surfxml_prop_value;
-#define A_surfxml_prop_value (surfxml_bufferstack + AX_surfxml_prop_value)
-XBT_PUBLIC_DATA short int surfxml_prop_value_isset;
-XBT_PUBLIC_DATA AT_surfxml_random_generator AX_surfxml_random_generator;
-#define A_surfxml_random_generator AX_surfxml_random_generator
-XBT_PUBLIC_DATA short int surfxml_random_generator_isset;
-XBT_PUBLIC_DATA AT_surfxml_random_id AX_surfxml_random_id;
-#define A_surfxml_random_id (surfxml_bufferstack + AX_surfxml_random_id)
-XBT_PUBLIC_DATA short int surfxml_random_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_random_max AX_surfxml_random_max;
-#define A_surfxml_random_max (surfxml_bufferstack + AX_surfxml_random_max)
-XBT_PUBLIC_DATA short int surfxml_random_max_isset;
-XBT_PUBLIC_DATA AT_surfxml_random_mean AX_surfxml_random_mean;
-#define A_surfxml_random_mean (surfxml_bufferstack + AX_surfxml_random_mean)
-XBT_PUBLIC_DATA short int surfxml_random_mean_isset;
-XBT_PUBLIC_DATA AT_surfxml_random_min AX_surfxml_random_min;
-#define A_surfxml_random_min (surfxml_bufferstack + AX_surfxml_random_min)
-XBT_PUBLIC_DATA short int surfxml_random_min_isset;
-XBT_PUBLIC_DATA AT_surfxml_random_radical AX_surfxml_random_radical;
-#define A_surfxml_random_radical (surfxml_bufferstack + AX_surfxml_random_radical)
-XBT_PUBLIC_DATA short int surfxml_random_radical_isset;
-XBT_PUBLIC_DATA AT_surfxml_random_seed AX_surfxml_random_seed;
-#define A_surfxml_random_seed (surfxml_bufferstack + AX_surfxml_random_seed)
-XBT_PUBLIC_DATA short int surfxml_random_seed_isset;
-XBT_PUBLIC_DATA AT_surfxml_random_std___deviation AX_surfxml_random_std___deviation;
-#define A_surfxml_random_std___deviation (surfxml_bufferstack + AX_surfxml_random_std___deviation)
-XBT_PUBLIC_DATA short int surfxml_random_std___deviation_isset;
-XBT_PUBLIC_DATA AT_surfxml_route_dst AX_surfxml_route_dst;
-#define A_surfxml_route_dst (surfxml_bufferstack + AX_surfxml_route_dst)
-XBT_PUBLIC_DATA short int surfxml_route_dst_isset;
-XBT_PUBLIC_DATA AT_surfxml_route_src AX_surfxml_route_src;
-#define A_surfxml_route_src (surfxml_bufferstack + AX_surfxml_route_src)
-XBT_PUBLIC_DATA short int surfxml_route_src_isset;
-XBT_PUBLIC_DATA AT_surfxml_route_symmetrical AX_surfxml_route_symmetrical;
-#define A_surfxml_route_symmetrical AX_surfxml_route_symmetrical
-XBT_PUBLIC_DATA short int surfxml_route_symmetrical_isset;
-XBT_PUBLIC_DATA AT_surfxml_router_coordinates AX_surfxml_router_coordinates;
-#define A_surfxml_router_coordinates (surfxml_bufferstack + AX_surfxml_router_coordinates)
-XBT_PUBLIC_DATA short int surfxml_router_coordinates_isset;
-XBT_PUBLIC_DATA AT_surfxml_router_id AX_surfxml_router_id;
-#define A_surfxml_router_id (surfxml_bufferstack + AX_surfxml_router_id)
-XBT_PUBLIC_DATA short int surfxml_router_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_storage_attach AX_surfxml_storage_attach;
-#define A_surfxml_storage_attach (surfxml_bufferstack + AX_surfxml_storage_attach)
-XBT_PUBLIC_DATA short int surfxml_storage_attach_isset;
-XBT_PUBLIC_DATA AT_surfxml_storage_content AX_surfxml_storage_content;
-#define A_surfxml_storage_content (surfxml_bufferstack + AX_surfxml_storage_content)
-XBT_PUBLIC_DATA short int surfxml_storage_content_isset;
-XBT_PUBLIC_DATA AT_surfxml_storage_id AX_surfxml_storage_id;
-#define A_surfxml_storage_id (surfxml_bufferstack + AX_surfxml_storage_id)
-XBT_PUBLIC_DATA short int surfxml_storage_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_storage_typeId AX_surfxml_storage_typeId;
-#define A_surfxml_storage_typeId (surfxml_bufferstack + AX_surfxml_storage_typeId)
-XBT_PUBLIC_DATA short int surfxml_storage_typeId_isset;
-XBT_PUBLIC_DATA AT_surfxml_storage___type_content AX_surfxml_storage___type_content;
-#define A_surfxml_storage___type_content (surfxml_bufferstack + AX_surfxml_storage___type_content)
-XBT_PUBLIC_DATA short int surfxml_storage___type_content_isset;
-XBT_PUBLIC_DATA AT_surfxml_storage___type_id AX_surfxml_storage___type_id;
-#define A_surfxml_storage___type_id (surfxml_bufferstack + AX_surfxml_storage___type_id)
-XBT_PUBLIC_DATA short int surfxml_storage___type_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_storage___type_model AX_surfxml_storage___type_model;
-#define A_surfxml_storage___type_model (surfxml_bufferstack + AX_surfxml_storage___type_model)
-XBT_PUBLIC_DATA short int surfxml_storage___type_model_isset;
-XBT_PUBLIC_DATA AT_surfxml_storage___type_size AX_surfxml_storage___type_size;
-#define A_surfxml_storage___type_size (surfxml_bufferstack + AX_surfxml_storage___type_size)
-XBT_PUBLIC_DATA short int surfxml_storage___type_size_isset;
-XBT_PUBLIC_DATA AT_surfxml_trace_file AX_surfxml_trace_file;
-#define A_surfxml_trace_file (surfxml_bufferstack + AX_surfxml_trace_file)
-XBT_PUBLIC_DATA short int surfxml_trace_file_isset;
-XBT_PUBLIC_DATA AT_surfxml_trace_id AX_surfxml_trace_id;
-#define A_surfxml_trace_id (surfxml_bufferstack + AX_surfxml_trace_id)
-XBT_PUBLIC_DATA short int surfxml_trace_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_trace_periodicity AX_surfxml_trace_periodicity;
-#define A_surfxml_trace_periodicity (surfxml_bufferstack + AX_surfxml_trace_periodicity)
-XBT_PUBLIC_DATA short int surfxml_trace_periodicity_isset;
-XBT_PUBLIC_DATA AT_surfxml_trace___connect_element AX_surfxml_trace___connect_element;
-#define A_surfxml_trace___connect_element (surfxml_bufferstack + AX_surfxml_trace___connect_element)
-XBT_PUBLIC_DATA short int surfxml_trace___connect_element_isset;
-XBT_PUBLIC_DATA AT_surfxml_trace___connect_kind AX_surfxml_trace___connect_kind;
-#define A_surfxml_trace___connect_kind AX_surfxml_trace___connect_kind
-XBT_PUBLIC_DATA short int surfxml_trace___connect_kind_isset;
-XBT_PUBLIC_DATA AT_surfxml_trace___connect_trace AX_surfxml_trace___connect_trace;
-#define A_surfxml_trace___connect_trace (surfxml_bufferstack + AX_surfxml_trace___connect_trace)
-XBT_PUBLIC_DATA short int surfxml_trace___connect_trace_isset;
-XBT_PUBLIC_DATA AT_surfxml_zone_id AX_surfxml_zone_id;
-#define A_surfxml_zone_id (surfxml_bufferstack + AX_surfxml_zone_id)
-XBT_PUBLIC_DATA short int surfxml_zone_id_isset;
-XBT_PUBLIC_DATA AT_surfxml_zone_routing AX_surfxml_zone_routing;
-#define A_surfxml_zone_routing (surfxml_bufferstack + AX_surfxml_zone_routing)
-XBT_PUBLIC_DATA short int surfxml_zone_routing_isset;
-XBT_PUBLIC_DATA AT_surfxml_zoneRoute_dst AX_surfxml_zoneRoute_dst;
-#define A_surfxml_zoneRoute_dst (surfxml_bufferstack + AX_surfxml_zoneRoute_dst)
-XBT_PUBLIC_DATA short int surfxml_zoneRoute_dst_isset;
-XBT_PUBLIC_DATA AT_surfxml_zoneRoute_gw___dst AX_surfxml_zoneRoute_gw___dst;
-#define A_surfxml_zoneRoute_gw___dst (surfxml_bufferstack + AX_surfxml_zoneRoute_gw___dst)
-XBT_PUBLIC_DATA short int surfxml_zoneRoute_gw___dst_isset;
-XBT_PUBLIC_DATA AT_surfxml_zoneRoute_gw___src AX_surfxml_zoneRoute_gw___src;
-#define A_surfxml_zoneRoute_gw___src (surfxml_bufferstack + AX_surfxml_zoneRoute_gw___src)
-XBT_PUBLIC_DATA short int surfxml_zoneRoute_gw___src_isset;
-XBT_PUBLIC_DATA AT_surfxml_zoneRoute_src AX_surfxml_zoneRoute_src;
-#define A_surfxml_zoneRoute_src (surfxml_bufferstack + AX_surfxml_zoneRoute_src)
-XBT_PUBLIC_DATA short int surfxml_zoneRoute_src_isset;
-XBT_PUBLIC_DATA AT_surfxml_zoneRoute_symmetrical AX_surfxml_zoneRoute_symmetrical;
-#define A_surfxml_zoneRoute_symmetrical AX_surfxml_zoneRoute_symmetrical
-XBT_PUBLIC_DATA short int surfxml_zoneRoute_symmetrical_isset;
+XBT_PUBLIC_DATA int simgrid_parse_pcdata_ix;
+XBT_PUBLIC_DATA char *simgrid_parse_bufferstack;
+#define simgrid_parse_pcdata (simgrid_parse_bufferstack + simgrid_parse_pcdata_ix)
+XBT_PUBLIC_DATA AT_simgrid_parse_AS_id AX_simgrid_parse_AS_id;
+#define A_simgrid_parse_AS_id (simgrid_parse_bufferstack + AX_simgrid_parse_AS_id)
+XBT_PUBLIC_DATA short int simgrid_parse_AS_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_AS_routing AX_simgrid_parse_AS_routing;
+#define A_simgrid_parse_AS_routing (simgrid_parse_bufferstack + AX_simgrid_parse_AS_routing)
+XBT_PUBLIC_DATA short int simgrid_parse_AS_routing_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_ASroute_dst AX_simgrid_parse_ASroute_dst;
+#define A_simgrid_parse_ASroute_dst (simgrid_parse_bufferstack + AX_simgrid_parse_ASroute_dst)
+XBT_PUBLIC_DATA short int simgrid_parse_ASroute_dst_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_ASroute_gw___dst AX_simgrid_parse_ASroute_gw___dst;
+#define A_simgrid_parse_ASroute_gw___dst (simgrid_parse_bufferstack + AX_simgrid_parse_ASroute_gw___dst)
+XBT_PUBLIC_DATA short int simgrid_parse_ASroute_gw___dst_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_ASroute_gw___src AX_simgrid_parse_ASroute_gw___src;
+#define A_simgrid_parse_ASroute_gw___src (simgrid_parse_bufferstack + AX_simgrid_parse_ASroute_gw___src)
+XBT_PUBLIC_DATA short int simgrid_parse_ASroute_gw___src_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_ASroute_src AX_simgrid_parse_ASroute_src;
+#define A_simgrid_parse_ASroute_src (simgrid_parse_bufferstack + AX_simgrid_parse_ASroute_src)
+XBT_PUBLIC_DATA short int simgrid_parse_ASroute_src_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_ASroute_symmetrical AX_simgrid_parse_ASroute_symmetrical;
+#define A_simgrid_parse_ASroute_symmetrical AX_simgrid_parse_ASroute_symmetrical
+XBT_PUBLIC_DATA short int simgrid_parse_ASroute_symmetrical_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_actor_function AX_simgrid_parse_actor_function;
+#define A_simgrid_parse_actor_function (simgrid_parse_bufferstack + AX_simgrid_parse_actor_function)
+XBT_PUBLIC_DATA short int simgrid_parse_actor_function_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_actor_host AX_simgrid_parse_actor_host;
+#define A_simgrid_parse_actor_host (simgrid_parse_bufferstack + AX_simgrid_parse_actor_host)
+XBT_PUBLIC_DATA short int simgrid_parse_actor_host_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_actor_kill___time AX_simgrid_parse_actor_kill___time;
+#define A_simgrid_parse_actor_kill___time (simgrid_parse_bufferstack + AX_simgrid_parse_actor_kill___time)
+XBT_PUBLIC_DATA short int simgrid_parse_actor_kill___time_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_actor_on___failure AX_simgrid_parse_actor_on___failure;
+#define A_simgrid_parse_actor_on___failure AX_simgrid_parse_actor_on___failure
+XBT_PUBLIC_DATA short int simgrid_parse_actor_on___failure_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_actor_start___time AX_simgrid_parse_actor_start___time;
+#define A_simgrid_parse_actor_start___time (simgrid_parse_bufferstack + AX_simgrid_parse_actor_start___time)
+XBT_PUBLIC_DATA short int simgrid_parse_actor_start___time_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_argument_value AX_simgrid_parse_argument_value;
+#define A_simgrid_parse_argument_value (simgrid_parse_bufferstack + AX_simgrid_parse_argument_value)
+XBT_PUBLIC_DATA short int simgrid_parse_argument_value_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_backbone_bandwidth AX_simgrid_parse_backbone_bandwidth;
+#define A_simgrid_parse_backbone_bandwidth (simgrid_parse_bufferstack + AX_simgrid_parse_backbone_bandwidth)
+XBT_PUBLIC_DATA short int simgrid_parse_backbone_bandwidth_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_backbone_id AX_simgrid_parse_backbone_id;
+#define A_simgrid_parse_backbone_id (simgrid_parse_bufferstack + AX_simgrid_parse_backbone_id)
+XBT_PUBLIC_DATA short int simgrid_parse_backbone_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_backbone_latency AX_simgrid_parse_backbone_latency;
+#define A_simgrid_parse_backbone_latency (simgrid_parse_bufferstack + AX_simgrid_parse_backbone_latency)
+XBT_PUBLIC_DATA short int simgrid_parse_backbone_latency_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_bypassASroute_dst AX_simgrid_parse_bypassASroute_dst;
+#define A_simgrid_parse_bypassASroute_dst (simgrid_parse_bufferstack + AX_simgrid_parse_bypassASroute_dst)
+XBT_PUBLIC_DATA short int simgrid_parse_bypassASroute_dst_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_bypassASroute_gw___dst AX_simgrid_parse_bypassASroute_gw___dst;
+#define A_simgrid_parse_bypassASroute_gw___dst (simgrid_parse_bufferstack + AX_simgrid_parse_bypassASroute_gw___dst)
+XBT_PUBLIC_DATA short int simgrid_parse_bypassASroute_gw___dst_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_bypassASroute_gw___src AX_simgrid_parse_bypassASroute_gw___src;
+#define A_simgrid_parse_bypassASroute_gw___src (simgrid_parse_bufferstack + AX_simgrid_parse_bypassASroute_gw___src)
+XBT_PUBLIC_DATA short int simgrid_parse_bypassASroute_gw___src_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_bypassASroute_src AX_simgrid_parse_bypassASroute_src;
+#define A_simgrid_parse_bypassASroute_src (simgrid_parse_bufferstack + AX_simgrid_parse_bypassASroute_src)
+XBT_PUBLIC_DATA short int simgrid_parse_bypassASroute_src_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_bypassRoute_dst AX_simgrid_parse_bypassRoute_dst;
+#define A_simgrid_parse_bypassRoute_dst (simgrid_parse_bufferstack + AX_simgrid_parse_bypassRoute_dst)
+XBT_PUBLIC_DATA short int simgrid_parse_bypassRoute_dst_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_bypassRoute_src AX_simgrid_parse_bypassRoute_src;
+#define A_simgrid_parse_bypassRoute_src (simgrid_parse_bufferstack + AX_simgrid_parse_bypassRoute_src)
+XBT_PUBLIC_DATA short int simgrid_parse_bypassRoute_src_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_bypassZoneRoute_dst AX_simgrid_parse_bypassZoneRoute_dst;
+#define A_simgrid_parse_bypassZoneRoute_dst (simgrid_parse_bufferstack + AX_simgrid_parse_bypassZoneRoute_dst)
+XBT_PUBLIC_DATA short int simgrid_parse_bypassZoneRoute_dst_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_bypassZoneRoute_gw___dst AX_simgrid_parse_bypassZoneRoute_gw___dst;
+#define A_simgrid_parse_bypassZoneRoute_gw___dst (simgrid_parse_bufferstack + AX_simgrid_parse_bypassZoneRoute_gw___dst)
+XBT_PUBLIC_DATA short int simgrid_parse_bypassZoneRoute_gw___dst_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_bypassZoneRoute_gw___src AX_simgrid_parse_bypassZoneRoute_gw___src;
+#define A_simgrid_parse_bypassZoneRoute_gw___src (simgrid_parse_bufferstack + AX_simgrid_parse_bypassZoneRoute_gw___src)
+XBT_PUBLIC_DATA short int simgrid_parse_bypassZoneRoute_gw___src_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_bypassZoneRoute_src AX_simgrid_parse_bypassZoneRoute_src;
+#define A_simgrid_parse_bypassZoneRoute_src (simgrid_parse_bufferstack + AX_simgrid_parse_bypassZoneRoute_src)
+XBT_PUBLIC_DATA short int simgrid_parse_bypassZoneRoute_src_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cabinet_bw AX_simgrid_parse_cabinet_bw;
+#define A_simgrid_parse_cabinet_bw (simgrid_parse_bufferstack + AX_simgrid_parse_cabinet_bw)
+XBT_PUBLIC_DATA short int simgrid_parse_cabinet_bw_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cabinet_id AX_simgrid_parse_cabinet_id;
+#define A_simgrid_parse_cabinet_id (simgrid_parse_bufferstack + AX_simgrid_parse_cabinet_id)
+XBT_PUBLIC_DATA short int simgrid_parse_cabinet_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cabinet_lat AX_simgrid_parse_cabinet_lat;
+#define A_simgrid_parse_cabinet_lat (simgrid_parse_bufferstack + AX_simgrid_parse_cabinet_lat)
+XBT_PUBLIC_DATA short int simgrid_parse_cabinet_lat_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cabinet_prefix AX_simgrid_parse_cabinet_prefix;
+#define A_simgrid_parse_cabinet_prefix (simgrid_parse_bufferstack + AX_simgrid_parse_cabinet_prefix)
+XBT_PUBLIC_DATA short int simgrid_parse_cabinet_prefix_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cabinet_radical AX_simgrid_parse_cabinet_radical;
+#define A_simgrid_parse_cabinet_radical (simgrid_parse_bufferstack + AX_simgrid_parse_cabinet_radical)
+XBT_PUBLIC_DATA short int simgrid_parse_cabinet_radical_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cabinet_speed AX_simgrid_parse_cabinet_speed;
+#define A_simgrid_parse_cabinet_speed (simgrid_parse_bufferstack + AX_simgrid_parse_cabinet_speed)
+XBT_PUBLIC_DATA short int simgrid_parse_cabinet_speed_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cabinet_suffix AX_simgrid_parse_cabinet_suffix;
+#define A_simgrid_parse_cabinet_suffix (simgrid_parse_bufferstack + AX_simgrid_parse_cabinet_suffix)
+XBT_PUBLIC_DATA short int simgrid_parse_cabinet_suffix_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_bb___bw AX_simgrid_parse_cluster_bb___bw;
+#define A_simgrid_parse_cluster_bb___bw (simgrid_parse_bufferstack + AX_simgrid_parse_cluster_bb___bw)
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_bb___bw_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_bb___lat AX_simgrid_parse_cluster_bb___lat;
+#define A_simgrid_parse_cluster_bb___lat (simgrid_parse_bufferstack + AX_simgrid_parse_cluster_bb___lat)
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_bb___lat_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_bb___sharing___policy AX_simgrid_parse_cluster_bb___sharing___policy;
+#define A_simgrid_parse_cluster_bb___sharing___policy AX_simgrid_parse_cluster_bb___sharing___policy
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_bb___sharing___policy_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_bw AX_simgrid_parse_cluster_bw;
+#define A_simgrid_parse_cluster_bw (simgrid_parse_bufferstack + AX_simgrid_parse_cluster_bw)
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_bw_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_core AX_simgrid_parse_cluster_core;
+#define A_simgrid_parse_cluster_core (simgrid_parse_bufferstack + AX_simgrid_parse_cluster_core)
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_core_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_id AX_simgrid_parse_cluster_id;
+#define A_simgrid_parse_cluster_id (simgrid_parse_bufferstack + AX_simgrid_parse_cluster_id)
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_lat AX_simgrid_parse_cluster_lat;
+#define A_simgrid_parse_cluster_lat (simgrid_parse_bufferstack + AX_simgrid_parse_cluster_lat)
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_lat_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_limiter___link AX_simgrid_parse_cluster_limiter___link;
+#define A_simgrid_parse_cluster_limiter___link (simgrid_parse_bufferstack + AX_simgrid_parse_cluster_limiter___link)
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_limiter___link_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_loopback___bw AX_simgrid_parse_cluster_loopback___bw;
+#define A_simgrid_parse_cluster_loopback___bw (simgrid_parse_bufferstack + AX_simgrid_parse_cluster_loopback___bw)
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_loopback___bw_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_loopback___lat AX_simgrid_parse_cluster_loopback___lat;
+#define A_simgrid_parse_cluster_loopback___lat (simgrid_parse_bufferstack + AX_simgrid_parse_cluster_loopback___lat)
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_loopback___lat_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_prefix AX_simgrid_parse_cluster_prefix;
+#define A_simgrid_parse_cluster_prefix (simgrid_parse_bufferstack + AX_simgrid_parse_cluster_prefix)
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_prefix_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_radical AX_simgrid_parse_cluster_radical;
+#define A_simgrid_parse_cluster_radical (simgrid_parse_bufferstack + AX_simgrid_parse_cluster_radical)
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_radical_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_router___id AX_simgrid_parse_cluster_router___id;
+#define A_simgrid_parse_cluster_router___id (simgrid_parse_bufferstack + AX_simgrid_parse_cluster_router___id)
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_router___id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_sharing___policy AX_simgrid_parse_cluster_sharing___policy;
+#define A_simgrid_parse_cluster_sharing___policy AX_simgrid_parse_cluster_sharing___policy
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_sharing___policy_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_speed AX_simgrid_parse_cluster_speed;
+#define A_simgrid_parse_cluster_speed (simgrid_parse_bufferstack + AX_simgrid_parse_cluster_speed)
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_speed_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_suffix AX_simgrid_parse_cluster_suffix;
+#define A_simgrid_parse_cluster_suffix (simgrid_parse_bufferstack + AX_simgrid_parse_cluster_suffix)
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_suffix_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_topo___parameters AX_simgrid_parse_cluster_topo___parameters;
+#define A_simgrid_parse_cluster_topo___parameters (simgrid_parse_bufferstack + AX_simgrid_parse_cluster_topo___parameters)
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_topo___parameters_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_cluster_topology AX_simgrid_parse_cluster_topology;
+#define A_simgrid_parse_cluster_topology AX_simgrid_parse_cluster_topology
+XBT_PUBLIC_DATA short int simgrid_parse_cluster_topology_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_config_id AX_simgrid_parse_config_id;
+#define A_simgrid_parse_config_id (simgrid_parse_bufferstack + AX_simgrid_parse_config_id)
+XBT_PUBLIC_DATA short int simgrid_parse_config_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_disk_id AX_simgrid_parse_disk_id;
+#define A_simgrid_parse_disk_id (simgrid_parse_bufferstack + AX_simgrid_parse_disk_id)
+XBT_PUBLIC_DATA short int simgrid_parse_disk_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_disk_read___bw AX_simgrid_parse_disk_read___bw;
+#define A_simgrid_parse_disk_read___bw (simgrid_parse_bufferstack + AX_simgrid_parse_disk_read___bw)
+XBT_PUBLIC_DATA short int simgrid_parse_disk_read___bw_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_disk_write___bw AX_simgrid_parse_disk_write___bw;
+#define A_simgrid_parse_disk_write___bw (simgrid_parse_bufferstack + AX_simgrid_parse_disk_write___bw)
+XBT_PUBLIC_DATA short int simgrid_parse_disk_write___bw_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_host_availability___file AX_simgrid_parse_host_availability___file;
+#define A_simgrid_parse_host_availability___file (simgrid_parse_bufferstack + AX_simgrid_parse_host_availability___file)
+XBT_PUBLIC_DATA short int simgrid_parse_host_availability___file_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_host_coordinates AX_simgrid_parse_host_coordinates;
+#define A_simgrid_parse_host_coordinates (simgrid_parse_bufferstack + AX_simgrid_parse_host_coordinates)
+XBT_PUBLIC_DATA short int simgrid_parse_host_coordinates_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_host_core AX_simgrid_parse_host_core;
+#define A_simgrid_parse_host_core (simgrid_parse_bufferstack + AX_simgrid_parse_host_core)
+XBT_PUBLIC_DATA short int simgrid_parse_host_core_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_host_id AX_simgrid_parse_host_id;
+#define A_simgrid_parse_host_id (simgrid_parse_bufferstack + AX_simgrid_parse_host_id)
+XBT_PUBLIC_DATA short int simgrid_parse_host_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_host_pstate AX_simgrid_parse_host_pstate;
+#define A_simgrid_parse_host_pstate (simgrid_parse_bufferstack + AX_simgrid_parse_host_pstate)
+XBT_PUBLIC_DATA short int simgrid_parse_host_pstate_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_host_speed AX_simgrid_parse_host_speed;
+#define A_simgrid_parse_host_speed (simgrid_parse_bufferstack + AX_simgrid_parse_host_speed)
+XBT_PUBLIC_DATA short int simgrid_parse_host_speed_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_host_speed___file AX_simgrid_parse_host_speed___file;
+#define A_simgrid_parse_host_speed___file (simgrid_parse_bufferstack + AX_simgrid_parse_host_speed___file)
+XBT_PUBLIC_DATA short int simgrid_parse_host_speed___file_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_host_state___file AX_simgrid_parse_host_state___file;
+#define A_simgrid_parse_host_state___file (simgrid_parse_bufferstack + AX_simgrid_parse_host_state___file)
+XBT_PUBLIC_DATA short int simgrid_parse_host_state___file_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_host___link_down AX_simgrid_parse_host___link_down;
+#define A_simgrid_parse_host___link_down (simgrid_parse_bufferstack + AX_simgrid_parse_host___link_down)
+XBT_PUBLIC_DATA short int simgrid_parse_host___link_down_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_host___link_id AX_simgrid_parse_host___link_id;
+#define A_simgrid_parse_host___link_id (simgrid_parse_bufferstack + AX_simgrid_parse_host___link_id)
+XBT_PUBLIC_DATA short int simgrid_parse_host___link_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_host___link_up AX_simgrid_parse_host___link_up;
+#define A_simgrid_parse_host___link_up (simgrid_parse_bufferstack + AX_simgrid_parse_host___link_up)
+XBT_PUBLIC_DATA short int simgrid_parse_host___link_up_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_include_file AX_simgrid_parse_include_file;
+#define A_simgrid_parse_include_file (simgrid_parse_bufferstack + AX_simgrid_parse_include_file)
+XBT_PUBLIC_DATA short int simgrid_parse_include_file_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_link_bandwidth AX_simgrid_parse_link_bandwidth;
+#define A_simgrid_parse_link_bandwidth (simgrid_parse_bufferstack + AX_simgrid_parse_link_bandwidth)
+XBT_PUBLIC_DATA short int simgrid_parse_link_bandwidth_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_link_bandwidth___file AX_simgrid_parse_link_bandwidth___file;
+#define A_simgrid_parse_link_bandwidth___file (simgrid_parse_bufferstack + AX_simgrid_parse_link_bandwidth___file)
+XBT_PUBLIC_DATA short int simgrid_parse_link_bandwidth___file_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_link_id AX_simgrid_parse_link_id;
+#define A_simgrid_parse_link_id (simgrid_parse_bufferstack + AX_simgrid_parse_link_id)
+XBT_PUBLIC_DATA short int simgrid_parse_link_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_link_latency AX_simgrid_parse_link_latency;
+#define A_simgrid_parse_link_latency (simgrid_parse_bufferstack + AX_simgrid_parse_link_latency)
+XBT_PUBLIC_DATA short int simgrid_parse_link_latency_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_link_latency___file AX_simgrid_parse_link_latency___file;
+#define A_simgrid_parse_link_latency___file (simgrid_parse_bufferstack + AX_simgrid_parse_link_latency___file)
+XBT_PUBLIC_DATA short int simgrid_parse_link_latency___file_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_link_sharing___policy AX_simgrid_parse_link_sharing___policy;
+#define A_simgrid_parse_link_sharing___policy AX_simgrid_parse_link_sharing___policy
+XBT_PUBLIC_DATA short int simgrid_parse_link_sharing___policy_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_link_state___file AX_simgrid_parse_link_state___file;
+#define A_simgrid_parse_link_state___file (simgrid_parse_bufferstack + AX_simgrid_parse_link_state___file)
+XBT_PUBLIC_DATA short int simgrid_parse_link_state___file_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_link___ctn_direction AX_simgrid_parse_link___ctn_direction;
+#define A_simgrid_parse_link___ctn_direction AX_simgrid_parse_link___ctn_direction
+XBT_PUBLIC_DATA short int simgrid_parse_link___ctn_direction_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_link___ctn_id AX_simgrid_parse_link___ctn_id;
+#define A_simgrid_parse_link___ctn_id (simgrid_parse_bufferstack + AX_simgrid_parse_link___ctn_id)
+XBT_PUBLIC_DATA short int simgrid_parse_link___ctn_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_model___prop_id AX_simgrid_parse_model___prop_id;
+#define A_simgrid_parse_model___prop_id (simgrid_parse_bufferstack + AX_simgrid_parse_model___prop_id)
+XBT_PUBLIC_DATA short int simgrid_parse_model___prop_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_model___prop_value AX_simgrid_parse_model___prop_value;
+#define A_simgrid_parse_model___prop_value (simgrid_parse_bufferstack + AX_simgrid_parse_model___prop_value)
+XBT_PUBLIC_DATA short int simgrid_parse_model___prop_value_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_mount_name AX_simgrid_parse_mount_name;
+#define A_simgrid_parse_mount_name (simgrid_parse_bufferstack + AX_simgrid_parse_mount_name)
+XBT_PUBLIC_DATA short int simgrid_parse_mount_name_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_mount_storageId AX_simgrid_parse_mount_storageId;
+#define A_simgrid_parse_mount_storageId (simgrid_parse_bufferstack + AX_simgrid_parse_mount_storageId)
+XBT_PUBLIC_DATA short int simgrid_parse_mount_storageId_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_peer_availability___file AX_simgrid_parse_peer_availability___file;
+#define A_simgrid_parse_peer_availability___file (simgrid_parse_bufferstack + AX_simgrid_parse_peer_availability___file)
+XBT_PUBLIC_DATA short int simgrid_parse_peer_availability___file_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_peer_bw___in AX_simgrid_parse_peer_bw___in;
+#define A_simgrid_parse_peer_bw___in (simgrid_parse_bufferstack + AX_simgrid_parse_peer_bw___in)
+XBT_PUBLIC_DATA short int simgrid_parse_peer_bw___in_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_peer_bw___out AX_simgrid_parse_peer_bw___out;
+#define A_simgrid_parse_peer_bw___out (simgrid_parse_bufferstack + AX_simgrid_parse_peer_bw___out)
+XBT_PUBLIC_DATA short int simgrid_parse_peer_bw___out_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_peer_coordinates AX_simgrid_parse_peer_coordinates;
+#define A_simgrid_parse_peer_coordinates (simgrid_parse_bufferstack + AX_simgrid_parse_peer_coordinates)
+XBT_PUBLIC_DATA short int simgrid_parse_peer_coordinates_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_peer_id AX_simgrid_parse_peer_id;
+#define A_simgrid_parse_peer_id (simgrid_parse_bufferstack + AX_simgrid_parse_peer_id)
+XBT_PUBLIC_DATA short int simgrid_parse_peer_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_peer_lat AX_simgrid_parse_peer_lat;
+#define A_simgrid_parse_peer_lat (simgrid_parse_bufferstack + AX_simgrid_parse_peer_lat)
+XBT_PUBLIC_DATA short int simgrid_parse_peer_lat_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_peer_speed AX_simgrid_parse_peer_speed;
+#define A_simgrid_parse_peer_speed (simgrid_parse_bufferstack + AX_simgrid_parse_peer_speed)
+XBT_PUBLIC_DATA short int simgrid_parse_peer_speed_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_peer_speed___file AX_simgrid_parse_peer_speed___file;
+#define A_simgrid_parse_peer_speed___file (simgrid_parse_bufferstack + AX_simgrid_parse_peer_speed___file)
+XBT_PUBLIC_DATA short int simgrid_parse_peer_speed___file_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_peer_state___file AX_simgrid_parse_peer_state___file;
+#define A_simgrid_parse_peer_state___file (simgrid_parse_bufferstack + AX_simgrid_parse_peer_state___file)
+XBT_PUBLIC_DATA short int simgrid_parse_peer_state___file_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_platform_version AX_simgrid_parse_platform_version;
+#define A_simgrid_parse_platform_version (simgrid_parse_bufferstack + AX_simgrid_parse_platform_version)
+XBT_PUBLIC_DATA short int simgrid_parse_platform_version_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_process_function AX_simgrid_parse_process_function;
+#define A_simgrid_parse_process_function (simgrid_parse_bufferstack + AX_simgrid_parse_process_function)
+XBT_PUBLIC_DATA short int simgrid_parse_process_function_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_process_host AX_simgrid_parse_process_host;
+#define A_simgrid_parse_process_host (simgrid_parse_bufferstack + AX_simgrid_parse_process_host)
+XBT_PUBLIC_DATA short int simgrid_parse_process_host_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_process_kill___time AX_simgrid_parse_process_kill___time;
+#define A_simgrid_parse_process_kill___time (simgrid_parse_bufferstack + AX_simgrid_parse_process_kill___time)
+XBT_PUBLIC_DATA short int simgrid_parse_process_kill___time_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_process_on___failure AX_simgrid_parse_process_on___failure;
+#define A_simgrid_parse_process_on___failure AX_simgrid_parse_process_on___failure
+XBT_PUBLIC_DATA short int simgrid_parse_process_on___failure_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_process_start___time AX_simgrid_parse_process_start___time;
+#define A_simgrid_parse_process_start___time (simgrid_parse_bufferstack + AX_simgrid_parse_process_start___time)
+XBT_PUBLIC_DATA short int simgrid_parse_process_start___time_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_prop_id AX_simgrid_parse_prop_id;
+#define A_simgrid_parse_prop_id (simgrid_parse_bufferstack + AX_simgrid_parse_prop_id)
+XBT_PUBLIC_DATA short int simgrid_parse_prop_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_prop_value AX_simgrid_parse_prop_value;
+#define A_simgrid_parse_prop_value (simgrid_parse_bufferstack + AX_simgrid_parse_prop_value)
+XBT_PUBLIC_DATA short int simgrid_parse_prop_value_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_random_generator AX_simgrid_parse_random_generator;
+#define A_simgrid_parse_random_generator AX_simgrid_parse_random_generator
+XBT_PUBLIC_DATA short int simgrid_parse_random_generator_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_random_id AX_simgrid_parse_random_id;
+#define A_simgrid_parse_random_id (simgrid_parse_bufferstack + AX_simgrid_parse_random_id)
+XBT_PUBLIC_DATA short int simgrid_parse_random_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_random_max AX_simgrid_parse_random_max;
+#define A_simgrid_parse_random_max (simgrid_parse_bufferstack + AX_simgrid_parse_random_max)
+XBT_PUBLIC_DATA short int simgrid_parse_random_max_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_random_mean AX_simgrid_parse_random_mean;
+#define A_simgrid_parse_random_mean (simgrid_parse_bufferstack + AX_simgrid_parse_random_mean)
+XBT_PUBLIC_DATA short int simgrid_parse_random_mean_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_random_min AX_simgrid_parse_random_min;
+#define A_simgrid_parse_random_min (simgrid_parse_bufferstack + AX_simgrid_parse_random_min)
+XBT_PUBLIC_DATA short int simgrid_parse_random_min_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_random_radical AX_simgrid_parse_random_radical;
+#define A_simgrid_parse_random_radical (simgrid_parse_bufferstack + AX_simgrid_parse_random_radical)
+XBT_PUBLIC_DATA short int simgrid_parse_random_radical_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_random_seed AX_simgrid_parse_random_seed;
+#define A_simgrid_parse_random_seed (simgrid_parse_bufferstack + AX_simgrid_parse_random_seed)
+XBT_PUBLIC_DATA short int simgrid_parse_random_seed_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_random_std___deviation AX_simgrid_parse_random_std___deviation;
+#define A_simgrid_parse_random_std___deviation (simgrid_parse_bufferstack + AX_simgrid_parse_random_std___deviation)
+XBT_PUBLIC_DATA short int simgrid_parse_random_std___deviation_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_route_dst AX_simgrid_parse_route_dst;
+#define A_simgrid_parse_route_dst (simgrid_parse_bufferstack + AX_simgrid_parse_route_dst)
+XBT_PUBLIC_DATA short int simgrid_parse_route_dst_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_route_src AX_simgrid_parse_route_src;
+#define A_simgrid_parse_route_src (simgrid_parse_bufferstack + AX_simgrid_parse_route_src)
+XBT_PUBLIC_DATA short int simgrid_parse_route_src_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_route_symmetrical AX_simgrid_parse_route_symmetrical;
+#define A_simgrid_parse_route_symmetrical AX_simgrid_parse_route_symmetrical
+XBT_PUBLIC_DATA short int simgrid_parse_route_symmetrical_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_router_coordinates AX_simgrid_parse_router_coordinates;
+#define A_simgrid_parse_router_coordinates (simgrid_parse_bufferstack + AX_simgrid_parse_router_coordinates)
+XBT_PUBLIC_DATA short int simgrid_parse_router_coordinates_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_router_id AX_simgrid_parse_router_id;
+#define A_simgrid_parse_router_id (simgrid_parse_bufferstack + AX_simgrid_parse_router_id)
+XBT_PUBLIC_DATA short int simgrid_parse_router_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_storage_attach AX_simgrid_parse_storage_attach;
+#define A_simgrid_parse_storage_attach (simgrid_parse_bufferstack + AX_simgrid_parse_storage_attach)
+XBT_PUBLIC_DATA short int simgrid_parse_storage_attach_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_storage_content AX_simgrid_parse_storage_content;
+#define A_simgrid_parse_storage_content (simgrid_parse_bufferstack + AX_simgrid_parse_storage_content)
+XBT_PUBLIC_DATA short int simgrid_parse_storage_content_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_storage_id AX_simgrid_parse_storage_id;
+#define A_simgrid_parse_storage_id (simgrid_parse_bufferstack + AX_simgrid_parse_storage_id)
+XBT_PUBLIC_DATA short int simgrid_parse_storage_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_storage_typeId AX_simgrid_parse_storage_typeId;
+#define A_simgrid_parse_storage_typeId (simgrid_parse_bufferstack + AX_simgrid_parse_storage_typeId)
+XBT_PUBLIC_DATA short int simgrid_parse_storage_typeId_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_storage___type_content AX_simgrid_parse_storage___type_content;
+#define A_simgrid_parse_storage___type_content (simgrid_parse_bufferstack + AX_simgrid_parse_storage___type_content)
+XBT_PUBLIC_DATA short int simgrid_parse_storage___type_content_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_storage___type_id AX_simgrid_parse_storage___type_id;
+#define A_simgrid_parse_storage___type_id (simgrid_parse_bufferstack + AX_simgrid_parse_storage___type_id)
+XBT_PUBLIC_DATA short int simgrid_parse_storage___type_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_storage___type_model AX_simgrid_parse_storage___type_model;
+#define A_simgrid_parse_storage___type_model (simgrid_parse_bufferstack + AX_simgrid_parse_storage___type_model)
+XBT_PUBLIC_DATA short int simgrid_parse_storage___type_model_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_storage___type_size AX_simgrid_parse_storage___type_size;
+#define A_simgrid_parse_storage___type_size (simgrid_parse_bufferstack + AX_simgrid_parse_storage___type_size)
+XBT_PUBLIC_DATA short int simgrid_parse_storage___type_size_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_trace_file AX_simgrid_parse_trace_file;
+#define A_simgrid_parse_trace_file (simgrid_parse_bufferstack + AX_simgrid_parse_trace_file)
+XBT_PUBLIC_DATA short int simgrid_parse_trace_file_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_trace_id AX_simgrid_parse_trace_id;
+#define A_simgrid_parse_trace_id (simgrid_parse_bufferstack + AX_simgrid_parse_trace_id)
+XBT_PUBLIC_DATA short int simgrid_parse_trace_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_trace_periodicity AX_simgrid_parse_trace_periodicity;
+#define A_simgrid_parse_trace_periodicity (simgrid_parse_bufferstack + AX_simgrid_parse_trace_periodicity)
+XBT_PUBLIC_DATA short int simgrid_parse_trace_periodicity_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_trace___connect_element AX_simgrid_parse_trace___connect_element;
+#define A_simgrid_parse_trace___connect_element (simgrid_parse_bufferstack + AX_simgrid_parse_trace___connect_element)
+XBT_PUBLIC_DATA short int simgrid_parse_trace___connect_element_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_trace___connect_kind AX_simgrid_parse_trace___connect_kind;
+#define A_simgrid_parse_trace___connect_kind AX_simgrid_parse_trace___connect_kind
+XBT_PUBLIC_DATA short int simgrid_parse_trace___connect_kind_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_trace___connect_trace AX_simgrid_parse_trace___connect_trace;
+#define A_simgrid_parse_trace___connect_trace (simgrid_parse_bufferstack + AX_simgrid_parse_trace___connect_trace)
+XBT_PUBLIC_DATA short int simgrid_parse_trace___connect_trace_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_zone_id AX_simgrid_parse_zone_id;
+#define A_simgrid_parse_zone_id (simgrid_parse_bufferstack + AX_simgrid_parse_zone_id)
+XBT_PUBLIC_DATA short int simgrid_parse_zone_id_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_zone_routing AX_simgrid_parse_zone_routing;
+#define A_simgrid_parse_zone_routing (simgrid_parse_bufferstack + AX_simgrid_parse_zone_routing)
+XBT_PUBLIC_DATA short int simgrid_parse_zone_routing_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_zoneRoute_dst AX_simgrid_parse_zoneRoute_dst;
+#define A_simgrid_parse_zoneRoute_dst (simgrid_parse_bufferstack + AX_simgrid_parse_zoneRoute_dst)
+XBT_PUBLIC_DATA short int simgrid_parse_zoneRoute_dst_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_zoneRoute_gw___dst AX_simgrid_parse_zoneRoute_gw___dst;
+#define A_simgrid_parse_zoneRoute_gw___dst (simgrid_parse_bufferstack + AX_simgrid_parse_zoneRoute_gw___dst)
+XBT_PUBLIC_DATA short int simgrid_parse_zoneRoute_gw___dst_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_zoneRoute_gw___src AX_simgrid_parse_zoneRoute_gw___src;
+#define A_simgrid_parse_zoneRoute_gw___src (simgrid_parse_bufferstack + AX_simgrid_parse_zoneRoute_gw___src)
+XBT_PUBLIC_DATA short int simgrid_parse_zoneRoute_gw___src_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_zoneRoute_src AX_simgrid_parse_zoneRoute_src;
+#define A_simgrid_parse_zoneRoute_src (simgrid_parse_bufferstack + AX_simgrid_parse_zoneRoute_src)
+XBT_PUBLIC_DATA short int simgrid_parse_zoneRoute_src_isset;
+XBT_PUBLIC_DATA AT_simgrid_parse_zoneRoute_symmetrical AX_simgrid_parse_zoneRoute_symmetrical;
+#define A_simgrid_parse_zoneRoute_symmetrical AX_simgrid_parse_zoneRoute_symmetrical
+XBT_PUBLIC_DATA short int simgrid_parse_zoneRoute_symmetrical_isset;
 
 /* XML application utilities. */
-XBT_PUBLIC int surfxml_element_context(int);
+XBT_PUBLIC int simgrid_parse_element_context(int);
 
 /* XML processor entry point. */
 XBT_PUBLIC int yylex(void);
 
 /* Flexml error handling function (useful only when -q flag passed to flexml) */
-const char * surfxml_parse_err_msg(void);
+const char * simgrid_parse_parse_err_msg(void);
 #endif

@@ -10,7 +10,7 @@ while (<>) {
 
     # Accept the alternative DTD location
     if (/DOCTYPE.*simgrid.org.simgrid.dtd/)  {
-	print ' "<!DOCTYPE"{S}"platform"{S}SYSTEM{S}("\'http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\'"|"\\"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\\""){s}">" SET(ROOT_surfxml_platform);'."\n";
+	print ' "<!DOCTYPE"{S}"platform"{S}SYSTEM{S}("\'http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\'"|"\\"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\\""){s}">" SET(ROOT_simgrid_parse_platform);'."\n";
     }
 
     # Completely rewrite the error handling mechanism to use exceptions instead of printing to stderr

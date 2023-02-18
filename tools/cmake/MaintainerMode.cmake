@@ -129,8 +129,8 @@ if(enable_maintainer_mode)
 
     set(string1  "'s/extern /XBT_PUBLIC_DATA /'")
     set(string2  "'s/XBT_PUBLIC_DATA \\([^(]*\\)(/XBT_PUBLIC \\1(/'")
-    set(string3  "'s/XBT_PUBLIC void STag_surfxml_include/XBT_ATTRIB_NORETURN &/'") # remove with v5 of the dtd
-    set(string4  "'s/XBT_PUBLIC void STag_surfxml_\\(mount\\|storage\\)/XBT_ATTRIB_NORETURN &/'") # remove with v5 of the dtd
+    set(string3  "'s/XBT_PUBLIC void STag_simgrid_parse_include/XBT_ATTRIB_NORETURN &/'") # remove with v5 of the dtd
+    set(string4  "'s/XBT_PUBLIC void STag_simgrid_parse_\\(mount\\|storage\\)/XBT_ATTRIB_NORETURN &/'") # remove with v5 of the dtd
     set(string5  "'s/SET(DOCTYPE)/SET(ROOT_dax__adag)/'")
     set(string14 "'\\!^ \\* Generated [0-9/]\\{10\\} [0-9:]\\{8\\}\\.$$!d'")
 
@@ -145,7 +145,7 @@ if(enable_maintainer_mode)
 
       #${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.l: ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd
       COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/src/surf/xml
-      COMMAND ${FLEXML_EXE} --root-tags platform -b 1000000 -P surfxml --sysid=https://simgrid.org/simgrid.dtd -S src/surf/xml/simgrid_dtd.l -L src/surf/xml/simgrid.dtd
+      COMMAND ${FLEXML_EXE} --root-tags platform -b 1000000 -P simgrid_parse --sysid=https://simgrid.org/simgrid.dtd -S src/surf/xml/simgrid_dtd.l -L src/surf/xml/simgrid.dtd
       COMMAND ${PERL_EXE} ${CMAKE_HOME_DIRECTORY}/tools/cmake/scripts/fixup_simgrid_dtd_l.pl < src/surf/xml/simgrid_dtd.l > src/surf/xml/simgrid_dtd.l.tmp
       COMMAND mv src/surf/xml/simgrid_dtd.l.tmp src/surf/xml/simgrid_dtd.l
       COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/surf/xml/simgrid_dtd.l"
@@ -158,7 +158,7 @@ if(enable_maintainer_mode)
 
       #${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.h: ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/include/surf/simgrid.h
-      COMMAND ${FLEXML_EXE} --root-tags platform -P surfxml --sysid=https://simgrid.org/simgrid.dtd -H src/surf/xml/simgrid_dtd.h -L src/surf/xml/simgrid.dtd
+      COMMAND ${FLEXML_EXE} --root-tags platform -P simgrid_parse --sysid=https://simgrid.org/simgrid.dtd -H src/surf/xml/simgrid_dtd.h -L src/surf/xml/simgrid.dtd
       COMMAND ${SED_EXE} -i ${string1} src/surf/xml/simgrid_dtd.h
       COMMAND ${SED_EXE} -i ${string2} src/surf/xml/simgrid_dtd.h
       COMMAND ${SED_EXE} -i ${string3} src/surf/xml/simgrid_dtd.h
