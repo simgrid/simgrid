@@ -168,10 +168,7 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   //                    <----- send ACTORS_STATUS_REPLY
   //                    <----- send `N` `s_mc_message_actors_status_one_t` structs
   //                    <----- send `M` `s_mc_message_simcall_probe_one_t` structs
-  s_mc_message_t msg;
-  memset(&msg, 0, sizeof msg);
-  msg.type = simgrid::mc::MessageType::ACTORS_STATUS;
-  model_checker_->channel().send(msg);
+  model_checker_->channel().send(MessageType::ACTORS_STATUS);
 
   s_mc_message_actors_status_answer_t answer;
   ssize_t received = model_checker_->channel().receive(answer);
