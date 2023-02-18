@@ -42,14 +42,14 @@ void ModuleGroup::create_flag(const std::string& opt_name, const std::string& de
           by_name(value); // Simply ensure that this value exists, it will be picked up later
       });
 }
-void ModuleGroup::init_from_flag_value()
+void ModuleGroup::init_from_flag_value() const
 {
   by_name(simgrid::config::get_value<std::string>(opt_name_)).init();
 }
 
 ModuleGroup& ModuleGroup::add(const char* id, const char* desc, std::function<void()> init)
 {
-  table_.emplace_back(Module(id, desc, init));
+  table_.emplace_back(id, desc, std::move(init));
   return *this;
 }
 

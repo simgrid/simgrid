@@ -236,6 +236,8 @@ void AppSide::handle_messages() const
     ssize_t received_size = channel_.receive(message_buffer.data(), message_buffer.size());
 
     xbt_assert(received_size >= 0, "Could not receive commands from the model-checker");
+    xbt_assert(static_cast<size_t>(received_size) >= sizeof(s_mc_message_t), "Cannot handle short message (size=%zd)",
+               received_size);
 
     const s_mc_message_t* message = (s_mc_message_t*)message_buffer.data();
     switch (message->type) {
