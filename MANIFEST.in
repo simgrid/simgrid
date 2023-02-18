@@ -1968,6 +1968,7 @@ include src/dag/dax.dtd
 include src/dag/dax_dtd.c
 include src/dag/dax_dtd.h
 include src/dag/loaders.cpp
+include src/deprecated.cpp
 include src/instr/instr_config.cpp
 include src/instr/instr_interface.cpp
 include src/instr/instr_paje_containers.cpp
@@ -2250,7 +2251,6 @@ include src/simgrid/sg_config.cpp
 include src/simgrid/sg_config.hpp
 include src/simgrid/sg_version.cpp
 include src/simgrid/util.hpp
-include src/simix/libsmx.cpp
 include src/smpi/bindings/smpi_f77.cpp
 include src/smpi/bindings/smpi_f77_coll.cpp
 include src/smpi/bindings/smpi_f77_comm.cpp

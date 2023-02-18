@@ -32,4 +32,4 @@
 + tools/internal/.*
 + tools/jenkins/.*
 
-+ src/simix/simix_network\.tla
++ doc/simix_network\.tla

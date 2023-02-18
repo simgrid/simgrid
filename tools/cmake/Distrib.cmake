@@ -86,9 +86,8 @@ set(source_to_pack
   ${PLUGINS_SRC}
   ${DAG_SRC}
   ${SIMGRID_SRC}
-  ${SIMIX_SRC}
   ${SMPI_SRC}
-  ${SURF_SRC}
+  ${KERNEL_SRC}
   ${TRACING_SRC}
   ${XBT_RL_SRC}
   ${XBT_SRC}

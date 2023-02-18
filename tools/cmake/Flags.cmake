@@ -186,7 +186,7 @@ if(enable_model-checking AND enable_compile_optimizations)
   # But you can still optimize this:
   set(src_list ${simgrid_sources})
   # except...
-  list(REMOVE_ITEM src_list ${SIMIX_SRC} ${S4U_SRC})
+  list(REMOVE_ITEM src_list ${KERNEL_SRC} ${S4U_SRC})
   # but...
   list(APPEND src_list
     src/kernel/actor/Simcall.cpp)

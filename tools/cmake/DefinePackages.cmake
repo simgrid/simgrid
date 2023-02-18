@@ -300,9 +300,53 @@ set(NS3_SRC
   src/kernel/resource/models/ns3/ns3_simulator.cpp
   )
 
-set(SURF_SRC
+set(KERNEL_SRC
+  src/deprecated.cpp
+
   src/kernel/EngineImpl.cpp
   src/kernel/EngineImpl.hpp
+
+  src/kernel/activity/ActivityImpl.cpp
+  src/kernel/activity/ActivityImpl.hpp
+  src/kernel/activity/BarrierImpl.cpp
+  src/kernel/activity/BarrierImpl.hpp
+  src/kernel/activity/CommImpl.cpp
+  src/kernel/activity/CommImpl.hpp
+  src/kernel/activity/ConditionVariableImpl.cpp
+  src/kernel/activity/ConditionVariableImpl.hpp
+  src/kernel/activity/ExecImpl.cpp
+  src/kernel/activity/ExecImpl.hpp
+  src/kernel/activity/IoImpl.cpp
+  src/kernel/activity/IoImpl.hpp
+  src/kernel/activity/MailboxImpl.cpp
+  src/kernel/activity/MailboxImpl.hpp
+  src/kernel/activity/MutexImpl.cpp
+  src/kernel/activity/MutexImpl.hpp
+  src/kernel/activity/SemaphoreImpl.cpp
+  src/kernel/activity/SemaphoreImpl.hpp
+  src/kernel/activity/SleepImpl.cpp
+  src/kernel/activity/SleepImpl.hpp
+  src/kernel/activity/Synchro.cpp
+  src/kernel/activity/Synchro.hpp
+
+  src/kernel/actor/ActorImpl.cpp
+  src/kernel/actor/ActorImpl.hpp
+  src/kernel/actor/CommObserver.cpp
+  src/kernel/actor/CommObserver.hpp
+  src/kernel/actor/Simcall.cpp
+  src/kernel/actor/SimcallObserver.cpp
+  src/kernel/actor/SimcallObserver.hpp
+  src/kernel/actor/SynchroObserver.cpp
+  src/kernel/actor/SynchroObserver.hpp
+  
+  src/kernel/context/Context.cpp
+  src/kernel/context/Context.hpp
+  src/kernel/context/ContextRaw.cpp
+  src/kernel/context/ContextRaw.hpp
+  src/kernel/context/ContextSwapped.cpp
+  src/kernel/context/ContextSwapped.hpp
+  src/kernel/context/ContextThread.cpp
+  src/kernel/context/ContextThread.hpp
 
   src/kernel/lmm/System.cpp
   src/kernel/lmm/System.hpp
@@ -370,8 +414,8 @@ set(SURF_SRC
   src/kernel/xml/surfxml_sax_cb.cpp
   )
 if (Eigen3_FOUND)
-  set(SURF_SRC
-    ${SURF_SRC}
+  set(KERNEL_SRC
+    ${KERNEL_SRC}
     src/kernel/lmm/bmf.cpp
     src/kernel/lmm/bmf.hpp)
 else()
@@ -379,6 +423,18 @@ else()
     ${EXTRA_DIST}
     src/kernel/lmm/bmf.cpp
     src/kernel/lmm/bmf.hpp)
+endif()
+# Boost context may not be available
+if (HAVE_BOOST_CONTEXTS)
+  set(KERNEL_SRC
+      ${KERNEL_SRC}
+      src/kernel/context/ContextBoost.cpp
+      src/kernel/context/ContextBoost.hpp)
+else()
+  set(EXTRA_DIST
+      ${EXTRA_DIST}
+      src/kernel/context/ContextBoost.cpp
+      src/kernel/context/ContextBoost.hpp)
 endif()
 
 set(PLUGINS_SRC
@@ -396,61 +452,6 @@ set(PLUGINS_SRC
   src/plugins/vm/dirty_page_tracking.cpp
   )
 
-set(SIMIX_SRC
-  src/kernel/activity/ActivityImpl.cpp
-  src/kernel/activity/ActivityImpl.hpp
-  src/kernel/activity/BarrierImpl.cpp
-  src/kernel/activity/BarrierImpl.hpp
-  src/kernel/activity/CommImpl.cpp
-  src/kernel/activity/CommImpl.hpp
-  src/kernel/activity/ConditionVariableImpl.cpp
-  src/kernel/activity/ConditionVariableImpl.hpp
-  src/kernel/activity/ExecImpl.cpp
-  src/kernel/activity/ExecImpl.hpp
-  src/kernel/activity/IoImpl.cpp
-  src/kernel/activity/IoImpl.hpp
-  src/kernel/activity/MailboxImpl.cpp
-  src/kernel/activity/MailboxImpl.hpp
-  src/kernel/activity/MutexImpl.cpp
-  src/kernel/activity/MutexImpl.hpp
-  src/kernel/activity/SemaphoreImpl.cpp
-  src/kernel/activity/SemaphoreImpl.hpp
-  src/kernel/activity/SleepImpl.cpp
-  src/kernel/activity/SleepImpl.hpp
-  src/kernel/activity/Synchro.cpp
-  src/kernel/activity/Synchro.hpp
-  src/kernel/actor/ActorImpl.cpp
-  src/kernel/actor/ActorImpl.hpp
-  src/kernel/actor/CommObserver.cpp
-  src/kernel/actor/CommObserver.hpp
-  src/kernel/actor/Simcall.cpp
-  src/kernel/actor/SimcallObserver.cpp
-  src/kernel/actor/SimcallObserver.hpp
-  src/kernel/actor/SynchroObserver.cpp
-  src/kernel/actor/SynchroObserver.hpp
-  src/kernel/context/Context.cpp
-  src/kernel/context/Context.hpp
-  src/kernel/context/ContextRaw.cpp
-  src/kernel/context/ContextRaw.hpp
-  src/kernel/context/ContextSwapped.cpp
-  src/kernel/context/ContextSwapped.hpp
-  src/kernel/context/ContextThread.cpp
-  src/kernel/context/ContextThread.hpp
-  src/simix/libsmx.cpp
-  )
-
-# Boost context may not be available
-if (HAVE_BOOST_CONTEXTS)
-  set(SIMIX_SRC
-      ${SIMIX_SRC}
-      src/kernel/context/ContextBoost.cpp
-      src/kernel/context/ContextBoost.hpp)
-else()
-  set(EXTRA_DIST
-      ${EXTRA_DIST}
-      src/kernel/context/ContextBoost.cpp
-      src/kernel/context/ContextBoost.hpp)
-endif()
 
 set(S4U_SRC
   src/s4u/s4u_Activity.cpp
@@ -720,7 +721,7 @@ set(source_of_generated_headers
 
 ### depend of some variables set upper
 if(${HAVE_UCONTEXT_CONTEXTS}) #ucontext
-  set(SIMIX_SRC    ${SIMIX_SRC} src/kernel/context/ContextUnix.hpp
+  set(KERNEL_SRC  ${KERNEL_SRC} src/kernel/context/ContextUnix.hpp
                                 src/kernel/context/ContextUnix.cpp)
 else() # NOT ucontext
   set(EXTRA_DIST  ${EXTRA_DIST} src/kernel/context/ContextUnix.hpp
@@ -732,8 +733,7 @@ set(simgrid_sources
   ${S4U_SRC}
   ${SIMGRID_SRC}
   ${MC_SRC_BASE}
-  ${SIMIX_SRC}
-  ${SURF_SRC}
+  ${KERNEL_SRC}
   ${TRACING_SRC}
   ${XBT_SRC}
   ${PLUGINS_SRC}
