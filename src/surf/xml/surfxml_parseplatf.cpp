@@ -22,9 +22,9 @@ static std::unordered_map<std::string, std::string> trace_connect_list_link_lat;
 
 void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* trace_connect)
 {
-  surf_parse_assert(traces_set_list.find(trace_connect->trace) != traces_set_list.end(),
-                    "Cannot connect trace " + trace_connect->trace + " to " + trace_connect->element +
-                        ": trace unknown");
+  simgrid_parse_assert(traces_set_list.find(trace_connect->trace) != traces_set_list.end(),
+                       "Cannot connect trace " + trace_connect->trace + " to " + trace_connect->element +
+                           ": trace unknown");
 
   switch (trace_connect->kind) {
     case simgrid::kernel::routing::TraceConnectKind::HOST_AVAIL:
@@ -43,8 +43,8 @@ void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* 
       trace_connect_list_link_lat.try_emplace(trace_connect->trace, trace_connect->element);
       break;
     default:
-      surf_parse_error("Cannot connect trace " + trace_connect->trace + " to " + trace_connect->element +
-                       ": unknown kind of trace");
+      simgrid_parse_error("Cannot connect trace " + trace_connect->trace + " to " + trace_connect->element +
+                          ": unknown kind of trace");
   }
 }
 
@@ -52,64 +52,64 @@ void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* 
 void parse_platform_file(const std::string& file)
 {
   /* init the flex parser */
-  surf_parse_open(file);
+  simgrid_parse_open(file);
 
   /* Do the actual parsing */
-  surf_parse();
+  simgrid_parse();
 
   /* Get the Engine singleton once and for all*/
   const auto engine = simgrid::s4u::Engine::get_instance();
 
   /* connect all profiles relative to hosts */
   for (auto const& [trace, name] : trace_connect_list_host_avail) {
-    surf_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
-                      "<trace_connect kind=\"HOST_AVAIL\">: Trace " + trace + " undefined.");
+    simgrid_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
+                         "<trace_connect kind=\"HOST_AVAIL\">: Trace " + trace + " undefined.");
     auto profile = traces_set_list.at(trace);
 
     auto host = engine->host_by_name_or_null(name);
-    surf_parse_assert(host, "<trace_connect kind=\"HOST_AVAIL\">: Host " + name + " undefined.");
+    simgrid_parse_assert(host, "<trace_connect kind=\"HOST_AVAIL\">: Host " + name + " undefined.");
     host->set_state_profile(profile);
   }
 
   for (auto const& [trace, name] : trace_connect_list_host_speed) {
-    surf_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
-                      "<trace_connect kind=\"SPEED\">: Trace " + trace + " undefined.");
+    simgrid_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
+                         "<trace_connect kind=\"SPEED\">: Trace " + trace + " undefined.");
     auto profile = traces_set_list.at(trace);
 
     auto host = engine->host_by_name_or_null(name);
-    surf_parse_assert(host, "<trace_connect kind=\"SPEED\">: Host " + name + " undefined.");
+    simgrid_parse_assert(host, "<trace_connect kind=\"SPEED\">: Host " + name + " undefined.");
     host->set_speed_profile(profile);
   }
 
   for (auto const& [trace, name] : trace_connect_list_link_avail) {
-    surf_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
-                      "<trace_connect kind=\"LINK_AVAIL\">: Trace " + trace + " undefined.");
+    simgrid_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
+                         "<trace_connect kind=\"LINK_AVAIL\">: Trace " + trace + " undefined.");
     auto profile = traces_set_list.at(trace);
 
     auto link = engine->link_by_name_or_null(name);
-    surf_parse_assert(link, "<trace_connect kind=\"LINK_AVAIL\">: Link " + name + " undefined.");
+    simgrid_parse_assert(link, "<trace_connect kind=\"LINK_AVAIL\">: Link " + name + " undefined.");
     link->set_state_profile(profile);
   }
 
   for (auto const& [trace, name] : trace_connect_list_link_bw) {
-    surf_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
-                      "<trace_connect kind=\"BANDWIDTH\">: Trace " + trace + " undefined.");
+    simgrid_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
+                         "<trace_connect kind=\"BANDWIDTH\">: Trace " + trace + " undefined.");
     auto profile = traces_set_list.at(trace);
 
     auto link = engine->link_by_name_or_null(name);
-    surf_parse_assert(link, "<trace_connect kind=\"BANDWIDTH\">: Link " + name + " undefined.");
+    simgrid_parse_assert(link, "<trace_connect kind=\"BANDWIDTH\">: Link " + name + " undefined.");
     link->set_bandwidth_profile(profile);
   }
 
   for (auto const& [trace, name] : trace_connect_list_link_lat) {
-    surf_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
-                      "<trace_connect kind=\"LATENCY\">: Trace " + trace + " undefined.");
+    simgrid_parse_assert(traces_set_list.find(trace) != traces_set_list.end(),
+                         "<trace_connect kind=\"LATENCY\">: Trace " + trace + " undefined.");
     auto profile = traces_set_list.at(trace);
 
     auto link = engine->link_by_name_or_null(name);
-    surf_parse_assert(link, "<trace_connect kind=\"LATENCY\">: Link " + name + " undefined.");
+    simgrid_parse_assert(link, "<trace_connect kind=\"LATENCY\">: Link " + name + " undefined.");
     link->set_latency_profile(profile);
   }
 
-  surf_parse_close();
+  simgrid_parse_close();
 }

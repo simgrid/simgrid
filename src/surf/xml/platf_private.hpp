@@ -1,7 +1,6 @@
 /* platf_private.h - Interface to the SimGrid platforms which visibility should be limited to this directory */
 
-/* Copyright (c) 2004-2023. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2023. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -207,17 +206,17 @@ XBT_PUBLIC void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* 
 XBT_PRIVATE void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* trace_connect);
 
 /* Prototypes of the functions offered by flex */
-XBT_PUBLIC int surf_parse_lex();
-XBT_PUBLIC int surf_parse_get_lineno();
-XBT_PUBLIC FILE* surf_parse_get_in();
-XBT_PUBLIC FILE* surf_parse_get_out();
-XBT_PUBLIC int surf_parse_get_leng();
-XBT_PUBLIC char* surf_parse_get_text();
-XBT_PUBLIC void surf_parse_set_lineno(int line_number);
-XBT_PUBLIC void surf_parse_set_in(FILE* in_str);
-XBT_PUBLIC void surf_parse_set_out(FILE* out_str);
-XBT_PUBLIC int surf_parse_get_debug();
-XBT_PUBLIC void surf_parse_set_debug(int bdebug);
-XBT_PUBLIC int surf_parse_lex_destroy();
+XBT_PUBLIC int simgrid_parse_lex();
+XBT_PUBLIC int simgrid_parse_get_lineno();
+XBT_PUBLIC FILE* simgrid_parse_get_in();
+XBT_PUBLIC FILE* simgrid_parse_get_out();
+XBT_PUBLIC int simgrid_parse_get_leng();
+XBT_PUBLIC char* simgrid_parse_get_text();
+XBT_PUBLIC void simgrid_parse_set_lineno(int line_number);
+XBT_PUBLIC void simgrid_parse_set_in(FILE* in_str);
+XBT_PUBLIC void simgrid_parse_set_out(FILE* out_str);
+XBT_PUBLIC int simgrid_parse_get_debug();
+XBT_PUBLIC void simgrid_parse_set_debug(int bdebug);
+XBT_PUBLIC int simgrid_parse_lex_destroy();
 
 #endif                          /* SG_PLATF_H */

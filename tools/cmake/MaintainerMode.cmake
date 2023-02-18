@@ -176,7 +176,7 @@ if(enable_maintainer_mode)
 
       #surf/xml/simgrid_dtd.c: surf/xml/simgrid_dtd.l
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.c
-      COMMAND ${FLEX_EXE} -o src/surf/xml/simgrid_dtd.c -Psurf_parse_ --noline src/surf/xml/simgrid_dtd.l
+      COMMAND ${FLEX_EXE} -o src/surf/xml/simgrid_dtd.c -Psimgrid_parse_ --noline src/surf/xml/simgrid_dtd.l
       COMMAND ${CMAKE_COMMAND} -E echo "       Generated surf/xml/simgrid_dtd.c"
 
       #dag/dax_dtd.c: dag/dax_dtd.l

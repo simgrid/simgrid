@@ -313,9 +313,9 @@ void EngineImpl::load_deployment(const std::string& file) const
 {
   sg_platf_parser_finalize();
 
-  surf_parse_open(file);
-  surf_parse();
-  surf_parse_close();
+  simgrid_parse_open(file);
+  simgrid_parse();
+  simgrid_parse_close();
 }
 
 void EngineImpl::register_function(const std::string& name, const actor::ActorCodeFactory& code)

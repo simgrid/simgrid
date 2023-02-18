@@ -27,22 +27,22 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(platf_parse, ker_platform, "Logging specific to the parsing of platform files");
 
-std::string surf_parsed_filename; // Currently parsed file (for the error messages)
+std::string simgrid_parsed_filename;                            // Currently parsed file (for the error messages)
 static std::vector<simgrid::s4u::LinkInRoute> parsed_link_list; /* temporary store of current link list of a route */
 
 /* Helping functions */
-void surf_parse_assert(bool cond, const std::string& msg)
+void simgrid_parse_assert(bool cond, const std::string& msg)
 {
   if (not cond)
-    surf_parse_error(msg);
+    simgrid_parse_error(msg);
 }
 
-void surf_parse_error(const std::string& msg)
+void simgrid_parse_error(const std::string& msg)
 {
-  throw simgrid::ParseError(surf_parsed_filename, surf_parse_lineno, msg);
+  throw simgrid::ParseError(simgrid_parsed_filename, simgrid_parse_lineno, msg);
 }
 
-void surf_parse_assert_netpoint(const std::string& hostname, const std::string& pre, const std::string& post)
+void simgrid_parse_assert_netpoint(const std::string& hostname, const std::string& pre, const std::string& post)
 {
   if (simgrid::s4u::Engine::get_instance()->netpoint_by_name_or_null(hostname) != nullptr) // found
     return;
@@ -70,24 +70,24 @@ void surf_parse_assert_netpoint(const std::string& hostname, const std::string& 
       break;
     }
   }
-  surf_parse_error(msg);
+  simgrid_parse_error(msg);
 }
 
-double surf_parse_get_double(const std::string& s)
+double simgrid_parse_get_double(const std::string& s)
 {
   try {
     return std::stod(s);
   } catch (const std::invalid_argument&) {
-    surf_parse_error(s + " is not a double");
+    simgrid_parse_error(s + " is not a double");
   }
 }
 
-int surf_parse_get_int(const std::string& s)
+int simgrid_parse_get_int(const std::string& s)
 {
   try {
     return std::stoi(s);
   } catch (const std::invalid_argument&) {
-    surf_parse_error(s + " is not an int");
+    simgrid_parse_error(s + " is not an int");
   }
 }
 
@@ -100,7 +100,7 @@ static void explodesRadical(const std::string& radicals, std::vector<int>* explo
   for (auto const& group : radical_elements) {
     std::vector<std::string> radical_ends;
     boost::split(radical_ends, group, boost::is_any_of("-"));
-    int start = surf_parse_get_int(radical_ends.front());
+    int start = simgrid_parse_get_int(radical_ends.front());
     int end   = 0;
 
     switch (radical_ends.size()) {
@@ -108,10 +108,10 @@ static void explodesRadical(const std::string& radicals, std::vector<int>* explo
         end = start;
         break;
       case 2:
-        end = surf_parse_get_int(radical_ends.back());
+        end = simgrid_parse_get_int(radical_ends.back());
         break;
       default:
-        surf_parse_error("Malformed radical: " + group);
+        simgrid_parse_error("Malformed radical: " + group);
     }
     for (int i = start; i <= end; i++)
       exploded->push_back(i);
@@ -173,26 +173,26 @@ void ETag_simgrid_parse_include()
 void STag_simgrid_parse_platform() {
   /* Use fixed point arithmetic to avoid rounding errors ("4.1" for example cannot be represented exactly as a floating
    * point number) */
-  const long int version           = lround(100.0 * surf_parse_get_double(A_simgrid_parse_platform_version));
+  const long int version           = lround(100.0 * simgrid_parse_get_double(A_simgrid_parse_platform_version));
   const std::string version_string = std::to_string(version / 100) + "." + std::to_string(version % 100);
 
-  surf_parse_assert(version >= 100L, "******* BIG FAT WARNING *********\n "
-                                     "You're using an ancient XML file.\n"
-                                     "Since SimGrid 3.1, units are Bytes, Flops, and seconds "
-                                     "instead of MBytes, MFlops and seconds.\n"
+  simgrid_parse_assert(version >= 100L, "******* BIG FAT WARNING *********\n "
+                                        "You're using an ancient XML file.\n"
+                                        "Since SimGrid 3.1, units are Bytes, Flops, and seconds "
+                                        "instead of MBytes, MFlops and seconds.\n"
 
-                                     "Use simgrid_update_xml to update your file automatically. "
-                                     "This program is installed automatically with SimGrid, or "
-                                     "available in the tools/ directory of the source archive.\n"
+                                        "Use simgrid_update_xml to update your file automatically. "
+                                        "This program is installed automatically with SimGrid, or "
+                                        "available in the tools/ directory of the source archive.\n"
 
-                                     "Please check also out the SURF section of the ChangeLog for "
-                                     "the 3.1 version for more information.");
-  surf_parse_assert(version >= 300L, "******* BIG FAT WARNING *********\n "
-                                     "You're using an old XML file.\n"
-                                     "Use simgrid_update_xml to update your file automatically. "
-                                     "This program is installed automatically with SimGrid, or "
-                                     "available in the tools/ directory of the source archive.");
-  surf_parse_assert(
+                                        "Please check also out the SURF section of the ChangeLog for "
+                                        "the 3.1 version for more information.");
+  simgrid_parse_assert(version >= 300L, "******* BIG FAT WARNING *********\n "
+                                        "You're using an old XML file.\n"
+                                        "Use simgrid_update_xml to update your file automatically. "
+                                        "This program is installed automatically with SimGrid, or "
+                                        "available in the tools/ directory of the source archive.");
+  simgrid_parse_assert(
       version >= 400L,
       "******* THIS FILE IS TOO OLD (v:" + version_string +
           ") *********\n "
@@ -211,12 +211,13 @@ void STag_simgrid_parse_platform() {
              "Use simgrid_update_xml to update your file automatically to get rid of this warning. "
              "This program is installed automatically with SimGrid, or "
              "available in the tools/ directory of the source archive.",
-             version_string.c_str(), surf_parsed_filename.c_str());
+             version_string.c_str(), simgrid_parsed_filename.c_str());
   }
-  surf_parse_assert(version <= 410L, "******* THIS FILE COMES FROM THE FUTURE (v:" + version_string +
-                                         ") *********\n "
-                                         "The most recent formalism that this version of SimGrid understands is v4.1.\n"
-                                         "Please update your code, or use another, more adapted, file.");
+  simgrid_parse_assert(version <= 410L,
+                       "******* THIS FILE COMES FROM THE FUTURE (v:" + version_string +
+                           ") *********\n "
+                           "The most recent formalism that this version of SimGrid understands is v4.1.\n"
+                           "Please update your code, or use another, more adapted, file.");
 }
 void ETag_simgrid_parse_platform(){
   simgrid::s4u::Engine::on_platform_created();
@@ -235,11 +236,11 @@ void STag_simgrid_parse_host()
   property_sets.emplace_back();
   host.id = A_simgrid_parse_host_id;
 
-  host.speed_per_pstate = xbt_parse_get_all_speeds(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_host_speed,
-                                                   "speed of host " + host.id);
+  host.speed_per_pstate = xbt_parse_get_all_speeds(simgrid_parsed_filename, simgrid_parse_lineno,
+                                                   A_simgrid_parse_host_speed, "speed of host " + host.id);
 
   XBT_DEBUG("pstate: %s", A_simgrid_parse_host_pstate);
-  host.core_amount = surf_parse_get_int(A_simgrid_parse_host_core);
+  host.core_amount = simgrid_parse_get_int(A_simgrid_parse_host_core);
 
   if (A_simgrid_parse_host_availability___file[0] != '\0') {
     XBT_WARN("The availability_file attribute in <host> is now deprecated. Please, use 'speed_file' instead.");
@@ -260,7 +261,7 @@ void ETag_simgrid_parse_host()
   sg_platf_new_host_set_properties(property_sets.back());
   property_sets.pop_back();
 
-  sg_platf_new_host_seal(surf_parse_get_int(A_simgrid_parse_host_pstate));
+  sg_platf_new_host_seal(simgrid_parse_get_int(A_simgrid_parse_host_pstate));
 }
 
 void STag_simgrid_parse_disk() {
@@ -273,10 +274,10 @@ void ETag_simgrid_parse_disk() {
   property_sets.pop_back();
 
   disk.id       = A_simgrid_parse_disk_id;
-  disk.read_bw  = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_disk_read___bw,
-                                         "read_bw of disk " + disk.id);
-  disk.write_bw = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_disk_write___bw,
-                                          "write_bw of disk " + disk.id);
+  disk.read_bw  = xbt_parse_get_bandwidth(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_disk_read___bw,
+                                          "read_bw of disk " + disk.id);
+  disk.write_bw = xbt_parse_get_bandwidth(simgrid_parsed_filename, simgrid_parse_lineno,
+                                          A_simgrid_parse_disk_write___bw, "write_bw of disk " + disk.id);
 
   sg_platf_new_disk(&disk);
 }
@@ -305,30 +306,31 @@ void ETag_simgrid_parse_cluster(){
   cluster.suffix      = A_simgrid_parse_cluster_suffix;
   explodesRadical(A_simgrid_parse_cluster_radical, &cluster.radicals);
 
-  cluster.speeds = xbt_parse_get_all_speeds(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_cluster_speed,
-                                            "speed of cluster " + cluster.id);
-  cluster.core_amount = surf_parse_get_int(A_simgrid_parse_cluster_core);
-  cluster.bw          = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_cluster_bw,
-                                       "bw of cluster " + cluster.id);
-  cluster.lat = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_cluster_lat,
+  cluster.speeds      = xbt_parse_get_all_speeds(simgrid_parsed_filename, simgrid_parse_lineno,
+                                                 A_simgrid_parse_cluster_speed, "speed of cluster " + cluster.id);
+  cluster.core_amount = simgrid_parse_get_int(A_simgrid_parse_cluster_core);
+  cluster.bw  = xbt_parse_get_bandwidth(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cluster_bw,
+                                        "bw of cluster " + cluster.id);
+  cluster.lat = xbt_parse_get_time(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cluster_lat,
                                    "lat of cluster " + cluster.id);
   if(strcmp(A_simgrid_parse_cluster_bb___bw,""))
-    cluster.bb_bw = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_cluster_bb___bw,
-                                            "bb_bw of cluster " + cluster.id);
+    cluster.bb_bw = xbt_parse_get_bandwidth(simgrid_parsed_filename, simgrid_parse_lineno,
+                                            A_simgrid_parse_cluster_bb___bw, "bb_bw of cluster " + cluster.id);
   if(strcmp(A_simgrid_parse_cluster_bb___lat,""))
-    cluster.bb_lat = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_cluster_bb___lat,
+    cluster.bb_lat = xbt_parse_get_time(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cluster_bb___lat,
                                         "bb_lat of cluster " + cluster.id);
   if(strcmp(A_simgrid_parse_cluster_limiter___link,""))
     cluster.limiter_link =
-        xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_cluster_limiter___link,
+        xbt_parse_get_bandwidth(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cluster_limiter___link,
                                 "limiter_link of cluster " + cluster.id);
   if(strcmp(A_simgrid_parse_cluster_loopback___bw,""))
     cluster.loopback_bw =
-        xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_cluster_loopback___bw,
+        xbt_parse_get_bandwidth(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cluster_loopback___bw,
                                 "loopback_bw of cluster " + cluster.id);
   if(strcmp(A_simgrid_parse_cluster_loopback___lat,""))
-    cluster.loopback_lat = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_cluster_loopback___lat,
-                                              "loopback_lat of cluster " + cluster.id);
+    cluster.loopback_lat =
+        xbt_parse_get_time(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cluster_loopback___lat,
+                           "loopback_lat of cluster " + cluster.id);
 
   switch(AX_simgrid_parse_cluster_topology){
   case A_simgrid_parse_cluster_topology_FLAT:
@@ -344,7 +346,7 @@ void ETag_simgrid_parse_cluster(){
     cluster.topology = simgrid::kernel::routing::ClusterTopology::DRAGONFLY;
     break;
   default:
-    surf_parse_error("Invalid cluster topology for cluster " + cluster.id);
+    simgrid_parse_error("Invalid cluster topology for cluster " + cluster.id);
   }
   cluster.topo_parameters = A_simgrid_parse_cluster_topo___parameters;
   cluster.router_id = A_simgrid_parse_cluster_router___id;
@@ -364,7 +366,7 @@ void ETag_simgrid_parse_cluster(){
     cluster.sharing_policy = simgrid::s4u::Link::SharingPolicy::FATPIPE;
     break;
   default:
-    surf_parse_error("Invalid cluster sharing policy for cluster " + cluster.id);
+    simgrid_parse_error("Invalid cluster sharing policy for cluster " + cluster.id);
   }
   switch (AX_simgrid_parse_cluster_bb___sharing___policy) {
   case A_simgrid_parse_cluster_bb___sharing___policy_FATPIPE:
@@ -374,7 +376,7 @@ void ETag_simgrid_parse_cluster(){
     cluster.bb_sharing_policy = simgrid::s4u::Link::SharingPolicy::SHARED;
     break;
   default:
-    surf_parse_error("Invalid bb sharing policy in cluster " + cluster.id);
+    simgrid_parse_error("Invalid bb sharing policy in cluster " + cluster.id);
   }
 
   sg_platf_new_tag_cluster(&cluster);
@@ -389,12 +391,12 @@ void STag_simgrid_parse_cabinet(){
   cabinet.id      = A_simgrid_parse_cabinet_id;
   cabinet.prefix  = A_simgrid_parse_cabinet_prefix;
   cabinet.suffix  = A_simgrid_parse_cabinet_suffix;
-  cabinet.speed   = xbt_parse_get_speed(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_cabinet_speed,
-                                      "speed of cabinet " + cabinet.id);
-  cabinet.bw = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_cabinet_bw,
-                                       "bw of cabinet " + cabinet.id);
-  cabinet.lat = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_cabinet_lat,
-                                   "lat of cabinet " + cabinet.id);
+  cabinet.speed   = xbt_parse_get_speed(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cabinet_speed,
+                                        "speed of cabinet " + cabinet.id);
+  cabinet.bw      = xbt_parse_get_bandwidth(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cabinet_bw,
+                                            "bw of cabinet " + cabinet.id);
+  cabinet.lat     = xbt_parse_get_time(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cabinet_lat,
+                                       "lat of cabinet " + cabinet.id);
   explodesRadical(A_simgrid_parse_cabinet_radical, &cabinet.radicals);
 
   sg_platf_new_cabinet(&cabinet);
@@ -404,11 +406,11 @@ void STag_simgrid_parse_peer(){
   simgrid::kernel::routing::PeerCreationArgs peer;
 
   peer.id = A_simgrid_parse_peer_id;
-  peer.speed =
-      xbt_parse_get_speed(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_peer_speed, "speed of peer " + peer.id);
-  peer.bw_in = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_peer_bw___in,
-                                       "bw_in of peer " + peer.id);
-  peer.bw_out = xbt_parse_get_bandwidth(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_peer_bw___out,
+  peer.speed  = xbt_parse_get_speed(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_peer_speed,
+                                    "speed of peer " + peer.id);
+  peer.bw_in  = xbt_parse_get_bandwidth(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_peer_bw___in,
+                                        "bw_in of peer " + peer.id);
+  peer.bw_out = xbt_parse_get_bandwidth(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_peer_bw___out,
                                         "bw_out of peer " + peer.id);
   peer.coord       = A_simgrid_parse_peer_coordinates;
   peer.speed_trace = nullptr;
@@ -440,13 +442,13 @@ void ETag_simgrid_parse_link(){
   property_sets.pop_back();
 
   link.id                  = A_simgrid_parse_link_id;
-  link.bandwidths          = xbt_parse_get_bandwidths(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_link_bandwidth,
-                                             "bandwidth of link " + link.id);
+  link.bandwidths          = xbt_parse_get_bandwidths(simgrid_parsed_filename, simgrid_parse_lineno,
+                                                      A_simgrid_parse_link_bandwidth, "bandwidth of link " + link.id);
   link.bandwidth_trace     = A_simgrid_parse_link_bandwidth___file[0]
                              ? simgrid::kernel::profile::ProfileBuilder::from_file(A_simgrid_parse_link_bandwidth___file)
                              : nullptr;
-  link.latency =
-      xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_link_latency, "latency of link " + link.id);
+  link.latency = xbt_parse_get_time(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_link_latency,
+                                    "latency of link " + link.id);
   link.latency_trace       = A_simgrid_parse_link_latency___file[0]
                            ? simgrid::kernel::profile::ProfileBuilder::from_file(A_simgrid_parse_link_latency___file)
                            : nullptr;
@@ -472,7 +474,7 @@ void ETag_simgrid_parse_link(){
     link.policy = simgrid::s4u::Link::SharingPolicy::WIFI;
     break;
   default:
-    surf_parse_error("Invalid sharing policy in link " + link.id);
+    simgrid_parse_error("Invalid sharing policy in link " + link.id);
   }
 
   sg_platf_new_link(&link);
@@ -497,7 +499,7 @@ void STag_simgrid_parse_link___ctn()
     direction = simgrid::s4u::LinkInRoute::Direction::DOWN;
     break;
   default:
-    surf_parse_error(std::string("Invalid direction for link ") + A_simgrid_parse_link___ctn_id);
+    simgrid_parse_error(std::string("Invalid direction for link ") + A_simgrid_parse_link___ctn_id);
   }
 
   const char* dirname;
@@ -511,7 +513,7 @@ void STag_simgrid_parse_link___ctn()
     default:
       dirname = "";
   }
-  surf_parse_assert(link != nullptr, std::string("No such link: '") + A_simgrid_parse_link___ctn_id + "'" + dirname);
+  simgrid_parse_assert(link != nullptr, std::string("No such link: '") + A_simgrid_parse_link___ctn_id + "'" + dirname);
   parsed_link_list.emplace_back(link, direction);
 }
 
@@ -520,9 +522,10 @@ void ETag_simgrid_parse_backbone()
   auto link = std::make_unique<simgrid::kernel::routing::LinkCreationArgs>();
 
   link->id = A_simgrid_parse_backbone_id;
-  link->bandwidths.push_back(xbt_parse_get_bandwidth(
-      surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_backbone_bandwidth, "bandwidth of backbone " + link->id));
-  link->latency = xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, A_simgrid_parse_backbone_latency,
+  link->bandwidths.push_back(xbt_parse_get_bandwidth(simgrid_parsed_filename, simgrid_parse_lineno,
+                                                     A_simgrid_parse_backbone_bandwidth,
+                                                     "bandwidth of backbone " + link->id));
+  link->latency = xbt_parse_get_time(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_backbone_latency,
                                      "latency of backbone " + link->id);
   link->policy  = simgrid::s4u::Link::SharingPolicy::SHARED;
 
@@ -530,40 +533,44 @@ void ETag_simgrid_parse_backbone()
 }
 
 void STag_simgrid_parse_route(){
-  surf_parse_assert_netpoint(A_simgrid_parse_route_src, "Route src='", "' does name a node.");
-  surf_parse_assert_netpoint(A_simgrid_parse_route_dst, "Route dst='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_route_src, "Route src='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_route_dst, "Route dst='", "' does name a node.");
 }
 
 void STag_simgrid_parse_ASroute(){
-  surf_parse_assert_netpoint(A_simgrid_parse_ASroute_src, "ASroute src='", "' does name a node.");
-  surf_parse_assert_netpoint(A_simgrid_parse_ASroute_dst, "ASroute dst='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_ASroute_src, "ASroute src='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_ASroute_dst, "ASroute dst='", "' does name a node.");
 
-  surf_parse_assert_netpoint(A_simgrid_parse_ASroute_gw___src, "ASroute gw_src='", "' does name a node.");
-  surf_parse_assert_netpoint(A_simgrid_parse_ASroute_gw___dst, "ASroute gw_dst='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_ASroute_gw___src, "ASroute gw_src='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_ASroute_gw___dst, "ASroute gw_dst='", "' does name a node.");
 }
 void STag_simgrid_parse_zoneRoute(){
-  surf_parse_assert_netpoint(A_simgrid_parse_zoneRoute_src, "zoneRoute src='", "' does name a node.");
-  surf_parse_assert_netpoint(A_simgrid_parse_zoneRoute_dst, "zoneRoute dst='", "' does name a node.");
-  surf_parse_assert_netpoint(A_simgrid_parse_zoneRoute_gw___src, "zoneRoute gw_src='", "' does name a node.");
-  surf_parse_assert_netpoint(A_simgrid_parse_zoneRoute_gw___dst, "zoneRoute gw_dst='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_zoneRoute_src, "zoneRoute src='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_zoneRoute_dst, "zoneRoute dst='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_zoneRoute_gw___src, "zoneRoute gw_src='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_zoneRoute_gw___dst, "zoneRoute gw_dst='", "' does name a node.");
 }
 
 void STag_simgrid_parse_bypassRoute(){
-  surf_parse_assert_netpoint(A_simgrid_parse_bypassRoute_src, "bypassRoute src='", "' does name a node.");
-  surf_parse_assert_netpoint(A_simgrid_parse_bypassRoute_dst, "bypassRoute dst='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_bypassRoute_src, "bypassRoute src='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_bypassRoute_dst, "bypassRoute dst='", "' does name a node.");
 }
 
 void STag_simgrid_parse_bypassASroute(){
-  surf_parse_assert_netpoint(A_simgrid_parse_bypassASroute_src, "bypassASroute src='", "' does name a node.");
-  surf_parse_assert_netpoint(A_simgrid_parse_bypassASroute_dst, "bypassASroute dst='", "' does name a node.");
-  surf_parse_assert_netpoint(A_simgrid_parse_bypassASroute_gw___src, "bypassASroute gw_src='", "' does name a node.");
-  surf_parse_assert_netpoint(A_simgrid_parse_bypassASroute_gw___dst, "bypassASroute gw_dst='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_bypassASroute_src, "bypassASroute src='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_bypassASroute_dst, "bypassASroute dst='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_bypassASroute_gw___src, "bypassASroute gw_src='",
+                                "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_bypassASroute_gw___dst, "bypassASroute gw_dst='",
+                                "' does name a node.");
 }
 void STag_simgrid_parse_bypassZoneRoute(){
-  surf_parse_assert_netpoint(A_simgrid_parse_bypassZoneRoute_src, "bypassZoneRoute src='", "' does name a node.");
-  surf_parse_assert_netpoint(A_simgrid_parse_bypassZoneRoute_dst, "bypassZoneRoute dst='", "' does name a node.");
-  surf_parse_assert_netpoint(A_simgrid_parse_bypassZoneRoute_gw___src, "bypassZoneRoute gw_src='", "' does name a node.");
-  surf_parse_assert_netpoint(A_simgrid_parse_bypassZoneRoute_gw___dst, "bypassZoneRoute gw_dst='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_bypassZoneRoute_src, "bypassZoneRoute src='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_bypassZoneRoute_dst, "bypassZoneRoute dst='", "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_bypassZoneRoute_gw___src, "bypassZoneRoute gw_src='",
+                                "' does name a node.");
+  simgrid_parse_assert_netpoint(A_simgrid_parse_bypassZoneRoute_gw___dst, "bypassZoneRoute gw_dst='",
+                                "' does name a node.");
 }
 
 void ETag_simgrid_parse_route(){
@@ -649,7 +656,7 @@ void ETag_simgrid_parse_trace(){
 
   trace.id = A_simgrid_parse_trace_id;
   trace.file = A_simgrid_parse_trace_file;
-  trace.periodicity = surf_parse_get_double(A_simgrid_parse_trace_periodicity);
+  trace.periodicity = simgrid_parse_get_double(A_simgrid_parse_trace_periodicity);
   trace.pc_data = simgrid_parse_pcdata;
 
   sg_platf_new_trace(&trace);
@@ -680,7 +687,7 @@ void STag_simgrid_parse_trace___connect()
       trace_connect.kind = simgrid::kernel::routing::TraceConnectKind::LINK_AVAIL;
       break;
     default:
-      surf_parse_error("Invalid trace kind");
+      simgrid_parse_error("Invalid trace kind");
   }
   sg_platf_trace_connect(&trace_connect);
 }
@@ -718,8 +725,9 @@ void STag_simgrid_parse_config()
   property_sets.emplace_back();
   XBT_DEBUG("START configuration name = %s",A_simgrid_parse_config_id);
   if (_sg_cfg_init_status == 2) {
-    surf_parse_error("All <config> tags must be given before any platform elements (such as <zone>, <host>, <cluster>, "
-                     "<link>, etc).");
+    simgrid_parse_error(
+        "All <config> tags must be given before any platform elements (such as <zone>, <host>, <cluster>, "
+        "<link>, etc).");
   }
 }
 
@@ -780,8 +788,8 @@ void ETag_simgrid_parse_actor()
   actor.args.swap(arguments);
   actor.host       = A_simgrid_parse_actor_host;
   actor.function   = A_simgrid_parse_actor_function;
-  actor.start_time = surf_parse_get_double(A_simgrid_parse_actor_start___time);
-  actor.kill_time  = surf_parse_get_double(A_simgrid_parse_actor_kill___time);
+  actor.start_time = simgrid_parse_get_double(A_simgrid_parse_actor_start___time);
+  actor.kill_time  = simgrid_parse_get_double(A_simgrid_parse_actor_kill___time);
 
   switch (A_simgrid_parse_actor_on___failure) {
   case AU_simgrid_parse_actor_on___failure:
@@ -792,7 +800,7 @@ void ETag_simgrid_parse_actor()
     actor.restart_on_failure = true;
     break;
   default:
-    surf_parse_error("Invalid on failure behavior");
+    simgrid_parse_error("Invalid on failure behavior");
   }
 
   sg_platf_new_actor(&actor);
@@ -827,9 +835,9 @@ void ETag_simgrid_parse_model___prop(){/* Nothing to do */}
 /* Open and Close parse file */
 static YY_BUFFER_STATE surf_input_buffer;
 
-void surf_parse_open(const std::string& file)
+void simgrid_parse_open(const std::string& file)
 {
-  surf_parsed_filename = file;
+  simgrid_parsed_filename = file;
   std::string dir      = simgrid::xbt::Path(file).get_dir_name();
   simgrid::xbt::path_push(dir);
 
@@ -837,25 +845,25 @@ void surf_parse_open(const std::string& file)
   if (surf_file_to_parse == nullptr)
     throw std::invalid_argument("Unable to open '" + file + "' from '" + simgrid::xbt::Path().get_name() +
                                 "'. Does this file exist?");
-  surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
-  surf_parse__switch_to_buffer(surf_input_buffer);
-  surf_parse_lineno = 1;
+  surf_input_buffer = simgrid_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
+  simgrid_parse__switch_to_buffer(surf_input_buffer);
+  simgrid_parse_lineno = 1;
 }
 
-void surf_parse_close()
+void simgrid_parse_close()
 {
-  simgrid::xbt::path_pop(); // remove the dirname of the opened file, that was added in surf_parse_open()
+  simgrid::xbt::path_pop(); // remove the dirname of the opened file, that was added in simgrid_parse_open()
 
   if (surf_file_to_parse) {
-    surf_parse__delete_buffer(surf_input_buffer);
+    simgrid_parse__delete_buffer(surf_input_buffer);
     fclose(surf_file_to_parse);
     surf_file_to_parse = nullptr; //Must be reset for Bypass
   }
 }
 
 /* Call the lexer to parse the currently opened file */
-void surf_parse()
+void simgrid_parse()
 {
-  bool err = surf_parse_lex();
-  surf_parse_assert(not err, "Flex returned an error code");
+  bool err = simgrid_parse_lex();
+  simgrid_parse_assert(not err, "Flex returned an error code");
 }

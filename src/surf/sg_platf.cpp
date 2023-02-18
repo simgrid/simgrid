@@ -47,7 +47,7 @@ void sg_platf_parser_finalize()
 {
   simgrid::kernel::routing::on_cluster_creation.disconnect_slots();
 
-  surf_parse_lex_destroy();
+  simgrid_parse_lex_destroy();
 }
 
 /** @brief Add a host to the current NetZone */

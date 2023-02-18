@@ -13,17 +13,17 @@
 /* Module management functions */
 XBT_PUBLIC void sg_platf_parser_finalize();
 
-XBT_PUBLIC void surf_parse_open(const std::string& file);
-XBT_PUBLIC void surf_parse_close();
-XBT_PUBLIC void surf_parse_assert(bool cond, const std::string& msg);
-XBT_ATTRIB_NORETURN XBT_PUBLIC void surf_parse_error(const std::string& msg);
-XBT_PUBLIC void surf_parse_assert_netpoint(const std::string& hostname, const std::string& pre,
-                                           const std::string& post);
+XBT_PUBLIC void simgrid_parse_open(const std::string& file);
+XBT_PUBLIC void simgrid_parse_close();
+XBT_PUBLIC void simgrid_parse_assert(bool cond, const std::string& msg);
+XBT_ATTRIB_NORETURN XBT_PUBLIC void simgrid_parse_error(const std::string& msg);
+XBT_PUBLIC void simgrid_parse_assert_netpoint(const std::string& hostname, const std::string& pre,
+                                              const std::string& post);
 
-XBT_PUBLIC double surf_parse_get_double(const std::string& s);
-XBT_PUBLIC int surf_parse_get_int(const std::string& s);
+XBT_PUBLIC double simgrid_parse_get_double(const std::string& s);
+XBT_PUBLIC int simgrid_parse_get_int(const std::string& s);
 
-XBT_PUBLIC void surf_parse(); /* Entry-point to the parser */
+XBT_PUBLIC void simgrid_parse(); /* Entry-point to the parser */
 XBT_PUBLIC void parse_platform_file(const std::string& file);
 
 #endif

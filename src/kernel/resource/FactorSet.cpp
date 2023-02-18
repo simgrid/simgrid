@@ -16,8 +16,8 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_resource);
 
-extern std::string surf_parsed_filename;
-extern int surf_parse_lineno;
+extern std::string simgrid_parsed_filename;
+extern int simgrid_parse_lineno;
 
 namespace simgrid::kernel::resource {
 
@@ -62,7 +62,7 @@ void FactorSet::parse(const std::string& values)
         }
       } else {
         try {
-          fact.values.push_back(xbt_parse_get_time(surf_parsed_filename, surf_parse_lineno, *factor_iter, ""));
+          fact.values.push_back(xbt_parse_get_time(simgrid_parsed_filename, simgrid_parse_lineno, *factor_iter, ""));
         } catch (const std::invalid_argument&) {
           throw std::invalid_argument("Invalid factor value " + std::to_string(iteration) + " in chunk " +
                                       std::to_string(factors_.size() + 1) + ": " + *factor_iter + " for " + name_);
