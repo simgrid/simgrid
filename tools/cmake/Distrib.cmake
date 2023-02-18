@@ -205,14 +205,6 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E remove_directory ${PROJECT_NAME}-${release_version}/)
 add_dependencies(dist dist-dir)
 
-if(NOT enable_maintainer_mode)
-  add_custom_target(echo-dist
-    COMMAND ${CMAKE_COMMAND} -E echo "WARNING: ----------------------------------------------------"
-    COMMAND ${CMAKE_COMMAND} -E echo "WARNING: Distrib is generated without option maintainer mode "
-    COMMAND ${CMAKE_COMMAND} -E echo "WARNING: ----------------------------------------------------")
-  add_dependencies(dist echo-dist)
-endif()
-
 ###########################################
 ### Fill in the "make distcheck" target ###
 ###########################################
