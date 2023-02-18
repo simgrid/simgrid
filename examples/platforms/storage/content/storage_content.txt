@@ -296,7 +296,7 @@
 /doc/simgrid/html/publis_intra.html  435
 /doc/simgrid/html/simgrid_logo_small.png  8326
 /doc/simgrid/html/group__SURF__resources.html  4203
-/doc/simgrid/html/structsurf__cpu__model__extension__public.html  2751
+/doc/simgrid/html/structsimgrid__cpu__model__extension__public.html  2751
 /doc/simgrid/html/tabs.css 1095
 /doc/simgrid/html/group__XBT__set.html  6991
 /doc/simgrid/html/group__XBT__set__curs.html  9653
@@ -309,11 +309,11 @@
 /doc/simgrid/html/nav_f.png 159
 /doc/simgrid/html/group__XBT__queue.html  23050
 /doc/simgrid/html/group__XBT__fifo__cons.html  9876
-/doc/simgrid/html/structsurf__model.html  17707
+/doc/simgrid/html/structsimgrid__model.html  17707
 /doc/simgrid/html/MSG_ex_asynchronous_communications.html  43212
 /doc/simgrid/html/Paje_MSG_screenshot_thn.jpg  30326
-/doc/simgrid/html/structsurf__network__model__extension__public.html  2783
-/doc/simgrid/html/structsurf__model__description.html 2621
+/doc/simgrid/html/structsimgrid__network__model__extension__public.html  2783
+/doc/simgrid/html/structsimgrid__model__description.html 2621
 /doc/simgrid/html/group__m__host__management.html 19042
 /doc/simgrid/html/group__XBT__fifo__perl.html  14045
 /doc/simgrid/html/modules.html  12734
@@ -321,7 +321,6 @@
 /doc/simgrid/html/group__XBT__fifo.html  6191
 /doc/simgrid/html/group__XBT__parmap.html  3765
 /doc/simgrid/html/tracing.html  58483
-/doc/simgrid/html/structs__surf__metric__t.html 2523
 /doc/simgrid/html/classsimgrid_1_1msg_1_1Task.html 1519
 /doc/simgrid/html/group__XBT__swag.html  5923
 /doc/simgrid/html/functions_vars.html  11436
@@ -380,7 +379,7 @@
 /doc/simgrid/html/group__XBT__dict__basic.html 20935
 /doc/simgrid/html/group__XBT__graph.html  23682
 /doc/simgrid/html/group__XBT__mallocator.html  6444
-/doc/simgrid/html/structsurf__workstation__model__extension__public.html 11076
+/doc/simgrid/html/structsimgrid__workstation__model__extension__public.html 11076
 /doc/simgrid/html/publis.html 435
 /doc/simgrid/html/group__XBT__misc.html  4663
 /doc/simgrid/html/simdag.html 226
@@ -409,7 +408,7 @@
 /doc/simgrid/html/options.html  7629
 /doc/simgrid/html/group__XBT__dict__nnul.html  18891
 /doc/simgrid/html/win_install_04.png  52033
-/doc/simgrid/html/structsurf__action.html  8353
+/doc/simgrid/html/structsimgrid__action.html  8353
 /doc/simgrid/html/group__XBT__ex.html  32537
 /doc/simgrid/html/group__SURF__API.html  6659
 /doc/simgrid/html/doxygen.css 12350
@@ -430,7 +429,7 @@
 /doc/simgrid/html/group__SD__task__management.html 60347
 /doc/simgrid/html/group__XBT__syscall.html  10095
 /doc/simgrid/html/group__XBT__heap.html  18482
-/doc/simgrid/html/structsurf__action__state.html 7301
+/doc/simgrid/html/structsimgrid__action__state.html 7301
 /doc/simgrid/html/tab_s.png 189
 /doc/simgrid/html/tab_h.png 192
 /doc/simgrid/html/nav_h.png  97
@@ -476,9 +475,7 @@
 /include/msg/msg.h  12038
 /include/simgrid_config.h 3641
 /include/mc/modelchecker.h  96
-/include/surf/simgrid_dtd.h  23583
-/include/surf/surf_routing.h  1167
-/include/surf/surfxml_parse.h  5343
+/include/simgrid_dtd.h  23583
 /include/instr/instr.h  5750
 /include/simdag/simdag.h  10325
 /include/simdag/datatypes.h  3715
