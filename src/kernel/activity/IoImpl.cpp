@@ -5,17 +5,11 @@
 
 #include <simgrid/Exception.hpp>
 #include <simgrid/kernel/routing/NetPoint.hpp>
-#include <simgrid/s4u/Engine.hpp>
-#include <simgrid/s4u/Host.hpp>
 
-#include "mc/mc.h"
 #include "src/kernel/activity/IoImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "src/kernel/actor/SimcallObserver.hpp"
-#include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/kernel/resource/HostImpl.hpp"
-#include "src/mc/mc_replay.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_io, kernel, "Kernel io-related synchronization");
 

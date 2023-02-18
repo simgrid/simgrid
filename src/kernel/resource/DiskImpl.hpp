@@ -3,6 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#ifndef DISK_IMPL_HPP_
+#define DISK_IMPL_HPP_
+
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/kernel/resource/Model.hpp"
 #include "simgrid/s4u/Disk.hpp"
@@ -11,13 +14,6 @@
 #include "xbt/PropertyHolder.hpp"
 
 #include <map>
-
-#ifndef DISK_IMPL_HPP_
-#define DISK_IMPL_HPP_
-
-/*********
- * Model *
- *********/
 
 namespace simgrid::kernel::resource {
 /***********

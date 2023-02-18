@@ -8,9 +8,7 @@
 
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/kernel/resource/Model.hpp"
-#include "simgrid/s4u/Link.hpp"
 #include "xbt/asserts.h"
-#include "xbt/ex.h"
 #include "xbt/mallocator.h"
 
 #include <boost/intrusive/list.hpp>

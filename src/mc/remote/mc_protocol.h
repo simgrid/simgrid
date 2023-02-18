@@ -14,11 +14,11 @@
 
 #include "mc/datatypes.h"
 #include "simgrid/forward.h" // aid_t
-#include <array>
-#include <cstdint>
-#include <xbt/dynar.h>
 #include <xbt/mmalloc.h>
 #include <xbt/utility.hpp>
+
+#include <array>
+#include <cstdint>
 
 // ***** Messages
 namespace simgrid::mc {

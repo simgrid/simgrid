@@ -6,12 +6,12 @@
 #ifndef SIMGRID_KERNEL_ACTIVITY_SEMAPHOREIMPL_HPP
 #define SIMGRID_KERNEL_ACTIVITY_SEMAPHOREIMPL_HPP
 
-#include <atomic>
-#include <boost/intrusive/list.hpp>
-
 #include "simgrid/s4u/Semaphore.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SynchroObserver.hpp"
+
+#include <atomic>
+#include <boost/intrusive/list.hpp>
 
 namespace simgrid::kernel::activity {
 

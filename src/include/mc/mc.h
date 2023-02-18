@@ -7,7 +7,7 @@
 #define MC_MC_H
 
 #include <simgrid/forward.h>
-#include <simgrid/modelchecker.h> /* our public interface (and definition of SIMGRID_HAVE_MC) */
+#include <simgrid/modelchecker.h> /* our public interface */
 
 #ifdef __cplusplus
 XBT_PUBLIC void MC_process_clock_add(const simgrid::kernel::actor::ActorImpl*, double);

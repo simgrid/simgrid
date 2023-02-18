@@ -7,7 +7,6 @@
 #define SIMGRID_SURF_CPUCAS01_HPP
 
 #include "src/kernel/resource/CpuImpl.hpp"
-#include "xbt/base.h"
 
 namespace simgrid::kernel::resource {
 

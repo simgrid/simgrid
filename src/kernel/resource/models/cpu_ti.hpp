@@ -8,6 +8,8 @@
 
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
+#include "xbt/ex.h"
+
 #include <boost/intrusive/list.hpp>
 #include <memory>
 

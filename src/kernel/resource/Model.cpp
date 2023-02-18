@@ -5,6 +5,7 @@
 
 #include "simgrid/kernel/resource/Model.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
+#include "xbt/ex.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_resource);
 
