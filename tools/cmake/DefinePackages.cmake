@@ -985,7 +985,6 @@ set(CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/rma/CMakeLists.txt
   teshsuite/smpi/mpich3-test/topo/CMakeLists.txt
 
-  teshsuite/surf/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
   tools/CMakeLists.txt
   tools/graphicator/CMakeLists.txt

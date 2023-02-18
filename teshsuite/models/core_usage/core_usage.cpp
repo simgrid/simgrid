@@ -1,4 +1,4 @@
-/* A few basic tests for the surf library                                   */
+/* A few basic tests for the model solving mechanism                        */
 
 /* Copyright (c) 2004-2023. The SimGrid Team. All rights reserved.          */
 
@@ -14,7 +14,7 @@
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "xbt/config.hpp"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(core_usage, "Messages specific to this test case");
 
 static const char* string_action(simgrid::kernel::resource::Action::State state)
 {

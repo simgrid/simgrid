@@ -841,10 +841,10 @@ teshsuite/smpi/type-hvector/type-hvector
 teshsuite/smpi/type-indexed/type-indexed
 teshsuite/smpi/type-struct/type-struct
 teshsuite/smpi/type-vector/type-vector
-teshsuite/surf/lmm_usage/lmm_usage
-teshsuite/surf/maxmin_bench/maxmin_bench
-teshsuite/surf/surf_usage/surf_usage
-teshsuite/surf/surf_usage2/surf_usage2
+teshsuite/models/lmm_usage/lmm_usage
+teshsuite/models/maxmin_bench/maxmin_bench
+teshsuite/models/core_usage/core_usage
+teshsuite/models/core_usage2/core_usage2
 teshsuite/xbt/cmdline/cmdline
 teshsuite/xbt/log_large/log_large
 teshsuite/xbt/log_usage/log_usage

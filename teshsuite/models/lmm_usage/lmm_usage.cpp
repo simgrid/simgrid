@@ -14,7 +14,7 @@
 #include <array>
 #include <cmath>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Messages specific for this example");
 
 namespace lmm = simgrid::kernel::lmm;
 
@@ -110,21 +110,21 @@ static void test3()
   }
 
   /*matrix that store the constraints/topology */
-  A[0][1] = A[0][7] =                                1.0;
-  A[1][1] = A[1][7] = A[1][8] =                      1.0;
-  A[2][1] = A[2][8] =                                1.0;
-  A[3][8] =                                          1.0;
-  A[4][0] = A[4][3] = A[4][9] =                      1.0;
-  A[5][0] = A[5][3] = A[5][4] = A[5][9] =            1.0;
-  A[6][0] = A[6][4] = A[6][9] = A[6][10] =           1.0;
+  A[0][1] = A[0][7] = 1.0;
+  A[1][1] = A[1][7] = A[1][8] = 1.0;
+  A[2][1] = A[2][8] = 1.0;
+  A[3][8]           = 1.0;
+  A[4][0] = A[4][3] = A[4][9] = 1.0;
+  A[5][0] = A[5][3] = A[5][4] = A[5][9] = 1.0;
+  A[6][0] = A[6][4] = A[6][9] = A[6][10] = 1.0;
   A[7][2] = A[7][4] = A[7][6] = A[7][9] = A[7][10] = 1.0;
-  A[8][2] = A[8][10] =                               1.0;
-  A[9][5] = A[9][6] = A[9][9] =                      1.0;
-  A[10][11] =                                        1.0;
-  A[11][12] =                                        1.0;
-  A[12][13] =                                        1.0;
-  A[13][14] =                                        1.0;
-  A[14][15] =                                        1.0;
+  A[8][2] = A[8][10] = 1.0;
+  A[9][5] = A[9][6] = A[9][9] = 1.0;
+  A[10][11]                   = 1.0;
+  A[11][12]                   = 1.0;
+  A[12][13]                   = 1.0;
+  A[13][14]                   = 1.0;
+  A[14][15]                   = 1.0;
 
   lmm::MaxMin Sys(false);
 
