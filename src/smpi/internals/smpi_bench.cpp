@@ -12,8 +12,8 @@
 #include "smpi_comm.hpp"
 #include "smpi_utils.hpp"
 #include "src/internal_config.h"
+#include "src/kernel/lmm/System.hpp" // sg_precision_timing
 #include "src/mc/mc_replay.hpp"
-#include "src/surf/surf_interface.hpp" // sg_precision_timing
 #include "xbt/config.hpp"
 #include "xbt/file.hpp"
 

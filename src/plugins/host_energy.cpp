@@ -12,6 +12,7 @@
 #include <simgrid/simix.hpp>
 
 #include "src/kernel/resource/CpuImpl.hpp"
+#include "src/simgrid/module.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>

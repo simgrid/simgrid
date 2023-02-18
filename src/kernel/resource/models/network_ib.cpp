@@ -5,24 +5,22 @@
 
 #include <simgrid/kernel/routing/NetPoint.hpp>
 
+#include "simgrid/math_utils.h"
 #include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/resource/HostImpl.hpp"
 #include "src/kernel/resource/models/network_ib.hpp"
+#include "src/simgrid/module.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 
-/*********
- * Model *
- *********/
-
-/************************************************************************/
-/* New model based on MPI contention model for Infiniband platforms */
-/************************************************************************/
+/****************************************************************/
+/* Model based on MPI contention model for Infiniband platforms */
+/****************************************************************/
 /* @Inproceedings{mescal_vienne_phd, */
 /*  author={Jérôme Vienne}, */
 /*  title={prédiction de performances d’applications de calcul haute performance sur réseau Infiniband}, */

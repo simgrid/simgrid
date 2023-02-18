@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/resource/CpuImpl.hpp"
+#include "simgrid/math_utils.h"
 #include "src/kernel/resource/models/cpu_ti.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 

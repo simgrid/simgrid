@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/lmm/bmf.hpp"
+#include "simgrid/math_utils.h"
 
 #include <Eigen/LU>
 #include <iostream>

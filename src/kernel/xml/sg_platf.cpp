@@ -25,6 +25,7 @@
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/kernel/xml/platf.hpp"
 #include "src/kernel/xml/platf_private.hpp"
+#include "src/surf/surf_interface.hpp"
 
 #include <algorithm>
 #include <string>

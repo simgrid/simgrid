@@ -9,7 +9,6 @@
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/kernel/resource/Model.hpp"
 #include "simgrid/s4u/Link.hpp"
-#include "src/surf/surf_interface.hpp"
 #include "xbt/asserts.h"
 #include "xbt/ex.h"
 #include "xbt/mallocator.h"
@@ -20,6 +19,11 @@
 #include <memory>
 #include <string_view>
 #include <vector>
+
+/* user-visible parameters */
+XBT_PUBLIC_DATA double sg_precision_workamount;
+XBT_PUBLIC_DATA double sg_precision_timing;
+XBT_PUBLIC_DATA int sg_concurrency_limit;
 
 namespace simgrid::kernel::lmm {
 

@@ -5,6 +5,7 @@
 
 #include "cpu_ti.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
+#include "simgrid/math_utils.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"

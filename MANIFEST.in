@@ -1969,6 +1969,7 @@ include src/dag/loaders.cpp
 include src/include/catch.hpp
 include src/include/mc/datatypes.h
 include src/include/mc/mc.h
+include src/include/simgrid/math_utils.h
 include src/include/simgrid/sg_config.hpp
 include src/include/xbt/coverage.h
 include src/include/xbt/mmalloc.h
@@ -2127,6 +2128,7 @@ include src/kernel/routing/WifiZone.cpp
 include src/kernel/timer/Timer.cpp
 include src/kernel/xml/platf.hpp
 include src/kernel/xml/platf_private.hpp
+include src/kernel/xml/sg_platf.cpp
 include src/kernel/xml/simgrid.dtd
 include src/kernel/xml/simgrid_dtd.c
 include src/kernel/xml/simgrid_dtd.h
@@ -2442,7 +2444,6 @@ include src/smpi/smpitools.sh
 include src/sthread/sthread.c
 include src/sthread/sthread.h
 include src/sthread/sthread_impl.cpp
-include src/surf/sg_platf.cpp
 include src/surf/surf_interface.hpp
 include src/xbt/OsSemaphore.hpp
 include src/xbt/PropertyHolder.cpp

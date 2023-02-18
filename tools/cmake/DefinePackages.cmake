@@ -9,6 +9,7 @@ set(EXTRA_DIST
   src/include/mc/datatypes.h
   src/include/mc/mc.h
   src/include/simgrid/sg_config.hpp
+  src/include/simgrid/math_utils.h
   src/include/xbt/coverage.h
   src/include/xbt/mmalloc.h
   src/include/xbt/parmap.hpp

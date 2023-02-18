@@ -11,6 +11,7 @@
 #include "src/kernel/resource/models/cpu_cas01.hpp"
 #include "src/kernel/resource/models/cpu_ti.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
+#include "src/simgrid/module.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cpu_cas, res_cpu, "CPU resource, CAS01 model (used by default)");
 

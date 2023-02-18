@@ -18,6 +18,7 @@
 #include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
+#include "src/simgrid/module.hpp"
 #include "xbt/asserts.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_platform, kernel, "Kernel platform-related information");

@@ -3,6 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/math_utils.h"
 #include "src/include/catch.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "xbt/log.h"

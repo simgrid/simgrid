@@ -9,6 +9,8 @@
 #include <string>
 #include <unordered_set>
 
+#include "src/include/simgrid/math_utils.h"
+#include "src/simgrid/module.hpp"
 #include "xbt/config.hpp"
 #include "xbt/str.h"
 #include "xbt/string.hpp"

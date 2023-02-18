@@ -11,13 +11,15 @@
 #include <simgrid/sg_config.hpp>
 
 #include "mc/mc.h"
+#include "simgrid/math_utils.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
+#include "src/kernel/xml/platf.hpp"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
-#include "src/kernel/xml/platf.hpp"
+#include "src/surf/surf_interface.hpp"
 #include "xbt/module.h"
 #include "xbt/xbt_modinter.h" /* whether initialization was already done */
 

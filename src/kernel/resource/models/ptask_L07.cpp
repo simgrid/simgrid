@@ -9,7 +9,9 @@
 #include <xbt/config.hpp>
 
 #include "simgrid/config.h"
+#include "simgrid/math_utils.h"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/simgrid/module.hpp"
 #if SIMGRID_HAVE_EIGEN3
 #include "src/kernel/lmm/bmf.hpp"
 #endif

@@ -5,6 +5,7 @@
 
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/kernel/resource/Model.hpp"
+#include "simgrid/math_utils.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 

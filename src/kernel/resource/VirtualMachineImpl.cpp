@@ -14,6 +14,7 @@
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/kernel/resource/models/cpu_cas01.hpp"
 #include "src/kernel/resource/models/cpu_ti.hpp"
+#include "src/simgrid/module.hpp"
 
 #include <numeric>
 

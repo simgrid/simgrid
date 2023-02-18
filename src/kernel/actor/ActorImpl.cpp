@@ -8,7 +8,9 @@
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Host.hpp>
 
+#include "src/internal_config.h"
 #include "src/kernel/EngineImpl.hpp"
+#include "src/surf/surf_interface.hpp"
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
 #endif

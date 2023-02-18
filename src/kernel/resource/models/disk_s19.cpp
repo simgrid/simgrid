@@ -13,6 +13,7 @@
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/kernel/resource/models/disk_s19.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
+#include "src/simgrid/module.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_disk);
 /***********
