@@ -3,11 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/include/catch.hpp"
+#include "src/3rd-party/catch.hpp"
 #include "xbt/log.h"
 #include "xbt/random.hpp"
-#include <random>
 #include <cmath>
+#include <random>
 
 #define EpsilonApprox(a) Catch::Matchers::WithinAbs((a), 100 * std::numeric_limits<double>::epsilon())
 

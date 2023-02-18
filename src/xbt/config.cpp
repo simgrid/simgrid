@@ -3,6 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simgrid/Exception.hpp"
+#include "src/simgrid/sg_config.hpp"
+#include "xbt/dynar.h"
+#include "xbt/log.h"
+#include "xbt/misc.h"
+#include "xbt/sysdep.h"
+#include <xbt/config.h>
+#include <xbt/config.hpp>
+
 #include <cstdio>
 
 #include <algorithm>
@@ -17,15 +26,6 @@
 #include <string>
 #include <string>
 #include <vector>
-
-#include "simgrid/Exception.hpp"
-#include "simgrid/sg_config.hpp"
-#include "xbt/dynar.h"
-#include "xbt/log.h"
-#include "xbt/misc.h"
-#include "xbt/sysdep.h"
-#include <xbt/config.h>
-#include <xbt/config.hpp>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 

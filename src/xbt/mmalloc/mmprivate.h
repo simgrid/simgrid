@@ -13,9 +13,9 @@
 #ifndef XBT_MMPRIVATE_H
 #define XBT_MMPRIVATE_H 1
 
-#include "swag.h"
 #include "src/internal_config.h"
-#include "xbt/mmalloc.h"
+#include "src/xbt/mmalloc/mmalloc.h"
+#include "swag.h"
 
 #include <limits.h>
 #include <stdint.h>

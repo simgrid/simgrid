@@ -9,12 +9,12 @@
 #include <xbt/file.hpp>
 #include <xbt/parse_units.hpp>
 
-#include "simgrid/sg_config.hpp"
 #include "src/kernel/resource/LinkImpl.hpp"
 #include "src/kernel/resource/profile/FutureEvtSet.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/kernel/xml/platf.hpp"
 #include "src/kernel/xml/platf_private.hpp"
+#include "src/simgrid/sg_config.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>

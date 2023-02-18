@@ -5,8 +5,8 @@
 
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
+#include "src/simgrid/sg_config.hpp"
 #include <simgrid/modelchecker.h>
-#include <simgrid/sg_config.hpp>
 
 #if SIMGRID_HAVE_MC
 #include <string_view>

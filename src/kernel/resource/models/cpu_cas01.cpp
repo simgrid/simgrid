@@ -6,12 +6,12 @@
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <simgrid/s4u/Engine.hpp>
 
-#include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/models/cpu_cas01.hpp"
 #include "src/kernel/resource/models/cpu_ti.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
 #include "src/simgrid/module.hpp"
+#include "src/simgrid/sg_config.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(cpu_cas, res_cpu, "CPU resource, CAS01 model (used by default)");
 

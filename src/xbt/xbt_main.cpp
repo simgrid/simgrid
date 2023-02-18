@@ -8,18 +8,18 @@
 #define XBT_LOG_LOCALLY_DEFINE_XBT_CHANNEL /* MSVC don't want it to be declared extern in headers and local here */
 
 #include "simgrid/config.h"
-#include "simgrid/sg_config.hpp"
 #include "src/internal_config.h"
+#include "src/simgrid/sg_config.hpp"
 #include "src/sthread/sthread.h" // sthread_inside_simgrid
+#include "src/xbt/coverage.h"
+#include "src/xbt/xbt_modinter.h" /* prototype of other module's init/exit in XBT */
 #include "xbt/config.hpp"
-#include "xbt/coverage.h"
 #include "xbt/dynar.h"
 #include "xbt/log.h"
 #include "xbt/log.hpp"
 #include "xbt/misc.h"
 #include "xbt/module.h" /* this module */
 #include "xbt/sysdep.h"
-#include "xbt/xbt_modinter.h" /* prototype of other module's init/exit in XBT */
 
 #include <cmath>
 #include <cstdio>

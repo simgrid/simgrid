@@ -7,10 +7,10 @@
 #undef NDEBUG
 #endif
 
-#include <mc/mc.h>
 #include <simgrid/s4u/Engine.hpp>
 
-#include "mc/datatypes.h"
+#include "src/mc/datatypes.h"
+#include "src/mc/mc.h"
 #include "src/mc/mc_private.hpp"
 
 #include "src/mc/inspect/ObjectInformation.hpp"

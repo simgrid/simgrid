@@ -8,8 +8,8 @@
 #ifndef SIMGRID_MC_PROCESS_H
 #define SIMGRID_MC_PROCESS_H
 
-#include "mc/datatypes.h"
 #include "src/mc/AddressSpace.hpp"
+#include "src/mc/datatypes.h"
 #include "src/mc/inspect/ObjectInformation.hpp"
 #include "src/mc/remote/RemotePtr.hpp"
 #include "src/xbt/memory_map.hpp"

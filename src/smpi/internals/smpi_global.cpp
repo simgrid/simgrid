@@ -3,7 +3,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "mc/mc.h"
 #include "simgrid/Exception.hpp"
 #include "simgrid/plugins/file_system.h"
 #include "simgrid/s4u/Engine.hpp"
@@ -13,6 +12,7 @@
 #include "smpi_host.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
+#include "src/mc/mc.h"
 #include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "xbt/config.hpp"

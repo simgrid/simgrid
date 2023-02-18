@@ -18,13 +18,13 @@
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/NetZone.hpp>
 
-#include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
 #include "src/kernel/resource/HostImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/kernel/xml/platf.hpp"
 #include "src/kernel/xml/platf_private.hpp"
+#include "src/simgrid/sg_config.hpp"
 #include "src/surf/surf_interface.hpp"
 
 #include <algorithm>

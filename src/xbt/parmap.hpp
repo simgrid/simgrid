@@ -39,7 +39,7 @@ namespace simgrid::xbt {
 template <typename T> class Parmap {
 public:
   Parmap(unsigned num_workers, e_xbt_parmap_mode_t mode);
-  Parmap(const Parmap&) = delete;
+  Parmap(const Parmap&)            = delete;
   Parmap& operator=(const Parmap&) = delete;
   ~Parmap();
   void apply(std::function<void(T)>&& fun, const std::vector<T>& data);
@@ -139,11 +139,11 @@ private:
   bool destroying = false;           /**< is the parmap being destroyed? */
   std::atomic_uint work_round{0};    /**< index of the current round */
   std::vector<std::thread*> workers; /**< worker thread handlers */
-  unsigned num_workers;     /**< total number of worker threads including the controller */
-  Synchro* synchro;         /**< synchronization object */
+  unsigned num_workers;              /**< total number of worker threads including the controller */
+  Synchro* synchro;                  /**< synchronization object */
 
-  std::atomic_uint thread_counter{0};   /**< number of workers that have done the work */
-  std::function<void(T)> worker_fun;    /**< function to run in parallel on each element of data */
+  std::atomic_uint thread_counter{0};          /**< number of workers that have done the work */
+  std::function<void(T)> worker_fun;           /**< function to run in parallel on each element of data */
   const std::vector<T>* common_data = nullptr; /**< parameters to pass to fun in parallel */
   std::atomic_uint common_index{0};            /**< index of the next element of data to pick */
 };
@@ -283,8 +283,8 @@ template <typename T> typename Parmap<T>::Synchro* Parmap<T>::new_synchro(e_xbt_
 template <typename T> void Parmap<T>::worker_main(ThreadData* data)
 {
   auto engine                       = simgrid::kernel::EngineImpl::get_instance();
-  Parmap<T>& parmap     = data->parmap;
-  unsigned round        = 0;
+  Parmap<T>& parmap                 = data->parmap;
+  unsigned round                    = 0;
   kernel::context::Context* context = engine->get_context_factory()->create_context(std::function<void()>(), nullptr);
   kernel::context::Context::set_current(context);
 

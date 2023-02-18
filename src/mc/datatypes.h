@@ -15,15 +15,15 @@
 
 SG_BEGIN_DECL
 
-struct s_stack_region{
-  void *address;
+struct s_stack_region {
+  void* address;
 #if HAVE_UCONTEXT_H
   ucontext_t* context;
 #endif
   size_t size;
   int block;
 };
-typedef struct s_stack_region  s_stack_region_t;
+typedef struct s_stack_region s_stack_region_t;
 
 SG_END_DECL
 

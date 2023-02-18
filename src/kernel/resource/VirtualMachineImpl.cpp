@@ -8,13 +8,13 @@
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <simgrid/s4u/Exec.hpp>
 
-#include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/kernel/resource/models/cpu_cas01.hpp"
 #include "src/kernel/resource/models/cpu_ti.hpp"
 #include "src/simgrid/module.hpp"
+#include "src/simgrid/sg_config.hpp"
 
 #include <numeric>
 

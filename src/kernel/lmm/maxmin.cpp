@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/lmm/maxmin.hpp"
-#include "simgrid/math_utils.h"
+#include "src/simgrid/math_utils.h"
 #include "xbt/ex.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_lmm);

@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "mc/mc.h"
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "src/mc/mc.h"
 
 #if SIMGRID_HAVE_MC
 #include "src/mc/api/RemoteApp.hpp"

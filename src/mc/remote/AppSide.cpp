@@ -16,9 +16,9 @@
 #include "src/smpi/include/private.hpp"
 #endif
 #include "src/sthread/sthread.h"
-#include "xbt/coverage.h"
+#include "src/xbt/coverage.h"
+#include "src/xbt/xbt_modinter.h" /* mmalloc_preinit to get the default mmalloc arena address */
 #include "xbt/str.h"
-#include "xbt/xbt_modinter.h" /* mmalloc_preinit to get the default mmalloc arena address */
 #include <simgrid/modelchecker.h>
 
 #include <cerrno>

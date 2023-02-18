@@ -11,7 +11,7 @@ Copyright: 1999, Mark Martinec <mark.martinec@ijs.si.
 License: Artistic
 Comment: Heavily adapted by the SimGrid team but remains under the original license
 
-Files: src/xbt/mmalloc/* src/include/xbt/mmalloc.h
+Files: src/xbt/mmalloc/*
 Copyright:
   Copyright (C) 1991, 1992 Free Software Foundation, Inc.
   Copyright (C) 2003-2023. The SimGrid team.
@@ -180,7 +180,7 @@ Copyright:
 License: GPL-3+ and LGPL-2.1-only
 Comment: Generated with the Bison processor generator (which is GPL-3+) using SimGrid configuration files (that are LGPL-2.1-only)
 
-Files: src/include/catch.hpp
+Files: src/3rd-party/catch.hpp
 Copyright:
   Copyright (c) 2018 Two Blue Cubes Ltd.
 License: BSL-1.0
@@ -191,7 +191,7 @@ Copyright:
 Comment: The MBI.py script was written for SimGrid while the other files are kept in sync with the MBI source tree.
 License: GPL-3
 
-Files: src/include/xxhash.hpp
+Files: src/3rd-party/xxhash.hpp
 Copyright:
   Copyright (C) 2012-2018, Yann Collet.
   Copyright (C) 2017-2018, Piotr Pliszka.

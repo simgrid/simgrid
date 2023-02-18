@@ -602,7 +602,7 @@ include examples/sthread/pthread-mutex-simple.tesh
 include examples/sthread/pthread-mutex-simpledeadlock.c
 include examples/sthread/sthread-mutex-simple.c
 include examples/sthread/sthread-mutex-simple.tesh
-include src/include/catch_simgrid.hpp
+include teshsuite/catch_simgrid.hpp
 include teshsuite/kernel/context-defaults/context-defaults.cpp
 include teshsuite/kernel/context-defaults/factory_boost.tesh
 include teshsuite/kernel/context-defaults/factory_raw.tesh
@@ -1961,21 +1961,13 @@ include include/xbt/utility.hpp
 include include/xbt/virtu.h
 include include/xbt/xbt_os_time.h
 include setup.py
+include src/3rd-party/catch.hpp
+include src/3rd-party/xxhash.hpp
 include src/bindings/python/simgrid_python.cpp
 include src/dag/dax.dtd
 include src/dag/dax_dtd.c
 include src/dag/dax_dtd.h
 include src/dag/loaders.cpp
-include src/include/catch.hpp
-include src/include/mc/datatypes.h
-include src/include/mc/mc.h
-include src/include/simgrid/math_utils.h
-include src/include/simgrid/sg_config.hpp
-include src/include/xbt/coverage.h
-include src/include/xbt/mmalloc.h
-include src/include/xbt/parmap.hpp
-include src/include/xbt/xbt_modinter.h
-include src/include/xxhash.hpp
 include src/instr/instr_config.cpp
 include src/instr/instr_interface.cpp
 include src/instr/instr_paje_containers.cpp
@@ -2145,6 +2137,7 @@ include src/mc/api/RemoteApp.hpp
 include src/mc/api/State.cpp
 include src/mc/api/State.hpp
 include src/mc/compare.cpp
+include src/mc/datatypes.h
 include src/mc/explo/CommunicationDeterminismChecker.cpp
 include src/mc/explo/DFSExplorer.cpp
 include src/mc/explo/DFSExplorer.hpp
@@ -2173,6 +2166,7 @@ include src/mc/inspect/mc_member.cpp
 include src/mc/inspect/mc_unw.cpp
 include src/mc/inspect/mc_unw.hpp
 include src/mc/inspect/mc_unw_vmread.cpp
+include src/mc/mc.h
 include src/mc/mc_base.cpp
 include src/mc/mc_base.hpp
 include src/mc/mc_client_api.cpp
@@ -2249,9 +2243,11 @@ include src/s4u/s4u_Netzone.cpp
 include src/s4u/s4u_Semaphore.cpp
 include src/s4u/s4u_VirtualMachine.cpp
 include src/simgrid/Exception.cpp
+include src/simgrid/math_utils.h
 include src/simgrid/module.cpp
 include src/simgrid/module.hpp
 include src/simgrid/sg_config.cpp
+include src/simgrid/sg_config.hpp
 include src/simgrid/sg_version.cpp
 include src/simgrid/util.hpp
 include src/simix/libsmx.cpp
@@ -2457,6 +2453,7 @@ include src/xbt/automaton/parserPromela.yacc
 include src/xbt/backtrace.cpp
 include src/xbt/config.cpp
 include src/xbt/config_test.cpp
+include src/xbt/coverage.h
 include src/xbt/dict.cpp
 include src/xbt/dict_cursor.c
 include src/xbt/dict_elm.c
@@ -2478,6 +2475,7 @@ include src/xbt/mmalloc/mm_interface.c
 include src/xbt/mmalloc/mm_legacy.c
 include src/xbt/mmalloc/mm_module.c
 include src/xbt/mmalloc/mmalloc.c
+include src/xbt/mmalloc/mmalloc.h
 include src/xbt/mmalloc/mmalloc.info
 include src/xbt/mmalloc/mmalloc.texi
 include src/xbt/mmalloc/mmorecore.c
@@ -2486,6 +2484,7 @@ include src/xbt/mmalloc/mrealloc.c
 include src/xbt/mmalloc/swag.c
 include src/xbt/mmalloc/swag.h
 include src/xbt/parmap.cpp
+include src/xbt/parmap.hpp
 include src/xbt/random.cpp
 include src/xbt/random_test.cpp
 include src/xbt/snprintf.c
@@ -2495,6 +2494,7 @@ include src/xbt/xbt_log_appender_file.cpp
 include src/xbt/xbt_log_layout_format.cpp
 include src/xbt/xbt_log_layout_simple.cpp
 include src/xbt/xbt_main.cpp
+include src/xbt/xbt_modinter.h
 include src/xbt/xbt_os_file.cpp
 include src/xbt/xbt_os_time.c
 include src/xbt/xbt_parse_units.cpp

@@ -1,20 +1,12 @@
 ### define source packages
 
 set(EXTRA_DIST
+  src/3rd-party/catch.hpp
+  src/3rd-party/xxhash.hpp
   src/bindings/python/simgrid_python.cpp
   src/dag/dax.dtd
   src/dag/dax_dtd.c
   src/dag/dax_dtd.h
-  src/include/catch.hpp
-  src/include/mc/datatypes.h
-  src/include/mc/mc.h
-  src/include/simgrid/sg_config.hpp
-  src/include/simgrid/math_utils.h
-  src/include/xbt/coverage.h
-  src/include/xbt/mmalloc.h
-  src/include/xbt/parmap.hpp
-  src/include/xbt/xbt_modinter.h
-  src/include/xxhash.hpp
   src/kernel/actor/Simcall.hpp
   src/kernel/resource/HostImpl.hpp
   src/kernel/resource/LinkImpl.hpp
@@ -34,8 +26,14 @@ set(EXTRA_DIST
   src/kernel/resource/models/ns3/ns3_simulator.hpp
   src/kernel/resource/models/ptask_L07.hpp
   
+  src/mc/datatypes.h
+  src/mc/mc.h
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
+
+  src/simgrid/sg_config.hpp
+  src/simgrid/math_utils.h
+
   src/smpi/colls/coll_tuned_topo.hpp
   src/smpi/colls/colls_private.hpp
   src/smpi/colls/smpi_mvapich2_selector_stampede.hpp
@@ -54,10 +52,14 @@ set(EXTRA_DIST
   src/xbt/automaton/parserPromela.tab.cacc
   src/xbt/automaton/parserPromela.tab.hacc
   src/xbt/automaton/parserPromela.yacc
+  src/xbt/coverage.h
   src/xbt/dict_private.h
   src/xbt/log_private.hpp
   src/xbt/mallocator_private.h
-
+  src/xbt/parmap.hpp
+  src/xbt/xbt_modinter.h
+  
+  src/xbt/mmalloc/mmalloc.h
   src/xbt/mmalloc/mfree.c
   src/xbt/mmalloc/mm_legacy.c
   src/xbt/mmalloc/mm_module.c

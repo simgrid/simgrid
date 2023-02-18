@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/lmm/fair_bottleneck.hpp"
-#include "simgrid/math_utils.h"
+#include "src/simgrid/math_utils.h"
 #include "xbt/sysdep.h"
 
 #include <algorithm>

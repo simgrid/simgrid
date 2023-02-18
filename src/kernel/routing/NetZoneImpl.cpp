@@ -9,7 +9,6 @@
 #include <simgrid/s4u/Host.hpp>
 #include <simgrid/s4u/VirtualMachine.hpp>
 
-#include "src/include/simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
@@ -19,6 +18,7 @@
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
 #include "src/simgrid/module.hpp"
+#include "src/simgrid/sg_config.hpp"
 #include "xbt/asserts.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_platform, kernel, "Kernel platform-related information");

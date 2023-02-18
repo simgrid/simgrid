@@ -7,6 +7,7 @@
 #define NETWORK_NS3_HPP_
 
 #include "xbt/base.h"
+#include "xbt/ex.h"
 
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"

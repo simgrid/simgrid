@@ -6,9 +6,9 @@
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <simgrid/s4u/Engine.hpp>
 
-#include "simgrid/math_utils.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/models/network_constant.hpp"
+#include "src/simgrid/math_utils.h"
 #include "src/simgrid/module.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);

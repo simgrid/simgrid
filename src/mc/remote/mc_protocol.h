@@ -12,9 +12,9 @@
 
 #include "src/kernel/actor/SimcallObserver.hpp"
 
-#include "mc/datatypes.h"
 #include "simgrid/forward.h" // aid_t
-#include <xbt/mmalloc.h>
+#include "src/mc/datatypes.h"
+#include "src/xbt/mmalloc/mmalloc.h"
 #include <xbt/utility.hpp>
 
 #include <array>

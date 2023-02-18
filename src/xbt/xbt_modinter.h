@@ -7,8 +7,8 @@
 
 #ifndef XBT_MODINTER_H
 #define XBT_MODINTER_H
+#include "src/xbt/mmalloc/mmalloc.h"
 #include "xbt/misc.h"
-#include "xbt/mmalloc.h"
 
 SG_BEGIN_DECL
 

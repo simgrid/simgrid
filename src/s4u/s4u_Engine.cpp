@@ -9,13 +9,13 @@
 #include <simgrid/modelchecker.h>
 #include <simgrid/s4u/Engine.hpp>
 
-#include "mc/mc.h"
 #include "src/instr/instr_private.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/HostImpl.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
+#include "src/mc/mc.h"
 #include "src/mc/mc_replay.hpp"
 #include "xbt/config.hpp"
 

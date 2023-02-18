@@ -8,20 +8,20 @@
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <simgrid/s4u/Host.hpp>
-#include <simgrid/sg_config.hpp>
 
-#include "mc/mc.h"
-#include "simgrid/math_utils.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
 #include "src/kernel/xml/platf.hpp"
+#include "src/mc/mc.h"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
+#include "src/simgrid/math_utils.h"
+#include "src/simgrid/sg_config.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "src/surf/surf_interface.hpp"
+#include "src/xbt/xbt_modinter.h" /* whether initialization was already done */
 #include "xbt/module.h"
-#include "xbt/xbt_modinter.h" /* whether initialization was already done */
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <dlfcn.h>

@@ -3,10 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/math_utils.h"
 #include "src/internal_config.h"
 #include "src/kernel/lmm/fair_bottleneck.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
+#include "src/simgrid/math_utils.h"
 #if SIMGRID_HAVE_EIGEN3
 #include "src/kernel/lmm/bmf.hpp"
 #endif

@@ -4,16 +4,16 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.hpp"
-#include <boost/algorithm/string.hpp>
-#include <deque>
+#include "src/simgrid/sg_config.hpp"
+#include "src/smpi/include/smpi_actor.hpp"
 #include <simgrid/host.h>
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Host.hpp>
-#include <simgrid/sg_config.hpp>
+
+#include <boost/algorithm/string.hpp>
+#include <deque>
 #include <string>
 #include <vector>
-
-#include "src/smpi/include/smpi_actor.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
 

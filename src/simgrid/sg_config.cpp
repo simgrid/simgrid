@@ -10,8 +10,6 @@
 #include <xbt/config.hpp>
 #include <xbt/file.hpp>
 
-#include "simgrid/sg_config.hpp"
-#include "src/include/xbt/mmalloc.h"
 #include "src/instr/instr_private.hpp"
 #include "src/internal_config.h"
 #include "src/kernel/context/Context.hpp"
@@ -20,7 +18,9 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simgrid/module.hpp"
+#include "src/simgrid/sg_config.hpp"
 #include "src/smpi/include/smpi_config.hpp"
+#include "src/xbt/mmalloc/mmalloc.h"
 
 #include <string_view>
 

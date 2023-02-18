@@ -9,7 +9,7 @@
 #include <string>
 #include <xbt/log.h>
 
-#include "catch.hpp"
+#include "src/3rd-party/catch.hpp"
 
 XBT_PUBLIC_DATA simgrid::config::Config* simgrid_config;
 

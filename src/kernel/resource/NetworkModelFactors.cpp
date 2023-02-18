@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/resource/NetworkModelFactors.hpp"
-#include "simgrid/sg_config.hpp"
+#include "src/simgrid/sg_config.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 

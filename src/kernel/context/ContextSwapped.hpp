@@ -8,6 +8,7 @@
 
 #include "src/internal_config.h" // HAVE_SANITIZER_*
 #include "src/kernel/context/Context.hpp"
+#include "src/xbt/parmap.hpp"
 
 #include <memory>
 

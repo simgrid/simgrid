@@ -5,15 +5,15 @@
 
 #include "src/kernel/resource/models/network_cm02.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
-#include "simgrid/math_utils.h"
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Host.hpp"
-#include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/kernel/resource/WifiLinkImpl.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
+#include "src/simgrid/math_utils.h"
 #include "src/simgrid/module.hpp"
+#include "src/simgrid/sg_config.hpp"
 
 #include <algorithm>
 #include <numeric>

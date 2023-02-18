@@ -6,8 +6,8 @@
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 
-#include "simgrid/sg_config.hpp"
 #include "src/simgrid/module.hpp"
+#include "src/simgrid/sg_config.hpp"
 
 #include <sstream>
 

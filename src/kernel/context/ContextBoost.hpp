@@ -18,11 +18,8 @@
 #include <functional>
 #include <vector>
 
-#include <simgrid/simix.hpp>
-#include <xbt/parmap.hpp>
-
-#include "src/internal_config.h"
 #include "src/kernel/context/ContextSwapped.hpp"
+#include "src/xbt/parmap.hpp"
 
 namespace simgrid::kernel::context {
 

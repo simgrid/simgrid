@@ -8,7 +8,7 @@
 #include "xbt/dynar.h"
 #include "xbt/sysdep.h"
 
-#include "catch.hpp"
+#include "src/3rd-party/catch.hpp"
 
 #include <string>
 

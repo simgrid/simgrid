@@ -5,9 +5,9 @@
 
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/kernel/resource/Model.hpp"
-#include "simgrid/math_utils.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
+#include "src/simgrid/math_utils.h"
 
 XBT_LOG_NEW_CATEGORY(kernel, "SimGrid internals");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_resource, kernel, "Resources, modeling the platform performance");

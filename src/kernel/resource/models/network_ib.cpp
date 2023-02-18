@@ -5,13 +5,13 @@
 
 #include <simgrid/kernel/routing/NetPoint.hpp>
 
-#include "simgrid/math_utils.h"
-#include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/resource/HostImpl.hpp"
 #include "src/kernel/resource/models/network_ib.hpp"
+#include "src/simgrid/math_utils.h"
 #include "src/simgrid/module.hpp"
+#include "src/simgrid/sg_config.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>

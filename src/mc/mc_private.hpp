@@ -6,7 +6,7 @@
 #ifndef SIMGRID_MC_PRIVATE_HPP
 #define SIMGRID_MC_PRIVATE_HPP
 
-#include "mc/mc.h"
+#include "src/mc/mc.h"
 #include "xbt/automaton.h"
 
 #include "src/mc/mc_forward.hpp"

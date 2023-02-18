@@ -5,9 +5,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/Exception.hpp"
-#include "simgrid/sg_config.hpp"
 #include "src/instr/instr_private.hpp"
 #include "src/instr/instr_smpi.hpp"
+#include "src/simgrid/sg_config.hpp"
 #include "src/smpi/include/private.hpp"
 #include <fstream>
 

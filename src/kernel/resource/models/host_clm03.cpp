@@ -7,11 +7,11 @@
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <simgrid/s4u/Engine.hpp>
 
-#include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/models/host_clm03.hpp"
 #include "src/simgrid/module.hpp"
+#include "src/simgrid/sg_config.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_host);
 

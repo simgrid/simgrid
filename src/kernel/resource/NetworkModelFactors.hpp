@@ -6,8 +6,8 @@
 #ifndef SIMGRID_KERNEL_RESOURCE_NETWORKMODELFACTORS_HPP
 #define SIMGRID_KERNEL_RESOURCE_NETWORKMODELFACTORS_HPP
 
-#include "simgrid/sg_config.hpp"
 #include "src/kernel/resource/FactorSet.hpp"
+#include "src/simgrid/sg_config.hpp"
 #include "xbt/asserts.h"
 #include <simgrid/forward.h>
 
