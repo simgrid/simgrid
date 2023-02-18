@@ -35,8 +35,8 @@ public:
   virtual ~ActivityImpl();
   ActivityImpl() = default;
   std::list<actor::Simcall*> simcalls_; /* List of simcalls waiting for this activity */
-  s4u::Activity* piface_         = nullptr;
-  resource::Action* surf_action_ = nullptr;
+  s4u::Activity* piface_          = nullptr;
+  resource::Action* model_action_ = nullptr; /* The resource consumption in the used model */
 
 protected:
   void inline set_name(std::string_view name)

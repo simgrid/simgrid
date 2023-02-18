@@ -357,12 +357,12 @@ activity::ActivityImplPtr ActorImpl::join(const ActorImpl* actor, double timeout
 {
   activity::ActivityImplPtr sleep_activity = this->sleep(timeout);
   if (actor->wannadie() || actor->to_be_freed()) {
-    if (sleep_activity->surf_action_)
-      sleep_activity->surf_action_->finish(resource::Action::State::FINISHED);
+    if (sleep_activity->model_action_)
+      sleep_activity->model_action_->finish(resource::Action::State::FINISHED);
   } else {
     actor->on_exit->emplace_back([sleep_activity](bool) {
-      if (sleep_activity->surf_action_)
-        sleep_activity->surf_action_->finish(resource::Action::State::FINISHED);
+      if (sleep_activity->model_action_)
+        sleep_activity->model_action_->finish(resource::Action::State::FINISHED);
     });
   }
   return sleep_activity;

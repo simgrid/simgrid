@@ -31,8 +31,8 @@ void SemAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   if (granted_) {
     post();
   } else if (timeout > 0) {
-    surf_action_ = get_issuer()->get_host()->get_cpu()->sleep(timeout);
-    surf_action_->set_activity(this);
+    model_action_ = get_issuer()->get_host()->get_cpu()->sleep(timeout);
+    model_action_->set_activity(this);
 
   } else {
     // Already in the queue
@@ -48,8 +48,8 @@ void SemAcquisitionImpl::finish()
   actor::Simcall* simcall = simcalls_.front();
   simcalls_.pop_front();
 
-  if (surf_action_ != nullptr) { // A timeout was declared
-    if (surf_action_->get_state() == resource::Action::State::FINISHED) { // The timeout elapsed
+  if (model_action_ != nullptr) {                                          // A timeout was declared
+    if (model_action_->get_state() == resource::Action::State::FINISHED) { // The timeout elapsed
       if (granted_) { // but we got the semaphore, just in time!
         set_state(State::DONE);
 
@@ -62,8 +62,8 @@ void SemAcquisitionImpl::finish()
         observer->set_result(true);
       }
     }
-    surf_action_->unref();
-    surf_action_ = nullptr;
+    model_action_->unref();
+    model_action_ = nullptr;
   }
 
   simcall->issuer_->waiting_synchro_ = nullptr;

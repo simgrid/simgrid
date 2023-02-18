@@ -44,15 +44,15 @@ void ActivityImpl::unregister_simcall(actor::Simcall* simcall)
 
 void ActivityImpl::clean_action()
 {
-  if (surf_action_) {
-    surf_action_->unref();
-    surf_action_ = nullptr;
+  if (model_action_) {
+    model_action_->unref();
+    model_action_ = nullptr;
   }
 }
 
 double ActivityImpl::get_remaining() const
 {
-  return surf_action_ ? surf_action_->get_remains() : 0;
+  return model_action_ ? model_action_->get_remains() : 0;
 }
 
 const char* ActivityImpl::get_state_str() const
@@ -176,27 +176,27 @@ void ActivityImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<Acti
 
 void ActivityImpl::suspend()
 {
-  if (surf_action_ == nullptr)
+  if (model_action_ == nullptr)
     return;
-  XBT_VERB("This activity is suspended (remain: %f)", surf_action_->get_remains());
-  surf_action_->suspend();
+  XBT_VERB("This activity is suspended (remain: %f)", model_action_->get_remains());
+  model_action_->suspend();
   s4u::Activity::on_suspended(*get_iface());
 }
 
 void ActivityImpl::resume()
 {
-  if (surf_action_ == nullptr)
+  if (model_action_ == nullptr)
     return;
-  XBT_VERB("This activity is resumed (remain: %f)", surf_action_->get_remains());
-  surf_action_->resume();
+  XBT_VERB("This activity is resumed (remain: %f)", model_action_->get_remains());
+  model_action_->resume();
   s4u::Activity::on_resumed(*get_iface());
 }
 
 void ActivityImpl::cancel()
 {
   XBT_VERB("Activity %p is canceled", this);
-  if (surf_action_ != nullptr)
-    surf_action_->cancel();
+  if (model_action_ != nullptr)
+    model_action_->cancel();
   state_ = State::CANCELED;
 }
 

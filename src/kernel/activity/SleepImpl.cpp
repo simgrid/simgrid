@@ -27,20 +27,20 @@ SleepImpl& SleepImpl::set_duration(double duration)
 
 SleepImpl* SleepImpl::start()
 {
-  surf_action_ = host_->get_cpu()->sleep(duration_);
-  surf_action_->set_activity(this);
+  model_action_ = host_->get_cpu()->sleep(duration_);
+  model_action_->set_activity(this);
   XBT_DEBUG("Create sleep synchronization %p", this);
   return this;
 }
 
 void SleepImpl::post()
 {
-  if (surf_action_->get_state() == resource::Action::State::FAILED) {
+  if (model_action_->get_state() == resource::Action::State::FAILED) {
     if (host_ && not host_->is_on())
       set_state(State::SRC_HOST_FAILURE);
     else
       set_state(State::CANCELED);
-  } else if (surf_action_->get_state() == resource::Action::State::FINISHED) {
+  } else if (model_action_->get_state() == resource::Action::State::FINISHED) {
     set_state(State::DONE);
   }
 

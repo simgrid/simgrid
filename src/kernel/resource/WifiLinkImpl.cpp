@@ -81,7 +81,7 @@ void WifiLinkImpl::dec_active_flux()
 
 void WifiLinkImpl::update_bw_comm_start(const kernel::activity::CommImpl& comm)
 {
-  auto const* actionWifi = dynamic_cast<const simgrid::kernel::resource::WifiLinkAction*>(comm.surf_action_);
+  auto const* actionWifi = dynamic_cast<const simgrid::kernel::resource::WifiLinkAction*>(comm.model_action_);
   if (actionWifi == nullptr)
     return;
 

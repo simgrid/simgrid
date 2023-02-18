@@ -72,7 +72,7 @@ void NetworkIBModel::IB_action_state_changed_callback(NetworkAction& action, Act
 
 void NetworkIBModel::IB_comm_start_callback(const activity::CommImpl& comm)
 {
-  auto* action  = static_cast<NetworkAction*>(comm.surf_action_);
+  auto* action  = static_cast<NetworkAction*>(comm.model_action_);
   auto* ibModel = static_cast<NetworkIBModel*>(action->get_model());
   auto* act_src = &ibModel->active_nodes.at(action->get_src().get_name());
   auto* act_dst = &ibModel->active_nodes.at(action->get_dst().get_name());
