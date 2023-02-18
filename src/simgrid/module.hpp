@@ -19,7 +19,7 @@ struct Module {
   const char* description_;
   std::function<void()> init;
   Module(const char* id, const char* desc, std::function<void()> init_fun)
-      : name_(id), description_(desc), init(init_fun)
+      : name_(id), description_(desc), init(std::move(init_fun))
   {
   }
 };
@@ -30,16 +30,16 @@ class ModuleGroup {
   std::string opt_name_;
 
 public:
-  ModuleGroup(const std::string& kind) : kind_(kind) {}
+  explicit ModuleGroup(const std::string& kind) : kind_(kind) {}
 
   ModuleGroup& add(const char* id, const char* desc, std::function<void()> init);
   Module const& by_name(const std::string& name) const;
   void help() const;
-  const std::string get_kind() const { return kind_; }
+  const std::string& get_kind() const { return kind_; }
   std::string existing_values() const;
   void create_flag(const std::string& opt_name, const std::string& descr, const std::string& default_value,
                    bool init_now);
-  void init_from_flag_value();
+  void init_from_flag_value() const;
 };
 
 }; // namespace simgrid
