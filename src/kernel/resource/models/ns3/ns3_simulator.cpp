@@ -3,16 +3,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/surf/ns3/ns3_simulator.hpp"
+#include "src/kernel/resource/models/ns3/ns3_simulator.hpp"
+
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
-#include <ns3/ipv4-address-helper.h>
-#include <ns3/point-to-point-helper.h>
 #include <ns3/application-container.h>
-#include <ns3/ptr.h>
 #include <ns3/callback.h>
+#include <ns3/ipv4-address-helper.h>
 #include <ns3/packet-sink.h>
+#include <ns3/point-to-point-helper.h>
+#include <ns3/ptr.h>
 
 #include <algorithm>
 
@@ -56,7 +57,7 @@ static void receive_callback(ns3::Ptr<ns3::Socket> socket)
 
 static void send_cb(ns3::Ptr<ns3::Socket> sock, uint32_t /*txSpace*/)
 {
-  SgFlow* flow = getFlowFromSocket(sock);
+  SgFlow* flow                          = getFlowFromSocket(sock);
   const ns3::ApplicationContainer* sink = getSinkFromSocket(sock);
   XBT_DEBUG("Asked to write on F[%p, total: %u, remain: %u]", flow, flow->total_bytes_, flow->remaining_);
 
@@ -83,14 +84,14 @@ static void send_cb(ns3::Ptr<ns3::Socket> sock, uint32_t /*txSpace*/)
               flow->remaining_);
   }
 
-  if (flow->buffered_bytes_ >= flow->total_bytes_){
+  if (flow->buffered_bytes_ >= flow->total_bytes_) {
     XBT_DEBUG("Closing Sockets of flow %p", flow);
     // Closing the sockets of the receiving application
-    ns3::Ptr<ns3::PacketSink> app = ns3::DynamicCast<ns3::PacketSink, ns3::Application>(sink->Get(0));
+    ns3::Ptr<ns3::PacketSink> app        = ns3::DynamicCast<ns3::PacketSink, ns3::Application>(sink->Get(0));
     ns3::Ptr<ns3::Socket> listening_sock = app->GetListeningSocket();
     listening_sock->Close();
     listening_sock->SetRecvCallback(ns3::MakeNullCallback<void, ns3::Ptr<ns3::Socket>>());
-    for(ns3::Ptr<ns3::Socket> accepted_sock : app->GetAcceptedSockets())
+    for (ns3::Ptr<ns3::Socket> accepted_sock : app->GetAcceptedSockets())
       accepted_sock->Close();
     // Closing the socket of the sender
     sock->Close();

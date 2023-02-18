@@ -30,7 +30,7 @@ set(EXTRA_DIST
   src/kernel/resource/models/network_constant.hpp
   src/kernel/resource/models/network_ib.hpp
   src/kernel/resource/models/network_ns3.hpp
-  src/surf/ns3/ns3_simulator.hpp
+  src/kernel/resource/models/ns3/ns3_simulator.hpp
   src/kernel/resource/models/ptask_L07.hpp
   
   src/mc/mc_mmu.hpp
@@ -294,7 +294,7 @@ endif()
 
 set(NS3_SRC
   src/kernel/resource/models/network_ns3.cpp
-  src/surf/ns3/ns3_simulator.cpp
+  src/kernel/resource/models/ns3/ns3_simulator.cpp
   )
 
 set(SURF_SRC

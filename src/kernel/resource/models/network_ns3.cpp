@@ -29,7 +29,7 @@
 #include "ns3/wifi-module.h"
 
 #include "network_ns3.hpp"
-#include "src/surf/ns3/ns3_simulator.hpp"
+#include "src/kernel/resource/models/ns3/ns3_simulator.hpp"
 
 #include "simgrid/kernel/routing/NetPoint.hpp"
 #include "simgrid/kernel/routing/NetZoneImpl.hpp"
