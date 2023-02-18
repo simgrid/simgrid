@@ -104,4 +104,6 @@ inline auto& simgrid_host_models() // Function to avoid static initialization or
   return models;
 }
 
+XBT_PUBLIC void simgrid_vm_model_init_HL13();
+
 #endif

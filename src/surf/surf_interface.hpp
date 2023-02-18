@@ -63,6 +63,4 @@ static inline int double_equals(double value1, double value2, double precision)
   return (fabs(value1 - value2) < precision);
 }
 
-XBT_PUBLIC void surf_vm_model_init_HL13();
-
 #endif /* SURF_MODEL_H_ */
