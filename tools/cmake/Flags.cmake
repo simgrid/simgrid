@@ -218,9 +218,9 @@ if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE")
 endif()
 
-# Avoid a failure seen with gcc 7.2.0 and ns3 3.27
+# Avoid a failure seen with some combinations of compiler and ns3 versions
 if(enable_ns3)
-  set_source_files_properties(src/surf/network_ns3.cpp PROPERTIES COMPILE_FLAGS " -Wno-unused-local-typedef")
+  set_source_files_properties(src/kernel/resource/models/network_ns3.cpp PROPERTIES COMPILE_FLAGS " -Wno-unused-local-typedef")
 endif()
 
 set(TESH_OPTION "")
