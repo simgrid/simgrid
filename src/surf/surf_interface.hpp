@@ -6,12 +6,8 @@
 #ifndef SURF_MODEL_H_
 #define SURF_MODEL_H_
 
-#include "src/kernel/resource/profile/Profile.hpp"
-
 #include <set>
 #include <string>
-
-extern XBT_PRIVATE std::unordered_map<std::string, simgrid::kernel::profile::Profile*> traces_set_list;
 
 /** set of hosts for which one want to be notified if they ever restart */
 inline auto& watched_hosts() // avoid static initialization order fiasco

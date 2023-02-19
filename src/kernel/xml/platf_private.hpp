@@ -16,6 +16,8 @@
 #include <string>
 #include <vector>
 
+extern XBT_PRIVATE std::unordered_map<std::string, simgrid::kernel::profile::Profile*> traces_set_list;
+
 namespace simgrid::kernel::routing {
 /* ***************************************** */
 /*
@@ -203,7 +205,6 @@ XBT_PUBLIC void sg_platf_new_bypass_route(simgrid::kernel::routing::RouteCreatio
 XBT_PUBLIC void sg_platf_new_trace(const simgrid::kernel::routing::ProfileCreationArgs* trace);
 
 XBT_PUBLIC void sg_platf_new_actor(simgrid::kernel::routing::ActorCreationArgs* actor);
-XBT_PRIVATE void sg_platf_trace_connect(simgrid::kernel::routing::TraceConnectCreationArgs* trace_connect);
 
 /* Prototypes of the functions offered by flex */
 XBT_PUBLIC int simgrid_parse_lex();

@@ -410,7 +410,6 @@ set(KERNEL_SRC
   src/kernel/xml/platf.hpp
   src/kernel/xml/platf_private.hpp
   src/kernel/xml/sg_platf.cpp
-  src/kernel/xml/surfxml_parseplatf.cpp
   src/kernel/xml/surfxml_sax_cb.cpp
   )
 if (Eigen3_FOUND)

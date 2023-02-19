@@ -3,6 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/* This file implements the public API to platform parsing                  */
+
 #include <simgrid/Exception.hpp>
 #include <simgrid/kernel/routing/DijkstraZone.hpp>
 #include <simgrid/kernel/routing/DragonflyZone.hpp>
@@ -25,12 +27,23 @@
 #include "src/kernel/xml/platf.hpp"
 #include "src/kernel/xml/platf_private.hpp"
 #include "src/simgrid/sg_config.hpp"
-#include "src/surf/surf_interface.hpp"
 
 #include <algorithm>
 #include <string>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(platf_parse);
+
+/* This function acts as a main in the parsing area. */
+void parse_platform_file(const std::string& file)
+{
+  /* init the flex parser */
+  simgrid_parse_open(file);
+
+  /* Do the actual parsing */
+  simgrid_parse();
+
+  simgrid_parse_close();
+}
 
 namespace simgrid::kernel::routing {
 xbt::signal<void(ClusterCreationArgs const&)> on_cluster_creation;

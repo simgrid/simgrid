@@ -2125,7 +2125,6 @@ include src/kernel/xml/sg_platf.cpp
 include src/kernel/xml/simgrid.dtd
 include src/kernel/xml/simgrid_dtd.c
 include src/kernel/xml/simgrid_dtd.h
-include src/kernel/xml/surfxml_parseplatf.cpp
 include src/kernel/xml/surfxml_sax_cb.cpp
 include src/mc/AddressSpace.hpp
 include src/mc/ModelChecker.cpp
