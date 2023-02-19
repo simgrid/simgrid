@@ -3,9 +3,9 @@
 $ ${bindir:=.}/core_usage ${platfdir}/two_hosts_profiles.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'CM02'
-> [0.000000] [core_usage/INFO] actionA state: SURF_ACTION_RUNNING
-> [0.000000] [core_usage/INFO] actionB state: SURF_ACTION_RUNNING
-> [0.000000] [core_usage/INFO] actionC state: SURF_ACTION_RUNNING
+> [0.000000] [core_usage/INFO] actionA state: ACTION_RUNNING
+> [0.000000] [core_usage/INFO] actionB state: ACTION_RUNNING
+> [0.000000] [core_usage/INFO] actionC state: ACTION_RUNNING
 > [0.200000] [core_usage/INFO] Next Event : 0.2
 > [0.200016] [core_usage/INFO] Next Event : 0.200016
 > [0.200016] [core_usage/INFO]    Network Done action

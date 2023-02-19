@@ -20,15 +20,15 @@ static const char* string_action(simgrid::kernel::resource::Action::State state)
 {
   switch (state) {
     case simgrid::kernel::resource::Action::State::INITED:
-      return "SURF_ACTION_INITED";
+      return "ACTION_INITED";
     case simgrid::kernel::resource::Action::State::STARTED:
-      return "SURF_ACTION_RUNNING";
+      return "ACTION_RUNNING";
     case simgrid::kernel::resource::Action::State::FAILED:
-      return "SURF_ACTION_FAILED";
+      return "ACTION_FAILED";
     case simgrid::kernel::resource::Action::State::FINISHED:
-      return "SURF_ACTION_DONE";
+      return "ACTION_DONE";
     case simgrid::kernel::resource::Action::State::IGNORED:
-      return "SURF_ACTION_IGNORED";
+      return "ACTION_IGNORED";
     default:
       return "INVALID STATE";
   }

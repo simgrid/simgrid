@@ -95,7 +95,7 @@ void System::validate_solver(const std::string& solver_name)
 
 void System::check_concurrency() const
 {
-  // These checks are very expensive, so do them only if we want to debug SURF LMM
+  // These checks are very expensive, so do them only if we want to debug the LMM
   if (not XBT_LOG_ISENABLED(ker_lmm, xbt_log_priority_debug))
     return;
 

@@ -171,7 +171,7 @@ protected:
  * Action *
  **********/
 
-/** @ingroup SURF_cpu_interface
+/** @ingroup Model_cpu_interface
  * @brief A CpuAction represents the execution of code on one or several Cpus
  */
 class XBT_PUBLIC CpuAction : public Action {

@@ -59,12 +59,6 @@ static simgrid::config::Flag<int>
     cfg_max_pstate("plugin/dvfs/max-pstate",
                    "Which pstate is the maximum (and hence slowest) pstate for this governor?", MAX_PSTATE_NOT_LIMITED);
 
-/** @addtogroup SURF_plugin_load
-
-  This plugin makes it very simple for users to obtain the current load for each host.
-
-*/
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(host_dvfs, kernel, "Logging specific to the HostDvfs plugin");
 
 namespace simgrid::plugin::dvfs {

@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_HOST_INTERFACE_HPP
-#define SURF_HOST_INTERFACE_HPP
+#ifndef SIMGRID_KERNEL_HOST_INTERFACE_HPP
+#define SIMGRID_KERNEL_HOST_INTERFACE_HPP
 
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
@@ -18,8 +18,8 @@ namespace simgrid::kernel::resource {
  * Model *
  *********/
 
-/** @ingroup SURF_host_interface
- * @brief SURF Host model interface class
+/** @ingroup Model_host_interface
+ * @brief Host model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
 class XBT_PRIVATE HostModel : public Model {
@@ -36,8 +36,8 @@ public:
 /************
  * Resource *
  ************/
-/** @ingroup SURF_host_interface
- * @brief SURF Host interface class
+/** @ingroup Model_host_interface
+ * @brief Host interface class
  * @details A host represents a machine with an aggregation of a Cpu, a RoutingEdge and Disk(s)
  */
 class XBT_PRIVATE HostImpl : public xbt::PropertyHolder, public actor::ObjectAccessSimcallItem {

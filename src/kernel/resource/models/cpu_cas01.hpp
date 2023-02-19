@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_SURF_CPUCAS01_HPP
-#define SIMGRID_SURF_CPUCAS01_HPP
+#ifndef SIMGRID_MODEL_CPU_CAS01_HPP
+#define SIMGRID_MODEL_CPU_CAS01_HPP
 
 #include "src/kernel/resource/CpuImpl.hpp"
 

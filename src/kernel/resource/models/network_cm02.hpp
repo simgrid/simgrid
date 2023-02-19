@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_NETWORK_CM02_HPP_
-#define SURF_NETWORK_CM02_HPP_
+#ifndef SIMGRID_MODEL_NETWORK_CM02_HPP_
+#define SIMGRID_MODEL_NETWORK_CM02_HPP_
 
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
@@ -76,4 +76,4 @@ public:
   void update_remains_lazy(double now) override;
 };
 } // namespace simgrid::kernel::resource
-#endif /* SURF_NETWORK_CM02_HPP_ */
+#endif /* SIMGRID_MODEL_NETWORK_CM02_HPP_ */

@@ -185,7 +185,7 @@ void EngineImpl::initialize(int* argc, char** argv)
 
   install_signal_handlers();
 
-  /* register a function to be called by SURF after the environment creation */
+  /* register a function to be called after the environment creation */
   s4u::Engine::on_platform_created_cb([this]() { this->presolve(); });
 
   if (config::get_value<bool>("debug/clean-atexit"))
@@ -342,7 +342,7 @@ void EngineImpl::add_model(std::shared_ptr<resource::Model> model, const std::ve
   models_prio_[model_name] = std::move(model);
 }
 
-/** Wake up all actors waiting for a Surf action to finish */
+/** Wake up all actors waiting for an action to finish */
 void EngineImpl::handle_ended_actions() const
 {
   for (auto const& model : models_) {

@@ -36,4 +36,4 @@ static inline int double_equals(double value1, double value2, double precision)
   return (fabs(value1 - value2) < precision);
 }
 
-#endif /* SURF_MODEL_H_ */
+#endif /* SIMGRID_MATH_UTILS_H_ */

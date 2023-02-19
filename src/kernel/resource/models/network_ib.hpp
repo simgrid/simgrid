@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_NETWORK_IB_HPP_
-#define SURF_NETWORK_IB_HPP_
+#ifndef SIMGRID_MODEL_NETWORK_IB_HPP_
+#define SIMGRID_MODEL_NETWORK_IB_HPP_
 
 #include "src/kernel/resource/models/network_cm02.hpp"
 

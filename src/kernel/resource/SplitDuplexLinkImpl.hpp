@@ -14,8 +14,8 @@ namespace simgrid::kernel::resource {
 /************
  * Resource *
  ************/
-/** @ingroup SURF_network_interface
- * @brief SURF network link interface class
+/** @ingroup Model_network_interface
+ * @brief Network link interface class
  * @details A Link represents the link between two [hosts](@ref HostImpl)
  */
 class SplitDuplexLinkImpl : public LinkImpl {

@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_MODEL_CPUTI_HPP_
-#define SURF_MODEL_CPUTI_HPP_
+#ifndef SIMGRID_MODEL_CPUTI_HPP_
+#define SIMGRID_MODEL_CPUTI_HPP_
 
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
@@ -155,4 +155,4 @@ public:
 
 } // namespace simgrid::kernel::resource
 
-#endif /* SURF_MODEL_CPUTI_HPP_ */
+#endif /* SIMGRID_MODEL_CPUTI_HPP_ */

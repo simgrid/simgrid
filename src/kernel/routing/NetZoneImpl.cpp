@@ -595,7 +595,7 @@ void NetZoneImpl::get_global_route_with_netzones(const NetPoint* src, const NetP
     return;
 
   /* If src and dst are in the same netzone, life is good */
-  if (src_ancestor == dst_ancestor) { /* SURF_ROUTING_BASE */
+  if (src_ancestor == dst_ancestor) { /* ROUTING_BASE */
     route.link_list_ = std::move(links);
     common_ancestor->get_local_route(src, dst, &route, latency);
     links = std::move(route.link_list_);

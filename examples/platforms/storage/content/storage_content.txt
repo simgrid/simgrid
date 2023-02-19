@@ -292,10 +292,10 @@
 /doc/simgrid/html/MSG_ex_master_slave_lua_bypass.html 4803
 /doc/simgrid/html/simgrid_modules2.png  11932
 /doc/simgrid/html/classsimgrid_1_1msg_1_1Msg.html 1519
-/doc/simgrid/html/group__SURF__actions.html  13562
+/doc/simgrid/html/group__SIMGRID__actions.html  13562
 /doc/simgrid/html/publis_intra.html  435
 /doc/simgrid/html/simgrid_logo_small.png  8326
-/doc/simgrid/html/group__SURF__resources.html  4203
+/doc/simgrid/html/group__SIMGRID__resources.html  4203
 /doc/simgrid/html/structsimgrid__cpu__model__extension__public.html  2751
 /doc/simgrid/html/tabs.css 1095
 /doc/simgrid/html/group__XBT__set.html  6991
@@ -350,7 +350,7 @@
 /doc/simgrid/html/index.html 9659
 /doc/simgrid/html/group__SD__link__management.html 17867
 /doc/simgrid/html/group__MSG__JAVA.html  5443
-/doc/simgrid/html/group__SURF__simulation.html 10385
+/doc/simgrid/html/group__SIMGRID__simulation.html 10385
 /doc/simgrid/html/structm__host.html  4188
 /doc/simgrid/html/group__XBT__dynar__array.html 22436
 /doc/simgrid/html/simgrid.css 386
@@ -410,10 +410,10 @@
 /doc/simgrid/html/win_install_04.png  52033
 /doc/simgrid/html/structsimgrid__action.html  8353
 /doc/simgrid/html/group__XBT__ex.html  32537
-/doc/simgrid/html/group__SURF__API.html  6659
+/doc/simgrid/html/group__SIMGRID__API.html  6659
 /doc/simgrid/html/doxygen.css 12350
 /doc/simgrid/html/group__XBT__set__cons.html  7965
-/doc/simgrid/html/group__SURF__build__api.html 7821
+/doc/simgrid/html/group__SIMGRID__build__api.html 7821
 /doc/simgrid/html/group__m__process__management.html 47169
 /doc/simgrid/html/group__XBT__dict__curs.html  19747
 /doc/simgrid/html/group__SD__datatypes__management.html  20816

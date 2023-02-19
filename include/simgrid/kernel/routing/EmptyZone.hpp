@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_ROUTING_NONE_HPP_
-#define SURF_ROUTING_NONE_HPP_
+#ifndef SIMGRID_ROUTING_NONE_HPP_
+#define SIMGRID_ROUTING_NONE_HPP_
 
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <xbt/asserts.h>
@@ -36,4 +36,4 @@ public:
 } // namespace kernel
 } // namespace simgrid
 
-#endif /* SURF_ROUTING_NONE_HPP_ */
+#endif /* SIMGRID_ROUTING_NONE_HPP_ */

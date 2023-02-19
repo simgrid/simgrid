@@ -20,8 +20,8 @@
 
 namespace simgrid::kernel::resource {
 
-/** @ingroup SURF_interface
- * @brief SURF resource interface class
+/** @ingroup Model_interface
+ * @brief Resource interface class
  * @details This is the ancestor class of every resources in SimGrid, such as links, CPU or disk
  */
 class XBT_PUBLIC Resource : public actor::ObjectAccessSimcallItem {

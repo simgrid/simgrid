@@ -14,10 +14,6 @@ namespace simgrid {
 namespace kernel {
 namespace resource {
 
-/** @ingroup SURF_interface
- * @brief SURF model interface class
- * @details A model is an object which handle the interactions between its Resources and its Actions
- */
 class XBT_PUBLIC Model {
 public:
   /** @brief Possible update mechanisms */

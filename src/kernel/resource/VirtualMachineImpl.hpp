@@ -83,8 +83,8 @@ private:
 /*********
  * Model *
  *********/
-/** @ingroup SURF_vm_interface
- * @brief SURF VM model interface class
+/** @ingroup Model_vm_interface
+ * @brief VM model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
 class XBT_PRIVATE VMModel : public HostModel {
