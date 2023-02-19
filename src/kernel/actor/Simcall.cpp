@@ -11,6 +11,11 @@
 #include "src/kernel/context/Context.hpp"
 #include "xbt/log.h"
 
+#if SIMGRID_HAVE_MC
+#include "simgrid/modelchecker.h"
+#include "src/mc/mc_replay.hpp"
+#endif
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_simcall, kernel, "transmuting from user request into kernel handlers");
 
 namespace simgrid::kernel::actor {
