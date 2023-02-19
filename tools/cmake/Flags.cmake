@@ -186,10 +186,10 @@ if(enable_model-checking AND enable_compile_optimizations)
   # But you can still optimize this:
   set(src_list ${simgrid_sources})
   # except...
-  list(REMOVE_ITEM src_list ${KERNEL_SRC} ${S4U_SRC})
-  # but...
-  list(APPEND src_list
-    src/kernel/actor/Simcall.cpp)
+  list(FILTER src_list EXCLUDE REGEX "^src/kernel/activity/")
+  list(FILTER src_list EXCLUDE REGEX "^src/kernel/actor/")
+  list(FILTER src_list EXCLUDE REGEX "^src/kernel/context/")
+  list(FILTER src_list EXCLUDE REGEX "^src/s4u/")
   foreach(src ${src_list})
       set (mcCFLAGS "-O3 -funroll-loops -fno-strict-aliasing")
       if(CMAKE_COMPILER_IS_GNUCC)
