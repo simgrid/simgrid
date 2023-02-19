@@ -41,7 +41,6 @@ set(EXTRA_DIST
   src/smpi/include/smpi_utils.hpp
   src/smpi/smpi_main.c
   src/smpi/smpi_replay_main.cpp
-  src/surf/surf_interface.hpp
   src/kernel/xml/simgrid.dtd
   src/kernel/xml/simgrid_dtd.c
   src/kernel/xml/simgrid_dtd.h

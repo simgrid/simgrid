@@ -19,7 +19,6 @@
 #include "src/simgrid/math_utils.h"
 #include "src/simgrid/sg_config.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
-#include "src/surf/surf_interface.hpp"
 #include "src/xbt/xbt_modinter.h" /* whether initialization was already done */
 #include "xbt/module.h"
 
@@ -553,7 +552,7 @@ double EngineImpl::solve(double max_date) const
     while (auto* event = profile::future_evt_set.pop_leq(next_event_date, &value, &resource)) {
       if(value<0)
 	      continue;
-      if (resource->is_used() || (watched_hosts().find(resource->get_cname()) != watched_hosts().end())) {
+      if (resource->is_used()) {
         time_delta = next_event_date - now_;
         XBT_DEBUG("This event invalidates the next_occurring_event() computation of models. Next event set to %f",
                   time_delta);

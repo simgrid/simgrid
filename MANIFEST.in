@@ -2439,7 +2439,6 @@ include src/smpi/smpitools.sh
 include src/sthread/sthread.c
 include src/sthread/sthread.h
 include src/sthread/sthread_impl.cpp
-include src/surf/surf_interface.hpp
 include src/xbt/OsSemaphore.hpp
 include src/xbt/PropertyHolder.cpp
 include src/xbt/automaton/automaton.c

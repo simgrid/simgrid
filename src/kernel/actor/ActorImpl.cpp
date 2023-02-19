@@ -10,7 +10,6 @@
 
 #include "src/internal_config.h"
 #include "src/kernel/EngineImpl.hpp"
-#include "src/surf/surf_interface.hpp"
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
 #endif
@@ -127,12 +126,6 @@ void ActorImpl::cleanup_from_kernel()
     host_->get_impl()->remove_actor(this);
   if (not kernel_destroy_list_hook.is_linked())
     engine->add_actor_to_destroy_list(*this);
-
-  if (has_to_auto_restart() && not get_host()->is_on()) {
-    XBT_DEBUG("Insert host %s to watched_hosts because it's off and %s needs to restart", get_host()->get_cname(),
-              get_cname());
-    watched_hosts().insert(get_host()->get_name());
-  }
 
   undaemonize();
   s4u::Actor::on_termination(*get_ciface());
