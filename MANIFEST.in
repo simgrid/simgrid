@@ -2121,11 +2121,11 @@ include src/kernel/routing/WifiZone.cpp
 include src/kernel/timer/Timer.cpp
 include src/kernel/xml/platf.hpp
 include src/kernel/xml/platf_private.hpp
+include src/kernel/xml/platf_sax_cb.cpp
 include src/kernel/xml/sg_platf.cpp
 include src/kernel/xml/simgrid.dtd
 include src/kernel/xml/simgrid_dtd.c
 include src/kernel/xml/simgrid_dtd.h
-include src/kernel/xml/surfxml_sax_cb.cpp
 include src/mc/AddressSpace.hpp
 include src/mc/ModelChecker.cpp
 include src/mc/ModelChecker.hpp

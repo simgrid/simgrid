@@ -45,7 +45,7 @@ set(EXTRA_DIST
   src/kernel/xml/simgrid.dtd
   src/kernel/xml/simgrid_dtd.c
   src/kernel/xml/simgrid_dtd.h
-  src/kernel/xml/surfxml_sax_cb.cpp
+  src/kernel/xml/platf_sax_cb.cpp
 
   src/xbt/automaton/automaton_lexer.yy.c
   src/xbt/automaton/parserPromela.lex
@@ -410,7 +410,7 @@ set(KERNEL_SRC
   src/kernel/xml/platf.hpp
   src/kernel/xml/platf_private.hpp
   src/kernel/xml/sg_platf.cpp
-  src/kernel/xml/surfxml_sax_cb.cpp
+  src/kernel/xml/platf_sax_cb.cpp
   )
 if (Eigen3_FOUND)
   set(KERNEL_SRC

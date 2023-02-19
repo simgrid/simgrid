@@ -207,7 +207,8 @@ void ETag_simgrid_parse_include()
 }
 
 /* Stag and Etag parse functions */
-void STag_simgrid_parse_platform() {
+void STag_simgrid_parse_platform()
+{
   /* Use fixed point arithmetic to avoid rounding errors ("4.1" for example cannot be represented exactly as a floating
    * point number) */
   const long int version           = lround(100.0 * simgrid_parse_get_double(A_simgrid_parse_platform_version));
@@ -256,7 +257,8 @@ void STag_simgrid_parse_platform() {
                            "The most recent formalism that this version of SimGrid understands is v4.1.\n"
                            "Please update your code, or use another, more adapted, file.");
 }
-void ETag_simgrid_parse_platform(){
+void ETag_simgrid_parse_platform()
+{
   simgrid::s4u::Engine::on_platform_created();
 }
 
@@ -301,11 +303,13 @@ void ETag_simgrid_parse_host()
   sg_platf_new_host_seal(simgrid_parse_get_int(A_simgrid_parse_host_pstate));
 }
 
-void STag_simgrid_parse_disk() {
+void STag_simgrid_parse_disk()
+{
   property_sets.emplace_back();
 }
 
-void ETag_simgrid_parse_disk() {
+void ETag_simgrid_parse_disk()
+{
   simgrid::kernel::routing::DiskCreationArgs disk;
   disk.properties = property_sets.back();
   property_sets.pop_back();
@@ -319,8 +323,9 @@ void ETag_simgrid_parse_disk() {
   sg_platf_new_disk(&disk);
 }
 
-void STag_simgrid_parse_host___link(){
-  XBT_DEBUG("Create a Host_link for %s",A_simgrid_parse_host___link_id);
+void STag_simgrid_parse_host___link()
+{
+  XBT_DEBUG("Create a Host_link for %s", A_simgrid_parse_host___link_id);
   simgrid::kernel::routing::HostLinkCreationArgs host_link;
 
   host_link.id        = A_simgrid_parse_host___link_id;
@@ -329,18 +334,20 @@ void STag_simgrid_parse_host___link(){
   sg_platf_new_hostlink(&host_link);
 }
 
-void STag_simgrid_parse_router(){
+void STag_simgrid_parse_router()
+{
   sg_platf_new_router(A_simgrid_parse_router_id, A_simgrid_parse_router_coordinates);
 }
 
-void ETag_simgrid_parse_cluster(){
+void ETag_simgrid_parse_cluster()
+{
   simgrid::kernel::routing::ClusterCreationArgs cluster;
   cluster.properties = property_sets.back();
   property_sets.pop_back();
 
-  cluster.id          = A_simgrid_parse_cluster_id;
-  cluster.prefix      = A_simgrid_parse_cluster_prefix;
-  cluster.suffix      = A_simgrid_parse_cluster_suffix;
+  cluster.id     = A_simgrid_parse_cluster_id;
+  cluster.prefix = A_simgrid_parse_cluster_prefix;
+  cluster.suffix = A_simgrid_parse_cluster_suffix;
   explodesRadical(A_simgrid_parse_cluster_radical, &cluster.radicals);
 
   cluster.speeds      = xbt_parse_get_all_speeds(simgrid_parsed_filename, simgrid_parse_lineno,
@@ -350,106 +357,109 @@ void ETag_simgrid_parse_cluster(){
                                         "bw of cluster " + cluster.id);
   cluster.lat = xbt_parse_get_time(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cluster_lat,
                                    "lat of cluster " + cluster.id);
-  if(strcmp(A_simgrid_parse_cluster_bb___bw,""))
+  if (strcmp(A_simgrid_parse_cluster_bb___bw, ""))
     cluster.bb_bw = xbt_parse_get_bandwidth(simgrid_parsed_filename, simgrid_parse_lineno,
                                             A_simgrid_parse_cluster_bb___bw, "bb_bw of cluster " + cluster.id);
-  if(strcmp(A_simgrid_parse_cluster_bb___lat,""))
+  if (strcmp(A_simgrid_parse_cluster_bb___lat, ""))
     cluster.bb_lat = xbt_parse_get_time(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cluster_bb___lat,
                                         "bb_lat of cluster " + cluster.id);
-  if(strcmp(A_simgrid_parse_cluster_limiter___link,""))
+  if (strcmp(A_simgrid_parse_cluster_limiter___link, ""))
     cluster.limiter_link =
         xbt_parse_get_bandwidth(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cluster_limiter___link,
                                 "limiter_link of cluster " + cluster.id);
-  if(strcmp(A_simgrid_parse_cluster_loopback___bw,""))
+  if (strcmp(A_simgrid_parse_cluster_loopback___bw, ""))
     cluster.loopback_bw =
         xbt_parse_get_bandwidth(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cluster_loopback___bw,
                                 "loopback_bw of cluster " + cluster.id);
-  if(strcmp(A_simgrid_parse_cluster_loopback___lat,""))
+  if (strcmp(A_simgrid_parse_cluster_loopback___lat, ""))
     cluster.loopback_lat =
         xbt_parse_get_time(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cluster_loopback___lat,
                            "loopback_lat of cluster " + cluster.id);
 
-  switch(AX_simgrid_parse_cluster_topology){
-  case A_simgrid_parse_cluster_topology_FLAT:
-    cluster.topology = simgrid::kernel::routing::ClusterTopology::FLAT;
-    break;
-  case A_simgrid_parse_cluster_topology_TORUS:
-    cluster.topology = simgrid::kernel::routing::ClusterTopology::TORUS;
-    break;
-  case A_simgrid_parse_cluster_topology_FAT___TREE:
-    cluster.topology = simgrid::kernel::routing::ClusterTopology::FAT_TREE;
-    break;
-  case A_simgrid_parse_cluster_topology_DRAGONFLY:
-    cluster.topology = simgrid::kernel::routing::ClusterTopology::DRAGONFLY;
-    break;
-  default:
-    simgrid_parse_error("Invalid cluster topology for cluster " + cluster.id);
+  switch (AX_simgrid_parse_cluster_topology) {
+    case A_simgrid_parse_cluster_topology_FLAT:
+      cluster.topology = simgrid::kernel::routing::ClusterTopology::FLAT;
+      break;
+    case A_simgrid_parse_cluster_topology_TORUS:
+      cluster.topology = simgrid::kernel::routing::ClusterTopology::TORUS;
+      break;
+    case A_simgrid_parse_cluster_topology_FAT___TREE:
+      cluster.topology = simgrid::kernel::routing::ClusterTopology::FAT_TREE;
+      break;
+    case A_simgrid_parse_cluster_topology_DRAGONFLY:
+      cluster.topology = simgrid::kernel::routing::ClusterTopology::DRAGONFLY;
+      break;
+    default:
+      simgrid_parse_error("Invalid cluster topology for cluster " + cluster.id);
   }
   cluster.topo_parameters = A_simgrid_parse_cluster_topo___parameters;
-  cluster.router_id = A_simgrid_parse_cluster_router___id;
+  cluster.router_id       = A_simgrid_parse_cluster_router___id;
 
   switch (AX_simgrid_parse_cluster_sharing___policy) {
-  case A_simgrid_parse_cluster_sharing___policy_SHARED:
-    cluster.sharing_policy = simgrid::s4u::Link::SharingPolicy::SHARED;
-    break;
-  case A_simgrid_parse_cluster_sharing___policy_FULLDUPLEX:
-    XBT_WARN("FULLDUPLEX is now deprecated. Please update your platform file to use SPLITDUPLEX instead.");
-    cluster.sharing_policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
-    break;
-  case A_simgrid_parse_cluster_sharing___policy_SPLITDUPLEX:
-    cluster.sharing_policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
-    break;
-  case A_simgrid_parse_cluster_sharing___policy_FATPIPE:
-    cluster.sharing_policy = simgrid::s4u::Link::SharingPolicy::FATPIPE;
-    break;
-  default:
-    simgrid_parse_error("Invalid cluster sharing policy for cluster " + cluster.id);
+    case A_simgrid_parse_cluster_sharing___policy_SHARED:
+      cluster.sharing_policy = simgrid::s4u::Link::SharingPolicy::SHARED;
+      break;
+    case A_simgrid_parse_cluster_sharing___policy_FULLDUPLEX:
+      XBT_WARN("FULLDUPLEX is now deprecated. Please update your platform file to use SPLITDUPLEX instead.");
+      cluster.sharing_policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
+      break;
+    case A_simgrid_parse_cluster_sharing___policy_SPLITDUPLEX:
+      cluster.sharing_policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
+      break;
+    case A_simgrid_parse_cluster_sharing___policy_FATPIPE:
+      cluster.sharing_policy = simgrid::s4u::Link::SharingPolicy::FATPIPE;
+      break;
+    default:
+      simgrid_parse_error("Invalid cluster sharing policy for cluster " + cluster.id);
   }
   switch (AX_simgrid_parse_cluster_bb___sharing___policy) {
-  case A_simgrid_parse_cluster_bb___sharing___policy_FATPIPE:
-    cluster.bb_sharing_policy = simgrid::s4u::Link::SharingPolicy::FATPIPE;
-    break;
-  case A_simgrid_parse_cluster_bb___sharing___policy_SHARED:
-    cluster.bb_sharing_policy = simgrid::s4u::Link::SharingPolicy::SHARED;
-    break;
-  default:
-    simgrid_parse_error("Invalid bb sharing policy in cluster " + cluster.id);
+    case A_simgrid_parse_cluster_bb___sharing___policy_FATPIPE:
+      cluster.bb_sharing_policy = simgrid::s4u::Link::SharingPolicy::FATPIPE;
+      break;
+    case A_simgrid_parse_cluster_bb___sharing___policy_SHARED:
+      cluster.bb_sharing_policy = simgrid::s4u::Link::SharingPolicy::SHARED;
+      break;
+    default:
+      simgrid_parse_error("Invalid bb sharing policy in cluster " + cluster.id);
   }
 
   sg_platf_new_tag_cluster(&cluster);
 }
 
-void STag_simgrid_parse_cluster(){
+void STag_simgrid_parse_cluster()
+{
   property_sets.emplace_back();
 }
 
-void STag_simgrid_parse_cabinet(){
+void STag_simgrid_parse_cabinet()
+{
   simgrid::kernel::routing::CabinetCreationArgs cabinet;
-  cabinet.id      = A_simgrid_parse_cabinet_id;
-  cabinet.prefix  = A_simgrid_parse_cabinet_prefix;
-  cabinet.suffix  = A_simgrid_parse_cabinet_suffix;
-  cabinet.speed   = xbt_parse_get_speed(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cabinet_speed,
-                                        "speed of cabinet " + cabinet.id);
-  cabinet.bw      = xbt_parse_get_bandwidth(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cabinet_bw,
-                                            "bw of cabinet " + cabinet.id);
-  cabinet.lat     = xbt_parse_get_time(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cabinet_lat,
-                                       "lat of cabinet " + cabinet.id);
+  cabinet.id     = A_simgrid_parse_cabinet_id;
+  cabinet.prefix = A_simgrid_parse_cabinet_prefix;
+  cabinet.suffix = A_simgrid_parse_cabinet_suffix;
+  cabinet.speed  = xbt_parse_get_speed(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cabinet_speed,
+                                       "speed of cabinet " + cabinet.id);
+  cabinet.bw     = xbt_parse_get_bandwidth(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cabinet_bw,
+                                           "bw of cabinet " + cabinet.id);
+  cabinet.lat    = xbt_parse_get_time(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_cabinet_lat,
+                                      "lat of cabinet " + cabinet.id);
   explodesRadical(A_simgrid_parse_cabinet_radical, &cabinet.radicals);
 
   sg_platf_new_cabinet(&cabinet);
 }
 
-void STag_simgrid_parse_peer(){
+void STag_simgrid_parse_peer()
+{
   simgrid::kernel::routing::PeerCreationArgs peer;
 
-  peer.id = A_simgrid_parse_peer_id;
+  peer.id     = A_simgrid_parse_peer_id;
   peer.speed  = xbt_parse_get_speed(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_peer_speed,
                                     "speed of peer " + peer.id);
   peer.bw_in  = xbt_parse_get_bandwidth(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_peer_bw___in,
                                         "bw_in of peer " + peer.id);
   peer.bw_out = xbt_parse_get_bandwidth(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_peer_bw___out,
                                         "bw_out of peer " + peer.id);
-  peer.coord       = A_simgrid_parse_peer_coordinates;
+  peer.coord  = A_simgrid_parse_peer_coordinates;
   peer.speed_trace = nullptr;
   if (A_simgrid_parse_peer_availability___file[0] != '\0') {
     XBT_WARN("The availability_file attribute in <peer> is now deprecated. Please, use 'speed_file' instead.");
@@ -468,50 +478,53 @@ void STag_simgrid_parse_peer(){
   sg_platf_new_peer(&peer);
 }
 
-void STag_simgrid_parse_link(){
+void STag_simgrid_parse_link()
+{
   property_sets.emplace_back();
 }
 
-void ETag_simgrid_parse_link(){
+void ETag_simgrid_parse_link()
+{
   simgrid::kernel::routing::LinkCreationArgs link;
 
   link.properties = property_sets.back();
   property_sets.pop_back();
 
-  link.id                  = A_simgrid_parse_link_id;
-  link.bandwidths          = xbt_parse_get_bandwidths(simgrid_parsed_filename, simgrid_parse_lineno,
-                                                      A_simgrid_parse_link_bandwidth, "bandwidth of link " + link.id);
-  link.bandwidth_trace     = A_simgrid_parse_link_bandwidth___file[0]
-                             ? simgrid::kernel::profile::ProfileBuilder::from_file(A_simgrid_parse_link_bandwidth___file)
-                             : nullptr;
-  link.latency = xbt_parse_get_time(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_link_latency,
-                                    "latency of link " + link.id);
-  link.latency_trace       = A_simgrid_parse_link_latency___file[0]
+  link.id         = A_simgrid_parse_link_id;
+  link.bandwidths = xbt_parse_get_bandwidths(simgrid_parsed_filename, simgrid_parse_lineno,
+                                             A_simgrid_parse_link_bandwidth, "bandwidth of link " + link.id);
+  link.bandwidth_trace =
+      A_simgrid_parse_link_bandwidth___file[0]
+          ? simgrid::kernel::profile::ProfileBuilder::from_file(A_simgrid_parse_link_bandwidth___file)
+          : nullptr;
+  link.latency       = xbt_parse_get_time(simgrid_parsed_filename, simgrid_parse_lineno, A_simgrid_parse_link_latency,
+                                          "latency of link " + link.id);
+  link.latency_trace = A_simgrid_parse_link_latency___file[0]
                            ? simgrid::kernel::profile::ProfileBuilder::from_file(A_simgrid_parse_link_latency___file)
                            : nullptr;
-  link.state_trace = A_simgrid_parse_link_state___file[0]
-                         ? simgrid::kernel::profile::ProfileBuilder::from_file(A_simgrid_parse_link_state___file)
-                         : nullptr;
+  link.state_trace   = A_simgrid_parse_link_state___file[0]
+                           ? simgrid::kernel::profile::ProfileBuilder::from_file(A_simgrid_parse_link_state___file)
+                           : nullptr;
 
   switch (A_simgrid_parse_link_sharing___policy) {
-  case A_simgrid_parse_link_sharing___policy_SHARED:
-    link.policy = simgrid::s4u::Link::SharingPolicy::SHARED;
-    break;
-  case A_simgrid_parse_link_sharing___policy_FATPIPE:
-    link.policy = simgrid::s4u::Link::SharingPolicy::FATPIPE;
-    break;
-  case A_simgrid_parse_link_sharing___policy_FULLDUPLEX:
-    XBT_WARN("FULLDUPLEX is now deprecated. Please update your platform file to use SPLITDUPLEX instead.");
-    link.policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
-    break;
-  case A_simgrid_parse_link_sharing___policy_SPLITDUPLEX:
-    link.policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
-    break;
-  case A_simgrid_parse_link_sharing___policy_WIFI:
-    link.policy = simgrid::s4u::Link::SharingPolicy::WIFI;
-    break;
-  default:
-    simgrid_parse_error("Invalid sharing policy in link " + link.id);
+    case A_simgrid_parse_link_sharing___policy_SHARED:
+      link.policy = simgrid::s4u::Link::SharingPolicy::SHARED;
+      break;
+    case A_simgrid_parse_link_sharing___policy_FATPIPE:
+      link.policy = simgrid::s4u::Link::SharingPolicy::FATPIPE;
+      break;
+    case A_simgrid_parse_link_sharing___policy_FULLDUPLEX:
+      XBT_WARN("FULLDUPLEX is now deprecated. Please update your platform file to use SPLITDUPLEX instead.");
+      link.policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
+      break;
+    case A_simgrid_parse_link_sharing___policy_SPLITDUPLEX:
+      link.policy = simgrid::s4u::Link::SharingPolicy::SPLITDUPLEX;
+      break;
+    case A_simgrid_parse_link_sharing___policy_WIFI:
+      link.policy = simgrid::s4u::Link::SharingPolicy::WIFI;
+      break;
+    default:
+      simgrid_parse_error("Invalid sharing policy in link " + link.id);
   }
 
   sg_platf_new_link(&link);
@@ -523,20 +536,20 @@ void STag_simgrid_parse_link___ctn()
   const simgrid::s4u::Link* link;
   simgrid::s4u::LinkInRoute::Direction direction = simgrid::s4u::LinkInRoute::Direction::NONE;
   switch (A_simgrid_parse_link___ctn_direction) {
-  case AU_simgrid_parse_link___ctn_direction:
-  case A_simgrid_parse_link___ctn_direction_NONE:
-    link = engine->link_by_name(A_simgrid_parse_link___ctn_id);
-    break;
-  case A_simgrid_parse_link___ctn_direction_UP:
-    link      = engine->split_duplex_link_by_name(A_simgrid_parse_link___ctn_id);
-    direction = simgrid::s4u::LinkInRoute::Direction::UP;
-    break;
-  case A_simgrid_parse_link___ctn_direction_DOWN:
-    link      = engine->split_duplex_link_by_name(A_simgrid_parse_link___ctn_id);
-    direction = simgrid::s4u::LinkInRoute::Direction::DOWN;
-    break;
-  default:
-    simgrid_parse_error(std::string("Invalid direction for link ") + A_simgrid_parse_link___ctn_id);
+    case AU_simgrid_parse_link___ctn_direction:
+    case A_simgrid_parse_link___ctn_direction_NONE:
+      link = engine->link_by_name(A_simgrid_parse_link___ctn_id);
+      break;
+    case A_simgrid_parse_link___ctn_direction_UP:
+      link      = engine->split_duplex_link_by_name(A_simgrid_parse_link___ctn_id);
+      direction = simgrid::s4u::LinkInRoute::Direction::UP;
+      break;
+    case A_simgrid_parse_link___ctn_direction_DOWN:
+      link      = engine->split_duplex_link_by_name(A_simgrid_parse_link___ctn_id);
+      direction = simgrid::s4u::LinkInRoute::Direction::DOWN;
+      break;
+    default:
+      simgrid_parse_error(std::string("Invalid direction for link ") + A_simgrid_parse_link___ctn_id);
   }
 
   const char* dirname;
@@ -569,31 +582,36 @@ void ETag_simgrid_parse_backbone()
   routing_cluster_add_backbone(std::move(link));
 }
 
-void STag_simgrid_parse_route(){
+void STag_simgrid_parse_route()
+{
   simgrid_parse_assert_netpoint(A_simgrid_parse_route_src, "Route src='", "' does name a node.");
   simgrid_parse_assert_netpoint(A_simgrid_parse_route_dst, "Route dst='", "' does name a node.");
 }
 
-void STag_simgrid_parse_ASroute(){
+void STag_simgrid_parse_ASroute()
+{
   simgrid_parse_assert_netpoint(A_simgrid_parse_ASroute_src, "ASroute src='", "' does name a node.");
   simgrid_parse_assert_netpoint(A_simgrid_parse_ASroute_dst, "ASroute dst='", "' does name a node.");
 
   simgrid_parse_assert_netpoint(A_simgrid_parse_ASroute_gw___src, "ASroute gw_src='", "' does name a node.");
   simgrid_parse_assert_netpoint(A_simgrid_parse_ASroute_gw___dst, "ASroute gw_dst='", "' does name a node.");
 }
-void STag_simgrid_parse_zoneRoute(){
+void STag_simgrid_parse_zoneRoute()
+{
   simgrid_parse_assert_netpoint(A_simgrid_parse_zoneRoute_src, "zoneRoute src='", "' does name a node.");
   simgrid_parse_assert_netpoint(A_simgrid_parse_zoneRoute_dst, "zoneRoute dst='", "' does name a node.");
   simgrid_parse_assert_netpoint(A_simgrid_parse_zoneRoute_gw___src, "zoneRoute gw_src='", "' does name a node.");
   simgrid_parse_assert_netpoint(A_simgrid_parse_zoneRoute_gw___dst, "zoneRoute gw_dst='", "' does name a node.");
 }
 
-void STag_simgrid_parse_bypassRoute(){
+void STag_simgrid_parse_bypassRoute()
+{
   simgrid_parse_assert_netpoint(A_simgrid_parse_bypassRoute_src, "bypassRoute src='", "' does name a node.");
   simgrid_parse_assert_netpoint(A_simgrid_parse_bypassRoute_dst, "bypassRoute dst='", "' does name a node.");
 }
 
-void STag_simgrid_parse_bypassASroute(){
+void STag_simgrid_parse_bypassASroute()
+{
   simgrid_parse_assert_netpoint(A_simgrid_parse_bypassASroute_src, "bypassASroute src='", "' does name a node.");
   simgrid_parse_assert_netpoint(A_simgrid_parse_bypassASroute_dst, "bypassASroute dst='", "' does name a node.");
   simgrid_parse_assert_netpoint(A_simgrid_parse_bypassASroute_gw___src, "bypassASroute gw_src='",
@@ -601,7 +619,8 @@ void STag_simgrid_parse_bypassASroute(){
   simgrid_parse_assert_netpoint(A_simgrid_parse_bypassASroute_gw___dst, "bypassASroute gw_dst='",
                                 "' does name a node.");
 }
-void STag_simgrid_parse_bypassZoneRoute(){
+void STag_simgrid_parse_bypassZoneRoute()
+{
   simgrid_parse_assert_netpoint(A_simgrid_parse_bypassZoneRoute_src, "bypassZoneRoute src='", "' does name a node.");
   simgrid_parse_assert_netpoint(A_simgrid_parse_bypassZoneRoute_dst, "bypassZoneRoute dst='", "' does name a node.");
   simgrid_parse_assert_netpoint(A_simgrid_parse_bypassZoneRoute_gw___src, "bypassZoneRoute gw_src='",
@@ -610,7 +629,8 @@ void STag_simgrid_parse_bypassZoneRoute(){
                                 "' does name a node.");
 }
 
-void ETag_simgrid_parse_route(){
+void ETag_simgrid_parse_route()
+{
   simgrid::kernel::routing::RouteCreationArgs route;
 
   route.src         = sg_netpoint_by_name_or_null(A_simgrid_parse_route_src); // tested to not be nullptr in start tag
@@ -626,10 +646,10 @@ void ETag_simgrid_parse_route(){
 
 void ETag_simgrid_parse_ASroute()
 {
-  AX_simgrid_parse_zoneRoute_src = AX_simgrid_parse_ASroute_src;
-  AX_simgrid_parse_zoneRoute_dst = AX_simgrid_parse_ASroute_dst;
-  AX_simgrid_parse_zoneRoute_gw___src = AX_simgrid_parse_ASroute_gw___src;
-  AX_simgrid_parse_zoneRoute_gw___dst = AX_simgrid_parse_ASroute_gw___dst;
+  AX_simgrid_parse_zoneRoute_src         = AX_simgrid_parse_ASroute_src;
+  AX_simgrid_parse_zoneRoute_dst         = AX_simgrid_parse_ASroute_dst;
+  AX_simgrid_parse_zoneRoute_gw___src    = AX_simgrid_parse_ASroute_gw___src;
+  AX_simgrid_parse_zoneRoute_gw___dst    = AX_simgrid_parse_ASroute_gw___dst;
   AX_simgrid_parse_zoneRoute_symmetrical = (AT_simgrid_parse_zoneRoute_symmetrical)AX_simgrid_parse_ASroute_symmetrical;
   ETag_simgrid_parse_zoneRoute();
 }
@@ -640,8 +660,10 @@ void ETag_simgrid_parse_zoneRoute()
   ASroute.src = sg_netpoint_by_name_or_null(A_simgrid_parse_zoneRoute_src); // tested to not be nullptr in start tag
   ASroute.dst = sg_netpoint_by_name_or_null(A_simgrid_parse_zoneRoute_dst); // tested to not be nullptr in start tag
 
-  ASroute.gw_src = sg_netpoint_by_name_or_null(A_simgrid_parse_zoneRoute_gw___src); // tested to not be nullptr in start tag
-  ASroute.gw_dst = sg_netpoint_by_name_or_null(A_simgrid_parse_zoneRoute_gw___dst); // tested to not be nullptr in start tag
+  ASroute.gw_src =
+      sg_netpoint_by_name_or_null(A_simgrid_parse_zoneRoute_gw___src); // tested to not be nullptr in start tag
+  ASroute.gw_dst =
+      sg_netpoint_by_name_or_null(A_simgrid_parse_zoneRoute_gw___dst); // tested to not be nullptr in start tag
 
   ASroute.link_list.swap(parsed_link_list);
 
@@ -652,11 +674,12 @@ void ETag_simgrid_parse_zoneRoute()
   sg_platf_new_route(&ASroute);
 }
 
-void ETag_simgrid_parse_bypassRoute(){
+void ETag_simgrid_parse_bypassRoute()
+{
   simgrid::kernel::routing::RouteCreationArgs route;
 
-  route.src         = sg_netpoint_by_name_or_null(A_simgrid_parse_bypassRoute_src); // tested to not be nullptr in start tag
-  route.dst         = sg_netpoint_by_name_or_null(A_simgrid_parse_bypassRoute_dst); // tested to not be nullptr in start tag
+  route.src = sg_netpoint_by_name_or_null(A_simgrid_parse_bypassRoute_src); // tested to not be nullptr in start tag
+  route.dst = sg_netpoint_by_name_or_null(A_simgrid_parse_bypassRoute_dst); // tested to not be nullptr in start tag
   route.symmetrical = false;
 
   route.link_list.swap(parsed_link_list);
@@ -666,8 +689,8 @@ void ETag_simgrid_parse_bypassRoute(){
 
 void ETag_simgrid_parse_bypassASroute()
 {
-  AX_simgrid_parse_bypassZoneRoute_src = AX_simgrid_parse_bypassASroute_src;
-  AX_simgrid_parse_bypassZoneRoute_dst = AX_simgrid_parse_bypassASroute_dst;
+  AX_simgrid_parse_bypassZoneRoute_src      = AX_simgrid_parse_bypassASroute_src;
+  AX_simgrid_parse_bypassZoneRoute_dst      = AX_simgrid_parse_bypassASroute_dst;
   AX_simgrid_parse_bypassZoneRoute_gw___src = AX_simgrid_parse_bypassASroute_gw___src;
   AX_simgrid_parse_bypassZoneRoute_gw___dst = AX_simgrid_parse_bypassASroute_gw___dst;
   ETag_simgrid_parse_bypassZoneRoute();
@@ -676,8 +699,8 @@ void ETag_simgrid_parse_bypassZoneRoute()
 {
   simgrid::kernel::routing::RouteCreationArgs ASroute;
 
-  ASroute.src         = sg_netpoint_by_name_or_null(A_simgrid_parse_bypassZoneRoute_src);
-  ASroute.dst         = sg_netpoint_by_name_or_null(A_simgrid_parse_bypassZoneRoute_dst);
+  ASroute.src = sg_netpoint_by_name_or_null(A_simgrid_parse_bypassZoneRoute_src);
+  ASroute.dst = sg_netpoint_by_name_or_null(A_simgrid_parse_bypassZoneRoute_dst);
   ASroute.link_list.swap(parsed_link_list);
 
   ASroute.symmetrical = false;
@@ -688,13 +711,14 @@ void ETag_simgrid_parse_bypassZoneRoute()
   sg_platf_new_bypass_route(&ASroute);
 }
 
-void ETag_simgrid_parse_trace(){
+void ETag_simgrid_parse_trace()
+{
   simgrid::kernel::routing::ProfileCreationArgs trace;
 
-  trace.id = A_simgrid_parse_trace_id;
-  trace.file = A_simgrid_parse_trace_file;
+  trace.id          = A_simgrid_parse_trace_id;
+  trace.file        = A_simgrid_parse_trace_file;
   trace.periodicity = simgrid_parse_get_double(A_simgrid_parse_trace_periodicity);
-  trace.pc_data = simgrid_parse_pcdata;
+  trace.pc_data     = simgrid_parse_pcdata;
 
   sg_platf_new_trace(&trace);
 }
@@ -731,7 +755,7 @@ void STag_simgrid_parse_trace___connect()
 
 void STag_simgrid_parse_AS()
 {
-  AX_simgrid_parse_zone_id = AX_simgrid_parse_AS_id;
+  AX_simgrid_parse_zone_id      = AX_simgrid_parse_AS_id;
   AX_simgrid_parse_zone_routing = AX_simgrid_parse_AS_routing;
   STag_simgrid_parse_zone();
 }
@@ -760,7 +784,7 @@ void ETag_simgrid_parse_zone()
 void STag_simgrid_parse_config()
 {
   property_sets.emplace_back();
-  XBT_DEBUG("START configuration name = %s",A_simgrid_parse_config_id);
+  XBT_DEBUG("START configuration name = %s", A_simgrid_parse_config_id);
   if (_sg_cfg_init_status == 2) {
     simgrid_parse_error(
         "All <config> tags must be given before any platform elements (such as <zone>, <host>, <cluster>, "
@@ -786,7 +810,7 @@ void ETag_simgrid_parse_config()
     } else
       XBT_INFO("The custom configuration '%s' is already defined by user!", key.c_str());
   }
-  XBT_DEBUG("End configuration name = %s",A_simgrid_parse_config_id);
+  XBT_DEBUG("End configuration name = %s", A_simgrid_parse_config_id);
 
   property_sets.pop_back();
 }
@@ -807,10 +831,10 @@ void STag_simgrid_parse_actor()
 
 void ETag_simgrid_parse_process()
 {
-  AX_simgrid_parse_actor_host = AX_simgrid_parse_process_host;
-  AX_simgrid_parse_actor_function = AX_simgrid_parse_process_function;
+  AX_simgrid_parse_actor_host         = AX_simgrid_parse_process_host;
+  AX_simgrid_parse_actor_function     = AX_simgrid_parse_process_function;
   AX_simgrid_parse_actor_start___time = AX_simgrid_parse_process_start___time;
-  AX_simgrid_parse_actor_kill___time = AX_simgrid_parse_process_kill___time;
+  AX_simgrid_parse_actor_kill___time  = AX_simgrid_parse_process_kill___time;
   AX_simgrid_parse_actor_on___failure = (AT_simgrid_parse_actor_on___failure)AX_simgrid_parse_process_on___failure;
   ETag_simgrid_parse_actor();
 }
@@ -829,45 +853,69 @@ void ETag_simgrid_parse_actor()
   actor.kill_time  = simgrid_parse_get_double(A_simgrid_parse_actor_kill___time);
 
   switch (A_simgrid_parse_actor_on___failure) {
-  case AU_simgrid_parse_actor_on___failure:
-  case A_simgrid_parse_actor_on___failure_DIE:
-    actor.restart_on_failure = false;
-    break;
-  case A_simgrid_parse_actor_on___failure_RESTART:
-    actor.restart_on_failure = true;
-    break;
-  default:
-    simgrid_parse_error("Invalid on failure behavior");
+    case AU_simgrid_parse_actor_on___failure:
+    case A_simgrid_parse_actor_on___failure_DIE:
+      actor.restart_on_failure = false;
+      break;
+    case A_simgrid_parse_actor_on___failure_RESTART:
+      actor.restart_on_failure = true;
+      break;
+    default:
+      simgrid_parse_error("Invalid on failure behavior");
   }
 
   sg_platf_new_actor(&actor);
 }
 
-void STag_simgrid_parse_argument(){
+void STag_simgrid_parse_argument()
+{
   arguments.emplace_back(A_simgrid_parse_argument_value);
 }
 
-void STag_simgrid_parse_model___prop(){
+void STag_simgrid_parse_model___prop()
+{
   XBT_INFO("Deprecated tag <model_prop> ignored");
 }
 
-void ETag_simgrid_parse_prop(){/* Nothing to do */}
-void STag_simgrid_parse_random(){/* Nothing to do */}
-void ETag_simgrid_parse_random(){/* Nothing to do */}
+void ETag_simgrid_parse_prop()
+{ /* Nothing to do */
+}
+void STag_simgrid_parse_random()
+{ /* Nothing to do */
+}
+void ETag_simgrid_parse_random()
+{ /* Nothing to do */
+}
 void ETag_simgrid_parse_trace___connect()
 { /* Nothing to do */
 }
 void STag_simgrid_parse_trace()
 { /* Nothing to do */
 }
-void ETag_simgrid_parse_router(){/*Nothing to do*/}
-void ETag_simgrid_parse_host___link(){/* Nothing to do */}
-void ETag_simgrid_parse_cabinet(){/* Nothing to do */}
-void ETag_simgrid_parse_peer(){/* Nothing to do */}
-void STag_simgrid_parse_backbone(){/* Nothing to do */}
-void ETag_simgrid_parse_link___ctn(){/* Nothing to do */}
-void ETag_simgrid_parse_argument(){/* Nothing to do */}
-void ETag_simgrid_parse_model___prop(){/* Nothing to do */}
+void ETag_simgrid_parse_router()
+{ /*Nothing to do*/
+}
+void ETag_simgrid_parse_host___link()
+{ /* Nothing to do */
+}
+void ETag_simgrid_parse_cabinet()
+{ /* Nothing to do */
+}
+void ETag_simgrid_parse_peer()
+{ /* Nothing to do */
+}
+void STag_simgrid_parse_backbone()
+{ /* Nothing to do */
+}
+void ETag_simgrid_parse_link___ctn()
+{ /* Nothing to do */
+}
+void ETag_simgrid_parse_argument()
+{ /* Nothing to do */
+}
+void ETag_simgrid_parse_model___prop()
+{ /* Nothing to do */
+}
 
 /* Open and Close parse file */
 static YY_BUFFER_STATE input_buffer;
@@ -875,7 +923,7 @@ static YY_BUFFER_STATE input_buffer;
 void simgrid_parse_open(const std::string& file)
 {
   simgrid_parsed_filename = file;
-  std::string dir      = simgrid::xbt::Path(file).get_dir_name();
+  std::string dir         = simgrid::xbt::Path(file).get_dir_name();
   simgrid::xbt::path_push(dir);
 
   file_to_parse = simgrid::xbt::path_fopen(file, "r");
