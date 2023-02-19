@@ -182,7 +182,7 @@ Comment: Generated with the Bison processor generator (which is GPL-3+) using Si
 
 Files: src/3rd-party/catch.hpp
 Copyright:
-  Copyright (c) 2018 Two Blue Cubes Ltd.
+  Copyright (c) 2022 Two Blue Cubes Ltd.
 License: BSL-1.0
 
 Files: teshsuite/smpi/MBI/*
