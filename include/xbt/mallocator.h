@@ -47,7 +47,7 @@ XBT_PUBLIC void xbt_mallocator_free(xbt_mallocator_t mallocator);
 XBT_PUBLIC void* xbt_mallocator_get(xbt_mallocator_t mallocator);
 XBT_PUBLIC void xbt_mallocator_release(xbt_mallocator_t mallocator, void* object);
 
-XBT_PUBLIC void xbt_mallocator_initialization_is_done(int protect);
+XBT_PUBLIC void xbt_mallocator_initialization_is_done(int need_protection);
 /** @} */
 
 SG_END_DECL

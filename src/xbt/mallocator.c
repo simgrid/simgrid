@@ -64,14 +64,15 @@ static inline void lock_release(xbt_mallocator_t m)
 }
 
 /**
- * This function must be called once the framework configuration is done. If not, mallocators will never get used.
- * Check the implementation notes in src/xbt/mallocator.c for the justification of this.
+ * This function must be called once the framework configuration is done. mallocators will not get used until it's
+ * called (check the implementation notes above for more info).
  *
- * For example, surf_config uses this function to tell to the mallocators that the simgrid configuration is now
- * finished and that it can create them if not done yet */
-void xbt_mallocator_initialization_is_done(int protect)
+ * sg_config uses this function to inform the mallocators when simgrid is configured, and whether lock protection is
+ * needed.
+ */
+void xbt_mallocator_initialization_is_done(int need_protection)
 {
-  initialization_done = protect ? 2 : 1;
+  initialization_done = need_protection ? 2 : 1;
 }
 
 /** used by the module to know if it's time to activate the mallocators yet */
