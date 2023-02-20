@@ -168,7 +168,6 @@ void AppSide::handle_actors_status() const
     status[i].aid            = aid;
     status[i].enabled        = mc::actor_is_enabled(actor);
     status[i].max_considered = actor->simcall_.observer_->get_max_consider();
-    status[i].n_transitions  = mc::actor_is_enabled(actor) ? status[i].max_considered : 0;
     i++;
   }
 

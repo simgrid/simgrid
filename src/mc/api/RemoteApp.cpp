@@ -105,14 +105,9 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   whereto.clear();
 
   for (const auto& actor : status) {
-    xbt_assert(actor.n_transitions == 0 || actor.n_transitions == actor.max_considered,
-               "If any transitions are serialized for an actor, it must match the "
-               "total number of transitions that can be considered for the actor "
-               "(currently %d), but only %d transition(s) was/were said to be encoded",
-               actor.max_considered, actor.n_transitions);
-
     std::vector<std::shared_ptr<Transition>> actor_transitions;
-    for (int times_considered = 0; times_considered < actor.n_transitions; times_considered++) {
+    int n_transitions = actor.enabled ? actor.max_considered : 0;
+    for (int times_considered = 0; times_considered < n_transitions; times_considered++) {
       s_mc_message_simcall_probe_one_t probe;
       ssize_t received = checker_side_->get_channel().receive(probe);
       xbt_assert(received >= 0, "Could not receive response to ACTORS_PROBE message (%s)", strerror(errno));

@@ -110,10 +110,6 @@ struct s_mc_message_actors_status_one_t { // an array of `s_mc_message_actors_st
   aid_t aid;
   bool enabled;
   int max_considered;
-
-  // The total number of transitions that are serialized and associated with this actor.
-  // Enforced to be either `0` or the same as `max_considered`
-  int n_transitions;
 };
 
 // Answer from an actor to the question "what are you about to run?"
