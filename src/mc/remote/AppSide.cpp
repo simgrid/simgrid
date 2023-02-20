@@ -186,40 +186,38 @@ void AppSide::handle_actors_status() const
   }
 
   // Serialize each transition to describe what each actor is doing
-  if (total_transitions > 0) {
-    XBT_DEBUG("Deliver ACTOR_TRANSITION_PROBE payload");
-    for (const auto& actor_status : status) {
-      if (not actor_status.enabled)
-        continue;
+  XBT_DEBUG("Deliver ACTOR_TRANSITION_PROBE payload");
+  for (const auto& actor_status : status) {
+    if (not actor_status.enabled)
+      continue;
 
-      const auto& actor        = actor_list.at(actor_status.aid);
-      const int max_considered = actor_status.max_considered;
+    const auto& actor        = actor_list.at(actor_status.aid);
+    const int max_considered = actor_status.max_considered;
 
-      for (int times_considered = 0; times_considered < max_considered; times_considered++) {
-        std::stringstream stream;
-        s_mc_message_simcall_probe_one_t probe;
+    for (int times_considered = 0; times_considered < max_considered; times_considered++) {
+      std::stringstream stream;
+      s_mc_message_simcall_probe_one_t probe;
 
-        if (actor->simcall_.observer_ != nullptr) {
-          actor->simcall_.observer_->prepare(times_considered);
-          actor->simcall_.observer_->serialize(stream);
-        } else {
-          stream << (short)mc::Transition::Type::UNKNOWN;
-        }
-
-        std::string str = stream.str();
-        xbt_assert(str.size() + 1 <= probe.buffer.size(),
-                   "The serialized transition is too large for the buffer. Please fix the code.");
-        strncpy(probe.buffer.data(), str.c_str(), probe.buffer.size() - 1);
-        probe.buffer.back() = '\0';
-
-        xbt_assert(channel_.send(probe) == 0, "Could not send ACTOR_TRANSITION_PROBE payload");
+      if (actor->simcall_.observer_ != nullptr) {
+        actor->simcall_.observer_->prepare(times_considered);
+        actor->simcall_.observer_->serialize(stream);
+      } else {
+        stream << (short)mc::Transition::Type::UNKNOWN;
       }
-      // NOTE: We do NOT need to reset `times_considered` for each actor's
-      // simcall observer here to the "original" value (i.e. the value BEFORE
-      // multiple prepare() calls were made for serialization purposes) since
-      // each SIMCALL_EXECUTE provides a `times_considered` to be used to prepare
-      // the transition before execution.
+
+      std::string str = stream.str();
+      xbt_assert(str.size() + 1 <= probe.buffer.size(),
+                 "The serialized transition is too large for the buffer. Please fix the code.");
+      strncpy(probe.buffer.data(), str.c_str(), probe.buffer.size() - 1);
+      probe.buffer.back() = '\0';
+
+      xbt_assert(channel_.send(probe) == 0, "Could not send ACTOR_TRANSITION_PROBE payload");
     }
+    // NOTE: We do NOT need to reset `times_considered` for each actor's
+    // simcall observer here to the "original" value (i.e. the value BEFORE
+    // multiple prepare() calls were made for serialization purposes) since
+    // each SIMCALL_EXECUTE provides a `times_considered` to be used to prepare
+    // the transition before execution.
   }
 }
 void AppSide::handle_actors_maxpid() const
