@@ -116,19 +116,7 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
              "Expected to receive %d transition(s) but was only notified of %d by the app side", expected_transitions,
              answer.transition_count);
 
-  std::vector<s_mc_message_simcall_probe_one_t> probes(answer.transition_count);
-  if (answer.transition_count > 0) {
-    for (auto& probe : probes) {
-      ssize_t received = checker_side_->get_channel().receive(probe);
-      xbt_assert(received >= 0, "Could not receive response to ACTORS_PROBE message (%s)", strerror(errno));
-      xbt_assert(static_cast<size_t>(received) == sizeof probe,
-                 "Could not receive response to ACTORS_PROBE message (%zd bytes received != %zu bytes expected",
-                 received, sizeof probe);
-    }
-  }
-
   whereto.clear();
-  std::move_iterator probes_iter(probes.begin());
 
   for (const auto& actor : status) {
     xbt_assert(actor.n_transitions == 0 || actor.n_transitions == actor.max_considered,
@@ -138,8 +126,15 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
                actor.max_considered, actor.n_transitions);
 
     std::vector<std::shared_ptr<Transition>> actor_transitions;
-    for (int times_considered = 0; times_considered < actor.n_transitions; times_considered++, probes_iter++) {
-      std::stringstream stream((*probes_iter).buffer.data());
+    for (int times_considered = 0; times_considered < actor.n_transitions; times_considered++) {
+      s_mc_message_simcall_probe_one_t probe;
+      ssize_t received = checker_side_->get_channel().receive(probe);
+      xbt_assert(received >= 0, "Could not receive response to ACTORS_PROBE message (%s)", strerror(errno));
+      xbt_assert(static_cast<size_t>(received) == sizeof probe,
+                 "Could not receive response to ACTORS_PROBE message (%zd bytes received != %zu bytes expected",
+                 received, sizeof probe);
+
+      std::stringstream stream(probe.buffer.data());
       actor_transitions.emplace_back(deserialize_transition(actor.aid, times_considered, stream));
     }
 

@@ -187,9 +187,7 @@ void AppSide::handle_actors_status() const
 
   // Serialize each transition to describe what each actor is doing
   if (total_transitions > 0) {
-    std::vector<s_mc_message_simcall_probe_one_t> probes(total_transitions);
-    auto probes_iter = probes.begin();
-
+    XBT_DEBUG("Deliver ACTOR_TRANSITION_PROBE payload");
     for (const auto& actor_status : status) {
       if (not actor_status.enabled)
         continue;
@@ -197,9 +195,9 @@ void AppSide::handle_actors_status() const
       const auto& actor        = actor_list.at(actor_status.aid);
       const int max_considered = actor_status.max_considered;
 
-      for (int times_considered = 0; times_considered < max_considered; times_considered++, probes_iter++) {
+      for (int times_considered = 0; times_considered < max_considered; times_considered++) {
         std::stringstream stream;
-        s_mc_message_simcall_probe_one_t& probe = *probes_iter;
+        s_mc_message_simcall_probe_one_t probe;
 
         if (actor->simcall_.observer_ != nullptr) {
           actor->simcall_.observer_->prepare(times_considered);
@@ -213,6 +211,8 @@ void AppSide::handle_actors_status() const
                    "The serialized transition is too large for the buffer. Please fix the code.");
         strncpy(probe.buffer.data(), str.c_str(), probe.buffer.size() - 1);
         probe.buffer.back() = '\0';
+
+        xbt_assert(channel_.send(probe) == 0, "Could not send ACTOR_TRANSITION_PROBE payload");
       }
       // NOTE: We do NOT need to reset `times_considered` for each actor's
       // simcall observer here to the "original" value (i.e. the value BEFORE
@@ -220,10 +220,6 @@ void AppSide::handle_actors_status() const
       // each SIMCALL_EXECUTE provides a `times_considered` to be used to prepare
       // the transition before execution.
     }
-    XBT_DEBUG("Deliver ACTOR_TRANSITION_PROBE payload");
-
-    for (const auto& probe : probes)
-      xbt_assert(channel_.send(probe) == 0, "Could not send ACTOR_TRANSITION_PROBE payload");
   }
 }
 void AppSide::handle_actors_maxpid() const
