@@ -180,13 +180,133 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Deletions")
   }
 }
 
-TEST_CASE("simgrid::mc::udpor::EventSet: Set Equality") {}
+TEST_CASE("simgrid::mc::udpor::EventSet: Set Equality")
+{
+  UnfoldingEvent e1, e2, e3, e4;
+  EventSet A{&e1, &e2, &e3}, B{&e1, &e2, &e3}, C{&e1, &e2, &e3};
+
+  SECTION("Equality implies containment")
+  {
+    REQUIRE(A == B);
+
+    for (const auto& e : A) {
+      REQUIRE(B.contains(e));
+    }
+
+    for (const auto& e : B) {
+      REQUIRE(A.contains(e));
+    }
+  }
+
+  SECTION("Containment implies equality")
+  {
+    for (const auto& e : A) {
+      REQUIRE(B.contains(e));
+    }
+
+    for (const auto& e : C) {
+      REQUIRE(C.contains(e));
+    }
+
+    REQUIRE(A == C);
+  }
+
+  SECTION("Equality is an equivalence relation")
+  {
+    // Reflexive
+    REQUIRE(A == A);
+    REQUIRE(B == B);
+    REQUIRE(C == C);
+
+    // Symmetric
+    REQUIRE(A == B);
+    REQUIRE(B == A);
+    REQUIRE(A == C);
+    REQUIRE(C == A);
+    REQUIRE(B == C);
+    REQUIRE(C == B);
+
+    // Transitive
+    REQUIRE(A == B);
+    REQUIRE(B == C);
+    REQUIRE(A == C);
+  }
+
+  SECTION("Equality after copy (assignment + constructor)")
+  {
+    EventSet A_copy = A;
+    EventSet A_copy2(A);
+
+    REQUIRE(A == A_copy);
+    REQUIRE(A == A_copy2);
+  }
+
+  SECTION("Equality after move constructor")
+  {
+    EventSet A_copy = A;
+    EventSet A_move(std::move(A));
+    REQUIRE(A_move == A_copy);
+  }
+
+  SECTION("Equality after move-assignment")
+  {
+    EventSet A_copy = A;
+    EventSet A_move = std::move(A);
+    REQUIRE(A_move == A_copy);
+  }
+}
 
 TEST_CASE("simgrid::mc::udpor::EventSet: Unions and Set Difference")
 {
   UnfoldingEvent e1, e2, e3, e4;
 
-  EventSet A{&e1, &e2, &e3}, B{&e2, &e3, &e4}, C{&e2, &e3, &e4};
+  // C = A + B
+  EventSet A{&e1, &e2, &e3}, B{&e2, &e3, &e4}, C{&e1, &e2, &e3, &e4}, D{&e1, &e3};
 
-  SECTION("Self-union (A union A)") {}
+  SECTION("Unions with no effect")
+  {
+    EventSet A_copy = A;
+
+    SECTION("Self union")
+    {
+      // A = A union A
+      EventSet A_union = A.make_union(A);
+      REQUIRE(A == A_copy);
+
+      A.form_union(A);
+      REQUIRE(A == A_copy);
+    }
+
+    SECTION("Union with empty set")
+    {
+      // A = A union empty set
+      EventSet A_union = A.make_union(EventSet());
+      REQUIRE(A == A_union);
+
+      A.form_union(EventSet());
+      REQUIRE(A == A_copy);
+    }
+
+    SECTION("Union with an equivalent set")
+    {
+      // A = A union B if B == A
+      EventSet A_equiv{&e1, &e2, &e3};
+      REQUIRE(A == A_equiv);
+
+      EventSet A_union = A.make_union(A_equiv);
+      REQUIRE(A_union == A_copy);
+
+      A.form_union(A_equiv);
+      REQUIRE(A == A_copy);
+    }
+  }
+
+  SECTION("Unions with overlaps")
+  {
+    EventSet A_union_B = A.make_union(B);
+    REQUIRE(A_union_B == C);
+
+    A.form_union(B);
+    REQUIRE(A == C);
+  }
 }

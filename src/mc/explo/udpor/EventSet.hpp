@@ -49,8 +49,8 @@ public:
   bool contains(UnfoldingEvent*) const;
   bool is_subset_of(const EventSet&) const;
 
-  bool operator==(const EventSet& other) { return this->events_ == other.events_; }
-  bool operator!=(const EventSet& other) { return this->events_ != other.events_; }
+  bool operator==(const EventSet& other) const { return this->events_ == other.events_; }
+  bool operator!=(const EventSet& other) const { return this->events_ != other.events_; }
 };
 
 } // namespace simgrid::mc::udpor
