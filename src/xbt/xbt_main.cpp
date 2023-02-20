@@ -48,11 +48,6 @@ simgrid::config::Flag<bool> cfg_dbg_clean_atexit{
 const int xbt_pagesize = static_cast<int>(sysconf(_SC_PAGESIZE));
 const int xbt_pagebits = static_cast<int>(log2(xbt_pagesize));
 
-/* Declare xbt_preinit and xbt_postexit as constructor/destructor of the library.
- * This is crude and rather compiler-specific, unfortunately.
- */
-static void xbt_preinit() XBT_ATTRIB_CONSTRUCTOR(200);
-static void xbt_postexit();
 XBT_ATTRIB_NOINLINE void sthread_enable()
 { // These symbols are used from ContextSwapped in any case, but they are only useful
   asm("");
@@ -60,11 +55,6 @@ XBT_ATTRIB_NOINLINE void sthread_enable()
 XBT_ATTRIB_NOINLINE void sthread_disable()
 { //  when libsthread is LD_PRELOADED. In this case, sthread's implem gets used instead.
   asm("");
-}
-
-static void xbt_preinit()
-{
-  atexit(xbt_postexit);
 }
 
 static void xbt_postexit()
@@ -83,6 +73,7 @@ void xbt_init(int *argc, char **argv)
     XBT_DEBUG("XBT has been initialized %d times.", xbt_initialized);
     return;
   }
+  atexit(xbt_postexit);
 
   simgrid::xbt::install_exception_handler();
 
