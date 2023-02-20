@@ -15,8 +15,6 @@
 #include <xbt/log.h>
 #include <xbt/parse_units.hpp>
 
-#include "src/surf/surf_interface.hpp"
-
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <fstream>

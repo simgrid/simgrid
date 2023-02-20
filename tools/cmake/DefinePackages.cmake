@@ -1,28 +1,39 @@
 ### define source packages
 
 set(EXTRA_DIST
+  src/3rd-party/catch.hpp
+  src/3rd-party/xxhash.hpp
   src/bindings/python/simgrid_python.cpp
   src/dag/dax.dtd
   src/dag/dax_dtd.c
   src/dag/dax_dtd.h
-  src/include/catch.hpp
-  src/include/mc/datatypes.h
-  src/include/mc/mc.h
-  src/include/simgrid/sg_config.hpp
-  src/include/xbt/coverage.h
-  src/include/xbt/mmalloc.h
-  src/include/xbt/parmap.hpp
-  src/include/xbt/xbt_modinter.h
-  src/include/xxhash.hpp
   src/kernel/actor/Simcall.hpp
+  src/kernel/resource/HostImpl.hpp
   src/kernel/resource/LinkImpl.hpp
   src/kernel/resource/NetworkModel.hpp
   src/kernel/resource/NetworkModelFactors.hpp
   src/kernel/resource/SplitDuplexLinkImpl.hpp
   src/kernel/resource/StandardLinkImpl.hpp
   src/kernel/resource/WifiLinkImpl.hpp
+  src/kernel/resource/models/cpu_cas01.hpp
+  src/kernel/resource/models/cpu_ti.hpp
+  src/kernel/resource/models/disk_s19.hpp
+  src/kernel/resource/models/host_clm03.hpp
+  src/kernel/resource/models/network_cm02.hpp
+  src/kernel/resource/models/network_constant.hpp
+  src/kernel/resource/models/network_ib.hpp
+  src/kernel/resource/models/network_ns3.hpp
+  src/kernel/resource/models/ns3/ns3_simulator.hpp
+  src/kernel/resource/models/ptask_L07.hpp
+  
+  src/mc/datatypes.h
+  src/mc/mc.h
   src/mc/mc_mmu.hpp
   src/mc/mc_record.hpp
+
+  src/simgrid/sg_config.hpp
+  src/simgrid/math_utils.h
+
   src/smpi/colls/coll_tuned_topo.hpp
   src/smpi/colls/colls_private.hpp
   src/smpi/colls/smpi_mvapich2_selector_stampede.hpp
@@ -30,32 +41,24 @@ set(EXTRA_DIST
   src/smpi/include/smpi_utils.hpp
   src/smpi/smpi_main.c
   src/smpi/smpi_replay_main.cpp
-  src/surf/HostImpl.hpp
-  src/surf/cpu_cas01.hpp
-  src/surf/cpu_ti.hpp
-  src/surf/disk_s19.hpp
-  src/surf/host_clm03.hpp
-  src/surf/network_cm02.hpp
-  src/surf/network_constant.hpp
-  src/surf/network_ib.hpp
-  src/surf/network_ns3.hpp
-  src/surf/ns3/ns3_simulator.hpp
-  src/surf/ptask_L07.hpp
-  src/surf/surf_interface.hpp
-  src/surf/xml/simgrid.dtd
-  src/surf/xml/simgrid_dtd.c
-  src/surf/xml/simgrid_dtd.h
-  src/surf/xml/surfxml_sax_cb.cpp
+  src/kernel/xml/simgrid.dtd
+  src/kernel/xml/simgrid_dtd.c
+  src/kernel/xml/simgrid_dtd.h
+  src/kernel/xml/platf_sax_cb.cpp
 
   src/xbt/automaton/automaton_lexer.yy.c
   src/xbt/automaton/parserPromela.lex
   src/xbt/automaton/parserPromela.tab.cacc
   src/xbt/automaton/parserPromela.tab.hacc
   src/xbt/automaton/parserPromela.yacc
+  src/xbt/coverage.h
   src/xbt/dict_private.h
   src/xbt/log_private.hpp
   src/xbt/mallocator_private.h
-
+  src/xbt/parmap.hpp
+  src/xbt/xbt_modinter.h
+  
+  src/xbt/mmalloc/mmalloc.h
   src/xbt/mmalloc/mfree.c
   src/xbt/mmalloc/mm_legacy.c
   src/xbt/mmalloc/mm_module.c
@@ -243,7 +246,7 @@ set(SMPI_SRC
   src/smpi/plugins/ampi/ampi.hpp
   src/smpi/plugins/ampi/instr_ampi.cpp
   src/smpi/plugins/ampi/instr_ampi.hpp
-  src/surf/network_ib.cpp
+  src/kernel/resource/models/network_ib.cpp
   )
 set(STHREAD_SRC
   src/sthread/sthread_impl.cpp
@@ -292,13 +295,57 @@ else()
 endif()
 
 set(NS3_SRC
-  src/surf/network_ns3.cpp
-  src/surf/ns3/ns3_simulator.cpp
+  src/kernel/resource/models/network_ns3.cpp
+  src/kernel/resource/models/ns3/ns3_simulator.cpp
   )
 
-set(SURF_SRC
+set(KERNEL_SRC
+  src/deprecated.cpp
+
   src/kernel/EngineImpl.cpp
   src/kernel/EngineImpl.hpp
+
+  src/kernel/activity/ActivityImpl.cpp
+  src/kernel/activity/ActivityImpl.hpp
+  src/kernel/activity/BarrierImpl.cpp
+  src/kernel/activity/BarrierImpl.hpp
+  src/kernel/activity/CommImpl.cpp
+  src/kernel/activity/CommImpl.hpp
+  src/kernel/activity/ConditionVariableImpl.cpp
+  src/kernel/activity/ConditionVariableImpl.hpp
+  src/kernel/activity/ExecImpl.cpp
+  src/kernel/activity/ExecImpl.hpp
+  src/kernel/activity/IoImpl.cpp
+  src/kernel/activity/IoImpl.hpp
+  src/kernel/activity/MailboxImpl.cpp
+  src/kernel/activity/MailboxImpl.hpp
+  src/kernel/activity/MutexImpl.cpp
+  src/kernel/activity/MutexImpl.hpp
+  src/kernel/activity/SemaphoreImpl.cpp
+  src/kernel/activity/SemaphoreImpl.hpp
+  src/kernel/activity/SleepImpl.cpp
+  src/kernel/activity/SleepImpl.hpp
+  src/kernel/activity/Synchro.cpp
+  src/kernel/activity/Synchro.hpp
+
+  src/kernel/actor/ActorImpl.cpp
+  src/kernel/actor/ActorImpl.hpp
+  src/kernel/actor/CommObserver.cpp
+  src/kernel/actor/CommObserver.hpp
+  src/kernel/actor/Simcall.cpp
+  src/kernel/actor/SimcallObserver.cpp
+  src/kernel/actor/SimcallObserver.hpp
+  src/kernel/actor/SynchroObserver.cpp
+  src/kernel/actor/SynchroObserver.hpp
+  
+  src/kernel/context/Context.cpp
+  src/kernel/context/Context.hpp
+  src/kernel/context/ContextRaw.cpp
+  src/kernel/context/ContextRaw.hpp
+  src/kernel/context/ContextSwapped.cpp
+  src/kernel/context/ContextSwapped.hpp
+  src/kernel/context/ContextThread.cpp
+  src/kernel/context/ContextThread.hpp
 
   src/kernel/lmm/System.cpp
   src/kernel/lmm/System.hpp
@@ -314,6 +361,7 @@ set(SURF_SRC
   src/kernel/resource/DiskImpl.hpp
   src/kernel/resource/FactorSet.cpp
   src/kernel/resource/FactorSet.hpp
+  src/kernel/resource/HostImpl.cpp
   src/kernel/resource/Model.cpp
   src/kernel/resource/NetworkModel.cpp
   src/kernel/resource/NetworkModelFactors.cpp
@@ -323,6 +371,14 @@ set(SURF_SRC
   src/kernel/resource/VirtualMachineImpl.cpp
   src/kernel/resource/VirtualMachineImpl.hpp
   src/kernel/resource/WifiLinkImpl.cpp
+
+  src/kernel/resource/models/cpu_cas01.cpp
+  src/kernel/resource/models/cpu_ti.cpp
+  src/kernel/resource/models/disk_s19.cpp
+  src/kernel/resource/models/host_clm03.cpp
+  src/kernel/resource/models/network_cm02.cpp
+  src/kernel/resource/models/network_constant.cpp
+  src/kernel/resource/models/ptask_L07.cpp
 
   src/kernel/resource/profile/Event.hpp
   src/kernel/resource/profile/FutureEvtSet.cpp
@@ -350,23 +406,14 @@ set(SURF_SRC
 
   src/kernel/timer/Timer.cpp
 
-  src/surf/HostImpl.cpp
-  src/surf/cpu_cas01.cpp
-  src/surf/cpu_ti.cpp
-  src/surf/disk_s19.cpp
-  src/surf/host_clm03.cpp
-  src/surf/network_cm02.cpp
-  src/surf/network_constant.cpp
-  src/surf/ptask_L07.cpp
-  src/surf/sg_platf.cpp
-  src/surf/xml/platf.hpp
-  src/surf/xml/platf_private.hpp
-  src/surf/xml/surfxml_parseplatf.cpp
-  src/surf/xml/surfxml_sax_cb.cpp
+  src/kernel/xml/platf.hpp
+  src/kernel/xml/platf_private.hpp
+  src/kernel/xml/sg_platf.cpp
+  src/kernel/xml/platf_sax_cb.cpp
   )
 if (Eigen3_FOUND)
-  set(SURF_SRC
-    ${SURF_SRC}
+  set(KERNEL_SRC
+    ${KERNEL_SRC}
     src/kernel/lmm/bmf.cpp
     src/kernel/lmm/bmf.hpp)
 else()
@@ -374,6 +421,18 @@ else()
     ${EXTRA_DIST}
     src/kernel/lmm/bmf.cpp
     src/kernel/lmm/bmf.hpp)
+endif()
+# Boost context may not be available
+if (HAVE_BOOST_CONTEXTS)
+  set(KERNEL_SRC
+      ${KERNEL_SRC}
+      src/kernel/context/ContextBoost.cpp
+      src/kernel/context/ContextBoost.hpp)
+else()
+  set(EXTRA_DIST
+      ${EXTRA_DIST}
+      src/kernel/context/ContextBoost.cpp
+      src/kernel/context/ContextBoost.hpp)
 endif()
 
 set(PLUGINS_SRC
@@ -391,61 +450,6 @@ set(PLUGINS_SRC
   src/plugins/vm/dirty_page_tracking.cpp
   )
 
-set(SIMIX_SRC
-  src/kernel/activity/ActivityImpl.cpp
-  src/kernel/activity/ActivityImpl.hpp
-  src/kernel/activity/BarrierImpl.cpp
-  src/kernel/activity/BarrierImpl.hpp
-  src/kernel/activity/CommImpl.cpp
-  src/kernel/activity/CommImpl.hpp
-  src/kernel/activity/ConditionVariableImpl.cpp
-  src/kernel/activity/ConditionVariableImpl.hpp
-  src/kernel/activity/ExecImpl.cpp
-  src/kernel/activity/ExecImpl.hpp
-  src/kernel/activity/IoImpl.cpp
-  src/kernel/activity/IoImpl.hpp
-  src/kernel/activity/MailboxImpl.cpp
-  src/kernel/activity/MailboxImpl.hpp
-  src/kernel/activity/MutexImpl.cpp
-  src/kernel/activity/MutexImpl.hpp
-  src/kernel/activity/SemaphoreImpl.cpp
-  src/kernel/activity/SemaphoreImpl.hpp
-  src/kernel/activity/SleepImpl.cpp
-  src/kernel/activity/SleepImpl.hpp
-  src/kernel/activity/Synchro.cpp
-  src/kernel/activity/Synchro.hpp
-  src/kernel/actor/ActorImpl.cpp
-  src/kernel/actor/ActorImpl.hpp
-  src/kernel/actor/CommObserver.cpp
-  src/kernel/actor/CommObserver.hpp
-  src/kernel/actor/Simcall.cpp
-  src/kernel/actor/SimcallObserver.cpp
-  src/kernel/actor/SimcallObserver.hpp
-  src/kernel/actor/SynchroObserver.cpp
-  src/kernel/actor/SynchroObserver.hpp
-  src/kernel/context/Context.cpp
-  src/kernel/context/Context.hpp
-  src/kernel/context/ContextRaw.cpp
-  src/kernel/context/ContextRaw.hpp
-  src/kernel/context/ContextSwapped.cpp
-  src/kernel/context/ContextSwapped.hpp
-  src/kernel/context/ContextThread.cpp
-  src/kernel/context/ContextThread.hpp
-  src/simix/libsmx.cpp
-  )
-
-# Boost context may not be available
-if (HAVE_BOOST_CONTEXTS)
-  set(SIMIX_SRC
-      ${SIMIX_SRC}
-      src/kernel/context/ContextBoost.cpp
-      src/kernel/context/ContextBoost.hpp)
-else()
-  set(EXTRA_DIST
-      ${EXTRA_DIST}
-      src/kernel/context/ContextBoost.cpp
-      src/kernel/context/ContextBoost.hpp)
-endif()
 
 set(S4U_SRC
   src/s4u/s4u_Activity.cpp
@@ -715,7 +719,7 @@ set(source_of_generated_headers
 
 ### depend of some variables set upper
 if(${HAVE_UCONTEXT_CONTEXTS}) #ucontext
-  set(SIMIX_SRC    ${SIMIX_SRC} src/kernel/context/ContextUnix.hpp
+  set(KERNEL_SRC  ${KERNEL_SRC} src/kernel/context/ContextUnix.hpp
                                 src/kernel/context/ContextUnix.cpp)
 else() # NOT ucontext
   set(EXTRA_DIST  ${EXTRA_DIST} src/kernel/context/ContextUnix.hpp
@@ -727,8 +731,7 @@ set(simgrid_sources
   ${S4U_SRC}
   ${SIMGRID_SRC}
   ${MC_SRC_BASE}
-  ${SIMIX_SRC}
-  ${SURF_SRC}
+  ${KERNEL_SRC}
   ${TRACING_SRC}
   ${XBT_SRC}
   ${PLUGINS_SRC}
@@ -787,6 +790,7 @@ set(DOC_SOURCES
   docs/source/img/extlink.svg
   docs/source/img/graphical-toc.svg
   docs/source/img/lmm-overview.svg
+  docs/source/img/plugin-energy.svg
   docs/source/img/smpi_simgrid_alltoall_pair_16.png
   docs/source/img/smpi_simgrid_alltoall_ring_16.png
   docs/source/img/starzone.drawio
@@ -982,7 +986,6 @@ set(CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/rma/CMakeLists.txt
   teshsuite/smpi/mpich3-test/topo/CMakeLists.txt
 
-  teshsuite/surf/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
   tools/CMakeLists.txt
   tools/graphicator/CMakeLists.txt

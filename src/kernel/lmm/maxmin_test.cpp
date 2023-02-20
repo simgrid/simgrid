@@ -3,9 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/include/catch.hpp"
+#include "src/3rd-party/catch.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
-#include "src/surf/surf_interface.hpp"
+#include "src/simgrid/math_utils.h"
 #include "xbt/log.h"
 
 namespace lmm = simgrid::kernel::lmm;
@@ -37,8 +37,8 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
     Sys.expand(sys_cnst, rho_2, 1);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 2, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 1, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 2, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 1, sg_precision_workamount));
   }
 
   SECTION("Consumption weight")
@@ -65,8 +65,8 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
     Sys.expand(sys_cnst, rho_2, 2);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 1, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 1, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 1, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 1, sg_precision_workamount));
   }
 
   SECTION("Consumption weight + variable penalty")
@@ -94,8 +94,8 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
     Sys.solve();
 
     double rho_1_share = 10;
-    REQUIRE(double_equals(rho_1->get_value(), rho_1_share, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), rho_1_share / 2, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), rho_1_share, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), rho_1_share / 2, sg_precision_workamount));
   }
 
   SECTION("Multiple constraints systems")
@@ -134,9 +134,9 @@ TEST_CASE("kernel::lmm Single constraint shared systems", "[kernel-lmm-shared-si
     Sys.solve();
 
     double rho_1_share = 10; // Start by solving the first constraint (results is the same as previous tests)
-    REQUIRE(double_equals(rho_1->get_value(), rho_1_share, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), rho_1_share / 2, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_3->get_value(), 60 - 2 * rho_1_share, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), rho_1_share, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), rho_1_share / 2, sg_precision_workamount));
+    REQUIRE(double_equals(rho_3->get_value(), 60 - 2 * rho_1_share, sg_precision_workamount));
   }
 
   Sys.variable_free_all();
@@ -171,8 +171,8 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
     Sys.expand(sys_cnst, rho_2, 1);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 10, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 10 / 2, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 10, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 10 / 2, sg_precision_workamount));
   }
 
   SECTION("Consumption weight")
@@ -201,8 +201,8 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
     Sys.expand(sys_cnst, rho_2, 2);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 5, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 5, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 5, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 5, sg_precision_workamount));
   }
 
   SECTION("Consumption weight + variable penalty")
@@ -231,8 +231,8 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
     Sys.expand(sys_cnst, sys_var_2, 2);
     Sys.solve();
 
-    REQUIRE(double_equals(sys_var_1->get_value(), 10, sg_maxmin_precision));
-    REQUIRE(double_equals(sys_var_2->get_value(), 5, sg_maxmin_precision));
+    REQUIRE(double_equals(sys_var_1->get_value(), 10, sg_precision_workamount));
+    REQUIRE(double_equals(sys_var_2->get_value(), 5, sg_precision_workamount));
   }
 
   SECTION("Multiple constraints systems")
@@ -273,9 +273,9 @@ TEST_CASE("kernel::lmm Single constraint unshared systems", "[kernel-lmm-unshare
     Sys.solve();
 
     double rho_1_share = 10; // Start by solving the first constraint (results is the same as previous tests)
-    REQUIRE(double_equals(rho_1->get_value(), rho_1_share, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), rho_1_share / 2, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_3->get_value(), 60, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), rho_1_share, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), rho_1_share / 2, sg_precision_workamount));
+    REQUIRE(double_equals(rho_3->get_value(), 60, sg_precision_workamount));
   }
 
   Sys.variable_free_all();
@@ -310,7 +310,7 @@ TEST_CASE("kernel::lmm dynamic constraint shared systems", "[kernel-lmm-shared-s
     Sys.expand(sys_cnst, rho_1, 1);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 10, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 10, sg_precision_workamount));
   }
 
   SECTION("2 activities, but ignore crosstraffic 100% C")
@@ -336,8 +336,8 @@ TEST_CASE("kernel::lmm dynamic constraint shared systems", "[kernel-lmm-shared-s
     Sys.expand(sys_cnst, rho_2, 0.05);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 10 / 1.05, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_1->get_value(), rho_2->get_value(), sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 10 / 1.05, sg_precision_workamount));
+    REQUIRE(double_equals(rho_1->get_value(), rho_2->get_value(), sg_precision_workamount));
   }
 
   SECTION("2 activities, 1 inactive 100% C")
@@ -362,8 +362,8 @@ TEST_CASE("kernel::lmm dynamic constraint shared systems", "[kernel-lmm-shared-s
     Sys.expand(sys_cnst, rho_2, 1);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 10, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 0, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 10, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 0, sg_precision_workamount));
   }
 
   SECTION("2 activity, 90% C")
@@ -388,8 +388,8 @@ TEST_CASE("kernel::lmm dynamic constraint shared systems", "[kernel-lmm-shared-s
     Sys.expand(sys_cnst, rho_2, 1);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 4.5, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_1->get_value(), 4.5, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 4.5, sg_precision_workamount));
+    REQUIRE(double_equals(rho_1->get_value(), 4.5, sg_precision_workamount));
   }
 
   SECTION("3 activity, 80% C")
@@ -417,9 +417,9 @@ TEST_CASE("kernel::lmm dynamic constraint shared systems", "[kernel-lmm-shared-s
     Sys.expand(sys_cnst, rho_3, 1);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 4, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 2, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_3->get_value(), 2, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 4, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 2, sg_precision_workamount));
+    REQUIRE(double_equals(rho_3->get_value(), 2, sg_precision_workamount));
   }
 
   Sys.variable_free_all();
@@ -458,9 +458,9 @@ TEST_CASE("kernel::lmm shared systems with crosstraffic", "[kernel-lmm-shared-cr
     Sys.expand(sys_cnst, rho_3, epsilon);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 1.0 / (2.0 + epsilon), sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 1.0 / (2.0 + epsilon), sg_maxmin_precision));
-    REQUIRE(double_equals(rho_3->get_value(), 1.0 / (2.0 + epsilon), sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 1.0 / (2.0 + epsilon), sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 1.0 / (2.0 + epsilon), sg_precision_workamount));
+    REQUIRE(double_equals(rho_3->get_value(), 1.0 / (2.0 + epsilon), sg_precision_workamount));
   }
 
   Sys.variable_free_all();

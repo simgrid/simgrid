@@ -7,7 +7,7 @@
 
 #include "private.hpp"
 #include "smpi_config.hpp"
-#include "src/surf/xml/platf.hpp"
+#include "src/kernel/xml/platf.hpp"
 #include "xbt/ex.h"
 #include "xbt/file.hpp"
 #include "xbt/log.h"

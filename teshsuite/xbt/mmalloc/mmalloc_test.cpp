@@ -4,8 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/Exception.hpp"
+#include "src/xbt/mmalloc/mmalloc.h"
 #include "xbt.h"
-#include "xbt/mmalloc.h"
 
 #include <array>
 #include <cassert>

@@ -1,6 +1,0 @@
-#!/usr/bin/env tesh
-
-$ ${bindir:=.}/lmm_usage
-> [0.000000] [surf_test/INFO] ***** Test 1
-> [0.000000] [surf_test/INFO] ***** Test 2
-> [0.000000] [surf_test/INFO] ***** Test 3

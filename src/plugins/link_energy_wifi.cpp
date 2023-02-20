@@ -10,6 +10,7 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/kernel/resource/WifiLinkImpl.hpp"
+#include "src/simgrid/module.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>

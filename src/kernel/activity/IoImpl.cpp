@@ -5,17 +5,11 @@
 
 #include <simgrid/Exception.hpp>
 #include <simgrid/kernel/routing/NetPoint.hpp>
-#include <simgrid/s4u/Engine.hpp>
-#include <simgrid/s4u/Host.hpp>
 
-#include "mc/mc.h"
 #include "src/kernel/activity/IoImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
-#include "src/kernel/actor/SimcallObserver.hpp"
-#include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
-#include "src/mc/mc_replay.hpp"
-#include "src/surf/HostImpl.hpp"
+#include "src/kernel/resource/HostImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_io, kernel, "Kernel io-related synchronization");
 
@@ -40,7 +34,7 @@ IoImpl& IoImpl::set_sharing_penalty(double sharing_penalty)
 IoImpl& IoImpl::update_sharing_penalty(double sharing_penalty)
 {
   sharing_penalty_ = sharing_penalty;
-  surf_action_->set_sharing_penalty(sharing_penalty);
+  model_action_->set_sharing_penalty(sharing_penalty);
   return *this;
 }
 
@@ -93,16 +87,16 @@ IoImpl* IoImpl::start()
   set_state(State::RUNNING);
   if (dst_host_ == nullptr) {
     XBT_DEBUG("Starting regular I/O");
-    surf_action_ = disk_->io_start(size_, type_);
-    surf_action_->set_sharing_penalty(sharing_penalty_);
+    model_action_ = disk_->io_start(size_, type_);
+    model_action_->set_sharing_penalty(sharing_penalty_);
   } else {
     XBT_DEBUG("Starting streaming I/O");
     auto host_model = dst_host_->get_netpoint()->get_englobing_zone()->get_host_model();
-    surf_action_    = host_model->io_stream(host_, disk_, dst_host_, dst_disk_, size_);
+    model_action_   = host_model->io_stream(host_, disk_, dst_host_, dst_disk_, size_);
   }
 
-  surf_action_->set_activity(this);
-  set_start_time(surf_action_->get_start_time());
+  model_action_->set_activity(this);
+  set_start_time(model_action_->get_start_time());
 
   XBT_DEBUG("Create IO synchro %p %s", this, get_cname());
 
@@ -111,8 +105,8 @@ IoImpl* IoImpl::start()
 
 void IoImpl::post()
 {
-  performed_ioops_ = surf_action_->get_cost();
-  if (surf_action_->get_state() == resource::Action::State::FAILED) {
+  performed_ioops_ = model_action_->get_cost();
+  if (model_action_->get_state() == resource::Action::State::FAILED) {
     if (host_ && dst_host_) { // this is an I/O stream
       if (not host_->is_on())
        set_state(State::SRC_HOST_FAILURE);
@@ -123,8 +117,8 @@ void IoImpl::post()
     else
       set_state(State::CANCELED);
   } else if (timeout_detector_ && timeout_detector_->get_state() == resource::Action::State::FINISHED &&
-             surf_action_->get_remains() > 0.0) {
-    surf_action_->set_state(resource::Action::State::FAILED);
+             model_action_->get_remains() > 0.0) {
+    model_action_->set_state(resource::Action::State::FAILED);
     set_state(State::TIMEOUT);
   } else {
     set_state(State::DONE);

@@ -8,11 +8,12 @@
 #include <simgrid/s4u/Actor.hpp>
 #include <simgrid/s4u/Host.hpp>
 
+#include "src/internal_config.h"
 #include "src/kernel/EngineImpl.hpp"
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
 #endif
-#include "src/surf/HostImpl.hpp"
+#include "src/kernel/resource/HostImpl.hpp"
 
 #include <boost/core/demangle.hpp>
 #include <typeinfo>
@@ -125,12 +126,6 @@ void ActorImpl::cleanup_from_kernel()
     host_->get_impl()->remove_actor(this);
   if (not kernel_destroy_list_hook.is_linked())
     engine->add_actor_to_destroy_list(*this);
-
-  if (has_to_auto_restart() && not get_host()->is_on()) {
-    XBT_DEBUG("Insert host %s to watched_hosts because it's off and %s needs to restart", get_host()->get_cname(),
-              get_cname());
-    watched_hosts().insert(get_host()->get_name());
-  }
 
   undaemonize();
   s4u::Actor::on_termination(*get_ciface());
@@ -357,12 +352,12 @@ activity::ActivityImplPtr ActorImpl::join(const ActorImpl* actor, double timeout
 {
   activity::ActivityImplPtr sleep_activity = this->sleep(timeout);
   if (actor->wannadie() || actor->to_be_freed()) {
-    if (sleep_activity->surf_action_)
-      sleep_activity->surf_action_->finish(resource::Action::State::FINISHED);
+    if (sleep_activity->model_action_)
+      sleep_activity->model_action_->finish(resource::Action::State::FINISHED);
   } else {
     actor->on_exit->emplace_back([sleep_activity](bool) {
-      if (sleep_activity->surf_action_)
-        sleep_activity->surf_action_->finish(resource::Action::State::FINISHED);
+      if (sleep_activity->model_action_)
+        sleep_activity->model_action_->finish(resource::Action::State::FINISHED);
     });
   }
   return sleep_activity;

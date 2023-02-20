@@ -11,7 +11,7 @@
 #include <functional>
 #include <vector>
 
-#include <xbt/parmap.hpp>
+#include "src/xbt/parmap.hpp"
 
 #include "src/kernel/context/ContextSwapped.hpp"
 

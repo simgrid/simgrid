@@ -121,21 +121,21 @@ CommImpl* CommImpl::start()
 
     /* Getting the network_model from the origin host
      * Valid while we have a single network model, otherwise we would need to change this function to first get the
-     * routes and later create the respective surf actions */
+     * routes and later create the respective model actions */
     auto net_model = from_->get_netpoint()->get_englobing_zone()->get_network_model();
 
-    surf_action_ = net_model->communicate(from_, to_, size_, rate_, false);
-    surf_action_->set_activity(this);
-    surf_action_->set_category(get_tracing_category());
-    set_start_time(surf_action_->get_start_time());
+    model_action_ = net_model->communicate(from_, to_, size_, rate_, false);
+    model_action_->set_activity(this);
+    model_action_->set_category(get_tracing_category());
+    set_start_time(model_action_->get_start_time());
     set_state(State::RUNNING);
     on_start(*this);
 
-    XBT_DEBUG("Starting communication %p from '%s' to '%s' (surf_action: %p; state: %s)", this, from_->get_cname(),
-              to_->get_cname(), surf_action_, get_state_str());
+    XBT_DEBUG("Starting communication %p from '%s' to '%s' (model action: %p; state: %s)", this, from_->get_cname(),
+              to_->get_cname(), model_action_, get_state_str());
 
     /* If a link is failed, detect it immediately */
-    if (surf_action_->get_state() == resource::Action::State::FAILED) {
+    if (model_action_->get_state() == resource::Action::State::FAILED) {
       XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure", from_->get_cname(),
                 to_->get_cname());
       set_state(State::LINK_FAILURE);
@@ -154,7 +154,7 @@ CommImpl* CommImpl::start()
                   "communication",
                   dst_actor_->get_cname(), dst_actor_->get_host()->get_cname());
 
-      surf_action_->suspend();
+      model_action_->suspend();
     }
   }
 
@@ -282,7 +282,7 @@ ActivityImplPtr CommImpl::irecv(actor::CommIrecvSimcall* observer)
     // find a match in the list of already received comms
     other_comm = mbox->find_matching_comm(CommImplType::SEND, observer->get_match_fun(), observer->get_payload(),
                                           this_synchro, /*done*/ true, /*remove_matching*/ true);
-    if (other_comm  && other_comm->surf_action_ && other_comm->get_remaining() < 1e-12) {
+    if (other_comm && other_comm->model_action_ && other_comm->get_remaining() < 1e-12) {
       XBT_DEBUG("comm %p has been already sent, and is finished, destroy it", other_comm.get());
       other_comm->set_state(State::DONE);
       other_comm->set_mailbox(nullptr);
@@ -370,16 +370,16 @@ void CommImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<CommImpl
 void CommImpl::suspend()
 {
   /* FIXME: shall we suspend also the timeout synchro? */
-  if (surf_action_)
-    surf_action_->suspend();
+  if (model_action_)
+    model_action_->suspend();
   /* if not created yet, the action will be suspended on creation, in CommImpl::start() */
 }
 
 void CommImpl::resume()
 {
   /*FIXME: check what happen with the timeouts */
-  if (surf_action_)
-    surf_action_->resume();
+  if (model_action_)
+    model_action_->resume();
   /* in the other case, the synchro were not really suspended yet, see CommImpl::suspend() and CommImpl::start() */
 }
 
@@ -391,9 +391,9 @@ void CommImpl::cancel()
       mbox_->remove(this);
       set_state(State::CANCELED);
     }
-  } else if (not MC_is_active() /* when running the MC there are no surf actions */
+  } else if (not MC_is_active() /* when running the MC there are no model actions */
              && not MC_record_replay_is_active() && (get_state() == State::READY || get_state() == State::RUNNING)) {
-    surf_action_->cancel();
+    model_action_->cancel();
   }
 }
 
@@ -426,7 +426,7 @@ void CommImpl::post()
     set_state(State::SRC_HOST_FAILURE);
   else if ((to_ && not to_->is_on()) || (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FAILED))
     set_state(State::DST_HOST_FAILURE);
-  else if (surf_action_ && surf_action_->get_state() == resource::Action::State::FAILED) {
+  else if (model_action_ && model_action_->get_state() == resource::Action::State::FAILED) {
     set_state(State::LINK_FAILURE);
   } else if (get_state() == State::RUNNING) {
     xbt_assert(from_ && from_->is_on());
@@ -437,7 +437,7 @@ void CommImpl::post()
   XBT_DEBUG("CommImpl::post(): comm %p, state %s, src_proc %p, dst_proc %p, detached: %d", this, get_state_str(),
             src_actor_.get(), dst_actor_.get(), detached_);
 
-  /* destroy the surf actions associated with the Simix communication */
+  /* destroy the model actions associated with the communication activity */
   cleanup_surf();
 
   /* Answer all simcalls associated with the synchro */

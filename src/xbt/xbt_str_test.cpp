@@ -10,7 +10,7 @@
 
 #include "simgrid/Exception.hpp"
 
-#include "catch.hpp"
+#include "src/3rd-party/catch.hpp"
 #include <string>
 #include <vector>
 

@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/lmm/fair_bottleneck.hpp"
-#include "src/surf/surf_interface.hpp"
+#include "src/simgrid/math_utils.h"
 #include "xbt/sysdep.h"
 
 #include <algorithm>
@@ -103,7 +103,7 @@ void simgrid::kernel::lmm::FairBottleneck::do_solve()
           xbt_assert(elem.variable->sharing_penalty_ > 0);
           XBT_DEBUG("\tUpdate constraint %p (%g) with variable %p by %g", &cnst, cnst.remaining_, elem.variable,
                     elem.variable->mu_);
-          double_update(&cnst.remaining_, elem.consumption_weight * elem.variable->mu_, sg_maxmin_precision);
+          double_update(&cnst.remaining_, elem.consumption_weight * elem.variable->mu_, sg_precision_workamount);
         }
       } else {
         for (const Element& elem : cnst.enabled_element_set_) {
@@ -113,7 +113,7 @@ void simgrid::kernel::lmm::FairBottleneck::do_solve()
           cnst.usage_ = std::min(cnst.usage_, elem.consumption_weight * elem.variable->mu_);
         }
         XBT_DEBUG("\tUpdate constraint %p (%g) by %g", &cnst, cnst.remaining_, cnst.usage_);
-        double_update(&cnst.remaining_, cnst.usage_, sg_maxmin_precision);
+        double_update(&cnst.remaining_, cnst.usage_, sg_precision_workamount);
       }
 
       XBT_DEBUG("\tRemaining for %p : %g", &cnst, cnst.remaining_);

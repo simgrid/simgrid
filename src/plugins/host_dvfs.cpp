@@ -14,6 +14,7 @@
 #include "src/internal_config.h" // HAVE_SMPI
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
+#include "src/simgrid/module.hpp"
 #if HAVE_SMPI
 #include "src/smpi/include/smpi_request.hpp"
 #include "src/smpi/plugins/ampi/ampi.hpp"
@@ -57,12 +58,6 @@ static constexpr int MAX_PSTATE_NOT_LIMITED = -1;
 static simgrid::config::Flag<int>
     cfg_max_pstate("plugin/dvfs/max-pstate",
                    "Which pstate is the maximum (and hence slowest) pstate for this governor?", MAX_PSTATE_NOT_LIMITED);
-
-/** @addtogroup SURF_plugin_load
-
-  This plugin makes it very simple for users to obtain the current load for each host.
-
-*/
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(host_dvfs, kernel, "Logging specific to the HostDvfs plugin");
 
@@ -307,7 +302,7 @@ public:
     // FIXME I think that this fires at the same time for all hosts, so when the src sends something,
     // the dst will be notified even though it didn't even arrive at the recv yet
     kernel::activity::CommImpl::on_start.connect([this](const kernel::activity::CommImpl& comm) {
-      const auto* act = static_cast<kernel::resource::NetworkAction*>(comm.surf_action_);
+      const auto* act = static_cast<kernel::resource::NetworkAction*>(comm.model_action_);
       if ((get_host() == &act->get_src() || get_host() == &act->get_dst()) && iteration_running) {
         post_task();
       }

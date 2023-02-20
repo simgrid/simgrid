@@ -3,11 +3,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_NETWORK_WIFI_HPP_
-#define SURF_NETWORK_WIFI_HPP_
+#ifndef SIMGRID_KERNEL_NETWORK_WIFI_HPP_
+#define SIMGRID_KERNEL_NETWORK_WIFI_HPP_
 
-#include "src/surf/network_cm02.hpp"
-#include "xbt/base.h"
+#include "src/kernel/resource/models/network_cm02.hpp"
+#include "xbt/ex.h"
 
 /***********
  * Classes *

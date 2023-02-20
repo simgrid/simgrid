@@ -8,18 +8,19 @@
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <simgrid/s4u/Exec.hpp>
 
-#include "simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/ExecImpl.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
-#include "src/surf/cpu_cas01.hpp"
-#include "src/surf/cpu_ti.hpp"
+#include "src/kernel/resource/models/cpu_cas01.hpp"
+#include "src/kernel/resource/models/cpu_ti.hpp"
+#include "src/simgrid/module.hpp"
+#include "src/simgrid/sg_config.hpp"
 
 #include <numeric>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_vm, ker_resource, "Virtual Machines, containing actors and mobile across hosts");
 
-void surf_vm_model_init_HL13()
+void simgrid_vm_model_init_HL13()
 {
   auto* cpu_pm_model = simgrid::s4u::Engine::get_instance()->get_netzone_root()->get_impl()->get_cpu_pm_model().get();
   auto vm_model = std::make_shared<simgrid::kernel::resource::VMModel>("VM_HL13");
@@ -333,7 +334,6 @@ void VirtualMachineImpl::shutdown(actor::ActorImpl* issuer)
   set_state(s4u::VirtualMachine::State::DESTROYED);
 
   s4u::VirtualMachine::on_shutdown(*get_iface());
-  /* FIXME: we may have to do something at the surf layer, e.g., vcpu action */
 }
 
 /** @brief Change the physical host on which the given VM is running

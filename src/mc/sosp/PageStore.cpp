@@ -12,7 +12,7 @@
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
-#include "src/include/xxhash.hpp"
+#include "src/3rd-party/xxhash.hpp"
 #include "src/mc/mc_mmu.hpp"
 #include "src/mc/sosp/PageStore.hpp"
 

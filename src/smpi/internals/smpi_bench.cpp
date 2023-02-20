@@ -12,8 +12,8 @@
 #include "smpi_comm.hpp"
 #include "smpi_utils.hpp"
 #include "src/internal_config.h"
+#include "src/kernel/lmm/System.hpp" // sg_precision_timing
 #include "src/mc/mc_replay.hpp"
-#include "src/surf/surf_interface.hpp" // sg_surf_precision
 #include "xbt/config.hpp"
 #include "xbt/file.hpp"
 
@@ -256,13 +256,13 @@ double smpi_mpi_wtime()
 unsigned long long smpi_rastro_resolution ()
 {
   const SmpiBenchGuard suspend_bench;
-  return static_cast<unsigned long long>(1.0 / sg_surf_precision);
+  return static_cast<unsigned long long>(1.0 / sg_precision_timing);
 }
 
 unsigned long long smpi_rastro_timestamp ()
 {
   const SmpiBenchGuard suspend_bench;
-  return static_cast<unsigned long long>(simgrid::s4u::Engine::get_clock() / sg_surf_precision);
+  return static_cast<unsigned long long>(simgrid::s4u::Engine::get_clock() / sg_precision_timing);
 }
 
 /* ****************************** Functions related to the SMPI_SAMPLE_ macros ************************************/

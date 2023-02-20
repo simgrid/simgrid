@@ -27,7 +27,7 @@ PRIVATIZE="--cfg=smpi/privatization:${SMPI_PRIVATIZATION:-@HAVE_PRIVATIZATION@}"
 NUMPROCS=0
 DEPLOYOPTS=""
 
-SIMOPTS="--cfg=surf/precision:1e-9 --cfg=network/model:SMPI"
+SIMOPTS="--cfg=precision/timing:1e-9 --cfg=network/model:SMPI"
 
 SMPITMPDIR="$(dirname $(mktemp -u))"
 

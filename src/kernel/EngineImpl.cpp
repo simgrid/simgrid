@@ -8,18 +8,19 @@
 #include <simgrid/kernel/routing/NetPoint.hpp>
 #include <simgrid/kernel/routing/NetZoneImpl.hpp>
 #include <simgrid/s4u/Host.hpp>
-#include <simgrid/sg_config.hpp>
 
-#include "mc/mc.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
+#include "src/kernel/xml/platf.hpp"
+#include "src/mc/mc.h"
 #include "src/mc/mc_record.hpp"
 #include "src/mc/mc_replay.hpp"
+#include "src/simgrid/math_utils.h"
+#include "src/simgrid/sg_config.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
-#include "src/surf/xml/platf.hpp"
+#include "src/xbt/xbt_modinter.h" /* whether initialization was already done */
 #include "xbt/module.h"
-#include "xbt/xbt_modinter.h" /* whether initialization was already done */
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <dlfcn.h>
@@ -184,7 +185,7 @@ void EngineImpl::initialize(int* argc, char** argv)
 
   install_signal_handlers();
 
-  /* register a function to be called by SURF after the environment creation */
+  /* register a function to be called after the environment creation */
   s4u::Engine::on_platform_created_cb([this]() { this->presolve(); });
 
   if (config::get_value<bool>("debug/clean-atexit"))
@@ -313,9 +314,9 @@ void EngineImpl::load_deployment(const std::string& file) const
 {
   sg_platf_parser_finalize();
 
-  surf_parse_open(file);
-  surf_parse();
-  surf_parse_close();
+  simgrid_parse_open(file);
+  simgrid_parse();
+  simgrid_parse_close();
 }
 
 void EngineImpl::register_function(const std::string& name, const actor::ActorCodeFactory& code)
@@ -341,7 +342,7 @@ void EngineImpl::add_model(std::shared_ptr<resource::Model> model, const std::ve
   models_prio_[model_name] = std::move(model);
 }
 
-/** Wake up all actors waiting for a Surf action to finish */
+/** Wake up all actors waiting for an action to finish */
 void EngineImpl::handle_ended_actions() const
 {
   for (auto const& model : models_) {
@@ -551,13 +552,12 @@ double EngineImpl::solve(double max_date) const
     while (auto* event = profile::future_evt_set.pop_leq(next_event_date, &value, &resource)) {
       if(value<0)
 	      continue;
-      if (resource->is_used() || (watched_hosts().find(resource->get_cname()) != watched_hosts().end())) {
+      if (resource->is_used()) {
         time_delta = next_event_date - now_;
         XBT_DEBUG("This event invalidates the next_occurring_event() computation of models. Next event set to %f",
                   time_delta);
       }
-      // FIXME: I'm too lame to update now_ live, so I change it and restore it so that the real update with surf_min
-      // will work
+      // FIXME: I'm too lame to update now_ live, so I change it and restore it so that the real update works
       double round_start = now_;
       now_               = next_event_date;
       /* update state of the corresponding resource to the new value. Does not touch lmm.

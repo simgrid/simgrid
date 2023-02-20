@@ -162,7 +162,6 @@ include_directories(
 set(INTERNAL_INCLUDES
   ${CMAKE_BINARY_DIR}
   ${CMAKE_HOME_DIRECTORY}
-  ${CMAKE_HOME_DIRECTORY}/src/include
   )
 
 if(enable_smpi)

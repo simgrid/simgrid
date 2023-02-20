@@ -14,9 +14,9 @@
 #include <xbt/parse_units.hpp>
 
 #include "simgrid/simix.hpp"
+#include "src/kernel/resource/HostImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
-#include "src/surf/HostImpl.hpp"
 
 #include <string>
 

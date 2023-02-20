@@ -4,8 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "ContextRaw.hpp"
-#include "mc/mc.h"
 #include "simgrid/Exception.hpp"
+#include "src/mc/mc.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_context);
 

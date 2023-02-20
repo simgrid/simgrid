@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/lmm/bmf.hpp"
+#include "src/simgrid/math_utils.h"
 
 #include <Eigen/LU>
 #include <iostream>
@@ -309,7 +310,7 @@ bool BmfSolver::is_bmf(const Eigen::VectorXd& rho) const
   Eigen::VectorXd remaining = (A_ * rho) - C_;
   remaining                 = remaining.array() * shared.array(); // ignore non shared resources
   bmf                       = bmf && (not std::any_of(remaining.data(), remaining.data() + remaining.size(),
-                                [](double v) { return double_positive(v, sg_maxmin_precision); }));
+                                                      [](double v) { return double_positive(v, sg_precision_workamount); }));
 
   // 3) every player receives maximum share in at least 1 saturated resource
   // due to subflows, compare with the maximum consumption and not the A matrix
@@ -321,15 +322,15 @@ bool BmfSolver::is_bmf(const Eigen::VectorXd& rho) const
 
   // matrix_ji: boolean indicating player p has the maximum share at resource j
   Eigen::MatrixXi player_max_share =
-      ((usage.array().colwise() - max_share.array()).abs() <= sg_maxmin_precision).cast<int>();
+      ((usage.array().colwise() - max_share.array()).abs() <= sg_precision_workamount).cast<int>();
   // but only saturated resources must be considered
-  Eigen::VectorXi saturated = (remaining.array().abs() <= sg_maxmin_precision).cast<int>();
+  Eigen::VectorXi saturated = (remaining.array().abs() <= sg_precision_workamount).cast<int>();
   XBT_DEBUG("Saturated_j resources:\n%s", debug_eigen(saturated).c_str());
   player_max_share.array().colwise() *= saturated.array();
 
   // just check if it has received at least it's bound
   for (int p = 0; p < rho.size(); p++) {
-    if (double_equals(rho[p], phi_[p], sg_maxmin_precision)) {
+    if (double_equals(rho[p], phi_[p], sg_precision_workamount)) {
       player_max_share(0, p) = 1; // it doesn't really matter, just to say that it's a bmf
       saturated[0]           = 1;
     }

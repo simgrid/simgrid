@@ -26,7 +26,6 @@ namespace simgrid::mc {
  * is important in cases
  */
 class ActorState {
-
   /**
    * @brief The transitions that the actor is allowed to execute from this
    * state, viz. those that are enabled for this actor

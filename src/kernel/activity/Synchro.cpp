@@ -28,8 +28,8 @@ SynchroImpl& SynchroImpl::set_timeout(double timeout)
 
 SynchroImpl* SynchroImpl::start()
 {
-  surf_action_ = host_->get_cpu()->sleep(timeout_);
-  surf_action_->set_activity(this);
+  model_action_ = host_->get_cpu()->sleep(timeout_);
+  model_action_->set_activity(this);
   return this;
 }
 
@@ -51,9 +51,9 @@ void SynchroImpl::cancel()
 
 void SynchroImpl::post()
 {
-  if (surf_action_->get_state() == resource::Action::State::FAILED)
+  if (model_action_->get_state() == resource::Action::State::FAILED)
     set_state(State::FAILED);
-  else if (surf_action_->get_state() == resource::Action::State::FINISHED)
+  else if (model_action_->get_state() == resource::Action::State::FINISHED)
     set_state(State::SRC_TIMEOUT);
 
   clean_action();

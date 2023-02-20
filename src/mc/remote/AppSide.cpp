@@ -16,9 +16,8 @@
 #include "src/smpi/include/private.hpp"
 #endif
 #include "src/sthread/sthread.h"
-#include "xbt/coverage.h"
+#include "src/xbt/coverage.h"
 #include "xbt/str.h"
-#include "xbt/xbt_modinter.h" /* mmalloc_preinit to get the default mmalloc arena address */
 #include <simgrid/modelchecker.h>
 
 #include <cerrno>
@@ -216,10 +215,12 @@ void AppSide::handle_actors_status() const
       // each SIMCALL_EXECUTE provides a `times_considered` to be used to prepare
       // the transition before execution.
     }
-
-    size_t size = probes.size() * sizeof(s_mc_message_simcall_probe_one_t);
     XBT_DEBUG("Deliver ACTOR_TRANSITION_PROBE payload");
-    xbt_assert(channel_.send(probes.data(), size) == 0, "Could not send ACTOR_TRANSITION_PROBE payload");
+
+    for (const auto& probe : probes) {
+      size_t size = sizeof(s_mc_message_simcall_probe_one_t);
+      xbt_assert(channel_.send(&probe, size) == 0, "Could not send ACTOR_TRANSITION_PROBE payload (%zu bytes)", size);
+    }
   }
 }
 
@@ -236,6 +237,8 @@ void AppSide::handle_messages() const
     ssize_t received_size = channel_.receive(message_buffer.data(), message_buffer.size());
 
     xbt_assert(received_size >= 0, "Could not receive commands from the model-checker");
+    xbt_assert(static_cast<size_t>(received_size) >= sizeof(s_mc_message_t), "Cannot handle short message (size=%zd)",
+               received_size);
 
     const s_mc_message_t* message = (s_mc_message_t*)message_buffer.data();
     switch (message->type) {

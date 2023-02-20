@@ -3,12 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "catch.hpp"
+#include "src/3rd-party/catch.hpp"
 
 #include "simgrid/s4u/Engine.hpp"
-#include "simgrid/sg_config.hpp"
 #include "src/internal_config.h" // HAVE_SMPI
 #include "src/kernel/resource/NetworkModelFactors.hpp"
+#include "src/simgrid/sg_config.hpp"
 
 static double factor_cb(double, const simgrid::s4u::Host*, const simgrid::s4u::Host*,
                         const std::vector<simgrid::s4u::Link*>&, const std::unordered_set<simgrid::s4u::NetZone*>&)

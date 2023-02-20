@@ -9,6 +9,8 @@
 #include "src/kernel/lmm/System.hpp"
 #include "xbt/config.hpp"
 
+#include <set>
+
 #ifdef __clang__
 // Ignore deprecation warnings with Eigen < 4.0 (see https://gitlab.com/libeigen/eigen/-/issues/1850)
 #pragma clang diagnostic push
@@ -78,7 +80,7 @@ class XBT_PUBLIC BmfSolver {
       "bmf/max-iterations", "Maximum number of steps to be performed while searching for a BMF allocation", 1000};
 
   inline static simgrid::config::Flag<double> cfg_bmf_precision{
-      "bmf/precision", "Numerical precision used when computing resource sharing", 1E-12};
+      "bmf/precision", {"precision/bmf"}, "Numerical precision used when computing resource sharing", 1E-12};
 
 public:
   /**

@@ -18,8 +18,8 @@ namespace simgrid::kernel::resource {
  * Model *
  *********/
 
-/** @ingroup SURF_network_interface
- * @brief SURF network model interface class
+/** @ingroup Model_network_interface
+ * @brief Network model interface class
  * @details A model is an object which handles the interactions between its Resources and its Actions
  */
 class NetworkModel : public Model, public NetworkModelFactors {
@@ -63,8 +63,8 @@ public:
 /**********
  * Action *
  **********/
-/** @ingroup SURF_network_interface
- * @brief SURF network action interface class
+/** @ingroup Model_network_interface
+ * @brief Network action interface class
  * @details A NetworkAction represents a communication between two [hosts](@ref HostImpl)
  */
 class NetworkAction : public Action {

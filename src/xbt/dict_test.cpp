@@ -12,7 +12,7 @@
 #include <cstdio>
 #include <cstring>
 
-#include "catch.hpp"
+#include "src/3rd-party/catch.hpp"
 
 #define STR(str) ((str) ? (str) : "(null)")
 

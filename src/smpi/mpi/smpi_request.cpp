@@ -5,7 +5,6 @@
 
 #include "smpi_request.hpp"
 
-#include "mc/mc.h"
 #include "private.hpp"
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/ConditionVariable.hpp"
@@ -19,6 +18,7 @@
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
+#include "src/mc/mc.h"
 #include "src/mc/mc_replay.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 

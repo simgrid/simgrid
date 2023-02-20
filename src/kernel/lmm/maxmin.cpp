@@ -4,6 +4,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/lmm/maxmin.hpp"
+#include "src/simgrid/math_utils.h"
+#include "xbt/ex.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ker_lmm);
 
@@ -71,7 +73,7 @@ template <class CnstList> void MaxMin::maxmin_solve(CnstList& cnst_list)
       cnst.dynamic_bound_ = cnst.dyn_constraint_cb_(cnst.bound_, cnst.concurrency_current_);
     }
     cnst.remaining_ = cnst.dynamic_bound_;
-    if (not double_positive(cnst.remaining_, cnst.dynamic_bound_ * sg_maxmin_precision))
+    if (not double_positive(cnst.remaining_, cnst.dynamic_bound_ * sg_precision_workamount))
       continue;
     cnst.usage_ = 0;
     for (Element& elem : cnst.enabled_element_set_) {
@@ -132,7 +134,7 @@ template <class CnstList> void MaxMin::maxmin_solve(CnstList& cnst_list)
         XBT_DEBUG("Setting var (%d) value to %f\n", var.rank_, var.value_);
       } else {
         // If there exist a variable that can reach its bound, only update it (and other with the same bound) for now.
-        if (double_equals(min_bound, var.bound_ * var.sharing_penalty_, sg_maxmin_precision)) {
+        if (double_equals(min_bound, var.bound_ * var.sharing_penalty_, sg_precision_workamount)) {
           var.value_ = var.bound_;
           XBT_DEBUG("Setting %p (%d) value to %f\n", &var, var.rank_, var.value_);
         } else {
@@ -151,11 +153,11 @@ template <class CnstList> void MaxMin::maxmin_solve(CnstList& cnst_list)
         if (cnst->sharing_policy_ != Constraint::SharingPolicy::FATPIPE) {
           // Remember: shared constraints require that sum(elem.value * var.value) < cnst->bound
           double_update(&(cnst->remaining_), elem.consumption_weight * var.value_,
-                        cnst->dynamic_bound_ * sg_maxmin_precision);
-          double_update(&(cnst->usage_), elem.consumption_weight / var.sharing_penalty_, sg_maxmin_precision);
+                        cnst->dynamic_bound_ * sg_precision_workamount);
+          double_update(&(cnst->usage_), elem.consumption_weight / var.sharing_penalty_, sg_precision_workamount);
           // If the constraint is saturated, remove it from the set of active constraints (light_tab)
-          if (not double_positive(cnst->usage_, sg_maxmin_precision) ||
-              not double_positive(cnst->remaining_, cnst->dynamic_bound_ * sg_maxmin_precision)) {
+          if (not double_positive(cnst->usage_, sg_precision_workamount) ||
+              not double_positive(cnst->remaining_, cnst->dynamic_bound_ * sg_precision_workamount)) {
             if (cnst->cnst_light_) {
               size_t index = (cnst->cnst_light_ - cnst_light_tab);
               XBT_DEBUG("index: %zu \t cnst_light_num: %d \t || usage: %f remaining: %f bound: %f", index,
@@ -183,8 +185,8 @@ template <class CnstList> void MaxMin::maxmin_solve(CnstList& cnst_list)
               cnst->usage_ = std::max(cnst->usage_, elem2.consumption_weight / elem2.variable->sharing_penalty_);
           }
           // If the constraint is saturated, remove it from the set of active constraints (light_tab)
-          if (not double_positive(cnst->usage_, sg_maxmin_precision) ||
-              not double_positive(cnst->remaining_, cnst->dynamic_bound_ * sg_maxmin_precision)) {
+          if (not double_positive(cnst->usage_, sg_precision_workamount) ||
+              not double_positive(cnst->remaining_, cnst->dynamic_bound_ * sg_precision_workamount)) {
             if (cnst->cnst_light_) {
               size_t index = (cnst->cnst_light_ - cnst_light_tab);
               XBT_DEBUG("index: %zu \t cnst_light_num: %d \t || \t cnst: %p \t cnst->cnst_light: %p "
@@ -214,12 +216,13 @@ template <class CnstList> void MaxMin::maxmin_solve(CnstList& cnst_list)
     min_bound = -1;
     saturated_constraints.clear();
     for (int pos = 0; pos < cnst_light_num; pos++) {
-      xbt_assert(not cnst_light_tab[pos].cnst->active_element_set_.empty(),
-                 "Cannot saturate more a constraint that has"
-                 " no active element! You may want to change the maxmin precision (--cfg=maxmin/precision:<new_value>)"
-                 " because of possible rounding effects.\n\tFor the record, the usage of this constraint is %g while "
-                 "the maxmin precision to which it is compared is %g.\n\tThe usage of the previous constraint is %g.",
-                 cnst_light_tab[pos].cnst->usage_, sg_maxmin_precision, cnst_light_tab[pos - 1].cnst->usage_);
+      xbt_assert(
+          not cnst_light_tab[pos].cnst->active_element_set_.empty(),
+          "Cannot saturate more a constraint that has"
+          " no active element! You may want to change the work amount precision (--cfg=precision/work:<new_value>)"
+          " because of possible rounding effects.\n\tFor the record, the usage of this constraint is %g while "
+          "the maxmin precision to which it is compared is %g.\n\tThe usage of the previous constraint is %g.",
+          cnst_light_tab[pos].cnst->usage_, sg_precision_workamount, cnst_light_tab[pos - 1].cnst->usage_);
       saturated_constraints_update(cnst_light_tab[pos].remaining_over_usage, pos, saturated_constraints, &min_usage);
     }
 

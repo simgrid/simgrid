@@ -646,7 +646,7 @@ The execution is similar for both modes. The only change is the platform library
     [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/privatization' to '1'
     [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/np' to '2'
     [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/hostfile' to '/tmp/host.txt'
-    [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
+    [0.000000] [xbt_cfg/INFO] Configuration change: Set 'precision/work-amount' to '1e-9'
     [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
     [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/simulate-computation' to '0'
     [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/display-timing' to 'yes'

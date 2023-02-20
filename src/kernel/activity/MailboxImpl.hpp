@@ -6,12 +6,12 @@
 #ifndef SIMGRID_KERNEL_ACTIVITY_MAILBOX_HPP
 #define SIMGRID_KERNEL_ACTIVITY_MAILBOX_HPP
 
-#include <boost/circular_buffer.hpp>
-
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
+
+#include <boost/circular_buffer.hpp>
 
 namespace simgrid::kernel::activity {
 

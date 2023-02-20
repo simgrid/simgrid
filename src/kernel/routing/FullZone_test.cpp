@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "catch.hpp"
+#include "src/3rd-party/catch.hpp"
 
 #include "simgrid/kernel/routing/FullZone.hpp"
 #include "simgrid/kernel/routing/NetPoint.hpp"

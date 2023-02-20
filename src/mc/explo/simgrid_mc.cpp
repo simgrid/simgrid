@@ -3,10 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/sg_config.hpp"
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
+#include "src/simgrid/sg_config.hpp"
 
 #if HAVE_SMPI
 #include "smpi/smpi.h"

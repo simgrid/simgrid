@@ -37,11 +37,11 @@ $ ${bindir:=.}/basic-parsing-test ${platfdir:=.}/cloud.xml --log=root.fmt=%m%n
 
 $ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../platforms/properties.xml --log=root.fmt=%m%n
 > Configuration change: Set 'cpu/optim' to 'TI'
-> Configuration change: Set 'maxmin/precision' to '0.000010'
+> Configuration change: Set 'precision/work-amount' to '0.000010'
 > Workstation number: 1, link number: 1
 
 $ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/../../platforms/properties.xml --cfg=cpu/optim:TI --log=root.fmt=%m%n
 > Configuration change: Set 'cpu/optim' to 'TI'
 > The custom configuration 'cpu/optim' is already defined by user!
-> Configuration change: Set 'maxmin/precision' to '0.000010'
+> Configuration change: Set 'precision/work-amount' to '0.000010'
 > Workstation number: 1, link number: 1

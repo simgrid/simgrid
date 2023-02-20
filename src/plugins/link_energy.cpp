@@ -9,7 +9,7 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "simgrid/s4u/Link.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
-#include "src/surf/surf_interface.hpp"
+#include "src/simgrid/module.hpp"
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>

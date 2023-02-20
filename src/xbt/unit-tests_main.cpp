@@ -5,7 +5,7 @@
 
 #define CATCH_CONFIG_RUNNER // we supply our own main()
 
-#include "catch.hpp"
+#include "src/3rd-party/catch.hpp"
 
 #include "xbt/log.h"
 

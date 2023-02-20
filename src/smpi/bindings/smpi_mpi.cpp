@@ -5,10 +5,10 @@
 
 #include "private.hpp"
 #include "simgrid/modelchecker.h"
-#include "simgrid/sg_config.hpp"
 #include "smpi_comm.hpp"
 #include "smpi_file.hpp"
 #include "smpi_win.hpp"
+#include "src/simgrid/sg_config.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)");
 

@@ -14,7 +14,7 @@ set(optCFLAGS "")
 set(warnCXXFLAGS "")
 
 if(enable_compile_warnings)
-  set(warnCFLAGS "-fno-common -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing")
+  set(warnCFLAGS "-fno-common -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wwrite-strings -Wno-unused-function -Wno-unused-local-typedefs -Wno-unused-parameter -Wno-strict-aliasing")
 
   if (CMAKE_CXX_COMPILER_ID MATCHES "Intel")
     # ignore remarks:
@@ -32,7 +32,7 @@ if(enable_compile_warnings)
   set(warnCXXFLAGS "${warnCFLAGS}")
 
   if(CMAKE_COMPILER_IS_GNUCC)
-    set(warnCFLAGS "${warnCFLAGS} -Wclobbered -Wformat-signedness -Wno-error=clobbered -Wno-unused-local-typedefs -Wno-error=attributes -Wno-error=maybe-uninitialized")
+    set(warnCFLAGS "${warnCFLAGS} -Wclobbered -Wformat-signedness -Wno-error=clobbered -Wno-error=attributes -Wno-error=maybe-uninitialized")
   endif()
 
   if(CMAKE_COMPILER_IS_GNUCXX)
@@ -186,10 +186,10 @@ if(enable_model-checking AND enable_compile_optimizations)
   # But you can still optimize this:
   set(src_list ${simgrid_sources})
   # except...
-  list(REMOVE_ITEM src_list ${SIMIX_SRC} ${S4U_SRC})
-  # but...
-  list(APPEND src_list
-    src/kernel/actor/Simcall.cpp)
+  list(FILTER src_list EXCLUDE REGEX "^src/kernel/activity/")
+  list(FILTER src_list EXCLUDE REGEX "^src/kernel/actor/")
+  list(FILTER src_list EXCLUDE REGEX "^src/kernel/context/")
+  list(FILTER src_list EXCLUDE REGEX "^src/s4u/")
   foreach(src ${src_list})
       set (mcCFLAGS "-O3 -funroll-loops -fno-strict-aliasing")
       if(CMAKE_COMPILER_IS_GNUCC)
@@ -216,11 +216,6 @@ set(CMAKE_CXX_FLAGS "${warnCXXFLAGS} ${CMAKE_CXX_FLAGS} ${optCFLAGS}")
 # Try to make Mac a bit more compliant to open source standards
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE")
-endif()
-
-# Avoid a failure seen with gcc 7.2.0 and ns3 3.27
-if(enable_ns3)
-  set_source_files_properties(src/surf/network_ns3.cpp PROPERTIES COMPILE_FLAGS " -Wno-unused-local-typedef")
 endif()
 
 set(TESH_OPTION "")

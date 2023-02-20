@@ -3,14 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "mc/mc.h"
+#include "src/mc/mc.h"
 
 #include "simgrid/Exception.hpp"
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/context/Context.hpp"
 #include "src/sthread/sthread.h"
-#include "src/surf/surf_interface.hpp"
 
 #include <vector>
 

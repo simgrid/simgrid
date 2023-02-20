@@ -39,7 +39,7 @@ $ ${bindir:=.}/s4u-comm-pingpong ${platfdir}/small_platform.xml --cfg=cpu/model:
 > [145.639041] (1:pinger@Tremblay) Pong time (bandwidth bound): 145.638
 > [145.639041] (0:maestro@) Total simulation time: 145.639
 
-p Testing the surf network constant model
+p Testing the network constant model
 
 $ ${bindir:=.}/s4u-comm-pingpong ${platfdir}/small_platform_routing_none.xml "--cfg=cpu/model:Cas01 network/model:Constant" "--log=root.fmt:[%10.6r]%e(%i:%a@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'

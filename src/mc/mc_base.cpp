@@ -4,11 +4,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/mc_base.hpp"
-#include "mc/mc.h"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
 #include "src/kernel/activity/MutexImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
+#include "src/mc/mc.h"
 #include "src/mc/mc_replay.hpp"
 
 #if SIMGRID_HAVE_MC

@@ -18,6 +18,11 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   static long expended_states_; /* Count total amount of states, for stats */
 
   /**
+   * @brief An empty transition that leads to this state by default
+   */
+  const std::unique_ptr<Transition> default_transition_ = std::make_unique<Transition>();
+
+  /**
    * @brief The outgoing transition: what was the last transition that
    * we took to leave this state?
    *
@@ -25,12 +30,7 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
    * or a reference to the internal default transition `Transition()` if no transition has been
    * set
    */
-  Transition* transition_ = nullptr;
-
-  /**
-   * @brief An empty transition that leads to this state by default
-   */
-  const std::unique_ptr<Transition> default_transition;
+  Transition* transition_ = default_transition_.get();
 
   /** Sequential state ID (used for debugging) */
   long num_ = 0;

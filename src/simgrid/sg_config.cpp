@@ -10,8 +10,6 @@
 #include <xbt/config.hpp>
 #include <xbt/file.hpp>
 
-#include "simgrid/sg_config.hpp"
-#include "src/include/xbt/mmalloc.h"
 #include "src/instr/instr_private.hpp"
 #include "src/internal_config.h"
 #include "src/kernel/context/Context.hpp"
@@ -20,8 +18,9 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_replay.hpp"
 #include "src/simgrid/module.hpp"
+#include "src/simgrid/sg_config.hpp"
 #include "src/smpi/include/smpi_config.hpp"
-#include "src/surf/surf_interface.hpp"
+#include "src/xbt/mmalloc/mmalloc.h"
 
 #include <string_view>
 
@@ -139,17 +138,17 @@ void sg_config_init(int *argc, char **argv)
     return;
   }
 
-  /* Plugins configuration */
+  /* Plugins and models configuration */
   simgrid_plugins().create_flag("plugin", "The plugins", "", true);
   simgrid_cpu_models().create_flag("cpu/model", "The model to use for the CPU", "Cas01", false);
   simgrid_network_models().create_flag("network/model", "The model to use for the network", "LV08", false);
   simgrid_host_models().create_flag("host/model", "The model to use for the host", "default", false);
   simgrid_disk_models().create_flag("disk/model", "The model to use for the disk", "S19", false);
 
-  simgrid::config::bind_flag(sg_surf_precision, "surf/precision",
+  simgrid::config::bind_flag(sg_precision_timing, "precision/timing", {"surf/precision"},
                              "Numerical precision used when updating simulation times (in seconds)");
 
-  simgrid::config::bind_flag(sg_maxmin_precision, "maxmin/precision",
+  simgrid::config::bind_flag(sg_precision_workamount, "precision/work-amount", {"maxmin/precision"},
                              "Numerical precision used when computing resource sharing (in flops/sec or bytes/sec)");
 
   simgrid::config::bind_flag(sg_concurrency_limit, "maxmin/concurrency-limit",

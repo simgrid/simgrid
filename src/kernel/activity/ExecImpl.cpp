@@ -12,8 +12,8 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
+#include "src/kernel/resource/HostImpl.hpp"
 #include "src/mc/mc_replay.hpp"
-#include "src/surf/HostImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_cpu, kernel, "Kernel cpu-related synchronization");
 
@@ -81,20 +81,20 @@ ExecImpl* ExecImpl::start()
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     if (get_hosts().size() == 1) {
       if (thread_count_ == 1) {
-        surf_action_ = get_host()->get_cpu()->execution_start(flops_amounts_.front(), bound_);
-        surf_action_->set_sharing_penalty(sharing_penalty_);
+        model_action_ = get_host()->get_cpu()->execution_start(flops_amounts_.front(), bound_);
+        model_action_->set_sharing_penalty(sharing_penalty_);
       } else {
         auto host_model = get_host()->get_netpoint()->get_englobing_zone()->get_host_model();
-        surf_action_    = host_model->execute_thread(get_host(), flops_amounts_.front(), thread_count_);
+        model_action_   = host_model->execute_thread(get_host(), flops_amounts_.front(), thread_count_);
       }
-      surf_action_->set_category(get_tracing_category());
+      model_action_->set_category(get_tracing_category());
     } else {
       // get the model from first host since we have only 1 by now
       auto host_model = get_host()->get_netpoint()->get_englobing_zone()->get_host_model();
-      surf_action_    = host_model->execute_parallel(get_hosts(), flops_amounts_.data(), bytes_amounts_.data(), -1);
+      model_action_   = host_model->execute_parallel(get_hosts(), flops_amounts_.data(), bytes_amounts_.data(), -1);
     }
-    surf_action_->set_activity(this);
-    set_start_time(surf_action_->get_start_time());
+    model_action_->set_activity(this);
+    set_start_time(model_action_->get_start_time());
   }
 
   XBT_DEBUG("Create execute synchro %p: %s", this, get_cname());
@@ -112,7 +112,7 @@ double ExecImpl::get_seq_remaining_ratio()
 {
   if (get_state() == State::WAITING)
     return 1;
-  return (surf_action_ == nullptr) ? 0 : surf_action_->get_remains() / surf_action_->get_cost();
+  return (model_action_ == nullptr) ? 0 : model_action_->get_remains() / model_action_->get_cost();
 }
 
 double ExecImpl::get_par_remaining_ratio()
@@ -120,7 +120,7 @@ double ExecImpl::get_par_remaining_ratio()
   // parallel task: their remain is already between 0 and 1
   if (get_state() == State::WAITING)
     return 1;
-  return (surf_action_ == nullptr) ? 0 : surf_action_->get_remains();
+  return (model_action_ == nullptr) ? 0 : model_action_->get_remains();
 }
 
 ExecImpl& ExecImpl::set_bound(double bound)
@@ -138,24 +138,24 @@ ExecImpl& ExecImpl::set_sharing_penalty(double sharing_penalty)
 ExecImpl& ExecImpl::update_sharing_penalty(double sharing_penalty)
 {
   sharing_penalty_ = sharing_penalty;
-  surf_action_->set_sharing_penalty(sharing_penalty);
+  model_action_->set_sharing_penalty(sharing_penalty);
   return *this;
 }
 
 void ExecImpl::post()
 {
-  xbt_assert(surf_action_ != nullptr);
+  xbt_assert(model_action_ != nullptr);
   if (auto const& hosts = get_hosts();
       std::any_of(hosts.begin(), hosts.end(), [](const s4u::Host* host) { return not host->is_on(); })) {
     /* If one of the hosts running the synchro failed, notice it. This way, the asking
      * process can be killed if it runs on that host itself */
     set_state(State::FAILED);
-  } else if (surf_action_->get_state() == resource::Action::State::FAILED) {
+  } else if (model_action_->get_state() == resource::Action::State::FAILED) {
     /* If all the hosts are running the synchro didn't fail, then the synchro was canceled */
     set_state(State::CANCELED);
   } else if (timeout_detector_ && timeout_detector_->get_state() == resource::Action::State::FINISHED &&
-             surf_action_->get_remains() > 0.0) {
-    surf_action_->set_state(resource::Action::State::FAILED);
+             model_action_->get_remains() > 0.0) {
+    model_action_->set_state(resource::Action::State::FAILED);
     set_state(State::TIMEOUT);
   } else {
     set_state(State::DONE);
@@ -230,7 +230,7 @@ void ExecImpl::reset()
 ActivityImpl* ExecImpl::migrate(s4u::Host* to)
 {
   if (not MC_is_active() && not MC_record_replay_is_active()) {
-    resource::Action* old_action = this->surf_action_;
+    resource::Action* old_action = this->model_action_;
     resource::Action* new_action = to->get_cpu()->execution_start(old_action->get_cost(), old_action->get_user_bound());
     new_action->set_remains(old_action->get_remains());
     new_action->set_activity(this);
@@ -240,7 +240,7 @@ ActivityImpl* ExecImpl::migrate(s4u::Host* to)
     old_action->set_activity(nullptr);
     old_action->cancel();
     old_action->unref();
-    this->surf_action_ = new_action;
+    this->model_action_ = new_action;
   }
 
   on_migration(*this, to);

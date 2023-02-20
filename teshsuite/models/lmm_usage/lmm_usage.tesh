@@ -1,0 +1,6 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/lmm_usage
+> [0.000000] [test/INFO] ***** Test 1
+> [0.000000] [test/INFO] ***** Test 2
+> [0.000000] [test/INFO] ***** Test 3

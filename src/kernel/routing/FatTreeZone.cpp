@@ -7,7 +7,7 @@
 #include <simgrid/kernel/routing/NetPoint.hpp>
 
 #include "src/kernel/resource/NetworkModel.hpp"
-#include "src/surf/xml/platf.hpp" // surf_parse_error() and surf_parse_assert()
+#include "src/kernel/xml/platf.hpp" // simgrid_parse_error() and simgrid_parse_assert()
 
 #include <fstream>
 #include <numeric>
@@ -232,9 +232,10 @@ void FatTreeZone::generate_switches(const s4u::ClusterCallbacks& set_callbacks)
     this->nodes_by_level_[0] *= this->num_children_per_node_[i];
 
   if (this->nodes_by_level_[0] != this->nodes_.size()) {
-    surf_parse_error("The number of provided nodes does not fit with the wanted topology."
-                     " Please check your platform description (We need " +
-                     std::to_string(this->nodes_by_level_[0]) + "nodes, we got " + std::to_string(this->nodes_.size()));
+    simgrid_parse_error("The number of provided nodes does not fit with the wanted topology."
+                        " Please check your platform description (We need " +
+                        std::to_string(this->nodes_by_level_[0]) + "nodes, we got " +
+                        std::to_string(this->nodes_.size()));
   }
 
   for (unsigned int i = 0; i < this->levels_; i++) {
@@ -415,7 +416,7 @@ s4u::FatTreeParams FatTreeZone::parse_topo_parameters(const std::string& topo_pa
   std::vector<unsigned int> count;
   boost::split(parameters, topo_parameters, boost::is_any_of(";"));
 
-  surf_parse_assert(
+  simgrid_parse_assert(
       parameters.size() == 4,
       "Fat trees are defined by the levels number and 3 vectors, see the documentation for more information.");
 
@@ -423,41 +424,41 @@ s4u::FatTreeParams FatTreeZone::parse_topo_parameters(const std::string& topo_pa
   try {
     n_lev = std::stoi(parameters[0]);
   } catch (const std::invalid_argument&) {
-    surf_parse_error("First parameter is not the amount of levels: " + parameters[0]);
+    simgrid_parse_error("First parameter is not the amount of levels: " + parameters[0]);
   }
 
   // Then, a l-sized vector standing for the children number by level
   boost::split(tmp, parameters[1], boost::is_any_of(","));
-  surf_parse_assert(tmp.size() == n_lev, "You specified " + std::to_string(n_lev) +
-                                             " levels but the child count vector (the first one) contains " +
-                                             std::to_string(tmp.size()) + " levels.");
+  simgrid_parse_assert(tmp.size() == n_lev, "You specified " + std::to_string(n_lev) +
+                                                " levels but the child count vector (the first one) contains " +
+                                                std::to_string(tmp.size()) + " levels.");
 
   for (std::string const& level : tmp) {
     try {
       down.push_back(std::stoi(level));
     } catch (const std::invalid_argument&) {
-      surf_parse_error("Invalid child count: " + level);
+      simgrid_parse_error("Invalid child count: " + level);
     }
   }
 
   // Then, a l-sized vector standing for the parents number by level
   boost::split(tmp, parameters[2], boost::is_any_of(","));
-  surf_parse_assert(tmp.size() == n_lev, "You specified " + std::to_string(n_lev) +
-                                             " levels but the parent count vector (the second one) contains " +
-                                             std::to_string(tmp.size()) + " levels.");
+  simgrid_parse_assert(tmp.size() == n_lev, "You specified " + std::to_string(n_lev) +
+                                                " levels but the parent count vector (the second one) contains " +
+                                                std::to_string(tmp.size()) + " levels.");
   for (std::string const& parent : tmp) {
     try {
       up.push_back(std::stoi(parent));
     } catch (const std::invalid_argument&) {
-      surf_parse_error("Invalid parent count: " + parent);
+      simgrid_parse_error("Invalid parent count: " + parent);
     }
   }
 
   // Finally, a l-sized vector standing for the ports number with the lower level
   boost::split(tmp, parameters[3], boost::is_any_of(","));
-  surf_parse_assert(tmp.size() == n_lev, "You specified " + std::to_string(n_lev) +
-                                             " levels but the port count vector (the third one) contains " +
-                                             std::to_string(tmp.size()) + " levels.");
+  simgrid_parse_assert(tmp.size() == n_lev, "You specified " + std::to_string(n_lev) +
+                                                " levels but the port count vector (the third one) contains " +
+                                                std::to_string(tmp.size()) + " levels.");
   for (std::string const& port : tmp) {
     try {
       count.push_back(std::stoi(port));

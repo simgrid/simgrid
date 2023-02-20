@@ -3,13 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "catch.hpp"
+#include "src/3rd-party/catch.hpp"
 
+#include "simgrid/kernel/ProfileBuilder.hpp"
 #include "src/kernel/resource/Resource.hpp"
 #include "src/kernel/resource/profile/Event.hpp"
-#include "simgrid/kernel/ProfileBuilder.hpp"
 #include "src/kernel/resource/profile/StochasticDatedValue.hpp"
-#include "src/surf/surf_interface.hpp"
 
 #include "xbt/log.h"
 #include "xbt/misc.h"

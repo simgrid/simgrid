@@ -5,9 +5,9 @@
 
 /* \file UContext.cpp Context switching with ucontexts from System V        */
 
-#include "mc/mc.h"
 #include "simgrid/Exception.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
+#include "src/mc/mc.h"
 #include "src/mc/remote/AppSide.hpp"
 
 #include "ContextUnix.hpp"

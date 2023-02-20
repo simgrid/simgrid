@@ -5,9 +5,8 @@
 
 #include <simgrid/s4u/Host.hpp>
 
-#include "src/kernel/resource/WifiLinkImpl.hpp"
-#include "src/surf/surf_interface.hpp"
 #include "src/kernel/activity/CommImpl.hpp"
+#include "src/kernel/resource/WifiLinkImpl.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(res_network);
 
@@ -82,7 +81,7 @@ void WifiLinkImpl::dec_active_flux()
 
 void WifiLinkImpl::update_bw_comm_start(const kernel::activity::CommImpl& comm)
 {
-  auto const* actionWifi = dynamic_cast<const simgrid::kernel::resource::WifiLinkAction*>(comm.surf_action_);
+  auto const* actionWifi = dynamic_cast<const simgrid::kernel::resource::WifiLinkAction*>(comm.model_action_);
   if (actionWifi == nullptr)
     return;
 

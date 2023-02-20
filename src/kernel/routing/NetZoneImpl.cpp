@@ -9,16 +9,17 @@
 #include <simgrid/s4u/Host.hpp>
 #include <simgrid/s4u/VirtualMachine.hpp>
 
-#include "xbt/asserts.hpp"
-#include "src/include/simgrid/sg_config.hpp"
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/resource/CpuImpl.hpp"
 #include "src/kernel/resource/DiskImpl.hpp"
+#include "src/kernel/resource/HostImpl.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/SplitDuplexLinkImpl.hpp"
 #include "src/kernel/resource/StandardLinkImpl.hpp"
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
-#include "src/surf/HostImpl.hpp"
+#include "src/simgrid/module.hpp"
+#include "src/simgrid/sg_config.hpp"
+#include "xbt/asserts.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_platform, kernel, "Kernel platform-related information");
 
@@ -33,15 +34,15 @@ NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
 {
   auto* engine = s4u::Engine::get_instance();
   /* workaroud: first netzoneImpl will be the root netzone.
-   * Without globals and with current surf_*_model_description init functions, we need
+   * Without globals and with current model description init functions (see module.hpp), we need
    * the root netzone to exist when creating the models.
-   * This was usually done at sg_platf.cpp, during XML parsing */
+   * This is usually done at sg_platf.cpp, during XML parsing */
   if (not engine->get_netzone_root()) {
     engine->set_netzone_root(&piface_);
     /* root netzone set, initialize models */
     simgrid::s4u::Engine::on_platform_creation();
 
-    /* Initialize the surf models. That must be done after we got all config, and before we need the models.
+    /* Initialize the models. That must be done after we got all config, and before we need the models.
      * That is, after the last <config> tag, if any, and before the first of cluster|peer|zone|trace|trace_cb
      *
      * I'm not sure for <trace> and <trace_cb>, there may be a bug here
@@ -49,7 +50,7 @@ NetZoneImpl::NetZoneImpl(const std::string& name) : piface_(this), name_(name)
      * but cluster and peer come down to zone creations, so putting this verification here is correct.
      */
     simgrid_host_models().init_from_flag_value();
-    surf_vm_model_init_HL13();
+    simgrid_vm_model_init_HL13();
   }
 
   xbt_enforce(nullptr == engine->netpoint_by_name_or_null(get_name()),
@@ -594,7 +595,7 @@ void NetZoneImpl::get_global_route_with_netzones(const NetPoint* src, const NetP
     return;
 
   /* If src and dst are in the same netzone, life is good */
-  if (src_ancestor == dst_ancestor) { /* SURF_ROUTING_BASE */
+  if (src_ancestor == dst_ancestor) { /* ROUTING_BASE */
     route.link_list_ = std::move(links);
     common_ancestor->get_local_route(src, dst, &route, latency);
     links = std::move(route.link_list_);

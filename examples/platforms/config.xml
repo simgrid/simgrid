@@ -2,7 +2,7 @@
 <!DOCTYPE platform SYSTEM "https://simgrid.org/simgrid.dtd">
 <platform version="4.1">
   <config id="General">
-    <prop id="maxmin/precision" value="0.000010"></prop>
+    <prop id="precision/work-amount" value="0.000010"></prop>
     <prop id="cpu/optim" value="TI"></prop>
     <prop id="network/model" value="SMPI"></prop>
     <prop id="path" value="~/"></prop>

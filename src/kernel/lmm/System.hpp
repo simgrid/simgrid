@@ -8,10 +8,7 @@
 
 #include "simgrid/kernel/resource/Action.hpp"
 #include "simgrid/kernel/resource/Model.hpp"
-#include "simgrid/s4u/Link.hpp"
-#include "src/surf/surf_interface.hpp"
 #include "xbt/asserts.h"
-#include "xbt/ex.h"
 #include "xbt/mallocator.h"
 
 #include <boost/intrusive/list.hpp>
@@ -21,9 +18,14 @@
 #include <string_view>
 #include <vector>
 
+/* user-visible parameters */
+XBT_PUBLIC_DATA double sg_precision_workamount;
+XBT_PUBLIC_DATA double sg_precision_timing;
+XBT_PUBLIC_DATA int sg_concurrency_limit;
+
 namespace simgrid::kernel::lmm {
 
-/** @addtogroup SURF_lmm
+/** @addtogroup Model_lmm
  * @details
  * A linear maxmin solver to resolve inequations systems.
  *
@@ -133,7 +135,7 @@ namespace simgrid::kernel::lmm {
  * At the current state, each variable counts as 1 if its consumption weight is greater than 1.
  */
 
-/** @{ @ingroup SURF_lmm */
+/** @{ @ingroup Model_lmm */
 
 /**
  * @brief LMM element
@@ -243,7 +245,7 @@ public:
   int get_concurrency_maximum() const
   {
     xbt_assert(concurrency_limit_ < 0 || concurrency_maximum_ <= concurrency_limit_,
-               "Very bad: maximum observed concurrency is higher than limit. This is a bug of SURF, please report it.");
+               "Very bad: maximum observed concurrency is higher than limit. This is a bug, please report it.");
     return concurrency_maximum_;
   }
 

@@ -9,7 +9,7 @@
 #include "src/kernel/EngineImpl.hpp"
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/sthread/sthread.h"
-#include "xbt/parmap.hpp"
+#include "src/xbt/parmap.hpp"
 
 #include "src/kernel/context/ContextSwapped.hpp"
 

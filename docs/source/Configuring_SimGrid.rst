@@ -105,7 +105,6 @@ Existing Configuration Items
 
 - **host/model:** :ref:`options_model_select`
 
-- **maxmin/precision:** :ref:`cfg=maxmin/precision`
 - **maxmin/concurrency-limit:** :ref:`cfg=maxmin/concurrency-limit`
 
 - **model-check:** :ref:`options_modelchecking`
@@ -140,7 +139,8 @@ Existing Configuration Items
 
 - **storage/max_file_descriptors:** :ref:`cfg=storage/max_file_descriptors`
 
-- **surf/precision:** :ref:`cfg=surf/precision`
+- **precision/timing:** :ref:`cfg=precision/timing`
+- **precision/work-amount:** :ref:`cfg=precision/work-amount`
 
 - **For collective operations of SMPI,** please refer to Section :ref:`cfg=smpi/coll-selector`
 - **smpi/auto-shared-malloc-thresh:** :ref:`cfg=smpi/auto-shared-malloc-thresh`
@@ -303,14 +303,14 @@ configurations.
     and slow pattern that follows the actual dependencies.
 
 .. _cfg=bmf/precision:
-.. _cfg=maxmin/precision:
-.. _cfg=surf/precision:
+.. _cfg=precision/timing:
+.. _cfg=precision/work-amount:
 
 Numerical Precision
 ...................
 
-**Option** ``maxmin/precision`` **Default:** 1e-5 (in flops or bytes) |br|
-**Option** ``surf/precision`` **Default:** 1e-9 (in seconds) |br|
+**Option** ``precision/timing`` **Default:** 1e-9 (in seconds) |br|
+**Option** ``precision/work-amount`` **Default:** 1e-5 (in flops or bytes) |br|
 **Option** ``bmf/precision`` **Default:** 1e-12 (no unit)
 
 The analytical models handle a lot of floating point values. It is

@@ -79,9 +79,9 @@ looking if a given communication matches my needs. For that, myself must match t
 expectations of the other side, too. See  */
   std::function<void(CommImpl*, void*, size_t)> copy_data_fun;
 
-  /* Surf action data */
-  resource::Action* src_timeout_ = nullptr; /* Surf's actions to instrument the timeouts */
-  resource::Action* dst_timeout_ = nullptr; /* Surf's actions to instrument the timeouts */
+  /* Model actions */
+  resource::Action* src_timeout_ = nullptr; /* represents the timeout set by the sender */
+  resource::Action* dst_timeout_ = nullptr; /* represents the timeout set by the receiver */
   actor::ActorImplPtr src_actor_ = nullptr;
   actor::ActorImplPtr dst_actor_ = nullptr;
 

@@ -9,7 +9,7 @@
 #include <simgrid/vm.h>
 
 #include "src/kernel/resource/VirtualMachineImpl.hpp"
-#include "src/surf/cpu_cas01.hpp"
+#include "src/kernel/resource/models/cpu_cas01.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_vm, s4u, "S4U virtual machines");
 

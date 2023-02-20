@@ -4,7 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/internal_config.h" // HAVE_FUTEX_H
-#include "xbt/parmap.hpp"
+#include "src/xbt/parmap.hpp"
 #include <simgrid/s4u/Engine.hpp>
 #include <xbt.h>
 

@@ -3,18 +3,21 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/internal_config.h"
 #include "src/kernel/lmm/fair_bottleneck.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
+#include "src/simgrid/math_utils.h"
 #if SIMGRID_HAVE_EIGEN3
 #include "src/kernel/lmm/bmf.hpp"
 #endif
+
 #include <boost/core/demangle.hpp>
 #include <typeinfo>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ker_lmm, kernel, "Kernel Linear Max-Min solver");
 
-double sg_maxmin_precision = 1E-5; /* Change this with --cfg=maxmin/precision:VALUE */
-double sg_surf_precision   = 1E-9; /* Change this with --cfg=surf/precision:VALUE */
+double sg_precision_workamount = 1E-5; /* Change this with --cfg=precision/work-amount:VALUE */
+double sg_precision_timing = 1E-9; /* Change this with --cfg=precision/timing:VALUE */
 int sg_concurrency_limit   = -1;      /* Change this with --cfg=maxmin/concurrency-limit:VALUE */
 
 namespace simgrid::kernel::lmm {
@@ -92,7 +95,7 @@ void System::validate_solver(const std::string& solver_name)
 
 void System::check_concurrency() const
 {
-  // These checks are very expensive, so do them only if we want to debug SURF LMM
+  // These checks are very expensive, so do them only if we want to debug the LMM
   if (not XBT_LOG_ISENABLED(ker_lmm, xbt_log_priority_debug))
     return;
 
@@ -426,7 +429,7 @@ void System::print() const
     }
     XBT_DEBUG("%s", buf.c_str());
     buf.clear();
-    xbt_assert(not double_positive(sum - cnst.bound_, cnst.bound_ * sg_maxmin_precision),
+    xbt_assert(not double_positive(sum - cnst.bound_, cnst.bound_ * sg_precision_workamount),
                "Incorrect value (%f is not smaller than %f): %g", sum, cnst.bound_, sum - cnst.bound_);
   }
 
@@ -435,7 +438,7 @@ void System::print() const
   for (Variable const& var : variable_set) {
     if (var.bound_ > 0) {
       XBT_DEBUG("'%d'(%f) : %f (<=%f)", var.rank_, var.sharing_penalty_, var.value_, var.bound_);
-      xbt_assert(not double_positive(var.value_ - var.bound_, var.bound_ * sg_maxmin_precision),
+      xbt_assert(not double_positive(var.value_ - var.bound_, var.bound_ * sg_precision_workamount),
                  "Incorrect value (%f is not smaller than %f", var.value_, var.bound_);
     } else {
       XBT_DEBUG("'%d'(%f) : %f", var.rank_, var.sharing_penalty_, var.value_);

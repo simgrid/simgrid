@@ -21,7 +21,7 @@
 /include/xbt/fifo.h  3626
 /include/msg/datatypes.h 4635
 /include/mc/modelchecker.h  96
-/include/surf/simgrid_dtd.h  23583
+/include/simgrid_dtd.h  23583
 /include/instr/instr.h  5750
 /include/simdag/simdag.h  10325
 /include/simix/simix.h  13003

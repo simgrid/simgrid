@@ -4,9 +4,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/resource/CpuImpl.hpp"
+#include "src/kernel/resource/models/cpu_ti.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
-#include "src/surf/cpu_ti.hpp"
-#include "src/surf/surf_interface.hpp"
+#include "src/simgrid/math_utils.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(res_cpu, ker_resource, "CPU resource, fueling execution activites");
 
@@ -18,7 +18,7 @@ namespace simgrid::kernel::resource {
 
 void CpuModel::update_actions_state_lazy(double now, double /*delta*/)
 {
-  while (not get_action_heap().empty() && double_equals(get_action_heap().top_date(), now, sg_surf_precision)) {
+  while (not get_action_heap().empty() && double_equals(get_action_heap().top_date(), now, sg_precision_timing)) {
     auto* action = static_cast<CpuAction*>(get_action_heap().pop());
     XBT_DEBUG("Something happened to action %p", action);
 

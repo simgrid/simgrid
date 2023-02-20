@@ -11,7 +11,7 @@
    Heavily modified Mar 1992 by Fred Fish.  (fnf@cygnus.com) */
 
 #include "mmprivate.h"
-#include "mc/mc.h"
+#include "src/mc/mc.h"
 
 /* Return memory to the heap.
    Like `mfree' but don't call a mfree_hook if there is one.  */

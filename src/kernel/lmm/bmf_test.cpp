@@ -3,9 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/include/catch.hpp"
+#include "src/3rd-party/catch.hpp"
 #include "src/kernel/lmm/bmf.hpp"
-#include "src/surf/surf_interface.hpp"
+#include "src/simgrid/math_utils.h"
 #include "xbt/log.h"
 
 namespace lmm = simgrid::kernel::lmm;
@@ -34,7 +34,7 @@ TEST_CASE("kernel::bmf Basic tests", "[kernel-bmf-basic]")
     Sys.expand(sys_cnst, rho_1, 1);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 3, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 3, sg_precision_workamount));
   }
 
   SECTION("Two flows")
@@ -60,8 +60,8 @@ TEST_CASE("kernel::bmf Basic tests", "[kernel-bmf-basic]")
     Sys.expand(sys_cnst, rho_2, 10);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 3.0 / 2.0, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), (3.0 / 2.0) / 10.0, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 3.0 / 2.0, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), (3.0 / 2.0) / 10.0, sg_precision_workamount));
   }
 
   SECTION("Variable penalty/priority")
@@ -87,8 +87,8 @@ TEST_CASE("kernel::bmf Basic tests", "[kernel-bmf-basic]")
     Sys.expand(sys_cnst, rho_2, 1);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 2.0 / 3.0, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 1.0 / 3.0, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 2.0 / 3.0, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 1.0 / 3.0, sg_precision_workamount));
   }
 
   SECTION("Disable variable doesn't count")
@@ -113,8 +113,8 @@ TEST_CASE("kernel::bmf Basic tests", "[kernel-bmf-basic]")
     Sys.expand(sys_cnst, rho_2, 10);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 1.0, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 0.0, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 1.0, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 0.0, sg_precision_workamount));
   }
 
   SECTION("No consumption variable")
@@ -138,7 +138,7 @@ TEST_CASE("kernel::bmf Basic tests", "[kernel-bmf-basic]")
     Sys.expand(sys_cnst, rho_2, 10);
     Sys.solve();
 
-    REQUIRE(double_positive(rho_1->get_value(), sg_maxmin_precision));
+    REQUIRE(double_positive(rho_1->get_value(), sg_precision_workamount));
   }
 
   SECTION("Bounded variable")
@@ -163,8 +163,8 @@ TEST_CASE("kernel::bmf Basic tests", "[kernel-bmf-basic]")
     Sys.expand(sys_cnst, rho_1, 2);
     Sys.expand(sys_cnst, rho_2, 1);
     Sys.solve();
-    REQUIRE(double_equals(rho_1->get_value(), .1, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), .8, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), .1, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), .8, sg_precision_workamount));
   }
 
   SECTION("Fatpipe")
@@ -191,8 +191,8 @@ TEST_CASE("kernel::bmf Basic tests", "[kernel-bmf-basic]")
     Sys.expand(sys_cnst, rho_2, 1);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 3.0, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 3.0, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 3.0, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 3.0, sg_precision_workamount));
   }
 
   SECTION("(un)Bounded variable")
@@ -217,8 +217,8 @@ TEST_CASE("kernel::bmf Basic tests", "[kernel-bmf-basic]")
     Sys.expand(sys_cnst, rho_1, 1);
     Sys.expand(sys_cnst, rho_2, 1);
     Sys.solve();
-    REQUIRE(double_equals(rho_1->get_value(), .5, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), .5, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), .5, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), .5, sg_precision_workamount));
   }
 
   SECTION("Dynamic bounds")
@@ -242,15 +242,15 @@ TEST_CASE("kernel::bmf Basic tests", "[kernel-bmf-basic]")
     lmm::Variable* rho_1 = Sys.variable_new(nullptr, 1);
     Sys.expand(sys_cnst, rho_1, 1);
     Sys.solve();
-    REQUIRE(double_equals(rho_1->get_value(), 1, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 1, sg_precision_workamount));
 
     // add another variable, half initial capacity
     lmm::Variable* rho_2 = Sys.variable_new(nullptr, 1);
     Sys.expand(sys_cnst, rho_2, 1);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), .25, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), .25, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), .25, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), .25, sg_precision_workamount));
   }
 
   Sys.variable_free_all();
@@ -291,8 +291,8 @@ TEST_CASE("kernel::bmf Advanced tests", "[kernel-bmf-advanced]")
     Sys.expand(sys_cnst2, rho_2, 1);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 1.0 / 11.0, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 1.0 / 11.0, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 1.0 / 11.0, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 1.0 / 11.0, sg_precision_workamount));
   }
 
   SECTION("BMF paper example")
@@ -327,9 +327,9 @@ TEST_CASE("kernel::bmf Advanced tests", "[kernel-bmf-advanced]")
     Sys.expand(sys_cnst3, rho_3, 3.0 / 4.0);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 1.0 / 3.0, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 4.0 / 9.0, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_3->get_value(), 4.0 / 9.0, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 1.0 / 3.0, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 4.0 / 9.0, sg_precision_workamount));
+    REQUIRE(double_equals(rho_3->get_value(), 4.0 / 9.0, sg_precision_workamount));
   }
 
   SECTION("IO - example")
@@ -368,8 +368,8 @@ TEST_CASE("kernel::bmf Advanced tests", "[kernel-bmf-advanced]")
     Sys.expand(sys_cnst3, rho_2, 1);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 1e6 / 2.0, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 1e6 / 2.0, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 1e6 / 2.0, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 1e6 / 2.0, sg_precision_workamount));
   }
 
   SECTION("Proportional fairness")
@@ -398,9 +398,9 @@ TEST_CASE("kernel::bmf Advanced tests", "[kernel-bmf-advanced]")
     Sys.expand(sys_cnst, rho_3, epsilon);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 1.0 / (2.0 + 2 * epsilon), sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 1.0 / (2.0 + 2 * epsilon), sg_maxmin_precision));
-    REQUIRE(double_equals(rho_3->get_value(), 1.0 / (1.0 + epsilon), sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 1.0 / (2.0 + 2 * epsilon), sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 1.0 / (2.0 + 2 * epsilon), sg_precision_workamount));
+    REQUIRE(double_equals(rho_3->get_value(), 1.0 / (1.0 + epsilon), sg_precision_workamount));
   }
 
   Sys.variable_free_all();
@@ -440,8 +440,8 @@ TEST_CASE("kernel::bmf Subflows", "[kernel-bmf-subflow]")
     Sys.expand(sys_cnst, rho_2, 5);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 5.0 / 24.0, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 5.0 / 24.0, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 5.0 / 24.0, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 5.0 / 24.0, sg_precision_workamount));
   }
 
   SECTION("1 subflows, 1 flow and 1 resource")
@@ -475,9 +475,9 @@ TEST_CASE("kernel::bmf Subflows", "[kernel-bmf-subflow]")
     Sys.expand(sys_cnst, rho_2, 10);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), (5.0 / 25.0), sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), (5.0 / 25.0), sg_maxmin_precision));
-    REQUIRE(double_equals(15 * rho_1->get_value(), 10 * rho_2->get_value() * 3 / 2, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), (5.0 / 25.0), sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), (5.0 / 25.0), sg_precision_workamount));
+    REQUIRE(double_equals(15 * rho_1->get_value(), 10 * rho_2->get_value() * 3 / 2, sg_precision_workamount));
   }
 
   SECTION("1 subflows using 2 resources: different max for each resource")
@@ -513,8 +513,8 @@ TEST_CASE("kernel::bmf Subflows", "[kernel-bmf-subflow]")
     Sys.expand(sys_cnst2, rho_2, 3.0 / 2.0);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), (1.0 / 3.0), sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), (1.0 / 3.0), sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), (1.0 / 3.0), sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), (1.0 / 3.0), sg_precision_workamount));
   }
 
   Sys.variable_free_all();
@@ -556,7 +556,7 @@ TEST_CASE("kernel::bmf Loop", "[kernel-bmf-loop]")
     Sys.solve();
 
     for (const auto* rho : vars) {
-      REQUIRE(double_positive(rho->get_value(), sg_maxmin_precision));
+      REQUIRE(double_positive(rho->get_value(), sg_precision_workamount));
     }
   }
 
@@ -655,8 +655,8 @@ TEST_CASE("kernel::bmf Bugs", "[kernel-bmf-bug]")
     Sys.expand(sys_cnst, rho_2, 1.0);
     Sys.expand(sys_cnst2, rho_2, 1.0);
     Sys.solve();
-    REQUIRE(double_equals(rho_1->get_value(), 1.4, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 3, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 1.4, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 3, sg_precision_workamount));
   }
 
   SECTION("s4u-cloud-capping bug: all limited by bound extra case")
@@ -675,8 +675,8 @@ TEST_CASE("kernel::bmf Bugs", "[kernel-bmf-bug]")
     Sys.expand(sys_cnst, rho_1, 1);
     Sys.expand(sys_cnst, rho_2, 1);
     Sys.solve();
-    REQUIRE(double_equals(rho_1->get_value(), 7.6296e+06, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 3.8148e+07, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 7.6296e+06, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 3.8148e+07, sg_precision_workamount));
   }
 
   SECTION("Variable penalty with bounds: thread bug")
@@ -694,8 +694,8 @@ TEST_CASE("kernel::bmf Bugs", "[kernel-bmf-bug]")
     Sys.expand(sys_cnst, rho_1, 1);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 8e7, sg_maxmin_precision));
-    REQUIRE(double_equals(rho_2->get_value(), 3.2e8, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 8e7, sg_precision_workamount));
+    REQUIRE(double_equals(rho_2->get_value(), 3.2e8, sg_precision_workamount));
   }
 
   SECTION("Variable penalty with bounds greater than C")
@@ -709,7 +709,7 @@ TEST_CASE("kernel::bmf Bugs", "[kernel-bmf-bug]")
     Sys.expand(sys_cnst, rho_1, 1);
     Sys.solve();
 
-    REQUIRE(double_equals(rho_1->get_value(), 4e8, sg_maxmin_precision));
+    REQUIRE(double_equals(rho_1->get_value(), 4e8, sg_precision_workamount));
   }
 
   Sys.variable_free_all();

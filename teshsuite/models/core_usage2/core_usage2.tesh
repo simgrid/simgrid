@@ -1,0 +1,66 @@
+#!/usr/bin/env tesh
+
+$ ${bindir:=.}/core_usage2 ${platfdir}/two_hosts_profiles.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'CM02'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
+> [0.200000] [core_usage2/INFO] Next Event : 0.2
+> [0.200016] [core_usage2/INFO] Next Event : 0.200016
+> [0.200016] [core_usage2/INFO]    * Done Action
+> [1.000000] [core_usage2/INFO] Next Event : 1
+> [1.000000] [core_usage2/INFO]    * Done Action
+> [2.000000] [core_usage2/INFO] Next Event : 2
+> [7.320000] [core_usage2/INFO] Next Event : 7.32
+> [7.320000] [core_usage2/INFO]    * Done Action
+> [10.000000] [core_usage2/INFO] Next Event : 10
+> [11.000000] [core_usage2/INFO] Next Event : 11
+> [12.000000] [core_usage2/INFO] Next Event : 12
+> [20.000000] [core_usage2/INFO] Next Event : 20
+> [21.000000] [core_usage2/INFO] Next Event : 21
+> [22.000000] [core_usage2/INFO] Next Event : 22
+> [30.000000] [core_usage2/INFO] Next Event : 30
+> [31.000000] [core_usage2/INFO] Next Event : 31
+> [32.000000] [core_usage2/INFO] Next Event : 32
+> [40.000000] [core_usage2/INFO] Next Event : 40
+> [41.000000] [core_usage2/INFO] Next Event : 41
+> [42.000000] [core_usage2/INFO] Next Event : 42
+> [50.000000] [core_usage2/INFO] Next Event : 50
+> [51.000000] [core_usage2/INFO] Next Event : 51
+> [52.000000] [core_usage2/INFO] Next Event : 52
+> [53.000000] [core_usage2/INFO] Next Event : 53
+> [60.000000] [core_usage2/INFO] Next Event : 60
+> [61.000000] [core_usage2/INFO] Next Event : 61
+> [62.000000] [core_usage2/INFO] Next Event : 62
+> [63.000000] [core_usage2/INFO] Next Event : 63
+> [70.000000] [core_usage2/INFO] Next Event : 70
+> [71.000000] [core_usage2/INFO] Next Event : 71
+> [72.000000] [core_usage2/INFO] Next Event : 72
+> [74.000000] [core_usage2/INFO] Next Event : 74
+> [80.000000] [core_usage2/INFO] Next Event : 80
+> [81.000000] [core_usage2/INFO] Next Event : 81
+> [82.000000] [core_usage2/INFO] Next Event : 82
+> [83.000000] [core_usage2/INFO] Next Event : 83
+> [84.000000] [core_usage2/INFO] Next Event : 84
+> [90.000000] [core_usage2/INFO] Next Event : 90
+> [91.000000] [core_usage2/INFO] Next Event : 91
+> [92.000000] [core_usage2/INFO] Next Event : 92
+> [95.000000] [core_usage2/INFO] Next Event : 95
+> [100.000000] [core_usage2/INFO] Next Event : 100
+> [101.000000] [core_usage2/INFO] Next Event : 101
+> [102.000000] [core_usage2/INFO] Next Event : 102
+> [104.000000] [core_usage2/INFO] Next Event : 104
+> [105.000000] [core_usage2/INFO] Next Event : 105
+> [110.000000] [core_usage2/INFO] Next Event : 110
+> [111.000000] [core_usage2/INFO] Next Event : 111
+> [112.000000] [core_usage2/INFO] Next Event : 112
+> [116.000000] [core_usage2/INFO] Next Event : 116
+> [120.000000] [core_usage2/INFO] Next Event : 120
+> [121.000000] [core_usage2/INFO] Next Event : 121
+> [122.000000] [core_usage2/INFO] Next Event : 122
+> [125.000000] [core_usage2/INFO] Next Event : 125
+> [126.000000] [core_usage2/INFO] Next Event : 126
+> [130.000000] [core_usage2/INFO] Next Event : 130
+> [131.000000] [core_usage2/INFO] Next Event : 131
+> [132.000000] [core_usage2/INFO] Next Event : 132
+> [132.500000] [core_usage2/INFO] Next Event : 132.5
+> [132.500000] [core_usage2/INFO]    * Done Action
+> [132.500000] [core_usage2/INFO] Simulation Terminated

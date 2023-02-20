@@ -5,7 +5,7 @@
 
 #define CATCH_CONFIG_RUNNER // we supply our own main()
 
-#include "catch_simgrid.hpp"
+#include "teshsuite/catch_simgrid.hpp"
 
 #include <xbt/config.hpp>
 

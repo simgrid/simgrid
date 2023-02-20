@@ -221,7 +221,7 @@ ExecPtr Exec::unset_host()
 
 double Exec::get_cost() const
 {
-  return (pimpl_->surf_action_ == nullptr) ? -1 : pimpl_->surf_action_->get_cost();
+  return (pimpl_->model_action_ == nullptr) ? -1 : pimpl_->model_action_->get_cost();
 }
 
 double Exec::get_remaining() const

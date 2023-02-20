@@ -129,26 +129,26 @@ if(enable_maintainer_mode)
 
     set(string1  "'s/extern /XBT_PUBLIC_DATA /'")
     set(string2  "'s/XBT_PUBLIC_DATA \\([^(]*\\)(/XBT_PUBLIC \\1(/'")
-    set(string3  "'s/XBT_PUBLIC void STag_surfxml_include/XBT_ATTRIB_NORETURN &/'") # remove with v5 of the dtd
-    set(string4  "'s/XBT_PUBLIC void STag_surfxml_\\(mount\\|storage\\)/XBT_ATTRIB_NORETURN &/'") # remove with v5 of the dtd
+    set(string3  "'s/XBT_PUBLIC void STag_simgrid_parse_include/XBT_ATTRIB_NORETURN &/'") # remove with v5 of the dtd
+    set(string4  "'s/XBT_PUBLIC void STag_simgrid_parse_\\(mount\\|storage\\)/XBT_ATTRIB_NORETURN &/'") # remove with v5 of the dtd
     set(string5  "'s/SET(DOCTYPE)/SET(ROOT_dax__adag)/'")
     set(string14 "'\\!^ \\* Generated [0-9/]\\{10\\} [0-9:]\\{8\\}\\.$$!d'")
 
     ADD_CUSTOM_COMMAND(
-      OUTPUT 	${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.h
+      OUTPUT 	${CMAKE_HOME_DIRECTORY}/src/kernel/xml/simgrid_dtd.h
                 ${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.h
-                ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.c
+                ${CMAKE_HOME_DIRECTORY}/src/kernel/xml/simgrid_dtd.c
                 ${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.c
 
-      DEPENDS	${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd
+      DEPENDS	${CMAKE_HOME_DIRECTORY}/src/kernel/xml/simgrid.dtd
                 ${CMAKE_HOME_DIRECTORY}/src/dag/dax.dtd
 
-      #${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.l: ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd
-      COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/src/surf/xml
-      COMMAND ${FLEXML_EXE} --root-tags platform -b 1000000 -P surfxml --sysid=https://simgrid.org/simgrid.dtd -S src/surf/xml/simgrid_dtd.l -L src/surf/xml/simgrid.dtd
-      COMMAND ${PERL_EXE} ${CMAKE_HOME_DIRECTORY}/tools/cmake/scripts/fixup_simgrid_dtd_l.pl < src/surf/xml/simgrid_dtd.l > src/surf/xml/simgrid_dtd.l.tmp
-      COMMAND mv src/surf/xml/simgrid_dtd.l.tmp src/surf/xml/simgrid_dtd.l
-      COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/surf/xml/simgrid_dtd.l"
+      #${CMAKE_HOME_DIRECTORY}/src/kernel/xml/simgrid_dtd.l: ${CMAKE_HOME_DIRECTORY}/src/kernel/xml/simgrid.dtd
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_HOME_DIRECTORY}/src/kernel/xml
+      COMMAND ${FLEXML_EXE} --root-tags platform -b 1000000 -P simgrid_parse --sysid=https://simgrid.org/simgrid.dtd -S src/kernel/xml/simgrid_dtd.l -L src/kernel/xml/simgrid.dtd
+      COMMAND ${PERL_EXE} ${CMAKE_HOME_DIRECTORY}/tools/cmake/scripts/fixup_simgrid_dtd_l.pl < src/kernel/xml/simgrid_dtd.l > src/kernel/xml/simgrid_dtd.l.tmp
+      COMMAND mv src/kernel/xml/simgrid_dtd.l.tmp src/kernel/xml/simgrid_dtd.l
+      COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/kernel/xml/simgrid_dtd.l"
 
       #${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.l: ${CMAKE_HOME_DIRECTORY}/src/dag/dax.dtd
       COMMAND ${FLEXML_EXE} -b 1000000 --root-tags adag -P dax_ --sysid=dax.dtd -S src/dag/dax_dtd.l -L src/dag/dax.dtd
@@ -156,15 +156,14 @@ if(enable_maintainer_mode)
       COMMAND ${SED_EXE} -i ${string14} src/dag/dax_dtd.l
       COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/dag/dax_dtd.l"
 
-      #${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.h: ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid.dtd
-      COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/include/surf/simgrid.h
-      COMMAND ${FLEXML_EXE} --root-tags platform -P surfxml --sysid=https://simgrid.org/simgrid.dtd -H src/surf/xml/simgrid_dtd.h -L src/surf/xml/simgrid.dtd
-      COMMAND ${SED_EXE} -i ${string1} src/surf/xml/simgrid_dtd.h
-      COMMAND ${SED_EXE} -i ${string2} src/surf/xml/simgrid_dtd.h
-      COMMAND ${SED_EXE} -i ${string3} src/surf/xml/simgrid_dtd.h
-      COMMAND ${SED_EXE} -i ${string4} src/surf/xml/simgrid_dtd.h
-      COMMAND ${SED_EXE} -i ${string14} src/surf/xml/simgrid_dtd.h
-      COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/surf/xml/simgrid_dtd.h"
+      #${CMAKE_HOME_DIRECTORY}/src/kernel/xml/simgrid_dtd.h: ${CMAKE_HOME_DIRECTORY}/src/kernel/xml/simgrid.dtd
+      COMMAND ${FLEXML_EXE} --root-tags platform -P simgrid_parse --sysid=https://simgrid.org/simgrid.dtd -H src/kernel/xml/simgrid_dtd.h -L src/kernel/xml/simgrid.dtd
+      COMMAND ${SED_EXE} -i ${string1} src/kernel/xml/simgrid_dtd.h
+      COMMAND ${SED_EXE} -i ${string2} src/kernel/xml/simgrid_dtd.h
+      COMMAND ${SED_EXE} -i ${string3} src/kernel/xml/simgrid_dtd.h
+      COMMAND ${SED_EXE} -i ${string4} src/kernel/xml/simgrid_dtd.h
+      COMMAND ${SED_EXE} -i ${string14} src/kernel/xml/simgrid_dtd.h
+      COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/kernel/xml/simgrid_dtd.h"
 
       #${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.h: ${CMAKE_HOME_DIRECTORY}/src/dag/dax.dtd
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.h
@@ -174,10 +173,10 @@ if(enable_maintainer_mode)
       COMMAND ${SED_EXE} -i ${string14} src/dag/dax_dtd.h
       COMMAND ${CMAKE_COMMAND} -E echo "       Generated src/dag/dax_dtd.h"
 
-      #surf/xml/simgrid_dtd.c: surf/xml/simgrid_dtd.l
-      COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.c
-      COMMAND ${FLEX_EXE} -o src/surf/xml/simgrid_dtd.c -Psurf_parse_ --noline src/surf/xml/simgrid_dtd.l
-      COMMAND ${CMAKE_COMMAND} -E echo "       Generated surf/xml/simgrid_dtd.c"
+      #kernel/xml/simgrid_dtd.c: kernel/xml/simgrid_dtd.l
+      COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/kernel/xml/simgrid_dtd.c
+      COMMAND ${FLEX_EXE} -o src/kernel/xml/simgrid_dtd.c -Psimgrid_parse_ --noline src/kernel/xml/simgrid_dtd.l
+      COMMAND ${CMAKE_COMMAND} -E echo "       Generated kernel/xml/simgrid_dtd.c"
 
       #dag/dax_dtd.c: dag/dax_dtd.l
       COMMAND ${CMAKE_COMMAND} -E remove -f ${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.c
@@ -206,8 +205,8 @@ if(enable_maintainer_mode)
 endif()
 
     add_custom_target(maintainer_files
-      DEPENDS ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.h
-              ${CMAKE_HOME_DIRECTORY}/src/surf/xml/simgrid_dtd.c
+      DEPENDS ${CMAKE_HOME_DIRECTORY}/src/kernel/xml/simgrid_dtd.h
+              ${CMAKE_HOME_DIRECTORY}/src/kernel/xml/simgrid_dtd.c
               ${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.h
               ${CMAKE_HOME_DIRECTORY}/src/dag/dax_dtd.c
       )

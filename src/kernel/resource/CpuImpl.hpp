@@ -10,6 +10,7 @@
 #include "simgrid/s4u/Host.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "src/kernel/resource/Resource.hpp"
+#include "xbt/ex.h"
 
 #include <list>
 
@@ -170,7 +171,7 @@ protected:
  * Action *
  **********/
 
-/** @ingroup SURF_cpu_interface
+/** @ingroup Model_cpu_interface
  * @brief A CpuAction represents the execution of code on one or several Cpus
  */
 class XBT_PUBLIC CpuAction : public Action {

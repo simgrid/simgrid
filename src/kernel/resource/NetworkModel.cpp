@@ -5,11 +5,10 @@
 
 #include <simgrid/s4u/Engine.hpp>
 
-#include "simgrid/sg_config.hpp"
 #include "src/kernel/resource/FactorSet.hpp"
 #include "src/kernel/resource/NetworkModel.hpp"
 #include "src/kernel/resource/profile/Profile.hpp"
-#include "src/surf/surf_interface.hpp"
+#include "src/simgrid/sg_config.hpp"
 
 #include <numeric>
 

@@ -10,8 +10,8 @@
 #include "smpi_info.hpp"
 #include "smpi_request.hpp"
 #include "smpi_win.hpp"
+#include "src/kernel/resource/HostImpl.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
-#include "src/surf/HostImpl.hpp"
 
 #include <limits>
 
