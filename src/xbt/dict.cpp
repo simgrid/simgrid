@@ -23,6 +23,23 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt, "Dictionaries provide the same fu
 
 constexpr int MAX_FILL_PERCENT = 80;
 
+/** Handle the dict mallocators init/fini cycle. */
+static void xbt_dict_postexit()
+{
+  if (dict_elm_mallocator != nullptr) {
+    xbt_mallocator_free(dict_elm_mallocator);
+    dict_elm_mallocator = nullptr;
+  }
+}
+static void xbt_dict_preinit()
+{
+  if (dict_elm_mallocator == nullptr) {
+    dict_elm_mallocator =
+        xbt_mallocator_new(256, dict_elm_mallocator_new_f, dict_elm_mallocator_free_f, dict_elm_mallocator_reset_f);
+    atexit(xbt_dict_postexit);
+  }
+}
+
 /**
  * @brief Constructor
  * @param free_ctn function to call with (@a data as argument) when @a data is removed from the dictionary
@@ -34,7 +51,7 @@ constexpr int MAX_FILL_PERCENT = 80;
  */
 xbt_dict_t xbt_dict_new_homogeneous(void_f_pvoid_t free_ctn)
 {
-  xbt_dict_preinit();
+  xbt_dict_preinit(); // Make sure that the module is intialized
 
   xbt_dict_t dict;
 
@@ -303,28 +320,4 @@ int xbt_dict_length(const_xbt_dict_t dict)
 int xbt_dict_is_empty(const_xbt_dict_t dict)
 {
   return not dict || (xbt_dict_length(dict) == 0);
-}
-
-/**
- * Create the dict mallocators.
- * This is an internal XBT function called during the lib initialization.
- * It can be used several times to recreate the mallocator, for example when you switch to MC mode
- */
-void xbt_dict_preinit()
-{
-  if (dict_elm_mallocator == nullptr)
-    dict_elm_mallocator = xbt_mallocator_new(256, dict_elm_mallocator_new_f, dict_elm_mallocator_free_f,
-      dict_elm_mallocator_reset_f);
-}
-
-/**
- * Destroy the dict mallocators.
- * This is an internal XBT function during the lib initialization
- */
-void xbt_dict_postexit()
-{
-  if (dict_elm_mallocator != nullptr) {
-    xbt_mallocator_free(dict_elm_mallocator);
-    dict_elm_mallocator = nullptr;
-  }
 }

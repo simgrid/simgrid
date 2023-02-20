@@ -64,7 +64,6 @@ XBT_ATTRIB_NOINLINE void sthread_disable()
 
 static void xbt_preinit()
 {
-  xbt_dict_preinit();
   atexit(xbt_postexit);
 }
 
@@ -73,7 +72,6 @@ static void xbt_postexit()
   if (not cfg_dbg_clean_atexit)
     return;
   xbt_initialized--;
-  xbt_dict_postexit();
   xbt_log_postexit();
 }
 
