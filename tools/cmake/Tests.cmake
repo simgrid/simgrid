@@ -128,7 +128,11 @@ set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
                 src/xbt/xbt_str_test.cpp
                 src/kernel/lmm/maxmin_test.cpp)
 if (SIMGRID_HAVE_MC)
-  set(UNIT_TESTS ${UNIT_TESTS} src/mc/sosp/Snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
+  set(UNIT_TESTS ${UNIT_TESTS} src/mc/sosp/Snapshot_test.cpp 
+                               src/mc/sosp/PageStore_test.cpp
+                               src/mc/explo/udpor/EventSet_test.cpp
+                               src/mc/explo/udpor/Unfolding_test.cpp
+                               src/mc/explo/udpor/UnfoldingEvent_test.cpp)
 else()
   set(EXTRA_DIST ${EXTRA_DIST} src/mc/sosp/Snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
 endif()

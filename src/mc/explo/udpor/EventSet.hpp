@@ -9,6 +9,7 @@
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 
 #include <cstddef>
+#include <initializer_list>
 #include <unordered_set>
 
 namespace simgrid::mc::udpor {
@@ -16,7 +17,6 @@ namespace simgrid::mc::udpor {
 class EventSet {
 private:
   std::unordered_set<UnfoldingEvent*> events_;
-  explicit EventSet(std::unordered_set<UnfoldingEvent*>&& raw_events) : events_(raw_events) {}
 
 public:
   EventSet()                           = default;
@@ -24,6 +24,8 @@ public:
   EventSet& operator=(const EventSet&) = default;
   EventSet& operator=(EventSet&&)      = default;
   EventSet(EventSet&&)                 = default;
+  explicit EventSet(std::unordered_set<UnfoldingEvent*>&& raw_events) : events_(raw_events) {}
+  explicit EventSet(std::initializer_list<UnfoldingEvent*> event_list) : events_(std::move(event_list)) {}
 
   inline auto begin() const { return this->events_.begin(); }
   inline auto end() const { return this->events_.end(); }
@@ -46,6 +48,9 @@ public:
   bool empty() const;
   bool contains(UnfoldingEvent*) const;
   bool is_subset_of(const EventSet&) const;
+
+  bool operator==(const EventSet& other) { return this->events_ == other.events_; }
+  bool operator!=(const EventSet& other) { return this->events_ != other.events_; }
 };
 
 } // namespace simgrid::mc::udpor
