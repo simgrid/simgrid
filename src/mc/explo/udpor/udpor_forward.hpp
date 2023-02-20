@@ -14,10 +14,10 @@
 namespace simgrid::mc::udpor {
 
 class EventSet;
-class UnfoldingEvent;
 class Configuration;
+class History;
 class Unfolding;
-using StateHandle = unsigned long long;
+class UnfoldingEvent;
 
 } // namespace simgrid::mc::udpor
 

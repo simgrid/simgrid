@@ -34,6 +34,12 @@ private:
 
   /**
    * @brief The events which make up this configuration
+   *
+   * @invariant For each event `e` in `events_`, the set of
+   * dependencies of `e` is also contained in `events_`
+   *
+   * TODO: UDPOR enforces this invariant, but perhaps we should
+   * too?
    */
   EventSet events_;
 
@@ -41,7 +47,7 @@ private:
    * The <-maxmimal events of the configuration. These are
    * dynamically adjusted as events are added to the configuration
    *
-   * @invariant: Each event that is part of this set is
+   * @invariant Each event that is part of this set is
    *
    * 1. a <-maxmimal event of the configuration, in the sense that
    * there is no event in the configuration that is "greater" than it.
