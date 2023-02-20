@@ -163,21 +163,18 @@ void AppSide::handle_actors_status() const
 
   std::vector<s_mc_message_actors_status_one_t> status(num_actors);
   int i                 = 0;
-  int total_transitions = 0;
 
   for (auto const& [aid, actor] : actor_list) {
     status[i].aid            = aid;
     status[i].enabled        = mc::actor_is_enabled(actor);
     status[i].max_considered = actor->simcall_.observer_->get_max_consider();
     status[i].n_transitions  = mc::actor_is_enabled(actor) ? status[i].max_considered : 0;
-    total_transitions += status[i].n_transitions;
     i++;
   }
 
   struct s_mc_message_actors_status_answer_t answer = {};
   answer.type             = MessageType::ACTORS_STATUS_REPLY;
   answer.count            = num_actors;
-  answer.transition_count = total_transitions;
 
   xbt_assert(channel_.send(answer) == 0, "Could not send ACTORS_STATUS_REPLY msg");
   if (answer.count > 0) {

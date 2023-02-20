@@ -104,7 +104,6 @@ struct s_mc_message_restore_t {
 struct s_mc_message_actors_status_answer_t {
   simgrid::mc::MessageType type;
   int count;
-  int transition_count; // The total number of transitions sent as a payload to the checker
 };
 struct s_mc_message_actors_status_one_t { // an array of `s_mc_message_actors_status_one_t[count]` is sent right after
                                           // after a `s_mc_message_actors_status_answer_t`

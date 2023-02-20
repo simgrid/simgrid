@@ -94,11 +94,6 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
 
   // Message sanity checks
   xbt_assert(answer.count >= 0, "Received an ACTOR_STATUS_REPLY message with an actor count of '%d' < 0", answer.count);
-  xbt_assert(answer.transition_count >= 0, "Received an ACTOR_STATUS_REPLY message with transition_count '%d' < 0",
-             answer.transition_count);
-  xbt_assert(answer.transition_count == 0 || answer.count >= 0,
-             "Received an ACTOR_STATUS_REPLY message with no actor data "
-             "but with transition data nonetheless");
 
   std::vector<s_mc_message_actors_status_one_t> status(answer.count);
   if (answer.count > 0) {
@@ -106,15 +101,6 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
     ssize_t received = checker_side_->get_channel().receive(status.data(), size);
     xbt_assert(static_cast<size_t>(received) == size);
   }
-
-  // Ensures that each actor sends precisely `answer.transition_count` transitions. While technically
-  // this doesn't catch the edge case where actor A sends 3 instead of 2 and actor B sends 2 instead
-  // of 3 transitions, that is ignored here since that invariant needs to be enforced on the AppSide
-  const auto expected_transitions = std::accumulate(
-      status.begin(), status.end(), 0, [](int total, const auto& actor) { return total + actor.n_transitions; });
-  xbt_assert(expected_transitions == answer.transition_count,
-             "Expected to receive %d transition(s) but was only notified of %d by the app side", expected_transitions,
-             answer.transition_count);
 
   whereto.clear();
 
