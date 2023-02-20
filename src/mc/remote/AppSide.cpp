@@ -158,22 +158,16 @@ void AppSide::handle_initial_addresses()
 void AppSide::handle_actors_status() const
 {
   auto const& actor_list = kernel::EngineImpl::get_instance()->get_actor_list();
-  const int num_actors   = actor_list.size();
-  XBT_DEBUG("Serialize the actors to answer ACTORS_STATUS from the checker. %d actors to go.", num_actors);
+  XBT_DEBUG("Serialize the actors to answer ACTORS_STATUS from the checker. %zu actors to go.", actor_list.size());
 
-  std::vector<s_mc_message_actors_status_one_t> status(num_actors);
-  int i                 = 0;
-
-  for (auto const& [aid, actor] : actor_list) {
-    status[i].aid            = aid;
-    status[i].enabled        = mc::actor_is_enabled(actor);
-    status[i].max_considered = actor->simcall_.observer_->get_max_consider();
-    i++;
-  }
+  std::vector<s_mc_message_actors_status_one_t> status;
+  for (auto const& [aid, actor] : actor_list)
+    status.emplace_back(s_mc_message_actors_status_one_t{aid, mc::actor_is_enabled(actor),
+                                                         actor->simcall_.observer_->get_max_consider()});
 
   struct s_mc_message_actors_status_answer_t answer = {};
   answer.type             = MessageType::ACTORS_STATUS_REPLY;
-  answer.count            = num_actors;
+  answer.count            = static_cast<int>(status.size());
 
   xbt_assert(channel_.send(answer) == 0, "Could not send ACTORS_STATUS_REPLY msg");
   if (answer.count > 0) {
