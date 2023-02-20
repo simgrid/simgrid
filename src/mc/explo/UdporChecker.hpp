@@ -10,7 +10,6 @@
 #include "src/mc/explo/Exploration.hpp"
 #include "src/mc/explo/udpor/Configuration.hpp"
 #include "src/mc/explo/udpor/EventSet.hpp"
-#include "src/mc/explo/udpor/StateManager.hpp"
 #include "src/mc/explo/udpor/Unfolding.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
 #include "src/mc/mc_record.hpp"
@@ -73,12 +72,6 @@ private:
    * is used to keep track of all events which used to be important to UDPOR
    */
   EventSet G;
-
-  /**
-   * Maintains the mapping between handles referenced by events in
-   * the current state of the unfolding
-   */
-  StateManager state_manager_;
 
   /**
    * @brief UDPOR's current "view" of the program it is exploring

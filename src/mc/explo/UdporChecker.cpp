@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/UdporChecker.hpp"
+#include "src/mc/api/State.hpp"
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 

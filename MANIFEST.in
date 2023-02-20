@@ -2216,8 +2216,6 @@ include src/mc/explo/udpor/Configuration.hpp
 include src/mc/explo/udpor/Configuration.cpp
 include src/mc/explo/udpor/EventSet.cpp
 include src/mc/explo/udpor/EventSet.hpp
-include src/mc/explo/udpor/StateManager.cpp
-include src/mc/explo/udpor/StateManager.hpp
 include src/mc/explo/udpor/UnfoldingEvent.cpp
 include src/mc/explo/udpor/UnfoldingEvent.hpp
 include src/mc/explo/udpor/Unfolding.cpp

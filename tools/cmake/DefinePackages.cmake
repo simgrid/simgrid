@@ -529,8 +529,6 @@ set(MC_SRC
   src/mc/explo/udpor/Configuration.cpp
   src/mc/explo/udpor/EventSet.cpp
   src/mc/explo/udpor/EventSet.hpp
-  src/mc/explo/udpor/StateManager.cpp
-  src/mc/explo/udpor/StateManager.hpp
   src/mc/explo/udpor/UnfoldingEvent.cpp
   src/mc/explo/udpor/UnfoldingEvent.hpp
   src/mc/explo/udpor/Unfolding.cpp
