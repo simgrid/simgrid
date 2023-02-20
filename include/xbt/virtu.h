@@ -8,6 +8,7 @@
 #ifndef XBT_VIRTU_H
 #define XBT_VIRTU_H
 
+#include <simgrid/actor.h>
 #include <xbt/base.h>
 
 #ifdef __cplusplus
@@ -28,9 +29,15 @@ XBT_PUBLIC_DATA std::vector<std::string> cmdline;
 
 SG_BEGIN_DECL
 
-XBT_PUBLIC const char* xbt_procname(void);
+XBT_ATTRIB_DEPRECATED_v337("Please use sg_actor_self_get_name()") static const char* xbt_procname(void)
+{
+  return sg_actor_self_get_name() ?: "maestro";
+}
 
-XBT_PUBLIC int xbt_getpid(void);
+XBT_ATTRIB_DEPRECATED_v337("Please use sg_actor_self_get_pid()") static int xbt_getpid(void)
+{
+  return sg_actor_self_get_pid();
+};
 
 SG_END_DECL
 

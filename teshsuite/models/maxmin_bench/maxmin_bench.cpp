@@ -7,7 +7,6 @@
 
 #include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
-#include "xbt/module.h"
 #include "xbt/random.hpp"
 #include "xbt/sysdep.h" /* time manipulation for benchmarking */
 #include "xbt/xbt_os_time.h"

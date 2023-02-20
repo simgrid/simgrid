@@ -8,7 +8,6 @@
 #include "simgrid/s4u/Engine.hpp"
 #include "src/kernel/lmm/maxmin.hpp"
 #include "xbt/log.h"
-#include "xbt/module.h"
 #include "xbt/sysdep.h"
 #include <algorithm>
 #include <array>

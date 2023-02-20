@@ -15,8 +15,6 @@ SG_BEGIN_DECL
 
 void xbt_log_postexit(void);
 
-extern int xbt_initialized;
-
 SG_END_DECL
 
 #endif

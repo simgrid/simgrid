@@ -18,7 +18,6 @@
 #include "xbt/log.h"
 #include "xbt/log.hpp"
 #include "xbt/misc.h"
-#include "xbt/module.h" /* this module */
 #include "xbt/sysdep.h"
 
 #include <cmath>
@@ -38,13 +37,6 @@ std::string binary_name;          /* Name of the system process containing us (m
 std::vector<std::string> cmdline; /* all we got in argv */
 } // namespace simgrid::xbt
 
-
-int xbt_initialized = 0;
-simgrid::config::Flag<bool> cfg_dbg_clean_atexit{
-    "debug/clean-atexit",
-    "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.",
-    true};
-
 const int xbt_pagesize = static_cast<int>(sysconf(_SC_PAGESIZE));
 const int xbt_pagebits = static_cast<int>(log2(xbt_pagesize));
 
@@ -55,34 +47,6 @@ XBT_ATTRIB_NOINLINE void sthread_enable()
 XBT_ATTRIB_NOINLINE void sthread_disable()
 { //  when libsthread is LD_PRELOADED. In this case, sthread's implem gets used instead.
   asm("");
-}
-
-static void xbt_postexit()
-{
-  if (not cfg_dbg_clean_atexit)
-    return;
-  xbt_initialized--;
-  xbt_log_postexit();
-}
-
-/** @brief Initialize the xbt mechanisms. */
-void xbt_init(int *argc, char **argv)
-{
-  xbt_initialized++;
-  if (xbt_initialized > 1) {
-    XBT_DEBUG("XBT has been initialized %d times.", xbt_initialized);
-    return;
-  }
-  atexit(xbt_postexit);
-
-  simgrid::xbt::install_exception_handler();
-
-  if (*argc > 0)
-    simgrid::xbt::binary_name = argv[0];
-  for (int i = 0; i < *argc; i++)
-    simgrid::xbt::cmdline.emplace_back(argv[i]);
-
-  xbt_log_init(argc, argv);
 }
 
 /* these two functions belong to xbt/sysdep.h, which have no corresponding .c file */

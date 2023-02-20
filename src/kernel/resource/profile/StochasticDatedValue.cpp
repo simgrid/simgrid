@@ -4,8 +4,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/kernel/resource/profile/StochasticDatedValue.hpp"
-#include "xbt.h"
+
+#include "xbt/asserts.h"
 #include "xbt/random.hpp"
+
 #include <math.h>
 
 namespace simgrid::kernel::profile {

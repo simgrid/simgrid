@@ -20,7 +20,8 @@
 #include "src/simgrid/sg_config.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "src/xbt/xbt_modinter.h" /* whether initialization was already done */
-#include "xbt/module.h"
+
+#include "xbt/log.hpp"
 
 #include <boost/algorithm/string/predicate.hpp>
 #include <dlfcn.h>
@@ -139,6 +140,15 @@ static void install_signal_handlers()
   }
 }
 
+static simgrid::config::Flag<bool> cfg_dbg_clean_atexit{
+    "debug/clean-atexit", "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.", true};
+static void xbt_postexit()
+{
+  if (not cfg_dbg_clean_atexit)
+    return;
+  xbt_log_postexit();
+}
+
 namespace simgrid::kernel {
 
 EngineImpl::~EngineImpl()
@@ -175,8 +185,18 @@ void EngineImpl::initialize(int* argc, char** argv)
   simgrid::mc::AppSide::initialize();
 #endif
 
-  if (xbt_initialized == 0) {
-    xbt_init(argc, argv);
+  static bool inited = false;
+  if (not inited) {
+    inited = true;
+    atexit(xbt_postexit);
+    xbt_log_init(argc, argv);
+
+    simgrid::xbt::install_exception_handler();
+
+    if (*argc > 0)
+      simgrid::xbt::binary_name = argv[0];
+    for (int i = 0; i < *argc; i++)
+      simgrid::xbt::cmdline.emplace_back(argv[i]);
 
     sg_config_init(argc, argv);
   }
@@ -188,7 +208,7 @@ void EngineImpl::initialize(int* argc, char** argv)
   /* register a function to be called after the environment creation */
   s4u::Engine::on_platform_created_cb([this]() { this->presolve(); });
 
-  if (config::get_value<bool>("debug/clean-atexit"))
+  if (cfg_dbg_clean_atexit)
     atexit(shutdown);
 }
 

@@ -8,11 +8,20 @@
 #ifndef XBT_MODULE_H
 #define XBT_MODULE_H
 
-#include <xbt/misc.h>           /* XBT_PUBLIC */
+// avoid deprecation warning on include (remove entire file with XBT_ATTRIB_DEPRECATED_v337)
+#ifndef XBT_MODULE_H_NO_DEPRECATED_WARNING
+#warning xbt/module.h is deprecated and will be removed in v3.37.
+#endif
+
+#include <simgrid/engine.h>
+#include <xbt/base.h>
 
 SG_BEGIN_DECL
 
-XBT_PUBLIC void xbt_init(int* argc, char** argv);
+XBT_ATTRIB_DEPRECATED_v337("Please use simgrid_init(&argc, argv) instead") static void xbt_init(int* argc, char** argv)
+{
+  simgrid_init(argc, argv);
+}
 
 SG_END_DECL
 

@@ -72,6 +72,7 @@ XBT_PUBLIC void sg_actor_detach();
 XBT_PUBLIC sg_actor_t sg_actor_self();
 XBT_PUBLIC aid_t sg_actor_self_get_pid();
 XBT_PUBLIC aid_t sg_actor_self_get_ppid();
+/** Returns the name of the current actor (or "maestro" if maestro is running) */
 XBT_PUBLIC const char* sg_actor_self_get_name();
 XBT_PUBLIC void* sg_actor_self_get_data();
 XBT_PUBLIC void sg_actor_self_set_data(void* data);

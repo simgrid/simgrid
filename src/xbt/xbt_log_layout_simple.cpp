@@ -7,7 +7,8 @@
 
 #include "src/xbt/log_private.hpp"
 #include "xbt/sysdep.h"
-#include "xbt/virtu.h"
+#include <simgrid/actor.h>
+#include <simgrid/s4u/Actor.hpp>
 
 #include "simgrid/engine.h" /* simgrid_get_clock */
 #include "simgrid/host.h"   /* sg_host_self_get_name */
@@ -34,12 +35,12 @@ static bool xbt_log_layout_simple_doit(const s_xbt_log_layout_t*, xbt_log_event_
   check_overflow(1);
 
   /* Display the proc info if available */
-  procname = xbt_procname();
+  procname = sg_actor_self_get_name();
   if (procname && strcmp(procname,"maestro")) {
-    len = snprintf(p, rem_size, "%s:%s:(%d) ", sg_host_self_get_name(), procname, xbt_getpid());
+    len = snprintf(p, rem_size, "%s:%s:(%ld) ", sg_host_self_get_name(), procname, sg_actor_self_get_pid());
     check_overflow(len);
   } else if (not procname) {
-    len = snprintf(p, rem_size, "%s::(%d) ", sg_host_self_get_name(), xbt_getpid());
+    len = snprintf(p, rem_size, "%s::(%ld) ", sg_host_self_get_name(), sg_actor_self_get_pid());
     check_overflow(len);
   }
 

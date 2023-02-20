@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/Exception.hpp"
+#include "simgrid/engine.h"
 #include "src/xbt/mmalloc/mmalloc.h"
 #include "xbt.h"
 
@@ -34,7 +35,7 @@ int main(int argc, char**argv)
 {
   xbt_mheap_t heapA = nullptr;
   std::array<void*, TESTSIZE> pointers;
-  xbt_init(&argc,argv);
+  simgrid_init(&argc, argv);
 
   XBT_INFO("Allocating a new heap");
   unsigned long mask = ~((unsigned long)xbt_pagesize - 1);

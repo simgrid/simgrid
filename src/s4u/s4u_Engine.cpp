@@ -587,7 +587,7 @@ Engine* Engine::set_default_comm_data_copy_callback(
 /* **************************** Public C interface *************************** */
 void simgrid_init(int* argc, char** argv)
 {
-  static simgrid::s4u::Engine e(argc, argv);
+  simgrid::s4u::Engine::get_instance(argc, argv);
 }
 void simgrid_load_platform(const char* file)
 {

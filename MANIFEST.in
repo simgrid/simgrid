@@ -2499,7 +2499,6 @@ include src/xbt/xbt_parse_units.cpp
 include src/xbt/xbt_replay.cpp
 include src/xbt/xbt_str.cpp
 include src/xbt/xbt_str_test.cpp
-include src/xbt/xbt_virtu.cpp
 include teshsuite/kernel/CMakeLists.txt
 include teshsuite/mc/CMakeLists.txt
 include teshsuite/models/CMakeLists.txt

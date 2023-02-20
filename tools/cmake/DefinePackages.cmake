@@ -284,7 +284,6 @@ set(XBT_SRC
   src/xbt/xbt_parse_units.cpp
   src/xbt/xbt_replay.cpp
   src/xbt/xbt_str.cpp
-  src/xbt/xbt_virtu.cpp
   )
 
 if(HAVE_MMALLOC)

@@ -9,7 +9,9 @@
 #include "simgrid/host.h"
 #include "src/xbt/log_private.hpp"
 #include "xbt/sysdep.h"
-#include "xbt/virtu.h"
+#include <simgrid/actor.h>
+#include <simgrid/s4u/Actor.hpp>
+
 #include <algorithm>
 #include <cstdio>
 
@@ -67,6 +69,7 @@ static constexpr const char* ERRMSG =
   } else                                                                                                               \
     (void)0
 #define show_int(data) show_it((data), "d")
+#define show_long(data) show_it((data), "ld")
 #define show_double(data) show_it((data), "f")
 
 static bool xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_event_t ev, const char* msg_fmt)
@@ -134,10 +137,10 @@ static bool xbt_log_layout_format_doit(const s_xbt_log_layout_t* l, xbt_log_even
         case 't': /* thread/process name; LOG4J compliant */
         case 'P': /* Used before SimGrid 3.26 and kept for compatiblity. Should not hurt. */
         case 'a': /* actor name; SimGrid extension */
-          show_string(xbt_procname());
+          show_string(sg_actor_self_get_name());
           break;
         case 'i': /* actor ID; SimGrid extension */
-          show_int(xbt_getpid());
+          show_long(sg_actor_self_get_pid());
           break;
         case 'F': /* file name; LOG4J compliant */
           show_string(ev->fileName);
