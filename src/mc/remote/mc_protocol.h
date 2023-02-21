@@ -118,8 +118,8 @@ struct s_mc_message_actors_status_one_t { // an array of `s_mc_message_actors_st
 };
 
 // Answer from an actor to the question "what are you about to run?"
-struct s_mc_message_simcall_probe_one_t { // an array of `s_mc_message_simcall_probe_one_t[n_transitions]
-                                          // is sent right after a `s_mc_message_actors_status_one_t`
+struct s_mc_message_simcall_probe_one_t { // a series of `s_mc_message_simcall_probe_one_t`
+                                          // is sent right after `s_mc_message_actors_status_one_t[]`
   std::array<char, SIMCALL_SERIALIZATION_BUFFER_SIZE> buffer;
 };
 
