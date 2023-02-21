@@ -6,7 +6,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/xbt/log_private.hpp"
-#include "src/xbt/xbt_modinter.h"
 #include "xbt/string.hpp"
 #include "xbt/sysdep.h"
 
@@ -56,6 +55,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(log, xbt, "Loggings from the logging mechanism i
 
 static void xbt_log_help();
 static void xbt_log_help_categories();
+static void xbt_log_postexit();
 
 void xbt_log_init(int *argc, char **argv)
 {
@@ -64,6 +64,7 @@ void xbt_log_init(int *argc, char **argv)
   int parse_args          = 1; // Stop parsing the parameters once we found '--'
 
   xbt_log_control_set("xbt_help.app:stdout xbt_help.threshold:VERBOSE xbt_help.fmt:%m%n");
+  atexit(xbt_log_postexit);
 
   /* Set logs and init log submodule */
   for (int i = 1; i < *argc; i++) {
@@ -114,7 +115,7 @@ static void log_cat_exit(const s_xbt_log_category_t* cat)
     log_cat_exit(child);
 }
 
-void xbt_log_postexit(void)
+static void xbt_log_postexit(void)
 {
   XBT_VERB("Exiting log");
   log_cat_exit(&_XBT_LOGV(XBT_LOG_ROOT_CAT));

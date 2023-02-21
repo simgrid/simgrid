@@ -19,7 +19,6 @@
 #include "src/simgrid/math_utils.h"
 #include "src/simgrid/sg_config.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
-#include "src/xbt/xbt_modinter.h" /* whether initialization was already done */
 
 #include "xbt/log.hpp"
 
@@ -142,12 +141,6 @@ static void install_signal_handlers()
 
 static simgrid::config::Flag<bool> cfg_dbg_clean_atexit{
     "debug/clean-atexit", "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.", true};
-static void xbt_postexit()
-{
-  if (not cfg_dbg_clean_atexit)
-    return;
-  xbt_log_postexit();
-}
 
 namespace simgrid::kernel {
 
@@ -188,7 +181,6 @@ void EngineImpl::initialize(int* argc, char** argv)
   static bool inited = false;
   if (not inited) {
     inited = true;
-    atexit(xbt_postexit);
     xbt_log_init(argc, argv);
 
     simgrid::xbt::install_exception_handler();

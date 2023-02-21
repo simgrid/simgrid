@@ -8,7 +8,6 @@
 #include "xbt/dict.h"
 #include "dict_private.h"
 #include "simgrid/Exception.hpp"
-#include "src/xbt/xbt_modinter.h"
 #include "xbt/ex.h"
 #include "xbt/log.h"
 #include "xbt/mallocator.h"

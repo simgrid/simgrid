@@ -56,7 +56,6 @@ set(EXTRA_DIST
   src/xbt/log_private.hpp
   src/xbt/mallocator_private.h
   src/xbt/parmap.hpp
-  src/xbt/xbt_modinter.h
   
   src/xbt/mmalloc/mmalloc.h
   src/xbt/mmalloc/mfree.c

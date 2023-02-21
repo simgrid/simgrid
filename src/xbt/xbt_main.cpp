@@ -12,7 +12,6 @@
 #include "src/simgrid/sg_config.hpp"
 #include "src/sthread/sthread.h" // sthread_inside_simgrid
 #include "src/xbt/coverage.h"
-#include "src/xbt/xbt_modinter.h" /* prototype of other module's init/exit in XBT */
 #include "xbt/config.hpp"
 #include "xbt/dynar.h"
 #include "xbt/log.h"
