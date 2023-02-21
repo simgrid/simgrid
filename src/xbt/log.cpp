@@ -98,21 +98,24 @@ void xbt_log_init(int *argc, char **argv)
   }
 }
 
-static void log_cat_exit(const s_xbt_log_category_t* cat)
+static void log_cat_exit(xbt_log_category_t cat)
 {
   if (cat->appender) {
     if (cat->appender->free_)
       cat->appender->free_(cat->appender);
     xbt_free(cat->appender);
+    cat->appender = nullptr;
   }
   if (cat->layout) {
     if (cat->layout->free_)
       cat->layout->free_(cat->layout);
     xbt_free(cat->layout);
+    cat->layout = nullptr;
   }
 
   for (auto const* child = cat->firstChild; child != nullptr; child = child->nextSibling)
-    log_cat_exit(child);
+    log_cat_exit(const_cast<xbt_log_category_t>(child));
+  cat->firstChild = nullptr;
 }
 
 static void xbt_log_postexit(void)
