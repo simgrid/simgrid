@@ -27,8 +27,10 @@ public:
   explicit EventSet(std::unordered_set<UnfoldingEvent*>&& raw_events) : events_(raw_events) {}
   explicit EventSet(std::initializer_list<UnfoldingEvent*> event_list) : events_(std::move(event_list)) {}
 
-  inline auto begin() const { return this->events_.begin(); }
-  inline auto end() const { return this->events_.end(); }
+  auto begin() const { return this->events_.begin(); }
+  auto end() const { return this->events_.end(); }
+  auto cbegin() const { return this->events_.cbegin(); }
+  auto cend() const { return this->events_.cend(); }
 
   void remove(UnfoldingEvent*);
   void subtract(const EventSet&);

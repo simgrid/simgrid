@@ -79,8 +79,6 @@ public:
    * dependency graph for all events in this history
    */
   EventSet get_all_events() const;
-
-  EventSet get_event_diff_with(const EventSet& event_set) const;
   EventSet get_event_diff_with(const Configuration& config) const;
 };
 
