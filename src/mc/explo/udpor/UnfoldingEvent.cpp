@@ -7,9 +7,8 @@
 
 namespace simgrid::mc::udpor {
 
-UnfoldingEvent::UnfoldingEvent(std::shared_ptr<Transition> transition, EventSet immediate_causes,
-                               unsigned long event_id)
-    : associated_transition(std::move(transition)), immediate_causes(std::move(immediate_causes)), event_id(event_id)
+UnfoldingEvent::UnfoldingEvent(EventSet immediate_causes, std::shared_ptr<Transition> transition)
+    : associated_transition(std::move(transition)), immediate_causes(std::move(immediate_causes))
 {
 }
 

@@ -29,7 +29,7 @@ void UdporChecker::run()
 
   // TODO: Move computing the root configuration into a method on the Unfolding
   auto initial_state      = get_current_state();
-  auto root_event         = std::make_unique<UnfoldingEvent>(std::make_shared<Transition>(), EventSet());
+  auto root_event         = std::make_unique<UnfoldingEvent>(EventSet(), std::make_shared<Transition>());
   auto* root_event_handle = root_event.get();
   unfolding.insert(std::move(root_event));
   C_root.add_event(root_event_handle);

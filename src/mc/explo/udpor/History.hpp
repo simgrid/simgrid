@@ -6,8 +6,12 @@
 #ifndef SIMGRID_MC_UDPOR_HISTORY_HPP
 #define SIMGRID_MC_UDPOR_HISTORY_HPP
 
+#include "src/mc/explo/udpor/Configuration.hpp"
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/udpor_forward.hpp"
+
+#include <functional>
+#include <optional>
 
 namespace simgrid::mc::udpor {
 
@@ -44,6 +48,42 @@ private:
    */
   EventSet events_;
 
+  /**
+   * @brief An iterator which traverses the history of a set of events
+   */
+  struct Iterator {
+  private:
+    EventSet frontier;
+    EventSet current_history = EventSet();
+
+    std::optional<std::reference_wrapper<Configuration>> configuration;
+
+    friend History;
+
+  public:
+    Iterator(const EventSet& initial_events, std::optional<std::reference_wrapper<Configuration>> config = std::nullopt)
+        : frontier(initial_events), configuration(config)
+    {
+    }
+
+    Iterator& operator++();
+
+    auto operator->() { return frontier.begin().operator->(); }
+    auto operator*() const { return *frontier.begin(); }
+
+    // If what the iterator sees next is the same, we consider them
+    // to be the same iterator. This way, once the iterator has completed
+    // its search, it will be "equal" to an iterator searching nothing
+    bool operator==(const Iterator& other) { return this->frontier == other.frontier; }
+    bool operator!=(const Iterator& other) { return not(this->operator==(other)); }
+
+    using iterator_category = std::forward_iterator_tag;
+    using difference_type   = int; // # of steps between
+    using value_type        = UnfoldingEvent*;
+    using pointer           = value_type*;
+    using reference         = value_type&;
+  };
+
 public:
   History()                          = default;
   History(const History&)            = default;
@@ -52,6 +92,9 @@ public:
 
   explicit History(UnfoldingEvent* e) : events_({e}) {}
   explicit History(EventSet event_set) : events_(std::move(event_set)) {}
+
+  auto begin() const { return Iterator(events_); }
+  auto end() const { return Iterator(EventSet()); }
 
   /**
    * @brief Whether or not the given event is contained in the history

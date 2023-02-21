@@ -17,8 +17,8 @@ namespace simgrid::mc::udpor {
 
 class UnfoldingEvent {
 public:
-  UnfoldingEvent(std::shared_ptr<Transition> transition = std::make_unique<Transition>(),
-                 EventSet immediate_causes = EventSet(), unsigned long event_id = 0);
+  UnfoldingEvent(EventSet immediate_causes              = EventSet(),
+                 std::shared_ptr<Transition> transition = std::make_unique<Transition>());
 
   UnfoldingEvent(const UnfoldingEvent&)            = default;
   UnfoldingEvent& operator=(UnfoldingEvent const&) = default;
@@ -67,8 +67,6 @@ private:
    * so on.
    */
   EventSet immediate_causes;
-
-  unsigned long event_id = 0;
 };
 
 } // namespace simgrid::mc::udpor

@@ -20,6 +20,8 @@ public:
 
   auto begin() const { return this->events_.begin(); }
   auto end() const { return this->events_.end(); }
+
+  bool contains(UnfoldingEvent* e) const { return this->events_.contains(e); }
   const EventSet& get_events() const { return this->events_; }
   const EventSet& get_maximal_events() const { return this->max_events_; }
   UnfoldingEvent* get_latest_event() const { return this->newest_event; }
