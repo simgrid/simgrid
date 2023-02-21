@@ -21,7 +21,7 @@ void Unfolding::insert(std::unique_ptr<UnfoldingEvent> e)
 {
   UnfoldingEvent* handle = e.get();
   auto loc               = this->global_events_.find(handle);
-  if (loc == this->global_events_.end()) {
+  if (loc != this->global_events_.end()) {
     // This is bad: someone wrapped the raw event address twice
     // in two different unique ptrs and attempted to
     // insert it into the unfolding...
