@@ -7,6 +7,11 @@
 
 namespace simgrid::mc::udpor {
 
+UnfoldingEvent::UnfoldingEvent(std::initializer_list<UnfoldingEvent*> init_list)
+    : UnfoldingEvent(EventSet(std::move(init_list)))
+{
+}
+
 UnfoldingEvent::UnfoldingEvent(EventSet immediate_causes, std::shared_ptr<Transition> transition)
     : associated_transition(std::move(transition)), immediate_causes(std::move(immediate_causes))
 {

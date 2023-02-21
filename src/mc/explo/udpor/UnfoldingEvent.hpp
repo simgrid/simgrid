@@ -10,6 +10,7 @@
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 #include "src/mc/transition/Transition.hpp"
 
+#include <initializer_list>
 #include <memory>
 #include <string>
 
@@ -17,6 +18,7 @@ namespace simgrid::mc::udpor {
 
 class UnfoldingEvent {
 public:
+  UnfoldingEvent(std::initializer_list<UnfoldingEvent*> init_list);
   UnfoldingEvent(EventSet immediate_causes              = EventSet(),
                  std::shared_ptr<Transition> transition = std::make_unique<Transition>());
 

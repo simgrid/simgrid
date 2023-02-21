@@ -48,50 +48,13 @@ private:
    */
   EventSet events_;
 
-  /**
-   * @brief An iterator which traverses the history of a set of events
-   */
-  struct Iterator {
-  private:
-    EventSet frontier;
-    EventSet current_history = EventSet();
-
-    std::optional<std::reference_wrapper<Configuration>> configuration;
-
-    friend History;
-
-  public:
-    Iterator(const EventSet& initial_events, std::optional<std::reference_wrapper<Configuration>> config = std::nullopt)
-        : frontier(initial_events), configuration(config)
-    {
-    }
-
-    Iterator& operator++();
-
-    auto operator->() { return frontier.begin().operator->(); }
-    auto operator*() const { return *frontier.begin(); }
-
-    // If what the iterator sees next is the same, we consider them
-    // to be the same iterator. This way, once the iterator has completed
-    // its search, it will be "equal" to an iterator searching nothing
-    bool operator==(const Iterator& other) { return this->frontier == other.frontier; }
-    bool operator!=(const Iterator& other) { return not(this->operator==(other)); }
-
-    using iterator_category = std::forward_iterator_tag;
-    using difference_type   = int; // # of steps between
-    using value_type        = UnfoldingEvent*;
-    using pointer           = value_type*;
-    using reference         = value_type&;
-  };
-
 public:
-  History()                          = default;
   History(const History&)            = default;
   History& operator=(History const&) = default;
   History(History&&)                 = default;
 
   explicit History(UnfoldingEvent* e) : events_({e}) {}
-  explicit History(EventSet event_set) : events_(std::move(event_set)) {}
+  explicit History(EventSet event_set = EventSet()) : events_(std::move(event_set)) {}
 
   auto begin() const { return Iterator(events_); }
   auto end() const { return Iterator(EventSet()); }
@@ -123,6 +86,41 @@ public:
    */
   EventSet get_all_events() const;
   EventSet get_event_diff_with(const Configuration& config) const;
+
+private:
+  /**
+   * @brief An iterator which traverses the history of a set of events
+   */
+  struct Iterator {
+  private:
+    EventSet frontier;
+    EventSet current_history = EventSet();
+    std::optional<std::reference_wrapper<Configuration>> configuration;
+
+    friend History;
+
+  public:
+    Iterator(const EventSet& initial_events, std::optional<std::reference_wrapper<Configuration>> config = std::nullopt)
+        : frontier(initial_events), configuration(config)
+    {
+    }
+
+    Iterator& operator++();
+    auto operator->() { return frontier.begin().operator->(); }
+    auto operator*() const { return *frontier.begin(); }
+
+    // If what the iterator sees next is the same, we consider them
+    // to be the same iterator. This way, once the iterator has completed
+    // its search, it will be "equal" to an iterator searching nothing
+    bool operator==(const Iterator& other) { return this->frontier == other.frontier; }
+    bool operator!=(const Iterator& other) { return not(this->operator==(other)); }
+
+    using iterator_category = std::forward_iterator_tag;
+    using difference_type   = int; // # of steps between
+    using value_type        = UnfoldingEvent*;
+    using pointer           = value_type*;
+    using reference         = value_type&;
+  };
 };
 
 } // namespace simgrid::mc::udpor
