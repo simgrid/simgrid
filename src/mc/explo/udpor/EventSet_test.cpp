@@ -256,7 +256,7 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Set Equality")
   }
 }
 
-TEST_CASE("simgrid::mc::udpor::EventSet: Unions and Set Difference")
+TEST_CASE("simgrid::mc::udpor::EventSet: Set Union Tests")
 {
   UnfoldingEvent e1, e2, e3, e4;
 
@@ -299,14 +299,207 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Unions and Set Difference")
       A.form_union(A_equiv);
       REQUIRE(A == A_copy);
     }
+
+    SECTION("Union with a subset")
+    {
+      // A = A union D if D is a subset of A
+      EventSet A_union = A.make_union(D);
+      REQUIRE(A == A_union);
+
+      A.form_union(D);
+      REQUIRE(A == A_copy);
+    }
   }
 
-  SECTION("Unions with overlaps")
+  SECTION("Unions with partial overlaps")
   {
     EventSet A_union_B = A.make_union(B);
     REQUIRE(A_union_B == C);
 
     A.form_union(B);
     REQUIRE(A == C);
+
+    EventSet B_union_D = B.make_union(D);
+    REQUIRE(B_union_D == C);
+
+    B.form_union(D);
+    REQUIRE(B == C);
+  }
+
+  SECTION("Set union properties")
+  {
+    SECTION("Union operator is symmetric")
+    {
+      EventSet A_union_B = A.make_union(B);
+      EventSet B_union_A = B.make_union(A);
+      REQUIRE(A_union_B == B_union_A);
+    }
+
+    SECTION("Union operator commutes")
+    {
+      // The last SECTION tested pair-wise
+      // equivalence, so we only check
+      // one of each pai
+      EventSet AD = A.make_union(D);
+      EventSet AC = A.make_union(C);
+      EventSet CD = D.make_union(C);
+
+      EventSet ADC = AD.make_union(C);
+      EventSet ACD = AC.make_union(D);
+      EventSet CDA = CD.make_union(A);
+
+      REQUIRE(ADC == ACD);
+      REQUIRE(ACD == CDA);
+
+      // Test `form_union()` in the same way
+
+      EventSet A_copy = A;
+      EventSet C_copy = C;
+      EventSet D_copy = D;
+
+      A.form_union(C_copy);
+      A.form_union(D_copy);
+
+      D.form_union(A_copy);
+      D.form_union(C_copy);
+
+      C.form_union(A);
+      C.form_union(D);
+
+      REQUIRE(A == D);
+      REQUIRE(C == D);
+      REQUIRE(A == C);
+    }
+  }
+}
+
+TEST_CASE("simgrid::mc::udpor::EventSet: Set Difference Tests")
+{
+  UnfoldingEvent e1, e2, e3, e4;
+
+  // C = A + B
+  // A is a subset of C
+  // B is a subset of C
+  // D is a subset of A and C
+  // E is a subset of B and C
+  // F is a subset of A, C, and D
+  EventSet A{&e1, &e2, &e3}, B{&e2, &e3, &e4}, C{&e1, &e2, &e3, &e4}, D{&e1, &e3}, E{&e4}, F{&e1};
+
+  SECTION("Difference with no effect")
+  {
+    SECTION("Difference with empty set")
+    {
+      EventSet A_copy = A.subtracting(EventSet());
+      REQUIRE(A == A_copy);
+
+      A.subtract(EventSet());
+      REQUIRE(A == A_copy);
+    }
+
+    SECTION("Difference with empty intersection")
+    {
+      // A intersection E = empty set
+      EventSet A_copy = A.subtracting(E);
+      REQUIRE(A == A_copy);
+
+      A.subtract(E);
+      REQUIRE(A == A_copy);
+
+      EventSet D_copy = D.subtracting(E);
+      REQUIRE(D == D_copy);
+
+      D.subtract(E);
+      REQUIRE(D == D_copy);
+    }
+  }
+
+  SECTION("Difference with some overlap")
+  {
+    // A - B = {&e1} = F
+    EventSet A_minus_B = A.subtracting(B);
+    REQUIRE(A_minus_B == F);
+
+    // B - D = {&e2, &e4}
+    EventSet B_minus_D = B.subtracting(D);
+    REQUIRE(B_minus_D == EventSet({&e2, &e4}));
+  }
+
+  SECTION("Difference with complete overlap")
+  {
+    SECTION("Difference with same set gives empty set")
+    {
+      REQUIRE(A.subtracting(A) == EventSet());
+      REQUIRE(B.subtracting(B) == EventSet());
+      REQUIRE(C.subtracting(C) == EventSet());
+      REQUIRE(D.subtracting(D) == EventSet());
+      REQUIRE(E.subtracting(E) == EventSet());
+      REQUIRE(F.subtracting(F) == EventSet());
+    }
+
+    SECTION("Difference with superset gives empty set")
+    {
+      REQUIRE(A.subtracting(C) == EventSet());
+      REQUIRE(B.subtracting(C) == EventSet());
+      REQUIRE(D.subtracting(A) == EventSet());
+      REQUIRE(D.subtracting(C) == EventSet());
+      REQUIRE(E.subtracting(B) == EventSet());
+      REQUIRE(E.subtracting(C) == EventSet());
+      REQUIRE(F.subtracting(A) == EventSet());
+      REQUIRE(F.subtracting(C) == EventSet());
+      REQUIRE(F.subtracting(D) == EventSet());
+    }
+  }
+}
+
+TEST_CASE("simgrid::mc::udpor::EventSet: Subset Tests")
+{
+  UnfoldingEvent e1, e2, e3, e4;
+
+  // A is a subset of C only
+  // B is a subset of C only
+  // D is a subset of C and A
+  // D is NOT a subset of B
+  // B is NOT a subset of D
+  // ...
+  EventSet A{&e1, &e2, &e3}, B{&e2, &e3, &e4}, C{&e1, &e2, &e3, &e4}, D{&e1, &e3}, E{&e2, &e3}, F{&e1, &e2, &e3};
+
+  SECTION("Subset operator properties")
+  {
+    SECTION("Subset operator is not commutative")
+    {
+      REQUIRE(A.is_subset_of(C));
+      REQUIRE_FALSE(C.is_subset_of(A));
+
+      SECTION("Commutativity implies equality and vice versa")
+      {
+        REQUIRE(A.is_subset_of(F));
+        REQUIRE(F.is_subset_of(A));
+        REQUIRE(A == F);
+
+        REQUIRE(C == C);
+        REQUIRE(A.is_subset_of(F));
+        REQUIRE(F.is_subset_of(A));
+      }
+    }
+
+    SECTION("Subset operator is transitive")
+    {
+      REQUIRE(D.is_subset_of(A));
+      REQUIRE(A.is_subset_of(C));
+      REQUIRE(D.is_subset_of(C));
+      REQUIRE(E.is_subset_of(B));
+      REQUIRE(B.is_subset_of(C));
+      REQUIRE(E.is_subset_of(C));
+    }
+
+    SECTION("Subset operator is reflexive")
+    {
+      REQUIRE(A.is_subset_of(A));
+      REQUIRE(B.is_subset_of(B));
+      REQUIRE(C.is_subset_of(C));
+      REQUIRE(D.is_subset_of(D));
+      REQUIRE(E.is_subset_of(E));
+      REQUIRE(F.is_subset_of(F));
+    }
   }
 }
