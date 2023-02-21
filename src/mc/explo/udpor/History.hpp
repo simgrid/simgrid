@@ -92,19 +92,7 @@ private:
    * @brief An iterator which traverses the history of a set of events
    */
   struct Iterator {
-  private:
-    EventSet frontier;
-    EventSet current_history = EventSet();
-    std::optional<std::reference_wrapper<Configuration>> configuration;
-
-    friend History;
-
   public:
-    Iterator(const EventSet& initial_events, std::optional<std::reference_wrapper<Configuration>> config = std::nullopt)
-        : frontier(initial_events), configuration(config)
-    {
-    }
-
     Iterator& operator++();
     auto operator->() { return frontier.begin().operator->(); }
     auto operator*() const { return *frontier.begin(); }
@@ -115,11 +103,20 @@ private:
     bool operator==(const Iterator& other) { return this->frontier == other.frontier; }
     bool operator!=(const Iterator& other) { return not(this->operator==(other)); }
 
-    using iterator_category = std::forward_iterator_tag;
-    using difference_type   = int; // # of steps between
-    using value_type        = UnfoldingEvent*;
-    using pointer           = value_type*;
-    using reference         = value_type&;
+    using iterator_category      = std::forward_iterator_tag;
+    using difference_type        = int; // # of steps between
+    using value_type             = UnfoldingEvent*;
+    using pointer                = value_type*;
+    using reference              = value_type&;
+    using optional_configuration = std::optional<std::reference_wrapper<const Configuration>>;
+
+    Iterator(const EventSet& initial_events, optional_configuration config = std::nullopt);
+
+  private:
+    EventSet frontier;
+    EventSet current_history = EventSet();
+    optional_configuration configuration;
+    friend History;
   };
 };
 

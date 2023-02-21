@@ -50,6 +50,7 @@ public:
   bool empty() const;
   bool contains(UnfoldingEvent*) const;
   bool is_subset_of(const EventSet&) const;
+  bool is_valid_configuration() const;
 
   bool operator==(const EventSet& other) const { return this->events_ == other.events_; }
   bool operator!=(const EventSet& other) const { return this->events_ != other.events_; }

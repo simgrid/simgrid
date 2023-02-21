@@ -170,7 +170,7 @@ TEST_CASE("simgrid::mc::udpor::History: History generation")
       REQUIRE_FALSE(history_e3e5.contains(&e7));
     }
 
-    SECTION("Nodes with the different ancestors")
+    SECTION("Nodes with different ancestors")
     {
       History history_e4e7(EventSet({&e4, &e7}));
       REQUIRE(history_e4e7.get_all_events() == EventSet({&e1, &e2, &e4, &e6, &e7}));
@@ -196,17 +196,22 @@ TEST_CASE("simgrid::mc::udpor::History: History generation")
       REQUIRE_FALSE(history_e2356.contains(&e7));
     }
 
-    SECTION("History of the entire graph is the entire graph")
+    SECTION("History of the entire graph yields the entire graph")
     {
-      History history_e2356(EventSet({&e1, &e2, &e3, &e4, &e5, &e6, &e7}));
-      REQUIRE(history_e2356.get_all_events() == EventSet({&e1, &e2, &e3, &e4, &e5, &e6, &e7}));
-      REQUIRE(history_e2356.contains(&e1));
-      REQUIRE(history_e2356.contains(&e2));
-      REQUIRE(history_e2356.contains(&e3));
-      REQUIRE(history_e2356.contains(&e4));
-      REQUIRE(history_e2356.contains(&e5));
-      REQUIRE(history_e2356.contains(&e6));
-      REQUIRE(history_e2356.contains(&e7));
+      History history(EventSet({&e1, &e2, &e3, &e4, &e5, &e6, &e7}));
+      REQUIRE(history.get_all_events() == EventSet({&e1, &e2, &e3, &e4, &e5, &e6, &e7}));
+      REQUIRE(history.contains(&e1));
+      REQUIRE(history.contains(&e2));
+      REQUIRE(history.contains(&e3));
+      REQUIRE(history.contains(&e4));
+      REQUIRE(history.contains(&e5));
+      REQUIRE(history.contains(&e6));
+      REQUIRE(history.contains(&e7));
     }
+  }
+
+  SECTION("History with masking configuration")
+  {
+    Configuration configuration;
   }
 }

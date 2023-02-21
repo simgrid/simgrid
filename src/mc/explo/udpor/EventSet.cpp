@@ -5,6 +5,7 @@
 
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/Configuration.hpp"
+#include "src/mc/explo/udpor/History.hpp"
 
 #include <iterator>
 
@@ -105,6 +106,19 @@ bool EventSet::is_subset_of(const EventSet& other) const
   // the set difference will contain that element and the
   // result won't be empty
   return subtracting(other).empty();
+}
+
+bool EventSet::is_valid_configuration() const
+{
+  /// @invariant: A collection of events `E` is a configuration
+  /// if and only if following while following the history of
+  /// each event `e` of `E`you remain in `E`. In other words, you
+  /// only see events from set `E`
+  ///
+  /// The proof is based on the definition of a configuration
+  /// which requires that all
+  const History history(*this);
+  return std::all_of(history.begin(), history.end(), [=](UnfoldingEvent* e) { return this->contains(e); });
 }
 
 } // namespace simgrid::mc::udpor

@@ -11,14 +11,17 @@
 
 namespace simgrid::mc::udpor {
 
+History::Iterator::Iterator(const EventSet& initial_events, optional_configuration config)
+    : frontier(initial_events), configuration(config)
+{
+}
+
 History::Iterator& History::Iterator::operator++()
 {
   if (not frontier.empty()) {
     // "Pop" the event at the "front"
     UnfoldingEvent* e = *frontier.begin();
     frontier.remove(e);
-
-    // If we've seen this event before, skip it
 
     // If there is a configuration and if the
     // event is in it, skip it: the event and
@@ -34,8 +37,8 @@ History::Iterator& History::Iterator::operator++()
 
     // Perform the expansion with all viable expansions
     EventSet candidates = e->get_immediate_causes();
-    candidates.subtract(current_history);
 
+    candidates.subtract(current_history);
     frontier.form_union(std::move(candidates));
   }
   return *this;
@@ -59,16 +62,14 @@ bool History::contains(UnfoldingEvent* e) const
 
 EventSet History::get_event_diff_with(const Configuration& config) const
 {
-  // auto wrapped_config = std::optional<std::reference_wrapper<Configuration>>(config);
-  // auto first          = Iterator(events_, wrapped_config);
-  // const auto last     = this->end();
+  auto wrapped_config = std::optional<std::reference_wrapper<const Configuration>>{config};
+  auto first          = Iterator(events_, std::move(wrapped_config));
+  const auto last     = this->end();
 
-  // for (; first != last; ++first)
-  //   ;
+  for (; first != last; ++first)
+    ;
 
-  // return first.current_history;
-  // TODO: Implement this
-  return EventSet();
+  return first.current_history;
 }
 
 } // namespace simgrid::mc::udpor
