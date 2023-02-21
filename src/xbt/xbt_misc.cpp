@@ -1,4 +1,4 @@
-/* module handling                                                          */
+/* Various pieces of code which don't fit in any module                     */
 
 /* Copyright (c) 2006-2023. The SimGrid Team. All rights reserved.          */
 
@@ -7,34 +7,21 @@
 
 #define XBT_LOG_LOCALLY_DEFINE_XBT_CHANNEL /* MSVC don't want it to be declared extern in headers and local here */
 
-#include "simgrid/config.h"
 #include "src/internal_config.h"
-#include "src/simgrid/sg_config.hpp"
 #include "src/sthread/sthread.h" // sthread_inside_simgrid
 #include "src/xbt/coverage.h"
-#include "xbt/config.hpp"
-#include "xbt/dynar.h"
 #include "xbt/log.h"
-#include "xbt/log.hpp"
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
 
 #include <cmath>
-#include <cstdio>
 #if HAVE_UNISTD_H
-# include <unistd.h>
+#include <unistd.h>
 #endif
-#include <string>
-#include <vector>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(module, xbt, "module handling");
-
-XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories"); /* lives here even if that's a bit odd to solve linking issues: this is used in xbt_log_file_appender to detect whether SMPI is used (and thus whether we should unbench the writing to disk) */
-
-namespace simgrid::xbt {
-std::string binary_name;          /* Name of the system process containing us (mandatory to retrieve neat backtraces) */
-std::vector<std::string> cmdline; /* all we got in argv */
-} // namespace simgrid::xbt
+XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories"); /* lives here even if that's a bit odd to solve linking issues: this
+                                                      is used in xbt_log_file_appender to detect whether SMPI is used
+                                                      (and thus whether we should unbench the writing to disk) */
 
 const int xbt_pagesize = static_cast<int>(sysconf(_SC_PAGESIZE));
 const int xbt_pagebits = static_cast<int>(log2(xbt_pagesize));

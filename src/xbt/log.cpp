@@ -113,8 +113,8 @@ static void log_cat_exit(xbt_log_category_t cat)
     cat->layout = nullptr;
   }
 
-  for (auto const* child = cat->firstChild; child != nullptr; child = child->nextSibling)
-    log_cat_exit(const_cast<xbt_log_category_t>(child));
+  for (auto* child = cat->firstChild; child != nullptr; child = child->nextSibling)
+    log_cat_exit(child);
   cat->firstChild = nullptr;
 }
 

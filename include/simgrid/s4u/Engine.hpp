@@ -200,7 +200,10 @@ public:
     return res;
   }
 
-  kernel::EngineImpl* get_impl() const { return pimpl; }
+  kernel::EngineImpl* get_impl() const
+  {
+    return pimpl_;
+  }
 
   /** Returns whether SimGrid was initialized yet -- mostly for internal use */
   static bool is_initialized();
@@ -256,7 +259,7 @@ private:
   static xbt::signal<void(void)> on_deadlock;
   static xbt::signal<void()> on_simulation_end;
 
-  kernel::EngineImpl* const pimpl;
+  kernel::EngineImpl* const pimpl_;
   static Engine* instance_;
   void initialize(int* argc, char** argv);
 };

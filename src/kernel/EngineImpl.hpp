@@ -102,8 +102,14 @@ public:
   const std::vector<resource::Model*>& get_all_models() const { return models_; }
 
   static bool has_instance() { return s4u::Engine::has_instance(); }
-  static EngineImpl* get_instance() { return s4u::Engine::get_instance()->pimpl; }
-  static EngineImpl* get_instance(int* argc, char** argv) { return s4u::Engine::get_instance(argc, argv)->pimpl; }
+  static EngineImpl* get_instance()
+  {
+    return s4u::Engine::get_instance()->pimpl_;
+  }
+  static EngineImpl* get_instance(int* argc, char** argv)
+  {
+    return s4u::Engine::get_instance(argc, argv)->pimpl_;
+  }
 
   actor::ActorCodeFactory get_function(const std::string& name)
   {

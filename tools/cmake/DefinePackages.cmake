@@ -277,7 +277,7 @@ set(XBT_SRC
   src/xbt/xbt_log_appender_file.cpp
   src/xbt/xbt_log_layout_format.cpp
   src/xbt/xbt_log_layout_simple.cpp
-  src/xbt/xbt_main.cpp
+  src/xbt/xbt_misc.cpp
   src/xbt/xbt_os_file.cpp
   src/xbt/xbt_os_time.c
   src/xbt/xbt_parse_units.cpp

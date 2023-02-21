@@ -42,20 +42,20 @@ void Engine::initialize(int* argc, char** argv)
   xbt_assert(Engine::instance_ == nullptr, "It is currently forbidden to create more than one instance of s4u::Engine");
   Engine::instance_ = this;
   instr::init();
-  pimpl->initialize(argc, argv);
+  pimpl_->initialize(argc, argv);
   // Either create a new context with maestro or create
   // a context object with the current context maestro):
   kernel::actor::create_maestro(maestro_code);
 }
 
-Engine::Engine(std::string name) : pimpl(new kernel::EngineImpl())
+Engine::Engine(std::string name) : pimpl_(new kernel::EngineImpl())
 {
   int argc   = 1;
   char* argv = &name[0];
   initialize(&argc, &argv);
 }
 
-Engine::Engine(int* argc, char** argv) : pimpl(new kernel::EngineImpl())
+Engine::Engine(int* argc, char** argv) : pimpl_(new kernel::EngineImpl())
 {
   initialize(argc, argv);
 }
@@ -83,7 +83,7 @@ Engine* Engine::get_instance(int* argc, char** argv)
 }
 const std::vector<std::string>& Engine::get_cmdline() const
 {
-  return pimpl->get_cmdline();
+  return pimpl_->get_cmdline();
 }
 
 void Engine::shutdown() // XBT_ATTRIB_DEPRECATED_v335
@@ -103,22 +103,22 @@ double Engine::get_clock()
 void Engine::add_model(std::shared_ptr<kernel::resource::Model> model,
                        const std::vector<kernel::resource::Model*>& dependencies)
 {
-  kernel::actor::simcall_answered([this, &model, &dependencies] { pimpl->add_model(std::move(model), dependencies); });
+  kernel::actor::simcall_answered([this, &model, &dependencies] { pimpl_->add_model(std::move(model), dependencies); });
 }
 
 const std::vector<simgrid::kernel::resource::Model*>& Engine::get_all_models() const
 {
-  return pimpl->get_all_models();
+  return pimpl_->get_all_models();
 }
 
 void Engine::load_platform(const std::string& platf) const
 {
-  pimpl->load_platform(platf);
+  pimpl_->load_platform(platf);
 }
 
 void Engine::seal_platform() const
 {
-  pimpl->seal_platform();
+  pimpl_->seal_platform();
 }
 
 static void flatify_hosts(Engine const& engine, std::stringstream& ss)
@@ -287,12 +287,12 @@ void Engine::register_default(const std::function<void(int, char**)>& code)
 }
 void Engine::register_default(const kernel::actor::ActorCodeFactory& code)
 {
-  simgrid::kernel::actor::simcall_answered([this, &code]() { pimpl->register_default(code); });
+  simgrid::kernel::actor::simcall_answered([this, &code]() { pimpl_->register_default(code); });
 }
 
 void Engine::register_function(const std::string& name, const kernel::actor::ActorCodeFactory& code)
 {
-  simgrid::kernel::actor::simcall_answered([this, name, &code]() { pimpl->register_function(name, code); });
+  simgrid::kernel::actor::simcall_answered([this, name, &code]() { pimpl_->register_function(name, code); });
 }
 
 /** Load a deployment file and launch the actors that it contains
@@ -303,7 +303,7 @@ void Engine::register_function(const std::string& name, const kernel::actor::Act
  */
 void Engine::load_deployment(const std::string& deploy) const
 {
-  pimpl->load_deployment(deploy);
+  pimpl_->load_deployment(deploy);
 }
 
 /** Returns the amount of hosts in the platform */
@@ -320,8 +320,8 @@ std::vector<Host*> Engine::get_all_hosts() const
 std::vector<Host*> Engine::get_filtered_hosts(const std::function<bool(Host*)>& filter) const
 {
   std::vector<Host*> hosts;
-  if (pimpl->netzone_root_) {
-    hosts = pimpl->netzone_root_->get_filtered_hosts(filter);
+  if (pimpl_->netzone_root_) {
+    hosts = pimpl_->netzone_root_->get_filtered_hosts(filter);
   }
   /* Sort hosts in lexicographical order: keep same behavior when the hosts were saved on Engine
    * Some tests do a get_all_hosts() and selects hosts in this order */
@@ -346,8 +346,8 @@ Host* Engine::host_by_name(const std::string& name) const
 Host* Engine::host_by_name_or_null(const std::string& name) const
 {
   Host* host = nullptr;
-  if (pimpl->netzone_root_) {
-    auto* host_impl = pimpl->netzone_root_->get_host_by_name_or_null(name);
+  if (pimpl_->netzone_root_) {
+    auto* host_impl = pimpl_->netzone_root_->get_host_by_name_or_null(name);
     if (host_impl)
       host = host_impl->get_iface();
   }
@@ -368,7 +368,8 @@ Link* Engine::link_by_name(const std::string& name) const
 
 SplitDuplexLink* Engine::split_duplex_link_by_name(const std::string& name) const
 {
-  auto* link_impl = pimpl->netzone_root_ ? pimpl->netzone_root_->get_split_duplex_link_by_name_or_null(name) : nullptr;
+  auto* link_impl =
+      pimpl_->netzone_root_ ? pimpl_->netzone_root_->get_split_duplex_link_by_name_or_null(name) : nullptr;
   if (not link_impl)
     throw std::invalid_argument("Link not found: " + name);
   return link_impl->get_iface();
@@ -378,11 +379,11 @@ SplitDuplexLink* Engine::split_duplex_link_by_name(const std::string& name) cons
 Link* Engine::link_by_name_or_null(const std::string& name) const
 {
   Link* link = nullptr;
-  if (pimpl->netzone_root_) {
+  if (pimpl_->netzone_root_) {
     /* keep behavior where internal __loopback__ link from network model is given to user */
     if (name == "__loopback__")
-      return pimpl->netzone_root_->get_network_model()->loopback_->get_iface();
-    auto* link_impl = pimpl->netzone_root_->get_link_by_name_or_null(name);
+      return pimpl_->netzone_root_->get_network_model()->loopback_->get_iface();
+    auto* link_impl = pimpl_->netzone_root_->get_link_by_name_or_null(name);
     if (link_impl)
       link = link_impl->get_iface();
   }
@@ -394,7 +395,7 @@ Mailbox* Engine::mailbox_by_name_or_create(const std::string& name) const
 {
   /* two actors may have pushed the same mbox_create simcall at the same time */
   kernel::activity::MailboxImpl* mbox = kernel::actor::simcall_answered([&name, this] {
-    auto [m, inserted] = pimpl->mailboxes_.try_emplace(name, nullptr);
+    auto [m, inserted] = pimpl_->mailboxes_.try_emplace(name, nullptr);
     if (inserted) {
       m->second = new kernel::activity::MailboxImpl(name);
       XBT_DEBUG("Creating a mailbox at %p with name %s", m->second, name.c_str());
@@ -408,10 +409,10 @@ Mailbox* Engine::mailbox_by_name_or_create(const std::string& name) const
 size_t Engine::get_link_count() const
 {
   int count = 0;
-  if (pimpl->netzone_root_) {
-    count += pimpl->netzone_root_->get_link_count();
+  if (pimpl_->netzone_root_) {
+    count += pimpl_->netzone_root_->get_link_count();
     /* keep behavior where internal __loopback__ link from network model is given to user */
-    count += pimpl->netzone_root_->get_network_model()->loopback_ ? 1 : 0;
+    count += pimpl_->netzone_root_->get_network_model()->loopback_ ? 1 : 0;
   }
   return count;
 }
@@ -425,25 +426,25 @@ std::vector<Link*> Engine::get_all_links() const
 std::vector<Link*> Engine::get_filtered_links(const std::function<bool(Link*)>& filter) const
 {
   std::vector<Link*> res;
-  if (pimpl->netzone_root_) {
-    res = pimpl->netzone_root_->get_filtered_links(filter);
+  if (pimpl_->netzone_root_) {
+    res = pimpl_->netzone_root_->get_filtered_links(filter);
     /* keep behavior where internal __loopback__ link from network model is given to user */
-    if (pimpl->netzone_root_->get_network_model()->loopback_ &&
-        filter(pimpl->netzone_root_->get_network_model()->loopback_->get_iface()))
-      res.push_back(pimpl->netzone_root_->get_network_model()->loopback_->get_iface());
+    if (pimpl_->netzone_root_->get_network_model()->loopback_ &&
+        filter(pimpl_->netzone_root_->get_network_model()->loopback_->get_iface()))
+      res.push_back(pimpl_->netzone_root_->get_network_model()->loopback_->get_iface());
   }
   return res;
 }
 
 size_t Engine::get_actor_count() const
 {
-  return pimpl->get_actor_count();
+  return pimpl_->get_actor_count();
 }
 
 std::vector<ActorPtr> Engine::get_all_actors() const
 {
   std::vector<ActorPtr> actor_list;
-  for (auto const& [_, actor] : pimpl->get_actor_list()) {
+  for (auto const& [_, actor] : pimpl_->get_actor_list()) {
     actor_list.push_back(actor->get_iface());
   }
   return actor_list;
@@ -452,7 +453,7 @@ std::vector<ActorPtr> Engine::get_all_actors() const
 std::vector<ActorPtr> Engine::get_filtered_actors(const std::function<bool(ActorPtr)>& filter) const
 {
   std::vector<ActorPtr> actor_list;
-  for (auto const& [_, actor] : pimpl->get_actor_list()) {
+  for (auto const& [_, actor] : pimpl_->get_actor_list()) {
     if (filter(actor->get_iface()))
       actor_list.push_back(actor->get_iface());
   }
@@ -473,7 +474,7 @@ void Engine::run_until(double max_date) const
   fflush(stdout);
   fflush(stderr);
 
-  pimpl->run(max_date);
+  pimpl_->run(max_date);
 }
 
 void Engine::track_vetoed_activities(std::set<Activity*>* vetoed_activities) const
@@ -484,15 +485,15 @@ void Engine::track_vetoed_activities(std::set<Activity*>* vetoed_activities) con
 /** @brief Retrieve the root netzone, containing all others */
 s4u::NetZone* Engine::get_netzone_root() const
 {
-  if (pimpl->netzone_root_)
-    return pimpl->netzone_root_->get_iface();
+  if (pimpl_->netzone_root_)
+    return pimpl_->netzone_root_->get_iface();
   return nullptr;
 }
 /** @brief Set the root netzone, containing all others. Once set, it cannot be changed. */
 void Engine::set_netzone_root(const s4u::NetZone* netzone)
 {
-  xbt_assert(pimpl->netzone_root_ == nullptr, "The root NetZone cannot be changed once set");
-  pimpl->netzone_root_ = netzone->get_impl();
+  xbt_assert(pimpl_->netzone_root_ == nullptr, "The root NetZone cannot be changed once set");
+  pimpl_->netzone_root_ = netzone->get_impl();
 }
 
 static NetZone* netzone_by_name_recursive(NetZone* current, const std::string& name)
@@ -518,8 +519,8 @@ NetZone* Engine::netzone_by_name_or_null(const std::string& name) const
 /** @brief Retrieve the netpoint of the given name (or nullptr if not found) */
 kernel::routing::NetPoint* Engine::netpoint_by_name_or_null(const std::string& name) const
 {
-  auto netp = pimpl->netpoints_.find(name);
-  return netp == pimpl->netpoints_.end() ? nullptr : netp->second;
+  auto netp = pimpl_->netpoints_.find(name);
+  return netp == pimpl_->netpoints_.end() ? nullptr : netp->second;
 }
 
 kernel::routing::NetPoint* Engine::netpoint_by_name(const std::string& name) const
@@ -534,7 +535,7 @@ kernel::routing::NetPoint* Engine::netpoint_by_name(const std::string& name) con
 std::vector<kernel::routing::NetPoint*> Engine::get_all_netpoints() const
 {
   std::vector<kernel::routing::NetPoint*> res;
-  for (auto const& [_, netpoint] : pimpl->netpoints_)
+  for (auto const& [_, netpoint] : pimpl_->netpoints_)
     res.push_back(netpoint);
   return res;
 }
@@ -542,14 +543,14 @@ std::vector<kernel::routing::NetPoint*> Engine::get_all_netpoints() const
 /** @brief Register a new netpoint to the system */
 void Engine::netpoint_register(kernel::routing::NetPoint* point)
 {
-  simgrid::kernel::actor::simcall_answered([this, point] { pimpl->netpoints_[point->get_name()] = point; });
+  simgrid::kernel::actor::simcall_answered([this, point] { pimpl_->netpoints_[point->get_name()] = point; });
 }
 
 /** @brief Unregister a given netpoint */
 void Engine::netpoint_unregister(kernel::routing::NetPoint* point)
 {
   kernel::actor::simcall_answered([this, point] {
-    pimpl->netpoints_.erase(point->get_name());
+    pimpl_->netpoints_.erase(point->get_name());
     delete point;
   });
 }

@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This file defines all possible exception that could occur in a SimGrid library. */
+/* This file defines all possible exceptions that could occur in a SimGrid library. */
 
 #ifndef SIMGRID_EXCEPTIONS_HPP
 #define SIMGRID_EXCEPTIONS_HPP
