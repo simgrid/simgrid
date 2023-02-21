@@ -81,6 +81,10 @@ Engine* Engine::get_instance(int* argc, char** argv)
   }
   return Engine::instance_;
 }
+const std::vector<std::string>& Engine::get_cmdline() const
+{
+  return pimpl->get_cmdline();
+}
 
 void Engine::shutdown() // XBT_ATTRIB_DEPRECATED_v335
 {

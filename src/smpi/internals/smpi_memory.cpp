@@ -5,9 +5,9 @@
 
 #include "private.hpp"
 #include "src/internal_config.h"
+#include "src/kernel/EngineImpl.hpp"
 #include "src/smpi/include/smpi_actor.hpp"
 #include "src/xbt/memory_map.hpp"
-#include "xbt/virtu.h"
 
 #include <algorithm>
 #include <cerrno>
@@ -52,8 +52,9 @@ void smpi_prepare_global_memory_segment()
 
 static void smpi_get_executable_global_size()
 {
-  char* buffer = realpath(simgrid::xbt::binary_name.c_str(), nullptr);
-  xbt_assert(buffer != nullptr, "Could not resolve real path of binary file '%s'", simgrid::xbt::binary_name.c_str());
+  auto* binary_name = simgrid::kernel::EngineImpl::get_instance()->get_cmdline().front().c_str();
+  char* buffer      = realpath(binary_name, nullptr);
+  xbt_assert(buffer != nullptr, "Could not resolve real path of binary file '%s'", binary_name);
   std::string full_name = buffer;
   free(buffer);
 

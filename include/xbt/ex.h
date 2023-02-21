@@ -11,7 +11,6 @@
 #include <xbt/base.h>
 #include <xbt/misc.h>
 #include <xbt/sysdep.h>
-#include <xbt/virtu.h>
 
 /** @addtogroup XBT_ex_c
  *  @brief Exceptions support (C)

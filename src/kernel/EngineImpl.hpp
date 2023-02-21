@@ -57,6 +57,7 @@ class EngineImpl {
   std::unique_ptr<void, std::function<int(void*)>> platf_handle_; //!< handle for platform library
   friend s4u::Engine;
 
+  std::vector<std::string> cmdline_; // Copy of the argv we got (including argv[0])
 public:
   EngineImpl() = default;
 
@@ -69,6 +70,10 @@ public:
 #endif
 
   void initialize(int* argc, char** argv);
+  const std::vector<std::string>& get_cmdline() const
+  {
+    return cmdline_;
+  }
   void load_platform(const std::string& platf);
   void load_deployment(const std::string& file) const;
   void seal_platform() const;

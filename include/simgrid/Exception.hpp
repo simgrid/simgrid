@@ -8,6 +8,7 @@
 #ifndef SIMGRID_EXCEPTIONS_HPP
 #define SIMGRID_EXCEPTIONS_HPP
 
+#include <simgrid/actor.h>
 #include <xbt/backtrace.hpp>
 #include <xbt/ex.h>
 #include <xbt/string.hpp>

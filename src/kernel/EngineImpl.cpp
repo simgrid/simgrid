@@ -193,10 +193,8 @@ void EngineImpl::initialize(int* argc, char** argv)
 
     simgrid::xbt::install_exception_handler();
 
-    if (*argc > 0)
-      simgrid::xbt::binary_name = argv[0];
     for (int i = 0; i < *argc; i++)
-      simgrid::xbt::cmdline.emplace_back(argv[i]);
+      cmdline_.emplace_back(argv[i]);
 
     sg_config_init(argc, argv);
   }
