@@ -1,3 +1,8 @@
+/* Copyright (c) 2002-2023. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 /* SimGrid's pthread interposer. Redefinition of the pthread symbols (see the comment in sthread.h) */
 
 #define _GNU_SOURCE
@@ -31,6 +36,9 @@ static sem_t* (*raw_sem_open)(const char*, int);
 static int (*raw_sem_init)(sem_t*, int, unsigned int);
 static int (*raw_sem_wait)(sem_t*);
 static int (*raw_sem_post)(sem_t*);
+static int (*raw_sem_destroy)(sem_t*);
+static int (*raw_sem_trywait)(sem_t*);
+static int (*raw_sem_timedwait)(sem_t*, const struct timespec*);
 
 static void intercepter_init()
 {
@@ -50,6 +58,9 @@ static void intercepter_init()
   raw_sem_init = dlsym(RTLD_NEXT, "sem_init");
   raw_sem_wait = dlsym(RTLD_NEXT, "sem_wait");
   raw_sem_post = dlsym(RTLD_NEXT, "sem_post");
+  raw_sem_destroy   = dlsym(RTLD_NEXT, "sem_destroy");
+  raw_sem_trywait   = dlsym(RTLD_NEXT, "sem_trywait");
+  raw_sem_timedwait = dlsym(RTLD_NEXT, "sem_timedwait");
 }
 
 static int sthread_inside_simgrid = 1;
@@ -155,6 +166,84 @@ int pthread_mutex_destroy(pthread_mutex_t* mutex)
   sthread_enable();
   return res;
 }
+int sem_init(sem_t* sem, int pshared, unsigned int value)
+{
+  if (raw_sem_init == NULL)
+    intercepter_init();
+
+  if (sthread_inside_simgrid)
+    return raw_sem_init(sem, pshared, value);
+
+  sthread_disable();
+  int res = sthread_sem_init((sthread_sem_t*)sem, pshared, value);
+  sthread_enable();
+  return res;
+}
+int sem_destroy(sem_t* sem)
+{
+  if (raw_sem_destroy == NULL)
+    intercepter_init();
+
+  if (sthread_inside_simgrid)
+    return raw_sem_destroy(sem);
+
+  sthread_disable();
+  int res = sthread_sem_destroy((sthread_sem_t*)sem);
+  sthread_enable();
+  return res;
+}
+int sem_post(sem_t* sem)
+{
+  if (raw_sem_post == NULL)
+    intercepter_init();
+
+  if (sthread_inside_simgrid)
+    return raw_sem_post(sem);
+
+  sthread_disable();
+  int res = sthread_sem_post((sthread_sem_t*)sem);
+  sthread_enable();
+  return res;
+}
+int sem_wait(sem_t* sem)
+{
+  if (raw_sem_wait == NULL)
+    intercepter_init();
+
+  if (sthread_inside_simgrid)
+    return raw_sem_wait(sem);
+
+  sthread_disable();
+  int res = sthread_sem_wait((sthread_sem_t*)sem);
+  sthread_enable();
+  return res;
+}
+int sem_trywait(sem_t* sem)
+{
+  if (raw_sem_trywait == NULL)
+    intercepter_init();
+
+  if (sthread_inside_simgrid)
+    return raw_sem_trywait(sem);
+
+  sthread_disable();
+  int res = sthread_sem_trywait((sthread_sem_t*)sem);
+  sthread_enable();
+  return res;
+}
+int sem_timedwait(sem_t* sem, const struct timespec* abs_timeout)
+{
+  if (raw_sem_timedwait == NULL)
+    intercepter_init();
+
+  if (sthread_inside_simgrid)
+    return raw_sem_timedwait(sem, abs_timeout);
+
+  sthread_disable();
+  int res = sthread_sem_timedwait((sthread_sem_t*)sem, abs_timeout);
+  sthread_enable();
+  return res;
+}
 
 /* Glibc < 2.31 uses type "struct timezone *" for the second parameter of gettimeofday.
    Other implementations use "void *" instead. */
@@ -210,24 +299,6 @@ int usleep(useconds_t usec)
 }
 
 #if 0
-int sem_init(sem_t *sem, int pshared, unsigned int value) {
-	int res;
-
-	res=raw_sem_init(sem,pshared,value);
-	return res;
-}
-
-int sem_wait(sem_t *sem) {
-	int res;
-
-	res = raw_sem_wait(sem);
-	return res;
-}
-
-int sem_post(sem_t *sem) {
-	return raw_sem_post(sem);
-}
-
 int pthread_cond_init(pthread_cond_t *cond, pthread_condattr_t *cond_attr) {
     *cond = sg_cond_init();
     return 0;

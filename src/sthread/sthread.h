@@ -1,3 +1,8 @@
+/* Copyright (c) 2002-2023. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 /* SimGrid's pthread interposer. Intercepts most of the pthread and semaphore calls to model-check them.
  *
  * Intercepting on pthread is somewhat complicated by the fact that pthread is used everywhere in the system headers.
@@ -34,6 +39,16 @@ int sthread_mutex_lock(sthread_mutex_t* mutex);
 int sthread_mutex_trylock(sthread_mutex_t* mutex);
 int sthread_mutex_unlock(sthread_mutex_t* mutex);
 int sthread_mutex_destroy(sthread_mutex_t* mutex);
+
+typedef struct {
+  void* sem;
+} sthread_sem_t;
+int sthread_sem_init(sthread_sem_t* sem, int pshared, unsigned int value);
+int sthread_sem_destroy(sthread_sem_t* sem);
+int sthread_sem_post(sthread_sem_t* sem);
+int sthread_sem_wait(sthread_sem_t* sem);
+int sthread_sem_trywait(sthread_sem_t* sem);
+int sthread_sem_timedwait(sthread_sem_t* sem, const struct timespec* abs_timeout);
 
 int sthread_gettimeofday(struct timeval* tv);
 void sthread_sleep(double seconds);

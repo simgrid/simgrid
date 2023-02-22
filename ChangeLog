@@ -43,6 +43,7 @@ Models:
 
 sthread:
  - Implement pthread_join in MC mode.
+ - Implement semaphore functions in sthread.
 
 XBT:
  - simgrid::xbt::cmdline and simgrid::xbt::binary_name are gone.

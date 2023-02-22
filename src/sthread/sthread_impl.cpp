@@ -1,3 +1,8 @@
+/* Copyright (c) 2002-2023. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 /* SimGrid's pthread interposer. Actual implementation of the symbols (see the comment in sthread.h) */
 
 #include "smpi/smpi.h"
@@ -7,6 +12,7 @@
 #include <simgrid/s4u/Engine.hpp>
 #include <simgrid/s4u/Mutex.hpp>
 #include <simgrid/s4u/NetZone.hpp>
+#include <simgrid/s4u/Semaphore.hpp>
 #include <xbt/base.h>
 #include <xbt/sysdep.h>
 
@@ -146,6 +152,48 @@ int sthread_mutex_destroy(sthread_mutex_t* mutex)
   intrusive_ptr_release(static_cast<sg4::Mutex*>(mutex->mutex));
   return 0;
 }
+int sthread_sem_init(sthread_sem_t* sem, int pshared, unsigned int value)
+{
+  auto s = sg4::Semaphore::create(value);
+  intrusive_ptr_add_ref(s.get());
+
+  sem->sem = s.get();
+  return 0;
+}
+int sthread_sem_destroy(sthread_sem_t* sem)
+{
+  intrusive_ptr_release(static_cast<sg4::Semaphore*>(sem->sem));
+  return 0;
+}
+int sthread_sem_post(sthread_sem_t* sem)
+{
+  static_cast<sg4::Semaphore*>(sem->sem)->release();
+  return 0;
+}
+int sthread_sem_wait(sthread_sem_t* sem)
+{
+  static_cast<sg4::Semaphore*>(sem->sem)->acquire();
+  return 0;
+}
+int sthread_sem_trywait(sthread_sem_t* sem)
+{
+  auto* s = static_cast<sg4::Semaphore*>(sem->sem);
+  if (s->would_block()) {
+    errno = EAGAIN;
+    return -1;
+  }
+  s->acquire();
+  return 0;
+}
+int sthread_sem_timedwait(sthread_sem_t* sem, const struct timespec* abs_timeout)
+{
+  if (static_cast<sg4::Semaphore*>(sem->sem)->acquire_timeout(abs_timeout->tv_sec +
+                                                              static_cast<double>(abs_timeout->tv_nsec) / 1E9)) {
+    errno = ETIMEDOUT;
+    return -1;
+  }
+  return 0;
+}
 
 int sthread_gettimeofday(struct timeval* tv)
 {
@@ -165,24 +213,6 @@ void sthread_sleep(double seconds)
 }
 
 #if 0
-int sem_init(sem_t *sem, int pshared, unsigned int value) {
-	int res;
-
-	res=raw_sem_init(sem,pshared,value);
-	return res;
-}
-
-int sem_wait(sem_t *sem) {
-	int res;
-
-	res = raw_sem_wait(sem);
-	return res;
-}
-
-int sem_post(sem_t *sem) {
-	return raw_sem_post(sem);
-}
-
 int pthread_cond_init(pthread_cond_t *cond, pthread_condattr_t *cond_attr) {
     *cond = sg_cond_init();
     return 0;
