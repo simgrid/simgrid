@@ -143,13 +143,14 @@ void DFSExplorer::run()
       continue;
     }
 
-    XBT_VERB("Sleep set actually containing:");
-    for (auto & [aid, transition] : state->get_sleep_set()) {
+    if (_sg_mc_sleep_set) {
+	XBT_VERB("Sleep set actually containing:");
+	for (auto & [aid, transition] : state->get_sleep_set()) {
+   
+	    XBT_VERB("  <%ld,%s>", aid, transition.to_string().c_str());
       
-	XBT_VERB("  <%ld,%s>", aid, transition.to_string().c_str());
-      
+	}
     }
-
     /* Actually answer the request: let's execute the selected request (MCed does one step) */
     state->execute_next(next);
     on_transition_execute_signal(state->get_transition(), get_remote_app());
@@ -164,7 +165,7 @@ void DFSExplorer::run()
 
     /* If we want sleep set reduction, pass the old state to the new state so it can
      * both copy the sleep set and eventually removes things from it locally */
-    if (sleep_set_reduction_)
+    if (_sg_mc_sleep_set)
 	next_state = std::make_unique<State>(get_remote_app(), state); 
     else
 	next_state = std::make_unique<State>(get_remote_app());
@@ -305,8 +306,6 @@ DFSExplorer::DFSExplorer(const std::vector<char*>& args, bool with_dpor) : Explo
   else
     reduction_mode_ = ReductionMode::none;
 
-  sleep_set_reduction_ = _sg_mc_sleep_set;
-  
   if (_sg_mc_termination) {
     if (with_dpor) {
       XBT_INFO("Check non progressive cycles (turning DPOR off)");
