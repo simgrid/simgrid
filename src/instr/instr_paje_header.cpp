@@ -1,14 +1,13 @@
-/* Copyright (c) 2010-2023. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2023. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/Exception.hpp"
 #include "simgrid/version.h"
 #include "src/instr/instr_private.hpp"
 #include "src/smpi/include/private.hpp"
-#include "xbt/virtu.h" /* xbt::cmdline */
+#include <simgrid/Exception.hpp>
+#include <simgrid/s4u/Engine.hpp>
 
 extern std::ofstream tracing_file;
 namespace simgrid::instr::paje {
@@ -18,7 +17,7 @@ void dump_generator_version()
   tracing_file << "#This file was generated using SimGrid-" << SIMGRID_VERSION_MAJOR << "." << SIMGRID_VERSION_MINOR
                << "." << SIMGRID_VERSION_PATCH << '\n';
   tracing_file << "#[";
-  for (auto const& str : simgrid::xbt::cmdline) {
+  for (auto const& str : simgrid::s4u::Engine::get_instance()->get_cmdline()) {
     tracing_file << str << " ";
   }
   tracing_file << "]\n";

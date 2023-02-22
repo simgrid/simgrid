@@ -8,6 +8,8 @@
 #ifndef SIMGRID_VERSION_H
 #define SIMGRID_VERSION_H
 
+#include "xbt/base.h"
+
 #define SIMGRID_GIT_VERSION   "@GIT_VERSION@"
 
 /** Define the version numbers of the used header files.

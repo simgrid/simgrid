@@ -3,11 +3,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This file defines all possible exception that could occur in a SimGrid library. */
+/* This file defines all possible exceptions that could occur in a SimGrid library. */
 
 #ifndef SIMGRID_EXCEPTIONS_HPP
 #define SIMGRID_EXCEPTIONS_HPP
 
+#include <simgrid/actor.h>
 #include <xbt/backtrace.hpp>
 #include <xbt/ex.h>
 #include <xbt/string.hpp>
@@ -51,7 +52,8 @@ public:
 
 /** Create a ThrowPoint with (__FILE__, __LINE__, __func__) */
 #define XBT_THROW_POINT                                                                                                \
-  ::simgrid::xbt::ThrowPoint(__FILE__, __LINE__, __func__, simgrid::xbt::Backtrace(), xbt_procname(), xbt_getpid())
+  ::simgrid::xbt::ThrowPoint(__FILE__, __LINE__, __func__, simgrid::xbt::Backtrace(), sg_actor_self_get_name(),        \
+                             sg_actor_self_get_pid())
 
 class XBT_PUBLIC ImpossibleError : public std::logic_error {
 public:

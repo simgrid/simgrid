@@ -137,6 +137,7 @@ void sg_config_init(int *argc, char **argv)
     XBT_WARN("Call to sg_config_init() after initialization ignored");
     return;
   }
+  _sg_cfg_init_status = 1;
 
   /* Plugins and models configuration */
   simgrid_plugins().create_flag("plugin", "The plugins", "", true);
@@ -233,8 +234,6 @@ void sg_config_init(int *argc, char **argv)
 
   static simgrid::config::Flag<bool> cfg_execution_cutpath{
       "exception/cutpath", "Whether to cut all path information from call traces, used e.g. in exceptions.", false};
-
-  _sg_cfg_init_status = 1;
 
   sg_config_cmd_line(argc, argv);
 

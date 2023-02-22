@@ -78,8 +78,7 @@ static XBT_ALWAYS_INLINE void *xbt_realloc(void *p, size_t s) {
   return res;
 }
 
-/** @brief like free
-    @hideinitializer */
+/** @brief like free */
 #define xbt_free(p) free(p) /*nothing specific to do here. A poor valgrind replacement? */
 
 #ifdef __cplusplus

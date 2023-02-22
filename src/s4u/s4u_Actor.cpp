@@ -413,7 +413,8 @@ ExecPtr exec_async(double flops)
 
 aid_t get_pid()
 {
-  return simgrid::kernel::actor::ActorImpl::self()->get_pid();
+  auto* self = simgrid::kernel::actor::ActorImpl::self();
+  return self ? self->get_pid() : 0;
 }
 
 aid_t get_ppid()
@@ -428,7 +429,8 @@ std::string get_name()
 
 const char* get_cname()
 {
-  return simgrid::kernel::actor::ActorImpl::self()->get_cname();
+  auto* self = simgrid::kernel::actor::ActorImpl::self();
+  return self ? self->get_cname() : nullptr;
 }
 
 Host* get_host()
@@ -753,6 +755,8 @@ aid_t sg_actor_self_get_ppid()
 
 const char* sg_actor_self_get_name()
 {
+  if (simgrid::s4u::Actor::is_maestro())
+    return "maestro";
   return simgrid::s4u::this_actor::get_cname();
 }
 

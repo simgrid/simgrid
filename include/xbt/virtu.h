@@ -8,29 +8,25 @@
 #ifndef XBT_VIRTU_H
 #define XBT_VIRTU_H
 
+#include <simgrid/actor.h>
 #include <xbt/base.h>
 
-#ifdef __cplusplus
-#include <string>
-#include <vector>
-
-namespace simgrid {
-namespace xbt {
-
-/* Get the name of the UNIX process englobing the world */
-XBT_PUBLIC_DATA std::string binary_name;
-/** Contains all the parameters we got from the command line (including argv[0]) */
-XBT_PUBLIC_DATA std::vector<std::string> cmdline;
-
-} // namespace xbt
-} // namespace simgrid
+// avoid deprecation warning on include (remove entire file with XBT_ATTRIB_DEPRECATED_v337)
+#ifndef XBT_VIRTU_H_NO_DEPRECATED_WARNING
+#warning xbt/virtu.h is deprecated and will be removed in v3.37.
 #endif
 
 SG_BEGIN_DECL
 
-XBT_PUBLIC const char* xbt_procname(void);
+XBT_ATTRIB_DEPRECATED_v337("Please use sg_actor_self_get_name()") static const char* xbt_procname(void)
+{
+  return sg_actor_self_get_name();
+}
 
-XBT_PUBLIC int xbt_getpid(void);
+XBT_ATTRIB_DEPRECATED_v337("Please use sg_actor_self_get_pid()") static int xbt_getpid(void)
+{
+  return sg_actor_self_get_pid();
+};
 
 SG_END_DECL
 

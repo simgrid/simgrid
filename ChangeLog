@@ -44,6 +44,10 @@ Models:
 sthread:
  - Implement pthread_join in MC mode.
 
+XBT:
+ - simgrid::xbt::cmdline and simgrid::xbt::binary_name are gone.
+   Please use simgrid::s4u::Engine::get_cmdline() instead.
+
 Documentation:
  - New section in the user guide on the provided performance models.
  - New section presenting some technical good practices for (potential) contributors.

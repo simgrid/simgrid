@@ -5,10 +5,11 @@
 
 #include "src/internal_config.h"
 
+#include <simgrid/actor.h>
+#include <simgrid/s4u/Actor.hpp>
 #include <xbt/backtrace.hpp>
 #include <xbt/string.hpp>
 #include <xbt/sysdep.h>
-#include <xbt/virtu.h>
 
 #include <cstdio>
 #include <cstdlib>
@@ -90,7 +91,8 @@ std::string Backtrace::resolve() const
 void Backtrace::display() const
 {
   std::string backtrace = resolve();
-  std::fprintf(stderr, "Backtrace (displayed in actor %s%s):\n%s\n", xbt_procname(),
+  std::fprintf(stderr, "Backtrace (displayed in actor %s%s):\n%s\n",
+               simgrid::s4u::Actor::is_maestro() ? "maestro" : sg_actor_self_get_name(),
                (xbt_log_no_loc ? " -- short trace because of --log=no_loc" : ""),
                backtrace.empty() ? "(backtrace not set -- did you install Boost.Stacktrace?)" : backtrace.c_str());
 }

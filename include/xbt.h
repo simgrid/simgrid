@@ -17,8 +17,6 @@
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 
-#include <xbt/module.h>
-
 #include <xbt/dynar.h>
 #include <xbt/dict.h>
 
