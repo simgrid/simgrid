@@ -209,9 +209,4 @@ TEST_CASE("simgrid::mc::udpor::History: History generation")
       REQUIRE(history.contains(&e7));
     }
   }
-
-  SECTION("History with masking configuration")
-  {
-    Configuration configuration;
-  }
 }

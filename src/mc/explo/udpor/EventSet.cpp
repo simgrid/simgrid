@@ -120,6 +120,11 @@ bool EventSet::is_valid_configuration() const
   /// The proof is based on the definition of a configuration
   /// which requires that all
   const History history(*this);
+  return this->contains(history);
+}
+
+bool EventSet::contains(const History& history) const
+{
   return std::all_of(history.begin(), history.end(), [=](UnfoldingEvent* e) { return this->contains(e); });
 }
 

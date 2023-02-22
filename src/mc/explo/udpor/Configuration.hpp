@@ -18,14 +18,39 @@ public:
   Configuration& operator=(Configuration const&) = default;
   Configuration(Configuration&&)                 = default;
 
+  Configuration(EventSet events) : events_(events) {}
+  Configuration(EventSet&& events) : events_(events) {}
+
   auto begin() const { return this->events_.begin(); }
   auto end() const { return this->events_.end(); }
 
   bool contains(UnfoldingEvent* e) const { return this->events_.contains(e); }
   const EventSet& get_events() const { return this->events_; }
-  const EventSet& get_maximal_events() const { return this->max_events_; }
   UnfoldingEvent* get_latest_event() const { return this->newest_event; }
 
+  /**
+   * @brief Insert a new event into the configuration
+   *
+   * When the newly added event is inserted into the configuration,
+   * an assertion is made to ensure that the configuration remains
+   * valid, i.e. that the newly added event's dependencies are contained
+   * within the configuration.
+   *
+   * @throws an invalid argument exception is raised should the event
+   * be missing one of its dependencies
+   *
+   * @note: UDPOR technically enforces the invariant that all newly-added events
+   * will ensure that the configuration is valid. We perform extra checks to ensure
+   * that UDPOR is implemented as expected. There is a performance penalty that
+   * should be noted: checking for maximality requires ensuring that all events in the
+   * configuration have their dependencies containes within the configuration, which
+   * essentially means performing a BFS/DFS over the configuration using a History object.
+   * However, since the slowest part of UDPOR involves enumerating all
+   * subsets of maximal events and computing k-partial alternatives (the
+   * latter definitively an NP-hard problem when optimal), Amdahl's law suggests
+   * we shouldn't focus so much on this (let alone the additional benefit of the
+   * assertions)
+   */
   void add_event(UnfoldingEvent*);
 
 private:
@@ -39,29 +64,8 @@ private:
    *
    * @invariant For each event `e` in `events_`, the set of
    * dependencies of `e` is also contained in `events_`
-   *
-   * TODO: UDPOR enforces this invariant, but perhaps we should
-   * too?
    */
   EventSet events_;
-
-  /**
-   * The <-maxmimal events of the configuration. These are
-   * dynamically adjusted as events are added to the configuration
-   *
-   * @invariant Each event that is part of this set is
-   *
-   * 1. a <-maxmimal event of the configuration, in the sense that
-   * there is no event in the configuration that is "greater" than it.
-   * In UDPOR terminology, each event does not "cause" another event
-   *
-   * 2. contained in the set of events `events_` which comprise
-   * the configuration
-   */
-  EventSet max_events_;
-
-private:
-  void recompute_maxmimal_events(UnfoldingEvent* new_event);
 };
 
 } // namespace simgrid::mc::udpor
