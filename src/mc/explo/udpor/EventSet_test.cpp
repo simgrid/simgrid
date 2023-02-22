@@ -503,3 +503,213 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Subset Tests")
     }
   }
 }
+
+TEST_CASE("simgrid::mc::udpor::EventSet: Testing Configurations")
+{
+  // The following tests concern the given event structure:
+  //                e1
+  //              /    /
+  //            e2      e5
+  //           /  /      /
+  //          e3  e4     e6
+  // The tests enumerate all possible subsets of the events
+  // in the structure and test whether those subsets are
+  // maximal and/or valid configurations
+  UnfoldingEvent e1;
+  UnfoldingEvent e2{&e1}, e5{&e1};
+  UnfoldingEvent e3{&e2}, e4{&e2};
+  UnfoldingEvent e6{&e5};
+
+  SECTION("Valid Configurations")
+  {
+    SECTION("The empty set is valid")
+    {
+      REQUIRE(EventSet().is_valid_configuration());
+    }
+
+    SECTION("The set with only the root event is valid")
+    {
+      REQUIRE(EventSet({&e1}).is_valid_configuration());
+    }
+
+    SECTION("All sets of maximal events are valid configurations")
+    {
+      REQUIRE(EventSet({&e1}).is_valid_configuration());
+      REQUIRE(EventSet({&e1, &e2}).is_valid_configuration());
+      REQUIRE(EventSet({&e1, &e2, &e3}).is_valid_configuration());
+      REQUIRE(EventSet({&e1, &e2, &e4}).is_valid_configuration());
+      REQUIRE(EventSet({&e1, &e5}).is_valid_configuration());
+      REQUIRE(EventSet({&e1, &e5, &e6}).is_valid_configuration());
+      REQUIRE(EventSet({&e1, &e2, &e5}).is_valid_configuration());
+      REQUIRE(EventSet({&e1, &e2, &e5, &e6}).is_valid_configuration());
+      REQUIRE(EventSet({&e1, &e2, &e3, &e4}).is_valid_configuration());
+      REQUIRE(EventSet({&e1, &e2, &e3, &e5}).is_valid_configuration());
+      REQUIRE(EventSet({&e1, &e2, &e4, &e5}).is_valid_configuration());
+      REQUIRE(EventSet({&e1, &e2, &e4, &e5, &e6}).is_valid_configuration());
+      REQUIRE(EventSet({&e1, &e2, &e3, &e4, &e5}).is_valid_configuration());
+      REQUIRE(EventSet({&e1, &e2, &e3, &e4, &e5, &e6}).is_valid_configuration());
+    }
+  }
+
+  SECTION("Configuration checks")
+  {
+    // 6 choose 0 = 1 test
+    REQUIRE(EventSet().is_valid_configuration());
+
+    // 6 choose 1 = 6 tests
+    REQUIRE(EventSet({&e1}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e2}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e3}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e4}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e5}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e6}).is_valid_configuration());
+
+    // 6 choose 2 = 15 tests
+    REQUIRE(EventSet({&e1, &e2}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e1, &e3}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e1, &e4}).is_valid_configuration());
+    REQUIRE(EventSet({&e1, &e5}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e1, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e2, &e3}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e2, &e4}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e2, &e5}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e2, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e3, &e4}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e3, &e5}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e3, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e4, &e5}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e4, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e5, &e6}).is_valid_configuration());
+
+    // 6 choose 3 = 20 tests
+    REQUIRE(EventSet({&e1, &e2, &e3}).is_valid_configuration());
+    REQUIRE(EventSet({&e1, &e2, &e4}).is_valid_configuration());
+    REQUIRE(EventSet({&e1, &e2, &e5}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e4}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e5}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e1, &e4, &e5}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e1, &e4, &e6}).is_valid_configuration());
+    REQUIRE(EventSet({&e1, &e5, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e4}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e5}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e2, &e4, &e5}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e2, &e4, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e2, &e5, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e3, &e4, &e5}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e3, &e4, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e3, &e5, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e4, &e5, &e6}).is_valid_configuration());
+
+    // 6 choose 4 = 15 tests
+    REQUIRE(EventSet({&e1, &e2, &e3, &e4}).is_valid_configuration());
+    REQUIRE(EventSet({&e1, &e2, &e3, &e5}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e6}).is_valid_configuration());
+    REQUIRE(EventSet({&e1, &e2, &e4, &e5}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e4, &e6}).is_valid_configuration());
+    REQUIRE(EventSet({&e1, &e2, &e5, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e5}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e5, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e1, &e4, &e5, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e5}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e5, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e2, &e4, &e5, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e3, &e4, &e5, &e6}).is_valid_configuration());
+
+    // 6 choose 5 = 6 tests
+    REQUIRE(EventSet({&e1, &e2, &e3, &e4, &e5}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4, &e6}).is_valid_configuration());
+    REQUIRE(EventSet({&e1, &e2, &e3, &e5, &e6}).is_valid_configuration());
+    REQUIRE(EventSet({&e1, &e2, &e4, &e5, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e5, &e6}).is_valid_configuration());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e5, &e6}).is_valid_configuration());
+
+    // 6 choose 6 = 1 test
+    REQUIRE(EventSet({&e1, &e2, &e3, &e4, &e5, &e6}).is_valid_configuration());
+  }
+
+  SECTION("Maximal event sets")
+  {
+    // 6 choose 0 = 1 test
+    REQUIRE(EventSet().is_maximal_event_set());
+
+    // 6 choose 1 = 6 tests
+    REQUIRE(EventSet({&e1}).is_maximal_event_set());
+    REQUIRE(EventSet({&e2}).is_maximal_event_set());
+    REQUIRE(EventSet({&e3}).is_maximal_event_set());
+    REQUIRE(EventSet({&e4}).is_maximal_event_set());
+    REQUIRE(EventSet({&e5}).is_maximal_event_set());
+    REQUIRE(EventSet({&e6}).is_maximal_event_set());
+
+    // 6 choose 2 = 15 tests
+    REQUIRE_FALSE(EventSet({&e1, &e2}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e3}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e4}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e5}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e2, &e3}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e2, &e4}).is_maximal_event_set());
+    REQUIRE(EventSet({&e2, &e5}).is_maximal_event_set());
+    REQUIRE(EventSet({&e2, &e6}).is_maximal_event_set());
+    REQUIRE(EventSet({&e3, &e4}).is_maximal_event_set());
+    REQUIRE(EventSet({&e3, &e5}).is_maximal_event_set());
+    REQUIRE(EventSet({&e3, &e6}).is_maximal_event_set());
+    REQUIRE(EventSet({&e4, &e5}).is_maximal_event_set());
+    REQUIRE(EventSet({&e4, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e5, &e6}).is_maximal_event_set());
+
+    // 6 choose 3 = 20 tests
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e4}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e5}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e4}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e5}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e4, &e5}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e4, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e4}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e5}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e2, &e4, &e5}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e2, &e4, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e2, &e5, &e6}).is_maximal_event_set());
+    REQUIRE(EventSet({&e3, &e4, &e5}).is_maximal_event_set());
+    REQUIRE(EventSet({&e3, &e4, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e3, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e4, &e5, &e6}).is_maximal_event_set());
+
+    // 6 choose 4 = 15 tests
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e5}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e4, &e5}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e4, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e5}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e4, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e5}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e2, &e4, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e3, &e4, &e5, &e6}).is_maximal_event_set());
+
+    // 6 choose 5 = 6 tests
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4, &e5}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e4, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e5, &e6}).is_maximal_event_set());
+
+    // 6 choose 6 = 1 test
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4, &e5, &e6}).is_maximal_event_set());
+  }
+}

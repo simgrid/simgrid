@@ -27,7 +27,7 @@ bool UnfoldingEvent::operator==(const UnfoldingEvent& other) const
 
   // All unfolding event objects are created in reference to
   // an Unfolding object which owns them. Hence, the references
-  // they contain to other events in the unvolding can
+  // they contain to other events in the unfolding can
   // be used as intrinsic identities (i.e. we don't need to
   // recursively check if each of our causes has a `==` in
   // the other event's causes)

@@ -85,6 +85,14 @@ public:
    * dependency graph for all events in this history
    */
   EventSet get_all_events() const;
+
+  /**
+   * @brief Computes all events in the history described by this instance
+   * which are maximal (intuitively, those events which cause no others
+   * or are the "most recent")
+   */
+  EventSet get_all_maximal_events() const;
+
   EventSet get_event_diff_with(const Configuration& config) const;
 
 private:
@@ -113,8 +121,15 @@ private:
     Iterator(const EventSet& initial_events, optional_configuration config = std::nullopt);
 
   private:
+    /// @brief Points in the graph from where to continue the search
     EventSet frontier;
+
+    /// @brief What the iterator currently believes to be the
+    /// entire history of the events in the graph it traverses
     EventSet current_history = EventSet();
+
+    /// @brief What the iterator currently believes
+    EventSet maximal_events;
     optional_configuration configuration;
     friend History;
   };

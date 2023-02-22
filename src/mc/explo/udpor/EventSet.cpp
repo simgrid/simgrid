@@ -11,6 +11,8 @@
 
 namespace simgrid::mc::udpor {
 
+EventSet::EventSet(Configuration&& config) : EventSet(std::move(config.get_events())) {}
+
 void EventSet::remove(UnfoldingEvent* e)
 {
   this->events_.erase(e);
@@ -119,6 +121,12 @@ bool EventSet::is_valid_configuration() const
   /// which requires that all
   const History history(*this);
   return std::all_of(history.begin(), history.end(), [=](UnfoldingEvent* e) { return this->contains(e); });
+}
+
+bool EventSet::is_maximal_event_set() const
+{
+  const History history(*this);
+  return *this == history.get_all_maximal_events();
 }
 
 } // namespace simgrid::mc::udpor

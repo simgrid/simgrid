@@ -12,8 +12,12 @@
 namespace simgrid::mc::udpor {
 
 History::Iterator::Iterator(const EventSet& initial_events, optional_configuration config)
-    : frontier(initial_events), configuration(config)
+    : frontier(initial_events), maximal_events(initial_events), configuration(config)
 {
+  // NOTE: Only events in the initial set of events can ever hope to have
+  // a chance at being a maximal event, since all other events in
+  // the search are generate by looking at dependencies of these events
+  // and all subsequent events that are added by the iterator
 }
 
 History::Iterator& History::Iterator::operator++()
@@ -38,6 +42,8 @@ History::Iterator& History::Iterator::operator++()
     // Perform the expansion with all viable expansions
     EventSet candidates = e->get_immediate_causes();
 
+    maximal_events.subtract(candidates);
+
     candidates.subtract(current_history);
     frontier.form_union(std::move(candidates));
   }
@@ -53,6 +59,17 @@ EventSet History::get_all_events() const
     ;
 
   return first.current_history;
+}
+
+EventSet History::get_all_maximal_events() const
+{
+  auto first      = this->begin();
+  const auto last = this->end();
+
+  for (; first != last; ++first)
+    ;
+
+  return first.maximal_events;
 }
 
 bool History::contains(UnfoldingEvent* e) const

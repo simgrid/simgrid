@@ -24,6 +24,7 @@ public:
   EventSet& operator=(const EventSet&) = default;
   EventSet& operator=(EventSet&&)      = default;
   EventSet(EventSet&&)                 = default;
+  explicit EventSet(Configuration&& config);
   explicit EventSet(std::unordered_set<UnfoldingEvent*>&& raw_events) : events_(raw_events) {}
   explicit EventSet(std::initializer_list<UnfoldingEvent*> event_list) : events_(std::move(event_list)) {}
 
@@ -50,10 +51,23 @@ public:
   bool empty() const;
   bool contains(UnfoldingEvent*) const;
   bool is_subset_of(const EventSet&) const;
-  bool is_valid_configuration() const;
 
   bool operator==(const EventSet& other) const { return this->events_ == other.events_; }
   bool operator!=(const EventSet& other) const { return this->events_ != other.events_; }
+
+public:
+  /**
+   * @brief Whether or not this set of events could
+   * represent a configuration
+   */
+  bool is_valid_configuration() const;
+
+  /**
+   * @brief Whether or not this set of events is
+   * a *maximal event set*, i.e. whether each element
+   * of the set causes none of the others
+   */
+  bool is_maximal_event_set() const;
 };
 
 } // namespace simgrid::mc::udpor
