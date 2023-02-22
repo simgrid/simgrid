@@ -38,6 +38,10 @@ public:
    * valid, i.e. that the newly added event's dependencies are contained
    * within the configuration.
    *
+   * @param e the event to add to the configuration. If the event is
+   * already a part of the configuration, calling this method has no
+   * effect.
+   *
    * @throws an invalid argument exception is raised should the event
    * be missing one of its dependencies
    *
@@ -53,7 +57,7 @@ public:
    * we shouldn't focus so much on this (let alone the additional benefit of the
    * assertions)
    */
-  void add_event(UnfoldingEvent*);
+  void add_event(UnfoldingEvent* e);
 
 private:
   /**

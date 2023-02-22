@@ -24,6 +24,14 @@ Configuration::Configuration(EventSet events) : events_(events)
 
 void Configuration::add_event(UnfoldingEvent* e)
 {
+  if (e == nullptr) {
+    throw std::invalid_argument("Expected a nonnull `UnfoldingEvent*` but received NULL instead");
+  }
+
+  if (this->events_.contains(e)) {
+    return;
+  }
+
   this->events_.insert(e);
   this->newest_event = e;
 
