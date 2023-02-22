@@ -41,9 +41,6 @@ std::string CommWaitTransition::to_string(bool verbose) const
 }
 bool CommWaitTransition::depends(const Transition* other) const
 {
-  if (aid_ == other->aid_)
-    return false;
-
   if (other->type_ < type_)
     return other->depends(this);
 
@@ -82,8 +79,6 @@ std::string CommTestTransition::to_string(bool verbose) const
 }
 bool CommTestTransition::depends(const Transition* other) const
 {
-  if (aid_ == other->aid_)
-    return false;
 
   if (other->type_ < type_)
     return other->depends(this);
@@ -117,9 +112,6 @@ std::string CommRecvTransition::to_string(bool verbose) const
 }
 bool CommRecvTransition::depends(const Transition* other) const
 {
-  if (aid_ == other->aid_)
-    return false;
-
   if (other->type_ < type_)
     return other->depends(this);
 
@@ -172,9 +164,6 @@ std::string CommSendTransition::to_string(bool verbose = false) const
 
 bool CommSendTransition::depends(const Transition* other) const
 {
-  if (aid_ == other->aid_)
-    return false;
-
   if (other->type_ < type_)
     return other->depends(this);
 
