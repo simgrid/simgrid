@@ -9,6 +9,8 @@
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 
+#include <initializer_list>
+
 namespace simgrid::mc::udpor {
 
 class Configuration {
@@ -18,8 +20,8 @@ public:
   Configuration& operator=(Configuration const&) = default;
   Configuration(Configuration&&)                 = default;
 
-  Configuration(EventSet events) : events_(events) {}
-  Configuration(EventSet&& events) : events_(events) {}
+  Configuration(EventSet events);
+  Configuration(std::initializer_list<UnfoldingEvent*> events);
 
   auto begin() const { return this->events_.begin(); }
   auto end() const { return this->events_.end(); }

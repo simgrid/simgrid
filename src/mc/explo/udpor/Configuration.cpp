@@ -11,11 +11,23 @@
 
 namespace simgrid::mc::udpor {
 
+Configuration::Configuration(std::initializer_list<UnfoldingEvent*> events) : Configuration(EventSet(std::move(events)))
+{
+}
+
+Configuration::Configuration(EventSet events) : events_(events)
+{
+  if (!events_.is_valid_configuration()) {
+    throw std::invalid_argument("The events do not form a valid configuration");
+  }
+}
+
 void Configuration::add_event(UnfoldingEvent* e)
 {
   this->events_.insert(e);
   this->newest_event = e;
 
+  // Preserves the property that the configuration is valid
   History history(e);
   if (!this->events_.contains(history)) {
     throw std::invalid_argument("The newly added event has dependencies "
