@@ -10,6 +10,7 @@
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 
 #include <initializer_list>
+#include <vector>
 
 namespace simgrid::mc::udpor {
 
@@ -58,6 +59,11 @@ public:
    * assertions)
    */
   void add_event(UnfoldingEvent* e);
+
+  /**
+   *
+   */
+  std::vector<UnfoldingEvent*> get_topogolically_sorted_events_of_reverse_graph() const;
 
 private:
   /**
