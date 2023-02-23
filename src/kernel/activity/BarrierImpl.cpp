@@ -28,6 +28,11 @@ void BarrierAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
     // Already in the queue
   }
 }
+void BarrierAcquisitionImpl::post()
+{
+  finish();
+}
+
 void BarrierAcquisitionImpl::finish()
 {
   xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
@@ -55,7 +60,7 @@ BarrierAcquisitionImplPtr BarrierImpl::acquire_async(actor::ActorImpl* issuer)
     for (auto const& acqui : ongoing_acquisitions_) {
       acqui->granted_ = true;
       if (acqui == acqui->get_issuer()->waiting_synchro_)
-        acqui->finish();
+        acqui->post();
       // else, the issuer is not blocked on this acquisition so no need to release it
     }
     ongoing_acquisitions_.clear(); // Rearm the barier for subsequent uses
