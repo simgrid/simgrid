@@ -32,7 +32,7 @@ class ThrowPoint {
 public:
   ThrowPoint() = default;
   explicit ThrowPoint(const char* file, int line, const char* function, Backtrace&& bt, std::string&& actor_name,
-                      int pid)
+                      aid_t pid)
       : file_(file)
       , line_(line)
       , function_(function)
@@ -47,7 +47,7 @@ public:
   const char* function_ = nullptr;
   Backtrace backtrace_;
   std::string procname_ = ""; /**< Name of the process who thrown this */
-  int pid_              = 0;  /**< PID of the process who thrown this */
+  aid_t pid_            = 0;  /**< PID of the process who thrown this */
 };
 
 /** Create a ThrowPoint with (__FILE__, __LINE__, __func__) */
