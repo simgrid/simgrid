@@ -14,6 +14,7 @@
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
 #include "src/mc/mc_record.hpp"
 
+#include <functional>
 #include <optional>
 
 namespace simgrid::mc::udpor {
@@ -75,10 +76,17 @@ private:
    */
   EventSet G;
 
-  /**
-   * @brief UDPOR's current "view" of the program it is exploring
-   */
+  /// @brief UDPOR's current "view" of the program it is exploring
   Unfolding unfolding = Unfolding();
+
+  using ExtensionFunction = std::function<EventSet(const Configuration&, const Transition&)>;
+
+  /**
+   * @brief A collection of specialized functions which can incrementally
+   * compute the extension of a configuration based on the action taken
+   */
+  std::unordered_map<Transition::Type, ExtensionFunction> incremental_extension_functions =
+      std::unordered_map<Transition::Type, ExtensionFunction>();
 
 private:
   /**
@@ -137,11 +145,15 @@ private:
    *
    * @param C the configuration based on which the two sets `ex(C)` and `en(C)` are
    * computed
+   * @param stateC the state of the program after having executed C (viz. `state(C)`)
    * @param prev_exC the previous value of `ex(C)`, viz. that which was computed for
    * the configuration `C' := C - {e}`
    * @returns a tuple containing the pair of sets `ex(C)` and `en(C)` respectively
    */
-  std::tuple<EventSet, EventSet> compute_extension(const Configuration& C, const EventSet& prev_exC) const;
+  std::tuple<EventSet, EventSet> compute_extension(const Configuration& C, const State& stateC,
+                                                   const EventSet& prev_exC) const;
+
+  EventSet compute_extension_by_enumeration(const Configuration& C, const Transition& action) const;
 
   /**
    *

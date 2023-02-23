@@ -14,9 +14,7 @@ namespace simgrid::mc::udpor {
 
 UdporChecker::UdporChecker(const std::vector<char*>& args) : Exploration(args)
 {
-  /* Create initial data structures, if any ...*/
-
-  // TODO: Initialize state structures for the search
+  // Initialize the map
 }
 
 void UdporChecker::run()
@@ -47,7 +45,7 @@ void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::unique_
   // the unfolding, but the naming of the method
   // suggests it is doesn't have side effects. We should
   // reconcile this in the future
-  auto [exC, enC] = compute_extension(C, prev_exC);
+  auto [exC, enC] = compute_extension(C, *stateC, prev_exC);
 
   // If enC is a subset of D, intuitively
   // there aren't any enabled transitions
@@ -126,22 +124,42 @@ void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::unique_
   clean_up_explore(e, C, D);
 }
 
-std::tuple<EventSet, EventSet> UdporChecker::compute_extension(const Configuration& C, const EventSet& prev_exC) const
+std::tuple<EventSet, EventSet> UdporChecker::compute_extension(const Configuration& C, const State& stateC,
+                                                               const EventSet& prev_exC) const
 {
   // See eqs. 5.7 of section 5.2 of [3]
   // C = C' + {e_cur}, i.e. C' = C - {e_cur}
   //
   // Then
   //
-  // ex(C) = ex(C' + {e_cur}) = ex(C') / {e_cur} + U{<a, > : H }
+  // ex(C) = ex(C' + {e_cur}) = ex(C') / {e_cur} + U{<a, K> : K is maximal, a depends on all of K, a enabled at K }
   UnfoldingEvent* e_cur = C.get_latest_event();
   EventSet exC          = prev_exC;
   exC.remove(e_cur);
 
-  // ... fancy computations
+  for (const auto& [aid, actor_state] : stateC.get_actors_list()) {
+    for (const auto& transition : actor_state.get_enabled_transitions()) {
+      // First check for a specialized function that can compute the extension
+      // set "quickly" based on its type. Otherwise, fall back to computing
+      // the set "by hand"
+      const auto specialized_extension_function = incremental_extension_functions.find(transition->type_);
+      if (specialized_extension_function != incremental_extension_functions.end()) {
+        exC.form_union((specialized_extension_function->second)(C, *transition));
+      } else {
+        exC.form_union(this->compute_extension_by_enumeration(C, *transition));
+      }
+    }
+  }
 
   EventSet enC;
+
   return std::tuple<EventSet, EventSet>(exC, enC);
+}
+
+EventSet UdporChecker::compute_extension_by_enumeration(const Configuration& C, const Transition& action) const
+{
+  // TODO: Do something more interesting here
+  return EventSet();
 }
 
 void UdporChecker::move_to_stateCe(State& state, const UnfoldingEvent& e)

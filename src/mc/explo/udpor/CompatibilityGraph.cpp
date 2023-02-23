@@ -28,7 +28,7 @@ void CompatibilityGraph::insert(std::unique_ptr<CompatibilityGraphNode> e)
     // This is bad: someone wrapped the raw event address twice
     // in two different unique ptrs and attempted to
     // insert it into the unfolding...
-    throw std::invalid_argument("Attempted to insert an unfolding event owned twice."
+    throw std::invalid_argument("Attempted to insert a node owned twice."
                                 "This will result in a  double free error and must be fixed.");
   }
 
