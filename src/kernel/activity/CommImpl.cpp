@@ -355,7 +355,7 @@ void CommImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   if (MC_is_active() || MC_record_replay_is_active()) {
     // FIXME: what about timeouts?
     set_state(State::DONE);
-    finish();
+    post();
     return;
   }
   ActivityImpl::wait_for(issuer, timeout);
