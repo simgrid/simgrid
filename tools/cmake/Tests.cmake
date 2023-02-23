@@ -127,16 +127,18 @@ set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
                 src/xbt/random_test.cpp
                 src/xbt/xbt_str_test.cpp
                 src/kernel/lmm/maxmin_test.cpp)
+
+set(MC_UNIT_TESTS src/mc/sosp/Snapshot_test.cpp 
+                  src/mc/sosp/PageStore_test.cpp
+                  src/mc/explo/udpor/EventSet_test.cpp
+                  src/mc/explo/udpor/Unfolding_test.cpp
+                  src/mc/explo/udpor/UnfoldingEvent_test.cpp
+                  src/mc/explo/udpor/History_test.cpp
+                  src/mc/explo/udpor/Configuration_test.cpp)
 if (SIMGRID_HAVE_MC)
-  set(UNIT_TESTS ${UNIT_TESTS} src/mc/sosp/Snapshot_test.cpp 
-                               src/mc/sosp/PageStore_test.cpp
-                               src/mc/explo/udpor/EventSet_test.cpp
-                               src/mc/explo/udpor/Unfolding_test.cpp
-                               src/mc/explo/udpor/UnfoldingEvent_test.cpp
-                               src/mc/explo/udpor/History_test.cpp
-                               src/mc/explo/udpor/Configuration_test.cpp)
+  set(UNIT_TESTS ${UNIT_TESTS} ${MC_UNIT_TESTS})
 else()
-  set(EXTRA_DIST ${EXTRA_DIST} src/mc/sosp/Snapshot_test.cpp src/mc/sosp/PageStore_test.cpp)
+  set(EXTRA_DIST ${EXTRA_DIST} ${MC_UNIT_TESTS})
 endif()
 if (SIMGRID_HAVE_EIGEN3)
   set(UNIT_TESTS ${UNIT_TESTS} src/kernel/lmm/bmf_test.cpp)
