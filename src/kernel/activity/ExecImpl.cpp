@@ -135,23 +135,25 @@ ExecImpl& ExecImpl::update_sharing_penalty(double sharing_penalty)
 
 void ExecImpl::post()
 {
-  xbt_assert(model_action_ != nullptr);
-  if (auto const& hosts = get_hosts();
-      std::any_of(hosts.begin(), hosts.end(), [](const s4u::Host* host) { return not host->is_on(); })) {
-    /* If one of the hosts running the synchro failed, notice it. This way, the asking
-     * process can be killed if it runs on that host itself */
-    set_state(State::FAILED);
-  } else if (model_action_->get_state() == resource::Action::State::FAILED) {
-    /* If all the hosts are running the synchro didn't fail, then the synchro was canceled */
-    set_state(State::CANCELED);
-  } else {
-    set_state(State::DONE);
+  if (model_action_ != nullptr) {
+    if (auto const& hosts = get_hosts();
+        std::any_of(hosts.begin(), hosts.end(), [](const s4u::Host* host) { return not host->is_on(); })) {
+      /* If one of the hosts running the synchro failed, notice it. This way, the asking
+       * process can be killed if it runs on that host itself */
+      set_state(State::FAILED);
+    } else if (model_action_->get_state() == resource::Action::State::FAILED) {
+      /* If all the hosts are running the synchro didn't fail, then the synchro was canceled */
+      set_state(State::CANCELED);
+    } else {
+      set_state(State::DONE);
+    }
+
+    clean_action();
   }
 
-  clean_action();
-  if (get_actor() != nullptr) {
+  if (get_actor() != nullptr)
     get_actor()->activities_.erase(this);
-  }
+
   if (get_state() != State::FAILED && cb_id_ >= 0)
     s4u::Host::on_state_change.disconnect(cb_id_);
   /* Answer all simcalls associated with the synchro */

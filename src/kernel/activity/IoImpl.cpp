@@ -97,22 +97,24 @@ IoImpl* IoImpl::start()
 
 void IoImpl::post()
 {
-  performed_ioops_ = model_action_->get_cost();
-  if (model_action_->get_state() == resource::Action::State::FAILED) {
-    if (host_ && dst_host_) { // this is an I/O stream
-      if (not host_->is_on())
-       set_state(State::SRC_HOST_FAILURE);
-      else if (not dst_host_->is_on())
-       set_state(State::DST_HOST_FAILURE);
-    } else if ((disk_ && not disk_->is_on()) || (dst_disk_ && not dst_disk_->is_on()))
-      set_state(State::FAILED);
-    else
-      set_state(State::CANCELED);
-  } else {
-    set_state(State::DONE);
-  }
+  if (model_action_ != nullptr) {
+    performed_ioops_ = model_action_->get_cost();
+    if (model_action_->get_state() == resource::Action::State::FAILED) {
+      if (host_ && dst_host_) { // this is an I/O stream
+        if (not host_->is_on())
+          set_state(State::SRC_HOST_FAILURE);
+        else if (not dst_host_->is_on())
+          set_state(State::DST_HOST_FAILURE);
+      } else if ((disk_ && not disk_->is_on()) || (dst_disk_ && not dst_disk_->is_on()))
+        set_state(State::FAILED);
+      else
+        set_state(State::CANCELED);
+    } else {
+      set_state(State::DONE);
+    }
 
-  clean_action();
+    clean_action();
+  }
 
   /* Answer all simcalls associated with the synchro */
   finish();
