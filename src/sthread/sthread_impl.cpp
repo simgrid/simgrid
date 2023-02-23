@@ -152,7 +152,7 @@ int sthread_mutex_destroy(sthread_mutex_t* mutex)
   intrusive_ptr_release(static_cast<sg4::Mutex*>(mutex->mutex));
   return 0;
 }
-int sthread_sem_init(sthread_sem_t* sem, int pshared, unsigned int value)
+int sthread_sem_init(sthread_sem_t* sem, int /*pshared*/, unsigned int value)
 {
   auto s = sg4::Semaphore::create(value);
   intrusive_ptr_add_ref(s.get());
@@ -187,7 +187,7 @@ int sthread_sem_trywait(sthread_sem_t* sem)
 }
 int sthread_sem_timedwait(sthread_sem_t* sem, const struct timespec* abs_timeout)
 {
-  if (static_cast<sg4::Semaphore*>(sem->sem)->acquire_timeout(abs_timeout->tv_sec +
+  if (static_cast<sg4::Semaphore*>(sem->sem)->acquire_timeout(static_cast<double>(abs_timeout->tv_sec) +
                                                               static_cast<double>(abs_timeout->tv_nsec) / 1E9)) {
     errno = ETIMEDOUT;
     return -1;

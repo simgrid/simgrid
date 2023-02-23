@@ -178,8 +178,7 @@ void EngineImpl::initialize(int* argc, char** argv)
   simgrid::mc::AppSide::initialize();
 #endif
 
-  static bool inited = false;
-  if (not inited) {
+  if (static bool inited = false; not inited) {
     inited = true;
     xbt_log_init(argc, argv);
 

@@ -58,7 +58,8 @@ int main(int argc, char** argv)
 {
   if (argc == 2 && strcmp(argv[1], "-q") == 0)
     do_output = 0;
-  pthread_t pro[2], con[2];
+  pthread_t pro[2];
+  pthread_t con[2];
   pthread_mutex_init(&mutex, NULL);
   sem_init(&empty, 0, BufferSize);
   sem_init(&full, 0, 0);
@@ -66,9 +67,9 @@ int main(int argc, char** argv)
   int ids[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}; // The identity of each thread (for debug messages)
 
   for (int i = 0; i < ProducerCount; i++)
-    pthread_create(&pro[i], NULL, (void*)producer, (void*)&ids[i]);
+    pthread_create(&pro[i], NULL, (void*)&producer, (void*)&ids[i]);
   for (int i = 0; i < ConsumerCount; i++)
-    pthread_create(&con[i], NULL, (void*)consumer, (void*)&ids[i]);
+    pthread_create(&con[i], NULL, (void*)&consumer, (void*)&ids[i]);
 
   for (int i = 0; i < ProducerCount; i++)
     pthread_join(pro[i], NULL);
