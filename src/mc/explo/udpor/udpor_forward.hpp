@@ -14,6 +14,8 @@
 namespace simgrid::mc::udpor {
 
 class EventSet;
+class CompatabilityGraph;
+class CompatabilityGraphNode;
 class Configuration;
 class History;
 class Unfolding;

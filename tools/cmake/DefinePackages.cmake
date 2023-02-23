@@ -523,6 +523,10 @@ set(MC_SRC
   src/mc/explo/UdporChecker.cpp
   src/mc/explo/UdporChecker.hpp
 
+  src/mc/explo/udpor/CompatibilityGraph.hpp
+  src/mc/explo/udpor/CompatibilityGraph.cpp
+  src/mc/explo/udpor/CompatibilityGraphNode.hpp
+  src/mc/explo/udpor/CompatibilityGraphNode.cpp
   src/mc/explo/udpor/Configuration.hpp
   src/mc/explo/udpor/Configuration.cpp
   src/mc/explo/udpor/EventSet.cpp
