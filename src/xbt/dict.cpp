@@ -35,7 +35,7 @@ static void xbt_dict_preinit()
 {
   static std::mutex init_mutex;
   const std::scoped_lock lock(init_mutex);
-  if (dict_elm_mallocator == nullptr) { // Just in case someone initialized it in between
+  if (dict_elm_mallocator == nullptr) {
     dict_elm_mallocator =
         xbt_mallocator_new(256, dict_elm_mallocator_new_f, dict_elm_mallocator_free_f, dict_elm_mallocator_reset_f);
     atexit(xbt_dict_postexit);
