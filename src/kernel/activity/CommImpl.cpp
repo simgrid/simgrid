@@ -96,7 +96,7 @@ CommImpl::~CommImpl()
 {
   XBT_DEBUG("Really free communication %p in state %s (detached = %d)", this, get_state_str(), detached_);
 
-  cleanup_surf();
+  clean_action();
 
   if (detached_ && get_state() != State::DONE) {
     /* the communication has failed and was detached:
@@ -397,22 +397,6 @@ void CommImpl::cancel()
   }
 }
 
-/** @brief This is part of the cleanup process, probably an internal command */
-void CommImpl::cleanup_surf()
-{
-  clean_action();
-
-  if (src_timeout_) {
-    src_timeout_->unref();
-    src_timeout_ = nullptr;
-  }
-
-  if (dst_timeout_) {
-    dst_timeout_->unref();
-    dst_timeout_ = nullptr;
-  }
-}
-
 void CommImpl::post()
 {
   on_completion(*this);
@@ -438,7 +422,7 @@ void CommImpl::post()
             src_actor_.get(), dst_actor_.get(), detached_);
 
   /* destroy the model actions associated with the communication activity */
-  cleanup_surf();
+  clean_action();
 
   /* Answer all simcalls associated with the synchro */
   finish();

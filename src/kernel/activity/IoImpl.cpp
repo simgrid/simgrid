@@ -38,14 +38,6 @@ IoImpl& IoImpl::update_sharing_penalty(double sharing_penalty)
   return *this;
 }
 
-IoImpl& IoImpl::set_timeout(double timeout)
-{
-  const s4u::Host* host = get_disk()->get_host();
-  timeout_detector_     = host->get_cpu()->sleep(timeout);
-  timeout_detector_->set_activity(this);
-  return *this;
-}
-
 IoImpl& IoImpl::set_type(s4u::Io::OpType type)
 {
   type_ = type;
@@ -116,19 +108,11 @@ void IoImpl::post()
       set_state(State::FAILED);
     else
       set_state(State::CANCELED);
-  } else if (timeout_detector_ && timeout_detector_->get_state() == resource::Action::State::FINISHED &&
-             model_action_->get_remains() > 0.0) {
-    model_action_->set_state(resource::Action::State::FAILED);
-    set_state(State::TIMEOUT);
   } else {
     set_state(State::DONE);
   }
 
   clean_action();
-  if (timeout_detector_) {
-    timeout_detector_->unref();
-    timeout_detector_ = nullptr;
-  }
 
   /* Answer all simcalls associated with the synchro */
   finish();

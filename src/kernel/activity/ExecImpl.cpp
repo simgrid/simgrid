@@ -41,15 +41,6 @@ ExecImpl& ExecImpl::set_hosts(const std::vector<s4u::Host*>& hosts)
   return *this;
 }
 
-ExecImpl& ExecImpl::set_timeout(double timeout)
-{
-  if (timeout >= 0 && not MC_is_active() && not MC_record_replay_is_active()) {
-    timeout_detector_.reset(get_host()->get_cpu()->sleep(timeout));
-    timeout_detector_->set_activity(this);
-  }
-  return *this;
-}
-
 ExecImpl& ExecImpl::set_flops_amount(double flops_amount)
 {
   flops_amounts_.assign(1, flops_amount);
@@ -153,16 +144,11 @@ void ExecImpl::post()
   } else if (model_action_->get_state() == resource::Action::State::FAILED) {
     /* If all the hosts are running the synchro didn't fail, then the synchro was canceled */
     set_state(State::CANCELED);
-  } else if (timeout_detector_ && timeout_detector_->get_state() == resource::Action::State::FINISHED &&
-             model_action_->get_remains() > 0.0) {
-    model_action_->set_state(resource::Action::State::FAILED);
-    set_state(State::TIMEOUT);
   } else {
     set_state(State::DONE);
   }
 
   clean_action();
-  timeout_detector_.reset();
   if (get_actor() != nullptr) {
     get_actor()->activities_.erase(this);
   }

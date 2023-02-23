@@ -14,9 +14,10 @@ namespace simgrid::kernel::activity {
 
 enum class CommImplType { SEND, RECEIVE };
 
+using timeout_action_type = std::unique_ptr<resource::Action, std::function<void(resource::Action*)>>;
+
 class XBT_PUBLIC CommImpl : public ActivityImpl_T<CommImpl> {
   ~CommImpl() override;
-  void cleanup_surf();
 
   static std::function<void(CommImpl*, void*, size_t)> copy_data_callback_;
 
@@ -80,8 +81,9 @@ expectations of the other side, too. See  */
   std::function<void(CommImpl*, void*, size_t)> copy_data_fun;
 
   /* Model actions */
-  resource::Action* src_timeout_ = nullptr; /* represents the timeout set by the sender */
-  resource::Action* dst_timeout_ = nullptr; /* represents the timeout set by the receiver */
+  timeout_action_type src_timeout_{nullptr, [](resource::Action* a) { a->unref(); }}; /* timeout set by the sender */
+  timeout_action_type dst_timeout_{nullptr, [](resource::Action* a) { a->unref(); }}; /* timeout set by the receiver */
+
   actor::ActorImplPtr src_actor_ = nullptr;
   actor::ActorImplPtr dst_actor_ = nullptr;
 
