@@ -6,6 +6,7 @@
 #include "src/3rd-party/catch.hpp"
 #include "src/mc/explo/udpor/Configuration.hpp"
 #include "src/mc/explo/udpor/EventSet.hpp"
+#include "src/mc/explo/udpor/History.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
 
 using namespace simgrid::mc::udpor;
@@ -272,6 +273,87 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order More Compli
                    std::vector<UnfoldingEvent*>{&e5, &e6, &e4, &e3, &e2, &e1} ||
                C.get_topologically_sorted_events_of_reverse_graph() ==
                    std::vector<UnfoldingEvent*>{&e5, &e4, &e6, &e3, &e2, &e1}));
+    }
+  }
+}
+
+TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Complicated")
+{
+  // The following tests concern the given event structure:
+  //                e1
+  //              /   /
+  //            e2    e8
+  //           /  /    /  /
+  //          e3   /   /    /
+  //         /  /    /      e11
+  //        e4  e6   e7
+  //        /   /  /   /
+  //       e5   e9    e10
+  //        /   /     /
+  //         /  /   /
+  //         [   e12    ]
+  UnfoldingEvent e1;
+  UnfoldingEvent e2{&e1}, e8{&e1};
+  UnfoldingEvent e3{&e2};
+  UnfoldingEvent e4{&e3};
+  UnfoldingEvent e5{&e4}, e6{&e4};
+  UnfoldingEvent e7{&e2, &e8}, e11{&e8};
+  UnfoldingEvent e10{&e7}, e9{&e6, &e7};
+  UnfoldingEvent e12{&e5, &e9, &e10};
+
+  SECTION("Test every combination of the maximal configuration (forward graph)")
+  {
+    // To test this, we ensure that for the `i`th event
+    // in `ordered_events`, each event in `ordered_events[0...<i]
+    // is contained in the history of `ordered_events[i]`.
+    Configuration C{&e1, &e2, &e3, &e4, &e5, &e6, &e7, &e8, &e9, &e10, &e11, &e12};
+    const auto ordered_events = C.get_topologically_sorted_events();
+
+    EventSet events_seen;
+    for (size_t i = 0; i < ordered_events.size(); i++) {
+      UnfoldingEvent* e = ordered_events[i];
+
+      History history(e);
+      for (auto* e_hist : history) {
+        // In this demo, we want to make sure that
+        // we don't mark not yet seeing `e` as an error.
+        // The history of `e` traverses `e` itself. All
+        // other events in e's history are included in
+        if (e_hist == e)
+          continue;
+
+        // If this event has not been "seen" before,
+        // this implies that event `e` appears earlier
+        // in the list than one of its dependencies
+        REQUIRE(events_seen.contains(e_hist));
+      }
+      events_seen.insert(e);
+    }
+  }
+
+  SECTION("Test every combination of the maximal configuration (reverse graph)")
+  {
+    // To test this, we ensure that for the `i`th event
+    // in `ordered_events`, no event in `ordered_events[0...<i]
+    // is contained in the history of `ordered_events[i]`.
+    Configuration C{&e1, &e2, &e3, &e4, &e5, &e6, &e7, &e8, &e9, &e10, &e11, &e12};
+    const auto ordered_events = C.get_topologically_sorted_events_of_reverse_graph();
+
+    EventSet events_seen;
+    for (size_t i = 0; i < ordered_events.size(); i++) {
+      UnfoldingEvent* e = ordered_events[i];
+      History history(e);
+
+      for (auto* e_hist : history) {
+        // Unlike the test above, we DO want to ensure
+        // that `e` itself ALSO isn't yet seen
+
+        // If this event has been "seen" before,
+        // this implies that event `e` appears later
+        // in the list than one of its ancestors
+        REQUIRE_FALSE(events_seen.contains(e_hist));
+      }
+      events_seen.insert(e);
     }
   }
 }
