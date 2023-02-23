@@ -45,7 +45,7 @@ void Configuration::add_event(UnfoldingEvent* e)
   }
 }
 
-std::vector<UnfoldingEvent*> Configuration::get_topogolically_sorted_events_of_reverse_graph() const
+std::vector<UnfoldingEvent*> Configuration::get_topologically_sorted_events() const
 {
   if (events_.empty()) {
     return std::vector<UnfoldingEvent*>();
@@ -69,35 +69,52 @@ std::vector<UnfoldingEvent*> Configuration::get_topogolically_sorted_events_of_r
         // detect a cycle and if we see it again here
         // we can detect that the node is re-processed
         temporarily_marked_events.insert(evt);
-      } else {
 
+        EventSet immediate_causes = evt->get_immediate_causes();
+        if (!immediate_causes.empty() && immediate_causes.is_subset_of(temporarily_marked_events)) {
+          throw std::invalid_argument("Attempted to perform a topological sort on a configuration "
+                                      "whose contents contain a cycle. The configuration (and the graph "
+                                      "connecting all of the events) is an invalid event structure");
+        }
+        immediate_causes.subtract(discovered_events);
+        immediate_causes.subtract(permanently_marked_events);
+        const EventSet undiscovered_causes = std::move(immediate_causes);
+
+        for (const auto cause : undiscovered_causes) {
+          event_stack.push(cause);
+        }
+      } else {
         // Mark this event as:
         // 1. discovered across all DFSs performed
-        // 2. part of the topological search
+        // 2. permanently marked
+        // 3. part of the topological search
+        unknown_events.remove(evt);
         temporarily_marked_events.remove(evt);
         permanently_marked_events.insert(evt);
+
+        // In moving this event to the end of the list,
+        // we are saying this events "happens before" other
+        // events that are added later.
         topological_ordering.push_back(evt);
 
         // Only now do we remove the event, i.e. once
         // we've processed the same event again
         event_stack.pop();
       }
-
-      const EventSet immediate_causes = evt->get_immediate_causes();
-      if (immediate_causes.is_subset_of(temporarily_marked_events)) {
-        throw std::invalid_argument("Attempted to perform a topological sort on a configuration "
-                                    "whose contents contain a cycle. The configuration (and the graph "
-                                    "connecting all of the events) is an invalid event structure");
-      }
-      const EventSet undiscovered_causes = std::move(immediate_causes).subtracting(discovered_events);
-
-      for (const auto cause : undiscovered_causes) {
-        event_stack.push(cause);
-      }
     }
   }
-
   return topological_ordering;
+}
+
+std::vector<UnfoldingEvent*> Configuration::get_topologically_sorted_events_of_reverse_graph() const
+{
+  // The method exploits the property that
+  // a topological sorting S^R of the reverse graph G^R
+  // of some graph G is simply the reverse of any
+  // topological sorting S of G.
+  auto topological_events = get_topologically_sorted_events();
+  std::reverse(topological_events.begin(), topological_events.end());
+  return topological_events;
 }
 
 } // namespace simgrid::mc::udpor

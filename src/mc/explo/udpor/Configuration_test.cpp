@@ -120,3 +120,158 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Adding Events")
   REQUIRE_NOTHROW(Configuration({&e1, &e2, &e3, &e4}).add_event(&e3));
   REQUIRE_NOTHROW(Configuration({&e1, &e2, &e3, &e4}).add_event(&e4));
 }
+
+TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order")
+{
+  // The following tests concern the given event structure:
+  //               e1
+  //              /
+  //            e2
+  //           /
+  //          e3
+  //         /
+  //        e4
+  UnfoldingEvent e1;
+  UnfoldingEvent e2{&e1};
+  UnfoldingEvent e3{&e2};
+  UnfoldingEvent e4{&e3};
+
+  SECTION("Topological ordering for entire set")
+  {
+    Configuration C{&e1, &e2, &e3, &e4};
+    REQUIRE(C.get_topologically_sorted_events() == std::vector<UnfoldingEvent*>{&e1, &e2, &e3, &e4});
+    REQUIRE(C.get_topologically_sorted_events_of_reverse_graph() == std::vector<UnfoldingEvent*>{&e4, &e3, &e2, &e1});
+  }
+
+  SECTION("Topological ordering for subsets")
+  {
+    SECTION("No elements")
+    {
+      Configuration C;
+      REQUIRE(C.get_topologically_sorted_events() == std::vector<UnfoldingEvent*>{});
+      REQUIRE(C.get_topologically_sorted_events_of_reverse_graph() == std::vector<UnfoldingEvent*>{});
+    }
+
+    SECTION("e1 only")
+    {
+      Configuration C{&e1};
+      REQUIRE(C.get_topologically_sorted_events() == std::vector<UnfoldingEvent*>{&e1});
+      REQUIRE(C.get_topologically_sorted_events_of_reverse_graph() == std::vector<UnfoldingEvent*>{&e1});
+    }
+
+    SECTION("e1 and e2 only")
+    {
+      Configuration C{&e1, &e2};
+      REQUIRE(C.get_topologically_sorted_events() == std::vector<UnfoldingEvent*>{&e1, &e2});
+      REQUIRE(C.get_topologically_sorted_events_of_reverse_graph() == std::vector<UnfoldingEvent*>{&e2, &e1});
+    }
+
+    SECTION("e1, e2, and e3 only")
+    {
+      Configuration C{&e1, &e2, &e3};
+      REQUIRE(C.get_topologically_sorted_events() == std::vector<UnfoldingEvent*>{&e1, &e2, &e3});
+      REQUIRE(C.get_topologically_sorted_events_of_reverse_graph() == std::vector<UnfoldingEvent*>{&e3, &e2, &e1});
+    }
+  }
+}
+
+TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order More Complicated")
+{
+  // The following tests concern the given event structure:
+  //                e1
+  //              /
+  //            e2
+  //           /
+  //          e3
+  //         /  /
+  //        e4   e6
+  //        /
+  //       e5
+  UnfoldingEvent e1;
+  UnfoldingEvent e2{&e1};
+  UnfoldingEvent e3{&e2};
+  UnfoldingEvent e4{&e3}, e6{&e3};
+  UnfoldingEvent e5{&e4};
+
+  SECTION("Topological ordering for subsets")
+  {
+    SECTION("No elements")
+    {
+      Configuration C;
+      REQUIRE(C.get_topologically_sorted_events() == std::vector<UnfoldingEvent*>{});
+      REQUIRE(C.get_topologically_sorted_events_of_reverse_graph() == std::vector<UnfoldingEvent*>{});
+    }
+
+    SECTION("e1 only")
+    {
+      Configuration C{&e1};
+      REQUIRE(C.get_topologically_sorted_events() == std::vector<UnfoldingEvent*>{&e1});
+      REQUIRE(C.get_topologically_sorted_events_of_reverse_graph() == std::vector<UnfoldingEvent*>{&e1});
+    }
+
+    SECTION("e1 and e2 only")
+    {
+      Configuration C{&e1, &e2};
+      REQUIRE(C.get_topologically_sorted_events() == std::vector<UnfoldingEvent*>{&e1, &e2});
+      REQUIRE(C.get_topologically_sorted_events_of_reverse_graph() == std::vector<UnfoldingEvent*>{&e2, &e1});
+    }
+
+    SECTION("e1, e2, and e3 only")
+    {
+      Configuration C{&e1, &e2, &e3};
+      REQUIRE(C.get_topologically_sorted_events() == std::vector<UnfoldingEvent*>{&e1, &e2, &e3});
+      REQUIRE(C.get_topologically_sorted_events_of_reverse_graph() == std::vector<UnfoldingEvent*>{&e3, &e2, &e1});
+    }
+
+    SECTION("e1, e2, e3, and e6 only")
+    {
+      Configuration C{&e1, &e2, &e3, &e6};
+      REQUIRE(C.get_topologically_sorted_events() == std::vector<UnfoldingEvent*>{&e1, &e2, &e3, &e6});
+      REQUIRE(C.get_topologically_sorted_events_of_reverse_graph() == std::vector<UnfoldingEvent*>{&e6, &e3, &e2, &e1});
+    }
+
+    SECTION("e1, e2, e3, and e4 only")
+    {
+      Configuration C{&e1, &e2, &e3, &e4};
+      REQUIRE(C.get_topologically_sorted_events() == std::vector<UnfoldingEvent*>{&e1, &e2, &e3, &e4});
+      REQUIRE(C.get_topologically_sorted_events_of_reverse_graph() == std::vector<UnfoldingEvent*>{&e4, &e3, &e2, &e1});
+    }
+
+    SECTION("e1, e2, e3, e4, and e5 only")
+    {
+      Configuration C{&e1, &e2, &e3, &e4, &e5};
+      REQUIRE(C.get_topologically_sorted_events() == std::vector<UnfoldingEvent*>{&e1, &e2, &e3, &e4, &e5});
+      REQUIRE(C.get_topologically_sorted_events_of_reverse_graph() ==
+              std::vector<UnfoldingEvent*>{&e5, &e4, &e3, &e2, &e1});
+    }
+
+    SECTION("e1, e2, e3, e4 and e6 only")
+    {
+      // In this case, e4 and e6 are interchangeable. Hence, we have to check
+      // if the sorting gives us *any* of the combinations
+      Configuration C{&e1, &e2, &e3, &e4, &e6};
+      REQUIRE((C.get_topologically_sorted_events() == std::vector<UnfoldingEvent*>{&e1, &e2, &e3, &e4, &e6} ||
+               C.get_topologically_sorted_events() == std::vector<UnfoldingEvent*>{&e1, &e2, &e3, &e6, &e4}));
+      REQUIRE((C.get_topologically_sorted_events_of_reverse_graph() ==
+                   std::vector<UnfoldingEvent*>{&e6, &e4, &e3, &e2, &e1} ||
+               C.get_topologically_sorted_events_of_reverse_graph() ==
+                   std::vector<UnfoldingEvent*>{&e4, &e6, &e3, &e2, &e1}));
+    }
+
+    SECTION("Topological ordering for entire set")
+    {
+      // In this case, e4/e5 are both interchangeable with e6. Hence, again we have to check
+      // if the sorting gives us *any* of the combinations
+      Configuration C{&e1, &e2, &e3, &e4, &e5, &e6};
+      REQUIRE((C.get_topologically_sorted_events() == std::vector<UnfoldingEvent*>{&e1, &e2, &e3, &e4, &e5, &e6} ||
+               C.get_topologically_sorted_events() == std::vector<UnfoldingEvent*>{&e1, &e2, &e3, &e4, &e6, &e5} ||
+               C.get_topologically_sorted_events() == std::vector<UnfoldingEvent*>{&e1, &e2, &e3, &e6, &e4, &e5}));
+      REQUIRE((C.get_topologically_sorted_events_of_reverse_graph() ==
+                   std::vector<UnfoldingEvent*>{&e6, &e5, &e4, &e3, &e2, &e1} ||
+               C.get_topologically_sorted_events_of_reverse_graph() ==
+                   std::vector<UnfoldingEvent*>{&e5, &e6, &e4, &e3, &e2, &e1} ||
+               C.get_topologically_sorted_events_of_reverse_graph() ==
+                   std::vector<UnfoldingEvent*>{&e5, &e4, &e6, &e3, &e2, &e1}));
+    }
+  }
+}
