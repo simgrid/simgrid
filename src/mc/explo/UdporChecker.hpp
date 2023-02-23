@@ -44,8 +44,10 @@ private:
   /**
    * The total number of events created whilst exploring the unfolding
    */
-  uint32_t nb_events = 0;
-  uint32_t nb_traces = 0;
+  /* FIXME: private fields are not used
+    uint32_t nb_events = 0;
+    uint32_t nb_traces = 0;
+  */
 
   /**
    * @brief The "relevant" portions of the unfolding that must be kept around to ensure that
