@@ -39,8 +39,8 @@ int main(int argc, char* argv[])
   int id[2] = {0, 1};
   pthread_t thread1;
   pthread_t thread2;
-  pthread_create(&thread1, NULL, thread_fun1, (void*)&id[0]);
-  pthread_create(&thread2, NULL, thread_fun2, (void*)&id[1]);
+  pthread_create(&thread1, NULL, thread_fun1, &id[0]);
+  pthread_create(&thread2, NULL, thread_fun2, &id[1]);
   fprintf(stderr, "All threads are started.\n");
   pthread_join(thread1, NULL);
   pthread_join(thread2, NULL);

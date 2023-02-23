@@ -67,9 +67,9 @@ int main(int argc, char** argv)
   int ids[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}; // The identity of each thread (for debug messages)
 
   for (int i = 0; i < ProducerCount; i++)
-    pthread_create(&pro[i], NULL, (void*)&producer, (void*)&ids[i]);
+    pthread_create(&pro[i], NULL, producer, &ids[i]);
   for (int i = 0; i < ConsumerCount; i++)
-    pthread_create(&con[i], NULL, (void*)&consumer, (void*)&ids[i]);
+    pthread_create(&con[i], NULL, consumer, &ids[i]);
 
   for (int i = 0; i < ProducerCount; i++)
     pthread_join(pro[i], NULL);
