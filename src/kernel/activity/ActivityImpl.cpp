@@ -63,7 +63,7 @@ const char* ActivityImpl::get_state_str() const
 bool ActivityImpl::test(actor::ActorImpl* issuer)
 {
   if (state_ != State::WAITING && state_ != State::RUNNING) {
-    post();
+    finish();
     issuer->exception_ = nullptr; // Do not propagate exception in that case
     return true;
   }
@@ -106,7 +106,7 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
 
   /* If the synchro is already finished then perform the error handling */
   if (state_ != State::WAITING && state_ != State::RUNNING) {
-    post();
+    finish();
   } else {
     /* we need a sleep action (even when the timeout is infinite) to be notified of host failures */
     /* Comms handle that a bit differently of the other activities */
@@ -145,7 +145,7 @@ void ActivityImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<Acti
       act->simcalls_.push_back(&issuer->simcall_);
       observer->set_result(idx);
       act->set_state(State::DONE);
-      act->post();
+      act->finish();
     }
     return;
   }
@@ -167,7 +167,7 @@ void ActivityImpl::wait_any_for(actor::ActorImpl* issuer, const std::vector<Acti
     act->simcalls_.push_back(&issuer->simcall_);
     /* see if the synchro is already finished */
     if (act->get_state() != State::WAITING && act->get_state() != State::RUNNING) {
-      act->post();
+      act->finish();
       break;
     }
   }

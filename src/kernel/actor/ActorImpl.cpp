@@ -183,7 +183,7 @@ void ActorImpl::exit()
     activity::ActivityImplPtr activity = waiting_synchro_;
     activity->cancel();
     activity->set_state(activity::State::FAILED);
-    activity->post();
+    activity->finish();
 
     activities_.erase(waiting_synchro_);
     waiting_synchro_ = nullptr;

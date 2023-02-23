@@ -71,14 +71,14 @@ void MailboxImpl::remove(const CommImplPtr& comm)
 
 /** @brief Removes all communication activities from a mailbox
  */
-void MailboxImpl::clear( bool do_post )
+void MailboxImpl::clear(bool do_finish)
 {
   // CommImpl::cancel() will remove the comm from the mailbox..
   for (auto comm : done_comm_queue_) {
     comm->cancel();
     comm->set_state(State::FAILED);
-    if(do_post)
-      comm->post();
+    if (do_finish)
+      comm->finish();
   }
   done_comm_queue_.clear();
 
@@ -87,8 +87,8 @@ void MailboxImpl::clear( bool do_post )
     if (comm->get_state() == State::WAITING && not comm->is_detached()) {
       comm->cancel();
       comm->set_state(State::FAILED);
-      if(do_post)
-        comm->post();
+      if (do_finish)
+        comm->finish();
     } else
       comm_queue_.pop_back();
   }

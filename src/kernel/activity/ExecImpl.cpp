@@ -133,33 +133,6 @@ ExecImpl& ExecImpl::update_sharing_penalty(double sharing_penalty)
   return *this;
 }
 
-void ExecImpl::post()
-{
-  if (model_action_ != nullptr) {
-    if (auto const& hosts = get_hosts();
-        std::any_of(hosts.begin(), hosts.end(), [](const s4u::Host* host) { return not host->is_on(); })) {
-      /* If one of the hosts running the synchro failed, notice it. This way, the asking
-       * process can be killed if it runs on that host itself */
-      set_state(State::FAILED);
-    } else if (model_action_->get_state() == resource::Action::State::FAILED) {
-      /* If all the hosts are running the synchro didn't fail, then the synchro was canceled */
-      set_state(State::CANCELED);
-    } else {
-      set_state(State::DONE);
-    }
-
-    clean_action();
-  }
-
-  if (get_actor() != nullptr)
-    get_actor()->activities_.erase(this);
-
-  if (get_state() != State::FAILED && cb_id_ >= 0)
-    s4u::Host::on_state_change.disconnect(cb_id_);
-  /* Answer all simcalls associated with the synchro */
-  finish();
-}
-
 void ExecImpl::set_exception(actor::ActorImpl* issuer)
 {
   switch (get_state()) {
@@ -187,6 +160,28 @@ void ExecImpl::set_exception(actor::ActorImpl* issuer)
 void ExecImpl::finish()
 {
   XBT_DEBUG("ExecImpl::finish() in state %s", get_state_str());
+  if (model_action_ != nullptr) {
+    if (auto const& hosts = get_hosts();
+        std::any_of(hosts.begin(), hosts.end(), [](const s4u::Host* host) { return not host->is_on(); })) {
+      /* If one of the hosts running the synchro failed, notice it. This way, the asking
+       * process can be killed if it runs on that host itself */
+      set_state(State::FAILED);
+    } else if (model_action_->get_state() == resource::Action::State::FAILED) {
+      /* If all the hosts are running the synchro didn't fail, then the synchro was canceled */
+      set_state(State::CANCELED);
+    } else {
+      set_state(State::DONE);
+    }
+
+    clean_action();
+  }
+
+  if (get_actor() != nullptr)
+    get_actor()->activities_.erase(this);
+
+  if (get_state() != State::FAILED && cb_id_ >= 0)
+    s4u::Host::on_state_change.disconnect(cb_id_);
+
   while (not simcalls_.empty()) {
     actor::Simcall* simcall = simcalls_.front();
     simcalls_.pop_front();

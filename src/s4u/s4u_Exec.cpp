@@ -35,7 +35,7 @@ ExecPtr Exec::init()
     if (not h.is_on() && pimpl->get_state() == kernel::activity::State::RUNNING &&
         std::find(pimpl->get_hosts().begin(), pimpl->get_hosts().end(), &h) != pimpl->get_hosts().end()) {
       pimpl->set_state(kernel::activity::State::FAILED);
-      pimpl->post();
+      pimpl->finish();
     }
   });
   pimpl->set_cb_id(cb_id);

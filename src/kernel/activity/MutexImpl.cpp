@@ -25,14 +25,10 @@ void MutexAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   this->register_simcall(&issuer_->simcall_); // Block on that acquisition
 
   if (mutex_->get_owner() == issuer_) { // I'm the owner
-    post();
+    finish();
   } else {
     // Already in the queue
   }
-}
-void MutexAcquisitionImpl::post()
-{
-  finish();
 }
 
 void MutexAcquisitionImpl::finish()
@@ -99,7 +95,7 @@ void MutexImpl::unlock(actor::ActorImpl* issuer)
 
     owner_ = acq->get_issuer();
     if (acq == owner_->waiting_synchro_)
-      acq->post();
+      acq->finish();
     // else, the issuer is not blocked on this acquisition so no need to release it
 
   } else {

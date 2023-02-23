@@ -79,11 +79,8 @@ public:
   virtual void resume();
   virtual void cancel();
 
-  virtual void post() = 0; // Called by the main loop when the activity is marked as terminated or failed by its model.
-                           // Setups the status, clean things up, and call finish()
   virtual void set_exception(actor::ActorImpl* issuer) = 0; // Raising exceptions and stuff
-  virtual void finish() = 0; // Unlock all simcalls blocked on that activity, either because it was marked as done by
-                             // the model or because it terminated without waiting for the model
+  virtual void finish() = 0; // Setups the status, clean things up, unlock all simcalls blocked on that activity.
 
   s4u::Host* get_host() const { return hosts_.front(); }
   const std::vector<s4u::Host*>& get_hosts() const { return hosts_; };

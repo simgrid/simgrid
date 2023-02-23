@@ -139,7 +139,7 @@ CommImpl* CommImpl::start()
       XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure", from_->get_cname(),
                 to_->get_cname());
       set_state(State::LINK_FAILURE);
-      post();
+      finish();
 
     } else if ((src_actor_ != nullptr && src_actor_->is_suspended()) ||
                (dst_actor_ != nullptr && dst_actor_->is_suspended())) {
@@ -355,7 +355,7 @@ void CommImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   if (MC_is_active() || MC_record_replay_is_active()) {
     // FIXME: what about timeouts?
     set_state(State::DONE);
-    post();
+    finish();
     return;
   }
   ActivityImpl::wait_for(issuer, timeout);
@@ -397,36 +397,6 @@ void CommImpl::cancel()
   }
 }
 
-void CommImpl::post()
-{
-  on_completion(*this);
-
-  /* Update synchro state */
-  if (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FINISHED)
-    set_state(State::SRC_TIMEOUT);
-  else if (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FINISHED)
-    set_state(State::DST_TIMEOUT);
-  else if ((from_ && not from_->is_on()) || (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FAILED))
-    set_state(State::SRC_HOST_FAILURE);
-  else if ((to_ && not to_->is_on()) || (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FAILED))
-    set_state(State::DST_HOST_FAILURE);
-  else if (model_action_ && model_action_->get_state() == resource::Action::State::FAILED) {
-    set_state(State::LINK_FAILURE);
-  } else if (get_state() == State::RUNNING) {
-    xbt_assert(from_ && from_->is_on());
-    xbt_assert(to_ && to_->is_on());
-    set_state(State::DONE);
-  }
-
-  XBT_DEBUG("CommImpl::post(): comm %p, state %s, src_proc %p, dst_proc %p, detached: %d", this, get_state_str(),
-            src_actor_.get(), dst_actor_.get(), detached_);
-
-  /* destroy the model actions associated with the communication activity */
-  clean_action();
-
-  /* Answer all simcalls associated with the synchro */
-  finish();
-}
 void CommImpl::set_exception(actor::ActorImpl* issuer)
 {
   switch (get_state()) {
@@ -494,7 +464,32 @@ void CommImpl::set_exception(actor::ActorImpl* issuer)
 
 void CommImpl::finish()
 {
-  XBT_DEBUG("CommImpl::finish() in state %s", get_state_str());
+  XBT_DEBUG("CommImpl::finish() comm %p, state %s, src_proc %p, dst_proc %p, detached: %d", this, get_state_str(),
+            src_actor_.get(), dst_actor_.get(), detached_);
+
+  on_completion(*this);
+
+  /* Update synchro state */
+  if (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FINISHED)
+    set_state(State::SRC_TIMEOUT);
+  else if (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FINISHED)
+    set_state(State::DST_TIMEOUT);
+  else if ((from_ && not from_->is_on()) ||
+           (src_timeout_ && src_timeout_->get_state() == resource::Action::State::FAILED))
+    set_state(State::SRC_HOST_FAILURE);
+  else if ((to_ && not to_->is_on()) || (dst_timeout_ && dst_timeout_->get_state() == resource::Action::State::FAILED))
+    set_state(State::DST_HOST_FAILURE);
+  else if (model_action_ && model_action_->get_state() == resource::Action::State::FAILED) {
+    set_state(State::LINK_FAILURE);
+  } else if (get_state() == State::RUNNING) {
+    xbt_assert(from_ && from_->is_on());
+    xbt_assert(to_ && to_->is_on());
+    set_state(State::DONE);
+  }
+
+  /* destroy the model actions associated with the communication activity */
+  clean_action();
+
   /* If the synchro is still in a rendez-vous point then remove from it */
   if (mbox_)
     mbox_->remove(this);

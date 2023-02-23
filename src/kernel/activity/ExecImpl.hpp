@@ -46,7 +46,6 @@ public:
   virtual ActivityImpl* migrate(s4u::Host* to);
 
   ExecImpl* start();
-  void post() override;
   void set_exception(actor::ActorImpl* issuer) override;
   void finish() override;
 

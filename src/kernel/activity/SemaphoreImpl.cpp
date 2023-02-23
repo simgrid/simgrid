@@ -29,7 +29,7 @@ void SemAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   this->register_simcall(&issuer_->simcall_); // Block on that acquisition
 
   if (granted_) {
-    post();
+    finish();
   } else if (timeout > 0) {
     model_action_ = get_issuer()->get_host()->get_cpu()->sleep(timeout);
     model_action_->set_activity(this);
@@ -37,10 +37,6 @@ void SemAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
   } else {
     // Already in the queue
   }
-}
-void SemAcquisitionImpl::post()
-{
-  finish();
 }
 void SemAcquisitionImpl::finish()
 {
@@ -108,7 +104,7 @@ void SemaphoreImpl::release()
 
     acqui->granted_ = true;
     if (acqui == acqui->get_issuer()->waiting_synchro_)
-      acqui->post();
+      acqui->finish();
     // else, the issuer is not blocked on this acquisition so no need to release it
 
   } else {

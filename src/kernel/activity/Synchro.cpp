@@ -49,17 +49,6 @@ void SynchroImpl::cancel()
   /* I cannot cancel raw synchros directly. */
 }
 
-void SynchroImpl::post()
-{
-  if (model_action_->get_state() == resource::Action::State::FAILED)
-    set_state(State::FAILED);
-  else if (model_action_->get_state() == resource::Action::State::FINISHED)
-    set_state(State::SRC_TIMEOUT);
-
-  clean_action();
-  /* Answer all simcalls associated with the synchro */
-  finish();
-}
 void SynchroImpl::set_exception(actor::ActorImpl* issuer)
 {
   if (get_state() == State::FAILED) {
@@ -74,6 +63,13 @@ void SynchroImpl::set_exception(actor::ActorImpl* issuer)
 void SynchroImpl::finish()
 {
   XBT_DEBUG("SynchroImpl::finish() in state %s", get_state_str());
+  if (model_action_->get_state() == resource::Action::State::FAILED)
+    set_state(State::FAILED);
+  else if (model_action_->get_state() == resource::Action::State::FINISHED)
+    set_state(State::SRC_TIMEOUT);
+
+  clean_action();
+
   xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());
   actor::Simcall* simcall = simcalls_.front();
   simcalls_.pop_front();
