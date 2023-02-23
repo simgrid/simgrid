@@ -33,15 +33,12 @@ static void xbt_dict_postexit()
 }
 static void xbt_dict_preinit()
 {
-  if (dict_elm_mallocator == nullptr) {
-    static std::mutex init_mutex;
-    init_mutex.lock();
-    if (dict_elm_mallocator == nullptr) { // Just in case someone initialized it in between
-      dict_elm_mallocator =
-          xbt_mallocator_new(256, dict_elm_mallocator_new_f, dict_elm_mallocator_free_f, dict_elm_mallocator_reset_f);
-      atexit(xbt_dict_postexit);
-    }
-    init_mutex.unlock();
+  static std::mutex init_mutex;
+  const std::scoped_lock lock(init_mutex);
+  if (dict_elm_mallocator == nullptr) { // Just in case someone initialized it in between
+    dict_elm_mallocator =
+        xbt_mallocator_new(256, dict_elm_mallocator_new_f, dict_elm_mallocator_free_f, dict_elm_mallocator_reset_f);
+    atexit(xbt_dict_postexit);
   }
 }
 
