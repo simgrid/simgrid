@@ -43,7 +43,7 @@ def sender():
     comm.resume()
     comm.wait()
     this_actor.info(f"There is {comm.remaining:.0f} bytes to transfer after the communication completion.")
-    this_actor.info(f"Suspending a completed activity is a no-op.")
+    this_actor.info("Suspending a completed activity is a no-op.")
     comm.suspend()
 
 

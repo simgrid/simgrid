@@ -30,7 +30,7 @@ def worker(barrier: Barrier):
     """ Wait on the barrier and exits.
     :param barrier: Barrier to be awaited
     """
-    this_actor.info(f"Waiting on the barrier")
+    this_actor.info("Waiting on the barrier")
     barrier.wait()
     this_actor.info("Bye")
 
@@ -45,7 +45,7 @@ def master(actor_count: int):
     this_actor.info(f"Spawning {workers_count} workers")
     for i in range(workers_count):
         Actor.create(f"worker-{i}", Host.by_name("Jupiter"), worker, barrier)
-    this_actor.info(f"Waiting on the barrier")
+    this_actor.info("Waiting on the barrier")
     barrier.wait()
     this_actor.info("Bye")
 
