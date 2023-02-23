@@ -22,7 +22,7 @@ public:
 
   inline void release()
   {
-    std::unique_lock lock(mutex_);
+    const std::scoped_lock lock(mutex_);
     ++capa_;
     condition_.notify_one();
   }

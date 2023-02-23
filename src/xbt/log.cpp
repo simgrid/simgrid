@@ -235,7 +235,7 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
     return priority >= category->threshold;
 
   static std::recursive_mutex log_cat_init_mutex;
-  log_cat_init_mutex.lock();
+  const std::scoped_lock lock(log_cat_init_mutex);
 
   XBT_DEBUG("Initializing category '%s' (firstChild=%s, nextSibling=%s)", category->name,
          (category->firstChild ? category->firstChild->name : "none"),
@@ -279,7 +279,6 @@ int _xbt_log_cat_init(xbt_log_category_t category, e_xbt_log_priority_t priority
   }
 
   category->initialized = 1;
-  log_cat_init_mutex.unlock();
   return priority >= category->threshold;
 }
 

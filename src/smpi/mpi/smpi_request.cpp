@@ -24,6 +24,7 @@
 
 #include <algorithm>
 #include <array>
+#include <mutex> // std::scoped_lock and std::unique_lock
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_request, smpi, "Logging specific to SMPI (request)");
 
@@ -463,9 +464,9 @@ void Request::start()
 
     simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
 
-    simgrid::s4u::MutexPtr mut = process->mailboxes_mutex();
+    std::unique_lock<s4u::Mutex> mut_lock;
     if (smpi_cfg_async_small_thresh() != 0 || (flags_ & MPI_REQ_RMA) != 0)
-      mut->lock();
+      mut_lock = std::unique_lock(*process->mailboxes_mutex());
 
     bool is_probe = ((flags_ & MPI_REQ_PROBE) != 0);
     flags_ |= MPI_REQ_PROBE;
@@ -520,9 +521,6 @@ void Request::start()
                                               &observer);
 
     XBT_DEBUG("recv simcall posted");
-
-    if (smpi_cfg_async_small_thresh() != 0 || (flags_ & MPI_REQ_RMA) != 0)
-      mut->unlock();
   } else { /* the RECV flag was not set, so this is a send */
     const simgrid::smpi::ActorExt* process = smpi_process_remote(simgrid::s4u::Actor::by_pid(dst_));
     xbt_assert(process, "Actor pid=%ld is gone??", dst_);
@@ -574,10 +572,9 @@ void Request::start()
       XBT_DEBUG("sending size of %zu : sleep %f ", size_, sleeptime);
     }
 
-    simgrid::s4u::MutexPtr mut = process->mailboxes_mutex();
-
+    std::unique_lock<s4u::Mutex> mut_lock;
     if (smpi_cfg_async_small_thresh() != 0 || (flags_ & MPI_REQ_RMA) != 0)
-      mut->lock();
+      mut_lock = std::unique_lock(*process->mailboxes_mutex());
 
     if (not(smpi_cfg_async_small_thresh() != 0 || (flags_ & MPI_REQ_RMA) != 0)) {
       mailbox = process->mailbox();
@@ -629,9 +626,6 @@ void Request::start()
       boost::static_pointer_cast<kernel::activity::CommImpl>(action_)->set_tracing_category(
           smpi_process()->get_tracing_category());
     }
-
-    if (smpi_cfg_async_small_thresh() != 0 || ((flags_ & MPI_REQ_RMA) != 0))
-      mut->unlock();
   }
 }
 
@@ -1093,9 +1087,8 @@ int Request::wait(MPI_Request * request, MPI_Status * status)
 
   if ((*request)->flags_ & MPI_REQ_GENERALIZED) {
     if (not((*request)->flags_ & MPI_REQ_COMPLETE)) {
-      ((*request)->generalized_funcs)->mutex->lock();
-      ((*request)->generalized_funcs)->cond->wait(((*request)->generalized_funcs)->mutex);
-      ((*request)->generalized_funcs)->mutex->unlock();
+      const std::scoped_lock lock(*(*request)->generalized_funcs->mutex);
+      (*request)->generalized_funcs->cond->wait((*request)->generalized_funcs->mutex);
     }
     MPI_Status tmp_status;
     MPI_Status* mystatus;
@@ -1331,10 +1324,9 @@ int Request::grequest_complete(MPI_Request request)
 {
   if ((not(request->flags_ & MPI_REQ_GENERALIZED)) || request->generalized_funcs->mutex == nullptr)
     return MPI_ERR_REQUEST;
-  request->generalized_funcs->mutex->lock();
+  const std::scoped_lock lock(*request->generalized_funcs->mutex);
   request->flags_ |= MPI_REQ_COMPLETE; // in case wait would be called after complete
   request->generalized_funcs->cond->notify_one();
-  request->generalized_funcs->mutex->unlock();
   return MPI_SUCCESS;
 }
 

@@ -309,7 +309,7 @@ template <typename T> void Parmap<T>::worker_main(ThreadData* data)
 
 template <typename T> void Parmap<T>::PosixSynchro::master_signal()
 {
-  std::unique_lock lk(ready_mutex);
+  const std::scoped_lock lock(ready_mutex);
   this->parmap.thread_counter = 1;
   this->parmap.work_round++;
   /* wake all workers */
@@ -318,14 +318,14 @@ template <typename T> void Parmap<T>::PosixSynchro::master_signal()
 
 template <typename T> void Parmap<T>::PosixSynchro::master_wait()
 {
-  std::unique_lock lk(done_mutex);
+  std::unique_lock lock(done_mutex);
   /* wait for all workers to be ready */
-  done_cond.wait(lk, [this]() { return this->parmap.thread_counter >= this->parmap.num_workers; });
+  done_cond.wait(lock, [this]() { return this->parmap.thread_counter >= this->parmap.num_workers; });
 }
 
 template <typename T> void Parmap<T>::PosixSynchro::worker_signal()
 {
-  std::unique_lock lk(done_mutex);
+  const std::scoped_lock lock(done_mutex);
   this->parmap.thread_counter++;
   if (this->parmap.thread_counter == this->parmap.num_workers) {
     /* all workers have finished, wake the controller */
@@ -335,9 +335,9 @@ template <typename T> void Parmap<T>::PosixSynchro::worker_signal()
 
 template <typename T> void Parmap<T>::PosixSynchro::worker_wait(unsigned expected_round)
 {
-  std::unique_lock lk(ready_mutex);
+  std::unique_lock lock(ready_mutex);
   /* wait for more work */
-  ready_cond.wait(lk, [this, expected_round]() { return this->parmap.work_round == expected_round; });
+  ready_cond.wait(lock, [this, expected_round]() { return this->parmap.work_round == expected_round; });
 }
 
 #if HAVE_FUTEX_H
