@@ -224,7 +224,7 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
                "(currently %d), but only %d transition(s) was/were said to be encoded",
                actor.max_considered, actor.n_transitions);
 
-    std::vector<std::unique_ptr<Transition>> actor_transitions;
+    std::vector<std::shared_ptr<Transition>> actor_transitions;
     for (int times_considered = 0; times_considered < actor.n_transitions; times_considered++, probes_iter++) {
       std::stringstream stream((*probes_iter).buffer.data());
       actor_transitions.emplace_back(deserialize_transition(actor.aid, times_considered, stream));
