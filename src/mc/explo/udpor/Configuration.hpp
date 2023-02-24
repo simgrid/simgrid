@@ -114,7 +114,7 @@ public:
    * of events of C that satisfy the predicate `pred`
    */
   std::unique_ptr<CompatibilityGraph>
-  make_compatibility_graph_filtered_on(std::function<bool(UnfoldingEvent*)> pred) const;
+  make_compatibility_graph_filtered_on(std::function<bool(const UnfoldingEvent*)> pred) const;
 
 private:
   /**

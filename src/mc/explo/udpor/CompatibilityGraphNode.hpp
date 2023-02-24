@@ -33,6 +33,7 @@ public:
 
   void add_event(UnfoldingEvent* e) { this->events_.insert(e); }
   const EventSet& get_events() const { return this->events_; }
+  const std::unordered_set<CompatibilityGraphNode*>& get_conflicts() const { return this->conflicts; }
 };
 
 } // namespace simgrid::mc::udpor

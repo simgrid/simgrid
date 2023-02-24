@@ -52,6 +52,9 @@ public:
   CompatibilityGraph& operator=(CompatibilityGraph&&) = default;
   CompatibilityGraph(CompatibilityGraph&&)            = default;
 
+  auto begin() const { return this->nodes.begin(); }
+  auto end() const { return this->nodes.end(); }
+
   void remove(CompatibilityGraphNode* e);
   void insert(std::unique_ptr<CompatibilityGraphNode> e);
 

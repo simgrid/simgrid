@@ -165,7 +165,7 @@ EventSet UdporChecker::compute_extension_by_enumeration(const Configuration& C, 
 
   // We only consider those combinations of events for which `action` is dependent with
   // the action associated with any given event ("`a` depends on all of K")
-  const std::unique_ptr<CompatibilityGraph> G = C.make_compatibility_graph_filtered_on([=](UnfoldingEvent* e) {
+  const std::unique_ptr<CompatibilityGraph> G = C.make_compatibility_graph_filtered_on([=](const UnfoldingEvent* e) {
     const auto e_transition = e->get_transition();
     return action.depends(e_transition);
   });
