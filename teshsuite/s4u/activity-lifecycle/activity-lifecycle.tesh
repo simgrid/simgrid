@@ -1,2 +1,146 @@
-! output display
+p The output is not very important and can be updated here without a doubt: the code is full of assertions.
+p The output is only included for you to read it without launching the test, if you want.
+
 $ ${bindir:=.}/activity-lifecycle ${srcdir:=.}/testing_platform.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/crosstraffic' to '0'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'CM02'
+> [host0:main_dispatcher:(1) 0.000000] [s4u_test/INFO] #####[ launch next "sleep" test ]#####
+> [host0:sleep:(2) 0.000000] [s4u_test/INFO] Launch a sleep(5), and let it proceed
+> [host0:main_dispatcher:(1) 10.000000] [s4u_test/INFO] #####[ launch next "sleep" test ]#####
+> [host0:sleep killed at start:(4) 10.000000] [s4u_test/INFO] Launch a sleep(5), and kill it right after start
+> [host0:main_dispatcher:(1) 20.000000] [s4u_test/INFO] #####[ launch next "sleep" test ]#####
+> [host0:sleep killed in middle:(6) 20.000000] [s4u_test/INFO] Launch a sleep(5), and kill it after 2 secs
+> [host0:main_dispatcher:(1) 30.000000] [s4u_test/INFO] #####[ launch next "sleep" test ]#####
+> [host0:sleep restarted at start:(8) 30.000000] [s4u_test/INFO] Launch a sleep(5), and restart its host right after start
+> [host0:main_dispatcher:(1) 40.000000] [s4u_test/INFO] #####[ launch next "sleep" test ]#####
+> [host0:sleep restarted in middle:(10) 40.000000] [s4u_test/INFO] Launch a sleep(5), and restart its host after 2 secs
+> [host0:main_dispatcher:(1) 50.000000] [s4u_test/INFO] #####[ launch next "sleep" test ]#####
+> [host0:sleep restarted at end:(12) 50.000000] [s4u_test/INFO] Launch a sleep(5), and restart its host right when it stops
+> [host0:main_dispatcher:(1) 60.000000] [s4u_test/INFO] #####[ launch next "sleep" test ]#####
+> [host0:turn off its own host:(15) 60.000000] [s4u_test/INFO] Launch a sleep(5), then saw off the branch it's sitting on
+> [host0:main_dispatcher:(1) 70.000000] [s4u_test/INFO] #####[ launch next "exec" test ]#####
+> [host0:exec:(17) 70.000000] [s4u_test/INFO] Launch an execute(5s), and let it proceed
+> [host0:main_dispatcher:(1) 80.000000] [s4u_test/INFO] #####[ launch next "exec" test ]#####
+> [host0:exec killed at start:(19) 80.000000] [s4u_test/INFO] Launch an execute(5s), and kill it right after start
+> [host0:main_dispatcher:(1) 90.000000] [s4u_test/INFO] #####[ launch next "exec" test ]#####
+> [host0:exec killed in middle:(21) 90.000000] [s4u_test/INFO] Launch an execute(5s), and kill it after 2 secs
+> [host0:main_dispatcher:(1) 100.000000] [s4u_test/INFO] #####[ launch next "exec" test ]#####
+> [host0:exec restarted at start:(23) 100.000000] [s4u_test/INFO] Launch an execute(5s), and restart its host right after start
+> [host0:main_dispatcher:(1) 110.000000] [s4u_test/INFO] #####[ launch next "exec" test ]#####
+> [host0:exec restarted in middle:(25) 110.000000] [s4u_test/INFO] Launch an execute(5s), and restart its host after 2 secs
+> [host0:main_dispatcher:(1) 120.000000] [s4u_test/INFO] #####[ launch next "exec" test ]#####
+> [host0:exec restarted at end:(27) 120.000000] [s4u_test/INFO] Launch an execute(5s), and restart its host right when it stops
+> [host0:main_dispatcher:(1) 130.000000] [s4u_test/INFO] #####[ launch next "comm" test ]#####
+> [host0:comm:(30) 130.000000] [s4u_test/INFO] Launch a communication
+> [host0:main_dispatcher:(1) 140.000000] [s4u_test/INFO] #####[ launch next "comm" test ]#####
+> [host0:comm (delayed send):(33) 140.000000] [s4u_test/INFO] Launch a communication with a delay for the send
+> [host0:main_dispatcher:(1) 150.000000] [s4u_test/INFO] #####[ launch next "comm" test ]#####
+> [host0:comm (delayed recv):(36) 150.000000] [s4u_test/INFO] Launch a communication with a delay for the recv
+> [host0:main_dispatcher:(1) 160.000000] [s4u_test/INFO] #####[ launch next "comm" test ]#####
+> [host0:comm dsend and quit (put before get):(39) 160.000000] [s4u_test/INFO] Launch a detached communication and end right after
+> [host0:main_dispatcher:(1) 170.000000] [s4u_test/INFO] #####[ launch next "comm" test ]#####
+> [host0:comm dsend and quit (get before put):(42) 170.000000] [s4u_test/INFO] Launch a detached communication and end right after
+> [host0:main_dispatcher:(1) 180.000000] [s4u_test/INFO] #####[ launch next "comm" test ]#####
+> [host0:comm kill sender:(45) 180.000000] [s4u_test/INFO] Launch a communication and kill the sender
+> [host0:main_dispatcher:(1) 190.000000] [s4u_test/INFO] #####[ launch next "comm" test ]#####
+> [host0:comm recv and kill:(48) 190.000000] [s4u_test/INFO] Launch an actor that waits on a recv, kill its host
+> [host0:main_dispatcher:(1) 200.000000] [s4u_test/INFO] #####[ launch next "comm" test ]#####
+> [host0:comm turn link off before send/recv:(51) 200.000000] [s4u_test/INFO] try to communicate with communicating link turned off before start
+> [host0:main_dispatcher:(1) 210.000000] [s4u_test/INFO] #####[ launch next "comm" test ]#####
+> [host0:comm turn link off between send/recv:(54) 210.000000] [s4u_test/INFO] try to communicate with communicating link turned off between send and receive
+> [host0:main_dispatcher:(1) 220.000000] [s4u_test/INFO] #####[ launch next "comm" test ]#####
+> [host0:comm turn link off during transfer:(57) 220.000000] [s4u_test/INFO] try to communicate with communicating link turned off during transfer
+> [host0:main_dispatcher:(1) 230.000000] [s4u_test/INFO] #####[ launch next "comm" test ]#####
+> [host0:comm turn link off during wait_any:(60) 230.000000] [s4u_test/INFO] try to communicate with communicating link turned off during wait_any
+> [host0:main_dispatcher:(1) 240.000000] [s4u_test/INFO] #####[ launch next "direct-comm" test ]#####
+> [host0:sendto:(63) 240.000000] [s4u_test/INFO] Launch a sendto(5s), and let it proceed
+> [host0:main_dispatcher:(1) 250.000000] [s4u_test/INFO] #####[ launch next "direct-comm" test ]#####
+> [host0:sendto actor killed at start:(65) 250.000000] [s4u_test/INFO] Launch a sendto(5s), and kill it right after start
+> [host0:main_dispatcher:(1) 260.000000] [s4u_test/INFO] #####[ launch next "direct-comm" test ]#####
+> [host0:sendto actor killed in middle:(67) 260.000000] [s4u_test/INFO] Launch a sendto(5s), and kill it after 2 secs
+> [host0:main_dispatcher:(1) 270.000000] [s4u_test/INFO] #####[ launch next "direct-comm" test ]#####
+> [host0:sendto host restarted at start:(69) 270.000000] [s4u_test/INFO] Launch a sendto(5s), and restart its host right after start
+> [host0:main_dispatcher:(1) 280.000000] [s4u_test/INFO] #####[ launch next "direct-comm" test ]#####
+> [host0:sendto host restarted in middle:(71) 280.000000] [s4u_test/INFO] Launch a sendto(5s), and restart its host after 2 secs
+> [host0:main_dispatcher:(1) 290.000000] [s4u_test/INFO] #####[ launch next "direct-comm" test ]#####
+> [host0:sendto host restarted at end:(73) 290.000000] [s4u_test/INFO] Launch a sendto(5s), and restart its host right when it stops
+> [host0:main_dispatcher:(1) 300.000000] [s4u_test/INFO] #####[ launch next "direct-comm" test ]#####
+> [host0:sendto link restarted at start:(76) 300.000000] [s4u_test/INFO] Launch a sendto(5s), and restart the used link right after start
+> [host0:main_dispatcher:(1) 310.000000] [s4u_test/INFO] #####[ launch next "direct-comm" test ]#####
+> [host0:sendto link restarted in middle:(78) 310.000000] [s4u_test/INFO] Launch a sendto(5s), and restart the used link after 2 secs
+> [host0:main_dispatcher:(1) 320.000000] [s4u_test/INFO] #####[ launch next "direct-comm" test ]#####
+> [host0:sendto link restarted at end:(80) 320.000000] [s4u_test/INFO] Launch a sendto(5s), and restart the used link right when it stops
+> [host0:main_dispatcher:(1) 330.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: run and test once:(83) 330.000000] [s4u_test/INFO] Launch an activity for 5s, and let it proceed before test
+> [host0:main_dispatcher:(1) 340.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: run and test many:(85) 340.000000] [s4u_test/INFO] Launch an activity for 5s, and test while it proceeds
+> [host0:main_dispatcher:(1) 350.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: cancel and test:(87) 350.000000] [s4u_test/INFO] Launch an activity for 5s, and cancel it after 2s
+> [host0:main_dispatcher:(1) 360.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: actor failure and test / sleep:(89) 360.000000] [s4u_test/INFO] Launch an activity for 5s, and kill running actor after 2s
+> [host0:main_dispatcher:(1) 370.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: host failure and test / sleep:(91) 370.000000] [s4u_test/INFO] Launch an activity for 5s, and shutdown host 2s
+> [host0:main_dispatcher:(1) 380.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: actor failure and test / wait:(93) 380.000000] [s4u_test/INFO] Launch an activity for 5s, and kill running actor after 2s
+> [host0:main_dispatcher:(1) 390.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: host failure and test / wait:(95) 390.000000] [s4u_test/INFO] Launch an activity for 5s, and shutdown host 2s
+> [host0:main_dispatcher:(1) 400.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: run and wait<0> once:(97) 400.000000] [s4u_test/INFO] Launch an activity for 5s, and let it proceed before test
+> [host0:main_dispatcher:(1) 410.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: run and wait<0> many:(99) 410.000000] [s4u_test/INFO] Launch an activity for 5s, and test while it proceeds
+> [host0:main_dispatcher:(1) 420.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: cancel and wait<0>:(101) 420.000000] [s4u_test/INFO] Launch an activity for 5s, and cancel it after 2s
+> [host0:main_dispatcher:(1) 430.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: actor failure and wait<0> / sleep:(103) 430.000000] [s4u_test/INFO] Launch an activity for 5s, and kill running actor after 2s
+> [host0:main_dispatcher:(1) 440.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: host failure and wait<0> / sleep:(105) 440.000000] [s4u_test/INFO] Launch an activity for 5s, and shutdown host 2s
+> [host0:main_dispatcher:(1) 450.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: actor failure and wait<0> / wait:(107) 450.000000] [s4u_test/INFO] Launch an activity for 5s, and kill running actor after 2s
+> [host0:main_dispatcher:(1) 460.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: host failure and wait<0> / wait:(109) 460.000000] [s4u_test/INFO] Launch an activity for 5s, and shutdown host 2s
+> [host0:main_dispatcher:(1) 470.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: run and wait<1> once:(111) 470.000000] [s4u_test/INFO] Launch an activity for 5s, and let it proceed before test
+> [host0:main_dispatcher:(1) 480.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: run and wait<1> many:(113) 480.000000] [s4u_test/INFO] Launch an activity for 5s, and test while it proceeds
+> [host0:main_dispatcher:(1) 490.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: cancel and wait<1>:(115) 490.000000] [s4u_test/INFO] Launch an activity for 5s, and cancel it after 2s
+> [host0:main_dispatcher:(1) 500.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: actor failure and wait<1> / sleep:(117) 500.000000] [s4u_test/INFO] Launch an activity for 5s, and kill running actor after 2s
+> [host0:main_dispatcher:(1) 510.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: host failure and wait<1> / sleep:(119) 510.000000] [s4u_test/INFO] Launch an activity for 5s, and shutdown host 2s
+> [host0:main_dispatcher:(1) 520.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: actor failure and wait<1> / wait:(121) 520.000000] [s4u_test/INFO] Launch an activity for 5s, and kill running actor after 2s
+> [host0:main_dispatcher:(1) 530.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: host failure and wait<1> / wait:(123) 530.000000] [s4u_test/INFO] Launch an activity for 5s, and shutdown host 2s
+> [host0:main_dispatcher:(1) 540.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: run and wait_any<0> once:(125) 540.000000] [s4u_test/INFO] Launch an activity for 5s, and let it proceed before test
+> [host0:main_dispatcher:(1) 550.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: run and wait_any<0> many:(127) 550.000000] [s4u_test/INFO] Launch an activity for 5s, and test while it proceeds
+> [host0:main_dispatcher:(1) 560.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: cancel and wait_any<0>:(129) 560.000000] [s4u_test/INFO] Launch an activity for 5s, and cancel it after 2s
+> [host0:main_dispatcher:(1) 570.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: actor failure and wait_any<0> / sleep:(131) 570.000000] [s4u_test/INFO] Launch an activity for 5s, and kill running actor after 2s
+> [host0:main_dispatcher:(1) 580.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: host failure and wait_any<0> / sleep:(133) 580.000000] [s4u_test/INFO] Launch an activity for 5s, and shutdown host 2s
+> [host0:main_dispatcher:(1) 590.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: actor failure and wait_any<0> / wait:(135) 590.000000] [s4u_test/INFO] Launch an activity for 5s, and kill running actor after 2s
+> [host0:main_dispatcher:(1) 600.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: host failure and wait_any<0> / wait:(137) 600.000000] [s4u_test/INFO] Launch an activity for 5s, and shutdown host 2s
+> [host0:main_dispatcher:(1) 610.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: run and wait_any<1> once:(139) 610.000000] [s4u_test/INFO] Launch an activity for 5s, and let it proceed before test
+> [host0:main_dispatcher:(1) 620.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: run and wait_any<1> many:(141) 620.000000] [s4u_test/INFO] Launch an activity for 5s, and test while it proceeds
+> [host0:main_dispatcher:(1) 630.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: cancel and wait_any<1>:(143) 630.000000] [s4u_test/INFO] Launch an activity for 5s, and cancel it after 2s
+> [host0:main_dispatcher:(1) 640.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: actor failure and wait_any<1> / sleep:(145) 640.000000] [s4u_test/INFO] Launch an activity for 5s, and kill running actor after 2s
+> [host0:main_dispatcher:(1) 650.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: host failure and wait_any<1> / sleep:(147) 650.000000] [s4u_test/INFO] Launch an activity for 5s, and shutdown host 2s
+> [host0:main_dispatcher:(1) 660.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: actor failure and wait_any<1> / wait:(149) 660.000000] [s4u_test/INFO] Launch an activity for 5s, and kill running actor after 2s
+> [host0:main_dispatcher:(1) 670.000000] [s4u_test/INFO] #####[ launch next test ]#####
+> [host0:exec: host failure and wait_any<1> / wait:(151) 670.000000] [s4u_test/INFO] Launch an activity for 5s, and shutdown host 2s
+> ===============================================================================
+> All tests passed (340 assertions in 9 test cases)
+> 
+> [680.000000] [s4u_test/INFO] Simulation done
