@@ -92,6 +92,50 @@ following the syntax described in this man page: ``man -l manpages/tesh.1`` Fina
 by modifying for example the ``examples/cpp/CMakeLists.txt`` file. The test name shall allow the filtering of tests with ``ctest -R``. Do not forget to run
 ``make distcheck`` once you're done to check that you did not forget to add your new files to the distribution.
 
+Noteworthy tests
+^^^^^^^^^^^^^^^^
+
+Here is a short list of some typical tests in SimGrid, in the hope that they can give you some inspiration for your own tests.
+Note that good tests rarely involve randomness, which makes it difficult to understand and fix problems when they occur.
+
+* Several **model tests** display the full computation and expected results for some simple cases. Check for example the tesh files
+  of `teshsuite/models/cm02-tcpgamma/ <https://framagit.org/simgrid/simgrid/-/tree/master/teshsuite/models/cm02-tcpgamma>`_
+  (about the impact of the :ref:`cfg=network/TCP-gamma` parameter), `teshsuite/models/wifi_usage/
+  <https://framagit.org/simgrid/simgrid/-/tree/master/teshsuite/models/wifi_usage>`_ (on the wifi network model),
+  `teshsuite/models/wifi_usage_decay/ <https://framagit.org/simgrid/simgrid/-/tree/master/teshsuite/models/wifi_usage_decay>`_
+  (on the decay component of the wifi model, for highly congestioned APs), or `teshsuite/models/ptask_L07_usage/
+  <https://framagit.org/simgrid/simgrid/-/tree/master/teshsuite/models/ptask_L07_usage>`_ (on parallel tasks). The goal of these tests
+  is to be easy to understand just by reading their output.
+
+  `teshsuite/models/cloud-sharing/ <https://framagit.org/simgrid/simgrid/-/tree/master/teshsuite/models/cloud-sharing>`_ is a
+  bit special here, because it introduces a mini-DSL. Its purpose is to test the CPU sharing between competing tasks with and
+  without VMs. The model is not very complex, but the corresponding code is somewhat intricated, thus the need for such an
+  extensive testing. In this test, ``( [o]2 )4`` denotes a test with only one task (only one ``o``) on a VM with two cores (``[
+  ]2``), which is itself on a PM with four cores (``( )4``). Likewise, ``( [oo]1 [ ]1 )2`` tests 2 VMs with one core each, one of
+  them being empty and the other containing 2 active tasks. Both VMs are located on a PM with two cores.  |br|
+  For each of these tests, we ensure that the performance delivered to each task matches our expectations, and that the reported
+  amount of used cores is also correct to ensure correct energy predictions. 
+
+* We also have several **torture tests**, such as `teshsuite/s4u/comm-pt2pt/comm-pt2pt.cpp
+  <https://framagit.org/simgrid/simgrid/-/tree/master/teshsuite/s4u/comm-pt2pt/comm-pt2pt.cpp>`_ which tests exhaustively each
+  case of a communication matching when no error is involved. Regular, asynchronous, detached communications, and communications
+  with a permanent receiver declared are tests, both with the send first and with the receive first. Again, we have a tiny DSL
+  to specify the tests to do (see the ``usage()`` function). 
+  
+  `teshsuite/s4u/activity-lifecycle/ <https://framagit.org/simgrid/simgrid/-/tree/master/teshsuite/s4u/activity-lifecycle>`_
+  tortures all kind of activities (sleep, exec, comm and direct-comm). It kills their ressource at several instants, kills the
+  host hosting the running actor, test the activity after death, etc. This time also, we have a little DSL but this time in the
+  code: the source is heavily loaded with templates to make it easier to write many such tests, at the expense of readability.
+
+  SimGrid also features a `chaos monkey <https://en.wikipedia.org/wiki/Chaos_engineering>`_ to apply torture testing to complex
+  applications. It is composed of a plugin (embeeded in any SimGrid simulation) that can be used to get info about the resources
+  and the timestamps at which actions happens, or to kill a given resource at a given time. It also features `a script
+  <https://framagit.org/simgrid/simgrid/-/blob/master/tools/simgrid-monkey>`_ that uses this information to launch a given
+  simulation many times, killing each resource at each timestamp to see how SimGrid and your code react to these failures. The
+  monkey can even run your simulation in Valgrind to detect problems that would be silent otherwise. Try passing
+  ``--cfg=plugin:cmonkey`` to your simulations for more information. We currently have a master-workers example (in both C++ and
+  Python) and a semaphore example (in C++ only) in ``teshsuite/s4u``.
+
 Continuous integrations
 ^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -145,3 +189,7 @@ Unsorted hints
 
 * If you break the logs, you want to define XBT_LOG_MAYDAY at the beginning of log.h. It deactivates the whole logging mechanism, switching to printfs instead.
   SimGrid then becomes incredibly verbose, but it you let you fixing things.
+
+.. |br| raw:: html
+
+   <br />
