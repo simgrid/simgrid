@@ -571,15 +571,20 @@ stochastic generator of external load has been reintroduced.
 Version 3.33 (not released yet)
 -------------------------------
 
-**On the maintainance front,** we removed the ancient MSG interface which end-of-life was scheduled for 2020, the Java
-bindings that was MSG-only and support for native builds on Windows (WSL is now required). Keeping SimGrid alive while
-adding new features require to remove old, unused stuff. The very rare users impacted by these removals are urged to
+**On the maintainance front,** we removed the ancient MSG interface which end-of-life was scheduled for 2020, the Java bindings
+that was MSG-only, support for native builds on Windows (WSL is now required) and support for 32 bits platforms. Keeping SimGrid
+alive while adding new features require to remove old, unused stuff. The very rare users impacted by these removals are urged to
 move to the new API and systems.
+
+We also conducted many internal refactorings to remove any occurence of "surf" and "simix". SimGrid v3.12 used a layered design
+where simix was providing synchronizations to actors, on top of surf which was computing the models. These features are now
+provided in modules, not layers. Surf became the kernel::{lmm, resource, routing, timer, xml} modules while simix became
+the kernel::{activity, actor, context} modules.
 
 **On the model front,** we realized an idea that has been on the back of our minds for quite some time. The question
 was: could we use something in the line of the ptask model, that mixes computations and network transfers in a single
 fluid activity, to simulate a *fluid I/O stream activity* that would consume both disk and network resources? This
-remained an open question for years, mainly because the implementation of the ptask doesn't rely on the LMM solver as
+remained an open question for years, mainly because the implementation of the ptask does not rely on the LMM solver as
 the other models do. The *fair bottleneck* solver is convenient, but with less solid theoretical bases and the
 development of its replacement (the *bmf solver*) is still ongoing. However, this combination of I/Os and
 communications seemed easier as these activities share the same unit (bytes).
@@ -590,10 +595,35 @@ creates a classical NetworkAction, but add some I/O-related constraints to it. A
 and done! A single activity mixing I/Os and communications can be created whose progress is limited by the resource
 (Disk or Link) of least bandwidth value.
 
+We also modified the Wi-Fi model so that the total capacity of a link depends on the amout of flows on that link, accordingly to
+the result of some ns-3 experiments. This model can be more accurate for congestioned Wi-Fi links, but its calibration is more
+demanding, as shown in the `example
+<https://framagit.org/simgrid/simgrid/tree/master/teshsuite/models/wifi_usage_decay/wifi_usage_decay.cpp>`_ and in the `research
+paper <https://hal.archives-ouvertes.fr/hal-03777726>`_.
+
+We also worked on the usability of our models, by actually writing the long overdue documentation of our TCP models and by renaming
+some options for clarity (old names are still accepted as aliases). A new function ``s4u::Engine::flatify_platform()`` dumps an
+XML representation that is inefficient (all zones are flatified) but easier to read (routes are explicitely defined). You should
+not use the output as a regular input file, but it will prove useful to double-check the your platform.
+
 **On the interface front**, the new ``Io::streamto()`` function has been inspired by the existing ``Comm::sendto()``
 function (which also derives from the ptask model). The user can specify a ``src_disk`` on a ``src_host`` and a
 ``dst_disk`` on a ``dst_host`` to stream data of a given ``size``. Note that disks are optional, allowing users to
 simulate some kind of "disk-to-memory" or "memory-to-disk" I/O streams.
+
+As usual on that front, some functions were deprecated and will be removed in 4 versions, while some old deprecated functions
+were removed in this version.
+
+**On the model checking front**, we are almost done with the ongoing refactoring to ensure that the model-checker don't read
+directly the memory of the application beside checkpoint/restore and state equality. Instead, the network protocol is used to
+retrieve the information, which makes the code much easier to read and understand. We fixed a bug in the DPOR reduction which
+resulted in some failures to be missed by the exploration. We started implementing the UDPOR (Unfoldings DPOR) reduction
+algorithm, and it will certainly be part of the next release.
+
+We also extended the sthread module, which allows to intercept simple code that use pthread mutex and semaphores to simulate and
+verify it. You do not even need to recompile your code, as it uses LD_PRELOAD to intercept on the target functions. This module
+is still rather young, but it could already reveal useful to verify the code written by students in a class on UNIX IPC and
+synchronization. Check `the examples <https://framagit.org/simgrid/simgrid/tree/master/examples/sthread>`_.
 
 .. |br| raw:: html
 
