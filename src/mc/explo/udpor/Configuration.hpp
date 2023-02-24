@@ -23,8 +23,8 @@ public:
   Configuration& operator=(Configuration const&) = default;
   Configuration(Configuration&&)                 = default;
 
-  Configuration(EventSet events);
-  Configuration(std::initializer_list<UnfoldingEvent*> events);
+  explicit Configuration(const EventSet& events);
+  explicit Configuration(std::initializer_list<UnfoldingEvent*> events);
 
   auto begin() const { return this->events_.begin(); }
   auto end() const { return this->events_.end(); }

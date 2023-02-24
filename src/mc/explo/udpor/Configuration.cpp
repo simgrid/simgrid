@@ -18,7 +18,7 @@ Configuration::Configuration(std::initializer_list<UnfoldingEvent*> events) : Co
 {
 }
 
-Configuration::Configuration(EventSet events) : events_(events)
+Configuration::Configuration(const EventSet& events) : events_(events)
 {
   if (!events_.is_valid_configuration()) {
     throw std::invalid_argument("The events do not form a valid configuration");

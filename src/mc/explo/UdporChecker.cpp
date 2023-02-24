@@ -33,12 +33,13 @@ void UdporChecker::run()
   unfolding.insert(std::move(root_event));
   C_root.add_event(root_event_handle);
 
-  explore(std::move(C_root), EventSet(), EventSet(), std::move(initial_state), EventSet());
+  explore(C_root, EventSet(), EventSet(), std::move(initial_state), EventSet());
 
   XBT_INFO("UDPOR exploration terminated -- model checking completed");
 }
 
-void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::unique_ptr<State> stateC, EventSet prev_exC)
+void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::unique_ptr<State> stateC,
+                           EventSet prev_exC)
 {
   // Perform the incremental computation of exC
   //
@@ -55,14 +56,9 @@ void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::unique_
   // "sleep-set blocked" trace.
   if (enC.is_subset_of(D)) {
 
-    if (C.get_events().size() > 0) {
+    if (not C.get_events().empty()) {
 
       // g_var::nb_traces++;
-
-      // TODO: Log here correctly
-      // XBT_DEBUG("\n Exploring executions: %d : \n", g_var::nb_traces);
-      // ...
-      // ...
     }
 
     // When `en(C)` is empty, intuitively this means that there
@@ -104,8 +100,7 @@ void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::unique_
 
   // TODO: Determine a value of K to use or don't use it at all
   constexpr unsigned K = 10;
-  auto J               = compute_partial_alternative(D, C, K);
-  if (!J.empty()) {
+  if (auto J = compute_partial_alternative(D, C, K); !J.empty()) {
     J.subtract(C.get_events());
 
     // Before searching the "right half", we need to make

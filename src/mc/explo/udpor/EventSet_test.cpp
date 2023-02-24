@@ -51,7 +51,6 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Initial conditions when creating sets")
 
     SECTION("List initialization")
     {
-      UnfoldingEvent e1, e2, e3;
       EventSet event_set{&e1, &e2, &e3};
       REQUIRE(event_set.size() == 3);
       REQUIRE(event_set.contains(&e1));
@@ -117,7 +116,7 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Deletions")
   {
     REQUIRE(event_set.contains(&e1));
 
-    // event_set = {e2, e3}
+    // Recall that event_set = {e2, e3}
     event_set.remove(&e1);
 
     // Check that
@@ -132,7 +131,7 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Deletions")
 
     SECTION("Remove a single element more than once")
     {
-      // event_set = {e2, e3}
+      // Recall that event_set = {e2, e3}
       event_set.remove(&e1);
       REQUIRE(event_set.size() == 2);
       REQUIRE_FALSE(event_set.contains(&e1));
@@ -143,7 +142,7 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Deletions")
 
     SECTION("Remove more than one element")
     {
-      // event_set = {e3}
+      // Recall that event_set = {e3}
       event_set.remove(&e2);
 
       REQUIRE(event_set.size() == 1);
@@ -152,7 +151,7 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Deletions")
       REQUIRE(event_set.contains(&e3));
       REQUIRE_FALSE(event_set.empty());
 
-      // event_set = {}
+      // Recall that event_set = {}
       event_set.remove(&e3);
 
       REQUIRE(event_set.size() == 0);
@@ -167,7 +166,7 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Deletions")
   {
     REQUIRE_FALSE(event_set.contains(&e4));
 
-    // event_set = {e1, e2, e3}
+    // Recall that event_set = {e1, e2, e3}
     event_set.remove(&e4);
     REQUIRE(event_set.size() == 3);
     REQUIRE(event_set.contains(&e1));

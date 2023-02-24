@@ -45,7 +45,7 @@ History::Iterator& History::Iterator::operator++()
     maximal_events.subtract(candidates);
 
     candidates.subtract(current_history);
-    frontier.form_union(std::move(candidates));
+    frontier.form_union(candidates);
   }
   return *this;
 }
@@ -72,9 +72,9 @@ EventSet History::get_all_maximal_events() const
   return first.maximal_events;
 }
 
-bool History::contains(UnfoldingEvent* e) const
+bool History::contains(const UnfoldingEvent* e) const
 {
-  return std::any_of(this->begin(), this->end(), [=](UnfoldingEvent* e_hist) { return e == e_hist; });
+  return std::any_of(this->begin(), this->end(), [=](const UnfoldingEvent* e_hist) { return e == e_hist; });
 }
 
 EventSet History::get_event_diff_with(const Configuration& config) const

@@ -110,7 +110,7 @@ private:
    * TODO: Add the optimization where we can check if e == e_prior
    * to prevent repeated work when computing ex(C)
    */
-  void explore(Configuration C, EventSet D, EventSet A, std::unique_ptr<State> stateC, EventSet prev_exC);
+  void explore(const Configuration& C, EventSet D, EventSet A, std::unique_ptr<State> stateC, EventSet prev_exC);
 
   /**
    * @brief Identifies the next event from the unfolding of the concurrent system

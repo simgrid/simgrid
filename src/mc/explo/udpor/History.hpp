@@ -71,7 +71,7 @@ public:
    * @param e the event to check
    * @returns whether or not `e` is contained in the collection
    */
-  bool contains(UnfoldingEvent* e) const;
+  bool contains(const UnfoldingEvent* e) const;
 
   /**
    * @brief Computes all events in the history described by this instance
@@ -102,14 +102,14 @@ private:
   struct Iterator {
   public:
     Iterator& operator++();
-    auto operator->() { return frontier.begin().operator->(); }
+    auto operator->() const { return frontier.begin().operator->(); }
     auto operator*() const { return *frontier.begin(); }
 
     // If what the iterator sees next is the same, we consider them
     // to be the same iterator. This way, once the iterator has completed
     // its search, it will be "equal" to an iterator searching nothing
-    bool operator==(const Iterator& other) { return this->frontier == other.frontier; }
-    bool operator!=(const Iterator& other) { return not(this->operator==(other)); }
+    bool operator==(const Iterator& other) const { return this->frontier == other.frontier; }
+    bool operator!=(const Iterator& other) const { return not(this->operator==(other)); }
 
     using iterator_category      = std::forward_iterator_tag;
     using difference_type        = int; // # of steps between
