@@ -123,9 +123,12 @@ Configuration::make_compatibility_graph_filtered_on(std::function<bool(Unfolding
 {
   auto G = std::make_unique<CompatibilityGraph>();
 
-  std::unordered_map<UnfoldingEvent*, std::unordered_set<CompatibilityGraphNode*>> discovered_conflicts;
-  std::unordered_map<UnfoldingEvent*, CompatibilityGraphNode*> potential_placements;
-  std::unordered_map<UnfoldingEvent*, int> direct_children_count;
+  struct UnfoldingEventSearchData {
+    int immediate_children_count                          = 0;
+    CompatibilityGraphNode* potential_placement           = nullptr;
+    std::unordered_set<CompatibilityGraphNode*> conflicts = std::unordered_set<CompatibilityGraphNode*>();
+  };
+  std::unordered_map<UnfoldingEvent*, UnfoldingEventSearchData> search_data;
 
   for (auto* e : get_topologically_sorted_events_of_reverse_graph()) {
 
@@ -134,23 +137,20 @@ Configuration::make_compatibility_graph_filtered_on(std::function<bool(Unfolding
     // Determine which nodes in the graph are in conflict
     // with this event. These nodes would have been added by child
     // events while iterating over the topological ordering of the reverse graph
-    const auto known_conflicts       = discovered_conflicts.find(e);
-    const auto potential_placement   = potential_placements.find(e);
-    const auto potential_child_count = direct_children_count.find(e);
 
-    const bool no_known_conflicts   = known_conflicts == discovered_conflicts.end();
-    const bool no_known_placement   = potential_placement == potential_placements.end();
-    const bool no_known_child_count = potential_child_count == direct_children_count.end();
+    const auto e_search_data_loc    = search_data.find(e);
+    const bool e_has_no_search_data = e_search_data_loc == search_data.end();
+    const auto e_search_data = e_has_no_search_data ? UnfoldingEventSearchData() : std::move(e_search_data_loc->second);
 
-    const auto e_conflicts =
-        no_known_conflicts ? std::unordered_set<CompatibilityGraphNode*>() : std::move(known_conflicts->second);
-    const auto e_child_count = no_known_child_count ? 0 : potential_child_count->second;
+    const auto& e_conflicts           = e_search_data.conflicts;
+    const auto& e_potential_placement = e_search_data.potential_placement;
+    const auto e_child_count          = e_search_data.immediate_children_count;
 
     CompatibilityGraphNode* e_placement = nullptr;
 
     // The justification is as follows:
     //
-    // no_known_placement:
+    // e_has_no_search_data:
     //  If nobody told us about a placement, we must either be a leaf event
     //  OR be the cause of an event that itself has more than one cause.
     //
@@ -158,7 +158,7 @@ Configuration::make_compatibility_graph_filtered_on(std::function<bool(Unfolding
     //  If there are two or more events that this event causes,
     //  then we certainly must be part of a different compatibility
     //  graph node since
-    const bool new_placement_required = no_known_placement || e_child_count >= 2;
+    const bool new_placement_required = e_has_no_search_data || e_child_count >= 2;
 
     if (new_placement_required) {
       auto new_graph_node = std::make_unique<CompatibilityGraphNode>(e_conflicts, EventSet({e}));
@@ -170,7 +170,7 @@ Configuration::make_compatibility_graph_filtered_on(std::function<bool(Unfolding
                                      "the parent about its precense");
       // A child event told us this node can be in the
       // same compatibility node in the graph G. Add ourselves now
-      e_placement = potential_placement->second;
+      e_placement = e_potential_placement;
       e_placement->add_event(e);
     }
 
@@ -181,24 +181,25 @@ Configuration::make_compatibility_graph_filtered_on(std::function<bool(Unfolding
       // If there is only a single ancestor, then it MAY BE in
       // the same "chain" of events as us. Note that the ancestor must
       // also have only a single child (see the note on `new_placement_required`)
-      UnfoldingEvent* only_ancestor       = *e_immediate_causes.begin();
-      potential_placements[only_ancestor] = e_placement;
+      UnfoldingEvent* only_ancestor                  = *e_immediate_causes.begin();
+      search_data[only_ancestor].potential_placement = e_placement;
     }
 
     // Our ancestors conflict with everyone `e` does else PLUS `e` itself
     auto parent_conflicts = std::move(e_conflicts);
     parent_conflicts.insert(e_placement);
     for (auto* cause : e_immediate_causes) {
-      direct_children_count[cause] += 1;
-      discovered_conflicts[cause] = parent_conflicts;
+      search_data[cause].immediate_children_count += 1;
+
+      for (auto parent_conflict : parent_conflicts) {
+        search_data[cause].conflicts.insert(parent_conflict);
+      }
     }
 
     // This event will only ever be seen once in the
     // topological ordering. Hence, its resources do not
     // need to be kept around
-    discovered_conflicts.erase(e);
-    direct_children_count.erase(e);
-    potential_placements.erase(e);
+    search_data.erase(e);
   }
 
   return G;
