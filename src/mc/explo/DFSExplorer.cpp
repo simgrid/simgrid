@@ -229,8 +229,7 @@ void DFSExplorer::backtrack()
     stack_.pop_back();
     
     XBT_DEBUG("Marking Transition >>%s<< of process %ld done and adding it to the sleep set", state->get_transition()->to_string().c_str(), state->get_transition()->aid_);
-    state->mark_done(state->get_transition()->aid_);
-    state->add_sleep_set(state->get_transition());
+    state->add_sleep_set(state->get_transition()); // Actors are marked done when they are considerd in ActorState
 
     if (reduction_mode_ == ReductionMode::dpor) {
       aid_t issuer_id = state->get_transition()->aid_;
