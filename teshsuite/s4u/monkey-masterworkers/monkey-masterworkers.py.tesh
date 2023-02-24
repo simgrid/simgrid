@@ -3,7 +3,7 @@ p Smoke test: do one arbitrary run of the monkey, just to make sure that *someth
 
 $ ${pythoncmd:=python3} ${PYTHON_TOOL_OPTIONS:=} ${srcdir:=.}/monkey-masterworkers.py --cfg=plugin:cmonkey --cfg=cmonkey/time:1 --cfg=cmonkey/host:1
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'plugin' to 'cmonkey'
-> [0.000000] [cmonkey/INFO] Initializing the chaos monkey
+> [0.000000] [cmonkey/INFO] Initializing the chaos monkey.
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cmonkey/time' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cmonkey/host' to '1'
 > [lilibeth 0:master:(1) 0.000000] [python/INFO] Master booting

@@ -3,7 +3,7 @@ p Smoke test: do one arbitrary run of the monkey, just to make sure that *someth
 
 $ ${bindir:=.}/monkey-semaphore --cfg=plugin:cmonkey --cfg=cmonkey/time:1 --cfg=cmonkey/host:1
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'plugin' to 'cmonkey'
-> [0.000000] [cmonkey/INFO] Initializing the chaos monkey
+> [0.000000] [cmonkey/INFO] Initializing the chaos monkey.
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cmonkey/time' to '1'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cmonkey/host' to '1'
 > [Paul:producer:(1) 0.000000] [sem_monkey/INFO] Producer booting
