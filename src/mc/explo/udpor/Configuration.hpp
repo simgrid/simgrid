@@ -6,9 +6,11 @@
 #ifndef SIMGRID_MC_UDPOR_CONFIGURATION_HPP
 #define SIMGRID_MC_UDPOR_CONFIGURATION_HPP
 
+#include "src/mc/explo/udpor/CompatibilityGraph.hpp"
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 
+#include <functional>
 #include <initializer_list>
 #include <vector>
 
@@ -100,6 +102,19 @@ public:
    * closer to the "bottom"
    */
   std::vector<UnfoldingEvent*> get_topologically_sorted_events_of_reverse_graph() const;
+
+  /**
+   * @brief Construct a new compatibility graph from the events of the
+   * configuration whose associated transitions are dependent with the
+   * given action
+   *
+   * @param pred whether or not to even consider the unfolding event in any
+   * compatibility nodes of the resulting graph
+   * @returns a new compatibility graph that defines possible maximal subsets
+   * of events of C that satisfy the predicate `pred`
+   */
+  std::unique_ptr<CompatibilityGraph>
+  make_compatibility_graph_filtered_on(std::function<bool(UnfoldingEvent*)> pred) const;
 
 private:
   /**

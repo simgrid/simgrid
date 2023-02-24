@@ -21,21 +21,18 @@ namespace simgrid::mc::udpor {
  * associated with the node
  */
 class CompatibilityGraphNode {
+private:
+  std::unordered_set<CompatibilityGraphNode*> conflicts;
+  EventSet events_;
+
 public:
   CompatibilityGraphNode(const CompatibilityGraphNode&)            = default;
   CompatibilityGraphNode& operator=(CompatibilityGraphNode const&) = default;
   CompatibilityGraphNode(CompatibilityGraphNode&&)                 = default;
-  CompatibilityGraphNode(std::unordered_set<CompatibilityGraphNode*> conflicts);
+  CompatibilityGraphNode(std::unordered_set<CompatibilityGraphNode*> conflicts, EventSet events_ = EventSet());
 
-  void add_event(UnfoldingEvent* e);
-
-private:
-  EventSet events_;
-
-  /**
-   * @brief The nodes with which this node is in conflict with
-   */
-  std::unordered_set<CompatibilityGraphNode*> conflicts;
+  void add_event(UnfoldingEvent* e) { this->events_.insert(e); }
+  const EventSet& get_events() const { return this->events_; }
 };
 
 } // namespace simgrid::mc::udpor

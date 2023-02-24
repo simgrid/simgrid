@@ -5,6 +5,7 @@
 
 #include "src/mc/explo/UdporChecker.hpp"
 #include "src/mc/api/State.hpp"
+#include "src/mc/explo/udpor/CompatibilityGraph.hpp"
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 
@@ -132,7 +133,8 @@ std::tuple<EventSet, EventSet> UdporChecker::compute_extension(const Configurati
   //
   // Then
   //
-  // ex(C) = ex(C' + {e_cur}) = ex(C') / {e_cur} + U{<a, K> : K is maximal, a depends on all of K, a enabled at K }
+  // ex(C) = ex(C' + {e_cur}) = ex(C') / {e_cur} +
+  //    U{<a, K> : K is maximal, `a` depends on all of K, `a` enabled at K }
   UnfoldingEvent* e_cur = C.get_latest_event();
   EventSet exC          = prev_exC;
   exC.remove(e_cur);
@@ -152,14 +154,35 @@ std::tuple<EventSet, EventSet> UdporChecker::compute_extension(const Configurati
   }
 
   EventSet enC;
+  // TODO: Compute enC based on conflict relations
 
   return std::tuple<EventSet, EventSet>(exC, enC);
 }
 
 EventSet UdporChecker::compute_extension_by_enumeration(const Configuration& C, const Transition& action) const
 {
-  // TODO: Do something more interesting here
-  return EventSet();
+  // Here we're computing the following:
+  //
+  // U{<a, K> : K is maximal, `a` depends on all of K, `a` enabled at K }
+  //
+  // where `a` is the `action` given to us.
+  EventSet incremental_exC;
+
+  // We only consider those combinations of events for which `action` is dependent with
+  // the action associated with any given event ("`a` depends on all of K")
+  const std::unique_ptr<CompatibilityGraph> G = C.make_compatibility_graph_filtered_on([=](UnfoldingEvent* e) {
+    const auto e_transition = e->get_transition();
+    return action.depends(e_transition);
+  });
+
+  // TODO: Now that the graph has been constructed, enumerate
+  // all possible k-cliques of the complement of G
+
+  // TODO: For each enumeration, check all possible
+  // combinations of selecting a single event from
+  // each set associated with the graph nodes
+
+  return incremental_exC;
 }
 
 void UdporChecker::move_to_stateCe(State& state, const UnfoldingEvent& e)
