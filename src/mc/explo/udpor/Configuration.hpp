@@ -10,6 +10,7 @@
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 
 #include <initializer_list>
+#include <vector>
 
 namespace simgrid::mc::udpor {
 
@@ -58,6 +59,47 @@ public:
    * assertions)
    */
   void add_event(UnfoldingEvent* e);
+
+  /**
+   * @brief Orders the events of the configuration such that
+   * "more recent" events (i.e. those that are farther down in
+   * the event structure's dependency chain) come after those
+   * that appeared "farther in the past"
+   *
+   * @returns a vector `V` with the following property:
+   *
+   * 1. Let i(e) := C -> I map events to their indices in `V`.
+   * For every pair of events e, e' in C, if e < e' then i(e) < i(e')
+   *
+   * Intuitively, events that are closer to the "bottom" of the event
+   * structure appear farther along in the list than those that appear
+   * closer to the "top"
+   */
+  std::vector<UnfoldingEvent*> get_topologically_sorted_events() const;
+
+  /**
+   * @brief Orders the events of the configuration such that
+   * "more recent" events (i.e. those that are farther down in
+   * the event structure's dependency chain) come before those
+   * that appear "farther in the past"
+   *
+   * @note The events of the event structure are arranged such that
+   * e < e' implies a directed edge from e to e'. However, it is
+   * also useful to be able to traverse the *reverse* graph (for
+   * example when computing the compatibility graph of a configuration),
+   * hence the distinction between "reversed" and the method
+   * "Configuration::get_topologically_sorted_events()"
+   *
+   * @returns a vector `V` with the following property:
+   *
+   * 1. Let i(e) := C -> I map events to their indices in `V`.
+   * For every pair of events e, e' in C, if e < e' then i(e) > i(e')
+   *
+   * Intuitively, events that are closer to the "top" of the event
+   * structure appear farther along in the list than those that appear
+   * closer to the "bottom"
+   */
+  std::vector<UnfoldingEvent*> get_topologically_sorted_events_of_reverse_graph() const;
 
 private:
   /**
