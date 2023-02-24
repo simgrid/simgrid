@@ -486,6 +486,8 @@ void CommImpl::finish()
     xbt_assert(to_ && to_->is_on());
     set_state(State::DONE);
   }
+  src_timeout_ = nullptr;
+  dst_timeout_ = nullptr;
 
   /* destroy the model actions associated with the communication activity */
   clean_action();
