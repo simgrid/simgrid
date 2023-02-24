@@ -184,11 +184,10 @@ void EngineImpl::initialize(int* argc, char** argv)
 
     simgrid::xbt::install_exception_handler();
 
-    for (int i = 0; i < *argc; i++)
-      cmdline_.emplace_back(argv[i]);
-
     sg_config_init(argc, argv);
   }
+
+  cmdline_.assign(argv, argv + *argc);
 
   instance_->context_mod_init();
 
