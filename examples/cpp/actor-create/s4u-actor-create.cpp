@@ -90,7 +90,7 @@ int main(int argc, char** argv)
   sg4::Engine e(&argc, argv);
 
   /* Then you should load a platform file, describing your simulated platform */
-  e.load_platform("../../platforms/small_platform.xml");
+  e.load_platform(argc > 1 ? argv[1] : "../../platforms/small_platform.xml");
 
   /* And now you have to ask SimGrid to actually start your actors.
    *
@@ -118,7 +118,7 @@ int main(int argc, char** argv)
   e.register_actor<Sender>("sender"); // The sender class is passed as a template parameter here
   e.register_function("forwarder", &forwarder);
   /* Once actors and functions are registered, just load the deployment file */
-  e.load_deployment("s4u-actor-create_d.xml");
+  e.load_deployment(argc > 2 ? argv[2] : "s4u-actor-create_d.xml");
 
   /* Once every actors are started in the engine, the simulation can start */
   e.run();
