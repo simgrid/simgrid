@@ -184,11 +184,18 @@ In C:
 Unsorted hints
 --------------
 
-* To thoroughly test your changes before pushing your commits, use several cmake configurations under sub-trees of ``build/`` (that is ignored by git) as
-  explained in :ref:`install_cmake_outsrc`. For example, I have the following directories: build/clang build/full build/mc (but YMMV).
+* To thoroughly test your changes before pushing your commits, use several cmake configurations under sub-trees of ``build/``
+  (that is ignored by git) as explained in :ref:`install_cmake_outsrc`. For example, I have the following directories:
+  build/clang build/full build/mc (but YMMV).
 
-* If you break the logs, you want to define XBT_LOG_MAYDAY at the beginning of log.h. It deactivates the whole logging mechanism, switching to printfs instead.
-  SimGrid then becomes incredibly verbose, but it you let you fixing things.
+* If you add or remove a file, you can check that everything is correctly setup with ``make distcheck``.
+
+* If everything gets crazy, as if it were not using the code that you actually compile, well, maybe it's using another version
+  of SimGrid on your disk. Use ``ldd`` on any simulator to check which library gets used. If you installed a SimGrid package,
+  you probably need to uninstall it.
+
+* If you break the logs, you want to define XBT_LOG_MAYDAY at the beginning of log.h. It deactivates the whole logging
+  mechanism, switching to printfs instead. SimGrid then becomes incredibly verbose, but it you let you fixing things.
 
 .. |br| raw:: html
 
