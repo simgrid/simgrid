@@ -28,6 +28,7 @@ void BarrierAcquisitionImpl::wait_for(actor::ActorImpl* issuer, double timeout)
     // Already in the queue
   }
 }
+
 void BarrierAcquisitionImpl::finish()
 {
   xbt_assert(simcalls_.size() == 1, "Unexpected number of simcalls waiting: %zu", simcalls_.size());

@@ -42,7 +42,7 @@ if(NS3_FOUND) # Starting from 3.36, ns3 provides a working pkg-config file, maki
 else()
   set(NS3_HINT ${ns3_path} CACHE PATH "Path to search for NS3 lib and include")
 
-  set(NS3_KNOWN_VERSIONS "3-dev" "3.28" "3.29" "3.30" "3.31" "3.32" "3.33" "3.34" "3.35")
+  set(NS3_KNOWN_VERSIONS "3-dev" "3.28" "3.29" "3.30" "3.31" "3.32" "3.33" "3.34" "3.35") # subsequent versions use pkg-config
 
   foreach (_ns3_ver ${NS3_KNOWN_VERSIONS})
     list(APPEND _ns3_LIB_SEARCH_DIRS "ns${_ns3_ver}-core" "ns${_ns3_ver}-core-optimized" "ns${_ns3_ver}-core-debug" "ns${_ns3_ver}-core-default")

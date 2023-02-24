@@ -20,13 +20,11 @@ class XBT_PUBLIC IoImpl : public ActivityImpl_T<IoImpl> {
   sg_size_t size_                     = 0;
   s4u::Io::OpType type_               = s4u::Io::OpType::READ;
   sg_size_t performed_ioops_          = 0;
-  resource::Action* timeout_detector_ = nullptr;
 
 public:
   IoImpl();
 
   IoImpl& set_sharing_penalty(double sharing_penalty);
-  IoImpl& set_timeout(double timeout) override;
   IoImpl& set_size(sg_size_t size);
   IoImpl& set_type(s4u::Io::OpType type);
   IoImpl& set_disk(resource::DiskImpl* disk);
@@ -42,7 +40,6 @@ public:
   resource::DiskImpl* get_disk() const { return disk_; }
 
   IoImpl* start();
-  void post() override;
   void set_exception(actor::ActorImpl* issuer) override;
   void finish() override;
 };

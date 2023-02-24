@@ -4,6 +4,11 @@ __   _____ _ __ ___(_) ___  _ __   |___ / |___ /___ /
  \ V /  __/ |  \__ \ | (_) | | | |  ___) | ___) |__) |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)____/____/
                (not released yet)
+
+  * MSG and Java are gone (EOL was scheduled for 2020)
+  * Introduce a fluid I/O model, mixing I/O and network, to represent streaming from disk
+  * Fix the DPOR reduction, toward sound verifications.
+  * (+ MANY internal refactoring, bug fixes and MANY documentation improvement)
                     _               _____  _________
 __   _____ _ __ ___(_) ___  _ __   |___ / |___ /___ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \   |_ \ __) |

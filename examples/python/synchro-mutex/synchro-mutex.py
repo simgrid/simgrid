@@ -35,9 +35,9 @@ class ResultHolder:
 def worker_context_manager(mutex: Mutex, result: ResultHolder):
     # When using a context manager, the lock and the unlock are automatic. This is the easiest approach
     with mutex:
-        this_actor.info(f"Hello simgrid, I'm ready to compute after acquiring the mutex from a context manager")
+        this_actor.info("Hello simgrid, I'm ready to compute after acquiring the mutex from a context manager")
         result.value += 1
-    this_actor.info(f"I'm done, good bye")
+    this_actor.info("I'm done, good bye")
 
 
 def worker(mutex: Mutex, result: ResultHolder):

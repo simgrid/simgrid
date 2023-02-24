@@ -17,6 +17,8 @@
 #include "simgrid/s4u/Host.hpp"
 #include "simgrid/plugins/file_system.h"
 
+#include <mutex> // std::scoped_lock
+
 #define FP_SIZE sizeof(MPI_Offset)
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_io, smpi, "Logging specific to SMPI (RMA operations)");
@@ -117,9 +119,8 @@ int File::get_position(MPI_Offset* offset) const
 
 int File::get_position_shared(MPI_Offset* offset) const
 {
-  shared_mutex_->lock();
+  const std::scoped_lock lock(*shared_mutex_);
   *offset = *shared_file_pointer_/etype_->get_extent();
-  shared_mutex_->unlock();
   return MPI_SUCCESS;
 }
 
@@ -146,10 +147,9 @@ int File::seek(MPI_Offset offset, int whence)
 
 int File::seek_shared(MPI_Offset offset, int whence)
 {
-  shared_mutex_->lock();
+  const std::scoped_lock lock(*shared_mutex_);
   seek(offset, whence);
   *shared_file_pointer_ = file_->tell();
-  shared_mutex_->unlock();
   return MPI_SUCCESS;
 }
 
@@ -184,11 +184,11 @@ int File::read(MPI_File fh, void* /*buf*/, int count, const Datatype* datatype, 
 /* }*/
 int File::read_shared(MPI_File fh, void* buf, int count, const Datatype* datatype, MPI_Status* status)
 {
-  fh->shared_mutex_->lock();
-  fh->seek(*(fh->shared_file_pointer_), MPI_SEEK_SET);
-  read(fh, buf, count, datatype, status);
-  *(fh->shared_file_pointer_) = fh->file_->tell();
-  fh->shared_mutex_->unlock();
+  if (const std::scoped_lock lock(*fh->shared_mutex_); true) {
+    fh->seek(*(fh->shared_file_pointer_), MPI_SEEK_SET);
+    read(fh, buf, count, datatype, status);
+    *(fh->shared_file_pointer_) = fh->file_->tell();
+  }
   fh->seek(*(fh->shared_file_pointer_), MPI_SEEK_SET);
   return MPI_SUCCESS;
 }
@@ -210,9 +210,8 @@ int File::read_ordered(MPI_File fh, void* buf, int count, const Datatype* dataty
   fh->seek(result, MPI_SEEK_SET);
   int ret = fh->op_all<simgrid::smpi::File::read>(buf, count, datatype, status);
   if (fh->comm_->rank() == fh->comm_->size() - 1) {
-    fh->shared_mutex_->lock();
+    const std::scoped_lock lock(*fh->shared_mutex_);
     *(fh->shared_file_pointer_)=fh->file_->tell();
-    fh->shared_mutex_->unlock();
   }
   char c;
   simgrid::smpi::colls::bcast(&c, 1, MPI_BYTE, fh->comm_->size() - 1, fh->comm_);
@@ -241,14 +240,13 @@ int File::write(MPI_File fh, void* /*buf*/, int count, const Datatype* datatype,
 
 int File::write_shared(MPI_File fh, const void* buf, int count, const Datatype* datatype, MPI_Status* status)
 {
-  fh->shared_mutex_->lock();
+  const std::scoped_lock lock(*fh->shared_mutex_);
   XBT_DEBUG("Write shared on %s - Shared ptr before : %lld", fh->file_->get_path(), *(fh->shared_file_pointer_));
   fh->seek(*(fh->shared_file_pointer_), MPI_SEEK_SET);
   write(fh, const_cast<void*>(buf), count, datatype, status);
   *(fh->shared_file_pointer_) = fh->file_->tell();
   XBT_DEBUG("Write shared on %s - Shared ptr after : %lld", fh->file_->get_path(), *(fh->shared_file_pointer_));
   fh->seek(*(fh->shared_file_pointer_), MPI_SEEK_SET);
-  fh->shared_mutex_->unlock();
   return MPI_SUCCESS;
 }
 
@@ -268,9 +266,8 @@ int File::write_ordered(MPI_File fh, const void* buf, int count, const Datatype*
   fh->seek(result, MPI_SEEK_SET);
   int ret = fh->op_all<simgrid::smpi::File::write>(const_cast<void*>(buf), count, datatype, status);
   if (fh->comm_->rank() == fh->comm_->size() - 1) {
-    fh->shared_mutex_->lock();
+    const std::scoped_lock lock(*fh->shared_mutex_);
     *(fh->shared_file_pointer_)=fh->file_->tell();
-    fh->shared_mutex_->unlock();
   }
   char c;
   simgrid::smpi::colls::bcast(&c, 1, MPI_BYTE, fh->comm_->size() - 1, fh->comm_);

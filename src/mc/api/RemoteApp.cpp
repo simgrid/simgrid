@@ -171,13 +171,13 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   model_checker_->channel().send(MessageType::ACTORS_STATUS);
 
   s_mc_message_actors_status_answer_t answer;
-  ssize_t received = model_checker_->channel().receive(answer);
-  xbt_assert(received != -1, "Could not receive message");
-  xbt_assert(received == sizeof(answer) && answer.type == MessageType::ACTORS_STATUS_REPLY,
-             "Received unexpected message %s (%i, size=%i) "
-             "expected MessageType::ACTORS_STATUS_REPLY (%i, size=%i)",
-             to_c_str(answer.type), (int)answer.type, (int)received, (int)MessageType::ACTORS_STATUS_REPLY,
-             (int)sizeof(answer));
+  ssize_t answer_size = model_checker_->channel().receive(answer);
+  xbt_assert(answer_size != -1, "Could not receive message");
+  xbt_assert(answer_size == sizeof answer && answer.type == MessageType::ACTORS_STATUS_REPLY,
+             "Received unexpected message %s (%i, size=%zd) "
+             "expected MessageType::ACTORS_STATUS_REPLY (%i, size=%zu)",
+             to_c_str(answer.type), (int)answer.type, answer_size, (int)MessageType::ACTORS_STATUS_REPLY,
+             sizeof answer);
 
   // Message sanity checks
   xbt_assert(answer.count >= 0, "Received an ACTOR_STATUS_REPLY message with an actor count of '%d' < 0", answer.count);
@@ -206,17 +206,16 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   std::vector<s_mc_message_simcall_probe_one_t> probes(answer.transition_count);
   if (answer.transition_count > 0) {
     for (auto& probe : probes) {
-      size_t size      = sizeof(s_mc_message_simcall_probe_one_t);
-      ssize_t received = model_checker_->channel().receive(&probe, size);
+      ssize_t received = model_checker_->channel().receive(probe);
       xbt_assert(received >= 0, "Could not receive response to ACTORS_PROBE message (%s)", strerror(errno));
-      xbt_assert(static_cast<size_t>(received) == size,
+      xbt_assert(static_cast<size_t>(received) == sizeof probe,
                  "Could not receive response to ACTORS_PROBE message (%zd bytes received != %zu bytes expected",
-                 received, size);
+                 received, sizeof probe);
     }
   }
 
   whereto.clear();
-  auto probes_iter = std::move_iterator(probes.begin());
+  std::move_iterator probes_iter(probes.begin());
 
   for (const auto& actor : status) {
     xbt_assert(actor.n_transitions == 0 || actor.n_transitions == actor.max_considered,
@@ -225,14 +224,13 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
                "(currently %d), but only %d transition(s) was/were said to be encoded",
                actor.max_considered, actor.n_transitions);
 
-    auto actor_transitions = std::vector<std::unique_ptr<Transition>>(actor.n_transitions);
+    std::vector<std::shared_ptr<Transition>> actor_transitions;
     for (int times_considered = 0; times_considered < actor.n_transitions; times_considered++, probes_iter++) {
       std::stringstream stream((*probes_iter).buffer.data());
-      auto transition = std::unique_ptr<Transition>(deserialize_transition(actor.aid, times_considered, stream));
-      actor_transitions[times_considered] = std::move(transition);
+      actor_transitions.emplace_back(deserialize_transition(actor.aid, times_considered, stream));
     }
 
-    XBT_DEBUG("Received %d transitions for actor %ld", actor.n_transitions, actor.aid);
+    XBT_DEBUG("Received %zu transitions for actor %ld", actor_transitions.size(), actor.aid);
     whereto.try_emplace(actor.aid, actor.aid, actor.enabled, actor.max_considered, std::move(actor_transitions));
   }
 }
@@ -241,13 +239,13 @@ void RemoteApp::check_deadlock() const
 {
   xbt_assert(model_checker_->channel().send(MessageType::DEADLOCK_CHECK) == 0, "Could not check deadlock state");
   s_mc_message_int_t message;
-  ssize_t s = model_checker_->channel().receive(message);
-  xbt_assert(s != -1, "Could not receive message");
-  xbt_assert(s == sizeof(message) && message.type == MessageType::DEADLOCK_CHECK_REPLY,
-             "Received unexpected message %s (%i, size=%i) "
-             "expected MessageType::DEADLOCK_CHECK_REPLY (%i, size=%i)",
-             to_c_str(message.type), (int)message.type, (int)s, (int)MessageType::DEADLOCK_CHECK_REPLY,
-             (int)sizeof(message));
+  ssize_t received = model_checker_->channel().receive(message);
+  xbt_assert(received != -1, "Could not receive message");
+  xbt_assert(received == sizeof message && message.type == MessageType::DEADLOCK_CHECK_REPLY,
+             "Received unexpected message %s (%i, size=%zd) "
+             "expected MessageType::DEADLOCK_CHECK_REPLY (%i, size=%zu)",
+             to_c_str(message.type), (int)message.type, received, (int)MessageType::DEADLOCK_CHECK_REPLY,
+             sizeof message);
 
   if (message.value != 0) {
     XBT_CINFO(mc_global, "Counter-example execution trace:");

@@ -59,9 +59,8 @@ public:
   long get_num() const { return num_; }
   std::size_t count_todo() const;
   void mark_todo(aid_t actor) { actors_to_run_.at(actor).mark_todo(); }
-  void mark_done(aid_t actor) { actors_to_run_.at(actor).mark_done();}
-  void mark_all_todo();
-  bool is_done(aid_t actor) const { return actors_to_run_.at(actor).is_done(); }
+  void mark_all_enabled_todo();
+  bool is_actor_done(aid_t actor) const { return actors_to_run_.at(actor).is_done(); }
   Transition* get_transition() const;
   void set_transition(Transition* t) { transition_ = t; }
   std::map<aid_t, ActorState> const& get_actors_list() const { return actors_to_run_; }

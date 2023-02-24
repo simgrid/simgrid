@@ -53,7 +53,7 @@ class ActorState {
    * This means there may be a way to store the list once and apply differences
    * rather than repeating elements frequently.
    */
-  std::vector<std::unique_ptr<Transition>> pending_transitions_;
+  std::vector<std::shared_ptr<Transition>> pending_transitions_;
 
   /* Possible exploration status of an actor transition in a state.
    * Either the checker did not consider the transition, or it was considered and still to do, or considered and
@@ -86,7 +86,7 @@ class ActorState {
 public:
   ActorState(aid_t aid, bool enabled, unsigned int max_consider) : ActorState(aid, enabled, max_consider, {}) {}
 
-  ActorState(aid_t aid, bool enabled, unsigned int max_consider, std::vector<std::unique_ptr<Transition>> transitions)
+  ActorState(aid_t aid, bool enabled, unsigned int max_consider, std::vector<std::shared_ptr<Transition>> transitions)
       : pending_transitions_(std::move(transitions)), aid_(aid), max_consider_(max_consider), enabled_(enabled)
   {
   }

@@ -27,7 +27,6 @@ public:
   void suspend() override;
   void resume() override;
   void cancel() override;
-  void post() override;
   void set_exception(actor::ActorImpl* issuer) override;
   void finish() override;
 };

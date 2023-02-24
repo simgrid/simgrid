@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <mutex>           /* std::mutex and std::lock_guard */
+#include <mutex>           /* std::mutex and std::scoped_lock */
 #include <simgrid/s4u.hpp> /* All of S4U */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
@@ -11,7 +11,7 @@ namespace sg4 = simgrid::s4u;
 
 static void worker_fun(sg4::ConditionVariablePtr cv, sg4::MutexPtr mutex, std::string& data, bool& done)
 {
-  std::unique_lock lock(*mutex);
+  const std::scoped_lock lock(*mutex);
 
   XBT_INFO("Start processing data which is '%s'.", data.c_str());
   data += " after processing";
@@ -34,7 +34,7 @@ static void master_fun()
                                    std::ref(done));
 
   // wait for the worker
-  cv->wait(std::unique_lock<sg4::Mutex>(*mutex), [&done]() { return done; });
+  cv->wait(std::unique_lock(*mutex), [&done]() { return done; });
   XBT_INFO("data is now '%s'.", data.c_str());
 
   worker->join();

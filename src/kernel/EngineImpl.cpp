@@ -178,8 +178,7 @@ void EngineImpl::initialize(int* argc, char** argv)
   simgrid::mc::AppSide::initialize();
 #endif
 
-  static bool inited = false;
-  if (not inited) {
+  if (static bool inited = false; not inited) {
     inited = true;
     xbt_log_init(argc, argv);
 
@@ -364,7 +363,7 @@ void EngineImpl::handle_ended_actions() const
         if (action->get_activity()->get_actor() == maestro_)
           action->get_activity()->get_iface()->complete(s4u::Activity::State::FAILED);
 
-        activity::ActivityImplPtr(action->get_activity())->post();
+        activity::ActivityImplPtr(action->get_activity())->finish();
       }
     }
     XBT_DEBUG("Handling the terminated actions (if any)");
@@ -377,7 +376,7 @@ void EngineImpl::handle_ended_actions() const
         if (action->get_activity()->get_actor() == maestro_)
           action->get_activity()->get_iface()->complete(s4u::Activity::State::FINISHED);
 
-        activity::ActivityImplPtr(action->get_activity())->post();
+        activity::ActivityImplPtr(action->get_activity())->finish();
       }
     }
   }

@@ -24,6 +24,8 @@
 #include "simgrid/s4u/Mailbox.hpp"
 #include "simgrid/s4u/Mutex.hpp"
 
+#include <mutex> // std::unique_lock
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(mutex_handling, "Messages specific for this test");
 
 static int receiver(const char* box_name)
@@ -45,14 +47,11 @@ static int sender(const char* box_name, simgrid::s4u::MutexPtr mutex, int value)
   auto* payload = new int(value);
   auto mb      = simgrid::s4u::Mailbox::by_name(box_name);
 
+  std::unique_lock<simgrid::s4u::Mutex> lock;
   if (mutex)
-    mutex->lock();
+    lock = std::unique_lock(*mutex);
 
   mb->put(payload, 8);
-
-  if (mutex)
-    mutex->unlock();
-
   return 0;
 }
 

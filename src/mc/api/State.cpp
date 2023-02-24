@@ -61,12 +61,12 @@ std::size_t State::count_todo() const
   return boost::range::count_if(this->actors_to_run_, [](auto& pair) { return pair.second.is_todo(); });
 }
 
-void State::mark_all_todo()
+void State::mark_all_enabled_todo()
 {
-  for (auto& [aid, actor] : actors_to_run_) {
-
-    if (actor.is_enabled() and not actor.is_done() and not actor.is_todo())
-      actor.mark_todo();
+  for (auto const& [aid, _] : this->get_actors_list()) {
+      if (this->is_actor_enabled(aid) and not is_actor_done(aid)) {
+      this->mark_todo(aid);
+    }
   }
 }
 

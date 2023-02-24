@@ -58,6 +58,7 @@ class EngineImpl {
   friend s4u::Engine;
 
   std::vector<std::string> cmdline_; // Copy of the argv we got (including argv[0])
+
 public:
   EngineImpl() = default;
 

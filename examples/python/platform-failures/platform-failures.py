@@ -82,7 +82,7 @@ def sleeper():
     this_actor.info("done sleeping.")
 
 if __name__ == '__main__':
-    assert len(sys.argv) > 2, f"Usage: python app-masterworkers.py platform_file deployment_file"
+    assert len(sys.argv) > 2, "Usage: python app-masterworkers.py platform_file deployment_file"
 
     e = Engine(sys.argv)
 

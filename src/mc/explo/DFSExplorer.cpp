@@ -184,7 +184,7 @@ void DFSExplorer::run()
     if (visited_state_ == nullptr) {
       /* Get an enabled process and insert it in the interleave set of the next state */
       for (auto const& [aid, _] : next_state->get_actors_list()) {
-        if (next_state->is_actor_enabled(aid) and not next_state->is_done(aid)) {
+        if (next_state->is_actor_enabled(aid) and not next_state->is_actor_done(aid)) {
           next_state->mark_todo(aid);
           if (reduction_mode_ == ReductionMode::dpor)
             break; // With DPOR, we take the first enabled transition
@@ -245,13 +245,13 @@ void DFSExplorer::backtrack()
           XBT_VERB("  %s (state=%ld)", state->get_transition()->to_string().c_str(), state->get_num());
 
 	  if (prev_state->is_actor_enabled(issuer_id)){
-	      if (not prev_state->is_done(issuer_id))
+	      if (not prev_state->is_actor_done(issuer_id))
 		  prev_state->mark_todo(issuer_id);
 	      else
 		  XBT_DEBUG("Actor %ld is already in done set: no need to explore it again", issuer_id);
 	  } else {
 	      XBT_DEBUG("Actor %ld is not enabled: DPOR may be failing. To stay sound, we are marking every enabled transition as todo", issuer_id);
-	      prev_state->mark_all_todo();
+	      prev_state->mark_all_enabled_todo();
 	  }
           break;
         } else {

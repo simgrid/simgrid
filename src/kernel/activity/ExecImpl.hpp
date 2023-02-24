@@ -14,8 +14,6 @@
 namespace simgrid::kernel::activity {
 
 class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
-  std::unique_ptr<resource::Action, std::function<void(resource::Action*)>> timeout_detector_{
-      nullptr, [](resource::Action* a) { a->unref(); }};
   double sharing_penalty_             = 1.0;
   double bound_                       = 0.0;
   std::vector<double> flops_amounts_;
@@ -26,7 +24,6 @@ class XBT_PUBLIC ExecImpl : public ActivityImpl_T<ExecImpl> {
 public:
   ExecImpl();
 
-  ExecImpl& set_timeout(double timeout) override;
   ExecImpl& set_bound(double bound);
   ExecImpl& set_sharing_penalty(double sharing_penalty);
   ExecImpl& update_sharing_penalty(double sharing_penalty);
@@ -49,7 +46,6 @@ public:
   virtual ActivityImpl* migrate(s4u::Host* to);
 
   ExecImpl* start();
-  void post() override;
   void set_exception(actor::ActorImpl* issuer) override;
   void finish() override;
 

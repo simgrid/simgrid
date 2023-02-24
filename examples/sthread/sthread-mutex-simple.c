@@ -21,8 +21,8 @@ int main(int argc, char* argv[])
   int id[2] = {0, 1};
   sthread_t thread1;
   sthread_t thread2;
-  sthread_create(&thread1, NULL, thread_fun, (void*)&id[0]);
-  sthread_create(&thread2, NULL, thread_fun, (void*)&id[1]);
+  sthread_create(&thread1, NULL, thread_fun, &id[0]);
+  sthread_create(&thread2, NULL, thread_fun, &id[1]);
   fprintf(stderr, "All threads are started.\n");
   sthread_join(thread1, NULL);
   sthread_join(thread2, NULL);

@@ -523,6 +523,18 @@ set(MC_SRC
   src/mc/explo/UdporChecker.cpp
   src/mc/explo/UdporChecker.hpp
 
+  src/mc/explo/udpor/Configuration.hpp
+  src/mc/explo/udpor/Configuration.cpp
+  src/mc/explo/udpor/EventSet.cpp
+  src/mc/explo/udpor/EventSet.hpp
+  src/mc/explo/udpor/History.cpp
+  src/mc/explo/udpor/History.hpp
+  src/mc/explo/udpor/UnfoldingEvent.cpp
+  src/mc/explo/udpor/UnfoldingEvent.hpp
+  src/mc/explo/udpor/Unfolding.cpp
+  src/mc/explo/udpor/Unfolding.hpp
+  src/mc/explo/udpor/udpor_forward.hpp
+  
   src/mc/inspect/DwarfExpression.cpp
   src/mc/inspect/DwarfExpression.hpp
   src/mc/inspect/Frame.cpp
@@ -589,8 +601,6 @@ set(MC_SRC
   src/mc/mc_forward.hpp
   src/mc/mc_private.hpp
   src/mc/mc_record.cpp
-  src/mc/udpor_global.cpp
-  src/mc/udpor_global.hpp
 
   src/xbt/mmalloc/mm_interface.c
   )

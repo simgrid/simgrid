@@ -50,9 +50,6 @@ public:
 
   bool test(actor::ActorImpl* issuer = nullptr) override;
   void wait_for(actor::ActorImpl* issuer, double timeout) override;
-  void post() override
-  { /* no model action */
-  }
   void finish() override;
   void set_exception(actor::ActorImpl* issuer) override
   { /* nothing to do */

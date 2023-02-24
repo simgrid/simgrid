@@ -31,11 +31,12 @@ void Exec::reset() const
 ExecPtr Exec::init()
 {
   auto pimpl = kernel::activity::ExecImplPtr(new kernel::activity::ExecImpl());
+  /* Allow parallel execs to fail if any of their hosts fail */
   unsigned int cb_id = Host::on_state_change.connect([pimpl](s4u::Host const& h) {
     if (not h.is_on() && pimpl->get_state() == kernel::activity::State::RUNNING &&
         std::find(pimpl->get_hosts().begin(), pimpl->get_hosts().end(), &h) != pimpl->get_hosts().end()) {
       pimpl->set_state(kernel::activity::State::FAILED);
-      pimpl->post();
+      pimpl->finish();
     }
   });
   pimpl->set_cb_id(cb_id);

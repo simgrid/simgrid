@@ -37,7 +37,7 @@ void log_exception(e_xbt_log_priority_t prio, const char* context, std::exceptio
 
     auto* with_context = dynamic_cast<const simgrid::Exception*>(&exception);
     if (with_context != nullptr) {
-      XBT_LOG(prio, "%s %s by %s/%d: %s", context, name.c_str(), with_context->throw_point().procname_.c_str(),
+      XBT_LOG(prio, "%s %s by %s/%ld: %s", context, name.c_str(), with_context->throw_point().procname_.c_str(),
               with_context->throw_point().pid_, exception.what());
       // Do we have a backtrace?
       if (not simgrid::config::get_value<bool>("exception/cutpath")) {

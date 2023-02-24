@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
+#include <mutex>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt, "Dictionaries provide the same functionalities as hash tables");
 
@@ -32,6 +33,8 @@ static void xbt_dict_postexit()
 }
 static void xbt_dict_preinit()
 {
+  static std::mutex init_mutex;
+  const std::scoped_lock lock(init_mutex);
   if (dict_elm_mallocator == nullptr) {
     dict_elm_mallocator =
         xbt_mallocator_new(256, dict_elm_mallocator_new_f, dict_elm_mallocator_free_f, dict_elm_mallocator_reset_f);

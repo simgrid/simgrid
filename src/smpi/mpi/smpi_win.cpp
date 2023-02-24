@@ -17,6 +17,7 @@
 #include "src/mc/mc_replay.hpp"
 
 #include <algorithm>
+#include <mutex> // std::scoped_lock
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_rma, smpi, "Logging specific to SMPI (RMA operations)");
 
@@ -239,16 +240,14 @@ int Win::put(const void *origin_addr, int origin_count, MPI_Datatype origin_data
     if(request!=nullptr){
       *request=sreq;
     }else{
-      mut_->lock();
+      const std::scoped_lock lock(*mut_);
       requests_.push_back(sreq);
-      mut_->unlock();
     }
 
     //push request to receiver's win
-    recv_win->mut_->lock();
+    const std::scoped_lock recv_lock(*recv_win->mut_);
     recv_win->requests_.push_back(rreq);
     rreq->start();
-    recv_win->mut_->unlock();
   } else {
     XBT_DEBUG("Entering MPI_Put from myself to myself, rank %d", target_rank);
     Datatype::copy(origin_addr, origin_count, origin_datatype, recv_addr, target_count, target_datatype);
@@ -283,9 +282,9 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     //start the send, with another process than us as sender.
     sreq->start();
     // push request to sender's win
-    send_win->mut_->lock();
-    send_win->requests_.push_back(sreq);
-    send_win->mut_->unlock();
+    if (const std::scoped_lock send_lock(*send_win->mut_); true) {
+      send_win->requests_.push_back(sreq);
+    }
 
     //start recv
     rreq->start();
@@ -293,9 +292,8 @@ int Win::get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
     if(request!=nullptr){
       *request=rreq;
     }else{
-      mut_->lock();
+      const std::scoped_lock lock(*mut_);
       requests_.push_back(rreq);
-      mut_->unlock();
     }
   } else {
     Datatype::copy(send_addr, target_count, target_datatype, origin_addr, origin_count, origin_datatype);
@@ -334,17 +332,16 @@ int Win::accumulate(const void *origin_addr, int origin_count, MPI_Datatype orig
   // start send
   sreq->start();
   // push request to receiver's win
-  recv_win->mut_->lock();
-  recv_win->requests_.push_back(rreq);
-  rreq->start();
-  recv_win->mut_->unlock();
+  if (const std::scoped_lock recv_lock(*recv_win->mut_); true) {
+    recv_win->requests_.push_back(rreq);
+    rreq->start();
+  }
 
   if (request != nullptr) {
     *request = sreq;
   } else {
-    mut_->lock();
+    const std::scoped_lock lock(*mut_);
     requests_.push_back(sreq);
-    mut_->unlock();
   }
 
   // FIXME: The current implementation fails to ensure the correct ordering of the accumulate requests.  The following
@@ -367,7 +364,7 @@ int Win::get_accumulate(const void* origin_addr, int origin_count, MPI_Datatype 
   XBT_DEBUG("Entering MPI_Get_accumulate from %d", target_rank);
   //need to be sure ops are correctly ordered, so finish request here ? slow.
   MPI_Request req = MPI_REQUEST_NULL;
-  send_win->atomic_mut_->lock();
+  const std::scoped_lock lock(*send_win->atomic_mut_);
   get(result_addr, result_count, result_datatype, target_rank,
               target_disp, target_count, target_datatype, &req);
   if (req != MPI_REQUEST_NULL)
@@ -377,7 +374,6 @@ int Win::get_accumulate(const void* origin_addr, int origin_count, MPI_Datatype 
               target_disp, target_count, target_datatype, op, &req);
   if (req != MPI_REQUEST_NULL)
     Request::wait(&req, MPI_STATUS_IGNORE);
-  send_win->atomic_mut_->unlock();
   return MPI_SUCCESS;
 }
 
@@ -391,7 +387,7 @@ int Win::compare_and_swap(const void* origin_addr, const void* compare_addr, voi
 
   XBT_DEBUG("Entering MPI_Compare_and_swap with %d", target_rank);
   MPI_Request req = MPI_REQUEST_NULL;
-  send_win->atomic_mut_->lock();
+  const std::scoped_lock lock(*send_win->atomic_mut_);
   get(result_addr, 1, datatype, target_rank,
               target_disp, 1, datatype, &req);
   if (req != MPI_REQUEST_NULL)
@@ -400,7 +396,6 @@ int Win::compare_and_swap(const void* origin_addr, const void* compare_addr, voi
     put(origin_addr, 1, datatype, target_rank,
               target_disp, 1, datatype);
   }
-  send_win->atomic_mut_->unlock();
   return MPI_SUCCESS;
 }
 
@@ -614,7 +609,7 @@ int Win::finish_comms(){
   // Without this, the vector could get redimensioned when another process pushes.
   // This would result in the array used by Request::waitall() to be invalidated.
   // Another solution would be to copy the data and cleanup the vector *before* Request::waitall
-  mut_->lock();
+  const std::scoped_lock lock(*mut_);
   //Finish own requests
   int size = static_cast<int>(requests_.size());
   if (size > 0) {
@@ -622,13 +617,12 @@ int Win::finish_comms(){
     Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
     requests_.clear();
   }
-  mut_->unlock();
   return size;
 }
 
 int Win::finish_comms(int rank){
   // See comment about the mutex in finish_comms() above
-  mut_->lock();
+  const std::scoped_lock lock(*mut_);
   // Finish own requests
   // Let's see if we're either the destination or the sender of this request
   // because we only wait for requests that we are responsible for.
@@ -646,7 +640,6 @@ int Win::finish_comms(int rank){
     Request::waitall(size, treqs, MPI_STATUSES_IGNORE);
     myreqqs.clear();
   }
-  mut_->unlock();
   return size;
 }
 

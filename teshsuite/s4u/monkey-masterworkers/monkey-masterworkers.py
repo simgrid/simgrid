@@ -63,7 +63,7 @@ def worker(my_id):
     assert Engine.clock < deadline, f"Failed to run all tasks in less than {deadline} seconds. Is this an infinite loop?"
 
     try:
-      this_actor.info(f"Waiting a message on mailbox")
+      this_actor.info("Waiting a message on mailbox")
       compute_cost = mailbox.get()
 
       this_actor.info("Start execution...")

@@ -15,10 +15,13 @@ S4U:
    Comm::set_payload_size() to change the size of the simulated data.
  - New function: Engine::flatify_platform(), to get a fully detailed vision of the
    configured platform.
+ - Full simDAG integration: Activity::start() actually starts only when all dependencies
+   are fullfiled. If it cannot be started right away, it will start as soon as it becomes
+   possible.
 
 Kernel:
- - optimize an internal datastructure, leading to a potentially big
-   performance gain (in particular with many detached comms)
+ - optimize an internal datastructure (use a set instead of a list for ongoing activities),
+   leading to a potentially big performance gain, in particular with many detached comms.
 
 MPI:
  - New option smpi/barrier-collectives to add a barrier to some collectives
@@ -40,9 +43,16 @@ Models:
    with the default host model, as it should.
  - Rename option "surf/precision" to "precision/timing" for clarity.
  - Rename option "maxmin/precision" to "precision/work-amount" for clarity.
+ - New function: Engine::flatify_platform() to debug your platform.
 
 sthread:
  - Implement pthread_join in MC mode.
+ - Implement semaphore functions in sthread.
+
+Model checking:
+ - Synchronize the MBI tests with upstream.
+ - Show the full actor bactraces when replaying a MC trace (with model-check/replay)
+   and the status of all actors on deadlocks in MC mode.
 
 XBT:
  - simgrid::xbt::cmdline and simgrid::xbt::binary_name are gone.

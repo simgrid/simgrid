@@ -5,7 +5,7 @@
 
 #include "simgrid/s4u.hpp" /* All of S4U */
 #include "xbt/config.hpp"
-#include <mutex> /* std::mutex and std::lock_guard */
+#include <mutex> /* std::mutex and std::scoped_lock */
 
 namespace sg4 = simgrid::s4u;
 
@@ -29,14 +29,14 @@ static void worker(sg4::MutexPtr mutex, int& result)
   mutex->unlock();
 }
 
-static void workerLockGuard(sg4::MutexPtr mutex, int& result)
+static void workerScopedLock(sg4::MutexPtr mutex, int& result)
 {
-  // Simply use the std::lock_guard like this
+  // Simply use the std::scoped_lock like this
   // It's like a lock() that would do the unlock() automatically when getting out of scope
-  std::lock_guard lock(*mutex);
+  const std::scoped_lock lock(*mutex);
 
   // then you are in a safe zone
-  XBT_INFO("Hello s4u, I'm ready to compute after a lock_guard");
+  XBT_INFO("Hello s4u, I'm ready to compute after a scoped_lock");
   // update the results
   result += 1;
   XBT_INFO("I'm done, good bye");
@@ -54,7 +54,7 @@ int main(int argc, char** argv)
 
   for (int i = 0; i < cfg_actor_count; i++) {
     sg4::MutexPtr mutex = sg4::Mutex::create();
-    sg4::Actor::create("worker", sg4::Host::by_name("Jupiter"), workerLockGuard, mutex, std::ref(result[i]));
+    sg4::Actor::create("worker", sg4::Host::by_name("Jupiter"), workerScopedLock, mutex, std::ref(result[i]));
     sg4::Actor::create("worker", sg4::Host::by_name("Tremblay"), worker, mutex, std::ref(result[i]));
   }
 

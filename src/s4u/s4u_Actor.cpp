@@ -413,7 +413,7 @@ ExecPtr exec_async(double flops)
 
 aid_t get_pid()
 {
-  auto* self = simgrid::kernel::actor::ActorImpl::self();
+  const auto* self = simgrid::kernel::actor::ActorImpl::self();
   return self ? self->get_pid() : 0;
 }
 
@@ -429,7 +429,7 @@ std::string get_name()
 
 const char* get_cname()
 {
-  auto* self = simgrid::kernel::actor::ActorImpl::self();
+  const auto* self = simgrid::kernel::actor::ActorImpl::self();
   return self ? self->get_cname() : nullptr;
 }
 

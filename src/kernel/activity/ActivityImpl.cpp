@@ -115,9 +115,9 @@ void ActivityImpl::wait_for(actor::ActorImpl* issuer, double timeout)
       sleep_action->set_activity(comm);
 
       if (issuer == comm->src_actor_)
-        comm->src_timeout_ = sleep_action;
+        comm->src_timeout_.reset(sleep_action);
       else
-        comm->dst_timeout_ = sleep_action;
+        comm->dst_timeout_.reset(sleep_action);
     } else {
       SynchroImplPtr synchro(new SynchroImpl([this, issuer]() {
         this->unregister_simcall(&issuer->simcall_);
@@ -236,4 +236,5 @@ void intrusive_ptr_release(ActivityImpl* activity)
     delete activity;
   }
 }
+
 } // namespace simgrid::kernel::activity

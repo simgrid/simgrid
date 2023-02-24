@@ -18,14 +18,14 @@ def sender(mailbox1_name: str, mailbox2_name: str) -> None:
     this_actor.info(f"Initiating asynchronous send to {mailbox2.name}")
     comm2: Comm = mailbox2.put_async(666, 2)
 
-    this_actor.info(f"Calling wait_any..")
+    this_actor.info("Calling wait_any..")
     pending_comms = [comm1, comm2]
     try:
         index = Comm.wait_any([comm1, comm2])
         this_actor.info(f"Wait any returned index {index} (comm to {pending_comms[index].mailbox.name})")
     except NetworkFailureException:
-        this_actor.info(f"Sender has experienced a network failure exception, so it knows that something went wrong")
-        this_actor.info(f"Now it needs to figure out which of the two comms failed by looking at their state:")
+        this_actor.info("Sender has experienced a network failure exception, so it knows that something went wrong")
+        this_actor.info("Now it needs to figure out which of the two comms failed by looking at their state:")
 
     this_actor.info(f"  Comm to {comm1.mailbox.name} has state: {comm1.state_str}")
     this_actor.info(f"  Comm to {comm2.mailbox.name} has state: {comm2.state_str}")

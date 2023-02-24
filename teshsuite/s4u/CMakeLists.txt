@@ -17,7 +17,7 @@ foreach(x actor actor-autorestart actor-suspend
         storage_client_server listen_async pid
         trace-integration
         seal-platform
-	      vm-live-migration vm-suicide issue71)
+        vm-live-migration vm-suicide issue71)
 
   if(NOT DEFINED ${x}_sources)
       set(${x}_sources ${x}/${x}.cpp)

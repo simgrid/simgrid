@@ -217,10 +217,8 @@ void AppSide::handle_actors_status() const
     }
     XBT_DEBUG("Deliver ACTOR_TRANSITION_PROBE payload");
 
-    for (const auto& probe : probes) {
-      size_t size = sizeof(s_mc_message_simcall_probe_one_t);
-      xbt_assert(channel_.send(&probe, size) == 0, "Could not send ACTOR_TRANSITION_PROBE payload (%zu bytes)", size);
-    }
+    for (const auto& probe : probes)
+      xbt_assert(channel_.send(probe) == 0, "Could not send ACTOR_TRANSITION_PROBE payload");
   }
 }
 

@@ -33,7 +33,11 @@ SleepImpl* SleepImpl::start()
   return this;
 }
 
-void SleepImpl::post()
+void SleepImpl::set_exception(actor::ActorImpl* issuer)
+{
+  /* FIXME: Really, nothing bad can happen while we sleep? */
+}
+void SleepImpl::finish()
 {
   if (model_action_->get_state() == resource::Action::State::FAILED) {
     if (host_ && not host_->is_on())
@@ -45,15 +49,6 @@ void SleepImpl::post()
   }
 
   clean_action();
-  /* Answer all simcalls associated with the synchro */
-  finish();
-}
-void SleepImpl::set_exception(actor::ActorImpl* issuer)
-{
-  /* FIXME: Really, nothing bad can happen while we sleep? */
-}
-void SleepImpl::finish()
-{
   XBT_DEBUG("SleepImpl::finish() in state %s", get_state_str());
   while (not simcalls_.empty()) {
     const actor::Simcall* simcall = simcalls_.front();
