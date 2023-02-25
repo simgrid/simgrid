@@ -28,8 +28,6 @@ public:
   ExecImpl& set_sharing_penalty(double sharing_penalty);
   ExecImpl& update_sharing_penalty(double sharing_penalty);
 
-  void set_cb_id(unsigned int cb_id) { cb_id_ = cb_id; }
-
   ExecImpl& set_flops_amount(double flop_amount);
   ExecImpl& set_host(s4u::Host* host);
 
