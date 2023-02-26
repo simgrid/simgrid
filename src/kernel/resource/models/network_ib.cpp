@@ -64,7 +64,7 @@ void NetworkIBModel::IB_action_state_changed_callback(NetworkAction& action, Act
   auto [src, dst] = ibModel->active_comms[&action];
 
   XBT_DEBUG("IB callback - action %p finished", &action);
-  ibModel->update_IB_factors(&action, src, dst, 1);
+  ibModel->update_IB_factors(&action, src, dst, true);
   ibModel->active_comms.erase(&action);
 }
 
@@ -76,7 +76,7 @@ void NetworkIBModel::IB_comm_start_callback(const activity::CommImpl& comm)
   auto* act_dst = &ibModel->active_nodes.at(action->get_dst().get_name());
 
   ibModel->active_comms[action] = std::make_pair(act_src, act_dst);
-  ibModel->update_IB_factors(action, act_src, act_dst, 0);
+  ibModel->update_IB_factors(action, act_src, act_dst, false);
 }
 
 NetworkIBModel::NetworkIBModel(const std::string& name) : NetworkCm02Model(name)
@@ -170,7 +170,7 @@ void NetworkIBModel::update_IB_factors_rec(IBNode* root, std::vector<bool>& upda
   }
 }
 
-void NetworkIBModel::update_IB_factors(NetworkAction* action, IBNode* from, IBNode* to, int remove) const
+void NetworkIBModel::update_IB_factors(NetworkAction* action, IBNode* from, IBNode* to, bool remove) const
 {
   if (from == to) // disregard local comms (should use loopback)
     return;

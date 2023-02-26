@@ -47,7 +47,7 @@ public:
   explicit NetworkIBModel(const std::string& name);
   NetworkIBModel(const NetworkIBModel&)            = delete;
   NetworkIBModel& operator=(const NetworkIBModel&) = delete;
-  void update_IB_factors(NetworkAction* action, IBNode* from, IBNode* to, int remove) const;
+  void update_IB_factors(NetworkAction* action, IBNode* from, IBNode* to, bool remove) const;
 
   static void IB_create_host_callback(s4u::Host const& host);
   static void IB_action_state_changed_callback(NetworkAction& action, Action::State /*previous*/);
