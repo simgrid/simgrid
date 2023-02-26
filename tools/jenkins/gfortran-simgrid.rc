@@ -11,7 +11,7 @@ conditions.add("simulation") #to include simgrid compilation
 modules = ['spred',]
 #example of the potentialities of the python syntax in this file
 def env_configuration():
-    return """--host=x86_64-linux-gnu 'FCFLAGS=-O2 -std=legacy -fopenmp -g -fbounds-check -fbacktrace -ffpe-trap=invalid,zero,overflow,denormal -Wall -fPIC' 'CFLAGS=-O2 -fopenmp -fPIC' 'LDFLAGS=-fopenmp -fPIC' --with-mpi3=false"""
+    return """--host=x86_64-linux-gnu 'FCFLAGS=-O2 -std=legacy -fopenmp -g -fbounds-check -fbacktrace -ffpe-trap=invalid,zero,overflow,denormal -Wall -fPIC' 'CFLAGS=-O2 -fopenmp -fPIC' 'LDFLAGS=-fopenmp -fPIC' 'CXXFLAGS=-Wall -O2 -g -fPIC' --with-mpi3=false"""
 
 #the following command sets the environment variable to give these settings
 #to all the modules
