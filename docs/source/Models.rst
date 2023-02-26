@@ -51,6 +51,8 @@ still be correct for most users. `Studies have shown <https://hal.inria.fr/hal-0
 under some conditions, and a :ref:`calibration process<howto_disk>` is provided. As usual, you probably want to
 double-check their predictions through an appropriate validation campaign.
 
+.. _models-lmm:
+
 LMM-based Models
 ****************
 

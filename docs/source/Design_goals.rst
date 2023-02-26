@@ -32,7 +32,8 @@ The design of SimGrid is shaped by several design goals:
    the exact same outcome, even if it runs on another computer or
    operating system. When possible, this should also be true when you
    use another version of SimGrid.
- - **speed**: running a given simulation should be as fast as possible
+ - **sweet spot between accuracy and simulation speed**: running a given simulation should be as fast as possible but predict
+   correct performance trends (or even provide accurate predictions when correctly calibrated).
  - **versatility**: ability to simulate many kinds of distributed systems
    and resource models. But the simulation should be parsimonious too,
    to not hinder the tool's usability. SimGrid tries to provide sane
@@ -68,6 +69,10 @@ rounds, so all events occurring during a given scheduling round occur
 at the exact same simulated timestamp, even if the actors are usually
 executed sequentially on the real platform.
 
+.. image:: img/design-scheduling-simulatedtime.svg
+   :scale: 80%
+   :align: center
+
 To modify their environment, the actors issue either **immediate
 simcalls** that take no time in the simulation (e.g.: spawning another
 actor), or **blocking simcalls** that must wait for future events (e.g.:
@@ -93,16 +98,19 @@ boost's context, or our own hand-tuned implementation, that is written
 in assembly language. This is possible because a given actor is never
 interrupted between consecutive simcalls in SimGrid.
 
-For the sake of performance, actors can be executed in parallel using
-several system threads for non-preemptive contexts. But in our
-experience, this rarely leads to any performance improvement because
-most applications simulated on top of SimGrid are fine-grained: when
-the simulation performance really matters, the users tend to abstract
-away any large computations to efficiently simulate the control flow
-of their application. In addition, parallel simulation puts unpleasant
-restrictions on the user code, that must be correctly isolated. To be
-honest, most of the existing SMPI implementation cannot be used in
-parallel yet.
+.. image:: img/design-scheduling-wallclock.svg
+   :scale: 80%
+   :align: center
+
+For the sake of performance, actors can be executed in parallel using several system threads which execute all user threads in
+turn. But in our experience, this rarely leads to any performance improvement because most applications simulated on top of
+SimGrid are fine-grained: it's often not worth simulating actors in parallel because the amount of work of each actor is too
+small. This is because the users tend to abstract away any large computations to efficiently simulate the control flow of their
+application. In addition, parallel simulation puts unpleasant restrictions on the user code, that must be correctly isolated.
+For example, the existing SMPI implementation cannot be used in parallel yet.
+
+.. image:: img/design-scheduling-parallel.svg
+   :align: center
 
 Parsimonious model versatility
 ******************************
@@ -123,7 +131,7 @@ was extended to represent the fact that the bandwidth provided by a
 wifi link to a given station depends on its signal-noise ratio (SNR).
 
 Further on this line, all provided resource models are very comparable
-internally. They rely on linear inequation systems, stating for
+internally. They :ref:`rely on linear inequation systems <models-lmm>`, stating for
 example that the sum of the computational power received by all
 computation activities located on a given CPU cannot overpass the
 computational power provided by this resource. This extends nicely to
@@ -168,6 +176,5 @@ Reduction (DPOR)
 <https://en.wikipedia.org/wiki/Partial_order_reduction>`_ and `state
 equality <https://hal.inria.fr/hal-01900120/document>`_.
 
-Mc SimGrid is far more experimental than other parts of the framework,
-such as SMPI that can now be used to run many full-featured MPI codes
-out of the box.
+Mc SimGrid is more experimental than other parts of the framework, such as SMPI that can now be used to run many full-featured
+MPI codes out of the box, but it's constently improving.

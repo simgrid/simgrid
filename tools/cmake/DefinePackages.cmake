@@ -793,6 +793,9 @@ set(DOC_SOURCES
   docs/source/_static/css/custom.css
   docs/source/_templates/breadcrumbs.html
 
+  docs/source/img/design-scheduling-parallel.svg
+  docs/source/img/design-scheduling-simulatedtime.svg
+  docs/source/img/design-scheduling-wallclock.svg
   docs/source/img/eclipseScreenShot.png
   docs/source/img/extlink.png
   docs/source/img/extlink.svg

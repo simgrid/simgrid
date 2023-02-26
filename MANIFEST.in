@@ -1676,6 +1676,9 @@ include docs/source/app_smpi.rst
 include docs/source/application.rst
 include docs/source/community.rst
 include docs/source/conf.py
+include docs/source/img/design-scheduling-parallel.svg
+include docs/source/img/design-scheduling-simulatedtime.svg
+include docs/source/img/design-scheduling-wallclock.svg
 include docs/source/img/eclipseScreenShot.png
 include docs/source/img/extlink.png
 include docs/source/img/extlink.svg
