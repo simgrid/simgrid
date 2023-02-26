@@ -10,18 +10,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
-#define AmountProduced 3 /* Amount of items produced by a producer */
-#define AmountConsumed 3 /* Amount of items consumed by a consumer */
-#define ProducerCount 2  /* Amount of producer threads*/
-#define ConsumerCount 2  /* Amount of consumer threads*/
-#define BufferSize 4     /* Size of the buffer */
+int AmountProduced = 3; /* Amount of items produced by a producer */
+int AmountConsumed = 3; /* Amount of items consumed by a consumer */
+int ProducerCount  = 2; /* Amount of producer threads*/
+int ConsumerCount  = 2; /* Amount of consumer threads*/
+int BufferSize     = 4; /* Size of the buffer */
 
 sem_t empty;
 sem_t full;
 int in  = 0;
 int out = 0;
-int buffer[BufferSize];
+int* buffer;
 pthread_mutex_t mutex;
 int do_output = 1;
 
@@ -56,15 +57,39 @@ static void* consumer(void* id)
 
 int main(int argc, char** argv)
 {
-  if (argc == 2 && strcmp(argv[1], "-q") == 0)
-    do_output = 0;
-  pthread_t pro[2];
-  pthread_t con[2];
+  char opt;
+  while ((opt = getopt(argc, argv, "c:C:p:P:q")) != -1) {
+    switch (opt) {
+      case 'q':
+        do_output = 0;
+        break;
+      case 'c':
+        AmountConsumed = atoi(optarg);
+        break;
+      case 'C':
+        ConsumerCount = atoi(optarg);
+        break;
+      case 'p':
+        AmountProduced = atoi(optarg);
+        break;
+      case 'P':
+        ProducerCount = atoi(optarg);
+        break;
+      case '?':
+        printf("unknown option: %c\n", optopt);
+        break;
+    }
+  }
+  pthread_t* pro = malloc(ProducerCount * sizeof(pthread_t));
+  pthread_t* con = malloc(ConsumerCount * sizeof(pthread_t));
+  buffer         = malloc(sizeof(int) * BufferSize);
   pthread_mutex_init(&mutex, NULL);
   sem_init(&empty, 0, BufferSize);
   sem_init(&full, 0, 0);
 
-  int ids[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}; // The identity of each thread (for debug messages)
+  int* ids = malloc(sizeof(int) * ((ProducerCount + ConsumerCount)));
+  for (int i = 0; i < ProducerCount + ConsumerCount; i++)
+    ids[i] = i + 1; // The identity of each thread (for debug messages)
 
   for (int i = 0; i < ProducerCount; i++)
     pthread_create(&pro[i], NULL, producer, &ids[i]);
@@ -79,6 +104,9 @@ int main(int argc, char** argv)
   pthread_mutex_destroy(&mutex);
   sem_destroy(&empty);
   sem_destroy(&full);
+  free(pro);
+  free(con);
+  free(buffer);
 
   return 0;
 }

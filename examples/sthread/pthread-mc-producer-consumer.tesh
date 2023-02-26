@@ -1,7 +1,8 @@
 # We ignore the LD_PRELOAD lines from the expected output because they contain the build path
 ! ignore .*LD_PRELOAD.*
 
-$ ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/pthread-producer-consumer -q
+$ ${bindir:=.}/../../bin/simgrid-mc --cfg=model-check/sleep-set:true --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/pthread-producer-consumer -q -c 2 -C 1 -p 2 -P 1
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/sleep-set' to 'true'
 > [0.000000] [sthread/INFO] Starting the simulation.
 > [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 1819 unique states visited; 108 backtracks (6808 transition replays, 4882 states visited overall)
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 719 unique states visited; 83 backtracks (1854 transition replays, 1053 states visited overall)
