@@ -179,9 +179,6 @@ void ExecImpl::finish()
   if (get_actor() != nullptr)
     get_actor()->activities_.erase(this);
 
-  if (get_state() != State::FAILED && cb_id_ >= 0)
-    s4u::Host::on_state_change.disconnect(cb_id_);
-
   while (not simcalls_.empty()) {
     actor::Simcall* simcall = simcalls_.front();
     simcalls_.pop_front();
