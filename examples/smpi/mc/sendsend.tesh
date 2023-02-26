@@ -9,7 +9,34 @@ $ ../../../smpi_script/bin/smpirun -quiet -wrapper "${bindir:=.}/../../../bin/si
 > rank 0 recv the data
 > rank 1 recv the data
 > Sent 0 to rank 1
-> [0.000000] [mc_dfs/INFO] DFS exploration ended. 7 unique states visited; 2 backtracks (10 transition replays, 2 states visited overall)
+> Sent 1 to rank 0
+> rank 0 recv the data
+> rank 1 recv the data
+> Sent 0 to rank 1
+> Sent 1 to rank 0
+> rank 1 recv the data
+> rank 0 recv the data
+> Sent 1 to rank 0
+> Sent 0 to rank 1
+> rank 0 recv the data
+> rank 1 recv the data
+> Sent 1 to rank 0
+> Sent 0 to rank 1
+> rank 0 recv the data
+> rank 1 recv the data
+> Sent 1 to rank 0
+> Sent 0 to rank 1
+> rank 1 recv the data
+> rank 0 recv the data
+> Sent 1 to rank 0
+> Sent 0 to rank 1
+> rank 0 recv the data
+> rank 1 recv the data
+> Sent 1 to rank 0
+> Sent 0 to rank 1
+> rank 1 recv the data
+> rank 0 recv the data
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 30 unique states visited; 8 backtracks (56 transition replays, 19 states visited overall)
 
 p Testing the paranoid model
 ! timeout 60
@@ -26,6 +53,7 @@ $ ../../../smpi_script/bin/smpirun -quiet -wrapper "${bindir:=.}/../../../bin/si
 > [0.000000] [mc_global/INFO] Counter-example execution trace:
 > [0.000000] [mc_global/INFO]   1: iSend(mbox=2)
 > [0.000000] [mc_global/INFO]   2: iSend(mbox=0)
-> [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;2'
+> [0.000000] [mc_global/INFO]   0: 
+> [0.000000] [mc_Session/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'1;2;0'
 > [0.000000] [mc_dfs/INFO] DFS exploration ended. 3 unique states visited; 1 backtracks (3 transition replays, 0 states visited overall)
 > Execution failed with code 3.

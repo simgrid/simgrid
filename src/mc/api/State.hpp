@@ -42,9 +42,14 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   /** Snapshot of system state (if needed) */
   std::shared_ptr<Snapshot> system_state_;
 
+  /* Sleep sets are composed of the actor and the corresponding transition that made it being added to the sleep
+   * set. With this information, it is check whether it should be removed from it or not when exploring a new
+   * transition */
+  std::map<aid_t, Transition> sleep_set_;
+  
 public:
   explicit State(const RemoteApp& remote_app);
-
+  explicit State(const RemoteApp& remote_app, const State* previous_state);
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   aid_t next_transition() const;
 
@@ -55,7 +60,7 @@ public:
   std::size_t count_todo() const;
   void mark_todo(aid_t actor) { actors_to_run_.at(actor).mark_todo(); }
   void mark_all_enabled_todo();
-  bool is_done(aid_t actor) const { return actors_to_run_.at(actor).is_done(); }
+  bool is_actor_done(aid_t actor) const { return actors_to_run_.at(actor).is_done(); }
   Transition* get_transition() const;
   void set_transition(Transition* t) { transition_ = t; }
   std::map<aid_t, ActorState> const& get_actors_list() const { return actors_to_run_; }
@@ -66,6 +71,9 @@ public:
   Snapshot* get_system_state() const { return system_state_.get(); }
   void set_system_state(std::shared_ptr<Snapshot> state) { system_state_ = std::move(state); }
 
+  std::map<aid_t, Transition> const& get_sleep_set() const { return sleep_set_; }
+  void add_sleep_set(Transition* t) {sleep_set_.insert_or_assign(t->aid_, Transition(t->type_, t->aid_, t->times_considered_)); }
+  
   /* Returns the total amount of states created so far (for statistics) */
   static long get_expanded_states() { return expended_states_; }
 };
