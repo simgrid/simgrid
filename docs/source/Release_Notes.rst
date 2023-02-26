@@ -617,8 +617,10 @@ were removed in this version.
 **On the model checking front**, we are almost done with the ongoing refactoring to ensure that the model-checker don't read
 directly the memory of the application beside checkpoint/restore and state equality. Instead, the network protocol is used to
 retrieve the information, which makes the code much easier to read and understand. We fixed a bug in the DPOR reduction which
-resulted in some failures to be missed by the exploration. We started implementing the UDPOR (Unfoldings DPOR) reduction
-algorithm, and it will certainly be part of the next release.
+resulted in some failures to be missed by the exploration, but our quick fix hindered the reduction quality. As a result, some
+scenarios which could be explored completely earlier (with bugs) are now too large for our (correct) exploration algorithm. We
+should improve DPOR in the next release, possibly implementing the ODPOR variant (Optimal DPOR). Also, we started implementing
+the UDPOR (Unfoldings DPOR) reduction algorithm, also for the next release.
 
 We also extended the sthread module, which allows to intercept simple code that use pthread mutex and semaphores to simulate and
 verify it. You do not even need to recompile your code, as it uses LD_PRELOAD to intercept on the target functions. This module
