@@ -88,15 +88,6 @@ ExecImpl* ExecImpl::start()
     set_start_time(model_action_->get_start_time());
   }
 
-  /* Allow execs to fail if any their host fail (or any of their host for parallel execs) */
-  cb_id_ = s4u::Host::on_state_change.connect([this](s4u::Host const& h) {
-    if (not h.is_on() && get_state() == kernel::activity::State::RUNNING &&
-        std::find(get_hosts().begin(), get_hosts().end(), &h) != get_hosts().end()) {
-      set_state(kernel::activity::State::FAILED);
-      finish();
-    }
-  });
-
   XBT_DEBUG("Create execute synchro %p: %s", this, get_cname());
   return this;
 }

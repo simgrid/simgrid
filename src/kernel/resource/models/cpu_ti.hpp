@@ -107,6 +107,7 @@ public:
   ~CpuTi() override;
 
   CpuImpl* set_speed_profile(profile::Profile* profile) override;
+  void turn_off() override;
 
   void apply_event(profile::Event* event, double value) override;
   void update_actions_finish_time(double now);

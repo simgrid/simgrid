@@ -337,6 +337,16 @@ CpuTi::~CpuTi()
   delete speed_integrated_trace_;
 }
 
+void CpuTi::turn_off()
+{
+  /* Skip CpuImpl::turn_off() that marks the actions as failing, as it seems to be done otherwise in CPU TI.
+   * So, just avoid the segfault for now.
+   *
+   * TODO: a proper solution would be to understand and adapt the way actions are marked FAILED in here,
+   * and adapt it to align with the other resources. */
+  Resource::turn_off();
+}
+
 CpuImpl* CpuTi::set_speed_profile(kernel::profile::Profile* profile)
 {
   delete speed_integrated_trace_;
