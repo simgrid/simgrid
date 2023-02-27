@@ -5,6 +5,9 @@
 
 #include "src/mc/explo/udpor/CompatibilityGraphNode.hpp"
 
+#include <algorithm>
+#include <numeric>
+
 namespace simgrid::mc::udpor {
 
 CompatibilityGraphNode::CompatibilityGraphNode(std::unordered_set<CompatibilityGraphNode*> conflicts, EventSet events_)
