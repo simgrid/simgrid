@@ -1,4 +1,4 @@
-..
+.. _setup_your_own:
 
 Start your Own Project
 ======================

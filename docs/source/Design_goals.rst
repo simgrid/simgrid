@@ -1,3 +1,5 @@
+.. _design:
+
 SimGrid's Design Goals
 ######################
 

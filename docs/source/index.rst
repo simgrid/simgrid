@@ -5,9 +5,9 @@
 The Modern Age of Computer Systems Simulation
 =============================================
 
-SimGrid is a framework to simulate distributed computer systems. It can be used
-to either :ref:`assess abstract algorithms <usecase_simalgo>` or to
-:ref:`debug and profile real MPI applications <usecase_smpi>`.
+SimGrid is a framework to simulate distributed computer systems. It can be used to either :ref:`assess the performance of
+abstract algorithms <usecase_simalgo>`, to :ref:`debug and profile real MPI applications <usecase_smpi>`. To some extend, it can
+also be used to :ref:`formally assess the correctness of simple algorithms and applications <usecase_modelchecking>`.
 
 SimGrid is routinely used in studies on (data-)Grids,
 IaaS Clouds (:ref:`API <API_s4u_VirtualMachine>`, :ref:`examples <s4u_ex_clouds>`),
@@ -22,7 +22,7 @@ The simulation models are **fast** (`🖹 <http://hal.inria.fr/hal-00650233>`__)
 **highly scalable** (`🖹 <http://hal.inria.fr/inria-00602216/>`__) while
 **theoretically sound and experimentally assessed** (`🖹 <http://doi.acm.org/10.1145/2517448>`__).
 Most of the time, SimGrid is used to predict the performance (time and energy) of a
-given IT infrastructure, and it includes a prototype model checker to formally
+given IT infrastructure, and it includes a prototypical model checker to formally
 assess these systems.
 
 Technically speaking, SimGrid is a library. It is neither a graphical

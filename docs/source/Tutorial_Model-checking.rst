@@ -38,6 +38,27 @@ fault-tolerance. It can alleviate the state space explosion problem through `Dyn
 Mc SimGrid is currently less mature than other parts of the framework, but it improves every month. Please report any question and
 issue so that we can further improve it.
 
+Limits
+^^^^^^
+
+The main limit of Model Checking lies in the huge amount of scenarios to explore. SimGrid tries to explore only non-redundant
+scenarios thanks to classical reduction techniques (such as DPOR and stateful exploration) but the exploration may well never
+finish if you don't carefully adapt your application to this mode.
+
+A classical trap is that the Model Checker can only verify whether your application fits the properties provided, which is
+useless if you have a bug in your property. Remember also that one way for your application to never violate a given assertion
+is to not start at all, because of a stupid bug.
+
+Another limit of this mode is that it does not use the performance models of the simulation mode. Time becomes discrete: You can
+say for example that the application took 42 steps to run, but there is no way to know how much time it took or the number of
+watts that were dissipated.
+
+Finally, the model checker only explores the interleavings of computations and communications. Other factors such as thread
+execution interleaving are not considered by the SimGrid model checker.
+
+The model checker may well miss existing issues, as it computes the possible outcomes *from a given initial situation*. There is
+no way to prove the correctness of your application in full generality with this tool.
+
 Getting Mc SimGrid
 ------------------
 
