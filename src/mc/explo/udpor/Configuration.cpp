@@ -233,4 +233,9 @@ Configuration::make_compatibility_graph_filtered_on(std::function<bool(const Unf
   return G;
 }
 
+std::unique_ptr<CompatibilityGraph> Configuration::make_compatibility_graph() const
+{
+  return make_compatibility_graph_filtered_on([=](const UnfoldingEvent*) { return true; });
+}
+
 } // namespace simgrid::mc::udpor

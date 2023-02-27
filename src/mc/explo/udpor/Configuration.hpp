@@ -105,8 +105,7 @@ public:
 
   /**
    * @brief Construct a new compatibility graph from the events of the
-   * configuration whose associated transitions are dependent with the
-   * given action
+   * configuration that satisfy the given predicate
    *
    * @param pred whether or not to even consider the unfolding event in any
    * compatibility nodes of the resulting graph
@@ -115,6 +114,15 @@ public:
    */
   std::unique_ptr<CompatibilityGraph>
   make_compatibility_graph_filtered_on(std::function<bool(const UnfoldingEvent*)> pred) const;
+
+  /**
+   * @brief Construct a new compatibility graph from the events of the
+   * configuration
+   *
+   * @returns a new compatibility graph that defines possible maximal subsets
+   * of events of C
+   */
+  std::unique_ptr<CompatibilityGraph> make_compatibility_graph() const;
 
 private:
   /**

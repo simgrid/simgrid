@@ -300,13 +300,13 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Compli
   UnfoldingEvent e7{&e2, &e8}, e11{&e8};
   UnfoldingEvent e10{&e7}, e9{&e6, &e7};
   UnfoldingEvent e12{&e5, &e9, &e10};
+  Configuration C{&e1, &e2, &e3, &e4, &e5, &e6, &e7, &e8, &e9, &e10, &e11, &e12};
 
   SECTION("Test every combination of the maximal configuration (forward graph)")
   {
     // To test this, we ensure that for the `i`th event
     // in `ordered_events`, each event in `ordered_events[0...<i]
     // is contained in the history of `ordered_events[i]`.
-    Configuration C{&e1, &e2, &e3, &e4, &e5, &e6, &e7, &e8, &e9, &e10, &e11, &e12};
     const auto ordered_events = C.get_topologically_sorted_events();
 
     EventSet events_seen;
@@ -336,7 +336,6 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Compli
     // To test this, we ensure that for the `i`th event
     // in `ordered_events`, no event in `ordered_events[0...<i]
     // is contained in the history of `ordered_events[i]`.
-    Configuration C{&e1, &e2, &e3, &e4, &e5, &e6, &e7, &e8, &e9, &e10, &e11, &e12};
     const auto ordered_events = C.get_topologically_sorted_events_of_reverse_graph();
 
     EventSet events_seen;
