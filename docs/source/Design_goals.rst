@@ -115,38 +115,25 @@ For example, the existing SMPI implementation cannot be used in parallel yet.
 Parsimonious model versatility
 ******************************
 
-Another orthogonal crux of the SimGrid design is the parsimonious
-versatility in modeling. For that, we tend to unify all resource and
-activity kinds. As you have seen, we parallel the classical notion of
-**computational power** with the more original **communication power** and
-**I/O power**. Asynchronous executions are less common than the
-asynchronous communications that proliferate in MPI but they are still
-provided for sake of symmetry: they even prove useful to efficiently
-simulate thread pools. Note that asynchronous mutex locking is still to be
-added to SimGrid atm. The notion of **pstate** was introduced to model
-the stepwise variation of computational speed depending on the DVFS,
-and was reused to model the bootup and shutdown phases of a CPU: the
-computational speed is 0 at these specific pstates. This pstate notion
-was extended to represent the fact that the bandwidth provided by a
-wifi link to a given station depends on its signal-noise ratio (SNR).
+Another orthogonal crux of the SimGrid design is the parsimonious versatility in modeling. For that, we tend to unify all
+resource and activity kinds. As you have seen, we parallel the classical notion of **computational power** with the more
+original **communication power** and **I/O power**. Asynchronous executions are less common than the asynchronous communications
+that proliferate in MPI but they are still provided for sake of symmetry: they even prove useful to efficiently simulate thread
+pools. SimGrid also provides asynchronous mutex locks for symmetry. The notion of **pstate** was introduced to model the
+stepwise variation of computational speed depending on the DVFS, and was reused to model the bootup and shutdown phases of a
+CPU: the computational speed is 0 at these specific pstates. This pstate notion was extended to represent the fact that the
+bandwidth provided by a wifi link to a given station depends on its signal-noise ratio (SNR).
 
-Further on this line, all provided resource models are very comparable
-internally. They :ref:`rely on linear inequation systems <models-lmm>`, stating for
-example that the sum of the computational power received by all
-computation activities located on a given CPU cannot overpass the
-computational power provided by this resource. This extends nicely to
-multi-resources activities such as communications using several links,
-and also to the so-called parallel tasks (abstract activities
-representing a parallel execution kernel consuming both the
-communication and computational power of a set of machines). Specific
-coefficients are added to the linear system to reflect how the real
-resources are shared between concurrent usages. The resulting system
-is then solved using a max-min objective function that maximizes the
-minimum of all shares allocated to activities. Our experience shows
-that this approach can successfully be used for fast yet accurate
-simulations of complex phenomena, provided that the model's
-coefficients and constants are carefully tailored and instantiated to
-that phenomenon.
+Further on this line, all provided resource models are very comparable internally. They :ref:`rely on linear inequation systems
+<models-lmm>`, stating for example that the sum of the computational power received by all computation activities located on a
+given CPU cannot overpass the computational power provided by this resource. This extends nicely to multi-resources activities
+such as communications using several links, and also to the so-called parallel tasks (abstract activities representing a
+parallel execution kernel consuming both the communication and computational power of a set of machines) or fluid I/O streams
+(abstract activities representing a data stream from disk to disk through the network). Specific coefficients are added to the
+linear system to reflect how the real resources are shared between concurrent usages. The resulting system is then solved using
+a max-min objective function that maximizes the minimum of all shares allocated to activities. Our experience shows that this
+approach can successfully be used for fast yet accurate simulations of complex phenomena, provided that the model's coefficients
+and constants are carefully :ref:`calibrated <models_calibration>`, i.e. tailored and instantiated to that phenomenon.
 
 Model-checking
 **************
