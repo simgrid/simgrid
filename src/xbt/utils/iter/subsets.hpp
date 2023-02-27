@@ -15,19 +15,15 @@
 
 namespace simgrid::xbt {
 
-// template <class Iterable> struct LazyPowerSet {
-// };
-
-// template <class Iterable> struct LazyKSubsets {
-// private:
-//   const Iterable& universe;
-
-// public:
-//   LazyKSubsets(const Iterable& universe) : universe(universe) {}
-// };
-
+/**
+ * @brief A higher-order iterator which traverses all possible subsets
+ * of a given fixed size `k` of an iterable sequence
+ *
+ * @class Iterator: The iterator over which this higher-order iterator
+ * generates elements.
+ */
 template <class Iterator> struct subsets_iterator {
-
+  subsets_iterator();
   subsets_iterator(unsigned k);
   subsets_iterator(unsigned k, Iterator begin, Iterator end = Iterator());
 
@@ -37,13 +33,16 @@ template <class Iterator> struct subsets_iterator {
 
   bool operator==(const subsets_iterator<Iterator>& other) const
   {
+    if (this->end == std::nullopt and other.end == std::nullopt) {
+      return true;
+    }
     if (this->k != other.k) {
       return false;
     }
-    if (this->k == 0) {
+    if (this->k == 0) { // this->k == other.k == 0
       return true;
     }
-    return this->P[0] == other.P[0];
+    return this->end != std::nullopt and other.end != std::nullopt and this->P[0] == other.P[0];
   }
   bool operator!=(const subsets_iterator<Iterator>& other) const { return not(this->operator==(other)); }
 
@@ -59,6 +58,8 @@ private:
   std::vector<Iterator> current_subset;
   std::vector<unsigned> P;
 };
+
+template <typename Iterator> subsets_iterator<Iterator>::subsets_iterator() : subsets_iterator<Iterator>(0) {}
 
 template <typename Iterator>
 subsets_iterator<Iterator>::subsets_iterator(unsigned k)
@@ -100,30 +101,46 @@ template <typename Iterator> subsets_iterator<Iterator>& subsets_iterator<Iterat
   const bool shift_other_elements = current_subset[k - 1] == end;
 
   if (shift_other_elements) {
+    if (k == 1) {
+      // We're done in the case that k = 1; here, we've iterated
+      // through the list once which is sufficient
+      this->end = std::nullopt;
+      return *this;
+    }
+
+    // At this point, k >= 2
+
     // The number of elements is now equal to the "index"
     // of the last element (it is at the end, which means we added
-    // for the finalth time)
+    // for the last time)
     const unsigned n = P[k - 1];
 
-    auto l = 0;
-    for (int j = static_cast<int>(k - 2); j >= 0; j--) {
+    unsigned l = 0;
+    for (unsigned j = k - 2; j > 0; j--) {
       if (P[j] != (n - (k - j))) {
         l = j;
         break;
       }
     }
 
-    P[l] += 1;
+    ++P[l];
+    ++current_subset[l];
 
+    // At this point, this means we've sucessfully iterated through
+    // all subsets, so we're done
     if (l == 0 and P[0] > (n - k)) {
+      this->end = std::nullopt;
       return *this;
     }
 
+    // Otherwise, everyone moves over
+
+    auto iter_at_l = current_subset[l];
     for (auto i = l + 1; i <= (k - 1); i++) {
-      P[i] = P[l] + (i - l);
+      P[i]              = P[l] + (i - l);
+      current_subset[i] = ++iter_at_l;
     }
   }
-
   return *this;
 }
 
