@@ -57,8 +57,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::
   if (enC.is_subset_of(D)) {
 
     if (not C.get_events().empty()) {
-
-      // g_var::nb_traces++;
+      // Report information...
     }
 
     // When `en(C)` is empty, intuitively this means that there

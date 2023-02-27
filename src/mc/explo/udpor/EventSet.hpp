@@ -25,7 +25,7 @@ public:
   EventSet& operator=(EventSet&&)      = default;
   EventSet(EventSet&&)                 = default;
   explicit EventSet(Configuration&& config);
-  explicit EventSet(std::unordered_set<UnfoldingEvent*>&& raw_events) : events_(std::move(raw_events)) {}
+  explicit EventSet(std::unordered_set<UnfoldingEvent*>&& raw_events) : events_(raw_events) {}
   explicit EventSet(std::initializer_list<UnfoldingEvent*> event_list) : events_(std::move(event_list)) {}
 
   auto begin() const { return this->events_.begin(); }
@@ -56,7 +56,6 @@ public:
   bool operator==(const EventSet& other) const { return this->events_ == other.events_; }
   bool operator!=(const EventSet& other) const { return this->events_ != other.events_; }
 
-public:
   /**
    * @brief Whether or not this set of events could
    * represent a configuration

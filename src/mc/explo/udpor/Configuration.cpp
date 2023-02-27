@@ -54,7 +54,9 @@ std::vector<UnfoldingEvent*> Configuration::get_topologically_sorted_events() co
 
   std::stack<UnfoldingEvent*> event_stack;
   std::vector<UnfoldingEvent*> topological_ordering;
-  EventSet unknown_events = events_, temporarily_marked_events, permanently_marked_events;
+  EventSet unknown_events = events_;
+  EventSet temporarily_marked_events;
+  EventSet permanently_marked_events;
 
   while (not unknown_events.empty()) {
     EventSet discovered_events;

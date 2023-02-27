@@ -24,7 +24,8 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Constructing Configurations")
   UnfoldingEvent e1;
   UnfoldingEvent e2{&e1};
   UnfoldingEvent e3{&e2};
-  UnfoldingEvent e4{&e3}, e5{&e3};
+  UnfoldingEvent e4{&e3};
+  UnfoldingEvent e5{&e3};
 
   SECTION("Creating a configuration without events")
   {
@@ -191,8 +192,9 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order More Compli
   UnfoldingEvent e1;
   UnfoldingEvent e2{&e1};
   UnfoldingEvent e3{&e2};
-  UnfoldingEvent e4{&e3}, e6{&e3};
+  UnfoldingEvent e4{&e3};
   UnfoldingEvent e5{&e4};
+  UnfoldingEvent e6{&e3};
 
   SECTION("Topological ordering for subsets")
   {
@@ -293,12 +295,16 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Compli
   //         /  /   /
   //         [   e12    ]
   UnfoldingEvent e1;
-  UnfoldingEvent e2{&e1}, e8{&e1};
+  UnfoldingEvent e2{&e1};
+  UnfoldingEvent e8{&e1};
   UnfoldingEvent e3{&e2};
   UnfoldingEvent e4{&e3};
-  UnfoldingEvent e5{&e4}, e6{&e4};
-  UnfoldingEvent e7{&e2, &e8}, e11{&e8};
-  UnfoldingEvent e10{&e7}, e9{&e6, &e7};
+  UnfoldingEvent e5{&e4};
+  UnfoldingEvent e6{&e4};
+  UnfoldingEvent e7{&e2, &e8};
+  UnfoldingEvent e9{&e6, &e7};
+  UnfoldingEvent e10{&e7};
+  UnfoldingEvent e11{&e8};
   UnfoldingEvent e12{&e5, &e9, &e10};
   Configuration C{&e1, &e2, &e3, &e4, &e5, &e6, &e7, &e8, &e9, &e10, &e11, &e12};
 
@@ -307,12 +313,10 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Compli
     // To test this, we ensure that for the `i`th event
     // in `ordered_events`, each event in `ordered_events[0...<i]
     // is contained in the history of `ordered_events[i]`.
+    EventSet events_seen;
     const auto ordered_events = C.get_topologically_sorted_events();
 
-    EventSet events_seen;
-    for (size_t i = 0; i < ordered_events.size(); i++) {
-      UnfoldingEvent* e = ordered_events[i];
-
+    std::for_each(ordered_events.begin(), ordered_events.end(), [&events_seen](UnfoldingEvent* e) {
       History history(e);
       for (auto* e_hist : history) {
         // In this demo, we want to make sure that
@@ -328,7 +332,7 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Compli
         REQUIRE(events_seen.contains(e_hist));
       }
       events_seen.insert(e);
-    }
+    });
   }
 
   SECTION("Test every combination of the maximal configuration (reverse graph)")
@@ -336,11 +340,10 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Compli
     // To test this, we ensure that for the `i`th event
     // in `ordered_events`, no event in `ordered_events[0...<i]
     // is contained in the history of `ordered_events[i]`.
+    EventSet events_seen;
     const auto ordered_events = C.get_topologically_sorted_events_of_reverse_graph();
 
-    EventSet events_seen;
-    for (size_t i = 0; i < ordered_events.size(); i++) {
-      UnfoldingEvent* e = ordered_events[i];
+    std::for_each(ordered_events.begin(), ordered_events.end(), [&events_seen](UnfoldingEvent* e) {
       History history(e);
 
       for (auto* e_hist : history) {
@@ -353,6 +356,6 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Compli
         REQUIRE_FALSE(events_seen.contains(e_hist));
       }
       events_seen.insert(e);
-    }
+    });
   }
 }

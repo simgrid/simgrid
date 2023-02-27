@@ -80,7 +80,7 @@ bool History::contains(const UnfoldingEvent* e) const
 EventSet History::get_event_diff_with(const Configuration& config) const
 {
   auto wrapped_config = std::optional<std::reference_wrapper<const Configuration>>{config};
-  auto first          = Iterator(events_, std::move(wrapped_config));
+  auto first          = Iterator(events_, wrapped_config);
   const auto last     = this->end();
 
   for (; first != last; ++first)

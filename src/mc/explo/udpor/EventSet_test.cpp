@@ -109,7 +109,10 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Insertions")
 
 TEST_CASE("simgrid::mc::udpor::EventSet: Deletions")
 {
-  UnfoldingEvent e1, e2, e3, e4;
+  UnfoldingEvent e1;
+  UnfoldingEvent e2;
+  UnfoldingEvent e3;
+  UnfoldingEvent e4;
   EventSet event_set({&e1, &e2, &e3});
 
   SECTION("Remove an element already present")
@@ -181,7 +184,10 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Deletions")
 
 TEST_CASE("simgrid::mc::udpor::EventSet: Set Equality")
 {
-  UnfoldingEvent e1, e2, e3, e4;
+  UnfoldingEvent e1;
+  UnfoldingEvent e2;
+  UnfoldingEvent e3;
+  UnfoldingEvent e4;
   EventSet A{&e1, &e2, &e3}, B{&e1, &e2, &e3}, C{&e1, &e2, &e3};
 
   SECTION("Equality implies containment")
@@ -515,8 +521,10 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Testing Configurations")
   // in the structure and test whether those subsets are
   // maximal and/or valid configurations
   UnfoldingEvent e1;
-  UnfoldingEvent e2{&e1}, e5{&e1};
-  UnfoldingEvent e3{&e2}, e4{&e2};
+  UnfoldingEvent e2{&e1};
+  UnfoldingEvent e3{&e2};
+  UnfoldingEvent e4{&e2};
+  UnfoldingEvent e5{&e1};
   UnfoldingEvent e6{&e5};
 
   SECTION("Valid Configurations")
