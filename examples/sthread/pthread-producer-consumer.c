@@ -107,6 +107,7 @@ int main(int argc, char** argv)
   free(pro);
   free(con);
   free(buffer);
+  free(ids);
 
   return 0;
 }
