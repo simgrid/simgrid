@@ -274,7 +274,6 @@ set(XBT_SRC
   src/xbt/random.cpp
   src/xbt/snprintf.c
   src/xbt/string.cpp
-  src/xbt/utils/iter/subsets.cpp
   src/xbt/xbt_log_appender_file.cpp
   src/xbt/xbt_log_layout_format.cpp
   src/xbt/xbt_log_layout_simple.cpp
