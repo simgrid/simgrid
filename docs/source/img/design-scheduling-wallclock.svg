@@ -2,8 +2,8 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   width="591.52972"
-   height="51.400616"
+   width="612.39081"
+   height="95.672424"
    id="svg3339"
    version="1.1"
    inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
@@ -22,9 +22,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.585482"
-     inkscape:cx="442.45221"
-     inkscape:cy="38.158744"
+     inkscape:zoom="1.3675787"
+     inkscape:cx="170.0085"
+     inkscape:cy="-16.452435"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -45,7 +45,7 @@
      inkscape:deskcolor="#d1d1d1">
     <sodipodi:guide
        orientation="1,0"
-       position="-471.20391,85.054806"
+       position="-460.45614,129.32661"
        id="guide4460"
        inkscape:locked="false" />
   </sodipodi:namedview>
@@ -594,7 +594,7 @@
      inkscape:label="Calque 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-89.3663,-718.32085)">
+     transform="translate(-78.61853,-718.32085)">
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:14.6667px;line-height:0%;font-family:FreeSans;-inkscape-font-specification:FreeSans;letter-spacing:0px;word-spacing:0px;fill:#999999;fill-opacity:1;stroke:none"
@@ -992,5 +992,23 @@
        id="path4419-43-2"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccccc" />
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:17.3333px;line-height:0%;font-family:FreeSans;-inkscape-font-specification:FreeSans;letter-spacing:0px;word-spacing:0px;fill:#0000ff;fill-opacity:1;stroke:none"
+       x="162.08578"
+       y="784.57434"
+       id="text4707-7-3"><tspan
+         style="font-size:17.3333px;line-height:1.25;fill:#0000ff"
+         sodipodi:role="line"
+         id="tspan4709-0-6-7"
+         x="162.08578"
+         y="784.57434">Figure: Actual execution of each parts (sequential simulation).</tspan></text>
+    <rect
+       style="font-variation-settings:normal;opacity:1;vector-effect:none;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.999999px;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;stop-color:#000000;stop-opacity:1"
+       id="rect711"
+       width="612.39081"
+       height="95.672409"
+       x="78.61853"
+       y="718.32086" />
   </g>
 </svg>

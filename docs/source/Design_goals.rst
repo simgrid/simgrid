@@ -102,7 +102,7 @@ interrupted between consecutive simcalls in SimGrid.
    :scale: 80%
    :align: center
 
-For the sake of performance, actors can be executed in parallel using several system threads which execute all user threads in
+For the sake of performance, actors can be executed in parallel using several system threads which execute all actors in
 turn. But in our experience, this rarely leads to any performance improvement because most applications simulated on top of
 SimGrid are fine-grained: it's often not worth simulating actors in parallel because the amount of work of each actor is too
 small. This is because the users tend to abstract away any large computations to efficiently simulate the control flow of their
@@ -110,6 +110,7 @@ application. In addition, parallel simulation puts unpleasant restrictions on th
 For example, the existing SMPI implementation cannot be used in parallel yet.
 
 .. image:: img/design-scheduling-parallel.svg
+   :scale: 80%
    :align: center
 
 Parsimonious model versatility
