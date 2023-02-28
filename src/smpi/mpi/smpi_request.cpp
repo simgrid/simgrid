@@ -369,7 +369,6 @@ int Request::recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
 {
   MPI_Request request = irecv(buf, count, datatype, src, tag, comm);
   int retval = wait(&request,status);
-  request = nullptr;
   return retval;
 }
 
@@ -382,7 +381,6 @@ void Request::bsend(const void *buf, int count, MPI_Datatype datatype, int dst, 
   if(dst != MPI_PROC_NULL)
    request->start();
   wait(&request, MPI_STATUS_IGNORE);
-  request = nullptr;
 }
 
 void Request::send(const void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
@@ -393,7 +391,6 @@ void Request::send(const void *buf, int count, MPI_Datatype datatype, int dst, i
   if(dst != MPI_PROC_NULL)
    request->start();
   wait(&request, MPI_STATUS_IGNORE);
-  request = nullptr;
 }
 
 void Request::ssend(const void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
@@ -405,7 +402,6 @@ void Request::ssend(const void *buf, int count, MPI_Datatype datatype, int dst, 
   if(dst != MPI_PROC_NULL)
    request->start();
   wait(&request,MPI_STATUS_IGNORE);
-  request = nullptr;
 }
 
 void Request::sendrecv(const void *sendbuf, int sendcount, MPI_Datatype sendtype,int dst, int sendtag,
