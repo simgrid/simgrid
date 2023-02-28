@@ -92,6 +92,9 @@ template <typename Iterator> const std::vector<Iterator>& subsets_iterator<Itera
 
 template <typename Iterator> void subsets_iterator<Iterator>::increment()
 {
+  // If k == 0, there's nothing to do
+  // If end == std::nullopt, we've finished
+  // iterating over all subsets of size `k`
   if (end == std::nullopt || k == 0) {
     return;
   }
@@ -106,7 +109,7 @@ template <typename Iterator> void subsets_iterator<Iterator>::increment()
   if (shift_other_elements) {
     if (k == 1) {
       // We're done in the case that k = 1; here, we've iterated
-      // through the list once which is sufficient
+      // through the list once, which is all that is needed
       this->end = std::nullopt;
       return;
     }
@@ -118,6 +121,19 @@ template <typename Iterator> void subsets_iterator<Iterator>::increment()
     // for the last time)
     const unsigned n = P[k - 1];
 
+    // We're looking to determine
+    //
+    // argmax_{0 <= j <= k - 2}(P[j] != (n - (k - j)))
+    //
+    // If P[j] == (n - (k - j)) for some `j`, that means
+    // the `j`th element of the current subset has moved
+    // "as far as it can move" to the right; in other words,
+    // this is our signal that some element before the `j`th
+    // has to move over
+    //
+    // std::max_element() would work here too, but it seems
+    // overkill to create a vector full of numbers when a simple
+    // range-based for-loop can do the trick
     unsigned l = 0;
     for (unsigned j = k - 2; j > 0; j--) {
       if (P[j] != (n - (k - j))) {
@@ -129,15 +145,17 @@ template <typename Iterator> void subsets_iterator<Iterator>::increment()
     ++P[l];
     ++current_subset[l];
 
-    // At this point, this means we've sucessfully iterated through
-    // all subsets, so we're done
-    if (l == 0 and P[0] > (n - k)) {
+    // Plugging in `j = 0` to the above formula yields
+    // `n - k`, which is the furthest point that the first (i.e. `0th`)
+    // element can be located. Thus, if `P[0] > (n - k)`, this means
+    // we've sucessfully iterated through all subsets so we're done
+    if (P[0] > (n - k)) {
       this->end = std::nullopt;
       return;
     }
 
-    // Otherwise, everyone moves over
-
+    // Otherwise, all elements past element `l` are reset
+    // to follow one after another immediately after `l`
     auto iter_at_l = current_subset[l];
     for (auto i = l + 1; i <= (k - 1); i++) {
       P[i]              = P[l] + (i - l);
