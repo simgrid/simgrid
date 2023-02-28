@@ -10,7 +10,7 @@
 
 namespace simgrid::xbt {
 
-template <class Iterable> class LazyKSubsets<Iterable>;
+template <class Iterable> class LazyKSubsets;
 template <class Iterable> LazyKSubsets<Iterable> make_k_subsets_iter(unsigned k, const Iterable& container);
 
 /**
@@ -27,14 +27,19 @@ template <class Iterable> LazyKSubsets<Iterable> make_k_subsets_iter(unsigned k,
  */
 template <class Iterable> class LazyKSubsets final {
 public:
-  auto begin() const { return subsets_iterator<Iterable::iterator>(k, iterable.begin(), iterable.end()); }
-  auto end() const { return subsets_iterator<Iterable::iterator>(k); }
+  auto begin() const
+  {
+    return subsets_iterator<typename Iterable::const_iterator>(k, iterable.begin(), iterable.end());
+  }
+  auto end() const { return subsets_iterator<typename Iterable::const_iterator>(k); }
 
 private:
   const unsigned k;
   const Iterable& iterable;
   LazyKSubsets(unsigned k, const Iterable& iterable) : k(k), iterable(iterable) {}
-  friend LazyKSubsets<Iterable> make_k_subsets_iter(unsigned k, const Iterable& iterable);
+
+  template <class IterableType>
+  friend LazyKSubsets<IterableType> make_k_subsets_iter(unsigned k, const IterableType& iterable);
 };
 
 template <class Iterable> LazyKSubsets<Iterable> make_k_subsets_iter(unsigned k, const Iterable& container)

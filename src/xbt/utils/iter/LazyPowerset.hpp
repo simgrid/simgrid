@@ -10,7 +10,7 @@
 
 namespace simgrid::xbt {
 
-template <class Iterable> class LazyPowerset<Iterable>;
+template <class Iterable> class LazyPowerset;
 template <class Iterable> LazyPowerset<Iterable> make_powerset_iter(const Iterable& container);
 
 /**
@@ -27,13 +27,13 @@ template <class Iterable> LazyPowerset<Iterable> make_powerset_iter(const Iterab
  */
 template <class Iterable> class LazyPowerset final {
 public:
-  auto begin() const { return powerset_iterator<Iterable::iterator>(iterable.begin(), iterable.end()); }
-  auto end() const { return powerset_iterator<Iterable::iterator>(); }
+  auto begin() const { return powerset_iterator<typename Iterable::const_iterator>(iterable.begin(), iterable.end()); }
+  auto end() const { return powerset_iterator<typename Iterable::const_iterator>(); }
 
 private:
   const Iterable& iterable;
   LazyPowerset(const Iterable& iterable) : iterable(iterable) {}
-  friend LazyPowerset<Iterable> make_powerset_iter(const Iterable& iterable);
+  template <class IterableType> friend LazyPowerset<IterableType> make_powerset_iter(const IterableType& iterable);
 };
 
 template <class Iterable> LazyPowerset<Iterable> make_powerset_iter(const Iterable& container)
