@@ -2520,6 +2520,9 @@ include src/xbt/snprintf.c
 include src/xbt/string.cpp
 include src/xbt/unit-tests_main.cpp
 include src/xbt/utils/iter/subsets.hpp
+include src/xbt/utils/iter/powerset.hpp
+include src/xbt/utils/iter/LazyKSubsets.hpp
+include src/xbt/utils/iter/LazyPowerset.hpp
 include src/xbt/xbt_log_appender_file.cpp
 include src/xbt/xbt_log_layout_format.cpp
 include src/xbt/xbt_log_layout_simple.cpp

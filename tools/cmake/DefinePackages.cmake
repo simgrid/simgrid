@@ -283,6 +283,10 @@ set(XBT_SRC
   src/xbt/xbt_parse_units.cpp
   src/xbt/xbt_replay.cpp
   src/xbt/xbt_str.cpp
+  src/xbt/utils/iter/subsets.hpp
+  src/xbt/utils/iter/powerset.hpp
+  src/xbt/utils/iter/LazyKSubsets.hpp
+  src/xbt/utils/iter/LazyPowerset.hpp
   )
 
 if(HAVE_MMALLOC)
