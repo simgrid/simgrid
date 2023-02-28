@@ -1,5 +1,3 @@
-/* A thread pool (C++ version).                                             */
-
 /* Copyright (c) 2004-2023 The SimGrid Team. All rights reserved.           */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -8,6 +6,7 @@
 #ifndef XBT_UTILS_ITER_SUBSETS_HPP
 #define XBT_UTILS_ITER_SUBSETS_HPP
 
+#include <boost/iterator/iterator_facade.hpp>
 #include <functional>
 #include <numeric>
 #include <optional>
@@ -16,47 +15,32 @@
 namespace simgrid::xbt {
 
 /**
- * @brief A higher-order iterator which traverses all possible subsets
+ * @brief A higher-order forward-iterator which traverses all possible subsets
  * of a given fixed size `k` of an iterable sequence
  *
  * @class Iterator: The iterator over which this higher-order iterator
  * generates elements.
  */
-template <class Iterator> struct subsets_iterator {
+template <class Iterator>
+struct subsets_iterator : public boost::iterator_facade<subsets_iterator<Iterator>, const std::vector<Iterator>,
+                                                        boost::forward_traversal_tag> {
   subsets_iterator();
-  subsets_iterator(unsigned k);
-  subsets_iterator(unsigned k, Iterator begin, Iterator end = Iterator());
-
-  subsets_iterator& operator++();
-  auto operator->() const { return &current_subset; }
-  auto& operator*() const { return current_subset; }
-
-  bool operator==(const subsets_iterator<Iterator>& other) const
-  {
-    if (this->end == std::nullopt and other.end == std::nullopt) {
-      return true;
-    }
-    if (this->k != other.k) {
-      return false;
-    }
-    if (this->k == 0) { // this->k == other.k == 0
-      return true;
-    }
-    return this->end != std::nullopt and other.end != std::nullopt and this->P[0] == other.P[0];
-  }
-  bool operator!=(const subsets_iterator<Iterator>& other) const { return not(this->operator==(other)); }
-
-  using iterator_category = std::forward_iterator_tag;
-  using difference_type   = int; // # of steps between
-  using value_type        = std::vector<Iterator>;
-  using pointer           = value_type*;
-  using reference         = value_type&;
+  explicit subsets_iterator(unsigned k);
+  explicit subsets_iterator(unsigned k, Iterator begin, Iterator end = Iterator());
 
 private:
-  unsigned k;
+  unsigned k; // The size of the subsets generated
   std::optional<Iterator> end = std::nullopt;
   std::vector<Iterator> current_subset;
-  std::vector<unsigned> P;
+  std::vector<unsigned> P; // Increment counts to determine which combinations need to be traversed
+
+  // boost::iterator_facade<...> interface to implement
+  void increment();
+  bool equal(const subsets_iterator<Iterator>& other) const;
+  const std::vector<Iterator>& dereference() const;
+
+  // Allows boost::iterator_facade<...> to function properly
+  friend class boost::iterator_core_access;
 };
 
 template <typename Iterator> subsets_iterator<Iterator>::subsets_iterator() : subsets_iterator<Iterator>(0) {}
@@ -87,10 +71,29 @@ subsets_iterator<Iterator>::subsets_iterator(unsigned k, Iterator begin, Iterato
   std::iota(P.begin(), P.end(), 0);
 }
 
-template <typename Iterator> subsets_iterator<Iterator>& subsets_iterator<Iterator>::operator++()
+template <typename Iterator> bool subsets_iterator<Iterator>::equal(const subsets_iterator<Iterator>& other) const
+{
+  if (this->end == std::nullopt and other.end == std::nullopt) {
+    return true;
+  }
+  if (this->k != other.k) {
+    return false;
+  }
+  if (this->k == 0) { // this->k == other.k == 0
+    return true;
+  }
+  return this->end != std::nullopt and other.end != std::nullopt and this->P[0] == other.P[0];
+}
+
+template <typename Iterator> const std::vector<Iterator>& subsets_iterator<Iterator>::dereference() const
+{
+  return this->current_subset;
+}
+
+template <typename Iterator> void subsets_iterator<Iterator>::increment()
 {
   if (end == std::nullopt || k == 0) {
-    return *this;
+    return;
   }
 
   // Move the last element over each time
@@ -105,7 +108,7 @@ template <typename Iterator> subsets_iterator<Iterator>& subsets_iterator<Iterat
       // We're done in the case that k = 1; here, we've iterated
       // through the list once which is sufficient
       this->end = std::nullopt;
-      return *this;
+      return;
     }
 
     // At this point, k >= 2
@@ -130,7 +133,7 @@ template <typename Iterator> subsets_iterator<Iterator>& subsets_iterator<Iterat
     // all subsets, so we're done
     if (l == 0 and P[0] > (n - k)) {
       this->end = std::nullopt;
-      return *this;
+      return;
     }
 
     // Otherwise, everyone moves over
@@ -141,7 +144,6 @@ template <typename Iterator> subsets_iterator<Iterator>& subsets_iterator<Iterat
       current_subset[i] = ++iter_at_l;
     }
   }
-  return *this;
 }
 
 } // namespace simgrid::xbt
