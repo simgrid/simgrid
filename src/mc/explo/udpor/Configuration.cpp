@@ -6,6 +6,7 @@
 #include "src/mc/explo/udpor/Configuration.hpp"
 #include "src/mc/explo/udpor/History.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
+#include "xbt/asserts.h"
 
 #include <algorithm>
 #include <stack>
@@ -17,7 +18,7 @@ Configuration::Configuration(std::initializer_list<UnfoldingEvent*> events) : Co
 {
 }
 
-Configuration::Configuration(EventSet events) : events_(events)
+Configuration::Configuration(const EventSet& events) : events_(events)
 {
   if (!events_.is_valid_configuration()) {
     throw std::invalid_argument("The events do not form a valid configuration");
@@ -53,7 +54,9 @@ std::vector<UnfoldingEvent*> Configuration::get_topologically_sorted_events() co
 
   std::stack<UnfoldingEvent*> event_stack;
   std::vector<UnfoldingEvent*> topological_ordering;
-  EventSet unknown_events = events_, temporarily_marked_events, permanently_marked_events;
+  EventSet unknown_events = events_;
+  EventSet temporarily_marked_events;
+  EventSet permanently_marked_events;
 
   while (not unknown_events.empty()) {
     EventSet discovered_events;

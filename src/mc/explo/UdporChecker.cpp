@@ -14,9 +14,7 @@ namespace simgrid::mc::udpor {
 
 UdporChecker::UdporChecker(const std::vector<char*>& args) : Exploration(args)
 {
-  /* Create initial data structures, if any ...*/
-
-  // TODO: Initialize state structures for the search
+  // Initialize the map
 }
 
 void UdporChecker::run()
@@ -34,12 +32,13 @@ void UdporChecker::run()
   unfolding.insert(std::move(root_event));
   C_root.add_event(root_event_handle);
 
-  explore(std::move(C_root), EventSet(), EventSet(), std::move(initial_state), EventSet());
+  explore(C_root, EventSet(), EventSet(), std::move(initial_state), EventSet());
 
   XBT_INFO("UDPOR exploration terminated -- model checking completed");
 }
 
-void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::unique_ptr<State> stateC, EventSet prev_exC)
+void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::unique_ptr<State> stateC,
+                           EventSet prev_exC)
 {
   // Perform the incremental computation of exC
   //
@@ -47,7 +46,7 @@ void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::unique_
   // the unfolding, but the naming of the method
   // suggests it is doesn't have side effects. We should
   // reconcile this in the future
-  auto [exC, enC] = compute_extension(C, prev_exC);
+  auto [exC, enC] = compute_extension(C, *stateC, prev_exC);
 
   // If enC is a subset of D, intuitively
   // there aren't any enabled transitions
@@ -56,14 +55,8 @@ void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::unique_
   // "sleep-set blocked" trace.
   if (enC.is_subset_of(D)) {
 
-    if (C.get_events().size() > 0) {
-
-      // g_var::nb_traces++;
-
-      // TODO: Log here correctly
-      // XBT_DEBUG("\n Exploring executions: %d : \n", g_var::nb_traces);
-      // ...
-      // ...
+    if (not C.get_events().empty()) {
+      // Report information...
     }
 
     // When `en(C)` is empty, intuitively this means that there
@@ -105,8 +98,7 @@ void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::unique_
 
   // TODO: Determine a value of K to use or don't use it at all
   constexpr unsigned K = 10;
-  auto J               = compute_partial_alternative(D, C, K);
-  if (!J.empty()) {
+  if (auto J = compute_partial_alternative(D, C, K); !J.empty()) {
     J.subtract(C.get_events());
 
     // Before searching the "right half", we need to make
@@ -126,22 +118,52 @@ void UdporChecker::explore(Configuration C, EventSet D, EventSet A, std::unique_
   clean_up_explore(e, C, D);
 }
 
-std::tuple<EventSet, EventSet> UdporChecker::compute_extension(const Configuration& C, const EventSet& prev_exC) const
+std::tuple<EventSet, EventSet> UdporChecker::compute_extension(const Configuration& C, const State& stateC,
+                                                               const EventSet& prev_exC) const
 {
   // See eqs. 5.7 of section 5.2 of [3]
   // C = C' + {e_cur}, i.e. C' = C - {e_cur}
   //
   // Then
   //
-  // ex(C) = ex(C' + {e_cur}) = ex(C') / {e_cur} + U{<a, > : H }
+  // ex(C) = ex(C' + {e_cur}) = ex(C') / {e_cur} +
+  //    U{<a, K> : K is maximal, `a` depends on all of K, `a` enabled at K }
   UnfoldingEvent* e_cur = C.get_latest_event();
   EventSet exC          = prev_exC;
   exC.remove(e_cur);
 
-  // ... fancy computations
+  for (const auto& [aid, actor_state] : stateC.get_actors_list()) {
+    for (const auto& transition : actor_state.get_enabled_transitions()) {
+      // First check for a specialized function that can compute the extension
+      // set "quickly" based on its type. Otherwise, fall back to computing
+      // the set "by hand"
+      const auto specialized_extension_function = incremental_extension_functions.find(transition->type_);
+      if (specialized_extension_function != incremental_extension_functions.end()) {
+        exC.form_union((specialized_extension_function->second)(C, *transition));
+      } else {
+        exC.form_union(this->compute_extension_by_enumeration(C, *transition));
+      }
+    }
+  }
 
   EventSet enC;
+  // TODO: Compute enC based on conflict relations
+
   return std::tuple<EventSet, EventSet>(exC, enC);
+}
+
+EventSet UdporChecker::compute_extension_by_enumeration(const Configuration& C, const Transition& action) const
+{
+  // Here we're computing the following:
+  //
+  // U{<a, K> : K is maximal, `a` depends on all of K, `a` enabled at K }
+  //
+  // where `a` is the `action` given to us.
+  EventSet incremental_exC;
+
+  // Compute the extension set here using the algorithm Martin described...
+
+  return incremental_exC;
 }
 
 void UdporChecker::move_to_stateCe(State& state, const UnfoldingEvent& e)

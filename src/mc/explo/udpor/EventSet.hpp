@@ -56,7 +56,6 @@ public:
   bool operator==(const EventSet& other) const { return this->events_ == other.events_; }
   bool operator!=(const EventSet& other) const { return this->events_ != other.events_; }
 
-public:
   /**
    * @brief Whether or not this set of events could
    * represent a configuration

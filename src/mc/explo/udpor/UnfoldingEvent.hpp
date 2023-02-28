@@ -18,7 +18,7 @@ namespace simgrid::mc::udpor {
 
 class UnfoldingEvent {
 public:
-  UnfoldingEvent(std::initializer_list<UnfoldingEvent*> init_list);
+  explicit UnfoldingEvent(std::initializer_list<UnfoldingEvent*> init_list);
   UnfoldingEvent(EventSet immediate_causes              = EventSet(),
                  std::shared_ptr<Transition> transition = std::make_unique<Transition>());
 
@@ -38,7 +38,6 @@ public:
 
   bool operator==(const UnfoldingEvent&) const;
 
-private:
   /**
    * @brief The transition that UDPOR "attaches" to this
    * specific event for later use while computing e.g. extension

@@ -131,6 +131,11 @@ public:
                aid_, times_considered);
     this->pending_transitions_[times_considered] = std::move(t);
   }
+
+  const std::vector<std::shared_ptr<Transition>>& get_enabled_transitions() const
+  {
+    return this->pending_transitions_;
+  };
 };
 
 } // namespace simgrid::mc

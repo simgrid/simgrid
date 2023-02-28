@@ -126,6 +126,7 @@ set(UNIT_TESTS  src/xbt/unit-tests_main.cpp
                 src/xbt/dynar_test.cpp
                 src/xbt/random_test.cpp
                 src/xbt/xbt_str_test.cpp
+                src/xbt/utils/iter/subsets_tests.cpp
                 src/kernel/lmm/maxmin_test.cpp)
 
 set(MC_UNIT_TESTS src/mc/sosp/Snapshot_test.cpp 

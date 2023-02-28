@@ -18,9 +18,12 @@ TEST_CASE("simgrid::mc::udpor::History: History generation")
   //  | \  \  /   /
   // e3 e4 e5      e7
   UnfoldingEvent e1;
-  UnfoldingEvent e2{&e1}, e6{&e1};
-  UnfoldingEvent e3{&e2}, e4{&e2};
-  UnfoldingEvent e5{&e2, &e6}, e7{&e6};
+  UnfoldingEvent e2{&e1};
+  UnfoldingEvent e6{&e1};
+  UnfoldingEvent e3{&e2};
+  UnfoldingEvent e4{&e2};
+  UnfoldingEvent e5{&e2, &e6};
+  UnfoldingEvent e7{&e6};
 
   SECTION("History with no events")
   {
