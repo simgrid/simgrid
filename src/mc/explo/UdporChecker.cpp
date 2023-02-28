@@ -5,7 +5,6 @@
 
 #include "src/mc/explo/UdporChecker.hpp"
 #include "src/mc/api/State.hpp"
-#include "src/mc/explo/udpor/CompatibilityGraph.hpp"
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 
@@ -162,19 +161,7 @@ EventSet UdporChecker::compute_extension_by_enumeration(const Configuration& C, 
   // where `a` is the `action` given to us.
   EventSet incremental_exC;
 
-  // We only consider those combinations of events for which `action` is dependent with
-  // the action associated with any given event ("`a` depends on all of K")
-  const std::unique_ptr<CompatibilityGraph> G = C.make_compatibility_graph_filtered_on([=](const UnfoldingEvent* e) {
-    const auto e_transition = e->get_transition();
-    return action.depends(e_transition);
-  });
-
-  // TODO: Now that the graph has been constructed, enumerate
-  // all possible k-cliques of the complement of G
-
-  // TODO: For each enumeration, check all possible
-  // combinations of selecting a single event from
-  // each set associated with the graph nodes
+  // Compute the extension set here using the algorithm Martin described...
 
   return incremental_exC;
 }

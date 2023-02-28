@@ -2231,10 +2231,6 @@ include src/mc/transition/TransitionRandom.cpp
 include src/mc/transition/TransitionRandom.hpp
 include src/mc/transition/TransitionSynchro.cpp
 include src/mc/transition/TransitionSynchro.hpp
-include src/mc/explo/udpor/CompatibilityGraph.hpp
-include src/mc/explo/udpor/CompatibilityGraph.cpp
-include src/mc/explo/udpor/CompatibilityGraphNode.hpp
-include src/mc/explo/udpor/CompatibilityGraphNode.cpp
 include src/mc/explo/udpor/Configuration.hpp
 include src/mc/explo/udpor/Configuration.cpp
 include src/mc/explo/udpor/EventSet.cpp
