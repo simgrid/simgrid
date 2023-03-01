@@ -80,10 +80,6 @@ void smpi_deployment_unregister_process(const std::string& instance_id)
 
 MPI_Comm* smpi_deployment_comm_world(const std::string& instance_id)
 {
-  if (smpi_instances
-          .empty()) { // no instance registered, we probably used smpirun. (FIXME: I guess this never happens for real)
-    return nullptr;
-  }
   Instance& instance = smpi_instances.at(instance_id);
   return &instance.comm_world_;
 }
