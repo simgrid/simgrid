@@ -114,11 +114,12 @@ bool EventSet::is_valid_configuration() const
 {
   /// @invariant: A collection of events `E` is a configuration
   /// if and only if following while following the history of
-  /// each event `e` of `E`you remain in `E`. In other words, you
+  /// each event `e` of `E` you remain in `E`. In other words, you
   /// only see events from set `E`
   ///
-  /// The proof is based on the definition of a configuration
-  /// which requires that all
+  /// The simple proof is based on the definition of a configuration
+  /// which requires that all events have their history contained
+  /// in the set
   const History history(*this);
   return this->contains(history);
 }
