@@ -76,8 +76,10 @@ AppSide* AppSide::initialize()
   xbt_assert(errno == 0 && raise(SIGSTOP) == 0, "Could not wait for the model-checker (errno = %d: %s)", errno,
              strerror(errno));
 
-  s_mc_message_initial_addresses_t message{MessageType::INITIAL_ADDRESSES, mmalloc_get_current_heap(),
-                                           kernel::actor::ActorImpl::get_maxpid_addr()};
+  s_mc_message_initial_addresses_t message = {};
+  message.type                = MessageType::INITIAL_ADDRESSES;
+  message.mmalloc_default_mdp = mmalloc_get_current_heap();
+  message.maxpid              = kernel::actor::ActorImpl::get_maxpid_addr();
   xbt_assert(instance_->channel_.send(message) == 0, "Could not send the initial message with addresses.");
 
   instance_->handle_messages();
@@ -298,7 +300,7 @@ void AppSide::ignore_memory(void* addr, std::size_t size) const
   if (not MC_is_active())
     return;
 
-  s_mc_message_ignore_memory_t message;
+  s_mc_message_ignore_memory_t message = {};
   message.type = MessageType::IGNORE_MEMORY;
   message.addr = (std::uintptr_t)addr;
   message.size = size;
@@ -312,7 +314,7 @@ void AppSide::ignore_heap(void* address, std::size_t size) const
 
   const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
 
-  s_mc_message_ignore_heap_t message;
+  s_mc_message_ignore_heap_t message = {};
   message.type    = MessageType::IGNORE_HEAP;
   message.address = address;
   message.size    = size;
@@ -375,7 +377,7 @@ void AppSide::declare_stack(void* stack, size_t size, ucontext_t* context) const
   region.size    = size;
   region.block   = ((char*)stack - (char*)heap->heapbase) / BLOCKSIZE + 1;
 
-  s_mc_message_stack_region_t message;
+  s_mc_message_stack_region_t message = {};
   message.type         = MessageType::STACK_REGION;
   message.stack_region = region;
   xbt_assert(channel_.send(message) == 0, "Could not send STACK_REGION to model-checker");
