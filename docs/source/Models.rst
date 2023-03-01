@@ -12,86 +12,89 @@
 
 .. _models:
 
-The SimGrid Models
+The SimGrid models
 ##################
 
-This page focuses on the **performance models** that compute the duration of :ref:`every activities <S4U_main_concepts>`
-in the simulator depending on the platform characteristics and on the other activities that are currently sharing the
-resources. If you look for other kind of models (such as routing models or compute model), please refer to :ref:`the
+This page focuses on the **performance models** that compute the duration of :ref:`all activities <S4U_main_concepts>`
+throughout the simulation, based on the platform characteristics and on the other activities that concurrently use the
+resources. If you are looking for information on other kinds of models (such as routing models or compute model), please refer to :ref:`the
 bottom of this page <models_other>`.
 
 Modeled resources
 *****************
 
-The main objective of SimGrid is to provide timing information for three following kind of resources: network, CPU,
-and disk.
+The primary objective of SimGrid is to provide simulated timing information
+for the usage of three kinds of resources: networks, CPUs, and disks.
 
-The **network models** have been improved and regularly assessed for almost 20 years. It should be possible to get
-accurate predictions once you properly :ref:`calibrate the models for your settings<models_calibration>`. As detailed
-in the next sections, SimGrid provides several network models. Two plugins can also be used to compute the network
-energy consumption: One for the :ref:`wired networks<plugin_link_energy>`, and another one for the :ref:`Wi-Fi networks
-<plugin_link_energy>`. Some users find :ref:`TCP simulated performance counter-intuitive<understanding_lv08>` at first
-in SimGrid, sometimes because of a misunderstanding of the TCP behavior in real networks.
+The **network models** have been improved and regularly validated for almost 20 years. It should be possible to get
+accurate simulations once you properly :ref:`calibrate the models for your settings<models_calibration>`. As detailed
+in the next sections, SimGrid provides several network models. Two plugins can also be used to compute the energy
+consumption of the network: one for :ref:`wired networks<plugin_link_energy>` and another one for :ref:`Wi-Fi networks
+<plugin_link_energy>`. Note that at first some users find the way in which SimGrid simulates :ref:`TCP performance<understanding_lv08>` to be
+counter-intuitive; in our experience this is due these users misunderstandings the (complex) behavior
+of TCP in real networks.
 
-The **computing models** are less developed in SimGrid. Through the S4U interface, the user specifies the amount of
+The **CPU models** are less developed in SimGrid. Through the S4U API, the user can specify amounts of
 computational work (expressed in FLOPs, for floating point operations) that each computation "consumes", and the model
-simply divides this amount by the host's FLOP rate to compute the duration of this execution. In SMPI, the user code
+simply divides this amount by a CPU's FLOP rate to compute the duration of the computation 
+(accounting for number of cores and all concurrent computations with a time-sharing model). In SMPI, the user code
 is automatically timed, and the :ref:`computing speed<cfg=smpi/host-speed>` of the host machine is used to evaluate
 the corresponding amount of FLOPs. This model should be sufficient for most users, even though assuming a constant FLOP
-rate for each machine remains a crude simplification. In reality, the flops rate varies because of I/O, memory, and
-cache effects. It is somehow possible to :ref:`overcome this simplification<cfg=smpi/comp-adjustment-file>`, but the
+rate for each machine remains a crude simplification (in reality, the FLOP rate varies because of I/O, memory, and
+cache effects). It is possible to :ref:`overcome this simplification<cfg=smpi/comp-adjustment-file>`, but the
 required calibration process is rather intricate and not documented yet (feel free to
-:ref:`contact the community<community>` on need).
-In the future, more advanced models may be added but the existing model proved good enough for all experiments done on
-distributed applications during the last two decades. The CPU energy consumption can be computed with the
+:ref:`contact the community<community>`).
+In the future, more advanced models may be added but the existing model have proven good enough 
+over the last two decades. The CPU energy consumption can be computed with the
 :ref:`relevant plugin<plugin_host_energy>`.
 
-The **disk models** of SimGrid are more recent than those for the network and computing resources, but they should
-still be correct for most users. `Studies have shown <https://hal.inria.fr/hal-01197128>`_ that they are sensitive
-under some conditions, and a :ref:`calibration process<howto_disk>` is provided. As usual, you probably want to
-double-check their predictions through an appropriate validation campaign.
+The **disk models** in SimGrid have been included more recently than those for networks and CPUs, but they should
+still prove useful to most users. `Studies have shown <https://hal.inria.fr/hal-01197128>`_ that these models are sensitive
+to various conditions, and a :ref:`calibration process<howto_disk>` is provided. As usual, you probably want to
+assess simulation accuracy through an appropriate validation campaign.
 
 .. _models-lmm:
 
 LMM-based Models
 ****************
 
-SimGrid aims at the sweet spot between accuracy and simulation speed. About accuracy, our goal is to report correct
-performance trends when comparing competing designs with a minimal burden on the user, while allowing power users to
-fine tune the simulation models for predictions that are within 5% or less of the results on real machines. For
-example, we determined the `speedup achieved by the Tibidabo ARM-based cluster <http://hal.inria.fr/hal-00919507>`_
-before it was even built. About simulation speed, the tool must be fast and scalable enough to study modern IT systems
-at scale. SimGrid was for example used to simulate `a Chord ring involving millions of actors
-<https://hal.inria.fr/inria-00602216>`_ (even though that has not really been more instructive than smaller scale
-simulations for this protocol), or `a qualification run at full-scale of the Stampede supercomputer
+SimGrid aims at the sweet spot between simulation accuracy and simulation speed. In terms of accuracy, the goal is for simulations
+to report correct
+performance trends when comparing competing designs while placing minimal burden on the user. We also want to allow power users to
+fine tune the simulation models to achieve simulation results that are within 5% or less of what would be observed
+on a real platform. For example, we accurately determined the `speedup achieved by the Tibidabo ARM-based cluster <http://hal.inria.fr/hal-00919507>`_
+before it was even built. In terms of simulation speed, the goal it to be fast and scalable enough to allow the study of modern IT systems
+at scale. SimGrid was, for example, used to simulate `a Chord ring with millions of actors
+<https://hal.inria.fr/inria-00602216>`_ (even though results were not really more instructive than those obtained at smaller scales),
+or `a qualification run at full-scale of the Stampede supercomputer
 <https://hal.inria.fr/hal-02096571>`_.
 
-Most of our models are based on a linear max-min solver (LMM), as depicted below. The actors' activities are
+Most SimGrid models are based on a linear max-min solver (LMM), as depicted below. The actors' activities are
 represented by actions in the simulation kernel, accounting for both the initial amount of work of the corresponding
-activity (in FLOPs for computing activities or bytes for networking and disk activities), and the currently remaining
+activity (in FLOPs for CPU activities or bytes for network and disk activities), and the currently remaining
 amount of work to process.
 
-At each simulation step, the instantaneous computing and communicating capacity of each action is computed according
-to the model. A set of constraints is used to express for example that the accumulated instantaneous consumption of a
-given resource by a set actions must remain smaller than the nominal capacity speed of that resource. In the example
-below, it is stated that the speed :math:`\varrho_1` of activity 1 plus the speed :math:`\varrho_n`
-of activity :math:`n` must remain smaller than the capacity :math:`C_A` of the corresponding host A.
+At each simulation step, the instantaneous speed for each action is computed according
+to the model. A set of constraints is used to express resource capacity constraints, i.e., that the cumulative instantaneous consumption of a
+given resource by a set actions must remain below the nominal capacity of that resource. In the example
+below, it is stated that the compute speed :math:`\varrho_1` of activity 1 plus the compute speed :math:`\varrho_n`
+of activity :math:`n`, which both run on host A, must remain smaller than that host's total compute speed :math:`C_A`.
 
 .. image:: img/lmm-overview.svg
 
-There are obviously many valuations of :math:`\varrho_1, \ldots{}, \varrho_n` that respect such as set of constraints.
-SimGrid usually computes the instantaneous speeds according to a Max-Min objective function, that is maximizing the
+There are many valuations of :math:`\varrho_1, \ldots{}, \varrho_n` that must respect sets of constraints.
+SimGrid usually computes the instantaneous speeds according to a Max-Min objective function, that is, maximizing the
 minimum over all :math:`\varrho_i`. The coefficients associated to each variable in the inequalities are used to model
 some performance effects, such as the fact that TCP tends to favor communications with small RTTs. These coefficients
 are computed from both hard-coded values and :ref:`latency and bandwidth factors<cfg=network/latency-factor>` (more
-details on network performance modeling is given in the next section).
+details on network performance modeling are given in the next section).
 
-Once the instantaneous speeds are computed, the simulation kernel determines what is the earliest terminating action
-from their respective speeds and remaining amounts of work. The simulated time is then updated along with the values
-in the LMM. As some actions have nothing left to do, the corresponding activities thus terminate, which in turn
-unblocks the corresponding actors that can further execute.
+Once the instantaneous speeds are computed for all acttions, the simulation kernel computes the earliest terminating action
+given their respective speeds and remaining amounts of work. The simulated time is then updated along with remaning
+amounts of work. At this point, some actions have no remaining work and are removed from the LMM. The corresponding activities thus terminate, which in turn
+unblocks the corresponding actors that can then continue executing. 
 
-Most of the SimGrid models build upon the LMM solver, that they adapt and configure for their respective usage. For CPU
+Most of the SimGrid models build upon the LMM solver, which they adapt and configure in various ways. For CPU
 and disk activities, the LMM-based models are respectively named **Cas01** and **S19**. The existing network models are
 described in the next section.
 
@@ -100,32 +103,34 @@ described in the next section.
 The TCP models
 **************
 
-SimGrid provides several network performance models which compute the time taken by each communication in isolation.
+SimGrid provides several network performance models that compute the time taken by each communication in isolation.
 **CM02** is the simplest one. It captures TCP windowing effects, but does not introduce any correction factors. This
-model should be used if you prefer understandable results over realistic ones. **LV08** (the default model) uses
+model should be used if you prefer human-understandable results over realistic ones. **LV08** (the default model) uses
 constant factors that are intended to capture common effects such as slow-start, the fact that TCP headers reduce the
 *effective* bandwidth, or TCP's ACK messages. **SMPI** uses more advanced factors that also capture the MPI-specific
 effects such as the switch between the eager vs. rendez-vous communication modes. You can :ref:`choose the
-model <options_model_select>` on command line, and these models can be :ref:`further configured <options_model>`.
+model <options_model_select>` on via command-line arguments, and each model can be :ref:`further configured <options_model>`.
 
-The LMM solver is then used as described above to compute the effect of contention on the communication time that is
-computed by the TCP model. For sake of realism, the sharing on saturated links is not necessarily a fair sharing
+The LMM solver is then used as described above to compute the effect of contention on the communication time when using TCP. 
+For the sake of realism, the sharing on saturated links is not necessarily a fair sharing
 (unless when ``weight-S=0``, in which case the following mechanism is disabled).
-Instead, flows receive an amount of bandwidth somehow inversely proportional to their round trip time. This is modeled
-in the LMM as a priority which depends on the :ref:`weight-S <cfg=network/weight-S>` parameter. More precisely, this
+Instead, flows receive an amount of bandwidth inversely proportional to their round trip time. This is modeled
+in the LMM as a priority that depends on the :ref:`weight-S <cfg=network/weight-S>` parameter. More precisely, this
 priority is computed for each flow as :math:`\displaystyle\sum_{l\in links}\left(Lat(l)+\frac{weightS}{Bandwidth(l)}\right)`, i.e., as the sum of the
-latencies of all links traversed by the communication, plus the sum of `weight-S` over the bandwidth of each link on
-the path. Intuitively, this dependency on the bandwidth of the links somehow accounts for the protocol reactivity.
+latencies of all links traversed by the communication, plus the sum of `weight-S` over the bandwidth of each link along
+the path. This dependency on the link bandwidths is for the model to account for the TCP protocol's reactivity.
 
-Regardless of the used TCP model, the latency is paid beforehand. It is as if the communication only starts after a
-little delay corresponding to the latency. During that time, the communication has no impact on the links (the other
+Regardless of the TCP model in used, the latency is paid beforehand. It is as if the communication only starts after a
+small delay that corresponds to the end-to-end latency. During that time, the communication has no impact on the links (i.e., the other
 communications are not slowed down, because there is no contention yet).
 
-In addition to these LMM-based models, you can use the :ref:`ns-3 simulator as a network model <models_ns3>`. It is much
-more detailed than the pure SimGrid models and thus slower, but it is easier to get more accurate results. Concerning
-the speed, both simulators are linear in the size of their input, but ns-3 has a much larger input in case of large
-steady communications. On the other hand, the SimGrid models must be carefully :ref:`calibrated <models_calibration>` if
-accuracy is really important to your study, while ns-3 models are less demanding with that regard.
+As an alternative to the above LMM-based models, it is possible to use the :ref:`ns-3 simulator as a network model <models_ns3>`. ns-3 performs
+a mushc more detailed, packet-level simulation 
+than the above models. As a result is is much slower but will produce more accurate results. 
+Both simulators have time complexity that is linear in the size of their input, but ns-3 has a much larger input in case of large communications
+because it considers individual network packets. 
+However, the above SimGrid models must be carefully :ref:`calibrated <models_calibration>` if
+achieve very high accuracy is needed, while ns-3 is less demanding in this regard.
 
 .. _understanding_cm02:
 
@@ -133,37 +138,37 @@ CM02
 ====
 
 This is a simple model of TCP performance, where the sender stops sending packets when its TCP window is full. If the
-acknowledgment packets are returned in time to the sender, the TCP window has no impact on the performance that then is
-only limited by the link bandwidth. Otherwise, late acknowledgments will reduce the bandwidth.
+acknowledgment packets are returned in time to the sender, the TCP window has no impact on the performance, which is then
+only limited by link bandwidths. Otherwise, late acknowledgments will reduce the data transfer rate.
 
 SimGrid models this mechanism as follows: :math:`real\_BW = min(physical\_BW, \frac{TCP\_GAMMA}{2\times latency})` The used
-bandwidth is either the physical bandwidth that is configured in the platform, or a value representing the bandwidth
-limit due to late acknowledgments. This value is the maximal TCP window size (noted TCP Gamma in SimGrid) over the
-round-trip time (i.e. twice the one-way latency). The default value of TCP Gamma is 4194304. This can be changed with
+bandwidth is either the physical bandwidth that is configured in the platform, or a value that represents a bandwidth
+limit due to late acknowledgments. This value is the maximal TCP window size (noted TCP Gamma in SimGrid) divided by the
+round-trip time (i.e. twice the one-way latency). The default value of TCP Gamma is 4194304. This value can be changed with
 the :ref:`network/TCP-gamma <cfg=network/TCP-gamma>` configuration item.
 
-If you want to disable this mechanism altogether (to model e.g. UDP or memory movements), you should set TCP-gamma
+If you want to disable this mechanism altogether (e.g.,to model UDP or memory operations), you should set TCP-gamma
 to 0. Otherwise, the time it takes to send 10 Gib of data over a 10 Gib/s link that is otherwise unused is computed as
-follows. This is always given by :math:`latency + \frac{size}{bandwidth}`, but the bandwidth to use may be the physical
-one (10Gb/s) or the one induced by the TCP window, depending on the latency.
+:math:`latency + \frac{size}{bandwidth}`, but the bandwidth in the denominator may be the physical
+one (10Gb/s) or the one induced by the TCP window, depending on the latency:
 
- - If the link latency is 0, the communication obviously takes one second.
+ - If the link latency is 0, the communication, expectedly, takes one second.
  - If the link latency is 0.00001s, :math:`\frac{gamma}{2\times lat}=209,715,200,000 \approx 209Gib/s` which is larger than the
-   physical bandwidth. So the physical bandwidth is used (you fully use the link) and the communication takes 1.00001s
- - If the link latency is 0.001s, :math:`\frac{gamma}{2\times lat}=2,097,152,000 \approx 2Gib/s`, which is smalled than the
-   physical bandwidth. The communication thus fails to fully use the link, and takes about 4.77s.
+   physical bandwidth. So the physical bandwidth is used (the link is fully utilized) and the communication takes 1.00001s
+ - If the link latency is 0.001s, :math:`\frac{gamma}{2\times lat}=2,097,152,000 \approx 2Gib/s`, which is smaller than the
+   physical bandwidth. The communication thus fails to fully utilize the link and takes about 4.77s.
  - With a link latency of 0.1s, :math:`gamma/2\times lat \approx 21Mb/s`, so the communication takes about 476.84 + 0.1 seconds!
- - More cases are tested and enforced by the test ``teshsuite/models/cm02-tcpgamma/cm02-tcpgamma.tesh``
+ - More cases are tested and their validity checked by the test ``teshsuite/models/cm02-tcpgamma/cm02-tcpgamma.tesh`` in our test suite.
 
 For more details, please refer to "A Network Model for Simulation of Grid Application" by Henri Casanova and Loris
-Marchal (published in 2002, thus the model name).
+Marchal (published in 2002, hence the model name).
 
 .. _understanding_lv08:
 
 LV08 (default)
 ==============
 
-This model builds upon CM02 to model TCP windowing (see above). It also introduces corrections factors for further realism:
+This model builds on CM02 to model TCP windowing (see above). It also introduces corrections factors for further realism:
 latency-factor is 13.01, bandwidth-factor is 0.97 while weight-S is 20537. Lets consider the following platform:
 
 .. code-block:: xml
@@ -216,10 +221,10 @@ Arnaud Legrand and Pedro Velho.
 Parallel tasks (L07)
 ********************
 
-This model is rather distinct from the other LMM models because it uses another objective function called *bottleneck*.
-This is because this model is intended to be used for parallel tasks that are actions mixing flops and bytes while the
-Max-Min objective function requires that all variables are expressed using the same unit. This is also why in reality,
-we have one LMM system per resource kind in the simulation, but the idea remains similar.
+This model is rather different from the other LMM models because it uses another objective function, which is called *bottleneck*.
+This is because this model is intended to be used for parallel tasks, that is sets of actions that mix flops and bytes, while the
+Max-Min objective function requires that all variables be expressed using the same unit (which is why in the implementation
+we have one LMM system per resource kind).
 
 Use the :ref:`relevant configuration <options_model_select>` to select this model in your simulation.
 
@@ -231,11 +236,11 @@ WiFi zones
 In SimGrid, WiFi networks are modeled with WiFi zones, where a zone contains the access point of the WiFi network and
 the hosts connected to it (called `stations` in the WiFi world). The network inside a WiFi zone is modeled by declaring
 a single regular link with a specific attribute. This link is then added to the routes to and from the stations within
-this WiFi zone. The main difference of WiFi networks is that their performance is not determined by some link bandwidth
-and latency but by both the access point WiFi characteristics and the distance between that access point and a given
+this WiFi zone. The main difference of WiFi networks, when compared to wired networks, is that performance is not determined by link bandwidths
+and latencies but by both the access point WiFi characteristics and the distance between that access point and a given
 station.
 
-Such WiFi zones can be used with the LMM-based model or ns-3, and are supposed to behave similarly in both cases.
+In SimGrid, WiFi zones can be used with the LMM-based models or the ns-3-based model.
 
 Declaring a WiFi zone
 =====================
@@ -284,15 +289,15 @@ WiFi network performance
 The performance of a wifi network is controlled by the three following properties:
 
  * ``mcs`` (`Modulation and Coding Scheme <https://en.wikipedia.org/wiki/Link_adaptation>`_)
-   is a property of the WiFi zone. Roughly speaking, it defines the speed at which the access point is exchanging data
-   with all the stations. It depends on the access point's model and configuration. Possible values for the MCS can be
+   is a property of the WiFi zone. Roughly speaking, it defines the speed at which the access point exchanges data
+   with all the stations. It depends on the access point's model and configuration. Possible values for mcs can be
    found on Wikipedia for example.
    |br| By default, ``mcs=3``.
  * ``nss`` (Number of Spatial Streams, or `number of antennas <https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Number_of_antennas>`_) is another property of the WiFi zone. It defines the amount of simultaneous data streams that the access
    point can sustain. Not all values of MCS and NSS are valid nor compatible (cf. `802.11n standard <https://en.wikipedia.org/wiki/IEEE_802.11n-2009#Data_rates>`_).
    |br| By default, ``nss=1``.
- * ``wifi_distance`` is the distance from a station to the access point. Each station can have its own specific value.
-   It is thus a property of the stations declared inside the WiFi zone.
+ * ``wifi_distance`` is the distance from a station to the access point. Since each station can have its own specific value
+   it is a property of the stations declared inside the WiFi zone.
    |br| By default, ``wifi_distance=10``.
 
 Here is an example of a zone with non-default ``mcs`` and ``nss`` values.
@@ -317,9 +322,9 @@ Here is an example of setting the ``wifi_distance`` of a given station.
 Constant-time model
 *******************
 
-This simplistic network model is one of the few SimGrid network model that is not based on the LMM solver. In this
+This model is one of the few SimGrid network models that is not based on the LMM solver. In this
 model, all communication take a constant time (one second by default). It provides the lowest level of realism, but is
-marginally faster and much simpler to understand. This model may reveal interesting if you plan to study abstract
+faster and much simpler to understand. This model may prove interesting though if you plan to study abstract
 distributed algorithms such as leader election or causal broadcast.
 
 .. _models_ns3:
@@ -327,21 +332,20 @@ distributed algorithms such as leader election or causal broadcast.
 ns-3 as a SimGrid model
 ***********************
 
-The **ns-3 based model** is the most accurate network model that you can get in SimGrid. It relies on the well-known
-`ns-3 packet-level network simulator <http://www.nsnam.org>`_ to compute every timing information related to the network
-transfers of your simulation. For instance, this may be used to investigate the validity of a simulation. Note that this
-model is much slower than the LMM-based models, because ns-3 simulates the movement of every network packet involved in
-every communication while SimGrid only recomputes the respective instantaneous speeds of the currently ongoing
-communications when one communication starts or stops.
+The **ns-3 based model** is the most accurate network model in SimGrid. It relies on the well-known
+`ns-3 packet-level network simulator <http://www.nsnam.org>`_ to compute full timing information related to network
+transfers. This
+model is much slower than the LMM-based models. This is because ns-3 simulates the movement of every network packet involved in
+every communication, while the LMM-based models only recompute the respective instantaneous speeds of the currently ongoing
+communications when a communication starts or stops.
 
 You need to install ns-3 and recompile SimGrid accordingly to use this model.
 
 The SimGrid/ns-3 binding only contains features that are common to both systems. Not all ns-3 models are available from
 SimGrid (only the TCP and WiFi ones are), while not all SimGrid platform files can be used in conjunction with ns-3
-(routes must be of length 1). Also, the platform built in ns-3 from the SimGrid
+(routes must be of length 1). Note also that the platform built in ns-3 from the SimGrid
 description is very basic. Finally, communicating from a host to
-itself is forbidden in ns-3, so every such communication completes
-immediately upon startup.
+itself is forbidden in ns-3, so every such communication is simulated to take zero time.
 
 
 Compiling the ns-3/SimGrid binding
@@ -367,7 +371,7 @@ your disk.
 
    $ cmake . -Denable_ns3=ON -DNS3_HINT=/opt/ns3 # or change the path if needed
 
-By the end of the configuration, cmake reports whether ns-3 was found,
+cmake will report whether ns-3 was found,
 and this information is also available in ``include/simgrid/config.h``
 If your local copy defines the variable ``SIMGRID_HAVE_NS3`` to 1, then ns-3
 was correctly detected. Otherwise, explore ``CMakeFiles/CMakeOutput.log`` and
@@ -407,7 +411,7 @@ Using ns-3 from SimGrid
 Platform files compatibility
 ----------------------------
 
-Any route longer than one will be ignored when using ns-3. They are
+Any route with more than one hop will be ignored when using ns-3. They are
 harmless, but you still need to connect your hosts using one-hop routes.
 The best solution is to add routers to split your route. Here is an
 example of an invalid platform:
@@ -431,7 +435,7 @@ example of an invalid platform:
      </zone>
    </platform>
 
-This can be reformulated as follows to make it usable with the ns-3 binding.
+This platform file can be reformulated as follows to make it usable with the ns-3 binding.
 There is no direct connection from alice to bob, but that's OK because ns-3
 automatically routes from point to point (using
 ``ns3::Ipv4GlobalRoutingHelper::PopulateRoutingTables``).
@@ -482,7 +486,7 @@ the ns-3 node from any given host with the
 
 Random seed
 -----------
-It is possible to define a fixed or random seed to the ns3 random number generator using the config tag.
+It is possible to define a fixed or random seed for ns-3's random number generator using the config tag.
 
 .. code-block:: xml
 
@@ -495,26 +499,25 @@ It is possible to define a fixed or random seed to the ns3 random number generat
 	...
 	</platform>
 
-The first property defines that this platform will be used with the ns3 model.
-The second property defines the seed that will be used. Defined to ``time``,
-it will use a random seed, defined to a number it will use this number as
-the seed.
+The first property defines that this platform will be used with the ns-3 model.
+The second property defines the seed that will be used. If defined to ``time``, as done above,
+it will use a random seed.
 
 Limitations
 ===========
 
-A ns-3 platform is automatically created from the provided SimGrid
+A ns-3 platform is automatically created based on the provided SimGrid
 platform. However, there are some known caveats:
 
   * The default values (e.g., TCP parameters) are the ns-3 default values.
   * ns-3 networks are routed using the shortest path algorithm, using ``ns3::Ipv4GlobalRoutingHelper::PopulateRoutingTables``.
-  * End hosts cannot have more than one interface card. So, your SimGrid hosts
+  * End hosts cannot have more than one network interface card. So, your SimGrid hosts
     should be connected to the platform through only one link. Otherwise, your
     SimGrid host will be considered as a router (FIXME: is it still true?).
 
 Our goal is to keep the ns-3 plugin of SimGrid as easy (and hopefully readable)
-as possible. If the current state does not fit your needs, you should modify
-this plugin, and/or create your own plugin from the existing one. If you come up
+as possible. If the current state of development does not fit your needs, you can modify
+this plugin and/or create your own plugin based on the current one. If you come up
 with interesting improvements, please contribute them back.
 
 Troubleshooting
@@ -542,8 +545,8 @@ for more details.
 Other kind of models
 ********************
 
-As for any simulator, models are very important components of the SimGrid toolkit. Several kind of models are used in
-SimGrid beyond the performance models described above:
+Models are key components of SimGrid, as they should be for any simulation framework, and beyond the above performance models
+SimGrid employs other models:
 
 The **routing models** constitute advanced elements of the platform description. This description naturally entails
 :ref:`components<platform>` that are very related to the performance models. For instance, determining the execution
