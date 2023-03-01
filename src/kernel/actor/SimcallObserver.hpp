@@ -146,10 +146,10 @@ public:
 /* Semi private template used by the to_string methods of various observer classes */
 template <typename A> static std::string ptr_to_id(A* ptr)
 {
-  static std::unordered_map<A*, std::string> map;
+  static std::unordered_map<A*, std::string> map({{nullptr, "-"}});
   auto [elm, inserted] = map.try_emplace(ptr);
   if (inserted)
-    elm->second = std::to_string(map.size());
+    elm->second = std::to_string(map.size() - 1);
   return elm->second;
 }
 
