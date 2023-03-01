@@ -23,7 +23,6 @@
 #include <cerrno>
 #include <cstdio> // setvbuf
 #include <cstdlib>
-#include <cstring>
 #include <memory>
 #include <numeric>
 #include <sys/ptrace.h>
@@ -115,8 +114,7 @@ void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* messa
   xbt_assert(channel_.send(MessageType::WAITING) == 0, "Could not send MESSAGE_WAITING to model-checker");
 
   // Finish the RPC from the server: return a serialized observer, to build a Transition on Checker side
-  s_mc_message_simcall_execute_answer_t answer;
-  memset(&answer, 0, sizeof(answer));
+  s_mc_message_simcall_execute_answer_t answer = {};
   answer.type = MessageType::SIMCALL_EXECUTE_ANSWER;
   std::stringstream stream;
   if (actor->simcall_.observer_ != nullptr) {
@@ -347,8 +345,7 @@ void AppSide::declare_symbol(const char* name, int* value) const
   if (not MC_is_active())
     return;
 
-  s_mc_message_register_symbol_t message;
-  memset(&message, 0, sizeof(message));
+  s_mc_message_register_symbol_t message = {};
   message.type = MessageType::REGISTER_SYMBOL;
   xbt_assert(strlen(name) + 1 <= message.name.size(), "Symbol is too long");
   strncpy(message.name.data(), name, message.name.size() - 1);
@@ -370,8 +367,7 @@ void AppSide::declare_stack(void* stack, size_t size, ucontext_t* context) const
 
   const s_xbt_mheap_t* heap = mmalloc_get_current_heap();
 
-  s_stack_region_t region;
-  memset(&region, 0, sizeof(region));
+  s_stack_region_t region = {};
   region.address = stack;
   region.context = context;
   region.size    = size;

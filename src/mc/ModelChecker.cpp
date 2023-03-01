@@ -326,8 +326,7 @@ void ModelChecker::wait_for_requests()
 
 Transition* ModelChecker::handle_simcall(aid_t aid, int times_considered, bool new_transition)
 {
-  s_mc_message_simcall_execute_t m;
-  memset(&m, 0, sizeof(m));
+  s_mc_message_simcall_execute_t m = {};
   m.type              = MessageType::SIMCALL_EXECUTE;
   m.aid_              = aid;
   m.times_considered_ = times_considered;
@@ -355,8 +354,7 @@ Transition* ModelChecker::handle_simcall(aid_t aid, int times_considered, bool n
 
 void ModelChecker::finalize_app(bool terminate_asap)
 {
-  s_mc_message_int_t m;
-  memset(&m, 0, sizeof m);
+  s_mc_message_int_t m = {};
   m.type  = MessageType::FINALIZE;
   m.value = terminate_asap;
   xbt_assert(checker_side_.get_channel().send(m) == 0, "Could not ask the app to finalize on need");

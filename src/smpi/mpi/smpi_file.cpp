@@ -59,10 +59,9 @@ File::File(MPI_Comm comm, const char* filename, int amode, MPI_Info info) : comm
   atomicity_ = true;
   if (comm_->rank() == 0) {
     int size    = comm_->size() + FP_SIZE;
-    list_       = new char[size];
+    list_       = new char[size]();
     errhandler_ = SMPI_default_File_Errhandler;
     errhandler_->ref();
-    memset(list_, 0, size);
     shared_file_pointer_  = new MPI_Offset();
     shared_mutex_         = s4u::Mutex::create();
     *shared_file_pointer_ = 0;
