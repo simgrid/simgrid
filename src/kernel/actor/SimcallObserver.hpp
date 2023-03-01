@@ -147,9 +147,10 @@ public:
 template <typename A> static std::string ptr_to_id(A* ptr)
 {
   static std::unordered_map<A*, std::string> map;
-  if (map.find(ptr) == map.end())
-    map.insert(std::make_pair(ptr, std::to_string(map.size() + 1)));
-  return map[ptr];
+  auto [elm, inserted] = map.try_emplace(ptr);
+  if (inserted)
+    elm->second = std::to_string(map.size());
+  return elm->second;
 }
 
 } // namespace simgrid::kernel::actor
