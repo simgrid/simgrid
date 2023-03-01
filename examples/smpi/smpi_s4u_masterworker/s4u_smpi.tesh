@@ -4,21 +4,21 @@ $ ./masterworker_mailbox_smpi ${srcdir:=.}/../../platforms/small_platform_with_r
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/simulate-computation' to 'no'
 > [0.000000] [smpi_config/INFO] You did not set the power of the host running the simulation.  The timings will certainly not be accurate.  Use the option "--cfg=smpi/host-speed:<flops>" to set its value.  Check https://simgrid.org/doc/latest/Configuring_SimGrid.html#automatic-benchmarking-of-smpi-code for more information.
 > [11.586581] [smpi_masterworkers/INFO] Simulation time 11.5866
-> [Bourassa:alltoall_mpi:(7) 0.000000] [smpi_masterworkers/INFO] alltoall for rank 1
-> [Bourassa:alltoall_mpi:(7) 0.047272] [smpi_masterworkers/INFO] after alltoall 1
+> [Bourassa:alltoall_mpi#1:(7) 0.000000] [smpi_masterworkers/INFO] alltoall for rank 1
+> [Bourassa:alltoall_mpi#1:(7) 0.047272] [smpi_masterworkers/INFO] after alltoall 1
 > [Bourassa:master_mpi:(5) 0.000000] [smpi_masterworkers/INFO] here for rank 1
 > [Bourassa:master_mpi:(5) 0.017245] [smpi_masterworkers/INFO] After comm 1
 > [Bourassa:master_mpi:(5) 0.017245] [smpi_masterworkers/INFO] After finalize 1 0
-> [Fafard:alltoall_mpi:(9) 0.000000] [smpi_masterworkers/INFO] alltoall for rank 3
-> [Fafard:alltoall_mpi:(9) 0.047582] [smpi_masterworkers/INFO] after alltoall 3
-> [Ginette:alltoall_mpi:(6) 0.000000] [smpi_masterworkers/INFO] alltoall for rank 0
-> [Ginette:alltoall_mpi:(6) 0.037258] [smpi_masterworkers/INFO] after alltoall 0
+> [Fafard:alltoall_mpi#3:(9) 0.000000] [smpi_masterworkers/INFO] alltoall for rank 3
+> [Fafard:alltoall_mpi#3:(9) 0.047582] [smpi_masterworkers/INFO] after alltoall 3
+> [Ginette:alltoall_mpi#0:(6) 0.000000] [smpi_masterworkers/INFO] alltoall for rank 0
+> [Ginette:alltoall_mpi#0:(6) 0.037258] [smpi_masterworkers/INFO] after alltoall 0
 > [Ginette:master_mpi:(4) 0.000000] [smpi_masterworkers/INFO] After comm 0
 > [Ginette:master_mpi:(4) 0.000000] [smpi_masterworkers/INFO] After finalize 0 0
 > [Ginette:master_mpi:(4) 0.000000] [smpi_masterworkers/INFO] here for rank 0
 > [Ginette:worker:(2) 11.567566] [smpi_masterworkers/INFO] Exiting now.
-> [Jupiter:alltoall_mpi:(8) 0.000000] [smpi_masterworkers/INFO] alltoall for rank 2
-> [Jupiter:alltoall_mpi:(8) 0.047582] [smpi_masterworkers/INFO] after alltoall 2
+> [Jupiter:alltoall_mpi#2:(8) 0.000000] [smpi_masterworkers/INFO] alltoall for rank 2
+> [Jupiter:alltoall_mpi#2:(8) 0.047582] [smpi_masterworkers/INFO] after alltoall 2
 > [Jupiter:worker:(3) 11.586581] [smpi_masterworkers/INFO] Exiting now.
 > [Tremblay:master:(1) 0.000000] [smpi_masterworkers/INFO] Got 2 workers and 20 tasks to process
 > [Tremblay:master:(1) 0.000000] [smpi_masterworkers/INFO] Sending task 0 of 20 to mailbox 'Ginette'

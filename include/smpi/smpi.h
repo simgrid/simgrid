@@ -1232,8 +1232,17 @@ XBT_PUBLIC void SMPI_thread_create();
 
 SG_END_DECL
 
-/* C++ declarations for shared_malloc and default copy buffer callback */
 #ifdef __cplusplus
+XBT_PUBLIC void SMPI_app_instance_start(const char* name, std::function<void()> const& code,
+                                        std::vector<simgrid::s4u::Host*> const& hosts);
+
+/* This version without parameter is nice to use with SMPI_app_instance_start() */
+static void MPI_Init()
+{
+  MPI_Init(nullptr, nullptr);
+}
+
+/* C++ declarations for shared_malloc and default copy buffer callback */
 XBT_PUBLIC int smpi_is_shared(const void* ptr, std::vector<std::pair<size_t, size_t>>& private_blocks, size_t* offset);
 
 std::vector<std::pair<size_t, size_t>> shift_and_frame_private_blocks(const std::vector<std::pair<size_t, size_t>>& vec,

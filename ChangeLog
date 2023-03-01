@@ -26,6 +26,7 @@ Kernel:
 MPI:
  - New option smpi/barrier-collectives to add a barrier to some collectives
    to detect dangerous code that /may/ work on some MPI implems.
+ - New function SMPI_app_instance_start() to easily start a MPI instance in your S4U simulation.
 
 Models:
  - Write the section of the manual about models, at least.

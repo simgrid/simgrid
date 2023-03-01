@@ -21,20 +21,4 @@
     <prop id="instance_id" value="master_mpi"/>
     <prop id="rank" value="1"/>
   </actor>
-  <actor host="Ginette" function="alltoall_mpi">
-    <prop id="instance_id" value="alltoall_mpi"/>
-    <prop id="rank" value="0"/>
-  </actor>
-  <actor host="Bourassa" function="alltoall_mpi">
-    <prop id="instance_id" value="alltoall_mpi"/>
-    <prop id="rank" value="1"/>
-  </actor>
-  <actor host="Jupiter" function="alltoall_mpi">
-    <prop id="instance_id" value="alltoall_mpi"/>
-    <prop id="rank" value="2"/>
-  </actor>
-  <actor host="Fafard" function="alltoall_mpi">
-    <prop id="instance_id" value="alltoall_mpi"/>
-    <prop id="rank" value="3"/>
-  </actor>
 </platform>

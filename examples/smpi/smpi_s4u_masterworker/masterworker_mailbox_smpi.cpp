@@ -80,9 +80,9 @@ static void master_mpi(int argc, char* argv[])
   XBT_INFO("After finalize %d %d", rank, test[0]);
 }
 
-static void alltoall_mpi(int argc, char* argv[])
+static void alltoall_mpi()
 {
-  MPI_Init(&argc, &argv);
+  MPI_Init();
 
   int rank;
   int size;
@@ -114,9 +114,12 @@ int main(int argc, char* argv[])
   e.register_function("worker", worker);
   // launch two MPI applications as well, one using master_mpi function as main on 2 nodes
   SMPI_app_instance_register("master_mpi", master_mpi, 2);
-  // the second performing an alltoall on 4 nodes
-  SMPI_app_instance_register("alltoall_mpi", alltoall_mpi, 4);
   e.load_deployment(argv[2]);
+  // the second performing an alltoall on 4 nodes, started directly, not from the deployment file
+  auto all_hosts = e.get_all_hosts();
+  SMPI_app_instance_start("alltoall_mpi", alltoall_mpi,
+                          {e.host_by_name_or_null("Ginette"), e.host_by_name_or_null("Bourassa"),
+                           e.host_by_name_or_null("Jupiter"), e.host_by_name_or_null("Fafard")});
 
   e.run();
 
