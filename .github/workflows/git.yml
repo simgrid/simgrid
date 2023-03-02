@@ -1,0 +1,85 @@
+name: Git build on various OS and setups
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+# Only trigger manually
+#######################
+# on:
+#   workflow_dispatch:
+#   # Rebuild when changing the stable branch
+#   push:
+#       branches:
+#             - master
+
+jobs:
+  simgrid-regular-debian11:
+
+    runs-on: debian:11
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: build
+        run: |
+          cmake -GNinja -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
+                -Denable_compile_optimizations=ON -Denable_compile_warnings=ON \
+                -Denable_model-checking=OFF -Denable_smpi_MBI_testsuite=OFF \
+                -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON \
+                -Denable_ns3=ON \
+                -DCMAKE_DISABLE_SOURCE_CHANGES=ON  -DLTO_EXTRA_FLAG="auto"
+          ninja tests VERBOSE=1
+	  ctest --output-on-verbose
+      - name: Create the failure Message
+        if: ${{ failure() }}
+        run: |
+          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"Failure when building STABLE docker image v3.$ver! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+      - name: Create the success Message
+        if: ${{ success() }}
+        run: |
+          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"Docker STABLE image v3.$ver built and pushed successfully! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+      - uses: mattermost/action-mattermost-notify@master
+        env:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
+
+  simgrid-modelchecker-debian11:
+
+    runs-on: debian:11
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: build
+        run: |
+          cmake -GNinja -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
+                -Denable_compile_optimizations=ON -Denable_compile_warnings=ON \
+                -Denable_model-checking=ON -Denable_smpi_MBI_testsuite=OFF \
+                -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF \
+                -Denable_ns3=OFF \
+                -DCMAKE_DISABLE_SOURCE_CHANGES=ON  -DLTO_EXTRA_FLAG="auto"
+          ninja tests VERBOSE=1
+	  ctest --output-on-verbose
+      - name: Create the failure Message
+        if: ${{ failure() }}
+        run: |
+          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"Failure when building STABLE docker image v3.$ver! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+      - name: Create the success Message
+        if: ${{ success() }}
+        run: |
+          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"Docker STABLE image v3.$ver built and pushed successfully! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+      - uses: mattermost/action-mattermost-notify@master
+        env:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
+
