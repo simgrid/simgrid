@@ -9,7 +9,7 @@ name: Git builds
 on: workflow_dispatch
 
 jobs:
-  simgrid-regular:
+  simgrid-regular-ubuntu:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -28,7 +28,7 @@ jobs:
                 -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON \
                 -Denable_ns3=ON \
                 -DCMAKE_DISABLE_SOURCE_CHANGES=ON  -DLTO_EXTRA_FLAG="auto"
-          ninja tests VERBOSE=1
+          ninja tests
           ctest --output-on-verbose
       - name: Create the failure Message
         if: ${{ failure() }}
@@ -63,7 +63,7 @@ jobs:
                 -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF \
                 -Denable_ns3=OFF \
                 -DCMAKE_DISABLE_SOURCE_CHANGES=ON  -DLTO_EXTRA_FLAG="auto"
-          ninja tests VERBOSE=1
+          ninja tests
           ctest --output-on-verbose
       - name: Create the failure Message
         if: ${{ failure() }}
