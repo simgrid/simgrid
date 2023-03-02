@@ -118,7 +118,7 @@ void DFSExplorer::run()
     // Backtrack if we are revisiting a state we saw previously
     if (visited_state_ != nullptr) {
       XBT_DEBUG("State already visited (equal to state %ld), exploration stopped on this path.",
-                visited_state_->original_num == -1 ? visited_state_->num : visited_state_->original_num);
+                visited_state_->original_num_ == -1 ? visited_state_->num_ : visited_state_->original_num_);
 
       visited_state_ = nullptr;
       this->backtrack();
@@ -195,8 +195,8 @@ void DFSExplorer::run()
                                    state->get_transition()->dot_string().c_str());
     } else
       mc_model_checker->dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(),
-                                   visited_state_->original_num == -1 ? visited_state_->num
-                                                                      : visited_state_->original_num,
+                                   visited_state_->original_num_ == -1 ? visited_state_->num_
+                                                                       : visited_state_->original_num_,
                                    state->get_transition()->dot_string().c_str());
 
     stack_.push_back(std::move(next_state));

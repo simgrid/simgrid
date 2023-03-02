@@ -19,10 +19,10 @@ namespace simgrid::mc {
 
 /** @brief Save the current state */
 VisitedState::VisitedState(unsigned long state_number, unsigned int actor_count)
-    : actor_count_(actor_count), num(state_number)
+    : actor_count_(actor_count), num_(state_number)
 {
-  this->heap_bytes_used = mc_model_checker->get_remote_process().get_remote_heap_bytes();
-  this->system_state = std::make_shared<simgrid::mc::Snapshot>(state_number);
+  this->heap_bytes_used_ = mc_model_checker->get_remote_process().get_remote_heap_bytes();
+  this->system_state_    = std::make_shared<simgrid::mc::Snapshot>(state_number);
 }
 
 void VisitedStates::prune()
@@ -31,7 +31,7 @@ void VisitedStates::prune()
     XBT_DEBUG("Try to remove visited state (maximum number of stored states reached)");
     auto min_element = boost::range::min_element(
         states_, [](const std::unique_ptr<simgrid::mc::VisitedState>& a,
-                    const std::unique_ptr<simgrid::mc::VisitedState>& b) { return a->num < b->num; });
+                    const std::unique_ptr<simgrid::mc::VisitedState>& b) { return a->num_ < b->num_; });
     xbt_assert(min_element != states_.end());
     // and drop it:
     states_.erase(min_element);
@@ -44,40 +44,40 @@ std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(unsign
                                                                           simgrid::mc::State* graph_state)
 {
   auto new_state = std::make_unique<simgrid::mc::VisitedState>(state_number, graph_state->get_actor_count());
-  graph_state->set_system_state(new_state->system_state);
-  XBT_DEBUG("Snapshot %p of visited state %ld (exploration stack state %ld)", new_state->system_state.get(),
-            new_state->num, graph_state->get_num());
+  graph_state->set_system_state(new_state->system_state_);
+  XBT_DEBUG("Snapshot %p of visited state %ld (exploration stack state %ld)", new_state->system_state_.get(),
+            new_state->num_, graph_state->get_num());
 
   auto [range_begin, range_end] = boost::range::equal_range(states_, new_state.get(), [](auto const& a, auto const& b) {
-    return std::make_pair(a->actor_count_, a->heap_bytes_used) < std::make_pair(b->actor_count_, b->heap_bytes_used);
+    return std::make_pair(a->actor_count_, a->heap_bytes_used_) < std::make_pair(b->actor_count_, b->heap_bytes_used_);
   });
 
   for (auto i = range_begin; i != range_end; ++i) {
     auto& visited_state = *i;
-    if (*visited_state->system_state.get() == *new_state->system_state.get()) {
+    if (*visited_state->system_state_.get() == *new_state->system_state_.get()) {
       // The state has been visited:
 
       std::unique_ptr<simgrid::mc::VisitedState> old_state = std::move(visited_state);
 
-      if (old_state->original_num == -1) // I'm the copy of an original process
-        new_state->original_num = old_state->num;
+      if (old_state->original_num_ == -1) // I'm the copy of an original process
+        new_state->original_num_ = old_state->num_;
       else // I'm the copy of a copy
-        new_state->original_num = old_state->original_num;
+        new_state->original_num_ = old_state->original_num_;
 
-      XBT_DEBUG("State %ld already visited ! (equal to state %ld (state %ld in dot_output))", new_state->num,
-                old_state->num, new_state->original_num);
+      XBT_DEBUG("State %ld already visited ! (equal to state %ld (state %ld in dot_output))", new_state->num_,
+                old_state->num_, new_state->original_num_);
 
       /* Replace the old state with the new one (with a bigger num)
           (when the max number of visited states is reached,  the oldest
           one is removed according to its number (= with the min number) */
-      XBT_DEBUG("Replace visited state %ld with the new visited state %ld", old_state->num, new_state->num);
+      XBT_DEBUG("Replace visited state %ld with the new visited state %ld", old_state->num_, new_state->num_);
 
       visited_state = std::move(new_state);
       return old_state;
     }
   }
 
-  XBT_DEBUG("Insert new visited state %ld (total : %lu)", new_state->num, (unsigned long)states_.size());
+  XBT_DEBUG("Insert new visited state %ld (total : %lu)", new_state->num_, (unsigned long)states_.size());
   states_.insert(range_begin, std::move(new_state));
   this->prune();
   return nullptr;

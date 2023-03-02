@@ -16,11 +16,11 @@ namespace simgrid::mc {
 
 class XBT_PRIVATE VisitedState {
 public:
-  std::shared_ptr<simgrid::mc::Snapshot> system_state = nullptr;
-  std::size_t heap_bytes_used = 0;
+  std::shared_ptr<simgrid::mc::Snapshot> system_state_ = nullptr;
+  std::size_t heap_bytes_used_                         = 0;
   int actor_count_;
-  long num;               // unique id of that state in the storage of all stored IDs
-  long original_num = -1; // num field of the VisitedState to which I was declared equal to (used for dot_output)
+  long num_;               // unique id of that state in the storage of all stored IDs
+  long original_num_ = -1; // num field of the VisitedState to which I was declared equal to (used for dot_output)
 
   explicit VisitedState(unsigned long state_number, unsigned int actor_count);
 };
