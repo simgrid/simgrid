@@ -57,9 +57,9 @@ public:
   }
 
 private:
-  using topological_order_position = std::vector<UnfoldingEvent*>::const_iterator;
+  using topological_order_position = std::vector<const UnfoldingEvent*>::const_iterator;
   const std::optional<std::reference_wrapper<const Configuration>> config;
-  const std::vector<UnfoldingEvent*> topological_ordering;
+  const std::vector<const UnfoldingEvent*> topological_ordering;
   const std::optional<node_filter_function> filter;
 
   EventSet current_maximal_set = EventSet();
@@ -78,19 +78,19 @@ private:
   struct bookkeeper {
   private:
     using topological_order_position = maximal_subsets_iterator::topological_order_position;
-    std::unordered_map<UnfoldingEvent*, unsigned> event_counts;
+    std::unordered_map<const UnfoldingEvent*, unsigned> event_counts;
 
-    bool is_candidate_event(UnfoldingEvent*) const;
+    bool is_candidate_event(const UnfoldingEvent*) const;
 
   public:
-    void mark_included_in_maximal_set(UnfoldingEvent*);
-    void mark_removed_from_maximal_set(UnfoldingEvent*);
+    void mark_included_in_maximal_set(const UnfoldingEvent*);
+    void mark_removed_from_maximal_set(const UnfoldingEvent*);
 
     topological_order_position find_next_event(topological_order_position first, topological_order_position last) const;
   } bookkeeper;
 
-  void add_element_to_current_maximal_set(UnfoldingEvent*);
-  void remove_element_from_current_maximal_set(UnfoldingEvent*);
+  void add_element_to_current_maximal_set(const UnfoldingEvent*);
+  void remove_element_from_current_maximal_set(const UnfoldingEvent*);
 
   // boost::iterator_facade<...> interface to implement
   void increment();

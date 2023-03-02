@@ -73,7 +73,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::
 
   // TODO: Add verbose logging about which event is being explored
 
-  UnfoldingEvent* e = select_next_unfolding_event(A, enC);
+  const UnfoldingEvent* e = select_next_unfolding_event(A, enC);
   xbt_assert(e != nullptr, "\n\n****** INVARIANT VIOLATION ******\n"
                            "UDPOR guarantees that an event will be chosen at each point in\n"
                            "the search, yet no events were actually chosen\n"
@@ -128,8 +128,8 @@ std::tuple<EventSet, EventSet> UdporChecker::compute_extension(const Configurati
   //
   // ex(C) = ex(C' + {e_cur}) = ex(C') / {e_cur} +
   //    U{<a, K> : K is maximal, `a` depends on all of K, `a` enabled at K }
-  UnfoldingEvent* e_cur = C.get_latest_event();
-  EventSet exC          = prev_exC;
+  const UnfoldingEvent* e_cur = C.get_latest_event();
+  EventSet exC                = prev_exC;
   exC.remove(e_cur);
 
   for (const auto& [aid, actor_state] : stateC.get_actors_list()) {
@@ -195,7 +195,7 @@ std::unique_ptr<State> UdporChecker::record_current_state()
   return next_state;
 }
 
-UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& A, const EventSet& enC)
+const UnfoldingEvent* UdporChecker::select_next_unfolding_event(const EventSet& A, const EventSet& enC)
 {
   if (!enC.empty()) {
     return *(enC.begin());

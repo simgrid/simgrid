@@ -115,7 +115,7 @@ private:
    * by the UDPOR algorithm to select new events to search. See the original
    * paper [1] for more details
    */
-  UnfoldingEvent* select_next_unfolding_event(const EventSet& A, const EventSet& enC);
+  const UnfoldingEvent* select_next_unfolding_event(const EventSet& A, const EventSet& enC);
 
   /**
    * @brief Computes the sets `ex(C)` and `en(C)` of the given configuration

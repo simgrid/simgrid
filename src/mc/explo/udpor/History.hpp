@@ -54,8 +54,8 @@ public:
   History& operator=(History const&) = default;
   History(History&&)                 = default;
 
-  explicit History(UnfoldingEvent* e) : events_({e}) {}
   explicit History(EventSet event_set = EventSet()) : events_(std::move(event_set)) {}
+  explicit History(const UnfoldingEvent* e) : events_({e}) {}
 
   auto begin() const { return Iterator(events_); }
   auto end() const { return Iterator(EventSet()); }
@@ -100,7 +100,7 @@ private:
   /**
    * @brief An iterator which traverses the history of a set of events
    */
-  struct Iterator : boost::iterator_facade<Iterator, UnfoldingEvent* const, boost::forward_traversal_tag> {
+  struct Iterator : boost::iterator_facade<Iterator, const UnfoldingEvent* const, boost::forward_traversal_tag> {
   public:
     using optional_configuration = std::optional<std::reference_wrapper<const Configuration>>;
     Iterator(const EventSet& initial_events, optional_configuration config = std::nullopt);
@@ -122,7 +122,7 @@ private:
     void increment();
     bool equal(const Iterator& other) const;
 
-    UnfoldingEvent* const& dereference() const;
+    const UnfoldingEvent* const& dereference() const;
 
     // Allows boost::iterator_facade<...> to function properly
     friend class boost::iterator_core_access;

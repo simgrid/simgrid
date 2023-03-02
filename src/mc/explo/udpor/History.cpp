@@ -24,7 +24,7 @@ void History::Iterator::increment()
 {
   if (not frontier.empty()) {
     // "Pop" the event at the "front"
-    UnfoldingEvent* e = *frontier.begin();
+    const UnfoldingEvent* e = *frontier.begin();
     frontier.remove(e);
 
     // If there is a configuration and if the
@@ -49,7 +49,7 @@ void History::Iterator::increment()
   }
 }
 
-UnfoldingEvent* const& History::Iterator::dereference() const
+const UnfoldingEvent* const& History::Iterator::dereference() const
 {
   return *frontier.begin();
 }

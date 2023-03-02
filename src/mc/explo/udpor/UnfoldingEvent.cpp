@@ -8,7 +8,7 @@
 
 namespace simgrid::mc::udpor {
 
-UnfoldingEvent::UnfoldingEvent(std::initializer_list<UnfoldingEvent*> init_list)
+UnfoldingEvent::UnfoldingEvent(std::initializer_list<const UnfoldingEvent*> init_list)
     : UnfoldingEvent(EventSet(std::move(init_list)))
 {
 }
@@ -35,7 +35,7 @@ bool UnfoldingEvent::operator==(const UnfoldingEvent& other) const
   return this->immediate_causes == other.immediate_causes;
 }
 
-EventSet UnfoldingEvent::get_history()
+EventSet UnfoldingEvent::get_history() const
 {
   return History(this).get_all_events();
 }

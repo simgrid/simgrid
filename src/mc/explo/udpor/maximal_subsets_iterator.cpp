@@ -58,18 +58,25 @@ void maximal_subsets_iterator::increment()
   // Otherwise we found some other event `e'` which is not in conflict with anything
   // that currently exists in `current_maximal_set`. Add it in and perform
   // some more bookkeeping
-  UnfoldingEvent* next_event = *next_event_ref;
-  add_element_to_current_maximal_set(next_event);
+  add_element_to_current_maximal_set(*next_event_ref);
   backtrack_points.push(next_event_ref);
 }
 
-void maximal_subsets_iterator::add_element_to_current_maximal_set(UnfoldingEvent* e)
+bool maximal_subsets_iterator::bookkeeper::is_candidate_event(const UnfoldingEvent* e) const
+{
+  if (const auto e_count = event_counts.find(e); e_count != event_counts.end()) {
+    return e_count->second == 0;
+  }
+  return true;
+}
+
+void maximal_subsets_iterator::add_element_to_current_maximal_set(const UnfoldingEvent* e)
 {
   current_maximal_set.insert(e);
   bookkeeper.mark_included_in_maximal_set(e);
 }
 
-void maximal_subsets_iterator::remove_element_from_current_maximal_set(UnfoldingEvent* e)
+void maximal_subsets_iterator::remove_element_from_current_maximal_set(const UnfoldingEvent* e)
 {
   current_maximal_set.remove(e);
   bookkeeper.mark_removed_from_maximal_set(e);
@@ -79,18 +86,10 @@ maximal_subsets_iterator::topological_order_position
 maximal_subsets_iterator::bookkeeper::find_next_event(topological_order_position first,
                                                       topological_order_position last) const
 {
-  return std::find_if(first, last, [&](UnfoldingEvent* e) { return is_candidate_event(e); });
+  return std::find_if(first, last, [&](const UnfoldingEvent* e) { return is_candidate_event(e); });
 }
 
-bool maximal_subsets_iterator::bookkeeper::is_candidate_event(UnfoldingEvent* e) const
-{
-  if (const auto e_count = event_counts.find(e); e_count != event_counts.end()) {
-    return e_count->second == 0;
-  }
-  return true;
-}
-
-void maximal_subsets_iterator::bookkeeper::mark_included_in_maximal_set(UnfoldingEvent* e)
+void maximal_subsets_iterator::bookkeeper::mark_included_in_maximal_set(const UnfoldingEvent* e)
 {
   const auto e_history = e->get_history();
   for (const auto e_hist : e_history) {
@@ -98,7 +97,7 @@ void maximal_subsets_iterator::bookkeeper::mark_included_in_maximal_set(Unfoldin
   }
 }
 
-void maximal_subsets_iterator::bookkeeper::mark_removed_from_maximal_set(UnfoldingEvent* e)
+void maximal_subsets_iterator::bookkeeper::mark_removed_from_maximal_set(const UnfoldingEvent* e)
 {
   const auto e_history = e->get_history();
   for (const auto e_hist : e_history) {
