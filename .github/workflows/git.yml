@@ -6,13 +6,7 @@ name: Git build on various OS and setups
 # documentation.
 
 # Only trigger manually
-#######################
-# on:
-#   workflow_dispatch:
-#   # Rebuild when changing the stable branch
-#   push:
-#       branches:
-#             - master
+on: workflow_dispatch
 
 jobs:
   simgrid-regular-debian11:
