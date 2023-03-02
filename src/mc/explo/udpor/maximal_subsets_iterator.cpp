@@ -18,27 +18,24 @@ void maximal_subsets_iterator::increment()
     return;
   }
 
-  // The initial step simply allows us to move past the initial empty set correctly
-  if (!has_started_searching) {
-    has_started_searching = true;
-
-    // Otherwise, the very first step is to push the very first
-    // element of the topological ordering
-    add_element_to_current_maximal_set(*topological_ordering.begin());
-    backtrack_points.push(topological_ordering.begin());
-  } else {
-
-    const auto next_event_ref = continue_traversal_of_maximal_events_tree();
-    if (next_event_ref == topological_ordering.end()) {
-      current_maximal_set = std::nullopt;
-      return;
+  const auto next_event_ref = [&]() {
+    if (!has_started_searching) {
+      has_started_searching = true;
+      return bookkeeper.find_next_candidate_event(topological_ordering.begin(), topological_ordering.end());
+    } else {
+      return continue_traversal_of_maximal_events_tree();
     }
+  }();
 
-    // We found some other event `e'` which is not in causally related with anything
-    // that currently exists in `current_maximal_set`. Add it in
-    add_element_to_current_maximal_set(*next_event_ref);
-    backtrack_points.push(next_event_ref);
+  if (next_event_ref == topological_ordering.end()) {
+    current_maximal_set = std::nullopt;
+    return;
   }
+
+  // We found some other event `e'` which is not in causally related with anything
+  // that currently exists in `current_maximal_set`, so add it in
+  add_element_to_current_maximal_set(*next_event_ref);
+  backtrack_points.push(next_event_ref);
 }
 
 maximal_subsets_iterator::topological_order_position
@@ -68,7 +65,7 @@ maximal_subsets_iterator::continue_traversal_of_maximal_events_tree()
     const auto next_event_ref = bookkeeper.find_next_candidate_event(latest_event_ref, topological_ordering.end());
 
     // If we can expand from what we currently have, we can stop
-    if (next_event_ref != topological_ordering.end() and should_consider_event(*next_event_ref)) {
+    if (next_event_ref != topological_ordering.end()) {
       return next_event_ref;
     }
   }
@@ -76,13 +73,8 @@ maximal_subsets_iterator::continue_traversal_of_maximal_events_tree()
   // Otherwise, we backtrack: we repeatedly pop off events that we know we
   // are finished with
   while (not backtrack_points.empty()) {
-    // Otherwise, if we can't find another event to add after `e` that
-    // we need to consider, we retry after first removing the latest event.
-    // This effectively tests "check now with all combinations that3
-    // exclude the latest event".
-    //
     // Note: it is important to remove the element FIRST before performing
-    // the second search, as removal may enable dependencies of `e` to be selected
+    // the search, as removal may enable dependencies of `e` to be selected
     const auto latest_event_ref = backtrack_points.top();
     remove_element_from_current_maximal_set(*latest_event_ref);
     backtrack_points.pop();
@@ -91,25 +83,20 @@ maximal_subsets_iterator::continue_traversal_of_maximal_events_tree()
     // to consider those events that could be added AFTER `e` and
     // not `e` itself again
     const auto next_event_ref = bookkeeper.find_next_candidate_event(latest_event_ref + 1, topological_ordering.end());
-
-    // If we finally found some event AFTER removal, we can stop
-    if (next_event_ref != topological_ordering.end() and should_consider_event(*next_event_ref)) {
+    if (next_event_ref != topological_ordering.end()) {
       return next_event_ref;
     }
   }
   return topological_ordering.end();
 }
 
-bool maximal_subsets_iterator::should_consider_event(const UnfoldingEvent* e) const
-{
-  if (filter_function.has_value()) {
-    return filter_function.value()(e);
-  }
-  return true; // If nobody specified a filter, we default to considering the event
-}
-
 bool maximal_subsets_iterator::bookkeeper::is_candidate_event(const UnfoldingEvent* e) const
 {
+  // The event must pass the filter, if it exists
+  if (filter_function.has_value() && not filter_function.value()(e)) {
+    return false;
+  }
+
   if (const auto e_count = event_counts.find(e); e_count != event_counts.end()) {
     return e_count->second == 0;
   }

@@ -445,6 +445,76 @@ TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Basic Testing of Maxima
     // e7 + e8 must be included, so that means we can combine from the left branch
     REQUIRE(maximal_subset_counts[3] == 3);
   }
+
+  SECTION("Check counts of maximal event sets discovered with a filter")
+  {
+    std::unordered_map<int, int> maximal_subset_counts;
+
+    Configuration C{&e1, &e2, &e3, &e4, &e5, &e6, &e7, &e8};
+
+    SECTION("Filter with events part of initial maximal set")
+    {
+      EventSet interesting_bunch{&e2, &e4, &e7, &e8};
+
+      maximal_subsets_iterator first(C, [&](const UnfoldingEvent* e) { return interesting_bunch.contains(e); });
+      maximal_subsets_iterator last;
+
+      for (; first != last; ++first) {
+        const auto& event_set = *first;
+        // Only events in `interesting_bunch` can appear: thus no set
+        // should include anything else other than `interesting_bunch`
+        REQUIRE(event_set.is_subset_of(interesting_bunch));
+        REQUIRE(event_set.is_maximal_event_set());
+        maximal_subset_counts[event_set.size()]++;
+      }
+
+      // The empty set should (still) appear only once
+      REQUIRE(maximal_subset_counts[0] == 1);
+
+      // 4 is the number of nodes in the `interesting_bunch`
+      REQUIRE(maximal_subset_counts[1] == 4);
+
+      // 5 = 2 * 2 (each of the left branch can combine with one in the right branch) + 1 (e7 + e8)
+      REQUIRE(maximal_subset_counts[2] == 5);
+
+      // e7 + e8 must be included, so that means we can combine from the left branch (only e2 and e4)
+      REQUIRE(maximal_subset_counts[3] == 2);
+
+      // There are no subsets of size 4 (or higher, but that
+      // is tested by asserting each maximal set traversed is a subset)
+      REQUIRE(maximal_subset_counts[4] == 0);
+    }
+
+    SECTION("Filter with interesting subset not initially part of the maximal set")
+    {
+      EventSet interesting_bunch{&e3, &e5, &e6};
+
+      maximal_subsets_iterator first(C, [&](const UnfoldingEvent* e) { return interesting_bunch.contains(e); });
+      maximal_subsets_iterator last;
+
+      for (; first != last; ++first) {
+        const auto& event_set = *first;
+        // Only events in `interesting_bunch` can appear: thus no set
+        // should include anything else other than `interesting_bunch`
+        REQUIRE(event_set.is_subset_of(interesting_bunch));
+        REQUIRE(event_set.is_maximal_event_set());
+        maximal_subset_counts[event_set.size()]++;
+      }
+
+      // The empty set should (still) appear only once
+      REQUIRE(maximal_subset_counts[0] == 1);
+
+      // 3 is the number of nodes in the `interesting_bunch`
+      REQUIRE(maximal_subset_counts[1] == 3);
+
+      // 2 = e3, e5 and e3, e6
+      REQUIRE(maximal_subset_counts[2] == 2);
+
+      // There are no subsets of size 3 (or higher, but that
+      // is tested by asserting each maximal set traversed is a subset)
+      REQUIRE(maximal_subset_counts[3] == 0);
+    }
+  }
 }
 
 TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Stress Test for Maximal Subsets Iteration")

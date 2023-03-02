@@ -41,23 +41,22 @@ public:
   maximal_subsets_iterator(const Configuration& config, std::optional<node_filter_function> filter)
       : config({config})
       , topological_ordering(config.get_topologically_sorted_events_of_reverse_graph())
-      , filter_function(filter)
       , current_maximal_set({EventSet()})
+      , bookkeeper(filter)
   {
   }
 
 private:
   const std::optional<std::reference_wrapper<const Configuration>> config;
   const std::vector<const UnfoldingEvent*> topological_ordering;
-  const std::optional<node_filter_function> filter_function = std::nullopt;
 
   // The boolean is a bit of an annoyance, but it works. Effectively,
   // there's no way to distinguish between "we're starting the search
   // after the empty set" and "we've finished the search" since the resulting
   // maximal set and backtracking point stack will both be empty in both cases
-  bool has_started_searching                  = false;
-  std::optional<EventSet> current_maximal_set = std::nullopt;
-  std::stack<topological_order_position> backtrack_points;
+  bool has_started_searching                              = false;
+  std::optional<EventSet> current_maximal_set             = std::nullopt;
+  std::stack<topological_order_position> backtrack_points = std::stack<topological_order_position>();
 
   /**
    * @brief A small class which provides functionality for managing
@@ -72,6 +71,8 @@ private:
   struct bookkeeper {
   public:
     using topological_order_position = maximal_subsets_iterator::topological_order_position;
+    explicit bookkeeper(std::optional<node_filter_function> filter = std::nullopt) : filter_function(filter) {}
+
     void mark_included_in_maximal_set(const UnfoldingEvent*);
     void mark_removed_from_maximal_set(const UnfoldingEvent*);
     topological_order_position find_next_candidate_event(topological_order_position first,
@@ -79,6 +80,7 @@ private:
 
   private:
     std::unordered_map<const UnfoldingEvent*, unsigned> event_counts;
+    const std::optional<node_filter_function> filter_function;
 
     /// @brief Whether or not the given event, according to the
     /// bookkeeping that has been done thus far, can be added to the
@@ -123,10 +125,6 @@ private:
    * or to the end of the topological ordering if no such event exists
    */
   topological_order_position continue_traversal_of_maximal_events_tree();
-
-  /// @brief Whether or not we should even consider cases where the given
-  /// event `e` is included in the maximal configurations
-  bool should_consider_event(const UnfoldingEvent*) const;
 
   // boost::iterator_facade<...> interface to implement
   void increment();
