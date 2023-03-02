@@ -19,8 +19,6 @@ namespace simgrid::mc {
  */
 class ModelChecker {
   CheckerSide checker_side_;
-  // This is the parent snapshot of the current state:
-  PageStore page_store_{500};
   std::unique_ptr<RemoteProcess> remote_process_;
   Exploration* exploration_ = nullptr;
 
@@ -31,7 +29,6 @@ public:
 
   RemoteProcess& get_remote_process() { return *remote_process_; }
   Channel& channel() { return checker_side_.get_channel(); }
-  PageStore& page_store() { return page_store_; }
 
   void start();
   void shutdown();

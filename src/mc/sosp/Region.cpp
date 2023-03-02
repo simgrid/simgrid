@@ -17,13 +17,13 @@
 
 namespace simgrid::mc {
 
-Region::Region(RegionType region_type, void* start_addr, size_t size)
+Region::Region(PageStore& store, RegionType region_type, void* start_addr, size_t size)
     : region_type_(region_type), start_addr_(start_addr), size_(size)
 {
   xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize - 1)) == 0, "Start address not at the beginning of a page");
 
-  chunks_ = ChunkedData(mc_model_checker->page_store(), mc_model_checker->get_remote_process(),
-                        RemotePtr<void>(start_addr), mmu::chunk_count(size));
+  chunks_ =
+      ChunkedData(store, mc_model_checker->get_remote_process(), RemotePtr<void>(start_addr), mmu::chunk_count(size));
 }
 
 /** @brief Restore a region from a snapshot

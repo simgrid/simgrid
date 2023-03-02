@@ -35,7 +35,7 @@ private:
   ChunkedData chunks_;
 
 public:
-  Region(RegionType type, void* start_addr, size_t size);
+  Region(PageStore& store, RegionType type, void* start_addr, size_t size);
   Region(Region const&) = delete;
   Region& operator=(Region const&) = delete;
   Region(Region&& that)            = delete;

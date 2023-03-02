@@ -48,8 +48,8 @@ class XBT_PRIVATE State : public xbt::Extendable<State> {
   std::map<aid_t, Transition> sleep_set_;
   
 public:
-  explicit State(const RemoteApp& remote_app);
-  explicit State(const RemoteApp& remote_app, const State* previous_state);
+  explicit State(RemoteApp& remote_app);
+  explicit State(RemoteApp& remote_app, const State* previous_state);
   /* Returns a positive number if there is another transition to pick, or -1 if not */
   aid_t next_transition() const;
 

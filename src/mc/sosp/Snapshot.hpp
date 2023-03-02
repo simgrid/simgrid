@@ -58,9 +58,11 @@ namespace simgrid::mc {
 using hash_type = std::uint64_t;
 
 class XBT_PRIVATE Snapshot final : public AddressSpace {
+  PageStore& page_store_;
+
 public:
   /* Initialization */
-  Snapshot(long num_state, RemoteProcess* process = &mc_model_checker->get_remote_process());
+  Snapshot(long num_state, PageStore& store, RemoteProcess* process = &mc_model_checker->get_remote_process());
 
   /* Regular use */
   bool on_heap(const void* address) const

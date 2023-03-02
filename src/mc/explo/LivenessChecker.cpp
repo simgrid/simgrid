@@ -19,12 +19,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc, "Logging specific to algorithms
 namespace simgrid::mc {
 
 VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t prop_state,
-                         std::shared_ptr<const std::vector<int>> atomic_propositions, std::shared_ptr<State> app_state)
+                         std::shared_ptr<const std::vector<int>> atomic_propositions, std::shared_ptr<State> app_state,
+                         RemoteApp& remote_app)
     : num(pair_num), prop_state_(prop_state)
 {
   this->app_state_ = std::move(app_state);
   if (not this->app_state_->get_system_state())
-    this->app_state_->set_system_state(std::make_shared<Snapshot>(pair_num));
+    this->app_state_->set_system_state(std::make_shared<Snapshot>(pair_num, remote_app.get_page_store()));
   this->heap_bytes_used     = mc_model_checker->get_remote_process().get_remote_heap_bytes();
   this->actor_count_        = app_state_->get_actor_count();
   this->other_num           = -1;
@@ -59,8 +60,8 @@ std::shared_ptr<const std::vector<int>> LivenessChecker::get_proposition_values(
 
 std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc::Pair* pair)
 {
-  auto new_pair =
-      std::make_shared<VisitedPair>(pair->num, pair->prop_state_, pair->atomic_propositions, pair->app_state_);
+  auto new_pair = std::make_shared<VisitedPair>(pair->num, pair->prop_state_, pair->atomic_propositions,
+                                                pair->app_state_, get_remote_app());
 
   auto [res_begin,
         res_end] = boost::range::equal_range(acceptance_pairs_, new_pair.get(), [](auto const& a, auto const& b) {
@@ -137,8 +138,8 @@ int LivenessChecker::insert_visited_pair(std::shared_ptr<VisitedPair> visited_pa
     return -1;
 
   if (visited_pair == nullptr)
-    visited_pair =
-        std::make_shared<VisitedPair>(pair->num, pair->prop_state_, pair->atomic_propositions, pair->app_state_);
+    visited_pair = std::make_shared<VisitedPair>(pair->num, pair->prop_state_, pair->atomic_propositions,
+                                                 pair->app_state_, get_remote_app());
 
   auto [range_begin,
         range_end] = boost::range::equal_range(visited_pairs_, visited_pair.get(), [](auto const& a, auto const& b) {

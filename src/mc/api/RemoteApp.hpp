@@ -26,6 +26,7 @@ namespace simgrid::mc {
 class XBT_PUBLIC RemoteApp {
 private:
   std::unique_ptr<ModelChecker> model_checker_;
+  PageStore page_store_{500};
   std::shared_ptr<simgrid::mc::Snapshot> initial_snapshot_;
 
   // No copy:
@@ -57,6 +58,8 @@ public:
 
   /* Get the remote process */
   RemoteProcess& get_remote_process() { return model_checker_->get_remote_process(); }
+
+  PageStore& get_page_store() { return page_store_; }
 };
 } // namespace simgrid::mc
 

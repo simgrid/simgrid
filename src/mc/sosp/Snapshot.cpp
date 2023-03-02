@@ -197,7 +197,8 @@ void Snapshot::ignore_restore() const
     get_remote_process()->write_bytes(ignored_data.data.data(), ignored_data.data.size(), remote(ignored_data.start));
 }
 
-Snapshot::Snapshot(long num_state, RemoteProcess* process) : AddressSpace(process), num_state_(num_state)
+Snapshot::Snapshot(long num_state, PageStore& store, RemoteProcess* process)
+    : AddressSpace(process), page_store_(store), num_state_(num_state)
 {
   XBT_DEBUG("Taking snapshot %ld", num_state);
 
@@ -223,7 +224,7 @@ void Snapshot::add_region(RegionType type, ObjectInformation* object_info, void*
   else if (type == RegionType::Heap)
     xbt_assert(not object_info, "Unexpected object info for heap region.");
 
-  auto* region = new Region(type, start_addr, size);
+  auto* region = new Region(page_store_, type, start_addr, size);
   region->object_info(object_info);
   snapshot_regions_.push_back(std::unique_ptr<Region>(region));
 }

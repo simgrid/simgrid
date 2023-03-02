@@ -136,7 +136,7 @@ RemoteApp::RemoteApp(const std::vector<char*>& args)
 
   /* Take the initial snapshot */
   model_checker_->wait_for_requests();
-  initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0);
+  initial_snapshot_ = std::make_shared<simgrid::mc::Snapshot>(0, page_store_);
 }
 
 RemoteApp::~RemoteApp()

@@ -45,7 +45,8 @@ public:
   int actor_count_;
 
   VisitedPair(int pair_num, xbt_automaton_state_t prop_state,
-              std::shared_ptr<const std::vector<int>> atomic_propositions, std::shared_ptr<State> app_state);
+              std::shared_ptr<const std::vector<int>> atomic_propositions, std::shared_ptr<State> app_state,
+              RemoteApp& remote_app);
 };
 
 class XBT_PRIVATE LivenessChecker : public Exploration {

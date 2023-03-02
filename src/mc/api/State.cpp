@@ -14,17 +14,16 @@ namespace simgrid::mc {
 
 long State::expended_states_ = 0;
 
-State::State(const RemoteApp& remote_app) : num_(++expended_states_)
+State::State(RemoteApp& remote_app) : num_(++expended_states_)
 {
   remote_app.get_actors_status(actors_to_run_);
 
   /* Stateful model checking */
-  if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
-    system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_);
-  }
+  if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination)
+    system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store());
 }
 
-State::State(const RemoteApp& remote_app, const State* previous_state)
+State::State(RemoteApp& remote_app, const State* previous_state)
     : default_transition_(std::make_unique<Transition>()), num_(++expended_states_)
 {
 
@@ -34,7 +33,7 @@ State::State(const RemoteApp& remote_app, const State* previous_state)
 
   /* Stateful model checking */
   if ((_sg_mc_checkpoint > 0 && (num_ % _sg_mc_checkpoint == 0)) || _sg_mc_termination) {
-    system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_);
+    system_state_ = std::make_shared<simgrid::mc::Snapshot>(num_, remote_app.get_page_store());
   }
 
   /* For each actor in the previous sleep set, keep it if it is not dependent with current transition.

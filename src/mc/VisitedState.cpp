@@ -18,10 +18,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_VisitedState, mc, "Logging specific to state 
 namespace simgrid::mc {
 
 /** @brief Save the current state */
-VisitedState::VisitedState(unsigned long state_number, unsigned int actor_count, std::size_t heap_bytes_used)
-    : heap_bytes_used_(heap_bytes_used), actor_count_(actor_count), num_(state_number)
+VisitedState::VisitedState(unsigned long state_number, unsigned int actor_count, RemoteApp& remote_app)
+    : heap_bytes_used_(remote_app.get_remote_process().get_remote_heap_bytes())
+    , actor_count_(actor_count)
+    , num_(state_number)
 {
-  this->system_state_    = std::make_shared<simgrid::mc::Snapshot>(state_number);
+  this->system_state_ = std::make_shared<simgrid::mc::Snapshot>(state_number, remote_app.get_page_store());
 }
 
 void VisitedStates::prune()
@@ -40,10 +42,10 @@ void VisitedStates::prune()
 
 /** @brief Checks whether a given state has already been visited by the algorithm. */
 std::unique_ptr<simgrid::mc::VisitedState>
-VisitedStates::addVisitedState(unsigned long state_number, simgrid::mc::State* graph_state, std::size_t heap_bytes_used)
+VisitedStates::addVisitedState(unsigned long state_number, simgrid::mc::State* graph_state, RemoteApp& remote_app)
 {
   auto new_state =
-      std::make_unique<simgrid::mc::VisitedState>(state_number, graph_state->get_actor_count(), heap_bytes_used);
+      std::make_unique<simgrid::mc::VisitedState>(state_number, graph_state->get_actor_count(), remote_app);
 
   graph_state->set_system_state(new_state->system_state_);
   XBT_DEBUG("Snapshot %p of visited state %ld (exploration stack state %ld)", new_state->system_state_.get(),
