@@ -76,8 +76,7 @@ std::shared_ptr<VisitedPair> LivenessChecker::insert_acceptance_pair(simgrid::mc
         continue;
       XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
       exploration_stack_.pop_back();
-      mc_model_checker->dot_output("\"%d\" -> \"%d\" [%s];\n", this->previous_pair_, pair_test->num,
-                                   this->previous_request_.c_str());
+      dot_output("\"%d\" -> \"%d\" [%s];\n", this->previous_pair_, pair_test->num, this->previous_request_.c_str());
       return nullptr;
     }
 
@@ -389,9 +388,7 @@ void LivenessChecker::run()
     if (not current_pair->exploration_started) {
       int visited_num = this->insert_visited_pair(reached_pair, current_pair.get());
       if (visited_num != -1) {
-        mc_model_checker->dot_output("\"%d\" -> \"%d\" [%s];\n", this->previous_pair_, visited_num,
-                                     this->previous_request_.c_str());
-        mc_model_checker->dot_output_flush();
+        dot_output("\"%d\" -> \"%d\" [%s];\n", this->previous_pair_, visited_num, this->previous_request_.c_str());
 
         XBT_DEBUG("Pair already visited (equal to pair %d), exploration on the current path stopped.", visited_num);
         current_pair->requests = 0;
@@ -405,15 +402,13 @@ void LivenessChecker::run()
 
     /* Update the dot output */
     if (this->previous_pair_ != 0 && this->previous_pair_ != current_pair->num) {
-      mc_model_checker->dot_output("\"%d\" -> \"%d\" [%s];\n", this->previous_pair_, current_pair->num,
-                                   this->previous_request_.c_str());
+      dot_output("\"%d\" -> \"%d\" [%s];\n", this->previous_pair_, current_pair->num, this->previous_request_.c_str());
       this->previous_request_.clear();
     }
     this->previous_pair_    = current_pair->num;
     this->previous_request_ = current_pair->app_state_->get_transition()->dot_string();
     if (current_pair->search_cycle)
-      mc_model_checker->dot_output("%d [shape=doublecircle];\n", current_pair->num);
-    mc_model_checker->dot_output_flush();
+      dot_output("%d [shape=doublecircle];\n", current_pair->num);
 
     if (not current_pair->exploration_started)
       visited_pairs_count_++;

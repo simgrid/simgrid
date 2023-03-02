@@ -30,14 +30,15 @@ namespace simgrid::mc {
 class Exploration : public xbt::Extendable<Exploration> {
   std::unique_ptr<RemoteApp> remote_app_;
 
+  FILE* dot_output_ = nullptr;
+
 public:
   explicit Exploration(const std::vector<char*>& args);
+  virtual ~Exploration();
 
   // No copy:
   Exploration(Exploration const&) = delete;
   Exploration& operator=(Exploration const&) = delete;
-
-  virtual ~Exploration() = default;
 
   /** Main function of this algorithm */
   virtual void run() = 0;
@@ -58,6 +59,9 @@ public:
   virtual void log_state();
 
   RemoteApp& get_remote_app() { return *remote_app_.get(); }
+
+  /** Print something to the dot output file*/
+  void dot_output(const char* fmt, ...) XBT_ATTRIB_PRINTF(2, 3);
 };
 
 // External constructors so that the types (and the types of their content) remain hidden

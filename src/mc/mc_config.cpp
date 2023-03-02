@@ -109,12 +109,6 @@ static simgrid::config::Flag<int> _sg_mc_max_visited_states__{
       _sg_mc_max_visited_states = value;
     }};
 
-simgrid::config::Flag<std::string> _sg_mc_dot_output_file{
-    "model-check/dot-output",
-    "Name of dot output file corresponding to graph state",
-    "",
-    [](const std::string&) { _mc_cfg_cb_check("file name for a dot output of graph state"); }};
-
 simgrid::config::Flag<bool> _sg_mc_termination{
     "model-check/termination", "Whether to enable non progressive cycle detection", false,
     [](bool) { _mc_cfg_cb_check("value to enable/disable the detection of non progressive cycles"); }};

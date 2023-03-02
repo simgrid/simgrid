@@ -192,13 +192,12 @@ void DFSExplorer::run()
         }
       }
 
-      mc_model_checker->dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), next_state->get_num(),
-                                   state->get_transition()->dot_string().c_str());
+      dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(), next_state->get_num(),
+                 state->get_transition()->dot_string().c_str());
     } else
-      mc_model_checker->dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(),
-                                   visited_state_->original_num_ == -1 ? visited_state_->num_
-                                                                       : visited_state_->original_num_,
-                                   state->get_transition()->dot_string().c_str());
+      dot_output("\"%ld\" -> \"%ld\" [%s];\n", state->get_num(),
+                 visited_state_->original_num_ == -1 ? visited_state_->num_ : visited_state_->original_num_,
+                 state->get_transition()->dot_string().c_str());
 
     stack_.push_back(std::move(next_state));
   }
