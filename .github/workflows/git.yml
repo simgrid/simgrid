@@ -10,10 +10,7 @@ on: workflow_dispatch
 
 jobs:
   simgrid-regular:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, macos-latest]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
@@ -24,6 +21,7 @@ jobs:
 
       - name: build
         run: |
+          apt install ninja libboost-dev libboost-context-dev libns3-dev
           cmake -GNinja -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
                 -Denable_compile_optimizations=ON -Denable_compile_warnings=ON \
                 -Denable_model-checking=OFF -Denable_smpi_MBI_testsuite=OFF \
@@ -58,6 +56,7 @@ jobs:
 
       - name: build
         run: |
+          apt install ninja libboost-dev libboost-context-dev
           cmake -GNinja -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
                 -Denable_compile_optimizations=ON -Denable_compile_warnings=ON \
                 -Denable_model-checking=ON -Denable_smpi_MBI_testsuite=OFF \
