@@ -75,6 +75,8 @@ but that's even more so for these unreleased versions).
 Installing from the Source
 --------------------------
 
+.. _install_src_deps:
+
 Getting the Dependencies
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -97,6 +99,8 @@ Eigen3 (optional)
   - On CentOS / Fedora: ``dnf install eigen3-devel``
   - On macOS with homebrew: ``brew install eigen``
   - Use EIGEN3_HINT to specify where it's installed if cmake doesn't find it automatically.
+Model-checking related dependencies (optional)
+  - On Debian / Ubuntu: ``apt install libunwind-dev libdw-dev libelf-dev libevent-dev``
 
 For platform-specific details, please see below.
 
@@ -229,9 +233,8 @@ enable_mallocators (ON/off)
   code, but it may fool the debuggers.
 
 enable_model-checking (on/OFF)
-  Activates the formal verification mode. This will **hinder
-  simulation speed** even when the model checker is not activated at
-  run time.
+  Activates the formal verification mode. This may slightly hinder simulation speed even when the model checker is not activated
+  at run time. You need to have the :ref:`required build-dependencies <install_src_deps>` to activate this option.
 
 enable_ns3 (on/OFF)
   Activates the ns-3 bindings. See section :ref:`models_ns3`.
