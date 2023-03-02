@@ -1,4 +1,4 @@
-name: Git build on various OS and setups
+name: Git builds
 
 # This workflow uses actions that are not certified by GitHub.
 # They are provided by a third-party and are governed by
@@ -21,7 +21,7 @@ jobs:
 
       - name: build
         run: |
-          apt install ninja libboost-dev libboost-context-dev libns3-dev
+          sudo apt update && sudo apt-get install ninja libboost-dev libboost-context-dev libns3-dev
           cmake -GNinja -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
                 -Denable_compile_optimizations=ON -Denable_compile_warnings=ON \
                 -Denable_model-checking=OFF -Denable_smpi_MBI_testsuite=OFF \
@@ -56,7 +56,7 @@ jobs:
 
       - name: build
         run: |
-          apt install ninja libboost-dev libboost-context-dev
+          sudo apt update && sudo apt-get install ninja libboost-dev libboost-context-dev
           cmake -GNinja -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
                 -Denable_compile_optimizations=ON -Denable_compile_warnings=ON \
                 -Denable_model-checking=ON -Denable_smpi_MBI_testsuite=OFF \
