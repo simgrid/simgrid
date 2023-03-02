@@ -90,17 +90,23 @@ cmake (v3.5).
   ``ccmake`` provides a nicer graphical interface compared to ``cmake``.
   Press ``t`` in ``ccmake`` if you need to see absolutely all
   configuration options (e.g., if your Python installation is not standard).
-boost (at least v1.48, v1.59 recommended)
-  - On Debian / Ubuntu: ``apt install libboost-dev libboost-context-dev``
+boost mandatory components (at least v1.48, v1.59 recommended)
+  - On Debian / Ubuntu: ``apt install libboost-dev``
   - On CentOS / Fedora: ``dnf install boost-devel``
   - On macOS with homebrew: ``brew install boost``
+boost recommended components (optional).
+  - boost-context may be used instead of our own fast context switching code which only works on amd64.
+  - boost-stacktrace is used to get nice stacktraces on errors in SimGrid.
+  - On Debian / Ubuntu: ``apt install libboost-context-dev libboost-stacktrace-dev``
+python bindings (optional):
+  - On Debian / Ubuntu: ``apt install pybind11-dev``
+Model-checking dependencies (optional)
+  - On Debian / Ubuntu: ``apt install libunwind-dev libdw-dev libelf-dev libevent-dev``
 Eigen3 (optional)
   - On Debian / Ubuntu: ``apt install libeigen3-dev``
   - On CentOS / Fedora: ``dnf install eigen3-devel``
   - On macOS with homebrew: ``brew install eigen``
   - Use EIGEN3_HINT to specify where it's installed if cmake doesn't find it automatically.
-Model-checking related dependencies (optional)
-  - On Debian / Ubuntu: ``apt install libunwind-dev libdw-dev libelf-dev libevent-dev``
 
 For platform-specific details, please see below.
 
@@ -233,8 +239,9 @@ enable_mallocators (ON/off)
   code, but it may fool the debuggers.
 
 enable_model-checking (on/OFF)
-  Activates the formal verification mode. This may slightly hinder simulation speed even when the model checker is not activated
-  at run time. You need to have the :ref:`required build-dependencies <install_src_deps>` to activate this option.
+  Activates the formal verification mode. This will hinder simulation speed even when the model checker is not activated at run
+  time, because some optimizations such as LTO must be disabled at compile time. You need to have the :ref:`required
+  build-dependencies <install_src_deps>` to activate this option.
 
 enable_ns3 (on/OFF)
   Activates the ns-3 bindings. See section :ref:`models_ns3`.
