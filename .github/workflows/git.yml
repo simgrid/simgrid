@@ -9,9 +9,11 @@ name: Git build on various OS and setups
 on: workflow_dispatch
 
 jobs:
-  simgrid-regular-debian11:
-
-    runs-on: debian:11
+  simgrid-regular:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     permissions:
       contents: read
       packages: write
@@ -43,9 +45,9 @@ jobs:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
 
-  simgrid-modelchecker-debian11:
+  simgrid-modelcheck-ubuntu:
 
-    runs-on: debian:11
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
