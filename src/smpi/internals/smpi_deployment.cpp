@@ -57,10 +57,10 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
 void SMPI_app_instance_start(const char* name, const std::function<void()>& code,
                              std::vector<simgrid::s4u::Host*> const& hosts)
 {
-  xbt_assert(hosts.size() > 0, "Cannot start a SMPI instance on 0 hosts");
-  xbt_assert(smpi_instances.find(name) == smpi_instances.end(),
-             "Cannot start two MPI applications of the same name '%s'", name);
-  smpi_instances.try_emplace(name, hosts.size());
+  xbt_assert(not hosts.empty(), "Cannot start a SMPI instance on 0 hosts");
+
+  auto [_, inserted] = smpi_instances.try_emplace(name, hosts.size());
+  xbt_assert(inserted, "Cannot start two MPI applications of the same name '%s'", name);
 
   int rank = 0;
   for (auto* host : hosts) {
