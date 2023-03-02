@@ -42,3 +42,12 @@ $ ./masterworker_mailbox_smpi ${srcdir:=.}/../../platforms/small_platform_with_r
 > [Tremblay:master:(1) 8.379411] [smpi_masterworkers/INFO] Sending task 16 of 20 to mailbox 'Ginette'
 > [Tremblay:master:(1) 9.365086] [smpi_masterworkers/INFO] Sending task 17 of 20 to mailbox 'Jupiter'
 > [Tremblay:master:(1) 9.534241] [smpi_masterworkers/INFO] Sending task 18 of 20 to mailbox 'Ginette'
+> [Ginette:launcher:(10) 10.000000] [smpi_masterworkers/INFO] Start another alltoall_mpi instance
+> [Ginette:alltoall_mpi#0:(11) 10.000000] [smpi_masterworkers/INFO] alltoall for rank 0
+> [Bourassa:alltoall_mpi#1:(12) 10.000000] [smpi_masterworkers/INFO] alltoall for rank 1
+> [Jupiter:alltoall_mpi#2:(13) 10.000000] [smpi_masterworkers/INFO] alltoall for rank 2
+> [Fafard:alltoall_mpi#3:(14) 10.000000] [smpi_masterworkers/INFO] alltoall for rank 3
+> [Ginette:alltoall_mpi#0:(11) 10.036773] [smpi_masterworkers/INFO] after alltoall 0
+> [Bourassa:alltoall_mpi#1:(12) 10.046578] [smpi_masterworkers/INFO] after alltoall 1
+> [Fafard:alltoall_mpi#3:(14) 10.046865] [smpi_masterworkers/INFO] after alltoall 3
+> [Jupiter:alltoall_mpi#2:(13) 10.046865] [smpi_masterworkers/INFO] after alltoall 2

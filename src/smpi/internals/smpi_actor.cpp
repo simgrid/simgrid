@@ -233,7 +233,10 @@ void ActorExt::init()
     return;
 
   const simgrid::s4u::Actor* self = simgrid::s4u::Actor::self();
-  ext->instance_id_ = self->get_property("instance_id");
+  const char* id                  = self->get_property("instance_id");
+  xbt_assert(id != nullptr, "Actor '%s' seem to be calling MPI_Init(), but it was created outside of MPI, wasn't it?",
+             self->get_cname());
+  ext->instance_id_ = id;
   const int rank = static_cast<int>(xbt_str_parse_int(self->get_property("rank"), "Cannot parse rank"));
 
   ext->state_ = SmpiProcessState::INITIALIZING;

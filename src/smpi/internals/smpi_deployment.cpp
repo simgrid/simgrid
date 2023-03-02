@@ -57,16 +57,19 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
 void SMPI_app_instance_start(const char* name, const std::function<void()>& code,
                              std::vector<simgrid::s4u::Host*> const& hosts)
 {
-  xbt_assert(hosts.size(), "Cannot start a SMPI instance on 0 hosts");
+  xbt_assert(hosts.size() > 0, "Cannot start a SMPI instance on 0 hosts");
+  xbt_assert(smpi_instances.find(name) == smpi_instances.end(),
+             "Cannot start two MPI applications of the same name '%s'", name);
   smpi_instances.try_emplace(name, hosts.size());
 
   int rank = 0;
   for (auto* host : hosts) {
-    auto rank_str          = std::to_string(rank);
-    std::string actor_name = std::string(name) + "#" + rank_str;
-    auto actor             = simgrid::s4u::Actor::create(actor_name, host, code);
+    auto rank_str = std::to_string(rank);
+    auto actor    = simgrid::s4u::Actor::init(std::string(name) + "#" + rank_str, host);
     actor->set_property("instance_id", name);
     actor->set_property("rank", rank_str);
+    actor->start(code);
+
     smpi_deployment_register_process(name, rank, actor.get());
 
     rank++;
