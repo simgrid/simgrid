@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
+#include "src/mc/explo/udpor/History.hpp"
 
 namespace simgrid::mc::udpor {
 
@@ -32,6 +33,11 @@ bool UnfoldingEvent::operator==(const UnfoldingEvent& other) const
   // recursively check if each of our causes has a `==` in
   // the other event's causes)
   return this->immediate_causes == other.immediate_causes;
+}
+
+EventSet UnfoldingEvent::get_history()
+{
+  return History(this).get_all_events();
 }
 
 } // namespace simgrid::mc::udpor

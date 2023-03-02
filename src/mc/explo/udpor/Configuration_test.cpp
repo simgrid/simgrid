@@ -358,4 +358,6 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Compli
       events_seen.insert(e);
     });
   }
+
+  SECTION("Test that the topological ordering contains only the events of the configuration") {}
 }

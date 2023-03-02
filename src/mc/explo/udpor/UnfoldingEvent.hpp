@@ -26,7 +26,7 @@ public:
   UnfoldingEvent& operator=(UnfoldingEvent const&) = default;
   UnfoldingEvent(UnfoldingEvent&&)                 = default;
 
-  EventSet get_history() const;
+  EventSet get_history();
   bool in_history_of(const UnfoldingEvent* otherEvent) const;
 
   bool conflicts_with(const UnfoldingEvent* otherEvent) const;
