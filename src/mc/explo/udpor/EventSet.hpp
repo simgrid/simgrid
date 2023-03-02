@@ -11,6 +11,7 @@
 #include <cstddef>
 #include <initializer_list>
 #include <unordered_set>
+#include <vector>
 
 namespace simgrid::mc::udpor {
 
@@ -25,6 +26,7 @@ public:
   EventSet& operator=(EventSet&&)      = default;
   EventSet(EventSet&&)                 = default;
   explicit EventSet(Configuration&& config);
+  explicit EventSet(std::vector<const UnfoldingEvent*>&& raw_events) : events_(raw_events.begin(), raw_events.end()) {}
   explicit EventSet(std::unordered_set<const UnfoldingEvent*>&& raw_events) : events_(raw_events) {}
   explicit EventSet(std::initializer_list<const UnfoldingEvent*> event_list) : events_(std::move(event_list)) {}
 

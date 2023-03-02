@@ -32,37 +32,26 @@ struct maximal_subsets_iterator
 public:
   // A function which answers the question "do I need to consider maximal sets
   // that contain this node?"
-  using node_filter_function = std::function<bool(const UnfoldingEvent*)>;
+  using node_filter_function       = std::function<bool(const UnfoldingEvent*)>;
+  using topological_order_position = std::vector<const UnfoldingEvent*>::const_iterator;
 
-  maximal_subsets_iterator();
-  maximal_subsets_iterator(const Configuration& config)
-      : maximal_subsets_iterator(
-            config, [](const UnfoldingEvent*) constexpr { return true; })
-  {
-  }
+  maximal_subsets_iterator() = default;
+  explicit maximal_subsets_iterator(const Configuration& config) : maximal_subsets_iterator(config, std::nullopt) {}
 
-  maximal_subsets_iterator(const Configuration& config, node_filter_function filter)
+  maximal_subsets_iterator(const Configuration& config, std::optional<node_filter_function> filter)
       : config({config})
       , topological_ordering(config.get_topologically_sorted_events_of_reverse_graph())
-      , filter(filter)
+      , filter_function(filter)
+      , current_maximal_set({EventSet()})
   {
-    // The idea here is that initially, no work has been done; but we want
-    // it to be the case that the iterator points at the very first
-    // element in the list. Effectively, we want to take the first step
-    if (not topological_ordering.empty()) {
-      auto earliest_element_iter = topological_ordering.begin();
-      // add_element_to_current_maximal_set(*earliest_element_iter);
-      backtrack_points.push(earliest_element_iter);
-    }
   }
 
 private:
-  using topological_order_position = std::vector<const UnfoldingEvent*>::const_iterator;
   const std::optional<std::reference_wrapper<const Configuration>> config;
   const std::vector<const UnfoldingEvent*> topological_ordering;
-  const std::optional<node_filter_function> filter;
+  const std::optional<node_filter_function> filter_function = std::nullopt;
 
-  EventSet current_maximal_set = EventSet();
+  std::optional<EventSet> current_maximal_set = std::nullopt;
   std::stack<topological_order_position> backtrack_points;
 
   /**
@@ -76,26 +65,57 @@ private:
    * its `current_maximal_set`)
    */
   struct bookkeeper {
-  private:
-    using topological_order_position = maximal_subsets_iterator::topological_order_position;
-    std::unordered_map<const UnfoldingEvent*, unsigned> event_counts;
-
-    bool is_candidate_event(const UnfoldingEvent*) const;
-
   public:
+    using topological_order_position = maximal_subsets_iterator::topological_order_position;
     void mark_included_in_maximal_set(const UnfoldingEvent*);
     void mark_removed_from_maximal_set(const UnfoldingEvent*);
+    topological_order_position find_next_candidate_event(topological_order_position first,
+                                                         topological_order_position last) const;
 
-    topological_order_position find_next_event(topological_order_position first, topological_order_position last) const;
+  private:
+    std::unordered_map<const UnfoldingEvent*, unsigned> event_counts;
+
+    /// @brief Whether or not the given event, according to the
+    /// bookkeeping that has been done thus far, can be added to the
+    /// current candidate maximal set
+    bool is_candidate_event(const UnfoldingEvent*) const;
+
   } bookkeeper;
 
   void add_element_to_current_maximal_set(const UnfoldingEvent*);
   void remove_element_from_current_maximal_set(const UnfoldingEvent*);
 
+  /**
+   * @brief Moves to the next node in the topological ordering
+   * by continuing the search in the tree of maximal event sets
+   * from where we currently believe we are in the tree
+   *
+   * @note: This method is a mutating method: it manipulates the
+   * iterator such that the iterator refers to the next maximal
+   * set sans the element returned. The `increment()` function performs
+   * the rest of the work needed to actually complete the transition
+   *
+   * @returns an iterator poiting to the event that should next
+   * be added to the set of maximal events if such an event exists,
+   * or to the end of the topological ordering if no such event exists
+   */
+  topological_order_position continue_traversal_of_maximal_events_tree();
+
+  /// @brief Whether or not we should even consider cases where the given
+  /// event `e` is included in the maximal configurations
+  bool should_consider_event(const UnfoldingEvent*) const;
+
   // boost::iterator_facade<...> interface to implement
   void increment();
   bool equal(const maximal_subsets_iterator& other) const { return current_maximal_set == other.current_maximal_set; }
-  const EventSet& dereference() const { return current_maximal_set; }
+  const EventSet& dereference() const
+  {
+    static const EventSet empty_set = EventSet();
+    if (current_maximal_set.has_value()) {
+      return current_maximal_set.value();
+    }
+    return empty_set;
+  }
 
   // Allows boost::iterator_facade<...> to function properly
   friend class boost::iterator_core_access;
