@@ -68,6 +68,12 @@ public:
    * @brief Whether or not this set of events is
    * a *maximal event set*, i.e. whether each element
    * of the set causes none of the others
+   *
+   * A set of events `E` is said to be _maximal_ if
+   * it is causally-free. Formally,
+   *
+   * 1. For each event `e` in `E`, there is no event
+   * `e'` in `E` such that `e < e'`
    */
   bool is_maximal_event_set() const;
 };

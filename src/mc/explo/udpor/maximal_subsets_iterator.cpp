@@ -8,26 +8,50 @@ namespace simgrid::mc::udpor {
 
 void maximal_subsets_iterator::increment()
 {
-  if (current_maximal_set = std::nullopt) {
+  if (current_maximal_set == std::nullopt) {
     return;
   }
 
-  const auto next_event_ref = continue_traversal_of_maximal_events_tree();
-  if (next_event_ref == topological_ordering.end()) {
+  if (topological_ordering.empty()) {
+    // Stop immediately if there's nothing to search
     current_maximal_set = std::nullopt;
     return;
   }
 
-  // We found some other event `e'` which is not in causally related with anything
-  // that currently exists in `current_maximal_set`. Add it in
-  add_element_to_current_maximal_set(*next_event_ref);
-  backtrack_points.push(next_event_ref);
+  // The initial step simply allows us to move past the initial empty set correctly
+  if (!has_started_searching) {
+    has_started_searching = true;
+
+    // Otherwise, the very first step is to push the very first
+    // element of the topological ordering
+    add_element_to_current_maximal_set(*topological_ordering.begin());
+    backtrack_points.push(topological_ordering.begin());
+  } else {
+
+    const auto next_event_ref = continue_traversal_of_maximal_events_tree();
+    if (next_event_ref == topological_ordering.end()) {
+      current_maximal_set = std::nullopt;
+      return;
+    }
+
+    // We found some other event `e'` which is not in causally related with anything
+    // that currently exists in `current_maximal_set`. Add it in
+    add_element_to_current_maximal_set(*next_event_ref);
+    backtrack_points.push(next_event_ref);
+  }
 }
 
 maximal_subsets_iterator::topological_order_position
 maximal_subsets_iterator::continue_traversal_of_maximal_events_tree()
 {
-  while (not backtrack_points.empty()) {
+  // Nothing needs to be done if there isn't anyone to search for...
+  if (backtrack_points.empty()) {
+    return topological_ordering.end();
+  }
+
+  // 1. First, check if we can keep expanding from the
+  // maximal set that we currently have
+  {
     // This is an iterator which points to the latest event `e` that
     // was added to what is currently the maximal set
     const auto latest_event_ref = backtrack_points.top();
@@ -41,31 +65,36 @@ maximal_subsets_iterator::continue_traversal_of_maximal_events_tree()
     // will not change whether or not to now allow someone before `e`
     // in the ordering (otherwise, they would have to be in `e`'s history
     // and therefore would come after `e`)
-    auto next_event_ref = bookkeeper.find_next_candidate_event(latest_event_ref, topological_ordering.end());
+    const auto next_event_ref = bookkeeper.find_next_candidate_event(latest_event_ref, topological_ordering.end());
 
-    // If we found some event, we can stop
+    // If we can expand from what we currently have, we can stop
     if (next_event_ref != topological_ordering.end() and should_consider_event(*next_event_ref)) {
       return next_event_ref;
-    } else {
-      // Otherwise, if we can't find another event to add after `e` that
-      // we need to consider, we retry after first removing the latest event.
-      // This effectively tests "check now with all combinations that3
-      // exclude the latest event".
-      //
-      // Note: it is important to remove the element FIRST before performing
-      // the second search, as removal may enable dependencies of `e` to be selected
-      remove_element_from_current_maximal_set(*latest_event_ref);
-      backtrack_points.pop();
+    }
+  }
 
-      // We begin the search AFTER the event we popped: we only want
-      // to consider those events that could be added AFTER `e` and
-      // not `e` itself again
-      next_event_ref = bookkeeper.find_next_candidate_event(latest_event_ref + 1, topological_ordering.end());
+  // Otherwise, we backtrack: we repeatedly pop off events that we know we
+  // are finished with
+  while (not backtrack_points.empty()) {
+    // Otherwise, if we can't find another event to add after `e` that
+    // we need to consider, we retry after first removing the latest event.
+    // This effectively tests "check now with all combinations that3
+    // exclude the latest event".
+    //
+    // Note: it is important to remove the element FIRST before performing
+    // the second search, as removal may enable dependencies of `e` to be selected
+    const auto latest_event_ref = backtrack_points.top();
+    remove_element_from_current_maximal_set(*latest_event_ref);
+    backtrack_points.pop();
 
-      // If we finally found some event AFTER removal, we can stop
-      if (next_event_ref != topological_ordering.end() and should_consider_event(*next_event_ref)) {
-        return next_event_ref;
-      }
+    // We begin the search AFTER the event we popped: we only want
+    // to consider those events that could be added AFTER `e` and
+    // not `e` itself again
+    const auto next_event_ref = bookkeeper.find_next_candidate_event(latest_event_ref + 1, topological_ordering.end());
+
+    // If we finally found some event AFTER removal, we can stop
+    if (next_event_ref != topological_ordering.end() and should_consider_event(*next_event_ref)) {
+      return next_event_ref;
     }
   }
   return topological_ordering.end();

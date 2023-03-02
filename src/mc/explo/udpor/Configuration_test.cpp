@@ -8,6 +8,9 @@
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/History.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
+#include "src/mc/explo/udpor/maximal_subsets_iterator.hpp"
+
+#include <unordered_map>
 
 using namespace simgrid::mc::udpor;
 
@@ -365,5 +368,130 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Compli
     });
   }
 
-  SECTION("Test that the topological ordering contains only the events of the configuration") {}
+  SECTION("Test that the topological ordering contains only the events of the configuration")
+  {
+    const EventSet events_seen = C.get_events();
+
+    SECTION("Forward direction")
+    {
+      auto ordered_events              = C.get_topologically_sorted_events();
+      const EventSet ordered_event_set = EventSet(std::move(ordered_events));
+      REQUIRE(events_seen == ordered_event_set);
+    }
+
+    SECTION("Reverse direction")
+    {
+      auto ordered_events              = C.get_topologically_sorted_events_of_reverse_graph();
+      const EventSet ordered_event_set = EventSet(std::move(ordered_events));
+      REQUIRE(events_seen == ordered_event_set);
+    }
+  }
+}
+
+TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Basic Testing of Maximal Subsets")
+{
+  // The following tests concern the given event structure:
+  //                e1
+  //              /   /
+  //             e2   e5
+  //            /     /
+  //           e3    e6
+  //           /     / /
+  //          e4    e7 e8
+  UnfoldingEvent e1;
+  UnfoldingEvent e2{&e1};
+  UnfoldingEvent e3{&e2};
+  UnfoldingEvent e4{&e3};
+  UnfoldingEvent e5{&e1};
+  UnfoldingEvent e6{&e5};
+  UnfoldingEvent e7{&e6};
+  UnfoldingEvent e8{&e6};
+
+  SECTION("Iteration over an empty configuration yields only the empty set")
+  {
+    Configuration C;
+    maximal_subsets_iterator first(C);
+    maximal_subsets_iterator last;
+
+    REQUIRE(*first == EventSet());
+    ++first;
+    REQUIRE(first == last);
+  }
+
+  SECTION("Check counts of maximal event sets discovered")
+  {
+    std::unordered_map<int, int> maximal_subset_counts;
+
+    Configuration C{&e1, &e2, &e3, &e4, &e5, &e6, &e7, &e8};
+    maximal_subsets_iterator first(C);
+    maximal_subsets_iterator last;
+
+    for (; first != last; ++first) {
+      maximal_subset_counts[(*first).size()]++;
+    }
+
+    // First, ensure that there are only sets of size 0, 1, 2, and 3
+    CHECK(maximal_subset_counts.size() == 4);
+
+    // The empty set should appear only once
+    REQUIRE(maximal_subset_counts[0] == 1);
+
+    // 8 is the number of nodes in the graph
+    REQUIRE(maximal_subset_counts[1] == 8);
+
+    // 13 = 3 * 4 (each of the left branch can combine with one in the right branch) + 1 (e7 + e8)
+    REQUIRE(maximal_subset_counts[2] == 13);
+
+    // e7 + e8 must be included, so that means we can combine from the left branch
+    REQUIRE(maximal_subset_counts[3] == 3);
+  }
+}
+
+TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Stress Test for Maximal Subsets Iteration")
+{
+  // The following tests concern the given event structure:
+  //                              e1
+  //                            /   /
+  //                          e2    e3
+  //                          / /   /  /
+  //               +------* e4 *e5 e6  e7
+  //               |        /   ///   /  /
+  //               |       e8   e9    e10
+  //               |      /  /   /\      /
+  //               |   e11 e12 e13 e14   e15
+  //               |   /      / / /   /  /
+  //               +-> e16     e17     e18
+  UnfoldingEvent e1;
+  UnfoldingEvent e2{&e1};
+  UnfoldingEvent e3{&e1};
+  UnfoldingEvent e4{&e2};
+  UnfoldingEvent e5{&e2};
+  UnfoldingEvent e6{&e3};
+  UnfoldingEvent e7{&e3};
+  UnfoldingEvent e8{&e4};
+  UnfoldingEvent e9{&e4, &e5, &e6};
+  UnfoldingEvent e10{&e6, &e7};
+  UnfoldingEvent e11{&e8};
+  UnfoldingEvent e12{&e8};
+  UnfoldingEvent e13{&e9};
+  UnfoldingEvent e14{&e9};
+  UnfoldingEvent e15{&e10};
+  UnfoldingEvent e16{&e5, &e11};
+  UnfoldingEvent e17{&e12, &e13, &e14};
+  UnfoldingEvent e18{&e14, &e15};
+  Configuration C{&e1, &e2, &e3, &e4, &e5, &e6, &e7, &e8, &e9, &e10, &e11, &e12, &e13, &e14, &e15, &e16, &e17, &e18};
+
+  SECTION("Every subset iterated over is maximal")
+  {
+    maximal_subsets_iterator first(C);
+    maximal_subsets_iterator last;
+
+    // Make sure we actually have something to iterate over
+    REQUIRE(first != last);
+
+    for (; first != last; ++first) {
+      REQUIRE((*first).size() <= C.get_events().size());
+      REQUIRE((*first).is_maximal_event_set());
+    }
+  }
 }

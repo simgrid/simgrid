@@ -16,7 +16,7 @@
 namespace simgrid::mc::udpor {
 
 /**
- * @brief An iterator over the tree of sets of maximal events that
+ * @brief An iterator over the tree of sets of (non-empty) maximal events that
  * can be generated from a given configuration
  *
  * This iterator traverses all possible sets of maximal events that
@@ -51,6 +51,11 @@ private:
   const std::vector<const UnfoldingEvent*> topological_ordering;
   const std::optional<node_filter_function> filter_function = std::nullopt;
 
+  // The boolean is a bit of an annoyance, but it works. Effectively,
+  // there's no way to distinguish between "we're starting the search
+  // after the empty set" and "we've finished the search" since the resulting
+  // maximal set and backtracking point stack will both be empty in both cases
+  bool has_started_searching                  = false;
   std::optional<EventSet> current_maximal_set = std::nullopt;
   std::stack<topological_order_position> backtrack_points;
 
@@ -89,6 +94,24 @@ private:
    * @brief Moves to the next node in the topological ordering
    * by continuing the search in the tree of maximal event sets
    * from where we currently believe we are in the tree
+   *
+   * At each stage of the iteration, the iterator points to
+   * a maximal event set that can be thought of as `R` + `A`:
+   *
+   * |   R    | A
+   * +--------+
+   *
+   * where `R` is some set of events and `A` is another event.
+   *
+   * The iterator first tries expansion from `R` + `A`. If it finds
+   * node `B` to expand, this means that there is a node in the tree of
+   * maximal event sets of `C` (the configuration traversed) such that
+   * `R` + `A` + `B` needs to be checked.
+   *
+   * If no such node is found, then the iterator must check `R` +
+   * some other node AFTER `A`. The new set of possibilities potentially
+   * includes some of `A`'s dependencies, so their counts are decremented
+   * prior to searching.
    *
    * @note: This method is a mutating method: it manipulates the
    * iterator such that the iterator refers to the next maximal
