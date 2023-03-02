@@ -20,7 +20,8 @@ class XBT_PRIVATE DFSExplorer : public Exploration {
   XBT_DECLARE_ENUM_CLASS(ReductionMode, none, dpor);
 
   ReductionMode reduction_mode_;
-  long backtrack_count_        = 0;
+  unsigned long backtrack_count_      = 0; // for statistics
+  unsigned long visited_states_count_ = 0; // for statistics
 
   static xbt::signal<void(RemoteApp&)> on_exploration_start_signal;
   static xbt::signal<void(RemoteApp&)> on_backtracking_signal;

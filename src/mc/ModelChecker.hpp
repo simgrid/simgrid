@@ -24,8 +24,6 @@ class ModelChecker {
   std::unique_ptr<RemoteProcess> remote_process_;
   Exploration* exploration_ = nullptr;
 
-  unsigned long visited_states_ = 0;
-
 public:
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;
@@ -50,9 +48,6 @@ public:
 
   Exploration* get_exploration() const { return exploration_; }
   void set_exploration(Exploration* exploration) { exploration_ = exploration; }
-
-  unsigned long get_visited_states() const { return visited_states_; }
-  void inc_visited_states() { visited_states_++; }
 
 private:
   void setup_ignore();
