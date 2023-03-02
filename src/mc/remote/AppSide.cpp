@@ -100,7 +100,9 @@ void AppSide::handle_deadlock_check(const s_mc_message_t*) const
     engine->display_all_actor_status();
   }
   // Send result:
-  s_mc_message_int_t answer{MessageType::DEADLOCK_CHECK_REPLY, deadlock};
+  s_mc_message_int_t answer = {};
+  answer.type  = MessageType::DEADLOCK_CHECK_REPLY;
+  answer.value = deadlock;
   xbt_assert(channel_.send(answer) == 0, "Could not send response");
 }
 void AppSide::handle_simcall_execute(const s_mc_message_simcall_execute_t* message) const
@@ -170,9 +172,10 @@ void AppSide::handle_actors_status() const
     i++;
   }
 
-  struct s_mc_message_actors_status_answer_t answer {
-    MessageType::ACTORS_STATUS_REPLY, num_actors, total_transitions
-  };
+  struct s_mc_message_actors_status_answer_t answer = {};
+  answer.type             = MessageType::ACTORS_STATUS_REPLY;
+  answer.count            = num_actors;
+  answer.transition_count = total_transitions;
 
   xbt_assert(channel_.send(answer) == 0, "Could not send ACTORS_STATUS_REPLY msg");
   if (answer.count > 0) {
@@ -333,7 +336,7 @@ void AppSide::unignore_heap(void* address, std::size_t size) const
   if (not MC_is_active())
     return;
 
-  s_mc_message_ignore_memory_t message;
+  s_mc_message_ignore_memory_t message = {};
   message.type = MessageType::UNIGNORE_HEAP;
   message.addr = (std::uintptr_t)address;
   message.size = size;
