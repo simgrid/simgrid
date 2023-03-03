@@ -144,14 +144,12 @@ void DFSExplorer::run()
       continue;
     }
 
-    if (_sg_mc_sleep_set) {
-	XBT_VERB("Sleep set actually containing:");
-	for (auto & [aid, transition] : state->get_sleep_set()) {
-   
-	    XBT_VERB("  <%ld,%s>", aid, transition.to_string().c_str());
-      
-	}
+    if (_sg_mc_sleep_set && XBT_LOG_ISENABLED(XBT_LOG_DEFAULT_CATEGORY, xbt_log_priority_verbose)) {
+      XBT_VERB("Sleep set actually containing:");
+      for (auto& [aid, transition] : state->get_sleep_set())
+        XBT_VERB("  <%ld,%s>", aid, transition.to_string().c_str());
     }
+
     /* Actually answer the request: let's execute the selected request (MCed does one step) */
     state->execute_next(next);
     on_transition_execute_signal(state->get_transition(), get_remote_app());
@@ -167,9 +165,9 @@ void DFSExplorer::run()
     /* If we want sleep set reduction, pass the old state to the new state so it can
      * both copy the sleep set and eventually removes things from it locally */
     if (_sg_mc_sleep_set)
-	next_state = std::make_unique<State>(get_remote_app(), state); 
+      next_state = std::make_unique<State>(get_remote_app(), state);
     else
-	next_state = std::make_unique<State>(get_remote_app());
+      next_state = std::make_unique<State>(get_remote_app());
 
     on_state_creation_signal(next_state.get(), get_remote_app());
 
@@ -225,10 +223,11 @@ void DFSExplorer::backtrack()
   bool found_backtracking_point = false;
   while (not stack_.empty() && not found_backtracking_point) {
     std::unique_ptr<State> state = std::move(stack_.back());
-    
+
     stack_.pop_back();
-    
-    XBT_DEBUG("Marking Transition >>%s<< of process %ld done and adding it to the sleep set", state->get_transition()->to_string().c_str(), state->get_transition()->aid_);
+
+    XBT_DEBUG("Marking Transition >>%s<< of process %ld done and adding it to the sleep set",
+              state->get_transition()->to_string().c_str(), state->get_transition()->aid_);
     state->add_sleep_set(state->get_transition()); // Actors are marked done when they are considerd in ActorState
 
     if (reduction_mode_ == ReductionMode::dpor) {
@@ -244,15 +243,17 @@ void DFSExplorer::backtrack()
           XBT_VERB("  %s (state=%ld)", prev_state->get_transition()->to_string().c_str(), prev_state->get_num());
           XBT_VERB("  %s (state=%ld)", state->get_transition()->to_string().c_str(), state->get_num());
 
-	  if (prev_state->is_actor_enabled(issuer_id)){
-	      if (not prev_state->is_actor_done(issuer_id))
-		  prev_state->mark_todo(issuer_id);
-	      else
-		  XBT_DEBUG("Actor %ld is already in done set: no need to explore it again", issuer_id);
-	  } else {
-	      XBT_DEBUG("Actor %ld is not enabled: DPOR may be failing. To stay sound, we are marking every enabled transition as todo", issuer_id);
-	      prev_state->mark_all_enabled_todo();
-	  }
+          if (prev_state->is_actor_enabled(issuer_id)) {
+            if (not prev_state->is_actor_done(issuer_id))
+              prev_state->mark_todo(issuer_id);
+            else
+              XBT_DEBUG("Actor %ld is already in done set: no need to explore it again", issuer_id);
+          } else {
+            XBT_DEBUG("Actor %ld is not enabled: DPOR may be failing. To stay sound, we are marking every enabled "
+                      "transition as todo",
+                      issuer_id);
+            prev_state->mark_all_enabled_todo();
+          }
           break;
         } else {
           XBT_VERB("INDEPENDENT Transitions:");
