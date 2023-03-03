@@ -12,6 +12,11 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI ,(mpi)");
 
+void MPI_Init()
+{
+  MPI_Init(nullptr, nullptr);
+}
+
 #define NOT_YET_IMPLEMENTED                                                                                            \
   {                                                                                                                    \
     xbt_die("Not yet implemented: %s. Please contact the SimGrid team if support is needed", __func__);                \
