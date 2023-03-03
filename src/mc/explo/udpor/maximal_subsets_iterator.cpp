@@ -6,6 +6,20 @@
 
 namespace simgrid::mc::udpor {
 
+maximal_subsets_iterator::maximal_subsets_iterator(const Configuration& config,
+                                                   std::optional<node_filter_function> filter)
+    : config({config}), current_maximal_set({EventSet()})
+{
+  const auto candidate_ordering = config.get_topologically_sorted_events_of_reverse_graph();
+  if (filter.has_value()) {
+    // Only store the events in the ordering that "matter" to us
+    std::copy_if(std::move_iterator(candidate_ordering.begin()), std::move_iterator(candidate_ordering.end()),
+                 std::back_inserter(topological_ordering), filter.value());
+  } else {
+    topological_ordering = std::move(candidate_ordering);
+  }
+}
+
 void maximal_subsets_iterator::increment()
 {
   if (current_maximal_set == std::nullopt) {
@@ -92,11 +106,6 @@ maximal_subsets_iterator::continue_traversal_of_maximal_events_tree()
 
 bool maximal_subsets_iterator::bookkeeper::is_candidate_event(const UnfoldingEvent* e) const
 {
-  // The event must pass the filter, if it exists
-  if (filter_function.has_value() && not filter_function.value()(e)) {
-    return false;
-  }
-
   if (const auto e_count = event_counts.find(e); e_count != event_counts.end()) {
     return e_count->second == 0;
   }

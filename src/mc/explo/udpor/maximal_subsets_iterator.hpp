@@ -37,18 +37,11 @@ public:
 
   maximal_subsets_iterator() = default;
   explicit maximal_subsets_iterator(const Configuration& config) : maximal_subsets_iterator(config, std::nullopt) {}
-
-  maximal_subsets_iterator(const Configuration& config, std::optional<node_filter_function> filter)
-      : config({config})
-      , topological_ordering(config.get_topologically_sorted_events_of_reverse_graph())
-      , current_maximal_set({EventSet()})
-      , bookkeeper(filter)
-  {
-  }
+  maximal_subsets_iterator(const Configuration& config, std::optional<node_filter_function> filter);
 
 private:
   const std::optional<std::reference_wrapper<const Configuration>> config;
-  const std::vector<const UnfoldingEvent*> topological_ordering;
+  std::vector<const UnfoldingEvent*> topological_ordering;
 
   // The boolean is a bit of an annoyance, but it works. Effectively,
   // there's no way to distinguish between "we're starting the search
@@ -71,7 +64,6 @@ private:
   struct bookkeeper {
   public:
     using topological_order_position = maximal_subsets_iterator::topological_order_position;
-    explicit bookkeeper(std::optional<node_filter_function> filter = std::nullopt) : filter_function(filter) {}
 
     void mark_included_in_maximal_set(const UnfoldingEvent*);
     void mark_removed_from_maximal_set(const UnfoldingEvent*);
@@ -80,7 +72,6 @@ private:
 
   private:
     std::unordered_map<const UnfoldingEvent*, unsigned> event_counts;
-    const std::optional<node_filter_function> filter_function;
 
     /// @brief Whether or not the given event, according to the
     /// bookkeeping that has been done thus far, can be added to the
