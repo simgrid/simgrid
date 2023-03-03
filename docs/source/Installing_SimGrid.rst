@@ -99,7 +99,7 @@ boost recommended components (optional).
   - boost-stacktrace is used to get nice stacktraces on errors in SimGrid.
   - On Debian / Ubuntu: ``apt install libboost-context-dev libboost-stacktrace-dev``
 python bindings (optional):
-  - On Debian / Ubuntu: ``apt install pybind11-dev``
+  - On Debian / Ubuntu: ``apt install pybind11-dev python3-dev``
 Model-checking dependencies (optional)
   - On Debian / Ubuntu: ``apt install libunwind-dev libdw-dev libelf-dev libevent-dev``
 Eigen3 (optional)

@@ -141,7 +141,7 @@ if(CMAKE_VERSION VERSION_LESS "3.12")
     message(FATAL_ERROR "Please install Python (version 3 or higher) to compile SimGrid.")
   endif()
 else()
-  find_package(Python3 COMPONENTS Interpreter Development)
+  find_package(Python3 COMPONENTS Interpreter)
   if(NOT Python3_Interpreter_FOUND)
     message(FATAL_ERROR "Please install Python (version 3 or higher) to compile SimGrid.")
   endif()
@@ -769,15 +769,17 @@ if((NOT DEFINED enable_python) OR enable_python)
       set(pybind11_FOUND OFF)
     endif()
   endif()
-
-  if(NOT PYTHONLIBS_FOUND AND NOT Python3_Development_FOUND)
-    message(STATUS "Python libs not found. Turn pybind11 off.")
-
-    set(pybind11_FOUND OFF)
-  endif()
 endif()
 
-option(enable_python "Whether the Python bindings are activated." ${pybind11_FOUND}) # ON by default if dependencies are met
+find_package(Python3 COMPONENTS Development)
+if(NOT Python3_Development_FOUND OR NOT pybind11_FOUND)
+  message(STATUS "SimGrid Python bindings cannot be built on this system.")
+  set(default_enable_python OFF)
+else()
+  set(default_enable_python ON)
+endif()
+
+option(enable_python "Whether the Python bindings are activated." ${default_enable_python}) # ON by default if dependencies are met
 
 if("${CMAKE_SYSTEM}" MATCHES "FreeBSD" AND enable_model-checking AND enable_python)
   message(WARNING "FreeBSD + Model-Checking + Python = too much for now. Disabling the Python bindings.")
@@ -785,6 +787,9 @@ if("${CMAKE_SYSTEM}" MATCHES "FreeBSD" AND enable_model-checking AND enable_pyth
 endif()
 
 if(enable_python)
+  if(NOT Python3_Development_FOUND)
+    message(FATAL_ERROR "Please install the development components of Python (python3-dev on Debian) to build the Python bindings (or disable that option).")
+  endif()
   if(pybind11_FOUND)
     message(STATUS "Found pybind11.")
     if(NOT enable_lto)
