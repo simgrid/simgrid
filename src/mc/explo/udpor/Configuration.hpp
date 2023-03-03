@@ -104,6 +104,19 @@ public:
    */
   std::vector<const UnfoldingEvent*> get_topologically_sorted_events_of_reverse_graph() const;
 
+  /**
+   * @brief Computes the smallest set of events whose collective histories
+   * capture all events of this configuration
+   *
+   * @invariant The set of all events in the collective histories
+   * of the events returned by this method is equal to the set of events
+   * in this configuration
+   *
+   * @returns the smallest set of events whose events generates this configuration
+   * (denoted `config(E)`)
+   */
+  EventSet get_minimally_reproducible_events() const;
+
 private:
   /**
    * @brief The most recent event added to the configuration
