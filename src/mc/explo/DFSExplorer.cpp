@@ -144,7 +144,7 @@ void DFSExplorer::run()
       continue;
     }
 
-    if (_sg_mc_sleep_set && XBT_LOG_ISENABLED(XBT_LOG_DEFAULT_CATEGORY, xbt_log_priority_verbose)) {
+    if (_sg_mc_sleep_set && XBT_LOG_ISENABLED(mc_dfs, xbt_log_priority_verbose)) {
       XBT_VERB("Sleep set actually containing:");
       for (auto& [aid, transition] : state->get_sleep_set())
         XBT_VERB("  <%ld,%s>", aid, transition.to_string().c_str());
