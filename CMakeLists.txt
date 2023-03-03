@@ -21,12 +21,8 @@ set(SIMGRID_VERSION_STRING "SimGrid version ${release_version}")
 set(libsimgrid_version "${release_version}")
 
 # Basic checks on cmake
-cmake_minimum_required(VERSION 3.5)
-#for lto, to avoid warning (should be removed when switching to requiring cmake >= 3.9)
-if(NOT CMAKE_VERSION VERSION_LESS "3.9")
-  cmake_policy(SET CMP0069 NEW)
-endif()
-# once we move >= 3.13, we should use target_link_option in examples/sthread
+cmake_minimum_required(VERSION 3.12)
+# once we move CMake to >= 3.13, we should use target_link_option in examples/sthread
 message(STATUS "Cmake version ${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_HOME_DIRECTORY}/tools/cmake/Modules)
 
@@ -132,21 +128,11 @@ if(NOT PERL_FOUND)
 endif()
 
 # tesh.py needs python 3 (or the module python-subprocess32 on python2.8+)
-if(CMAKE_VERSION VERSION_LESS "3.12")
-  set(PythonInterp_FIND_VERSION 3)
-  set(PythonInterp_FIND_VERSION_COUNT 1)
-  set(PythonInterp_FIND_VERSION_MAJOR 3)
-  include(FindPythonInterp)
-  if(NOT PYTHONINTERP_FOUND)
-    message(FATAL_ERROR "Please install Python (version 3 or higher) to compile SimGrid.")
-  endif()
-else()
-  find_package(Python3 COMPONENTS Interpreter)
-  if(NOT Python3_Interpreter_FOUND)
-    message(FATAL_ERROR "Please install Python (version 3 or higher) to compile SimGrid.")
-  endif()
-  set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE})
+find_package(Python3 COMPONENTS Interpreter)
+if(NOT Python3_Interpreter_FOUND)
+  message(FATAL_ERROR "Please install Python (version 3 or higher) to compile SimGrid.")
 endif()
+set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE})
 
 SET(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/lib)
 

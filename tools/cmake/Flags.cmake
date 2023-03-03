@@ -122,18 +122,10 @@ if(enable_lto) # User wants LTO. Try if we can do that
   set(enable_lto OFF)
   if(enable_compile_optimizations
       AND (NOT enable_model-checking))
-    if(CMAKE_VERSION VERSION_LESS "3.9")
-      if ( CMAKE_COMPILER_IS_GNUCC
-         AND (CMAKE_C_COMPILER_VERSION VERSION_GREATER "4.8.5")
-         AND (LINKER_VERSION VERSION_GREATER "2.22"))
-        set(enable_lto ON)
-      endif()
-    else()
-      include(CheckIPOSupported)
-      check_ipo_supported(RESULT ipo LANGUAGES C CXX)
-      if(ipo)
-        set(enable_lto ON)
-      endif()
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT ipo LANGUAGES C CXX)
+    if(ipo)
+      set(enable_lto ON)
     endif()
   endif()
 
