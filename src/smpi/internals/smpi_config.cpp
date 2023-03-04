@@ -42,8 +42,11 @@
 # ifndef MAC_OS_X_VERSION_10_12
 #   define MAC_OS_X_VERSION_10_12 101200
 # endif
+# ifndef __MAC_11_0
+#   define __MAC_11_0 110000
+# endif
 
-constexpr bool HAVE_WORKING_MMAP = (MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12);
+constexpr bool HAVE_WORKING_MMAP = ((MAC_OS_X_VERSION_MIN_REQUIRED >= MAC_OS_X_VERSION_10_12) && (MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_11_0));
 #elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__sun) || defined(__HAIKU__) || defined(__MUSL__)
 constexpr bool HAVE_WORKING_MMAP = false;
 #else
