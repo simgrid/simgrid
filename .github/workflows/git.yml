@@ -10,7 +10,12 @@ on: workflow_dispatch
 
 jobs:
   simgrid-regular-ubuntu:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.config.os }}-latest
+    strategy:
+        matrix:
+          config:
+          - { name: "Ubuntu gcc", os: ubuntu, cc: "gcc", cxx: "g++", generator: "Unix Makefiles", cmake_extra_options: "-DLTO_EXTRA_FLAG=auto" }
+          - { name: "MacOS clang", os: macos, cc: "clang", cxx: "clang++", generator: "Unix Makefiles", cmake_extra_options: "-DLTO_EXTRA_FLAG=auto" }
     permissions:
       contents: read
       packages: write
@@ -18,10 +23,20 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: build
+      - name: Init options
+        run: |
+          echo "CC=${{ matrix.config.cc }}"   >> $GITHUB_ENV
+          echo "CXX=${{ matrix.config.cxx }}" >> GITHUB_ENV
+      - name: prepare for ubuntu
+        if: matrix.config.os == 'ubuntu'
         run: |
           sudo apt-get update && sudo apt-get install ninja-build libboost-dev libboost-context-dev pybind11-dev
+          sudo apt-get install libunwind-dev libdw-dev libelf-dev libevent-dev
+      - name: prepare for macos
+        if: matrix.config.os == 'macos'
+        run: brew install boost eigen pybind11 ninja
+      - name: build
+        run: |
           mkdir build ; cd build
           cmake -GNinja -Denable_debug=ON -Denable_documentation=OFF -Denable_coverage=OFF \
                 -Denable_compile_optimizations=ON -Denable_compile_warnings=ON \
@@ -33,11 +48,11 @@ jobs:
       - name: Create the failure Message
         if: ${{ failure() }}
         run: |
-          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"Failure when building STABLE docker image v3.$ver! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"Failure when building simgrid on ${{ matrix.config.name }}! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - name: Create the success Message
         if: ${{ success() }}
         run: |
-          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"Docker STABLE image v3.$ver built and pushed successfully! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"Simgrid built on successfully on ${{ matrix.config.name }}! successfully! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@master
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
@@ -70,11 +85,11 @@ jobs:
       - name: Create the failure Message
         if: ${{ failure() }}
         run: |
-          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"Failure when building STABLE docker image v3.$ver! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#FF0000\", \"text\":\"Failure when building simgrid Modelchecker on ubuntu-stable! See ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - name: Create the success Message
         if: ${{ success() }}
         run: |
-          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"Docker STABLE image v3.$ver built and pushed successfully! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
+          ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"Simgrid Modelchecker built successfully on ubuntu-stable! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@master
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
