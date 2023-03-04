@@ -141,11 +141,6 @@ if [ "$os" = "Debian" ] ; then
     have_NS3="yes"
   fi
 fi
-MAY_HINT_AT_NS3=""
-if [ $NODE_NAME = "ubuntu-lts" ] ; then
-  MAY_HINT_AT_NS3="-DNS3_HINT=/builds/ns-3-dev/build/"
-  have_NS3="yes"
-fi
 if [ "$os" = "nixos" ] ; then
   have_NS3="yes"
 fi
@@ -209,7 +204,7 @@ cmake -G"$GENERATOR" ${INSTALL:+-DCMAKE_INSTALL_PREFIX=$INSTALL} \
   -Denable_compile_warnings=$(onoff test "$GENERATOR" != "MSYS Makefiles") -Denable_smpi=ON \
   -Denable_ns3=$(onoff test "$have_NS3" = "yes" -a "$build_mode" = "Debug") \
   -DSIMGRID_PYTHON_LIBDIR=${SIMGRID_PYTHON_LIBDIR} \
-  -DCMAKE_DISABLE_SOURCE_CHANGES=ON ${MAY_DISABLE_LTO} ${MAY_HINT_AT_NS3} \
+  -DCMAKE_DISABLE_SOURCE_CHANGES=ON ${MAY_DISABLE_LTO} \
   -DLTO_EXTRA_FLAG="auto" \
   -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
   "$SRCFOLDER"
