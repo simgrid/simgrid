@@ -43,7 +43,7 @@ jobs:
                 -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON \
                 -DCMAKE_DISABLE_SOURCE_CHANGES=ON  -DLTO_EXTRA_FLAG="auto" ..
           ninja tests
-          ctest --output-on-failure
+          ctest --output-on-failure -j$(nproc)
       - name: Create the failure Message
         if: ${{ failure() }}
         run: |
@@ -53,6 +53,7 @@ jobs:
         run: |
           ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"Simgrid built successfully on ${{ matrix.config.name }}! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@master
+        if: ${{ always() }}
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
@@ -80,7 +81,7 @@ jobs:
                 -Denable_ns3=OFF \
                 -DCMAKE_DISABLE_SOURCE_CHANGES=ON  -DLTO_EXTRA_FLAG="auto" ..
           ninja tests
-          ctest --output-on-failure
+          ctest --output-on-failure -j$(nproc)
       - name: Create the failure Message
         if: ${{ failure() }}
         run: |
@@ -90,6 +91,7 @@ jobs:
         run: |
           ver=$(grep set.SIMGRID_VERSION_MINOR CMakeLists.txt|sed 's/[^"]*"//'|sed 's/".*$//') echo "{\"attachments\": [{\"color\": \"#00FF00\", \"text\":\"Simgrid Modelchecker built successfully on ubuntu-stable! ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}]}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@master
+        if: ${{ always() }}
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_CHANNEL: ${{ secrets.MATTERMOST_CHANNEL}}
