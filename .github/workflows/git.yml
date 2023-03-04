@@ -31,7 +31,6 @@ jobs:
         if: matrix.config.os == 'ubuntu'
         run: |
           sudo apt-get update && sudo apt-get install ninja-build libboost-dev libboost-context-dev pybind11-dev
-          sudo apt-get install libunwind-dev libdw-dev libelf-dev libevent-dev
       - name: prepare for macos
         if: matrix.config.os == 'macos'
         run: brew install boost eigen pybind11 ninja
