@@ -67,7 +67,7 @@ fi
 
 echo "Step ${STEP}/${NSTEPS} - Building with debug=${builddebug}, SMPI=${buildsmpi}, MC=${buildmc}"
 
-if [ "${builddebug}/${buildsmpi}/${buildmc}" = "ON/ON/ON"; then
+if [ "${builddebug}/${buildsmpi}/${buildmc}" = "ON/ON/ON" ]; then
     # ${buildmc}=ON because "why not", and especially because it doesn't
     # compile with -D_GLIBCXX_DEBUG and -Denable_ns3=ON together
     export CXXFLAGS=-D_GLIBCXX_DEBUG
