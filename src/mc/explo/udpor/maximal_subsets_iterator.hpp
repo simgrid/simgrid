@@ -40,7 +40,7 @@ public:
   maximal_subsets_iterator(const Configuration& config, std::optional<node_filter_function> filter);
 
 private:
-  const std::optional<std::reference_wrapper<const Configuration>> config;
+  const std::optional<std::reference_wrapper<const Configuration>> config = std::nullopt;
   std::vector<const UnfoldingEvent*> topological_ordering;
 
   // The boolean is a bit of an annoyance, but it works. Effectively,
@@ -77,7 +77,6 @@ private:
     /// bookkeeping that has been done thus far, can be added to the
     /// current candidate maximal set
     bool is_candidate_event(const UnfoldingEvent*) const;
-
   } bookkeeper;
 
   void add_element_to_current_maximal_set(const UnfoldingEvent*);
