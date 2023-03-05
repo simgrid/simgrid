@@ -57,7 +57,7 @@ static void* consumer(void* id)
 
 int main(int argc, char** argv)
 {
-  char opt;
+  int opt;
   while ((opt = getopt(argc, argv, "c:C:p:P:q")) != -1) {
     switch (opt) {
       case 'q':
@@ -75,7 +75,7 @@ int main(int argc, char** argv)
       case 'P':
         ProducerCount = atoi(optarg);
         break;
-      case '?':
+      default: /* '?' */
         printf("unknown option: %c\n", optopt);
         break;
     }
@@ -87,7 +87,7 @@ int main(int argc, char** argv)
   sem_init(&empty, 0, BufferSize);
   sem_init(&full, 0, 0);
 
-  int* ids = malloc(sizeof(int) * ((ProducerCount + ConsumerCount)));
+  int* ids = malloc(sizeof(int) * (ProducerCount + ConsumerCount));
   for (int i = 0; i < ProducerCount + ConsumerCount; i++)
     ids[i] = i + 1; // The identity of each thread (for debug messages)
 
