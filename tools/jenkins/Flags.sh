@@ -66,6 +66,16 @@ else
 fi
 
 echo "Step ${STEP}/${NSTEPS} - Building with debug=${builddebug}, SMPI=${buildsmpi}, MC=${buildmc}"
+
+if [ "${builddebug}/${buildsmpi}/${buildmc}" = "ON/ON/ON"; then
+    # ${buildmc}=ON because "why not", and especially because it doesn't
+    # compile with -D_GLIBCXX_DEBUG and -Denable_ns3=ON together
+    export CXXFLAGS=-D_GLIBCXX_DEBUG
+    runtests="ON"
+else
+    runtests="OFF"
+fi
+
 cmake -Denable_documentation=OFF \
       -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
       -Denable_mallocators=ON -Denable_debug=${builddebug} \
@@ -76,5 +86,11 @@ cmake -Denable_documentation=OFF \
       "$WORKSPACE"
 
 make -j$NUMPROC tests
+
+if [ "$runtests" = "ON" ]; then
+    # exclude tests known to fail with _GLIBCXX_DEBUG
+    ctest -j$NUMPROC -E '^[ps]thread-|mc-bugged1-liveness'
+fi
+
 cd ..
 rm -rf build
