@@ -71,6 +71,7 @@ ExecImpl* ExecImpl::start()
   set_state(State::RUNNING);
   if (not MC_is_active() && not MC_record_replay_is_active()) {
     if (get_hosts().size() == 1) {
+      xbt_assert(not flops_amounts_.empty(), "Cannot start Exec: no flops_amount defined.");
       if (thread_count_ == 1) {
         model_action_ = get_host()->get_cpu()->execution_start(flops_amounts_.front(), bound_);
         model_action_->set_sharing_penalty(sharing_penalty_);
@@ -202,8 +203,6 @@ void ExecImpl::finish()
 void ExecImpl::reset()
 {
   clear_hosts();
-  bytes_amounts_.clear();
-  flops_amounts_.clear();
   set_start_time(-1.0);
 }
 
