@@ -454,7 +454,6 @@ void define_callbacks()
               static_cast<kernel::resource::NetworkModel*>(link.get_impl()->get_model())->get_bandwidth_factor() *
                   link.get_bandwidth());
     });
-    s4u::NetZone::on_seal_cb([](s4u::NetZone const& /*netzone*/) { currentContainer.pop_back(); });
     kernel::routing::NetPoint::on_creation.connect([](kernel::routing::NetPoint const& netpoint) {
       if (netpoint.is_router())
         new RouterContainer(netpoint.get_name(), currentContainer.back());
