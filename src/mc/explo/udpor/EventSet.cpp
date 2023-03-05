@@ -13,7 +13,7 @@ namespace simgrid::mc::udpor {
 
 EventSet::EventSet(Configuration&& config) : EventSet(config.get_events()) {}
 
-void EventSet::remove(UnfoldingEvent* e)
+void EventSet::remove(const UnfoldingEvent* e)
 {
   this->events_.erase(e);
 }
@@ -30,9 +30,9 @@ void EventSet::subtract(const Configuration& config)
 
 EventSet EventSet::subtracting(const EventSet& other) const
 {
-  std::unordered_set<UnfoldingEvent*> result = this->events_;
+  std::unordered_set<const UnfoldingEvent*> result = this->events_;
 
-  for (UnfoldingEvent* e : other.events_)
+  for (const UnfoldingEvent* e : other.events_)
     result.erase(e);
 
   return EventSet(std::move(result));
@@ -43,14 +43,14 @@ EventSet EventSet::subtracting(const Configuration& config) const
   return subtracting(config.get_events());
 }
 
-EventSet EventSet::subtracting(UnfoldingEvent* e) const
+EventSet EventSet::subtracting(const UnfoldingEvent* e) const
 {
   auto result = this->events_;
   result.erase(e);
   return EventSet(std::move(result));
 }
 
-void EventSet::insert(UnfoldingEvent* e)
+void EventSet::insert(const UnfoldingEvent* e)
 {
   this->events_.insert(e);
 }
@@ -65,7 +65,7 @@ void EventSet::form_union(const Configuration& config)
   form_union(config.get_events());
 }
 
-EventSet EventSet::make_union(UnfoldingEvent* e) const
+EventSet EventSet::make_union(const UnfoldingEvent* e) const
 {
   auto result = this->events_;
   result.insert(e);
@@ -74,9 +74,9 @@ EventSet EventSet::make_union(UnfoldingEvent* e) const
 
 EventSet EventSet::make_union(const EventSet& other) const
 {
-  std::unordered_set<UnfoldingEvent*> result = this->events_;
+  std::unordered_set<const UnfoldingEvent*> result = this->events_;
 
-  for (UnfoldingEvent* e : other.events_)
+  for (const UnfoldingEvent* e : other.events_)
     result.insert(e);
 
   return EventSet(std::move(result));
@@ -97,7 +97,7 @@ bool EventSet::empty() const
   return this->events_.empty();
 }
 
-bool EventSet::contains(UnfoldingEvent* e) const
+bool EventSet::contains(const UnfoldingEvent* e) const
 {
   return this->events_.find(e) != this->events_.end();
 }
@@ -114,18 +114,19 @@ bool EventSet::is_valid_configuration() const
 {
   /// @invariant: A collection of events `E` is a configuration
   /// if and only if following while following the history of
-  /// each event `e` of `E`you remain in `E`. In other words, you
+  /// each event `e` of `E` you remain in `E`. In other words, you
   /// only see events from set `E`
   ///
-  /// The proof is based on the definition of a configuration
-  /// which requires that all
+  /// The simple proof is based on the definition of a configuration
+  /// which requires that all events have their history contained
+  /// in the set
   const History history(*this);
   return this->contains(history);
 }
 
 bool EventSet::contains(const History& history) const
 {
-  return std::all_of(history.begin(), history.end(), [=](UnfoldingEvent* e) { return this->contains(e); });
+  return std::all_of(history.begin(), history.end(), [=](const UnfoldingEvent* e) { return this->contains(e); });
 }
 
 bool EventSet::is_maximal_event_set() const

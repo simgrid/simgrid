@@ -11,12 +11,13 @@
 #include <cstddef>
 #include <initializer_list>
 #include <unordered_set>
+#include <vector>
 
 namespace simgrid::mc::udpor {
 
 class EventSet {
 private:
-  std::unordered_set<UnfoldingEvent*> events_;
+  std::unordered_set<const UnfoldingEvent*> events_;
 
 public:
   EventSet()                           = default;
@@ -25,31 +26,32 @@ public:
   EventSet& operator=(EventSet&&)      = default;
   EventSet(EventSet&&)                 = default;
   explicit EventSet(Configuration&& config);
-  explicit EventSet(std::unordered_set<UnfoldingEvent*>&& raw_events) : events_(raw_events) {}
-  explicit EventSet(std::initializer_list<UnfoldingEvent*> event_list) : events_(std::move(event_list)) {}
+  explicit EventSet(std::vector<const UnfoldingEvent*>&& raw_events) : events_(raw_events.begin(), raw_events.end()) {}
+  explicit EventSet(std::unordered_set<const UnfoldingEvent*>&& raw_events) : events_(raw_events) {}
+  explicit EventSet(std::initializer_list<const UnfoldingEvent*> event_list) : events_(std::move(event_list)) {}
 
   auto begin() const { return this->events_.begin(); }
   auto end() const { return this->events_.end(); }
   auto cbegin() const { return this->events_.cbegin(); }
   auto cend() const { return this->events_.cend(); }
 
-  void remove(UnfoldingEvent*);
+  void remove(const UnfoldingEvent*);
   void subtract(const EventSet&);
   void subtract(const Configuration&);
-  EventSet subtracting(UnfoldingEvent*) const;
+  EventSet subtracting(const UnfoldingEvent*) const;
   EventSet subtracting(const EventSet&) const;
   EventSet subtracting(const Configuration&) const;
 
-  void insert(UnfoldingEvent*);
+  void insert(const UnfoldingEvent*);
   void form_union(const EventSet&);
   void form_union(const Configuration&);
-  EventSet make_union(UnfoldingEvent*) const;
+  EventSet make_union(const UnfoldingEvent*) const;
   EventSet make_union(const EventSet&) const;
   EventSet make_union(const Configuration&) const;
 
   size_t size() const;
   bool empty() const;
-  bool contains(UnfoldingEvent*) const;
+  bool contains(const UnfoldingEvent*) const;
   bool contains(const History&) const;
   bool is_subset_of(const EventSet&) const;
 
@@ -66,6 +68,12 @@ public:
    * @brief Whether or not this set of events is
    * a *maximal event set*, i.e. whether each element
    * of the set causes none of the others
+   *
+   * A set of events `E` is said to be _maximal_ if
+   * it is causally-free. Formally,
+   *
+   * 1. For each event `e` in `E`, there is no event
+   * `e'` in `E` such that `e < e'`
    */
   bool is_maximal_event_set() const;
 };

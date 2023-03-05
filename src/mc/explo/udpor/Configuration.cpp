@@ -14,7 +14,8 @@
 
 namespace simgrid::mc::udpor {
 
-Configuration::Configuration(std::initializer_list<UnfoldingEvent*> events) : Configuration(EventSet(std::move(events)))
+Configuration::Configuration(std::initializer_list<const UnfoldingEvent*> events)
+    : Configuration(EventSet(std::move(events)))
 {
 }
 
@@ -25,7 +26,7 @@ Configuration::Configuration(const EventSet& events) : events_(events)
   }
 }
 
-void Configuration::add_event(UnfoldingEvent* e)
+void Configuration::add_event(const UnfoldingEvent* e)
 {
   if (e == nullptr) {
     throw std::invalid_argument("Expected a nonnull `UnfoldingEvent*` but received NULL instead");
@@ -46,14 +47,14 @@ void Configuration::add_event(UnfoldingEvent* e)
   }
 }
 
-std::vector<UnfoldingEvent*> Configuration::get_topologically_sorted_events() const
+std::vector<const UnfoldingEvent*> Configuration::get_topologically_sorted_events() const
 {
   if (events_.empty()) {
-    return std::vector<UnfoldingEvent*>();
+    return std::vector<const UnfoldingEvent*>();
   }
 
-  std::stack<UnfoldingEvent*> event_stack;
-  std::vector<UnfoldingEvent*> topological_ordering;
+  std::stack<const UnfoldingEvent*> event_stack;
+  std::vector<const UnfoldingEvent*> topological_ordering;
   EventSet unknown_events = events_;
   EventSet temporarily_marked_events;
   EventSet permanently_marked_events;
@@ -63,7 +64,7 @@ std::vector<UnfoldingEvent*> Configuration::get_topologically_sorted_events() co
     event_stack.push(*unknown_events.begin());
 
     while (not event_stack.empty()) {
-      UnfoldingEvent* evt = event_stack.top();
+      const UnfoldingEvent* evt = event_stack.top();
       discovered_events.insert(evt);
 
       if (not temporarily_marked_events.contains(evt)) {
@@ -109,7 +110,7 @@ std::vector<UnfoldingEvent*> Configuration::get_topologically_sorted_events() co
   return topological_ordering;
 }
 
-std::vector<UnfoldingEvent*> Configuration::get_topologically_sorted_events_of_reverse_graph() const
+std::vector<const UnfoldingEvent*> Configuration::get_topologically_sorted_events_of_reverse_graph() const
 {
   // The method exploits the property that
   // a topological sorting S^R of the reverse graph G^R

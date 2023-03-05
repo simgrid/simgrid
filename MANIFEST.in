@@ -2169,6 +2169,8 @@ include src/mc/explo/udpor/UnfoldingEvent.cpp
 include src/mc/explo/udpor/UnfoldingEvent.hpp
 include src/mc/explo/udpor/UnfoldingEvent_test.cpp
 include src/mc/explo/udpor/Unfolding_test.cpp
+include src/mc/explo/udpor/maximal_subsets_iterator.cpp
+include src/mc/explo/udpor/maximal_subsets_iterator.hpp
 include src/mc/explo/udpor/udpor_forward.hpp
 include src/mc/inspect/DwarfExpression.cpp
 include src/mc/inspect/DwarfExpression.hpp

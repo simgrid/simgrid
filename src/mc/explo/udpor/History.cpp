@@ -20,11 +20,11 @@ History::Iterator::Iterator(const EventSet& initial_events, optional_configurati
   // and all subsequent events that are added by the iterator
 }
 
-History::Iterator& History::Iterator::operator++()
+void History::Iterator::increment()
 {
   if (not frontier.empty()) {
     // "Pop" the event at the "front"
-    UnfoldingEvent* e = *frontier.begin();
+    const UnfoldingEvent* e = *frontier.begin();
     frontier.remove(e);
 
     // If there is a configuration and if the
@@ -33,7 +33,7 @@ History::Iterator& History::Iterator::operator++()
     // be searched since the configuration contains
     // them (configuration invariant)
     if (configuration.has_value() && configuration->get().contains(e)) {
-      return *this;
+      return;
     }
 
     // Mark this event as seen
@@ -47,7 +47,19 @@ History::Iterator& History::Iterator::operator++()
     candidates.subtract(current_history);
     frontier.form_union(candidates);
   }
-  return *this;
+}
+
+const UnfoldingEvent* const& History::Iterator::dereference() const
+{
+  return *frontier.begin();
+}
+
+bool History::Iterator::equal(const Iterator& other) const
+{
+  // If what the iterator sees next is the same, we consider them
+  // to be the same iterator. This way, once the iterator has completed
+  // its search, it will be "equal" to an iterator searching nothing
+  return this->frontier == other.frontier;
 }
 
 EventSet History::get_all_events() const

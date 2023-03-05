@@ -533,6 +533,8 @@ set(MC_SRC
   src/mc/explo/udpor/EventSet.hpp
   src/mc/explo/udpor/History.cpp
   src/mc/explo/udpor/History.hpp
+  src/mc/explo/udpor/maximal_subsets_iterator.cpp
+  src/mc/explo/udpor/maximal_subsets_iterator.hpp
   src/mc/explo/udpor/UnfoldingEvent.cpp
   src/mc/explo/udpor/UnfoldingEvent.hpp
   src/mc/explo/udpor/Unfolding.cpp

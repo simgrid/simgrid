@@ -9,8 +9,10 @@
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 
+#include <boost/iterator/iterator_facade.hpp>
 #include <functional>
 #include <initializer_list>
+#include <optional>
 #include <vector>
 
 namespace simgrid::mc::udpor {
@@ -23,14 +25,14 @@ public:
   Configuration(Configuration&&)                 = default;
 
   explicit Configuration(const EventSet& events);
-  explicit Configuration(std::initializer_list<UnfoldingEvent*> events);
+  explicit Configuration(std::initializer_list<const UnfoldingEvent*> events);
 
   auto begin() const { return this->events_.begin(); }
   auto end() const { return this->events_.end(); }
 
-  bool contains(UnfoldingEvent* e) const { return this->events_.contains(e); }
+  bool contains(const UnfoldingEvent* e) const { return this->events_.contains(e); }
   const EventSet& get_events() const { return this->events_; }
-  UnfoldingEvent* get_latest_event() const { return this->newest_event; }
+  const UnfoldingEvent* get_latest_event() const { return this->newest_event; }
 
   /**
    * @brief Insert a new event into the configuration
@@ -59,7 +61,7 @@ public:
    * we shouldn't focus so much on this (let alone the additional benefit of the
    * assertions)
    */
-  void add_event(UnfoldingEvent* e);
+  void add_event(const UnfoldingEvent* e);
 
   /**
    * @brief Orders the events of the configuration such that
@@ -76,7 +78,7 @@ public:
    * structure appear farther along in the list than those that appear
    * closer to the "top"
    */
-  std::vector<UnfoldingEvent*> get_topologically_sorted_events() const;
+  std::vector<const UnfoldingEvent*> get_topologically_sorted_events() const;
 
   /**
    * @brief Orders the events of the configuration such that
@@ -100,13 +102,13 @@ public:
    * structure appear farther along in the list than those that appear
    * closer to the "bottom"
    */
-  std::vector<UnfoldingEvent*> get_topologically_sorted_events_of_reverse_graph() const;
+  std::vector<const UnfoldingEvent*> get_topologically_sorted_events_of_reverse_graph() const;
 
 private:
   /**
    * @brief The most recent event added to the configuration
    */
-  UnfoldingEvent* newest_event = nullptr;
+  const UnfoldingEvent* newest_event = nullptr;
 
   /**
    * @brief The events which make up this configuration

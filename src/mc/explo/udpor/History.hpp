@@ -10,6 +10,7 @@
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 
+#include <boost/iterator/iterator_facade.hpp>
 #include <functional>
 #include <optional>
 
@@ -53,8 +54,8 @@ public:
   History& operator=(History const&) = default;
   History(History&&)                 = default;
 
-  explicit History(UnfoldingEvent* e) : events_({e}) {}
   explicit History(EventSet event_set = EventSet()) : events_(std::move(event_set)) {}
+  explicit History(const UnfoldingEvent* e) : events_({e}) {}
 
   auto begin() const { return Iterator(events_); }
   auto end() const { return Iterator(EventSet()); }
@@ -99,25 +100,9 @@ private:
   /**
    * @brief An iterator which traverses the history of a set of events
    */
-  struct Iterator {
+  struct Iterator : boost::iterator_facade<Iterator, const UnfoldingEvent* const, boost::forward_traversal_tag> {
   public:
-    Iterator& operator++();
-    auto operator->() const { return frontier.begin().operator->(); }
-    auto operator*() const { return *frontier.begin(); }
-
-    // If what the iterator sees next is the same, we consider them
-    // to be the same iterator. This way, once the iterator has completed
-    // its search, it will be "equal" to an iterator searching nothing
-    bool operator==(const Iterator& other) const { return this->frontier == other.frontier; }
-    bool operator!=(const Iterator& other) const { return not(this->operator==(other)); }
-
-    using iterator_category      = std::forward_iterator_tag;
-    using difference_type        = int; // # of steps between
-    using value_type             = UnfoldingEvent*;
-    using pointer                = value_type*;
-    using reference              = value_type&;
     using optional_configuration = std::optional<std::reference_wrapper<const Configuration>>;
-
     Iterator(const EventSet& initial_events, optional_configuration config = std::nullopt);
 
   private:
@@ -129,8 +114,21 @@ private:
     EventSet current_history = EventSet();
 
     /// @brief What the iterator currently believes
+    // to be the set of maximal events
     EventSet maximal_events;
     optional_configuration configuration;
+
+    // boost::iterator_facade<...> interface to implement
+    void increment();
+    bool equal(const Iterator& other) const;
+
+    const UnfoldingEvent* const& dereference() const;
+
+    // Allows boost::iterator_facade<...> to function properly
+    friend class boost::iterator_core_access;
+
+    // Allow the `History` class to use some of the
+    // computation of the iterator
     friend History;
   };
 };

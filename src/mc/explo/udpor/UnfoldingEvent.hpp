@@ -18,7 +18,7 @@ namespace simgrid::mc::udpor {
 
 class UnfoldingEvent {
 public:
-  explicit UnfoldingEvent(std::initializer_list<UnfoldingEvent*> init_list);
+  explicit UnfoldingEvent(std::initializer_list<const UnfoldingEvent*> init_list);
   UnfoldingEvent(EventSet immediate_causes              = EventSet(),
                  std::shared_ptr<Transition> transition = std::make_unique<Transition>());
 
