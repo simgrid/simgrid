@@ -19,15 +19,15 @@ class DhistSampler : public Sampler {
   std::mt19937& gen_;
 
 public:
-  DhistSampler(bool log, std::mt19937& gen, const std::vector<double>& b, const std::vector<double> h)
-      : log_(log_), breaks_(b), heights_(h), gen_(gen)
+  DhistSampler(bool log, std::mt19937& gen, const std::vector<double>& b, const std::vector<double>& h)
+      : log_(log), breaks_(b), heights_(h), gen_(gen)
   {
   }
-  double sample()
+  double sample() override
   {
     std::piecewise_constant_distribution<double> d(breaks_.begin(), breaks_.end(), heights_.begin());
     auto value = d(gen_);
-    if (log)
+    if (log_)
       value = std::exp(value);
     return value;
   }
@@ -126,11 +126,11 @@ void load_platform(const sg4::Engine& e)
   /* setting network factors callbacks */
   auto* zone              = e.get_netzone_root();
   SegmentedRegression seg = read_json_file("pingpong_dhist.json", gen, false);
-  zone->set_lat_factor_cb(std::bind(&latency_factor_cb, lat_base, seg, std::placeholders::_1, std::placeholders::_2,
-                                    std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
+  zone->set_latency_factor_cb(std::bind(&latency_factor_cb, lat_base, seg, std::placeholders::_1, std::placeholders::_2,
+                                        std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
 
-  zone->set_bw_factor_cb(std::bind(&bw_factor_cb, bw_base, seg, std::placeholders::_1, std::placeholders::_2,
-                                   std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
+  zone->set_bandwidth_factor_cb(std::bind(&bw_factor_cb, bw_base, seg, std::placeholders::_1, std::placeholders::_2,
+                                          std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
 
   seg = read_json_file("send_dhist.json", gen);
   smpi_register_op_cost_callback(SmpiOperation::SEND, std::bind(&smpi_cost_cb, seg, std::placeholders::_1,

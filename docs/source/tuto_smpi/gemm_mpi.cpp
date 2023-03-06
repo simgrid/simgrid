@@ -3,8 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "stdio.h"
-#include "mpi.h"
+#include <mpi.h>
+#include <stdio.h>
 
 const int size = 3000;
 
@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 {
     int rank, nproc;
     int istart, iend;
-    double start, end;
+    // double start, end;
 
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &nproc);

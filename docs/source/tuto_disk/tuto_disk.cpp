@@ -35,7 +35,7 @@ static void estimate_bw(const sg4::Disk* disk, int n, int n_flows, bool read)
     act->wait();
 
   double elapsed_time = sg4::Engine::get_clock() - cur_time;
-  printf("%s,%s,%d,%d,%d,%lf\n", disk->get_cname(), read ? "read" : "write", n, n_flows, size, elapsed_time);
+  printf("%s,%s,%d,%d,%llu,%lf\n", disk->get_cname(), read ? "read" : "write", n, n_flows, size, elapsed_time);
 }
 
 static void host()
@@ -60,7 +60,7 @@ class DiskNoise {
   std::mt19937& gen_;
 
 public:
-  DiskNoise(double capacity, std::mt19937& gen, const std::vector<double>& b, const std::vector<double> h)
+  DiskNoise(double capacity, std::mt19937& gen, const std::vector<double>& b, const std::vector<double>& h)
       : bw_(capacity), breaks_(b), heights_(h), gen_(gen)
   {
   }

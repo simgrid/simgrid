@@ -18,13 +18,13 @@ class NormalMixture : public Sampler {
   std::mt19937& gen_;
 
 public:
-  NormalMixture(std::mt19937& gen) : gen_(gen) {}
+  explicit NormalMixture(std::mt19937& gen) : gen_(gen) {}
   void append(double mean, double stddev, double prob)
   {
     mixture_.push_back(std::normal_distribution<double>(mean, stddev));
     prob_.push_back(prob);
   }
-  double sample()
+  double sample() override
   {
     std::discrete_distribution<> d(prob_.begin(), prob_.end());
     int index    = d(gen_);
@@ -121,11 +121,11 @@ void load_platform(const sg4::Engine& e)
   auto zone = e.get_netzone_root();
 
   SegmentedRegression seg = read_json_file("pingpong_ckmeans.json", gen, false);
-  zone->set_lat_factor_cb(std::bind(&latency_factor_cb, lat_base, seg, std::placeholders::_1, std::placeholders::_2,
-                                    std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
+  zone->set_latency_factor_cb(std::bind(&latency_factor_cb, lat_base, seg, std::placeholders::_1, std::placeholders::_2,
+                                        std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
 
-  zone->set_bw_factor_cb(std::bind(&bw_factor_cb, bw_base, seg, std::placeholders::_1, std::placeholders::_2,
-                                   std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
+  zone->set_bandwidth_factor_cb(std::bind(&bw_factor_cb, bw_base, seg, std::placeholders::_1, std::placeholders::_2,
+                                          std::placeholders::_3, std::placeholders::_4, std::placeholders::_5));
 
   seg = read_json_file("send_ckmeans.json", gen);
   smpi_register_op_cost_callback(SmpiOperation::SEND, std::bind(&smpi_cost_cb, seg, std::placeholders::_1,
