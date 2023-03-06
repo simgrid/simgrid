@@ -74,12 +74,14 @@ int sthread_create(unsigned long int* thread, const void* /*pthread_attr_t* attr
   static int TID = 0;
   TID++;
   XBT_VERB("Create thread %d", TID);
-  int rank = 0;
+  std::string name = std::string("thread ") + std::to_string(TID);
 #if HAVE_SMPI
-  if (SMPI_is_inited())
+  if (SMPI_is_inited()) {
+    int rank = 0;
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    name = simgrid::xbt::string_printf("%d:%d", rank, TID);
+  }
 #endif
-  std::string name    = simgrid::xbt::string_printf("%d:%d", rank, TID);
   sg4::ActorPtr actor = sg4::Actor::create(
       name, lilibeth,
       [](auto* user_function, auto* param) {
