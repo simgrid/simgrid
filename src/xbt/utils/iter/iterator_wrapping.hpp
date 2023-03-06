@@ -43,10 +43,10 @@ private:
   iterator_wrapping(Args&&... begin_iteration) : m_args(std::forward<ref_or_value_t<Args>>(begin_iteration)...) {}
 
   template <typename IteratorType, typename... Arguments>
-  friend iterator_wrapping<IteratorType, Arguments...> make_iterator_wrapping(Arguments&&... args);
+  friend constexpr iterator_wrapping<IteratorType, Arguments...> make_iterator_wrapping(Arguments&&... args);
 
   template <typename IteratorType, typename... Arguments>
-  friend iterator_wrapping<IteratorType, Arguments...> make_iterator_wrapping_explicit(Arguments... args);
+  friend constexpr iterator_wrapping<IteratorType, Arguments...> make_iterator_wrapping_explicit(Arguments... args);
 
 public:
   iterator_wrapping(const iterator_wrapping&)            = delete;
@@ -62,13 +62,13 @@ public:
 };
 
 template <typename Iterator, typename... Args>
-iterator_wrapping<Iterator, Args...> make_iterator_wrapping(Args&&... args)
+constexpr iterator_wrapping<Iterator, Args...> make_iterator_wrapping(Args&&... args)
 {
   return iterator_wrapping<Iterator, Args...>(std::forward<Args>(args)...);
 }
 
 template <typename Iterator, typename... Args>
-iterator_wrapping<Iterator, Args...> make_iterator_wrapping_explicit(Args... args)
+constexpr iterator_wrapping<Iterator, Args...> make_iterator_wrapping_explicit(Args... args)
 {
   return iterator_wrapping<Iterator, Args...>(std::forward<Args>(args)...);
 }
