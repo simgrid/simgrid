@@ -7,8 +7,10 @@
 #define SIMGRID_MC_UDPOR_MAXIMAL_SUBSETS_ITERATOR_HPP
 
 #include "src/mc/explo/udpor/Configuration.hpp"
+#include "src/xbt/utils/iter/iterator_wrapping.hpp"
 
 #include <boost/iterator/iterator_facade.hpp>
+#include <functional>
 #include <optional>
 #include <stack>
 #include <unordered_map>
@@ -132,37 +134,8 @@ private:
   friend class boost::iterator_core_access;
 };
 
-/**
- * @brief A collection whose contents consist of
- * the maximal event sets of some configuration
- *
- * @note You should treat this class as a small
- * wrapper that is more convenient and readable
- * than creating iterators directly, and thus should
- * not e.g. store instanca
- */
-class maximal_subsets_iterator_wrapper {
-public:
-  using node_filter_function = maximal_subsets_iterator::node_filter_function;
-
-  maximal_subsets_iterator_wrapper(const maximal_subsets_iterator_wrapper&)             = delete;
-  maximal_subsets_iterator_wrapper& operator=(const maximal_subsets_iterator_wrapper&)  = delete;
-  maximal_subsets_iterator_wrapper(const maximal_subsets_iterator_wrapper&&)            = delete;
-  maximal_subsets_iterator_wrapper& operator=(const maximal_subsets_iterator_wrapper&&) = delete;
-
-  explicit maximal_subsets_iterator_wrapper(const Configuration& config) : config(config) {}
-  maximal_subsets_iterator_wrapper(const Configuration& config, node_filter_function filter)
-      : config(config), filter({filter})
-  {
-  }
-
-  auto begin() const { return maximal_subsets_iterator(config, filter); }
-  auto end() const { return maximal_subsets_iterator(); }
-
-private:
-  const Configuration& config;
-  std::optional<node_filter_function> filter = std::nullopt;
-};
+using maximal_subsets_iterator_wrapper =
+    simgrid::xbt::iterator_wrapping<maximal_subsets_iterator, const Configuration&>;
 
 } // namespace simgrid::mc::udpor
 #endif

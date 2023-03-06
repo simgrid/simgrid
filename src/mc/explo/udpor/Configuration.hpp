@@ -9,12 +9,6 @@
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/udpor_forward.hpp"
 
-#include <boost/iterator/iterator_facade.hpp>
-#include <functional>
-#include <initializer_list>
-#include <optional>
-#include <vector>
-
 namespace simgrid::mc::udpor {
 
 class Configuration {

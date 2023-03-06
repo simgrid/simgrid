@@ -40,7 +40,6 @@ template <typename T> using ref_or_value_t = typename ref_or_value<T>::type;
 template <typename Iterator, typename... Args> struct iterator_wrapping {
 private:
   std::tuple<ref_or_value_t<Args>...> m_args;
-  iterator_wrapping(Args&&... begin_iteration) : m_args(std::forward<ref_or_value_t<Args>>(begin_iteration)...) {}
 
   template <typename IteratorType, typename... Arguments>
   friend constexpr iterator_wrapping<IteratorType, Arguments...> make_iterator_wrapping(Arguments&&... args);
@@ -49,6 +48,7 @@ private:
   friend constexpr iterator_wrapping<IteratorType, Arguments...> make_iterator_wrapping_explicit(Arguments... args);
 
 public:
+  iterator_wrapping(Args&&... begin_iteration) : m_args(std::forward<ref_or_value_t<Args>>(begin_iteration)...) {}
   iterator_wrapping(const iterator_wrapping&)            = delete;
   iterator_wrapping(iterator_wrapping&&)                 = delete;
   iterator_wrapping& operator=(const iterator_wrapping&) = delete;
