@@ -50,6 +50,10 @@ void Configuration::add_event(const UnfoldingEvent* e)
 
 std::vector<const UnfoldingEvent*> Configuration::get_topologically_sorted_events() const
 {
+  // This is essentially an implementation of detecting cycles
+  // in a graph with coloring, except it makes a topological
+  // ordering out of it
+
   if (events_.empty()) {
     return std::vector<const UnfoldingEvent*>();
   }
@@ -70,9 +74,8 @@ std::vector<const UnfoldingEvent*> Configuration::get_topologically_sorted_event
 
       if (not temporarily_marked_events.contains(evt)) {
         // If this event hasn't yet been marked, do
-        // so now so that if we see it again in a child we can
-        // detect a cycle and if we see it again here
-        // we can detect that the node is re-processed
+        // so now so that if we both see it
+        // again in a child we can detect a cycle
         temporarily_marked_events.insert(evt);
 
         EventSet immediate_causes = evt->get_immediate_causes();
@@ -83,11 +86,8 @@ std::vector<const UnfoldingEvent*> Configuration::get_topologically_sorted_event
         }
         immediate_causes.subtract(discovered_events);
         immediate_causes.subtract(permanently_marked_events);
-        const EventSet undiscovered_causes = std::move(immediate_causes);
-
-        for (const auto cause : undiscovered_causes) {
-          event_stack.push(cause);
-        }
+        std::for_each(immediate_causes.begin(), immediate_causes.end(),
+                      [&event_stack](const UnfoldingEvent* cause) { event_stack.push(cause); });
       } else {
         unknown_events.remove(evt);
         temporarily_marked_events.remove(evt);
