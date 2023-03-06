@@ -73,11 +73,60 @@ TEST_CASE("simgrid::xbt::powerset_iterator: Iteration General Properties")
 
 TEST_CASE("simgrid::xbt::variable_for_loop: Edge Cases")
 {
+  // Note the extra `{}` in the tests. This constructs a
+  // `std::reference_wrapper` to the specified collection
+  std::vector<int> outer_loop1{0, 1, 2, 3, 4, 5, 6, 7};
+  std::vector<int> outer_loop2{0, 1, 6, 7};
+  std::vector<int> outer_loop3{0};
+  std::vector<int> empty_set;
 
   SECTION("Iterations without effect")
   {
-    SECTION("Iteration over no collections") {}
+    SECTION("Iteration over no collections")
+    {
+      variable_for_loop<std::vector<int>> first;
+      variable_for_loop<std::vector<int>> last;
+      REQUIRE(first == last);
+    }
 
-    SECTION("Iteration with an empty collection") {}
+    SECTION("Iteration with an empty collection")
+    {
+      variable_for_loop<std::vector<int>> last;
+      REQUIRE(variable_for_loop<std::vector<int>>{{empty_set}} == last);
+      REQUIRE(variable_for_loop<std::vector<int>>{{outer_loop1}, {empty_set}} == last);
+      REQUIRE(variable_for_loop<std::vector<int>>{{outer_loop1}, {outer_loop2}, {empty_set}} == last);
+      REQUIRE(variable_for_loop<std::vector<int>>{{outer_loop1}, {outer_loop2}, {outer_loop3}, {empty_set}} == last);
+      REQUIRE(variable_for_loop<std::vector<int>>{{outer_loop3}, {empty_set}} == last);
+    }
+
+    SECTION("Iteration with multiple empty collections")
+    {
+      variable_for_loop<std::vector<int>> last;
+      REQUIRE(variable_for_loop<std::vector<int>>{{empty_set}} == last);
+      REQUIRE(variable_for_loop<std::vector<int>>{{empty_set}, {empty_set}} == last);
+      REQUIRE(variable_for_loop<std::vector<int>>{{outer_loop1}, {outer_loop2}, {empty_set}} == last);
+      REQUIRE(variable_for_loop<std::vector<int>>{{outer_loop1}, {outer_loop2}, {empty_set}, {empty_set}} == last);
+      REQUIRE(variable_for_loop<std::vector<int>>{
+                  {outer_loop1}, {outer_loop2}, {outer_loop3}, {empty_set}, {empty_set}} == last);
+    }
+  }
+
+  SECTION("Iteration with effects")
+  {
+    SECTION("Iteration over a single collection yields the collection")
+    {
+      variable_for_loop<std::vector<int>> first{{outer_loop1}};
+      variable_for_loop<std::vector<int>> last;
+
+      std::vector<int> elements_seen;
+
+      for (; first != last; ++first) {
+        const auto& elements = *first;
+        REQUIRE(elements.size() == 1);
+        elements_seen.push_back(*elements[0]);
+      }
+
+      REQUIRE(elements_seen == outer_loop1);
+    }
   }
 }

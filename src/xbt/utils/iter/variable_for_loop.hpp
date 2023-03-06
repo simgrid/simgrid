@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <boost/iterator/iterator_facade.hpp>
 #include <functional>
+#include <initializer_list>
 #include <limits>
 #include <optional>
 
@@ -38,25 +39,28 @@ public:
   using underlying_iterator = typename IterableType::const_iterator;
 
   variable_for_loop() = default;
+  explicit variable_for_loop(std::initializer_list<std::reference_wrapper<IterableType>> initializer_list)
+      : variable_for_loop(std::vector<std::reference_wrapper<IterableType>>(initializer_list))
+  {
+  }
   explicit variable_for_loop(std::vector<std::reference_wrapper<IterableType>> collections)
   {
     // All collections should be non-empty: if one is empty, the
     // for-loop has no effect (since there would be no way to choose
     // one element from the empty collection(s))
     const auto has_effect =
-        std::none_of(collections.begin(), collections.end(), [](const auto c) { return c.empty(); });
+        std::none_of(collections.begin(), collections.end(), [](const auto& c) { return c.get().empty(); });
 
     if (has_effect and (not collections.empty())) {
+      std::transform(collections.begin(), collections.end(), std::back_inserter(current_subset),
+                     [](const auto& c) { return c.get().begin(); });
       underlying_collections = std::move(collections);
-      std::copy(collections.begin(), collections.end(), std::back_inserter(current_subset),
-                [](const auto c) { return c.begin(); });
     }
     // Otherwise leave `underlying_collections` as default-initialized (i.e. empty)
   }
 
 private:
   std::vector<std::reference_wrapper<IterableType>> underlying_collections;
-
   std::vector<underlying_iterator> current_subset;
 
   // boost::iterator_facade<...> interface to implement
@@ -76,27 +80,27 @@ template <typename IterableType> void variable_for_loop<IterableType>::increment
     return;
   }
 
-  size_t l       = 0;
-  const size_t k = underlying_collections.size() - 1;
+  bool completed_iteration = true;
+  const size_t k           = underlying_collections.size() - 1;
 
-  for (auto j = k - 1; j != std::numeric_limits<size_t>::max(); j--) {
+  for (auto j = k; j != std::numeric_limits<size_t>::max(); j--) {
     // Attempt to move to the next element of the `j`th collection
     const auto& new_position = ++current_subset[j];
 
     // If the `j`th element has reached its own end, reset it
     // back to the beginning and keep moving forward
-    if (new_position == underlying_collections[j].end()) {
-      current_subset[j] = underlying_collections[j].begin();
+    if (new_position == underlying_collections[j].get().end()) {
+      current_subset[j] = underlying_collections[j].get().begin();
     } else {
       // Otherwise we've found the largest element which needed to
-      // be moved down, and everyone else before us has been reset
+      // be moved down. Everyone else before us has been reset
       // to properly to point at their beginnings
-      l = j;
+      completed_iteration = false;
       break;
     }
   }
 
-  if (l == 0) {
+  if (completed_iteration) {
     // We've iterated over all subsets at this point:
     // set the termination condition
     current_subset.clear();
