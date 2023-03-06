@@ -12,7 +12,7 @@ foreach(x
     add_executable       (pthread-${x} EXCLUDE_FROM_ALL pthread-${x}.c)
     set_target_properties(pthread-${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(pthread-${x} PRIVATE Threads::Threads)
-    target_link_libraries(pthread-${x} PUBLIC "-Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once cmake is >3.13
+    target_link_libraries(pthread-${x} PUBLIC "-Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once CMAKE_VERSION is >3.13
 
     add_dependencies(tests pthread-${x})
     ADD_TESH_FACTORIES(pthread-${x} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.tesh)
@@ -49,6 +49,27 @@ foreach(x
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/pthread-mc-${x}.tesh)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/pthread-${x}.c)
 
+endforeach()
+
+# C++ tests with sthread+MC that live in their own directory
+########################################################
+foreach(example
+        stdobject)
+
+  if(SIMGRID_HAVE_MC AND ("${CMAKE_SYSTEM}" MATCHES "Linux")) # sthread is linux-only
+
+    add_executable       (${example} EXCLUDE_FROM_ALL ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.cpp)
+    set_target_properties(${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(${example} PRIVATE Threads::Threads)
+    target_link_libraries(${example} PUBLIC "-fPIC -Wl,-znorelro -Wl,-znoseparate-code") # TODO: convert to target_link_option once CMAKE_VERSION is >3.13
+    set_target_properties(${example} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
+
+    add_dependencies(tests-mc ${example})
+    #ADD_TESH_FACTORIES(sthread-mc-${example} "^thread" --setenv libdir=${CMAKE_BINARY_DIR}/lib --cd ${CMAKE_BINARY_DIR}/examples/sthread/${example} ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
+  endif()
+
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh)
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.cpp)
 endforeach()
 
 # Regular sthread examples: test the internal interface for debugging purpose

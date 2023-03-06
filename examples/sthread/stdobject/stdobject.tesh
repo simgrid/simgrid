@@ -1,0 +1,28 @@
+# This test raises a property violation, thus the return code of 1
+! expect return 1
+
+# We ignore the LD_PRELOAD lines from the expected output because they contain the build path
+! ignore .*LD_PRELOAD.*
+
+$ ${bindir:=.}/../../../bin/simgrid-mc --cfg=model-check/sleep-set:true --cfg=model-check/setenv:LD_PRELOAD=${libdir:=.}/libsgmalloc.so:${libdir:=.}/libsthread.so ${bindir:=.}/stdobject
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'model-check/sleep-set' to 'true'
+> [0.000000] [sthread/INFO] Starting the simulation.
+> starting two helpers...
+> waiting for helpers to finish...
+> [0.000000] [mc_dfs/INFO] Start a DFS exploration. Reduction is: dpor.
+> [0.000000] [sthread/INFO] thread 1 takes &v
+> [0.000000] [sthread/INFO] thread 1 releases &v
+> [0.000000] [sthread/INFO] thread 2 takes &v
+> [0.000000] [sthread/INFO] thread 2 releases &v
+> v = { 1, 2, 3, 5, 8, 13, 21, 21, }; 
+> [0.000000] [sthread/INFO] thread 1 takes &v
+> [0.000000] [sthread/INFO] thread 2 takes &v
+> [0.000000] ../../src/sthread/ObjectAccess.cpp:87: [sthread/CRITICAL] Unprotected concurent access to &v: thread 1 at ../../examples/sthread/stdobject/stdobject.cpp:20 vs. thread 2 at ../../examples/sthread/stdobject/stdobject.cpp:20.
+> [0.000000] [mc_ModelChecker/INFO] **************************
+> [0.000000] [mc_ModelChecker/INFO] *** PROPERTY NOT VALID ***
+> [0.000000] [mc_ModelChecker/INFO] **************************
+> [0.000000] [mc_ModelChecker/INFO] Counter-example execution trace:
+> [0.000000] [mc_ModelChecker/INFO]   2: BeginObjectAccess(&v @ ../../examples/sthread/stdobject/stdobject.cpp:20)
+> [0.000000] [mc_ModelChecker/INFO]   3: BeginObjectAccess(&v @ ../../examples/sthread/stdobject/stdobject.cpp:20)
+> [0.000000] [mc_ModelChecker/INFO] You can debug the problem (and see the whole details) by rerunning out of simgrid-mc with --cfg=model-check/replay:'2;3'
+> [0.000000] [mc_dfs/INFO] DFS exploration ended. 7 unique states visited; 1 backtracks (9 transition replays, 1 states visited overall)

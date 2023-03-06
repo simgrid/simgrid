@@ -49,6 +49,8 @@ Models:
 sthread:
  - Implement pthread_join in MC mode.
  - Implement semaphore functions in sthread.
+ - Add an intricated way to verify the access to non-reentrant data structures
+   It requires code annotation, as shown in examples/sthread/stdobject/stdobject.cpp
 
 Model checking:
  - Synchronize the MBI tests with upstream.

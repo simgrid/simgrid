@@ -251,6 +251,7 @@ set(STHREAD_SRC
   src/sthread/sthread_impl.cpp
   src/sthread/sthread.c
   src/sthread/sthread.h
+  src/sthread/ObjectAccess.cpp
 )
 
 set(XBT_SRC
@@ -587,6 +588,8 @@ set(MC_SRC
   src/mc/transition/TransitionAny.hpp
   src/mc/transition/TransitionComm.cpp
   src/mc/transition/TransitionComm.hpp
+  src/mc/transition/TransitionObjectAccess.cpp
+  src/mc/transition/TransitionObjectAccess.hpp
   src/mc/transition/TransitionRandom.cpp
   src/mc/transition/TransitionRandom.hpp
   src/mc/transition/TransitionSynchro.cpp

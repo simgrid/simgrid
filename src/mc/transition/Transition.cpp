@@ -14,6 +14,7 @@
 #include "src/mc/transition/TransitionActorJoin.hpp"
 #include "src/mc/transition/TransitionAny.hpp"
 #include "src/mc/transition/TransitionComm.hpp"
+#include "src/mc/transition/TransitionObjectAccess.hpp"
 #include "src/mc/transition/TransitionRandom.hpp"
 #include "src/mc/transition/TransitionSynchro.hpp"
 #endif
@@ -95,6 +96,9 @@ Transition* deserialize_transition(aid_t issuer, int times_considered, std::stri
 
     case Transition::Type::ACTOR_JOIN:
       return new ActorJoinTransition(issuer, times_considered, stream);
+
+    case Transition::Type::OBJECT_ACCESS:
+      return new ObjectAccessTransition(issuer, times_considered, stream);
 
     case Transition::Type::UNKNOWN:
       return new Transition(Transition::Type::UNKNOWN, issuer, times_considered);

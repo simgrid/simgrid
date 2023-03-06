@@ -603,6 +603,8 @@ include examples/sthread/pthread-mutex-simple.tesh
 include examples/sthread/pthread-mutex-simpledeadlock.c
 include examples/sthread/pthread-producer-consumer.c
 include examples/sthread/pthread-producer-consumer.tesh
+include examples/sthread/stdobject/stdobject.cpp
+include examples/sthread/stdobject/stdobject.tesh
 include examples/sthread/sthread-mutex-simple.c
 include examples/sthread/sthread-mutex-simple.tesh
 include teshsuite/catch_simgrid.hpp
@@ -2232,6 +2234,8 @@ include src/mc/transition/TransitionAny.cpp
 include src/mc/transition/TransitionAny.hpp
 include src/mc/transition/TransitionComm.cpp
 include src/mc/transition/TransitionComm.hpp
+include src/mc/transition/TransitionObjectAccess.cpp
+include src/mc/transition/TransitionObjectAccess.hpp
 include src/mc/transition/TransitionRandom.cpp
 include src/mc/transition/TransitionRandom.hpp
 include src/mc/transition/TransitionSynchro.cpp
@@ -2458,6 +2462,7 @@ include src/smpi/smpif90.in
 include src/smpi/smpiff.in
 include src/smpi/smpirun.in
 include src/smpi/smpitools.sh
+include src/sthread/ObjectAccess.cpp
 include src/sthread/sthread.c
 include src/sthread/sthread.h
 include src/sthread/sthread_impl.cpp
