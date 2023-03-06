@@ -11,6 +11,7 @@
 #include "src/kernel/actor/ActorImpl.hpp"
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/sthread/sthread.h"
+#include "xbt/string.hpp"
 
 #include <unordered_map>
 
@@ -85,8 +86,15 @@ int sthread_access_begin(void* objaddr, const char* objname, const char* file, i
         XBT_INFO("%s takes %s", self->get_cname(), objname);
         auto* ownership = get_owner(objaddr);
         if (ownership->owner != nullptr) {
-          XBT_CRITICAL("Unprotected concurent access to %s: %s at %s:%d vs. %s at %s:%d.", objname,
-                       ownership->owner->get_cname(), ownership->file, ownership->line, self->get_cname(), file, line);
+          auto msg = std::string("Unprotected concurent access to ") + objname + ": " + ownership->owner->get_name();
+          if (not xbt_log_no_loc)
+            msg += simgrid::xbt::string_printf(" at %s:%d", ownership->file, ownership->line);
+          msg += " vs " + self->get_name();
+          if (xbt_log_no_loc)
+            msg += std::string(" (locations hidden because of --log=no_loc).");
+          else
+            msg += simgrid::xbt::string_printf(" at %s:%d.", file, line);
+          XBT_CRITICAL("%s", msg.c_str());
           return false;
         }
         ownership->owner = self;
@@ -107,7 +115,7 @@ void sthread_access_end(void* objaddr, const char* objname, const char* file, in
   simgrid::sthread::ObjectAccessObserver observer(self, simgrid::sthread::AccessType::EXIT, objaddr, objname, file,
                                                   line);
   simgrid::kernel::actor::simcall_answered(
-      [self, objaddr, objname, file, line]() -> void {
+      [self, objaddr, objname]() -> void {
         XBT_INFO("%s releases %s", self->get_cname(), objname);
         auto* ownership = get_owner(objaddr);
         xbt_assert(ownership->owner == self, "safety check failed: I'm not owner of the object I'm releasing.");

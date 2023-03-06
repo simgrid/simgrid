@@ -19,11 +19,18 @@ ObjectAccessTransition::ObjectAccessTransition(aid_t issuer, int times_considere
 }
 std::string ObjectAccessTransition::to_string(bool verbose) const
 {
+  std::string res;
   if (type_ == ObjectAccessType::ENTER)
-    return xbt::string_printf("BeginObjectAccess(%s @ %s:%d)", objname_.c_str(), file_.c_str(), line_);
-  if (type_ == ObjectAccessType::EXIT)
-    return xbt::string_printf("EndObjectAccess(%s @ %s:%d)", objname_.c_str(), file_.c_str(), line_);
-  return xbt::string_printf("ObjectAccess(%s @ %s:%d)", objname_.c_str(), file_.c_str(), line_);
+    res = std::string("BeginObjectAccess(");
+  else if (type_ == ObjectAccessType::EXIT)
+    res = std::string("EndObjectAccess(");
+  else
+    res = std::string("ObjectAccess(");
+  res += objname_;
+  if (not xbt_log_no_loc)
+    res += std::string(" @ ") + file_ + ":" + std::to_string(line_);
+  res += std::string(")");
+  return res;
 }
 bool ObjectAccessTransition::depends(const Transition* o) const
 {
