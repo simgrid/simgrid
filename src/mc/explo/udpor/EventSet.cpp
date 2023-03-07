@@ -129,7 +129,7 @@ bool EventSet::contains(const History& history) const
   return std::all_of(history.begin(), history.end(), [=](const UnfoldingEvent* e) { return this->contains(e); });
 }
 
-bool EventSet::is_maximal_event_set() const
+bool EventSet::is_maximal() const
 {
   const History history(*this);
   return *this == history.get_all_maximal_events();

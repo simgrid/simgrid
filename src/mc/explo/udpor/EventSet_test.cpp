@@ -642,81 +642,81 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Testing Configurations")
   SECTION("Maximal event sets")
   {
     // 6 choose 0 = 1 test
-    REQUIRE(EventSet().is_maximal_event_set());
+    REQUIRE(EventSet().is_maximal());
 
     // 6 choose 1 = 6 tests
-    REQUIRE(EventSet({&e1}).is_maximal_event_set());
-    REQUIRE(EventSet({&e2}).is_maximal_event_set());
-    REQUIRE(EventSet({&e3}).is_maximal_event_set());
-    REQUIRE(EventSet({&e4}).is_maximal_event_set());
-    REQUIRE(EventSet({&e5}).is_maximal_event_set());
-    REQUIRE(EventSet({&e6}).is_maximal_event_set());
+    REQUIRE(EventSet({&e1}).is_maximal());
+    REQUIRE(EventSet({&e2}).is_maximal());
+    REQUIRE(EventSet({&e3}).is_maximal());
+    REQUIRE(EventSet({&e4}).is_maximal());
+    REQUIRE(EventSet({&e5}).is_maximal());
+    REQUIRE(EventSet({&e6}).is_maximal());
 
     // 6 choose 2 = 15 tests
-    REQUIRE_FALSE(EventSet({&e1, &e2}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e3}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e4}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e3}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e4}).is_maximal_event_set());
-    REQUIRE(EventSet({&e2, &e5}).is_maximal_event_set());
-    REQUIRE(EventSet({&e2, &e6}).is_maximal_event_set());
-    REQUIRE(EventSet({&e3, &e4}).is_maximal_event_set());
-    REQUIRE(EventSet({&e3, &e5}).is_maximal_event_set());
-    REQUIRE(EventSet({&e3, &e6}).is_maximal_event_set());
-    REQUIRE(EventSet({&e4, &e5}).is_maximal_event_set());
-    REQUIRE(EventSet({&e4, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e3}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e4}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e3}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e4}).is_maximal());
+    REQUIRE(EventSet({&e2, &e5}).is_maximal());
+    REQUIRE(EventSet({&e2, &e6}).is_maximal());
+    REQUIRE(EventSet({&e3, &e4}).is_maximal());
+    REQUIRE(EventSet({&e3, &e5}).is_maximal());
+    REQUIRE(EventSet({&e3, &e6}).is_maximal());
+    REQUIRE(EventSet({&e4, &e5}).is_maximal());
+    REQUIRE(EventSet({&e4, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e5, &e6}).is_maximal());
 
     // 6 choose 3 = 20 tests
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e3}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e4}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e3, &e4}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e3, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e3, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e4, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e4, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e3, &e4}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e3, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e3, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e4, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e4, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e5, &e6}).is_maximal_event_set());
-    REQUIRE(EventSet({&e3, &e4, &e5}).is_maximal_event_set());
-    REQUIRE(EventSet({&e3, &e4, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e3, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e4, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e4}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e4}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e4, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e4, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e4}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e4, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e4, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e5, &e6}).is_maximal());
+    REQUIRE(EventSet({&e3, &e4, &e5}).is_maximal());
+    REQUIRE(EventSet({&e3, &e4, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e3, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e4, &e5, &e6}).is_maximal());
 
     // 6 choose 4 = 15 tests
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e4, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e4, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e3, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e4, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e3, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e4, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e3, &e4, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e4, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e4, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e4, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e4, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e3, &e4, &e5, &e6}).is_maximal());
 
     // 6 choose 5 = 6 tests
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e4, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e4, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e5, &e6}).is_maximal());
 
     // 6 choose 6 = 1 test
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4, &e5, &e6}).is_maximal());
   }
 }

@@ -464,7 +464,7 @@ TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Basic Testing of Maxima
         // Only events in `interesting_bunch` can appear: thus no set
         // should include anything else other than `interesting_bunch`
         REQUIRE(event_set.is_subset_of(interesting_bunch));
-        REQUIRE(event_set.is_maximal_event_set());
+        REQUIRE(event_set.is_maximal());
         maximal_subset_counts[event_set.size()]++;
       }
 
@@ -497,7 +497,7 @@ TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Basic Testing of Maxima
         // Only events in `interesting_bunch` can appear: thus no set
         // should include anything else other than `interesting_bunch`
         REQUIRE(event_set.is_subset_of(interesting_bunch));
-        REQUIRE(event_set.is_maximal_event_set());
+        REQUIRE(event_set.is_maximal());
         maximal_subset_counts[event_set.size()]++;
       }
 
@@ -561,7 +561,7 @@ TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Stress Test for Maximal
 
     for (; first != last; ++first) {
       REQUIRE((*first).size() <= C.get_events().size());
-      REQUIRE((*first).is_maximal_event_set());
+      REQUIRE((*first).is_maximal());
     }
   }
 }

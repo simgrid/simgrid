@@ -75,7 +75,7 @@ public:
    * 1. For each event `e` in `E`, there is no event
    * `e'` in `E` such that `e < e'`
    */
-  bool is_maximal_event_set() const;
+  bool is_maximal() const;
 };
 
 } // namespace simgrid::mc::udpor
