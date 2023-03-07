@@ -39,14 +39,14 @@ public:
   using topological_order_position = std::vector<const UnfoldingEvent*>::const_iterator;
 
   maximal_subsets_iterator() = default;
-  explicit maximal_subsets_iterator(const Configuration& config) : maximal_subsets_iterator(config.get_events()) {}
-  explicit maximal_subsets_iterator(const EventSet& events) : maximal_subsets_iterator(events, std::nullopt) {}
-
-  maximal_subsets_iterator(const Configuration& config, std::optional<node_filter_function> filter)
-      : maximal_subsets_iterator(config.get_events(), filter)
+  explicit maximal_subsets_iterator(const Configuration& config,
+                                    std::optional<node_filter_function> filter = std::nullopt,
+                                    std::optional<size_t> maximum_subset_size  = std::nullopt)
+      : maximal_subsets_iterator(config.get_events(), filter, maximum_subset_size)
   {
   }
-  maximal_subsets_iterator(const EventSet& events, std::optional<node_filter_function> filter);
+  explicit maximal_subsets_iterator(const EventSet& events, std::optional<node_filter_function> filter = std::nullopt,
+                                    std::optional<size_t> maximum_subset_size = std::nullopt);
 
 private:
   std::vector<const UnfoldingEvent*> topological_ordering;
@@ -56,6 +56,7 @@ private:
   // after the empty set" and "we've finished the search" since the resulting
   // maximal set and backtracking point stack will both be empty in both cases
   bool has_started_searching                              = false;
+  std::optional<size_t> maximum_subset_size               = std::nullopt;
   std::optional<EventSet> current_maximal_set             = std::nullopt;
   std::stack<topological_order_position> backtrack_points = std::stack<topological_order_position>();
 
@@ -123,6 +124,13 @@ private:
    * or to the end of the topological ordering if no such event exists
    */
   topological_order_position continue_traversal_of_maximal_events_tree();
+
+  /**
+   * @brief: Whether or not the current maximal set can
+   * grow based on the size limit imposed on the maximal
+   * sets that can be produced
+   */
+  bool can_grow_maximal_set() const;
 
   // boost::iterator_facade<...> interface to implement
   void increment();
