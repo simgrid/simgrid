@@ -76,6 +76,72 @@ public:
    * `e'` in `E` such that `e < e'`
    */
   bool is_maximal() const;
+
+  /**
+   * @brief Whether or not this set of events is
+   * free of conflicts
+   *
+   * A set of events `E` is said to be _conflict free_
+   * if
+   *
+   * 1. For each event `e` in `E`, there is no event
+   * `e'` in `E` such that `e # e'` where `#` is the
+   * conflict relation over the unfolding from
+   * which the events `E` are derived
+   *
+   * @note: This method makes use only of the causality
+   * tree of the events in the set; i.e. it determines conflicts
+   * based solely on the unfolding and the definition of
+   * conflict in an unfolding. Some clever techniques
+   * exist for computing conflicts with specialized transition
+   * types (only mutexes if I remember correctly) that was
+   * referenced in The Anh Pham's thesis. This would require
+   * keeping track of information *outside* of any given
+   * set and probably doesn't work for all types of transitions
+   * anyway.
+   */
+  bool is_conflict_free() const;
+
+  /**
+   * @brief Orders the events of the set such that
+   * "more recent" events (i.e. those that are farther down in
+   * the event structure's dependency chain) come after those
+   * that appeared "farther in the past"
+   *
+   * @returns a vector `V` with the following property:
+   *
+   * 1. Let i(e) := C -> I map events to their indices in `V`.
+   * For every pair of events e, e' in C, if e < e' then i(e) < i(e')
+   *
+   * Intuitively, events that are closer to the "bottom" of the event
+   * structure appear farther along in the list than those that appear
+   * closer to the "top"
+   */
+  std::vector<const UnfoldingEvent*> get_topological_ordering() const;
+
+  /**
+   * @brief Orders the events of set such that
+   * "more recent" events (i.e. those that are farther down in
+   * the event structure's dependency chain) come before those
+   * that appear "farther in the past"
+   *
+   * @note The events of the event structure are arranged such that
+   * e < e' implies a directed edge from e to e'. However, it is
+   * also useful to be able to traverse the *reverse* graph (for
+   * example when computing the compatibility graph of a configuration),
+   * hence the distinction between "reversed" and the method
+   * "EventSet::get_topological_ordering()"
+   *
+   * @returns a vector `V` with the following property:
+   *
+   * 1. Let i(e) := C -> I map events to their indices in `V`.
+   * For every pair of events e, e' in C, if e < e' then i(e) > i(e')
+   *
+   * Intuitively, events that are closer to the "top" of the event
+   * structure appear farther along in the list than those that appear
+   * closer to the "bottom"
+   */
+  std::vector<const UnfoldingEvent*> get_topological_ordering_of_reverse_graph() const;
 };
 
 } // namespace simgrid::mc::udpor
