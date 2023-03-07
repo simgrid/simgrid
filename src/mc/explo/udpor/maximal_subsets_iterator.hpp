@@ -39,10 +39,9 @@ public:
   using topological_order_position = std::vector<const UnfoldingEvent*>::const_iterator;
 
   maximal_subsets_iterator() = default;
-  explicit maximal_subsets_iterator(const Configuration& config)
-      : maximal_subsets_iterator(config.get_events(), std::nullopt)
-  {
-  }
+  explicit maximal_subsets_iterator(const Configuration& config) : maximal_subsets_iterator(config.get_events()) {}
+  explicit maximal_subsets_iterator(const EventSet& events) : maximal_subsets_iterator(events, std::nullopt) {}
+
   maximal_subsets_iterator(const Configuration& config, std::optional<node_filter_function> filter)
       : maximal_subsets_iterator(config.get_events(), filter)
   {

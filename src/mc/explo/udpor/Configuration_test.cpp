@@ -386,6 +386,13 @@ TEST_CASE("simgrid::mc::udpor::Configuration: Topological Sort Order Very Compli
       REQUIRE(events_seen == ordered_event_set);
     }
   }
+
+  SECTION("Test that the topological ordering is equivalent to that of the configuration's events")
+  {
+    REQUIRE(C.get_topologically_sorted_events() == C.get_events().get_topological_ordering());
+    REQUIRE(C.get_topologically_sorted_events_of_reverse_graph() ==
+            C.get_events().get_topological_ordering_of_reverse_graph());
+  }
 }
 
 TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Basic Testing of Maximal Subsets")
@@ -563,5 +570,31 @@ TEST_CASE("simgrid::mc::udpor::maximal_subsets_iterator: Stress Test for Maximal
       REQUIRE((*first).size() <= C.get_events().size());
       REQUIRE((*first).is_maximal());
     }
+  }
+
+  SECTION("Test that the maximal set ordering is equivalent to that of the configuration's events")
+  {
+    maximal_subsets_iterator first_config(C);
+    maximal_subsets_iterator first_events(C.get_events());
+    maximal_subsets_iterator last;
+
+    // Make sure we actually have something to iterate over
+    REQUIRE(first_config != last);
+    REQUIRE(first_config == first_events);
+    REQUIRE(first_events != last);
+
+    for (; first_config != last; ++first_config, ++first_events) {
+      // first_events and first_config should always be at the same location
+      REQUIRE(first_events != last);
+      const auto& first_config_set = *first_config;
+      const auto& first_events_set = *first_events;
+
+      REQUIRE(first_config_set.size() <= C.get_events().size());
+      REQUIRE(first_config_set.is_maximal());
+      REQUIRE(first_events_set == first_config_set);
+    }
+
+    // Iteration with events directly should now also be finished
+    REQUIRE(first_events == last);
   }
 }
