@@ -19,10 +19,11 @@ namespace simgrid::mc::udpor {
 
 /**
  * @brief An iterator over the tree of sets of (non-empty) maximal events that
- * can be generated from a given configuration
+ * can be generated from a given set of events
  *
  * This iterator traverses all possible sets of maximal events that
- * can be formed from a configuration, each of which satisfy a predicate.
+ * can be formed from some subset of events of an unfolding,
+ * each of which satisfy a predicate.
  *
  * Iteration over the maximal events of a configuration is an important
  * step in computing the extension set of a configuration for an action
@@ -38,11 +39,17 @@ public:
   using topological_order_position = std::vector<const UnfoldingEvent*>::const_iterator;
 
   maximal_subsets_iterator() = default;
-  explicit maximal_subsets_iterator(const Configuration& config) : maximal_subsets_iterator(config, std::nullopt) {}
-  maximal_subsets_iterator(const Configuration& config, std::optional<node_filter_function> filter);
+  explicit maximal_subsets_iterator(const Configuration& config)
+      : maximal_subsets_iterator(config.get_events(), std::nullopt)
+  {
+  }
+  maximal_subsets_iterator(const Configuration& config, std::optional<node_filter_function> filter)
+      : maximal_subsets_iterator(config.get_events(), filter)
+  {
+  }
+  maximal_subsets_iterator(const EventSet& events, std::optional<node_filter_function> filter);
 
 private:
-  const std::optional<std::reference_wrapper<const Configuration>> config = std::nullopt;
   std::vector<const UnfoldingEvent*> topological_ordering;
 
   // The boolean is a bit of an annoyance, but it works. Effectively,
