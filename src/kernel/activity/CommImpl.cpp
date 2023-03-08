@@ -23,7 +23,11 @@ namespace simgrid::kernel::activity {
 xbt::signal<void(CommImpl const&)> CommImpl::on_start;
 xbt::signal<void(CommImpl const&)> CommImpl::on_completion;
 
-std::function<void(CommImpl*, void*, size_t)> CommImpl::copy_data_callback_ = &s4u::Comm::copy_pointer_callback;
+std::function<void(CommImpl*, void*, size_t)> CommImpl::copy_data_callback_ = [](kernel::activity::CommImpl* comm,
+                                                                                 void* buff, size_t buff_size) {
+  xbt_assert((buff_size == sizeof(void*)), "Cannot copy %zu bytes: must be sizeof(void*)", buff_size);
+  *(void**)(comm->dst_buff_) = buff;
+};
 
 void CommImpl::set_copy_data_callback(const std::function<void(CommImpl*, void*, size_t)>& callback)
 {
