@@ -142,6 +142,11 @@ public:
    * closer to the "bottom"
    */
   std::vector<const UnfoldingEvent*> get_topological_ordering_of_reverse_graph() const;
+
+  /**
+   * @brief Moves the event set into a list
+   */
+  std::vector<const UnfoldingEvent*> move_into_vector() const&&;
 };
 
 } // namespace simgrid::mc::udpor

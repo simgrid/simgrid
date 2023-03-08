@@ -148,8 +148,8 @@ private:
   friend class boost::iterator_core_access;
 };
 
-using maximal_subsets_iterator_wrapper =
-    simgrid::xbt::iterator_wrapping<maximal_subsets_iterator, const Configuration&>;
+template <typename T>
+using maximal_subsets_iterator_wrapper = simgrid::xbt::iterator_wrapping<maximal_subsets_iterator, const T&>;
 
 } // namespace simgrid::mc::udpor
 #endif

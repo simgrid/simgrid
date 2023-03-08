@@ -40,4 +40,43 @@ EventSet UnfoldingEvent::get_history() const
   return History(this).get_all_events();
 }
 
+bool UnfoldingEvent::related_to(const UnfoldingEvent* other) const
+{
+  return EventSet({this, other}).is_maximal();
+}
+
+bool UnfoldingEvent::in_history_of(const UnfoldingEvent* other) const
+{
+  return History(other).contains(this);
+}
+
+bool UnfoldingEvent::conflicts_with(const UnfoldingEvent* other) const
+{
+  // Events that have a causal relation never are in conflict
+  // in an unfolding structure. Two events in conflict must
+  // not be contained in each other's histories
+  if (related_to(other)) {
+    return false;
+  }
+
+  const EventSet my_history      = get_history();
+  const EventSet other_history   = other->get_history();
+  const EventSet unique_to_me    = my_history.subtracting(other_history);
+  const EventSet unique_to_other = other_history.subtracting(my_history);
+
+  for (const auto e_me : unique_to_me) {
+    for (const auto e_other : unique_to_other) {
+      if (e_me->has_conflicting_transition_with(e_other)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+bool UnfoldingEvent::has_conflicting_transition_with(const UnfoldingEvent* other) const
+{
+  return associated_transition->depends(other->associated_transition.get());
+}
+
 } // namespace simgrid::mc::udpor

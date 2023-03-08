@@ -27,11 +27,13 @@ public:
   UnfoldingEvent(UnfoldingEvent&&)                 = default;
 
   EventSet get_history() const;
-  bool in_history_of(const UnfoldingEvent* otherEvent) const;
+  bool in_history_of(const UnfoldingEvent* other) const;
+  bool related_to(const UnfoldingEvent* other) const;
 
-  bool conflicts_with(const UnfoldingEvent* otherEvent) const;
+  bool conflicts_with(const UnfoldingEvent* other) const;
   bool conflicts_with(const Configuration& config) const;
-  bool immediately_conflicts_with(const UnfoldingEvent* otherEvt) const;
+  bool immediately_conflicts_with(const UnfoldingEvent* other) const;
+  bool has_conflicting_transition_with(const UnfoldingEvent* other) const;
 
   const EventSet& get_immediate_causes() const { return this->immediate_causes; }
   Transition* get_transition() const { return this->associated_transition.get(); }

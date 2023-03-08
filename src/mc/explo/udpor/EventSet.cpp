@@ -7,9 +7,10 @@
 #include "src/mc/explo/udpor/Configuration.hpp"
 #include "src/mc/explo/udpor/History.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
+#include "src/mc/explo/udpor/maximal_subsets_iterator.hpp"
 
-#include <iterator>
 #include <stack>
+#include <vector>
 
 namespace simgrid::mc::udpor {
 
@@ -133,13 +134,23 @@ bool EventSet::contains(const History& history) const
 
 bool EventSet::is_maximal() const
 {
+  // A set of events is maximal if no event from
+  // the original set is ruled out when traversing
+  // the history of the events
   const History history(*this);
   return *this == history.get_all_maximal_events();
 }
 
 bool EventSet::is_conflict_free() const
 {
-  return false;
+  const auto begin = maximal_subsets_iterator(*this, std::nullopt, {2});
+  const auto end   = maximal_subsets_iterator();
+  return std::none_of(begin, end, [](const EventSet event_pair) {
+    const auto events        = std::move(event_pair).move_into_vector();
+    const UnfoldingEvent* e1 = events[0];
+    const UnfoldingEvent* e2 = events[1];
+    return e1->conflicts_with(e2);
+  });
 }
 
 std::vector<const UnfoldingEvent*> EventSet::get_topological_ordering() const
@@ -211,6 +222,18 @@ std::vector<const UnfoldingEvent*> EventSet::get_topological_ordering_of_reverse
   auto topological_events = get_topological_ordering();
   std::reverse(topological_events.begin(), topological_events.end());
   return topological_events;
+}
+
+std::vector<const UnfoldingEvent*> EventSet::move_into_vector() const&&
+{
+  std::vector<const UnfoldingEvent*> contents;
+  contents.reserve(size());
+
+  for (auto&& event : *this) {
+    contents.push_back(event);
+  }
+
+  return contents;
 }
 
 } // namespace simgrid::mc::udpor

@@ -75,7 +75,7 @@ EventSet Configuration::get_minimally_reproducible_events() const
   // topological ordering that appear in `S`
   EventSet minimally_reproducible_events = EventSet();
 
-  for (const auto& maximal_set : maximal_subsets_iterator_wrapper(*this)) {
+  for (const auto& maximal_set : maximal_subsets_iterator_wrapper<Configuration>(*this)) {
     if (maximal_set.size() > minimally_reproducible_events.size()) {
       minimally_reproducible_events = maximal_set;
     } else {
