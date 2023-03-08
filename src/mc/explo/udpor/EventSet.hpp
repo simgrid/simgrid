@@ -147,6 +147,8 @@ public:
    * @brief Moves the event set into a list
    */
   std::vector<const UnfoldingEvent*> move_into_vector() const&&;
+
+  using const_iterator = std::unordered_set<const UnfoldingEvent*>::const_iterator;
 };
 
 } // namespace simgrid::mc::udpor

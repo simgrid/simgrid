@@ -42,7 +42,7 @@ EventSet UnfoldingEvent::get_history() const
 
 bool UnfoldingEvent::related_to(const UnfoldingEvent* other) const
 {
-  return EventSet({this, other}).is_maximal();
+  return this->in_history_of(other) or other->in_history_of(this);
 }
 
 bool UnfoldingEvent::in_history_of(const UnfoldingEvent* other) const

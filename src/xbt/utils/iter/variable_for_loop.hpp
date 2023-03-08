@@ -53,7 +53,7 @@ public:
 
     if (has_effect and (not collections.empty())) {
       std::transform(collections.begin(), collections.end(), std::back_inserter(current_subset),
-                     [](const auto& c) { return c.get().begin(); });
+                     [](const auto& c) { return c.get().cbegin(); });
       underlying_collections = std::move(collections);
     }
     // Otherwise leave `underlying_collections` as default-initialized (i.e. empty)
@@ -89,8 +89,8 @@ template <typename IterableType> void variable_for_loop<IterableType>::increment
 
     // If the `j`th element has reached its own end, reset it
     // back to the beginning and keep moving forward
-    if (new_position == underlying_collections[j].get().end()) {
-      current_subset[j] = underlying_collections[j].get().begin();
+    if (new_position == underlying_collections[j].get().cend()) {
+      current_subset[j] = underlying_collections[j].get().cbegin();
     } else {
       // Otherwise we've found the largest element which needed to
       // be moved down. Everyone else before us has been reset

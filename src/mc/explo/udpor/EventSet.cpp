@@ -7,7 +7,7 @@
 #include "src/mc/explo/udpor/Configuration.hpp"
 #include "src/mc/explo/udpor/History.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
-#include "src/mc/explo/udpor/maximal_subsets_iterator.hpp"
+#include "src/xbt/utils/iter/variable_for_loop.hpp"
 
 #include <stack>
 #include <vector>
@@ -143,12 +143,11 @@ bool EventSet::is_maximal() const
 
 bool EventSet::is_conflict_free() const
 {
-  const auto begin = maximal_subsets_iterator(*this, std::nullopt, {2});
-  const auto end   = maximal_subsets_iterator();
-  return std::none_of(begin, end, [](const EventSet event_pair) {
-    const auto events        = std::move(event_pair).move_into_vector();
-    const UnfoldingEvent* e1 = events[0];
-    const UnfoldingEvent* e2 = events[1];
+  const auto begin = simgrid::xbt::variable_for_loop<const EventSet>{{*this}, {*this}};
+  const auto end   = simgrid::xbt::variable_for_loop<const EventSet>();
+  return std::none_of(begin, end, [=](const auto event_pair) {
+    const UnfoldingEvent* e1 = *event_pair[0];
+    const UnfoldingEvent* e2 = *event_pair[1];
     return e1->conflicts_with(e2);
   });
 }
