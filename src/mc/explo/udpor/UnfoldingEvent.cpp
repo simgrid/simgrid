@@ -64,14 +64,13 @@ bool UnfoldingEvent::conflicts_with(const UnfoldingEvent* other) const
   const EventSet unique_to_me    = my_history.subtracting(other_history);
   const EventSet unique_to_other = other_history.subtracting(my_history);
 
-  for (const auto e_me : unique_to_me) {
-    for (const auto e_other : unique_to_other) {
-      if (e_me->has_conflicting_transition_with(e_other)) {
-        return true;
-      }
-    }
-  }
-  return false;
+  const bool conflicts_with_me = std::any_of(unique_to_me.begin(), unique_to_me.end(), [&](const UnfoldingEvent* e) {
+    return e->has_dependent_transition_with(other);
+  });
+  const bool conflicts_with_other =
+      std::any_of(unique_to_other.begin(), unique_to_other.end(),
+                  [&](const UnfoldingEvent* e) { return e->has_dependent_transition_with(this); });
+  return conflicts_with_me or conflicts_with_other;
 }
 
 bool UnfoldingEvent::conflicts_with(const Configuration& config) const
@@ -83,10 +82,10 @@ bool UnfoldingEvent::conflicts_with(const Configuration& config) const
   // if they are not related)
   const EventSet potential_conflicts = config.get_events().subtracting(get_history());
   return std::any_of(potential_conflicts.cbegin(), potential_conflicts.cend(),
-                     [&](const UnfoldingEvent* e) { return this->has_conflicting_transition_with(e); });
+                     [&](const UnfoldingEvent* e) { return this->has_dependent_transition_with(e); });
 }
 
-bool UnfoldingEvent::has_conflicting_transition_with(const UnfoldingEvent* other) const
+bool UnfoldingEvent::has_dependent_transition_with(const UnfoldingEvent* other) const
 {
   return associated_transition->depends(other->associated_transition.get());
 }
