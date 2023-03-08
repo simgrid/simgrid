@@ -28,7 +28,8 @@ CommPtr Comm::set_copy_data_callback(const std::function<void(kernel::activity::
   return this;
 }
 
-void Comm::copy_buffer_callback(kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
+void Comm::copy_buffer_callback(kernel::activity::CommImpl* comm, void* buff,
+                                size_t buff_size) // XBT_ATTRIB_DEPRECATED_v337
 {
   XBT_DEBUG("Copy the data over");
   memcpy(comm->dst_buff_, buff, buff_size);
@@ -39,7 +40,8 @@ void Comm::copy_buffer_callback(kernel::activity::CommImpl* comm, void* buff, si
   }
 }
 
-void Comm::copy_pointer_callback(kernel::activity::CommImpl* comm, void* buff, size_t buff_size)
+void Comm::copy_pointer_callback(kernel::activity::CommImpl* comm, void* buff,
+                                 size_t buff_size) // XBT_ATTRIB_DEPRECATED_v337
 {
   xbt_assert((buff_size == sizeof(void*)), "Cannot copy %zu bytes: must be sizeof(void*)", buff_size);
   *(void**)(comm->dst_buff_) = buff;
