@@ -74,6 +74,18 @@ bool UnfoldingEvent::conflicts_with(const UnfoldingEvent* other) const
   return false;
 }
 
+bool UnfoldingEvent::conflicts_with(const Configuration& config) const
+{
+  // A configuration is itself already conflict-free. Thus, it is
+  // simply a matter of testing whether or not the transition associated
+  // with the event is dependent with any already in `config` that are
+  // OUTSIDE this event's history (in an unfolding, events only conflict
+  // if they are not related)
+  const EventSet potential_conflicts = config.get_events().subtracting(get_history());
+  return std::any_of(potential_conflicts.cbegin(), potential_conflicts.cend(),
+                     [&](const UnfoldingEvent* e) { return this->has_conflicting_transition_with(e); });
+}
+
 bool UnfoldingEvent::has_conflicting_transition_with(const UnfoldingEvent* other) const
 {
   return associated_transition->depends(other->associated_transition.get());

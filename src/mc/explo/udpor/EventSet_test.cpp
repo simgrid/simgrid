@@ -6,9 +6,9 @@
 #include "src/3rd-party/catch.hpp"
 #include "src/mc/explo/udpor/EventSet.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
+#include "src/mc/explo/udpor/udpor_tests_private.hpp"
 #include "src/mc/transition/Transition.hpp"
 
-using namespace simgrid::mc;
 using namespace simgrid::mc::udpor;
 
 TEST_CASE("simgrid::mc::udpor::EventSet: Initial conditions when creating sets")
@@ -761,27 +761,6 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Moving into a collection")
 
 TEST_CASE("simgrid::mc::udpor::EventSet: Checking conflicts")
 {
-  struct IndependentAction : public Transition {
-    // Independent with everyone else
-    bool depends(const Transition* other) const override { return false; }
-  };
-
-  struct DependentAction : public Transition {
-    // Dependent with everyone else (except IndependentAction)
-    bool depends(const Transition* other) const override
-    {
-      return dynamic_cast<const IndependentAction*>(other) == nullptr;
-    }
-  };
-
-  struct ConditionallyDependentAction : public Transition {
-    // Dependent only with DependentAction (i.e. not itself)
-    bool depends(const Transition* other) const override
-    {
-      return dynamic_cast<const DependentAction*>(other) != nullptr;
-    }
-  };
-
   // The following tests concern the given event structure:
   //                e1
   //              /    /

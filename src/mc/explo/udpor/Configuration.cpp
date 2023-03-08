@@ -36,12 +36,18 @@ void Configuration::add_event(const UnfoldingEvent* e)
     return;
   }
 
+  // Preserves the property that the configuration is conflict-free
+  if (e->conflicts_with(*this)) {
+    throw std::invalid_argument("The newly added event conflicts with the events already "
+                                "contained in the configuration. Adding this event violates "
+                                "the property that a configuration is conflict-free");
+  }
+
   this->events_.insert(e);
   this->newest_event = e;
 
-  // Preserves the property that the configuration is valid
-  History history(e);
-  if (!this->events_.contains(history)) {
+  // Preserves the property that the configuration is causally closed
+  if (auto history = History(e); !this->events_.contains(history)) {
     throw std::invalid_argument("The newly added event has dependencies "
                                 "which are missing from this configuration");
   }

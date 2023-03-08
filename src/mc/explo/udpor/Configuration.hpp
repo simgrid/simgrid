@@ -23,6 +23,8 @@ public:
 
   auto begin() const { return this->events_.begin(); }
   auto end() const { return this->events_.end(); }
+  auto cbegin() const { return this->events_.cbegin(); }
+  auto cend() const { return this->events_.cend(); }
 
   bool contains(const UnfoldingEvent* e) const { return this->events_.contains(e); }
   const EventSet& get_events() const { return this->events_; }
