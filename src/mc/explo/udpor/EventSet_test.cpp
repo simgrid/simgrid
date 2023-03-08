@@ -276,7 +276,7 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Set Union Tests")
     {
       // A = A union A
       EventSet A_union = A.make_union(A);
-      REQUIRE(A == A_copy);
+      REQUIRE(A == A_union);
 
       A.form_union(A);
       REQUIRE(A == A_copy);
