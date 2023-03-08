@@ -27,8 +27,8 @@
 #include <ns3/packet-sink-helper.h>
 #include <ns3/point-to-point-helper.h>
 
-#include "ns3/mobility-module.h"
-#include "ns3/wifi-module.h"
+#include <ns3/mobility-module.h>
+#include <ns3/wifi-module.h>
 
 #include "network_ns3.hpp"
 #include "src/kernel/resource/models/ns3/ns3_simulator.hpp"

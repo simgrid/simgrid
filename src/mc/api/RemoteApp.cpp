@@ -12,13 +12,13 @@
 #include "smpi/smpi.h"
 #include "src/smpi/include/private.hpp"
 #endif
-#include "signal.h"
 #include "src/mc/api/State.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
 #include "xbt/log.h"
 #include "xbt/system_error.hpp"
+#include <signal.h>
 
 #include <algorithm>
 #include <array>

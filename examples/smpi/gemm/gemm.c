@@ -12,8 +12,8 @@
 /*#*/
 /*# ==================================================================================================*/
 
-#include "stdio.h"
-#include "mpi.h"
+#include <mpi.h>
+#include <stdio.h>
 
 void multiply(float* a, float* b, float* c, int istart, int iend, int size);
 void multiply_sampled(float* a, float* b, float* c, int istart, int iend, int size);

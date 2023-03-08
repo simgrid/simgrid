@@ -13,7 +13,7 @@
 #include "xbt/str.h"
 
 #if HAVE_PAPI
-#include "papi.h"
+#include <papi.h>
 #endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_process, smpi, "Logging specific to SMPI (kernel)");

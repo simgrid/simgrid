@@ -36,7 +36,7 @@
 #endif
 
 #if HAVE_PAPI
-#include "papi.h"
+#include <papi.h>
 #endif
 
 #if not defined(__APPLE__) && not defined(__HAIKU__)

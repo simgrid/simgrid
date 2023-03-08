@@ -3,7 +3,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "getopt.h"
 #include "private.hpp"
 #include "simgrid/host.h"
 #include "simgrid/modelchecker.h"
@@ -16,6 +15,7 @@
 #include "src/mc/mc_replay.hpp"
 #include "xbt/config.hpp"
 #include "xbt/file.hpp"
+#include <getopt.h>
 
 #include "src/smpi/include/smpi_actor.hpp"
 

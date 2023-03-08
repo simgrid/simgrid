@@ -21,11 +21,11 @@
   #undef _GNU_SOURCE
 #endif
 
-#include "include/xbt/config.hpp"
 #include "private.hpp"
 #include "smpi_coll.hpp"
 #include "smpi_config.hpp"
 #include "src/mc/mc.h"
+#include "xbt/config.hpp"
 #include "xbt/ex.h"
 #include "xbt/parse_units.hpp"
 
