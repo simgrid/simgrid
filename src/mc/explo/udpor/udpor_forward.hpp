@@ -18,6 +18,7 @@ class Configuration;
 class History;
 class Unfolding;
 class UnfoldingEvent;
+class maximal_subsets_iterator;
 
 } // namespace simgrid::mc::udpor
 

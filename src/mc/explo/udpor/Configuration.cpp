@@ -6,6 +6,7 @@
 #include "src/mc/explo/udpor/Configuration.hpp"
 #include "src/mc/explo/udpor/History.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
+#include "src/mc/explo/udpor/maximal_subsets_iterator.hpp"
 #include "xbt/asserts.h"
 
 #include <algorithm>
@@ -49,6 +50,10 @@ void Configuration::add_event(const UnfoldingEvent* e)
 
 std::vector<const UnfoldingEvent*> Configuration::get_topologically_sorted_events() const
 {
+  // This is essentially an implementation of detecting cycles
+  // in a graph with coloring, except it makes a topological
+  // ordering out of it
+
   if (events_.empty()) {
     return std::vector<const UnfoldingEvent*>();
   }
@@ -69,9 +74,8 @@ std::vector<const UnfoldingEvent*> Configuration::get_topologically_sorted_event
 
       if (not temporarily_marked_events.contains(evt)) {
         // If this event hasn't yet been marked, do
-        // so now so that if we see it again in a child we can
-        // detect a cycle and if we see it again here
-        // we can detect that the node is re-processed
+        // so now so that if we both see it
+        // again in a child we can detect a cycle
         temporarily_marked_events.insert(evt);
 
         EventSet immediate_causes = evt->get_immediate_causes();
@@ -82,16 +86,9 @@ std::vector<const UnfoldingEvent*> Configuration::get_topologically_sorted_event
         }
         immediate_causes.subtract(discovered_events);
         immediate_causes.subtract(permanently_marked_events);
-        const EventSet undiscovered_causes = std::move(immediate_causes);
-
-        for (const auto cause : undiscovered_causes) {
-          event_stack.push(cause);
-        }
+        std::for_each(immediate_causes.begin(), immediate_causes.end(),
+                      [&event_stack](const UnfoldingEvent* cause) { event_stack.push(cause); });
       } else {
-        // Mark this event as:
-        // 1. discovered across all DFSs performed
-        // 2. permanently marked
-        // 3. part of the topological search
         unknown_events.remove(evt);
         temporarily_marked_events.remove(evt);
         permanently_marked_events.insert(evt);
@@ -102,7 +99,7 @@ std::vector<const UnfoldingEvent*> Configuration::get_topologically_sorted_event
         topological_ordering.push_back(evt);
 
         // Only now do we remove the event, i.e. once
-        // we've processed the same event again
+        // we've processed the same event twice
         event_stack.pop();
       }
     }
@@ -112,13 +109,44 @@ std::vector<const UnfoldingEvent*> Configuration::get_topologically_sorted_event
 
 std::vector<const UnfoldingEvent*> Configuration::get_topologically_sorted_events_of_reverse_graph() const
 {
-  // The method exploits the property that
+  // The implementation exploits the property that
   // a topological sorting S^R of the reverse graph G^R
   // of some graph G is simply the reverse of any
   // topological sorting S of G.
   auto topological_events = get_topologically_sorted_events();
   std::reverse(topological_events.begin(), topological_events.end());
   return topological_events;
+}
+
+EventSet Configuration::get_minimally_reproducible_events() const
+{
+  // The implementation exploits the following observations:
+  //
+  // To select the smallest reproducible set of events, we want
+  // to pick events that "knock out" a lot of others. Furthermore,
+  // we need to ensure that the events furthest down in the
+  // causality graph are also selected. If you combine these ideas,
+  // you're basically left with traversing the set of maximal
+  // subsets of C! And we have an iterator for that already!
+  //
+  // The next observation is that the moment we don't increase in size
+  // the current maximal set (or decrease the number of events),
+  // we know that the prior set `S` covered the entire history of C and
+  // was maximal. Subsequent sets will miss events earlier in the
+  // topological ordering that appear in `S`
+  EventSet minimally_reproducible_events = EventSet();
+
+  for (const auto& maximal_set : maximal_subsets_iterator_wrapper(*this)) {
+    if (maximal_set.size() > minimally_reproducible_events.size()) {
+      minimally_reproducible_events = maximal_set;
+    } else {
+      // The moment we see the iterator generate a set of size
+      // that is not monotonically increasing, we can stop:
+      // the set prior was the minimally-reproducible one
+      return minimally_reproducible_events;
+    }
+  }
+  return minimally_reproducible_events;
 }
 
 } // namespace simgrid::mc::udpor

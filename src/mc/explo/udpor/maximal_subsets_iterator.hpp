@@ -7,8 +7,10 @@
 #define SIMGRID_MC_UDPOR_MAXIMAL_SUBSETS_ITERATOR_HPP
 
 #include "src/mc/explo/udpor/Configuration.hpp"
+#include "src/xbt/utils/iter/iterator_wrapping.hpp"
 
 #include <boost/iterator/iterator_facade.hpp>
+#include <functional>
 #include <optional>
 #include <stack>
 #include <unordered_map>
@@ -131,6 +133,9 @@ private:
   // Allows boost::iterator_facade<...> to function properly
   friend class boost::iterator_core_access;
 };
+
+using maximal_subsets_iterator_wrapper =
+    simgrid::xbt::iterator_wrapping<maximal_subsets_iterator, const Configuration&>;
 
 } // namespace simgrid::mc::udpor
 #endif
