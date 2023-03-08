@@ -5,6 +5,7 @@
 
 #include "src/mc/explo/UdporChecker.hpp"
 #include "src/mc/api/State.hpp"
+#include "src/mc/explo/udpor/maximal_subsets_iterator.hpp"
 #include <xbt/asserts.h>
 #include <xbt/log.h>
 
@@ -40,13 +41,8 @@ void UdporChecker::run()
 void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::unique_ptr<State> stateC,
                            EventSet prev_exC)
 {
-  // Perform the incremental computation of exC
-  //
-  // TODO: This method will have side effects on
-  // the unfolding, but the naming of the method
-  // suggests it is doesn't have side effects. We should
-  // reconcile this in the future
-  auto [exC, enC] = compute_extension(C, *stateC, prev_exC);
+  auto exC       = compute_exC(C, *stateC, prev_exC);
+  const auto enC = compute_enC(C, exC);
 
   // If enC is a subset of D, intuitively
   // there aren't any enabled transitions
@@ -118,8 +114,7 @@ void UdporChecker::explore(const Configuration& C, EventSet D, EventSet A, std::
   clean_up_explore(e, C, D);
 }
 
-std::tuple<EventSet, EventSet> UdporChecker::compute_extension(const Configuration& C, const State& stateC,
-                                                               const EventSet& prev_exC) const
+EventSet UdporChecker::compute_exC(const Configuration& C, const State& stateC, const EventSet& prev_exC)
 {
   // See eqs. 5.7 of section 5.2 of [3]
   // C = C' + {e_cur}, i.e. C' = C - {e_cur}
@@ -127,7 +122,7 @@ std::tuple<EventSet, EventSet> UdporChecker::compute_extension(const Configurati
   // Then
   //
   // ex(C) = ex(C' + {e_cur}) = ex(C') / {e_cur} +
-  //    U{<a, K> : K is maximal, `a` depends on all of K, `a` enabled at K }
+  //    U{<a, K> : K is maximal, `a` depends on all of K, `a` enabled at config(K) }
   const UnfoldingEvent* e_cur = C.get_latest_event();
   EventSet exC                = prev_exC;
   exC.remove(e_cur);
@@ -139,31 +134,54 @@ std::tuple<EventSet, EventSet> UdporChecker::compute_extension(const Configurati
       // the set "by hand"
       const auto specialized_extension_function = incremental_extension_functions.find(transition->type_);
       if (specialized_extension_function != incremental_extension_functions.end()) {
-        exC.form_union((specialized_extension_function->second)(C, *transition));
+        exC.form_union((specialized_extension_function->second)(C, transition));
       } else {
-        exC.form_union(this->compute_extension_by_enumeration(C, *transition));
+        exC.form_union(this->compute_exC_by_enumeration(C, transition));
+      }
+    }
+  }
+  return exC;
+}
+
+EventSet UdporChecker::compute_exC_by_enumeration(const Configuration& C, const std::shared_ptr<Transition> action)
+{
+  // Here we're computing the following:
+  //
+  // U{<a, K> : K is maximal, `a` depends on all of K, `a` enabled at config(K) }
+  //
+  // where `a` is the `action` given to us. Note that `a` is presumed to be enabled
+  EventSet incremental_exC;
+
+  for (auto begin =
+           maximal_subsets_iterator(C, {[&](const UnfoldingEvent* e) { return e->is_dependent_with(action.get()); }});
+       begin != maximal_subsets_iterator(); ++begin) {
+    const EventSet& maximal_subset = *begin;
+
+    // TODO: Determine if `a` is enabled here
+    const bool enabled_at_config_k = false;
+
+    if (enabled_at_config_k) {
+      auto candidate_handle = std::make_unique<UnfoldingEvent>(maximal_subset, action);
+      if (auto candidate_event = candidate_handle.get(); not unfolding.contains_event_equivalent_to(candidate_event)) {
+        // This is a new event (i.e. one we haven't yet seen)
+        unfolding.insert(std::move(candidate_handle));
+        incremental_exC.insert(candidate_event);
       }
     }
   }
 
-  EventSet enC;
-  // TODO: Compute enC based on conflict relations
-
-  return std::tuple<EventSet, EventSet>(exC, enC);
+  return incremental_exC;
 }
 
-EventSet UdporChecker::compute_extension_by_enumeration(const Configuration& C, const Transition& action) const
+EventSet UdporChecker::compute_enC(const Configuration& C, const EventSet& exC) const
 {
-  // Here we're computing the following:
-  //
-  // U{<a, K> : K is maximal, `a` depends on all of K, `a` enabled at K }
-  //
-  // where `a` is the `action` given to us.
-  EventSet incremental_exC;
-
-  // Compute the extension set here using the algorithm Martin described...
-
-  return incremental_exC;
+  EventSet enC;
+  for (const auto e : exC) {
+    if (not e->conflicts_with(C)) {
+      enC.insert(e);
+    }
+  }
+  return enC;
 }
 
 void UdporChecker::move_to_stateCe(State& state, const UnfoldingEvent& e)

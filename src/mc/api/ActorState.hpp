@@ -40,7 +40,7 @@ class ActorState {
    * such transitions such that `pending_transitions_[i]` represents
    * the variation of the transition with `times_considered = i`.
    *
-   * TODO: If only a subset of transitions of an actor that can
+   * @note: If only a subset of transitions of an actor that can
    * take multiple transitions in some state are truly enabled,
    * we would instead need to map `times_considered` to a transition,
    * as the map is currently implicit in the ordering of the transitions

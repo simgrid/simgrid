@@ -20,9 +20,12 @@ UnfoldingEvent::UnfoldingEvent(EventSet immediate_causes, std::shared_ptr<Transi
 
 bool UnfoldingEvent::operator==(const UnfoldingEvent& other) const
 {
-  const bool same_actor = associated_transition->aid_ == other.associated_transition->aid_;
-  if (!same_actor)
+  // Must be run by the same actor
+  if (associated_transition->aid_ != other.associated_transition->aid_)
     return false;
+
+  // If run by the same actor, must be the same _step_ of that actor's
+  // execution
 
   // TODO: Add in information to determine which step in the sequence this actor was executed
 
@@ -85,9 +88,14 @@ bool UnfoldingEvent::conflicts_with(const Configuration& config) const
                      [&](const UnfoldingEvent* e) { return this->has_dependent_transition_with(e); });
 }
 
+bool UnfoldingEvent::is_dependent_with(const Transition* t) const
+{
+  return associated_transition->depends(t);
+}
+
 bool UnfoldingEvent::has_dependent_transition_with(const UnfoldingEvent* other) const
 {
-  return associated_transition->depends(other->associated_transition.get());
+  return is_dependent_with(other->associated_transition.get());
 }
 
 } // namespace simgrid::mc::udpor

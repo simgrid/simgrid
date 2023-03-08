@@ -9,7 +9,7 @@
 
 namespace simgrid::mc::udpor {
 
-void Unfolding::remove(UnfoldingEvent* e)
+void Unfolding::remove(const UnfoldingEvent* e)
 {
   if (e == nullptr) {
     throw std::invalid_argument("Expected a non-null pointer to an event, but received NULL");
@@ -19,9 +19,8 @@ void Unfolding::remove(UnfoldingEvent* e)
 
 void Unfolding::insert(std::unique_ptr<UnfoldingEvent> e)
 {
-  UnfoldingEvent* handle = e.get();
-  auto loc               = this->global_events_.find(handle);
-  if (loc != this->global_events_.end()) {
+  const UnfoldingEvent* handle = e.get();
+  if (auto loc = this->global_events_.find(handle); loc != this->global_events_.end()) {
     // This is bad: someone wrapped the raw event address twice
     // in two different unique ptrs and attempted to
     // insert it into the unfolding...
@@ -31,6 +30,18 @@ void Unfolding::insert(std::unique_ptr<UnfoldingEvent> e)
 
   // Map the handle to its owner
   this->global_events_[handle] = std::move(e);
+}
+
+bool Unfolding::contains_event_equivalent_to(const UnfoldingEvent* e) const
+{
+  // Notice the use of `==` equality here. `e` may not be contained in the
+  // unfolding; but some event which is "equivalent" to it could be.
+  for (const auto& [event, _] : global_events_) {
+    if (*event == *e) {
+      return true;
+    }
+  }
+  return false;
 }
 
 } // namespace simgrid::mc::udpor

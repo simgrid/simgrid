@@ -24,15 +24,16 @@ private:
    * of the addresses that are referenced by EventSet instances and Configuration
    * instances. UDPOR guarantees that events are persisted for as long as necessary
    */
-  std::unordered_map<UnfoldingEvent*, std::unique_ptr<UnfoldingEvent>> global_events_;
+  std::unordered_map<const UnfoldingEvent*, std::unique_ptr<UnfoldingEvent>> global_events_;
 
 public:
   Unfolding()                       = default;
   Unfolding& operator=(Unfolding&&) = default;
   Unfolding(Unfolding&&)            = default;
 
-  void remove(UnfoldingEvent* e);
+  void remove(const UnfoldingEvent* e);
   void insert(std::unique_ptr<UnfoldingEvent> e);
+  bool contains_event_equivalent_to(const UnfoldingEvent* e) const;
 
   size_t size() const { return this->global_events_.size(); }
   bool empty() const { return this->global_events_.empty(); }
