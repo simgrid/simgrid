@@ -173,11 +173,10 @@ void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const
   s_mc_message_actors_status_answer_t answer;
   ssize_t answer_size = model_checker_->channel().receive(answer);
   xbt_assert(answer_size != -1, "Could not receive message");
-  xbt_assert(answer_size == sizeof answer && answer.type == MessageType::ACTORS_STATUS_REPLY,
-             "Received unexpected message %s (%i, size=%zd) "
-             "expected MessageType::ACTORS_STATUS_REPLY (%i, size=%zu)",
-             to_c_str(answer.type), (int)answer.type, answer_size, (int)MessageType::ACTORS_STATUS_REPLY,
-             sizeof answer);
+  xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
+  xbt_assert(answer.type == MessageType::ACTORS_STATUS_REPLY,
+             "Received unexpected message %s (%i); expected MessageType::ACTORS_STATUS_REPLY (%i)",
+             to_c_str(answer.type), (int)answer.type, (int)MessageType::ACTORS_STATUS_REPLY);
 
   // Message sanity checks
   xbt_assert(answer.count >= 0, "Received an ACTOR_STATUS_REPLY message with an actor count of '%d' < 0", answer.count);
@@ -241,11 +240,10 @@ void RemoteApp::check_deadlock() const
   s_mc_message_int_t message;
   ssize_t received = model_checker_->channel().receive(message);
   xbt_assert(received != -1, "Could not receive message");
-  xbt_assert(received == sizeof message && message.type == MessageType::DEADLOCK_CHECK_REPLY,
-             "Received unexpected message %s (%i, size=%zd) "
-             "expected MessageType::DEADLOCK_CHECK_REPLY (%i, size=%zu)",
-             to_c_str(message.type), (int)message.type, received, (int)MessageType::DEADLOCK_CHECK_REPLY,
-             sizeof message);
+  xbt_assert(received == sizeof message, "Broken message (size=%zd; expected %zu)", received, sizeof message);
+  xbt_assert(message.type == MessageType::DEADLOCK_CHECK_REPLY,
+             "Received unexpected message %s (%i); expected MessageType::DEADLOCK_CHECK_REPLY (%i)",
+             to_c_str(message.type), (int)message.type, (int)MessageType::DEADLOCK_CHECK_REPLY);
 
   if (message.value != 0) {
     XBT_CINFO(mc_global, "Counter-example execution trace:");

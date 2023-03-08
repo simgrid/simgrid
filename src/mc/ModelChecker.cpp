@@ -323,11 +323,10 @@ Transition* ModelChecker::handle_simcall(aid_t aid, int times_considered, bool n
   s_mc_message_simcall_execute_answer_t answer;
   ssize_t s = checker_side_.get_channel().receive(answer);
   xbt_assert(s != -1, "Could not receive message");
-  xbt_assert(s == sizeof(answer) && answer.type == MessageType::SIMCALL_EXECUTE_ANSWER,
-             "Received unexpected message %s (%i, size=%i) "
-             "expected MessageType::SIMCALL_EXECUTE_ANSWER (%i, size=%i)",
-             to_c_str(answer.type), (int)answer.type, (int)s, (int)MessageType::SIMCALL_EXECUTE_ANSWER,
-             (int)sizeof(answer));
+  xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
+  xbt_assert(answer.type == MessageType::SIMCALL_EXECUTE_ANSWER,
+             "Received unexpected message %s (%i); expected MessageType::SIMCALL_EXECUTE_ANSWER (%i)",
+             to_c_str(answer.type), (int)answer.type, (int)MessageType::SIMCALL_EXECUTE_ANSWER);
 
   if (new_transition) {
     std::stringstream stream(answer.buffer.data());
@@ -346,9 +345,10 @@ void ModelChecker::finalize_app(bool terminate_asap)
   s_mc_message_t answer;
   ssize_t s = checker_side_.get_channel().receive(answer);
   xbt_assert(s != -1, "Could not receive answer to FINALIZE");
-  xbt_assert(s == sizeof(answer) && answer.type == MessageType::FINALIZE_REPLY,
-             "Received unexpected message %s (%i, size=%i) expected MessageType::FINALIZE_REPLY (%i, size=%i)",
-             to_c_str(answer.type), (int)answer.type, (int)s, (int)MessageType::FINALIZE_REPLY, (int)sizeof(answer));
+  xbt_assert(s == sizeof answer, "Broken message (size=%zd; expected %zu)", s, sizeof answer);
+  xbt_assert(answer.type == MessageType::FINALIZE_REPLY,
+             "Received unexpected message %s (%i); expected MessageType::FINALIZE_REPLY (%i)", to_c_str(answer.type),
+             (int)answer.type, (int)MessageType::FINALIZE_REPLY);
 }
 
 } // namespace simgrid::mc
