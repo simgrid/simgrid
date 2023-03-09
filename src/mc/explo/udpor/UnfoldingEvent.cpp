@@ -88,6 +88,35 @@ bool UnfoldingEvent::conflicts_with(const Configuration& config) const
                      [&](const UnfoldingEvent* e) { return this->has_dependent_transition_with(e); });
 }
 
+bool UnfoldingEvent::immediately_conflicts_with(const UnfoldingEvent* other) const
+{
+  // They have to be in conflict at a minimum
+  if (not conflicts_with(other)) {
+    return false;
+  }
+
+  auto combined_events = History(EventSet{this, other}).get_all_events();
+
+  // See the definition of immediate conflicts in the original paper on UDPOR
+  {
+    combined_events.remove(this);
+    if (not combined_events.is_valid_configuration()) {
+      return false;
+    }
+    combined_events.insert(this);
+  }
+
+  {
+    combined_events.remove(other);
+    if (not combined_events.is_valid_configuration()) {
+      return false;
+    }
+    combined_events.insert(other);
+  }
+
+  return true;
+}
+
 bool UnfoldingEvent::is_dependent_with(const Transition* t) const
 {
   return associated_transition->depends(t);
