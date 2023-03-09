@@ -543,6 +543,7 @@ set(MC_SRC
   src/mc/explo/udpor/Unfolding.cpp
   src/mc/explo/udpor/Unfolding.hpp
   src/mc/explo/udpor/udpor_forward.hpp
+  src/mc/explo/udpor/udpor_tests_private.hpp
   
   src/mc/inspect/DwarfExpression.cpp
   src/mc/inspect/DwarfExpression.hpp
