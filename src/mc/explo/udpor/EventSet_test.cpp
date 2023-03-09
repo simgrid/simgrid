@@ -5,10 +5,12 @@
 
 #include "src/3rd-party/catch.hpp"
 #include "src/mc/explo/udpor/EventSet.hpp"
+#include "src/mc/explo/udpor/History.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
 #include "src/mc/explo/udpor/udpor_tests_private.hpp"
-#include "src/mc/transition/Transition.hpp"
+#include "src/xbt/utils/iter/LazyPowerset.hpp"
 
+using namespace simgrid::xbt;
 using namespace simgrid::mc::udpor;
 
 TEST_CASE("simgrid::mc::udpor::EventSet: Initial conditions when creating sets")
@@ -1050,5 +1052,78 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Checking conflicts")
 
     // 6 choose 6 = 1 test
     CHECK_FALSE(EventSet({&e1, &e2, &e3, &e4, &e5, &e6}).is_conflict_free());
+  }
+}
+
+TEST_CASE("simgrid::mc::udpor::EventSet: Topological Ordering Property Observed for Every Possible Subset")
+{
+  // The following tests concern the given event structure:
+  //                e1
+  //              /   /
+  //            e2    e6
+  //           /  /    /
+  //          e3   /   /
+  //         /  /    /
+  //        e4  e5   e7
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e5(EventSet({&e3}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e6(EventSet({&e1}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e7(EventSet({&e2, &e6}), std::make_shared<IndependentAction>());
+
+  const EventSet all_events{&e1, &e2, &e3, &e4, &e5, &e6, &e7};
+
+  for (const auto& subset_of_iterators : make_powerset_iter<EventSet>(all_events)) {
+    // Verify that the topological ordering property holds for every subset
+
+    const EventSet subset = [&subset_of_iterators]() {
+      EventSet subset_local;
+      for (const auto iter : subset_of_iterators) {
+        subset_local.insert(*iter);
+      }
+      return subset_local;
+    }();
+
+    {
+      // To test this, we verify that at each point none of the events
+      // that follow after any particular event `e` are contained in
+      // `e`'s history
+      EventSet invalid_events   = subset;
+      const auto ordered_events = subset.get_topological_ordering();
+
+      std::for_each(ordered_events.begin(), ordered_events.end(), [&](const UnfoldingEvent* e) {
+        History history(e);
+        for (auto* e_hist : history) {
+          if (e_hist == e)
+            continue;
+          REQUIRE_FALSE(invalid_events.contains(e_hist));
+        }
+        invalid_events.remove(e);
+      });
+    }
+    {
+      // To test this, we verify that at each point none of the events
+      // that we've processed in the ordering are ever seen again
+      // in anybody else's history
+      EventSet events_seen;
+      const auto ordered_events = subset.get_topological_ordering_of_reverse_graph();
+
+      std::for_each(ordered_events.begin(), ordered_events.end(), [&events_seen](const UnfoldingEvent* e) {
+        History history(e);
+
+        for (auto* e_hist : history) {
+          // Unlike the test above, we DO want to ensure
+          // that `e` itself ALSO isn't yet seen
+
+          // If this event has been "seen" before,
+          // this implies that event `e` appears later
+          // in the list than one of its ancestors
+          REQUIRE_FALSE(events_seen.contains(e_hist));
+        }
+        events_seen.insert(e);
+      });
+    }
   }
 }

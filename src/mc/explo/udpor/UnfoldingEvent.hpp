@@ -40,6 +40,7 @@ public:
   Transition* get_transition() const { return this->associated_transition.get(); }
 
   bool operator==(const UnfoldingEvent&) const;
+  bool operator!=(const UnfoldingEvent& other) const { return not(*this == other); }
 
   /**
    * @brief The transition that UDPOR "attaches" to this

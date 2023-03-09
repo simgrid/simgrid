@@ -148,7 +148,9 @@ public:
    */
   std::vector<const UnfoldingEvent*> move_into_vector() const&&;
 
-  using const_iterator = std::unordered_set<const UnfoldingEvent*>::const_iterator;
+  using iterator       = decltype(events_)::iterator;
+  using const_iterator = decltype(events_)::const_iterator;
+  using value_type     = decltype(events_)::value_type;
 };
 
 } // namespace simgrid::mc::udpor
