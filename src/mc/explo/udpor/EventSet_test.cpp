@@ -527,12 +527,12 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Testing Configurations")
   // The tests enumerate all possible subsets of the events
   // in the structure and test whether those subsets are
   // maximal and/or valid configurations
-  UnfoldingEvent e1;
-  UnfoldingEvent e2{&e1};
-  UnfoldingEvent e3{&e2};
-  UnfoldingEvent e4{&e2};
-  UnfoldingEvent e5{&e1};
-  UnfoldingEvent e6{&e5};
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e4(EventSet({&e2}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e5(EventSet({&e1}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e6(EventSet({&e5}), std::make_shared<IndependentAction>());
 
   SECTION("Valid Configurations")
   {

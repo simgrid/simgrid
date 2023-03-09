@@ -124,7 +124,7 @@ bool EventSet::is_valid_configuration() const
   /// which requires that all events have their history contained
   /// in the set
   const History history(*this);
-  return this->contains(history);
+  return contains(history) && is_conflict_free();
 }
 
 bool EventSet::contains(const History& history) const
