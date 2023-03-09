@@ -635,12 +635,11 @@ In SMPI, this depends on the message size, that is compared against two threshol
 
 - if (size < :ref:`smpi/async-small-thresh <cfg=smpi/async-small-thresh>`) then
   MPI_Send returns immediately, and the message is sent even if the
-  corresponding receive has not be issued yet.
+  corresponding receive has not be issued yet.  This is known as the eager mode.
 - if (:ref:`smpi/async-small-thresh <cfg=smpi/async-small-thresh>` < size <
   :ref:`smpi/send-is-detached-thresh <cfg=smpi/send-is-detached-thresh>`) then
   MPI_Send also returns immediately, but SMPI waits for the corresponding
-  receive to be posted, in order to perform the communication operation. This is
-  known as the eager mode.
+  receive to be posted, in order to perform the communication operation.
 - if (:ref:`smpi/send-is-detached-thresh <cfg=smpi/send-is-detached-thresh>` < size) then
   MPI_Send returns only when the message has actually been sent over the network. This is known as the rendez-vous mode.
 
