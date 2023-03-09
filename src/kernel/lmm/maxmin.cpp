@@ -219,7 +219,7 @@ template <class CnstList> void MaxMin::maxmin_solve(CnstList& cnst_list)
       xbt_assert(
           not cnst_light_tab[pos].cnst->active_element_set_.empty(),
           "Cannot saturate more a constraint that has"
-          " no active element! You may want to change the work amount precision (--cfg=maxmin/precision:<new_value>)"
+          " no active element! You may want to change the work amount precision (--cfg=precision/work-amount:<new_value>)"
           " because of possible rounding effects.\n\tFor the record, the usage of this constraint is %g while "
           "the maxmin precision to which it is compared is %g.\n\tThe usage of the previous constraint is %g.",
           cnst_light_tab[pos].cnst->usage_, sg_precision_workamount, cnst_light_tab[pos - 1].cnst->usage_);
