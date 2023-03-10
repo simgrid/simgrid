@@ -71,12 +71,11 @@ private:
   /// @brief UDPOR's current "view" of the program it is exploring
   Unfolding unfolding = Unfolding();
 
-  using ExtensionFunction = std::function<EventSet(const Configuration&, const Transition&)>;
-
   /**
    * @brief A collection of specialized functions which can incrementally
    * compute the extension of a configuration based on the action taken
    */
+  using ExtensionFunction = std::function<EventSet(const Configuration&, const std::shared_ptr<Transition>)>;
   std::unordered_map<Transition::Type, ExtensionFunction> incremental_extension_functions =
       std::unordered_map<Transition::Type, ExtensionFunction>();
 
@@ -139,12 +138,17 @@ private:
    * @param stateC the state of the program after having executed C (viz. `state(C)`)
    * @param prev_exC the previous value of `ex(C)`, viz. that which was computed for
    * the configuration `C' := C - {e}`
-   * @returns a tuple containing the pair of sets `ex(C)` and `en(C)` respectively
+   * @returns the extension set `ex(C)` of `C`
    */
-  std::tuple<EventSet, EventSet> compute_extension(const Configuration& C, const State& stateC,
-                                                   const EventSet& prev_exC) const;
+  EventSet compute_exC(const Configuration& C, const State& stateC, const EventSet& prev_exC);
 
-  EventSet compute_extension_by_enumeration(const Configuration& C, const Transition& action) const;
+  /**
+   * @brief Computes a portion of the extension set of a configuration given
+   * some action `action`
+   */
+  EventSet compute_exC_by_enumeration(const Configuration& C, const std::shared_ptr<Transition> action);
+
+  EventSet compute_enC(const Configuration& C, const EventSet& exC) const;
 
   /**
    *

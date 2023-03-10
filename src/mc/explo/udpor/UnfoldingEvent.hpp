@@ -27,17 +27,22 @@ public:
   UnfoldingEvent(UnfoldingEvent&&)                 = default;
 
   EventSet get_history() const;
-  bool in_history_of(const UnfoldingEvent* otherEvent) const;
+  bool in_history_of(const UnfoldingEvent* other) const;
+  bool related_to(const UnfoldingEvent* other) const;
 
-  bool conflicts_with(const UnfoldingEvent* otherEvent) const;
+  bool conflicts_with(const UnfoldingEvent* other) const;
   bool conflicts_with(const Configuration& config) const;
-  bool immediately_conflicts_with(const UnfoldingEvent* otherEvt) const;
+  bool immediately_conflicts_with(const UnfoldingEvent* other) const;
+  bool is_dependent_with(const Transition*) const;
+  bool is_dependent_with(const UnfoldingEvent* other) const;
 
   const EventSet& get_immediate_causes() const { return this->immediate_causes; }
   Transition* get_transition() const { return this->associated_transition.get(); }
 
   bool operator==(const UnfoldingEvent&) const;
+  bool operator!=(const UnfoldingEvent& other) const { return not(*this == other); }
 
+private:
   /**
    * @brief The transition that UDPOR "attaches" to this
    * specific event for later use while computing e.g. extension

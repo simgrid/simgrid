@@ -5,6 +5,7 @@
 
 #include "src/3rd-party/catch.hpp"
 #include "src/mc/explo/udpor/Unfolding.hpp"
+#include "src/mc/explo/udpor/udpor_tests_private.hpp"
 
 using namespace simgrid::mc::udpor;
 
@@ -18,10 +19,10 @@ TEST_CASE("simgrid::mc::udpor::Unfolding: Creating an unfolding")
 TEST_CASE("simgrid::mc::udpor::Unfolding: Inserting and removing events with an unfolding")
 {
   Unfolding unfolding;
-  auto e1        = std::make_unique<UnfoldingEvent>();
-  auto e2        = std::make_unique<UnfoldingEvent>();
-  auto e1_handle = e1.get();
-  auto e2_handle = e2.get();
+  auto e1              = std::make_unique<UnfoldingEvent>();
+  auto e2              = std::make_unique<UnfoldingEvent>();
+  const auto e1_handle = e1.get();
+  const auto e2_handle = e2.get();
 
   unfolding.insert(std::move(e1));
   REQUIRE(unfolding.size() == 1);

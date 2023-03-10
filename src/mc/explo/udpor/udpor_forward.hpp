@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/** @file mc_forward.hpp
+/** @file udpor_forward.hpp
  *
  *  Forward definitions for MC types specific to UDPOR
  */

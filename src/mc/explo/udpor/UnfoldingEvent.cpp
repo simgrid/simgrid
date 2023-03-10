@@ -20,9 +20,12 @@ UnfoldingEvent::UnfoldingEvent(EventSet immediate_causes, std::shared_ptr<Transi
 
 bool UnfoldingEvent::operator==(const UnfoldingEvent& other) const
 {
-  const bool same_actor = associated_transition->aid_ == other.associated_transition->aid_;
-  if (!same_actor)
+  // Must be run by the same actor
+  if (associated_transition->aid_ != other.associated_transition->aid_)
     return false;
+
+  // If run by the same actor, must be the same _step_ of that actor's
+  // execution
 
   // TODO: Add in information to determine which step in the sequence this actor was executed
 
@@ -38,6 +41,88 @@ bool UnfoldingEvent::operator==(const UnfoldingEvent& other) const
 EventSet UnfoldingEvent::get_history() const
 {
   return History(this).get_all_events();
+}
+
+bool UnfoldingEvent::related_to(const UnfoldingEvent* other) const
+{
+  return this->in_history_of(other) or other->in_history_of(this);
+}
+
+bool UnfoldingEvent::in_history_of(const UnfoldingEvent* other) const
+{
+  return History(other).contains(this);
+}
+
+bool UnfoldingEvent::conflicts_with(const UnfoldingEvent* other) const
+{
+  // Events that have a causal relation never are in conflict
+  // in an unfolding structure. Two events in conflict must
+  // not be contained in each other's histories
+  if (related_to(other)) {
+    return false;
+  }
+
+  const EventSet my_history      = get_history();
+  const EventSet other_history   = other->get_history();
+  const EventSet unique_to_me    = my_history.subtracting(other_history);
+  const EventSet unique_to_other = other_history.subtracting(my_history);
+
+  const bool conflicts_with_me    = std::any_of(unique_to_me.begin(), unique_to_me.end(),
+                                                [&](const UnfoldingEvent* e) { return e->is_dependent_with(other); });
+  const bool conflicts_with_other = std::any_of(unique_to_other.begin(), unique_to_other.end(),
+                                                [&](const UnfoldingEvent* e) { return e->is_dependent_with(this); });
+  return conflicts_with_me or conflicts_with_other;
+}
+
+bool UnfoldingEvent::conflicts_with(const Configuration& config) const
+{
+  // A configuration is itself already conflict-free. Thus, it is
+  // simply a matter of testing whether or not the transition associated
+  // with the event is dependent with any already in `config` that are
+  // OUTSIDE this event's history (in an unfolding, events only conflict
+  // if they are not related)
+  const EventSet potential_conflicts = config.get_events().subtracting(get_history());
+  return std::any_of(potential_conflicts.cbegin(), potential_conflicts.cend(),
+                     [&](const UnfoldingEvent* e) { return this->is_dependent_with(e); });
+}
+
+bool UnfoldingEvent::immediately_conflicts_with(const UnfoldingEvent* other) const
+{
+  // They have to be in conflict at a minimum
+  if (not conflicts_with(other)) {
+    return false;
+  }
+
+  auto combined_events = History(EventSet{this, other}).get_all_events();
+
+  // See the definition of immediate conflicts in the original paper on UDPOR
+  {
+    combined_events.remove(this);
+    if (not combined_events.is_valid_configuration()) {
+      return false;
+    }
+    combined_events.insert(this);
+  }
+
+  {
+    combined_events.remove(other);
+    if (not combined_events.is_valid_configuration()) {
+      return false;
+    }
+    combined_events.insert(other);
+  }
+
+  return true;
+}
+
+bool UnfoldingEvent::is_dependent_with(const Transition* t) const
+{
+  return associated_transition->depends(t);
+}
+
+bool UnfoldingEvent::is_dependent_with(const UnfoldingEvent* other) const
+{
+  return is_dependent_with(other->associated_transition.get());
 }
 
 } // namespace simgrid::mc::udpor

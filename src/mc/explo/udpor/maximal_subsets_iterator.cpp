@@ -6,11 +6,11 @@
 
 namespace simgrid::mc::udpor {
 
-maximal_subsets_iterator::maximal_subsets_iterator(const Configuration& config,
-                                                   std::optional<node_filter_function> filter)
-    : config({config}), current_maximal_set({EventSet()})
+maximal_subsets_iterator::maximal_subsets_iterator(const EventSet& events, std::optional<node_filter_function> filter,
+                                                   std::optional<size_t> maximum_subset_size)
+    : maximum_subset_size(maximum_subset_size), current_maximal_set({EventSet()})
 {
-  const auto candidate_ordering = config.get_topologically_sorted_events_of_reverse_graph();
+  const auto candidate_ordering = events.get_topological_ordering_of_reverse_graph();
   if (filter.has_value()) {
     // Only store the events in the ordering that "matter" to us
     std::copy_if(std::move_iterator(candidate_ordering.begin()), std::move_iterator(candidate_ordering.end()),
@@ -22,12 +22,13 @@ maximal_subsets_iterator::maximal_subsets_iterator(const Configuration& config,
 
 void maximal_subsets_iterator::increment()
 {
+  // Termination condition
   if (current_maximal_set == std::nullopt) {
     return;
   }
 
+  // Stop immediately if there's nothing to search
   if (topological_ordering.empty()) {
-    // Stop immediately if there's nothing to search
     current_maximal_set = std::nullopt;
     return;
   }
@@ -41,6 +42,7 @@ void maximal_subsets_iterator::increment()
     }
   }();
 
+  // Out of events: we've finished
   if (next_event_ref == topological_ordering.end()) {
     current_maximal_set = std::nullopt;
     return;
@@ -60,9 +62,13 @@ maximal_subsets_iterator::continue_traversal_of_maximal_events_tree()
     return topological_ordering.end();
   }
 
+  xbt_assert(current_maximal_set.has_value(), "Traversal continued even after the termination condition "
+                                              "was met. Please verify that the termination condition "
+                                              "of the iterator has not been modified");
+
   // 1. First, check if we can keep expanding from the
   // maximal set that we currently have
-  {
+  if (can_grow_maximal_set()) {
     // This is an iterator which points to the latest event `e` that
     // was added to what is currently the maximal set
     const auto latest_event_ref = backtrack_points.top();
@@ -114,6 +120,11 @@ bool maximal_subsets_iterator::bookkeeper::is_candidate_event(const UnfoldingEve
 
 void maximal_subsets_iterator::add_element_to_current_maximal_set(const UnfoldingEvent* e)
 {
+  xbt_assert(can_grow_maximal_set(), "Attempting to add an event to the maximal set "
+                                     "when doing so would increase the size past the "
+                                     "prescribed limit. This indicates that detecting when "
+                                     "to stop growing the maximal set when continuing the "
+                                     "search is broken");
   xbt_assert(current_maximal_set.has_value(), "Attempting to add an event to the maximal set "
                                               "when iteration has completed. This indicates that "
                                               "the termination condition for the iterator is broken");
@@ -128,6 +139,17 @@ void maximal_subsets_iterator::remove_element_from_current_maximal_set(const Unf
                                               "the termination condition for the iterator is broken");
   current_maximal_set.value().remove(e);
   bookkeeper.mark_removed_from_maximal_set(e);
+}
+
+bool maximal_subsets_iterator::can_grow_maximal_set() const
+{
+  if (not current_maximal_set.has_value()) {
+    return true;
+  }
+  if (maximum_subset_size.has_value()) {
+    return current_maximal_set.value().size() < maximum_subset_size.value();
+  }
+  return true;
 }
 
 maximal_subsets_iterator::topological_order_position

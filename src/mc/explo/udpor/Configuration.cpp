@@ -10,7 +10,6 @@
 #include "xbt/asserts.h"
 
 #include <algorithm>
-#include <stack>
 #include <stdexcept>
 
 namespace simgrid::mc::udpor {
@@ -37,12 +36,18 @@ void Configuration::add_event(const UnfoldingEvent* e)
     return;
   }
 
+  // Preserves the property that the configuration is conflict-free
+  if (e->conflicts_with(*this)) {
+    throw std::invalid_argument("The newly added event conflicts with the events already "
+                                "contained in the configuration. Adding this event violates "
+                                "the property that a configuration is conflict-free");
+  }
+
   this->events_.insert(e);
   this->newest_event = e;
 
-  // Preserves the property that the configuration is valid
-  History history(e);
-  if (!this->events_.contains(history)) {
+  // Preserves the property that the configuration is causally closed
+  if (auto history = History(e); !this->events_.contains(history)) {
     throw std::invalid_argument("The newly added event has dependencies "
                                 "which are missing from this configuration");
   }
@@ -50,72 +55,12 @@ void Configuration::add_event(const UnfoldingEvent* e)
 
 std::vector<const UnfoldingEvent*> Configuration::get_topologically_sorted_events() const
 {
-  // This is essentially an implementation of detecting cycles
-  // in a graph with coloring, except it makes a topological
-  // ordering out of it
-
-  if (events_.empty()) {
-    return std::vector<const UnfoldingEvent*>();
-  }
-
-  std::stack<const UnfoldingEvent*> event_stack;
-  std::vector<const UnfoldingEvent*> topological_ordering;
-  EventSet unknown_events = events_;
-  EventSet temporarily_marked_events;
-  EventSet permanently_marked_events;
-
-  while (not unknown_events.empty()) {
-    EventSet discovered_events;
-    event_stack.push(*unknown_events.begin());
-
-    while (not event_stack.empty()) {
-      const UnfoldingEvent* evt = event_stack.top();
-      discovered_events.insert(evt);
-
-      if (not temporarily_marked_events.contains(evt)) {
-        // If this event hasn't yet been marked, do
-        // so now so that if we both see it
-        // again in a child we can detect a cycle
-        temporarily_marked_events.insert(evt);
-
-        EventSet immediate_causes = evt->get_immediate_causes();
-        if (!immediate_causes.empty() && immediate_causes.is_subset_of(temporarily_marked_events)) {
-          throw std::invalid_argument("Attempted to perform a topological sort on a configuration "
-                                      "whose contents contain a cycle. The configuration (and the graph "
-                                      "connecting all of the events) is an invalid event structure");
-        }
-        immediate_causes.subtract(discovered_events);
-        immediate_causes.subtract(permanently_marked_events);
-        std::for_each(immediate_causes.begin(), immediate_causes.end(),
-                      [&event_stack](const UnfoldingEvent* cause) { event_stack.push(cause); });
-      } else {
-        unknown_events.remove(evt);
-        temporarily_marked_events.remove(evt);
-        permanently_marked_events.insert(evt);
-
-        // In moving this event to the end of the list,
-        // we are saying this events "happens before" other
-        // events that are added later.
-        topological_ordering.push_back(evt);
-
-        // Only now do we remove the event, i.e. once
-        // we've processed the same event twice
-        event_stack.pop();
-      }
-    }
-  }
-  return topological_ordering;
+  return this->events_.get_topological_ordering();
 }
 
 std::vector<const UnfoldingEvent*> Configuration::get_topologically_sorted_events_of_reverse_graph() const
 {
-  // The implementation exploits the property that
-  // a topological sorting S^R of the reverse graph G^R
-  // of some graph G is simply the reverse of any
-  // topological sorting S of G.
-  auto topological_events = get_topologically_sorted_events();
-  std::reverse(topological_events.begin(), topological_events.end());
-  return topological_events;
+  return this->events_.get_topological_ordering_of_reverse_graph();
 }
 
 EventSet Configuration::get_minimally_reproducible_events() const
@@ -136,7 +81,7 @@ EventSet Configuration::get_minimally_reproducible_events() const
   // topological ordering that appear in `S`
   EventSet minimally_reproducible_events = EventSet();
 
-  for (const auto& maximal_set : maximal_subsets_iterator_wrapper(*this)) {
+  for (const auto& maximal_set : maximal_subsets_iterator_wrapper<Configuration>(*this)) {
     if (maximal_set.size() > minimally_reproducible_events.size()) {
       minimally_reproducible_events = maximal_set;
     } else {

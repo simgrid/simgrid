@@ -5,8 +5,12 @@
 
 #include "src/3rd-party/catch.hpp"
 #include "src/mc/explo/udpor/EventSet.hpp"
+#include "src/mc/explo/udpor/History.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
+#include "src/mc/explo/udpor/udpor_tests_private.hpp"
+#include "src/xbt/utils/iter/LazyPowerset.hpp"
 
+using namespace simgrid::xbt;
 using namespace simgrid::mc::udpor;
 
 TEST_CASE("simgrid::mc::udpor::EventSet: Initial conditions when creating sets")
@@ -380,7 +384,10 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Set Union Tests")
 
 TEST_CASE("simgrid::mc::udpor::EventSet: Set Difference Tests")
 {
-  UnfoldingEvent e1, e2, e3, e4;
+  UnfoldingEvent e1;
+  UnfoldingEvent e2;
+  UnfoldingEvent e3;
+  UnfoldingEvent e4;
 
   // C = A + B
   // A is a subset of C
@@ -520,12 +527,12 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Testing Configurations")
   // The tests enumerate all possible subsets of the events
   // in the structure and test whether those subsets are
   // maximal and/or valid configurations
-  UnfoldingEvent e1;
-  UnfoldingEvent e2{&e1};
-  UnfoldingEvent e3{&e2};
-  UnfoldingEvent e4{&e2};
-  UnfoldingEvent e5{&e1};
-  UnfoldingEvent e6{&e5};
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e4(EventSet({&e2}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e5(EventSet({&e1}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e6(EventSet({&e5}), std::make_shared<IndependentAction>());
 
   SECTION("Valid Configurations")
   {
@@ -642,81 +649,481 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Testing Configurations")
   SECTION("Maximal event sets")
   {
     // 6 choose 0 = 1 test
-    REQUIRE(EventSet().is_maximal_event_set());
+    REQUIRE(EventSet().is_maximal());
 
     // 6 choose 1 = 6 tests
-    REQUIRE(EventSet({&e1}).is_maximal_event_set());
-    REQUIRE(EventSet({&e2}).is_maximal_event_set());
-    REQUIRE(EventSet({&e3}).is_maximal_event_set());
-    REQUIRE(EventSet({&e4}).is_maximal_event_set());
-    REQUIRE(EventSet({&e5}).is_maximal_event_set());
-    REQUIRE(EventSet({&e6}).is_maximal_event_set());
+    REQUIRE(EventSet({&e1}).is_maximal());
+    REQUIRE(EventSet({&e2}).is_maximal());
+    REQUIRE(EventSet({&e3}).is_maximal());
+    REQUIRE(EventSet({&e4}).is_maximal());
+    REQUIRE(EventSet({&e5}).is_maximal());
+    REQUIRE(EventSet({&e6}).is_maximal());
 
     // 6 choose 2 = 15 tests
-    REQUIRE_FALSE(EventSet({&e1, &e2}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e3}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e4}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e3}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e4}).is_maximal_event_set());
-    REQUIRE(EventSet({&e2, &e5}).is_maximal_event_set());
-    REQUIRE(EventSet({&e2, &e6}).is_maximal_event_set());
-    REQUIRE(EventSet({&e3, &e4}).is_maximal_event_set());
-    REQUIRE(EventSet({&e3, &e5}).is_maximal_event_set());
-    REQUIRE(EventSet({&e3, &e6}).is_maximal_event_set());
-    REQUIRE(EventSet({&e4, &e5}).is_maximal_event_set());
-    REQUIRE(EventSet({&e4, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e3}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e4}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e3}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e4}).is_maximal());
+    REQUIRE(EventSet({&e2, &e5}).is_maximal());
+    REQUIRE(EventSet({&e2, &e6}).is_maximal());
+    REQUIRE(EventSet({&e3, &e4}).is_maximal());
+    REQUIRE(EventSet({&e3, &e5}).is_maximal());
+    REQUIRE(EventSet({&e3, &e6}).is_maximal());
+    REQUIRE(EventSet({&e4, &e5}).is_maximal());
+    REQUIRE(EventSet({&e4, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e5, &e6}).is_maximal());
 
     // 6 choose 3 = 20 tests
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e3}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e4}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e3, &e4}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e3, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e3, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e4, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e4, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e3, &e4}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e3, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e3, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e4, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e4, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e5, &e6}).is_maximal_event_set());
-    REQUIRE(EventSet({&e3, &e4, &e5}).is_maximal_event_set());
-    REQUIRE(EventSet({&e3, &e4, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e3, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e4, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e4}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e4}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e4, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e4, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e4}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e4, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e4, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e5, &e6}).is_maximal());
+    REQUIRE(EventSet({&e3, &e4, &e5}).is_maximal());
+    REQUIRE(EventSet({&e3, &e4, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e3, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e4, &e5, &e6}).is_maximal());
 
     // 6 choose 4 = 15 tests
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e4, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e4, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e3, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e4, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e3, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e4, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e3, &e4, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e4, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e4, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e4, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e4, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e3, &e4, &e5, &e6}).is_maximal());
 
     // 6 choose 5 = 6 tests
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4, &e5}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e4, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e5, &e6}).is_maximal_event_set());
-    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4, &e5}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e4, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e1, &e3, &e4, &e5, &e6}).is_maximal());
+    REQUIRE_FALSE(EventSet({&e2, &e3, &e4, &e5, &e6}).is_maximal());
 
     // 6 choose 6 = 1 test
-    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4, &e5, &e6}).is_maximal_event_set());
+    REQUIRE_FALSE(EventSet({&e1, &e2, &e3, &e4, &e5, &e6}).is_maximal());
+  }
+}
+
+TEST_CASE("simgrid::mc::udpor::EventSet: Moving into a collection")
+{
+  UnfoldingEvent e1;
+  UnfoldingEvent e2;
+  UnfoldingEvent e3;
+  UnfoldingEvent e4;
+
+  EventSet A({&e1});
+  EventSet B({&e1, &e2});
+  EventSet C({&e1, &e2, &e3});
+  EventSet D({&e1, &e2, &e3, &e4});
+
+  EventSet A_copy = A;
+  EventSet B_copy = B;
+  EventSet C_copy = C;
+  EventSet D_copy = D;
+
+  std::vector<const UnfoldingEvent*> actual_A = std::move(A).move_into_vector();
+  std::vector<const UnfoldingEvent*> actual_B = std::move(B).move_into_vector();
+  std::vector<const UnfoldingEvent*> actual_C = std::move(C).move_into_vector();
+  std::vector<const UnfoldingEvent*> actual_D = std::move(D).move_into_vector();
+
+  EventSet A_copy_remade(std::move(actual_A));
+  EventSet B_copy_remade(std::move(actual_B));
+  EventSet C_copy_remade(std::move(actual_C));
+  EventSet D_copy_remade(std::move(actual_D));
+
+  REQUIRE(A_copy == A_copy_remade);
+  REQUIRE(B_copy == B_copy_remade);
+  REQUIRE(C_copy == C_copy_remade);
+  REQUIRE(D_copy == D_copy_remade);
+}
+
+TEST_CASE("simgrid::mc::udpor::EventSet: Checking conflicts")
+{
+  // The following tests concern the given event structure:
+  //                e1
+  //              /    /
+  //            e2      e5
+  //           /  /      /
+  //          e3  e4     e6
+  // The tests enumerate all possible subsets of the events
+  // in the structure and test whether those subsets contain
+  // conflicts.
+  //
+  // Each test assigns different transitions to each event to
+  // make the scenarios more interesting
+
+  SECTION("No conflicts throughout the whole structure with independent actions")
+  {
+    UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
+    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e4(EventSet({&e2}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e5(EventSet({&e1}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e6(EventSet({&e5}), std::make_shared<IndependentAction>());
+
+    // 6 choose 0 = 1 test
+    CHECK(EventSet().is_conflict_free());
+
+    // 6 choose 1 = 6 tests
+    CHECK(EventSet({&e1}).is_conflict_free());
+    CHECK(EventSet({&e2}).is_conflict_free());
+    CHECK(EventSet({&e3}).is_conflict_free());
+    CHECK(EventSet({&e4}).is_conflict_free());
+    CHECK(EventSet({&e5}).is_conflict_free());
+    CHECK(EventSet({&e6}).is_conflict_free());
+
+    // 6 choose 2 = 15 tests
+    CHECK(EventSet({&e1, &e2}).is_conflict_free());
+    CHECK(EventSet({&e1, &e3}).is_conflict_free());
+    CHECK(EventSet({&e1, &e4}).is_conflict_free());
+    CHECK(EventSet({&e1, &e5}).is_conflict_free());
+    CHECK(EventSet({&e1, &e6}).is_conflict_free());
+    CHECK(EventSet({&e2, &e3}).is_conflict_free());
+    CHECK(EventSet({&e2, &e4}).is_conflict_free());
+    CHECK(EventSet({&e2, &e5}).is_conflict_free());
+    CHECK(EventSet({&e2, &e6}).is_conflict_free());
+    CHECK(EventSet({&e3, &e4}).is_conflict_free());
+    CHECK(EventSet({&e3, &e5}).is_conflict_free());
+    CHECK(EventSet({&e3, &e6}).is_conflict_free());
+    CHECK(EventSet({&e4, &e5}).is_conflict_free());
+    CHECK(EventSet({&e4, &e6}).is_conflict_free());
+    CHECK(EventSet({&e5, &e6}).is_conflict_free());
+
+    // 6 choose 3 = 20 tests
+    CHECK(EventSet({&e1, &e2, &e3}).is_conflict_free());
+    CHECK(EventSet({&e1, &e2, &e4}).is_conflict_free());
+    CHECK(EventSet({&e1, &e2, &e5}).is_conflict_free());
+    CHECK(EventSet({&e1, &e2, &e6}).is_conflict_free());
+    CHECK(EventSet({&e1, &e3, &e4}).is_conflict_free());
+    CHECK(EventSet({&e1, &e3, &e5}).is_conflict_free());
+    CHECK(EventSet({&e1, &e3, &e6}).is_conflict_free());
+    CHECK(EventSet({&e1, &e4, &e5}).is_conflict_free());
+    CHECK(EventSet({&e1, &e4, &e6}).is_conflict_free());
+    CHECK(EventSet({&e1, &e5, &e6}).is_conflict_free());
+    CHECK(EventSet({&e2, &e3, &e4}).is_conflict_free());
+    CHECK(EventSet({&e2, &e3, &e5}).is_conflict_free());
+    CHECK(EventSet({&e2, &e3, &e6}).is_conflict_free());
+    CHECK(EventSet({&e2, &e4, &e5}).is_conflict_free());
+    CHECK(EventSet({&e2, &e4, &e6}).is_conflict_free());
+    CHECK(EventSet({&e2, &e5, &e6}).is_conflict_free());
+    CHECK(EventSet({&e3, &e4, &e5}).is_conflict_free());
+    CHECK(EventSet({&e3, &e4, &e6}).is_conflict_free());
+    CHECK(EventSet({&e3, &e5, &e6}).is_conflict_free());
+    CHECK(EventSet({&e4, &e5, &e6}).is_conflict_free());
+
+    // 6 choose 4 = 15 tests
+    CHECK(EventSet({&e1, &e2, &e3, &e4}).is_conflict_free());
+    CHECK(EventSet({&e1, &e2, &e3, &e5}).is_conflict_free());
+    CHECK(EventSet({&e1, &e2, &e3, &e6}).is_conflict_free());
+    CHECK(EventSet({&e1, &e2, &e4, &e5}).is_conflict_free());
+    CHECK(EventSet({&e1, &e2, &e4, &e6}).is_conflict_free());
+    CHECK(EventSet({&e1, &e2, &e5, &e6}).is_conflict_free());
+    CHECK(EventSet({&e1, &e3, &e4, &e5}).is_conflict_free());
+    CHECK(EventSet({&e1, &e3, &e4, &e6}).is_conflict_free());
+    CHECK(EventSet({&e1, &e3, &e5, &e6}).is_conflict_free());
+    CHECK(EventSet({&e1, &e4, &e5, &e6}).is_conflict_free());
+    CHECK(EventSet({&e2, &e3, &e4, &e5}).is_conflict_free());
+    CHECK(EventSet({&e2, &e3, &e4, &e6}).is_conflict_free());
+    CHECK(EventSet({&e2, &e3, &e5, &e6}).is_conflict_free());
+    CHECK(EventSet({&e2, &e4, &e5, &e6}).is_conflict_free());
+    CHECK(EventSet({&e3, &e4, &e5, &e6}).is_conflict_free());
+
+    // 6 choose 5 = 6 tests
+    CHECK(EventSet({&e1, &e2, &e3, &e4, &e5}).is_conflict_free());
+    CHECK(EventSet({&e1, &e2, &e3, &e4, &e6}).is_conflict_free());
+    CHECK(EventSet({&e1, &e2, &e3, &e5, &e6}).is_conflict_free());
+    CHECK(EventSet({&e1, &e2, &e4, &e5, &e6}).is_conflict_free());
+    CHECK(EventSet({&e1, &e3, &e4, &e5, &e6}).is_conflict_free());
+    CHECK(EventSet({&e2, &e3, &e4, &e5, &e6}).is_conflict_free());
+
+    // 6 choose 6 = 1 test
+    CHECK(EventSet({&e1, &e2, &e3, &e4, &e5, &e6}).is_conflict_free());
+  }
+
+  SECTION("Conflicts throughout the whole structure with dependent actions (except with DFS sets)")
+  {
+    // Since all actions are dependent, if a set contains a "fork" or divergent histories,
+    // we expect the collections to contain conflicts
+    UnfoldingEvent e1(EventSet(), std::make_shared<DependentAction>());
+    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<DependentAction>());
+    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<DependentAction>());
+    UnfoldingEvent e4(EventSet({&e2}), std::make_shared<DependentAction>());
+    UnfoldingEvent e5(EventSet({&e1}), std::make_shared<DependentAction>());
+    UnfoldingEvent e6(EventSet({&e5}), std::make_shared<DependentAction>());
+
+    // 6 choose 0 = 1 test
+    // There are no events even to be in conflict with
+    CHECK(EventSet().is_conflict_free());
+
+    // 6 choose 1 = 6 tests
+    // Sets of size 1 should have no conflicts
+    CHECK(EventSet({&e1}).is_conflict_free());
+    CHECK(EventSet({&e2}).is_conflict_free());
+    CHECK(EventSet({&e3}).is_conflict_free());
+    CHECK(EventSet({&e4}).is_conflict_free());
+    CHECK(EventSet({&e5}).is_conflict_free());
+    CHECK(EventSet({&e6}).is_conflict_free());
+
+    // 6 choose 2 = 15 tests
+    CHECK(EventSet({&e1, &e2}).is_conflict_free());
+    CHECK(EventSet({&e1, &e3}).is_conflict_free());
+    CHECK(EventSet({&e1, &e4}).is_conflict_free());
+    CHECK(EventSet({&e1, &e5}).is_conflict_free());
+    CHECK(EventSet({&e1, &e6}).is_conflict_free());
+    CHECK(EventSet({&e2, &e3}).is_conflict_free());
+    CHECK(EventSet({&e2, &e4}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e3, &e4}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e3, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e3, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e4, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e4, &e6}).is_conflict_free());
+    CHECK(EventSet({&e5, &e6}).is_conflict_free());
+
+    // 6 choose 3 = 20 tests
+    CHECK(EventSet({&e1, &e2, &e3}).is_conflict_free());
+    CHECK(EventSet({&e1, &e2, &e4}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e3, &e4}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e3, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e3, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e4, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e4, &e6}).is_conflict_free());
+    CHECK(EventSet({&e1, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e3, &e4}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e3, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e3, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e4, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e4, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e3, &e4, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e3, &e4, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e3, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e4, &e5, &e6}).is_conflict_free());
+
+    // 6 choose 4 = 15 tests
+    CHECK_FALSE(EventSet({&e1, &e2, &e3, &e4}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e3, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e3, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e4, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e4, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e3, &e4, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e3, &e4, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e3, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e4, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e3, &e4, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e3, &e4, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e3, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e4, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e3, &e4, &e5, &e6}).is_conflict_free());
+
+    // 6 choose 5 = 6 tests
+    CHECK_FALSE(EventSet({&e1, &e2, &e3, &e4, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e3, &e4, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e3, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e4, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e3, &e4, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e3, &e4, &e5, &e6}).is_conflict_free());
+
+    // 6 choose 6 = 1 test
+    CHECK_FALSE(EventSet({&e1, &e2, &e3, &e4, &e5, &e6}).is_conflict_free());
+  }
+
+  SECTION("Conditional conflicts")
+  {
+    UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
+    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<ConditionallyDependentAction>());
+    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e4(EventSet({&e2}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e5(EventSet({&e1}), std::make_shared<DependentAction>());
+    UnfoldingEvent e6(EventSet({&e5}), std::make_shared<IndependentAction>());
+
+    // 6 choose 0 = 1 test
+    // There are no events even to be in conflict with
+    CHECK(EventSet().is_conflict_free());
+
+    // 6 choose 1 = 6 tests
+    // Sets of size 1 should still have no conflicts
+    CHECK(EventSet({&e1}).is_conflict_free());
+    CHECK(EventSet({&e2}).is_conflict_free());
+    CHECK(EventSet({&e3}).is_conflict_free());
+    CHECK(EventSet({&e4}).is_conflict_free());
+    CHECK(EventSet({&e5}).is_conflict_free());
+    CHECK(EventSet({&e6}).is_conflict_free());
+
+    // 6 choose 2 = 15 tests
+    CHECK(EventSet({&e1, &e2}).is_conflict_free());
+    CHECK(EventSet({&e1, &e3}).is_conflict_free());
+    CHECK(EventSet({&e1, &e4}).is_conflict_free());
+    CHECK(EventSet({&e1, &e5}).is_conflict_free());
+    CHECK(EventSet({&e1, &e6}).is_conflict_free());
+    CHECK(EventSet({&e2, &e3}).is_conflict_free());
+    CHECK(EventSet({&e2, &e4}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e5}).is_conflict_free());
+
+    // Although e2 and e6 are not directly dependent,
+    // e2 conflicts with e5 which causes e6
+    CHECK_FALSE(EventSet({&e2, &e6}).is_conflict_free());
+    CHECK(EventSet({&e3, &e4}).is_conflict_free());
+
+    // Likewise, since e2 and e5 conflict and e2 causes
+    // e3, so e3 and e5 conflict
+    CHECK_FALSE(EventSet({&e3, &e5}).is_conflict_free());
+    CHECK(EventSet({&e3, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e4, &e5}).is_conflict_free());
+    CHECK(EventSet({&e4, &e6}).is_conflict_free());
+    CHECK(EventSet({&e5, &e6}).is_conflict_free());
+
+    // 6 choose 3 = 20 tests
+    CHECK(EventSet({&e1, &e2, &e3}).is_conflict_free());
+    CHECK(EventSet({&e1, &e2, &e4}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e6}).is_conflict_free());
+    CHECK(EventSet({&e1, &e3, &e4}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e3, &e5}).is_conflict_free());
+    CHECK(EventSet({&e1, &e3, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e4, &e5}).is_conflict_free());
+    CHECK(EventSet({&e1, &e4, &e6}).is_conflict_free());
+    CHECK(EventSet({&e1, &e5, &e6}).is_conflict_free());
+    CHECK(EventSet({&e2, &e3, &e4}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e3, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e3, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e4, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e4, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e3, &e4, &e5}).is_conflict_free());
+    CHECK(EventSet({&e3, &e4, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e3, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e4, &e5, &e6}).is_conflict_free());
+
+    // 6 choose 4 = 15 tests
+    CHECK(EventSet({&e1, &e2, &e3, &e4}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e3, &e5}).is_conflict_free());
+
+    // e2 is dependent with e6
+    CHECK_FALSE(EventSet({&e1, &e2, &e3, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e4, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e4, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e3, &e4, &e5}).is_conflict_free());
+    CHECK(EventSet({&e1, &e3, &e4, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e3, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e4, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e3, &e4, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e3, &e4, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e3, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e4, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e3, &e4, &e5, &e6}).is_conflict_free());
+
+    // 6 choose 5 = 6 tests
+    CHECK_FALSE(EventSet({&e1, &e2, &e3, &e4, &e5}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e3, &e4, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e3, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e2, &e4, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e1, &e3, &e4, &e5, &e6}).is_conflict_free());
+    CHECK_FALSE(EventSet({&e2, &e3, &e4, &e5, &e6}).is_conflict_free());
+
+    // 6 choose 6 = 1 test
+    CHECK_FALSE(EventSet({&e1, &e2, &e3, &e4, &e5, &e6}).is_conflict_free());
+  }
+}
+
+TEST_CASE("simgrid::mc::udpor::EventSet: Topological Ordering Property Observed for Every Possible Subset")
+{
+  // The following tests concern the given event structure:
+  //                e1
+  //              /   /
+  //            e2    e6
+  //           /  /    /
+  //          e3   /   /
+  //         /  /    /
+  //        e4  e5   e7
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e5(EventSet({&e3}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e6(EventSet({&e1}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e7(EventSet({&e2, &e6}), std::make_shared<IndependentAction>());
+
+  const EventSet all_events{&e1, &e2, &e3, &e4, &e5, &e6, &e7};
+
+  for (const auto& subset_of_iterators : make_powerset_iter<EventSet>(all_events)) {
+    // Verify that the topological ordering property holds for every subset
+
+    const EventSet subset = [&subset_of_iterators]() {
+      EventSet subset_local;
+      for (const auto iter : subset_of_iterators) {
+        subset_local.insert(*iter);
+      }
+      return subset_local;
+    }();
+
+    {
+      // To test this, we verify that at each point none of the events
+      // that follow after any particular event `e` are contained in
+      // `e`'s history
+      EventSet invalid_events   = subset;
+      const auto ordered_events = subset.get_topological_ordering();
+
+      std::for_each(ordered_events.begin(), ordered_events.end(), [&](const UnfoldingEvent* e) {
+        History history(e);
+        for (auto* e_hist : history) {
+          if (e_hist == e)
+            continue;
+          REQUIRE_FALSE(invalid_events.contains(e_hist));
+        }
+        invalid_events.remove(e);
+      });
+    }
+    {
+      // To test this, we verify that at each point none of the events
+      // that we've processed in the ordering are ever seen again
+      // in anybody else's history
+      EventSet events_seen;
+      const auto ordered_events = subset.get_topological_ordering_of_reverse_graph();
+
+      std::for_each(ordered_events.begin(), ordered_events.end(), [&events_seen](const UnfoldingEvent* e) {
+        History history(e);
+
+        for (auto* e_hist : history) {
+          // Unlike the test above, we DO want to ensure
+          // that `e` itself ALSO isn't yet seen
+
+          // If this event has been "seen" before,
+          // this implies that event `e` appears later
+          // in the list than one of its ancestors
+          REQUIRE_FALSE(events_seen.contains(e_hist));
+        }
+        events_seen.insert(e);
+      });
+    }
   }
 }
