@@ -221,8 +221,10 @@ template <class CnstList> void MaxMin::maxmin_solve(CnstList& cnst_list)
           "Cannot saturate more a constraint that has"
           " no active element! You may want to change the work amount precision (--cfg=precision/work-amount:<new_value>)"
           " because of possible rounding effects.\n\tFor the record, the usage of this constraint is %g while "
-          "the maxmin precision to which it is compared is %g.\n\tThe usage of the previous constraint is %g.",
-          cnst_light_tab[pos].cnst->usage_, sg_precision_workamount, cnst_light_tab[pos - 1].cnst->usage_);
+          "the maxmin precision to which it is compared is %g.\n\t%s%g.",
+          cnst_light_tab[pos].cnst->usage_, sg_precision_workamount,
+          (pos > 0 ? "The usage of the previous constraint is " : "There is no previous constraint. "),
+          (pos > 0 ? cnst_light_tab[pos - 1].cnst->usage_ : -1));
       saturated_constraints_update(cnst_light_tab[pos].remaining_over_usage, pos, saturated_constraints, &min_usage);
     }
 
