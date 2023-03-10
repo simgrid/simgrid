@@ -85,7 +85,7 @@ class RandomSimcall final : public SimcallObserver {
 public:
   RandomSimcall(ActorImpl* actor, int min, int max) : SimcallObserver(actor), min_(min), max_(max)
   {
-    xbt_assert(min < max);
+    xbt_assert(min <= max);
   }
   void serialize(std::stringstream& stream) const override;
   std::string to_string() const override;
