@@ -146,7 +146,7 @@ static void MC_report_crash(Exploration* explorer, int status)
       XBT_INFO("Stack trace not displayed because you passed --log=no_loc");
     } else {
       XBT_INFO("Stack trace:");
-      mc_model_checker->get_remote_process().dump_stack();
+      explorer->get_remote_app().get_remote_process().dump_stack();
     }
   }
 }
