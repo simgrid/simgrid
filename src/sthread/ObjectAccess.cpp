@@ -71,7 +71,7 @@ static ObjectOwner* get_owner(void* object)
   if (it != owners.end())
     return it->second;
   auto* o = new ObjectOwner(nullptr);
-  owners.emplace(object, o);
+  owners.insert({object, o});
   return o;
 }
 
@@ -118,7 +118,8 @@ void sthread_access_end(void* objaddr, const char* objname, const char* file, in
       [self, objaddr, objname]() -> void {
         XBT_INFO("%s releases %s", self->get_cname(), objname);
         auto* ownership = get_owner(objaddr);
-        xbt_assert(ownership->owner == self, "safety check failed: I'm not owner of the object I'm releasing.");
+        xbt_assert(ownership->owner == self, "safety check failed: %s is not owner of the object it's releasing.",
+                   self->get_cname());
         ownership->owner = nullptr;
       },
       &observer);
