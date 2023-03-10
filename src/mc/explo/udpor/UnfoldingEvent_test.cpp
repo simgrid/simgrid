@@ -26,7 +26,7 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Dependency/Conflict Tests")
     UnfoldingEvent e1(EventSet(), std::make_shared<ConditionallyDependentAction>());
     UnfoldingEvent e2(EventSet({&e1}), std::make_shared<DependentAction>());
     UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
-    UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e4(EventSet({&e3}), std::make_shared<ConditionallyDependentAction>());
     UnfoldingEvent e5(EventSet({&e3}), std::make_shared<DependentAction>());
     UnfoldingEvent e6(EventSet({&e1}), std::make_shared<ConditionallyDependentAction>());
     UnfoldingEvent e7(EventSet({&e6, &e2}), std::make_shared<ConditionallyDependentAction>());
@@ -64,12 +64,22 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Dependency/Conflict Tests")
         REQUIRE_FALSE(e5.conflicts_with(&e5));
         REQUIRE_FALSE(e6.conflicts_with(&e6));
         REQUIRE_FALSE(e7.conflicts_with(&e7));
+
+        REQUIRE_FALSE(e1.immediately_conflicts_with(&e1));
+        REQUIRE_FALSE(e2.immediately_conflicts_with(&e2));
+        REQUIRE_FALSE(e3.immediately_conflicts_with(&e3));
+        REQUIRE_FALSE(e4.immediately_conflicts_with(&e4));
+        REQUIRE_FALSE(e5.immediately_conflicts_with(&e5));
+        REQUIRE_FALSE(e6.immediately_conflicts_with(&e6));
+        REQUIRE_FALSE(e7.immediately_conflicts_with(&e7));
       }
 
       SECTION("Conflict relation is symmetric")
       {
         REQUIRE(e5.conflicts_with(&e6));
         REQUIRE(e6.conflicts_with(&e5));
+        REQUIRE(e5.immediately_conflicts_with(&e4));
+        REQUIRE(e4.immediately_conflicts_with(&e5));
       }
     }
   }
@@ -394,4 +404,53 @@ TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Dependency/Conflict Tests")
     CHECK_FALSE(e7.conflicts_with(&e6));
     CHECK_FALSE(e7.conflicts_with(&e7));
   }
+}
+
+TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Immediate Conflicts + Conflicts Stress Test")
+{
+  // The following tests concern the given event structure:
+  //                e1
+  //              /  / /
+  //            e2  e3  e4
+  //                 / /  /
+  //                 e5   e10
+  //                  /
+  //                 e6
+  //                 / /
+  //               e7  e8
+  //                    /
+  //                    e9
+  //
+  // Immediate conflicts:
+  // e2 + e3
+  // e3 + e4
+  // e2 + e4
+  //
+  // NOTE: e7 + e8 ARE NOT in immediate conflict! The reason is that
+  // the set of events {e8, e6, e5, e3, e4, e1} is not a valid configuration,
+  // (nor is {e7, e6, e5, e3, e4, e1})
+  //
+  // NOTE: e2/e3 + e10 are NOT in immediate conflict! EVEN THOUGH {e1, e4, e10}
+  // is a valid configuration, {e1, e2/e3, e4} is not (since e2/e3 and e4 conflict)
+  UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
+  UnfoldingEvent e2(EventSet({&e1}), std::make_shared<DependentAction>());
+  UnfoldingEvent e3(EventSet({&e1}), std::make_shared<DependentAction>());
+  UnfoldingEvent e4(EventSet({&e1}), std::make_shared<DependentAction>());
+  UnfoldingEvent e5(EventSet({&e3, &e4}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e6(EventSet({&e5}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e7(EventSet({&e6}), std::make_shared<DependentAction>());
+  UnfoldingEvent e8(EventSet({&e6}), std::make_shared<DependentAction>());
+  UnfoldingEvent e9(EventSet({&e8}), std::make_shared<IndependentAction>());
+  UnfoldingEvent e10(EventSet({&e4}), std::make_shared<DependentAction>());
+
+  REQUIRE(e2.immediately_conflicts_with(&e3));
+  REQUIRE(e3.immediately_conflicts_with(&e4));
+  REQUIRE(e2.immediately_conflicts_with(&e4));
+
+  REQUIRE(e2.conflicts_with(&e10));
+  REQUIRE(e3.conflicts_with(&e10));
+  REQUIRE(e7.conflicts_with(&e8));
+  REQUIRE_FALSE(e2.immediately_conflicts_with(&e10));
+  REQUIRE_FALSE(e3.immediately_conflicts_with(&e10));
+  REQUIRE_FALSE(e7.immediately_conflicts_with(&e8));
 }

@@ -42,6 +42,7 @@ public:
   bool operator==(const UnfoldingEvent&) const;
   bool operator!=(const UnfoldingEvent& other) const { return not(*this == other); }
 
+private:
   /**
    * @brief The transition that UDPOR "attaches" to this
    * specific event for later use while computing e.g. extension
