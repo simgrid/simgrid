@@ -34,7 +34,7 @@ public:
   bool conflicts_with(const Configuration& config) const;
   bool immediately_conflicts_with(const UnfoldingEvent* other) const;
   bool is_dependent_with(const Transition*) const;
-  bool has_dependent_transition_with(const UnfoldingEvent* other) const;
+  bool is_dependent_with(const UnfoldingEvent* other) const;
 
   const EventSet& get_immediate_causes() const { return this->immediate_causes; }
   Transition* get_transition() const { return this->associated_transition.get(); }

@@ -67,12 +67,10 @@ bool UnfoldingEvent::conflicts_with(const UnfoldingEvent* other) const
   const EventSet unique_to_me    = my_history.subtracting(other_history);
   const EventSet unique_to_other = other_history.subtracting(my_history);
 
-  const bool conflicts_with_me = std::any_of(unique_to_me.begin(), unique_to_me.end(), [&](const UnfoldingEvent* e) {
-    return e->has_dependent_transition_with(other);
-  });
-  const bool conflicts_with_other =
-      std::any_of(unique_to_other.begin(), unique_to_other.end(),
-                  [&](const UnfoldingEvent* e) { return e->has_dependent_transition_with(this); });
+  const bool conflicts_with_me    = std::any_of(unique_to_me.begin(), unique_to_me.end(),
+                                                [&](const UnfoldingEvent* e) { return e->is_dependent_with(other); });
+  const bool conflicts_with_other = std::any_of(unique_to_other.begin(), unique_to_other.end(),
+                                                [&](const UnfoldingEvent* e) { return e->is_dependent_with(this); });
   return conflicts_with_me or conflicts_with_other;
 }
 
@@ -85,7 +83,7 @@ bool UnfoldingEvent::conflicts_with(const Configuration& config) const
   // if they are not related)
   const EventSet potential_conflicts = config.get_events().subtracting(get_history());
   return std::any_of(potential_conflicts.cbegin(), potential_conflicts.cend(),
-                     [&](const UnfoldingEvent* e) { return this->has_dependent_transition_with(e); });
+                     [&](const UnfoldingEvent* e) { return this->is_dependent_with(e); });
 }
 
 bool UnfoldingEvent::immediately_conflicts_with(const UnfoldingEvent* other) const
@@ -122,7 +120,7 @@ bool UnfoldingEvent::is_dependent_with(const Transition* t) const
   return associated_transition->depends(t);
 }
 
-bool UnfoldingEvent::has_dependent_transition_with(const UnfoldingEvent* other) const
+bool UnfoldingEvent::is_dependent_with(const UnfoldingEvent* other) const
 {
   return is_dependent_with(other->associated_transition.get());
 }

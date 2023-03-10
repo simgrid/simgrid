@@ -5,5 +5,393 @@
 
 #include "src/3rd-party/catch.hpp"
 #include "src/mc/explo/udpor/UnfoldingEvent.hpp"
+#include "src/mc/explo/udpor/udpor_tests_private.hpp"
 
 using namespace simgrid::mc::udpor;
+
+TEST_CASE("simgrid::mc::udpor::UnfoldingEvent: Dependency/Conflict Tests")
+{
+  SECTION("Properties of the relations")
+  {
+    // The following tests concern the given event structure:
+    //                e1
+    //              /   /
+    //            e2    e6
+    //           /  /    /
+    //          e3   /   /
+    //         /  /    /
+    //        e4  e5   e7
+    //
+    // e5 and e6 are in conflict, e5 and e7 are in conflict, e2 and e6, and e2 ands e7 are in conflict
+    UnfoldingEvent e1(EventSet(), std::make_shared<ConditionallyDependentAction>());
+    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<DependentAction>());
+    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e5(EventSet({&e3}), std::make_shared<DependentAction>());
+    UnfoldingEvent e6(EventSet({&e1}), std::make_shared<ConditionallyDependentAction>());
+    UnfoldingEvent e7(EventSet({&e6, &e2}), std::make_shared<ConditionallyDependentAction>());
+
+    SECTION("Dependency relation properties")
+    {
+      SECTION("Dependency is reflexive")
+      {
+        REQUIRE(e2.is_dependent_with(&e2));
+        REQUIRE(e5.is_dependent_with(&e5));
+      }
+
+      SECTION("Dependency is symmetric")
+      {
+        REQUIRE(e2.is_dependent_with(&e6));
+        REQUIRE(e6.is_dependent_with(&e2));
+      }
+
+      SECTION("Dependency is NOT necessarily transitive")
+      {
+        REQUIRE(e1.is_dependent_with(&e5));
+        REQUIRE(e5.is_dependent_with(&e7));
+        REQUIRE_FALSE(e1.is_dependent_with(&e7));
+      }
+    }
+
+    SECTION("Conflict relation properties")
+    {
+      SECTION("Conflict relation is irreflexive")
+      {
+        REQUIRE_FALSE(e1.conflicts_with(&e1));
+        REQUIRE_FALSE(e2.conflicts_with(&e2));
+        REQUIRE_FALSE(e3.conflicts_with(&e3));
+        REQUIRE_FALSE(e4.conflicts_with(&e4));
+        REQUIRE_FALSE(e5.conflicts_with(&e5));
+        REQUIRE_FALSE(e6.conflicts_with(&e6));
+        REQUIRE_FALSE(e7.conflicts_with(&e7));
+      }
+
+      SECTION("Conflict relation is symmetric")
+      {
+        REQUIRE(e5.conflicts_with(&e6));
+        REQUIRE(e6.conflicts_with(&e5));
+      }
+    }
+  }
+
+  SECTION("No conflicts whatsoever")
+  {
+    // The following tests concern the given event structure:
+    //                e1
+    //              /   /
+    //            e2    e6
+    //           /  /    /
+    //          e3   /   /
+    //         /  /    /
+    //        e4  e5   e7
+    UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
+    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e5(EventSet({&e3}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e6(EventSet({&e1}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e7(EventSet({&e6, &e2}), std::make_shared<IndependentAction>());
+
+    // Since everyone's actions are independent of one another, we expect
+    // that there are no conflicts between each pair of events
+    SECTION("Mutual dependencies")
+    {
+      CHECK_FALSE(e1.is_dependent_with(&e1));
+      CHECK_FALSE(e1.is_dependent_with(&e2));
+      CHECK_FALSE(e1.is_dependent_with(&e3));
+      CHECK_FALSE(e1.is_dependent_with(&e4));
+      CHECK_FALSE(e1.is_dependent_with(&e5));
+      CHECK_FALSE(e1.is_dependent_with(&e6));
+      CHECK_FALSE(e1.is_dependent_with(&e7));
+
+      CHECK_FALSE(e2.is_dependent_with(&e2));
+      CHECK_FALSE(e2.is_dependent_with(&e3));
+      CHECK_FALSE(e2.is_dependent_with(&e4));
+      CHECK_FALSE(e2.is_dependent_with(&e5));
+      CHECK_FALSE(e2.is_dependent_with(&e6));
+      CHECK_FALSE(e2.is_dependent_with(&e7));
+
+      CHECK_FALSE(e3.is_dependent_with(&e3));
+      CHECK_FALSE(e3.is_dependent_with(&e4));
+      CHECK_FALSE(e3.is_dependent_with(&e5));
+      CHECK_FALSE(e3.is_dependent_with(&e6));
+      CHECK_FALSE(e3.is_dependent_with(&e7));
+
+      CHECK_FALSE(e4.is_dependent_with(&e4));
+      CHECK_FALSE(e4.is_dependent_with(&e5));
+      CHECK_FALSE(e4.is_dependent_with(&e6));
+      CHECK_FALSE(e4.is_dependent_with(&e7));
+
+      CHECK_FALSE(e5.is_dependent_with(&e5));
+      CHECK_FALSE(e5.is_dependent_with(&e6));
+      CHECK_FALSE(e5.is_dependent_with(&e7));
+
+      CHECK_FALSE(e6.is_dependent_with(&e6));
+      CHECK_FALSE(e6.is_dependent_with(&e7));
+
+      CHECK_FALSE(e7.is_dependent_with(&e7));
+    }
+
+    SECTION("Mutual conflicts")
+    {
+      CHECK_FALSE(e1.conflicts_with(&e1));
+      CHECK_FALSE(e1.conflicts_with(&e2));
+      CHECK_FALSE(e1.conflicts_with(&e3));
+      CHECK_FALSE(e1.conflicts_with(&e4));
+      CHECK_FALSE(e1.conflicts_with(&e5));
+      CHECK_FALSE(e1.conflicts_with(&e6));
+      CHECK_FALSE(e1.conflicts_with(&e7));
+
+      CHECK_FALSE(e2.conflicts_with(&e1));
+      CHECK_FALSE(e2.conflicts_with(&e2));
+      CHECK_FALSE(e2.conflicts_with(&e3));
+      CHECK_FALSE(e2.conflicts_with(&e4));
+      CHECK_FALSE(e2.conflicts_with(&e5));
+      CHECK_FALSE(e2.conflicts_with(&e6));
+      CHECK_FALSE(e2.conflicts_with(&e7));
+
+      CHECK_FALSE(e3.conflicts_with(&e1));
+      CHECK_FALSE(e3.conflicts_with(&e2));
+      CHECK_FALSE(e3.conflicts_with(&e3));
+      CHECK_FALSE(e3.conflicts_with(&e4));
+      CHECK_FALSE(e3.conflicts_with(&e5));
+      CHECK_FALSE(e3.conflicts_with(&e6));
+      CHECK_FALSE(e3.conflicts_with(&e7));
+
+      CHECK_FALSE(e4.conflicts_with(&e1));
+      CHECK_FALSE(e4.conflicts_with(&e2));
+      CHECK_FALSE(e4.conflicts_with(&e3));
+      CHECK_FALSE(e4.conflicts_with(&e4));
+      CHECK_FALSE(e4.conflicts_with(&e5));
+      CHECK_FALSE(e4.conflicts_with(&e6));
+      CHECK_FALSE(e4.conflicts_with(&e7));
+
+      CHECK_FALSE(e5.conflicts_with(&e1));
+      CHECK_FALSE(e5.conflicts_with(&e2));
+      CHECK_FALSE(e5.conflicts_with(&e3));
+      CHECK_FALSE(e5.conflicts_with(&e4));
+      CHECK_FALSE(e5.conflicts_with(&e5));
+      CHECK_FALSE(e5.conflicts_with(&e6));
+      CHECK_FALSE(e5.conflicts_with(&e7));
+
+      CHECK_FALSE(e6.conflicts_with(&e1));
+      CHECK_FALSE(e6.conflicts_with(&e2));
+      CHECK_FALSE(e6.conflicts_with(&e3));
+      CHECK_FALSE(e6.conflicts_with(&e4));
+      CHECK_FALSE(e6.conflicts_with(&e5));
+      CHECK_FALSE(e6.conflicts_with(&e6));
+      CHECK_FALSE(e6.conflicts_with(&e7));
+
+      CHECK_FALSE(e7.conflicts_with(&e1));
+      CHECK_FALSE(e7.conflicts_with(&e2));
+      CHECK_FALSE(e7.conflicts_with(&e3));
+      CHECK_FALSE(e7.conflicts_with(&e4));
+      CHECK_FALSE(e7.conflicts_with(&e5));
+      CHECK_FALSE(e7.conflicts_with(&e6));
+      CHECK_FALSE(e7.conflicts_with(&e7));
+    }
+  }
+
+  SECTION("General conflicts")
+  {
+    // The following tests concern the given event structure:
+    //                e1
+    //              /   /
+    //            e2    e6
+    //           /  /    /
+    //          e3   /   /
+    //         /  /    /
+    //        e4  e5   e7
+    UnfoldingEvent e1(EventSet(), std::make_shared<DependentAction>());
+    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<DependentAction>());
+    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e5(EventSet({&e3}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e6(EventSet({&e1}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e7(EventSet({&e6, &e2}), std::make_shared<ConditionallyDependentAction>());
+
+    // Since everyone's actions are independent of one another, we expect
+    // that there are no conflicts between each pair of events
+    SECTION("Mutual dependencies")
+    {
+      CHECK(e1.is_dependent_with(&e1));
+      CHECK(e1.is_dependent_with(&e2));
+      CHECK_FALSE(e1.is_dependent_with(&e3));
+      CHECK_FALSE(e1.is_dependent_with(&e4));
+      CHECK_FALSE(e1.is_dependent_with(&e5));
+      CHECK_FALSE(e1.is_dependent_with(&e6));
+      CHECK(e1.is_dependent_with(&e7));
+
+      CHECK(e2.is_dependent_with(&e2));
+      CHECK_FALSE(e2.is_dependent_with(&e3));
+      CHECK_FALSE(e2.is_dependent_with(&e4));
+      CHECK_FALSE(e2.is_dependent_with(&e5));
+      CHECK_FALSE(e2.is_dependent_with(&e6));
+      CHECK(e2.is_dependent_with(&e7));
+
+      CHECK_FALSE(e3.is_dependent_with(&e3));
+      CHECK_FALSE(e3.is_dependent_with(&e4));
+      CHECK_FALSE(e3.is_dependent_with(&e5));
+      CHECK_FALSE(e3.is_dependent_with(&e6));
+      CHECK_FALSE(e3.is_dependent_with(&e7));
+
+      CHECK_FALSE(e4.is_dependent_with(&e4));
+      CHECK_FALSE(e4.is_dependent_with(&e5));
+      CHECK_FALSE(e4.is_dependent_with(&e6));
+      CHECK_FALSE(e4.is_dependent_with(&e7));
+
+      CHECK_FALSE(e5.is_dependent_with(&e5));
+      CHECK_FALSE(e5.is_dependent_with(&e6));
+      CHECK_FALSE(e5.is_dependent_with(&e7));
+
+      CHECK_FALSE(e6.is_dependent_with(&e6));
+      CHECK_FALSE(e6.is_dependent_with(&e7));
+
+      CHECK_FALSE(e7.is_dependent_with(&e7));
+    }
+
+    SECTION("Mutual conflicts")
+    {
+      // Although e1 is dependent with e1, e2, and e7,
+      // since they are related to one another, they are not
+      // considered to be in conflict
+      CHECK_FALSE(e1.conflicts_with(&e1));
+      CHECK_FALSE(e1.conflicts_with(&e2));
+      CHECK_FALSE(e1.conflicts_with(&e3));
+      CHECK_FALSE(e1.conflicts_with(&e4));
+      CHECK_FALSE(e1.conflicts_with(&e5));
+      CHECK_FALSE(e1.conflicts_with(&e6));
+      CHECK_FALSE(e1.conflicts_with(&e7));
+
+      // Same goes for e2 with e2 and e7
+      CHECK_FALSE(e2.conflicts_with(&e1));
+      CHECK_FALSE(e2.conflicts_with(&e2));
+      CHECK_FALSE(e2.conflicts_with(&e3));
+      CHECK_FALSE(e2.conflicts_with(&e4));
+      CHECK_FALSE(e2.conflicts_with(&e5));
+      CHECK_FALSE(e2.conflicts_with(&e6));
+      CHECK_FALSE(e2.conflicts_with(&e7));
+
+      CHECK_FALSE(e3.conflicts_with(&e1));
+      CHECK_FALSE(e3.conflicts_with(&e2));
+      CHECK_FALSE(e3.conflicts_with(&e3));
+      CHECK_FALSE(e3.conflicts_with(&e4));
+      CHECK_FALSE(e3.conflicts_with(&e5));
+      CHECK_FALSE(e3.conflicts_with(&e6));
+      CHECK_FALSE(e3.conflicts_with(&e7));
+
+      CHECK_FALSE(e4.conflicts_with(&e1));
+      CHECK_FALSE(e4.conflicts_with(&e2));
+      CHECK_FALSE(e4.conflicts_with(&e3));
+      CHECK_FALSE(e4.conflicts_with(&e4));
+      CHECK_FALSE(e4.conflicts_with(&e5));
+      CHECK_FALSE(e4.conflicts_with(&e6));
+      CHECK_FALSE(e4.conflicts_with(&e7));
+
+      CHECK_FALSE(e5.conflicts_with(&e1));
+      CHECK_FALSE(e5.conflicts_with(&e2));
+      CHECK_FALSE(e5.conflicts_with(&e3));
+      CHECK_FALSE(e5.conflicts_with(&e4));
+      CHECK_FALSE(e5.conflicts_with(&e5));
+      CHECK_FALSE(e5.conflicts_with(&e6));
+      CHECK_FALSE(e5.conflicts_with(&e7));
+
+      CHECK_FALSE(e6.conflicts_with(&e1));
+      CHECK_FALSE(e6.conflicts_with(&e2));
+      CHECK_FALSE(e6.conflicts_with(&e3));
+      CHECK_FALSE(e6.conflicts_with(&e4));
+      CHECK_FALSE(e6.conflicts_with(&e5));
+      CHECK_FALSE(e6.conflicts_with(&e6));
+      CHECK_FALSE(e6.conflicts_with(&e7));
+
+      CHECK_FALSE(e7.conflicts_with(&e1));
+      CHECK_FALSE(e7.conflicts_with(&e2));
+      CHECK_FALSE(e7.conflicts_with(&e3));
+      CHECK_FALSE(e7.conflicts_with(&e4));
+      CHECK_FALSE(e7.conflicts_with(&e5));
+      CHECK_FALSE(e7.conflicts_with(&e6));
+      CHECK_FALSE(e7.conflicts_with(&e7));
+    }
+  }
+
+  SECTION("More complicated conflicts")
+  {
+    // The following tests concern the given event structure:
+    //                e1
+    //              /   /
+    //            e2    e6
+    //           /      /
+    //          e3      /
+    //         /  /    e7
+    //        e4  e5
+    UnfoldingEvent e1(EventSet(), std::make_shared<IndependentAction>());
+    UnfoldingEvent e2(EventSet({&e1}), std::make_shared<ConditionallyDependentAction>());
+    UnfoldingEvent e3(EventSet({&e2}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e4(EventSet({&e3}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e5(EventSet({&e3}), std::make_shared<IndependentAction>());
+    UnfoldingEvent e6(EventSet({&e1}), std::make_shared<DependentAction>());
+    UnfoldingEvent e7(EventSet({&e6}), std::make_shared<IndependentAction>());
+
+    CHECK_FALSE(e1.conflicts_with(&e1));
+    CHECK_FALSE(e1.conflicts_with(&e2));
+    CHECK_FALSE(e1.conflicts_with(&e3));
+    CHECK_FALSE(e1.conflicts_with(&e4));
+    CHECK_FALSE(e1.conflicts_with(&e5));
+    CHECK_FALSE(e1.conflicts_with(&e6));
+    CHECK_FALSE(e1.conflicts_with(&e7));
+
+    // e2 conflicts with e6. Since e6 < e7,
+    // e2 also conflicts with e7
+    CHECK_FALSE(e2.conflicts_with(&e1));
+    CHECK_FALSE(e2.conflicts_with(&e2));
+    CHECK_FALSE(e2.conflicts_with(&e3));
+    CHECK_FALSE(e2.conflicts_with(&e4));
+    CHECK_FALSE(e2.conflicts_with(&e5));
+    CHECK(e2.conflicts_with(&e6));
+    REQUIRE(e2.conflicts_with(&e7));
+
+    // e3 and e6 are dependent and unrelated, so they conflict
+    CHECK_FALSE(e3.conflicts_with(&e1));
+    CHECK_FALSE(e3.conflicts_with(&e2));
+    CHECK_FALSE(e3.conflicts_with(&e3));
+    CHECK_FALSE(e3.conflicts_with(&e4));
+    CHECK_FALSE(e3.conflicts_with(&e5));
+    CHECK(e3.conflicts_with(&e6));
+    CHECK_FALSE(e3.conflicts_with(&e7));
+
+    // Since e3 and e6 conflict and e3 < e4, e4 and e6 conflict
+    CHECK_FALSE(e4.conflicts_with(&e1));
+    CHECK_FALSE(e4.conflicts_with(&e2));
+    CHECK_FALSE(e4.conflicts_with(&e3));
+    CHECK_FALSE(e4.conflicts_with(&e4));
+    CHECK_FALSE(e4.conflicts_with(&e5));
+    CHECK(e4.conflicts_with(&e6));
+    CHECK_FALSE(e4.conflicts_with(&e7));
+
+    // Likewise for e5
+    CHECK_FALSE(e5.conflicts_with(&e1));
+    CHECK_FALSE(e5.conflicts_with(&e2));
+    CHECK_FALSE(e5.conflicts_with(&e3));
+    CHECK_FALSE(e5.conflicts_with(&e4));
+    CHECK_FALSE(e5.conflicts_with(&e5));
+    CHECK(e5.conflicts_with(&e6));
+    CHECK_FALSE(e5.conflicts_with(&e7));
+
+    // Conflicts are symmetric
+    CHECK_FALSE(e6.conflicts_with(&e1));
+    CHECK(e6.conflicts_with(&e2));
+    CHECK(e6.conflicts_with(&e3));
+    CHECK(e6.conflicts_with(&e4));
+    CHECK(e6.conflicts_with(&e5));
+    CHECK_FALSE(e6.conflicts_with(&e6));
+    CHECK_FALSE(e6.conflicts_with(&e7));
+
+    CHECK_FALSE(e7.conflicts_with(&e1));
+    CHECK(e7.conflicts_with(&e2));
+    CHECK_FALSE(e7.conflicts_with(&e3));
+    CHECK_FALSE(e7.conflicts_with(&e4));
+    CHECK_FALSE(e7.conflicts_with(&e5));
+    CHECK_FALSE(e7.conflicts_with(&e6));
+    CHECK_FALSE(e7.conflicts_with(&e7));
+  }
+}
