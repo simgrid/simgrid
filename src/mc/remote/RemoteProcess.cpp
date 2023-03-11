@@ -105,10 +105,9 @@ int open_vm(pid_t pid, int flags)
 
 RemoteProcess::RemoteProcess(pid_t pid) : AddressSpace(this), pid_(pid), running_(true) {}
 
-void RemoteProcess::init(xbt_mheap_t mmalloc_default_mdp, unsigned long* maxpid)
+void RemoteProcess::init(xbt_mheap_t mmalloc_default_mdp)
 {
-  this->heap_address      = remote(mmalloc_default_mdp);
-  this->maxpid_addr_      = remote(maxpid);
+  this->heap_address = remote(mmalloc_default_mdp);
 
   this->memory_map_ = simgrid::xbt::get_memory_map(this->pid_);
   this->init_memory_map_info();

@@ -33,6 +33,7 @@ private:
   void handle_simcall_execute(const s_mc_message_simcall_execute_t* message) const;
   void handle_finalize(const s_mc_message_int_t* msg) const;
   void handle_actors_status() const;
+  void handle_actors_maxpid() const;
 
 public:
   Channel const& get_channel() const { return channel_; }

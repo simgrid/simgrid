@@ -61,7 +61,7 @@ void snap_test_helper::Init()
   REQUIRE(1 << xbt_pagebits == xbt_pagesize);
 
   process = std::make_unique<simgrid::mc::RemoteProcess>(getpid());
-  process->init(nullptr, nullptr);
+  process->init(nullptr);
   mc_model_checker = new ::simgrid::mc::ModelChecker(std::move(process), -1);
 }
 

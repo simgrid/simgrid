@@ -77,8 +77,7 @@ AppSide* AppSide::initialize()
 
   s_mc_message_initial_addresses_t message = {};
   message.type                = MessageType::INITIAL_ADDRESSES;
-  message.mmalloc_default_mdp = mmalloc_get_current_heap();
-  message.maxpid              = kernel::actor::ActorImpl::get_maxpid_addr();
+  message.mmalloc_default_mdp              = mmalloc_get_current_heap();
   xbt_assert(instance_->channel_.send(message) == 0, "Could not send the initial message with addresses.");
 
   instance_->handle_messages();
@@ -224,6 +223,13 @@ void AppSide::handle_actors_status() const
       xbt_assert(channel_.send(probe) == 0, "Could not send ACTOR_TRANSITION_PROBE payload");
   }
 }
+void AppSide::handle_actors_maxpid() const
+{
+  s_mc_message_int_t answer = {};
+  answer.type               = MessageType::ACTORS_MAXPID_REPLY;
+  answer.value              = kernel::actor::ActorImpl::get_maxpid();
+  xbt_assert(channel_.send(answer) == 0, "Could not send response");
+}
 
 #define assert_msg_size(_name_, _type_)                                                                                \
   xbt_assert(received_size == sizeof(_type_), "Unexpected size for " _name_ " (%zd != %zu)", received_size,            \
@@ -265,6 +271,11 @@ void AppSide::handle_messages() const
       case MessageType::ACTORS_STATUS:
         assert_msg_size("ACTORS_STATUS", s_mc_message_t);
         handle_actors_status();
+        break;
+
+      case MessageType::ACTORS_MAXPID:
+        assert_msg_size("ACTORS_MAXPID", s_mc_message_t);
+        handle_actors_maxpid();
         break;
 
       default:

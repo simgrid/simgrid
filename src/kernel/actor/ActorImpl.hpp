@@ -40,8 +40,6 @@ public:
   aid_t get_ppid() const { return ppid_; }
 
   static unsigned long get_maxpid() { return maxpid_; }
-  // In MC mode, the application sends this pointer to the MC
-  static unsigned long* get_maxpid_addr() { return &maxpid_; }
 };
 
 /*------------------------- [ ActorRestartingTrait ] -------------------------*/

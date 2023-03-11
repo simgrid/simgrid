@@ -71,7 +71,7 @@ private:
 public:
   explicit RemoteProcess(pid_t pid);
   ~RemoteProcess() override;
-  void init(xbt_mheap_t mmalloc_default_mdp, unsigned long* maxpid);
+  void init(xbt_mheap_t mmalloc_default_mdp);
 
   RemoteProcess(RemoteProcess const&) = delete;
   RemoteProcess(RemoteProcess&&)      = delete;

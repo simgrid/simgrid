@@ -156,7 +156,19 @@ void RemoteApp::restore_initial_state() const
 
 unsigned long RemoteApp::get_maxpid() const
 {
-  return model_checker_->get_remote_process().get_maxpid();
+  // note: we could maybe cache it and count the actor creation on checker side too.
+  // But counting correctly accross state checkpoint/restore would be annoying.
+
+  model_checker_->channel().send(MessageType::ACTORS_MAXPID);
+  s_mc_message_int_t answer;
+  ssize_t answer_size = model_checker_->channel().receive(answer);
+  xbt_assert(answer_size != -1, "Could not receive message");
+  xbt_assert(answer_size == sizeof answer, "Broken message (size=%zd; expected %zu)", answer_size, sizeof answer);
+  xbt_assert(answer.type == MessageType::ACTORS_MAXPID_REPLY,
+             "Received unexpected message %s (%i); expected MessageType::ACTORS_MAXPID_REPLY (%i)",
+             to_c_str(answer.type), (int)answer.type, (int)MessageType::ACTORS_MAXPID_REPLY);
+
+  return answer.value;
 }
 
 void RemoteApp::get_actors_status(std::map<aid_t, ActorState>& whereto) const

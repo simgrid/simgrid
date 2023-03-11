@@ -52,6 +52,8 @@ void ModelChecker::start()
         } else if (events == EV_SIGNAL) {
           if (sig == SIGCHLD)
             mc->handle_waitpid();
+          else
+            xbt_die("Unexpected signal: %d", sig);
         } else {
           xbt_die("Unexpected event");
         }
@@ -163,7 +165,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       xbt_assert(size == sizeof(message), "Broken message. Got %d bytes instead of %d.", (int)size, (int)sizeof(message));
       memcpy(&message, buffer, sizeof(message));
 
-      get_remote_process().init(message.mmalloc_default_mdp, message.maxpid);
+      get_remote_process().init(message.mmalloc_default_mdp);
       break;
     }
 
