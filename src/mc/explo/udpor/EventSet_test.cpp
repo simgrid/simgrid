@@ -1080,7 +1080,7 @@ TEST_CASE("simgrid::mc::udpor::EventSet: Topological Ordering Property Observed 
 
     const EventSet subset = [&subset_of_iterators]() {
       EventSet subset_local;
-      for (const auto iter : subset_of_iterators) {
+      for (const auto& iter : subset_of_iterators) {
         subset_local.insert(*iter);
       }
       return subset_local;
