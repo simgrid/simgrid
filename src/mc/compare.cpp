@@ -137,7 +137,7 @@ static ssize_t heap_comparison_ignore_size(const std::vector<simgrid::mc::Ignore
   return (pos != ignore_list->end() && pos->address == address) ? pos->size : -1;
 }
 
-static bool is_stack(const simgrid::mc::RemoteProcess& process, const void* address)
+static bool is_stack(const simgrid::mc::RemoteProcessMemory& process, const void* address)
 {
   auto const& stack_areas = process.stack_areas();
   return std::any_of(stack_areas.begin(), stack_areas.end(),
@@ -145,7 +145,7 @@ static bool is_stack(const simgrid::mc::RemoteProcess& process, const void* addr
 }
 
 // TODO, this should depend on the snapshot?
-static bool is_block_stack(const simgrid::mc::RemoteProcess& process, int block)
+static bool is_block_stack(const simgrid::mc::RemoteProcessMemory& process, int block)
 {
   auto const& stack_areas = process.stack_areas();
   return std::any_of(stack_areas.begin(), stack_areas.end(),
@@ -183,7 +183,7 @@ int StateComparator::initHeapInformation(const s_xbt_mheap_t* heap1, const s_xbt
   if ((heap1->heaplimit != heap2->heaplimit) || (heap1->heapsize != heap2->heapsize))
     return -1;
   this->heaplimit     = heap1->heaplimit;
-  this->std_heap_copy = *mc_model_checker->get_remote_process().get_heap();
+  this->std_heap_copy = *mc_model_checker->get_remote_process_memory().get_heap();
   this->processStates[0].initHeapInformation(heap1, i1);
   this->processStates[1].initHeapInformation(heap2, i2);
   return 0;
@@ -198,9 +198,9 @@ static inline Region* MC_get_heap_region(const Snapshot& snapshot)
   xbt_die("No heap region");
 }
 
-static bool heap_area_differ(const RemoteProcess& process, StateComparator& state, const void* area1, const void* area2,
-                             const Snapshot& snapshot1, const Snapshot& snapshot2, HeapLocationPairs* previous,
-                             Type* type, int pointer_level);
+static bool heap_area_differ(const RemoteProcessMemory& process, StateComparator& state, const void* area1,
+                             const void* area2, const Snapshot& snapshot1, const Snapshot& snapshot2,
+                             HeapLocationPairs* previous, Type* type, int pointer_level);
 
 /* Compares the content of each heap fragment between the two states, at the bit level.
  *
@@ -233,7 +233,7 @@ static bool heap_area_differ(const RemoteProcess& process, StateComparator& stat
  * of the liveness model-checker, as state-equality is used to detect the loops that constitute the accepting states of
  * the verified property. So we could miss counter-examples to the verified property. Not good. Not good at all.
  */
-static bool mmalloc_heap_differ(const RemoteProcess& process, StateComparator& state, const Snapshot& snapshot1,
+static bool mmalloc_heap_differ(const RemoteProcessMemory& process, StateComparator& state, const Snapshot& snapshot1,
                                 const Snapshot& snapshot2)
 {
   /* Check busy blocks */
@@ -457,9 +457,10 @@ static bool mmalloc_heap_differ(const RemoteProcess& process, StateComparator& s
  * @param check_ignore
  * @return true when different, false otherwise (same or unknown)
  */
-static bool heap_area_differ_without_type(const RemoteProcess& process, StateComparator& state, const void* real_area1,
-                                          const void* real_area2, const Snapshot& snapshot1, const Snapshot& snapshot2,
-                                          HeapLocationPairs* previous, int size, int check_ignore)
+static bool heap_area_differ_without_type(const RemoteProcessMemory& process, StateComparator& state,
+                                          const void* real_area1, const void* real_area2, const Snapshot& snapshot1,
+                                          const Snapshot& snapshot2, HeapLocationPairs* previous, int size,
+                                          int check_ignore)
 {
   const Region* heap_region1  = MC_get_heap_region(snapshot1);
   const Region* heap_region2  = MC_get_heap_region(snapshot2);
@@ -520,7 +521,7 @@ static bool heap_area_differ_without_type(const RemoteProcess& process, StateCom
  * @param pointer_level
  * @return               true when different, false otherwise (same or unknown)
  */
-static bool heap_area_differ_with_type(const simgrid::mc::RemoteProcess& process, StateComparator& state,
+static bool heap_area_differ_with_type(const simgrid::mc::RemoteProcessMemory& process, StateComparator& state,
                                        const void* real_area1, const void* real_area2, const Snapshot& snapshot1,
                                        const Snapshot& snapshot2, HeapLocationPairs* previous, const Type* type,
                                        int area_size, int check_ignore, int pointer_level)
@@ -743,9 +744,9 @@ static Type* get_offset_type(void* real_base_address, Type* type, int offset, in
  * @param pointer_level
  * @return true when different, false otherwise (same or unknown)
  */
-static bool heap_area_differ(const RemoteProcess& process, StateComparator& state, const void* area1, const void* area2,
-                             const Snapshot& snapshot1, const Snapshot& snapshot2, HeapLocationPairs* previous,
-                             Type* type, int pointer_level)
+static bool heap_area_differ(const RemoteProcessMemory& process, StateComparator& state, const void* area1,
+                             const void* area2, const Snapshot& snapshot1, const Snapshot& snapshot2,
+                             HeapLocationPairs* previous, Type* type, int pointer_level)
 {
   ssize_t block1;
   ssize_t block2;
@@ -1016,7 +1017,7 @@ static bool heap_area_differ(const RemoteProcess& process, StateComparator& stat
 /************************** Snapshot comparison *******************************/
 /******************************************************************************/
 
-static bool areas_differ_with_type(const simgrid::mc::RemoteProcess& process, simgrid::mc::StateComparator& state,
+static bool areas_differ_with_type(const simgrid::mc::RemoteProcessMemory& process, simgrid::mc::StateComparator& state,
                                    const void* real_area1, const simgrid::mc::Snapshot& snapshot1,
                                    simgrid::mc::Region* region1, const void* real_area2,
                                    const simgrid::mc::Snapshot& snapshot2, simgrid::mc::Region* region2,
@@ -1143,7 +1144,8 @@ static bool areas_differ_with_type(const simgrid::mc::RemoteProcess& process, si
   return false;
 }
 
-static bool global_variables_differ(const simgrid::mc::RemoteProcess& process, simgrid::mc::StateComparator& state,
+static bool global_variables_differ(const simgrid::mc::RemoteProcessMemory& process,
+                                    simgrid::mc::StateComparator& state,
                                     const simgrid::mc::ObjectInformation* object_info, simgrid::mc::Region* r1,
                                     simgrid::mc::Region* r2, const simgrid::mc::Snapshot& snapshot1,
                                     const simgrid::mc::Snapshot& snapshot2)
@@ -1170,7 +1172,7 @@ static bool global_variables_differ(const simgrid::mc::RemoteProcess& process, s
   return false;
 }
 
-static bool local_variables_differ(const simgrid::mc::RemoteProcess& process, simgrid::mc::StateComparator& state,
+static bool local_variables_differ(const simgrid::mc::RemoteProcessMemory& process, simgrid::mc::StateComparator& state,
                                    const simgrid::mc::Snapshot& snapshot1, const simgrid::mc::Snapshot& snapshot2,
                                    const_mc_snapshot_stack_t stack1, const_mc_snapshot_stack_t stack2)
 {
@@ -1209,7 +1211,7 @@ bool Snapshot::operator==(const Snapshot& other)
   // TODO, make this a field of ModelChecker or something similar
   static StateComparator state_comparator;
 
-  const RemoteProcess& process = mc_model_checker->get_remote_process();
+  const RemoteProcessMemory& process = mc_model_checker->get_remote_process_memory();
 
   if (hash_ != other.hash_) {
     XBT_VERB("(%ld - %ld) Different hash: 0x%" PRIx64 "--0x%" PRIx64, this->num_state_, other.num_state_, this->hash_,

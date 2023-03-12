@@ -12,7 +12,7 @@
 #include "src/mc/inspect/ObjectInformation.hpp"
 #include "src/mc/inspect/Type.hpp"
 #include "src/mc/inspect/Variable.hpp"
-#include "src/mc/remote/RemoteProcess.hpp"
+#include "src/mc/sosp/RemoteProcessMemory.hpp"
 
 #include <array>
 #include <cassert>
@@ -148,7 +148,7 @@ static void test_deref(simgrid::dwarf::ExpressionContext const& state)
 
 int main()
 {
-  auto* process = new simgrid::mc::RemoteProcess(getpid());
+  auto* process = new simgrid::mc::RemoteProcessMemory(getpid());
   process->init(nullptr);
 
   simgrid::dwarf::ExpressionContext state;

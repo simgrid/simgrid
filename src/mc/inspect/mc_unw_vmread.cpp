@@ -6,7 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/mc/inspect/mc_unw.hpp"
-#include "src/mc/remote/RemoteProcess.hpp"
+#include "src/mc/sosp/RemoteProcessMemory.hpp"
 
 #include <sys/types.h>
 #include <sys/uio.h>

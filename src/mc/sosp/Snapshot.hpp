@@ -8,8 +8,8 @@
 
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/inspect/mc_unw.hpp"
-#include "src/mc/remote/RemoteProcess.hpp"
 #include "src/mc/sosp/Region.hpp"
+#include "src/mc/sosp/RemoteProcessMemory.hpp"
 
 // ***** MC Snapshot
 
@@ -62,12 +62,13 @@ class XBT_PRIVATE Snapshot final : public AddressSpace {
 
 public:
   /* Initialization */
-  Snapshot(long num_state, PageStore& store, RemoteProcess* process = &mc_model_checker->get_remote_process());
+  Snapshot(long num_state, PageStore& store,
+           RemoteProcessMemory* process = &mc_model_checker->get_remote_process_memory());
 
   /* Regular use */
   bool on_heap(const void* address) const
   {
-    const s_xbt_mheap_t* heap = get_remote_process()->get_heap();
+    const s_xbt_mheap_t* heap = get_remote_process_memory()->get_heap();
     return address >= heap->heapbase && address < heap->breakval;
   }
 
@@ -75,7 +76,7 @@ public:
                    ReadOptions options = ReadOptions::none()) const override;
   Region* get_region(const void* addr) const;
   Region* get_region(const void* addr, Region* hinted_region) const;
-  void restore(RemoteProcess* process) const;
+  void restore(RemoteProcessMemory* process) const;
 
   bool operator==(const Snapshot& other);
   bool operator!=(const Snapshot& other) { return not(*this == other); }
@@ -92,8 +93,8 @@ public:
 
 private:
   void add_region(RegionType type, ObjectInformation* object_info, void* start_addr, std::size_t size);
-  void snapshot_regions(RemoteProcess* process);
-  void snapshot_stacks(RemoteProcess* process);
+  void snapshot_regions(RemoteProcessMemory* process);
+  void snapshot_stacks(RemoteProcessMemory* process);
   void handle_ignore();
   void ignore_restore() const;
   hash_type do_hash() const;

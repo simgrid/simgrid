@@ -19,7 +19,7 @@ namespace simgrid::mc {
 
 /** @brief Save the current state */
 VisitedState::VisitedState(unsigned long state_number, unsigned int actor_count, RemoteApp& remote_app)
-    : heap_bytes_used_(remote_app.get_remote_process().get_remote_heap_bytes())
+    : heap_bytes_used_(remote_app.get_remote_process_memory().get_remote_heap_bytes())
     , actor_count_(actor_count)
     , num_(state_number)
 {

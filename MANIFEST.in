@@ -2213,8 +2213,6 @@ include src/mc/remote/Channel.cpp
 include src/mc/remote/Channel.hpp
 include src/mc/remote/CheckerSide.cpp
 include src/mc/remote/CheckerSide.hpp
-include src/mc/remote/RemoteProcess.cpp
-include src/mc/remote/RemoteProcess.hpp
 include src/mc/remote/RemotePtr.hpp
 include src/mc/remote/mc_protocol.h
 include src/mc/sosp/ChunkedData.cpp
@@ -2224,6 +2222,8 @@ include src/mc/sosp/PageStore.hpp
 include src/mc/sosp/PageStore_test.cpp
 include src/mc/sosp/Region.cpp
 include src/mc/sosp/Region.hpp
+include src/mc/sosp/RemoteProcessMemory.cpp
+include src/mc/sosp/RemoteProcessMemory.hpp
 include src/mc/sosp/Snapshot.cpp
 include src/mc/sosp/Snapshot.hpp
 include src/mc/sosp/Snapshot_test.cpp

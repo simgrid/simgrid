@@ -26,7 +26,7 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t prop_state,
   this->app_state_ = std::move(app_state);
   if (not this->app_state_->get_system_state())
     this->app_state_->set_system_state(std::make_shared<Snapshot>(pair_num, remote_app.get_page_store()));
-  this->heap_bytes_used     = mc_model_checker->get_remote_process().get_remote_heap_bytes();
+  this->heap_bytes_used     = mc_model_checker->get_remote_process_memory().get_remote_heap_bytes();
   this->actor_count_        = app_state_->get_actor_count();
   this->other_num           = -1;
   this->atomic_propositions = std::move(atomic_propositions);
@@ -102,7 +102,7 @@ void LivenessChecker::replay()
   if (_sg_mc_checkpoint > 0) {
     const Pair* pair = exploration_stack_.back().get();
     if (const auto* system_state = pair->app_state_->get_system_state()) {
-      system_state->restore(&get_remote_app().get_remote_process());
+      system_state->restore(&get_remote_app().get_remote_process_memory());
       return;
     }
   }
@@ -241,7 +241,7 @@ xbt_automaton_state_t LivenessChecker::get_automaton_transition_dst(xbt_dynar_t 
   const xbt_automaton_transition* transition = xbt_dynar_get_as(dynar, index, xbt_automaton_transition_t);
   return transition->dst;
 }
-void LivenessChecker::automaton_register_symbol(RemoteProcess const& remote_process, const char* name,
+void LivenessChecker::automaton_register_symbol(RemoteProcessMemory const& remote_process, const char* name,
                                                 RemotePtr<int> address)
 {
   if (property_automaton_ == nullptr)

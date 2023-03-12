@@ -11,7 +11,7 @@
 #include "src/kernel/actor/SimcallObserver.hpp"
 #include "src/mc/mc_base.hpp"
 #include "src/mc/mc_config.hpp"
-#include "src/mc/remote/RemoteProcess.hpp"
+#include "src/mc/sosp/RemoteProcessMemory.hpp"
 #if HAVE_SMPI
 #include "src/smpi/include/private.hpp"
 #endif

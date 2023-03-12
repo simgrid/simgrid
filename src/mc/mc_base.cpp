@@ -15,7 +15,7 @@
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/api/RemoteApp.hpp"
 #include "src/mc/remote/AppSide.hpp"
-#include "src/mc/remote/RemoteProcess.hpp"
+#include "src/mc/sosp/RemoteProcessMemory.hpp"
 #endif
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(mc, "All MC categories");

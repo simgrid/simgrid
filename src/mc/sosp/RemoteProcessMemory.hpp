@@ -60,23 +60,23 @@ struct IgnoredHeapRegion {
  *  - stack unwinding;
  *  - etc.
  */
-class RemoteProcess final : public AddressSpace {
+class RemoteProcessMemory final : public AddressSpace {
 private:
   // Those flags are used to track down which cached information
   // is still up to date and which information needs to be updated.
-  static constexpr int cache_none            = 0;
-  static constexpr int cache_heap            = 1;
-  static constexpr int cache_malloc          = 2;
+  static constexpr int cache_none   = 0;
+  static constexpr int cache_heap   = 1;
+  static constexpr int cache_malloc = 2;
 
 public:
-  explicit RemoteProcess(pid_t pid);
-  ~RemoteProcess() override;
+  explicit RemoteProcessMemory(pid_t pid);
+  ~RemoteProcessMemory() override;
   void init(xbt_mheap_t mmalloc_default_mdp);
 
-  RemoteProcess(RemoteProcess const&) = delete;
-  RemoteProcess(RemoteProcess&&)      = delete;
-  RemoteProcess& operator=(RemoteProcess const&) = delete;
-  RemoteProcess& operator=(RemoteProcess&&) = delete;
+  RemoteProcessMemory(RemoteProcessMemory const&)            = delete;
+  RemoteProcessMemory(RemoteProcessMemory&&)                 = delete;
+  RemoteProcessMemory& operator=(RemoteProcessMemory const&) = delete;
+  RemoteProcessMemory& operator=(RemoteProcessMemory&&)      = delete;
 
   /* ************* */
   /* Low-level API */
@@ -115,20 +115,20 @@ public:
   // Heap access:
   xbt_mheap_t get_heap()
   {
-    if (not(this->cache_flags_ & RemoteProcess::cache_heap))
+    if (not(this->cache_flags_ & RemoteProcessMemory::cache_heap))
       this->refresh_heap();
     return this->heap.get();
   }
   const malloc_info* get_malloc_info()
   {
-    if (not(this->cache_flags_ & RemoteProcess::cache_malloc))
+    if (not(this->cache_flags_ & RemoteProcessMemory::cache_malloc))
       this->refresh_malloc_info();
     return this->heap_info.data();
   }
   /* Get the amount of memory mallocated in the remote process (requires mmalloc) */
   std::size_t get_remote_heap_bytes();
 
-  void clear_cache() { this->cache_flags_ = RemoteProcess::cache_none; }
+  void clear_cache() { this->cache_flags_ = RemoteProcessMemory::cache_none; }
 
   std::vector<IgnoredRegion> const& ignored_regions() const { return ignored_regions_; }
   void ignore_region(std::uint64_t address, std::size_t size);
@@ -177,7 +177,7 @@ private:
   std::vector<IgnoredHeapRegion> ignored_heap_;
 
   /** State of the cache (which variables are up to date) */
-  int cache_flags_ = RemoteProcess::cache_none;
+  int cache_flags_ = RemoteProcessMemory::cache_none;
 
 public:
   // object info

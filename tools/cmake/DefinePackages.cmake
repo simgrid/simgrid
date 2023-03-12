@@ -570,17 +570,17 @@ set(MC_SRC
   src/mc/remote/Channel.hpp
   src/mc/remote/CheckerSide.cpp
   src/mc/remote/CheckerSide.hpp
-  src/mc/remote/RemoteProcess.cpp
-  src/mc/remote/RemoteProcess.hpp
   src/mc/remote/RemotePtr.hpp
   src/mc/remote/mc_protocol.h
-
+  
   src/mc/sosp/ChunkedData.cpp
   src/mc/sosp/ChunkedData.hpp
   src/mc/sosp/PageStore.cpp
   src/mc/sosp/PageStore.hpp
   src/mc/sosp/Region.cpp
   src/mc/sosp/Region.hpp
+  src/mc/sosp/RemoteProcessMemory.cpp
+  src/mc/sosp/RemoteProcessMemory.hpp
   src/mc/sosp/Snapshot.cpp
   src/mc/sosp/Snapshot.hpp
 

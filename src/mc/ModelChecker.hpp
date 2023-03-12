@@ -19,15 +19,15 @@ namespace simgrid::mc {
  */
 class ModelChecker {
   CheckerSide checker_side_;
-  std::unique_ptr<RemoteProcess> remote_process_;
+  std::unique_ptr<RemoteProcessMemory> remote_process_memory_;
   Exploration* exploration_ = nullptr;
 
 public:
   ModelChecker(ModelChecker const&) = delete;
   ModelChecker& operator=(ModelChecker const&) = delete;
-  explicit ModelChecker(std::unique_ptr<RemoteProcess> remote_simulation, int sockfd);
+  explicit ModelChecker(std::unique_ptr<RemoteProcessMemory> remote_simulation, int sockfd);
 
-  RemoteProcess& get_remote_process() { return *remote_process_; }
+  RemoteProcessMemory& get_remote_process_memory() { return *remote_process_memory_; }
   Channel& channel() { return checker_side_.get_channel(); }
 
   void start();

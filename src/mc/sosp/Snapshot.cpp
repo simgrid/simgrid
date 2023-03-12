@@ -13,7 +13,7 @@ namespace simgrid::mc {
 /************************************* Take Snapshot ************************************/
 /****************************************************************************************/
 
-void Snapshot::snapshot_regions(RemoteProcess* process)
+void Snapshot::snapshot_regions(RemoteProcessMemory* process)
 {
   snapshot_regions_.clear();
 
@@ -74,7 +74,7 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame, Frame* sco
     else if (not current_variable.location_list.empty()) {
       dwarf::Location location = simgrid::dwarf::resolve(current_variable.location_list, current_variable.object_info,
                                                          &(stack_frame->unw_cursor), (void*)stack_frame->frame_base,
-                                                         &mc_model_checker->get_remote_process());
+                                                         &mc_model_checker->get_remote_process_memory());
 
       xbt_assert(location.in_memory(), "Cannot handle non-address variable");
       new_var.address = location.address();
@@ -99,7 +99,7 @@ static std::vector<s_local_variable_t> get_local_variables_values(std::vector<s_
 
 static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_context)
 {
-  const RemoteProcess* process = &mc_model_checker->get_remote_process();
+  const RemoteProcessMemory* process = &mc_model_checker->get_remote_process_memory();
   std::vector<s_mc_stack_frame_t> result;
 
   unw_cursor_t c = stack_context->cursor();
@@ -149,7 +149,7 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(UnwindContext* stack_
   return result;
 }
 
-void Snapshot::snapshot_stacks(RemoteProcess* process)
+void Snapshot::snapshot_stacks(RemoteProcessMemory* process)
 {
   for (auto const& stack : process->stack_areas()) {
     s_mc_snapshot_stack_t st;
@@ -174,30 +174,31 @@ void Snapshot::snapshot_stacks(RemoteProcess* process)
 
 void Snapshot::handle_ignore()
 {
-  xbt_assert(get_remote_process());
+  xbt_assert(get_remote_process_memory());
 
   // Copy the memory:
-  for (auto const& region : get_remote_process()->ignored_regions()) {
+  for (auto const& region : get_remote_process_memory()->ignored_regions()) {
     s_mc_snapshot_ignored_data_t ignored_data;
     ignored_data.start = (void*)region.addr;
     ignored_data.data.resize(region.size);
     // TODO, we should do this once per privatization segment:
-    get_remote_process()->read_bytes(ignored_data.data.data(), region.size, remote(region.addr));
+    get_remote_process_memory()->read_bytes(ignored_data.data.data(), region.size, remote(region.addr));
     ignored_data_.push_back(std::move(ignored_data));
   }
 
   // Zero the memory:
-  for (auto const& region : get_remote_process()->ignored_regions())
-    get_remote_process()->clear_bytes(remote(region.addr), region.size);
+  for (auto const& region : get_remote_process_memory()->ignored_regions())
+    get_remote_process_memory()->clear_bytes(remote(region.addr), region.size);
 }
 
 void Snapshot::ignore_restore() const
 {
   for (auto const& ignored_data : ignored_data_)
-    get_remote_process()->write_bytes(ignored_data.data.data(), ignored_data.data.size(), remote(ignored_data.start));
+    get_remote_process_memory()->write_bytes(ignored_data.data.data(), ignored_data.data.size(),
+                                             remote(ignored_data.start));
 }
 
-Snapshot::Snapshot(long num_state, PageStore& store, RemoteProcess* process)
+Snapshot::Snapshot(long num_state, PageStore& store, RemoteProcessMemory* process)
     : AddressSpace(process), page_store_(store), num_state_(num_state)
 {
   XBT_DEBUG("Taking snapshot %ld", num_state);
@@ -241,7 +242,7 @@ void* Snapshot::read_bytes(void* buffer, std::size_t size, RemotePtr<void> addre
       return buffer;
     }
   } else
-    return this->get_remote_process()->read_bytes(buffer, size, address, options);
+    return this->get_remote_process_memory()->read_bytes(buffer, size, address, options);
 }
 /** @brief Find the snapshotted region from a pointer
  *
@@ -270,7 +271,7 @@ Region* Snapshot::get_region(const void* addr, Region* hinted_region) const
     return get_region(addr);
 }
 
-void Snapshot::restore(RemoteProcess* process) const
+void Snapshot::restore(RemoteProcessMemory* process) const
 {
   XBT_DEBUG("Restore snapshot %ld", num_state_);
 

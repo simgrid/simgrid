@@ -40,12 +40,12 @@ XBT_PRIVATE void* create_context(unw_addr_space_t as, pid_t pid);
 namespace simgrid::mc {
 
 class UnwindContext {
-  simgrid::mc::AddressSpace* address_space_ = nullptr;
-  simgrid::mc::RemoteProcess* process_      = nullptr;
-  unw_context_t unwind_context_             = {};
+  simgrid::mc::AddressSpace* address_space_  = nullptr;
+  simgrid::mc::RemoteProcessMemory* process_ = nullptr;
+  unw_context_t unwind_context_              = {};
 
 public:
-  void initialize(simgrid::mc::RemoteProcess* process, unw_context_t* c);
+  void initialize(simgrid::mc::RemoteProcessMemory* process, unw_context_t* c);
   unw_cursor_t cursor();
 
 private: // Methods and virtual table for libunwind

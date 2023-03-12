@@ -13,7 +13,7 @@
 #include "src/mc/inspect/Variable.hpp"
 #include "src/mc/inspect/mc_dwarf.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/remote/RemoteProcess.hpp"
+#include "src/mc/sosp/RemoteProcessMemory.hpp"
 
 #include <algorithm>
 #include <array>
@@ -1147,7 +1147,7 @@ std::shared_ptr<ObjectInformation> createObjectInformation(std::vector<xbt::VmMa
 
 /*************************************************************************/
 
-void postProcessObjectInformation(const RemoteProcess* process, ObjectInformation* info)
+void postProcessObjectInformation(const RemoteProcessMemory* process, ObjectInformation* info)
 {
   for (auto& [_, t] : info->types) {
     Type* type    = &t;

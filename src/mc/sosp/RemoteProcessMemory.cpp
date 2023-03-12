@@ -5,7 +5,7 @@
 
 #define _FILE_OFFSET_BITS 64 /* needed for pread_whole to work as expected on 32bits */
 
-#include "src/mc/remote/RemoteProcess.hpp"
+#include "src/mc/sosp/RemoteProcessMemory.hpp"
 
 #include "src/mc/sosp/Snapshot.hpp"
 #include "xbt/file.hpp"
@@ -101,11 +101,11 @@ int open_vm(pid_t pid, int flags)
   return open(buffer.c_str(), flags);
 }
 
-// ***** RemoteProcess
+// ***** RemoteProcessMemory
 
-RemoteProcess::RemoteProcess(pid_t pid) : AddressSpace(this), pid_(pid), running_(true) {}
+RemoteProcessMemory::RemoteProcessMemory(pid_t pid) : AddressSpace(this), pid_(pid), running_(true) {}
 
-void RemoteProcess::init(xbt_mheap_t mmalloc_default_mdp)
+void RemoteProcessMemory::init(xbt_mheap_t mmalloc_default_mdp)
 {
   this->heap_address = remote(mmalloc_default_mdp);
 
@@ -121,7 +121,7 @@ void RemoteProcess::init(xbt_mheap_t mmalloc_default_mdp)
   this->unw_underlying_context    = simgrid::unw::create_context(this->unw_underlying_addr_space, this->pid_);
 }
 
-RemoteProcess::~RemoteProcess()
+RemoteProcessMemory::~RemoteProcessMemory()
 {
   if (this->memory_file >= 0)
     close(this->memory_file);
@@ -141,11 +141,11 @@ RemoteProcess::~RemoteProcess()
  *  Do not use directly, this is used by the getters when appropriate
  *  in order to have fresh data.
  */
-void RemoteProcess::refresh_heap()
+void RemoteProcessMemory::refresh_heap()
 {
   // Read/dereference/refresh the std_heap pointer:
   this->read(this->heap.get(), this->heap_address);
-  this->cache_flags_ |= RemoteProcess::cache_heap;
+  this->cache_flags_ |= RemoteProcessMemory::cache_heap;
 }
 
 /** Refresh the information about the process
@@ -153,24 +153,24 @@ void RemoteProcess::refresh_heap()
  *  Do not use directly, this is used by the getters when appropriate
  *  in order to have fresh data.
  * */
-void RemoteProcess::refresh_malloc_info()
+void RemoteProcessMemory::refresh_malloc_info()
 {
   // Refresh process->heapinfo:
-  if (this->cache_flags_ & RemoteProcess::cache_malloc)
+  if (this->cache_flags_ & RemoteProcessMemory::cache_malloc)
     return;
   size_t count = this->heap->heaplimit + 1;
   if (this->heap_info.size() < count)
     this->heap_info.resize(count);
   this->read_bytes(this->heap_info.data(), count * sizeof(malloc_info), remote(this->heap->heapinfo));
-  this->cache_flags_ |= RemoteProcess::cache_malloc;
+  this->cache_flags_ |= RemoteProcessMemory::cache_malloc;
 }
-std::size_t RemoteProcess::get_remote_heap_bytes()
+std::size_t RemoteProcessMemory::get_remote_heap_bytes()
 {
   return mmalloc_get_bytes_used_remote(get_heap()->heaplimit, get_malloc_info());
 }
 
 /** @brief Finds the range of the different memory segments and binary paths */
-void RemoteProcess::init_memory_map_info()
+void RemoteProcessMemory::init_memory_map_info()
 {
   XBT_DEBUG("Get debug information ...");
   this->maestro_stack_start_ = nullptr;
@@ -231,7 +231,7 @@ void RemoteProcess::init_memory_map_info()
   XBT_DEBUG("Get debug information done !");
 }
 
-std::shared_ptr<simgrid::mc::ObjectInformation> RemoteProcess::find_object_info(RemotePtr<void> addr) const
+std::shared_ptr<simgrid::mc::ObjectInformation> RemoteProcessMemory::find_object_info(RemotePtr<void> addr) const
 {
   for (auto const& object_info : this->object_infos)
     if (addr.address() >= (std::uint64_t)object_info->start && addr.address() <= (std::uint64_t)object_info->end)
@@ -239,7 +239,7 @@ std::shared_ptr<simgrid::mc::ObjectInformation> RemoteProcess::find_object_info(
   return nullptr;
 }
 
-std::shared_ptr<ObjectInformation> RemoteProcess::find_object_info_exec(RemotePtr<void> addr) const
+std::shared_ptr<ObjectInformation> RemoteProcessMemory::find_object_info_exec(RemotePtr<void> addr) const
 {
   for (std::shared_ptr<ObjectInformation> const& info : this->object_infos)
     if (addr.address() >= (std::uint64_t)info->start_exec && addr.address() <= (std::uint64_t)info->end_exec)
@@ -247,7 +247,7 @@ std::shared_ptr<ObjectInformation> RemoteProcess::find_object_info_exec(RemotePt
   return nullptr;
 }
 
-std::shared_ptr<ObjectInformation> RemoteProcess::find_object_info_rw(RemotePtr<void> addr) const
+std::shared_ptr<ObjectInformation> RemoteProcessMemory::find_object_info_rw(RemotePtr<void> addr) const
 {
   for (std::shared_ptr<ObjectInformation> const& info : this->object_infos)
     if (addr.address() >= (std::uint64_t)info->start_rw && addr.address() <= (std::uint64_t)info->end_rw)
@@ -255,7 +255,7 @@ std::shared_ptr<ObjectInformation> RemoteProcess::find_object_info_rw(RemotePtr<
   return nullptr;
 }
 
-simgrid::mc::Frame* RemoteProcess::find_function(RemotePtr<void> ip) const
+simgrid::mc::Frame* RemoteProcessMemory::find_function(RemotePtr<void> ip) const
 {
   std::shared_ptr<simgrid::mc::ObjectInformation> info = this->find_object_info_exec(ip);
   return info ? info->find_function((void*)ip.address()) : nullptr;
@@ -263,7 +263,7 @@ simgrid::mc::Frame* RemoteProcess::find_function(RemotePtr<void> ip) const
 
 /** Find (one occurrence of) the named variable definition
  */
-const simgrid::mc::Variable* RemoteProcess::find_variable(const char* name) const
+const simgrid::mc::Variable* RemoteProcessMemory::find_variable(const char* name) const
 {
   // First lookup the variable in the executable shared object.
   // A global variable used directly by the executable code from a library
@@ -285,7 +285,7 @@ const simgrid::mc::Variable* RemoteProcess::find_variable(const char* name) cons
   return nullptr;
 }
 
-void RemoteProcess::read_variable(const char* name, void* target, size_t size) const
+void RemoteProcessMemory::read_variable(const char* name, void* target, size_t size) const
 {
   const simgrid::mc::Variable* var = this->find_variable(name);
   xbt_assert(var, "Variable %s not found", name);
@@ -301,7 +301,7 @@ void RemoteProcess::read_variable(const char* name, void* target, size_t size) c
   this->read_bytes(target, size, remote(var->address));
 }
 
-std::string RemoteProcess::read_string(RemotePtr<char> address) const
+std::string RemoteProcessMemory::read_string(RemotePtr<char> address) const
 {
   if (not address)
     return {};
@@ -324,7 +324,8 @@ std::string RemoteProcess::read_string(RemotePtr<char> address) const
   }
 }
 
-void* RemoteProcess::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address, ReadOptions /*options*/) const
+void* RemoteProcessMemory::read_bytes(void* buffer, std::size_t size, RemotePtr<void> address,
+                                      ReadOptions /*options*/) const
 {
   xbt_assert(pread_whole(this->memory_file, buffer, size, (size_t)address.address()) != -1,
              "Read at %p from process %lli failed", (void*)address.address(), (long long)this->pid_);
@@ -337,7 +338,7 @@ void* RemoteProcess::read_bytes(void* buffer, std::size_t size, RemotePtr<void> 
  *  @param len      data size
  *  @param address  target process memory address (target)
  */
-void RemoteProcess::write_bytes(const void* buffer, size_t len, RemotePtr<void> address) const
+void RemoteProcessMemory::write_bytes(const void* buffer, size_t len, RemotePtr<void> address) const
 {
   xbt_assert(pwrite_whole(this->memory_file, buffer, len, (size_t)address.address()) != -1,
              "Write to process %lli failed", (long long)this->pid_);
@@ -352,7 +353,7 @@ static void zero_buffer_init(const void** zero_buffer, size_t zero_buffer_size)
   close(fd);
 }
 
-void RemoteProcess::clear_bytes(RemotePtr<void> address, size_t len) const
+void RemoteProcessMemory::clear_bytes(RemotePtr<void> address, size_t len) const
 {
   static constexpr size_t zero_buffer_size = 10 * 4096;
   static const void* zero_buffer;
@@ -367,7 +368,7 @@ void RemoteProcess::clear_bytes(RemotePtr<void> address, size_t len) const
   }
 }
 
-void RemoteProcess::ignore_region(std::uint64_t addr, std::size_t size)
+void RemoteProcessMemory::ignore_region(std::uint64_t addr, std::size_t size)
 {
   IgnoredRegion region;
   region.addr = addr;
@@ -381,7 +382,7 @@ void RemoteProcess::ignore_region(std::uint64_t addr, std::size_t size)
     ignored_regions_.insert(pos, region);
 }
 
-void RemoteProcess::ignore_heap(IgnoredHeapRegion const& region)
+void RemoteProcessMemory::ignore_heap(IgnoredHeapRegion const& region)
 {
   // Binary search the position of insertion:
   auto pos = std::lower_bound(ignored_heap_.begin(), ignored_heap_.end(), region.address,
@@ -392,7 +393,7 @@ void RemoteProcess::ignore_heap(IgnoredHeapRegion const& region)
   }
 }
 
-void RemoteProcess::unignore_heap(void* address, size_t size)
+void RemoteProcessMemory::unignore_heap(void* address, size_t size)
 {
   // Binary search:
   auto pos = std::lower_bound(ignored_heap_.begin(), ignored_heap_.end(), address,
@@ -401,7 +402,7 @@ void RemoteProcess::unignore_heap(void* address, size_t size)
     ignored_heap_.erase(pos);
 }
 
-void RemoteProcess::ignore_local_variable(const char* var_name, const char* frame_name) const
+void RemoteProcessMemory::ignore_local_variable(const char* var_name, const char* frame_name) const
 {
   if (frame_name != nullptr && strcmp(frame_name, "*") == 0)
     frame_name = nullptr;
@@ -409,7 +410,7 @@ void RemoteProcess::ignore_local_variable(const char* var_name, const char* fram
     info->remove_local_variable(var_name, frame_name);
 }
 
-void RemoteProcess::dump_stack() const
+void RemoteProcessMemory::dump_stack() const
 {
   unw_addr_space_t as = unw_create_addr_space(&_UPT_accessors, BYTE_ORDER);
   if (as == nullptr) {

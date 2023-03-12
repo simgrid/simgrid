@@ -9,7 +9,7 @@
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_exit.hpp"
 #include "src/mc/mc_private.hpp"
-#include "src/mc/remote/RemoteProcess.hpp"
+#include "src/mc/sosp/RemoteProcessMemory.hpp"
 #include "src/mc/transition/TransitionComm.hpp"
 #include "xbt/automaton.hpp"
 #include "xbt/system_error.hpp"
@@ -31,8 +31,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");
 
 namespace simgrid::mc {
 
-ModelChecker::ModelChecker(std::unique_ptr<RemoteProcess> remote_simulation, int sockfd)
-    : checker_side_(sockfd), remote_process_(std::move(remote_simulation))
+ModelChecker::ModelChecker(std::unique_ptr<RemoteProcessMemory> remote_memory, int sockfd)
+    : checker_side_(sockfd), remote_process_memory_(std::move(remote_memory))
 {
 }
 
@@ -64,7 +64,7 @@ void ModelChecker::start()
   int status;
 
   // The model-checked process SIGSTOP itself to signal it's ready:
-  const pid_t pid = remote_process_->pid();
+  const pid_t pid = remote_process_memory_->pid();
 
   xbt_assert(waitpid(pid, &status, WAITPID_CHECKED_FLAGS) == pid && WIFSTOPPED(status) && WSTOPSIG(status) == SIGSTOP,
              "Could not wait model-checked process");
@@ -97,7 +97,7 @@ static constexpr auto ignored_local_variables = {
 
 void ModelChecker::setup_ignore()
 {
-  const RemoteProcess& process = this->get_remote_process();
+  const RemoteProcessMemory& process = this->get_remote_process_memory();
   for (auto const& [var, frame] : ignored_local_variables)
     process.ignore_local_variable(var, frame);
 
@@ -109,7 +109,7 @@ void ModelChecker::shutdown()
 {
   XBT_DEBUG("Shutting down model-checker");
 
-  RemoteProcess& process = get_remote_process();
+  RemoteProcessMemory& process = get_remote_process_memory();
   if (process.running()) {
     XBT_DEBUG("Killing process");
     finalize_app(true);
@@ -122,7 +122,7 @@ void ModelChecker::resume()
 {
   if (checker_side_.get_channel().send(MessageType::CONTINUE) != 0)
     throw xbt::errno_error();
-  remote_process_->clear_cache();
+  remote_process_memory_->clear_cache();
 }
 
 static void MC_report_crash(Exploration* explorer, int status)
@@ -148,7 +148,7 @@ static void MC_report_crash(Exploration* explorer, int status)
       XBT_INFO("Stack trace not displayed because you passed --log=no_loc");
     } else {
       XBT_INFO("Stack trace:");
-      explorer->get_remote_app().get_remote_process().dump_stack();
+      explorer->get_remote_app().get_remote_process_memory().dump_stack();
     }
   }
 }
@@ -165,7 +165,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       xbt_assert(size == sizeof(message), "Broken message. Got %d bytes instead of %d.", (int)size, (int)sizeof(message));
       memcpy(&message, buffer, sizeof(message));
 
-      get_remote_process().init(message.mmalloc_default_mdp);
+      get_remote_process_memory().init(message.mmalloc_default_mdp);
       break;
     }
 
@@ -179,7 +179,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       region.fragment = message.fragment;
       region.address  = message.address;
       region.size     = message.size;
-      get_remote_process().ignore_heap(region);
+      get_remote_process_memory().ignore_heap(region);
       break;
     }
 
@@ -187,7 +187,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       s_mc_message_ignore_memory_t message;
       xbt_assert(size == sizeof(message), "Broken message");
       memcpy(&message, buffer, sizeof(message));
-      get_remote_process().unignore_heap((void*)(std::uintptr_t)message.addr, message.size);
+      get_remote_process_memory().unignore_heap((void*)(std::uintptr_t)message.addr, message.size);
       break;
     }
 
@@ -195,7 +195,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       s_mc_message_ignore_memory_t message;
       xbt_assert(size == sizeof(message), "Broken message");
       memcpy(&message, buffer, sizeof(message));
-      this->get_remote_process().ignore_region(message.addr, message.size);
+      this->get_remote_process_memory().ignore_region(message.addr, message.size);
       break;
     }
 
@@ -203,7 +203,7 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       s_mc_message_stack_region_t message;
       xbt_assert(size == sizeof(message), "Broken message");
       memcpy(&message, buffer, sizeof(message));
-      this->get_remote_process().stack_areas().push_back(message.stack_region);
+      this->get_remote_process_memory().stack_areas().push_back(message.stack_region);
     } break;
 
     case MessageType::REGISTER_SYMBOL: {
@@ -213,7 +213,8 @@ bool ModelChecker::handle_message(const char* buffer, ssize_t size)
       xbt_assert(not message.callback, "Support for client-side function proposition is not implemented.");
       XBT_DEBUG("Received symbol: %s", message.name.data());
 
-      LivenessChecker::automaton_register_symbol(get_remote_process(), message.name.data(), remote((int*)message.data));
+      LivenessChecker::automaton_register_symbol(get_remote_process_memory(), message.name.data(),
+                                                 remote((int*)message.data));
       break;
     }
 
@@ -256,7 +257,7 @@ void ModelChecker::handle_waitpid()
     if (pid == -1) {
       if (errno == ECHILD) {
         // No more children:
-        xbt_assert(not this->get_remote_process().running(), "Inconsistent state");
+        xbt_assert(not this->get_remote_process_memory().running(), "Inconsistent state");
         break;
       } else {
         XBT_ERROR("Could not wait for pid");
@@ -264,16 +265,17 @@ void ModelChecker::handle_waitpid()
       }
     }
 
-    if (pid == this->get_remote_process().pid()) {
+    if (pid == this->get_remote_process_memory().pid()) {
       // From PTRACE_O_TRACEEXIT:
 #ifdef __linux__
       if (status>>8 == (SIGTRAP | (PTRACE_EVENT_EXIT<<8))) {
         unsigned long eventmsg;
-        xbt_assert(ptrace(PTRACE_GETEVENTMSG, remote_process_->pid(), 0, &eventmsg) != -1, "Could not get exit status");
+        xbt_assert(ptrace(PTRACE_GETEVENTMSG, get_remote_process_memory().pid(), 0, &eventmsg) != -1,
+                   "Could not get exit status");
         status = static_cast<int>(eventmsg);
         if (WIFSIGNALED(status)) {
           MC_report_crash(exploration_, status);
-          this->get_remote_process().terminate();
+          this->get_remote_process_memory().terminate();
           this->exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
         }
       }
@@ -284,20 +286,20 @@ void ModelChecker::handle_waitpid()
         XBT_DEBUG("Stopped with signal %i", (int) WSTOPSIG(status));
         errno = 0;
 #ifdef __linux__
-        ptrace(PTRACE_CONT, remote_process_->pid(), 0, WSTOPSIG(status));
+        ptrace(PTRACE_CONT, get_remote_process_memory().pid(), 0, WSTOPSIG(status));
 #elif defined BSD
-        ptrace(PT_CONTINUE, remote_process_->pid(), (caddr_t)1, WSTOPSIG(status));
+        ptrace(PT_CONTINUE, get_remote_process_memory().pid(), (caddr_t)1, WSTOPSIG(status));
 #endif
         xbt_assert(errno == 0, "Could not PTRACE_CONT");
       }
 
       else if (WIFSIGNALED(status)) {
         MC_report_crash(exploration_, status);
-        this->get_remote_process().terminate();
+        this->get_remote_process_memory().terminate();
         this->exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
       } else if (WIFEXITED(status)) {
         XBT_DEBUG("Child process is over");
-        this->get_remote_process().terminate();
+        this->get_remote_process_memory().terminate();
       }
     }
   }
@@ -306,7 +308,7 @@ void ModelChecker::handle_waitpid()
 void ModelChecker::wait_for_requests()
 {
   this->resume();
-  if (this->get_remote_process().running())
+  if (this->get_remote_process_memory().running())
     checker_side_.dispatch();
 }
 
@@ -318,8 +320,8 @@ Transition* ModelChecker::handle_simcall(aid_t aid, int times_considered, bool n
   m.times_considered_ = times_considered;
   checker_side_.get_channel().send(m);
 
-  this->remote_process_->clear_cache();
-  if (this->remote_process_->running())
+  this->remote_process_memory_->clear_cache();
+  if (this->remote_process_memory_->running())
     checker_side_.dispatch(); // The app may send messages while processing the transition
 
   s_mc_message_simcall_execute_answer_t answer;

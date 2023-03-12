@@ -7,7 +7,7 @@
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/mc_config.hpp"
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/remote/RemoteProcess.hpp"
+#include "src/mc/sosp/RemoteProcessMemory.hpp"
 
 #include <cstdlib>
 #include <sys/mman.h>
@@ -22,8 +22,8 @@ Region::Region(PageStore& store, RegionType region_type, void* start_addr, size_
 {
   xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize - 1)) == 0, "Start address not at the beginning of a page");
 
-  chunks_ =
-      ChunkedData(store, mc_model_checker->get_remote_process(), RemotePtr<void>(start_addr), mmu::chunk_count(size));
+  chunks_ = ChunkedData(store, mc_model_checker->get_remote_process_memory(), RemotePtr<void>(start_addr),
+                        mmu::chunk_count(size));
 }
 
 /** @brief Restore a region from a snapshot
@@ -38,7 +38,7 @@ void Region::restore() const
   for (size_t i = 0; i != get_chunks().page_count(); ++i) {
     auto* target_page       = (void*)simgrid::mc::mmu::join(i, (std::uintptr_t)(void*)start().address());
     const void* source_page = get_chunks().page(i);
-    mc_model_checker->get_remote_process().write_bytes(source_page, xbt_pagesize, remote(target_page));
+    mc_model_checker->get_remote_process_memory().write_bytes(source_page, xbt_pagesize, remote(target_page));
   }
 }
 

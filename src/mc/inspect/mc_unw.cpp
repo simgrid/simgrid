@@ -3,16 +3,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/** \file
- *  Libunwind support for mc_address_space objects.
- */
+/** \file Libunwind support for mc_address_space objects. */
 
 // We need this for the register indices:
 // #define _GNU_SOURCE
 
 #include "src/mc/inspect/mc_unw.hpp"
 #include "src/mc/inspect/Frame.hpp"
-#include "src/mc/remote/RemoteProcess.hpp"
+#include "src/mc/sosp/RemoteProcessMemory.hpp"
 
 #include <cstring>
 
@@ -218,7 +216,7 @@ unw_addr_space_t UnwindContext::createUnwindAddressSpace()
   return unw_create_addr_space(&accessors, BYTE_ORDER);
 }
 
-void UnwindContext::initialize(simgrid::mc::RemoteProcess* process, unw_context_t* c)
+void UnwindContext::initialize(simgrid::mc::RemoteProcessMemory* process, unw_context_t* c)
 {
   this->address_space_ = process;
   this->process_      = process;

@@ -17,7 +17,7 @@ class PageStore;
 class ChunkedData;
 class ModelChecker;
 class AddressSpace;
-class RemoteProcess;
+class RemoteProcessMemory;
 class Snapshot;
 class ObjectInformation;
 class Member;

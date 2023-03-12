@@ -40,11 +40,11 @@ public:
     mc_model_checker = nullptr;
   }
 
-  static std::unique_ptr<simgrid::mc::RemoteProcess> process;
+  static std::unique_ptr<simgrid::mc::RemoteProcessMemory> process;
 };
 
 // static member variables init.
-std::unique_ptr<simgrid::mc::RemoteProcess> snap_test_helper::process = nullptr;
+std::unique_ptr<simgrid::mc::RemoteProcessMemory> snap_test_helper::process = nullptr;
 simgrid::mc::PageStore snap_test_helper::page_store_(500);
 
 void snap_test_helper::init_memory(void* mem, size_t size)
@@ -60,7 +60,7 @@ void snap_test_helper::Init()
   REQUIRE(xbt_pagesize == getpagesize());
   REQUIRE(1 << xbt_pagebits == xbt_pagesize);
 
-  process = std::make_unique<simgrid::mc::RemoteProcess>(getpid());
+  process = std::make_unique<simgrid::mc::RemoteProcessMemory>(getpid());
   process->init(nullptr);
   mc_model_checker = new ::simgrid::mc::ModelChecker(std::move(process), -1);
 }

@@ -56,8 +56,8 @@ public:
   /* Get the list of actors that are ready to run at that step. Usually shorter than maxpid */
   void get_actors_status(std::map<aid_t, simgrid::mc::ActorState>& whereto) const;
 
-  /* Get the remote process */
-  RemoteProcess& get_remote_process() { return model_checker_->get_remote_process(); }
+  /* Get the memory of the remote process */
+  RemoteProcessMemory& get_remote_process_memory() { return model_checker_->get_remote_process_memory(); }
 
   PageStore& get_page_store() { return page_store_; }
 };
