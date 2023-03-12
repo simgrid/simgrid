@@ -31,7 +31,6 @@ public:
   Channel& channel() { return checker_side_.get_channel(); }
 
   void start();
-  void resume();
   void wait_for_requests();
 
   /** Let the application take a transition. A new Transition is created iff the last parameter is true */

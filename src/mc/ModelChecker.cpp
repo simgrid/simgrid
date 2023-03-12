@@ -105,13 +105,6 @@ void ModelChecker::setup_ignore()
   process.ignore_global_variable("counter");
 }
 
-void ModelChecker::resume()
-{
-  if (checker_side_.get_channel().send(MessageType::CONTINUE) != 0)
-    throw xbt::errno_error();
-  remote_process_memory_->clear_cache();
-}
-
 static void MC_report_crash(Exploration* explorer, int status)
 {
   XBT_INFO("**************************");
@@ -287,7 +280,11 @@ void ModelChecker::handle_waitpid()
 
 void ModelChecker::wait_for_requests()
 {
-  this->resume();
+  /* Resume the application */
+  if (checker_side_.get_channel().send(MessageType::CONTINUE) != 0)
+    throw xbt::errno_error();
+  remote_process_memory_->clear_cache();
+
   if (this->get_remote_process_memory().running())
     checker_side_.dispatch();
 }
